@@ -1,0 +1,30 @@
+<h1>Listing Leaderboard entry</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Battletag</th>
+      <th>Position</th>
+      <th>Rating</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for leaderboard_entry <- @leaderboard_entry do %>
+    <tr>
+      <td><%= leaderboard_entry.battletag %></td>
+      <td><%= leaderboard_entry.position %></td>
+      <td><%= leaderboard_entry.rating %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.leaderboard_entry_path(@conn, :show, leaderboard_entry) %></span>
+        <span><%= link "Edit", to: Routes.leaderboard_entry_path(@conn, :edit, leaderboard_entry) %></span>
+        <span><%= link "Delete", to: Routes.leaderboard_entry_path(@conn, :delete, leaderboard_entry), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Leaderboard entry", to: Routes.leaderboard_entry_path(@conn, :new) %></span>
