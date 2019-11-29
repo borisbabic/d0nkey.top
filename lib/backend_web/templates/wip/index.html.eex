@@ -1,0 +1,39 @@
+<h1>Leaderboard</h1>
+<section class="container">
+    <nav role="navigation">
+<%= for region <- [:EU, :US, :AP] do %>
+            <a <%= to_string(region) == to_string(@region) && 'class=selected_leaderboard' || '' %> href="<%= Routes.wip_path(@conn, :index, region: region, leaderboardId: @leaderboard_id) %>">
+                <%= region %>
+            </a>
+<% end %>
+    </nav>
+    <nav role="navigation">
+<%= for leaderboard_id <- [:BG, :STD, :WLD] do %>
+            <a <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'class=selected_leaderboard' || '' %> href="<%= Routes.wip_path(@conn, :index, region: @region, leaderboardId: leaderboard_id) %>">
+                <%= leaderboard_id %>
+            </a>
+<% end %>
+    </nav>
+</section>
+<table>
+    <thead>
+        <tr>
+            <th>Position</th>
+            <th>Battletag</th>
+        <%= if to_string(@leaderboard_id) == "BG" do %>
+            <th>Rating</th>
+        <% end %>
+        </tr>
+    </thead>
+    <tbody>
+<%= for %{qualified: qualified, rating: rating, battletag: battletag, position: position} <- @entry do %>
+        <tr class="alternating_color <%= (qualified && to_string(@leaderboard_id) == to_string('STD')) && 'qualified' || '' %>">
+            <td><%= position %></td>
+            <td><%= battletag %></td>
+        <%= if to_string(@leaderboard_id) == "BG" do %>
+            <td><%=rating%></td>
+        <% end %>
+        </tr>
+<% end %>
+    </tbody>
+<table>

@@ -1,0 +1,23 @@
+<h1>Show Leaderboard entry</h1>
+
+<ul>
+
+  <li>
+    <strong>Battletag:</strong>
+    <%= @leaderboard_entry.battletag %>
+  </li>
+
+  <li>
+    <strong>Position:</strong>
+    <%= @leaderboard_entry.position %>
+  </li>
+
+  <li>
+    <strong>Rating:</strong>
+    <%= @leaderboard_entry.rating %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.leaderboard_entry_path(@conn, :edit, @leaderboard_entry) %></span>
+<span><%= link "Back", to: Routes.leaderboard_entry_path(@conn, :index) %></span>

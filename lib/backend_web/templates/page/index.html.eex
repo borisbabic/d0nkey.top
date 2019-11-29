@@ -1,0 +1,4 @@
+<section class="row">
+  Hello! <%= link " You probably want to click her", to: Routes.wip_path(@conn, :index) %> <%= link "e", to: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" %>
+
+</section>

@@ -1,0 +1,5 @@
+<h1>Edit Leaderboard entry</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.leaderboard_entry_path(@conn, :update, @leaderboard_entry)) %>
+
+<span><%= link "Back", to: Routes.leaderboard_entry_path(@conn, :index) %></span>

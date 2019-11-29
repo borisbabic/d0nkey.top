@@ -1,0 +1,14 @@
+/* This file is for your main application css. */
+
+@import "./phoenix.css";
+
+.qualified {
+    text-decoration: line-through;
+}
+.alternating_color:nth-child(even) {
+    background-color: #f2f2f2
+}
+
+.selected_leaderboard {
+    font-weight: bold;
+}
