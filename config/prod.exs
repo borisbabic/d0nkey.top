@@ -10,8 +10,8 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :backend, BackendWeb.Endpoint,
-  url: [scheme: "http", host: "www.d0nkey.top", port: 80],
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  url: [scheme: "https", host: "www.d0nkey.top", port: 443],
+  # force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
