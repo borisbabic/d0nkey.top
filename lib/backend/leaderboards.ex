@@ -301,7 +301,18 @@ defmodule Backend.Leaderboards do
         "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}"
       )
     raw_snapshot = Poison.decode!(response.body)
-    Enum.map(raw_snapshot["leaderboard"]["table"]["rows"], fn row ->
+    updated_at = raw_snapshot["leaderboard"]["table"]["metadata"]["last_updated_time"]
+    |> String.split(" ")
+    |> Enum.take(2)
+    |> Enum.join(" ")
+    |> Kernel.<>("+00:00")
+    |> DateTime.from_iso8601()
+    |> case do
+      {:ok, time, _} -> time
+      {:error, _} -> nil
+    end
+
+    { Enum.map(raw_snapshot["leaderboard"]["table"]["rows"], fn row ->
       case  row do
          %{
            "player" => [%{"key" => "id", "battleTag" => battletag}],
@@ -323,7 +334,7 @@ defmodule Backend.Leaderboards do
           rating: nil,
         }
       end
-    end)
+    end), updated_at}
   end
 
   @doc """

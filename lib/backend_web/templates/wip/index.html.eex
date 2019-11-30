@@ -15,6 +15,11 @@
 <% end %>
     </nav>
 </section>
+<%= if @old do %>
+    <h2 class="warning">
+        WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
+    </h2>
+<% end %>
 <table>
     <thead>
         <tr>
