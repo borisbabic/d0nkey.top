@@ -4,9 +4,9 @@ defmodule BackendWeb.WipController do
   alias Backend.MastersTour
 
   def index(conn, %{"region" => region, "leaderboardId" => leaderboard_id}) do
-    entry = Leaderboards.fetch_current_entries(region, leaderboard_id)
+    {entry, updated_at} = Leaderboards.fetch_current_entries(region, leaderboard_id)
     invited = MastersTour.list_invited_players()
-    render(conn, "index.html", %{entry: entry, invited: invited, region: region, leaderboard_id: leaderboard_id})
+    render(conn, "index.html", %{entry: entry, invited: invited, region: region, leaderboard_id: leaderboard_id, updated_at: updated_at})
   end
   def index(conn, params) do
     new_params =
