@@ -12,11 +12,6 @@ defmodule BackendWeb.WipView do
     entry = Enum.map(entry_raw, fn le = %{battletag: battletag} -> Map.put_new(le, :qualified, MapSet.member?(invited, to_string(battletag))) end)
     old = updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600
 
-    # new_params = Map.put(params, :entry, entry)
-    # inspect entry
     render("index.html", %{conn: conn, entry: entry, region: region, leaderboard_id: leaderboard_id, old: old})
   end
-  # def render("index.html", params) do
-  #   inspect Map.keys(params)
-  # end
 end
