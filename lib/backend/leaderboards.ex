@@ -298,7 +298,7 @@ defmodule Backend.Leaderboards do
   def fetch_current_entries(region, leaderboard_id) do
     response =
       HTTPoison.get!(
-        "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}"
+        "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}&seasonId=73"
       )
     raw_snapshot = Poison.decode!(response.body)
     updated_at = raw_snapshot["leaderboard"]["table"]["metadata"]["last_updated_time"]
