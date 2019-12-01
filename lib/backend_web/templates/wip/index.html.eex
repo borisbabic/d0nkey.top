@@ -2,15 +2,22 @@
 <section class="container">
     <nav role="navigation">
 <%= for region <- [:EU, :US, :AP] do %>
-            <a <%= to_string(region) == to_string(@region) && 'class=selected_leaderboard' || '' %> href="<%= Routes.wip_path(@conn, :index, region: region, leaderboardId: @leaderboard_id) %>">
+            <a <%= to_string(region) == to_string(@region) && 'class=selected_leaderboard' || '' %> href="<%= Routes.wip_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>">
                 <%= region %>
             </a>
 <% end %>
     </nav>
     <nav role="navigation">
 <%= for leaderboard_id <- [:BG, :STD, :WLD] do %>
-            <a <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'class=selected_leaderboard' || '' %> href="<%= Routes.wip_path(@conn, :index, region: @region, leaderboardId: leaderboard_id) %>">
+            <a <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'class=selected_leaderboard' || '' %> href="<%= Routes.wip_path(@conn, :index, Map.put(@conn.query_params, "leaderboardId", leaderboard_id)) %>">
                 <%= leaderboard_id %>
+            </a>
+<% end %>
+    </nav>
+    <nav role="navigation">
+<%= for {month, season_id} <- [{"dec", 74}, {"nov", 73}, {"oct", 72}] do %>
+            <a <%= to_string(season_id) == to_string(@conn.query_params["seasonId"]) && 'class=selected_leaderboard' || '' %> href="<%= Routes.wip_path(@conn, :index, Map.put(@conn.query_params, "seasonId", season_id)) %>">
+                <%= month %>
             </a>
 <% end %>
     </nav>
