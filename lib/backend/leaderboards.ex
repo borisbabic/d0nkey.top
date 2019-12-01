@@ -295,13 +295,8 @@ defmodule Backend.Leaderboards do
     LeaderboardEntry.changeset(leaderboard_entry, %{})
   end
 
-  def fetch_current_entries(region, leaderboard_id) do
-    response =
-      HTTPoison.get!(
-        "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}&seasonId=73"
-      )
-    raw_snapshot = Poison.decode!(response.body)
-    updated_at = raw_snapshot["leaderboard"]["table"]["metadata"]["last_updated_time"]
+  def process_current_entries(raw_snapshot = %{"leaderboard" => %{ "table" => %{ "metadata" => metadata}}}) do
+    updated_at = metadata["last_updated_time"]
     |> String.split(" ")
     |> Enum.take(2)
     |> Enum.join(" ")
@@ -335,6 +330,25 @@ defmodule Backend.Leaderboards do
         }
       end
     end), updated_at}
+  end
+  def process_current_entries(_raw_snapshot) do
+    {[], false}
+  end
+  def fetch_current_entries(region, leaderboard_id, season_id) do
+    response =
+      HTTPoison.get!(
+        "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}&seasonId=#{season_id}"
+      )
+    raw_snapshot = Poison.decode!(response.body)
+    process_current_entries(raw_snapshot)
+  end
+  def fetch_current_entries(region, leaderboard_id) do
+    response =
+      HTTPoison.get!(
+        "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}"
+      )
+    raw_snapshot = Poison.decode!(response.body)
+    process_current_entries(raw_snapshot)
   end
 
   @doc """
