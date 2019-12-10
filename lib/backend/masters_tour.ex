@@ -25,7 +25,7 @@ defmodule Backend.MastersTour do
 
   def fetch() do
     # until I figure out better storage than I'll get old ones as well
-    tour_stop = "Arlington"
+    tour_stop = "Indonesia"
 
     response =
       HTTPoison.get!(

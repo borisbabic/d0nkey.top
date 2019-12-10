@@ -13,7 +13,7 @@ defmodule BackendWeb.WipController do
       %{"seasonId" => season_id} -> Leaderboards.fetch_current_entries(region, leaderboard_id, season_id)
       _ -> Leaderboards.fetch_current_entries(region, leaderboard_id)
     end
-    invited = MastersTour.list_invited_players()
+    invited = MastersTour.list_invited_players("Indonesia") # todo figure out a better way to handle tour stops
     render(conn, "index.html", %{entry: entry, invited: invited, region: region, leaderboard_id: leaderboard_id, updated_at: updated_at})
   end
   def index(conn, params) do
