@@ -295,58 +295,52 @@ defmodule Backend.Leaderboards do
     LeaderboardEntry.changeset(leaderboard_entry, %{})
   end
 
-  def process_current_entries(raw_snapshot = %{"leaderboard" => %{ "table" => %{ "metadata" => metadata}}}) do
-    updated_at = metadata["last_updated_time"]
-    |> String.split(" ")
-    |> Enum.take(2)
-    |> Enum.join(" ")
-    |> Kernel.<>("+00:00")
-    |> DateTime.from_iso8601()
-    |> case do
-      {:ok, time, _} -> time
-      {:error, _} -> nil
-    end
-
-    { Enum.map(raw_snapshot["leaderboard"]["table"]["rows"], fn row ->
-      case  row do
-         %{
-           "player" => [%{"key" => "id", "battleTag" => battletag}],
-           "cells" => [
-             %{"data" => [%{"number" => rank, "type" => "NUMBER"}]},
-             %{"data" => [%{"number" => rating, "type" => "NUMBER"}]}
-           ]
-        } ->  %{
-          battletag: battletag,
-          position: rank,
-          rating: rating
-        }
-        %{
-          "player" => [%{"key" => "id", "battleTag" => battletag}],
-          "cells" => [%{"id" => "rank", "data" => [%{"number" => rank, "type" => "NUMBER"}]}]
-        } ->  %{
-          battletag: battletag,
-          position: rank,
-          rating: nil,
-        }
+  def process_current_entries(raw_snapshot = %{"leaderboard" => %{"metadata" => metadata}}) do
+    updated_at =
+      metadata["last_updated_time"]
+      |> String.split(" ")
+      |> Enum.take(2)
+      |> Enum.join(" ")
+      |> Kernel.<>("+00:00")
+      |> DateTime.from_iso8601()
+      |> case do
+        {:ok, time, _} -> time
+        {:error, _} -> nil
       end
-    end), updated_at}
+
+    {Enum.map(raw_snapshot["leaderboard"]["rows"], fn row ->
+       %{
+         battletag: row["accountid"],
+         position: row["rank"],
+         rating: row["rating"]
+       }
+     end), updated_at}
   end
+
   def process_current_entries(_raw_snapshot) do
     {[], false}
   end
+
   def fetch_current_entries(region, leaderboard_id, season_id) do
     response =
       HTTPoison.get!(
-        "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}&seasonId=#{season_id}"
+        "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
+          leaderboard_id
+        }&seasonId=#{season_id}"
       )
+
     raw_snapshot = Poison.decode!(response.body)
     process_current_entries(raw_snapshot)
   end
+
   def fetch_current_entries(region, leaderboard_id) do
     response =
       HTTPoison.get!(
-        "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}"
+        "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
+          leaderboard_id
+        }"
       )
+
     raw_snapshot = Poison.decode!(response.body)
     process_current_entries(raw_snapshot)
   end
@@ -365,7 +359,7 @@ defmodule Backend.Leaderboards do
       Enum.each(['EU', 'US', 'AP'], fn region ->
         response =
           HTTPoison.get!(
-            "https://playhearthstone.com/en-us/community/leaderboardsData?region=#{region}&leaderboard_id=#{
+            "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboard_id=#{
               leaderboard
             }"
           )
