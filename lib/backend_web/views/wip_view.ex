@@ -11,7 +11,12 @@ defmodule BackendWeb.WipView do
 
     entry = Enum.map(entry_raw, fn le = %{battletag: battletag} -> Map.put_new(le, :qualified, MapSet.member?(invited, to_string(battletag))) end)
     old = updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600
+    updated_at_string = updated_at
+      |> DateTime.to_iso8601
+      |> String.splitter(".")
+      |> Enum.at(0)
+      |> String.replace("T", " ")
 
-    render("index.html", %{conn: conn, entry: entry, region: region, leaderboard_id: leaderboard_id, old: old})
+    render("index.html", %{conn: conn, entry: entry, region: region, leaderboard_id: leaderboard_id, old: old, updated_at: updated_at_string})
   end
 end
