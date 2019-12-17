@@ -9,6 +9,8 @@ defmodule Backend.Leaderboards do
   alias Backend.Leaderboards.LeaderboardEntry
   alias Backend.Leaderboards.LeaderboardSnapshot
 
+  @last_leaderboard_key "last_leaderboard"
+
   @doc """
   Returns the list of leaderboard_snapshot.
 
@@ -295,42 +297,72 @@ defmodule Backend.Leaderboards do
     LeaderboardEntry.changeset(leaderboard_entry, %{})
   end
 
-  def process_current_entries(raw_snapshot = %{"leaderboard" => %{"metadata" => metadata}}) do
-    updated_at =
-      metadata["last_updated_time"]
-      |> String.split(" ")
-      |> Enum.take(2)
-      |> Enum.join(" ")
-      |> Kernel.<>("+00:00")
-      |> DateTime.from_iso8601()
-      |> case do
-        {:ok, time, _} -> time
-        {:error, _} -> nil
-      end
+  defp get_latest_cached_leaderboard() do
+    case Backend.ApiCache.get(@last_leaderboard_key) do
+      nil -> {[], nil}
+      lb -> lb
+    end
+  end
+  defp save_latest_cached_leaderboard(to_save) do
+    Backend.ApiCache.set(@last_leaderboard_key, to_save)
+    to_save
+  end
 
-    {Enum.map(raw_snapshot["leaderboard"]["rows"], fn row ->
-       %{
-         battletag: row["accountid"],
-         position: row["rank"],
-         rating: row["rating"]
-       }
-     end), updated_at}
+  def process_current_entries(raw_snapshot = %{"leaderboard" => %{"metadata" => _}}) do
+    updated_at = get_updated_at(raw_snapshot)
+    {cached_leaderboard, cached_updated_at} = get_latest_cached_leaderboard()
+    if is_nil(cached_updated_at) || DateTime.diff(updated_at, cached_updated_at) do
+      entries = Enum.map(raw_snapshot["leaderboard"]["rows"], fn row ->
+        %{
+          battletag: row["accountid"],
+          position: row["rank"],
+          rating: row["rating"]
+        }
+      end)
+      save_latest_cached_leaderboard({entries, updated_at})
+    else
+      {cached_leaderboard, cached_updated_at}
+    end
   end
 
   def process_current_entries(_raw_snapshot) do
-    {[], false}
+    get_latest_cached_leaderboard()
+  end
+
+  def get_updated_at(%{"leaderboard" => %{"metadata" => metadata}}) do
+    metadata["last_updated_time"]
+    |> String.split(" ")
+    |> Enum.take(2)
+    |> Enum.join(" ")
+    |> Kernel.<>("+00:00")
+    |> DateTime.from_iso8601()
+    |> case do
+      {:ok, time, _} -> time
+      {:error, _} -> nil
+    end
   end
 
   def fetch_current_entries(region, leaderboard_id, season_id) do
-    response =
-      HTTPoison.get!(
-        "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
-          leaderboard_id
-        }&seasonId=#{season_id}"
-      )
+    case HTTPoison.get(
+           "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
+             leaderboard_id
+           }&seasonId=#{season_id}"
+         ) do
+      {:error, _} ->
+        get_latest_cached_leaderboard()
 
-    raw_snapshot = Poison.decode!(response.body)
-    process_current_entries(raw_snapshot)
+      {:ok, %{body: body}} ->
+        body
+        |> Poison.decode!()
+        |> process_current_entries
+    end
+
+    # response =
+    #   HTTPoison.get!(
+    #   )
+
+    # raw_snapshot = Poison.decode!(response.body)
+    # process_current_entries(raw_snapshot)
   end
 
   def fetch_current_entries(region, leaderboard_id) do
