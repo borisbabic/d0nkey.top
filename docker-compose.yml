@@ -1,0 +1,13 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:11.6
+    container_name: DtopDB
+    ports: 
+      - "2470:5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=DtopDB 
+    restart: unless-stopped
+

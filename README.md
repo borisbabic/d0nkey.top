@@ -1,20 +1,39 @@
-# Backend
+# Intro
+www.d0nkey.top
+A site for my hearthstone related endeavours
 
-To start your Phoenix server:
+# Tech stack
+- elixir, phoenix framework
+- postgres
+- heroku, cloudfare
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
+# Contributing
+## Legal and licensing
+Contributions should be provided under the Apache License. If I haven't yet added it the pull request template please badger me
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Format 
+Ensure the code is formatted correctly with `mix format`
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Tests 
+Test what makes sense to be tested :) (if I haven't yet added tests you can skip this :sweat_smile:)
 
-## Learn more
+## Commits
+https://chris.beams.io/posts/git-commit/#seven-rules
+Please be guided the seven rules when writing commit messages
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+# Running
+## Dependencies
+elixir 1.9.4
+docker, docker-compose (or an appropriate postgres running)
+npm 
+
+## First run
+```shell
+mix deps.get # install dependencies
+docker-compose up -d # get postgres running
+mix setup # setup the db
+mix run -e Backend.MastersTour.fetch # optional, fetches the currently invited players
+cd assets && npm install && cd ..
+mix phx.server # start the server at port 2470
+```
+

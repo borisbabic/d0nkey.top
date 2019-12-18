@@ -4,8 +4,9 @@ use Mix.Config
 config :backend, Backend.Repo,
   username: "root",
   password: "root",
-  database: "backend_dev",
+  database: "DtopDB",
   hostname: "localhost",
+  port: 2470,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -16,7 +17,7 @@ config :backend, Backend.Repo,
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :backend, BackendWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: 8994],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
