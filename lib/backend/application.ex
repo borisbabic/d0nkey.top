@@ -15,8 +15,8 @@ defmodule Backend.Application do
       # Starts a worker by calling: Backend.Worker.start_link(arg)
       # {Backend.Worker, arg},
       %{
-        id: Backend.ApiCache,
-        start: {Backend.ApiCache, :start_link, [[]]}
+        id: Backend.Infrastructure.ApiCache,
+        start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
       }
     ]
 

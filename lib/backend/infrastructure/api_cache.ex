@@ -1,4 +1,4 @@
-defmodule Backend.ApiCache do
+defmodule Backend.Infrastructure.ApiCache do
   use GenServer
 
   # Client
