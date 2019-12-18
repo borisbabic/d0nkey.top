@@ -1,4 +1,4 @@
-defmodule BackendWeb.WipView do
+defmodule BackendWeb.LeaderboardView do
   use BackendWeb, :view
 
   def render("index.html", %{invited: invited_raw, entry: entry_raw, conn: conn, region: region, leaderboard_id: leaderboard_id, updated_at: updated_at}) do

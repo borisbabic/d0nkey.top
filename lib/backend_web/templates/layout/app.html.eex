@@ -11,7 +11,7 @@
     <header>
       <section class="container">
         <nav >
-          <%= link "leaderboard", to: Routes.wip_path(@conn, :index) %>
+          <%= link "leaderboard", to: Routes.leaderboard_path(@conn, :index) %>
         </nav>
       </section>
     </header>
