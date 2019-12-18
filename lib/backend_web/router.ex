@@ -16,7 +16,7 @@ defmodule BackendWeb.Router do
   scope "/", BackendWeb do
     pipe_through :browser
 
-    get "/leaderboard", WipController, :index
+    get "/leaderboard", LeaderboardController, :index
     get "/", PageController, :index
   end
 

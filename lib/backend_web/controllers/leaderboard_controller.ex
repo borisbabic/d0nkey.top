@@ -1,4 +1,4 @@
-defmodule BackendWeb.WipController do
+defmodule BackendWeb.LeaderboardController do
   use BackendWeb, :controller
   alias Backend.Leaderboards
   alias Backend.MastersTour
