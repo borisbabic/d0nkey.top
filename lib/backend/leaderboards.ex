@@ -1,5 +1,6 @@
 defmodule Backend.Leaderboards do
   require Logger
+
   @moduledoc """
   The Leaderboards context.
   """
@@ -25,14 +26,27 @@ defmodule Backend.Leaderboards do
   def fetch_current_entries(region, leaderboard_id, season_id \\ nil) do
     cache_key = create_cache_key(region, leaderboard_id, season_id)
     cached = {_table, cached_updated_at} = get_latest_cached_leaderboard(cache_key)
+
     case BlizzardCommunicator.get_leaderboard(region, leaderboard_id, season_id) do
-      {:error, _} -> cached
+      {:error, _} ->
+        cached
+
       {:ok, leaderboard = {_table, updated_at}} ->
         if !cached_updated_at || DateTime.diff(updated_at, cached_updated_at) >= 0 do
-          Logger.debug "Using blizzard leaderboard, updated_at: #{updated_at}, cached_updated_at: #{cached_updated_at}"
+          Logger.debug(
+            "Using blizzard leaderboard, updated_at: #{updated_at}, cached_updated_at: #{
+              cached_updated_at
+            }"
+          )
+
           save_latest_cached_leaderboard(leaderboard, cache_key)
         else
-          Logger.debug "USING CACHED LEADERBOARD! updated_at: #{updated_at}, cached_updated_at: #{cached_updated_at}"
+          Logger.debug(
+            "USING CACHED LEADERBOARD! updated_at: #{updated_at}, cached_updated_at: #{
+              cached_updated_at
+            }"
+          )
+
           cached
         end
     end

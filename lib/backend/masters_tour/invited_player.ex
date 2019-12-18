@@ -17,6 +17,4 @@ defmodule Backend.MastersTour.InvitedPlayer do
     |> cast(attrs, [:battletag_full, :tour_stop])
     |> validate_required([:battletag_full, :tour_stop])
   end
-
-
 end

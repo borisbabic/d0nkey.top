@@ -15,11 +15,13 @@ defmodule Backend.MastersTour do
   def list_invited_players() do
     Repo.all(InvitedPlayer)
   end
+
   def list_invited_players(tour_stop) do
     query =
       from ip in InvitedPlayer,
         where: ip.tour_stop == ^tour_stop,
         select: ip
+
     Repo.all(query)
   end
 
