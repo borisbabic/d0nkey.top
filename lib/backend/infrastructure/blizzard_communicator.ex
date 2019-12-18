@@ -42,6 +42,7 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
       {:error, _} -> nil
     end
   end
+
   defp extract_updated_at(_) do
     nil
   end

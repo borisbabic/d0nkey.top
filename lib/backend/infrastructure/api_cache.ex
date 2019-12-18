@@ -14,23 +14,26 @@ defmodule Backend.Infrastructure.ApiCache do
     GenServer.cast(:api_cache, {:set, key, value})
   end
 
-
   # Server
   def init(_args) do
     table = :ets.new(:api_cache, [:set, :private])
     {:ok, %{table: table}}
   end
+
   def create(server, name) do
     GenServer.cast(server, {:create, name})
   end
 
   def handle_call({:get, key}, _from, state) do
     %{table: table} = state
-    value = case :ets.lookup(table, key) do
-      [{found_key, value}] when found_key == key -> value
-      [] -> nil
-      other -> other
-    end
+
+    value =
+      case :ets.lookup(table, key) do
+        [{found_key, value}] when found_key == key -> value
+        [] -> nil
+        other -> other
+      end
+
     {:reply, value, state}
   end
 
@@ -39,5 +42,4 @@ defmodule Backend.Infrastructure.ApiCache do
     true = :ets.insert(table, {key, value})
     {:noreply, state}
   end
-
 end

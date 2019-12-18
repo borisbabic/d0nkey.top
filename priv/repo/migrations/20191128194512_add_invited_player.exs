@@ -10,6 +10,5 @@ defmodule Backend.Repo.Migrations.AddInvitedPlayer do
 
       timestamps()
     end
-
   end
 end
