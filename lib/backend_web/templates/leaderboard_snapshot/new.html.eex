@@ -1,5 +1,0 @@
-<h1>New Leaderboard snapshot</h1>
-
-<%= render "form.html", Map.put(assigns, :action, Routes.leaderboard_snapshot_path(@conn, :create)) %>
-
-<span><%= link "Back", to: Routes.leaderboard_snapshot_path(@conn, :index) %></span>

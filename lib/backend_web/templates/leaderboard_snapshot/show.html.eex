@@ -1,8 +1,0 @@
-<h1>Show Leaderboard snapshot</h1>
-
-<ul>
-
-</ul>
-
-<span><%= link "Edit", to: Routes.leaderboard_snapshot_path(@conn, :edit, @leaderboard_snapshot) %></span>
-<span><%= link "Back", to: Routes.leaderboard_snapshot_path(@conn, :index) %></span>
