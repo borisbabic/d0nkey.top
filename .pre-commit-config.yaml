@@ -1,0 +1,13 @@
+repos:
+  - repo: local
+    hooks:
+      - id: mix-format
+        name: mix format
+        files: '.*\.(ex|exs)$'
+        entry: mix format
+        language: system
+      #- id: mix-test-unit
+        #name: mix test unit
+        #language: system
+        #always_run: true
+        #entry: 'mix test'

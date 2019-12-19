@@ -2,10 +2,11 @@ use Mix.Config
 
 # Configure your database
 config :backend, Backend.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "backend_test",
+  username: "root",
+  password: "root",
+  database: "DtopDB_test",
   hostname: "localhost",
+  port: 2470,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
