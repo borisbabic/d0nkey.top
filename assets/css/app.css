@@ -5,6 +5,9 @@
 .qualified {
     text-decoration: line-through;
 }
+.qualifying {
+    font-weight: bold;
+}
 .alternating_color:nth-child(even) {
     background-color: #f2f2f2
 }

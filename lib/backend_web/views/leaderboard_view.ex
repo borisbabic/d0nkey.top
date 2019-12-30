@@ -19,9 +19,20 @@ defmodule BackendWeb.LeaderboardView do
         end
       )
 
-    entry =
-      Enum.map(entry_raw, fn le = %{battletag: battletag} ->
-        Map.put_new(le, :qualified, MapSet.member?(invited, to_string(battletag)))
+    # add qualified and qualifying
+    # add qualified
+    {entry, _} =
+      Enum.map_reduce(entry_raw, 0, fn le = %{battletag: battletag}, acc ->
+        qualified = MapSet.member?(invited, to_string(battletag))
+        qualifying = !qualified && acc < 16
+
+        {Map.put_new(le, :qualified, qualified)
+         |> Map.put_new(:qualifying, qualifying),
+         if qualified do
+           acc
+         else
+           acc + 1
+         end}
       end)
 
     old = updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600
