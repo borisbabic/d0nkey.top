@@ -28,25 +28,6 @@
         WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
     </h2>
 <% end %>
-<table>
-    <thead>
-        <tr>
-            <th>Position</th>
-            <th>Battletag</th>
-        <%= if to_string(@leaderboard_id) == "BG" do %>
-            <th>Rating</th>
-        <% end %>
-        </tr>
-    </thead>
-    <tbody>
-<%= for %{qualified: qualified, rating: rating, battletag: battletag, position: position, qualifying: qualifying} <- @entry do %>
-        <tr class="alternating_color <%= (qualified && to_string(@leaderboard_id) == to_string('STD')) && 'qualified' || '' %> <%=qualifying && 'qualifying'%> ">
-            <td><%= position %></td>
-            <td><%= battletag %></td>
-        <%= if to_string(@leaderboard_id) == "BG" do %>
-            <td><%=rating%></td>
-        <% end %>
-        </tr>
-<% end %>
-    </tbody>
-<table>
+<%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted) %>
+
+<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entry) %>
