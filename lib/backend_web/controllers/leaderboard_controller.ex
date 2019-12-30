@@ -16,12 +16,20 @@ defmodule BackendWeb.LeaderboardController do
     # todo figure out a better way to handle tour stops
     invited = MastersTour.list_invited_players("Indonesia")
 
+    highlight =
+      case params["highlight"] do
+        string when is_binary(string) -> MapSet.new([string])
+        list when is_list(list) -> MapSet.new(list)
+        _ -> nil
+      end
+
     render(conn, "index.html", %{
       entry: entry,
       invited: invited,
       region: region,
       leaderboard_id: leaderboard_id,
-      updated_at: updated_at
+      updated_at: updated_at,
+      highlight: highlight
     })
   end
 
