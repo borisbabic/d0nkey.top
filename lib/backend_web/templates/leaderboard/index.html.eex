@@ -21,7 +21,7 @@
             </a>
 <% end %>
     </nav>
-<h6>Updated at <%=@updated_at%> UTC</h6>
+<%= @updated_at && "<h6>Updated at #{@updated_at} UTC</h6>" %>
 </section>
 <%= if @old do %>
     <h2 class="warning">
