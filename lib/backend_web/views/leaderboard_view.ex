@@ -27,6 +27,10 @@ defmodule BackendWeb.LeaderboardView do
     })
   end
 
+  def process_updated_at(_ = nil) do
+    nil
+  end
+
   def process_updated_at(updated_at) do
     updated_at
     |> DateTime.to_iso8601()
