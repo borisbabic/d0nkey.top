@@ -15,13 +15,13 @@
 <% end %>
     </nav>
     <nav role="navigation">
-<%= for {month, season_id} <- [{"dec", 74}, {"nov", 73}, {"oct", 72}] do %>
+<%= for {month, season_id} <- [{"jan", 75}, {"dec", 74}, {"nov", 73}] do %>
             <a <%= to_string(season_id) == to_string(@conn.query_params["seasonId"]) && 'class=selected_leaderboard' || '' %> href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "seasonId", season_id)) %>">
                 <%= month %>
             </a>
 <% end %>
     </nav>
-<%= @updated_at && "<h6>Updated at #{@updated_at} UTC</h6>" %>
+<h6><%= @updated_at && 'Updated at #{@updated_at} UTC' %></h6>
 </section>
 <%= if @old do %>
     <h2 class="warning">
