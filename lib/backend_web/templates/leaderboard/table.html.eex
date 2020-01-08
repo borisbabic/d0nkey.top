@@ -1,20 +1,33 @@
 <table class="table is-striped is-fullwidth">
     <thead>
-        <tr>
+        <tr class="center-table">
             <th>Position</th>
             <th>Battletag</th>
         <%= if to_string(@leaderboard_id) == "BG" do %>
             <th>Rating</th>
         <% end %>
+        <%= if to_string(@leaderboard_id) == "STD" do %>
+            <th>Master's Tour</th>
+        <% end %>
         </tr>
     </thead>
     <tbody>
 <%= for %{qualified: qualified, rating: rating, battletag: battletag, position: position, qualifying: qualifying} <- @table_entries do %>
-        <tr class="<%= (qualified && to_string(@leaderboard_id) == to_string('STD')) && 'qualified' || '' %> <%=qualifying && 'qualifying'%> ">
+        <tr class="has-text-centered">
             <td><%= position %></td>
             <td><%= battletag %></td>
         <%= if to_string(@leaderboard_id) == "BG" do %>
             <td><%=rating%></td>
+        <% end %>
+        <%= if to_string(@leaderboard_id) == "STD" do %>
+            <td>
+                <%= if qualified do %>
+                    <p class="tag is-info">Invited</p>
+                <% end %>
+                <%= if qualifying do %>
+                    <p class="tag is-success">Top 16</p>
+                <% end %>
+            </td>
         <% end %>
         </tr>
 <% end %>
