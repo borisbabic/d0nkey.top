@@ -1,4 +1,3 @@
 <section class="row">
-  Hello! <%= link " You probably want to click her", to: Routes.leaderboard_path(@conn, :index) %> <%= link "e", to: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" %>
-
+  Hello! <%= link " You probably want to click her", to: Routes.leaderboard_path(@conn, :index) %><%= link "e", to: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" %>
 </section>
