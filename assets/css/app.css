@@ -1,14 +1,1 @@
 /* This file is for your main application css. */
-
-/* @import "./phoenix.css"; */
-
-.qualified {
-    text-decoration: line-through;
-}
-.qualifying {
-    font-weight: bold;
-}
-
-.warning {
-    color: red
-}
