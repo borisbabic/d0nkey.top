@@ -12,13 +12,13 @@
 
 
   </head>
-  <body class="container is-fluid">
-    <header>
+  <body>
+    <header class="container">
         <nav >
           <%= link "leaderboard", to: Routes.leaderboard_path(@conn, :index) %>
         </nav>
     </header>
-    <main role="main">
+    <main role="main" class="container">
         <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
         <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
         <%= render @view_module, @view_template, assigns %>
