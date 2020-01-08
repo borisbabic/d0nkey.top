@@ -6,16 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>d0nkey.top</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
+
+
+
   </head>
   <body>
     <header>
-      <section class="container">
+      <section class="container is-fluid">
         <nav >
           <%= link "leaderboard", to: Routes.leaderboard_path(@conn, :index) %>
         </nav>
       </section>
     </header>
-    <main role="main" class="container">
+    <main role="main" class="container is-fluid">
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
       <%= render @view_module, @view_template, assigns %>

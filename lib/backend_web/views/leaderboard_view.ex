@@ -15,6 +15,16 @@ defmodule BackendWeb.LeaderboardView do
     highlighted = process_highlighted(highlighted_raw, entry)
     old = updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600
     updated_at_string = process_updated_at(updated_at)
+    season_id = conn.query_params["seasonId"]
+    # todo generate these from the current date
+    selectable_seasons = [{"JAN", 75}, {"DEC", 74}, {"NOV", 73}]
+
+    season_selector = fn season_tuple ->
+      to_string(elem(season_tuple, 1)) == to_string(season_id)
+    end
+
+    season_name =
+      Enum.find(selectable_seasons, Enum.at(selectable_seasons, 0), season_selector) |> elem(0)
 
     render("index.html", %{
       conn: conn,
@@ -23,7 +33,10 @@ defmodule BackendWeb.LeaderboardView do
       leaderboard_id: leaderboard_id,
       old: old,
       updated_at: updated_at_string,
-      highlighted: highlighted
+      highlighted: highlighted,
+      season_id: season_id,
+      selectable_seasons: selectable_seasons,
+      season_name: season_name
     })
   end
 
