@@ -1,6 +1,6 @@
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
-        <tr class="center-table">
+        <tr>
             <th>Position</th>
             <th>Battletag</th>
         <%= if to_string(@leaderboard_id) == "BG" do %>
@@ -13,7 +13,7 @@
     </thead>
     <tbody>
 <%= for %{qualified: qualified, rating: rating, battletag: battletag, position: position, qualifying: qualifying} <- @table_entries do %>
-        <tr class="has-text-centered">
+        <tr>
             <td><%= position %></td>
             <td><%= battletag %></td>
         <%= if to_string(@leaderboard_id) == "BG" do %>
