@@ -1,32 +1,45 @@
-<h1>Leaderboard</h1>
-<section class="container">
-    <nav role="navigation">
-<%= for region <- [:EU, :US, :AP] do %>
-            <a <%= to_string(region) == to_string(@region) && 'class=selected_leaderboard' || '' %> href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>">
-                <%= region %>
-            </a>
-<% end %>
-    </nav>
-    <nav role="navigation">
-<%= for leaderboard_id <- [:BG, :STD, :WLD] do %>
-            <a <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'class=selected_leaderboard' || '' %> href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "leaderboardId", leaderboard_id)) %>">
+<div class="title is-2">Leaderboard</div>
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@region%></button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for region <- [:EU, :US, :AP] do %>
+                <a class="dropdown-item <%= to_string(region) == to_string(@region) && 'is-active' || '' %>" href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>"><%= region %></a>
+        <% end %>
+    </div>
+    </div>
+</div>
+
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-controls="dropdown-menu" class="button"><%=@leaderboard_id%></button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for leaderboard_id <- [:STD, :BG, :WLD] do %>
+            <a class="dropdown-item <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'is-active'%>" href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "leaderboardId", leaderboard_id)) %>">
                 <%= leaderboard_id %>
             </a>
-<% end %>
-    </nav>
-    <nav role="navigation">
-<%= for {month, season_id} <- [{"jan", 75}, {"dec", 74}, {"nov", 73}] do %>
-            <a <%= to_string(season_id) == to_string(@conn.query_params["seasonId"]) && 'class=selected_leaderboard' || '' %> href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "seasonId", season_id)) %>">
+        <% end %>
+    </div>
+    </div>
+</div>
+
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-controls="dropdown-menu" class="button"><%=@season_name%></button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for {month, season_id} <- @selectable_seasons do %>
+            <a class="dropdown-item <%= to_string(season_id) == to_string(@season_id) && 'is-active' %>" href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "seasonId", season_id)) %>">
                 <%= month %>
             </a>
-<% end %>
-    </nav>
-<h6><%= @updated_at && 'Updated at #{@updated_at} UTC' %></h6>
-</section>
+        <% end %>
+    </div>
+    </div>
+</div>
+<div class="subtitle is-6"><%= @updated_at && 'Updated at #{@updated_at} UTC' %></div>
 <%= if @old do %>
-    <h2 class="warning">
+    <div class="notification is-warning">
         WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
-    </h2>
+    </div>
 <% end %>
 <%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted) %>
 

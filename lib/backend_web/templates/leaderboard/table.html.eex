@@ -1,4 +1,4 @@
-<table>
+<table class="table is-striped is-fullwidth">
     <thead>
         <tr>
             <th>Position</th>
@@ -10,7 +10,7 @@
     </thead>
     <tbody>
 <%= for %{qualified: qualified, rating: rating, battletag: battletag, position: position, qualifying: qualifying} <- @table_entries do %>
-        <tr class="alternating_color <%= (qualified && to_string(@leaderboard_id) == to_string('STD')) && 'qualified' || '' %> <%=qualifying && 'qualifying'%> ">
+        <tr class="<%= (qualified && to_string(@leaderboard_id) == to_string('STD')) && 'qualified' || '' %> <%=qualifying && 'qualifying'%> ">
             <td><%= position %></td>
             <td><%= battletag %></td>
         <%= if to_string(@leaderboard_id) == "BG" do %>
