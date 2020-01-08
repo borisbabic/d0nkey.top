@@ -7,22 +7,68 @@
     <title>d0nkey.top</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
-
-
-
+    <link id="theme-stylesheet" rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
   </head>
   <body>
     <header class="container">
-        <nav >
-          <%= link "leaderboard", to: Routes.leaderboard_path(@conn, :index) %>
-        </nav>
+      <%= link "leaderboard", to: Routes.leaderboard_path(@conn, :index) %>
     </header>
     <main role="main" class="container">
         <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
         <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+        <div id="theme-chooser-dropdown" style="display: none" class="is-pulled-right">
+          <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger">
+              <button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Choose Theme</button>
+            </div>
+            <div class="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <%= for theme <- ["darkly", "flatly"] do %>
+                  <a href="" class="dropdown-item" id="theme-select-<%=theme%>" onclick='selectTheme("<%=theme%>")'><%=theme%></a>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
         <%= render @view_module, @view_template, assigns %>
     </main>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <script defer>
+      var allowed_themes = ['flatly', 'darkly'];
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      var theme = localStorage.getItem('theme');
+      if (!theme || allowed_themes.indexOf(theme) < 0) {
+        theme = 'darkly'
+      }
+      href = "https://unpkg.com/bulmaswatch/" + theme + "/bulmaswatch.min.css"
+      var link = document.getElementById('theme-stylesheet');
+      if (link) {
+        link.href = href
+      } else {
+        console.log("Couldn't grab the link")
+      }
+      var theme_select = document.getElementById("theme-select-" + theme)
+      if (theme_select) {
+        theme_select.classList.add("is-active");
+      } else {
+        console.log("Couldn't get theme select!")
+      }
+      var selectTheme = function(selected_theme) {
+        if (allowed_themes.indexOf(selected_theme) > -1) {
+          localStorage.setItem('theme', selected_theme);
+          console.log("Setting theme to " + selected_theme + " and reloading");
+          location.reload();
+        } else {
+          console.log("Got an invalid theme, refusing to select!");
+        }
+      }
+      var dropdown = document.getElementById('theme-chooser-dropdown');
+      if (dropdown) {
+        dropdown.style.display = 'inline-flex';
+      } else {
+        console.log("Couldn't get dropdown!")
+      }
+    </script>
   </body>
 </html>
