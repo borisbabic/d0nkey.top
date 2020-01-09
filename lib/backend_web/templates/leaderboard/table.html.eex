@@ -7,7 +7,7 @@
             <th>Rating</th>
         <% end %>
         <%= if to_string(@leaderboard_id) == "STD" do %>
-            <th>Master's Tour</th>
+            <th>Masters Tour</th>
         <% end %>
         </tr>
     </thead>
@@ -22,7 +22,7 @@
         <%= if to_string(@leaderboard_id) == "STD" do %>
             <td>
                 <%= if qualified do %>
-                    <p class="tag is-info">Invited</p>
+                    <p class="tag is-info">Qualified</p>
                 <% end %>
                 <%= if qualifying do %>
                     <p class="tag is-success">Top 16</p>
