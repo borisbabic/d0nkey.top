@@ -12,7 +12,7 @@ defmodule BackendWeb.LeaderboardView do
         highlight: highlighted_raw
       }) do
     updated_at_string = process_updated_at(updated_at)
-    invited = process_invited(invited_raw, updated_at_string)
+    invited = process_invited(invited_raw, updated_at)
     entry = process_entry(entry_raw, invited)
     highlighted = process_highlighted(highlighted_raw, entry)
     season_id = conn.query_params["seasonId"]
@@ -73,22 +73,15 @@ defmodule BackendWeb.LeaderboardView do
     |> String.replace("T", " ")
   end
 
-  def process_invited(invited_raw, updated_at_string) do
-    filter =
-      case NaiveDateTime.from_iso8601(updated_at_string) do
-        {:ok, updated_at} ->
-          fn ip ->
-            ip.upstream_time
-            |> NaiveDateTime.compare(updated_at)
-            |> Kernel.==(:lt)
-          end
-
-        _ ->
-          fn _ip -> false end
-      end
+  def process_invited(invited_raw, updated_at) do
+    not_invited_afterwards = fn ip ->
+      ip.upstream_time
+      |> NaiveDateTime.compare(updated_at)
+      |> Kernel.==(:lt)
+    end
 
     invited_raw
-    |> Enum.filter(filter)
+    |> Enum.filter(not_invited_afterwards)
     |> MapSet.new(fn ip -> InvitedPlayer.shorten_battletag(ip.battletag_full) end)
   end
 
