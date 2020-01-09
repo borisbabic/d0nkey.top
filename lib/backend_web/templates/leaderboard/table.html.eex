@@ -16,18 +16,16 @@
         <tr>
             <td><%= position %></td>
             <td><%= battletag %></td>
-        <%= if to_string(@leaderboard_id) == "BG" do %>
-            <td><%=rating%></td>
-        <% end %>
-        <%= if to_string(@leaderboard_id) == "STD" do %>
-            <td>
-                <%= if qualified do %>
-                    <p class="tag is-info">Invited</p>
-                <% end %>
-                <%= if qualifying do %>
-                    <p class="tag is-success">Top 16</p>
-                <% end %>
-            </td>
-        <% end %>
+            <%= case {to_string(@leaderboard_id), qualified, qualifying} do%>
+                <% {"BG", _, _} -> %>
+                    <td><%=rating%></td>
+                <% {"STD", true, _} -> %> 
+                    <td><p class="tag is-info">Invited</p></td>
+                <% {"STD", _, true} -> %>
+                    <td><p class="tag is-success">Top 16</p></td>
+                <% {"STD", false, false} -> %>
+                    <td></td>
+                <% _ -> %> 
+            <% end %>
         </tr>
 <% end %>
