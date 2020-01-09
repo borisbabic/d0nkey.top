@@ -5,6 +5,7 @@ defmodule Backend.MastersTour do
   import Ecto.Query, warn: false
   alias Backend.Repo
   alias Backend.MastersTour.InvitedPlayer
+  alias Backend.Infrastructure.BattlefyCommunicator
 
   def create_invited_player(attrs \\ %{}) do
     %InvitedPlayer{}
@@ -30,15 +31,15 @@ defmodule Backend.MastersTour do
     # until I figure out better storage than I'll get old ones as well
     tour_stop = "Indonesia"
 
-    response =
-      HTTPoison.get!(
-        "https://majestic.battlefy.com/hearthstone-masters/invitees?tourStop=#{tour_stop}"
+    existing =
+      Repo.all(
+        from ip in InvitedPlayer, where: ip.tour_stop == ^tour_stop, select: ip.battletag_full
       )
+      |> MapSet.new()
 
-    Poison.decode!(response.body)
-    |> Enum.each(fn ip ->
-      process_invited_player(ip)
-    end)
+    BattlefyCommunicator.get_invited_players(tour_stop)
+    |> Enum.filter(fn ip -> !MapSet.member?(existing, ip.battletag_full) end)
+    |> Enum.each(&create_invited_player/1)
   end
 
   def process_invited_player(
@@ -50,22 +51,15 @@ defmodule Backend.MastersTour do
           "createdAt" => upstream_time
         }
       ) do
-    with [] <-
-           Repo.all(
-             from ip in InvitedPlayer,
-               where: ip.battletag_full == ^battletag_full and ip.tour_stop == ^tour_stop,
-               select: ip
-           ) do
-      create_invited_player(%{
-        battletag_full: battletag_full,
-        reason: reason,
-        type: type,
-        tour_stop: tour_stop,
-        upstream_time: upstream_time,
-        tournament_slug: invited["tournamentSlug"],
-        tournament_id: invited["tournamentID"]
-      })
-    end
+    create_invited_player(%{
+      battletag_full: battletag_full,
+      reason: reason,
+      type: type,
+      tour_stop: tour_stop,
+      upstream_time: upstream_time,
+      tournament_slug: invited["tournamentSlug"],
+      tournament_id: invited["tournamentID"]
+    })
   end
 
   def process_invited_player(
