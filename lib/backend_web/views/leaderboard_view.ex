@@ -20,6 +20,18 @@ defmodule BackendWeb.LeaderboardView do
     # todo generate these from the current date
     selectable_seasons = [{"JAN", 75}, {"DEC", 74}, {"NOV", 73}]
 
+    crystal =
+      case leaderboard_id do
+        "STD" ->
+          "https://d2q63o9r0h0ohi.cloudfront.net/images/leaderboards/crystal_standard-add3c953a625a04c8545699c65c338786606c56e770182c236c7ec5229bf5f1e78631e57bcdda6eee820f3a13e57e97fe22f0e39b5777c7e41b75ce28f3bd8c7.png"
+
+        "BG" ->
+          "https://d2q63o9r0h0ohi.cloudfront.net/images/leaderboards/crystal_battlegrounds-5cd82d919afcfc5de20e0857cfce3e19ba9bd47d8f02ab977d3fa3a17b9dc7c972a18e0f55eb970ff0639aa69045b3aacb3cc1125d17a9550bd5ed7167a51aea.png"
+
+        "WLD" ->
+          "https://d2q63o9r0h0ohi.cloudfront.net/images/leaderboards/crystal_wild-f9075a1fe0a5953b314fab5ca15f7cc83db86764786f590b8d64fb87603f797adbfd75ffd6160d89bf53ae08eb50d032a3d9d6885c0e03b0fcd6f22265aa6a0f.png"
+      end
+
     season_selector = fn season_tuple ->
       to_string(elem(season_tuple, 1)) == to_string(season_id)
     end
@@ -37,7 +49,8 @@ defmodule BackendWeb.LeaderboardView do
       highlighted: highlighted,
       season_id: season_id,
       selectable_seasons: selectable_seasons,
-      season_name: season_name
+      season_name: season_name,
+      crystal: crystal
     })
   end
 
