@@ -1,0 +1,23 @@
+<div class="title is-2">Qualifiers</div>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Start Time</th>
+            <th>Region</th>
+        </tr>
+    </thead>
+    <tbody>
+    <%= for %{region: region, start_time: start_time, name: name, link: link} <- @qualifiers do %>
+        <tr>
+            <td>
+                <a class="is-link" href="<%= link %>">
+                    <%= name %>
+                </a>
+            </td>
+            <td><%= start_time %></td>
+            <td><%= region %></td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>
