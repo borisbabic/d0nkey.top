@@ -11,11 +11,11 @@ defmodule BackendWeb.LeaderboardView do
         updated_at: updated_at,
         highlight: highlighted_raw
       }) do
-    invited = process_invited(invited_raw)
+    updated_at_string = process_updated_at(updated_at)
+    invited = process_invited(invited_raw, updated_at_string)
     entry = process_entry(entry_raw, invited)
     highlighted = process_highlighted(highlighted_raw, entry)
     old = updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600
-    updated_at_string = process_updated_at(updated_at)
     season_id = conn.query_params["seasonId"]
     # todo generate these from the current date
     selectable_seasons = [{"JAN", 75}, {"DEC", 74}, {"NOV", 73}]
@@ -66,8 +66,23 @@ defmodule BackendWeb.LeaderboardView do
     |> String.replace("T", " ")
   end
 
-  def process_invited(invited_raw) do
-    MapSet.new(invited_raw, fn ip -> InvitedPlayer.shorten_battletag(ip.battletag_full) end)
+  def process_invited(invited_raw, updated_at_string) do
+    filter =
+      case NaiveDateTime.from_iso8601(updated_at_string) do
+        {:ok, updated_at} ->
+          fn ip ->
+            ip.upstream_time
+            |> NaiveDateTime.compare(updated_at)
+            |> Kernel.==(:lt)
+          end
+
+        _ ->
+          fn _ip -> false end
+      end
+
+    invited_raw
+    |> Enum.filter(filter)
+    |> MapSet.new(fn ip -> InvitedPlayer.shorten_battletag(ip.battletag_full) end)
   end
 
   def process_highlighted(highlighted_raw, entry) do
