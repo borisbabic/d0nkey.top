@@ -1,5 +1,6 @@
 defmodule BackendWeb.LeaderboardView do
   use BackendWeb, :view
+  alias Backend.MastersTour.InvitedPlayer
 
   def render("index.html", %{
         invited: invited_raw,
@@ -53,14 +54,7 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   def process_invited(invited_raw) do
-    MapSet.new(
-      invited_raw,
-      fn ip ->
-        String.splitter(ip.battletag_full, "#")
-        |> Enum.at(0)
-        |> to_string()
-      end
-    )
+    MapSet.new(invited_raw, fn ip -> InvitedPlayer.shorten_battletag(ip.battletag_full) end)
   end
 
   def process_highlighted(highlighted_raw, entry) do

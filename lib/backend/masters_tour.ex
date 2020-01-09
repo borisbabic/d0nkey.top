@@ -20,7 +20,8 @@ defmodule Backend.MastersTour do
     query =
       from ip in InvitedPlayer,
         where: ip.tour_stop == ^tour_stop,
-        select: ip
+        select: ip,
+        order_by: [desc: ip.upstream_time]
 
     Repo.all(query)
   end
@@ -40,12 +41,15 @@ defmodule Backend.MastersTour do
     end)
   end
 
-  def process_invited_player(%{
-        "battletag" => battletag_full,
-        "reason" => reason,
-        "type" => type,
-        "tourStop" => tour_stop
-      }) do
+  def process_invited_player(
+        invited = %{
+          "battletag" => battletag_full,
+          "reason" => reason,
+          "type" => type,
+          "tourStop" => tour_stop,
+          "createdAt" => upstream_time
+        }
+      ) do
     with [] <-
            Repo.all(
              from ip in InvitedPlayer,
@@ -56,7 +60,10 @@ defmodule Backend.MastersTour do
         battletag_full: battletag_full,
         reason: reason,
         type: type,
-        tour_stop: tour_stop
+        tour_stop: tour_stop,
+        upstream_time: upstream_time,
+        tournament_slug: invited["tournamentSlug"],
+        tournament_id: invited["tournamentID"]
       })
     end
   end

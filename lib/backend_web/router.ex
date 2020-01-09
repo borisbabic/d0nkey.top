@@ -18,6 +18,7 @@ defmodule BackendWeb.Router do
 
     get "/leaderboard", LeaderboardController, :index
     get "/", PageController, :index
+    get "/invited/:tour_stop", MastersTourController, :invited_players
   end
 
   # Other scopes may use custom stacks.
