@@ -137,7 +137,7 @@ defmodule BackendWeb.LeaderboardView do
   ## Example
     iex> BackendWeb.LeaderboardView.get_season_id(~D[2019-12-01])
     74
-    iex> BackendWeb.LeaderboardView.get_season_id(~D[2019-1-31])
+    iex> BackendWeb.LeaderboardView.get_season_id(~D[2019-01-31])
     75
   """
   @spec get_season_id(Calendar.date() | %{month: number, year: number}) :: number
