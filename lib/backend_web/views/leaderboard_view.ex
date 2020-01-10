@@ -1,6 +1,9 @@
 defmodule BackendWeb.LeaderboardView do
   use BackendWeb, :view
   alias Backend.MastersTour.InvitedPlayer
+  @type selectable_season :: {String.t(), integer()}
+  @type month_name ::
+          :JAN | :FEB | :MAR | :APR | :MAY | :JUN | :JUL | :AUG | :SEP | :OCT | :NOV | :DEC
 
   def render("index.html", %{
         invited: invited_raw,
@@ -15,9 +18,18 @@ defmodule BackendWeb.LeaderboardView do
     invited = process_invited(invited_raw, updated_at)
     entry = process_entry(entry_raw, invited)
     highlighted = process_highlighted(highlighted_raw, entry)
-    season_id = conn.query_params["seasonId"]
-    {selectable_seasons, season_name, is_latest_season} = handle_seasons(season_id)
-    old = updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 && is_latest_season
+    today = Date.utc_today()
+    selectable_seasons = create_selectable_seasons(today)
+
+    season_id =
+      case Integer.parse(to_string(conn.query_params["seasonId"])) do
+        :error -> get_season_id(today)
+        {id, _} -> id
+      end
+
+    old =
+      updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 &&
+        season_id >= get_season_id(today)
 
     render("index.html", %{
       conn: conn,
@@ -29,7 +41,7 @@ defmodule BackendWeb.LeaderboardView do
       highlighted: highlighted,
       season_id: season_id,
       selectable_seasons: selectable_seasons,
-      season_name: season_name,
+      season_name: get_month_name(get_month_start(season_id).month),
       crystal: get_crystal(leaderboard_id)
     })
   end
@@ -47,24 +59,133 @@ defmodule BackendWeb.LeaderboardView do
     end
   end
 
-  def handle_seasons(season_id) do
-    # todo generate these from the current date
-    selectable_seasons = [{"JAN", 75}, {"DEC", 74}, {"NOV", 73}]
-    latest = {_, latest_season_id} = Enum.at(selectable_seasons, 0)
+  @doc """
+    Creates the list of months that will be shown in the dropdown
 
-    season_selector = fn season_tuple ->
-      to_string(elem(season_tuple, 1)) == to_string(season_id)
+    Unless it's the first or last of a month then it shows the current month, then the two previous
+    If it's the first of a month it put's the previous month in first place
+    If it's the last of the month it put's the next month in second place
+    (see examples)
+    ## Example
+    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-1-1])
+    [{"DEC", 74}, {"JAN", 75}, {"NOV", 73}]
+    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-31])
+    [{"DEC", 74}, {"JAN", 75}, {"NOV", 73}]
+    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-12])
+    [{"DEC", 74}, {"NOV", 73}, {"OCT", 72}]
+  """
+  @spec create_selectable_seasons(Calendar.date()) :: [selectable_season]
+  def create_selectable_seasons(today) do
+    tomorrow = Date.add(today, 1)
+    tomorrow_id = get_season_id(tomorrow)
+    # if it's the first day of jan or last day of dec we want to show [dec, jan, nov]
+    if tomorrow.day in [1, 2] do
+      # month difference compared to tomorrow
+      [-1, 0, -2]
+    else
+      [0, -1, -2]
     end
+    |> Enum.map(fn month_diff ->
+      month_num = normalize_month(month_diff + tomorrow.month)
+      {get_month_name(month_num), tomorrow_id + month_diff}
+    end)
+  end
 
-    {season_name, curr_season_id} = Enum.find(selectable_seasons, latest, season_selector)
+  @doc """
+  Makes all numbers fit into cycles of 1..12
 
-    {selectable_seasons, season_name, curr_season_id == latest_season_id}
+  ## Example
+    iex> BackendWeb.LeaderboardView.normalize_month(0)
+    12
+    iex> BackendWeb.LeaderboardView.normalize_month(-2)
+    10
+    iex> BackendWeb.LeaderboardView.normalize_month(15)
+    3
+    iex> BackendWeb.LeaderboardView.normalize_month(7)
+    7
+  """
+  @spec normalize_month(integer) :: integer
+  def normalize_month(month) do
+    # make all numbers fit into cycles of 1..12
+    rem(rem(month - 1, 12) + 12, 12) + 1
+  end
+
+  @doc """
+  Gets the year and month from a season_id
+
+  ## Example
+    iex> BackendWeb.LeaderboardView.get_month_start(75)
+    ~D[2020-01-01]
+    iex> BackendWeb.LeaderboardView.get_month_start(74)
+    ~D[2020-12-01]
+  """
+  @spec get_month_start(integer) :: Date.t()
+  def get_month_start(season_id) do
+    month = normalize_month(rem(season_id - 62, 12))
+    year = 2019 + div(season_id - month - 62, 12)
+
+    case Date.new(year, month, 1) do
+      {:ok, date} -> date
+      # this should never happen
+      {:error, reason} -> throw(reason)
+    end
+  end
+
+  @doc """
+  Gets the season id for a date
+
+  ## Example
+    iex> BackendWeb.LeaderboardView.get_season_id(~D[2019-12-01])
+    74
+    iex> BackendWeb.LeaderboardView.get_season_id(~D[2019-1-31])
+    75
+  """
+  @spec get_season_id(Calendar.date() | %{month: number, year: number}) :: number
+  def get_season_id(date) do
+    62 + (date.year - 2019) * 12 + date.month
+  end
+
+  @doc """
+  Gets three letter month name for a month number
+
+  ## Example
+    iex> BackendWeb.LeaderboardView.get_month_name(12)
+    :DEC
+    iex> BackendWeb.LeaderboardView.get_month_name(1)
+    :JAN
+  """
+  @spec get_month_name(integer) :: month_name
+  def get_month_name(month) do
+    case month do
+      1 -> :JAN
+      2 -> :FEB
+      3 -> :MAR
+      4 -> :APR
+      5 -> :MAY
+      6 -> :JUN
+      7 -> :JUL
+      8 -> :AUG
+      9 -> :SEP
+      10 -> :OCT
+      11 -> :NOV
+      12 -> :DEC
+      x -> to_string(x)
+    end
   end
 
   def process_updated_at(_ = nil) do
     nil
   end
 
+  @doc """
+  Transforms the date into a displayable string
+
+  Example
+  iex> BackendWeb.LeaderboardView.process_updated_at(~N[2019-12-01 23:00:00])
+  "2019-12-01 23:00:00"
+
+  """
+  @spec process_updated_at(Calendar.datetime()) :: String.t()
   def process_updated_at(updated_at) do
     updated_at
     |> DateTime.to_iso8601()
