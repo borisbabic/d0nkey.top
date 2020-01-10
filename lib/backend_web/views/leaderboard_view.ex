@@ -201,8 +201,10 @@ defmodule BackendWeb.LeaderboardView do
       |> Kernel.==(:lt)
     end
 
-    invited_raw
-    |> Enum.filter(not_invited_afterwards)
+    case updated_at do
+      nil -> invited_raw
+      _ -> Enum.filter(invited_raw, not_invited_afterwards)
+    end
     |> MapSet.new(fn ip -> InvitedPlayer.shorten_battletag(ip.battletag_full) end)
   end
 
