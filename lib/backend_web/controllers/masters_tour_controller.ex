@@ -4,9 +4,9 @@ defmodule BackendWeb.MastersTourController do
   alias Backend.Infrastructure.BattlefyCommunicator
 
   def invited_players(conn, %{"tour_stop" => tour_stop}) do
-    MastersTour.fetch()
+    MastersTour.fetch(tour_stop)
     invited = MastersTour.list_invited_players(tour_stop)
-    render(conn, "invited_players.html", %{invited: invited})
+    render(conn, "invited_players.html", %{invited: invited, tour_stop: tour_stop})
   end
 
   def qualifiers(conn, _params) do

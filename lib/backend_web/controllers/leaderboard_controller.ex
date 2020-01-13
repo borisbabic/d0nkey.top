@@ -1,20 +1,25 @@
 defmodule BackendWeb.LeaderboardController do
   use BackendWeb, :controller
+  alias Backend.Blizzard
   alias Backend.Leaderboards
   alias Backend.MastersTour
 
-  # def index(conn, %{"region" => region, "leaderboardId" => leaderboard_id, "seasonId" => season_id}) do
-  #   {entry, updated_at} = Leaderboards.fetch_current_entries(region, leaderboard_id, season_id)
-  #   invited = MastersTour.list_invited_players()
-  #   render(conn, "index.html", %{entry: entry, invited: invited, region: region, leaderboard_id: leaderboard_id, updated_at: updated_at})
-  # end
   def index(conn, params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
     # seasonId can be nil
     {entry, updated_at} =
       Leaderboards.fetch_current_entries(region, leaderboard_id, params["seasonId"])
 
-    # todo figure out a better way to handle tour stops
-    invited = MastersTour.list_invited_players("Indonesia")
+    season_id =
+      case Integer.parse(to_string(conn.query_params["seasonId"])) do
+        :error -> Blizzard.get_season_id(Date.utc_today())
+        {id, _} -> id
+      end
+
+    invited =
+      case Blizzard.get_ladder_tour_stop(season_id) do
+        {:ok, tour_stop} -> MastersTour.list_invited_players(tour_stop)
+        {:error, _} -> []
+      end
 
     highlight =
       case params["highlight"] do
@@ -29,7 +34,8 @@ defmodule BackendWeb.LeaderboardController do
       region: region,
       leaderboard_id: leaderboard_id,
       updated_at: updated_at,
-      highlight: highlight
+      highlight: highlight,
+      season_id: season_id
     })
   end
 

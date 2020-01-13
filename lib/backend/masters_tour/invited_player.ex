@@ -35,4 +35,9 @@ defmodule Backend.MastersTour.InvitedPlayer do
     |> Enum.at(0)
     |> to_string()
   end
+
+  @spec uniq_string(InvitedPlayer.t()) :: String.t()
+  def uniq_string(ip) do
+    ip.battletag_full <> ip.tour_stop
+  end
 end

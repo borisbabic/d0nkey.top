@@ -3,12 +3,12 @@
         <tr>
             <th>Position</th>
             <th>Battletag</th>
-        <%= if to_string(@leaderboard_id) == "BG" do %>
-            <th>Rating</th>
-        <% end %>
-        <%= if to_string(@leaderboard_id) == "STD" do %>
-            <th>Masters Tour</th>
-        <% end %>
+            <%= if @show_mt_column do %>
+                <th>Masters Tour</th>
+            <% end %>
+            <%= if to_string(@leaderboard_id) == "BG" do %>
+                <th>Rating</th>
+            <% end %>
         </tr>
     </thead>
     <tbody>
@@ -16,16 +16,18 @@
         <tr>
             <td><%= position %></td>
             <td><%= battletag %></td>
-            <%= case {to_string(@leaderboard_id), qualified, qualifying} do%>
-                <% {"BG", _, _} -> %>
-                    <td><%=rating%></td>
-                <% {"STD", true, _} -> %> 
-                    <td><p class="tag is-info">Invited</p></td>
-                <% {"STD", _, true} -> %>
-                    <td><p class="tag is-success">Top 16</p></td>
-                <% {"STD", false, false} -> %>
-                    <td></td>
-                <% _ -> %> 
+            <%= if @show_mt_column do %>
+                <%= case {qualified, qualifying} do%>
+                    <% {true, _} -> %>
+                        <td><p class="tag is-info">Invited</p></td>
+                    <% {_, true} -> %>
+                        <td><p class="tag is-success">Top 16</p></td>
+                    <% {false, false} -> %>
+                        <td></td>
+                <% end %>
+            <% end %>
+            <%= if to_string(@leaderboard_id) == "BG" do %>
+                <td><%= rating %></td>
             <% end %>
         </tr>
 <% end %>
