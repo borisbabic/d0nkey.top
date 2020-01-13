@@ -8,9 +8,9 @@ defmodule Backend.Blizzard do
   Gets the year and month from a season_id
 
   ## Example
-    iex> BackendWeb.LeaderboardView.get_month_start(75)
+    iex> Backend.Blizzard.get_month_start(75)
     ~D[2020-01-01]
-    iex> BackendWeb.LeaderboardView.get_month_start(74)
+    iex> Backend.Blizzard.get_month_start(74)
     ~D[2020-12-01]
   """
   @spec get_month_start(integer) :: Date.t()
@@ -40,12 +40,12 @@ defmodule Backend.Blizzard do
   end
 
   @doc """
-  Gets the season id for a date
+  Gets the tour stop a ladder season qualifies for
 
   ## Example
     iex> Backend.Blizzard.get_ladder_tour_stop(72)
     {:ok, :Arlington}
-    iex> Backend.Blizzard.get_season_id(79)
+    iex> Backend.Blizzard.get_ladder_tour_stop(79)
     {:ok, :Montreal}
   """
   @spec get_ladder_tour_stop(integer()) :: {:ok, tour_stop} | {:error, String.t()}
@@ -67,6 +67,15 @@ defmodule Backend.Blizzard do
     end
   end
 
+  @doc """
+  Gets the season ids of ladder qualifying seasons for a tour stop
+
+  ## Example
+    iex> Backend.Blizzard.get_ladder_tour_stop(72)
+    {:ok, :Arlington}
+    iex> Backend.Blizzard.get_ladder_tour_stop(79)
+    {:ok, :Montreal}
+  """
   @spec get_ladder_tour_stop(tour_stop) :: {:ok, [integer()]} | {:error, String.t()}
   def get_ladder_seasons(tour_stop) do
     no_ladder_for_tour = {:error, "There were no ladder invites for this tour stop"}
@@ -83,6 +92,9 @@ defmodule Backend.Blizzard do
     end
   end
 
+  @doc """
+  Returns a list of all tour stops
+  """
   @spec tour_stops() :: [tour_stop]
   def tour_stops() do
     @tour_stops
