@@ -34,17 +34,24 @@ defmodule BackendWeb.MastersTourView do
     })
   end
 
-  @spec process_invited_player(%{battletag_full: binary, reason: any}) :: %{
-          battletag: binary,
-          link: nil | <<_::64, _::_*8>>,
-          reason: any
+  @spec process_invited_player(%{
+          battletag_full: String.t(),
+          reason: String.t() | nil,
+          tournament_slug: String.t() | nil,
+          tournament_id: String.t() | nil,
+          upstream_time: Calendar.datetime()
+        }) :: %{
+          battletag: String.t(),
+          invited_at: String.t(),
+          link: nil | String.t(),
+          reason: String.t() | nil
         }
   def process_invited_player(
         invited_player = %{battletag_full: battletag_full, reason: reason_raw}
       ) do
     link =
       case invited_player do
-        %{tournament_slug: slug, tournament_id: id} when slug != nil and id != nil ->
+        %{tournament_slug: slug, tournament_id: id} when is_binary(slug) and is_binary(id) ->
           create_qualifier_link(slug, id)
 
         _ ->
@@ -53,7 +60,7 @@ defmodule BackendWeb.MastersTourView do
 
     reason =
       case {invited_player.tournament_slug, reason_raw} do
-        {slug, "qualifier"} when slug != nil -> Recase.to_title(slug)
+        {slug, "qualifier"} when is_binary(slug) -> Recase.to_title(slug)
         _ -> reason_raw
       end
 
