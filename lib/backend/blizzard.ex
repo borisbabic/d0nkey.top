@@ -92,6 +92,14 @@ defmodule Backend.Blizzard do
     end
   end
 
+  @spec current_ladder_tour_stop() :: tour_stop
+  def current_ladder_tour_stop() do
+    case get_ladder_tour_stop(get_season_id(Date.utc_today())) do
+      {:ok, ts} -> ts
+      {:error, _} -> ""
+    end
+  end
+
   @doc """
   Returns a list of all tour stops
   """

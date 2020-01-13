@@ -13,8 +13,7 @@
     <header class="container">
       <nav role="navigation">
         <a class="" href="<%=Routes.leaderboard_path(@conn, :index)%>">leaderboard</a>
-        <a class="" href='<%=Routes.masters_tour_path(@conn, :invited_players, "Indonesia")%>'>invited</a>
-      <nav>
+        <a class="" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop) %>'>invited</a><nav>
     </header>
     <main role="main" class="container">
         <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
