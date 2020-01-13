@@ -1,13 +1,26 @@
 <div class="title is-2">Invited Players</div>
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@selected_ts%></button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for %{ts: ts, selected: selected, link: link} <- @ts_list do %>
+            <a class="dropdown-item <%= selected && 'is-active' || '' %>" href="<%= link %>"><%=ts%></a>
+        <% end %>
+    </div>
+    </div>
+</div>
+<div class="subtitle is-6"><%= @latest && 'Latest #{@latest} UTC' %></div>
+
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
             <th>Battletag</th>
             <th>Reason</th>
+            <th>Invited At</th>
         </tr>
     </thead>
     <tbody>
-    <%= for player = %{reason: reason, battletag: battletag} <- @invited_players do %>
+    <%= for player = %{reason: reason, battletag: battletag, invited_at: invited_at} <- @invited_players do %>
         <tr>
         <td><%= battletag %></td>
         <td>
@@ -16,6 +29,7 @@
             <% else %>
                 <%= reason %>
             <% end %> </td>
+        <td><%= invited_at %> UTC</td>
         </tr>
     <% end %>
     </tbody>

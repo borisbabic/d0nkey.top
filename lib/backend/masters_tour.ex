@@ -3,6 +3,7 @@ defmodule Backend.MastersTour do
     The MastersTour context.
   """
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Backend.Repo
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Infrastructure.BattlefyCommunicator
@@ -10,7 +11,6 @@ defmodule Backend.MastersTour do
   def create_invited_player(attrs \\ %{}) do
     %InvitedPlayer{}
     |> InvitedPlayer.changeset(attrs)
-    |> Repo.insert()
   end
 
   def list_invited_players() do
@@ -20,17 +20,14 @@ defmodule Backend.MastersTour do
   def list_invited_players(tour_stop) do
     query =
       from ip in InvitedPlayer,
-        where: ip.tour_stop == ^tour_stop,
+        where: ip.tour_stop == ^to_string(tour_stop),
         select: ip,
         order_by: [desc: ip.upstream_time]
 
     Repo.all(query)
   end
 
-  def fetch() do
-    # until I figure out better storage than I'll get old ones as well
-    tour_stop = "Indonesia"
-
+  def fetch(tour_stop) do
     existing =
       Repo.all(
         from ip in InvitedPlayer, where: ip.tour_stop == ^tour_stop, select: ip.battletag_full
@@ -39,7 +36,30 @@ defmodule Backend.MastersTour do
 
     BattlefyCommunicator.get_invited_players(tour_stop)
     |> Enum.filter(fn ip -> !MapSet.member?(existing, ip.battletag_full) end)
-    |> Enum.each(&create_invited_player/1)
+    |> insert_all
+  end
+
+  def fetch() do
+    existing =
+      Repo.all(
+        from ip in InvitedPlayer, select: fragment("concat(?,?)", ip.battletag_full, ip.tour_stop)
+      )
+      |> MapSet.new()
+
+    BattlefyCommunicator.get_invited_players()
+    |> Enum.filter(fn ip -> !MapSet.member?(existing, ip.battletag_full <> ip.tour_stop) end)
+    |> insert_all
+  end
+
+  def insert_all(new_players) do
+    new_players
+    |> Enum.filter(fn np -> np.battletag_full && np.tour_stop end)
+    |> Enum.uniq_by(&InvitedPlayer.uniq_string/1)
+    |> Enum.reduce(Multi.new(), fn np, multi ->
+      changeset = create_invited_player(np)
+      Multi.insert(multi, InvitedPlayer.uniq_string(np), changeset)
+    end)
+    |> Repo.transaction()
   end
 
   def process_invited_player(

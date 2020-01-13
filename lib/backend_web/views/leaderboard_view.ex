@@ -1,5 +1,6 @@
 defmodule BackendWeb.LeaderboardView do
   use BackendWeb, :view
+  import Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
   @type selectable_season :: {String.t(), integer()}
   @type month_name ::
@@ -12,24 +13,27 @@ defmodule BackendWeb.LeaderboardView do
         region: region,
         leaderboard_id: leaderboard_id,
         updated_at: updated_at,
-        highlight: highlighted_raw
+        highlight: highlighted_raw,
+        season_id: season_id
       }) do
-    updated_at_string = process_updated_at(updated_at)
+    updated_at_string =
+      case updated_at do
+        nil -> nil
+        ua -> Util.datetime_to_presentable_string(ua)
+      end
+
     invited = process_invited(invited_raw, updated_at)
     entry = process_entry(entry_raw, invited)
     highlighted = process_highlighted(highlighted_raw, entry)
     today = Date.utc_today()
     selectable_seasons = create_selectable_seasons(today)
 
-    season_id =
-      case Integer.parse(to_string(conn.query_params["seasonId"])) do
-        :error -> get_season_id(today)
-        {id, _} -> id
-      end
-
     old =
       updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 &&
         season_id >= get_season_id(today)
+
+    show_mt_column =
+      to_string(leaderboard_id) == "STD" && elem(get_ladder_tour_stop(season_id), 0) == :ok
 
     render("index.html", %{
       conn: conn,
@@ -42,7 +46,8 @@ defmodule BackendWeb.LeaderboardView do
       season_id: season_id,
       selectable_seasons: selectable_seasons,
       season_name: get_month_name(get_month_start(season_id).month),
-      crystal: get_crystal(leaderboard_id)
+      crystal: get_crystal(leaderboard_id),
+      show_mt_column: show_mt_column
     })
   end
 
@@ -86,72 +91,18 @@ defmodule BackendWeb.LeaderboardView do
       [0, -1, -2]
     end
     |> Enum.map(fn month_diff ->
-      month_num = normalize_month(month_diff + tomorrow.month)
+      month_num = Util.normalize_month(month_diff + tomorrow.month)
       {get_month_name(month_num), tomorrow_id + month_diff}
     end)
-  end
-
-  @doc """
-  Makes all numbers fit into cycles of 1..12
-
-  ## Example
-    iex> BackendWeb.LeaderboardView.normalize_month(0)
-    12
-    iex> BackendWeb.LeaderboardView.normalize_month(-2)
-    10
-    iex> BackendWeb.LeaderboardView.normalize_month(15)
-    3
-    iex> BackendWeb.LeaderboardView.normalize_month(7)
-    7
-  """
-  @spec normalize_month(integer) :: integer
-  def normalize_month(month) do
-    # make all numbers fit into cycles of 1..12
-    rem(rem(month - 1, 12) + 12, 12) + 1
-  end
-
-  @doc """
-  Gets the year and month from a season_id
-
-  ## Example
-    iex> BackendWeb.LeaderboardView.get_month_start(75)
-    ~D[2020-01-01]
-    iex> BackendWeb.LeaderboardView.get_month_start(74)
-    ~D[2020-12-01]
-  """
-  @spec get_month_start(integer) :: Date.t()
-  def get_month_start(season_id) do
-    month = normalize_month(rem(season_id - 62, 12))
-    year = 2019 + div(season_id - month - 62, 12)
-
-    case Date.new(year, month, 1) do
-      {:ok, date} -> date
-      # this should never happen
-      {:error, reason} -> throw(reason)
-    end
-  end
-
-  @doc """
-  Gets the season id for a date
-
-  ## Example
-    iex> BackendWeb.LeaderboardView.get_season_id(~D[2019-12-01])
-    74
-    iex> BackendWeb.LeaderboardView.get_season_id(~D[2019-01-31])
-    75
-  """
-  @spec get_season_id(Calendar.date() | %{month: number, year: number}) :: number
-  def get_season_id(date) do
-    62 + (date.year - 2019) * 12 + date.month
   end
 
   @doc """
   Gets three letter month name for a month number
 
   ## Example
-    iex> BackendWeb.LeaderboardView.get_month_name(12)
+    iex> Util.get_month_name(12)
     :DEC
-    iex> BackendWeb.LeaderboardView.get_month_name(1)
+    iex> Util.get_month_name(1)
     :JAN
   """
   @spec get_month_name(integer) :: month_name
@@ -171,27 +122,6 @@ defmodule BackendWeb.LeaderboardView do
       12 -> :DEC
       x -> to_string(x)
     end
-  end
-
-  def process_updated_at(_ = nil) do
-    nil
-  end
-
-  @doc """
-  Transforms the date into a displayable string
-
-  Example
-  iex> BackendWeb.LeaderboardView.process_updated_at(~N[2019-12-01 23:00:00])
-  "2019-12-01 23:00:00"
-
-  """
-  @spec process_updated_at(Calendar.datetime()) :: String.t()
-  def process_updated_at(updated_at) do
-    updated_at
-    |> DateTime.to_iso8601()
-    |> String.splitter(".")
-    |> Enum.at(0)
-    |> String.replace("T", " ")
   end
 
   def process_invited(invited_raw, updated_at) do

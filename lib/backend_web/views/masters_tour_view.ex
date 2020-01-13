@@ -10,9 +10,27 @@ defmodule BackendWeb.MastersTourView do
     render("qualifiers.html", %{qualifiers: qualifiers})
   end
 
-  def render("invited_players.html", %{invited: invited}) do
+  def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do
+    latest = Enum.find_value(invited, fn ip -> ip.upstream_time end)
+
     invited_players = Enum.map(invited, &process_invited_player/1)
-    render("invited_players.html", %{invited_players: invited_players})
+
+    tour_stop_list =
+      Backend.Blizzard.tour_stops()
+      |> Enum.map(fn ts ->
+        %{
+          ts: ts,
+          selected: to_string(ts) == to_string(selected_ts),
+          link: Routes.masters_tour_path(conn, :invited_players, ts)
+        }
+      end)
+
+    render("invited_players.html", %{
+      invited_players: invited_players,
+      ts_list: tour_stop_list,
+      selected_ts: selected_ts,
+      latest: latest
+    })
   end
 
   @spec process_invited_player(%{battletag_full: binary, reason: any}) :: %{
@@ -35,7 +53,8 @@ defmodule BackendWeb.MastersTourView do
     %{
       link: link,
       reason: reason,
-      battletag: battletag
+      battletag: battletag,
+      invited_at: Util.datetime_to_presentable_string(invited_player.upstream_time)
     }
   end
 

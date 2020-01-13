@@ -48,14 +48,14 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   def get_invited_players(tour_stop \\ nil) do
     url =
       case tour_stop do
-        ts when is_binary(ts) ->
+        ts when is_binary(ts) or is_atom(ts) ->
           "https://majestic.battlefy.com/hearthstone-masters/invitees?tourStop=#{ts}"
 
         nil ->
           "https://majestic.battlefy.com/hearthstone-masters/invitees"
       end
 
-    response = HTTPoison.get!(url)
+    response = HTTPoison.get!(URI.encode(url))
 
     Poison.decode!(response.body)
     |> Enum.map(

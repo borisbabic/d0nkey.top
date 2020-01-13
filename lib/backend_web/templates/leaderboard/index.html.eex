@@ -41,6 +41,6 @@
         WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
     </div>
 <% end %>
-<%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal) %>
+<%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal, show_mt_column: @show_mt_column) %>
 
-<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entry, crystal: @crystal) %>
+<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entry, crystal: @crystal, show_mt_column: @show_mt_column) %>
