@@ -12,7 +12,10 @@ defmodule BackendWeb.MastersTourView do
 
   def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do
     latest =
-      Util.datetime_to_presentable_string(Enum.find_value(invited, fn ip -> ip.upstream_time end))
+      case Enum.find_value(invited, fn ip -> ip.upstream_time end) do
+        nil -> nil
+        ut -> Util.datetime_to_presentable_string(ut)
+      end
 
     invited_players = Enum.map(invited, &process_invited_player/1)
 
