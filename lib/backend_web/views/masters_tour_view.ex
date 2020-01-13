@@ -11,7 +11,8 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do
-    latest = Enum.find_value(invited, fn ip -> ip.upstream_time end)
+    latest =
+      Util.datetime_to_presentable_string(Enum.find_value(invited, fn ip -> ip.upstream_time end))
 
     invited_players = Enum.map(invited, &process_invited_player/1)
 
