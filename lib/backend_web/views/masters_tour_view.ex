@@ -38,7 +38,9 @@ defmodule BackendWeb.MastersTourView do
           link: nil | <<_::64, _::_*8>>,
           reason: any
         }
-  def process_invited_player(invited_player = %{battletag_full: battletag_full, reason: reason}) do
+  def process_invited_player(
+        invited_player = %{battletag_full: battletag_full, reason: reason_raw}
+      ) do
     link =
       case invited_player do
         %{tournament_slug: slug, tournament_id: id} when slug != nil and id != nil ->
@@ -46,6 +48,12 @@ defmodule BackendWeb.MastersTourView do
 
         _ ->
           nil
+      end
+
+    reason =
+      case {invited_player.tournament_slug, reason_raw} do
+        {slug, "qualifier"} when slug != nil -> Recase.to_title(slug)
+        _ -> reason_raw
       end
 
     battletag = InvitedPlayer.shorten_battletag(battletag_full)
