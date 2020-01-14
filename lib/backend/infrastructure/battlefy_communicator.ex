@@ -1,4 +1,5 @@
 defmodule Backend.Infrastructure.BattlefyCommunicator do
+  require Logger
   @behaviour Backend.MastersTour.BattlefyCommunicator
   defp get_latest_tuesday() do
     %{year: year, month: month, day: day} = now = NaiveDateTime.utc_now()
@@ -25,7 +26,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         NaiveDateTime.to_iso8601(start_time)
       }&end=#{NaiveDateTime.to_iso8601(end_time)}"
 
-    response = HTTPoison.get!(url)
+    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [url])
+    Logger.debug("Got masters qualifiers in #{div(uSecs, 1000)} ms")
 
     Poison.decode!(response.body)
     |> Enum.map(fn %{
@@ -55,7 +57,11 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
           "https://majestic.battlefy.com/hearthstone-masters/invitees"
       end
 
-    response = HTTPoison.get!(URI.encode(url))
+    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
+
+    Logger.debug(
+      "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(uSecs, 1000)} ms"
+    )
 
     Poison.decode!(response.body)
     |> Enum.map(
