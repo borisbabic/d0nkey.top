@@ -75,3 +75,9 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :nostrum,
+  # The token of your bot as a string
+  token: "NjY3MzQyODIxNDM4NTIxMzY1.XiBVqg.Ya91ymmfYZVLdZjajii0wGMSkRc",
+  # The number of shards you want to run your bot under, or :auto.
+  num_shards: :auto

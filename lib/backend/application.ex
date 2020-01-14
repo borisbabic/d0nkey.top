@@ -17,7 +17,8 @@ defmodule Backend.Application do
       %{
         id: Backend.Infrastructure.ApiCache,
         start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
-      }
+      },
+      Bot.Consumer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
