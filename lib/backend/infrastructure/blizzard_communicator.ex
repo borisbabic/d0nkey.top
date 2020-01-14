@@ -1,10 +1,19 @@
 defmodule Backend.Infrastructure.BlizzardCommunicator do
+  require Logger
+
   def get_leaderboard(region, leaderboard_id, season_id) do
-    case HTTPoison.get(
-           "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
-             leaderboard_id
-           }&seasonId=#{season_id}"
-         ) do
+    url =
+      "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
+        leaderboard_id
+      }&seasonId=#{season_id}"
+
+    {uSecs, return} = :timer.tc(&HTTPoison.get/1, [url])
+
+    Logger.debug(
+      "Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(uSecs, 1000)} ms"
+    )
+
+    case return do
       {:ok, %{body: body}} -> body |> Poison.decode!() |> process_leaderboard
       _ -> {:error, nil}
     end

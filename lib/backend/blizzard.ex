@@ -4,6 +4,11 @@ defmodule Backend.Blizzard do
           :"Las Vegas" | :Seoul | :Bucharest | :Arlington | :Indonesia | :Jonkoping | :Montreal
   @tour_stops [:"Las Vegas", :Seoul, :Bucharest, :Arlington, :Indonesia, :Jonkoping, :Montreal]
 
+  @type region :: :EU | :US | :AP
+  @regions [:EU, :US, :AP]
+  @type leaderboard :: :BG | :STD | :WLD
+  @leaderboards [:BG, :STD, :WLD]
+
   @doc """
   Gets the year and month from a season_id
 
@@ -106,5 +111,72 @@ defmodule Backend.Blizzard do
   @spec tour_stops() :: [tour_stop]
   def tour_stops() do
     @tour_stops
+  end
+
+  @doc """
+  Returns a list of all tour stops as strings
+  """
+  @spec tour_stops(:string) :: [String.t()]
+  def tour_stops(:string) do
+    Enum.map(@tour_stops, &to_string/1)
+  end
+
+  @doc """
+  Returns a list of all leaderboards
+  """
+  @spec leaderboards() :: [leaderboard]
+  def leaderboards() do
+    @leaderboards
+  end
+
+  @doc """
+  Returns a list of all leaderboards as strings
+  """
+  @spec leaderboards(:string) :: [String.t()]
+  def leaderboards(:string) do
+    Enum.map(@leaderboards, &to_string/1)
+  end
+
+  @doc """
+  Returns a list of all regions
+  """
+  @spec regions() :: [region]
+  def regions() do
+    @regions
+  end
+
+  @doc """
+  Returns a list of all regions as strings
+  """
+  @spec regions(:string) :: [String.t()]
+  def regions(:string) do
+    Enum.map(@regions, &to_string/1)
+  end
+
+  @spec to_leaderboard(:string) :: {:ok, leaderboard} | {:error, String.t()}
+  def to_leaderboard(string) do
+    if Enum.member?(leaderboards(:string), string) do
+      {:ok, String.to_existing_atom(string)}
+    else
+      {:error, "not valid"}
+    end
+  end
+
+  @spec to_tour_stop(:string) :: {:ok, tour_stop} | {:error, String.t()}
+  def to_tour_stop(string) do
+    if Enum.member?(tour_stops(:string), string) do
+      {:ok, String.to_existing_atom(string)}
+    else
+      {:error, "not valid"}
+    end
+  end
+
+  @spec to_region(:string) :: {:ok, region} | {:error, String.t()}
+  def to_region(string) do
+    if Enum.member?(regions(:string), string) do
+      {:ok, String.to_existing_atom(string)}
+    else
+      {:error, "not valid"}
+    end
   end
 end
