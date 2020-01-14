@@ -33,6 +33,7 @@ defmodule Backend.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:cowlib, "~> 2.8.0", override: true},
       {:phoenix, "~> 1.4.9"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
@@ -45,7 +46,8 @@ defmodule Backend.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:httpoison, "~> 1.6"},
       {:poison, "~> 3.1"},
-      {:recase, "~> 0.5"}
+      {:recase, "~> 0.5"},
+      {:nostrum, "~> 0.4"}
     ]
   end
 

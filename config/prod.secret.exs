@@ -11,6 +11,13 @@ database_url =
     For example: ecto://USER:PASS@HOST/DATABASE
     """
 
+discord_token =
+  System.get_env("DISCORD_TOKEN") ||
+    raise """
+    environment variable DISCORD_TOKEN is missing.
+    this is needed for the bot
+    """
+
 config :backend, Backend.Repo,
   ssl: true,
   url: database_url,
@@ -26,6 +33,9 @@ secret_key_base =
 config :backend, BackendWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
   secret_key_base: secret_key_base
+
+config :nostrum,
+  token: discord_token
 
 # ## Using releases (Elixir v1.9+)
 #
