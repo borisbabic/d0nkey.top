@@ -35,7 +35,9 @@
     </div>
     </div>
 </div>
-<div class="subtitle is-6"><%= @updated_at && 'Updated at #{@updated_at} UTC' %></div>
+<%= if @updated_at do %>
+    <div class="subtitle is-6">Updated at <%= render_datetime @updated_at %></div>
+<% end %>
 <%= if @old do %>
     <div class="notification is-warning">
         WARNING: THE DATA FOR THIS LEADERBOARD IS OLD

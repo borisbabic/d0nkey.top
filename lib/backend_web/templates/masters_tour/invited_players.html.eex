@@ -9,7 +9,9 @@
     </div>
     </div>
 </div>
-<div class="subtitle is-6"><%= @latest && 'Latest #{@latest} UTC' %></div>
+<%= if @latest do %>
+    <div class="subtitle is-6"><span>Latest: </span><%=render_datetime(@latest)%></div>
+<% end %>
 
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
@@ -29,7 +31,7 @@
             <% else %>
                 <%= reason %>
             <% end %> </td>
-        <td><%= invited_at %> UTC</td>
+        <td><%= render_datetime invited_at%></td>
         </tr>
     <% end %>
     </tbody>
