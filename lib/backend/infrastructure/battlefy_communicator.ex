@@ -2,6 +2,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   require Logger
   alias Backend.Battlefy
   alias Backend.Blizzard
+  alias Backend.Battlefy.Match
   @behaviour Backend.Battlefy.Communicator
   defp get_latest_tuesday() do
     %{year: year, month: month, day: day} = now = NaiveDateTime.utc_now()
@@ -50,7 +51,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   @spec get_invited_players(Blizzard.tour_stop() | String.t() | nil) :: Battlefy.invited_player()
-  def get_invited_players(tour_stop) do
+  def get_invited_players(tour_stop \\ nil) do
     url =
       case tour_stop do
         nil -> "https://majestic.battlefy.com/hearthstone-masters/invitees"
@@ -106,5 +107,21 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     Poison.decode!(response.body)
     |> Backend.Battlefy.Tournament.from_raw_map()
+  end
+
+  @spec get_matches(Battlefy.stage_id(), Battlefy.get_matches_options()) :: [Match.t()]
+  def get_matches(stage_id, opts \\ []) do
+    url =
+      case opts[:round] do
+        nil -> "http://api.battlefy.com/stages/#{stage_id}/matches"
+        round -> "http://api.battlefy.com/stages/#{stage_id}/matches?roundNumber=#{round}"
+      end
+
+    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
+
+    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
+
+    Poison.decode!(response.body)
+    |> Enum.map(&Match.from_raw_map/1)
   end
 end

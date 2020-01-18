@@ -3,6 +3,7 @@ defmodule Backend.Battlefy.Communicator do
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Standings
+  alias Backend.Battlefy.Match
 
   @type qualifier :: %{
           name: String.t() | nil,
@@ -26,5 +27,6 @@ defmodule Backend.Battlefy.Communicator do
   @callback get_invited_players(Blizzard.tour_stop() | nil | String.t()) :: [invited_player]
 
   @callback get_tournament(Battlefy.tournament_id()) :: Tournament.t()
-  @callback get_standings(Battlefy.stage_id()) :: Standings.t()
+  @callback get_standings(Battlefy.stage_id()) :: [Standings.t()]
+  @callback get_matches(Battlefy.stage_id(), Battlefy.get_matches_options()) :: [Match.t()]
 end

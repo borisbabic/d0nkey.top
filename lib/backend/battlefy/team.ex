@@ -1,6 +1,5 @@
 defmodule Backend.Battlefy.Team do
   use TypedStruct
-  alias Backend.Battlefy
 
   typedstruct enforce: true do
     field :name, String.t()
