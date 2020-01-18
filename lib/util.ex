@@ -78,4 +78,8 @@ defmodule Util do
   def pad_time_element(integer) do
     String.pad_leading(to_string(integer), 2, "0")
   end
+
+  def reject_keys(target, keys) do
+    Enum.reject(target, fn {k, _v} -> Enum.member?(keys, k) end)
+  end
 end
