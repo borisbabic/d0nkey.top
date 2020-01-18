@@ -1,6 +1,8 @@
 defmodule Backend.Infrastructure.BattlefyCommunicator do
   require Logger
-  @behaviour Backend.MastersTour.BattlefyCommunicator
+  alias Backend.Battlefy
+  alias Backend.Blizzard
+  @behaviour Backend.Battlefy.Communicator
   defp get_latest_tuesday() do
     %{year: year, month: month, day: day} = now = NaiveDateTime.utc_now()
     day_of_the_week = :calendar.day_of_the_week(year, month, day)
@@ -47,14 +49,12 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     end)
   end
 
-  def get_invited_players(tour_stop \\ nil) do
+  @spec get_invited_players(Blizzard.tour_stop() | String.t() | nil) :: Battlefy.invited_player()
+  def get_invited_players(tour_stop) do
     url =
       case tour_stop do
-        ts when is_binary(ts) or is_atom(ts) ->
-          "https://majestic.battlefy.com/hearthstone-masters/invitees?tourStop=#{ts}"
-
-        nil ->
-          "https://majestic.battlefy.com/hearthstone-masters/invitees"
+        nil -> "https://majestic.battlefy.com/hearthstone-masters/invitees"
+        ts -> "https://majestic.battlefy.com/hearthstone-masters/invitees?tourStop=#{ts}"
       end
 
     {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
@@ -82,5 +82,29 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         }
       end
     )
+  end
+
+  @spec get_standings(Backend.Battlefy.stage_id()) :: [Backend.Battlefy.Standings.t()]
+  def get_standings(stage_id) do
+    url = "https://api.battlefy.com/stages/#{stage_id}/standings"
+
+    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
+
+    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
+
+    Poison.decode!(response.body)
+    |> Enum.map(&Backend.Battlefy.Standings.from_raw_map/1)
+  end
+
+  @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t()
+  def get_tournament(tournament_id) do
+    url = "https://majestic.battlefy.com/tournaments/#{tournament_id}"
+
+    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
+
+    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
+
+    Poison.decode!(response.body)
+    |> Backend.Battlefy.Tournament.from_raw_map()
   end
 end

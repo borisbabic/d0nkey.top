@@ -1,0 +1,20 @@
+<div class="title is-2"><%= @name %></div>
+<%= if @duration do %>
+<div class="subtitle is-6">Duration: <%= @duration %></div>
+<% end %>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <th>Place</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+    <%= for %{place: place, name: name} <- @standings do %>
+        <tr>
+            <td><%= place %></td>
+            <td><%= name %></td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>

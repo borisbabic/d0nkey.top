@@ -47,7 +47,8 @@ defmodule Backend.MixProject do
       {:httpoison, "~> 1.6"},
       {:poison, "~> 3.1"},
       {:recase, "~> 0.5"},
-      {:nostrum, "~> 0.4"}
+      {:nostrum, "~> 0.4"},
+      {:typed_struct, "~> 0.1.4"}
     ]
   end
 
