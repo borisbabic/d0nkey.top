@@ -19,9 +19,11 @@
             <td><%= render_datetime start_time %></td>
             <td><%= region %></td>
             <td>
-                <a class="is-link" href="<%= standings_link %>">
-                    standings
-                </a>
+                <%= if NaiveDateTime.compare(start_time, DateTime.utc_now()) == :lt do %>
+                    <a class="is-link" href="<%= standings_link %>">
+                        standings
+                    </a>
+                <% end %>
             </td>
         </tr>
     <% end %>
