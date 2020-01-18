@@ -8,7 +8,6 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.map(fn q ->
         q
         |> Map.put_new(:link, create_qualifier_link(q.slug, q.id))
-        |> Map.put(:start_time, Util.datetime_to_presentable_string(q.start_time))
         |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, q.id))
       end)
 
@@ -16,11 +15,7 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do
-    latest =
-      case Enum.find_value(invited, fn ip -> ip.upstream_time end) do
-        nil -> nil
-        ut -> Util.datetime_to_presentable_string(ut)
-      end
+    latest = Enum.find_value(invited, fn ip -> ip.upstream_time end)
 
     invited_players = Enum.map(invited, &process_invited_player/1)
 
@@ -78,7 +73,7 @@ defmodule BackendWeb.MastersTourView do
       link: link,
       reason: reason,
       battletag: battletag,
-      invited_at: Util.datetime_to_presentable_string(invited_player.upstream_time)
+      invited_at: invited_player.upstream_time
     }
   end
 

@@ -42,6 +42,10 @@ defmodule BackendWeb do
       import BackendWeb.ErrorHelpers
       import BackendWeb.Gettext
       alias BackendWeb.Router.Helpers, as: Routes
+
+      def render_datetime(datetime) do
+        render(BackendWeb.SharedView, "datetime.html", %{datetime: datetime})
+      end
     end
   end
 

@@ -16,7 +16,7 @@
                     <%= name %>
                 </a>
             </td>
-            <td><%= start_time %> UTC</td>
+            <td><%= render_datetime start_time %></td>
             <td><%= region %></td>
             <td>
                 <a class="is-link" href="<%= standings_link %>">

@@ -16,12 +16,6 @@ defmodule BackendWeb.LeaderboardView do
         highlight: highlighted_raw,
         season_id: season_id
       }) do
-    updated_at_string =
-      case updated_at do
-        nil -> nil
-        ua -> Util.datetime_to_presentable_string(ua)
-      end
-
     invited = process_invited(invited_raw, updated_at)
     entry = process_entry(entry_raw, invited)
     highlighted = process_highlighted(highlighted_raw, entry)
@@ -41,7 +35,7 @@ defmodule BackendWeb.LeaderboardView do
       region: region,
       leaderboard_id: leaderboard_id,
       old: old,
-      updated_at: updated_at_string,
+      updated_at: updated_at,
       highlighted: highlighted,
       season_id: season_id,
       selectable_seasons: selectable_seasons,
