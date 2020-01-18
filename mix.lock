@@ -34,5 +34,6 @@
   "recase": {:hex, :recase, "0.6.0", "1dd2dd2f4e06603b74977630e739f08b7fedbb9420cc14de353666c2fc8b99f4", [:mix], [], "hexpm"},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.5", "6eaf7ad16cb568bb01753dbbd7a95ff8b91c7979482b95f38443fe2c8852a79b", [:make, :mix, :rebar3], [], "hexpm"},
   "telemetry": {:hex, :telemetry, "0.4.1", "ae2718484892448a24470e6aa341bc847c3277bfb8d4e9289f7474d752c09c7f", [:rebar3], [], "hexpm"},
+  "typed_struct": {:hex, :typed_struct, "0.1.4", "25971ce73a8b336dedf2f80e4dafaab111af127ba4773955b66805c89e197f6a", [:mix], [], "hexpm"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.4.1", "d869e4c68901dd9531385bb0c8c40444ebf624e60b6962d95952775cac5e90cd", [:rebar3], [], "hexpm"},
 }

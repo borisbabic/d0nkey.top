@@ -1,4 +1,9 @@
-defmodule Backend.MastersTour.BattlefyCommunicator do
+defmodule Backend.Battlefy.Communicator do
+  alias Backend.Blizzard
+  alias Backend.Battlefy
+  alias Backend.Battlefy.Tournament
+  alias Backend.Battlefy.Standings
+
   @type qualifier :: %{
           name: String.t() | nil,
           start_time: NaiveDateTime.t(),
@@ -18,5 +23,8 @@ defmodule Backend.MastersTour.BattlefyCommunicator do
           tournament_slug: String.t() | nil,
           tournament_id: String.t() | nil
         }
-  @callback get_invited_players(tour_stop: String.t() | nil) :: [invited_player]
+  @callback get_invited_players(Blizzard.tour_stop() | nil | String.t()) :: [invited_player]
+
+  @callback get_tournament(Battlefy.tournament_id()) :: Tournament.t()
+  @callback get_standings(Battlefy.stage_id()) :: Standings.t()
 end

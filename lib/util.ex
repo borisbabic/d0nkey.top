@@ -49,9 +49,33 @@ defmodule Util do
   @spec datetime_to_presentable_string(Calendar.datetime()) :: String.t()
   def datetime_to_presentable_string(datetime) do
     datetime
-    |> DateTime.to_iso8601()
+    |> NaiveDateTime.to_iso8601()
     |> String.splitter(["Z", ".", "z"])
     |> Enum.at(0)
     |> String.replace("T", " ")
+  end
+
+  def human_diff(later, earlier) do
+    diff = NaiveDateTime.diff(later, earlier, :second)
+    hours = div(diff, 60 * 60) |> pad_time_element()
+    minutes_and_seconds = rem(diff, 60 * 60)
+    minutes = div(minutes_and_seconds, 60) |> pad_time_element()
+    seconds = rem(minutes_and_seconds, 60) |> pad_time_element()
+    "#{hours}:#{minutes}:#{seconds}"
+  end
+
+  @doc """
+  Converts an integer into a string padded to represent time
+  ## Example
+  iex> pad_time_element(4)
+  "04"
+  iex> pad_time_element(12)
+  "12"
+  iex> pad_time_element(666)
+  "666"
+  """
+  @spec pad_time_element(integer()) :: String.t()
+  def pad_time_element(integer) do
+    String.pad_leading(to_string(integer), 2, "0")
   end
 end

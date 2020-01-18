@@ -1,0 +1,9 @@
+<footer class=>
+    <div class="has-text-centered">
+        <div>
+            <a href="https://twitter.com/D0nkeyHS?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @D0nkeyHS</a>
+            <a href="https://twitter.com/intent/tweet?screen_name=D0nkeyHS&ref_src=twsrc%5Etfw" class="twitter-mention-button" data-show-count="false">Tweet to @D0nkeyHS</a>
+            <%# <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> %>
+        </div>
+    </div>
+</footer>

@@ -2,10 +2,15 @@ defmodule BackendWeb.MastersTourView do
   use BackendWeb, :view
   alias Backend.MastersTour.InvitedPlayer
 
-  def render("qualifiers.html", %{fetched_qualifiers: qualifiers_raw}) do
+  def render("qualifiers.html", %{fetched_qualifiers: qualifiers_raw, conn: conn}) do
     qualifiers =
       qualifiers_raw
-      |> Enum.map(fn q -> Map.put_new(q, :link, create_qualifier_link(q.slug, q.id)) end)
+      |> Enum.map(fn q ->
+        q
+        |> Map.put_new(:link, create_qualifier_link(q.slug, q.id))
+        |> Map.put(:start_time, Util.datetime_to_presentable_string(q.start_time))
+        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, q.id))
+      end)
 
     render("qualifiers.html", %{qualifiers: qualifiers})
   end
