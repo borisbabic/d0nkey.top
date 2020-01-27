@@ -21,6 +21,8 @@ defmodule BackendWeb.Router do
     get "/invited/:tour_stop", MastersTourController, :invited_players
     get "/qualifiers", MastersTourController, :qualifiers
     get "/battlefy/tournament/:tournament_id", BattlefyController, :tournament
+
+    get "/hsreplay/live_feed", HSReplayController, :live_feed
   end
 
   # Other scopes may use custom stacks.

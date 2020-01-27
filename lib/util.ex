@@ -82,4 +82,74 @@ defmodule Util do
   def reject_keys(target, keys) do
     Enum.reject(target, fn {k, _v} -> Enum.member?(keys, k) end)
   end
+
+  # def map_kv!(map, key_mapper_list) do
+  #   case map_kv(map, key_mapper_list) do
+  #     {:error, reason} -> throw reason
+  #     success -> success
+  #   end
+  # end
+
+  # def map_kv(map, key_mapper_list) do
+  #   missing_keys = Map.keys(key_mapper_list) -- Map.keys(map)
+  #   if missing_keys != [] do
+  #     {:error, "Missing keys from map: #{Enum.join(missing_keys, " ")}"}
+  #   end
+  #   mapped = key_mapper_list
+  #   |> Enum.map(fn {key, mapper} ->
+  #     case()
+
+  #     {key, mapper.(map[key])}
+  #   end)
+  #   {:ok, mapped}
+  # end
+
+  # def map_kv(map, key_mapper_list, struct) do
+  #   struct(struct, map |> map_kv(key_mapper_list))
+  # end
+  # def map_kv!(map, key_mapper_list, struct) do
+  #   struct(struct, map |> map_kv!(key_mapper_list))
+  # end
+
+  def update_map(map, key_updater_map) do
+    key_updater_map
+    |> Enum.reduce(map, fn {key, updater}, acc ->
+      Map.put(acc, key, updater.(map[key]))
+    end)
+  end
+
+  def update_map_to_struct(map, key_updater_list, struct) do
+    struct(struct, update_map(map, key_updater_list))
+  end
+
+  def get(from, key, opts \\ [default: nil, atoms: :convert])
+
+  def get(from, key, opts) when is_binary(key) do
+    atom_val =
+      case opts[:atoms] do
+        :convert -> String.to_atom(key)
+        :convert_existing -> String.to_existing_atom(key)
+        _ -> nil
+      end
+
+    case {atom_val, from} do
+      {_, %{^key => value}} -> value
+      {k, _} when is_atom(k) -> get(from, key, opts)
+      _ -> opts[:default]
+    end
+  end
+
+  def get(from, key, opts) when is_atom(key) do
+    string_key = to_string(key)
+
+    case from do
+      [_ | _] -> from[key]
+      %{^key => value} -> value
+      %{^string_key => value} -> value
+      _ -> opts[:default]
+    end
+  end
+
+  @spec id(any) :: any
+  def id(x), do: x
 end

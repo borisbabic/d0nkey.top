@@ -2,9 +2,7 @@
 <%= if @duration do %>
 <div class="subtitle is-6">Duration: <%= @duration %></div>
 <% end %>
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-        <tr>
+
             <th>Place</th>
             <th>Name</th>
         </tr>
