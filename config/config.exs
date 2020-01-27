@@ -7,6 +7,11 @@
 # General application configuration
 use Mix.Config
 
+config :backend, QuantumScheduler,
+  jobs: [
+    {"*/3 * * * *", fn -> Backend.HSReplay.update_latest() end}
+  ]
+
 config :backend,
   ecto_repos: [Backend.Repo]
 

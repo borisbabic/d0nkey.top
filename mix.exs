@@ -48,7 +48,8 @@ defmodule Backend.MixProject do
       {:poison, "~> 3.1"},
       {:recase, "~> 0.5"},
       {:nostrum, "~> 0.4"},
-      {:typed_struct, "~> 0.1.4"}
+      {:typed_struct, "~> 0.1.4"},
+      {:quantum, "~> 2.3"}
     ]
   end
 
