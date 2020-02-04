@@ -20,9 +20,21 @@ defmodule BackendWeb.Router do
     get "/", PageController, :index
     get "/invited/:tour_stop", MastersTourController, :invited_players
     get "/qualifiers", MastersTourController, :qualifiers
+
     get "/battlefy/tournament/:tournament_id", BattlefyController, :tournament
 
+    get "/battlefy/tournament/:tournament_id/decks/:battletag_full",
+        BattlefyController,
+        :tournament_decks
+
     get "/hsreplay/live_feed", HSReplayController, :live_feed
+
+    get "/discord/broadcasts", DiscordController, :broadcasts
+
+    get "/discord/broadcast", DiscordController, :broadcast
+    post "/discord/broadcast", DiscordController, :broadcast
+
+    post "/discord/create_broadcast", DiscordController, :create_broadcast
   end
 
   # Other scopes may use custom stacks.

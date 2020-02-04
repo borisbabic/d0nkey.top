@@ -152,4 +152,43 @@ defmodule Util do
 
   @spec id(any) :: any
   def id(x), do: x
+
+  @doc """
+  Get's the date range before this one with the same length
+
+  ## Example
+  iex> get_previous_range({~D[2020-01-01], ~D[2020-01-07]})
+  {~D[2019-12-25], ~D[2019-12-31]}
+  """
+  def get_previous_range({%Date{} = from, %Date{} = to}) do
+    new_to = Date.add(from, -1)
+    diff = Date.diff(from, to)
+    new_from = Date.add(new_to, diff)
+    {new_from, new_to}
+  end
+
+  @doc """
+  Get's the date range after this one with the same length
+
+  ## Example
+  iex> get_following_range({~D[2020-01-01], ~D[2020-01-07]})
+  {~D[2020-01-08], ~D[2020-01-14]}
+  """
+  def get_following_range({%Date{} = from, %Date{} = to}) do
+    new_from = Date.add(to, 1)
+    diff = Date.diff(to, from)
+    new_to = Date.add(new_from, diff)
+    {new_from, new_to}
+  end
+
+  @doc """
+  Get's the date ranges before after this one with the same length
+
+  ## Example
+  iex> get_surrounding_ranges({~D[2020-01-01], ~D[2020-01-07]})
+  {{~D[2019-12-25], ~D[2019-12-31]}, {~D[2020-01-08], ~D[2020-01-14]}}
+  """
+  def get_surrounding_ranges(range = {%Date{} = _from, %Date{} = _to}) do
+    {get_previous_range(range), get_following_range(range)}
+  end
 end

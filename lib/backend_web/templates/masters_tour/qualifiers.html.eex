@@ -1,4 +1,6 @@
 <div class="title is-2">Qualifiers</div>
+<a class="tag is-link" href="<%= @before_link %>"><---</a>
+<a class="tag is-link" href="<%= @after_link %>">---></a>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>

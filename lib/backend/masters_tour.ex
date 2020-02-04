@@ -91,4 +91,18 @@ defmodule Backend.MastersTour do
       ) do
     process_invited_player(Map.put(args, "reason", type))
   end
+
+  @spec get_masters_date_range(:week) :: {Date.t(), Date.t()}
+  def get_masters_date_range(:week) do
+    start_time = get_latest_tuesday()
+    end_time = Date.add(start_time, 7)
+    {start_time, end_time}
+  end
+
+  defp get_latest_tuesday() do
+    %{year: year, month: month, day: day} = now = Date.utc_today()
+    day_of_the_week = :calendar.day_of_the_week(year, month, day)
+    days_to_subtract = 0 - rem(day_of_the_week + 5, 7)
+    Date.add(now, days_to_subtract)
+  end
 end
