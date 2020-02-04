@@ -2,7 +2,11 @@ defmodule BackendWeb.MastersTourView do
   use BackendWeb, :view
   alias Backend.MastersTour.InvitedPlayer
 
-  def render("qualifiers.html", %{fetched_qualifiers: qualifiers_raw, conn: conn}) do
+  def render("qualifiers.html", %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range}) do
+    {before_range, after_range} = Util.get_surrounding_ranges(range)
+    before_link = create_qualifiers_link(before_range, conn)
+    after_link = create_qualifiers_link(after_range, conn)
+
     qualifiers =
       qualifiers_raw
       |> Enum.map(fn q ->
@@ -11,7 +15,20 @@ defmodule BackendWeb.MastersTourView do
         |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, q.id))
       end)
 
-    render("qualifiers.html", %{qualifiers: qualifiers})
+    render("qualifiers.html", %{
+      qualifiers: qualifiers,
+      before_link: before_link,
+      after_link: after_link
+    })
+  end
+
+  def create_qualifiers_link({%Date{} = from, %Date{} = to}, conn) do
+    # Routes.masters_tour_path(conn, :qualifiers, %{"from" => from, "to" => to})
+    # Routes.masters_tour_path(conn, :qualifiers, %{from: from, to: to})
+    new_params =
+      Map.merge(conn.query_params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
+
+    Routes.masters_tour_path(conn, :qualifiers, new_params)
   end
 
   def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do

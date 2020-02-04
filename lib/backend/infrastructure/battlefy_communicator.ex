@@ -3,34 +3,17 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy
   alias Backend.Blizzard
   alias Backend.Battlefy.Match
+  alias Backend.Battlefy.MatchDeckstrings
   @behaviour Backend.Battlefy.Communicator
-  defp get_latest_tuesday() do
-    %{year: year, month: month, day: day} = now = NaiveDateTime.utc_now()
-    day_of_the_week = :calendar.day_of_the_week(year, month, day)
-    days_to_subtract = 0 - rem(day_of_the_week + 5, 7)
-    NaiveDateTime.add(now, days_to_subtract * 24 * 60 * 60, :second)
-  end
-
-  @spec get_masters_date_range(:week) :: {NaiveDateTime.t(), NaiveDateTime.t()}
-  defp get_masters_date_range(:week) do
-    start_time = get_latest_tuesday()
-    end_time = NaiveDateTime.add(start_time, 7 * 24 * 60 * 60, :second)
-    {start_time, end_time}
-  end
-
-  def get_masters_qualifiers() do
-    {start_time, end_time} = get_masters_date_range(:week)
-    get_masters_qualifiers(start_time, end_time)
-  end
 
   def get_masters_qualifiers(start_time, end_time) do
     url =
       "https://majestic.battlefy.com/hearthstone-masters/tournaments?start=#{
-        NaiveDateTime.to_iso8601(start_time)
-      }&end=#{NaiveDateTime.to_iso8601(end_time)}"
+        Date.to_iso8601(start_time)
+      }&end=#{Date.to_iso8601(end_time)}"
 
     {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [url])
-    Logger.debug("Got masters qualifiers in #{div(uSecs, 1000)} ms")
+    Logger.debug("Got masters qualifiers #{url} in #{div(uSecs, 1000)} ms")
 
     Poison.decode!(response.body)
     |> Enum.map(fn %{
@@ -123,5 +106,20 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     Poison.decode!(response.body)
     |> Enum.map(&Match.from_raw_map/1)
+  end
+
+  @spec get_match_deckstrings(Battlefy.tournament_id(), Battlefy.match_id()) :: [
+          MatchDeckstrings.t()
+        ]
+  def get_match_deckstrings(tournament_id, match_id) do
+    url =
+      "https://majestic.battlefy.com/tournaments/#{tournament_id}/matches/#{match_id}/deckstrings"
+
+    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
+
+    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
+
+    Poison.decode!(response.body)
+    |> MatchDeckstrings.from_raw_map()
   end
 end

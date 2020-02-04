@@ -2,16 +2,20 @@
 <%= if @duration do %>
 <div class="subtitle is-6">Duration: <%= @duration %></div>
 <% end %>
-
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
             <th>Place</th>
             <th>Name</th>
+            <th>Decks</th>
         </tr>
     </thead>
     <tbody>
-    <%= for %{place: place, name: name} <- @standings do %>
+    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears} <- @standings do %>
         <tr>
             <td><%= place %></td>
             <td><%= name %></td>
+            <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
         </tr>
     <% end %>
     </tbody>
