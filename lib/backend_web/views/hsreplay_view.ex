@@ -76,7 +76,8 @@ defmodule BackendWeb.HSReplayView do
     "You need to add the as and vs query string.
     Example as[]=146&vs[]=344 for highlander mage vs gally rogue
     You can find the correct numbers needed in the url of the archetype on hsreplay.
-    Expect improvements in this regard in the future.
+    You can also use the bot in the discord (example: !matchups_link highlander mage, pirate warrior vs galakrond
+    rogue, highlander hunter)
     All data is the default free data.
     "
   end
