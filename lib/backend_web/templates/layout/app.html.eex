@@ -13,7 +13,13 @@
     <header class="container">
       <nav role="navigation">
         <a class="" href="<%=Routes.leaderboard_path(@conn, :index)%>">leaderboard</a>
-        <a class="" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop) %>'>invited</a><nav>
+        <a class="" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop) %>'>invited</a>
+        <div class="is-pulled-right">
+            <a class="" href="https://twitter.com/D0nkeyHS">twitter</a>
+            <a class="" href="https://discord.gg/DKYDu2Q">discord</a>
+            <a class="" href="https://www.twitch.tv/d0nkeyhs">twitch</a>
+            <a class="" href="https://www.pornhub.com/view_video.php?viewkey=ph55b2ec08ad5b1">pornhub</a>
+        </div>
     </header>
     <main role="main" class="container">
         <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
