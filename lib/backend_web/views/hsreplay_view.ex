@@ -26,4 +26,58 @@ defmodule BackendWeb.HSReplayView do
 
     render("live_feed.html", %{replays: replays})
   end
+
+  #  def render("matchups.html", %{matchups: matchups, as: as, vs: vs, archetypes: archetypes}) do
+  #
+  #    render("matchups.html", {rows: [[1, 2], [2,3]]})
+  #  end
+
+  def render("matchups.html", %{
+        matchups: matchups,
+        as: as_string,
+        vs: vs_string,
+        archetypes: archetypes
+      }) do
+    get_name = fn arch ->
+      %{style: "", value: archetypes |> Enum.find(fn a -> a.id == arch end) |> Map.get(:name)}
+    end
+
+    as = as_string |> Enum.map(&Util.to_int_or_orig/1)
+    vs = vs_string |> Enum.map(&Util.to_int_or_orig/1)
+
+    rows = [
+      [%{value: "", style: ""} | vs |> Enum.map(get_name)]
+      | as
+        |> Enum.map(fn as_arch ->
+          [
+            get_name.(as_arch)
+            | vs
+              |> Enum.map(fn vs_arch ->
+                win_rate =
+                  Backend.HSReplay.ArchetypeMatchups.get_matchup(matchups, as_arch, vs_arch).win_rate
+
+                red = 255 - 255 * (win_rate / 100)
+                green = 255 * (win_rate / 100)
+                blue = min(red, green)
+
+                %{
+                  value: win_rate,
+                  style: "background-color: rgb(#{red}, #{green}, #{blue})"
+                }
+              end)
+          ]
+        end)
+    ]
+
+    render("matchups.html", %{rows: rows})
+  end
+
+  def render("matchups_empty.html", _params) do
+    "You need to add the as and vs query string.
+    Example as[]=146&vs[]=344 for highlander mage vs gally rogue
+    You can find the correct numbers needed in the url of the archetype on hsreplay.
+    Expect improvements in this regard in the future.
+    All data is the default free data.
+    "
+  end
 end
