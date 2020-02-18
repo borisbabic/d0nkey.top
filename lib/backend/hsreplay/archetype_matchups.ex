@@ -37,6 +37,10 @@ defmodule Backend.HSReplay.ArchetypeMatchups do
     }
   end
 
+  def get_matchup(%__MODULE__{} = matchups, %{id: as_id}, %{id: vs_id}) do
+    get_matchup(matchups, as_id, vs_id)
+  end
+
   def get_matchup(%__MODULE__{} = matchups, as, vs) do
     matchups.data
     |> Map.get(as)

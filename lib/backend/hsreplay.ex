@@ -10,6 +10,37 @@ defmodule Backend.HSReplay do
     |> Cache.add_multiple()
   end
 
+  @doc """
+  Returns the archetypes found by name as well as the names of the ones without a match
+  """
+  @spec find_archetypes_by_names([String.t()]) :: {[Backend.HSReplay.Archetype], [String.t()]}
+  def find_archetypes_by_names(arch_names) do
+    archetypes = get_archetypes()
+
+    {found, missing} =
+      arch_names
+      |> Enum.map_reduce([], fn a, acc ->
+        normalized = a |> String.trim() |> String.downcase()
+
+        arch =
+          archetypes
+          |> Enum.filter(fn b ->
+            b.name
+            |> String.downcase()
+            |> String.contains?(normalized)
+          end)
+          |> Enum.at(0)
+
+        if arch == nil do
+          {arch, [a | acc]}
+        else
+          {arch, acc}
+        end
+      end)
+
+    {found |> Enum.reject(&is_nil/1), missing}
+  end
+
   def get_archetype_matchups() do
     Api.get_archetype_matchups()
   end

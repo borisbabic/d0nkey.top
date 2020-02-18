@@ -12,6 +12,8 @@ defmodule Bot.MessageHandler do
       <<"!ch", _::binary>> -> handle_highlight(msg)
       <<"!leaderboard", _::binary>> -> handle_leaderboard(msg)
       <<"!l", _::binary>> -> handle_leaderboard(msg)
+      <<"!matchups_link", _::binary>> -> Bot.MatchupMessageHandler.handle_matchups_link(msg)
+      <<"!matchup", _::binary>> -> Bot.MatchupMessageHandler.handle_matchup(msg)
       _ -> :ignore
     end
   end
@@ -58,9 +60,12 @@ defmodule Bot.MessageHandler do
     table =
       leaderboard_entries
       |> Enum.take(10)
-      |> Enum.map_join("\n", fn le ->
-        "#{String.pad_trailing(to_string(le.position), 3, [" "])} #{le.battletag}"
-      end)
+      |> Enum.map_join(
+        "\n",
+        fn le ->
+          "#{String.pad_trailing(to_string(le.position), 3, [" "])} #{le.battletag}"
+        end
+      )
 
     message = "#{url}\n```#{table}\n```"
     Api.create_message(channel_id, message)
@@ -91,14 +96,17 @@ defmodule Bot.MessageHandler do
     parsed =
       normalized
       |> Stream.map(&String.upcase/1)
-      |> Enum.reduce(%{}, fn opt, acc ->
-        case {Blizzard.to_region(opt), Blizzard.to_leaderboard(opt), Integer.parse(opt)} do
-          {{:ok, region}, _, _} -> Map.put_new(acc, :region, region)
-          {_, {:ok, leaderboard_id}, _} -> Map.put_new(acc, :leaderboard_id, leaderboard_id)
-          {_, _, {season_id, _}} -> Map.put_new(acc, :season_id, season_id)
-          _ -> acc
+      |> Enum.reduce(
+        %{},
+        fn opt, acc ->
+          case {Blizzard.to_region(opt), Blizzard.to_leaderboard(opt), Integer.parse(opt)} do
+            {{:ok, region}, _, _} -> Map.put_new(acc, :region, region)
+            {_, {:ok, leaderboard_id}, _} -> Map.put_new(acc, :leaderboard_id, leaderboard_id)
+            {_, _, {season_id, _}} -> Map.put_new(acc, :season_id, season_id)
+            _ -> acc
+          end
         end
-      end)
+      )
 
     default = %{
       season_id: Blizzard.get_season_id(Date.utc_today()),
