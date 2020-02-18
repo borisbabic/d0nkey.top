@@ -28,9 +28,9 @@ defmodule BackendWeb.Router do
         :tournament_decks
 
     get "/hsreplay/live_feed", HSReplayController, :live_feed
+    get "/hsreplay/matchups", HSReplayController, :matchups
 
     get "/discord/broadcasts", DiscordController, :broadcasts
-
     get "/discord/broadcast", DiscordController, :broadcast
     post "/discord/broadcast", DiscordController, :broadcast
 

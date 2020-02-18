@@ -15,4 +15,13 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     |> Poison.decode!()
     |> Enum.map(&Archetype.from_raw_map/1)
   end
+
+  def get_archetype_matchups() do
+    url =
+      "https://hsreplay.net/analytics/query/head_to_head_archetype_matchups/?GameType=RANKED_STANDARD"
+
+    get_body(url)
+    |> Poison.decode!()
+    |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
+  end
 end

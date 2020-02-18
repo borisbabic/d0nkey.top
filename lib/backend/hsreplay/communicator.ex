@@ -3,4 +3,5 @@ defmodule Backend.HSReplay.Communicator do
   alias Backend.HSReplay.Archetype
   @callback get_replay_feed() :: [ReplayFeedEntry.t()]
   @callback get_archetypes() :: [Archetype.t()]
+  @callback get_archetype_matchups() :: [Backend.HSReplay.ArchetypeMatchups.t()]
 end

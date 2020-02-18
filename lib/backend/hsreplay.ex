@@ -2,11 +2,16 @@ defmodule Backend.HSReplay do
   alias Backend.Infrastructure.HSReplayCommunicator, as: Api
   alias Backend.Infrastructure.HSReplayLatestCache, as: Cache
   alias Backend.Infrastructure.ApiCache
+  @type archetype_id :: integer
 
   def update_latest() do
     Api.get_replay_feed()
     |> Enum.map(fn rf -> {rf.id, rf} end)
     |> Cache.add_multiple()
+  end
+
+  def get_archetype_matchups() do
+    Api.get_archetype_matchups()
   end
 
   def get_archetypes() do
@@ -120,79 +125,8 @@ defmodule Backend.HSReplay do
         end
       end)
 
-    # filter_func_creators = [
-    #   min_rank: fn x ->
-    #     rank = case x do
-    #       <<string::binary>> -> string |> Integer.parse() |> elem(0)
-    #       integer when is_integer(x) -> integer
-    #     end
-    #     fn re -> re.player1_rank >= rank && re.player2_rank >= rank end
-    #   end,
-    #   max_rank: fn x ->
-    #     rank = case x do
-    #       <<string::binary>> -> string |> Integer.parse() |> elem(0)
-    #       integer when is_integer(x) -> integer
-    #     end
-    #     fn re -> re.player1_rank <= rank && re.player2_rank <= rank end
-    #   end,
-    #   min_legend_rank: fn x ->
-    #     rank = case x do
-    #       <<string::binary>> -> string |> Integer.parse() |> elem(0)
-    #       integer when is_integer(x) -> integer
-    #     end
-    #     fn re -> re.player1_legend_rank >= rank && re.player2_rank >= rank end
-    #   end,
-    #   max_legend_rank: fn x ->
-    #     rank = case x do
-    #       <<string::binary>> -> string |> Integer.parse() |> elem(0)
-    #       integer when is_integer(x) -> integer
-    #     end
-    #     fn re -> re.player1_legend_rank <= rank && re.player2_rank <= rank end
-    #   end,
-    # ]
-    # filter_funcs =
-    #   filter_values.filter_funcs =
-    #   [
-    #     min_rank: numeric_comp_filter([:player1_rank, :player2_rank], &Kernel.<=/2),
-    #     max_rank: numeric_comp_filter([:player1_rank, :player2_rank], &Kernel.>=/2),
-    #     min_legend_rank:
-    #       numeric_comp_filter([:player1_legend_rank, :player2_legend_rank], &Kernel.<=/2),
-    #     max_legend_rank:
-    #       numeric_comp_filter([:player1_legend_rank, :player2_legend_rank], &Kernel.>=/2)
-    #   ]
-    #   |> Enum.flat_map(fn {k, v} ->
-    #     case Util.get(filter_values, k) do
-    #       nil -> []
-    #       val -> [v.(val)]
-    #     end
-    #   end)
-
-    # |> Enum.keys()
-    # |> Enum.intersection(Map.keys(filter_values))
-    # |> Enum.reduce()
-
-    # filter_funcs = filter_values |> Enum.map(fn {k, v} ->
-    #   key = if is_binary(k), do: String.to_atom(k), else: k
-    #   filter_func_creators[key].(v)
-    # end)
     fn a -> filter_funcs |> Enum.reduce(true, fn ff, acc -> ff.(a) && acc end) end
   end
-
-  # def numeric_comp_filter(fields, comparator) do
-  #   fn value ->
-  #     val =
-  #       cond do
-  #         is_binary(value) -> Integer.parse(value) |> elem(0)
-  #       end
-
-  #     fn re ->
-  #       fields
-  #       |> Enum.reduce(true, fn r, acc ->
-  #         acc && re |> Map.get(r) && comparator.(value, re |> Map.get(r))
-  #       end)
-  #     end
-  #   end
-  # end
 
   @spec create_replay_link(String.t()) :: String.t()
   def create_replay_link(match_id) do

@@ -199,4 +199,28 @@ defmodule Util do
   def get_surrounding_ranges(range = {%Date{} = _from, %Date{} = _to}) do
     {get_previous_range(range), get_following_range(range)}
   end
+
+  @doc """
+  Transform to an integer while ignoring the binary remainder or returns the original string
+
+  ## Example
+  iex> to_int_or_rg("hello")
+  "hello"
+  iex> to_int_or_rg("-1")
+  -1
+  iex> to_int_or_rg("-1.45")
+  -1
+  """
+  def to_int_or_orig(int_or_not) do
+    case Integer.parse(int_or_not) do
+      {int, _rem} -> int
+      _ -> int_or_not
+    end
+  end
+
+  @doc """
+  Either returns the list or returns a new list with a single element
+  """
+  def to_list(list) when is_list(list), do: list
+  def to_list(not_list), do: [not_list]
 end
