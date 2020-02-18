@@ -7,6 +7,7 @@ defmodule Backend.MastersTour do
   alias Backend.Repo
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Infrastructure.BattlefyCommunicator
+  alias Backend.Blizzard
 
   def create_invited_player(attrs \\ %{}) do
     %InvitedPlayer{}
@@ -104,5 +105,23 @@ defmodule Backend.MastersTour do
     day_of_the_week = :calendar.day_of_the_week(year, month, day)
     days_to_subtract = 0 - rem(day_of_the_week + 5, 7)
     Date.add(now, days_to_subtract)
+  end
+
+  def get_qualifiers_for_tour(tour_stop) do
+    {start_date, end_date} = guess_qualifier_range(tour_stop)
+    Backend.Infrastructure.BattlefyCommunicator.get_masters_qualifiers(start_date, end_date)
+  end
+
+  def guess_qualifier_range(tour_stop) do
+    {:ok, seasons} = Blizzard.get_ladder_seasons(tour_stop)
+    {min, max} = seasons |> Enum.min_max()
+    start_date = Blizzard.get_month_start(min)
+
+    end_date =
+      (max + 1)
+      |> Blizzard.get_month_start()
+      |> Date.add(-1)
+
+    {start_date, end_date}
   end
 end
