@@ -1,8 +1,8 @@
 defmodule Backend.Blizzard do
   @moduledoc false
   @type tour_stop ::
-          :"Las Vegas" | :Seoul | :Bucharest | :Arlington | :Indonesia | :Jonkoping | :Montreal
-  @tour_stops [:"Las Vegas", :Seoul, :Bucharest, :Arlington, :Indonesia, :Jonkoping, :Montreal]
+          :"Las Vegas" | :Seoul | :Bucharest | :Arlington | :Indonesia | :Jönköping | :Montreal
+  @tour_stops [:"Las Vegas", :Seoul, :Bucharest, :Arlington, :Indonesia, :Jönköping, :Montreal]
 
   @type region :: :EU | :US | :AP
   @regions [:EU, :US, :AP]
@@ -61,9 +61,9 @@ defmodule Backend.Blizzard do
       74 -> {:ok, :Indonesia}
       75 -> {:ok, :Indonesia}
       # I assume
-      76 -> {:ok, :Jonkoping}
+      76 -> {:ok, :Jönköping}
       # I assume
-      77 -> {:ok, :Jonkoping}
+      77 -> {:ok, :Jönköping}
       # I assume
       78 -> {:ok, :Montreal}
       # I assume
@@ -91,7 +91,7 @@ defmodule Backend.Blizzard do
       :Bucharest -> no_ladder_for_tour
       :Arlington -> {:ok, [72, 73]}
       :Indonesia -> {:ok, [74, 75]}
-      :Jonkoping -> {:ok, [76, 77]}
+      :Jönköping -> {:ok, [76, 77]}
       :Montreal -> {:ok, [78, 79]}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
