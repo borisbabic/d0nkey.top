@@ -57,8 +57,16 @@ defmodule Util do
 
   def human_diff(later, earlier) do
     diff = NaiveDateTime.diff(later, earlier, :second)
-    hours = div(diff, 60 * 60) |> pad_time_element()
-    minutes_and_seconds = rem(diff, 60 * 60)
+    human_duration(diff)
+  end
+
+  def human_duration(dur) when is_float(dur) do
+    human_duration(round(dur))
+  end
+
+  def human_duration(dur) do
+    hours = div(dur, 60 * 60) |> pad_time_element()
+    minutes_and_seconds = rem(dur, 60 * 60)
     minutes = div(minutes_and_seconds, 60) |> pad_time_element()
     seconds = rem(minutes_and_seconds, 60) |> pad_time_element()
     "#{hours}:#{minutes}:#{seconds}"

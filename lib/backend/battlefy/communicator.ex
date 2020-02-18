@@ -13,7 +13,7 @@ defmodule Backend.Battlefy.Communicator do
           region: String.t(),
           id: String.t()
         }
-  @callback get_masters_qualifiers() :: [qualifier]
+  # @callback get_masters_qualifiers() :: [qualifier]
   @callback get_masters_qualifiers(NaiveDateTime.t(), NaiveDateTime.t()) :: [qualifier]
 
   @type invited_player :: %{

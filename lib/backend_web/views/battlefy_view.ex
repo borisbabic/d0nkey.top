@@ -15,14 +15,18 @@ defmodule BackendWeb.BattlefyView do
       |> Enum.sort_by(fn s -> s.place end)
 
     duration =
-      case tournament.last_completed_match_at do
-        %{calendar: _} ->
-          Util.human_diff(tournament.last_completed_match_at, tournament.start_time)
+      tournament
+      |> Backend.Battlefy.Tournament.get_duration()
+      |> Util.human_duration()
 
-        _ ->
-          nil
+    duration_subtitle = "Duration: #{duration}"
+
+    subtitle =
+      case standings |> Enum.count() do
+        0 -> duration_subtitle
+        num -> "#{duration_subtitle} Players: #{num}"
       end
 
-    render("tournament.html", %{standings: standings, duration: duration, name: tournament.name})
+    render("tournament.html", %{standings: standings, subtitle: subtitle, name: tournament.name})
   end
 end

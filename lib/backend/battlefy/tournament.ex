@@ -9,6 +9,7 @@ defmodule Backend.Battlefy.Tournament do
     field :last_completed_match_at, Calendar.datetime() | nil
     field :name, Calendar.datetime()
     field :slug, String.t()
+    field :region, Backend.Blizzard.region() | nil
   end
 
   @spec from_raw_map(map) :: Backend.Battlefy.Tournament.t()
@@ -34,13 +35,32 @@ defmodule Backend.Battlefy.Tournament do
         _ -> nil
       end
 
+    region =
+      case map["region"] do
+        "Americas" -> :US
+        "Europe" -> :EU
+        "Asia" -> :AP
+        _ -> nil
+      end
+
     %__MODULE__{
       id: map["id"] || map["_id"],
       stage_ids: stage_ids,
       slug: slug,
       name: name,
       start_time: NaiveDateTime.from_iso8601!(start_time),
-      last_completed_match_at: last_completed_match_at
+      last_completed_match_at: last_completed_match_at,
+      region: region
     }
+  end
+
+  def get_duration(%__MODULE__{} = tournament) do
+    case tournament.last_completed_match_at do
+      %{calendar: _} ->
+        NaiveDateTime.diff(tournament.last_completed_match_at, tournament.start_time)
+
+      _ ->
+        nil
+    end
   end
 end

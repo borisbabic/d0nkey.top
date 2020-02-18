@@ -1,7 +1,5 @@
 <div class="title is-2"><%= @name %></div>
-<%= if @duration do %>
-<div class="subtitle is-6">Duration: <%= @duration %></div>
-<% end %>
+<div class="subtitle is-6"><%=@subtitle%></div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
