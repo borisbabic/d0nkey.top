@@ -8,10 +8,26 @@ defmodule BackendWeb.HSReplayController do
     render(conn, "live_feed.html", %{feed: feed, archetypes: archetypes})
   end
 
-  def matchups(conn, %{"as" => as, "vs" => vs}) do
-    IO.inspect(as)
+  def extract_archetype_ids(params) do
+    params
+    |> Util.to_list()
+    |> Enum.map(fn a ->
+      case Integer.parse(a) do
+        :error ->
+          {[archetype], _} = HSReplay.find_archetypes_by_names([a])
+          archetype.id
+
+        {int_val, _remainder} ->
+          int_val
+      end
+    end)
+  end
+
+  def matchups(conn, %{"as" => as_raw, "vs" => vs_raw}) do
     archetype_matchups = HSReplay.get_archetype_matchups()
     archetypes = HSReplay.get_archetypes()
+    as = extract_archetype_ids(as_raw)
+    vs = extract_archetype_ids(vs_raw)
 
     render(conn, "matchups.html", %{
       matchups: archetype_matchups,
