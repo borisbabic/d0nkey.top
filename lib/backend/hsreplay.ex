@@ -11,12 +11,13 @@ defmodule Backend.HSReplay do
   end
 
   @doc """
-  Returns the archetypes found by name as well as the names of the ones without a match
+  Returns the archetypes with the closest jaro distance
   """
   @spec find_archetypes_by_names([String.t()]) :: {[Backend.HSReplay.Archetype], [String.t()]}
   def find_archetypes_by_names(arch_names) do
     archetypes = get_archetypes()
 
+    # todo remove missing since it will always be empty
     {found, missing} =
       arch_names
       |> Enum.map_reduce([], fn a, acc ->
@@ -24,11 +25,10 @@ defmodule Backend.HSReplay do
 
         arch =
           archetypes
-          |> Enum.filter(fn b ->
-            b.name
-            |> String.downcase()
-            |> String.contains?(normalized)
-          end)
+          |> Enum.sort_by(
+            fn a -> String.jaro_distance(a.name |> String.downcase(), normalized) end,
+            &Kernel.>=/2
+          )
           |> Enum.at(0)
 
         if arch == nil do

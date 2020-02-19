@@ -42,9 +42,13 @@ defmodule Backend.HSReplay.ArchetypeMatchups do
   end
 
   def get_matchup(%__MODULE__{} = matchups, as, vs) do
-    matchups.data
-    |> Map.get(as)
-    |> List.keyfind(vs, 0)
-    |> elem(1)
+    try do
+      matchups.data
+      |> Map.get(as)
+      |> List.keyfind(vs, 0)
+      |> elem(1)
+    rescue
+      ArgumentError -> nil
+    end
   end
 end

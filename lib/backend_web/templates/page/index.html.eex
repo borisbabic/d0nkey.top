@@ -11,9 +11,15 @@
   <a class="" href="<%=Routes.hs_replay_path(@conn, :live_feed)%>">HSReplay live replay feed</a> - You can use the
   min_rank max_rank min_rank_any max_rank_any query params. Append an uppercase L to make it legend rank, <a href="http://d0nkey.top/hsreplay/live_feed?max_rank_any=2000L&min_rank=2">example</a>
   <br/>
+  <!--http://d0nkey.top/hsreplay/matchups?as[]=146&as[]=344&as[]=302&vs[]=344&vs[]=310&vs[]=268-->
   <a class="" href="<%=Routes.hs_replay_path(@conn, :matchups)%>">HSReplay matchups</a> - Shows matchups for certain
   decks vs other decks. Good for visualizing how two lineups line up. Only hsreplay free data for now. Also you either have to
-   manually change the url (<a href="http://d0nkey.top/hsreplay/matchups?as[]=146&as[]=344&as[]=302&vs[]=344&vs[]=310&vs[]=268">example</a>) to select the decks or use
+   manually change the url (<a href="<%=Routes.hs_replay_path(@conn, :matchups, %{as: [146, 344, "Highlander HUNTER"],
+   vs: ["galakrond rogue", 310, 268]})
+   %>">example</a>) to select
+    the
+   decks
+   or use
    the !matchups_link command my discord (ex: !matchups_link
    highlander mage,
    highlander hunter vs quest druid, quest hunter)

@@ -34,16 +34,13 @@ defmodule BackendWeb.HSReplayView do
 
   def render("matchups.html", %{
         matchups: matchups,
-        as: as_string,
-        vs: vs_string,
+        as: as,
+        vs: vs,
         archetypes: archetypes
       }) do
     get_name = fn arch ->
       %{style: "", value: archetypes |> Enum.find(fn a -> a.id == arch end) |> Map.get(:name)}
     end
-
-    as = as_string |> Enum.map(&Util.to_int_or_orig/1)
-    vs = vs_string |> Enum.map(&Util.to_int_or_orig/1)
 
     rows = [
       [%{value: "", style: ""} | vs |> Enum.map(get_name)]
@@ -53,17 +50,23 @@ defmodule BackendWeb.HSReplayView do
             get_name.(as_arch)
             | vs
               |> Enum.map(fn vs_arch ->
-                win_rate =
-                  Backend.HSReplay.ArchetypeMatchups.get_matchup(matchups, as_arch, vs_arch).win_rate
+                case Backend.HSReplay.ArchetypeMatchups.get_matchup(matchups, as_arch, vs_arch) do
+                  %{win_rate: win_rate} ->
+                    red = 255 - 255 * (win_rate / 100)
+                    green = 255 * (win_rate / 100)
+                    blue = min(red, green)
 
-                red = 255 - 255 * (win_rate / 100)
-                green = 255 * (win_rate / 100)
-                blue = min(red, green)
+                    %{
+                      value: win_rate,
+                      style: "background-color: rgb(#{red}, #{green}, #{blue})"
+                    }
 
-                %{
-                  value: win_rate,
-                  style: "background-color: rgb(#{red}, #{green}, #{blue})"
-                }
+                  nil ->
+                    %{
+                      value: "?",
+                      style: "background-color: rgb(150, 150, 150)"
+                    }
+                end
               end)
           ]
         end)
@@ -73,9 +76,11 @@ defmodule BackendWeb.HSReplayView do
   end
 
   def render("matchups_empty.html", _params) do
-    "You need to add the as and vs query string.
-    Example as[]=146&vs[]=344 for highlander mage vs gally rogue
-    You can find the correct numbers needed in the url of the archetype on hsreplay.
+    "You need to add the as and vs query params.
+    Example \"d0nkey.top/hsreplay/matchups?as[]=146&vs[]=344\" or \"d0nkey.top/hsreplay/matchups?as[]=highlander
+    mage&vs[]=galakrond rogue\" for
+    highlander mage vs gally rogue
+    Exact names and numbers are based on hsreplay data
     You can also use the bot in the discord (example: !matchups_link highlander mage, pirate warrior vs galakrond
     rogue, highlander hunter)
     All data is the default free data.
