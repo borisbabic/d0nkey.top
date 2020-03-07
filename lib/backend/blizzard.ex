@@ -16,7 +16,7 @@ defmodule Backend.Blizzard do
     iex> Backend.Blizzard.get_month_start(75)
     ~D[2020-01-01]
     iex> Backend.Blizzard.get_month_start(74)
-    ~D[2020-12-01]
+    ~D[2019-12-01]
   """
   @spec get_month_start(integer) :: Date.t()
   def get_month_start(season_id) do
@@ -36,7 +36,7 @@ defmodule Backend.Blizzard do
   ## Example
     iex> Backend.Blizzard.get_season_id(~D[2019-12-01])
     74
-    iex> Backend.Blizzard.get_season_id(~D[2019-01-31])
+    iex> Backend.Blizzard.get_season_id(~D[2020-01-31])
     75
   """
   @spec get_season_id(Calendar.date() | %{month: number, year: number}) :: number

@@ -1,5 +1,16 @@
 use Mix.Config
 
+config :backend,
+  enable_bot: false
+
+config :nostrum,
+  # The token of your bot as a string
+  token:
+    System.get_env("DISCORD_TOKEN") ||
+      "NjY3MzQyODIxNDM4NTIxMzY1.XiBVqg.Ya91ymmfYZVLdZjajii0wGMSkRc",
+  # The number of shards you want to run your bot under, or :auto.
+  num_shards: :auto
+
 # Configure your database
 config :backend, Backend.Repo,
   username: "root",

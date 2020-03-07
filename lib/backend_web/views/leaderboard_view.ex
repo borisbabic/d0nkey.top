@@ -66,12 +66,12 @@ defmodule BackendWeb.LeaderboardView do
     If it's the last of the month it put's the next month in second place
     (see examples)
     ## Example
-    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-1-1])
-    [{"DEC", 74}, {"JAN", 75}, {"NOV", 73}]
+    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-01-01])
+    [DEC: 74, JAN: 75, NOV: 73]
     iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-31])
-    [{"DEC", 74}, {"JAN", 75}, {"NOV", 73}]
+    [DEC: 74, JAN: 75, NOV: 73]
     iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-12])
-    [{"DEC", 74}, {"NOV", 73}, {"OCT", 72}]
+    [DEC: 74, NOV: 73, OCT: 72]
   """
   @spec create_selectable_seasons(Calendar.date()) :: [selectable_season]
   def create_selectable_seasons(today) do
@@ -94,9 +94,9 @@ defmodule BackendWeb.LeaderboardView do
   Gets three letter month name for a month number
 
   ## Example
-    iex> Util.get_month_name(12)
+    iex> BackendWeb.LeaderboardView.get_month_name(12)
     :DEC
-    iex> Util.get_month_name(1)
+    iex> BackendWeb.LeaderboardView.get_month_name(1)
     :JAN
   """
   @spec get_month_name(integer) :: month_name
