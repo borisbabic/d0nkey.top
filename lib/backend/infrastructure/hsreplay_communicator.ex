@@ -24,4 +24,19 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     |> Poison.decode!()
     |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
   end
+
+  def get_archetype_matchups(cookies) when is_nil(cookies) do
+    get_archetype_matchups()
+  end
+
+  def get_archetype_matchups(cookies) do
+    url =
+      "https://hsreplay.net/analytics/query/head_to_head_archetype_matchups/?GameType=RANKED_STANDARD&RankRange=LEGEND_THROUGH_FIVE&Region=ALL&TimeRange=LAST_7_DAYS"
+
+    response = HTTPoison.get!(url, %{}, hackney: [cookie: [cookies]])
+
+    response.body
+    |> Poison.decode!()
+    |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
+  end
 end

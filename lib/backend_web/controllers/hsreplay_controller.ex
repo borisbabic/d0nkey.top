@@ -23,8 +23,12 @@ defmodule BackendWeb.HSReplayController do
     end)
   end
 
-  def matchups(conn, %{"as" => as_raw, "vs" => vs_raw}) do
-    archetype_matchups = HSReplay.get_archetype_matchups()
+  def matchups(conn, params = %{"as" => as_raw, "vs" => vs_raw}) do
+    cookies = params["cookies"]
+
+    archetype_matchups =
+      Backend.Infrastructure.HSReplayCommunicator.get_archetype_matchups(cookies)
+
     archetypes = HSReplay.get_archetypes()
     as = extract_archetype_ids(as_raw)
     vs = extract_archetype_ids(vs_raw)
