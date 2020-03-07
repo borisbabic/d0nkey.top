@@ -18,7 +18,7 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
 
   def get_archetype_matchups() do
     url =
-      "https://hsreplay.net/analytics/query/head_to_head_archetype_matchups/?GameType=RANKED_STANDARD"
+      "https://hsreplay.net/analytics/query/head_to_head_archetype_matchups/?GameType=RANKED_STANDARD&RankRange=LEGEND_THROUGH_TWENTY&Region=ALL&TimeRange=LAST_7_DAYS"
 
     get_body(url)
     |> Poison.decode!()
