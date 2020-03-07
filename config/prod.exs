@@ -1,5 +1,8 @@
 use Mix.Config
 
+config :backend,
+  enable_bot: true
+
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.

@@ -7,29 +7,38 @@ defmodule Backend.Application do
 
   def start(_type, _args) do
     # List all child processes to be supervised
-    children = [
-      # Start the Ecto repository
-      Backend.Repo,
-      # Start the endpoint when the application starts
-      BackendWeb.Endpoint,
-      # Starts a worker by calling: Backend.Worker.start_link(arg)
-      # {Backend.Worker, arg},
-      %{
-        id: Backend.Infrastructure.ApiCache,
-        start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
-      },
-      %{
-        id: Backend.Infrastructure.HSReplayLatestCache,
-        start: {Backend.Infrastructure.HSReplayLatestCache, :start_link, [[]]}
-      },
-      Bot.Consumer,
-      QuantumScheduler
-    ]
+    children =
+      [
+        # Start the Ecto repository
+        Backend.Repo,
+        # Start the endpoint when the application starts
+        BackendWeb.Endpoint,
+        # Starts a worker by calling: Backend.Worker.start_link(arg)
+        # {Backend.Worker, arg},
+        %{
+          id: Backend.Infrastructure.ApiCache,
+          start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
+        },
+        %{
+          id: Backend.Infrastructure.HSReplayLatestCache,
+          start: {Backend.Infrastructure.HSReplayLatestCache, :start_link, [[]]}
+        },
+        QuantumScheduler
+      ]
+      |> check_bot()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Backend.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  def check_bot(prev) do
+    if Application.fetch_env!(:backend, :enable_bot) do
+      prev ++ [Bot.Consumer]
+    else
+      prev
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration

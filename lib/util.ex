@@ -75,11 +75,11 @@ defmodule Util do
   @doc """
   Converts an integer into a string padded to represent time
   ## Example
-  iex> pad_time_element(4)
+  iex> Util.pad_time_element(4)
   "04"
-  iex> pad_time_element(12)
+  iex> Util.pad_time_element(12)
   "12"
-  iex> pad_time_element(666)
+  iex> Util.pad_time_element(666)
   "666"
   """
   @spec pad_time_element(integer()) :: String.t()
@@ -165,7 +165,7 @@ defmodule Util do
   Get's the date range before this one with the same length
 
   ## Example
-  iex> get_previous_range({~D[2020-01-01], ~D[2020-01-07]})
+  iex> Util.get_previous_range({~D[2020-01-01], ~D[2020-01-07]})
   {~D[2019-12-25], ~D[2019-12-31]}
   """
   def get_previous_range({%Date{} = from, %Date{} = to}) do
@@ -179,7 +179,7 @@ defmodule Util do
   Get's the date range after this one with the same length
 
   ## Example
-  iex> get_following_range({~D[2020-01-01], ~D[2020-01-07]})
+  iex> Util.get_following_range({~D[2020-01-01], ~D[2020-01-07]})
   {~D[2020-01-08], ~D[2020-01-14]}
   """
   def get_following_range({%Date{} = from, %Date{} = to}) do
@@ -193,7 +193,7 @@ defmodule Util do
   Get's the date ranges before after this one with the same length
 
   ## Example
-  iex> get_surrounding_ranges({~D[2020-01-01], ~D[2020-01-07]})
+  iex> Util.get_surrounding_ranges({~D[2020-01-01], ~D[2020-01-07]})
   {{~D[2019-12-25], ~D[2019-12-31]}, {~D[2020-01-08], ~D[2020-01-14]}}
   """
   def get_surrounding_ranges(range = {%Date{} = _from, %Date{} = _to}) do
@@ -204,11 +204,11 @@ defmodule Util do
   Transform to an integer while ignoring the binary remainder or returns the original string
 
   ## Example
-  iex> to_int_or_rg("hello")
+  iex> Util.to_int_or_orig("hello")
   "hello"
-  iex> to_int_or_rg("-1")
+  iex> Util.to_int_or_orig("-1")
   -1
-  iex> to_int_or_rg("-1.45")
+  iex> Util.to_int_or_orig("-1.45")
   -1
   """
   def to_int_or_orig(int_or_not) do
