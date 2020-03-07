@@ -22,15 +22,6 @@ defmodule BackendWeb.MastersTourView do
     })
   end
 
-  def create_qualifiers_link({%Date{} = from, %Date{} = to}, conn) do
-    # Routes.masters_tour_path(conn, :qualifiers, %{"from" => from, "to" => to})
-    # Routes.masters_tour_path(conn, :qualifiers, %{from: from, to: to})
-    new_params =
-      Map.merge(conn.query_params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
-
-    Routes.masters_tour_path(conn, :qualifiers, new_params)
-  end
-
   def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do
     latest = Enum.find_value(invited, fn ip -> ip.upstream_time end)
 
@@ -52,6 +43,15 @@ defmodule BackendWeb.MastersTourView do
       selected_ts: selected_ts,
       latest: latest
     })
+  end
+
+  def create_qualifiers_link({%Date{} = from, %Date{} = to}, conn) do
+    # Routes.masters_tour_path(conn, :qualifiers, %{"from" => from, "to" => to})
+    # Routes.masters_tour_path(conn, :qualifiers, %{from: from, to: to})
+    new_params =
+      Map.merge(conn.query_params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
+
+    Routes.masters_tour_path(conn, :qualifiers, new_params)
   end
 
   @spec process_invited_player(%{
