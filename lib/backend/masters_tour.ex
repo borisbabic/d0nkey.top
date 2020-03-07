@@ -63,6 +63,50 @@ defmodule Backend.MastersTour do
     |> Repo.transaction()
   end
 
+  @spec copy_grandmasters(Backend.Blizzard.tour_stop(), String.t() | nil) :: any
+  def delete_copied(tour_stop, copied_search \\ "%copied") do
+    ts = to_string(tour_stop)
+
+    from(ip in InvitedPlayer, where: like(ip.reason, ^copied_search), where: ip.tour_stop == ^ts)
+    |> Repo.delete_all()
+  end
+
+  @spec copy_grandmasters(
+          Backend.Blizzard.tour_stop(),
+          Backen.Blizzard.tour_stop(),
+          String.t() | nil,
+          String.t() | nil
+        ) :: any
+  def copy_grandmasters(
+        from_ts,
+        to_ts,
+        reason_append \\ " *copied",
+        reason_search \\ "%Grandmaster%"
+      ) do
+    from = to_string(from_ts)
+    to = to_string(to_ts)
+
+    Repo.all(
+      from ip in InvitedPlayer,
+        where: ip.tour_stop == ^from,
+        where: like(ip.reason, ^reason_search)
+    )
+    |> Enum.uniq_by(&InvitedPlayer.uniq_string/1)
+    |> Enum.reduce(Multi.new(), fn gm, multi ->
+      # changeset = create_invited_player(%{gm | tour_stop: to_ts, reason: gm.reason <>})
+      changeset =
+        create_invited_player(%{
+          tour_stop: to,
+          battletag_full: gm.battletag_full,
+          reason: gm.reason <> reason_append,
+          upstream_time: gm.upstream_time
+        })
+
+      Multi.insert(multi, InvitedPlayer.uniq_string(gm), changeset)
+    end)
+    |> Repo.transaction()
+  end
+
   def process_invited_player(
         invited = %{
           "battletag" => battletag_full,
