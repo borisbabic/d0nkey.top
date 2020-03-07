@@ -3,42 +3,26 @@
   <div class="subtitle is-4">
       Well Met!
   </div>
-  <div>
-      This page just contains a list of partly done stuff and some tips and info
-  </div>
+
+  
+  <a class="" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a> - <a class="" href="<%=Routes.leaderboard_path(@conn, :index, %{"highlight" => ["D0nkey", "Paljuha", "Groinkpff", "reqvam", "AuZG"], "seasonId" => "74"})%>">example usage</a>
   <br>
-  <div class="subtitle is-5">WIP</div>
-  <a class="" href="<%=Routes.hs_replay_path(@conn, :live_feed)%>">HSReplay live replay feed</a> - You can use the
-  min_rank max_rank min_rank_any max_rank_any query params. Append an uppercase L to make it legend rank, <a href="http://d0nkey.top/hsreplay/live_feed?max_rank_any=2000L&min_rank=2">example</a>
+  <a class="" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop) %>'>Masters Tour Invited List</a>
+  <br>
+  <a class="" href="<%=Routes.hs_replay_path(@conn, :live_feed)%>">HSReplay live replay feed</a> - <a href="<%=Routes.hs_replay_path(@conn, :live_feed, %{"max_rank_any" => "2000L", "min_rank" => "2"})%>">example usage</a>
   <br/>
   <!--http://d0nkey.top/hsreplay/matchups?as[]=146&as[]=344&as[]=302&vs[]=344&vs[]=310&vs[]=268-->
-  <a class="" href="<%=Routes.hs_replay_path(@conn, :matchups)%>">HSReplay matchups</a> - Shows matchups for certain
-  decks vs other decks. Good for visualizing how two lineups line up. Only hsreplay free data for now. Also you either have to
-   manually change the url (<a href="<%=Routes.hs_replay_path(@conn, :matchups, %{as: [146, 344, "Highlander HUNTER"],
-   vs: ["galakrond rogue", 310, 268]})
-   %>">example</a>) to select
-    the
-   decks
-   or use
-   the !matchups_link command my discord (ex: !matchups_link
-   highlander mage,
-   highlander hunter vs quest druid, quest hunter)
+  <a class="" href="<%=Routes.hs_replay_path(@conn, :matchups)%>">HSReplay matchups</a> - <a href="<%=Routes.hs_replay_path(@conn, :matchups, %{as: ["Highlander Shaman", "highlander mage", "Highlander HUNTER"], vs: ["galakrond rogue", "galakrond warrior", "galakrond warlock"]}) %>">example usage</a>
   <br/>
-  <a class="" href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Master's Tour Qualifiers</a> - This should be
-  familiar, not much benefit compared to yaytears unless you reaaaallllyyy like hsdeckviewer.com
+  <a class="" href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Masters Tour Qualifiers</a>
   <br>
+  <a class="" href="<%=Routes.discord_path(@conn, :broadcasts)%>">Discord Broadcasts</a> - Broadcast images to multiple channels accross servers
   <br>
   <div class="subtitle is-5">Tips & info</div>
-  -  You can highlight certain players to appear in their own table before others if they are on the
-  leaderboard, <a
-  href="https://www.d0nkey.top/leaderboard?highlight[]=D0nkey">example</a>. You can use the bot in my discord to
-  create the link, ex !create_highlight D0nkey Viper Furyhunter Groinkpff
-  <br>
   - The invited players list is not refreshed from <a href="https://battlefy.com/hsesports/invites">battlefy</a>
   everytime the leaderboard is opened. If you
   think it's missing players you can get it to refresh by opening the invited players list on this site.
   <br>
   - If battlefy is missing players you can contact me on discord or twitter with something to verify that the player is invited and
-   I'll add them. NOTE: I am aware GM's are missing as of 2020-02-18, I'll copy them over from last month if they are
-    not added soon
+   I'll add them. 
 </section>
