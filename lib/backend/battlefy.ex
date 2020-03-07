@@ -65,8 +65,6 @@ defmodule Backend.Battlefy do
   end
 
   def get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full}) do
-    IO.inspect(battletag_full)
-
     {position, match} =
       get_tournament_matches(tournament_id, round: 1)
       |> Enum.flat_map(fn m ->

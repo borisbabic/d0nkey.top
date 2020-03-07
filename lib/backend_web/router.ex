@@ -31,10 +31,17 @@ defmodule BackendWeb.Router do
     get "/hsreplay/matchups", HSReplayController, :matchups
 
     get "/discord/broadcasts", DiscordController, :broadcasts
-    get "/discord/broadcast", DiscordController, :broadcast
-    post "/discord/broadcast", DiscordController, :broadcast
 
-    post "/discord/create_broadcast", DiscordController, :create_broadcast
+    # get "/discord/broadcast", DiscordController, :broadcast
+    # post "/discord/broadcast", DiscordController, :broadcast
+
+    get "/discord/broadcasts/:id/publish/:token", DiscordController, :view_publish
+    post "/discord/broadcasts/:id/publish/:token", DiscordController, :publish
+
+    get "/discord/broadcasts/:id/subscribe/:token", DiscordController, :view_subscribe
+    post "/discord/broadcasts/:id/subscribe/:token", DiscordController, :subscribe
+
+    get "/discord/create_broadcast", DiscordController, :create_broadcast
   end
 
   # Other scopes may use custom stacks.

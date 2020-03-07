@@ -1,17 +1,27 @@
 defmodule Backend.Discord do
   alias Backend.Repo
+  alias Backend.Infrastructure.DiscordCommunicator, as: Api
+  alias Backend.Discord.Broadcast
 
   def url() do
     "https://discordapp.com/api/webhooks/672113411731226634/q7F_sCtz6aCvF6wIB1qHEbsx-_aLnvHPC53Nol-SkfDfeKNHhD62gCFVeJ-7dPLnDx5p"
   end
 
   def broadcast(path, name) do
-    form = {:multipart, [{:file, path, {"form-data", [{"filename", name}]}, []}]}
-    {success, _} = HTTPoison.post(url(), form)
-    success
+    Api.broadcast_file(path, name, url())
   end
 
-  alias Backend.Discord.Broadcast
+  @spec broadcast(Broadcast.t(), String.t(), String.t()) :: any
+  def broadcast(broadcast, path, name) do
+    broadcast.subscribed_urls
+    |> Enum.each(fn url -> Api.broadcast_file(path, name, url) end)
+  end
+
+  def subscribe(broadcast, url) do
+    broadcast
+    |> Broadcast.changeset(%{subscribed_urls: broadcast.subscribed_urls ++ [url]})
+    |> Repo.update()
+  end
 
   @doc """
   Returns the list of broadcasts.
@@ -40,7 +50,13 @@ defmodule Backend.Discord do
       ** (Ecto.NoResultsError)
 
   """
+  @spec get_broadcast!(String.t()) :: Backend.Discord.Broadcast.t()
   def get_broadcast!(id), do: Repo.get!(Broadcast, id)
+
+  def create_broadcast() do
+    Broadcast.new()
+    |> Repo.insert()
+  end
 
   @doc """
   Creates a broadcast.
@@ -54,7 +70,7 @@ defmodule Backend.Discord do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_broadcast(attrs \\ %{}) do
+  def create_broadcast(attrs) do
     %Broadcast{}
     |> Broadcast.changeset(attrs)
     |> Repo.insert()

@@ -11,9 +11,19 @@ defmodule Backend.Discord.Broadcast do
   end
 
   @doc false
+  def new() do
+    cast(
+      %__MODULE__{},
+      %{publish_token: Ecto.UUID.generate(), subscribe_token: Ecto.UUID.generate()},
+      [:publish_token, :subscribe_token]
+    )
+    |> validate_required([:subscribe_token, :publish_token])
+  end
+
+  @doc false
   def changeset(broadcast, attrs) do
     broadcast
     |> cast(attrs, [:publish_token, :subscribe_token, :subscribed_urls])
-    |> validate_required([])
+    |> validate_required([:subscribe_token, :publish_token])
   end
 end

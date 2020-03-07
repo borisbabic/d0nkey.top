@@ -1,0 +1,9 @@
+<div class="title is-2">Broadcasts</div>
+
+<a class="is_button" href=<%=Routes.discord_path(@conn, :create_broadcast) %>> Create new </a> 
+
+<div>
+Broadcasts are a way to send the same image to multiple discord channels at once. 
+<br>
+You'll get a separate url for publishing and for subscribing (so you can share the subscribe url)
+</div>

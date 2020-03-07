@@ -1,0 +1,13 @@
+<div class="title is-2">Subscribe</div>
+See making a web hook <a href="https://support.discordapp.com/hc/en-us/articles/228383668-Intro-to-Webhooks">here</a> for how to create the hook
+
+<%= form_for @conn, Routes.discord_path(@conn, :subscribe, @broadcast.id, @broadcast.subscribe_token), fn f -> %>
+  <div class="form-group">
+    <label>Hook url</label>
+    <%= text_input f, :hook_url %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
