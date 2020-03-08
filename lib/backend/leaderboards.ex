@@ -31,6 +31,10 @@ defmodule Backend.Leaderboards do
       {:error, _} ->
         cached
 
+      {:ok, {_table, nil}} ->
+        Logger.info("Got nil updated at, using cached leaderboard")
+        cached
+
       {:ok, leaderboard = {_table, updated_at}} ->
         if !cached_updated_at || DateTime.diff(updated_at, cached_updated_at) >= 0 do
           Logger.debug(

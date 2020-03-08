@@ -6,8 +6,13 @@ defmodule BackendWeb.LeaderboardController do
 
   def index(conn, params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
     # seasonId can be nil
-    {entry, updated_at} =
+    # {entry, updated_at} =
+      # Leaderboards.fetch_current_entries(region, leaderboard_id, params["seasonId"])
+    {entry, updated_at} = try do
       Leaderboards.fetch_current_entries(region, leaderboard_id, params["seasonId"])
+    rescue
+      _ -> {[], nil}
+    end
 
     season_id =
       case Integer.parse(to_string(conn.query_params["seasonId"])) do
