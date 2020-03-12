@@ -76,12 +76,12 @@ defmodule Backend.Blizzard do
   Gets the season ids of ladder qualifying seasons for a tour stop
 
   ## Example
-    iex> Backend.Blizzard.get_ladder_tour_stop(72)
-    {:ok, :Arlington}
-    iex> Backend.Blizzard.get_ladder_tour_stop(79)
-    {:ok, :Montreal}
+    iex> Backend.Blizzard.get_ladder_seasons(:Montreal)
+    {:ok, [78, 79]}
+    iex> Backend.Blizzard.get_ladder_seasons(:Bucharest)
+    {:error, "There were no ladder invites for this tour stop"}
   """
-  @spec get_ladder_tour_stop(tour_stop) :: {:ok, [integer()]} | {:error, String.t()}
+  @spec get_ladder_seasons(tour_stop) :: {:ok, [integer()]} | {:error, String.t()}
   def get_ladder_seasons(tour_stop) do
     no_ladder_for_tour = {:error, "There were no ladder invites for this tour stop"}
 
