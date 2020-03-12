@@ -19,7 +19,7 @@ Test what makes sense to be tested :) (if I haven't yet added tests you can skip
 
 ## Commits
 https://chris.beams.io/posts/git-commit/#seven-rules
-Please be guided the seven rules when writing commit messages
+Please be guided by the seven rules when writing commit messages
 
 # Running
 ## Dependencies
@@ -34,6 +34,6 @@ docker-compose up -d # get postgres running
 mix setup # setup the db
 mix run -e Backend.MastersTour.fetch # optional, fetches the currently invited players
 cd assets && npm install && cd ..
-mix phx.server # start the server at port 2470
+mix phx.server # start the server at port 8994. Open http://localhost:8994/leaderboard
 ```
 

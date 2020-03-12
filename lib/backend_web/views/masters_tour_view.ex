@@ -1,6 +1,9 @@
 defmodule BackendWeb.MastersTourView do
   use BackendWeb, :view
   alias Backend.MastersTour.InvitedPlayer
+  alias Backend.MastersTour
+  alias Backend.Blizzard
+  @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
 
   def render("qualifiers.html", %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range}) do
     {before_range, after_range} = Util.get_surrounding_ranges(range)
@@ -18,7 +21,8 @@ defmodule BackendWeb.MastersTourView do
     render("qualifiers.html", %{
       qualifiers: qualifiers,
       before_link: before_link,
-      after_link: after_link
+      after_link: after_link,
+      dropdown_links: create_dropdown_qualifier_links(conn)
     })
   end
 
@@ -43,6 +47,31 @@ defmodule BackendWeb.MastersTourView do
       selected_ts: selected_ts,
       latest: latest
     })
+  end
+
+  @spec create_dropdown_qualifier_links(any) :: [qualifiers_dropdown_link]
+  def create_dropdown_qualifier_links(conn) do
+    tour_stop_ranges =
+      Blizzard.tour_stops()
+      |> Enum.reverse()
+      |> Enum.take_while(fn ts -> ts != :Bucharest end)
+      |> Enum.map(fn ts ->
+        %{
+          display: ts,
+          link: ts |> MastersTour.guess_qualifier_range() |> create_qualifiers_link(conn)
+        }
+      end)
+
+    date_ranges =
+      [{:week, "Week"}, {:month, "Month"}]
+      |> Enum.map(fn {range, display} ->
+        %{
+          display: display,
+          link: MastersTour.get_masters_date_range(range) |> create_qualifiers_link(conn)
+        }
+      end)
+
+    date_ranges ++ tour_stop_ranges
   end
 
   def create_qualifiers_link({%Date{} = from, %Date{} = to}, conn) do

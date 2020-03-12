@@ -1,6 +1,16 @@
 <div class="title is-2">Qualifiers</div>
-<a class="tag is-link" href="<%= @before_link %>"><---</a>
-<a class="tag is-link" href="<%= @after_link %>">---></a>
+<a class="button is-link" href="<%= @before_link %>"><---</a>
+<a class="button is-link" href="<%= @after_link %>">---></a>
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Select Range</button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for %{display: display, link: link} <- @dropdown_links do %>
+            <a class="dropdown-item" href="<%= link %>"><%=display%></a>
+        <% end %>
+    </div>
+    </div>
+</div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
