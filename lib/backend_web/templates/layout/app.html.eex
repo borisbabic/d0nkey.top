@@ -12,6 +12,7 @@
   <body>
     <header class="container">
       <nav role="navigation">
+        <a class="" href="<%=Routes.page_path(@conn, :index)%>">🏠</a>
         <a class="" href="<%=Routes.leaderboard_path(@conn, :index)%>">leaderboard</a>
         <a class="" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop) %>'>invited</a>
         <div class="is-pulled-right">

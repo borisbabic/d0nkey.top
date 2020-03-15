@@ -23,7 +23,7 @@ Please be guided by the seven rules when writing commit messages
 
 # Running
 ## Dependencies
-elixir 1.9.4
+See elixir_buildpack.config for elixir and erlang versions
 docker, docker-compose (or an appropriate postgres running)
 npm 
 
