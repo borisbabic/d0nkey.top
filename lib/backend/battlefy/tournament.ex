@@ -5,6 +5,7 @@ defmodule Backend.Battlefy.Tournament do
   typedstruct enforce: true do
     field :id, Battlefy.tournament_id()
     field :stage_ids, [Battlefy.stage_id()]
+    field :stages, [Battlefy.Stage.t()]
     field :start_time, Calendar.datetime()
     field :last_completed_match_at, Calendar.datetime() | nil
     field :name, Calendar.datetime()
@@ -43,6 +44,15 @@ defmodule Backend.Battlefy.Tournament do
         _ -> nil
       end
 
+    stages =
+      case map["stages"] do
+        raw_list = [%{"start_time" => _} | _] ->
+          raw_list |> Enum.map(&Battlefy.Stage.from_raw_map/1)
+
+        _ ->
+          []
+      end
+
     %__MODULE__{
       id: map["id"] || map["_id"],
       stage_ids: stage_ids,
@@ -50,7 +60,8 @@ defmodule Backend.Battlefy.Tournament do
       name: name,
       start_time: NaiveDateTime.from_iso8601!(start_time),
       last_completed_match_at: last_completed_match_at,
-      region: region
+      region: region,
+      stages: stages
     }
   end
 

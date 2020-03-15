@@ -14,7 +14,7 @@ defmodule BackendWeb.MastersTourView do
       qualifiers_raw
       |> Enum.map(fn q ->
         q
-        |> Map.put_new(:link, create_qualifier_link(q.slug, q.id))
+        |> Map.put_new(:link, MastersTour.create_qualifier_link(q))
         |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, q.id))
       end)
 
@@ -101,7 +101,7 @@ defmodule BackendWeb.MastersTourView do
     link =
       case invited_player do
         %{tournament_slug: slug, tournament_id: id} when is_binary(slug) and is_binary(id) ->
-          create_qualifier_link(slug, id)
+          MastersTour.create_qualifier_link(slug, id)
 
         _ ->
           nil
@@ -121,10 +121,5 @@ defmodule BackendWeb.MastersTourView do
       battletag: battletag,
       invited_at: invited_player.upstream_time
     }
-  end
-
-  @spec create_qualifier_link(String.t(), String.t()) :: String.t()
-  def create_qualifier_link(slug, id) do
-    "https://battlefy.com/hsesports/#{slug}/#{id}/info"
   end
 end

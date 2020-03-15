@@ -4,13 +4,19 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Blizzard
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchDeckstrings
+  import Backend.Infrastructure.CommunicatorUtil
   @behaviour Backend.Battlefy.Communicator
 
-  def get_masters_qualifiers(start_time, end_time) do
+  @doc """
+  Get's the qualifiers that start between the start and end_date (inclusive)
+  """
+  def get_masters_qualifiers(start_date, end_date) do
+    {:ok, end_time} = NaiveDateTime.new(end_date.year, end_date.month, end_date.day, 23, 59, 59)
+
     url =
       "https://majestic.battlefy.com/hearthstone-masters/tournaments?start=#{
-        Date.to_iso8601(start_time)
-      }&end=#{Date.to_iso8601(end_time)}"
+        Date.to_iso8601(start_date)
+      }&end=#{NaiveDateTime.to_iso8601(end_time)}"
 
     {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [url])
     Logger.debug("Got masters qualifiers #{url} in #{div(uSecs, 1000)} ms")
@@ -68,27 +74,42 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     )
   end
 
+  @spec get_stage(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stagea.t()
+  def get_stage(stage_id) do
+    url = "https://api.battlefy.com/stages/#{stage_id}"
+
+    get_body(url)
+    |> Poison.decode!()
+    |> Backend.Battlefy.Stage.from_raw_map()
+  end
+
   @spec get_standings(Backend.Battlefy.stage_id()) :: [Backend.Battlefy.Standings.t()]
   def get_standings(stage_id) do
     url = "https://api.battlefy.com/stages/#{stage_id}/standings"
 
-    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
+    get_body(url)
+    |> Poison.decode!()
+    |> Backend.Battlefy.Standings.from_raw_map_list()
+  end
 
-    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
+  @spec get_round_standings(Backend.Battlefy.stage_id(), integer | String.t()) :: [
+          Backend.Battlefy.Standings.t()
+        ]
+  def get_round_standings(stage_id, round) do
+    url = "https://api.battlefy.com/stages/#{stage_id}/rounds/#{round}/standings"
 
-    Poison.decode!(response.body)
-    |> Enum.map(&Backend.Battlefy.Standings.from_raw_map/1)
+    get_body(url)
+    |> Poison.decode!()
+    |> Backend.Battlefy.Standings.from_raw_map_list()
   end
 
   @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t()
   def get_tournament(tournament_id) do
-    url = "https://majestic.battlefy.com/tournaments/#{tournament_id}"
+    url = "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true"
 
-    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
-
-    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
-
-    Poison.decode!(response.body)
+    get_body(url)
+    |> Poison.decode!()
+    |> Enum.at(0)
     |> Backend.Battlefy.Tournament.from_raw_map()
   end
 
@@ -100,11 +121,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         round -> "http://api.battlefy.com/stages/#{stage_id}/matches?roundNumber=#{round}"
       end
 
-    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
-
-    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
-
-    Poison.decode!(response.body)
+    get_body(url)
+    |> Poison.decode!()
     |> Enum.map(&Match.from_raw_map/1)
   end
 
@@ -115,11 +133,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url =
       "https://majestic.battlefy.com/tournaments/#{tournament_id}/matches/#{match_id}/deckstrings"
 
-    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
-
-    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
-
-    Poison.decode!(response.body)
+    get_body(url)
+    |> Poison.decode!()
     |> MatchDeckstrings.from_raw_map()
   end
 end

@@ -1,18 +1,36 @@
-<div class="title is-2"><%= @name %></div>
+<div class="title is-2"><a href=<%= @link %>> <%= @name %></a></div>
 <div class="subtitle is-6"><%=@subtitle%></div>
+<%= if @show_stage_selection do %>
+    <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@stage_selection_text%></button></div>
+        <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+            <%= for %{name: name, selected: selected, link: link} <- @stages do %>
+                <a class="dropdown-item <%= selected && 'is-active' || '' %>" href="<%= link %>"><%=name%></a>
+            <% end %>
+        </div>
+        </div>
+    </div>
+<% end %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
             <th>Place</th>
             <th>Name</th>
+            <%= if @show_score do %>
+                <th>Score</th>
+            <% end %>
             <th>Decks</th>
         </tr>
     </thead>
     <tbody>
-    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears} <- @standings do %>
+    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score} <- @standings do %>
         <tr>
             <td><%= place %></td>
             <td><%= name %></td>
+            <%= if @show_score do %>
+                <th><%=score%></th>
+            <% end %>
             <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
         </tr>
     <% end %>
