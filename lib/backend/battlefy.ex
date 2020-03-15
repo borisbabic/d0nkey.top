@@ -16,11 +16,102 @@ defmodule Backend.Battlefy do
   @type get_tournament_matches_opt :: {:stage, integer()} | get_matches_opt
   @type get_tournament_matches_options :: [get_tournament_matches_opt]
 
+  def get_stage_standings(stage_id) when is_binary(stage_id) do
+    stage_id
+    |> Api.get_stage()
+    |> get_stage_standings()
+  end
+
+  def get_stage_standings(%{id: id, standing_ids: [_ | _]}) do
+    Api.get_standings(id)
+  end
+
+  def get_stage_standings(%{id: id, current_round: current_round})
+      when is_integer(current_round) do
+    Api.get_round_standings(id, current_round)
+  end
+
+  def get_stage_standings(stage) do
+    create_standings_from_matches(stage)
+  end
+
+  def create_standings_from_matches(%{
+        id: id,
+        bracket: bracket = %{type: "elimination", style: "single"}
+      }) do
+    {rounds, _max_position} =
+      case {bracket.rounds_count, bracket.teams_count} do
+        {nil, nil} -> raise "Handle this case d0nkey!"
+        {nil, teams_count} -> {:math.log2(teams_count) |> Float.ceil() |> trunc(), teams_count}
+        {rounds_count, nil} -> {rounds_count, :math.pow(2, rounds_count) |> trunc()}
+        {rounds_count, teams_count} -> {rounds_count, teams_count}
+      end
+
+    get_matches(id)
+    |> Enum.flat_map(fn %{top: top, bottom: bottom, round_number: round_number} ->
+      pos = (:math.pow(2, rounds - round_number) + 1) |> trunc()
+
+      {winners, losers, in_progress} =
+        case {top.winner, bottom.winner} do
+          {true, false} ->
+            {[top], [bottom], []}
+
+          {false, true} ->
+            {[bottom], [top], []}
+
+          # not yet finished
+          {false, false} ->
+            {[], [], [bottom, top]}
+
+          # :shrug
+          _ ->
+            {[], [], []}
+        end
+
+      losers_standings =
+        losers
+        |> Enum.map(fn l ->
+          %Standings{team: l.team, place: pos, wins: round_number - 1, losses: 1}
+        end)
+
+      in_progress_standings =
+        in_progress
+        |> Enum.map(fn ip ->
+          %Standings{team: ip.team, place: 0, wins: round_number - 1, losses: 0}
+        end)
+
+      winners_standings =
+        if round_number == rounds,
+          do:
+            winners
+            |> Enum.map(fn w ->
+              %Standings{team: w.team, place: 1, wins: round_number, losses: 0}
+            end),
+          else: []
+
+      List.flatten([losers_standings, in_progress_standings, winners_standings])
+    end)
+    # remove byes and the opponents of people waiting
+    |> Enum.filter(fn s -> s.team end)
+    |> Enum.sort_by(fn s -> s.place end, :asc)
+  end
+
+  def get_standings_from_matches() do
+    nil
+  end
+
   @spec get_tournament_standings(Tournament.t() | %{stage_ids: [stage_id]}) :: [Standings.t()]
   def get_tournament_standings(%{stage_ids: stage_ids}) do
-    stage_ids
-    |> List.last()
-    |> get_stage_standings()
+    case stage_ids
+         |> Enum.reverse()
+         |> Enum.find_value(fn id ->
+           id
+           |> Api.get_stage()
+           |> get_stage_standings()
+         end) do
+      nil -> []
+      standings -> standings
+    end
   end
 
   @spec get_tournament_standings(tournament_id) :: [Standings.t()]
@@ -28,11 +119,6 @@ defmodule Backend.Battlefy do
     tournament_id
     |> get_tournament()
     |> get_tournament_standings()
-  end
-
-  @spec get_stage_standings(stage_id) :: [Standings.t()]
-  def get_stage_standings(stage_id) do
-    Api.get_standings(stage_id)
   end
 
   @spec get_tournament(tournament_id) :: Tournament.t()

@@ -183,4 +183,13 @@ defmodule Backend.MastersTour do
 
     {start_date, end_date}
   end
+
+  def create_qualifier_link(%{slug: slug, id: id}) do
+    create_qualifier_link(slug, id)
+  end
+
+  @spec create_qualifier_link(String.t(), String.t()) :: String.t()
+  def create_qualifier_link(slug, id) do
+    "https://battlefy.com/hsesports/#{slug}/#{id}/info"
+  end
 end
