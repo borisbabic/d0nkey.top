@@ -17,11 +17,14 @@
             <th>Name</th>
             <th>Start Time</th>
             <th>Region</th>
+            <%= if @show_signed_up do %>
+                <th>Signed Up</th>
+            <% end %>
             <th>Standings</th>
         </tr>
     </thead>
     <tbody>
-    <%= for %{region: region, start_time: start_time, name: name, link: link, standings_link: standings_link} <- @qualifiers do %>
+    <%= for %{region: region, start_time: start_time, name: name, link: link, standings_link: standings_link, signed_up: signed_up} <- @qualifiers do %>
         <tr>
             <td>
                 <a class="is-link" href="<%= link %>">
@@ -30,6 +33,13 @@
             </td>
             <td><%= render_datetime start_time %></td>
             <td><%= region %></td>
+            <%= if @show_signed_up do %>
+                <td>
+                    <%= if signed_up do %>
+                        <span class="tag is-success">✓</span>
+                    <% end %>
+                </td>
+            <% end %>
             <td>
                 <%= if NaiveDateTime.compare(start_time, DateTime.utc_now()) == :lt do %>
                     <a class="is-link" href="<%= standings_link %>">
