@@ -3,6 +3,7 @@ defmodule Backend.Battlefy.Communicator do
   alias Backend.Battlefy
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchDeckstrings
+  alias Backend.Battlefy.Profile
   alias Backend.Battlefy.Stage
   alias Backend.Battlefy.Standings
   alias Backend.Battlefy.Tournament
@@ -36,4 +37,6 @@ defmodule Backend.Battlefy.Communicator do
               MatchDeckstrings.t()
             ]
   @callback get_stage(Battlefy.stage_id()) :: Stage.t()
+  @callback get_profile(String.t()) :: Profile.t()
+  @callback get_user_tournaments(String.t()) :: [Tournament.t()]
 end

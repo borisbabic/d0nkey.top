@@ -4,6 +4,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Blizzard
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchDeckstrings
+  alias Backend.Battlefy.Profile
+  alias Backend.Battlefy.Tournament
   import Backend.Infrastructure.CommunicatorUtil
   @behaviour Backend.Battlefy.Communicator
 
@@ -136,5 +138,25 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     get_body(url)
     |> Poison.decode!()
     |> MatchDeckstrings.from_raw_map()
+  end
+
+  def get_profile(slug) do
+    url = "https://api.battlefy.com/profile/#{slug}"
+
+    get_body(url)
+    |> Poison.decode!()
+    |> Profile.from_raw_map()
+  end
+
+  def get_user_tournaments(slug) do
+    # they return max 25 regardless of size. I don't feel like paginating or being smart about it
+    url = "https://search.battlefy.com/user/#{slug}/tournaments?size=1000"
+
+    raw =
+      get_body(url)
+      |> Poison.decode!()
+
+    raw["tournaments"]
+    |> Enum.map(&Tournament.from_raw_map/1)
   end
 end
