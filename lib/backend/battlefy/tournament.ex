@@ -25,7 +25,6 @@ defmodule Backend.Battlefy.Tournament do
   def from_raw_map(
         map = %{
           "start_time" => start_time,
-          "stage_ids" => stage_ids,
           "slug" => slug,
           "name" => name
         }
@@ -55,7 +54,7 @@ defmodule Backend.Battlefy.Tournament do
 
     %__MODULE__{
       id: map["id"] || map["_id"],
-      stage_ids: stage_ids,
+      stage_ids: map["stage_ids"] || [],
       slug: slug,
       name: name,
       start_time: NaiveDateTime.from_iso8601!(start_time),

@@ -10,7 +10,7 @@
   <div class="subtitle is-5">
       Features
   </div>
-  <a class="" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a> - <a class="" href="<%=Routes.leaderboard_path(@conn, :index, %{"highlight" => ["D0nkey", "Paljuha", "Groinkpff", "reqvam", "AuZG"], "seasonId" => "74"})%>">example usage</a>
+  <a class="" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a> - <a class="" href="<%=Routes.leaderboard_path(@conn, :index, %{"highlight" => ["D0nkey", "Paljuha", "Groinkpff", "reqvam", "AuZG"], "seasonId" => "74"})%>">higlight_example</a>
   <br>
   <a class="" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop) %>'>Masters Tour Invited List</a>
   <br>
@@ -22,7 +22,7 @@
   <!--http://d0nkey.top/hsreplay/matchups?as[]=146&as[]=344&as[]=302&vs[]=344&vs[]=310&vs[]=268-->
   <a class="" href="<%=Routes.hs_replay_path(@conn, :matchups)%>">HSReplay matchups</a> - <a href="<%=Routes.hs_replay_path(@conn, :matchups, %{as: ["Highlander Shaman", "highlander mage", "Highlander HUNTER"], vs: ["galakrond rogue", "galakrond warrior", "galakrond warlock"]}) %>">example usage</a>
   <br/>
-  <a class="" href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Masters Tour Qualifiers</a>
+  <a class="" href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Masters Tour Qualifiers</a> - <a class="" href="<%=Routes.masters_tour_path(@conn, :qualifiers, %{"player_slug" => "d0nkey"})%>">Signed Up example (wip, may be false negatives)</a>
   <br>
   <a class="" href="<%=Routes.discord_path(@conn, :broadcasts)%>">Discord Broadcasts</a> - Broadcast images to multiple channels accross servers
   <br>

@@ -1,7 +1,7 @@
 defmodule Backend.Battlefy.Team do
   use TypedStruct
 
-  typedstruct enforce: true do
+  typedstruct do
     field :name, String.t()
   end
 

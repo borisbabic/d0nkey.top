@@ -9,6 +9,21 @@ defmodule BackendWeb.MastersTourController do
     render(conn, "invited_players.html", %{invited: invited, tour_stop: tour_stop})
   end
 
+  def qualifiers(conn, %{
+        "from" => %Date{} = from,
+        "to" => %Date{} = to,
+        "player_slug" => player_slug
+      }) do
+    fetched = BattlefyCommunicator.get_masters_qualifiers(from, to)
+    user_tournaments = BattlefyCommunicator.get_user_tournaments(player_slug)
+
+    render(conn, "qualifiers.html", %{
+      fetched_qualifiers: fetched,
+      range: {from, to},
+      user_tournaments: user_tournaments
+    })
+  end
+
   def qualifiers(conn, %{"from" => %Date{} = from, "to" => %Date{} = to}) do
     fetched = BattlefyCommunicator.get_masters_qualifiers(from, to)
     render(conn, "qualifiers.html", %{fetched_qualifiers: fetched, range: {from, to}})

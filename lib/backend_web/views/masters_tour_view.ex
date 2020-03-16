@@ -5,10 +5,20 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.Blizzard
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
 
-  def render("qualifiers.html", %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range}) do
+  def render(
+        "qualifiers.html",
+        params = %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range}
+      ) do
     {before_range, after_range} = Util.get_surrounding_ranges(range)
     before_link = create_qualifiers_link(before_range, conn)
     after_link = create_qualifiers_link(after_range, conn)
+
+    signed_up_ids =
+      case params[:user_tournaments] do
+        nil -> []
+        uts -> uts |> Enum.map(fn ut -> ut.id end)
+      end
+      |> MapSet.new()
 
     qualifiers =
       qualifiers_raw
@@ -16,12 +26,14 @@ defmodule BackendWeb.MastersTourView do
         q
         |> Map.put_new(:link, MastersTour.create_qualifier_link(q))
         |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, q.id))
+        |> Map.put_new(:signed_up, MapSet.member?(signed_up_ids, q.id))
       end)
 
     render("qualifiers.html", %{
       qualifiers: qualifiers,
       before_link: before_link,
       after_link: after_link,
+      show_signed_up: MapSet.size(signed_up_ids) > 0,
       dropdown_links: create_dropdown_qualifier_links(conn)
     })
   end
