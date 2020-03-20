@@ -26,6 +26,10 @@ defmodule Backend.Battlefy do
     Api.get_standings(id)
   end
 
+  def get_stage_standings(%{id: id, current_round: 1}) do
+    create_standings_from_round1_matches(%{id: id})
+  end
+
   def get_stage_standings(%{id: id, current_round: current_round})
       when is_integer(current_round) do
     Api.get_round_standings(id, current_round)
@@ -33,6 +37,69 @@ defmodule Backend.Battlefy do
 
   def get_stage_standings(stage) do
     create_standings_from_matches(stage)
+  end
+
+  def create_standings_from_round1_matches(%{
+        id: id
+      }) do
+    matches = get_matches(id, %{round: 1})
+
+    # num_losers = Enum.count(matches, fn %{top: top, bottom: bottom} -> top.winner || bottom.winnere end)
+    # num_people = matches
+    # |> Enum.map(fn %{top: top, bottom: bottom} ->
+    #   [top.team, bottom.team] |> Enum.filter() |> Enum.count()
+    # end)
+    # |> Enum.sum()
+    # loser_pos = num_people - num_losers
+    # in_progress_pos = num_losers + 1
+
+    matches
+    |> Enum.flat_map(fn %{top: top, bottom: bottom} ->
+      {winners, losers, in_progress} =
+        case {top.winner, bottom.winner} do
+          {true, false} ->
+            {[top], [bottom], []}
+
+          {false, true} ->
+            {[bottom], [top], []}
+
+          # not yet finished
+          {false, false} ->
+            {[], [], [bottom, top]}
+
+          # :shrug
+          _ ->
+            {[], [], []}
+        end
+
+      losers_standings =
+        losers
+        |> Enum.map(fn l ->
+          %Standings{
+            team: l.team,
+            place: 0,
+            wins: 0,
+            losses: 1
+          }
+        end)
+
+      in_progress_standings =
+        in_progress
+        |> Enum.map(fn ip ->
+          %Standings{team: ip.team, place: 0, wins: 0, losses: 0}
+        end)
+
+      winners_standings =
+        winners
+        |> Enum.map(fn w ->
+          %Standings{team: w.team, place: 0, wins: 1, losses: 0}
+        end)
+
+      List.flatten([losers_standings, in_progress_standings, winners_standings])
+    end)
+    # remove byes and the opponents of people waiting
+    |> Enum.filter(fn s -> s.team end)
+    |> Enum.sort_by(fn s -> s.place end, :asc)
   end
 
   def create_standings_from_matches(%{
