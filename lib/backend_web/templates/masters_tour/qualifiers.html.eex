@@ -11,6 +11,16 @@
     </div>
     </div>
 </div>
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%= @region || "Filter Region"%></button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for %{display: display, link: link} <- @region_links do %>
+            <a class="dropdown-item" href="<%= link %>"><%=display%></a>
+        <% end %>
+    </div>
+    </div>
+</div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>

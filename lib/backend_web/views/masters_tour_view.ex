@@ -9,6 +9,7 @@ defmodule BackendWeb.MastersTourView do
         "qualifiers.html",
         params = %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range}
       ) do
+    region = params[:region]
     {before_range, after_range} = Util.get_surrounding_ranges(range)
     before_link = create_qualifiers_link(before_range, conn)
     after_link = create_qualifiers_link(after_range, conn)
@@ -22,6 +23,9 @@ defmodule BackendWeb.MastersTourView do
 
     qualifiers =
       qualifiers_raw
+      |> Enum.filter(fn q ->
+        region == nil || region == q.region
+      end)
       |> Enum.map(fn q ->
         q
         |> Map.put_new(:link, MastersTour.create_qualifier_link(q))
@@ -29,12 +33,35 @@ defmodule BackendWeb.MastersTourView do
         |> Map.put_new(:signed_up, MapSet.member?(signed_up_ids, q.id))
       end)
 
+    region_links =
+      Backend.Battlefy.regions()
+      |> Enum.map(fn r ->
+        %{
+          display: r,
+          link:
+            Routes.masters_tour_path(conn, :qualifiers, Map.put(conn.query_params, "region", r))
+        }
+      end)
+      |> Enum.concat([
+        %{
+          display: "All",
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifiers,
+              Map.drop(conn.query_params, ["region", :region])
+            )
+        }
+      ])
+
     render("qualifiers.html", %{
       qualifiers: qualifiers,
       before_link: before_link,
       after_link: after_link,
       show_signed_up: MapSet.size(signed_up_ids) > 0,
-      dropdown_links: create_dropdown_qualifier_links(conn)
+      dropdown_links: create_dropdown_qualifier_links(conn),
+      region_links: region_links,
+      region: region
     })
   end
 
