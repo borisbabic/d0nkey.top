@@ -5,6 +5,8 @@ defmodule Backend.Battlefy do
   alias Backend.Battlefy.MatchTeam
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
+  @type region :: :Asia | :Europe | :Americas
+  @regions [:Americas, :Asia, :Europe]
   @type battlefy_id :: <<_::192>>
   @type tournament_id :: battlefy_id
   @type user_id :: battlefy_id
@@ -236,6 +238,16 @@ defmodule Backend.Battlefy do
       :bottom -> deckstrings.bottom
     end
     |> Enum.map(&Backend.Battlefy.MatchDeckstrings.remove_comments/1)
+  end
+
+  @spec regions :: [region]
+  def regions() do
+    @regions
+  end
+
+  @spec regions(:string) :: [String.t()]
+  def regions(:string) do
+    Enum.map(@regions, &to_string/1)
   end
 
   # todo move this somewhere else
