@@ -1,0 +1,22 @@
+<div class="title is-2"><%= @team_name %></a></div>
+
+<div class="subtitle is-6">Future opponents</div>
+
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Current Round</th>
+            <th>Decks</th>
+        </tr>
+    </thead>
+    <tbody>
+    <%= for %{name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, current_round: current_round} <- @opponents do %>
+        <tr>
+            <td><%= name %></td>
+            <td><%= current_round %></td>
+            <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>
