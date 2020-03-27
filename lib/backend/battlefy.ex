@@ -3,6 +3,7 @@ defmodule Backend.Battlefy do
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Standings
   alias Backend.Battlefy.MatchTeam
+  alias Backend.BattlefyUtil
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
   @type region :: :Asia | :Europe | :Americas
@@ -217,6 +218,95 @@ defmodule Backend.Battlefy do
   @spec get_matches(stage_id, get_matches_options) :: [Match.t()]
   def get_matches(stage_id, opts \\ []) do
     Api.get_matches(stage_id, opts)
+  end
+
+  def get_future_opponents(tournament_id, team_name) do
+    tournament = Api.get_tournament(tournament_id)
+    [stage | _] = tournament.stages
+    matches = get_matches(stage.id)
+    total_rounds = stage.bracket && stage.bracket.rounds_count
+
+    latest_team_game =
+      %{top: top, bottom: bottom} =
+      matches
+      |> Enum.filter(fn %{top: top, bottom: bottom} ->
+        [top, bottom] |> Enum.any?(fn t -> t.team && t.team.name == team_name end)
+      end)
+      |> Enum.max_by(fn %{round_number: rn} -> rn end)
+
+    case {top, bottom} do
+      {%{team: nil}, _} ->
+        latest_team_game
+        |> BattlefyUtil.prev_top(matches, total_rounds)
+        |> get_future_from_previous(matches, total_rounds)
+
+      {_, %{team: nil}} ->
+        latest_team_game
+        |> BattlefyUtil.prev_bottom(matches, total_rounds)
+        |> get_future_from_previous(matches, total_rounds)
+
+      {%{winner: false}, %{winner: false}} ->
+        get_future_from_next(latest_team_game, matches, total_rounds)
+
+      _ ->
+        []
+    end
+  end
+
+  def get_future_from_next(
+        %{match_number: match_number, round_number: round_number},
+        matches,
+        total_rounds
+      ) do
+    next_match_num = BattlefyUtil.next_round_match(match_number, round_number, total_rounds)
+    next_match = matches |> Enum.find(fn %{match_number: mn} -> mn == next_match_num end)
+
+    case next_match do
+      %{round_number: rn, top: %{team: %{name: name}}} ->
+        [{name, rn}]
+
+      %{round_number: rn, bottom: %{team: %{name: name}}} ->
+        [{name, rn}]
+
+      _ ->
+        case BattlefyUtil.get_neighbor(match_number, round_number, total_rounds) do
+          nil ->
+            []
+
+          neighbor_num ->
+            matches
+            |> Enum.find(fn %{match_number: mn} -> mn == neighbor_num end)
+            |> get_future_from_previous(matches, total_rounds)
+        end
+    end
+  end
+
+  def get_future_from_previous(nil, _, _) do
+  end
+
+  def get_future_from_previous(%{top: top, bottom: bottom, round_number: 1}, _, _) do
+    [top, bottom]
+    |> Enum.filter(fn %{team: t} -> t end)
+    |> Enum.map(fn %{team: %{name: name}} -> {name, 1} end)
+  end
+
+  def get_future_from_previous(
+        match = %{top: top, bottom: bottom, round_number: round_number},
+        matches,
+        total_rounds
+      ) do
+    [{top, &BattlefyUtil.prev_top/3}, {bottom, &BattlefyUtil.prev_bottom/3}]
+    |> Enum.flat_map(fn {%{team: team}, get_prev} ->
+      case team do
+        nil ->
+          match
+          |> get_prev.(matches, total_rounds)
+          |> get_future_from_previous(matches, total_rounds)
+
+        %{name: name} ->
+          [{name, round_number}]
+      end
+    end)
   end
 
   def get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full}) do
