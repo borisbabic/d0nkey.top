@@ -79,11 +79,11 @@ defmodule Backend.BattlefyUtil do
     total / count
   end
 
-  def get_num_short(tournaments) do
+  def get_number_short(tournaments) do
     tournaments |> Enum.filter(fn %{standings: s} -> 257 > s |> Enum.count() end) |> Enum.count()
   end
 
-  def get_num_full(tournaments) do
+  def get_number_full(tournaments) do
     tournaments |> Enum.filter(fn %{standings: s} -> 512 == s |> Enum.count() end) |> Enum.count()
   end
 
@@ -99,9 +99,14 @@ defmodule Backend.BattlefyUtil do
     tournaments |> Enum.map(fn %{standings: s} -> s |> Enum.count() end) |> Enum.min_max()
   end
 
+  def min_max_duration(tournaments) do
+    tournaments |> Enum.map(fn %{duration: duration} -> duration end) |> Enum.min_max()
+  end
+
   def get_meta(unfiltered = _tournaments_with_meta) do
     t = unfiltered |> Enum.filter(fn %{duration: duration} -> duration end)
     {fewest, most} = min_max_players(t)
+    {shortest, longest} = min_max_duration(t)
 
     %{
       average_duration: t |> get_average_duration() |> Util.human_duration(),
@@ -109,12 +114,14 @@ defmodule Backend.BattlefyUtil do
         t |> get_average_duration_fewer_rounds() |> Util.human_duration(),
       average_duration_all_rounds:
         t |> get_average_duration_all_rounds() |> Util.human_duration(),
+      shortest_duration: Util.human_duration(shortest),
+      longest_duration: Util.human_duration(longest),
       avg_players: get_average_player_count(t),
       fewest_players: fewest,
       most_players: most,
       num: t |> Enum.count(),
-      num_fewer_rounds: get_num_short(t),
-      num_full: get_num_full(t)
+      num_fewer_rounds: get_number_short(t),
+      num_full: get_number_full(t)
     }
   end
 
@@ -135,9 +142,9 @@ defmodule Backend.BattlefyUtil do
       iex> Backend.BattlefyUtil.get_prev_rounds_matches(3, 9)
       384
   """
-  def get_prev_rounds_matches(round_num, total_rounds) do
-    (get_prev_rounds_matches(round_num - 1, total_rounds) +
-       :math.pow(2, total_rounds - round_num + 1))
+  def get_prev_rounds_matches(round_number, total_rounds) do
+    (get_prev_rounds_matches(round_number - 1, total_rounds) +
+       :math.pow(2, total_rounds - round_number + 1))
     |> trunc()
   end
 
@@ -149,8 +156,8 @@ defmodule Backend.BattlefyUtil do
       iex> Backend.BattlefyUtil.get_matchnum(88, 1, 9)
       88
   """
-  def get_matchnum(pos_in_round, round_num, total_rounds) do
-    get_prev_rounds_matches(round_num, total_rounds) + pos_in_round
+  def get_matchnum(pos_in_round, round_number, total_rounds) do
+    get_prev_rounds_matches(round_number, total_rounds) + pos_in_round
   end
 
   @doc """
@@ -161,12 +168,21 @@ defmodule Backend.BattlefyUtil do
       iex> Backend.BattlefyUtil.get_pos_in_round(300, 2, 9)
       44
   """
-  def get_pos_in_round(match_num, round_num, total_rounds) do
-    match_num - get_prev_rounds_matches(round_num, total_rounds)
+  def get_pos_in_round(match_number, round_number, total_rounds) do
+    match_number - get_prev_rounds_matches(round_number, total_rounds)
   end
 
-  def prev_top(_match_num, 1, _total_rounds) do
+  def prev_top(_match_number, 1, _total_rounds) do
     nil
+  end
+
+  def prev_top(%{match_number: 1}, _, _) do
+    nil
+  end
+
+  def prev_top(%{match_number: match_number, round_number: round_number}, matches, total_rounds) do
+    prev_number = prev_top(match_number, round_number, total_rounds)
+    matches |> Enum.find(fn %{match_number: mn} -> mn == prev_number end)
   end
 
   @doc """
@@ -177,13 +193,27 @@ defmodule Backend.BattlefyUtil do
       iex> Backend.BattlefyUtil.prev_top(300, 2, 9)
       87
   """
-  def prev_top(match_num, round_num, total_rounds) do
-    pos_in_round = get_pos_in_round(match_num, round_num, total_rounds)
-    get_matchnum(pos_in_round * 2 - 1, round_num - 1, total_rounds)
+  def prev_top(match_number, round_number, total_rounds) do
+    pos_in_round = get_pos_in_round(match_number, round_number, total_rounds)
+    get_matchnum(pos_in_round * 2 - 1, round_number - 1, total_rounds)
   end
 
-  def prev_bottom(_match_num, 1, _total_rounds) do
+  def prev_bottom(_match_number, 1, _total_rounds) do
     nil
+  end
+
+  def prev_bottom(%{match_number: 1}, _, _) do
+    nil
+  end
+
+  def prev_bottom(
+        %{match_number: match_number, round_number: round_number},
+        matches,
+        total_rounds
+      ) do
+    IO.inspect("#{match_number} #{round_number} #{total_rounds}")
+    prev_number = prev_bottom(match_number, round_number, total_rounds)
+    matches |> Enum.find(fn %{match_number: mn} -> mn == prev_number end)
   end
 
   @doc """
@@ -194,8 +224,29 @@ defmodule Backend.BattlefyUtil do
       iex> Backend.BattlefyUtil.prev_bottom(300, 2, 9)
       88
   """
-  def prev_bottom(match_num, round_num, total_rounds) do
-    pos_in_round = get_pos_in_round(match_num, round_num, total_rounds)
-    get_matchnum(pos_in_round * 2, round_num - 1, total_rounds)
+  def prev_bottom(match_number, round_number, total_rounds) do
+    pos_in_round = get_pos_in_round(match_number, round_number, total_rounds)
+    get_matchnum(pos_in_round * 2, round_number - 1, total_rounds)
+  end
+
+  @doc """
+    Gets the matchnum of the match the bottom player comes from
+    ## Example
+      iex> Backend.BattlefyUtil.next_round_match(481, 5, 9)
+      497
+      iex> Backend.BattlefyUtil.next_round_match(504, 6, 9)
+      508
+  """
+  def next_round_match(match_number, round_number, total_rounds) do
+    pos_in_round = get_pos_in_round(match_number, round_number, total_rounds)
+    get_matchnum((pos_in_round / 2) |> Float.ceil() |> trunc(), round_number + 1, total_rounds)
+  end
+
+  def get_neighbor(_, round_number, total_rounds) when round_number == total_rounds do
+    nil
+  end
+
+  def get_neighbor(match_number, _, _) do
+    match_number - rem(match_number, 2)
   end
 end

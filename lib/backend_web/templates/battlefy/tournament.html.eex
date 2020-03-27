@@ -24,10 +24,10 @@
         </tr>
     </thead>
     <tbody>
-    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score} <- @standings do %>
+    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link} <- @standings do %>
         <tr>
             <td><%= place %></td>
-            <td><%= name %></td>
+            <td><a href="<%= name_link%>"> <%= name %></a></td>
             <%= if @show_score do %>
                 <th><%=score%></th>
             <% end %>
