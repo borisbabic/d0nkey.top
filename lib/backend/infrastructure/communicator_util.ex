@@ -8,7 +8,7 @@ defmodule Backend.Infrastructure.CommunicatorUtil do
 
   def get_response(url) do
     {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
-    Logger.debug("Got #{url} in #{div(uSecs, 1000)} ms")
+    Logger.info("Got #{url} in #{div(uSecs, 1000)} ms")
     response
   end
 end

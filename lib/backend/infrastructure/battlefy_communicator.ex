@@ -21,7 +21,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       }&end=#{NaiveDateTime.to_iso8601(end_time)}"
 
     {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [url])
-    Logger.debug("Got masters qualifiers #{url} in #{div(uSecs, 1000)} ms")
+    Logger.info("Got masters qualifiers #{url} in #{div(uSecs, 1000)} ms")
 
     Poison.decode!(response.body)
     |> Enum.map(fn %{
@@ -51,7 +51,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
 
-    Logger.debug(
+    Logger.info(
       "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(uSecs, 1000)} ms"
     )
 
