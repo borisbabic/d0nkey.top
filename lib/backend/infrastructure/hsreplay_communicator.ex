@@ -1,4 +1,5 @@
 defmodule Backend.Infrastructure.HSReplayCommunicator do
+  require Logger
   import Backend.Infrastructure.CommunicatorUtil
   alias Backend.HSReplay.ReplayFeedEntry
   alias Backend.HSReplay.Archetype
@@ -33,7 +34,10 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     url =
       "https://hsreplay.net/analytics/query/head_to_head_archetype_matchups/?GameType=RANKED_STANDARD&RankRange=LEGEND_THROUGH_FIVE&Region=ALL&TimeRange=LAST_7_DAYS"
 
-    response = HTTPoison.get!(url, %{}, hackney: [cookie: [cookies]])
+    {uSecs, response} =
+      :timer.tc(&HTTPoison.get!/1, [URI.encode(url), %{}, hackney: [cookie: [cookies]]])
+
+    Logger.info("Got #{url} in #{div(uSecs, 1000)} ms")
 
     response.body
     |> Poison.decode!()

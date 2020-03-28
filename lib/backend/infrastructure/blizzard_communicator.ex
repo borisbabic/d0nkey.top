@@ -9,7 +9,7 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
 
     {uSecs, return} = :timer.tc(&HTTPoison.get/1, [url])
 
-    Logger.debug(
+    Logger.info(
       "Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(uSecs, 1000)} ms"
     )
 
