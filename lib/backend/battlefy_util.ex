@@ -247,6 +247,9 @@ defmodule Backend.BattlefyUtil do
   end
 
   def get_neighbor(match_number, _, _) do
-    match_number - rem(match_number, 2)
+    case rem(match_number, 2) do
+      1 -> match_number + 1
+      0 -> match_number - 1
+    end
   end
 end
