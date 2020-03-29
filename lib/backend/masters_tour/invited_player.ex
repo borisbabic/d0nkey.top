@@ -26,11 +26,14 @@ defmodule Backend.MastersTour.InvitedPlayer do
       :tournament_slug,
       :tournament_id
     ])
+    |> update_change(:battletag_full, &String.trim/1)
     |> validate_required([:battletag_full, :tour_stop, :upstream_time])
   end
 
   def shorten_battletag(battletag_full) do
     battletag_full
+    # some in the db still have it, meh, don't feel like changing it
+    |> String.trim()
     |> String.splitter("#")
     |> Enum.at(0)
     |> to_string()
@@ -38,6 +41,6 @@ defmodule Backend.MastersTour.InvitedPlayer do
 
   @spec uniq_string(InvitedPlayer.t()) :: String.t()
   def uniq_string(ip) do
-    ip.battletag_full <> ip.tour_stop
+    String.trim(ip.battletag_full) <> ip.tour_stop
   end
 end
