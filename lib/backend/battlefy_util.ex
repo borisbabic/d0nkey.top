@@ -211,7 +211,6 @@ defmodule Backend.BattlefyUtil do
         matches,
         total_rounds
       ) do
-    IO.inspect("#{match_number} #{round_number} #{total_rounds}")
     prev_number = prev_bottom(match_number, round_number, total_rounds)
     matches |> Enum.find(fn %{match_number: mn} -> mn == prev_number end)
   end

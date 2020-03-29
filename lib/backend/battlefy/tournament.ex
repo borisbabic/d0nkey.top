@@ -8,9 +8,10 @@ defmodule Backend.Battlefy.Tournament do
     field :stages, [Battlefy.Stage.t()]
     field :start_time, Calendar.datetime()
     field :last_completed_match_at, Calendar.datetime() | nil
-    field :name, Calendar.datetime()
+    field :name, String.t()
     field :slug, String.t()
     field :region, Backend.Blizzard.region() | nil
+    field :organization, Backend.Battlefy.Organization | nil
   end
 
   @spec from_raw_map(map) :: Backend.Battlefy.Tournament.t()
@@ -52,6 +53,12 @@ defmodule Backend.Battlefy.Tournament do
           []
       end
 
+    organization =
+      case map["organization"] do
+        raw_map = %{"slug" => _} -> Backend.Battlefy.Organization.from_raw_map(raw_map)
+        _ -> nil
+      end
+
     %__MODULE__{
       id: map["id"] || map["_id"],
       stage_ids: map["stage_ids"] || [],
@@ -60,6 +67,7 @@ defmodule Backend.Battlefy.Tournament do
       start_time: NaiveDateTime.from_iso8601!(start_time),
       last_completed_match_at: last_completed_match_at,
       region: region,
+      organization: organization,
       stages: stages
     }
   end
@@ -72,5 +80,23 @@ defmodule Backend.Battlefy.Tournament do
       _ ->
         nil
     end
+  end
+end
+
+defmodule Backend.Battlefy.Organization do
+  use TypedStruct
+
+  typedstruct do
+    field :id, Battlefy.tournament_id()
+    field :name, String.t()
+    field :slug, String.t()
+  end
+
+  def from_raw_map(map = %{"slug" => slug}) do
+    %__MODULE__{
+      id: map["id"] || map["_id"],
+      name: map["name"],
+      slug: slug
+    }
   end
 end
