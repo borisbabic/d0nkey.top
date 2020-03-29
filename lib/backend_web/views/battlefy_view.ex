@@ -1,29 +1,54 @@
 defmodule BackendWeb.BattlefyView do
   use BackendWeb, :view
+  alias Backend.Battlefy
+
+  @type future_opponent_team :: %{
+          name: String.t(),
+          yaytears: String.t(),
+          hsdeckviewer: String.t(),
+          link: String.t()
+        }
+
+  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Battlefy.Tournament.t(), Plug.Conn.t()) ::
+          nil
+  def handle_opponent_team(%{team: nil}, _, _) do
+    nil
+  end
+
+  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Battlefy.Tournament.t(), Plug.Conn.t()) ::
+          future_opponent_team
+  def handle_opponent_team(%{team: %{name: name}}, %{id: tournament_id}, conn) do
+    %{
+      name: name,
+      yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
+      hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, name),
+      link: Routes.battlefy_path(conn, :future_opponents, tournament_id, name)
+    }
+  end
 
   def render(
         "future_opponents.html",
         %{
-          tournament_id: tournament_id,
-          future_opponents: future_opponents_raw,
+          tournament: tournament,
+          opponent_matches: opponent_matches,
           team_name: team_name,
           conn: conn
         }
       ) do
-    opponents =
-      future_opponents_raw
-      |> Enum.map(fn {name, current_round} ->
+    matches =
+      opponent_matches
+      |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
         %{
-          name: name,
+          top: handle_opponent_team(top, tournament, conn),
+          bottom: handle_opponent_team(bottom, tournament, conn),
+          match_url: Battlefy.get_match_url(tournament, match),
           current_round: current_round,
-          # todo don't just assume it's hearthstone and there are decklists
-          yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
-          hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, team_name)
+          score: "#{top.score} - #{bottom.score}"
         }
       end)
       |> Enum.sort_by(fn o -> o.current_round end, :desc)
 
-    render("future_opponents.html", %{opponents: opponents, team_name: team_name})
+    render("future_opponents.html", %{matches: matches, team_name: team_name})
   end
 
   def render(
