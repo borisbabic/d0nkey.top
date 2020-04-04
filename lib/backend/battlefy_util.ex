@@ -1,6 +1,11 @@
 defmodule Backend.BattlefyUtil do
   alias Backend.Battlefy
 
+  @type expanded :: %{
+          tournament: Battlefy.Tournament.t(),
+          duration: integer,
+          standings: [Backend.Battlefy.Standings]
+        }
   @spec get_player_count(
           Battlefy.tournament_id()
           | Backend.Battlefy.Tournament.t()
@@ -87,26 +92,39 @@ defmodule Backend.BattlefyUtil do
     tournaments |> Enum.filter(fn %{standings: s} -> 512 == s |> Enum.count() end) |> Enum.count()
   end
 
+  @spec get_fewest_players(expanded) :: Any
   def get_fewest_players(tournaments) do
     min_max_players(tournaments) |> elem(0)
   end
 
+  @spec get_most_players(expanded) :: Any
   def get_most_players(tournaments) do
     min_max_players(tournaments) |> elem(1)
   end
 
+  @spec min_max_players(expanded) :: Any
   def min_max_players(tournaments) do
-    tournaments |> Enum.map(fn %{standings: s} -> s |> Enum.count() end) |> Enum.min_max()
+    # tournaments |> Enum.map(fn %{standings: s} -> s |> Enum.count() end) |> Enum.min_max()
+    tournaments
+    |> Enum.map(fn %{standings: s, tournament: t} ->
+      {s |> Enum.count(), Backend.MastersTour.create_qualifier_link(t)}
+    end)
+    |> Enum.min_max_by(fn {num, _} -> num end)
   end
 
+  @spec min_max_duration(expanded) :: Any
   def min_max_duration(tournaments) do
-    tournaments |> Enum.map(fn %{duration: duration} -> duration end) |> Enum.min_max()
+    tournaments
+    |> Enum.map(fn %{duration: duration, tournament: t} ->
+      {duration, Backend.MastersTour.create_qualifier_link(t)}
+    end)
+    |> Enum.min_max()
   end
 
   def get_meta(unfiltered = _tournaments_with_meta) do
     t = unfiltered |> Enum.filter(fn %{duration: duration} -> duration end)
     {fewest, most} = min_max_players(t)
-    {shortest, longest} = min_max_duration(t)
+    {{shortest_dur, shortest_link}, {longest_dur, longest_link}} = min_max_duration(t)
 
     %{
       average_duration: t |> get_average_duration() |> Util.human_duration(),
@@ -114,8 +132,8 @@ defmodule Backend.BattlefyUtil do
         t |> get_average_duration_fewer_rounds() |> Util.human_duration(),
       average_duration_all_rounds:
         t |> get_average_duration_all_rounds() |> Util.human_duration(),
-      shortest_duration: Util.human_duration(shortest),
-      longest_duration: Util.human_duration(longest),
+      shortest_duration: {Util.human_duration(shortest_dur), shortest_link},
+      longest_duration: {Util.human_duration(longest_dur), longest_link},
       avg_players: get_average_player_count(t),
       fewest_players: fewest,
       most_players: most,
