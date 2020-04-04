@@ -284,7 +284,7 @@ defmodule Backend.Battlefy do
   end
 
   def get_future_from_previous(match = %{round_number: 1}, _, _) do
-    match
+    [match]
   end
 
   def get_future_from_previous(
