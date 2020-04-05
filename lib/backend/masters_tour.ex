@@ -107,36 +107,6 @@ defmodule Backend.MastersTour do
     |> Repo.transaction()
   end
 
-  def process_invited_player(
-        invited = %{
-          "battletag" => battletag_full,
-          "reason" => reason,
-          "type" => type,
-          "tourStop" => tour_stop,
-          "createdAt" => upstream_time
-        }
-      ) do
-    create_invited_player(%{
-      battletag_full: battletag_full,
-      reason: reason,
-      type: type,
-      tour_stop: tour_stop,
-      upstream_time: upstream_time,
-      tournament_slug: invited["tournamentSlug"],
-      tournament_id: invited["tournamentID"]
-    })
-  end
-
-  def process_invited_player(
-        args = %{
-          "battletag" => _battletag_full,
-          "type" => type,
-          "tourStop" => _tour_stop
-        }
-      ) do
-    process_invited_player(Map.put(args, "reason", type))
-  end
-
   @spec get_masters_date_range(:week) :: {Date.t(), Date.t()}
   def get_masters_date_range(:week) do
     start_time = get_latest_tuesday()
@@ -184,6 +154,7 @@ defmodule Backend.MastersTour do
     {start_date, end_date}
   end
 
+  @spec create_qualifier_link(Backend.Battlefy.Tournament.t()) :: String.t()
   def create_qualifier_link(%{slug: slug, id: id}) do
     create_qualifier_link(slug, id)
   end

@@ -263,6 +263,14 @@ defmodule Backend.BattlefyUtil do
     nil
   end
 
+  @doc """
+    Get's the neighboring match that will go to the same next round match.
+    ## Example
+      iex> Backend.BattlefyUtil.get_neighbor(258, 2, 9)
+      257
+      iex> Backend.BattlefyUtil.get_neighbor(257, 2, 9)
+      258
+  """
   def get_neighbor(match_number, _, _) do
     case rem(match_number, 2) do
       1 -> match_number + 1
