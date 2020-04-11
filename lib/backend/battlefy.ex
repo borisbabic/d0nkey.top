@@ -106,6 +106,7 @@ defmodule Backend.Battlefy do
     |> Enum.sort_by(fn s -> s.place end, :asc)
   end
 
+  @spec get_tournament_standings(Stage.t()) :: [Standings.t()]
   def create_standings_from_matches(%{
         id: id,
         bracket: bracket = %{type: "elimination", style: "single"}
@@ -221,18 +222,37 @@ defmodule Backend.Battlefy do
     Api.get_matches(stage_id, opts)
   end
 
+  @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]
+  def get_future_and_player_matches(tournament_id, team_name) do
+    tournament = Api.get_tournament(tournament_id)
+    [stage | _] = tournament.stages
+    matches = get_matches(stage.id)
+    total_rounds = stage.bracket && stage.bracket.rounds_count
+    future_opponents = get_future_opponents(matches, total_rounds, team_name)
+
+    player_matches =
+      matches
+      |> Match.filter_team(team_name)
+      |> Match.sort_by_round(:desc)
+
+    {future_opponents, player_matches}
+  end
+
+  @spec get_matches(tournament_id, String.t()) :: [Match.t()]
   def get_future_opponents(tournament_id, team_name) do
     tournament = Api.get_tournament(tournament_id)
     [stage | _] = tournament.stages
     matches = get_matches(stage.id)
     total_rounds = stage.bracket && stage.bracket.rounds_count
+    get_future_opponents(matches, total_rounds, team_name)
+  end
 
+  @spec get_future_opponents([Match.t()], integer, String.t()) :: [Match.t()]
+  def get_future_opponents(matches, total_rounds, team_name) do
     latest_team_game =
       %{top: top, bottom: bottom} =
       matches
-      |> Enum.filter(fn %{top: top, bottom: bottom} ->
-        [top, bottom] |> Enum.any?(fn t -> t.team && t.team.name == team_name end)
-      end)
+      |> Match.filter_team(team_name)
       |> Enum.max_by(fn %{round_number: rn} -> rn end)
 
     case {top, bottom} do
@@ -254,6 +274,7 @@ defmodule Backend.Battlefy do
     end
   end
 
+  @spec get_future_from_next(Match.t(), [Match.t()], integer) :: [Match.t()]
   def get_future_from_next(
         match = %{match_number: match_number, round_number: round_number},
         matches,
@@ -279,14 +300,17 @@ defmodule Backend.Battlefy do
     end
   end
 
+  @spec get_future_from_previous(Match.t(), [Match.t()], integer) :: [Match.t()]
   def get_future_from_previous(nil, _, _) do
     []
   end
 
+  @spec get_future_from_previous(Match.t(), [Match.t()], integer) :: [Match.t()]
   def get_future_from_previous(match = %{round_number: 1}, _, _) do
     [match]
   end
 
+  @spec get_future_from_previous(Match.t(), [Match.t()], integer) :: [Match.t()]
   def get_future_from_previous(
         match = %{top: top, bottom: bottom},
         matches,

@@ -149,6 +149,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Profile.from_raw_map()
   end
 
+  @spec get_user_tournaments(String.t()) :: [Tournament.t()]
   def get_user_tournaments(slug) do
     # they return max 25 regardless of size. I don't feel like paginating or being smart about it
     url = "https://search.battlefy.com/user/#{slug}/tournaments?size=1000"
