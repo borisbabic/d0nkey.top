@@ -21,26 +21,28 @@ defmodule BackendWeb.BattlefyController do
 
   def tournament_decks(conn, %{
         "tournament_id" => tournament_id,
-        "battletag_full" => battletag_full
+        "team_name" => team_name
       }) do
     tournament_decks =
-      Battlefy.get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full})
+      Battlefy.get_deckstrings(%{tournament_id: tournament_id, battletag_full: team_name})
 
     link = Backend.HSDeckViewer.create_link(tournament_decks)
     redirect(conn, external: link)
   end
 
-  def future_opponents(conn, %{
+  def tournament_player(conn, %{
         "tournament_id" => tournament_id,
-        "battletag_full" => team_name
+        "team_name" => team_name
       }) do
     tournament = Battlefy.get_tournament(tournament_id)
 
-    opponent_matches = Battlefy.get_future_opponents(tournament_id, team_name)
+    {opponent_matches, player_matches} =
+      Battlefy.get_future_and_player_matches(tournament_id, team_name)
 
-    render(conn, "future_opponents.html", %{
+    render(conn, "profile.html", %{
       tournament: tournament,
       opponent_matches: opponent_matches,
+      player_matches: player_matches,
       team_name: team_name,
       conn: conn
     })

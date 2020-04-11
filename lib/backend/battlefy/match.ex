@@ -14,6 +14,25 @@ defmodule Backend.Battlefy.Match do
     # field :is_complete, boolean
   end
 
+  @spec filter_team([Match], String.t()) :: [Match]
+  def filter_team(matches, team_name) do
+    matches
+    |> Enum.filter(fn %{top: top, bottom: bottom} ->
+      [top, bottom] |> Enum.any?(fn t -> t.team && t.team.name == team_name end)
+    end)
+  end
+
+  @spec sort_by_round([Match]) :: [Match]
+  def sort_by_round(matches) do
+    sort_by_round(matches, :asc)
+  end
+
+  @spec sort_by_round([Match], :asc | :desc) :: [Match]
+  def sort_by_round(matches, direction) do
+    matches
+    |> Enum.sort_by(fn %{round_number: rn} -> rn end, direction)
+  end
+
   def from_raw_map(map = %{"roundNumber" => _}) do
     Recase.Enumerable.convert_keys(
       map,
@@ -56,6 +75,16 @@ defmodule Backend.Battlefy.MatchTeam do
     field :team, Team.t() | nil
     field :score, integer
     field :name, String.t()
+  end
+
+  def empty() do
+    %__MODULE__{
+      winner: false,
+      disqualified: false,
+      team: nil,
+      score: 0,
+      name: nil
+    }
   end
 
   def from_raw_map(map) do

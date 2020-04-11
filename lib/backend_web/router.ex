@@ -23,11 +23,15 @@ defmodule BackendWeb.Router do
 
     get "/battlefy/tournament/:tournament_id", BattlefyController, :tournament
 
-    get "/battlefy/tournament/:tournament_id/future/:battletag_full",
+    get "/battlefy/tournament/:tournament_id/player/:team_name",
         BattlefyController,
-        :future_opponents
+        :tournament_player
 
-    get "/battlefy/tournament/:tournament_id/decks/:battletag_full",
+    get "/battlefy/tournament/:tournament_id/future/:team_name",
+        BattlefyController,
+        :tournament_player
+
+    get "/battlefy/tournament/:tournament_id/decks/:team_name",
         BattlefyController,
         :tournament_decks
 
