@@ -1,36 +1,73 @@
-<div class="title is-2"><%= @team_name %></a></div>
+<div class="title is-2">
+    <%= @team_name%>
+</div>
 
-<div class="subtitle is-6">Future opponents</div>
+<div class="subtitle is-6">
+    <a class="tag is-button" href="<%= @standings_link %>"><- Standings</a>
+    <a class="tag is-link" href="<%= @hsdeckviewer %>">HSDeckViewer</a>
+    <a class="tag is-link" href="<%= @yaytears%>">yaytears</a>
+</div>
 
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-        <tr>
-            <th>Round</th>
-            <th>Top</th>
-            <th>Top Decks</th>
-            <th>Score</th>
-            <th>Bottom</th>
-            <th>Bottom Decks</th>
-        </tr>
-    </thead>
-    <tbody>
-    <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @matches do %>
-        <tr>
-            <td><%= current_round %></td>
-            <%= if top == nil do %>
-                <td></td><td></td>
-            <% else %>
-                <td><a href="<%= top.link %>"> <%= top.name %></a></td>
-                <td><a class="tag is-link" href="<%= top.hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= top.yaytears %>">yaytears</a></td>
+<%= if @show_player do %>
+    <div class="title is-5">Player matches</div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th>Score</th>
+                <th>Opponent</th>
+                <th>Opponent Decks</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{opponent: opponent, match_url: match_url, score: score, current_round: current_round} <- @player_matches do %>
+                <tr>
+                    <td><%= current_round %></td>
+                    <td><a href="<%= match_url %>"> <%= score %></a></td>
+                    <%= if opponent == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href="<%= opponent.link %>"> <%= opponent.name %></a></td>
+                        <td><a class="tag is-link" href="<%= opponent.hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= opponent.yaytears %>">yaytears</a></td>
+                    <% end %>
+                </tr>
             <% end %>
-            <td><a href="<%= match_url %>"> <%= score %></a></td>
-            <%= if bottom == nil do %>
-                <td></td><td></td>
-            <% else %>
-                <td><a href="<%= bottom.link %>"> <%= bottom.name %></a></td>
-                <td><a class="tag is-link" href="<%= bottom.hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= bottom.yaytears %>">yaytears</a></td>
+        </tbody>
+    </table>
+<% end %>
+
+<%= if @show_future do %>
+    <div class="title is-5">Future opponents</div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th>Top</th>
+                <th>Top Decks</th>
+                <th>Score</th>
+                <th>Bottom</th>
+                <th>Bottom Decks</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @future_matches do %>
+                <tr>
+                    <td><%= current_round %></td>
+                    <%= if top == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href="<%= top.link %>"> <%= top.name %></a></td>
+                        <td><a class="tag is-link" href="<%= top.hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= top.yaytears %>">yaytears</a></td>
+                    <% end %>
+                    <td><a href="<%= match_url %>"> <%= score %></a></td>
+                    <%= if bottom == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href="<%= bottom.link %>"> <%= bottom.name %></a></td>
+                        <td><a class="tag is-link" href="<%= bottom.hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= bottom.yaytears %>">yaytears</a></td>
+                    <% end %>
+                </tr>
             <% end %>
-        </tr>
-    <% end %>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+<% end %>

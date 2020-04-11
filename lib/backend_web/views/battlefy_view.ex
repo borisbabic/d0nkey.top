@@ -1,4 +1,5 @@
 defmodule BackendWeb.BattlefyView do
+  require Logger
   use BackendWeb, :view
   alias Backend.Battlefy
 
@@ -22,20 +23,21 @@ defmodule BackendWeb.BattlefyView do
       name: name,
       yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
       hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, name),
-      link: Routes.battlefy_path(conn, :future_opponents, tournament_id, name)
+      link: Routes.battlefy_path(conn, :tournament_player, tournament_id, name)
     }
   end
 
   def render(
-        "future_opponents.html",
+        "profile.html",
         %{
           tournament: tournament,
           opponent_matches: opponent_matches,
+          player_matches: player_matches,
           team_name: team_name,
           conn: conn
         }
       ) do
-    matches =
+    opponent =
       opponent_matches
       |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
         %{
@@ -48,7 +50,44 @@ defmodule BackendWeb.BattlefyView do
       end)
       |> Enum.sort_by(fn o -> o.current_round end, :desc)
 
-    render("future_opponents.html", %{matches: matches, team_name: team_name})
+    player =
+      player_matches
+      |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: rn} ->
+        {player, opponent} =
+          case {top.team, bottom.team} do
+            {%{name: ^team_name}, _} ->
+              {top, bottom || Battlefy.MatchTeam.empty()}
+
+            {_, %{name: ^team_name}} ->
+              {bottom, top || Battlefy.MatchTeam.empty()}
+
+            _ ->
+              Logger.warn("No team is the players team, wtf #{top.team} #{bottom.team}")
+              {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty()}
+          end
+
+        %{
+          score: "#{player.score} - #{opponent.score} ",
+          match_url: Battlefy.get_match_url(tournament, match),
+          opponent: handle_opponent_team(opponent, tournament, conn),
+          current_round: rn
+        }
+      end)
+
+    hsdeckviewer = Routes.battlefy_path(conn, :tournament_decks, tournament.id, team_name)
+    yaytears = Backend.Yaytears.create_deckstrings_link(tournament.id, team_name)
+
+    render("future_opponents.html", %{
+      show_future: opponent |> Enum.any?(),
+      show_player: player |> Enum.any?(),
+      future_matches: opponent,
+      player_matches: player,
+      team_name: team_name,
+      hsdeckviewer: hsdeckviewer,
+      tournament: tournament,
+      standings_link: Routes.battlefy_path(conn, :tournament, tournament.id),
+      yaytears: yaytears
+    })
   end
 
   def render(
@@ -65,7 +104,7 @@ defmodule BackendWeb.BattlefyView do
         %{
           place: if(s.place && s.place > 0, do: s.place, else: "?"),
           name: s.team.name,
-          name_link: Routes.battlefy_path(conn, :future_opponents, tournament.id, s.team.name),
+          name_link: Routes.battlefy_path(conn, :tournament_player, tournament.id, s.team.name),
           has_score: s.wins && s.losses,
           score: "#{s.wins} - #{s.losses}",
           wins: s.wins,
