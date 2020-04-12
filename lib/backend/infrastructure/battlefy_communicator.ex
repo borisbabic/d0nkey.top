@@ -65,7 +65,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
            "createdAt" => upstream_time
          } ->
         %{
-          battletag_full: battletag_full,
+          battletag_full: String.trim(battletag_full),
           reason: invited["reason"] || type,
           type: type,
           tour_stop: tour_stop,
