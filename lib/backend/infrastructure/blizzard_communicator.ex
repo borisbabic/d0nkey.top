@@ -1,4 +1,5 @@
 defmodule Backend.Infrastructure.BlizzardCommunicator do
+  @moduledoc false
   require Logger
 
   def get_leaderboard(region, leaderboard_id, season_id) do
@@ -7,10 +8,10 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
         leaderboard_id
       }&seasonId=#{season_id}"
 
-    {uSecs, return} = :timer.tc(&HTTPoison.get/1, [url])
+    {u_secs, return} = :timer.tc(&HTTPoison.get/1, [url])
 
     Logger.info(
-      "Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(uSecs, 1000)} ms"
+      "Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(u_secs, 1000)} ms"
     )
 
     case return do

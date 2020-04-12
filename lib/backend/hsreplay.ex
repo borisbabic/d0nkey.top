@@ -1,4 +1,5 @@
 defmodule Backend.HSReplay do
+  @moduledoc false
   alias Backend.Infrastructure.HSReplayCommunicator, as: Api
   alias Backend.Infrastructure.HSReplayLatestCache, as: Cache
   alias Backend.Infrastructure.ApiCache
@@ -113,6 +114,7 @@ defmodule Backend.HSReplay do
     end
   end
 
+  # credo:disable-for-this-file
   def create_filter_func(name, value) do
     rank_filter_val = normalize_rank_filter_value(value)
 

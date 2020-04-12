@@ -100,6 +100,8 @@ defmodule BackendWeb.LeaderboardView do
     :JAN
   """
   @spec get_month_name(integer) :: month_name
+  # complexity is too high
+  # credo:disable-for-this-file
   def get_month_name(month) do
     case month do
       1 -> :JAN

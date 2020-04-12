@@ -1,4 +1,7 @@
 defmodule Backend.FifoSet do
+  @moduledoc """
+    A set with a fixed length that automatically removes the oldest entries when new ones come in
+  """
   use TypedStruct
 
   typedstruct enforce: true do

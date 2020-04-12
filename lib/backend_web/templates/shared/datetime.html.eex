@@ -1,7 +1,7 @@
 <span id="<%= @id %>"><%=@human_readable%> UTC</span>
 <script>
-var id = "<%= @id%>"
-var timestamp = <%= @timestamp_ms%>
+var id = "<%= @id%>";
+var timestamp = <%= @timestamp_ms %>;
 var span = document.getElementById(id);
 var date = new Date(timestamp);
 var pad = function(te) {

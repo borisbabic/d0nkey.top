@@ -1,4 +1,5 @@
 defmodule Backend.HSReplay.ReplayFeedEntry do
+  @moduledoc false
   use TypedStruct
   # @players ["player1", "player2"]
   typedstruct enforce: true do

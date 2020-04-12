@@ -49,6 +49,7 @@ defmodule Backend.MixProject do
       {:recase, "~> 0.5"},
       {:nostrum, "~> 0.4"},
       {:typed_struct, "~> 0.1.4"},
+      {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:quantum, "~> 2.3"}
     ]
   end
