@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy.Team do
+  @moduledoc false
   use TypedStruct
 
   typedstruct do

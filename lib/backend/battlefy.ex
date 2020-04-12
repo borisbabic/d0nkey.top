@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy do
+  @moduledoc false
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Standings
@@ -106,20 +107,9 @@ defmodule Backend.Battlefy do
     |> Enum.sort_by(fn s -> s.place end, :asc)
   end
 
-  @spec get_tournament_standings(Stage.t()) :: [Standings.t()]
-  def create_standings_from_matches(%{
-        id: id,
-        bracket: bracket = %{type: "elimination", style: "single"}
-      }) do
-    {rounds, _max_position} =
-      case {bracket.rounds_count, bracket.teams_count} do
-        {nil, nil} -> raise "Handle this case d0nkey!"
-        {nil, teams_count} -> {:math.log2(teams_count) |> Float.ceil() |> trunc(), teams_count}
-        {rounds_count, nil} -> {rounds_count, :math.pow(2, rounds_count) |> trunc()}
-        {rounds_count, teams_count} -> {rounds_count, teams_count}
-      end
-
-    get_matches(id)
+  @spec create_single_elim_standings([Match.t()], integer) :: [Standings.t()]
+  def create_single_elim_standings(matches, rounds) do
+    matches
     |> Enum.flat_map(fn %{top: top, bottom: bottom, round_number: round_number} ->
       pos = (:math.pow(2, rounds - round_number) + 1) |> trunc()
 
@@ -166,6 +156,24 @@ defmodule Backend.Battlefy do
     # remove byes and the opponents of people waiting
     |> Enum.filter(fn s -> s.team end)
     |> Enum.sort_by(fn s -> s.place end, :asc)
+  end
+
+  @spec get_tournament_standings(Stage.t()) :: [Standings.t()]
+  def create_standings_from_matches(%{
+        id: id,
+        bracket: bracket = %{type: "elimination", style: "single"}
+      }) do
+    {rounds, _max_position} =
+      case {bracket.rounds_count, bracket.teams_count} do
+        {nil, nil} -> raise "Handle this case d0nkey!"
+        {nil, teams_count} -> {:math.log2(teams_count) |> Float.ceil() |> trunc(), teams_count}
+        {rounds_count, nil} -> {rounds_count, :math.pow(2, rounds_count) |> trunc()}
+        {rounds_count, teams_count} -> {rounds_count, teams_count}
+      end
+
+    id
+    |> get_matches()
+    |> create_single_elim_standings(rounds)
   end
 
   def get_standings_from_matches() do
@@ -281,7 +289,7 @@ defmodule Backend.Battlefy do
         total_rounds
       ) do
     next_match_num = BattlefyUtil.next_round_match(match_number, round_number, total_rounds)
-    next_match = matches |> Enum.find(fn %{match_number: mn} -> mn == next_match_num end)
+    next_match = matches |> Match.find(next_match_num)
 
     case next_match do
       %{top: %{team: nil}, bottom: %{team: nil}} ->
@@ -291,7 +299,7 @@ defmodule Backend.Battlefy do
 
           neighbor_num ->
             matches
-            |> Enum.find(fn %{match_number: mn} -> mn == neighbor_num end)
+            |> Match.find(neighbor_num)
             |> get_future_from_previous(matches, total_rounds)
         end
 

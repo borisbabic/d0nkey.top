@@ -1,5 +1,9 @@
 defmodule Backend.BattlefyUtil do
+  @moduledoc """
+  Holds utility functions for battlefy stuff.
+  """
   alias Backend.Battlefy
+  alias Backend.Battlefy.Match
 
   @type expanded :: %{
           tournament: Battlefy.Tournament.t(),
@@ -200,7 +204,7 @@ defmodule Backend.BattlefyUtil do
 
   def prev_top(%{match_number: match_number, round_number: round_number}, matches, total_rounds) do
     prev_number = prev_top(match_number, round_number, total_rounds)
-    matches |> Enum.find(fn %{match_number: mn} -> mn == prev_number end)
+    matches |> Match.find(prev_number)
   end
 
   @doc """
@@ -230,7 +234,7 @@ defmodule Backend.BattlefyUtil do
         total_rounds
       ) do
     prev_number = prev_bottom(match_number, round_number, total_rounds)
-    matches |> Enum.find(fn %{match_number: mn} -> mn == prev_number end)
+    matches |> Match.find(prev_number)
   end
 
   @doc """

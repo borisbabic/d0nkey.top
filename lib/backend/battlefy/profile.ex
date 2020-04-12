@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy.Profile do
+  @moduledoc false
   use TypedStruct
 
   typedstruct enforce: true do

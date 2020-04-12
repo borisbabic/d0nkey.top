@@ -1,4 +1,5 @@
 defmodule Backend.Infrastructure.BattlefyCommunicator do
+  @moduledoc false
   require Logger
   alias Backend.Battlefy
   alias Backend.Blizzard
@@ -20,8 +21,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         Date.to_iso8601(start_date)
       }&end=#{NaiveDateTime.to_iso8601(end_time)}"
 
-    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [url])
-    Logger.info("Got masters qualifiers #{url} in #{div(uSecs, 1000)} ms")
+    {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [url])
+    Logger.info("Got masters qualifiers #{url} in #{div(u_secs, 1000)} ms")
 
     Poison.decode!(response.body)
     |> Enum.map(fn %{
@@ -49,10 +50,10 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         ts -> "https://majestic.battlefy.com/hearthstone-masters/invitees?tourStop=#{ts}"
       end
 
-    {uSecs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
+    {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
 
     Logger.info(
-      "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(uSecs, 1000)} ms"
+      "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(u_secs, 1000)} ms"
     )
 
     Poison.decode!(response.body)

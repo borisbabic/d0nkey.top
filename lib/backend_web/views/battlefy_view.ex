@@ -10,6 +10,18 @@ defmodule BackendWeb.BattlefyView do
           link: String.t()
         }
 
+  @type standings :: %{
+          place: String.t(),
+          name: String.t(),
+          name_link: String.t(),
+          has_score: boolean,
+          score: String.t(),
+          wins: integer,
+          losses: integer,
+          hsdeckviewer: String.t(),
+          yaytears: String.t()
+        }
+
   @spec handle_opponent_team(Battlefy.MatchTeam.t(), Battlefy.Tournament.t(), Plug.Conn.t()) ::
           nil
   def handle_opponent_team(%{team: nil}, _, _) do
@@ -94,25 +106,7 @@ defmodule BackendWeb.BattlefyView do
         "tournament.html",
         params = %{standings: standings_raw, tournament: tournament, conn: conn}
       ) do
-    standings =
-      standings_raw
-      |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
-      |> Enum.sort_by(fn s -> s.losses end)
-      |> Enum.sort_by(fn s -> s.wins end, :desc)
-      |> Enum.sort_by(fn s -> s.place end)
-      |> Enum.map(fn s ->
-        %{
-          place: if(s.place && s.place > 0, do: s.place, else: "?"),
-          name: s.team.name,
-          name_link: Routes.battlefy_path(conn, :tournament_player, tournament.id, s.team.name),
-          has_score: s.wins && s.losses,
-          score: "#{s.wins} - #{s.losses}",
-          wins: s.wins,
-          losses: s.losses,
-          hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament.id, s.team.name),
-          yaytears: Backend.Yaytears.create_deckstrings_link(tournament.id, s.team.name)
-        }
-      end)
+    standings = prepare_standings(standings_raw, tournament, conn)
 
     duration_subtitle =
       case Backend.Battlefy.Tournament.get_duration(tournament) do
@@ -149,5 +143,29 @@ defmodule BackendWeb.BattlefyView do
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
+  end
+
+  @spec prepare_standings([Battelfy.Standings.t()], Battlefy.Tournament.t(), Plug.Conn) :: [
+          standings
+        ]
+  def prepare_standings(standings_raw, %{id: tournament_id}, conn) do
+    standings_raw
+    |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
+    |> Enum.sort_by(fn s -> s.losses end)
+    |> Enum.sort_by(fn s -> s.wins end, :desc)
+    |> Enum.sort_by(fn s -> s.place end)
+    |> Enum.map(fn s ->
+      %{
+        place: if(s.place && s.place > 0, do: s.place, else: "?"),
+        name: s.team.name,
+        name_link: Routes.battlefy_path(conn, :tournament_player, tournament_id, s.team.name),
+        has_score: s.wins && s.losses,
+        score: "#{s.wins} - #{s.losses}",
+        wins: s.wins,
+        losses: s.losses,
+        hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, s.team.name),
+        yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, s.team.name)
+      }
+    end)
   end
 end

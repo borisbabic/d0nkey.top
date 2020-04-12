@@ -11,8 +11,10 @@ A site for my hearthstone related endeavours
 ## Legal and licensing
 Contributions should be provided under the Apache License. If I haven't yet added it the pull request template please badger me
 
-## Format 
-Ensure the code is formatted correctly with `mix format`
+## Code quality/style
+There are pre-commit hooks available, see https://pre-commit.com/ for usage
+
+Otherwise run check the format (`mix format`) and the static analysis (`mix credo`)
 
 ## Tests 
 Test what makes sense to be tested :) (if I haven't yet added tests you can skip this :sweat_smile:)

@@ -1,9 +1,15 @@
 defmodule Bot.MessageHandler do
+  @moduledoc """
+  Handles incoming discord message
+  """
+
   alias BackendWeb.Router.Helpers, as: Routes
   alias Nostrum.Api
   alias Backend.Blizzard
   alias Backend.Leaderboards
 
+  # complexity is too high because of all the case options
+  # credo:disable-for-this-file
   def handle(msg) do
     case msg.content do
       "!ping" -> Api.create_message(msg.channel_id, "pong")

@@ -1,4 +1,5 @@
 defmodule Backend.Discord do
+  @moduledoc false
   alias Backend.Repo
   alias Backend.Infrastructure.DiscordCommunicator, as: Api
   alias Backend.Discord.Broadcast
@@ -88,7 +89,7 @@ defmodule Backend.Discord do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_broadcast(%Broadcast{} = broadcast, attrs) do
+  def update_broadcast(broadcast = %Broadcast{}, attrs) do
     broadcast
     |> Broadcast.changeset(attrs)
     |> Repo.update()
@@ -106,7 +107,7 @@ defmodule Backend.Discord do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_broadcast(%Broadcast{} = broadcast) do
+  def delete_broadcast(broadcast = %Broadcast{}) do
     Repo.delete(broadcast)
   end
 
@@ -119,7 +120,7 @@ defmodule Backend.Discord do
       %Ecto.Changeset{source: %Broadcast{}}
 
   """
-  def change_broadcast(%Broadcast{} = broadcast) do
+  def change_broadcast(broadcast = %Broadcast{}) do
     Broadcast.changeset(broadcast, %{})
   end
 end

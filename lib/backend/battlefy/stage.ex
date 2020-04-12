@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy.Stage do
+  @moduledoc false
   use TypedStruct
   alias Backend.Battlefy
 
@@ -42,6 +43,7 @@ defmodule Backend.Battlefy.Stage do
 end
 
 defmodule Backend.Battlefy.Bracket do
+  @moduledoc false
   use TypedStruct
 
   typedstruct do

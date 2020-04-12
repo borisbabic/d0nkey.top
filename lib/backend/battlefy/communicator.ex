@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy.Communicator do
+  @moduledoc false
   alias Backend.Blizzard
   alias Backend.Battlefy
   alias Backend.Battlefy.Match

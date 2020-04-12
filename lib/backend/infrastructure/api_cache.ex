@@ -1,4 +1,7 @@
 defmodule Backend.Infrastructure.ApiCache do
+  @moduledoc """
+  Holds, in memory, a cache of various results from various api's
+  """
   use GenServer
 
   # Client
