@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy.Match do
+  @moduledoc false
   use TypedStruct
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.MatchTeam
@@ -12,6 +13,11 @@ defmodule Backend.Battlefy.Match do
     field :stage_id, Backend.Battlefy.stage_id()
     field :is_bye, boolean
     # field :is_complete, boolean
+  end
+
+  @spec find([Match.t()], integer) :: Match.t()
+  def find(matches, match_number) do
+    matches |> Enum.find(fn %{match_number: mn} -> mn == match_number end)
   end
 
   @spec filter_team([Match], String.t()) :: [Match]
@@ -66,6 +72,7 @@ defmodule Backend.Battlefy.Match do
 end
 
 defmodule Backend.Battlefy.MatchTeam do
+  @moduledoc false
   use TypedStruct
   alias Backend.Battlefy.Team
 
@@ -103,7 +110,7 @@ defmodule Backend.Battlefy.MatchTeam do
     }
   end
 
-  def get_name(%__MODULE__{} = mt) do
+  def get_name(mt = %__MODULE__{}) do
     cond do
       mt.team && mt.team.name && mt.team.name != "" -> mt.team.name
       mt.name && mt.name != "" -> mt.name
@@ -113,6 +120,7 @@ defmodule Backend.Battlefy.MatchTeam do
 end
 
 defmodule Backend.Battlefy.MatchDeckstrings do
+  @moduledoc false
   use TypedStruct
 
   typedstruct enforce: true do

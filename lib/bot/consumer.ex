@@ -1,4 +1,5 @@
 defmodule Bot.Consumer do
+  @moduledoc false
   use Nostrum.Consumer
   require Logger
 

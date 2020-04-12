@@ -1,4 +1,5 @@
 defmodule Backend.HSDeckViewer do
+  @moduledoc false
   @spec create_link([String.t()]) :: String.t()
   def create_link(deckstrings) do
     query =

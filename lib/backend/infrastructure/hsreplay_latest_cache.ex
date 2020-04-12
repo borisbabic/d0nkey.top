@@ -1,4 +1,7 @@
 defmodule Backend.Infrastructure.HSReplayLatestCache do
+  @moduledoc """
+  Holds the results of the hsreplay live feed in memory
+  """
   use GenServer
   alias Backend.FifoSet
   @name :hsreplay_latest_cache
@@ -27,7 +30,7 @@ defmodule Backend.Infrastructure.HSReplayLatestCache do
   end
 
   # Server
-  def init(args \\ [max_length: 10000]) do
+  def init(args \\ [max_length: 10_000]) do
     fs = %FifoSet{max_length: args[:max_length]}
     {:ok, %{fs: fs}}
   end

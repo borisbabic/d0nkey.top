@@ -54,6 +54,7 @@ defmodule Backend.Blizzard do
     {:ok, :Montreal}
   """
   @spec get_ladder_tour_stop(integer()) :: {:ok, tour_stop} | {:error, String.t()}
+  # credo:disable-for-this-file
   def get_ladder_tour_stop(season_id) do
     case season_id do
       72 -> {:ok, :Arlington}
@@ -171,7 +172,7 @@ defmodule Backend.Blizzard do
     end
   end
 
-  @spec to_region(:string) :: {:ok, region} | {:error, String.t()}
+  @spec to_region(String.t()) :: {:ok, region} | {:error, String.t()}
   def to_region(string) do
     if Enum.member?(regions(:string), string) do
       {:ok, String.to_existing_atom(string)}

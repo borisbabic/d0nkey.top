@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy.Standings do
+  @moduledoc false
   use TypedStruct
   alias Backend.Battlefy.Team
 

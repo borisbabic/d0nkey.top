@@ -1,6 +1,8 @@
 defmodule Backend.Battlefy.Tournament do
+  @moduledoc false
   use TypedStruct
   alias Backend.Battlefy
+  alias Backend.Battlefy.Util
 
   typedstruct enforce: true do
     field :id, Battlefy.tournament_id()
@@ -30,32 +32,11 @@ defmodule Backend.Battlefy.Tournament do
           "name" => name
         }
       ) do
-    last_completed_match_at =
-      case map["last_completed_match_at"] do
-        lcma when is_binary(lcma) -> NaiveDateTime.from_iso8601!(lcma)
-        _ -> nil
-      end
-
     region =
       case map["region"] do
         "Americas" -> :US
         "Europe" -> :EU
         "Asia" -> :AP
-        _ -> nil
-      end
-
-    stages =
-      case map["stages"] do
-        raw_list = [%{"start_time" => _} | _] ->
-          raw_list |> Enum.map(&Battlefy.Stage.from_raw_map/1)
-
-        _ ->
-          []
-      end
-
-    organization =
-      case map["organization"] do
-        raw_map = %{"slug" => _} -> Backend.Battlefy.Organization.from_raw_map(raw_map)
         _ -> nil
       end
 
@@ -65,14 +46,26 @@ defmodule Backend.Battlefy.Tournament do
       slug: slug,
       name: name,
       start_time: NaiveDateTime.from_iso8601!(start_time),
-      last_completed_match_at: last_completed_match_at,
+      last_completed_match_at: Util.parse_date(map["last_completed_match_at"]),
       region: region,
-      organization: organization,
-      stages: stages
+      organization: extract_organization(map),
+      stages: extract_stages(map)
     }
   end
 
-  def get_duration(%__MODULE__{} = tournament) do
+  def extract_stages(%{"stages" => stages = [%{"start_time" => _} | _]}) do
+    stages |> Enum.map(&Battlefy.Stage.from_raw_map/1)
+  end
+
+  def extract_stages(_), do: nil
+
+  def extract_organization(%{"organization" => org = %{"slug" => _}}) do
+    Backend.Battlefy.Organization.from_raw_map(org)
+  end
+
+  def extract_organization(_), do: nil
+
+  def get_duration(tournament = %__MODULE__{}) do
     case tournament.last_completed_match_at do
       %{calendar: _} ->
         NaiveDateTime.diff(tournament.last_completed_match_at, tournament.start_time)
@@ -84,6 +77,7 @@ defmodule Backend.Battlefy.Tournament do
 end
 
 defmodule Backend.Battlefy.Organization do
+  @moduledoc false
   use TypedStruct
 
   typedstruct do

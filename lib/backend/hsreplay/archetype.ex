@@ -1,4 +1,5 @@
 defmodule Backend.HSReplay.Archetype do
+  @moduledoc false
   use TypedStruct
 
   typedstruct enforce: true do

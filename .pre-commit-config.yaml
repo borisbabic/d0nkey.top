@@ -6,6 +6,11 @@ repos:
         files: '.*\.(ex|exs)$'
         entry: mix format
         language: system
+      - id: mix-credo
+        name: mix credo
+        entry: mix credo
+        always_run: true
+        language: system
       #- id: mix-test-unit
         #name: mix test unit
         #language: system

@@ -1,4 +1,5 @@
 defmodule Backend.MastersTour.InvitedPlayer do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
