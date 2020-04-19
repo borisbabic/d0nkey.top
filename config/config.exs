@@ -9,7 +9,8 @@ use Mix.Config
 
 config :backend, QuantumScheduler,
   jobs: [
-    {"*/3 * * * *", fn -> Backend.HSReplay.update_latest() end}
+    {"*/3 * * * *", fn -> Backend.HSReplay.update_latest() end},
+    {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end}
   ]
 
 config :backend,
@@ -21,6 +22,15 @@ config :backend, BackendWeb.Endpoint,
   secret_key_base: "Hm4BqSotrad1PnidcjfF1FVR5I2Yw4YXEs64ZczPSBkDDXBsTPjMyC9TmGXJ3Kh2",
   render_errors: [view: BackendWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Backend.PubSub, adapter: Phoenix.PubSub.PG2]
+
+# auto sign me up
+config :backend,
+  su_token: System.get_env("SIGNUP_TOKEN") || nil,
+  su_user_id: "581f5548583dd73a0351b867",
+  su_battletag_full: "D0nkey#2470",
+  su_battlenet_id: "406233814",
+  su_discord: "D0nkey#8994",
+  su_slug: "d0nkey"
 
 # Configures Elixir's Logger
 config :logger, :console,

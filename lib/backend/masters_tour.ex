@@ -9,6 +9,15 @@ defmodule Backend.MastersTour do
   alias Backend.Infrastructure.BattlefyCommunicator
   alias Backend.Blizzard
 
+  @type user_signup_options :: %{
+          user_id: Battlefy.user_id(),
+          token: String.t(),
+          battletag_full: Blizzard.battletag(),
+          battlenet_id: String.t(),
+          discord: String.t(),
+          slug: String.t()
+        }
+
   def create_invited_player(attrs \\ %{}) do
     %InvitedPlayer{}
     |> InvitedPlayer.changeset(attrs)
@@ -152,6 +161,50 @@ defmodule Backend.MastersTour do
       |> Date.add(-1)
 
     {start_date, end_date}
+  end
+
+  @spec get_me_signup_options() :: user_signup_options
+  def get_me_signup_options() do
+    %{
+      user_id: Application.fetch_env!(:backend, :su_user_id),
+      token: Application.fetch_env!(:backend, :su_token),
+      battletag_full: Application.fetch_env!(:backend, :su_battletag_full),
+      battlenet_id: Application.fetch_env!(:backend, :su_battlenet_id),
+      discord: Application.fetch_env!(:backend, :su_discord),
+      slug: Application.fetch_env!(:backend, :su_slug)
+    }
+  end
+
+  def sign_me_up() do
+    with {:ok, <<_::binary>>} <- Application.fetch_env(:backend, :su_token) do
+      get_me_signup_options() |> signup_player()
+    else
+      {_, reason} -> {:error, reason}
+    end
+  end
+
+  @spec signup_player(user_signup_options) :: any
+  def signup_player(options) do
+    now = NaiveDateTime.utc_now()
+    cutoff = NaiveDateTime.add(now, 14 * 24 * 60 * 60, :second)
+
+    user_tournament_ids =
+      BattlefyCommunicator.get_user_tournaments(options.slug)
+      |> MapSet.new(fn t -> t.id end)
+
+    missing_qualifier_options =
+      BattlefyCommunicator.get_masters_qualifiers(now, cutoff)
+      |> Enum.filter(fn q -> !MapSet.member?(user_tournament_ids, q.id) end)
+      |> Enum.map(fn q -> Map.put(options, :tournament_id, q.id) end)
+
+    missing_qualifier_options
+    |> Enum.map(&BattlefyCommunicator.signup_for_qualifier/1)
+    |> Enum.reduce({:ok, []}, fn result, acc = {_, errors} ->
+      case result do
+        {:ok, _} -> acc
+        {:error, reason} -> {:error, [reason | errors]}
+      end
+    end)
   end
 
   @spec create_qualifier_link(Backend.Battlefy.Tournament.t()) :: String.t()
