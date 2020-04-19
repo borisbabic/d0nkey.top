@@ -8,6 +8,9 @@ defmodule Backend.Blizzard do
   @regions [:EU, :US, :AP]
   @type leaderboard :: :BG | :STD | :WLD
   @leaderboards [:BG, :STD, :WLD]
+  # @type battletag :: <<_::binary, "#", _::binary>>
+  @type battletag :: String.t()
+  @type deckstring :: String.t()
 
   @doc """
   Gets the year and month from a season_id

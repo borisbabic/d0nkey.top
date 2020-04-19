@@ -344,6 +344,8 @@ defmodule Backend.Battlefy do
     end
   end
 
+  @spec get_deckstrings(%{tournament_id: tournament_id, battletag_full: Blizzard.battletag()}) ::
+          [Blizzard.deckstring()]
   def get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full}) do
     {position, match} =
       get_tournament_matches(tournament_id, round: 1)
