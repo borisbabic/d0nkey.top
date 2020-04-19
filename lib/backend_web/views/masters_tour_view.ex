@@ -123,7 +123,7 @@ defmodule BackendWeb.MastersTourView do
   end
 
   @spec process_invited_player(%{
-          battletag_full: String.t(),
+          battletag_full: Blizzard.battletag(),
           reason: String.t() | nil,
           tournament_slug: String.t() | nil,
           tournament_id: String.t() | nil,

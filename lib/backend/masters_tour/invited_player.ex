@@ -31,6 +31,7 @@ defmodule Backend.MastersTour.InvitedPlayer do
     |> validate_required([:battletag_full, :tour_stop, :upstream_time])
   end
 
+  @spec shorten_battletag(Backend.Blizzard.battletag()) :: String.t()
   def shorten_battletag(battletag_full) do
     battletag_full
     # some in the db still have it, meh, don't feel like changing it

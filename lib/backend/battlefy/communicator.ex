@@ -9,6 +9,15 @@ defmodule Backend.Battlefy.Communicator do
   alias Backend.Battlefy.Standings
   alias Backend.Battlefy.Tournament
 
+  @type signup_options :: %{
+          tournament_id: Battlefy.tournament_id(),
+          user_id: Battlefy.user_id(),
+          token: String.t(),
+          battletag_full: Blizzard.battletag(),
+          battlenet_id: String.t(),
+          discord: String.t()
+        }
+  @callback signup_for_qualifier(signup_options) :: {:ok, any} | {:error, any}
   @type qualifier :: %{
           name: String.t() | nil,
           start_time: NaiveDateTime.t(),
