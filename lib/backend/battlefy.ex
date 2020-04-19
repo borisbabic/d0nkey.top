@@ -284,27 +284,21 @@ defmodule Backend.Battlefy do
 
   @spec get_future_from_next(Match.t(), [Match.t()], integer) :: [Match.t()]
   def get_future_from_next(
-        match = %{match_number: match_number, round_number: round_number},
+        %{match_number: match_number, round_number: round_number},
         matches,
         total_rounds
       ) do
     next_match_num = BattlefyUtil.next_round_match(match_number, round_number, total_rounds)
-    next_match = matches |> Match.find(next_match_num)
 
-    case next_match do
-      %{top: %{team: nil}, bottom: %{team: nil}} ->
-        case BattlefyUtil.get_neighbor(match_number, round_number, total_rounds) do
-          nil ->
-            []
-
-          neighbor_num ->
-            matches
-            |> Match.find(neighbor_num)
-            |> get_future_from_previous(matches, total_rounds)
-        end
-
-      _ ->
-        [match]
+    with %{top: %{team: nil}, bottom: %{team: nil}} <- matches |> Match.find(next_match_num),
+         neighbor_num when is_integer(neighbor_num) <-
+           BattlefyUtil.get_neighbor(match_number, round_number, total_rounds) do
+      matches
+      |> Match.find(neighbor_num)
+      |> get_future_from_previous(matches, total_rounds)
+    else
+      nil -> []
+      next_match -> [next_match]
     end
   end
 
