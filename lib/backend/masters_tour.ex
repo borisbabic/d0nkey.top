@@ -15,6 +15,7 @@ defmodule Backend.MastersTour do
           battletag_full: Blizzard.battletag(),
           battlenet_id: String.t(),
           discord: String.t(),
+          regions: [Blizzard.region()],
           slug: String.t()
         }
 
@@ -171,14 +172,15 @@ defmodule Backend.MastersTour do
       battletag_full: Application.fetch_env!(:backend, :su_battletag_full),
       battlenet_id: Application.fetch_env!(:backend, :su_battlenet_id),
       discord: Application.fetch_env!(:backend, :su_discord),
+      regions: Application.fetch_env!(:backend, :su_regions),
       slug: Application.fetch_env!(:backend, :su_slug)
     }
   end
 
   def sign_me_up() do
-    with {:ok, <<_::binary>>} <- Application.fetch_env(:backend, :su_token) do
-      get_me_signup_options() |> signup_player()
-    else
+    case Application.fetch_env(:backend, :su_token) do
+      {:ok, <<_::binary>>} -> get_me_signup_options() |> signup_player()
+      {_, nil} -> {:error, "Missing signup token"}
       {_, reason} -> {:error, reason}
     end
   end
@@ -194,6 +196,7 @@ defmodule Backend.MastersTour do
 
     missing_qualifier_options =
       BattlefyCommunicator.get_masters_qualifiers(now, cutoff)
+      |> Enum.filter(fn q -> Enum.member?(options.regions, q.region) end)
       |> Enum.filter(fn q -> !MapSet.member?(user_tournament_ids, q.id) end)
       |> Enum.map(fn q -> Map.put(options, :tournament_id, q.id) end)
 
