@@ -274,6 +274,8 @@ defmodule Backend.BattlefyUtil do
       257
       iex> Backend.BattlefyUtil.get_neighbor(257, 2, 9)
       258
+      iex> Backend.BattlefyUtil.get_neighbor(331, 2, 9)
+      332
   """
   def get_neighbor(match_number, _, _) do
     case rem(match_number, 2) do
