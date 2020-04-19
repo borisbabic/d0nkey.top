@@ -6,7 +6,7 @@ defmodule BackendWeb.MastersTourController do
   def invited_players(conn, %{"tour_stop" => tour_stop}) do
     MastersTour.fetch(tour_stop)
     invited = MastersTour.list_invited_players(tour_stop)
-    render(conn, "invited_players.html", %{invited: invited, tour_stop: tour_stop})
+    render(conn, "invited_players.html", %{invited: invited, tour_stop: tour_stop, conn: conn})
   end
 
   def qualifiers(

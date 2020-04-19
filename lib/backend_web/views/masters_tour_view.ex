@@ -61,6 +61,7 @@ defmodule BackendWeb.MastersTourView do
       show_signed_up: MapSet.size(signed_up_ids) > 0,
       dropdown_links: create_dropdown_qualifier_links(conn),
       region_links: region_links,
+      conn: conn,
       region: region
     })
   end
@@ -68,7 +69,7 @@ defmodule BackendWeb.MastersTourView do
   def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do
     latest = Enum.find_value(invited, fn ip -> ip.upstream_time end)
 
-    invited_players = Enum.map(invited, &process_invited_player/1)
+    invited_players = Enum.map(invited, fn ip -> process_invited_player(ip, conn) end)
 
     tour_stop_list =
       Backend.Blizzard.tour_stops()
@@ -122,28 +123,36 @@ defmodule BackendWeb.MastersTourView do
     Routes.masters_tour_path(conn, :qualifiers, new_params)
   end
 
-  @spec process_invited_player(%{
-          battletag_full: Blizzard.battletag(),
-          reason: String.t() | nil,
-          tournament_slug: String.t() | nil,
-          tournament_id: String.t() | nil,
-          upstream_time: Calendar.datetime()
-        }) :: %{
+  @spec process_invited_player(
+          %{
+            battletag_full: Blizzard.battletag(),
+            reason: String.t() | nil,
+            tournament_slug: String.t() | nil,
+            tournament_id: String.t() | nil,
+            upstream_time: Calendar.datetime()
+          },
+          Plug.Conn
+        ) :: %{
           battletag: String.t(),
           invited_at: String.t(),
           link: nil | String.t(),
+          profile_link: nil | String.t(),
           reason: String.t() | nil
         }
   def process_invited_player(
-        invited_player = %{battletag_full: battletag_full, reason: reason_raw}
+        invited_player = %{battletag_full: battletag_full, reason: reason_raw},
+        conn
       ) do
-    link =
+    {link, profile_link} =
       case invited_player do
         %{tournament_slug: slug, tournament_id: id} when is_binary(slug) and is_binary(id) ->
-          MastersTour.create_qualifier_link(slug, id)
+          {
+            MastersTour.create_qualifier_link(slug, id),
+            Routes.battlefy_path(conn, :tournament_player, id, battletag_full)
+          }
 
         _ ->
-          nil
+          {nil, nil}
       end
 
     reason =
@@ -156,6 +165,7 @@ defmodule BackendWeb.MastersTourView do
 
     %{
       link: link,
+      profile_link: profile_link,
       reason: reason,
       battletag: battletag,
       invited_at: invited_player.upstream_time
