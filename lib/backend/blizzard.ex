@@ -1,8 +1,24 @@
 defmodule Backend.Blizzard do
   @moduledoc false
   @type tour_stop ::
-          :"Las Vegas" | :Seoul | :Bucharest | :Arlington | :Indonesia | :Jönköping | :Montreal
-  @tour_stops [:"Las Vegas", :Seoul, :Bucharest, :Arlington, :Indonesia, :Jönköping, :Montreal]
+          :"Las Vegas"
+          | :Seoul
+          | :Bucharest
+          | :Arlington
+          | :Indonesia
+          | :Jönköping
+          | :"Asia-Pacific"
+          | :Montreal
+  @tour_stops [
+    :"Las Vegas",
+    :Seoul,
+    :Bucharest,
+    :Arlington,
+    :Indonesia,
+    :Jönköping,
+    :"Asia-Pacific",
+    :Montreal
+  ]
 
   @type region :: :EU | :US | :AP
   @regions [:EU, :US, :AP]
@@ -54,7 +70,7 @@ defmodule Backend.Blizzard do
     iex> Backend.Blizzard.get_ladder_tour_stop(72)
     {:ok, :Arlington}
     iex> Backend.Blizzard.get_ladder_tour_stop(79)
-    {:ok, :Montreal}
+    {:ok, :"Asia-Pacific"}
   """
   @spec get_ladder_tour_stop(integer()) :: {:ok, tour_stop} | {:error, String.t()}
   # credo:disable-for-this-file
@@ -64,14 +80,12 @@ defmodule Backend.Blizzard do
       73 -> {:ok, :Arlington}
       74 -> {:ok, :Indonesia}
       75 -> {:ok, :Indonesia}
-      # I assume
       76 -> {:ok, :Jönköping}
-      # I assume
       77 -> {:ok, :Jönköping}
-      # I assume
-      78 -> {:ok, :Montreal}
-      # I assume
-      79 -> {:ok, :Montreal}
+      78 -> {:ok, :"Asia-Pacific"}
+      79 -> {:ok, :"Asia-Pacific"}
+      80 -> {:ok, :Montreal}
+      81 -> {:ok, :Montreal}
       _ -> {:error, "Invalid tour stop for ladder"}
     end
   end
@@ -80,7 +94,7 @@ defmodule Backend.Blizzard do
   Gets the season ids of ladder qualifying seasons for a tour stop
 
   ## Example
-    iex> Backend.Blizzard.get_ladder_seasons(:Montreal)
+    iex> Backend.Blizzard.get_ladder_seasons(:"Asia-Pacific")
     {:ok, [78, 79]}
     iex> Backend.Blizzard.get_ladder_seasons(:Bucharest)
     {:error, "There were no ladder invites for this tour stop"}
@@ -96,7 +110,8 @@ defmodule Backend.Blizzard do
       :Arlington -> {:ok, [72, 73]}
       :Indonesia -> {:ok, [74, 75]}
       :Jönköping -> {:ok, [76, 77]}
-      :Montreal -> {:ok, [78, 79]}
+      :"Asia-Pacific" -> {:ok, [78, 79]}
+      :Montreal -> {:ok, [80, 81]}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
