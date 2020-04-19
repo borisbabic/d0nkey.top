@@ -24,7 +24,13 @@
     <tbody>
     <%= for player = %{reason: reason, battletag: battletag, invited_at: invited_at} <- @invited_players do %>
         <tr>
-        <td><%= battletag %></td>
+        <td>
+            <%= if player.profile_link do %>
+                <a href="<%=player.profile_link%>"> <%= battletag %> </a>
+            <% else %>
+                <%= battletag %>
+            <% end %> </td>
+        </td>
         <td>
             <%= if player.link do %>
                 <a href="<%=player.link%>"> <%= reason %> </a>
