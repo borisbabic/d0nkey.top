@@ -14,9 +14,11 @@ defmodule BackendWeb.LeaderboardView do
         leaderboard_id: leaderboard_id,
         updated_at: updated_at,
         highlight: highlighted_raw,
+        other_ladders: other_ladders,
+        ladder_mode: ladder_mode,
         season_id: season_id
       }) do
-    invited = process_invited(invited_raw, updated_at)
+    invited = process_invited(invited_raw, updated_at) |> add_other_ladders(other_ladders)
     entry = process_entry(entry_raw, invited)
     highlighted = process_highlighted(highlighted_raw, entry)
     today = Date.utc_today()
@@ -41,8 +43,17 @@ defmodule BackendWeb.LeaderboardView do
       selectable_seasons: selectable_seasons,
       season_name: get_month_name(get_month_start(season_id).month),
       crystal: get_crystal(leaderboard_id),
+      ladder_mode: ladder_mode,
       show_mt_column: show_mt_column
     })
+  end
+
+  def add_other_ladders(invited, other_ladders) do
+    other_ladders
+    |> Enum.flat_map(fn ol_entries -> process_entry(ol_entries, invited) end)
+    |> Enum.filter(fn e -> e.qualifying end)
+    |> Map.new(fn e -> {e.battletag, :other_ladder} end)
+    |> Map.merge(invited)
   end
 
   def get_crystal(leaderboard_id) do
