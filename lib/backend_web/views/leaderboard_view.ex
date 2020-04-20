@@ -134,7 +134,10 @@ defmodule BackendWeb.LeaderboardView do
       nil -> invited_raw
       _ -> Enum.filter(invited_raw, not_invited_afterwards)
     end
-    |> MapSet.new(fn ip -> InvitedPlayer.shorten_battletag(ip.battletag_full) end)
+    |> InvitedPlayer.prioritize()
+    |> Map.new(fn ip ->
+      {InvitedPlayer.shorten_battletag(ip.battletag_full), InvitedPlayer.source(ip)}
+    end)
   end
 
   def process_highlighted(highlighted_raw, entry) do
@@ -151,7 +154,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def process_entry(entry_raw, invited) do
     Enum.map_reduce(entry_raw, 0, fn le = %{battletag: battletag}, acc ->
-      qualified = MapSet.member?(invited, to_string(battletag))
+      qualified = Map.get(invited, to_string(battletag))
       qualifying = !qualified && acc < 16
 
       {Map.put_new(le, :qualified, qualified)

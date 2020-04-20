@@ -18,11 +18,14 @@
         <tr>
             <th>Battletag</th>
             <th>Reason</th>
+            <th>Source</th>
             <th>Invited At</th>
         </tr>
     </thead>
     <tbody>
-    <%= for player = %{reason: reason, battletag: battletag, invited_at: invited_at} <- @invited_players do %>
+    <%= for player = %{reason: reason, battletag: battletag, invited_at: invited_at, official: official}
+     <-
+    @invited_players do %>
         <tr>
         <td>
             <%= if player.profile_link do %>
@@ -36,6 +39,12 @@
                 <a href="<%=player.link%>"> <%= reason %> </a>
             <% else %>
                 <%= reason %>
+            <% end %> </td>
+        <td>
+            <%= if official do %>
+                <div class="tag is-info">Official</div>
+            <% else %>
+                <div class="tag is-warning">Unofficial</div>
             <% end %> </td>
         <td><%= render_datetime invited_at%></td>
         </tr>
