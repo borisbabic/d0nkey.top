@@ -2,6 +2,7 @@ defmodule Backend.MastersTour.InvitedPlayer do
   @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
+  @type source :: :official | :unofficial | :other_ladder
 
   schema "invited_player" do
     field :battletag_full, :string
@@ -11,7 +12,7 @@ defmodule Backend.MastersTour.InvitedPlayer do
     field :upstream_time, :utc_datetime
     field :tournament_slug, :string
     field :tournament_id, :string
-    # field :source, Backend.MastersTour.InvitedPlayer.SourceType, default: :official
+    field :official, :boolean, default: true
     timestamps()
   end
 
@@ -27,6 +28,7 @@ defmodule Backend.MastersTour.InvitedPlayer do
         :reason,
         :upstream_time,
         :tournament_slug,
+        :official,
         :tournament_id
       ]
     )
@@ -46,46 +48,38 @@ defmodule Backend.MastersTour.InvitedPlayer do
 
   @spec uniq_string(InvitedPlayer.t()) :: String.t()
   def uniq_string(ip) do
-    String.trim(ip.battletag_full) <> ip.tour_stop
+    String.trim(ip.battletag_full) <> ip.tour_stop <> to_string(ip.official)
   end
-end
 
-defmodule Backend.MastersTour.InvitedPlayer.SourceType do
-  @moduledoc """
-  Ecto type for the source field
+  @doc """
+  Uniques the players for each tour while prioritizing by source
   """
-  @behaviour Ecto.Type
+  @spec prioritize([InvitedPlayer.t()]) :: [InvitedPlayer.t()]
+  def prioritize(invited_players) do
+    sort = fn first, second -> first.official && !second.official end
 
-  @type source :: :official | :unofficial | :other_ladder
-  @spec cast(InvitedPlayer.source() | atom) :: bool
-  def is_valid_source?(source) when is_atom(source) do
-    [:official, :unofficial, :other_ladder] |> Enum.any?(fn s -> s == source end)
+    invited_players
+    |> Enum.group_by(fn ip -> ip.tour_stop end)
+    |> Enum.flat_map(fn {_, tsg} ->
+      tsg
+      |> Enum.group_by(fn ip -> ip.battletag_full end)
+      |> Enum.map(fn {_, ips} ->
+        ips
+        |> Enum.sort(sort)
+        |> Enum.at(0)
+      end)
+    end)
   end
 
-  def type, do: :string
-
-  @spec cast(InvitedPlayer.source() | atom) :: {:ok, InvitedPlayer.source()}
-  def cast(atom_source) when is_atom(atom_source) do
-    if is_valid_source?(atom_source) do
-      {:ok, Atom.to_string(atom_source)}
+  @doc """
+  Uniques the players for each tour while prioritizing by source
+  """
+  @spec source(InvitedPlayer.t()) :: source
+  def source(%__MODULE__{official: official}) do
+    if official do
+      :official
     else
-      :error
+      :unofficial
     end
-  end
-
-  def cast(_) do
-    :error
-  end
-
-  def load(string_source) when is_binary(string_source) do
-    String.to_existing_atom(string_source)
-  end
-
-  def dump(casted) when is_atom(casted) do
-    {:ok, Atom.to_string(casted)}
-  end
-
-  def dump(_) do
-    :error
   end
 end

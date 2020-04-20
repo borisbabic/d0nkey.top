@@ -69,7 +69,11 @@ defmodule BackendWeb.MastersTourView do
   def render("invited_players.html", %{invited: invited, tour_stop: selected_ts, conn: conn}) do
     latest = Enum.find_value(invited, fn ip -> ip.upstream_time end)
 
-    invited_players = Enum.map(invited, fn ip -> process_invited_player(ip, conn) end)
+    invited_players =
+      invited
+      |> InvitedPlayer.prioritize()
+      |> Enum.map(fn ip -> process_invited_player(ip, conn) end)
+      |> Enum.sort_by(fn ip -> ip.invited_at |> NaiveDateTime.to_iso8601() end, :desc)
 
     tour_stop_list =
       Backend.Blizzard.tour_stops()
@@ -140,7 +144,7 @@ defmodule BackendWeb.MastersTourView do
           reason: String.t() | nil
         }
   def process_invited_player(
-        invited_player = %{battletag_full: battletag_full, reason: reason_raw},
+        invited_player = %{battletag_full: battletag_full, reason: reason_raw, official: official},
         conn
       ) do
     {link, profile_link} =
@@ -168,6 +172,7 @@ defmodule BackendWeb.MastersTourView do
       profile_link: profile_link,
       reason: reason,
       battletag: battletag,
+      official: official,
       invited_at: invited_player.upstream_time
     }
   end
