@@ -35,6 +35,26 @@
     </div>
     </div>
 </div>
+
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-controls="dropdown-menu" class="button">Other ladders</button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <a class="dropdown-item <%= @ladder_mode == to_string('auto') && 'is-active' %>"
+           href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "ladder_mode", "auto")) %>">
+            Season Finish
+        </a>
+        <a class="dropdown-item <%= @ladder_mode == to_string('yes') && 'is-active' %>"
+           href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "ladder_mode", "yes")) %>">
+            Yes
+        </a>
+        <a class="dropdown-item <%= @ladder_mode == to_string('no') && 'is-active' %>"
+           href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "ladder_mode", "no")) %>">
+            No
+        </a>
+    </div>
+    </div>
+</div>
 <%= if @updated_at do %>
     <div class="subtitle is-6">Updated at <%= render_datetime @updated_at %></div>
 <% end %>
