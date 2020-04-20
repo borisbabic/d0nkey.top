@@ -9,6 +9,7 @@ defmodule Backend.Blizzard do
           | :Jönköping
           | :"Asia-Pacific"
           | :Montreal
+
   @tour_stops [
     :"Las Vegas",
     :Seoul,
@@ -27,6 +28,8 @@ defmodule Backend.Blizzard do
   # @type battletag :: <<_::binary, "#", _::binary>>
   @type battletag :: String.t()
   @type deckstring :: String.t()
+
+  @ladder_finish_order [:AP, :EU, :US]
 
   @doc """
   Gets the year and month from a season_id
@@ -91,6 +94,24 @@ defmodule Backend.Blizzard do
   end
 
   @doc """
+  Gets the tour stop a ladder season qualifies for
+
+  ## Example
+    iex> Backend.Blizzard.get_ladder_tour_stop!(72)
+    :Arlington
+    iex> Backend.Blizzard.get_ladder_tour_stop!(79)
+    :"Asia-Pacific"
+  """
+  @spec get_ladder_tour_stop(integer()) :: tour_stop
+  def get_ladder_tour_stop!(season_id) do
+    with {:ok, ts} <- get_ladder_tour_stop(season_id) do
+      ts
+    else
+      {:error, reason} -> throw(reason)
+    end
+  end
+
+  @doc """
   Gets the season ids of ladder qualifying seasons for a tour stop
 
   ## Example
@@ -114,6 +135,75 @@ defmodule Backend.Blizzard do
       :Montreal -> {:ok, [80, 81]}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
+  end
+
+  @doc """
+  Gets the region of the tour stop
+
+  ## Example
+    iex> Backend.Blizzard.get_tour_stop_region!(:"Asia-Pacific")
+    :AP
+    iex> Backend.Blizzard.get_tour_stop_region!(:Montreal)
+    :US
+  """
+  @spec get_tour_stop_region!(tour_stop) :: region
+  def get_tour_stop_region!(tour_stop) do
+    case tour_stop do
+      :LasVegas -> :US
+      :Seoul -> :AP
+      :Bucharest -> :EU
+      :Arlington -> :US
+      :Indonesia -> :AP
+      :Jönköping -> :EU
+      :"Asia-Pacific" -> :AP
+      :Montreal -> :US
+      _ -> throw("Unknown tour stop")
+    end
+  end
+
+  @doc """
+  Gets the region of the tour stop
+
+  ## Example
+    iex> Backend.Blizzard.get_tour_stop_region!(:"Asia-Pacific")
+    :AP
+    iex> Backend.Blizzard.get_tour_stop_region!(:Montreal)
+    :US
+  """
+  @spec get_tour_stop_region!(region) :: [region]
+  def get_ladder_priority!(region) do
+    case region do
+      :US -> [:US, :EU, :AP]
+      :AP -> [:AP, :US, :EU]
+      :EU -> [:EU, :AP, :US]
+      _ -> throw("Unknown region")
+    end
+  end
+
+  # todo Perhaps move to leaderboard module?
+  @doc """
+  Get the ladders that should be checked when viewing this
+
+  ## Example
+    iex> Backend.Blizzard.ladders_to_check(:"Asia-Pacific", :EU)
+    [:AP]
+  """
+  @spec ladders_to_check(tour_stop | integer, region | String.t()) :: [region]
+  def ladders_to_check(season_id, region) when is_integer(season_id) do
+    ladders_to_check(get_ladder_tour_stop!(season_id), region)
+  end
+
+  def ladders_to_check(tour_stop, region) when is_atom(tour_stop) do
+    different_region = fn r -> to_string(r) != to_string(region) end
+    regions_ahead = @ladder_finish_order |> Enum.take_while(different_region) |> MapSet.new()
+
+    tour_stop
+    |> get_tour_stop_region!()
+    |> get_ladder_priority!()
+    |> Enum.take_while(different_region)
+    |> MapSet.new()
+    |> MapSet.intersection(regions_ahead)
+    |> MapSet.to_list()
   end
 
   @spec current_ladder_tour_stop() :: tour_stop

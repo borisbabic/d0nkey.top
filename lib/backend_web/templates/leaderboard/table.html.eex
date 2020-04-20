@@ -25,7 +25,7 @@
                     <% {:unofficial, _} -> %>
                         <td><p class="tag is-warning">Unofficial</p></td>
                     <% {:other_ladder, _} -> %>
-                        <td><p class="tag is-danger">Other Ladder</p></td>
+                        <td><p class="tag is-danger">Ladder</p></td>
                     <% {nil, false} -> %>
                         <td></td>
                 <% end %>
