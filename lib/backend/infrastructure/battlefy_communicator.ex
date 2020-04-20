@@ -86,6 +86,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
           tour_stop: tour_stop,
           upstream_time: elem(NaiveDateTime.from_iso8601(upstream_time), 1),
           tournament_slug: invited["tournamentSlug"],
+          official: true,
           tournament_id: invited["tournamentID"]
         }
       end

@@ -73,12 +73,17 @@ defmodule Backend.MastersTour do
     |> Repo.transaction()
   end
 
-  @spec copy_grandmasters(Backend.Blizzard.tour_stop(), String.t() | nil) :: any
+  @spec delete_copied(Backend.Blizzard.tour_stop(), String.t() | nil) :: any
   def delete_copied(tour_stop, copied_search \\ "%copied") do
     ts = to_string(tour_stop)
 
     from(ip in InvitedPlayer, where: like(ip.reason, ^copied_search), where: ip.tour_stop == ^ts)
     |> Repo.delete_all()
+  end
+
+  def make_unofficial(search \\ "%\\*%") when is_binary(search) do
+    from(ip in InvitedPlayer, where: like(ip.reason, ^search))
+    |> Repo.update_all(set: [official: false])
   end
 
   @spec copy_grandmasters(
@@ -109,6 +114,7 @@ defmodule Backend.MastersTour do
           tour_stop: to,
           battletag_full: gm.battletag_full,
           reason: gm.reason <> reason_append,
+          official: true,
           upstream_time: gm.upstream_time
         })
 

@@ -18,11 +18,15 @@
             <td><%= battletag %></td>
             <%= if @show_mt_column do %>
                 <%= case {qualified, qualifying} do%>
-                    <% {true, _} -> %>
-                        <td><p class="tag is-info">Invited</p></td>
                     <% {_, true} -> %>
                         <td><p class="tag is-success">Top 16</p></td>
-                    <% {false, false} -> %>
+                    <% {:official, _} -> %>
+                        <td><p class="tag is-info">Official</p></td>
+                    <% {:unofficial, _} -> %>
+                        <td><p class="tag is-warning">Unofficial</p></td>
+                    <% {:other_ladder, _} -> %>
+                        <td><p class="tag is-danger">Other Ladder</p></td>
+                    <% {nil, false} -> %>
                         <td></td>
                 <% end %>
             <% end %>
