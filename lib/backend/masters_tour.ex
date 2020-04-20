@@ -41,7 +41,15 @@ defmodule Backend.MastersTour do
   def fetch(tour_stop) do
     existing =
       Repo.all(
-        from ip in InvitedPlayer, where: ip.tour_stop == ^tour_stop, select: ip.battletag_full
+        from ip in InvitedPlayer,
+          where: ip.tour_stop == ^tour_stop,
+          select:
+            fragment(
+              "concat(?,?, CASE WHEN ?=true THEN 'true' ELSE 'false' END)",
+              ip.battletag_full,
+              ip.tour_stop,
+              ip.official
+            )
       )
       |> MapSet.new()
 
@@ -53,12 +61,19 @@ defmodule Backend.MastersTour do
   def fetch() do
     existing =
       Repo.all(
-        from ip in InvitedPlayer, select: fragment("concat(?,?)", ip.battletag_full, ip.tour_stop)
+        from ip in InvitedPlayer,
+          select:
+            fragment(
+              "concat(?,?, CASE WHEN ?=true THEN 'true' ELSE 'false' END)",
+              ip.battletag_full,
+              ip.tour_stop,
+              ip.official
+            )
       )
       |> MapSet.new()
 
     BattlefyCommunicator.get_invited_players()
-    |> Enum.filter(fn ip -> !MapSet.member?(existing, ip.battletag_full <> ip.tour_stop) end)
+    |> Enum.filter(fn ip -> !MapSet.member?(existing, InvitedPlayer.uniq_string(ip)) end)
     |> insert_all
   end
 
@@ -114,7 +129,7 @@ defmodule Backend.MastersTour do
           tour_stop: to,
           battletag_full: gm.battletag_full,
           reason: gm.reason <> reason_append,
-          official: true,
+          official: false,
           upstream_time: gm.upstream_time
         })
 
