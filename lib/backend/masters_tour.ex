@@ -54,7 +54,7 @@ defmodule Backend.MastersTour do
       |> MapSet.new()
 
     BattlefyCommunicator.get_invited_players(tour_stop)
-    |> Enum.filter(fn ip -> !MapSet.member?(existing, ip.battletag_full) end)
+    |> Enum.filter(fn ip -> !MapSet.member?(existing, InvitedPlayer.uniq_string(ip)) end)
     |> insert_all
   end
 
