@@ -38,11 +38,11 @@ defmodule Backend.MastersTour do
     Repo.all(query)
   end
 
-  def fetch(tour_stop) do
+  def filter_existing(invited_players, tour_stop) do
     existing =
       Repo.all(
         from ip in InvitedPlayer,
-          where: ip.tour_stop == ^tour_stop,
+          where: ip.tour_stop == ^to_string(tour_stop),
           select:
             fragment(
               "concat(?,?, CASE WHEN ?=true THEN 'true' ELSE 'false' END)",
@@ -53,8 +53,13 @@ defmodule Backend.MastersTour do
       )
       |> MapSet.new()
 
-    BattlefyCommunicator.get_invited_players(tour_stop)
+    invited_players
     |> Enum.filter(fn ip -> !MapSet.member?(existing, InvitedPlayer.uniq_string(ip)) end)
+  end
+
+  def fetch(tour_stop) do
+    BattlefyCommunicator.get_invited_players(tour_stop)
+    |> filter_existing(tour_stop)
     |> insert_all
   end
 
@@ -204,6 +209,32 @@ defmodule Backend.MastersTour do
       {_, nil} -> {:error, "Missing signup token"}
       {_, reason} -> {:error, reason}
     end
+  end
+
+  def add_top_cut(tour_stop, reason, stage_id, opts \\ []) do
+    min_wins = opts[:min_wins] || 7
+    upstream_time = opts[:upstream_time] || NaiveDateTime.utc_now()
+
+    all =
+      list_invited_players(tour_stop)
+      |> MapSet.new(fn %{battletag_full: bt} -> InvitedPlayer.shorten_battletag(bt) end)
+
+    Backend.Battlefy.get_stage_standings(stage_id)
+    |> Enum.filter(fn s -> s.wins >= min_wins end)
+    |> Enum.map(fn s ->
+      %{
+        tour_stop: to_string(tour_stop),
+        battletag_full: String.trim(s.team.name),
+        reason: reason,
+        type: "invite",
+        official: false,
+        upstream_time: upstream_time
+      }
+    end)
+    |> Enum.filter(fn %{battletag_full: bt} ->
+      !MapSet.member?(all, InvitedPlayer.shorten_battletag(bt))
+    end)
+    |> insert_all()
   end
 
   @spec signup_player(user_signup_options) :: any
