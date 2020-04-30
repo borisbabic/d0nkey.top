@@ -19,7 +19,7 @@ defmodule BackendWeb.LeaderboardView do
         season_id: season_id
       }) do
     invited = process_invited(invited_raw, updated_at) |> add_other_ladders(other_ladders)
-    entry = process_entry(entry_raw, invited)
+    entry = process_entry(entry_raw, invited) |> hack_entries(region, season_id)
     highlighted = process_highlighted(highlighted_raw, entry)
     today = Date.utc_today()
     selectable_seasons = create_selectable_seasons(today)
@@ -46,6 +46,16 @@ defmodule BackendWeb.LeaderboardView do
       ladder_mode: ladder_mode,
       show_mt_column: show_mt_column
     })
+  end
+
+  def hack_entries(ldb, region, season_id) do
+    ldb
+    |> Enum.map(fn le = %{battletag: battletag} ->
+      case {battletag, to_string(region), season_id} do
+        {"Eclipse", "AP", 78} -> Map.put(le, :battletag, "Win")
+        _ -> le
+      end
+    end)
   end
 
   def add_other_ladders(invited, other_ladders) do
