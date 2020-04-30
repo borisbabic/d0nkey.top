@@ -29,7 +29,7 @@ defmodule Backend.Blizzard do
   @type battletag :: String.t()
   @type deckstring :: String.t()
 
-  @ladder_finish_order [:AP, :EU, :US]
+  #  @ladder_finish_order [:AP, :EU, :US]
 
   @doc """
   Gets the year and month from a season_id
@@ -186,7 +186,7 @@ defmodule Backend.Blizzard do
 
   ## Example
     iex> Backend.Blizzard.ladders_to_check(:"Asia-Pacific", :EU)
-    [:AP]
+    [:AP, :US]
   """
   @spec ladders_to_check(tour_stop | integer, region | String.t()) :: [region]
   def ladders_to_check(season_id, region) when is_integer(season_id) do
@@ -195,14 +195,12 @@ defmodule Backend.Blizzard do
 
   def ladders_to_check(tour_stop, region) when is_atom(tour_stop) do
     different_region = fn r -> to_string(r) != to_string(region) end
-    regions_ahead = @ladder_finish_order |> Enum.take_while(different_region) |> MapSet.new()
 
     tour_stop
     |> get_tour_stop_region!()
     |> get_ladder_priority!()
     |> Enum.take_while(different_region)
     |> MapSet.new()
-    |> MapSet.intersection(regions_ahead)
     |> MapSet.to_list()
   end
 

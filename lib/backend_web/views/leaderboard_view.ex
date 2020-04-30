@@ -60,9 +60,11 @@ defmodule BackendWeb.LeaderboardView do
 
   def add_other_ladders(invited, other_ladders) do
     other_ladders
-    |> Enum.flat_map(fn ol_entries -> process_entry(ol_entries, invited) end)
-    |> Enum.filter(fn e -> e.qualifying end)
-    |> Map.new(fn e -> {e.battletag, :other_ladder} end)
+    |> Enum.flat_map(fn %{region: region, entries: ol_entries} ->
+      process_entry(ol_entries, invited) |> Enum.map(fn e -> {region, e} end)
+    end)
+    |> Enum.filter(fn {_, e} -> e.qualifying end)
+    |> Map.new(fn {region, e} -> {e.battletag, {:other_ladder, region}} end)
     |> Map.merge(invited)
   end
 

@@ -40,22 +40,7 @@ defmodule BackendWeb.LeaderboardController do
         _ -> nil
       end
 
-    other_ladders =
-      if include_other_ladders?(season_id, leaderboard_id, ladder_mode) do
-        Blizzard.ladders_to_check(season_id, region)
-        |> Enum.map(fn r ->
-          {entry, _} =
-            try do
-              Leaderboards.fetch_current_entries(r, leaderboard_id, season_id)
-            rescue
-              _ -> {[], nil}
-            end
-
-          entry
-        end)
-      else
-        []
-      end
+    other_ladders = get_other_ladders(season_id, leaderboard_id, ladder_mode, region)
 
     render(conn, "index.html", %{
       entry: entry,
@@ -77,6 +62,24 @@ defmodule BackendWeb.LeaderboardController do
       |> Map.put_new("leaderboardId", "STD")
 
     index(conn, new_params)
+  end
+
+  def get_other_ladders(season_id, leaderboard_id, ladder_mode, region) do
+    if include_other_ladders?(season_id, leaderboard_id, ladder_mode) do
+      Blizzard.ladders_to_check(season_id, region)
+      |> Enum.map(fn r ->
+        {entry, _} =
+          try do
+            Leaderboards.fetch_current_entries(r, leaderboard_id, season_id)
+          rescue
+            _ -> {[], nil}
+          end
+
+        %{region: r, entries: entry}
+      end)
+    else
+      []
+    end
   end
 
   @spec include_other_ladders?(integer, String.t() | atom, String.t()) :: boolean
