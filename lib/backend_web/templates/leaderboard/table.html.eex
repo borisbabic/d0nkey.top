@@ -23,9 +23,9 @@
                     <% {:official, _} -> %>
                         <td><p class="tag is-info">Official</p></td>
                     <% {:unofficial, _} -> %>
-                        <td><p class="tag is-warning">Unofficial</p></td>
-                    <% {:other_ladder, _} -> %>
-                        <td><p class="tag is-danger">Ladder</p></td>
+                        <td><p class="tag is-warning" >Unofficial</p></td>
+                    <% {{:other_ladder, region}, _} -> %>
+                        <td><p class="tag is-danger"><%="#{region} Ladder"%></p></td>
                     <% {nil, false} -> %>
                         <td></td>
                 <% end %>
