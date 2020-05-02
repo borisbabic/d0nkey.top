@@ -93,9 +93,9 @@ defmodule BackendWeb.LeaderboardView do
     (see examples)
     ## Example
     iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-01-01])
-    [DEC: 74, JAN: 75, NOV: 73]
+    [JAN: 75, DEC: 74, NOV: 73]
     iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-31])
-    [DEC: 74, JAN: 75, NOV: 73]
+    [JAN: 75, DEC: 74, NOV: 73]
     iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-12])
     [DEC: 74, NOV: 73, OCT: 72]
   """
@@ -104,12 +104,7 @@ defmodule BackendWeb.LeaderboardView do
     tomorrow = Date.add(today, 1)
     tomorrow_id = get_season_id(tomorrow)
     # if it's the first day of jan or last day of dec we want to show [dec, jan, nov]
-    if tomorrow.day in [1, 2] do
-      # month difference compared to tomorrow
-      [-1, 0, -2]
-    else
-      [0, -1, -2]
-    end
+    [0, -1, -2]
     |> Enum.map(fn month_diff ->
       month_num = Util.normalize_month(month_diff + tomorrow.month)
       {get_month_name(month_num), tomorrow_id + month_diff}
