@@ -16,9 +16,8 @@ defmodule BackendWeb.LeaderboardController do
 
     ladder_mode =
       case params["ladder_mode"] do
-        "yes" -> "yes"
         "no" -> "no"
-        _ -> "auto"
+        _ -> "yes"
       end
 
     season_id =
@@ -33,12 +32,7 @@ defmodule BackendWeb.LeaderboardController do
         {:error, _} -> []
       end
 
-    highlight =
-      case params["highlight"] do
-        string when is_binary(string) -> MapSet.new([string])
-        list when is_list(list) -> MapSet.new(list)
-        _ -> nil
-      end
+    highlight = parse_highlight(params)
 
     other_ladders = get_other_ladders(season_id, leaderboard_id, ladder_mode, region)
 
@@ -64,6 +58,14 @@ defmodule BackendWeb.LeaderboardController do
     index(conn, new_params)
   end
 
+  def parse_highlight(params) do
+    case params["highlight"] do
+      string when is_binary(string) -> MapSet.new([string])
+      list when is_list(list) -> MapSet.new(list)
+      _ -> nil
+    end
+  end
+
   def get_other_ladders(season_id, leaderboard_id, ladder_mode, region) do
     if include_other_ladders?(season_id, leaderboard_id, ladder_mode) do
       Blizzard.ladders_to_check(season_id, region)
@@ -83,18 +85,11 @@ defmodule BackendWeb.LeaderboardController do
   end
 
   @spec include_other_ladders?(integer, String.t() | atom, String.t()) :: boolean
-  def include_other_ladders?(_, _, "yes") do
-    true
-  end
-
   def include_other_ladders?(_, _, "no") do
     false
   end
 
-  def include_other_ladders?(season_id, leaderboard_id, "auto") do
-    today = Date.utc_today()
-    season_start = Blizzard.get_month_start(season_id)
-    date_diff = Date.diff(today, season_start)
-    date_diff > 26 && date_diff < 33 && to_string(leaderboard_id) == "STD"
+  def include_other_ladders?(_, _, _) do
+    true
   end
 end
