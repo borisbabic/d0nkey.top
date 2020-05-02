@@ -19,13 +19,15 @@
             <%= if @show_mt_column do %>
                 <%= case {qualified, qualifying} do%>
                     <% {_, true} -> %>
-                        <td><p class="tag is-success">Top 16</p></td>
+                        <td><p class="tag is-success" data-balloon-pos="up" aria-label="The top 16 uninvited earn an MT invite">Top
+                        16</p></td>
                     <% {:official, _} -> %>
-                        <td><p class="tag is-info">Official</p></td>
+                        <td><p class="tag is-info" data-balloon-pos="up" aria-label="Officially invited to the MT">Official</p></td>
                     <% {:unofficial, _} -> %>
-                        <td><p class="tag is-warning" >Unofficial</p></td>
+                        <td><p class="tag is-warning" data-balloon-pos="up" aria-label="Earned a spot but hasn't yet been officially invited">Unofficial</p></td>
                     <% {{:other_ladder, region}, _} -> %>
-                        <td><p class="tag is-danger"><%="#{region} Ladder"%></p></td>
+                        <td><p class="tag is-danger" data-balloon-pos="up" aria-label="In a top16 spot in a region that has a higher priority"><%="#{region}
+                        Ladder"%></p></td>
                     <% {nil, false} -> %>
                         <td></td>
                 <% end %>
