@@ -152,7 +152,7 @@ defmodule BackendWeb.LeaderboardView do
       nil -> invited_raw
       _ -> Enum.filter(invited_raw, not_invited_afterwards)
     end
-    |> InvitedPlayer.prioritize()
+    |> InvitedPlayer.prioritize(&InvitedPlayer.shorten_battletag/1)
     |> Map.new(fn ip ->
       {InvitedPlayer.shorten_battletag(ip.battletag_full), InvitedPlayer.source(ip)}
     end)
