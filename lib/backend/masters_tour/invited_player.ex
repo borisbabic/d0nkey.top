@@ -56,13 +56,17 @@ defmodule Backend.MastersTour.InvitedPlayer do
   """
   @spec prioritize([InvitedPlayer.t()]) :: [InvitedPlayer.t()]
   def prioritize(invited_players) do
+    prioritize(invited_players, &Util.id/1)
+  end
+
+  def prioritize(invited_players, transform_battletag) do
     sort = fn first, second -> first.official && !second.official end
 
     invited_players
     |> Enum.group_by(fn ip -> ip.tour_stop end)
     |> Enum.flat_map(fn {_, tsg} ->
       tsg
-      |> Enum.group_by(fn ip -> ip.battletag_full end)
+      |> Enum.group_by(fn ip -> transform_battletag.(ip.battletag_full) end)
       |> Enum.map(fn {_, ips} ->
         ips
         |> Enum.sort(sort)
