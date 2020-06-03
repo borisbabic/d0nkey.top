@@ -17,7 +17,7 @@ defmodule Bot.MessageHandler do
       <<"!c_h", _::binary>> -> handle_highlight(msg)
       <<"!ch", _::binary>> -> handle_highlight(msg)
       <<"!leaderboard", _::binary>> -> handle_leaderboard(msg)
-      <<"!l", _::binary>> -> handle_leaderboard(msg)
+      <<"!ldb", _::binary>> -> Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
       <<"!matchups_link", _::binary>> -> Bot.MatchupMessageHandler.handle_matchups_link(msg)
       <<"!matchup", _::binary>> -> Bot.MatchupMessageHandler.handle_matchup(msg)
       _ -> :ignore

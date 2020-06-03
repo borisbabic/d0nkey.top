@@ -20,6 +20,7 @@ defmodule Backend.Blizzard do
     :"Asia-Pacific",
     :Montreal
   ]
+  @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
 
   @type region :: :EU | :US | :AP
   @regions [:EU, :US, :AP]
@@ -285,5 +286,10 @@ defmodule Backend.Blizzard do
     else
       {:error, "not valid"}
     end
+  end
+
+  @spec is_battletag?(String.t()) :: boolean
+  def is_battletag?(string) do
+    String.match?(string, @battletag_regex)
   end
 end
