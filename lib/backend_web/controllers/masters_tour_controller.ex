@@ -48,4 +48,16 @@ defmodule BackendWeb.MastersTourController do
     {from, to} = MastersTour.get_masters_date_range(:week)
     qualifiers(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
+
+  def earnings(conn, _params) do
+    gm_season = {2020, 2}
+    tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
+    earnings = MastersTour.get_gm_money_rankings(gm_season)
+
+    render(conn, "earnings.html", %{
+      tour_stops: tour_stops,
+      earnings: earnings,
+      gm_season: gm_season
+    })
+  end
 end

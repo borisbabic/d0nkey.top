@@ -1,0 +1,19 @@
+<div class="title is-2"><%=@title%></div>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <%= for header <- @headers do %>
+                <th><%= header %></th>
+            <% end %>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for row <- @rows do %>
+            <tr>
+                <%= for cell <- row do %>
+                    <th><%= cell %></th>
+                <% end %>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
