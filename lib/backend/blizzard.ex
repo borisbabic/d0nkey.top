@@ -9,6 +9,7 @@ defmodule Backend.Blizzard do
           | :Jönköping
           | :"Asia-Pacific"
           | :Montreal
+          | :Madrid
 
   @tour_stops [
     :"Las Vegas",
@@ -18,7 +19,8 @@ defmodule Backend.Blizzard do
     :Indonesia,
     :Jönköping,
     :"Asia-Pacific",
-    :Montreal
+    :Montreal,
+    :Madrid
   ]
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
 
@@ -29,6 +31,8 @@ defmodule Backend.Blizzard do
   # @type battletag :: <<_::binary, "#", _::binary>>
   @type battletag :: String.t()
   @type deckstring :: String.t()
+  @typedoc "{year, season}"
+  @type gm_season :: {number, number}
 
   #  @ladder_finish_order [:AP, :EU, :US]
 
@@ -90,6 +94,8 @@ defmodule Backend.Blizzard do
       79 -> {:ok, :"Asia-Pacific"}
       80 -> {:ok, :Montreal}
       81 -> {:ok, :Montreal}
+      82 -> {:ok, :Madrid}
+      83 -> {:ok, :Madrid}
       _ -> {:error, "Invalid tour stop for ladder"}
     end
   end
@@ -134,6 +140,7 @@ defmodule Backend.Blizzard do
       :Jönköping -> {:ok, [76, 77]}
       :"Asia-Pacific" -> {:ok, [78, 79]}
       :Montreal -> {:ok, [80, 81]}
+      :Madrid -> {:ok, [82, 83]}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
@@ -158,6 +165,7 @@ defmodule Backend.Blizzard do
       :Jönköping -> :EU
       :"Asia-Pacific" -> :AP
       :Montreal -> :US
+      :Madrid -> :EU
       _ -> throw("Unknown tour stop")
     end
   end
@@ -291,5 +299,40 @@ defmodule Backend.Blizzard do
   @spec is_battletag?(String.t()) :: boolean
   def is_battletag?(string) do
     String.match?(string, @battletag_regex)
+  end
+
+  #  def get_money_distribution(tour_stop) do
+  #    distribution_unknown = {:error, "Unknown distribution for tour stop"}
+  #    case tour_stop do
+  #      :LasVegas -> distribution_unknown
+  #      :Seoul -> distribution_unknown
+  #      :Bucharest -> distribution_unknown
+  #      :Arlington -> distribution_unknown
+  #      :Indonesia -> distribution_unknown
+  #
+  #      # edit_hs_decks "5ec9a33da4d7bf2e78ec166a"
+  #      :"Jönköping" -> distribution_unknown
+  #      :"Asia-Pacific" -> distribution_unknown
+  #      :Montreal -> distribution_unknown
+  #      :Madrid -> distribution_unknown
+  #      _ -> {:error, "Unknown/unsupported tour_stop"}
+  #    end
+  #  end
+
+  @spec get_tour_stops_for_gm(Blizzard.gm_season()) ::
+          {:ok, [Blizzard.tour_stop()]} | {:error, String.t()}
+  def get_tour_stops_for_gm(gm_season) do
+    case gm_season do
+      {2020, 2} -> {:ok, [:Arlington, :Indonesia, :Jönköping]}
+      _ -> {:error, "Unknown/unsupported gm_season"}
+    end
+  end
+
+  @spec get_tour_stops_for_gm!(Blizzard.gm_season()) :: Blizzard.tour_stop()
+  def get_tour_stops_for_gm!(gm_season) do
+    case get_tour_stops_for_gm(gm_season) do
+      {:ok, tour_stops} -> tour_stops
+      {:error, error} -> raise error
+    end
   end
 end

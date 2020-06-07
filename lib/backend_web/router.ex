@@ -18,8 +18,10 @@ defmodule BackendWeb.Router do
 
     get "/leaderboard", LeaderboardController, :index
     get "/", PageController, :index
+
     get "/invited/:tour_stop", MastersTourController, :invited_players
     get "/qualifiers", MastersTourController, :qualifiers
+    get "/mt/earnings", MastersTourController, :earnings
 
     get "/battlefy/tournament/:tournament_id", BattlefyController, :tournament
 
