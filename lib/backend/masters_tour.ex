@@ -8,7 +8,9 @@ defmodule Backend.MastersTour do
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Infrastructure.BattlefyCommunicator
   alias Backend.Blizzard
+  alias Backend.Battlefy
 
+  @type gm_money_rankings :: [{String.t(), integer, [{Blizzard.tour_stop(), integer}]}]
   @type user_signup_options :: %{
           user_id: Battlefy.user_id(),
           token: String.t(),
@@ -270,5 +272,81 @@ defmodule Backend.MastersTour do
   @spec create_qualifier_link(String.t(), String.t()) :: String.t()
   def create_qualifier_link(slug, id) do
     "https://battlefy.com/hsesports/#{slug}/#{id}/info"
+  end
+
+  @spec get_gm_money_rankings(Blizzard.gm_season()) :: gm_money_rankings
+  def get_gm_money_rankings(gm_season) do
+    Blizzard.get_tour_stops_for_gm!(gm_season)
+    # remove the ones happening in the future for which we don't have info
+    |> Enum.filter(fn ts ->
+      Battlefy.get_tour_stop_id(ts) |> elem(0) == :ok
+    end)
+    |> Enum.flat_map(fn ts ->
+      get_ts_money_rankings(ts) |> Enum.map(fn {name, money} -> {name, money, ts} end)
+    end)
+    |> Enum.group_by(fn {name, _, _} -> name end, fn {_, money, tour_stop} ->
+      {tour_stop, money}
+    end)
+    |> Enum.map(fn {name, earnings_list} ->
+      {
+        name,
+        earnings_list |> Enum.map(fn {_, money} -> money end) |> Enum.sum(),
+        earnings_list
+      }
+    end)
+    |> Enum.sort_by(fn {_, earnings, _} -> earnings end, :desc)
+  end
+
+  @spec get_ts_money_rankings(Blizzard.tour_stop()) :: [{String.t(), number}]
+  def get_ts_money_rankings(tour_stop)
+      when tour_stop in [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid] do
+    id = Battlefy.get_tour_stop_id!(tour_stop)
+    %{stages: [swiss, top8]} = Battlefy.get_tournament(id)
+    top8_standings = Battlefy.get_stage_standings(top8)
+
+    top8_rankings =
+      top8_standings
+      |> Enum.map(fn %{team: %{name: name}, wins: wins, place: place} ->
+        shortened_name = InvitedPlayer.shorten_battletag(name)
+
+        money =
+          case {wins, place, tour_stop, shortened_name} do
+            # stupid blizzard not updating battlefy till the end
+            {_, _, :Arlington, "xBlyzes"} -> 32500
+            {3, _, _, _} -> 32500
+            {2, _, _, _} -> 22500
+            {1, _, _, _} -> 15000
+            {0, _, _, _} -> 11000
+            {nil, 1, _, _} -> 32500
+            {nil, 2, _, _} -> 22500
+            {nil, 3, _, _} -> 15000
+            {nil, 5, _, _} -> 11000
+            _ -> 11000
+          end
+
+        {shortened_name, money}
+      end)
+
+    top8_players = top8_standings |> MapSet.new(fn %{team: %{name: name}} -> name end)
+
+    swiss_rankings =
+      Battlefy.get_stage_standings(swiss)
+      |> Enum.filter(fn %{team: %{name: name}} -> !MapSet.member?(top8_players, name) end)
+      |> Enum.map(fn %{team: %{name: name}, wins: wins} ->
+        # top 8 is handled above, don't want to double count
+        money =
+          case wins do
+            # shouldn't happen, but whatever, let's be safe
+            8 -> 3500
+            7 -> 3500
+            6 -> 2250
+            5 -> 1000
+            _ -> 850
+          end
+
+        {InvitedPlayer.shorten_battletag(name), money}
+      end)
+
+    (top8_rankings ++ swiss_rankings) |> Enum.sort_by(fn {_, money} -> money end, :desc)
   end
 end

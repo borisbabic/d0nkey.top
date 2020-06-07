@@ -5,6 +5,33 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.Blizzard
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
 
+  def render("earnings.html", %{
+        tour_stops: tour_stops,
+        earnings: earnings,
+        gm_season: {year, season}
+      }) do
+    headers = ["#", "Name"] ++ tour_stops ++ ["Total"]
+
+    rows =
+      earnings
+      |> Enum.with_index(1)
+      |> Enum.map(fn {{name, total, per_ts}, place} ->
+        [place, name] ++
+          (tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)) ++
+          [total]
+      end)
+
+    title = "Earnings for #{year} Season #{season}"
+
+    render("earnings.html", %{
+      title: title,
+      year: year,
+      season: season,
+      headers: headers,
+      rows: rows
+    })
+  end
+
   def render(
         "qualifiers.html",
         params = %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range}

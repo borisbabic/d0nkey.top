@@ -22,6 +22,8 @@
   <div class="subtitle is-6">WIP features:</div>
   These features need some finishing touches but are available for the adventurous
   <br>
+  <a class="" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Earnings</a> - View the earnings for the next GM season - not sorted by region
+  <br>
   <a class="" href="<%=Routes.leaderboard_path(@conn, :index, %{"highlight" => ["D0nkey", "Paljuha", "Groinkpff",
   "reqvam", "AuZG"], "seasonId" => "74"})%>">Highlight players on the leaderboard</a> - you need to change the url
   <br>
