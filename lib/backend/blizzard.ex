@@ -81,7 +81,7 @@ defmodule Backend.Blizzard do
     {:ok, :"Asia-Pacific"}
   """
   @spec get_ladder_tour_stop(integer()) :: {:ok, tour_stop} | {:error, String.t()}
-  # credo:disable-for-this-file
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_ladder_tour_stop(season_id) do
     case season_id do
       72 -> {:ok, :Arlington}
