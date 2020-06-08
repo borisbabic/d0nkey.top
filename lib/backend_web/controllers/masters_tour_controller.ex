@@ -49,15 +49,22 @@ defmodule BackendWeb.MastersTourController do
     qualifiers(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 
-  def earnings(conn, _params) do
+  def earnings(conn, %{"show_gms" => show_gms}) do
     gm_season = {2020, 2}
+    gms = Backend.PlayerInfo.current_gms()
     tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
     earnings = MastersTour.get_gm_money_rankings(gm_season)
 
     render(conn, "earnings.html", %{
       tour_stops: tour_stops,
       earnings: earnings,
+      show_gms: show_gms,
+      gms: gms,
       gm_season: gm_season
     })
+  end
+
+  def earnings(conn, params) do
+    earnings(conn, Map.merge(params, %{"show_gms" => "no"}))
   end
 end
