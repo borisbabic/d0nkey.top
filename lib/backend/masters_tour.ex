@@ -282,7 +282,8 @@ defmodule Backend.MastersTour do
       Battlefy.get_tour_stop_id(ts) |> elem(0) == :ok
     end)
     |> Enum.flat_map(fn ts ->
-      get_ts_money_rankings(ts) |> Enum.map(fn {name, money} -> {name, money, ts} end)
+      get_ts_money_rankings(ts)
+      |> Enum.map(fn {name, money} -> {name, money, ts} end)
     end)
     |> Enum.group_by(fn {name, _, _} -> name end, fn {_, money, tour_stop} ->
       {tour_stop, money}
@@ -301,52 +302,72 @@ defmodule Backend.MastersTour do
   def get_ts_money_rankings(tour_stop)
       when tour_stop in [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid] do
     id = Battlefy.get_tour_stop_id!(tour_stop)
-    %{stages: [swiss, top8]} = Battlefy.get_tournament(id)
+
+    Battlefy.get_tournament(id)
+    |> get_2020_earnings(tour_stop)
+  end
+
+  @spec get_2020_earnings(Battlefy.Tournament.t(), Blizzard.tour_stop()) :: [{String.t(), number}]
+  def get_2020_earnings(%{stages: [swiss, top8]}, tour_stop) do
     top8_standings = Battlefy.get_stage_standings(top8)
-
-    top8_rankings =
-      top8_standings
-      |> Enum.map(fn %{team: %{name: name}, wins: wins, place: place} ->
-        shortened_name = InvitedPlayer.shorten_battletag(name)
-
-        money =
-          case {wins, place, tour_stop, shortened_name} do
-            # stupid blizzard not updating battlefy till the end
-            {_, _, :Arlington, "xBlyzes"} -> 32500
-            {3, _, _, _} -> 32500
-            {2, _, _, _} -> 22500
-            {1, _, _, _} -> 15000
-            {0, _, _, _} -> 11000
-            {nil, 1, _, _} -> 32500
-            {nil, 2, _, _} -> 22500
-            {nil, 3, _, _} -> 15000
-            {nil, 5, _, _} -> 11000
-            _ -> 11000
-          end
-
-        {shortened_name, money}
-      end)
+    swiss_standings = Battlefy.get_stage_standings(swiss)
 
     top8_players = top8_standings |> MapSet.new(fn %{team: %{name: name}} -> name end)
 
-    swiss_rankings =
-      Battlefy.get_stage_standings(swiss)
-      |> Enum.filter(fn %{team: %{name: name}} -> !MapSet.member?(top8_players, name) end)
-      |> Enum.map(fn %{team: %{name: name}, wins: wins} ->
-        # top 8 is handled above, don't want to double count
-        money =
-          case wins do
-            # shouldn't happen, but whatever, let's be safe
-            8 -> 3500
-            7 -> 3500
-            6 -> 2250
-            5 -> 1000
-            _ -> 850
-          end
+    (get_2020_top8_earnings(top8_standings, tour_stop) ++
+       get_2020_swiss_earnings(swiss_standings, top8_players))
+    |> Enum.sort_by(fn {_, money} -> money end, :desc)
+  end
 
-        {InvitedPlayer.shorten_battletag(name), money}
-      end)
+  def get_2020_earnings(_, _) do
+    []
+  end
 
-    (top8_rankings ++ swiss_rankings) |> Enum.sort_by(fn {_, money} -> money end, :desc)
+  @spec get_2020_top8_earnings([Battlefy.Standings.t()], Blizzard.tour_stop()) :: [
+          {String.t(), number}
+        ]
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_2020_top8_earnings(standings, tour_stop) do
+    standings
+    |> Enum.map(fn %{team: %{name: name}, wins: wins, place: place} ->
+      shortened_name = InvitedPlayer.shorten_battletag(name)
+
+      money =
+        case {wins, place, tour_stop, shortened_name} do
+          # stupid blizzard not updating battlefy till the end
+          {_, _, :Arlington, "xBlyzes"} -> 32_500
+          {3, _, _, _} -> 32_500
+          {2, _, _, _} -> 22_500
+          {1, _, _, _} -> 15_000
+          {0, _, _, _} -> 11_000
+          {nil, 1, _, _} -> 32_500
+          {nil, 2, _, _} -> 22_500
+          {nil, 3, _, _} -> 15_000
+          {nil, 5, _, _} -> 11_000
+          _ -> 11_000
+        end
+
+      {shortened_name, money}
+    end)
+  end
+
+  @spec get_2020_top8_earnings([Battlefy.Standings.t()], MapSet.t()) :: [{String.t(), number}]
+  def get_2020_swiss_earnings(standings, top8_players = %MapSet{}) do
+    standings
+    |> Enum.filter(fn %{team: %{name: name}} -> !MapSet.member?(top8_players, name) end)
+    |> Enum.map(fn %{team: %{name: name}, wins: wins} ->
+      # top 8 is handled above, don't want to double count
+      money =
+        case wins do
+          # shouldn't happen, but whatever, let's be safe
+          8 -> 3500
+          7 -> 3500
+          6 -> 2250
+          5 -> 1000
+          _ -> 850
+        end
+
+      {InvitedPlayer.shorten_battletag(name), money}
+    end)
   end
 end

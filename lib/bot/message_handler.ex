@@ -8,8 +8,7 @@ defmodule Bot.MessageHandler do
   alias Backend.Blizzard
   alias Backend.Leaderboards
 
-  # complexity is too high because of all the case options
-  # credo:disable-for-this-file
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle(msg) do
     case msg.content do
       "!ping" -> Api.create_message(msg.channel_id, "pong")

@@ -114,7 +114,7 @@ defmodule Backend.HSReplay do
     end
   end
 
-  # credo:disable-for-this-file
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def create_filter_func(name, value) do
     rank_filter_val = normalize_rank_filter_value(value)
 
