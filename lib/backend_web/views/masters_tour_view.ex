@@ -8,12 +8,18 @@ defmodule BackendWeb.MastersTourView do
   def render("earnings.html", %{
         tour_stops: tour_stops,
         earnings: earnings,
-        gm_season: {year, season}
+        gm_season: {year, season},
+        show_gms: show_gms,
+        conn: conn,
+        gms: gms_list
       }) do
     headers = ["#", "Name"] ++ tour_stops ++ ["Total"]
 
+    gms = MapSet.new(gms_list)
+
     rows =
       earnings
+      |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
       |> Enum.with_index(1)
       |> Enum.map(fn {{name, total, per_ts}, place} ->
         [place, name] ++
@@ -28,6 +34,8 @@ defmodule BackendWeb.MastersTourView do
       year: year,
       season: season,
       headers: headers,
+      show_gms: show_gms,
+      conn: conn,
       rows: rows
     })
   end
