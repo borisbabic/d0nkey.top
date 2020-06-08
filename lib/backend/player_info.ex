@@ -99,7 +99,7 @@ defmodule Backend.PlayerInfo do
 
   def get_region(player) do
     cond do
-      MapSet.member?(@na_players, player) -> "NA"
+      MapSet.member?(@na_players, player) -> "AM"
       MapSet.member?(@eu_players, player) -> "EU"
       MapSet.member?(@ap_players, player) -> "AP"
       MapSet.member?(@cn_players, player) -> "CN"
