@@ -16,7 +16,7 @@ defmodule BackendWeb.MastersTourView do
   def create_name_cell(name, region) do
     tag =
       case region do
-        "NA" -> "is-info"
+        "AM" -> "is-info"
         "EU" -> "is-primary"
         "CN" -> "is-warning"
         _ -> "is-success"
