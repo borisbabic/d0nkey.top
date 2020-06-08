@@ -27,15 +27,10 @@
          <a class="navbar-item navbar-link" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a>
 
          <div class="navbar-dropdown">
-           <a class="navbar-item is-link" href="<%=Routes.leaderboard_path(@conn, :index, %{"region" => "US"}) %>">
-               Americas
-           </a>
-           <a class="navbar-item is-link" href="<%=Routes.leaderboard_path(@conn, :index, %{"region" => "AP"}) %>">
-               Asia-Pacific
-           </a>
-           <a class="navbar-item is-link" href="<%=Routes.leaderboard_path(@conn, :index, %{"region" => "EU"}) %>">
-               Europe
-           </a>
+            <%= for {region, region_name} <- Backend.Blizzard.regions_with_name() do %>
+                    <a class="navbar-item is-link"
+                    href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>"><%= region_name %></a>
+            <% end %>
          </div>
        </div>
        <div class="navbar-item has-dropdown is-hoverable">

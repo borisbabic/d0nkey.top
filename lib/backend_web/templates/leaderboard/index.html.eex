@@ -1,22 +1,25 @@
 <div class="title is-2">Leaderboard</div>
 <div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@region%></button></div>
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu"
+    class="button"><%=Backend.Blizzard.get_region_name(@region)%></button></div>
     <div class="dropdown-menu" role="menu">
-    <div class="dropdown-content">
-        <%= for region <- [:EU, :US, :AP] do %>
-                <a class="dropdown-item <%= to_string(region) == to_string(@region) && 'is-active' || '' %>" href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>"><%= region %></a>
-        <% end %>
-    </div>
+        <div class="dropdown-content">
+            <%= for {region, region_name} <- Backend.Blizzard.regions_with_name() do %>
+                    <a class="dropdown-item <%= to_string(region) == to_string(@region) && 'is-active' || '' %>"
+                    href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>"><%= region_name %></a>
+            <% end %>
+        </div>
     </div>
 </div>
 
 <div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-controls="dropdown-menu" class="button"><%=@leaderboard_id%></button></div>
+    <div class="dropdown-trigger"><button aria-controls="dropdown-menu"
+    class="button"><%= Backend.Blizzard.get_leaderboard_name(@leaderboard_id) %></button></div>
     <div class="dropdown-menu" role="menu">
     <div class="dropdown-content">
-        <%= for leaderboard_id <- [:STD, :BG, :WLD] do %>
+        <%= for {leaderboard_id, leaderboard_name} <- Backend.Blizzard.leaderboards_with_name() do %>
             <a class="dropdown-item <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'is-active'%>" href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "leaderboardId", leaderboard_id)) %>">
-                <%= leaderboard_id %>
+                <%= leaderboard_name %>
             </a>
         <% end %>
     </div>
