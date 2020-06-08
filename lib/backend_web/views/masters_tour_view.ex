@@ -5,6 +5,28 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.Blizzard
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
 
+  def create_name_cell(name) do
+    create_name_cell(name, Backend.PlayerInfo.get_region(name))
+  end
+
+  def create_name_cell(name, nil) do
+    name
+  end
+
+  def create_name_cell(name, region) do
+    tag =
+      case region do
+        "NA" -> "is-info"
+        "EU" -> "is-primary"
+        "CN" -> "is-warning"
+        _ -> "is-success"
+      end
+
+    ~E"""
+    <span class="tag <%= tag %>"><%= region %></span> <%= name %>
+    """
+  end
+
   def render("earnings.html", %{
         tour_stops: tour_stops,
         earnings: earnings,
@@ -22,7 +44,7 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
       |> Enum.with_index(1)
       |> Enum.map(fn {{name, total, per_ts}, place} ->
-        [place, name] ++
+        [place, create_name_cell(name)] ++
           (tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)) ++
           [total]
       end)
