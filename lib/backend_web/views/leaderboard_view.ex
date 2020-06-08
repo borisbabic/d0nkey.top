@@ -106,7 +106,7 @@ defmodule BackendWeb.LeaderboardView do
     tomorrow = Date.add(today, 1)
     tomorrow_id = get_season_id(tomorrow)
     # if it's the first day of jan or last day of dec we want to show [dec, jan, nov]
-    [0, -1, -2]
+    [0, -1, -2, -3, -4, -5]
     |> Enum.map(fn month_diff ->
       month_num = Util.normalize_month(month_diff + tomorrow.month)
       {get_month_name(month_num), tomorrow_id + month_diff}
@@ -118,26 +118,26 @@ defmodule BackendWeb.LeaderboardView do
 
   ## Example
     iex> BackendWeb.LeaderboardView.get_month_name(12)
-    :DEC
+    :December
     iex> BackendWeb.LeaderboardView.get_month_name(1)
-    :JAN
+    :January
   """
   @spec get_month_name(integer) :: month_name
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_month_name(month) do
     case month do
-      1 -> :JAN
-      2 -> :FEB
-      3 -> :MAR
-      4 -> :APR
-      5 -> :MAY
-      6 -> :JUN
-      7 -> :JUL
-      8 -> :AUG
-      9 -> :SEP
-      10 -> :OCT
-      11 -> :NOV
-      12 -> :DEC
+      1 -> :January
+      2 -> :February
+      3 -> :March
+      4 -> :April
+      5 -> :May
+      6 -> :June
+      7 -> :July
+      8 -> :August
+      9 -> :September
+      10 -> :October
+      11 -> :November
+      12 -> :December
       x -> to_string(x)
     end
   end

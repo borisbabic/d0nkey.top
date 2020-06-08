@@ -111,9 +111,8 @@ defmodule Backend.Blizzard do
   """
   @spec get_ladder_tour_stop(integer()) :: tour_stop
   def get_ladder_tour_stop!(season_id) do
-    with {:ok, ts} <- get_ladder_tour_stop(season_id) do
-      ts
-    else
+    case get_ladder_tour_stop(season_id) do
+      {:ok, ts} -> ts
       {:error, reason} -> throw(reason)
     end
   end
@@ -128,6 +127,7 @@ defmodule Backend.Blizzard do
     {:error, "There were no ladder invites for this tour stop"}
   """
   @spec get_ladder_seasons(tour_stop) :: {:ok, [integer()]} | {:error, String.t()}
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_ladder_seasons(tour_stop) do
     no_ladder_for_tour = {:error, "There were no ladder invites for this tour stop"}
 
@@ -189,6 +189,7 @@ defmodule Backend.Blizzard do
     end
   end
 
+  # credo:disable-next-line
   # todo Perhaps move to leaderboard module?
   @doc """
   Get the ladders that should be checked when viewing this
@@ -334,5 +335,41 @@ defmodule Backend.Blizzard do
       {:ok, tour_stops} -> tour_stops
       {:error, error} -> raise error
     end
+  end
+
+  @spec regions_with_name() :: [{region(), String.t()}]
+  def regions_with_name() do
+    regions() |> Enum.map(fn r -> {r, get_region_name(r)} end)
+  end
+
+  @spec get_region_name(String.t() | region()) :: String.t()
+  def get_region_name(region) when is_atom(region) do
+    case region do
+      :EU -> "Europe"
+      :US -> "Americas"
+      :AP -> "Asia-Pacific"
+    end
+  end
+
+  def get_region_name(region) when is_binary(region) do
+    get_region_name(String.to_existing_atom(region))
+  end
+
+  @spec leaderboards_with_name() :: [{leaderboard(), String.t()}]
+  def leaderboards_with_name() do
+    leaderboards() |> Enum.map(fn l -> {l, get_leaderboard_name(l)} end)
+  end
+
+  @spec get_leaderboard_name(String.t() | leaderboard()) :: String.t()
+  def get_leaderboard_name(leaderboard) when is_atom(leaderboard) do
+    case leaderboard do
+      :BG -> "Battlegrounds"
+      :STD -> "Standard"
+      :WLD -> "Wild"
+    end
+  end
+
+  def get_leaderboard_name(leaderboard) when is_binary(leaderboard) do
+    get_leaderboard_name(String.to_existing_atom(leaderboard))
   end
 end
