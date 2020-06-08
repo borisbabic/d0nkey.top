@@ -1319,12 +1319,24 @@ defmodule Backend.PlayerInfo do
   @spec get_region(String.t()) :: String.t()
   def get_region(player) do
     cond do
-      nationality = @nationality_to_region[@player_nationalities[player]] -> nationality
-      MapSet.member?(@na_players, player) -> "AM"
-      MapSet.member?(@eu_players, player) -> "EU"
-      MapSet.member?(@ap_players, player) -> "AP"
-      MapSet.member?(@cn_players, player) -> "CN"
-      true -> nil
+      nationality = @nationality_to_region[@player_nationalities[player]] ->
+        nationality
+
+      MapSet.member?(@na_players, player) ->
+        "AM"
+
+      MapSet.member?(@eu_players, player) ->
+        "EU"
+
+      MapSet.member?(@ap_players, player) ->
+        "AP"
+
+      MapSet.member?(@cn_players, player) ->
+        "CN"
+
+      true ->
+        pi = Backend.EsportsGold.get_player_info(player)
+        pi && pi.nationality && @nationality_to_region[pi.nationality]
     end
   end
 end
