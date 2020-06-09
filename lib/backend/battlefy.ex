@@ -109,6 +109,19 @@ defmodule Backend.Battlefy do
 
   @spec create_single_elim_standings([Match.t()], integer) :: [Standings.t()]
   def create_single_elim_standings(matches, rounds) do
+    byes =
+      matches
+      |> Enum.flat_map(fn %{top: top, bottom: bottom, is_bye: is_bye} ->
+        cond do
+          is_bye && top.winner -> [top.team.name]
+          is_bye && bottom.winner -> [bottom.team.name]
+          top.winner && (top.score == nil || top.score == 0) -> [top.team.name]
+          bottom.winner && (bottom.score == nil || bottom.score == 0) -> [bottom.team.name]
+          true -> []
+        end
+      end)
+      |> Enum.frequencies()
+
     matches
     |> Enum.flat_map(fn %{top: top, bottom: bottom, round_number: round_number} ->
       pos = (:math.pow(2, rounds - round_number) + 1) |> trunc()
@@ -133,13 +146,25 @@ defmodule Backend.Battlefy do
       losers_standings =
         losers
         |> Enum.map(fn l ->
-          %Standings{team: l.team, place: pos, wins: round_number - 1, losses: 1}
+          %Standings{
+            team: l.team,
+            place: pos,
+            wins: round_number - 1,
+            losses: 1,
+            byes: get_byes(byes, l.team)
+          }
         end)
 
       in_progress_standings =
         in_progress
         |> Enum.map(fn ip ->
-          %Standings{team: ip.team, place: 0, wins: round_number - 1, losses: 0}
+          %Standings{
+            team: ip.team,
+            place: 0,
+            wins: round_number - 1,
+            losses: 0,
+            byes: get_byes(byes, ip.team)
+          }
         end)
 
       winners_standings =
@@ -147,7 +172,13 @@ defmodule Backend.Battlefy do
           do:
             winners
             |> Enum.map(fn w ->
-              %Standings{team: w.team, place: 1, wins: round_number, losses: 0}
+              %Standings{
+                team: w.team,
+                place: 1,
+                wins: round_number,
+                losses: 0,
+                byes: get_byes(byes, w.team)
+              }
             end),
           else: []
 
@@ -157,6 +188,9 @@ defmodule Backend.Battlefy do
     |> Enum.filter(fn s -> s.team end)
     |> Enum.sort_by(fn s -> s.place end, :asc)
   end
+
+  def get_byes(byes, %{name: name}), do: byes[name] || 0
+  def get_byes(_, _), do: 0
 
   @spec create_standings_from_matches(Stage.t()) :: [Standings.t()]
   def create_standings_from_matches(%{

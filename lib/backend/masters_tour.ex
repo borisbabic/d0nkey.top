@@ -7,7 +7,6 @@ defmodule Backend.MastersTour do
   alias Backend.Repo
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.MastersTour.Qualifier
-  alias Backend.MastersTour.QualifierStats
   alias Backend.Infrastructure.BattlefyCommunicator
   alias Backend.Blizzard
   alias Backend.Battlefy
@@ -79,14 +78,16 @@ defmodule Backend.MastersTour do
   @spec create_qualifier_standings([Battlefy.Standings.t()]) :: [Qualifier.Standings.t()]
   def create_qualifier_standings(battlefy_standings) do
     battlefy_standings
-    |> Enum.map(fn %{wins: wins, losses: losses, place: position, team: %{name: battletag_full}} ->
-      %{
-        battletag_full: battletag_full,
-        wins: wins,
-        losses: losses,
-        position: position
-      }
-    end)
+    |> Enum.map(
+      fn s = %{wins: wins, losses: losses, place: position, team: %{name: battletag_full}} ->
+        %{
+          battletag_full: battletag_full,
+          wins: wins - Map.get(s, :byes, 0),
+          losses: losses,
+          position: position
+        }
+      end
+    )
   end
 
   @spec list_qualifiers_for_tour(Blizzard.tour_stop()) :: [Qualifier]
@@ -94,6 +95,19 @@ defmodule Backend.MastersTour do
     query =
       from q in Qualifier,
         where: q.tour_stop == ^to_string(tour_stop),
+        select: q,
+        order_by: [asc: q.start_time]
+
+    Repo.all(query)
+  end
+
+  @spec list_qualifiers_for_year(integer) :: [Qualifier]
+  def list_qualifiers_for_year(year) do
+    ts = Blizzard.get_tour_stops_for_year(year) |> Enum.map(&to_string/1)
+
+    query =
+      from q in Qualifier,
+        where: q.tour_stop in ^ts,
         select: q,
         order_by: [asc: q.start_time]
 
@@ -146,7 +160,6 @@ defmodule Backend.MastersTour do
     |> Enum.reduce(Multi.new(), fn cs, multi ->
       Multi.insert(multi, "qualifier_#{cs.changes.tournament_id}", cs)
     end)
-    |> update_stats(new_structs, tour_stop)
     |> Repo.transaction()
 
     # we don't really care too much if this fails since they will get officially invited at some point
@@ -172,54 +185,6 @@ defmodule Backend.MastersTour do
       tournament_id: q.tournament_id,
       official: official && true
     }
-  end
-
-  @spec update_stats([Qualifier.t()], Blizzard.tour_stop(), Multi.t()) :: Multi.t()
-  def update_stats(multi = %Multi{}, qualifiers, tour_stop) do
-    stats =
-      get_or_create_stats(tour_stop)
-      |> QualifierStats.add_cups(qualifiers)
-
-    Multi.update(multi, "stats_#{tour_stop}", stats)
-  end
-
-  @spec get_or_create_stats(Blizzard.tour_stop()) :: Multi.t()
-  def get_or_create_stats(tour_stop) do
-    with nil <- find_stats(tour_stop),
-         {:ok, stats} <- create_stats(tour_stop) do
-      stats
-    else
-      {:error, reason} -> raise reason
-      stats = %QualifierStats{} -> stats
-    end
-  end
-
-  @spec create_stats(Blizzard.tour_stop()) :: QualifierStats
-  def create_stats(tour_stop) do
-    %QualifierStats{}
-    |> QualifierStats.changeset(%{
-      tour_stop: to_string(tour_stop),
-      region: to_string(Blizzard.get_tour_stop_region!(tour_stop)),
-      cups_counted: 0,
-      player_stats: []
-    })
-    |> Repo.insert()
-  end
-
-  @spec find_stats(Blizzard.tour_stop()) :: QualifierStats | nil
-  def find_stats(tour_stop) do
-    Repo.one(
-      from s in QualifierStats,
-        select: s,
-        where: s.tour_stop == ^to_string(tour_stop)
-    )
-  end
-
-  @spec update_stats([Qualifier.t()], Blizzard.tour_stop()) :: {:ok, any()} | {:error, any()}
-  def update_stats(qualifiers, tour_stop) do
-    Multi.new()
-    |> update_stats(qualifiers, tour_stop)
-    |> Repo.transaction()
   end
 
   def fetch(tour_stop) do
