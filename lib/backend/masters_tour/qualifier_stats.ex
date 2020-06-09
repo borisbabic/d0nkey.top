@@ -62,21 +62,10 @@ defmodule Backend.MastersTour.QualifierStats.Player do
   @moduledoc false
   use Ecto.Schema
   alias Backend.MastersTour.Qualifier
-  #    @all_attrs [:wins, :losses, :cups, :top8, :top16, :positions]
-  #    @empty_attrs %{
-  #      battletag_full: "",
-  #      wins: 0,
-  #      losses: 0,
-  #      cups: 0,
-  #      top8: 0,
-  #      top16: 0,
-  #      positions: []
-  #    }
   @primary_key {:battletag_full, :string, autogenerate: false}
   embedded_schema do
     field :wins, :integer
     field :losses, :integer
-    field :cups, :integer
     field :won, :boolean
     field :top8, :integer
     field :top16, :integer
@@ -89,7 +78,6 @@ defmodule Backend.MastersTour.QualifierStats.Player do
       battletag_full: s.battletag_full,
       wins: s.wins,
       losses: s.losses,
-      cups: 1,
       won: s.position == 1,
       top8: if(s.position < 8, do: 1, else: 0),
       top16: if(s.position < 16, do: 1, else: 0),
