@@ -68,31 +68,49 @@ defmodule BackendWeb.MastersTourView do
 
   def render("qualifier_stats.html", %{
         tour_stop: tour_stop,
-        stats: stats
+        stats: stats,
+        conn: conn
       }) do
     min_to_show = (5 + stats.cups_counted * 0.20) |> ceil()
 
-    headers = ["#", "Player", "Cups", "Top 8", "%"]
+    headers = ["#", "Player", "Cups", "Top 8", "Top16", "%"]
 
     rows =
       stats.player_stats
       |> Enum.filter(fn ps -> Enum.count(ps.positions) >= min_to_show end)
       |> Enum.sort_by(fn ps -> ps.wins / (ps.wins + ps.losses) end, :desc)
       |> Enum.with_index(1)
+      #      |> (fn all = [orange|_] ->
+      #        IO.inspect(orange)
+      #        all
+      #      end).()
       |> Enum.map(fn {ps, pos} ->
         [
           pos,
-          ps.battletag_full,
+          InvitedPlayer.shorten_battletag(ps.battletag_full),
           Enum.count(ps.positions),
           ps.top8,
+          ps.top16,
           "#{(100 * ps.wins / (ps.wins + ps.losses)) |> Float.round(2) |> Float.to_string()}%"
         ]
+      end)
+
+    ts_list =
+      eligible_tour_stops()
+      |> Enum.map(fn ts ->
+        %{
+          ts: ts,
+          selected: to_string(ts) == to_string(tour_stop),
+          link: Routes.masters_tour_path(conn, :qualifier_stats, ts)
+        }
       end)
 
     render("qualifier_stats.html", %{
       title: "#{tour_stop} qualifier stats",
       headers: headers,
       rows: rows,
+      ts_list: ts_list,
+      selected_ts: tour_stop,
       min: min_to_show
     })
   end
@@ -219,9 +237,7 @@ defmodule BackendWeb.MastersTourView do
   @spec create_dropdown_qualifier_links(any) :: [qualifiers_dropdown_link]
   def create_dropdown_qualifier_links(conn) do
     tour_stop_ranges =
-      Blizzard.tour_stops()
-      |> Enum.reverse()
-      |> Enum.take_while(fn ts -> ts != :Bucharest end)
+      eligible_tour_stops()
       |> Enum.map(fn ts ->
         %{
           display: ts,
@@ -239,6 +255,12 @@ defmodule BackendWeb.MastersTourView do
       end)
 
     date_ranges ++ tour_stop_ranges
+  end
+
+  def eligible_tour_stops() do
+    Blizzard.tour_stops()
+    |> Enum.reverse()
+    |> Enum.take_while(fn ts -> ts != :Bucharest end)
   end
 
   def create_qualifiers_link({%Date{} = from, %Date{} = to}, conn) do
