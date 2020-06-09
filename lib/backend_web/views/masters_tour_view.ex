@@ -56,6 +56,47 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
+  def render("qualifier_stats.html", %{
+        tour_stop: tour_stop,
+        stats: nil
+      }) do
+    ~E"""
+    No stats for <%= tour_stop %>. Only tour stops with 100% single elim tourneys are supported. If this is one of
+    them them contact me somewhere
+    """
+  end
+
+  def render("qualifier_stats.html", %{
+        tour_stop: tour_stop,
+        stats: stats
+      }) do
+    min_to_show = (5 + stats.cups_counted * 0.20) |> ceil()
+
+    headers = ["#", "Player", "Cups", "Top 8", "%"]
+
+    rows =
+      stats.player_stats
+      |> Enum.filter(fn ps -> Enum.count(ps.positions) >= min_to_show end)
+      |> Enum.sort_by(fn ps -> ps.wins / (ps.wins + ps.losses) end, :desc)
+      |> Enum.with_index(1)
+      |> Enum.map(fn {ps, pos} ->
+        [
+          pos,
+          ps.battletag_full,
+          Enum.count(ps.positions),
+          ps.top8,
+          "#{(100 * ps.wins / (ps.wins + ps.losses)) |> Float.round(2) |> Float.to_string()}%"
+        ]
+      end)
+
+    render("qualifier_stats.html", %{
+      title: "#{tour_stop} qualifier stats",
+      headers: headers,
+      rows: rows,
+      min: min_to_show
+    })
+  end
+
   def render("earnings.html", %{
         tour_stops: tour_stops,
         earnings: earnings,

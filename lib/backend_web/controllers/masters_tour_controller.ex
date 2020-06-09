@@ -67,4 +67,22 @@ defmodule BackendWeb.MastersTourController do
   def earnings(conn, params) do
     earnings(conn, Map.merge(params, %{"show_gms" => "no"}))
   end
+
+  def qualifier_stats(conn, %{"tour_stop" => ts}) do
+    tour_stop = ts |> to_string() |> String.to_existing_atom()
+
+    stats = MastersTour.find_stats(tour_stop)
+
+    render(conn, "qualifier_stats.html", %{
+      tour_stop: tour_stop,
+      stats: stats
+    })
+  end
+
+  def qualifier_stats(conn, params) do
+    qualifier_stats(
+      conn,
+      Map.merge(params, %{"tour_stop" => Backend.Blizzard.current_ladder_tour_stop()})
+    )
+  end
 end
