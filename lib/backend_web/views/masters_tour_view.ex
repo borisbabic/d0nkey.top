@@ -27,6 +27,35 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
+  def create_headers(tour_stops) do
+    ~E"""
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <%= for ts <- tour_stops do %>
+        <th class="is-hidden-mobile"><%=ts%></th>
+      <% end %>
+      <th>Total</th>
+    </tr>
+    """
+  end
+
+  def create_row_html({{name, total, per_ts}, place}, tour_stops) do
+    name_cell = create_name_cell(name)
+    tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
+
+    ~E"""
+      <tr>
+        <td> <%=place%> </td>
+        <td> <%=name_cell%> </td>
+        <%= for tsc <- tour_stop_cells do %>
+          <td class="is-hidden-mobile"><%=tsc%></td>
+        <% end %>
+        <td><%=total%></td>
+      </tr>
+    """
+  end
+
   def render("earnings.html", %{
         tour_stops: tour_stops,
         earnings: earnings,
@@ -35,7 +64,7 @@ defmodule BackendWeb.MastersTourView do
         conn: conn,
         gms: gms_list
       }) do
-    headers = ["#", "Name"] ++ tour_stops ++ ["Total"]
+    headers = create_headers(tour_stops)
 
     gms = MapSet.new(gms_list)
 
@@ -43,11 +72,7 @@ defmodule BackendWeb.MastersTourView do
       earnings
       |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
       |> Enum.with_index(1)
-      |> Enum.map(fn {{name, total, per_ts}, place} ->
-        [place, create_name_cell(name)] ++
-          (tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)) ++
-          [total]
-      end)
+      |> Enum.map(fn row_data -> create_row_html(row_data, tour_stops) end)
 
     title = "Earnings for #{year} Season #{season}"
 
