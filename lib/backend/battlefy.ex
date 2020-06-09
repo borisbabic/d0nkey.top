@@ -158,7 +158,7 @@ defmodule Backend.Battlefy do
     |> Enum.sort_by(fn s -> s.place end, :asc)
   end
 
-  @spec get_tournament_standings(Stage.t()) :: [Standings.t()]
+  @spec create_standings_from_matches(Stage.t()) :: [Standings.t()]
   def create_standings_from_matches(%{
         id: id,
         bracket: bracket = %{type: "elimination", style: "single"}
@@ -371,7 +371,6 @@ defmodule Backend.Battlefy do
     Enum.map(@regions, &to_string/1)
   end
 
-  # todo move this somewhere else
   def get_hsdeckviewer_link(get_deckstrings_options) do
     get_deckstrings_options
     |> get_deckstrings()
@@ -397,6 +396,7 @@ defmodule Backend.Battlefy do
   end
 
   @spec get_tour_stop_id(Blizzard.tour_stop()) :: {:ok, tournament_id()} | {:error, String.t()}
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_tour_stop_id(tour_stop) do
     id_unknown = {:error, "ID unknown for tour stop"}
 
