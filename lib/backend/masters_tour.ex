@@ -6,6 +6,8 @@ defmodule Backend.MastersTour do
   alias Ecto.Multi
   alias Backend.Repo
   alias Backend.MastersTour.InvitedPlayer
+  alias Backend.MastersTour.Qualifier
+  alias Backend.MastersTour.QualifierStats
   alias Backend.Infrastructure.BattlefyCommunicator
   alias Backend.Blizzard
   alias Backend.Battlefy
@@ -57,6 +59,167 @@ defmodule Backend.MastersTour do
 
     invited_players
     |> Enum.filter(fn ip -> !MapSet.member?(existing, InvitedPlayer.uniq_string(ip)) end)
+  end
+
+  def has_qualifier_started?(%{start_time: st}),
+    do: NaiveDateTime.compare(st, NaiveDateTime.utc_now()) == :lt
+
+  def has_qualifier_started?(_), do: false
+
+  @spec is_finished_qualifier?(Battlefy.Tournament.t()) :: boolean
+  def is_finished_qualifier?(%{stages: [%{current_round: nil, has_started: true}]}), do: true
+  def is_finished_qualifier?(_), do: false
+
+  @spec is_supported_qualifier?(Battlefy.Tournament.t()) :: boolean
+  def is_supported_qualifier?(%{stages: [%{bracket: %{type: "elimination", style: "single"}}]}),
+    do: true
+
+  def is_supported_qualifier?(_), do: false
+
+  @spec create_qualifier_standings([Battlefy.Standings.t()]) :: [Qualifier.Standings.t()]
+  def create_qualifier_standings(battlefy_standings) do
+    battlefy_standings
+    |> Enum.map(fn %{wins: wins, losses: losses, place: position, team: %{name: battletag_full}} ->
+      %{
+        battletag_full: battletag_full,
+        wins: wins,
+        losses: losses,
+        position: position
+      }
+    end)
+  end
+
+  @spec list_qualifiers_for_tour(Blizzard.tour_stop()) :: [Qualifier]
+  def list_qualifiers_for_tour(tour_stop) do
+    query =
+      from q in Qualifier,
+        where: q.tour_stop == ^to_string(tour_stop),
+        select: q,
+        order_by: [asc: q.start_time]
+
+    Repo.all(query)
+  end
+
+  def qualifiers_update() do
+    Blizzard.current_ladder_tour_stop()
+    |> qualifiers_update()
+  end
+
+  def qualifiers_update(tour_stop) when is_atom(tour_stop) do
+    existing =
+      list_qualifiers_for_tour(tour_stop) |> Enum.map(fn q -> q.tournament_id end) |> MapSet.new()
+
+    new =
+      get_qualifiers_for_tour(tour_stop)
+      |> Enum.filter(fn q -> !MapSet.member?(existing, q.id) end)
+      |> Enum.filter(&has_qualifier_started?/1)
+      |> Enum.map(fn q -> Battlefy.get_tournament(q.id) end)
+      |> Enum.filter(&is_supported_qualifier?/1)
+      |> Enum.filter(&is_finished_qualifier?/1)
+      |> Enum.map(fn t = %{stages: [stage]} ->
+        {t, Battlefy.create_standings_from_matches(stage)}
+      end)
+      |> Enum.map(fn {t, s} ->
+        standings = create_qualifier_standings(s)
+
+        winner =
+          standings
+          |> Enum.find_value(fn %{position: pos, battletag_full: bt} -> pos == 1 && bt end)
+
+        %Qualifier{}
+        |> Qualifier.changeset(%{
+          tour_stop: to_string(tour_stop),
+          start_time: t.start_time,
+          end_time: t.last_completed_match_at,
+          region: to_string(t.region),
+          tournament_id: t.id,
+          tournament_slug: t.slug,
+          winner: winner,
+          type: to_string(:single_elimination),
+          standings: standings
+        })
+      end)
+
+    new_structs = new |> Enum.map(&Ecto.Changeset.apply_changes/1)
+
+    new
+    |> Enum.reduce(Multi.new(), fn cs, multi ->
+      Multi.insert(multi, "qualifier_#{cs.changes.tournament_id}", cs)
+    end)
+    |> update_stats(new_structs, tour_stop)
+    |> Repo.transaction()
+
+    # we don't really care too much if this fails since they will get officially invited at some point
+    # so it's okay that it's in a separate transaction
+    new_structs
+    |> Enum.reduce(Multi.new(), fn q, multi ->
+      ip = q |> create_qualifier_invite()
+      cs = ip |> create_invited_player()
+      Multi.insert(multi, InvitedPlayer.uniq_string(ip), cs)
+    end)
+    |> Repo.transaction()
+  end
+
+  @spec create_qualifier_invite(Qualifier, boolean | nil) :: any()
+  def create_qualifier_invite(q, official \\ false) do
+    %{
+      battletag_full: q.winner,
+      tour_stop: to_string(q.tour_stop),
+      type: "qualifier",
+      reason: "qualifier",
+      upstream_time: q.end_time,
+      tournament_slug: q.tournament_slug,
+      tournament_id: q.tournament_id,
+      official: official && true
+    }
+  end
+
+  @spec update_stats([Qualifier.t()], Blizzard.tour_stop(), Multi.t()) :: Multi.t()
+  def update_stats(multi = %Multi{}, qualifiers, tour_stop) do
+    stats =
+      get_or_create_stats(tour_stop)
+      |> QualifierStats.add_cups(qualifiers)
+
+    Multi.update(multi, "stats_#{tour_stop}", stats)
+  end
+
+  @spec get_or_create_stats(Blizzard.tour_stop()) :: Multi.t()
+  def get_or_create_stats(tour_stop) do
+    with nil <- find_stats(tour_stop),
+         {:ok, stats} <- create_stats(tour_stop) do
+      stats
+    else
+      {:error, reason} -> raise reason
+      stats = %QualifierStats{} -> stats
+    end
+  end
+
+  @spec create_stats(Blizzard.tour_stop()) :: QualifierStats
+  def create_stats(tour_stop) do
+    %QualifierStats{}
+    |> QualifierStats.changeset(%{
+      tour_stop: to_string(tour_stop),
+      region: to_string(Blizzard.get_tour_stop_region!(tour_stop)),
+      cups_counted: 0,
+      player_stats: []
+    })
+    |> Repo.insert()
+  end
+
+  @spec find_stats(Blizzard.tour_stop()) :: QualifierStats | nil
+  def find_stats(tour_stop) do
+    Repo.one(
+      from s in QualifierStats,
+        select: s,
+        where: s.tour_stop == ^to_string(tour_stop)
+    )
+  end
+
+  @spec update_stats([Qualifier.t()], Blizzard.tour_stop()) :: {:ok, any()} | {:error, any()}
+  def update_stats(qualifiers, tour_stop) do
+    Multi.new()
+    |> update_stats(qualifiers, tour_stop)
+    |> Repo.transaction()
   end
 
   def fetch(tour_stop) do
@@ -176,7 +339,7 @@ defmodule Backend.MastersTour do
 
   def get_qualifiers_for_tour(tour_stop) do
     {start_date, end_date} = guess_qualifier_range(tour_stop)
-    Backend.Infrastructure.BattlefyCommunicator.get_masters_qualifiers(start_date, end_date)
+    BattlefyCommunicator.get_masters_qualifiers(start_date, end_date)
   end
 
   def guess_qualifier_range(tour_stop) do
