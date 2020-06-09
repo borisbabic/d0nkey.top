@@ -1,30 +1,33 @@
 <div class="title is-2">Leaderboard</div>
-<div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu"
-    class="button"><%=Backend.Blizzard.get_region_name(@region)%></button></div>
-    <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-            <%= for {region, region_name} <- Backend.Blizzard.regions_with_name() do %>
-                    <a class="dropdown-item <%= to_string(region) == to_string(@region) && 'is-active' || '' %>"
-                    href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>"><%= region_name %></a>
-            <% end %>
+<!-- We want different name lengths depending on mobile or not -->
+<%= for {class, length} <- [{"is-hidden-mobile", :long}, {"is-hidden-tablet", :short}] do %>
+    <div class="dropdown is-hoverable <%= class %>">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu"
+        class="button"><%=Backend.Blizzard.get_region_name(@region, length)%></button></div>
+        <div class="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+                <%= for {region, region_name} <- Backend.Blizzard.qualifier_regions_with_name(length) do %>
+                        <a class="dropdown-item <%= to_string(region) == to_string(@region) && 'is-active' || '' %>"
+                        href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>"><%= region_name %></a>
+                <% end %>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-controls="dropdown-menu"
-    class="button"><%= Backend.Blizzard.get_leaderboard_name(@leaderboard_id) %></button></div>
-    <div class="dropdown-menu" role="menu">
-    <div class="dropdown-content">
-        <%= for {leaderboard_id, leaderboard_name} <- Backend.Blizzard.leaderboards_with_name() do %>
-            <a class="dropdown-item <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'is-active'%>" href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "leaderboardId", leaderboard_id)) %>">
-                <%= leaderboard_name %>
-            </a>
-        <% end %>
+    <div class="dropdown is-hoverable <%=class %>">
+        <div class="dropdown-trigger"><button aria-controls="dropdown-menu"
+        class="button"><%= Backend.Blizzard.get_leaderboard_name(@leaderboard_id, length) %></button></div>
+        <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+            <%= for {leaderboard_id, leaderboard_name} <- Backend.Blizzard.leaderboards_with_name(length) do %>
+                <a class="dropdown-item <%= to_string(leaderboard_id) == to_string(@leaderboard_id) && 'is-active'%>" href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "leaderboardId", leaderboard_id)) %>">
+                    <%= leaderboard_name %>
+                </a>
+            <% end %>
+        </div>
+        </div>
     </div>
-    </div>
-</div>
+<% end %>
 
 <div class="dropdown is-hoverable">
     <div class="dropdown-trigger"><button aria-controls="dropdown-menu" class="button"><%=@season_name%></button></div>
