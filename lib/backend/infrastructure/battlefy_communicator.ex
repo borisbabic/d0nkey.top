@@ -18,10 +18,10 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   """
   @spec get_masters_qualifiers(Date.t(), Date.t()) :: [qualifier]
   def get_masters_qualifiers(start_date = %Date{}, end_date = %Date{}) do
-    with {:ok, start_time} <-
-           NaiveDateTime.new(start_date.year, start_date.month, start_date.day, 23, 59, 59),
-         {:ok, end_time} <-
-           NaiveDateTime.new(end_date.year, end_date.month, end_date.day, 0, 0, 0) do
+    with {:ok, end_time} <-
+           NaiveDateTime.new(end_date.year, end_date.month, end_date.day, 23, 59, 59),
+         {:ok, start_time} <-
+           NaiveDateTime.new(start_date.year, start_date.month, start_date.day, 0, 0, 0) do
       get_masters_qualifiers(start_time, end_time)
     end
   end
