@@ -23,7 +23,7 @@ defmodule BackendWeb.MastersTourView do
       end
 
     ~E"""
-    <span class="tag <%= tag %>"><%= region %></span> <%= name %>
+    <span class="tag <%= tag %> is-family-code"><%= region %></span> <%= name %>
     """
   end
 
