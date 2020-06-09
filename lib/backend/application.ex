@@ -23,6 +23,7 @@ defmodule Backend.Application do
           id: Backend.Infrastructure.HSReplayLatestCache,
           start: {Backend.Infrastructure.HSReplayLatestCache, :start_link, [[]]}
         },
+        {Task, &warmup_cache/0},
         QuantumScheduler
       ]
       |> check_bot()
@@ -46,5 +47,16 @@ defmodule Backend.Application do
   def config_change(changed, _new, removed) do
     BackendWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  def warmup_cache() do
+    try do
+      Backend.MastersTour.get_gm_money_rankings({2020, 2})
+      |> Enum.each(fn {player, _, _} -> Backend.EsportsGold.get_player_info(player) end)
+    rescue
+      _ -> nil
+    catch
+      _ -> nil
+    end
   end
 end
