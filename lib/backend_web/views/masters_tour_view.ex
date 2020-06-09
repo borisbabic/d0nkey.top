@@ -66,31 +66,94 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
+  def opposite(:desc), do: :asc
+  def opposite(_), do: :desc
+  def symbol(:asc), do: "↓"
+  def symbol(_), do: "↑"
+  def create_stats_header("#", _, _, _, _), do: "#"
+
+  def create_stats_header(header, sort_by, direction, conn, period) when header == sort_by do
+    IO.inspect(direction)
+    IO.inspect(opposite(direction))
+    click_params = %{"sort_by" => header, "direction" => opposite(direction)}
+
+    url =
+      Routes.masters_tour_path(
+        conn,
+        :qualifier_stats,
+        period,
+        Map.merge(conn.query_params, click_params)
+      )
+
+    cell = "#{header}#{symbol(direction)}"
+
+    ~E"""
+      <a class="is-text" href="<%= url %>"><%= cell %></a>
+    """
+  end
+
+  def create_stats_header(header, _, _, conn, period) do
+    click_params = %{"sort_by" => header, "direction" => :desc}
+
+    url =
+      Routes.masters_tour_path(
+        conn,
+        :qualifier_stats,
+        period,
+        Map.merge(conn.query_params, click_params)
+      )
+
+    ~E"""
+      <a class="is-text" href="<%= url %>"><%= header %></a>
+    """
+  end
+
+  def get_sort_index(headers, sort_by, default \\ "%") do
+    headers |> Enum.find_index(fn a -> a == sort_by end) ||
+      headers |> Enum.find_index(fn a -> a == default end) ||
+      0
+  end
+
   def render("qualifier_stats.html", %{
         period: period,
         total: total,
         stats: stats,
+        sort_by: sort_by_raw,
+        direction: direction_raw,
         conn: conn
       }) do
     min_to_show = (5 + total * 0.20) |> ceil()
 
-    headers = ["#", "Player", "Cups", "Top 8", "Top16", "%"]
+    {sort_by, direction} =
+      case {sort_by_raw, direction_raw} do
+        {s, d} when is_atom(d and is_binary(s)) -> {s, d}
+        {s, _} when is_binary(s) -> {s, :desc}
+        _ -> {"%", :desc}
+      end
+
+    sortable_headers = ["Player", "Cups", "Top 8", "Top16", "%"]
+
+    headers =
+      (["#"] ++ sortable_headers)
+      |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn, period) end)
+
+    sort_index = get_sort_index(sortable_headers, sort_by)
 
     rows =
       stats
       |> Enum.filter(fn ps -> Enum.count(ps.positions) >= min_to_show end)
-      |> Enum.sort_by(fn ps -> ps.wins / (ps.wins + ps.losses) end, :desc)
-      |> Enum.with_index(1)
-      |> Enum.map(fn {ps, pos} ->
+      |> Enum.map(fn ps ->
         [
-          pos,
           InvitedPlayer.shorten_battletag(ps.battletag_full),
           Enum.count(ps.positions),
           ps.top8,
           ps.top16,
-          "#{(100 * ps.wins / (ps.wins + ps.losses)) |> Float.round(2) |> Float.to_string()}%"
+          (100 * ps.wins / (ps.wins + ps.losses)) |> Float.round(2)
         ]
       end)
+      |> Enum.sort_by(fn row -> Enum.at(row, sort_index) end, direction || :desc)
+      |> Enum.with_index(1)
+      |> Enum.map(fn {row, pos} -> [pos | row] end)
 
     ts_list =
       (eligible_years() ++ eligible_tour_stops())
