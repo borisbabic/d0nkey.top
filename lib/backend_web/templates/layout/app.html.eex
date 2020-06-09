@@ -39,8 +39,9 @@
          </a>
 
          <div class="navbar-dropdown">
-           <a class="navbar-item" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard .current_ladder_tour_stop) %>'>Invited</a>
+           <a class="navbar-item" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop) %>'>Invited</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Qualifiers</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :qualifier_stats, Backend.Blizzard.current_ladder_tour_stop())%>">Qualifier Stats</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Earnings</a>
          </div>
        </div>
