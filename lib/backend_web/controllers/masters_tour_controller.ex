@@ -68,7 +68,7 @@ defmodule BackendWeb.MastersTourController do
     earnings(conn, Map.merge(params, %{"show_gms" => "no"}))
   end
 
-  def qualifier_stats(conn, %{"tour_stop" => ts}) do
+  def qualifier_stats(conn, params = %{"tour_stop" => ts}) do
     #    tour_stop = ts |> to_string() |> String.to_existing_atom()
     #    qualifiers = MastersTour.list_qualifiers_for_tour(tour_stop)
     {qualifiers, period} =
@@ -87,9 +87,18 @@ defmodule BackendWeb.MastersTourController do
 
     stats = MastersTour.PlayerStats.create_collection(qualifiers)
 
+    direction =
+      case params["direction"] do
+        "desc" -> :desc
+        "asc" -> :asc
+        _ -> nil
+      end
+
     render(conn, "qualifier_stats.html", %{
       period: period,
       total: qualifiers |> Enum.count(),
+      sort_by: params["sort_by"],
+      direction: direction,
       stats: stats
     })
   end
