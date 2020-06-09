@@ -67,23 +67,20 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def render("qualifier_stats.html", %{
-        tour_stop: tour_stop,
+        period: period,
+        total: total,
         stats: stats,
         conn: conn
       }) do
-    min_to_show = (5 + stats.cups_counted * 0.20) |> ceil()
+    min_to_show = (5 + total * 0.20) |> ceil()
 
     headers = ["#", "Player", "Cups", "Top 8", "Top16", "%"]
 
     rows =
-      stats.player_stats
+      stats
       |> Enum.filter(fn ps -> Enum.count(ps.positions) >= min_to_show end)
       |> Enum.sort_by(fn ps -> ps.wins / (ps.wins + ps.losses) end, :desc)
       |> Enum.with_index(1)
-      #      |> (fn all = [orange|_] ->
-      #        IO.inspect(orange)
-      #        all
-      #      end).()
       |> Enum.map(fn {ps, pos} ->
         [
           pos,
@@ -96,21 +93,21 @@ defmodule BackendWeb.MastersTourView do
       end)
 
     ts_list =
-      eligible_tour_stops()
+      (eligible_years() ++ eligible_tour_stops())
       |> Enum.map(fn ts ->
         %{
           ts: ts,
-          selected: to_string(ts) == to_string(tour_stop),
+          selected: to_string(ts) == to_string(period),
           link: Routes.masters_tour_path(conn, :qualifier_stats, ts)
         }
       end)
 
     render("qualifier_stats.html", %{
-      title: "#{tour_stop} qualifier stats",
+      title: "#{period} qualifier stats",
       headers: headers,
       rows: rows,
       ts_list: ts_list,
-      selected_ts: tour_stop,
+      selected_ts: period,
       min: min_to_show
     })
   end
@@ -256,6 +253,8 @@ defmodule BackendWeb.MastersTourView do
 
     date_ranges ++ tour_stop_ranges
   end
+
+  def eligible_years(), do: [2020]
 
   def eligible_tour_stops() do
     Blizzard.tour_stops()

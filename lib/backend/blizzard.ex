@@ -418,4 +418,13 @@ defmodule Backend.Blizzard do
   def get_leaderboard_name(leaderboard, length) when is_binary(leaderboard) do
     get_leaderboard_name(String.to_existing_atom(leaderboard), length)
   end
+
+  @spec get_tour_stops_for_year(integer) :: [tour_stop()]
+  def get_tour_stops_for_year(year) do
+    case year do
+      2020 -> [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid]
+      2019 -> [:"Las Vegas", :Seoul, :Bucharest]
+      _ -> []
+    end
+  end
 end
