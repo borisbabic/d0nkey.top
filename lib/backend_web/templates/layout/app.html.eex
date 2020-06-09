@@ -27,7 +27,7 @@
          <a class="navbar-item navbar-link" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a>
 
          <div class="navbar-dropdown">
-            <%= for {region, region_name} <- Backend.Blizzard.regions_with_name() do %>
+            <%= for {region, region_name} <- Backend.Blizzard.qualifier_regions_with_name() do %>
                     <a class="navbar-item is-link"
                     href="<%= Routes.leaderboard_path(@conn, :index, Map.put(@conn.query_params, "region", region)) %>"><%= region_name %></a>
             <% end %>

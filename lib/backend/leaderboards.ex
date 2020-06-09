@@ -76,7 +76,7 @@ defmodule Backend.Leaderboards do
   def get_player_entries(battletags_short) do
     short_set = MapSet.new(battletags_short)
 
-    for region <- Backend.Blizzard.regions(),
+    for region <- Backend.Blizzard.qualifier_regions(),
         ldb <- Backend.Blizzard.leaderboards(),
         into: [],
         do: {get_player_entries(short_set, region, ldb), region, ldb}

@@ -24,8 +24,9 @@ defmodule Backend.Blizzard do
   ]
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
 
-  @type region :: :EU | :US | :AP
-  @regions [:EU, :US, :AP]
+  @type region :: :EU | :US | :AP | :CN
+  @regions [:EU, :US, :AP, :CN]
+  @qualifier_regions [:EU, :US, :AP]
   @type leaderboard :: :BG | :STD | :WLD
   @leaderboards [:BG, :STD, :WLD]
   # @type battletag :: <<_::binary, "#", _::binary>>
@@ -257,9 +258,9 @@ defmodule Backend.Blizzard do
   @doc """
   Returns a list of all regions
   """
-  @spec regions() :: [region]
-  def regions() do
-    @regions
+  @spec qualifier_regions() :: [region]
+  def qualifier_regions() do
+    @qualifier_regions
   end
 
   @doc """
@@ -337,31 +338,67 @@ defmodule Backend.Blizzard do
     end
   end
 
-  @spec regions_with_name() :: [{region(), String.t()}]
-  def regions_with_name() do
-    regions() |> Enum.map(fn r -> {r, get_region_name(r)} end)
+  @spec qualifier_regions_with_name() :: [{region(), String.t()}]
+  def qualifier_regions_with_name() do
+    qualifier_regions_with_name(:long)
+  end
+
+  @spec qualifier_regions_with_name(:long | :short) :: [{region(), String.t()}]
+  def qualifier_regions_with_name(:long) do
+    qualifier_regions() |> Enum.map(fn r -> {r, get_region_name(r, :long)} end)
+  end
+
+  @spec qualifier_regions_with_name(:long | :short) :: [{region(), String.t()}]
+  def qualifier_regions_with_name(:short) do
+    qualifier_regions() |> Enum.map(fn r -> {r, get_region_name(r, :short)} end)
   end
 
   @spec get_region_name(String.t() | region()) :: String.t()
-  def get_region_name(region) when is_atom(region) do
+  def get_region_name(region) do
+    get_region_name(region, :long)
+  end
+
+  @spec get_region_name(region() | String.t(), :long | :short) :: String.t()
+  def get_region_name(region, :long) when is_atom(region) do
     case region do
       :EU -> "Europe"
       :US -> "Americas"
       :AP -> "Asia-Pacific"
+      :CN -> "China"
     end
   end
 
-  def get_region_name(region) when is_binary(region) do
-    get_region_name(String.to_existing_atom(region))
+  @spec get_region_name(region(), :long | :short) :: String.t()
+  def get_region_name(region, :short) when is_atom(region) do
+    case region do
+      :EU -> "EU"
+      :US -> "AM"
+      :AP -> "AP"
+      :CN -> "CN"
+    end
+  end
+
+  def get_region_name(region, length) when is_binary(region) do
+    get_region_name(String.to_existing_atom(region), length)
   end
 
   @spec leaderboards_with_name() :: [{leaderboard(), String.t()}]
   def leaderboards_with_name() do
-    leaderboards() |> Enum.map(fn l -> {l, get_leaderboard_name(l)} end)
+    leaderboards_with_name(:long)
+  end
+
+  @spec leaderboards_with_name(:short | :long) :: [{leaderboard(), String.t()}]
+  def leaderboards_with_name(length) do
+    leaderboards() |> Enum.map(fn l -> {l, get_leaderboard_name(l, length)} end)
   end
 
   @spec get_leaderboard_name(String.t() | leaderboard()) :: String.t()
-  def get_leaderboard_name(leaderboard) when is_atom(leaderboard) do
+  def get_leaderboard_name(leaderboard) do
+    get_leaderboard_name(leaderboard, :long)
+  end
+
+  @spec get_leaderboard_name(String.t() | leaderboard()) :: String.t()
+  def get_leaderboard_name(leaderboard, :long) when is_atom(leaderboard) do
     case leaderboard do
       :BG -> "Battlegrounds"
       :STD -> "Standard"
@@ -369,7 +406,16 @@ defmodule Backend.Blizzard do
     end
   end
 
-  def get_leaderboard_name(leaderboard) when is_binary(leaderboard) do
-    get_leaderboard_name(String.to_existing_atom(leaderboard))
+  @spec get_leaderboard_name(String.t() | leaderboard(), :short | :long) :: String.t()
+  def get_leaderboard_name(leaderboard, :short) when is_atom(leaderboard) do
+    case leaderboard do
+      :BG -> "BG"
+      :STD -> "STD"
+      :WLD -> "WLD"
+    end
+  end
+
+  def get_leaderboard_name(leaderboard, length) when is_binary(leaderboard) do
+    get_leaderboard_name(String.to_existing_atom(leaderboard), length)
   end
 end

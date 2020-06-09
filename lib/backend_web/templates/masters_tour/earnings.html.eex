@@ -17,18 +17,12 @@
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
-            <%= for header <- @headers do %>
-                <th><%= header %></th>
-            <% end %>
+            <%= @headers %>
         </tr>
     </thead>
     <tbody>
         <%= for row <- @rows do %>
-            <tr>
-                <%= for cell <- row do %>
-                    <th><%= cell %></th>
-                <% end %>
-            </tr>
+            <%= row %>
         <% end %>
     </tbody>
 </table>
