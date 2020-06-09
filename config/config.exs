@@ -10,6 +10,7 @@ use Mix.Config
 config :backend, QuantumScheduler,
   jobs: [
     {"*/3 * * * *", fn -> Backend.HSReplay.update_latest() end},
+    {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
     {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end}
   ]
 
