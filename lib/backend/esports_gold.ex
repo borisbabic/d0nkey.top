@@ -13,6 +13,12 @@ defmodule Backend.EsportsGold do
     player_details
   end
 
+  def get_cached_info(battletag_short) do
+    battletag_short
+    |> create_cache_key()
+    |> ApiCache.get()
+  end
+
   def get_player_info(battletag_short) do
     cache_key = create_cache_key(battletag_short)
 

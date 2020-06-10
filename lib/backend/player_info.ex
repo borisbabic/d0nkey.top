@@ -1335,7 +1335,7 @@ defmodule Backend.PlayerInfo do
         "CN"
 
       true ->
-        pi = Backend.EsportsGold.get_player_info(player)
+        pi = Backend.EsportsGold.get_cached_info(player)
         pi && pi.nationality && @nationality_to_region[pi.nationality]
     end
   end
