@@ -166,7 +166,7 @@ defmodule Backend.MastersTour do
     |> qualifiers_update()
   end
 
-  def qualifiers_update(tour_stop) when is_atom(tour_stop) do
+  def qualifiers_update(tour_stop, update_cache \\ true) when is_atom(tour_stop) do
     existing =
       list_qualifiers_for_tour(tour_stop) |> Enum.map(fn q -> q.tournament_id end) |> MapSet.new()
 
@@ -214,6 +214,7 @@ defmodule Backend.MastersTour do
     multi |> Repo.transaction()
 
     invalidate_stats_cache(tour_stop)
+    if update_cache, do: warmup_stats_cache
 
     # we don't really care too much if this fails since they will get officially invited at some point
     # so it's okay that it's in a separate transaction
