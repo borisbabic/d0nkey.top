@@ -32,6 +32,7 @@ config :backend,
   su_battlenet_id: "406233814",
   su_discord: "D0nkey#8994",
   su_slug: "d0nkey",
+  warmup_cache: false,
   su_regions: ["Europe", "Americas"]
 
 # Configures Elixir's Logger
