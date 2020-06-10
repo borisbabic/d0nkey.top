@@ -7,7 +7,9 @@ defmodule Backend.MastersTour do
   alias Backend.Repo
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.MastersTour.Qualifier
+  alias Backend.MastersTour.PlayerStats
   alias Backend.Infrastructure.BattlefyCommunicator
+  alias Backend.Infrastructure.PlayerStatsCache
   alias Backend.Blizzard
   alias Backend.Battlefy
 
@@ -90,6 +92,43 @@ defmodule Backend.MastersTour do
     )
   end
 
+  def warmup_stats_cache() do
+    [2020]
+    |> Enum.flat_map(fn y -> [y | Backend.Blizzard.get_tour_stops_for_year(y)] end)
+    |> Enum.each(&Backend.MastersTour.get_player_stats/1)
+  end
+
+  def create_and_cache_stats(qualifiers, period) do
+    stats = PlayerStats.create_collection(qualifiers)
+    ret = {stats, Enum.count(qualifiers)}
+    PlayerStatsCache.set(period, ret)
+    ret
+  end
+
+  def get_player_stats(tour_stop) when is_atom(tour_stop) do
+    case PlayerStatsCache.get(tour_stop) do
+      nil ->
+        tour_stop
+        |> list_qualifiers_for_tour()
+        |> create_and_cache_stats(tour_stop)
+
+      s ->
+        s
+    end
+  end
+
+  def get_player_stats(year) when is_integer(year) do
+    case PlayerStatsCache.get(year) do
+      nil ->
+        year
+        |> list_qualifiers_for_year()
+        |> create_and_cache_stats(year)
+
+      s ->
+        s
+    end
+  end
+
   @spec list_qualifiers_for_tour(Blizzard.tour_stop()) :: [Qualifier]
   def list_qualifiers_for_tour(tour_stop) do
     query =
@@ -161,6 +200,8 @@ defmodule Backend.MastersTour do
       Multi.insert(multi, "qualifier_#{cs.changes.tournament_id}", cs)
     end)
     |> Repo.transaction()
+
+    PlayerStatsCache.delete(tour_stop)
 
     # we don't really care too much if this fails since they will get officially invited at some point
     # so it's okay that it's in a separate transaction

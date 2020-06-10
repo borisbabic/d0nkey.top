@@ -69,23 +69,18 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def qualifier_stats(conn, params = %{"tour_stop" => ts}) do
-    #    tour_stop = ts |> to_string() |> String.to_existing_atom()
-    #    qualifiers = MastersTour.list_qualifiers_for_tour(tour_stop)
-    {qualifiers, period} =
+    period =
       case Integer.parse(ts) do
         {year, _} ->
-          {MastersTour.list_qualifiers_for_year(year), year}
+          year
 
         :error ->
-          tour_stop =
-            ts
-            |> to_string()
-            |> String.to_existing_atom()
-
-          {MastersTour.list_qualifiers_for_tour(tour_stop), tour_stop}
+          ts
+          |> to_string()
+          |> String.to_existing_atom()
       end
 
-    stats = MastersTour.PlayerStats.create_collection(qualifiers)
+    {stats, total} = MastersTour.get_player_stats(period)
 
     direction =
       case params["direction"] do
@@ -99,7 +94,7 @@ defmodule BackendWeb.MastersTourController do
     render(conn, "qualifier_stats.html", %{
       min: min,
       period: period,
-      total: qualifiers |> Enum.count(),
+      total: total,
       sort_by: params["sort_by"],
       direction: direction,
       stats: stats
