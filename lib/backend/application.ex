@@ -23,6 +23,10 @@ defmodule Backend.Application do
           id: Backend.Infrastructure.HSReplayLatestCache,
           start: {Backend.Infrastructure.HSReplayLatestCache, :start_link, [[]]}
         },
+        %{
+          id: Backend.Infrastructure.PlayerStatsCache,
+          start: {Backend.Infrastructure.PlayerStatsCache, :start_link, [[]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
@@ -52,6 +56,8 @@ defmodule Backend.Application do
   def warmup_cache() do
     if Application.fetch_env!(:backend, :warmup_cache) do
       try do
+        Backend.MastersTour.warmup_stats_cache()
+
         Backend.MastersTour.get_gm_money_rankings({2020, 2})
         |> Enum.each(fn {player, _, _} -> Backend.EsportsGold.get_player_info(player) end)
       rescue
