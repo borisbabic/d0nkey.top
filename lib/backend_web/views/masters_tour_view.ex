@@ -4,6 +4,7 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.MastersTour
   alias Backend.Blizzard
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
+  @min_cups_options [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
 
   def create_name_cell(name) do
     create_name_cell(name, Backend.PlayerInfo.get_region(name))
@@ -63,8 +64,6 @@ defmodule BackendWeb.MastersTourView do
   def create_stats_header("#", _, _, _, _), do: "#"
 
   def create_stats_header(header, sort_by, direction, conn, period) when header == sort_by do
-    IO.inspect(direction)
-    IO.inspect(opposite(direction))
     click_params = %{"sort_by" => header, "direction" => opposite(direction)}
 
     url =
@@ -104,6 +103,9 @@ defmodule BackendWeb.MastersTourView do
       0
   end
 
+  def min_cups(total) when total < 5, do: 0
+  def min_cups(total), do: @min_cups_options |> Enum.find(fn a -> a > 4 + total * 0.20 end) || 100
+
   def render("qualifier_stats.html", %{
         period: period,
         total: total,
@@ -113,10 +115,7 @@ defmodule BackendWeb.MastersTourView do
         min: min_raw,
         conn: conn
       }) do
-    min_options = [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
-
-    min_to_show =
-      min_raw || min_options |> Enum.drop_while(fn m -> m < 5 + total * 0.20 end) |> Enum.at(0) || 100
+    min_to_show = min_raw || min_cups(total)
 
     {sort_by, direction} =
       case {sort_by_raw, direction_raw} do
@@ -160,7 +159,7 @@ defmodule BackendWeb.MastersTourView do
       end)
 
     min_list =
-      min_options
+      @min_cups_options
       |> Enum.map(fn min ->
         %{
           display: "Min #{min}",
@@ -182,6 +181,7 @@ defmodule BackendWeb.MastersTourView do
 
     render("qualifier_stats.html", %{
       title: "#{period} qualifier stats",
+      subtitle: "Total cups: #{total}",
       headers: headers,
       rows: rows,
       selected_ts: period,

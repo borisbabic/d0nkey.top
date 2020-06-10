@@ -1,4 +1,5 @@
 <div class="title is-2"><%= @title %></div>
+<div class="subtitle is-6"><%= @subtitle %></div>
 <%= render_dropdowns @dropdowns %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
