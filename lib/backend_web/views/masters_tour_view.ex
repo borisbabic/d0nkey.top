@@ -56,16 +56,6 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
-  def render("qualifier_stats.html", %{
-        tour_stop: tour_stop,
-        stats: nil
-      }) do
-    ~E"""
-    No stats for <%= tour_stop %>. Only tour stops with 100% single elim tourneys are supported. If this is one of
-    them them contact me somewhere
-    """
-  end
-
   def opposite(:desc), do: :asc
   def opposite(_), do: :desc
   def symbol(:asc), do: "↓"
@@ -120,9 +110,13 @@ defmodule BackendWeb.MastersTourView do
         stats: stats,
         sort_by: sort_by_raw,
         direction: direction_raw,
+        min: min_raw,
         conn: conn
       }) do
-    min_to_show = (5 + total * 0.20) |> ceil()
+    min_options = [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
+
+    min_to_show =
+      min_raw || min_options |> Enum.drop_while(fn m -> m < 5 + total * 0.20 end) |> Enum.at(0) || 100
 
     {sort_by, direction} =
       case {sort_by_raw, direction_raw} do
@@ -159,19 +153,40 @@ defmodule BackendWeb.MastersTourView do
       (eligible_years() ++ eligible_tour_stops())
       |> Enum.map(fn ts ->
         %{
-          ts: ts,
+          display: ts,
           selected: to_string(ts) == to_string(period),
           link: Routes.masters_tour_path(conn, :qualifier_stats, ts)
         }
       end)
 
+    min_list =
+      min_options
+      |> Enum.map(fn min ->
+        %{
+          display: "Min #{min}",
+          selected: min == min_to_show,
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifier_stats,
+              period,
+              Map.put(conn.query_params, "min", min)
+            )
+        }
+      end)
+
+    dropdowns = [
+      {ts_list, period},
+      {min_list, "Min #{min_to_show} cups"}
+    ]
+
     render("qualifier_stats.html", %{
       title: "#{period} qualifier stats",
       headers: headers,
       rows: rows,
-      ts_list: ts_list,
       selected_ts: period,
-      min: min_to_show
+      min: min_to_show,
+      dropdowns: dropdowns
     })
   end
 

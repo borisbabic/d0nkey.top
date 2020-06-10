@@ -1,0 +1,3 @@
+<%= for {options, title} <- @dropdowns do %>
+    <%= render_dropdown(options, title) %>
+<% end %>
