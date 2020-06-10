@@ -156,6 +156,7 @@ defmodule Backend.Blizzard do
     :US
   """
   @spec get_tour_stop_region!(tour_stop) :: region
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_tour_stop_region!(tour_stop) do
     case tour_stop do
       :LasVegas -> :US
@@ -425,6 +426,23 @@ defmodule Backend.Blizzard do
       2020 -> [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid]
       2019 -> [:"Las Vegas", :Seoul, :Bucharest]
       _ -> []
+    end
+  end
+
+  @spec get_year_for_tour_stop(tour_stop()) :: integer
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_year_for_tour_stop(tour_stop) do
+    case tour_stop do
+      :LasVegas -> 2019
+      :Seoul -> 2019
+      :Bucharest -> 2019
+      :Arlington -> 2020
+      :Indonesia -> 2020
+      :Jönköping -> 2020
+      :"Asia-Pacific" -> 2020
+      :Montreal -> 2020
+      :Madrid -> 2020
+      _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
 end

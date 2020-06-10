@@ -153,6 +153,14 @@ defmodule Backend.MastersTour do
     Repo.all(query)
   end
 
+  def invalidate_stats_cache(tour_stop) do
+    PlayerStatsCache.delete(tour_stop)
+
+    tour_stop
+    |> Blizzard.get_year_for_tour_stop()
+    |> PlayerStatsCache.delete()
+  end
+
   def qualifiers_update() do
     Blizzard.current_ladder_tour_stop()
     |> qualifiers_update()
@@ -195,13 +203,17 @@ defmodule Backend.MastersTour do
 
     new_structs = new |> Enum.map(&Ecto.Changeset.apply_changes/1)
 
-    new
-    |> Enum.reduce(Multi.new(), fn cs, multi ->
-      Multi.insert(multi, "qualifier_#{cs.changes.tournament_id}", cs)
-    end)
-    |> Repo.transaction()
+    multi =
+      new
+      |> Enum.reduce(Multi.new(), fn cs, multi ->
+        Multi.insert(multi, "qualifier_#{cs.changes.tournament_id}", cs)
+      end)
 
-    PlayerStatsCache.delete(tour_stop)
+    invalidate_stats_cache(tour_stop)
+
+    multi |> Repo.transaction()
+
+    invalidate_stats_cache(tour_stop)
 
     # we don't really care too much if this fails since they will get officially invited at some point
     # so it's okay that it's in a separate transaction
