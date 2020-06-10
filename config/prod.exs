@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :backend,
+  warmup_cache: true,
   enable_bot: true
 
 # For production, don't forget to configure the url host
