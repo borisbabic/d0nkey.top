@@ -46,6 +46,14 @@ defmodule BackendWeb do
       def render_datetime(datetime) do
         render(BackendWeb.SharedView, "datetime.html", %{datetime: datetime})
       end
+
+      def render_dropdown(options, title) do
+        render(BackendWeb.SharedView, "dropdown_links.html", %{options: options, title: title})
+      end
+
+      def render_dropdowns(dropdowns) do
+        render(BackendWeb.SharedView, "multiple_dropdown_links.html", %{dropdowns: dropdowns})
+      end
     end
   end
 

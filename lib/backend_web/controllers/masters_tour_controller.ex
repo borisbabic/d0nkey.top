@@ -94,7 +94,10 @@ defmodule BackendWeb.MastersTourController do
         _ -> nil
       end
 
+    min = with raw when is_binary(raw) <- params["min"], {val, _} <- Integer.parse(raw), do: val
+
     render(conn, "qualifier_stats.html", %{
+      min: min,
       period: period,
       total: qualifiers |> Enum.count(),
       sort_by: params["sort_by"],
