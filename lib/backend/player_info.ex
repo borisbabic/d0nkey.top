@@ -1,5 +1,6 @@
 defmodule Backend.PlayerInfo do
   @moduledoc false
+  alias Backend.Blizzard
 
   @na_players MapSet.new([
                 "brimful",
@@ -1213,95 +1214,95 @@ defmodule Backend.PlayerInfo do
   }
 
   @nationality_to_region %{
-    "Argentina" => "AM",
-    "Belize" => "AM",
-    "Bolivia" => "AM",
-    "Brazil" => "AM",
-    "Canada" => "AM",
-    "Chile" => "AM",
-    "Colombia" => "AM",
-    "Costa Rica" => "AM",
-    "Ecuador" => "AM",
-    "El Salvador" => "AM",
-    "Guatemala" => "AM",
-    "Honduras" => "AM",
-    "Jamaica" => "AM",
-    "Mexico" => "AM",
-    "Nicaragua" => "AM",
-    "Paraguay" => "AM",
-    "Peru" => "AM",
-    "Puerto Rico" => "AM",
-    "United States of America" => "AM",
-    "United States" => "AM",
-    "Uruguay" => "AM",
-    "Venezuela" => "AM",
-    "Australia" => "AP",
-    "Indonesia" => "AP",
-    "Hong Kong" => "AP",
-    "India" => "AP",
-    "Japan" => "AP",
-    "Macau" => "AP",
-    "Malaysia" => "AP",
-    "New Zealand" => "AP",
-    "The Philippines" => "AP",
-    "Singapore" => "AP",
-    "South Korea" => "AP",
-    "Taiwan" => "AP",
-    "Thailand" => "AP",
-    "Vietnam" => "AP",
-    "Algeria" => "EU",
-    "Austria" => "EU",
-    "Bahrain" => "EU",
-    "Belarus" => "EU",
-    "Belgium" => "EU",
-    "Bulgaria" => "EU",
-    "Croatia" => "EU",
-    "Czech Republic" => "EU",
-    "Denmark" => "EU",
-    "Egypt" => "EU",
-    "Estonia" => "EU",
-    "Finland" => "EU",
-    "France" => "EU",
-    "Germany" => "EU",
-    "Greece" => "EU",
-    "Hungary" => "EU",
-    "Iceland" => "EU",
-    "Iraq" => "EU",
-    "Ireland" => "EU",
-    "Israel" => "EU",
-    "Italy" => "EU",
-    "Jordan" => "EU",
-    "Kazakhstan" => "EU",
-    "Kuwait" => "EU",
-    "Latvia" => "EU",
-    "Lebanon" => "EU",
-    "Libya" => "EU",
-    "Lithuania" => "EU",
-    "Luxembourg" => "EU",
-    "Malta" => "EU",
-    "Morocco" => "EU",
-    "Netherlands" => "EU",
-    "Norway" => "EU",
-    "Oman" => "EU",
-    "Poland" => "EU",
-    "Portugal" => "EU",
-    "Romania" => "EU",
-    "Russia" => "EU",
-    "Serbia" => "EU",
-    "Slovakia" => "EU",
-    "Slovenia" => "EU",
-    "Kingdom of Saudi Arabia" => "EU",
-    "South Africa" => "EU",
-    "Spain" => "EU",
-    "State of Qatar" => "EU",
-    "Sweden" => "EU",
-    "Switzerland" => "EU",
-    "Tunisia" => "EU",
-    "Turkey" => "EU",
-    "Ukraine" => "EU",
-    "United Arab Emirates" => "EU",
-    "United Kingdom" => "EU",
-    "China" => "CN"
+    "Argentina" => :US,
+    "Belize" => :US,
+    "Bolivia" => :US,
+    "Brazil" => :US,
+    "Canada" => :US,
+    "Chile" => :US,
+    "Colombia" => :US,
+    "Costa Rica" => :US,
+    "Ecuador" => :US,
+    "El Salvador" => :US,
+    "Guatemala" => :US,
+    "Honduras" => :US,
+    "Jamaica" => :US,
+    "Mexico" => :US,
+    "Nicaragua" => :US,
+    "Paraguay" => :US,
+    "Peru" => :US,
+    "Puerto Rico" => :US,
+    "United States of America" => :US,
+    "United States" => :US,
+    "Uruguay" => :US,
+    "Venezuela" => :US,
+    "Australia" => :AP,
+    "Indonesia" => :AP,
+    "Hong Kong" => :AP,
+    "India" => :AP,
+    "Japan" => :AP,
+    "Macau" => :AP,
+    "Malaysia" => :AP,
+    "New Zealand" => :AP,
+    "The Philippines" => :AP,
+    "Singapore" => :AP,
+    "South Korea" => :AP,
+    "Taiwan" => :AP,
+    "Thailand" => :AP,
+    "Vietnam" => :AP,
+    "Algeria" => :EU,
+    "Austria" => :EU,
+    "Bahrain" => :EU,
+    "Belarus" => :EU,
+    "Belgium" => :EU,
+    "Bulgaria" => :EU,
+    "Croatia" => :EU,
+    "Czech Republic" => :EU,
+    "Denmark" => :EU,
+    "Egypt" => :EU,
+    "Estonia" => :EU,
+    "Finland" => :EU,
+    "France" => :EU,
+    "Germany" => :EU,
+    "Greece" => :EU,
+    "Hungary" => :EU,
+    "Iceland" => :EU,
+    "Iraq" => :EU,
+    "Ireland" => :EU,
+    "Israel" => :EU,
+    "Italy" => :EU,
+    "Jordan" => :EU,
+    "Kazakhstan" => :EU,
+    "Kuwait" => :EU,
+    "Latvia" => :EU,
+    "Lebanon" => :EU,
+    "Libya" => :EU,
+    "Lithuania" => :EU,
+    "Luxembourg" => :EU,
+    "Malta" => :EU,
+    "Morocco" => :EU,
+    "Netherlands" => :EU,
+    "Norway" => :EU,
+    "Oman" => :EU,
+    "Poland" => :EU,
+    "Portugal" => :EU,
+    "Romania" => :EU,
+    "Russia" => :EU,
+    "Serbia" => :EU,
+    "Slovakia" => :EU,
+    "Slovenia" => :EU,
+    "Kingdom of Saudi Arabia" => :EU,
+    "South Africa" => :EU,
+    "Spain" => :EU,
+    "State of Qatar" => :EU,
+    "Sweden" => :EU,
+    "Switzerland" => :EU,
+    "Tunisia" => :EU,
+    "Turkey" => :EU,
+    "Ukraine" => :EU,
+    "United Arab Emirates" => :EU,
+    "United Kingdom" => :EU,
+    "China" => :CN
   }
 
   @spec current_gms() :: [String.t()]
@@ -1316,27 +1317,36 @@ defmodule Backend.PlayerInfo do
     |> Enum.filter(fn n -> !MapSet.member?(relegated, n) end)
   end
 
-  @spec get_region(String.t()) :: String.t()
+  def get_esportsgold_nationality(player) do
+    ((pi = Backend.EsportsGold.get_cached_info(player)) &&
+       pi &&
+       pi.nationality &&
+       @nationality_to_region[pi.nationality]) || nil
+  end
+
+  @spec get_region(String.t()) :: Blizzard.region()
   def get_region(player) do
     cond do
       nationality = @nationality_to_region[@player_nationalities[player]] ->
         nationality
 
       MapSet.member?(@na_players, player) ->
-        "AM"
+        :US
 
       MapSet.member?(@eu_players, player) ->
-        "EU"
+        :EU
 
       MapSet.member?(@ap_players, player) ->
-        "AP"
+        :AP
 
       MapSet.member?(@cn_players, player) ->
-        "CN"
+        :CN
+
+      r = get_esportsgold_nationality(player) ->
+        r
 
       true ->
-        pi = Backend.EsportsGold.get_cached_info(player)
-        pi && pi.nationality && @nationality_to_region[pi.nationality]
+        nil
     end
   end
 end

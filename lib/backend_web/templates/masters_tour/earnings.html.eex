@@ -1,19 +1,5 @@
 <div class="title is-2"><%=@title%></div>
-<div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-controls="dropdown-menu" class="button">Show GMs</button></div>
-    <div class="dropdown-menu" role="menu">
-    <div class="dropdown-content">
-        <a class="dropdown-item <%= @show_gms == to_string('yes') && 'is-active' %>"
-           href="<%= Routes.masters_tour_path(@conn, :earnings, Map.put(@conn.query_params, "show_gms", "yes")) %>">
-            Yes
-        </a>
-        <a class="dropdown-item <%= @show_gms == to_string('no') && 'is-active' %>"
-           href="<%= Routes.masters_tour_path(@conn, :earnings, Map.put(@conn.query_params, "show_gms", "no")) %>">
-            No
-        </a>
-    </div>
-    </div>
-</div>
+<%= render_dropdowns @dropdowns %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
