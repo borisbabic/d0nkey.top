@@ -219,6 +219,13 @@ defmodule Util do
   end
 
   @doc """
+  Takes and {:ok,_} | {:error, _ } and returns the value on :ok and nil on :error
+  """
+  @spec nilify({:ok | :error, any()}) :: any() | nil
+  def nilify({:ok, val}), do: val
+  def nilify({:error, _reason}), do: nil
+
+  @doc """
   Either returns the list or returns a new list with a single element
   """
   def to_list(list) when is_list(list), do: list

@@ -3,12 +3,9 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.MastersTour
   alias Backend.Blizzard
+  alias Backend.PlayerInfo
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
   @min_cups_options [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
-
-  def create_name_cell(name) do
-    create_name_cell(name, Backend.PlayerInfo.get_region(name))
-  end
 
   def create_name_cell(name, nil) do
     name
@@ -17,9 +14,9 @@ defmodule BackendWeb.MastersTourView do
   def create_name_cell(name, region) do
     tag =
       case region do
-        "AM" -> "is-info"
-        "EU" -> "is-primary"
-        "CN" -> "is-warning"
+        :US -> "is-info"
+        :EU -> "is-primary"
+        :CN -> "is-warning"
         _ -> "is-success"
       end
 
@@ -41,8 +38,8 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
-  def create_row_html({{name, total, per_ts}, place}, tour_stops) do
-    name_cell = create_name_cell(name)
+  def create_row_html({{name, total, per_ts, region}, place}, tour_stops) do
+    name_cell = create_name_cell(name, region)
     tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
 
     ~E"""
@@ -190,12 +187,63 @@ defmodule BackendWeb.MastersTourView do
     })
   end
 
+  def filter_region(earnings_players, nil), do: earnings_players
+
+  def filter_region(earnings_players, region) do
+    earnings_players
+    |> Enum.filter(fn {_, _, _, r} -> region == r end)
+  end
+
+  def create_show_gms_dropdown(conn, show_gms) do
+    title = "Show gms"
+
+    options =
+      ["yes", "no"]
+      |> Enum.map(fn v ->
+        %{
+          display: Recase.to_title(v),
+          selected: v == show_gms,
+          link:
+            Routes.masters_tour_path(conn, :earnings, Map.put(conn.query_params, "show_gms", v))
+        }
+      end)
+
+    {options, title}
+  end
+
+  def create_region_dropdown(conn, region) do
+    title =
+      case region do
+        nil -> "Region"
+        r -> Blizzard.get_region_name(r, :long)
+      end
+
+    all_option = %{
+      display: "All",
+      selected: region == nil,
+      link: Routes.masters_tour_path(conn, :earnings, Map.delete(conn.query_params, "region"))
+    }
+
+    region_options =
+      Blizzard.regions()
+      |> Enum.map(fn r ->
+        %{
+          display: Blizzard.get_region_name(r, :long),
+          selected: region == r,
+          link: Routes.masters_tour_path(conn, :earnings, Map.put(conn.query_params, "region", r))
+        }
+      end)
+
+    {[all_option | region_options], title}
+  end
+
   def render("earnings.html", %{
         tour_stops: tour_stops,
         earnings: earnings,
         gm_season: {year, season},
         show_gms: show_gms,
         conn: conn,
+        region: region,
         gms: gms_list
       }) do
     headers = create_headers(tour_stops)
@@ -205,15 +253,25 @@ defmodule BackendWeb.MastersTourView do
     rows =
       earnings
       |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
+      |> Enum.map(fn {name, total, per_ts} ->
+        {name, total, per_ts, PlayerInfo.get_region(name)}
+      end)
+      |> filter_region(region)
       |> Enum.with_index(1)
-      |> Enum.map(fn row_data -> create_row_html(row_data, tour_stops) end)
+      |> Enum.map(fn r -> create_row_html(r, tour_stops) end)
 
     title = "Earnings for #{year} Season #{season}"
+
+    dropdowns = [
+      create_show_gms_dropdown(conn, show_gms),
+      create_region_dropdown(conn, region)
+    ]
 
     render("earnings.html", %{
       title: title,
       year: year,
       season: season,
+      dropdowns: dropdowns,
       headers: headers,
       show_gms: show_gms,
       conn: conn,

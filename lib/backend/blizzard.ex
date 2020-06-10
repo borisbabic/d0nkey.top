@@ -259,6 +259,14 @@ defmodule Backend.Blizzard do
   @doc """
   Returns a list of all regions
   """
+  @spec regions() :: [region]
+  def regions() do
+    @regions
+  end
+
+  @doc """
+  Returns a list of all qualifier eligible regions
+  """
   @spec qualifier_regions() :: [region]
   def qualifier_regions() do
     @qualifier_regions
@@ -290,7 +298,9 @@ defmodule Backend.Blizzard do
     end
   end
 
-  @spec to_region(String.t()) :: {:ok, region} | {:error, String.t()}
+  @spec to_region(String.t() | nil) :: {:ok, region} | {:error, String.t()}
+  def to_region(nil), do: {:error, "not a string"}
+
   def to_region(string) do
     if Enum.member?(regions(:string), string) do
       {:ok, String.to_existing_atom(string)}
