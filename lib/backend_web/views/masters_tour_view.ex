@@ -194,7 +194,13 @@ defmodule BackendWeb.MastersTourView do
         %{
           display: ts,
           selected: to_string(ts) == to_string(period),
-          link: Routes.masters_tour_path(conn, :qualifier_stats, ts)
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifier_stats,
+              ts,
+              conn.query_params
+            )
         }
       end)
 
