@@ -103,6 +103,15 @@ defmodule BackendWeb.MastersTourView do
   def min_cups(total) when total < 5, do: 0
   def min_cups(total), do: @min_cups_options |> Enum.find(fn a -> a > 4 + total * 0.20 end) || 100
 
+  def filter_columns(column_map, columns_to_show) do
+    columns_to_show
+    |> Enum.map(fn c -> column_map[c] || "" end)
+  end
+
+  def percent(num, total) do
+    (100 * num / total) |> Float.round(2)
+  end
+
   def render("qualifier_stats.html", %{
         period: period,
         total: total,
@@ -110,6 +119,7 @@ defmodule BackendWeb.MastersTourView do
         sort_by: sort_by_raw,
         direction: direction_raw,
         min: min_raw,
+        selected_columns: selected_columns,
         conn: conn
       }) do
     min_to_show = min_raw || min_cups(total)
@@ -121,29 +131,62 @@ defmodule BackendWeb.MastersTourView do
         _ -> {"%", :desc}
       end
 
-    sortable_headers = ["Player", "Cups", "Top 8", "Top16", "%"]
+    sortable_headers = [
+      "Player",
+      "Cups",
+      "Top 8",
+      "Top 16",
+      "Best",
+      "Worst",
+      "No Wins",
+      "No Wins %",
+      "Cups Won",
+      "Num Matches",
+      "Matches Won",
+      "Matches Lost",
+      "%"
+    ]
+
+    columns_to_show =
+      case selected_columns do
+        columns when is_list(columns) ->
+          sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
+
+        _ ->
+          ["Player", "Cups", "Top 8", "Top 16", "Best", "%"]
+      end
 
     headers =
-      (["#"] ++ sortable_headers)
+      (["#"] ++ columns_to_show)
       |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn, period) end)
 
-    sort_index = get_sort_index(sortable_headers, sort_by)
+    sort_key = sortable_headers |> Enum.find("%", fn h -> h == sort_by end)
 
     rows =
       stats
       |> Enum.filter(fn ps -> Enum.count(ps.positions) >= min_to_show end)
       |> Enum.map(fn ps ->
-        [
-          InvitedPlayer.shorten_battletag(ps.battletag_full),
-          Enum.count(ps.positions),
-          ps.top8,
-          ps.top16,
-          (100 * ps.wins / (ps.wins + ps.losses)) |> Float.round(2)
-        ]
+        total = Enum.count(ps.positions)
+
+        %{
+          "Player" => InvitedPlayer.shorten_battletag(ps.battletag_full),
+          "Cups" => total,
+          "Top 8" => ps.top8,
+          "Top 16" => ps.top16,
+          "Best" => ps.positions |> Enum.min(),
+          "Worst" => ps.positions |> Enum.max(),
+          "No Wins" => ps.no_wins,
+          "No Wins %" => percent(ps.no_wins, total),
+          "Cups Won" => ps.num_won,
+          "Num Matches" => ps.wins + ps.losses,
+          "Matches Won" => ps.wins,
+          "Matches Lost" => ps.losses,
+          "%" => percent(ps.wins, ps.wins + ps.losses)
+        }
       end)
-      |> Enum.sort_by(fn row -> Enum.at(row, sort_index) end, direction || :desc)
+      |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
-      |> Enum.map(fn {row, pos} -> [pos | row] end)
+      |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     ts_list =
       (eligible_years() ++ eligible_tour_stops())
@@ -181,8 +224,10 @@ defmodule BackendWeb.MastersTourView do
       subtitle: "Total cups: #{total}",
       headers: headers,
       rows: rows,
-      selected_ts: period,
+      columns: sortable_headers,
+      period: period,
       min: min_to_show,
+      conn: conn,
       dropdowns: dropdowns
     })
   end
