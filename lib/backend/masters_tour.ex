@@ -214,7 +214,7 @@ defmodule Backend.MastersTour do
     multi |> Repo.transaction()
 
     invalidate_stats_cache(tour_stop)
-    if update_cache, do: warmup_stats_cache
+    if update_cache, do: warmup_stats_cache()
 
     # we don't really care too much if this fails since they will get officially invited at some point
     # so it's okay that it's in a separate transaction

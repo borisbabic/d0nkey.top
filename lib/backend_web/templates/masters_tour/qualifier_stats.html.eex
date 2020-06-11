@@ -1,6 +1,28 @@
 <div class="title is-2"><%= @title %></div>
 <div class="subtitle is-6"><%= @subtitle %></div>
 <%= render_dropdowns @dropdowns %>
+
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Columns</button></div>
+    <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+
+            <%= form_for @conn, Routes.masters_tour_path(@conn, :qualifier_stats, @period, @conn.query_params),
+            [as: :columns, method: :get], fn
+            f-> %>
+                <%= for column <- @columns do %>
+                        <label for="columns_<%= column %>" class="dropdown-item">
+                            <span > <%= column %></span>
+                            <%= checkbox f, column, hidden_input: false, class: "is-pulled-right" %>
+                        </label>
+                <% end %>
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>

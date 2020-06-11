@@ -97,12 +97,24 @@ defmodule BackendWeb.MastersTourController do
 
     min = with raw when is_binary(raw) <- params["min"], {val, _} <- Integer.parse(raw), do: val
 
+    selected_columns =
+      case params["columns"] do
+        columns = %{} ->
+          columns
+          |> Enum.filter(fn {_, selected} -> selected == "true" end)
+          |> Enum.map(fn {column, _} -> column end)
+
+        _ ->
+          nil
+      end
+
     render(conn, "qualifier_stats.html", %{
       min: min,
       period: period,
       total: total,
       sort_by: params["sort_by"],
       direction: direction,
+      selected_columns: selected_columns,
       stats: stats
     })
   end
