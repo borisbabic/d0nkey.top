@@ -7,7 +7,8 @@ defmodule Backend.MastersTour.PlayerStats do
     field :battletag_full, :string
     field :wins, :integer
     field :losses, :integer
-    field :won, :boolean
+    field :num_won, :integer
+    field :no_wins, :integer
     field :top8, :integer
     field :top16, :integer
     field :positions, {:array, :integer}
@@ -29,7 +30,8 @@ defmodule Backend.MastersTour.PlayerStats do
       battletag_full: s.battletag_full,
       wins: s.wins,
       losses: s.losses,
-      won: s.position == 1,
+      num_won: if(s.position == 1, do: 1, else: 0),
+      no_wins: if(s.wins == 0, do: 1, else: 0),
       top8: if(s.position < 8, do: 1, else: 0),
       top16: if(s.position < 16, do: 1, else: 0),
       positions: [s.position]
@@ -47,7 +49,8 @@ defmodule Backend.MastersTour.PlayerStats do
       battletag_full: p.battletag_full,
       wins: p.wins + s.wins,
       losses: p.losses + s.losses,
-      won: p.won || s.position == 1,
+      num_won: if(s.position == 1, do: 1, else: 0) + p.num_won,
+      no_wins: if(s.wins == 0, do: 1, else: 0) + p.no_wins,
       top8: if(s.position < 8, do: 1, else: 0) + p.top8,
       top16: if(s.position < 16, do: 1, else: 0) + p.top16,
       positions: [s.position | p.positions]
