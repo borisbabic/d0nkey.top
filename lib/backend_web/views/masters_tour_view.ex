@@ -207,7 +207,7 @@ defmodule BackendWeb.MastersTourView do
           sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
 
         {_, ts} when is_atom(period) ->
-          ["Player", "Cups", "Top 8", "Top 16", to_string(ts), "%"]
+          ["Player", "Cups", "Top 8", to_string(ts), "%"]
 
         _ ->
           ["Player", "Cups", "Top 8", "Top 16", "%"]
