@@ -55,6 +55,11 @@ defmodule Util do
     |> String.replace("T", " ")
   end
 
+  def in_range?(target = %NaiveDateTime{}, {min = %NaiveDateTime{}, max = %NaiveDateTime{}}) do
+    NaiveDateTime.compare(target, min) != :lt &&
+      NaiveDateTime.compare(target, max) != :gt
+  end
+
   def human_diff(later, earlier) do
     diff = NaiveDateTime.diff(later, earlier, :second)
     human_duration(diff)
@@ -224,6 +229,13 @@ defmodule Util do
   @spec nilify({:ok | :error, any()}) :: any() | nil
   def nilify({:ok, val}), do: val
   def nilify({:error, _reason}), do: nil
+
+  @doc """
+  Takes and {:ok, value} | {:error, reason} and returns the value on :ok and raises the reason on :error
+  """
+  @spec bangify({:ok | :error, any()}) :: any()
+  def bangify({:ok, val}), do: val
+  def bangify({:error, reason}), do: raise(reason)
 
   @doc """
   Either returns the list or returns a new list with a single element

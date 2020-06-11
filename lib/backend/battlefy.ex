@@ -432,19 +432,6 @@ defmodule Backend.Battlefy do
   @spec get_tour_stop_id(Blizzard.tour_stop()) :: {:ok, tournament_id()} | {:error, String.t()}
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_tour_stop_id(tour_stop) do
-    id_unknown = {:error, "ID unknown for tour stop"}
-
-    case tour_stop do
-      :LasVegas -> {:ok, "5cdb04cdce130203069be2dd"}
-      :Seoul -> {:ok, "5d3117357045a2325e167ad6"}
-      :Bucharest -> {:ok, "5d8276701d82bf1a20dbf45b"}
-      :Arlington -> {:ok, "5e1cf8ff1e66fd33ebbfc0ed"}
-      :Indonesia -> {:ok, "5e5d80217506f5240ebad221"}
-      # edit_hs_decks "5ec9a33da4d7bf2e78ec166a"
-      :Jönköping -> {:ok, "5ec5ca7153702b1ab2a5c9dd"}
-      :"Asia-Pacific" -> id_unknown
-      :Montreal -> id_unknown
-      _ -> {:error, "Unknown tour stop #{tour_stop}"}
-    end
+    Backend.MastersTour.TourStop.get_battlefy_id(tour_stop)
   end
 end
