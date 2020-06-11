@@ -108,6 +108,8 @@ defmodule BackendWeb.MastersTourController do
           nil
       end
 
+    invited_players = MastersTour.list_invited_players()
+
     render(conn, "qualifier_stats.html", %{
       min: min,
       period: period,
@@ -115,6 +117,7 @@ defmodule BackendWeb.MastersTourController do
       sort_by: params["sort_by"],
       direction: direction,
       selected_columns: selected_columns,
+      invited_players: invited_players,
       stats: stats
     })
   end

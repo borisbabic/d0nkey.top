@@ -10,10 +10,10 @@
             <%= form_for @conn, Routes.masters_tour_path(@conn, :qualifier_stats, @period, @conn.query_params),
             [as: :columns, method: :get], fn
             f-> %>
-                <%= for column <- @columns do %>
+                <%= for {column, selected} <- @columns do %>
                         <label for="columns_<%= column %>" class="dropdown-item">
                             <span > <%= column %></span>
-                            <%= checkbox f, column, hidden_input: false, class: "is-pulled-right" %>
+                            <%= checkbox f, column, hidden_input: false, class: "is-pulled-right", value: selected %>
                         </label>
                 <% end %>
                 <div class="dropdown-item">
