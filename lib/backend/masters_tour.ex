@@ -299,6 +299,7 @@ defmodule Backend.MastersTour do
   def copy_grandmasters(
         from_ts,
         to_ts,
+        excluding \\ MapSet.new([]),
         reason_append \\ " *copied",
         reason_search \\ "%Grandmaster%"
       ) do
@@ -310,6 +311,10 @@ defmodule Backend.MastersTour do
         where: ip.tour_stop == ^from,
         where: like(ip.reason, ^reason_search)
     )
+    |> Enum.filter(fn ip ->
+      !MapSet.member?(excluding, ip.battletag_full) &&
+        !MapSet.member?(excluding, InvitedPlayer.shorten_battletag(ip.battletag_full))
+    end)
     |> Enum.uniq_by(&InvitedPlayer.uniq_string/1)
     |> Enum.reduce(Multi.new(), fn gm, multi ->
       # changeset = create_invited_player(%{gm | tour_stop: to_ts, reason: gm.reason <>})
