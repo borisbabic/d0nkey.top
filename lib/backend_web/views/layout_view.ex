@@ -2,12 +2,17 @@ defmodule BackendWeb.LayoutView do
   use BackendWeb, :view
 
   def current_mt(conn) do
-    today = Date.utc_today()
-
-    case {today.year, today.month, today.day} do
-      {2020, 6, day} when day > 11 and day < 18 -> show_mt(conn, :Jönköping)
-      _ -> ""
+    case Backend.MastersTour.TourStop.get_current() do
+      nil -> ""
+      ts -> show_mt(conn, ts)
     end
+
+    #    today = Date.utc_today()
+    #
+    #    case {today.year, today.month, today.day} do
+    #      {2020, 6, day} when day > 11 and day < 18 -> show_mt(conn, :"Jönköping")
+    #      _ -> ""
+    #    end
   end
 
   def show_mt(conn, tour_stop) do
