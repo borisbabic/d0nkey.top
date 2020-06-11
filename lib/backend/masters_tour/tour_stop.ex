@@ -148,7 +148,7 @@ defmodule Backend.MastersTour.TourStop do
     |> Enum.find(fn ts -> ts.id == tour_stop end)
   end
 
-  def get_current(hours_before_start \\ 40, hours_after_start \\ 96) do
+  def get_current(hours_before_start \\ 1, hours_after_start \\ 96) do
     now = NaiveDateTime.utc_now()
 
     all()
