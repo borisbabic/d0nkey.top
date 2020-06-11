@@ -441,7 +441,7 @@ defmodule Backend.Battlefy do
       :Arlington -> {:ok, "5e1cf8ff1e66fd33ebbfc0ed"}
       :Indonesia -> {:ok, "5e5d80217506f5240ebad221"}
       # edit_hs_decks "5ec9a33da4d7bf2e78ec166a"
-      :Jönköping -> id_unknown
+      :Jönköping -> {:ok, "5ec5ca7153702b1ab2a5c9dd"}
       :"Asia-Pacific" -> id_unknown
       :Montreal -> id_unknown
       _ -> {:error, "Unknown tour stop #{tour_stop}"}

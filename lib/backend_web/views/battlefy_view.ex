@@ -121,7 +121,7 @@ defmodule BackendWeb.BattlefyView do
       end
 
     stages =
-      tournament.stages
+      (tournament.stages || [])
       |> Enum.map(fn s ->
         %{
           name: s.name,
