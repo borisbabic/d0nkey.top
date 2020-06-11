@@ -47,8 +47,14 @@ defmodule Backend.MastersTour.InvitedPlayer do
   end
 
   @spec uniq_string(InvitedPlayer.t()) :: String.t()
-  def uniq_string(ip) do
-    String.trim(ip.battletag_full) <> ip.tour_stop <> to_string(ip.official)
+  def uniq_string(%{battletag_full: bt, tour_stop: ts, official: o}) do
+    uniq_string(bt, ts, o)
+  end
+
+  @spec uniq_string(String.t(), Backend.Blizzard.tour_stop(), boolean) :: String.t()
+  @spec uniq_string(String.t(), Backend.Blizzard.tour_stop()) :: String.t()
+  def uniq_string(battletag_full, tour_stop, official \\ true) do
+    String.trim(battletag_full) <> to_string(tour_stop) <> to_string(official)
   end
 
   @doc """
