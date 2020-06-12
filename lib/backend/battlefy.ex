@@ -35,9 +35,16 @@ defmodule Backend.Battlefy do
     create_standings_from_round1_matches(%{id: id})
   end
 
+  def get_stage_standings(%{id: id, current_round: 0}) do
+    []
+  end
+
   def get_stage_standings(%{id: id, current_round: current_round})
-      when is_integer(current_round) do
-    Api.get_round_standings(id, current_round)
+      when is_integer(current_round) and current_round > 0 do
+    case Api.get_round_standings(id, current_round) do
+      [] -> get_stage_standings(%{id: id, current_round: current_round - 1})
+      standings -> standings
+    end
   end
 
   def get_stage_standings(stage) do
