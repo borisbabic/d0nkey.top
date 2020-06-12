@@ -82,8 +82,8 @@ defmodule Backend.HSReplay do
 
   defp normalize_ranks(rank, legend_rank) do
     case {rank, legend_rank} do
-      {nil, l} when not is_nil(l) -> normalize_legend(l)
-      {r, nil} when not is_nil(r) -> normalize_regular(r)
+      {51, l} -> normalize_legend(l)
+      {r, _} when not is_nil(r) -> normalize_regular(r)
       _ -> nil
     end
   end
@@ -93,7 +93,7 @@ defmodule Backend.HSReplay do
   end
 
   def normalize_regular(num) do
-    -1 * (999_999_999 + num)
+    -1 * (999_999_999 - num)
   end
 
   def normalize_ranks(replay_feed_entry) do

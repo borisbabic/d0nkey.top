@@ -2,6 +2,29 @@ defmodule BackendWeb.HSReplayView do
   use BackendWeb, :view
   alias Backend.HSReplay
 
+  def player_rank(51, legend), do: "L#{legend}"
+
+  def player_rank(rank, _) do
+    material =
+      case div(rank - 1, 10) do
+        4 -> "D"
+        3 -> "P"
+        2 -> "G"
+        1 -> "S"
+        0 -> "B"
+      end
+
+    in_material_rank = rem(10 - rem(rank, 10), 10) + 1
+    "#{material}#{in_material_rank}"
+  end
+
+  def extract_ranks(entry) do
+    {
+      player_rank(entry.player1_rank, entry.player1_legend_rank),
+      player_rank(entry.player2_rank, entry.player2_legend_rank)
+    }
+  end
+
   def render("live_feed.html", %{feed: feed, archetypes: archetypes}) do
     archetype_map =
       archetypes
@@ -12,12 +35,14 @@ defmodule BackendWeb.HSReplayView do
     replays =
       feed
       |> Enum.map(fn f ->
+        {p1rank, p2rank} = extract_ranks(f)
+
         %{
           url: HSReplay.create_replay_link(f.id),
           p1deck: Map.get(archetype_map, f.player1_archetype, "Unknown"),
-          p1rank: f.player1_rank || "L#{f.player1_legend_rank}",
+          p1rank: p1rank,
           p2deck: Map.get(archetype_map, f.player2_archetype, "Unknown"),
-          p2rank: f.player2_rank || "L#{f.player2_legend_rank}",
+          p2rank: p2rank,
           p1won: f.player1_won,
           p2won: f.player2_won
         }
