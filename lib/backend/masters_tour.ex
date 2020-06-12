@@ -506,6 +506,14 @@ defmodule Backend.MastersTour do
     |> Enum.sort_by(fn {_, money} -> money end, :desc)
   end
 
+  @spec get_2020_earnings(Battlefy.Tournament.t(), Blizzard.tour_stop()) :: [{String.t(), number}]
+  def get_2020_earnings(%{stages: [swiss]}, tour_stop) do
+    swiss_standings = Battlefy.get_stage_standings(swiss)
+
+    get_2020_swiss_earnings(swiss_standings, MapSet.new([]))
+    |> Enum.sort_by(fn {_, money} -> money end, :desc)
+  end
+
   def get_2020_earnings(_, _) do
     []
   end
@@ -538,7 +546,7 @@ defmodule Backend.MastersTour do
     end)
   end
 
-  @spec get_2020_top8_earnings([Battlefy.Standings.t()], MapSet.t()) :: [{String.t(), number}]
+  @spec get_2020_swiss_earnings([Battlefy.Standings.t()], MapSet.t()) :: [{String.t(), number}]
   def get_2020_swiss_earnings(standings, top8_players = %MapSet{}) do
     standings
     |> Enum.filter(fn %{team: %{name: name}} -> !MapSet.member?(top8_players, name) end)
