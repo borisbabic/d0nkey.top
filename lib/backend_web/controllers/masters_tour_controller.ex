@@ -55,6 +55,11 @@ defmodule BackendWeb.MastersTourController do
     tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
     earnings = MastersTour.get_gm_money_rankings(gm_season)
 
+    standings =
+      :Jönköping
+      |> Backend.MastersTour.TourStop.get_battlefy_id!()
+      |> Backend.Battlefy.get_tournament_standings()
+
     region =
       params["region"]
       |> Backend.Blizzard.to_region()
@@ -66,6 +71,7 @@ defmodule BackendWeb.MastersTourController do
       show_gms: show_gms,
       region: region,
       gms: gms,
+      standings: standings,
       gm_season: gm_season
     })
   end
