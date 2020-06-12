@@ -69,6 +69,7 @@ defmodule Backend.PlayerInfo do
   @cn_players MapSet.new([
                 "TNCAnswer",
                 "Liooon",
+                "VKLiooon",
                 "SNBrox",
                 "SNJing",
                 "Bourbon",

@@ -472,7 +472,7 @@ defmodule Backend.MastersTour do
       get_ts_money_rankings(ts)
       |> Enum.map(fn {name, money} -> {name, money, ts} end)
     end)
-    |> Enum.group_by(fn {name, _, _} -> name end, fn {_, money, tour_stop} ->
+    |> Enum.group_by(fn {name, _, _} -> name_hacks(name) end, fn {_, money, tour_stop} ->
       {tour_stop, money}
     end)
     |> Enum.map(fn {name, earnings_list} ->
@@ -483,6 +483,13 @@ defmodule Backend.MastersTour do
       }
     end)
     |> Enum.sort_by(fn {_, earnings, _} -> earnings end, :desc)
+  end
+
+  def name_hacks(name) do
+    case name do
+      "Liooon" -> "VKLiooon"
+      n -> n
+    end
   end
 
   @spec get_ts_money_rankings(Blizzard.tour_stop()) :: [{String.t(), number}]
