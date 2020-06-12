@@ -16,10 +16,13 @@ defmodule Backend.PlayerInfo do
                 "Innovation",
                 "TheLastChamp",
                 "IrvinG",
+                "Pavelingbook",
+                "HSKeDaiBiao",
                 "Cesky",
                 "LeandroLeal"
               ])
   @eu_players MapSet.new([
+                "GrJim",
                 "xBlyzes",
                 "AyRoK",
                 "totosh",
@@ -31,7 +34,6 @@ defmodule Backend.PlayerInfo do
                 "Leta",
                 "Turbon1ck",
                 "Fenomeno",
-                "Pavelingbook",
                 "Dreivo",
                 "Gaby",
                 "Dizdemon",
