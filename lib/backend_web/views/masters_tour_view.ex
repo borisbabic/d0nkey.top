@@ -33,12 +33,13 @@ defmodule BackendWeb.MastersTourView do
       <%= for ts <- tour_stops do %>
         <th class="is-hidden-mobile"><%=ts%></th>
       <% end %>
+      <th>MTJ Score</th>
       <th>Total</th>
     </tr>
     """
   end
 
-  def create_row_html({{name, total, per_ts, region}, place}, tour_stops) do
+  def create_row_html({{name, total, per_ts, region, score}, place}, tour_stops) do
     name_cell = create_name_cell(name, region)
     tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
 
@@ -49,6 +50,7 @@ defmodule BackendWeb.MastersTourView do
         <%= for tsc <- tour_stop_cells do %>
           <td class="is-hidden-mobile"><%=tsc%></td>
         <% end %>
+        <td><%= score %></td>
         <td><%=total%></td>
       </tr>
     """
@@ -284,7 +286,7 @@ defmodule BackendWeb.MastersTourView do
 
   def filter_region(earnings_players, region) do
     earnings_players
-    |> Enum.filter(fn {_, _, _, r} -> region == r end)
+    |> Enum.filter(fn {_, _, _, r, _} -> region == r end)
   end
 
   def create_show_gms_dropdown(conn, show_gms) do
@@ -330,6 +332,15 @@ defmodule BackendWeb.MastersTourView do
     {[all_option | region_options], title}
   end
 
+  def get_player_score(name, standings) do
+    standings
+    |> Enum.find(fn %{team: %{name: full}} -> InvitedPlayer.shorten_battletag(full) == name end)
+    |> case do
+      %{wins: wins, losses: losses} -> "#{wins} - #{losses}"
+      _ -> "N/A"
+    end
+  end
+
   def render("earnings.html", %{
         tour_stops: tour_stops,
         earnings: earnings,
@@ -337,6 +348,7 @@ defmodule BackendWeb.MastersTourView do
         show_gms: show_gms,
         conn: conn,
         region: region,
+        standings: standings,
         gms: gms_list
       }) do
     headers = create_headers(tour_stops)
@@ -347,7 +359,7 @@ defmodule BackendWeb.MastersTourView do
       earnings
       |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
       |> Enum.map(fn {name, total, per_ts} ->
-        {name, total, per_ts, PlayerInfo.get_region(name)}
+        {name, total, per_ts, PlayerInfo.get_region(name), get_player_score(name, standings)}
       end)
       |> filter_region(region)
       |> Enum.with_index(1)

@@ -121,6 +121,8 @@ defmodule Backend.MastersTour.TourStop do
     end
   end
 
+  def get_battlefy_id!(tour_stop), do: get_battlefy_id(tour_stop) |> Util.bangify()
+
   @doc """
   Gets the tour stop a ladder season qualifies for
 
