@@ -28,9 +28,32 @@ defmodule Backend.EsportsEarnings do
 
   def update_game_details(player_details, existing) do
     # stupid hack because I'm too lazy to figure out how to do it properly
+    delete_cache(existing.game_id)
     save_resp = save_game_details(player_details, existing.game_id)
+    delete_cache(existing.game_id)
     Repo.delete(existing)
     save_resp
+  end
+
+  def delete_cache(game_id) do
+    game_id
+    |> create_cache_key()
+    |> ApiCache.delete()
+  end
+
+  def get_player_country(handle, game \\ :Hearthstone) do
+    game_id = game |> get_game_id()
+    cache_key = "esports_earnings_#{game}_player_country_#{handle}}"
+
+    with nil <- ApiCache.get(cache_key),
+         %{player_details: player_details} <- game_player_details(game_id),
+         %{country_code: country_code} <-
+           player_details |> Enum.find(fn pd -> pd.handle == handle end) do
+      ApiCache.set(cache_key, country_code)
+      country_code
+    else
+      cc -> cc
+    end
   end
 
   def auto_update(), do: update_hearthstone()
