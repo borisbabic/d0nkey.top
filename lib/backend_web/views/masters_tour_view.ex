@@ -20,8 +20,10 @@ defmodule BackendWeb.MastersTourView do
         _ -> "is-success"
       end
 
+    region_name = Blizzard.get_region_name(region, :short)
+
     ~E"""
-    <span class="tag <%= tag %> is-family-code"><%= region %></span> <%= name %>
+    <span class="tag <%= tag %> is-family-code"><%= region_name %></span> <%= name %>
     """
   end
 

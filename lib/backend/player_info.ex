@@ -1217,7 +1217,9 @@ defmodule Backend.PlayerInfo do
     "zlsjs" => "United States",
     "zumpp" => "Finland",
     "reqvam" => "Croatia",
-    "D0nkey" => "Croatia"
+    "D0nkey" => "Croatia",
+    "WEStone" => "China",
+    "azuuu" => "South Korea"
   }
 
   @nationality_to_region %{
