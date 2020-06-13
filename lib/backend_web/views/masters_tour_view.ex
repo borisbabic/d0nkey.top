@@ -35,7 +35,6 @@ defmodule BackendWeb.MastersTourView do
       <%= for ts <- tour_stops do %>
         <th class="is-hidden-mobile"><%=ts%></th>
       <% end %>
-      <th>MTJ Score</th>
       <th>Total</th>
     </tr>
     """
@@ -52,7 +51,6 @@ defmodule BackendWeb.MastersTourView do
         <%= for tsc <- tour_stop_cells do %>
           <td class="is-hidden-mobile"><%=tsc%></td>
         <% end %>
-        <td><%= score %></td>
         <td><%=total%></td>
       </tr>
     """
