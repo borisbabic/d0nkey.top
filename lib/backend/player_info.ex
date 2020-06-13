@@ -50,9 +50,11 @@ defmodule Backend.PlayerInfo do
                 "NikolajHoej",
                 "Yogg",
                 "Habugabu",
+                "DikiyZver",
                 "Matty"
               ])
   @ap_players MapSet.new([
+                "yeschicken",
                 "Alan870806",
                 "Bankyugi",
                 "TIZS",
@@ -69,6 +71,7 @@ defmodule Backend.PlayerInfo do
               ])
 
   @cn_players MapSet.new([
+                "AjjXiGuan",
                 "TNCAnswer",
                 "Liooon",
                 "VKLiooon",
