@@ -17,6 +17,10 @@ defmodule Backend.Infrastructure.ApiCache do
     GenServer.cast(:api_cache, {:set, key, value})
   end
 
+  def delete(key) do
+    GenServer.cast(:api_cache, {:delete, key})
+  end
+
   # Server
   def init(_args) do
     table = :ets.new(:api_cache, [:set, :private])
@@ -43,6 +47,12 @@ defmodule Backend.Infrastructure.ApiCache do
   def handle_cast({:set, key, value}, state) do
     %{table: table} = state
     true = :ets.insert(table, {key, value})
+    {:noreply, state}
+  end
+
+  def handle_cast({:delete, key}, state) do
+    %{table: table} = state
+    true = :ets.delete(table, key)
     {:noreply, state}
   end
 end

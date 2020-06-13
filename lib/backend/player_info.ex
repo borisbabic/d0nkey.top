@@ -1,6 +1,8 @@
 defmodule Backend.PlayerInfo do
   @moduledoc false
   alias Backend.Blizzard
+  alias Backend.MastersTour.InvitedPlayer
+  alias Backend.EsportsEarnings
 
   @na_players MapSet.new([
                 "brimful",
@@ -1308,6 +1310,98 @@ defmodule Backend.PlayerInfo do
     "China" => :CN
   }
 
+  @alpha2_to_region %{
+    "KZ" => :EU,
+    "PE" => :US,
+    "MY" => :AP,
+    "SA" => :EU,
+    "TH" => :AP,
+    "KW" => :EU,
+    "AR" => :US,
+    "AT" => :EU,
+    "IT" => :EU,
+    "GR" => :EU,
+    "TR" => :EU,
+    "JP" => :AP,
+    "LT" => :EU,
+    "JM" => :US,
+    "BO" => :US,
+    "FR" => :EU,
+    "BZ" => :US,
+    "QA" => :EU,
+    "MO" => :AP,
+    "RS" => :EU,
+    "PL" => :EU,
+    "HN" => :US,
+    "TW" => :AP,
+    "BR" => :US,
+    "NL" => :EU,
+    "IQ" => :EU,
+    "PY" => :US,
+    "CH" => :EU,
+    "PH" => :AP,
+    "SK" => :EU,
+    "VN" => :AP,
+    "CN" => :CN,
+    "DZ" => :EU,
+    "PT" => :EU,
+    "US" => :US,
+    "ES" => :EU,
+    "LV" => :EU,
+    "UA" => :EU,
+    "BH" => :EU,
+    "EG" => :EU,
+    "MX" => :US,
+    "SV" => :US,
+    "IN" => :AP,
+    "LU" => :EU,
+    "DE" => :EU,
+    "NI" => :US,
+    "CZ" => :EU,
+    "HR" => :EU,
+    "ZA" => :EU,
+    "FI" => :EU,
+    "PR" => :US,
+    "IL" => :EU,
+    "GB" => :EU,
+    "JO" => :EU,
+    "BE" => :EU,
+    "DK" => :EU,
+    "LB" => :EU,
+    "OM" => :EU,
+    "UY" => :US,
+    "HU" => :EU,
+    "EC" => :US,
+    "NO" => :EU,
+    "MA" => :EU,
+    "HK" => :AP,
+    "VE" => :US,
+    "LY" => :EU,
+    "CA" => :US,
+    "SI" => :EU,
+    "SE" => :EU,
+    "MT" => :EU,
+    "BG" => :EU,
+    "IE" => :EU,
+    "ID" => :AP,
+    "AE" => :EU,
+    "RO" => :EU,
+    "NZ" => :AP,
+    "RU" => :EU,
+    "KR" => :AP,
+    "EE" => :EU,
+    "CO" => :US,
+    "CR" => :US,
+    "AU" => :AP,
+    "GT" => :US,
+    "SG" => :AP,
+    "CL" => :US,
+    "US" => :US,
+    "TN" => :EU,
+    "BY" => :EU,
+    "IS" => :EU
+  }
+
   @spec current_gms() :: [String.t()]
   def current_gms() do
     relegated = relegated_gms()
@@ -1327,12 +1421,19 @@ defmodule Backend.PlayerInfo do
        @nationality_to_region[pi.nationality]) || nil
   end
 
+  def get_esports_earnings_region(player) do
+    player
+    |> InvitedPlayer.shorten_battletag()
+    |> EsportsEarnings.get_player_country()
+    |> case do
+      nil -> nil
+      a2 -> @alpha2_to_region[a2]
+    end
+  end
+
   @spec get_region(String.t()) :: Blizzard.region()
   def get_region(player) do
     cond do
-      region = @nationality_to_region[@player_nationalities[player]] ->
-        region
-
       MapSet.member?(@na_players, player) ->
         :US
 
@@ -1345,8 +1446,11 @@ defmodule Backend.PlayerInfo do
       MapSet.member?(@cn_players, player) ->
         :CN
 
-      r = get_esportsgold_nationality(player) ->
+      r = get_esports_earnings_region(player) ->
         r
+
+      region = @nationality_to_region[@player_nationalities[player]] ->
+        region
 
       true ->
         nil
