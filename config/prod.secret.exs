@@ -18,6 +18,9 @@ discord_token =
     this is needed for the bot
     """
 
+config :backend,
+  esports_earnings_api_key: System.get_env("ESPORTS_EARNINGS_API_KEY") || ""
+
 config :backend, Backend.Repo,
   ssl: true,
   url: database_url,
