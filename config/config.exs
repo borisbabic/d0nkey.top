@@ -10,6 +10,7 @@ use Mix.Config
 config :backend, QuantumScheduler,
   jobs: [
     {"*/3 * * * *", fn -> Backend.HSReplay.update_latest() end},
+    {"7 7 * * *", fn -> Backend.EsportsEarnings.auto_update() end},
     {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
     {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end}
   ]
@@ -26,6 +27,7 @@ config :backend, BackendWeb.Endpoint,
 
 # auto sign me up
 config :backend,
+  esports_earnings_api_key: "",
   su_token: System.get_env("SIGNUP_TOKEN") || nil,
   su_user_id: "581f5548583dd73a0351b867",
   su_battletag_full: "D0nkey#2470",
