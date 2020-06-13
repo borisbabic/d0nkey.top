@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :backend,
+  esports_earnings_api_key: System.get_env("ESPORTS_EARNINGS_API_KEY") || "",
   enable_bot: !is_nil(System.get_env("DISCORD_TOKEN")) || !is_nil(System.get_env("ENABLE_BOT"))
 
 # Configure your database

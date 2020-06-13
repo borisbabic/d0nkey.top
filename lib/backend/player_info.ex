@@ -1330,8 +1330,8 @@ defmodule Backend.PlayerInfo do
   @spec get_region(String.t()) :: Blizzard.region()
   def get_region(player) do
     cond do
-      nationality = @nationality_to_region[@player_nationalities[player]] ->
-        nationality
+      region = @nationality_to_region[@player_nationalities[player]] ->
+        region
 
       MapSet.member?(@na_players, player) ->
         :US
