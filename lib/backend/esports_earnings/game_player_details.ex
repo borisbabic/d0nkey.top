@@ -28,6 +28,7 @@ defmodule Backend.EsportsEarnings.GamePlayerDetails do
 end
 
 defmodule Backend.EsportsEarnings.PlayerDetails do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
   @all_attrs [:id, :first_name, :last_name, :country_code, :usd_total, :handle]
@@ -62,10 +63,10 @@ defmodule Backend.EsportsEarnings.PlayerDetails do
     %__MODULE__{
       id: id,
       handle: handle,
-      country_code: cc,
+      country_code: cc |> String.upcase(),
       first_name: first |> nillable_name(),
       last_name: last |> nillable_name(),
-      usd_total: map["total_usd_prize"] || map["total_usd_prize"]
+      usd_total: map["total_usd_prize"] || map["total_usdprize"]
     }
   end
 
