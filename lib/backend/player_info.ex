@@ -1215,7 +1215,9 @@ defmodule Backend.PlayerInfo do
     "younTheory" => "Switzerland",
     "zGGLeoz" => "Vietnam",
     "zlsjs" => "United States",
-    "zumpp" => "Finland"
+    "zumpp" => "Finland",
+    "reqvam" => "Croatia",
+    "D0nkey" => "Croatia"
   }
 
   @nationality_to_region %{
