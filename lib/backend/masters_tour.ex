@@ -84,8 +84,8 @@ defmodule Backend.MastersTour do
       fn s = %{wins: wins, losses: losses, place: position, team: %{name: battletag_full}} ->
         %{
           battletag_full: battletag_full,
-          wins: wins - Map.get(s, :byes, 0),
-          losses: losses,
+          wins: wins - Map.get(s, :auto_wins, 0),
+          losses: losses - Map.get(s, :auto_losses, 0),
           position: position
         }
       end
@@ -164,6 +164,16 @@ defmodule Backend.MastersTour do
   def qualifiers_update() do
     Blizzard.current_ladder_tour_stop()
     |> qualifiers_update()
+  end
+
+  def reset_qualifier(tour_stop) when is_atom(tour_stop) do
+    Repo.delete_all(
+      from q in Qualifier,
+        where: q.tour_stop == ^to_string(tour_stop)
+    )
+
+    invalidate_stats_cache(tour_stop)
+    qualifiers_update(tour_stop)
   end
 
   def qualifiers_update(tour_stop, update_cache \\ true) when is_atom(tour_stop) do
@@ -514,7 +524,7 @@ defmodule Backend.MastersTour do
   end
 
   @spec get_2020_earnings(Battlefy.Tournament.t(), Blizzard.tour_stop()) :: [{String.t(), number}]
-  def get_2020_earnings(%{stages: [swiss]}, tour_stop) do
+  def get_2020_earnings(%{stages: [swiss]}, _) do
     swiss_standings = Battlefy.get_stage_standings(swiss)
 
     get_2020_swiss_earnings(swiss_standings, MapSet.new([]))
