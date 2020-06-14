@@ -10,6 +10,7 @@ defmodule Backend.Battlefy.Match do
     field :bottom, MatchTeam.t()
     field :round_number, integer
     field :match_number, integer
+    field :double_loss, boolean
     field :stage_id, Backend.Battlefy.stage_id()
     field :is_bye, boolean
     # field :is_complete, boolean
@@ -64,6 +65,7 @@ defmodule Backend.Battlefy.Match do
       bottom: MatchTeam.from_raw_map(bottom),
       round_number: round_number,
       match_number: match_number,
+      double_loss: map["double_loss"] || false,
       is_bye: is_bye,
       stage_id: stage_id
       # is_complete: is_complete
@@ -75,12 +77,14 @@ defmodule Backend.Battlefy.MatchTeam do
   @moduledoc false
   use TypedStruct
   alias Backend.Battlefy.Team
+  alias Backend.Battlefy.Util
 
   typedstruct do
     field :winner, boolean
     field :disqualified, boolean
     field :team, Team.t() | nil
     field :score, integer
+    field :ready_at, NaiveDateTime.t() | nil
     field :name, String.t()
   end
 
@@ -106,6 +110,7 @@ defmodule Backend.Battlefy.MatchTeam do
       winner: map["winner"],
       name: map["name"],
       team: team,
+      ready_at: Util.parse_date(map["ready_at"]),
       score: map["score"] || 0
     }
   end

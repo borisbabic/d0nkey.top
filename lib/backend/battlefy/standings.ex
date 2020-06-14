@@ -7,7 +7,8 @@ defmodule Backend.Battlefy.Standings do
     field :place, integer, enforce: true
     field :team, Team.t(), enforce: true
     field :wins, integer
-    field :byes, integer
+    field :auto_wins, integer
+    field :auto_losses, integer
     field :losses, integer
   end
 

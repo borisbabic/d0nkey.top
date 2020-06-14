@@ -35,7 +35,7 @@ defmodule Backend.Battlefy do
     create_standings_from_round1_matches(%{id: id})
   end
 
-  def get_stage_standings(%{id: id, current_round: 0}) do
+  def get_stage_standings(%{id: _, current_round: 0}) do
     []
   end
 
@@ -114,9 +114,9 @@ defmodule Backend.Battlefy do
     |> Enum.sort_by(fn s -> s.place end, :asc)
   end
 
-  @spec create_single_elim_standings([Match.t()], integer) :: [Standings.t()]
-  def create_single_elim_standings(matches, rounds) do
-    byes =
+  @spec find_auto_wins_losses([Match.t()]) :: {Map.t(), Map.t()}
+  def find_auto_wins_losses(matches) do
+    auto_wins =
       matches
       |> Enum.flat_map(fn %{top: top, bottom: bottom, is_bye: is_bye} ->
         cond do
@@ -124,10 +124,31 @@ defmodule Backend.Battlefy do
           is_bye && bottom.winner -> [bottom.team.name]
           top.winner && (top.score == nil || top.score == 0) -> [top.team.name]
           bottom.winner && (bottom.score == nil || bottom.score == 0) -> [bottom.team.name]
+          top.ready_at != nil && bottom.ready_at == nil -> [top.team.name]
+          top.ready_at == nil && bottom.ready_at != nil -> [bottom.team.name]
           true -> []
         end
       end)
       |> Enum.frequencies()
+
+    auto_losses =
+      matches
+      |> Enum.flat_map(fn %{double_loss: double_loss, top: top, bottom: bottom} ->
+        cond do
+          double_loss -> [top.team.name, bottom.team.name]
+          top.ready_at != nil && bottom.ready_at == nil -> [bottom.team.name]
+          top.ready_at == nil && bottom.ready_at != nil -> [top.team.name]
+          true -> []
+        end
+      end)
+      |> Enum.frequencies()
+
+    {auto_wins, auto_losses}
+  end
+
+  @spec create_single_elim_standings([Match.t()], integer) :: [Standings.t()]
+  def create_single_elim_standings(matches, rounds) do
+    {auto_wins, auto_losses} = find_auto_wins_losses(matches)
 
     matches
     |> Enum.flat_map(fn %{top: top, bottom: bottom, round_number: round_number} ->
@@ -158,7 +179,8 @@ defmodule Backend.Battlefy do
             place: pos,
             wins: round_number - 1,
             losses: 1,
-            byes: get_byes(byes, l.team)
+            auto_wins: get_auto_wins(auto_wins, l.team),
+            auto_losses: get_auto_losses(auto_losses, l.team)
           }
         end)
 
@@ -170,7 +192,8 @@ defmodule Backend.Battlefy do
             place: 0,
             wins: round_number - 1,
             losses: 0,
-            byes: get_byes(byes, ip.team)
+            auto_wins: get_auto_wins(auto_wins, ip.team),
+            auto_losses: get_auto_losses(auto_losses, ip.team)
           }
         end)
 
@@ -184,7 +207,8 @@ defmodule Backend.Battlefy do
                 place: 1,
                 wins: round_number,
                 losses: 0,
-                byes: get_byes(byes, w.team)
+                auto_wins: get_auto_wins(auto_wins, w.team),
+                auto_losses: get_auto_losses(auto_losses, w.team)
               }
             end),
           else: []
@@ -196,8 +220,10 @@ defmodule Backend.Battlefy do
     |> Enum.sort_by(fn s -> s.place end, :asc)
   end
 
-  def get_byes(byes, %{name: name}), do: byes[name] || 0
-  def get_byes(_, _), do: 0
+  def get_auto_wins(auto_wins, %{name: name}), do: auto_wins[name] || 0
+  def get_auto_wins(_, _), do: 0
+  def get_auto_losses(auto_losses, %{name: name}), do: auto_losses[name] || 0
+  def get_auto_losses(_, _), do: 0
 
   @spec create_standings_from_matches(Stage.t()) :: [Standings.t()]
   def create_standings_from_matches(%{

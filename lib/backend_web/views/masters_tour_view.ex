@@ -110,6 +110,8 @@ defmodule BackendWeb.MastersTourView do
     |> Enum.map(fn c -> column_map[c] || "" end)
   end
 
+  def percent(0, 0), do: 0
+
   def percent(num, total) do
     (100 * num / total) |> Float.round(2)
   end
