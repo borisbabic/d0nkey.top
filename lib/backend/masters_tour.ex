@@ -582,4 +582,21 @@ defmodule Backend.MastersTour do
       {InvitedPlayer.shorten_battletag(name), money}
     end)
   end
+
+  @spec get_packs_earned(integer) :: integer
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_packs_earned(position) do
+    case position do
+      1 -> 20
+      2 -> 20
+      3 -> 15
+      5 -> 10
+      9 -> 5
+      17 -> 4
+      33 -> 3
+      65 -> 2
+      129 -> 1
+      _ -> 0
+    end
+  end
 end

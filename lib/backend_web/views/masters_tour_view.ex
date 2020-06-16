@@ -146,29 +146,14 @@ defmodule BackendWeb.MastersTourView do
         "Top 16" => ps.top16,
         "Best" => ps.positions |> Enum.min(),
         "Worst" => ps.positions |> Enum.max(),
+        "Median" => ps.positions |> Enum.sort() |> Enum.at(Enum.count(ps.positions) |> div(2)),
         "No Wins" => ps.no_wins,
         "No Wins %" => percent(ps.no_wins, total),
         "Cups Won" => ps.num_won,
         "Num Matches" => ps.wins + ps.losses,
         "Matches Won" => ps.wins,
         "Matches Lost" => ps.losses,
-        "Packs Earned" =>
-          ps.positions
-          |> Enum.map(fn p ->
-            case p do
-              1 -> 20
-              2 -> 20
-              3 -> 15
-              5 -> 10
-              9 -> 5
-              17 -> 4
-              33 -> 3
-              65 -> 2
-              129 -> 1
-              _ -> 0
-            end
-          end)
-          |> Enum.sum(),
+        "Packs Earned" => ps.positions |> Enum.map(&MastersTour.get_packs_earned/1) |> Enum.sum(),
         "%" => percent(ps.wins, ps.wins + ps.losses)
       }
       |> Map.merge(ts_cells)
@@ -212,6 +197,7 @@ defmodule BackendWeb.MastersTourView do
         "Top 16",
         "Best",
         "Worst",
+        "Median",
         "No Wins",
         "No Wins %",
         "Cups Won",
