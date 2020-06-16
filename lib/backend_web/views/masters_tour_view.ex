@@ -40,7 +40,7 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
-  def create_row_html({{name, total, per_ts, region, score}, place}, tour_stops) do
+  def create_row_html({{name, total, per_ts, region}, place}, tour_stops) do
     name_cell = create_name_cell(name, region)
     tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
 
@@ -152,6 +152,23 @@ defmodule BackendWeb.MastersTourView do
         "Num Matches" => ps.wins + ps.losses,
         "Matches Won" => ps.wins,
         "Matches Lost" => ps.losses,
+        "Packs Earned" =>
+          ps.positions
+          |> Enum.map(fn p ->
+            case p do
+              1 -> 20
+              2 -> 20
+              3 -> 15
+              5 -> 10
+              9 -> 5
+              17 -> 4
+              33 -> 3
+              65 -> 2
+              129 -> 1
+              _ -> 0
+            end
+          end)
+          |> Enum.sum(),
         "%" => percent(ps.wins, ps.wins + ps.losses)
       }
       |> Map.merge(ts_cells)
@@ -200,7 +217,8 @@ defmodule BackendWeb.MastersTourView do
         "Cups Won",
         "Num Matches",
         "Matches Won",
-        "Matches Lost"
+        "Matches Lost",
+        "Packs Earned"
       ] ++
         (eligible_ts |> Enum.map(&to_string/1)) ++
         ["%"]
@@ -350,7 +368,6 @@ defmodule BackendWeb.MastersTourView do
         show_gms: show_gms,
         conn: conn,
         region: region,
-        standings: standings,
         gms: gms_list
       }) do
     headers = create_headers(tour_stops)
@@ -361,7 +378,7 @@ defmodule BackendWeb.MastersTourView do
       earnings
       |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
       |> Enum.map(fn {name, total, per_ts} ->
-        {name, total, per_ts, PlayerInfo.get_region(name), get_player_score(name, standings)}
+        {name, total, per_ts, PlayerInfo.get_region(name)}
       end)
       |> filter_region(region)
       |> Enum.with_index(1)
