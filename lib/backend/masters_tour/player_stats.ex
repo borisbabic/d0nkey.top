@@ -9,6 +9,7 @@ defmodule Backend.MastersTour.PlayerStats do
     field :losses, :integer
     field :num_won, :integer
     field :no_wins, :integer
+    field :no_results, :integer
     field :top8, :integer
     field :top16, :integer
     field :positions, {:array, :integer}
@@ -28,14 +29,16 @@ defmodule Backend.MastersTour.PlayerStats do
   def create(s) do
     %__MODULE__{
       battletag_full: s.battletag_full,
-      wins: s.wins,
-      losses: s.losses,
-      num_won: if(s.position == 1, do: 1, else: 0),
-      no_wins: if(s.wins == 0, do: 1, else: 0),
-      top8: if(s.position < 8, do: 1, else: 0),
-      top16: if(s.position < 16, do: 1, else: 0),
-      positions: [s.position]
+      wins: 0,
+      losses: 0,
+      num_won: 0,
+      no_wins: 0,
+      no_results: 0,
+      top8: 0,
+      top16: 0,
+      positions: []
     }
+    |> update(s)
   end
 
   @spec update(Player.t(), Qualifier.Standings.t()) :: Player.t()
@@ -53,6 +56,7 @@ defmodule Backend.MastersTour.PlayerStats do
       no_wins: if(s.wins == 0, do: 1, else: 0) + p.no_wins,
       top8: if(s.position < 8, do: 1, else: 0) + p.top8,
       top16: if(s.position < 16, do: 1, else: 0) + p.top16,
+      no_results: if(s.wins + s.losses < 1, do: 1, else: 0) + p.no_results,
       positions: [s.position | p.positions]
     }
   end
