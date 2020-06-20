@@ -135,7 +135,7 @@ defmodule BackendWeb.MastersTourView do
   def create_player_rows(player_stats, eligible_tour_stops, invited_set) do
     player_stats
     |> Enum.map(fn ps ->
-      total = Enum.count(ps.positions)
+      total = Enum.count(ps.positions) - ps.no_results
 
       ts_cells = create_tour_stop_cells(ps, eligible_tour_stops, invited_set)
 
@@ -229,7 +229,7 @@ defmodule BackendWeb.MastersTourView do
 
     rows =
       stats
-      |> Enum.filter(fn ps -> Enum.count(ps.positions) >= min_to_show end)
+      |> Enum.filter(fn ps -> (Enum.count(ps.positions) - ps.no_results) >= min_to_show end)
       |> create_player_rows(eligible_tour_stops, invited_set)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
