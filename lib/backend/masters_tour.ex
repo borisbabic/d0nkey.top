@@ -69,7 +69,7 @@ defmodule Backend.MastersTour do
 
   @spec is_finished_qualifier?(Battlefy.Tournament.t()) :: boolean
   def is_finished_qualifier?(%{
-        stages: [%{current_round: nil, has_started: true, standing_ids: [_|_]}]
+        stages: [%{current_round: nil, has_started: true, standing_ids: [_ | _]}]
       }),
       do: true
 
@@ -232,7 +232,26 @@ defmodule Backend.MastersTour do
 
     # we don't really care too much if this fails since they will get officially invited at some point
     # so it's okay that it's in a separate transaction
-    new_structs
+    new_structs |> save_qualifier_invites()
+  end
+
+  def save_missing_qualifier_invites(tour_stop) when is_atom(tour_stop) do
+    tournament_ids =
+      list_invited_players(tour_stop)
+      |> Enum.filter(fn ip -> ip.tournament_id end)
+      |> Enum.map(fn ip -> ip.tournament_id end)
+      |> MapSet.new()
+
+    Repo.all(
+      from qs in Qualifier,
+        where: qs.tour_stop == ^to_string(tour_stop)
+    )
+    |> Enum.filter(fn q -> !MapSet.member?(tournament_ids, q.tournament_id) end)
+    |> save_qualifier_invites()
+  end
+
+  def save_qualifier_invites(qualifiers = [%{tournament_slug: _} | _]) do
+    qualifiers
     |> Enum.reduce(Multi.new(), fn q, multi ->
       ip = q |> create_qualifier_invite()
       cs = ip |> create_invited_player()
@@ -240,6 +259,8 @@ defmodule Backend.MastersTour do
     end)
     |> Repo.transaction()
   end
+
+  def save_qualifier_invites(_), do: []
 
   @spec create_qualifier_invite(Qualifier, boolean | nil) :: any()
   def create_qualifier_invite(q, official \\ false) do
