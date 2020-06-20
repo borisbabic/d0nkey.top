@@ -68,7 +68,11 @@ defmodule Backend.MastersTour do
   def has_qualifier_started?(_), do: false
 
   @spec is_finished_qualifier?(Battlefy.Tournament.t()) :: boolean
-  def is_finished_qualifier?(%{stages: [%{current_round: nil, has_started: true}]}), do: true
+  def is_finished_qualifier?(%{
+        stages: [%{current_round: nil, has_started: true, standing_ids: [_|_]}]
+      }),
+      do: true
+
   def is_finished_qualifier?(_), do: false
 
   @spec is_supported_qualifier?(Battlefy.Tournament.t()) :: boolean
