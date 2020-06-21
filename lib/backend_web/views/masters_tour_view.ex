@@ -4,6 +4,8 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.MastersTour
   alias Backend.Blizzard
   alias Backend.PlayerInfo
+  alias Backend.MastersTour.PlayerStats
+
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
   @min_cups_options [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
 
@@ -110,12 +112,6 @@ defmodule BackendWeb.MastersTourView do
     |> Enum.map(fn c -> column_map[c] || "" end)
   end
 
-  def percent(_, 0), do: 0
-
-  def percent(num, total) do
-    (100 * num / total) |> Float.round(2)
-  end
-
   @spec create_tour_stop_cells(PlayerStats.t(), [Blizzard.tour_stop()], MapSet.t()) :: Map.t()
   def create_tour_stop_cells(player_stats, tour_stops, invited_set) do
     tour_stops
@@ -135,7 +131,7 @@ defmodule BackendWeb.MastersTourView do
   def create_player_rows(player_stats, eligible_tour_stops, invited_set) do
     player_stats
     |> Enum.map(fn ps ->
-      total = Enum.count(ps.positions) - ps.no_results
+      total = ps |> PlayerStats.with_result()
 
       ts_cells = create_tour_stop_cells(ps, eligible_tour_stops, invited_set)
 
@@ -144,17 +140,17 @@ defmodule BackendWeb.MastersTourView do
         "Cups" => total,
         "Top 8" => ps.top8,
         "Top 16" => ps.top16,
-        "Best" => ps.positions |> Enum.min(),
-        "Worst" => ps.positions |> Enum.max(),
-        "Median" => ps.positions |> Enum.sort() |> Enum.at(Enum.count(ps.positions) |> div(2)),
-        "No Wins" => ps.no_wins,
-        "No Wins %" => percent(ps.no_wins, total),
+        "Best" => ps |> PlayerStats.best(),
+        "Worst" => ps |> PlayerStats.worst(),
+        "Median" => ps |> PlayerStats.median(),
+        "Only Losses" => ps.only_losses,
+        "Only Losses %" => ps |> PlayerStats.only_losses_percent() |> Float.round(2),
         "Cups Won" => ps.num_won,
-        "Num Matches" => ps.wins + ps.losses,
+        "Num Matches" => ps |> PlayerStats.matches(),
         "Matches Won" => ps.wins,
         "Matches Lost" => ps.losses,
         "Packs Earned" => ps.positions |> Enum.map(&MastersTour.get_packs_earned/1) |> Enum.sum(),
-        "%" => percent(ps.wins, ps.wins + ps.losses)
+        "%" => ps |> PlayerStats.matches_won_percent() |> Float.round(2)
       }
       |> Map.merge(ts_cells)
     end)
@@ -198,8 +194,8 @@ defmodule BackendWeb.MastersTourView do
         "Best",
         "Worst",
         "Median",
-        "No Wins",
-        "No Wins %",
+        "Only Losses",
+        "Only Losses %",
         "Cups Won",
         "Num Matches",
         "Matches Won",
@@ -229,7 +225,7 @@ defmodule BackendWeb.MastersTourView do
 
     rows =
       stats
-      |> Enum.filter(fn ps -> (Enum.count(ps.positions) - ps.no_results) >= min_to_show end)
+      |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
       |> create_player_rows(eligible_tour_stops, invited_set)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)

@@ -95,11 +95,9 @@ defmodule BackendWeb.LeaderboardView do
     (see examples)
     ## Example
     iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-01-01])
-    [JAN: 75, DEC: 74, NOV: 73]
+    [{:January, 75}, {:December, 74}, {:November, 73}, {:October, 72}, {:September, 71}, {:August, 70}]
     iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-31])
-    [JAN: 75, DEC: 74, NOV: 73]
-    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-12])
-    [DEC: 74, NOV: 73, OCT: 72]
+    [{:January, 75}, {:December, 74}, {:November, 73}, {:October, 72}, {:September, 71}, {:August, 70}]
   """
   @spec create_selectable_seasons(Calendar.date()) :: [selectable_season]
   def create_selectable_seasons(today) do
