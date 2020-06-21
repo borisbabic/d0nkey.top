@@ -3,6 +3,8 @@ defmodule Backend.PlayerInfo do
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.EsportsEarnings
+  @type country_code :: <<_::2>>
+  @type player_info :: %{region: Blizzard.region() | nil, country: country_code | nil}
 
   @na_players MapSet.new([
                 "brimful",
@@ -1430,8 +1432,7 @@ defmodule Backend.PlayerInfo do
 
   def get_esports_earnings_region(player) do
     player
-    |> InvitedPlayer.shorten_battletag()
-    |> EsportsEarnings.get_player_country()
+    |> get_country()
     |> case do
       nil -> nil
       a2 -> @alpha2_to_region[a2]
@@ -1462,5 +1463,29 @@ defmodule Backend.PlayerInfo do
       true ->
         nil
     end
+  end
+
+  @spec get_country(Blizzard.battletag()) :: country_code
+  def get_country(battletag_full) do
+    battletag_full
+    |> InvitedPlayer.shorten_battletag()
+    |> EsportsEarnings.get_player_country()
+  end
+
+  @spec get_info(String.t()) :: player_info
+  def get_info(battletag_full) do
+    country = battletag_full |> get_country()
+
+    region =
+      case {country, battletag_full |> InvitedPlayer.shorten_battletag() |> get_region()} do
+        {nil, nil} -> nil
+        {country, nil} -> @alpha2_to_region[country]
+        {_, region} -> region
+      end
+
+    %{
+      country: country,
+      region: region
+    }
   end
 end
