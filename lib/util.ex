@@ -242,4 +242,13 @@ defmodule Util do
   """
   def to_list(list) when is_list(list), do: list
   def to_list(not_list), do: [not_list]
+
+  @doc """
+  iex> Util.percent(141324,0)
+  0.0
+  iex> Util.percent(20,50)
+  40.0
+  """
+  def percent(_, 0), do: 0.0
+  def percent(num, total), do: 100 * num / total
 end

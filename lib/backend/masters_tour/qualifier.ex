@@ -56,4 +56,33 @@ defmodule Backend.MastersTour.Qualifier.Standings do
     |> cast(attrs, @all_attrs)
     |> validate_required(@all_attrs)
   end
+
+  @spec no_result?(Standings.t()) :: boolean
+  def no_result?(standings), do: standings.wins + standings.losses < 1
+
+  @spec no_result(Standings.t()) :: integer
+  def no_result(standings), do: if(no_result?(standings), do: 1, else: 0)
+
+  @spec only_losses?(Standings.t()) :: boolean
+  def only_losses?(standings), do: standings.wins < 1 && standings.losses > 0
+
+  @spec only_losses(Standings.t()) :: integer
+  def only_losses(standings), do: if(only_losses?(standings), do: 1, else: 0)
+
+  @spec won?(Standings.t()) :: boolean
+  def won?(standings), do: standings.position == 1
+  @spec won(Standings.t()) :: integer
+  def won(standings), do: if(won?(standings), do: 1, else: 0)
+
+  @spec top8?(Standings.t()) :: boolean
+  def top8?(standings), do: standings.position < 9
+
+  @spec top8(Standings.t()) :: integer
+  def top8(standings), do: if(top8?(standings), do: 1, else: 0)
+
+  @spec top16?(Standings.t()) :: boolean
+  def top16?(standings), do: standings.position < 17
+
+  @spec top16(Standings.t()) :: integer
+  def top16(standings), do: if(top16?(standings), do: 1, else: 0)
 end
