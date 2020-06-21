@@ -124,8 +124,8 @@ defmodule Backend.Battlefy do
           is_bye && bottom.winner -> [bottom.team.name]
           top.winner && (top.score == nil || top.score == 0) -> [top.team.name]
           bottom.winner && (bottom.score == nil || bottom.score == 0) -> [bottom.team.name]
-          top.ready_at != nil && bottom.ready_at == nil -> [top.team.name]
-          top.ready_at == nil && bottom.ready_at != nil -> [bottom.team.name]
+          top.winner && top.ready_at != nil && bottom.ready_at == nil -> [top.team.name]
+          bottom.winner && top.ready_at == nil && bottom.ready_at != nil -> [bottom.team.name]
           true -> []
         end
       end)
