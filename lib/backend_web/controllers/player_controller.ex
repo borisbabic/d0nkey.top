@@ -3,6 +3,7 @@ defmodule BackendWeb.PlayerController do
   use BackendWeb, :controller
   alias Backend.Blizzard
   alias Backend.PlayerInfo
+  alias Backend.MastersTour.InvitedPlayer
 
   def player_profile(conn, %{"battletag_full" => bt}) do
     qualifier_stats =
@@ -17,11 +18,11 @@ defmodule BackendWeb.PlayerController do
     mt_earnings =
       Backend.MastersTour.get_gm_money_rankings({2020, 2})
       |> Enum.find(fn {player, total, per_stop} ->
-        player == bt
+        player == InvitedPlayer.shorten_battletag(bt)
       end)
       |> case do
         nil -> 0
-        earnings -> earnings
+        {_, earnings, _} -> earnings
       end
 
     render(conn, "player_profile.html", %{
