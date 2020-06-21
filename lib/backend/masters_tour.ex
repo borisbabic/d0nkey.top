@@ -496,7 +496,7 @@ defmodule Backend.MastersTour do
     "https://battlefy.com/hsesports/#{slug}/#{id}/info"
   end
 
-  @spec get_gm_money_rankings(Blizzard.gm_season()) :: gm_money_rankings
+  @spec get_gm_money_rankings(Blizzard.gm_season()) :: gm_money_rankings()
   def get_gm_money_rankings(gm_season) do
     Blizzard.get_tour_stops_for_gm!(gm_season)
     # remove the ones happening in the future for which we don't have info

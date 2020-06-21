@@ -90,6 +90,7 @@ defmodule BackendWeb.BattlefyView do
     yaytears = Backend.Yaytears.create_deckstrings_link(tournament.id, team_name)
 
     render("future_opponents.html", %{
+      conn: conn,
       show_future: opponent |> Enum.any?(),
       show_player: player |> Enum.any?(),
       future_matches: opponent,

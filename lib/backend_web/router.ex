@@ -53,6 +53,8 @@ defmodule BackendWeb.Router do
     post "/discord/broadcasts/:id/subscribe/:token", DiscordController, :subscribe
 
     get "/discord/create_broadcast", DiscordController, :create_broadcast
+
+    get "/player-profile/:battletag_full", PlayerController, :player_profile
   end
 
   # Other scopes may use custom stacks.
