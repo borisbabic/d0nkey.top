@@ -5,3 +5,17 @@
     <%= row %>
     <br>
 <% end %>
+
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <%= @table_headers %>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for row <- @table_rows do %>
+            <%= row %>
+        <% end %>
+    </tbody>
+</table>
+

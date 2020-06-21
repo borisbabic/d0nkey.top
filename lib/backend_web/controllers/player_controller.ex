@@ -12,6 +12,8 @@ defmodule BackendWeb.PlayerController do
 
     player_info = PlayerInfo.get_info(bt)
 
+    tournaments = Backend.MastersTour.list_qualifiers_for_player(bt)
+
     mt_earnings =
       Backend.MastersTour.get_gm_money_rankings({2020, 2})
       |> Enum.find(fn {player, total, per_stop} ->
@@ -26,6 +28,7 @@ defmodule BackendWeb.PlayerController do
       qualifier_stats: qualifier_stats,
       player_info: player_info,
       battletag_full: bt,
+      tournaments: tournaments,
       mt_earnings: mt_earnings
     })
   end

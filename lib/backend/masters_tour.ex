@@ -133,6 +133,19 @@ defmodule Backend.MastersTour do
     end
   end
 
+  @spec list_qualifiers_for_player(Blizzard.battletag()) :: [Qualifier]
+  def list_qualifiers_for_player(battletag_full) do
+    search = "%#{battletag_full}%"
+
+    query =
+      from q in Qualifier,
+        select: q,
+        where: like(fragment("?::text", q.standings), ^search),
+        order_by: [desc: q.start_time]
+
+    query |> Repo.all()
+  end
+
   @spec list_qualifiers_for_tour(Blizzard.tour_stop()) :: [Qualifier]
   def list_qualifiers_for_tour(tour_stop) do
     query =

@@ -1,12 +1,16 @@
 defmodule BackendWeb.PlayerView do
   use BackendWeb, :view
-  alias Backend.MastersTour.PlayerStats
+
   alias Backend.Blizzard
+  alias Backend.MastersTour
+  alias Backend.MastersTour.PlayerStats
 
   def render("player_profile.html", %{
         battletag_full: battletag_full,
         qualifier_stats: qs,
         player_info: pi,
+        tournaments: t,
+        conn: conn,
         mt_earnings: mt_earnings
       }) do
     stats_rows =
@@ -35,6 +39,52 @@ defmodule BackendWeb.PlayerView do
       (player_rows ++ stats_rows ++ earnings_rows)
       |> Enum.map(fn {title, val} -> "#{title}: #{val}" end)
 
-    render("player_profile.html", %{title: battletag_full, rows: rows})
+    table_headers =
+      [
+        "Tournament",
+        "Finish",
+        "Wins",
+        "Losses"
+      ]
+      |> Enum.map(fn h -> ~E"<th><%= h %></th>" end)
+
+    table_rows =
+      t
+      |> Enum.flat_map(fn t ->
+        t.standings
+        |> Enum.find(fn ps -> ps.battletag_full == battletag_full end)
+        |> case do
+          # this shouldn't be possible, but let's be safe
+          nil ->
+            []
+
+          ps ->
+            tournament_link =
+              MastersTour.create_qualifier_link(t.tournament_slug, t.tournament_id)
+
+            tournament_title = Recase.to_title(t.tournament_slug)
+
+            player_link =
+              Routes.battlefy_path(conn, :tournament_player, t.tournament_id, battletag_full)
+
+            [
+              ~E"""
+              <tr>
+                <td><a class="is-link" href="<%=tournament_link%>"><%=tournament_title%></a></td>
+                <td><a class="is-link" href="<%=player_link%>"><%=ps.position%></a></td>
+                <td><%=ps.wins%></td>
+                <td><%=ps.losses%></td>
+              </tr>
+              """
+            ]
+        end
+      end)
+
+    render("player_profile.html", %{
+      title: battletag_full,
+      rows: rows,
+      table_headers: table_headers,
+      table_rows: table_rows
+    })
   end
 end
