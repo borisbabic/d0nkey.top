@@ -1,0 +1,7 @@
+<div class="title is-2"><%= @title %></div>
+
+<div class="subtitle is-6">Greetings, traveler. This is still very WIP but you're welcome to this sneak peak </div>
+<%= for row <- @rows do %>
+    <%= row %>
+    <br>
+<% end %>

@@ -1,5 +1,5 @@
 <div class="title is-2">
-    <%= @team_name%>
+    <a class="is-link" href="<%= Routes.player_path(@conn, :player_profile, @team_name) %>"><%= @team_name%></a>
 </div>
 
 <div class="subtitle is-6">
