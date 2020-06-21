@@ -33,7 +33,7 @@ defmodule BackendWeb.PlayerView do
         {country, region} -> [{"Country", pi.country}, {"Region", pi.region}]
       end
 
-    earnings_rows = [{"2020 MT earnings", mt_earnings |> IO.inspect()}]
+    earnings_rows = [{"2020 MT earnings", mt_earnings}]
 
     rows =
       (player_rows ++ stats_rows ++ earnings_rows)
