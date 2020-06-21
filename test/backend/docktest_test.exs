@@ -3,4 +3,5 @@ defmodule Backend.Doctest do
   doctest Backend.Blizzard
   doctest BackendWeb.LeaderboardView
   doctest Backend.BattlefyUtil
+  doctest Backend.MastersTour.PlayerStats
 end
