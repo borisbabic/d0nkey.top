@@ -128,15 +128,21 @@ defmodule BackendWeb.MastersTourView do
     |> Map.new()
   end
 
-  def create_player_rows(player_stats, eligible_tour_stops, invited_set) do
+  def create_player_rows(player_stats, eligible_tour_stops, invited_set, conn) do
     player_stats
     |> Enum.map(fn ps ->
       total = ps |> PlayerStats.with_result()
 
       ts_cells = create_tour_stop_cells(ps, eligible_tour_stops, invited_set)
 
+      player_cell = ~E"""
+      <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, ps.battletag_full)%>">
+        <%= InvitedPlayer.shorten_battletag(ps.battletag_full)%>
+      </a>
+      """
+
       %{
-        "Player" => InvitedPlayer.shorten_battletag(ps.battletag_full),
+        "Player" => player_cell,
         "Cups" => total,
         "Top 8" => ps.top8,
         "Top 16" => ps.top16,
@@ -226,7 +232,7 @@ defmodule BackendWeb.MastersTourView do
     rows =
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
-      |> create_player_rows(eligible_tour_stops, invited_set)
+      |> create_player_rows(eligible_tour_stops, invited_set, conn)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
