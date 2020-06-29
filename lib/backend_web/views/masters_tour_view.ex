@@ -294,7 +294,7 @@ defmodule BackendWeb.MastersTourView do
 
   def filter_region(earnings_players, region) do
     earnings_players
-    |> Enum.filter(fn {_, _, _, r, _} -> region == r end)
+    |> Enum.filter(fn {_, _, _, r} -> region == r end)
   end
 
   def create_show_gms_dropdown(conn, show_gms) do
