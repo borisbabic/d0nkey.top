@@ -21,12 +21,17 @@ defmodule Backend.HSReplay.ReplayFeedEntry do
     field :id, String.t()
   end
 
+  def parse_int_or_none(int_field) when is_integer(int_field), do: int_field
+  def parse_int_or_none(int_field) when is_nil(int_field), do: nil
+
   def parse_int_or_none(int_field) do
     case Integer.parse(int_field) do
       {int, _} -> int
       :error -> nil
     end
   end
+
+  def parse_true_or_false(bool) when is_boolean(bool), do: bool
 
   def parse_true_or_false(bool_field) do
     case bool_field do
