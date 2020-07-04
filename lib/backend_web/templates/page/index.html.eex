@@ -3,16 +3,25 @@
   <div class="subtitle is-4">
       Well Met!
   </div>
+  <div class="subtitle is-5">
+      Donate
+  </div>
   If you like my site and would like to donate you can do so using
   <a class="is-link" href="https://www.paypal.me/d0nkeyhs">paypal</a>
   or you can schedule donations using <a class="is-link" href="https://liberapay.com/d0nkeyhs">liberapay</a>
   <br>
   <br>
+  <div class="subtitle is-5">
+      Contact
+  </div>
   You can contact me on <a class="" href="https://twitter.com/D0nkeyHS">twitter</a>, <a class=""
   href="https://discord.gg/DKYDu2Q">my discord server</a>, or create an issue on <a href="https://github
   .com/borisbabic/d0nkey
   .top/issues">github</a>
   <br>
   <br>
+  <div class="subtitle is-5">
+      Other features
+  </div>
   You can see the WIP/dropped features <a href="<%=Routes.page_path(@conn, :incubator)%>" class="is-link">here</a>
 </section>
