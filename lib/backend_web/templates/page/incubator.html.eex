@@ -2,9 +2,8 @@
 These features need some finishing touches but are available for the adventurous
 <br>
 <a class="" href="<%=Routes.player_path(@conn, :player_profile, "D0nkey#2470")%>">Player Profile</a> - You can change
- the url (keep %23 in place of #) or find a link to this on the earnings page or tournament profile page (qualifiers ->
- standings -> click on
- player -> click on player name)
+ the url (keep %23 in place of #) or find a link to this on the qualifiers stats page or tournament profile page
+ (qualifiers -> standings -> click on player -> click on player name)
 <br>
 <a class="" href="<%=Routes.leaderboard_path(@conn, :index, %{"highlight" => ["D0nkey", "Paljuha", "Groinkpff",
 "reqvam", "AuZG"], "seasonId" => "74"})%>">Highlight players on the leaderboard</a> - you need to change the url
