@@ -94,6 +94,8 @@ defmodule Backend.MastersTour do
         }
       end
     )
+    |> Enum.group_by(fn s -> s.battletag_full end)
+    |> Enum.map(fn {_key, standings} -> standings |> Enum.min_by(fn s -> s.position end) end)
   end
 
   def warmup_stats_cache() do
