@@ -144,6 +144,7 @@ defmodule BackendWeb.MastersTourView do
       %{
         "Player" => player_cell,
         "Cups" => total,
+        "Top 8 %" => (100 * ps.top8 / total) |> Float.round(2),
         "Top 8" => ps.top8,
         "Top 16" => ps.top16,
         "Best" => ps |> PlayerStats.best(),
@@ -195,6 +196,7 @@ defmodule BackendWeb.MastersTourView do
       [
         "Player",
         "Cups",
+        "Top 8 %",
         "Top 8",
         "Top 16",
         "Best",
