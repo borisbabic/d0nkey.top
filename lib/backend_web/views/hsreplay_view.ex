@@ -12,6 +12,7 @@ defmodule BackendWeb.HSReplayView do
         2 -> "G"
         1 -> "S"
         0 -> "B"
+        _ -> "?"
       end
 
     in_material_rank = rem(10 - rem(rank, 10), 10) + 1
