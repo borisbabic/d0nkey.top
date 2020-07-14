@@ -38,6 +38,20 @@ defmodule Util do
     rem(rem(number - min, length) + length, length) + min
   end
 
+  def day_start(day = %Date{}, :naive) do
+    case NaiveDateTime.new(day.year, day.month, day.day, 0, 0, 0) do
+      {:ok, day_start} -> day_start
+      _ -> raise "Weird date, couldn't make naive date time"
+    end
+  end
+
+  def day_end(day = %Date{}, :naive) do
+    case NaiveDateTime.new(day.year, day.month, day.day, 23, 59, 59) do
+      {:ok, day_start} -> day_start
+      _ -> raise "Weird date, couldn't make naive date time"
+    end
+  end
+
   @doc """
   Transforms the datetime into a displayable string
 

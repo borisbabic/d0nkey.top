@@ -9,7 +9,7 @@ These features need some finishing touches but are available for the adventurous
 "reqvam", "AuZG"], "seasonId" => "74"})%>">Highlight players on the leaderboard</a> - you need to change the url
 <br>
 <a class="" href="<%=Routes.masters_tour_path(@conn, :qualifiers, %{"player_slug" => "d0nkey"})%>">Qualifiers
-Signed Up example - there may be false negatives</a> - change the battlefy slug in the url
+Signed Up example </a> - change the battlefy slug in the url
 <br>
 <a class="" href="<%=Routes.discord_path(@conn, :broadcasts)%>">Discord Broadcasts</a> - Broadcast images to multiple channels accross servers
 <br>
