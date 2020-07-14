@@ -18,7 +18,9 @@ defmodule BackendWeb.MastersTourController do
         }
       ) do
     fetched = BattlefyCommunicator.get_masters_qualifiers(from, to)
-    user_tournaments = BattlefyCommunicator.get_user_tournaments(player_slug)
+
+    user_tournaments =
+      BattlefyCommunicator.get_user_tournaments_from(player_slug, Util.day_start(from, :naive))
 
     render(conn, "qualifiers.html", %{
       fetched_qualifiers: fetched,
