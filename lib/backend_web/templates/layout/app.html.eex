@@ -47,6 +47,15 @@
          </div>
        </div>
        <%= current_mt @conn %>
+       <div class="navbar-item has-dropdown is-hoverable">
+         <a class="navbar-link">
+           Misc
+         </a>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :organization_tournaments) %>'>3rd Party Tournaments</a>
+         </div>
+       </div>
      </div>
 
      <div class="navbar-end">
