@@ -18,12 +18,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   """
   @spec get_masters_qualifiers(Date.t(), Date.t()) :: [qualifier]
   def get_masters_qualifiers(start_date = %Date{}, end_date = %Date{}) do
-    with {:ok, end_time} <-
-           NaiveDateTime.new(end_date.year, end_date.month, end_date.day, 23, 59, 59),
-         {:ok, start_time} <-
-           NaiveDateTime.new(start_date.year, start_date.month, start_date.day, 0, 0, 0) do
-      get_masters_qualifiers(start_time, end_time)
-    end
+    get_masters_qualifiers(Util.day_start(start_date, :naive), Util.day_end(end_date, :naive))
   end
 
   @doc """
@@ -166,10 +161,28 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Profile.from_raw_map()
   end
 
+  def get_user_tournaments_from(slug, from_time = %NaiveDateTime{}, page \\ 1, carry \\ [])
+      when is_integer(page) do
+    ret = get_user_tournaments(slug, page)
+
+    ret
+    |> Enum.filter(fn t -> NaiveDateTime.compare(from_time, t.start_time) != :gt end)
+    |> case do
+      [] ->
+        carry
+
+      new when length(new) == length(ret) ->
+        get_user_tournaments_from(slug, from_time, page + 1, carry ++ new)
+
+      new ->
+        carry ++ new
+    end
+  end
+
   @spec get_user_tournaments(String.t()) :: [Tournament.t()]
-  def get_user_tournaments(slug) do
+  def get_user_tournaments(slug, page \\ 1, size \\ 25) do
     # they return max 25 regardless of size. I don't feel like paginating or being smart about it
-    url = "https://search.battlefy.com/user/#{slug}/tournaments?size=1000"
+    url = "https://search.battlefy.com/user/#{slug}/tournaments?page=#{page}&size=#{size}"
 
     raw =
       get_body(url)
