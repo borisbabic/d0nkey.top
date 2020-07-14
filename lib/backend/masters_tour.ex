@@ -502,13 +502,18 @@ defmodule Backend.MastersTour do
   end
 
   @spec create_qualifier_link(Backend.Battlefy.Tournament.t()) :: String.t()
+  def create_qualifier_link(t = %{slug: slug, id: id, organization: %{slug: org_slug}}) do
+    Battlefy.create_tournament_link(t)
+  end
+
+  @spec create_qualifier_link(Backend.Battlefy.Tournament.t()) :: String.t()
   def create_qualifier_link(%{slug: slug, id: id}) do
     create_qualifier_link(slug, id)
   end
 
   @spec create_qualifier_link(String.t(), String.t()) :: String.t()
   def create_qualifier_link(slug, id) do
-    "https://battlefy.com/hsesports/#{slug}/#{id}/info"
+    Battlefy.create_tournament_link(slug, id, "hsesports")
   end
 
   @spec get_gm_money_rankings(Blizzard.gm_season()) :: gm_money_rankings()

@@ -16,6 +16,7 @@ defmodule Backend.Battlefy do
   @type team_id :: battlefy_id
   @type stage_id :: battlefy_id
   @type match_id :: battlefy_id
+  @type organization_id :: battlefy_id
   @type get_matches_opt :: {:round, integer()}
   @type get_matches_options :: [get_matches_opt]
   @type get_tournament_matches_opt :: {:stage, integer()} | get_matches_opt
@@ -466,5 +467,23 @@ defmodule Backend.Battlefy do
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_tour_stop_id(tour_stop) do
     Backend.MastersTour.TourStop.get_battlefy_id(tour_stop)
+  end
+
+  def create_tournament_link(%{slug: slug, id: id, organization: %{slug: org_slug}}) do
+    create_tournament_link(slug, id, org_slug)
+  end
+
+  def create_tournament_link(slug, id, org_slug) do
+    "https://battlefy.com/#{org_slug}/#{slug}/#{id}/info"
+  end
+
+  def hardcoded_organization_slugs() do
+    ["houserivalries", "super-girl-gamer-pro", "ilh-events", "fantastic-pro-league"]
+  end
+
+  def hardcoded_organizations() do
+    hardcoded_organization_slugs
+    |> Enum.map(&Api.get_organization/1)
+    |> Enum.filter(&Util.id/1)
   end
 end

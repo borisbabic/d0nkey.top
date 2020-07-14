@@ -1,6 +1,7 @@
 defmodule BackendWeb.BattlefyController do
   use BackendWeb, :controller
   alias Backend.Battlefy
+  alias Backend.Infrastructure.BattlefyCommunicator, as: Api
 
   def tournament(conn, %{"tournament_id" => tournament_id, "stage_id" => stage_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
@@ -46,5 +47,43 @@ defmodule BackendWeb.BattlefyController do
       team_name: team_name,
       conn: conn
     })
+  end
+
+  def organization_tournaments(conn, %{
+        "from" => from = %Date{},
+        "to" => to = %Date{},
+        "slug" => slug
+      }) do
+    {org, tournaments} =
+      slug
+      |> Api.get_organization()
+      |> case do
+        nil -> {nil, []}
+        org -> {org, Api.get_organization_tournaments_from_to(org.id, from, to)}
+      end
+
+    render(conn, "organization_tournaments.html", %{
+      from: from,
+      to: to,
+      org: org,
+      tournaments: tournaments
+    })
+  end
+
+  def organization_tournaments(conn, %{"from" => from = %Date{}, "to" => to = %Date{}}) do
+    render(conn, "organization_tournaments.html", %{from: from, to: to, tournaments: [], org: nil})
+  end
+
+  def organization_tournaments(conn, params = %{"from" => from, "to" => to}) do
+    from_date = Date.from_iso8601!(from)
+    to_date = Date.from_iso8601!(to)
+    organization_tournaments(conn, %{params | "from" => from_date, "to" => to_date})
+  end
+
+  def organization_tournaments(conn, params) do
+    today = Date.utc_today()
+    from = Date.add(today, -3)
+    to = Date.add(today, 27)
+    organization_tournaments(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 end

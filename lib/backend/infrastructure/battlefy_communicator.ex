@@ -7,6 +7,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy.MatchDeckstrings
   alias Backend.Battlefy.Profile
   alias Backend.Battlefy.Tournament
+  alias Backend.Battlefy.Organization
   import Backend.Battlefy.Communicator
   import Backend.Infrastructure.CommunicatorUtil
   @behaviour Backend.Battlefy.Communicator
@@ -161,6 +162,130 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Profile.from_raw_map()
   end
 
+  @spec get_organization(String.t()) :: Organization.t()
+  def get_organization(slug) do
+    url = "https://dtmwra1jsgyb0.cloudfront.net/organizations?slug=#{slug}"
+
+    get_body(url)
+    |> Poison.decode!()
+    |> Enum.map(&Organization.from_raw_map/1)
+    # dunno when we'll get more or this won't equal, but just in case :shrug:
+    |> Enum.filter(fn o -> o.slug == slug end)
+    |> Enum.at(0)
+  end
+
+  def get_organization_tournaments_from_to(
+        slug,
+        from_date = %Date{},
+        to_date = %Date{}
+      ) do
+    get_organization_tournaments_from_to(
+      slug,
+      from_date |> Util.day_start(:naive),
+      to_date |> Util.day_end(:naive)
+    )
+  end
+
+  @spec get_organization_tournaments_from_to(
+          Battlefy.organization_id(),
+          NaiveDateTime.t(),
+          NaiveDateTime.t()
+        ) :: [Tournament.t()]
+  def get_organization_tournaments_from_to(
+        org_id,
+        from_time = %NaiveDateTime{},
+        to_time = %NaiveDateTime{}
+      ) do
+    now = NaiveDateTime.utc_now()
+
+    past =
+      case NaiveDateTime.compare(now, from_time) do
+        :lt -> []
+        _ -> get_past_organization_tournaments_from(org_id, from_time)
+      end
+
+    future =
+      case NaiveDateTime.compare(now, to_time) do
+        :gt -> []
+        _ -> get_upcoming_organization_tournaments_to(org_id, to_time)
+      end
+
+    (past ++ future)
+    |> Enum.sort_by(fn t -> t.start_time |> NaiveDateTime.to_string() end, :asc)
+    |> Enum.filter(fn t ->
+      NaiveDateTime.compare(t.start_time, from_time) != :lt &&
+        NaiveDateTime.compare(t.start_time, to_time) != :gt
+    end)
+  end
+
+  @spec get_past_organization_tournaments_from(Battlefy.organization_id(), NaiveDateTime.t()) :: [
+          Tournament.t()
+        ]
+  def get_past_organization_tournaments_from(
+        org_id,
+        from_time = %NaiveDateTime{},
+        page \\ 1,
+        carry \\ []
+      ) do
+    ret = get_organization_tournaments(org_id, :past, page)
+
+    ret
+    |> Enum.filter(fn t -> NaiveDateTime.compare(from_time, t.start_time) != :gt end)
+    |> case do
+      [] ->
+        carry
+
+      new when length(new) == length(ret) ->
+        get_past_organization_tournaments_from(org_id, from_time, page + 1, carry ++ new)
+
+      new ->
+        carry ++ new
+    end
+  end
+
+  @spec get_upcoming_organization_tournaments_to(Battlefy.organization_id(), NaiveDateTime.t()) ::
+          [Tournament.t()]
+  def get_upcoming_organization_tournaments_to(
+        org_id,
+        to_time = %NaiveDateTime{},
+        page \\ 1,
+        carry \\ []
+      ) do
+    ret = get_organization_tournaments(org_id, :upcoming, page)
+
+    ret
+    |> Enum.filter(fn t -> NaiveDateTime.compare(to_time, t.start_time) != :lt end)
+    |> case do
+      [] ->
+        carry
+
+      new when length(new) == length(ret) ->
+        get_upcoming_organization_tournaments_to(org_id, to_time, page + 1, carry ++ new)
+
+      new ->
+        carry ++ new
+    end
+  end
+
+  @spec get_organization_tournaments(Battlefy.organization_id(), :past | :upcoming) :: [
+          Tournament.t()
+        ]
+  def get_organization_tournaments(org_id, period, page \\ 1, size \\ 25) do
+    # they return max 25 regardless of size. I don't feel like paginating or being smart about it
+    url =
+      "https://search.battlefy.com/tournament/organization/#{org_id}/#{period}?page=#{page}&size=#{
+        size
+      }"
+
+    raw =
+      get_body(url)
+      |> Poison.decode!()
+
+    raw["tournaments"]
+    |> Enum.map(&Tournament.from_raw_map/1)
+  end
+
+  @spec get_user_tournaments_from(String.t(), NaiveDateTime.t()) :: [Tournament.t()]
   def get_user_tournaments_from(slug, from_time = %NaiveDateTime{}, page \\ 1, carry \\ [])
       when is_integer(page) do
     ret = get_user_tournaments(slug, page)

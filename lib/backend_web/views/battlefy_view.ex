@@ -2,6 +2,7 @@ defmodule BackendWeb.BattlefyView do
   require Logger
   use BackendWeb, :view
   alias Backend.Battlefy
+  alias Backend.Battlefy.Organization
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -37,6 +38,76 @@ defmodule BackendWeb.BattlefyView do
       hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, name),
       link: Routes.battlefy_path(conn, :tournament_player, tournament_id, name)
     }
+  end
+
+  def create_organization_dropdown(conn, org) do
+    options =
+      Battlefy.hardcoded_organizations()
+      |> Enum.map(fn o ->
+        %{
+          selected: org && org.id == o.id,
+          display: o.name,
+          link:
+            Routes.battlefy_path(
+              conn,
+              :organization_tournaments,
+              Map.put(conn.query_params, "slug", o.slug)
+            )
+        }
+      end)
+      |> Enum.sort_by(fn d -> d.display end, :asc)
+
+    {options, "Choose Organization"}
+  end
+
+  def render("organization_tournaments.html", %{
+        from: from,
+        to: to,
+        tournaments: tour,
+        org: org,
+        conn: conn
+      }) do
+    range = {from, to}
+    {before_range, after_range} = Util.get_surrounding_ranges(range)
+    before_link = create_org_tour_link(before_range, conn)
+    after_link = create_org_tour_link(after_range, conn)
+
+    tournaments =
+      (tour || [])
+      |> Enum.map(fn t ->
+        t
+        |> Map.put_new(:link, Battlefy.create_tournament_link(t.slug, t.id, org.slug))
+        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, t.id))
+        |> Map.put_new(:yaytears, Backend.Yaytears.create_tournament_link(t.id))
+      end)
+
+    title =
+      case org do
+        nil ->
+          "Choose organization"
+
+        o ->
+          link = Organization.create_link(o)
+          name = o.name
+
+          ~E"""
+          <a class="is-link" href="<%= link %>"> <%= name %> </a>
+          """
+      end
+
+    render("organization_tournaments.html", %{
+      title: title,
+      before_link: before_link,
+      after_link: after_link,
+      tournaments: tournaments,
+      dropdowns: [create_organization_dropdown(conn, org)],
+      conn: conn
+    })
+  end
+
+  def create_org_tour_link(range, conn) do
+    new_params = conn.query_params |> Util.update_from_to_params(range)
+    Routes.battlefy_path(conn, :organization_tournaments, new_params)
   end
 
   def render(
@@ -137,7 +208,7 @@ defmodule BackendWeb.BattlefyView do
       standings: standings,
       subtitle: subtitle,
       name: tournament.name,
-      link: Backend.MastersTour.create_qualifier_link(tournament.slug, tournament.id),
+      link: Battlefy.create_tournament_link(tournament),
       stages: stages,
       show_stage_selection: Enum.count(stages) > 1,
       stage_selection_text:

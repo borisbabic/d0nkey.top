@@ -265,4 +265,8 @@ defmodule Util do
   """
   def percent(_, 0), do: 0.0
   def percent(num, total), do: 100 * num / total
+
+  def update_from_to_params(params, {from = %Date{}, to = %Date{}}) do
+    Map.merge(params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
+  end
 end

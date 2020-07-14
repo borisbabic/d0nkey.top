@@ -512,11 +512,8 @@ defmodule BackendWeb.MastersTourView do
     |> Enum.take_while(fn ts -> ts != :Bucharest end)
   end
 
-  def create_qualifiers_link({%Date{} = from, %Date{} = to}, conn) do
-    # Routes.masters_tour_path(conn, :qualifiers, %{"from" => from, "to" => to})
-    # Routes.masters_tour_path(conn, :qualifiers, %{from: from, to: to})
-    new_params =
-      Map.merge(conn.query_params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
+  def create_qualifiers_link(range = {%Date{} = from, %Date{} = to}, conn) do
+    new_params = conn.query_params |> Util.update_from_to_params(range)
 
     Routes.masters_tour_path(conn, :qualifiers, new_params)
   end
