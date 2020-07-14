@@ -46,7 +46,6 @@
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Earnings</a>
          </div>
        </div>
-       <%= current_mt @conn %>
        <div class="navbar-item has-dropdown is-hoverable">
          <a class="navbar-link">
            Misc
@@ -56,6 +55,8 @@
            <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :organization_tournaments) %>'>3rd Party Tournaments</a>
          </div>
        </div>
+
+       <%= current_mt @conn %>
      </div>
 
      <div class="navbar-end">
