@@ -75,22 +75,3 @@ defmodule Backend.Battlefy.Tournament do
     end
   end
 end
-
-defmodule Backend.Battlefy.Organization do
-  @moduledoc false
-  use TypedStruct
-
-  typedstruct do
-    field :id, Battlefy.tournament_id()
-    field :name, String.t()
-    field :slug, String.t()
-  end
-
-  def from_raw_map(map = %{"slug" => slug}) do
-    %__MODULE__{
-      id: map["id"] || map["_id"],
-      name: map["name"],
-      slug: slug
-    }
-  end
-end
