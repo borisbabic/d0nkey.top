@@ -478,7 +478,13 @@ defmodule Backend.Battlefy do
   end
 
   def hardcoded_organization_slugs() do
-    ["houserivalries", "super-girl-gamer-pro", "ilh-events", "fantastic-pro-league"]
+    [
+      "houserivalries",
+      "super-girl-gamer-pro",
+      "ilh-events",
+      "fantastic-pro-league",
+      "tierras-de-fuego-hs"
+    ]
   end
 
   def hardcoded_organizations() do
