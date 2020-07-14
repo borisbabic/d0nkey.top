@@ -80,7 +80,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Asia-Pacific",
-        battlefy_id: nil,
+        battlefy_id: "5efbcdaca2b8f022508f65c3",
         ladder_seasons: [78, 79],
         region: :AP,
         start_time: ~N[2020-07-17 00:00:00],
