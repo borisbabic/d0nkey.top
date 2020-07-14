@@ -483,7 +483,8 @@ defmodule Backend.Battlefy do
       "super-girl-gamer-pro",
       "ilh-events",
       "fantastic-pro-league",
-      "tierras-de-fuego-hs"
+      "tierras-de-fuego-hs",
+      "akg-games"
     ]
   end
 
