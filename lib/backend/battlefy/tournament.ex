@@ -3,6 +3,8 @@ defmodule Backend.Battlefy.Tournament do
   use TypedStruct
   alias Backend.Battlefy
   alias Backend.Battlefy.Util
+  alias Backend.Battlefy.Organization
+  alias Backend.Battlefy.Tournament.Game
 
   typedstruct enforce: true do
     field :id, Battlefy.tournament_id()
@@ -13,7 +15,8 @@ defmodule Backend.Battlefy.Tournament do
     field :name, String.t()
     field :slug, String.t()
     field :region, Backend.Blizzard.region() | nil
-    field :organization, Backend.Battlefy.Organization | nil
+    field :organization, Organization | nil
+    field :game, Game
   end
 
   @spec from_raw_map(map) :: Backend.Battlefy.Tournament.t()
@@ -49,6 +52,7 @@ defmodule Backend.Battlefy.Tournament do
       last_completed_match_at: Util.parse_date(map["last_completed_match_at"]),
       region: region,
       organization: extract_organization(map),
+      game: Game.from_raw_map(map["game"]),
       stages: extract_stages(map)
     }
   end
@@ -74,4 +78,35 @@ defmodule Backend.Battlefy.Tournament do
         nil
     end
   end
+end
+
+defmodule Backend.Battlefy.Tournament.Game do
+  @moduledoc false
+
+  use TypedStruct
+
+  typedstruct enforce: true do
+    field :id, Battlefy.tournament_id()
+    field :name, String.t()
+    field :slug, String.t()
+  end
+
+  def from_raw_map(nil), do: nil
+
+  def from_raw_map(
+        map = %{
+          "slug" => slug,
+          "name" => name
+        }
+      ) do
+    %__MODULE__{
+      id: map["id"] || map["_id"],
+      slug: slug,
+      name: name
+    }
+  end
+
+  def is_hearthstone(%{game: game}), do: is_hearthstone(game)
+  def is_hearthstone(%{slug: "hearthstone"} = %__MODULE__{}), do: true
+  def is_hearthstone(_), do: false
 end

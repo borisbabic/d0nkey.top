@@ -1,6 +1,7 @@
 defmodule BackendWeb.BattlefyController do
   use BackendWeb, :controller
   alias Backend.Battlefy
+  alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
 
   def tournament(conn, %{"tournament_id" => tournament_id, "stage_id" => stage_id}) do
@@ -58,8 +59,16 @@ defmodule BackendWeb.BattlefyController do
       slug
       |> Api.get_organization()
       |> case do
-        nil -> {nil, []}
-        org -> {org, Api.get_organization_tournaments_from_to(org.id, from, to)}
+        nil ->
+          {nil, []}
+
+        org ->
+          {
+            org,
+            org.id
+            |> Api.get_organization_tournaments_from_to(from, to)
+            |> Enum.filter(fn t -> t.game |> Tournament.Game.is_hearthstone() end)
+          }
       end
 
     render(conn, "organization_tournaments.html", %{
