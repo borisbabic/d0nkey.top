@@ -17,6 +17,7 @@ config :backend, Backend.Repo,
   password: "root",
   database: "DtopDB_test",
   hostname: "localhost",
+  hearthstone_json_fetch_fresh: false,
   port: 2470,
   pool: Ecto.Adapters.SQL.Sandbox
 

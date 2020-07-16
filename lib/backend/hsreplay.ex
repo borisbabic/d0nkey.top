@@ -174,4 +174,6 @@ defmodule Backend.HSReplay do
   def create_archetype_link(<<url::binary>>) do
     "https://hsreplay.net#{url}"
   end
+
+  def get_streaming_now(), do: Api.get_streaming_now()
 end

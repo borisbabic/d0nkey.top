@@ -1,7 +1,13 @@
 use Mix.Config
 
+config :backend, QuantumScheduler,
+  jobs: [
+    {"* * * * *", fn -> Backend.Streaming.update_streamer_decks() end}
+  ]
+
 config :backend,
   warmup_cache: true,
+  auto_migrate: true,
   enable_bot: true
 
 # For production, don't forget to configure the url host
