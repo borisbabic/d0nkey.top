@@ -269,4 +269,38 @@ defmodule Util do
   def update_from_to_params(params, {from = %Date{}, to = %Date{}}) do
     Map.merge(params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
   end
+
+  def get_range(:year) do
+    %{year: year} = Date.utc_today()
+    {Date.new(year, 1, 1) |> bangify(), Date.new(year, 12, 31) |> bangify()}
+  end
+
+  def get_range(:month) do
+    today = %{year: year, month: month, day: day} = Date.utc_today()
+
+    start_of_month =
+      case Date.new(year, month, 1) do
+        {:ok, date} -> date
+        # this should never happen
+        {:error, reason} -> throw(reason)
+      end
+
+    end_of_month = Date.add(start_of_month, Date.days_in_month(today) - 1)
+    {start_of_month, end_of_month}
+  end
+
+  def get_range(:week), do: get_range(:week, 1)
+
+  def get_range(:week, day_in_week) when is_integer(day_in_week) do
+    start_time = get_latest_day(day_in_week)
+    end_time = Date.add(start_time, 7)
+    {start_time, end_time}
+  end
+
+  def get_latest_day(day_in_week) when is_integer(day_in_week) do
+    %{year: year, month: month, day: day} = now = Date.utc_today()
+    day_of_the_week = :calendar.day_of_the_week(year, month, day)
+    days_to_subtract = 0 - rem(day_of_the_week + (7 - day_in_week), 7)
+    Date.add(now, days_to_subtract)
+  end
 end
