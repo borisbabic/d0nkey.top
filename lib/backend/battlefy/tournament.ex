@@ -93,20 +93,16 @@ defmodule Backend.Battlefy.Tournament.Game do
 
   def from_raw_map(nil), do: nil
 
-  def from_raw_map(
-        map = %{
-          "slug" => slug,
-          "name" => name
-        }
-      ) do
+  def from_raw_map(map = %{}) do
     %__MODULE__{
       id: map["id"] || map["_id"],
-      slug: slug,
-      name: name
+      slug: map["slug"],
+      name: map["name"]
     }
   end
 
   def is_hearthstone(%{game: game}), do: is_hearthstone(game)
   def is_hearthstone(%{slug: "hearthstone"} = %__MODULE__{}), do: true
+  def is_hearthstone(%{name: "Hearthstone"} = %__MODULE__{}), do: true
   def is_hearthstone(_), do: false
 end
