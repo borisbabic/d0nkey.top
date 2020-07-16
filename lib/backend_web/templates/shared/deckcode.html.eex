@@ -1,0 +1,4 @@
+<textarea class="textarea has-fixed-size" readonly rows="1" style="white-space: nowrap; overflow: hidden; width: 50px;">
+    <%= @deckcode %>
+</textarea>
+

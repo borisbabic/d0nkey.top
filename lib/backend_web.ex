@@ -54,6 +54,10 @@ defmodule BackendWeb do
       def render_dropdowns(dropdowns) do
         render(BackendWeb.SharedView, "multiple_dropdown_links.html", %{dropdowns: dropdowns})
       end
+
+      def render_deckcode(<<deckcode::binary>>) do
+        render(BackendWeb.SharedView, "deckcode.html", %{deckcode: deckcode})
+      end
     end
   end
 
