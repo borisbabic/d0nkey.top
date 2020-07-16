@@ -6,9 +6,9 @@
             <th>Streamer</th>
             <th>Class</th>
             <th>Mode</th>
-            <th>Legend Peak</th>
+            <th><abbr title="Legend Peak">Peak</abbr></th>
             <th>Links</th>
-            <th>Last Played</th>
+            <th class="is-hidden-mobile">Last Played</th>
             <th>Code</th>
         </tr>
     </thead>
@@ -20,8 +20,8 @@
             <td><%= mode %></td>
             <td><%= best_legend_rank %></td>
             <td><%= links %></td>
-            <td><%= render_datetime last_played %></td>
-            <td><%= code %></td>
+            <td class="is-hidden-mobile"><%= render_datetime last_played %></td>
+            <td><%= render_deckcode code %></td>
         </tr>
         <% end %>
     </tbody>
