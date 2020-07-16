@@ -58,6 +58,9 @@ defmodule BackendWeb.Router do
     get "/discord/create_broadcast", DiscordController, :create_broadcast
 
     get "/player-profile/:battletag_full", PlayerController, :player_profile
+
+    get "/streamer-decks/twitch-login/:twitch_login", StreamingController, :streamers_decks
+    get "/streamer-decks", StreamingController, :streamer_decks
   end
 
   # Other scopes may use custom stacks.

@@ -28,12 +28,7 @@ defmodule Backend.HearthstoneJson do
   end
 
   def init(args \\ [fetch_fresh: false]) do
-    state =
-      if args[:fetch_fresh],
-        do: get_fresh(),
-        else:
-          get_json()
-          |> create_state()
+    state = if(args[:fetch_fresh], do: get_fresh(), else: get_json()) |> create_state()
 
     {:ok, state}
   end
