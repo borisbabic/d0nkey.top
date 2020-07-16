@@ -60,6 +60,22 @@ defmodule BackendWeb.BattlefyView do
     {options, "Choose Organization"}
   end
 
+  def create_daterange_dropdown(conn, {from, to}) do
+    options =
+      [{:week, "Week"}, {:month, "Month"}, {:year, "Year"}]
+      |> Enum.map(fn {r, display} ->
+        range = {f, t} = Util.get_range(r)
+
+        %{
+          selected: f == from && t == to,
+          display: display,
+          link: create_org_tour_link(range, conn)
+        }
+      end)
+
+    {options, "Select Range"}
+  end
+
   def render("organization_tournaments.html", %{
         from: from,
         to: to,
@@ -100,7 +116,10 @@ defmodule BackendWeb.BattlefyView do
       before_link: before_link,
       after_link: after_link,
       tournaments: tournaments,
-      dropdowns: [create_organization_dropdown(conn, org)],
+      dropdowns: [
+        create_organization_dropdown(conn, org),
+        create_daterange_dropdown(conn, range)
+      ],
       conn: conn
     })
   end

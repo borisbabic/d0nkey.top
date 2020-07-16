@@ -91,8 +91,8 @@ defmodule BackendWeb.BattlefyController do
 
   def organization_tournaments(conn, params) do
     today = Date.utc_today()
-    from = Date.add(today, -3)
-    to = Date.add(today, 27)
+    from = Date.add(today, -30)
+    to = Date.add(today, 30)
     organization_tournaments(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 end
