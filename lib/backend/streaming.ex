@@ -10,6 +10,31 @@ defmodule Backend.Streaming do
     [10, 9, 10, 31, 1, 2, 45, 30, 4] |> Enum.member?(bnet_game_type)
   end
 
+  def get_latest_streamer_decks() do
+    query =
+      from sd in StreamerDeck,
+        join: s in assoc(sd, :streamer),
+        join: d in assoc(sd, :deck),
+        preload: [streamer: s, deck: d],
+        select: sd,
+        order_by: [desc: sd.last_played]
+
+    Repo.all(query)
+  end
+
+  def get_streamers_decks(twitch_login) do
+    query =
+      from sd in StreamerDeck,
+        join: s in assoc(sd, :streamer),
+        join: d in assoc(sd, :deck),
+        preload: [streamer: s, deck: d],
+        select: sd,
+        order_by: [desc: sd.last_played],
+        where: s.twitch_login == ^twitch_login
+
+    Repo.all(query)
+  end
+
   def update_streamer_decks() do
     HSReplay.get_streaming_now()
     |> update_streamer_decks()
