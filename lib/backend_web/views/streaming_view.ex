@@ -1,17 +1,21 @@
 defmodule BackendWeb.StreamingView do
   use BackendWeb, :view
 
-  def named_twitch_link(streamer) do
-    twitch_link = twitch_link(streamer)
+  def twitch_link(streamer) do
+    twitch_link(streamer.twitch_login, streamer.twitch_display)
+  end
+
+  def twitch_link(login, display, classes \\ ["is-link"]) do
+    twitch_link = Backend.Twitch.create_channel_link(login)
+    class = Enum.join(classes, " ")
 
     ~E"""
-      <a class="is-link" href="<%= twitch_link %>"><%= streamer.twitch_display %></a>
+      <a class="<%= class %>" href="<%= twitch_link %>"><%= display %></a>
     """
   end
 
   def render("streamer_decks.html", %{streamer_decks: streamer_decks, conn: conn}) do
     title = "Streamer Decks"
-    headers = ["Streamer", "Class", "Code", "Last Played", "Mode", "Legend Peak"]
 
     rows =
       streamer_decks
@@ -22,16 +26,26 @@ defmodule BackendWeb.StreamingView do
           sd.deck.deckcode,
           sd.last_played,
           if(sd.deck.format == 1, do: "Wild", else: "Standard"),
-          if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil)
+          if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
+          ~E"""
+          <%= hsreplay_link(sd.deck.deckcode) %>
+          """
         }
       end)
 
-    render("streamer_decks.html", %{rows: rows, headers: headers, title: title})
+    render("streamer_decks.html", %{rows: rows, title: title})
+  end
+
+  def hsreplay_link(<<deckcode::binary>>) do
+    link = Backend.HSReplay.create_deck_link(deckcode)
+
+    ~E"""
+    <a class="is-link tag" href="<%= link %>">HSReplay</a>
+    """
   end
 
   def render("streamers_decks.html", %{decks: decks}) do
-    title = (decks |> Enum.at(0)).streamer |> named_twitch_link()
-    headers = ["Class", "Code", "Last Played", "Mode", "Legend Peak"]
+    title = (decks |> Enum.at(0)).streamer |> twitch_link()
 
     rows =
       decks
@@ -41,11 +55,12 @@ defmodule BackendWeb.StreamingView do
           sd.deck.deckcode,
           sd.last_played,
           if(sd.deck.format == 1, do: "Wild", else: "Standard"),
-          if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil)
+          if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
+          hsreplay_link(sd.deck.deckcode)
         }
       end)
 
-    render("streamers_decks.html", %{rows: rows, title: title, headers: headers})
+    render("streamers_decks.html", %{rows: rows, title: title})
   end
 
   def internal_link(%{twitch_login: tl, twitch_display: td}, conn) do
@@ -55,6 +70,4 @@ defmodule BackendWeb.StreamingView do
       <a class="is-link" href="<%= link %>"><%= td %></a>
     """
   end
-
-  def twitch_link(%{twitch_login: twitch_login}), do: "https://www.twitch.tv/#{twitch_login}"
 end
