@@ -12,6 +12,7 @@ config :backend, QuantumScheduler,
     {"*/3 * * * *", fn -> Backend.HSReplay.update_latest() end},
     {"7 7 * * *", fn -> Backend.EsportsEarnings.auto_update() end},
     {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
+    {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
     {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end}
   ]
 
@@ -35,6 +36,8 @@ config :backend,
   su_discord: "D0nkey#8994",
   su_slug: "d0nkey",
   warmup_cache: false,
+  auto_migrate: false,
+  hearthstone_json_fetch_fresh: true,
   su_regions: ["Europe", "Americas"]
 
 # Configures Elixir's Logger
