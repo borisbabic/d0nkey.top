@@ -4,6 +4,7 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
   import Backend.Infrastructure.CommunicatorUtil
   alias Backend.HSReplay.ReplayFeedEntry
   alias Backend.HSReplay.Archetype
+  alias Backend.HSReplay.Streaming
   @behaviour Backend.HSReplay.Communicator
   def get_replay_feed() do
     get_body("https://hsreplay.net/api/v1/live/replay_feed/")
@@ -43,5 +44,15 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     response.body
     |> Poison.decode!()
     |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
+  end
+
+  @spec get_streaming_now() :: [Streaming.t()]
+  def get_streaming_now() do
+    url = "https://hsreplay.net/api/v1/live/streaming-now/"
+
+    url
+    |> get_body()
+    |> Poison.decode!()
+    |> Enum.map(&Streaming.from_raw_map/1)
   end
 end

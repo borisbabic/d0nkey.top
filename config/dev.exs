@@ -1,7 +1,13 @@
 use Mix.Config
 
+# config :backend, QuantumScheduler,
+#   jobs: [
+#     {"* * * * *", fn -> Backend.Streaming.update_streamer_decks() end},
+#   ]
+
 config :backend,
   esports_earnings_api_key: System.get_env("ESPORTS_EARNINGS_API_KEY") || "",
+  auto_migrate: false,
   enable_bot: !is_nil(System.get_env("DISCORD_TOKEN")) || !is_nil(System.get_env("ENABLE_BOT"))
 
 # Configure your database

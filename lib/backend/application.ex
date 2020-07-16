@@ -27,6 +27,10 @@ defmodule Backend.Application do
           id: Backend.Infrastructure.PlayerStatsCache,
           start: {Backend.Infrastructure.PlayerStatsCache, :start_link, [[]]}
         },
+        %{
+          id: Backend.HearthstoneJson,
+          start: {Backend.HearthstoneJson, :start_link, [[fetch_fresh: fetch_fresh()]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
@@ -35,8 +39,18 @@ defmodule Backend.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Backend.Supervisor]
-    Supervisor.start_link(children, opts)
+    start_result = Supervisor.start_link(children, opts)
+    migrate()
+    start_result
   end
+
+  def migrate() do
+    if Application.fetch_env!(:backend, :auto_migrate) do
+      Ecto.Migrator.run(Backend.Repo, "priv/repo/migrations", :up, all: true)
+    end
+  end
+
+  def fetch_fresh(), do: Application.fetch_env!(:backend, :hearthstone_json_fetch_fresh)
 
   def check_bot(prev) do
     if Application.fetch_env!(:backend, :enable_bot) do
