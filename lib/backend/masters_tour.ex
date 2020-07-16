@@ -384,24 +384,13 @@ defmodule Backend.MastersTour do
 
   @spec get_masters_date_range(:week) :: {Date.t(), Date.t()}
   def get_masters_date_range(:week) do
-    start_time = get_latest_tuesday()
-    end_time = Date.add(start_time, 7)
-    {start_time, end_time}
+    # starting from tuesday
+    Util.get_range(:week, 2)
   end
 
   @spec get_masters_date_range(:month) :: {Date.t(), Date.t()}
   def get_masters_date_range(:month) do
-    today = %{year: year, month: month, day: day} = Date.utc_today()
-
-    start_of_month =
-      case Date.new(year, month, 1) do
-        {:ok, date} -> date
-        # this should never happen
-        {:error, reason} -> throw(reason)
-      end
-
-    end_of_month = Date.add(start_of_month, Date.days_in_month(today) - day)
-    {start_of_month, end_of_month}
+    Util.get_range(:month)
   end
 
   defp get_latest_tuesday() do
