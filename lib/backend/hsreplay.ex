@@ -175,5 +175,7 @@ defmodule Backend.HSReplay do
     "https://hsreplay.net#{url}"
   end
 
+  def create_deck_link(<<deckcode::binary>>), do: "https://hsreplay.net/decks/#{deckcode |> URI.encode_www_form()}"
+
   def get_streaming_now(), do: Api.get_streaming_now()
 end
