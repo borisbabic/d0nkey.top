@@ -46,7 +46,7 @@ defmodule BackendWeb.BattlefyView do
       |> Enum.map(fn o ->
         %{
           selected: org && org.id == o.id,
-          display: o.name,
+          display: o |> Organization.display_name(),
           link:
             Routes.battlefy_path(
               conn,
