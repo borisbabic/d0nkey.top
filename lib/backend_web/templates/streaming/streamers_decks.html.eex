@@ -1,0 +1,22 @@
+<div class="title is-2"><%= @title %></div>
+
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <%= for h <- @headers do%>
+                <th><%= h %></th>
+            <% end %>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for {class, code, last_played, mode, best_legend_rank} <- @rows do %>
+        <tr>
+            <td><%= class %></td>
+            <td><%= code %></td>
+            <td><%= render_datetime last_played %></td>
+            <td><%= mode %></td>
+            <td><%= best_legend_rank %></td>
+        </tr>
+        <% end %>
+    </tbody>
+</table>
