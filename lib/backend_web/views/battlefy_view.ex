@@ -198,6 +198,10 @@ defmodule BackendWeb.BattlefyView do
         params = %{standings: standings_raw, tournament: tournament, conn: conn}
       ) do
     standings = prepare_standings(standings_raw, tournament, conn)
+    highlight = if params.highlight == nil, do: [], else: params.highlight
+
+    highlighted_standings =
+      standings |> Enum.filter(fn s -> highlight |> Enum.member?(s.name) end)
 
     duration_subtitle =
       case Backend.Battlefy.Tournament.get_duration(tournament) do
@@ -223,8 +227,17 @@ defmodule BackendWeb.BattlefyView do
 
     selected_stage = stages |> Enum.find_value(fn s -> s.selected && s end)
 
+    players =
+      standings
+      |> Enum.map(fn s -> {s.name, highlight |> Enum.member?(s.name)} end)
+      |> Enum.sort_by(fn {n, _} -> String.upcase(n) end)
+
     render("tournament.html", %{
       standings: standings,
+      highlight: highlighted_standings,
+      id: tournament.id,
+      conn: conn,
+      players: players,
       subtitle: subtitle,
       name: tournament.name,
       link: Battlefy.create_tournament_link(tournament),
