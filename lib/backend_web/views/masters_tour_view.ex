@@ -2,6 +2,7 @@ defmodule BackendWeb.MastersTourView do
   use BackendWeb, :view
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.MastersTour
+  alias Backend.MastersTour.TourStop
   alias Backend.Blizzard
   alias Backend.PlayerInfo
   alias Backend.MastersTour.PlayerStats
@@ -342,6 +343,25 @@ defmodule BackendWeb.MastersTourView do
     {[all_option | region_options], title}
   end
 
+  def create_season_dropdown(conn, gm_season = {year, season}) do
+    options =
+      [{2020, 2}, {2021, 1}]
+      |> Enum.map(fn {y, s} ->
+        %{
+          display: "#{y} Season #{s}",
+          selected: y == year && s == season,
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :earnings,
+              Map.put(conn.query_params, "season", "#{y}_#{s}")
+            )
+        }
+      end)
+
+    {options, "Select Season"}
+  end
+
   def get_player_score(name, standings) do
     standings
     |> Enum.find(fn %{team: %{name: full}} -> InvitedPlayer.shorten_battletag(full) == name end)
@@ -352,15 +372,16 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def render("earnings.html", %{
-        tour_stops: tour_stops,
+        tour_stops: tour_stops_all,
         earnings: earnings,
-        gm_season: {year, season},
+        gm_season: gm_season = {year, season},
         show_gms: show_gms,
         conn: conn,
         region: region,
         gms: gms_list
       }) do
-    headers = create_headers(tour_stops)
+    tour_stops_started = tour_stops_all |> Enum.filter(&TourStop.started?/1)
+    headers = create_headers(tour_stops_started)
 
     gms = MapSet.new(gms_list)
 
@@ -372,13 +393,14 @@ defmodule BackendWeb.MastersTourView do
       end)
       |> filter_region(region)
       |> Enum.with_index(1)
-      |> Enum.map(fn r -> create_row_html(r, tour_stops) end)
+      |> Enum.map(fn r -> create_row_html(r, tour_stops_started) end)
 
     title = "Earnings for #{year} Season #{season}"
 
     dropdowns = [
       create_show_gms_dropdown(conn, show_gms),
-      create_region_dropdown(conn, region)
+      create_region_dropdown(conn, region),
+      create_season_dropdown(conn, gm_season)
     ]
 
     render("earnings.html", %{

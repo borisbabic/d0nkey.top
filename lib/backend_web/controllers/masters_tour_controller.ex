@@ -51,8 +51,13 @@ defmodule BackendWeb.MastersTourController do
     qualifiers(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 
+  @default_season {2021, 1}
+  def parse_season("2020_2"), do: {2020, 2}
+  def parse_season("2021_1"), do: {2021, 1}
+  def parse_season(_), do: @default_season
+
   def earnings(conn, params = %{"show_gms" => show_gms}) do
-    gm_season = {2020, 2}
+    gm_season = params["season"] |> parse_season()
     gms = Backend.PlayerInfo.current_gms()
     tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
     earnings = MastersTour.get_gm_money_rankings(gm_season)
