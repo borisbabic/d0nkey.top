@@ -338,8 +338,14 @@ defmodule Backend.Blizzard do
           {:ok, [Blizzard.tour_stop()]} | {:error, String.t()}
   def get_tour_stops_for_gm(gm_season) do
     case gm_season do
-      {2020, 2} -> {:ok, [:Arlington, :Indonesia, :Jönköping]}
-      _ -> {:error, "Unknown/unsupported gm_season"}
+      {2020, 2} ->
+        {:ok, [:Arlington, :Indonesia, :Jönköping]}
+
+      {2021, 1} ->
+        {:ok, [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid]}
+
+      _ ->
+        {:error, "Unknown/unsupported gm_season"}
     end
   end
 
