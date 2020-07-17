@@ -4,21 +4,39 @@ defmodule BackendWeb.BattlefyController do
   alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
 
-  def tournament(conn, %{"tournament_id" => tournament_id, "stage_id" => stage_id}) do
+  def tournament(conn, params = %{"tournament_id" => tournament_id, "stage_id" => stage_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
     standings = Battlefy.get_stage_standings(stage_id)
 
     render(conn, "tournament.html", %{
       standings: standings,
       tournament: tournament,
+      highlight: get_highlight(params),
       stage_id: stage_id
     })
   end
 
-  def tournament(conn, %{"tournament_id" => tournament_id}) do
+  def tournament(conn, params = %{"tournament_id" => tournament_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
     standings = Battlefy.get_tournament_standings(tournament)
-    render(conn, "tournament.html", %{standings: standings, tournament: tournament})
+
+    render(conn, "tournament.html", %{
+      standings: standings,
+      tournament: tournament,
+      highlight: get_highlight(params)
+    })
+  end
+
+  def get_highlight(params) do
+    case params["player"] do
+      player = %{} ->
+        player
+        |> Enum.filter(fn {_, selected} -> selected == "true" end)
+        |> Enum.map(fn {column, _} -> column end)
+
+      _ ->
+        nil
+    end
   end
 
   def tournament_decks(conn, %{
