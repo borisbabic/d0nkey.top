@@ -8,7 +8,7 @@ defmodule Backend.Blizzard do
           | :Indonesia
           | :Jönköping
           | :"Asia-Pacific"
-          | :Montreal
+          | :Montréal
           | :Madrid
 
   @tour_stops [
@@ -19,7 +19,7 @@ defmodule Backend.Blizzard do
     :Indonesia,
     :Jönköping,
     :"Asia-Pacific",
-    :Montreal,
+    :Montréal,
     :Madrid
   ]
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
@@ -95,8 +95,8 @@ defmodule Backend.Blizzard do
       77 -> {:ok, :Jönköping}
       78 -> {:ok, :"Asia-Pacific"}
       79 -> {:ok, :"Asia-Pacific"}
-      80 -> {:ok, :Montreal}
-      81 -> {:ok, :Montreal}
+      80 -> {:ok, :Montréal}
+      81 -> {:ok, :Montréal}
       82 -> {:ok, :Madrid}
       83 -> {:ok, :Madrid}
       _ -> {:error, "Invalid tour stop for ladder"}
@@ -142,7 +142,7 @@ defmodule Backend.Blizzard do
       :Indonesia -> {:ok, [74, 75]}
       :Jönköping -> {:ok, [76, 77]}
       :"Asia-Pacific" -> {:ok, [78, 79]}
-      :Montreal -> {:ok, [80, 81]}
+      :Montréal -> {:ok, [80, 81]}
       :Madrid -> {:ok, [82, 83]}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
@@ -154,7 +154,7 @@ defmodule Backend.Blizzard do
   ## Example
     iex> Backend.Blizzard.get_tour_stop_region!(:"Asia-Pacific")
     :AP
-    iex> Backend.Blizzard.get_tour_stop_region!(:Montreal)
+    iex> Backend.Blizzard.get_tour_stop_region!(:"Montréal")
     :US
   """
   @spec get_tour_stop_region!(tour_stop) :: region
@@ -168,7 +168,7 @@ defmodule Backend.Blizzard do
       :Indonesia -> :AP
       :Jönköping -> :EU
       :"Asia-Pacific" -> :AP
-      :Montreal -> :US
+      :Montréal -> :US
       :Madrid -> :EU
       _ -> throw("Unknown tour stop")
     end
@@ -180,7 +180,7 @@ defmodule Backend.Blizzard do
   ## Example
     iex> Backend.Blizzard.get_tour_stop_region!(:"Asia-Pacific")
     :AP
-    iex> Backend.Blizzard.get_tour_stop_region!(:Montreal)
+    iex> Backend.Blizzard.get_tour_stop_region!(:"Montréal")
     :US
   """
   @spec get_ladder_priority!(region) :: [region]
@@ -328,7 +328,7 @@ defmodule Backend.Blizzard do
   #      # edit_hs_decks "5ec9a33da4d7bf2e78ec166a"
   #      :"Jönköping" -> distribution_unknown
   #      :"Asia-Pacific" -> distribution_unknown
-  #      :Montreal -> distribution_unknown
+  #      :"Montréal" -> distribution_unknown
   #      :Madrid -> distribution_unknown
   #      _ -> {:error, "Unknown/unsupported tour_stop"}
   #    end
@@ -342,7 +342,7 @@ defmodule Backend.Blizzard do
         {:ok, [:Arlington, :Indonesia, :Jönköping]}
 
       {2021, 1} ->
-        {:ok, [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid]}
+        {:ok, [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]}
 
       _ ->
         {:error, "Unknown/unsupported gm_season"}
@@ -441,7 +441,7 @@ defmodule Backend.Blizzard do
   @spec get_tour_stops_for_year(integer) :: [tour_stop()]
   def get_tour_stops_for_year(year) do
     case year do
-      2020 -> [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid]
+      2020 -> [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]
       2019 -> [:"Las Vegas", :Seoul, :Bucharest]
       _ -> []
     end
@@ -458,7 +458,7 @@ defmodule Backend.Blizzard do
       :Indonesia -> 2020
       :Jönköping -> 2020
       :"Asia-Pacific" -> 2020
-      :Montreal -> 2020
+      :Montréal -> 2020
       :Madrid -> 2020
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end

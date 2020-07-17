@@ -13,7 +13,7 @@ defmodule Backend.MastersTour.TourStop do
         :Indonesia,
         :Jönköping,
         :"Asia-Pacific",
-        :Montreal,
+        :Montréal,
         :Madrid
       ]
     end
@@ -25,6 +25,7 @@ defmodule Backend.MastersTour.TourStop do
     field :ladder_seasons, [integer]
     field :region, Blizzard.region()
     field :start_time, NaiveDateTime.t(), enforce: false
+    field :old_id, atom, enforce: false
     field :year, integer
   end
 
@@ -87,10 +88,11 @@ defmodule Backend.MastersTour.TourStop do
         year: 2020
       },
       %__MODULE__{
-        id: :Montreal,
+        id: :Montréal,
         battlefy_id: nil,
         ladder_seasons: [80, 81],
         region: :US,
+        old_id: :Montreal,
         start_time: ~N[2020-09-11 13:00:00],
         year: 2020
       },
