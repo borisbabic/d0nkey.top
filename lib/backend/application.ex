@@ -41,6 +41,7 @@ defmodule Backend.Application do
     opts = [strategy: :one_for_one, name: Backend.Supervisor]
     start_result = Supervisor.start_link(children, opts)
     migrate()
+    Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
     start_result
   end
 

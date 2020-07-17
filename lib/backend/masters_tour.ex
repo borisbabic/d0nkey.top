@@ -538,7 +538,7 @@ defmodule Backend.MastersTour do
 
   @spec get_ts_money_rankings(Blizzard.tour_stop()) :: [{String.t(), number}]
   def get_ts_money_rankings(tour_stop)
-      when tour_stop in [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montreal, :Madrid] do
+      when tour_stop in [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid] do
     id = Battlefy.get_tour_stop_id!(tour_stop)
 
     Battlefy.get_tournament(id)
@@ -632,5 +632,16 @@ defmodule Backend.MastersTour do
       129 -> 1
       _ -> 0
     end
+  end
+
+  def rename_tour_stop(old, new) do
+    old_string = to_string(old)
+    new_string = to_string(new)
+
+    from(ip in InvitedPlayer, where: ip.tour_stop == ^old_string)
+    |> Repo.update_all(set: [tour_stop: new_string])
+
+    from(q in Qualifier, where: q.tour_stop == ^old_string)
+    |> Repo.update_all(set: [tour_stop: new_string])
   end
 end
