@@ -193,11 +193,37 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
+  @spec calculate_ongoing([Match.t()], boolean) :: Map.t()
+
+  def calculate_ongoing(_, false), do: Map.new()
+
+  def calculate_ongoing(matches, true) do
+    matches
+    |> Enum.filter(fn %{top: t, bottom: b, completed_at: ca} ->
+      ca == nil && !b.winner && !t.winner
+    end)
+    |> Enum.flat_map(fn %{top: t, bottom: b} ->
+      [
+        {t.name, "#{t.score} - #{b.score}"},
+        {b.name, "#{b.score} - #{t.score}"}
+      ]
+    end)
+    |> Map.new()
+  end
+
   def render(
         "tournament.html",
-        params = %{standings: standings_raw, tournament: tournament, conn: conn}
+        params = %{
+          standings: standings_raw,
+          tournament: tournament,
+          conn: conn,
+          show_ongoing: show_ongoing,
+          matches: matches
+        }
       ) do
-    standings = prepare_standings(standings_raw, tournament, conn)
+    ongoing = calculate_ongoing(matches, show_ongoing)
+
+    standings = prepare_standings(standings_raw, tournament, ongoing, conn)
     highlight = if params.highlight == nil, do: [], else: params.highlight
 
     highlighted_standings =
@@ -232,6 +258,8 @@ defmodule BackendWeb.BattlefyView do
       |> Enum.map(fn s -> {s.name, highlight |> Enum.member?(s.name)} end)
       |> Enum.sort_by(fn {n, _} -> String.upcase(n) end)
 
+    dropdowns = [get_ongoing_dropdown(conn, tournament, show_ongoing)]
+
     render("tournament.html", %{
       standings: standings,
       highlight: highlighted_standings,
@@ -240,19 +268,53 @@ defmodule BackendWeb.BattlefyView do
       players: players,
       subtitle: subtitle,
       name: tournament.name,
+      dropdowns: dropdowns,
       link: Battlefy.create_tournament_link(tournament),
       stages: stages,
       show_stage_selection: Enum.count(stages) > 1,
+      show_ongoing: show_ongoing,
       stage_selection_text:
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
   end
 
-  @spec prepare_standings([Battelfy.Standings.t()], Battlefy.Tournament.t(), Plug.Conn) :: [
+  def get_ongoing_dropdown(conn, tournament, show_ongoing) do
+    {[
+       %{
+         display: "Yes",
+         selected: show_ongoing,
+         link:
+           Routes.battlefy_path(
+             conn,
+             :tournament,
+             tournament.id,
+             Map.put(conn.query_params, "show_ongoing", "yes")
+           )
+       },
+       %{
+         display: "No",
+         selected: !show_ongoing,
+         link:
+           Routes.battlefy_path(
+             conn,
+             :tournament,
+             tournament.id,
+             Map.put(conn.query_params, "show_ongoing", "no")
+           )
+       }
+     ], "Show Ongoing"}
+  end
+
+  @spec prepare_standings(
+          [Battelfy.Standings.t()],
+          Battlefy.Tournament.t(),
+          [{String.t(), String.t()}],
+          Plug.Conn
+        ) :: [
           standings
         ]
-  def prepare_standings(standings_raw, %{id: tournament_id}, conn) do
+  def prepare_standings(standings_raw, %{id: tournament_id}, ongoing, conn) do
     standings_raw
     |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
     |> Enum.sort_by(fn s -> s.losses end)
@@ -267,6 +329,7 @@ defmodule BackendWeb.BattlefyView do
         score: "#{s.wins} - #{s.losses}",
         wins: s.wins,
         losses: s.losses,
+        ongoing: ongoing |> Map.get(s.team.name),
         hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, s.team.name),
         yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, s.team.name)
       }

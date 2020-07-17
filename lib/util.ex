@@ -303,4 +303,12 @@ defmodule Util do
     days_to_subtract = 0 - rem(day_of_the_week + (7 - day_in_week), 7)
     Date.add(now, days_to_subtract)
   end
+
+  def naive_date_time_or_nil(nil), do: nil
+
+  def naive_date_time_or_nil(val) do
+    val
+    |> NaiveDateTime.from_iso8601()
+    |> nilify
+  end
 end

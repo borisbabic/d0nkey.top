@@ -37,6 +37,8 @@
         </div>
     </div>
 </div>
+
+<%= render_dropdowns @dropdowns %>
 <%= if Enum.any?(@highlight) do %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
@@ -46,17 +48,22 @@
             <%= if @show_score do %>
                 <th>Score</th>
             <% end %>
+            <%= if @show_ongoing do %>
+                <th><abbr title="Ongoing Match Score">Ongoing</abbr></th>
+            <% end %>
             <th>Decks</th>
         </tr>
     </thead>
     <tbody>
-    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link:
-    name_link} <- @highlight do %>
+    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing} <- @highlight do %>
         <tr>
             <td><%= place %></td>
             <td><a href="<%= name_link%>"> <%= name %></a></td>
             <%= if @show_score do %>
                 <th><%=score%></th>
+            <% end %>
+            <%= if @show_ongoing do %>
+                <th><%= ongoing %></th>
             <% end %>
             <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
         </tr>
@@ -72,16 +79,22 @@
             <%= if @show_score do %>
                 <th>Score</th>
             <% end %>
+            <%= if @show_ongoing do %>
+                <th><abbr title="Ongoing Match Score">Ongoing</abbr></th>
+            <% end %>
             <th>Decks</th>
         </tr>
     </thead>
     <tbody>
-    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link} <- @standings do %>
+    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing} <- @standings do %>
         <tr>
             <td><%= place %></td>
             <td><a href="<%= name_link%>"> <%= name %></a></td>
             <%= if @show_score do %>
                 <th><%=score%></th>
+            <% end %>
+            <%= if @show_ongoing do %>
+                <th><%= ongoing %></th>
             <% end %>
             <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
         </tr>
