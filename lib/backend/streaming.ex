@@ -10,14 +10,15 @@ defmodule Backend.Streaming do
     [10, 9, 10, 31, 1, 2, 45, 30, 4] |> Enum.member?(bnet_game_type)
   end
 
-  def get_latest_streamer_decks() do
+  def get_latest_streamer_decks(limit \\ 1000) do
     query =
       from sd in StreamerDeck,
         join: s in assoc(sd, :streamer),
         join: d in assoc(sd, :deck),
         preload: [streamer: s, deck: d],
         select: sd,
-        order_by: [desc: sd.last_played]
+        order_by: [desc: sd.last_played],
+        limit: ^limit
 
     Repo.all(query)
   end
