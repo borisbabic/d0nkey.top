@@ -160,4 +160,14 @@ defmodule Backend.MastersTour.TourStop do
       Util.in_range?(now, {lower, upper}) && ts.id
     end)
   end
+
+  @spec started?(atom) :: boolean
+  def started?(tour_stop) do
+    tour_stop
+    |> get()
+    |> case do
+      nil -> false
+      ts -> NaiveDateTime.compare(ts.start_time, NaiveDateTime.utc_now()) == :lt
+    end
+  end
 end
