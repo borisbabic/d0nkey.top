@@ -13,6 +13,7 @@ defmodule Backend.Battlefy.Match do
     field :double_loss, boolean
     field :stage_id, Backend.Battlefy.stage_id()
     field :is_bye, boolean
+    field :completed_at, NaiveDateTime.t()
     # field :is_complete, boolean
   end
 
@@ -67,6 +68,7 @@ defmodule Backend.Battlefy.Match do
       match_number: match_number,
       double_loss: map["double_loss"] || false,
       is_bye: is_bye,
+      completed_at: map["completed_at"] |> Util.naive_date_time_or_nil(),
       stage_id: stage_id
       # is_complete: is_complete
     }
