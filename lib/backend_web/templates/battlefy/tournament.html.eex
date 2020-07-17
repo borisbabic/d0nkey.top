@@ -12,6 +12,58 @@
         </div>
     </div>
 <% end %>
+
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Highlight Players</button></div>
+    <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+
+            <%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @id),
+            [as: :player, method: :get], fn
+            f-> %>
+                <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+                    <input name="<%= key %>" type="hidden" value="<%= value %>">
+                <% end %>
+                <%= for {player, selected} <- @players do %>
+                        <label for="player_<%= player %>" class="dropdown-item">
+                            <span > <%= player %></span>
+                            <%= checkbox f, player, hidden_input: false, class: "is-pulled-right", value: selected %>
+                        </label>
+                <% end %>
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>
+<%= if Enum.any?(@highlight) do %>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <th>Place</th>
+            <th>Name</th>
+            <%= if @show_score do %>
+                <th>Score</th>
+            <% end %>
+            <th>Decks</th>
+        </tr>
+    </thead>
+    <tbody>
+    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link:
+    name_link} <- @highlight do %>
+        <tr>
+            <td><%= place %></td>
+            <td><a href="<%= name_link%>"> <%= name %></a></td>
+            <%= if @show_score do %>
+                <th><%=score%></th>
+            <% end %>
+            <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>
+<% end %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
