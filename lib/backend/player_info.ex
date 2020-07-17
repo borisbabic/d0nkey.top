@@ -1411,11 +1411,12 @@ defmodule Backend.PlayerInfo do
     "IS" => :EU
   }
 
-  @spec current_gms() :: [String.t()]
-  def current_gms() do
-    relegated = relegated_gms()
+  def get_grandmasters({2020, 2}), do: get_grandmasters(:Jönköping, relegated_gms())
+  def get_grandmasters({2021, 1}), do: get_grandmasters(:Montréal, MapSet.new())
+  def get_grandmasters(_), do: []
 
-    Backend.MastersTour.list_invited_players(:Jönköping)
+  def get_grandmasters(rts = reference_tour_stop, relegated) do
+    Backend.MastersTour.list_invited_players(rts)
     |> Enum.filter(fn %{reason: r} -> String.contains?(r, "Grandmaster") end)
     |> Enum.map(fn %{battletag_full: bf} ->
       Backend.MastersTour.InvitedPlayer.shorten_battletag(bf)
