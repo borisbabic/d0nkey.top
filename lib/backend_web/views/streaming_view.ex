@@ -23,24 +23,24 @@ defmodule BackendWeb.StreamingView do
         {
           internal_link(sd.streamer, conn),
           sd.deck.hero |> Backend.HearthstoneJson.get_class() |> Recase.to_title(),
-          sd.deck.deckcode,
+          deckcode(sd.deck),
           sd.last_played,
           if(sd.deck.format == 1, do: "Wild", else: "Standard"),
           if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
-          ~E"""
-          <%= hsreplay_link(sd.deck.deckcode) %>
-          """
+          deckcode_links(deckcode(sd.deck))
         }
       end)
 
     render("streamer_decks.html", %{rows: rows, title: title})
   end
 
-  def hsreplay_link(<<deckcode::binary>>) do
-    link = Backend.HSReplay.create_deck_link(deckcode)
+  def deckcode_links(<<deckcode::binary>>) do
+    hsreplay = Backend.HSReplay.create_deck_link(deckcode)
+    hsdeckviewer = Backend.HSDeckViewer.create_link(deckcode)
 
     ~E"""
-    <a class="is-link tag" href="<%= link %>">HSReplay</a>
+    <a class="is-link tag" href="<%= hsreplay %>">HSReplay</a>
+    <a class="is-link tag" href="<%= hsdeckviewer %>">HSDeckViewer</a>
     """
   end
 
@@ -52,16 +52,18 @@ defmodule BackendWeb.StreamingView do
       |> Enum.map(fn sd ->
         {
           sd.deck.hero |> Backend.HearthstoneJson.get_class() |> Recase.to_title(),
-          sd.deck.deckcode,
+          deckcode(sd.deck),
           sd.last_played,
           if(sd.deck.format == 1, do: "Wild", else: "Standard"),
           if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
-          hsreplay_link(sd.deck.deckcode)
+          deckcode_links(deckcode(sd.deck))
         }
       end)
 
     render("streamers_decks.html", %{rows: rows, title: title})
   end
+
+  def deckcode(deck), do: Backend.Hearthstone.Deck.deckcode(deck.cards, deck.hero, deck.format)
 
   def internal_link(%{twitch_login: tl, twitch_display: td}, conn) do
     link = Routes.streaming_path(conn, :streamers_decks, tl)

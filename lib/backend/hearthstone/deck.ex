@@ -43,6 +43,6 @@ defmodule Backend.Hearthstone.Deck do
     |> Base.encode64()
   end
 
-  defp deckcode_part(nil), do: []
+  defp deckcode_part(nil), do: [0]
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 end

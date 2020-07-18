@@ -1,5 +1,6 @@
 defmodule Backend.HSDeckViewer do
   @moduledoc false
+  def create_link(<<deckstring::binary>>), do: create_link([deckstring])
   @spec create_link([String.t()]) :: String.t()
   def create_link(deckstrings) do
     query =
