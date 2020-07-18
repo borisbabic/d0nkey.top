@@ -27,13 +27,9 @@ defmodule Backend.Streaming.StreamerDeck do
 
   @doc false
   def update(c, a) do
-    IO.inspect(c)
-    IO.inspect(a)
-
     c
     |> cast(a, [:last_played, :best_rank, :best_legend_rank])
     |> validate_required([:last_played, :best_rank, :best_legend_rank])
-    |> IO.inspect()
   end
 
   @doc false
