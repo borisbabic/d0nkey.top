@@ -22,6 +22,7 @@ defmodule Backend.PlayerInfo do
                 "IrvinG",
                 "Pavelingbook",
                 "HSKeDaiBiao",
+                "caravaggio8",
                 "Cesky",
                 "LeandroLeal"
               ])
@@ -51,6 +52,7 @@ defmodule Backend.PlayerInfo do
                 "Hoej",
                 "NikolajHoej",
                 "Yogg",
+                "s8ris",
                 "Habugabu",
                 "DikiyZver",
                 "Matty"
@@ -68,6 +70,7 @@ defmodule Backend.PlayerInfo do
                 "Hi3",
                 "GivePLZ",
                 "hone",
+                "RaFaEl",
                 "LojomHS",
                 "WaningMoon"
               ])
@@ -79,7 +82,10 @@ defmodule Backend.PlayerInfo do
                 "VKLiooon",
                 "SNBrox",
                 "SNJing",
+                "iGSyf",
+                "RNGKylinS",
                 "Bourbon",
+                "LPXHope",
                 "RNGLeaoh",
                 "WEYuansu"
               ])
