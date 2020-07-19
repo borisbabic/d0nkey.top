@@ -3,12 +3,13 @@ defmodule Backend.Hearthstone.Deck do
 
   use Ecto.Schema
   import Ecto.Changeset
-  @required [:cards, :hero, :format, :deckcode]
+  @required [:cards, :hero, :format, :deckcode, :class]
   schema "deck" do
     field :cards, {:array, :integer}
     field :deckcode, :string
     field :format, :integer
     field :hero, :integer
+    field :class, :string
     timestamps()
   end
 

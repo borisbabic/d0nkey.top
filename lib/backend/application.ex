@@ -42,6 +42,7 @@ defmodule Backend.Application do
     start_result = Supervisor.start_link(children, opts)
     migrate()
     Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
+    Backend.Hearthstone.add_class_and_regenerate_deckcode()
     start_result
   end
 
