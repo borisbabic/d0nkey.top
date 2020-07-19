@@ -27,7 +27,7 @@ defmodule BackendWeb.StreamingView do
           sd.last_played,
           if(sd.deck.format == 1, do: "Wild", else: "Standard"),
           if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
-          deckcode_links(deckcode(sd.deck))
+          links(sd)
         }
       end)
 
@@ -38,6 +38,16 @@ defmodule BackendWeb.StreamingView do
     ]
 
     render("streamer_decks.html", %{rows: rows, title: title, dropdowns: dropdowns})
+  end
+
+  def links(sd) do
+    deck = deckcode_links(deckcode(sd.deck))
+    twitch = twitch_link(sd.streamer.twitch_login, "twitch", ["tag", "is-link"])
+
+    ~E"""
+    <%= deck %>
+    <%= twitch %>
+    """
   end
 
   def create_legend_dropdown(conn) do
