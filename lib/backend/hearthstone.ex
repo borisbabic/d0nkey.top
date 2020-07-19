@@ -11,7 +11,9 @@ defmodule Backend.Hearthstone do
     query =
       from d in Deck,
         where: d.deckcode == ^deckcode,
-        select: d
+        select: d,
+        order_by: [desc: :updated_at],
+        limit: 1
 
     Repo.one(query)
     |> case do

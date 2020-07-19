@@ -1,6 +1,7 @@
 defmodule Backend.Streaming do
   @moduledoc false
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Backend.Repo
   alias Backend.HSReplay
   alias Backend.Streaming.Streamer
@@ -120,6 +121,54 @@ defmodule Backend.Streaming do
     |> Repo.update()
   end
 
+  def change_deck_association() do
+    streamer_decks([])
+    |> Enum.reduce(Multi.new(), fn sd, multi ->
+      old_id = sd.deck.id
+      deckcode = Backend.Hearthstone.Deck.deckcode(sd.deck)
+      uniq = to_string(sd.streamer_id) <> deckcode
+
+      case Backend.Hearthstone.decks([{"deckcode", deckcode}]) do
+        [deck = %{id: id}] when id != old_id ->
+          case streamer_decks([{"deck_id", id}]) do
+            [other_sd] ->
+              attrs = %{
+                best_rank: Enum.min([other_sd.best_rank, sd.best_rank]),
+                best_legend_rank: Enum.min([other_sd.best_rank, sd.best_legend_rank]),
+                last_played:
+                  if(NaiveDateTime.compare(other_sd.last_played, sd.last_played) == :lt,
+                    do: sd.last_played,
+                    else: other_sd.last_played
+                  )
+              }
+
+              cs =
+                other_sd
+                |> StreamerDeck.changeset(attrs)
+
+              Multi.update(multi, uniq, cs)
+              Multi.delete(multi, uniq <> "delete", sd)
+
+            _ ->
+              cs =
+                sd
+                |> StreamerDeck.changeset(%{deck_id: deck.id})
+                |> Ecto.Changeset.unique_constraint(:name)
+
+              Multi.update(
+                multi,
+                uniq,
+                cs
+              )
+          end
+
+        _ ->
+          multi
+      end
+    end)
+    |> Repo.transaction()
+  end
+
   def streamer_decks(criteria) do
     base_streamer_decks_query()
     |> build_streamer_deck_query(criteria)
@@ -157,6 +206,9 @@ defmodule Backend.Streaming do
 
   defp compose_streamer_deck_query({"legend", legend}, query),
     do: query |> where([sd], sd.best_legend_rank > 0 and sd.best_legend_rank <= ^legend)
+
+  defp compose_streamer_deck_query({"deck_id", deck_id}, query),
+    do: query |> where([_sd, _s, d], d.id == ^deck_id)
 
   defp compose_streamer_deck_query(_unrecognized, query), do: query
 end
