@@ -1,11 +1,12 @@
 <div class="title is-2"><%= @title %></div>
 
+<%= render_dropdowns @dropdowns %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
             <th>Streamer</th>
             <th>Class</th>
-            <th>Mode</th>
+            <th>Format</th>
             <th><abbr title="Legend Peak">Peak</abbr></th>
             <th>Links</th>
             <th class="is-hidden-mobile">Last Played</th>

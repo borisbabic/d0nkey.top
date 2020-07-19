@@ -3,12 +3,19 @@ defmodule BackendWeb.StreamingController do
   @moduledoc false
 
   def streamers_decks(conn, %{"twitch_login" => twitch_login}) do
-    decks = Backend.Streaming.get_streamers_decks(twitch_login)
-    render(conn, "streamers_decks.html", %{decks: decks})
+    real_route =
+      Routes.streaming_path(
+        conn,
+        :streamer_decks,
+        Map.put(conn.query_params, "twitch_login", twitch_login)
+      )
+
+    redirect(conn, to: real_route)
   end
 
-  def streamer_decks(conn, _params) do
-    streamer_decks = Backend.Streaming.get_latest_streamer_decks()
+  def streamer_decks(conn, params) do
+    criteria = %{"order_by" => {:desc, :last_played}, "limit" => 300} |> Map.merge(params)
+    streamer_decks = Backend.Streaming.streamer_decks(criteria)
     render(conn, "streamer_decks.html", %{streamer_decks: streamer_decks, conn: conn})
   end
 end
