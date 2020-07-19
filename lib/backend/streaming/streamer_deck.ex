@@ -9,7 +9,7 @@ defmodule Backend.Streaming.StreamerDeck do
   @not_required [:best_rank, :best_legend_rank]
   @primary_key false
   schema "streamer_deck" do
-    belongs_to :deck, Deck, primary_key: true
+    belongs_to :deck, Deck, primary_key: true, on_replace: :update
     belongs_to :streamer, Streamer, primary_key: true
     field :best_rank, :integer
     field :best_legend_rank, :integer
@@ -28,7 +28,8 @@ defmodule Backend.Streaming.StreamerDeck do
   @doc false
   def update(c, a) do
     c
-    |> cast(a, [:last_played, :best_rank, :best_legend_rank])
+    |> cast(a, [:last_played, :best_rank, :best_legend_rank, :deck_id])
+    |> cast_assoc(:deck)
     |> validate_required([:last_played, :best_rank, :best_legend_rank])
   end
 
@@ -37,14 +38,23 @@ defmodule Backend.Streaming.StreamerDeck do
     c
     |> cast(a, non_assoc())
     |> validate_required(@required)
-    |> put_assoc(:deck, a.deck)
-    |> put_assoc(:streamer, a.streamer)
-    |> foreign_key_checks()
+    |> set_deck(a)
+    |> set_streamer(a)
   end
 
-  def foreign_key_checks(c) do
+  defp set_deck(c, %{deck: deck}) do
     c
+    |> put_assoc(:deck, deck)
     |> foreign_key_constraint(:deck)
+  end
+
+  defp set_deck(c, _), do: c
+
+  defp set_streamer(c, %{streamer: streamer}) do
+    c
+    |> put_assoc(:streamer, streamer)
     |> foreign_key_constraint(:streamer)
   end
+
+  defp set_streamer(c, _), do: c
 end
