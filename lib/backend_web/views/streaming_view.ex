@@ -22,7 +22,7 @@ defmodule BackendWeb.StreamingView do
       |> Enum.map(fn sd ->
         {
           streamer_link(sd.streamer, conn),
-          sd.deck.class |> Recase.to_title(),
+          sd.deck.class |> class_name(),
           deckcode(sd.deck),
           sd.last_played,
           if(sd.deck.format == 1, do: "Wild", else: "Standard"),
@@ -33,8 +33,8 @@ defmodule BackendWeb.StreamingView do
 
     dropdowns = [
       create_legend_dropdown(conn),
-      create_format_dropdown(conn)
-      #      create_class_dropdown(conn),
+      create_format_dropdown(conn),
+      create_class_dropdown(conn)
     ]
 
     render("streamer_decks.html", %{rows: rows, title: title, dropdowns: dropdowns})
@@ -50,6 +50,35 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
+  def class_name("DEMONHUNTER"), do: "Demon Hunter"
+  def class_name(c), do: c |> Recase.to_title()
+
+  def create_class_dropdown(conn) do
+    options =
+      [
+        "DEMONHUNTER",
+        "DRUID",
+        "HUNTER",
+        "MAGE",
+        "PALADIN",
+        "PRIEST",
+        "ROGUE",
+        "SHAMAN",
+        "WARLOCK",
+        "WARRIOR"
+      ]
+      |> Enum.map(fn c ->
+        %{
+          link:
+            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "class", c)),
+          selected: to_string(Map.get(conn.query_params, "class")) == to_string(c),
+          display: class_name(c)
+        }
+      end)
+
+    {[any_option(conn, "class") | options], title(options, "Class")}
+  end
+
   def create_legend_dropdown(conn) do
     options =
       [100, 500, 1000, 5000]
@@ -62,7 +91,7 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {options, title(options, "Legend Peak")}
+    {[any_option(conn, "legend") | options], title(options, "Legend Peak")}
   end
 
   def create_format_dropdown(conn) do
@@ -77,7 +106,16 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {options, title(options, "Format")}
+    {[any_option(conn, "format") | options], title(options, "Format")}
+  end
+
+  def any_option(conn, query_param, display \\ "Any") do
+    %{
+      link:
+        Routes.streaming_path(conn, :streamer_decks, Map.delete(conn.query_params, query_param)),
+      selected: Map.get(conn.query_params, query_param) == nil,
+      display: display
+    }
   end
 
   def deckcode_links(<<deckcode::binary>>) do
@@ -102,7 +140,21 @@ defmodule BackendWeb.StreamingView do
 
   def streamer_link(%{twitch_login: tl, twitch_display: td}, conn) do
     link =
-      Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "twitch_login", tl))
+      case Map.get(conn.query_params, "twitch_login") do
+        ^tl ->
+          Routes.streaming_path(
+            conn,
+            :streamer_decks,
+            Map.delete(conn.query_params, "twitch_login")
+          )
+
+        _ ->
+          Routes.streaming_path(
+            conn,
+            :streamer_decks,
+            Map.put(conn.query_params, "twitch_login", tl)
+          )
+      end
 
     ~E"""
       <a class="is-link" href="<%= link %>"><%= td %></a>

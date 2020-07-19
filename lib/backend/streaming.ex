@@ -149,7 +149,9 @@ defmodule Backend.Streaming do
 
   defp compose_streamer_deck_query({"limit", limit}, query), do: query |> limit(^limit)
 
-  #  defp compose_streamer_deck_query({"class", class}, query), do: query |> where([_sd, d], d.class ==^class)
+  defp compose_streamer_deck_query({"class", class}, query),
+    do: query |> where([_sd, _s, d], d.class == ^class)
+
   defp compose_streamer_deck_query({"format", format}, query),
     do: query |> where([_sd, _s, d], d.format == ^format)
 
