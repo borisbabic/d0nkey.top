@@ -36,7 +36,7 @@ defmodule Backend.Hearthstone do
     |> Enum.reduce(Multi.new(), fn d, multi ->
       deckcode = Deck.deckcode(d)
       updated = d |> Deck.changeset(%{deckcode: deckcode, class: class(d)})
-      Multi.update(multi, deckcode, updated)
+      Multi.update(multi, to_string(d.id) <> deckcode, updated)
     end)
     |> Repo.transaction()
   end
