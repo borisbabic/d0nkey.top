@@ -155,4 +155,6 @@ defmodule Backend.Streaming do
 
   defp compose_streamer_deck_query({"legend", legend}, query),
     do: query |> where([sd], sd.best_legend_rank > 0 and sd.best_legend_rank <= ^legend)
+
+  defp compose_streamer_deck_query(_unrecognized, query), do: query
 end

@@ -22,7 +22,7 @@ defmodule BackendWeb.StreamingView do
       |> Enum.map(fn sd ->
         {
           streamer_link(sd.streamer, conn),
-          sd.deck.hero |> Backend.HearthstoneJson.get_class() |> Recase.to_title(),
+          sd.deck.class |> Recase.to_title(),
           deckcode(sd.deck),
           sd.last_played,
           if(sd.deck.format == 1, do: "Wild", else: "Standard"),
