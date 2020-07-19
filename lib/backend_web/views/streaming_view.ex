@@ -21,7 +21,7 @@ defmodule BackendWeb.StreamingView do
       streamer_decks
       |> Enum.map(fn sd ->
         {
-          internal_link(sd.streamer, conn),
+          streamer_link(sd.streamer, conn),
           sd.deck.hero |> Backend.HearthstoneJson.get_class() |> Recase.to_title(),
           deckcode(sd.deck),
           sd.last_played,
@@ -31,7 +31,43 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    render("streamer_decks.html", %{rows: rows, title: title})
+    dropdowns = [
+      create_legend_dropdown(conn),
+      create_format_dropdown(conn)
+      #      create_class_dropdown(conn),
+    ]
+
+    render("streamer_decks.html", %{rows: rows, title: title, dropdowns: dropdowns})
+  end
+
+  def create_legend_dropdown(conn) do
+    options =
+      [100, 500, 1000, 5000]
+      |> Enum.map(fn lr ->
+        %{
+          link:
+            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "legend", lr)),
+          selected: to_string(Map.get(conn.query_params, "legend")) == to_string(lr),
+          display: "Top #{lr}"
+        }
+      end)
+
+    {options, title(options, "Legend Peak")}
+  end
+
+  def create_format_dropdown(conn) do
+    options =
+      [{1, "Wild"}, {2, "Standard"}]
+      |> Enum.map(fn {f, display} ->
+        %{
+          link:
+            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "format", f)),
+          selected: to_string(Map.get(conn.query_params, "format")) == to_string(f),
+          display: display
+        }
+      end)
+
+    {options, title(options, "Format")}
   end
 
   def deckcode_links(<<deckcode::binary>>) do
@@ -44,29 +80,19 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
-  def render("streamers_decks.html", %{decks: decks}) do
-    title = (decks |> Enum.at(0)).streamer |> twitch_link()
+  def title(options, <<default::binary>>) do
+    selected_title =
+      options
+      |> Enum.find_value(fn o -> o.selected && o.display end)
 
-    rows =
-      decks
-      |> Enum.map(fn sd ->
-        {
-          sd.deck.hero |> Backend.HearthstoneJson.get_class() |> Recase.to_title(),
-          deckcode(sd.deck),
-          sd.last_played,
-          if(sd.deck.format == 1, do: "Wild", else: "Standard"),
-          if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
-          deckcode_links(deckcode(sd.deck))
-        }
-      end)
-
-    render("streamers_decks.html", %{rows: rows, title: title})
+    selected_title || default
   end
 
   def deckcode(deck), do: Backend.Hearthstone.Deck.deckcode(deck.cards, deck.hero, deck.format)
 
-  def internal_link(%{twitch_login: tl, twitch_display: td}, conn) do
-    link = Routes.streaming_path(conn, :streamers_decks, tl)
+  def streamer_link(%{twitch_login: tl, twitch_display: td}, conn) do
+    link =
+      Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "twitch_login", tl))
 
     ~E"""
       <a class="is-link" href="<%= link %>"><%= td %></a>
