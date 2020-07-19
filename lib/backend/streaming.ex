@@ -119,4 +119,40 @@ defmodule Backend.Streaming do
     |> StreamerDeck.changeset(attrs)
     |> Repo.update()
   end
+
+  def streamer_decks(criteria) do
+    base_streamer_decks_query()
+    |> build_streamer_deck_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_streamer_decks_query() do
+    from sd in StreamerDeck,
+      join: s in assoc(sd, :streamer),
+      join: d in assoc(sd, :deck),
+      preload: [streamer: s, deck: d]
+  end
+
+  defp build_streamer_deck_query(query, criteria),
+    do: Enum.reduce(criteria, query, &compose_streamer_deck_query/2)
+
+  defp compose_streamer_deck_query({"twitch_login", twitch_login}, query) do
+    query
+    |> join(:inner, [sd], s in assoc(sd, :streamer))
+    |> where([_sd, s, _d], s.twitch_login == ^twitch_login)
+  end
+
+  defp compose_streamer_deck_query({"order_by", {direction, field}}, query) do
+    query
+    |> order_by([{^direction, ^field}])
+  end
+
+  defp compose_streamer_deck_query({"limit", limit}, query), do: query |> limit(^limit)
+
+  #  defp compose_streamer_deck_query({"class", class}, query), do: query |> where([_sd, d], d.class ==^class)
+  defp compose_streamer_deck_query({"format", format}, query),
+    do: query |> where([_sd, _s, d], d.format == ^format)
+
+  defp compose_streamer_deck_query({"legend", legend}, query),
+    do: query |> where([sd], sd.best_legend_rank > 0 and sd.best_legend_rank <= ^legend)
 end
