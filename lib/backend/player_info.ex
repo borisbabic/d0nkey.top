@@ -72,6 +72,8 @@ defmodule Backend.PlayerInfo do
                 "hone",
                 "RaFaEl",
                 "LojomHS",
+                "Bloodtrail",
+                "ShroomJuice",
                 "WaningMoon"
               ])
 
@@ -103,8 +105,9 @@ defmodule Backend.PlayerInfo do
     ])
   end
 
-  # from liquidpedia
+  # from liquidpedia and some hardcoded
   @player_nationalities %{
+    "HyunMini" => "South Korea",
     "1123630728" => "Singapore",
     "A83650" => "Poland",
     "AKAWonder" => "Spain",
@@ -1230,7 +1233,20 @@ defmodule Backend.PlayerInfo do
     "reqvam" => "Croatia",
     "D0nkey" => "Croatia",
     "WEStone" => "China",
-    "azuuu" => "South Korea"
+    "azuuu" => "South Korea",
+    "Jajo" => "South Korea",
+    "WEYuyi" => "China",
+    "iGXc" => "China",
+    "Cptnkitty" => "Netherlands",
+    "GamerRvg" => "USA",
+    "PeaceHawk" => "Peru",
+    "Lwd12318" => "???",
+    "BlizzconJan" => "Czech Republic",
+    "LFYueying" => "China",
+    "RNGLys" => "China",
+    "gle" => "USA",
+    "VKDiana" => "China",
+    "maneti" => "Spain"
   }
 
   @nationality_to_region %{
@@ -1254,6 +1270,7 @@ defmodule Backend.PlayerInfo do
     "Puerto Rico" => :US,
     "United States of America" => :US,
     "United States" => :US,
+    "USA" => :US,
     "Uruguay" => :US,
     "Venezuela" => :US,
     "Australia" => :AP,
@@ -1418,7 +1435,7 @@ defmodule Backend.PlayerInfo do
   }
 
   def get_grandmasters({2020, 2}), do: get_grandmasters(:Jönköping, relegated_gms())
-  def get_grandmasters({2021, 1}), do: get_grandmasters(:Montréal, MapSet.new())
+  def get_grandmasters({2021, 1}), do: get_grandmasters(:Montréal, MapSet.new()) ++ ["Briarthorn"]
   def get_grandmasters(_), do: []
 
   def get_grandmasters(rts = reference_tour_stop, relegated) do
@@ -1446,8 +1463,21 @@ defmodule Backend.PlayerInfo do
     end
   end
 
+  # for people that appear differently in my source
+  def hack_name(name) do
+    case name do
+      "muzzy" -> "Muzzy"
+      "justsaiyan" -> "Justsaiyan"
+      "Bunnyhoppor" -> "BunnyHoppor"
+      "Briarthorn" -> "brimful"
+      _ -> name
+    end
+  end
+
   @spec get_region(String.t()) :: Blizzard.region()
-  def get_region(player) do
+  def get_region(original_name) do
+    player = hack_name(original_name)
+
     cond do
       MapSet.member?(@na_players, player) ->
         :US
