@@ -532,6 +532,7 @@ defmodule Backend.MastersTour do
   def name_hacks(name) do
     case name do
       "Liooon" -> "VKLiooon"
+      "brimful" -> "Briarthorn"
       n -> n
     end
   end
