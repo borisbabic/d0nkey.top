@@ -7,6 +7,8 @@ defmodule BackendWeb.LeaderboardController do
 
   def index(conn, params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
     leaderboard = get_leaderboard(region, leaderboard_id, params["seasonId"])
+    compare_to = params["compare_to"]
+    comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
 
     render(conn, "index.html", %{
@@ -15,6 +17,8 @@ defmodule BackendWeb.LeaderboardController do
       highlight: parse_highlight(params),
       other_ladders: leaderboard |> get_other_ladders(ladder_mode),
       leaderboard: leaderboard,
+      compare_to: params["compare_to"],
+      comparison: comparison,
       ladder_mode: ladder_mode
     })
   end
@@ -63,11 +67,19 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  defp get_leaderboard(r, l, s), do: Leaderboards.get_leaderboard(r, l, s)
-
   defp get_leaderboard(r, l, s) do
     try do
       Leaderboards.get_leaderboard(r, l, s)
+    rescue
+      _ -> nil
+    end
+  end
+
+  defp get_comparison(l, nil), do: nil
+
+  defp get_comparison(l, c_t) do
+    try do
+      Leaderboards.get_comparison(l, c_t)
     rescue
       _ -> nil
     end
