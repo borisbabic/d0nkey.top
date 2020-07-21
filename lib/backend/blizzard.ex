@@ -1,5 +1,9 @@
 defmodule Backend.Blizzard do
   @moduledoc false
+
+  alias Backend.Infrastructure.BlizzardCommunicator, as: Api
+  alias Backend.Blizzard.Leaderboard
+
   @type tour_stop ::
           :"Las Vegas"
           | :Seoul
@@ -462,5 +466,11 @@ defmodule Backend.Blizzard do
       :Madrid -> 2020
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
+  end
+
+  @spec get_leaderboard(region(), leaderboard(), integer | nil) :: Leaderboard
+  def get_leaderboard(region, leaderboard, season_id) do
+    # todo pick season_id when nil
+    Api.get_leaderboard(region, leaderboard, season_id)
   end
 end

@@ -76,7 +76,7 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {[any_option(conn, "class") | options], title(options, "Class")}
+    {[any_option(conn, "class") | options], dropdown_title(options, "Class")}
   end
 
   def create_legend_dropdown(conn) do
@@ -91,7 +91,7 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {[any_option(conn, "legend") | options], title(options, "Legend Peak")}
+    {[any_option(conn, "legend") | options], dropdown_title(options, "Legend Peak")}
   end
 
   def create_format_dropdown(conn) do
@@ -106,7 +106,7 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {[any_option(conn, "format") | options], title(options, "Format")}
+    {[any_option(conn, "format") | options], dropdown_title(options, "Format")}
   end
 
   def any_option(conn, query_param, display \\ "Any") do
@@ -126,14 +126,6 @@ defmodule BackendWeb.StreamingView do
     <a class="is-link tag" href="<%= hsreplay %>">HSReplay</a>
     <a class="is-link tag" href="<%= hsdeckviewer %>">HSDeckViewer</a>
     """
-  end
-
-  def title(options, <<default::binary>>) do
-    selected_title =
-      options
-      |> Enum.find_value(fn o -> o.selected && o.display end)
-
-    selected_title || default
   end
 
   def deckcode(deck), do: Backend.Hearthstone.Deck.deckcode(deck.cards, deck.hero, deck.format)

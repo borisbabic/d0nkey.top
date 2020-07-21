@@ -1,0 +1,15 @@
+<div class="title is-2">Leaderboard</div>
+<%= render_dropdowns @dropdowns %>
+
+<%= if @updated_at do %>
+    <div class="subtitle is-6">Updated at <%= render_datetime @updated_at %></div>
+<% end %>
+<%= if @old do %>
+    <div class="notification is-warning">
+        WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
+    </div>
+<% end %>
+<%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal, show_mt_column: @show_mt_column) %>
+
+<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entries, crystal: @crystal, show_mt_column:
+@show_mt_column) %>

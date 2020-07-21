@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody>
-<%= for %{qualified: qualified, rating: rating, battletag: battletag, position: position, qualifying: qualifying} <- @table_entries do %>
+<%= for %{qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying} <- @table_entries do %>
         <tr>
             <td><%= position %></td>
             <td><%= battletag %></td>

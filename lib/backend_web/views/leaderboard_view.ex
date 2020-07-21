@@ -6,65 +6,135 @@ defmodule BackendWeb.LeaderboardView do
   @type month_name ::
           :JAN | :FEB | :MAR | :APR | :MAY | :JUN | :JUL | :AUG | :SEP | :OCT | :NOV | :DEC
 
+  @spec create_dropdowns(
+          Plug.Conn,
+          %{leaderboard_id: String.t(), region: String.t(), season_id: integer} | nil,
+          String.t()
+        ) :: any()
+  def create_dropdowns(conn, nil, ladder_mode),
+    do: create_dropdowns(conn, %{leaderboard_id: nil, region: nil, season_id: nil}, ladder_mode)
+
+  def create_dropdowns(
+        conn,
+        %{
+          leaderboard_id: leaderboard_id,
+          region: region,
+          season_id: season_id
+        },
+        ladder_mode
+      ) do
+    [
+      create_region_dropdown(conn, region),
+      create_leaderboard_dropdown(conn, leaderboard_id),
+      create_season_dropdown(conn, season_id),
+      create_ladder_mode_dropdown(conn, ladder_mode)
+    ]
+  end
+
+  def create_region_dropdown(conn, region) do
+    options =
+      Backend.Blizzard.qualifier_regions_with_name()
+      |> Enum.map(fn {r, name} ->
+        %{
+          display: name,
+          selected: to_string(r) == to_string(region),
+          link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "region", r))
+        }
+      end)
+
+    {options, dropdown_title(options, "Region")}
+  end
+
+  def create_leaderboard_dropdown(conn, leaderboard_id) do
+    options =
+      Backend.Blizzard.leaderboards_with_name()
+      |> Enum.map(fn {id, name} ->
+        %{
+          display: name,
+          selected: to_string(id) == to_string(leaderboard_id),
+          link:
+            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "leaderboardId", id))
+        }
+      end)
+
+    {options, dropdown_title(options, "Leaderboard")}
+  end
+
+  def create_season_dropdown(conn, season) do
+    options =
+      create_selectable_seasons(Date.utc_today())
+      |> Enum.map(fn {name, s} ->
+        %{
+          display: name,
+          selected: to_string(s) == to_string(season),
+          link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "seasonId", s))
+        }
+      end)
+
+    {options, dropdown_title(options, "Season")}
+  end
+
+  def create_ladder_mode_dropdown(conn, ladder_mode) do
+    options =
+      ["yes", "no"]
+      |> Enum.map(fn mode ->
+        %{
+          display: Recase.to_title(mode),
+          selected: mode == ladder_mode,
+          link:
+            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "ladder_mode", mode))
+        }
+      end)
+
+    {options, "Ladder Mode"}
+  end
+
+  def render("index.html", %{leaderboard: nil, conn: conn, ladder_mode: ladder_mode}) do
+    render("empty.html", %{dropdowns: create_dropdowns(conn, nil, ladder_mode)})
+  end
+
   def render("index.html", %{
-        invited: invited_raw,
-        entry: entry_raw,
         conn: conn,
-        region: region,
-        leaderboard_id: leaderboard_id,
-        updated_at: updated_at,
-        highlight: highlighted_raw,
+        invited: invited_raw,
+        highlight: highlight,
         other_ladders: other_ladders,
-        ladder_mode: ladder_mode,
-        season_id: season_id
+        leaderboard: leaderboard,
+        ladder_mode: ladder_mode
       }) do
-    invited = process_invited(invited_raw, updated_at) |> add_other_ladders(other_ladders)
-    entry = process_entry(entry_raw, invited) |> hack_entries(region, season_id)
-    highlighted = process_highlighted(highlighted_raw, entry)
-    today = Date.utc_today()
-    selectable_seasons = create_selectable_seasons(today)
+    invited = leaderboard |> process_invited(invited_raw) |> add_other_ladders(other_ladders)
+    entries = leaderboard |> process_entries(invited)
 
-    old =
-      updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 &&
-        season_id >= get_season_id(today)
-
-    show_mt_column =
-      to_string(leaderboard_id) == "STD" && elem(get_ladder_tour_stop(season_id), 0) == :ok
-
-    render("index.html", %{
-      conn: conn,
-      entry: entry,
-      region: region,
-      leaderboard_id: leaderboard_id,
-      old: old,
-      updated_at: updated_at,
-      highlighted: highlighted,
-      season_id: season_id,
-      selectable_seasons: selectable_seasons,
-      season_name: get_month_name(get_month_start(season_id).month),
-      crystal: get_crystal(leaderboard_id),
-      ladder_mode: ladder_mode,
-      show_mt_column: show_mt_column
+    render("leaderboard.html", %{
+      entries: entries,
+      crystal: get_crystal("STD"),
+      show_mt_column: show_mt_column?(leaderboard),
+      leaderboard_id: leaderboard.leaderboard_id,
+      updated_at: leaderboard.upstream_updated_at,
+      dropdowns: create_dropdowns(conn, leaderboard, ladder_mode),
+      old: old?(leaderboard),
+      highlighted: process_highlighted(highlight, entries)
     })
   end
 
-  def hack_entries(ldb, region, season_id) do
-    ldb
-    |> Enum.map(fn le = %{battletag: battletag} ->
-      case {battletag, to_string(region), season_id} do
-        {"Eclipse", "AP", 78} -> Map.put(le, :battletag, "Win")
-        _ -> le
-      end
-    end)
+  def show_mt_column?(%{leaderboard_id: "STD", season_id: season_id}),
+    do: elem(get_ladder_tour_stop(season_id), 0) == :ok
+
+  def show_mt_column?(_), do: false
+
+  def old(%{upstream_updated_at: updated_at, season_id: season_id}) do
+    updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 &&
+      season_id >= get_season_id(Date.utc_today())
   end
+
+  def old?(_), do: false
 
   def add_other_ladders(invited, other_ladders) do
     other_ladders
-    |> Enum.flat_map(fn %{region: region, entries: ol_entries} ->
-      process_entry(ol_entries, invited)
+    |> Enum.flat_map(fn leaderboard ->
+      process_entries(leaderboard, invited)
       |> Enum.filter(fn e -> e.qualifying end)
       |> Enum.with_index(1)
-      |> Enum.map(fn {e, pos} -> {e.battletag, {:other_ladder, region, pos}} end)
+      |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, leaderboard.region, pos}} end)
     end)
     |> Map.new()
     |> Map.merge(invited)
@@ -140,6 +210,11 @@ defmodule BackendWeb.LeaderboardView do
     end
   end
 
+  def process_invited(nil, invited_raw), do: process_invited(invited_raw, NaiveDateTime.utc_now())
+
+  def process_invited(%{upstream_updated_at: updated_at}, invited_raw),
+    do: process_invited(invited_raw, updated_at)
+
   def process_invited(invited_raw, updated_at) do
     not_invited_afterwards = fn ip ->
       ip.upstream_time
@@ -169,9 +244,11 @@ defmodule BackendWeb.LeaderboardView do
     end
   end
 
-  def process_entry(entry_raw, invited) do
-    Enum.map_reduce(entry_raw, 0, fn le = %{battletag: battletag}, acc ->
-      qualified = Map.get(invited, to_string(battletag))
+  def process_entries(nil, _), do: []
+
+  def process_entries(%{entries: entries}, invited) do
+    Enum.map_reduce(entries, 0, fn le = %{account_id: account_id}, acc ->
+      qualified = Map.get(invited, to_string(account_id))
       qualifying = !qualified && acc < 16
 
       {Map.put_new(le, :qualified, qualified)
