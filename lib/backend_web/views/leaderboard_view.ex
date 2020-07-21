@@ -6,28 +6,58 @@ defmodule BackendWeb.LeaderboardView do
   @type month_name ::
           :JAN | :FEB | :MAR | :APR | :MAY | :JUN | :JUL | :AUG | :SEP | :OCT | :NOV | :DEC
 
-  @spec create_dropdowns(
-          Plug.Conn,
-          %{leaderboard_id: String.t(), region: String.t(), season_id: integer} | nil,
-          String.t()
-        ) :: any()
-  def create_dropdowns(conn, nil, ladder_mode),
-    do: create_dropdowns(conn, %{leaderboard_id: nil, region: nil, season_id: nil}, ladder_mode)
+  def render("index.html", params = %{leaderboard: nil, conn: conn, ladder_mode: ladder_mode}) do
+    render("empty.html", %{dropdowns: create_dropdowns(params)})
+  end
 
-  def create_dropdowns(
-        conn,
-        %{
+  def render(
+        "index.html",
+        params = %{
+          conn: conn,
+          invited: invited_raw,
+          highlight: highlight,
+          other_ladders: other_ladders,
+          leaderboard: leaderboard,
+          comparison: comparison
+        }
+      ) do
+    invited = leaderboard |> process_invited(invited_raw) |> add_other_ladders(other_ladders)
+    entries = leaderboard |> process_entries(invited, comparison)
+
+    render("leaderboard.html", %{
+      entries: entries,
+      crystal: get_crystal("STD"),
+      show_mt_column: show_mt_column?(leaderboard),
+      leaderboard_id: leaderboard.leaderboard_id,
+      updated_at: leaderboard.upstream_updated_at,
+      dropdowns: create_dropdowns(params),
+      old: old?(leaderboard),
+      highlighted: process_highlighted(highlight, entries)
+    })
+  end
+
+  def create_dropdowns(params = %{leaderboard: nil}) do
+    params
+    |> Map.put(:leaderboard, %{leaderboard_id: nil, region: nil, season_id: nil})
+    |> create_dropdowns()
+  end
+
+  def create_dropdowns(%{
+        conn: conn,
+        leaderboard: %{
           leaderboard_id: leaderboard_id,
           region: region,
           season_id: season_id
         },
-        ladder_mode
-      ) do
+        ladder_mode: ladder_mode,
+        compare_to: compare_to
+      }) do
     [
       create_region_dropdown(conn, region),
       create_leaderboard_dropdown(conn, leaderboard_id),
       create_season_dropdown(conn, season_id),
-      create_ladder_mode_dropdown(conn, ladder_mode)
+      create_ladder_mode_dropdown(conn, ladder_mode),
+      create_compare_to_dropdown(conn, compare_to)
     ]
   end
 
@@ -89,31 +119,27 @@ defmodule BackendWeb.LeaderboardView do
     {options, "Ladder Mode"}
   end
 
-  def render("index.html", %{leaderboard: nil, conn: conn, ladder_mode: ladder_mode}) do
-    render("empty.html", %{dropdowns: create_dropdowns(conn, nil, ladder_mode)})
+  def create_compare_to_dropdown(conn, compare_to) do
+    options =
+      [{"10 min ago", "min_ago_10"}, {"30 min ago", "min_ago_30"}, {"1 hour ago", "min_ago_60"}]
+      |> Enum.map(fn {display, id} ->
+        %{
+          display: display,
+          selected: id && id == compare_to,
+          link:
+            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "compare_to", id))
+        }
+      end)
+
+    {[nil_option(conn, "compare_to", "None") | options], dropdown_title(options, "Compare to")}
   end
 
-  def render("index.html", %{
-        conn: conn,
-        invited: invited_raw,
-        highlight: highlight,
-        other_ladders: other_ladders,
-        leaderboard: leaderboard,
-        ladder_mode: ladder_mode
-      }) do
-    invited = leaderboard |> process_invited(invited_raw) |> add_other_ladders(other_ladders)
-    entries = leaderboard |> process_entries(invited)
-
-    render("leaderboard.html", %{
-      entries: entries,
-      crystal: get_crystal("STD"),
-      show_mt_column: show_mt_column?(leaderboard),
-      leaderboard_id: leaderboard.leaderboard_id,
-      updated_at: leaderboard.upstream_updated_at,
-      dropdowns: create_dropdowns(conn, leaderboard, ladder_mode),
-      old: old?(leaderboard),
-      highlighted: process_highlighted(highlight, entries)
-    })
+  def nil_option(conn, query_param, display \\ "Any") do
+    %{
+      link: Routes.leaderboard_path(conn, :index, Map.delete(conn.query_params, query_param)),
+      selected: Map.get(conn.query_params, query_param) == nil,
+      display: display
+    }
   end
 
   def show_mt_column?(%{leaderboard_id: "STD", season_id: season_id}),
@@ -131,7 +157,7 @@ defmodule BackendWeb.LeaderboardView do
   def add_other_ladders(invited, other_ladders) do
     other_ladders
     |> Enum.flat_map(fn leaderboard ->
-      process_entries(leaderboard, invited)
+      process_entries(leaderboard, invited, nil)
       |> Enum.filter(fn e -> e.qualifying end)
       |> Enum.with_index(1)
       |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, leaderboard.region, pos}} end)
@@ -244,21 +270,40 @@ defmodule BackendWeb.LeaderboardView do
     end
   end
 
-  def process_entries(nil, _), do: []
+  def process_entries(nil, _, _), do: []
 
-  def process_entries(%{entries: entries}, invited) do
+  def process_entries(%{entries: entries}, invited, comparison) do
     Enum.map_reduce(entries, 0, fn le = %{account_id: account_id}, acc ->
       qualified = Map.get(invited, to_string(account_id))
       qualifying = !qualified && acc < 16
 
-      {Map.put_new(le, :qualified, qualified)
-       |> Map.put_new(:qualifying, qualifying),
-       if qualified do
-         acc
-       else
-         acc + 1
-       end}
+      {prev_rank, prev_rating} = prev(comparison, account_id)
+
+      {
+        le
+        |> Map.put_new(:qualified, qualified)
+        |> Map.put_new(:qualifying, qualifying)
+        |> Map.put_new(:prev_rank, prev_rank)
+        |> Map.put_new(:prev_rating, prev_rating),
+        if qualified do
+          acc
+        else
+          acc + 1
+        end
+      }
     end)
     |> elem(0)
+  end
+
+  defp prev(nil, account_id), do: {nil, nil}
+
+  defp prev(comparison, account_id) do
+    comparison.entries
+    |> Enum.filter(fn e -> e.account_id == account_id end)
+    |> Enum.sort_by(fn e -> e.rank end, :asc)
+    |> case do
+      [e | _] -> {e.rank, e.rating}
+      _ -> {nil, nil}
+    end
   end
 end

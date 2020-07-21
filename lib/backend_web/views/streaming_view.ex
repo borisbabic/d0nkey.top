@@ -76,7 +76,7 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {[any_option(conn, "class") | options], dropdown_title(options, "Class")}
+    {[nil_option(conn, "class") | options], dropdown_title(options, "Class")}
   end
 
   def create_legend_dropdown(conn) do
@@ -91,7 +91,7 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {[any_option(conn, "legend") | options], dropdown_title(options, "Legend Peak")}
+    {[nil_option(conn, "legend") | options], dropdown_title(options, "Legend Peak")}
   end
 
   def create_format_dropdown(conn) do
@@ -106,10 +106,10 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    {[any_option(conn, "format") | options], dropdown_title(options, "Format")}
+    {[nil_option(conn, "format") | options], dropdown_title(options, "Format")}
   end
 
-  def any_option(conn, query_param, display \\ "Any") do
+  def nil_option(conn, query_param, display \\ "Any") do
     %{
       link:
         Routes.streaming_path(conn, :streamer_decks, Map.delete(conn.query_params, query_param)),
