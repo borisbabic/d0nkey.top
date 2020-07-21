@@ -2,7 +2,8 @@ use Mix.Config
 
 config :backend, QuantumScheduler,
   jobs: [
-    {"* * * * *", fn -> Backend.Streaming.update_streamer_decks() end}
+    {"* * * * *", fn -> Backend.Streaming.update_streamer_decks() end},
+    {"* * * * *", fn -> Backend.Leaderboards.save_current() end}
   ]
 
 config :backend,

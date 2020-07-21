@@ -1,6 +1,7 @@
 defmodule Backend.Infrastructure.BlizzardCommunicator do
   @moduledoc false
   require Logger
+  alias Backend.Blizzard.Leaderboard
 
   def get_leaderboard(region, leaderboard_id, season_id) do
     url =
@@ -15,16 +16,22 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
     )
 
     case return do
-      {:ok, %{body: body}} -> body |> Poison.decode!() |> process_leaderboard
+      #      {:ok, %{body: body}} -> body |> Poison.decode!() |> process_leaderboard
+      {:ok, %{body: body}} -> body |> Poison.decode!() |> Leaderboard.from_raw_map()
       _ -> {:error, nil}
     end
   end
 
-  defp process_leaderboard(%{"leaderboard" => %{"metadata" => metadata, "rows" => rows}}) do
-    leaderboard_table = process_leaderboard_table(rows)
-    updated_at = extract_updated_at(metadata)
-    {:ok, {leaderboard_table, updated_at}}
+  defp process_leaderboard(map = %{"leaderboard" => %{"metadata" => metadata, "rows" => rows}}) do
+    new = Leaderboard.from_raw_map(map)
+    {:ok, {new |> Leaderboard.old_entries(), new.updated_at}}
   end
+
+  #  defp process_leaderboard(map = %{"leaderboard" => %{"metadata" => metadata, "rows" => rows}}) do
+  #    leaderboard_table = process_leaderboard_table(rows)
+  #    updated_at = extract_updated_at(metadata)
+  #    {:ok, {leaderboard_table, updated_at}}
+  #  end
 
   defp process_leaderboard(_raw_snapshot) do
     {:error, nil}

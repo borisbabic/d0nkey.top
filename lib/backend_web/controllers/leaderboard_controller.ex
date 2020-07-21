@@ -6,46 +6,16 @@ defmodule BackendWeb.LeaderboardController do
   alias Backend.MastersTour
 
   def index(conn, params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
-    # seasonId can be nil
-    {entry, updated_at} =
-      try do
-        Leaderboards.fetch_current_entries(region, leaderboard_id, params["seasonId"])
-      rescue
-        _ -> {[], nil}
-      end
-
-    ladder_mode =
-      case params["ladder_mode"] do
-        "no" -> "no"
-        _ -> "yes"
-      end
-
-    season_id =
-      case Integer.parse(to_string(conn.query_params["seasonId"])) do
-        :error -> Blizzard.get_season_id(Date.utc_today())
-        {id, _} -> id
-      end
-
-    invited =
-      case Blizzard.get_ladder_tour_stop(season_id) do
-        {:ok, tour_stop} -> MastersTour.list_invited_players(tour_stop)
-        {:error, _} -> []
-      end
-
-    highlight = parse_highlight(params)
-
-    other_ladders = get_other_ladders(season_id, leaderboard_id, ladder_mode, region)
+    leaderboard = get_leaderboard(region, leaderboard_id, params["seasonId"])
+    ladder_mode = parse_ladder_mode(params)
 
     render(conn, "index.html", %{
-      entry: entry,
-      invited: invited,
-      region: region,
-      leaderboard_id: leaderboard_id,
-      updated_at: updated_at,
-      highlight: highlight,
-      other_ladders: other_ladders,
-      ladder_mode: ladder_mode,
-      season_id: season_id
+      conn: conn,
+      invited: leaderboard |> get_invited(),
+      highlight: parse_highlight(params),
+      other_ladders: leaderboard |> get_other_ladders(ladder_mode),
+      leaderboard: leaderboard,
+      ladder_mode: ladder_mode
     })
   end
 
@@ -58,6 +28,33 @@ defmodule BackendWeb.LeaderboardController do
     index(conn, new_params)
   end
 
+  def parse_ladder_mode(%{"ladder_mode" => "no"}), do: "no"
+  def parse_ladder_mode(_), do: "yes"
+
+  def get_invited(nil), do: []
+  def get_invited(%{season_id: season_id}), do: get_invited(season_id)
+
+  def get_invited(season_id) do
+    case Blizzard.get_ladder_tour_stop(season_id) do
+      {:ok, tour_stop} -> MastersTour.list_invited_players(tour_stop)
+      {:error, _} -> []
+    end
+  end
+
+  def get_other_ladders(_, "no"), do: []
+
+  def get_other_ladders(%{season_id: s, leaderboard_id: "STD", region: r}, "yes") when s > 71 do
+    Blizzard.ladders_to_check(s, r)
+    |> Enum.flat_map(fn r ->
+      case get_leaderboard(r, "STD", s) do
+        nil -> []
+        leaderboard -> [leaderboard]
+      end
+    end)
+  end
+
+  def get_other_ladders(_, _), do: []
+
   def parse_highlight(params) do
     case params["highlight"] do
       string when is_binary(string) -> MapSet.new([string])
@@ -66,30 +63,13 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  def get_other_ladders(season_id, leaderboard_id, ladder_mode, region) do
-    if include_other_ladders?(season_id, leaderboard_id, ladder_mode) do
-      Blizzard.ladders_to_check(season_id, region)
-      |> Enum.map(fn r ->
-        {entry, _} =
-          try do
-            Leaderboards.fetch_current_entries(r, leaderboard_id, season_id)
-          rescue
-            _ -> {[], nil}
-          end
+  defp get_leaderboard(r, l, s), do: Leaderboards.get_leaderboard(r, l, s)
 
-        %{region: r, entries: entry}
-      end)
-    else
-      []
+  defp get_leaderboard(r, l, s) do
+    try do
+      Leaderboards.get_leaderboard(r, l, s)
+    rescue
+      _ -> nil
     end
-  end
-
-  @spec include_other_ladders?(integer, String.t() | atom, String.t()) :: boolean
-  def include_other_ladders?(_, _, "no") do
-    false
-  end
-
-  def include_other_ladders?(_, _, _) do
-    true
   end
 end
