@@ -24,6 +24,12 @@ defmodule Backend.Leaderboards do
     |> get_latest_matching()
   end
 
+  def get_comparison(snap = %Snapshot{}, min_ago) do
+    get_criteria(snap, [:latest, :season, min_ago])
+    |> snapshots()
+    |> Enum.at(0)
+  end
+
   def save_current() do
     for region <- Blizzard.qualifier_regions(),
         ldb <- Blizzard.leaderboards(),
@@ -92,6 +98,9 @@ defmodule Backend.Leaderboards do
     do: criteria |> Enum.flat_map(fn c -> get_criteria(l, c) end)
 
   defp get_criteria(_, :latest), do: get_criteria(:latest)
+
+  defp get_criteria(_, <<"min_ago_"::binary, min_ago::bitstring>>),
+    do: [{"until", {min_ago |> Util.to_int_or_orig(), "minute"}}]
 
   defp get_criteria(
          %{leaderboard_id: leaderboard_id, season_id: season_id, region: region},
@@ -182,5 +191,19 @@ defmodule Backend.Leaderboards do
   defp compose_snapshot_query({"limit", limit}, query) do
     query
     |> limit(^limit)
+  end
+
+  defp compose_snapshot_query({"until", {string_num, unit}}, query) when is_binary(string_num) do
+    string_num
+    |> Integer.parse()
+    |> case do
+      {num, _} -> compose_snapshot_query({"until", {num, unit}}, query)
+      :error -> raise "Invalid until, can't parse string_num"
+    end
+  end
+
+  defp compose_snapshot_query({"until", {num, unit}}, query) do
+    query
+    |> where([s], s.upstream_updated_at < ago(^num, ^unit))
   end
 end

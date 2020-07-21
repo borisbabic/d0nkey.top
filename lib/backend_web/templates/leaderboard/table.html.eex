@@ -12,9 +12,10 @@
         </tr>
     </thead>
     <tbody>
-<%= for %{qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying} <- @table_entries do %>
+<%= for %{qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying, prev_rank: prev_rank, prev_rating: prev_rating}
+ <- @table_entries do %>
         <tr>
-            <td><%= position %></td>
+            <td><%= render_comparison(position, prev_rank, true) %></td>
             <td><%= battletag %></td>
             <%= if @show_mt_column do %>
                 <%= case {qualified, qualifying} do%>
@@ -33,7 +34,7 @@
                 <% end %>
             <% end %>
             <%= if to_string(@leaderboard_id) == "BG" do %>
-                <td><%= rating %></td>
+                <td><%= render_comparison(rating, prev_rating, false) %></td>
             <% end %>
         </tr>
 <% end %>

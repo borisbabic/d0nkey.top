@@ -27,6 +27,7 @@ defmodule BackendWeb do
     end
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def view do
     quote do
       use Phoenix.View,
@@ -57,6 +58,21 @@ defmodule BackendWeb do
 
       def render_deckcode(<<deckcode::binary>>) do
         render(BackendWeb.SharedView, "deckcode.html", %{deckcode: deckcode})
+      end
+
+      def render_comparison(current, nil, _), do: current
+      def render_comparison(current, prev, _) when current == prev, do: current
+
+      def render_comparison(current, prev, flip) do
+        {class, arrow} =
+          if current > prev == flip, do: {"has-text-danger", "↓"}, else: {"has-text-success", "↑"}
+
+        render(BackendWeb.SharedView, "comparison.html", %{
+          class: class,
+          diff: abs(current - prev),
+          arrow: arrow,
+          current: current
+        })
       end
 
       def dropdown_title(options, <<default::binary>>) do
