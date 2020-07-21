@@ -4,9 +4,11 @@ defmodule Backend.Leaderboards do
   @moduledoc """
   The Leaderboards context.
   """
-  alias Backend.Infrastructure.ApiCache
+  import Ecto.Query
+  alias Backend.Repo
   alias Backend.Infrastructure.BlizzardCommunicator
   alias Backend.Blizzard
+  alias Backend.Leaderboards.Snapshot
 
   @type entry :: %{
           battletag: String.t(),
@@ -17,85 +19,168 @@ defmodule Backend.Leaderboards do
 
   @type categorized_entries :: [{[entry], Blizzard.region(), Blizzard.leaderboard()}]
 
-  @spec get_latest_cached_leaderboard(String.t()) :: timestamped_leaderboard
-  defp get_latest_cached_leaderboard(cache_key) do
-    case ApiCache.get(cache_key) do
-      nil -> {[], nil}
-      lb -> lb
+  def get_leaderboard(region, leaderboard, season) do
+    get_and_save(region, leaderboard, season)
+    |> get_latest_matching()
+  end
+
+  def save_current() do
+    for region <- Blizzard.qualifier_regions(),
+        ldb <- Blizzard.leaderboards(),
+        do: get_and_save(region, ldb, nil)
+  end
+
+  def save_old() do
+    for region <- Blizzard.qualifier_regions(),
+        ldb <- ["STD", "WLD"],
+        season_id <- 64..80,
+        do: get_and_save(region, ldb, season_id)
+  end
+
+  defp get_and_save(r, l, s) do
+    case Blizzard.get_leaderboard(r, l, s) do
+      {:error, _} -> nil
+      l = %Blizzard.Leaderboard{} -> l |> get_or_create_ldb()
     end
   end
 
-  @spec save_latest_cached_leaderboard(timestamped_leaderboard, String.t()) ::
-          timestamped_leaderboard
-  defp save_latest_cached_leaderboard(to_save, cache_key) do
-    ApiCache.set(cache_key, to_save)
-    to_save
+  def get_latest_matching(l = %Snapshot{}) do
+    get_criteria(l, [:latest, :season])
+    |> snapshots()
+    |> Enum.at(0)
   end
 
-  @spec fetch_current_entries(Blizzard.region(), Blizzard.leaderboard(), number | nil) ::
-          String.t()
-  def create_cache_key(region_id, leaderboard_id, season_id) do
-    "last_leaderboard_#{region_id}_#{leaderboard_id}_#{season_id}"
-  end
+  def get_latest_matching(_), do: nil
 
-  @spec fetch_current_entries(Blizzard.region(), Blizzard.leaderboard(), number | nil) :: [entry]
-  def fetch_current_entries(region, leaderboard_id, season_id \\ nil) do
-    cache_key = create_cache_key(region, leaderboard_id, season_id)
-    cached = {_table, cached_updated_at} = get_latest_cached_leaderboard(cache_key)
-
-    case BlizzardCommunicator.get_leaderboard(region, leaderboard_id, season_id) do
-      {:error, _} ->
-        cached
-
-      {:ok, {_table, nil}} ->
-        Logger.info("Got nil updated at, using cached leaderboard")
-        cached
-
-      {:ok, leaderboard = {_table, updated_at}} ->
-        if !cached_updated_at || DateTime.diff(updated_at, cached_updated_at) >= 0 do
-          Logger.debug(
-            "Using blizzard leaderboard, updated_at: #{updated_at}, cached_updated_at: #{
-              cached_updated_at
-            }"
-          )
-
-          save_latest_cached_leaderboard(leaderboard, cache_key)
-        else
-          Logger.debug(
-            "USING CACHED LEADERBOARD! updated_at: #{updated_at}, cached_updated_at: #{
-              cached_updated_at
-            }"
-          )
-
-          cached
-        end
+  def get_or_create_ldb(l = %Blizzard.Leaderboard{}) do
+    case l |> get_criteria([:updated_at, :season]) |> snapshots() do
+      [existing] -> existing
+      _ -> create_ldb(l)
     end
   end
 
-  @spec get_player_entries([String.t()]) :: categorized_entries
-  def get_player_entries(battletags_short) do
-    short_set = MapSet.new(battletags_short)
+  defp create_ldb(l = %Blizzard.Leaderboard{}) do
+    attrs = %{
+      entries: l.entries |> Enum.map(&Map.from_struct/1),
+      season_id: l.season_id,
+      leaderboard_id: l.leaderboard_id,
+      region: l.region,
+      upstream_updated_at: l.updated_at
+    }
 
-    for region <- Backend.Blizzard.qualifier_regions(),
-        ldb <- Backend.Blizzard.leaderboards(),
-        into: [],
-        do: {get_player_entries(short_set, region, ldb), region, ldb}
+    %Snapshot{}
+    |> Snapshot.changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, inserted} ->
+        inserted
+
+      {:error, reason} ->
+        Logger.warn(
+          "Error saving #{attrs.season_id} #{attrs.leaderboard_id} #{attrs.region} #{
+            attrs.upstream_updated_at
+          }"
+        )
+
+        nil
+    end
   end
 
-  @spec get_player_entries(
-          [String.t()] | MapSet.t(),
-          Blizzard.region(),
-          Blizzard.leaderboard(),
-          number | nil
-        ) :: [Entry]
-  def get_player_entries(battletags_short, region, leaderboard_id, season_id \\ nil)
+  defp get_criteria(:latest), do: [{"order_by", {:desc, :updated_at}}, {"limit", 1}]
 
-  def get_player_entries(battletags_short = [_ | _], region, leaderboard_id, season_id) do
-    get_player_entries(MapSet.new(battletags_short), region, leaderboard_id, season_id)
+  defp get_criteria(l, criteria) when is_list(criteria),
+    do: criteria |> Enum.flat_map(fn c -> get_criteria(l, c) end)
+
+  defp get_criteria(_, :latest), do: get_criteria(:latest)
+
+  defp get_criteria(
+         %{leaderboard_id: leaderboard_id, season_id: season_id, region: region},
+         :season
+       ) do
+    [
+      {"leaderboard_id", leaderboard_id},
+      {"season_id", season_id},
+      {"region", region}
+    ]
   end
 
-  def get_player_entries(short_set, region, leaderboard_id, season_id) do
-    {table, _updated_at} = fetch_current_entries(region, leaderboard_id, season_id)
-    table |> Enum.filter(fn e -> MapSet.member?(short_set, e.battletag) end)
+  defp get_criteria(%{upstream_updated_at: updated_at}, :updated_at),
+    do: [{"updated_at", updated_at}]
+
+  defp get_criteria(%{updated_at: updated_at}, :updated_at), do: [{"updated_at", updated_at}]
+
+  #  @spec get_player_entries([String.t()]) :: categorized_entries
+  #  def get_player_entries(battletags_short) do
+  #    short_set = MapSet.new(battletags_short)
+  #
+  #    for region <- Backend.Blizzard.qualifier_regions(),
+  #        ldb <- Backend.Blizzard.leaderboards(),
+  #        into: [],
+  #        do: {get_player_entries(short_set, region, ldb), region, ldb}
+  #  end
+  #
+  #  @spec get_player_entries(
+  #          [String.t()] | MapSet.t(),
+  #          Blizzard.region(),
+  #          Blizzard.leaderboard(),
+  #          number | nil
+  #        ) :: [Entry]
+  #  def get_player_entries(battletags_short, region, leaderboard_id, season_id \\ nil)
+  #
+  #  def get_player_entries(battletags_short = [_ | _], region, leaderboard_id, season_id) do
+  #    get_player_entries(MapSet.new(battletags_short), region, leaderboard_id, season_id)
+  #  end
+  #
+  #  def get_player_entries(short_set, region, leaderboard_id, season_id) do
+  #    {table, _updated_at} = fetch_current_entries(region, leaderboard_id, season_id)
+  #    table |> Enum.filter(fn e -> MapSet.member?(short_set, e.battletag) end)
+  #  end
+
+  def snapshots(criteria) do
+    base_snapshots_query()
+    |> build_snapshot_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_snapshots_query() do
+    from(s in Snapshot)
+  end
+
+  defp build_snapshot_query(query, criteria),
+    do: Enum.reduce(criteria, query, &compose_snapshot_query/2)
+
+  defp compose_snapshot_query({"region", region}, query) do
+    query
+    |> where([s], s.region == ^region)
+  end
+
+  defp compose_snapshot_query({"season_id", season_id}, query) do
+    query
+    |> where([s], s.season_id == ^season_id)
+  end
+
+  defp compose_snapshot_query({"leaderboard_id", leaderboard_id}, query) do
+    query
+    |> where([s], s.leaderboard_id == ^leaderboard_id)
+  end
+
+  defp compose_snapshot_query({"updated_at", nil}, query) do
+    query
+    |> where([s], is_nil(s.upstream_updated_at))
+  end
+
+  defp compose_snapshot_query({"updated_at", updated_at}, query) do
+    query
+    |> where([s], s.upstream_updated_at == ^updated_at)
+  end
+
+  defp compose_snapshot_query({"order_by", {direction, field}}, query) do
+    query
+    |> order_by([{^direction, ^field}])
+  end
+
+  defp compose_snapshot_query({"limit", limit}, query) do
+    query
+    |> limit(^limit)
   end
 end

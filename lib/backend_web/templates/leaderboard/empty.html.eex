@@ -1,0 +1,6 @@
+<div class="title is-2">Leaderboard</div>
+<%= render_dropdowns @dropdowns %>
+
+<div class="notification is-warning">
+    No data available for this leaderboard! Try other options!
+</div>

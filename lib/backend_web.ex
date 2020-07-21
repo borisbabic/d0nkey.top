@@ -58,6 +58,14 @@ defmodule BackendWeb do
       def render_deckcode(<<deckcode::binary>>) do
         render(BackendWeb.SharedView, "deckcode.html", %{deckcode: deckcode})
       end
+
+      def dropdown_title(options, <<default::binary>>) do
+        selected_title =
+          options
+          |> Enum.find_value(fn o -> o.selected && o.display end)
+
+        selected_title || default
+      end
     end
   end
 
