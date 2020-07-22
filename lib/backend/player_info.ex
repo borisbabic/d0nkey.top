@@ -24,6 +24,9 @@ defmodule Backend.PlayerInfo do
                 "HSKeDaiBiao",
                 "caravaggio8",
                 "Cesky",
+                "Rpbalance",
+                "V1ctor",
+                "Turner",
                 "LeandroLeal"
               ])
   @eu_players MapSet.new([
