@@ -308,7 +308,7 @@ defmodule BackendWeb.LeaderboardView do
     |> Enum.sort_by(fn e -> e.rank end, :asc)
     |> case do
       [e | _] -> {e.rank, e.rating}
-      _ -> {nil, nil}
+      _ -> {201, nil}
     end
   end
 end
