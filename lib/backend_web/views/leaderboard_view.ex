@@ -121,7 +121,12 @@ defmodule BackendWeb.LeaderboardView do
 
   def create_compare_to_dropdown(conn, compare_to) do
     options =
-      [{"10 min ago", "min_ago_10"}, {"30 min ago", "min_ago_30"}, {"1 hour ago", "min_ago_60"}]
+      [
+        {"10 minutes ago", "min_ago_10"},
+        {"30 minutes ago", "min_ago_30"},
+        {"1 hour ago", "min_ago_60"},
+        {"6 hours ago", "min_ago_360"}
+      ]
       |> Enum.map(fn {display, id} ->
         %{
           display: display,
