@@ -125,7 +125,8 @@ defmodule BackendWeb.LeaderboardView do
         {"10 minutes ago", "min_ago_10"},
         {"30 minutes ago", "min_ago_30"},
         {"1 hour ago", "min_ago_60"},
-        {"6 hours ago", "min_ago_360"}
+        {"6 hours ago", "min_ago_360"},
+        {"1 day ago", "min_ago_1440"}
       ]
       |> Enum.map(fn {display, id} ->
         %{
