@@ -34,7 +34,7 @@
         </tr>
     </thead>
     <tbody>
-    <%= for %{region: region, start_time: start_time, name: name, link: link, standings_link: standings_link, signed_up: signed_up} <- @qualifiers do %>
+    <%= for t = %{region: region, start_time: start_time, name: name, link: link, standings_link: standings_link, signed_up: signed_up} <- @qualifiers do %>
         <tr>
             <td>
                 <a class="is-link" href="<%= link %>">
@@ -51,7 +51,7 @@
                 </td>
             <% end %>
             <td>
-                <%= if NaiveDateTime.compare(start_time, DateTime.utc_now()) == :lt do %>
+                <%= if t |> Backend.Battlefy.Tournament.has_bracket() do %>
                     <a class="is-link" href="<%= standings_link %>">
                         standings
                     </a>

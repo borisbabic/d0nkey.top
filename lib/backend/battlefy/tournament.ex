@@ -14,6 +14,7 @@ defmodule Backend.Battlefy.Tournament do
     field :last_completed_match_at, Calendar.datetime() | nil
     field :name, String.t()
     field :slug, String.t()
+    field :status, String.t()
     field :region, Backend.Blizzard.region() | nil
     field :organization, Organization | nil
     field :game, Game
@@ -27,6 +28,11 @@ defmodule Backend.Battlefy.Tournament do
     )
     |> from_raw_map
   end
+
+  def has_bracket(%{status: "registration-closed"}), do: true
+
+  def has_bracket(%{start_time: start_time}),
+    do: NaiveDateTime.utc_now() |> NaiveDateTime.compare(start_time) == :gt
 
   def from_raw_map(
         map = %{
@@ -53,6 +59,7 @@ defmodule Backend.Battlefy.Tournament do
       region: region,
       organization: extract_organization(map),
       game: Game.from_raw_map(map["game"]),
+      status: map["status"],
       stages: extract_stages(map)
     }
   end
