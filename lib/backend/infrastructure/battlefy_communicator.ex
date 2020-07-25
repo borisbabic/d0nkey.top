@@ -319,14 +319,33 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
   @spec signup_for_qualifier(signup_options) :: {:ok, any} | {:error, any}
   def signup_for_qualifier(options) do
-    with {:ok, _} <- accept_rules(options),
-         {:ok, _} <- connect_battlenet(options),
-         {:ok, _} <- masters_eligibility(options),
-         {:ok, _} <- submit_discord(options),
-         {:ok, _} <- submit_decks(options),
-         {:ok, _} <- join_tournament(options) do
-      Logger.info("Successfully signed up #{options.battletag_full} fo #{options.tournament_id}")
-      {:ok, nil}
+    prev_errors =
+      [
+        &accept_rules/1,
+        &connect_battlenet/1,
+        &masters_eligibility/1,
+        &submit_discord/1,
+        &submit_decks/1
+      ]
+      |> Enum.reduce([], fn f, carry ->
+        options
+        |> f.()
+        |> case do
+          {:ok, _} -> carry
+          {:error, reason} -> [reason | carry]
+        end
+      end)
+
+    case join_tournament(options) do
+      {:error, reason} ->
+        {:error, [reason | prev_errors]}
+
+      {:ok, _} ->
+        Logger.info(
+          "Successfully signed up #{options.battletag_full} fo #{options.tournament_id}"
+        )
+
+        {:ok, nil}
     end
   end
 
