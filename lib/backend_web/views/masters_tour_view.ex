@@ -8,7 +8,7 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.MastersTour.PlayerStats
 
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
-  @min_cups_options [0, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
+  @min_cups_options [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
 
   def create_name_cell(name, nil) do
     name
@@ -145,7 +145,7 @@ defmodule BackendWeb.MastersTourView do
       %{
         "Player" => player_cell,
         "Cups" => total,
-        "Top 8 %" => (100 * ps.top8 / total) |> Float.round(2),
+        "Top 8 %" => if(total > 0, do: (100 * ps.top8 / total) |> Float.round(2), else: 0),
         "Top 8" => ps.top8,
         "Top 16" => ps.top16,
         "Best" => ps |> PlayerStats.best(),
