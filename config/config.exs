@@ -13,7 +13,9 @@ config :backend, QuantumScheduler,
     {"7 7 * * *", fn -> Backend.EsportsEarnings.auto_update() end},
     {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
     {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
-    {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end}
+    {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},
+    {"* * * * *", fn -> Backend.Streaming.update_streamer_decks() end},
+    {"* * * * *", fn -> Backend.Leaderboards.save_current() end}
   ]
 
 config :backend,
