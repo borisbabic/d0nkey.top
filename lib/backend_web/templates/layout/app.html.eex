@@ -76,7 +76,6 @@
                <a class="navbar-item" href="https://twitter.com/D0nkeyHS">twitter</a>
                <a class="navbar-item" href="https://discord.gg/DKYDu2Q">discord</a>
                <a class="navbar-item" href="https://www.twitch.tv/d0nkeyhs">twitch</a>
-               <a class="navbar-item" href="https://www.pornhub.com/view_video.php?viewkey=ph55b2ec08ad5b1">pornhub</a>
            </div>
        </div>
        <!--
@@ -139,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a class="" href="https://twitter.com/D0nkeyHS">twitter</a>
                 <a class="" href="https://discord.gg/DKYDu2Q">discord</a>
                 <a class="" href="https://www.twitch.tv/d0nkeyhs">twitch</a>
-                <a class="" href="https://www.pornhub.com/view_video.php?viewkey=ph55b2ec08ad5b1">pornhub</a>
             </div>
           </nav>
         </header>
