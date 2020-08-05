@@ -14,8 +14,59 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
-  def render("streamer_decks.html", %{streamer_decks: streamer_decks, conn: conn}) do
+  def get_surrounding(%{"offset" => offset, "limit" => limit}), do: get_surrounding(offset, limit)
+
+  def get_surrounding(offset, limit) when is_integer(offset) and is_integer(limit),
+    do: {(offset - limit) |> max(0), offset + limit}
+
+  def get_surrounding(offset, limit),
+    do: get_surrounding(Util.to_int_or_orig(offset), Util.to_int_or_orig(limit))
+
+  def prev_button(_, prev_offset, offset) when prev_offset == offset do
+    ~E"""
+    <span class="icon button is-link">
+        <i class="fas fa-caret-left"></i>
+    </span>
+    """
+  end
+
+  def prev_button(conn, prev_offset, _) do
+    link =
+      Routes.streaming_path(
+        conn,
+        :streamer_decks,
+        Map.put(conn.query_params, "offset", prev_offset)
+      )
+
+    ~E"""
+    <a class="icon button is-link" href="<%= link %>">
+      <i class="fas fa-caret-left"></i>
+    </a>
+    """
+  end
+
+  def next_button(conn, next_offset) do
+    link =
+      Routes.streaming_path(
+        conn,
+        :streamer_decks,
+        Map.put(conn.query_params, "offset", next_offset)
+      )
+
+    ~E"""
+    <a class="icon button is-link" href="<%= link %>">
+      <i class="fas fa-caret-right"></i>
+    </a>
+    """
+  end
+
+  def render("streamer_decks.html", %{
+        streamer_decks: streamer_decks,
+        conn: conn,
+        criteria: %{"offset" => offset, "limit" => limit}
+      }) do
     title = "Streamer Decks"
+    {prev_offset, next_offset} = get_surrounding(offset, limit)
 
     rows =
       streamer_decks
@@ -32,12 +83,19 @@ defmodule BackendWeb.StreamingView do
       end)
 
     dropdowns = [
+      create_limit_dropdown(conn, limit),
       create_legend_dropdown(conn),
       create_format_dropdown(conn),
       create_class_dropdown(conn)
     ]
 
-    render("streamer_decks.html", %{rows: rows, title: title, dropdowns: dropdowns})
+    render("streamer_decks.html", %{
+      rows: rows,
+      title: title,
+      dropdowns: dropdowns,
+      prev_button: prev_button(conn, prev_offset, offset),
+      next_button: next_button(conn, next_offset)
+    })
   end
 
   def links(sd) do
@@ -52,6 +110,30 @@ defmodule BackendWeb.StreamingView do
 
   def class_name("DEMONHUNTER"), do: "Demon Hunter"
   def class_name(c), do: c |> Recase.to_title()
+
+  def create_limit_dropdown(conn, limit) do
+    options =
+      [
+        10,
+        20,
+        30,
+        50,
+        75,
+        100,
+        250,
+        500
+      ]
+      |> Enum.map(fn l ->
+        %{
+          link:
+            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "limit", l)),
+          selected: to_string(limit) == to_string(l),
+          display: "Show #{l} decks"
+        }
+      end)
+
+    {options, dropdown_title(options, "Page Size")}
+  end
 
   def create_class_dropdown(conn) do
     options =

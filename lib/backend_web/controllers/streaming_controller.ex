@@ -14,8 +14,15 @@ defmodule BackendWeb.StreamingController do
   end
 
   def streamer_decks(conn, params) do
-    criteria = %{"order_by" => {:desc, :last_played}, "limit" => 300} |> Map.merge(params)
+    criteria =
+      %{"order_by" => {:desc, :last_played}, "limit" => 30, "offset" => 0} |> Map.merge(params)
+
     streamer_decks = Backend.Streaming.streamer_decks(criteria)
-    render(conn, "streamer_decks.html", %{streamer_decks: streamer_decks, conn: conn})
+
+    render(conn, "streamer_decks.html", %{
+      streamer_decks: streamer_decks,
+      conn: conn,
+      criteria: criteria
+    })
   end
 end

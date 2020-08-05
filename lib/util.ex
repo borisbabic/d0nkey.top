@@ -230,12 +230,14 @@ defmodule Util do
   iex> Util.to_int_or_orig("-1.45")
   -1
   """
-  def to_int_or_orig(int_or_not) do
+  def to_int_or_orig(<<int_or_not::binary>>) do
     case Integer.parse(int_or_not) do
       {int, _rem} -> int
       _ -> int_or_not
     end
   end
+
+  def to_int_or_orig(orig), do: orig
 
   @doc """
   Takes and {:ok,_} | {:error, _ } and returns the value on :ok and nil on :error

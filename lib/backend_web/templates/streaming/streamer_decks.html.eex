@@ -1,5 +1,8 @@
 <div class="title is-2"><%= @title %></div>
 
+
+<%= @prev_button %>
+<%= @next_button %>
 <%= render_dropdowns @dropdowns %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
