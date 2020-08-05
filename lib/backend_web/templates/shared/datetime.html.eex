@@ -1,16 +1,1 @@
-<span id="<%= @id %>"><%=@human_readable%> UTC</span>
-<script>
-var id = "<%= @id%>";
-var timestamp = <%= @timestamp_ms %>;
-var span = document.getElementById(id);
-var date = new Date(timestamp);
-var pad = function(te) {
-    return ('0' + te).slice(-2)
-}
-if (span) {
-    span.innerHTML = 
-        [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
-        + ' '
-        + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
-}
-</script>
+<span class="datetime-human" id="<%= @id %>" aria-label="<%= @timestamp_ms %>"><%=@human_readable%> UTC</span>
