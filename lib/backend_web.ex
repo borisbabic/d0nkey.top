@@ -57,7 +57,10 @@ defmodule BackendWeb do
       end
 
       def render_deckcode(<<deckcode::binary>>) do
-        render(BackendWeb.SharedView, "deckcode.html", %{deckcode: deckcode})
+        render(BackendWeb.SharedView, "deckcode.html", %{
+          deckcode: deckcode,
+          id: Util.gen_html_id()
+        })
       end
 
       def render_comparison(current, nil, _), do: current

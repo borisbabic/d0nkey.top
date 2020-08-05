@@ -15,3 +15,17 @@ import "phoenix_html"
 //
 // Local files can be imported directly using relative paths, for example:
 // import socket from "./socket"
+import '@fortawesome/fontawesome-free/js/all'
+
+
+new ClipboardJS(".clip-btn-value", {text: function(trigger) {
+    return trigger.getAttribute("aria-label");
+}});
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("test")
+    var hideWithJs = document.getElementsByClassName("is-shown-js")
+    for (var i = 0; i < hideWithJs.length; i++) {
+        hideWithJs[i].style.display = "";
+    }
+})
+

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <link id="theme-stylesheet" rel="stylesheet" href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css">
     <link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
   </head>
  <nav id="main-navbar" class="navbar is-dark" role="navigation" aria-label="main navigation" style="display:none">
    <div class="navbar-brand">
