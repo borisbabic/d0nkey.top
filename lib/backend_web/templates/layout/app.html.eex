@@ -175,10 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       href = "https://unpkg.com/bulmaswatch/" + theme + "/bulmaswatch.min.css"
       var link = document.getElementById('theme-stylesheet');
-      if (link) {
-        link.href = href
+      if (!link) {
+        console.log("Couldn't grab the link");
+      } else if (link.href != href) {
+        link.href = href;
+        console.log("Changed the theme to " + theme);
       } else {
-        console.log("Couldn't grab the link")
+        console.log("The theme is already correct");
       }
       var selectTheme = function(selected_theme) {
         if (allowed_themes.indexOf(selected_theme) > -1) {
