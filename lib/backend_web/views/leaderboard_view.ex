@@ -265,8 +265,8 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   def process_highlighted(highlighted_raw, entry) do
-    is_highlighted = fn %{battletag: battletag} ->
-      MapSet.member?(highlighted_raw, to_string(battletag))
+    is_highlighted = fn %{account_id: account_id} ->
+      MapSet.member?(highlighted_raw, to_string(account_id))
     end
 
     if highlighted_raw && Enum.any?(entry, is_highlighted) do
