@@ -31,12 +31,7 @@ defmodule BackendWeb.StreamingView do
   end
 
   def prev_button(conn, prev_offset, _) do
-    link =
-      Routes.streaming_path(
-        conn,
-        :streamer_decks,
-        Map.put(conn.query_params, "offset", prev_offset)
-      )
+    link = update_link(conn, "offset", prev_offset, false)
 
     ~E"""
     <a class="icon button is-link" href="<%= link %>">
@@ -46,12 +41,7 @@ defmodule BackendWeb.StreamingView do
   end
 
   def next_button(conn, next_offset) do
-    link =
-      Routes.streaming_path(
-        conn,
-        :streamer_decks,
-        Map.put(conn.query_params, "offset", next_offset)
-      )
+    link = update_link(conn, "offset", next_offset, false)
 
     ~E"""
     <a class="icon button is-link" href="<%= link %>">
@@ -166,8 +156,7 @@ defmodule BackendWeb.StreamingView do
       [100, 500, 1000, 5000]
       |> Enum.map(fn lr ->
         %{
-          link:
-            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "legend", lr)),
+          link: update_link(conn, "legend", lr),
           selected: to_string(Map.get(conn.query_params, "legend")) == to_string(lr),
           display: "Top #{lr}"
         }
@@ -176,13 +165,20 @@ defmodule BackendWeb.StreamingView do
     {[nil_option(conn, "legend") | options], dropdown_title(options, "Legend Peak")}
   end
 
+  def update_link(conn, param, value, reset_offset \\ true) do
+    new_params =
+      if(reset_offset, do: Map.delete(conn.query_params, "offset"), else: conn.query_params)
+      |> Map.put(param, value)
+
+    Routes.streaming_path(conn, :streamer_decks, new_params)
+  end
+
   def create_format_dropdown(conn) do
     options =
       [{1, "Wild"}, {2, "Standard"}]
       |> Enum.map(fn {f, display} ->
         %{
-          link:
-            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "format", f)),
+          link: update_link(conn, "format", f),
           selected: to_string(Map.get(conn.query_params, "format")) == to_string(f),
           display: display
         }
@@ -223,11 +219,7 @@ defmodule BackendWeb.StreamingView do
           )
 
         _ ->
-          Routes.streaming_path(
-            conn,
-            :streamer_decks,
-            Map.put(conn.query_params, "twitch_login", tl)
-          )
+          update_link(conn, "twitch_login", tl)
       end
 
     ~E"""
