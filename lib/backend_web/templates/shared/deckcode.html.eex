@@ -1,7 +1,7 @@
 <div>
     <button class="clip-btn-value is-shown-js" style="display: none" aria-label="<%= @deckcode %>">
         <span class="icon is-small">
-            <i class="far fa-copy"></i>
+            <i class="far fa-copy" title="copy"></i>
         </span>
     </button>
     <noscript>

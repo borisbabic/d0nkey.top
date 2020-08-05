@@ -1,6 +1,10 @@
 <div class="title is-2">Qualifiers</div>
-<a class="button is-link" href="<%= @before_link %>"><---</a>
-<a class="button is-link" href="<%= @after_link %>">---></a>
+<a class="button icon is-link" href="<%= @before_link %>">
+  <i class="fas fa-caret-left"></i>
+</a>
+<a class="button icon is-link" href="<%= @after_link %>">
+  <i class="fas fa-caret-right"></i>
+</a>
 <div class="dropdown is-hoverable">
     <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Select Range</button></div>
     <div class="dropdown-menu" role="menu">
