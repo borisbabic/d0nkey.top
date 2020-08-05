@@ -311,4 +311,15 @@ defmodule Util do
     |> NaiveDateTime.from_iso8601()
     |> nilify
   end
+
+  def gen_html_id() do
+    # A as the first to ensure it starts with a non digit
+    min = String.to_integer("A0000000000000000000000", 36)
+
+    String.to_integer("ZZZZZZZZZZZZZZZZZZZZZZZ", 36)
+    |> Kernel.-(min)
+    |> :rand.uniform()
+    |> Kernel.+(min)
+    |> Integer.to_string(36)
+  end
 end

@@ -1,4 +1,13 @@
-<textarea class="textarea has-fixed-size" readonly rows="1" style="white-space: nowrap; overflow: hidden; width: 50px;">
-    <%= @deckcode %>
-</textarea>
+<div>
+    <button class="clip-btn-value is-shown-js" style="display: none" aria-label="<%= @deckcode %>">
+        <span class="icon is-small">
+            <i class="far fa-copy"></i>
+        </span>
+    </button>
+    <noscript>
+        <textarea class="textarea has-fixed-size is-hidden-js" readonly rows="1" style="white-space: nowrap; overflow: hidden; width: 50px;">
+            <%= @deckcode %>
+        </textarea>
+    </noscript>
+</div>
 
