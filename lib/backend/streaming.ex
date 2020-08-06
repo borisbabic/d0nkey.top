@@ -205,10 +205,13 @@ defmodule Backend.Streaming do
   defp build_streamer_deck_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_streamer_deck_query/2)
 
+  defp compose_streamer_deck_query({"twitch_login", <<twitch_login::binary>>}, query),
+    do: compose_streamer_deck_query({"twitch_login", String.split(twitch_login, ",")}, query)
+
   defp compose_streamer_deck_query({"twitch_login", twitch_login}, query) do
     query
     |> join(:inner, [sd], s in assoc(sd, :streamer))
-    |> where([_sd, s, _d], s.twitch_login == ^twitch_login)
+    |> where([_sd, s, _d], s.twitch_login in ^twitch_login)
   end
 
   defp compose_streamer_deck_query({"order_by", {direction, field}}, query) do
