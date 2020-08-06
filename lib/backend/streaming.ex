@@ -169,6 +169,26 @@ defmodule Backend.Streaming do
     |> Repo.transaction()
   end
 
+  def streamers(criteria) do
+    base_streamers_query()
+    |> build_streamers_query(criteria)
+    |> Repo.all()
+  end
+
+  def base_streamers_query() do
+    from(s in Streamer)
+  end
+
+  defp build_streamers_query(query, criteria),
+    do: Enum.reduce(criteria, query, &compose_streamers_query/2)
+
+  defp compose_streamers_query({"order_by", {direction, field}}, query) do
+    query
+    |> order_by([{^direction, ^field}])
+  end
+
+  defp compose_streamers_query(_unrecognized, query), do: query
+
   def streamer_decks(criteria) do
     base_streamer_decks_query()
     |> build_streamer_deck_query(criteria)

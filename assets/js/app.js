@@ -48,3 +48,19 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e){ }
     }
 })
+
+
+window.location_href_by_datalist = function(input_id, datalist_id) {
+    var input = document.getElementById(input_id)
+    if(input && input.value) {
+        var option = document.querySelector('option[value="' + input.value + '"]');
+        if (option && option.dataset && option.dataset.link) {
+            window.location.href = option.dataset.link
+
+        } else {
+            console.log("Can't location href, no option or option link")
+        }
+    } else {
+        console.log("Can't location href, no input or input value")
+    }
+}
