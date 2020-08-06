@@ -18,10 +18,12 @@ defmodule BackendWeb.StreamingController do
       %{"order_by" => {:desc, :last_played}, "limit" => 30, "offset" => 0} |> Map.merge(params)
 
     streamer_decks = Backend.Streaming.streamer_decks(criteria)
+    streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :twitch_display}})
 
     render(conn, "streamer_decks.html", %{
       streamer_decks: streamer_decks,
       conn: conn,
+      streamers: streamers,
       criteria: criteria
     })
   end

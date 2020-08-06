@@ -50,9 +50,19 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
+  def create_streamer_list(conn, streamers) do
+    ~E"""
+          <option data-link="<%= remove_from_link(conn, "twitch_login") %>" value="All Streamers">
+          <%= for %{twitch_display: d, twitch_login: l} <- streamers do %>
+            <option data-link="<%= update_link(conn, "twitch_login", l) %>" value="<%= d %>">
+          <% end %>
+    """
+  end
+
   def render("streamer_decks.html", %{
         streamer_decks: streamer_decks,
         conn: conn,
+        streamers: streamers,
         criteria: %{"offset" => offset, "limit" => limit}
       }) do
     title = "Streamer Decks"
@@ -83,6 +93,7 @@ defmodule BackendWeb.StreamingView do
       rows: rows,
       title: title,
       dropdowns: dropdowns,
+      streamer_list: create_streamer_list(conn, streamers),
       prev_button: prev_button(conn, prev_offset, offset),
       next_button: next_button(conn, next_offset)
     })
@@ -189,11 +200,14 @@ defmodule BackendWeb.StreamingView do
 
   def nil_option(conn, query_param, display \\ "Any") do
     %{
-      link:
-        Routes.streaming_path(conn, :streamer_decks, Map.delete(conn.query_params, query_param)),
+      link: remove_from_link(conn, query_param),
       selected: Map.get(conn.query_params, query_param) == nil,
       display: display
     }
+  end
+
+  def remove_from_link(conn, param) do
+    Routes.streaming_path(conn, :streamer_decks, Map.delete(conn.query_params, param))
   end
 
   def deckcode_links(<<deckcode::binary>>) do
@@ -212,11 +226,7 @@ defmodule BackendWeb.StreamingView do
     link =
       case Map.get(conn.query_params, "twitch_login") do
         ^tl ->
-          Routes.streaming_path(
-            conn,
-            :streamer_decks,
-            Map.delete(conn.query_params, "twitch_login")
-          )
+          remove_from_link(conn, "twitch_login")
 
         _ ->
           update_link(conn, "twitch_login", tl)

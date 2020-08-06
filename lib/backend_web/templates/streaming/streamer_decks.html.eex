@@ -4,6 +4,18 @@
 <%= @prev_button %>
 <%= @next_button %>
 <%= render_dropdowns @dropdowns %>
+<div class="field is-pulled-right is-shown-js" style="display: none">
+    <input
+    list="streamers"
+    name="streamers"
+    id="streamer_select"
+    class="input"
+    placeholder="Select Streamer"
+    onchange="location_href_by_datalist('streamer_select', 'streamers')">
+    <datalist id="streamers">
+        <%= @streamer_list %>
+    </datalist>
+</div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
