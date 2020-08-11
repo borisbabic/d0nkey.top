@@ -9,7 +9,18 @@ defmodule Backend.Streaming do
 
   def relevant_bnet_game_type?(%{game_type: bnet_game_type}) do
     # see https://github.com/HearthSim/Arcane-Tracker/blob/master/app/src/main/kotlin/net/mbonnin/arcanetracker/BnetGameType.kt
-    [1, 2, 45, 30, 4] |> Enum.member?(bnet_game_type)
+    [10, 9, 10, 31, 1, 2, 45, 30, 4] |> Enum.member?(bnet_game_type)
+  end
+
+  def ranks(sn = %{game_type: bnet_game_type}) do
+    # ranked ranks
+    [2, 30, 45]
+    |> Enum.member?(bnet_game_type)
+    |> if do
+      %{rank: sn.rank, legend_rank: sn}
+    else
+      %{rank: 0, legend_rank: 0}
+    end
   end
 
   def get_latest_streamer_decks(limit \\ 300) do
@@ -47,6 +58,8 @@ defmodule Backend.Streaming do
     streaming_now
     |> Enum.filter(&relevant_bnet_game_type?/1)
     |> Enum.map(fn sn ->
+      %{rank: rank, legend_rank: legend_rank} = ranks(sn)
+
       with {:ok, deck} <- Backend.Hearthstone.create_or_get_deck(sn.deck, sn.hero, sn.format),
            {:ok, streamer} <-
              get_or_create_streamer(sn.twitch.login, sn.twitch.display_name, sn.twitch.id),
