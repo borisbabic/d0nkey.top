@@ -38,9 +38,9 @@
             <td><%= render_deckcode r.code %></td>
             <td><%= r.streamer %></td>
             <%= if @show_archetype do %>
-            <th><%= r.archetype %></th>
+            <td><%= r.archetype %></td>
             <% else %>
-            <th><%= r.class %></th>
+            <td><%= r.class %></td>
             <% end %>
             <td><%= r.format %></td>
             <td><%= r.best_legend_rank %></td>
