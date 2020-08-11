@@ -88,7 +88,8 @@ defmodule BackendWeb.StreamingView do
       create_limit_dropdown(conn, limit),
       create_legend_dropdown(conn),
       create_format_dropdown(conn),
-      create_class_dropdown(conn)
+      create_class_dropdown(conn),
+      create_show_archetypes_dropdown(conn)
     ]
 
     render("streamer_decks.html", %{
@@ -110,6 +111,20 @@ defmodule BackendWeb.StreamingView do
     <%= deck %>
     <%= twitch %>
     """
+  end
+
+  def create_show_archetypes_dropdown(conn) do
+    options =
+      ["yes", "no"]
+      |> Enum.map(fn sa ->
+        %{
+          link: update_link(conn, "show_archetypes", sa),
+          selected: to_string(sa) == conn.query_params["show_archetypes"],
+          display: sa |> Recase.to_title()
+        }
+      end)
+
+    {options, "Show Archetypes"}
   end
 
   def create_limit_dropdown(conn, limit) do
