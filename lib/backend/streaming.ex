@@ -8,7 +8,8 @@ defmodule Backend.Streaming do
   alias Backend.Streaming.StreamerDeck
 
   def relevant_bnet_game_type?(%{game_type: bnet_game_type}) do
-    [10, 9, 10, 31, 1, 2, 45, 30, 4] |> Enum.member?(bnet_game_type)
+    # see https://github.com/HearthSim/Arcane-Tracker/blob/master/app/src/main/kotlin/net/mbonnin/arcanetracker/BnetGameType.kt
+    [1, 2, 45, 30, 4] |> Enum.member?(bnet_game_type)
   end
 
   def get_latest_streamer_decks(limit \\ 300) do
