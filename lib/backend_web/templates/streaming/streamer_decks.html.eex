@@ -21,7 +21,11 @@
         <tr>
             <th>Code</th>
             <th>Streamer</th>
+            <%= if @show_archetype do %>
+            <th>Archetype</th>
+            <% else %>
             <th>Class</th>
+            <% end %>
             <th>Format</th>
             <th><abbr title="Legend Peak">Peak</abbr></th>
             <th>Links</th>
@@ -29,15 +33,19 @@
         </tr>
     </thead>
     <tbody>
-        <%= for {streamer, class, code, last_played, mode, best_legend_rank, links} <- @rows do %>
+        <%= for r <- @rows do %>
         <tr>
-            <td><%= render_deckcode code %></td>
-            <td><%= streamer %></td>
-            <td><%= class %></td>
-            <td><%= mode %></td>
-            <td><%= best_legend_rank %></td>
-            <td><%= links %></td>
-            <td class="is-hidden-mobile"><%= render_datetime last_played %></td>
+            <td><%= render_deckcode r.code %></td>
+            <td><%= r.streamer %></td>
+            <%= if @show_archetype do %>
+            <th><%= r.archetype %></th>
+            <% else %>
+            <th><%= r.class %></th>
+            <% end %>
+            <td><%= r.format %></td>
+            <td><%= r.best_legend_rank %></td>
+            <td><%= r.links %></td>
+            <td class="is-hidden-mobile"><%= render_datetime r.last_played %></td>
         </tr>
         <% end %>
     </tbody>

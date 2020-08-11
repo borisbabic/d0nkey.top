@@ -46,4 +46,7 @@ defmodule Backend.Hearthstone.Deck do
 
   defp deckcode_part(nil), do: [0]
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
+
+  def class_name("DEMONHUNTER"), do: "Demon Hunter"
+  def class_name(c), do: c |> Recase.to_title()
 end

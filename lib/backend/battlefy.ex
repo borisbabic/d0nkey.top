@@ -244,7 +244,7 @@ defmodule Backend.Battlefy do
     |> create_single_elim_standings(rounds)
   end
 
-  def get_standings_from_matches() do
+  def create_standings_from_matches(_) do
     nil
   end
 
