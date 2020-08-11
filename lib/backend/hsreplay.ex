@@ -3,6 +3,8 @@ defmodule Backend.HSReplay do
   alias Backend.Infrastructure.HSReplayCommunicator, as: Api
   alias Backend.Infrastructure.HSReplayLatestCache, as: Cache
   alias Backend.Infrastructure.ApiCache
+  alias Backend.Hearthstone.Deck
+  alias Backend.HSReplay.Archetype
   @type archetype_id :: integer
 
   def update_latest() do
@@ -175,7 +177,30 @@ defmodule Backend.HSReplay do
     "https://hsreplay.net#{url}"
   end
 
-  def create_deck_link(<<deckcode::binary>>), do: "https://hsreplay.net/decks/#{deckcode |> URI.encode_www_form()}"
+  def create_deck_link(<<deckcode::binary>>),
+    do: "https://hsreplay.net/decks/#{deckcode |> URI.encode_www_form()}"
 
   def get_streaming_now(), do: Api.get_streaming_now()
+
+  def guess_archetype(%{class: class_name, cards: cards, format: format}) do
+    get_archetypes()
+    |> Enum.filter(fn a -> a.player_class_name == class_name end)
+    |> Enum.filter(fn a ->
+      core = a |> Archetype.signature_core(format)
+      limit = NaiveDateTime.utc_now() |> NaiveDateTime.add(-60 * 60 * 24 * 30)
+      core && NaiveDateTime.compare(core.as_of, limit) == :gt
+    end)
+    |> Enum.map(fn a ->
+      core = a |> Archetype.signature_core(format)
+      num_matches = (cards -- cards -- core.components) |> Enum.count()
+      {num_matches, a}
+    end)
+    |> Enum.max_by(fn {matches, _} -> matches end, &>=/2, fn -> nil end)
+    |> case do
+      {matches, a} when matches > 5 -> a.name
+      _ -> class_name |> Deck.class_name()
+    end
+  end
+
+  def guess_archetype(%{class: class_name}), do: class_name |> Deck.class_name()
 end

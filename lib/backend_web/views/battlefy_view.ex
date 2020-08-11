@@ -307,13 +307,15 @@ defmodule BackendWeb.BattlefyView do
   end
 
   @spec prepare_standings(
-          [Battelfy.Standings.t()],
+          [Battelfy.Standings.t()] | nil,
           Battlefy.Tournament.t(),
           [{String.t(), String.t()}],
           Plug.Conn
         ) :: [
           standings
         ]
+  def prepare_standings(nil, _, _, _), do: []
+
   def prepare_standings(standings_raw, %{id: tournament_id}, ongoing, conn) do
     standings_raw
     |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)

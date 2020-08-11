@@ -1,5 +1,6 @@
 defmodule BackendWeb.StreamingView do
   use BackendWeb, :view
+  alias Backend.Hearthstone.Deck
 
   def twitch_link(streamer) do
     twitch_link(streamer.twitch_login, streamer.twitch_display)
@@ -71,14 +72,15 @@ defmodule BackendWeb.StreamingView do
     rows =
       streamer_decks
       |> Enum.map(fn sd ->
-        {
-          streamer_link(sd.streamer, conn),
-          sd.deck.class |> class_name(),
-          deckcode(sd.deck),
-          sd.last_played,
-          if(sd.deck.format == 1, do: "Wild", else: "Standard"),
-          if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
-          links(sd)
+        %{
+          streamer: streamer_link(sd.streamer, conn),
+          class: sd.deck.class |> Deck.class_name(),
+          code: deckcode(sd.deck),
+          last_played: sd.last_played,
+          format: if(sd.deck.format == 1, do: "Wild", else: "Standard"),
+          best_legend_rank: if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
+          archetype: Backend.HSReplay.guess_archetype(sd.deck),
+          links: links(sd)
         }
       end)
 
@@ -95,6 +97,7 @@ defmodule BackendWeb.StreamingView do
       dropdowns: dropdowns,
       streamer_list: create_streamer_list(conn, streamers),
       prev_button: prev_button(conn, prev_offset, offset),
+      show_archetype: conn.query_params["show_archetypes"] == "yes",
       next_button: next_button(conn, next_offset)
     })
   end
@@ -108,9 +111,6 @@ defmodule BackendWeb.StreamingView do
     <%= twitch %>
     """
   end
-
-  def class_name("DEMONHUNTER"), do: "Demon Hunter"
-  def class_name(c), do: c |> Recase.to_title()
 
   def create_limit_dropdown(conn, limit) do
     options =
@@ -155,7 +155,7 @@ defmodule BackendWeb.StreamingView do
           link:
             Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "class", c)),
           selected: to_string(Map.get(conn.query_params, "class")) == to_string(c),
-          display: class_name(c)
+          display: Deck.class_name(c)
         }
       end)
 
