@@ -2,34 +2,4 @@
 <a class="button is-link" href="<%= @before_link %>"><---</a>
 <a class="button is-link" href="<%= @after_link %>">---></a>
 <%= render_dropdowns @dropdowns %>
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Start Time</th>
-        <th>Links</th>
-    </tr>
-    </thead>
-    <tbody>
-    <%= for t = %{start_time: start_time, name: name, link: link, standings_link: standings_link, yaytears: yaytears} <- @tournaments do %>
-    <tr>
-        <td>
-            <a class="is-link" href="<%= link %>">
-                <%= name %>
-            </a>
-        </td>
-        <td><%= render_datetime start_time %></td>
-        <td>
-            <%= if t |> Backend.Battlefy.Tournament.has_bracket() do %>
-                <a class="is-link" href="<%= standings_link %>">
-                    standings
-                </a>
-                <a class="is-link tag" href="<%= yaytears %>">
-                    yaytears
-                </a>
-            <% end %>
-        </td>
-    </tr>
-    <% end %>
-    </tbody>
-</table>
+<%= render("tournament_table.html", conn: @conn, raw: @tournaments, slug: @slug) %>

@@ -61,6 +61,8 @@ defmodule BackendWeb.Router do
 
     get "/streamer-decks/twitch-login/:twitch_login", StreamingController, :streamers_decks
     get "/streamer-decks", StreamingController, :streamer_decks
+
+    get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
   end
 
   # Other scopes may use custom stacks.
