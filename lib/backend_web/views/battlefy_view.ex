@@ -76,6 +76,21 @@ defmodule BackendWeb.BattlefyView do
     {options, "Select Range"}
   end
 
+  def render("tournament_table.html", params = %{conn: conn, raw: raw}) do
+    slug = fn t -> (t.organization && t.organization.slug) || params[:slug] end
+
+    tournaments =
+      raw
+      |> Enum.map(fn t ->
+        t
+        |> Map.put_new(:link, Battlefy.create_tournament_link(t.slug, t.id, t |> slug.()))
+        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, t.id))
+        |> Map.put_new(:yaytears, Backend.Yaytears.create_tournament_link(t.id))
+      end)
+
+    render("tournament_table.html", %{tournaments: tournaments})
+  end
+
   def render("organization_tournaments.html", %{
         from: from,
         to: to,
@@ -87,15 +102,6 @@ defmodule BackendWeb.BattlefyView do
     {before_range, after_range} = Util.get_surrounding_ranges(range)
     before_link = create_org_tour_link(before_range, conn)
     after_link = create_org_tour_link(after_range, conn)
-
-    tournaments =
-      (tour || [])
-      |> Enum.map(fn t ->
-        t
-        |> Map.put_new(:link, Battlefy.create_tournament_link(t.slug, t.id, org.slug))
-        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, t.id))
-        |> Map.put_new(:yaytears, Backend.Yaytears.create_tournament_link(t.id))
-      end)
 
     title =
       case org do
@@ -115,7 +121,8 @@ defmodule BackendWeb.BattlefyView do
       title: title,
       before_link: before_link,
       after_link: after_link,
-      tournaments: tournaments,
+      tournaments: tour || [],
+      slug: org && org.slug,
       dropdowns: [
         create_organization_dropdown(conn, org),
         create_daterange_dropdown(conn, range)

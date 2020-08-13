@@ -28,4 +28,12 @@ defmodule BackendWeb.LayoutView do
         """
     end
   end
+
+  def grandmasters(conn) do
+    link = Routes.grandmasters_path(conn, :grandmasters_season, "2020_2")
+
+    ~E"""
+      <a class="navbar-item" href='<%= link %>'>Grandmasters</a>
+    """
+  end
 end

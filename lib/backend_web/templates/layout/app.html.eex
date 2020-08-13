@@ -59,6 +59,7 @@
        </div>
 
        <%= current_mt @conn %>
+       <%= grandmasters @conn %>
      </div>
 
      <div class="navbar-end">
