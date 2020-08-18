@@ -324,4 +324,37 @@ defmodule Util do
     |> Kernel.+(min)
     |> Integer.to_string(36)
   end
+
+  @doc """
+  iex> Util.get_percentile_unsorted(10, [500, 100, 200, 300])
+  0.0
+  iex> Util.get_percentile_unsorted(1000, [500, 100, 200, 300])
+  100.0
+  iex> Util.get_percentile_unsorted(1000, [6000, 200, 300, 2000, 5000])
+  40.0
+  """
+  def get_percentile_unsorted(target, all, get_val \\ &Util.id/1) do
+    sorted_all = all |> Enum.sort_by(get_val, :asc)
+    get_percentile(target, sorted_all, get_val)
+  end
+
+  @doc """
+  iex> Util.get_percentile(10, [100, 200, 300])
+  0.0
+  iex> Util.get_percentile(1000, [100, 200, 300])
+  100.0
+  iex> Util.get_percentile(1000, [100, 200, 300, 2000, 5000])
+  60.0
+  """
+  def get_percentile(target, all, get_val \\ &Util.id/1) do
+    val = get_val.(target)
+
+    num_lower =
+      all
+      |> Enum.sort_by(get_val, :asc)
+      |> Enum.take_while(fn a -> get_val.(a) < val end)
+      |> Enum.count()
+
+    num_lower * 100 / (all |> Enum.count())
+  end
 end
