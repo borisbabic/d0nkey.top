@@ -41,16 +41,29 @@ defmodule Backend.Battlefy do
   end
 
   def get_stage_standings(%{id: id, current_round: current_round})
-      when is_integer(current_round) and current_round > 0 do
-    case Api.get_round_standings(id, current_round) do
-      [] -> get_stage_standings(%{id: id, current_round: current_round - 1})
-      standings -> standings
-    end
+      when is_integer(current_round) do
+    get_stage_round_standings(id, current_round)
+  end
+
+  def get_stage_standings(%{id: id, bracket: %{current_round_number: round}})
+      when is_integer(round) do
+    # sometimes the current round is not completely updated
+    # I assume it won't lag behind by more than 1
+    get_stage_round_standings(id, round + 1)
   end
 
   def get_stage_standings(stage) do
     create_standings_from_matches(stage)
   end
+
+  def get_stage_round_standings(stage_id, round) when round > 0 do
+    case Api.get_round_standings(stage_id, round) do
+      [] -> get_stage_round_standings(stage_id, round - 1)
+      standings -> standings
+    end
+  end
+
+  def get_stage_round_standings(stage_id, round), do: []
 
   def create_standings_from_round1_matches(%{
         id: id

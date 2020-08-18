@@ -51,6 +51,7 @@ defmodule Backend.Battlefy.Bracket do
     field :style, String.t()
     field :rounds_count, integer
     field :teams_count, integer
+    field :current_round_number, integer
   end
 
   def from_raw_map(nil) do
@@ -68,7 +69,8 @@ defmodule Backend.Battlefy.Bracket do
       type: snake_case["type"],
       style: snake_case["style"],
       rounds_count: snake_case["rounds_count"],
-      teams_count: snake_case["teams_count"]
+      teams_count: snake_case["teams_count"],
+      current_round_number: snake_case["current_round_number"]
     }
   end
 end
