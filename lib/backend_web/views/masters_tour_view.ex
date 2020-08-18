@@ -99,7 +99,7 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
-  def get_sort_index(headers, sort_by, default \\ "%") do
+  def get_sort_index(headers, sort_by, default \\ "Winrate %") do
     headers |> Enum.find_index(fn a -> a == sort_by end) ||
       headers |> Enum.find_index(fn a -> a == default end) ||
       0
@@ -129,7 +129,7 @@ defmodule BackendWeb.MastersTourView do
     |> Map.new()
   end
 
-  def create_player_rows(player_stats, eligible_tour_stops, invited_set, conn) do
+  def create_player_rows(player_stats, eligible_tour_stops, invited_set, conn, period) do
     player_stats
     |> Enum.map(fn ps ->
       total = ps |> PlayerStats.with_result()
@@ -158,9 +158,44 @@ defmodule BackendWeb.MastersTourView do
         "Matches Won" => ps.wins,
         "Matches Lost" => ps.losses,
         "Packs Earned" => ps.positions |> Enum.map(&MastersTour.get_packs_earned/1) |> Enum.sum(),
-        "%" => ps |> PlayerStats.matches_won_percent() |> Float.round(2)
+        "Winrate %" => ps |> PlayerStats.matches_won_percent() |> Float.round(2)
       }
       |> Map.merge(ts_cells)
+    end)
+    |> add_percentile_rows(period |> to_string())
+  end
+
+  def add_percentile_rows(rows, period) do
+    num = rows |> Enum.count()
+
+    get_val = fn m -> m["Winrate %"] end
+
+    qualified =
+      rows
+      |> Enum.filter(fn m -> m[period] && m[period] != "" end)
+      |> Enum.sort_by(get_val, :asc)
+
+    qualified_num = qualified |> Enum.count()
+
+    sorted =
+      rows
+      |> Enum.sort_by(get_val, :asc)
+
+    rows
+    |> Enum.map(fn m ->
+      if qualified_num > 0 do
+        Map.put(
+          m,
+          "Winrate percentile (qualified)",
+          Util.get_percentile(m, qualified, get_val) |> Float.round(2)
+        )
+      else
+        m
+      end
+      |> Map.put(
+        "Winrate percentile",
+        Util.get_percentile(m, sorted, get_val) |> Float.round(2)
+      )
     end)
   end
 
@@ -168,7 +203,7 @@ defmodule BackendWeb.MastersTourView do
     case {sort_by_raw, direction_raw} do
       {s, d} when is_atom(d and is_binary(s)) -> {s, d}
       {s, _} when is_binary(s) -> {s, :desc}
-      _ -> {"%", :desc}
+      _ -> {"Winrate %", :desc}
     end
   end
 
@@ -209,10 +244,12 @@ defmodule BackendWeb.MastersTourView do
         "Num Matches",
         "Matches Won",
         "Matches Lost",
-        "Packs Earned"
+        "Packs Earned",
+        "Winrate percentile",
+        "Winrate percentile (qualified)"
       ] ++
         (eligible_ts |> Enum.map(&to_string/1)) ++
-        ["%"]
+        ["Winrate %"]
 
     columns_to_show =
       case {selected_columns, period} do
@@ -220,22 +257,22 @@ defmodule BackendWeb.MastersTourView do
           sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
 
         {_, ts} when is_atom(period) ->
-          ["Player", "Cups", "Top 8", to_string(ts), "%"]
+          ["Player", "Cups", "Top 8", to_string(ts), "Winrate %"]
 
         _ ->
-          ["Player", "Cups", "Top 8", "Top 16", "%"]
+          ["Player", "Cups", "Top 8", "Top 16", "Winrate %"]
       end
 
     headers =
       (["#"] ++ columns_to_show)
       |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn, period) end)
 
-    sort_key = sortable_headers |> Enum.find("%", fn h -> h == sort_by end)
+    sort_key = sortable_headers |> Enum.find("Winrate %", fn h -> h == sort_by end)
 
     rows =
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
-      |> create_player_rows(eligible_tour_stops, invited_set, conn)
+      |> create_player_rows(eligible_tour_stops, invited_set, conn, period)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
