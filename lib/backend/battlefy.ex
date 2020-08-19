@@ -36,6 +36,10 @@ defmodule Backend.Battlefy do
     create_standings_from_round1_matches(%{id: id})
   end
 
+  def get_stage_standings(%{id: id, bracket: %{current_round_number: 0}}) do
+    create_standings_from_round1_matches(%{id: id})
+  end
+
   def get_stage_standings(%{id: _, current_round: 0}) do
     []
   end
@@ -68,7 +72,7 @@ defmodule Backend.Battlefy do
   def create_standings_from_round1_matches(%{
         id: id
       }) do
-    matches = get_matches(id, %{round: 1})
+    matches = get_matches(id, %{round: 1}) || []
 
     # num_losers = Enum.count(matches, fn %{top: top, bottom: bottom} -> top.winner || bottom.winnere end)
     # num_people = matches
@@ -93,7 +97,10 @@ defmodule Backend.Battlefy do
           {false, false} ->
             {[], [], [bottom, top]}
 
-          # :shrug
+          {nil, nil} ->
+            {[], [], [bottom, top]}
+
+          # :shrug:
           _ ->
             {[], [], []}
         end
