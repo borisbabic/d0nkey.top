@@ -72,12 +72,17 @@
                 <% end %>
             </div>
         </div>
-       <div class="navbar-item has-dropdown is-hoverable">
-           <a class="navbar-link">Follow me!</a>
-           <div class="navbar-dropdown">
-               <a class="navbar-item" href="https://twitter.com/D0nkeyHS">twitter</a>
-               <a class="navbar-item" href="https://discord.gg/DKYDu2Q">discord</a>
-               <a class="navbar-item" href="https://www.twitch.tv/d0nkeyhs">twitch</a>
+
+       <a class="is-hidden-tablet navbar-item " href="<%=Routes.page_path(@conn, :donate_follow)%>">Donate/Follow</a>
+       <div class="navbar-item has-dropdown is-hoverable is-hidden-mobile">
+           <a class="navbar-link navbar-item " href="<%=Routes.page_path(@conn, :donate_follow)%>">Donate/Follow</a>
+           <div class="navbar-dropdown is-hidden-mobile">
+               <a class="navbar-item" href="<%= Constants.twitter() %>">twitter</a>
+               <a class="navbar-item" href="<%= Constants.discord() %>">discord</a>
+               <a class="navbar-item" href="<%= Constants.twitch() %>">twitch</a>
+               <a class="navbar-item" href="<%= Constants.paypal() %>">paypal</a>
+               <a class="navbar-item" href="<%= Constants.patreon() %>">patreon</a>
+               <a class="navbar-item" href="<%= Constants.liberapay() %>">liberapay</a>
            </div>
        </div>
        <!--
