@@ -30,7 +30,7 @@ defmodule BackendWeb.BattlefyController do
     standings = Battlefy.get_tournament_standings(tournament)
 
     {matches, show_ongoing} =
-      if String.starts_with?(params["show_ongoing"], "yes") do
+      if params["show_ongoing"] && String.starts_with?(params["show_ongoing"], "yes") do
         {Battlefy.get_tournament_matches(tournament), true}
       else
         {[], false}
