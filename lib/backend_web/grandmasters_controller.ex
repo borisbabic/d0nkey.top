@@ -13,9 +13,11 @@ defmodule BackendWeb.GrandmastersController do
         # AM W1
         "5f0cc029685620138a169469",
         # APAC W2
-        "5f0cc0da26cc57765b463cc1"
+        "5f0cc0da26cc57765b463cc1",
         # EU W2
+        "5f0cc1439760c878cf3e6984",
         # AM W2
+        "5f0cc19b773ffd3455b9e843"
         # APAC W3
         # EU W3
         # AM W3
