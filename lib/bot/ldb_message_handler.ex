@@ -42,11 +42,11 @@ defmodule Bot.LdbMessageHandler do
         |> Enum.map_join(
           "\n",
           fn le ->
-            "#{String.pad_trailing(to_string(le.position), 3, [" "])} #{le.battletag}"
+            "#{String.pad_trailing(to_string(le.rank), 3, [" "])}\t#{le.account_id}"
           end
         )
 
-      "#{region} #{leaderboard}\n#{body}"
+      "#{String.pad_trailing(to_string(region), 3, [" "])}\t#{leaderboard}\n#{body}"
     end)
     |> Enum.join("\n")
   end
