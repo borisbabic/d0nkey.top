@@ -118,32 +118,32 @@ defmodule Backend.Leaderboards do
 
   defp get_criteria(%{updated_at: updated_at}, :updated_at), do: [{"updated_at", updated_at}]
 
-  #  @spec get_player_entries([String.t()]) :: categorized_entries
-  #  def get_player_entries(battletags_short) do
-  #    short_set = MapSet.new(battletags_short)
-  #
-  #    for region <- Backend.Blizzard.qualifier_regions(),
-  #        ldb <- Backend.Blizzard.leaderboards(),
-  #        into: [],
-  #        do: {get_player_entries(short_set, region, ldb), region, ldb}
-  #  end
-  #
-  #  @spec get_player_entries(
-  #          [String.t()] | MapSet.t(),
-  #          Blizzard.region(),
-  #          Blizzard.leaderboard(),
-  #          number | nil
-  #        ) :: [Entry]
-  #  def get_player_entries(battletags_short, region, leaderboard_id, season_id \\ nil)
-  #
-  #  def get_player_entries(battletags_short = [_ | _], region, leaderboard_id, season_id) do
-  #    get_player_entries(MapSet.new(battletags_short), region, leaderboard_id, season_id)
-  #  end
-  #
-  #  def get_player_entries(short_set, region, leaderboard_id, season_id) do
-  #    {table, _updated_at} = fetch_current_entries(region, leaderboard_id, season_id)
-  #    table |> Enum.filter(fn e -> MapSet.member?(short_set, e.battletag) end)
-  #  end
+  @spec get_player_entries([String.t()]) :: categorized_entries
+  def get_player_entries(battletags_short) do
+    short_set = MapSet.new(battletags_short)
+
+    for region <- Backend.Blizzard.qualifier_regions(),
+        ldb <- Backend.Blizzard.leaderboards(),
+        into: [],
+        do: {get_player_entries(short_set, region, ldb), region, ldb}
+  end
+
+  @spec get_player_entries(
+          [String.t()] | MapSet.t(),
+          Blizzard.region(),
+          Blizzard.leaderboard(),
+          number | nil
+        ) :: [Entry]
+  def get_player_entries(battletags_short, region, leaderboard_id, season_id \\ nil)
+
+  def get_player_entries(battletags_short = [_ | _], region, leaderboard_id, season_id) do
+    get_player_entries(MapSet.new(battletags_short), region, leaderboard_id, season_id)
+  end
+
+  def get_player_entries(short_set, region, leaderboard_id, season_id) do
+    %{entries: table} = get_leaderboard(region, leaderboard_id, season_id)
+    table |> Enum.filter(fn e -> MapSet.member?(short_set, e.account_id) end)
+  end
 
   def snapshots(criteria) do
     base_snapshots_query()
