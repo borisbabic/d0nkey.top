@@ -8,4 +8,8 @@ defmodule BackendWeb.PageController do
   def incubator(conn, _params) do
     render(conn, "incubator.html")
   end
+
+  def donate_follow(conn, _params) do
+    render(conn, "donate_follow.html")
+  end
 end
