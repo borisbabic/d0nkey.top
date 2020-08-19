@@ -9,9 +9,10 @@ defmodule BackendWeb.BattlefyController do
     standings = Battlefy.get_stage_standings(stage_id)
 
     {matches, show_ongoing} =
-      case params["show_ongoing"] do
-        "yes" -> {Battlefy.get_matches(stage_id), true}
-        _ -> {[], false}
+      if String.starts_with?(params["show_ongoing"], "yes") do
+        {Battlefy.get_matches(stage_id), true}
+      else
+        {[], false}
       end
 
     render(conn, "tournament.html", %{
@@ -29,9 +30,10 @@ defmodule BackendWeb.BattlefyController do
     standings = Battlefy.get_tournament_standings(tournament)
 
     {matches, show_ongoing} =
-      case params["show_ongoing"] do
-        "yes" -> {Battlefy.get_tournament_matches(tournament), true}
-        _ -> {[], false}
+      if String.starts_with?(params["show_ongoing"], "yes") do
+        {Battlefy.get_tournament_matches(tournament), true}
+      else
+        {[], false}
       end
 
     render(conn, "tournament.html", %{

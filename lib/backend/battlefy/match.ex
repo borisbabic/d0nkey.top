@@ -73,6 +73,12 @@ defmodule Backend.Battlefy.Match do
       # is_complete: is_complete
     }
   end
+
+  def ongoing?(m = %__MODULE__{}) do
+    m.completed_at == nil &&
+      (m.bottom.winner == false || m.bottom.winner == nil) &&
+      (m.top.winner == false || m.top.winner == nil)
+  end
 end
 
 defmodule Backend.Battlefy.MatchTeam do

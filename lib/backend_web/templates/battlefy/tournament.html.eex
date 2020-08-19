@@ -85,6 +85,9 @@
             <%= if @show_ongoing do %>
                 <th><abbr title="Ongoing Match Score">Ongoing</abbr></th>
             <% end %>
+            <%= if @show_ongoing do %>
+                <th><abbr title="Ongoing Match Opponent">Opponent</abbr></th>
+            <% end %>
             <th>Decks</th>
         </tr>
     </thead>
@@ -94,10 +97,20 @@
             <td><%= place %></td>
             <td><a href="<%= name_link%>"> <%= name %></a></td>
             <%= if @show_score do %>
-                <th><%=score%></th>
+                <td><%=score%></td>
             <% end %>
             <%= if @show_ongoing do %>
-                <th><%= ongoing %></th>
+                    <%= if ongoing do %>
+                        <td>
+                            <a href="<%= ongoing.match_url %>"> <%= ongoing.score %></a>
+                        </td>
+                        <td>
+                            <a href="<%= ongoing.opponent_link %>"> <%= ongoing.opponent %></a>
+                        </td>
+                    <% else %>
+                        <td></td>
+                        <td></td>
+                    <% end %>
             <% end %>
             <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
         </tr>

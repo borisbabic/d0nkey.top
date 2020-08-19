@@ -3,6 +3,8 @@ defmodule BackendWeb.BattlefyView do
   use BackendWeb, :view
   alias Backend.Battlefy
   alias Backend.Battlefy.Organization
+  alias Backend.Battlefy.Match
+  alias Backend.Battlefy.MatchTeam
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -200,19 +202,45 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
-  @spec calculate_ongoing([Match.t()], boolean) :: Map.t()
+  @spec calculate_ongoing([Match.t()], boolean, Battlefy.Tournament.t(), Plug.Conn.t()) :: Map.t()
 
-  def calculate_ongoing(_, false), do: Map.new()
+  def calculate_ongoing(_, _show_ongoing = false, _, _), do: Map.new()
 
-  def calculate_ongoing(matches, true) do
+  def calculate_ongoing(matches, _show_ongoing = true, tournament, conn) do
     matches
-    |> Enum.filter(fn %{top: t, bottom: b, completed_at: ca} ->
-      ca == nil && !b.winner && !t.winner
-    end)
-    |> Enum.flat_map(fn %{top: t, bottom: b} ->
+    |> Enum.filter(&Match.ongoing?/1)
+    |> Enum.flat_map(fn m = %{top: t, bottom: b} ->
       [
-        {t.name, "#{t.score} - #{b.score}"},
-        {b.name, "#{b.score} - #{t.score}"}
+        {
+          t |> MatchTeam.get_name(),
+          %{
+            score: "#{t.score} - #{b.score}",
+            match_url: Battlefy.get_match_url(tournament, m),
+            opponent: b |> MatchTeam.get_name(),
+            opponent_link:
+              Routes.battlefy_path(
+                conn,
+                :tournament_player,
+                tournament.id,
+                b |> MatchTeam.get_name()
+              )
+          }
+        },
+        {
+          b |> MatchTeam.get_name(),
+          %{
+            score: "#{b.score} - #{t.score}",
+            match_url: Battlefy.get_match_url(tournament, m),
+            opponent: t |> MatchTeam.get_name(),
+            opponent_link:
+              Routes.battlefy_path(
+                conn,
+                :tournament_player,
+                tournament.id,
+                t |> MatchTeam.get_name()
+              )
+          }
+        }
       ]
     end)
     |> Map.new()
@@ -228,7 +256,7 @@ defmodule BackendWeb.BattlefyView do
           matches: matches
         }
       ) do
-    ongoing = calculate_ongoing(matches, show_ongoing)
+    ongoing = calculate_ongoing(matches, show_ongoing, tournament, conn)
 
     standings = prepare_standings(standings_raw, tournament, ongoing, conn)
     highlight = if params.highlight == nil, do: [], else: params.highlight
