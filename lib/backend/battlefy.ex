@@ -504,7 +504,8 @@ defmodule Backend.Battlefy do
       "ilh-events",
       "fantastic-pro-league",
       "tierras-de-fuego-hs",
-      "akg-games"
+      "akg-games",
+      "liga-kombatklub-de-hearthstone"
     ]
   end
 
