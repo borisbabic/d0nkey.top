@@ -17,9 +17,10 @@ defmodule BackendWeb.GrandmastersController do
         # EU W2
         "5f0cc1439760c878cf3e6984",
         # AM W2
-        "5f0cc19b773ffd3455b9e843"
+        "5f0cc19b773ffd3455b9e843",
         # APAC W3
         # EU W3
+        "5f0cc2ef69a363414a64af95"
         # AM W3
       ]
       |> Enum.map(&Battlefy.get_tournament/1)
