@@ -145,6 +145,8 @@ defmodule Backend.Leaderboards do
     table |> Enum.filter(fn e -> MapSet.member?(short_set, e.account_id) end)
   end
 
+  def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
+
   def snapshots(criteria) do
     base_snapshots_query()
     |> build_snapshot_query(criteria)
@@ -157,6 +159,11 @@ defmodule Backend.Leaderboards do
 
   defp build_snapshot_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_snapshot_query/2)
+
+  defp compose_snapshot_query({"id", id}, query) do
+    query
+    |> where([s], s.id == ^id)
+  end
 
   defp compose_snapshot_query({"region", region}, query) do
     query
