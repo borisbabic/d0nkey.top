@@ -5,8 +5,8 @@ defmodule BackendWeb.LeaderboardController do
   alias Backend.Leaderboards
   alias Backend.MastersTour
 
-  def index(conn, params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
-    leaderboard = get_leaderboard(region, leaderboard_id, params["seasonId"])
+  def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
+    leaderboard = get_leaderboard(params)
     compare_to = params["compare_to"]
     comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
@@ -65,6 +65,12 @@ defmodule BackendWeb.LeaderboardController do
       list when is_list(list) -> MapSet.new(list)
       _ -> nil
     end
+  end
+
+  def get_leaderboard(%{"database_id" => id}), do: Leaderboards.snapshot(id)
+
+  def get_leaderboard(params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
+    get_leaderboard(region, leaderboard_id, params["seasonId"])
   end
 
   defp get_leaderboard(r, l, s) do
