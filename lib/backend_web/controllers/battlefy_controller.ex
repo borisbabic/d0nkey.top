@@ -45,17 +45,7 @@ defmodule BackendWeb.BattlefyController do
     })
   end
 
-  def get_highlight(params) do
-    case params["player"] do
-      player = %{} ->
-        player
-        |> Enum.filter(fn {_, selected} -> selected == "true" end)
-        |> Enum.map(fn {column, _} -> column end)
-
-      _ ->
-        nil
-    end
-  end
+  def get_highlight(params), do: multi_select_to_array(params["player"])
 
   def tournament_decks(conn, %{
         "tournament_id" => tournament_id,

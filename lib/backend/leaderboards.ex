@@ -81,7 +81,7 @@ defmodule Backend.Leaderboards do
       {:ok, inserted} ->
         inserted
 
-      {:error, reason} ->
+      {:error, _reason} ->
         Logger.warn(
           "Error saving #{attrs.season_id} #{attrs.leaderboard_id} #{attrs.region} #{
             attrs.upstream_updated_at
@@ -160,6 +160,36 @@ defmodule Backend.Leaderboards do
   defp build_snapshot_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_snapshot_query/2)
 
+  defp compose_snapshot_query({"latest_in_season", _}, query),
+    do: compose_snapshot_query({"latest_in_season"}, query)
+
+  defp compose_snapshot_query({"latest_in_season"}, query),
+    do: compose_snapshot_query({:latest_in_season}, query)
+
+  defp compose_snapshot_query({:latest_in_season}, query) do
+    season_end_subquery =
+      from e in Snapshot,
+        select: %{
+          season_id: e.season_id,
+          leaderboard_id: e.leaderboard_id,
+          region: e.region,
+          upstream_updated_at: max(e.upstream_updated_at)
+        },
+        group_by: [:season_id, :leaderboard_id, :region]
+
+    query
+    |> join(
+      :inner,
+      [s],
+      e in subquery(season_end_subquery),
+      on:
+        s.upstream_updated_at == e.upstream_updated_at and
+          s.season_id == e.season_id and
+          s.leaderboard_id == e.leaderboard_id and
+          s.region == e.region
+    )
+  end
+
   defp compose_snapshot_query({"id", id}, query) do
     query
     |> where([s], s.id == ^id)
@@ -213,4 +243,20 @@ defmodule Backend.Leaderboards do
     query
     |> where([s], s.upstream_updated_at < ago(^num, ^unit))
   end
+
+  defp compose_snapshot_query({"battletag_full", battletag_full}, query) do
+    players = Backend.PlayerInfo.leaderboard_names(battletag_full)
+    compose_snapshot_query({"players", players}, query)
+  end
+
+  defp compose_snapshot_query({"players", players}, query) do
+    similar_search = "%(#{Enum.join(players, "|")})%"
+
+    query
+    # it's over 100 times faster when first converting to jsonb, DO NOT REMOVE IT unless you test the speed
+    |> where([s], fragment("to_jsonb(?)::text SIMILAR TO ?", s.entries, ^similar_search))
+  end
+
+  def finishes_for_battletag(battletag_full),
+    do: [{:latest_in_season}, {"battletag_full", battletag_full}] |> snapshots()
 end

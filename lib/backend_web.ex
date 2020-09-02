@@ -24,6 +24,14 @@ defmodule BackendWeb do
       import Plug.Conn
       import BackendWeb.Gettext
       alias BackendWeb.Router.Helpers, as: Routes
+
+      def multi_select_to_array(multi = %{}) do
+        multi
+        |> Enum.filter(fn {_, selected} -> selected == "true" end)
+        |> Enum.map(fn {column, _} -> column end)
+      end
+
+      def multi_select_to_array(multi), do: []
     end
   end
 

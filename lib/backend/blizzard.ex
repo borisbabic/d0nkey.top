@@ -473,4 +473,24 @@ defmodule Backend.Blizzard do
     # todo pick season_id when nil
     Api.get_leaderboard(region, leaderboard, season_id)
   end
+
+  @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: Leaderboard
+  def get_leaderboard_name(region, leaderboard, season_id, length \\ :long)
+
+  def get_leaderboard_name(region, "BG", season_id, length),
+    do: get_leaderboard_name(region, :BG, season_id, length)
+
+  def get_leaderboard_name(region, :BG, _season_id, length) do
+    r = get_region_name(region, length)
+    ldb = get_leaderboard_name(:BG, length)
+    "#{ldb} #{r}"
+  end
+
+  def get_leaderboard_name(region, leaderboard, season_id, length) do
+    %{year: year, month: month} = get_month_start(season_id)
+    m = Util.get_month_name(month)
+    r = get_region_name(region, length)
+    ldb = get_leaderboard_name(leaderboard, length)
+    "#{ldb} #{r} #{m} #{year}"
+  end
 end

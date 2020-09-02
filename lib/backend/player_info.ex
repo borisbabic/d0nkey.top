@@ -1528,4 +1528,6 @@ defmodule Backend.PlayerInfo do
       region: region
     }
   end
+
+  def leaderboard_names(battletag_full), do: [InvitedPlayer.shorten_battletag(battletag_full)]
 end
