@@ -5,7 +5,7 @@ defmodule BackendWeb.PlayerController do
   alias Backend.PlayerInfo
   alias Backend.MastersTour.InvitedPlayer
 
-  def player_profile(conn, %{"battletag_full" => bt}) do
+  def player_profile(conn, params = %{"battletag_full" => bt}) do
     qualifier_stats =
       Backend.MastersTour.get_player_stats(2020)
       |> elem(0)
@@ -25,11 +25,15 @@ defmodule BackendWeb.PlayerController do
         {_, earnings, _} -> earnings
       end
 
+    finishes = Backend.Leaderboards.finishes_for_battletag(bt)
+
     render(conn, "player_profile.html", %{
       qualifier_stats: qualifier_stats,
       player_info: player_info,
       battletag_full: bt,
       tournaments: tournaments,
+      finishes: finishes,
+      competitions: multi_select_to_array(params["competition"]),
       mt_earnings: mt_earnings
     })
   end

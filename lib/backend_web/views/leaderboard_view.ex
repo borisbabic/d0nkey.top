@@ -3,8 +3,6 @@ defmodule BackendWeb.LeaderboardView do
   import Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
   @type selectable_season :: {String.t(), integer()}
-  @type month_name ::
-          :JAN | :FEB | :MAR | :APR | :MAY | :JUN | :JUL | :AUG | :SEP | :OCT | :NOV | :DEC
 
   def render("index.html", params = %{leaderboard: nil, conn: conn, ladder_mode: ladder_mode}) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
@@ -209,37 +207,8 @@ defmodule BackendWeb.LeaderboardView do
     [0, -1, -2, -3, -4, -5]
     |> Enum.map(fn month_diff ->
       month_num = Util.normalize_month(month_diff + tomorrow.month)
-      {get_month_name(month_num), tomorrow_id + month_diff}
+      {Util.get_month_name(month_num), tomorrow_id + month_diff}
     end)
-  end
-
-  @doc """
-  Gets three letter month name for a month number
-
-  ## Example
-    iex> BackendWeb.LeaderboardView.get_month_name(12)
-    :December
-    iex> BackendWeb.LeaderboardView.get_month_name(1)
-    :January
-  """
-  @spec get_month_name(integer) :: month_name
-  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
-  def get_month_name(month) do
-    case month do
-      1 -> :January
-      2 -> :February
-      3 -> :March
-      4 -> :April
-      5 -> :May
-      6 -> :June
-      7 -> :July
-      8 -> :August
-      9 -> :September
-      10 -> :October
-      11 -> :November
-      12 -> :December
-      x -> to_string(x)
-    end
   end
 
   def process_invited(nil, invited_raw), do: process_invited(invited_raw, NaiveDateTime.utc_now())

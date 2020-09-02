@@ -357,4 +357,33 @@ defmodule Util do
 
     num_lower * 100 / (all |> Enum.count())
   end
+
+  @doc """
+  Gets the month name
+
+  ## Example
+    iex> BackendWeb.LeaderboardView.get_month_name(12)
+    :December
+    iex> BackendWeb.LeaderboardView.get_month_name(1)
+    :January
+  """
+  @spec get_month_name(integer) :: atom | String.t()
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_month_name(month) do
+    case month do
+      1 -> :January
+      2 -> :February
+      3 -> :March
+      4 -> :April
+      5 -> :May
+      6 -> :June
+      7 -> :July
+      8 -> :August
+      9 -> :September
+      10 -> :October
+      11 -> :November
+      12 -> :December
+      x -> to_string(x)
+    end
+  end
 end
