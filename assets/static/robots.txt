@@ -9,3 +9,4 @@ Disallow: /battlefy/tournament/*/future/*
 Disallow: /battlefy/tournament/*/player/*
 Disallow: /battlefy/tournament/*/decks/*
 Disallow: /streamer-decks?*
+Disallow: /admin*

@@ -51,6 +51,7 @@ defmodule Backend.MixProject do
       {:typed_struct, "~> 0.1.4"},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:varint, "~> 1.0.0"},
+      {:timex, "~> 3.5"},
       {:quantum, "~> 2.3"}
     ]
   end
