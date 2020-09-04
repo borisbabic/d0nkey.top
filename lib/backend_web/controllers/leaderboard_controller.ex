@@ -102,6 +102,8 @@ defmodule BackendWeb.LeaderboardController do
     regions = multi_select_to_array(params["regions"])
     leaderboards = multi_select_to_array(params["leaderboards"])
 
+    min = with raw when is_binary(raw) <- params["min"], {val, _} <- Integer.parse(raw), do: val
+
     criteria =
       [{:latest_in_season}, {:not_current_season}]
       |> add_region_criteria(regions)
@@ -114,6 +116,7 @@ defmodule BackendWeb.LeaderboardController do
       leaderboards: leaderboards,
       regions: regions,
       direction: direction,
+      min: min,
       sort_by: params["sort_by"],
       stats: stats
     })
