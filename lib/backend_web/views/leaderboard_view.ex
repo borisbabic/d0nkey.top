@@ -324,6 +324,7 @@ defmodule BackendWeb.LeaderboardView do
     rows =
       stats
       |> create_player_rows()
+      |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
       |> Enum.map(fn {row, pos} ->
