@@ -66,6 +66,8 @@ defmodule BackendWeb.Router do
     get "/streamer-decks", StreamingController, :streamer_decks
 
     get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
+
+    get "/admin/get-all-leaderboards", AdminController, :get_all_leaderboards
   end
 
   # Other scopes may use custom stacks.

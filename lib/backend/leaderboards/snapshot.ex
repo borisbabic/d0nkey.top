@@ -42,20 +42,24 @@ defmodule Backend.Leaderboards.Snapshot do
         }
       end)
 
-  defp extract_updated_at(%{"last_updated_time" => last_updated_time}) do
-    last_updated_time
-    |> String.split(" ")
-    |> Enum.take(2)
-    |> Enum.join(" ")
-    |> Kernel.<>("+00:00")
-    |> DateTime.from_iso8601()
-    |> case do
-      {:ok, time, _} -> time
-      {:error, _} -> nil
+  def extract_updated_at(%{"last_updated_time" => last_updated_time}) do
+    with {:error, _reason} <-
+           last_updated_time |> Timex.parse("{YYYY}/{M}/{D} {ISOtime} {WDshort}"),
+         {:error, _reason} <-
+           last_updated_time
+           |> String.split(" ")
+           |> Enum.take(2)
+           |> Enum.join(" ")
+           |> Kernel.<>("+00:00")
+           |> DateTime.from_iso8601() do
+      nil
+    else
+      {:ok, time} -> time
+      {:ok, time, 0} -> time
     end
   end
 
-  defp extract_updated_at(_) do
+  def extract_updated_at(_) do
     nil
   end
 end

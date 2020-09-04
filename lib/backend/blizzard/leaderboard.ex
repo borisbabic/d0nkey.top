@@ -54,22 +54,7 @@ defmodule Backend.Blizzard.Leaderboard do
 
   defp parse_season_id(_), do: 0
 
-  defp extract_updated_at(%{"last_updated_time" => last_updated_time}) do
-    last_updated_time
-    |> String.split(" ")
-    |> Enum.take(2)
-    |> Enum.join(" ")
-    |> Kernel.<>("+00:00")
-    |> DateTime.from_iso8601()
-    |> case do
-      {:ok, time, _} -> time
-      {:error, _} -> nil
-    end
-  end
-
-  defp extract_updated_at(_) do
-    nil
-  end
+  defp extract_updated_at(map), do: map |> Backend.Leaderboards.Snapshot.extract_updated_at()
 end
 
 defmodule Backend.Blizzard.Leaderboard.Entry do
