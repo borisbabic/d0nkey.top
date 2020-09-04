@@ -5,6 +5,7 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Leaderboards.PlayerStats
   @type selectable_season :: {String.t(), integer()}
+  @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
 
   def render("index.html", params = %{leaderboard: nil, conn: conn, ladder_mode: ladder_mode}) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
@@ -297,9 +298,11 @@ defmodule BackendWeb.LeaderboardView do
         leaderboards: leaderboards,
         regions: regions,
         stats: stats,
+        min: min_raw,
         sort_by: sort_by_raw,
         direction: direction_raw
       }) do
+    min_to_show = min_raw || 5
     {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
 
     sortable_headers = [
@@ -323,6 +326,7 @@ defmodule BackendWeb.LeaderboardView do
 
     rows =
       stats
+      |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
       |> create_player_rows()
       |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
@@ -341,6 +345,21 @@ defmodule BackendWeb.LeaderboardView do
         }
       end)
 
+    min_list =
+      @min_finishes_options
+      |> Enum.map(fn min ->
+        %{
+          display: "Min #{min}",
+          selected: min == min_to_show,
+          link:
+            Routes.leaderboard_path(
+              conn,
+              :player_stats,
+              Map.put(conn.query_params, "min", min)
+            )
+        }
+      end)
+
     leaderboards_options =
       ["STD", "WLD"]
       |> Enum.map(fn l ->
@@ -352,14 +371,23 @@ defmodule BackendWeb.LeaderboardView do
         }
       end)
 
+    dropdowns = [
+      {min_list, min_dropdown_title(min_to_show)}
+    ]
+
     render("player_stats.html", %{
       headers: headers,
       rows: rows,
       conn: conn,
+      min: min_to_show,
       region_options: region_options,
+      dropdowns: dropdowns,
       leaderboards_options: leaderboards_options
     })
   end
+
+  def min_dropdown_title(1), do: "Min 1 Finish"
+  def min_dropdown_title(min), do: "Min #{min} Finishes"
 
   def opposite(:desc), do: :asc
   def opposite(_), do: :desc

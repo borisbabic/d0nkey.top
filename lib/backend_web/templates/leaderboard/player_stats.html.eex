@@ -48,6 +48,7 @@
         </div>
     </div>
 </div>
+<%= render_dropdowns @dropdowns %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
