@@ -17,6 +17,8 @@ defmodule BackendWeb.Router do
     pipe_through :browser
 
     get "/leaderboard", LeaderboardController, :index
+    get "/leaderboard/player-stats", LeaderboardController, :player_stats
+
     get "/", PageController, :index
     get "/incubator", PageController, :incubator
     get "/donate-follow", PageController, :donate_follow
