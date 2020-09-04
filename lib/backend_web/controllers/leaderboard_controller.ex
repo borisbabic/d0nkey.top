@@ -90,4 +90,40 @@ defmodule BackendWeb.LeaderboardController do
       _ -> nil
     end
   end
+
+  def player_stats(conn, params) do
+    direction =
+      case params["direction"] do
+        "desc" -> :desc
+        "asc" -> :asc
+        _ -> nil
+      end
+
+    regions = multi_select_to_array(params["regions"])
+    leaderboards = multi_select_to_array(params["leaderboards"])
+
+    criteria =
+      [{:latest_in_season}, {:not_current_season}]
+      |> add_region_criteria(regions)
+      |> add_leaderboard_criteria(leaderboards)
+
+    stats = Leaderboards.stats(criteria)
+
+    render(conn, "stats.html", %{
+      conn: conn,
+      leaderboards: leaderboards,
+      regions: regions,
+      direction: direction,
+      sort_by: params["sort_by"],
+      stats: stats
+    })
+  end
+
+  defp add_leaderboard_criteria(criteria, []), do: add_leaderboard_criteria(criteria, nil)
+  defp add_leaderboard_criteria(criteria, nil), do: [{"leaderboard_id", ["STD"]} | criteria]
+  defp add_leaderboard_criteria(criteria, ids), do: [{"leaderboard_id", ids} | criteria]
+
+  defp add_region_criteria(criteria, []), do: criteria
+  defp add_region_criteria(criteria, nil), do: criteria
+  defp add_region_criteria(criteria, regions), do: [{"region", regions} | criteria]
 end

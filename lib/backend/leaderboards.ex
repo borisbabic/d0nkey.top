@@ -9,6 +9,7 @@ defmodule Backend.Leaderboards do
   alias Backend.Infrastructure.BlizzardCommunicator
   alias Backend.Blizzard
   alias Backend.Leaderboards.Snapshot
+  alias Backend.Leaderboards.PlayerStats
 
   @type entry :: %{
           battletag: String.t(),
@@ -145,6 +146,7 @@ defmodule Backend.Leaderboards do
     table |> Enum.filter(fn e -> MapSet.member?(short_set, e.account_id) end)
   end
 
+  def stats(criteria), do: snapshots(criteria) |> PlayerStats.create_collection()
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
   def snapshots(criteria) do
@@ -190,9 +192,21 @@ defmodule Backend.Leaderboards do
     )
   end
 
+  defp compose_snapshot_query({:not_current_season}, query) do
+    current_season_id = Blizzard.get_season_id(Date.utc_today())
+
+    query
+    |> where([s], s.season_id != ^current_season_id)
+  end
+
   defp compose_snapshot_query({"id", id}, query) do
     query
     |> where([s], s.id == ^id)
+  end
+
+  defp compose_snapshot_query({"region", regions}, query) when is_list(regions) do
+    query
+    |> where([s], s.region in ^regions)
   end
 
   defp compose_snapshot_query({"region", region}, query) do
@@ -203,6 +217,12 @@ defmodule Backend.Leaderboards do
   defp compose_snapshot_query({"season_id", season_id}, query) do
     query
     |> where([s], s.season_id == ^season_id)
+  end
+
+  defp compose_snapshot_query({"leaderboard_id", leaderboards}, query)
+       when is_list(leaderboards) do
+    query
+    |> where([s], s.leaderboard_id in ^leaderboards)
   end
 
   defp compose_snapshot_query({"leaderboard_id", leaderboard_id}, query) do

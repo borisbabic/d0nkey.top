@@ -1,7 +1,9 @@
 defmodule BackendWeb.LeaderboardView do
   use BackendWeb, :view
   import Backend.Blizzard
+  alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
+  alias Backend.Leaderboards.PlayerStats
   @type selectable_season :: {String.t(), integer()}
 
   def render("index.html", params = %{leaderboard: nil, conn: conn, ladder_mode: ladder_mode}) do
@@ -280,5 +282,138 @@ defmodule BackendWeb.LeaderboardView do
       [e | _] -> {e.rank, e.rating}
       _ -> {201, nil}
     end
+  end
+
+  def process_sorting(sort_by_raw, direction_raw) do
+    case {sort_by_raw, direction_raw} do
+      {s, d} when is_atom(d and is_binary(s)) -> {s, d}
+      {s, _} when is_binary(s) -> {s, :desc}
+      _ -> {"Total Finishes", :desc}
+    end
+  end
+
+  def render("stats.html", %{
+        conn: conn,
+        leaderboards: leaderboards,
+        regions: regions,
+        stats: stats,
+        sort_by: sort_by_raw,
+        direction: direction_raw
+      }) do
+    {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
+
+    sortable_headers = [
+      "Player",
+      "Top 1",
+      "Top 10",
+      "Top 50",
+      "Top 100",
+      "Best",
+      "Worst",
+      "Average Finish",
+      "Total Finishes"
+    ]
+
+    headers =
+      (["#"] ++ sortable_headers)
+      |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn) end)
+
+    sort_key = sortable_headers |> Enum.find("Total Finishes", fn h -> h == sort_by end)
+
+    rows =
+      stats
+      |> create_player_rows()
+      |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
+      |> Enum.with_index(1)
+      |> Enum.map(fn {row, pos} ->
+        [pos | sortable_headers |> Enum.map(fn h -> row[h] || "" end)]
+      end)
+
+    region_options =
+      Blizzard.qualifier_regions()
+      |> Enum.map(fn r ->
+        %{
+          value: r,
+          name: r |> Blizzard.get_region_name(:long),
+          selected: regions == [] || regions |> Enum.member?(to_string(r))
+        }
+      end)
+
+    leaderboards_options =
+      ["STD", "WLD"]
+      |> Enum.map(fn l ->
+        %{
+          value: l,
+          name: l |> Blizzard.get_leaderboard_name(:long),
+          selected:
+            (leaderboards == [] && "STD" == l) || leaderboards |> Enum.member?(to_string(l))
+        }
+      end)
+
+    render("player_stats.html", %{
+      headers: headers,
+      rows: rows,
+      conn: conn,
+      region_options: region_options,
+      leaderboards_options: leaderboards_options
+    })
+  end
+
+  def opposite(:desc), do: :asc
+  def opposite(_), do: :desc
+  def symbol(:asc), do: "↓"
+  def symbol(_), do: "↑"
+  def create_stats_header("#", _, _, _), do: "#"
+
+  def create_stats_header(header, sort_by, direction, conn) when header == sort_by do
+    click_params = %{"sort_by" => header, "direction" => opposite(direction)}
+
+    url =
+      Routes.leaderboard_path(
+        conn,
+        :player_stats,
+        Map.merge(conn.query_params, click_params)
+      )
+
+    cell = "#{header}#{symbol(direction)}"
+
+    ~E"""
+      <a class="is-text" href="<%= url %>"><%= cell %></a>
+    """
+  end
+
+  def create_stats_header(header, _, _, conn) do
+    click_params = %{"sort_by" => header, "direction" => :desc}
+
+    url =
+      Routes.leaderboard_path(
+        conn,
+        :player_stats,
+        Map.merge(conn.query_params, click_params)
+      )
+
+    ~E"""
+      <a class="is-text" href="<%= url %>"><%= header %></a>
+    """
+  end
+
+  def create_player_rows(player_stats) do
+    player_stats
+    |> Enum.map(fn ps ->
+      total = ps.ranks |> Enum.count()
+      avg = ((ps.ranks |> Enum.sum()) / total) |> Float.round(2)
+
+      %{
+        "Player" => ps.account_id,
+        "Top 1" => ps |> PlayerStats.num_top(1),
+        "Top 10" => ps |> PlayerStats.num_top(10),
+        "Top 50" => ps |> PlayerStats.num_top(50),
+        "Top 100" => ps |> PlayerStats.num_top(100),
+        "Best" => ps.ranks |> Enum.min(),
+        "Worst" => ps.ranks |> Enum.max(),
+        "Average Finish" => avg,
+        "Total Finishes" => total
+      }
+    end)
   end
 end

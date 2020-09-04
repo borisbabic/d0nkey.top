@@ -25,7 +25,7 @@ defmodule Backend.MastersTour.PlayerStats do
   def calculate_player_stats({_, ps}), do: calculate_player_stats(ps)
   def calculate_player_stats([first | rest]), do: rest |> Enum.reduce(create(first), &update/2)
 
-  @spec create(Standings.t()) :: Player.t()
+  @spec create(Standings.t()) :: PlayerStats.t()
   def create(s) do
     %__MODULE__{
       battletag_full: s.battletag_full,

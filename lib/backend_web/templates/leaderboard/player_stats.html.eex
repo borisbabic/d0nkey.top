@@ -1,0 +1,68 @@
+<div class="title is-2">Leaderboard Stats</div>
+<div class="subtitle is-6">Since January 2019</div>
+
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Regions</button></div>
+    <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+
+            <%= form_for @conn, Routes.leaderboard_path(@conn, :player_stats), [as: :regions, method: :get], fn
+            f-> %>
+                <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+                    <input name="<%= key %>" type="hidden" value="<%= value %>">
+                <% end %>
+                <%= for %{value: val, name: name, selected: selected} <- @region_options do %>
+                        <label for="regions_<%= val%>" class="dropdown-item">
+                            <span > <%= name %></span>
+                            <%= checkbox f, val, hidden_input: false, class: "is-pulled-right", value: selected %>
+                        </label>
+                <% end %>
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>
+
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Leaderboards</button></div>
+    <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+
+            <%= form_for @conn, Routes.leaderboard_path(@conn, :player_stats), [as: :leaderboards, method: :get], fn
+            f-> %>
+                <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+                    <input name="<%= key %>" type="hidden" value="<%= value %>">
+                <% end %>
+                <%= for %{value: val, name: name, selected: selected} <- @leaderboards_options do %>
+                        <label for="leaderboards_<%= val%>" class="dropdown-item">
+                            <span > <%= name %></span>
+                            <%= checkbox f, val, hidden_input: false, class: "is-pulled-right", value: selected %>
+                        </label>
+                <% end %>
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <%= for hd <- @headers do %>
+                <th> <%= hd %> </th>
+            <% end %>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for row <- @rows do %>
+            <tr>
+                <%= for cell <- row do %>
+                    <td> <%= cell %> </td>
+                <% end %>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
