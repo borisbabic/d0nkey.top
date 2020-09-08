@@ -89,7 +89,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :Montréal,
-        battlefy_id: nil,
+        battlefy_id: "5f3c3c6066bf242962711d60",
         ladder_seasons: [80, 81],
         region: :US,
         old_id: :Montreal,
