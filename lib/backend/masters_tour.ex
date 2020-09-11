@@ -8,6 +8,7 @@ defmodule Backend.MastersTour do
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.MastersTour.Qualifier
   alias Backend.MastersTour.PlayerStats
+  alias Backend.MastersTour.TourStop
   alias Backend.Infrastructure.BattlefyCommunicator
   alias Backend.Infrastructure.PlayerStatsCache
   alias Backend.Blizzard
@@ -644,5 +645,13 @@ defmodule Backend.MastersTour do
 
     from(q in Qualifier, where: q.tour_stop == ^old_string)
     |> Repo.update_all(set: [tour_stop: new_string])
+  end
+
+  @spec tour_stops_tournaments() :: [Battlefy.Tournament.t()]
+  def tour_stops_tournaments() do
+    TourStop.all()
+    |> Enum.map(fn ts -> ts.battlefy_id end)
+    |> Enum.filter(&Util.id/1)
+    |> Enum.map(&Battlefy.get_tournament/1)
   end
 end

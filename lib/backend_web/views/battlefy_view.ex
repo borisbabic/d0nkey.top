@@ -161,32 +161,10 @@ defmodule BackendWeb.BattlefyView do
       end)
       |> Enum.sort_by(fn o -> o.current_round end, :desc)
 
-    player =
-      player_matches
-      |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: rn} ->
-        {player, opponent} =
-          case {top.team, bottom.team} do
-            {%{name: ^team_name}, _} ->
-              {top, bottom || Battlefy.MatchTeam.empty()}
-
-            {_, %{name: ^team_name}} ->
-              {bottom, top || Battlefy.MatchTeam.empty()}
-
-            _ ->
-              Logger.warn("No team is the players team, wtf #{top.team} #{bottom.team}")
-              {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty()}
-          end
-
-        %{
-          score: "#{player.score} - #{opponent.score} ",
-          match_url: Battlefy.get_match_url(tournament, match),
-          opponent: handle_opponent_team(opponent, tournament, conn),
-          current_round: rn
-        }
-      end)
-
+    {player, class_stats_raw} = handle_player_matches(player_matches, team_name, tournament, conn)
     hsdeckviewer = Routes.battlefy_path(conn, :tournament_decks, tournament.id, team_name)
     yaytears = Backend.Yaytears.create_deckstrings_link(tournament.id, team_name)
+    class_stats = class_stats_raw |> Enum.map(fn {_k, v} -> v end)
 
     render("future_opponents.html", %{
       conn: conn,
@@ -197,9 +175,40 @@ defmodule BackendWeb.BattlefyView do
       team_name: team_name,
       hsdeckviewer: hsdeckviewer,
       tournament: tournament,
+      class_stats: class_stats,
+      show_class_stats: class_stats |> Enum.count() > 0,
       standings_link: Routes.battlefy_path(conn, :tournament, tournament.id),
       yaytears: yaytears
     })
+  end
+
+  def handle_player_matches(player_matches, team_name, tournament, conn) do
+    player_matches
+    |> Enum.map_reduce(%{}, fn match = %{top: top, bottom: bottom, round_number: rn}, acc ->
+      {player, opponent, player_place} =
+        case {top.team, bottom.team} do
+          {%{name: ^team_name}, _} ->
+            {top, bottom || Battlefy.MatchTeam.empty(), :top}
+
+          {_, %{name: ^team_name}} ->
+            {bottom, top || Battlefy.MatchTeam.empty(), :bottom}
+
+          _ ->
+            Logger.warn("No team is the players team, wtf #{top.team} #{bottom.team}")
+            {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty()}
+        end
+
+      {
+        %{
+          score: "#{player.score} - #{opponent.score} ",
+          match_url: Battlefy.get_match_url(tournament, match),
+          opponent: handle_opponent_team(opponent, tournament, conn),
+          current_round: rn
+        },
+        Match.create_class_stats(match, player_place)
+        |> Battlefy.ClassMatchStats.merge_collections(acc)
+      }
+    end)
   end
 
   @spec calculate_ongoing([Match.t()], boolean, Battlefy.Tournament.t(), Plug.Conn.t()) :: Map.t()

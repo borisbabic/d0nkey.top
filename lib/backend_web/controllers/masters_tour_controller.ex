@@ -78,11 +78,7 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def tour_stops(conn, _params) do
-    tournaments =
-      MastersTour.TourStop.all()
-      |> Enum.map(fn ts -> ts.battlefy_id end)
-      |> Enum.filter(&Util.id/1)
-      |> Enum.map(&Backend.Battlefy.get_tournament/1)
+    tournaments = MastersTour.tour_stops_tournaments()
 
     render(conn, "tour_stops.html", %{conn: conn, tournaments: tournaments})
   end

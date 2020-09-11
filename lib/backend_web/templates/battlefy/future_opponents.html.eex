@@ -8,6 +8,29 @@
     <a class="tag is-link" href="<%= @yaytears%>">yaytears</a>
 </div>
 
+<%= if @show_class_stats do %>
+    <div class="title is-5">Class Stats</div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Class</th>
+                <th>Banned</th>
+                <th>Wins</th>
+                <th>Losses</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{class: class, bans: bans, wins: wins, losses: losses} <- @class_stats do %>
+                <tr>
+                    <td><%= class %></td>
+                    <td><%= bans %></td>
+                    <td><%= wins %></td>
+                    <td><%= losses %></td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+<% end %>
 <%= if @show_player do %>
     <div class="title is-5">Player matches</div>
     <table class="table is-striped is-fullwidth is-narrow">

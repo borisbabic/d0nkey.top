@@ -3,6 +3,8 @@ defmodule Backend.Battlefy.Match do
   use TypedStruct
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.MatchTeam
+  alias Backend.Battlefy.ClassMatchStats
+  alias Backend.Battlefy.Match.MatchStats
 
   typedstruct enforce: true do
     field :id, Backend.Battlefy.match_id()
@@ -14,6 +16,7 @@ defmodule Backend.Battlefy.Match do
     field :stage_id, Backend.Battlefy.stage_id()
     field :is_bye, boolean
     field :completed_at, NaiveDateTime.t()
+    field :stats, MatchStats.t() | nil
     # field :is_complete, boolean
   end
 
@@ -69,6 +72,7 @@ defmodule Backend.Battlefy.Match do
       double_loss: map["double_loss"] || false,
       is_bye: is_bye,
       completed_at: map["completed_at"] |> Util.naive_date_time_or_nil(),
+      stats: MatchStats.from_raw_map(map["stats"]) || [],
       stage_id: stage_id
       # is_complete: is_complete
     }
@@ -78,6 +82,28 @@ defmodule Backend.Battlefy.Match do
     m.completed_at == nil &&
       (m.bottom.winner == false || m.bottom.winner == nil) &&
       (m.top.winner == false || m.top.winner == nil)
+  end
+
+  def create_class_stats(%{stats: nil}, _), do: nil
+
+  def create_class_stats(m = %__MODULE__{}, place) do
+    case Map.get(m, place) do
+      nil ->
+        nil
+
+      team ->
+        collection =
+          if team.banned_class, do: %{} |> ClassMatchStats.add_ban(team.banned_class), else: %{}
+
+        m.stats
+        |> Enum.reduce(collection, fn s, acc ->
+          if s.stats do
+            MatchStats.Stats.add_class_stats_for_place(s.stats, acc, place)
+          else
+            acc
+          end
+        end)
+    end
   end
 end
 
@@ -92,6 +118,7 @@ defmodule Backend.Battlefy.MatchTeam do
     field :disqualified, boolean
     field :team, Team.t() | nil
     field :score, integer
+    field :banned_class, String.t() | nil
     field :ready_at, NaiveDateTime.t() | nil
     field :name, String.t()
   end
@@ -118,6 +145,7 @@ defmodule Backend.Battlefy.MatchTeam do
       winner: map["winner"],
       name: map["name"],
       team: team,
+      banned_class: map["banned_class"],
       ready_at: Util.parse_date(map["ready_at"]),
       score: map["score"] || 0
     }
@@ -129,6 +157,83 @@ defmodule Backend.Battlefy.MatchTeam do
       mt.name && mt.name != "" -> mt.name
       true -> nil
     end
+  end
+end
+
+defmodule Backend.Battlefy.ClassMatchStats do
+  @moduledoc false
+  use TypedStruct
+
+  typedstruct enforce: true do
+    field :class, string
+    field :wins, integer
+    field :losses, integer
+    field :bans, integer
+  end
+
+  def init(class) do
+    %__MODULE__{
+      class: class,
+      wins: 0,
+      losses: 0,
+      bans: 0
+    }
+  end
+
+  def merge(nil, second = %__MODULE__{}), do: second
+  def merge(first = %__MODULE__{}, nil), do: first
+
+  def merge(first = %__MODULE__{class: a}, second = %__MODULE__{class: b}) when a == b do
+    %__MODULE__{
+      class: a,
+      wins: first.wins + second.wins,
+      losses: first.losses + second.losses,
+      bans: first.bans + second.bans
+    }
+  end
+
+  def init_collection(class_stats = %__MODULE__{}) do
+    %{} |> Map.put(class_stats.class, class_stats)
+  end
+
+  def merge_collections(first_collection, second_collection) do
+    Map.merge(first_collection, second_collection, fn _, first, second -> merge(first, second) end)
+  end
+
+  def update_collection(collection, class_stats = %__MODULE__{}) do
+    class_stats
+    |> init_collection()
+    |> merge_collections(collection)
+  end
+
+  def add_win(collection, class) do
+    collection
+    |> update_collection(%__MODULE__{
+      class: class,
+      wins: 1,
+      losses: 0,
+      bans: 0
+    })
+  end
+
+  def add_loss(collection, class) do
+    collection
+    |> update_collection(%__MODULE__{
+      class: class,
+      wins: 0,
+      losses: 1,
+      bans: 0
+    })
+  end
+
+  def add_ban(collection, class) do
+    collection
+    |> update_collection(%__MODULE__{
+      class: class,
+      wins: 0,
+      losses: 0,
+      bans: 1
+    })
   end
 end
 
@@ -155,4 +260,96 @@ defmodule Backend.Battlefy.MatchDeckstrings do
     |> Enum.filter(fn line -> line && line != "" && String.at(line, 0) != "#" end)
     |> Enum.at(0)
   end
+end
+
+defmodule Backend.Battlefy.Match.MatchStats do
+  @moduledoc false
+  use TypedStruct
+  alias Backend.Battlefy.Match.MatchStats.Stats
+
+  typedstruct enforce: true do
+    field :stats, Stats.t()
+    field :game_number, integer
+  end
+
+  def from_raw_map(maps) when is_list(maps) do
+    maps |> Enum.map(&from_raw_map/1)
+  end
+
+  def from_raw_map(map = %{"gameNumber" => _}) do
+    Recase.Enumerable.convert_keys(
+      map,
+      &Recase.to_snake/1
+    )
+    |> from_raw_map
+  end
+
+  def from_raw_map(%{"stats" => stats, "game_number" => game_number}) do
+    %__MODULE__{
+      stats: Stats.from_raw_map(stats),
+      game_number: game_number
+    }
+  end
+
+  def from_raw_map(_), do: nil
+end
+
+defmodule Backend.Battlefy.Match.MatchStats.Stats do
+  @moduledoc false
+  use TypedStruct
+  alias Backend.Battlefy.ClassMatchStats
+  alias Backend.Battlefy.Match.MatchStats.Stats.StatsTeam
+
+  typedstruct enforce: true do
+    field :top, StatsTeam.t()
+    field :bottom, StatsTeam.t()
+    field :is_complete, boolean
+  end
+
+  def from_raw_map(map = %{"isComplete" => _}) do
+    Recase.Enumerable.convert_keys(
+      map,
+      &Recase.to_snake/1
+    )
+    |> from_raw_map
+  end
+
+  def from_raw_map(%{"bottom" => bottom, "top" => top, "is_complete" => is_complete}) do
+    %__MODULE__{
+      top: StatsTeam.from_raw_map(top),
+      bottom: StatsTeam.from_raw_map(bottom),
+      is_complete: is_complete
+    }
+  end
+
+  def from_raw_map(_), do: nil
+
+  def add_class_stats_for_place(s = %__MODULE__{}, collection, place) do
+    team_stats = Map.get(s, place)
+
+    cond do
+      !s.is_complete || !team_stats -> collection
+      team_stats.winner -> collection |> ClassMatchStats.add_win(team_stats.class)
+      !team_stats.winner -> collection |> ClassMatchStats.add_loss(team_stats.class)
+    end
+  end
+end
+
+defmodule Backend.Battlefy.Match.MatchStats.Stats.StatsTeam do
+  @moduledoc false
+  use TypedStruct
+
+  typedstruct enforce: true do
+    field :class, String.t()
+    field :winner, boolean
+  end
+
+  def from_raw_map(%{"class" => class, "winner" => winner}) do
+    %__MODULE__{
+      class: class,
+      winner: winner
+    }
+  end
+
+  def from_raw_map(_), do: nil
 end

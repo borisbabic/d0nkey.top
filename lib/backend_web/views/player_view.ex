@@ -32,10 +32,17 @@ defmodule BackendWeb.PlayerView do
 
     player_rows =
       case {pi.country, pi.region} do
-        {nil, nil} -> []
-        {country, nil} -> [{"Country", pi.country}]
-        {nil, region} -> [{"Region", pi.region |> Blizzard.get_region_name(:long)}]
-        {country, region} -> [{"Country", pi.country}, {"Region", pi.region}]
+        {nil, nil} ->
+          []
+
+        {country, nil} ->
+          [{"Country", pi.country}]
+
+        {nil, region} ->
+          [{"Region", pi.region |> Blizzard.get_region_name(:long)}]
+
+        {country, region} ->
+          [{"Country", pi.country}, {"Region", pi.region |> Blizzard.get_region_name(:long)}]
       end
 
     earnings_rows = [{"2020 MT earnings", mt_earnings}]
