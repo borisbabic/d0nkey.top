@@ -14,6 +14,7 @@ defmodule BackendWeb.PlayerController do
     player_info = PlayerInfo.get_info(bt)
 
     tournaments = Backend.MastersTour.list_qualifiers_for_player(bt)
+    tour_stops = Backend.MastersTour.tour_stops_tournaments()
 
     mt_earnings =
       Backend.MastersTour.get_gm_money_rankings({2021, 1})
