@@ -27,6 +27,7 @@ defmodule BackendWeb.Router do
     get "/qualifiers", MastersTourController, :qualifiers
     get "/mt/earnings", MastersTourController, :earnings
     get "/mt/qualifier-stats/:tour_stop", MastersTourController, :qualifier_stats
+    get "/mt/tour-stops", MastersTourController, :tour_stops
 
     get "/battlefy/third-party-tournaments", BattlefyController, :organization_tournaments
 

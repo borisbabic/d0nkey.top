@@ -93,7 +93,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_seasons: [80, 81],
         region: :US,
         old_id: :Montreal,
-        start_time: ~N[2020-09-11 13:00:00],
+        start_time: ~N[2020-09-11 15:15:00],
         year: 2020
       },
       %__MODULE__{

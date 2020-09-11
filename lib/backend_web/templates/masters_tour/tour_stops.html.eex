@@ -1,0 +1,2 @@
+<div class="title is-2">Tour Stops</div>
+<%= render(BackendWeb.BattlefyView, "tournament_table.html", conn: @conn, raw: @raw, slug: @slug) %>

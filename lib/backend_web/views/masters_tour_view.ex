@@ -626,4 +626,8 @@ defmodule BackendWeb.MastersTourView do
       invited_at: invited_player.upstream_time
     }
   end
+
+  def render("tour_stops.html", %{conn: conn, tournaments: tournaments}) do
+    render("tour_stops.html", %{conn: conn, raw: tournaments, slug: "hsesports"})
+  end
 end
