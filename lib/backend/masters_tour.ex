@@ -534,6 +534,7 @@ defmodule Backend.MastersTour do
     case name do
       "Liooon" -> "VKLiooon"
       "brimful" -> "Briarthorn"
+      "LojomHS" -> "lojom"
       n -> n
     end
   end
