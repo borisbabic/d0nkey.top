@@ -596,7 +596,7 @@ defmodule Backend.PlayerInfo do
     "Kykounet" => "France",
     "L0rinda" => "United Kingdom",
     "LBYS" => "United States",
-    "Lambyseries" => "Singapore",
+    "lambyseries" => "Singapore",
     "LazyA" => "Portugal",
     "Leadpaint" => "United States",
     "Leaoh" => "China",
@@ -1249,6 +1249,14 @@ defmodule Backend.PlayerInfo do
     "RNGLys" => "China",
     "gle" => "USA",
     "VKDiana" => "China",
+    "Lambyseries" => "Singapore",
+    "Komik" => "Germany",
+    "taroimo" => "Japan",
+    "Aojiru" => "Japan",
+    "decisivebeat" => "Russia",
+    "Lwd12318" => "Hong Kong",
+    "cagnetta99" => "Italy",
+    "DreadEye" => "United States",
     "maneti" => "Spain"
   }
 
