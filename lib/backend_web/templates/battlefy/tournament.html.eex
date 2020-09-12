@@ -27,8 +27,16 @@
                 <div class="dropdown-item">
                     <%= submit "Submit", class: "button" %>
                 </div>
+
+                <input
+                list="highlight"
+                name="highlight"
+                id="highlight_select"
+                class="input"
+                placeholder="Select Player"
+                onchange="location_href_by_datalist('highlight_select', 'highlight')">
                 <%= for {player, selected} <- @players do %>
-                        <label for="player_<%= player %>" class="dropdown-item">
+                        <label for="player_<%= player %>" class="dropdown-item" style>
                             <span > <%= player %></span>
                             <%= checkbox f, player, hidden_input: false, class: "is-pulled-right", value: selected %>
                         </label>
