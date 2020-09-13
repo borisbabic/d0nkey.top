@@ -585,6 +585,10 @@ defmodule Backend.MastersTour do
         case {wins, place, tour_stop, shortened_name} do
           # stupid blizzard not updating battlefy till the end
           {_, _, :Arlington, "xBlyzes"} -> 32_500
+          {_, _, :Montréal, "Frenetic"} -> 22_500
+          {_, _, :Montréal, "lambyseries"} -> 15_000
+          {_, _, :Montréal, "DreadEye"} -> 15_000
+          {_, _, :Montréal, "cagnetta99"} -> 22_500
           {3, _, _, _} -> 32_500
           {2, _, _, _} -> 22_500
           {1, _, _, _} -> 15_000
