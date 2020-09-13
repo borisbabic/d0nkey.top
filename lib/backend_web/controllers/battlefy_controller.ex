@@ -4,12 +4,17 @@ defmodule BackendWeb.BattlefyController do
   alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
 
+  defp is_ongoing(%{"show_ongoing" => ongoing}) when is_binary(ongoing),
+    do: String.starts_with(ongoing, "yes")
+
+  defp is_ongoing(_), do: false
+
   def tournament(conn, params = %{"tournament_id" => tournament_id, "stage_id" => stage_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
     standings = Battlefy.get_stage_standings(stage_id)
 
     {matches, show_ongoing} =
-      if String.starts_with?(params["show_ongoing"], "yes") do
+      if is_ongoing(params) do
         {Battlefy.get_matches(stage_id), true}
       else
         {[], false}
@@ -30,7 +35,7 @@ defmodule BackendWeb.BattlefyController do
     standings = Battlefy.get_tournament_standings(tournament)
 
     {matches, show_ongoing} =
-      if params["show_ongoing"] && String.starts_with?(params["show_ongoing"], "yes") do
+      if is_ongoing(params) do
         {Battlefy.get_tournament_matches(tournament), true}
       else
         {[], false}
