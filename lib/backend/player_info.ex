@@ -1257,6 +1257,7 @@ defmodule Backend.PlayerInfo do
     "Lwd12318" => "Hong Kong",
     "cagnetta99" => "Italy",
     "DreadEye" => "United States",
+    "coolkid2001" => "Australia",
     "maneti" => "Spain"
   }
 
