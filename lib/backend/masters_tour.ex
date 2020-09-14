@@ -535,6 +535,8 @@ defmodule Backend.MastersTour do
       "Liooon" -> "VKLiooon"
       "brimful" -> "Briarthorn"
       "LojomHS" -> "lojom"
+      "執念の蒼汁" -> "Aojiru"
+      "Syuunen No Aojiru" -> "Aojiru"
       n -> n
     end
   end
