@@ -349,7 +349,10 @@ defmodule Backend.Battlefy do
       %{top: top, bottom: bottom} =
       matches
       |> Match.filter_team(team_name)
-      |> Enum.max_by(fn %{round_number: rn} -> rn end)
+      |> case do
+        [] -> %{top: nil, bottom: nil}
+        matches -> matches |> Enum.max_by(fn %{round_number: rn} -> rn end)
+      end
 
     case {top, bottom} do
       {%{team: nil}, _} ->
