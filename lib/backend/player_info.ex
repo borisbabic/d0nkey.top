@@ -1243,7 +1243,6 @@ defmodule Backend.PlayerInfo do
     "Cptnkitty" => "Netherlands",
     "GamerRvg" => "USA",
     "PeaceHawk" => "Peru",
-    "Lwd12318" => "???",
     "BlizzconJan" => "Czech Republic",
     "LFYueying" => "China",
     "RNGLys" => "China",
