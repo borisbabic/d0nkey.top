@@ -278,7 +278,7 @@ defmodule Util do
   end
 
   def get_range(:month) do
-    today = %{year: year, month: month, day: day} = Date.utc_today()
+    today = %{year: year, month: month, day: _} = Date.utc_today()
 
     start_of_month =
       case Date.new(year, month, 1) do
@@ -362,9 +362,9 @@ defmodule Util do
   Gets the month name
 
   ## Example
-    iex> BackendWeb.LeaderboardView.get_month_name(12)
+    iex> Util.get_month_name(12)
     :December
-    iex> BackendWeb.LeaderboardView.get_month_name(1)
+    iex> Util.get_month_name(1)
     :January
   """
   @spec get_month_name(integer) :: atom | String.t()
