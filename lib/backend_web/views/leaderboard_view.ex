@@ -7,7 +7,7 @@ defmodule BackendWeb.LeaderboardView do
   @type selectable_season :: {String.t(), integer()}
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
 
-  def render("index.html", params = %{leaderboard: nil, conn: conn, ladder_mode: ladder_mode}) do
+  def render("index.html", params = %{leaderboard: nil}) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
   end
 
@@ -274,7 +274,7 @@ defmodule BackendWeb.LeaderboardView do
     |> elem(0)
   end
 
-  defp prev(nil, account_id), do: {nil, nil}
+  defp prev(nil, _), do: {nil, nil}
 
   defp prev(comparison, account_id) do
     comparison.entries

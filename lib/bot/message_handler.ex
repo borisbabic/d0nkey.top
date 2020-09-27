@@ -53,8 +53,7 @@ defmodule Bot.MessageHandler do
       %{season_id: season_id, leaderboard_id: leaderboard_id, region: region} =
       parse_leaderboard_options(rest)
 
-    {leaderboard_entries, _} =
-      Leaderboards.fetch_current_entries(region, leaderboard_id, season_id)
+    {leaderboard_entries, _} = Leaderboards.get_leaderboard(region, leaderboard_id, season_id)
 
     query_params =
       ldb_params

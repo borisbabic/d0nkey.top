@@ -5,7 +5,7 @@ defmodule BackendWeb.BattlefyController do
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
 
   defp is_ongoing(%{"show_ongoing" => ongoing}) when is_binary(ongoing),
-    do: String.starts_with(ongoing, "yes")
+    do: String.starts_with?(ongoing, "yes")
 
   defp is_ongoing(_), do: false
 
