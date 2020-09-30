@@ -4,15 +4,12 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
   alias Backend.Blizzard.Leaderboard
 
   def get_leaderboard(region, leaderboard_id, season_id) do
-    url =
-      "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
-        leaderboard_id
-      }&seasonId=#{season_id}"
+    url = create_link(region, leaderboard_id, season_id)
 
     {u_secs, return} = :timer.tc(&HTTPoison.get/1, [url])
 
     Logger.info(
-      "Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(u_secs, 1000)} ms"
+      "Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(u_secs, 1000)} ms #{url}"
     )
 
     case return do
@@ -21,6 +18,15 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
       _ -> {:error, nil}
     end
   end
+
+  def create_link(region, leaderboard_id, nil),
+    do:
+      "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
+        leaderboard_id
+      }"
+
+  def create_link(region, leaderboard_id, season_id),
+    do: "#{create_link(region, leaderboard_id, nil)}&seasonId=#{season_id}"
 
   defp process_leaderboard(map = %{"leaderboard" => %{"metadata" => metadata, "rows" => rows}}) do
     new = Leaderboard.from_raw_map(map)
