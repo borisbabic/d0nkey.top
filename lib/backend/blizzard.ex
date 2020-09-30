@@ -493,4 +493,26 @@ defmodule Backend.Blizzard do
     ldb = get_leaderboard_name(leaderboard, length)
     "#{ldb} #{r} #{m} #{year}"
   end
+
+  def get_ineligible_players() do
+    [
+      %{battletag_short: "Archangel", from: ~D[2019-01-01]},
+      %{battletag_short: "Chakki", from: ~D[2019-01-01]},
+      %{battletag_short: "Gallon", from: ~D[2020-08-01]}
+    ]
+  end
+
+  def ineligible?(battletag_short, %{year: year, month: month, day: day}) do
+    Date.new(year, month, day)
+    |> case do
+      {:ok, date} ->
+        get_ineligible_players()
+        |> Enum.any?(fn %{battletag_short: bt, from: d} ->
+          battletag_short == bt && Date.compare(d, date) == :lt
+        end)
+
+      _ ->
+        false
+    end
+  end
 end
