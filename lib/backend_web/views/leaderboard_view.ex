@@ -166,7 +166,7 @@ defmodule BackendWeb.LeaderboardView do
     other_ladders
     |> Enum.flat_map(fn leaderboard ->
       process_entries(leaderboard, invited, nil)
-      |> Enum.filter(fn e -> e.qualifying end)
+      |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
       |> Enum.with_index(1)
       |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, leaderboard.region, pos}} end)
     end)
@@ -252,9 +252,9 @@ defmodule BackendWeb.LeaderboardView do
   def process_entries(nil, _, _), do: []
 
   def process_entries(%{entries: entries}, invited, comparison) do
-    Enum.map_reduce(entries, 0, fn le = %{account_id: account_id}, acc ->
+    Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
       qualified = Map.get(invited, to_string(account_id))
-      qualifying = !qualified && acc < 16
+      qualifying = {!qualified && acc <= 16, acc}
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
 
