@@ -19,9 +19,8 @@
             <td><a href="<%= Routes.player_path(@conn, :player_profile, battletag) %>"><%= battletag %></a></td>
             <%= if @show_mt_column do %>
                 <%= case {qualified, qualifying} do%>
-                    <% {_, true} -> %>
-                        <td><p class="tag is-success" data-balloon-pos="up" aria-label="The top 16 uninvited earn an MT invite">Top
-                        16</p></td>
+                    <% {_, {true, pos}} -> %>
+                        <td><p class="tag is-success" data-balloon-pos="up" aria-label="The top 16 uninvited earn an MT invite. #<%= pos %> uninvited">Top 16</p></td>
                     <% {:official, _} -> %>
                         <td><p class="tag is-info" data-balloon-pos="up" aria-label="Officially invited to the MT">Official</p></td>
                     <% {:unofficial, _} -> %>
@@ -29,7 +28,7 @@
                     <% {{:other_ladder, region, pos}, _} -> %>
                         <td><p class="tag is-danger" data-balloon-pos="up" aria-label="#<%=pos%> uninvited in
                         <%=region%>, which has a higher priority according to MT rules"><%="#{region} ##{pos}"%></p></td>
-                    <% {nil, false} -> %>
+                    <% {nil, {false, _}} -> %>
                         <td></td>
                 <% end %>
             <% end %>
