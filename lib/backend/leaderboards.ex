@@ -93,7 +93,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  defp get_criteria(:latest), do: [{"order_by", {:desc, :updated_at}}, {"limit", 1}]
+  defp get_criteria(:latest), do: [{"order_by", {:desc, :upstream_updated_at}}, {"limit", 1}]
 
   defp get_criteria(l, criteria) when is_list(criteria),
     do: criteria |> Enum.flat_map(fn c -> get_criteria(l, c) end)
