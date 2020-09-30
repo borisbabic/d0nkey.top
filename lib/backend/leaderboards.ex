@@ -147,6 +147,18 @@ defmodule Backend.Leaderboards do
   end
 
   def stats(criteria), do: snapshots(criteria) |> PlayerStats.create_collection()
+
+  def latest_up_to(region, leaderboard, date) do
+    ([
+       {"region", region},
+       {"leaderboard_id", leaderboard},
+       {"up_to", date}
+     ] ++
+       get_criteria(:latest))
+    |> snapshots()
+    |> Enum.at(0)
+  end
+
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
   def snapshots(criteria) do
@@ -248,6 +260,11 @@ defmodule Backend.Leaderboards do
   defp compose_snapshot_query({"limit", limit}, query) do
     query
     |> limit(^limit)
+  end
+
+  defp compose_snapshot_query({"up_to", date = %NaiveDateTime{}}, query) do
+    query
+    |> where([s], s.upstream_updated_at < ^date)
   end
 
   defp compose_snapshot_query({"until", {string_num, unit}}, query) when is_binary(string_num) do

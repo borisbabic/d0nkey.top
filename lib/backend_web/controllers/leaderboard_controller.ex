@@ -69,6 +69,20 @@ defmodule BackendWeb.LeaderboardController do
 
   def get_leaderboard(%{"database_id" => id}), do: Leaderboards.snapshot(id)
 
+  def get_leaderboard(%{
+        "up_to" => string_date,
+        "region" => region,
+        "leaderboardId" => leaderboard
+      }) do
+    case string_date |> Timex.parse("{RFC3339z}") do
+      {:error, _} ->
+        nil
+
+      {:ok, date} ->
+        Leaderboards.latest_up_to(region, leaderboard, date)
+    end
+  end
+
   def get_leaderboard(params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
     get_leaderboard(region, leaderboard_id, params["seasonId"])
   end
