@@ -251,10 +251,15 @@ defmodule BackendWeb.LeaderboardView do
 
   def process_entries(nil, _, _), do: []
 
-  def process_entries(%{entries: entries}, invited, comparison) do
+  def process_entries(
+        %{entries: entries, upstream_updated_at: upstream_updated_at},
+        invited,
+        comparison
+      ) do
     Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
       qualified = Map.get(invited, to_string(account_id))
-      qualifying = {!qualified && acc <= 16, acc}
+      ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
+      qualifying = {!qualified && !ineligible && acc <= 16, acc}
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
 
@@ -262,9 +267,10 @@ defmodule BackendWeb.LeaderboardView do
         le
         |> Map.put_new(:qualified, qualified)
         |> Map.put_new(:qualifying, qualifying)
+        |> Map.put_new(:ineligible, ineligible)
         |> Map.put_new(:prev_rank, prev_rank)
         |> Map.put_new(:prev_rating, prev_rating),
-        if qualified do
+        if qualified || ineligible do
           acc
         else
           acc + 1

@@ -12,23 +12,25 @@
         </tr>
     </thead>
     <tbody>
-<%= for %{qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying, prev_rank: prev_rank, prev_rating: prev_rating}
+<%= for %{qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying, prev_rank: prev_rank, prev_rating: prev_rating, ineligible: ineligible}
  <- @table_entries do %>
         <tr>
             <td><%= render_comparison(position, prev_rank, true) %></td>
             <td><a href="<%= Routes.player_path(@conn, :player_profile, battletag) %>"><%= battletag %></a></td>
             <%= if @show_mt_column do %>
-                <%= case {qualified, qualifying} do%>
-                    <% {_, {true, pos}} -> %>
+                <%= case {qualified, qualifying, ineligible} do%>
+                    <% {_, _, true} -> %>
+                        <td><p class="tag is-dark" data-balloon-pos="up" aria-label="Blizz employees and others are ineligible ">Ineligible</p></td>
+                    <% {_, {true, pos}, _} -> %>
                         <td><p class="tag is-success" data-balloon-pos="up" aria-label="The top 16 uninvited earn an MT invite. #<%= pos %> uninvited">Top 16</p></td>
-                    <% {:official, _} -> %>
+                    <% {:official, _, _} -> %>
                         <td><p class="tag is-info" data-balloon-pos="up" aria-label="Officially invited to the MT">Official</p></td>
-                    <% {:unofficial, _} -> %>
+                    <% {:unofficial, _, _} -> %>
                         <td><p class="tag is-warning" data-balloon-pos="up" aria-label="Earned a spot but hasn't yet been officially invited">Unofficial</p></td>
-                    <% {{:other_ladder, region, pos}, _} -> %>
+                    <% {{:other_ladder, region, pos}, _, _} -> %>
                         <td><p class="tag is-danger" data-balloon-pos="up" aria-label="#<%=pos%> uninvited in
                         <%=region%>, which has a higher priority according to MT rules"><%="#{region} ##{pos}"%></p></td>
-                    <% {nil, {false, _}} -> %>
+                    <% {nil, {false, _}, _} -> %>
                         <td></td>
                 <% end %>
             <% end %>
