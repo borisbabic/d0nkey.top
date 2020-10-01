@@ -208,7 +208,10 @@ defmodule Backend.Blizzard do
   """
   @spec ladders_to_check(tour_stop | integer, region | String.t()) :: [region]
   def ladders_to_check(season_id, region) when is_integer(season_id) do
-    ladders_to_check(get_ladder_tour_stop!(season_id), region)
+    case get_ladder_tour_stop(season_id) do
+      {:ok, tour_stop} -> ladders_to_check(tour_stop, region)
+      {:error, _} -> []
+    end
   end
 
   def ladders_to_check(tour_stop, region) when is_atom(tour_stop) do
