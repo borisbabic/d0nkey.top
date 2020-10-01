@@ -249,15 +249,25 @@ defmodule BackendWeb.LeaderboardView do
     end
   end
 
+  def warning(%{season_id: 83, region: "US", leaderboard_id: "STD"}, "Jay"),
+    do: "I've been told this isn't the same
+  Jay that Finished on APAC so I'm not counting them"
+
+  def warning(_, _), do: nil
   def process_entries(nil, _, _), do: []
 
   def process_entries(
-        %{entries: entries, upstream_updated_at: upstream_updated_at},
+        snapshot = %{entries: entries, upstream_updated_at: upstream_updated_at},
         invited,
         comparison
       ) do
     Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
-      qualified = Map.get(invited, to_string(account_id))
+      warning = warning(snapshot, account_id)
+      qualified = !warning && Map.get(invited, account_id)
+
+      if account_id == "Jay",
+        do: IO.inspect({snapshot.region, snapshot.season_id, snapshot.leaderboard_id})
+
       ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
       qualifying = {!qualified && !ineligible && acc <= 16, acc}
 
@@ -269,6 +279,7 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:qualifying, qualifying)
         |> Map.put_new(:ineligible, ineligible)
         |> Map.put_new(:prev_rank, prev_rank)
+        |> Map.put_new(:warning, warning)
         |> Map.put_new(:prev_rating, prev_rating),
         if qualified || ineligible do
           acc
