@@ -12,27 +12,32 @@
         </tr>
     </thead>
     <tbody>
-<%= for %{qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying, prev_rank: prev_rank, prev_rating: prev_rating, ineligible: ineligible}
+<%= for e = %{qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying, prev_rank: prev_rank, prev_rating: prev_rating, ineligible: ineligible}
  <- @table_entries do %>
         <tr>
             <td><%= render_comparison(position, prev_rank, true) %></td>
             <td><a href="<%= Routes.player_path(@conn, :player_profile, battletag) %>"><%= battletag %></a></td>
             <%= if @show_mt_column do %>
+                <td>
                 <%= case {qualified, qualifying, ineligible} do%>
                     <% {_, _, true} -> %>
-                        <td><p class="tag is-dark" data-balloon-pos="up" aria-label="Blizz employees and others are ineligible ">Ineligible</p></td>
+                        <p class="tag is-dark" data-balloon-pos="up" aria-label="Blizz employees and others are ineligible ">Ineligible</p>
                     <% {_, {true, pos}, _} -> %>
-                        <td><p class="tag is-success" data-balloon-pos="up" aria-label="The top 16 uninvited earn an MT invite. #<%= pos %> uninvited">Top 16</p></td>
+                        <p class="tag is-success" data-balloon-pos="up" aria-label="The top 16 uninvited earn an MT invite. #<%= pos %> uninvited">Top 16</p>
                     <% {:official, _, _} -> %>
-                        <td><p class="tag is-info" data-balloon-pos="up" aria-label="Officially invited to the MT">Official</p></td>
+                        <p class="tag is-info" data-balloon-pos="up" aria-label="Officially invited to the MT">Official</p>
                     <% {:unofficial, _, _} -> %>
-                        <td><p class="tag is-warning" data-balloon-pos="up" aria-label="Earned a spot but hasn't yet been officially invited">Unofficial</p></td>
+                        <p class="tag is-warning" data-balloon-pos="up" aria-label="Earned a spot but hasn't yet been officially invited">Unofficial</p>
                     <% {{:other_ladder, region, pos}, _, _} -> %>
-                        <td><p class="tag is-danger" data-balloon-pos="up" aria-label="#<%=pos%> uninvited in
-                        <%=region%>, which has a higher priority according to MT rules"><%="#{region} ##{pos}"%></p></td>
-                    <% {nil, {false, _}, _} -> %>
-                        <td></td>
+                        <p class="tag is-danger" data-balloon-pos="up" aria-label="#<%=pos%> uninvited in
+                        <%=region%>, which has a higher priority according to MT rules"><%="#{region} ##{pos}"%></p>
+                    <% {nil, {false, _}, _} -> %> <span></span>
                 <% end %>
+
+                <%= if e.warning do %>
+                    <span data-balloon-pos="up" aria-label="<%=e.warning%>" class="tag is-warning">HOVER ME!</span>
+                <% end %>
+                </td>
             <% end %>
             <%= if to_string(@leaderboard_id) == "BG" do %>
                 <td><%= render_comparison(rating, prev_rating, false) %></td>
