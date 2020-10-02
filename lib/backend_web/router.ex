@@ -24,6 +24,7 @@ defmodule BackendWeb.Router do
     get "/donate-follow", PageController, :donate_follow
 
     get "/invited/:tour_stop", MastersTourController, :invited_players
+    get "/invited/", MastersTourController, :invited_players
     get "/qualifiers", MastersTourController, :qualifiers
     get "/mt/earnings", MastersTourController, :earnings
     get "/mt/qualifier-stats/", MastersTourController, :qualifier_stats

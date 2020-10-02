@@ -9,6 +9,25 @@ defmodule BackendWeb.MastersTourController do
     render(conn, "invited_players.html", %{invited: invited, tour_stop: tour_stop, conn: conn})
   end
 
+  def invited_players(conn, _params) do
+    tour_stop =
+      case Backend.Blizzard.current_ladder_tour_stop() do
+        "" ->
+          ts =
+            Backend.MastersTour.TourStop.all()
+            |> Enum.max_by(fn ts -> ts.start_time |> to_string() end)
+
+          ts.id |> to_string
+
+        ts ->
+          ts
+      end
+
+    redirect(conn,
+      to: Routes.masters_tour_path(conn, :invited_players, tour_stop)
+    )
+  end
+
   def qualifiers(
         conn,
         params = %{
@@ -136,8 +155,6 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def qualifier_stats(conn, params) do
-    IO.inspect(params)
-
     period =
       case Backend.Blizzard.current_ladder_tour_stop() do
         "" ->
