@@ -8,7 +8,7 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.MastersTour.PlayerStats
 
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
-  @min_cups_options [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
+  @min_cups_options [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 300]
 
   def create_name_cell(name, nil) do
     name
@@ -106,7 +106,10 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def min_cups(total) when total < 5, do: 0
-  def min_cups(total), do: @min_cups_options |> Enum.find(fn a -> a > 4 + total * 0.20 end) || 100
+
+  def min_cups(total),
+    do:
+      [100, @min_cups_options |> Enum.find(fn a -> a > 4 + total * 0.20 end) || 100] |> Enum.min()
 
   def filter_columns(column_map, columns_to_show) do
     columns_to_show
