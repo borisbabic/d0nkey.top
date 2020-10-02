@@ -101,7 +101,7 @@ defmodule Backend.MastersTour.TourStop do
         battlefy_id: nil,
         ladder_seasons: [82, 83],
         region: :EU,
-        start_time: ~N[2020-12-11 07:00:00],
+        start_time: ~N[2020-10-23 13:00:00],
         year: 2020
       }
     ]
