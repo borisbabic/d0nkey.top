@@ -136,9 +136,23 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def qualifier_stats(conn, params) do
+    IO.inspect(params)
+
+    period =
+      case Backend.Blizzard.current_ladder_tour_stop() do
+        "" ->
+          Backend.MastersTour.TourStop.all()
+          |> Enum.map(fn ts -> ts.year end)
+          |> Enum.max()
+          |> to_string()
+
+        ts ->
+          ts
+      end
+
     qualifier_stats(
       conn,
-      Map.merge(params, %{"tour_stop" => Backend.Blizzard.current_ladder_tour_stop()})
+      Map.merge(params, %{"tour_stop" => period})
     )
   end
 end
