@@ -118,6 +118,12 @@ defmodule BackendWeb.MastersTourView do
 
   @spec create_tour_stop_cells(PlayerStats.t(), [Blizzard.tour_stop()], MapSet.t()) :: Map.t()
   def create_tour_stop_cells(player_stats, tour_stops, invited_set) do
+    num_tour_stops =
+      tour_stops
+      |> Enum.map(fn ts -> player_stats.battletag_full <> to_string(ts) end)
+      |> Enum.filter(fn uniq_string -> MapSet.member?(invited_set, uniq_string) end)
+      |> Enum.count()
+
     tour_stops
     |> Enum.map(fn tour_stop ->
       cell =
@@ -130,6 +136,7 @@ defmodule BackendWeb.MastersTourView do
       {to_string(tour_stop), cell}
     end)
     |> Map.new()
+    |> Map.put("2020 MTs qualified", num_tour_stops)
   end
 
   def create_player_rows(player_stats, eligible_tour_stops, invited_set, conn, period) do
@@ -249,7 +256,8 @@ defmodule BackendWeb.MastersTourView do
         "Matches Lost",
         "Packs Earned",
         "Winrate percentile",
-        "Winrate percentile (qualified)"
+        "Winrate percentile (qualified)",
+        "2020 MTs qualified"
       ] ++
         (eligible_ts |> Enum.map(&to_string/1)) ++
         ["Winrate %"]
