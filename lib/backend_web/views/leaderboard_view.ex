@@ -345,7 +345,7 @@ defmodule BackendWeb.LeaderboardView do
     rows =
       stats
       |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
-      |> create_player_rows()
+      |> create_player_rows(conn)
       |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
@@ -445,14 +445,16 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  def create_player_rows(player_stats) do
+  def create_player_rows(player_stats, conn) do
     player_stats
     |> Enum.map(fn ps ->
       total = ps.ranks |> Enum.count()
       avg = ((ps.ranks |> Enum.sum()) / total) |> Float.round(2)
 
       %{
-        "Player" => ps.account_id,
+        "Player" => ~E"""
+          <a href="<%= Routes.player_path(conn, :player_profile, ps.account_id)%>"><%= ps.account_id %></a>
+        """,
         "Top 1" => ps |> PlayerStats.num_top(1),
         "Top 10" => ps |> PlayerStats.num_top(10),
         "Top 25" => ps |> PlayerStats.num_top(25),
