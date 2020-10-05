@@ -94,7 +94,7 @@ defmodule Backend.PlayerInfo do
                 "RNGLeaoh",
                 "WEYuansu"
               ])
-  def relegated_gms() do
+  def relegated_gms({2020, 2}) do
     MapSet.new([
       "Kolento",
       "Pavel",
@@ -107,6 +107,19 @@ defmodule Backend.PlayerInfo do
       "FroStee"
     ])
   end
+
+  def relegated_gms({2021, 1}) do
+    MapSet.new([
+      "Ryvius",
+      "kin0531",
+      "SilverName",
+      "BoarControl",
+      "Firebat",
+      "Empanizado"
+    ])
+  end
+
+  def relegated_gms(_), do: MapSet.new()
 
   # from liquidpedia and some hardcoded
   @player_nationalities %{
@@ -1445,8 +1458,12 @@ defmodule Backend.PlayerInfo do
     "IS" => :EU
   }
 
-  def get_grandmasters({2020, 2}), do: get_grandmasters(:Jönköping, relegated_gms())
-  def get_grandmasters({2021, 1}), do: get_grandmasters(:Montréal, MapSet.new()) ++ ["Briarthorn"]
+  def get_grandmasters(season = {2020, 2}),
+    do: get_grandmasters(:Jönköping, relegated_gms(season))
+
+  def get_grandmasters(season = {2021, 1}),
+    do: get_grandmasters(:Montréal, relegated_gms(season)) ++ ["Briarthorn"]
+
   def get_grandmasters(_), do: []
 
   def get_grandmasters(rts = reference_tour_stop, relegated) do
