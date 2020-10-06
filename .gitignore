@@ -35,3 +35,7 @@ npm-debug.log
 
 .elixir_ls
 .history
+
+/.idea/
+.sw*
+/logs.txt
