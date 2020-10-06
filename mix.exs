@@ -52,6 +52,11 @@ defmodule Backend.MixProject do
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:varint, "~> 1.0.0"},
       {:timex, "~> 3.5"},
+      {:phoenix_live_view, "~> 0.14.7"},
+      {:floki, ">= 0.27.0", only: :test},
+      {:phoenix_live_dashboard, "~> 0.1"},
+      {:telemetry_poller, "~> 0.4"},
+      {:telemetry_metrics, "~> 0.4"},
       {:quantum, "~> 2.3"}
     ]
   end

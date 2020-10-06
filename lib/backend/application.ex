@@ -13,6 +13,7 @@ defmodule Backend.Application do
         Backend.Repo,
         # Start the endpoint when the application starts
         {Phoenix.PubSub, name: Backend.PubSub},
+        Backend.Telemetry,
         BackendWeb.Endpoint,
         # Starts a worker by calling: Backend.Worker.start_link(arg)
         # {Backend.Worker, arg},

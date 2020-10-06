@@ -27,7 +27,8 @@ config :backend, BackendWeb.Endpoint,
   secret_key_base: "Hm4BqSotrad1PnidcjfF1FVR5I2Yw4YXEs64ZczPSBkDDXBsTPjMyC9TmGXJ3Kh2",
   render_errors: [view: BackendWeb.ErrorView, accepts: ~w(html json)],
   # pubsub: [name: Backend.PubSub, adapter: Phoenix.PubSub.PG2]
-  pubsub_server: Backend.PubSub
+  pubsub_server: Backend.PubSub,
+  live_view: [signing_salt: "Can't Touch This"]
 
 # auto sign me up
 config :backend,
@@ -41,7 +42,8 @@ config :backend,
   warmup_cache: false,
   auto_migrate: false,
   hearthstone_json_fetch_fresh: true,
-  su_regions: ["Europe", "Americas"]
+  su_regions: ["Europe", "Americas"],
+  admin_pass: "admin"
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -1,16 +1,24 @@
 defmodule BackendWeb.Router do
   use BackendWeb, :router
+  import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :fetch_flash
+    plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :put_root_layout, {BackendWeb.LayoutView, :root}
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  import Plug.BasicAuth
+
+  pipeline :admins_only do
+    plug :basic_auth, username: "admin", password: Application.fetch_env!(:backend, :admin_pass)
   end
 
   scope "/", BackendWeb do
@@ -73,8 +81,8 @@ defmodule BackendWeb.Router do
     get "/admin/get-all-leaderboards", AdminController, :get_all_leaderboards
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", BackendWeb do
-  #   pipe_through :api
-  # end
+  scope "/" do
+    pipe_through [:browser, :admins_only]
+    live_dashboard "/dashboard", metrics: Backend.Telemetry
+  end
 end
