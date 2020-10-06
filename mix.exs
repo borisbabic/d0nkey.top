@@ -56,6 +56,8 @@ defmodule Backend.MixProject do
       {:floki, ">= 0.27.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.1"},
       {:telemetry_poller, "~> 0.4"},
+      {:tesla, "~> 1.3.0"},
+      {:tesla_cache, "~> 1.1.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:quantum, "~> 2.3"}
     ]
