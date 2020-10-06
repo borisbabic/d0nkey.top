@@ -26,7 +26,8 @@ config :backend, BackendWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "Hm4BqSotrad1PnidcjfF1FVR5I2Yw4YXEs64ZczPSBkDDXBsTPjMyC9TmGXJ3Kh2",
   render_errors: [view: BackendWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Backend.PubSub, adapter: Phoenix.PubSub.PG2]
+  # pubsub: [name: Backend.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: Backend.PubSub
 
 # auto sign me up
 config :backend,
