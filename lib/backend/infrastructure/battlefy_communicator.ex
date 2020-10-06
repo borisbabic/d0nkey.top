@@ -9,10 +9,23 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Organization
   import Backend.Battlefy.Communicator
-  import Backend.Infrastructure.CommunicatorUtil
   @behaviour Backend.Battlefy.Communicator
   @type signup_options :: Communicator.signup_options()
   @type qualifier :: Communicator.qualifier()
+
+  use Tesla
+  plug Tesla.Middleware.Cache, ttl: :timer.seconds(30)
+
+  def get_body(url) do
+    response = get_response(url)
+    response.body
+  end
+
+  def get_response(url) do
+    {u_secs, response} = :timer.tc(&get!/1, [URI.encode(url)])
+    Logger.info("Got #{url} in #{div(u_secs, 1000)} ms")
+    response
+  end
 
   @doc """
   Get's the qualifiers that start between the start and end date (inclusive)
@@ -91,7 +104,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
   @spec get_stage(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stagea.t()
   def get_stage(stage_id) do
-    url = "https://api.battlefy.com/stages/#{stage_id}"
+    url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}"
 
     get_body(url)
     |> Poison.decode!()
@@ -100,7 +113,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
   @spec get_standings(Backend.Battlefy.stage_id()) :: [Backend.Battlefy.Standings.t()]
   def get_standings(stage_id) do
-    url = "https://api.battlefy.com/stages/#{stage_id}/standings"
+    url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/standings"
 
     get_body(url)
     |> Poison.decode!()
@@ -111,7 +124,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
           Backend.Battlefy.Standings.t()
         ]
   def get_round_standings(stage_id, round) do
-    url = "https://api.battlefy.com/stages/#{stage_id}/rounds/#{round}/standings"
+    url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/rounds/#{round}/standings"
 
     get_body(url)
     |> Poison.decode!()
@@ -121,7 +134,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t()
   def get_tournament(tournament_id) do
     url =
-      "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true"
+      "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend%5Bstages%5D=true&extend%5Borganization%5D=true"
 
     get_body(url)
     |> Poison.decode!()
@@ -133,13 +146,31 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   def get_matches(stage_id, opts \\ []) do
     url =
       case opts[:round] do
-        nil -> "http://api.battlefy.com/stages/#{stage_id}/matches"
-        round -> "http://api.battlefy.com/stages/#{stage_id}/matches?roundNumber=#{round}"
+        nil ->
+          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches"
+
+        round ->
+          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches?roundNumber=#{round}"
       end
 
     get_body(url)
     |> Poison.decode!()
-    |> Enum.map(&Match.from_raw_map/1)
+    |> Util.async_map(&Match.from_raw_map/1)
+  end
+
+  @spec get_matches(Battlefy.stage_id(), Battlefy.get_matches_options()) :: [Match.t()]
+  def get_matches_raw(stage_id, opts \\ []) do
+    url =
+      case opts[:round] do
+        nil ->
+          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches"
+
+        round ->
+          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches?roundNumber=#{round}"
+      end
+
+    response = get_response(url)
+    response.body
   end
 
   @spec get_match_deckstrings(Battlefy.tournament_id(), Battlefy.match_id()) :: [
@@ -155,7 +186,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   def get_profile(slug) do
-    url = "https://api.battlefy.com/profile/#{slug}"
+    url = "https://dtmwra1jsgyb0.cloudfront.net/profile/#{slug}"
 
     get_body(url)
     |> Poison.decode!()

@@ -24,7 +24,7 @@ defmodule BackendWeb.BattlefyController do
       standings: standings,
       tournament: tournament,
       matches: matches,
-      show_ongoing: show_ongoing,
+      show_ongoing: false,
       highlight: get_highlight(params),
       stage_id: stage_id
     })
@@ -45,7 +45,7 @@ defmodule BackendWeb.BattlefyController do
       standings: standings,
       tournament: tournament,
       matches: matches,
-      show_ongoing: show_ongoing,
+      show_ongoing: false,
       highlight: get_highlight(params)
     })
   end
