@@ -265,9 +265,6 @@ defmodule BackendWeb.LeaderboardView do
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
 
-      if account_id == "Jay",
-        do: {snapshot.region, snapshot.season_id, snapshot.leaderboard_id}
-
       ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
       qualifying = {!qualified && !ineligible && acc <= 16, acc}
 
