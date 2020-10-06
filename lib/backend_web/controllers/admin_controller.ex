@@ -14,4 +14,9 @@ defmodule BackendWeb.AdminController do
 
     text(conn, "Success")
   end
+
+  def test(conn, _params) do
+    IO.inspect(conn)
+    text(conn, "Success")
+  end
 end
