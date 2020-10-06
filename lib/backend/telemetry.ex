@@ -1,4 +1,5 @@
 defmodule Backend.Telemetry do
+  @moduledoc false
   use Supervisor
   import Telemetry.Metrics
 
@@ -30,6 +31,7 @@ defmodule Backend.Telemetry do
         unit: {:native, :millisecond}
       ),
       counter("phoenix.router_dispatch.stop.duration", tags: [:route]),
+      counter("phoenix.endpoint.stop.duration", tags: [:ip], tag_values: &get_and_put_ip/1),
 
       # Database Time Metrics
       summary("backend.repo.query.total_time", unit: {:native, :millisecond}),
@@ -44,6 +46,19 @@ defmodule Backend.Telemetry do
       summary("vm.total_run_queue_lengths.cpu"),
       summary("vm.total_run_queue_lengths.io")
     ]
+  end
+
+  defp get_and_put_ip(metadata = %{conn: conn}) do
+    ip =
+      conn.req_headers
+      |> Enum.find_value(fn {h, v} -> h == "x-forwarded-for" && v end)
+      |> case do
+        nil -> conn.remote_ip |> Tuple.to_list() |> Enum.join(".")
+        ff when is_binary(ff) -> ff |> String.split(",") |> Enum.at(0)
+        _ -> "unknown"
+      end
+
+    Map.put(metadata, :ip, ip)
   end
 
   defp periodic_measurements do

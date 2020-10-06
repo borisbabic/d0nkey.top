@@ -79,6 +79,7 @@ defmodule BackendWeb.Router do
     get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
 
     get "/admin/get-all-leaderboards", AdminController, :get_all_leaderboards
+    get "/admin/test", AdminController, :test
   end
 
   scope "/" do
