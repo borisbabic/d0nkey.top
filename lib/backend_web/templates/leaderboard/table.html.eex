@@ -31,7 +31,7 @@
                     <% {{:other_ladder, region, pos}, _, _} -> %>
                         <p class="tag is-danger" data-balloon-pos="up" aria-label="#<%=pos%> uninvited in
                         <%=region%>, which has a higher priority according to MT rules"><%="#{region} ##{pos}"%></p>
-                    <% {nil, {false, _}, _} -> %> <span></span>
+                    <% {_, {false, _}, _} -> %> <span></span>
                 <% end %>
 
                 <%= if e.warning do %>
