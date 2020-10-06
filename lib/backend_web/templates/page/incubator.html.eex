@@ -1,6 +1,11 @@
 <div class="subtitle is-5">WIP features:</div>
 These features need some finishing touches but are available for the adventurous
 <br>
+<a class="" href="<%=Routes.leaderboard_path(@conn, :index, %{"region" => "EU", "leaderboardId" => "STD", "up_to" =>
+"2020-09-02T09:09:11"})%>">Rewind the leaderboard</a> - you need to have both the leaderboardId and region in the url,
+and keep the date format as is (it's UTC). It finds the latest that I have up to that date, if it's too far back then
+ it will just return the previous season finish
+<br>
 <a class="" href="<%=Routes.player_path(@conn, :player_profile, "D0nkey#2470")%>">Player Profile</a> - You can change
  the url (keep %23 in place of #) or find a link to this on the qualifiers stats page or tournament profile page
  (qualifiers -> standings -> click on player -> click on player name)
