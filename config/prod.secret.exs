@@ -18,7 +18,12 @@ discord_token =
     this is needed for the bot
     """
 
+admin_pass =
+  System.get_env("ADMIN_PASS") ||
+    raise "environment variable ADMIN_PASS is missing."
+
 config :backend,
+  admin_pass: admin_pass,
   esports_earnings_api_key: System.get_env("ESPORTS_EARNINGS_API_KEY") || ""
 
 config :backend, Backend.Repo,
@@ -33,9 +38,14 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
+signing_salt =
+  System.get_env("LIVE_SIGNING_SALT") ||
+    raise "environment variable LIVE_SIGNING_SALT is missing."
+
 config :backend, BackendWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
-  secret_key_base: secret_key_base
+  secret_key_base: secret_key_base,
+  live_view: [signing_salt: signing_salt]
 
 config :nostrum,
   token: discord_token
