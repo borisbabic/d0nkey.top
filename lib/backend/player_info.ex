@@ -114,6 +114,10 @@ defmodule Backend.PlayerInfo do
       "kin0531",
       "SilverName",
       "BoarControl",
+      "Justsaiyan",
+      "justsaiyan",
+      "Warma",
+      "Flurry",
       "Firebat",
       "Empanizado"
     ])
