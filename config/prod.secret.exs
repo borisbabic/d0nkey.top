@@ -50,6 +50,24 @@ config :backend, BackendWeb.Endpoint,
 config :nostrum,
   token: discord_token
 
+bnet_client_id =
+  System.get_env("BNET_CLIENT_ID") ||
+    raise "environment variable BNET_CLIENT_ID is missing."
+
+bnet_client_secret =
+  System.get_env("BNET_CLIENT_SECRET") ||
+    raise "environment variable BNET_CLIENT_SECRET is missing."
+
+config :ueberauth, Ueberauth.Strategy.Bnet.OAuth,
+  client_id: bnet_client_id,
+  client_secret: bnet_client_secret
+
+guardian_secret_key =
+  System.get_env("GUARDIAN_SECRET_KEY") ||
+    raise "environment variable GUARDIAN_SECRET_KEY is missing."
+
+config :backend, Backend.UserManager.Guardian, secret_key: guardian_secret_key
+
 # ## Using releases (Elixir v1.9+)
 #
 # If you are doing OTP releases, you need to instruct Phoenix

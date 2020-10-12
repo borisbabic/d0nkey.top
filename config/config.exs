@@ -30,6 +30,21 @@ config :backend, BackendWeb.Endpoint,
   pubsub_server: Backend.PubSub,
   live_view: [signing_salt: "Can't Touch This"]
 
+config :ueberauth, Ueberauth,
+  providers: [
+    bnet: {Ueberauth.Strategy.Bnet, []}
+  ]
+
+config :ueberauth, Ueberauth.Strategy.Bnet.OAuth,
+  # System.get_env("BNET_CLIENT_ID"),
+  client_id: "3f839935169e4d6e9c1fc893301d242a",
+  client_secret: System.get_env("BNET_CLIENT_SECRET") || "",
+  region: "eu"
+
+config :backend, Backend.UserManager.Guardian,
+  issuer: "d0nkey.top",
+  secret_key: "CyjJAVTbtJgJwS+NbkbTpVTPDJeMKqcn+GakxrO4E5j/kB3SgcgF3CqfsxpxzQKM"
+
 # auto sign me up
 config :backend,
   esports_earnings_api_key: "",
