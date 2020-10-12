@@ -58,7 +58,8 @@ config :backend,
   auto_migrate: false,
   hearthstone_json_fetch_fresh: true,
   su_regions: ["Europe", "Americas"],
-  admin_pass: "admin"
+  admin_pass: "admin",
+  admin_config_vars_cutoff_date: "3000-12-31"
 
 # Configures Elixir's Logger
 config :logger, :console,
