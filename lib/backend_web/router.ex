@@ -2,6 +2,14 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
 
+  pipeline :auth do
+    plug Backend.UserManager.Pipeline
+  end
+
+  pipeline :ensure_auth do
+    plug Guardian.Plug.EnsureAuthenticated
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -22,7 +30,7 @@ defmodule BackendWeb.Router do
   end
 
   scope "/", BackendWeb do
-    pipe_through :browser
+    pipe_through [:browser, :auth]
 
     get "/leaderboard", LeaderboardController, :index
     get "/leaderboard/player-stats", LeaderboardController, :player_stats
@@ -80,10 +88,18 @@ defmodule BackendWeb.Router do
 
     get "/admin/get-all-leaderboards", AdminController, :get_all_leaderboards
     get "/admin/test", AdminController, :test
+
+    get "who-am-i", AuthController, :who_am_i
   end
 
   scope "/" do
     pipe_through [:browser, :admins_only]
     live_dashboard "/dashboard", metrics: Backend.Telemetry
+  end
+
+  scope "/auth", BackendWeb do
+    pipe_through [:browser, :auth]
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
   end
 end

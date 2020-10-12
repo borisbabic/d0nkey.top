@@ -59,6 +59,9 @@ defmodule Backend.MixProject do
       {:tesla, "~> 1.3.0"},
       {:tesla_cache, "~> 1.1.0"},
       {:telemetry_metrics, "~> 0.4"},
+      {:guardian, "~> 2.0"},
+      {:ueberauth, "~>0.6"},
+      {:ueberauth_bnet, "~>0.2"},
       {:quantum, "~> 2.3"}
     ]
   end
