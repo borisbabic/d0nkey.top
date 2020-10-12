@@ -22,8 +22,11 @@ admin_pass =
   System.get_env("ADMIN_PASS") ||
     raise "environment variable ADMIN_PASS is missing."
 
+admin_config_vars_cutoff_date = System.get_env("ADMIN_CONFIG_VARS_CUTOFF_DATE") || "2020-10-12"
+
 config :backend,
   admin_pass: admin_pass,
+  admin_config_vars_cutoff_date: admin_config_vars_cutoff_date,
   esports_earnings_api_key: System.get_env("ESPORTS_EARNINGS_API_KEY") || ""
 
 config :backend, Backend.Repo,

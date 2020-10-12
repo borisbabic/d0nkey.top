@@ -19,4 +19,26 @@ defmodule BackendWeb.AdminController do
     IO.inspect(conn)
     text(conn, "Success")
   end
+
+  def config_vars(conn, _params) do
+    print_config_vars(conn, :backend)
+  end
+
+  def ueberauth_config_vars(conn, _params) do
+    print_config_vars(conn, :ueberauth)
+  end
+
+  defp print_config_vars(conn, app) do
+    Application.get_env(:backend, :admin_config_vars_cutoff_date)
+    |> Timex.parse!("{YYYY}-{0M}-{0D}")
+    |> Date.compare(Date.utc_today())
+    |> case do
+      :lt ->
+        text(conn, "Can't touch this, nanana")
+
+      _ ->
+        log = Application.get_all_env(app) |> inspect(pretty: true)
+        text(conn, log)
+    end
+  end
 end

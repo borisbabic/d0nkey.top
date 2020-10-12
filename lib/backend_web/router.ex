@@ -86,10 +86,16 @@ defmodule BackendWeb.Router do
 
     get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
 
-    get "/admin/get-all-leaderboards", AdminController, :get_all_leaderboards
-    get "/admin/test", AdminController, :test
+    get "/who-am-i", AuthController, :who_am_i
+  end
 
-    get "who-am-i", AuthController, :who_am_i
+  scope "/admin", BackendWeb do
+    pipe_through [:browser, :admins_only]
+    get "/get-all-leaderboards", AdminController, :get_all_leaderboards
+    get "/test", AdminController, :test
+    get "/config-vars", AdminController, :config_vars
+    get "/config-vars/backend", AdminController, :config_vars
+    get "/config-vars/ueberauth", AdminController, :ueberauth_config_vars
   end
 
   scope "/" do
