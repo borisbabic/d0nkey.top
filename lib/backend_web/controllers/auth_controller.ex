@@ -39,6 +39,18 @@ defmodule BackendWeb.AuthController do
 
   def get_bnet_info(_), do: raise("Can't get bnet info")
 
+  def login_welcome(conn, params) do
+    response =
+      conn
+      |> Guardian.Plug.current_resource()
+      |> case do
+        user = %{battletag: bt} -> render(conn, "login_welcome.html", %{user: user})
+        _ -> render(conn, "user_expected.html", %{})
+      end
+
+    text(conn, response)
+  end
+
   def callback(conn, _params) do
     conn
     |> put_flash(
