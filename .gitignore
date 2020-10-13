@@ -39,3 +39,5 @@ npm-debug.log
 /.idea/
 .sw*
 /logs.txt
+/local_ignore/
+/tunnel.sh
