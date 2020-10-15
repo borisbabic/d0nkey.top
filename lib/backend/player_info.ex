@@ -121,6 +121,7 @@ defmodule Backend.PlayerInfo do
       "Firebat",
       "Empanizado"
     ])
+    |> MapSet.union(relegated_gms({2020, 2}))
   end
 
   def relegated_gms(_), do: MapSet.new()
