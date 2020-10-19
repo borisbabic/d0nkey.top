@@ -392,4 +392,14 @@ defmodule Util do
       x -> to_string(x)
     end
   end
+
+  @doc """
+  Gets the middle/median member in the list
+  iex> Util.median([1,2,3])
+  2
+  iex> Util.median([1,2,3,5,6,7])
+  5
+  """
+  def median(sortable_list),
+    do: sortable_list |> Enum.sort() |> Enum.at(Enum.count(sortable_list) |> div(2))
 end

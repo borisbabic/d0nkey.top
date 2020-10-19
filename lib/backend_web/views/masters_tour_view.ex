@@ -6,6 +6,7 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.Blizzard
   alias Backend.PlayerInfo
   alias Backend.MastersTour.PlayerStats
+  alias BackendWeb.MastersTour.MastersToursStats
 
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
   @min_cups_options [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 300]
@@ -641,4 +642,6 @@ defmodule BackendWeb.MastersTourView do
   def render("tour_stops.html", %{conn: conn, tournaments: tournaments}) do
     render("tour_stops.html", %{conn: conn, raw: tournaments, slug: "hsesports"})
   end
+
+  def render(t = "masters_tours_stats.html", params), do: MastersToursStats.render(t, params)
 end

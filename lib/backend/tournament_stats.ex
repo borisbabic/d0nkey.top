@@ -1,8 +1,6 @@
-defmodule Backend.TournamentStats do
-  @moduledoc false
-  defprotocol Backend.TournamentStats.PlayerPerformance do
-    def get_player_performance(standings)
-  end
+defprotocol Backend.TournamentStats.Standings do
+  @spec create_team_standings(t) :: Backend.TournamentStats.TeamStats.t()
+  def create_team_standings(standings)
 end
 
 defmodule Backend.TournamentStats.TeamStandings do
@@ -42,6 +40,21 @@ defmodule Backend.TournamentStats.TeamStats do
     field :positions, [integer]
   end
 
+  @spec create_collection([TeamStandings.t()]) :: [TeamStats.t()]
+  def create_collection(standings) do
+    standings
+    |> Enum.group_by(fn s -> s.name end)
+    |> Enum.map(&calculate_team_stats/1)
+  end
+
+  def calculate_team_stats({_, ps}), do: calculate_team_stats(ps)
+
+  def calculate_team_stats([first = %__MODULE__{} | rest]),
+    do: rest |> Enum.reduce(first, &update/2)
+
+  def calculate_team_stats([first = %TeamStandings{} | rest]),
+    do: rest |> Enum.reduce(create(first), &update/2)
+
   @spec create(TeamStandings.t()) :: TeamStats.t()
   @doc """
   iex> Backend.TournamentStats.TeamStats.create(
@@ -76,6 +89,19 @@ defmodule Backend.TournamentStats.TeamStats do
       positions: []
     }
     |> update(s)
+  end
+
+  def update(subject = %__MODULE__{}, new = %__MODULE__{}) do
+    %__MODULE__{
+      name: subject.name,
+      wins: subject.wins + new.wins,
+      losses: subject.losses + new.losses,
+      auto_wins: subject.auto_wins + new.auto_wins,
+      auto_losses: subject.auto_losses + new.auto_losses,
+      only_losses: subject.only_losses + new.only_losses,
+      no_results: subject.no_results + new.no_results,
+      positions: new.positions ++ subject.positions
+    }
   end
 
   @doc """
@@ -125,6 +151,10 @@ defmodule Backend.TournamentStats.TeamStats do
     }
   end
 
+  # for use in Enum.reduce()
+  @spec update(TeamStandings.t(), TeamStats.t()) :: TeamStats.t()
+  def update(s, ts = %__MODULE__{}), do: update(ts, s)
+
   @doc """
   iex> Backend.TournamentStats.TeamStats.with_result(%{positions: [1,2,3,5], no_results: 2})
   2
@@ -153,7 +183,7 @@ defmodule Backend.TournamentStats.TeamStats do
   3
   """
   @spec median(TeamStats.t()) :: integer()
-  def median(%{positions: pos}), do: pos |> Enum.sort() |> Enum.at(Enum.count(pos) |> div(2))
+  def median(%{positions: pos}), do: pos |> Util.median()
 
   @doc """
   iex> Backend.TournamentStats.TeamStats.only_losses_percent(%{positions: [1,2,3,5,257], no_results: 0, only_losses: 1})
@@ -209,4 +239,84 @@ defmodule Backend.TournamentStats.TeamStats do
   def losses(%{losses: losses, auto_losses: auto_losses}, :actual), do: losses - auto_losses
   def losses(%{losses: losses}, :all), do: losses
   def losses(ts), do: ts |> losses(:actual)
+end
+
+defmodule Backend.TournamentStats.TournamentTeamStats do
+  @moduledoc false
+  alias Backend.TournamentStats.TeamStandings
+  alias Backend.TournamentStats.TeamStats
+  @type stats_type :: :total | Backend.Tournament.bracket_type()
+  use TypedStruct
+
+  typedstruct enforce: true do
+    field :tournament_name, String.t()
+    field :tournament_id, String.t()
+    field :team_name, String.t()
+    field :stage_stats, [{Backend.Tournament.bracket_type(), TeamStats.t()}]
+  end
+
+  @doc """
+  Get the stats the represent the whole tournament over all stages
+  """
+  @spec total_stats(__MODULE__) :: TeamStats.t()
+  def total_stats(%{stage_stats: stage_stats}) do
+    {_, final_stage} = stage_stats |> Enum.at(-1)
+
+    total =
+      stage_stats
+      |> Enum.map(fn {_, s} -> s end)
+      |> TeamStats.calculate_team_stats()
+
+    %{total | positions: final_stage.positions}
+  end
+
+  def filter_stages(%{stage_stats: stage_stats}, bracket_type),
+    do: stage_stats |> Enum.find_value(fn {bt, ts} -> bt == bracket_type && ts end)
+end
+
+defmodule Backend.TournamentStats do
+  @moduledoc false
+  alias Backend.TournamentStats.Standings
+  alias Backend.TournamentStats.TeamStats
+  alias Backend.TournamentStats.TournamentTeamStats
+  @type stage_spec :: {Backend.Tournament.bracket_type(), [any]}
+  @spec create_standings([any]) :: [Standings.t()]
+  def create_standings(standings) when is_list(standings),
+    do: standings |> Enum.map(&Standings.create_team_standings/1)
+
+  @spec create_tournament_team_stats([stage_spec], String.t(), String.t()) :: [
+          TournamentTeamStats
+        ]
+  def create_tournament_team_stats(stage_specs, tournament_name, tournament_id) do
+    stage_specs
+    |> Enum.flat_map(fn {bracket_type, standings_list} ->
+      standings_list
+      |> Enum.map(fn s ->
+        stats =
+          s
+          |> Standings.create_team_standings()
+          |> TeamStats.create()
+
+        {bracket_type, stats}
+      end)
+    end)
+    |> Enum.group_by(fn {_, %{name: n}} -> n end)
+    |> Enum.map(fn {name, stage_stats} ->
+      %Backend.TournamentStats.TournamentTeamStats{
+        tournament_name: tournament_name,
+        tournament_id: tournament_id,
+        team_name: name,
+        stage_stats: stage_stats
+      }
+    end)
+  end
+
+  def create_team_stats_collection(tournament_stats_list),
+    do: create_team_stats_collection(tournament_stats_list, &Util.id/1)
+
+  def create_team_stats_collection(tournament_stats_list, name_mapper) do
+    tournament_stats_list
+    |> List.flatten()
+    |> Enum.group_by(fn ts -> ts.team_name |> name_mapper.() end)
+  end
 end

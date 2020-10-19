@@ -530,6 +530,11 @@ defmodule Backend.MastersTour do
     |> Enum.sort_by(fn {_, earnings, _} -> earnings end, :desc)
   end
 
+  def fix_name(name) do
+    Regex.replace(~r/^\d\d\d - /, name, "")
+    |> name_hacks()
+  end
+
   def name_hacks(name) do
     case name do
       "Liooon" -> "VKLiooon"

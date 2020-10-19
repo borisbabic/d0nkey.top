@@ -5,6 +5,7 @@ defmodule Backend.Battlefy do
   alias Backend.Battlefy.Standings
   alias Backend.Battlefy.MatchTeam
   alias Backend.Battlefy.Match
+  alias Backend.Battlefy.Stage
   alias Backend.BattlefyUtil
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
@@ -24,7 +25,7 @@ defmodule Backend.Battlefy do
 
   def get_stage_standings(stage_id) when is_binary(stage_id) do
     stage_id
-    |> Api.get_stage()
+    |> get_stage()
     |> get_stage_standings()
   end
 
@@ -268,6 +269,17 @@ defmodule Backend.Battlefy do
     nil
   end
 
+  def get_all_tournament_standings(%{stage_ids: stage_ids}),
+    do: stage_ids |> Enum.map(&get_stage_standings/1)
+
+  def get_all_tournament_standings(tournament_id),
+    do: tournament_id |> get_tournament() |> get_all_tournament_standings()
+
+  @spec get_stage(stage_id) :: Stage.t()
+  def get_stage(stage_id) do
+    Api.get_stage(stage_id)
+  end
+
   @spec get_tournament_standings(Tournament.t() | %{stage_ids: [stage_id]}) :: [Standings.t()]
   def get_tournament_standings(%{stage_ids: stage_ids}) do
     case stage_ids
@@ -334,7 +346,7 @@ defmodule Backend.Battlefy do
     {future_opponents, player_matches}
   end
 
-  @spec get_matches(tournament_id, String.t()) :: [Match.t()]
+  @spec get_future_opponents(tournament_id, String.t()) :: [Match.t()]
   def get_future_opponents(tournament_id, team_name) do
     tournament = Api.get_tournament(tournament_id)
     [stage | _] = tournament.stages
@@ -516,5 +528,16 @@ defmodule Backend.Battlefy do
     hardcoded_organization_slugs
     |> Enum.map(&Api.get_organization/1)
     |> Enum.filter(&Util.id/1)
+  end
+
+  def create_tournament_stats(%{stage_ids: stage_ids, name: name, id: id}) do
+    stage_ids
+    |> Enum.map(&get_stage/1)
+    |> Enum.map(fn s ->
+      bracket_type = s |> Stage.bracket_type()
+      standings = s |> get_stage_standings()
+      {bracket_type, standings}
+    end)
+    |> Backend.TournamentStats.create_tournament_team_stats(name, id)
   end
 end

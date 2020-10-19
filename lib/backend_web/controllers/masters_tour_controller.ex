@@ -106,6 +106,18 @@ defmodule BackendWeb.MastersTourController do
     earnings(conn, Map.merge(params, %{"show_gms" => "no"}))
   end
 
+  defp direction("desc"), do: :desc
+  defp direction("asc"), do: :asc
+  defp direction(_), do: nil
+
+  defp columns(columns = %{}) do
+    columns
+    |> Enum.filter(fn {_, selected} -> selected == "true" end)
+    |> Enum.map(fn {column, _} -> column end)
+  end
+
+  defp columns(_), do: nil
+
   def qualifier_stats(conn, params = %{"tour_stop" => ts}) do
     period =
       case Integer.parse(ts) do
@@ -120,25 +132,11 @@ defmodule BackendWeb.MastersTourController do
 
     {stats, total} = MastersTour.get_player_stats(period)
 
-    direction =
-      case params["direction"] do
-        "desc" -> :desc
-        "asc" -> :asc
-        _ -> nil
-      end
+    direction = direction(params["direction"])
 
     min = with raw when is_binary(raw) <- params["min"], {val, _} <- Integer.parse(raw), do: val
 
-    selected_columns =
-      case params["columns"] do
-        columns = %{} ->
-          columns
-          |> Enum.filter(fn {_, selected} -> selected == "true" end)
-          |> Enum.map(fn {column, _} -> column end)
-
-        _ ->
-          nil
-      end
+    selected_columns = columns(params["columns"])
 
     invited_players = MastersTour.list_invited_players()
 
@@ -171,5 +169,22 @@ defmodule BackendWeb.MastersTourController do
       conn,
       Map.merge(params, %{"tour_stop" => period})
     )
+  end
+
+  def masters_tours_stats(conn, params) do
+    tournaments = MastersTour.tour_stops_tournaments()
+    tour_stops = tournaments |> Enum.map(fn t -> t.name end)
+    tournament_team_stats = tournaments |> Enum.map(&Backend.Battlefy.create_tournament_stats/1)
+    direction = direction(params["direction"])
+    selected_columns = columns(params["columns"])
+
+    render(conn, "masters_tours_stats.html", %{
+      conn: conn,
+      direction: direction,
+      selected_columns: selected_columns,
+      sort_by: params["sort_by"],
+      tour_stops: tour_stops,
+      tournament_team_stats: tournament_team_stats
+    })
   end
 end
