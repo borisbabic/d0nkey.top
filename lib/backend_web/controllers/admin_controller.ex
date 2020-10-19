@@ -41,4 +41,20 @@ defmodule BackendWeb.AdminController do
         text(conn, log)
     end
   end
+
+  def wip(conn, app) do
+    alias Backend.Battlefy
+    alias Backend.TournamentStats
+    alias Backend.TournamentStats.TeamStats
+    import Backend.MastersTour.InvitedPlayer
+
+    text =
+      Backend.MastersTour.tour_stops_tournaments()
+      |> Enum.take(1)
+      |> Enum.map(&Battlefy.create_tournament_stats/1)
+      |> Backend.TournamentStats.TournamentTeamStats.create_collection()
+      |> inspect(pretty: true)
+
+    text(conn, text)
+  end
 end

@@ -46,6 +46,7 @@ defmodule BackendWeb.Router do
     get "/mt/qualifier-stats/", MastersTourController, :qualifier_stats
     get "/mt/qualifier-stats/:tour_stop", MastersTourController, :qualifier_stats
     get "/mt/tour-stops", MastersTourController, :tour_stops
+    get "/mt/stats", MastersTourController, :masters_tours_stats
 
     get "/battlefy/third-party-tournaments", BattlefyController, :organization_tournaments
 
@@ -87,7 +88,7 @@ defmodule BackendWeb.Router do
     get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
 
     get "/who-am-i", AuthController, :who_am_i
-    get "whoami", AuthController, :who_am_i
+    get "/whoami", AuthController, :who_am_i
     get "/login-welcome", AuthController, :login_welcome
   end
 

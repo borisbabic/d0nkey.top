@@ -47,6 +47,7 @@
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :qualifier_stats, Backend.Blizzard.current_ladder_tour_stop())%>">Qualifier Stats</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Earnings</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :tour_stops)%>">Tour Stops</a>
+           <!--  <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :masters_tours_stats)%>">Stats</a> -->
          </div>
        </div>
        <div class="navbar-item has-dropdown is-hoverable">

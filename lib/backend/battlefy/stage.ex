@@ -40,6 +40,9 @@ defmodule Backend.Battlefy.Stage do
       bracket: Battlefy.Bracket.from_raw_map(map["bracket"])
     }
   end
+
+  @spec bracket_type(__MODULE__) :: Backend.Tournament.bracket_type()
+  def bracket_type(stage), do: stage.bracket |> Battlefy.Bracket.bracket_type()
 end
 
 defmodule Backend.Battlefy.Bracket do
@@ -52,6 +55,7 @@ defmodule Backend.Battlefy.Bracket do
     field :rounds_count, integer
     field :teams_count, integer
     field :current_round_number, integer
+    field :tiebreaker_method, String.t()
   end
 
   def from_raw_map(nil) do
@@ -68,9 +72,19 @@ defmodule Backend.Battlefy.Bracket do
     %__MODULE__{
       type: snake_case["type"],
       style: snake_case["style"],
+      tiebreaker_method: snake_case["tiebreaker_method"],
       rounds_count: snake_case["rounds_count"],
       teams_count: snake_case["teams_count"],
       current_round_number: snake_case["current_round_number"]
     }
   end
+
+  @spec bracket_type(__MODULE__) :: Backend.Tournament.bracket_type()
+  def bracket_type(%{type: "elimination", style: "single"}), do: :single_elimination
+  def bracket_type(%{type: "elimination", style: "double"}), do: :double_elimination
+
+  # why tf isn't there a type for swiss. Dunno if I need the tiebreaker method, but just in case it's there
+  def bracket_type(%{type: "custom", tiebreaker_method: "hct"}), do: :swiss
+  def bracket_type(%{type: "roundrobin"}), do: :round_robin
+  def bracket_type(_), do: :unknown
 end
