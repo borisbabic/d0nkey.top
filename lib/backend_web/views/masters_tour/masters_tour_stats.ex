@@ -74,13 +74,12 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       </a>
       """
 
-      {stats_list = [first | rest], ts_rows} =
+      {swiss_stats_list, ts_rows} =
         tts
         |> Enum.map_reduce(%{}, fn ts, acc ->
           swiss = ts |> TournamentTeamStats.filter_stages(:swiss)
-          stats = ts |> TournamentTeamStats.total_stats()
 
-          {stats,
+          {swiss,
            Map.put_new(
              acc,
              ts.tournament_name |> masters_tour_column_name(),
@@ -89,7 +88,10 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
            )}
         end)
 
-      stats = stats_list |> TeamStats.calculate_team_stats()
+      swiss = swiss_stats_list |> TeamStats.calculate_team_stats()
+
+      stats =
+        tts |> Enum.map(&TournamentTeamStats.total_stats/1) |> TeamStats.calculate_team_stats()
 
       %{
         "Player" => player_cell,
@@ -99,6 +101,10 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         "Worst" => stats |> TeamStats.worst(),
         "Median" => stats |> TeamStats.median(),
         "Tour Stops Won" => stats.positions |> Enum.filter(fn p -> p == 1 end) |> Enum.count(),
+        "Num Swiss Matches" => swiss.wins + swiss.losses,
+        "Swiss Matches Won" => swiss.wins,
+        "Swiss Matches Lost" => swiss.losses,
+        "Swiss Winrate %" => swiss |> TeamStats.matches_won_percent() |> Float.round(2),
         "Num Matches" => stats.wins + stats.losses,
         "Matches Won" => stats.wins,
         "Matches Lost" => stats.losses,
@@ -143,6 +149,10 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
           "Best",
           "Worst",
           "Median",
+          "Num Swiss Matches",
+          "Swiss Matches Won",
+          "Swiss Matches Lost",
+          "Swiss Winrate %",
           "Num Matches",
           "Matches Won",
           "Matches Lost",
@@ -153,7 +163,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       if is_list(selected_columns) do
         columns |> Enum.filter(fn c -> Enum.member?(selected_columns, c) end)
       else
-        ["Player", "Top 8", "Matches Won", "Matches Lost", "Winrate %"]
+        ["Player", "Tour Stops", "Top 8", "Matches Won", "Matches Lost", "Winrate %"]
       end
 
     sort_key = columns |> Enum.find("Matches Won", fn h -> h == sort_by end)
