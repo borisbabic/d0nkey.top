@@ -55,6 +55,14 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     |> Enum.map(fn c -> column_map[c] || "" end)
   end
 
+  defp tournament_score_cell(score, name, tournament_id, conn) do
+    link = Routes.battlefy_path(conn, :tournament_player, tournament_id, name)
+
+    ~E"""
+    <a class="is-link" href="<%= link %>"><%= score %></a>
+    """
+  end
+
   defp create_player_rows(player_stats, conn) do
     player_stats
     |> Enum.map(fn {player_name, tts} ->
@@ -66,34 +74,35 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       </a>
       """
 
-      {swiss_stats_list = [first | rest], ts_rows} =
+      {stats_list = [first | rest], ts_rows} =
         tts
         |> Enum.map_reduce(%{}, fn ts, acc ->
-          swiss_stats = ts |> TournamentTeamStats.filter_stages(:swiss)
+          swiss = ts |> TournamentTeamStats.filter_stages(:swiss)
+          stats = ts |> TournamentTeamStats.total_stats()
 
-          {swiss_stats,
+          {stats,
            Map.put_new(
              acc,
-             ts.tournament_name |> masters_tour_name_fixer(),
-             "#{swiss_stats.wins} - #{swiss_stats.losses}"
+             ts.tournament_name |> masters_tour_column_name(),
+             "#{swiss.wins} - #{swiss.losses}"
+             |> tournament_score_cell(ts.team_name, ts.tournament_id, conn)
            )}
         end)
 
-      swiss_stats = swiss_stats_list |> TeamStats.calculate_team_stats()
+      stats = stats_list |> TeamStats.calculate_team_stats()
 
       %{
         "Player" => player_cell,
         "Tour Stops" => total,
-        "Top 8" => swiss_stats.positions |> Enum.filter(fn p -> p < 9 end) |> Enum.count(),
-        "Best" => swiss_stats |> TeamStats.best(),
-        "Worst" => swiss_stats |> TeamStats.worst(),
-        "Median" => swiss_stats |> TeamStats.median(),
-        "Tour Stops Won" =>
-          swiss_stats.positions |> Enum.filter(fn p -> p == 1 end) |> Enum.count(),
-        "Num Matches" => swiss_stats.wins + swiss_stats.losses,
-        "Matches Won" => swiss_stats.wins,
-        "Matches Lost" => swiss_stats.losses,
-        "Winrate %" => swiss_stats |> TeamStats.matches_won_percent() |> Float.round(2)
+        "Top 8" => stats.positions |> Enum.filter(fn p -> p < 9 end) |> Enum.count(),
+        "Best" => stats |> TeamStats.best(),
+        "Worst" => stats |> TeamStats.worst(),
+        "Median" => stats |> TeamStats.median(),
+        "Tour Stops Won" => stats.positions |> Enum.filter(fn p -> p == 1 end) |> Enum.count(),
+        "Num Matches" => stats.wins + stats.losses,
+        "Matches Won" => stats.wins,
+        "Matches Lost" => stats.losses,
+        "Winrate %" => stats |> TeamStats.matches_won_percent() |> Float.round(2)
       }
       |> Map.merge(ts_rows)
     end)
@@ -107,8 +116,10 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     end
   end
 
+  defp masters_tour_column_name(name), do: masters_tour_name_fixer(name) <> " swiss"
+
   def masters_tour_name_fixer(name),
-    do: ~r/^Master(s)? Tour( Online: )?/ |> Regex.replace(name, "")
+    do: ~r/^Master(s)? Tour( Online: )?/ |> Regex.replace(to_string(name), "")
 
   def render("masters_tours_stats.html", %{
         conn: conn,
@@ -124,7 +135,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       [
         "Player"
       ] ++
-        (tour_stops |> Enum.map(&masters_tour_name_fixer/1)) ++
+        (tour_stops |> Enum.map(&masters_tour_column_name/1)) ++
         [
           "Tour Stops",
           "Won",
