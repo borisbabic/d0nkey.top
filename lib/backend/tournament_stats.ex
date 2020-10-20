@@ -55,6 +55,8 @@ defmodule Backend.TournamentStats.TeamStats do
   def calculate_team_stats([first = %TeamStandings{} | rest]),
     do: rest |> Enum.reduce(create(first), &update/2)
 
+  def calculate_team_stats([]), do: empty("")
+
   @spec create(TeamStandings.t()) :: TeamStats.t()
   @doc """
   iex> Backend.TournamentStats.TeamStats.create(
@@ -78,8 +80,13 @@ defmodule Backend.TournamentStats.TeamStats do
   }
   """
   def create(s) do
+    empty(s.name)
+    |> update(s)
+  end
+
+  def empty(name) do
     %__MODULE__{
-      name: s.name,
+      name: name,
       wins: 0,
       losses: 0,
       auto_wins: 0,
@@ -88,7 +95,6 @@ defmodule Backend.TournamentStats.TeamStats do
       no_results: 0,
       positions: []
     }
-    |> update(s)
   end
 
   def update(subject = %__MODULE__{}, new = %__MODULE__{}) do

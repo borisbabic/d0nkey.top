@@ -1,6 +1,5 @@
 <div class="title is-2"><%= @bt %></div>
 
-<div class="subtitle is-6">Greetings, traveler. This page is still WIP but you're welcome to this sneak peak </div>
 <%= for row <- @rows do %>
     <%= row %>
     <br>

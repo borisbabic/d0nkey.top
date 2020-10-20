@@ -13,6 +13,7 @@ defmodule Backend.MastersTour do
   alias Backend.Infrastructure.PlayerStatsCache
   alias Backend.Blizzard
   alias Backend.Battlefy
+  alias Backend.TournamentStats.TournamentTeamStats
 
   @type gm_money_rankings :: [{String.t(), integer, [{Blizzard.tour_stop(), integer}]}]
   @type user_signup_options :: %{
@@ -762,6 +763,7 @@ defmodule Backend.MastersTour do
     end)
   end
 
+  @spec masters_tours_stats() :: [[TournamentTeamStats.t()]]
   def masters_tours_stats() do
     TourStop.all()
     |> Enum.filter(fn ts -> ts.battlefy_id end)
@@ -773,5 +775,17 @@ defmodule Backend.MastersTour do
       |> Backend.TournamentStats.create_tournament_team_stats(ts.id, ts.battlefy_id)
     end)
     |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
+  end
+
+  @spec create_mt_stats_collection([[TournamentTeamStats.t()]]) :: [
+          {String.t(), [TournamentTeamStats.t()]}
+        ]
+  def create_mt_stats_collection(tts) do
+    tts
+    |> Backend.TournamentStats.create_team_stats_collection(fn n ->
+      n
+      |> InvitedPlayer.shorten_battletag()
+      |> fix_name()
+    end)
   end
 end
