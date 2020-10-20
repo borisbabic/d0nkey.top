@@ -675,10 +675,6 @@ defmodule Backend.MastersTour do
     }
   end
 
-  def get_mt_stage_standings(s) do
-    Battlefy.get_stage_standings(s)
-  end
-
   # bucharest, the finals aren't entered in battlefy
   def get_mt_stage_standings(%{id: "5dabfb21c2359802f6cb334e"}) do
     [
@@ -697,7 +693,7 @@ defmodule Backend.MastersTour do
   # arlington, the finals aren't entered in battelfy
   def get_mt_stage_standings(%{id: "5e36e004c2daa21083f167b5"}) do
     [
-      {"Blyzes#2682", 1, 3, 0},
+      {"xBlyzes#2682", 1, 3, 0},
       {"AyRoK#11677", 2, 2, 1},
       {"Alan870806#1369", 3, 1, 1},
       {"Felkeine#1745", 3, 1, 1},
@@ -707,6 +703,14 @@ defmodule Backend.MastersTour do
       {"brimful#1988", 5, 0, 1}
     ]
     |> Enum.map(&to_battelfy_standings/1)
+  end
+
+  def get_mt_stage_standings(s) do
+    if s |> Battlefy.Stage.bracket_type() == :single_elimination do
+      s |> Battlefy.create_standings_from_matches()
+    else
+      s |> Battlefy.get_stage_standings()
+    end
   end
 
   defp las_vegas_top8_standings() do
