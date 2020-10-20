@@ -1,6 +1,7 @@
 defmodule BackendWeb.MastersTourController do
   use BackendWeb, :controller
   alias Backend.MastersTour
+  alias Backend.MastersTour.TourStop
   alias Backend.Infrastructure.BattlefyCommunicator
 
   def invited_players(conn, %{"tour_stop" => tour_stop}) do
@@ -172,9 +173,10 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def masters_tours_stats(conn, params) do
-    tournaments = MastersTour.tour_stops_tournaments()
-    tour_stops = tournaments |> Enum.map(fn t -> t.name end)
-    tournament_team_stats = tournaments |> Enum.map(&Backend.Battlefy.create_tournament_stats/1)
+    tour_stops =
+      TourStop.all() |> Enum.filter(fn ts -> ts.battlefy_id end) |> Enum.map(fn ts -> ts.id end)
+
+    tournament_team_stats = MastersTour.masters_tours_stats()
     direction = direction(params["direction"])
     selected_columns = columns(params["columns"])
 

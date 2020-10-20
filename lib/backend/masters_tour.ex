@@ -662,4 +662,116 @@ defmodule Backend.MastersTour do
     |> Enum.filter(&Util.id/1)
     |> Enum.map(&Battlefy.get_tournament/1)
   end
+
+  defp to_battelfy_standings({name, place, wins, losses}) do
+    %Backend.Battlefy.Standings{
+      auto_losses: 0,
+      auto_wins: 0,
+      losses: losses,
+      place: place,
+      team: %Backend.Battlefy.Team{name: name},
+      wins: wins
+    }
+  end
+
+  def get_mt_stage_standings(s) do
+    Battlefy.get_stage_standings(s)
+  end
+
+  # bucharest, the finals aren't entered in battlefy
+  def get_mt_stage_standings(%{id: "5dabfb21c2359802f6cb334e"}) do
+    [
+      {"Eddie#13420", 1, 3, 0},
+      {"kin0531#1125", 2, 2, 1},
+      {"totosh#1491", 3, 1, 1},
+      {"DeadDraw#11192", 3, 1, 1},
+      {"hone#11500", 5, 0, 1},
+      {"Orange#13615", 5, 0, 1},
+      {"SNBrox#1715", 5, 0, 1},
+      {"hunterace#11722", 5, 0, 1}
+    ]
+    |> Enum.map(&to_battelfy_standings/1)
+  end
+
+  # arlington, the finals aren't entered in battelfy
+  def get_mt_stage_standings(%{id: "5e36e004c2daa21083f167b5"}) do
+    [
+      {"Blyzes#2682", 1, 3, 0},
+      {"AyRoK#11677", 2, 2, 1},
+      {"Alan870806#1369", 3, 1, 1},
+      {"Felkeine#1745", 3, 1, 1},
+      {"bloodyface#11770", 5, 0, 1},
+      {"TIZS#3227", 5, 0, 1},
+      {"totosh#2527", 5, 0, 1},
+      {"brimful#1988", 5, 0, 1}
+    ]
+    |> Enum.map(&to_battelfy_standings/1)
+  end
+
+  defp las_vegas_top8_standings() do
+    [
+      {"dog#1593", 1, 4, 1},
+      {"gallon#11212", 2, 3, 1},
+      {"tom60229#3684", 3, 2, 1},
+      {"posesi#1277", 4, 2, 2},
+      {"Hypno#22145", 5, 1, 2},
+      {"Kalàxz#2721", 6, 1, 2},
+      {"Neirea#2513", 7, 0, 2},
+      {"Fenomeno#21327", 8, 0, 2}
+    ]
+    |> Enum.map(&to_battelfy_standings/1)
+  end
+
+  defp seoul_top8_standings() do
+    [
+      {"168 - Felkeine#1616", 1, 4, 0},
+      {"077 - Zhym#11132", 2, 3, 2},
+      {"158 - RNGLys#1800", 3, 2, 1},
+      {"167 - Magoho#1118", 4, 2, 2},
+      {"092 - DeadDraw#11449", 5, 1, 2},
+      {"111 - Sooni#11228", 6, 1, 2},
+      {"151 - Staz#11286", 7, 0, 2},
+      {"063 - Un33D#11378", 8, 0, 2}
+    ]
+    |> Enum.map(&to_battelfy_standings/1)
+  end
+
+  # I merged the group and top4 because I'm lazy, if it ever matters I'll unmerge
+  defp get_mt_tournament_stages_standings(%{id: :"Las Vegas", battlefy_id: battlefy_id}) do
+    swiss = get_mt_tournament_stages_standings(%{battlefy_id: battlefy_id})
+    top8 = {:single_elimination, las_vegas_top8_standings()}
+    swiss ++ [top8]
+  end
+
+  # I merged the group and top4 because I'm lazy, if it ever matters I'll unmerge
+  defp get_mt_tournament_stages_standings(%{id: :Seoul, battlefy_id: battlefy_id}) do
+    swiss = get_mt_tournament_stages_standings(%{battlefy_id: battlefy_id})
+    top8 = {:single_elimination, seoul_top8_standings()}
+    swiss ++ [top8]
+  end
+
+  defp get_mt_tournament_stages_standings(%{battlefy_id: battlefy_id}) do
+    tournament = Battlefy.get_tournament(battlefy_id)
+
+    tournament.stage_ids
+    |> Enum.map(&Battlefy.get_stage/1)
+    |> Enum.map(fn s ->
+      bracket_type = s |> Battlefy.Stage.bracket_type()
+      standings = get_mt_stage_standings(s)
+      {bracket_type, standings}
+    end)
+  end
+
+  def masters_tours_stats() do
+    TourStop.all()
+    |> Enum.filter(fn ts -> ts.battlefy_id end)
+    |> Enum.map(fn ts ->
+      # ts.battlefy_id
+      # |> Battlefy.get_tournament()
+      # |> Battlefy.create_tournament_stats()
+      get_mt_tournament_stages_standings(ts)
+      |> Backend.TournamentStats.create_tournament_team_stats(ts.id, ts.battlefy_id)
+    end)
+    |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
+  end
 end
