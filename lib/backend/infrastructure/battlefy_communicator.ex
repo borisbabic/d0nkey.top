@@ -14,7 +14,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @type qualifier :: Communicator.qualifier()
 
   use Tesla
-  plug Tesla.Middleware.Cache, ttl: :timer.seconds(30)
+  plug Tesla.Middleware.Cache, ttl: :timer.seconds(3000)
 
   def get_body(url) do
     response = get_response(url)
