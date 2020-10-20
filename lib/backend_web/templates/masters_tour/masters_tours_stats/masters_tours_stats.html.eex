@@ -1,4 +1,4 @@
-<div class="title is-2"><%= @title %></div>
+<div class="title is-2">MT Stats</div>
 <%= render_dropdowns @dropdowns %>
 
 <div class="dropdown is-hoverable">

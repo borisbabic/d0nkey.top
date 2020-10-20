@@ -187,7 +187,6 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn) end)
 
     render("masters_tours_stats.html", %{
-      title: "Masters Tours Swiss Stats",
       headers: headers,
       rows: rows,
       columns: columns_options,
