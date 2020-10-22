@@ -8,7 +8,7 @@ f-> %>
         <input name="<%= key %>" type="hidden" value="<%= value %>">
     <% end %>
     <div class="dropdown is-hoverable">
-        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Regions</button></div>
+        <div class="dropdown-trigger"><div aria-haspopup="true" aria-controls="dropdown-menu" class="button">Regions</div></div>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
                     <%= for %{value: val, name: name, selected: selected} <- @region_options do %>
@@ -27,7 +27,7 @@ f-> %>
     </div>
 
     <div class="dropdown is-hoverable">
-        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Leaderboards</button></div>
+        <div class="dropdown-trigger"><div aria-haspopup="true" aria-controls="dropdown-menu" class="button">Leaderboards</div></div>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
                 <%= for %{value: val, name: name, selected: selected} <- @leaderboards_options do %>
