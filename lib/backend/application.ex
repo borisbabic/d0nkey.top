@@ -30,6 +30,10 @@ defmodule Backend.Application do
           start: {Backend.Infrastructure.PlayerStatsCache, :start_link, [[]]}
         },
         %{
+          id: Backend.Infrastructure.PlayerNationalityCache,
+          start: {Backend.Infrastructure.PlayerNationalityCache, :start_link, [[]]}
+        },
+        %{
           id: Backend.HearthstoneJson,
           start: {Backend.HearthstoneJson, :start_link, [[fetch_fresh: fetch_fresh()]]}
         },
@@ -73,13 +77,19 @@ defmodule Backend.Application do
 
   def warmup_cache() do
     if Application.fetch_env!(:backend, :warmup_cache) do
-      try do
-        Backend.MastersTour.warmup_stats_cache()
-      rescue
-        _ -> nil
-      catch
-        _ -> nil
-      end
+      [
+        &Backend.MasterTour.warmup_stats_cache/1,
+        &Backend.MastersTour.warmup_player_nationality_cache/0
+      ]
+      |> Enum.each(fn f ->
+        try do
+          f.()
+        rescue
+          _ -> nil
+        catch
+          _ -> nil
+        end
+      end)
     end
   end
 end

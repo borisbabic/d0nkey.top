@@ -2,6 +2,7 @@ defmodule Backend.PlayerInfo do
   @moduledoc false
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
+  alias Backend.Infrastructure.PlayerNationalityCache, as: PlayerNationality
   alias Backend.EsportsEarnings
   @type country_code :: <<_::2>>
   @type player_info :: %{region: Blizzard.region() | nil, country: country_code | nil}
@@ -1462,6 +1463,7 @@ defmodule Backend.PlayerInfo do
     "BY" => :EU,
     "IS" => :EU
   }
+  def country_to_region(cc), do: @alpha2_to_region[cc]
 
   def get_grandmasters(season = {2020, 2}),
     do: get_grandmasters(:Jönköping, relegated_gms(season))
@@ -1508,8 +1510,17 @@ defmodule Backend.PlayerInfo do
   end
 
   @spec get_region(String.t()) :: Blizzard.region()
-  def get_region(original_name) do
-    player = hack_name(original_name)
+  def get_region(full_or_short) do
+    with nil <- full_or_short |> PlayerNationality.get_country() |> country_to_region(),
+         nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region() do
+      nil
+    else
+      r -> r
+    end
+  end
+
+  def old_get_region(original_name) do
+    player = original_name |> hack_name()
 
     cond do
       MapSet.member?(@na_players, player) ->
@@ -1538,8 +1549,10 @@ defmodule Backend.PlayerInfo do
   @spec get_country(Blizzard.battletag()) :: country_code
   def get_country(battletag_full) do
     battletag_full
-    |> InvitedPlayer.shorten_battletag()
-    |> EsportsEarnings.get_player_country()
+    |> PlayerNationality.get_country() ||
+      battletag_full
+      |> InvitedPlayer.shorten_battletag()
+      |> EsportsEarnings.get_player_country()
   end
 
   @spec get_info(String.t()) :: player_info
@@ -1547,7 +1560,7 @@ defmodule Backend.PlayerInfo do
     country = battletag_full |> get_country()
 
     region =
-      case {country, battletag_full |> InvitedPlayer.shorten_battletag() |> get_region()} do
+      case {country, battletag_full |> get_region()} do
         {nil, nil} -> nil
         {country, nil} -> @alpha2_to_region[country]
         {_, region} -> region

@@ -42,11 +42,13 @@ defmodule Backend.Battlefy.Communicator do
   @callback get_tournament(Battlefy.tournament_id()) :: Tournament.t()
   @callback get_standings(Battlefy.stage_id()) :: [Standings.t()]
   @callback get_round_standings(Battlefy.stage_id(), integer | String.t()) :: [Standings.t()]
+  @callback get_match(Battlefy.match_id()) :: Match.t()
   @callback get_matches(Battlefy.stage_id(), Battlefy.get_matches_options()) :: [Match.t()]
   @callback get_match_deckstrings(Battlefy.tournament_id(), Battlefy.match_id()) :: [
               MatchDeckstrings.t()
             ]
   @callback get_stage(Battlefy.stage_id()) :: Stage.t()
+  @callback get_stage_with_matches(Battlefy.stage_id()) :: Stage.t()
   @callback get_profile(String.t()) :: Profile.t()
   @callback get_user_tournaments(String.t()) :: [Tournament.t()]
 end

@@ -14,7 +14,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @type qualifier :: Communicator.qualifier()
 
   use Tesla
-  plug Tesla.Middleware.Cache, ttl: :timer.seconds(3000)
+  plug Tesla.Middleware.Cache, ttl: :timer.seconds(30)
 
   def get_body(url) do
     response = get_response(url)
@@ -102,7 +102,21 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     )
   end
 
-  @spec get_stage(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stagea.t()
+  @spec get_stage_with_matches(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stage.t()
+  def get_stage_with_matches(stage_id) do
+    url =
+      "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}?extend%5Bmatches%5D%5Btop.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bmatches%5D%5Btop.team%5D%5BpersistentTeam%5D=true&extend%5Bmatches%5D%5Bbottom.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bmatches%5D%5Bbottom.team%5D%5BpersistentTeam%5D=true&extend%5Bgroups%5D%5Bteams%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Btop.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Btop.team%5D%5BpersistentTeam%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Bbottom.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Bbottom.team%5D%5BpersistentTeam%5D=true"
+
+    get_body(url)
+    |> Poison.decode!()
+    |> case do
+      [r] -> r
+      r -> raise("WTF #{r |> Enum.count()}")
+    end
+    |> Backend.Battlefy.Stage.from_raw_map()
+  end
+
+  @spec get_stage(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stage.t()
   def get_stage(stage_id) do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}"
 
@@ -171,6 +185,20 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     response = get_response(url)
     response.body
+  end
+
+  @spec get_match(Battlefy.match_id()) :: Battlefy.Match.t()
+  def get_match(match_id) do
+    url =
+      "https://dtmwra1jsgyb0.cloudfront.net/matches/#{match_id}?extend%5Btop.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Btop.team%5D%5BpersistentTeam%5D=true&extend%5Bbottom.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bbottom.team%5D%5BpersistentTeam%5D=true&extend%5Bstats%5D=true"
+
+    get_body(url)
+    |> Poison.decode!()
+    |> case do
+      [m] -> m
+      m -> m
+    end
+    |> Match.from_raw_map()
   end
 
   @spec get_match_deckstrings(Battlefy.tournament_id(), Battlefy.match_id()) :: [

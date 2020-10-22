@@ -1,5 +1,9 @@
 defmodule BackendWeb.AdminController do
   use BackendWeb, :controller
+  alias Backend.Battlefy
+  alias Backend.Infrastructure.BattlefyCommunicator, as: BattlefyApi
+  alias Backend.MastersTour
+  alias Backend.MastersTour.TourStop
 
   def get_all_leaderboards(conn, _params) do
     current_season = Date.utc_today() |> Backend.Blizzard.get_season_id()
@@ -42,19 +46,55 @@ defmodule BackendWeb.AdminController do
     end
   end
 
-  def wip(conn, app) do
-    alias Backend.Battlefy
-    alias Backend.TournamentStats
-    alias Backend.TournamentStats.TeamStats
-    import Backend.MastersTour.InvitedPlayer
+  def wip(conn, _app) do
+    # alias Backend.Battlefy
+    # alias Backend.TournamentStats
+    # alias Backend.TournamentStats.TeamStats
+    # import Backend.MastersTour.InvitedPlayer
 
-    text =
-      Backend.MastersTour.tour_stops_tournaments()
-      |> Enum.take(1)
-      |> Enum.map(&Battlefy.create_tournament_stats/1)
-      |> Backend.TournamentStats.TournamentTeamStats.create_collection()
-      |> inspect(pretty: true)
+    # text =
+    # Backend.MastersTour.tour_stops_tournaments()
+    # |> Enum.take(1)
+    # |> Enum.map(&Battlefy.create_tournament_stats/1)
+    # |> Backend.TournamentStats.TournamentTeamStats.create_collection()
+    # |> inspect(pretty: true)
 
-    text(conn, text)
+    text(conn, "All work and no play")
+  end
+
+  def index(conn, _) do
+    render(conn, "index.html")
+  end
+
+  def mt_player_nationality(conn, %{"tour_stop" => ts_string}) do
+    response =
+      ts_string
+      |> TourStop.get()
+      |> MastersTour.update_player_nationalities()
+      |> case do
+        {:ok, ret} -> inspect(ret, pretty: true)
+        {:error, reason} -> reason
+      end
+
+    text(conn, response)
+  end
+
+  def check_new_region_data(conn, _) do
+    response =
+      {2021, 1}
+      |> MastersTour.get_gm_money_rankings()
+      |> Enum.flat_map(fn {name, _, _} ->
+        region = Backend.PlayerInfo.get_region(name)
+        old_region = Backend.PlayerInfo.get_region(name)
+
+        if old_region && region != old_region do
+          [{region, old_region}]
+        else
+          []
+        end
+      end)
+      |> inspect()
+
+    text(conn, response)
   end
 end

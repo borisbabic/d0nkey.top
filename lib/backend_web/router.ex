@@ -94,11 +94,14 @@ defmodule BackendWeb.Router do
 
   scope "/admin", BackendWeb do
     pipe_through [:browser, :admins_only]
+    get "/", AdminController, :index
     get "/get-all-leaderboards", AdminController, :get_all_leaderboards
     get "/test", AdminController, :test
     get "/config-vars", AdminController, :config_vars
     get "/config-vars/backend", AdminController, :config_vars
     get "/config-vars/ueberauth", AdminController, :ueberauth_config_vars
+    get "/check-new-region-data", AdminController, :check_new_region_data
+    get "/mt-player-nationality/:tour_stop", AdminController, :mt_player_nationality
   end
 
   scope "/" do

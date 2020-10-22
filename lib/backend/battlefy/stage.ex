@@ -11,6 +11,7 @@ defmodule Backend.Battlefy.Stage do
     field :standing_ids, Battlefy.battlefy_id()
     field :has_started, bool
     field :bracket, Battlefy.Bracket.t()
+    field :matches, [Battlefy.Match.t()]
   end
 
   @spec from_raw_map(map) :: __MODULE__.t()
@@ -37,6 +38,11 @@ defmodule Backend.Battlefy.Stage do
       standing_ids: standing_ids,
       name: name,
       current_round: map["current_round"],
+      matches:
+        if(is_list(map["matches"]),
+          do: map["matches"] |> Enum.map(&Battlefy.Match.from_raw_map/1),
+          else: []
+        ),
       bracket: Battlefy.Bracket.from_raw_map(map["bracket"])
     }
   end

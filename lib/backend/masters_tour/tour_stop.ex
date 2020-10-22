@@ -152,6 +152,11 @@ defmodule Backend.MastersTour.TourStop do
     |> Enum.find(fn ts -> ts.id == tour_stop end)
   end
 
+  def get(tour_stop) when is_binary(tour_stop) do
+    all()
+    |> Enum.find(fn ts -> to_string(ts.id) == tour_stop end)
+  end
+
   def get_current(hours_before_start \\ 1, hours_after_start \\ 96) do
     now = NaiveDateTime.utc_now()
 
@@ -163,13 +168,10 @@ defmodule Backend.MastersTour.TourStop do
     end)
   end
 
-  @spec started?(atom) :: boolean
-  def started?(tour_stop) do
-    tour_stop
-    |> get()
-    |> case do
-      nil -> false
-      ts -> NaiveDateTime.compare(ts.start_time, NaiveDateTime.utc_now()) == :lt
-    end
-  end
+  @spec started?(atom | String.t() | Backend.MastersTour.TourStop.t()) :: boolean
+  def started?(%{start_time: start_time}),
+    do: NaiveDateTime.compare(start_time, NaiveDateTime.utc_now()) == :lt
+
+  def started?(tour_stop) when is_atom(tour_stop) or is_binary(tour_stop),
+    do: tour_stop |> get() |> started?()
 end
