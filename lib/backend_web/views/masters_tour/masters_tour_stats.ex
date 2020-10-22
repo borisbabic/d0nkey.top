@@ -68,8 +68,15 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     |> Enum.map(fn {player_name, tts} ->
       total = tts |> Enum.count()
 
+      flag =
+        case player_name |> Backend.PlayerInfo.get_country() do
+          nil -> ""
+          cc -> cc |> country_flag()
+        end
+
       player_cell = ~E"""
-      <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, player_name)%>">
+
+      <%= flag %> <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, player_name)%>">
         <%= player_name %>
       </a>
       """
