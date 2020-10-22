@@ -16,10 +16,10 @@
         </tr>
     </thead>
     <tbody>
-    <%= for %{place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing} <- @standings do %>
+    <%= for %{pre_name_cell: pre_name_cell, place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing} <- @standings do %>
         <tr>
             <td><%= place %></td>
-            <td><a href="<%= name_link%>"> <%= name %></a></td>
+            <td><%= pre_name_cell %> <a href="<%= name_link%>"> <%= name %></a></td>
             <%= if @show_score do %>
                 <td><%=score%></td>
             <% end %>
