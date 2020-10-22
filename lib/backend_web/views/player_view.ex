@@ -46,13 +46,16 @@ defmodule BackendWeb.PlayerView do
           []
 
         {country, nil} ->
-          [{"Country", country}]
+          [{"Country", country |> Util.get_country_name()}]
 
         {nil, region} ->
           [{"Region", region |> Blizzard.get_region_name(:long)}]
 
         {country, region} ->
-          [{"Country", country}, {"Region", region |> Blizzard.get_region_name(:long)}]
+          [
+            {"Country", country |> Util.get_country_name()},
+            {"Region", region |> Blizzard.get_region_name(:long)}
+          ]
       end
 
     earnings_rows = [{"2020 MT earnings", mt_earnings}]

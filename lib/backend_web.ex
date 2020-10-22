@@ -89,6 +89,12 @@ defmodule BackendWeb do
         selected_title || default
       end
 
+      def country_flag(country) do
+        name = Util.get_country_name(country)
+
+        render(BackendWeb.SharedView, "country_flag.html", %{country: country, country_name: name})
+      end
+
       unquote(view_helpers())
     end
   end
