@@ -179,12 +179,13 @@ defmodule BackendWeb.MastersTourController do
 
     tournament_team_stats = MastersTour.masters_tours_stats()
     direction = direction(params["direction"])
-    selected_columns = columns(params["columns"])
+    selected_columns = multi_select_to_array(params["columns"])
 
     render(conn, "masters_tours_stats.html", %{
       conn: conn,
       direction: direction,
       selected_columns: selected_columns,
+      countries: multi_select_to_array(params["country"]),
       sort_by: params["sort_by"],
       tour_stops: tour_stops,
       tournament_team_stats: tournament_team_stats

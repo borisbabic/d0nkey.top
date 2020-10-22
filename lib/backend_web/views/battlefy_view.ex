@@ -258,6 +258,24 @@ defmodule BackendWeb.BattlefyView do
   def use_countries(%{id: id}),
     do: Backend.MastersTour.TourStop.all() |> Enum.any?(fn ts -> ts.battlefy_id == id end)
 
+  def create_countries(countries) do
+    Backend.PlayerInfo.get_eligible_countries()
+    |> Enum.map(fn cc ->
+      flag = cc |> country_flag()
+      name = cc |> Util.get_country_name()
+
+      %{
+        value: cc,
+        name: name,
+        display: ~E"""
+        <%= flag %><span><%= name %></span>
+        """,
+        selected: countries |> Enum.member?(cc)
+      }
+    end)
+    |> Enum.sort_by(fn %{name: name} -> name end)
+  end
+
   def render(
         "tournament.html",
         params = %{
@@ -315,21 +333,7 @@ defmodule BackendWeb.BattlefyView do
 
     countries =
       if use_countries do
-        Backend.PlayerInfo.get_eligible_countries()
-        |> Enum.map(fn cc ->
-          flag = cc |> country_flag()
-          name = cc |> Util.get_country_name()
-
-          %{
-            value: cc,
-            name: name,
-            display: ~E"""
-            <%= flag %><span><%= name %></span>
-            """,
-            selected: country_highlight |> Enum.member?(cc)
-          }
-        end)
-        |> Enum.sort_by(fn %{name: name} -> name end)
+        create_countries(country_highlight)
       else
         []
       end
