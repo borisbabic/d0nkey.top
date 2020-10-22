@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 })
 
-
 window.location_href_by_datalist = function(input_id, datalist_id) {
     var input = document.getElementById(input_id)
     if(input && input.value) {
@@ -62,6 +61,24 @@ window.location_href_by_datalist = function(input_id, datalist_id) {
         }
     } else {
         console.log("Can't location href, no input or input value")
+    }
+}
+window.hide_based_on_search = function(search_id, target_class)  {
+    var input = document.getElementById(search_id);
+    if (input) {
+        console.log("Searching for " + input.value);
+        var elements = document.getElementsByClassName(target_class);
+        Array.prototype.forEach.call(elements, function (thing) {
+            if (input.value === null || thing.dataset && thing.dataset.targetValue && thing.dataset.targetValue.search(input.value) > -1) {
+                thing.style.display = "";
+            }
+            else {
+                thing.style.display="none";
+            }
+        })
+    }
+    else {
+        console.log("Could not find search")
     }
 }
 
