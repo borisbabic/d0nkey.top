@@ -10,6 +10,7 @@ defmodule BackendWeb.LeaderboardController do
     compare_to = params["compare_to"]
     comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
+    show_flags = parse_show_flags(params)
 
     render(conn, "index.html", %{
       conn: conn,
@@ -18,6 +19,7 @@ defmodule BackendWeb.LeaderboardController do
       other_ladders: leaderboard |> get_other_ladders(ladder_mode),
       leaderboard: leaderboard,
       compare_to: params["compare_to"],
+      show_flags: show_flags,
       comparison: comparison,
       ladder_mode: ladder_mode
     })
@@ -32,6 +34,8 @@ defmodule BackendWeb.LeaderboardController do
     index(conn, new_params)
   end
 
+  def parse_show_flags(%{"show_flags" => "yes"}), do: "yes"
+  def parse_show_flags(_), do: "no"
   def parse_ladder_mode(%{"ladder_mode" => "no"}), do: "no"
   def parse_ladder_mode(_), do: "yes"
 

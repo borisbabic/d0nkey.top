@@ -19,11 +19,12 @@ defmodule BackendWeb.LeaderboardView do
           highlight: highlight,
           other_ladders: other_ladders,
           leaderboard: leaderboard,
+          show_flags: show_flags,
           comparison: comparison
         }
       ) do
     invited = leaderboard |> process_invited(invited_raw) |> add_other_ladders(other_ladders)
-    entries = leaderboard |> process_entries(invited, comparison)
+    entries = leaderboard |> process_entries(invited, comparison, show_flags == "yes")
 
     render("leaderboard.html", %{
       entries: entries,
@@ -51,6 +52,7 @@ defmodule BackendWeb.LeaderboardView do
           region: region,
           season_id: season_id
         },
+        show_flags: show_flags,
         ladder_mode: ladder_mode,
         compare_to: compare_to
       }) do
@@ -59,6 +61,7 @@ defmodule BackendWeb.LeaderboardView do
       create_leaderboard_dropdown(conn, leaderboard_id),
       create_season_dropdown(conn, season_id),
       create_ladder_mode_dropdown(conn, ladder_mode),
+      create_show_flags_dropdown(conn, show_flags),
       create_compare_to_dropdown(conn, compare_to)
     ]
   end
@@ -121,6 +124,21 @@ defmodule BackendWeb.LeaderboardView do
     {options, "Ladder Mode"}
   end
 
+  def create_show_flags_dropdown(conn, show_flags) do
+    options =
+      ["yes", "no"]
+      |> Enum.map(fn mode ->
+        %{
+          display: Recase.to_title(mode),
+          selected: mode == show_flags,
+          link:
+            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "show_flags", mode))
+        }
+      end)
+
+    {options, "Show Country Flags"}
+  end
+
   def create_compare_to_dropdown(conn, compare_to) do
     options =
       [
@@ -165,7 +183,7 @@ defmodule BackendWeb.LeaderboardView do
   def add_other_ladders(invited, other_ladders) do
     other_ladders
     |> Enum.flat_map(fn leaderboard ->
-      process_entries(leaderboard, invited, nil)
+      process_entries(leaderboard, invited, nil, false)
       |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
       |> Enum.with_index(1)
       |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, leaderboard.region, pos}} end)
@@ -254,12 +272,13 @@ defmodule BackendWeb.LeaderboardView do
   Jay that Finished on APAC so I'm not counting them"
 
   def warning(_, _), do: nil
-  def process_entries(nil, _, _), do: []
+  def process_entries(nil, _, _, _), do: []
 
   def process_entries(
         snapshot = %{entries: entries, upstream_updated_at: upstream_updated_at},
         invited,
-        comparison
+        comparison,
+        show_flags
       ) do
     Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
       warning = warning(snapshot, account_id)
@@ -270,6 +289,14 @@ defmodule BackendWeb.LeaderboardView do
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
 
+      flag =
+        with true <- show_flags,
+             cc when is_binary(cc) <- Backend.PlayerInfo.get_country(account_id) do
+          country_flag(cc)
+        else
+          _ -> ""
+        end
+
       {
         le
         |> Map.put_new(:qualified, qualified)
@@ -277,6 +304,7 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:ineligible, ineligible)
         |> Map.put_new(:prev_rank, prev_rank)
         |> Map.put_new(:warning, warning)
+        |> Map.put_new(:flag, flag)
         |> Map.put_new(:prev_rating, prev_rating),
         if qualified || ineligible do
           acc
