@@ -1,59 +1,93 @@
 <div class="title is-2"><a href=<%= @link %>> <%= @name %></a></div>
 <div class="subtitle is-6"><%=@subtitle%></div>
-<%= if @show_stage_selection do %>
-    <div class="dropdown is-hoverable">
-        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@stage_selection_text%></button></div>
-        <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-            <%= for %{name: name, selected: selected, link: link} <- @stages do %>
-                <a class="dropdown-item <%= selected && 'is-active' || '' %>" href="<%= link %>"><%=name%></a>
-            <% end %>
-        </div>
-        </div>
-    </div>
-<% end %>
 
-<div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Highlight Players</button></div>
-    <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-
-            <%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @id),
-            [as: :player, method: :get], fn
-            f-> %>
-                <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
-                    <input name="<%= key %>" type="hidden" value="<%= value %>">
+<div>
+<%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @id), [method: :get], fn
+f-> %>
+    <%= if @show_stage_selection do %>
+        <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@stage_selection_text%></button></div>
+            <div class="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+                <%= for %{name: name, selected: selected, link: link} <- @stages do %>
+                    <a class="dropdown-item <%= selected && 'is-active' || '' %>" href="<%= link %>"><%=name%></a>
                 <% end %>
+            </div>
+            </div>
+        </div>
+    <% end %>
+    <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+        <input name="<%= key %>" type="hidden" value="<%= value %>">
+    <% end %>
+    <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Highlight Players</button></div>
+        <div class="dropdown-menu" role="menu">
+            <div class="dropdown-content">
                 <div class="dropdown-item">
                     <%= submit "Submit", class: "button" %>
                 </div>
 
                 <input
-                id="highlight_select"
-                class="input"
-                placeholder="Select Player"
-                type="text"
-                autocomplete="off"
-                onpaste="hide_based_on_search('highlight_select', 'player-dropdown-item')"
-                oninput="hide_based_on_search('highlight_select', 'player-dropdown-item')"
-                onkeyup="hide_based_on_search('highlight_select', 'player-dropdown-item')"
-                oncut="hide_based_on_search('highlight_select', 'player-dropdown-item')"
-                onchange="hide_based_on_search('highlight_select', 'player-dropdown-item')">
+                    id="highlight_select_player"
+                    class="input"
+                    placeholder="Select Player"
+                    type="text"
+                    autocomplete="off"
+                    onpaste="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
+                    oninput="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
+                    onkeyup="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
+                    oncut="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
+                    onchange="hide_based_on_search('highlight_select_player', 'player-dropdown-item')">
                 <%= for {player, selected} <- @players do %>
-                    <label for="player_<%= player %>" style data-target-value="<%= player %>" class="dropdown-item player-dropdown-item">
+                    <label for="player[<%= player %>]" style data-target-value="<%= player %>" class="dropdown-item player-dropdown-item">
                         <span ><%= player %></span>
-                        <%= checkbox f, player, hidden_input: false, class: "is-pulled-right", value: selected %>
+                        <%= checkbox f, "player[#{player}]", hidden_input: false, class: "is-pulled-right", value: selected %>
                     </label>
                 <% end %>
                 <div class="dropdown-item">
                     <%= submit "Submit", class: "button" %>
                 </div>
-            <% end %>
+            </div>
         </div>
     </div>
+    <%= if @use_countries do %>
+        <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Highlight countries</button></div>
+            <div class="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                    <div class="dropdown-item">
+                        <%= submit "Submit", class: "button" %>
+                    </div>
+
+                    <input
+                        id="highlight_select_country"
+                        class="input"
+                        placeholder="Select country"
+                        type="text"
+                        autocomplete="off"
+                        onpaste="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
+                        oninput="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
+                        onkeyup="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
+                        oncut="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
+                        onchange="hide_based_on_search('highlight_select_country', 'country-dropdown-item')">
+                    <%= for %{value: value, display: display, selected: selected, name: name} <- @countries do %>
+                        <label for="country[<%= value %>]" style data-target-value="<%= name %>" class="dropdown-item country-dropdown-item">
+                            <span ><%= display %></span>
+                            <%= checkbox f, "country[#{value}]", hidden_input: false, class: "is-pulled-right", value: selected %>
+                        </label>
+                    <% end %>
+                    <div class="dropdown-item">
+                        <%= submit "Submit", class: "button" %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <% end %>
+    <%= render_dropdowns @dropdowns %>
+<% end %>
 </div>
 
-<%= render_dropdowns @dropdowns %>
 <%= if Enum.any?(@highlight) do %>
     <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlight) %>
 <% end %>

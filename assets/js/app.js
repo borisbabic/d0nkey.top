@@ -69,7 +69,7 @@ window.hide_based_on_search = function(search_id, target_class)  {
         console.log("Searching for " + input.value);
         var elements = document.getElementsByClassName(target_class);
         Array.prototype.forEach.call(elements, function (thing) {
-            if (input.value === null || thing.dataset && thing.dataset.targetValue && thing.dataset.targetValue.search(input.value) > -1) {
+            if (input.value === null || thing.dataset && thing.dataset.targetValue && thing.dataset.targetValue.toLowerCase().search(input.value.toLowerCase()) > -1) {
                 thing.style.display = "";
             }
             else {

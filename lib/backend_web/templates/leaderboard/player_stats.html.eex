@@ -12,7 +12,7 @@ f-> %>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
                     <%= for %{value: val, name: name, selected: selected} <- @region_options do %>
-                            <label for="regions_<%= val%>" class="dropdown-item">
+                            <label for="regions[<%= val%>]" class="dropdown-item">
                                 <span > <%= name %></span>
                                 <%= checkbox f, "regions[#{val}]", hidden_input: false, class: "is-pulled-right",
                                 value:
@@ -31,7 +31,7 @@ f-> %>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
                 <%= for %{value: val, name: name, selected: selected} <- @leaderboards_options do %>
-                        <label for="leaderboards_<%= val%>" class="dropdown-item">
+                        <label for="leaderboards[<%= val%>]" class="dropdown-item">
                             <span > <%= name %></span>
                             <%= checkbox f, "leaderboards[#{val}]", hidden_input: false, class: "is-pulled-right", value: selected %>
                         </label>

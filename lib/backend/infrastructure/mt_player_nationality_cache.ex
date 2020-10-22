@@ -35,15 +35,20 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
     end)
   end
 
+  defp get_country(map, key) do
+    p = Map.get(map, key)
+
+    if p && p.nationality do
+      p.nationality
+    else
+      nil
+    end
+  end
+
   def handle_call({:get_country, mt_bt}, _from, state = {mt_bt_map, short_bt_map}) do
     response =
-      with nil <- Map.get(mt_bt_map, mt_bt),
-           nil <- Map.get(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag()) do
-        nil
-      else
-        %{nationality: cc} -> cc
-        _ -> nil
-      end
+      get_country(mt_bt_map, mt_bt) ||
+        get_country(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag())
 
     {:reply, response, state}
   end
@@ -54,7 +59,7 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
            nil <- Map.get(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag()) do
         nil
       else
-        pn = %{nationality: cc} -> pn
+        pn = %{nationality: _} -> pn
         _ -> nil
       end
 
