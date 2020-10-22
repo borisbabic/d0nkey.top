@@ -98,7 +98,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :Madrid,
-        battlefy_id: nil,
+        battlefy_id: "5f8100994e9faf3dd1a80ad0",
         ladder_seasons: [82, 83],
         region: :EU,
         start_time: ~N[2020-10-23 13:00:00],
