@@ -165,7 +165,7 @@ defmodule Backend.Battlefy.ClassMatchStats do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :class, string
+    field :class, String.t()
     field :wins, integer
     field :losses, integer
     field :bans, integer

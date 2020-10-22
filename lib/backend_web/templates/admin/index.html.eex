@@ -1,0 +1,6 @@
+<div class="title is-2">Hello Handsome!</div>
+
+<%= render_dropdowns @dropdowns %>
+<%= for {link, display} <- @links do %>
+  <a class="is-link" href=<%= link %>><%= display %></a>
+<% end %>

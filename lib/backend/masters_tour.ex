@@ -8,9 +8,11 @@ defmodule Backend.MastersTour do
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.MastersTour.Qualifier
   alias Backend.MastersTour.PlayerStats
+  alias Backend.MastersTour.PlayerNationality
   alias Backend.MastersTour.TourStop
   alias Backend.Infrastructure.BattlefyCommunicator
   alias Backend.Infrastructure.PlayerStatsCache
+  alias Backend.Infrastructure.PlayerNationalityCache
   alias Backend.Blizzard
   alias Backend.Battlefy
   alias Backend.TournamentStats.TournamentTeamStats
@@ -771,6 +773,7 @@ defmodule Backend.MastersTour do
   def masters_tours_stats() do
     TourStop.all()
     |> Enum.filter(fn ts -> ts.battlefy_id end)
+    |> Enum.filter(&TourStop.started?/1)
     |> Enum.map(fn ts ->
       # ts.battlefy_id
       # |> Battlefy.get_tournament()
@@ -791,5 +794,68 @@ defmodule Backend.MastersTour do
       |> InvitedPlayer.shorten_battletag()
       |> fix_name()
     end)
+  end
+
+  def create_player_nationality(
+        %Backend.Battlefy.MatchTeam{team: %{name: name, players: [p = %{country_code: cc}]}},
+        ts
+      )
+      when not is_nil(cc) do
+    attrs =
+      %{
+        mt_battletag_full: name,
+        actual_battletag_full: p.battletag,
+        twitch: p.twitch,
+        nationality: cc,
+        tour_stop: to_string(ts)
+      }
+      |> IO.inspect()
+
+    %PlayerNationality{}
+    |> PlayerNationality.changeset(attrs)
+  end
+
+  def create_player_nationality(_, _), do: nil
+
+  def update_player_nationalities(%{battlefy_id: battlefy_id, id: id}) do
+    battlefy_id
+    |> Battlefy.get_tournament()
+    |> case do
+      %{stage_ids: [s_id | _]} ->
+        matches =
+          BattlefyCommunicator.get_matches(s_id, round: 1)
+          |> Util.async_map(fn m -> m.id |> BattlefyCommunicator.get_match() end)
+
+        multi =
+          matches
+          |> Enum.reduce(Multi.new(), fn m, multi ->
+            [m.top, m.bottom]
+            |> Enum.map(fn t -> create_player_nationality(t, id) end)
+            |> Enum.filter(&Util.id/1)
+            |> Enum.reduce(multi, fn cs, m ->
+              Multi.insert(
+                m,
+                "player_nationality_#{cs.changes.tour_stop}#{cs.changes.mt_battletag_full}",
+                cs
+              )
+            end)
+          end)
+
+        result = multi |> Repo.transaction()
+        warmup_player_nationality_cache()
+        {:ok, result}
+
+      _ ->
+        {:error, "Tournament not ready"}
+    end
+  end
+
+  def mt_player_nationalities() do
+    Repo.all(from(pn in PlayerNationality))
+  end
+
+  def warmup_player_nationality_cache() do
+    mt_player_nationalities()
+    |> PlayerNationalityCache.reinit()
   end
 end
