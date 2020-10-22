@@ -1,29 +1,62 @@
 <div class="title is-2">MT Stats</div>
 <%= render_dropdowns @dropdowns %>
 
-<div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Columns</button></div>
-    <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-
-            <%= form_for @conn, Routes.masters_tour_path(@conn, :masters_tours_stats, @conn.query_params),
-            [as: :columns, method: :get], fn
-            f-> %>
-                <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
-                    <input name="<%= key %>" type="hidden" value="<%= value %>">
-                <% end %>
+<div>
+<%= form_for @conn, Routes.masters_tour_path(@conn, :masters_tours_stats, @conn.query_params),
+[method: :get], fn
+f-> %>
+    <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+        <input name="<%= key %>" type="hidden" value="<%= value %>">
+    <% end %>
+    <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Columns</button></div>
+        <div class="dropdown-menu" role="menu">
+            <div class="dropdown-content">
                 <%= for {column, selected} <- @columns do %>
-                        <label for="columns_<%= column %>" class="dropdown-item">
-                            <span > <%= column %></span>
-                            <%= checkbox f, column, hidden_input: false, class: "is-pulled-right", value: selected %>
-                        </label>
+                    <label for="columns[<%= column %>]" class="dropdown-item">
+                        <span > <%= column %></span>
+                        <%= checkbox f, "columns[#{column}]", hidden_input: false, class: "is-pulled-right", value: selected %>
+                    </label>
                 <% end %>
                 <div class="dropdown-item">
                     <%= submit "Submit", class: "button" %>
                 </div>
-            <% end %>
+            </div>
         </div>
     </div>
+
+    <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Filter countries</button></div>
+        <div class="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+
+                <input
+                    id="filter_select_country"
+                    class="input"
+                    placeholder="Select country"
+                    type="text"
+                    autocomplete="off"
+                    onpaste="hide_based_on_search('filter_select_country', 'country-dropdown-item')"
+                    oninput="hide_based_on_search('filter_select_country', 'country-dropdown-item')"
+                    onkeyup="hide_based_on_search('filter_select_country', 'country-dropdown-item')"
+                    oncut="hide_based_on_search('filter_select_country', 'country-dropdown-item')"
+                    onchange="hide_based_on_search('filter_select_country', 'country-dropdown-item')">
+                <%= for %{value: value, display: display, selected: selected, name: name} <- @countries do %>
+                    <label for="country[<%= value %>]" style data-target-value="<%= name %>" class="dropdown-item country-dropdown-item">
+                        <span ><%= display %></span>
+                        <%= checkbox f, "country[#{value}]", hidden_input: false, class: "is-pulled-right", value: selected %>
+                    </label>
+                <% end %>
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+            </div>
+        </div>
+    </div>
+<% end %>
 </div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>

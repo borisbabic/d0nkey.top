@@ -68,10 +68,10 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     |> Enum.map(fn {player_name, tts} ->
       total = tts |> Enum.count()
 
-      flag =
+      {flag, country} =
         case player_name |> Backend.PlayerInfo.get_country() do
-          nil -> ""
-          cc -> cc |> country_flag()
+          nil -> {"", nil}
+          cc -> {cc |> country_flag(), cc}
         end
 
       player_cell = ~E"""
@@ -102,6 +102,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
       %{
         "Player" => player_cell,
+        :country => country,
         "Tour Stops" => total,
         "Top 8" => stats.positions |> Enum.filter(fn p -> p < 9 end) |> Enum.count(),
         "Best" => stats |> TeamStats.best(),
@@ -140,6 +141,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         direction: direction_raw,
         selected_columns: selected_columns,
         tour_stops: tour_stops,
+        countries: countries,
         tournament_team_stats: tts
       }) do
     {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
@@ -167,7 +169,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         ]
 
     columns_to_show =
-      if is_list(selected_columns) do
+      if is_list(selected_columns) && Enum.count(selected_columns) > 0 do
         columns |> Enum.filter(fn c -> Enum.member?(selected_columns, c) end)
       else
         ["Player", "Tour Stops", "Top 8", "Matches Won", "Matches Lost", "Winrate %"]
@@ -183,6 +185,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         |> MastersTour.fix_name()
       end)
       |> create_player_rows(conn)
+      |> Enum.filter(fn row ->
+        countries == nil || countries == [] || countries |> Enum.member?(row[:country])
+      end)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
@@ -198,6 +203,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       rows: rows,
       columns: columns_options,
       conn: conn,
+      countries: BackendWeb.BattlefyView.create_countries(countries || []),
       dropdowns: []
     })
   end
