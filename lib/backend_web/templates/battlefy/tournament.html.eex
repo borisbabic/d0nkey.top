@@ -29,17 +29,21 @@
                 </div>
 
                 <input
-                list="highlight"
-                name="highlight"
                 id="highlight_select"
                 class="input"
                 placeholder="Select Player"
-                onchange="location_href_by_datalist('highlight_select', 'highlight')">
+                type="text"
+                autocomplete="off"
+                onpaste="hide_based_on_search('highlight_select', 'player-dropdown-item')"
+                oninput="hide_based_on_search('highlight_select', 'player-dropdown-item')"
+                onkeyup="hide_based_on_search('highlight_select', 'player-dropdown-item')"
+                oncut="hide_based_on_search('highlight_select', 'player-dropdown-item')"
+                onchange="hide_based_on_search('highlight_select', 'player-dropdown-item')">
                 <%= for {player, selected} <- @players do %>
-                        <label for="player_<%= player %>" class="dropdown-item" style>
-                            <span > <%= player %></span>
-                            <%= checkbox f, player, hidden_input: false, class: "is-pulled-right", value: selected %>
-                        </label>
+                    <label for="player_<%= player %>" style data-target-value="<%= player %>" class="dropdown-item player-dropdown-item">
+                        <span ><%= player %></span>
+                        <%= checkbox f, player, hidden_input: false, class: "is-pulled-right", value: selected %>
+                    </label>
                 <% end %>
                 <div class="dropdown-item">
                     <%= submit "Submit", class: "button" %>
