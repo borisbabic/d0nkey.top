@@ -801,15 +801,13 @@ defmodule Backend.MastersTour do
         ts
       )
       when not is_nil(cc) do
-    attrs =
-      %{
-        mt_battletag_full: name,
-        actual_battletag_full: p.battletag,
-        twitch: p.twitch,
-        nationality: cc,
-        tour_stop: to_string(ts)
-      }
-      |> IO.inspect()
+    attrs = %{
+      mt_battletag_full: name,
+      actual_battletag_full: p.battletag,
+      twitch: p.twitch,
+      nationality: cc,
+      tour_stop: to_string(ts)
+    }
 
     %PlayerNationality{}
     |> PlayerNationality.changeset(attrs)

@@ -90,8 +90,6 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
       swiss = swiss_stats_list |> TeamStats.calculate_team_stats()
 
-      if player_name == "Leta", do: IO.inspect(tts)
-
       stats =
         tts |> Enum.map(&TournamentTeamStats.total_stats/1) |> TeamStats.calculate_team_stats()
 

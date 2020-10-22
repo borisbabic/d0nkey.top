@@ -402,4 +402,16 @@ defmodule Util do
   """
   def median(sortable_list),
     do: sortable_list |> Enum.sort() |> Enum.at(Enum.count(sortable_list) |> div(2))
+
+  def get_country_name(nil), do: nil
+
+  def get_country_name(cc) do
+    country = Countriex.get_by(:alpha2, cc)
+
+    if country != nil do
+      country.name
+    else
+      nil
+    end
+  end
 end

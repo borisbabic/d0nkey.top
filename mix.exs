@@ -62,6 +62,7 @@ defmodule Backend.MixProject do
       {:guardian, "~> 2.0"},
       {:ueberauth, "~>0.6"},
       {:ueberauth_bnet, "~>0.2"},
+      {:countriex, "~>0.4"},
       {:quantum, "~> 2.3"}
     ]
   end

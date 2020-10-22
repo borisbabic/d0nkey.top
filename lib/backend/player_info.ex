@@ -1463,6 +1463,10 @@ defmodule Backend.PlayerInfo do
     "BY" => :EU,
     "IS" => :EU
   }
+  def get_eligible_countries() do
+    @alpha2_to_region |> Map.keys()
+  end
+
   def country_to_region(cc), do: @alpha2_to_region[cc]
 
   def get_grandmasters(season = {2020, 2}),
@@ -1491,7 +1495,7 @@ defmodule Backend.PlayerInfo do
 
   def get_esports_earnings_region(player) do
     player
-    |> get_country()
+    |> EsportsEarnings.get_player_country()
     |> case do
       nil -> nil
       a2 -> @alpha2_to_region[a2]
@@ -1511,13 +1515,16 @@ defmodule Backend.PlayerInfo do
 
   @spec get_region(String.t()) :: Blizzard.region()
   def get_region(full_or_short) do
-    with nil <- full_or_short |> PlayerNationality.get_country() |> country_to_region(),
-         nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region() do
+    with nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region(),
+         nil <- full_or_short |> new_get_region() do
       nil
     else
       r -> r
     end
   end
+
+  def new_get_region(full_or_short),
+    do: full_or_short |> PlayerNationality.get_country() |> country_to_region()
 
   def old_get_region(original_name) do
     player = original_name |> hack_name()
@@ -1548,11 +1555,26 @@ defmodule Backend.PlayerInfo do
 
   @spec get_country(Blizzard.battletag()) :: country_code
   def get_country(battletag_full) do
-    battletag_full
-    |> PlayerNationality.get_country() ||
-      battletag_full
-      |> InvitedPlayer.shorten_battletag()
-      |> EsportsEarnings.get_player_country()
+    short = battletag_full |> InvitedPlayer.shorten_battletag()
+
+    with nil <- short |> old_get_country(),
+         nil <- battletag_full |> new_get_country() do
+      nil
+    else
+      c -> c
+    end
+  end
+
+  def new_get_country(full_or_short), do: full_or_short |> PlayerNationality.get_country()
+
+  def old_get_country(short) do
+    with nil <- short |> EsportsEarnings.get_player_country(),
+         old when old != :CN <- short |> old_get_region() do
+      nil
+    else
+      :CN -> "CN"
+      c -> c
+    end
   end
 
   @spec get_info(String.t()) :: player_info

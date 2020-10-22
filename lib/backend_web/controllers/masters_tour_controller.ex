@@ -93,6 +93,7 @@ defmodule BackendWeb.MastersTourController do
       show_gms: show_gms,
       region: region,
       gms: gms,
+      country: params["country"],
       gm_season: gm_season
     })
   end
