@@ -540,6 +540,9 @@ defmodule Backend.MastersTour do
 
   def name_hacks(name) do
     case name do
+      "香菇奾汁" -> "ShroomJuice"
+      "LFbleau" -> "LFBleau"
+      "ChungLiTaiChihYuan" -> "LzJohn"
       "Liooon" -> "VKLiooon"
       "brimful" -> "Briarthorn"
       "LojomHS" -> "lojom"
