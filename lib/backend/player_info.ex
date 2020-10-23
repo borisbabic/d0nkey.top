@@ -1555,11 +1555,20 @@ defmodule Backend.PlayerInfo do
     end
   end
 
+  def nationality_overrides(short) do
+    case short do
+      "Thund3r" -> "IT"
+      "D0nkey" -> "HR"
+      _ -> nil
+    end
+  end
+
   @spec get_country(Blizzard.battletag()) :: country_code
   def get_country(battletag_full) do
     short = battletag_full |> InvitedPlayer.shorten_battletag()
 
-    with nil <- short |> old_get_country(),
+    with nil <- short |> nationality_overrides(),
+         nil <- short |> old_get_country(),
          nil <- battletag_full |> new_get_country() do
       nil
     else
