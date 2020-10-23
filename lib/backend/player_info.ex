@@ -1,6 +1,7 @@
 defmodule Backend.PlayerInfo do
   @moduledoc false
   alias Backend.Blizzard
+  alias Backend.MastersTour
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Infrastructure.PlayerNationalityCache, as: PlayerNationality
   alias Backend.EsportsEarnings
@@ -1615,6 +1616,8 @@ defmodule Backend.PlayerInfo do
       "LFZhoulang" => "CN",
       # correct but writing it here to know it's correct
       "destiny" => "CN",
+      "BunnyHoppor" => "DE",
+      "Tyler" => "VN",
       "edwin" => "CN",
       "illsory" => "AU"
     }
@@ -1623,7 +1626,8 @@ defmodule Backend.PlayerInfo do
 
   @spec get_country(Blizzard.battletag()) :: country_code
   def get_country(battletag_full) do
-    short = battletag_full |> InvitedPlayer.shorten_battletag()
+    short =
+      battletag_full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name() |> hack_name()
 
     with nil <- nationality_overrides() |> Map.get(short),
          nil <- short |> old_get_country(),
