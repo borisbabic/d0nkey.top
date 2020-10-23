@@ -1557,8 +1557,12 @@ defmodule Backend.PlayerInfo do
 
   def nationality_overrides(short) do
     case short do
+      # NEW
       "Thund3r" -> "IT"
+      # 
       "D0nkey" -> "HR"
+      # NEW
+      "HSKeDaiBiao" -> "US"
       _ -> nil
     end
   end
