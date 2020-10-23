@@ -1517,11 +1517,23 @@ defmodule Backend.PlayerInfo do
 
   @spec get_region(String.t()) :: Blizzard.region()
   def get_region(full_or_short) do
-    with nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region(),
+    with nil <- full_or_short |> region_from_override(),
+         nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region(),
          nil <- full_or_short |> new_get_region() do
       nil
     else
       r -> r
+    end
+  end
+
+  def region_from_override(full_or_short) do
+    short = full_or_short |> InvitedPlayer.shorten_battletag()
+
+    nationality_overrides()
+    |> Map.get(short)
+    |> case do
+      nil -> nil
+      cc -> @alpha2_to_region[cc]
     end
   end
 
@@ -1555,23 +1567,65 @@ defmodule Backend.PlayerInfo do
     end
   end
 
-  def nationality_overrides(short) do
-    case short do
-      # NEW
-      "Thund3r" -> "IT"
-      # 
-      "D0nkey" -> "HR"
-      # NEW
-      "HSKeDaiBiao" -> "US"
-      _ -> nil
-    end
+  def nationality_overrides() do
+    china =
+      for n <- [
+            "WedgmXmg",
+            "LPTrunks",
+            "SubUss",
+            "GMLT",
+            "LFyueying",
+            "ADU",
+            "RNGTyrion",
+            "TainanWater",
+            "旅店老闆",
+            "PDA",
+            "yoyo",
+            "樂天盜賊",
+
+            # maybe actually not china and Taiwan and no override
+            "Allen",
+            "maxchen",
+            "Joy",
+            "choco06743",
+            "MagicPants",
+            "jerry",
+            "Asura",
+            "SevenC"
+          ],
+          into: %{},
+          do: {n, "CN"}
+
+    %{
+      "Thund3r" => "IT",
+      "HSKeDaiBiao" => "US",
+      "D0nkey" => "HR",
+      "WEChengxin" => "CN",
+      "Mysterious" => "PL",
+      "Rpbalance" => "CN",
+      "fire" => "KR",
+      "Dennis" => "TW",
+      "WEYoulove" => "CN",
+      "WEBaKu" => "CN",
+      "VKxhx" => "CN",
+      "VKTianming" => "CN",
+      "SNSyu" => "CN",
+      "SNRugal" => "CN",
+      "LPOmegaZero" => "CN",
+      "LFZhoulang" => "CN",
+      # correct but writing it here to know it's correct
+      "destiny" => "CN",
+      "edwin" => "CN",
+      "illsory" => "AU"
+    }
+    |> Map.merge(china)
   end
 
   @spec get_country(Blizzard.battletag()) :: country_code
   def get_country(battletag_full) do
     short = battletag_full |> InvitedPlayer.shorten_battletag()
 
-    with nil <- short |> nationality_overrides(),
+    with nil <- nationality_overrides() |> Map.get(short),
          nil <- short |> old_get_country(),
          nil <- battletag_full |> new_get_country() do
       nil
