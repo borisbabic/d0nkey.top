@@ -548,6 +548,8 @@ defmodule Backend.MastersTour do
       "LojomHS" -> "lojom"
       "執念の蒼汁" -> "Aojiru"
       "Syuunen No Aojiru" -> "Aojiru"
+      "LPOmegazero" -> "LPOmegaZero"
+      "VK.xhx" -> "VKxhx"
       n -> n
     end
   end
