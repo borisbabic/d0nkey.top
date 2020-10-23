@@ -550,6 +550,7 @@ defmodule Backend.MastersTour do
       "Syuunen No Aojiru" -> "Aojiru"
       "LPOmegazero" -> "LPOmegaZero"
       "VK.xhx" -> "VKxhx"
+      "yuyi" -> "WEYuyi"
       n -> n
     end
   end
