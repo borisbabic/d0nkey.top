@@ -24,7 +24,7 @@ defmodule BackendWeb.BattlefyController do
       standings: standings,
       tournament: tournament,
       matches: matches,
-      show_ongoing: false,
+      show_ongoing: show_ongoing,
       country_highlight: multi_select_to_array(params["country"]),
       highlight: get_highlight(params),
       stage_id: stage_id
@@ -46,7 +46,7 @@ defmodule BackendWeb.BattlefyController do
       standings: standings,
       tournament: tournament,
       matches: matches,
-      show_ongoing: false,
+      show_ongoing: show_ongoing,
       country_highlight: multi_select_to_array(params["country"]),
       highlight: get_highlight(params)
     })
