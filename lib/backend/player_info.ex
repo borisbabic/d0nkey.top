@@ -1583,8 +1583,8 @@ defmodule Backend.PlayerInfo do
   def new_get_country(full_or_short), do: full_or_short |> PlayerNationality.get_country()
 
   def old_get_country(short) do
-    with nil <- short |> EsportsEarnings.get_player_country(),
-         old when old != :CN <- short |> old_get_region() do
+    with old when old != :CN <- short |> old_get_region(),
+         nil <- short |> EsportsEarnings.get_player_country() do
       nil
     else
       :CN -> "CN"
