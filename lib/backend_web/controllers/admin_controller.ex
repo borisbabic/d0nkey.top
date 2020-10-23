@@ -106,14 +106,14 @@ defmodule BackendWeb.AdminController do
         end
       end)
       |> Enum.sort_by(fn {_, _, _, _, _, t} -> t end)
-      |> Enum.map(fn t -> t |> Tuple.to_list() |> Enum.join(",") end)
+      |> Enum.map(fn t -> t |> Tuple.to_list() |> Enum.join("|") end)
       |> Enum.join("\n")
 
     response =
       if csv == "" do
         "No discrepancies"
       else
-        "Name,New Region,Old Region,New Country,Old Country,Total Earnings\n" <>
+        "Name|New Region|Old Region|New Country|Old Country|Total Earnings\n" <>
           csv
       end
 
