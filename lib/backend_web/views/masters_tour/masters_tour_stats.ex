@@ -76,7 +76,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
       player_cell = ~E"""
 
-      <%= flag %> <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, player_name)%>">
+      <span><%= flag %></span> <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, player_name)%>">
         <%= player_name %>
       </a>
       """
