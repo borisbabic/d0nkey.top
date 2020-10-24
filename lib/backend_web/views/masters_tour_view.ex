@@ -74,7 +74,7 @@ defmodule BackendWeb.MastersTourView do
           <td class="is-hidden-mobile"><%=tsc%></td>
         <% end %>
         <%= if show_current_score do %>
-          <th><%= pr.current_score %></th>
+          <td><%= pr.current_score %></td>
         <% end %>
         <td><%=total%></td>
       </tr>
@@ -498,8 +498,21 @@ defmodule BackendWeb.MastersTourView do
     standings
     |> Enum.find(fn %{team: %{name: full}} -> InvitedPlayer.shorten_battletag(full) == name end)
     |> case do
-      %{wins: wins, losses: losses} -> "#{wins} - #{losses}"
-      _ -> "N/A"
+      s = %{wins: wins, losses: losses, disqualified: disqualified} ->
+        class =
+          cond do
+            disqualified -> "has-text-danger"
+            losses == 2 -> "has-text-warning"
+            losses < 2 -> "has-text-success"
+            true -> "has-text-danger"
+          end
+
+        ~E"""
+        <div class="<%= class %>"> <%= wins %> - <%= losses %> </div>
+        """
+
+      _ ->
+        ""
     end
   end
 
@@ -524,13 +537,7 @@ defmodule BackendWeb.MastersTourView do
       earnings
       |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
       |> Enum.map(fn {name, total, per_ts} ->
-        current_score =
-          standings
-          |> Enum.find_value(fn s -> MastersTour.same_player?(s.team.name, name) && s end)
-          |> case do
-            %{wins: wins, losses: losses} -> "#{wins} - #{losses}" |> IO.inspect()
-            _ -> ""
-          end
+        current_score = get_player_score(name, standings)
 
         %{
           name: name,
