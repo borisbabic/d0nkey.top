@@ -523,7 +523,7 @@ defmodule Backend.MastersTour do
       get_ts_money_rankings(ts)
       |> Enum.map(fn {name, money} -> {name, money, ts} end)
     end)
-    |> Enum.group_by(fn {name, _, _} -> name_hacks(name) end, fn {_, money, tour_stop} ->
+    |> Enum.group_by(fn {name, _, _} -> get_earnings_group_by(name) end, fn {_, money, tour_stop} ->
       {tour_stop, money}
     end)
     |> Enum.map(fn {name, earnings_list} ->
@@ -534,6 +534,13 @@ defmodule Backend.MastersTour do
       }
     end)
     |> Enum.sort_by(fn {_, earnings, _} -> earnings end, :desc)
+  end
+
+  def get_earnings_group_by(name) do
+    cond do
+      name |> String.starts_with?("Jay#") -> PlayerNationalityCache.get_actual_battletag(name)
+      true -> name |> InvitedPlayer.shorten_battletag() |> name_hacks()
+    end
   end
 
   def fix_name(name) do
@@ -615,7 +622,7 @@ defmodule Backend.MastersTour do
           _ -> 11_000
         end
 
-      {shortened_name, money}
+      {name, money}
     end)
   end
 
@@ -635,7 +642,7 @@ defmodule Backend.MastersTour do
           _ -> 850
         end
 
-      {InvitedPlayer.shorten_battletag(name), money}
+      {name, money}
     end)
   end
 

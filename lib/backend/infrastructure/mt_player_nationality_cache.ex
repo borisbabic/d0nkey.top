@@ -13,6 +13,10 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
     GenServer.call(@name, {:get_country, mt_bt})
   end
 
+  def get_actual_battletag(mt_bt) do
+    GenServer.call(@name, {:get_actual_battletag, mt_bt})
+  end
+
   def get(mt_bt) do
     GenServer.call(@name, {:get, mt_bt})
   end
@@ -35,6 +39,16 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
     end)
   end
 
+  defp get_actual_battletag(map, key) do
+    p = Map.get(map, key)
+
+    if p && p.actual_battletag_full do
+      p.actual_battletag_full
+    else
+      nil
+    end
+  end
+
   defp get_country(map, key) do
     p = Map.get(map, key)
 
@@ -43,6 +57,14 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
     else
       nil
     end
+  end
+
+  def handle_call({:get_actual_battletag, mt_bt}, _from, state = {mt_bt_map, short_bt_map}) do
+    response =
+      get_actual_battletag(mt_bt_map, mt_bt) ||
+        get_actual_battletag(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag())
+
+    {:reply, response, state}
   end
 
   def handle_call({:get_country, mt_bt}, _from, state = {mt_bt_map, short_bt_map}) do
