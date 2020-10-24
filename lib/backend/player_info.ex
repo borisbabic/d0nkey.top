@@ -1516,9 +1516,17 @@ defmodule Backend.PlayerInfo do
     end
   end
 
+  def same_player_override(player, new) do
+    cond do
+      player |> String.starts_with?("Jay#") -> player |> new.()
+      true -> nil
+    end
+  end
+
   @spec get_region(String.t()) :: Blizzard.region()
   def get_region(full_or_short) do
-    with nil <- full_or_short |> region_from_override(),
+    with nil <- full_or_short |> same_player_override(&new_get_region/1),
+         nil <- full_or_short |> region_from_override(),
          nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region(),
          nil <- full_or_short |> new_get_region() do
       nil
@@ -1629,7 +1637,8 @@ defmodule Backend.PlayerInfo do
     short =
       battletag_full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name() |> hack_name()
 
-    with nil <- nationality_overrides() |> Map.get(short),
+    with nil <- battletag_full |> same_player_override(&new_get_country/1),
+         nil <- nationality_overrides() |> Map.get(short),
          nil <- short |> old_get_country(),
          nil <- battletag_full |> new_get_country() do
       nil
