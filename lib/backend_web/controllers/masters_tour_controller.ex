@@ -76,11 +76,28 @@ defmodule BackendWeb.MastersTourController do
   def parse_season("2021_1"), do: {2021, 1}
   def parse_season(_), do: @default_season
 
+  defp show_current_score?(%{"show_current_score" => current_score})
+       when is_binary(current_score),
+       do: String.starts_with?(current_score, "yes")
+
+  defp show_current_score?(_), do: false
+
   def earnings(conn, params = %{"show_gms" => show_gms}) do
     gm_season = params["season"] |> parse_season()
     gms = Backend.PlayerInfo.get_grandmasters(gm_season)
     tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
     earnings = MastersTour.get_gm_money_rankings(gm_season)
+
+    {standings, show_current_score} =
+      with true <- show_current_score?(params),
+           current_ts when not is_nil(current_ts) <- MastersTour.TourStop.get_current(),
+           %{battlefy_id: battlefy_id} <- MastersTour.TourStop.get(current_ts),
+           standings when standings != [] <-
+             battlefy_id |> Backend.Battlefy.get_tournament_standings() do
+        {standings, true}
+      else
+        _ -> {[], false}
+      end
 
     region =
       params["region"]
@@ -90,6 +107,8 @@ defmodule BackendWeb.MastersTourController do
     render(conn, "earnings.html", %{
       tour_stops: tour_stops,
       earnings: earnings,
+      standings: standings,
+      show_current_score: show_current_score,
       show_gms: show_gms,
       region: region,
       gms: gms,
