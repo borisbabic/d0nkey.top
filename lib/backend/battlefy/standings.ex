@@ -9,6 +9,7 @@ defmodule Backend.Battlefy.Standings do
     field :wins, integer
     field :auto_wins, integer
     field :auto_losses, integer
+    field :disqualified, boolean
     field :losses, integer
   end
 
@@ -18,6 +19,7 @@ defmodule Backend.Battlefy.Standings do
       |> Enum.map(fn raw = %{"team" => team, "place" => place} ->
         %__MODULE__{
           place: place,
+          disqualified: !!raw["disqualified"],
           team: Team.from_raw_map(team)
         }
         |> add_win_loss(raw)
@@ -28,6 +30,7 @@ defmodule Backend.Battlefy.Standings do
       |> Enum.map(fn {raw = %{"team" => team}, index} ->
         %__MODULE__{
           place: index + 1,
+          disqualified: !!raw["disqualified"],
           team: Team.from_raw_map(team)
         }
         |> add_win_loss(raw)
