@@ -356,6 +356,23 @@ defmodule Backend.Blizzard do
     end
   end
 
+  @spec get_tour_stops_for_gm(tour_stop()) :: {:ok, gm_season()} | {:error, String.t()}
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_promotion_season_for_gm(tour_stop) do
+    case tour_stop do
+      :LasVegas -> {:ok, {2020, 1}}
+      :Seoul -> {:ok, {2020, 1}}
+      :Bucharest -> {:ok, {2020, 1}}
+      :Arlington -> {:ok, {2020, 2}}
+      :Indonesia -> {:ok, {2020, 2}}
+      :Jönköping -> {:ok, {2020, 2}}
+      :"Asia-Pacific" -> {:ok, {2021, 1}}
+      :Montréal -> {:ok, {2021, 1}}
+      :Madrid -> {:ok, {2021, 1}}
+      _ -> {:error, "Unknown tour stop #{tour_stop}"}
+    end
+  end
+
   @spec get_tour_stops_for_gm!(Blizzard.gm_season()) :: Blizzard.tour_stop()
   def get_tour_stops_for_gm!(gm_season) do
     case get_tour_stops_for_gm(gm_season) do

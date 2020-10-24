@@ -12,11 +12,14 @@
             <%= if @show_ongoing do %>
                 <th><abbr title="Ongoing Match Opponent">Opponent</abbr></th>
             <% end %>
+            <%= if @show_earnings do %>
+                <th><abbr title="Earnings for the next season of GM">Earnings</abbr></th>
+            <% end %>
             <th>Decks</th>
         </tr>
     </thead>
     <tbody>
-    <%= for %{pre_name_cell: pre_name_cell, place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing} <- @standings do %>
+    <%= for %{earnings: earnings, pre_name_cell: pre_name_cell, place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing} <- @standings do %>
         <tr>
             <td><%= place %></td>
             <td> <span><%= pre_name_cell %></span> <a href="<%= name_link%>"> <%= name %></a></td>
@@ -35,6 +38,9 @@
                         <td></td>
                         <td></td>
                     <% end %>
+            <% end %>
+            <%= if @show_earnings do %>
+                <td><%= earnings %></td>
             <% end %>
             <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
         </tr>

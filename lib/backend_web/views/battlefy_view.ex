@@ -5,6 +5,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
+  alias Backend.MastersTour
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -255,7 +256,7 @@ defmodule BackendWeb.BattlefyView do
     |> Map.new()
   end
 
-  def use_countries(%{id: id}),
+  def tour_stop?(%{id: id}),
     do: Backend.MastersTour.TourStop.all() |> Enum.any?(fn ts -> ts.battlefy_id == id end)
 
   def create_countries(countries) do
@@ -282,14 +283,18 @@ defmodule BackendWeb.BattlefyView do
           standings: standings_raw,
           tournament: tournament,
           conn: conn,
+          earnings: earnings,
+          show_earnings: show_earnings,
           show_ongoing: show_ongoing,
           matches: matches
         }
       ) do
     ongoing = calculate_ongoing(matches, show_ongoing, tournament, conn)
-    use_countries = use_countries(tournament)
+    is_tour_stop = tour_stop?(tournament)
 
-    standings = prepare_standings(standings_raw, tournament, ongoing, conn, use_countries)
+    standings =
+      prepare_standings(standings_raw, tournament, ongoing, conn, is_tour_stop, earnings)
+
     highlight = if params.highlight == nil, do: [], else: params.highlight
     country_highlight = if params.country_highlight == nil, do: [], else: params.country_highlight
 
@@ -329,10 +334,12 @@ defmodule BackendWeb.BattlefyView do
       |> Enum.map(fn s -> {s.name, highlight |> Enum.member?(s.name)} end)
       |> Enum.sort_by(fn {n, _} -> String.upcase(n) end)
 
-    dropdowns = [get_ongoing_dropdown(conn, tournament, show_ongoing)]
+    dropdowns =
+      [get_ongoing_dropdown(conn, tournament, show_ongoing)] ++
+        if is_tour_stop, do: [get_earnings_dropdown(conn, tournament, show_earnings)], else: []
 
     countries =
-      if use_countries do
+      if is_tour_stop do
         create_countries(country_highlight)
       else
         []
@@ -345,7 +352,7 @@ defmodule BackendWeb.BattlefyView do
       conn: conn,
       players: players,
       countries: countries,
-      use_countries: use_countries,
+      use_countries: is_tour_stop,
       subtitle: subtitle,
       name: tournament.name,
       dropdowns: dropdowns,
@@ -353,6 +360,7 @@ defmodule BackendWeb.BattlefyView do
       stages: stages,
       show_stage_selection: Enum.count(stages) > 1,
       show_ongoing: show_ongoing,
+      show_earnings: show_earnings,
       stage_selection_text:
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
@@ -386,18 +394,60 @@ defmodule BackendWeb.BattlefyView do
      ], "Show Ongoing"}
   end
 
+  def get_earnings_dropdown(conn, tournament, show_earnings) do
+    {[
+       %{
+         display: "Yes",
+         selected: show_earnings,
+         link:
+           Routes.battlefy_path(
+             conn,
+             :tournament,
+             tournament.id,
+             Map.put(conn.query_params, "show_earnings", "yes")
+           )
+       },
+       %{
+         display: "No",
+         selected: !show_earnings,
+         link:
+           Routes.battlefy_path(
+             conn,
+             :tournament,
+             tournament.id,
+             Map.put(conn.query_params, "show_earnings", "no")
+           )
+       }
+     ], "Show Earnings"}
+  end
+
+  defp player_earnings(earnings, player) do
+    earnings
+    |> Enum.find_value(fn {name, total, _} ->
+      MastersTour.same_player?(name, player) && total
+    end)
+  end
+
   @spec prepare_standings(
           [Battelfy.Standings.t()] | nil,
           Battlefy.Tournament.t(),
           [{String.t(), String.t()}],
           Plug.Conn,
-          boolean
+          boolean,
+          MastersTour.gm_money_rankings()
         ) :: [
           standings
         ]
-  def prepare_standings(nil, _, _, _, _), do: []
+  def prepare_standings(nil, _, _, _, _, _), do: []
 
-  def prepare_standings(standings_raw, %{id: tournament_id}, ongoing, conn, use_countries) do
+  def prepare_standings(
+        standings_raw,
+        %{id: tournament_id},
+        ongoing,
+        conn,
+        use_countries,
+        earnings
+      ) do
     standings_raw
     |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
     |> Enum.sort_by(fn s -> s.losses end)
@@ -416,6 +466,7 @@ defmodule BackendWeb.BattlefyView do
         place: if(s.place && s.place > 0, do: s.place, else: "?"),
         country: country,
         name: s.team.name,
+        earnings: player_earnings(earnings, s.team.name),
         pre_name_cell: pre_name_cell,
         name_link: Routes.battlefy_path(conn, :tournament_player, tournament_id, s.team.name),
         has_score: s.wins && s.losses,
