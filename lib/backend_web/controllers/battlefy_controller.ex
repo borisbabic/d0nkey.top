@@ -9,6 +9,24 @@ defmodule BackendWeb.BattlefyController do
 
   defp is_ongoing(_), do: false
 
+  defp show_earnings?(%{"show_earnings" => earnings}) when is_binary(earnings),
+    do: String.starts_with?(earnings, "yes")
+
+  defp show_earnings?(_), do: false
+
+  defp earnings(params, tournament_id) do
+    with true <- show_earnings?(params),
+         %{id: tour_stop} <-
+           Backend.MastersTour.TourStop.all()
+           |> Enum.find(fn ts -> ts.battlefy_id == tournament_id end),
+         {:ok, season} <- Backend.Blizzard.get_promotion_season_for_gm(tour_stop),
+         earnings <- Backend.MastersTour.get_gm_money_rankings(season) do
+      {earnings, true}
+    else
+      _ -> {[], false}
+    end
+  end
+
   def tournament(conn, params = %{"tournament_id" => tournament_id, "stage_id" => stage_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
     standings = Battlefy.get_stage_standings(stage_id)
@@ -20,11 +38,15 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
+    {earnings, show_earnings} = earnings(params, tournament_id)
+
     render(conn, "tournament.html", %{
       standings: standings,
       tournament: tournament,
       matches: matches,
       show_ongoing: show_ongoing,
+      show_earnings: show_earnings,
+      earnings: earnings,
       country_highlight: multi_select_to_array(params["country"]),
       highlight: get_highlight(params),
       stage_id: stage_id
@@ -42,11 +64,15 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
+    {earnings, show_earnings} = earnings(params, tournament_id)
+
     render(conn, "tournament.html", %{
       standings: standings,
       tournament: tournament,
       matches: matches,
       show_ongoing: show_ongoing,
+      show_earnings: show_earnings,
+      earnings: earnings,
       country_highlight: multi_select_to_array(params["country"]),
       highlight: get_highlight(params)
     })

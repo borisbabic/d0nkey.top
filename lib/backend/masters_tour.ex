@@ -510,6 +510,9 @@ defmodule Backend.MastersTour do
   end
 
   @spec get_gm_money_rankings(Blizzard.gm_season()) :: gm_money_rankings()
+  # not implemented yet
+  def get_gm_money_rankings({2020, 1}), do: []
+
   def get_gm_money_rankings(gm_season) do
     Blizzard.get_tour_stops_for_gm!(gm_season)
     # remove the ones happening in the future for which we don't have info
@@ -861,5 +864,10 @@ defmodule Backend.MastersTour do
   def warmup_player_nationality_cache() do
     mt_player_nationalities()
     |> PlayerNationalityCache.reinit()
+  end
+
+  def same_player?(one, two) do
+    one |> InvitedPlayer.shorten_battletag() |> fix_name() ==
+      two |> InvitedPlayer.shorten_battletag() |> fix_name()
   end
 end
