@@ -41,13 +41,16 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
-  def create_headers(tour_stops) do
+  def create_headers(tour_stops, show_current_score) do
     ~E"""
     <tr>
       <th>#</th>
       <th>Name</th>
       <%= for ts <- tour_stops do %>
         <th class="is-hidden-mobile"><%=ts%></th>
+      <% end %>
+      <%= if show_current_score do %>
+        <th>Current Score</th>
       <% end %>
       <th>Total</th>
     </tr>
@@ -57,7 +60,8 @@ defmodule BackendWeb.MastersTourView do
   def create_row_html(
         {pr = %{name: name, total: total, per_ts: per_ts, region: region, country: country},
          place},
-        tour_stops
+        tour_stops,
+        show_current_score
       ) do
     name_cell = create_name_cell(pr)
     tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
@@ -68,6 +72,9 @@ defmodule BackendWeb.MastersTourView do
         <td> <%=name_cell%> </td>
         <%= for tsc <- tour_stop_cells do %>
           <td class="is-hidden-mobile"><%=tsc%></td>
+        <% end %>
+        <%= if show_current_score do %>
+          <th><%= pr.current_score %></th>
         <% end %>
         <td><%=total%></td>
       </tr>
@@ -462,6 +469,31 @@ defmodule BackendWeb.MastersTourView do
     {options, "Select Season"}
   end
 
+  def create_current_score_dropdown(conn, show_current_score) do
+    {[
+       %{
+         display: "Yes",
+         selected: show_current_score,
+         link:
+           Routes.masters_tour_path(
+             conn,
+             :earnings,
+             Map.put(conn.query_params, "show_current_score", "yes")
+           )
+       },
+       %{
+         display: "No",
+         selected: !show_current_score,
+         link:
+           Routes.masters_tour_path(
+             conn,
+             :earnings,
+             Map.put(conn.query_params, "show_current_score", "no")
+           )
+       }
+     ], "Show Current Score"}
+  end
+
   def get_player_score(name, standings) do
     standings
     |> Enum.find(fn %{team: %{name: full}} -> InvitedPlayer.shorten_battletag(full) == name end)
@@ -478,11 +510,13 @@ defmodule BackendWeb.MastersTourView do
         show_gms: show_gms,
         conn: conn,
         country: country,
+        show_current_score: show_current_score,
+        standings: standings,
         region: region,
         gms: gms_list
       }) do
     tour_stops_started = tour_stops_all |> Enum.filter(&TourStop.started?/1)
-    headers = create_headers(tour_stops_started)
+    headers = create_headers(tour_stops_started, show_current_score)
 
     gms = MapSet.new(gms_list)
 
@@ -490,9 +524,18 @@ defmodule BackendWeb.MastersTourView do
       earnings
       |> Enum.filter(fn {name, _, _} -> show_gms == "yes" || !MapSet.member?(gms, name) end)
       |> Enum.map(fn {name, total, per_ts} ->
+        current_score =
+          standings
+          |> Enum.find_value(fn s -> MastersTour.same_player?(s.team.name, name) && s end)
+          |> case do
+            %{wins: wins, losses: losses} -> "#{wins} - #{losses}" |> IO.inspect()
+            _ -> ""
+          end
+
         %{
           name: name,
           total: total,
+          current_score: current_score,
           per_ts: per_ts,
           region: PlayerInfo.get_region(name),
           country: PlayerInfo.get_country(name)
@@ -501,16 +544,22 @@ defmodule BackendWeb.MastersTourView do
       |> filter_region(region)
       |> filter_country(country)
       |> Enum.with_index(1)
-      |> Enum.map(fn r -> create_row_html(r, tour_stops_started) end)
+      |> Enum.map(fn r -> create_row_html(r, tour_stops_started, show_current_score) end)
 
     title = "Earnings for #{year} Season #{season}"
 
-    dropdowns = [
-      create_show_gms_dropdown(conn, show_gms),
-      create_region_dropdown(conn, region),
-      create_season_dropdown(conn, gm_season),
-      create_country_dropdown(conn, country)
-    ]
+    dropdowns =
+      [
+        create_show_gms_dropdown(conn, show_gms),
+        create_region_dropdown(conn, region),
+        create_season_dropdown(conn, gm_season),
+        create_country_dropdown(conn, country)
+      ] ++
+        if show_current_score_dropdown?(gm_season) do
+          [create_current_score_dropdown(conn, show_current_score)]
+        else
+          []
+        end
 
     render("earnings.html", %{
       title: title,
@@ -522,6 +571,15 @@ defmodule BackendWeb.MastersTourView do
       conn: conn,
       rows: rows
     })
+  end
+
+  def show_current_score_dropdown?(gm_season) do
+    with current_ts when not is_nil(current_ts) <- MastersTour.TourStop.get_current(),
+         {:ok, ts_season} <- Backend.Blizzard.get_promotion_season_for_gm(current_ts) do
+      gm_season == ts_season
+    else
+      _ -> false
+    end
   end
 
   def render(
