@@ -1478,6 +1478,22 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters(season = {2021, 1}),
     do: get_grandmasters(:Montréal, relegated_gms(season)) ++ ["Briarthorn"]
 
+  def get_grandmasters(season = {2021, 2}),
+    do:
+      get_grandmasters({2021, 1}) ++
+        [
+          "Leta",
+          "Warma",
+          "Frenetic",
+          "justsaiyan",
+          "DreadEye",
+          "Impact",
+          "Fled",
+          "GivePLZ",
+          "Hi3",
+          "lambyseries"
+        ]
+
   def get_grandmasters(_), do: []
 
   def get_grandmasters(rts = reference_tour_stop, relegated) do
