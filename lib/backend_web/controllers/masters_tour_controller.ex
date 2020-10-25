@@ -74,6 +74,7 @@ defmodule BackendWeb.MastersTourController do
   @default_season {2021, 1}
   def parse_season("2020_2"), do: {2020, 2}
   def parse_season("2021_1"), do: {2021, 1}
+  def parse_season("2021_2"), do: {2021, 2}
   def parse_season(_), do: @default_season
 
   defp show_current_score?(%{"show_current_score" => current_score})

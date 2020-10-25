@@ -351,6 +351,9 @@ defmodule Backend.Blizzard do
       {2021, 1} ->
         {:ok, [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]}
 
+      {2021, 2} ->
+        {:ok, [:"Asia-Pacific", :Montréal, :Madrid]}
+
       _ ->
         {:error, "Unknown/unsupported gm_season"}
     end
