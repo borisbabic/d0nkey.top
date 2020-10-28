@@ -265,6 +265,67 @@ defmodule Backend.Battlefy do
     |> create_single_elim_standings(rounds)
   end
 
+  def create_standings_from_matches(%{id: id}),
+    do: id |> get_matches() |> create_standings_from_matches()
+
+  defp auto_win?(_, _, %{is_bye: true}), do: true
+
+  defp auto_win?(winner, loser, _),
+    do:
+      winner.score == nil || winner.score == 0 ||
+        (winner.ready_at != nil && loser.ready_at == nil)
+
+  defp auto_loss?(_, _, %{double_loss: true}), do: true
+  defp auto_loss?(w, l, m), do: auto_win?(w, l, m)
+
+  def add_team_to_stats(team_map, t = %{team: team = %{name: name}}, opponent, m) do
+    standings =
+      team_map |> Map.get(name) ||
+        %Standings{
+          team: team,
+          place: 0,
+          wins: 0,
+          losses: 0,
+          auto_wins: 0,
+          auto_losses: 0
+        }
+
+    new_standings =
+      cond do
+        t.winner ->
+          %{
+            standings
+            | wins: standings.wins + 1,
+              auto_wins: standings.auto_wins + if(auto_win?(t, opponent, m), do: 1, else: 0)
+          }
+
+        opponent.winner || m.double_loss ->
+          %{
+            standings
+            | losses: standings.losses + 1,
+              auto_losses: standings.auto_losses + if(auto_loss?(opponent, t, m), do: 1, else: 0)
+          }
+
+        true ->
+          standings
+      end
+
+    team_map
+    |> Map.put(name, new_standings)
+  end
+
+  def add_team_to_stats(team_map, _, _, _), do: team_map
+
+  def create_standings_from_matches(matches = [_ | _]) do
+    matches
+    |> Enum.reduce(%{}, fn m = %{top: top, bottom: bottom}, acc ->
+      acc
+      |> add_team_to_stats(top, bottom, m)
+      |> add_team_to_stats(bottom, top, m)
+    end)
+    |> Map.values()
+  end
+
   def create_standings_from_matches(_) do
     nil
   end
