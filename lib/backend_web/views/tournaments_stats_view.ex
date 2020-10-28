@@ -71,6 +71,7 @@ defmodule BackendWeb.TournamentStatsView do
             total: total,
             tts: tts,
             stats: stats,
+            stats_type: :actual,
             conn: conn,
             name: name
           }
@@ -145,11 +146,14 @@ defmodule BackendWeb.TournamentStatsView do
   defp add_cell("Worst", {c = %{stats: stats}, row}), do: {c, [stats |> TeamStats.worst() | row]}
   defp add_cell("Best", {c = %{stats: stats}, row}), do: {c, [stats |> TeamStats.best() | row]}
 
-  defp add_cell("Num Matches", {c = %{stats: stats}, row}),
-    do: {c, [stats.wins + stats.losses | row]}
+  defp add_cell("Num Matches", {c = %{stats: stats, stats_type: st}, row}),
+    do: {c, [TeamStats.matches(stats, st) | row]}
 
-  defp add_cell("Matches Won", {c = %{stats: stats}, row}), do: {c, [stats.wins | row]}
-  defp add_cell("Matches Lost", {c = %{stats: stats}, row}), do: {c, [stats.losses | row]}
+  defp add_cell("Matches Won", {c = %{stats: stats, stats_type: st}, row}),
+    do: {c, [stats |> TeamStats.wins(st) | row]}
+
+  defp add_cell("Matches Lost", {c = %{stats: stats, stats_type: st}, row}),
+    do: {c, [stats |> TeamStats.losses(st) | row]}
 
   defp add_cell("Winrate %", {c = %{stats: stats}, row}),
     do: {c, [stats |> TeamStats.matches_won_percent() |> Float.round(2) | row]}
