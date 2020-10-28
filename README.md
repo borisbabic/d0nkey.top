@@ -24,10 +24,24 @@ https://chris.beams.io/posts/git-commit/#seven-rules
 Please be guided by the seven rules when writing commit messages
 
 # Running
+## Environment variables
+
+If you use direnv you can just add the following
+```
+export BNET_CLIENT_SECRET='' 
+export SIGNUP_TOKEN='' # battlefy token, for autosignup, not necessary
+export ESPORTS_EARNINGS_API_KEY='' 
+export DISCORD_TOKEN=''
+
+```
 ## Dependencies
+
 See elixir_buildpack.config for elixir and erlang versions
 docker, docker-compose (or an appropriate postgres running)
 npm 
+
+You can use the shell.nix provided, possibly in combination with direnv and 
+
 
 ## First run
 ```shell
