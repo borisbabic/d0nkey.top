@@ -23,9 +23,13 @@ defmodule BackendWeb.TournamentStatsView do
           tournaments_stats: tournaments_stats,
           selected_columns: selected_columns_raw,
           sort_by: sort_by,
+          min_matches: min_matches_raw,
+          min_tournaments: min_tournaments_raw,
           direction: direction
         }
       ) do
+    min_matches = if is_integer(min_matches_raw), do: min_matches_raw, else: 0
+    min_tournaments = if is_integer(min_tournaments_raw), do: min_tournaments_raw, else: 0
     create_link = p[:create_link] || link_creator(conn)
     additional_columns = p[:additional_columns] || []
 
@@ -57,31 +61,38 @@ defmodule BackendWeb.TournamentStatsView do
       |> Enum.with_index()
       |> Enum.find_value(Enum.count(selected_columns) - 1, fn {c, pos} -> c == sort_by && pos end)
 
+    stats_type = :actual
+
     rows =
       tournaments_stats
       |> Backend.TournamentStats.create_team_stats_collection()
-      |> Enum.map(fn {name, tts} ->
+      |> Util.async_map(fn {name, tts} ->
         total = tts |> Enum.count()
 
         stats =
           tts |> Enum.map(&TournamentTeamStats.total_stats/1) |> TeamStats.calculate_team_stats()
 
-        context =
-          %{
-            total: total,
-            tts: tts,
-            stats: stats,
-            stats_type: :actual,
-            conn: conn,
-            name: name
-          }
-          |> additional_context.()
+        if total >= min_tournaments && stats |> TeamStats.matches(stats_type) >= min_matches do
+          context =
+            %{
+              total: total,
+              tts: tts,
+              stats: stats,
+              stats_type: stats_type,
+              conn: conn,
+              name: name
+            }
+            |> additional_context.()
 
-        selected_columns
-        |> Enum.reverse()
-        |> Enum.reduce({context, []}, &add_cell/2)
-        |> elem(1)
+          selected_columns
+          |> Enum.reverse()
+          |> Enum.reduce({context, []}, &add_cell/2)
+          |> elem(1)
+        else
+          nil
+        end
       end)
+      |> Enum.filter(&Util.id/1)
       |> Enum.sort_by(fn r -> r |> Enum.at(sort_index) end, direction || :desc)
       |> Enum.with_index(1)
       |> Enum.map(fn {row, pos} -> [pos | row] end)

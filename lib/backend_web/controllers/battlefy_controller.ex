@@ -180,6 +180,8 @@ defmodule BackendWeb.BattlefyController do
       tournaments_stats: tournaments_stats,
       direction: direction,
       selected_columns: selected_columns,
+      min_matches: params["min_matches"] |> Util.to_int_or_orig(),
+      min_tournaments: params["min_tournaments"] |> Util.to_int_or_orig(),
       sort_by: params["sort_by"]
     })
   end
