@@ -41,7 +41,6 @@ defmodule Backend.Battlefy.Team.Player do
     do: Recase.Enumerable.convert_keys(map, &Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(map = %{"user_id" => _}) do
-    # IO.inspect(map)
     %__MODULE__{
       battletag: get_in(map, ["user", "accounts", "battlenet", "battletag"]),
       twitch: get_in(map, ["user", "accounts", "twitch"]),

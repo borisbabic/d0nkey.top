@@ -6,6 +6,7 @@ f-> %>
     <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
         <input name="<%= key %>" type="hidden" value="<%= value %>">
     <% end %>
+    <%= @dropdown_row %>
     <div class="dropdown is-hoverable">
         <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Columns</button></div>
         <div class="dropdown-menu" role="menu">
@@ -22,7 +23,12 @@ f-> %>
             </div>
         </div>
     </div>
-    <%= @dropdown_row %>
+    <div class="is-pulled-right">
+        <%= number_input f, "min_matches", class: "input", placeholder: "Min Matches" %>
+    </div>
+    <div class="is-pulled-right">
+        <%= number_input f, "min_tournaments", class: "input", placeholder: "Min Tournaments" %>
+    </div>
 <% end %>
 </div>
 <table class="table is-striped is-fullwidth is-narrow">
