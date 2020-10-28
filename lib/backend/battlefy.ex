@@ -530,14 +530,54 @@ defmodule Backend.Battlefy do
     |> Enum.filter(&Util.id/1)
   end
 
+  def get_stats_stage_standings(s = %Stage{}) do
+    if s |> Stage.bracket_type() == :single_elimination do
+      s |> create_standings_from_matches()
+    else
+      s |> get_stage_standings()
+    end
+  end
+
   def create_tournament_stats(%{stage_ids: stage_ids, name: name, id: id}) do
     stage_ids
     |> Enum.map(&get_stage/1)
     |> Enum.map(fn s ->
       bracket_type = s |> Stage.bracket_type()
-      standings = s |> get_stage_standings()
+      standings = s |> get_stats_stage_standings()
       {bracket_type, standings}
     end)
     |> Backend.TournamentStats.create_tournament_team_stats(name, id)
+  end
+
+  @doc """
+  Extracts the tournament id from a link to the tournament
+
+  ## Example
+    iex> Backend.Battlefy.tournament_link_to_id("https://battlefy.com/tierras-de-fuego-hs/el-camino-de-kaelthas-20/5f5bc93e0c405a2571493bf4/info?infoTab=details")
+    "5f5bc93e0c405a2571493bf4"
+    iex> Backend.Battlefy.tournament_link_to_id("https://battlefy.com/tierras-de-fuego-hs/el-camino-de-kaelthas-20/5f5bc93e0c405a2571493bf4/stage/5f888122a9c3434f84077e3e/match/5f88827f97c3d42eac842b06")
+    "5f5bc93e0c405a2571493bf4"
+    iex> Backend.Battlefy.tournament_link_to_id("5f5bc93e0c405a2571493bf4")
+    "5f5bc93e0c405a2571493bf4"
+    iex> Backend.Battlefy.tournament_link_to_id("5f5bc93e0c405a2571493bf4 #bla bla bla, this should be ignored")
+    "5f5bc93e0c405a2571493bf4"
+  """
+  @spec tournament_link_to_id(String.t() | tournament_id()) :: tournament_id()
+  def tournament_link_to_id(id = <<_::192>>), do: id
+
+  def tournament_link_to_id(link) do
+    no_comments =
+      link
+      |> String.replace(~r/#.*/, "")
+      |> String.trim()
+
+    if 24 == String.length(no_comments) do
+      no_comments
+    else
+      no_comments
+      |> String.replace(~r/http.*battlefy.com/, "")
+      |> String.split("/")
+      |> Enum.at(3)
+    end
   end
 end

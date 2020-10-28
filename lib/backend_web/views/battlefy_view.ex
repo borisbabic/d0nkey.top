@@ -5,7 +5,6 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
-  alias Backend.MastersTour
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -275,6 +274,46 @@ defmodule BackendWeb.BattlefyView do
       }
     end)
     |> Enum.sort_by(fn %{name: name} -> name end)
+  end
+
+  def render(u = "tournaments_stats.html", p = %{conn: conn, tournaments: tournaments}) do
+    tournaments_string =
+      tournaments
+      |> Enum.map(fn %{name: name, id: id} ->
+        "#{id} # #{name}"
+      end)
+      |> Enum.join("\n")
+
+    edit_tournaments_link =
+      Routes.battlefy_path(conn, :tournaments_stats, %{edit: tournaments_string})
+
+    table_params =
+      p
+      |> Map.put(
+        :link_creator,
+        fn params ->
+          Routes.battlefy_path(conn, :tournament_stats, conn.query_params |> Map.merge(params))
+        end
+      )
+      |> Map.put(
+        :dropdown_row,
+        ~E"""
+        <a href="<%= edit_tournaments_link %>" class="is-link button"><- Edit tournaments</a>
+        """
+      )
+
+    render("tournaments_stats.html", %{conn: conn, table_params: table_params})
+  end
+
+  def render("tournaments_stats_input.html", %{conn: conn, edit: edit}) do
+    self_link = Routes.battlefy_path(conn, :tournaments_stats)
+
+    render("tournaments_stats_input.html", %{
+      c: conn,
+      self_link: self_link,
+      title: "Tournament Stats",
+      edit: edit
+    })
   end
 
   def render(

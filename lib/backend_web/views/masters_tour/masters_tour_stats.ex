@@ -5,12 +5,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.TournamentStats.TeamStats
   alias Backend.MastersTour
+  import BackendWeb.SortHelper
 
-  defp opposite(:desc), do: :asc
-  defp opposite(_), do: :desc
-  defp symbol(:asc), do: "↓"
-  defp symbol(_), do: "↑"
-  defp create_stats_header("#", _, _, _, _), do: "#"
+  defp create_stats_header("#", _, _, _), do: "#"
 
   defp create_stats_header(header, sort_by, direction, conn) when header == sort_by do
     click_params = %{"sort_by" => header, "direction" => opposite(direction)}

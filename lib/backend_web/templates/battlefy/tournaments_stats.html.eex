@@ -1,0 +1,3 @@
+<div class="title is-2"> Custom Tournaments Stats</div>
+
+<%= BackendWeb.TournamentStatsView.render("tournaments_stats_table.html", @table_params) %>
