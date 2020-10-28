@@ -64,6 +64,10 @@ defmodule BackendWeb.Router do
         BattlefyController,
         :tournament_decks
 
+    get "/battlefy/tournaments-stats/",
+        BattlefyController,
+        :tournaments_stats
+
     get "/hsreplay/live_feed", HSReplayController, :live_feed
     get "/hsreplay/matchups", HSReplayController, :matchups
 

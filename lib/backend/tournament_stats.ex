@@ -176,6 +176,13 @@ defmodule Backend.TournamentStats.TeamStats do
   def best(%{positions: pos}), do: pos |> Enum.min()
 
   @doc """
+  iex> Backend.TournamentStats.TeamStats.num_won(%{positions: [5,1,2,3,1], no_results: 2})
+  2
+  """
+  @spec num_won(TeamStats.t()) :: integer()
+  def num_won(%{positions: pos}), do: pos |> Enum.filter(fn p -> p == 1 end) |> Enum.count()
+
+  @doc """
   iex> Backend.TournamentStats.TeamStats.worst(%{positions: [2,5,3,1,], no_results: 2})
   5
   """

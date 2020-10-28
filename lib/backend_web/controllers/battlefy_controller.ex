@@ -3,6 +3,9 @@ defmodule BackendWeb.BattlefyController do
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
+  defp direction("desc"), do: :desc
+  defp direction("asc"), do: :asc
+  defp direction(_), do: nil
 
   defp is_ongoing(%{"show_ongoing" => ongoing}) when is_binary(ongoing),
     do: String.starts_with?(ongoing, "yes")
@@ -153,5 +156,50 @@ defmodule BackendWeb.BattlefyController do
     from = Date.add(today, -30)
     to = Date.add(today, 30)
     organization_tournaments(conn, Map.merge(params, %{"from" => from, "to" => to}))
+  end
+
+  defp list_or_comma_separated(list) when is_list(list), do: list
+  defp list_or_comma_separated(string) when is_binary(string), do: string |> String.split(",")
+
+  def tournaments_stats(conn, params = %{"tournament_ids" => tournament_ids}) do
+    direction = direction(params["direction"])
+    selected_columns = multi_select_to_array(params["columns"])
+
+    tournaments =
+      tournament_ids
+      |> list_or_comma_separated()
+      |> Enum.map(&Battlefy.get_tournament/1)
+
+    tournaments_stats =
+      tournaments
+      |> Enum.map(&Battlefy.create_tournament_stats/1)
+      |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
+
+    render(conn, "tournaments_stats.html", %{
+      tournaments: tournaments,
+      tournaments_stats: tournaments_stats,
+      direction: direction,
+      selected_columns: selected_columns,
+      sort_by: params["sort_by"]
+    })
+  end
+
+  def tournaments_stats(conn, params = %{"tournaments" => tournaments}) do
+    tournament_ids =
+      tournaments
+      |> String.split("\n")
+      |> Enum.map(&Battlefy.tournament_link_to_id/1)
+
+    new_params =
+      params
+      |> Map.delete("tournaments")
+      |> Map.put("tournament_ids", tournament_ids |> Enum.join(","))
+
+    new_url = Routes.battlefy_path(conn, :tournaments_stats, new_params)
+    redirect(conn, to: new_url)
+  end
+
+  def tournaments_stats(conn, params) do
+    render(conn, "tournaments_stats_input.html", %{conn: conn, edit: params["edit"]})
   end
 end

@@ -1,0 +1,12 @@
+<div class="title is-2">Tournaments Stats</div>
+
+
+Enter battlefy tournament links or ids below, one per line
+<%= form_for @c, @self_link, [method: :get], fn
+f -> %>
+    <%= textarea f, "tournaments", class: "textarea", value: @edit %>
+
+    <%= submit "Submit", class: "button" %> 
+
+<% end %>
+
