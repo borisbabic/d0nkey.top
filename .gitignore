@@ -41,3 +41,5 @@ npm-debug.log
 /logs.txt
 /local_ignore/
 /tunnel.sh
+/.direnv/
+.envrc
