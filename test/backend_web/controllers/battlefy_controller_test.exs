@@ -6,7 +6,7 @@ defmodule BackendWeb.BattlefyControllerTest do
     conn = get(conn, url)
 
     assert html_response(conn, 200) =~ "Submit"
-    assert html_response(conn, 200) =~ "Enter tournmament links or ids below, one per line"
+    assert html_response(conn, 200) =~ "Enter battlefy tournament"
   end
 
   test "GET /battlefy/tournaments-stats tournaments redirect", %{conn: conn} do

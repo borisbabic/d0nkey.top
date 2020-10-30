@@ -71,9 +71,12 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
           cc -> {cc |> country_flag(), cc}
         end
 
+      profile_name = MastersTour.mt_profile_name(player_name)
+      profile_link = Routes.player_path(conn, :player_profile, profile_name)
+
       player_cell = ~E"""
 
-      <span><%= flag %></span> <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, player_name)%>">
+      <span><%= flag %></span> <a class="is-link" href="<%= profile_link %>">
         <%= player_name %>
       </a>
       """
