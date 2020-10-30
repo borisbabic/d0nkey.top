@@ -878,4 +878,14 @@ defmodule Backend.MastersTour do
     one |> InvitedPlayer.shorten_battletag() |> fix_name() ==
       two |> InvitedPlayer.shorten_battletag() |> fix_name()
   end
+
+  def mt_profile_name(short_or_full) do
+    with false <- String.contains?(short_or_full, "#"),
+         %{actual_battletag_full: bt} when is_binary(bt) <-
+           PlayerNationalityCache.get(short_or_full) do
+      bt
+    else
+      _ -> short_or_full
+    end
+  end
 end

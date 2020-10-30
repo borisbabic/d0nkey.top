@@ -32,12 +32,14 @@ defmodule BackendWeb.MastersTourView do
   def create_country_tag(%{country: nil}), do: ""
   def create_country_tag(%{country: cc}), do: country_flag(cc)
 
-  def create_name_cell(pr = %{name: name}) do
+  def create_name_cell(pr = %{name: name}, conn) do
     region = create_region_tag(pr)
     country = create_country_tag(pr)
 
+    profile_link = Routes.player_path(conn, :player_profile, MastersTour.mt_profile_name(name))
+
     ~E"""
-    <%= region %><%= country %><span> <%= name %></span>
+    <%= region %><%= country %><span> <a class="is-link" href="<%= profile_link %>"> <%= name %> </a></span>
     """
   end
 
@@ -58,12 +60,13 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def create_row_html(
-        {pr = %{name: name, total: total, per_ts: per_ts, region: region, country: country},
+        {pr = %{name: _name, total: total, per_ts: per_ts, region: _region, country: _country},
          place},
         tour_stops,
-        show_current_score
+        show_current_score,
+        conn
       ) do
-    name_cell = create_name_cell(pr)
+    name_cell = create_name_cell(pr, conn)
     tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
 
     ~E"""
@@ -551,7 +554,7 @@ defmodule BackendWeb.MastersTourView do
       |> filter_region(region)
       |> filter_country(country)
       |> Enum.with_index(1)
-      |> Enum.map(fn r -> create_row_html(r, tour_stops_started, show_current_score) end)
+      |> Enum.map(fn r -> create_row_html(r, tour_stops_started, show_current_score, conn) end)
 
     title = "Earnings for #{year} Season #{season}"
 
