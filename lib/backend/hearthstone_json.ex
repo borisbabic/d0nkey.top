@@ -48,9 +48,14 @@ defmodule Backend.HearthstoneJson do
     GenServer.call(@name, {:get_class, dbf_id})
   end
 
+  def cards() do
+    GenServer.call(@name, {:cards})
+  end
+
+  def handle_call({:cards}, _from, s = %{cards: cards}), do: {:reply, cards, s}
   def handle_call({:get_class, dbf_id}, _from, s = %{class_map: cm}), do: {:reply, cm[dbf_id], s}
 
-  def handle_cast({:update_cards}, old_state) do
+  def handle_cast({:update_cards}, _old_state) do
     state = get_fresh() |> create_state()
     {:noreply, state}
   end

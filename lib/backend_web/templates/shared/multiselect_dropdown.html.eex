@@ -1,0 +1,34 @@
+    <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%= @title %></button></div>
+        <div class="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+
+                <input
+                    class="input"
+                    placeholder="<%= @placeholder %>"
+                    autocomplete="off"
+                <%= if @show_search do %>
+                    id="<%= @search_id %>"
+                    onpaste="hide_based_on_search('<%= @search_id %>', '<%= @search_class %>')"
+                    oninput="hide_based_on_search('<%= @search_id %>', '<%= @search_class %>')"
+                    onkeyup="hide_based_on_search('<%= @search_id %>', '<%= @search_class %>')"
+                    oncut="hide_based_on_search('<%= @search_id %>', '<%= @search_class %>')"
+                    onchange="hide_based_on_search('<%= @search_id %>', '<%= @search_class %>')"
+                <% end %>
+                    type="text">
+                <%= for %{value: value, display: display, selected: selected, name: name} <- @options do %>
+                    <label for="<%= @attr %>[<%= value %>]" style data-target-value="<%= name %>" class="dropdown-item <%= @search_class %>">
+                        <span ><%= display %></span>
+                        <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, class: "is-pulled-right", value: selected %>
+                    </label>
+                <% end %>
+                <div class="dropdown-item">
+                    <%= submit "Submit", class: "button" %>
+                </div>
+            </div>
+        </div>
+    </div>
+

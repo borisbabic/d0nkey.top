@@ -1,21 +1,39 @@
 <div class="title is-2"><%= @title %></div>
 
 
-<%= @prev_button %>
-<%= @next_button %>
-<%= render_dropdowns @dropdowns %>
-<div class="field is-pulled-right is-shown-js" style="display: none">
-    <input
-    list="streamers"
-    name="streamers"
-    id="streamer_select"
-    class="input"
-    placeholder="Select Streamer"
-    onchange="location_href_by_datalist('streamer_select', 'streamers')">
-    <datalist id="streamers">
-        <%= @streamer_list %>
-    </datalist>
-</div>
+<%= form_for @conn, Routes.streaming_path(@conn, :streamer_decks, @conn.query_params),
+[method: :get], fn
+f-> %>
+    <%= @prev_button %>
+    <%= @next_button %>
+    <%= render_dropdowns @dropdowns %>
+    <%= render_multiselect_dropdown %{
+        form: f,
+        title: "Select Archetypes",
+        options: @archetypes_options,
+        attr: "archetypes",
+        placeholder: "Archetype",
+        search_id: "sd-archetype-select"} %>
+    <%= render_multiselect_dropdown %{
+        form: f,
+        title: "Filter By Cards",
+        options: @card_options,
+        attr: "cards",
+        placeholder: "Card Name",
+        search_id: "sd-card-select"} %>
+    <div class="field is-pulled-right is-shown-js" style="display: none">
+        <input
+        list="streamers"
+        name="streamers"
+        id="streamer_select"
+        class="input"
+        placeholder="Select Streamer"
+        onchange="location_href_by_datalist('streamer_select', 'streamers')">
+        <datalist id="streamers">
+            <%= @streamer_list %>
+        </datalist>
+    </div>
+<% end %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
@@ -38,7 +56,7 @@
             <td><%= render_deckcode r.code %></td>
             <td><%= r.streamer %></td>
             <%= if @show_archetype do %>
-            <td><%= r.archetype %></td>
+                <td><%= if r.archetype, do: r.archetype.name, else: r.class %></td>
             <% else %>
             <td><%= r.class %></td>
             <% end %>

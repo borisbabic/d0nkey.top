@@ -60,14 +60,24 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
+  def filter_archetypes(sd, archetypes = [_ | _]) do
+    sd
+    |> Enum.filter(fn %{archetype: a} -> a && a.id in archetypes end)
+  end
+
+  def filter_archetypes(sd, _), do: sd
+
   def render("streamer_decks.html", %{
         streamer_decks: streamer_decks,
         conn: conn,
         streamers: streamers,
+        archetypes: archetypes_raw,
+        cards: cards,
         criteria: %{"offset" => offset, "limit" => limit}
       }) do
     title = "Streamer Decks"
     {prev_offset, next_offset} = get_surrounding(offset, limit)
+    archetypes = archetypes_raw || []
 
     rows =
       streamer_decks
@@ -83,6 +93,7 @@ defmodule BackendWeb.StreamingView do
           links: links(sd)
         }
       end)
+      |> filter_archetypes(archetypes)
 
     dropdowns = [
       create_limit_dropdown(conn, limit),
@@ -92,6 +103,28 @@ defmodule BackendWeb.StreamingView do
       create_show_archetypes_dropdown(conn)
     ]
 
+    archetypes_options =
+      Backend.HSReplay.get_latest_archetypes()
+      |> Enum.map(fn a ->
+        %{
+          selected: a && a.id in archetypes,
+          display: a.name,
+          name: a.name,
+          value: a.id
+        }
+      end)
+
+    card_options =
+      Backend.HearthstoneJson.cards()
+      |> Enum.map(fn c ->
+        %{
+          selected: c.dbf_id in cards,
+          value: c.dbf_id,
+          name: c.name,
+          display: c.name
+        }
+      end)
+
     render("streamer_decks.html", %{
       rows: rows,
       title: title,
@@ -99,6 +132,9 @@ defmodule BackendWeb.StreamingView do
       streamer_list: create_streamer_list(conn, streamers),
       prev_button: prev_button(conn, prev_offset, offset),
       show_archetype: conn.query_params["show_archetypes"] == "yes",
+      conn: conn,
+      archetypes_options: archetypes_options,
+      card_options: card_options,
       next_button: next_button(conn, next_offset)
     })
   end

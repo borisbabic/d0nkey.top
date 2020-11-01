@@ -14,8 +14,18 @@ defmodule BackendWeb.StreamingController do
   end
 
   def streamer_decks(conn, params) do
+    cards =
+      multi_select_to_array(params["cards"])
+      |> Enum.map(&Util.to_int_or_orig/1)
+
+    archetypes =
+      multi_select_to_array(params["archetypes"])
+      |> Enum.map(&Util.to_int_or_orig/1)
+
     criteria =
-      %{"order_by" => {:desc, :last_played}, "limit" => 50, "offset" => 0} |> Map.merge(params)
+      %{"order_by" => {:desc, :last_played}, "limit" => 50, "offset" => 0}
+      |> Map.merge(params)
+      |> Map.put("cards", cards)
 
     streamer_decks = Backend.Streaming.streamer_decks(criteria)
     streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :twitch_display}})
@@ -24,6 +34,8 @@ defmodule BackendWeb.StreamingController do
       streamer_decks: streamer_decks,
       conn: conn,
       streamers: streamers,
+      archetypes: archetypes,
+      cards: cards,
       criteria: criteria
     })
   end
