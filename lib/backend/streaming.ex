@@ -239,6 +239,11 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"class", class}, query),
     do: query |> where([_sd, _s, d], d.class == ^class)
 
+  defp compose_streamer_deck_query({"cards", []}, query), do: query
+
+  defp compose_streamer_deck_query({"cards", cards}, query),
+    do: query |> where([_sd, _s, d], fragment("? @> ?", d.cards, ^cards))
+
   defp compose_streamer_deck_query({"format", format}, query),
     do: query |> where([_sd, _s, d], d.format == ^format)
 

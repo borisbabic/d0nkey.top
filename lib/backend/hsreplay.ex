@@ -197,10 +197,24 @@ defmodule Backend.HSReplay do
     end)
     |> Enum.max_by(fn {matches, _} -> matches end, &>=/2, fn -> nil end)
     |> case do
-      {matches, a} when matches > 5 -> a.name
-      _ -> class_name |> Deck.class_name()
+      {matches, a} when matches > 5 -> a
+      _ -> nil
     end
   end
 
-  def guess_archetype(%{class: class_name}), do: class_name |> Deck.class_name()
+  def guess_archetype(%{class: _class_name}), do: nil
+
+  def get_latest_archetypes(days \\ 30) do
+    reference_time =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.add(-1 * days * 24 * 60 * 60)
+
+    get_archetypes()
+    |> Enum.filter(fn a ->
+      core = a |> Archetype.signature_core(2)
+      core && core.as_of && NaiveDateTime.compare(reference_time, core.as_of) == :lt
+    end)
+    |> Enum.sort_by(fn a -> a.name end, :asc)
+    |> Enum.sort_by(fn a -> a.player_class_name end, :asc)
+  end
 end

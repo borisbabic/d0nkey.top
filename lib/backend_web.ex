@@ -59,6 +59,20 @@ defmodule BackendWeb do
         render(BackendWeb.SharedView, "multiple_dropdown_links.html", %{dropdowns: dropdowns})
       end
 
+      def render_multiselect_dropdown(
+            o = %{form: _, title: _, options: _, attr: _, placeholder: _}
+          ) do
+        search_id = o |> Map.get(:search_id)
+
+        render(
+          BackendWeb.SharedView,
+          "multiselect_dropdown.html",
+          o
+          |> Map.put(:show_search, search_id)
+          |> Map.put(:search_class, search_id)
+        )
+      end
+
       def render_deckcode(<<deckcode::binary>>) do
         render(BackendWeb.SharedView, "deckcode.html", %{
           deckcode: deckcode,
