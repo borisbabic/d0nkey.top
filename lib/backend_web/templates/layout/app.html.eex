@@ -13,7 +13,7 @@
   </head>
  <nav id="main-navbar" class="navbar is-dark" role="navigation" aria-label="main navigation" style="display:none">
    <div class="navbar-brand">
-    <a class="navbar-item" href="<%=Routes.page_path(@conn, :index)%>">d0nkey</a>
+     <a class="navbar-item" href="<%=Routes.page_path(@conn, :index)%>"><img src="/favicon.ico" alt="d0nkey"></a>
 
      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="burger-toggle">
        <span aria-hidden="true"></span>
