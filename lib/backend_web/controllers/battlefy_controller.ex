@@ -51,6 +51,7 @@ defmodule BackendWeb.BattlefyController do
       show_earnings: show_earnings,
       earnings: earnings,
       country_highlight: multi_select_to_array(params["country"]),
+      page_title: tournament.name,
       highlight: get_highlight(params),
       stage_id: stage_id
     })
@@ -77,6 +78,7 @@ defmodule BackendWeb.BattlefyController do
       show_earnings: show_earnings,
       earnings: earnings,
       country_highlight: multi_select_to_array(params["country"]),
+      page_title: tournament.name,
       highlight: get_highlight(params)
     })
   end
@@ -107,6 +109,7 @@ defmodule BackendWeb.BattlefyController do
       tournament: tournament,
       opponent_matches: opponent_matches,
       player_matches: player_matches,
+      page_title: team_name,
       team_name: team_name,
       conn: conn
     })
@@ -133,16 +136,29 @@ defmodule BackendWeb.BattlefyController do
           }
       end
 
+    page_title =
+      case org do
+        %{name: name} when not is_nil(name) -> "#{name} Tournaments"
+        _ -> "3rd Party Tournaments"
+      end
+
     render(conn, "organization_tournaments.html", %{
       from: from,
       to: to,
       org: org,
+      page_title: page_title,
       tournaments: tournaments
     })
   end
 
   def organization_tournaments(conn, %{"from" => from = %Date{}, "to" => to = %Date{}}) do
-    render(conn, "organization_tournaments.html", %{from: from, to: to, tournaments: [], org: nil})
+    render(conn, "organization_tournaments.html", %{
+      from: from,
+      to: to,
+      tournaments: [],
+      org: nil,
+      page_title: "3rd Party Tournaments"
+    })
   end
 
   def organization_tournaments(conn, params = %{"from" => from, "to" => to}) do
@@ -182,6 +198,7 @@ defmodule BackendWeb.BattlefyController do
       selected_columns: selected_columns,
       min_matches: params["min_matches"] |> Util.to_int_or_orig(),
       min_tournaments: params["min_tournaments"] |> Util.to_int_or_orig(),
+      page_title: "Tournaments Stats",
       sort_by: params["sort_by"]
     })
   end
@@ -202,6 +219,10 @@ defmodule BackendWeb.BattlefyController do
   end
 
   def tournaments_stats(conn, params) do
-    render(conn, "tournaments_stats_input.html", %{conn: conn, edit: params["edit"]})
+    render(conn, "tournaments_stats_input.html", %{
+      conn: conn,
+      edit: params["edit"],
+      page_title: "Tournaments Stats"
+    })
   end
 end

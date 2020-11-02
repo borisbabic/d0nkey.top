@@ -5,7 +5,12 @@ defmodule BackendWeb.HSReplayController do
   def live_feed(conn, params) do
     feed = HSReplay.get_latest(params)
     archetypes = HSReplay.get_archetypes()
-    render(conn, "live_feed.html", %{feed: feed, archetypes: archetypes})
+
+    render(conn, "live_feed.html", %{
+      feed: feed,
+      archetypes: archetypes,
+      page_title: "HSReplay live feed"
+    })
   end
 
   def extract_archetype_ids(params) do
@@ -35,6 +40,7 @@ defmodule BackendWeb.HSReplayController do
 
     render(conn, "matchups.html", %{
       matchups: archetype_matchups,
+      page_title: "HsReplay matchups",
       as: Util.to_list(as),
       vs: Util.to_list(vs),
       archetypes: archetypes

@@ -538,8 +538,11 @@ defmodule Backend.MastersTour do
 
   def get_earnings_group_by(name) do
     cond do
-      name |> String.starts_with?("Jay#") -> PlayerNationalityCache.get_actual_battletag(name)
-      true -> name |> InvitedPlayer.shorten_battletag() |> name_hacks()
+      name |> String.starts_with?("Jay#") && PlayerNationalityCache.get_actual_battletag(name) ->
+        PlayerNationalityCache.get_actual_battletag(name)
+
+      true ->
+        name |> InvitedPlayer.shorten_battletag() |> name_hacks()
     end
   end
 

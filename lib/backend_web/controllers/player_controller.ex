@@ -40,6 +40,7 @@ defmodule BackendWeb.PlayerController do
       tournaments: tournaments,
       finishes: finishes,
       competitions: multi_select_to_array(params["competition"]),
+      page_title: bt,
       tournament_team_stats: mt_stats,
       mt_earnings: mt_earnings
     })
