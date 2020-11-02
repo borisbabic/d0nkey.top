@@ -20,6 +20,7 @@ defmodule BackendWeb.LeaderboardController do
       leaderboard: leaderboard,
       compare_to: params["compare_to"],
       show_flags: show_flags,
+      page_title: "Ladder Leaderboard",
       comparison: comparison,
       ladder_mode: ladder_mode
     })
@@ -136,6 +137,7 @@ defmodule BackendWeb.LeaderboardController do
       direction: direction,
       min: min,
       sort_by: params["sort_by"],
+      page_title: "Leaderboard Stats",
       stats: stats
     })
   end

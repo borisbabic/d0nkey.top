@@ -7,7 +7,13 @@ defmodule BackendWeb.MastersTourController do
   def invited_players(conn, %{"tour_stop" => tour_stop}) do
     MastersTour.fetch(tour_stop)
     invited = MastersTour.list_invited_players(tour_stop)
-    render(conn, "invited_players.html", %{invited: invited, tour_stop: tour_stop, conn: conn})
+
+    render(conn, "invited_players.html", %{
+      invited: invited,
+      tour_stop: tour_stop,
+      page_title: "#{tour_stop} invited players",
+      conn: conn
+    })
   end
 
   def invited_players(conn, _params) do
@@ -46,6 +52,7 @@ defmodule BackendWeb.MastersTourController do
       fetched_qualifiers: fetched,
       range: {from, to},
       user_tournaments: user_tournaments,
+      page_title: "MT Qualifiers",
       region: params["region"]
     })
   end
@@ -55,6 +62,7 @@ defmodule BackendWeb.MastersTourController do
 
     render(conn, "qualifiers.html", %{
       fetched_qualifiers: fetched,
+      page_title: "MT Qualifiers",
       range: {from, to},
       region: params["region"]
     })
@@ -109,6 +117,7 @@ defmodule BackendWeb.MastersTourController do
       tour_stops: tour_stops,
       earnings: earnings,
       standings: standings,
+      page_title: "MT Earnings",
       show_current_score: show_current_score,
       show_gms: show_gms,
       region: region,
@@ -121,7 +130,11 @@ defmodule BackendWeb.MastersTourController do
   def tour_stops(conn, _params) do
     tournaments = MastersTour.tour_stops_tournaments()
 
-    render(conn, "tour_stops.html", %{conn: conn, tournaments: tournaments})
+    render(conn, "tour_stops.html", %{
+      conn: conn,
+      page_title: "Tour Stops",
+      tournaments: tournaments
+    })
   end
 
   def earnings(conn, params) do
@@ -170,6 +183,7 @@ defmodule BackendWeb.MastersTourController do
       direction: direction,
       selected_columns: selected_columns,
       invited_players: invited_players,
+      page_title: "#{period} Qualifier Stats",
       stats: stats
     })
   end
@@ -208,6 +222,7 @@ defmodule BackendWeb.MastersTourController do
       countries: multi_select_to_array(params["country"]),
       sort_by: params["sort_by"],
       tour_stops: tour_stops,
+      page_title: "MT Stats",
       tournament_team_stats: tournament_team_stats
     })
   end

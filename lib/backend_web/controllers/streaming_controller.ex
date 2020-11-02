@@ -30,11 +30,18 @@ defmodule BackendWeb.StreamingController do
     streamer_decks = Backend.Streaming.streamer_decks(criteria)
     streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :twitch_display}})
 
+    page_title =
+      case params["twitch_login"] do
+        nil -> "Streamer decks"
+        tl -> "#{tl}'s decks"
+      end
+
     render(conn, "streamer_decks.html", %{
       streamer_decks: streamer_decks,
       conn: conn,
       streamers: streamers,
       archetypes: archetypes,
+      page_title: page_title,
       cards: cards,
       criteria: criteria
     })
