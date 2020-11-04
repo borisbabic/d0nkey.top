@@ -54,7 +54,9 @@ f-> %>
         <%= for r <- @rows do %>
         <tr>
             <td><%= render_deckcode r.code %></td>
-            <td><%= r.streamer %></td>
+            <td>
+                <span><%= r.streamer %></span>
+            </td>
             <%= if @show_archetype do %>
                 <td><%= if r.archetype, do: r.archetype.name, else: r.class %></td>
             <% else %>
@@ -62,7 +64,14 @@ f-> %>
             <% end %>
             <td><%= r.format %></td>
             <td><%= r.best_legend_rank %></td>
-            <td><%= r.links %></td>
+            <td>
+                <a href="<%= r.deck_link %>">
+                    <span class="icon tag is-link">
+                    <i class="fas fa-users" title="list"></i>
+                    </span>
+                </a>
+                <%= r.links %>
+            </td>
             <td class="is-hidden-mobile"><%= render_datetime r.last_played %></td>
         </tr>
         <% end %>

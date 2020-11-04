@@ -67,6 +67,23 @@ defmodule BackendWeb.StreamingView do
 
   def filter_archetypes(sd, _), do: sd
 
+  def deck_toggle_link(conn, %{deck: %{id: id}}) do
+    with deck_id <- conn.query_params["deck_id"],
+         true <- to_string(id) == deck_id do
+      remove_from_link(conn, "deck_id")
+    else
+      _ ->
+        new_params =
+          conn.query_params
+          |> Map.delete("twitch_login")
+          |> Map.put("deck_id", id)
+
+        Routes.streaming_path(conn, :streamer_decks, new_params)
+    end
+  end
+
+  def deck_toggle_link(_), do: nil
+
   def render("streamer_decks.html", %{
         streamer_decks: streamer_decks,
         conn: conn,
@@ -86,6 +103,7 @@ defmodule BackendWeb.StreamingView do
           streamer: streamer_link(sd.streamer, conn),
           class: sd.deck.class |> Deck.class_name(),
           code: deckcode(sd.deck),
+          deck_link: deck_toggle_link(conn, sd),
           last_played: sd.last_played,
           format: if(sd.deck.format == 1, do: "Wild", else: "Standard"),
           best_legend_rank: if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
@@ -280,7 +298,12 @@ defmodule BackendWeb.StreamingView do
           remove_from_link(conn, "twitch_login")
 
         _ ->
-          update_link(conn, "twitch_login", tl)
+          new_params =
+            conn.query_params
+            |> Map.delete("deck_id")
+            |> Map.put("twitch_login", tl)
+
+          Routes.streaming_path(conn, :streamer_decks, new_params)
       end
 
     ~E"""
