@@ -137,6 +137,8 @@ defmodule BackendWeb.LeaderboardController do
       direction: direction,
       min: min,
       sort_by: params["sort_by"],
+      countries: multi_select_to_array(params["country"]),
+      show_flags: parse_yes_no(params["show_flags"]),
       page_title: "Leaderboard Stats",
       stats: stats
     })

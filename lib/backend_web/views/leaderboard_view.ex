@@ -342,6 +342,8 @@ defmodule BackendWeb.LeaderboardView do
         regions: regions,
         stats: stats,
         min: min_raw,
+        countries: countries,
+        show_flags: show_flags,
         sort_by: sort_by_raw,
         direction: direction_raw
       }) do
@@ -370,7 +372,8 @@ defmodule BackendWeb.LeaderboardView do
     rows =
       stats
       |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
-      |> create_player_rows(conn)
+      |> create_player_rows(conn, show_flags == "yes")
+      |> filter_countries(countries)
       |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
@@ -384,6 +387,7 @@ defmodule BackendWeb.LeaderboardView do
         %{
           value: r,
           name: r |> Blizzard.get_region_name(:long),
+          display: r |> Blizzard.get_region_name(:long),
           selected: regions == [] || regions |> Enum.member?(to_string(r))
         }
       end)
@@ -409,13 +413,30 @@ defmodule BackendWeb.LeaderboardView do
         %{
           value: l,
           name: l |> Blizzard.get_leaderboard_name(:long),
+          display: l |> Blizzard.get_leaderboard_name(:long),
           selected:
             (leaderboards == [] && "STD" == l) || leaderboards |> Enum.member?(to_string(l))
         }
       end)
 
+    show_flags_list =
+      ["Yes", "No"]
+      |> Enum.map(fn o ->
+        %{
+          display: o,
+          selected: show_flags == String.downcase(o),
+          link:
+            Routes.leaderboard_path(
+              conn,
+              :player_stats,
+              Map.put(conn.query_params, "show_flags", o |> String.downcase())
+            )
+        }
+      end)
+
     dropdowns = [
-      {min_list, min_dropdown_title(min_to_show)}
+      {min_list, min_dropdown_title(min_to_show)},
+      {show_flags_list, "Show Country Flags"}
     ]
 
     render("player_stats.html", %{
@@ -425,6 +446,7 @@ defmodule BackendWeb.LeaderboardView do
       min: min_to_show,
       region_options: region_options,
       dropdowns: dropdowns,
+      selected_countries: countries,
       leaderboards_options: leaderboards_options
     })
   end
@@ -470,16 +492,23 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  def create_player_rows(player_stats, conn) do
+  def filter_countries(target, []), do: target
+  def filter_countries(r, countries), do: r |> Enum.filter(fn f -> f["_country"] in countries end)
+
+  def create_player_rows(player_stats, conn, show_flags) do
     player_stats
     |> Enum.map(fn ps ->
       total = ps.ranks |> Enum.count()
       avg = ((ps.ranks |> Enum.sum()) / total) |> Float.round(2)
 
+      country = Backend.PlayerInfo.get_country(ps.account_id)
+      flag_part = if show_flags && country, do: country_flag(country), else: ""
+
       %{
         "Player" => ~E"""
-          <a href="<%= Routes.player_path(conn, :player_profile, ps.account_id)%>"><%= ps.account_id %></a>
+          <%= flag_part %> <a href="<%= Routes.player_path(conn, :player_profile, ps.account_id)%>"><%= ps.account_id %></a>
         """,
+        "_country" => country,
         "Top 1" => ps |> PlayerStats.num_top(1),
         "Top 10" => ps |> PlayerStats.num_top(10),
         "Top 25" => ps |> PlayerStats.num_top(25),

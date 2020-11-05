@@ -64,10 +64,16 @@ defmodule BackendWeb do
       def render_multiselect_dropdown(o = %{form: _, title: _, options: _, attr: attr}) do
         search_id = o |> Map.get(:search_id)
 
+        defaults = %{
+          top_submit: true,
+          bottom_submit: true
+        }
+
         render(
           BackendWeb.SharedView,
           "multiselect_dropdown.html",
-          o
+          defaults
+          |> Map.merge(o)
           |> Map.put(:show_search, !!search_id)
           |> Map.put(:search_class, "#{attr}_#{search_id}")
         )
