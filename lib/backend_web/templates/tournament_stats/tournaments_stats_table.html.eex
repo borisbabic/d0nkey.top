@@ -7,22 +7,12 @@ f-> %>
         <input name="<%= key %>" type="hidden" value="<%= value %>">
     <% end %>
     <%= @dropdown_row %>
-    <div class="dropdown is-hoverable">
-        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Columns</button></div>
-        <div class="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-                <%= for %{column: column, selected: selected} <- @columns do %>
-                    <label for="columns[<%= column %>]" class="dropdown-item">
-                        <span > <%= column %></span>
-                        <%= checkbox f, "columns[#{column}]", hidden_input: false, class: "is-pulled-right", value: selected %>
-                    </label>
-                <% end %>
-                <div class="dropdown-item">
-                    <%= submit "Submit", class: "button" %>
-                </div>
-            </div>
-        </div>
-    </div>
+    <%= render_multiselect_dropdown(%{
+        form: f,
+        attr: "columns",
+        title: "Columns",
+        options: @column_options
+    }) %>
     <div class="is-pulled-right">
         <%= number_input f, "min_matches", class: "input", placeholder: "Min Matches" %>
     </div>

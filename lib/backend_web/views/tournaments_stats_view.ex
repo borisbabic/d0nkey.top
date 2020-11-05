@@ -103,15 +103,15 @@ defmodule BackendWeb.TournamentStatsView do
       [%{name: "#", sortable: false} | headers_raw]
       |> Enum.map(fn h -> create_header(h, create_link, sort_by, direction) end)
 
-    columns =
+    column_options =
       all_columns
-      |> Enum.map(fn c -> %{column: c, selected: c in selected_columns} end)
+      |> Enum.map(fn c -> %{name: c, display: c, value: c, selected: c in selected_columns} end)
 
     render("tournaments_stats_table.html", %{
       headers: headers,
       rows: rows,
       conn: conn,
-      columns: columns,
+      column_options: column_options,
       curr_url: create_link.(%{}),
       dropdown_row: p[:dropdown_row]
     })

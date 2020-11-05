@@ -309,8 +309,6 @@ defmodule BackendWeb.MastersTourView do
 
     sort_key = sortable_headers |> Enum.find("Winrate %", fn h -> h == sort_by end)
 
-    IO.inspect(countries)
-
     rows =
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)

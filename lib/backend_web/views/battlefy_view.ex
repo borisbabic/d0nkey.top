@@ -258,24 +258,6 @@ defmodule BackendWeb.BattlefyView do
   def tour_stop?(%{id: id}),
     do: Backend.MastersTour.TourStop.all() |> Enum.any?(fn ts -> ts.battlefy_id == id end)
 
-  def create_countries(countries) do
-    Backend.PlayerInfo.get_eligible_countries()
-    |> Enum.map(fn cc ->
-      flag = cc |> country_flag()
-      name = cc |> Util.get_country_name()
-
-      %{
-        value: cc,
-        name: name,
-        display: ~E"""
-        <%= flag %><span><%= name %></span>
-        """,
-        selected: countries |> Enum.member?(cc)
-      }
-    end)
-    |> Enum.sort_by(fn %{name: name} -> name end)
-  end
-
   def render(u = "tournaments_stats.html", p = %{conn: conn, tournaments: tournaments}) do
     tournaments_string =
       tournaments
@@ -368,29 +350,29 @@ defmodule BackendWeb.BattlefyView do
 
     selected_stage = stages |> Enum.find_value(fn s -> s.selected && s end)
 
-    players =
+    player_options =
       standings
-      |> Enum.map(fn s -> {s.name, highlight |> Enum.member?(s.name)} end)
-      |> Enum.sort_by(fn {n, _} -> String.upcase(n) end)
+      |> Enum.map(fn s ->
+        %{
+          name: s.name,
+          selected: s.name in highlight,
+          display: s.name,
+          value: s.name
+        }
+      end)
+      |> Enum.sort_by(fn p -> p.name end)
 
     dropdowns =
       [get_ongoing_dropdown(conn, tournament, show_ongoing)] ++
         if is_tour_stop, do: [get_earnings_dropdown(conn, tournament, show_earnings)], else: []
-
-    countries =
-      if is_tour_stop do
-        create_countries(country_highlight)
-      else
-        []
-      end
 
     render("tournament.html", %{
       standings: standings,
       highlight: highlighted_standings,
       id: tournament.id,
       conn: conn,
-      players: players,
-      countries: countries,
+      player_options: player_options,
+      selected_countries: country_highlight,
       use_countries: is_tour_stop,
       subtitle: subtitle,
       name: tournament.name,

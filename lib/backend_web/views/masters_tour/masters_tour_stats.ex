@@ -213,7 +213,6 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       columns_options: columns_options,
       conn: conn,
       selected_countries: countries,
-      countries: BackendWeb.BattlefyView.create_countries(countries || []),
       dropdowns: []
     })
   end

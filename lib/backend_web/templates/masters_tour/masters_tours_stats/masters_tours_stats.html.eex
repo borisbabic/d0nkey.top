@@ -12,6 +12,7 @@ f-> %>
         form: f,
         title: "Columns",
         options: @columns_options,
+        selected_first: false,
         attr: "columns"
     } %>
 
