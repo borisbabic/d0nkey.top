@@ -12,14 +12,17 @@ f-> %>
         attr: "regions",
         options: @region_options,
         form: f,
-        top_submit: false
+        top_submit: false,
+        selected_first: false,
+
     }) %>
     <%= render_multiselect_dropdown(%{
         title: "Leaderboards",
         attr: "leaderboards",
         options: @leaderboards_options,
         form: f,
-        top_submit: false
+        top_submit: false,
+        selected_first: false,
     }) %>
     <%= render_countries_multiselect_dropdown(f, @selected_countries) %>
     <%= render_dropdowns @dropdowns %>

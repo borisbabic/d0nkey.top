@@ -19,70 +19,14 @@ f-> %>
     <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
         <input name="<%= key %>" type="hidden" value="<%= value %>">
     <% end %>
-    <div class="dropdown is-hoverable">
-        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Highlight Players</button></div>
-        <div class="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-                <div class="dropdown-item">
-                    <%= submit "Submit", class: "button" %>
-                </div>
-
-                <input
-                    id="highlight_select_player"
-                    class="input"
-                    placeholder="Select Player"
-                    type="text"
-                    autocomplete="off"
-                    onpaste="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
-                    oninput="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
-                    onkeyup="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
-                    oncut="hide_based_on_search('highlight_select_player', 'player-dropdown-item')"
-                    onchange="hide_based_on_search('highlight_select_player', 'player-dropdown-item')">
-                <%= for {player, selected} <- @players do %>
-                    <label for="player[<%= player %>]" style data-target-value="<%= player %>" class="dropdown-item player-dropdown-item">
-                        <span ><%= player %></span>
-                        <%= checkbox f, "player[#{player}]", hidden_input: false, class: "is-pulled-right", value: selected %>
-                    </label>
-                <% end %>
-                <div class="dropdown-item">
-                    <%= submit "Submit", class: "button" %>
-                </div>
-            </div>
-        </div>
-    </div>
+    <%= render_multiselect_dropdown(%{
+        form: f,
+        options: @player_options,
+        attr: "player",
+        title: "Highlight Players"
+    }) %>
     <%= if @use_countries do %>
-        <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Highlight countries</button></div>
-            <div class="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                    <div class="dropdown-item">
-                        <%= submit "Submit", class: "button" %>
-                    </div>
-
-                    <input
-                        id="highlight_select_country"
-                        class="input"
-                        placeholder="Select country"
-                        type="text"
-                        autocomplete="off"
-                        onpaste="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
-                        oninput="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
-                        onkeyup="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
-                        oncut="hide_based_on_search('highlight_select_country', 'country-dropdown-item')"
-                        onchange="hide_based_on_search('highlight_select_country', 'country-dropdown-item')">
-                    <%= for %{value: value, display: display, selected: selected, name: name} <- @countries do %>
-                        <label for="country[<%= value %>]" style data-target-value="<%= name %>" class="dropdown-item country-dropdown-item">
-                            <span ><%= display %></span>
-                            <%= checkbox f, "country[#{value}]", hidden_input: false, class: "is-pulled-right", value: selected %>
-                        </label>
-                    <% end %>
-                    <div class="dropdown-item">
-                        <%= submit "Submit", class: "button" %>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <%= render_countries_multiselect_dropdown(f, @selected_countries, %{title: "Highlight Countries"}) %>
     <% end %>
     <%= render_dropdowns @dropdowns %>
 <% end %>

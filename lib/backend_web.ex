@@ -61,21 +61,33 @@ defmodule BackendWeb do
         render(BackendWeb.SharedView, "multiple_dropdown_links.html", %{dropdowns: dropdowns})
       end
 
-      def render_multiselect_dropdown(o = %{form: _, title: _, options: _, attr: attr}) do
+      defp sort_by_selected(options, false), do: options
+
+      defp sort_by_selected(options, true),
+        do: options |> Enum.sort_by(fn o -> o.selected end, :desc)
+
+      def render_multiselect_dropdown(o = %{form: _, title: _, options: options, attr: attr}) do
         search_id = o |> Map.get(:search_id)
 
         defaults = %{
           top_submit: true,
-          bottom_submit: true
+          bottom_submit: true,
+          selected_first: true
         }
+
+        with_defaults =
+          defaults
+          |> Map.merge(o)
+
+        sorted = sort_by_selected(options, with_defaults.selected_first)
 
         render(
           BackendWeb.SharedView,
           "multiselect_dropdown.html",
-          defaults
-          |> Map.merge(o)
+          with_defaults
           |> Map.put(:show_search, !!search_id)
           |> Map.put(:search_class, "#{attr}_#{search_id}")
+          |> Map.put(:options, sorted)
         )
       end
 

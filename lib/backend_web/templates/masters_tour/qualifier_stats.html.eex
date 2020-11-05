@@ -13,6 +13,7 @@ f-> %>
         form: f,
         title: "Columns",
         options: @columns_options,
+        selected_first: false,
         attr: "columns"
     } %>
     <%= render_countries_multiselect_dropdown(f, @selected_countries) %>
