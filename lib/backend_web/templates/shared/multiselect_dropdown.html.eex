@@ -2,9 +2,11 @@
         <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%= @title %></button></div>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
-                <div class="dropdown-item">
-                    <%= submit "Submit", class: "button" %>
-                </div>
+                <%= if @top_submit do %>
+                    <div class="dropdown-item">
+                        <%= submit "Submit", class: "button" %>
+                    </div>
+                <% end %>
 
                 <%= if @show_search do %>
                     <input
@@ -25,9 +27,11 @@
                         <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, class: "is-pulled-right", value: selected %>
                     </label>
                 <% end %>
-                <div class="dropdown-item">
-                    <%= submit "Submit", class: "button" %>
-                </div>
+                <%= if @bottom_submit do %>
+                    <div class="dropdown-item">
+                        <%= submit "Submit", class: "button" %>
+                    </div>
+                <% end %>
             </div>
         </div>
     </div>
