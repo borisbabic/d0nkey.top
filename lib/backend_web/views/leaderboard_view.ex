@@ -4,6 +4,8 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Leaderboards.PlayerStats
+  alias BackendWeb.ViewUtil
+
   @type selectable_season :: {String.t(), integer()}
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
 
@@ -369,14 +371,32 @@ defmodule BackendWeb.LeaderboardView do
 
     sort_key = sortable_headers |> Enum.find("Total Finishes", fn h -> h == sort_by end)
 
+    update_link = fn new_params ->
+      Routes.leaderboard_path(conn, :player_stats, conn.query_params |> Map.merge(new_params))
+    end
+
+    %{
+      limit: limit,
+      offset: offset,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
+      )
+
     rows =
       stats
       |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
-      |> create_player_rows(conn, show_flags == "yes")
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
       |> filter_countries(countries)
+      |> create_player_rows(conn, show_flags == "yes")
       |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
-      |> Enum.with_index(1)
+      |> Enum.with_index(1 + offset)
       |> Enum.map(fn {row, pos} ->
         [pos | sortable_headers |> Enum.map(fn h -> row[h] || "" end)]
       end)
@@ -435,6 +455,7 @@ defmodule BackendWeb.LeaderboardView do
       end)
 
     dropdowns = [
+      limit_dropdown,
       {min_list, min_dropdown_title(min_to_show)},
       {show_flags_list, "Show Country Flags"}
     ]
@@ -447,6 +468,8 @@ defmodule BackendWeb.LeaderboardView do
       region_options: region_options,
       dropdowns: dropdowns,
       selected_countries: countries,
+      prev_button: prev_button,
+      next_button: next_button,
       leaderboards_options: leaderboards_options
     })
   end
@@ -493,7 +516,9 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   def filter_countries(target, []), do: target
-  def filter_countries(r, countries), do: r |> Enum.filter(fn f -> f["_country"] in countries end)
+
+  def filter_countries(r, countries),
+    do: r |> Enum.filter(fn p -> (p.account_id |> PlayerInfo.get_country()) in countries end)
 
   def create_player_rows(player_stats, conn, show_flags) do
     player_stats

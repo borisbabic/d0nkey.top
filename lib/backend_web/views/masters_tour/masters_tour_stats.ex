@@ -5,6 +5,8 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.TournamentStats.TeamStats
   alias Backend.MastersTour
+  alias Backend.PlayerInfo
+  alias BackendWeb.ViewUtil
   import BackendWeb.SortHelper
 
   defp create_stats_header("#", _, _, _), do: "#"
@@ -146,6 +148,26 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       }) do
     {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
 
+    update_link = fn new_params ->
+      Routes.masters_tour_path(
+        conn,
+        :masters_tours_stats,
+        conn.query_params |> Map.merge(new_params)
+      )
+    end
+
+    %{
+      limit: limit,
+      offset: offset,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000]
+      )
+
     columns =
       [
         "Player"
@@ -184,12 +206,15 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         |> InvitedPlayer.shorten_battletag()
         |> MastersTour.fix_name()
       end)
-      |> create_player_rows(conn)
-      |> Enum.filter(fn row ->
-        countries == nil || countries == [] || countries |> Enum.member?(row[:country])
+      |> Enum.filter(fn ip ->
+        countries == nil || countries == [] ||
+          PlayerInfo.get_country(ip.battletag_full) in countries
       end)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
+      |> create_player_rows(conn)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
-      |> Enum.with_index(1)
+      |> Enum.with_index(1 + offset)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     columns_options =
@@ -213,7 +238,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       columns_options: columns_options,
       conn: conn,
       selected_countries: countries,
-      dropdowns: []
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdowns: [limit_dropdown]
     })
   end
 end
