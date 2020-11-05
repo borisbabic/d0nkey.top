@@ -192,7 +192,16 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       |> Enum.with_index(1)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
-    columns_options = columns |> Enum.map(fn h -> {h, Enum.member?(columns_to_show, h)} end)
+    columns_options =
+      columns
+      |> Enum.map(fn h ->
+        %{
+          selected: h in columns_to_show,
+          display: h,
+          name: h,
+          value: h
+        }
+      end)
 
     headers =
       (["#"] ++ columns_to_show)
@@ -201,8 +210,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     render("masters_tours_stats.html", %{
       headers: headers,
       rows: rows,
-      columns: columns_options,
+      columns_options: columns_options,
       conn: conn,
+      selected_countries: countries,
       countries: BackendWeb.BattlefyView.create_countries(countries || []),
       dropdowns: []
     })

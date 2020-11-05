@@ -164,14 +164,17 @@ defmodule BackendWeb.MastersTourView do
     |> Map.put("2020 MTs qualified", num_tour_stops)
   end
 
-  def create_player_rows(player_stats, eligible_tour_stops, invited_set, conn, period) do
+  def create_player_rows(player_stats, eligible_tour_stops, invited_set, conn, period, show_flags) do
     player_stats
     |> Enum.map(fn ps ->
       total = ps |> PlayerStats.with_result()
 
       ts_cells = create_tour_stop_cells(ps, eligible_tour_stops, invited_set)
+      country = Backend.PlayerInfo.get_country(ps.battletag_full)
+      flag_part = if show_flags && country, do: country_flag(country), else: ""
 
       player_cell = ~E"""
+      <%= flag_part %>
       <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, ps.battletag_full)%>">
         <%= InvitedPlayer.shorten_battletag(ps.battletag_full)%>
       </a>
@@ -179,6 +182,7 @@ defmodule BackendWeb.MastersTourView do
 
       %{
         "Player" => player_cell,
+        "_country" => country,
         "Cups" => total,
         "Top 8 %" => if(total > 0, do: (100 * ps.top8 / total) |> Float.round(2), else: 0),
         "Top 8" => ps.top8,
@@ -201,8 +205,6 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def add_percentile_rows(rows, period) do
-    num = rows |> Enum.count()
-
     get_val = fn m -> m["Winrate %"] end
 
     qualified =
@@ -249,6 +251,8 @@ defmodule BackendWeb.MastersTourView do
         sort_by: sort_by_raw,
         direction: direction_raw,
         min: min_raw,
+        countries: countries,
+        show_flags: show_flags,
         selected_columns: selected_columns,
         invited_players: invited_players,
         conn: conn
@@ -305,10 +309,13 @@ defmodule BackendWeb.MastersTourView do
 
     sort_key = sortable_headers |> Enum.find("Winrate %", fn h -> h == sort_by end)
 
+    IO.inspect(countries)
+
     rows =
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
-      |> create_player_rows(eligible_tour_stops(), invited_set, conn, period)
+      |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
+      |> filter_countries(countries)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
@@ -345,20 +352,46 @@ defmodule BackendWeb.MastersTourView do
         }
       end)
 
+    show_flags_list =
+      ["Yes", "No"]
+      |> Enum.map(fn o ->
+        %{
+          display: o,
+          selected: show_flags == String.downcase(o),
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifier_stats,
+              period,
+              Map.put(conn.query_params, "show_flags", o |> String.downcase())
+            )
+        }
+      end)
+
     dropdowns = [
       {ts_list, period},
-      {min_list, "Min #{min_to_show} cups"}
+      {min_list, "Min #{min_to_show} cups"},
+      {show_flags_list, "Show Country Flags"}
     ]
 
     columns_options =
-      sortable_headers |> Enum.map(fn h -> {h, Enum.member?(columns_to_show, h)} end)
+      sortable_headers
+      |> Enum.map(fn h ->
+        %{
+          selected: h in columns_to_show,
+          display: h,
+          name: h,
+          value: h
+        }
+      end)
 
     render("qualifier_stats.html", %{
       title: "#{period} qualifier stats",
       subtitle: "Total cups: #{total}",
       headers: headers,
       rows: rows,
-      columns: columns_options,
+      columns_options: columns_options,
+      selected_countries: countries,
       period: period,
       min: min_to_show,
       conn: conn,
@@ -366,10 +399,12 @@ defmodule BackendWeb.MastersTourView do
     })
   end
 
-  def filter_country(earnings_players, nil), do: earnings_players
+  def filter_countries(target, []), do: target
+  def filter_countries(r, countries), do: r |> Enum.filter(fn f -> f["_country"] in countries end)
+  def filter_country(target, nil), do: target
 
-  def filter_country(earnings_players, country) do
-    earnings_players
+  def filter_country(ep, country) do
+    ep
     |> Enum.filter(fn %{country: c} -> country == c end)
   end
 
@@ -453,7 +488,7 @@ defmodule BackendWeb.MastersTourView do
     {[all_option | options], "Select Country"}
   end
 
-  def create_season_dropdown(conn, gm_season = {year, season}) do
+  def create_season_dropdown(conn, {year, season}) do
     options =
       [{2020, 2}, {2021, 1}, {2021, 2}]
       |> Enum.map(fn {y, s} ->
@@ -501,7 +536,7 @@ defmodule BackendWeb.MastersTourView do
     standings
     |> Enum.find(fn %{team: %{name: full}} -> InvitedPlayer.shorten_battletag(full) == name end)
     |> case do
-      s = %{wins: wins, losses: losses, disqualified: disqualified} ->
+      %{wins: wins, losses: losses, disqualified: disqualified} ->
         class =
           cond do
             disqualified -> "has-text-danger"
@@ -711,7 +746,7 @@ defmodule BackendWeb.MastersTourView do
     |> Enum.take_while(fn ts -> ts != :Bucharest end)
   end
 
-  def create_qualifiers_link(range = {%Date{} = from, %Date{} = to}, conn) do
+  def create_qualifiers_link(range = {%Date{} = _from, %Date{} = _to}, conn) do
     new_params = conn.query_params |> Util.update_from_to_params(range)
 
     Routes.masters_tour_path(conn, :qualifiers, new_params)
