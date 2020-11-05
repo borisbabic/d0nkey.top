@@ -7,6 +7,7 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.PlayerInfo
   alias Backend.MastersTour.PlayerStats
   alias BackendWeb.MastersTour.MastersToursStats
+  alias BackendWeb.ViewUtil
 
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
   @min_cups_options [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 300]
@@ -259,7 +260,23 @@ defmodule BackendWeb.MastersTourView do
       }) do
     min_to_show = min_raw || min_cups(total)
 
+    update_link = fn new_params ->
+      Routes.masters_tour_path(conn, :qualifier_stats, conn.query_params |> Map.merge(new_params))
+    end
+
     {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
+
+    %{
+      limit: limit,
+      offset: offset,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
+      )
 
     invited_set =
       invited_players
@@ -312,10 +329,12 @@ defmodule BackendWeb.MastersTourView do
     rows =
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
-      |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
       |> filter_countries(countries)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
+      |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
-      |> Enum.with_index(1)
+      |> Enum.with_index(1 + offset)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     ts_list =
@@ -367,6 +386,7 @@ defmodule BackendWeb.MastersTourView do
       end)
 
     dropdowns = [
+      limit_dropdown,
       {ts_list, period},
       {min_list, "Min #{min_to_show} cups"},
       {show_flags_list, "Show Country Flags"}
@@ -393,12 +413,21 @@ defmodule BackendWeb.MastersTourView do
       period: period,
       min: min_to_show,
       conn: conn,
+      prev_button: prev_button,
+      next_button: next_button,
       dropdowns: dropdowns
     })
   end
 
   def filter_countries(target, []), do: target
-  def filter_countries(r, countries), do: r |> Enum.filter(fn f -> f["_country"] in countries end)
+
+  def filter_countries(r, countries),
+    do:
+      r
+      |> Enum.filter(fn f ->
+        PlayerInfo.get_country(f.battletag_full) in countries
+      end)
+
   def filter_country(target, nil), do: target
 
   def filter_country(ep, country) do
