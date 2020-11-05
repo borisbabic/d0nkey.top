@@ -26,15 +26,16 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
   end
 
   def init(_args) do
-    {:ok, {%{}, %{}}}
+    {:ok, {%{}, %{}, %{}}}
   end
 
   defp init_state(all) do
     all
-    |> Enum.reduce({%{}, %{}}, fn pn, {mt_bt_map, short_bt_map} ->
+    |> Enum.reduce({%{}, %{}, %{}}, fn pn, {mt_bt_map, short_bt_map, actual_bt_map} ->
       {
         mt_bt_map |> Map.put(pn.mt_battletag_full, pn),
-        short_bt_map |> Map.put(pn.mt_battletag_full |> InvitedPlayer.shorten_battletag(), pn)
+        short_bt_map |> Map.put(pn.mt_battletag_full |> InvitedPlayer.shorten_battletag(), pn),
+        actual_bt_map |> Map.put(pn.actual_battletag_full, pn)
       }
     end)
   end
@@ -59,25 +60,32 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
     end
   end
 
-  def handle_call({:get_actual_battletag, mt_bt}, _from, state = {mt_bt_map, short_bt_map}) do
+  def handle_call(
+        {:get_actual_battletag, mt_bt},
+        _from,
+        state = {mt_bt_map, short_bt_map, actual_bt_map}
+      ) do
     response =
       get_actual_battletag(mt_bt_map, mt_bt) ||
+        get_actual_battletag(actual_bt_map, mt_bt) ||
         get_actual_battletag(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag())
 
     {:reply, response, state}
   end
 
-  def handle_call({:get_country, mt_bt}, _from, state = {mt_bt_map, short_bt_map}) do
+  def handle_call({:get_country, mt_bt}, _from, state = {mt_bt_map, short_bt_map, actual_bt_map}) do
     response =
       get_country(mt_bt_map, mt_bt) ||
+        get_country(actual_bt_map, mt_bt) ||
         get_country(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag())
 
     {:reply, response, state}
   end
 
-  def handle_call({:get, mt_bt}, _from, state = {mt_bt_map, short_bt_map}) do
+  def handle_call({:get, mt_bt}, _from, state = {mt_bt_map, short_bt_map, actual_bt_map}) do
     response =
       with nil <- Map.get(mt_bt_map, mt_bt),
+           nil <- Map.get(actual_bt_map, mt_bt),
            nil <- Map.get(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag()) do
         nil
       else

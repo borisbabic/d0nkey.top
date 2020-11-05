@@ -33,6 +33,8 @@ defmodule BackendWeb do
       end
 
       def multi_select_to_array(multi), do: []
+      def parse_yes_no("yes"), do: "yes"
+      def parse_yes_no(_), do: "no"
     end
   end
 
@@ -59,17 +61,15 @@ defmodule BackendWeb do
         render(BackendWeb.SharedView, "multiple_dropdown_links.html", %{dropdowns: dropdowns})
       end
 
-      def render_multiselect_dropdown(
-            o = %{form: _, title: _, options: _, attr: _, placeholder: _}
-          ) do
+      def render_multiselect_dropdown(o = %{form: _, title: _, options: _, attr: attr}) do
         search_id = o |> Map.get(:search_id)
 
         render(
           BackendWeb.SharedView,
           "multiselect_dropdown.html",
           o
-          |> Map.put(:show_search, search_id)
-          |> Map.put(:search_class, search_id)
+          |> Map.put(:show_search, !!search_id)
+          |> Map.put(:search_class, "#{attr}_#{search_id}")
         )
       end
 
@@ -107,6 +107,33 @@ defmodule BackendWeb do
         name = Util.get_country_name(country)
 
         render(BackendWeb.SharedView, "country_flag.html", %{country: country, country_name: name})
+      end
+
+      def countries_options(selected_countries) do
+        countries_options =
+          Backend.PlayerInfo.get_eligible_countries()
+          |> Enum.map(fn cc ->
+            %{
+              selected: cc && cc in selected_countries,
+              display: cc |> Util.get_country_name(),
+              name: cc |> Util.get_country_name(),
+              value: cc
+            }
+          end)
+          |> Enum.sort_by(fn %{display: display} -> display end)
+      end
+
+      def render_countries_multiselect_dropdown(form, selected_countries, opts \\ %{}) do
+        %{
+          form: form,
+          title: "Filter Countries",
+          options: countries_options(selected_countries),
+          attr: "country",
+          placeholder: "Country",
+          search_id: "country-select"
+        }
+        |> Map.merge(opts)
+        |> render_multiselect_dropdown()
       end
 
       unquote(view_helpers())
