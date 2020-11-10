@@ -58,6 +58,8 @@ config :backend,
   auto_migrate: false,
   hearthstone_json_fetch_fresh: true,
   su_regions: ["Europe", "Americas"],
+  twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
+  twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
   admin_pass: "admin",
   admin_config_vars_cutoff_date: "3000-12-31"
 

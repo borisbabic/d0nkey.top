@@ -30,6 +30,22 @@ defmodule Backend.Application do
           start: {Backend.Infrastructure.PlayerStatsCache, :start_link, [[]]}
         },
         %{
+          id: Twitch.TokenRefresher,
+          start: {Twitch.TokenRefresher, :start_link, [[]]}
+        },
+        %{
+          id: Twitch.HearthstoneLive,
+          start: {Twitch.HearthstoneLive, :start_link, [[]]}
+        },
+        %{
+          id: Backend.HSReplay.StreamingNow,
+          start: {Backend.HSReplay.StreamingNow, :start_link, [[]]}
+        },
+        %{
+          id: Backend.Streaming.StreamingNow,
+          start: {Backend.Streaming.StreamingNow, :start_link, [[]]}
+        },
+        %{
           id: Backend.Infrastructure.PlayerNationalityCache,
           start: {Backend.Infrastructure.PlayerNationalityCache, :start_link, [[]]}
         },
@@ -47,7 +63,7 @@ defmodule Backend.Application do
     opts = [strategy: :one_for_one, name: Backend.Supervisor]
     start_result = Supervisor.start_link(children, opts)
     migrate()
-    Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
+    # Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
     #    Backend.Hearthstone.add_class_and_regenerate_deckcode()
     start_result
   end
