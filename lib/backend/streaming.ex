@@ -6,17 +6,15 @@ defmodule Backend.Streaming do
   alias Backend.HSReplay
   alias Backend.Streaming.Streamer
   alias Backend.Streaming.StreamerDeck
+  alias Hearthstone.Enums.BnetGameType
 
   def relevant_bnet_game_type?(%{game_type: bnet_game_type}) do
     # see https://github.com/HearthSim/Arcane-Tracker/blob/master/app/src/main/kotlin/net/mbonnin/arcanetracker/BnetGameType.kt
-    [10, 9, 10, 31, 1, 2, 45, 30, 4] |> Enum.member?(bnet_game_type)
+    BnetGameType.with_decks?(bnet_game_type)
   end
 
   def ranks(sn = %{game_type: bnet_game_type}) do
-    # ranked ranks
-    [2, 30, 45]
-    |> Enum.member?(bnet_game_type)
-    |> if do
+    if BnetGameType.ladder?(bnet_game_type) do
       %{rank: sn.rank, legend_rank: sn}
     else
       %{rank: 0, legend_rank: 0}
@@ -226,6 +224,15 @@ defmodule Backend.Streaming do
     query
     |> join(:inner, [sd], s in assoc(sd, :streamer))
     |> where([_sd, s, _d], s.twitch_login in ^twitch_login)
+  end
+
+  defp compose_streamer_deck_query({"twitch_id", <<twitch_id::binary>>}, query),
+    do: compose_streamer_deck_query({"twitch_id", String.split(twitch_id, ",")}, query)
+
+  defp compose_streamer_deck_query({"twitch_id", twitch_id}, query) when is_list(twitch_id) do
+    query
+    |> join(:inner, [sd], s in assoc(sd, :streamer))
+    |> where([_sd, s, _d], s.twitch_id in ^twitch_id)
   end
 
   defp compose_streamer_deck_query({"order_by", {direction, field}}, query) do

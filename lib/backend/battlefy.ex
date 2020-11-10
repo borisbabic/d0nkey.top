@@ -68,7 +68,7 @@ defmodule Backend.Battlefy do
     end
   end
 
-  def get_stage_round_standings(stage_id, round), do: []
+  def get_stage_round_standings(_stage_id, _round), do: []
 
   def create_standings_from_round1_matches(%{
         id: id
