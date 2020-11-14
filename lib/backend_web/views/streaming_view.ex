@@ -60,12 +60,14 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
-  def filter_archetypes(sd, archetypes = [_ | _]) do
+  def filter_archetypes(sd, _, true), do: sd
+
+  def filter_archetypes(sd, archetypes = [_ | _], _) do
     sd
     |> Enum.filter(fn %{archetype: a} -> a && a.id in archetypes end)
   end
 
-  def filter_archetypes(sd, _), do: sd
+  def filter_archetypes(sd, _, _), do: sd
 
   def deck_toggle_link(conn, %{deck: %{id: id}}) do
     with deck_id <- conn.query_params["deck_id"],
@@ -84,12 +86,21 @@ defmodule BackendWeb.StreamingView do
 
   def deck_toggle_link(_), do: nil
 
+  defp legend_rank(0), do: nil
+  defp legend_rank(lr), do: lr
+
+  defp get_archetype(%{hsreplay_archetype: archetype_id}) when not is_nil(archetype_id),
+    do: Backend.HSReplay.get_archetype(archetype_id)
+
+  defp get_archetype(deck), do: Backend.HSReplay.guess_archetype(deck)
+
   def render("streamer_decks.html", %{
         streamer_decks: streamer_decks,
         conn: conn,
         streamers: streamers,
         archetypes: archetypes_raw,
         cards: cards,
+        new_mode: new_mode,
         criteria: %{"offset" => offset, "limit" => limit}
       }) do
     title = "Streamer Decks"
@@ -106,12 +117,15 @@ defmodule BackendWeb.StreamingView do
           deck_link: deck_toggle_link(conn, sd),
           last_played: sd.last_played,
           format: if(sd.deck.format == 1, do: "Wild", else: "Standard"),
-          best_legend_rank: if(sd.best_legend_rank > 0, do: sd.best_legend_rank, else: nil),
-          archetype: Backend.HSReplay.guess_archetype(sd.deck),
+          best_legend_rank: legend_rank(sd.best_legend_rank),
+          worst_legend_rank: legend_rank(sd.worst_legend_rank),
+          latest_legend_rank: legend_rank(sd.latest_legend_rank),
+          minutes_played: sd.minutes_played,
+          archetype: get_archetype(sd.deck),
           links: links(sd)
         }
       end)
-      |> filter_archetypes(archetypes)
+      |> filter_archetypes(archetypes, new_mode)
 
     dropdowns = [
       create_limit_dropdown(conn, limit),
@@ -153,6 +167,7 @@ defmodule BackendWeb.StreamingView do
       conn: conn,
       archetypes_options: archetypes_options,
       card_options: card_options,
+      new_mode: new_mode,
       next_button: next_button(conn, next_offset)
     })
   end

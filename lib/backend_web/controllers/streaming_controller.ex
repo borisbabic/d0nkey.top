@@ -13,19 +13,27 @@ defmodule BackendWeb.StreamingController do
     redirect(conn, to: real_route)
   end
 
+  defp add_archetypes_filter(criteria_map, _, true), do: criteria_map
+
+  defp add_archetypes_filter(criteria_map, archetypes, false),
+    do: criteria_map |> Map.put("hsreplay_archetype", archetypes)
+
   def streamer_decks(conn, params) do
     cards =
       multi_select_to_array(params["cards"])
       |> Enum.map(&Util.to_int_or_orig/1)
 
     archetypes =
-      multi_select_to_array(params["archetypes"])
+      multi_select_to_array(params["hsreplay_archetypes"])
       |> Enum.map(&Util.to_int_or_orig/1)
+
+    new_mode = params["new_mode"] == "yes" || Backend.Hearthstone.darkmoon_faire_out?()
 
     criteria =
       %{"order_by" => {:desc, :last_played}, "limit" => 50, "offset" => 0}
       |> Map.merge(params)
       |> Map.put("cards", cards)
+      |> add_archetypes_filter(archetypes, new_mode)
 
     streamer_decks = Backend.Streaming.streamer_decks(criteria)
     streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :twitch_display}})
@@ -43,6 +51,7 @@ defmodule BackendWeb.StreamingController do
       archetypes: archetypes,
       page_title: page_title,
       cards: cards,
+      new_mode: new_mode,
       criteria: criteria
     })
   end
