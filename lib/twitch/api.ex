@@ -36,7 +36,8 @@ defmodule Twitch.Api do
   defp data_cursor({:ok, %{body: %{"data" => data, "pagination" => %{"cursor" => cursor}}}}),
     do: {data, cursor}
 
-  defp data_cursor({:ok, %{body: %{"data" => _, "pagination" => %{}}}}), do: {[], nil}
+  defp data_cursor({:ok, %{body: %{"data" => data}}}), do: {data, nil}
+  defp data_cursor(_), do: {[], nil}
 
   defp get_all(get_more, [], _) do
     get_more.(nil)
