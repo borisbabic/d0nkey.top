@@ -36,7 +36,7 @@ defmodule BackendWeb.StreamingController do
       |> add_archetypes_filter(archetypes, new_mode)
 
     streamer_decks = Backend.Streaming.streamer_decks(criteria)
-    streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :twitch_display}})
+    streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :hsreplay_twitch_display}})
 
     page_title =
       case params["twitch_login"] do

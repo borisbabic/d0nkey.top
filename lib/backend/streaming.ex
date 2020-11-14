@@ -34,7 +34,7 @@ defmodule Backend.Streaming do
     Repo.all(query)
   end
 
-  def get_streamers_decks(twitch_login) do
+  def get_streamers_decks(hsreplay_twitch_login) do
     query =
       from sd in StreamerDeck,
         join: s in assoc(sd, :streamer),
@@ -42,7 +42,7 @@ defmodule Backend.Streaming do
         preload: [streamer: s, deck: d],
         select: sd,
         order_by: [desc: sd.last_played],
-        where: s.twitch_login == ^twitch_login
+        where: s.hsreplay_twitch_login == ^hsreplay_twitch_login
 
     Repo.all(query)
   end
@@ -65,7 +65,7 @@ defmodule Backend.Streaming do
     end)
   end
 
-  def get_or_create_streamer(twitch_login, twitch_display, twitch_id) do
+  def get_or_create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
     query =
       from s in Streamer,
         where: s.twitch_id == ^twitch_id,
@@ -74,13 +74,17 @@ defmodule Backend.Streaming do
     query
     |> Repo.one()
     |> case do
-      nil -> create_streamer(twitch_login, twitch_display, twitch_id)
+      nil -> create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id)
       s -> {:ok, s}
     end
   end
 
-  def create_streamer(twitch_login, twitch_display, twitch_id) do
-    attrs = %{twitch_login: twitch_login, twitch_display: twitch_display, twitch_id: twitch_id}
+  def create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
+    attrs = %{
+      hsreplay_twitch_login: hsreplay_twitch_login,
+      hsreplay_twitch_display: hsreplay_twitch_display,
+      twitch_id: twitch_id
+    }
 
     %Streamer{}
     |> Streamer.changeset(attrs)
@@ -229,13 +233,17 @@ defmodule Backend.Streaming do
   defp build_streamer_deck_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_streamer_deck_query/2)
 
-  defp compose_streamer_deck_query({"twitch_login", <<twitch_login::binary>>}, query),
-    do: compose_streamer_deck_query({"twitch_login", String.split(twitch_login, ",")}, query)
+  defp compose_streamer_deck_query({"twitch_login", <<hsreplay_twitch_login::binary>>}, query),
+    do:
+      compose_streamer_deck_query(
+        {"twitch_login", String.split(hsreplay_twitch_login, ",")},
+        query
+      )
 
-  defp compose_streamer_deck_query({"twitch_login", twitch_login}, query) do
+  defp compose_streamer_deck_query({"twitch_login", hsreplay_twitch_login}, query) do
     query
     |> join(:inner, [sd], s in assoc(sd, :streamer))
-    |> where([_sd, s, _d], s.twitch_login in ^twitch_login)
+    |> where([_sd, s, _d], s.hsreplay_twitch_login in ^hsreplay_twitch_login)
   end
 
   defp compose_streamer_deck_query({"twitch_id", <<twitch_id::binary>>}, query),

@@ -1,9 +1,10 @@
 defmodule BackendWeb.StreamingView do
   use BackendWeb, :view
   alias Backend.Hearthstone.Deck
+  alias Backend.Streaming.Streamer
 
   def twitch_link(streamer) do
-    twitch_link(streamer.twitch_login, streamer.twitch_display)
+    twitch_link(Streamer.twitch_login(streamer), Streamer.twitch_display(streamer))
   end
 
   def twitch_link(login, display, classes \\ ["is-link"]) do
@@ -54,8 +55,8 @@ defmodule BackendWeb.StreamingView do
   def create_streamer_list(conn, streamers) do
     ~E"""
           <option data-link="<%= remove_from_link(conn, "twitch_login") %>" value="All Streamers">
-          <%= for %{twitch_display: d, twitch_login: l} <- streamers do %>
-            <option data-link="<%= update_link(conn, "twitch_login", l) %>" value="<%= d %>">
+          <%= for s <- streamers do %>
+            <option data-link="<%= update_link(conn, "twitch_login", Streamer.twitch_login(s)) %>" value="<%= Streamer.twitch_display(s) %>">
           <% end %>
     """
   end
@@ -174,7 +175,7 @@ defmodule BackendWeb.StreamingView do
 
   def links(sd) do
     deck = deckcode_links(deckcode(sd.deck))
-    twitch = twitch_link(sd.streamer.twitch_login, "twitch", ["tag", "is-link"])
+    twitch = twitch_link(sd.streamer |> Streamer.twitch_login(), "twitch", ["tag", "is-link"])
 
     ~E"""
     <%= deck %>
@@ -306,7 +307,10 @@ defmodule BackendWeb.StreamingView do
 
   def deckcode(deck), do: Backend.Hearthstone.Deck.deckcode(deck.cards, deck.hero, deck.format)
 
-  def streamer_link(%{twitch_login: tl, twitch_display: td}, conn) do
+  def streamer_link(streamer, conn) do
+    tl = streamer |> Streamer.twitch_login()
+    td = streamer |> Streamer.twitch_display()
+
     link =
       case Map.get(conn.query_params, "twitch_login") do
         ^tl ->
