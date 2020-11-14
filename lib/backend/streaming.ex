@@ -125,6 +125,9 @@ defmodule Backend.Streaming do
     attrs = %{
       best_rank: Enum.min([rank, ds.best_rank]),
       best_legend_rank: Enum.min([legend_rank, ds.best_legend_rank]),
+      worst_legend_rank: Enum.max([legend_rank, ds.worst_legend_rank]),
+      latest_legend_rank: legend_rank,
+      minutes_played: ds.minutes_played + 1,
       last_played: NaiveDateTime.utc_now()
     }
 
@@ -250,6 +253,11 @@ defmodule Backend.Streaming do
 
   defp compose_streamer_deck_query({"cards", cards}, query),
     do: query |> where([_sd, _s, d], fragment("? @> ?", d.cards, ^cards))
+
+  defp compose_streamer_deck_query({"hsreplay_archetype", []}, query), do: query
+
+  defp compose_streamer_deck_query({"hsreplay_archetype", archetypes}, query),
+    do: query |> where([_sd, _s, d], d.hsreplay_archetype in ^archetypes)
 
   defp compose_streamer_deck_query({"format", format}, query),
     do: query |> where([_sd, _s, d], d.format == ^format)

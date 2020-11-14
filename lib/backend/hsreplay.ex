@@ -204,6 +204,10 @@ defmodule Backend.HSReplay do
 
   def guess_archetype(%{class: _class_name}), do: nil
 
+  def get_archetype(id) do
+    get_archetypes() |> Enum.find(fn a -> a.id == id end)
+  end
+
   def get_latest_archetypes(days \\ 30) do
     reference_time =
       NaiveDateTime.utc_now()

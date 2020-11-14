@@ -70,4 +70,10 @@ defmodule Backend.Hearthstone do
     do: query |> where([d], d.deckcode == ^deckcode)
 
   defp compose_decks_query(_unrecognized, query), do: query
+
+  def darkmoon_faire_out?() do
+    now = NaiveDateTime.utc_now()
+    release = ~N[2020-11-17 18:00:00]
+    NaiveDateTime.compare(now, release) == :gt
+  end
 end
