@@ -121,10 +121,19 @@ defmodule Backend.Streaming do
     |> Repo.insert()
   end
 
+  defp non_zero_min(ranks) do
+    ranks
+    |> Enum.filter(fn r -> r > 0 end)
+    |> case do
+      [] -> 0
+      r -> Enum.min(r)
+    end
+  end
+
   def update_streamer_deck(ds = %StreamerDeck{}, rank, legend_rank) do
     attrs = %{
-      best_rank: Enum.min([rank, ds.best_rank]),
-      best_legend_rank: Enum.min([legend_rank, ds.best_legend_rank]),
+      best_rank: [rank, ds.best_rank] |> non_zero_min(),
+      best_legend_rank: [legend_rank, ds.best_legend_rank] |> non_zero_min(),
       worst_legend_rank: Enum.max([legend_rank, ds.worst_legend_rank]),
       latest_legend_rank: legend_rank,
       minutes_played: ds.minutes_played + 1,
