@@ -602,6 +602,11 @@ defmodule Backend.MastersTour do
     []
   end
 
+  @first_earnings 32_500
+  @second_earnings 22_500
+  @top4_earnings 15_000
+  @top8_earnings 11_000
+
   @spec get_2020_top8_earnings([Battlefy.Standings.t()], Blizzard.tour_stop()) :: [
           {String.t(), number}
         ]
@@ -614,16 +619,16 @@ defmodule Backend.MastersTour do
       money =
         case {wins, place, tour_stop, shortened_name} do
           # stupid blizzard not updating battlefy till the end
-          {_, _, :Arlington, "xBlyzes"} -> 32_500
-          {3, _, _, _} -> 32_500
-          {2, _, _, _} -> 22_500
-          {1, _, _, _} -> 15_000
-          {0, _, _, _} -> 11_000
-          {nil, 1, _, _} -> 32_500
-          {nil, 2, _, _} -> 22_500
-          {nil, 3, _, _} -> 15_000
-          {nil, 5, _, _} -> 11_000
-          _ -> 11_000
+          {_, _, :Arlington, "xBlyzes"} -> @first_earnings
+          {3, _, _, _} -> @first_earnings
+          {2, _, _, _} -> @second_earnings
+          {1, _, _, _} -> @top4_earnings
+          {0, _, _, _} -> @top8_earnings
+          {nil, 1, _, _} -> @first_earnings
+          {nil, 2, _, _} -> @second_earnings
+          {nil, 3, _, _} -> @top4_earnings
+          {nil, 5, _, _} -> @top8_earnings
+          _ -> @top8_earnings
         end
 
       {name, money}

@@ -23,7 +23,16 @@ defmodule Backend.Hearthstone do
   end
 
   def create_deck(cards, hero, format) do
-    attrs = %{cards: cards, hero: hero, format: format, class: class(hero)}
+    temp_attrs = %{cards: cards, hero: hero, format: format, class: class(hero)}
+
+    hsreplay_archetype =
+      Backend.HSReplay.guess_archetype(temp_attrs)
+      |> case do
+        %{id: id} -> id
+        _ -> nil
+      end
+
+    attrs = Map.put(temp_attrs, :hsreplay_archetype, hsreplay_archetype)
 
     %Deck{}
     |> Deck.changeset(attrs)

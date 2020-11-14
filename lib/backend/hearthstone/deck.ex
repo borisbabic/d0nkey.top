@@ -4,19 +4,21 @@ defmodule Backend.Hearthstone.Deck do
   use Ecto.Schema
   import Ecto.Changeset
   @required [:cards, :hero, :format, :deckcode, :class]
+  @optional [:hsreplay_archetype]
   schema "deck" do
     field :cards, {:array, :integer}
     field :deckcode, :string
     field :format, :integer
     field :hero, :integer
     field :class, :string
+    field :hsreplay_archetype, :integer, default: nil
     timestamps()
   end
 
   @doc false
   def changeset(c, attrs = %{deckcode: d}) when not is_nil(d) do
     c
-    |> cast(attrs, @required)
+    |> cast(attrs, @required ++ @optional)
     |> validate_required(@required)
   end
 
