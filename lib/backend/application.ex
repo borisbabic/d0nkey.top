@@ -53,6 +53,10 @@ defmodule Backend.Application do
           id: Backend.HearthstoneJson,
           start: {Backend.HearthstoneJson, :start_link, [[fetch_fresh: fetch_fresh()]]}
         },
+        %{
+          id: Backend.StreamerTwitchInfoUpdater,
+          start: {Backend.StreamerTwitchInfoUpdater, :start_link, [[]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]

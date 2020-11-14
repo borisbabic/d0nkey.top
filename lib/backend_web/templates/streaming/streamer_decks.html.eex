@@ -1,12 +1,13 @@
 <div class="title is-2"><%= @title %></div>
 
 
+<div class="columns is-pulled-left">
+<%= @prev_button %>
+<%= @next_button %>
+<%= render_dropdowns @dropdowns %>
 <%= form_for @conn, Routes.streaming_path(@conn, :streamer_decks, @conn.query_params),
 [method: :get], fn
 f-> %>
-    <%= @prev_button %>
-    <%= @next_button %>
-    <%= render_dropdowns @dropdowns %>
     <%= render_multiselect_dropdown %{
         form: f,
         title: "Select Archetypes",
@@ -21,6 +22,7 @@ f-> %>
         attr: "cards",
         placeholder: "Card Name",
         search_id: "sd-card-select"} %>
+<% end %>
     <div class="field is-pulled-right is-shown-js" style="display: none">
         <input
         list="streamers"
@@ -33,7 +35,7 @@ f-> %>
             <%= @streamer_list %>
         </datalist>
     </div>
-<% end %>
+</div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>

@@ -134,6 +134,24 @@ defmodule Backend.Streaming do
     end
   end
 
+  def update_twitch_info(twitch_streams) do
+    twitch_streams
+    |> Util.async_map(fn ts ->
+      login = ts |> Twitch.Stream.login()
+      id = ts.user_id
+
+      updates =
+        if is_binary(login) do
+          [twitch_login: login]
+        else
+          []
+        end
+        |> Kernel.++(twitch_display: ts.user_name)
+
+      Repo.update_all(from(s in Streamer, where: s.twitch_id == ^id), set: updates)
+    end)
+  end
+
   def update_streamer_deck(ds = %StreamerDeck{}, rank, legend_rank) do
     attrs = %{
       best_rank: [rank, ds.best_rank] |> non_zero_min(),
@@ -233,17 +251,20 @@ defmodule Backend.Streaming do
   defp build_streamer_deck_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_streamer_deck_query/2)
 
-  defp compose_streamer_deck_query({"twitch_login", <<hsreplay_twitch_login::binary>>}, query),
+  defp compose_streamer_deck_query({"twitch_login", <<twitch_login::binary>>}, query),
     do:
       compose_streamer_deck_query(
-        {"twitch_login", String.split(hsreplay_twitch_login, ",")},
+        {"twitch_login", String.split(twitch_login, ",")},
         query
       )
 
-  defp compose_streamer_deck_query({"twitch_login", hsreplay_twitch_login}, query) do
+  defp compose_streamer_deck_query({"twitch_login", twitch_login}, query) do
     query
     |> join(:inner, [sd], s in assoc(sd, :streamer))
-    |> where([_sd, s, _d], s.hsreplay_twitch_login in ^hsreplay_twitch_login)
+    |> where(
+      [_sd, s, _d],
+      s.hsreplay_twitch_login in ^twitch_login or s.twitch_login in ^twitch_login
+    )
   end
 
   defp compose_streamer_deck_query({"twitch_id", <<twitch_id::binary>>}, query),
