@@ -54,9 +54,9 @@ defmodule BackendWeb.StreamingView do
 
   def create_streamer_list(conn, streamers) do
     ~E"""
-          <option data-link="<%= remove_from_link(conn, "twitch_login") %>" value="All Streamers">
+          <option data-link="<%= remove_from_link(conn, ["twitch_id", "twitch_login"]) %>" value="All Streamers">
           <%= for s <- streamers do %>
-            <option data-link="<%= update_link(conn, "twitch_login", Streamer.twitch_login(s)) %>" value="<%= Streamer.twitch_display(s) %>">
+            <option data-link="<%= update_link(conn, "twitch_id", s.twitch_id) %>" value="<%= Streamer.twitch_display(s) %>">
           <% end %>
     """
   end
@@ -78,7 +78,7 @@ defmodule BackendWeb.StreamingView do
       _ ->
         new_params =
           conn.query_params
-          |> Map.delete("twitch_login")
+          |> Map.drop(["twitch_login", "twitch_id"])
           |> Map.put("deck_id", id)
 
         Routes.streaming_path(conn, :streamer_decks, new_params)
@@ -291,8 +291,10 @@ defmodule BackendWeb.StreamingView do
     }
   end
 
-  def remove_from_link(conn, param) do
-    Routes.streaming_path(conn, :streamer_decks, Map.delete(conn.query_params, param))
+  def remove_from_link(conn, param) when is_binary(param), do: remove_from_link(conn, [param])
+
+  def remove_from_link(conn, params) do
+    Routes.streaming_path(conn, :streamer_decks, Map.drop(conn.query_params, params))
   end
 
   def deckcode_links(<<deckcode::binary>>) do
@@ -308,19 +310,23 @@ defmodule BackendWeb.StreamingView do
   def deckcode(deck), do: Backend.Hearthstone.Deck.deckcode(deck.cards, deck.hero, deck.format)
 
   def streamer_link(streamer, conn) do
+    twitch_id = streamer.twitch_id |> to_string()
     tl = streamer |> Streamer.twitch_login()
     td = streamer |> Streamer.twitch_display()
 
     link =
-      case Map.get(conn.query_params, "twitch_login") do
-        ^tl ->
-          remove_from_link(conn, "twitch_login")
+      case {Map.get(conn.query_params, "twitch_id"), Map.get(conn.query_params, "twitch_login")} do
+        {^twitch_id, _} ->
+          remove_from_link(conn, ["twitch_id", "twitch_login"])
+
+        {_, ^tl} ->
+          remove_from_link(conn, ["twitch_id", "twitch_login"])
 
         _ ->
           new_params =
             conn.query_params
-            |> Map.delete("deck_id")
-            |> Map.put("twitch_login", tl)
+            |> Map.drop(["deck_id", "twitch_login"])
+            |> Map.put("twitch_id", twitch_id)
 
           Routes.streaming_path(conn, :streamer_decks, new_params)
       end
