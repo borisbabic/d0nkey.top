@@ -330,11 +330,11 @@ defmodule BackendWeb.MastersTourView do
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
       |> filter_countries(countries)
-      |> Enum.drop(offset)
-      |> Enum.take(limit)
       |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1 + offset)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     ts_list =

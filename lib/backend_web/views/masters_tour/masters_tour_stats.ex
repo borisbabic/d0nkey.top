@@ -210,11 +210,11 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         countries == nil || countries == [] ||
           PlayerInfo.get_country(ip.battletag_full) in countries
       end)
-      |> Enum.drop(offset)
-      |> Enum.take(limit)
       |> create_player_rows(conn)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1 + offset)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     columns_options =
