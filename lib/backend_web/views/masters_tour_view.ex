@@ -245,6 +245,17 @@ defmodule BackendWeb.MastersTourView do
     end
   end
 
+  defp warning_triangle(),
+    do: ~E"""
+    <span class="icon is-small">
+      <i class="fas fa-exclamation-triangle"></i>
+    </span>
+    """
+
+  def warning(min, 2020) when min < 25, do: warning_triangle()
+  def warning(min, _) when min < 5, do: warning_triangle()
+  def warning(_, _), do: ""
+
   def render("qualifier_stats.html", %{
         period: period,
         total: total,
@@ -356,8 +367,14 @@ defmodule BackendWeb.MastersTourView do
     min_list =
       @min_cups_options
       |> Enum.map(fn min ->
+        warning = warning(min, period)
+
+        display = ~E"""
+        <span><%= warning %>Min <%= min %></span>
+        """
+
         %{
-          display: "Min #{min}",
+          display: display,
           selected: min == min_to_show,
           link:
             Routes.masters_tour_path(
