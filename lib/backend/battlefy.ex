@@ -412,9 +412,19 @@ defmodule Backend.Battlefy do
     tournament = Api.get_tournament(tournament_id)
     [stage | _] = tournament.stages
     matches = get_matches(stage.id)
+    get_future_opponents(stage, matches, team_name)
+  end
+
+  def get_future_opponents(
+        stage = %{bracket: %{type: "elimination", style: "single"}},
+        matches,
+        team_name
+      ) do
     total_rounds = stage.bracket && stage.bracket.rounds_count
     get_future_opponents(matches, total_rounds, team_name)
   end
+
+  def get_future_opponents(%{}, _, _), do: []
 
   @spec get_future_opponents([Match.t()], integer, String.t()) :: [Match.t()]
   def get_future_opponents(matches, total_rounds, team_name) do
