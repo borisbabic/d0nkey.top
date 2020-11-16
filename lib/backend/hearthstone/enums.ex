@@ -75,8 +75,8 @@ defmodule Hearthstone.Enums.BnetGameType do
   def ladder_types(), do: [ranked_standard(), ranked_wild(), ranked_standard_new_player()]
   def ladder?(type), do: type in ladder_types()
 
-  def with_decks_types(), do: wild_types() ++ standard_types() ++ [friends(), vs_ai()]
-  def with_decks?(type), do: type in with_decks_types()
+  def constructed_types(), do: wild_types() ++ standard_types() ++ [friends(), vs_ai()]
+  def constructed?(type), do: type in constructed_types()
 
   def game_type_name(type) do
     cond do
