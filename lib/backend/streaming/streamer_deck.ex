@@ -11,6 +11,7 @@ defmodule Backend.Streaming.StreamerDeck do
     :best_legend_rank,
     :worst_legend_rank,
     :latest_legend_rank,
+    :game_type,
     :minutes_played
   ]
   @primary_key false
@@ -24,6 +25,7 @@ defmodule Backend.Streaming.StreamerDeck do
     field :worst_legend_rank, :integer
     field :latest_legend_rank, :integer
     field :minutes_played, :integer, default: 1
+    field :game_type, :integer, nullable: true
     timestamps()
   end
 

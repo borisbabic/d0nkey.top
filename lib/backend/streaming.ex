@@ -9,13 +9,12 @@ defmodule Backend.Streaming do
   alias Hearthstone.Enums.BnetGameType
 
   def relevant_bnet_game_type?(%{game_type: bnet_game_type}) do
-    # see https://github.com/HearthSim/Arcane-Tracker/blob/master/app/src/main/kotlin/net/mbonnin/arcanetracker/BnetGameType.kt
-    BnetGameType.with_decks?(bnet_game_type)
+    BnetGameType.constructed?(bnet_game_type)
   end
 
   def ranks(sn = %{game_type: bnet_game_type}) do
     if BnetGameType.ladder?(bnet_game_type) do
-      %{rank: sn.rank, legend_rank: sn}
+      %{rank: sn.rank, legend_rank: sn.legend_rank}
     else
       %{rank: 0, legend_rank: 0}
     end
@@ -56,12 +55,10 @@ defmodule Backend.Streaming do
     streaming_now
     |> Enum.filter(&relevant_bnet_game_type?/1)
     |> Enum.map(fn sn ->
-      %{rank: rank, legend_rank: legend_rank} = ranks(sn)
-
       with {:ok, deck} <- Backend.Hearthstone.create_or_get_deck(sn.deck, sn.hero, sn.format),
            {:ok, streamer} <-
              get_or_create_streamer(sn.twitch.login, sn.twitch.display_name, sn.twitch.id),
-           do: get_or_create_streamer_deck(deck, streamer, sn.rank, sn.legend_rank)
+           do: get_or_create_streamer_deck(deck, streamer, sn)
     end)
   end
 
@@ -91,7 +88,7 @@ defmodule Backend.Streaming do
     |> Repo.insert()
   end
 
-  def get_or_create_streamer_deck(deck, streamer, rank, legend_rank) do
+  def get_or_create_streamer_deck(deck, streamer, sn) do
     query =
       from sd in StreamerDeck,
         join: s in assoc(sd, :streamer),
@@ -103,19 +100,23 @@ defmodule Backend.Streaming do
     query
     |> Repo.one()
     |> case do
-      nil -> create_streamer_deck(deck, streamer, rank, legend_rank)
-      sd -> update_streamer_deck(sd, rank, legend_rank)
+      nil -> create_streamer_deck(deck, streamer, sn)
+      sd -> update_streamer_deck(sd, sn)
     end
   end
 
-  def create_streamer_deck(deck, streamer, rank, legend_rank) do
+  def create_streamer_deck(deck, streamer, sn) do
     now = DateTime.utc_now()
+    %{rank: rank, legend_rank: legend_rank} = ranks(sn)
 
     attrs = %{
       deck: deck,
       streamer: streamer,
       best_rank: rank,
       best_legend_rank: legend_rank,
+      worst_legend_rank: legend_rank,
+      latest_legend_rank: legend_rank,
+      game_type: sn.game_type,
       first_played: now,
       last_played: now
     }
@@ -152,12 +153,15 @@ defmodule Backend.Streaming do
     end)
   end
 
-  def update_streamer_deck(ds = %StreamerDeck{}, rank, legend_rank) do
+  def update_streamer_deck(ds = %StreamerDeck{}, sn) do
+    %{rank: rank, legend_rank: legend_rank} = ranks(sn)
+
     attrs = %{
       best_rank: [rank, ds.best_rank] |> non_zero_min(),
       best_legend_rank: [legend_rank, ds.best_legend_rank] |> non_zero_min(),
-      worst_legend_rank: Enum.max([legend_rank, ds.worst_legend_rank]),
-      latest_legend_rank: legend_rank,
+      worst_legend_rank: Enum.max([legend_rank, ds.worst_legend_rank, 0]),
+      latest_legend_rank: legend_rank || 0,
+      game_type: sn.game_type,
       minutes_played: ds.minutes_played + 1,
       last_played: NaiveDateTime.utc_now()
     }
@@ -165,54 +169,6 @@ defmodule Backend.Streaming do
     ds
     |> StreamerDeck.changeset(attrs)
     |> Repo.update()
-  end
-
-  def change_deck_association() do
-    streamer_decks([])
-    |> Enum.reduce(Multi.new(), fn sd, multi ->
-      old_id = sd.deck.id
-      deckcode = Backend.Hearthstone.Deck.deckcode(sd.deck)
-      uniq = to_string(sd.streamer_id) <> deckcode
-
-      case Backend.Hearthstone.decks([{"deckcode", deckcode}]) do
-        [deck = %{id: id}] when id != old_id ->
-          case streamer_decks([{"deck_id", id}]) do
-            [other_sd] ->
-              attrs = %{
-                best_rank: Enum.min([other_sd.best_rank, sd.best_rank]),
-                best_legend_rank: Enum.min([other_sd.best_rank, sd.best_legend_rank]),
-                last_played:
-                  if(NaiveDateTime.compare(other_sd.last_played, sd.last_played) == :lt,
-                    do: sd.last_played,
-                    else: other_sd.last_played
-                  )
-              }
-
-              cs =
-                other_sd
-                |> StreamerDeck.changeset(attrs)
-
-              Multi.update(multi, uniq, cs)
-              Multi.delete(multi, uniq <> "delete", sd)
-
-            _ ->
-              cs =
-                sd
-                |> StreamerDeck.changeset(%{deck_id: deck.id})
-                |> Ecto.Changeset.unique_constraint(:name)
-
-              Multi.update(
-                multi,
-                uniq,
-                cs
-              )
-          end
-
-        _ ->
-          multi
-      end
-    end)
-    |> Repo.transaction()
   end
 
   def streamers(criteria) do
