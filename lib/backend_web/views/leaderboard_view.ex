@@ -390,12 +390,12 @@ defmodule BackendWeb.LeaderboardView do
     rows =
       stats
       |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
-      |> Enum.drop(offset)
-      |> Enum.take(limit)
       |> filter_countries(countries)
       |> create_player_rows(conn, show_flags == "yes")
       |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
       |> Enum.with_index(1 + offset)
       |> Enum.map(fn {row, pos} ->
         [pos | sortable_headers |> Enum.map(fn h -> row[h] || "" end)]
