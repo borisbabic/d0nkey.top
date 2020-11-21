@@ -63,6 +63,13 @@ window.location_href_by_datalist = function(input_id, datalist_id) {
         console.log("Can't location href, no input or input value")
     }
 }
+window.uncheck = function(target_class) {
+    var elements = document.getElementsByClassName(target_class);
+    Array.prototype.forEach.call(elements, function (thing) {
+        thing.checked = false;
+    });
+    return false;
+}
 window.hide_based_on_search = function(search_id, target_class)  {
     var input = document.getElementById(search_id);
     if (input) {

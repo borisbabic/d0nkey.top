@@ -15,7 +15,7 @@ f-> %>
         attr: "regions",
         options: @region_options,
         form: f,
-        top_submit: false,
+        top_buttons: false,
         selected_first: false,
 
     }) %>
@@ -24,7 +24,7 @@ f-> %>
         attr: "leaderboards",
         options: @leaderboards_options,
         form: f,
-        top_submit: false,
+        top_buttons: false,
         selected_first: false,
     }) %>
     <%= render_countries_multiselect_dropdown(f, @selected_countries) %>
