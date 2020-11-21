@@ -8,6 +8,9 @@
 <%= form_for @conn, Routes.streaming_path(@conn, :streamer_decks, @conn.query_params),
 [method: :get], fn
 f-> %>
+    <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+        <input name="<%= key %>" type="hidden" value="<%= value %>">
+    <% end %>
     <%= render_multiselect_dropdown %{
         form: f,
         title: "Select Archetypes",
