@@ -2,9 +2,12 @@
         <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%= @title %></button></div>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
-                <%= if @top_submit do %>
-                    <div class="dropdown-item">
+                <%= if @top_buttons do %>
+                    <div class="dropdown-item is-flex">
                         <%= submit "Submit", class: "button" %>
+                        <button class="button" type="button" onclick="uncheck('<%= @checkbox_class %>')">
+                            Clear
+                        </button>
                     </div>
                 <% end %>
 
@@ -24,12 +27,15 @@
                 <%= for %{value: value, display: display, selected: selected, name: name} <- @options do %>
                     <label for="<%= @attr %>[<%= value %>]" data-target-value="<%= name %>" class="is-flex dropdown-item <%= @search_class %>">
                         <span class="multi-select-text"><%= display %></span>
-                        <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, style: "margin-left: auto", value: selected %>
+                        <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, class: @checkbox_class, style: "margin-left: auto", value: selected %>
                     </label>
                 <% end %>
-                <%= if @bottom_submit do %>
-                    <div class="dropdown-item">
+                <%= if @bottom_buttons do %>
+                    <div class="dropdown-item is-flex">
                         <%= submit "Submit", class: "button" %>
+                        <button class="button" type="button" onclick="uncheck('<%= @checkbox_class %>')">
+                            Clear
+                        </button>
                     </div>
                 <% end %>
             </div>

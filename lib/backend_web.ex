@@ -70,8 +70,8 @@ defmodule BackendWeb do
         search_id = o |> Map.get(:search_id)
 
         defaults = %{
-          top_submit: true,
-          bottom_submit: true,
+          top_buttons: true,
+          bottom_buttons: true,
           selected_first: true
         }
 
@@ -80,13 +80,16 @@ defmodule BackendWeb do
           |> Map.merge(o)
 
         sorted = sort_by_selected(options, with_defaults.selected_first)
+        search_class = "#{attr}_#{search_id}"
+        checkbox_class = "#{attr}_#{search_id}_checkbox"
 
         render(
           BackendWeb.SharedView,
           "multiselect_dropdown.html",
           with_defaults
           |> Map.put(:show_search, !!search_id)
-          |> Map.put(:search_class, "#{attr}_#{search_id}")
+          |> Map.put(:search_class, search_class)
+          |> Map.put(:checkbox_class, checkbox_class)
           |> Map.put(:options, sorted)
         )
       end
