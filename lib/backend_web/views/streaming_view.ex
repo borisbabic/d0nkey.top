@@ -61,14 +61,12 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
-  def filter_archetypes(sd, _, true), do: sd
+  def filter_archetypes(sd, []), do: sd
 
-  def filter_archetypes(sd, archetypes = [_ | _], _) do
+  def filter_archetypes(sd, archetypes) do
     sd
     |> Enum.filter(fn %{archetype: a} -> a && a.id in archetypes end)
   end
-
-  def filter_archetypes(sd, _, _), do: sd
 
   def deck_toggle_link(conn, %{deck: %{id: id}}) do
     with deck_id <- conn.query_params["deck_id"],
@@ -101,7 +99,6 @@ defmodule BackendWeb.StreamingView do
         streamers: streamers,
         archetypes: archetypes_raw,
         cards: cards,
-        new_mode: new_mode,
         criteria: %{"offset" => offset, "limit" => limit}
       }) do
     title = "Streamer Decks"
@@ -126,7 +123,7 @@ defmodule BackendWeb.StreamingView do
           links: links(sd)
         }
       end)
-      |> filter_archetypes(archetypes, new_mode)
+      |> filter_archetypes(archetypes)
 
     dropdowns = [
       create_limit_dropdown(conn, limit),
@@ -168,7 +165,6 @@ defmodule BackendWeb.StreamingView do
       conn: conn,
       archetypes_options: archetypes_options,
       card_options: card_options,
-      new_mode: new_mode,
       next_button: next_button(conn, next_offset)
     })
   end

@@ -48,11 +48,9 @@ f-> %>
             <% end %>
             <th>Format</th>
             <th><abbr title="Legend Peak">Peak</abbr></th>
-            <%= if (@new_mode) do %>
-                <th class="is-hidden-mobile"><abbr title="Latest Legend Rank">Latest</abbr></th>
-                <th class="is-hidden-mobile"><abbr title="Worst Legend Rank">Worst</abbr></th>
-                <th class="is-hidden-mobile"><abbr title="Estimated time played">Min. Played</abbr></th>
-            <% end %>
+            <th class="is-hidden-mobile"><abbr title="Latest Legend Rank">Latest</abbr></th>
+            <th class="is-hidden-mobile"><abbr title="Worst Legend Rank">Worst</abbr></th>
+            <th class="is-hidden-mobile"><abbr title="Estimated time played">Min. Played</abbr></th>
             <th>Links</th>
             <th class="is-hidden-mobile">Last Played</th>
         </tr>
@@ -71,11 +69,9 @@ f-> %>
             <% end %>
             <td><%= r.format %></td>
             <td><%= r.best_legend_rank %></td>
-            <%= if (@new_mode) do %>
-                <th class="is-hidden-mobile"><%= r.latest_legend_rank %></th>
-                <th class="is-hidden-mobile"><%= r.worst_legend_rank %></th>
-                <th class="is-hidden-mobile"><%= r.minutes_played %></th>
-            <% end %>
+            <th class="is-hidden-mobile"><%= r.latest_legend_rank %></th>
+            <th class="is-hidden-mobile"><%= r.worst_legend_rank %></th>
+            <th class="is-hidden-mobile"><%= r.minutes_played %></th>
             <td>
                 <a href="<%= r.deck_link %>">
                     <span class="icon tag is-link">
