@@ -18,8 +18,6 @@ Signed Up example </a> - change the battlefy slug in the url
 <br>
 <a class="" href="<%=Routes.live_path(@conn, BackendWeb.StreamingNowLive)%>">Streaming Now</a> - filter streams by mode
 <br>
-<a class="" href="<%=Routes.streaming_path(@conn, :streamer_decks, %{"new_mode" => "yes"})%>">New streamer decks features</a> - new columns, better archetype handling
-<br>
 <br>
 
 <div class="subtitle is-5">Dropped features:</div>
