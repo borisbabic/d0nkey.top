@@ -22,9 +22,9 @@
                         type="text">
                 <% end %>
                 <%= for %{value: value, display: display, selected: selected, name: name} <- @options do %>
-                    <label for="<%= @attr %>[<%= value %>]" style data-target-value="<%= name %>" class="dropdown-item <%= @search_class %>">
-                        <span ><%= display %></span>
-                        <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, class: "is-pulled-right", value: selected %>
+                    <label for="<%= @attr %>[<%= value %>]" data-target-value="<%= name %>" class="is-flex dropdown-item <%= @search_class %>">
+                        <span class="multi-select-text"><%= display %></span>
+                        <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, style: "margin-left: auto", value: selected %>
                     </label>
                 <% end %>
                 <%= if @bottom_submit do %>
