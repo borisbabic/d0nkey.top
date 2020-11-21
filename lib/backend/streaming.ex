@@ -262,5 +262,8 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"deck_id", deck_id}, query),
     do: query |> where([_sd, _s, d], d.id == ^deck_id)
 
+  defp compose_streamer_deck_query({"min_minutes_played", min_minutes_played}, query),
+    do: query |> where([sd, _s, _d], sd.minutes_played >= ^min_minutes_played)
+
   defp compose_streamer_deck_query(_unrecognized, query), do: query
 end

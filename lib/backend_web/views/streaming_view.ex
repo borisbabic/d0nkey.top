@@ -130,6 +130,8 @@ defmodule BackendWeb.StreamingView do
       create_legend_dropdown(conn),
       create_format_dropdown(conn),
       create_class_dropdown(conn),
+      create_min_minutes_played_dropdown(conn),
+      # keep below last :shrug:
       create_show_archetypes_dropdown(conn)
     ]
 
@@ -177,6 +179,20 @@ defmodule BackendWeb.StreamingView do
     <%= deck %>
     <%= twitch %>
     """
+  end
+
+  def create_min_minutes_played_dropdown(conn) do
+    options =
+      [0, 30, 60, 90, 120, 240, 360, 480, 600]
+      |> Enum.map(fn mmp ->
+        %{
+          link: update_link(conn, "min_minutes_played", mmp),
+          selected: to_string(mmp) == conn.query_params["min_minutes_played"],
+          display: "#{mmp}"
+        }
+      end)
+
+    {options, "Min Minutes Played"}
   end
 
   def create_show_archetypes_dropdown(conn) do
