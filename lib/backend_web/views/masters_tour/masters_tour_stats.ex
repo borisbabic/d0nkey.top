@@ -206,9 +206,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         |> InvitedPlayer.shorten_battletag()
         |> MastersTour.fix_name()
       end)
-      |> Enum.filter(fn ip ->
+      |> Enum.filter(fn {name, _} ->
         countries == nil || countries == [] ||
-          PlayerInfo.get_country(ip.battletag_full) in countries
+          PlayerInfo.get_country(name) in countries
       end)
       |> create_player_rows(conn)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
