@@ -1,6 +1,7 @@
 defmodule BackendWeb.LeaderboardView do
   use BackendWeb, :view
   import Backend.Blizzard
+  alias Backend.PlayerInfo
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Leaderboards.PlayerStats

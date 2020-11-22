@@ -100,7 +100,7 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  defp get_comparison(l, nil), do: nil
+  defp get_comparison(_, nil), do: nil
 
   defp get_comparison(l, c_t) do
     try do
