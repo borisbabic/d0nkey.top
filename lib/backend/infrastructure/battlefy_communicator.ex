@@ -23,7 +23,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
   def get_response(url) do
     {u_secs, response} = :timer.tc(&get!/1, [URI.encode(url)])
-    Logger.info("Got #{url} in #{div(u_secs, 1000)} ms")
+    Logger.debug("Got #{url} in #{div(u_secs, 1000)} ms")
     response
   end
 
@@ -46,7 +46,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       }&end=#{NaiveDateTime.to_iso8601(end_time)}"
 
     {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [url])
-    Logger.info("Got masters qualifiers #{url} in #{div(u_secs, 1000)} ms")
+    Logger.debug("Got masters qualifiers #{url} in #{div(u_secs, 1000)} ms")
 
     Poison.decode!(response.body)
     |> Enum.map(fn %{
@@ -76,7 +76,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
 
-    Logger.info(
+    Logger.debug(
       "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(u_secs, 1000)} ms"
     )
 
@@ -400,7 +400,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         {:error, [reason | prev_errors]}
 
       {:ok, _} ->
-        Logger.info(
+        Logger.debug(
           "Successfully signed up #{options.battletag_full} fo #{options.tournament_id}"
         )
 
