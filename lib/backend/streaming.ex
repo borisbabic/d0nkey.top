@@ -191,6 +191,9 @@ defmodule Backend.Streaming do
 
   defp compose_streamers_query(_unrecognized, query), do: query
 
+  def streamer(id), do: Repo.get(Streamer, id)
+  def streamer_deck(id), do: Repo.get(StreamerDeck, id)
+
   def streamer_decks(criteria) do
     base_streamer_decks_query()
     |> build_streamer_deck_query(criteria)

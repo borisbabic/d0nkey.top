@@ -10,6 +10,10 @@ defmodule Backend.HearthstoneJson do
     GenServer.start_link(__MODULE__, default, name: @name)
   end
 
+  def get_card(dbf_id) do
+    GenServer.call(@name, {:get_card, dbf_id})
+  end
+
   @spec get_fresh() :: [Card]
   def get_fresh() do
     Api.get_collectible_cards()
@@ -35,7 +39,8 @@ defmodule Backend.HearthstoneJson do
 
   def create_state(cards) do
     class_map = create_class_map(cards)
-    %{cards: cards, class_map: class_map}
+    card_map = cards |> Enum.map(fn c -> {c.dbf_id, c} end) |> Map.new()
+    %{cards: cards, class_map: class_map, card_map: card_map}
   end
 
   def create_class_map(cards) do
@@ -54,6 +59,7 @@ defmodule Backend.HearthstoneJson do
 
   def handle_call({:cards}, _from, s = %{cards: cards}), do: {:reply, cards, s}
   def handle_call({:get_class, dbf_id}, _from, s = %{class_map: cm}), do: {:reply, cm[dbf_id], s}
+  def handle_call({:get_card, dbf_id}, _from, s = %{card_map: cm}), do: {:reply, cm[dbf_id], s}
 
   def handle_cast({:update_cards}, _old_state) do
     state = get_fresh() |> create_state()

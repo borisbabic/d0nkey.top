@@ -22,6 +22,8 @@ defmodule Backend.Hearthstone do
     end
   end
 
+  def deck(id), do: Repo.get(Deck, id)
+
   def create_deck(cards, hero, format) do
     temp_attrs = %{cards: cards, hero: hero, format: format, class: class(hero)}
 
