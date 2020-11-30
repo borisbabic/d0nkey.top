@@ -10,6 +10,12 @@ defmodule BackendWeb.Router do
     plug Guardian.Plug.EnsureAuthenticated
   end
 
+  forward "/api/graphql", Absinthe.Plug, schema: BackendWeb.Schema
+
+  forward "/graphiql", Absinthe.Plug.GraphiQL,
+    schema: BackendWeb.Schema,
+    interface: :playground
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session

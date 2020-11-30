@@ -42,6 +42,15 @@ npm
 
 You can use the shell.nix provided, possibly in combination with direnv and 
 
+## API 
+
+Graphql api is available at /api/graphql
+
+GraphiQL playground should be available at /graphiql
+
+Currently covered:
+- streamer decks - (partial arguments/filters)
+
 
 ## First run
 ```shell
