@@ -52,9 +52,9 @@ defmodule Backend.MixProject do
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:varint, "~> 1.0.0"},
       {:timex, "~> 3.5"},
-      {:phoenix_live_view, "~> 0.14.7"},
+      {:phoenix_live_view, "~> 0.15.0"},
       {:floki, ">= 0.27.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.1"},
+      {:phoenix_live_dashboard, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:tesla, "~> 1.3.0"},
       {:tesla_cache, "~> 1.1.0"},
@@ -67,6 +67,7 @@ defmodule Backend.MixProject do
       {:absinthe_plug, "~> 1.5"},
       {:absinthe_phoenix, "~> 2.0.0"},
       {:absinthe_relay, "~> 1.5.0"},
+      {:surface, "~> 0.1.1"},
       {:quantum, "~> 2.3"}
     ]
   end
