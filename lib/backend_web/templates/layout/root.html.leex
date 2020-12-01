@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- template: root.html.leex -->
 <html lang="en">
   <head>
     <%= csrf_meta_tag() %>
@@ -13,6 +14,7 @@
     <link rel="stylesheet" href="https://unpkg.com/balloon-css/balloon.min.css">
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
   </head>
+  <%= render("navbar.html", conn: BackendWeb.Endpoint)%>
   <body>
     <%= @inner_content %>
   </body>

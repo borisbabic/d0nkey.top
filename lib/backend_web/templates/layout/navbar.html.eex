@@ -1,0 +1,185 @@
+<!-- template: navbar.html.eex -->
+
+ <nav id="main-navbar" class="navbar is-dark" role="navigation" aria-label="main navigation" style="display:none">
+   <div class="navbar-brand">
+     <a class="navbar-item" href="<%=Routes.page_path(@conn, :index)%>"><img src="/favicon.ico" alt="d0nkey"></a>
+
+     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="burger-toggle">
+       <span aria-hidden="true"></span>
+       <span aria-hidden="true"></span>
+       <span aria-hidden="true"></span>
+     </a>
+   </div>
+
+   <div id="burger-toggle" class="navbar-menu">
+     <div class="navbar-start">
+       <div class="navbar-item has-dropdown is-hoverable">
+         <a class="navbar-item navbar-link" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href='<%=Routes.leaderboard_path(@conn, :player_stats) %>'>Player Stats</a>
+            <%= for {region, region_name} <- Backend.Blizzard.qualifier_regions_with_name() do %>
+                    <a class="navbar-item is-link"
+                    href="<%= Routes.leaderboard_path(@conn, :index, %{"region" => region})
+                    %>"><%= region_name %></a>
+            <% end %>
+         </div>
+       </div>
+       <div class="navbar-item has-dropdown is-hoverable">
+         <a class="navbar-link">
+           Masters Tour
+         </a>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop()) %>'>Invited</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Qualifiers</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :qualifier_stats, Backend.Blizzard.current_ladder_tour_stop())%>">Qualifier Stats</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Earnings</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :tour_stops)%>">Tour Stops</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :masters_tours_stats)%>">Stats</a> 
+         </div>
+       </div>
+       <div class="navbar-item has-dropdown is-hoverable">
+         <a class="navbar-link">
+           Misc
+         </a>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :organization_tournaments) %>'>3rd Party Tournaments</a>
+           <a class="navbar-item" href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
+           <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :tournaments_stats) %>'>Battlefy Tournaments Stats</a>
+         </div>
+       </div>
+
+       <%= current_mt @conn %>
+       <!-- <%= grandmasters @conn %> -->
+     </div>
+
+     <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">Choose Theme</a>
+            <div class="navbar-dropdown">
+                <%= for theme <- ["darkly", "flatly"] do %>
+                  <a href="" class="navbar-item" id="theme-select-<%=theme%>" onclick='selectTheme("<%=theme%>")
+                  '><%=theme%></a>
+                <% end %>
+            </div>
+        </div>
+
+       <a class="is-hidden-tablet navbar-item " href="<%=Routes.page_path(@conn, :donate_follow)%>">Donate/Follow</a>
+       <div class="navbar-item has-dropdown is-hoverable is-hidden-mobile">
+           <a class="navbar-link navbar-item " href="<%=Routes.page_path(@conn, :donate_follow)%>">Donate/Follow</a>
+           <div class="navbar-dropdown is-hidden-mobile">
+               <a class="navbar-item" href="<%= Constants.twitter() %>">twitter</a>
+               <a class="navbar-item" href="<%= Constants.discord() %>">discord</a>
+               <a class="navbar-item" href="<%= Constants.twitch() %>">twitch</a>
+               <a class="navbar-item" href="<%= Constants.paypal() %>">paypal</a>
+               <a class="navbar-item" href="<%= Constants.patreon() %>">patreon</a>
+               <a class="navbar-item" href="<%= Constants.liberapay() %>">liberapay</a>
+           </div>
+       </div>
+       <!--
+       <div class="navbar-item">
+         <div class="buttons">
+           <a class="button is-primary">
+             <strong>Sign up</strong>
+           </a>
+           <a class="button is-light">
+             Log in
+           </a>
+         </div>
+       </div>
+       -->
+     </div>
+   </div>
+ </nav>
+<script>
+   var navbar = document.getElementById('main-navbar');
+   if (navbar) {
+   navbar.style.display = '';
+   } else {
+       console.log("Couldn't get navbar!")
+   }
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Get all "navbar-burger" elements
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+  // Check if there are any navbar burgers
+  if ($navbarBurgers.length > 0) {
+
+    // Add a click event on each of them
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+
+        // Get the target from the "data-target" attribute
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+
+        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+
+      });
+    });
+  }
+
+});
+</script>
+  <body>
+    <noscript>
+        <header class="container">
+          <nav role="navigation">
+           <a href="<%=Routes.page_path(@conn, :index)%>">🏠</a>
+           <a href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a>
+           |
+           <a href='<%=Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop()) %>'>Invited</a>
+           |
+           <a href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Qualifiers</a>
+           |
+           <a href="<%=Routes.masters_tour_path(@conn, :qualifier_stats, Backend.Blizzard.current_ladder_tour_stop())%>">Qualifier Stats</a>
+           |
+           <a href="<%=Routes.masters_tour_path(@conn, :earnings)%>">MT Earnings</a>
+           |
+           <a href="<%=Routes.masters_tour_path(@conn, :tour_stops)%>">Tour Stops</a>
+           |
+           <a href='<%=Routes.battlefy_path(@conn, :organization_tournaments) %>'>3rd Party Tournaments</a>
+           |
+           <a href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
+           |
+           <a href="<%=Routes.page_path(@conn, :donate_follow)%>">Donate/Follow</a>
+          </nav>
+        </header>
+    </noscript>
+    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <script>
+      var allowed_themes = ['flatly', 'darkly'];
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      var theme = localStorage.getItem('theme');
+      if (!theme || allowed_themes.indexOf(theme) < 0) {
+        theme = 'darkly'
+      }
+      href = "https://unpkg.com/bulmaswatch/" + theme + "/bulmaswatch.min.css"
+      var link = document.getElementById('theme-stylesheet');
+      if (!link) {
+        console.log("Couldn't grab the link");
+      } else if (link.href != href) {
+        link.href = href;
+        console.log("Changed the theme to " + theme);
+      } else {
+        console.log("The theme is already correct");
+      }
+      var selectTheme = function(selected_theme) {
+        if (allowed_themes.indexOf(selected_theme) > -1) {
+          localStorage.setItem('theme', selected_theme);
+          console.log("Setting theme to " + selected_theme + " and reloading");
+          location.reload();
+        } else {
+          console.log("Got an invalid theme, refusing to select!");
+        }
+      }
+    </script>
+  </body>
+</html>
