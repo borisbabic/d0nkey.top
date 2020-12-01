@@ -30,7 +30,14 @@ defmodule Backend.Streaming.StreamingNow do
     {:ok, state}
   end
 
-  def streaming_now(), do: GenServer.call(@name, :streaming_now)
+  def streaming_now() do
+    if GenServer.whereis(@name) == nil do
+      []
+    else
+      GenServer.call(@name, :streaming_now)
+    end
+  end
+
   def handle_call(:streaming_now, _from, state = %{streaming_now: sn}), do: {:reply, sn, state}
 
   defp update_state(old_state, key, new_val) do
