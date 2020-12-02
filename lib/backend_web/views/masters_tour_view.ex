@@ -202,9 +202,9 @@ defmodule BackendWeb.MastersTourView do
       }
       |> Map.merge(ts_cells)
     end)
-    |> add_percentile_rows(period |> to_string())
   end
 
+  # way too big of a performance hit
   def add_percentile_rows(rows, period) do
     get_val = fn m -> m["Winrate %"] end
 
@@ -252,8 +252,8 @@ defmodule BackendWeb.MastersTourView do
     </span>
     """
 
-  def warning(min, 2020) when min < 25, do: warning_triangle()
-  def warning(min, _) when min < 5, do: warning_triangle()
+  def warning(min, 2020) when min < 15, do: warning_triangle()
+  # def warning(min, _) when min < 5, do: warning_triangle()
   def warning(_, _), do: ""
 
   def render("qualifier_stats.html", %{
@@ -312,8 +312,8 @@ defmodule BackendWeb.MastersTourView do
         "Matches Won",
         "Matches Lost",
         "Packs Earned",
-        "Winrate percentile",
-        "Winrate percentile (qualified)",
+        # "Winrate percentile",
+        # "Winrate percentile (qualified)",
         "2020 MTs qualified"
       ] ++
         (eligible_ts |> Enum.map(&to_string/1)) ++
