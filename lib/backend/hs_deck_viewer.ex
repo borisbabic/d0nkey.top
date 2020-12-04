@@ -8,6 +8,6 @@ defmodule Backend.HSDeckViewer do
       |> Enum.map(fn ds -> {"deckstring", ds} end)
       |> URI.encode_query()
 
-    "https://www.hsdeckviewer.com?#{query}"
+    "https://hsdeckviewer.com?#{query}"
   end
 end
