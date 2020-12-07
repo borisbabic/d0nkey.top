@@ -116,14 +116,17 @@ defmodule BackendWeb.BattlefyController do
   end
 
   def organization_tournament_stats(conn, %{"stats_slug" => stats_slug}) do
-    with %{organization_slug: org_slug, from: from, pattern: pattern} <-
+    with %{organization_slug: org_slug, from: from, pattern: pattern, title: title} <-
            Battlefy.stats_config(stats_slug),
          %{id: org_id} <- Api.get_organization(org_slug),
          tournaments when is_list(tournaments) <-
            org_id |> Api.get_organization_tournaments_from_to(from, Date.utc_today()),
          filtered <- tournaments |> Enum.filter(&Regex.match?(pattern, &1.name)) do
       ids = filtered |> Enum.map(fn t -> t.id end)
-      redirect(conn, to: Routes.battlefy_path(conn, :tournaments_stats, %{tournament_ids: ids}))
+
+      redirect(conn,
+        to: Routes.battlefy_path(conn, :tournaments_stats, %{tournament_ids: ids, title: title})
+      )
     else
       something ->
         text(
@@ -210,6 +213,12 @@ defmodule BackendWeb.BattlefyController do
       |> Enum.map(&Battlefy.create_tournament_stats/1)
       |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
 
+    page_title =
+      case params["title"] do
+        title when is_binary(title) -> "#{title} Stats"
+        _ -> "Tournaments Stats"
+      end
+
     render(conn, "tournaments_stats.html", %{
       tournaments: tournaments,
       tournaments_stats: tournaments_stats,
@@ -217,7 +226,8 @@ defmodule BackendWeb.BattlefyController do
       selected_columns: selected_columns,
       min_matches: params["min_matches"] |> Util.to_int_or_orig(),
       min_tournaments: params["min_tournaments"] |> Util.to_int_or_orig(),
-      page_title: "Tournaments Stats",
+      page_title: page_title,
+      title: params["title"],
       sort_by: params["sort_by"]
     })
   end

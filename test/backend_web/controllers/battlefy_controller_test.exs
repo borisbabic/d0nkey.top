@@ -21,4 +21,23 @@ defmodule BackendWeb.BattlefyControllerTest do
     assert "/battlefy/tournaments-stats?tournament_ids=5f5bc93e0c405a2571493bf4" =
              redirected_to(conn, 302)
   end
+
+  test "GET /battlefy/tournaments-stats?tournament_ids=5f5bc93e0c405a2571493bf4&title=TESTTITLE contains TESTTILE",
+       %{conn: conn} do
+    url =
+      Routes.battlefy_path(conn, :tournaments_stats, %{
+        "tournament_ids" => ["5f5bc93e0c405a2571493bf4"],
+        "title" => "TESTTITLE"
+      })
+
+    conn = get(conn, url)
+    assert html_response(conn, 200) =~ "TESTTITLE"
+  end
+
+  test "GET /battlefy/third-party-tournaments/stats/ilh-events-eu-open redirects with title query param",
+       %{conn: conn} do
+    url = Routes.battlefy_path(conn, :organization_tournament_stats, "ilh-events-eu-open")
+    conn = get(conn, url)
+    assert redirected_to(conn, 302) =~ ~r/\?.*title=ILH/
+  end
 end
