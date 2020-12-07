@@ -31,9 +31,17 @@ defmodule Backend.Battlefy do
     "tierras-de-fuego-hs",
     "akg-games",
     "liga-kombatklub-de-hearthstone",
+    "btw-esports",
     "osc-esports"
   ]
   @organization_stats_configs [
+    %{
+      from: ~D[2020-06-01],
+      organization_slug: "btw-esports",
+      title: "Copa DoomHammer",
+      stats_slug: "btw-copa-doomhammer",
+      pattern: ~r/Copa DoomHammer/i
+    },
     %{
       from: ~D[2020-06-01],
       organization_slug: "ilh-events",
