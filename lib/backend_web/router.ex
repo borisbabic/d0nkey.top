@@ -54,6 +54,10 @@ defmodule BackendWeb.Router do
     get "/mt/tour-stops", MastersTourController, :tour_stops
     get "/mt/stats", MastersTourController, :masters_tours_stats
 
+    get "/battlefy/third-party-tournaments/stats/:stats_slug",
+        BattlefyController,
+        :organization_tournament_stats
+
     get "/battlefy/third-party-tournaments", BattlefyController, :organization_tournaments
 
     get "/battlefy/tournament/:tournament_id", BattlefyController, :tournament

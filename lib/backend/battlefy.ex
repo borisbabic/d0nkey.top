@@ -23,6 +23,16 @@ defmodule Backend.Battlefy do
   @type get_tournament_matches_opt :: {:stage, integer()} | get_matches_opt
   @type get_tournament_matches_options :: [get_tournament_matches_opt]
 
+  @organization_stats_configs [
+    %{
+      from: ~D[2020-06-01],
+      organization_slug: "ilh-events",
+      title: "ILH Events EU Open",
+      stats_slug: "ilh-events-eu-open",
+      pattern: ~r/ILH Events EU Open.*/
+    }
+  ]
+
   def get_stage_standings(stage_id) when is_binary(stage_id) do
     stage_id
     |> get_stage()
@@ -594,6 +604,12 @@ defmodule Backend.Battlefy do
       "liga-kombatklub-de-hearthstone"
     ]
   end
+
+  def organization_stats(org_slug),
+    do: @organization_stats_configs |> Enum.filter(&Kernel.==(&1.organization_slug, org_slug))
+
+  def stats_config(stats_slug),
+    do: @organization_stats_configs |> Enum.find(&Kernel.==(&1.stats_slug, stats_slug))
 
   def hardcoded_organizations() do
     hardcoded_organization_slugs

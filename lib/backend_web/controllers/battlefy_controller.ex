@@ -115,6 +115,25 @@ defmodule BackendWeb.BattlefyController do
     })
   end
 
+  def organization_tournament_stats(conn, %{"stats_slug" => stats_slug}) do
+    with %{organization_slug: org_slug, from: from, pattern: pattern} <-
+           Battlefy.stats_config(stats_slug),
+         %{id: org_id} <- Api.get_organization(org_slug),
+         tournaments when is_list(tournaments) <-
+           org_id |> Api.get_organization_tournaments_from_to(from, Date.utc_today()),
+         filtered <- tournaments |> Enum.filter(&Regex.match?(pattern, &1.name)) do
+      ids = filtered |> Enum.map(fn t -> t.id end)
+      redirect(conn, to: Routes.battlefy_path(conn, :tournaments_stats, %{tournament_ids: ids}))
+    else
+      something ->
+        text(
+          conn,
+          "Something went wrong, did you tamper with the link you naughty " <>
+            Enum.random(["boy", "girl", "dog", "thing"])
+        )
+    end
+  end
+
   def organization_tournaments(conn, %{
         "from" => from = %Date{},
         "to" => to = %Date{},
