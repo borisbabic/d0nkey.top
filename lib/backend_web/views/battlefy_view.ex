@@ -119,18 +119,42 @@ defmodule BackendWeb.BattlefyView do
           """
       end
 
+    dropdowns =
+      [
+        create_organization_dropdown(conn, org),
+        create_daterange_dropdown(conn, range)
+      ]
+      |> add_stats_dropdown(conn, org)
+
     render("organization_tournaments.html", %{
       title: title,
       before_link: before_link,
       after_link: after_link,
       tournaments: tour || [],
       slug: org && org.slug,
-      dropdowns: [
-        create_organization_dropdown(conn, org),
-        create_daterange_dropdown(conn, range)
-      ],
+      dropdowns: dropdowns,
       conn: conn
     })
+  end
+
+  def add_stats_dropdown(dropdowns, _, nil), do: dropdowns
+
+  def add_stats_dropdown(dropdowns, conn, org) do
+    with stats_configs = [_ | _] <- org.slug |> Battlefy.organization_stats() do
+      options =
+        stats_configs
+        |> Enum.map(fn %{title: title, stats_slug: ss} ->
+          %{
+            selected: false,
+            display: title,
+            link: Routes.battlefy_path(conn, :organization_tournament_stats, ss)
+          }
+        end)
+
+      dropdowns ++ [{options, "Stats"}]
+    else
+      _ -> dropdowns
+    end
   end
 
   def create_org_tour_link(range, conn) do
