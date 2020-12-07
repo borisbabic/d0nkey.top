@@ -23,13 +23,44 @@ defmodule Backend.Battlefy do
   @type get_tournament_matches_opt :: {:stage, integer()} | get_matches_opt
   @type get_tournament_matches_options :: [get_tournament_matches_opt]
 
+  @organization_slugs [
+    "houserivalries",
+    "super-girl-gamer-pro",
+    "ilh-events",
+    "fantastic-pro-league",
+    "tierras-de-fuego-hs",
+    "akg-games",
+    "liga-kombatklub-de-hearthstone",
+    "osc-esports"
+  ]
   @organization_stats_configs [
     %{
       from: ~D[2020-06-01],
       organization_slug: "ilh-events",
       title: "ILH Events EU Open",
       stats_slug: "ilh-events-eu-open",
-      pattern: ~r/ILH Events EU Open.*/
+      pattern: ~r/ILH Events EU Open/i
+    },
+    %{
+      from: ~D[2020-06-01],
+      organization_slug: "osc-esports",
+      title: "HearthStone Americas Open",
+      stats_slug: "osc-hearthstone-americas-open",
+      pattern: ~r/HearthStone Americas Open/i
+    },
+    %{
+      from: ~D[2020-06-01],
+      organization_slug: "osc-esports",
+      title: "Leeroy Jenkins Cup",
+      stats_slug: "osc-leeroy-jenkins-cup",
+      pattern: ~r/Leeroy Jenkins Cup/i
+    },
+    %{
+      from: ~D[2020-06-01],
+      organization_slug: "osc-esports",
+      title: "Zephrys the Great Tournament",
+      stats_slug: "osc-zephrys-the-great-tournament",
+      pattern: ~r/Zephrys the Great Tournament/i
     }
   ]
 
@@ -593,17 +624,7 @@ defmodule Backend.Battlefy do
     "https://battlefy.com/#{org_slug}/#{slug}/#{id}/info"
   end
 
-  def hardcoded_organization_slugs() do
-    [
-      "houserivalries",
-      "super-girl-gamer-pro",
-      "ilh-events",
-      "fantastic-pro-league",
-      "tierras-de-fuego-hs",
-      "akg-games",
-      "liga-kombatklub-de-hearthstone"
-    ]
-  end
+  def hardcoded_organization_slugs(), do: @organization_slugs
 
   def organization_stats(org_slug),
     do: @organization_stats_configs |> Enum.filter(&Kernel.==(&1.organization_slug, org_slug))
