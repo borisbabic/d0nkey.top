@@ -308,7 +308,8 @@ defmodule BackendWeb.BattlefyView do
         """
       )
 
-    render("tournaments_stats.html", %{conn: conn, table_params: table_params})
+    title = p[:title] || "Custom Tournaments Stats"
+    render("tournaments_stats.html", %{conn: conn, table_params: table_params, title: title})
   end
 
   def render("tournaments_stats_input.html", %{conn: conn, edit: edit}) do
