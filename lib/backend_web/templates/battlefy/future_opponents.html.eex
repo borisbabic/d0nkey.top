@@ -1,5 +1,5 @@
 <div class="title is-2">
-    <a class="is-link" href="<%= Routes.player_path(@conn, :player_profile, @team_name) %>"><%= @team_name%></a>
+    <a class="is-link" href="<%= Routes.player_path(BackendWeb.Endpoint, :player_profile, @team_name) %>"><%= @team_name%></a>
 </div>
 
 <div class="subtitle is-6">
@@ -22,7 +22,11 @@
         <tbody>
             <%= for %{class: class, bans: bans, wins: wins, losses: losses} <- @class_stats do %>
                 <tr>
-                    <td><%= class %></td>
+                    <td>
+                        <figure>
+                            <img class="image is-32x32" src="<%= class_url(class) %>" > 
+                        </figure>
+                    </td>
                     <td><%= bans %></td>
                     <td><%= wins %></td>
                     <td><%= losses %></td>
@@ -37,20 +41,36 @@
         <thead>
             <tr>
                 <th>Round</th>
+                <th class="is-hidden-mobile">Player Stats</th>
                 <th>Score</th>
                 <th>Opponent</th>
-                <th>Opponent Decks</th>
+                <th>Opponent Stats</th>
+                <th class="is-hidden-mobile">Opponent Decks</th>
             </tr>
         </thead>
         <tbody>
-            <%= for %{opponent: opponent, match_url: match_url, score: score, current_round: current_round} <- @player_matches do %>
+            <%= for %{opponent: opponent, match_url: match_url, score: score, current_round: current_round, class_stats: class_stats, opponent_class_stats: opponent_class_stats} <- @player_matches do %>
                 <tr>
                     <td><%= current_round %></td>
+                    <td class="is-hidden-mobile">
+                        <div class="is-flex is-justify-content-center">
+                            <%= for {_, stats} <- class_stats do %>
+                                <%= render("class_match_stats.html", stats |> Map.to_list()) %>
+                            <% end %>
+                        </div>
+                    </td>
                     <td><a href="<%= match_url %>"> <%= score %></a></td>
                     <%= if opponent == nil do %>
                         <td></td><td></td>
                     <% else %>
                         <td><a href="<%= opponent.link %>"> <%= opponent.name %></a></td>
+                        <td class="is-hidden-mobile">
+                            <div class="is-flex is-justify-content-center">
+                                <%= for {_, stats} <- opponent_class_stats do %>
+                                    <%= render("class_match_stats.html", stats |> Map.to_list()) %>
+                                <% end %>
+                            </div>
+                        </td>
                         <td><a class="tag is-link" href="<%= opponent.hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= opponent.yaytears %>">yaytears</a></td>
                     <% end %>
                 </tr>

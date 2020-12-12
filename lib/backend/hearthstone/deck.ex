@@ -3,8 +3,8 @@ defmodule Backend.Hearthstone.Deck do
 
   use Ecto.Schema
   import Ecto.Changeset
-  @required [:cards, :hero, :format, :deckcode, :class]
-  @optional [:hsreplay_archetype]
+  @required [:cards, :hero, :format, :deckcode]
+  @optional [:hsreplay_archetype, :class]
   schema "deck" do
     field :cards, {:array, :integer}
     field :deckcode, :string
@@ -73,7 +73,10 @@ defmodule Backend.Hearthstone.Deck do
 
     cards = decode_cards_parts(cards_parts, 1, [])
 
-    {format, hero, cards}
+    attrs = %{format: format, hero: hero, cards: cards, deckcode: deckcode}
+
+    %__MODULE__{}
+    |> changeset(attrs)
   end
 
   defp decode_cards_parts([0], _, cards), do: cards

@@ -24,6 +24,7 @@ defmodule Twitch.HearthstoneLive do
     {:noreply, streams}
   end
 
+  @spec streams() :: [Twitch.Stream]
   def streams(), do: GenServer.call(@name, :streams)
 
   def handle_call(:streams, _from, streams), do: {:reply, streams, streams}
