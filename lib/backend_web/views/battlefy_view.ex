@@ -209,27 +209,32 @@ defmodule BackendWeb.BattlefyView do
   def handle_player_matches(player_matches, team_name, tournament, conn) do
     player_matches
     |> Enum.map_reduce(%{}, fn match = %{top: top, bottom: bottom, round_number: rn}, acc ->
-      {player, opponent, player_place} =
+      {player, opponent, player_place, opponent_place} =
         case {top.team, bottom.team} do
           {%{name: ^team_name}, _} ->
-            {top, bottom || Battlefy.MatchTeam.empty(), :top}
+            {top, bottom || Battlefy.MatchTeam.empty(), :top, :bottom}
 
           {_, %{name: ^team_name}} ->
-            {bottom, top || Battlefy.MatchTeam.empty(), :bottom}
+            {bottom, top || Battlefy.MatchTeam.empty(), :bottom, :top}
 
           _ ->
             Logger.warn("No team is the players team, wtf #{top.team} #{bottom.team}")
-            {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty()}
+            {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty(), nil, nil}
         end
+
+      class_stats = Match.create_class_stats(match, player_place)
+      opponent_class_stats = Match.create_class_stats(match, opponent_place)
 
       {
         %{
           score: "#{player.score} - #{opponent.score} ",
           match_url: Battlefy.get_match_url(tournament, match),
           opponent: handle_opponent_team(opponent, tournament, conn),
+          class_stats: class_stats,
+          opponent_class_stats: opponent_class_stats,
           current_round: rn
         },
-        Match.create_class_stats(match, player_place)
+        class_stats
         |> Battlefy.ClassMatchStats.merge_collections(acc)
       }
     end)
@@ -281,6 +286,53 @@ defmodule BackendWeb.BattlefyView do
 
   def tour_stop?(%{id: id}),
     do: Backend.MastersTour.TourStop.all() |> Enum.any?(fn ts -> ts.battlefy_id == id end)
+
+  def render("class_match_stats.html", %{class: class, bans: 1}) do
+    ~E"""
+    <img class="image is-32x32" style="opacity:0.2;" src="<%= class_url(class) %>" >
+    """
+  end
+
+  defp class_url(class), do: "/images/icons/#{class}.png"
+
+  @win_color "hsl(141, 53%, 53%)"
+  @loss_color "hsl(348, 86%, 61%)"
+  @result_width 2
+  @border_width 1
+  @border_color "black"
+  defp build_box_shadow(wins, losses) do
+    {
+      @border_width + (wins + losses) * @result_width,
+      """
+      border_radius: 100%;
+      box-shadow: 0 0 0 #{@border_width}px #{@border_color}
+        , 0 0 0 #{@border_width + losses * @result_width}px #{@loss_color}
+        , 0 0 0 #{@border_width + (wins + losses) * @result_width}px #{@win_color}
+        ;
+      """
+    }
+  end
+
+  def render("class_match_stats.html", %{class: class, bans: 0, wins: wins, losses: losses}) do
+    image_url = class_url(class)
+
+    text_coloring_class =
+      case wins - losses do
+        # n when n > 0 -> "has-text-success"
+        # _ -> "has-text-danger"
+        _ -> "has-text-dark"
+      end
+
+    {offset, border_css} = build_box_shadow(wins, losses) |> IO.inspect()
+    size = 32 - offset
+    style = border_css <> "height: #{size}px; width: #{size}px; margin: 3px #{offset}px;"
+
+    ~E"""
+    <figure class="image is-rounded">
+      <img class="image is-rounded" style="<%= style %>" src="<%= image_url %>"/>
+    </figure>
+    """
+  end
 
   def render(u = "tournaments_stats.html", p = %{conn: conn, tournaments: tournaments}) do
     tournaments_string =

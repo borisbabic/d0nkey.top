@@ -84,6 +84,7 @@ defmodule Backend.Battlefy.Match do
       (m.top.winner == false || m.top.winner == nil)
   end
 
+  @spec create_class_stats(Match.t(), :bottom | :top) :: [ClassMatchStats.t()]
   def create_class_stats(%{stats: nil}, _), do: nil
 
   def create_class_stats(m = %__MODULE__{}, place) do
