@@ -25,6 +25,7 @@ defmodule Backend.Hearthstone.Deck do
   @doc false
   def changeset(c, a), do: changeset(c, a |> Map.put(:deckcode, deckcode(a)))
 
+  @spec deckcode(__MODULE__) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f}), do: deckcode(c, h, f)
 
   @doc """
@@ -46,18 +47,22 @@ defmodule Backend.Hearthstone.Deck do
     |> Base.encode64()
   end
 
+  @spec class_name([integer] | nil) :: [integer]
   defp deckcode_part(nil), do: [0]
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 
+  @spec class_name(String.t()) :: String.t()
   def class_name("DEMONHUNTER"), do: "Demon Hunter"
   def class_name(c), do: c |> Recase.to_title()
 
+  @spec remove_comments(String.t()) :: String.t()
   def remove_comments(deckcode_string) do
     deckcode_string
     |> String.split("\n")
     |> Enum.find(fn l -> l |> String.at(0) != "#" end)
   end
 
+  @spec decode(String.t()) :: __MODULE__
   def decode(deckcode) do
     [0, 1, format, 1, hero | cards_parts] =
       deckcode
@@ -73,12 +78,10 @@ defmodule Backend.Hearthstone.Deck do
 
     cards = decode_cards_parts(cards_parts, 1, [])
 
-    attrs = %{format: format, hero: hero, cards: cards, deckcode: deckcode}
-
-    %__MODULE__{}
-    |> changeset(attrs)
+    %__MODULE__{format: format, hero: hero, cards: cards, deckcode: deckcode}
   end
 
+  @spec decode_cards_parts([integer], integer, [integer]) :: [integer]
   defp decode_cards_parts([0], _, cards), do: cards
 
   defp decode_cards_parts([to_take | parts], num_copies, acc_cards) do
@@ -93,6 +96,7 @@ defmodule Backend.Hearthstone.Deck do
 
   defp decode_cards_parts(_, _, cards), do: cards
 
+  @spec chunk_parts([byte()]) :: [[byte()]]
   defp chunk_parts(parts) do
     chunk_fun = fn element, acc ->
       if element < 128 do
@@ -110,4 +114,9 @@ defmodule Backend.Hearthstone.Deck do
     parts
     |> Enum.chunk_while([], chunk_fun, after_fun)
   end
+
+  @spec format_name(integer) :: String.t()
+  def format_name(1), do: "Wild"
+  def format_name(2), do: "Standard"
+  def format_name(9001), do: "Duels"
 end
