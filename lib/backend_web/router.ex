@@ -43,6 +43,7 @@ defmodule BackendWeb.Router do
 
     get "/", PageController, :index
     get "/incubator", PageController, :incubator
+    get "/about", PageController, :about
     get "/donate-follow", PageController, :donate_follow
 
     get "/invited/:tour_stop", MastersTourController, :invited_players
@@ -99,6 +100,7 @@ defmodule BackendWeb.Router do
     get "/streamer-decks/twitch-login/:twitch_login", StreamingController, :streamers_decks
     get "/streamer-decks", StreamingController, :streamer_decks
     live "/streaming-now", StreamingNowLive
+    live "/youtube/bnet-chat/:video_id", YoutubeChatLive
 
     get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
 

@@ -12,4 +12,8 @@ defmodule BackendWeb.PageController do
   def donate_follow(conn, _params) do
     render(conn, "donate_follow.html")
   end
+
+  def about(conn, _params) do
+    render(conn, "about.html")
+  end
 end
