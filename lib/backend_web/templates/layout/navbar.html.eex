@@ -48,14 +48,20 @@
            <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :organization_tournaments) %>'>3rd Party Tournaments</a>
            <a class="navbar-item" href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
            <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :tournaments_stats) %>'>Battlefy Tournaments Stats</a>
+           <a class="navbar-item" href='<%=Routes.page_path(@conn, :incubator) %>'>WIP</a>
+           <a class="navbar-item" href='<%=Routes.page_path(@conn, :about) %>'>About</a>
          </div>
        </div>
+         <a class="navbar-item" href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
 
        <%= current_mt @conn %>
        <!-- <%= grandmasters @conn %> -->
      </div>
 
      <div class="navbar-end">
+        <a class="navbar-item" href="https://www.patreon.com/d0nkey">
+          <img class="image" src="/images/brands/patreon_wordmark_fierycoral.png"/>
+        </a>
         <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">Choose Theme</a>
             <div class="navbar-dropdown">
@@ -65,31 +71,6 @@
                 <% end %>
             </div>
         </div>
-
-       <a class="is-hidden-tablet navbar-item " href="<%=Routes.page_path(@conn, :donate_follow)%>">Donate/Follow</a>
-       <div class="navbar-item has-dropdown is-hoverable is-hidden-mobile">
-           <a class="navbar-link navbar-item " href="<%=Routes.page_path(@conn, :donate_follow)%>">Donate/Follow</a>
-           <div class="navbar-dropdown is-hidden-mobile">
-               <a class="navbar-item" href="<%= Constants.twitter() %>">twitter</a>
-               <a class="navbar-item" href="<%= Constants.discord() %>">discord</a>
-               <a class="navbar-item" href="<%= Constants.twitch() %>">twitch</a>
-               <a class="navbar-item" href="<%= Constants.paypal() %>">paypal</a>
-               <a class="navbar-item" href="<%= Constants.patreon() %>">patreon</a>
-               <a class="navbar-item" href="<%= Constants.liberapay() %>">liberapay</a>
-           </div>
-       </div>
-       <!--
-       <div class="navbar-item">
-         <div class="buttons">
-           <a class="button is-primary">
-             <strong>Sign up</strong>
-           </a>
-           <a class="button is-light">
-             Log in
-           </a>
-         </div>
-       </div>
-       -->
      </div>
    </div>
  </nav>
