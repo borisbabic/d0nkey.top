@@ -96,6 +96,7 @@ defmodule BackendWeb.DeckviewerLive do
         Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
         true -> [new_code]
       end
+      |> Deck.shorten_codes()
 
     {
       :noreply,
