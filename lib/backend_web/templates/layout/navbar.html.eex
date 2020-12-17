@@ -48,6 +48,7 @@
            <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :organization_tournaments) %>'>3rd Party Tournaments</a>
            <a class="navbar-item" href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
            <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :tournaments_stats) %>'>Battlefy Tournaments Stats</a>
+           <a class="navbar-item" href="<%=Routes.live_path(@conn, BackendWeb.DeckviewerLive)%>">Deckviewer</a>
            <a class="navbar-item" href='<%=Routes.page_path(@conn, :incubator) %>'>WIP</a>
            <a class="navbar-item" href='<%=Routes.page_path(@conn, :about) %>'>About</a>
          </div>

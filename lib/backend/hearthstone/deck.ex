@@ -58,27 +58,44 @@ defmodule Backend.Hearthstone.Deck do
   @spec remove_comments(String.t()) :: String.t()
   def remove_comments(deckcode_string) do
     deckcode_string
-    |> String.split("\n")
+    |> String.split(["\n", "\r\n"])
     |> Enum.find(fn l -> l |> String.at(0) != "#" end)
   end
 
-  @spec decode(String.t()) :: __MODULE__
+  @spec extract_name(String.t()) :: String.t()
+  def extract_name(deckcode) do
+    ~r/^### (.*)/
+    |> Regex.run(deckcode)
+    |> case do
+      nil -> nil
+      [_, name] -> name |> String.trim()
+    end
+  end
+
+  @spec decode!(String.t()) :: __MODULE__
+  def decode!(deckcode), do: decode(deckcode) |> Util.bangify()
+
+  @doc """
+  Decode a deckcode into a Deck struct
+  ## Example
+  iex> Backend.Hearthstone.Deck.decode("blabla")
+  {:error, "Couldn't decode deckstring"}
+  iex> {:ok, deck} = Backend.Hearthstone.Deck.decode("AAECAR8BugMAAA=="); deck.deckcode
+  "AAECAR8BugMAAA=="
+  """
+  @spec decode(String.t()) :: {:ok, __MODULE__} | {:error, String.t() | any}
   def decode(deckcode) do
-    [0, 1, format, 1, hero | cards_parts] =
-      deckcode
-      |> remove_comments()
-      |> Base.decode64()
-      |> case do
-        {:ok, decoded} -> decoded
-        _ -> raise "Couldn't decode presumed base64 string"
-      end
-      |> :binary.bin_to_list()
-      |> chunk_parts()
-      |> Enum.map(&Varint.LEB128.decode/1)
-
-    cards = decode_cards_parts(cards_parts, 1, [])
-
-    %__MODULE__{format: format, hero: hero, cards: cards, deckcode: deckcode}
+    with no_comments <- remove_comments(deckcode),
+         {:ok, decoded} <- Base.decode64(no_comments),
+         list <- :binary.bin_to_list(decoded),
+         chunked <- chunk_parts(list),
+         [0, 1, format, 1, hero | card_parts] <- Enum.map(chunked, &Varint.LEB128.decode/1),
+         cards <- decode_cards_parts(card_parts, 1, []) do
+      {:ok, %__MODULE__{format: format, hero: hero, cards: cards, deckcode: no_comments}}
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, "Couldn't decode deckstring"}
+    end
   end
 
   @spec decode_cards_parts([integer], integer, [integer]) :: [integer]
@@ -119,4 +136,40 @@ defmodule Backend.Hearthstone.Deck do
   def format_name(1), do: "Wild"
   def format_name(2), do: "Standard"
   def format_name(9001), do: "Duels"
+
+  @spec get_basic_hero(String.t()) :: integer
+  def get_basic_hero(class) do
+    class
+    |> normalize_class_name()
+    |> case do
+      "DEMONHUNTER" -> 56550
+      "DRUID" -> 274
+      "HUNTER" -> 31
+      "MAGE" -> 637
+      "PALADIN" -> 671
+      "PRIEST" -> 813
+      "ROGUE" -> 930
+      "SHAMAN" -> 1066
+      "WARLOCK" -> 893
+      "WARRIOR" -> 7
+      # lich king
+      _ -> 42458
+    end
+  end
+
+  """
+  Converts it to single word upper case
+
+  ## Example
+  iex> Backend.Hearhtsotne.normalize_class_name("Demon HuNter")
+  "DEMONHUNTER"
+
+  """
+
+  @spec normalize_class_name(String.t()) :: String.t()
+  defp normalize_class_name(class),
+    do:
+      class
+      |> String.upcase()
+      |> String.replace(~r/\w/, "")
 end

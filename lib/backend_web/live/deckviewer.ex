@@ -1,0 +1,93 @@
+defmodule BackendWeb.DeckviewerLive do
+  @moduledoc false
+  alias Components.Decklist
+  alias Backend.Hearthstone.Deck
+  alias Backend.HearthstoneJson
+  alias Surface.Components.Form
+  alias Surface.Components.Form.Field
+  alias Surface.Components.Form.Label
+  alias Surface.Components.Form.TextArea
+  alias Surface.Components.Form.Submit
+  alias BackendWeb.Router.Helpers, as: Routes
+  use Surface.LiveView
+  data(deckcodes, :any)
+  require WaitForIt
+
+  def mount(_params, session, socket) do
+    case WaitForIt.wait(HearthstoneJson.up?(), frequency: 500, timeout: 20_000) do
+      _ -> {:ok, socket}
+    end
+  end
+
+  def render(assigns) do
+    ~H"""
+
+    <div class="container">
+      <br>
+      <Form for={{ :new_deck }} submit="submit" opts={{ autocomplete: "off" }}>
+        <div class="columns is-mobile">
+          <Field name="new_code">
+            <div class="column is-narrow">
+              <TextArea class="textarea has-fixed-size small" opts={{ placeholder: "Paste deckcode", size: "30", rows: "1"}}/>
+            </div>
+          </Field>
+            <div class="column is-narrow">
+              <Submit label="Submit" class="button"/>
+            </div>
+        </div>
+      </Form>
+      <div class="columns is-mobile">
+        <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}}>
+          <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}">
+            <template slot="right_button">
+              <a class="delete" phx-click="delete" phx-value-index={{ index }}/>
+            </template>
+          </Decklist>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def handle_params(params, _uri, socket) do
+    codes =
+      params["code"]
+      |> case do
+        code = [_ | _] -> code
+        string when is_binary(string) -> [string]
+        _ -> []
+      end
+      |> Enum.filter(fn code -> :ok == code |> Deck.decode() |> elem(0) end)
+
+    {
+      :noreply,
+      socket
+      |> assign(:deckcodes, codes)
+      |> assign(:new_deck, "")
+    }
+  end
+
+  def handle_event(
+        "submit",
+        %{"new_deck" => %{"new_code" => new_code}},
+        socket = %{assigns: %{deckcodes: dc}}
+      ) do
+    new_codes = [new_code | dc]
+
+    {
+      :noreply,
+      socket
+      |> push_patch(to: Routes.live_path(socket, __MODULE__, %{"code" => new_codes}))
+    }
+  end
+
+  def handle_event("delete", %{"index" => index}, socket = %{assigns: %{deckcodes: dc}}) do
+    new_codes = dc |> List.delete_at(index |> Util.to_int_or_orig())
+
+    {
+      :noreply,
+      socket
+      |> push_patch(to: Routes.live_path(socket, __MODULE__, %{"code" => new_codes}))
+    }
+  end
+end

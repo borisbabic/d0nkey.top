@@ -78,4 +78,17 @@ defmodule Backend.Hearthstone do
     release = ~N[2020-11-17 18:00:00]
     NaiveDateTime.compare(now, release) == :gt
   end
+
+  def ordered_frequencies(cards = [a | _]) when is_integer(a) do
+    cards
+    |> Enum.frequencies()
+    |> Enum.map(fn {c, freq} ->
+      {get_card(c), freq}
+    end)
+    |> Enum.filter(&(&1 |> elem(0)))
+    |> Enum.sort_by(fn {c, _} -> c.name end)
+    |> Enum.sort_by(fn {c, _} -> c.cost end)
+  end
+
+  def get_card(dbf_id), do: Backend.HearthstoneJson.get_card(dbf_id)
 end

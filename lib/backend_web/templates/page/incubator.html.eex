@@ -29,5 +29,6 @@ These will be removed unless somebody has a good idea for them
 <br/>
 <!--http://d0nkey.top/hsreplay/matchups?as[]=146&as[]=344&as[]=302&vs[]=344&vs[]=310&vs[]=268-->
 <a class="" href="<%=Routes.hs_replay_path(@conn, :matchups)%>">HSReplay matchups</a> - <a href="<%=Routes.hs_replay_path(@conn, :matchups, %{as: ["Highlander Shaman", "highlander mage", "Highlander HUNTER"], vs: ["galakrond rogue", "galakrond warrior", "galakrond warlock"]}) %>">example usage</a>
+
 <br>
 <br>
