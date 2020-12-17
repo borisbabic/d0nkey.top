@@ -8,4 +8,6 @@ defmodule Backend.Doctest do
   doctest Backend.TournamentStats
   doctest Backend.TournamentStats.TeamStats
   doctest Backend.Hearthstone.Deck
+  doctest Backend.HSDeckViewer
+  doctest Backend.Yaytears
 end

@@ -323,7 +323,7 @@ defmodule BackendWeb.BattlefyView do
         _ -> "has-text-dark"
       end
 
-    {offset, border_css} = build_box_shadow(wins, losses) |> IO.inspect()
+    {offset, border_css} = build_box_shadow(wins, losses)
     size = 32 - offset
     style = border_css <> "height: #{size}px; width: #{size}px; margin: 3px #{offset}px;"
 

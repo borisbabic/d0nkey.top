@@ -3,6 +3,8 @@ defmodule BackendWeb.DeckviewerLive do
   alias Components.Decklist
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson
+  alias Backend.HSDeckViewer
+  alias Backend.Yaytears
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
   alias Surface.Components.Form.Label
@@ -20,23 +22,36 @@ defmodule BackendWeb.DeckviewerLive do
   end
 
   def render(assigns) do
+    deckcodes = assigns[:deckcodes]
+    yaytears_link = Yaytears.create_deckstrings_link(deckcodes)
+    hdv_link = HSDeckViewer.create_link(deckcodes)
+    show_alternate_links = deckcodes |> Enum.any?()
+
     ~H"""
 
     <div class="container">
       <br>
       <Form for={{ :new_deck }} submit="submit" opts={{ autocomplete: "off" }}>
-        <div class="columns is-mobile">
+        <div class="columns is-mobile is-multiline">
           <Field name="new_code">
             <div class="column is-narrow">
-              <TextArea class="textarea has-fixed-size small" opts={{ placeholder: "Paste deckcode", size: "30", rows: "1"}}/>
+              <TextArea class="textarea has-fixed-size small" opts={{ placeholder: "Paste deckcode or link", size: "30", rows: "1"}}/>
             </div>
           </Field>
             <div class="column is-narrow">
               <Submit label="Submit" class="button"/>
             </div>
+            <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
+              <a class="is-link tag" href="{{ @deckcodes |> Yaytears.create_deckstrings_link()  }}">
+                yaytears
+            </a>
+              <a class="is-link tag" href="{{ @deckcodes |> HSDeckViewer.create_link() }}">
+                HSDeckViewer
+            </a>
+        </div>
         </div>
       </Form>
-      <div class="columns is-mobile">
+      <div class="columns is-mobile is-multiline">
         <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}}>
           <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}">
             <template slot="right_button">
@@ -72,12 +87,17 @@ defmodule BackendWeb.DeckviewerLive do
         %{"new_deck" => %{"new_code" => new_code}},
         socket = %{assigns: %{deckcodes: dc}}
       ) do
-    new_codes = [new_code | dc]
+    new_codes =
+      cond do
+        HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
+        Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
+        true -> [new_code]
+      end
 
     {
       :noreply,
       socket
-      |> push_patch(to: Routes.live_path(socket, __MODULE__, %{"code" => new_codes}))
+      |> push_patch(to: Routes.live_path(socket, __MODULE__, %{"code" => dc ++ new_codes}))
     }
   end
 
