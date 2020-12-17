@@ -22,10 +22,13 @@ defmodule BackendWeb.DeckviewerLive do
   end
 
   def render(assigns) do
-    deckcodes = assigns[:deckcodes]
-    yaytears_link = Yaytears.create_deckstrings_link(deckcodes)
-    hdv_link = HSDeckViewer.create_link(deckcodes)
-    show_alternate_links = deckcodes |> Enum.any?()
+    shortened =
+      assigns[:deckcodes]
+      |> Enum.map(&Deck.decode(&1))
+      |> Enum.flat_map(fn
+        {:ok, deck} -> [Deck.deckcode(deck)]
+        _ -> []
+      end)
 
     ~H"""
 
@@ -42,10 +45,10 @@ defmodule BackendWeb.DeckviewerLive do
               <Submit label="Submit" class="button"/>
             </div>
             <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
-              <a class="is-link tag" href="{{ @deckcodes |> Yaytears.create_deckstrings_link()  }}">
+              <a class="is-link tag" href="{{ shortened |> Yaytears.create_deckstrings_link()  }}">
                 yaytears
             </a>
-              <a class="is-link tag" href="{{ @deckcodes |> HSDeckViewer.create_link() }}">
+              <a class="is-link tag" href="{{ shortened |> HSDeckViewer.create_link() }}">
                 HSDeckViewer
             </a>
         </div>
