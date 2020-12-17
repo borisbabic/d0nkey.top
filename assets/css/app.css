@@ -7,3 +7,205 @@
   min-width: 0;
   max-width: 90%;
 }
+:root {
+  /*--color-common: rgb(255, 255, 255);*/
+  /*--color-common-dark: rgb(191, 191, 191);*/
+  /*--color-rare: rgb(0, 112, 221);*/
+  /*--color-rare-dark: rgb(0, 84, 165);*/
+  /*--color-epic: rgb(163, 53, 238);*/
+  /*--color-epic-dark: rgb(126, 16, 201);*/
+  /*--color-legendary: rgb(255, 128, 0);*/
+  /*--color-legendary-dark: rgb(191, 96, 0);*/
+
+  --color-common: rgb(133, 133, 133);
+  --color-rare: rgb(49, 83, 118);
+  --color-epic: rgb(100, 76, 130);
+  --color-legendary: rgb(133, 92, 37);
+
+  --color-dark-common: rgb(99, 99, 99);
+  --color-dark-rare: rgb(36, 62, 88);
+  --color-dark-epic: rgb(75, 57, 97);
+  --color-dark-legendary: rgb(99, 68, 27);
+
+  --color-demonhunter: rgb(37, 111, 61);
+  --color-druid: rgb(255, 127, 14);
+  --color-hunter: rgb(44, 160, 44);
+  --color-mage: rgb(23, 190, 207);
+  --color-paladin: rgb(240, 189, 39);
+  --color-priest: rgb(199, 199, 199);
+  --color-rogue: rgb(127, 127, 127);
+  --color-shaman: rgb(43, 125, 180);
+  --color-warlock: rgb(162, 112, 153);
+  --color-warrior: rgb(200, 21, 24);
+}
+
+.card_tile_fade_box {
+  background: linear-gradient(65deg,#313109,#313131 calc(100% - 120px),rgba(49,49,49,0) calc(100% - 50px),rgba(49,49,49,0));
+}
+.decklist_tile_image {
+  /*z-index: -1;*/
+  /*max-height: 45px;*/
+  /*max-width: 200px;*/
+  position: absolute;
+  left: -30%;
+  clip-path: polygon(30% 0%, 90% 0, 90% 100%, 30% 100%);
+  /*clip-path: fill-box inset(0% 9% 21% 35%);*/
+}
+
+.decklist_hero_image {
+  clip-path: polygon(30% 0%, 90% 0, 90% 100%, 30% 100%);
+}
+
+.decklist_card_container {
+  max-height: 45px;
+  max-width: 200px;
+  /*max-height: 30px;*/
+}
+
+.decklist_card_text_container {
+  color: white;
+  background-color: black;
+  height: 100%;
+  text-align: center;
+}
+
+.decklist_card_text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+}
+
+.decklist_card_count {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.decklist_card_cost {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.decklist-card {
+  padding: 0;
+  height: 25px;
+  color: white;
+  text-align: center;
+  display: flex;
+}
+
+
+.background-common {
+  background: var(--color-common);
+}
+
+.background-rare {
+  background: var(--color-rare);
+}
+
+.background-epic {
+  background: var(--color-epic);
+}
+
+.background-legendary {
+  background: var(--color-legendary);
+}
+
+.background-dark-common {
+  background: var(--color-dark-common);
+}
+
+.background-dark-rare {
+  background: var(--color-dark-rare);
+}
+
+.background-dark-epic {
+  background: var(--color-dark-epic);
+}
+
+.background-dark-legendary {
+  background: var(--color-dark-legendary);
+}
+
+.card-number {
+  width: 15px;
+}
+.card-name {
+  width: 180px;
+  flex: auto;
+}
+
+.background-warlock {
+  background: var(--color-warlock);
+}
+.gradient-warlock {
+  background: -moz-linear-gradient(90deg, var(--color-warlock) 0%, var(--color-warlock) 30%, transparent);
+  background: -webkit-linear-gradient(90deg, var(--color-warlock) 0%, var(--color-warlock) 30%, transparent);
+  background: linear-gradient(90deg, var(--color-warlock) 0%, var(--color-warlock) 30%, transparent);
+}
+.gradient-dark-common{
+  background: -moz-linear-gradient(90deg, var(--color-dark-common) 0%, var(--color-dark-common) 30%, transparent);
+  background: -webkit-linear-gradient(90deg, var(--color-dark-common) 0%, var(--color-dark-common) 30%, transparent);
+  background: linear-gradient(90deg, var(--color-dark-common) 0%, var(--color-dark-common) 30%, transparent);
+}
+
+.gradient-dark-rare{
+  background: -moz-linear-gradient(90deg, var(--color-dark-rare) 0%, var(--color-dark-rare) 30%,  transparent);
+  background: -webkit-linear-gradient(90deg, var(--color-dark-rare) 0%, var(--color-dark-rare) 30%, transparent);
+  background: linear-gradient(90deg, var(--color-dark-rare) 0%, var(--color-dark-rare) 30%, transparent);
+}
+
+.gradient-dark-epic{
+  background: -moz-linear-gradient(90deg, var(--color-dark-epic) 0%, var(--color-dark-epic) 30%,  transparent);
+  background: -webkit-linear-gradient(90deg, var(--color-dark-epic) 0%, var(--color-dark-epic) 30%, transparent);
+  background: linear-gradient(90deg, var(--color-dark-epic) 0%, var(--color-dark-epic) 30%, transparent);
+}
+
+.gradient-dark-legendary{
+  background: -moz-linear-gradient(90deg, var(--color-dark-legendary) 0%, var(--color-dark-legendary) 30%, transparent);
+  background: -webkit-linear-gradient(90deg, var(--color-dark-legendary) 0%, var(--color-dark-legendary) 30%, transparent);
+  background: linear-gradient(90deg, var(--color-dark-legendary) 0%, var(--color-dark-legendary) 30%, transparent);
+}
+
+.decklist-hero.demonhunter {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_demonhunter-74b078df0873e39c69ded4395fe044bec4a0509b7604781a93fba4ffa3de8c79c641e0168002428adef337e0a1038c1fa7862748d0c0dac90afaccea84cc1e99.jpg");
+}
+.decklist-hero.druid {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_druid-f0e01a45d1d78a898f5d8b2c1a5fc6a342c3c250c40fdca0df491e7518b1d7e513b329ff7d317ab87f7a18885edee4f29e94ff0cbccbcf9870c157401b04d79e.jpg");
+}
+.decklist-hero.hunter {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_hunter-e035017bdd8257893bca2b2950302847093ea25d85dc7ec29675e46f9c652a773c758dd8b6530b704b7ec1ddf22313595f2e1ba73a41bb2beb178892855673d2.jpg");
+}
+.decklist-hero.mage {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_mage-93b0dbc915e6bb762ea277033e0e2bde6e2b9d4c03af0834dd0190249584fccd3bbfc88665230f5d8276c704a2e04748bd7f1d82d989762d011423070cd95990.jpg");
+}
+.decklist-hero.paladin {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_paladin-5f99cf232ff7735649b532948bea213ea92f1ae94de3b7a6589bc32ab1d2cc9274e3a393138e5b15cfb0607da506afd9ef6f7583586d4c819df5c40a2dbb62f1.jpg");
+}
+.decklist-hero.priest {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_priest-d55e5c57179030e2d08128abe234b5db5729a2e9849d74d45b60fb8c31003606bbf9a79189b0ce9b50163cf7e6833a26a2a0f90b6575978c47acd86ffc27c451.jpg");
+}
+.decklist-hero.shaman {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_shaman-01f75fe095213b0b89a38c2a77b563c81ca74bca48560039e023a05c88a6c44abaf1334cc78d6afd52f74241296156181a065e3b9f5dbcd8b9bfc57e113469b7.jpg");
+}
+.decklist-hero.rogue {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_rogue-79d0c64c2c3e61ae02dafda95936405677b80c3c29e038179a4726279df80e6179f55a10ac486447a379eb7f68299702c26774468ef93aee15179e6787a105a3.jpg");
+}
+.decklist-hero.warlock {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_warlock-4b024793cdd1f65a9fad3febb1ae115cf4777d36a9305f8610c5b239568919303a76a8ecc3fbe9f3c96936991c6cea31b887577257a26db58c8b920bc96c6726.jpg");
+}
+.decklist-hero.warrior {
+  background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_warrior-af1e7128db69a0453750626f90f68adb42f8f9013f10238c0c02fd90120fe1c27bb61aa31287c76e2610c974adce762c0e1d1b9620e8c3bc0736a5957c161e53.jpg");
+}
+
+.decklist-hero {
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-bottom: 13%;
+}
+.deck-text {
+  text-color: #222222;
+  text-shadow: 2px 2px #000000;
+}

@@ -61,7 +61,7 @@ f-> %>
     <tbody>
         <%= for r <- @rows do %>
         <tr>
-            <td><%= render_deckcode r.code %></td>
+            <td><%= render_deckcode(r.code,true) %></td>
             <td>
                 <span><%= r.streamer %></span>
             </td>

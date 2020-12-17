@@ -14,6 +14,7 @@ defmodule Backend.Application do
         # Start the endpoint when the application starts
         {Phoenix.PubSub, name: Backend.PubSub},
         Backend.Telemetry,
+        BackendWeb.Presence,
         BackendWeb.Endpoint,
         # Starts a worker by calling: Backend.Worker.start_link(arg)
         # {Backend.Worker, arg},

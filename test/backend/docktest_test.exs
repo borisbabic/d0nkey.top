@@ -7,4 +7,5 @@ defmodule Backend.Doctest do
   doctest Backend.MastersTour.PlayerStats
   doctest Backend.TournamentStats
   doctest Backend.TournamentStats.TeamStats
+  doctest Backend.Hearthstone.Deck
 end

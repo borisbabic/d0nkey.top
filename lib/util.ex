@@ -414,4 +414,20 @@ defmodule Util do
       nil
     end
   end
+
+  @doc """
+  Only call a genserver if it's up, if not return a default value
+
+  ## Example
+  iex> Util.gs_call_if_up(:this_totally_does_not_exist, :important_func, "blabla")
+  "blabla"
+
+  """
+  def gs_call_if_up(name, call, if_down \\ nil) do
+    if GenServer.whereis(name) == nil do
+      if_down
+    else
+      GenServer.call(name, call)
+    end
+  end
 end
