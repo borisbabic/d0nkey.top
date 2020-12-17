@@ -142,18 +142,18 @@ defmodule Backend.Hearthstone.Deck do
     class
     |> normalize_class_name()
     |> case do
-      "DEMONHUNTER" -> 56550
+      "DEMONHUNTER" -> 56_550
       "DRUID" -> 274
       "HUNTER" -> 31
       "MAGE" -> 637
       "PALADIN" -> 671
       "PRIEST" -> 813
       "ROGUE" -> 930
-      "SHAMAN" -> 1066
+      "SHAMAN" -> 1_066
       "WARLOCK" -> 893
       "WARRIOR" -> 7
       # lich king
-      _ -> 42458
+      _ -> 42_458
     end
   end
 
@@ -172,4 +172,12 @@ defmodule Backend.Hearthstone.Deck do
       class
       |> String.upcase()
       |> String.replace(~r/\w/, "")
+
+  @spec shorten_codes([String.t()]) :: [String.t()]
+  def shorten_codes(codes) do
+    codes
+    |> Enum.map(&decode/1)
+    |> Enum.filter(&(:ok == elem(&1, 0)))
+    |> Enum.map(&(&1 |> elem(1) |> deckcode()))
+  end
 end
