@@ -8,6 +8,14 @@
     <a class="tag is-link" href="<%= @yaytears%>">yaytears</a>
 </div>
 
+<div class="columns is-multiline is-mobile is-hidden-mobile">
+    <%= for code <- @deckcodes do %>
+        <div class="column is-narrow">
+            <%= live_render(@conn, BackendWeb.DeckLive, session: %{"code" => code}) %>
+        </div>
+    <% end %>
+</div>
+
 <%= if @show_class_stats do %>
     <div class="title is-5">Class Stats</div>
     <table class="table is-striped is-fullwidth is-narrow">
