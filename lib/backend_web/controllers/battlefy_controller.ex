@@ -105,11 +105,15 @@ defmodule BackendWeb.BattlefyController do
     {opponent_matches, player_matches} =
       Battlefy.get_future_and_player_matches(tournament_id, team_name)
 
+    deckcodes =
+      Battlefy.get_deckstrings(%{tournament_id: tournament_id, battletag_full: team_name})
+
     render(conn, "profile.html", %{
       tournament: tournament,
       opponent_matches: opponent_matches,
       player_matches: player_matches,
       page_title: team_name,
+      deckcodes: deckcodes,
       team_name: team_name,
       conn: conn
     })

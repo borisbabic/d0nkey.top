@@ -168,6 +168,7 @@ defmodule BackendWeb.BattlefyView do
           tournament: tournament,
           opponent_matches: opponent_matches,
           player_matches: player_matches,
+          deckcodes: deckcodes,
           team_name: team_name,
           conn: conn
         }
@@ -198,6 +199,7 @@ defmodule BackendWeb.BattlefyView do
       player_matches: player,
       team_name: team_name,
       hsdeckviewer: hsdeckviewer,
+      deckcodes: deckcodes || [],
       tournament: tournament,
       class_stats: class_stats,
       show_class_stats: class_stats |> Enum.count() > 0,
