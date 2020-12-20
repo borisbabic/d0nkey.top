@@ -199,7 +199,7 @@ defmodule BackendWeb.BattlefyView do
       player_matches: player,
       team_name: team_name,
       hsdeckviewer: hsdeckviewer,
-      deckcodes: deckcodes || [],
+      deckcodes: deckcodes,
       tournament: tournament,
       class_stats: class_stats,
       show_class_stats: class_stats |> Enum.count() > 0,
@@ -262,7 +262,7 @@ defmodule BackendWeb.BattlefyView do
                 conn,
                 :tournament_player,
                 tournament.id,
-                b |> MatchTeam.get_name()
+                b |> MatchTeam.get_name() || ""
               )
           }
         },
