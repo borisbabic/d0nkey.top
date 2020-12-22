@@ -1,5 +1,7 @@
 defmodule Backend.Yaytears do
   @moduledoc false
+  alias Backend.Hearthstone.Deck
+
   @spec create_deckstrings_link(Backend.Battlefy.tournament_id(), Backend.Battlefy.battletag()) ::
           String.t()
   def create_deckstrings_link(tournament_id, battletag_full) do
@@ -41,6 +43,7 @@ defmodule Backend.Yaytears do
   def create_deckstrings_link(deckstrings) do
     codes_part =
       deckstrings
+      |> Deck.shorten()
       |> Enum.join(".")
       |> URI.encode_www_form()
 

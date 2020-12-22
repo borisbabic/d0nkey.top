@@ -180,4 +180,25 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.filter(&(:ok == elem(&1, 0)))
     |> Enum.map(&(&1 |> elem(1) |> deckcode()))
   end
+
+  @spec shorten([String.t()]) :: [String.t()]
+  def shorten(deckcodes) when is_list(deckcodes) do
+    deckcodes
+    |> Enum.map(&shorten/1)
+    |> Enum.flat_map(fn
+      {:ok, code} -> [code]
+      _ -> []
+    end)
+  end
+
+  @spec shorten(String.t()) :: String.t()
+  def shorten(deckcodes) when is_binary(deckcodes) do
+    with {:ok, deck} <- decode(deckcodes),
+         deckcode when is_binary(deckcode) <- deckcode(deck) do
+      {:ok, deckcode}
+    else
+      ret = {:error, _} -> ret
+      _ -> {:error, "Couldn't decode deckcode"}
+    end
+  end
 end
