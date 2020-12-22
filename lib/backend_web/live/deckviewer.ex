@@ -7,7 +7,6 @@ defmodule BackendWeb.DeckviewerLive do
   alias Backend.Yaytears
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
-  alias Surface.Components.Form.Label
   alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.Submit
   alias BackendWeb.Router.Helpers, as: Routes
@@ -15,21 +14,13 @@ defmodule BackendWeb.DeckviewerLive do
   data(deckcodes, :any)
   require WaitForIt
 
-  def mount(_params, session, socket) do
+  def mount(_params, _session, socket) do
     case WaitForIt.wait(HearthstoneJson.up?(), frequency: 500, timeout: 20_000) do
       _ -> {:ok, socket}
     end
   end
 
   def render(assigns) do
-    shortened =
-      assigns[:deckcodes]
-      |> Enum.map(&Deck.decode(&1))
-      |> Enum.flat_map(fn
-        {:ok, deck} -> [Deck.deckcode(deck)]
-        _ -> []
-      end)
-
     ~H"""
 
     <div class="container">
@@ -45,10 +36,10 @@ defmodule BackendWeb.DeckviewerLive do
               <Submit label="Submit" class="button"/>
             </div>
             <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
-              <a class="is-link tag" href="{{ shortened |> Yaytears.create_deckstrings_link()  }}">
+              <a class="is-link tag" href="{{ Yaytears.create_deckstrings_link(@deckcodes)  }}">
                 yaytears
             </a>
-              <a class="is-link tag" href="{{ shortened |> HSDeckViewer.create_link() }}">
+              <a class="is-link tag" href="{{ HSDeckViewer.create_link(@deckcodes) }}">
                 HSDeckViewer
             </a>
         </div>

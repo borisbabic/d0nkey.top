@@ -1,6 +1,7 @@
 defmodule Backend.Streaming.StreamingNow do
   @moduledoc false
   use GenServer
+  alias Hearthstone.Enums.BnetGameType
 
   @type streaming_now :: %{
           user_id: String.t(),
@@ -49,13 +50,14 @@ defmodule Backend.Streaming.StreamingNow do
 
   defp create_streaming_now(%{twitch: twitch, hsreplay: hsreplay}) do
     twitch
+    |> Enum.uniq_by(& &1.id)
     |> Enum.map(fn t ->
       {game_type, legend} =
         hsreplay
         |> Enum.find(fn hsr -> to_string(hsr.twitch.id) == to_string(t.user_id) end)
         |> case do
           %{game_type: game_type, legend_rank: legend_rank} -> {game_type, legend_rank}
-          _ -> {nil, nil}
+          _ -> {guess_from_title(t.title), nil}
         end
 
       %{
@@ -67,9 +69,37 @@ defmodule Backend.Streaming.StreamingNow do
         language: t.language,
         started_at: t.started_at,
         legend_rank: legend,
+        stream_id: t.id,
         game_type: game_type
       }
     end)
+  end
+
+  @standard_patterns ["[std]", "[standard]"]
+  @duels_patterns ["[duels]", "[duel]"]
+  @wild_patterns ["[wild]", "[wld]"]
+  @battlegrounds_patterns ["[bg]", "[battlegrounds]", "[bgs]", "[battleground]"]
+  @arena_patterns ["[arena]", "[arn]"]
+  def guess_from_title(title) do
+    cond do
+      title |> String.downcase() |> String.contains?(@standard_patterns) ->
+        BnetGameType.ranked_standard()
+
+      title |> String.downcase() |> String.contains?(@duels_patterns) ->
+        BnetGameType.pvpdr()
+
+      title |> String.downcase() |> String.contains?(@wild_patterns) ->
+        BnetGameType.ranked_wild()
+
+      title |> String.downcase() |> String.contains?(@battlegrounds_patterns) ->
+        BnetGameType.battlegrounds()
+
+      title |> String.downcase() |> String.contains?(@arena_patterns) ->
+        BnetGameType.arena()
+
+      true ->
+        nil
+    end
   end
 
   def handle_info(%{topic: "streaming:hs:twitch_live", payload: %{streams: twitch}}, state) do
