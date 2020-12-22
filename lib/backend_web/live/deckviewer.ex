@@ -33,8 +33,9 @@ defmodule BackendWeb.DeckviewerLive do
             </div>
           </Field>
             <div class="column is-narrow">
-              <Submit label="Submit" class="button"/>
+              <Submit label="Add" class="button"/>
             </div>
+
             <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
               <a class="is-link tag" href="{{ Yaytears.create_deckstrings_link(@deckcodes)  }}">
                 yaytears
@@ -63,7 +64,7 @@ defmodule BackendWeb.DeckviewerLive do
       params["code"]
       |> case do
         code = [_ | _] -> code
-        string when is_binary(string) -> [string]
+        string when is_binary(string) -> string |> String.split(",")
         _ -> []
       end
       |> Enum.filter(fn code -> :ok == code |> Deck.decode() |> elem(0) end)
@@ -92,7 +93,9 @@ defmodule BackendWeb.DeckviewerLive do
     {
       :noreply,
       socket
-      |> push_patch(to: Routes.live_path(socket, __MODULE__, %{"code" => dc ++ new_codes}))
+      |> push_patch(
+        to: Routes.live_path(socket, __MODULE__, %{"code" => (dc ++ new_codes) |> Enum.join(",")})
+      )
     }
   end
 
@@ -102,7 +105,9 @@ defmodule BackendWeb.DeckviewerLive do
     {
       :noreply,
       socket
-      |> push_patch(to: Routes.live_path(socket, __MODULE__, %{"code" => new_codes}))
+      |> push_patch(
+        to: Routes.live_path(socket, __MODULE__, %{"code" => new_codes |> Enum.join(",")})
+      )
     }
   end
 end
