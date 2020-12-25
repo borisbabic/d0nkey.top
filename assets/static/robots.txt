@@ -12,4 +12,4 @@ Disallow: /streamer-decks?*
 Disallow: /admin*
 Disallow: *?*limit*
 Disallow: *?*offset*
-
+Disallow: *?*
