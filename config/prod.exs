@@ -7,9 +7,10 @@ use Mix.Config
 config :backend,
   warmup_cache: true,
   auto_migrate: true,
+  goatcounter_analytics: true,
   enable_bot: true
 
-# For production, don't forget to configure the url host
+# For production, don't f "d0nkey.top"orget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.
 #
