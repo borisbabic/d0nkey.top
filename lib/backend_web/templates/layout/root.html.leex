@@ -17,6 +17,10 @@
   <%= render("navbar.html", conn: BackendWeb.Endpoint)%>
   <body>
     <%= @inner_content %>
+    <%= if Application.get_env(:backend, :goatcounter_analytics) do %>
+    <script data-goatcounter="https://d0nkeytop.goatcounter.com/count"
+              async src="//gc.zgo.at/count.js"></script>
+    <% end %>
   </body>
     <script>
       var allowed_themes = ['flatly', 'darkly'];
