@@ -246,10 +246,15 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"class", class}, query),
     do: query |> where([_sd, _s, d], d.class == ^class)
 
-  defp compose_streamer_deck_query({"cards", []}, query), do: query
+  defp compose_streamer_deck_query({"include_cards", []}, query), do: query
 
-  defp compose_streamer_deck_query({"cards", cards}, query),
+  defp compose_streamer_deck_query({"include_cards", cards}, query),
     do: query |> where([_sd, _s, d], fragment("? @> ?", d.cards, ^cards))
+
+  defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
+
+  defp compose_streamer_deck_query({"exclude_cards", cards}, query),
+    do: query |> where([_sd, _s, d], fragment("NOT(? @> ?)", d.cards, ^cards))
 
   defp compose_streamer_deck_query({"hsreplay_archetype", []}, query), do: query
 
@@ -259,11 +264,32 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"format", format}, query),
     do: query |> where([_sd, _s, d], d.format == ^format)
 
-  defp compose_streamer_deck_query({"legend", legend}, query),
+  defp compose_streamer_deck_query({"best_legend_rank", legend}, query),
     do: query |> where([sd], sd.best_legend_rank > 0 and sd.best_legend_rank <= ^legend)
+
+  defp compose_streamer_deck_query({"latest_legend_rank", legend}, query),
+    do: query |> where([sd], sd.latest_legend_rank > 0 and sd.latest_legend_rank <= ^legend)
+
+  defp compose_streamer_deck_query({"worst_legend_rank", legend}, query),
+    do: query |> where([sd], sd.worst_legend_rank > 0 and sd.worst_legend_rank <= ^legend)
 
   defp compose_streamer_deck_query({"deck_id", deck_id}, query),
     do: query |> where([_sd, _s, d], d.id == ^deck_id)
+
+  defp compose_streamer_deck_query({"min_minutes_played", min_minutes_played}, query),
+    do: query |> where([sd, _s, _d], sd.minutes_played >= ^min_minutes_played)
+
+  defp compose_streamer_deck_query(
+         {"last_played", <<"min_ago_"::binary, min_ago::bitstring>>},
+         query
+       ) do
+    min_ago
+    |> Integer.parse()
+    |> case do
+      {num, _} -> query |> where([sd, _s, _d], sd.last_played >= ago(^num, "minute"))
+      _ -> query
+    end
+  end
 
   defp compose_streamer_deck_query({"min_minutes_played", min_minutes_played}, query),
     do: query |> where([sd, _s, _d], sd.minutes_played >= ^min_minutes_played)

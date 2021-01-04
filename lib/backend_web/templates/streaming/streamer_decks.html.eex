@@ -13,18 +13,25 @@ f-> %>
     <% end %>
     <%= render_multiselect_dropdown %{
         form: f,
-        title: "Select Archetypes",
+        title: "Archetypes",
         options: @archetypes_options,
         attr: "hsreplay_archetypes",
         placeholder: "Archetype",
         search_id: "sd-archetype-select"} %>
     <%= render_multiselect_dropdown %{
         form: f,
-        title: "Filter By Cards",
-        options: @card_options,
-        attr: "cards",
+        title: "Include Cards",
+        options: @include_options,
+        attr: "include_cards",
         placeholder: "Card Name",
-        search_id: "sd-card-select"} %>
+        search_id: "sd-include-card-select"} %>
+    <%= render_multiselect_dropdown %{
+        form: f,
+        title: "Exclude Cards",
+        options: @exclude_options,
+        attr: "exclude_cards",
+        placeholder: "Card Name",
+        search_id: "sd-exclude-card-select"} %>
 <% end %>
     <div class="field is-pulled-right is-shown-js" style="display: none">
         <input

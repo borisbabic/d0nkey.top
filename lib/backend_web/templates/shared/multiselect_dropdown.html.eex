@@ -24,14 +24,16 @@
                         onchange="hide_based_on_search('<%= @search_id %>', '<%= @search_class %>')"
                         type="text">
                 <% end %>
-                <%= for %{value: value, display: display, selected: selected, name: name} <- @options do %>
-                    <label for="<%= @attr %>[<%= value %>]" data-target-value="<%= name %>" class="dropdown-item <%= @search_class %>">
-                        <div class="is-flex">
-                            <span class="multi-select-text"><%= display %></span>
-                            <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, class: @checkbox_class, style: "margin-left: auto", value: selected %>
-                        </div>
-                    </label>
-                <% end %>
+                <div style="max-height: 23em; overflow: auto;">
+                    <%= for %{value: value, display: display, selected: selected, name: name} <- @options do %>
+                        <label for="<%= @attr %>[<%= value %>]" data-target-value="<%= name %>" class="dropdown-item <%= @search_class %>">
+                            <div class="is-flex">
+                                <span class="multi-select-text"><%= display %></span>
+                                <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, class: @checkbox_class, style: "margin-left: auto", value: selected %>
+                            </div>
+                        </label>
+                    <% end %>
+                </div>
                 <%= if @bottom_buttons do %>
                     <div class="dropdown-item is-flex">
                         <%= submit "Submit", class: "button" %>

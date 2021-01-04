@@ -98,7 +98,8 @@ defmodule BackendWeb.StreamingView do
         conn: conn,
         streamers: streamers,
         archetypes: archetypes_raw,
-        cards: cards,
+        include_cards: include,
+        exclude_cards: exclude,
         criteria: %{"offset" => offset, "limit" => limit}
       }) do
     title = "Streamer Decks"
@@ -127,12 +128,15 @@ defmodule BackendWeb.StreamingView do
 
     dropdowns = [
       create_limit_dropdown(conn, limit),
-      create_legend_dropdown(conn),
+      create_legend_dropdown(conn, "legend", "Peak"),
+      create_legend_dropdown(conn, "latest_legend_rank", "Latest"),
+      create_legend_dropdown(conn, "worst_legend_rank", "Worst"),
       create_format_dropdown(conn),
       create_class_dropdown(conn),
       create_min_minutes_played_dropdown(conn),
+      create_last_played_dropdown(conn)
       # keep below last :shrug:
-      create_show_archetypes_dropdown(conn)
+      # create_show_archetypes_dropdown(conn)
     ]
 
     archetypes_options =
@@ -146,16 +150,8 @@ defmodule BackendWeb.StreamingView do
         }
       end)
 
-    card_options =
-      Backend.HearthstoneJson.collectible_cards()
-      |> Enum.map(fn c ->
-        %{
-          selected: c.dbf_id in cards,
-          value: c.dbf_id,
-          name: c.name,
-          display: c.name
-        }
-      end)
+    include_options = card_options(include)
+    exclude_options = card_options(exclude)
 
     render("streamer_decks.html", %{
       rows: rows,
@@ -163,12 +159,25 @@ defmodule BackendWeb.StreamingView do
       dropdowns: dropdowns,
       streamer_list: create_streamer_list(conn, streamers),
       prev_button: prev_button(conn, prev_offset, offset),
-      show_archetype: conn.query_params["show_archetypes"] == "yes",
+      show_archetype: true,
       conn: conn,
       archetypes_options: archetypes_options,
-      card_options: card_options,
+      include_options: include_options,
+      exclude_options: exclude_options,
       next_button: next_button(conn, next_offset)
     })
+  end
+
+  def card_options(selected) do
+    Backend.HearthstoneJson.collectible_cards()
+    |> Enum.map(fn c ->
+      %{
+        selected: c.dbf_id in selected,
+        value: c.dbf_id,
+        name: c.name,
+        display: c.name
+      }
+    end)
   end
 
   def links(sd) do
@@ -183,16 +192,22 @@ defmodule BackendWeb.StreamingView do
 
   def create_min_minutes_played_dropdown(conn) do
     options =
-      [0, 30, 60, 90, 120, 240, 360, 480, 600]
+      [0, 30, 60, 90, 120, 180, 240, 300, 360, 480, 600]
       |> Enum.map(fn mmp ->
         %{
           link: update_link(conn, "min_minutes_played", mmp),
           selected: to_string(mmp) == conn.query_params["min_minutes_played"],
-          display: "#{mmp}"
+          display: ">= #{mmp} min"
         }
       end)
 
-    {options, "Min Minutes Played"}
+    title = ~E"""
+    <span class="icon">
+      <i class="fas fa-hourglass"></i>
+    </span>
+    """
+
+    {options, title}
   end
 
   def create_show_archetypes_dropdown(conn) do
@@ -226,11 +241,31 @@ defmodule BackendWeb.StreamingView do
           link:
             Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "limit", l)),
           selected: to_string(limit) == to_string(l),
-          display: "Show #{l} decks"
+          display: "Show #{l}"
         }
       end)
 
     {options, dropdown_title(options, "Page Size")}
+  end
+
+  def create_last_played_dropdown(conn) do
+    options =
+      [
+        {"Last hour", "min_ago_60"},
+        {"Last day", "min_ago_1440"},
+        {"Last 3 days", "min_ago_4320"},
+        {"Last 7 days", "min_ago_10080"},
+        {"Last 15 days", "min_ago_21600"}
+      ]
+      |> Enum.map(fn {display, lp} ->
+        %{
+          link: update_link(conn, "last_played", lp),
+          selected: to_string(Map.get(conn.query_params, "last_played")) == to_string(lp),
+          display: display
+        }
+      end)
+
+    {[nil_option(conn, "last_played") | options], "Last Played"}
   end
 
   def create_class_dropdown(conn) do
@@ -259,18 +294,18 @@ defmodule BackendWeb.StreamingView do
     {[nil_option(conn, "class") | options], dropdown_title(options, "Class")}
   end
 
-  def create_legend_dropdown(conn) do
+  def create_legend_dropdown(conn, query_param, title) do
     options =
-      [100, 500, 1000, 5000]
+      [100, 200, 500, 1000, 5000]
       |> Enum.map(fn lr ->
         %{
-          link: update_link(conn, "legend", lr),
-          selected: to_string(Map.get(conn.query_params, "legend")) == to_string(lr),
+          link: update_link(conn, query_param, lr),
+          selected: to_string(Map.get(conn.query_params, query_param)) == to_string(lr),
           display: "Top #{lr}"
         }
       end)
 
-    {[nil_option(conn, "legend") | options], dropdown_title(options, "Legend Peak")}
+    {[nil_option(conn, query_param) | options], title}
   end
 
   def update_link(conn, param, value, reset_offset \\ true) do

@@ -17,8 +17,17 @@ defmodule BackendWeb.StreamingController do
     do: criteria_map |> Map.put("hsreplay_archetype", archetypes)
 
   def streamer_decks(conn, params) do
-    cards =
-      multi_select_to_array(params["cards"])
+    # used to only be include cards, but then I added exclude_cards so cards is there for backwards compatibility
+    include_cards =
+      ["cards", "include_cards"]
+      |> Enum.flat_map(fn p ->
+        params[p]
+        |> multi_select_to_array()
+        |> Enum.map(&Util.to_int_or_orig/1)
+      end)
+
+    exclude_cards =
+      multi_select_to_array(params["exclude_cards"])
       |> Enum.map(&Util.to_int_or_orig/1)
 
     archetypes =
@@ -28,7 +37,9 @@ defmodule BackendWeb.StreamingController do
     criteria =
       %{"order_by" => {:desc, :last_played}, "limit" => 50, "offset" => 0}
       |> Map.merge(params)
-      |> Map.put("cards", cards)
+      |> handle_old_peak_param()
+      |> Map.put("include_cards", include_cards)
+      |> Map.put("exclude_cards", exclude_cards)
       |> add_archetypes_filter(archetypes)
 
     streamer_decks = Backend.Streaming.streamer_decks(criteria)
@@ -46,8 +57,18 @@ defmodule BackendWeb.StreamingController do
       streamers: streamers,
       archetypes: archetypes,
       page_title: page_title,
-      cards: cards,
+      include_cards: include_cards,
+      exclude_cards: exclude_cards,
       criteria: criteria
     })
   end
+
+  @doc """
+  The params was renamed from legend to best_legend_rank.
+  I included other legend filters and wanted to keep it consistent in the queries
+  """
+  defp handle_old_peak_param(params = %{"legend" => best}),
+    do: params |> Map.put("best_legend_rank", best) |> Map.delete("legend")
+
+  defp handle_old_peak_param(params), do: params
 end
