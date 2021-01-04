@@ -99,6 +99,7 @@ defmodule BackendWeb.Router do
 
     get "/streamer-decks/twitch-login/:twitch_login", StreamingController, :streamers_decks
     get "/streamer-decks", StreamingController, :streamer_decks
+    get "/streamer-instructions", StreamingController, :streamer_instructions
     live "/streaming-now", StreamingNowLive
     live "/youtube/bnet-chat/:video_id", YoutubeChatLive
     live "/deckviewer", DeckviewerLive

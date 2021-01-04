@@ -2,6 +2,14 @@ defmodule BackendWeb.StreamingController do
   use BackendWeb, :controller
   @moduledoc false
 
+  def streamer_instructions(conn, params) do
+    render(
+      conn,
+      "streamer_instructions.html",
+      params |> Map.put(:page_title, "Streamer Instructions")
+    )
+  end
+
   def streamers_decks(conn, %{"twitch_login" => twitch_login}) do
     real_route =
       Routes.streaming_path(

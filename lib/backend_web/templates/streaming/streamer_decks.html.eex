@@ -1,4 +1,5 @@
 <div class="title is-2"><%= @title %></div>
+<div class="subtitle is-6"><a href="<%= Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)%>">Instructions for streamers</a></div>
 
 
 <div class="columns is-pulled-left">

@@ -1,0 +1,30 @@
+<div class="title is-2">Streamer Instructions</div>
+
+
+<div>
+Hi, I'm glad you want to appear on the site. Currently you need to be using the Hearthstone Deck Tracker with the twitch HDT extension and allow sharing to hsreplay to make the info public. You can still use other deck tracker overlays, it's enough that a properly setup HDT is running in the background.
+</div>
+<br>
+
+
+<ol>
+    <li>
+        Follow the instructions <a href="https://hsdecktracker.net/twitch/setup/">here</a> to setup HDT
+    </li>
+    <li>
+        <ul>
+            <li>
+                Go to the <a href="https://dashboard.twitch.tv/extensions">Extensions page</a> in the twitch dashboard
+            </li>
+            <li>
+                Open the My Extensions tab
+            </li>
+            <li>
+                Open the configuration for Hearthstone Deck Tracker
+            </li>
+            <li>
+                Scroll down to the Other section and make sure "Allow my stream to appear on HSReplay.net" is checked.
+            </li>
+        </ul>
+    </li>
+</ol>

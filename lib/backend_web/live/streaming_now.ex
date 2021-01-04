@@ -27,9 +27,12 @@ defmodule BackendWeb.StreamingNowLive do
   end
 
   def render(assigns) do
+    instructions_link = Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)
+
     ~H"""
     <div class="container">
-      <div class="title is-1">Streaming Now</div>
+      <div class="title is-2">Streaming Now</div>
+      <div class="subtitle is-6"><a href="{{ instructions_link }}">Instructions for streamers</a></div>
 
       <div class="dropdown is-hoverable">
           <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Sort</button></div>
