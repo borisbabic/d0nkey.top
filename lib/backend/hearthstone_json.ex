@@ -52,7 +52,14 @@ defmodule Backend.HearthstoneJson do
   def create_state(cards) do
     class_map = create_class_map(cards)
     card_map = cards |> Enum.map(fn c -> {c.dbf_id, c} end) |> Map.new()
-    %{cards: cards, class_map: class_map, card_map: card_map}
+    collectible_cards = cards |> Enum.filter(& &1.collectible)
+
+    %{
+      cards: cards,
+      class_map: class_map,
+      card_map: card_map,
+      collectible_cards: collectible_cards
+    }
   end
 
   def create_class_map(cards) do
@@ -71,6 +78,10 @@ defmodule Backend.HearthstoneJson do
   def get_hero(deck), do: Util.gs_call_if_up(@name, {:get_hero, deck})
 
   def cards(), do: Util.gs_call_if_up(@name, {:cards}, [])
+  def collectible_cards(), do: Util.gs_call_if_up(@name, {:collectible_cards}, [])
+
+  def handle_call({:collectible_cards}, _from, s = %{collectible_cards: cards}),
+    do: {:reply, cards, s}
 
   def handle_call({:cards}, _from, s = %{cards: cards}), do: {:reply, cards, s}
   def handle_call({:get_class, dbf_id}, _from, s = %{class_map: cm}), do: {:reply, cm[dbf_id], s}
