@@ -1,5 +1,5 @@
 <div>
-    <button class="clip-btn-value is-shown-js" style="<%= @style %>" aria-label="<%= @deckcode %>">
+    <button data-balloon-pos="up" data-aria-on-copy="Copied!" class="clip-btn-value is-shown-js" style="<%= @style %>" aria-label="Copy"> 
         <span class="icon is-small">
             <i class="far fa-copy" title="copy"></i>
         </span>
@@ -10,4 +10,3 @@
         </textarea>
     </noscript>
 </div>
-
