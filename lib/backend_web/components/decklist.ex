@@ -32,7 +32,8 @@ defmodule Components.Decklist do
     hero = Backend.HearthstoneJson.get_hero(deck)
     deckcode = render_deckcode(deck.deckcode, false)
 
-    class_class = deck_class(deck, hero) |> String.downcase()
+    deck_class = deck_class(deck, hero)
+    class_class = deck_class |> String.downcase()
 
     name = deck_name(assigns[:name], deck, hero)
 
@@ -55,7 +56,7 @@ defmodule Components.Decklist do
               </div>
           </div>
           <div class="decklist_card_container" :for = {{ {card, count} <- cards }}>
-              <DecklistCard card={{ card }} count={{ count }}/>
+              <DecklistCard show_mana_cost={{ true }} deck_class={{ deck_class }} card={{ card }} count={{ count }}/>
           </div>
           <span style="font-size: 0; line-size:0; display:block">
             # You really like to select a lot of stuff, don't ya you beautiful being! 🤎 D0nkey
