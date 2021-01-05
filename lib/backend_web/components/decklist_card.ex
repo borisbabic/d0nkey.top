@@ -19,7 +19,7 @@ defmodule Components.DecklistCard do
     %{border: border, gradient: gradient} =
       %{
         border: :dark_grey,
-        gradient: :dark_grey
+        gradient: :rarity
       }
       |> Map.merge(opts)
 
