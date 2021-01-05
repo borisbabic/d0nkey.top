@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             var timestamp = toConvert[i].getAttribute("aria-label");
             var date = new Date(parseInt(timestamp));
-            if (date.getMonth()) {
+            if (Number.isInteger(date.getMonth())) {
                 toConvert[i].innerHTML =
                     [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
                     + ' '
