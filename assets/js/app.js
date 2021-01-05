@@ -21,16 +21,16 @@ import '@fortawesome/fontawesome-free/js/all'
 var clipboard = new ClipboardJS(".clip-btn-value", {text: function(trigger) {
     return trigger.getAttribute("aria-label");
 }});
-clipboard.on('success', function(e) {
-    if (e.action === "copy" && e.trigger.hasAttribute("data-aria-on-copy")) {
-        e.trigger.setAttribute("aria-label", e.trigger.getAttribute( "data-aria-on-copy"))
-    }
-    console.info('Action:', e.action);
-    console.info('Text:', e.text);
-    console.info('Trigger:', e.trigger);
+//clipboard.on('success', function(e) {
+    //if (e.action === "copy" && e.trigger.hasAttribute("data-aria-on-copy")) {
+        //e.trigger.setAttribute("aria-label", e.trigger.getAttribute( "data-aria-on-copy"))
+    //}
+    //console.info('Action:', e.action);
+    //console.info('Text:', e.text);
+    //console.info('Trigger:', e.trigger);
 
-    e.clearSelection();
-})
+    //e.clearSelection();
+//})
 document.addEventListener('DOMContentLoaded', () => {
     var hideWithJs = document.getElementsByClassName("is-shown-js")
     for (var i = 0; i < hideWithJs.length; i++) {
