@@ -167,7 +167,7 @@ defmodule Backend.Hearthstone.Deck do
   """
 
   @spec normalize_class_name(String.t()) :: String.t()
-  defp normalize_class_name(class),
+  def normalize_class_name(class),
     do:
       class
       |> String.upcase()
