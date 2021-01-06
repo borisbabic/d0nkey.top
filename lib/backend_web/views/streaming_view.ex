@@ -346,11 +346,9 @@ defmodule BackendWeb.StreamingView do
 
   def deckcode_links(<<deckcode::binary>>) do
     hsreplay = Backend.HSReplay.create_deck_link(deckcode)
-    hsdeckviewer = Backend.HSDeckViewer.create_link(deckcode)
 
     ~E"""
     <a class="is-link tag" href="<%= hsreplay %>">HSReplay</a>
-    <a class="is-link tag" href="<%= hsdeckviewer %>">HSDeckViewer</a>
     """
   end
 

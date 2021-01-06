@@ -50,13 +50,8 @@ f-> %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
-            <th>Code</th>
+            <th>Deck</th>
             <th>Streamer</th>
-            <%= if @show_archetype do %>
-            <th>Archetype</th>
-            <% else %>
-            <th>Class</th>
-            <% end %>
             <th>Format</th>
             <th><abbr title="Legend Peak">Peak</abbr></th>
             <th class="is-hidden-mobile"><abbr title="Latest Legend Rank">Latest</abbr></th>
@@ -69,15 +64,12 @@ f-> %>
     <tbody>
         <%= for r <- @rows do %>
         <tr>
-            <td><%= render_deckcode(r.code,true) %></td>
+            <td>
+                <%= live_render(@conn, BackendWeb.ExpandableDeckLive, session: %{"code" => r.code, "show_cards" => false, "name" => if(r.archetype, do: r.archetype.name, else: r.class)}) %> 
+            </td>
             <td>
                 <span><%= r.streamer %></span>
             </td>
-            <%= if @show_archetype do %>
-                <td><%= if r.archetype, do: r.archetype.name, else: r.class %></td>
-            <% else %>
-            <td><%= r.class %></td>
-            <% end %>
             <td><%= r.format %></td>
             <td><%= r.best_legend_rank %></td>
             <th class="is-hidden-mobile"><%= r.latest_legend_rank %></th>

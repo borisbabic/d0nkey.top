@@ -9,6 +9,7 @@ defmodule Components.Decklist do
   use BackendWeb.ViewHelpers
   prop(deck, :map, required: true)
   prop(name, :string, required: false)
+  prop(show_cards, :boolean, default: true)
   slot(right_button)
 
   @spec deck_name(String.t() | nil, Deck.t(), Card.t()) :: String.t()
@@ -45,8 +46,8 @@ defmodule Components.Decklist do
                   <div class="level-left"> 
                       {{ deckcode }}
                   </div>
-                  <div class="level-item deck-text"> 
-                    <span><span style="font-size:0;">### </span> {{ name }}
+                  <div class="level-left deck-text"> 
+                    <span><span style="font-size:0;">### </span> <span style="text-overflow: clip;">{{ name }}</span>
     <span style="font-size: 0; line-size:0; display:block">
     {{ @deck |> Deck.deckcode() }}</span></span>
                   </div> 
@@ -55,7 +56,7 @@ defmodule Components.Decklist do
                   </div>
               </div>
           </div>
-          <div class="decklist_card_container" :for = {{ {card, count} <- cards }}>
+          <div class="decklist_card_container" :if = {{ @show_cards }} :for = {{ {card, count} <- cards }}>
               <DecklistCard show_mana_cost={{ true }} deck_class={{ deck_class }} card={{ card }} count={{ count }}/>
           </div>
           <span style="font-size: 0; line-size:0; display:block">
