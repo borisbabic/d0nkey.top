@@ -184,6 +184,7 @@
 }
 
 .decklist-hero {
+  max-width: 200px;
   background-repeat: no-repeat;
   background-size: contain;
   /*border-width: 10px;*/
