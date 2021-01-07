@@ -6,10 +6,14 @@ defmodule Backend.Streaming.StreamingNow do
   @type streaming_now :: %{
           user_id: String.t(),
           user_name: String.t(),
+          thumbnail_url: String.t(),
           viewer_count: number,
           title: String.t(),
           language: String.t(),
           started_at: NaiveDateTime.t(),
+          legend_rank: number() | nil,
+          stream_id: String.t() | number,
+          deckcode: String.t() | nil,
           game_type: number() | nil
         }
   @name :hs_streaming_now
@@ -31,6 +35,7 @@ defmodule Backend.Streaming.StreamingNow do
     {:ok, state}
   end
 
+  @spec streaming_now() :: streaming_now()
   def streaming_now(), do: Util.gs_call_if_up(@name, :streaming_now, [])
 
   def handle_call(:streaming_now, _from, state = %{streaming_now: sn}), do: {:reply, sn, state}
@@ -48,16 +53,23 @@ defmodule Backend.Streaming.StreamingNow do
     updated
   end
 
+  @spec create_streaming_now(%{
+          twitch: [Twitch.Stream.t()],
+          hsreplay: [Backend.HSReplay.Streaming.t()]
+        }) :: streaming_now()
   defp create_streaming_now(%{twitch: twitch, hsreplay: hsreplay}) do
     twitch
     |> Enum.uniq_by(& &1.id)
     |> Enum.map(fn t ->
-      {game_type, legend} =
+      {game_type, legend, deckcode} =
         hsreplay
         |> Enum.find(fn hsr -> to_string(hsr.twitch.id) == to_string(t.user_id) end)
         |> case do
-          %{game_type: game_type, legend_rank: legend_rank} -> {game_type, legend_rank}
-          _ -> {guess_from_title(t.title), nil}
+          sn = %{game_type: game_type, legend_rank: legend_rank} ->
+            {game_type, legend_rank, sn |> Backend.HSReplay.Streaming.deckcode()}
+
+          _ ->
+            {guess_from_title(t.title), nil, nil}
         end
 
       %{
@@ -70,6 +82,7 @@ defmodule Backend.Streaming.StreamingNow do
         started_at: t.started_at,
         legend_rank: legend,
         stream_id: t.id,
+        deckcode: deckcode,
         game_type: game_type
       }
     end)

@@ -2,6 +2,7 @@ defmodule Components.LiveStreamer do
   @moduledoc false
   use Surface.Component
   alias Surface.Components.Link
+  alias Components.ExpandableDecklist
   prop(live_streamer, :map, required: true)
 
   def render(assigns = %{live_streamer: s}) do
@@ -24,22 +25,39 @@ defmodule Components.LiveStreamer do
         ""
       end
 
+    {show_deck, deck} =
+      with deckcode when is_binary(deckcode) <- s.deckcode,
+           {:ok, deck} <- Backend.Hearthstone.Deck.decode(deckcode) do
+        {true, deck}
+      else
+        _ -> {false, nil}
+      end
+
+    link = s |> Twitch.Stream.login() |> Backend.Twitch.create_channel_link()
+
     ~H"""
-    <Link to="{{ @live_streamer |> Twitch.Stream.login() |> Backend.Twitch.create_channel_link() }}" opts={{ target: "_blank" }}>
-      <div class="cestor card" > 
+    <div class="cestor card" > 
         <div class="is-parent">
-          <div class="card-header"> 
-            <p> <strong>{{ s.user_name }}</strong> <small>{{ s.viewer_count }}<i class="fas fa-users"></i></small> <small>{{ game_type }}</small>  <small>{{ duration }}</small>  {{ legend_rank }} </p>
-          </div>
-          <div class="card-image">
-            <img src="{{ thumbnail_url}}" alt="{{ @live_streamer.user_name }}"/>
-          </div>
+            <div class="card-header"> 
+              <slot/>
+              <a href="{{ link }}" target="_blank">
+                <p> <strong>{{ s.user_name }}</strong> <small>{{ s.viewer_count }}<i class="fas fa-users"></i></small> <small>{{ game_type }}</small>  <small>{{ duration }}</small>  {{ legend_rank }} </p>
+              </a>
+            </div>
+            <div class="card-image">
+              <a href="{{ link }}" target="_blank">
+                <img src="{{ thumbnail_url}}" alt="{{ @live_streamer.user_name }}"/>
+              </a>
+            </div>
           <div class="card-content" style="width: {{ thumbnail_width }}px;  text-overflow: ellipsis;">
-            {{ @live_streamer.title }}
+            <a href="{{ link }}" target="_blank">
+              {{ @live_streamer.title }}
+            </a>
           </div>
         </div>
+      <div class="card-content">
       </div>
-    </Link>
+    </div>
 
     """
   end

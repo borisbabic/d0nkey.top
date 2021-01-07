@@ -18,22 +18,7 @@ defmodule Backend.HSReplay.Streaming do
   def is_wild(%{format: 2}), do: true
   def is_wild(_), do: false
 
-  def deckcode(%{deck: d, hero: h, format: f}) do
-    cards =
-      d
-      |> Enum.frequencies()
-      |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
-
-    ([0, 1, f, 1, h] ++
-       deckcode_part(cards[1]) ++
-       deckcode_part(cards[2]) ++
-       [0])
-    |> Enum.into(<<>>, fn i -> Varint.LEB128.encode(i) end)
-    |> Base.encode64()
-  end
-
-  defp deckcode_part(nil), do: []
-  defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
+  def deckcode(%{deck: d, hero: h, format: f}), do: Backend.Hearthstone.Deck.deckcode(d, h, f)
 
   def from_raw_map(map = %{"legend_rank" => lr}) do
     %__MODULE__{

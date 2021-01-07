@@ -3,8 +3,8 @@ defmodule Backend.HSReplay do
   alias Backend.Infrastructure.HSReplayCommunicator, as: Api
   alias Backend.Infrastructure.HSReplayLatestCache, as: Cache
   alias Backend.Infrastructure.ApiCache
-  alias Backend.Hearthstone.Deck
   alias Backend.HSReplay.Archetype
+  alias Backend.HSReplay.Streaming
   @type archetype_id :: integer
 
   def update_latest() do
@@ -180,6 +180,7 @@ defmodule Backend.HSReplay do
   def create_deck_link(<<deckcode::binary>>),
     do: "https://hsreplay.net/decks/#{deckcode |> URI.encode_www_form()}"
 
+  @spec get_streaming_now() :: [Streaming.t()]
   def get_streaming_now(), do: Api.get_streaming_now()
 
   def guess_archetype(%{class: class_name, cards: cards, format: format}) do
