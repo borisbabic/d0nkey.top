@@ -565,6 +565,7 @@ defmodule Backend.MastersTour do
       "LPOmegazero" -> "LPOmegaZero"
       "VK.xhx" -> "VKxhx"
       "yuyi" -> "WEYuyi"
+      "유워리" -> "6worry"
       n -> n
     end
   end
