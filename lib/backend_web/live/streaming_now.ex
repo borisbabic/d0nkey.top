@@ -114,11 +114,24 @@ defmodule BackendWeb.StreamingNowLive do
 
       <div class="columns is-multiline">
         <div class="column is-narrow" :for={{ ls <- @streaming_now |> filter_sort_streaming(@filter_sort)}} > 
-          <LiveStreamer id={{ls.stream_id}} live_streamer={{ ls }}/>
+          <div>
+            <LiveStreamer live_streamer={{ ls }}>
+              <Components.ExpandableDecklist :if={{ ls.deckcode }} id={{ "deck_#{ls.stream_id}_#{ls.deckcode}" }} show_cards={{ false }} deck={{ ls.deckcode |> Backend.Hearthstone.Deck.decode!() }} guess_archetype={{ true }}/>
+            </LiveStreamer>
+          </div>
         </div>
       </div>
     </div>
     """
+  end
+
+  def handle_event("toggle_cards", params, socket) do
+    Components.ExpandableDecklist.toggle_cards(params)
+
+    {
+      :noreply,
+      socket
+    }
   end
 
   def handle_info(
