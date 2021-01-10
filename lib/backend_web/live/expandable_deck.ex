@@ -15,7 +15,6 @@ defmodule BackendWeb.ExpandableDeckLive do
     deck = Deck.decode!(assigns[:deckcode])
 
     ~H"""
-    <div class="column is-narrow">
       <Decklist deck={{deck}} show_cards={{ @show_cards }} name={{ @name }}>
         <template slot="right_button">
           <span phx-click="show_cards" class="is-clickable" >
@@ -26,7 +25,6 @@ defmodule BackendWeb.ExpandableDeckLive do
           </span>
         </template>
       </Decklist>
-    </div>
     """
   end
 
