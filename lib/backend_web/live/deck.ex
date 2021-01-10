@@ -13,9 +13,7 @@ defmodule BackendWeb.DeckLive do
     deck = Deck.decode!(assigns[:deckcode])
 
     ~H"""
-    <div class="column is-narrow">
-      <Decklist deck={{deck}} />
-    </div>
+    <Decklist deck={{deck}} />
     """
   end
 end

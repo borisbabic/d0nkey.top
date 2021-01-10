@@ -17,7 +17,6 @@ defmodule Components.ExpandableDecklist do
       end
 
     ~H"""
-    <div class="column is-narrow">
       <Decklist deck={{ @deck }} show_cards={{ @show_cards }} name={{ name }}>
         <template slot="right_button">
           <span phx-click="toggle_cards" phx-value-id={{ @id }} phx-value-show_cards= {{ !@show_cards }}class="is-clickable" >
@@ -28,7 +27,6 @@ defmodule Components.ExpandableDecklist do
           </span>
         </template>
       </Decklist>
-    </div>
     """
   end
 
