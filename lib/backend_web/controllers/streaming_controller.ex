@@ -24,6 +24,15 @@ defmodule BackendWeb.StreamingController do
   defp add_archetypes_filter(criteria_map, archetypes),
     do: criteria_map |> Map.put("hsreplay_archetype", archetypes)
 
+  def order_by("best_legend_rank"), do: :best_legend_rank
+  def order_by("worst_legend_rank"), do: :worst_legend_rank
+  def order_by("latest_legend_rank"), do: :latest_legend_rank
+  def order_by(_), do: :last_played
+
+  defp direction("desc"), do: :desc
+  defp direction("asc"), do: :asc
+  defp direction(_), do: nil
+
   def streamer_decks(conn, params) do
     # used to only be include cards, but then I added exclude_cards so cards is there for backwards compatibility
     include_cards =
@@ -42,8 +51,11 @@ defmodule BackendWeb.StreamingController do
       multi_select_to_array(params["hsreplay_archetypes"])
       |> Enum.map(&Util.to_int_or_orig/1)
 
+    direction = direction(params["direction"])
+    sort_by = params["sort_by"]
+
     criteria =
-      %{"order_by" => {:desc, :last_played}, "limit" => 50, "offset" => 0}
+      %{"order_by" => {direction || :desc, sort_by |> order_by}, "limit" => 50, "offset" => 0}
       |> Map.merge(params)
       |> handle_old_peak_param()
       |> Map.put("include_cards", include_cards)
