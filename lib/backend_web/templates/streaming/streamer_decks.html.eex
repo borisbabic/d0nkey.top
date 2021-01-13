@@ -70,7 +70,7 @@ f-> %>
             <td>
                 <span><%= r.streamer %></span>
             </td>
-            <td><%= r.format %></td>
+            <td><%= render_game_type r.format %></td>
             <td><%= render_legend_rank r.best_legend_rank %></td>
             <td class="is-hidden-mobile"><%= render_legend_rank r.latest_legend_rank %></td>
             <td class="is-hidden-mobile"><%= render_legend_rank r.worst_legend_rank %></td>
