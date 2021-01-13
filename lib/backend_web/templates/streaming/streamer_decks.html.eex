@@ -74,7 +74,7 @@ f-> %>
             <td><%= render_legend_rank r.best_legend_rank %></td>
             <td class="is-hidden-mobile"><%= render_legend_rank r.latest_legend_rank %></td>
             <td class="is-hidden-mobile"><%= render_legend_rank r.worst_legend_rank %></td>
-            <td class="is-hidden-mobile"><%= render_legend_rank r.minutes_played %></td>
+            <td class="is-hidden-mobile"><%= r.minutes_played %></td>
             <td>
                 <a href="<%= r.deck_link %>">
                     <span class="icon tag is-link">
