@@ -19,6 +19,7 @@ defmodule BackendWeb.LeaderboardView do
         params = %{
           conn: conn,
           invited: invited_raw,
+          ladder_invite_num: ladder_invite_num,
           highlight: highlight,
           other_ladders: other_ladders,
           leaderboard: leaderboard,
@@ -26,8 +27,13 @@ defmodule BackendWeb.LeaderboardView do
           comparison: comparison
         }
       ) do
-    invited = leaderboard |> process_invited(invited_raw) |> add_other_ladders(other_ladders)
-    entries = leaderboard |> process_entries(invited, comparison, show_flags == "yes")
+    invited =
+      leaderboard
+      |> process_invited(invited_raw)
+      |> add_other_ladders(other_ladders, ladder_invite_num)
+
+    entries =
+      leaderboard |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num)
 
     render("leaderboard.html", %{
       entries: entries,
@@ -38,6 +44,7 @@ defmodule BackendWeb.LeaderboardView do
       dropdowns: create_dropdowns(params),
       old: old?(leaderboard),
       conn: conn,
+      ladder_invite_num: ladder_invite_num,
       highlighted: process_highlighted(highlight, entries)
     })
   end
@@ -186,10 +193,10 @@ defmodule BackendWeb.LeaderboardView do
 
   def old?(_), do: false
 
-  def add_other_ladders(invited, other_ladders) do
+  def add_other_ladders(invited, other_ladders, ladder_invite_num) do
     other_ladders
     |> Enum.flat_map(fn leaderboard ->
-      process_entries(leaderboard, invited, nil, false)
+      process_entries(leaderboard, invited, nil, false, ladder_invite_num)
       |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
       |> Enum.with_index(1)
       |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, leaderboard.region, pos}} end)
@@ -278,20 +285,21 @@ defmodule BackendWeb.LeaderboardView do
   Jay that Finished on APAC so I'm not counting them"
 
   def warning(_, _), do: nil
-  def process_entries(nil, _, _, _), do: []
+  def process_entries(nil, _, _, _, _), do: []
 
   def process_entries(
         snapshot = %{entries: entries, upstream_updated_at: upstream_updated_at},
         invited,
         comparison,
-        show_flags
+        show_flags,
+        num_invited
       ) do
     Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
 
       ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
-      qualifying = {!qualified && !ineligible && acc <= 16, acc}
+      qualifying = {!qualified && !ineligible && acc <= num_invited, acc}
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
 

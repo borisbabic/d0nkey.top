@@ -23,7 +23,7 @@
                     <% {_, _, true} -> %>
                         <p class="tag is-dark" data-balloon-pos="up" aria-label="Blizz employees and others are ineligible ">Ineligible</p>
                     <% {_, {true, pos}, _} -> %>
-                        <p class="tag is-success" data-balloon-pos="up" aria-label="The top 16 uninvited earn an MT invite. #<%= pos %> uninvited">Top 16</p>
+                        <p class="tag is-success" data-balloon-pos="up" aria-label="The top <%= @ladder_invite_num %> uninvited earn an MT invite. #<%= pos %> uninvited">Top <%= @ladder_invite_num %></p>
                     <% {:official, _, _} -> %>
                         <p class="tag is-info" data-balloon-pos="up" aria-label="Officially invited to the MT">Official</p>
                     <% {:unofficial, _, _} -> %>
