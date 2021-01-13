@@ -193,6 +193,7 @@ defmodule Backend.Streaming do
 
   def streamer(id), do: Repo.get(Streamer, id)
   def streamer_deck(id), do: Repo.get(StreamerDeck, id)
+  def streamer_decks_by_deck(deck_id), do: [{"deck_id", deck_id}] |> streamer_decks()
 
   def streamer_decks(criteria) do
     base_streamer_decks_query()

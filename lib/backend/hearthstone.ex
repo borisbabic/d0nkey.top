@@ -6,23 +6,33 @@ defmodule Backend.Hearthstone do
   alias Backend.Hearthstone.Deck
 
   def create_or_get_deck(cards, hero, format) do
-    deckcode = Deck.deckcode(cards, hero, format)
-
-    query =
-      from d in Deck,
-        where: d.deckcode == ^deckcode,
-        select: d,
-        order_by: [desc: :updated_at],
-        limit: 1
-
-    Repo.one(query)
+    deck(cards, hero, format)
     |> case do
       nil -> create_deck(cards, hero, format)
       deck -> {:ok, deck}
     end
   end
 
+  def deck(%{id: id}) when is_integer(id), do: deck(id)
+  def deck(%{cards: cards, hero: hero, format: format}), do: deck(cards, hero, format)
   def deck(id), do: Repo.get(Deck, id)
+
+  def deck(cards, hero, format) do
+    class = hero |> Backend.HearthstoneJson.get_class()
+
+    query =
+      from d in Deck,
+        where:
+          fragment("? @> ?", d.cards, ^cards) and
+            fragment("? <@ ?", d.cards, ^cards) and
+            d.format == ^format and
+            d.class == ^class,
+        select: d,
+        order_by: [desc: :updated_at],
+        limit: 1
+
+    Repo.one(query)
+  end
 
   def create_deck(cards, hero, format) do
     temp_attrs = %{cards: cards, hero: hero, format: format, class: class(hero)}

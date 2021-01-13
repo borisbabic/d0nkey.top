@@ -103,6 +103,7 @@ defmodule BackendWeb.Router do
     live "/streaming-now", StreamingNowLive
     live "/youtube/bnet-chat/:video_id", YoutubeChatLive
     live "/deckviewer", DeckviewerLive
+    live "/deck/*deck", DeckLive
 
     get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
 

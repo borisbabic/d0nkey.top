@@ -1,4 +1,4 @@
-defmodule BackendWeb.DeckLive do
+defmodule BackendWeb.DeckOnlyLive do
   @moduledoc false
   alias Components.Decklist
   alias Backend.Hearthstone.Deck

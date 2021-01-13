@@ -14,13 +14,13 @@
   /*--color-rare-dark: rgb(0, 84, 165);*/
   /*--color-epic: rgb(163, 53, 238);*/
   /*--color-epic-dark: rgb(126, 16, 201);*/
-  /*--color-legendary: rgb(255, 128, 0);*/
+  --color-legendary: rgb(255, 128, 0);
   /*--color-legendary-dark: rgb(191, 96, 0);*/
 
-  --color-common: rgb(133, 133, 133);
-  --color-rare: rgb(49, 83, 118);
-  --color-epic: rgb(100, 76, 130);
-  --color-legendary: rgb(133, 92, 37);
+  /*--color-common: rgb(133, 133, 133);*/
+  /*--color-rare: rgb(49, 83, 118);*/
+  /*--color-epic: rgb(100, 76, 130);*/
+  /*--color-legendary: rgb(133, 92, 37);*/
 
   --color-dark-common: rgb(99, 99, 99);
   --color-dark-rare: rgb(36, 62, 88);
@@ -41,6 +41,17 @@
   --color-warrior: rgb(200, 21, 24);
   --color-neutral: var(--color-darker-grey);
 
+  --color-twitch: rgb(145, 70, 255);
+
+  /*mode/gametype colors*/
+  --color-standard: rgb(66, 166, 66);
+  --color-wild: rgb(166, 66, 66);
+  --color-duels: rgb(66, 66, 166);
+  --color-arena: rgb(166, 166, 66);
+  --color-tavernbrawl: rgb(166, 66, 166);
+  --color-battlegrounds: rgb(66, 166, 166);
+  --color-firesidegathering: rgb(166, 166, 166);
+  --color-unknown: rgb(66, 66, 66);
 }
 
 .card_tile_fade_box {
@@ -199,3 +210,40 @@
   white-space: nowrap;
   align-items: center;
 }
+
+.legend-rank.tag {
+  /*color:  rgb(255, 175, 15);*/
+  color: rgb(238, 224, 133);
+  /*background-color: rgb(255, 140, 0);*/
+  /*background-color: rgb(173, 82, 15);*/
+  background-color: rgb(187, 100, 2);
+}
+
+.is-twitch.tag {
+  background-color: var(--color-twitch);
+
+}
+
+.has-text-twitch {
+  color: var(--color-twitch);
+}
+
+.is-multiline-tag.tag {
+  height: initial;
+  white-space: initial;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+/*.live-streamer.twitch {*/
+  /*border-color: var(--color-twitch);*/
+/*}*/
+/*.live-streamer.twitch .card-image {*/
+  /*border-color: var(--color-twitch);*/
+  /*border-size: 1px;*/
+/*}*/
+
+
+/*.live-streamer a {*/
+  /*[>color: black;<]*/
+/*}*/
