@@ -11,10 +11,12 @@ defmodule BackendWeb.LeaderboardController do
     comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
     show_flags = parse_show_flags(params)
+    {invited, ladder_invite_num} = leaderboard |> get_season_info()
 
     render(conn, "index.html", %{
       conn: conn,
-      invited: leaderboard |> get_invited(),
+      invited: invited,
+      ladder_invite_num: ladder_invite_num,
       highlight: parse_highlight(params),
       other_ladders: leaderboard |> get_other_ladders(ladder_mode),
       leaderboard: leaderboard,
@@ -40,19 +42,23 @@ defmodule BackendWeb.LeaderboardController do
   def parse_ladder_mode(%{"ladder_mode" => "no"}), do: "no"
   def parse_ladder_mode(_), do: "yes"
 
-  def get_invited(nil), do: []
-  def get_invited(%{season_id: season_id}), do: get_invited(season_id)
+  def get_season_info(nil), do: {[], 0}
+  def get_season_info(%{season_id: season_id}), do: get_season_info(season_id)
 
-  def get_invited(season_id) do
+  def get_season_info(season_id) do
     case Blizzard.get_ladder_tour_stop(season_id) do
-      {:ok, tour_stop} -> MastersTour.list_invited_players(tour_stop)
-      {:error, _} -> []
+      {:ok, tour_stop} ->
+        {MastersTour.list_invited_players(tour_stop), Blizzard.get_ladder_invite_num(tour_stop)}
+
+      {:error, _} ->
+        {[], 0}
     end
   end
 
   def get_other_ladders(_, "no"), do: []
 
-  def get_other_ladders(%{season_id: s, leaderboard_id: "STD", region: r}, "yes") when s > 71 do
+  def get_other_ladders(%{season_id: s, leaderboard_id: "STD", region: r}, "yes")
+      when s > 71 and s < 86 do
     Blizzard.ladders_to_check(s, r)
     |> Enum.flat_map(fn r ->
       case get_leaderboard(r, "STD", s) do

@@ -14,6 +14,7 @@ defmodule Backend.Blizzard do
           | :"Asia-Pacific"
           | :Montréal
           | :Madrid
+          | :TBD_2021_1
 
   @tour_stops [
     :"Las Vegas",
@@ -24,7 +25,8 @@ defmodule Backend.Blizzard do
     :Jönköping,
     :"Asia-Pacific",
     :Montréal,
-    :Madrid
+    :Madrid,
+    :TBD_2021_1
   ]
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
 
@@ -103,6 +105,7 @@ defmodule Backend.Blizzard do
       81 -> {:ok, :Montréal}
       82 -> {:ok, :Madrid}
       83 -> {:ok, :Madrid}
+      87 -> {:ok, :TBD_2021_1}
       _ -> {:error, "Invalid tour stop for ladder"}
     end
   end
@@ -148,6 +151,7 @@ defmodule Backend.Blizzard do
       :"Asia-Pacific" -> {:ok, [78, 79]}
       :Montréal -> {:ok, [80, 81]}
       :Madrid -> {:ok, [82, 83]}
+      :TBD_2021_1 -> {:ok, [87]}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
@@ -174,6 +178,7 @@ defmodule Backend.Blizzard do
       :"Asia-Pacific" -> :AP
       :Montréal -> :US
       :Madrid -> :EU
+      :TBD_2021_1 -> :US
       _ -> throw("Unknown tour stop")
     end
   end
@@ -352,7 +357,7 @@ defmodule Backend.Blizzard do
         {:ok, [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]}
 
       {2021, 2} ->
-        {:ok, [:"Asia-Pacific", :Montréal, :Madrid]}
+        {:ok, [:"Asia-Pacific", :Montréal, :Madrid, :TBD_2021_1]}
 
       _ ->
         {:error, "Unknown/unsupported gm_season"}
@@ -372,6 +377,7 @@ defmodule Backend.Blizzard do
       :"Asia-Pacific" -> {:ok, {2021, 1}}
       :Montréal -> {:ok, {2021, 1}}
       :Madrid -> {:ok, {2021, 1}}
+      :TBD_2021_1 -> {:ok, {2021, 2}}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
@@ -468,6 +474,7 @@ defmodule Backend.Blizzard do
   @spec get_tour_stops_for_year(integer) :: [tour_stop()]
   def get_tour_stops_for_year(year) do
     case year do
+      2021 -> [:TBD_2021_1]
       2020 -> [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]
       2019 -> [:"Las Vegas", :Seoul, :Bucharest]
       _ -> []
@@ -487,6 +494,7 @@ defmodule Backend.Blizzard do
       :"Asia-Pacific" -> 2020
       :Montréal -> 2020
       :Madrid -> 2020
+      :TBD_2021_1 -> 2021
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
@@ -538,4 +546,14 @@ defmodule Backend.Blizzard do
         false
     end
   end
+
+  def get_ladder_invite_num(tour_stop) when is_atom(tour_stop) do
+    tour_stop
+    |> get_year_for_tour_stop()
+    |> get_ladder_invite_num()
+  end
+
+  def get_ladder_invite_num(2020), do: 16
+  def get_ladder_invite_num(2021), do: 32
+  def get_ladder_invite_num(_), do: 0
 end

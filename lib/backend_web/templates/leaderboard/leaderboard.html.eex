@@ -11,4 +11,4 @@
 <% end %>
 <%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn) %>
 
-<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entries, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn) %>
+<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entries, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn, ladder_invite_num: @ladder_invite_num) %>

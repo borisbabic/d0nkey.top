@@ -103,6 +103,14 @@ defmodule Backend.MastersTour.TourStop do
         region: :EU,
         start_time: ~N[2020-10-23 12:15:00],
         year: 2020
+      },
+      %__MODULE__{
+        id: :TBD_2021_1,
+        battlefy_id: nil,
+        ladder_seasons: [87],
+        region: :US,
+        start_time: ~N[2021-10-23 12:15:00],
+        year: 2021
       }
     ]
   end
