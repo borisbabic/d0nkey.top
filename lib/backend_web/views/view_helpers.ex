@@ -116,6 +116,21 @@ defmodule BackendWeb.ViewHelpers do
         |> Map.merge(opts)
         |> render_multiselect_dropdown()
       end
+
+      def render_legend_rank(rank)
+          when (is_integer(rank) and rank > 0) or (is_binary(rank) and bit_size(rank) > 0) do
+        render(BackendWeb.SharedView, "legend_rank.html", %{rank: rank})
+      end
+
+      def render_legend_rank(rank), do: ""
+
+      def render_game_type(type) do
+        render(
+          BackendWeb.SharedView,
+          "game_type.html",
+          %{type: type}
+        )
+      end
     end
   end
 end

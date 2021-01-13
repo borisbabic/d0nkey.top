@@ -11,7 +11,7 @@
 <div class="columns is-multiline is-mobile is-hidden-mobile">
     <%= for code <- @deckcodes do %>
         <div class="column is-narrow">
-            <%= live_render(@conn, BackendWeb.DeckLive, session: %{"code" => code}) %>
+            <%= live_render(@conn, BackendWeb.DeckOnlyLive, session: %{"code" => code}) %>
         </div>
     <% end %>
 </div>

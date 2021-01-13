@@ -60,6 +60,9 @@ defmodule Hearthstone.Enums.BnetGameType do
   def fireside_gathering?(type), do: type in fireside_gathering_types()
   def fsg?(type), do: fireside_gathering?(type)
 
+  def arena_types(), do: [arena()]
+  def arena?(type), do: type in arena_types()
+
   def ranked_types(),
     do: [
       pvpdr_paid(),
@@ -78,7 +81,7 @@ defmodule Hearthstone.Enums.BnetGameType do
   def constructed_types(), do: wild_types() ++ standard_types() ++ [friends(), vs_ai()]
   def constructed?(type), do: type in constructed_types()
 
-  def game_type_name(type) do
+  def game_type_name(type) when is_integer(type) do
     cond do
       wild?(type) -> "Wild"
       standard?(type) -> "Standard"
@@ -86,7 +89,17 @@ defmodule Hearthstone.Enums.BnetGameType do
       tavernbrawl?(type) -> "Tavern Brawl"
       duels?(type) -> "Duels"
       fsg?(type) -> "Fireside Gathering"
+      arena?(type) -> "Arena"
       true -> "Unknown"
     end
   end
+
+  def game_type_name(type) when is_binary(type) do
+    normalize = &(&1 |> String.downcase() |> String.replace(" ", ""))
+
+    ["Wild", "Standard", "Battlegrounds", "Tavern Brawl", "Duels", "Fireside Gathering", "Arena"]
+    |> Enum.find("Unknown", &(normalize.(&1) == normalize.(type)))
+  end
+
+  def game_type_name(_), do: "Unknown"
 end
