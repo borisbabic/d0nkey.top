@@ -16,6 +16,11 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @doc false
+  def changeset(c, attrs = %{hsreplay_archetype: %{id: id}}) do
+    changeset(c, attrs |> Map.put(:hsreplay_archetype, id))
+  end
+
+  @doc false
   def changeset(c, attrs = %{deckcode: d}) when not is_nil(d) do
     c
     |> cast(attrs, @required ++ @optional)

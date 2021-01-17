@@ -52,6 +52,8 @@ defmodule Backend.HSReplay.Archetype do
     b_core = b |> signature_core(format)
     NaiveDateTime.compare(a_core, b_core)
   end
+
+  def highlander?(a = %{name: name}), do: name =~ "Highlander"
 end
 
 defmodule Backend.HSReplay.Archetype.CcpSignatureCore do

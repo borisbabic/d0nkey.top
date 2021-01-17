@@ -183,14 +183,51 @@ defmodule Backend.HSReplay do
   @spec get_streaming_now() :: [Streaming.t()]
   def get_streaming_now(), do: Api.get_streaming_now()
 
-  def guess_archetype(%{class: class_name, cards: cards, format: format}) do
+  def guess_non_highlander(d = %{class: class_name, format: format}) do
     get_archetypes()
     |> Enum.filter(fn a -> a.player_class_name == class_name end)
     |> Enum.filter(fn a ->
       core = a |> Archetype.signature_core(format)
       limit = NaiveDateTime.utc_now() |> NaiveDateTime.add(-60 * 60 * 24 * 30)
-      core && NaiveDateTime.compare(core.as_of, limit) == :gt
+      core && NaiveDateTime.compare(core.as_of, limit) == :gt && !Archetype.highlander?(a)
     end)
+    |> match_archetypes(d)
+  end
+
+  def get_highlander(d = %{class: class_name}) when not is_nil(class_name) do
+    get_highlander(class_name, d)
+  end
+
+  def get_highlander(d = %{hero: hero}) do
+    hero
+    |> Backend.HearthstoneJson.get_class()
+    |> get_highlander(d)
+  end
+
+  def get_highlander(class_name, d = %{format: format}) do
+    get_archetypes()
+    |> Enum.filter(fn a ->
+      Archetype.signature_core(a, format) &&
+        a.player_class_name == class_name &&
+        a |> Archetype.highlander?()
+    end)
+    |> match_archetypes(d)
+  end
+
+  def guess_archetype(d = %{cards: cards}) do
+    cards
+    |> Enum.frequencies()
+    |> Enum.max_by(fn {_archetype, freq} -> freq end)
+    |> case do
+      {_, 1} -> get_highlander(d)
+      {_, _} -> guess_non_highlander(d)
+    end
+  end
+
+  def guess_archetype(%{class: _class_name}), do: nil
+
+  def match_archetypes(archetypes, %{cards: cards, format: format}) do
+    archetypes
     |> Enum.map(fn a ->
       core = a |> Archetype.signature_core(format)
       num_matches = (cards -- cards -- core.components) |> Enum.count()
@@ -202,8 +239,6 @@ defmodule Backend.HSReplay do
       _ -> nil
     end
   end
-
-  def guess_archetype(%{class: _class_name}), do: nil
 
   def get_archetype(id) do
     get_archetypes() |> Enum.find(fn a -> a.id == id end)
