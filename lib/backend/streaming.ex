@@ -292,8 +292,17 @@ defmodule Backend.Streaming do
     end
   end
 
-  defp compose_streamer_deck_query({"min_minutes_played", min_minutes_played}, query),
-    do: query |> where([sd, _s, _d], sd.minutes_played >= ^min_minutes_played)
+  defp compose_streamer_deck_query(
+         {"first_played", <<"min_ago_"::binary, min_ago::bitstring>>},
+         query
+       ) do
+    min_ago
+    |> Integer.parse()
+    |> case do
+      {num, _} -> query |> where([sd, _s, _d], sd.first_played >= ago(^num, "minute"))
+      _ -> query
+    end
+  end
 
   defp compose_streamer_deck_query(_unrecognized, query), do: query
 end

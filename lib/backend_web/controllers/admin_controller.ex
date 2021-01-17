@@ -66,6 +66,17 @@ defmodule BackendWeb.AdminController do
     render(conn, "index.html")
   end
 
+  def recalculate_archetypes(conn, %{"minutes_ago" => min_ago}) do
+    Task.start(fn ->
+      resp =
+        min_ago
+        |> Backend.Hearthstone.recalculate_archetypes()
+        |> inspect(pretty: true)
+    end)
+
+    text(conn, "Doing it")
+  end
+
   def mt_player_nationality(conn, %{"tour_stop" => ts_string}) do
     response =
       ts_string

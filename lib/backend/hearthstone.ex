@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone do
   alias Ecto.Multi
   alias Backend.Repo
   alias Backend.Hearthstone.Deck
+  require Logger
 
   def create_or_get_deck(cards, hero, format) do
     deck(cards, hero, format)
@@ -64,6 +65,38 @@ defmodule Backend.Hearthstone do
     |> Repo.transaction()
   end
 
+  @spec recalculate_archetypes(Integer.t() | String.t()) :: {:ok, any()} | {:error, any()}
+  def recalculate_archetypes(<<"min_ago_"::binary, min_ago::bitstring>>),
+    do: recalculate_archetypes(min_ago)
+
+  def recalculate_archetypes(minutes_ago) when is_binary(minutes_ago) do
+    case Integer.parse(minutes_ago) do
+      {num, _} -> recalculate_archetypes(num)
+      _ -> {:error, "Couldn't parse integer"}
+    end
+  end
+
+  def recalculate_archetypes(minutes_ago) when is_integer(minutes_ago) do
+    decks = decks([{"latest", minutes_ago}])
+    Logger.info("Recalculating archetypes for #{decks |> Enum.count()} decks")
+
+    decks
+    |> Enum.chunk_every(100)
+    |> Enum.each(fn chunk ->
+      Logger.info("Recalculating archetypes...")
+
+      chunk
+      |> Enum.reduce(Multi.new(), fn d, multi ->
+        new_archetype = Backend.HSReplay.guess_archetype(d)
+        updated = d |> Deck.changeset(%{hsreplay_archetype: new_archetype, deckcode: d.deckcode})
+        Multi.update(multi, to_string(d.id), updated)
+      end)
+      |> Repo.transaction()
+    end)
+
+    {:ok, "Done"}
+  end
+
   def decks(criteria) do
     base_decks_query()
     |> build_decks_query(criteria)
@@ -81,7 +114,25 @@ defmodule Backend.Hearthstone do
   defp compose_decks_query({"deckcode", deckcode}, query),
     do: query |> where([d], d.deckcode == ^deckcode)
 
-  defp compose_decks_query(_unrecognized, query), do: query
+  defp compose_decks_query(
+         {"latest", <<"min_ago_"::binary, min_ago::bitstring>>},
+         query
+       ) do
+    min_ago
+    |> Integer.parse()
+    |> case do
+      {num, _} -> compose_decks_query({"last_played", num}, query)
+      _ -> query
+    end
+  end
+
+  defp compose_decks_query({"latest", min_ago}, query) when is_integer(min_ago),
+    do: query |> where([d], d.inserted_at >= ago(^min_ago, "minute"))
+
+  defp compose_decks_query(unrecognized, query) do
+    Logger.warn("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
+    query
+  end
 
   def darkmoon_faire_out?() do
     now = NaiveDateTime.utc_now()

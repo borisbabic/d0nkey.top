@@ -4,7 +4,8 @@ defmodule BackendWeb.AdminView do
 
   def render("index.html", %{conn: conn}) do
     dropdowns = [
-      mt_player_nationality_dropdown(conn)
+      mt_player_nationality_dropdown(conn),
+      recalculate_archetypes_dropdown(conn)
     ]
 
     links = [
@@ -15,6 +16,26 @@ defmodule BackendWeb.AdminView do
     ]
 
     render("index.html", %{dropdowns: dropdowns, links: links})
+  end
+
+  def recalculate_archetypes_dropdown(conn) do
+    options =
+      [
+        {"Last hour", "min_ago_60"},
+        {"Last day", "min_ago_1440"},
+        {"Last 3 days", "min_ago_4320"},
+        {"Last 7 days", "min_ago_10080"},
+        {"Last 15 days", "min_ago_21600"}
+      ]
+      |> Enum.map(fn {display, ma} ->
+        %{
+          link: Routes.admin_path(conn, :recalculate_archetypes, to_string(ma)),
+          selected: false,
+          display: display
+        }
+      end)
+
+    {options, "Recalculate Archetypes"}
   end
 
   def mt_player_nationality_dropdown(conn) do
