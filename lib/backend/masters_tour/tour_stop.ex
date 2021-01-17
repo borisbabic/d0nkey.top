@@ -14,7 +14,8 @@ defmodule Backend.MastersTour.TourStop do
         :Jönköping,
         :"Asia-Pacific",
         :Montréal,
-        :Madrid
+        :Madrid,
+        :TBD_2021_1
       ]
     end
   end
@@ -125,7 +126,7 @@ defmodule Backend.MastersTour.TourStop do
     id_unknown = {:error, "ID unknown for tour stop #{tour_stop}}"}
 
     case get(tour_stop) do
-      nil -> raise "Unknown tour stop #{tour_stop}"
+      nil -> {:error, "Unknown tour stop #{tour_stop}"}
       %{battlefy_id: battlefy_id} when is_binary(battlefy_id) -> {:ok, battlefy_id}
       _ -> id_unknown
     end
