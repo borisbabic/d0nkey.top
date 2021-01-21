@@ -6,6 +6,7 @@ defmodule Components.DecklistCard do
   prop(card, :map, required: true)
   prop(deck_class, :string, default: "NEUTRAL")
   prop(show_mana_cost, :boolean, default: true)
+  defp rarity(nil), do: rarity("COMMON")
   defp rarity("FREE"), do: rarity("COMMON")
   defp rarity(rarity), do: rarity |> String.downcase()
   defp class(class), do: class |> String.downcase()
