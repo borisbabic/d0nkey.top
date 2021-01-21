@@ -11,7 +11,7 @@ defmodule Backend.HearthstoneJson do
     GenServer.start_link(__MODULE__, default, name: @name)
   end
 
-  def get_card(dbf_id), do: Util.gs_call_if_up(@name, {:get_card, dbf_id})
+  def get_card(dbf_id), do: table() |> Util.ets_lookup("card_#{dbf_id}")
 
   @spec get_fresh() :: [Card]
   def get_fresh() do
@@ -31,9 +31,10 @@ defmodule Backend.HearthstoneJson do
   end
 
   def init(args \\ [fetch_fresh: false]) do
-    state = if(args[:fetch_fresh], do: get_fresh(), else: get_json()) |> create_state()
+    table = :ets.new(@name, [:named_table])
+    if(args[:fetch_fresh], do: get_fresh(), else: get_json()) |> update_table(table)
 
-    {:ok, state}
+    {:ok, %{table: table}}
   end
 
   @spec tile_url(Card.t() | String.t()) :: String.t()
@@ -49,57 +50,50 @@ defmodule Backend.HearthstoneJson do
   def card_url(id, size),
     do: "https://art.hearthstonejson.com/v1/render/latest/enUS/#{size}/#{id}.png"
 
-  def create_state(cards) do
-    class_map = create_class_map(cards)
-    card_map = cards |> Enum.map(fn c -> {c.dbf_id, c} end) |> Map.new()
-    collectible_cards = cards |> Enum.filter(& &1.collectible)
+  def update_table(_cards, :undefined), do: nil
 
-    %{
-      cards: cards,
-      class_map: class_map,
-      card_map: card_map,
-      collectible_cards: collectible_cards
-    }
-  end
-
-  def create_class_map(cards) do
+  def update_table(cards, table) do
     cards
-    |> Enum.map(fn c -> {c.dbf_id, c.card_class} end)
-    |> Map.new()
+    |> Enum.each(fn c ->
+      :ets.insert(table, {"card_#{c.dbf_id}", c})
+      :ets.insert(table, {"card_class_#{c.dbf_id}", c.card_class})
+    end)
+
+    :ets.insert(table, {"all_cards", cards})
+    :ets.insert(table, {"collectible_cards", cards |> Enum.filter(& &1.collectible)})
   end
 
-  def get_class(dbf_id), do: Util.gs_call_if_up(@name, {:get_class, dbf_id})
+  def get_class(dbf_id) do
+    table()
+    |> Util.ets_lookup("card_class_#{dbf_id}")
+  end
+
+  def table(), do: :ets.whereis(@name)
 
   """
   If the hero isn't available then it defaults to the basic hero for the class
   """
 
   @spec get_hero(Deck.t()) :: Backend.HearthstoneJson.Card.t()
-  def get_hero(deck), do: Util.gs_call_if_up(@name, {:get_hero, deck})
+  def get_hero(deck) do
+    deck.hero
+    |> get_card()
+    |> case do
+      nil ->
+        deck.class
+        |> Deck.get_basic_hero()
+        |> get_card()
 
-  def cards(), do: Util.gs_call_if_up(@name, {:cards}, [])
-  def collectible_cards(), do: Util.gs_call_if_up(@name, {:collectible_cards}, [])
-
-  def handle_call({:collectible_cards}, _from, s = %{collectible_cards: cards}),
-    do: {:reply, cards, s}
-
-  def handle_call({:cards}, _from, s = %{cards: cards}), do: {:reply, cards, s}
-  def handle_call({:get_class, dbf_id}, _from, s = %{class_map: cm}), do: {:reply, cm[dbf_id], s}
-  def handle_call({:get_card, dbf_id}, _from, s = %{card_map: cm}), do: {:reply, cm[dbf_id], s}
-
-  def handle_call({:get_hero, deck}, _from, s = %{card_map: cm}) do
-    hero =
-      with nil <- cm[deck.hero] do
-        cm[Deck.get_basic_hero(deck.class)]
-      else
-        hero -> hero
-      end
-
-    {:reply, hero, s}
+      hero ->
+        hero
+    end
   end
 
-  def handle_cast({:update_cards}, _old_state) do
-    state = get_fresh() |> create_state()
+  def cards(), do: table() |> Util.ets_lookup("all_cards", [])
+  def collectible_cards(), do: table() |> Util.ets_lookup("collection_cards", [])
+
+  def handle_cast({:update_cards}, state = %{table: table}) do
+    get_fresh() |> update_table(table)
     {:noreply, state}
   end
 
