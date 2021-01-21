@@ -136,17 +136,23 @@ defmodule BackendWeb.LeaderboardView do
 
   def create_show_flags_dropdown(conn, show_flags) do
     options =
-      ["yes", "no"]
-      |> Enum.map(fn mode ->
+      [{"Show country flags", "yes"}, {"Hide country flags", "no"}]
+      |> Enum.map(fn {title, mode} ->
         %{
-          display: Recase.to_title(mode),
+          display: title,
           selected: mode == show_flags,
           link:
             Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "show_flags", mode))
         }
       end)
 
-    {options, "Show Country Flags"}
+    title = ~E"""
+    <span class="icon">
+      <i class="far fa-flag"></i>
+    </span>
+    """
+
+    {options, title}
   end
 
   def create_compare_to_dropdown(conn, compare_to) do
