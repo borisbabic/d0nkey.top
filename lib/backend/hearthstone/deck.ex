@@ -58,7 +58,8 @@ defmodule Backend.Hearthstone.Deck do
 
   @spec class_name(String.t()) :: String.t()
   def class_name("DEMONHUNTER"), do: "Demon Hunter"
-  def class_name(c), do: c |> Recase.to_title()
+  def class_name(c) when is_binary(c), do: c |> Recase.to_title()
+  def class_name(other), do: other
 
   @spec remove_comments(String.t()) :: String.t()
   def remove_comments(deckcode_string) do
@@ -172,11 +173,13 @@ defmodule Backend.Hearthstone.Deck do
   """
 
   @spec normalize_class_name(String.t()) :: String.t()
-  def normalize_class_name(class),
+  def normalize_class_name(<<class::binary>>),
     do:
       class
       |> String.upcase()
       |> String.replace(~r/\w/, "")
+
+  def normalize_class_name(not_string), do: not_string
 
   @spec shorten_codes([String.t()]) :: [String.t()]
   def shorten_codes(codes) do

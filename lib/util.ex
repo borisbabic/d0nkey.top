@@ -430,4 +430,15 @@ defmodule Util do
       GenServer.call(name, call)
     end
   end
+
+  def ets_lookup(table, key, default \\ nil)
+  def ets_lookup(:undefined, _, default), do: default
+
+  def ets_lookup(table, key, default) do
+    case :ets.lookup(table, key) do
+      [{found_key, value}] when found_key == key -> value
+      [] -> default
+      other -> other
+    end
+  end
 end
