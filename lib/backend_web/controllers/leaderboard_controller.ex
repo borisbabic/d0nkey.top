@@ -48,7 +48,8 @@ defmodule BackendWeb.LeaderboardController do
   def get_season_info(season_id) do
     case Blizzard.get_ladder_tour_stop(season_id) do
       {:ok, tour_stop} ->
-        {MastersTour.list_invited_players(tour_stop), Blizzard.get_ladder_invite_num(tour_stop)}
+        {MastersTour.list_invited_players(tour_stop),
+         MastersTour.TourStop.ladder_invites(tour_stop)}
 
       {:error, _} ->
         {[], 0}

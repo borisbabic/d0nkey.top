@@ -3,6 +3,7 @@ defmodule Backend.Blizzard do
 
   alias Backend.Infrastructure.BlizzardCommunicator, as: Api
   alias Backend.Blizzard.Leaderboard
+  alias Backend.MastersTour.TourStop
 
   @type tour_stop ::
           :"Las Vegas"
@@ -14,20 +15,13 @@ defmodule Backend.Blizzard do
           | :"Asia-Pacific"
           | :Montréal
           | :Madrid
-          | :TBD_2021_1
+          | :Ironforge
+          | :Ogrimmar
+          | :Dalaran
+          | :Silvermoon
+          | :Stormwind
+          | :Undercity
 
-  @tour_stops [
-    :"Las Vegas",
-    :Seoul,
-    :Bucharest,
-    :Arlington,
-    :Indonesia,
-    :Jönköping,
-    :"Asia-Pacific",
-    :Montréal,
-    :Madrid,
-    :TBD_2021_1
-  ]
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
 
   @type region :: :EU | :US | :AP | :CN
@@ -90,24 +84,7 @@ defmodule Backend.Blizzard do
   @spec get_ladder_tour_stop(integer()) :: {:ok, tour_stop} | {:error, String.t()}
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_ladder_tour_stop(season_id) do
-    Backend.MastersTour.TourS
-
-    case season_id do
-      72 -> {:ok, :Arlington}
-      73 -> {:ok, :Arlington}
-      74 -> {:ok, :Indonesia}
-      75 -> {:ok, :Indonesia}
-      76 -> {:ok, :Jönköping}
-      77 -> {:ok, :Jönköping}
-      78 -> {:ok, :"Asia-Pacific"}
-      79 -> {:ok, :"Asia-Pacific"}
-      80 -> {:ok, :Montréal}
-      81 -> {:ok, :Montréal}
-      82 -> {:ok, :Madrid}
-      83 -> {:ok, :Madrid}
-      87 -> {:ok, :TBD_2021_1}
-      _ -> {:error, "Invalid tour stop for ladder"}
-    end
+    TourStop.get_by_ladder(season_id)
   end
 
   @doc """
@@ -141,17 +118,11 @@ defmodule Backend.Blizzard do
   def get_ladder_seasons(tour_stop) do
     no_ladder_for_tour = {:error, "There were no ladder invites for this tour stop"}
 
-    case tour_stop do
-      :LasVegas -> no_ladder_for_tour
-      :Seoul -> no_ladder_for_tour
-      :Bucharest -> no_ladder_for_tour
-      :Arlington -> {:ok, [72, 73]}
-      :Indonesia -> {:ok, [74, 75]}
-      :Jönköping -> {:ok, [76, 77]}
-      :"Asia-Pacific" -> {:ok, [78, 79]}
-      :Montréal -> {:ok, [80, 81]}
-      :Madrid -> {:ok, [82, 83]}
-      :TBD_2021_1 -> {:ok, [87]}
+    tour_stop
+    |> TourStop.get()
+    |> case do
+      %{ladder_seasons: []} -> no_ladder_for_tour
+      %{ladder_seasons: seasons} -> {:ok, seasons}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
@@ -168,17 +139,10 @@ defmodule Backend.Blizzard do
   @spec get_tour_stop_region!(tour_stop) :: region
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_tour_stop_region!(tour_stop) do
-    case tour_stop do
-      :LasVegas -> :US
-      :Seoul -> :AP
-      :Bucharest -> :EU
-      :Arlington -> :US
-      :Indonesia -> :AP
-      :Jönköping -> :EU
-      :"Asia-Pacific" -> :AP
-      :Montréal -> :US
-      :Madrid -> :EU
-      :TBD_2021_1 -> :US
+    tour_stop
+    |> TourStop.get()
+    |> case do
+      %{region: region} -> region
       _ -> throw("Unknown tour stop")
     end
   end
@@ -243,7 +207,7 @@ defmodule Backend.Blizzard do
   """
   @spec tour_stops() :: [tour_stop]
   def tour_stops() do
-    @tour_stops
+    TourStop.all() |> Enum.map(& &1.id)
   end
 
   @doc """
@@ -251,7 +215,7 @@ defmodule Backend.Blizzard do
   """
   @spec tour_stops(:string) :: [String.t()]
   def tour_stops(:string) do
-    Enum.map(@tour_stops, &to_string/1)
+    tour_stops() |> Enum.map(&to_string/1)
   end
 
   @doc """
@@ -357,14 +321,17 @@ defmodule Backend.Blizzard do
         {:ok, [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]}
 
       {2021, 2} ->
-        {:ok, [:"Asia-Pacific", :Montréal, :Madrid, :TBD_2021_1]}
+        {:ok, [:"Asia-Pacific", :Montréal, :Madrid, :Ironforge, :Ogrimmar, :Dalaran]}
+
+      {2022, 1} ->
+        {:ok, [:Ironforge, :Ogrimmar, :Dalaran, :Silvermoon, :Stormwind, :Undercity]}
 
       _ ->
         {:error, "Unknown/unsupported gm_season"}
     end
   end
 
-  @spec get_tour_stops_for_gm(tour_stop()) :: {:ok, gm_season()} | {:error, String.t()}
+  @spec get_promotion_season_for_gm(tour_stop()) :: {:ok, gm_season()} | {:error, String.t()}
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_promotion_season_for_gm(tour_stop) do
     case tour_stop do
@@ -377,7 +344,12 @@ defmodule Backend.Blizzard do
       :"Asia-Pacific" -> {:ok, {2021, 1}}
       :Montréal -> {:ok, {2021, 1}}
       :Madrid -> {:ok, {2021, 1}}
-      :TBD_2021_1 -> {:ok, {2021, 2}}
+      :Ironforge -> {:ok, {2021, 2}}
+      :Ogrimmar -> {:ok, {2021, 2}}
+      :Dalaran -> {:ok, {2021, 2}}
+      :Silvermoon -> {:ok, {2022, 1}}
+      :Stormwind -> {:ok, {2022, 1}}
+      :Undercity -> {:ok, {2022, 1}}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
@@ -473,30 +445,9 @@ defmodule Backend.Blizzard do
 
   @spec get_tour_stops_for_year(integer) :: [tour_stop()]
   def get_tour_stops_for_year(year) do
-    case year do
-      2021 -> [:TBD_2021_1]
-      2020 -> [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]
-      2019 -> [:"Las Vegas", :Seoul, :Bucharest]
-      _ -> []
-    end
-  end
-
-  @spec get_year_for_tour_stop(tour_stop()) :: integer
-  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
-  def get_year_for_tour_stop(tour_stop) do
-    case tour_stop do
-      :LasVegas -> 2019
-      :Seoul -> 2019
-      :Bucharest -> 2019
-      :Arlington -> 2020
-      :Indonesia -> 2020
-      :Jönköping -> 2020
-      :"Asia-Pacific" -> 2020
-      :Montréal -> 2020
-      :Madrid -> 2020
-      :TBD_2021_1 -> 2021
-      _ -> {:error, "Unknown tour stop #{tour_stop}"}
-    end
+    TourStop.all()
+    |> Enum.filter(&(&1.year == year))
+    |> Enum.map(& &1.id)
   end
 
   @spec get_leaderboard(region(), leaderboard(), integer | nil) :: Leaderboard
@@ -529,7 +480,8 @@ defmodule Backend.Blizzard do
     [
       %{battletag_short: "Archangel", from: ~D[2019-01-01]},
       %{battletag_short: "Chakki", from: ~D[2019-01-01]},
-      %{battletag_short: "Gallon", from: ~D[2020-08-01]}
+      %{battletag_short: "Gallon", from: ~D[2020-08-01]},
+      %{battletag_short: "BoarControl", from: ~D[2021-10-01]}
     ]
   end
 
@@ -546,14 +498,4 @@ defmodule Backend.Blizzard do
         false
     end
   end
-
-  def get_ladder_invite_num(tour_stop) when is_atom(tour_stop) do
-    tour_stop
-    |> get_year_for_tour_stop()
-    |> get_ladder_invite_num()
-  end
-
-  def get_ladder_invite_num(2020), do: 16
-  def get_ladder_invite_num(2021), do: 32
-  def get_ladder_invite_num(_), do: 0
 end

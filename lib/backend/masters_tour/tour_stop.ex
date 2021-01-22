@@ -15,7 +15,12 @@ defmodule Backend.MastersTour.TourStop do
         :"Asia-Pacific",
         :Montréal,
         :Madrid,
-        :TBD_2021_1
+        :Ironforge,
+        :Ogrimmar,
+        :Dalaran,
+        :Silvermoon,
+        :Stormwind,
+        :Undercity
       ]
     end
   end
@@ -24,6 +29,8 @@ defmodule Backend.MastersTour.TourStop do
     field :id, :atom
     field :battlefy_id, Backend.Battlefy.tournament_id(), enforce: false
     field :ladder_seasons, [integer]
+    field :ladder_invites, enforce: false
+    field :qualifiers_period, {Date.t(), Date.t()}
     field :region, Blizzard.region()
     field :start_time, NaiveDateTime.t(), enforce: false
     field :old_id, atom, enforce: false
@@ -36,7 +43,9 @@ defmodule Backend.MastersTour.TourStop do
         id: :"Las Vegas",
         battlefy_id: "5cdb04cdce130203069be2dd",
         ladder_seasons: [],
+        ladder_invites: 0,
         region: :US,
+        qualifiers_period: {~D[2019-03-06], ~D[2019-04-28]},
         start_time: ~N[2019-06-14 16:00:00],
         year: 2020
       },
@@ -44,7 +53,9 @@ defmodule Backend.MastersTour.TourStop do
         id: :Seoul,
         battlefy_id: "5d3117357045a2325e167ad6",
         ladder_seasons: [],
+        ladder_invites: 0,
         region: :AP,
+        qualifiers_period: {~D[2019-05-08], ~D[2019-06-30]},
         start_time: ~N[2019-08-16 01:00:00],
         year: 2019
       },
@@ -52,7 +63,9 @@ defmodule Backend.MastersTour.TourStop do
         id: :Bucharest,
         battlefy_id: "5d8276701d82bf1a20dbf45b",
         ladder_seasons: [],
+        ladder_invites: 0,
         region: :EU,
+        qualifiers_period: {~D[2019-07-05], ~D[2019-08-25]},
         start_time: ~N[2019-10-18 06:00:00],
         year: 2020
       },
@@ -60,15 +73,19 @@ defmodule Backend.MastersTour.TourStop do
         id: :Arlington,
         battlefy_id: "5e1cf8ff1e66fd33ebbfc0ed",
         ladder_seasons: [72, 73],
+        ladder_invites: 16,
         region: :US,
         start_time: ~N[2020-01-31 15:00:00],
+        qualifiers_period: {~D[2019-10-04], ~D[2019-11-24]},
         year: 2020
       },
       %__MODULE__{
         id: :Indonesia,
         battlefy_id: "5e5d80217506f5240ebad221",
         ladder_seasons: [74, 75],
+        ladder_invites: 16,
         region: :AP,
+        qualifiers_period: {~D[2019-12-13], ~D[2020-01-26]},
         start_time: ~N[2020-03-20 16:00:00],
         year: 2020
       },
@@ -76,50 +93,113 @@ defmodule Backend.MastersTour.TourStop do
         id: :Jönköping,
         battlefy_id: "5ec5ca7153702b1ab2a5c9dd",
         ladder_seasons: [76, 77],
+        ladder_invites: 16,
         region: :EU,
         start_time: ~N[2020-06-12 12:15:00],
+        qualifiers_period: {~D[2020-02-07], ~D[2020-03-29]},
         year: 2020
       },
       %__MODULE__{
         id: :"Asia-Pacific",
         battlefy_id: "5efbcdaca2b8f022508f65c3",
         ladder_seasons: [78, 79],
+        ladder_invites: 16,
         region: :AP,
         start_time: ~N[2020-07-17 00:00:00],
+        qualifiers_period: {~D[2020-04-03], ~D[2020-05-24]},
         year: 2020
       },
       %__MODULE__{
         id: :Montréal,
         battlefy_id: "5f3c3c6066bf242962711d60",
         ladder_seasons: [80, 81],
+        ladder_invites: 16,
         region: :US,
         old_id: :Montreal,
         start_time: ~N[2020-09-11 15:15:00],
+        qualifiers_period: {~D[2020-06-05], ~D[2020-07-26]},
         year: 2020
       },
       %__MODULE__{
         id: :Madrid,
         battlefy_id: "5f8100994e9faf3dd1a80ad0",
         ladder_seasons: [82, 83],
+        ladder_invites: 16,
         region: :EU,
         start_time: ~N[2020-10-23 12:15:00],
+        qualifiers_period: {~D[2020-08-07], ~D[2020-09-27]},
         year: 2020
       },
       %__MODULE__{
-        id: :TBD_2021_1,
+        id: :Ironforge,
         battlefy_id: nil,
         ladder_seasons: [87],
+        ladder_invites: 32,
         region: :US,
-        start_time: ~N[2021-10-23 12:15:00],
+        start_time: ~N[2021-03-12 17:15:00],
+        qualifiers_period: {~D[2021-01-28], ~D[2021-02-28]},
+        year: 2021
+      },
+      %__MODULE__{
+        id: :Ogrimmar,
+        battlefy_id: nil,
+        ladder_seasons: [88, 89],
+        ladder_invites: 16,
+        region: :EU,
+        qualifiers_period: {~D[2021-03-04], ~D[2020-04-11]},
+        start_time: ~N[2021-04-30 12:15:00],
+        year: 2021
+      },
+      %__MODULE__{
+        id: :Dalaran,
+        battlefy_id: nil,
+        ladder_seasons: [90, 91],
+        ladder_invites: 16,
+        qualifiers_period: {~D[2021-04-15], ~D[2020-05-23]},
+        region: :AP,
+        start_time: ~N[2021-06-18 04:15:00],
+        year: 2021
+      },
+      %__MODULE__{
+        id: :Silvermoon,
+        battlefy_id: nil,
+        ladder_seasons: [92, 93],
+        ladder_invites: 16,
+        region: :US,
+        start_time: ~N[2021-08-27 17:15:00],
+        qualifiers_period: {~D[2021-06-03], ~D[2020-07-18]},
+        year: 2021
+      },
+      %__MODULE__{
+        id: :Stormwind,
+        battlefy_id: nil,
+        ladder_seasons: [94, 95],
+        ladder_invites: 16,
+        region: :US,
+        start_time: ~N[2021-10-22 12:15:00],
+        qualifiers_period: {~D[2021-07-22], ~D[2020-09-05]},
+        year: 2021
+      },
+      %__MODULE__{
+        id: :Undercity,
+        battlefy_id: nil,
+        ladder_seasons: [96],
+        ladder_invites: 32,
+        region: :AP,
+        start_time: ~N[2021-11-19 04:15:00],
+        qualifiers_period: {~D[2021-09-09], ~D[2020-10-31]},
         year: 2021
       }
     ]
   end
 
-  def get(tour_stop, attr) when is_tour_stop(tour_stop) and is_atom(attr) do
+  def get(tour_stop, attr, default \\ nil) when is_tour_stop(tour_stop) and is_atom(attr) do
     tour_stop
     |> get()
-    |> Access.get(attr)
+    |> case do
+      ts = %{id: _} -> ts |> Map.get(attr, default)
+      _ -> default
+    end
   end
 
   def get_battlefy_id(tour_stop) when is_tour_stop(tour_stop) do
@@ -183,4 +263,18 @@ defmodule Backend.MastersTour.TourStop do
 
   def started?(tour_stop) when is_atom(tour_stop) or is_binary(tour_stop),
     do: tour_stop |> get() |> started?()
+
+  def get_year(tour_stop), do: get(tour_stop, :year)
+
+  @spec get_by_ladder(integer()) :: {:ok, atom} | {:error, String.t()}
+  def get_by_ladder(season_id) do
+    all()
+    |> Enum.find(&(season_id in &1.ladder_seasons))
+    |> case do
+      %{id: id} -> {:ok, id}
+      _ -> {:error, "Invalid tour stop for ladder"}
+    end
+  end
+
+  def ladder_invites(tour_stop), do: get(tour_stop, :ladder_invites, 0)
 end
