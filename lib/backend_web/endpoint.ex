@@ -4,7 +4,8 @@ defmodule BackendWeb.Endpoint do
   @session_options store: :cookie, key: "_backend_key", signing_salt: "tbOo3n69"
 
   socket "/socket", BackendWeb.UserSocket,
-    websocket: true,
+    # timeout for heroku
+    websocket: [timeout: 45_000],
     longpoll: false
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
