@@ -57,6 +57,7 @@ defmodule BackendWeb.StreamingController do
     criteria =
       %{"order_by" => {direction || :desc, sort_by |> order_by}, "limit" => 20, "offset" => 0}
       |> Map.merge(params)
+      |> Map.update!("limit", &(&1 |> Util.to_int_or_orig() |> min(50)))
       |> handle_old_peak_param()
       |> Map.put("include_cards", include_cards)
       |> Map.put("exclude_cards", exclude_cards)
