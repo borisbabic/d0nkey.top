@@ -762,11 +762,18 @@ defmodule BackendWeb.MastersTourView do
   @spec create_dropdown_qualifier_links(any) :: [qualifiers_dropdown_link]
   def create_dropdown_qualifier_links(conn) do
     tour_stop_ranges =
-      eligible_tour_stops()
+      TourStop.all()
+      |> Enum.filter(fn %{qualifiers_period: {start, _}} ->
+        :gt ==
+          Date.utc_today()
+          |> Date.add(14)
+          |> Date.compare(start)
+      end)
+      |> Enum.reverse()
       |> Enum.map(fn ts ->
         %{
-          display: ts,
-          link: ts |> MastersTour.guess_qualifier_range() |> create_qualifiers_link(conn)
+          display: ts.id,
+          link: ts.qualifiers_period |> create_qualifiers_link(conn)
         }
       end)
 
@@ -782,7 +789,7 @@ defmodule BackendWeb.MastersTourView do
     date_ranges ++ tour_stop_ranges
   end
 
-  def eligible_years(), do: [2020]
+  def eligible_years(), do: [2020, 2021]
 
   def eligible_tour_stops() do
     Blizzard.tour_stops()

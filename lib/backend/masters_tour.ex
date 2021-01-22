@@ -180,7 +180,7 @@ defmodule Backend.MastersTour do
     PlayerStatsCache.delete(tour_stop)
 
     tour_stop
-    |> Blizzard.get_year_for_tour_stop()
+    |> TourStop.get_year()
     |> PlayerStatsCache.delete()
   end
 
