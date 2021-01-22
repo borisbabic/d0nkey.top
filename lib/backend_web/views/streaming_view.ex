@@ -227,14 +227,12 @@ defmodule BackendWeb.StreamingView do
   def create_limit_dropdown(conn, limit) do
     options =
       [
+        5,
         10,
         20,
         30,
-        50,
-        75,
-        100,
-        250,
-        500
+        40,
+        50
       ]
       |> Enum.map(fn l ->
         %{
