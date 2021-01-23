@@ -90,7 +90,7 @@ defmodule Backend.HearthstoneJson do
   end
 
   def cards(), do: table() |> Util.ets_lookup("all_cards", [])
-  def collectible_cards(), do: table() |> Util.ets_lookup("collection_cards", [])
+  def collectible_cards(), do: table() |> Util.ets_lookup("collectible_cards", [])
 
   def handle_cast({:update_cards}, state = %{table: table}) do
     get_fresh() |> update_table(table)
