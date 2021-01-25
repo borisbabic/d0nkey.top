@@ -52,7 +52,10 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
 
     url
     |> get_body()
-    |> Poison.decode!()
-    |> Enum.map(&Streaming.from_raw_map/1)
+    |> Poison.decode()
+    |> case do
+      {:ok, decoded} -> decoded |> Enum.map(&Streaming.from_raw_map/1)
+      _ -> []
+    end
   end
 end
