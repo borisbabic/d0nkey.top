@@ -59,7 +59,7 @@ defmodule BackendWeb.LeaderboardController do
   def get_other_ladders(_, "no"), do: []
 
   def get_other_ladders(%{season_id: s, leaderboard_id: "STD", region: r}, "yes")
-      when s > 71 and s < 86 do
+      when s > 71 do
     Blizzard.ladders_to_check(s, r)
     |> Enum.flat_map(fn r ->
       case get_leaderboard(r, "STD", s) do

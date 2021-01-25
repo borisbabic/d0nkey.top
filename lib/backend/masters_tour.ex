@@ -355,7 +355,8 @@ defmodule Backend.MastersTour do
         to_ts,
         excluding \\ MapSet.new([]),
         reason_append \\ " *copied",
-        reason_search \\ "%Grandmaster%"
+        reason_search \\ "%Grandmaster%",
+        reason \\ nil
       ) do
     from = to_string(from_ts)
     to = to_string(to_ts)
@@ -495,11 +496,10 @@ defmodule Backend.MastersTour do
   end
 
   @spec create_qualifier_link(Backend.Battlefy.Tournament.t()) :: String.t()
-  def create_qualifier_link(t = %{slug: slug, id: id, organization: %{slug: org_slug}}) do
+  def create_qualifier_link(t = %{slug: _, id: _, organization: %{slug: _}}) do
     Battlefy.create_tournament_link(t)
   end
 
-  @spec create_qualifier_link(Backend.Battlefy.Tournament.t()) :: String.t()
   def create_qualifier_link(%{slug: slug, id: id}) do
     create_qualifier_link(slug, id)
   end
@@ -591,7 +591,6 @@ defmodule Backend.MastersTour do
     |> Enum.sort_by(fn {_, money} -> money end, :desc)
   end
 
-  @spec get_2020_earnings(Battlefy.Tournament.t(), Blizzard.tour_stop()) :: [{String.t(), number}]
   def get_2020_earnings(%{stages: [swiss]}, _) do
     swiss_standings = Battlefy.get_stage_standings(swiss)
 
@@ -896,5 +895,62 @@ defmodule Backend.MastersTour do
     else
       _ -> short_or_full
     end
+  end
+
+  def invite_2021_01_new_gms(tour_stop) do
+    reason = "2021 Hearthstone Grandmaster"
+
+    list = [
+      "Leta#21458",
+      "Warma#2764",
+      "Frenetic#2377",
+      "justsaiyan#1493",
+      "DreadEye#11302",
+      "Impact#1923",
+      "Fled#1956",
+      "GivePLZ#1207",
+      "Hi3#31902",
+      "lambyseries#1852"
+    ]
+
+    now = NaiveDateTime.utc_now()
+
+    list
+    |> Enum.reduce(Multi.new(), fn gm, multi ->
+      raw = %{
+        tour_stop: tour_stop,
+        battletag_full: gm,
+        reason: reason,
+        official: false,
+        upstream_time: now
+      }
+
+      changeset = raw |> create_invited_player()
+      Multi.insert(multi, InvitedPlayer.uniq_string(raw), changeset)
+    end)
+    |> Repo.transaction()
+  end
+
+  @spec add_top_win_cut([atom()] | atom(), [atom()] | atom()) :: any()
+  def add_top_win_cut(targets, sources) when not is_list(targets),
+    do: add_top_win_cut([targets], sources)
+
+  def add_top_win_cut(targets, sources) when not is_list(sources),
+    do: add_top_win_cut(targets, [sources])
+
+  def add_top_win_cut(targets, sources) when is_list(targets) and is_list(sources) do
+    sources
+    |> Enum.map(fn ts ->
+      tournament =
+        ts
+        |> TourStop.get_battlefy_id!()
+        |> Battlefy.get_tournament()
+
+      {ts, tournament.stage_ids |> Enum.at(0)}
+    end)
+    |> Enum.each(fn {source, stage_id} ->
+      targets
+      |> Enum.each(&add_top_cut(&1, "#{source} Top Finisher", stage_id))
+    end)
   end
 end
