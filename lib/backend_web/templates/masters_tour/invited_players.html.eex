@@ -1,6 +1,6 @@
 <div class="title is-2">Invited Players</div>
 <div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@selected_ts%></button></div>
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@selected_ts%></button></div>
     <div class="dropdown-menu" role="menu">
     <div class="dropdown-content">
         <%= for %{ts: ts, selected: selected, link: link} <- @ts_list do %>

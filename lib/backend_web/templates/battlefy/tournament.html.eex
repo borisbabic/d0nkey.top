@@ -6,7 +6,7 @@
 f-> %>
     <%= if @show_stage_selection do %>
         <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button"><%=@stage_selection_text%></button></div>
+            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@stage_selection_text%></button></div>
             <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
                 <%= for %{name: name, selected: selected, link: link} <- @stages do %>
