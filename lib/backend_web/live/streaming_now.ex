@@ -35,7 +35,7 @@ defmodule BackendWeb.StreamingNowLive do
       <div class="subtitle is-6"><a href="{{ instructions_link }}">Instructions for streamers</a></div>
 
       <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Sort</button></div>
+          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Sort</button></div>
           <div class="dropdown-menu" role="menu">
               <div class="dropdown-content">
                 <div :for={{ {display, val} <- [{"Newest", "newest"}, {"Oldest", "oldest"}, {"Most Viewers", "most_viewers"}, {"Fewest Viewers", "fewest_viewers"}] }}>
@@ -51,7 +51,7 @@ defmodule BackendWeb.StreamingNowLive do
       </div>
 
       <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Mode</button></div>
+          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Mode</button></div>
           <div class="dropdown-menu" role="menu">
               <div class="dropdown-content">
                   <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode")) }}" class="dropdown-item" >
@@ -70,7 +70,7 @@ defmodule BackendWeb.StreamingNowLive do
       </div>
 
       <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Language</button></div>
+          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Language</button></div>
           <div class="dropdown-menu" role="menu">
               <div class="dropdown-content">
                 <div class="dropdown-content">
@@ -91,7 +91,7 @@ defmodule BackendWeb.StreamingNowLive do
       </div>
 
       <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button">Legend Rank</button></div>
+          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Legend Rank</button></div>
           <div class="dropdown-menu" role="menu">
               <div class="dropdown-content">
                     <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend")) }}" class="dropdown-item" >
