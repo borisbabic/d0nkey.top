@@ -2,6 +2,7 @@ defmodule BackendWeb.ExpandableDeckLive do
   @moduledoc false
   alias Components.Decklist
   alias Backend.Hearthstone.Deck
+  alias Backend.DeckInteractionTracker, as: Tracker
   use Surface.LiveView
   data(deckcode, :string)
   data(name, :string)
@@ -28,11 +29,18 @@ defmodule BackendWeb.ExpandableDeckLive do
     """
   end
 
-  def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old}}) do
+  def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old, deckcode: code}}) do
+    if !old, do: Tracker.inc_expanded(code)
+
     {
       :noreply,
       socket
       |> assign(show_cards: !old)
     }
+  end
+
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
   end
 end

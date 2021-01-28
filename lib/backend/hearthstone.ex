@@ -6,6 +6,12 @@ defmodule Backend.Hearthstone do
   alias Backend.Hearthstone.Deck
   require Logger
 
+  def create_or_get_deck(deckcode) when is_binary(deckcode),
+    do: deckcode |> Deck.decode!() |> create_or_get_deck()
+
+  def create_or_get_deck(%{cards: cards, hero: hero, format: format}),
+    do: create_or_get_deck(cards, hero, format)
+
   def create_or_get_deck(cards, hero, format) do
     deck(cards, hero, format)
     |> case do

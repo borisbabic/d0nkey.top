@@ -43,7 +43,7 @@ defmodule Components.Decklist do
 
           <div class=" decklist-hero {{ class_class }}" style="margin-bottom: 0px;"> 
               <div class="level is-mobile">
-                  <div class="level-left"> 
+                  <div phx-click="deck_copied" phx-value-deckcode="{{ deck.deckcode }}" class="level-left"> 
                       {{ deckcode }}
                   </div>
                   <div class="level-left deck-text"> 

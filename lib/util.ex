@@ -259,6 +259,8 @@ defmodule Util do
   def bangify({:ok, val}), do: val
   def bangify({:error, reason}), do: raise(reason)
 
+  def ok!(thing), do: bangify(thing)
+
   @doc """
   Either returns the list or returns a new list with a single element
   """
