@@ -1,6 +1,7 @@
 defmodule BackendWeb.DeckviewerLive do
   @moduledoc false
   alias Components.Decklist
+  alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson
   alias Backend.HSDeckViewer
@@ -88,6 +89,18 @@ defmodule BackendWeb.DeckviewerLive do
     }
   end
 
+  def our_link?(new_code) when is_binary(new_code), do: new_code =~ "d0nkey.top"
+  def our_link?(_), do: false
+
+  def extract_codes(link) do
+    with %{query: query} when is_binary(query) <- link |> URI.parse(),
+         <<"code="::binary, codes_part::binary>> <- URI.decode(query) do
+      codes_part |> String.split(",") |> Enum.filter(&(bit_size(&1) > 0))
+    else
+      _ -> []
+    end
+  end
+
   def handle_event(
         "submit",
         %{"new_deck" => %{"new_code" => new_code}},
@@ -111,18 +124,6 @@ defmodule BackendWeb.DeckviewerLive do
     }
   end
 
-  def our_link?(new_code) when is_binary(new_code), do: new_code =~ "d0nkey.top"
-  def our_link?(_), do: false
-
-  def extract_codes(link) do
-    with %{query: query} when is_binary(query) <- link |> URI.parse(),
-         <<"code="::binary, codes_part::binary>> <- URI.decode(query) do
-      codes_part |> String.split(",") |> Enum.filter(&(bit_size(&1) > 0))
-    else
-      _ -> []
-    end
-  end
-
   def handle_event("delete", %{"index" => index}, socket = %{assigns: %{deckcodes: dc}}) do
     new_codes = dc |> List.delete_at(index |> Util.to_int_or_orig())
 
@@ -133,5 +134,10 @@ defmodule BackendWeb.DeckviewerLive do
         to: Routes.live_path(socket, __MODULE__, %{"code" => new_codes |> Enum.join(",")})
       )
     }
+  end
+
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
   end
 end

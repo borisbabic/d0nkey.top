@@ -58,6 +58,10 @@ defmodule Backend.Application do
           id: Backend.StreamerTwitchInfoUpdater,
           start: {Backend.StreamerTwitchInfoUpdater, :start_link, [[]]}
         },
+        %{
+          id: Backend.DeckInteractionTracker,
+          start: {Backend.DeckInteractionTracker, :start_link, [[]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]

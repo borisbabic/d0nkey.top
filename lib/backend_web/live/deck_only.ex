@@ -2,6 +2,7 @@ defmodule BackendWeb.DeckOnlyLive do
   @moduledoc false
   alias Components.Decklist
   alias Backend.Hearthstone.Deck
+  alias Backend.DeckInteractionTracker, as: Tracker
   use Surface.LiveView
   data(deckcode, :string)
 
@@ -15,5 +16,10 @@ defmodule BackendWeb.DeckOnlyLive do
     ~H"""
     <Decklist deck={{deck}} />
     """
+  end
+
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
   end
 end
