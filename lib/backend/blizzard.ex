@@ -481,7 +481,7 @@ defmodule Backend.Blizzard do
       %{battletag_short: "Archangel", from: ~D[2019-01-01]},
       %{battletag_short: "Chakki", from: ~D[2019-01-01]},
       %{battletag_short: "Gallon", from: ~D[2020-08-01]},
-      %{battletag_short: "BoarControl", from: ~D[2021-10-01]}
+      %{battletag_short: "BoarControl", from: ~D[2020-10-01]}
     ]
   end
 

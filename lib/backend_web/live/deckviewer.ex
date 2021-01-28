@@ -12,6 +12,7 @@ defmodule BackendWeb.DeckviewerLive do
   alias BackendWeb.Router.Helpers, as: Routes
   use Surface.LiveView
   data(deckcodes, :any)
+  data(current_link, :string)
   require WaitForIt
 
   def mount(_params, _session, socket) do
@@ -20,7 +21,9 @@ defmodule BackendWeb.DeckviewerLive do
     end
   end
 
-  def render(assigns) do
+  def render(%{deckcodes: codes} = assigns) do
+    show_copy_button = codes |> Enum.any?()
+
     ~H"""
 
     <div class="container">
@@ -34,6 +37,9 @@ defmodule BackendWeb.DeckviewerLive do
           </Field>
             <div class="column is-narrow">
               <Submit label="Add" class="button"/>
+            </div>
+            <div :if={{ show_copy_button }} class="column is-narrow">
+              <button class="clip-btn-value button is-shown-js" type="button" data-balloon-pos="down" data-aria-on-copy="Copied!" data-clipboard-text="{{ @current_link }}" >Copy Link</button>
             </div>
 
             <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
@@ -69,10 +75,15 @@ defmodule BackendWeb.DeckviewerLive do
       end
       |> Enum.filter(fn code -> :ok == code |> Deck.decode() |> elem(0) end)
 
+    current_link =
+      "https://www.d0nkey.top" <>
+        Routes.live_path(socket, __MODULE__, %{"code" => codes |> Enum.join(",")})
+
     {
       :noreply,
       socket
       |> assign(:deckcodes, codes)
+      |> assign(:current_link, current_link)
       |> assign(:new_deck, "")
     }
   end
@@ -86,6 +97,7 @@ defmodule BackendWeb.DeckviewerLive do
       cond do
         HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
         Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
+        our_link?(new_code) -> extract_codes(new_code)
         true -> [new_code]
       end
       |> Deck.shorten_codes()
@@ -97,6 +109,18 @@ defmodule BackendWeb.DeckviewerLive do
         to: Routes.live_path(socket, __MODULE__, %{"code" => (dc ++ new_codes) |> Enum.join(",")})
       )
     }
+  end
+
+  def our_link?(new_code) when is_binary(new_code), do: new_code =~ "d0nkey.top"
+  def our_link?(_), do: false
+
+  def extract_codes(link) do
+    with %{query: query} when is_binary(query) <- link |> URI.parse(),
+         <<"code="::binary, codes_part::binary>> <- URI.decode(query) do
+      codes_part |> String.split(",") |> Enum.filter(&(bit_size(&1) > 0))
+    else
+      _ -> []
+    end
   end
 
   def handle_event("delete", %{"index" => index}, socket = %{assigns: %{deckcodes: dc}}) do
