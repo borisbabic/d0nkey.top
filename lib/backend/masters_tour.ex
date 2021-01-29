@@ -953,4 +953,16 @@ defmodule Backend.MastersTour do
       |> Enum.each(&add_top_cut(&1, "#{source} Top Finisher", stage_id))
     end)
   end
+
+  def get_qualifier(num) do
+    with %{qualifiers_period: {start_date, end_date}} <- TourStop.get_current_qualifiers(),
+         qualifiers = [_ | _] <- BattlefyCommunicator.get_masters_qualifiers(start_date, end_date) do
+      qualifiers
+      |> Enum.find(fn %{name: name} ->
+        name |> String.contains?("- #{num}") || name |> String.contains?("- ##{num}")
+      end)
+    else
+      _ -> nil
+    end
+  end
 end

@@ -185,5 +185,5 @@ defmodule BackendWeb.StreamingNowLive do
   def filter_sort({"sort", "fewest_viewers"}, streaming_now),
     do: streaming_now |> Enum.sort_by(fn s -> s.viewer_count end, &<=/2)
 
-  def filter_sort(other, carry), do: carry
+  def filter_sort(_other, carry), do: carry
 end

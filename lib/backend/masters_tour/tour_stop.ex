@@ -277,4 +277,15 @@ defmodule Backend.MastersTour.TourStop do
   end
 
   def ladder_invites(tour_stop), do: get(tour_stop, :ladder_invites, 0)
+
+  @spec get_current_qualifiers() :: __MODULE__.t() | nil
+  def get_current_qualifiers() do
+    now = Date.utc_today()
+
+    all()
+    |> Enum.find(fn %{qualifiers_period: {start_date, end_date}} ->
+      Date.compare(now, start_date) != :lt &&
+        Date.compare(now, end_date) != :gt
+    end)
+  end
 end
