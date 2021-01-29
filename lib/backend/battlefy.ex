@@ -72,6 +72,7 @@ defmodule Backend.Battlefy do
     }
   ]
 
+  @spec get_stage_standings(Stage.t() | String.t()) :: [Standings.t()]
   def get_stage_standings(stage_id) when is_binary(stage_id) do
     stage_id
     |> get_stage()
@@ -118,6 +119,17 @@ defmodule Backend.Battlefy do
   end
 
   def get_stage_round_standings(_stage_id, _round), do: []
+
+  @spec get_standings(tournament_id() | stage_id()) :: [Standings.t()]
+  def get_standings(some_id) do
+    with nil <- get_tournament_standings(some_id),
+         stage when not is_nil(stage) <- get_stage(some_id),
+         nil <- get_stage_standings(stage) do
+      []
+    else
+      standings -> standings || []
+    end
+  end
 
   def create_standings_from_round1_matches(%{
         id: id
@@ -641,7 +653,7 @@ defmodule Backend.Battlefy do
     do: @organization_stats_configs |> Enum.find(&Kernel.==(&1.stats_slug, stats_slug))
 
   def hardcoded_organizations() do
-    hardcoded_organization_slugs
+    hardcoded_organization_slugs()
     |> Enum.map(&Api.get_organization/1)
     |> Enum.filter(&Util.id/1)
   end

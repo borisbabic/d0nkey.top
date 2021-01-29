@@ -7,6 +7,7 @@ defmodule Bot.MessageHandler do
   alias Nostrum.Api
   alias Backend.Blizzard
   alias Backend.Leaderboards
+  import Bot.MessageHandlerUtil
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle(msg) do
@@ -19,25 +20,10 @@ defmodule Bot.MessageHandler do
       <<"!ldb", _::binary>> -> Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
       <<"!matchups_link", _::binary>> -> Bot.MatchupMessageHandler.handle_matchups_link(msg)
       <<"!matchup", _::binary>> -> Bot.MatchupMessageHandler.handle_matchup(msg)
+      <<"!battlefy", _::binary>> -> Bot.BattlefyMessageHandler.handle_tournament_standings(msg)
+      <<"!mtq", _::binary>> -> Bot.MTMessageHandler.handle_qualifier_standings(msg)
       _ -> :ignore
     end
-  end
-
-  def get_options(content, :list) do
-    content
-    |> String.splitter(" ")
-    |> Stream.drop(1)
-    |> Enum.to_list()
-  end
-
-  def get_options(content, :string) do
-    content
-    |> get_options(:list)
-    |> Enum.join(" ")
-  end
-
-  def get_options(content) do
-    get_options(content, :list)
   end
 
   def handle_highlight(%{content: content, channel_id: channel_id}) do
