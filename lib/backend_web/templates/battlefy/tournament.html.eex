@@ -23,6 +23,8 @@ f-> %>
         form: f,
         options: @player_options,
         attr: "player",
+        search_id: "highlight-players",
+        placeholder: "Player Name",
         title: "Highlight Players"
     }) %>
     <%= if @use_countries do %>
