@@ -1,4 +1,5 @@
 defmodule BackendWeb.MastersTourControllerTest do
+  @moduledoc false
   use BackendWeb.ConnCase
   ##### MT Stats #####
   test "GET /mt/stats?country[DE]=true INCLUDES D0nkey and flag", %{conn: conn} do
