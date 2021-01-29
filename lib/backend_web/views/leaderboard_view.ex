@@ -43,6 +43,7 @@ defmodule BackendWeb.LeaderboardView do
       updated_at: leaderboard.upstream_updated_at,
       dropdowns: create_dropdowns(params),
       old: old?(leaderboard),
+      season_id: leaderboard && leaderboard.season_id,
       conn: conn,
       ladder_invite_num: ladder_invite_num,
       highlighted: process_highlighted(highlight, entries)
