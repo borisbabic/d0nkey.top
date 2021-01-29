@@ -272,7 +272,12 @@ defmodule BackendWeb.MastersTourView do
     min_to_show = min_raw || min_cups(total)
 
     update_link = fn new_params ->
-      Routes.masters_tour_path(conn, :qualifier_stats, conn.query_params |> Map.merge(new_params))
+      Routes.masters_tour_path(
+        conn,
+        :qualifier_stats,
+        period,
+        conn.query_params |> Map.merge(new_params)
+      )
     end
 
     {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
