@@ -155,7 +155,7 @@ defmodule BackendWeb.MastersTourController do
 
   def qualifier_stats(conn, params = %{"tour_stop" => ts}) do
     period =
-      case Integer.parse(ts) do
+      case Integer.parse(ts |> to_string()) do
         {year, _} ->
           year
 
@@ -200,7 +200,7 @@ defmodule BackendWeb.MastersTourController do
           |> to_string()
 
         ts ->
-          ts
+          ts |> to_string()
       end
 
     qualifier_stats(
