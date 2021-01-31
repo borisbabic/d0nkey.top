@@ -37,4 +37,10 @@ defmodule BackendWeb.SharedView do
 
     "var(--color-#{normalized})"
   end
+
+  def render("empty.html", _) do
+    ~E"""
+
+    """
+  end
 end
