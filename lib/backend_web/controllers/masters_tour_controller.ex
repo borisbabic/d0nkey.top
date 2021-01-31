@@ -53,6 +53,7 @@ defmodule BackendWeb.MastersTourController do
       fetched_qualifiers: fetched,
       range: {from, to},
       user_tournaments: user_tournaments,
+      db: Backend.MastersTour.list_qualifiers_in_range(from, to),
       page_title: "MT Qualifiers",
       region: params["region"]
     })
@@ -82,6 +83,7 @@ defmodule BackendWeb.MastersTourController do
         fetched_qualifiers: fetched,
         page_title: "MT Qualifiers",
         range: {from, to},
+        db: Backend.MastersTour.list_qualifiers_in_range(from, to),
         region: params["region"]
       }
       |> Map.merge(user_params)
