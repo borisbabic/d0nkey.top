@@ -21,6 +21,7 @@
           <% end %>
           <div class="navbar-dropdown">
             <%= if @user do %>
+              <a class="navbar-item" href='<%= Routes.player_path(@conn, :player_profile, @user) %>'>Player Profile</a>
               <a class="navbar-item" href='/profile/settings'>Settings</a>
               <a class="navbar-item" href='/logout'>Logout</a>
             <% else %>
