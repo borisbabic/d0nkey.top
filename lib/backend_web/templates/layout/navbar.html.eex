@@ -13,6 +13,21 @@
 
    <div id="burger-toggle" class="navbar-menu">
      <div class="navbar-start">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <%= if @user do %>
+            <a class="navbar-link"><%= @user %></a>
+          <% else %>
+            <a class="navbar-link"><i class="far fa-user"></i></a>
+          <% end %>
+          <div class="navbar-dropdown">
+            <%= if @user do %>
+              <a class="navbar-item" href='/profile/settings'>Settings</a>
+              <a class="navbar-item" href='/logout'>Logout</a>
+            <% else %>
+              <a class="navbar-item" href='/auth/bnet'>Sign in (Battlenet) </a>
+            <% end %>
+          </div>
+        </div>
        <div class="navbar-item has-dropdown is-hoverable">
          <a class="navbar-item navbar-link" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a>
 

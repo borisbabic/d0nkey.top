@@ -6,6 +6,7 @@ defmodule Backend.UserManager.User do
   schema "users" do
     field :battletag, :string
     field :bnet_id, :integer
+    field :battlefy_slug, :string
 
     timestamps()
   end
@@ -13,7 +14,7 @@ defmodule Backend.UserManager.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:battletag, :bnet_id])
+    |> cast(attrs, [:battletag, :bnet_id, :battlefy_slug])
     |> validate_required([:battletag, :bnet_id])
     |> unique_constraint(:bnet_id)
   end

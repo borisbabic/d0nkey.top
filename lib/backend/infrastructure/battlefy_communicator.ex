@@ -286,7 +286,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         page \\ 1,
         carry \\ []
       ) do
-    ret = get_organization_tournaments(org_id, :past, page)
+    ret = get_organization_tournaments(org_id, :past, page) || []
 
     ret
     |> Enum.filter(fn t -> NaiveDateTime.compare(from_time, t.start_time) != :gt end)
@@ -347,7 +347,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec get_user_tournaments_from(String.t(), NaiveDateTime.t()) :: [Tournament.t()]
   def get_user_tournaments_from(slug, from_time = %NaiveDateTime{}, page \\ 1, carry \\ [])
       when is_integer(page) do
-    ret = get_user_tournaments(slug, page)
+    ret = get_user_tournaments(slug, page) || []
 
     ret
     |> Enum.filter(fn t -> NaiveDateTime.compare(from_time, t.start_time) != :gt end)
@@ -372,7 +372,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       get_body(url)
       |> Poison.decode!()
 
-    raw["tournaments"]
+    (raw["tournaments"] || [])
     |> Enum.map(&Tournament.from_raw_map/1)
   end
 

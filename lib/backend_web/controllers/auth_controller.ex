@@ -71,4 +71,10 @@ defmodule BackendWeb.AuthController do
 
     text(conn, response)
   end
+
+  def logout(conn, _params) do
+    conn
+    |> Guardian.Plug.sign_out()
+    |> redirect(to: "/")
+  end
 end

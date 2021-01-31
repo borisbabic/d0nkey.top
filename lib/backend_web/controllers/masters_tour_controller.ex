@@ -3,6 +3,7 @@ defmodule BackendWeb.MastersTourController do
   alias Backend.MastersTour
   alias Backend.MastersTour.TourStop
   alias Backend.Infrastructure.BattlefyCommunicator
+  alias Backend.UserManager.Guardian
 
   def invited_players(conn, %{"tour_stop" => tour_stop}) do
     MastersTour.fetch(tour_stop)
@@ -60,12 +61,31 @@ defmodule BackendWeb.MastersTourController do
   def qualifiers(conn, params = %{"from" => %Date{} = from, "to" => %Date{} = to}) do
     fetched = BattlefyCommunicator.get_masters_qualifiers(from, to)
 
-    render(conn, "qualifiers.html", %{
-      fetched_qualifiers: fetched,
-      page_title: "MT Qualifiers",
-      range: {from, to},
-      region: params["region"]
-    })
+    user_params =
+      conn
+      |> Guardian.Plug.current_resource()
+      |> case do
+        %{battlefy_slug: slug} ->
+          %{
+            user_tournaments:
+              BattlefyCommunicator.get_user_tournaments_from(slug, Util.day_start(from, :naive))
+          }
+
+        _ ->
+          %{}
+      end
+
+    render(
+      conn,
+      "qualifiers.html",
+      %{
+        fetched_qualifiers: fetched,
+        page_title: "MT Qualifiers",
+        range: {from, to},
+        region: params["region"]
+      }
+      |> Map.merge(user_params)
+    )
   end
 
   def qualifiers(conn, params = %{"from" => from, "to" => to}) do

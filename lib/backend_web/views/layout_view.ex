@@ -36,4 +36,16 @@ defmodule BackendWeb.LayoutView do
       <a class="navbar-item" href='<%= link %>'>Grandmasters</a>
     """
   end
+
+  def render("navbar.html", %{handle_user: true, conn: conn}) do
+    user =
+      conn
+      |> Guardian.Plug.current_resource()
+      |> case do
+        %{battletag: bt} -> bt
+        _ -> nil
+      end
+
+    render("navbar.html", %{user: user, conn: conn})
+  end
 end

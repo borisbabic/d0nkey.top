@@ -110,6 +110,12 @@ defmodule BackendWeb.Router do
     get "/who-am-i", AuthController, :who_am_i
     get "/whoami", AuthController, :who_am_i
     get "/login-welcome", AuthController, :login_welcome
+    get "/logout", AuthController, :logout
+  end
+
+  scope "/", BackendWeb do
+    pipe_through [:browser, :auth, :ensure_auth]
+    live "/profile/settings", ProfileSettingsLive
   end
 
   scope "/admin", BackendWeb do
