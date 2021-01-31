@@ -29,16 +29,13 @@ defmodule BackendWeb.PlayerView do
         }
       ) do
     stats_rows =
-      case qs do
-        nil ->
-          []
-
-        ps ->
-          [
-            {"2020 MTQ played", ps |> PlayerStats.with_result()},
-            {"2020 MTQ winrate", ps |> PlayerStats.matches_won_percent() |> Float.round(2)}
-          ]
-      end
+      qs
+      |> Enum.flat_map(fn {year, ps} ->
+        [
+          {"#{year} MTQ played", ps |> PlayerStats.with_result()},
+          {"#{year} MTQ winrate", ps |> PlayerStats.matches_won_percent() |> Float.round(2)}
+        ]
+      end)
 
     player_rows =
       case {pi.country, pi.region} do
