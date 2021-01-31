@@ -1,11 +1,5 @@
 <div class="title is-2"><%= @bt %></div>
 
-<%= for row <- @rows do %>
-    <div class="tag"> 
-        <%= row %>
-    </div>
-<% end %>
-
 <div class="dropdown is-hoverable">
     <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Competitions</button></div>
     <div class="dropdown-menu" role="menu">
@@ -29,6 +23,11 @@
         </div>
     </div>
 </div>
+<%= for row <- @rows do %>
+    <div class="tag is-info"> 
+        <%= row %>
+    </div>
+<% end %>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>

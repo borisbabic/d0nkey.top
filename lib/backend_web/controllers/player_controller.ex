@@ -7,9 +7,17 @@ defmodule BackendWeb.PlayerController do
 
   def player_profile(conn, params = %{"battletag_full" => bt}) do
     qualifier_stats =
-      Backend.MastersTour.get_player_stats(2020)
-      |> elem(0)
-      |> Enum.find(fn ps -> ps.battletag_full == bt end)
+      [2020, 2021]
+      |> Enum.flat_map(fn year ->
+        year
+        |> Backend.MastersTour.get_player_stats()
+        |> elem(0)
+        |> Enum.find(fn ps -> ps.battletag_full == bt end)
+        |> case do
+          ps = %{wins: _} -> [{year, ps}]
+          nil -> []
+        end
+      end)
 
     player_info = PlayerInfo.get_info(bt)
 

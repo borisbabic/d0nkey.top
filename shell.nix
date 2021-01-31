@@ -2,8 +2,8 @@
 
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [ 
-    elixir 
-    erlang 
+    elixir_1_10
+    erlangR22
     docker-compose 
     nodejs # for npm
     watchexec # for test_watch
