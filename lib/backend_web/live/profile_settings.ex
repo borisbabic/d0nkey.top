@@ -28,6 +28,7 @@ defmodule BackendWeb.ProfileSettingsLive do
             <Field name="battlefy_slug">
               <Label>Battlefy Slug</Label>
               <TextInput value={{ @user.battlefy_slug }}/>
+              <Label>Open your battlefy profile then take your part in the url, ex https://battlefy.com/users/blablabla -> blablabla</Label>
             </Field>
             <Submit label="Save" class="button"/>
           </Form>
