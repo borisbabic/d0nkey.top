@@ -65,7 +65,7 @@ defmodule BackendWeb.MastersTourController do
       conn
       |> Guardian.Plug.current_resource()
       |> case do
-        %{battlefy_slug: slug} ->
+        %{battlefy_slug: slug} when is_binary(slug) ->
           %{
             user_tournaments:
               BattlefyCommunicator.get_user_tournaments_from(slug, Util.day_start(from, :naive))
