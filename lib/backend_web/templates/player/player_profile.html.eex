@@ -1,8 +1,9 @@
 <div class="title is-2"><%= @bt %></div>
 
 <%= for row <- @rows do %>
-    <%= row %>
-    <br>
+    <div class="tag"> 
+        <%= row %>
+    </div>
 <% end %>
 
 <div class="dropdown is-hoverable">

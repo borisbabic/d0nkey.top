@@ -96,17 +96,22 @@ defmodule BackendWeb.BattlefyController do
     redirect(conn, external: link)
   end
 
+  # somebody is spamming this, :shrug:
+  def tournament_player(conn, %{"team_name" => "&"}) do
+    render(conn, BackendWeb.SharedView, "empty.html", %{})
+  end
+
   def tournament_player(conn, %{
         "tournament_id" => tournament_id,
         "team_name" => team_name
       }) do
+    deckcodes =
+      Battlefy.get_deckstrings(%{tournament_id: tournament_id, battletag_full: team_name})
+
     tournament = Battlefy.get_tournament(tournament_id)
 
     {opponent_matches, player_matches} =
       Battlefy.get_future_and_player_matches(tournament_id, team_name)
-
-    deckcodes =
-      Battlefy.get_deckstrings(%{tournament_id: tournament_id, battletag_full: team_name})
 
     render(conn, "profile.html", %{
       tournament: tournament,

@@ -576,24 +576,31 @@ defmodule Backend.Battlefy do
   @spec get_deckstrings(%{tournament_id: tournament_id, battletag_full: Blizzard.battletag()}) ::
           [Blizzard.deckstring()]
   def get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full}) do
-    {position, match} =
-      get_tournament_matches(tournament_id, round: 1)
-      |> Enum.flat_map(fn m ->
-        cond do
-          battletag_full == MatchTeam.get_name(m.top) -> [{:top, m}]
-          battletag_full == MatchTeam.get_name(m.bottom) -> [{:bottom, m}]
-          true -> []
-        end
-      end)
-      |> Enum.at(0)
+    with matches <- get_tournament_matches(tournament_id, round: 1),
+         {match, position} <- get_team_match_position(matches, battletag_full) do
+      deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
 
-    deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
-
-    case position do
-      :top -> deckstrings.top
-      :bottom -> deckstrings.bottom
+      case position do
+        :top -> deckstrings.top
+        :bottom -> deckstrings.bottom
+      end
+      |> Enum.map(&Backend.Battlefy.MatchDeckstrings.remove_comments/1)
+    else
+      _ -> []
     end
-    |> Enum.map(&Backend.Battlefy.MatchDeckstrings.remove_comments/1)
+  end
+
+  @spec get_team_match_position([Match.t()], Blizzard.battletag()) :: {Match.t(), atom()}
+  def get_team_match_position(matches, battletag_full) do
+    matches
+    |> Enum.flat_map(fn m ->
+      cond do
+        battletag_full == MatchTeam.get_name(m.top) -> [{m, :top}]
+        battletag_full == MatchTeam.get_name(m.bottom) -> [{m, :bottom}]
+        true -> []
+      end
+    end)
+    |> Enum.at(0)
   end
 
   @spec regions :: [region]
