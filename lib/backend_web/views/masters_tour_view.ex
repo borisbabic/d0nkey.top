@@ -676,9 +676,31 @@ defmodule BackendWeb.MastersTourView do
     end
   end
 
+  @spec add_qualifier_winner(
+          Backend.Battlefy.Communicator.qualifier(),
+          [Qualifier.t()],
+          Plug.Conn.t()
+        ) :: Backend.Battlefy.Communicator.qualifier() | Map.t()
+  def add_qualifier_winner(q = %{id: id}, qualifiers, conn) do
+    winner =
+      qualifiers
+      |> Enum.find(&(&1.tournament_id == id))
+      |> case do
+        %{winner: winner, tournament_id: tournament_id} ->
+          ~E"""
+          <a href="<%= Routes.battlefy_path(conn, :tournament_player, tournament_id, winner)%>"><%= winner %></a>
+          """
+
+        _ ->
+          nil
+      end
+
+    q |> Map.put(:winner, winner)
+  end
+
   def render(
         "qualifiers.html",
-        params = %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range}
+        params = %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range, db: db}
       ) do
     region = params[:region]
     {before_range, after_range} = Util.get_surrounding_ranges(range)
@@ -702,6 +724,7 @@ defmodule BackendWeb.MastersTourView do
         |> Map.put_new(:link, MastersTour.create_qualifier_link(q))
         |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, q.id))
         |> Map.put_new(:signed_up, MapSet.member?(signed_up_ids, q.id))
+        |> add_qualifier_winner(db, conn)
       end)
 
     region_links =

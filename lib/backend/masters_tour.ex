@@ -152,6 +152,22 @@ defmodule Backend.MastersTour do
     query |> Repo.all()
   end
 
+  def list_qualifiers_in_range(start_date = %Date{}, end_date = %Date{}),
+    do:
+      list_qualifiers_in_range(
+        start_date |> Util.day_start(:naive),
+        end_date |> Util.day_end(:naive)
+      )
+
+  def list_qualifiers_in_range(start_time = %NaiveDateTime{}, end_time = %NaiveDateTime{}) do
+    query =
+      from q in Qualifier,
+        where: q.start_time >= ^start_time and q.start_time <= ^end_time,
+        select: q
+
+    Repo.all(query)
+  end
+
   @spec list_qualifiers_for_tour(Blizzard.tour_stop()) :: [Qualifier]
   def list_qualifiers_for_tour(tour_stop) do
     query =

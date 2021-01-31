@@ -29,6 +29,7 @@
     <thead>
         <tr>
             <th>Name</th>
+            <th>Winner</th>
             <th>Start Time</th>
             <th>Region</th>
             <%= if @show_signed_up do %>
@@ -45,6 +46,7 @@
                     <%= name %>
                 </a>
             </td>
+            <td><%= t.winner %></td>
             <td><%= render_datetime start_time %></td>
             <td><%= region %></td>
             <%= if @show_signed_up do %>
