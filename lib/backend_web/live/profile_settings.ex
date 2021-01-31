@@ -28,7 +28,7 @@ defmodule BackendWeb.ProfileSettingsLive do
             <Field name="battlefy_slug">
               <Label>Battlefy Slug</Label>
               <TextInput value={{ @user.battlefy_slug }}/>
-              <Label>Open your battlefy profile then take your part in the url, ex https://battlefy.com/users/blablabla -> blablabla</Label>
+              <Label>Open your battlefy profile then paste the url and I'll extract it</Label>
             </Field>
             <Submit label="Save" class="button"/>
           </Form>
@@ -38,7 +38,11 @@ defmodule BackendWeb.ProfileSettingsLive do
     """
   end
 
-  def handle_event("submit", %{"user" => attrs}, socket = %{assigns: %{user: user}}) do
+  def handle_event("submit", %{"user" => attrs_raw}, socket = %{assigns: %{user: user}}) do
+    attrs =
+      attrs_raw
+      |> parse_battlefy_slug()
+
     updated =
       user
       |> UserManager.update_user(attrs)
@@ -49,4 +53,11 @@ defmodule BackendWeb.ProfileSettingsLive do
 
     {:noreply, socket |> assign(:user, updated)}
   end
+
+  def parse_battlefy_slug(
+        attrs = %{"battlefy_slug" => <<"https://battlefy.com/users/"::binary, slug::binary>>}
+      ),
+      do: attrs |> Map.put("battlefy_slug", slug)
+
+  def parse_battlefy_slug(attrs), do: attrs
 end
