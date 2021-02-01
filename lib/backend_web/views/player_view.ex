@@ -107,8 +107,7 @@ defmodule BackendWeb.PlayerView do
             []
 
           ps ->
-            tournament_link =
-              MastersTour.create_qualifier_link(t.tournament_slug, t.tournament_id)
+            tournament_link = Routes.battlefy_path(conn, :tournament, t.tournament_id)
 
             tournament_title = Recase.to_title(t.tournament_slug)
 
