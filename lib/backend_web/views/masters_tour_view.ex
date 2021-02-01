@@ -855,7 +855,7 @@ defmodule BackendWeb.MastersTourView do
       case invited_player do
         %{tournament_slug: slug, tournament_id: id} when is_binary(slug) and is_binary(id) ->
           {
-            MastersTour.create_qualifier_link(slug, id),
+            Routes.battlefy_path(conn, :tournament, id),
             Routes.battlefy_path(conn, :tournament_player, id, battletag_full)
           }
 
