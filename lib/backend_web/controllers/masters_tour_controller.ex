@@ -18,18 +18,7 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def invited_players(conn, _params) do
-    tour_stop =
-      case Backend.Blizzard.current_ladder_tour_stop() do
-        "" ->
-          ts =
-            Backend.MastersTour.TourStop.all()
-            |> Enum.max_by(fn ts -> ts.start_time |> to_string() end)
-
-          ts.id |> to_string
-
-        ts ->
-          ts
-      end
+    tour_stop = current_qualifiers_ts()
 
     redirect(conn,
       to: Routes.masters_tour_path(conn, :invited_players, tour_stop)
@@ -213,17 +202,7 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def qualifier_stats(conn, params) do
-    period =
-      case Backend.Blizzard.current_ladder_tour_stop() do
-        "" ->
-          Backend.MastersTour.TourStop.all()
-          |> Enum.map(fn ts -> ts.year end)
-          |> Enum.max()
-          |> to_string()
-
-        ts ->
-          ts |> to_string()
-      end
+    period = current_qualifiers_ts()
 
     qualifier_stats(
       conn,
@@ -249,5 +228,19 @@ defmodule BackendWeb.MastersTourController do
       page_title: "MT Stats",
       tournament_team_stats: tournament_team_stats
     })
+  end
+
+  @spec current_qualifiers_ts() :: String.t()
+  def current_qualifiers_ts() do
+    case TourStop.get_current_qualifiers() do
+      %{id: id} ->
+        to_string(id)
+
+      _ ->
+        TourStop.all()
+        |> Enum.map(fn ts -> ts.year end)
+        |> Enum.max()
+        |> to_string()
+    end
   end
 end
