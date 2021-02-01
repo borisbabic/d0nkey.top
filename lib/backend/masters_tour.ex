@@ -201,7 +201,7 @@ defmodule Backend.MastersTour do
   end
 
   def qualifiers_update() do
-    Blizzard.current_ladder_tour_stop()
+    TourStop.get_current_qualifiers(:id)
     |> qualifiers_update()
   end
 

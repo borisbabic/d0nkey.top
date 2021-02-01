@@ -288,4 +288,13 @@ defmodule Backend.MastersTour.TourStop do
         Date.compare(now, end_date) != :gt
     end)
   end
+
+  @spec get_current_qualifiers(:id) :: Blizzard.tour_stop() | nil
+  def get_current_qualifiers(:id) do
+    get_current_qualifiers()
+    |> case do
+      %{id: id} -> id
+      _ -> nil
+    end
+  end
 end
