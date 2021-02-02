@@ -247,14 +247,15 @@ defmodule Backend.MastersTour.TourStop do
   end
 
   def get_current(hours_before_start \\ 1, hours_after_start \\ 96) do
-    now = NaiveDateTime.utc_now()
-
     all()
-    |> Enum.find_value(fn ts ->
-      lower = NaiveDateTime.add(ts.start_time, hours_before_start * -3600)
-      upper = NaiveDateTime.add(ts.start_time, hours_after_start * 3600)
-      Util.in_range?(now, {lower, upper}) && ts.id
-    end)
+    |> Enum.find_value(fn ts -> ts |> current?(hours_before_start, hours_after_start) && ts.id end)
+  end
+
+  def current?(%{start_time: start_time}, hours_before_start \\ 1, hours_after_start \\ 96) do
+    now = NaiveDateTime.utc_now()
+    lower = NaiveDateTime.add(start_time, hours_before_start * -3600)
+    upper = NaiveDateTime.add(start_time, hours_after_start * 3600)
+    Util.in_range?(now, {lower, upper})
   end
 
   @spec started?(atom | String.t() | Backend.MastersTour.TourStop.t()) :: boolean
