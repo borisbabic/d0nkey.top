@@ -15,7 +15,10 @@ defmodule Backend.MastersTour do
   alias Backend.Infrastructure.PlayerNationalityCache
   alias Backend.Blizzard
   alias Backend.Battlefy
+  alias Backend.Battlefy.Stage
+  alias Backend.Battlefy.Standings
   alias Backend.TournamentStats.TournamentTeamStats
+  alias Backend.Infrastructure.ApiCache
 
   @type gm_money_rankings :: [{String.t(), integer, [{Blizzard.tour_stop(), integer}]}]
   @type user_signup_options :: %{
@@ -552,13 +555,12 @@ defmodule Backend.MastersTour do
     |> Enum.sort_by(fn {_, earnings, _} -> earnings end, :desc)
   end
 
+  @spec get_earnings_group_by(String.t()) :: String.t()
   def get_earnings_group_by(name) do
-    cond do
-      name |> String.starts_with?("Jay#") && PlayerNationalityCache.get_actual_battletag(name) ->
-        PlayerNationalityCache.get_actual_battletag(name)
-
-      true ->
-        name |> InvitedPlayer.shorten_battletag() |> name_hacks()
+    if name |> String.starts_with?("Jay#") && PlayerNationalityCache.get_actual_battletag(name) do
+      PlayerNationalityCache.get_actual_battletag(name)
+    else
+      name |> InvitedPlayer.shorten_battletag() |> name_hacks()
     end
   end
 
@@ -567,6 +569,7 @@ defmodule Backend.MastersTour do
     |> name_hacks()
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def name_hacks(name) do
     case name do
       "香菇奾汁" -> "ShroomJuice"
@@ -589,16 +592,143 @@ defmodule Backend.MastersTour do
   @spec get_ts_money_rankings(Blizzard.tour_stop()) :: [{String.t(), number}]
   def get_ts_money_rankings(tour_stop)
       when tour_stop in [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid] do
-    id = Battlefy.get_tour_stop_id!(tour_stop)
-
-    Battlefy.get_tournament(id)
+    get_mt_tournament(tour_stop)
     |> get_2020_earnings(tour_stop)
+  end
+
+  defp use_cached_value?(cached, ts = %TourStop{}),
+    do: !TourStop.current?(ts) && (cached || !TourStop.started?(ts))
+
+  defp mt_tournament_cache_key(%{id: id}), do: "mt_tournament_#{id}"
+  def get_mt_tournament(ts) when is_atom(ts), do: ts |> TourStop.get() |> get_mt_tournament()
+
+  def get_mt_tournament(ts = %TourStop{}) do
+    cached = get_mt_tournament(ts, :cache)
+
+    if use_cached_value?(cached, ts) do
+      cached
+    else
+      val = get_mt_tournament(ts, :fresh)
+
+      if val do
+        ts
+        |> mt_tournament_cache_key()
+        |> ApiCache.set(val)
+      end
+
+      val
+    end
+  end
+
+  def get_mt_tournament(ts, :cache), do: ts |> mt_tournament_cache_key() |> ApiCache.get()
+
+  def get_mt_tournament(%{battlefy_id: battlefy_id}, :fresh),
+    do: Battlefy.get_tournament(battlefy_id)
+
+  defp mt_stage_cache_key(%{id: id}), do: mt_stage_cache_key(id)
+  defp mt_stage_cache_key(stage_id), do: "mt_stage_#{stage_id}"
+
+  def get_mt_stage(stage_id, ts = %TourStop{}) do
+    cached = get_mt_stage(stage_id, :cache)
+
+    if use_cached_value?(cached, ts) do
+      cached
+    else
+      val = get_mt_stage(stage_id, :fresh)
+
+      if val do
+        stage_id
+        |> mt_stage_cache_key()
+        |> ApiCache.set(val)
+      end
+
+      val
+    end
+  end
+
+  def get_mt_stage(stage_id, :cache), do: stage_id |> mt_stage_cache_key() |> ApiCache.get()
+  def get_mt_stage(stage_id, :fresh), do: Battlefy.get_stage(stage_id)
+
+  def get_mt_stage(stage_id, ts_id) when is_atom(ts_id) do
+    ts = ts_id |> TourStop.get()
+    get_mt_stage(stage_id, ts)
+  end
+
+  defp mt_stage_standings_cache_key(%{id: id}), do: "mt_stage_standings_#{id}"
+
+  @spec get_mt_stage_standings(Stage.t(), TourStop.t() | Blizzard.tour_stop() | :cache | :fresh) ::
+          [Standings.t()]
+  def get_mt_stage_standings(stage, ts = %TourStop{}) do
+    cached = get_mt_stage_standings(stage, :cache)
+
+    if use_cached_value?(cached, ts) do
+      cached || []
+    else
+      val = get_mt_stage_standings(stage, :fresh)
+
+      if val do
+        stage
+        |> mt_stage_standings_cache_key()
+        |> ApiCache.set(val)
+      end
+
+      val
+    end
+  end
+
+  def get_mt_stage_standings(stage, :cache),
+    do: stage |> mt_stage_standings_cache_key() |> ApiCache.get()
+
+  def get_mt_stage_standings(stage, :fresh), do: get_mt_stage_standings(stage)
+
+  def get_mt_stage_standings(stage, ts_id) do
+    ts = ts_id |> TourStop.get()
+    get_mt_stage_standings(stage, ts)
+  end
+
+  @spec get_mt_stage_standings(Stage.t()) :: [Standings.t()]
+  # bucharest, the finals aren't entered in battlefy
+  def get_mt_stage_standings(%{id: "5dabfb21c2359802f6cb334e"}) do
+    [
+      {"Eddie#13420", 1, 3, 0},
+      {"kin0531#1125", 2, 2, 1},
+      {"totosh#1491", 3, 1, 1},
+      {"DeadDraw#11192", 3, 1, 1},
+      {"hone#11500", 5, 0, 1},
+      {"Orange#13615", 5, 0, 1},
+      {"SNBrox#1715", 5, 0, 1},
+      {"hunterace#11722", 5, 0, 1}
+    ]
+    |> Enum.map(&to_battelfy_standings/1)
+  end
+
+  # arlington, the finals aren't entered in battelfy
+  def get_mt_stage_standings(%{id: "5e36e004c2daa21083f167b5"}) do
+    [
+      {"xBlyzes#2682", 1, 3, 0},
+      {"AyRoK#11677", 2, 2, 1},
+      {"Alan870806#1369", 3, 1, 1},
+      {"Felkeine#1745", 3, 1, 1},
+      {"bloodyface#11770", 5, 0, 1},
+      {"TIZS#3227", 5, 0, 1},
+      {"totosh#2527", 5, 0, 1},
+      {"brimful#1988", 5, 0, 1}
+    ]
+    |> Enum.map(&to_battelfy_standings/1)
+  end
+
+  def get_mt_stage_standings(s = %Stage{}) do
+    if s |> Battlefy.Stage.bracket_type() == :single_elimination do
+      s |> Battlefy.create_standings_from_matches()
+    else
+      s |> Battlefy.get_stage_standings()
+    end
   end
 
   @spec get_2020_earnings(Battlefy.Tournament.t(), Blizzard.tour_stop()) :: [{String.t(), number}]
   def get_2020_earnings(%{stages: [swiss, top8]}, tour_stop) do
-    top8_standings = Battlefy.get_stage_standings(top8)
-    swiss_standings = Battlefy.get_stage_standings(swiss)
+    top8_standings = get_mt_stage_standings(top8, tour_stop)
+    swiss_standings = get_mt_stage_standings(swiss, tour_stop)
 
     top8_players = top8_standings |> MapSet.new(fn %{team: %{name: name}} -> name end)
 
@@ -608,7 +738,7 @@ defmodule Backend.MastersTour do
   end
 
   def get_2020_earnings(%{stages: [swiss]}, _) do
-    swiss_standings = Battlefy.get_stage_standings(swiss)
+    swiss_standings = get_mt_stage_standings(swiss.id)
 
     get_2020_swiss_earnings(swiss_standings, MapSet.new([]))
     |> Enum.sort_by(fn {_, money} -> money end, :desc)
@@ -718,44 +848,6 @@ defmodule Backend.MastersTour do
     }
   end
 
-  # bucharest, the finals aren't entered in battlefy
-  def get_mt_stage_standings(%{id: "5dabfb21c2359802f6cb334e"}) do
-    [
-      {"Eddie#13420", 1, 3, 0},
-      {"kin0531#1125", 2, 2, 1},
-      {"totosh#1491", 3, 1, 1},
-      {"DeadDraw#11192", 3, 1, 1},
-      {"hone#11500", 5, 0, 1},
-      {"Orange#13615", 5, 0, 1},
-      {"SNBrox#1715", 5, 0, 1},
-      {"hunterace#11722", 5, 0, 1}
-    ]
-    |> Enum.map(&to_battelfy_standings/1)
-  end
-
-  # arlington, the finals aren't entered in battelfy
-  def get_mt_stage_standings(%{id: "5e36e004c2daa21083f167b5"}) do
-    [
-      {"xBlyzes#2682", 1, 3, 0},
-      {"AyRoK#11677", 2, 2, 1},
-      {"Alan870806#1369", 3, 1, 1},
-      {"Felkeine#1745", 3, 1, 1},
-      {"bloodyface#11770", 5, 0, 1},
-      {"TIZS#3227", 5, 0, 1},
-      {"totosh#2527", 5, 0, 1},
-      {"brimful#1988", 5, 0, 1}
-    ]
-    |> Enum.map(&to_battelfy_standings/1)
-  end
-
-  def get_mt_stage_standings(s) do
-    if s |> Battlefy.Stage.bracket_type() == :single_elimination do
-      s |> Battlefy.create_standings_from_matches()
-    else
-      s |> Battlefy.get_stage_standings()
-    end
-  end
-
   defp las_vegas_top8_standings() do
     [
       {"dog#1593", 1, 4, 1},
@@ -785,29 +877,30 @@ defmodule Backend.MastersTour do
   end
 
   # I merged the group and top4 because I'm lazy, if it ever matters I'll unmerge
-  defp get_mt_tournament_stages_standings(%{id: :"Las Vegas", battlefy_id: battlefy_id}) do
-    swiss = get_mt_tournament_stages_standings(%{battlefy_id: battlefy_id})
+  defp add_missing_top_cut(swiss, %{id: :"Las Vegas"}) do
     top8 = {:single_elimination, las_vegas_top8_standings()}
     swiss ++ [top8]
   end
 
   # I merged the group and top4 because I'm lazy, if it ever matters I'll unmerge
-  defp get_mt_tournament_stages_standings(%{id: :Seoul, battlefy_id: battlefy_id}) do
-    swiss = get_mt_tournament_stages_standings(%{battlefy_id: battlefy_id})
+  defp add_missing_top_cut(swiss, %{id: :Seoul}) do
     top8 = {:single_elimination, seoul_top8_standings()}
     swiss ++ [top8]
   end
 
-  defp get_mt_tournament_stages_standings(%{battlefy_id: battlefy_id}) do
-    tournament = Battlefy.get_tournament(battlefy_id)
+  defp add_missing_top_cut(stages, _), do: stages
+
+  defp get_mt_tournament_stages_standings(ts = %TourStop{}) do
+    tournament = get_mt_tournament(ts)
 
     tournament.stage_ids
-    |> Enum.map(&Battlefy.get_stage/1)
+    |> Enum.map(&get_mt_stage(&1, ts))
     |> Enum.map(fn s ->
       bracket_type = s |> Battlefy.Stage.bracket_type()
-      standings = get_mt_stage_standings(s)
+      standings = get_mt_stage_standings(s, ts)
       {bracket_type, standings}
     end)
+    |> add_missing_top_cut(ts)
   end
 
   @spec masters_tours_stats() :: [[TournamentTeamStats.t()]]
@@ -871,6 +964,7 @@ defmodule Backend.MastersTour do
             [m.top, m.bottom]
             |> Enum.map(fn t -> create_player_nationality(t, id) end)
             |> Enum.filter(&Util.id/1)
+            # credo:disable-for-next-line Credo.Check.Refactor.Nesting
             |> Enum.reduce(multi, fn cs, m ->
               Multi.insert(
                 m,
