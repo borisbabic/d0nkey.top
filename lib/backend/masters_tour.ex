@@ -425,7 +425,9 @@ defmodule Backend.MastersTour do
   end
 
   def get_qualifiers_for_tour(tour_stop) do
-    {start_date, end_date} = guess_qualifier_range(tour_stop)
+    {start_date, end_date} =
+      TourStop.get(tour_stop, :qualifiers_period) || guess_qualifier_range(tour_stop)
+
     BattlefyCommunicator.get_masters_qualifiers(start_date, end_date)
   end
 
