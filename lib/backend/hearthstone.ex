@@ -6,12 +6,14 @@ defmodule Backend.Hearthstone do
   alias Backend.Hearthstone.Deck
   require Logger
 
+  @spec create_or_get_deck(String.t() | Deck.t()) :: {:ok, Deck.t()} | {:error, any()}
   def create_or_get_deck(deckcode) when is_binary(deckcode),
     do: deckcode |> Deck.decode!() |> create_or_get_deck()
 
-  def create_or_get_deck(%{cards: cards, hero: hero, format: format}),
+  def create_or_get_deck(%Deck{cards: cards, hero: hero, format: format}),
     do: create_or_get_deck(cards, hero, format)
 
+  @spec create_or_get_deck([integer()], integer(), integer()) :: {:ok, Deck.t()} | {:error, any()}
   def create_or_get_deck(cards, hero, format) do
     deck(cards, hero, format)
     |> case do

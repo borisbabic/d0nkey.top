@@ -14,6 +14,8 @@ config :backend, QuantumScheduler,
     {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
     {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
     {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},
+    {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
+    {"19 * * * *", fn -> Backend.Feed.decay_feed_items() end},
     {"* * * * *", fn -> Backend.Streaming.update_streamer_decks() end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end}
   ]

@@ -111,6 +111,7 @@ defmodule BackendWeb.Router do
     get "/whoami", AuthController, :who_am_i
     get "/login-welcome", AuthController, :login_welcome
     get "/logout", AuthController, :logout
+    live "/feed", FeedLive
   end
 
   scope "/", BackendWeb do

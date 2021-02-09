@@ -2,6 +2,7 @@ defmodule Backend.Feed do
   @moduledoc false
   import Ecto.Query, warn: false
   alias Backend.Feed.DeckInteraction
+  alias Backend.Feed.FeedItem
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.Repo
@@ -64,5 +65,72 @@ defmodule Backend.Feed do
 
     NaiveDateTime.new(now.year, now.month, now.day, now.hour, 0, 0)
     |> Util.bangify()
+  end
+
+  def get_current_items(limit \\ 40) do
+    query =
+      from fi in FeedItem,
+        order_by: [desc: fi.decayed_points],
+        limit: ^limit,
+        select: fi
+
+    Repo.all(query)
+  end
+
+  def get_latest_deck_interactions(num \\ 24) do
+    now = NaiveDateTime.utc_now()
+
+    start =
+      NaiveDateTime.new(now.year, now.month, now.day, now.hour, 0, 0)
+      |> Util.bangify()
+      |> NaiveDateTime.add(-3600 * num)
+
+    query =
+      from di in DeckInteraction,
+        where: di.period_start >= ^start and di.period_start < ^now,
+        select: di
+
+    Repo.all(query)
+  end
+
+  @spec feed_item(String.t() | atom(), String.t() | atom() | integer()) :: FeedItem.t() | nil
+  def feed_item(type, value) when is_binary(type) and is_binary(value) do
+    query =
+      from f in FeedItem,
+        where: f.type == ^type and f.value == ^value,
+        select: f
+
+    Repo.one(query)
+  end
+
+  def feed_item(type, value), do: feed_item(to_string(type), to_string(value))
+
+  @spec create_feed_item(atom() | String.t(), integer() | String.t() | atom(), number()) ::
+          {:ok, FeedItem.t()} | {:error, any()}
+  def create_feed_item(type, value, points \\ 0.0) do
+    attrs = %{type: to_string(type), value: to_string(value), points: points}
+
+    %FeedItem{}
+    |> FeedItem.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @spec update_feed_item_points(FeedItem.t(), number()) :: {:ok, FeedItem.t()} | {:error, any()}
+  def update_feed_item_points(fi = %FeedItem{}, points) do
+    fi
+    |> FeedItem.changeset(%{points: points})
+    |> Repo.update()
+  end
+
+  def decay_feed_items() do
+    query = from(fi in FeedItem)
+
+    query
+    |> Repo.update_all(
+      set: [
+        cumulative_decay: dynamic([di], di.cumulative_decay * di.decay_rate),
+        decayed_points: dynamic([di], di.points * di.cumulative_decay)
+      ]
+    )
   end
 end

@@ -3,6 +3,7 @@ defmodule Backend.Hearthstone.Deck do
 
   use Ecto.Schema
   import Ecto.Changeset
+  alias __MODULE__
   @required [:cards, :hero, :format, :deckcode]
   @optional [:hsreplay_archetype, :class]
   schema "deck" do
@@ -30,7 +31,7 @@ defmodule Backend.Hearthstone.Deck do
   @doc false
   def changeset(c, a), do: changeset(c, a |> Map.put(:deckcode, deckcode(a)))
 
-  @spec deckcode(__MODULE__) :: String.t()
+  @spec deckcode(Deck) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f}), do: deckcode(c, h, f)
 
   @doc """
@@ -78,8 +79,8 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  @spec decode!(String.t()) :: __MODULE__
-  def decode!(deckcode), do: decode(deckcode) |> Util.bangify()
+  @spec decode!(String.t()) :: Deck
+  def decode!(deckcode), do: deckcode |> decode() |> Util.bangify()
 
   @doc """
   Decode a deckcode into a Deck struct
