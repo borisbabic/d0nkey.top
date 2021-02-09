@@ -7,6 +7,12 @@
   min-width: 0;
   max-width: 90%;
 }
+.is-text-overflow {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 :root {
   /*--color-common: rgb(255, 255, 255);*/
   /*--color-common-dark: rgb(191, 191, 191);*/

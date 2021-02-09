@@ -9,7 +9,10 @@ defmodule BackendWeb.FeedLive do
 
     ~H"""
       <div class="container">
-        <div class="columns is-multiline is-mobile is-narrow">
+      <div class="level">
+        <div class="level-item title is-2">Well Met!</div>
+      </div>
+        <div class="columns is-multiline is-mobile is-narrow is-centered">
           <div :for={{ item <- items }}>
             <div :if={{ item.type == "deck" }} class="column is-narrow">
               <DeckFeedItem item={{ item }}/>
