@@ -2,29 +2,44 @@ defmodule Components.DeckStreamingInfo do
   @moduledoc false
   use Surface.Component
   alias Backend.Streaming
+  use BackendWeb.ViewHelpers
+  alias BackendWeb.Router.Helpers, as: Routes
   prop(deck_id, :integer, required: true)
 
   def render(%{deck_id: deck_id}) when is_integer(deck_id) do
     deck_id
     |> Streaming.streamer_decks_by_deck()
     |> create_info()
+    |> Map.put(
+      :streamer_decks_path,
+      Routes.streaming_path(BackendWeb.Endpoint, :streamer_decks, %{"deck_id" => deck_id})
+    )
     |> render()
   end
 
-  def render(assigns = %{peak: peak, peaked_by: pb, streamers: s}) do
+  def render(
+        assigns = %{
+          peak: peak,
+          peaked_by: pb,
+          streamers: s,
+          first_streamed_by: fsb,
+          streamer_decks_path: sdp
+        }
+      ) do
+    legend_rank = render_legend_rank(peak)
+
     ~H"""
-    <div >
-      <div class="tag is-success" :if={{ peak }}>
-        peak: {{ peak }}
+    <div class="columns is-multiline is-mobile" style="margin:7.5px">
+      <div class="tag column" :if={{ pb }}>
+        Peaked By: {{ pb }}
       </div>
-        <br>
-      <div class="tag is-success" :if={{ pb }}>
-        peaked_by: {{ pb }}
+      <div :if={{ legend_rank }}> {{ legend_rank }} </div>
+      <div class="tag column" if:={{ fsb }}>
+        First Streamed: {{ fsb }}
       </div>
-        <br>
-      <div class="tag">
-        streamers: {{ s |> Enum.count() }}
-      </div>
+      <a href="{{ sdp }}" class="tag column is-link" if:= {{ s }}>
+        # Streamers: {{ s |> Enum.count() }}
+      </a>
     </div>
 
     """
@@ -50,9 +65,12 @@ defmodule Components.DeckStreamingInfo do
     %{
       peak: peak,
       peaked_by: peaked_by,
-      streamers: sd |> Enum.map(&name/1)
+      streamers: sd |> Enum.map(&name/1),
+      first_streamed_by: first_played |> name()
     }
   end
+
+  def create_info(_), do: %{}
 
   defp name(%{streamer: streamer}), do: streamer |> Backend.Streaming.Streamer.twitch_display()
 end

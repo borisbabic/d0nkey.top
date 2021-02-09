@@ -1,4 +1,5 @@
 defmodule Backend.Feed.DeckInteraction do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.Hearthstone.Deck
@@ -27,4 +28,7 @@ defmodule Backend.Feed.DeckInteraction do
   end
 
   defp set_deck(c, _), do: c
+
+  @spec points(%{copied: number(), expanded: number()}) :: number()
+  def points(%{copied: copied, expanded: expanded}), do: 2 * copied + expanded
 end
