@@ -41,7 +41,7 @@ defmodule BackendWeb.Router do
     get "/leaderboard", LeaderboardController, :index
     get "/leaderboard/player-stats", LeaderboardController, :player_stats
 
-    get "/", PageController, :index
+    live "/", FeedLive
     get "/incubator", PageController, :incubator
     get "/about", PageController, :about
     get "/donate-follow", PageController, :donate_follow
