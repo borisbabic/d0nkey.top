@@ -1,10 +1,12 @@
 defmodule Backend.PlayerInfo do
   @moduledoc false
   alias Backend.Blizzard
+  alias Backend.Battlenet
   alias Backend.MastersTour
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Infrastructure.PlayerNationalityCache, as: PlayerNationality
   alias Backend.EsportsEarnings
+  alias Backend.PrioritizedBattletagCache
   @type country_code :: <<_::2>>
   @type player_info :: %{region: Blizzard.region() | nil, country: country_code | nil}
 
@@ -1410,7 +1412,6 @@ defmodule Backend.PlayerInfo do
     "CN" => :CN,
     "DZ" => :EU,
     "PT" => :EU,
-    "US" => :US,
     "ES" => :EU,
     "LV" => :EU,
     "UA" => :EU,
@@ -1541,26 +1542,33 @@ defmodule Backend.PlayerInfo do
 
   @spec get_region(String.t()) :: Blizzard.region()
   def get_region(full_or_short) do
-    with nil <- full_or_short |> same_player_override(&new_get_region/1),
-         nil <- full_or_short |> region_from_override(),
-         nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region(),
-         nil <- full_or_short |> new_get_region() do
-      nil
-    else
-      r -> r
-    end
-  end
-
-  def region_from_override(full_or_short) do
-    short = full_or_short |> InvitedPlayer.shorten_battletag()
-
-    nationality_overrides()
-    |> Map.get(short)
+    full_or_short
+    |> get_country()
     |> case do
       nil -> nil
       cc -> @alpha2_to_region[cc]
     end
+
+    # with nil <- full_or_short |> same_player_override(&new_get_region/1),
+    # nil <- full_or_short |> region_from_override(),
+    # nil <- full_or_short |> InvitedPlayer.shorten_battletag() |> old_get_region(),
+    # nil <- full_or_short |> new_get_region() do
+    # nil
+    # else
+    # r -> r
+    # end
   end
+
+  # def region_from_override(full_or_short) do
+  # short = full_or_short |> InvitedPlayer.shorten_battletag()
+
+  # nationality_overrides()
+  # |> Map.get(short)
+  # |> case do
+  # nil -> nil
+  # cc -> @alpha2_to_region[cc]
+  # end
+  # end
 
   def new_get_region(full_or_short),
     do: full_or_short |> PlayerNationality.get_country() |> country_to_region()
@@ -1692,17 +1700,23 @@ defmodule Backend.PlayerInfo do
 
   @spec get_country(Blizzard.battletag()) :: country_code
   def get_country(battletag_full) do
-    short =
-      battletag_full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name() |> hack_name()
-
-    with nil <- battletag_full |> same_player_override(&new_get_country/1),
-         nil <- nationality_overrides() |> Map.get(short),
-         nil <- short |> old_get_country(),
-         nil <- battletag_full |> new_get_country() do
-      nil
-    else
-      c -> c
+    PrioritizedBattletagCache.get_long_or_short(battletag_full)
+    |> case do
+      %{country: c} -> c
+      _ -> nil
     end
+
+    # short =
+    # battletag_full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name() |> hack_name()
+
+    # with nil <- battletag_full |> same_player_override(&new_get_country/1),
+    # nil <- nationality_overrides() |> Map.get(short),
+    # nil <- short |> old_get_country(),
+    # nil <- battletag_full |> new_get_country() do
+    # nil
+    # else
+    # c -> c
+    # end
   end
 
   def new_get_country(full_or_short), do: full_or_short |> PlayerNationality.get_country()
@@ -1715,23 +1729,6 @@ defmodule Backend.PlayerInfo do
       :CN -> "CN"
       c -> c
     end
-  end
-
-  @spec get_info(String.t()) :: player_info
-  def get_info(battletag_full) do
-    country = battletag_full |> get_country()
-
-    region =
-      case {country, battletag_full |> get_region()} do
-        {nil, nil} -> nil
-        {country, nil} -> @alpha2_to_region[country]
-        {_, region} -> region
-      end
-
-    %{
-      country: country,
-      region: region
-    }
   end
 
   def leaderboard_names(battletag_full), do: [InvitedPlayer.shorten_battletag(battletag_full)]

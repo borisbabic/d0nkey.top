@@ -30,6 +30,8 @@ defmodule BackendWeb.ProfileSettingsLive do
               <TextInput value={{ @user.battlefy_slug }}/>
               <Label>Open your battlefy profile then paste the url and I'll extract it</Label>
             </Field>
+            <Field name="country">
+            </Field>
             <Submit label="Save" class="button"/>
           </Form>
         </div>
@@ -42,6 +44,7 @@ defmodule BackendWeb.ProfileSettingsLive do
     attrs =
       attrs_raw
       |> parse_battlefy_slug()
+      |> Map.put("aasdfasdf", "ASdfas")
 
     updated =
       user
