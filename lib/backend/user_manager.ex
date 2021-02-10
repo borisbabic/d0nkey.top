@@ -72,6 +72,14 @@ defmodule Backend.UserManager do
     user
     |> User.changeset(attrs)
     |> Repo.update()
+    |> update_user_country()
+  end
+
+  def update_user_country(ret = {:error, _}), do: ret
+
+  def update_user_country(ret = {:ok, user}) do
+    Backend.Battlenet.update_user_country(user)
+    ret
   end
 
   @doc """
