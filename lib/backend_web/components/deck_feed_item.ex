@@ -8,10 +8,18 @@ defmodule Components.DeckFeedItem do
   def render(assigns = %{item: %{value: deck_id}}) do
     deck = Backend.Hearthstone.deck(deck_id)
 
+    name =
+      with id when not is_nil(id) <- deck.hsreplay_archetype,
+           %{name: name} <- Backend.HSReplay.get_archetype(id) do
+        name
+      else
+        _ -> nil
+      end
+
     ~H"""
     <div :if={{ deck }} class="card" style="width: 215px;">
       <div class="card-image" style="margin:7.5px;">
-        <Decklist deck={{ deck }} />
+        <Decklist deck={{ deck }} name={{ name }} />
       </div>
       <DeckStreamingInfo deck_id={{ deck.id }}/>
     </div>
