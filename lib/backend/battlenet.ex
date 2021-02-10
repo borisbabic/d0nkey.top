@@ -11,6 +11,8 @@ defmodule Backend.Battlenet do
   alias Backend.Battlenet.Battletag
   alias Backend.PrioritizedBattletagCache
 
+  @self_reported_priority 9001
+
   @pagination [page_size: 15]
   @pagination_distance 5
 
@@ -181,4 +183,23 @@ defmodule Backend.Battlenet do
     |> limit(1)
     |> Repo.one()
   end
+
+  @spec update_user_country(Backend.UserManager.User.t()) :: any()
+  def update_user_country(%{battletag: bt, country_code: cc}) when not is_nil(cc) do
+    from(b in Battletag,
+      where: b.battletag_full == ^bt and b.reported_by == ^bt,
+      select: b
+    )
+    |> Repo.one()
+    |> case do
+      nil ->
+        %{battletag_full: bt, reported_by: bt, country: cc, priority: @self_reported_priority}
+        |> create_battletag()
+
+      battletag ->
+        battletag |> update_battletag(%{country: cc})
+    end
+  end
+
+  def update_user_country(_), do: nil
 end
