@@ -26,13 +26,12 @@ defmodule BackendWeb.LeaderboardControllerTest do
 
   test "GET /leaderboard/region=EU&seasonId=84 INCLUDES D0nkey", %{conn: conn} do
     params = %{
-      "seasonId" => 74,
-      "show_flags" => "yes"
+      "seasonId" => 84,
+      "region" => "EU"
     }
 
     url = Routes.leaderboard_path(conn, :index, params)
     conn = get(conn, url)
-    assert html_response(conn, 200) =~ "https://www.countryflags.io/HR/flat/64.png"
     assert html_response(conn, 200) =~ "/player-profile/D0nkey"
   end
 end

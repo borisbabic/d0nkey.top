@@ -30,23 +30,29 @@ defmodule BackendWeb.BattletagControllerTest do
     battletag
   end
 
+  @spec add_auth(Plug.Conn) :: Plug.Conn
+  def add_auth(conn),
+    do:
+      conn |> Plug.Conn.put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
+
   describe "index" do
     test "lists all battletag_info", %{conn: conn} do
-      conn = get(conn, Routes.battletag_path(conn, :index))
+      conn = get(conn |> add_auth(), Routes.battletag_path(conn, :index))
       assert html_response(conn, 200) =~ "Battletag info"
     end
   end
 
   describe "new battletag" do
     test "renders form", %{conn: conn} do
-      conn = get(conn, Routes.battletag_path(conn, :new))
+      conn = get(conn |> add_auth(), Routes.battletag_path(conn, :new))
       assert html_response(conn, 200) =~ "New Battletag"
     end
   end
 
   describe "create battletag" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post conn, Routes.battletag_path(conn, :create), battletag: @create_attrs
+      conn =
+        post(conn |> add_auth(), Routes.battletag_path(conn, :create), battletag: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.battletag_path(conn, :show, id)
@@ -56,7 +62,9 @@ defmodule BackendWeb.BattletagControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, Routes.battletag_path(conn, :create), battletag: @invalid_attrs
+      conn =
+        post(conn |> add_auth(), Routes.battletag_path(conn, :create), battletag: @invalid_attrs)
+
       assert html_response(conn, 200) =~ "New Battletag"
     end
   end
@@ -65,7 +73,7 @@ defmodule BackendWeb.BattletagControllerTest do
     setup [:create_battletag]
 
     test "renders form for editing chosen battletag", %{conn: conn, battletag: battletag} do
-      conn = get(conn, Routes.battletag_path(conn, :edit, battletag))
+      conn = get(conn |> add_auth(), Routes.battletag_path(conn, :edit, battletag))
       assert html_response(conn, 200) =~ "Edit Battletag"
     end
   end
@@ -74,7 +82,11 @@ defmodule BackendWeb.BattletagControllerTest do
     setup [:create_battletag]
 
     test "redirects when data is valid", %{conn: conn, battletag: battletag} do
-      conn = put conn, Routes.battletag_path(conn, :update, battletag), battletag: @update_attrs
+      conn =
+        put(conn |> add_auth(), Routes.battletag_path(conn, :update, battletag),
+          battletag: @update_attrs
+        )
+
       assert redirected_to(conn) == Routes.battletag_path(conn, :show, battletag)
 
       conn = get(conn, Routes.battletag_path(conn, :show, battletag))
@@ -82,7 +94,10 @@ defmodule BackendWeb.BattletagControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, battletag: battletag} do
-      conn = put conn, Routes.battletag_path(conn, :update, battletag), battletag: @invalid_attrs
+      conn =
+        put conn |> add_auth(), Routes.battletag_path(conn, :update, battletag),
+          battletag: @invalid_attrs
+
       assert html_response(conn, 200) =~ "Edit Battletag"
     end
   end
@@ -91,7 +106,7 @@ defmodule BackendWeb.BattletagControllerTest do
     setup [:create_battletag]
 
     test "deletes chosen battletag", %{conn: conn, battletag: battletag} do
-      conn = delete(conn, Routes.battletag_path(conn, :delete, battletag))
+      conn = delete(conn |> add_auth(), Routes.battletag_path(conn, :delete, battletag))
       assert redirected_to(conn) == Routes.battletag_path(conn, :index)
 
       assert_error_sent 404, fn ->
