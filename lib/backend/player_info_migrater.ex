@@ -73,7 +73,7 @@ defmodule Backend.PlayerInfoMigrater do
     pn
     |> Enum.reduce(Multi.new(), fn pn, multi ->
       multi
-      |> migrate_pn(pn, pn.mt_battletag_full, "mt")
+      # |> migrate_pn(pn, pn.mt_battletag_full, "mt")
       |> migrate_pn(pn, pn.actual_battletag_full, "actual")
     end)
     |> Repo.transaction()
