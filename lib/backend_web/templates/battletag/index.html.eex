@@ -1,0 +1,99 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "New Battletag", to: Routes.battletag_path(@conn, :new) %>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find Battletag info</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+        
+          <div class="field">
+            <label>Battletag full</label>
+            <%= filter_select(:battletag, :battletag_full, @conn.params) %>
+            <%= filter_string_input(:battletag, :battletag_full, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Battletag short</label>
+            <%= filter_select(:battletag, :battletag_short, @conn.params) %>
+            <%= filter_string_input(:battletag, :battletag_short, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Country</label>
+            <%= filter_select(:battletag, :country, @conn.params) %>
+            <%= filter_string_input(:battletag, :country, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Reported by</label>
+            <%= filter_select(:battletag, :reported_by, @conn.params) %>
+            <%= filter_string_input(:battletag, :reported_by, @conn.params) %>
+          </div>
+        
+        
+        
+        
+          <div class="field">
+            <label>Priority</label>
+            <%= number_filter_select(:battletag, :priority, @conn.params) %>
+            <%= filter_number_input(:battletag, :priority, @conn.params) %>
+          </div>
+        
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: Routes.battletag_path(@conn, :index) %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@battletag_info) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+            
+              <th><%= table_link(@conn, "Battletag full", :battletag_full) %></th>
+            
+              <th><%= table_link(@conn, "Battletag short", :battletag_short) %></th>
+            
+              <th><%= table_link(@conn, "Country", :country) %></th>
+            
+              <th><%= table_link(@conn, "Priority", :priority) %></th>
+            
+              <th><%= table_link(@conn, "Reported by", :reported_by) %></th>
+            
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for battletag <- @battletag_info do %>
+            <tr>
+              
+                <td><%= battletag.battletag_full %></td>
+              
+                <td><%= battletag.battletag_short %></td>
+              
+                <td><%= battletag.country %></td>
+              
+                <td><%= battletag.priority %></td>
+              
+                <td><%= battletag.reported_by %></td>
+              
+              <td class="torch-actions">
+                <span><%= link "Show", to: Routes.battletag_path(@conn, :show, battletag) %></span>
+                <span><%= link "Edit", to: Routes.battletag_path(@conn, :edit, battletag) %></span>
+                <span><%= link "Delete", to: Routes.battletag_path(@conn, :delete, battletag), method: :delete, data: [confirm: "Are you sure?"] %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+    <% else %>
+      <p class="torch-no-data">No Battletag info match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>

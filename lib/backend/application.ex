@@ -59,6 +59,10 @@ defmodule Backend.Application do
           start: {Backend.StreamerTwitchInfoUpdater, :start_link, [[]]}
         },
         %{
+          id: Backend.PrioritizedBattletagCache,
+          start: {Backend.PrioritizedBattletagCache, :start_link, [[]]}
+        },
+        %{
           id: Backend.DeckInteractionTracker,
           start: {Backend.DeckInteractionTracker, :start_link, [[]]}
         },
@@ -103,7 +107,7 @@ defmodule Backend.Application do
   def warmup_cache() do
     if Application.fetch_env!(:backend, :warmup_cache) do
       [
-        &Backend.MasterTour.warmup_stats_cache/1,
+        &Backend.MastersTour.warmup_stats_cache/1,
         &Backend.MastersTour.warmup_player_nationality_cache/0
       ]
       |> Enum.each(fn f ->

@@ -76,7 +76,7 @@ defmodule Backend.EsportsEarnings do
     details
   end
 
-  @spec game_player_details(integer) :: GamePlayerDetails | nil
+  @spec game_player_details(integer) :: GamePlayerDetails.t() | nil
   def game_player_details(game_id) when is_integer(game_id) do
     case game_player_details(game_id, :cache) do
       nil -> game_player_details(game_id, :fresh) |> cache_game_player_details(game_id)

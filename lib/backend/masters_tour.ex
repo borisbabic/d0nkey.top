@@ -989,6 +989,17 @@ defmodule Backend.MastersTour do
     Repo.all(from(pn in PlayerNationality))
   end
 
+  def mt_player_nationalities(tour_stop) do
+    string_ts = to_string(tour_stop)
+
+    query =
+      from pn in PlayerNationality,
+        where: pn.tour_stop == ^string_ts,
+        select: pn
+
+    Repo.all(query)
+  end
+
   def warmup_player_nationality_cache() do
     mt_player_nationalities()
     |> PlayerNationalityCache.reinit()

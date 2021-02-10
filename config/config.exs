@@ -13,6 +13,7 @@ config :backend, QuantumScheduler,
     {"7 7 * * *", fn -> Backend.EsportsEarnings.auto_update() end},
     {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
     {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
+    {"37 5 * * *", fn -> Backend.PrioritizedBattletagCache.update_cache() end},
     {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},
     {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
     {"47 * * * *", fn -> Backend.Feed.decay_feed_items() end},
@@ -76,6 +77,10 @@ config :phoenix, :json_library, Jason
 
 config :nostrum,
   num_shards: :auto
+
+config :torch,
+  otp_app: :backend,
+  template_format: "eex"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

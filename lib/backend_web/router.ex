@@ -119,6 +119,11 @@ defmodule BackendWeb.Router do
     live "/profile/settings", ProfileSettingsLive
   end
 
+  scope "/torch", BackendWeb do
+    pipe_through [:browser, :auth]
+    resources "/battletag_info", BattletagController
+  end
+
   scope "/admin", BackendWeb do
     pipe_through [:browser, :admins_only]
     get "/", AdminController, :index

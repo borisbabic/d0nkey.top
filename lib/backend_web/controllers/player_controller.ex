@@ -19,7 +19,7 @@ defmodule BackendWeb.PlayerController do
         end
       end)
 
-    player_info = PlayerInfo.get_info(bt)
+    country = PlayerInfo.get_country(bt)
 
     tournaments = Backend.MastersTour.list_qualifiers_for_player(bt)
     short_bt = bt |> InvitedPlayer.shorten_battletag()
@@ -43,7 +43,7 @@ defmodule BackendWeb.PlayerController do
 
     render(conn, "player_profile.html", %{
       qualifier_stats: qualifier_stats,
-      player_info: player_info,
+      player_info: %{country: country, region: nil},
       battletag_full: bt,
       tournaments: tournaments,
       finishes: finishes,

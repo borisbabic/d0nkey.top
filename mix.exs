@@ -69,6 +69,7 @@ defmodule Backend.MixProject do
       {:absinthe_relay, "~> 1.5.0"},
       {:surface, "~> 0.1.1"},
       {:wait_for_it, "~>1.1"},
+      {:torch, "~> 3.4"},
       {:quantum, "~> 2.3"}
     ]
   end
