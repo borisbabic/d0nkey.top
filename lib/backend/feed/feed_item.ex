@@ -19,13 +19,15 @@ defmodule Backend.Feed.FeedItem do
   def changeset(feed_item, attrs) do
     feed_item
     |> cast(attrs, @required)
-    |> ensure_decayed_points()
+    |> ensure_decayed_points(feed_item)
     |> ensure_decay_rate()
     |> validate_required(@required)
   end
 
-  @spec ensure_decayed_points(Ecto.Changeset.t()) :: Ecto.Changset.t()
-  defp ensure_decayed_points(changeset) do
+  @spec ensure_decayed_points(Ecto.Changeset.t(), __MODULE__) :: Ecto.Changset.t()
+  defp ensure_decayed_points(changeset, %{decayed_points: dp}) when is_number(dp), do: changeset
+
+  defp ensure_decayed_points(changeset, _) do
     with :error <- changeset |> fetch_change(:decayed_points),
          {:ok, points} <- changeset |> fetch_change(:points) do
       changeset |> put_change(:decayed_points, points)
