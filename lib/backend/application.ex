@@ -3,6 +3,7 @@ defmodule Backend.Application do
   # for more information on OTP Applications
   @moduledoc false
 
+  require Logger
   use Application
 
   def start(_type, _args) do
@@ -83,7 +84,11 @@ defmodule Backend.Application do
 
   def migrate() do
     if Application.fetch_env!(:backend, :auto_migrate) do
-      Ecto.Migrator.run(Backend.Repo, "priv/repo/migrations", :up, all: true)
+      try do
+        Ecto.Migrator.run(Backend.Repo, "priv/repo/migrations", :up, all: true)
+      rescue
+        _ -> Logger.error("MIGRATION FAILED ON STARTUP!")
+      end
     end
   end
 
