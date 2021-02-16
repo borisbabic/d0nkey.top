@@ -30,8 +30,13 @@ defmodule Backend.MastersTour do
           regions: [Blizzard.region()],
           slug: String.t()
         }
+  import Torch.Helpers, only: [sort: 1, paginate: 4]
+  import Filtrex.Type.Config
 
-  def create_invited_player(attrs \\ %{}) do
+  @pagination [page_size: 15]
+  @pagination_distance 5
+
+  def invited_player_changeset(attrs \\ %{}) do
     %InvitedPlayer{}
     |> InvitedPlayer.changeset(attrs)
   end
@@ -292,7 +297,7 @@ defmodule Backend.MastersTour do
     qualifiers
     |> Enum.reduce(Multi.new(), fn q, multi ->
       ip = q |> create_qualifier_invite()
-      cs = ip |> create_invited_player()
+      cs = ip |> invited_player_changeset()
       Multi.insert(multi, InvitedPlayer.uniq_string(ip), cs)
     end)
     |> Repo.transaction()
@@ -344,7 +349,7 @@ defmodule Backend.MastersTour do
     |> Enum.filter(fn np -> np.battletag_full && np.tour_stop end)
     |> Enum.uniq_by(&InvitedPlayer.uniq_string/1)
     |> Enum.reduce(Multi.new(), fn np, multi ->
-      changeset = create_invited_player(np)
+      changeset = invited_player_changeset(np)
       Multi.insert(multi, InvitedPlayer.uniq_string(np), changeset)
     end)
     |> Repo.transaction()
@@ -391,9 +396,9 @@ defmodule Backend.MastersTour do
     end)
     |> Enum.uniq_by(&InvitedPlayer.uniq_string/1)
     |> Enum.reduce(Multi.new(), fn gm, multi ->
-      # changeset = create_invited_player(%{gm | tour_stop: to_ts, reason: gm.reason <>})
+      # changeset = invited_player_changeset(%{gm | tour_stop: to_ts, reason: gm.reason <>})
       changeset =
-        create_invited_player(%{
+        invited_player_changeset(%{
           tour_stop: to,
           battletag_full: gm.battletag_full,
           reason: gm.reason <> reason_append,
@@ -1048,7 +1053,7 @@ defmodule Backend.MastersTour do
         upstream_time: now
       }
 
-      changeset = raw |> create_invited_player()
+      changeset = raw |> invited_player_changeset()
       Multi.insert(multi, InvitedPlayer.uniq_string(raw), changeset)
     end)
     |> Repo.transaction()
@@ -1088,4 +1093,90 @@ defmodule Backend.MastersTour do
       _ -> nil
     end
   end
+
+  @doc """
+  Paginate the list of invited_player using filtrex
+  filters.
+
+  ## Examples
+
+      iex> list_invited_player(%{})
+      %{invited_player: [%InvitedPlayer{}], ...}
+  """
+  @spec paginate_invited_player(map) :: {:ok, map} | {:error, any}
+  def paginate_invited_player(params \\ %{}) do
+    params =
+      params
+      |> Map.put_new("sort_direction", "desc")
+      |> Map.put_new("sort_field", "inserted_at")
+
+    {:ok, sort_direction} = Map.fetch(params, "sort_direction")
+    {:ok, sort_field} = Map.fetch(params, "sort_field")
+
+    with {:ok, filter} <-
+           Filtrex.parse_params(filter_config(:invited_player), params["invited_player"] || %{}),
+         %Scrivener.Page{} = page <- do_paginate_invited_player(filter, params) do
+      {:ok,
+       %{
+         invited_player: page.entries,
+         page_number: page.page_number,
+         page_size: page.page_size,
+         total_pages: page.total_pages,
+         total_entries: page.total_entries,
+         distance: @pagination_distance,
+         sort_field: sort_field,
+         sort_direction: sort_direction
+       }}
+    else
+      {:error, error} -> {:error, error}
+      error -> {:error, error}
+    end
+  end
+
+  defp do_paginate_invited_player(filter, params) do
+    InvitedPlayer
+    |> Filtrex.query(filter)
+    |> order_by(^sort(params))
+    |> paginate(Repo, params, @pagination)
+  end
+
+  defp filter_config(:invited_player) do
+    defconfig do
+      text(:battletag_full)
+      text(:tour_stop)
+      text(:type)
+      text(:reason)
+      datetime(:upstream_time)
+      text(:tournament_slug)
+      text(:tournament_id)
+    end
+  end
+
+  def get_invited_player!(id), do: Repo.get!(InvitedPlayer, id)
+
+  @doc """
+  Updates a invited_player.
+
+  ## Examples
+
+      iex> update_invited_player(invited_player, %{field: new_value})
+      {:ok, %InvitedPlayer{}}
+
+      iex> update_invited_player(invited_player, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_invited_player(%InvitedPlayer{} = invited_player, attrs) do
+    invited_player
+    |> InvitedPlayer.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def change_invited_player(%InvitedPlayer{} = ip, attrs \\ %{}),
+    do: InvitedPlayer.changeset(ip, attrs)
+
+  def create_invited_player(attrs \\ %{}),
+    do: attrs |> invited_player_changeset() |> Repo.insert()
+
+  def delete_invited_player(%InvitedPlayer{} = ip), do: Repo.delete(ip)
 end

@@ -123,6 +123,7 @@ defmodule BackendWeb.Router do
     pipe_through [:browser, :admins_only]
     resources "/battletag_info", BattletagController
     resources "/users", UserController
+    resources "/invited_player", InvitedPlayerController
   end
 
   scope "/admin", BackendWeb do
