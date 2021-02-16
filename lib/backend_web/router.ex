@@ -122,6 +122,7 @@ defmodule BackendWeb.Router do
   scope "/torch", BackendWeb do
     pipe_through [:browser, :admins_only]
     resources "/battletag_info", BattletagController
+    resources "/users", UserController
   end
 
   scope "/admin", BackendWeb do

@@ -6,6 +6,11 @@ defmodule Backend.UserManager do
   import Ecto.Query, warn: false
   alias Backend.Repo
   @type bnet_info :: %{battletag: String.t(), bnet_id: String.t()}
+  import Torch.Helpers, only: [sort: 1, paginate: 4]
+  import Filtrex.Type.Config
+
+  @pagination [page_size: 15]
+  @pagination_distance 5
 
   alias Backend.UserManager.User
 
@@ -109,6 +114,61 @@ defmodule Backend.UserManager do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  @doc """
+  Paginate the list of users using filtrex
+  filters.
+
+  ## Examples
+
+      iex> paginate_users(%{})
+      %{users: [%User{}], ...}
+  """
+  @spec paginate_users(map) :: {:ok, map} | {:error, any}
+  def paginate_users(params \\ %{}) do
+    params =
+      params
+      |> Map.put_new("sort_direction", "desc")
+      |> Map.put_new("sort_field", "inserted_at")
+
+    {:ok, sort_direction} = Map.fetch(params, "sort_direction")
+    {:ok, sort_field} = Map.fetch(params, "sort_field")
+
+    with {:ok, filter} <-
+           Filtrex.parse_params(filter_config(:users), params["user"] || %{}),
+         %Scrivener.Page{} = page <- do_paginate_users(filter, params) do
+      {:ok,
+       %{
+         users: page.entries,
+         page_number: page.page_number,
+         page_size: page.page_size,
+         total_pages: page.total_pages,
+         total_entries: page.total_entries,
+         distance: @pagination_distance,
+         sort_field: sort_field,
+         sort_direction: sort_direction
+       }}
+    else
+      {:error, error} -> {:error, error}
+      error -> {:error, error}
+    end
+  end
+
+  defp do_paginate_users(filter, params) do
+    User
+    |> Filtrex.query(filter)
+    |> order_by(^sort(params))
+    |> paginate(Repo, params, @pagination)
+  end
+
+  defp filter_config(:users) do
+    defconfig do
+      text(:battletag)
+      number(:bnet_id)
+      text(:battlefy_slug)
+      text(:country_code)
+    end
   end
 
   @doc """
