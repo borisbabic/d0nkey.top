@@ -149,7 +149,7 @@ defmodule Backend.MastersTour do
     query =
       from q in Qualifier,
         select: q,
-        where: like(fragment("?::text", q.standings), ^search),
+        where: like(fragment("to_jsonb(?)::text", q.standings), ^search),
         order_by: [desc: q.start_time]
 
     query |> Repo.all()
