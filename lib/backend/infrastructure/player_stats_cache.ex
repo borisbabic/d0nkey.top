@@ -8,9 +8,7 @@ defmodule Backend.Infrastructure.PlayerStatsCache do
     GenServer.start_link(__MODULE__, default, name: @name)
   end
 
-  def get(period) do
-    GenServer.call(@name, {:get, period})
-  end
+  def get(period), do: table() |> Util.ets_lookup(period)
 
   def set(period, stats) do
     GenServer.cast(@name, {:set, period, stats})
@@ -22,22 +20,23 @@ defmodule Backend.Infrastructure.PlayerStatsCache do
 
   # Server
   def init(_args \\ nil) do
-    {:ok, %{}}
-  end
-
-  def create(server, name) do
-    GenServer.cast(server, {:create, name})
+    table = :ets.new(@name, [:named_table])
+    {:ok, %{table: table}}
   end
 
   def handle_call({:get, period}, _from, state) do
     {:reply, state[period], state}
   end
 
-  def handle_cast({:set, period, stats}, state) do
-    {:noreply, Map.put(state, period, stats)}
+  def handle_cast({:set, period, stats}, state = %{table: table}) do
+    :ets.insert(table, {period, stats})
+    {:noreply, state}
   end
 
-  def handle_cast({:delete, period}, state) do
-    {:noreply, Map.delete(state, period)}
+  def handle_cast({:delete, period}, state = %{table: table}) do
+    :ets.delete(table, period)
+    {:noreply, state}
   end
+
+  def table(), do: :ets.whereis(@name)
 end
