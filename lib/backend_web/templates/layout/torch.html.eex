@@ -25,6 +25,7 @@
           <nav class="torch-nav">
             <a href="/torch/battletag_info">Battletag Info</a>
             <a href="/torch/users">Users</a>
+            <a href="/torch/invited_player">Invites</a>
           </nav>
         </div>
       </section>
