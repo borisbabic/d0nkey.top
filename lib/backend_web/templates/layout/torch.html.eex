@@ -23,7 +23,8 @@
             </a>
           </div>
           <nav class="torch-nav">
-            <!-- nav links here -->
+            <a href="/torch/battletag_info">Battletag Info</a>
+            <a href="/torch/users">Users</a>
           </nav>
         </div>
       </section>
