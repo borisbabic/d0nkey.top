@@ -7,6 +7,12 @@ defmodule Backend.Feed do
   alias Backend.Hearthstone.Deck
   alias Backend.Repo
 
+  import Torch.Helpers, only: [sort: 1, paginate: 4]
+  import Filtrex.Type.Config
+
+  @pagination [page_size: 15]
+  @pagination_distance 5
+
   def inc_deck_copied(deck), do: inc(deck, :copied)
   def inc_deck_expanded(deck), do: inc(deck, :expanded)
 
@@ -108,8 +114,12 @@ defmodule Backend.Feed do
   @spec create_feed_item(atom() | String.t(), integer() | String.t() | atom(), number()) ::
           {:ok, FeedItem.t()} | {:error, any()}
   def create_feed_item(type, value, points \\ 0.0) do
-    attrs = %{type: to_string(type), value: to_string(value), points: points}
+    %{type: to_string(type), value: to_string(value), points: points}
+    |> create_feed_item()
+  end
 
+  @spec create_feed_item(Map.t()) :: {:ok | FeedItem.t()} | {:error, Ecto.Changset.t()}
+  def create_feed_item(attrs) do
     %FeedItem{}
     |> FeedItem.changeset(attrs)
     |> Repo.insert()
@@ -117,10 +127,21 @@ defmodule Backend.Feed do
 
   @spec update_feed_item_points(FeedItem.t(), number()) :: {:ok, FeedItem.t()} | {:error, any()}
   def update_feed_item_points(fi = %FeedItem{}, points) do
+    attrs = %{points: points}
+    fi |> update_feed_item(attrs)
+  end
+
+  @spec update_feed_item(FeedItem.t(), Map.t()) :: {:ok, FeedItem.t()} | {:error, any()}
+  def update_feed_item(fi = %FeedItem{}, attrs) do
     fi
-    |> FeedItem.changeset(%{points: points})
+    |> FeedItem.changeset(attrs)
     |> Repo.update()
   end
+
+  @spec change_feed_item(FeedItem.t(), Map.t()) :: Ecto.Changeset
+  def change_feed_item(fi = %FeedItem{}, attrs \\ %{}), do: fi |> FeedItem.changeset(attrs)
+
+  def delete_feed_item(fi = %FeedItem{}), do: fi |> Repo.delete()
 
   def decay_feed_items() do
     query = from(fi in FeedItem)
@@ -133,4 +154,64 @@ defmodule Backend.Feed do
       ]
     )
   end
+
+  @doc """
+  Paginate the list of feed_items using filtrex
+  filters.
+
+  ## Examples
+
+      iex> list_feed_items(%{})
+      %{feed_items: [%FeedItem{}], ...}
+  """
+  @spec paginate_feed_items(map) :: {:ok, map} | {:error, any}
+  def paginate_feed_items(params \\ %{}) do
+    params =
+      params
+      |> Map.put_new("sort_direction", "desc")
+      |> Map.put_new("sort_field", "inserted_at")
+
+    {:ok, sort_direction} = Map.fetch(params, "sort_direction")
+    {:ok, sort_field} = Map.fetch(params, "sort_field")
+
+    with {:ok, filter} <-
+           Filtrex.parse_params(filter_config(:feed_items), params["feed_items"] || %{}),
+         %Scrivener.Page{} = page <- do_paginate_feed_items(filter, params) do
+      {:ok,
+       %{
+         feed_items: page.entries,
+         page_number: page.page_number,
+         page_size: page.page_size,
+         total_pages: page.total_pages,
+         total_entries: page.total_entries,
+         distance: @pagination_distance,
+         sort_field: sort_field,
+         sort_direction: sort_direction
+       }}
+    else
+      {:error, error} -> {:error, error}
+      error -> {:error, error}
+    end
+  end
+
+  defp do_paginate_feed_items(filter, params) do
+    FeedItem
+    |> Filtrex.query(filter)
+    |> order_by(^sort(params))
+    |> paginate(Repo, params, @pagination)
+  end
+
+  defp filter_config(:feed_items) do
+    defconfig do
+      number(:decay_rate, allow_decimal: true)
+      number(:cumulative_decay, allow_decimal: true)
+      number(:points, allow_decimal: true)
+      number(:decayed_points, allow_decimal: true)
+      text(:value)
+      text(:string)
+    end
+  end
+
+  @spec get_feed_item!(integer()) :: FeedItem.t()
+  def get_feed_item!(id), do: Repo.get!(FeedItem, id)
 end

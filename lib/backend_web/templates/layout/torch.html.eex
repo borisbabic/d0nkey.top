@@ -11,7 +11,7 @@
       <section id="torch-account-info">
         <div class="torch-container">
           <a href="/">user@example.com</a>
-          <a href="/">Logout</a>
+          <a href="/logout">Logout</a>
         </div>
       </section>
 
@@ -19,13 +19,14 @@
         <div class="torch-container">
           <div class="torch-logo">
             <a href="/">
-              <h3>Torch</h3>
+              <h3>Home</h3>
             </a>
           </div>
           <nav class="torch-nav">
             <a href="/torch/battletag_info">Battletag Info</a>
             <a href="/torch/users">Users</a>
             <a href="/torch/invited_player">Invites</a>
+            <a href="/torch/feed_items">Feed Items</a>
           </nav>
         </div>
       </section>

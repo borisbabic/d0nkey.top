@@ -1,0 +1,50 @@
+<%= form_for @changeset, @action, [multipart: true, id: "torch-form"], fn f -> %>
+  <fieldset class="torch-panel">
+    <legend>
+      <span>Details</span>
+    </legend>
+    <%= if @changeset.action do %>
+      <p class="torch-form-error">Oops, something went wrong! Please check the errors below.</p>
+    <% end %>
+  
+    <div class="torch-form-group">
+      <%= label f, :decay_rate %>
+      <%= number_input f, :decay_rate, step: "any" %>
+      <%= error_tag f, :decay_rate %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :cumulative_decay %>
+      <%= number_input f, :cumulative_decay, step: "any" %>
+      <%= error_tag f, :cumulative_decay %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :points %>
+      <%= number_input f, :points, step: "any" %>
+      <%= error_tag f, :points %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :decayed_points %>
+      <%= number_input f, :decayed_points, step: "any" %>
+      <%= error_tag f, :decayed_points %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :value %>
+      <%= text_input f, :value %>
+      <%= error_tag f, :value %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :type %>
+      <%= text_input f, :type %>
+      <%= error_tag f, :type %>
+    </div>
+  
+    <div class="torch-submit-form">
+      <%= submit "Submit", class: "torch-submit-button" %>
+    </div>
+  </fieldset>
+<% end %>

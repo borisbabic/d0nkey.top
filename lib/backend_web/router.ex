@@ -124,6 +124,7 @@ defmodule BackendWeb.Router do
     resources "/battletag_info", BattletagController
     resources "/users", UserController
     resources "/invited_player", InvitedPlayerController
+    resources "/feed_items", FeedItemController
   end
 
   scope "/admin", BackendWeb do
