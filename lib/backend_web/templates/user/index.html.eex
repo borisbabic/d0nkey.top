@@ -55,6 +55,8 @@
               <th><%= table_link(@conn, "Battlefy slug", :battlefy_slug) %></th>
             
               <th><%= table_link(@conn, "Country code", :country_code) %></th>
+
+              <th><%= table_link(@conn, "Admin roles", :admin_roles) %></th>
             
             <th><span>Actions</span></th>
           </tr>
@@ -70,6 +72,8 @@
                 <td><%= user.battlefy_slug %></td>
               
                 <td><%= user.country_code %></td>
+
+                <td><%= user.admin_roles |> Enum.join(" ") %></td>
               
               <td class="torch-actions">
                 <span><%= link "Show", to: Routes.user_path(@conn, :show, user) %></span>

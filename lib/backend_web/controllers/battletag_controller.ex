@@ -5,6 +5,7 @@ defmodule BackendWeb.BattletagController do
   alias Backend.Battlenet.Battletag
 
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
+  plug(Backend.Plug.AdminAuth, role: :battletag_info)
 
   def index(conn, params) do
     case Battlenet.paginate_battletag_info(params) do
@@ -24,7 +25,10 @@ defmodule BackendWeb.BattletagController do
   end
 
   def create(conn, %{"battletag" => battletag_params}) do
-    case Battlenet.create_battletag(battletag_params) do
+    battletag_params
+    |> Map.put("reported_by", conn |> BackendWeb.AuthUtils.battletag())
+    |> Battlenet.create_battletag()
+    |> case do
       {:ok, battletag} ->
         conn
         |> put_flash(:info, "Battletag created successfully.")

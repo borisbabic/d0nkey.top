@@ -5,6 +5,7 @@ defmodule BackendWeb.UserController do
   alias Backend.UserManager.User
 
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
+  plug(Backend.Plug.AdminAuth, role: :users)
 
   def index(conn, params) do
     case UserManager.paginate_users(params) do

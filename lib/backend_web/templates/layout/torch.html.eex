@@ -10,7 +10,11 @@
     <header>
       <section id="torch-account-info">
         <div class="torch-container">
-          <a href="/">user@example.com</a>
+          <%= if battletag(@conn) do %>
+            <a href="/profile/settings"><%= battletag(@conn) %></a>
+          <% else %>
+            <a href="/auth/bnet">Login</a>
+          <% end %>
           <a href="/logout">Logout</a>
         </div>
       </section>
@@ -23,10 +27,18 @@
             </a>
           </div>
           <nav class="torch-nav">
-            <a href="/torch/battletag_info">Battletag Info</a>
-            <a href="/torch/users">Users</a>
-            <a href="/torch/invited_player">Invites</a>
-            <a href="/torch/feed_items">Feed Items</a>
+            <%= if can_access?(@conn, :battletag_info) do %>
+              <a href="/torch/battletag_info">Battletag Info</a>
+            <% end %>
+            <%= if can_access?(@conn, :users) do %>
+              <a href="/torch/users">Users</a>
+            <% end %>
+            <%= if can_access?(@conn, :invites) do %>
+              <a href="/torch/invited_player">Invites</a>
+            <% end %>
+            <%= if can_access?(@conn, :feed_items) do %>
+              <a href="/torch/feed_items">Feed Items</a>
+            <% end %>
           </nav>
         </div>
       </section>

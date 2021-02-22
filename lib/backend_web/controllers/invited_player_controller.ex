@@ -5,6 +5,7 @@ defmodule BackendWeb.InvitedPlayerController do
   alias Backend.MastersTour.InvitedPlayer
 
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
+  plug(Backend.Plug.AdminAuth, role: :invites)
 
   def index(conn, params) do
     case MastersTour.paginate_invited_player(params) do

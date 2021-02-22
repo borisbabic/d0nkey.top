@@ -27,14 +27,8 @@
   
     <div class="torch-form-group">
       <%= label f, :priority %>
-      <%= number_input f, :priority %>
+      <%= number_input f, :priority, value: 5000 %>
       <%= error_tag f, :priority %>
-    </div>
-  
-    <div class="torch-form-group">
-      <%= label f, :reported_by %>
-      <%= text_input f, :reported_by %>
-      <%= error_tag f, :reported_by %>
     </div>
   
     <div class="torch-submit-form">

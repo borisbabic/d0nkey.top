@@ -4,8 +4,12 @@ defmodule BackendWeb.ViewHelpers do
     root: "lib/backend_web/templates",
     namespace: BackendWeb
 
+  alias Backend.UserManager.User
+
   defmacro __using__(_opts) do
     quote do
+      import BackendWeb.AuthUtils
+
       def render_datetime(datetime) do
         render(BackendWeb.SharedView, "datetime.html", %{datetime: datetime})
       end

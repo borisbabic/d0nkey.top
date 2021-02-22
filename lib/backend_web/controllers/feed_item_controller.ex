@@ -5,6 +5,7 @@ defmodule BackendWeb.FeedItemController do
   alias Backend.Feed.FeedItem
 
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
+  plug(Backend.Plug.AdminAuth, role: :feed_items)
 
   def index(conn, params) do
     case Feed.paginate_feed_items(params) do
