@@ -24,6 +24,18 @@
               <a class="navbar-item" href='<%= Routes.player_path(@conn, :player_profile, @user) %>'>Player Profile</a>
               <a class="navbar-item" href='/profile/settings'>Settings</a>
               <a class="navbar-item" href='/logout'>Logout</a>
+              <%= if can_access?(@conn, :battletag_info) do %>
+                <a class="navbar-item" href="/torch/battletag_info">Admin - Battletag Info</a>
+              <% end %>
+              <%= if can_access?(@conn, :users) do %>
+                <a class="navbar-item" href="/torch/users">Admin - Users</a>
+              <% end %>
+              <%= if can_access?(@conn, :invites) do %>
+                <a class="navbar-item" href="/torch/invited_player">Admin - Invites</a>
+              <% end %>
+              <%= if can_access?(@conn, :feed_items) do %>
+                <a class="navbar-item" href="/torch/feed_items">Admin - Feed Items</a>
+              <% end %>
             <% else %>
               <a class="navbar-item" href='/auth/bnet'>Sign in (Battlenet) </a>
             <% end %>

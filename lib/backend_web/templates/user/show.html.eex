@@ -31,6 +31,11 @@
           <div class="torch-show-label">Country code:</div>
           <div class="torch-show-data"><%= @user.country_code %></div>
         </li>
+
+        <li>
+          <div class="torch-show-label">Admin Roles</div>
+          <div class="torch-show-data"><%= @user.admin_roles |> Enum.join(" ")%></div>
+        </li>
       
     </ul>
   </div>

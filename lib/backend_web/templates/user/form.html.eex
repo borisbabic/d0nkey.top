@@ -30,6 +30,12 @@
       <%= text_input f, :country_code %>
       <%= error_tag f, :country_code %>
     </div>
+
+    <div class="torch-form-group">
+      <%= label f, :admin_roles %>
+      <%= multiple_select f, :admin_roles, Backend.UserManager.User.all_admin_roles() %>
+      <%= error_tag f, :admin_roles %>
+    </div>
   
     <div class="torch-submit-form">
       <%= submit "Submit", class: "torch-submit-button" %>

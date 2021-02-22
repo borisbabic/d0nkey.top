@@ -83,8 +83,10 @@
               
               <td class="torch-actions">
                 <span><%= link "Show", to: Routes.battletag_path(@conn, :show, battletag) %></span>
-                <span><%= link "Edit", to: Routes.battletag_path(@conn, :edit, battletag) %></span>
-                <span><%= link "Delete", to: Routes.battletag_path(@conn, :delete, battletag), method: :delete, data: [confirm: "Are you sure?"] %></span>
+                <%= if battletag(@conn) == battletag.reported_by || can_access?(@conn, "super") do %>
+                  <span><%= link "Edit", to: Routes.battletag_path(@conn, :edit, battletag) %></span>
+                  <span><%= link "Delete", to: Routes.battletag_path(@conn, :delete, battletag), method: :delete, data: [confirm: "Are you sure?"] %></span>
+                <% end %>
               </td>
             </tr>
           <% end %>

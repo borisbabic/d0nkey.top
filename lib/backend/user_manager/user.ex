@@ -8,6 +8,7 @@ defmodule Backend.UserManager.User do
     field :bnet_id, :integer
     field :battlefy_slug, :string
     field :country_code, :string
+    field :admin_roles, {:array, :string}, default: []
 
     timestamps()
   end
@@ -15,7 +16,7 @@ defmodule Backend.UserManager.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:battletag, :bnet_id, :battlefy_slug, :country_code])
+    |> cast(attrs, [:battletag, :bnet_id, :battlefy_slug, :country_code, :admin_roles])
     |> validate_required([:battletag, :bnet_id])
     |> validate_length(:country_code, min: 2, max: 2)
     |> capitalize_country_code()
@@ -34,4 +35,12 @@ defmodule Backend.UserManager.User do
 
   def display_name(%__MODULE__{battletag: bt}),
     do: bt |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
+
+  def all_admin_roles(), do: [:super, :battletag_info, :users, :invites, :feed_items]
+
+  @spec can_access?(User.t(), String.t()) :: boolean
+  def can_access?(nil, _), do: false
+
+  def can_access?(%{admin_roles: ar}, r),
+    do: ar |> Enum.map(&to_string/1) |> Enum.any?(&(&1 in [r |> to_string(), "super"]))
 end
