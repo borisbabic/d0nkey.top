@@ -7,12 +7,14 @@ defmodule BackendWeb.UserControllerTest do
     battlefy_slug: "some battlefy_slug",
     battletag: "some battletag",
     bnet_id: 42,
+    hide_ads: true,
     country_code: "US"
   }
   @update_attrs %{
     battlefy_slug: "some updated battlefy_slug",
     battletag: "some updated battletag",
     bnet_id: 43,
+    hide_ads: false,
     country_code: "IT"
   }
   @invalid_attrs %{

@@ -112,6 +112,8 @@ defmodule BackendWeb.Router do
     get "/login-welcome", AuthController, :login_welcome
     get "/logout", AuthController, :logout
     live "/feed", FeedLive
+    get "/empty/with-nav", EmptyController, :with_nav
+    get "/empty/without-nav", EmptyController, :without_nav
   end
 
   scope "/", BackendWeb do

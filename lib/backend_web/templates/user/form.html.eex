@@ -37,6 +37,11 @@
       <%= error_tag f, :admin_roles %>
     </div>
   
+    <div class="torch-form-group">
+      <%= label f, :hide_ads %>
+      <%= checkbox f, :hide_ads %>
+      <%= error_tag f, :hide_ads %>
+    </div>
     <div class="torch-submit-form">
       <%= submit "Submit", class: "torch-submit-button" %>
     </div>

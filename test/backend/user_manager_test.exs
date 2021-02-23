@@ -6,8 +6,18 @@ defmodule Backend.UserManagerTest do
   describe "users" do
     alias Backend.UserManager.User
 
-    @valid_attrs %{battletag: "some battletag", bnet_id: 42}
-    @update_attrs %{battletag: "some updated battletag", bnet_id: 43}
+    @valid_attrs %{
+      battletag: "some battletag",
+      bnet_id: 42,
+      hide_ads: true,
+      admin_roles: ["users", "battletag_info"]
+    }
+    @update_attrs %{
+      battletag: "some updated battletag",
+      bnet_id: 43,
+      hide_ads: false,
+      admin_roles: ["super"]
+    }
     @invalid_attrs %{battletag: nil, bnet_id: nil}
 
     def user_fixture(attrs \\ %{}) do

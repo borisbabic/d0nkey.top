@@ -34,9 +34,13 @@
 
         <li>
           <div class="torch-show-label">Admin Roles</div>
-          <div class="torch-show-data"><%= @user.admin_roles |> Enum.join(" ")%></div>
+          <div class="torch-show-data"><%= @user.admin_roles || [] |> Enum.join(" ")%></div>
         </li>
       
+        <li>
+          <div class="torch-show-label">Hide Ads</div>
+          <div class="torch-show-data"><%= @user.hide_ads %></div>
+        </li>
     </ul>
   </div>
 </section>
