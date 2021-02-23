@@ -205,6 +205,18 @@ defmodule BackendWeb.BattlefyController do
     organization_tournaments(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 
+  def user_tournaments(conn, params = %{"slug" => slug}) do
+    page = params["page"] |> Util.to_int(1)
+    tournaments = Api.get_user_tournaments(slug, page)
+
+    render(conn, "user_tournaments.html", %{
+      slug: slug,
+      page: page,
+      page_title: "#{slug}'s Tournaments'",
+      tournaments: tournaments
+    })
+  end
+
   defp list_or_comma_separated(list) when is_list(list), do: list
   defp list_or_comma_separated(string) when is_binary(string), do: string |> String.split(",")
 

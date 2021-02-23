@@ -1,0 +1,6 @@
+<div class="title is-2"><%= @title %> </div>
+<div class="subtitle is-6"><%= @subtitle %> </div>
+<%= @prev_button %>
+<%= @next_button %>
+<%= render("tournament_table.html", conn: @conn, raw: @tournaments, slug: @slug) %>
+

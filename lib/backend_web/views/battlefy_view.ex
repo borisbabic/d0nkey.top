@@ -579,4 +579,55 @@ defmodule BackendWeb.BattlefyView do
       }
     end)
   end
+
+  def render("user_tournaments.html", %{
+        slug: slug,
+        page: page,
+        tournaments: tournaments,
+        conn: conn
+      }) do
+    render(
+      "user_tournaments.html",
+      %{
+        title: "#{slug}'s Battlefy Tournaments",
+        subtitle: "Public tournaments only",
+        tournaments: tournaments,
+        conn: conn,
+        slug: slug,
+        prev_button: prev_button(conn, page - 1, slug),
+        next_button: next_button(conn, page + 1, slug)
+      }
+    )
+  end
+
+  @spec next_button(Plug.Conn.t(), integer(), String.t()) :: Phoenix.HTML.Safe.t()
+  def next_button(conn, next_page, slug) do
+    new_params = conn.query_params |> Map.put("page", next_page)
+    link = Routes.battlefy_path(conn, :user_tournaments, slug, new_params)
+
+    ~E"""
+    <a class="icon button is-link" href="<%= link %>">
+      <i class="fas fa-caret-right"></i>
+    </a>
+    """
+  end
+
+  @spec prev_button(Plug.Conn.t(), integer(), String.t()) :: Phoenix.HTML.Safe.t()
+  def prev_button(_, 0, _),
+    do: ~E"""
+      <span class="icon button is-link">
+          <i class="fas fa-caret-left"></i>
+      </span>
+    """
+
+  def prev_button(conn, prev_page, slug) do
+    new_params = conn.query_params |> Map.put("page", prev_page)
+    link = Routes.battlefy_path(conn, :user_tournaments, slug, new_params)
+
+    ~E"""
+    <a class="icon button is-link" href="<%= link %>">
+      <i class="fas fa-caret-left"></i>
+    </a>
+    """
+  end
 end
