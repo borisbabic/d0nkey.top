@@ -40,10 +40,10 @@ defmodule Backend.UserManager.User do
   def string_admin_roles(), do: all_admin_roles() |> Enum.map(&to_string/1)
 
   @spec can_access?(User.t(), String.t()) :: boolean
-  def can_access?(nil, _), do: false
-
-  def can_access?(%{admin_roles: ar}, r),
+  def can_access?(%{admin_roles: ar}, r) when is_list(ar),
     do: ar |> Enum.map(&to_string/1) |> Enum.any?(&(&1 in [r |> to_string(), "super"]))
+
+  def can_access?(_, _), do: false
 
   @spec is_role?(atom() | String.t()) :: boolean()
   def is_role?(atom_or_string), do: (atom_or_string |> to_string()) in string_admin_roles()
