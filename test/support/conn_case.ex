@@ -44,13 +44,11 @@ defmodule BackendWeb.ConnCase do
 
     {conn, user} =
       if tags[:authenticated] do
-        {:ok, user} = create_auth_user(tags)
+        {:ok, user} = create_auth_user_from_tags(tags)
 
         conn =
-          Phoenix.ConnTest.build_conn()
-          |> Plug.Session.call(@signing_opts)
-          |> Plug.Conn.fetch_session()
-          |> Backend.UserManager.Guardian.Plug.sign_in(user)
+          user
+          |> build_conn_with_user()
 
         {conn, user}
       else
@@ -60,14 +58,27 @@ defmodule BackendWeb.ConnCase do
     {:ok, conn: conn, user: user}
   end
 
-  defp create_auth_user(tags) do
-    roles = tags |> Map.keys() |> Enum.filter(&Backend.UserManager.User.is_role?/1)
+  @spec build_conn_with_user(Backend.UserManager.User.t()) :: Plug.Conn.t()
+  def build_conn_with_user(user) do
+    Phoenix.ConnTest.build_conn()
+    |> Plug.Session.call(@signing_opts)
+    |> Plug.Conn.fetch_session()
+    |> Backend.UserManager.Guardian.Plug.sign_in(user)
+  end
 
+  defp create_auth_user_from_tags(tags) do
+    roles = tags |> Map.keys() |> Enum.filter(&Backend.UserManager.User.is_role?/1)
+    create_auth_user(%{admin_roles: roles})
+  end
+
+  @spec create_auth_user(Map.t()) :: {:ok, User.t()} | {:error, any()}
+  def create_auth_user(opts \\ %{}) when is_map(opts) do
     %{
-      battletag: "test_user",
-      admin_roles: roles |> Enum.map(&to_string/1),
+      battletag: "test_user#1234",
+      admin_roles: [],
       bnet_id: 1
     }
+    |> Map.merge(opts)
     |> Backend.UserManager.create_user()
   end
 end

@@ -9,14 +9,20 @@ defmodule Backend.UserManager.User do
     field :battlefy_slug, :string
     field :country_code, :string
     field :admin_roles, {:array, :string}, default: []
+    field :hide_ads, :boolean
 
     timestamps()
   end
 
   @doc false
+  def changeset(user, attrs = %{admin_roles: ar = [r | _]}) when is_atom(r) do
+    new_attrs = attrs |> Map.put(:admin_roles, ar |> Enum.map(&to_string/1))
+    changeset(user, new_attrs)
+  end
+
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:battletag, :bnet_id, :battlefy_slug, :country_code, :admin_roles])
+    |> cast(attrs, [:battletag, :bnet_id, :battlefy_slug, :country_code, :admin_roles, :hide_ads])
     |> validate_required([:battletag, :bnet_id])
     |> validate_length(:country_code, min: 2, max: 2)
     |> capitalize_country_code()
@@ -36,7 +42,10 @@ defmodule Backend.UserManager.User do
   def display_name(%__MODULE__{battletag: bt}),
     do: bt |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
 
+  @spec all_admin_roles() :: [atom()]
   def all_admin_roles(), do: [:super, :battletag_info, :users, :invites, :feed_items]
+
+  @spec string_admin_roles() :: [String.t()]
   def string_admin_roles(), do: all_admin_roles() |> Enum.map(&to_string/1)
 
   @spec can_access?(User.t(), String.t()) :: boolean
@@ -47,4 +56,8 @@ defmodule Backend.UserManager.User do
 
   @spec is_role?(atom() | String.t()) :: boolean()
   def is_role?(atom_or_string), do: (atom_or_string |> to_string()) in string_admin_roles()
+
+  def hide_ads?(%{hide_ads: true}), do: true
+  def hide_ads?(%{admin_roles: ar}) when is_list(ar), do: !(ar |> Enum.empty?())
+  def hide_ads?(_), do: false
 end

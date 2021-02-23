@@ -58,6 +58,7 @@
 
               <th><%= table_link(@conn, "Admin roles", :admin_roles) %></th>
             
+              <th><%= table_link(@conn, "Hide Ads", :hide_ads) %></th>
             <th><span>Actions</span></th>
           </tr>
         </thead>
@@ -74,6 +75,8 @@
                 <td><%= user.country_code %></td>
 
                 <td><%= user.admin_roles || [] |> Enum.join(" ") %></td>
+
+                <td><%= user.hide_ads %></td>
               
               <td class="torch-actions">
                 <span><%= link "Show", to: Routes.user_path(@conn, :show, user) %></span>
