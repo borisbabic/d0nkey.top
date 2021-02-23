@@ -39,30 +39,29 @@ defmodule BackendWeb.InvitedPlayerControllerTest do
     invited_player
   end
 
-  @spec add_auth(Plug.Conn) :: Plug.Conn
-  def add_auth(conn),
-    do:
-      conn |> Plug.Conn.put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-
   describe "index" do
+    @describetag :authenticated
+    @describetag :invites
     test "lists all invited_player", %{conn: conn} do
-      conn = get(conn |> add_auth(), Routes.invited_player_path(conn, :index))
+      conn = get(conn, Routes.invited_player_path(conn, :index))
       assert html_response(conn, 200) =~ "Invited player"
     end
   end
 
   describe "new invited_player" do
+    @describetag :authenticated
+    @describetag :invites
     test "renders form", %{conn: conn} do
-      conn = get(conn |> add_auth(), Routes.invited_player_path(conn, :new))
+      conn = get(conn, Routes.invited_player_path(conn, :new))
       assert html_response(conn, 200) =~ "New Invited player"
     end
   end
 
   describe "create invited_player" do
+    @describetag :authenticated
+    @describetag :invites
     test "redirects to show when data is valid", %{conn: conn} do
-      conn =
-        post conn |> add_auth(), Routes.invited_player_path(conn, :create),
-          invited_player: @create_attrs
+      conn = post conn, Routes.invited_player_path(conn, :create), invited_player: @create_attrs
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.invited_player_path(conn, :show, id)
@@ -72,32 +71,34 @@ defmodule BackendWeb.InvitedPlayerControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn =
-        post conn |> add_auth(), Routes.invited_player_path(conn, :create),
-          invited_player: @invalid_attrs
+      conn = post conn, Routes.invited_player_path(conn, :create), invited_player: @invalid_attrs
 
       assert html_response(conn, 200) =~ "New Invited player"
     end
   end
 
   describe "edit invited_player" do
+    @describetag :authenticated
+    @describetag :invites
     setup [:create_invited_player]
 
     test "renders form for editing chosen invited_player", %{
       conn: conn,
       invited_player: invited_player
     } do
-      conn = get(conn |> add_auth(), Routes.invited_player_path(conn, :edit, invited_player))
+      conn = get(conn, Routes.invited_player_path(conn, :edit, invited_player))
       assert html_response(conn, 200) =~ "Edit Invited player"
     end
   end
 
   describe "update invited_player" do
+    @describetag :authenticated
+    @describetag :invites
     setup [:create_invited_player]
 
     test "redirects when data is valid", %{conn: conn, invited_player: invited_player} do
       conn =
-        put conn |> add_auth(), Routes.invited_player_path(conn, :update, invited_player),
+        put conn, Routes.invited_player_path(conn, :update, invited_player),
           invited_player: @update_attrs
 
       assert redirected_to(conn) == Routes.invited_player_path(conn, :show, invited_player)
@@ -108,7 +109,7 @@ defmodule BackendWeb.InvitedPlayerControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, invited_player: invited_player} do
       conn =
-        put conn |> add_auth(), Routes.invited_player_path(conn, :update, invited_player),
+        put conn, Routes.invited_player_path(conn, :update, invited_player),
           invited_player: @invalid_attrs
 
       assert html_response(conn, 200) =~ "Edit Invited player"
@@ -116,10 +117,12 @@ defmodule BackendWeb.InvitedPlayerControllerTest do
   end
 
   describe "delete invited_player" do
+    @describetag :authenticated
+    @describetag :invites
     setup [:create_invited_player]
 
     test "deletes chosen invited_player", %{conn: conn, invited_player: invited_player} do
-      conn = delete(conn |> add_auth(), Routes.invited_player_path(conn, :delete, invited_player))
+      conn = delete(conn, Routes.invited_player_path(conn, :delete, invited_player))
       assert redirected_to(conn) == Routes.invited_player_path(conn, :index)
 
       assert_error_sent 404, fn ->
