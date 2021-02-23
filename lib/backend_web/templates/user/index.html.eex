@@ -73,7 +73,7 @@
               
                 <td><%= user.country_code %></td>
 
-                <td><%= user.admin_roles |> Enum.join(" ") %></td>
+                <td><%= user.admin_roles || [] |> Enum.join(" ") %></td>
               
               <td class="torch-actions">
                 <span><%= link "Show", to: Routes.user_path(@conn, :show, user) %></span>
