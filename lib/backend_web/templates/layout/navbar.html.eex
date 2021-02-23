@@ -23,6 +23,11 @@
             <%= if @user do %>
               <a class="navbar-item" href='<%= Routes.player_path(@conn, :player_profile, @user) %>'>Player Profile</a>
               <a class="navbar-item" href='/profile/settings'>Settings</a>
+              <%= if user(@conn) && user(@conn).battlefy_slug do %>
+                <a class="navbar-item" href='<%= Routes.battlefy_path(@conn, :user_tournaments, user(@conn).battlefy_slug)%>'>
+                  Battlefy Tournaments
+                </a>
+              <% end %>
               <a class="navbar-item" href='/logout'>Logout</a>
               <%= if can_access?(@conn, :battletag_info) do %>
                 <a class="navbar-item" href="/torch/battletag_info">Admin - Battletag Info</a>

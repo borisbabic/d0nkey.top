@@ -236,14 +236,27 @@ defmodule Util do
   iex> Util.to_int_or_orig("-1.45")
   -1
   """
-  def to_int_or_orig(<<int_or_not::binary>>) do
+  def to_int_or_orig(orig), do: to_int(orig, orig)
+
+  @doc """
+  Transform to an integer while ignoring the binary remainder or returns the fallback
+
+  ## Example
+  iex> Util.to_int("hello", 45)
+  45
+  iex> Util.to_int("-1", 45)
+  -1
+  iex> Util.to_int("-1.45", 45)
+  -1
+  """
+  def to_int(<<int_or_not::binary>>, fallback) do
     case Integer.parse(int_or_not) do
       {int, _rem} -> int
-      _ -> int_or_not
+      _ -> fallback
     end
   end
 
-  def to_int_or_orig(orig), do: orig
+  def to_int(_, fallback), do: fallback
 
   @doc """
   Takes and {:ok,_} | {:error, _ } and returns the value on :ok and nil on :error
