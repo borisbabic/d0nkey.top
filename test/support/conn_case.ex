@@ -44,7 +44,7 @@ defmodule BackendWeb.ConnCase do
 
     {conn, user} =
       if tags[:authenticated] do
-        {:ok, user} = create_auth_user_from_tags(tags)
+        {:ok, user} = create_auth_user_from_tags(tags, tags[:other_battletag])
 
         conn =
           user
@@ -66,9 +66,11 @@ defmodule BackendWeb.ConnCase do
     |> Backend.UserManager.Guardian.Plug.sign_in(user)
   end
 
-  defp create_auth_user_from_tags(tags) do
+  defp create_auth_user_from_tags(tags, alt_battletag) do
     roles = tags |> Map.keys() |> Enum.filter(&Backend.UserManager.User.is_role?/1)
-    create_auth_user(%{admin_roles: roles})
+    more_attrs = if alt_battletag, do: %{battletag: "alt_battletag#4321"}, else: %{}
+    attrs = %{admin_roles: roles} |> Map.merge(more_attrs)
+    create_auth_user(attrs)
   end
 
   @spec create_auth_user(Map.t()) :: {:ok, User.t()} | {:error, any()}

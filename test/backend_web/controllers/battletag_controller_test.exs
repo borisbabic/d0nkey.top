@@ -8,14 +8,13 @@ defmodule BackendWeb.BattletagControllerTest do
     battletag_short: "some battletag_short",
     country: "some country",
     priority: 42,
-    reported_by: "some reported_by"
+    reported_by: "test_user#1234"
   }
   @update_attrs %{
     battletag_full: "some updated battletag_full",
     battletag_short: "some updated battletag_short",
     country: "some updated country",
-    priority: 43,
-    reported_by: "some updated reported_by"
+    priority: 43
   }
   @invalid_attrs %{
     battletag_full: nil,
@@ -97,6 +96,28 @@ defmodule BackendWeb.BattletagControllerTest do
       conn = put conn, Routes.battletag_path(conn, :update, battletag), battletag: @invalid_attrs
 
       assert html_response(conn, 200) =~ "Edit Battletag"
+    end
+
+    @tag :other_battletag
+    test "unauthorized when other user", %{conn: conn, battletag: battletag} do
+      conn = put(conn, Routes.battletag_path(conn, :update, battletag), battletag: @update_attrs)
+
+      assert html_response(conn, 403)
+    end
+
+    test "unauthorized when changing battletag", %{conn: conn, battletag: battletag} do
+      attrs = @update_attrs |> Map.put(:reported_by, "other_battletag#2470")
+      conn = put(conn, Routes.battletag_path(conn, :update, battletag), battletag: attrs)
+
+      assert html_response(conn, 403)
+    end
+
+    @tag :super
+    test "allow changing battletag when super", %{conn: conn, battletag: battletag} do
+      attrs = @update_attrs |> Map.put(:reported_by, "other_battletag#2470")
+      conn = put(conn, Routes.battletag_path(conn, :update, battletag), battletag: attrs)
+
+      assert html_response(conn, 302)
     end
   end
 
