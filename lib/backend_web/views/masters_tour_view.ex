@@ -40,7 +40,7 @@ defmodule BackendWeb.MastersTourView do
     profile_link = Routes.player_path(conn, :player_profile, MastersTour.mt_profile_name(name))
 
     ~E"""
-    <%= region %><%= country %><span> <a class="is-link" href="<%= profile_link %>"> <%= name %> </a></span>
+    <%= region %><%= country %><span> <a class="is-link" href="<%= profile_link %>"> <%= render_player_name(name) %> </a></span>
     """
   end
 
@@ -188,7 +188,7 @@ defmodule BackendWeb.MastersTourView do
       player_cell = ~E"""
       <%= flag_part %>
       <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, ps.battletag_full)%>">
-        <%= InvitedPlayer.shorten_battletag(ps.battletag_full)%>
+        <%= ps.battletag_full |> InvitedPlayer.shorten_battletag() |> render_player_name() %>
       </a>
       """
 

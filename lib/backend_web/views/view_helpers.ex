@@ -135,6 +135,14 @@ defmodule BackendWeb.ViewHelpers do
           %{type: type}
         )
       end
+
+      def render_player_name(name) do
+        render(
+          BackendWeb.SharedView,
+          "player_name.html",
+          %{name: name}
+        )
+      end
     end
   end
 end
