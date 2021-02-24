@@ -43,4 +43,14 @@ defmodule BackendWeb.SharedView do
 
     """
   end
+
+  def render("player_name.html", %{name: name}) do
+    if name in ["D0nkey", "D0nkey#2470"] do
+      ~E"""
+        <span><span class="icon small"><img src="/favicon.ico" alt="<%= name %>"></span><%= name %></span>
+      """
+    else
+      name
+    end
+  end
 end

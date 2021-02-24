@@ -16,7 +16,9 @@
  <- @table_entries do %>
         <tr>
             <td><%= render_comparison(position, prev_rank, true) %></td>
-            <td><%= e.flag %><a href="<%= Routes.player_path(@conn, :player_profile, battletag) %>"> <%= battletag %></a></td>
+            <td><%= e.flag %><a href="<%= Routes.player_path(@conn, :player_profile, battletag) %>"> 
+                    <%= render_player_name(battletag) %>
+            </a></td>
             <%= if @show_mt_column do %>
                 <td>
                 <%= case {qualified, qualifying, ineligible} do%>
