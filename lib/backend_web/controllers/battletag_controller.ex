@@ -7,6 +7,8 @@ defmodule BackendWeb.BattletagController do
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
   plug(Backend.Plug.AdminAuth, role: :battletag_info)
 
+  action_fallback BackendWeb.FallbackController
+
   def index(conn, params) do
     case Battlenet.paginate_battletag_info(params) do
       {:ok, assigns} ->
@@ -53,15 +55,31 @@ defmodule BackendWeb.BattletagController do
   def update(conn, %{"id" => id, "battletag" => battletag_params}) do
     battletag = Battlenet.get_battletag!(id)
 
-    case Battlenet.update_battletag(battletag, battletag_params) do
-      {:ok, battletag} ->
-        conn
-        |> put_flash(:info, "Battletag updated successfully.")
-        |> redirect(to: Routes.battletag_path(conn, :show, battletag))
+    if can_edit?(battletag, battletag_params, conn) do
+      case Battlenet.update_battletag(battletag, battletag_params) do
+        {:ok, battletag} ->
+          conn
+          |> put_flash(:info, "Battletag updated successfully.")
+          |> redirect(to: Routes.battletag_path(conn, :show, battletag))
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", battletag: battletag, changeset: changeset)
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "edit.html", battletag: battletag, changeset: changeset)
+      end
+    else
+      {:error, :unauthorized}
     end
+  end
+
+  defp can_edit?(battletag, battletag_params, conn) do
+    user = conn |> Guardian.Plug.current_resource()
+
+    is_super = user |> Backend.UserManager.User.can_access?("super")
+    reported_by_matches = battletag.reported_by == user.battletag
+
+    params_reported_by_ok =
+      battletag_params["reported_by"] == nil || battletag_params["reported_by"] == user.battletag
+
+    is_super || (reported_by_matches && params_reported_by_ok)
   end
 
   def delete(conn, %{"id" => id}) do

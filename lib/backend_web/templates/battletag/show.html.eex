@@ -1,6 +1,8 @@
 <section id="torch-toolbar">
   <div class="torch-container">
-    <%= link "Edit", to: Routes.battletag_path(@conn, :edit, @battletag), class: "torch-button" %>
+    <%= if battletag(@conn) == @battletag.reported_by || can_access?(@conn, "super") do %>
+      <%= link "Edit", to: Routes.battletag_path(@conn, :edit, @battletag), class: "torch-button" %>
+    <% end %>
     <%= link "Back", to: Routes.battletag_path(@conn, :index), class: "torch-button" %>
   </div>
 </section>
