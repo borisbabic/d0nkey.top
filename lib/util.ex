@@ -316,7 +316,7 @@ defmodule Util do
 
   def get_range(:week, day_in_week) when is_integer(day_in_week) do
     start_time = get_latest_day(day_in_week)
-    end_time = Date.add(start_time, 7)
+    end_time = Date.add(start_time, 6)
     {start_time, end_time}
   end
 
