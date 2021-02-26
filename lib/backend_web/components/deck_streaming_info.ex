@@ -45,7 +45,9 @@ defmodule Components.DeckStreamingInfo do
     """
   end
 
-  def render(_), do: ""
+  def render(assigns),
+    do: ~H"""
+    """
 
   def create_info(sd) when length(sd) > 0 do
     {peak, peaked_by} =
