@@ -2,6 +2,7 @@ defmodule Backend.UserManager.User do
   @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
+  alias Backend.UserManager.User.DecklistOptions
 
   schema "users" do
     field :battletag, :string
@@ -10,6 +11,7 @@ defmodule Backend.UserManager.User do
     field :country_code, :string
     field :admin_roles, {:array, :string}, default: []
     field :hide_ads, :boolean
+    embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
 
     timestamps()
   end
@@ -23,6 +25,7 @@ defmodule Backend.UserManager.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:battletag, :bnet_id, :battlefy_slug, :country_code, :admin_roles, :hide_ads])
+    |> cast_embed(:decklist_options)
     |> validate_required([:battletag, :bnet_id])
     |> validate_length(:country_code, min: 2, max: 2)
     |> capitalize_country_code()
@@ -60,4 +63,47 @@ defmodule Backend.UserManager.User do
   def hide_ads?(%{hide_ads: true}), do: true
   def hide_ads?(%{admin_roles: ar}) when is_list(ar), do: !(ar |> Enum.empty?())
   def hide_ads?(_), do: false
+
+  def decklist_options(%{decklist_options: deck_opts}) when is_map(deck_opts), do: deck_opts
+  def decklist_options(_), do: %{}
+end
+
+defmodule Backend.UserManager.User.DecklistOptions do
+  @moduledoc "User options for how decklists are displayed"
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @primary_key false
+  embedded_schema do
+    field :border, :string
+    field :gradient, :string
+  end
+
+  @doc false
+  def changeset(entry, attrs) do
+    entry
+    |> cast(attrs, [:border, :gradient])
+    |> validate_colors([:border, :gradient])
+  end
+
+  def border(%{border: b}), do: b
+  def border(_), do: "dark_grey"
+
+  def gradient(%{gradient: g}), do: g
+  def gradient(_), do: "rarity"
+
+  def valid?(opt), do: opt in ["dark_grey", "card_class", "deck_class", "rarity"]
+
+  def validate_colors(changeset, fields) do
+    fields
+    |> Enum.reduce(changeset, fn f, cs ->
+      validate_change(cs, f, fn f, value ->
+        if valid?(value) do
+          []
+        else
+          [{f, "Invalid color for decklist options"}]
+        end
+      end)
+    end)
+  end
 end

@@ -1,6 +1,7 @@
 defmodule BackendWeb.DeckLive do
   @moduledoc false
   use Surface.LiveView
+  import BackendWeb.LiveHelpers
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Components.DeckStreamingInfo
@@ -8,6 +9,11 @@ defmodule BackendWeb.DeckLive do
 
   data(deck, :any)
   data(streamer_decks, :any)
+  data(user, :any)
+
+  def mount(_, session, socket) do
+    {:ok, assign_defaults(socket, session)}
+  end
 
   def handle_params(params = %{"deck" => deck_parts}, session, socket) when is_list(deck_parts) do
     new_deck = deck_parts |> Enum.join("/")
@@ -32,17 +38,19 @@ defmodule BackendWeb.DeckLive do
 
   def render(assigns = %{deck: _}) do
     ~H"""
-    <div class="container">
-      <br>
-      <div class="columns is-narrow is-mobile is-multiline">
-        <div class="column">
-          <Decklist deck={{ @deck }}/>
-        </div>
-        <div class="column" :if={{ @deck.id }}>
-          <DeckStreamingInfo deck_id={{ @deck.id }}/>
+    <Context put={{user: @user}}>
+      <div class="container">
+        <br>
+        <div class="columns is-narrow is-mobile is-multiline">
+          <div class="column">
+            <Decklist deck={{ @deck }}/>
+          </div>
+          <div class="column" :if={{ @deck.id }}>
+            <DeckStreamingInfo deck_id={{ @deck.id }}/>
+          </div>
         </div>
       </div>
-    </div>
+    </Context>
     """
   end
 

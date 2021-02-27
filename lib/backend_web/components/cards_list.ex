@@ -3,6 +3,7 @@ defmodule Components.CardsList do
   use Surface.Component
   alias Components.DecklistCard
   alias Backend.Hearthstone
+  alias Backend.UserManager.User
   prop(cards, :list, required: true)
   prop(comparison, :any, required: false, default: nil)
   prop(deck_class, :string, required: false, default: "NEUTRAL")
@@ -25,14 +26,16 @@ defmodule Components.CardsList do
     end
 
     ~H"""
+      <Context get={{ user: user }}>
         <div class="decklist_card_container" :for={{ cc <- comparison }}>
           <div :if={{ cards_map[cc.id]}} class="{{ comparison_class(cc, count.(cc)) }}">
-            <DecklistCard  show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ card.(cc) }} count={{ count.(cc) }}/>
+            <DecklistCard  show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ card.(cc) }} count={{ count.(cc) }} decklist_options={{ User.decklist_options(user) }}/>
           </div>
           <div :if={{ !cards_map[cc.id] }} class="not-in-list">
-            <DecklistCard show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ cc }} count={{ nil }}/>
+            <DecklistCard show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ cc }} count={{ nil }} decklist_options={{ User.decklist_options(user) }}/>
           </div>
         </div>
+      </Context>
     """
   end
 
@@ -40,9 +43,11 @@ defmodule Components.CardsList do
     cards = c |> Hearthstone.ordered_frequencies()
 
     ~H"""
-      <div class="decklist_card_container" :for ={{ {card, count} <- cards }}>
-        <DecklistCard show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ card }} count={{ count }}/>
-      </div>
+      <Context get={{ user: user }}>
+        <div class="decklist_card_container" :for ={{ {card, count} <- cards }}>
+            <DecklistCard show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ card }} count={{ count }} decklist_options={{ User.decklist_options(user) }}/>
+        </div>
+      </Context>
     """
   end
 

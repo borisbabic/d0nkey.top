@@ -1,5 +1,6 @@
 defmodule BackendWeb.ExpandableDeckLive do
   @moduledoc false
+  import BackendWeb.LiveHelpers
   alias Components.Decklist
   alias Backend.Hearthstone.Deck
   alias Backend.DeckInteractionTracker, as: Tracker
@@ -9,13 +10,17 @@ defmodule BackendWeb.ExpandableDeckLive do
   data(show_cards, :boolean)
 
   def mount(_params, p = %{"code" => code}, socket) do
-    {:ok, socket |> assign(deckcode: code, show_cards: !!p["show_cards"], name: p["name"])}
+    {:ok,
+     socket
+     |> assign(deckcode: code, show_cards: !!p["show_cards"], name: p["name"])
+     |> assign_defaults(p)}
   end
 
   def render(assigns) do
     deck = Deck.decode!(assigns[:deckcode])
 
     ~H"""
+    <Context put={{ user: @user }} >
       <Decklist deck={{deck}} show_cards={{ @show_cards }} name={{ @name }}>
         <template slot="right_button">
           <span phx-click="show_cards" class="is-clickable" >
@@ -26,6 +31,7 @@ defmodule BackendWeb.ExpandableDeckLive do
           </span>
         </template>
       </Decklist>
+    </Context>
     """
   end
 

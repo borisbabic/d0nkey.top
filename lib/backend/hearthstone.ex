@@ -167,10 +167,12 @@ defmodule Backend.Hearthstone do
   defp name_for_sort({%{name: name}, _}), do: name
   defp name_for_sort({_, %{name: name}}), do: name
   defp name_for_sort(%{name: name}), do: name
+  defp name_for_sort(_), do: nil
 
   defp cost_for_sort({%{cost: cost}, _}), do: cost
   defp cost_for_sort({_, %{cost: cost}}), do: cost
   defp cost_for_sort(%{cost: cost}), do: cost
+  defp cost_for_sort(), do: nil
 
   def get_card(dbf_id), do: Backend.HearthstoneJson.get_card(dbf_id)
 end
