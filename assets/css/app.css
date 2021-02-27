@@ -241,6 +241,13 @@
   padding-bottom: 0.25em;
 }
 
+.not-in-list {
+  opacity: 0.15;
+}
+.card-comparison-count-1 {
+  opacity: 0.69;
+}
+
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/
 /*}*/

@@ -2,6 +2,7 @@ defmodule BackendWeb.DeckviewerLive do
   @moduledoc false
   alias Components.Decklist
   alias Backend.DeckInteractionTracker, as: Tracker
+  alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson
   alias Backend.HSDeckViewer
@@ -14,6 +15,7 @@ defmodule BackendWeb.DeckviewerLive do
   use Surface.LiveView
   data(deckcodes, :any)
   data(current_link, :string)
+  data(compare_decks, :boolean)
   require WaitForIt
 
   def mount(_params, _session, socket) do
@@ -22,8 +24,20 @@ defmodule BackendWeb.DeckviewerLive do
     end
   end
 
-  def render(%{deckcodes: codes} = assigns) do
+  def render(assigns = %{deckcodes: codes, compare_decks: cd}) do
     show_copy_button = codes |> Enum.any?()
+
+    comparison =
+      if cd do
+        codes
+        |> Enum.map(&Deck.decode!/1)
+        |> Enum.flat_map(& &1.cards)
+        |> Enum.uniq()
+        |> Enum.map(&HearthstoneJson.get_card/1)
+        |> Hearthstone.sort_cards()
+      else
+        nil
+      end
 
     ~H"""
 
@@ -42,6 +56,9 @@ defmodule BackendWeb.DeckviewerLive do
             <div :if={{ show_copy_button }} class="column is-narrow">
               <button class="clip-btn-value button is-shown-js" type="button" data-balloon-pos="down" data-aria-on-copy="Copied!" data-clipboard-text="{{ @current_link }}" >Copy Link</button>
             </div>
+            <div :if={{ cd || @deckcodes |> Enum.count() > 1}} class="column is-narrow">
+              <button phx-click="toggle_compare" class="button" type="button">{{ compare_button_text(@compare_decks) }}</button>
+            </div>
 
             <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
               <a class="is-link tag" href="{{ Yaytears.create_deckstrings_link(@deckcodes)  }}">
@@ -54,8 +71,8 @@ defmodule BackendWeb.DeckviewerLive do
         </div>
       </Form>
       <div class="columns is-mobile is-multiline">
-        <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}}>
-          <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}">
+        <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}} :if={{@compare_decks == @compare_decks}}>
+          <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}" comparison={{ comparison }}>
             <template slot="right_button">
               <a class="delete" phx-click="delete" phx-value-index={{ index }}/>
             </template>
@@ -65,6 +82,9 @@ defmodule BackendWeb.DeckviewerLive do
     </div>
     """
   end
+
+  def compare_button_text(true), do: "Stop Comparing"
+  def compare_button_text(false), do: "Compare Decks"
 
   def handle_params(params, _uri, socket) do
     codes =
@@ -80,11 +100,14 @@ defmodule BackendWeb.DeckviewerLive do
       "https://www.d0nkey.top" <>
         Routes.live_path(socket, __MODULE__, %{"code" => codes |> Enum.join(",")})
 
+    compare_decks = params["compare_decks"] == "true"
+
     {
       :noreply,
       socket
       |> assign(:deckcodes, codes)
       |> assign(:current_link, current_link)
+      |> assign(:compare_decks, compare_decks)
       |> assign(:new_deck, "")
     }
   end
@@ -119,7 +142,12 @@ defmodule BackendWeb.DeckviewerLive do
       :noreply,
       socket
       |> push_patch(
-        to: Routes.live_path(socket, __MODULE__, %{"code" => (dc ++ new_codes) |> Enum.join(",")})
+        to:
+          Routes.live_path(
+            socket,
+            __MODULE__,
+            current_params(socket) |> add_code_param(dc ++ new_codes)
+          )
       )
     }
   end
@@ -131,7 +159,12 @@ defmodule BackendWeb.DeckviewerLive do
       :noreply,
       socket
       |> push_patch(
-        to: Routes.live_path(socket, __MODULE__, %{"code" => new_codes |> Enum.join(",")})
+        to:
+          Routes.live_path(
+            socket,
+            __MODULE__,
+            current_params(socket) |> add_code_param(new_codes)
+          )
       )
     }
   end
@@ -140,4 +173,32 @@ defmodule BackendWeb.DeckviewerLive do
     Tracker.inc_copied(code)
     {:noreply, socket}
   end
+
+  def handle_event("toggle_compare", _, socket = %{assigns: %{compare_decks: cd}}) do
+    {
+      :noreply,
+      socket
+      |> push_patch(
+        to: Routes.live_path(socket, __MODULE__, current_params(socket) |> add_compare_param(!cd))
+      )
+    }
+  end
+
+  defp current_params(%{assigns: assigns}), do: current_params(assigns)
+
+  defp current_params(assigns) do
+    %{}
+    |> add_existing_code(assigns)
+    |> add_existing_compare_decks(assigns)
+  end
+
+  defp add_existing_code(map, %{deckcodes: dc}), do: add_code_param(map, dc)
+  defp add_existing_code(map, _), do: map
+
+  defp add_existing_compare_decks(map, %{compare_decks: cd}), do: add_compare_param(map, cd)
+  defp add_existing_compare_decks(map, _), do: map
+
+  defp add_compare_param(map, cd), do: map |> Map.put("compare_decks", cd)
+  defp add_code_param(map, deckcodes), do: map |> Map.put("code", deckcodes |> codes_to_param())
+  defp codes_to_param(codes), do: codes |> Enum.join(",")
 end

@@ -1,15 +1,14 @@
 defmodule Components.Decklist do
   @moduledoc false
   use Surface.Component
-  alias Components.DecklistCard
-  alias Components.DecklistHero
-  alias Backend.Hearthstone
+  alias Components.CardsList
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson.Card
   use BackendWeb.ViewHelpers
   prop(deck, :map, required: true)
   prop(name, :string, required: false)
   prop(show_cards, :boolean, default: true)
+  prop(comparison, :any, required: false)
   slot(right_button)
 
   @spec deck_name(String.t() | nil, Deck.t(), Card.t()) :: String.t()
@@ -25,10 +24,6 @@ defmodule Components.Decklist do
 
   def render(assigns) do
     deck = assigns[:deck]
-
-    cards =
-      deck.cards
-      |> Hearthstone.ordered_frequencies()
 
     hero = Backend.HearthstoneJson.get_hero(deck)
     deckcode = render_deckcode(deck.deckcode, false)
@@ -56,8 +51,8 @@ defmodule Components.Decklist do
                   </div>
               </div>
           </div>
-          <div class="decklist_card_container" :if = {{ @show_cards }} :for = {{ {card, count} <- cards }}>
-              <DecklistCard show_mana_cost={{ true }} deck_class={{ deck_class }} card={{ card }} count={{ count }}/>
+          <div :if={{ @show_cards }}>
+            <CardsList comparison={{ @comparison }} cards={{ deck.cards }} deck_class={{ deck_class }}/>
           </div>
           <span style="font-size: 0; line-size:0; display:block">
             # You really like to select a lot of stuff, don't ya you beautiful being! 🤎 D0nkey

@@ -155,9 +155,22 @@ defmodule Backend.Hearthstone do
       {get_card(c), freq}
     end)
     |> Enum.filter(&(&1 |> elem(0)))
-    |> Enum.sort_by(fn {c, _} -> c.name end)
-    |> Enum.sort_by(fn {c, _} -> c.cost end)
+    |> sort_cards()
   end
+
+  def sort_cards(cards) do
+    cards
+    |> Enum.sort_by(&name_for_sort/1)
+    |> Enum.sort_by(&cost_for_sort/1)
+  end
+
+  defp name_for_sort({%{name: name}, _}), do: name
+  defp name_for_sort({_, %{name: name}}), do: name
+  defp name_for_sort(%{name: name}), do: name
+
+  defp cost_for_sort({%{cost: cost}, _}), do: cost
+  defp cost_for_sort({_, %{cost: cost}}), do: cost
+  defp cost_for_sort(%{cost: cost}), do: cost
 
   def get_card(dbf_id), do: Backend.HearthstoneJson.get_card(dbf_id)
 end
