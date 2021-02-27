@@ -1,19 +1,18 @@
 defmodule BackendWeb.StreamingNowLive do
   @moduledoc false
   use Surface.LiveView
+  import BackendWeb.LiveHelpers
   alias Components.LiveStreamer
-  alias Components.NumberFilter
-  alias Surface.Components.Form
   alias Surface.Components.LivePatch
   alias BackendWeb.Router.Helpers, as: Routes
   @subscriptions ["streaming:hs:streaming_now"]
   data(streaming_now, :map)
   data(filter_sort, :map)
 
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     streaming_now = Backend.Streaming.StreamingNow.streaming_now()
     subscribe_to_messages()
-    {:ok, assign(socket, streaming_now: streaming_now)}
+    {:ok, assign(socket, streaming_now: streaming_now) |> assign_defaults(session)}
   end
 
   def handle_params(params, _uri, socket) do
@@ -30,98 +29,100 @@ defmodule BackendWeb.StreamingNowLive do
     instructions_link = Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)
 
     ~H"""
-    <div class="container">
-      <div class="title is-2">Streaming Now</div>
-      <div class="subtitle is-6"><a href="{{ instructions_link }}">Instructions for streamers</a></div>
+    <Context put={{ user: @user }} >
+      <div class="container">
+        <div class="title is-2">Streaming Now</div>
+        <div class="subtitle is-6"><a href="{{ instructions_link }}">Instructions for streamers</a></div>
 
-      <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Sort</button></div>
-          <div class="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                <div :for={{ {display, val} <- [{"Newest", "newest"}, {"Oldest", "oldest"}, {"Most Viewers", "most_viewers"}, {"Fewest Viewers", "fewest_viewers"}] }}>
-                    <LivePatch 
-                      class="{{ "dropdown-item " <> if @filter_sort["sort"] == val, do: "is-active", else: ""  }}"
-                      to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val)) }}"
-                      >
-                    {{ display }}
-                    </LivePatch>
-                </div>
-              </div>
-          </div>
-      </div>
-
-      <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Mode</button></div>
-          <div class="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                  <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode")) }}" class="dropdown-item" >
-                    Any
-                  </LivePatch>
-                  <div :for={{ m <- ["Standard", "Battlegrounds", "Duels",  "Wild", "Arena", "Tavern Brawl", "Fireside Gathering", "Unknown"] }}>
-                    <LivePatch 
-                      class="{{ "dropdown-item " <> if @filter_sort["filter_mode"] == m, do: "is-active", else: ""  }}"
-                      to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", m)) }}"
-                      >
-                    {{ m }}
-                    </LivePatch>
-                  </div>
-              </div>
-          </div>
-      </div>
-
-      <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Language</button></div>
-          <div class="dropdown-menu" role="menu">
-              <div class="dropdown-content">
+        <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Sort</button></div>
+            <div class="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                    <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_language")) }}" class="dropdown-item" >
+                  <div :for={{ {display, val} <- [{"Newest", "newest"}, {"Oldest", "oldest"}, {"Most Viewers", "most_viewers"}, {"Fewest Viewers", "fewest_viewers"}] }}>
+                      <LivePatch 
+                        class="{{ "dropdown-item " <> if @filter_sort["sort"] == val, do: "is-active", else: ""  }}"
+                        to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val)) }}"
+                        >
+                      {{ display }}
+                      </LivePatch>
+                  </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Mode</button></div>
+            <div class="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                    <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode")) }}" class="dropdown-item" >
                       Any
                     </LivePatch>
-                    <div :for={{ l <- @streaming_now |> Enum.map(fn s -> s.language end) |> Enum.uniq() |> Enum.sort() }}>
+                    <div :for={{ m <- ["Standard", "Battlegrounds", "Duels",  "Wild", "Arena", "Tavern Brawl", "Fireside Gathering", "Unknown"] }}>
                       <LivePatch 
-                        class="{{  "dropdown-item " <> if @filter_sort["filter_language"] == l, do: "is-active", else: ""  }}"
-                        to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_language", l)) }}"
+                        class="{{ "dropdown-item " <> if @filter_sort["filter_mode"] == m, do: "is-active", else: ""  }}"
+                        to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", m)) }}"
                         >
-                      {{ l }}
+                      {{ m }}
                       </LivePatch>
                     </div>
                 </div>
-              </div>
-          </div>
-      </div>
+            </div>
+        </div>
 
-      <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Legend Rank</button></div>
-          <div class="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                    <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend")) }}" class="dropdown-item" >
-                      Any
-                    </LivePatch>
-                    <div :for={{ l <- [100, 200, 500, 1000, 5000] }}>
-                      <LivePatch 
-                      class="{{ "dropdown-item " <> if @filter_sort["filter_legend"] == to_string(l), do: "is-active", else: ""  }}"
-                        to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_legend", l)) }}"
-                        >
-                      {{ l }}
+        <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Language</button></div>
+            <div class="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <div class="dropdown-content">
+                      <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_language")) }}" class="dropdown-item" >
+                        Any
                       </LivePatch>
-                    </div>
-              </div>
-          </div>
-      </div>
+                      <div :for={{ l <- @streaming_now |> Enum.map(fn s -> s.language end) |> Enum.uniq() |> Enum.sort() }}>
+                        <LivePatch 
+                          class="{{  "dropdown-item " <> if @filter_sort["filter_language"] == l, do: "is-active", else: ""  }}"
+                          to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_language", l)) }}"
+                          >
+                        {{ l }}
+                        </LivePatch>
+                      </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Legend Rank</button></div>
+            <div class="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                      <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend")) }}" class="dropdown-item" >
+                        Any
+                      </LivePatch>
+                      <div :for={{ l <- [100, 200, 500, 1000, 5000] }}>
+                        <LivePatch 
+                        class="{{ "dropdown-item " <> if @filter_sort["filter_legend"] == to_string(l), do: "is-active", else: ""  }}"
+                          to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_legend", l)) }}"
+                          >
+                        {{ l }}
+                        </LivePatch>
+                      </div>
+                </div>
+            </div>
+        </div>
 
 
 
 
-      <div class="columns is-multiline">
-        <div class="column is-narrow" :for={{ ls <- @streaming_now |> filter_sort_streaming(@filter_sort)}} > 
-          <div>
-            <LiveStreamer live_streamer={{ ls }}>
-              <Components.ExpandableDecklist :if={{ ls.deckcode }} id={{ "deck_#{ls.stream_id}_#{ls.deckcode}" }} show_cards={{ false }} deck={{ ls.deckcode |> Backend.Hearthstone.Deck.decode!() }} guess_archetype={{ true }}/>
-            </LiveStreamer>
+        <div class="columns is-multiline">
+          <div class="column is-narrow" :for={{ ls <- @streaming_now |> filter_sort_streaming(@filter_sort)}} > 
+            <div>
+              <LiveStreamer live_streamer={{ ls }}>
+                <Components.ExpandableDecklist :if={{ ls.deckcode }} id={{ "deck_#{ls.stream_id}_#{ls.deckcode}" }} show_cards={{ false }} deck={{ ls.deckcode |> Backend.Hearthstone.Deck.decode!() }} guess_archetype={{ true }}/>
+              </LiveStreamer>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Context>
     """
   end
 

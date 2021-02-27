@@ -1,5 +1,13 @@
-defmodule BackendWeb.AuthHelper do
-  @moduledoc "Utility to handle auth in live views"
+defmodule BackendWeb.LiveHelpers do
+  import Phoenix.LiveView
+
+  def assign_defaults(socket, session) do
+    user = load_user(session)
+
+    socket
+    |> assign(:user, user)
+  end
+
   alias Backend.UserManager.User
   alias Backend.UserManager.Guardian
 

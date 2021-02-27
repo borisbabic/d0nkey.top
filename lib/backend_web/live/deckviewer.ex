@@ -1,5 +1,6 @@
 defmodule BackendWeb.DeckviewerLive do
   @moduledoc false
+  import BackendWeb.LiveHelpers
   alias Components.Decklist
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone
@@ -16,11 +17,12 @@ defmodule BackendWeb.DeckviewerLive do
   data(deckcodes, :any)
   data(current_link, :string)
   data(compare_decks, :boolean)
+  data(user, :any)
   require WaitForIt
 
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     case WaitForIt.wait(HearthstoneJson.up?(), frequency: 500, timeout: 20_000) do
-      _ -> {:ok, socket}
+      _ -> {:ok, socket |> assign_defaults(session)}
     end
   end
 
@@ -41,45 +43,47 @@ defmodule BackendWeb.DeckviewerLive do
 
     ~H"""
 
-    <div class="container">
-      <br>
-      <Form for={{ :new_deck }} submit="submit" opts={{ autocomplete: "off" }}>
-        <div class="columns is-mobile is-multiline">
-          <Field name="new_code">
-            <div class="column is-narrow">
-              <TextArea class="textarea has-fixed-size small" opts={{ placeholder: "Paste deckcode or link", size: "30", rows: "1"}}/>
-            </div>
-          </Field>
-            <div class="column is-narrow">
-              <Submit label="Add" class="button"/>
-            </div>
-            <div :if={{ show_copy_button }} class="column is-narrow">
-              <button class="clip-btn-value button is-shown-js" type="button" data-balloon-pos="down" data-aria-on-copy="Copied!" data-clipboard-text="{{ @current_link }}" >Copy Link</button>
-            </div>
-            <div :if={{ cd || @deckcodes |> Enum.count() > 1}} class="column is-narrow">
-              <button phx-click="toggle_compare" class="button" type="button">{{ compare_button_text(@compare_decks) }}</button>
-            </div>
+    <Context put={{ user: @user }}>
+      <div class="container">
+        <br>
+        <Form for={{ :new_deck }} submit="submit" opts={{ autocomplete: "off" }}>
+          <div class="columns is-mobile is-multiline">
+            <Field name="new_code">
+              <div class="column is-narrow">
+                <TextArea class="textarea has-fixed-size small" opts={{ placeholder: "Paste deckcode or link", size: "30", rows: "1"}}/>
+              </div>
+            </Field>
+              <div class="column is-narrow">
+                <Submit label="Add" class="button"/>
+              </div>
+              <div :if={{ show_copy_button }} class="column is-narrow">
+                <button class="clip-btn-value button is-shown-js" type="button" data-balloon-pos="down" data-aria-on-copy="Copied!" data-clipboard-text="{{ @current_link }}" >Copy Link</button>
+              </div>
+              <div :if={{ cd || @deckcodes |> Enum.count() > 1}} class="column is-narrow">
+                <button phx-click="toggle_compare" class="button" type="button">{{ compare_button_text(@compare_decks) }}</button>
+              </div>
 
-            <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
-              <a class="is-link tag" href="{{ Yaytears.create_deckstrings_link(@deckcodes)  }}">
-                yaytears
-            </a>
-              <a class="is-link tag" href="{{ HSDeckViewer.create_link(@deckcodes) }}">
-                HSDeckViewer
-            </a>
-        </div>
-        </div>
-      </Form>
-      <div class="columns is-mobile is-multiline">
-        <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}} :if={{@compare_decks == @compare_decks}}>
-          <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}" comparison={{ comparison }}>
-            <template slot="right_button">
-              <a class="delete" phx-click="delete" phx-value-index={{ index }}/>
-            </template>
-          </Decklist>
+              <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
+                <a class="is-link tag" href="{{ Yaytears.create_deckstrings_link(@deckcodes)  }}">
+                  yaytears
+              </a>
+                <a class="is-link tag" href="{{ HSDeckViewer.create_link(@deckcodes) }}">
+                  HSDeckViewer
+              </a>
+          </div>
+          </div>
+        </Form>
+        <div class="columns is-mobile is-multiline">
+          <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}} :if={{@compare_decks == @compare_decks}}>
+            <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}" comparison={{ comparison }}>
+              <template slot="right_button">
+                <a class="delete" phx-click="delete" phx-value-index={{ index }}/>
+              </template>
+            </Decklist>
+          </div>
         </div>
       </div>
-    </div>
+    </Context>
     """
   end
 

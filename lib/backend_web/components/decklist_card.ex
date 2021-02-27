@@ -6,21 +6,22 @@ defmodule Components.DecklistCard do
   prop(card, :map, required: true)
   prop(deck_class, :string, default: "NEUTRAL")
   prop(show_mana_cost, :boolean, default: true)
+  prop(decklist_options, :map, default: %{})
   defp rarity(nil), do: rarity("COMMON")
   defp rarity("FREE"), do: rarity("COMMON")
   defp rarity(rarity), do: rarity |> String.downcase()
   defp class(class), do: class |> String.downcase()
 
-  defp color_option(:rarity, %{rarity: rarity}), do: "var(--color-dark-#{rarity})"
-  defp color_option(:card_class, %{card_class: card_class}), do: "var(--color-#{card_class})"
-  defp color_option(:deck_class, %{deck_class: deck_class}), do: "var(--color-#{deck_class})"
+  defp color_option("rarity", %{rarity: rarity}), do: "var(--color-dark-#{rarity})"
+  defp color_option("card_class", %{card_class: card_class}), do: "var(--color-#{card_class})"
+  defp color_option("deck_class", %{deck_class: deck_class}), do: "var(--color-#{deck_class})"
   defp color_option(_, _), do: "var(--color-darker-grey)"
 
   defp colors(%{rarity: rarity, card_class: card_class}, deck_class, opts \\ %{}) do
     %{border: border, gradient: gradient} =
       %{
-        border: :dark_grey,
-        gradient: :rarity
+        border: "dark_grey",
+        gradient: "rarity"
       }
       |> Map.merge(opts)
 
@@ -41,7 +42,9 @@ defmodule Components.DecklistCard do
     html_id = "card-#{card.id}"
     tile_url = card.id |> HearthstoneJson.tile_url()
     # card_url = card.id |> HearthstoneJson.tile_url()
-    %{border: border, gradient: gradient} = colors(card, assigns[:deck_class])
+    %{border: border, gradient: gradient} =
+      colors(card, assigns[:deck_class], assigns[:decklist_options])
+
     # rarity_color = "--color-dark-#{rarity(card.rarity)}"
     # deck_class_color = "--color-#{class(card.card_class)}"
 

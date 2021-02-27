@@ -10,13 +10,15 @@ defmodule Backend.UserManagerTest do
       battletag: "some battletag",
       bnet_id: 42,
       hide_ads: true,
-      admin_roles: ["users", "battletag_info"]
+      admin_roles: ["users", "battletag_info"],
+      decklist_options: %{"border" => "dark_grey", "gradient" => "card_class"}
     }
     @update_attrs %{
       battletag: "some updated battletag",
       bnet_id: 43,
       hide_ads: false,
-      admin_roles: ["super"]
+      admin_roles: ["super"],
+      decklist_options: %{"border" => "card_class", "gradient" => "dark_grey"}
     }
     @invalid_attrs %{battletag: nil, bnet_id: nil}
 

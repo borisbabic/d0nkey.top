@@ -58,6 +58,7 @@ defmodule BackendWeb do
       use Phoenix.LiveView,
         layout: {BackendWeb.LayoutView, "live.html"}
 
+      import BackendWeb.LiveHelpers
       unquote(view_helpers())
     end
   end
