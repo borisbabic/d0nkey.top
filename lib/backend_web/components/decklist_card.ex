@@ -17,13 +17,15 @@ defmodule Components.DecklistCard do
   defp color_option("deck_class", %{deck_class: deck_class}), do: "var(--color-#{deck_class})"
   defp color_option(_, _), do: "var(--color-darker-grey)"
 
-  defp colors(%{rarity: rarity, card_class: card_class}, deck_class, opts \\ %{}) do
+  defp colors(%{rarity: rarity, card_class: card_class}, deck_class, opts) do
+    filtered_opts = opts |> Map.to_list() |> Enum.filter(fn {_, v} -> v end) |> Map.new()
+
     %{border: border, gradient: gradient} =
       %{
         border: "dark_grey",
         gradient: "rarity"
       }
-      |> Map.merge(opts)
+      |> Map.merge(filtered_opts)
 
     color_opts = %{
       rarity: rarity(rarity),
