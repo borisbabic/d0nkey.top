@@ -156,8 +156,11 @@ defmodule Backend.Blizzard do
     iex> Backend.Blizzard.get_tour_stop_region!(:"Montréal")
     :US
   """
-  @spec get_ladder_priority!(region) :: [region]
-  def get_ladder_priority!(region) do
+  @spec get_ladder_priority!(tour_stop | TourStop.t()) :: [region]
+  def get_ladder_priority!(ts) when is_atom(ts) or is_binary(ts),
+    do: ts |> TourStop.get() |> get_ladder_priority!()
+
+  def get_ladder_priority!(%{ladder_priority: :regional, region: region}) do
     case region do
       :US -> [:US, :EU, :AP]
       :AP -> [:AP, :US, :EU]
@@ -165,6 +168,9 @@ defmodule Backend.Blizzard do
       _ -> throw("Unknown region")
     end
   end
+
+  def get_ladder_priority!(%{ladder_priority: :timezone}), do: [:AP, :EU, :US]
+  def get_ladder_priority!(_), do: throw("Unsupported tour stop")
 
   # credo:disable-next-line
   # todo Perhaps move to leaderboard module?
@@ -187,7 +193,6 @@ defmodule Backend.Blizzard do
     different_region = fn r -> to_string(r) != to_string(region) end
 
     tour_stop
-    |> get_tour_stop_region!()
     |> get_ladder_priority!()
     |> Enum.take_while(different_region)
     |> MapSet.new()

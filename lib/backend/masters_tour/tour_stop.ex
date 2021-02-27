@@ -34,6 +34,7 @@ defmodule Backend.MastersTour.TourStop do
     field :region, Blizzard.region()
     field :start_time, NaiveDateTime.t(), enforce: false
     field :old_id, atom, enforce: false
+    field :ladder_priority, atom
     field :year, integer
   end
 
@@ -44,6 +45,7 @@ defmodule Backend.MastersTour.TourStop do
         battlefy_id: "5cdb04cdce130203069be2dd",
         ladder_seasons: [],
         ladder_invites: 0,
+        ladder_priority: nil,
         region: :US,
         qualifiers_period: {~D[2019-03-06], ~D[2019-04-28]},
         start_time: ~N[2019-06-14 16:00:00],
@@ -54,6 +56,7 @@ defmodule Backend.MastersTour.TourStop do
         battlefy_id: "5d3117357045a2325e167ad6",
         ladder_seasons: [],
         ladder_invites: 0,
+        ladder_priority: nil,
         region: :AP,
         qualifiers_period: {~D[2019-05-08], ~D[2019-06-30]},
         start_time: ~N[2019-08-16 01:00:00],
@@ -64,6 +67,7 @@ defmodule Backend.MastersTour.TourStop do
         battlefy_id: "5d8276701d82bf1a20dbf45b",
         ladder_seasons: [],
         ladder_invites: 0,
+        ladder_priority: nil,
         region: :EU,
         qualifiers_period: {~D[2019-07-05], ~D[2019-08-25]},
         start_time: ~N[2019-10-18 06:00:00],
@@ -73,6 +77,7 @@ defmodule Backend.MastersTour.TourStop do
         id: :Arlington,
         battlefy_id: "5e1cf8ff1e66fd33ebbfc0ed",
         ladder_seasons: [72, 73],
+        ladder_priority: :regional,
         ladder_invites: 16,
         region: :US,
         start_time: ~N[2020-01-31 15:00:00],
@@ -83,6 +88,7 @@ defmodule Backend.MastersTour.TourStop do
         id: :Indonesia,
         battlefy_id: "5e5d80217506f5240ebad221",
         ladder_seasons: [74, 75],
+        ladder_priority: :regional,
         ladder_invites: 16,
         region: :AP,
         qualifiers_period: {~D[2019-12-13], ~D[2020-01-26]},
@@ -93,6 +99,7 @@ defmodule Backend.MastersTour.TourStop do
         id: :Jönköping,
         battlefy_id: "5ec5ca7153702b1ab2a5c9dd",
         ladder_seasons: [76, 77],
+        ladder_priority: :regional,
         ladder_invites: 16,
         region: :EU,
         start_time: ~N[2020-06-12 12:15:00],
@@ -103,6 +110,7 @@ defmodule Backend.MastersTour.TourStop do
         id: :"Asia-Pacific",
         battlefy_id: "5efbcdaca2b8f022508f65c3",
         ladder_seasons: [78, 79],
+        ladder_priority: :regional,
         ladder_invites: 16,
         region: :AP,
         start_time: ~N[2020-07-17 00:00:00],
@@ -113,6 +121,7 @@ defmodule Backend.MastersTour.TourStop do
         id: :Montréal,
         battlefy_id: "5f3c3c6066bf242962711d60",
         ladder_seasons: [80, 81],
+        ladder_priority: :regional,
         ladder_invites: 16,
         region: :US,
         old_id: :Montreal,
@@ -123,6 +132,7 @@ defmodule Backend.MastersTour.TourStop do
       %__MODULE__{
         id: :Madrid,
         battlefy_id: "5f8100994e9faf3dd1a80ad0",
+        ladder_priority: :regional,
         ladder_seasons: [82, 83],
         ladder_invites: 16,
         region: :EU,
@@ -133,6 +143,7 @@ defmodule Backend.MastersTour.TourStop do
       %__MODULE__{
         id: :Ironforge,
         battlefy_id: nil,
+        ladder_priority: :regional,
         ladder_seasons: [87],
         ladder_invites: 32,
         region: :US,
@@ -143,6 +154,7 @@ defmodule Backend.MastersTour.TourStop do
       %__MODULE__{
         id: :Ogrimmar,
         battlefy_id: nil,
+        ladder_priority: :timezone,
         ladder_seasons: [88, 89],
         ladder_invites: 16,
         region: :EU,
@@ -153,6 +165,7 @@ defmodule Backend.MastersTour.TourStop do
       %__MODULE__{
         id: :Dalaran,
         battlefy_id: nil,
+        ladder_priority: :timezone,
         ladder_seasons: [90, 91],
         ladder_invites: 16,
         qualifiers_period: {~D[2021-04-15], ~D[2021-05-23]},
@@ -163,6 +176,7 @@ defmodule Backend.MastersTour.TourStop do
       %__MODULE__{
         id: :Silvermoon,
         battlefy_id: nil,
+        ladder_priority: :timezone,
         ladder_seasons: [92, 93],
         ladder_invites: 16,
         region: :US,
@@ -173,6 +187,7 @@ defmodule Backend.MastersTour.TourStop do
       %__MODULE__{
         id: :Stormwind,
         battlefy_id: nil,
+        ladder_priority: :timezone,
         ladder_seasons: [94, 95],
         ladder_invites: 16,
         region: :US,
@@ -183,6 +198,7 @@ defmodule Backend.MastersTour.TourStop do
       %__MODULE__{
         id: :Undercity,
         battlefy_id: nil,
+        ladder_priority: :timezone,
         ladder_seasons: [96],
         ladder_invites: 32,
         region: :AP,
