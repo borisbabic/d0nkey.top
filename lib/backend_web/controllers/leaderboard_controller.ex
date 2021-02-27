@@ -56,17 +56,22 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  def get_other_ladders(_, "no"), do: []
+  def get_other_ladders(%{season_id: s, leaderboard_id: "STD", region: r}, "yes") do
+    s
+    |> MastersTour.TourStop.get_by_ladder()
+    |> case do
+      {:ok, _} ->
+        Blizzard.ladders_to_check(s, r)
+        |> Enum.flat_map(fn region ->
+          case get_leaderboard(region, "STD", s) do
+            nil -> []
+            leaderboard -> [leaderboard]
+          end
+        end)
 
-  def get_other_ladders(%{season_id: s, leaderboard_id: "STD", region: r}, "yes")
-      when s > 71 do
-    Blizzard.ladders_to_check(s, r)
-    |> Enum.flat_map(fn r ->
-      case get_leaderboard(r, "STD", s) do
-        nil -> []
-        leaderboard -> [leaderboard]
-      end
-    end)
+      _ ->
+        []
+    end
   end
 
   def get_other_ladders(_, _), do: []
