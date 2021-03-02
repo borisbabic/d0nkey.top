@@ -19,6 +19,7 @@ defmodule Backend.Application do
         BackendWeb.Endpoint,
         # Starts a worker by calling: Backend.Worker.start_link(arg)
         # {Backend.Worker, arg},
+        {Oban, oban_config()},
         %{
           id: Backend.Infrastructure.ApiCache,
           start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
@@ -76,7 +77,7 @@ defmodule Backend.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Backend.Supervisor]
     start_result = Supervisor.start_link(children, opts)
-    migrate()
+    # migrate()
     # Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
     #    Backend.Hearthstone.add_class_and_regenerate_deckcode()
     start_result
@@ -112,7 +113,7 @@ defmodule Backend.Application do
   def warmup_cache() do
     if Application.fetch_env!(:backend, :warmup_cache) do
       [
-        &Backend.MastersTour.warmup_stats_cache/1,
+        &Backend.MastersTour.warmup_stats_cache/0,
         &Backend.MastersTour.warmup_player_nationality_cache/0
       ]
       |> Enum.each(fn f ->
@@ -125,5 +126,9 @@ defmodule Backend.Application do
         end
       end)
     end
+  end
+
+  def oban_config() do
+    Application.get_env(:backend, Oban)
   end
 end

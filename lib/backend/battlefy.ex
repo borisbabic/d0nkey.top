@@ -7,6 +7,8 @@ defmodule Backend.Battlefy do
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.Stage
   alias Backend.BattlefyUtil
+  alias Backend.Hearthstone
+  alias Backend.Hearthstone.Lineup
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
   @type region :: :Asia | :Europe | :Americas
@@ -713,6 +715,17 @@ defmodule Backend.Battlefy do
       |> String.replace(~r/http.*battlefy.com/, "")
       |> String.split("/")
       |> Enum.at(3)
+    end
+  end
+
+  @spec lineups(tournament_id) :: [Lineup]
+  def lineups(tournament_id) do
+    with lineups = [_ | _] <- Hearthstone.get_lineups(tournament_id, "battlefy") do
+      lineups
+    else
+      _ ->
+        Backend.Battlefy.LineupFetcher.fetch_async(tournament_id)
+        []
     end
   end
 end

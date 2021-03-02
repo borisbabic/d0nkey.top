@@ -79,6 +79,9 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
+  @spec valid?(String.t()) :: boolean
+  def valid?(code) when is_binary(code), do: :ok == code |> decode() |> elem(0)
+
   @spec decode!(String.t()) :: Deck
   def decode!(deckcode), do: deckcode |> decode() |> Util.bangify()
 

@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone do
   alias Ecto.Multi
   alias Backend.Repo
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.Lineup
   require Logger
 
   @spec create_or_get_deck(String.t() | Deck.t()) :: {:ok, Deck.t()} | {:error, any()}
@@ -172,7 +173,59 @@ defmodule Backend.Hearthstone do
   defp cost_for_sort({%{cost: cost}, _}), do: cost
   defp cost_for_sort({_, %{cost: cost}}), do: cost
   defp cost_for_sort(%{cost: cost}), do: cost
-  defp cost_for_sort(), do: nil
+  defp cost_for_sort(_), do: nil
 
   def get_card(dbf_id), do: Backend.HearthstoneJson.get_card(dbf_id)
+
+  @spec get_or_create_lineup(String.t() | integer(), String.t(), String.t(), [String.t()]) ::
+          {:ok, Lineup.t()} | {:error, any()}
+  def get_or_create_lineup(id, s, n, d) when is_integer(id),
+    do: get_or_create_lineup(to_string(id), s, n, d)
+
+  def get_or_create_lineup(tournament_id, tournament_source, name, deckstrings) do
+    attrs = %{tournament_id: tournament_id, tournament_source: tournament_source, name: name}
+
+    case lineup(attrs) do
+      ln = %{id: _} ->
+        {:ok, ln}
+
+      nil ->
+        decks =
+          deckstrings
+          |> Enum.filter(&Deck.valid?/1)
+          |> Enum.map(&(&1 |> create_or_get_deck() |> Util.nilify()))
+          |> Enum.filter(& &1)
+
+        create_lineup(attrs, decks)
+    end
+  end
+
+  def lineup(%{tournament_id: tournament_id, tournament_source: tournament_source, name: name}) do
+    query =
+      from l in Lineup,
+        where:
+          l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source and
+            l.name == ^name,
+        preload: [:decks],
+        select: l
+
+    Repo.one(query)
+  end
+
+  def create_lineup(attrs, decks) do
+    %Lineup{}
+    |> Lineup.changeset(attrs, decks)
+    |> Repo.insert()
+  end
+
+  def get_lineups(tournament_id, tournament_source) do
+    query =
+      from l in Lineup,
+        where: l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source,
+        preload: [:decks],
+        select: l
+
+    query
+    |> Repo.all()
+  end
 end
