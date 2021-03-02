@@ -187,18 +187,22 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     response.body
   end
 
-  @spec get_match(Battlefy.match_id()) :: Battlefy.Match.t()
+  @spec get_match!(Battlefy.match_id()) :: Battlefy.Match.t()
+  def get_match!(match_id), do: match_id |> get_match() |> Util.bangify()
+
+  @spec get_match(Battlefy.match_id()) :: {:ok, Battlefy.Match.t()} | {:error, any()}
   def get_match(match_id) do
     url =
       "https://dtmwra1jsgyb0.cloudfront.net/matches/#{match_id}?extend%5Btop.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Btop.team%5D%5BpersistentTeam%5D=true&extend%5Bbottom.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bbottom.team%5D%5BpersistentTeam%5D=true&extend%5Bstats%5D=true"
 
-    get_body(url)
-    |> Poison.decode!()
-    |> case do
-      [m] -> m
-      m -> m
+    with body <- get_body(url),
+         {:ok, decoded} <- Poison.decode(body),
+         match <- Match.from_raw_map(decoded) do
+      {:ok, match}
+    else
+      {:error, reason} -> {:error, reason}
+      _ -> {:error, "could not fetch match"}
     end
-    |> Match.from_raw_map()
   end
 
   @spec get_match_deckstrings(Battlefy.tournament_id(), Battlefy.match_id()) :: [

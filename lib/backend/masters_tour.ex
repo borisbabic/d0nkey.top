@@ -963,7 +963,7 @@ defmodule Backend.MastersTour do
       %{stage_ids: [s_id | _]} ->
         matches =
           BattlefyCommunicator.get_matches(s_id, round: 1)
-          |> Util.async_map(fn m -> m.id |> BattlefyCommunicator.get_match() end)
+          |> Util.async_map(fn m -> m.id |> BattlefyCommunicator.get_match!() end)
 
         multi =
           matches

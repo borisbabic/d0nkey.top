@@ -44,6 +44,8 @@ defmodule Backend.Battlefy.Match do
     |> Enum.sort_by(fn %{round_number: rn} -> rn end, direction)
   end
 
+  def from_raw_map([match]), do: from_raw_map(match)
+
   def from_raw_map(map = %{"roundNumber" => _}) do
     Recase.Enumerable.convert_keys(
       map,

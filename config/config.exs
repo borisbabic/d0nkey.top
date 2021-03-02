@@ -82,6 +82,11 @@ config :torch,
   otp_app: :backend,
   template_format: "eex"
 
+config :backend, Oban,
+  repo: Backend.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [default: 10, battlefy_lineups: 20]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
