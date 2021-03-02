@@ -6,7 +6,7 @@ use Mix.Config
 
 config :backend,
   warmup_cache: true,
-  auto_migrate: true,
+  auto_migrate: false,
   goatcounter_analytics: true,
   enable_bot: true
 
