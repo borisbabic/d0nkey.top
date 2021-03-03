@@ -29,4 +29,6 @@ defmodule BackendWeb.FeedLive do
     </Context>
     """
   end
+
+  def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 end
