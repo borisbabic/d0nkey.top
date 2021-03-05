@@ -168,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
           </nav>
         </header>
     </noscript>
-    <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
     <script>
       var allowed_themes = ['flatly', 'darkly'];
       var link = document.createElement('link');
