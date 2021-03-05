@@ -130,6 +130,8 @@ defmodule BackendWeb.Router do
     resources "/invited_player", InvitedPlayerController
     resources "/feed_items", FeedItemController
     resources "/fantasy-leagues", LeagueController
+    resources "/fantasy-leagues/teams", LeagueTeamController
+    resources "/fantasy-leagues/team-picks", LeagueTeamPickController
   end
 
   scope "/admin", BackendWeb do

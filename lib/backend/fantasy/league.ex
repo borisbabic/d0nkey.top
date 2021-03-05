@@ -4,6 +4,7 @@ defmodule Backend.Fantasy.League do
   import Ecto.Changeset
 
   alias Backend.UserManager.User
+  alias Backend.Fantasy.LeagueTeam
 
   schema "leagues" do
     field :competition, :string
@@ -13,6 +14,7 @@ defmodule Backend.Fantasy.League do
     field :point_system, :string
     field :roster_size, :integer
     belongs_to :owner, User, primary_key: true
+    has_many :teams, LeagueTeam
 
     timestamps()
   end
