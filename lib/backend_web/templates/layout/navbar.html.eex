@@ -41,6 +41,9 @@
               <%= if can_access?(@conn, :feed_items) do %>
                 <a class="navbar-item" href="/torch/feed_items">Admin - Feed Items</a>
               <% end %>
+              <%= if can_access?(@conn, :fantasy_leagues) do %>
+                <a class="navbar-item" href="/torch/fantasy-leagues">Admin - Fantasy Leagues</a>
+              <% end %>
             <% else %>
               <a class="navbar-item" href='/auth/bnet'>Sign in (Battlenet) </a>
             <% end %>

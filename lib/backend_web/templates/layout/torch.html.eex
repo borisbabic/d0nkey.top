@@ -39,6 +39,9 @@
             <%= if can_access?(@conn, :feed_items) do %>
               <a href="/torch/feed_items">Feed Items</a>
             <% end %>
+            <%= if can_access?(@conn, :fantasy_leagues) do %>
+              <a href="/torch/fantasy-leagues">Fantasy Leagues</a>
+            <% end %>
           </nav>
         </div>
       </section>

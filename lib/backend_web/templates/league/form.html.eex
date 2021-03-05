@@ -1,0 +1,50 @@
+<%= form_for @changeset, @action, [multipart: true, id: "torch-form"], fn f -> %>
+  <fieldset class="torch-panel">
+    <legend>
+      <span>Details</span>
+    </legend>
+    <%= if @changeset.action do %>
+      <p class="torch-form-error">Oops, something went wrong! Please check the errors below.</p>
+    <% end %>
+  
+    <div class="torch-form-group">
+      <%= label f, :name %>
+      <%= text_input f, :name %>
+      <%= error_tag f, :name %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :competition %>
+      <%= text_input f, :competition %>
+      <%= error_tag f, :competition %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :competition_type %>
+      <%= text_input f, :competition_type %>
+      <%= error_tag f, :competition_type %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :point_system %>
+      <%= text_input f, :point_system %>
+      <%= error_tag f, :point_system %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :max_teams %>
+      <%= number_input f, :max_teams %>
+      <%= error_tag f, :max_teams %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :roster_size %>
+      <%= number_input f, :roster_size %>
+      <%= error_tag f, :roster_size %>
+    </div>
+  
+    <div class="torch-submit-form">
+      <%= submit "Submit", class: "torch-submit-button" %>
+    </div>
+  </fieldset>
+<% end %>
