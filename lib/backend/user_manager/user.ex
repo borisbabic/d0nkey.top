@@ -46,7 +46,8 @@ defmodule Backend.UserManager.User do
     do: bt |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
 
   @spec all_admin_roles() :: [atom()]
-  def all_admin_roles(), do: [:super, :battletag_info, :users, :invites, :feed_items]
+  def all_admin_roles(),
+    do: [:super, :battletag_info, :users, :invites, :feed_items, :fantasy_leagues]
 
   @spec string_admin_roles() :: [String.t()]
   def string_admin_roles(), do: all_admin_roles() |> Enum.map(&to_string/1)

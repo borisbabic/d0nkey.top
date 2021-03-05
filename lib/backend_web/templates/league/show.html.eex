@@ -1,0 +1,47 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "Edit", to: Routes.league_path(@conn, :edit, @league), class: "torch-button" %>
+    <%= link "Back", to: Routes.league_path(@conn, :index), class: "torch-button" %>
+  </div>
+</section>
+
+<section id="torch-header-and-content">
+  <div class="torch-container">
+    <div class="header">
+      <h3>League Details</h3>
+    </div>
+    <ul>
+      
+        <li>
+          <div class="torch-show-label">Name:</div>
+          <div class="torch-show-data"><%= @league.name %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Competition:</div>
+          <div class="torch-show-data"><%= @league.competition %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Competition type:</div>
+          <div class="torch-show-data"><%= @league.competition_type %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Point system:</div>
+          <div class="torch-show-data"><%= @league.point_system %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Max teams:</div>
+          <div class="torch-show-data"><%= @league.max_teams %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Roster size:</div>
+          <div class="torch-show-data"><%= @league.roster_size %></div>
+        </li>
+      
+    </ul>
+  </div>
+</section>
