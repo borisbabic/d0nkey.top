@@ -1,0 +1,59 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "New League team pick", to: Routes.league_team_pick_path(@conn, :new) %>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find League team picks</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+        
+          <div class="field">
+            <label>Pick</label>
+            <%= filter_select(:league_team_pick, :pick, @conn.params) %>
+            <%= filter_string_input(:league_team_pick, :pick, @conn.params) %>
+          </div>
+        
+        
+        
+        
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: Routes.league_team_pick_path(@conn, :index) %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@league_team_picks) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+            
+              <th><%= table_link(@conn, "Pick", :pick) %></th>
+            
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for league_team_pick <- @league_team_picks do %>
+            <tr>
+              
+                <td><%= league_team_pick.pick %></td>
+              
+              <td class="torch-actions">
+                <span><%= link "Show", to: Routes.league_team_pick_path(@conn, :show, league_team_pick) %></span>
+                <span><%= link "Edit", to: Routes.league_team_pick_path(@conn, :edit, league_team_pick) %></span>
+                <span><%= link "Delete", to: Routes.league_team_pick_path(@conn, :delete, league_team_pick), method: :delete, data: [confirm: "Are you sure?"] %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+    <% else %>
+      <p class="torch-no-data">No League team picks match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>
