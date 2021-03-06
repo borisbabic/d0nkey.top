@@ -116,6 +116,9 @@ defmodule BackendWeb.Router do
     live "/feed", FeedLive
     get "/empty/with-nav", EmptyController, :with_nav
     get "/empty/without-nav", EmptyController, :without_nav
+
+    live "/fantasy", FantasyIndexLive
+    # live "/fantasy/leagues/:league_id", FantasyLeagueLive
   end
 
   scope "/", BackendWeb do
