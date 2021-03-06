@@ -69,7 +69,9 @@ defmodule Backend.Fantasy do
 
   """
   def list_leagues do
-    Repo.all(League)
+    from(l in League)
+    |> preload([:owner])
+    |> Repo.all()
   end
 
   @doc """
@@ -86,7 +88,7 @@ defmodule Backend.Fantasy do
       ** (Ecto.NoResultsError)
 
   """
-  def get_league!(id), do: Repo.get!(League, id)
+  def get_league!(id), do: Repo.get!(League, id) |> Repo.preload(:owner)
 
   @doc """
   Creates a league.

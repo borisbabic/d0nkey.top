@@ -80,9 +80,9 @@ defmodule Backend.UserManager do
     |> update_user_country()
   end
 
-  def update_user_country(ret = {:error, _}), do: ret
+  def update_user_country({:error, _} = ret), do: ret
 
-  def update_user_country(ret = {:ok, user}) do
+  def update_user_country({:ok, user} = ret) do
     Backend.Battlenet.update_user_country(user)
     ret
   end
@@ -175,7 +175,7 @@ defmodule Backend.UserManager do
   Finds the bnet user if it exists, creates one if it doesn't.
   """
   @spec ensure_bnet_user(bnet_info()) :: User
-  def ensure_bnet_user(bnet_info = %{bnet_id: id}) do
+  def ensure_bnet_user(%{bnet_id: id} = bnet_info) do
     case Repo.get_by(User, bnet_id: id) do
       nil -> create_bnet_user!(bnet_info)
       user -> user
@@ -187,4 +187,14 @@ defmodule Backend.UserManager do
   """
   @spec create_bnet_user!(bnet_info()) :: User
   def create_bnet_user!(info), do: create_user(info) |> Util.bangify()
+
+  @spec get_by_btag(String.t()) :: User.t() | nil
+  def get_by_btag(battletag) do
+    query =
+      from u in User,
+        select: u,
+        where: u.battletag == ^battletag
+
+    Repo.one(query)
+  end
 end

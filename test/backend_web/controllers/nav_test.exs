@@ -26,7 +26,7 @@ defmodule BackendWeb.NavTest do
 
   def add_user_with_battlefy_slug(_) do
     {:ok, user} =
-      BackendWeb.ConnCase.create_auth_user(%{
+      BackendWeb.ConnCase.ensure_auth_user(%{
         battlefy_slug: "d0nkey",
         battletag: "hide_ads#2345",
         hide_ads: true

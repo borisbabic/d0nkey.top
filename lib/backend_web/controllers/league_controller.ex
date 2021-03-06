@@ -26,7 +26,11 @@ defmodule BackendWeb.LeagueController do
   end
 
   def create(conn, %{"league" => league_params}) do
-    case Fantasy.create_league(league_params) do
+    owner_id = league_params["owner_id"] || BackendWeb.AuthUtils.user(conn).id
+
+    league_params
+    |> Fantasy.create_league(owner_id)
+    |> case do
       {:ok, league} ->
         conn
         |> put_flash(:info, "League created successfully.")
