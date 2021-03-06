@@ -41,8 +41,6 @@
             <% end %>
             <%= if can_access?(@conn, :fantasy_leagues) do %>
               <a href="/torch/fantasy-leagues">Fantasy Leagues</a>
-              <a href="/torch/fantasy-leagues/teams">Fantasy League Teams</a>
-              <a href="/torch/fantasy-leagues/team-picks">Fantasy League Teams</a>
             <% end %>
           </nav>
         </div>

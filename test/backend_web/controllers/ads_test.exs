@@ -34,7 +34,7 @@ defmodule BackendWeb.AdsTest do
 
   def add_user_with_hidden_ads(_) do
     {:ok, user} =
-      BackendWeb.ConnCase.create_auth_user(%{battletag: "hide_ads#2345", hide_ads: true})
+      BackendWeb.ConnCase.ensure_auth_user(%{battletag: "hide_ads#2345", hide_ads: true})
 
     conn =
       user

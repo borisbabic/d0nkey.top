@@ -7,8 +7,8 @@ defmodule Backend.Fantasy.LeagueTeam do
   alias Backend.UserManager.League
 
   schema "league_teams" do
-    belongs_to :owner, User, primary_key: true
-    belongs_to :league, League, primary_key: true
+    belongs_to :owner, User
+    belongs_to :league, League
 
     timestamps()
   end

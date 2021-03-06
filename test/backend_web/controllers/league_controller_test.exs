@@ -29,11 +29,20 @@ defmodule BackendWeb.LeagueControllerTest do
   }
 
   def fixture(:league) do
-    {:ok, league} = Fantasy.create_league(@create_attrs)
+    # owner = fixtures(:users)
+    {:ok, owner} = BackendWeb.ConnCase.ensure_auth_user()
+
+    {:ok, league} =
+      @create_attrs
+      |> Map.put(:owner, owner)
+      |> Fantasy.create_league()
+
     league
   end
 
   describe "index" do
+    @describetag :authenticated
+    @describetag :fantasy_leagues
     test "lists all leagues", %{conn: conn} do
       conn = get(conn, Routes.league_path(conn, :index))
       assert html_response(conn, 200) =~ "Leagues"
@@ -41,6 +50,8 @@ defmodule BackendWeb.LeagueControllerTest do
   end
 
   describe "new league" do
+    @describetag :authenticated
+    @describetag :fantasy_leagues
     test "renders form", %{conn: conn} do
       conn = get(conn, Routes.league_path(conn, :new))
       assert html_response(conn, 200) =~ "New League"
@@ -48,6 +59,8 @@ defmodule BackendWeb.LeagueControllerTest do
   end
 
   describe "create league" do
+    @describetag :authenticated
+    @describetag :fantasy_leagues
     test "redirects to show when data is valid", %{conn: conn} do
       conn = post conn, Routes.league_path(conn, :create), league: @create_attrs
 
@@ -65,6 +78,8 @@ defmodule BackendWeb.LeagueControllerTest do
   end
 
   describe "edit league" do
+    @describetag :authenticated
+    @describetag :fantasy_leagues
     setup [:create_league]
 
     test "renders form for editing chosen league", %{conn: conn, league: league} do
@@ -74,6 +89,8 @@ defmodule BackendWeb.LeagueControllerTest do
   end
 
   describe "update league" do
+    @describetag :authenticated
+    @describetag :fantasy_leagues
     setup [:create_league]
 
     test "redirects when data is valid", %{conn: conn, league: league} do
@@ -91,6 +108,8 @@ defmodule BackendWeb.LeagueControllerTest do
   end
 
   describe "delete league" do
+    @describetag :authenticated
+    @describetag :fantasy_leagues
     setup [:create_league]
 
     test "deletes chosen league", %{conn: conn, league: league} do
