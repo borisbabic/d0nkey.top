@@ -38,5 +38,18 @@ defmodule Backend.Fantasy.League do
       :max_teams,
       :roster_size
     ])
+    |> set_owner(attrs)
+  end
+
+  defp set_owner(c, attrs) do
+    case attrs[:owner] || attrs["owner"] do
+      nil ->
+        c
+
+      owner ->
+        c
+        |> put_assoc(:owner, owner)
+        |> foreign_key_constraint(:owner)
+    end
   end
 end

@@ -9,6 +9,7 @@ defmodule Backend.Fantasy do
   import Filtrex.Type.Config
 
   alias Backend.Fantasy.League
+  alias Backend.UserManager.User
 
   @pagination [page_size: 15]
   @pagination_distance 5
@@ -104,6 +105,17 @@ defmodule Backend.Fantasy do
     |> League.changeset(attrs)
     |> Repo.insert()
   end
+
+  def create_league(attrs, owner_id) do
+    owner = Backend.UserManager.get_user!(owner_id)
+
+    attrs
+    |> Map.put(owner_key(attrs), owner)
+    |> create_league()
+  end
+
+  defp owner_key(%{name: _}), do: :owner
+  defp owner_key(%{"name" => _}), do: "owner"
 
   @doc """
   Updates a league.
@@ -471,5 +483,16 @@ defmodule Backend.Fantasy do
     defconfig do
       text(:pick)
     end
+  end
+
+  @spec get_user_leagues(User.t()) :: [League.t()]
+  def get_user_leagues(%User{} = user) do
+    query =
+      from l in League,
+        left_join: lt in LeagueTeam,
+        on: [league_id: l.id],
+        where: l.owner_id == ^user.id or lt.owner_id == ^user.id
+
+    query |> Repo.all()
   end
 end
