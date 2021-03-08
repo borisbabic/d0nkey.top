@@ -88,7 +88,9 @@ defmodule Backend.Fantasy do
       ** (Ecto.NoResultsError)
 
   """
-  def get_league!(id), do: Repo.get!(League, id) |> Repo.preload(:owner)
+  def get_league!(id) do
+    Repo.get!(League, id) |> Repo.preload([:owner, [teams: [:owner]]])
+  end
 
   @doc """
   Creates a league.
@@ -275,6 +277,13 @@ defmodule Backend.Fantasy do
   def create_league_team(attrs \\ %{}) do
     %LeagueTeam{}
     |> LeagueTeam.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @spec create_league_team(League.t(), User.t()) :: LeagueTeam.t()
+  def create_league_team(league, owner) do
+    %LeagueTeam{}
+    |> LeagueTeam.changeset(league, owner)
     |> Repo.insert()
   end
 
@@ -493,8 +502,46 @@ defmodule Backend.Fantasy do
       from l in League,
         left_join: lt in LeagueTeam,
         on: [league_id: l.id],
+        preload: [:teams, :owner],
         where: l.owner_id == ^user.id or lt.owner_id == ^user.id
 
     query |> Repo.all()
+  end
+
+  @spec get_user_league(League.t(), User.t()) :: boolean
+  def get_user_league(league, user) do
+    query =
+      from l in LeagueTeam,
+        where: l.owner_id == ^user.id and l.league_id == ^league.id
+
+    query |> Repo.one()
+  end
+
+  @spec join_league(League.t(), User.t()) :: {:ok, LeagueTeam.t()} | {:error, any()}
+  def join_league(league, user) do
+    if !get_user_league(league, user) &&
+         league.max_teams > league |> league_members() |> Enum.count() do
+      create_league_team(league, user)
+    end
+  end
+
+  @spec get_league_by_code(String.t()) :: League.t()
+  def get_league_by_code(join_code) do
+    query =
+      from l in League,
+        preload: [:owner],
+        where: l.join_code == ^join_code
+
+    Repo.one(query)
+  end
+
+  @spec league_members(League.t()) :: [LeagueTeam.t()]
+  def league_members(league) do
+    query =
+      from lt in LeagueTeam,
+        preload: [:owner, :league],
+        where: lt.league_id == ^league.id
+
+    Repo.all(query)
   end
 end

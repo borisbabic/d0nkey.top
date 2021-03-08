@@ -5,6 +5,7 @@ defmodule Backend.Fantasy.League do
 
   alias Backend.UserManager.User
   alias Backend.Fantasy.LeagueTeam
+  alias Backend.Fantasy.League
 
   schema "leagues" do
     field :competition, :string
@@ -13,6 +14,7 @@ defmodule Backend.Fantasy.League do
     field :name, :string
     field :point_system, :string
     field :roster_size, :integer
+    field :join_code, Ecto.UUID, autogenerate: true
     belongs_to :owner, User
     has_many :teams, LeagueTeam
 
@@ -52,4 +54,13 @@ defmodule Backend.Fantasy.League do
     |> put_assoc(:owner, owner)
     |> foreign_key_constraint(:owner)
   end
+
+  @spec can_manage?(League, User.t()) :: boolean()
+  def can_manage?(%League{owner: %{id: owner_id}}, %User{id: user_id}) when is_integer(owner_id),
+    do: owner_id == user_id
+
+  def can_manage?(_, _), do: false
+
+  def teams(%{teams: teams = [_ | _]}), do: teams
+  def teams(_), do: []
 end
