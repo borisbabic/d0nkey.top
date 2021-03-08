@@ -47,6 +47,12 @@
             <%= number_filter_select(:league, :roster_size, @conn.params) %>
             <%= filter_number_input(:league, :roster_size, @conn.params) %>
           </div>
+
+          <div class="field">
+            <label>Join Code</label>
+            <%= filter_select(:league, :join_code, @conn.params) %>
+            <%= filter_string_input(:league, :join_code, @conn.params) %>
+          </div>
         
         <button type="submit" class="torch-button">Search</button>
         <%= link "Clear Filters", to: Routes.league_path(@conn, :index) %>
@@ -71,6 +77,8 @@
               <th><%= table_link(@conn, "Max teams", :max_teams) %></th>
             
               <th><%= table_link(@conn, "Roster size", :roster_size) %></th>
+
+              <th><%= table_link(@conn, "Join Code", :join_code) %></th>
             
             <th><span>Actions</span></th>
           </tr>
@@ -90,6 +98,8 @@
                 <td><%= league.max_teams %></td>
               
                 <td><%= league.roster_size %></td>
+
+                <td><%= league.join_code %></td>
               
               <td class="torch-actions">
                 <span><%= link "Show", to: Routes.league_path(@conn, :show, league) %></span>

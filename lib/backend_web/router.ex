@@ -118,7 +118,8 @@ defmodule BackendWeb.Router do
     get "/empty/without-nav", EmptyController, :without_nav
 
     live "/fantasy", FantasyIndexLive
-    # live "/fantasy/leagues/:league_id", FantasyLeagueLive
+    live "/fantasy/leagues/:league_id", FantasyLeagueLive
+    live "/fantasy/leagues/join/:join_code", JoinLeagueLive
   end
 
   scope "/", BackendWeb do

@@ -41,6 +41,11 @@
           <div class="torch-show-label">Roster size:</div>
           <div class="torch-show-data"><%= @league.roster_size %></div>
         </li>
+
+        <li>
+          <div class="torch-show-label">Join Coide</div>
+          <div class="torch-show-data"><%= @league.join_code %></div>
+        </li>
       
     </ul>
   </div>

@@ -1,5 +1,7 @@
 defmodule Components.FantasyLeaguesTable do
   use Surface.Component
+  alias Backend.Fantasy.League
+  alias Backend.UserManager.User
 
   prop(leagues, :list, required: true)
 
@@ -13,14 +15,26 @@ defmodule Components.FantasyLeaguesTable do
           <th>
             Link
           </th>
+          <th>
+            Owner
+          </th>
+          <th>
+            Members
+          </th>
         </thead>
         <tbody>
-          <tr :for={{ league <- @leagues }}>
+          <tr :for={{ league <- @leagues |> Enum.uniq_by(& &1.id)}}>
             <td>
               {{ league.name }}
             </td>
             <td>
               <a href="/fantasy/leagues/{{ league.id }}">View</a>
+            </td>
+            <td>
+              {{ league.owner |> User.display_name() }}
+            </td>
+            <td>
+              {{ league |> League.teams() |> Enum.count() }} / {{ league.max_teams }}
             </td>
           </tr>
         </tbody>

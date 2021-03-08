@@ -1,0 +1,52 @@
+defmodule BackendWeb.JoinLeagueLive do
+  @moduledoc false
+  use Surface.LiveView
+  alias Backend.Fantasy
+  alias Backend.UserManager.User
+  alias Components.JoinLeague
+  import BackendWeb.LiveHelpers
+
+  data(league, :map)
+  data(user, :map)
+  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def render(assigns = %{user: %{id: _}}) do
+    ~H"""
+    <Context put={{ user: @user }} >
+      <div class="container">
+        <div :if={{ @league }} >
+          <div> League name: {{ @league.name }}</div>
+          <div> League owner: {{ @league.owner |> User.display_name() }}</div>
+          <div> Members: {{ Fantasy.league_members(@league) |> Enum.count() }} / {{ @league.max_teams }} </div>
+          <div :if={{ true == already_member?(@league, @user) }}>
+            You're already a member!
+          </div>
+          <div :if={{ false == already_member?(@league, @user) }}>
+            <JoinLeague id={{ "join_league_@user.id_" }} user={{ @user }} league={{ @league }} />
+          </div>
+        </div>
+        <div :if = {{ !@league }}> 
+          <div class="title is-2">League Not Found. Maybe the join link/code changed?</div>
+        </div>
+      </div>
+    </Context>
+    """
+  end
+
+  def render(assigns) do
+    ~H"""
+    <Context put={{ user: @user }} >
+      <div class="container">
+        <div class="title is-3">Please login to join Fantasy Leagues!</div>
+      </div>
+    </Context>
+    """
+  end
+
+  def handle_params(%{"join_code" => join_code}, _session, socket) do
+    league = Fantasy.get_league_by_code(join_code)
+    {:noreply, socket |> assign(league: league)}
+  end
+
+  defp already_member?(league, user), do: !!Fantasy.get_user_league(league, user)
+end

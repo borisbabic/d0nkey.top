@@ -3,7 +3,7 @@ defmodule BackendWeb.FantasyIndexLive do
   use Surface.LiveView
   alias Backend.Fantasy
   alias Components.FantasyLeaguesTable
-  alias Components.FantasyCreateModal
+  alias Components.FantasyModal
   import BackendWeb.LiveHelpers
 
   data(user, :any)
@@ -14,7 +14,7 @@ defmodule BackendWeb.FantasyIndexLive do
     <Context put={{ user: @user }} >
       <div class="container">
         <div class="title is-2">Fantasy Leagues</div>
-        <FantasyCreateModal id="create_modal"/> 
+        <FantasyModal id="create_modal" title="Create Fantasy League"/> 
         <FantasyLeaguesTable leagues={{ get_user_leagues(@user)}} />
       </div>
     </Context>

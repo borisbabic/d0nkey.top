@@ -3,8 +3,8 @@ defmodule Backend.Repo.Migrations.CreateLeagueTeams do
 
   def change do
     create table(:league_teams) do
-      add :owner_id, references(:users, on_delete: :nothing)
-      add :league_id, references(:leagues, on_delete: :nothing)
+      add :owner_id, references(:users, on_delete: :nothing), null: false
+      add :league_id, references(:leagues, on_delete: :nothing), null: false
 
       timestamps()
     end
