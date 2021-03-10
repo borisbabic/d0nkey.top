@@ -535,11 +535,26 @@ defmodule Backend.MastersTour do
     Battlefy.create_tournament_link(slug, id, "hsesports")
   end
 
+  @spec get_gm_money_rankings(Blizzard.gm_season(), atom()) :: gm_money_rankings()
+  def get_gm_money_rankings(gm_season, type \\ :earnings_2020)
+
   @spec get_gm_money_rankings(Blizzard.gm_season()) :: gm_money_rankings()
   # not implemented yet
-  def get_gm_money_rankings({2020, 1}), do: []
+  def get_gm_money_rankings({2020, 1}, _), do: []
 
-  def get_gm_money_rankings(gm_season) do
+  def get_gm_money_rankings(gm_season, :points_2021) do
+    Blizzard.get_tour_stops_for_gm!(gm_season)
+    |> Enum.filter(fn ts ->
+      Battlefy.get_tour_stop_id(ts) |> elem(0) == :ok
+    end)
+    |> Enum.flat_map(fn ts ->
+      get_ts_points_ranking(ts, :points_2021)
+      |> Enum.map(fn {name, money} -> {name, money, ts} end)
+    end)
+    |> group_gm_rankings()
+  end
+
+  def get_gm_money_rankings(gm_season, :earnings_2020) do
     Blizzard.get_tour_stops_for_gm!(gm_season)
     # remove the ones happening in the future for which we don't have info
     |> Enum.filter(fn ts ->
@@ -549,6 +564,11 @@ defmodule Backend.MastersTour do
       get_ts_money_rankings(ts)
       |> Enum.map(fn {name, money} -> {name, money, ts} end)
     end)
+    |> group_gm_rankings()
+  end
+
+  defp group_gm_rankings(rankings) do
+    rankings
     |> Enum.group_by(fn {name, _, _} -> get_earnings_group_by(name) end, fn {_, money, tour_stop} ->
       {tour_stop, money}
     end)
@@ -560,6 +580,77 @@ defmodule Backend.MastersTour do
       }
     end)
     |> Enum.sort_by(fn {_, earnings, _} -> earnings end, :desc)
+  end
+
+  def get_ts_points_ranking(tour_stop, :points_2021) do
+    tour_stop
+    |> get_mt_tournament()
+    |> calculate_2021_points()
+  end
+
+  def calculate_2021_points(%{stages: [swiss, top16]}) do
+    top_cut_standings = get_mt_stage_standings(top16)
+    swiss_standings = get_mt_stage_standings(swiss)
+
+    top_cut_points = get_2021_top16_points(top_cut_standings)
+    swiss_points = get_2021_swiss_points(swiss_standings)
+
+    swiss_points
+    |> Enum.map(fn {player, points} ->
+      new_p =
+        top_cut_points
+        |> Enum.find(&(player == &1 |> elem(0)))
+        |> case do
+          {^player, top_points} -> points + top_points
+          nil -> points
+        end
+
+      {player, new_p}
+    end)
+    |> Enum.sort_by(fn {_, points} -> points end, :desc)
+  end
+
+  def calculate_2021_points(%{stages: [swiss]}) do
+    swiss.id
+    |> get_mt_stage_standings()
+    |> get_2021_swiss_points()
+  end
+
+  def calculate_2021_points(_), do: []
+
+  def get_2021_top16_points(standings) do
+    standings
+    |> Enum.map(fn %{team: %{name: name}, wins: wins, place: place} ->
+      points =
+        case {wins, place} do
+          {_, 1} -> 15
+          {_, 2} -> 12
+          {_, 3} -> 8
+          {_, 5} -> 4
+          {4, _} -> 15
+          {3, _} -> 12
+          {2, _} -> 8
+          {1, _} -> 4
+          _ -> 0
+        end
+
+      {name, points}
+    end)
+  end
+
+  def get_2021_swiss_points(standings) do
+    standings
+    |> Enum.map(fn %{team: %{name: name}, wins: wins} ->
+      points =
+        case wins do
+          9 -> 9
+          8 -> 8
+          7 -> 7
+          _ -> 0
+        end
+
+      {name, points}
+    end)
   end
 
   @spec get_earnings_group_by(String.t()) :: String.t()
@@ -603,11 +694,19 @@ defmodule Backend.MastersTour do
     |> get_2020_earnings(tour_stop)
   end
 
+  def get_ts_money_rankings(tour_stop) do
+    # todo maybe not do this for all of them?
+    get_mt_tournament(tour_stop)
+    |> get_2020_earnings(tour_stop)
+  end
+
   defp use_cached_value?(cached, ts = %TourStop{}),
     do: !TourStop.current?(ts) && (cached || !TourStop.started?(ts))
 
   defp mt_tournament_cache_key(%{id: id}), do: "mt_tournament_#{id}"
-  def get_mt_tournament(ts) when is_atom(ts), do: ts |> TourStop.get() |> get_mt_tournament()
+
+  def get_mt_tournament(ts) when is_atom(ts) or is_binary(ts),
+    do: ts |> TourStop.get() |> get_mt_tournament()
 
   def get_mt_tournament(ts = %TourStop{}) do
     cached = get_mt_tournament(ts, :cache)

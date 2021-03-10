@@ -519,6 +519,25 @@ defmodule BackendWeb.MastersTourView do
     {[all_option | region_options], title}
   end
 
+  def create_point_system_dropdown(conn) do
+    options =
+      [{"2020 Earnings", "mt_earnings_2020"}, {"2021 Points", "gm_points_2021"}]
+      |> Enum.map(fn {name, val} ->
+        %{
+          display: name,
+          selected: conn.query_params["points_system"] == val,
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :earnings,
+              Map.put(conn.query_params, "points_system", val)
+            )
+        }
+      end)
+
+    {options, "Points System"}
+  end
+
   def create_country_dropdown(conn, country) do
     all_option = %{
       display: "All",
@@ -659,6 +678,7 @@ defmodule BackendWeb.MastersTourView do
         create_show_gms_dropdown(conn, show_gms),
         create_region_dropdown(conn, region),
         create_season_dropdown(conn, gm_season),
+        create_point_system_dropdown(conn),
         create_country_dropdown(conn, country)
       ] ++
         if show_current_score_dropdown?(gm_season) do

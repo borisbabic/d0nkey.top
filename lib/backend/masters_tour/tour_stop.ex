@@ -142,7 +142,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :Ironforge,
-        battlefy_id: nil,
+        battlefy_id: "60368b4367dfd71a9ffe0848",
         ladder_priority: :regional,
         ladder_seasons: [87],
         ladder_invites: 32,
