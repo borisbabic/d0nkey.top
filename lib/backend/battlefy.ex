@@ -3,6 +3,7 @@ defmodule Backend.Battlefy do
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Standings
+  alias Backend.Battlefy.Team
   alias Backend.Battlefy.MatchTeam
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.Stage
@@ -727,5 +728,10 @@ defmodule Backend.Battlefy do
         Backend.Battlefy.LineupFetcher.fetch_async(tournament_id)
         []
     end
+  end
+
+  @spec get_participants(String.t()) :: [Team.t()]
+  def get_participants(tournament_id) do
+    Api.get_participants(tournament_id)
   end
 end

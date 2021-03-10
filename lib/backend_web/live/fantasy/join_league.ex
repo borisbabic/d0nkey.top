@@ -15,9 +15,10 @@ defmodule BackendWeb.JoinLeagueLive do
     <Context put={{ user: @user }} >
       <div class="container">
         <div :if={{ @league }} >
-          <div> League name: {{ @league.name }}</div>
-          <div> League owner: {{ @league.owner |> User.display_name() }}</div>
-          <div> Members: {{ Fantasy.league_members(@league) |> Enum.count() }} / {{ @league.max_teams }} </div>
+          <div class="title is-2"> Join {{ @league.name }}</div>
+          <div class="subtitle is-5 tag"> League owner: {{ @league.owner |> User.display_name() }}</div>
+          <div class="subtitle is-5 tag"> Members: {{ Fantasy.league_members(@league) |> Enum.count() }} / {{ @league.max_teams }} </div>
+          <a class="link" href="/fantasy/leagues/{{ @league.id }}">View League</a>
           <div :if={{ true == already_member?(@league, @user) }}>
             You're already a member!
           </div>

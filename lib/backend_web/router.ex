@@ -118,6 +118,7 @@ defmodule BackendWeb.Router do
     get "/empty/without-nav", EmptyController, :without_nav
 
     live "/fantasy", FantasyIndexLive
+    live "/fantasy/leagues/:league_id/draft", FantasyDraftLive
     live "/fantasy/leagues/:league_id", FantasyLeagueLive
     live "/fantasy/leagues/join/:join_code", JoinLeagueLive
   end
@@ -134,8 +135,6 @@ defmodule BackendWeb.Router do
     resources "/invited_player", InvitedPlayerController
     resources "/feed_items", FeedItemController
     resources "/fantasy-leagues", LeagueController
-    resources "/fantasy-leagues/teams", LeagueTeamController
-    resources "/fantasy-leagues/team-picks", LeagueTeamPickController
   end
 
   scope "/admin", BackendWeb do

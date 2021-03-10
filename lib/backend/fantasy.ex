@@ -9,6 +9,7 @@ defmodule Backend.Fantasy do
   import Filtrex.Type.Config
 
   alias Backend.Fantasy.League
+  alias Backend.Fantasy.Draft
   alias Backend.UserManager.User
 
   @pagination [page_size: 15]
@@ -89,8 +90,13 @@ defmodule Backend.Fantasy do
 
   """
   def get_league!(id) do
-    Repo.get!(League, id) |> Repo.preload([:owner, [teams: [:owner]]])
+    Repo.get!(League, id) |> preload_league()
   end
+
+  def get_league(id), do: Repo.get(League, id) |> preload_league()
+
+  defp preload_league(thing),
+    do: thing |> Repo.preload([:owner, [teams: [:owner, :league, :picks]]])
 
   @doc """
   Creates a league.
@@ -321,6 +327,8 @@ defmodule Backend.Fantasy do
     Repo.delete(league_team)
   end
 
+  def delete_league_team(id), do: id |> get_league_team!() |> delete_league_team()
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking league_team changes.
 
@@ -543,5 +551,46 @@ defmodule Backend.Fantasy do
         where: lt.league_id == ^league.id
 
     Repo.all(query)
+  end
+
+  @spec get_draft(String.t()) :: Draft.t()
+  def get_draft(draft_id) do
+    query =
+      from d in Draft,
+        preload: [:league],
+        where: d.id == ^draft_id
+
+    Repo.one(query)
+  end
+
+  @spec get_league_draft(String.t()) :: Draft.t()
+  def get_league_draft(league_id) do
+    query =
+      from d in Draft,
+        preload: [:league],
+        where: d.league_id == ^league_id
+
+    Repo.one(query)
+  end
+
+  @spec start_draft(League.t()) :: {:ok, League.t()} | {:error, any()}
+  def start_draft(league) do
+    if League.draft_started?(league) do
+      {:ok, league}
+    else
+      league |> League.start_draft() |> Repo.update()
+    end
+  end
+
+  def make_pick(league, user, name) do
+    with league_team = %{id: _id} <- League.drafting_now(league),
+         {:ok, league_cs} <- League.add_pick(league, user),
+         pick_cs <-
+           %LeagueTeamPick{} |> LeagueTeamPick.changeset(%{pick: name, team: league_team}) do
+      Repo.transaction(fn repo ->
+        repo.update!(league_cs)
+        repo.insert!(pick_cs)
+      end)
+    end
   end
 end

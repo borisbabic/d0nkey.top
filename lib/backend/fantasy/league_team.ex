@@ -5,10 +5,12 @@ defmodule Backend.Fantasy.LeagueTeam do
 
   alias Backend.UserManager.User
   alias Backend.Fantasy.League
+  alias Backend.Fantasy.LeagueTeamPick
 
   schema "league_teams" do
     belongs_to :owner, User
     belongs_to :league, League
+    has_many :picks, LeagueTeamPick, foreign_key: :team_id
 
     timestamps()
   end
@@ -43,4 +45,11 @@ defmodule Backend.Fantasy.LeagueTeam do
 
   @spec display_name(__MODULE__) :: String.t()
   def display_name(%{owner: owner = %{id: _}}), do: owner |> User.display_name()
+
+  @spec can_manage?(__MODULE__, User.t()) :: boolean()
+  def can_manage?(%{owner_id: owner_id}, %{id: user_id}), do: owner_id == user_id
+  def can_manage?(_, _), do: false
+
+  def has_pick?(%{picks: picks = [_ | _]}, name), do: picks |> Enum.any?(&(&1.pick == name))
+  def has_pick?(_, _), do: false
 end

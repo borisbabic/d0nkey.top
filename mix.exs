@@ -71,6 +71,7 @@ defmodule Backend.MixProject do
       {:wait_for_it, "~>1.1"},
       {:torch, "~> 3.4"},
       {:oban, "~> 2.5"},
+      {:postgrex_pubsub, "~> 0.2.0"},
       {:quantum, "~> 2.3"}
     ]
   end
