@@ -49,7 +49,7 @@ defmodule Components.FantasyModal do
 
               <Field name="competition">
                 <Label class="label">Competition</Label>
-                <Select class="select" options= {{"Ironforge": "Ironforge" }} />
+                <Select selected={{ @league.competition }} class="select" options= {{"Ironforge": "Ironforge"}} />
               </Field>
 
               <Field name="competition_type">
@@ -58,7 +58,7 @@ defmodule Components.FantasyModal do
 
               <Field name="point_system">
                 <Label class="label">Point System</Label>
-                <Select class="select" options={{"GM Points": "gm_points_2021" }} />
+                <Select selected={{ @league.point_system }} class="select" options={{"GM Points": "gm_points_2021", "Swiss Wins": "swiss_wins" }} />
               </Field>
 
               <Field :if={{ @league.join_code }} name="join_code">

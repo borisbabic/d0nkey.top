@@ -2,13 +2,14 @@ defmodule Components.FantasyLeague do
   @moduledoc false
   use Surface.LiveComponent
   alias Components.FantasyModal
+  alias Components.RosterModal
   alias Backend.Fantasy.League
   alias Backend.Fantasy.LeagueTeam
   alias Backend.UserManager.User
   alias Backend.Fantasy
   prop(league, :any)
 
-  def render(assigns = %{league: %{id: _}}) do
+  def render(assigns = %{league: league = %{id: _}}) do
     ~H"""
       <div>
         <Context get={{ user: user }} >
@@ -22,12 +23,12 @@ defmodule Components.FantasyLeague do
                   <FantasyModal id={{ "edit_modal_#{@league.id}" }} league={{ @league }} title="Edit League"/>
                 </div>
                 <div class="level-item">
-                  <a class="link"  href="/fantasy/leagues/join/{{ @league.join_code }}">Join Link</a>
+                  <a class="is-link button"  href="/fantasy/leagues/join/{{ @league.join_code }}">Join Link</a>
                 </div>
               </div>
 
               <div class="level-item">
-                <a class="link"  href="/fantasy/leagues/{{ @league.id }}/draft">Draft Link</a>
+                <a class="is-link button"  href="/fantasy/leagues/{{ @league.id }}/draft">View Draft</a>
               </div>
 
             </div>
@@ -37,17 +38,18 @@ defmodule Components.FantasyLeague do
             <thead>
               <th>Team</th>
               <th>Owner</th>
-              <th :if={{ League.can_manage?(@league, user) }}>
-                Actions
-              </th>
+              <th>Points</th>
+              <th>Actions</th>
             </thead>
             <tbody>
-             <tr :for={{ lt <- @league.teams }}>
+             <tr :for={{ {lt, points} <- teams_with_points(@league) }}>
               <td>{{ lt |> LeagueTeam.display_name() }}</td>
               <td>{{ lt.owner |> User.display_name() }}</td>
-              <th :if={{ League.can_manage?(@league, user) }}>
-                <button class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
-              </th>
+              <td>{{ points }}</td>
+              <td>
+                <button  :if={{ false && League.can_manage?(@league, user) }} class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
+                <RosterModal id="roster_modal_{{lt.id}}" league_team={{ lt }} />
+              </td>
             </tr>
               
             </tbody>
@@ -56,6 +58,21 @@ defmodule Components.FantasyLeague do
         </Context>
       </div>
     """
+  end
+
+  defp teams_with_points(league) do
+    results = Backend.FantasyCompetitionFetcher.fetch_results(league)
+
+    league.teams
+    |> Enum.map(fn t ->
+      points =
+        t.picks
+        |> Enum.map(&(results |> Map.get(&1.pick) || 0))
+        |> Enum.sum()
+
+      {t, points}
+    end)
+    |> Enum.sort_by(&(&1 |> elem(1)), :desc)
   end
 
   def render(assigns) do
