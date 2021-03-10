@@ -8,6 +8,7 @@ defmodule Backend.Battlefy.Communicator do
   alias Backend.Battlefy.Stage
   alias Backend.Battlefy.Standings
   alias Backend.Battlefy.Tournament
+  alias Backend.Battlefy.Team
 
   @type signup_options :: %{
           tournament_id: Battlefy.tournament_id(),
@@ -52,4 +53,6 @@ defmodule Backend.Battlefy.Communicator do
   @callback get_stage_with_matches(Battlefy.stage_id()) :: Stage.t()
   @callback get_profile(String.t()) :: Profile.t()
   @callback get_user_tournaments(String.t()) :: [Tournament.t()]
+
+  @callback get_participants(Battlefy.tournament_id()) :: [Team.t()]
 end

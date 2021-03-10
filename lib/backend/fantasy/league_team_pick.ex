@@ -15,6 +15,18 @@ defmodule Backend.Fantasy.LeagueTeamPick do
   def changeset(league_team_pick, attrs) do
     league_team_pick
     |> cast(attrs, [:pick])
-    |> validate_required([:pick])
+    |> set_league_team(attrs)
+    |> validate_required([:pick, :team])
   end
+
+  defp set_league_team(c, %{team: league_team}), do: set_league_team(c, league_team)
+  defp set_league_team(c, %{"team" => league_team}), do: set_league_team(c, league_team)
+
+  defp set_league_team(c, league_team = %{id: _}) do
+    c
+    |> put_assoc(:team, league_team)
+    |> foreign_key_constraint(:team)
+  end
+
+  defp set_league_team(c, _), do: c
 end

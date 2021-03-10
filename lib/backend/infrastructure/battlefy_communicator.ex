@@ -6,6 +6,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchDeckstrings
   alias Backend.Battlefy.Profile
+  alias Backend.Battlefy.Team
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Organization
   import Backend.Battlefy.Communicator
@@ -504,5 +505,14 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       {_, other} ->
         {:error, other}
     end
+  end
+
+  @spec get_participants(String.t()) :: [Team.t()]
+  def get_participants(tournament_id) do
+    url = "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}/teams"
+
+    get_body(url)
+    |> Poison.decode!()
+    |> Enum.map(&Team.from_raw_map/1)
   end
 end
