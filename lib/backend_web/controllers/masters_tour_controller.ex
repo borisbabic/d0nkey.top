@@ -96,6 +96,9 @@ defmodule BackendWeb.MastersTourController do
   def parse_season("2021_2"), do: {2021, 2}
   def parse_season(_), do: @default_season
 
+  def parse_points_system(%{"points_system" => "gm_points_2021"}), do: :points_2021
+  def parse_points_system(_), do: :earnings_2020
+
   defp show_current_score?(%{"show_current_score" => current_score})
        when is_binary(current_score),
        do: String.starts_with?(current_score, "yes")
@@ -104,9 +107,10 @@ defmodule BackendWeb.MastersTourController do
 
   def earnings(conn, params = %{"show_gms" => show_gms}) do
     gm_season = params["season"] |> parse_season()
+    points_system = parse_points_system(params)
     gms = Backend.PlayerInfo.get_grandmasters(gm_season)
     tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
-    earnings = MastersTour.get_gm_money_rankings(gm_season)
+    earnings = MastersTour.get_gm_money_rankings(gm_season, points_system)
 
     {standings, show_current_score} =
       with true <- show_current_score?(params),
