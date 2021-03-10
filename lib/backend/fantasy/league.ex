@@ -15,7 +15,7 @@ defmodule Backend.Fantasy.League do
     field :point_system, :string
     field :roster_size, :integer
     field :join_code, Ecto.UUID, autogenerate: true
-    field :time_per_pick, :integer
+    field :time_per_pick, :integer, default: 0
     field :pick_order, {:array, :integer}, default: []
     field :current_pick_number, :integer, default: 0
     field :last_pick_at, :utc_datetime
@@ -139,15 +139,15 @@ defmodule Backend.Fantasy.League do
   def drafting_next(league), do: drafting_pos(league, 1)
 
   @spec drafting_pos(__MODULE__, integer()) :: LeagueTeam.t() | nil
-  defp drafting_pos(
-         %{current_pick_number: pn, pick_order: pick_order, teams: teams = [_ | _]},
-         offset
-       ) do
+  def drafting_pos(
+        %{current_pick_number: pn, pick_order: pick_order, teams: teams = [_ | _]},
+        offset
+      ) do
     lt_id = pick_order |> Enum.at(pn + offset)
     teams |> Enum.find(&(&1.id == lt_id))
   end
 
-  defp drafting_pos(_, _), do: nil
+  def drafting_pos(_, _), do: nil
 
   def team_for_user(%{teams: teams = [_ | _]}, user) do
     teams
@@ -156,7 +156,9 @@ defmodule Backend.Fantasy.League do
 
   def team_for_user(_, _), do: nil
 
-  defp league_team(%{teams: teams}, id) do
+  def league_team!(league, id), do: league_team(league, id) |> Util.bangify()
+
+  def league_team(%{teams: teams}, id) do
     teams
     |> Enum.find(&(&1.id == id))
     |> case do

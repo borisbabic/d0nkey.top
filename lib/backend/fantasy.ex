@@ -71,7 +71,7 @@ defmodule Backend.Fantasy do
   """
   def list_leagues do
     from(l in League)
-    |> preload([:owner])
+    |> preload([:owner, :teams])
     |> Repo.all()
   end
 
@@ -95,7 +95,7 @@ defmodule Backend.Fantasy do
 
   def get_league(id), do: Repo.get(League, id) |> preload_league()
 
-  defp preload_league(thing),
+  def preload_league(thing),
     do: thing |> Repo.preload([:owner, [teams: [:owner, :league, :picks]]])
 
   @doc """

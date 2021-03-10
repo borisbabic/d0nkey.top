@@ -11,7 +11,7 @@ defmodule Components.CompetitorsTable do
   prop(league, :map)
   prop(participants, :list, default: [])
   prop(search, :any, default: nil)
-  prop(user, :map)
+  prop(user, :any)
 
   def update(assigns, socket) do
     {:ok, socket |> assign(assigns) |> add_participants()}

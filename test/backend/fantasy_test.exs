@@ -41,6 +41,7 @@ defmodule Backend.FantasyTest do
         |> Fantasy.create_league()
 
       league
+      |> Backend.Fantasy.preload_league()
     end
 
     test "paginate_leagues/1 returns paginated list of leagues" do
