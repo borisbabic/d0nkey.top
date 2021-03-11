@@ -7,6 +7,7 @@ defmodule Components.FantasyLeague do
   alias Backend.Fantasy.LeagueTeam
   alias Backend.UserManager.User
   alias Backend.Fantasy
+  use BackendWeb.ViewHelpers
   prop(league, :any)
 
   def render(assigns = %{league: league = %{id: _}}) do
@@ -29,6 +30,12 @@ defmodule Components.FantasyLeague do
 
               <div class="level-item">
                 <a class="is-link button"  href="/fantasy/leagues/{{ @league.id }}/draft">View Draft</a>
+              </div>
+              <div class="level-item is-5 tag is-info">
+                Point System: {{ @league |> League.scoring_display() }}
+              </div>
+              <div class="level-item is-5 tag is-info" :if={{ @league.draft_deadline }}>
+                Draft Deadline: {{ render_datetime(@league.draft_deadline) }}
               </div>
 
             </div>

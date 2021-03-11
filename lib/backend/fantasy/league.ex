@@ -213,4 +213,11 @@ defmodule Backend.Fantasy.League do
     now = NaiveDateTime.utc_now()
     NaiveDateTime.compare(dd, now) == :lt
   end
+
+  def scoring_display(%{point_system: ps}) do
+    case ps do
+      "swiss_wins" -> "Swiss Wins"
+      "gm_points_2021" -> "GM Points"
+    end
+  end
 end
