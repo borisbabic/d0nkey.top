@@ -582,13 +582,25 @@ defmodule Backend.Fantasy do
     end
   end
 
-  def make_pick(league, user, name) do
+  def make_pick(league = %{real_time_draft: true}, user, name) do
     with league_team = %{id: _id} <- League.drafting_now(league),
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
            %LeagueTeamPick{} |> LeagueTeamPick.changeset(%{pick: name, team: league_team}) do
       Repo.transaction(fn repo ->
         repo.update!(league_cs)
+        repo.insert!(pick_cs)
+      end)
+    end
+  end
+
+  def make_pick(league = %{real_time_draft: false}, user, name) do
+    with league_team = %{id: id} <- League.team_for_user(league, user),
+         {:ok, league_cs} <- League.add_pick(league, user),
+         pick_cs <-
+           %LeagueTeamPick{} |> LeagueTeamPick.changeset(%{pick: name, team: league_team}) do
+      Repo.transaction(fn repo ->
+        repo.update!(league_cs |> IO.inspect())
         repo.insert!(pick_cs)
       end)
     end

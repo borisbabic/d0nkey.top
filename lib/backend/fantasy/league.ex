@@ -19,6 +19,8 @@ defmodule Backend.Fantasy.League do
     field :pick_order, {:array, :integer}, default: []
     field :current_pick_number, :integer, default: 0
     field :last_pick_at, :utc_datetime
+    field :real_time_draft, :boolean, default: true
+    field :draft_deadline, :utc_datetime, null: true
     belongs_to :owner, User
     has_many :teams, LeagueTeam
 
@@ -34,7 +36,9 @@ defmodule Backend.Fantasy.League do
       :competition_type,
       :point_system,
       :max_teams,
-      :roster_size
+      :roster_size,
+      :real_time_draft,
+      :draft_deadline
     ])
     |> set_owner(attrs, league)
     |> validate_required([
@@ -44,14 +48,16 @@ defmodule Backend.Fantasy.League do
       :point_system,
       :max_teams,
       :owner,
-      :roster_size
+      :roster_size,
+      :real_time_draft
     ])
   end
 
   def start_draft(l = %{teams: [_ | _]}) do
     attrs = %{
       pick_order: generate_pick_order(l),
-      last_pick_at: NaiveDateTime.utc_now()
+      last_pick_at: NaiveDateTime.utc_now(),
+      draft_started: true
     }
 
     l
@@ -60,12 +66,13 @@ defmodule Backend.Fantasy.League do
 
   @spec add_pick(__MODULE__, User.t()) ::
           {:ok, Ecto.Changeset.t()} | {:ok, __MODULE__} | {:error, atom()}
-  def add_pick(league = %League{}, user) do
-    with true <- picked_on_time?(league),
+  def add_pick(league = %League{real_time_draft: true}, user) do
+    with true <- draft_started?(league),
+         true <- picked_on_time?(league),
          current_picker when is_integer(current_picker) <-
            league.pick_order |> Enum.at(league.current_pick_number),
          {:ok, picking_team} <- league_team(league, current_picker),
-         true <- picking_team |> LeagueTeam.can_manage?(user) do
+         true <- LeagueTeam.can_manage?(picking_team, user) do
       {
         :ok,
         league
@@ -84,19 +91,38 @@ defmodule Backend.Fantasy.League do
     end
   end
 
+  def add_pick(league = %League{real_time_draft: false, roster_size: roster_size}, user) do
+    with true <- draft_started?(league),
+         true <- picked_on_time?(league),
+         picking_team = %{id: id} <- team_for_user(league, user),
+         currently_picked when currently_picked < roster_size <-
+           picking_team.picks |> Enum.count() do
+      {:ok, league |> cast(%{last_pick_at: NaiveDateTime.utc_now()}, [:last_pick_at])}
+    else
+      false -> {:error, :invalid_pick}
+      {:error, r} -> {:error, r}
+      num when is_integer(num) and num >= roster_size -> {:error, :out_of_picks}
+    end
+  end
+
   @spec right_picker?(__MODULE__, LeagueTeam.t()) :: boolean()
   def right_picker?(league, %{id: id}), do: league.pick_order[league.current_pick_number] == id
 
   @spec picked_on_time?(__MODULE__) :: boolean()
-  def picked_on_time?(%League{time_per_pick: 0}), do: true
+  def picked_on_time?(%League{time_per_pick: 0, real_time_draft: true}), do: true
 
-  def picked_on_time?(%League{time_per_pick: seconds, last_pick_at: last}) do
+  def picked_on_time?(%League{time_per_pick: seconds, last_pick_at: last, real_time_draft: true}) do
     deadline = last |> NaiveDateTime.add(seconds)
     now = NaiveDateTime.utc_now()
     NaiveDateTime.compare(deadline, now) != :lt
   end
 
-  defp generate_pick_order(%{roster_size: roster_size, teams: lt = [_ | _]}) do
+  def picked_on_time?(league = %League{real_time_draft: false}),
+    do: !draft_deadline_passed?(league)
+
+  defp generate_pick_order(%{real_time_draft: false}), do: []
+
+  defp generate_pick_order(%{real_time_draft: true, roster_size: roster_size, teams: lt = [_ | _]}) do
     forward = lt |> Enum.map(& &1.id) |> Enum.shuffle()
     reverse = forward |> Enum.reverse()
 
@@ -169,4 +195,22 @@ defmodule Backend.Fantasy.League do
 
   def picked_by(%{teams: teams}, name),
     do: teams |> Enum.find(&(&1 |> LeagueTeam.has_pick?(name)))
+
+  def pickable?(league = %{real_time_draft: true}, user = %User{}, <<pick::binary>>) do
+    picked_by = picked_by(league, pick)
+    lt = team_for_user(league, user)
+    lt && !picked_by
+  end
+
+  def pickable?(league = %{real_time_draft: false}, user = %User{}, <<pick::binary>>) do
+    lt = team_for_user(league, user)
+    !LeagueTeam.has_pick?(lt, pick)
+  end
+
+  def draft_deadline_passed?(%{draft_deadline: nil}), do: false
+
+  def draft_deadline_passed?(%{draft_deadline: dd}) do
+    now = NaiveDateTime.utc_now()
+    NaiveDateTime.compare(dd, now) == :lt
+  end
 end
