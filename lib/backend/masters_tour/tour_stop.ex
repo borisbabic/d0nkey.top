@@ -147,7 +147,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_seasons: [87],
         ladder_invites: 32,
         region: :US,
-        start_time: ~N[2021-03-12 17:15:00],
+        start_time: ~N[2021-03-12 16:15:00],
         qualifiers_period: {~D[2021-01-28], ~D[2021-02-28]},
         year: 2021
       },
@@ -209,7 +209,8 @@ defmodule Backend.MastersTour.TourStop do
     ]
   end
 
-  def get(tour_stop, attr, default \\ nil) when is_tour_stop(tour_stop) and is_atom(attr) do
+  def get(tour_stop, attr, default \\ nil)
+      when (is_tour_stop(tour_stop) or is_binary(tour_stop)) and is_atom(attr) do
     tour_stop
     |> get()
     |> case do
@@ -314,4 +315,13 @@ defmodule Backend.MastersTour.TourStop do
       _ -> nil
     end
   end
+
+  def get_next() do
+    all()
+    |> Enum.find(&(!started?(&1)))
+  end
+
+  def get_start_time(ts) when is_binary(ts) or is_atom(ts), do: ts |> get() |> get_start_time()
+  def get_start_time(%{start_time: start_time}), do: start_time
+  def get_start_time(_), do: nil
 end

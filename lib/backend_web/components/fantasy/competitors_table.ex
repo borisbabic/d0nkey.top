@@ -40,13 +40,13 @@ defmodule Components.CompetitorsTable do
           <tbody>
             <tr :for={{ participant <- @participants |> filter(@search)}} >
               <td>{{ participant.name }}</td>
-              <td :if={{ picked_by = League.picked_by(@league, participant.name) }}>
+              <td :if={{ picked_by = picked_by(@league, participant, @user) }}>
                 <div class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
               </td>
-              <td :if={{ has_current_pick?(@league, @user) && !League.picked_by(@league, participant.name)}}>
+              <td :if={{ has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name) }}>
                 <button class="button" type="button" :on-click="pick" phx-value-name="{{ participant.name }}">Pick</button>
               </td>
-              <td :if={{ !has_current_pick?(@league, @user) && !League.picked_by(@league, participant.name)}}>
+              <td :if={{ !has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}}>
                 <div class="tag">Available</div>
               </td>
             </tr>
@@ -56,8 +56,19 @@ defmodule Components.CompetitorsTable do
     """
   end
 
+  defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),
+    do: league |> League.picked_by(name)
+
+  defp picked_by(league = %{real_time_draft: false}, %{name: name}, user),
+    do: !League.pickable?(league, user, name) && League.team_for_user(league, user)
+
   # defp current_team(league, user), do: league |> League.team_for_user(user)
-  defp has_current_pick?(league, user),
+  defp has_current_pick?(league = %{real_time_draft: false, roster_size: roster_size}, user) do
+    lt = league |> League.team_for_user(user)
+    lt && roster_size > Enum.count(lt.picks)
+  end
+
+  defp has_current_pick?(league = %{real_time_draft: true}, user),
     do: league |> League.drafting_now() |> LeagueTeam.can_manage?(user)
 
   def handle_event("search", %{"search" => [search]}, socket),

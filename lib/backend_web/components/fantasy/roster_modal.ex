@@ -1,6 +1,7 @@
 defmodule Components.RosterModal do
   use Surface.LiveComponent
   alias Backend.Fantasy.LeagueTeam
+  alias Backend.Fantasy.League
 
   prop(show_modal, :boolean, default: false)
   prop(league_team, :map, required: true)
@@ -10,6 +11,7 @@ defmodule Components.RosterModal do
 
   def render(assigns) do
     ~H"""
+    <Context get={{ user: user }}>
     <div>
       <button class="button" type="button" :on-click="show_modal">{{ @button_title }}</button>
       <div class="modal is-active" :if={{ @show_modal }}>
@@ -21,14 +23,30 @@ defmodule Components.RosterModal do
             </header>
             <section class="modal-card-body content">
               <ul :for={{ {pick_name, points} <- picks_with_points(@league_team, @include_points) }}>
-                <li><span :if={{ @include_points }}>{{ points }} - </span>{{ pick_name }}</li>
+                <li><span :if={{ @include_points }}>{{ points }} - </span>{{ show_pick_name(@league_team, user, pick_name) }}</li>
               </ul>
             </section>
           </div>
         </div>
     </div>
+    </Context>
     """
   end
+
+  defp show_pick_name(
+         lt = %{league: league = %{real_time_draft: false, draft_deadline: dd}},
+         user,
+         name
+       )
+       when not is_nil(dd) do
+    if LeagueTeam.can_manage?(lt, user) || League.draft_deadline_passed?(league) do
+      name
+    else
+      "?????"
+    end
+  end
+
+  defp show_pick_name(_, _, name), do: name
 
   def picks_with_points(league_team, true) do
     results = Backend.FantasyCompetitionFetcher.fetch_results(league_team.league)

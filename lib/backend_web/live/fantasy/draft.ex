@@ -42,7 +42,7 @@ defmodule BackendWeb.FantasyDraftLive do
         <div :if={{ !League.draft_started?(@league) }} >
           Draft Not Started 
         </div>
-        <div :if={{ League.draft_started?(@league) }} class="level">
+        <div :if={{ League.draft_started?(@league) &&  @league.real_time_draft}} class="level">
           <div class="level-left">
             <DraftOrderModal id="draft_order_modal_{{@league.id}}" league={{ @league }} button_title="Draft Order" />
             <div :if={{ now = League.drafting_now(@league) }} class="level-item" ><RosterModal include_points={{ false }} id="drafting_now_{{now.id}}" league_team={{ now }} button_title="Drafting Now: {{ now |> LeagueTeam.display_name() }}" /></div>
@@ -51,7 +51,13 @@ defmodule BackendWeb.FantasyDraftLive do
             <div :if={{ next = League.drafting_pos(@league, 3) }} class="level-item" ><RosterModal include_points={{ false }} id="drafting_3_{{next.id}}" league_team={{ next }} button_title="{{ next |> LeagueTeam.display_name() }}" /></div>
           </div>
         </div>
+        <div class="notification is-warning" :if={{ League.draft_deadline_passed?(@league) }}>
+          Draft Deadline Passed!
+        </div>
         <a class="link" href="/fantasy/leagues/{{ @league.id }}">View League</a>
+        <div :if={{ lt = League.team_for_user(@league, @user)}}>
+          Your roster: {{ lt.picks |> Enum.count() }} / {{ @league.roster_size }}
+        </div>
 
         <div :if={{ @user && League.can_manage?(@league, @user) && !League.draft_started?(@league) }} >
             <button class="button" type="button" :on-click="start_draft">Start Draft</button>
