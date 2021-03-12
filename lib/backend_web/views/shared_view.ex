@@ -45,9 +45,16 @@ defmodule BackendWeb.SharedView do
   end
 
   def render("player_name.html", %{name: name}) do
-    if name in ["D0nkey", "D0nkey#2470"] do
+    picture =
+      cond do
+        name in ["D0nkey", "D0nkey#2470"] -> "/favicon.ico"
+        name in ["Carvalho", "Carvalho#1712"] -> "/images/icons/carvalho.png"
+        true -> false
+      end
+
+    if picture do
       ~E"""
-        <span><span class="icon small"><img src="/favicon.ico" alt="<%= name %>"></span><%= name %></span>
+        <span><span class="icon small"><img src="<%= picture %>" alt="<%= name %>"></span><%= name %></span>
       """
     else
       name
