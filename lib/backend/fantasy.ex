@@ -4,6 +4,7 @@ defmodule Backend.Fantasy do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Backend.Repo
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
@@ -600,9 +601,26 @@ defmodule Backend.Fantasy do
          pick_cs <-
            %LeagueTeamPick{} |> LeagueTeamPick.changeset(%{pick: name, team: league_team}) do
       Repo.transaction(fn repo ->
-        repo.update!(league_cs |> IO.inspect())
+        repo.update!(league_cs)
         repo.insert!(pick_cs)
       end)
     end
+  end
+
+  def fix_mt_pick_battletag(tour_stop) do
+    tour_stop
+    |> Backend.MastersTour.TourStop.get(:battlefy_id)
+    |> Backend.Infrastructure.BattlefyCommunicator.get_participants()
+    |> Enum.reduce(Multi.new(), fn %{name: n, players: [%{in_game_name: ign}]}, multi ->
+      query =
+        from ltp in LeagueTeamPick,
+          join: lt in assoc(ltp, :team),
+          join: l in assoc(lt, :league),
+          where: l.competition == ^tour_stop and ltp.pick == ^ign
+
+      multi
+      |> Multi.update_all("#{n}_#{ign}", query, set: [pick: n])
+    end)
+    |> Repo.transaction()
   end
 end

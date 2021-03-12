@@ -40,14 +40,16 @@ defmodule Components.CompetitorsTable do
           <tbody>
             <tr :for={{ participant <- @participants |> filter(@search)}} >
               <td>{{ participant.name }}</td>
-              <td :if={{ picked_by = picked_by(@league, participant, @user) }}>
-                <div class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
-              </td>
-              <td :if={{ has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name) }}>
-                <button class="button" type="button" :on-click="pick" phx-value-name="{{ participant.name }}">Pick</button>
-              </td>
-              <td :if={{ !has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}}>
-                <div class="tag">Available</div>
+              <td>
+                <div :if={{ picked_by = picked_by(@league, participant, @user) }}>
+                  <div class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
+                </div>
+                <div :if={{ has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name) }}>
+                  <button class="button" type="button" :on-click="pick" phx-value-name="{{ participant.name }}">Pick</button>
+                </div>
+                <div :if={{ !has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}}>
+                  <div class="tag">Available</div>
+                </div>
               </td>
             </tr>
           </tbody>
