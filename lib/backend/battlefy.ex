@@ -580,13 +580,13 @@ defmodule Backend.Battlefy do
   @spec get_deckstrings(%{tournament_id: tournament_id, battletag_full: Blizzard.battletag()}) ::
           [Blizzard.deckstring()]
   def get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full}) do
-    with nil <-
-           Hearthstone.lineup(%{
-             tournament_id: tournament_id,
-             tournament_source: "battlefy",
-             name: battletag_full
-           }),
-         matches <- get_tournament_matches(tournament_id, round: 1),
+    # with nil <-
+    # Hearthstone.lineup(%{
+    # tournament_id: tournament_id,
+    # tournament_source: "battlefy",
+    # name: battletag_full
+    # }),
+    with matches <- get_tournament_matches(tournament_id, round: 1),
          {match, position} <- get_team_match_position(matches, battletag_full) do
       deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
 
