@@ -143,6 +143,13 @@ defmodule BackendWeb.ViewHelpers do
           %{name: name}
         )
       end
+
+      def warning_triangle(),
+        do: ~E"""
+        <span class="icon is-small">
+          <i class="fas fa-exclamation-triangle"></i>
+        </span>
+        """
     end
   end
 end

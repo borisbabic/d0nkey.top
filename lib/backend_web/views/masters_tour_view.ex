@@ -256,13 +256,6 @@ defmodule BackendWeb.MastersTourView do
     end
   end
 
-  defp warning_triangle(),
-    do: ~E"""
-    <span class="icon is-small">
-      <i class="fas fa-exclamation-triangle"></i>
-    </span>
-    """
-
   def warning(min, 2020) when min < 15, do: warning_triangle()
   # def warning(min, _) when min < 5, do: warning_triangle()
   def warning(_, _), do: ""

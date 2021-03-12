@@ -647,6 +647,8 @@ defmodule Backend.Fantasy do
     Repo.all(query)
   end
 
+  def get_mt_user_picks(_, _), do: []
+
   def get_battlefy_user_picks(tournament_id, %{id: user_id}) do
     query =
       from ltp in LeagueTeamPick,
@@ -658,4 +660,6 @@ defmodule Backend.Fantasy do
 
     Repo.all(query)
   end
+
+  def get_battlefy_user_picks(_, _), do: []
 end

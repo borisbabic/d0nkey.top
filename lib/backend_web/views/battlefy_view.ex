@@ -455,7 +455,7 @@ defmodule BackendWeb.BattlefyView do
 
     dropdowns =
       [get_ongoing_dropdown(conn, tournament, show_ongoing)]
-      # |> add_lineups_dropdown(conn, show_lineups, tournament)
+      |> add_lineups_dropdown(conn, show_lineups, tournament)
       |> add_earnings_dropdown(is_tour_stop, conn, tournament, show_earnings)
       |> add_highlight_fantasy_dropdown(conn, highlight_fantasy, tournament, fantasy_picks)
 
@@ -524,7 +524,9 @@ defmodule BackendWeb.BattlefyView do
       [
         {[
            %{
-             display: "Yes",
+             display: ~E"""
+             <span><%= warning_triangle() %> Yes</span>
+             """,
              selected: show_lineups,
              link:
                Routes.battlefy_path(
