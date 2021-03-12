@@ -20,6 +20,9 @@ defmodule BackendWeb.BattlefyController do
   defp show_lineups(%{"show_lineups" => "yes"}), do: true
   defp show_lineups(_), do: false
 
+  defp highlight_fantasy(%{"highlight_fantasy" => "no"}), do: false
+  defp highlight_fantasy(_), do: true
+
   defp earnings(params, tournament_id) do
     with true <- show_earnings?(params),
          ts = %{id: ts_id} <-
@@ -38,6 +41,12 @@ defmodule BackendWeb.BattlefyController do
     tournament = Battlefy.get_tournament(tournament_id)
     {earnings, show_earnings} = earnings(params, tournament_id)
 
+    fantasy_picks =
+      conn
+      |> BackendWeb.AuthUtils.user()
+      |> Backend.Fantasy.get_battlefy_or_mt_user_picks(tournament_id)
+      |> Enum.map(& &1.pick)
+
     render(
       conn,
       "tournament.html",
@@ -45,7 +54,9 @@ defmodule BackendWeb.BattlefyController do
         tournament: tournament,
         show_earnings: show_earnings,
         earnings: earnings,
+        fantasy_picks: fantasy_picks,
         show_lineups: show_lineups(params),
+        highlight_fantasy: highlight_fantasy(params),
         lineups: lineups(params),
         country_highlight: multi_select_to_array(params["country"]),
         page_title: tournament.name,

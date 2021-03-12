@@ -583,7 +583,7 @@ defmodule Backend.Fantasy do
     end
   end
 
-  def make_pick(league = %{real_time_draft: true}, user, name) do
+  def make_pick(%{real_time_draft: true} = league, user, name) do
     with league_team = %{id: _id} <- League.drafting_now(league),
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
@@ -595,7 +595,7 @@ defmodule Backend.Fantasy do
     end
   end
 
-  def make_pick(league = %{real_time_draft: false}, user, name) do
+  def make_pick(%{real_time_draft: false} = league, user, name) do
     with league_team = %{id: id} <- League.team_for_user(league, user),
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
@@ -622,5 +622,40 @@ defmodule Backend.Fantasy do
       |> Multi.update_all("#{n}_#{ign}", query, set: [pick: n])
     end)
     |> Repo.transaction()
+  end
+
+  def get_battlefy_or_mt_user_picks(%{id: _} = user, tournament_id) do
+    mt_picks =
+      Backend.MastersTour.TourStop.get_by(:battlefy_id, tournament_id)
+      |> get_mt_user_picks(user)
+
+    battlefy_picks = get_battlefy_user_picks(tournament_id, user)
+    mt_picks ++ battlefy_picks
+  end
+
+  def get_battlefy_or_mt_user_picks(_, _), do: []
+
+  def get_mt_user_picks(%{id: ts}, %{id: user_id}) do
+    query =
+      from ltp in LeagueTeamPick,
+        join: lt in assoc(ltp, :team),
+        join: l in assoc(lt, :league),
+        where:
+          lt.owner_id == ^user_id and l.competition == ^to_string(ts) and
+            l.competition_type == "masters_tour"
+
+    Repo.all(query)
+  end
+
+  def get_battlefy_user_picks(tournament_id, %{id: user_id}) do
+    query =
+      from ltp in LeagueTeamPick,
+        join: lt in assoc(ltp, :team),
+        join: l in assoc(lt, :league),
+        where:
+          lt.owner_id == ^user_id and l.competition == ^tournament_id and
+            l.competition_type == "battlefy"
+
+    Repo.all(query)
   end
 end
