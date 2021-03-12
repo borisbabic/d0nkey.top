@@ -17,6 +17,9 @@ defmodule BackendWeb.BattlefyController do
 
   defp show_earnings?(_), do: false
 
+  defp show_lineups(%{"show_lineups" => "yes"}), do: true
+  defp show_lineups(_), do: false
+
   defp earnings(params, tournament_id) do
     with true <- show_earnings?(params),
          ts = %{id: ts_id} <-
@@ -31,8 +34,34 @@ defmodule BackendWeb.BattlefyController do
     end
   end
 
-  def tournament(conn, params = %{"tournament_id" => tournament_id, "stage_id" => stage_id}) do
+  def tournament(conn, params = %{"tournament_id" => tournament_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
+    {earnings, show_earnings} = earnings(params, tournament_id)
+
+    render(
+      conn,
+      "tournament.html",
+      %{
+        tournament: tournament,
+        show_earnings: show_earnings,
+        earnings: earnings,
+        show_lineups: show_lineups(params),
+        lineups: lineups(params),
+        country_highlight: multi_select_to_array(params["country"]),
+        page_title: tournament.name,
+        stage_id: params["stage_id"],
+        highlight: get_highlight(params)
+      }
+      |> add_matches_standings(params)
+    )
+  end
+
+  def lineups(%{"show_lineups" => "yes", "tournament_id" => tournament_id}),
+    do: Battlefy.lineups(tournament_id)
+
+  def lineups(_), do: []
+
+  defp add_matches_standings(existing, params = %{"stage_id" => stage_id}) do
     standings = Battlefy.get_stage_standings(stage_id)
 
     {matches, show_ongoing} =
@@ -42,24 +71,10 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
-    {earnings, show_earnings} = earnings(params, tournament_id)
-
-    render(conn, "tournament.html", %{
-      standings: standings,
-      tournament: tournament,
-      matches: matches,
-      show_ongoing: show_ongoing,
-      show_earnings: show_earnings,
-      earnings: earnings,
-      country_highlight: multi_select_to_array(params["country"]),
-      page_title: tournament.name,
-      highlight: get_highlight(params),
-      stage_id: stage_id
-    })
+    existing |> Map.merge(%{standings: standings, matches: matches, show_ongoing: show_ongoing})
   end
 
-  def tournament(conn, params = %{"tournament_id" => tournament_id}) do
-    tournament = Battlefy.get_tournament(tournament_id)
+  defp add_matches_standings(existing = %{tournament: tournament}, params) do
     standings = Battlefy.get_tournament_standings(tournament)
 
     {matches, show_ongoing} =
@@ -69,19 +84,7 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
-    {earnings, show_earnings} = earnings(params, tournament_id)
-
-    render(conn, "tournament.html", %{
-      standings: standings,
-      tournament: tournament,
-      matches: matches,
-      show_ongoing: show_ongoing,
-      show_earnings: show_earnings,
-      earnings: earnings,
-      country_highlight: multi_select_to_array(params["country"]),
-      page_title: tournament.name,
-      highlight: get_highlight(params)
-    })
+    existing |> Map.merge(%{standings: standings, matches: matches, show_ongoing: show_ongoing})
   end
 
   def get_highlight(params), do: multi_select_to_array(params["player"])

@@ -35,6 +35,6 @@ f-> %>
 </div>
 
 <%= if Enum.any?(@highlight) do %>
-    <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlight, show_earnings: @show_earnings) %>
+    <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlight, show_earnings: @show_earnings, conn: @conn, deck_num: @deck_num) %>
 <% end %>
-<%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @standings, show_earnings: @show_earnings) %>
+<%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @standings, show_earnings: @show_earnings, conn: @conn, deck_num: @deck_num) %>

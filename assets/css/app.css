@@ -199,7 +199,10 @@
   /*background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_warrior-af1e7128db69a0453750626f90f68adb42f8f9013f10238c0c02fd90120fe1c27bb61aa31287c76e2610c974adce762c0e1d1b9620e8c3bc0736a5957c161e53.jpg");*/
   background-color: var(--color-warrior)
 }
+.is-deck-wide {
+  width: 200px;
 
+}
 .decklist-hero {
   max-width: 200px;
   background-repeat: no-repeat;
