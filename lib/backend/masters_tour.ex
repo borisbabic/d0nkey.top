@@ -611,7 +611,7 @@ defmodule Backend.MastersTour do
   end
 
   def calculate_2021_points(%{stages: [swiss]}) do
-    swiss.id
+    swiss
     |> get_mt_stage_standings()
     |> get_2021_swiss_points()
   end
@@ -844,7 +844,7 @@ defmodule Backend.MastersTour do
   end
 
   def get_2020_earnings(%{stages: [swiss]}, _) do
-    swiss_standings = get_mt_stage_standings(swiss.id)
+    swiss_standings = get_mt_stage_standings(swiss)
 
     get_2020_swiss_earnings(swiss_standings, MapSet.new([]))
     |> Enum.sort_by(fn {_, money} -> money end, :desc)
