@@ -207,6 +207,8 @@ defmodule Backend.Fantasy.League do
     !LeagueTeam.has_pick?(lt, pick)
   end
 
+  def pickable?(_, _, _), do: false
+
   def draft_deadline_passed?(%{draft_deadline: nil}), do: false
 
   def draft_deadline_passed?(%{draft_deadline: dd}) do

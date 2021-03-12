@@ -34,6 +34,8 @@ defmodule Backend.Battlefy.Team.Player do
     field :battletag, String.t() | nil
     field :country_code, String.t() | nil
     field :twitch, String.t() | nil
+    field :in_game_name, String.t() | nil
+    field :user_id, String.t() | nil
     field :slug, String.t() | nil
   end
 
@@ -42,6 +44,8 @@ defmodule Backend.Battlefy.Team.Player do
 
   def from_raw_map(map = %{"user_id" => _}) do
     %__MODULE__{
+      in_game_name: map["in_game_name"],
+      user_id: map["user_id"],
       battletag: get_in(map, ["user", "accounts", "battlenet", "battletag"]),
       twitch: get_in(map, ["user", "accounts", "twitch"]),
       country_code: get_in(map, ["user", "country_code"]),

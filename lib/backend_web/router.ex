@@ -147,6 +147,7 @@ defmodule BackendWeb.Router do
     get "/config-vars/ueberauth", AdminController, :ueberauth_config_vars
     get "/check-new-region-data", AdminController, :check_new_region_data
     get "/mt-player-nationality/:tour_stop", AdminController, :mt_player_nationality
+    get "/fix-fantasy-mt-btag/:tour_stop", AdminController, :fantasy_fix_btag
     get "/recalculate_archetypes/:minutes_ago", AdminController, :recalculate_archetypes
   end
 

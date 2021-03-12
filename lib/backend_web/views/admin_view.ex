@@ -5,7 +5,8 @@ defmodule BackendWeb.AdminView do
   def render("index.html", %{conn: conn}) do
     dropdowns = [
       mt_player_nationality_dropdown(conn),
-      recalculate_archetypes_dropdown(conn)
+      recalculate_archetypes_dropdown(conn),
+      fantasy_mt_btag_dropdown(conn)
     ]
 
     links = [
@@ -51,5 +52,20 @@ defmodule BackendWeb.AdminView do
       end)
 
     {options, "MT Player Nationality"}
+  end
+
+  def fantasy_mt_btag_dropdown(conn) do
+    options =
+      TourStop.all()
+      |> Enum.map(fn ts -> ts.id end)
+      |> Enum.map(fn ts ->
+        %{
+          link: Routes.admin_path(conn, :fantasy_fix_btag, to_string(ts)),
+          display: to_string(ts),
+          selected: false
+        }
+      end)
+
+    {options, "Fantasy fix mt battletag"}
   end
 end

@@ -90,6 +90,19 @@ defmodule BackendWeb.AdminController do
     text(conn, response)
   end
 
+  def fantasy_fix_btag(conn, %{"tour_stop" => ts_string}) do
+    response =
+      ts_string
+      |> Backend.Fantasy.fix_mt_pick_battletag()
+      |> case do
+        {:ok, ret} -> ret
+        {:error, reason} -> reason
+      end
+      |> inspect(pretty: true)
+
+    text(conn, response)
+  end
+
   def check_new_region_data(conn, _) do
     csv =
       {2021, 1}
