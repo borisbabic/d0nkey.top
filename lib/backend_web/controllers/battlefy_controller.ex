@@ -19,11 +19,12 @@ defmodule BackendWeb.BattlefyController do
 
   defp earnings(params, tournament_id) do
     with true <- show_earnings?(params),
-         %{id: tour_stop} <-
+         ts = %{id: ts_id} <-
            Backend.MastersTour.TourStop.all()
            |> Enum.find(fn ts -> ts.battlefy_id == tournament_id end),
-         {:ok, season} <- Backend.Blizzard.get_promotion_season_for_gm(tour_stop),
-         earnings <- Backend.MastersTour.get_gm_money_rankings(season) do
+         {:ok, season} <- Backend.Blizzard.get_promotion_season_for_gm(ts_id),
+         {:ok, point_system} <- Backend.MastersTour.TourStop.gm_point_system(ts),
+         earnings <- Backend.MastersTour.get_gm_money_rankings(season, point_system) do
       {earnings, true}
     else
       _ -> {[], false}
