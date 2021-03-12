@@ -9,6 +9,7 @@ defmodule Components.Decklist do
   prop(name, :string, required: false)
   prop(show_cards, :boolean, default: true)
   prop(comparison, :any, required: false)
+  prop(show_hero, :any, default: true)
   slot(right_button)
 
   @spec deck_name(String.t() | nil, Deck.t(), Card.t()) :: String.t()
@@ -36,7 +37,7 @@ defmodule Components.Decklist do
     ~H"""
       <div>
 
-          <div class=" decklist-hero {{ class_class }}" style="margin-bottom: 0px;"> 
+          <div :if={{ @show_hero }} class=" decklist-hero {{ class_class }}" style="margin-bottom: 0px;"> 
               <div class="level is-mobile">
                   <div phx-click="deck_copied" phx-value-deckcode="{{ deck.deckcode }}" class="level-left"> 
                       {{ deckcode }}

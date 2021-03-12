@@ -15,11 +15,13 @@
             <%= if @show_earnings do %>
                 <th><abbr title="Earnings for the next season of GM">Earnings</abbr></th>
             <% end %>
-            <th>Decks</th>
+            <%= if @deck_num > 0 do %>
+                <th>Decks</th>
+            <% end %>
         </tr>
     </thead>
     <tbody>
-    <%= for %{earnings: earnings, pre_name_cell: pre_name_cell, place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing} <- @standings do %>
+    <%= for %{earnings: earnings, pre_name_cell: pre_name_cell, place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing, lineup: lineup} <- @standings do %>
         <tr>
             <td><%= place %></td>
             <td> <span><%= pre_name_cell %></span> <a href="<%= name_link%>"> 
@@ -44,7 +46,13 @@
             <%= if @show_earnings do %>
                 <td><%= earnings %></td>
             <% end %>
-            <td><a class="tag is-link" href="<%= hsdeckviewer %>">HSDeckViewer</a> <a class="tag is-link" href="<%= yaytears %>">yaytears</a></td>
+            <%= if @deck_num > 0 do %>
+                <td>
+                    <%= if lineup do %>
+                        <%= live_render(@conn, BackendWeb.ExpandableLineupLive, session: %{"lineup_id" => lineup.id, "classes" => lineup.decks |> Enum.map(& &1.class)}) %> 
+                    <% end %>
+                </td>
+            <% end %>
         </tr>
     <% end %>
     </tbody>

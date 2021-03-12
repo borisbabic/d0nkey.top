@@ -213,4 +213,6 @@ defmodule Backend.Hearthstone.Deck do
       _ -> {:error, "Couldn't decode deckcode"}
     end
   end
+
+  def sort(decks), do: decks |> Enum.sort_by(& &1.class)
 end

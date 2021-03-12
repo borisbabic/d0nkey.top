@@ -212,6 +212,16 @@ defmodule Backend.Hearthstone do
     Repo.one(query)
   end
 
+  def lineup(id) do
+    query =
+      from l in Lineup,
+        select: l,
+        preload: [:decks],
+        where: l.id == ^id
+
+    Repo.one(query)
+  end
+
   def create_lineup(attrs, decks) do
     %Lineup{}
     |> Lineup.changeset(attrs, decks)

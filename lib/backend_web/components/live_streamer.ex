@@ -4,6 +4,7 @@ defmodule Components.LiveStreamer do
   alias Hearthstone.Enums.BnetGameType
   use BackendWeb.ViewHelpers
   prop(live_streamer, :map, required: true)
+  slot(default)
 
   def render(assigns = %{live_streamer: s}) do
     game_type =

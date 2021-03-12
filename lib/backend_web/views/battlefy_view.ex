@@ -1,6 +1,8 @@
 defmodule BackendWeb.BattlefyView do
   require Logger
   use BackendWeb, :view
+  alias Backend.Hearthstone.Lineup
+  alias Backend.MastersTour
   alias Backend.Battlefy
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Match
@@ -387,6 +389,8 @@ defmodule BackendWeb.BattlefyView do
           earnings: earnings,
           show_earnings: show_earnings,
           show_ongoing: show_ongoing,
+          lineups: lineups,
+          show_lineups: show_lineups,
           matches: matches
         }
       ) do
@@ -394,7 +398,7 @@ defmodule BackendWeb.BattlefyView do
     is_tour_stop = tour_stop?(tournament)
 
     standings =
-      prepare_standings(standings_raw, tournament, ongoing, conn, is_tour_stop, earnings)
+      prepare_standings(standings_raw, tournament, ongoing, conn, is_tour_stop, earnings, lineups)
 
     highlight = if params.highlight == nil, do: [], else: params.highlight
     country_highlight = if params.country_highlight == nil, do: [], else: params.country_highlight
@@ -443,8 +447,9 @@ defmodule BackendWeb.BattlefyView do
       |> Enum.sort_by(fn p -> p.name end)
 
     dropdowns =
-      [get_ongoing_dropdown(conn, tournament, show_ongoing)] ++
-        if is_tour_stop, do: [get_earnings_dropdown(conn, tournament, show_earnings)], else: []
+      [get_ongoing_dropdown(conn, tournament, show_ongoing)]
+      # |> add_lineups_dropdown(conn, show_lineups, tournament)
+      |> add_earnings_dropdown(is_tour_stop, conn, tournament, show_earnings)
 
     render("tournament.html", %{
       standings: standings,
@@ -462,11 +467,52 @@ defmodule BackendWeb.BattlefyView do
       show_stage_selection: Enum.count(stages) > 1,
       show_ongoing: show_ongoing,
       show_earnings: show_earnings,
+      deck_num: max_decks(lineups),
       stage_selection_text:
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
   end
+
+  def add_earnings_dropdown(dds, false, _, _, _), do: dds
+
+  def add_earnings_dropdown(dds, true, conn, tournament, show_earnings),
+    do: dds ++ [get_earnings_dropdown(conn, tournament, show_earnings)]
+
+  def add_lineups_dropdown(dds, conn, show_lineups, tournament) do
+    dds ++
+      [
+        {[
+           %{
+             display: "Yes",
+             selected: show_lineups,
+             link:
+               Routes.battlefy_path(
+                 conn,
+                 :tournament,
+                 tournament.id,
+                 Map.put(conn.query_params, "show_lineups", "yes")
+               )
+           },
+           %{
+             display: "No",
+             selected: !show_lineups,
+             link:
+               Routes.battlefy_path(
+                 conn,
+                 :tournament,
+                 tournament.id,
+                 Map.put(conn.query_params, "show_lineups", "no")
+               )
+           }
+         ], "Show lineups"}
+      ]
+  end
+
+  defp max_decks(lineups = [%{decks: _} | _]),
+    do: lineups |> Enum.map(&(&1.decks |> Enum.count())) |> Enum.max()
+
+  defp max_decks(_), do: 0
 
   def get_ongoing_dropdown(conn, tournament, show_ongoing) do
     {[
@@ -535,11 +581,12 @@ defmodule BackendWeb.BattlefyView do
           [{String.t(), String.t()}],
           Plug.Conn,
           boolean,
-          MastersTour.gm_money_rankings()
+          MastersTour.gm_money_rankings(),
+          [Lineup.t()]
         ) :: [
           standings
         ]
-  def prepare_standings(nil, _, _, _, _, _), do: []
+  def prepare_standings(nil, _, _, _, _, _, _), do: []
 
   def prepare_standings(
         standings_raw,
@@ -547,8 +594,11 @@ defmodule BackendWeb.BattlefyView do
         ongoing,
         conn,
         use_countries,
-        earnings
+        earnings,
+        lineups
       ) do
+    lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
+
     standings_raw
     |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
     |> Enum.sort_by(fn s -> s.losses end)
@@ -576,6 +626,7 @@ defmodule BackendWeb.BattlefyView do
         losses: s.losses,
         ongoing: ongoing |> Map.get(s.team.name),
         hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, s.team.name),
+        lineup: lineup_map[s.team.name],
         yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, s.team.name)
       }
     end)

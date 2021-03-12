@@ -10,6 +10,7 @@ defmodule Backend.Battlefy do
   alias Backend.BattlefyUtil
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Lineup
+  alias Backend.Hearthstone.Deck
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
   @type region :: :Asia | :Europe | :Americas
@@ -579,7 +580,13 @@ defmodule Backend.Battlefy do
   @spec get_deckstrings(%{tournament_id: tournament_id, battletag_full: Blizzard.battletag()}) ::
           [Blizzard.deckstring()]
   def get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full}) do
-    with matches <- get_tournament_matches(tournament_id, round: 1),
+    with nil <-
+           Hearthstone.lineup(%{
+             tournament_id: tournament_id,
+             tournament_source: "battlefy",
+             name: battletag_full
+           }),
+         matches <- get_tournament_matches(tournament_id, round: 1),
          {match, position} <- get_team_match_position(matches, battletag_full) do
       deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
 
@@ -589,6 +596,7 @@ defmodule Backend.Battlefy do
       end
       |> Enum.map(&Backend.Battlefy.MatchDeckstrings.remove_comments/1)
     else
+      %{decks: decks} -> decks |> Enum.map(&Deck.deckcode/1)
       _ -> []
     end
   end
