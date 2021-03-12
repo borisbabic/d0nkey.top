@@ -324,4 +324,8 @@ defmodule Backend.MastersTour.TourStop do
   def get_start_time(ts) when is_binary(ts) or is_atom(ts), do: ts |> get() |> get_start_time()
   def get_start_time(%{start_time: start_time}), do: start_time
   def get_start_time(_), do: nil
+
+  def gm_point_system(%{year: 2020}), do: {:ok, :earnings_2020}
+  def gm_point_system(%{year: 2021}), do: {:ok, :points_2021}
+  def gm_point_system(_), do: {:error, :no_point_system}
 end

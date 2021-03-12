@@ -5,6 +5,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
+  alias Backend.MastersTour
 
   @type future_opponent_team :: %{
           name: String.t(),
