@@ -503,4 +503,6 @@ defmodule Backend.Blizzard do
         false
     end
   end
+
+  def ineligible?(_, nil), do: false
 end

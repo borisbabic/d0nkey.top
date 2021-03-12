@@ -209,6 +209,11 @@ defmodule Backend.MastersTour.TourStop do
     ]
   end
 
+  def get_by(attr, value) do
+    all()
+    |> Enum.find(&(value == &1 |> Map.get(attr)))
+  end
+
   def get(tour_stop, attr, default \\ nil)
       when (is_tour_stop(tour_stop) or is_binary(tour_stop)) and is_atom(attr) do
     tour_stop

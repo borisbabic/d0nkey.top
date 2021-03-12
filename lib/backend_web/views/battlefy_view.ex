@@ -143,20 +143,22 @@ defmodule BackendWeb.BattlefyView do
   def add_stats_dropdown(dropdowns, _, nil), do: dropdowns
 
   def add_stats_dropdown(dropdowns, conn, org) do
-    with stats_configs = [_ | _] <- org.slug |> Battlefy.organization_stats() do
-      options =
-        stats_configs
-        |> Enum.map(fn %{title: title, stats_slug: ss} ->
-          %{
-            selected: false,
-            display: title,
-            link: Routes.battlefy_path(conn, :organization_tournament_stats, ss)
-          }
-        end)
+    case org.slug |> Battlefy.organization_stats() do
+      stats_configs = [_ | _] ->
+        options =
+          stats_configs
+          |> Enum.map(fn %{title: title, stats_slug: ss} ->
+            %{
+              selected: false,
+              display: title,
+              link: Routes.battlefy_path(conn, :organization_tournament_stats, ss)
+            }
+          end)
 
-      dropdowns ++ [{options, "Stats"}]
-    else
-      _ -> dropdowns
+        dropdowns ++ [{options, "Stats"}]
+
+      _ ->
+        dropdowns
     end
   end
 
@@ -290,7 +292,7 @@ defmodule BackendWeb.BattlefyView do
   end
 
   def tour_stop?(%{id: id}),
-    do: Backend.MastersTour.TourStop.all() |> Enum.any?(fn ts -> ts.battlefy_id == id end)
+    do: !!Backend.MastersTour.TourStop.get_by(:battlefy_id, id)
 
   def render("class_match_stats.html", %{class: class, bans: 1}) do
     ~E"""
@@ -380,6 +382,7 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def render(
         "tournament.html",
         params = %{
@@ -390,7 +393,9 @@ defmodule BackendWeb.BattlefyView do
           show_earnings: show_earnings,
           show_ongoing: show_ongoing,
           lineups: lineups,
+          fantasy_picks: fantasy_picks,
           show_lineups: show_lineups,
+          highlight_fantasy: highlight_fantasy,
           matches: matches
         }
       ) do
@@ -402,12 +407,14 @@ defmodule BackendWeb.BattlefyView do
 
     highlight = if params.highlight == nil, do: [], else: params.highlight
     country_highlight = if params.country_highlight == nil, do: [], else: params.country_highlight
+    fantasy_highlight = if highlight_fantasy, do: fantasy_picks, else: []
 
     highlighted_standings =
       standings
       |> Enum.filter(fn s ->
         highlight |> Enum.member?(s.name) ||
-          (s.country != nil && country_highlight |> Enum.member?(s.country))
+          (s.country != nil && country_highlight |> Enum.member?(s.country)) ||
+          fantasy_highlight |> Enum.member?(s.name)
       end)
 
     duration_subtitle =
@@ -450,6 +457,7 @@ defmodule BackendWeb.BattlefyView do
       [get_ongoing_dropdown(conn, tournament, show_ongoing)]
       # |> add_lineups_dropdown(conn, show_lineups, tournament)
       |> add_earnings_dropdown(is_tour_stop, conn, tournament, show_earnings)
+      |> add_highlight_fantasy_dropdown(conn, highlight_fantasy, tournament, fantasy_picks)
 
     render("tournament.html", %{
       standings: standings,
@@ -473,6 +481,38 @@ defmodule BackendWeb.BattlefyView do
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
   end
+
+  def add_highlight_fantasy_dropdown(dds, conn, highlight_fantasy, tournament, [_ | _]) do
+    dds ++
+      [
+        {[
+           %{
+             display: "Yes",
+             selected: highlight_fantasy,
+             link:
+               Routes.battlefy_path(
+                 conn,
+                 :tournament,
+                 tournament.id,
+                 Map.put(conn.query_params, "highlight_fantasy", "yes")
+               )
+           },
+           %{
+             display: "No",
+             selected: !highlight_fantasy,
+             link:
+               Routes.battlefy_path(
+                 conn,
+                 :tournament,
+                 tournament.id,
+                 Map.put(conn.query_params, "highlight_fantasy", "no")
+               )
+           }
+         ], "Highlight Fantasy Picks"}
+      ]
+  end
+
+  def add_highlight_fantasy_dropdown(dds, _, _, _, _), do: dds
 
   def add_earnings_dropdown(dds, false, _, _, _), do: dds
 
