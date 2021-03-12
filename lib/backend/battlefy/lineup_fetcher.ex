@@ -1,4 +1,5 @@
 defmodule Backend.Battlefy.LineupFetcher do
+  @moduledoc false
   use Oban.Worker, queue: :battlefy_lineups, unique: [period: 360]
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
@@ -30,7 +31,7 @@ defmodule Backend.Battlefy.LineupFetcher do
     )
   end
 
-  def insert(_, _), do: nil
+  def insert(_, _, _), do: nil
 
   @spec enqueue_jobs(Tournament.t() | String.t()) :: {:ok, [Oban.Job.t()]} | {:error, any()}
   def enqueue_jobs(%Tournament{id: id}), do: enqueue_jobs(id)
