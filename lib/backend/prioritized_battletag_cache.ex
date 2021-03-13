@@ -39,8 +39,17 @@ defmodule Backend.PrioritizedBattletagCache do
   @spec get_long_or_short([String.t()] | String.t()) :: Battletag.t() | nil
   def get_long_or_short(list) when is_list(list), do: list |> Enum.find(nil, &get_long_or_short/1)
 
-  def get_long_or_short(bt) when is_binary(bt),
-    do: get(bt) || bt |> InvitedPlayer.shorten_battletag() |> get()
+  def get_long_or_short(bt) when is_binary(bt) do
+    full = get(bt)
+    shortened = bt |> InvitedPlayer.shorten_battletag() |> get()
+
+    case {full, shortened} do
+      {nil, s} -> s
+      {f, nil} -> f
+      {%{priority: fp}, s = %{priority: sp}} when fp < 5000 and sp >= 5000 -> s
+      {f, _} -> f
+    end
+  end
 
   @spec get([String.t()] | String.t()) :: Battletag.t() | nil
   def get(list) when is_list(list), do: list |> Enum.find(nil, &get/1)
