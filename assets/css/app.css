@@ -251,6 +251,10 @@
   opacity: 0.69;
 }
 
+.disqualified-player {
+  text-decoration: line-through;
+}
+
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/
 /*}*/

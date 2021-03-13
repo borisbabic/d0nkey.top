@@ -21,11 +21,13 @@
         </tr>
     </thead>
     <tbody>
-    <%= for %{earnings: earnings, pre_name_cell: pre_name_cell, place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing, lineup: lineup} <- @standings do %>
+    <%= for %{earnings: earnings, name_class: name_class, pre_name_cell: pre_name_cell, place: place, name: name, hsdeckviewer: hsdeckviewer, yaytears: yaytears, score: score, name_link: name_link, ongoing: ongoing, lineup: lineup} <- @standings do %>
         <tr>
             <td><%= place %></td>
-            <td> <span><%= pre_name_cell %></span> <a href="<%= name_link%>"> 
+            <td> <span ><%= pre_name_cell %></span> <a href="<%= name_link%>"> 
+                    <span class="<%= name_class %>">
                     <%= render_player_name(name) %>
+                    </span>
             </a></td>
             <%= if @show_score do %>
                 <td><%=score%></td>
