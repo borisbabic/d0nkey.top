@@ -659,6 +659,7 @@ defmodule BackendWeb.BattlefyView do
         place: if(s.place && s.place > 0, do: s.place, else: "?"),
         country: country,
         name: s.team.name,
+        name_class: if(s.disqualified, do: "disqualified-player", else: ""),
         earnings: player_earnings(earnings, s.team.name),
         pre_name_cell: pre_name_cell,
         name_link: Routes.battlefy_path(conn, :tournament_player, tournament_id, s.team.name),
