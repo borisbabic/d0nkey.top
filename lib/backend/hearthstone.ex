@@ -25,24 +25,26 @@ defmodule Backend.Hearthstone do
 
   def deck(%{id: id}) when is_integer(id), do: deck(id)
   def deck(%{cards: cards, hero: hero, format: format}), do: deck(cards, hero, format)
-  def deck(id), do: Repo.get(Deck, id)
+  def deck(id) when is_integer(id), do: Repo.get(Deck, id)
 
-  def deck(cards, hero, format) do
-    class = hero |> Backend.HearthstoneJson.get_class()
+  def deck(id_or_deckcode) when is_binary(id_or_deckcode) do
+    id_or_deckcode
+    |> Integer.parse()
+    |> case do
+      {id, _} ->
+        deck(id)
 
-    query =
-      from d in Deck,
-        where:
-          fragment("? @> ?", d.cards, ^cards) and
-            fragment("? <@ ?", d.cards, ^cards) and
-            d.format == ^format and
-            d.class == ^class,
-        select: d,
-        order_by: [desc: :updated_at],
-        limit: 1
+      _ ->
+        query =
+          from d in Deck,
+            where: d.deckcode == ^id_or_deckcode,
+            limit: 1
 
-    Repo.one(query)
+        Repo.one(query)
+    end
   end
+
+  def deck(cards, hero, format), do: Deck.deckcode(cards, hero, format) |> deck()
 
   def create_deck(cards, hero, format) do
     temp_attrs = %{cards: cards, hero: hero, format: format, class: class(hero)}
