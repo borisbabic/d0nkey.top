@@ -1,7 +1,9 @@
 defmodule Components.RosterModal do
+  @moduledoc false
   use Surface.LiveComponent
   alias Backend.Fantasy.LeagueTeam
   alias Backend.Fantasy.League
+  alias BackendWeb.Router.Helpers, as: Routes
 
   prop(show_modal, :boolean, default: false)
   prop(league_team, :map, required: true)
@@ -25,6 +27,7 @@ defmodule Components.RosterModal do
               <ul :for={{ {pick_name, points} <- picks_with_points(@league_team, @include_points) }}>
                 <li><span :if={{ @include_points }}>{{ points }} - </span>{{ show_pick_name(@league_team, user, pick_name) }}</li>
               </ul>
+              <a target="_blank" :if={{ standings_link = standings_link(@league_team) }} class="button is-link " href="{{ standings_link }}">View in standings</a>
             </section>
           </div>
         </div>
@@ -32,6 +35,29 @@ defmodule Components.RosterModal do
     </Context>
     """
   end
+
+  def standings_link(%{
+        picks: picks = [_ | _],
+        league: %{competition_type: "masters_tour", competition: ts}
+      }) do
+    ts
+    |> Backend.MastersTour.TourStop.get()
+    |> case do
+      %{battlefy_id: battlefy_id} when not is_nil(battlefy_id) ->
+        params =
+          picks
+          |> Enum.reduce(%{"highlight_fantasy" => "no", "player" => %{}}, fn %{pick: p}, carry ->
+            carry |> put_in(["player", p], true)
+          end)
+
+        Routes.battlefy_path(BackendWeb.Endpoint, :tournament, battlefy_id, params)
+
+      _ ->
+        nil
+    end
+  end
+
+  def standings_link(_), do: nil
 
   defp show_pick_name(
          lt = %{league: league = %{real_time_draft: false, draft_deadline: dd}},
