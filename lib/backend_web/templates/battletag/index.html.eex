@@ -1,6 +1,7 @@
 <section id="torch-toolbar">
   <div class="torch-container">
     <%= link "New Battletag", to: Routes.battletag_path(@conn, :new) %>
+    <%= link "Batch Insert ", to: Routes.battletag_path(@conn, :batch) %>
   </div>
 </section>
 <section id="torch-index-content">

@@ -3,6 +3,7 @@ defmodule BackendWeb.BattletagController do
 
   alias Backend.Battlenet
   alias Backend.Battlenet.Battletag
+  require Logger
 
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
   plug(Backend.Plug.AdminAuth, role: :battletag_info)
@@ -25,6 +26,36 @@ defmodule BackendWeb.BattletagController do
     changeset = Battlenet.change_battletag(%Battletag{})
     render(conn, "new.html", changeset: changeset)
   end
+
+  def batch(conn, _params) do
+    render(conn, "batch.html")
+  end
+
+  def batch_insert(conn, %{"batch" => batch}) do
+    reported_by = reported_by(conn, batch)
+    batch_insert(batch, "battletag_full", reported_by)
+    batch_insert(batch, "battletag_short", reported_by)
+    redirect(conn, to: Routes.battletag_path(conn, :index))
+  end
+
+  def batch_insert(p = %{"country" => country, "priority" => priority}, split_attr, rb) do
+    base_attrs = %{"country" => country, "priority" => priority, "reported_by" => rb}
+
+    p[split_attr]
+    # |> String.split(~r/\R/) would break chinese characters so I use the below two lines instead
+    |> String.replace("\r", "")
+    |> String.split("\n")
+    |> Enum.map(&String.trim/1)
+    |> Enum.filter(&(&1 != ""))
+    |> Enum.map(fn btf ->
+      base_attrs
+      |> Map.put(split_attr, btf)
+      |> Battlenet.create_battletag()
+    end)
+  end
+
+  def reported_by(_, %{"reported_by" => rb}) when is_binary(rb) and bit_size(rb) > 0, do: rb
+  def reported_by(conn, _), do: conn |> BackendWeb.AuthUtils.battletag()
 
   def create(conn, %{"battletag" => battletag_params}) do
     battletag_params
