@@ -24,15 +24,15 @@ defmodule Backend.PrioritizedBattletagCache do
 
     all
     |> Enum.filter(& &1.battletag_full)
-    |> Enum.group_by(& &1.battletag_short)
+    |> Enum.group_by(& &1.battletag_full)
     |> add_max(table)
   end
 
   defp add_max(grouped, table) do
     grouped
-    |> Enum.each(fn {_, list} ->
+    |> Enum.each(fn {bt, list} ->
       max = list |> Enum.max_by(& &1.priority)
-      :ets.insert(table, {max.battletag_short, max})
+      :ets.insert(table, {bt, max})
     end)
   end
 
@@ -42,6 +42,8 @@ defmodule Backend.PrioritizedBattletagCache do
   def get_long_or_short(bt) when is_binary(bt) do
     full = get(bt)
     shortened = bt |> InvitedPlayer.shorten_battletag() |> get()
+
+    {full, shortened}
 
     case {full, shortened} do
       {nil, s} -> s
