@@ -22,14 +22,13 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @doc false
-  def changeset(c, attrs = %{deckcode: d}) when not is_nil(d) do
+  def changeset(c, a) do
+    attrs = Map.put(a, :deckcode, deckcode(a))
+
     c
     |> cast(attrs, @required ++ @optional)
     |> validate_required(@required)
   end
-
-  @doc false
-  def changeset(c, a), do: changeset(c, a |> Map.put(:deckcode, deckcode(a)))
 
   @spec deckcode(Deck) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f}), do: deckcode(c, h, f)
