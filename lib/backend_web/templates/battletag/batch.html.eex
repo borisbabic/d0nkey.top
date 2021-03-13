@@ -1,0 +1,58 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "Cancel", to: Routes.battletag_path(@conn, :index), class: "torch-button" %>
+  </div>
+</section>
+
+<section id="torch-header-and-content">
+  <div class="torch-container">
+    <div class="header">
+      <h3>Batch Insert</h3>
+    </div>
+
+    <%= form_for :batch, Routes.battletag_path(@conn, :batch_insert), [multipart: true, id: "torch-form"], fn f -> %>
+      <fieldset class="torch-panel">
+        <legend>
+          <span>Details</span>
+        </legend>
+      
+        <div class="torch-form-group">
+          <%= label f, "Battletag Full (with numbers) - one per line"%>
+          <%= textarea f, :battletag_full %>
+          <%= error_tag f, :battletag_full %>
+        </div>
+      
+        <div class="torch-form-group">
+          <%= label f, "Battletag Short (without numbers) - one per line"%>
+          <%= textarea f, :battletag_short %>
+          <%= error_tag f, :battletag_short %>
+        </div>
+      
+        <div class="torch-form-group">
+          <%= label f, :country %>
+          <%= text_input f, :country %>
+          <%= error_tag f, :country %>
+        </div>
+      
+        <div class="torch-form-group">
+          <%= label f, :priority %>
+          <%= number_input f, :priority, value: 5000 %>
+          <%= error_tag f, :priority %>
+        </div>
+
+        <%= if can_access?(@conn, "super") do %>
+          <div class="torch-form-group">
+            <%= label f, :reported_by %>
+            <%= text_input f, :reported_by %>
+            <%= error_tag f, :reported_by %>
+          </div>
+        <% end %>
+        
+      
+        <div class="torch-submit-form">
+          <%= submit "Submit", class: "torch-submit-button" %>
+        </div>
+      </fieldset>
+    <% end %>
+  </div>
+</section>

@@ -131,6 +131,8 @@ defmodule BackendWeb.Router do
 
   scope "/torch", BackendWeb do
     pipe_through [:browser, :auth]
+    get "/battletag_info/batch", BattletagController, :batch
+    post "/battletag_info/batch-insert", BattletagController, :batch_insert
     resources "/battletag_info", BattletagController
     resources "/users", UserController
     resources "/invited_player", InvitedPlayerController
