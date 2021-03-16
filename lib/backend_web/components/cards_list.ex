@@ -6,6 +6,7 @@ defmodule Components.CardsList do
   alias Backend.UserManager.User
   prop(cards, :list, required: true)
   prop(comparison, :any, required: false, default: nil)
+  prop(highlight_rotation, :boolean, required: false)
   prop(deck_class, :string, required: false, default: "NEUTRAL")
 
   def render(assigns = %{cards: cards, comparison: comparison}) when is_list(comparison) do
@@ -45,10 +46,20 @@ defmodule Components.CardsList do
     ~H"""
       <Context get={{ user: user }}>
         <div class="decklist_card_container" :for ={{ {card, count} <- cards }}>
-            <DecklistCard show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ card }} count={{ count }} decklist_options={{ User.decklist_options(user) }}/>
+            <div class="{{ rotation_class(@highlight_rotation, card) }}">
+              <DecklistCard show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ card }} count={{ count }} decklist_options={{ User.decklist_options(user) }}/>
+            </div>
         </div>
       </Context>
     """
+  end
+
+  def rotation_class(highlight, card) do
+    if highlight && Backend.Hearthstone.rotating?(card) do
+      "not-in-list"
+    else
+      ""
+    end
   end
 
   defp comparison_class(%{rarity: "LEGENDARY"}, _), do: "card-comparison-legendary"

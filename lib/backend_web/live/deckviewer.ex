@@ -17,6 +17,7 @@ defmodule BackendWeb.DeckviewerLive do
   data(deckcodes, :any)
   data(current_link, :string)
   data(compare_decks, :boolean)
+  data(rotation, :boolean)
   data(user, :any)
   require WaitForIt
 
@@ -62,6 +63,9 @@ defmodule BackendWeb.DeckviewerLive do
               <div :if={{ cd || @deckcodes |> Enum.count() > 1}} class="column is-narrow">
                 <button phx-click="toggle_compare" class="button" type="button">{{ compare_button_text(@compare_decks) }}</button>
               </div>
+              <div :if={{ false && @deckcodes |> Enum.count() > 0}} class="column is-narrow">
+                <button :on-click="toggle_rotation" class="button" type="button">{{ rotation_text(@rotation) }}</button>
+              </div>
 
               <div class= "column is-narrow" :if={{ @deckcodes |> Enum.any?() }}>
                 <a class="is-link tag" href="{{ Yaytears.create_deckstrings_link(@deckcodes)  }}">
@@ -75,7 +79,7 @@ defmodule BackendWeb.DeckviewerLive do
         </Form>
         <div class="columns is-mobile is-multiline">
           <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}} :if={{@compare_decks == @compare_decks}}>
-            <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}" comparison={{ comparison }}>
+            <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}" comparison={{ comparison }} highlight_rotation={{ @rotation |> IO.inspect()}}>
               <template slot="right_button">
                 <a class="delete" phx-click="delete" phx-value-index={{ index }}/>
               </template>
@@ -86,6 +90,9 @@ defmodule BackendWeb.DeckviewerLive do
     </Context>
     """
   end
+
+  def rotation_text(true), do: "Hide Rotation"
+  def rotation_text(false), do: "Show Rotation"
 
   def compare_button_text(true), do: "Stop Comparing"
   def compare_button_text(false), do: "Compare Decks"
@@ -106,12 +113,15 @@ defmodule BackendWeb.DeckviewerLive do
 
     compare_decks = params["compare_decks"] == "true"
 
+    rotation = params["rotation"] == "true"
+
     {
       :noreply,
       socket
       |> assign(:deckcodes, codes)
       |> assign(:current_link, current_link)
       |> assign(:compare_decks, compare_decks)
+      |> assign(:rotation, rotation)
       |> assign(:new_deck, "")
     }
   end
@@ -188,11 +198,23 @@ defmodule BackendWeb.DeckviewerLive do
     }
   end
 
+  def handle_event("toggle_rotation", _, socket = %{assigns: %{rotation: rt}}) do
+    {
+      :noreply,
+      socket
+      |> push_patch(
+        to:
+          Routes.live_path(socket, __MODULE__, current_params(socket) |> add_rotation_param(!rt))
+      )
+    }
+  end
+
   defp current_params(%{assigns: assigns}), do: current_params(assigns)
 
   defp current_params(assigns) do
     %{}
     |> add_existing_code(assigns)
+    |> add_rotation(assigns)
     |> add_existing_compare_decks(assigns)
   end
 
@@ -201,6 +223,11 @@ defmodule BackendWeb.DeckviewerLive do
 
   defp add_existing_compare_decks(map, %{compare_decks: cd}), do: add_compare_param(map, cd)
   defp add_existing_compare_decks(map, _), do: map
+
+  defp add_rotation(map, %{rotation: rt}), do: add_rotation_param(map, rt)
+  defp add_rotation(map, _), do: map
+
+  defp add_rotation_param(map, rt), do: map |> Map.put("rotation", rt)
 
   defp add_compare_param(map, cd), do: map |> Map.put("compare_decks", cd)
   defp add_code_param(map, deckcodes), do: map |> Map.put("code", deckcodes |> codes_to_param())

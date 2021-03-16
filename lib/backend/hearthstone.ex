@@ -5,6 +5,8 @@ defmodule Backend.Hearthstone do
   alias Backend.Repo
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.Lineup
+  alias Backend.HearthstoneJson
+  alias Backend.HearthstoneJson.Card
   require Logger
 
   @spec create_or_get_deck(String.t() | Deck.t()) :: {:ok, Deck.t()} | {:error, any()}
@@ -64,7 +66,7 @@ defmodule Backend.Hearthstone do
   end
 
   def class(%{hero: hero}), do: class(hero)
-  def class(dbf_id), do: Backend.HearthstoneJson.get_class(dbf_id)
+  def class(dbf_id), do: HearthstoneJson.get_class(dbf_id)
 
   def add_class_and_regenerate_deckcode() do
     decks([{"class", nil}])
@@ -177,7 +179,7 @@ defmodule Backend.Hearthstone do
   defp cost_for_sort(%{cost: cost}), do: cost
   defp cost_for_sort(_), do: nil
 
-  def get_card(dbf_id), do: Backend.HearthstoneJson.get_card(dbf_id)
+  def get_card(dbf_id), do: HearthstoneJson.get_card(dbf_id)
 
   @spec get_or_create_lineup(String.t() | integer(), String.t(), String.t(), [String.t()]) ::
           {:ok, Lineup.t()} | {:error, any()}
@@ -239,5 +241,34 @@ defmodule Backend.Hearthstone do
 
     query
     |> Repo.all()
+  end
+
+  def rotating?(card) do
+    cond do
+      staying_in_core?(card) ->
+        false
+
+      card.set in [
+        "DEMON_HUNTER_INITIATE",
+        "YEAR_OF_THE_DRAGON",
+        "DRAGONS",
+        "ULDUM",
+        "BLACK_TEMPLE",
+        "CORE",
+        "EXPERT1"
+      ] ->
+        true
+
+      true ->
+        false
+    end
+  end
+
+  def staying_in_core?(card) do
+    false
+    # HearthstoneJson.collectible_cards()
+    # |> Enum.filter(&1.set == ????)
+    # |> Enum.find(& &1.name == card.name)
+    # |> Card.same_effect?(card)
   end
 end
