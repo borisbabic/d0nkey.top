@@ -9,6 +9,7 @@ defmodule Components.Decklist do
   prop(name, :string, required: false)
   prop(show_cards, :boolean, default: true)
   prop(comparison, :any, required: false)
+  prop(highlight_rotation, :boolean, default: false)
   prop(show_hero, :any, default: true)
   slot(right_button)
 
@@ -53,7 +54,7 @@ defmodule Components.Decklist do
               </div>
           </div>
           <div :if={{ @show_cards }}>
-            <CardsList comparison={{ @comparison }} cards={{ deck.cards }} deck_class={{ deck_class }}/>
+            <CardsList comparison={{ @comparison }} cards={{ deck.cards }} deck_class={{ deck_class }} highlight_rotation={{ @highlight_rotation }}/>
           </div>
           <span style="font-size: 0; line-size:0; display:block">
             # You really like to select a lot of stuff, don't ya you beautiful being! 🤎 D0nkey
