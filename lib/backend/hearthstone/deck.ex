@@ -44,7 +44,7 @@ defmodule Backend.Hearthstone.Deck do
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
-    ([0, 1, format, 1, hero] ++
+    ([0, 1, format, 1, get_canonical_hero(hero)] ++
        deckcode_part(cards[1]) ++
        deckcode_part(cards[2]) ++
        [0])
@@ -146,7 +146,17 @@ defmodule Backend.Hearthstone.Deck do
   def format_name(2), do: "Standard"
   def format_name(9001), do: "Duels"
 
-  @spec get_basic_hero(String.t()) :: integer
+  def get_canonical_hero(hero) when is_integer(hero) do
+    hero
+    |> Backend.HearthstoneJson.get_class()
+    |> case do
+      class when is_binary(class) -> get_basic_hero(class)
+      _ -> hero
+    end
+  end
+
+  @spec get_basic_hero(String.t() | integer) :: integer
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_basic_hero(class) do
     class
     |> normalize_class_name()
@@ -166,12 +176,14 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  """
+  @doc """
   Converts it to single word upper case
 
   ## Example
-  iex> Backend.Hearhtsotne.normalize_class_name("Demon HuNter")
+  iex> Backend.Hearthstone.Deck.normalize_class_name("Demon    HuNter")
   "DEMONHUNTER"
+  iex> Backend.Hearthstone.Deck.normalize_class_name("ROGUE")
+  "ROGUE"
 
   """
 
@@ -180,7 +192,7 @@ defmodule Backend.Hearthstone.Deck do
     do:
       class
       |> String.upcase()
-      |> String.replace(~r/\w/, "")
+      |> String.replace(~r/\s/, "")
 
   def normalize_class_name(not_string), do: not_string
 
