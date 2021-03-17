@@ -1,5 +1,6 @@
 defmodule Backend.Doctest do
   use ExUnit.Case, async: true
+  doctest Backend.Hearthstone.Deck
   doctest Backend.Blizzard
   doctest BackendWeb.LeaderboardView
   doctest Backend.Battlefy
@@ -7,7 +8,6 @@ defmodule Backend.Doctest do
   doctest Backend.MastersTour.PlayerStats
   doctest Backend.TournamentStats
   doctest Backend.TournamentStats.TeamStats
-  doctest Backend.Hearthstone.Deck
   doctest Backend.HSDeckViewer
   doctest Backend.Yaytears
 end
