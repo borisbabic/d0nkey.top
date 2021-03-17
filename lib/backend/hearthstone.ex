@@ -249,12 +249,19 @@ defmodule Backend.Hearthstone do
         false
 
       card.set in [
+        # Initiate
         "DEMON_HUNTER_INITIATE",
+        # Galakronds Awakening
         "YEAR_OF_THE_DRAGON",
+        # Descent of Dragons
         "DRAGONS",
+        # Saviors of UIlduum
         "ULDUM",
-        "BLACK_TEMPLE",
+        # Rise of Shadows
+        "DALARAN",
+        # Basic
         "CORE",
+        # Classic
         "EXPERT1"
       ] ->
         true
