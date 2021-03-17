@@ -256,6 +256,13 @@ defmodule Backend.Battlefy.MatchDeckstrings do
     }
   end
 
+  def from_raw_map(_) do
+    %__MODULE__{
+      top: [],
+      bottom: []
+    }
+  end
+
   # todo move to blizzard or hearthstone
   def remove_comments(deckstring) do
     deckstring
