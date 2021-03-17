@@ -111,8 +111,9 @@ defmodule Backend.MastersTour do
   end
 
   def warmup_stats_cache() do
-    [2020]
+    [2020, 2021]
     |> Enum.flat_map(fn y -> [y | Backend.Blizzard.get_tour_stops_for_year(y)] end)
+    |> List.insert_at(0, :all)
     |> Enum.each(&Backend.MastersTour.get_player_stats/1)
   end
 
@@ -121,6 +122,17 @@ defmodule Backend.MastersTour do
     ret = {stats, Enum.count(qualifiers)}
     PlayerStatsCache.set(period, ret)
     ret
+  end
+
+  def get_player_stats(:all) do
+    case PlayerStatsCache.get(:all) do
+      nil ->
+        list_qualifiers()
+        |> create_and_cache_stats(:all)
+
+      s ->
+        s
+    end
   end
 
   def get_player_stats(tour_stop) when is_atom(tour_stop) do
@@ -145,6 +157,16 @@ defmodule Backend.MastersTour do
       s ->
         s
     end
+  end
+
+  @spec list_qualifiers() :: [Qualifier]
+  def list_qualifiers() do
+    query =
+      from q in Qualifier,
+        select: q,
+        order_by: [desc: q.start_time]
+
+    query |> Repo.all()
   end
 
   @spec list_qualifiers_for_player(Blizzard.battletag()) :: [Qualifier]
@@ -206,6 +228,8 @@ defmodule Backend.MastersTour do
     tour_stop
     |> TourStop.get_year()
     |> PlayerStatsCache.delete()
+
+    PlayerStatsCache.delete(:all)
   end
 
   def qualifiers_update() do
