@@ -334,7 +334,7 @@ defmodule BackendWeb.MastersTourView do
         {columns, _} when is_list(columns) ->
           sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
 
-        {_, ts} when is_atom(period) ->
+        {_, ts} when is_atom(period) and period != :all ->
           ["Player", "Cups", "Top 8", to_string(ts), "Winrate %"]
 
         _ ->
@@ -359,10 +359,10 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     ts_list =
-      (eligible_years() ++ eligible_tour_stops())
+      ([:all] ++ eligible_years() ++ eligible_tour_stops())
       |> Enum.map(fn ts ->
         %{
-          display: ts,
+          display: ts |> period_title(),
           selected: to_string(ts) == to_string(period),
           link:
             Routes.masters_tour_path(
@@ -414,7 +414,7 @@ defmodule BackendWeb.MastersTourView do
 
     dropdowns = [
       limit_dropdown,
-      {ts_list, period},
+      {ts_list, period |> period_title},
       {min_list, "Min #{min_to_show} cups"},
       {show_flags_list, "Show Country Flags"}
     ]
@@ -431,7 +431,7 @@ defmodule BackendWeb.MastersTourView do
       end)
 
     render("qualifier_stats.html", %{
-      title: "#{period} qualifier stats",
+      title: "#{period |> period_title()} qualifier stats",
       subtitle: "Total cups: #{total}",
       headers: headers,
       rows: rows,
@@ -445,6 +445,9 @@ defmodule BackendWeb.MastersTourView do
       dropdowns: dropdowns
     })
   end
+
+  def period_title(:all), do: "2020-2021"
+  def period_title(period), do: period
 
   def filter_countries(target, []), do: target
 
