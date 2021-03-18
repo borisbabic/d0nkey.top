@@ -16,7 +16,7 @@ defmodule Backend.MastersTour.TourStop do
         :Montréal,
         :Madrid,
         :Ironforge,
-        :Ogrimmar,
+        :Orgrimmar,
         :Dalaran,
         :Silvermoon,
         :Stormwind,
@@ -152,7 +152,7 @@ defmodule Backend.MastersTour.TourStop do
         year: 2021
       },
       %__MODULE__{
-        id: :Ogrimmar,
+        id: :Orgrimmar,
         battlefy_id: nil,
         ladder_priority: :timezone,
         ladder_seasons: [88, 89],

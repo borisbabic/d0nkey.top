@@ -16,7 +16,7 @@ defmodule Backend.Blizzard do
           | :Montréal
           | :Madrid
           | :Ironforge
-          | :Ogrimmar
+          | :Orgrimmar
           | :Dalaran
           | :Silvermoon
           | :Stormwind
@@ -326,10 +326,10 @@ defmodule Backend.Blizzard do
         {:ok, [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid]}
 
       {2021, 2} ->
-        {:ok, [:"Asia-Pacific", :Montréal, :Madrid, :Ironforge, :Ogrimmar, :Dalaran]}
+        {:ok, [:"Asia-Pacific", :Montréal, :Madrid, :Ironforge, :Orgrimmar, :Dalaran]}
 
       {2022, 1} ->
-        {:ok, [:Ironforge, :Ogrimmar, :Dalaran, :Silvermoon, :Stormwind, :Undercity]}
+        {:ok, [:Ironforge, :Orgrimmar, :Dalaran, :Silvermoon, :Stormwind, :Undercity]}
 
       _ ->
         {:error, "Unknown/unsupported gm_season"}
@@ -350,7 +350,7 @@ defmodule Backend.Blizzard do
       :Montréal -> {:ok, {2021, 1}}
       :Madrid -> {:ok, {2021, 1}}
       :Ironforge -> {:ok, {2021, 2}}
-      :Ogrimmar -> {:ok, {2021, 2}}
+      :Orgrimmar -> {:ok, {2021, 2}}
       :Dalaran -> {:ok, {2021, 2}}
       :Silvermoon -> {:ok, {2022, 1}}
       :Stormwind -> {:ok, {2022, 1}}
