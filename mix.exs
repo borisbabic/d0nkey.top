@@ -72,6 +72,7 @@ defmodule Backend.MixProject do
       {:torch, "~> 3.4"},
       {:oban, "~> 2.5"},
       {:postgrex_pubsub, "~> 0.2.0"},
+      {:phoenix_meta_tags, ">= 0.1.8"},
       {:quantum, "~> 2.3"}
     ]
   end
