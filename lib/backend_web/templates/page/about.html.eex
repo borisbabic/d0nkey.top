@@ -20,25 +20,22 @@
   <div class="content">
     <ul>
         <li>
-            <a class="is-link" href="https://rerootgaming.com/">reroot gaming</a> - My esports Team!
+            <a class="is-link" href="/twitter">twitter</a>
         </li>
         <li>
-            <a class="is-link" href="<%= Constants.twitter() %>">twitter</a>
+            <a class="is-link" href="/discord">discord</a>
         </li>
         <li>
-            <a class="is-link" href="<%= Constants.discord() %>">discord</a>
+            <a class="is-link" href="/twitch">twitch</a>
         </li>
         <li>
-            <a class="is-link" href="<%= Constants.twitch() %>">twitch</a>
+            <a class="is-link" href="/paypal">paypal</a>
         </li>
         <li>
-            <a class="is-link" href="<%= Constants.paypal() %>">paypal</a>
+            <a class="is-link" href="/patreon">patreon</a>
         </li>
         <li>
-            <a class="is-link" href="<%= Constants.patreon() %>">patreon</a>
-        </li>
-        <li>
-            <a class="is-link" href="<%= Constants.liberapay() %>">liberapay</a>
+            <a class="is-link" href="/liberapay">liberapay</a>
         </li>
     </ul>
   </div>
