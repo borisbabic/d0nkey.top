@@ -16,6 +16,7 @@
     <%= unless user(@conn)  |> Backend.UserManager.User.hide_ads?() do %>
       <script data-ad-client="ca-pub-8835820092180114" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <% end %>
+    <%= render_tags_all(assigns[:meta_tags] || %{}) %>
   </head>
   <%= render("navbar.html", %{conn: @conn, handle_user: true}) %>
   <body>

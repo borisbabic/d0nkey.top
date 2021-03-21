@@ -33,7 +33,7 @@ defmodule BackendWeb.DeckLive do
         _ -> []
       end
 
-    {:noreply, socket |> assign(deck: deck)}
+    {:noreply, socket |> assign(deck: deck) |> assign_meta()}
   end
 
   def render(assigns = %{deck: _}) do
@@ -59,5 +59,13 @@ defmodule BackendWeb.DeckLive do
     <h2>Whooops</h2>
     Invalid deck, please go back, queue wild, or try again
     """
+  end
+
+  def assign_meta(socket = %{assigns: %{deck: deck}}) do
+    socket
+    |> assign_meta_tags(%{
+      description: deck |> Deck.deckcode(),
+      title: deck.class |> Deck.class_name()
+    })
   end
 end

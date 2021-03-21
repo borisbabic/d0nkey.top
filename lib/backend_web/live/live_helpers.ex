@@ -22,4 +22,9 @@ defmodule BackendWeb.LiveHelpers do
   end
 
   def load_user(_), do: nil
+
+  def assign_meta_tags(socket, new_tags = %{}) do
+    meta = (get_in(socket.assigns, [:meta_tags]) || %{}) |> Map.merge(new_tags)
+    socket |> assign(:meta_tags, meta)
+  end
 end

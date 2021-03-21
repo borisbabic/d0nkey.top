@@ -87,6 +87,11 @@ config :backend, Oban,
   plugins: [Oban.Plugins.Pruner],
   queues: [default: 10, battlefy_lineups: 20]
 
+config :phoenix_meta_tags,
+  title: "d0nkey",
+  description: "Hearthstone Streamer Decks and Esports Info",
+  url: "d0nkey.top"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

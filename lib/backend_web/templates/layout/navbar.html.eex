@@ -15,9 +15,9 @@
      <div class="navbar-start">
         <div class="navbar-item has-dropdown is-hoverable">
           <%= if @user do %>
-            <a class="navbar-link"><%= @user %></a>
+            <div class="navbar-link"><%= @user %></div>
           <% else %>
-            <a class="navbar-link"><i class="far fa-user"></i></a>
+            <div class="navbar-link"><i class="far fa-user"></i></div>
           <% end %>
           <div class="navbar-dropdown">
             <%= if @user do %>
@@ -62,9 +62,9 @@
          </div>
        </div>
        <div class="navbar-item has-dropdown is-hoverable">
-         <a class="navbar-link">
+         <div class="navbar-link">
            Masters Tour
-         </a>
+         </div>
 
          <div class="navbar-dropdown">
            <a class="navbar-item" href='<%=Routes.masters_tour_path(@conn, :invited_players) %>'>Invited</a>
@@ -76,9 +76,9 @@
          </div>
        </div>
        <div class="navbar-item has-dropdown is-hoverable">
-         <a class="navbar-link">
+         <div class="navbar-link">
            Misc
-         </a>
+         </div>
 
          <div class="navbar-dropdown">
            <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :organization_tournaments) %>'>3rd Party Tournaments</a>
@@ -99,11 +99,10 @@
 
      <div class="navbar-end">
         <a class="navbar-item" href="https://www.patreon.com/d0nkey">
-          <img class="image" src="/images/brands/patreon_wordmark_fierycoral.png"/>
+          <img class="image" alt="Patreon" src="/images/brands/patreon_wordmark_fierycoral.png"/>
         </a>
         <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link">Choose Theme</a>
-            <div class="navbar-dropdown">
+            <div class="navbar-link">Choose Theme</div> <div class="navbar-dropdown">
                 <%= for theme <- ["darkly", "flatly"] do %>
                   <a href="" class="navbar-item" id="theme-select-<%=theme%>" onclick='selectTheme("<%=theme%>")
                   '><%=theme%></a>
