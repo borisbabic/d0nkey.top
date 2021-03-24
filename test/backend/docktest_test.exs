@@ -10,4 +10,5 @@ defmodule Backend.Doctest do
   doctest Backend.TournamentStats.TeamStats
   doctest Backend.HSDeckViewer
   doctest Backend.Yaytears
+  doctest Backend.Streaming
 end
