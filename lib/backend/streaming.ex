@@ -154,21 +154,59 @@ defmodule Backend.Streaming do
   end
 
   def update_streamer_deck(ds = %StreamerDeck{}, sn) do
-    %{rank: rank, legend_rank: legend_rank} = ranks(sn)
+    if should_update?(ds, sn) do
+      %{rank: rank, legend_rank: legend_rank} = ranks(sn)
 
-    attrs = %{
-      best_rank: [rank, ds.best_rank] |> non_zero_min(),
-      best_legend_rank: [legend_rank, ds.best_legend_rank] |> non_zero_min(),
-      worst_legend_rank: Enum.max([legend_rank, ds.worst_legend_rank, 0]),
-      latest_legend_rank: legend_rank || 0,
-      game_type: sn.game_type,
-      minutes_played: ds.minutes_played + 1,
-      last_played: NaiveDateTime.utc_now()
-    }
+      attrs = %{
+        best_rank: [rank, ds.best_rank] |> non_zero_min(),
+        best_legend_rank: [legend_rank, ds.best_legend_rank] |> non_zero_min(),
+        worst_legend_rank: Enum.max([legend_rank, ds.worst_legend_rank, 0]),
+        latest_legend_rank: legend_rank || 0,
+        game_type: sn.game_type,
+        minutes_played: ds.minutes_played + 1,
+        last_played: NaiveDateTime.utc_now()
+      }
 
-    ds
-    |> StreamerDeck.changeset(attrs)
-    |> Repo.update()
+      ds
+      |> StreamerDeck.changeset(attrs)
+      |> Repo.update()
+    else
+      ds
+    end
+  end
+
+  def should_update?(ds, sn) do
+    !recent?(ds) || reasonable_legend_change?(ds, sn)
+  end
+
+  def recent?(%{updated_at: ua}) do
+    line = NaiveDateTime.utc_now() |> NaiveDateTime.add(-15 * 60)
+    NaiveDateTime.compare(ua, line) == :gt
+  end
+
+  @doc """
+  Check if the legend ranks are withing range for updating
+  When a streamer spectates somebody upstream will sends us the streamers deck but the spectatee's rank
+  So we want to reject obvious mismatches, >25% diff outside of the top 50
+  ## Example
+  iex> Backend.Streaming.reasonable_legend_change?(%{latest_legend_rank: 1}, %{legend_rank: 2, rank: 0, game_type: 2}) 
+  true
+  iex> Backend.Streaming.reasonable_legend_change?(%{latest_legend_rank: 900}, %{legend_rank: 800, rank: 0, game_type: 2})
+  true
+  iex> Backend.Streaming.reasonable_legend_change?(%{latest_legend_rank: 5000}, %{legend_rank: 40, rank: 0, game_type: 2})
+  false
+  """
+  @spec reasonable_legend_change?(StreamerDeck.t(), StreamingNow.t()) :: boolean
+  def reasonable_legend_change?(%{latest_legend_rank: 0}, _), do: true
+  def reasonable_legend_change?(_, %{legend_rank: nil}), do: true
+  def reasonable_legend_change?(_, %{legend_rank: 0}), do: true
+  def reasonable_legend_change?(%{latest_legend_rank: llr}, sn) do
+    %{legend_rank: lr} = ranks(sn)
+    case {lr, llr} do
+      {0, _} -> true
+      {lr, llr} when lr < 50 and llr < 50 -> true
+      {lr, llr} -> 0.25 >= abs(lr - llr) / llr
+    end
   end
 
   def streamers(criteria) do
