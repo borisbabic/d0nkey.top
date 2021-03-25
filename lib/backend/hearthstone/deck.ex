@@ -94,7 +94,7 @@ defmodule Backend.Hearthstone.Deck do
   """
   @spec decode(String.t()) :: {:ok, __MODULE__} | {:error, String.t() | any}
   def decode(deckcode) do
-    with no_comments <- remove_comments(deckcode),
+    with no_comments <- deckcode |> remove_comments() |> String.trim(),
          {:ok, decoded} <- Base.decode64(no_comments),
          list <- :binary.bin_to_list(decoded),
          chunked <- chunk_parts(list),
