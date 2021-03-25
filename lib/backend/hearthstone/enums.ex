@@ -30,6 +30,10 @@ defmodule Hearthstone.Enums.BnetGameType do
   def reserved_18_22, do: 56
   def reserved_18_23, do: 57
 
+  # CLASSIC_UPDATE
+  def ranked_classic, do: 9030
+  def casual_classic, do: 9031
+
   def duels_types(), do: [pvpdr(), pvpdr_paid()]
   def duels?(type), do: type in duels_types()
 
@@ -63,6 +67,9 @@ defmodule Hearthstone.Enums.BnetGameType do
   def arena_types(), do: [arena()]
   def arena?(type), do: type in arena_types()
 
+  def classic_types(), do: [ranked_classic(), casual_classic()]
+  def classic?(type), do: type in classic_types()
+
   def ranked_types(),
     do: [
       pvpdr_paid(),
@@ -70,6 +77,7 @@ defmodule Hearthstone.Enums.BnetGameType do
       ranked_standard(),
       ranked_standard_new_player(),
       ranked_wild(),
+      ranked_classic(),
       battlegrounds()
     ]
 
@@ -78,7 +86,9 @@ defmodule Hearthstone.Enums.BnetGameType do
   def ladder_types(), do: [ranked_standard(), ranked_wild(), ranked_standard_new_player()]
   def ladder?(type), do: type in ladder_types()
 
-  def constructed_types(), do: wild_types() ++ standard_types() ++ [friends(), vs_ai()]
+  def constructed_types(),
+    do: wild_types() ++ standard_types() ++ classic_types() ++ [friends(), vs_ai()]
+
   def constructed?(type), do: type in constructed_types()
 
   def game_type_name(type) when is_integer(type) do
@@ -90,6 +100,7 @@ defmodule Hearthstone.Enums.BnetGameType do
       duels?(type) -> "Duels"
       fsg?(type) -> "Fireside Gathering"
       arena?(type) -> "Arena"
+      classic?(type) -> "Classic"
       true -> "Unknown"
     end
   end
@@ -97,9 +108,37 @@ defmodule Hearthstone.Enums.BnetGameType do
   def game_type_name(type) when is_binary(type) do
     normalize = &(&1 |> String.downcase() |> String.replace(" ", ""))
 
-    ["Wild", "Standard", "Battlegrounds", "Tavern Brawl", "Duels", "Fireside Gathering", "Arena"]
+    ["Wild", "Standard", "Battlegrounds", "Tavern Brawl", "Duels", "Fireside Gathering", "Arena", "Classic"]
     |> Enum.find("Unknown", &(normalize.(&1) == normalize.(type)))
   end
 
   def game_type_name(_), do: "Unknown"
+end
+
+defmodule Hearthstone.Enums.Format do
+  @all [{:wild, 1, "Wild"}, {:standard, 2, "Standard"}, {:classic, 3, "Classic"}]
+
+  @all
+  |> Enum.each(fn {down, num, name} ->
+    def unquote(down)(), do: unquote(num)
+    def name(unquote(num)), do: unquote(name)
+    defp down_parse(unquote(down |> to_string())), do: unquote(num)
+  end)
+
+  def name(_), do: nil
+  @spec name(integer(), integer()) :: String.t()
+  def name(real, fallback), do: name(real) || name(fallback)
+
+  defp down_parse(_), do: nil
+
+  def parse(name) do
+    name
+    |> String.downcase()
+    |> down_parse()
+  end
+
+  @spec all() :: [{integer(), String.t()}]
+  def all() do
+    @all |> Enum.map(fn {_, id, name} -> {id, name} end)
+  end
 end
