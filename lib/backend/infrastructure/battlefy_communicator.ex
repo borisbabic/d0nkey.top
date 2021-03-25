@@ -23,9 +23,16 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   def get_response(url) do
-    {u_secs, response} = :timer.tc(&get!/1, [URI.encode(url)])
+    {u_secs, response} = :timer.tc(&get!/1, [url |> encode()])
     Logger.debug("Got #{url} in #{div(u_secs, 1000)} ms")
     response
+  end
+
+  def encode(url) do
+    url
+    |> URI.encode()
+    |> String.replace("[", "%5B")
+    |> String.replace("]", "%5D")
   end
 
   @doc """
@@ -106,7 +113,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec get_stage_with_matches(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stage.t()
   def get_stage_with_matches(stage_id) do
     url =
-      "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}?extend%5Bmatches%5D%5Btop.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bmatches%5D%5Btop.team%5D%5BpersistentTeam%5D=true&extend%5Bmatches%5D%5Bbottom.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bmatches%5D%5Bbottom.team%5D%5BpersistentTeam%5D=true&extend%5Bgroups%5D%5Bteams%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Btop.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Btop.team%5D%5BpersistentTeam%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Bbottom.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bgroups%5D%5Bmatches%5D%5Bbottom.team%5D%5BpersistentTeam%5D=true"
+      "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}?extend[matches][top.team][players][user]=true&extend[matches][top.team][persistentTeam]=true&extend[matches][bottom.team][players][user]=true&extend[matches][bottom.team][persistentTeam]=true&extend[groups][teams]=true&extend[groups][matches][top.team][players][user]=true&extend[groups][matches][top.team][persistentTeam]=true&extend[groups][matches][bottom.team][players][user]=true&extend[groups][matches][bottom.team][persistentTeam]=true"
 
     get_body(url)
     |> Poison.decode!()
@@ -149,7 +156,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t()
   def get_tournament(tournament_id) do
     url =
-      "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend%5Bstages%5D=true&extend%5Borganization%5D=true"
+      "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true"
 
     get_body(url)
     |> Poison.decode!()
@@ -194,7 +201,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec get_match(Battlefy.match_id()) :: {:ok, Battlefy.Match.t()} | {:error, any()}
   def get_match(match_id) do
     url =
-      "https://dtmwra1jsgyb0.cloudfront.net/matches/#{match_id}?extend%5Btop.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Btop.team%5D%5BpersistentTeam%5D=true&extend%5Bbottom.team%5D%5Bplayers%5D%5Buser%5D=true&extend%5Bbottom.team%5D%5BpersistentTeam%5D=true&extend%5Bstats%5D=true"
+      "https://dtmwra1jsgyb0.cloudfront.net/matches/#{match_id}?extend[top.team][players][user]=true&extend[top.team][persistentTeam]=true&extend[bottom.team][players][user]=true&extend[bottom.team][persistentTeam]=true&extend[stats]=true"
 
     with body <- get_body(url),
          {:ok, decoded} <- Poison.decode(body),
