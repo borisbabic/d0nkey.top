@@ -2,6 +2,7 @@ defmodule BackendWeb.StreamingView do
   use BackendWeb, :view
   alias Backend.Hearthstone.Deck
   alias Backend.Streaming.Streamer
+  alias Hearthstone.Enums.Format
 
   def twitch_link(streamer) do
     twitch_link(Streamer.twitch_login(streamer), Streamer.twitch_display(streamer))
@@ -115,7 +116,7 @@ defmodule BackendWeb.StreamingView do
           code: deckcode(sd.deck),
           deck_link: deck_toggle_link(conn, sd),
           last_played: sd.last_played,
-          format: if(sd.deck.format == 1, do: "Wild", else: "Standard"),
+          format: sd.deck.format |> Format.name(Format.standard()),
           best_legend_rank: legend_rank(sd.best_legend_rank),
           worst_legend_rank: legend_rank(sd.worst_legend_rank),
           latest_legend_rank: legend_rank(sd.latest_legend_rank),
@@ -316,7 +317,7 @@ defmodule BackendWeb.StreamingView do
 
   def create_format_dropdown(conn) do
     options =
-      [{1, "Wild"}, {2, "Standard"}]
+      Format.all()
       |> Enum.map(fn {f, display} ->
         %{
           link: update_link(conn, "format", f),

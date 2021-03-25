@@ -93,22 +93,28 @@ defmodule Backend.Streaming.StreamingNow do
   @wild_patterns ["[wild]", "[wld]"]
   @battlegrounds_patterns ["[bg]", "[battlegrounds]", "[bgs]", "[battleground]"]
   @arena_patterns ["[arena]", "[arn]"]
+  @classic_patterns ["[classic]"]
   def guess_from_title(title) do
+    down = title |> String.downcase()
+
     cond do
-      title |> String.downcase() |> String.contains?(@standard_patterns) ->
+      down |> String.contains?(@standard_patterns) ->
         BnetGameType.ranked_standard()
 
-      title |> String.downcase() |> String.contains?(@duels_patterns) ->
+      down |> String.contains?(@duels_patterns) ->
         BnetGameType.pvpdr()
 
-      title |> String.downcase() |> String.contains?(@wild_patterns) ->
+      down |> String.contains?(@wild_patterns) ->
         BnetGameType.ranked_wild()
 
-      title |> String.downcase() |> String.contains?(@battlegrounds_patterns) ->
+      down |> String.contains?(@battlegrounds_patterns) ->
         BnetGameType.battlegrounds()
 
-      title |> String.downcase() |> String.contains?(@arena_patterns) ->
+      down |> String.contains?(@arena_patterns) ->
         BnetGameType.arena()
+
+      down |> String.contains?(@classic_patterns) ->
+        BnetGameType.ranked_classic()
 
       true ->
         nil

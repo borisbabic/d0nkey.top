@@ -56,7 +56,8 @@
   --color-arena: rgb(166, 166, 66);
   --color-tavernbrawl: rgb(166, 66, 166);
   --color-battlegrounds: rgb(66, 166, 166);
-  --color-firesidegathering: rgb(166, 166, 166);
+  --color-classic: rgb(166, 166, 166);
+  --color-firesidegathering: rgb(24, 200, 166);
   --color-unknown: rgb(66, 66, 66);
 }
 

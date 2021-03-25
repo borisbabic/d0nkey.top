@@ -12,12 +12,6 @@ defmodule Backend.HSReplay.Streaming do
     field :twitch, Backend.HSReplay.Streaming.Twitch.t()
   end
 
-  def is_standard(%{format: 1}), do: true
-  def is_standard(_), do: false
-
-  def is_wild(%{format: 2}), do: true
-  def is_wild(_), do: false
-
   def deckcode(%{deck: d, hero: h, format: f}), do: Backend.Hearthstone.Deck.deckcode(d, h, f)
 
   def from_raw_map(map = %{"legend_rank" => lr}) do

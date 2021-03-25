@@ -57,7 +57,7 @@ defmodule BackendWeb.StreamingNowLive do
                     <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode")) }}" class="dropdown-item" >
                       Any
                     </LivePatch>
-                    <div :for={{ m <- ["Standard", "Battlegrounds", "Duels",  "Wild", "Arena", "Tavern Brawl", "Fireside Gathering", "Unknown"] }}>
+                    <div :for={{ m <- ["Standard", "Battlegrounds", "Duels",  "Wild", "Arena", "Tavern Brawl", "Fireside Gathering", "Classic", "Unknown"] }}>
                       <LivePatch 
                         class="{{ "dropdown-item " <> if @filter_sort["filter_mode"] == m, do: "is-active", else: ""  }}"
                         to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", m)) }}"
