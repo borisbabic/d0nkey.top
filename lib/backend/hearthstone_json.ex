@@ -61,6 +61,7 @@ defmodule Backend.HearthstoneJson do
 
     :ets.insert(table, {"all_cards", cards})
     :ets.insert(table, {"collectible_cards", cards |> Enum.filter(& &1.collectible)})
+    :ets.insert(table, {"playable_cards", cards |> Enum.filter(&Card.playable?/1)})
   end
 
   def get_class(dbf_id) do
@@ -91,6 +92,7 @@ defmodule Backend.HearthstoneJson do
 
   def cards(), do: table() |> Util.ets_lookup("all_cards", [])
   def collectible_cards(), do: table() |> Util.ets_lookup("collectible_cards", [])
+  def playable_cards(), do: table() |> Util.ets_lookup("playable_cards", [])
 
   def handle_cast({:update_cards}, state = %{table: table}) do
     get_fresh() |> update_table(table)

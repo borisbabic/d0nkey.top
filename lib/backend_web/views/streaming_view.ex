@@ -170,7 +170,7 @@ defmodule BackendWeb.StreamingView do
   end
 
   def card_options(selected) do
-    Backend.HearthstoneJson.collectible_cards()
+    Backend.HearthstoneJson.playable_cards()
     |> Enum.map(fn c ->
       %{
         selected: c.dbf_id in selected,

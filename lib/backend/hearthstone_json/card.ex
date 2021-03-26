@@ -56,4 +56,6 @@ defmodule Backend.HearthstoneJson.Card do
   end
 
   def same_effect?(_, _), do: false
+
+  def playable?(%{collectible: collectible, set: set}), do: collectible && set != "HERO_SKINS"
 end
