@@ -200,8 +200,10 @@ defmodule Backend.Streaming do
   def reasonable_legend_change?(%{latest_legend_rank: 0}, _), do: true
   def reasonable_legend_change?(_, %{legend_rank: nil}), do: true
   def reasonable_legend_change?(_, %{legend_rank: 0}), do: true
+
   def reasonable_legend_change?(%{latest_legend_rank: llr}, sn) do
     %{legend_rank: lr} = ranks(sn)
+
     case {lr, llr} do
       {0, _} -> true
       {lr, llr} when lr < 50 and llr < 50 -> true
@@ -293,7 +295,7 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"exclude_cards", cards}, query),
-    do: query |> where([_sd, _s, d], fragment("NOT(? @> ?)", d.cards, ^cards))
+    do: query |> where([_sd, _s, d], fragment("NOT(? && ?)", d.cards, ^cards))
 
   defp compose_streamer_deck_query({"hsreplay_archetype", []}, query), do: query
 
