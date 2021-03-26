@@ -30,9 +30,8 @@ defmodule Hearthstone.Enums.BnetGameType do
   def reserved_18_22, do: 56
   def reserved_18_23, do: 57
 
-  # CLASSIC_UPDATE
-  def ranked_classic, do: 9030
-  def casual_classic, do: 9031
+  def ranked_classic, do: 58
+  def casual_classic, do: 59
 
   def duels_types(), do: [pvpdr(), pvpdr_paid()]
   def duels?(type), do: type in duels_types()
@@ -108,7 +107,16 @@ defmodule Hearthstone.Enums.BnetGameType do
   def game_type_name(type) when is_binary(type) do
     normalize = &(&1 |> String.downcase() |> String.replace(" ", ""))
 
-    ["Wild", "Standard", "Battlegrounds", "Tavern Brawl", "Duels", "Fireside Gathering", "Arena", "Classic"]
+    [
+      "Wild",
+      "Standard",
+      "Battlegrounds",
+      "Tavern Brawl",
+      "Duels",
+      "Fireside Gathering",
+      "Arena",
+      "Classic"
+    ]
     |> Enum.find("Unknown", &(normalize.(&1) == normalize.(type)))
   end
 
@@ -116,6 +124,7 @@ defmodule Hearthstone.Enums.BnetGameType do
 end
 
 defmodule Hearthstone.Enums.Format do
+  @moduledoc false
   @all [{:wild, 1, "Wild"}, {:standard, 2, "Standard"}, {:classic, 3, "Classic"}]
 
   @all
