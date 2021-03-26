@@ -28,8 +28,6 @@ defmodule BackendWeb.ExpandableLineupLive do
   end
 
   def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old}}) do
-    IO.inspect("SHOWING CARDS")
-
     {
       :noreply,
       socket

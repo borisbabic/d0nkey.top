@@ -52,7 +52,7 @@ defmodule Backend.HearthstoneJson.Card do
 
   def same_effect?(first = %__MODULE__{}, second = %__MODULE__{}) do
     [:attack, :health, :cost, :text, :type]
-    |> Enum.any?(&(Map.get(first, &1) != Map.get(second, &1)))
+    |> Enum.all?(&(Map.get(first, &1) == Map.get(second, &1)))
   end
 
   def same_effect?(_, _), do: false

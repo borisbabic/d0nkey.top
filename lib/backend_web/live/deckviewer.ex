@@ -63,7 +63,7 @@ defmodule BackendWeb.DeckviewerLive do
               <div :if={{ cd || @deckcodes |> Enum.count() > 1}} class="column is-narrow">
                 <button phx-click="toggle_compare" class="button" type="button">{{ compare_button_text(@compare_decks) }}</button>
               </div>
-              <div :if={{ false && @deckcodes |> Enum.count() > 0}} class="column is-narrow">
+              <div :if={{ @deckcodes |> Enum.count() > 0}} class="column is-narrow">
                 <button :on-click="toggle_rotation" class="button" type="button">{{ rotation_text(@rotation) }}</button>
               </div>
 
@@ -79,7 +79,7 @@ defmodule BackendWeb.DeckviewerLive do
         </Form>
         <div class="columns is-mobile is-multiline">
           <div class="column is-narrow" :for.with_index = {{ {deck, index} <- @deckcodes}} :if={{@compare_decks == @compare_decks}}>
-            <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}" comparison={{ comparison }} highlight_rotation={{ @rotation |> IO.inspect()}}>
+            <Decklist deck={{deck |> Deck.decode!()}} name="{{ deck |> Deck.extract_name() }}" comparison={{ comparison }} highlight_rotation={{ @rotation }}>
               <template slot="right_button">
                 <a class="delete" phx-click="delete" phx-value-index={{ index }}/>
               </template>

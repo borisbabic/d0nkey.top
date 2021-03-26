@@ -260,7 +260,9 @@ defmodule Backend.Hearthstone do
         # Rise of Shadows
         "DALARAN",
         # Basic
-        "CORE",
+        "BASIC",
+        # Classic and basic?
+        "VANILLA",
         # Classic
         "EXPERT1"
       ] ->
@@ -273,9 +275,10 @@ defmodule Backend.Hearthstone do
 
   def staying_in_core?(card) do
     false
-    # HearthstoneJson.collectible_cards()
-    # |> Enum.filter(&1.set == ????)
-    # |> Enum.find(& &1.name == card.name)
-    # |> Card.same_effect?(card)
+
+    HearthstoneJson.collectible_cards()
+    |> Enum.filter(&(&1.set == "CORE"))
+    |> Enum.find(&(&1.name == card.name))
+    |> Card.same_effect?(card)
   end
 end
