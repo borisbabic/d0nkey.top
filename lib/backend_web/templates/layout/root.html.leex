@@ -25,7 +25,9 @@
     <script data-goatcounter="https://d0nkeytop.goatcounter.com/count"
               async src="//gc.zgo.at/count.js"></script>
     <% end %>
+    <br>
   </body>
+  <%= render("footer.html", %{conn: @conn}) %>
     <script>
       var allowed_themes = ['flatly', 'darkly'];
       var link = document.createElement('link');
