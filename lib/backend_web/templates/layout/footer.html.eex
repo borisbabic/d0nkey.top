@@ -17,8 +17,9 @@
                  </a>
                  <a class="twitter-follow-button"
                    href="https://twitter.com/D0nkeyHS"
-                   data-size="large">
-                 Follow @D0nkeyHS</a>
+                   data-show-screen-name="false"
+                   data-show-count="false">
+                 Follow</a>
             </div>
              <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
         </div>
