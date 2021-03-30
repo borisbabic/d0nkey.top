@@ -263,8 +263,8 @@
 .decklist-card-image {
   position: absolute;
   z-index: 1;
-  top: -75px;
-  left: 150px;
+  top: -85px;
+  left: 70px;
   height: 384px;
   width: 256px;
   display: none;
