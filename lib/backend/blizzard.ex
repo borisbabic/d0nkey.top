@@ -27,8 +27,8 @@ defmodule Backend.Blizzard do
   @type region :: :EU | :US | :AP | :CN
   @regions [:EU, :US, :AP, :CN]
   @qualifier_regions [:EU, :US, :AP]
-  @type leaderboard :: :BG | :STD | :WLD
-  @leaderboards [:BG, :STD, :WLD]
+  @type leaderboard :: :BG | :STD | :WLD | :CLS
+  @leaderboards [:BG, :STD, :WLD, :CLS]
   # @type battletag :: <<_::binary, "#", _::binary>>
   @type battletag :: String.t()
   @type deckstring :: String.t()
@@ -432,6 +432,7 @@ defmodule Backend.Blizzard do
       :BG -> "Battlegrounds"
       :STD -> "Standard"
       :WLD -> "Wild"
+      :CLS -> "Classic"
     end
   end
 
@@ -441,6 +442,7 @@ defmodule Backend.Blizzard do
       :BG -> "BG"
       :STD -> "STD"
       :WLD -> "WLD"
+      :CLS -> "CLS"
     end
   end
 
