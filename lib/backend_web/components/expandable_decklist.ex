@@ -19,7 +19,7 @@ defmodule Components.ExpandableDecklist do
     ~H"""
       <Decklist deck={{ @deck }} show_cards={{ @show_cards }} name={{ name }}>
         <template slot="right_button">
-          <span phx-click="toggle_cards" phx-value-id={{ @id }} phx-value-show_cards= {{ !@show_cards }}class="is-clickable" >
+          <span phx-click="toggle_cards" phx-value-id={{ @id }} phx-value-show_cards={{ !@show_cards }} class="is-clickable" >
             <span class="icon">
               <i :if={{ !@show_cards }} class="fas fa-eye"></i>
               <i :if={{ @show_cards }} class="fas fa-eye-slash"></i>
@@ -33,4 +33,6 @@ defmodule Components.ExpandableDecklist do
   def toggle_cards(%{"id" => id, "show_cards" => show_cards}) do
     send_update(__MODULE__, id: id, show_cards: show_cards)
   end
+
+  def toggle_cards(%{"id" => id}), do: toggle_cards(%{"id" => id, "show_cards" => false})
 end

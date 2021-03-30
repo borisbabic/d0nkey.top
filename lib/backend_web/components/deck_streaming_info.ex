@@ -2,20 +2,10 @@ defmodule Components.DeckStreamingInfo do
   @moduledoc false
   use Surface.Component
   alias Backend.Streaming
+  alias Components.StreamingDeckNow
   use BackendWeb.ViewHelpers
   alias BackendWeb.Router.Helpers, as: Routes
   prop(deck_id, :integer, required: true)
-
-  def render(%{deck_id: deck_id}) when is_integer(deck_id) do
-    deck_id
-    |> Streaming.streamer_decks_by_deck()
-    |> create_info()
-    |> Map.put(
-      :streamer_decks_path,
-      Routes.streaming_path(BackendWeb.Endpoint, :streamer_decks, %{"deck_id" => deck_id})
-    )
-    |> render()
-  end
 
   def render(
         assigns = %{
@@ -23,6 +13,7 @@ defmodule Components.DeckStreamingInfo do
           peaked_by: pb,
           streamers: s,
           first_streamed_by: fsb,
+          deck: deck,
           streamer_decks_path: sdp
         }
       ) do
@@ -38,11 +29,25 @@ defmodule Components.DeckStreamingInfo do
         First Streamed: {{ fsb }}
       </div>
       <a href="{{ sdp }}" class="tag column is-link" if:= {{ s }}>
-        # Streamers: {{ s |> Enum.count() }}
+        # Streamed: {{ s |> Enum.count() }}
       </a>
+      <StreamingDeckNow deck={{ deck }}/>
     </div>
 
     """
+  end
+
+  def render(%{deck_id: deck_id, socket: socket}) when is_integer(deck_id) do
+    deck_id
+    |> Streaming.streamer_decks_by_deck()
+    |> create_info()
+    |> Map.put(
+      :streamer_decks_path,
+      Routes.streaming_path(BackendWeb.Endpoint, :streamer_decks, %{"deck_id" => deck_id})
+    )
+    |> Map.put(:deck, Backend.Hearthstone.deck(deck_id))
+    |> Map.put(:socket, socket)
+    |> render()
   end
 
   def render(assigns),
