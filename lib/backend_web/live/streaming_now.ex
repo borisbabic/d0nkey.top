@@ -3,11 +3,13 @@ defmodule BackendWeb.StreamingNowLive do
   use Surface.LiveView
   import BackendWeb.LiveHelpers
   alias Components.LiveStreamer
+  alias Backend.DeckInteractionTracker, as: Tracker
   alias Surface.Components.LivePatch
   alias BackendWeb.Router.Helpers, as: Routes
   @subscriptions ["streaming:hs:streaming_now"]
   data(streaming_now, :map)
   data(filter_sort, :map)
+  data(deckcode, :string)
 
   def mount(_params, session, socket) do
     streaming_now = Backend.Streaming.StreamingNow.streaming_now()
@@ -126,6 +128,11 @@ defmodule BackendWeb.StreamingNowLive do
     """
   end
 
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
+  end
+
   def handle_event("toggle_cards", params, socket) do
     Components.ExpandableDecklist.toggle_cards(params)
 
@@ -152,7 +159,8 @@ defmodule BackendWeb.StreamingNowLive do
   end
 
   def extract_filter_sort(params),
-    do: params |> Map.take(["filter_mode", "filter_language", "sort", "filter_legend"])
+    do:
+      params |> Map.take(["filter_mode", "filter_language", "sort", "filter_legend", "deckcode"])
 
   def filter_sort_streaming(streaming, filter_params),
     do: filter_params |> Enum.reduce(streaming, &filter_sort/2)
@@ -173,6 +181,9 @@ defmodule BackendWeb.StreamingNowLive do
       |> Enum.filter(fn s ->
         s.legend_rank && s.legend_rank > 0 && s.legend_rank <= legend |> Util.to_int_or_orig()
       end)
+
+  def filter_sort({"deckcode", deckcode}, streaming_now) when is_binary(deckcode),
+    do: streaming_now |> Enum.filter(&(&1.deckcode == deckcode))
 
   def filter_sort({"sort", "newest"}, streaming_now),
     do: streaming_now |> Enum.sort_by(fn s -> s.started_at end, &Timex.after?/2)
