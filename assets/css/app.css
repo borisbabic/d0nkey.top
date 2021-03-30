@@ -256,6 +256,20 @@
   text-decoration: line-through;
 }
 
+.decklist-card-container {
+  position: relative;
+}
+
+.decklist-card-image {
+  position: absolute;
+  z-index: 1;
+  top: -75px;
+  left: 150px;
+  height: 384px;
+  width: 256px;
+  display: none;
+}
+
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/
 /*}*/

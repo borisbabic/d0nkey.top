@@ -93,6 +93,19 @@ window.hide_based_on_search = function(search_id, target_class)  {
     }
 }
 
+window.set_display = function (id_or_elem, display_val) {
+    var elem = id_or_elem;
+    if(typeof(id_or_elem) === "string" || id_or_elem instanceof String){
+        elem = document.getElementById(id_or_elem);
+    }
+
+    if(elem && elem.style) {
+        elem.style.display = display_val;
+    } else {
+        console.log("Can't set display on elem")
+    }
+}
+
 /**** <LiveViewCopyPasta> ****/
 // assets/js/app.js
 import {Socket} from "phoenix"
