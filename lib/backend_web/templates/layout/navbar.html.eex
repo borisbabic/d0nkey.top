@@ -97,9 +97,6 @@
      </div>
 
      <div class="navbar-end">
-        <a class="navbar-item" href="https://www.patreon.com/d0nkey">
-          <img class="image" alt="Patreon" src="/images/brands/patreon_wordmark_fierycoral.png"/>
-        </a>
         <div class="navbar-item has-dropdown is-hoverable">
             <div class="navbar-link">Choose Theme</div> <div class="navbar-dropdown">
                 <%= for theme <- ["darkly", "flatly"] do %>
