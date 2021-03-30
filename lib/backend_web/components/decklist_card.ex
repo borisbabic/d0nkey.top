@@ -43,7 +43,9 @@ defmodule Components.DecklistCard do
     card = assigns[:card]
     html_id = "card-#{card.id}"
     tile_url = card.id |> HearthstoneJson.tile_url()
-    # card_url = card.id |> HearthstoneJson.tile_url()
+    id = Ecto.UUID.generate()
+    card_url = card |> HearthstoneJson.card_url()
+
     %{border: border, gradient: gradient} =
       colors(card, assigns[:deck_class], assigns[:decklist_options])
 
@@ -51,13 +53,18 @@ defmodule Components.DecklistCard do
     # deck_class_color = "--color-#{class(card.card_class)}"
 
     ~H"""
-    <div style="background-image: url('{{ tile_url }}'); --color-border: {{ border }} ; --color-gradient: {{ gradient }};" class="decklist-card {{ html_id }} is-flex is-align-items-center">
-      <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
-      <span :if={{ @show_mana_cost }}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{{ card.cost }}</span>
-      <span class="card-name deck-text decklist-card-gradient has-text-left is-clipped"><span style="font-size: 0;"># {{ @count }}x ({{ @card.cost }}) </span>{{ card.name }}</span>
-      <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable"> {{ @count }}</span>
-    </div>
-    <div></div>
+      <div>
+        <div onmouseover="set_display('{{ id }}', 'flex')" onmouseout="set_display('{{ id }}', 'none')">
+          <div style="background-image: url('{{ tile_url }}'); --color-border: {{ border }} ; --color-gradient: {{ gradient }};" class="decklist-card-container decklist-card {{ html_id }} is-flex is-align-items-center">
+            <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
+            <span :if={{ @show_mana_cost }}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{{ card.cost }}</span>
+            <span class="card-name deck-text decklist-card-gradient has-text-left is-clipped"><span style="font-size: 0;"># {{ @count }}x ({{ @card.cost }}) </span>{{ card.name }}</span>
+            <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable"> {{ @count }}</span>
+            <div id="{{ id }}" class="decklist-card-image" style="background-image: url('{{ card_url }}')"></div>
+          </div>
+        </div>
+        <div></div>
+      </div>
     """
   end
 end
