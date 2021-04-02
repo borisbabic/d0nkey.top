@@ -14,7 +14,12 @@ defmodule BackendWeb.FantasyIndexLive do
     <Context put={{ user: @user }} >
       <div class="container">
         <div class="title is-2">Fantasy Leagues</div>
-        <FantasyModal id="create_modal" title="Create Fantasy League"/> 
+        <div class="level">
+          <div class="level-left">
+            <FantasyModal id="create_modal" title="Create Fantasy League"/> 
+            <a class="is-link button" href="/fantasy/leagues/join/e5b76f1c-979c-4da5-b084-7cbef78b14e9">Join the d0nkey.top GM League</a>
+          </div>
+        </div>
         <FantasyLeaguesTable leagues={{ get_user_leagues(@user)}} />
       </div>
     </Context>
