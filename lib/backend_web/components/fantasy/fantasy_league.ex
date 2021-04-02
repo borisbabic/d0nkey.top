@@ -54,7 +54,7 @@ defmodule Components.FantasyLeague do
               <td>{{ lt.owner |> User.display_name() }}</td>
               <td>{{ points }}</td>
               <td>
-                <button  :if={{ false && League.can_manage?(@league, user) }} class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
+                <button  :if={{ !League.draft_started?(@league) && League.startLeague.can_manage?(@league, user) }} class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
                 <RosterModal id="roster_modal_{{lt.id}}" league_team={{ lt }} />
               </td>
             </tr>
@@ -90,5 +90,6 @@ defmodule Components.FantasyLeague do
 
   def handle_event("remove_league_team", %{"id" => id}, socket) do
     Fantasy.delete_league_team(id)
+    {:noreply, socket}
   end
 end
