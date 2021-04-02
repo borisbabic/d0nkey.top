@@ -108,7 +108,7 @@ defmodule BackendWeb.MastersTourController do
   def earnings(conn, params = %{"show_gms" => show_gms}) do
     gm_season = params["season"] |> parse_season()
     points_system = parse_points_system(params)
-    gms = Backend.PlayerInfo.get_grandmasters(gm_season)
+    gms = Backend.PlayerInfo.get_grandmasters_for_promotion(gm_season)
     tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
     earnings = MastersTour.get_gm_money_rankings(gm_season, points_system)
 

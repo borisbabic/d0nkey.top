@@ -22,7 +22,9 @@ defmodule Backend.FantasyCompetitionFetcher do
     |> Hearthstone.parse_gm_season()
     |> case do
       {:ok, gm_season} ->
-        Backend.PlayerInfo.get_grandmasters(gm_season) |> Enum.map(&%Participant{name: &1})
+        Backend.PlayerInfo.get_grandmasters(gm_season)
+        |> Enum.sort_by(&String.upcase/1)
+        |> Enum.map(&%Participant{name: &1})
 
       _ ->
         []
@@ -33,7 +35,7 @@ defmodule Backend.FantasyCompetitionFetcher do
         competition_type: "grandmasters",
         competition: <<"gm_"::binary, _gm_season_raw::binary>>
       }) do
-    []
+    %{}
     # with {:ok, } <- gm_season_raw |> Hearthstone.parse_gm_season(),
     # [] <- ret do
     # ret

@@ -1473,13 +1473,13 @@ defmodule Backend.PlayerInfo do
 
   def country_to_region(cc), do: @alpha2_to_region[cc]
 
-  def get_grandmasters(season = {2020, 2}),
+  def get_grandmasters_fot_promotion(season = {2020, 2}),
     do: get_grandmasters(:Jönköping, relegated_gms(season))
 
-  def get_grandmasters(season = {2021, 1}),
+  def get_grandmasters_for_promotion(season = {2021, 1}),
     do: get_grandmasters(:Montréal, relegated_gms(season)) ++ ["Briarthorn"]
 
-  def get_grandmasters(season = {2021, 2}),
+  def get_grandmasters_for_promotion({2021, 2}),
     do:
       get_grandmasters({2021, 1}) ++
         [
@@ -1495,15 +1495,20 @@ defmodule Backend.PlayerInfo do
           "lambyseries"
         ]
 
-  def get_grandmasters(_), do: []
+  def get_grandmasters_for_promotion(_), do: []
+
+  def get_grandmasters({2021, 1}) do
+    get_grandmasters(:Ironforge, ["justsaiyan"] |> MapSet.new()) ++ ["Tincho"]
+  end
 
   def get_grandmasters(rts = reference_tour_stop, relegated) do
     Backend.MastersTour.list_invited_players(rts)
-    |> Enum.filter(fn %{reason: r} -> String.contains?(r, "Grandmaster") end)
+    |> Enum.filter(fn %{reason: r, official: o} -> String.contains?(r, "Grandmaster") end)
     |> Enum.map(fn %{battletag_full: bf} ->
       Backend.MastersTour.InvitedPlayer.shorten_battletag(bf)
     end)
     |> Enum.filter(fn n -> !MapSet.member?(relegated, n) end)
+    |> Enum.uniq()
   end
 
   def get_esportsgold_nationality(player) do
