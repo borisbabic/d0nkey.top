@@ -106,7 +106,7 @@ defmodule Components.FantasyModal do
     """
   end
 
-  defp gm_2021_1_start(), do: ~N[2021-04-07 09:00:00]
+  defp gm_2021_1_start(), do: ~N[2021-04-08 09:00:00]
 
   defp draft_deadline_value(%{draft_deadline: dd}) when not is_nil(dd),
     do: dd |> NaiveDateTime.to_iso8601()
