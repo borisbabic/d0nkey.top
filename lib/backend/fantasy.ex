@@ -267,7 +267,7 @@ defmodule Backend.Fantasy do
       ** (Ecto.NoResultsError)
 
   """
-  def get_league_team!(id), do: Repo.get!(LeagueTeam, id)
+  def get_league_team!(id), do: Repo.get!(LeagueTeam, id) |> Repo.preload([:league])
 
   @doc """
   Creates a league_team.
