@@ -10,7 +10,7 @@ defmodule Backend.Fantasy.LeagueTeam do
   schema "league_teams" do
     belongs_to :owner, User
     belongs_to :league, League
-    has_many :picks, LeagueTeamPick, foreign_key: :team_id
+    has_many :picks, LeagueTeamPick, foreign_key: :team_id, on_delete: :delete_all
 
     timestamps()
   end
