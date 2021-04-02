@@ -7,6 +7,7 @@ defmodule BackendWeb.FantasyDraftLive do
   alias Backend.UserManager.User
   alias BackendWeb.Presence
   alias Components.CompetitorsTable
+  alias Components.DraftPicksTable
   alias Components.RosterModal
   alias Components.DraftOrderModal
   import BackendWeb.LiveHelpers
@@ -14,6 +15,7 @@ defmodule BackendWeb.FantasyDraftLive do
   data(league, :map)
   data(user, :any)
   data(present, :list)
+  data(show_draft_picks_table, :boolean)
 
   def mount(params, session, s) do
     socket = s |> assign_defaults(session) |> assign_league(params)
@@ -28,7 +30,7 @@ defmodule BackendWeb.FantasyDraftLive do
 
     BackendWeb.Endpoint.subscribe(topic)
     BackendWeb.Endpoint.subscribe("entity_leagues_#{socket.assigns.league_id}")
-    {:ok, socket |> assign_present()}
+    {:ok, socket |> assign_present() |> assign(show_draft_picks_table: false)}
   end
 
   def render(assigns) do
@@ -62,10 +64,32 @@ defmodule BackendWeb.FantasyDraftLive do
         <div :if={{ @user && League.can_manage?(@league, @user) && !League.draft_started?(@league) }} >
             <button class="button" type="button" :on-click="start_draft">Start Draft</button>
         </div>
+        <button :if={{ show_draft_picks_table_button(@league) }} class="button" type="button" :on-click="toggle_draft_picks_table">{{ toggle_draft_picks_table_button_name(@show_draft_picks_table) }}</button>
+        <DraftPicksTable :if={{ show_draft_picks_table(@league, @show_draft_picks_table)}} id="draft_picks_table_{{ @league.id }}" league={{ @league }} />
         <CompetitorsTable id="competitors_{{ @league.id }}" league={{ @league }} user={{ @user }}/>
       </div>
     </Context>
     """
+  end
+
+  def show_draft_picks_table(league = %{real_time_draft: true}, true),
+    do: League.any_picks?(league)
+
+  def show_draft_picks_table(_, _), do: false
+
+  def show_draft_picks_table_button(league = %{real_time_draft: true}),
+    do: League.any_picks?(league)
+
+  def show_draft_picks_table_button(_), do: false
+  def toggle_draft_picks_table_button_name(true), do: "Hide picked order"
+  def toggle_draft_picks_table_button_name(false), do: "Show picked order"
+
+  def handle_event(
+        "toggle_draft_picks_table",
+        _,
+        socket = %{assigns: %{show_draft_picks_table: sdpt}}
+      ) do
+    {:noreply, socket |> assign(show_draft_picks_table: !sdpt)}
   end
 
   def handle_event("start_draft", _, socket = %{assigns: %{league: league}}) do
