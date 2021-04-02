@@ -58,11 +58,11 @@ defmodule Components.FantasyModal do
 
               <Field name="competition">
                 <Label class="label">Competition</Label>
-                <Select selected={{ @current_params["competition"] || @league.competition }} class="select" options= {{"Ironforge": "Ironforge"}} />
+                <Select selected={{ @current_params["competition"] || @league.competition }} class="select" options= {{"GM 2021 Season 1": "gm_2021_1"}} />
               </Field>
 
               <Field name="competition_type">
-                <HiddenInput value={{ @current_params["competition_type"] || @league.competition_type || "masters_tour" }}/>
+                <HiddenInput value={{ @current_params["competition_type"] || @league.competition_type || "grandmasters" }}/>
               </Field>
 
               <Field name="real_time_draft">
@@ -77,7 +77,7 @@ defmodule Components.FantasyModal do
 
               <Field name="point_system">
                 <Label class="label">Point System</Label>
-                <Select selected={{ @current_params["point_system"] || @league.point_system }} class="select" options={{"GM Points": "gm_points_2021", "Swiss Wins": "swiss_wins" }} />
+                <Select selected={{ @current_params["point_system"] || @league.point_system }} class="select" options={{"Total Wins": "total_wins"}} />
               </Field>
 
               <Field :if={{ @league.join_code }} name="join_code">
@@ -106,13 +106,21 @@ defmodule Components.FantasyModal do
     """
   end
 
+  defp gm_2021_1_start(), do: ~N[2021-04-07 09:00:00]
+
   defp draft_deadline_value(%{draft_deadline: dd}) when not is_nil(dd),
     do: dd |> NaiveDateTime.to_iso8601()
+
+  defp draft_deadline_value(%{competition_type: "grandmasters", competition: "gm_2021_1"}),
+    do: gm_2021_1_start()
 
   defp draft_deadline_value(%{competition_type: "masters_tour", competition: ts_raw}),
     do: ts_raw |> TourStop.get_start_time()
 
-  defp draft_deadline_value(%{}), do: TourStop.get_next() |> TourStop.get_start_time()
+  defp draft_deadline_value(%{competition_type: "masters_tour"}),
+    do: TourStop.get_next() |> TourStop.get_start_time()
+
+  defp draft_deadline_value(%{}), do: gm_2021_1_start()
   defp draft_deadline_value(), do: nil
 
   defp update_draft_deadline(attrs = %{"deadline" => <<dd::binary>>}) do

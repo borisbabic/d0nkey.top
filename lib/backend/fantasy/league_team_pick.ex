@@ -1,4 +1,5 @@
 defmodule Backend.Fantasy.LeagueTeamPick do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -7,6 +8,7 @@ defmodule Backend.Fantasy.LeagueTeamPick do
   schema "league_team_picks" do
     field :pick, :string
     belongs_to :team, LeagueTeam
+    field :round, :integer, default: 1
 
     timestamps()
   end

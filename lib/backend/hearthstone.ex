@@ -281,4 +281,9 @@ defmodule Backend.Hearthstone do
     |> Enum.find(&(&1.name == card.name))
     |> Card.same_effect?(card)
   end
+
+  def parse_gm_season("2020_2"), do: {:ok, {2020, 2}}
+  def parse_gm_season("2021_1"), do: {:ok, {2021, 1}}
+  def parse_gm_season("2021_2"), do: {:ok, {2021, 2}}
+  def parse_gm_season(_), do: :error
 end
