@@ -220,6 +220,9 @@ defmodule Backend.Fantasy.League do
     case ps do
       "swiss_wins" -> "Swiss Wins"
       "gm_points_2021" -> "GM Points"
+      "total_wins" -> "Total Wins"
     end
   end
+
+  def any_picks?(%{teams: teams}), do: teams |> Enum.any?(&(&1.picks |> Enum.any?()))
 end
