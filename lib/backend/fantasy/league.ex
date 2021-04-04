@@ -120,9 +120,9 @@ defmodule Backend.Fantasy.League do
   def picked_on_time?(league = %League{real_time_draft: false}),
     do: !draft_deadline_passed?(league)
 
-  defp generate_pick_order(%{real_time_draft: false}), do: []
+  def generate_pick_order(%{real_time_draft: false}), do: []
 
-  defp generate_pick_order(%{real_time_draft: true, roster_size: roster_size, teams: lt = [_ | _]}) do
+  def generate_pick_order(%{real_time_draft: true, roster_size: roster_size, teams: lt = [_ | _]}) do
     forward = lt |> Enum.map(& &1.id) |> Enum.shuffle()
     reverse = forward |> Enum.reverse()
 

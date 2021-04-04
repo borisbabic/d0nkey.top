@@ -579,7 +579,7 @@ defmodule Backend.Fantasy do
     if League.draft_started?(league) do
       {:ok, league}
     else
-      league |> League.start_draft() |> Repo.update()
+      league.id |> get_league!() |> League.start_draft() |> Repo.update()
     end
   end
 
