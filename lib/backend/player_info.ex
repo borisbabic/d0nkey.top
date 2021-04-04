@@ -1498,7 +1498,7 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters_for_promotion(_), do: []
 
   def get_grandmasters({2021, 1}) do
-    get_grandmasters(:Ironforge, ["justsaiyan"] |> MapSet.new()) ++ ["Tincho"]
+    get_grandmasters(:Ironforge, ["justsaiyan", "撒旦降臨"] |> MapSet.new()) ++ ["Tincho"]
   end
 
   def get_grandmasters(rts = reference_tour_stop, relegated) do
