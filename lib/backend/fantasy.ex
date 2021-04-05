@@ -685,10 +685,9 @@ defmodule Backend.Fantasy do
          true <- LeagueTeam.can_unpick?(lt),
          ltp = %LeagueTeamPick{} <- get_league_team_pick(lt.id, pick),
          {:ok, _} <- delete_league_team_pick(ltp),
-         league = %{id: _} <- get_league(lt.league_id) do
-      {:ok, league}
-    else
-      val -> IO.inspect(val)
+         league = %{id: _} <- get_league(lt.league_id),
+         cs <- League.inc_updated_at(league) do
+      Repo.update(cs)
     end
   end
 

@@ -57,8 +57,8 @@ defmodule BackendWeb.FantasyDraftLive do
           Draft Deadline Passed!
         </div>
         <a class="link" href="/fantasy/leagues/{{ @league.id }}">View League</a>
-        <div :if={{ lt = League.team_for_user(@league, @user)}}>
-          Your roster: {{ lt.picks |> Enum.count() }} / {{ @league.roster_size }}
+        <div :if={{ lt = League.team_for_user(@league, @user)}} style="position: sticky; top: 0; z-index: 10;">
+          <RosterModal :if={{ @league }} id={{ "self_roster_modal_{{lt.id}}" }} league_team={{ lt }} button_title="Your roster: {{ lt.picks |> Enum.count() }} / {{ @league.roster_size }}" />
         </div>
 
         <div :if={{ @user && League.can_manage?(@league, @user) && !League.draft_started?(@league) }} >
