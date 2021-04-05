@@ -65,6 +65,12 @@ defmodule Backend.Fantasy.League do
     |> cast(attrs, [:pick_order, :last_pick_at])
   end
 
+  def inc_updated_at(l) do
+    attrs = %{updated_at: NaiveDateTime.utc_now()}
+
+    l |> cast(attrs, [:updated_at])
+  end
+
   @spec add_pick(__MODULE__, User.t()) ::
           {:ok, Ecto.Changeset.t()} | {:ok, __MODULE__} | {:error, atom()}
   def add_pick(league = %League{real_time_draft: true}, user) do
