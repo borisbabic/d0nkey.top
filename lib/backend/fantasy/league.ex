@@ -21,6 +21,7 @@ defmodule Backend.Fantasy.League do
     field :last_pick_at, :utc_datetime
     field :real_time_draft, :boolean, default: true
     field :draft_deadline, :utc_datetime, null: true
+    field :current_round, :integer, default: 1
     belongs_to :owner, User
     has_many :teams, LeagueTeam
 
@@ -224,5 +225,13 @@ defmodule Backend.Fantasy.League do
     end
   end
 
+  def unpickable?(l = %{real_time_draft: false}, lt = %LeagueTeam{}, u = %User{}) do
+    !draft_deadline_passed?(l) && lt |> LeagueTeam.can_manage?(u)
+  end
+
+  def unpickable?(_, _, _), do: false
+
   def any_picks?(%{teams: teams}), do: teams |> Enum.any?(&(&1.picks |> Enum.any?()))
+
+  def min_same(_), do: 0
 end
