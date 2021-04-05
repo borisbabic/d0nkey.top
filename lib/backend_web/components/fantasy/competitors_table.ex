@@ -42,7 +42,10 @@ defmodule Components.CompetitorsTable do
               <td>{{ participant.name }}</td>
               <td>
                 <div :if={{ picked_by = picked_by(@league, participant, @user) }}>
-                  <div class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
+                  <div :if={{ !League.unpickable?(@league, picked_by, @user) }}class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
+                  <button :if={{ League.unpickable?(@league, picked_by, @user) }} class="button" type="button" :on-click="unpick" phx-value-league_team="{{picked_by.id}}" phx-value-pick="{{ participant.name }}">
+                    Unpick
+                  </button>
                 </div>
                 <div :if={{ has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name) }}>
                   <button class="button" type="button" :on-click="pick" phx-value-name="{{ participant.name }}">Pick</button>
@@ -56,6 +59,22 @@ defmodule Components.CompetitorsTable do
         </table>
       </div>
     """
+  end
+
+  def handle_event(
+        "unpick",
+        %{"pick" => pick, "league_team" => lt_string_id},
+        socket = %{assigns: %{user: u}}
+      ) do
+    new_socket =
+      with {lt_id, _} <- Integer.parse(lt_string_id),
+           {:ok, league} <- Fantasy.unpick(lt_id, u, pick) do
+        socket |> assign(league: league)
+      else
+        _ -> socket
+      end
+
+    {:noreply, new_socket}
   end
 
   defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),

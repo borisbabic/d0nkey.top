@@ -267,7 +267,13 @@ defmodule Backend.Fantasy do
       ** (Ecto.NoResultsError)
 
   """
-  def get_league_team!(id), do: Repo.get!(LeagueTeam, id) |> Repo.preload([:league])
+  @spec get_league_team!(integer) :: LeagueTeam | nil
+  def get_league_team!(id), do: Repo.get!(LeagueTeam, id) |> preload_league_team()
+
+  @spec get_league_team(integer) :: LeagueTeam | nil
+  def get_league_team(id), do: Repo.get(LeagueTeam, id) |> preload_league_team()
+
+  defp preload_league_team(lt), do: lt |> Repo.preload([:league, :picks, :owner])
 
   @doc """
   Creates a league_team.
@@ -433,6 +439,16 @@ defmodule Backend.Fantasy do
 
   """
   def get_league_team_pick!(id), do: Repo.get!(LeagueTeamPick, id)
+  def get_league_team_pick(id), do: Repo.get(LeagueTeamPick, id)
+
+  def get_league_team_pick(lt_id, pick) do
+    query =
+      from ltp in LeagueTeamPick,
+        select: ltp,
+        where: ltp.team_id == ^lt_id and ltp.pick == ^pick
+
+    Repo.one(query)
+  end
 
   @doc """
   Creates a league_team_pick.
@@ -583,11 +599,12 @@ defmodule Backend.Fantasy do
     end
   end
 
-  def make_pick(%{real_time_draft: true} = league, user, name) do
+  def make_pick(%{real_time_draft: true, current_round: cr} = league, user, name) do
     with league_team = %{id: _id} <- League.drafting_now(league),
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
-           %LeagueTeamPick{} |> LeagueTeamPick.changeset(%{pick: name, team: league_team}) do
+           %LeagueTeamPick{}
+           |> LeagueTeamPick.changeset(%{pick: name, team: league_team, round: cr}) do
       Repo.transaction(fn repo ->
         repo.update!(league_cs)
         repo.insert!(pick_cs)
@@ -595,11 +612,12 @@ defmodule Backend.Fantasy do
     end
   end
 
-  def make_pick(%{real_time_draft: false} = league, user, name) do
+  def make_pick(%{real_time_draft: false, current_round: cr} = league, user, name) do
     with league_team = %{id: id} <- League.team_for_user(league, user),
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
-           %LeagueTeamPick{} |> LeagueTeamPick.changeset(%{pick: name, team: league_team}) do
+           %LeagueTeamPick{}
+           |> LeagueTeamPick.changeset(%{pick: name, team: league_team, round: cr}) do
       Repo.transaction(fn repo ->
         repo.update!(league_cs)
         repo.insert!(pick_cs)
@@ -659,6 +677,19 @@ defmodule Backend.Fantasy do
             l.competition_type == "battlefy"
 
     Repo.all(query)
+  end
+
+  def unpick(league_team_id, user, pick) do
+    with lt = %LeagueTeam{} <- get_league_team(league_team_id),
+         true <- LeagueTeam.can_manage?(lt, user),
+         true <- LeagueTeam.can_unpick?(lt),
+         ltp = %LeagueTeamPick{} <- get_league_team_pick(lt.id, pick),
+         {:ok, _} <- delete_league_team_pick(ltp),
+         league = %{id: _} <- get_league(lt.league_id) do
+      {:ok, league}
+    else
+      val -> IO.inspect(val)
+    end
   end
 
   def get_battlefy_user_picks(_, _), do: []

@@ -52,4 +52,19 @@ defmodule Backend.Fantasy.LeagueTeam do
 
   def has_pick?(%{picks: picks = [_ | _]}, name), do: picks |> Enum.any?(&(&1.pick == name))
   def has_pick?(_, _), do: false
+
+  def round_picks(%{picks: picks}, round), do: picks |> Enum.filter(&(&1.round == round))
+
+  def can_unpick?(%{league: %{current_round: 1}}, _), do: true
+
+  def can_unpick?(lt = %{league: league = %{current_round: cr}}) do
+    current_round_picks = lt |> round_picks(cr) |> Enum.map(& &1.pick)
+
+    currently_same =
+      lt |> round_picks(cr - 1) |> Enum.filter(&(&1.pick in current_round_picks)) |> Enum.count()
+
+    min_same = league |> League.min_same()
+
+    currently_same >= min_same
+  end
 end
