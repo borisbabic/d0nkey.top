@@ -54,7 +54,7 @@ defmodule Components.FantasyLeague do
               <td>{{ lt.owner |> User.display_name() }}</td>
               <td>{{ points }}</td>
               <td>
-                <button  :if={{ !League.draft_started?(@league) && League.can_manage?(@league, user) }} class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
+                <button  :if={{ can_remove?(@league, user, lt) }} class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
                 <RosterModal id="roster_modal_{{lt.id}}" league_team={{ lt }} />
               </td>
             </tr>
@@ -65,6 +65,16 @@ defmodule Components.FantasyLeague do
         </Context>
       </div>
     """
+  end
+
+  def can_remove?(league, user, league_team) do
+    cond do
+      !League.can_manage?(league, user) -> false
+      !League.draft_started?(league) -> true
+      league.real_time_draft -> false
+      league_team.picks |> Enum.any?() -> false
+      true -> true
+    end
   end
 
   defp teams_with_points(league) do
