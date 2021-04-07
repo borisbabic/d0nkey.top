@@ -7,7 +7,7 @@ use Mix.Config
 config :backend,
   warmup_cache: true,
   auto_migrate: false,
-  goatcounter_analytics: true,
+  goatcounter_analytics: false,
   enable_bot: true
 
 # For production, don't f "d0nkey.top"orget to configure the url host
