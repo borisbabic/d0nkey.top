@@ -52,7 +52,7 @@ defmodule Backend.Hearthstone.Deck do
     |> Base.encode64()
   end
 
-  @spec class_name([integer] | nil) :: [integer]
+  @spec deckcode_part([integer] | nil) :: [integer]
   defp deckcode_part(nil), do: [0]
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 
@@ -95,7 +95,7 @@ defmodule Backend.Hearthstone.Deck do
   @spec decode(String.t()) :: {:ok, __MODULE__} | {:error, String.t() | any}
   def decode(deckcode) do
     with no_comments <- deckcode |> remove_comments() |> String.trim(),
-         {:ok, decoded} <- Base.decode64(no_comments),
+         {:ok, decoded} <- base64_decode(no_comments),
          list <- :binary.bin_to_list(decoded),
          chunked <- chunk_parts(list),
          [0, 1, format, 1, hero | card_parts] <- Enum.map(chunked, &Varint.LEB128.decode/1),
@@ -103,7 +103,19 @@ defmodule Backend.Hearthstone.Deck do
       {:ok, %__MODULE__{format: format, hero: hero, cards: cards, deckcode: no_comments}}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "Couldn't decode deckstring"}
+      _ -> :error
+    end
+  end
+
+  defp base64_decode(target) do
+    fixed = String.replace(target, [",", "."], "")
+
+    with :error <- fixed |> Base.decode64(),
+         :error <- (fixed <> "==") |> Base.decode64(),
+         :error <- (fixed <> "++") |> Base.decode64(),
+         :error <- (fixed <> "+") |> Base.decode64(),
+         :error <- (fixed <> "=") |> Base.decode64() do
+      :error
     end
   end
 
@@ -222,6 +234,16 @@ defmodule Backend.Hearthstone.Deck do
     else
       ret = {:error, _} -> ret
       _ -> {:error, "Couldn't decode deckcode"}
+    end
+  end
+
+  def canonical_constructed_deckcode(code) do
+    case Deck.decode(code) do
+      {:ok, deck = %{cards: cards}} when length(cards) > 14 and length(cards) < 31 ->
+        {:ok, deck |> deckcode()}
+
+      _ ->
+        {:error}
     end
   end
 

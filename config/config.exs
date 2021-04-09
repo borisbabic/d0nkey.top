@@ -85,7 +85,7 @@ config :torch,
 config :backend, Oban,
   repo: Backend.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [default: 10, battlefy_lineups: 20]
+  queues: [default: 10, battlefy_lineups: 20, grandmasters_lineups: 3]
 
 config :phoenix_meta_tags,
   title: "d0nkey",
