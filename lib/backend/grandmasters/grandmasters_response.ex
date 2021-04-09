@@ -43,11 +43,21 @@ defmodule Backend.Grandmasters.Response do
     |> Enum.uniq()
   end
 
-  def stage_titles(%{requested_season_tournaments: tournaments}) do
+  def results(r, stage_title) do
+    r
+    |> matches(&(&1.title == stage_title))
+    |> Enum.flat_map(&if(&1.winner, do: [&1.winner], else: []))
+    |> Enum.group_by(& &1.name)
+    |> Enum.map(fn {gm, l} -> {gm, l |> Enum.count()} end)
+    |> Map.new()
+  end
+
+  def matches(%{requested_season_tournaments: tournaments}, stage_matcher) do
     tournaments
     |> Enum.flat_map(& &1.stages)
-    |> Enum.map(& &1.title)
-    |> Enum.uniq()
+    |> Enum.filter(stage_matcher)
+    |> Enum.flat_map(& &1.brackets)
+    |> Enum.flat_map(& &1.matches)
   end
 
   def decklists(r) do
@@ -72,13 +82,10 @@ defmodule Backend.Grandmasters.Response do
     end)
   end
 
-  def decklists(%{requested_season_tournaments: tournaments}, matcher)
+  def decklists(r, matcher)
       when is_function(matcher) do
-    tournaments
-    |> Enum.flat_map(& &1.stages)
-    |> Enum.filter(matcher)
-    |> Enum.flat_map(& &1.brackets)
-    |> Enum.flat_map(& &1.matches)
+    r
+    |> matches(matcher)
     |> Enum.flat_map(&Match.decklists/1)
     |> Enum.filter(fn {competitor, lists} -> competitor != nil && lists |> Enum.any?() end)
     |> Enum.reduce(%{}, fn {competitor, lists}, carry ->
@@ -259,8 +266,8 @@ defmodule Backend.Grandmasters.Response.Match do
       end)
 
     start_date =
-      if is_integer(sd = map["start_date"]) do
-        div(sd, 1000)
+      if is_integer(map["start_date"]) do
+        div(map["start_date"], 1000)
       else
         nil
       end

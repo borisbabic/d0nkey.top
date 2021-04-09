@@ -4,6 +4,9 @@ defmodule Backend.FantasyCompetitionFetcher do
   alias Backend.MastersTour.TourStop
   alias Backend.Battlefy
   alias Backend.Hearthstone
+  alias Backend.Infrastructure.GrandmastersCommunicator
+  alias Backend.Blizzard
+  alias Backend.Grandmasters.Response, as: GM
   @spec get_participants(League.t()) :: [Participant.t()]
   def get_participants(%{competition_type: "masters_tour", competition: competition}) do
     competition
@@ -35,7 +38,9 @@ defmodule Backend.FantasyCompetitionFetcher do
         competition_type: "grandmasters",
         competition: <<"gm_"::binary, _gm_season_raw::binary>>
       }) do
-    %{}
+    gm = GrandmastersCommunicator.get_gm()
+    current_week = Blizzard.current_gm_week_title()
+    gm |> GM.results(current_week)
     # with {:ok, } <- gm_season_raw |> Hearthstone.parse_gm_season(),
     # [] <- ret do
     # ret
