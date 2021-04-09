@@ -3,6 +3,7 @@ defmodule Backend.Blizzard do
 
   alias Backend.Infrastructure.BlizzardCommunicator, as: Api
   alias Backend.Blizzard.Leaderboard
+  alias Backend.Hearthstone
   alias Backend.MastersTour.TourStop
 
   @type tour_stop ::
@@ -507,4 +508,45 @@ defmodule Backend.Blizzard do
   end
 
   def ineligible?(_, nil), do: false
+
+  def gm_tournament_title({year, season}), do: "gm_#{year}_#{season}"
+
+  def gm_lineup_tournament_id(gm_season, stage_title),
+    do: "#{gm_tournament_title(gm_season)}_#{stage_title}"
+
+  def get_grandmasters_lineups(gm_season, stage_title) do
+    tournament = gm_lineup_tournament_id(gm_season, stage_title)
+
+    Hearthstone.get_lineups(tournament, "grandmasters")
+    |> case do
+      lineups = [_ | _] ->
+        lineups
+
+      _ ->
+        Backend.Grandmasters.LineupFetcher.enqueue_job(stage_title)
+        []
+    end
+  end
+
+  def get_grandmasters_lineups() do
+    gm_season = current_gm_season()
+    stage_title = current_gm_week_title()
+    get_grandmasters_lineups(gm_season, stage_title)
+  end
+
+  def current_gm_season(), do: {2021, 1}
+
+  def current_gm_week_title() do
+    # todo make this better per season
+    # GM SEASON
+    Date.utc_today()
+    |> Date.add(-1)
+    |> Date.to_erl()
+    |> :calendar.iso_week_number()
+    |> case do
+      {2021, week} when week >= 14 and week <= 20 -> "Week #{week - 13}"
+      {2021, 21} -> "Playoffs"
+      _ -> nil
+    end
+  end
 end

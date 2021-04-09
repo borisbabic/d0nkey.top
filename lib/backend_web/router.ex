@@ -136,6 +136,8 @@ defmodule BackendWeb.Router do
     get "/notion", SocialController, :notion
 
     get "/liberapay", SocialController, :liberapay
+
+    live "/gm/lineups", GrandmastersLineup
   end
 
   scope "/", BackendWeb do
