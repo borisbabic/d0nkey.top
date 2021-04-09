@@ -2,7 +2,6 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
   @moduledoc false
   require Logger
   alias Backend.Blizzard.Leaderboard
-  alias Backend.Grandmasters.Response
 
   def get_leaderboard(region, leaderboard_id, season_id) do
     url = create_link(region, leaderboard_id, season_id)
@@ -69,15 +68,5 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
 
   defp extract_updated_at(_) do
     nil
-  end
-
-  def get_gm() do
-    url =
-      "https://playhearthstone.com/en-us/api/esports/schedule/grandmasters/?season=null&year=null"
-
-    with {:ok, %{body: body}} <- HTTPoison.get(url, [], timeout: 20_000, recv_timeout: 20_000),
-         {:ok, decoded} <- Poison.decode(body) do
-      Response.from_raw_map(decoded)
-    end
   end
 end

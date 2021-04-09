@@ -2,7 +2,7 @@ defmodule Backend.Grandmasters.LineupFetcher do
   @moduledoc false
   use Oban.Worker, queue: :grandmasters_lineups, unique: [period: 300]
 
-  alias Backend.Infrastructure.BlizzardCommunicator, as: Api
+  alias Backend.Infrastructure.GrandmastersCommunicator, as: Api
   alias Backend.Grandmasters.Response
   alias Backend.Blizzard
   alias Ecto.Multi
