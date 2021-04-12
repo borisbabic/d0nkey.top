@@ -86,7 +86,7 @@ defmodule Components.CompetitorsTable do
   # defp current_team(league, user), do: league |> League.team_for_user(user)
   defp has_current_pick?(league = %{real_time_draft: false, roster_size: roster_size}, user) do
     lt = league |> League.team_for_user(user)
-    lt && roster_size > Enum.count(lt.picks)
+    lt && roster_size > LeagueTeam.current_roster_size(lt)
   end
 
   defp has_current_pick?(league = %{real_time_draft: true}, user),

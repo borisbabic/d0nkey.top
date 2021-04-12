@@ -6,6 +6,7 @@ defmodule Backend.Fantasy.League do
   alias Backend.UserManager.User
   alias Backend.Fantasy.LeagueTeam
   alias Backend.Fantasy.League
+  alias Backend.Blizzard
 
   schema "leagues" do
     field :competition, :string
@@ -22,6 +23,7 @@ defmodule Backend.Fantasy.League do
     field :real_time_draft, :boolean, default: true
     field :draft_deadline, :utc_datetime, null: true
     field :current_round, :integer, default: 1
+    field :changes_between_rounds, :integer, default: 0
     belongs_to :owner, User
     has_many :teams, LeagueTeam
 
@@ -39,6 +41,8 @@ defmodule Backend.Fantasy.League do
       :max_teams,
       :roster_size,
       :real_time_draft,
+      :changes_between_rounds,
+      :current_round,
       :draft_deadline
     ])
     |> set_owner(attrs, league)
@@ -50,6 +54,8 @@ defmodule Backend.Fantasy.League do
       :max_teams,
       :owner,
       :roster_size,
+      :changes_between_rounds,
+      :current_round,
       :real_time_draft
     ])
   end
@@ -103,7 +109,7 @@ defmodule Backend.Fantasy.League do
          true <- picked_on_time?(league),
          picking_team = %{id: id} <- team_for_user(league, user),
          currently_picked when currently_picked < roster_size <-
-           picking_team.picks |> Enum.count() do
+           picking_team |> LeagueTeam.current_roster_size() do
       {:ok, league |> cast(%{last_pick_at: NaiveDateTime.utc_now()}, [:last_pick_at])}
     else
       false -> {:error, :invalid_pick}
@@ -200,8 +206,8 @@ defmodule Backend.Fantasy.League do
     end
   end
 
-  def picked_by(%{teams: teams}, name),
-    do: teams |> Enum.find(&(&1 |> LeagueTeam.has_pick?(name)))
+  def picked_by(%{teams: teams, current_round: cr}, name),
+    do: teams |> Enum.find(&(&1 |> LeagueTeam.has_pick?(name, cr)))
 
   def pickable?(league = %{real_time_draft: true}, user = %User{}, <<pick::binary>>) do
     picked_by = picked_by(league, pick)
@@ -211,7 +217,7 @@ defmodule Backend.Fantasy.League do
 
   def pickable?(league = %{real_time_draft: false}, user = %User{}, <<pick::binary>>) do
     lt = team_for_user(league, user)
-    !LeagueTeam.has_pick?(lt, pick)
+    !LeagueTeam.has_pick?(lt, pick, league.current_round)
   end
 
   def pickable?(_, _, _), do: false
@@ -232,12 +238,19 @@ defmodule Backend.Fantasy.League do
   end
 
   def unpickable?(l = %{real_time_draft: false}, lt = %LeagueTeam{}, u = %User{}) do
-    !draft_deadline_passed?(l) && lt |> LeagueTeam.can_manage?(u)
+    !draft_deadline_passed?(l) && lt |> LeagueTeam.can_manage?(u) &&
+      lt |> LeagueTeam.can_unpick?()
   end
 
   def unpickable?(_, _, _), do: false
 
   def any_picks?(%{teams: teams}), do: teams |> Enum.any?(&(&1.picks |> Enum.any?()))
 
-  def min_same(_), do: 0
+  def min_same(%{roster_size: rs, changes_between_rounds: cbr}), do: rs - cbr
+
+  def round_length(_), do: :week
+
+  def round(_, round) when is_integer(round), do: round
+  def round(%{current_round: round}, _), do: round
+  def round(_, _), do: 1
 end

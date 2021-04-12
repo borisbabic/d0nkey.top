@@ -43,9 +43,12 @@ defmodule Backend.Grandmasters.Response do
     |> Enum.uniq()
   end
 
-  def results(r, stage_title) do
+  def results(r, stage_title) when is_binary(stage_title),
+    do: results(r, &(&1.title == stage_title))
+
+  def results(r, stage_matcher) when is_function(stage_matcher) do
     r
-    |> matches(&(&1.title == stage_title))
+    |> matches(stage_matcher)
     |> Enum.flat_map(&if(&1.winner, do: [&1.winner], else: []))
     |> Enum.group_by(& &1.name)
     |> Enum.map(fn {gm, l} -> {gm, l |> Enum.count()} end)
@@ -238,6 +241,7 @@ defmodule Backend.Grandmasters.Response.Match do
     field :winner, Competitor.t() | nil
     field :competitors, [Competitor.t()]
     field :status, String.t()
+    field :state, String.t()
     field :start_date, integer | nil
     field :decklists, [[String.t()]]
   end
@@ -279,6 +283,7 @@ defmodule Backend.Grandmasters.Response.Match do
       winner: map["winner"] |> Competitor.from_raw_map(),
       competitors: map["competitors"] |> Enum.map(&Competitor.from_raw_map/1),
       status: map["status"],
+      state: map["state"],
       decklists: decklists
     }
   end

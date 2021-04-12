@@ -9,6 +9,8 @@ defmodule Components.RosterModal do
   prop(league_team, :map, required: true)
   prop(include_points, :boolean, default: true)
 
+  prop(round, :number, default: nil)
+
   prop(button_title, :string, default: "View Roster")
 
   def render(assigns) do
@@ -23,18 +25,43 @@ defmodule Components.RosterModal do
               <p class="modal-card-title">{{ @league_team |> LeagueTeam.display_name() }}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
-            <section class="modal-card-body content">
-              <ul :for={{ {pick_name, points} <- picks_with_points(@league_team, @include_points) }}>
-                <li><span :if={{ @include_points }}>{{ points }} - </span>{{ show_pick_name(@league_team, user, pick_name) }}</li>
-              </ul>
-              <a target="_blank" :if={{ standings_link = standings_link(@league_team) }} class="button is-link " href="{{ standings_link }}">View in standings</a>
+            <section class="modal-card-body">
+              <div class="content">
+                <ul :for={{ {pick_name, points} <- picks_with_points(@league_team, @include_points, round(@league_team, @round)) }}>
+                  <li><span :if={{ @include_points }}>{{ points }} - </span>{{ show_pick_name(@league_team, user, pick_name, round(@league_team, @round)) }}</li>
+                </ul>
+                <a target="_blank" :if={{ standings_link = standings_link(@league_team) }} class="button is-link " href="{{ standings_link }}">View in standings</a>
+              </div>
             </section>
+            <div class="modal-card-foot" :if={{ show_round_footer(@league_team) }} :if={{ round = round(@league_team, @round) }}>
+
+              <button type="button" class="button" :on-click="dec_round" >
+                <i class="fas fa-caret-left"></i>
+              </button>
+              <button type="button" class="button" :on-click="inc_round">
+                <i class="fas fa-caret-right"></i>
+              </button>
+              <p>Round {{ round }}</p>
+            </div>
           </div>
         </div>
     </div>
     </Context>
     """
   end
+
+  def handle_event("inc_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
+    do: {:noreply, socket |> assign(round: round(lt, r) + 1)}
+
+  def handle_event("dec_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
+    do: {:noreply, socket |> assign(round: round(lt, r) - 1)}
+
+  def round(lt, round), do: League.round(lt.league, round)
+
+  def show_round_footer(%{league: %{current_round: current_round}}) when current_round > 1,
+    do: true
+
+  def show_round_footer(_), do: true
 
   def standings_link(%{
         picks: picks = [_ | _],
@@ -62,22 +89,25 @@ defmodule Components.RosterModal do
   defp show_pick_name(
          lt = %{league: league = %{real_time_draft: false, draft_deadline: dd}},
          user,
-         name
+         name,
+         round
        )
        when not is_nil(dd) do
-    if LeagueTeam.can_manage?(lt, user) || League.draft_deadline_passed?(league) do
+    if LeagueTeam.can_manage?(lt, user) || League.draft_deadline_passed?(league) ||
+         round < league.current_round do
       name
     else
       "?????"
     end
   end
 
-  defp show_pick_name(_, _, name), do: name
+  defp show_pick_name(_, _, name, _), do: name
 
-  def picks_with_points(league_team, true) do
-    results = Backend.FantasyCompetitionFetcher.fetch_results(league_team.league)
+  def picks_with_points(league_team, true, round) do
+    results = Backend.FantasyCompetitionFetcher.fetch_results(league_team.league, round)
 
-    league_team.picks
+    league_team
+    |> LeagueTeam.round_picks(round)
     |> Enum.map(fn %{pick: pick} ->
       {pick, results |> Map.get(pick) || 0}
     end)

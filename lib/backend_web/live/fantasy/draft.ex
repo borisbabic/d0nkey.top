@@ -10,6 +10,7 @@ defmodule BackendWeb.FantasyDraftLive do
   alias Components.DraftPicksTable
   alias Components.RosterModal
   alias Components.DraftOrderModal
+  alias Components.LeagueInfoModal
   import BackendWeb.LiveHelpers
 
   data(league, :map)
@@ -53,18 +54,23 @@ defmodule BackendWeb.FantasyDraftLive do
             <div :if={{ next = League.drafting_pos(@league, 3) }} class="level-item" ><RosterModal include_points={{ false }} id="drafting_3_{{next.id}}" league_team={{ next }} button_title="{{ next |> LeagueTeam.display_name() }}" /></div>
           </div>
         </div>
-        <div class="notification is-warning" :if={{ League.draft_deadline_passed?(@league) }}>
-          Draft Deadline Passed!
-        </div>
-        <a class="link" href="/fantasy/leagues/{{ @league.id }}">View League</a>
-        <div :if={{ lt = League.team_for_user(@league, @user)}} style="position: sticky; top: 0; z-index: 10;">
-          <RosterModal :if={{ @league }} id={{ "self_roster_modal_{{lt.id}}" }} league_team={{ lt }} button_title="Your roster: {{ lt.picks |> Enum.count() }} / {{ @league.roster_size }}" />
-        </div>
+        <div class="level is-mobile">
+          <div class="level-left">
+            <div class="level-item notification is-warning" :if={{ League.draft_deadline_passed?(@league) }}>
+              Draft Deadline Passed!
+            </div>
+            <a class="is-link level-item button" href="/fantasy/leagues/{{ @league.id }}">View League</a>
+            <div :if={{ lt = League.team_for_user(@league, @user)}} style="position: sticky; top: 0; z-index: 10;">
+              <RosterModal :if={{ @league }} id={{ "self_roster_modal_{{lt.id}}" }} league_team={{ lt }} button_title="Your roster: {{ LeagueTeam.current_roster_size(lt) }} / {{ @league.roster_size }}" />
+            </div>
+            <LeagueInfoModal class="level-item" id={{ "league_info_modal_#{@league.id}" }} league={{ @league }}/>
 
-        <div :if={{ @user && League.can_manage?(@league, @user) && !League.draft_started?(@league) }} >
-            <button class="button" type="button" :on-click="start_draft">Start Draft</button>
+            <button class="button level-item" type="button" :on-click="start_draft" :if={{ @user && League.can_manage?(@league, @user) && !League.draft_started?(@league) }} >
+              Start Draft
+            </button>
+            <button :if={{ show_draft_picks_table_button(@league) }} class="button level-item" type="button" :on-click="toggle_draft_picks_table">{{ toggle_draft_picks_table_button_name(@show_draft_picks_table) }}</button>
+          </div>
         </div>
-        <button :if={{ show_draft_picks_table_button(@league) }} class="button" type="button" :on-click="toggle_draft_picks_table">{{ toggle_draft_picks_table_button_name(@show_draft_picks_table) }}</button>
         <DraftPicksTable :if={{ show_draft_picks_table(@league, @show_draft_picks_table)}} id="draft_picks_table_{{ @league.id }}" league={{ @league }} />
         <CompetitorsTable id="competitors_{{ @league.id }}" league={{ @league }} user={{ @user }}/>
       </div>

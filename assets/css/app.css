@@ -270,6 +270,15 @@
   display: none;
 }
 
+.has-no-pointer-events {
+  pointer-events: none;
+}
+.is-shrinkable .level-left,
+.is-shrinkable .level-right {
+  flex-shrink: 1;
+}
+
+
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/
 /*}*/

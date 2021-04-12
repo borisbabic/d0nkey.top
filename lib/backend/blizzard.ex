@@ -509,7 +509,7 @@ defmodule Backend.Blizzard do
 
   def ineligible?(_, nil), do: false
 
-  def gm_tournament_title({year, season}), do: "gm_#{year}_#{season}"
+  def gm_tournament_title(season), do: "gm_#{gm_season_string(season)}"
 
   def gm_lineup_tournament_id(gm_season, stage_title),
     do: "#{gm_tournament_title(gm_season)}_#{stage_title}"
@@ -530,23 +530,53 @@ defmodule Backend.Blizzard do
 
   def get_grandmasters_lineups() do
     gm_season = current_gm_season()
-    stage_title = current_gm_week_title()
+    stage_title = current_gm_week_title!()
     get_grandmasters_lineups(gm_season, stage_title)
   end
 
   def current_gm_season(), do: {2021, 1}
 
-  def current_gm_week_title() do
+  def current_gm_week_title!() do
     # todo make this better per season
     # GM SEASON
+    current_gm_season() |> current_gm_week_title!()
+  end
+
+  def gm_season_string({year, num}), do: "#{year}_#{num}"
+
+  def current_gm_week_title!(season), do: season |> current_gm_week_title() |> Util.bangify()
+
+  def current_gm_week_title(season) when is_binary(season),
+    do: season |> Hearthstone.parse_gm_season!() |> current_gm_week_title()
+
+  def current_gm_week_title(season) when is_tuple(season) do
+    with {_, week_num} <- season |> current_gm_week() do
+      gm_week_title(season, week_num)
+    end
+  end
+
+  def gm_week_title(season, week_num) do
+    playin = playin_weeks(season)
+
+    cond do
+      0 < week_num && week_num <= playin -> {:ok, "Week #{week_num}"}
+      week_num == playin + 1 -> {:ok, "Playoffs"}
+      true -> :error
+    end
+  end
+
+  def playin_weeks(_), do: 7
+  def current_gm_week({2021, 1}), do: current_gm_week(14, 21)
+
+  def current_gm_week(week_one, playoffs) do
     Date.utc_today()
-    |> Date.add(-1)
     |> Date.to_erl()
     |> :calendar.iso_week_number()
     |> case do
-      {2021, week} when week >= 14 and week <= 20 -> "Week #{week - 13}"
-      {2021, 21} -> "Playoffs"
-      _ -> nil
+      {_, week} when week >= week_one and week < playoffs -> {:playin, week - week_one + 1}
+      {_, ^playoffs} -> {:playoffs, playoffs - week_one + 1}
+      # keep different size than the above
+      _ -> :error
     end
   end
 end

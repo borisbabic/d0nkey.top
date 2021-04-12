@@ -65,6 +65,11 @@ defmodule Components.FantasyModal do
                 <HiddenInput value={{ @current_params["competition_type"] || @league.competition_type || "grandmasters" }}/>
               </Field>
 
+              <Field name="changes_between_rounds">
+                <Label class="label">Changes Between Rounds</Label>
+                <NumberInput class="input is-small" value= {{ @current_params["changes_between_rounds"] || @league.changes_between_rounds }}/>
+              </Field>
+
               <Field name="real_time_draft">
                 <Label class="label">Real Time Draft</Label>
                 <Checkbox value={{ @current_params["real_time_draft"] || @league.real_time_draft }} />
