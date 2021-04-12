@@ -62,12 +62,14 @@ defmodule Backend.Fantasy.LeagueTeam do
   def can_unpick?(lt = %{league: league = %{current_round: cr}}) do
     current_round_picks = lt |> round_picks(cr) |> Enum.map(& &1.pick)
 
-    currently_same =
-      lt |> round_picks(cr - 1) |> Enum.filter(&(&1.pick in current_round_picks)) |> Enum.count()
+    removed =
+      lt
+      |> round_picks(cr - 1)
+      |> Enum.filter(&(!(&1.pick in current_round_picks)))
+      |> Enum.count()
 
     min_same = league |> League.min_same()
-
-    currently_same > min_same
+    removed < min_same
   end
 
   def current_roster_size(lt), do: lt |> current_picks() |> Enum.count()
