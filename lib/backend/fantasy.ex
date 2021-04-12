@@ -754,6 +754,8 @@ defmodule Backend.Fantasy do
     |> Repo.transaction()
   end
 
+  def new_league_deadline(nil, _), do: nil
+
   def new_league_deadline(deadline, :week) do
     now = NaiveDateTime.utc_now()
 
