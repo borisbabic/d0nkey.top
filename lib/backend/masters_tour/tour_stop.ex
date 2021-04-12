@@ -158,7 +158,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_seasons: [88, 89],
         ladder_invites: 16,
         region: :EU,
-        qualifiers_period: {~D[2021-03-04], ~D[2021-04-11]},
+        qualifiers_period: {~D[2021-03-04], ~D[2021-04-12]},
         start_time: ~N[2021-04-30 12:15:00],
         year: 2021
       },
@@ -168,7 +168,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_priority: :timezone,
         ladder_seasons: [90, 91],
         ladder_invites: 16,
-        qualifiers_period: {~D[2021-04-15], ~D[2021-05-23]},
+        qualifiers_period: {~D[2021-04-15], ~D[2021-05-24]},
         region: :AP,
         start_time: ~N[2021-06-18 04:15:00],
         year: 2021
@@ -181,7 +181,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_invites: 16,
         region: :US,
         start_time: ~N[2021-08-27 17:15:00],
-        qualifiers_period: {~D[2021-06-03], ~D[2021-07-18]},
+        qualifiers_period: {~D[2021-06-03], ~D[2021-07-19]},
         year: 2021
       },
       %__MODULE__{
@@ -192,7 +192,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_invites: 16,
         region: :US,
         start_time: ~N[2021-10-22 12:15:00],
-        qualifiers_period: {~D[2021-07-22], ~D[2021-09-05]},
+        qualifiers_period: {~D[2021-07-22], ~D[2021-09-06]},
         year: 2021
       },
       %__MODULE__{
@@ -203,7 +203,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_invites: 32,
         region: :AP,
         start_time: ~N[2021-11-19 04:15:00],
-        qualifiers_period: {~D[2021-09-09], ~D[2021-10-31]},
+        qualifiers_period: {~D[2021-09-09], ~D[2021-01-01]},
         year: 2021
       }
     ]
