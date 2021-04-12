@@ -68,8 +68,7 @@ defmodule Backend.Fantasy.LeagueTeam do
       |> Enum.filter(&(!(&1.pick in current_round_picks)))
       |> Enum.count()
 
-    min_same = league |> League.min_same()
-    removed < min_same
+    removed < league.changes_between_rounds
   end
 
   def current_roster_size(lt), do: lt |> current_picks() |> Enum.count()
