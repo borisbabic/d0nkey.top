@@ -16,9 +16,9 @@ defmodule Backend.Fantasy.LeagueTeamPick do
   @doc false
   def changeset(league_team_pick, attrs) do
     league_team_pick
-    |> cast(attrs, [:pick])
+    |> cast(attrs, [:pick, :round])
     |> set_league_team(attrs)
-    |> validate_required([:pick, :team])
+    |> validate_required([:pick, :team, :round])
   end
 
   defp set_league_team(c, %{team: league_team}), do: set_league_team(c, league_team)

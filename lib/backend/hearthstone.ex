@@ -286,4 +286,6 @@ defmodule Backend.Hearthstone do
   def parse_gm_season("2021_1"), do: {:ok, {2021, 1}}
   def parse_gm_season("2021_2"), do: {:ok, {2021, 2}}
   def parse_gm_season(_), do: :error
+
+  def parse_gm_season!(s), do: s |> parse_gm_season() |> Util.bangify()
 end

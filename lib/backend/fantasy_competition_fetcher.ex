@@ -34,20 +34,30 @@ defmodule Backend.FantasyCompetitionFetcher do
     end
   end
 
-  def fetch_results(%{
-        competition_type: "grandmasters",
-        competition: <<"gm_"::binary, _gm_season_raw::binary>>
-      }) do
-    gm = GrandmastersCommunicator.get_gm()
-    current_week = Blizzard.current_gm_week_title()
-    gm |> GM.results(current_week)
-    # with {:ok, } <- gm_season_raw |> Hearthstone.parse_gm_season(),
-    # [] <- ret do
-    # ret
-    # else
-    # _ -> []
-    # end
+  def fetch_results(l), do: fetch_results(l, 1)
+
+  def fetch_results(
+        %{
+          competition_type: "grandmasters",
+          competition: <<"gm_"::binary, gm_season_raw::binary>>
+        },
+        round
+      ) do
+    # gm = GrandmastersCommunicator.get_gm()
+    # gm |> GM.results(current_week)
+
+    with {:ok, season} <- gm_season_raw |> Hearthstone.parse_gm_season(),
+         {:ok, matcher} <- gm_stage_matching(season, round),
+         gm <- GrandmastersCommunicator.get_gm() do
+      gm |> GM.results(matcher)
+    else
+      other ->
+        IO.inspect(other)
+        %{}
+    end
   end
+
+  defp gm_stage_matching(season, round), do: Blizzard.gm_week_title(season, round)
 
   defp get_battlefy_participants(tournament_id) do
     tournament_id
@@ -59,17 +69,20 @@ defmodule Backend.FantasyCompetitionFetcher do
     end)
   end
 
-  def fetch_results(%{
-        competition_type: "masters_tour",
-        competition: competition,
-        point_system: "gm_points_2021"
-      }) do
+  def fetch_results(
+        %{
+          competition_type: "masters_tour",
+          competition: competition,
+          point_system: "gm_points_2021"
+        },
+        _
+      ) do
     competition
     |> Backend.MastersTour.get_ts_points_ranking(:points_2021)
     |> Map.new()
   end
 
-  def fetch_results(l = %{competition_type: "masters_tour", competition: competition}) do
+  def fetch_results(l = %{competition_type: "masters_tour", competition: competition}, _) do
     competition
     |> TourStop.get()
     |> case do
@@ -78,7 +91,7 @@ defmodule Backend.FantasyCompetitionFetcher do
     end
   end
 
-  def get_battlefy_results(tournament_id, %{point_system: "total_wins"}) do
+  def get_battlefy_results(_tournament_id, %{point_system: "total_wins"}) do
     %{}
     # raise "NOT WORKING RIGHT"
     ## single elim wins aren't being counted right :(

@@ -9,6 +9,7 @@ defmodule Backend.Fantasy do
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
 
+  alias Backend.Blizzard
   alias Backend.Fantasy.League
   alias Backend.Fantasy.Draft
   alias Backend.UserManager.User
@@ -441,11 +442,11 @@ defmodule Backend.Fantasy do
   def get_league_team_pick!(id), do: Repo.get!(LeagueTeamPick, id)
   def get_league_team_pick(id), do: Repo.get(LeagueTeamPick, id)
 
-  def get_league_team_pick(lt_id, pick) do
+  def get_league_team_pick(lt_id, pick, round) do
     query =
       from ltp in LeagueTeamPick,
         select: ltp,
-        where: ltp.team_id == ^lt_id and ltp.pick == ^pick
+        where: ltp.team_id == ^lt_id and ltp.pick == ^pick and ltp.round == ^round
 
     Repo.one(query)
   end
@@ -683,7 +684,7 @@ defmodule Backend.Fantasy do
     with lt = %LeagueTeam{} <- get_league_team(league_team_id),
          true <- LeagueTeam.can_manage?(lt, user),
          true <- LeagueTeam.can_unpick?(lt),
-         ltp = %LeagueTeamPick{} <- get_league_team_pick(lt.id, pick),
+         ltp = %LeagueTeamPick{} <- get_league_team_pick(lt.id, pick, lt.league.current_round),
          {:ok, _} <- delete_league_team_pick(ltp),
          league = %{id: _} <- get_league(lt.league_id),
          cs <- League.inc_updated_at(league) do
@@ -692,4 +693,76 @@ defmodule Backend.Fantasy do
   end
 
   def get_battlefy_user_picks(_, _), do: []
+
+  def stale_leagues(comp_type, comp, current_round) do
+    query =
+      from l in League,
+        where:
+          l.competition_type == ^comp_type and l.competition == ^comp and
+            l.current_round < ^current_round
+
+    Repo.all(query)
+  end
+
+  def advance_gm_round() do
+    current_season = Blizzard.current_gm_season()
+    tournament_title = current_season |> Blizzard.gm_tournament_title()
+
+    with {_, week_num} <- Blizzard.current_gm_week(current_season),
+         stale_leagues <- stale_leagues("grandmasters", tournament_title, week_num) do
+      stale_leagues
+      |> Enum.map(&advance_gm_round(&1, week_num))
+    end
+  end
+
+  def advance_gm_round(%{id: id}, new_round) do
+    league = get_league!(id)
+
+    attrs = %{
+      draft_deadline: new_league_deadline(league.draft_deadline, League.round_length(league)),
+      current_round: new_round
+    }
+
+    multi =
+      league.teams
+      |> Enum.reduce(Multi.new(), fn team, multi ->
+        team
+        |> LeagueTeam.round_picks(league.current_round)
+        |> Enum.reduce(multi, fn ltp, multi ->
+          team = league |> League.league_team!(ltp.team_id)
+
+          team
+          |> LeagueTeam.has_pick?(ltp.pick, new_round)
+          |> if do
+            multi
+          else
+            cs =
+              %LeagueTeamPick{}
+              |> LeagueTeamPick.changeset(%{pick: ltp.pick, team: team, round: new_round})
+
+            multi |> Multi.insert("carry_forward_#{ltp.pick}_#{team.id}_#{new_round}", cs)
+          end
+        end)
+      end)
+
+    league_cs =
+      league
+      |> League.changeset(attrs)
+
+    multi
+    |> Multi.update("advance_league_#{id}", league_cs)
+    |> Repo.transaction()
+  end
+
+  def new_league_deadline(deadline, :week) do
+    now = NaiveDateTime.utc_now()
+
+    if NaiveDateTime.compare(now, deadline) == :gt do
+      deadline
+      |> NaiveDateTime.add(60 * 60 * 24 * 7)
+      |> new_league_deadline(:week)
+    else
+      deadline
+    end
+  end
 end

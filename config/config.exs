@@ -11,6 +11,7 @@ config :backend, QuantumScheduler,
   jobs: [
     {"*/3 * * * *", fn -> Backend.HSReplay.update_latest() end},
     {"7 7 * * *", fn -> Backend.EsportsEarnings.auto_update() end},
+    {"0 12 * * Mon", fn -> Backend.Fantasy.advance_gm_round() end},
     {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
     {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
     {"37 5 * * *", fn -> Backend.PrioritizedBattletagCache.update_cache() end},

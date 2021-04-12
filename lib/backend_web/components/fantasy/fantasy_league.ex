@@ -2,13 +2,16 @@ defmodule Components.FantasyLeague do
   @moduledoc false
   use Surface.LiveComponent
   alias Components.FantasyModal
+  alias Components.LeagueInfoModal
   alias Components.RosterModal
   alias Backend.Fantasy.League
   alias Backend.Fantasy.LeagueTeam
   alias Backend.UserManager.User
   alias Backend.Fantasy
+  alias Backend.FantasyCompetitionFetcher, as: ResultsFetcher
   use BackendWeb.ViewHelpers
   prop(league, :any)
+  prop(round, :any, default: nil)
 
   def render(assigns = %{league: league = %{id: _}}) do
     ~H"""
@@ -16,27 +19,33 @@ defmodule Components.FantasyLeague do
         <Context get={{ user: user }} >
           <div class="title is-2">{{ @league.name }} </div>
         
-          <div class="level"> 
+          <div class="level is-mobile "> 
             <div class="level-left">
 
               <div class="level-item" :if={{ League.can_manage?(@league, user) }} >
-                <div class="level-item">
                   <FantasyModal id={{ "edit_modal_#{@league.id}" }} league={{ @league }} title="Edit League"/>
-                </div>
-                <div class="level-item">
-                  <a class="is-link button"  href="/fantasy/leagues/join/{{ @league.join_code }}">Join Link</a>
+              </div>
+              <div class="level-item" :if={{ !League.can_manage?(@league, user) }} >
+                  <LeagueInfoModal id={{ "league_info_modal_#{@league.id}" }} league={{ @league }}/>
+              </div>
+
+              <div class="level-item dropdown is-hoverable">
+                <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">{{ round_title(@league, @round) }}</button></div>
+                <div class="dropdown-menu" role="menu">
+                    <div class="dropdown-content">
+                        <a  :for={{ r <- round_options(@league) }} :on-click="set_round" phx-value-round={{ r }} class="dropdown-item is-link {{ current_round_option(@league, @round) == r && 'is-active' || '' }}">{{ round_title(r) }}</a>
+                    </div>
                 </div>
               </div>
 
               <div class="level-item">
-                <a class="is-link button"  href="/fantasy/leagues/{{ @league.id }}/draft">View Draft</a>
+                <a class="is-link button"  href="/fantasy/leagues/{{ @league.id }}/draft">{{ draft_title(@league) }}</a>
               </div>
-              <div class="level-item is-5 tag is-info">
-                Point System: {{ @league |> League.scoring_display() }}
+
+              <div class="level-item" :if={{ League.can_manage?(@league, user) }} >
+                <a class="is-link button"  href="/fantasy/leagues/join/{{ @league.join_code }}">Join Link</a>
               </div>
-              <div class="level-item is-5 tag is-info" :if={{ @league.draft_deadline }}>
-                Draft Deadline: {{ render_datetime(@league.draft_deadline) }}
-              </div>
+
 
             </div>
           </div>
@@ -49,7 +58,7 @@ defmodule Components.FantasyLeague do
               <th>Actions</th>
             </thead>
             <tbody>
-             <tr :for={{ {lt, points} <- teams_with_points(@league) }}>
+             <tr :for={{ {lt, points} <- teams_with_points(@league, @round) }}>
               <td>{{ lt |> LeagueTeam.display_name() }}</td>
               <td>{{ lt.owner |> User.display_name() }}</td>
               <td>{{ points }}</td>
@@ -67,6 +76,32 @@ defmodule Components.FantasyLeague do
     """
   end
 
+  def draft_title(%{real_time_draft: true}), do: "View Draft"
+  def draft_title(%{real_time_draft: false}), do: "Manager Roster"
+
+  def handle_event("set_round", %{"round" => round}, socket) do
+    round_val =
+      round
+      |> Integer.parse()
+      |> case do
+        {r, _} -> r
+        _ -> :all
+      end
+
+    {:noreply, socket |> assign(round: round_val)}
+  end
+
+  def round_title(league, round), do: current_round_option(league, round) |> round_title()
+  def round_title("All"), do: "All Rounds"
+  def round_title(round), do: "Round #{round}"
+
+  def current_round_option(_, :all), do: "All"
+  def current_round_option(league, round), do: League.round(league, round)
+
+  def round_options(%{current_round: cr}) do
+    ["All" | 1..cr |> Enum.into([])]
+  end
+
   def can_remove?(league, user, league_team) do
     cond do
       !League.can_manage?(league, user) -> false
@@ -77,20 +112,27 @@ defmodule Components.FantasyLeague do
     end
   end
 
-  defp teams_with_points(league) do
-    results = Backend.FantasyCompetitionFetcher.fetch_results(league)
+  defp teams_with_points(league, round) do
+    results =
+      results_rounds(league, round)
+      |> Enum.map(&{&1, ResultsFetcher.fetch_results(league, &1)})
+      |> Map.new()
 
     league.teams
     |> Enum.map(fn t ->
       points =
         t.picks
-        |> Enum.map(&(results |> Map.get(&1.pick) || 0))
+        |> Enum.map(&(get_in(results, [&1.round, &1.pick]) || 0))
         |> Enum.sum()
 
       {t, points}
     end)
     |> Enum.sort_by(&(&1 |> elem(1)), :desc)
   end
+
+  defp results_rounds(league, :all), do: 1..league.current_round |> Enum.into([])
+  defp results_rounds(_, round) when is_integer(round), do: [round]
+  defp results_rounds(league, _), do: [league.current_round]
 
   def render(assigns) do
     ~H"""

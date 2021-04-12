@@ -1498,7 +1498,10 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters_for_promotion(_), do: []
 
   def get_grandmasters({2021, 1}) do
-    get_grandmasters(:Ironforge, ["justsaiyan", "撒旦降臨", "bloodyface", "Che0nsu"] |> MapSet.new()) ++
+    get_grandmasters(
+      :Ironforge,
+      ["justsaiyan", "撒旦降臨", "bloodyface", "Che0nsu", "Zalae", "zalae"] |> MapSet.new()
+    ) ++
       ["lunaloveee", "Tincho", "che0nsu"]
   end
 

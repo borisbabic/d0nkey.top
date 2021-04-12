@@ -50,12 +50,14 @@ defmodule Backend.Fantasy.LeagueTeam do
   def can_manage?(%{owner_id: owner_id}, %{id: user_id}), do: owner_id == user_id
   def can_manage?(_, _), do: false
 
-  def has_pick?(%{picks: picks = [_ | _]}, name), do: picks |> Enum.any?(&(&1.pick == name))
-  def has_pick?(_, _), do: false
+  def has_pick?(%{picks: picks = [_ | _]}, name, current_round),
+    do: picks |> Enum.any?(&(&1.pick == name && &1.round == current_round))
+
+  def has_pick?(_, _, _), do: false
 
   def round_picks(%{picks: picks}, round), do: picks |> Enum.filter(&(&1.round == round))
 
-  def can_unpick?(%{league: %{current_round: 1}}, _), do: true
+  def can_unpick?(%{league: %{current_round: 1}}), do: true
 
   def can_unpick?(lt = %{league: league = %{current_round: cr}}) do
     current_round_picks = lt |> round_picks(cr) |> Enum.map(& &1.pick)
@@ -65,6 +67,9 @@ defmodule Backend.Fantasy.LeagueTeam do
 
     min_same = league |> League.min_same()
 
-    currently_same >= min_same
+    currently_same > min_same
   end
+
+  def current_roster_size(lt), do: lt |> current_picks() |> Enum.count()
+  def current_picks(lt = %{league: %{current_round: cr}}), do: lt |> round_picks(cr)
 end
