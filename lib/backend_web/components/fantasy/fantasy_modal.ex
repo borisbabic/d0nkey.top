@@ -24,6 +24,7 @@ defmodule Components.FantasyModal do
   alias Surface.Components.Form.Checkbox
   alias Surface.Components.Form.DateTimeLocalInput
 
+  alias Backend.Fantasy
   alias Backend.MastersTour.TourStop
 
   def render(assigns) do
@@ -111,7 +112,7 @@ defmodule Components.FantasyModal do
     """
   end
 
-  defp gm_2021_1_start(), do: ~N[2021-04-08 09:00:00]
+  defp gm_2021_1_start(), do: ~N[2021-04-08 09:00:00] |> Fantasy.new_league_deadline(:week)
 
   defp draft_deadline_value(%{draft_deadline: dd}) when not is_nil(dd),
     do: dd |> NaiveDateTime.to_iso8601()
@@ -126,7 +127,7 @@ defmodule Components.FantasyModal do
     do: TourStop.get_next() |> TourStop.get_start_time()
 
   defp draft_deadline_value(%{}), do: gm_2021_1_start()
-  defp draft_deadline_value(), do: nil
+  defp draft_deadline_value(_), do: nil
 
   defp update_draft_deadline(attrs = %{"deadline" => <<dd::binary>>}) do
     "#{dd}:00"
@@ -164,11 +165,23 @@ defmodule Components.FantasyModal do
     {owner_id, attrs} =
       attrs_raw
       |> update_draft_deadline()
+      |> add_round()
       |> Map.pop("owner_id")
 
     attrs
     |> Backend.Fantasy.create_league(owner_id)
     |> handle_result(socket)
+  end
+
+  def add_round(attrs) do
+    attrs
+    |> Map.put(
+      "current_round",
+      Backend.FantasyCompetitionFetcher.current_round(
+        attrs["competition_type"],
+        attrs["competition"]
+      )
+    )
   end
 
   def handle_event("regenerate_join_code", _, socket = %{assigns: %{league: league}}) do
