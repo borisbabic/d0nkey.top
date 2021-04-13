@@ -683,7 +683,7 @@ defmodule Backend.Fantasy do
   def unpick(league_team_id, user, pick) do
     with lt = %LeagueTeam{} <- get_league_team(league_team_id),
          true <- LeagueTeam.can_manage?(lt, user),
-         true <- LeagueTeam.can_unpick?(lt),
+         true <- LeagueTeam.can_unpick?(lt, pick),
          ltp = %LeagueTeamPick{} <- get_league_team_pick(lt.id, pick, lt.league.current_round),
          {:ok, _} <- delete_league_team_pick(ltp),
          league = %{id: _} <- get_league(lt.league_id),

@@ -237,9 +237,9 @@ defmodule Backend.Fantasy.League do
     end
   end
 
-  def unpickable?(l = %{real_time_draft: false}, lt = %LeagueTeam{}, u = %User{}) do
+  def unpickable?(l = %{real_time_draft: false}, lt = %LeagueTeam{}, u = %User{}, pick) do
     !draft_deadline_passed?(l) && lt |> LeagueTeam.can_manage?(u) &&
-      lt |> LeagueTeam.can_unpick?()
+      lt |> LeagueTeam.can_unpick?(pick)
   end
 
   def unpickable?(_, _, _), do: false

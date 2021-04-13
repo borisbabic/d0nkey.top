@@ -42,8 +42,8 @@ defmodule Components.CompetitorsTable do
               <td>{{ participant.name }}</td>
               <td>
                 <div :if={{ picked_by = picked_by(@league, participant, @user) }}>
-                  <div :if={{ !League.unpickable?(@league, picked_by, @user) }}class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
-                  <button :if={{ League.unpickable?(@league, picked_by, @user) }} class="button" type="button" :on-click="unpick" phx-value-league_team="{{picked_by.id}}" phx-value-pick="{{ participant.name }}">
+                  <div :if={{ !League.unpickable?(@league, picked_by, @user, participant.name) }}class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
+                  <button :if={{ League.unpickable?(@league, picked_by, @user, participant.name) }} class="button" type="button" :on-click="unpick" phx-value-league_team="{{picked_by.id}}" phx-value-pick="{{ participant.name }}">
                     Unpick
                   </button>
                 </div>

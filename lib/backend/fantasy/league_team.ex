@@ -57,9 +57,9 @@ defmodule Backend.Fantasy.LeagueTeam do
 
   def round_picks(%{picks: picks}, round), do: picks |> Enum.filter(&(&1.round == round))
 
-  def can_unpick?(%{league: %{current_round: 1}}), do: true
+  def can_unpick?(%{league: %{current_round: 1}}, _pick), do: true
 
-  def can_unpick?(lt = %{league: league = %{current_round: cr}}) do
+  def can_unpick?(lt = %{league: league = %{current_round: cr}}, pick) do
     current_round_picks = lt |> round_picks(cr) |> Enum.map(& &1.pick)
 
     removed =
@@ -68,7 +68,12 @@ defmodule Backend.Fantasy.LeagueTeam do
       |> Enum.filter(&(!(&1.pick in current_round_picks)))
       |> Enum.count()
 
-    removed < league.changes_between_rounds
+    in_previous_round =
+      lt
+      |> round_picks(cr - 1)
+      |> Enum.any?(&(&1.pick == pick))
+
+    !in_previous_round || removed < league.changes_between_rounds
   end
 
   def current_roster_size(lt), do: lt |> current_picks() |> Enum.count()
