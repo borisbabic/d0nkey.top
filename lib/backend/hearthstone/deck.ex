@@ -108,7 +108,10 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   defp base64_decode(target) do
-    fixed = String.replace(target, [",", "."], "")
+    fixed =
+      String.replace(target, [",", "."], "")
+      |> String.split(" ")
+      |> Enum.at(0)
 
     with :error <- fixed |> Base.decode64(),
          :error <- (fixed <> "==") |> Base.decode64(),
