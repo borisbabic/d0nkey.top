@@ -8,6 +8,7 @@ defmodule Components.ExpandableLineup do
   prop(lineup, :map)
   prop(show_cards, :boolean, default: false)
   prop(track_copied, :boolean, default: true)
+  prop(stats, :map, default: nil)
 
   def render(assigns) do
     ~H"""
@@ -19,13 +20,19 @@ defmodule Components.ExpandableLineup do
           </span>
         </span>
       <div class="columns">
-        <div class=" column " :for={{ deck <- @lineup.decks |> Deck.sort() }} >
+        <div class=" column " :for={{ deck <- @lineup.decks |> sort(@stats) }} >
           <Decklist deck={{ deck }} show_cards={{ @show_cards }}/>
         </div>
       </div>
     </div>
     """
   end
+
+  def sort(decks, stats) when is_map(stats) do
+    decks |> Deck.sort() |> Enum.sort_by(&(stats |> Map.get(&1 |> Deck.class(), 1)), :desc)
+  end
+
+  def sort(decks, _), do: decks |> Deck.sort()
 
   def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old, lineup: l}}) do
     {
