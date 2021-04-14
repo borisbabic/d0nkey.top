@@ -20,4 +20,30 @@ defmodule Backend.Hearthstone.Lineup do
     |> put_assoc(:decks, decks)
     |> validate_required([:tournament_id, :tournament_source, :name])
   end
+
+  def stats(lineups) do
+    lineups
+    |> Enum.reduce(empty_stats_map(), fn l, c ->
+      l.decks
+      |> Enum.reduce(c, fn d, carry ->
+        carry
+        |> Map.update(d |> Deck.class(), 1, &(&1 + 1))
+      end)
+    end)
+  end
+
+  defp empty_stats_map() do
+    %{
+      "DEMONHUNTER" => 0,
+      "DRUID" => 0,
+      "HUNTER" => 0,
+      "MAGE" => 0,
+      "PALADIN" => 0,
+      "PRIEST" => 0,
+      "ROGUE" => 0,
+      "SHAMAN" => 0,
+      "WARLOCK" => 0,
+      "WARRIOR" => 0
+    }
+  end
 end

@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone.Deck do
   use Ecto.Schema
   import Ecto.Changeset
   alias __MODULE__
+  alias Backend.Hearthstone
   @required [:cards, :hero, :format, :deckcode]
   @optional [:hsreplay_archetype, :class]
   schema "deck" do
@@ -163,7 +164,7 @@ defmodule Backend.Hearthstone.Deck do
 
   def get_canonical_hero(hero) when is_integer(hero) do
     hero
-    |> Backend.HearthstoneJson.get_class()
+    |> Hearthstone.class()
     |> case do
       class when is_binary(class) -> get_basic_hero(class)
       _ -> hero
@@ -250,5 +251,11 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def sort(decks), do: decks |> Enum.sort_by(& &1.class)
+  def sort(decks), do: decks |> Enum.sort_by(&class/1)
+
+  def class(deck) do
+    with nil <- deck.class do
+      deck.hero |> Hearthstone.class()
+    end
+  end
 end
