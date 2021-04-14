@@ -20,7 +20,7 @@ defmodule Components.ExpandableLineup do
           </span>
         </span>
       <div class="columns">
-        <div class=" column " :for={{ deck <- @lineup.decks |> sort(@stats) }} >
+        <div class=" column is-narrow" :for={{ deck <- @lineup.decks |> sort(@stats) }} >
           <Decklist deck={{ deck }} show_cards={{ @show_cards }}/>
         </div>
       </div>

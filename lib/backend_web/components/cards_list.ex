@@ -45,7 +45,7 @@ defmodule Components.CardsList do
 
     ~H"""
       <Context get={{ user: user }}>
-        <div class="decklist_card_container" :for ={{ {card, count} <- cards }}>
+        <div class="decklist_card_container" :for ={{ {card, count} <- cards }} style="margin: 0; padding: 0;">
             <div class="{{ rotation_class(@highlight_rotation, card) }}">
               <DecklistCard show_mana_cost={{ true }} deck_class={{ @deck_class }} card={{ card }} count={{ count }} decklist_options={{ User.decklist_options(user) }}/>
             </div>

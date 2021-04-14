@@ -59,6 +59,7 @@
   --color-classic: rgb(166, 166, 166);
   --color-firesidegathering: rgb(24, 200, 166);
   --color-unknown: rgb(66, 66, 66);
+  --decklist-width: 200px;
 }
 
 .card_tile_fade_box {
@@ -79,8 +80,8 @@
 }
 
 .decklist_card_container {
-  max-height: 45px;
-  max-width: 200px;
+  /*max-height: 45px;*/
+  width: var(--decklist-width);
   /*max-height: 30px;*/
 }
 
@@ -201,11 +202,11 @@
   background-color: var(--color-warrior)
 }
 .is-deck-wide {
-  width: 200px;
+  width: var(--decklist-width);
 
 }
 .decklist-hero {
-  max-width: 200px;
+  width: var(--decklist-width);
   background-repeat: no-repeat;
   background-size: contain;
   /*border-width: 10px;*/

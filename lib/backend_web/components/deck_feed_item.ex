@@ -17,7 +17,7 @@ defmodule Components.DeckFeedItem do
       end
 
     ~H"""
-    <div :if={{ deck }} class="card" style="width: 215px;">
+    <div :if={{ deck }} class="card" style="width: calc(var(--decklist-width) + 15px);">
       <div class="card-image" style="margin:7.5px;">
         <Decklist deck={{ deck }} name={{ name }} />
       </div>
