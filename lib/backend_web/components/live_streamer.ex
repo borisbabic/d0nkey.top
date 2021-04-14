@@ -56,7 +56,7 @@ defmodule Components.LiveStreamer do
                   <div :if={{ legend_rank }}> {{ legend_rank }} </div>
                 </div>
                 <div :if={{ show_deck }} >
-                  <div style="width: 200px"> 
+                  <div class="is-deck-wide"> 
                     <slot/>
                   </div>
                 </div>
