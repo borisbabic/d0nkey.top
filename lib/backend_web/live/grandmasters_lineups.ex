@@ -28,7 +28,7 @@ defmodule BackendWeb.GrandmastersLineup do
             </tr>
           </thead>
           <tbody>
-            <tr :for={{ lineup <- Backend.Blizzard.get_grandmasters_lineups() }}>
+            <tr :for={{ lineup <- Backend.Blizzard.get_grandmasters_lineups() |> Enum.sort_by(& &1.name) }}>
               <td> {{ lineup.name }} </td>
               <td> 
                 <ExpandableLineup lineup={{ lineup }} id={{"modal_lineup_#{lineup.id}"}}/>
