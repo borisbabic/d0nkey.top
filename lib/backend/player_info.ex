@@ -1500,9 +1500,9 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters({2021, 1}) do
     get_grandmasters(
       :Ironforge,
-      ["justsaiyan", "撒旦降臨", "bloodyface", "Che0nsu", "Zalae", "zalae"] |> MapSet.new()
+      ["justsaiyan", "撒旦降臨", "bloodyface", "Che0nsu", "Zalae", "zalae", "posesi"] |> MapSet.new()
     ) ++
-      ["lunaloveee", "Tincho", "che0nsu"]
+      ["lunaloveee", "Tincho", "che0nsu", "Posesi"]
   end
 
   def get_grandmasters(rts = reference_tour_stop, relegated) do
