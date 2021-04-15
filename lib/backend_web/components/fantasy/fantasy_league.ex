@@ -77,7 +77,7 @@ defmodule Components.FantasyLeague do
   end
 
   def draft_title(%{real_time_draft: true}), do: "View Draft"
-  def draft_title(%{real_time_draft: false}), do: "Manager Roster"
+  def draft_title(%{real_time_draft: false}), do: "Manage Roster"
 
   def handle_event("set_round", %{"round" => round}, socket) do
     round_val =
