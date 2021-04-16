@@ -104,7 +104,7 @@ defmodule Backend.Hearthstone.Deck do
       {:ok, %__MODULE__{format: format, hero: hero, cards: cards, deckcode: no_comments}}
     else
       {:error, reason} -> {:error, reason}
-      _ -> :error
+      _ -> {:error, "Couldn't decode deckstring"}
     end
   end
 
