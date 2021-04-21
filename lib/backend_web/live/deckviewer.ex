@@ -33,11 +33,7 @@ defmodule BackendWeb.DeckviewerLive do
     comparison =
       if cd do
         codes
-        |> Enum.map(&Deck.decode!/1)
-        |> Enum.flat_map(& &1.cards)
-        |> Enum.uniq()
-        |> Enum.map(&HearthstoneJson.get_card/1)
-        |> Hearthstone.sort_cards()
+        |> Deck.create_comparison_map()
       else
         nil
       end

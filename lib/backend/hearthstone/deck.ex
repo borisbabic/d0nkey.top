@@ -258,4 +258,16 @@ defmodule Backend.Hearthstone.Deck do
       deck.hero |> Hearthstone.class()
     end
   end
+
+  def create_comparison_map(decklists = [code | _]) when is_binary(code) do
+    decklists |> Enum.map(&Deck.decode!/1)
+  end
+
+  def create_comparison_map(decks = [%Deck{} | _]) do
+    decks
+    |> Enum.flat_map(& &1.cards)
+    |> Enum.uniq()
+    |> Enum.map(&Hearthstone.get_card/1)
+    |> Hearthstone.sort_cards()
+  end
 end

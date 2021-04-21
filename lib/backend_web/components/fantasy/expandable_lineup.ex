@@ -20,12 +20,23 @@ defmodule Components.ExpandableLineup do
           </span>
         </span>
       <div class="columns">
-        <div class=" column is-narrow" :for={{ deck <- @lineup.decks |> sort(@stats) }} >
-          <Decklist deck={{ deck }} show_cards={{ @show_cards }}/>
+        <div class=" column is-narrow" :for={{ deck <- @lineup.decks |> sort(@stats) }}  >
+          <Decklist deck={{ deck }} show_cards={{ @show_cards }} comparison={{ comparison_map(@lineup.decks) }}/>
         </div>
       </div>
     </div>
     """
+  end
+
+  def comparison_map(decks) do
+    decks
+    |> Enum.map(&Deck.class/1)
+    |> Enum.uniq()
+    |> Enum.count()
+    |> case do
+      1 -> decks |> Deck.create_comparison_map()
+      _ -> nil
+    end
   end
 
   def sort(decks, stats) when is_map(stats) do
