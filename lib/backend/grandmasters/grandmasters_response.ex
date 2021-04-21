@@ -259,16 +259,6 @@ defmodule Backend.Grandmasters.Response.Match do
   def from_raw_map(nil), do: nil
 
   def from_raw_map(map) do
-    decklists =
-      ["competitor_1", "competitor_2"]
-      |> Enum.map(fn n ->
-        get_in(map, ["attributes", n, "decklist"])
-        |> case do
-          nil -> []
-          codes -> codes |> Enum.map(& &1["deck_code"])
-        end
-      end)
-
     start_date =
       if is_integer(map["start_date"]) do
         div(map["start_date"], 1000)
@@ -284,9 +274,33 @@ defmodule Backend.Grandmasters.Response.Match do
       competitors: map["competitors"] |> Enum.map(&Competitor.from_raw_map/1),
       status: map["status"],
       state: map["state"],
-      decklists: decklists
+      decklists: parse_decklists(map)
     }
   end
+
+  def parse_decklists(map = %{"attributes" => %{"competitor_1" => _}}) do
+    ["competitor_1", "competitor_2"]
+    |> Enum.map(fn n ->
+      get_in(map, ["attributes", n, "decklist"])
+      |> case do
+        nil -> []
+        codes -> codes |> Enum.map(& &1["deck_code"])
+      end
+    end)
+  end
+
+  def parse_decklists(map = %{"attributes" => %{"competitor_1_decklists" => _}}) do
+    ["competitor_1_decklists", "competitor_2_decklists"]
+    |> Enum.map(fn n ->
+      get_in(map, ["attributes", n])
+      |> case do
+        nil -> []
+        codes -> codes
+      end
+    end)
+  end
+
+  def parse_decklists(_), do: [[], []]
 end
 
 defmodule Backend.Grandmasters.Response.Competitor do
