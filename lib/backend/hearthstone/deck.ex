@@ -260,7 +260,7 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   def create_comparison_map(decklists = [code | _]) when is_binary(code) do
-    decklists |> Enum.map(&Deck.decode!/1)
+    decklists |> Enum.map(&Deck.decode!/1) |> create_comparison_map()
   end
 
   def create_comparison_map(decks = [%Deck{} | _]) do
