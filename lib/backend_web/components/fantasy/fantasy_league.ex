@@ -53,14 +53,12 @@ defmodule Components.FantasyLeague do
           <table class="table is-fullwidth is-striped">
             <thead>
               <th>Team</th>
-              <th>Owner</th>
               <th>Points</th>
               <th>Actions</th>
             </thead>
             <tbody>
              <tr :for={{ {lt, points} <- teams_with_points(@league, @round) }}>
               <td>{{ lt |> LeagueTeam.display_name() }}</td>
-              <td>{{ lt.owner |> User.display_name() }}</td>
               <td>{{ points }}</td>
               <td>
                 <button  :if={{ can_remove?(@league, user, lt) }} class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
