@@ -88,7 +88,7 @@ defmodule Backend.Hearthstone.Deck do
   @doc """
   Decode a deckcode into a Deck struct
   ## Example
-  iex> Backend.Hearthstone.Deck.decode("blabla")
+  iex> Backend.Hearthstone.Deck.decode("blablabla")
   {:error, "Couldn't decode deckstring"}
   iex> {:ok, deck} = Backend.Hearthstone.Deck.decode("AAECAR8BugMAAA=="); deck.deckcode
   "AAECAR8BugMAAA=="
