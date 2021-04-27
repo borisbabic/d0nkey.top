@@ -529,7 +529,8 @@ defmodule Backend.Fantasy do
         left_join: lt in LeagueTeam,
         on: [league_id: l.id],
         preload: [:teams, :owner],
-        where: l.owner_id == ^user.id or lt.owner_id == ^user.id
+        where: l.owner_id == ^user.id or lt.owner_id == ^user.id,
+        order_by: [desc: lt.inserted_at, desc: l.inserted_at]
 
     query |> Repo.all()
   end
