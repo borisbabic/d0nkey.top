@@ -104,12 +104,14 @@ defmodule Components.RosterModal do
   defp show_pick_name(_, _, name, _), do: name
 
   def picks_with_points(league_team, true, round) do
-    results = Backend.FantasyCompetitionFetcher.fetch_results(league_team.league, round)
+    results =
+      Backend.FantasyCompetitionFetcher.fetch_results(league_team.league, round)
+      |> Map.new(&League.normalize_pick(&1, league_team.league))
 
     league_team
     |> LeagueTeam.round_picks(round)
     |> Enum.map(fn %{pick: pick} ->
-      {pick, results |> Map.get(pick) || 0}
+      {pick, results |> Map.get(pick |> League.normalize_pick(league_team.league)) || 0}
     end)
     |> Enum.sort_by(&(&1 |> elem(0)), :desc)
     |> Enum.sort_by(&(&1 |> elem(1)), :desc)

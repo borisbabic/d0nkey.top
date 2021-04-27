@@ -55,6 +55,10 @@ defmodule Backend.MastersTour do
     Repo.all(query)
   end
 
+  def list_officially_invited_players(tour_stop) do
+    list_invited_players(tour_stop) |> Enum.filter(& &1.official)
+  end
+
   def filter_existing(invited_players, tour_stop) do
     existing =
       Repo.all(

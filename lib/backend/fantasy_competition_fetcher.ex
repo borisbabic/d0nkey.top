@@ -6,15 +6,30 @@ defmodule Backend.FantasyCompetitionFetcher do
   alias Backend.Hearthstone
   alias Backend.Infrastructure.GrandmastersCommunicator
   alias Backend.Blizzard
+  alias Backend.MastersTour
   alias Backend.Grandmasters.Response, as: GM
+
   @spec get_participants(League.t()) :: [Participant.t()]
   def get_participants(%{competition_type: "masters_tour", competition: competition}) do
+    normalize_name = &Backend.Battlenet.Battletag.shorten/1
+
+    battlefy_particpants =
+      competition
+      |> TourStop.get()
+      |> case do
+        %{battlefy_id: bid} when is_binary(bid) -> bid |> get_battlefy_participants()
+        _ -> []
+      end
+      |> MapSet.new(&(&1.name |> normalize_name.()))
+
     competition
-    |> TourStop.get()
-    |> case do
-      %{battlefy_id: bid} when is_binary(bid) -> bid |> get_battlefy_participants()
-      _ -> []
-    end
+    |> MastersTour.list_officially_invited_players()
+    |> Enum.map(fn ip ->
+      signed_up_in_battlefy =
+        battlefy_particpants |> MapSet.member?(ip.battletag_full |> normalize_name.())
+
+      %Participant{name: ip.battletag_full, meta: %{in_battlefy: signed_up_in_battlefy}}
+    end)
   end
 
   def current_round("grandmasters", <<"gm_"::binary, gm_season_raw::binary>>) do
@@ -62,7 +77,7 @@ defmodule Backend.FantasyCompetitionFetcher do
          gm <- GrandmastersCommunicator.get_gm() do
       gm |> GM.results(matcher)
     else
-      other ->
+      _other ->
         %{}
     end
   end

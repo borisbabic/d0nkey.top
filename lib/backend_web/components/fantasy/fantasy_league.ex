@@ -114,13 +114,15 @@ defmodule Components.FantasyLeague do
     results =
       results_rounds(league, round)
       |> Enum.map(&{&1, ResultsFetcher.fetch_results(league, &1)})
-      |> Map.new()
+      |> Map.new(fn {round, round_results} ->
+        {round, round_results |> Map.new(&League.normalize_pick(&1, league))}
+      end)
 
     league.teams
     |> Enum.map(fn t ->
       points =
         t.picks
-        |> Enum.map(&(get_in(results, [&1.round, &1.pick]) || 0))
+        |> Enum.map(&(get_in(results, [&1.round, &1.pick |> League.normalize_pick(league)]) || 0))
         |> Enum.sum()
 
       {t, points}

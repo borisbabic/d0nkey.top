@@ -4,6 +4,7 @@ defmodule Components.CompetitorsTable do
 
   alias Backend.Fantasy
   alias Backend.Fantasy.League
+  alias Backend.Fantasy.Competition.Participant
   alias Backend.Fantasy.LeagueTeam
   alias Surface.Components.Form
   alias Surface.Components.Form.TextInput
@@ -33,6 +34,9 @@ defmodule Components.CompetitorsTable do
             <th>
               Competitor
             </th>
+            <th :for={{ column <- competition_specific_columns(@league)}}>
+              {{ column }}
+            </th>
             <th>
               Status
             </th>
@@ -40,6 +44,9 @@ defmodule Components.CompetitorsTable do
           <tbody>
             <tr :for={{ participant <- @participants |> filter(@search)}} >
               <td>{{ participant.name }}</td>
+              <td :for={{ value <- competition_specific_columns(@league, participant)}}>
+                {{ value }}
+              </td>
               <td>
                 <div :if={{ picked_by = picked_by(@league, participant, @user) }}>
                   <div :if={{ !League.unpickable?(@league, picked_by, @user, participant.name) }}class="tag is-info"> {{ picked_by |> LeagueTeam.display_name() }}</div>
@@ -60,6 +67,19 @@ defmodule Components.CompetitorsTable do
       </div>
     """
   end
+
+  defp competition_specific_columns(%{competition_type: "masters_tour"}), do: ["Signed Up"]
+  defp competition_specific_columns(_), do: []
+
+  defp competition_specific_columns(%{competition_type: "masters_tour"}, p) do
+    if p |> Participant.in_battlefy?() do
+      ["Yes"]
+    else
+      ["No"]
+    end
+  end
+
+  defp competition_specific_columns(_, _), do: []
 
   def handle_event(
         "unpick",

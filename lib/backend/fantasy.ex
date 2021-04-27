@@ -530,7 +530,7 @@ defmodule Backend.Fantasy do
         on: [league_id: l.id],
         preload: [:teams, :owner],
         where: l.owner_id == ^user.id or lt.owner_id == ^user.id,
-        order_by: [desc: lt.inserted_at, desc: l.inserted_at]
+        order_by: [desc: l.inserted_at]
 
     query |> Repo.all()
   end

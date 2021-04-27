@@ -12,6 +12,9 @@ defmodule BackendWeb.FantasyHelper do
     end
   end
 
+  def competition_name(competition) when is_atom(competition),
+    do: competition |> to_string() |> competition_name()
+
   def competition_name(n) when is_binary(n), do: n
 
   def draft_type_name(%{real_time_draft: true}), do: "Exclusive/Real Time"
