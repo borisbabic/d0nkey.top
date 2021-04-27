@@ -229,7 +229,9 @@ defmodule Backend.Fantasy.League do
     NaiveDateTime.compare(dd, now) == :lt
   end
 
-  def scoring_display(%{point_system: ps}) do
+  def scoring_display(%{point_system: ps}), do: ps |> scoring_display()
+
+  def scoring_display(ps) when is_binary(ps) do
     case ps do
       "swiss_wins" -> "Swiss Wins"
       "gm_points_2021" -> "GM Points"
@@ -253,4 +255,12 @@ defmodule Backend.Fantasy.League do
   def round(_, round) when is_integer(round), do: round
   def round(%{current_round: round}, _), do: round
   def round(_, _), do: 1
+
+  def normalize_pick({pick, val}, %{competition_type: "masters_tour"}),
+    do: {pick |> Backend.Battlenet.Battletag.shorten(), val}
+
+  def normalize_pick(pick, %{competition_type: "masters_tour"}),
+    do: pick |> Backend.Battlenet.Battletag.shorten()
+
+  def normalize_pick(pick_or_val, _), do: pick_or_val
 end

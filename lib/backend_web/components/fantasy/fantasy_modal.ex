@@ -24,15 +24,19 @@ defmodule Components.FantasyModal do
   alias Surface.Components.Form.Checkbox
   alias Surface.Components.Form.DateTimeLocalInput
 
+  import BackendWeb.FantasyHelper
+
   alias Backend.Fantasy
   alias Backend.MastersTour.TourStop
 
   def render(assigns) do
+    competition_type = selected_competition_type(assigns.current_params, assigns.league)
+
     ~H"""
     <div>
       <button class="button" type="button" :on-click="show_modal">{{ @title }}</button>
       <div :if={{ @show_success }} class="notification is-success tag">{{ @success_message }}</div>
-      <div class="modal is-active" :if={{ @show_modal }}>
+      <div class="modal is-active" :if={{ @show_modal }} >
         <Form for={{ :league }} change="change" submit="submit">
           <div class="modal-background"></div>
           <div class="modal-card">
@@ -57,16 +61,18 @@ defmodule Components.FantasyModal do
                 <NumberInput class="input is-small" value= {{ @current_params["roster_size"] || @league.roster_size }}/>
               </Field>
 
+              <Field name="competition_type">
+                <Label class="label">Competition Type</Label>
+                <Select selected={{ competition_type }} class="select" options={{ competition_type_options() }}/>
+              </Field>
+
               <Field name="competition">
                 <Label class="label">Competition</Label>
-                <Select selected={{ @current_params["competition"] || @league.competition }} class="select" options= {{"GM 2021 Season 1": "gm_2021_1"}} />
+                <Select selected={{ @current_params["competition"] || @league.competition }} class="select" options={{ competition_type |> competition_options() }} />
               </Field>
 
-              <Field name="competition_type">
-                <HiddenInput value={{ @current_params["competition_type"] || @league.competition_type || "grandmasters" }}/>
-              </Field>
 
-              <Field name="changes_between_rounds">
+              <Field name="changes_between_rounds" :if={{ competition_type == "grandmasters" }}>
                 <Label class="label">Changes Between Rounds</Label>
                 <NumberInput class="input is-small" value= {{ @current_params["changes_between_rounds"] || @league.changes_between_rounds }}/>
               </Field>
@@ -78,12 +84,12 @@ defmodule Components.FantasyModal do
 
               <Field :if={{ @league.draft_deadline || !@league.real_time_draft || @show_deadline }} name="deadline" >
                 <Label class="label">Draft Deadline (UTC!)</Label>
-                <DateTimeLocalInput value={{ @current_params["deadline"] || draft_deadline_value(@league) }} />
+                <DateTimeLocalInput value={{ @current_params["deadline"] || draft_deadline_value(@league, competition_type) }} />
               </Field>
 
               <Field name="point_system">
                 <Label class="label">Point System</Label>
-                <Select selected={{ @current_params["point_system"] || @league.point_system }} class="select" options={{"Total Wins": "total_wins"}} />
+                <Select selected={{ @current_params["point_system"] || @league.point_system }} class="select" options={{ competition_type |> point_system_options()}} />
               </Field>
 
               <Field :if={{ @league.join_code }} name="join_code">
@@ -112,22 +118,74 @@ defmodule Components.FantasyModal do
     """
   end
 
+  defp current_tour_stop(), do: TourStop.get_current(96, 0)
+  defp current_tour_stop?(), do: nil != current_tour_stop()
+
+  defp competition_type_options() do
+    if current_tour_stop?() do
+      [{"Masters Tour", "masters_tour"}]
+    else
+      []
+    end
+    |> Kernel.++([{"Grandmasters", "grandmasters"}])
+  end
+
+  defp selected_competition_type(%{"competition_type" => type}, _) when is_binary(type), do: type
+  defp selected_competition_type(_, %{competition_type: type}) when is_binary(type), do: type
+
+  defp selected_competition_type(_, _) do
+    if current_tour_stop?() do
+      "masters_tour"
+    else
+      "grandmasters"
+    end
+  end
+
+  defp competition_options("grandmasters"), do: ["gm_2021_1"] |> competition_options()
+
+  defp competition_options("masters_tour") do
+    current_tour_stop()
+    |> case do
+      nil -> []
+      id -> [id] |> competition_options()
+    end
+  end
+
+  defp competition_options(competitions) when is_list(competitions),
+    do: competitions |> Enum.map(&{&1 |> competition_name(), &1})
+
+  defp competition_options(_), do: []
+
+  defp point_system_options("grandmasters"), do: ["total_wins"] |> point_system_options()
+
+  defp point_system_options("masters_tour"),
+    do: ["swiss_wins", "gm_points_2021"] |> point_system_options()
+
+  defp point_system_options(point_systems) when is_list(point_systems),
+    do: point_systems |> Enum.map(&{&1 |> Fantasy.League.scoring_display(), &1})
+
+  defp point_system_options(_), do: []
+
   defp gm_2021_1_start(), do: ~N[2021-04-08 09:00:00] |> Fantasy.new_league_deadline(:week)
 
-  defp draft_deadline_value(%{draft_deadline: dd}) when not is_nil(dd),
+  defp draft_deadline_value(%{draft_deadline: dd}, _) when not is_nil(dd),
     do: dd |> NaiveDateTime.to_iso8601()
 
-  defp draft_deadline_value(%{competition_type: "grandmasters", competition: "gm_2021_1"}),
+  defp draft_deadline_value(%{competition_type: "grandmasters", competition: "gm_2021_1"}, _),
     do: gm_2021_1_start()
 
-  defp draft_deadline_value(%{competition_type: "masters_tour", competition: ts_raw}),
+  defp draft_deadline_value(%{competition_type: "masters_tour", competition: ts_raw}, _),
     do: ts_raw |> TourStop.get_start_time()
 
-  defp draft_deadline_value(%{competition_type: "masters_tour"}),
+  defp draft_deadline_value(%{competition_type: "masters_tour"}, _),
     do: TourStop.get_next() |> TourStop.get_start_time()
 
-  defp draft_deadline_value(%{}), do: gm_2021_1_start()
-  defp draft_deadline_value(_), do: nil
+  defp draft_deadline_value(%{}, "grandmasters"), do: gm_2021_1_start()
+
+  defp draft_deadline_value(%{}, "masters_tour"),
+    do: current_tour_stop() |> TourStop.get_start_time()
+
+  defp draft_deadline_value(_, _), do: nil
 
   defp update_draft_deadline(attrs = %{"deadline" => <<dd::binary>>}) do
     "#{dd}:00"
