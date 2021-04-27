@@ -669,7 +669,7 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.with_index(1)
       |> Enum.map(fn r -> create_row_html(r, tour_stops_started, show_current_score, conn) end)
 
-    title = "Earnings for #{year} Season #{season}"
+    title = "GM Promotion for #{year} Season #{season}"
 
     dropdowns =
       [
