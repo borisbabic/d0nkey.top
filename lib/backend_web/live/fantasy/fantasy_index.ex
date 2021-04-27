@@ -18,12 +18,23 @@ defmodule BackendWeb.FantasyIndexLive do
           <div class="level-left">
             <FantasyModal id="create_modal" title="Create Fantasy League"/> 
             <a class="is-link button" href="/fantasy/leagues/join/e5b76f1c-979c-4da5-b084-7cbef78b14e9">Join the d0nkey.top GM League</a>
+            <a :if={{ show_orgrimmar?() }} class="is-link button" href="/fantasy/leagues/join/4f46c22c-02b8-4794-abec-bd8beb279c1b">Join the d0nkey.top Orgrimmar League</a>
           </div>
         </div>
         <FantasyLeaguesTable leagues={{ get_user_leagues(@user)}} />
       </div>
     </Context>
     """
+  end
+
+  def show_orgrimmar?() do
+    now = NaiveDateTime.utc_now()
+
+    orgrimmar_start =
+      :Orgrimmar
+      |> Backend.MastersTour.TourStop.get_start_time()
+
+    :lt == NaiveDateTime.compare(now, orgrimmar_start)
   end
 
   def render(assigns) do
