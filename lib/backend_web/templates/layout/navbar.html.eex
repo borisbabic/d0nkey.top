@@ -70,7 +70,7 @@
            <a class="navbar-item" href='<%=Routes.masters_tour_path(@conn, :invited_players) %>'>Invited</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :qualifiers)%>">Qualifiers</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :qualifier_stats)%>">Qualifier Stats</a>
-           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Earnings</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">GM Promotion</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :tour_stops)%>">Tour Stops</a>
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :masters_tours_stats)%>">Stats</a> 
          </div>
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
            |
            <a href="<%=Routes.masters_tour_path(@conn, :qualifier_stats, Backend.Blizzard.current_ladder_tour_stop())%>">Qualifier Stats</a>
            |
-           <a href="<%=Routes.masters_tour_path(@conn, :earnings)%>">MT Earnings</a>
+           <a href="<%=Routes.masters_tour_path(@conn, :earnings)%>">GM Promotion</a>
            |
            <a href="<%=Routes.masters_tour_path(@conn, :tour_stops)%>">Tour Stops</a>
            |
