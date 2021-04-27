@@ -90,14 +90,14 @@ defmodule BackendWeb.MastersTourController do
     qualifiers(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 
-  @default_season {2021, 1}
+  @default_season {2021, 2}
   def parse_season("2020_2"), do: {2020, 2}
   def parse_season("2021_1"), do: {2021, 1}
   def parse_season("2021_2"), do: {2021, 2}
   def parse_season(_), do: @default_season
 
-  def parse_points_system(%{"points_system" => "gm_points_2021"}), do: :points_2021
-  def parse_points_system(_), do: :earnings_2020
+  def parse_points_system(%{"points_system" => "mt_earnings_2020"}), do: :earnings_2020
+  def parse_points_system(_), do: :points_2021
 
   defp show_current_score?(%{"show_current_score" => current_score})
        when is_binary(current_score),
