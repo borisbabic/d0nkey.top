@@ -1,3 +1,9 @@
 <span data-balloon-pos="up" aria-label="<%= @country_name %> "class="icon">
-  <img src="https://www.countryflags.io/<%= @country %>/flat/64.png">
+<img
+  src="https://flagcdn.com/64x48/<%= @country %>.png"
+  srcset="https://flagcdn.com/128x96/<%= @country %>.png 2x,
+  https://flagcdn.com/192x144/<%= @country %>.png 3x"
+  width="64"
+  height="48"
+  >
 </span>

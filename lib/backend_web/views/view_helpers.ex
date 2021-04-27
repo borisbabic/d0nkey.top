@@ -91,7 +91,10 @@ defmodule BackendWeb.ViewHelpers do
       def country_flag(country) do
         name = Util.get_country_name(country)
 
-        render(BackendWeb.SharedView, "country_flag.html", %{country: country, country_name: name})
+        render(BackendWeb.SharedView, "country_flag.html", %{
+          country: country |> String.downcase(),
+          country_name: name
+        })
       end
 
       def countries_options(selected_countries) do
