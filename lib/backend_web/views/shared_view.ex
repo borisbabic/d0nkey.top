@@ -49,6 +49,7 @@ defmodule BackendWeb.SharedView do
       cond do
         name in ["D0nkey", "D0nkey#2470"] -> "/favicon.ico"
         name in ["Carvalho", "Carvalho#1712"] -> "/images/icons/carvalho.png"
+        name in ["Blastoise", "Blastoise#1855"] -> "/images/icons/blastoise.png"
         true -> false
       end
 
