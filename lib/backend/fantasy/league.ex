@@ -244,7 +244,7 @@ defmodule Backend.Fantasy.League do
       lt |> LeagueTeam.can_unpick?(pick)
   end
 
-  def unpickable?(_, _, _), do: false
+  def unpickable?(_, _, _, _), do: false
 
   def any_picks?(%{teams: teams}), do: teams |> Enum.any?(&(&1.picks |> Enum.any?()))
 
