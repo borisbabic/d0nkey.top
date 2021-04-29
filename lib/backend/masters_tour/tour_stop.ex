@@ -153,7 +153,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :Orgrimmar,
-        battlefy_id: nil,
+        battlefy_id: "607996932a7af81040b485e0",
         ladder_priority: :timezone,
         ladder_seasons: [88, 89],
         ladder_invites: 16,
