@@ -74,7 +74,7 @@ defmodule Components.RosterModal do
         params =
           picks
           |> Enum.reduce(%{"highlight_fantasy" => "no", "player" => %{}}, fn %{pick: p}, carry ->
-            carry |> put_in(["player", p], true)
+            carry |> put_in(["player", p |> Backend.Battlenet.Battletag.shorten()], true)
           end)
 
         Routes.battlefy_path(BackendWeb.Endpoint, :tournament, battlefy_id, params)
