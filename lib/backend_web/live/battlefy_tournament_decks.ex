@@ -4,6 +4,7 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
   import BackendWeb.LiveHelpers
   use Surface.LiveView
   alias Components.ExpandableLineup
+  alias Components.TournamentLineupExplorer
   alias Backend.Hearthstone.Deck
   alias Backend.DeckInteractionTracker, as: Tracker
 
@@ -17,36 +18,12 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
   end
 
   def render(assigns) do
-    # ~H"""
-    # <Context put={{ user: @user }}>
-    # <div class="level">
-    # <div :for={{ {class, index} <- @classes |> Enum.sort() |> Enum.with_index() }} class=" level-item deck-class-tab {{ class |> String.downcase()}} ">
-    # A
-    # </div>
-    # </div>
-    # <a class="button link" href="/deckviewer/@lineup_id">Deckviewer</a>
-    # <button type="button" class="button"> Show </button>
-    # </Context>
-    # """
-
     ~H"""
     <Context  put={{ user: @user }}>
-      <table> 
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Decks</th>
-          </tr>ExpandableDecklist
-        </thead>
-        <tbody>
-          <tr :for={{ lineup <- Backend.Battlefy.lineups(@tournament_id) }}>
-            <td> {{ lineup.name }} </td>
-            <td> 
-              <ExpandableLineup lineup={{ lineup }} id={{"modal_lineup_#{lineup.id}"}}/>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="container">
+        <div class="title is-1">Explore Decks</div>
+        <TournamentLineupExplorer id={{ "lineup_explorer#{@tournament_id}" }}tournament_id={{ @tournament_id }} tournament_source={{ "battlefy" }}/>
+      </div>
     </Context>
     """
   end
@@ -58,10 +35,5 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
       :noreply,
       socket |> assign(tournament_id: tournament_id, show_cards: false)
     }
-  end
-
-  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
-    Tracker.inc_copied(code)
-    {:noreply, socket}
   end
 end
