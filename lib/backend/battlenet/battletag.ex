@@ -1,4 +1,5 @@
 defmodule Backend.Battlenet.Battletag do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -11,6 +12,9 @@ defmodule Backend.Battlenet.Battletag do
 
     timestamps()
   end
+
+  @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
+  @short_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
 
   @doc false
   def changeset(battletag, attrs) do
@@ -38,4 +42,12 @@ defmodule Backend.Battlenet.Battletag do
 
   def shorten(full) when is_binary(full),
     do: full |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
+
+  def long?(string) do
+    String.match?(string, @battletag_regex)
+  end
+
+  def short?(string) do
+    String.match?(string, @short_regex)
+  end
 end
