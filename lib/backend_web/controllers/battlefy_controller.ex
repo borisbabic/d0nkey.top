@@ -45,7 +45,7 @@ defmodule BackendWeb.BattlefyController do
       conn
       |> BackendWeb.AuthUtils.user()
       |> Backend.Fantasy.get_battlefy_or_mt_user_picks(tournament_id)
-      |> Enum.map(& &1.pick)
+      |> Enum.map(&(&1.pick |> Backend.Battlenet.Battletag.shorten()))
 
     render(
       conn,

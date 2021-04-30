@@ -8,6 +8,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
   alias Backend.MastersTour
+  alias Backend.Battlenet.Battletag
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -413,8 +414,10 @@ defmodule BackendWeb.BattlefyView do
       standings
       |> Enum.filter(fn s ->
         highlight |> Enum.member?(s.name) ||
+          highlight |> Enum.member?(s.name |> Battletag.shorten()) ||
           (s.country != nil && country_highlight |> Enum.member?(s.country)) ||
-          fantasy_highlight |> Enum.member?(s.name)
+          fantasy_highlight |> Enum.member?(s.name) ||
+          fantasy_highlight |> Enum.member?(s.name |> Battletag.shorten())
       end)
 
     duration_subtitle =
