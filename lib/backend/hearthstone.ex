@@ -5,6 +5,7 @@ defmodule Backend.Hearthstone do
   alias Backend.Repo
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.Lineup
+  alias Backend.Hearthstone.LineupDeck
   alias Backend.HearthstoneJson
   alias Backend.HearthstoneJson.Card
   require Logger
@@ -116,16 +117,18 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
-  defp base_decks_query(), do: from(d in Deck)
+  defp base_decks_query(), do: from(d in Deck, as: :deck)
 
   defp build_decks_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_decks_query/2)
 
-  defp compose_decks_query({"class", nil}, query), do: query |> where([d], is_nil(d.class))
-  defp compose_decks_query({"class", class}, query), do: query |> where([d], d.class == ^class)
+  defp compose_decks_query({"class", nil}, query), do: query |> where([deck: d], is_nil(d.class))
+
+  defp compose_decks_query({"class", class}, query),
+    do: query |> where([deck: d], d.class == ^class)
 
   defp compose_decks_query({"deckcode", deckcode}, query),
-    do: query |> where([d], d.deckcode == ^deckcode)
+    do: query |> where([deck: d], d.deckcode == ^deckcode)
 
   defp compose_decks_query(
          {"latest", <<"min_ago_"::binary, min_ago::bitstring>>},
@@ -140,7 +143,13 @@ defmodule Backend.Hearthstone do
   end
 
   defp compose_decks_query({"latest", min_ago}, query) when is_integer(min_ago),
-    do: query |> where([d], d.inserted_at >= ago(^min_ago, "minute"))
+    do: query |> where([deck: d], d.inserted_at >= ago(^min_ago, "minute"))
+
+  defp compose_decks_query({"include_cards", cards = [_ | _]}, query),
+    do: query |> where([deck: d], fragment("? @> ?", d.cards, ^cards))
+
+  defp compose_decks_query({"exclude_cards", cards = [_ | _]}, query),
+    do: query |> where([deck: d], fragment("NOT(? && ?)", d.cards, ^cards))
 
   defp compose_decks_query(unrecognized, query) do
     Logger.warn("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
@@ -288,4 +297,47 @@ defmodule Backend.Hearthstone do
   def parse_gm_season(_), do: :error
 
   def parse_gm_season!(s), do: s |> parse_gm_season() |> Util.bangify()
+
+  def lineups(criteria) do
+    base_lineups_query()
+    |> build_lineups_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_lineups_query() do
+    from l in Lineup,
+      as: :lineup,
+      join: ld in assoc(l, :decks),
+      preload: [decks: ld]
+  end
+
+  defp build_lineups_query(query, criteria),
+    do: Enum.reduce(criteria, query, &compose_lineups_query/2)
+
+  defp compose_lineups_query({"tournament_id", tournament_id}, query) do
+    query
+    |> where([lineup: l], l.tournament_id == ^tournament_id)
+  end
+
+  defp compose_lineups_query({"tournament_source", tournament_source}, query) do
+    query
+    |> where([lineup: l], l.tournament_source == ^tournament_source)
+  end
+
+  defp compose_lineups_query({"decks", decks}, query) do
+    decks
+    |> Enum.reduce(query, &lineup_deck_subquery/2)
+  end
+
+  defp lineup_deck_subquery(criteria, query) do
+    base_query =
+      from ld in LineupDeck,
+        as: :lineup_deck,
+        join: d in assoc(ld, :deck),
+        as: :deck,
+        select: ld.lineup_id
+
+    sub_query = criteria |> Enum.reduce(base_query, &compose_decks_query/2)
+    query |> where([lineup: l], l.id in subquery(sub_query))
+  end
 end

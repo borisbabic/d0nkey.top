@@ -274,6 +274,10 @@
 .has-no-pointer-events {
   pointer-events: none;
 }
+.is-clickable {
+  cursor: pointer;
+
+}
 .is-shrinkable .level-left,
 .is-shrinkable .level-right {
   flex-shrink: 1;

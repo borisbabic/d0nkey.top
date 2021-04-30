@@ -270,4 +270,19 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.map(&Hearthstone.get_card/1)
     |> Hearthstone.sort_cards()
   end
+
+  def classes() do
+    [
+      "DEMONHUNTER",
+      "DRUID",
+      "HUNTER",
+      "MAGE",
+      "PALADIN",
+      "PRIEST",
+      "ROGUE",
+      "SHAMAN",
+      "WARLOCK",
+      "WARRIOR"
+    ]
+  end
 end
