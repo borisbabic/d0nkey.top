@@ -19,6 +19,7 @@ defmodule BackendWeb.DeckviewerLive do
   data(compare_decks, :boolean)
   data(rotation, :boolean)
   data(user, :any)
+  data(title, :string)
   require WaitForIt
 
   def mount(_params, session, socket) do
@@ -42,6 +43,7 @@ defmodule BackendWeb.DeckviewerLive do
 
     <Context put={{ user: @user }}>
       <div class="container">
+        <div class="title is-1" :if={{ @title }}> {{ @title }}</div>
         <br>
         <Form for={{ :new_deck }} submit="submit" opts={{ autocomplete: "off" }}>
           <div class="columns is-mobile is-multiline">
@@ -110,6 +112,14 @@ defmodule BackendWeb.DeckviewerLive do
     compare_decks = params["compare_decks"] == "true"
 
     rotation = params["rotation"] == "true"
+    title = params["title"]
+
+    optional_assigns =
+      if title do
+        [page_title: title]
+      else
+        []
+      end
 
     {
       :noreply,
@@ -118,7 +128,9 @@ defmodule BackendWeb.DeckviewerLive do
       |> assign(:current_link, current_link)
       |> assign(:compare_decks, compare_decks)
       |> assign(:rotation, rotation)
+      |> assign(:title, params["title"])
       |> assign(:new_deck, "")
+      |> assign(optional_assigns)
     }
   end
 
