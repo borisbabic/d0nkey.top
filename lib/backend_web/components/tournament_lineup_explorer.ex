@@ -9,6 +9,8 @@ defmodule Components.TournamentLineupExplorer do
   prop(show_modal, :boolean, default: false)
   prop(page, :integer, default: 1)
   prop(page_size, :integer, default: 50)
+  prop(show_page_dropdown, :boolean, default: true)
+  slot(default)
 
   alias Components.ExpandableLineup
   alias Components.Dropdown
@@ -19,7 +21,8 @@ defmodule Components.TournamentLineupExplorer do
     ~H"""
     <div>
       <div :if={{ lineups = lineups(@tournament_id, @tournament_source, @filters) }}>
-        <Dropdown title="Page">
+        <slot />
+        <Dropdown title="Page" :if={{ @show_page_dropdown }}>
           <a :for={{ page <- page_range(lineups, @page_size) }}class="dropdown-item {{ page == @page && 'is-active' || ''}}" :on-click="set-page" phx-value-page={{ page }} >
             {{ page }}
           </a>

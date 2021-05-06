@@ -528,11 +528,12 @@ defmodule Backend.Blizzard do
     end
   end
 
-  def get_grandmasters_lineups() do
+  def get_grandmasters_lineups(stage_title) do
     gm_season = current_gm_season()
-    stage_title = current_gm_week_title!()
     get_grandmasters_lineups(gm_season, stage_title)
   end
+
+  def get_grandmasters_lineups(), do: current_gm_week_title!() |> get_grandmasters_lineups()
 
   def current_gm_season(), do: {2021, 1}
 
@@ -570,13 +571,15 @@ defmodule Backend.Blizzard do
   def current_gm_week(season),
     do: season |> gm_season_definition() |> gm_week(Util.current_week())
 
+  def gm_week(season_def, {_year, week_num}), do: gm_week(season_def, week_num)
+
   def gm_week(%{week_one: week_one, playoffs_week: playoffs, break_weeks: break_weeks}, week) do
     week
     |> case do
-      {_, week} when week >= week_one and week < playoffs ->
+      week when week >= week_one and week < playoffs ->
         {:playin, week - week_one + 1 - break_weeks_so_far(week, break_weeks)}
 
-      {_, ^playoffs} ->
+      ^playoffs ->
         {:playoffs, playoffs - week_one + 1 - break_weeks_so_far(playoffs, break_weeks)}
 
       # keep different size than the above
