@@ -293,6 +293,12 @@ defmodule Util do
     Map.merge(params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
   end
 
+  def current_week() do
+    Date.utc_today()
+    |> Date.to_erl()
+    |> :calendar.iso_week_number()
+  end
+
   def get_range(:year) do
     %{year: year} = Date.utc_today()
     {Date.new(year, 1, 1) |> bangify(), Date.new(year, 12, 31) |> bangify()}

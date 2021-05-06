@@ -566,17 +566,39 @@ defmodule Backend.Blizzard do
   end
 
   def playin_weeks(_), do: 7
-  def current_gm_week({2021, 1}), do: current_gm_week(14, 21)
 
-  def current_gm_week(week_one, playoffs) do
-    Date.utc_today()
-    |> Date.to_erl()
-    |> :calendar.iso_week_number()
+  def current_gm_week(season),
+    do: season |> gm_season_definition() |> gm_week(Util.current_week())
+
+  def gm_week(%{week_one: week_one, playoffs_week: playoffs, break_weeks: break_weeks}, week) do
+    week
     |> case do
-      {_, week} when week >= week_one and week < playoffs -> {:playin, week - week_one + 1}
-      {_, ^playoffs} -> {:playoffs, playoffs - week_one + 1}
+      {_, week} when week >= week_one and week < playoffs ->
+        {:playin, week - week_one + 1 - break_weeks_so_far(week, break_weeks)}
+
+      {_, ^playoffs} ->
+        {:playoffs, playoffs - week_one + 1 - break_weeks_so_far(playoffs, break_weeks)}
+
       # keep different size than the above
-      _ -> :error
+      _ ->
+        :error
     end
   end
+
+  defp break_weeks_so_far(week, break_weeks),
+    do: break_weeks |> Enum.filter(&(&1 <= week)) |> Enum.count()
+
+  def weeks_so_far(
+        season_def = %{week_one: week_one, break_weeks: break_weeks, playoffs_week: playoffs}
+      ) do
+    {_year, current} = Util.current_week()
+
+    week_one..current
+    |> Enum.filter(&(!(&1 in break_weeks) && &1 <= playoffs))
+    |> Enum.map(&gm_week(season_def, &1))
+  end
+
+  def weeks_so_far(season), do: season |> gm_season_definition() |> weeks_so_far()
+
+  def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
 end
