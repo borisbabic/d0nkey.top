@@ -128,7 +128,6 @@ defmodule Components.FantasyModal do
     |> String.split("/")
     |> Enum.map(&String.trim/1)
     |> Enum.find(&Backend.Battlefy.battlefy_id?/1)
-    |> IO.inspect(label: "found")
   end
 
   defp battlefy_tournament_id(_), do: nil
@@ -142,7 +141,11 @@ defmodule Components.FantasyModal do
     else
       []
     end
-    |> Kernel.++([{"Grandmasters", "grandmasters"}, {"Battlefy", "battlefy"}])
+    |> Kernel.++([
+      {"Grandmasters", "grandmasters"},
+      {"Battlefy", "battlefy"},
+      {"Card Changes", "card_changes"}
+    ])
   end
 
   defp selected_competition_type(%{"competition_type" => type}, _) when is_binary(type), do: type
@@ -157,6 +160,7 @@ defmodule Components.FantasyModal do
   end
 
   defp competition_options("grandmasters"), do: ["gm_2021_1"] |> competition_options()
+  defp competition_options("card_changes"), do: ["buffs_may_2021"] |> competition_options()
 
   defp competition_options("masters_tour") do
     current_tour_stop()
@@ -180,7 +184,7 @@ defmodule Components.FantasyModal do
     do: ["swiss_wins"] |> point_system_options()
 
   defp point_system_options("card_changes"),
-    do: ["num_changes"] |> point_system_options()
+    do: ["num_correct"] |> point_system_options()
 
   defp point_system_options(point_systems) when is_list(point_systems),
     do: point_systems |> Enum.map(&{&1 |> Fantasy.League.scoring_display(), &1})
@@ -243,7 +247,6 @@ defmodule Components.FantasyModal do
   def handle_event("submit", %{"league" => attrs_raw}, socket) do
     {owner_id, attrs} =
       attrs_raw
-      |> IO.inspect(label: "attrs_raw")
       |> update_draft_deadline()
       |> add_round()
       |> Map.pop("owner_id")

@@ -42,7 +42,7 @@ defmodule Components.CompetitorsTable do
             </th>
           </thead>
           <tbody>
-            <tr :for={{ participant <- @participants |> filter(@search)}} >
+            <tr :for={{ participant <- @participants |> filter(@search) |> cut(@league) }} >
               <td>{{ participant.name }}</td>
               <td :for={{ value <- competition_specific_columns(@league, participant)}}>
                 {{ value }}
@@ -68,6 +68,8 @@ defmodule Components.CompetitorsTable do
     """
   end
 
+  defp cut(participants, %{competition_type: "card_changes"}), do: participants |> Enum.take(20)
+  defp cut(participants, _), do: participants |> Enum.take(500)
   defp competition_specific_columns(%{competition_type: "masters_tour"}), do: ["Signed Up"]
   defp competition_specific_columns(_), do: []
 
