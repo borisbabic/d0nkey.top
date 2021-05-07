@@ -160,7 +160,9 @@ defmodule Components.FantasyModal do
   end
 
   defp competition_options("grandmasters"), do: ["gm_2021_1"] |> competition_options()
-  defp competition_options("card_changes"), do: ["buffs_may_2021"] |> competition_options()
+
+  defp competition_options("card_changes"),
+    do: ["buffs_may_2021", "nerfs_may_2021"] |> competition_options()
 
   defp competition_options("masters_tour") do
     current_tour_stop()
