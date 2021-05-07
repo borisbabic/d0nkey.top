@@ -12,6 +12,8 @@ defmodule BackendWeb.FantasyHelper do
     end
   end
 
+  def competition_name("buffs_may_2021"), do: "Buffs May 2021"
+
   def competition_name(competition) when is_atom(competition),
     do: competition |> to_string() |> competition_name()
 

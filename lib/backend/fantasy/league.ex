@@ -236,7 +236,7 @@ defmodule Backend.Fantasy.League do
       "swiss_wins" -> "Swiss Wins"
       "gm_points_2021" -> "GM Points"
       "total_wins" -> "Total Wins"
-      "num_correct" -> "# Correct"
+      "num_correct" -> "Num Correct"
     end
   end
 

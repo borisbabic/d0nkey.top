@@ -89,7 +89,8 @@ defmodule Backend.FantasyCompetitionFetcher do
   def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
     do: get_battlefy_results(competition, l)
 
-  def fetch_results(%{competition_type: "card_changes", competition: _competition}, _), do: []
+  def fetch_results(%{competition_type: "card_changes", competition: _competition}, _), do: %{}
+  # %{"Spellslinger" => 1}
 
   def fetch_results(
         %{
