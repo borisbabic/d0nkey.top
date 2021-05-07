@@ -111,6 +111,8 @@ defmodule Backend.Battlefy do
     get_stage_round_standings(id, round + 1)
   end
 
+  def battlefy_id?(id), do: id |> String.match?(~r/^[a-f\d]{24}$/i)
+
   def get_stage_standings(stage) do
     create_standings_from_matches(stage)
   end

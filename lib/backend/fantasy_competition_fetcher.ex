@@ -9,6 +9,18 @@ defmodule Backend.FantasyCompetitionFetcher do
   alias Backend.MastersTour
   alias Backend.Grandmasters.Response, as: GM
 
+  def get_participants(%{competition_type: "card_changes"}) do
+    Backend.HearthstoneJson.playable_cards()
+    |> Enum.map(&%Participant{name: &1.name})
+    |> Enum.uniq_by(& &1.name)
+  end
+
+  def get_participants(%{competition_type: "battlefy", competition: battlefy_id}) do
+    battlefy_id
+    |> get_battlefy_participants()
+    |> Enum.map(&%Participant{name: &1.name})
+  end
+
   @spec get_participants(League.t()) :: [Participant.t()]
   def get_participants(%{competition_type: "masters_tour", competition: competition}) do
     normalize_name = &Backend.Battlenet.Battletag.shorten/1
@@ -60,7 +72,24 @@ defmodule Backend.FantasyCompetitionFetcher do
     end
   end
 
+  defp gm_stage_matching(season, round), do: Blizzard.gm_week_title(season, round)
+
+  defp get_battlefy_participants(tournament_id) do
+    tournament_id
+    |> Battlefy.get_participants()
+    |> Enum.map(fn p ->
+      %Participant{
+        name: p.name
+      }
+    end)
+  end
+
   def fetch_results(l), do: fetch_results(l, 1)
+
+  def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
+    do: get_battlefy_results(competition, l)
+
+  def fetch_results(%{competition_type: "card_changes", competition: _competition}, _), do: []
 
   def fetch_results(
         %{
@@ -80,18 +109,6 @@ defmodule Backend.FantasyCompetitionFetcher do
       _other ->
         %{}
     end
-  end
-
-  defp gm_stage_matching(season, round), do: Blizzard.gm_week_title(season, round)
-
-  defp get_battlefy_participants(tournament_id) do
-    tournament_id
-    |> Battlefy.get_participants()
-    |> Enum.map(fn p ->
-      %Participant{
-        name: p.name
-      }
-    end)
   end
 
   def fetch_results(
