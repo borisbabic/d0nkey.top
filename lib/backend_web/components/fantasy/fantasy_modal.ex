@@ -66,9 +66,14 @@ defmodule Components.FantasyModal do
                 <Select selected={{ competition_type }} class="select" options={{ competition_type_options() }}/>
               </Field>
 
-              <Field name="competition">
+              <Field name="competition" :if={{ competition_type != "battlefy" }}>
                 <Label class="label">Competition</Label>
                 <Select selected={{ @current_params["competition"] || @league.competition }} class="select" options={{ competition_type |> competition_options() }} />
+              </Field>
+
+              <Field name="competition" :if={{ competition_type == "battlefy" }}>
+                <Label class="label">Battlefy tournament id</Label>
+                <TextInput class="input is-small" value={{ (@current_params["competition"] || @league.competition) |> battlefy_tournament_id()}} />
               </Field>
 
 
@@ -118,6 +123,16 @@ defmodule Components.FantasyModal do
     """
   end
 
+  defp battlefy_tournament_id(id) when is_binary(id) do
+    id
+    |> String.split("/")
+    |> Enum.map(&String.trim/1)
+    |> Enum.find(&Backend.Battlefy.battlefy_id?/1)
+    |> IO.inspect(label: "found")
+  end
+
+  defp battlefy_tournament_id(_), do: nil
+
   defp current_tour_stop(), do: TourStop.get_current(96, 0)
   defp current_tour_stop?(), do: nil != current_tour_stop()
 
@@ -127,7 +142,7 @@ defmodule Components.FantasyModal do
     else
       []
     end
-    |> Kernel.++([{"Grandmasters", "grandmasters"}])
+    |> Kernel.++([{"Grandmasters", "grandmasters"}, {"Battlefy", "battlefy"}])
   end
 
   defp selected_competition_type(%{"competition_type" => type}, _) when is_binary(type), do: type
@@ -160,6 +175,12 @@ defmodule Components.FantasyModal do
 
   defp point_system_options("masters_tour"),
     do: ["swiss_wins", "gm_points_2021"] |> point_system_options()
+
+  defp point_system_options("battlefy"),
+    do: ["swiss_wins"] |> point_system_options()
+
+  defp point_system_options("card_changes"),
+    do: ["num_changes"] |> point_system_options()
 
   defp point_system_options(point_systems) when is_list(point_systems),
     do: point_systems |> Enum.map(&{&1 |> Fantasy.League.scoring_display(), &1})
@@ -222,6 +243,7 @@ defmodule Components.FantasyModal do
   def handle_event("submit", %{"league" => attrs_raw}, socket) do
     {owner_id, attrs} =
       attrs_raw
+      |> IO.inspect(label: "attrs_raw")
       |> update_draft_deadline()
       |> add_round()
       |> Map.pop("owner_id")
@@ -278,7 +300,7 @@ defmodule Components.FantasyModal do
           [show_success: true, show_modal: false]
 
         {:error, error} ->
-          Logger.warn("Error saving league #{error |> inspect()}")[[show_error: true]]
+          Logger.warn("Error saving league #{error |> inspect()}", show_error: true)
       end
 
     {
