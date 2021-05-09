@@ -95,7 +95,7 @@ defmodule Backend.FantasyCompetitionFetcher do
   def fetch_results(
         %{
           competition_type: "grandmasters",
-          competition: <<"gm_"::binary, gm_season_raw::binary>>
+          competition: competition = <<"gm_"::binary, gm_season_raw::binary>>
         },
         round
       ) do
@@ -105,12 +105,18 @@ defmodule Backend.FantasyCompetitionFetcher do
     with {:ok, season} <- gm_season_raw |> Hearthstone.parse_gm_season(),
          {:ok, matcher} <- gm_stage_matching(season, round),
          gm <- GrandmastersCommunicator.get_gm() do
-      gm |> GM.results(matcher)
+      gm |> GM.results(matcher) |> hack_gm_results(season, round)
     else
       _other ->
         %{}
     end
   end
+
+  defp hack_gm_results(results, {2021, 1}, 4) do
+    results |> Map.update!("Fled", &(&1 + 1))
+  end
+
+  defp hack_gm_results(results, _, _), do: results
 
   def fetch_results(
         %{
