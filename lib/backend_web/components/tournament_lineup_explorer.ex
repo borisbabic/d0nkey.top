@@ -4,7 +4,7 @@ defmodule Components.TournamentLineupExplorer do
 
   prop(tournament_id, :string)
   prop(tournament_source, :string)
-  prop(filters, :map, default: %{})
+  prop(filters, :map, default: %{"decks" => []})
   prop(temp_filters, :map, default: %{})
   prop(show_modal, :boolean, default: false)
   prop(page, :integer, default: 1)
@@ -14,6 +14,7 @@ defmodule Components.TournamentLineupExplorer do
 
   alias Components.ExpandableLineup
   alias Components.Dropdown
+  alias Components.Filter.PlayableCardSelect
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
 
@@ -45,6 +46,9 @@ defmodule Components.TournamentLineupExplorer do
                       {{ class |> Deck.class_name() }}
                     </a>
                   </Dropdown>
+                  <PlayableCardSelect id="include_cards_deck_{{index}}" update_fun={{ update_cards(@id, @temp_filters, index, "include_cards")}} selected={{ deck["include_cards"] }} title="Include cards"/>
+                  <PlayableCardSelect id="exclude_cards_deck_{{index}}" update_fun={{ update_cards(@id, @temp_filters, index, "exclude_cards")}} selected={{ deck["exclude_cards"] }} title="Exclude cards"/>
+                  
                 </div>
               </div>
             </section>
@@ -117,28 +121,51 @@ defmodule Components.TournamentLineupExplorer do
      )}
   end
 
+  def update_cards(id, temp_filters, index, param) do
+    fn value ->
+      new_temp_filters = update_temp_filters(temp_filters, index, param, value)
+      send_update(__MODULE__, id: id, temp_filters: new_temp_filters)
+    end
+  end
+
+  def update_temp_filters(%{assigns: %{temp_filters: temp_filters}}, deck_index, key, val),
+    do: update_temp_filters(temp_filters, deck_index, key, val)
+
+  def update_temp_filters(temp_filters, deck_index, key, val) do
+    decks = temp_filters |> decks()
+
+    deck =
+      decks
+      |> IO.inspect(label: "decks")
+      |> Enum.at(deck_index |> IO.inspect(label: "deck_index"))
+      |> IO.inspect(label: "deck")
+      |> Map.put(key, val)
+      |> IO.inspect(label: "updated deck")
+
+    new_decks = decks |> List.replace_at(deck_index, deck)
+    temp_filters |> Map.put("decks", new_decks)
+  end
+
   def handle_event(
         "filter-class",
         %{"index" => index_raw, "class" => class},
-        socket = %{assigns: %{temp_filters: temp_filters}}
+        socket
       ) do
     {index, _} = Integer.parse(index_raw)
 
-    decks = temp_filters |> decks()
-    deck = decks |> Enum.at(index) |> Map.put("class", class)
-    new_decks = decks |> List.replace_at(index, deck)
-    new_temp_filters = temp_filters |> Map.put("decks", new_decks)
+    new_temp_filters = update_temp_filters(socket, index, "class", class)
     {:noreply, socket |> assign(temp_filters: new_temp_filters)}
   end
 
   def handle_event("add_deck", _, socket = %{assigns: %{temp_filters: temp_filters}}) do
-    decks = temp_filters |> decks() |> Kernel.++([%{}])
+    decks = temp_filters |> decks() |> Kernel.++([empty_deck_filter()])
 
     new_temp_filters = temp_filters |> Map.put("decks", decks)
 
     {:noreply, socket |> assign(temp_filters: new_temp_filters)}
   end
 
+  def empty_deck_filter(), do: %{"include_cards" => [], "exclude_cards" => []}
   def decks(%{"decks" => d}) when is_list(d), do: d
   def decks(_), do: []
 end

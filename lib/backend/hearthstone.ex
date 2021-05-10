@@ -148,8 +148,12 @@ defmodule Backend.Hearthstone do
   defp compose_decks_query({"include_cards", cards = [_ | _]}, query),
     do: query |> where([deck: d], fragment("? @> ?", d.cards, ^cards))
 
+  defp compose_decks_query({"include_cards", []}, query), do: query
+
   defp compose_decks_query({"exclude_cards", cards = [_ | _]}, query),
     do: query |> where([deck: d], fragment("NOT(? && ?)", d.cards, ^cards))
+
+  defp compose_decks_query({"exclude_cards", []}, query), do: query
 
   defp compose_decks_query(unrecognized, query) do
     Logger.warn("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
