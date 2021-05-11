@@ -89,8 +89,19 @@ defmodule Backend.FantasyCompetitionFetcher do
   def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
     do: get_battlefy_results(competition, l)
 
-  def fetch_results(%{competition_type: "card_changes", competition: _competition}, _), do: %{}
-  # %{"Spellslinger" => 1}
+  def fetch_results(%{competition_type: "card_changes", competition: "nerfs_may_2021"}, _),
+    do:
+      [
+        "Incanter's Flow"
+      ]
+      |> Enum.map(&{&1, 1})
+      |> Map.new()
+
+  def fetch_results(%{competition_type: "card_changes", competition: "buffs_may_2021"}, _),
+    do:
+      []
+      |> Enum.map(&{&1, 1})
+      |> Map.new()
 
   def fetch_results(
         %{
@@ -111,18 +122,11 @@ defmodule Backend.FantasyCompetitionFetcher do
         gm_stage_matching(current_season, round)
         |> Util.bangify()
         |> Backend.Grandmasters.results()
-        |> hack_gm_results(current_season, round)
 
       _ ->
         %{}
     end
   end
-
-  defp hack_gm_results(results, {2021, 1}, 4) do
-    results |> Map.update!("Fled", &(&1 + 1))
-  end
-
-  defp hack_gm_results(results, _, _), do: results
 
   def fetch_results(
         %{

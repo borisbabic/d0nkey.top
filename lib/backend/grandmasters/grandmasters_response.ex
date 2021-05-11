@@ -9,7 +9,7 @@ defmodule Backend.Grandmasters.Response do
   alias Backend.Hearthstone.Deck
 
   typedstruct enforce: true do
-    field :requested_season_tournaments, Tournament.t()
+    field :requested_season_tournaments, [Tournament.t()]
 
     field :seasons, [Season.t()]
 
@@ -52,6 +52,7 @@ defmodule Backend.Grandmasters.Response do
     |> Enum.flat_map(&if(&1.winner, do: [&1.winner], else: []))
     |> Enum.group_by(& &1.name)
     |> Enum.map(fn {gm, l} -> {gm, l |> Enum.count()} end)
+    |> Enum.sort_by(&elem(&1, 1), :desc)
     |> Map.new()
   end
 
@@ -61,6 +62,21 @@ defmodule Backend.Grandmasters.Response do
     |> Enum.filter(stage_matcher)
     |> Enum.flat_map(& &1.brackets)
     |> Enum.flat_map(& &1.matches)
+  end
+
+  def regionified_competitors(%{requested_season_tournaments: tournaments}) do
+    tournaments
+    |> Enum.map(fn t ->
+      competitors =
+        t.stages
+        |> Enum.flat_map(& &1.brackets)
+        |> Enum.flat_map(& &1.matches)
+        |> Enum.flat_map(& &1.competitors)
+        |> Enum.filter(& &1)
+        |> Enum.uniq_by(& &1.id)
+
+      {String.to_atom(t.region), competitors}
+    end)
   end
 
   def decklists(r) do
