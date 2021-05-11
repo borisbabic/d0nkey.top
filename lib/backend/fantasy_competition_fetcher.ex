@@ -102,12 +102,18 @@ defmodule Backend.FantasyCompetitionFetcher do
     # gm = GrandmastersCommunicator.get_gm()
     # gm |> GM.results(current_week)
 
-    with {:ok, season} <- gm_season_raw |> Hearthstone.parse_gm_season(),
-         {:ok, matcher} <- gm_stage_matching(season, round),
-         gm <- GrandmastersCommunicator.get_gm() do
-      gm |> GM.results(matcher) |> hack_gm_results(season, round)
-    else
-      _other ->
+    current_season = Blizzard.current_gm_season()
+
+    gm_season_raw
+    |> Hearthstone.parse_gm_season()
+    |> case do
+      {:ok, ^current_season} ->
+        gm_stage_matching(current_season, round)
+        |> Util.bangify()
+        |> Backend.Grandmasters.results()
+        |> hack_gm_results(current_season, round)
+
+      _ ->
         %{}
     end
   end

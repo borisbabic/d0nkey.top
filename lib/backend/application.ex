@@ -69,6 +69,10 @@ defmodule Backend.Application do
           id: Backend.DeckInteractionTracker,
           start: {Backend.DeckInteractionTracker, :start_link, [[]]}
         },
+        %{
+          id: Backend.Grandmasters,
+          start: {Backend.Grandmasters, :start_link, [[]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]

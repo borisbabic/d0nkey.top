@@ -14,25 +14,28 @@ defmodule Backend.Grandmasters.LineupFetcher do
   end
 
   def save_lineups(stage_title) do
-    with r = %{requested_season: rs} <- Api.get_gm(),
-         decklists <- r |> Response.decklists(stage_title) do
-      tournament_id = Blizzard.gm_lineup_tournament_id({rs.year, rs.season}, stage_title)
-
-      decklists
-      |> Enum.map(fn {%{name: name}, codes} ->
-        Backend.Hearthstone.get_or_create_lineup(
-          tournament_id,
-          "grandmasters",
-          name,
-          codes
-        )
-      end)
-
-      :ok
-    else
-      _ -> :error
-    end
+    Api.get_gm()
+    |> save_lineups(stage_title)
   end
+
+  def save_lineups(r = %{requested_season: rs}, stage_title) do
+    decklists = r |> Response.decklists(stage_title)
+    tournament_id = Blizzard.gm_lineup_tournament_id({rs.year, rs.season}, stage_title)
+
+    decklists
+    |> Enum.map(fn {%{name: name}, codes} ->
+      Backend.Hearthstone.get_or_create_lineup(
+        tournament_id,
+        "grandmasters",
+        name,
+        codes
+      )
+    end)
+
+    :ok
+  end
+
+  def save_lineups(_, _), do: :error
 
   def enqueue_job(stage_title) do
     %{"stage_title" => stage_title}
