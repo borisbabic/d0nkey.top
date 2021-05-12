@@ -92,14 +92,29 @@ defmodule Backend.FantasyCompetitionFetcher do
   def fetch_results(%{competition_type: "card_changes", competition: "nerfs_may_2021"}, _),
     do:
       [
-        "Incanter's Flow"
+        "Refreshing Spring Water",
+        "First Day of School",
+        "Hysteria",
+        "Crabrider",
+        "Mankrik"
       ]
       |> Enum.map(&{&1, 1})
       |> Map.new()
 
   def fetch_results(%{competition_type: "card_changes", competition: "buffs_may_2021"}, _),
     do:
-      []
+      [
+        "Razorboar",
+        "Dark Inquisitor Xanesh",
+        "Unbound Elemental",
+        "Tidal Surge",
+        "Lilypad Lurker",
+        "Fiendish Circle",
+        "Deck of Chaos",
+        "Whirling Combatant",
+        "Shieldmaiden",
+        "N'Zoth, God of the Deep"
+      ]
       |> Enum.map(&{&1, 1})
       |> Map.new()
 
