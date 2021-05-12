@@ -507,6 +507,16 @@ defmodule Backend.Blizzard do
     end
   end
 
+  @spec get_single_gm_lineup(String.t(), String.t()) :: Hearthstone.Lineup.t() | nil
+  def get_single_gm_lineup(stage_title, gm),
+    do: current_gm_season() |> get_single_gm_lineup(stage_title, gm)
+
+  @spec get_single_gm_lineup(String.t(), String.t(), String.t()) :: Hearthstone.Lineup.t() | nil
+  def get_single_gm_lineup(season, stage_title, gm) do
+    get_grandmasters_lineups(season, stage_title)
+    |> Enum.find(&(&1.name == gm))
+  end
+
   def ineligible?(_, nil), do: false
 
   def gm_tournament_title(season), do: "gm_#{gm_season_string(season)}"

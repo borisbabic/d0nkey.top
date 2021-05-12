@@ -56,6 +56,10 @@ defmodule Backend.Grandmasters.Response do
     |> Map.new()
   end
 
+  def matches(r, stage_title) when is_binary(stage_title) do
+    matches(r, &(&1.title == stage_title))
+  end
+
   def matches(%{requested_season_tournaments: tournaments}, stage_matcher) do
     tournaments
     |> Enum.flat_map(& &1.stages)
@@ -245,10 +249,24 @@ defmodule Backend.Grandmasters.Response.Bracket do
   end
 end
 
+defmodule Backend.Grandmasters.Response.Score do
+  @moduledoc false
+  use TypedStruct
+  alias Backend.Grandmasters.Response.Competitor
+
+  typedstruct enforce: true do
+    field :value, integer
+  end
+
+  def from_raw_map(%{"value" => value}), do: %__MODULE__{value: value}
+  def from_raw_map(nil), do: nil
+end
+
 defmodule Backend.Grandmasters.Response.Match do
   @moduledoc false
   use TypedStruct
   alias Backend.Grandmasters.Response.Competitor
+  alias Backend.Grandmasters.Response.Score
 
   typedstruct enforce: true do
     field :id, integer
@@ -259,6 +277,7 @@ defmodule Backend.Grandmasters.Response.Match do
     field :status, String.t()
     field :state, String.t()
     field :start_date, integer | nil
+    field :scores, [Score.t()]
     field :decklists, [[String.t()]]
   end
 
@@ -289,6 +308,7 @@ defmodule Backend.Grandmasters.Response.Match do
       winner: map["winner"] |> Competitor.from_raw_map(),
       competitors: map["competitors"] |> Enum.map(&Competitor.from_raw_map/1),
       status: map["status"],
+      scores: map["scores"] |> Enum.map(&Score.from_raw_map/1),
       state: map["state"],
       decklists: parse_decklists(map)
     }
@@ -317,6 +337,8 @@ defmodule Backend.Grandmasters.Response.Match do
   end
 
   def parse_decklists(_), do: [[], []]
+
+  def score(%{scores: [%{value: top}, %{value: bottom}]}), do: "#{top} - #{bottom}"
 end
 
 defmodule Backend.Grandmasters.Response.Competitor do
@@ -346,6 +368,9 @@ defmodule Backend.Grandmasters.Response.Competitor do
       headshot: map["headshot"]
     }
   end
+
+  def name(%{name: name}), do: name
+  def name(_), do: nil
 end
 
 defmodule Backend.Grandmasters.Response.Season do

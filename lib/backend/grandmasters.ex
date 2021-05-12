@@ -33,7 +33,7 @@ defmodule Backend.Grandmasters do
       |> Response.stage_titles()
       |> Enum.map(fn stage ->
         results = response |> Response.results(stage) |> hack_results(response, stage)
-        :ets.insert(table, {results_key(stage), results})
+        :ets.insert(table, {results_key(stage), sort_results(results)})
 
         Task.start(fn ->
           response |> LineupFetcher.save_lineups(stage)
@@ -55,6 +55,7 @@ defmodule Backend.Grandmasters do
     :ets.insert(table, {"raw_response", response})
   end
 
+  defp sort_results(results), do: results |> Enum.sort_by(&elem(&1, 1), :desc)
   defp results_key(stage), do: "results_#{stage}"
 
   def results(stage) do
@@ -70,21 +71,71 @@ defmodule Backend.Grandmasters do
 
   defp hack_results(results, _, _), do: results
 
+  def raw_response(), do: table() |> Util.ets_lookup("raw_response", %{})
   def total_results(), do: table() |> Util.ets_lookup("total_results", %{})
 
   def regionified_competitors(), do: table() |> Util.ets_lookup("regionified_competitors", [])
 
-  def regionify_results(results) do
+  defp competitors_map() do
     competitors_map =
-      regionified_competitors
+      regionified_competitors()
       |> Enum.flat_map(fn {region, competitors} ->
         competitors |> Enum.map(&{&1.name, region})
       end)
       |> Map.new()
+  end
+
+  def regionify_results(results) do
+    competitors_map = competitors_map()
 
     results
     |> Enum.group_by(fn {comp, _results} ->
       competitors_map |> Map.get(comp)
     end)
+  end
+
+  def region_matches(region, stage) do
+    raw_response()
+    |> Response.matches(stage)
+    |> Enum.filter(&(&1.competitors |> Enum.any?()))
+    |> regionify_matches()
+    |> Map.get(region, %{})
+  end
+
+  defp regionify_matches(matches) do
+    competitors_map = competitors_map()
+
+    matches
+    |> Enum.group_by(fn %{competitors: c} ->
+      name = c |> Enum.find_value(&(&1 && &1.name))
+      competitors_map |> Map.get(name)
+    end)
+  end
+
+  def region_results(region) do
+    total_results()
+    |> regionify_results()
+    |> Map.get(region, %{})
+  end
+
+  def region_results(region, stage) do
+    stage
+    |> results()
+    |> regionify_results()
+    |> Map.get(region, %{})
+  end
+
+  def parse_region(region, default \\ :EU) do
+    region
+    |> to_string()
+    |> case do
+      "APAC" -> :APAC
+      "AP" -> :APAC
+      "EU" -> :EU
+      "NA" -> :NA
+      "US" -> :NA
+      "AM" -> :NA
+      _ -> default
+    end
   end
 end
