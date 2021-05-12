@@ -138,6 +138,8 @@ defmodule BackendWeb.Router do
     get "/liberapay", SocialController, :liberapay
 
     live "/gm/lineups", GrandmastersLineup
+    live "/gm", GrandmastersLive
+    live "/gm/profile/:gm", GrandmasterProfileLive
   end
 
   scope "/", BackendWeb do

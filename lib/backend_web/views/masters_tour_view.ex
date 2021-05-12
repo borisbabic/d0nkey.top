@@ -647,7 +647,7 @@ defmodule BackendWeb.MastersTourView do
     tour_stops_started = tour_stops_all |> Enum.filter(&TourStop.started?/1)
     headers = create_headers(tour_stops_started, show_current_score)
 
-    gms = MapSet.new(gms_list) |> IO.inspect()
+    gms = MapSet.new(gms_list)
 
     rows =
       earnings

@@ -76,6 +76,17 @@
          </div>
        </div>
        <div class="navbar-item has-dropdown is-hoverable">
+         <a class="navbar-item navbar-link" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLive) %>'>GM</a>
+
+         <div class="navbar-dropdown">
+            <%= for region <- [:EU, :APAC, :NA] do %>
+              <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLive, %{region: region}) %>'><%= BackendWeb.GrandmastersLive.gm_region_display(region) %></a>
+            <% end %>
+           <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLineup) %>'>Lineups</a>
+           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Promotion</a>
+         </div>
+       </div>
+       <div class="navbar-item has-dropdown is-hoverable">
          <div class="navbar-link">
            Misc
          </div>
@@ -87,7 +98,6 @@
            <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :tournaments_stats) %>'>Battlefy Tournaments Stats</a>
            <a class="navbar-item" href="<%=Routes.live_path(@conn, BackendWeb.DeckviewerLive)%>">Deckviewer</a>
            <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.FantasyIndexLive) %>'>Fantasy</a>
-           <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLineup) %>'>Grandmasters Decks</a>
            <a class="navbar-item" href='<%=Routes.page_path(@conn, :about) %>'>About</a>
          </div>
        </div>
