@@ -6,7 +6,7 @@ defmodule Components.GMProfileLink do
   alias Backend.Grandmasters.Response.Competitor
 
   prop(week, :string)
-  prop(gm, :map)
+  prop(gm, :any)
 
   def render(assigns) do
     ~H"""
