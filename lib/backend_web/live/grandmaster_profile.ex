@@ -44,10 +44,10 @@ defmodule BackendWeb.GrandmasterProfileLive do
               </Dropdown>
             </div>
             <div class="level-item" :if={{ region = region(@gm) }}>
-              <GMStandingsModal id="gm_standings_modal_total" button_title="Total Standings" title="{{GrandmastersLive.gm_region_display(region)}} Standings" />
+              <GMStandingsModal region={{ region }} id="gm_standings_modal_total" button_title="Total Standings" title="{{GrandmastersLive.gm_region_display(region)}} Standings" />
             </div>
             <div class="level-item" :if={{ region = region(@gm) }}>
-              <GMStandingsModal id="gm_standings_modal_week" week={{ @week }} button_title="Week Standings" title="{{GrandmastersLive.gm_region_display(region)}} Standings" />
+              <GMStandingsModal region={{ region }} id="gm_standings_modal_week" week={{ @week }} button_title="Week Standings" title="{{GrandmastersLive.gm_region_display(region)}} Standings" />
             </div>
           </div>
         </div>
