@@ -18,8 +18,6 @@ defmodule BackendWeb.FantasyIndexLive do
           <div class="level-left">
             <FantasyModal id="create_modal" title="Create Fantasy League"/> 
             <a class="is-link button" href="/fantasy/leagues/join/e5b76f1c-979c-4da5-b084-7cbef78b14e9">Join the d0nkey.top GM League</a>
-            <a class="is-link button" href="/fantasy/leagues/join/4cb7f0e3-3ff6-423d-8c82-d563c3bd8d0a">Buffs Prediction League</a>
-            <a class="is-link button" href="/fantasy/leagues/join/b14626af-0f61-4a6d-98f8-94cf36f67b65">Nerfs Prediction League</a>
             <a :if={{ show_orgrimmar?() }} class="is-link button" href="/fantasy/leagues/join/4f46c22c-02b8-4794-abec-bd8beb279c1b">Join the d0nkey.top Orgrimmar League</a>
           </div>
         </div>
