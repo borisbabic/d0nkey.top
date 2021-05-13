@@ -29,7 +29,7 @@ defmodule BackendWeb.GrandmastersLineup do
           <div :if={{ stats = Lineup.stats(lineups) }} >
             <div class="title is-2">Grandmasters Decks</div>
 
-            <TournamentLineupExplorer id="grandmasters_tournament_lineup_{{ @week }}" tournament_id="{{ tournament_id(@week) }}" tournament_source="grandmasters" show_page_dropdown={{ false }}>
+            <TournamentLineupExplorer id="grandmasters_tournament_lineup_{{ @week }}" tournament_id="{{ tournament_id(@week) }}" tournament_source="grandmasters" show_page_dropdown={{ false }} gm_week={{ @week }}>
               <Dropdown title={{ @week }} >
                 <a class="dropdown-item {{ @week == week && 'is-active' || '' }}" :for={{ week <- weeks() }} :on-click="change-week" phx-value-week={{ week }}>
                   {{ week }}
