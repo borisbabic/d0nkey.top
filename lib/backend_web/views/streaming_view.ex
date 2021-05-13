@@ -58,6 +58,8 @@ defmodule BackendWeb.StreamingView do
           <option data-link="<%= remove_from_link(conn, ["twitch_id", "twitch_login"]) %>" value="All Streamers">
           <%= for s <- streamers do %>
             <option data-link="<%= update_link(conn, "twitch_id", s.twitch_id) %>" value="<%= Streamer.twitch_display(s) %>">
+              <%= Streamer.twitch_login(s) %>
+            </option>
           <% end %>
     """
   end
