@@ -42,7 +42,7 @@ defmodule Components.TournamentLineupExplorer do
             <section class="modal-card-body" style="min-height: 400px;">
               <div :for.with_index={{ {deck, index} <- decks(@temp_filters)}} class="level">
                 <div class="level-left">
-                  <button class="button level-item" type="button" :on-click="remove_deck" phx-data-index={{ index }}>Remove deck</button>
+                  <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={{ index }}>Remove deck</button>
                   <Dropdown title="{{ deck["class"] && deck["class"] |> Deck.class_name() || "Class" }}">
                     <a class="dropdown-item {{ deck["class"] == class && 'is-active' || '' }}" :for={{ class <- Deck.classes() }} :on-click="filter-class" phx-value-index={{ index }} phx-value-class={{ class }}>
                       {{ class |> Deck.class_name() }}
@@ -138,11 +138,8 @@ defmodule Components.TournamentLineupExplorer do
 
     deck =
       decks
-      |> IO.inspect(label: "decks")
-      |> Enum.at(deck_index |> IO.inspect(label: "deck_index"))
-      |> IO.inspect(label: "deck")
+      |> Enum.at(deck_index)
       |> Map.put(key, val)
-      |> IO.inspect(label: "updated deck")
 
     new_decks = decks |> List.replace_at(deck_index, deck)
     temp_filters |> Map.put("decks", new_decks)
@@ -156,6 +153,18 @@ defmodule Components.TournamentLineupExplorer do
     {index, _} = Integer.parse(index_raw)
 
     new_temp_filters = update_temp_filters(socket, index, "class", class)
+    {:noreply, socket |> assign(temp_filters: new_temp_filters)}
+  end
+
+  def handle_event(
+        "remove_deck",
+        %{"index" => index_raw},
+        socket = %{assigns: %{temp_filters: temp_filters}}
+      ) do
+    {index, _} = Integer.parse(index_raw)
+
+    decks = temp_filters |> decks() |> List.delete_at(index)
+    new_temp_filters = temp_filters |> Map.put("decks", decks)
     {:noreply, socket |> assign(temp_filters: new_temp_filters)}
   end
 
