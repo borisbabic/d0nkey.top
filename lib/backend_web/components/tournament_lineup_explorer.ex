@@ -10,8 +10,10 @@ defmodule Components.TournamentLineupExplorer do
   prop(page, :integer, default: 1)
   prop(page_size, :integer, default: 50)
   prop(show_page_dropdown, :boolean, default: true)
+  prop(gm_week, :string, default: nil)
   slot(default)
 
+  alias Components.GMProfileLink
   alias Components.ExpandableLineup
   alias Components.Dropdown
   alias Components.Filter.PlayableCardSelect
@@ -67,7 +69,7 @@ defmodule Components.TournamentLineupExplorer do
           </thead>
           <tbody>
             <tr :for={{ lineup <- lineups |> paginate(@page, @page_size) }}>
-              <td> {{ lineup.name }} </td>
+              <td :if={{ @gm_week }}> <GMProfileLink week={{ @gm_week }} gm={{ lineup.name }}/> </td>
               <td> 
                 <ExpandableLineup lineup={{ lineup }} id={{"modal_lineup_#{lineup.id}"}}/>
               </td>

@@ -11,10 +11,13 @@ defmodule Components.GMProfileLink do
   def render(assigns) do
     ~H"""
     <span>
-      <a :if={{ name = Competitor.name(@gm) }} class="link" href="{{ link(name, @week) }}">{{ name }}</a>
+      <a :if={{ name = name(@gm) }} class="link" href="{{ link(name, @week) }}">{{ name }}</a>
     </span>
     """
   end
+
+  def name(name) when is_binary(name), do: name
+  def name(gm), do: Competitor.name(gm)
 
   def link(name, week) do
     Routes.live_path(BackendWeb.Endpoint, BackendWeb.GrandmasterProfileLive, name, %{week: week})
