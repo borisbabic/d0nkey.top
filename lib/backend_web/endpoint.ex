@@ -1,7 +1,10 @@
 defmodule BackendWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :backend
 
-  @session_options store: :cookie, key: "_backend_key", signing_salt: "tbOo3n69"
+  @session_options store: :cookie,
+                   key: "_backend_key",
+                   signing_salt: "tbOo3n69",
+                   max_age: 60 * 60 * 24 * 7
 
   socket "/socket", BackendWeb.UserSocket,
     # timeout for heroku
