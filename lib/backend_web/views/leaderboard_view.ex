@@ -288,8 +288,11 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   def warning(%{season_id: 83, region: "US", leaderboard_id: "STD"}, "Jay"),
-    do: "I've been told this isn't the same
-  Jay that Finished on APAC so I'm not counting them"
+    do: "I've been told this isn't the same Jay that Finished on APAC so I'm not counting them"
+
+  def warning(%{season_id: 91, region: "AP", leaderboard_id: "STD"}, "Jay"),
+    do:
+      "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
 
   def warning(_, _), do: nil
   def process_entries(nil, _, _, _, _), do: []
