@@ -6,12 +6,13 @@ defmodule Components.GMProfileLink do
   alias Backend.Grandmasters.Response.Competitor
 
   prop(week, :string)
+  prop(link_text, :string, default: nil)
   prop(gm, :any)
 
   def render(assigns) do
     ~H"""
     <span>
-      <a :if={{ name = name(@gm) }} class="link" href="{{ link(name, @week) }}">{{ name }}</a>
+      <a :if={{ name = name(@gm) }} class="link" href="{{ link(name, @week) }}">{{ @link_text || name }}</a>
     </span>
     """
   end

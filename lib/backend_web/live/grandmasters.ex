@@ -3,13 +3,13 @@ defmodule BackendWeb.GrandmastersLive do
   use Surface.LiveView
 
   alias Components.GMResultsTable
+  alias Components.GMStandingsTable
   alias Components.GMStandingsModal
   alias Components.Dropdown
   alias BackendWeb.Router.Helpers, as: Routes
   import BackendWeb.LiveHelpers
 
   alias Backend.Blizzard
-  alias Backend.Grandmasters.Response.Match
 
   data(user, :map)
   data(week, :string)
@@ -55,6 +55,7 @@ defmodule BackendWeb.GrandmastersLive do
             </div>
           </div>
         </div>
+        <GMStandingsTable region={{ @region }} />
         <GMResultsTable week={{ @week }} region={{ @region }} />
       </div>
     </Context>

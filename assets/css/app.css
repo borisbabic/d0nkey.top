@@ -283,6 +283,27 @@
   flex-shrink: 1;
 }
 
+.gm-standings-playoff-top {
+  background-color: #55E6C1;
+  color: black;
+}
+.gm-standings-playoff {
+  background-color: #58B19F;
+  color: black;
+}
+.gm-standings-playoff-bottom {
+  background-color: #9AECDB;
+  color: black;
+}
+.gm-standings-boring {
+  background-color: #CAD3C8;
+  color: black;
+}
+.gm-standings-relegated {
+  background-color: #FD7272;
+  color: black;
+}
+
 
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/
