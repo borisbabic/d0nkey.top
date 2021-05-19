@@ -7,11 +7,13 @@ defmodule BackendWeb.GrandmasterProfileLive do
   import BackendWeb.LiveHelpers
 
   alias Components.ExpandableLineup
+  alias Components.GMProfileLink
   alias Components.Dropdown
   alias Components.GMStandingsModal
   alias BackendWeb.GrandmastersLive
 
   alias Backend.Blizzard
+  alias Backend.Grandmasters
   alias Backend.Grandmasters.Response.Competitor
 
   data(user, :map)
@@ -30,7 +32,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
           {{ @gm }} {{ @week }}
         </div>
         <div class="subtitle is-5">
-          Points: {{ points(@gm, @week) }}
+          Week Points: {{ points(@gm, @week) }} Total Points: {{ points(@gm) }}
         </div>
 
         <div class="level is-mobile">
@@ -54,6 +56,23 @@ defmodule BackendWeb.GrandmasterProfileLive do
         <ExpandableLineup :if={{ lineup = lineup(@gm, @week) }} id="{{ @gm }}_profile_lineup" lineup={{ lineup }}/>
         <br>
         <GMResultsTable :if={{ region = region(@gm) }}week={{ @week }} region={{ region }} match_filter={{ match_filter(@gm) }}/>
+        <div class="title is-4">
+          All weeks
+        </div>
+        <table class="table is-fullwidth is-striped"> 
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr :for={{ week <- BackendWeb.GrandmastersLive.weeks() }}>
+              <td><GMProfileLink week="{{ week }}" gm={{@gm}} link_text={{ week }}/></td>
+              <td>{{ points(@gm, week) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </Context>
     """
@@ -97,10 +116,14 @@ defmodule BackendWeb.GrandmasterProfileLive do
     Blizzard.get_single_gm_lineup(week, gm)
   end
 
+  def points(gm) do
+    Grandmasters.total_results()
+    |> Grandmasters.get_points(gm)
+  end
+
   def points(gm, week) do
-    Backend.Grandmasters.results(week)
-    |> Map.new()
-    |> Map.get(gm, 0)
+    Grandmasters.results(week)
+    |> Grandmasters.get_points(gm)
   end
 
   def handle_params(params, _uri, socket) do
