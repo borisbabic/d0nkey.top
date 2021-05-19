@@ -43,17 +43,31 @@ defmodule Backend.Grandmasters do
       end)
       |> Enum.reduce(%{}, fn weekly_results, carry ->
         weekly_results
+        |> Enum.map(fn {player, points} ->
+          {player, %{points: points, results: [points]}}
+        end)
+        |> Map.new()
         |> Map.merge(carry, fn _, first, second ->
-          first + second
+          new_points = first.points + second.points
+          new_results = (first.results ++ second.results) |> Enum.sort(:desc)
+          %{points: new_points, results: new_results}
         end)
       end)
-      |> Enum.sort_by(&elem(&1, 1), :desc)
+      |> add_penalties()
+      |> Enum.sort_by(&elem(&1, 1).results, :desc)
+      |> Enum.sort_by(&elem(&1, 1).points, :desc)
+      |> Enum.map(fn {player, %{points: points}} ->
+        {player, points}
+      end)
 
     competitors = response |> Response.regionified_competitors()
     :ets.insert(table, {"regionified_competitors", competitors})
     :ets.insert(table, {"total_results", total_results})
     :ets.insert(table, {"raw_response", response})
   end
+
+  defp add_penalties(results),
+    do: Map.update!(results, "xBlyzes", &%{points: &1.points - 2, results: &1.results})
 
   defp sort_results(results), do: results |> Enum.sort_by(&elem(&1, 1), :desc)
   defp results_key(stage), do: "results_#{stage}"
@@ -77,12 +91,11 @@ defmodule Backend.Grandmasters do
   def regionified_competitors(), do: table() |> Util.ets_lookup("regionified_competitors", [])
 
   defp competitors_map() do
-    competitors_map =
-      regionified_competitors()
-      |> Enum.flat_map(fn {region, competitors} ->
-        competitors |> Enum.map(&{&1.name, region})
-      end)
-      |> Map.new()
+    regionified_competitors()
+    |> Enum.flat_map(fn {region, competitors} ->
+      competitors |> Enum.map(&{&1.name, region})
+    end)
+    |> Map.new()
   end
 
   def regionify_results(results) do
