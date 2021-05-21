@@ -9,6 +9,7 @@ defmodule Backend.Battlenet.Battletag do
     field :country, :string
     field :priority, :integer
     field :reported_by, :string
+    field :comment, :string
 
     timestamps()
   end
@@ -19,7 +20,14 @@ defmodule Backend.Battlenet.Battletag do
   @doc false
   def changeset(battletag, attrs) do
     battletag
-    |> cast(attrs, [:battletag_full, :battletag_short, :country, :priority, :reported_by])
+    |> cast(attrs, [
+      :battletag_full,
+      :battletag_short,
+      :country,
+      :priority,
+      :reported_by,
+      :comment
+    ])
     |> validate_required([:country, :priority, :reported_by])
     |> add_short()
   end

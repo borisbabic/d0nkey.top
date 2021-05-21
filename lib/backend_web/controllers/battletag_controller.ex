@@ -39,7 +39,12 @@ defmodule BackendWeb.BattletagController do
   end
 
   def batch_insert(p = %{"country" => country, "priority" => priority}, split_attr, rb) do
-    base_attrs = %{"country" => country, "priority" => priority, "reported_by" => rb}
+    base_attrs = %{
+      "country" => country,
+      "priority" => priority,
+      "reported_by" => rb,
+      "comment" => p["comment"]
+    }
 
     p[split_attr]
     # |> String.split(~r/\R/) would break chinese characters so I use the below two lines instead

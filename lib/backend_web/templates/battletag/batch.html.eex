@@ -40,6 +40,12 @@
           <%= error_tag f, :priority %>
         </div>
 
+        <div class="torch-form-group">
+          <%= label f, :comment %>
+          <%= text_input f, :comment %>
+          <%= error_tag f, :comment %>
+        </div>
+
         <%= if can_access?(@conn, "super") do %>
           <div class="torch-form-group">
             <%= label f, :reported_by %>
