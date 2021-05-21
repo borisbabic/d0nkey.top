@@ -35,6 +35,11 @@
         </li>
       
         <li>
+          <div class="torch-show-label">Comment:</div>
+          <div class="torch-show-data"><%= @battletag.comment %></div>
+        </li>
+      
+        <li>
           <div class="torch-show-label">Reported by:</div>
           <div class="torch-show-data"><%= @battletag.reported_by %></div>
         </li>

@@ -35,12 +35,16 @@
           </div>
         
         
-        
-        
           <div class="field">
             <label>Priority</label>
             <%= number_filter_select(:battletag, :priority, @conn.params) %>
             <%= filter_number_input(:battletag, :priority, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Comment</label>
+            <%= filter_select(:battletag, :comment, @conn.params) %>
+            <%= filter_string_input(:battletag, :comment, @conn.params) %>
           </div>
         
         <button type="submit" class="torch-button">Search</button>
@@ -64,6 +68,8 @@
               <th><%= table_link(@conn, "Priority", :priority) %></th>
             
               <th><%= table_link(@conn, "Reported by", :reported_by) %></th>
+
+              <th><%= table_link(@conn, "Comment", :comment) %></th>
             
             <th><span>Actions</span></th>
           </tr>
@@ -81,6 +87,8 @@
                 <td><%= battletag.priority %></td>
               
                 <td><%= battletag.reported_by %></td>
+
+                <td><%= battletag.comment %></td>
               
               <td class="torch-actions">
                 <span><%= link "Show", to: Routes.battletag_path(@conn, :show, battletag) %></span>
