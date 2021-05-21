@@ -744,4 +744,9 @@ defmodule Backend.Battlefy do
   def get_participants(tournament_id) do
     Api.get_participants(tournament_id)
   end
+
+  @spec get_match!(String.t()) :: Match.t()
+  def get_match!(match_id) do
+    Api.get_match!(match_id)
+  end
 end
