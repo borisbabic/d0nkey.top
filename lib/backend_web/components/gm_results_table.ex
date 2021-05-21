@@ -20,11 +20,11 @@ defmodule Components.GMResultsTable do
             </tr>
           </thead>
           <tbody>
-          <tr :for={{ match = %{competitors: [top, bottom]} <- matches(@region, @week) |> filter(@match_filter) |> sort()}}>
+          <tr :for={{ match <- matches(@region, @week) |> filter(@match_filter) |> sort()}} >
               <td>{{ Backend.Grandmasters.bracket(match.bracket_id).name }}</td>
-              <td><GMProfileLink week="{{ @week }}" gm={{top}} /></td>
-              <td>{{ match |> Match.score() }}</td>
-              <td><GMProfileLink week="{{ @week }}" gm={{bottom}} /></td>
+              <td><GMProfileLink week="{{ @week }}" gm={{ Match.match_info(match).top }} /></td>
+              <td>{{ Match.match_info(match).score }}</td>
+              <td><GMProfileLink week="{{ @week }}" gm={{ Match.match_info(match).bottom }} /></td>
             </tr>
           </tbody>
         </table>
