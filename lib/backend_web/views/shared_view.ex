@@ -44,7 +44,7 @@ defmodule BackendWeb.SharedView do
     """
   end
 
-  def render("player_name.html", %{name: name}) do
+  def render("player_icon.html", %{name: name}) do
     picture =
       cond do
         name in ["D0nkey", "D0nkey#2470"] -> "/favicon.ico"
@@ -55,10 +55,19 @@ defmodule BackendWeb.SharedView do
 
     if picture do
       ~E"""
-        <span><span class="icon small"><img src="<%= picture %>" alt="<%= name %>"></span><%= name %></span>
+        <span class="icon small"><img src="<%= picture %>" alt="<%= name %>"></span>
       """
     else
-      name
+      ~E"""
+      """
     end
+  end
+
+  def render("player_name.html", %{name: name}) do
+    icon_part = render_player_icon(name)
+
+    ~E"""
+      <span><%= icon_part %><%= name %></span>
+    """
   end
 end

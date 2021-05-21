@@ -2,7 +2,10 @@ defmodule Components.GMProfileLink do
   @moduledoc false
   use Surface.Component
   alias BackendWeb.Router.Helpers, as: Routes
+  use BackendWeb.ViewHelpers
   alias Backend.Grandmasters.Response.Competitor
+
+  alias Components.PlayerName
 
   prop(week, :string)
   prop(link_text, :string, default: nil)
@@ -12,7 +15,10 @@ defmodule Components.GMProfileLink do
   def render(assigns) do
     ~H"""
     <span>
-      <a :if={{ name = name(@gm) }} class="link is-text {{ @link_class }}" href="{{ link(name, @week) }}">{{ @link_text || name }}</a>
+      <a :if={{ name = name(@gm) }}  :if={{ @link_text }} class="link is-text {{ @link_class }}" href="{{ link(name, @week) }}">
+        {{ @link_text }}
+      </a>
+      <PlayerName :if={{ name = name(@gm) }} :if={{ ! @link_text }} flag={{ true }} player={{ name }} text_link={{ link(name, @week) }} link_class={{ @link_class }}/>
     </span>
     """
   end
