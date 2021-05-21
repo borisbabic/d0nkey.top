@@ -60,17 +60,37 @@ defmodule Backend.Grandmasters do
         {player, points}
       end)
 
+    set_brackets(response, table)
     competitors = response |> Response.regionified_competitors()
     :ets.insert(table, {"regionified_competitors", competitors})
     :ets.insert(table, {"total_results", total_results})
     :ets.insert(table, {"raw_response", response})
   end
 
+  defp set_brackets(response, table) do
+    response
+    |> Response.brackets()
+    |> Enum.each(fn b ->
+      key = bracket_key(b)
+      :ets.insert(table, {key, b})
+    end)
+  end
+
+  def bracket_key(%{id: id}), do: bracket_key(id)
+  def bracket_key(bracket_id), do: "bracekt_id_#{bracket_id}"
+
   defp add_penalties(results),
     do: Map.update!(results, "xBlyzes", &%{points: &1.points - 2, results: &1.results})
 
   defp sort_results(results), do: results |> Enum.sort_by(&elem(&1, 1), :desc)
   defp results_key(stage), do: "results_#{stage}"
+
+  def bracket(bracket_id) do
+    key = bracket_key(bracket_id)
+
+    table()
+    |> Util.ets_lookup(key)
+  end
 
   def results(stage) do
     key = results_key(stage)
