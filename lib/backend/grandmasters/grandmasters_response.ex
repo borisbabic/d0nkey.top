@@ -358,6 +358,35 @@ defmodule Backend.Grandmasters.Response.Match do
   end
 
   def date(_), do: nil
+
+  def score_at(%{scores: scores}, index, default \\ 0) do
+    case Enum.at(scores, index) do
+      %{value: value} -> value
+      _ -> default
+    end
+  end
+
+  def match_info(match = %{winner: winner = %{id: id}, competitors: c}) do
+    winner_index = c |> Enum.find_index(&(&1 && &1.id == id))
+    winner_score = match |> score_at(winner_index)
+    loser_score = match |> score_at(1 - winner_index)
+    loser = c |> Enum.find(&(&1 && &1.id != id))
+    score = "#{winner_score} - #{loser_score}"
+
+    %{
+      top: winner,
+      bottom: loser,
+      score: score
+    }
+  end
+
+  def match_info(match = %{competitors: [top, bottom]}) do
+    %{
+      top: top,
+      bottom: bottom,
+      score: score(match)
+    }
+  end
 end
 
 defmodule Backend.Grandmasters.Response.Competitor do
