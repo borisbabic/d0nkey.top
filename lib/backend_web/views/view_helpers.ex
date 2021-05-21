@@ -139,6 +139,14 @@ defmodule BackendWeb.ViewHelpers do
         )
       end
 
+      def render_player_icon(name) do
+        render(
+          BackendWeb.SharedView,
+          "player_icon.html",
+          %{name: name}
+        )
+      end
+
       def render_player_name(name) do
         render(
           BackendWeb.SharedView,
