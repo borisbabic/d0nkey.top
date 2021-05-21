@@ -127,7 +127,12 @@ defmodule BackendWeb.GrandmasterProfileLive do
   end
 
   def handle_params(params, _uri, socket) do
-    week = params["week"] || Blizzard.current_gm_week_title!()
+    week =
+      case params["week"] do
+        w = <<_::8, _::binary>> -> w
+        _ -> Blizzard.current_gm_week_title!()
+      end
+
     gm = params["gm"]
     {:noreply, socket |> assign(gm: gm, week: week)}
   end

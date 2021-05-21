@@ -48,9 +48,6 @@ defmodule BackendWeb.GrandmastersLive do
               </Dropdown>
             </div>
             <div class="level-item">
-              <GMStandingsModal id="gm_standings_modal_total" button_title="Total Standings" region={{ @region }} title="{{gm_region_display(@region)}} Standings" />
-            </div>
-            <div class="level-item">
               <GMStandingsModal id="gm_standings_modal_week" button_title="Week Standings" week={{ @week }} region={{ @region }} title="{{gm_region_display(@region)}} Standings" />
             </div>
           </div>
