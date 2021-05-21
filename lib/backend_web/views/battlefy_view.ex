@@ -185,7 +185,13 @@ defmodule BackendWeb.BattlefyView do
         %{
           top: handle_opponent_team(top, tournament, conn),
           bottom: handle_opponent_team(bottom, tournament, conn),
-          match_url: Battlefy.get_match_url(tournament, match),
+          match_url:
+            Routes.live_path(
+              BackendWeb.Endpoint,
+              BackendWeb.BattlefyMatchLive,
+              tournament.id,
+              match.id
+            ),
           current_round: current_round,
           score: "#{top.score} - #{bottom.score}"
         }
@@ -279,12 +285,16 @@ defmodule BackendWeb.BattlefyView do
             match_url: Battlefy.get_match_url(tournament, m),
             opponent: t |> MatchTeam.get_name(),
             opponent_link:
-              Routes.battlefy_path(
-                conn,
-                :tournament_player,
-                tournament.id,
-                t |> MatchTeam.get_name()
-              )
+              if t |> MatchTeam.get_name() do
+                Routes.battlefy_path(
+                  conn,
+                  :tournament_player,
+                  tournament.id,
+                  t |> MatchTeam.get_name()
+                )
+              else
+                nil
+              end
           }
         }
       ]

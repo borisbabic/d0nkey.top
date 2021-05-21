@@ -61,6 +61,7 @@ defmodule BackendWeb.Router do
 
     get "/battlefy/third-party-tournaments", BattlefyController, :organization_tournaments
 
+    live "/battlefy/tournament/:tournament_id/match/:match_id", BattlefyMatchLive
     live "/battlefy/tournament/:tournament_id/lineups", BattlefyTournamentDecksLive
     get "/battlefy/tournament/:tournament_id", BattlefyController, :tournament
 

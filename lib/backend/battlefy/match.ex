@@ -16,7 +16,7 @@ defmodule Backend.Battlefy.Match do
     field :stage_id, Backend.Battlefy.stage_id()
     field :is_bye, boolean
     field :completed_at, NaiveDateTime.t()
-    field :stats, MatchStats.t() | nil
+    field :stats, [MatchStats.t()] | nil
     # field :is_complete, boolean
   end
 
@@ -122,6 +122,7 @@ defmodule Backend.Battlefy.MatchTeam do
     field :team, Team.t() | nil
     field :score, integer
     field :banned_class, String.t() | nil
+    field :banned_at, NaiveDateTime.t() | nil
     field :ready_at, NaiveDateTime.t() | nil
     field :name, String.t()
   end
@@ -149,6 +150,7 @@ defmodule Backend.Battlefy.MatchTeam do
       name: map["name"],
       team: team,
       banned_class: map["banned_class"],
+      banned_at: Util.parse_date(map["banned_at"]),
       ready_at: Util.parse_date(map["ready_at"]),
       score: map["score"] || 0
     }
@@ -280,6 +282,7 @@ defmodule Backend.Battlefy.Match.MatchStats do
   typedstruct enforce: true do
     field :stats, Stats.t()
     field :game_number, integer
+    field :created_at, NaiveDateTime.t() | nil
   end
 
   def from_raw_map(maps) when is_list(maps) do
@@ -294,9 +297,10 @@ defmodule Backend.Battlefy.Match.MatchStats do
     |> from_raw_map
   end
 
-  def from_raw_map(%{"stats" => stats, "game_number" => game_number}) do
+  def from_raw_map(map = %{"stats" => stats, "game_number" => game_number}) do
     %__MODULE__{
       stats: Stats.from_raw_map(stats),
+      created_at: map["created_at"] |> Util.naive_date_time_or_nil(),
       game_number: game_number
     }
   end
