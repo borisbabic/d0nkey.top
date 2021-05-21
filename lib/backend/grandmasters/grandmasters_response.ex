@@ -43,6 +43,12 @@ defmodule Backend.Grandmasters.Response do
     |> Enum.uniq()
   end
 
+  def brackets(%{requested_season_tournaments: tournaments}) do
+    tournaments
+    |> Enum.flat_map(& &1.stages)
+    |> Enum.flat_map(& &1.brackets)
+  end
+
   def results(r, stage_title) when is_binary(stage_title),
     do: results(r, &(&1.title == stage_title))
 
@@ -267,6 +273,7 @@ defmodule Backend.Grandmasters.Response.Match do
   use TypedStruct
   alias Backend.Grandmasters.Response.Competitor
   alias Backend.Grandmasters.Response.Score
+  alias __MODULE__
 
   typedstruct enforce: true do
     field :id, integer
@@ -276,6 +283,7 @@ defmodule Backend.Grandmasters.Response.Match do
     field :competitors, [Competitor.t()]
     field :status, String.t()
     field :state, String.t()
+    field :bracket_id, integer
     field :start_date, integer | nil
     field :scores, [Score.t()]
     field :decklists, [[String.t()]]
@@ -285,7 +293,7 @@ defmodule Backend.Grandmasters.Response.Match do
   def concluded?(_), do: false
   def finished?(this), do: concluded?(this)
 
-  @spec decklists(__MODULE__) :: [{Competitor.t(), [String.t()]}]
+  @spec decklists(Match.t()) :: [{Competitor.t(), [String.t()]}]
   def decklists(%{competitors: c, decklists: d}), do: Enum.zip(c, d)
 
   def from_raw_map(map = %{"availableLanguages" => _}),
@@ -310,6 +318,8 @@ defmodule Backend.Grandmasters.Response.Match do
       status: map["status"],
       scores: map["scores"] |> Enum.map(&Score.from_raw_map/1),
       state: map["state"],
+      start_date: start_date,
+      bracket_id: map["bracket_id"],
       decklists: parse_decklists(map)
     }
   end
@@ -339,6 +349,15 @@ defmodule Backend.Grandmasters.Response.Match do
   def parse_decklists(_), do: [[], []]
 
   def score(%{scores: [%{value: top}, %{value: bottom}]}), do: "#{top} - #{bottom}"
+
+  def date(%{start_date: start_date}) do
+    case DateTime.from_unix(start_date) do
+      {:ok, date_time} -> date_time |> DateTime.to_date()
+      _ -> nil
+    end
+  end
+
+  def date(_), do: nil
 end
 
 defmodule Backend.Grandmasters.Response.Competitor do
@@ -371,6 +390,10 @@ defmodule Backend.Grandmasters.Response.Competitor do
 
   def name(%{name: name}), do: name
   def name(_), do: nil
+
+  def date(%{start_date: start_date}) do
+    start_date
+  end
 end
 
 defmodule Backend.Grandmasters.Response.Season do
