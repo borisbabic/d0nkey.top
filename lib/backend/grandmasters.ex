@@ -138,7 +138,9 @@ defmodule Backend.Grandmasters do
     |> Map.get(region, %{})
   end
 
-  def get_points(results, gm, default \\ 0) do
+  def get_points(results, gm, default \\ 0)
+
+  def get_points(results, gm, default) when is_list(results) do
     results
     |> List.keyfind(gm, 0)
     |> case do
@@ -146,6 +148,8 @@ defmodule Backend.Grandmasters do
       _ -> default
     end
   end
+
+  def get_points(_, _, default), do: default
 
   def parse_region(region, default \\ :EU) do
     region
