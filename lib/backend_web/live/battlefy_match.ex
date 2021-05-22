@@ -8,8 +8,10 @@ defmodule BackendWeb.BattlefyMatchLive do
   data(match, :map)
 
   alias Backend.Battlefy
+  alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
   alias Backend.Hearthstone.Deck
+  alias BackendWeb.Router.Helpers, as: Routes
 
   def mount(_params, session, socket) do
     {:ok,
@@ -32,9 +34,9 @@ defmodule BackendWeb.BattlefyMatchLive do
         <table class="table is-fullwidth"> 
           <thead>
             <tr>
-              <th>{{ @match.top |> MatchTeam.get_name() }}</th>
+              <th>{{ @match.top |> MatchTeam.get_name() |> player(@tournament) }}</th>
               <th>Score</th>
-              <th>{{ @match.bottom |> MatchTeam.get_name() }}</th>
+              <th>{{ @match.bottom |> MatchTeam.get_name() |> player(@tournament) }}</th>
               <th>When</th>
             </tr>
           </thead>
@@ -49,6 +51,16 @@ defmodule BackendWeb.BattlefyMatchLive do
         </table>
       </div>
     </Context>
+    """
+  end
+
+  def player(nil, _), do: ""
+
+  def player(name, tournament) do
+    link = Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, tournament.id, name)
+
+    ~E"""
+    <a href=<%= link %> ><%= name %></a>
     """
   end
 
@@ -123,8 +135,19 @@ defmodule BackendWeb.BattlefyMatchLive do
   defp score(_), do: 0
 
   def handle_params(%{"match_id" => match_id, "tournament_id" => tournament_id}, _uri, socket) do
-    match = Battlefy.get_match!(match_id)
     tournament = Battlefy.get_tournament(tournament_id)
+
+    match =
+      case Integer.parse(match_id) do
+        {match_num, ""} ->
+          tournament
+          |> Backend.Battlefy.get_tournament_matches()
+          |> Match.find(match_num)
+
+        _ ->
+          Battlefy.get_match!(match_id)
+      end
+
     {:noreply, socket |> assign(match: match, tournament: tournament)}
   end
 

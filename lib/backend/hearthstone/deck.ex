@@ -93,7 +93,7 @@ defmodule Backend.Hearthstone.Deck do
   iex> {:ok, deck} = Backend.Hearthstone.Deck.decode("AAECAR8BugMAAA=="); deck.deckcode
   "AAECAR8BugMAAA=="
   """
-  @spec decode(String.t()) :: {:ok, __MODULE__} | {:error, String.t() | any}
+  @spec decode(String.t()) :: {:ok, Deck} | {:error, String.t() | any}
   def decode(deckcode) do
     with no_comments <- deckcode |> remove_comments() |> String.trim(),
          {:ok, decoded} <- base64_decode(no_comments),
@@ -247,7 +247,7 @@ defmodule Backend.Hearthstone.Deck do
         {:ok, deck |> deckcode()}
 
       _ ->
-        {:error}
+        {:error, "Not a constructed deckcode"}
     end
   end
 
