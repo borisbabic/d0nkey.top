@@ -15,6 +15,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
   alias Backend.Blizzard
   alias Backend.Grandmasters
   alias Backend.Grandmasters.Response.Competitor
+  alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :map)
   data(gm, :string)
@@ -138,4 +139,9 @@ defmodule BackendWeb.GrandmasterProfileLive do
   end
 
   defp current_params(%{assigns: %{week: week}}), do: %{week: week}
+
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
+  end
 end
