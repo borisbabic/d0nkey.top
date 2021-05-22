@@ -54,6 +54,8 @@ defmodule BackendWeb.Router do
     get "/mt/qualifier-stats/:tour_stop", MastersTourController, :qualifier_stats
     get "/mt/tour-stops", MastersTourController, :tour_stops
     get "/mt/stats", MastersTourController, :masters_tours_stats
+    get "/mtq/:mtq_num", MastersTourController, :qualifier_redirect
+    get "/mtq/:mtq_num/*rest", MastersTourController, :qualifier_redirect
 
     get "/battlefy/third-party-tournaments/stats/:stats_slug",
         BattlefyController,

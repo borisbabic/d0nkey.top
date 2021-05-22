@@ -247,4 +247,20 @@ defmodule BackendWeb.MastersTourController do
         |> to_string()
     end
   end
+
+  def qualifier_redirect(conn, params = %{"mtq_num" => mtq_num}) do
+    %{id: id} = MastersTour.get_qualifier(mtq_num)
+
+    append =
+      case params["rest"] do
+        rest = [_ | _] -> ["" | rest] |> Enum.join("/")
+        _ -> ""
+      end
+
+    link = Routes.battlefy_path(conn, :tournament, id) <> append
+
+    conn
+    |> Plug.Conn.put_status(302)
+    |> redirect(to: link)
+  end
 end

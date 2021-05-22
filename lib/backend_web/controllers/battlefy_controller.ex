@@ -280,7 +280,10 @@ defmodule BackendWeb.BattlefyController do
       |> Map.put("tournament_ids", tournament_ids |> Enum.join(","))
 
     new_url = Routes.battlefy_path(conn, :tournaments_stats, new_params)
-    redirect(conn, to: new_url)
+
+    conn
+    |> Plug.Conn.put_status(302)
+    |> redirect(to: new_url)
   end
 
   def tournaments_stats(conn, params) do
