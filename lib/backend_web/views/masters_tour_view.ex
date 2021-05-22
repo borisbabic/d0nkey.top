@@ -881,17 +881,16 @@ defmodule BackendWeb.MastersTourView do
         invited_player = %{battletag_full: battletag_full, reason: reason_raw, official: official},
         conn
       ) do
-    {link, profile_link} =
+    tournament_link =
       case invited_player do
         %{tournament_slug: slug, tournament_id: id} when is_binary(slug) and is_binary(id) ->
-          {
-            Routes.battlefy_path(conn, :tournament, id),
-            Routes.battlefy_path(conn, :tournament_player, id, battletag_full)
-          }
+          Routes.battlefy_path(conn, :tournament_player, id, battletag_full)
 
         _ ->
-          {nil, nil}
+          nil
       end
+
+    profile_link = Routes.player_path(conn, :player_profile, battletag_full)
 
     reason =
       case {invited_player.tournament_slug, reason_raw} do
@@ -902,11 +901,12 @@ defmodule BackendWeb.MastersTourView do
     battletag = InvitedPlayer.shorten_battletag(battletag_full)
 
     %{
-      link: link,
+      tournament_link: tournament_link,
       profile_link: profile_link,
       reason: reason,
       battletag: battletag,
       official: official,
+      country: PlayerInfo.get_country(battletag_full),
       invited_at: invited_player.upstream_time
     }
   end
