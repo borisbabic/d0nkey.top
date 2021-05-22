@@ -106,7 +106,7 @@ defmodule BackendWeb.AdminController do
   def check_new_region_data(conn, _) do
     csv =
       {2021, 1}
-      |> MastersTour.get_gm_money_rankings()
+      |> MastersTour.get_gm_money_rankings(:earnings_2020)
       |> Enum.flat_map(fn {name, total, _} ->
         new_region = Backend.PlayerInfo.new_get_region(name)
         old_region = Backend.PlayerInfo.old_get_region(name)

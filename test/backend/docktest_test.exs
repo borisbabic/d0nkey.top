@@ -1,5 +1,6 @@
 defmodule Backend.Doctest do
   use ExUnit.Case, async: true
+  doctest Backend.Grandmasters.PromotionRanking
   doctest Backend.Hearthstone.Deck
   doctest Backend.Blizzard
   doctest BackendWeb.LeaderboardView
