@@ -152,7 +152,8 @@ defmodule Backend.FantasyCompetitionFetcher do
         _
       ) do
     competition
-    |> Backend.MastersTour.get_ts_points_ranking(:points_2021)
+    |> Backend.Grandmasters.PromotionCalculator.ts_points(:points_2021)
+    |> Enum.map(&{&1.player, &1.points})
     |> Map.new()
   end
 

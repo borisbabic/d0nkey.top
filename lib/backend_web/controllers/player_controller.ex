@@ -25,7 +25,7 @@ defmodule BackendWeb.PlayerController do
     short_bt = bt |> InvitedPlayer.shorten_battletag()
 
     mt_earnings =
-      Backend.MastersTour.get_gm_money_rankings({2021, 1})
+      Backend.MastersTour.get_gm_money_rankings({2021, 1}, :earnings_2020)
       |> Enum.find(fn {player, _total, _per_stop} ->
         player == short_bt
       end)

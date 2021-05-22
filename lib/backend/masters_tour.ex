@@ -17,6 +17,7 @@ defmodule Backend.MastersTour do
   alias Backend.Battlefy
   alias Backend.Battlefy.Stage
   alias Backend.Battlefy.Standings
+  alias Backend.Grandmasters.PromotionCalculator
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.Infrastructure.ApiCache
 
@@ -563,131 +564,9 @@ defmodule Backend.MastersTour do
     Battlefy.create_tournament_link(slug, id, "hsesports")
   end
 
-  @spec get_gm_money_rankings(Blizzard.gm_season(), atom()) :: gm_money_rankings()
-  def get_gm_money_rankings(gm_season, type \\ :earnings_2020)
-
-  @spec get_gm_money_rankings(Blizzard.gm_season()) :: gm_money_rankings()
-  # not implemented yet
-  def get_gm_money_rankings({2020, 1}, _), do: []
-
-  def get_gm_money_rankings(gm_season, :points_2021) do
-    Blizzard.get_tour_stops_for_gm!(gm_season)
-    |> Enum.filter(fn ts ->
-      Battlefy.get_tour_stop_id(ts) |> elem(0) == :ok
-    end)
-    |> Enum.flat_map(fn ts ->
-      get_ts_points_ranking(ts, :points_2021)
-      |> Enum.map(fn {name, money} -> {name, money, ts} end)
-    end)
-    |> group_gm_rankings()
-  end
-
-  def get_gm_money_rankings(gm_season, :earnings_2020) do
-    Blizzard.get_tour_stops_for_gm!(gm_season)
-    # remove the ones happening in the future for which we don't have info
-    |> Enum.filter(fn ts ->
-      Battlefy.get_tour_stop_id(ts) |> elem(0) == :ok
-    end)
-    |> Enum.flat_map(fn ts ->
-      get_ts_money_rankings(ts)
-      |> Enum.map(fn {name, money} -> {name, money, ts} end)
-    end)
-    |> group_gm_rankings()
-  end
-
-  defp group_gm_rankings(rankings) do
-    rankings
-    |> Enum.group_by(fn {name, _, _} -> get_earnings_group_by(name) end, fn {_, money, tour_stop} ->
-      {tour_stop, money}
-    end)
-    |> Enum.map(fn {name, earnings_list} ->
-      {
-        name,
-        earnings_list |> Enum.map(fn {_, money} -> money end) |> Enum.sum(),
-        earnings_list
-      }
-    end)
-    |> Enum.sort_by(fn {_, earnings, _} -> earnings end, :desc)
-  end
-
-  def get_ts_points_ranking(tour_stop, :points_2021) do
-    tour_stop
-    |> get_mt_tournament()
-    |> calculate_2021_points()
-  end
-
-  def calculate_2021_points(%{stages: [swiss, top16]}) do
-    top_cut_standings = get_mt_stage_standings(top16)
-    swiss_standings = get_mt_stage_standings(swiss)
-
-    top_cut_points = get_2021_top16_points(top_cut_standings)
-    swiss_points = get_2021_swiss_points(swiss_standings)
-
-    swiss_points
-    |> Enum.map(fn {player, points} ->
-      new_p =
-        top_cut_points
-        |> Enum.find(&(player == &1 |> elem(0)))
-        |> case do
-          {^player, top_points} -> points + top_points
-          nil -> points
-        end
-
-      {player, new_p}
-    end)
-    |> Enum.sort_by(fn {_, points} -> points end, :desc)
-  end
-
-  def calculate_2021_points(%{stages: [swiss]}) do
-    swiss
-    |> get_mt_stage_standings()
-    |> get_2021_swiss_points()
-  end
-
-  def calculate_2021_points(_), do: []
-
-  def get_2021_top16_points(standings) do
-    standings
-    |> Enum.map(fn %{team: %{name: name}, wins: wins, place: place} ->
-      points =
-        case {wins, place} do
-          {_, 1} -> 15
-          {_, 2} -> 12
-          {_, 3} -> 8
-          {_, 5} -> 4
-          {4, _} -> 15
-          {3, _} -> 12
-          {2, _} -> 8
-          {1, _} -> 4
-          _ -> 0
-        end
-
-      {name, points}
-    end)
-  end
-
-  def get_2021_swiss_points(standings) do
-    standings
-    |> Enum.map(fn %{team: %{name: name}, wins: wins} ->
-      points =
-        case wins do
-          9 -> 9
-          8 -> 8
-          7 -> 7
-          _ -> 0
-        end
-
-      {name, points}
-    end)
-  end
-
-  @spec get_earnings_group_by(String.t()) :: String.t()
-  def get_earnings_group_by(name) do
-    if name |> String.starts_with?("Jay#") && PlayerNationalityCache.get_actual_battletag(name) do
-      PlayerNationalityCache.get_actual_battletag(name)
-    else
-      name |> InvitedPlayer.shorten_battletag() |> name_hacks()
-    end
+  def get_gm_money_rankings(gm_season, system) do
+    PromotionCalculator.for_season(gm_season, system)
+    |> PromotionCalculator.convert_to_legacy()
   end
 
   def fix_name(name) do
@@ -713,19 +592,6 @@ defmodule Backend.MastersTour do
       "유워리" -> "6worry"
       n -> n
     end
-  end
-
-  @spec get_ts_money_rankings(Blizzard.tour_stop()) :: [{String.t(), number}]
-  def get_ts_money_rankings(tour_stop)
-      when tour_stop in [:Arlington, :Indonesia, :Jönköping, :"Asia-Pacific", :Montréal, :Madrid] do
-    get_mt_tournament(tour_stop)
-    |> get_2020_earnings(tour_stop)
-  end
-
-  def get_ts_money_rankings(tour_stop) do
-    # todo maybe not do this for all of them?
-    get_mt_tournament(tour_stop)
-    |> get_2020_earnings(tour_stop)
   end
 
   defp use_cached_value?(cached, ts = %TourStop{}),
@@ -857,82 +723,6 @@ defmodule Backend.MastersTour do
     else
       s |> Battlefy.get_stage_standings()
     end
-  end
-
-  @spec get_2020_earnings(Battlefy.Tournament.t(), Blizzard.tour_stop()) :: [{String.t(), number}]
-  def get_2020_earnings(%{stages: [swiss, top8]}, tour_stop) do
-    top8_standings = get_mt_stage_standings(top8, tour_stop)
-    swiss_standings = get_mt_stage_standings(swiss, tour_stop)
-
-    top8_players = top8_standings |> MapSet.new(fn %{team: %{name: name}} -> name end)
-
-    (get_2020_top8_earnings(top8_standings, tour_stop) ++
-       get_2020_swiss_earnings(swiss_standings, top8_players))
-    |> Enum.sort_by(fn {_, money} -> money end, :desc)
-  end
-
-  def get_2020_earnings(%{stages: [swiss]}, _) do
-    swiss_standings = get_mt_stage_standings(swiss)
-
-    get_2020_swiss_earnings(swiss_standings, MapSet.new([]))
-    |> Enum.sort_by(fn {_, money} -> money end, :desc)
-  end
-
-  def get_2020_earnings(_, _) do
-    []
-  end
-
-  @first_earnings 32_500
-  @second_earnings 22_500
-  @top4_earnings 15_000
-  @top8_earnings 11_000
-
-  @spec get_2020_top8_earnings([Battlefy.Standings.t()], Blizzard.tour_stop()) :: [
-          {String.t(), number}
-        ]
-  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
-  def get_2020_top8_earnings(standings, tour_stop) do
-    standings
-    |> Enum.map(fn %{team: %{name: name}, wins: wins, place: place} ->
-      shortened_name = InvitedPlayer.shorten_battletag(name)
-
-      money =
-        case {wins, place, tour_stop, shortened_name} do
-          # stupid blizzard not updating battlefy till the end
-          {_, _, :Arlington, "xBlyzes"} -> @first_earnings
-          {3, _, _, _} -> @first_earnings
-          {2, _, _, _} -> @second_earnings
-          {1, _, _, _} -> @top4_earnings
-          {0, _, _, _} -> @top8_earnings
-          {nil, 1, _, _} -> @first_earnings
-          {nil, 2, _, _} -> @second_earnings
-          {nil, 3, _, _} -> @top4_earnings
-          {nil, 5, _, _} -> @top8_earnings
-          _ -> @top8_earnings
-        end
-
-      {name, money}
-    end)
-  end
-
-  @spec get_2020_swiss_earnings([Battlefy.Standings.t()], MapSet.t()) :: [{String.t(), number}]
-  def get_2020_swiss_earnings(standings, top8_players = %MapSet{}) do
-    standings
-    |> Enum.filter(fn %{team: %{name: name}} -> !MapSet.member?(top8_players, name) end)
-    |> Enum.map(fn %{team: %{name: name}, wins: wins} ->
-      # top 8 is handled above, don't want to double count
-      money =
-        case wins do
-          # shouldn't happen, but whatever, let's be safe
-          8 -> 3500
-          7 -> 3500
-          6 -> 2250
-          5 -> 1000
-          _ -> 850
-        end
-
-      {name, money}
-    end)
   end
 
   @spec get_packs_earned(integer) :: integer

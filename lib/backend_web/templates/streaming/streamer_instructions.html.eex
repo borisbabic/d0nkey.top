@@ -28,3 +28,12 @@ Hi, I'm glad you want to appear on the site. Currently you need to be using the 
         </ul>
     </li>
 </ol>
+
+<br>
+<div class="title is-3">Troubleshooting</div>
+<ul>
+    <li>
+        If everything seems fine try going <a href="https://hsreplay.net/account/social/connections/">here</a> then removing twitch and reconnecting
+    </li>
+<ul>
+
