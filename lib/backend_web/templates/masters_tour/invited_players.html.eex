@@ -23,20 +23,20 @@
         </tr>
     </thead>
     <tbody>
-    <%= for player = %{reason: reason, battletag: battletag, invited_at: invited_at, official: official}
+    <%= for player = %{reason: reason, battletag: battletag, invited_at: invited_at, official: official, country: country}
      <-
     @invited_players do %>
         <tr>
         <td>
-            <%= if player.profile_link do %>
-                <a href="<%=player.profile_link%>"> <%= battletag %> </a>
-            <% else %>
-                <%= battletag %>
-            <% end %> </td>
+            <%= if country do %>
+                <%= country_flag(country) %>
+            <% end %>
+            <%= render_player_icon(battletag) %>
+            <a href="<%=player.profile_link%>"> <%= battletag %> </a>
         </td>
         <td>
-            <%= if player.link do %>
-                <a href="<%=player.link%>"> <%= reason %> </a>
+            <%= if player.tournament_link do %>
+                <a href="<%=player.tournament_link%>"> <%= reason %> </a>
             <% else %>
                 <%= reason %>
             <% end %> </td>
