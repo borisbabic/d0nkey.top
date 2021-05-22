@@ -898,7 +898,12 @@ defmodule BackendWeb.MastersTourView do
         _ -> reason_raw
       end
 
-    battletag = InvitedPlayer.shorten_battletag(battletag_full)
+    battletag =
+      if conn.query_params["show_full_bt"] in ["true", "yes"] do
+        battletag_full
+      else
+        InvitedPlayer.shorten_battletag(battletag_full)
+      end
 
     %{
       tournament_link: tournament_link,
