@@ -67,8 +67,11 @@ defmodule BackendWeb.BattlefyMatchLive do
   def subtitle(%{top: top, bottom: bottom}) do
     if Enum.all?([top, bottom], & &1.banned_at) do
       min_ago =
-        [top.banned_at, bottom.banned_at]
-        |> Enum.max()
+        if :gt == NaiveDateTime.compare(top.banned_at, bottom.banned_at) do
+          top.banned_at
+        else
+          bottom.banned_at
+        end
         |> min_ago(NaiveDateTime.utc_now())
 
       "Banned #{min_ago} min ago"
