@@ -41,11 +41,17 @@ defmodule BackendWeb.BattlefyMatchLive do
             </tr>
           </thead>
           <tbody>
+            <tr :for={{ times <- times(@match) }} > 
+              <td>{{ times.top }}</td>
+              <td></td>
+              <td>{{ times.bottom }}</td>
+              <td>{{ times.when || "?" }} min ago</td>
+            </tr>
             <tr :for={{ game <- games(@match) }} >
               <td>{{ game.top_class |> Deck.class_name() }}</td>
               <td>{{ game.score }}</td>
               <td>{{ game.bottom_class |> Deck.class_name() }}  </td>
-              <td>{{ game.finished }} min ago</td>
+              <td>{{ game.finished || "?" }} min ago</td>
             </tr>
           </tbody>
         </table>
@@ -62,6 +68,35 @@ defmodule BackendWeb.BattlefyMatchLive do
     ~E"""
     <a href=<%= link %> ><%= name %></a>
     """
+  end
+
+  def times(%{top: top, bottom: bottom}) do
+    now = NaiveDateTime.utc_now()
+
+    [
+      %{
+        top: "Check In",
+        when: top && top.ready_at |> min_ago(now),
+        bottom: ""
+      },
+      %{
+        top: "Banned",
+        when: top && top.banned_at |> min_ago(now),
+        bottom: ""
+      },
+      %{
+        bottom: "Check In",
+        when: bottom && bottom.ready_at |> min_ago(now),
+        top: ""
+      },
+      %{
+        bottom: "Banned",
+        when: bottom && bottom.banned_at |> min_ago(now),
+        top: ""
+      }
+    ]
+    |> Enum.filter(& &1.when)
+    |> Enum.sort_by(& &1.when, :desc)
   end
 
   def subtitle(%{top: top, bottom: bottom}) do
@@ -119,7 +154,7 @@ defmodule BackendWeb.BattlefyMatchLive do
     end)
   end
 
-  defp min_ago(nil, _now), do: "?"
+  defp min_ago(nil, _now), do: nil
 
   defp min_ago(comparison, now) do
     now_stamp = now |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_unix()
