@@ -76,27 +76,28 @@ defmodule BackendWeb.BattlefyMatchLive do
     [
       %{
         top: "Check In",
-        when: top && top.ready_at |> min_ago(now),
+        when: top && top.ready_at,
         bottom: ""
       },
       %{
         top: "Banned",
-        when: top && top.banned_at |> min_ago(now),
+        when: top && top.banned_at,
         bottom: ""
       },
       %{
         bottom: "Check In",
-        when: bottom && bottom.ready_at |> min_ago(now),
+        when: bottom && bottom.ready_at,
         top: ""
       },
       %{
         bottom: "Banned",
-        when: bottom && bottom.banned_at |> min_ago(now),
+        when: bottom && bottom.banned_at,
         top: ""
       }
     ]
     |> Enum.filter(& &1.when)
-    |> Enum.sort_by(& &1.when, :desc)
+    |> Enum.sort_by(& &1.when, fn a, b -> :lt == NaiveDateTime.compare(a, b) end)
+    |> Enum.map(&%{&1 | when: min_ago(&1.when, now)})
   end
 
   def subtitle(%{top: top, bottom: bottom}) do
