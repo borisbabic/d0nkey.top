@@ -10,7 +10,7 @@ defmodule Backend.PlayerInfo do
   @type country_code :: <<_::2>>
   @type player_info :: %{region: Blizzard.region() | nil, country: country_code | nil}
 
-  def relegated_gms({2020, 2}) do
+  def relegated_gms_for_promotion({2020, 2}) do
     MapSet.new([
       "Kolento",
       "Pavel",
@@ -24,7 +24,7 @@ defmodule Backend.PlayerInfo do
     ])
   end
 
-  def relegated_gms({2021, 1}) do
+  def relegated_gms_for_promotion({2021, 1}) do
     MapSet.new([
       "Ryvius",
       "kin0531",
@@ -37,10 +37,18 @@ defmodule Backend.PlayerInfo do
       "Firebat",
       "Empanizado"
     ])
-    |> MapSet.union(relegated_gms({2020, 2}))
+    |> MapSet.union(relegated_gms_for_promotion({2020, 2}))
   end
 
-  def relegated_gms(_), do: MapSet.new()
+  def relegated_gms_for_promotion({2021, 2}) do
+    MapSet.new([
+      "Tyler",
+      "Swidz",
+      "Zhym"
+    ])
+  end
+
+  def relegated_gms_for_promotion(_), do: MapSet.new()
 
   @nationality_to_region %{
     "Argentina" => :US,
@@ -231,28 +239,16 @@ defmodule Backend.PlayerInfo do
 
   def country_to_region(cc), do: @alpha2_to_region[cc]
 
-  def get_grandmasters_fot_promotion(season = {2020, 2}),
-    do: get_grandmasters(:Jönköping, relegated_gms(season))
+  def new_grandmasters(_), do: []
+
+  def get_grandmasters_for_promotion(season = {2020, 2}),
+    do: get_grandmasters(:Jönköping, relegated_gms_for_promotion(season))
 
   def get_grandmasters_for_promotion(season = {2021, 1}),
-    do: get_grandmasters(:Montréal, relegated_gms(season)) ++ ["Briarthorn"]
+    do: get_grandmasters(:Montréal, relegated_gms_for_promotion(season)) ++ ["Briarthorn"]
 
-  def get_grandmasters_for_promotion({2021, 2}),
-    do:
-      get_grandmasters({2021, 1}) ++
-        [
-          "Leta",
-          "Warma",
-          "Frenetic",
-          "justsaiyan",
-          "DreadEye",
-          "Impact",
-          "Fled",
-          "GivePLZ",
-          "Hi3",
-          "lambyseries",
-          "Che0nsu"
-        ]
+  def get_grandmasters_for_promotion(season = {2021, 2}),
+    do: get_grandmasters(:Dalaran, relegated_gms_for_promotion(season))
 
   def get_grandmasters_for_promotion(_), do: []
 
