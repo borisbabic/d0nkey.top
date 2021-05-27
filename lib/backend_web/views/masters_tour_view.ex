@@ -60,6 +60,15 @@ defmodule BackendWeb.MastersTourView do
     """
   end
 
+  def warning(warning) when is_binary(warning),
+    do: ~E"""
+    <span data-balloon-pos="up" aria-label="<%= warning %>" class="icon is-small">
+      <i class="fas fa-exclamation"></i>
+    </span>
+    """
+
+  def warning(_), do: ""
+
   def create_row_html(
         {pr = %{name: _name, total: total, per_ts: per_ts, region: _region, country: _country},
          place},
@@ -68,12 +77,13 @@ defmodule BackendWeb.MastersTourView do
         conn
       ) do
     name_cell = create_name_cell(pr, conn)
+    warning = warning(pr.warning)
     tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
 
     ~E"""
       <tr>
         <td> <%=place%> </td>
-        <td> <%=name_cell%> </td>
+        <td> <%=name_cell%><%= warning %> </td>
         <%= for tsc <- tour_stop_cells do %>
           <td class="is-hidden-mobile"><%=tsc%></td>
         <% end %>
@@ -632,6 +642,9 @@ defmodule BackendWeb.MastersTourView do
     end
   end
 
+  def earnings_warning({2021, 2}, "justsaiyan"), do: "Retired from GM"
+  def earnings_warning(_, _), do: nil
+
   def render("earnings.html", %{
         tour_stops: tour_stops_all,
         earnings: earnings,
@@ -661,6 +674,7 @@ defmodule BackendWeb.MastersTourView do
           current_score: current_score,
           per_ts: per_ts,
           region: PlayerInfo.get_region(name),
+          warning: earnings_warning(gm_season, name),
           country: PlayerInfo.get_country(name)
         }
       end)
