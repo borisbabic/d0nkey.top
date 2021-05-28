@@ -44,6 +44,10 @@ defmodule Backend.PlayerInfo do
     MapSet.new([
       "Tyler",
       "Swidz",
+      "Briarthorn",
+      "Hi3",
+      "Impact",
+      "tom60229",
       "Zhym"
     ])
   end
