@@ -114,7 +114,7 @@ defmodule Backend.Grandmasters.PromotionCalculator do
           _ -> 0
         end
 
-      {name, points, place}
+      {name, points, place |> normalize_2021_swiss_place()}
     end)
   end
 
@@ -183,6 +183,13 @@ defmodule Backend.Grandmasters.PromotionCalculator do
       {name, points, place}
     end)
   end
+
+  @doc """
+  2020 9-16 in swiss are treated as 9th
+  https://twitter.com/GnimshTV/status/1398550231634034688
+  """
+  defp normalize_2021_swiss_place(place) when place > 8 and place < 17, do: 9
+  defp normalize_2021_swiss_place(place), do: place
 
   defp merge_points(:points_2021, swiss, top), do: swiss + top
   defp merge_points(:earnings_2020, _, top), do: top
