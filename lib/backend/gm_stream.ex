@@ -30,9 +30,11 @@ defmodule Backend.GMStream do
     "tincho_hs",
     "viper__hs",
     "xblyzeshs",
-    "xblyzeshs",
-    "xblyzeshs",
-    "surrenderhs"
+    "surrenderhs",
+    "casie1",
+    "bunnyhoppor",
+    "lambyseriestv",
+    "AyRoK_HS"
   ]
 
   def start_link(default) do
