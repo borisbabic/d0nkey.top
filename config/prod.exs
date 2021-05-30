@@ -8,6 +8,7 @@ config :backend,
   warmup_cache: true,
   auto_migrate: false,
   goatcounter_analytics: false,
+  gm_stream_send_tweet: true,
   enable_bot: true
 
 # For production, don't f "d0nkey.top"orget to configure the url host

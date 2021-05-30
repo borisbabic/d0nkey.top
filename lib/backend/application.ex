@@ -70,6 +70,10 @@ defmodule Backend.Application do
           start: {Backend.DeckInteractionTracker, :start_link, [[]]}
         },
         %{
+          id: Backend.GMStream,
+          start: {Backend.GMStream, :start_link, [[]]}
+        },
+        %{
           id: Backend.Grandmasters,
           start: {Backend.Grandmasters, :start_link, [[]]}
         },
