@@ -73,6 +73,8 @@ defmodule Backend.MixProject do
       {:oban, "~> 2.5"},
       {:postgrex_pubsub, "~> 0.2.0"},
       {:phoenix_meta_tags, ">= 0.1.8"},
+      {:oauther, "~> 1.1"},
+      {:extwitter, "~> 0.12"},
       {:quantum, "~> 2.3"}
     ]
   end

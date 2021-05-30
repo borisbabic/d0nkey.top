@@ -67,12 +67,21 @@ config :backend,
   twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
   twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
   admin_pass: "admin",
+  gm_stream_send_tweet: false,
+  gm_stream_twitter_info: [
+    consumer_key: System.get_env("GMS_CONSUMER_KEY"),
+    consumer_secret: System.get_env("GMS_CONSUMER_SECRET"),
+    access_token: System.get_env("GMS_ACCESS_TOKEN"),
+    access_token_secret: System.get_env("GMS_ACCESS_TOKEN_SECRET")
+  ],
   admin_config_vars_cutoff_date: "3000-12-31"
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+config :logger, level: :warning
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
@@ -87,7 +96,7 @@ config :torch,
 config :backend, Oban,
   repo: Backend.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [default: 10, battlefy_lineups: 20, grandmasters_lineups: 3]
+  queues: [default: 10, battlefy_lineups: 20, grandmasters_lineups: 3, gm_stream_live: 4]
 
 config :phoenix_meta_tags,
   title: "d0nkey",
