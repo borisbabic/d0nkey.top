@@ -709,7 +709,7 @@ defmodule Backend.Fantasy do
     current_season = Blizzard.current_gm_season()
     tournament_title = current_season |> Blizzard.gm_tournament_title()
 
-    with {_, week_num} <- Blizzard.current_gm_week(current_season),
+    with {:playin, week_num} <- Blizzard.current_gm_week(current_season),
          stale_leagues <- stale_leagues("grandmasters", tournament_title, week_num) do
       stale_leagues
       |> Enum.map(&advance_gm_round(&1, week_num))
