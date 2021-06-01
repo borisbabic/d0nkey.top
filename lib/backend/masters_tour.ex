@@ -583,6 +583,7 @@ defmodule Backend.MastersTour do
       "ChungLiTaiChihYuan" -> "LzJohn"
       "Liooon" -> "VKLiooon"
       "brimful" -> "Briarthorn"
+      "SphnxManatee" -> "Briarthorn"
       "LojomHS" -> "lojom"
       "執念の蒼汁" -> "Aojiru"
       "Syuunen No Aojiru" -> "Aojiru"
@@ -590,6 +591,7 @@ defmodule Backend.MastersTour do
       "VK.xhx" -> "VKxhx"
       "yuyi" -> "WEYuyi"
       "유워리" -> "6worry"
+      "bloodyface" -> "lunaloveee"
       n -> n
     end
   end
