@@ -1,0 +1,74 @@
+defmodule Backend.PlayerIconBag do
+  @moduledoc """
+  Holds cached player icons
+  """
+  use GenServer
+  @name :player_icon_cache
+  @picture_icons [
+    {"D0nkey#2470", {:image, "/favicon.ico"}},
+    {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}}
+  ]
+  @type player_icon :: {:image, String.t()} | {:unicode, String.t()}
+
+  import Ecto.Query, warn: false
+  alias Backend.Repo
+  alias Backend.UserManager.User
+  alias Backend.Battlenet.Battletag
+
+  def start_link(default), do: GenServer.start_link(__MODULE__, default, name: @name)
+
+  def init(_args) do
+    table = :ets.new(@name, [:named_table])
+    update_table(table)
+    {:ok, %{table: table}}
+  end
+
+  defp update_table(table) do
+    query =
+      from u in User,
+        where: not is_nil(u.unicode_icon),
+        select: u
+
+    unicode_icons =
+      Repo.all(query)
+      |> Enum.map(&{&1.battletag, {:unicode, &1.unicode_icon}})
+
+    set_icons(@picture_icons, table)
+    set_icons(unicode_icons, table)
+  end
+
+  def set_icons(icons, table) do
+    icons
+    |> Enum.each(fn {btag, icon_config} ->
+      set_icon(table, btag, icon_config)
+    end)
+  end
+
+  def update(), do: GenServer.cast(@name, :update)
+
+  def set_user_icons(%{battletag: btag, unicode_icon: icon}) when not is_nil(icon) do
+    GenServer.cast(@name, {:set_icon, {btag, {:unicode, icon}}})
+  end
+
+  def set_user_icons(_), do: nil
+
+  def handle_cast(:update, state = %{table: table}) do
+    update_table(table)
+    {:noreply, state}
+  end
+
+  def handle_cast({:set_icon, {btag, icon}}, state = %{table: table}) do
+    set_icon(table, btag, icon)
+    {:noreply, state}
+  end
+
+  @spec set_icon(any(), String.t(), player_icon()) :: any()
+  def set_icon(table, btag, icon) do
+    :ets.insert(table, {btag, icon})
+    :ets.insert(table, {Battletag.shorten(btag), icon})
+  end
+
+  def table(), do: :ets.whereis(@name)
+
+  def get(player), do: table() |> Util.ets_lookup(player, nil)
+end

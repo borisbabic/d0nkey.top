@@ -45,21 +45,22 @@ defmodule BackendWeb.SharedView do
   end
 
   def render("player_icon.html", %{name: name}) do
-    picture =
-      cond do
-        name in ["D0nkey", "D0nkey#2470"] -> "/favicon.ico"
-        name in ["Carvalho", "Carvalho#1712"] -> "/images/icons/carvalho.png"
-        name in ["Blastoise", "Blastoise#1855"] -> "/images/icons/blastoise.png"
-        true -> false
-      end
+    name
+    |> Backend.PlayerIconBag.get()
+    |> case do
+      {:unicode, icon} ->
+        ~E"""
+          <span class="icon small"><%= icon %></span>
+        """
 
-    if picture do
-      ~E"""
-        <span class="icon small"><img src="<%= picture %>" alt="<%= name %>"></span>
-      """
-    else
-      ~E"""
-      """
+      {:image, path} ->
+        ~E"""
+          <span class="icon small"><img src="<%= path %>" alt="<%= name %>"></span>
+        """
+
+      _ ->
+        ~E"""
+        """
     end
   end
 

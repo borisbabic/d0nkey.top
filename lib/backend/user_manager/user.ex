@@ -11,6 +11,7 @@ defmodule Backend.UserManager.User do
     field :country_code, :string
     field :admin_roles, {:array, :string}, default: []
     field :hide_ads, :boolean
+    field :unicode_icon, :string
     embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
 
     timestamps()
@@ -24,7 +25,15 @@ defmodule Backend.UserManager.User do
 
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:battletag, :bnet_id, :battlefy_slug, :country_code, :admin_roles, :hide_ads])
+    |> cast(attrs, [
+      :battletag,
+      :bnet_id,
+      :battlefy_slug,
+      :country_code,
+      :admin_roles,
+      :hide_ads,
+      :unicode_icon
+    ])
     |> cast_embed(:decklist_options)
     |> validate_required([:battletag, :bnet_id])
     |> validate_length(:country_code, min: 2, max: 2)

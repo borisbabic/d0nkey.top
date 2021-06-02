@@ -74,6 +74,10 @@ defmodule Backend.Application do
           start: {Backend.GMStream, :start_link, [[]]}
         },
         %{
+          id: Backend.PlayerIconBag,
+          start: {Backend.PlayerIconBag, :start_link, [[]]}
+        },
+        %{
           id: Backend.Grandmasters,
           start: {Backend.Grandmasters, :start_link, [[]]}
         },
