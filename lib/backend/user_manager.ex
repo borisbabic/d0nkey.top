@@ -77,13 +77,14 @@ defmodule Backend.UserManager do
     user
     |> User.changeset(attrs)
     |> Repo.update()
-    |> update_user_country()
+    |> update_user_info()
   end
 
-  def update_user_country({:error, _} = ret), do: ret
+  def update_user_info({:error, _} = ret), do: ret
 
-  def update_user_country({:ok, user} = ret) do
+  def update_user_info({:ok, user} = ret) do
     Backend.Battlenet.update_user_country(user)
+    Backend.PlayerIconBag.set_user_icons(user)
     ret
   end
 

@@ -36,6 +36,12 @@ defmodule BackendWeb.ProfileSettingsLive do
               <ErrorTag field="country_code"/>
             </Field>
             <br>
+            <Field name="unicode_icon">
+              <Label>Player Icon</Label> 
+              <Select selected={{ @user.unicode_icon }} class="select" options={{ [{"None", nil}, {pride_flag(), pride_flag()}] }}/>
+              For custom icons see <a href="/patreon">patreon</a>
+            </Field>
+            <br>
             <Label class="label">Decklist Options</Label>
             <Field name="border">
               <Label>Border Color</Label>
@@ -53,6 +59,10 @@ defmodule BackendWeb.ProfileSettingsLive do
       </div>
     </Context>
     """
+  end
+
+  def pride_flag() do
+    <<0xF0, 0x9F, 0x8F, 0xB3, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x8C, 0x88>>
   end
 
   def handle_event("submit", %{"user" => attrs_raw}, socket = %{assigns: %{user: user}}) do
