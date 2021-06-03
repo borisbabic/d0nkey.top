@@ -23,7 +23,7 @@ defmodule Components.GMResultsTable do
           <tr :for={{ match <- matches(@region, @week) |> filter(@match_filter) |> sort()}} >
               <td>{{ Backend.Grandmasters.bracket(match.bracket_id).name }}</td>
               <td><GMProfileLink week="{{ @week }}" gm={{ Match.match_info(match).top }} /></td>
-              <td>{{ Match.match_info(match).score }}</td>
+              <td><a href="{{ match_link(match) }}">{{ Match.match_info(match).score }}</a></td>
               <td><GMProfileLink week="{{ @week }}" gm={{ Match.match_info(match).bottom }} /></td>
             </tr>
           </tbody>
@@ -32,6 +32,7 @@ defmodule Components.GMResultsTable do
     """
   end
 
+  def match_link(%{id: id}), do: "https://playhearthstone.com/en-us/esports/match/#{id}"
   def matches(region, week), do: Backend.Grandmasters.region_matches(region, week)
   def filter(matches, fun) when is_function(fun), do: matches |> Enum.filter(fun)
   def filter(matches, _), do: matches
