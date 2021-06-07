@@ -271,6 +271,7 @@ defmodule Util do
   @spec bangify({:ok | :error, any()}) :: any()
   def bangify({:ok, val}), do: val
   def bangify({:error, reason}), do: raise(reason)
+  def bangify(:error), do: raise("Unknown error")
 
   def ok!(thing), do: bangify(thing)
 
