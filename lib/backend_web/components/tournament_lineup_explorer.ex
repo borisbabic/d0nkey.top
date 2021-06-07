@@ -70,6 +70,7 @@ defmodule Components.TournamentLineupExplorer do
           <tbody>
             <tr :for={{ lineup <- lineups |> paginate(@page, @page_size) }}>
               <td :if={{ @gm_week }}> <GMProfileLink week={{ @gm_week }} gm={{ lineup.name }}/> </td>
+              <td :if={{ !@gm_week }}>{{ lineup.name }}</td>
               <td> 
                 <ExpandableLineup lineup={{ lineup }} id={{"modal_lineup_#{lineup.id}"}}/>
               </td>
