@@ -131,7 +131,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
     week =
       case params["week"] do
         w = <<_::8, _::binary>> -> w
-        _ -> Blizzard.current_gm_week_title!()
+        _ -> Blizzard.current_or_default_week_title()
       end
 
     gm = params["gm"]

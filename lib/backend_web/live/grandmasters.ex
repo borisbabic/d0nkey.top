@@ -20,7 +20,7 @@ defmodule BackendWeb.GrandmastersLive do
   end
 
   defp assign_default_week(socket) do
-    week = Blizzard.current_gm_week_title!()
+    week = Blizzard.current_or_default_week_title()
     socket |> assign(week: week)
   end
 
@@ -97,7 +97,7 @@ defmodule BackendWeb.GrandmastersLive do
     do: %{region: region, week: week}
 
   def handle_params(params, _uri, socket) do
-    week = params["week"] || Blizzard.current_gm_week_title!()
+    week = params["week"] || Blizzard.current_or_default_week_title()
     region = params["region"] |> Backend.Grandmasters.parse_region()
     {:noreply, socket |> assign(week: week, region: region)}
   end

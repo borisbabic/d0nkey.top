@@ -51,7 +51,7 @@ defmodule BackendWeb.GrandmastersLineup do
   end
 
   def handle_params(params, _uri, socket) do
-    week = params["week"] || Blizzard.current_gm_week_title!()
+    week = params["week"] || Blizzard.current_or_default_week_title()
     {:noreply, socket |> assign(week: week)}
   end
 

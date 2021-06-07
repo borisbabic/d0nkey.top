@@ -543,19 +543,23 @@ defmodule Backend.Blizzard do
     get_grandmasters_lineups(gm_season, stage_title)
   end
 
-  def get_grandmasters_lineups(), do: current_gm_week_title!() |> get_grandmasters_lineups()
+  def get_grandmasters_lineups(),
+    do: current_or_default_week_title() |> get_grandmasters_lineups()
 
   def current_gm_season(), do: {2021, 1}
 
-  def current_gm_week_title!() do
-    # todo make this better per season
-    # GM SEASON
-    current_gm_season() |> current_gm_week_title!()
+  def current_or_default_week_title(), do: current_gm_season() |> current_or_default_week_title()
+
+  def current_or_default_week_title(season) do
+    season
+    |> current_gm_week_title()
+    |> or_default_week_title()
   end
 
-  def gm_season_string({year, num}), do: "#{year}_#{num}"
+  def or_default_week_title({:ok, title}), do: title
+  def or_default_week_title(_), do: "Playoffs"
 
-  def current_gm_week_title!(season), do: season |> current_gm_week_title() |> Util.bangify()
+  def gm_season_string({year, num}), do: "#{year}_#{num}"
 
   def current_gm_week_title(season) when is_binary(season),
     do: season |> Hearthstone.parse_gm_season!() |> current_gm_week_title()
