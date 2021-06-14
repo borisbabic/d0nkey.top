@@ -1,6 +1,7 @@
 defmodule BackendWeb.Router do
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
+  import Plug.BasicAuth
 
   pipeline :auth do
     plug Backend.UserManager.Pipeline
@@ -27,12 +28,25 @@ defmodule BackendWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :api_auth
   end
 
-  import Plug.BasicAuth
+  defp api_auth(conn, _opts) do
+    with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
+         {:ok, api_user} <- Backend.Api.verify_user(user, pass) do
+      assign(conn, :api_user, api_user)
+    else
+      _ -> conn |> Plug.BasicAuth.request_basic_auth() |> halt()
+    end
+  end
 
   pipeline :admins_only do
     plug :basic_auth, username: "admin", password: Application.fetch_env!(:backend, :admin_pass)
+  end
+
+  scope "/api", BackendWeb do
+    pipe_through [:api_auth]
+    get "/who-am-i", ApiController, :who_am_i
   end
 
   scope "/", BackendWeb do
@@ -159,6 +173,7 @@ defmodule BackendWeb.Router do
     resources "/invited_player", InvitedPlayerController
     resources "/feed_items", FeedItemController
     resources "/fantasy-leagues", LeagueController
+    resources "/api-users", ApiUserController
   end
 
   scope "/admin", BackendWeb do
