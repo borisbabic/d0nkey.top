@@ -4,7 +4,6 @@ defmodule Backend.Infrastructure.GrandmastersCommunicator do
   alias Backend.Grandmasters.Response
 
   use Tesla
-  plug Tesla.Middleware.Cache, ttl: :timer.seconds(60)
   plug Tesla.Middleware.Timeout, timeout: 10_000
 
   def get_gm() do
@@ -13,7 +12,10 @@ defmodule Backend.Infrastructure.GrandmastersCommunicator do
 
     with {:ok, %{body: body}} <- get(url),
          {:ok, decoded} <- Poison.decode(body) do
-      Response.from_raw_map(decoded)
+      {:ok, Response.from_raw_map(decoded)}
+    else
+      r = {:error, _reason} -> r
+      _ -> {:error, :unknown_error}
     end
   end
 end

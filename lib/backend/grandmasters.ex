@@ -25,7 +25,11 @@ defmodule Backend.Grandmasters do
     {:noreply, state}
   end
 
-  defp update_table(table), do: Communicator.get_gm() |> update_table(table)
+  defp update_table(table) do
+    with {:ok, response} <- Communicator.get_gm() do
+      update_table(response, table)
+    end
+  end
 
   defp update_table(response, table) do
     total_results =

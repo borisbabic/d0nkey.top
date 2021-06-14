@@ -14,8 +14,9 @@ defmodule Backend.Grandmasters.LineupFetcher do
   end
 
   def save_lineups(stage_title) do
-    Api.get_gm()
-    |> save_lineups(stage_title)
+    with {:ok, response} <- Api.get_gm() do
+      save_lineups(response, stage_title)
+    end
   end
 
   def save_lineups(r = %{requested_season: rs}, stage_title) do
