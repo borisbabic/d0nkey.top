@@ -125,9 +125,6 @@ defmodule Backend.FantasyCompetitionFetcher do
         },
         round
       ) do
-    # gm = GrandmastersCommunicator.get_gm()
-    # gm |> GM.results(current_week)
-
     current_season = Blizzard.current_gm_season()
 
     gm_season_raw
