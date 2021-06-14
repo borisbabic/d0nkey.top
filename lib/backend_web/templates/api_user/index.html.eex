@@ -1,0 +1,69 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "New Api user", to: Routes.api_user_path(@conn, :new) %>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find Api users</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+        
+          <div class="field">
+            <label>Username</label>
+            <%= filter_select(:api_user, :username, @conn.params) %>
+            <%= filter_string_input(:api_user, :username, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Password</label>
+            <%= filter_select(:api_user, :password, @conn.params) %>
+            <%= filter_string_input(:api_user, :password, @conn.params) %>
+          </div>
+        
+        
+        
+        
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: Routes.api_user_path(@conn, :index) %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@api_users) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+            
+              <th><%= table_link(@conn, "Username", :username) %></th>
+            
+              <th><%= table_link(@conn, "Password", :password) %></th>
+            
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for api_user <- @api_users do %>
+            <tr>
+              
+                <td><%= api_user.username %></td>
+              
+                <td><%= api_user.password %></td>
+              
+              <td class="torch-actions">
+                <span><%= link "Show", to: Routes.api_user_path(@conn, :show, api_user) %></span>
+                <span><%= link "Edit", to: Routes.api_user_path(@conn, :edit, api_user) %></span>
+                <span><%= link "Delete", to: Routes.api_user_path(@conn, :delete, api_user), method: :delete, data: [confirm: "Are you sure?"] %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+    <% else %>
+      <p class="torch-no-data">No Api users match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>
