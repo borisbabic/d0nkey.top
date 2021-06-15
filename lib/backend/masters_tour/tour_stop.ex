@@ -164,13 +164,13 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :Dalaran,
-        battlefy_id: nil,
+        battlefy_id: "60b75695c2e3fd31243ff2c3",
         ladder_priority: :timezone,
         ladder_seasons: [90, 91],
         ladder_invites: 16,
         qualifiers_period: {~D[2021-04-15], ~D[2021-05-24]},
         region: :AP,
-        start_time: ~N[2021-06-18 04:15:00],
+        start_time: ~N[2021-06-18 22:00:00],
         year: 2021
       },
       %__MODULE__{

@@ -17,8 +17,7 @@ defmodule BackendWeb.FantasyIndexLive do
         <div class="level">
           <div class="level-left">
             <FantasyModal id="create_modal" title="Create Fantasy League"/> 
-            <a class="is-link button" href="/fantasy/leagues/join/e5b76f1c-979c-4da5-b084-7cbef78b14e9">Join the d0nkey.top GM League</a>
-            <a :if={{ show_orgrimmar?() }} class="is-link button" href="/fantasy/leagues/join/4f46c22c-02b8-4794-abec-bd8beb279c1b">Join the d0nkey.top Orgrimmar League</a>
+            <a :if={{ show_mt?(:Dalaran) }} class="is-link button" href="/fantasy/leagues/join/adad6039-e4b9-493e-8e5a-fb7e0254f8a9">Join the d0nkey.top Dalaran League</a>
           </div>
         </div>
         <FantasyLeaguesTable leagues={{ get_user_leagues(@user)}} />
@@ -27,14 +26,14 @@ defmodule BackendWeb.FantasyIndexLive do
     """
   end
 
-  def show_orgrimmar?() do
+  def show_mt?(mt) do
     now = NaiveDateTime.utc_now()
 
-    orgrimmar_start =
-      :Orgrimmar
+    mt_start =
+      mt
       |> Backend.MastersTour.TourStop.get_start_time()
 
-    :lt == NaiveDateTime.compare(now, orgrimmar_start)
+    :lt == NaiveDateTime.compare(now, mt_start)
   end
 
   def render(assigns) do
