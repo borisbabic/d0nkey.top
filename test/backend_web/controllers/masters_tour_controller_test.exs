@@ -30,4 +30,10 @@ defmodule BackendWeb.MastersTourControllerTest do
     conn = get(conn, url)
     assert html_response(conn, 200) =~ "/mt/qualifier-stats/Ironforge?limit="
   end
+
+  test "GET /mt/earnings returns 200", %{conn: conn} do
+    url = Routes.masters_tour_path(conn, :earnings)
+    conn = get(conn, url)
+    assert html_response(conn, 200)
+  end
 end
