@@ -76,7 +76,7 @@ defmodule Backend.Grandmasters.PromotionCalculator do
     |> to_ts_points(tour_stop)
   end
 
-  def calculate_points(_, _), do: []
+  def calculate_points(_, _, _), do: []
 
   @spec to_ts_points(raw_ts_points(), atom()) :: [TSPoints.t()]
   def to_ts_points(raw_points, tour_stop) do
