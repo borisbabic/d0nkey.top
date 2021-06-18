@@ -1,6 +1,7 @@
 defmodule Backend.FantasyCompetitionFetcher do
   @moduledoc false
   alias Backend.Fantasy.Competition.Participant
+  alias Backend.Fantasy.MTCompetitorMapper
   alias Backend.MastersTour.TourStop
   alias Backend.Battlefy
   alias Backend.Hearthstone
@@ -40,7 +41,10 @@ defmodule Backend.FantasyCompetitionFetcher do
       signed_up_in_battlefy =
         battlefy_particpants |> MapSet.member?(ip.battletag_full |> normalize_name.())
 
-      %Participant{name: ip.battletag_full, meta: %{in_battlefy: signed_up_in_battlefy}}
+      %Participant{
+        name: MTCompetitorMapper.map(ip.battletag_full, competition),
+        meta: %{in_battlefy: signed_up_in_battlefy}
+      }
     end)
   end
 
