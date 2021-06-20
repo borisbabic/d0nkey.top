@@ -94,6 +94,7 @@ defmodule BackendWeb.MastersTourController do
   def parse_season("2020_2"), do: {2020, 2}
   def parse_season("2021_1"), do: {2021, 1}
   def parse_season("2021_2"), do: {2021, 2}
+  def parse_season("2022_1"), do: {2022, 1}
   def parse_season(_), do: @default_season
 
   def parse_points_system(%{"points_system" => "mt_earnings_2020"}), do: :earnings_2020
