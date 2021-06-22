@@ -261,6 +261,24 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters_for_promotion(season = {2021, 2}),
     do: get_grandmasters(:Dalaran, relegated_gms_for_promotion(season))
 
+  def get_grandmasters_for_promotion({2022, 1}),
+    do:
+      get_grandmasters_for_promotion({2021, 2}) ++
+        [
+          "Gaby",
+          "Bunnyhoppor",
+          "Floki",
+          "J4YOU",
+          "CaelesLuna",
+          "McBanterFace",
+          "Eggowaffle",
+          "DimitriKazov",
+          "trahison",
+          "lambyseries",
+          "okasinnsuke",
+          "grr"
+        ]
+
   def get_grandmasters_for_promotion(_), do: []
 
   def get_grandmasters({2021, 1}) do
