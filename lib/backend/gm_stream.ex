@@ -13,8 +13,11 @@ defmodule Backend.GMStream do
 
   @gm_logins [
     "bankyugi_hs",
+    "caelesluna",
+    "EggowaffleHS",
     "fr0zen",
     "frenetichs",
+    "gaby59",
     "glory__hs",
     "jarlahs",
     "lambyseriestv",
@@ -22,19 +25,18 @@ defmodule Backend.GMStream do
     "leta",
     "lunaloveee8",
     "monsantohs",
+    "McBanterFace",
     "nalguidan",
     "nohandsgamer",
     "rami94hs",
     "rdulive",
     "thijs",
-    "tincho_hs",
     "viper__hs",
     "xblyzeshs",
     "surrenderhs",
     "casie1",
     "bunnyhoppor",
-    "lambyseriestv",
-    "AyRoK_HS"
+    "lambyseriestv"
   ]
 
   def start_link(default) do
