@@ -412,9 +412,18 @@ defmodule BackendWeb.BattlefyView do
       ) do
     ongoing = calculate_ongoing(matches, show_ongoing, tournament, conn)
     is_tour_stop = tour_stop?(tournament)
+    use_countries = use_countries?(is_tour_stop, tournament)
 
     standings =
-      prepare_standings(standings_raw, tournament, ongoing, conn, is_tour_stop, earnings, lineups)
+      prepare_standings(
+        standings_raw,
+        tournament,
+        ongoing,
+        conn,
+        use_countries,
+        earnings,
+        lineups
+      )
 
     highlight = if params.highlight == nil, do: [], else: params.highlight
     country_highlight = if params.country_highlight == nil, do: [], else: params.country_highlight
@@ -479,7 +488,7 @@ defmodule BackendWeb.BattlefyView do
       conn: conn,
       player_options: player_options,
       selected_countries: country_highlight,
-      use_countries: is_tour_stop,
+      use_countries: use_countries |> IO.inspect(),
       subtitle: subtitle,
       name: tournament.name,
       dropdowns: dropdowns,
@@ -494,6 +503,11 @@ defmodule BackendWeb.BattlefyView do
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
   end
+
+  def use_countries?(true, _), do: true
+  # max open 7
+  def use_countries?(_, %{id: "6061eff7c649e9119bb7594b"}), do: true
+  def use_countries?(_, _), do: false
 
   def add_highlight_fantasy_dropdown(dds, conn, highlight_fantasy, tournament, [_ | _]) do
     dds ++
