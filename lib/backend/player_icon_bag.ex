@@ -8,6 +8,7 @@ defmodule Backend.PlayerIconBag do
     {"D0nkey#2470", {:image, "/favicon.ico"}},
     {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}},
     {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
+    {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
     {"Dragoninja#1573", {:image, "/images/icons/dragoninja.png"}}
   ]
   @type player_icon :: {:image, String.t()} | {:unicode, String.t()}
