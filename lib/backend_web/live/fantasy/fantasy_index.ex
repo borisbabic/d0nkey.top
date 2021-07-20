@@ -18,12 +18,17 @@ defmodule BackendWeb.FantasyIndexLive do
           <div class="level-left">
             <FantasyModal id="create_modal" title="Create Fantasy League"/> 
             <a :if={{ show_mt?(:Dalaran) }} class="is-link button" href="/fantasy/leagues/join/adad6039-e4b9-493e-8e5a-fb7e0254f8a9">Join the d0nkey.top Dalaran League</a>
+            <a :for={{ {tour, link} <- Dreamhack.current_fantasy() }} class="is-link button" href="{{ link }}">Join DH {{ tour }}</a>
           </div>
         </div>
         <FantasyLeaguesTable leagues={{ get_user_leagues(@user)}} />
       </div>
     </Context>
     """
+  end
+
+  def show_dreamhack?() do
+    now = NaiveDateTime.utc_now()
   end
 
   def show_mt?(mt) do
