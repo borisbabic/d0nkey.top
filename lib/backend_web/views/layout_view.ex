@@ -48,4 +48,26 @@ defmodule BackendWeb.LayoutView do
 
     render("navbar.html", %{user: user, conn: conn})
   end
+
+  def current_dreamhack(conn) do
+    case Dreamhack.current() |> IO.inspect(label: "dh current") do
+      current = [_ | _] ->
+        ~E"""
+         <div class="navbar-item has-dropdown is-hoverable">
+           <div class="navbar-link">
+             DreamHack
+           </div>
+
+           <div class="navbar-dropdown">
+            <%= for {tour, id} <- current do %>
+              <a class="navbar-item" href='<%=Routes.battlefy_path(conn, :tournament, id)%>'><%= tour %></a>
+            <% end %>
+           </div>
+         </div>
+        """
+
+      _ ->
+        ""
+    end
+  end
 end
