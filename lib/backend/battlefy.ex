@@ -211,10 +211,11 @@ defmodule Backend.Battlefy do
         cond do
           is_bye && top.winner -> [top.team.name]
           is_bye && bottom.winner -> [bottom.team.name]
-          top.winner && (top.score == nil || top.score == 0) -> [top.team.name]
-          bottom.winner && (bottom.score == nil || bottom.score == 0) -> [bottom.team.name]
-          top.winner && top.ready_at != nil && bottom.ready_at == nil -> [top.team.name]
-          bottom.winner && top.ready_at == nil && bottom.ready_at != nil -> [bottom.team.name]
+          # not counting these because of new masters tour qualifier rules
+          # top.winner && (top.score == nil || top.score == 0) -> [top.team.name]
+          # bottom.winner && (bottom.score == nil || bottom.score == 0) -> [bottom.team.name]
+          # top.winner && top.ready_at != nil && bottom.ready_at == nil -> [top.team.name]
+          # bottom.winner && top.ready_at == nil && bottom.ready_at != nil -> [bottom.team.name]
           true -> []
         end
       end)
@@ -224,9 +225,10 @@ defmodule Backend.Battlefy do
       matches
       |> Enum.flat_map(fn %{double_loss: double_loss, top: top, bottom: bottom} ->
         cond do
-          double_loss -> [top.team.name, bottom.team.name]
-          top.ready_at != nil && bottom.ready_at == nil -> [bottom.team.name]
-          top.ready_at == nil && bottom.ready_at != nil -> [top.team.name]
+          # not counting these because of new masters tour qualifier rules
+          # double_loss -> [top.team.name, bottom.team.name]
+          # top.ready_at != nil && bottom.ready_at == nil -> [bottom.team.name]
+          # top.ready_at == nil && bottom.ready_at != nil -> [top.team.name]
           true -> []
         end
       end)

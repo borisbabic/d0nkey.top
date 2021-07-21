@@ -488,7 +488,7 @@ defmodule BackendWeb.BattlefyView do
       conn: conn,
       player_options: player_options,
       selected_countries: country_highlight,
-      use_countries: use_countries |> IO.inspect(),
+      use_countries: use_countries,
       subtitle: subtitle,
       name: tournament.name,
       dropdowns: dropdowns,
