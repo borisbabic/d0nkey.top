@@ -280,6 +280,7 @@ defmodule BackendWeb.MastersTourView do
         min: min_raw,
         countries: countries,
         show_flags: show_flags,
+        hide_qualified: hide_qualified,
         selected_columns: selected_columns,
         invited_players: invited_players,
         conn: conn
@@ -341,12 +342,14 @@ defmodule BackendWeb.MastersTourView do
         (eligible_ts |> Enum.map(&to_string/1)) ++
         ["Winrate %"]
 
+    is_ts = is_atom(period) and period != :all
+
     columns_to_show =
       case {selected_columns, period} do
         {columns, _} when is_list(columns) ->
           sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
 
-        {_, ts} when is_atom(period) and period != :all ->
+        {_, ts} when is_ts ->
           ["Player", "Cups", "Top 8", to_string(ts), "Winrate %"]
 
         _ ->
@@ -363,6 +366,7 @@ defmodule BackendWeb.MastersTourView do
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
       |> filter_countries(countries)
+      |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set)
       |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1 + offset)
@@ -424,12 +428,20 @@ defmodule BackendWeb.MastersTourView do
         }
       end)
 
-    dropdowns = [
-      limit_dropdown,
-      {ts_list, period |> period_title},
-      {min_list, "Min #{min_to_show} cups"},
-      {show_flags_list, "Show Country Flags"}
-    ]
+    flag_title = ~E"""
+    <span class="icon">
+      <i class="far fa-flag"></i>
+    </span>
+    """
+
+    dropdowns =
+      [
+        limit_dropdown,
+        {ts_list, period |> period_title},
+        {min_list, "Min #{min_to_show} cups"},
+        {show_flags_list, flag_title}
+      ]
+      |> add_qualified_filter(conn, is_ts, period, hide_qualified)
 
     columns_options =
       sortable_headers
@@ -456,6 +468,37 @@ defmodule BackendWeb.MastersTourView do
       next_button: next_button,
       dropdowns: dropdowns
     })
+  end
+
+  def filter_qualified(rows, true, "yes", ts, invited_set) do
+    rows
+    |> Enum.filter(fn p ->
+      !MapSet.member?(invited_set, p.battletag_full <> ts)
+    end)
+  end
+
+  def filter_qualified(rows, _, _, _, _), do: rows
+
+  def add_qualified_filter(dropdowns, _, false, _, _), do: dropdowns
+
+  def add_qualified_filter(dropdowns, conn, _, ts, hide_qualified) do
+    options =
+      ["yes", "no"]
+      |> Enum.map(fn v ->
+        %{
+          display: Recase.to_title(v),
+          selected: v == hide_qualified,
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifier_stats,
+              ts,
+              Map.put(conn.query_params, "hide_qualified", v)
+            )
+        }
+      end)
+
+    dropdowns ++ [{options, "Hide Qualified"}]
   end
 
   def period_title(:all), do: "2020-2021"

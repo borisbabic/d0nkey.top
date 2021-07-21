@@ -50,7 +50,7 @@ defmodule BackendWeb.LayoutView do
   end
 
   def current_dreamhack(conn) do
-    case Dreamhack.current() |> IO.inspect(label: "dh current") do
+    case Dreamhack.current() do
       current = [_ | _] ->
         ~E"""
          <div class="navbar-item has-dropdown is-hoverable">
