@@ -463,4 +463,7 @@ defmodule Util do
       other -> other
     end
   end
+
+  def or_nil({:ok, thing}), do: thing
+  def or_nil({:error, _}), do: nil
 end

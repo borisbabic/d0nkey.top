@@ -1,0 +1,149 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "New Deck tracker game", to: Routes.deck_tracker_game_path(@conn, :new) %>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find Dt games</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+        
+          <div class="field">
+            <label>Player btag</label>
+            <%= filter_select(:deck_tracker_game, :player_btag, @conn.params) %>
+            <%= filter_string_input(:deck_tracker_game, :player_btag, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Opponent btag</label>
+            <%= filter_select(:deck_tracker_game, :opponent_btag, @conn.params) %>
+            <%= filter_string_input(:deck_tracker_game, :opponent_btag, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Region</label>
+            <%= filter_select(:deck_tracker_game, :region, @conn.params) %>
+            <%= filter_string_input(:deck_tracker_game, :region, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Status</label>
+            <%= filter_select(:deck_tracker_game, :status, @conn.params) %>
+            <%= filter_string_input(:deck_tracker_game, :status, @conn.params) %>
+          </div>
+        
+        
+        
+        
+          <div class="field">
+            <label>Player rank</label>
+            <%= number_filter_select(:deck_tracker_game, :player_rank, @conn.params) %>
+            <%= filter_number_input(:deck_tracker_game, :player_rank, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Player legend rank</label>
+            <%= number_filter_select(:deck_tracker_game, :player_legend_rank, @conn.params) %>
+            <%= filter_number_input(:deck_tracker_game, :player_legend_rank, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Opponent rank</label>
+            <%= number_filter_select(:deck_tracker_game, :opponent_rank, @conn.params) %>
+            <%= filter_number_input(:deck_tracker_game, :opponent_rank, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Opponent legend rank</label>
+            <%= number_filter_select(:deck_tracker_game, :opponent_legend_rank, @conn.params) %>
+            <%= filter_number_input(:deck_tracker_game, :opponent_legend_rank, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Game mode</label>
+            <%= number_filter_select(:deck_tracker_game, :game_mode, @conn.params) %>
+            <%= filter_number_input(:deck_tracker_game, :game_mode, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Game type</label>
+            <%= number_filter_select(:deck_tracker_game, :game_type, @conn.params) %>
+            <%= filter_number_input(:deck_tracker_game, :game_type, @conn.params) %>
+          </div>
+        
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: Routes.deck_tracker_game_path(@conn, :index) %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@dt_games) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+            
+              <th><%= table_link(@conn, "Player btag", :player_btag) %></th>
+            
+              <th><%= table_link(@conn, "Opponent btag", :opponent_btag) %></th>
+            
+              <th><%= table_link(@conn, "Player rank", :player_rank) %></th>
+            
+              <th><%= table_link(@conn, "Player legend rank", :player_legend_rank) %></th>
+            
+              <th><%= table_link(@conn, "Opponent rank", :opponent_rank) %></th>
+            
+              <th><%= table_link(@conn, "Opponent legend rank", :opponent_legend_rank) %></th>
+            
+              <th><%= table_link(@conn, "Region", :region) %></th>
+            
+              <th><%= table_link(@conn, "Status", :status) %></th>
+            
+              <th><%= table_link(@conn, "Game mode", :game_mode) %></th>
+            
+              <th><%= table_link(@conn, "Game type", :game_type) %></th>
+            
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for deck_tracker_game <- @dt_games do %>
+            <tr>
+              
+                <td><%= deck_tracker_game.player_btag %></td>
+              
+                <td><%= deck_tracker_game.opponent_btag %></td>
+              
+                <td><%= deck_tracker_game.player_rank %></td>
+              
+                <td><%= deck_tracker_game.player_legend_rank %></td>
+              
+                <td><%= deck_tracker_game.opponent_rank %></td>
+              
+                <td><%= deck_tracker_game.opponent_legend_rank %></td>
+              
+                <td><%= deck_tracker_game.region %></td>
+              
+                <td><%= deck_tracker_game.status %></td>
+              
+                <td><%= deck_tracker_game.game_mode %></td>
+              
+                <td><%= deck_tracker_game.game_type %></td>
+              
+              <td class="torch-actions">
+                <span><%= link "Show", to: Routes.deck_tracker_game_path(@conn, :show, deck_tracker_game) %></span>
+                <span><%= link "Edit", to: Routes.deck_tracker_game_path(@conn, :edit, deck_tracker_game) %></span>
+                <span><%= link "Delete", to: Routes.deck_tracker_game_path(@conn, :delete, deck_tracker_game), method: :delete, data: [confirm: "Are you sure?"] %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+    <% else %>
+      <p class="torch-no-data">No Dt games match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>

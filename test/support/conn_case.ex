@@ -42,28 +42,78 @@ defmodule BackendWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, {:shared, self()})
     end
 
-    {conn, user} =
-      if tags[:authenticated] do
-        {:ok, user} = create_auth_user_from_tags(tags, tags[:other_battletag])
+    opts =
+      [conn: Phoenix.ConnTest.build_conn()]
+      |> setup_user(tags)
+      |> setup_api_user(tags)
 
-        conn =
-          user
-          |> build_conn_with_user()
+    # {conn, user, api_user} =
+    # cond do
+    # tags[:authenticated] -> 
+    # {:ok, user} = create_auth_user_from_tags(tags, tags[:other_battletag])
 
-        {conn, user}
-      else
-        {Phoenix.ConnTest.build_conn(), nil}
-      end
+    # conn =
+    # user
+    # |> build_conn_with_user()
 
-    {:ok, conn: conn, user: user}
+    # {conn, user, nil}
+    # tags[:api_user] ->
+    # true -> 
+    # {Phoenix.ConnTest.build_conn(), nil, nil}
+
+    # end
+    # if tags[:authenticated] do
+    # else
+    # end
+
+    {:ok, opts}
+  end
+
+  defp setup_user(carry, tags) do
+    if tags[:authenticated] do
+      {:ok, user} = create_auth_user_from_tags(tags, tags[:other_battletag])
+      conn = user |> build_conn_with_user(tags[:conn])
+
+      carry
+      |> Keyword.merge(conn: conn, user: user)
+    else
+      carry
+    end
+  end
+
+  defp setup_api_user(carry, tags) do
+    if tags[:api_user] do
+      {:ok, conn, api_user} = build_conn_with_api_user(tags[:conn])
+
+      carry
+      |> Keyword.merge(conn: conn, api_user: api_user)
+    else
+      carry
+    end
   end
 
   @spec build_conn_with_user(Backend.UserManager.User.t()) :: Plug.Conn.t()
-  def build_conn_with_user(user) do
-    Phoenix.ConnTest.build_conn()
+  def build_conn_with_user(user, conn \\ nil) do
+    conn
+    |> ensure_conn()
     |> Plug.Session.call(@signing_opts)
     |> Plug.Conn.fetch_session()
     |> Backend.UserManager.Guardian.Plug.sign_in(user)
+  end
+
+  defp build_conn_with_api_user(conn) do
+    with {:ok, api_user} <-
+           Backend.Api.create_api_user(%{username: "test_api_user", password: "new_password"}) do
+      new_conn =
+        conn
+        |> ensure_conn()
+        |> Plug.Conn.put_req_header(
+          "authorization",
+          "Basic " <> Base.encode64("test_api_user:new_password")
+        )
+
+      {:ok, new_conn, api_user}
+    end
   end
 
   defp create_auth_user_from_tags(tags, alt_battletag) do
@@ -72,6 +122,9 @@ defmodule BackendWeb.ConnCase do
     attrs = %{admin_roles: roles} |> Map.merge(more_attrs)
     ensure_auth_user(attrs)
   end
+
+  defp ensure_conn(nil), do: Phoenix.ConnTest.build_conn()
+  defp ensure_conn(conn), do: conn
 
   @spec ensure_auth_user(Map.t()) :: {:ok, User.t()} | {:error, any()}
   def ensure_auth_user(opts \\ %{}) when is_map(opts) do

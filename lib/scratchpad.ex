@@ -98,4 +98,47 @@ defmodule ScratchPad do
       json |> Enum.map(&Backend.HearthstoneJson.Card.from_raw_map/1)
     end
   end
+
+  def fudov(d, player \\ "FudoV#") do
+    sum =
+      %{fudov: fudov, ta_win: wins, ta_loss: losses, player_count: count} =
+      d
+      |> Enum.filter(fn %{standings: standings} ->
+        standings |> Enum.any?(&(&1.team.name =~ player))
+      end)
+      |> Enum.reduce(%{fudov: 0, ta_win: 0, ta_loss: 0, player_count: 0}, fn %{
+                                                                               standings:
+                                                                                 standings
+                                                                             },
+                                                                             %{
+                                                                               fudov: f,
+                                                                               ta_win: taw,
+                                                                               ta_loss: tal,
+                                                                               player_count: pc
+                                                                             } ->
+        {auto_wins, auto_losses} =
+          standings
+          |> Enum.reduce({0, 0}, fn s, {aw, al} ->
+            {aw + (s.auto_wins || 0), al + (s.auto_losses || 0)}
+          end)
+
+        fudov_auto = Enum.find_value(standings, 0, &(&1.team.name =~ player && &1.auto_wins))
+        total = Enum.count(standings)
+        IO.inspect({auto_wins, auto_losses, fudov_auto})
+
+        %{
+          fudov: f + fudov_auto,
+          ta_win: taw + auto_wins,
+          ta_loss: tal + auto_losses,
+          player_count: pc + total
+        }
+        |> IO.inspect()
+      end)
+      |> IO.inspect()
+
+    expected = (wins - losses) / count
+    expected_alt = wins / count
+    IO.inspect("Expected: #{expected} Expected_alt: #{expected_alt} fudov: #{fudov}")
+    sum
+  end
 end
