@@ -2,6 +2,7 @@ defmodule BackendWeb.ProfileSettingsLive do
   @moduledoc false
   use Surface.LiveView
   import BackendWeb.LiveHelpers
+  alias Backend.Streaming
   alias Backend.UserManager
   alias Backend.UserManager.User.DecklistOptions
   alias Surface.Components.Form
@@ -53,6 +54,12 @@ defmodule BackendWeb.ProfileSettingsLive do
             </Field>
 
             <Submit label="Save" class="button"/>
+            <div :if={{ @user.twitch_id }} >
+              <button class="button" type="button" :on-click="disconnect_twitch">Disconnect Twitch {{ twitch_username(@user) }}        </button>
+            </div>
+            <div :if={{ !@user.twitch_id }} >
+              <a class="button" href="/auth/twitch">Connect Twitch</a>
+            </div>
           </Form>
         </div>
         <div :if={{ !@user }}>Not Logged In</div>
@@ -63,6 +70,23 @@ defmodule BackendWeb.ProfileSettingsLive do
 
   def pride_flag() do
     <<0xF0, 0x9F, 0x8F, 0xB3, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x8C, 0x88>>
+  end
+
+  def twitch_username(%{twitch_id: nil}), do: nil
+
+  def twitch_username(%{twitch_id: twitch_id}) do
+    case Streaming.streamer_by_twitch_id(twitch_id) do
+      streamer = %{id: _} -> Streaming.Streamer.twitch_display(streamer)
+      _ -> "Unknown twitch display???"
+    end
+  end
+
+  def handle_event("disconnect_twitch", _, socket = %{assigns: %{user: user}}) do
+    {:ok, updated} = UserManager.remove_twitch(user)
+    {:noreply, socket |> assign(:user, updated)}
+  end
+
+  def handle_event("submit", %{"user" => attrs_raw}, socket = %{assigns: %{user: user}}) do
   end
 
   def handle_event("submit", %{"user" => attrs_raw}, socket = %{assigns: %{user: user}}) do

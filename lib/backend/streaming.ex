@@ -231,6 +231,14 @@ defmodule Backend.Streaming do
 
   defp compose_streamers_query(_unrecognized, query), do: query
 
+  def streamer_by_twitch_id(twitch_id) do
+    query =
+      from s in Streamer,
+        where: s.twitch_id == ^twitch_id
+
+    Repo.one(query)
+  end
+
   def streamer(id), do: Repo.get(Streamer, id)
   def streamer_deck(id), do: Repo.get(StreamerDeck, id)
   def streamer_decks_by_deck(deck_id), do: [{"deck_id", deck_id}] |> streamer_decks()

@@ -12,6 +12,7 @@ defmodule Backend.UserManager.User do
     field :admin_roles, {:array, :string}, default: []
     field :hide_ads, :boolean
     field :unicode_icon, :string
+    field :twitch_id, :string
     embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
 
     timestamps()
@@ -32,12 +33,14 @@ defmodule Backend.UserManager.User do
       :country_code,
       :admin_roles,
       :hide_ads,
+      :twitch_id,
       :unicode_icon
     ])
     |> cast_embed(:decklist_options)
     |> validate_required([:battletag, :bnet_id])
     |> validate_length(:country_code, min: 2, max: 2)
     |> capitalize_country_code()
+    |> unique_constraint(:twitch_id)
     |> unique_constraint(:bnet_id)
   end
 

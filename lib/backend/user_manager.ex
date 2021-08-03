@@ -198,4 +198,16 @@ defmodule Backend.UserManager do
 
     Repo.one(query)
   end
+
+  def set_twitch(user, twitch_id) do
+    user
+    |> User.changeset(%{twitch_id: twitch_id})
+    |> Repo.update()
+  end
+
+  def remove_twitch(user) do
+    user
+    |> User.changeset(%{twitch_id: nil})
+    |> Repo.update()
+  end
 end

@@ -75,6 +75,7 @@ defmodule Backend.MixProject do
       {:phoenix_meta_tags, ">= 0.1.8"},
       {:oauther, "~> 1.1"},
       {:extwitter, "~> 0.12"},
+      {:ueberauth_twitch, "~> 0.0.2"},
       {:bcrypt_elixir, "~> 2.3.0"},
       {:quantum, "~> 2.3"}
     ]
