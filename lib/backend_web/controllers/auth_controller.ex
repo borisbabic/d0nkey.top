@@ -22,6 +22,20 @@ defmodule BackendWeb.AuthController do
     |> redirect(to: "/")
   end
 
+  def callback(
+        conn = %{assigns: %{ueberauth_auth: auth = %{provider: :twitch, uid: twitch_id}}},
+        _params
+      ) do
+    case Guardian.Plug.current_resource(conn) do
+      user = %{battletag: bt} ->
+        UserManager.set_twitch(user, twitch_id)
+        conn |> redirect(to: "/profile/settings")
+
+      _ ->
+        render(conn, "user_expected.html", %{})
+    end
+  end
+
   @spec get_bnet_info(any()) :: UserManager.bnet_info()
   def get_bnet_info(%{extra: %{user: %{"battletag" => bt, "id" => id}}}) do
     %{
