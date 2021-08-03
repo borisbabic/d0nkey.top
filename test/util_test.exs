@@ -1,4 +1,4 @@
 defmodule UtilTest do
-  use ExUnit.Case, async: true
+  use Backend.DataCase, async: true
   doctest Util
 end

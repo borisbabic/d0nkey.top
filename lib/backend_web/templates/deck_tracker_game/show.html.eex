@@ -1,0 +1,67 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "Edit", to: Routes.deck_tracker_game_path(@conn, :edit, @deck_tracker_game), class: "torch-button" %>
+    <%= link "Back", to: Routes.deck_tracker_game_path(@conn, :index), class: "torch-button" %>
+  </div>
+</section>
+
+<section id="torch-header-and-content">
+  <div class="torch-container">
+    <div class="header">
+      <h3>Deck tracker game Details</h3>
+    </div>
+    <ul>
+      
+        <li>
+          <div class="torch-show-label">Player btag:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.player_btag %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Opponent btag:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.opponent_btag %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Player rank:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.player_rank %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Player legend rank:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.player_legend_rank %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Opponent rank:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.opponent_rank %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Opponent legend rank:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.opponent_legend_rank %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Region:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.region %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Status:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.status %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Game mode:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.game_mode %></div>
+        </li>
+      
+        <li>
+          <div class="torch-show-label">Game type:</div>
+          <div class="torch-show-data"><%= @deck_tracker_game.game_type %></div>
+        </li>
+      
+    </ul>
+  </div>
+</section>

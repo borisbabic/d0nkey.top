@@ -1,0 +1,74 @@
+<%= form_for @changeset, @action, [multipart: true, id: "torch-form"], fn f -> %>
+  <fieldset class="torch-panel">
+    <legend>
+      <span>Details</span>
+    </legend>
+    <%= if @changeset.action do %>
+      <p class="torch-form-error">Oops, something went wrong! Please check the errors below.</p>
+    <% end %>
+  
+    <div class="torch-form-group">
+      <%= label f, :player_btag %>
+      <%= text_input f, :player_btag %>
+      <%= error_tag f, :player_btag %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :opponent_btag %>
+      <%= text_input f, :opponent_btag %>
+      <%= error_tag f, :opponent_btag %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :player_rank %>
+      <%= number_input f, :player_rank %>
+      <%= error_tag f, :player_rank %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :player_legend_rank %>
+      <%= number_input f, :player_legend_rank %>
+      <%= error_tag f, :player_legend_rank %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :opponent_rank %>
+      <%= number_input f, :opponent_rank %>
+      <%= error_tag f, :opponent_rank %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :opponent_legend_rank %>
+      <%= number_input f, :opponent_legend_rank %>
+      <%= error_tag f, :opponent_legend_rank %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :region %>
+      <%= text_input f, :region %>
+      <%= error_tag f, :region %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :status %>
+      <%= text_input f, :status %>
+      <%= error_tag f, :status %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :game_mode %>
+      <%= number_input f, :game_mode %>
+      <%= error_tag f, :game_mode %>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :game_type %>
+      <%= number_input f, :game_type %>
+      <%= error_tag f, :game_type %>
+    </div>
+  
+    <div class="torch-submit-form">
+      <%= submit "Submit", class: "torch-submit-button" %>
+    </div>
+  </fieldset>
+<% end %>
