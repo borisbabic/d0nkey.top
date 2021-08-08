@@ -3,18 +3,27 @@ defmodule BackendWeb.PlayerController do
   use BackendWeb, :controller
   alias Backend.PlayerInfo
   alias Backend.MastersTour
+  alias Backend.MastersTour.TourStop
   alias Backend.MastersTour.InvitedPlayer
+
+  def add_current_qualifiers(periods) do
+    case TourStop.get_current_qualifiers() do
+      %{id: id} -> [id | periods]
+      _ -> periods
+    end
+  end
 
   def player_profile(conn, params = %{"battletag_full" => bt}) do
     qualifier_stats =
       [2020, 2021]
-      |> Enum.flat_map(fn year ->
-        year
+      |> add_current_qualifiers()
+      |> Enum.flat_map(fn period ->
+        period
         |> Backend.MastersTour.get_player_stats()
         |> elem(0)
         |> Enum.find(fn ps -> ps.battletag_full == bt end)
         |> case do
-          ps = %{wins: _} -> [{year, ps}]
+          ps = %{wins: _} -> [{period, ps}]
           nil -> []
         end
       end)
