@@ -147,6 +147,18 @@ defmodule BackendWeb.MastersTourView do
     do:
       [100, @min_cups_options |> Enum.find(fn a -> a > 4 + total * 0.20 end) || 100] |> Enum.min()
 
+  @doc """
+  When there is winrate invites and we don't want the default min cups to exceed that num
+  """
+  def max_for_mt(min_cups, period) when is_atom(period) do
+    case TourStop.get(period, :min_qualifiers_for_winrate) do
+      num when is_integer(num) -> Enum.min([min_cups, num])
+      nil -> min_cups
+    end
+  end
+
+  def max_for_mt(min_cups, _period), do: min_cups
+
   def filter_columns(column_map, columns_to_show) do
     columns_to_show
     |> Enum.map(fn c -> column_map[c] || "" end)
@@ -228,7 +240,7 @@ defmodule BackendWeb.MastersTourView do
 
   # way too big of a performance hit
   def add_percentile_rows(rows, period) do
-    get_val = fn m -> m["Winrate %"] end
+    get_val = & &1["Winrate %"]
 
     qualified =
       rows
@@ -285,7 +297,7 @@ defmodule BackendWeb.MastersTourView do
         invited_players: invited_players,
         conn: conn
       }) do
-    min_to_show = min_raw || min_cups(total)
+    min_to_show = min_raw || min_cups(total) |> max_for_mt(period)
 
     update_link = fn new_params ->
       Routes.masters_tour_path(
