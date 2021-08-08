@@ -369,7 +369,7 @@ defmodule BackendWeb.MastersTourView do
       |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set)
       |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
-      |> Enum.with_index(1 + offset)
+      |> Enum.with_index(1)
       |> Enum.drop(offset)
       |> Enum.take(limit)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
