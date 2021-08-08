@@ -212,7 +212,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       end)
       |> create_player_rows(conn)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
-      |> Enum.with_index(1 + offset)
+      |> Enum.with_index(1)
       |> Enum.drop(offset)
       |> Enum.take(limit)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
