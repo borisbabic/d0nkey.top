@@ -57,7 +57,6 @@ defmodule Backend.Grandmasters do
           %{points: new_points, results: new_results}
         end)
       end)
-      |> add_penalties()
       |> Enum.sort_by(&elem(&1, 1).results, :desc)
       |> Enum.sort_by(&elem(&1, 1).points, :desc)
       |> Enum.map(fn {player, %{points: points}} ->
@@ -82,9 +81,6 @@ defmodule Backend.Grandmasters do
 
   def bracket_key(%{id: id}), do: bracket_key(id)
   def bracket_key(bracket_id), do: "bracekt_id_#{bracket_id}"
-
-  defp add_penalties(results),
-    do: Map.update!(results, "xBlyzes", &%{points: &1.points - 2, results: &1.results})
 
   defp sort_results(results), do: results |> Enum.sort_by(&elem(&1, 1), :desc)
   defp results_key(stage), do: "results_#{stage}"
