@@ -102,6 +102,7 @@
          </div>
        </div>
          <a class="navbar-item" href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
+         <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.FantasyIndexLive) %>'>Fantasy</a>
 
        <%= if Enum.any?(Dreamhack.current_fantasy()) do %>
          <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.FantasyIndexLive) %>'>Fantasy</a>

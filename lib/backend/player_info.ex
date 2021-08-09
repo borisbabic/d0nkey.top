@@ -289,9 +289,17 @@ defmodule Backend.PlayerInfo do
       ["lunaloveee", "Tincho", "che0nsu", "Posesi"]
   end
 
-  def get_grandmasters(rts = reference_tour_stop, relegated) do
+  def get_grandmasters({2021, 2}) do
+    get_grandmasters(
+      :Silvermoon,
+      ["Swidz", "AyRoK", "Zhym", "Hi3", "tom60229", "Tyler", "Tincho", "Briarthorn", "Impact"]
+      |> MapSet.new()
+    ) ++ ["okasinnsuke"]
+  end
+
+  def get_grandmasters(rts = _reference_tour_stop, relegated) do
     Backend.MastersTour.list_invited_players(rts)
-    |> Enum.filter(fn %{reason: r, official: o} -> String.contains?(r, "Grandmaster") end)
+    |> Enum.filter(fn %{reason: r, official: _o} -> String.contains?(r, "Grandmaster") end)
     |> Enum.map(fn %{battletag_full: bf} ->
       Backend.MastersTour.InvitedPlayer.shorten_battletag(bf)
     end)

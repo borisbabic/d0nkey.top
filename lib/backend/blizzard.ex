@@ -618,4 +618,5 @@ defmodule Backend.Blizzard do
   def weeks_so_far(season), do: season |> gm_season_definition() |> weeks_so_far()
 
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
+  def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
 end
