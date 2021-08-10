@@ -292,9 +292,21 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters({2021, 2}) do
     get_grandmasters(
       :Silvermoon,
-      ["Swidz", "AyRoK", "Zhym", "Hi3", "tom60229", "Tyler", "Tincho", "Briarthorn", "Impact"]
+      [
+        "Swidz",
+        "AyRoK",
+        "Zhym",
+        "Hi3",
+        "tom60229",
+        "Tyler",
+        "Tincho",
+        "Briarthorn",
+        "Impact",
+        "撒旦降臨",
+        "Alan870806"
+      ]
       |> MapSet.new()
-    ) ++ ["okasinnsuke"]
+    ) ++ ["GivePLZ", "AlanC86"]
   end
 
   def get_grandmasters(rts = _reference_tour_stop, relegated) do
