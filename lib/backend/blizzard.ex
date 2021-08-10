@@ -546,7 +546,7 @@ defmodule Backend.Blizzard do
   def get_grandmasters_lineups(),
     do: current_or_default_week_title() |> get_grandmasters_lineups()
 
-  def current_gm_season(), do: {2021, 1}
+  def current_gm_season(), do: {2021, 2}
 
   def current_or_default_week_title(), do: current_gm_season() |> current_or_default_week_title()
 
