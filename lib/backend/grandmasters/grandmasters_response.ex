@@ -88,6 +88,8 @@ defmodule Backend.Grandmasters.Response do
     |> Enum.flat_map(& &1.matches)
   end
 
+  def matches(_, _), do: []
+
   def regionified_competitors(%{requested_season_tournaments: tournaments}) do
     tournaments
     |> Enum.map(fn t ->
