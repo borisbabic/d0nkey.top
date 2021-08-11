@@ -57,6 +57,7 @@ defmodule Backend.Grandmasters do
           %{points: new_points, results: new_results}
         end)
       end)
+      |> add_season_winner_points(response)
       |> Enum.sort_by(&elem(&1, 1).results, :desc)
       |> Enum.sort_by(&elem(&1, 1).points, :desc)
       |> Enum.map(fn {player, %{points: points}} ->
@@ -69,6 +70,18 @@ defmodule Backend.Grandmasters do
     :ets.insert(table, {"total_results", total_results})
     :ets.insert(table, {"raw_response", response})
   end
+
+  {2021, 20}
+
+  def add_season_winner_points(results_map, %{requested_season: %{year: 2021, season: 2}}) do
+    ["Frenetic", "Posesi", "Nalguidan"]
+    |> Enum.reduce(results_map, fn prev_winner, r ->
+      Map.update!(r, prev_winner, &add_winner_points/1)
+    end)
+  end
+
+  def add_winner_points(%{points: p, results: r}), do: %{points: p + 5, results: r}
+  def add_season_winner_points(results_map, _), do: results_map
 
   defp set_brackets(response, table) do
     response
