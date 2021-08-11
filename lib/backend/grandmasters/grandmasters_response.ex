@@ -53,12 +53,26 @@ defmodule Backend.Grandmasters.Response do
     do: results(r, &(&1.title == stage_title))
 
   def results(r, stage_matcher) when is_function(stage_matcher) do
-    r
-    |> matches(stage_matcher)
-    |> Enum.flat_map(&if(&1.winner, do: [&1.winner], else: []))
-    |> Enum.group_by(& &1.name)
-    |> Enum.map(fn {gm, l} -> {gm, l |> Enum.count()} end)
-    |> Enum.sort_by(&elem(&1, 1), :desc)
+    matches = r |> matches(stage_matcher)
+
+    all_players_zeroed =
+      matches
+      |> Enum.flat_map(fn %{competitors: c} ->
+        c
+        |> Enum.filter(& &1)
+        |> Enum.map(& &1.name)
+      end)
+      |> Enum.uniq()
+      |> Enum.map(&{&1, 0})
+
+    winners =
+      matches
+      |> Enum.flat_map(&if(&1.winner, do: [&1.winner], else: []))
+      |> Enum.group_by(& &1.name)
+      |> Enum.map(fn {gm, l} -> {gm, l |> Enum.count()} end)
+
+    (winners ++ all_players_zeroed)
+    |> Enum.uniq_by(&elem(&1, 0))
     |> Map.new()
   end
 
