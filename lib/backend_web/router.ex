@@ -47,6 +47,7 @@ defmodule BackendWeb.Router do
   scope "/api", BackendWeb do
     pipe_through [:api_auth]
     get "/who-am-i", ApiController, :who_am_i
+    post "/dt/game", DeckTrackerController, :put_game
     put "/dt/game", DeckTrackerController, :put_game
   end
 
