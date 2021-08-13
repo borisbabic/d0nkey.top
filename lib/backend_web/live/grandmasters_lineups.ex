@@ -3,10 +3,8 @@ defmodule BackendWeb.GrandmastersLineup do
   use Surface.LiveView
   import BackendWeb.LiveHelpers
 
-  alias Components.ExpandableLineup
   alias Components.TournamentLineupExplorer
   alias Backend.Hearthstone.Lineup
-  alias Backend.Hearthstone.Deck
   alias Backend.Blizzard
   alias Components.Dropdown
   alias Backend.DeckInteractionTracker, as: Tracker
@@ -26,7 +24,7 @@ defmodule BackendWeb.GrandmastersLineup do
     <Context  put={{ user: @user }}>
       <div class="container">
         <div :if={{ lineups = Backend.Blizzard.get_grandmasters_lineups(@week) }} >
-          <div :if={{ stats = Lineup.stats(lineups) }} >
+          <div :if={{ Lineup.stats(lineups) }} >
             <div class="title is-2">Grandmasters Decks</div>
 
             <TournamentLineupExplorer id="grandmasters_tournament_lineup_{{ @week }}" tournament_id="{{ tournament_id(@week) }}" tournament_source="grandmasters" show_page_dropdown={{ false }} gm_week={{ @week }}>
