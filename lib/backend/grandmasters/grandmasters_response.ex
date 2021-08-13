@@ -127,39 +127,62 @@ defmodule Backend.Grandmasters.Response do
     end)
   end
 
-  def decklists(r, matcher)
-      when is_function(matcher) do
+  def latest_decklists(r, stage_title, max_match_age_sec \\ 60 * 60 * 24) do
+    latest_start =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.add(-1 * max_match_age_sec)
+
+    matcher = fn match ->
+      case Match.start_time(match) do
+        {:ok, start} -> NaiveDateTime.compare(start, latest_start) == :gt
+        _ -> false
+      end
+    end
+
+    decklists(r, stage_title, matcher)
+  end
+
+  @spec decklists(Response.t(), (Stage.t() -> boolean()) | String.t()) :: Map.t()
+  @spec decklists(Response.t(), (Stage.t() -> boolean()) | String.t(), (Match.t() -> boolean())) ::
+          Map.t()
+  def decklists(r, stage_matcher_or_title, match_matcher \\ & &1)
+
+  def decklists(r, stage_matcher, match_filter)
+      when is_function(stage_matcher) do
     r
-    |> matches(matcher)
+    |> matches(stage_matcher)
+    |> Enum.filter(match_filter)
     |> Enum.flat_map(&Match.decklists/1)
     |> Enum.filter(fn {competitor, lists} -> competitor != nil && lists |> Enum.any?() end)
-    |> Enum.reduce(%{}, fn {competitor, lists}, carry ->
-      existing_lists =
-        carry
-        |> Map.get(competitor.name)
-        |> case do
-          {_, codes} when is_list(codes) -> codes
-          _ -> []
-        end
-
-      filtered =
-        lists
-        |> Enum.reduce([], fn code, carry ->
-          case Deck.canonical_constructed_deckcode(code) do
-            {:ok, deckcode} -> [deckcode | carry]
-            _ -> carry
-          end
-        end)
-        |> Kernel.++(existing_lists)
-        |> Enum.uniq()
-
-      carry |> Map.put(competitor.name, {competitor, filtered})
-    end)
+    |> Enum.reduce(%{}, &merge_competitor_decklists/2)
     |> Map.values()
   end
 
-  def decklists(r, stage_title) when is_binary(stage_title) do
-    decklists(r, &(&1.title == stage_title))
+  defp merge_competitor_decklists({competitor, lists}, decklists_map) do
+    existing_lists =
+      decklists_map
+      |> Map.get(competitor.name)
+      |> case do
+        {_, codes} when is_list(codes) -> codes
+        _ -> []
+      end
+
+    filtered =
+      lists
+      |> Enum.reduce([], fn code, carry ->
+        case Deck.canonical_constructed_deckcode(code) do
+          {:ok, deckcode} -> [deckcode | carry]
+          _ -> carry
+        end
+      end)
+      |> Kernel.++(existing_lists)
+      |> Enum.uniq()
+
+    decklists_map |> Map.put(competitor.name, {competitor, filtered})
+  end
+
+  def decklists(r, stage_title, match_filter) when is_binary(stage_title) do
+    decklists(r, &(&1.title == stage_title), match_filter)
   end
 end
 
@@ -366,14 +389,12 @@ defmodule Backend.Grandmasters.Response.Match do
 
   def score(%{scores: [%{value: top}, %{value: bottom}]}), do: "#{top} - #{bottom}"
 
-  def date(%{start_date: start_date}) do
+  def start_time(%{start_date: start_date}) do
     case DateTime.from_unix(start_date) do
-      {:ok, date_time} -> date_time |> DateTime.to_date()
-      _ -> nil
+      {:ok, date_time} -> {:ok, DateTime.to_naive(date_time)}
+      err -> err
     end
   end
-
-  def date(_), do: nil
 
   def score_at(%{scores: scores}, index, default \\ 0) do
     case Enum.at(scores, index) do

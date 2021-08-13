@@ -20,7 +20,7 @@ defmodule Backend.Grandmasters.LineupFetcher do
   end
 
   def save_lineups(r = %{requested_season: rs}, stage_title) do
-    decklists = r |> Response.decklists(stage_title)
+    decklists = r |> Response.latest_decklists(stage_title)
     tournament_id = Blizzard.gm_lineup_tournament_id({rs.year, rs.season}, stage_title)
 
     decklists
