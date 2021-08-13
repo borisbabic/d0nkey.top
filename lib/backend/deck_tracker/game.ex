@@ -27,6 +27,7 @@ defmodule Hearthstone.DeckTracker.Game do
     field :duration, :integer
     field :turns, :integer
 
+    timestamps()
     belongs_to :created_by, ApiUser
   end
 
