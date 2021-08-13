@@ -158,6 +158,7 @@ defmodule BackendWeb.Router do
     live "/gm/lineups", GrandmastersLineup
     live "/gm", GrandmastersLive
     live "/gm/profile/:gm", GrandmasterProfileLive
+    live "/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups
   end
 
   scope "/", BackendWeb do
