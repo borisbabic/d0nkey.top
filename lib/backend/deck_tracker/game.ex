@@ -12,11 +12,13 @@ defmodule Hearthstone.DeckTracker.Game do
     field :player_btag, :string
     field :player_rank, :integer
     field :player_legend_rank, :integer
+    field :player_class, :string
     belongs_to :player_deck, Deck
 
     field :opponent_btag, :string
     field :opponent_rank, :integer
     field :opponent_legend_rank, :integer
+    field :opponent_class, :string
     belongs_to :opponent_deck, Deck
 
     field :game_id, :string
@@ -27,14 +29,14 @@ defmodule Hearthstone.DeckTracker.Game do
     field :duration, :integer
     field :turns, :integer
 
-    timestamps()
     belongs_to :created_by, ApiUser
+    timestamps()
   end
 
   @doc false
   def changeset(game = %{game_id: game_id}, attrs) when is_binary(game_id) do
     game
-    |> cast(attrs, [:status, :duration, :turns])
+    |> cast(attrs, [:status, :duration, :turns, :player_class, :opponent_class])
     |> unique_constraint(:game_id)
   end
 
@@ -45,9 +47,11 @@ defmodule Hearthstone.DeckTracker.Game do
       :player_btag,
       :player_rank,
       :player_legend_rank,
+      :player_class,
       :opponent_btag,
       :opponent_rank,
       :opponent_legend_rank,
+      :opponent_class,
       :game_id,
       :game_type,
       :format,

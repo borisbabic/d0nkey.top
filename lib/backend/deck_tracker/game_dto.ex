@@ -3,6 +3,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
   use TypedStruct
   alias __MODULE__
   alias Hearthstone.DeckTracker.PlayerDto
+  alias Backend.Hearthstone.Deck
 
   typedstruct do
     field :player, PlayerDto.t()
@@ -41,10 +42,12 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "player_rank" => dto.player.rank,
       "player_legend_rank" => dto.player.legend_rank,
       "player_deck" => deckcode_handler.(dto.player.deckcode) |> Util.or_nil(),
+      "player_class" => Deck.normalize_class_name(dto.player.class),
       "opponent_btag" => dto.opponent.battletag,
       "opponent_rank" => dto.opponent.rank,
       "opponent_legend_rank" => dto.opponent.legend_rank,
       "opponent_deck" => deckcode_handler.(dto.opponent.deckcode) |> Util.or_nil(),
+      "opponent_class" => Deck.normalize_class_name(dto.opponent.class),
       "game_id" => dto.game_id,
       "game_type" => dto.game_type,
       "format" => dto.format,
@@ -82,6 +85,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
     field :rank, String.t()
     field :legend_rank, String.t()
     field :deckcode, String.t()
+    field :class, String.t()
   end
 
   @spec from_raw_map(Map.t()) :: PlayerDto.t()
@@ -90,6 +94,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
       battletag: map["battletag"],
       rank: map["rank"],
       legend_rank: map["legend_rank"],
+      class: map["class"],
       deckcode: map["deckcode"]
     }
   end
