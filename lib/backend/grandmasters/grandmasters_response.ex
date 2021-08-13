@@ -389,6 +389,8 @@ defmodule Backend.Grandmasters.Response.Match do
 
   def score(%{scores: [%{value: top}, %{value: bottom}]}), do: "#{top} - #{bottom}"
 
+  def start_time(%{start_date: nil}), do: {:error, :no_start_date}
+
   def start_time(%{start_date: start_date}) do
     case DateTime.from_unix(start_date) do
       {:ok, date_time} -> {:ok, DateTime.to_naive(date_time)}
