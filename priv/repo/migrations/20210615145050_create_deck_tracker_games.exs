@@ -4,11 +4,13 @@ defmodule Backend.Repo.Migrations.CreateDeckTrackerGames do
   def change do
     create(table(:dt_games)) do
       add :player_btag, :string, null: false
+      # changed to nullable in  future migration
       add :player_rank, :integer, null: false
       add :player_legend_rank, :integer, null: true
       add :player_deck_id, references(:deck, on_delete: :delete_all), null: true
 
       add :opponent_btag, :string, null: false
+      # changed to nullable in  future migration
       add :opponent_rank, :integer, null: false
       add :opponent_legend_rank, :integer, null: true
       add :opponent_deck_id, references(:deck, on_delete: :delete_all), null: true
