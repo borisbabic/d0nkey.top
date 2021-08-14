@@ -333,6 +333,11 @@ defmodule Backend.Hearthstone do
     |> Enum.reduce(query, &lineup_deck_subquery/2)
   end
 
+  defp compose_lineups_query({"order_by", {direction, field}}, query) do
+    query
+    |> order_by([{^direction, ^field}])
+  end
+
   defp lineup_deck_subquery(criteria, query) do
     base_query =
       from ld in LineupDeck,
