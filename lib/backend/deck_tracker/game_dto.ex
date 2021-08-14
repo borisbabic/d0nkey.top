@@ -22,7 +22,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
   def from_raw_map(map = %{}, created_by) do
     %GameDto{
       player: map["player"] |> PlayerDto.from_raw_map(),
-      opponent: map["opponent"] |> PlayerDto.from_raw_map(),
+      opponent: (map["opponent"] || map["opposing_player"]) |> PlayerDto.from_raw_map(),
       game_id: map["game_id"],
       game_type: map["game_type"],
       format: map["format"],
@@ -91,9 +91,9 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
   @spec from_raw_map(Map.t()) :: PlayerDto.t()
   def from_raw_map(map) when is_map(map) do
     %PlayerDto{
-      battletag: map["battletag"],
+      battletag: map["battletag"] || map["battleTag"],
       rank: map["rank"],
-      legend_rank: map["legend_rank"],
+      legend_rank: map["legend_rank"] || map["legendRank"],
       class: map["class"],
       deckcode: map["deckcode"]
     }
