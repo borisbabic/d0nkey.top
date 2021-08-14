@@ -5,6 +5,7 @@ defmodule BackendWeb.DeckTrackerController do
   Controller for actions performed by a deck tracker
   """
 
+  require Logger
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker
 
@@ -23,7 +24,11 @@ defmodule BackendWeb.DeckTrackerController do
         |> put_status(400)
         |> text("Missing game_id")
 
-      {:error, _} ->
+      {:error, reason} ->
+        Logger.warn(
+          "Unknown error submitting games reason: #{inspect(reason)} params: #{inspect(params)}"
+        )
+
         conn
         |> put_status(500)
         |> text("Unknown error")
