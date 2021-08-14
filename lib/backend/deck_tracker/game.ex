@@ -67,9 +67,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :player_btag,
       :status,
       :region,
-      :game_id,
-      :player_rank,
-      :player_legend_rank
+      :game_id
     ])
     |> unique_constraint(:game_id)
   end
