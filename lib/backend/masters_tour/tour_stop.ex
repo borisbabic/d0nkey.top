@@ -240,6 +240,8 @@ defmodule Backend.MastersTour.TourStop do
     end
   end
 
+  def get(_, _, default), do: default
+
   def get_battlefy_id(tour_stop) when is_tour_stop(tour_stop) do
     id_unknown = {:error, "ID unknown for tour stop #{tour_stop}}"}
 

@@ -356,13 +356,23 @@ defmodule BackendWeb.MastersTourView do
 
     is_ts = is_atom(period) and period != :all
 
+    ts =
+      if is_ts do
+        TourStop.get(period)
+      else
+        nil
+      end
+
     columns_to_show =
-      case {selected_columns, period} do
+      case {selected_columns, ts} do
         {columns, _} when is_list(columns) ->
           sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
 
-        {_, ts} when is_ts ->
-          ["Player", "Cups", "Top 8", to_string(ts), "Winrate %"]
+        {_, %{id: id, min_qualifiers_for_winrate: min}} when is_integer(min) ->
+          ["Player", "Cups", "Best", to_string(id), "Winrate %"]
+
+        {_, %{id: id}} ->
+          ["Player", "Cups", "Top 8", to_string(id), "Winrate %"]
 
         _ ->
           ["Player", "Cups", "Top 8", "Top 16", "Winrate %"]
@@ -380,6 +390,7 @@ defmodule BackendWeb.MastersTourView do
       |> filter_countries(countries)
       |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set)
       |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
+      |> sort_for_qualifier_winrate(ts)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
       |> Enum.drop(offset)
@@ -481,6 +492,15 @@ defmodule BackendWeb.MastersTourView do
       dropdowns: dropdowns
     })
   end
+
+  def sort_for_qualifier_winrate(rows, %{min_qualifiers_for_winrate: min}) when is_integer(min) do
+    rows
+    |> Enum.sort_by(& &1["Cups"], :desc)
+    |> Enum.sort_by(& &1["Best"], :asc)
+    |> Enum.sort_by(& &1["Winrate %"], :desc)
+  end
+
+  def sort_for_qualifier_winrate(rows, _), do: rows
 
   def filter_qualified(rows, true, "yes", ts, invited_set) do
     rows
