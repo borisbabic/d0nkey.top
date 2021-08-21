@@ -111,4 +111,21 @@ defmodule Backend.MastersTour.PlayerStats do
   """
   @spec matches_won_percent(PlayerStats.t()) :: float
   def matches_won_percent(ps = %{wins: wins}), do: Util.percent(wins, matches(ps))
+
+  @spec adjusted_matches_won_percent(PlayerStats.t(), integer, float) :: float
+  def adjusted_matches_won_percent(ps = %{wins: wins}, min_cups, adjusted_winrate) do
+    adjusted_wins_per_loss = adjusted_winrate / (1 - adjusted_winrate)
+
+    {adjusted_matches, adjusted_wins} =
+      case with_result(ps) do
+        cups when cups >= min_cups ->
+          {matches(ps), wins}
+
+        cups when cups < min_cups ->
+          {matches(ps) + (1 + adjusted_wins_per_loss) * (min_cups - cups),
+           wins + adjusted_wins_per_loss * (min_cups - cups)}
+      end
+
+    Util.percent(adjusted_wins, adjusted_matches)
+  end
 end

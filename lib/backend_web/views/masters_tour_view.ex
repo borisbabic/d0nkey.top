@@ -198,7 +198,14 @@ defmodule BackendWeb.MastersTourView do
     |> Map.merge(qualified_per_year)
   end
 
-  def create_player_rows(player_stats, eligible_tour_stops, invited_set, conn, period, show_flags) do
+  def create_player_rows(
+        player_stats,
+        eligible_tour_stops,
+        invited_set,
+        conn,
+        _period,
+        show_flags
+      ) do
     player_stats
     |> Enum.map(fn ps ->
       total = ps |> PlayerStats.with_result()
@@ -232,7 +239,13 @@ defmodule BackendWeb.MastersTourView do
         "Matches Won" => ps.wins,
         "Matches Lost" => ps.losses,
         "Packs Earned" => ps.positions |> Enum.map(&MastersTour.get_packs_earned/1) |> Enum.sum(),
-        "Winrate %" => ps |> PlayerStats.matches_won_percent() |> Float.round(2)
+        "Winrate %" => ps |> PlayerStats.matches_won_percent() |> Float.round(2),
+        "Adjusted Winrate % (0.5)" =>
+          ps |> PlayerStats.adjusted_matches_won_percent(20, 0.5) |> Float.round(2),
+        "Adjusted Winrate % (0.6)" =>
+          ps |> PlayerStats.adjusted_matches_won_percent(20, 0.6) |> Float.round(2),
+        "Adjusted Winrate % (0.65)" =>
+          ps |> PlayerStats.adjusted_matches_won_percent(20, 0.65) |> Float.round(2)
       }
       |> Map.merge(ts_cells)
     end)
@@ -352,7 +365,12 @@ defmodule BackendWeb.MastersTourView do
         "2021 MTs qualified"
       ] ++
         (eligible_ts |> Enum.map(&to_string/1)) ++
-        ["Winrate %"]
+        [
+          "Winrate %",
+          "Adjusted Winrate % (0.5)",
+          "Adjusted Winrate % (0.6)",
+          "Adjusted Winrate % (0.65)"
+        ]
 
     is_ts = is_atom(period) and period != :all
 
