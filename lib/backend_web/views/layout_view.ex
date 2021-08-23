@@ -70,4 +70,14 @@ defmodule BackendWeb.LayoutView do
         ""
     end
   end
+
+  def show_fantasy?() do
+    ongoing_dreamhack_fantasy?() ||
+      ongoing_mt_fantasy?() ||
+      highlight_fantasy_for_gm?()
+  end
+
+  defp ongoing_mt_fantasy?(), do: !!Backend.MastersTour.TourStop.get_current(120, 96)
+  defp ongoing_dreamhack_fantasy?(), do: Enum.any?(Dreamhack.current_fantasy())
+  defp highlight_fantasy_for_gm?(), do: false
 end

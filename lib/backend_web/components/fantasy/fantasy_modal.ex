@@ -132,7 +132,7 @@ defmodule Components.FantasyModal do
 
   defp battlefy_tournament_id(_), do: nil
 
-  defp current_tour_stop(), do: TourStop.get_current(96, 0)
+  defp current_tour_stop(), do: TourStop.get_current(120, 0)
   defp current_tour_stop?(), do: nil != current_tour_stop()
 
   defp competition_type_options() do
