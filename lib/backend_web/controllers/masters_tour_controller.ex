@@ -90,7 +90,7 @@ defmodule BackendWeb.MastersTourController do
     qualifiers(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 
-  @default_season {2021, 2}
+  @default_season {2022, 1}
   def parse_season("2020_2"), do: {2020, 2}
   def parse_season("2021_1"), do: {2021, 1}
   def parse_season("2021_2"), do: {2021, 2}
