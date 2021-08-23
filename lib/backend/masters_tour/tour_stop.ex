@@ -188,7 +188,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :Silvermoon,
-        battlefy_id: nil,
+        battlefy_id: "6107b8dba3f8bf704c2fbb09",
         ladder_priority: :timezone,
         ladder_seasons: [92, 93],
         ladder_invites: 16,
