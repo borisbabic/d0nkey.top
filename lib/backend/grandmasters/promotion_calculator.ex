@@ -5,6 +5,7 @@ defmodule Backend.Grandmasters.PromotionCalculator do
   alias Backend.Battlefy
   alias Backend.Battlenet.Battletag
   alias Backend.MastersTour
+  alias Backend.MastersTour.TourStop
   alias Backend.Grandmasters.PromotionRanking
   alias Backend.Infrastructure.PlayerNationalityCache
   alias Backend.Grandmasters.TourStopPromotionPoints, as: TSPoints
@@ -103,15 +104,16 @@ defmodule Backend.Grandmasters.PromotionCalculator do
   end
 
   @spec swiss_points([Battlefy.Standings.t()], atom(), atom()) :: [raw_ts_points()]
-  def swiss_points(standings, :points_2021, _) do
+  def swiss_points(standings, :points_2021, tour_stop) do
+    swiss_rounds = TourStop.get(tour_stop, :swiss_rounds)
+
     standings
     |> Enum.map(fn %{team: %{name: name}, wins: wins, place: place} ->
       points =
-        case wins do
-          9 -> 9
-          8 -> 8
-          7 -> 7
-          _ -> 0
+        if wins >= swiss_rounds - 2 do
+          wins
+        else
+          0
         end
 
       {name, points, place |> normalize_2021_swiss_place()}

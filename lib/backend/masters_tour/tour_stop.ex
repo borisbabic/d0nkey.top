@@ -36,6 +36,7 @@ defmodule Backend.MastersTour.TourStop do
     field :old_id, atom, enforce: false
     field :ladder_priority, atom
     field :min_qualifiers_for_winrate, integer | nil
+    field :swiss_rounds, integer
     field :year, integer
   end
 
@@ -51,6 +52,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2019-03-06], ~D[2019-04-28]},
         start_time: ~N[2019-06-14 16:00:00],
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 13,
         year: 2020
       },
       %__MODULE__{
@@ -63,6 +65,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2019-05-08], ~D[2019-06-30]},
         start_time: ~N[2019-08-16 01:00:00],
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 13,
         year: 2019
       },
       %__MODULE__{
@@ -75,6 +78,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2019-07-05], ~D[2019-08-25]},
         start_time: ~N[2019-10-18 06:00:00],
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2020
       },
       %__MODULE__{
@@ -87,6 +91,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-01-31 15:00:00],
         qualifiers_period: {~D[2019-10-04], ~D[2019-11-24]},
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2020
       },
       %__MODULE__{
@@ -99,6 +104,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2019-12-13], ~D[2020-01-26]},
         start_time: ~N[2020-03-20 16:00:00],
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2020
       },
       %__MODULE__{
@@ -111,6 +117,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-06-12 12:15:00],
         qualifiers_period: {~D[2020-02-07], ~D[2020-03-29]},
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2020
       },
       %__MODULE__{
@@ -123,6 +130,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-07-17 00:00:00],
         qualifiers_period: {~D[2020-04-03], ~D[2020-05-24]},
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2020
       },
       %__MODULE__{
@@ -136,6 +144,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-09-11 15:15:00],
         qualifiers_period: {~D[2020-06-05], ~D[2020-07-26]},
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2020
       },
       %__MODULE__{
@@ -148,6 +157,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-10-23 12:15:00],
         qualifiers_period: {~D[2020-08-07], ~D[2020-09-27]},
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2020
       },
       %__MODULE__{
@@ -160,6 +170,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-03-12 16:15:00],
         qualifiers_period: {~D[2021-01-28], ~D[2021-02-28]},
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2021
       },
       %__MODULE__{
@@ -172,6 +183,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2021-03-04], ~D[2021-04-12]},
         start_time: ~N[2021-04-30 12:15:00],
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2021
       },
       %__MODULE__{
@@ -184,6 +196,7 @@ defmodule Backend.MastersTour.TourStop do
         region: :AP,
         start_time: ~N[2021-06-18 22:00:00],
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 9,
         year: 2021
       },
       %__MODULE__{
@@ -196,6 +209,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-08-27 17:15:00],
         qualifiers_period: {~D[2021-06-03], ~D[2021-07-19]},
         min_qualifiers_for_winrate: nil,
+        swiss_rounds: 8,
         year: 2021
       },
       %__MODULE__{
@@ -208,6 +222,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-10-22 12:15:00],
         qualifiers_period: {~D[2021-07-22], ~D[2021-09-06]},
         min_qualifiers_for_winrate: 20,
+        swiss_rounds: 8,
         year: 2021
       },
       %__MODULE__{
@@ -220,6 +235,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-11-19 04:15:00],
         qualifiers_period: {~D[2021-09-09], ~D[2021-01-01]},
         min_qualifiers_for_winrate: 20,
+        swiss_rounds: 8,
         year: 2021
       }
     ]
