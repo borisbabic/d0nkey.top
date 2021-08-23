@@ -240,12 +240,12 @@ defmodule BackendWeb.MastersTourView do
         "Matches Lost" => ps.losses,
         "Packs Earned" => ps.positions |> Enum.map(&MastersTour.get_packs_earned/1) |> Enum.sum(),
         "Winrate %" => ps |> PlayerStats.matches_won_percent() |> Float.round(2),
-        "Adjusted Winrate % (0.5)" =>
-          ps |> PlayerStats.adjusted_matches_won_percent(20, 0.5) |> Float.round(2),
-        "Adjusted Winrate % (0.6)" =>
-          ps |> PlayerStats.adjusted_matches_won_percent(20, 0.6) |> Float.round(2),
-        "Adjusted Winrate % (0.65)" =>
-          ps |> PlayerStats.adjusted_matches_won_percent(20, 0.65) |> Float.round(2)
+        "Projected % (using 0.5)" =>
+          ps |> PlayerStats.projected_matches_won_percent(20, 0.5) |> Float.round(2),
+        "Projected % (using 0.6)" =>
+          ps |> PlayerStats.projected_matches_won_percent(20, 0.6) |> Float.round(2),
+        "Projected % (using 0.65)" =>
+          ps |> PlayerStats.projected_matches_won_percent(20, 0.65) |> Float.round(2)
       }
       |> Map.merge(ts_cells)
     end)
@@ -367,9 +367,9 @@ defmodule BackendWeb.MastersTourView do
         (eligible_ts |> Enum.map(&to_string/1)) ++
         [
           "Winrate %",
-          "Adjusted Winrate % (0.5)",
-          "Adjusted Winrate % (0.6)",
-          "Adjusted Winrate % (0.65)"
+          "Projected % (using 0.5)",
+          "Projected % (using 0.6)",
+          "Projected % (using 0.65)"
         ]
 
     is_ts = is_atom(period) and period != :all
