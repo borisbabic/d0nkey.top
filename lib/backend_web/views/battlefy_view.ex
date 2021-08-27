@@ -393,6 +393,49 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
+  def ongoing_count(ongoing) do
+    total = Enum.count(ongoing) |> div(2)
+
+    not_nil_nil =
+      ongoing
+      |> Enum.filter(fn {_, %{score: score}} -> score != "0 - 0" end)
+      |> Enum.count()
+      |> div(2)
+
+    {total, not_nil_nil}
+  end
+
+  def tournament_subtitle(tournament, standings, ongoing) do
+    []
+    |> add_duration_subtitle(tournament)
+    |> add_player_count_subtitle(standings)
+    |> add_ongoing_subtitle(ongoing)
+    |> Enum.join(" ")
+  end
+
+  def add_duration_subtitle(subtitles, tournament) do
+    subtitles ++
+      case Backend.Battlefy.Tournament.get_duration(tournament) do
+        nil -> ["Duration: ?"]
+        duration -> ["Duration: #{Util.human_duration(duration)}"]
+      end
+  end
+
+  def add_player_count_subtitle(subtitles, standings) do
+    subtitles ++
+      case standings |> Enum.count() do
+        0 -> []
+        num -> ["Players: #{num}"]
+      end
+  end
+
+  def add_ongoing_subtitle(subtitles, ongoing) when ongoing == %{}, do: subtitles
+
+  def add_ongoing_subtitle(subtitles, ongoing) do
+    {total_ongoing, not_nil_nil_ongoing} = ongoing_count(ongoing)
+    subtitles ++ ["Ongoing: #{total_ongoing}", "Ongoing(not 0-0): #{not_nil_nil_ongoing}"]
+  end
+
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def render(
         "tournament.html",
@@ -439,17 +482,7 @@ defmodule BackendWeb.BattlefyView do
           fantasy_highlight |> Enum.member?(s.name |> Battletag.shorten())
       end)
 
-    duration_subtitle =
-      case Backend.Battlefy.Tournament.get_duration(tournament) do
-        nil -> "Duration: ?"
-        duration -> "Duration: #{Util.human_duration(duration)}"
-      end
-
-    subtitle =
-      case standings |> Enum.count() do
-        0 -> duration_subtitle
-        num -> "#{duration_subtitle} Players: #{num}"
-      end
+    subtitle = tournament_subtitle(tournament, standings, ongoing)
 
     stages =
       (tournament.stages || [])
