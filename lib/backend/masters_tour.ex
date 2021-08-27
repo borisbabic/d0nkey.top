@@ -592,6 +592,8 @@ defmodule Backend.MastersTour do
       "yuyi" -> "WEYuyi"
       "유워리" -> "6worry"
       "bloodyface" -> "lunaloveee"
+      "AjjXiGuan" -> "BilibiliXG"
+      "Backup2" -> "GamerRvg"
       n -> n
     end
   end
