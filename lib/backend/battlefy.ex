@@ -36,45 +36,61 @@ defmodule Backend.Battlefy do
     "akg-games",
     "liga-kombatklub-de-hearthstone",
     "btw-esports",
+    "juega-duro-hearthstone",
     "osc-esports"
   ]
-  @organization_stats_configs [
-    %{
-      from: ~D[2020-06-01],
-      organization_slug: "btw-esports",
-      title: "Copa DoomHammer",
-      stats_slug: "btw-copa-doomhammer",
-      pattern: ~r/Copa DoomHammer/i
-    },
-    %{
-      from: ~D[2020-06-01],
-      organization_slug: "ilh-events",
-      title: "ILH Events EU Open",
-      stats_slug: "ilh-events-eu-open",
-      pattern: ~r/ILH Events EU Open/i
-    },
-    %{
-      from: ~D[2020-06-01],
-      organization_slug: "osc-esports",
-      title: "HearthStone Americas Open",
-      stats_slug: "osc-hearthstone-americas-open",
-      pattern: ~r/HearthStone Americas Open/i
-    },
-    %{
-      from: ~D[2020-06-01],
-      organization_slug: "osc-esports",
-      title: "Leeroy Jenkins Cup",
-      stats_slug: "osc-leeroy-jenkins-cup",
-      pattern: ~r/Leeroy Jenkins Cup/i
-    },
-    %{
-      from: ~D[2020-06-01],
-      organization_slug: "osc-esports",
-      title: "Zephrys the Great Tournament",
-      stats_slug: "osc-zephrys-the-great-tournament",
-      pattern: ~r/Zephrys the Great Tournament/i
-    }
-  ]
+  @organization_stats_configs for num <- [6, 5, 4, 3, 2],
+                                  do: %{
+                                    from: ~D[2020-05-01],
+                                    organization_slug: "juega-duro-hearthstone",
+                                    title: "GRITO DE GUERRA #{num}",
+                                    stats_slug: "grito-de-guerra-#{num}",
+                                    pattern: ~r/GRITO DE GUERRA #{num}/i
+                                  },
+                                  into: [
+                                    %{
+                                      from: ~D[2020-06-01],
+                                      organization_slug: "juega-duro-hearthstone",
+                                      title: "GRITO DE GUERRA",
+                                      stats_slug: "grito-de-guerra",
+                                      pattern: ~r/GRITO DE GUERRA/i
+                                    },
+                                    %{
+                                      from: ~D[2020-06-01],
+                                      organization_slug: "btw-esports",
+                                      title: "Copa DoomHammer",
+                                      stats_slug: "btw-copa-doomhammer",
+                                      pattern: ~r/Copa DoomHammer/i
+                                    },
+                                    %{
+                                      from: ~D[2020-06-01],
+                                      organization_slug: "ilh-events",
+                                      title: "ILH Events EU Open",
+                                      stats_slug: "ilh-events-eu-open",
+                                      pattern: ~r/ILH Events EU Open/i
+                                    },
+                                    %{
+                                      from: ~D[2020-06-01],
+                                      organization_slug: "osc-esports",
+                                      title: "HearthStone Americas Open",
+                                      stats_slug: "osc-hearthstone-americas-open",
+                                      pattern: ~r/HearthStone Americas Open/i
+                                    },
+                                    %{
+                                      from: ~D[2020-06-01],
+                                      organization_slug: "osc-esports",
+                                      title: "Leeroy Jenkins Cup",
+                                      stats_slug: "osc-leeroy-jenkins-cup",
+                                      pattern: ~r/Leeroy Jenkins Cup/i
+                                    },
+                                    %{
+                                      from: ~D[2020-06-01],
+                                      organization_slug: "osc-esports",
+                                      title: "Zephrys the Great Tournament",
+                                      stats_slug: "osc-zephrys-the-great-tournament",
+                                      pattern: ~r/Zephrys the Great Tournament/i
+                                    }
+                                  ]
 
   @spec get_stage_standings(Stage.t() | String.t()) :: [Standings.t()]
   def get_stage_standings(stage_id) when is_binary(stage_id) do
