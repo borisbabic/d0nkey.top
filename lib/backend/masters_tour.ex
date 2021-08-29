@@ -594,6 +594,19 @@ defmodule Backend.MastersTour do
       "bloodyface" -> "lunaloveee"
       "AjjXiGuan" -> "BilibiliXG"
       "Backup2" -> "GamerRvg"
+      # <zflow> https://docs.google.com/document/d/1AhHUQWVJeBjPLHveFtJ2fwfVikZAiNsDXRO3CQiXaKQ/edit
+      "게임이기기봇" -> "Che0nsu"
+      "무에서유창조" -> "Crefno"
+      "mueseoyuchangjo" -> "Crefno"
+      "현명한로나" -> "LoNa"
+      "슬퍼하지마노노노" -> "wellmadekimchi"
+      "ZizonZzang" -> "wellmadekimchi"
+      "현명한라이언" -> "ilikeryan"
+      "막강한올빼미" -> "Makganghanol"
+      "이스티" -> "LuiSti"
+      "ESti" -> "LuiSti"
+      "최석중" -> "ChoiSeokJoon"
+      # </zflow>
       n -> n
     end
   end
