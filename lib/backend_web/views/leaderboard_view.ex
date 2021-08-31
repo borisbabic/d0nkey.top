@@ -193,7 +193,12 @@ defmodule BackendWeb.LeaderboardView do
 
   def show_mt_column?(_), do: false
 
-  def old(%{upstream_updated_at: updated_at, season_id: season_id}) do
+  def old?(%{upstream_updated_at: updated_at, season_id: 94, leaderboard_id: "STD", region: "US"}) do
+    updated_at && DateTime.diff(DateTime.utc_now(), updated_at) &&
+      DateTime.diff(DateTime.utc_now(), ~U[2021-09-01T07:00:00Z]) < 0
+  end
+
+  def old?(%{upstream_updated_at: updated_at, season_id: season_id}) do
     updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 &&
       season_id >= get_season_id(Date.utc_today())
   end
