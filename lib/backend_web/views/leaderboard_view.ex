@@ -294,6 +294,9 @@ defmodule BackendWeb.LeaderboardView do
     do:
       "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
 
+  def warning(%{season_id: 94, region: "EU", leaderboard_id: "STD"}, "XiaoT"),
+    do: "Has previously gotten a second invite from a ladder finish, so I'm not counting them"
+
   def warning(_, _), do: nil
   def process_entries(nil, _, _, _, _), do: []
 
