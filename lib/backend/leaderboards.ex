@@ -204,11 +204,14 @@ defmodule Backend.Leaderboards do
     )
   end
 
-  defp compose_snapshot_query({:not_current_season}, query) do
-    current_season_id = Blizzard.get_season_id(Date.utc_today())
+  defp compose_snapshot_query({:not_current_season, leaderboards}, query) do
+    leaderboards
+    |> Enum.reduce(query, fn ldb, q ->
+      season_id = Blizzard.get_current_ladder_season(ldb)
 
-    query
-    |> where([s], s.season_id != ^current_season_id)
+      q
+      |> where([s], not (s.season_id == ^season_id and s.leaderboard_id == ^ldb))
+    end)
   end
 
   defp compose_snapshot_query({"id", id}, query) do

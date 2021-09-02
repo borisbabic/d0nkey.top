@@ -24,6 +24,7 @@ defmodule Backend.Blizzard do
           | :Undercity
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
+  @current_bg_season_id 4
 
   @type region :: :EU | :US | :AP | :CN
   @regions [:EU, :US, :AP, :CN]
@@ -622,4 +623,8 @@ defmodule Backend.Blizzard do
 
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
+
+  def get_current_ladder_season("BG"), do: get_current_ladder_season(:BG)
+  def get_current_ladder_season(:BG), do: @current_bg_season_id
+  def get_current_ladder_season(_ldb), do: get_season_id(Date.utc_today())
 end
