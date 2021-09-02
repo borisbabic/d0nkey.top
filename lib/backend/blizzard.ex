@@ -470,10 +470,10 @@ defmodule Backend.Blizzard do
   def get_leaderboard_name(region, "BG", season_id, length),
     do: get_leaderboard_name(region, :BG, season_id, length)
 
-  def get_leaderboard_name(region, :BG, _season_id, length) do
+  def get_leaderboard_name(region, :BG, season_id, length) do
     r = get_region_name(region, length)
     ldb = get_leaderboard_name(:BG, length)
-    "#{ldb} #{r}"
+    "#{ldb} #{r} #{get_season_name(season_id, :BG)}"
   end
 
   def get_season_name(season, "BG"), do: get_season_name(season, :BG)
