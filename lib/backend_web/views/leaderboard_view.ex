@@ -108,7 +108,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def create_season_dropdown(conn, season, "BG") do
     options =
-      4..0
+      Blizzard.get_current_ladder_season(:BG)..0
       |> Enum.map(fn s ->
         %{
           display: Blizzard.get_season_name(s, :BG),
@@ -472,7 +472,7 @@ defmodule BackendWeb.LeaderboardView do
       end)
 
     leaderboards_options =
-      ["STD", "WLD"]
+      ["STD", "WLD", "CLS", "BG"]
       |> Enum.map(fn l ->
         %{
           value: l,
