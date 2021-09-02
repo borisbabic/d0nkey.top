@@ -70,7 +70,7 @@ defmodule BackendWeb.LeaderboardView do
     [
       create_region_dropdown(conn, region),
       create_leaderboard_dropdown(conn, leaderboard_id),
-      create_season_dropdown(conn, season_id),
+      create_season_dropdown(conn, season_id, leaderboard_id),
       create_ladder_mode_dropdown(conn, ladder_mode),
       create_show_flags_dropdown(conn, show_flags),
       create_compare_to_dropdown(conn, compare_to)
@@ -106,7 +106,21 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Leaderboard")}
   end
 
-  def create_season_dropdown(conn, season) do
+  def create_season_dropdown(conn, season, "BG") do
+    options =
+      4..0
+      |> Enum.map(fn s ->
+        %{
+          display: Blizzard.get_season_name(s, :BG),
+          selected: to_string(s) == to_string(season),
+          link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "seasonId", s))
+        }
+      end)
+
+    {options, dropdown_title(options, "Season")}
+  end
+
+  def create_season_dropdown(conn, season, _) do
     options =
       create_selectable_seasons(Date.utc_today())
       |> Enum.map(fn {name, s} ->

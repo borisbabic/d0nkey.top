@@ -607,6 +607,9 @@ defmodule Backend.MastersTour do
       "ESti" -> "LuiSti"
       "최석중" -> "ChoiSeokJoon"
       # </zflow>
+      #
+      # Battlefy
+      "wiwi" -> "麻煩"
       n -> n
     end
   end
