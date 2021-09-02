@@ -476,6 +476,9 @@ defmodule Backend.Blizzard do
     "#{ldb} #{r}"
   end
 
+  def get_season_name(season, "BG"), do: get_season_name(season, :BG)
+  def get_season_name(season, :BG), do: "Season #{season + 1}"
+
   def get_leaderboard_name(region, leaderboard, season_id, length) do
     %{year: year, month: month} = get_month_start(season_id)
     m = Util.get_month_name(month)
