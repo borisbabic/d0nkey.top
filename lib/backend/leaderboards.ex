@@ -1,12 +1,12 @@
 defmodule Backend.Leaderboards do
   require Logger
+  require Backend.Blizzard
 
   @moduledoc """
   The Leaderboards context.
   """
   import Ecto.Query
   alias Backend.Repo
-  alias Backend.Infrastructure.BlizzardCommunicator
   alias Backend.Blizzard
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
@@ -20,9 +20,34 @@ defmodule Backend.Leaderboards do
 
   @type categorized_entries :: [{[entry], Blizzard.region(), Blizzard.leaderboard()}]
 
+  defp should_avoid_fetching?(r, l, s) when is_binary(s),
+    do: should_avoid_fetching?(r, l, Util.to_int(s, nil))
+
+  defp should_avoid_fetching?(r, l, s) when not is_binary(r) or not is_binary(l),
+    do: should_avoid_fetching?(to_string(r), to_string(l), s)
+
+  # OLD BG Seasons get updated post patch with people playing on old patches
+  defp should_avoid_fetching?(_r, "BG", s) when Blizzard.is_old_bg_season(s), do: true
+
+  # Auguest 2021 constructed EU+AM leaderboards were overwritten by the first few days of september
+  defp should_avoid_fetching?(r, l, 94) when r in ["EU", "US"] and l != "BG", do: true
+  defp should_avoid_fetching?(_r, _l, _s), do: false
+
   def get_leaderboard(region, leaderboard, season) do
-    get_and_save(region, leaderboard, season)
-    |> get_latest_matching()
+    if should_avoid_fetching?(region, leaderboard, season) do
+      [
+        {"order_by", {:desc, :upstream_updated_at}},
+        {"limit", 1},
+        {"leaderboard_id", leaderboard},
+        {"season_id", season},
+        {"region", region}
+      ]
+      |> snapshots()
+      |> Enum.at(0)
+    else
+      get_and_save(region, leaderboard, season)
+      |> get_latest_matching()
+    end
   end
 
   def get_comparison(snap = %Snapshot{}, min_ago) do
