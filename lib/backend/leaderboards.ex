@@ -193,7 +193,8 @@ defmodule Backend.Leaderboards do
   end
 
   defp base_snapshots_query() do
-    from(s in Snapshot)
+    from s in Snapshot,
+      where: not like(s.leaderboard_id, "invalid_%")
   end
 
   defp build_snapshot_query(query, criteria),

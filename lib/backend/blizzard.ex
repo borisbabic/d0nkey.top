@@ -455,7 +455,12 @@ defmodule Backend.Blizzard do
   end
 
   def get_leaderboard_name(leaderboard, length) when is_binary(leaderboard) do
-    get_leaderboard_name(String.to_existing_atom(leaderboard), length)
+    @leaderboards
+    |> Enum.find(&(to_string(&1) == leaderboard))
+    |> case do
+      nil -> ""
+      ldb -> get_leaderboard_name(ldb, length)
+    end
   end
 
   @spec get_tour_stops_for_year(integer) :: [tour_stop()]
