@@ -26,6 +26,7 @@ defmodule BackendWeb.GrandmastersLineup do
         <div :if={{ lineups = Backend.Blizzard.get_grandmasters_lineups(@week) }} >
           <div :if={{ Lineup.stats(lineups) }} >
             <div class="title is-2">Grandmasters Decks</div>
+            <div class="subtitle is-5">{{ subtitle(@week) }}</div>
 
             <TournamentLineupExplorer id="grandmasters_tournament_lineup_{{ @week }}" tournament_id="{{ tournament_id(@week) }}" tournament_source="grandmasters" show_page_dropdown={{ false }} gm_week={{ @week }} filters={{ %{"order_by" => {:asc, :name}} }} page_size={{ 100 }}>
               <Dropdown title={{ @week }} >
@@ -39,6 +40,20 @@ defmodule BackendWeb.GrandmastersLineup do
       </div>
     </Context>
     """
+  end
+
+  def subtitle(week) do
+    case week do
+      "Week 1" -> "Format: Conquest"
+      "Week 2" -> "Format: LHS"
+      "Week 3" -> "Format: Conquest"
+      "Week 4" -> "Format: LHS"
+      "Week 5" -> "Format: Conquest"
+      "Week 6" -> "Format: LHS"
+      "Week 7" -> "Format: Conquest"
+      "Playoffs" -> "Format: Conquest"
+      _ -> ""
+    end
   end
 
   def tournament_id(week),
