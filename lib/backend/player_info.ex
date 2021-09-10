@@ -303,10 +303,11 @@ defmodule Backend.PlayerInfo do
         "Briarthorn",
         "Impact",
         "撒旦降臨",
-        "Alan870806"
+        "Alan870806",
+        "posesi"
       ]
       |> MapSet.new()
-    ) ++ ["GivePLZ", "AlanC86"]
+    ) ++ ["GivePLZ", "AlanC86", "Posesi"]
   end
 
   def get_grandmasters(rts = _reference_tour_stop, relegated) do
