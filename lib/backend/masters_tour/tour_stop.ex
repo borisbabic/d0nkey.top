@@ -233,7 +233,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_invites: 32,
         region: :AP,
         start_time: ~N[2021-11-19 04:15:00],
-        qualifiers_period: {~D[2021-09-09], ~D[2021-01-01]},
+        qualifiers_period: {~D[2021-09-09], ~D[2021-10-18]},
         min_qualifiers_for_winrate: 20,
         swiss_rounds: 8,
         year: 2021
