@@ -20,7 +20,7 @@ config :backend, QuantumScheduler,
     {"47 * * * *", fn -> Backend.Feed.decay_feed_items() end},
     {"* * * * *", fn -> Backend.Grandmasters.update() end},
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
-    {"* * * * *", fn -> Backend.Streaming.update_streamer_decks() end},
+    {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end}
   ]
 
