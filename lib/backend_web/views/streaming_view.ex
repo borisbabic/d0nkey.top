@@ -97,7 +97,7 @@ defmodule BackendWeb.StreamingView do
   defp get_archetype(deck), do: Backend.HSReplay.guess_archetype(deck)
 
   defp amount_played(%{wins: wins, losses: losses}) when wins + losses > 0,
-    do: "#{wins + losses} Games"
+    do: "#{wins + losses} game(s)"
 
   defp amount_played(%{minutes_played: minutes}), do: "#{minutes} min"
 
