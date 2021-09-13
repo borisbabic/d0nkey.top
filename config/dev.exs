@@ -5,6 +5,12 @@ config :backend,
   auto_migrate: false,
   enable_bot: !is_nil(System.get_env("DISCORD_TOKEN")) || !is_nil(System.get_env("ENABLE_BOT"))
 
+config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
+  client_id: System.get_env("TWITCH_CLIENT_ID") || "",
+  client_secret: System.get_env("TWITCH_CLIENT_SECRET") || "",
+  send_redirect_uri: true,
+  redirect_uri: "http://localhost:8994/auth/twitch/callback"
+
 # Configure your database
 config :backend, Backend.Repo,
   username: "root",
