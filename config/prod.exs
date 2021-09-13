@@ -13,7 +13,8 @@ config :backend,
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: System.get_env("TWITCH_CLIENT_ID") || "",
-  client_secret: System.get_env("TWITCH_CLIENT_SECRET") || ""
+  client_secret: System.get_env("TWITCH_CLIENT_SECRET") || "",
+  send_redirect_uri: false
 
 # For production, don't f "d0nkey.top"orget to configure the url host
 # to something meaningful, Phoenix uses this information
