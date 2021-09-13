@@ -121,6 +121,84 @@ defmodule Hearthstone.Enums.BnetGameType do
   end
 
   def game_type_name(_), do: "Unknown"
+
+  def from_type_and_format(game_type, format) do
+  end
+end
+
+defmodule Hearthstone.Enums.GameType do
+  @moduledoc "Contains enums for hs game types"
+  alias Hearthstone.Enums.Format
+  alias Hearthstone.Enums.BnetGameType
+  def unknown, do: 0
+  def ai, do: 1
+  def vs_friend, do: 2
+  def tutorial, do: 3
+  def arena, do: 5
+  def test_ai_vs_ai, do: 6
+  @ranked
+  def ranked, do: @ranked
+  @casual
+  def casual, do: @casual
+  def tavernbrawl, do: 16
+  def tb_1p_vs_ai, do: 16
+  def tb_2p_coop, do: 16
+  def fsg_brawl_vs_friend, do: 16
+  def fsg_brawl, do: 16
+  def fsg_brawl_1p_vs_ai, do: 16
+  def fsg_brawl_2p_coop, do: 16
+  def battlegrounds, do: 16
+  def battlegrounds_friendly, do: 16
+  def reserved_18_22, do: 16
+  def reserved_18_23, do: 16
+  def pvpdr_paid, do: 16
+  def pvpdr, do: 16
+
+  # renamed
+  def pvpcwtestdr, do: test_ai_vs_ai()
+
+  def as_bnet(%{game_type: game_type, format: format}), do: as_bnet(game_type, format)
+
+  def as_bnet(@ranked, format) do
+    [
+      {Format.wild(), BnetGameType.ranked_wild()},
+      {Format.standard(), BnetGameType.ranked_standard()},
+      {Format.classic(), BnetGameType.ranked_classic()}
+    ]
+    |> List.keyfind(format, 0)
+  end
+
+  def as_bnet(@casual, format) do
+    [
+      {Format.wild(), BnetGameType.casual_wild()},
+      {Format.standard(), BnetGameType.casual_standard()},
+      {Format.classic(), BnetGameType.casual_classic()}
+    ]
+    |> List.keyfind(format, 0)
+  end
+
+  def as_bnet(game_type, _format) do
+    [
+      {unknown(), BnetGameType.unknown()},
+      {ai(), BnetGameType.vs_ai()},
+      {vs_friend(), BnetGameType.friends()},
+      {tutorial(), BnetGameType.tutorial()},
+      {arena(), BnetGameType.arena()},
+      {test_ai_vs_ai(), BnetGameType.test1()},
+      {tavernbrawl(), BnetGameType.tavernbrawl_pvp()},
+      {tb_1p_vs_ai(), BnetGameType.tavernbrawl_1p_versus_ai()},
+      {tb_2p_coop(), BnetGameType.tavernbrawl_2p_coop()},
+      {fsg_brawl_vs_friend(), BnetGameType.fsg_brawl_vs_friend()},
+      {fsg_brawl(), BnetGameType.fsg_brawl_pvp()},
+      {fsg_brawl_1p_vs_ai(), BnetGameType.fsg_brawl_1p_versus_ai()},
+      {fsg_brawl_2p_coop(), BnetGameType.fsg_brawl_2p_coop()},
+      {battlegrounds(), BnetGameType.battlegrounds()},
+      {battlegrounds_friendly(), BnetGameType.battlegrounds_friendly()},
+      {pvpdr_paid(), BnetGameType.pvpdr_paid()},
+      {pvpdr(), BnetGameType.pvpdr()}
+    ]
+    |> List.keyfind(game_type, 0)
+  end
 end
 
 defmodule Hearthstone.Enums.Format do
