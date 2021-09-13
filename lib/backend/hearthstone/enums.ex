@@ -141,18 +141,42 @@ defmodule Hearthstone.Enums.GameType do
   @casual
   def casual, do: @casual
   def tavernbrawl, do: 16
-  def tb_1p_vs_ai, do: 16
-  def tb_2p_coop, do: 16
-  def fsg_brawl_vs_friend, do: 16
-  def fsg_brawl, do: 16
-  def fsg_brawl_1p_vs_ai, do: 16
-  def fsg_brawl_2p_coop, do: 16
-  def battlegrounds, do: 16
-  def battlegrounds_friendly, do: 16
-  def reserved_18_22, do: 16
-  def reserved_18_23, do: 16
-  def pvpdr_paid, do: 16
-  def pvpdr, do: 16
+  def tb_1p_vs_ai, do: 17
+  def tb_2p_coop, do: 18
+  def fsg_brawl_vs_friend, do: 19
+  def fsg_brawl, do: 20
+  def fsg_brawl_1p_vs_ai, do: 21
+  def fsg_brawl_2p_coop, do: 22
+  def battlegrounds, do: 23
+  def battlegrounds_friendly, do: 24
+  def reserved_18_22, do: 26
+  def reserved_18_23, do: 27
+  def pvpdr_paid, do: 28
+  def pvpdr, do: 29
+
+  def name(game_type) do
+    [
+      {ai(), "Vs AI"},
+      {vs_friend(), "Friend Challenge"},
+      {tutorial(), "Tutorial"},
+      {arena(), "Arena"},
+      {ranked(), "Ranked"},
+      {casual(), "Casual"},
+      {tavernbrawl(), "Tavern Brawl"},
+      {tb_1p_vs_ai(), "Tavern Brawl"},
+      {tb_2p_coop(), "Tavern Brawl"},
+      {fsg_brawl(), "Tavern Brawl"},
+      {fsg_brawl_vs_friend(), "Tavern Brawl"},
+      {fsg_brawl_1p_vs_ai(), "Tavern Brawl"},
+      {fsg_brawl_2p_coop(), "Tavern Brawl"},
+      {battlegrounds(), "Battlegrounds"},
+      {battlegrounds_friendly(), "Battlegrounds Friendly"},
+      {pvpdr(), "Duels"},
+      {pvpdr(), "Duels Casual"}
+    ]
+    |> List.keyfind(game_type, 0, {0, "Unknown"})
+    |> elem(1)
+  end
 
   # renamed
   def pvpcwtestdr, do: test_ai_vs_ai()
@@ -166,6 +190,7 @@ defmodule Hearthstone.Enums.GameType do
       {Format.classic(), BnetGameType.ranked_classic()}
     ]
     |> List.keyfind(format, 0)
+    |> elem(1)
   end
 
   def as_bnet(@casual, format) do
@@ -175,6 +200,7 @@ defmodule Hearthstone.Enums.GameType do
       {Format.classic(), BnetGameType.casual_classic()}
     ]
     |> List.keyfind(format, 0)
+    |> elem(1)
   end
 
   def as_bnet(game_type, _format) do
@@ -198,6 +224,7 @@ defmodule Hearthstone.Enums.GameType do
       {pvpdr(), BnetGameType.pvpdr()}
     ]
     |> List.keyfind(game_type, 0)
+    |> elem(1)
   end
 end
 
