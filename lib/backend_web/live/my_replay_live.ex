@@ -85,7 +85,7 @@ defmodule BackendWeb.MyReplaysLive do
     limit =
       case Util.to_int(params["limit"], nil) do
         nil -> 25
-        l -> Enum.min(l, 100)
+        l -> Enum.min([l, 100])
       end
 
     offset =

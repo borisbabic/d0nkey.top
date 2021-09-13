@@ -189,7 +189,7 @@ defmodule Hearthstone.Enums.GameType do
       {Format.standard(), BnetGameType.ranked_standard()},
       {Format.classic(), BnetGameType.ranked_classic()}
     ]
-    |> List.keyfind(format, 0)
+    |> List.keyfind(format, 0, {0, BnetGameType.unknown()})
     |> elem(1)
   end
 
@@ -199,7 +199,7 @@ defmodule Hearthstone.Enums.GameType do
       {Format.standard(), BnetGameType.casual_standard()},
       {Format.classic(), BnetGameType.casual_classic()}
     ]
-    |> List.keyfind(format, 0)
+    |> List.keyfind(format, 0, {0, BnetGameType.unknown()})
     |> elem(1)
   end
 
@@ -223,7 +223,7 @@ defmodule Hearthstone.Enums.GameType do
       {pvpdr_paid(), BnetGameType.pvpdr_paid()},
       {pvpdr(), BnetGameType.pvpdr()}
     ]
-    |> List.keyfind(game_type, 0)
+    |> List.keyfind(game_type, 0, {0, BnetGameType.unknown()})
     |> elem(1)
   end
 end
