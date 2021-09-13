@@ -31,4 +31,6 @@ defmodule Twitch.HearthstoneLive do
 
   defp create_streams(), do: Twitch.Api.hearthstone_streams()
   defp send_loop(), do: Process.send_after(self(), :loop, 1000 * 60)
+
+  def twitch_id_live?(twitch_id), do: streams() |> Enum.any?(&(&1.user_id == twitch_id))
 end

@@ -145,7 +145,7 @@ defmodule BackendWeb.LeaderboardController do
 
     render(conn, "stats.html", %{
       conn: conn,
-      leaderboards: leaderboards |> IO.inspect(label: "LDB"),
+      leaderboards: leaderboards,
       regions: regions,
       direction: direction,
       min: min,

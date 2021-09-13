@@ -78,6 +78,10 @@ defmodule Backend.Application do
           start: {Backend.PlayerIconBag, :start_link, [[]]}
         },
         %{
+          id: Hearthstone.DeckTracker.InsertListener,
+          start: {Hearthstone.DeckTracker.InsertListener, :start_link, [[]]}
+        },
+        %{
           id: Backend.Grandmasters,
           start: {Backend.Grandmasters, :start_link, [[]]}
         },

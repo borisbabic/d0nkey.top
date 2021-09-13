@@ -26,6 +26,8 @@ defmodule Backend.Streaming.StreamerDeck do
     field :latest_legend_rank, :integer
     field :minutes_played, :integer, default: 1
     field :game_type, :integer, nullable: true
+    field :wins, :integer, default: 0
+    field :losses, :integer, default: 0
     timestamps()
   end
 
@@ -52,6 +54,20 @@ defmodule Backend.Streaming.StreamerDeck do
     |> validate_required([:last_played, :best_rank, :best_legend_rank])
   end
 
+  def add_wins_losses(cs, %{result: :win}) do
+    old_wins = cs |> fetch_field!(:wins)
+    cs |> put_change(:wins, old_wins + 1)
+  end
+
+  def add_wins_losses(cs, %{result: :loss}) do
+    old_wins = cs |> fetch_field!(:losses)
+    cs |> put_change(:losses, old_wins + 1)
+  end
+
+  def add_wins_losses(cs, attrs) do
+    cs
+  end
+
   @doc false
   def create(c, a) do
     c
@@ -59,6 +75,7 @@ defmodule Backend.Streaming.StreamerDeck do
     |> validate_required(@required)
     |> set_deck(a)
     |> set_streamer(a)
+    |> add_wins_losses(a)
   end
 
   defp set_deck(c, %{deck: deck}) do

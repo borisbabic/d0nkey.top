@@ -124,7 +124,6 @@ defmodule ScratchPad do
 
         fudov_auto = Enum.find_value(standings, 0, &(&1.team.name =~ player && &1.auto_wins))
         total = Enum.count(standings)
-        IO.inspect({auto_wins, auto_losses, fudov_auto})
 
         %{
           fudov: f + fudov_auto,
@@ -132,9 +131,7 @@ defmodule ScratchPad do
           ta_loss: tal + auto_losses,
           player_count: pc + total
         }
-        |> IO.inspect()
       end)
-      |> IO.inspect()
 
     expected = (wins - losses) / count
     expected_alt = wins / count

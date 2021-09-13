@@ -7,6 +7,10 @@ defmodule Backend.Streaming do
   alias Backend.Streaming.Streamer
   alias Backend.Streaming.StreamerDeck
   alias Hearthstone.Enums.BnetGameType
+  alias Hearthstone.DeckTracker.Game
+  alias Backend.Hearthstone
+  alias Backend.Hearthstone.Deck
+  alias Backend.Streaming.StreamerDeckInfoDto
 
   def relevant_bnet_game_type?(%{game_type: bnet_game_type}) do
     BnetGameType.constructed?(bnet_game_type)
@@ -46,23 +50,33 @@ defmodule Backend.Streaming do
     Repo.all(query)
   end
 
-  def update_streamer_decks() do
-    HSReplay.get_streaming_now()
-    |> update_streamer_decks()
+  @spec log_streamer_game(String.t(), Game.t()) :: {:ok, StreamerDeck.t()} | {:error, any()}
+  def log_streamer_game(twitch_id, game = %{player_deck: deck = %Deck{}}) do
+    with {:ok, streamer} <- get_or_create_streamer(twitch_id) do
+      get_or_create_streamer_deck(deck, streamer, game)
+    end
   end
 
-  def update_streamer_decks(streaming_now) do
+  # don't know the deck so can't log the game
+  def log_streamer_game(_twitch_id, _game), do: {:error, :unknown_deck}
+
+  def update_hdt_streamer_decks() do
+    HSReplay.get_streaming_now()
+    |> update_hdt_streamer_decks()
+  end
+
+  def update_hdt_streamer_decks(streaming_now) do
     streaming_now
     |> Enum.filter(&relevant_bnet_game_type?/1)
     |> Enum.map(fn sn ->
-      with {:ok, deck} <- Backend.Hearthstone.create_or_get_deck(sn.deck, sn.hero, sn.format),
+      with {:ok, deck} <- Hearthstone.create_or_get_deck(sn.deck, sn.hero, sn.format),
            {:ok, streamer} <-
              get_or_create_streamer(sn.twitch.login, sn.twitch.display_name, sn.twitch.id),
            do: get_or_create_streamer_deck(deck, streamer, sn)
     end)
   end
 
-  def get_or_create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
+  def get_streamer_by_twitch_id(twitch_id) do
     query =
       from s in Streamer,
         where: s.twitch_id == ^twitch_id,
@@ -70,7 +84,17 @@ defmodule Backend.Streaming do
 
     query
     |> Repo.one()
-    |> case do
+  end
+
+  def get_or_create_streamer(twitch_id) do
+    case get_streamer_by_twitch_id(twitch_id) do
+      nil -> create_streamer(nil, nil, twitch_id)
+      s -> {:ok, s}
+    end
+  end
+
+  def get_or_create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
+    case get_streamer_by_twitch_id(twitch_id) do
       nil -> create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id)
       s -> {:ok, s}
     end
@@ -105,18 +129,18 @@ defmodule Backend.Streaming do
     end
   end
 
-  def create_streamer_deck(deck, streamer, sn) do
+  def create_streamer_deck(deck, streamer, dto = %StreamerDeckInfoDto{}) do
     now = DateTime.utc_now()
-    %{rank: rank, legend_rank: legend_rank} = ranks(sn)
 
     attrs = %{
       deck: deck,
       streamer: streamer,
-      best_rank: rank,
-      best_legend_rank: legend_rank,
-      worst_legend_rank: legend_rank,
-      latest_legend_rank: legend_rank,
-      game_type: sn.game_type,
+      best_rank: dto.rank,
+      best_legend_rank: dto.legend_rank,
+      worst_legend_rank: dto.legend_rank,
+      latest_legend_rank: dto.legend_rank,
+      game_type: dto.game_type,
+      result: dto.result,
       first_played: now,
       last_played: now
     }
@@ -125,6 +149,9 @@ defmodule Backend.Streaming do
     |> StreamerDeck.changeset(attrs)
     |> Repo.insert()
   end
+
+  def create_streamer_deck(deck, streamer, info),
+    do: create_streamer_deck(deck, streamer, StreamerDeckInfoDto.create(info))
 
   defp non_zero_min(ranks) do
     ranks
@@ -153,23 +180,34 @@ defmodule Backend.Streaming do
     end)
   end
 
+  def update_streamer_deck(ds = %StreamerDeck{}, dto = %StreamerDeckInfoDto{}) do
+    attrs = %{
+      best_rank: [dto.rank, ds.best_rank] |> non_zero_min(),
+      best_legend_rank: [dto.legend_rank, ds.best_legend_rank] |> non_zero_min(),
+      worst_legend_rank: Enum.max([dto.legend_rank, ds.worst_legend_rank, 0]),
+      latest_legend_rank: dto.legend_rank || 0,
+      game_type: dto.game_type,
+      minutes_played: ds.minutes_played + 1,
+      result: dto.result,
+      last_played: NaiveDateTime.utc_now()
+    }
+
+    ds
+    |> StreamerDeck.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_streamer_deck(ds = %StreamerDeck{}, game = %Game{}) do
+    dto = StreamerDeckInfoDto.create(game)
+    update_streamer_deck(ds, dto)
+  end
+
   def update_streamer_deck(ds = %StreamerDeck{}, sn) do
     if should_update?(ds, sn) do
       %{rank: rank, legend_rank: legend_rank} = ranks(sn)
 
-      attrs = %{
-        best_rank: [rank, ds.best_rank] |> non_zero_min(),
-        best_legend_rank: [legend_rank, ds.best_legend_rank] |> non_zero_min(),
-        worst_legend_rank: Enum.max([legend_rank, ds.worst_legend_rank, 0]),
-        latest_legend_rank: legend_rank || 0,
-        game_type: sn.game_type,
-        minutes_played: ds.minutes_played + 1,
-        last_played: NaiveDateTime.utc_now()
-      }
-
-      ds
-      |> StreamerDeck.changeset(attrs)
-      |> Repo.update()
+      dto = StreamerDeckInfoDto.create(sn)
+      update_streamer_deck(ds, dto)
     else
       ds
     end

@@ -2,7 +2,7 @@ defmodule Backend.Streaming.Streamer do
   @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
-  @required [:hsreplay_twitch_login, :hsreplay_twitch_display, :twitch_id]
+  @required [:twitch_id]
   schema "streamer" do
     field :hsreplay_twitch_login, :string
     field :hsreplay_twitch_display, :string
@@ -14,7 +14,13 @@ defmodule Backend.Streaming.Streamer do
 
   def changeset(s, attrs) do
     s
-    |> cast(attrs, @required)
+    |> cast(attrs, [
+      :hsreplay_twitch_login,
+      :hsreplay_twitch_display,
+      :twitch_login,
+      :twitch_display,
+      :twitch_id
+    ])
     |> validate_required(@required)
   end
 
