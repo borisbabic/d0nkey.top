@@ -45,7 +45,7 @@ config :ueberauth, Ueberauth,
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: System.get_env("TWITCH_CLIENT_ID") || "",
   client_secret: System.get_env("TWITCH_CLIENT_SECRET") || "",
-  redirect_uri: "http://localhost:8994/auth/twitch/callback"
+  send_redirect_uri: false
 
 config :ueberauth, Ueberauth.Strategy.Bnet.OAuth,
   # System.get_env("BNET_CLIENT_ID"),
