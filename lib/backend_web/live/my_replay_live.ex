@@ -75,7 +75,8 @@ defmodule BackendWeb.MyReplaysLive do
     DeckTracker.games([
       {"player_btag", battletag},
       {"limit", limit},
-      {"offset", offset}
+      {"offset", offset},
+      :latest
     ])
   end
 
