@@ -84,13 +84,13 @@ defmodule BackendWeb.MyReplaysLive do
   def handle_params(params, _uri, socket) do
     limit =
       case Util.to_int(params["limit"], nil) do
-        nil -> 25
+        nil -> @default_limit
         l -> Enum.min([l, 100])
       end
 
     offset =
       case Util.to_int(params["offset"], nil) do
-        nil -> 0
+        nil -> @default_offset
         o -> o
       end
 
