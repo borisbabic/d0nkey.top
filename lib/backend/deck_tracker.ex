@@ -59,6 +59,9 @@ defmodule Hearthstone.DeckTracker do
   defp build_games_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_games_query/2)
 
+  defp compose_games_query(:latest, query),
+    do: query |> order_by([g], desc: g.inserted_at)
+
   defp compose_games_query({"player_btag", btag}, query),
     do: query |> where([g], g.player_btag == ^btag)
 
