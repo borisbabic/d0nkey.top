@@ -96,6 +96,11 @@ defmodule BackendWeb.StreamingView do
 
   defp get_archetype(deck), do: Backend.HSReplay.guess_archetype(deck)
 
+  defp amount_played(%{wins: wins, losses: losses}) when wins + losses > 0,
+    do: "#{wins + losses} Games"
+
+  defp amount_played(%{minutes_played: minutes}), do: "#{minutes} min"
+
   def render("streamer_decks.html", %{
         streamer_decks: streamer_decks,
         conn: conn,
@@ -122,7 +127,7 @@ defmodule BackendWeb.StreamingView do
           best_legend_rank: legend_rank(sd.best_legend_rank),
           worst_legend_rank: legend_rank(sd.worst_legend_rank),
           latest_legend_rank: legend_rank(sd.latest_legend_rank),
-          minutes_played: sd.minutes_played,
+          amount_played: amount_played(sd),
           archetype: get_archetype(sd.deck),
           links: links(sd)
         }
