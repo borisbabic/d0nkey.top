@@ -4,6 +4,8 @@ use Mix.Config
 #  jobs: [
 #  ]
 
+twitch_redirect = "https://www.d0nkey.top/auth/twitch/callback"
+
 config :backend,
   warmup_cache: true,
   auto_migrate: false,
@@ -14,9 +16,13 @@ config :backend,
 config :ueberauth, Ueberauth,
   providers: [
     bnet: {Ueberauth.Strategy.Bnet, []},
-    twitch:
-      {Ueberauth.Strategy.Twitch, [callback_url: "https://www.d0nkey.top/auth/twitch/callback"]}
+    twitch: {Ueberauth.Strategy.Twitch, [callback_url: twitch_redirect]}
   ]
+
+config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
+  client_id: System.get_env("TWITCH_CLIENT_ID") || "",
+  client_secret: System.get_env("TWITCH_CLIENT_SECRET") || "",
+  redirect_uri: twitch_redirect
 
 # For production, don't f "d0nkey.top"orget to configure the url host
 # to something meaningful, Phoenix uses this information
