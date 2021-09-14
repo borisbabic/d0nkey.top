@@ -44,9 +44,11 @@ defmodule Components.Decklist do
                       {{ deckcode }}
                   </div>
                   <div class="level-left deck-text"> 
-                    <span><span style="font-size:0;">### </span> <span>{{ name }}</span>
-    <span style="font-size: 0; line-size:0; display:block">
-    {{ @deck |> Deck.deckcode() }}</span></span>
+                    <div class="deck-title">
+                      <span><span style="font-size:0;">### </span> <span>{{ name }}</span>
+                      <span style="font-size: 0; line-size:0; display:block">
+                      {{ @deck |> Deck.deckcode() }}</span></span>
+                    </div> 
                   </div> 
                   <div class="level-right"> 
                       <slot name="right_button"/>

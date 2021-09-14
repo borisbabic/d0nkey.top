@@ -214,7 +214,6 @@
   /*padding-bottom: 13%;*/
 }
 .deck-text {
-  text-color: #222222;
   text-shadow: 1px 1px #000000;
   font-size: small;
   display: flex;
@@ -226,6 +225,7 @@
   overflow: hidden;
   text-overflow: clip;
   width: 145px;
+  text-align: center;
 }
 
 .legend-rank.tag {
