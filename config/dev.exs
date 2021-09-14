@@ -8,7 +8,6 @@ config :backend,
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_id: System.get_env("TWITCH_CLIENT_ID") || "",
   client_secret: System.get_env("TWITCH_CLIENT_SECRET") || "",
-  send_redirect_uri: true,
   redirect_uri: "http://localhost:8994/auth/twitch/callback"
 
 # Configure your database
