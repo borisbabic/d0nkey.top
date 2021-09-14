@@ -3,10 +3,10 @@ defmodule BackendWeb.FeedLive do
   use Surface.LiveView
   alias Backend.Feed
   alias Components.DeckFeedItem
+  alias Components.OmniBar
   import BackendWeb.LiveHelpers
 
   data(user, :any)
-
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
@@ -16,6 +16,9 @@ defmodule BackendWeb.FeedLive do
     <Context put={{ user: @user }} >
       <div class="container">
         <div class="level">
+          <div :if={{ false }} class="level-item">
+            <OmniBar id="omni_bar_id"/>
+          </div>
           <div class="level-item title is-2">Well Met!</div>
         </div>
         <div class="columns is-multiline is-mobile is-narrow is-centered">
@@ -29,4 +32,9 @@ defmodule BackendWeb.FeedLive do
   end
 
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
+
+  def handle_info({:incoming_result, result}, socket) do
+    OmniBar.incoming_result(result, "omni_bar_id")
+    {:noreply, socket}
+  end
 end

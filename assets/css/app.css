@@ -310,6 +310,11 @@
   color: black;
 }
 
+.omni-bar-results {
+  position: relative;
+  z-index: 10;
+}
+
 
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/
