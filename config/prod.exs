@@ -11,6 +11,13 @@ config :backend,
   gm_stream_send_tweet: true,
   enable_bot: true
 
+config :ueberauth, Ueberauth,
+  providers: [
+    bnet: {Ueberauth.Strategy.Bnet, []},
+    twitch:
+      {Ueberauth.Strategy.Twitch, [callback_url: "https://www.d0nkey.top/auth/twitch/callback"]}
+  ]
+
 # For production, don't f "d0nkey.top"orget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.
