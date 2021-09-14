@@ -222,6 +222,12 @@
   align-items: center;
 }
 
+.deck-title {
+  overflow: hidden;
+  text-overflow: clip;
+  width: 145px;
+}
+
 .legend-rank.tag {
   /*color:  rgb(255, 175, 15);*/
   color: rgb(238, 224, 133);
