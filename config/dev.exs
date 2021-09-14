@@ -10,6 +10,13 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_secret: System.get_env("TWITCH_CLIENT_SECRET") || "",
   redirect_uri: "http://localhost:8994/auth/twitch/callback"
 
+config :ueberauth, Ueberauth,
+  providers: [
+    bnet: {Ueberauth.Strategy.Bnet, []},
+    twitch:
+      {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
+  ]
+
 # Configure your database
 config :backend, Backend.Repo,
   username: "root",
