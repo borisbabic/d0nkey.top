@@ -130,15 +130,15 @@ defmodule Hearthstone.Enums.GameType do
   @moduledoc "Contains enums for hs game types"
   alias Hearthstone.Enums.Format
   alias Hearthstone.Enums.BnetGameType
+  @ranked 8
+  @casual 7
   def unknown, do: 0
   def ai, do: 1
   def vs_friend, do: 2
   def tutorial, do: 3
   def arena, do: 5
   def test_ai_vs_ai, do: 6
-  @ranked
   def ranked, do: @ranked
-  @casual
   def casual, do: @casual
   def tavernbrawl, do: 16
   def tb_1p_vs_ai, do: 17

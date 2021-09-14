@@ -2,6 +2,7 @@ defmodule Backend.DeckFeedItemUpdater do
   @moduledoc false
   alias Backend.Feed
   alias Backend.Feed.DeckInteraction
+  alias Hearthstone.DeckTracker
 
   @threshold 69
   @feed_item_type :deck
@@ -18,6 +19,7 @@ defmodule Backend.DeckFeedItemUpdater do
       deck_interactions
       |> Enum.map(&DeckInteraction.points/1)
       |> Enum.sum()
+      |> apply_stats(deck_id)
 
     feed = Feed.feed_item(@feed_item_type, deck_id)
 
@@ -30,6 +32,18 @@ defmodule Backend.DeckFeedItemUpdater do
 
       true ->
         nil
+    end
+  end
+
+  def apply_stats(points, deck_id) do
+    stats = DeckTracker.deck_stats(deck_id, [:past_week, :diamond_to_legend])
+    total_games = stats.wins + stats.losses
+    winrate = stats.wins / total_games
+
+    if total_games >= 100 do
+      points * :math.pow(winrate + 0.58, 2)
+    else
+      points
     end
   end
 end

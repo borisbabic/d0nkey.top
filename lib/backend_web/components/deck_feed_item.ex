@@ -3,6 +3,7 @@ defmodule Components.DeckFeedItem do
   use Surface.Component
   alias Components.Decklist
   alias Components.DeckStreamingInfo
+  alias Components.DeckWinrate
   prop(item, :map, required: true)
 
   def render(assigns = %{item: %{value: deck_id}}) do
@@ -21,7 +22,9 @@ defmodule Components.DeckFeedItem do
       <div class="card-image" style="margin:7.5px;">
         <Decklist deck={{ deck }} name={{ name }} />
       </div>
-      <DeckStreamingInfo deck_id={{ deck.id }}/>
+      <div class="columns is-multiline is-mobile is-text-overflow" style="margin:7.5px">
+        <DeckStreamingInfo deck_id={{ deck.id }}/>
+      </div>
     </div>
     """
   end
