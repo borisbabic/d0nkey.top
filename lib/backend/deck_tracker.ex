@@ -6,6 +6,8 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
   alias Backend.Hearthstone
+  alias Backend.Hearthstone.Deck
+  @type deck_stats :: %{deck: Deck.t(), wins: integer(), losses: integer()}
 
   @spec get_game(integer) :: Game.t() | nil
   def get_game(id), do: Repo.get(Game, id) |> Repo.preload(:player_deck)
@@ -20,6 +22,33 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def handle_game(_), do: {:error, :missing_game_id}
+
+  @spec deck_stats(integer(), list()) :: [deck_stats()]
+  def deck_stats(deck_id, additional_criteria) do
+    deck_stats([{"player_deck_id", deck_id} | additional_criteria])
+  end
+
+  @spec deck_stats(integer() | list()) :: [deck_stats()]
+  def deck_stats(deck_id) when is_integer(deck_id) do
+    deck_stats(deck_id, [])
+  end
+
+  def deck_stats(criteria) do
+    base_deck_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_deck_stats_query() do
+    from g in Game,
+      join: pd in assoc(g, :player_deck),
+      group_by: pd.id,
+      select: %{
+        deck: pd,
+        wins: sum(fragment("CASE WHEN ? = 'win' THEN 1 ELSE 0 END", g.status)),
+        losses: sum(fragment("CASE WHEN ? = 'loss' THEN 1 ELSE 0 END", g.status))
+      }
+  end
 
   defp handle_deck(code) when is_binary(code), do: Hearthstone.create_or_get_deck(code)
   defp handle_deck(nil), do: {:ok, nil}
@@ -59,8 +88,26 @@ defmodule Hearthstone.DeckTracker do
   defp build_games_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_games_query/2)
 
+  defp compose_games_query(:past_week, query),
+    do: query |> where([g], g.inserted_at >= ago(1, "week"))
+
+  defp compose_games_query(:past_day, query),
+    do: query |> where([g], g.inserted_at >= ago(1, "day"))
+
+  defp compose_games_query(:past_3_days, query),
+    do: query |> where([g], g.inserted_at >= ago(3, "day"))
+
+  defp compose_games_query(:legend, query),
+    do: query |> where([g], g.player_rank >= 51)
+
+  defp compose_games_query(:diamond_to_legend, query),
+    do: query |> where([g], g.player_rank >= 41)
+
   defp compose_games_query(:latest, query),
     do: query |> order_by([g], desc: g.inserted_at)
+
+  defp compose_games_query({"player_deck_id", deck_id}, query),
+    do: query |> where([g], g.player_deck_id == ^deck_id)
 
   defp compose_games_query({"player_btag", btag}, query),
     do: query |> where([g], g.player_btag == ^btag)

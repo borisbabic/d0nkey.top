@@ -20,7 +20,6 @@ defmodule Components.DeckStreamingInfo do
     legend_rank = render_legend_rank(peak)
 
     ~H"""
-    <div class="columns is-multiline is-mobile is-text-overflow" style="margin:7.5px">
       <div class="tag column" :if={{ pb }}>
         Peaked By: {{ pb }}
       </div>
@@ -32,7 +31,6 @@ defmodule Components.DeckStreamingInfo do
         # Streamed: {{ s |> Enum.count() }}
       </a>
       <StreamingDeckNow deck={{ deck }}/>
-    </div>
 
     """
   end
