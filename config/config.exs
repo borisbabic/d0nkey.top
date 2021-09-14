@@ -39,7 +39,7 @@ config :backend, BackendWeb.Endpoint,
 config :ueberauth, Ueberauth,
   providers: [
     bnet: {Ueberauth.Strategy.Bnet, []},
-    twitch: {Ueberauth.Strategy.Twitch, []}
+    twitch: {Ueberauth.Strategy.Twitch, [callback_scheme: "https"]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
