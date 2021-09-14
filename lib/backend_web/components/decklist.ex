@@ -43,7 +43,7 @@ defmodule Components.Decklist do
                   <div phx-click="deck_copied" phx-value-deckcode="{{ deck.deckcode }}" class="level-left"> 
                       {{ deckcode }}
                   </div>
-                  <div class="level-left deck-text deck-title"> 
+                  <div class="level-left deck-text"> 
                     <span><span style="font-size:0;">### </span> <span>{{ name }}</span>
     <span style="font-size: 0; line-size:0; display:block">
     {{ @deck |> Deck.deckcode() }}</span></span>
