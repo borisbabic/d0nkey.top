@@ -4,6 +4,10 @@ defmodule OmniBar do
   def providers(), do: [BackendWeb.DeckcodeSearchProvider]
 
   def search(term, reply) do
-    Enum.each(providers(), &apply(&1, :search, [term, reply]))
+    Enum.each(providers(), fn p ->
+      Task.start(fn ->
+        apply(p, :search, [term, reply])
+      end)
+    end)
   end
 end

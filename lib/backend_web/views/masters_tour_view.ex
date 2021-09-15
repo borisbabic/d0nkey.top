@@ -337,6 +337,7 @@ defmodule BackendWeb.MastersTourView do
 
     invited_set =
       invited_players
+      |> Enum.filter(&(!(String.downcase(&1.reason) =~ "winrate")))
       |> MapSet.new(fn ip -> String.trim(ip.battletag_full) <> ip.tour_stop end)
 
     eligible_ts = eligible_tour_stops()

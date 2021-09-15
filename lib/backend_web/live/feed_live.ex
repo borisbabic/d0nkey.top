@@ -10,16 +10,17 @@ defmodule BackendWeb.FeedLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-    items = Feed.get_current_items()
+    _items = Feed.get_current_items()
+    items = []
 
     ~H"""
     <Context put={{ user: @user }} >
       <div class="container">
         <div class="level">
-          <div :if={{ false }} class="level-item">
+          <div :if={{ true }} class="level-item">
             <OmniBar id="omni_bar_id"/>
           </div>
-          <div class="level-item title is-2">Well Met!</div>
+          <div :if={{ false }} class="level-item title is-2">Well Met!</div>
         </div>
         <div class="columns is-multiline is-mobile is-narrow is-centered">
           <div :for={{ item <- items }} :if={{ item.type == "deck" }} class="column is-narrow">
