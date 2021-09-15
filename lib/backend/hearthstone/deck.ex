@@ -274,6 +274,31 @@ defmodule Backend.Hearthstone.Deck do
     |> Hearthstone.sort_cards()
   end
 
+  def equals(first, second), do: equal([first, second])
+
+  def equal(decks) when is_list(decks) do
+    num_different =
+      decks
+      |> Enum.map(fn deck ->
+        deck
+        |> case do
+          d = %__MODULE__{} -> {:ok, d}
+          code when is_binary(code) -> decode(code)
+          _ -> {:error, :not_valid}
+        end
+        |> case do
+          {:ok, d} -> deckcode(d)
+          other -> other
+        end
+      end)
+      |> Enum.uniq()
+      |> Enum.count()
+
+    num_different == 1
+  end
+
+  def equal(_), do: false
+
   def classes() do
     [
       "DEMONHUNTER",

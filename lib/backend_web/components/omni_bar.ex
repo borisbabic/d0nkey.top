@@ -12,8 +12,6 @@ defmodule Components.OmniBar do
   prop(results, :list, default: [])
 
   def render(assigns) do
-    IO.inspect(assigns.results, label: "assigned results")
-
     ~H"""
       <div>
         <Form for={{:search}} change="change" submit="change">
@@ -61,7 +59,7 @@ defmodule Components.OmniBar do
   end
 
   def handle_event("change", %{"search" => [search]}, socket) do
-    OmniBar.search(search, &handle_result/1)
+    OmniBar.search(search, create_handle_result(self()))
     {:noreply, update_search(socket, search)}
   end
 
@@ -71,17 +69,23 @@ defmodule Components.OmniBar do
     assign(socket, assigns)
   end
 
-  @spec handle_result([Result.t()] | Result.t()) :: boolean
-  def handle_result(results) when is_list(results),
-    do: Enum.reduce(results, false, &(&2 && handle_result(&1)))
-
-  def handle_result(result) do
-    Process.send_after(self(), {:incoming_result, result}, 0)
-    false
+  def create_handle_result(pid) do
+    fn results ->
+      if is_list(results) do
+        results
+      else
+        [results]
+      end
+      |> Enum.reduce(false, fn result, carry ->
+        Process.send_after(pid, {:incoming_result, result}, 0)
+        carry || false
+      end)
+    end
   end
 
   defp sorted(results), do: Enum.sort_by(results, & &1.priority, :desc)
 
+  @spec incoming_result(Result.t(), String.t()) :: any()
   def incoming_result(result, id) do
     send_update(__MODULE__, id: id, incoming_result: result)
   end
