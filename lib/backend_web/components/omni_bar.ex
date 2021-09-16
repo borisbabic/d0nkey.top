@@ -7,6 +7,7 @@ defmodule Components.OmniBar do
   alias Surface.Components.Form.TextInput
   alias OmniBar.Result
   alias Components.OmniBarResult
+  alias Components.OmniBarHelp
 
   prop(search, :string, default: "")
   prop(results, :list, default: [])
@@ -14,9 +15,17 @@ defmodule Components.OmniBar do
   def render(assigns) do
     ~H"""
       <div>
-        <Form for={{:search}} change="change" submit="change">
-          <TextInput value={{@search}} class="input" opts={{ placeholder: "Omni bar" }}/>
-        </Form>
+        <div class="level is-mobile">
+          <div class="level-item">
+            <Form for={{:search}} change="change" submit="change">
+              <TextInput value={{@search}} class="input" opts={{ placeholder: "Type or paste" }}/>
+            </Form>
+          </div>
+
+          <div class="level-item">
+            <OmniBarHelp id="omni_bar_help" />
+          </div>
+        </div>
         <div :if={{ @results |> Enum.any?() }} class="dropdown is-active">
           <div class="dropdown-menu">
             <div class="dropdown-content">
