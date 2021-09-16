@@ -1,7 +1,11 @@
 defmodule OmniBar do
   @moduledoc "Backend behind the omni bar, orchestrates searches"
 
-  def providers(), do: [BackendWeb.DeckcodeSearchProvider]
+  def providers(),
+    do: [
+      BackendWeb.DeckcodeSearchProvider,
+      BackendWeb.BattlefySearchProvider
+    ]
 
   def search(term, reply) do
     Enum.each(providers(), fn p ->
