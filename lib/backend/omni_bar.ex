@@ -4,7 +4,8 @@ defmodule OmniBar do
   def providers(),
     do: [
       BackendWeb.DeckcodeSearchProvider,
-      BackendWeb.BattlefySearchProvider
+      BackendWeb.BattlefySearchProvider,
+      BackendWeb.BattletagSearchProvider
     ]
 
   def search(term, reply) do
