@@ -15,7 +15,8 @@ defmodule BackendWeb.FeedLive do
     ~H"""
     <Context put={{ user: @user }} >
       <div class="container">
-        <div class="level">
+        <br>
+        <div class="level is-mobile">
           <div :if={{ true }} class="level-item">
             <OmniBar id="omni_bar_id"/>
           </div>
