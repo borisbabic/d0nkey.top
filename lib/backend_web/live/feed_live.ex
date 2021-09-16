@@ -10,8 +10,7 @@ defmodule BackendWeb.FeedLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-    _items = Feed.get_current_items()
-    items = []
+    items = Feed.get_current_items()
 
     ~H"""
     <Context put={{ user: @user }} >

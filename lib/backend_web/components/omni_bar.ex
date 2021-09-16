@@ -20,7 +20,7 @@ defmodule Components.OmniBar do
         <div :if={{ @results |> Enum.any?() }} class="dropdown is-active">
           <div class="dropdown-menu">
             <div class="dropdown-content">
-              <div :for={{ result <- sorted(@results) }}>
+              <div :for={{ result <- sorted(@results) }} class="dropdown-item">
                 <OmniBarResult result={{ result }} />
               </div>
             </div>
@@ -69,6 +69,7 @@ defmodule Components.OmniBar do
     assign(socket, assigns)
   end
 
+  @spec
   def create_handle_result(pid) do
     fn results ->
       if is_list(results) do
