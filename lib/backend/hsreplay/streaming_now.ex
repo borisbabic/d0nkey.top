@@ -7,9 +7,8 @@ defmodule Backend.HSReplay.StreamingNow do
   end
 
   def init(_args) do
-    sn = create_streaming_now()
     send_loop()
-    {:ok, sn}
+    {:ok, []}
   end
 
   def handle_info(:loop, _state) do

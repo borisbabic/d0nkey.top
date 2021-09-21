@@ -15,7 +15,14 @@ defmodule Backend.HearthstoneJson do
 
   @spec get_fresh() :: [Card]
   def get_fresh() do
-    Api.get_cards()
+    case Api.get_cards() do
+      {:ok, cards} ->
+        cards
+
+      _ ->
+        Process.send_after(self(), :update_cards, 20_000)
+        get_json()
+    end
   end
 
   def update_cards() do
@@ -32,9 +39,8 @@ defmodule Backend.HearthstoneJson do
 
   def init(args \\ [fetch_fresh: false]) do
     table = :ets.new(@name, [:named_table])
-    if(args[:fetch_fresh], do: get_fresh(), else: get_json()) |> update_table(table)
-
-    {:ok, %{table: table}}
+    update_cards()
+    {:ok, %{table: table, fetch_fresh: args[:fetch_fresh]}}
   end
 
   @spec tile_url(Card.t() | String.t()) :: String.t()
@@ -49,6 +55,9 @@ defmodule Backend.HearthstoneJson do
 
   def card_url(id, size),
     do: "https://art.hearthstonejson.com/v1/render/latest/enUS/#{size}/#{id}.png"
+
+  def update_table(%{table: table, fetch_fresh: false}), do: get_json() |> update_table(table)
+  def update_table(%{table: table, fetch_fresh: true}), do: get_fresh() |> update_table(table)
 
   def update_table(_cards, :undefined), do: nil
 
@@ -94,8 +103,13 @@ defmodule Backend.HearthstoneJson do
   def collectible_cards(), do: table() |> Util.ets_lookup("collectible_cards", [])
   def playable_cards(), do: table() |> Util.ets_lookup("playable_cards", [])
 
-  def handle_cast({:update_cards}, state = %{table: table}) do
-    get_fresh() |> update_table(table)
+  def handle_cast({:update_cards}, state) do
+    update_table(state)
+    {:noreply, state}
+  end
+
+  def handle_info(:update_cards, state) do
+    update_table(state)
     {:noreply, state}
   end
 

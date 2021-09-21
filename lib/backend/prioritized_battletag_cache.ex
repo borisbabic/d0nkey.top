@@ -10,7 +10,7 @@ defmodule Backend.PrioritizedBattletagCache do
 
   def init(_) do
     table = :ets.new(@name, [:named_table])
-    update_table(table)
+    Process.send_after(self(), :update_cache, 0)
     {:ok, %{table: table}}
   end
 
@@ -87,6 +87,11 @@ defmodule Backend.PrioritizedBattletagCache do
   end
 
   def handle_cast(:update_cache, state = %{table: table}) do
+    table |> update_table()
+    {:noreply, state}
+  end
+
+  def handle_info(:update_cache, state = %{table: table}) do
     table |> update_table()
     {:noreply, state}
   end

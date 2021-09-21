@@ -22,17 +22,10 @@ defmodule Backend.Streaming.StreamingNow do
   end
 
   def init(_args) do
-    partial_state = %{
-      hsreplay: Backend.HSReplay.StreamingNow.streaming_now(),
-      twitch: Twitch.HearthstoneLive.streams()
-    }
-
-    state = partial_state |> Map.put(:streaming_now, create_streaming_now(partial_state))
-
     ["streaming:hs:twitch_live", "streaming:hs:hsreplay_live"]
     |> Enum.each(fn en -> BackendWeb.Endpoint.subscribe(en) end)
 
-    {:ok, state}
+    {:ok, %{twitch: [], hsreplay: [], streaming_now: []}}
   end
 
   @spec streaming_now() :: streaming_now()

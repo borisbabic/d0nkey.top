@@ -8,9 +8,8 @@ defmodule Twitch.HearthstoneLive do
   end
 
   def init(_args) do
-    streams = create_streams()
     send_loop()
-    {:ok, streams}
+    {:ok, []}
   end
 
   def handle_info(:loop, _state) do

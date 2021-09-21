@@ -148,7 +148,13 @@ defmodule Backend.BattlefyUtil do
   end
 
   def get_meta_per_region_for_tour(tour_stop) do
-    Backend.MastersTour.get_qualifiers_for_tour(tour_stop)
+    tour_stop
+    |> Backend.MastersTour.get_qualifiers_for_tour()
+    |> get_meta_per_region()
+  end
+
+  def get_meta_per_region(qualifiers) do
+    qualifiers
     |> Enum.map(fn t -> Backend.Battlefy.get_tournament(t.id) end)
     |> Backend.BattlefyUtil.group_and_get_standings()
     |> Enum.map(fn {region, tours} -> {region, Backend.BattlefyUtil.get_meta(tours)} end)
