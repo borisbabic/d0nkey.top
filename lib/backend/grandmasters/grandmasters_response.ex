@@ -27,8 +27,8 @@ defmodule Backend.Grandmasters.Response do
     requested_raw = map["requested_season_tournaments"]
 
     %{
-      requested_season_tournaments: requested_raw |> Enum.map(&Tournament.from_raw_map/1),
-      seasons: map["seasons"] |> Enum.map(&Season.from_raw_map/1),
+      requested_season_tournaments: (requested_raw || []) |> Enum.map(&Tournament.from_raw_map/1),
+      seasons: (map["seasons"] || []) |> Enum.map(&Season.from_raw_map/1),
       requested_season: Season.from_raw_map(map["requested_season"]),
       default_season: Season.from_raw_map(map["default_season"]),
       season_start: Time.from_raw_map(map["season_start"]),
@@ -505,6 +505,13 @@ defmodule Backend.Grandmasters.Response.Time do
     %__MODULE__{
       time: div(time, 1000),
       time_zone: time_zone
+    }
+  end
+
+  def from_raw_map(_) do
+    %__MODULE__{
+      time: 0,
+      time_zone: "Etc/UTC"
     }
   end
 end
