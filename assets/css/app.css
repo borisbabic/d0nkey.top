@@ -315,6 +315,13 @@
   z-index: 10;
 }
 
+.container {
+  min-height: calc(100vh - 14.5rem);
+}
+.footer {
+  height: 2.5rem;
+}
+
 
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/
