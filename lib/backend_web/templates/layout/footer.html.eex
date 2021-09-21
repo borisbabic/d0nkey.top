@@ -7,7 +7,7 @@
                    <img height="50px" class="image" alt="Paypal" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"/>
                  </a>
                  <a href="/discord">
-                   <img style="height: 30px;" class="image" alt="Discord" src="https://discord.com/assets/e4923594e694a21542a489471ecffa50.svg"/>
+                   <img style="height: 30px;" class="image" alt="Discord" src="/images/brands/discord.svg"/>
                  </a>
                  <a href="/twitch">
                    <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
