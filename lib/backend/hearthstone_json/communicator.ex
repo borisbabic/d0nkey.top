@@ -3,6 +3,7 @@ defmodule Backend.HearthstoneJson.Communicator do
 
   alias Backend.HearthstoneJson.Card
 
-  @callback get_collectible_cards() :: [Card]
-  @callback get_cards() :: [Card]
+  @callback get_collectible_cards() :: {:ok, [Card]} | {:error, any()}
+  @callback get_cards!() :: [Card]
+  @callback get_cards() :: {:ok, [Card]} | {:error, any()}
 end

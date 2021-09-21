@@ -12,7 +12,7 @@ defmodule Backend.Grandmasters do
 
   def init(_args) do
     table = :ets.new(@name, [:named_table])
-    update_table(table)
+    update()
     {:ok, %{table: table}}
   end
 

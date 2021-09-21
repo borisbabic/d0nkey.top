@@ -2,7 +2,6 @@ defmodule Backend.DeckInteractionTracker do
   @moduledoc false
   use GenServer
   @name :deck_interaction
-  alias Backend.Hearthstone
   alias Backend.Feed
 
   def start_link(default) do
