@@ -1,5 +1,4 @@
 <div class="title is-2">Leaderboard Stats</div>
-<div class="subtitle is-6">Since January 2019</div>
 
 <div>
 <%= form_for @conn, Routes.leaderboard_path(@conn, :player_stats), [method: :get], fn

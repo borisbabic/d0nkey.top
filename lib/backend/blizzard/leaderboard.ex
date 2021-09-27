@@ -47,6 +47,8 @@ defmodule Backend.Blizzard.Leaderboard do
     }
   end
 
+  def from_raw_map(_), do: nil
+
   defp parse_season_id(s) when is_integer(s), do: s
 
   defp parse_season_id(s) when is_binary(s),

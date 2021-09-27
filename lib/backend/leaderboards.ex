@@ -35,19 +35,27 @@ defmodule Backend.Leaderboards do
 
   def get_leaderboard(region, leaderboard, season) do
     if should_avoid_fetching?(region, leaderboard, season) do
-      [
-        {"order_by", {:desc, :upstream_updated_at}},
-        {"limit", 1},
-        {"leaderboard_id", leaderboard},
-        {"season_id", season},
-        {"region", region}
-      ]
-      |> snapshots()
-      |> Enum.at(0)
+      get_by_info(region, leaderboard, season)
     else
       get_and_save(region, leaderboard, season)
       |> get_latest_matching()
+      |> case do
+        nil -> get_by_info(region, leaderboard, season)
+        ldb -> ldb
+      end
     end
+  end
+
+  def get_by_info(region, leaderboard, season) do
+    [
+      {"order_by", {:desc, :upstream_updated_at}},
+      {"limit", 1},
+      {"leaderboard_id", leaderboard},
+      {"season_id", season},
+      {"region", region}
+    ]
+    |> snapshots()
+    |> Enum.at(0)
   end
 
   def get_comparison(snap = %Snapshot{}, min_ago) do
@@ -71,8 +79,8 @@ defmodule Backend.Leaderboards do
 
   defp get_and_save(r, l, s) do
     case Blizzard.get_leaderboard(r, l, s) do
-      {:error, _} -> nil
       l = %Blizzard.Leaderboard{} -> l |> get_or_create_ldb()
+      _ -> nil
     end
   end
 
@@ -91,14 +99,18 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  defp create_ldb(l = %Blizzard.Leaderboard{}) do
-    attrs = %{
+  def create_snapshot_attrs(l = %Blizzard.Leaderboard{}) do
+    %{
       entries: l.entries |> Enum.map(&Map.from_struct/1),
       season_id: l.season_id,
       leaderboard_id: l.leaderboard_id,
       region: l.region,
       upstream_updated_at: l.updated_at
     }
+  end
+
+  defp create_ldb(l = %Blizzard.Leaderboard{}) do
+    attrs = create_snapshot_attrs(l)
 
     %Snapshot{}
     |> Snapshot.changeset(attrs)
