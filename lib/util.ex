@@ -415,6 +415,26 @@ defmodule Util do
     end
   end
 
+  @spec get_month_number(String.t()) :: {:ok, integer()} | {:error, String.t()}
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_month_number(month) do
+    case month do
+      "January" -> {:ok, 1}
+      "February" -> {:ok, 2}
+      "March" -> {:ok, 3}
+      "April" -> {:ok, 4}
+      "May" -> {:ok, 5}
+      "June" -> {:ok, 6}
+      "July" -> {:ok, 7}
+      "August" -> {:ok, 8}
+      "September" -> {:ok, 9}
+      "October" -> {:ok, 10}
+      "November" -> {:ok, 11}
+      "December" -> {:ok, 12}
+      _ -> {:error, "Unknown month name #{month}"}
+    end
+  end
+
   @doc """
   Gets the middle/median member in the list
   iex> Util.median([1,2,3])
@@ -466,4 +486,36 @@ defmodule Util do
 
   def or_nil({:ok, thing}), do: thing
   def or_nil({:error, _}), do: nil
+
+  @doc """
+  Like Enum.map except it expects and handles error tuples from the mapper function
+  It aborts at the first {:error, _} tuple returning that tuple
+  If the mapper function always returns {:ok, value} this will return {:ok, [values]}
+
+  ## Example
+  iex> Util.map_abort_on_error(["1999-12-31", "1900-01-01"], &Date.from_iso8601/1)
+  {:ok, [~D[1999-12-31], ~D[1900-01-01]]}
+
+  iex> Util.map_abort_on_error(["2021-12-57", "adgfqwt"], &Date.from_iso8601/1)
+  {:error, :invalid_date}
+
+  iex> Util.map_abort_on_error(["adgfqwt", "2021-12-57"], &Date.from_iso8601/1)
+  {:error, :invalid_format}
+
+  iex> Util.map_abort_on_error([:apples, :oranges], &to_string/1)
+  {:error, :invalid_mapper_function_return}
+  """
+  @spec map_abort_on_error(any(), (any() -> {:ok, any()} | {:error, any()})) ::
+          {:ok, list()} | {:error, any()}
+  def map_abort_on_error(enum, map_fun), do: do_map_abort_on_error(enum, map_fun, {:ok, []})
+
+  defp do_map_abort_on_error([], map_fun, {:ok, values}), do: {:ok, values |> Enum.reverse()}
+
+  defp do_map_abort_on_error([current | rest], map_fun, carry = {:ok, cards}) do
+    case map_fun.(current) do
+      {:ok, mapped} -> do_map_abort_on_error(rest, map_fun, {:ok, [mapped | cards]})
+      e = {:error, _} -> e
+      _ -> {:error, :invalid_mapper_function_return}
+    end
+  end
 end
