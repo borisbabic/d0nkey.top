@@ -65,13 +65,13 @@ defmodule Backend.Leaderboards.Snapshot do
 end
 
 defmodule Backend.Leaderboards.Snapshot.Entry do
+  @moduledoc "A player entry in the leaderboard snapshot"
   use Ecto.Schema
   import Ecto.Changeset
   @all_attrs [:account_id, :rank, :rating]
   @required [:account_id, :rank]
-  # @primary_key {:rank, :integer, autogenerate: false}
+  @primary_key {:rank, :integer, autogenerate: false}
   embedded_schema do
-    field :rank, :integer
     field :account_id, :string
     field :rating, :integer
   end
