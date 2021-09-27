@@ -36,14 +36,19 @@ defmodule Backend.DeckFeedItemUpdater do
   end
 
   def apply_stats(points, deck_id) do
-    stats = DeckTracker.deck_stats(deck_id, [:past_week, :diamond_to_legend])
-    total_games = stats.wins + stats.losses
-    winrate = stats.wins / total_games
+    case DeckTracker.deck_stats(deck_id, [:past_week, :diamond_to_legend]) do
+      [stats] ->
+        total_games = stats.wins + stats.losses
+        winrate = stats.wins / total_games
 
-    if total_games >= 100 do
-      points * :math.pow(winrate + 0.58, 2)
-    else
-      points
+        if total_games >= 100 do
+          points * :math.pow(winrate + 0.58, 2)
+        else
+          points
+        end
+
+      _ ->
+        points
     end
   end
 end
