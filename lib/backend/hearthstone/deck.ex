@@ -102,12 +102,20 @@ defmodule Backend.Hearthstone.Deck do
          {:ok, decoded} <- base64_decode(no_comments),
          list <- :binary.bin_to_list(decoded),
          chunked <- chunk_parts(list),
-         [0, 1, format, 1, hero | card_parts] <- Enum.map(chunked, &Varint.LEB128.decode/1),
+         [0, 1, format, 1, hero | card_parts] <- parts(chunked),
          cards <- decode_cards_parts(card_parts, 1, []) do
       {:ok, %__MODULE__{format: format, hero: hero, cards: cards, deckcode: no_comments}}
     else
       {:error, reason} -> {:error, reason}
       _ -> String.slice(deckcode, 0, String.length(deckcode) - 1) |> decode()
+    end
+  end
+
+  defp parts(chunked) do
+    try do
+      Enum.map(chunked, &Varint.LEB128.decode/1)
+    rescue
+      _ -> :error
     end
   end
 
