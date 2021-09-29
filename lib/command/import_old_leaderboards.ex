@@ -9,17 +9,18 @@ defmodule Command.ImportOldLeaderboards do
   alias Backend.Leaderboards
   alias Backend.Leaderboards.Snapshot
 
-  def import(file \\ "lib/data/old_leaderboards.csv") do
+  def import(file \\ "lib/data/old_wild_leaderboards.csv", ldb_id \\ "WLD") do
     with {:ok, body} <- File.read(file) do
       body
       |> String.split("\r\n")
       |> Enum.drop(1)
+      |> Enum.uniq()
       |> Enum.map(&String.split(&1, ","))
       |> Enum.group_by(fn [region, month, year, _position, _battletag] ->
         "#{region}-#{month}-#{year}"
       end)
       |> Enum.reduce(Multi.new(), fn {snapshot, grouped}, multi ->
-        {:ok, ldb} = create_leaderboard(grouped)
+        {:ok, ldb} = create_leaderboard(grouped, ldb_id)
         attrs = Leaderboards.create_snapshot_attrs(ldb)
         cs = Snapshot.changeset(%Snapshot{}, attrs)
         Multi.insert(multi, "multi_#{snapshot}", cs)
@@ -28,8 +29,8 @@ defmodule Command.ImportOldLeaderboards do
     end
   end
 
-  @spec create_leaderboard([]) :: Leaderboard.t()
-  defp create_leaderboard(csv_entries = [[region, month_raw, year_raw | _] | _]) do
+  @spec create_leaderboard(list(), String.t()) :: Leaderboard.t()
+  defp create_leaderboard(csv_entries = [[region, month_raw, year_raw | _] | _], ldb_id) do
     with {:ok, month} <- Util.get_month_number(month_raw),
          {year, _} <- Integer.parse(year_raw),
          {:ok, date} <- Date.new(year, month, 13),
@@ -38,7 +39,7 @@ defmodule Command.ImportOldLeaderboards do
       {:ok,
        %Leaderboard{
          season_id: season_id,
-         leaderboard_id: "STD",
+         leaderboard_id: ldb_id,
          region: region(region),
          updated_at: updated_at,
          entries: Enum.map(csv_entries, &create_entry/1)
@@ -60,6 +61,8 @@ defmodule Command.ImportOldLeaderboards do
   end
 
   defp region("Eu"), do: "EU"
+  defp region("Europe"), do: "EU"
   defp region("Na"), do: "US"
+  defp region("Americas"), do: "US"
   defp region("Asia"), do: "AP"
 end
