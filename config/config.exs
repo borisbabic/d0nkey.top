@@ -24,8 +24,9 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end}
   ]
 
-config :backend,
-  ecto_repos: [Backend.Repo]
+bnet_client_id =
+  config :backend,
+    ecto_repos: [Backend.Repo]
 
 # Configures the endpoint
 config :backend, BackendWeb.Endpoint,
@@ -43,16 +44,23 @@ config :ueberauth, Ueberauth,
       {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
   ]
 
+bnet_client_id =
+  System.get_env("BNET_CLIENT_ID") ||
+    raise "environment variable BNET_CLIENT_ID is missing."
+
+bnet_client_secret =
+  System.get_env("BNET_CLIENT_SECRET") ||
+    raise "environment variable BNET_CLIENT_SECRET is missing."
+
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
-  client_id: System.get_env("TWITCH_CLIENT_ID") || "",
-  client_secret: System.get_env("TWITCH_CLIENT_SECRET") || "",
+  client_id: bnet_client_id,
+  client_secret: bnet_client_secret,
   send_redirect_uri: false
 
 config :ueberauth, Ueberauth.Strategy.Bnet.OAuth,
   # System.get_env("BNET_CLIENT_ID"),
   client_id: "3f839935169e4d6e9c1fc893301d242a",
-  client_secret: System.get_env("BNET_CLIENT_SECRET") || "",
-  region: "eu"
+  client_secret: System.get_env("BNET_CLIENT_SECRET") || ""
 
 config :backend, Backend.UserManager.Guardian,
   issuer: "d0nkey.top",
@@ -74,6 +82,8 @@ config :backend,
   su_regions: ["Europe"],
   twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
   twitch_client_secret: System.get_env("TWITCH_CLIENT_SECRET"),
+  bnet_client_id: bnet_client_id,
+  bnet_client_secret: bnet_client_secret,
   admin_pass: "admin",
   gm_stream_send_tweet: false,
   gm_stream_twitter_info: [

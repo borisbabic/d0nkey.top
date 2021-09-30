@@ -6,9 +6,73 @@ defmodule Backend.Hearthstone do
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.Lineup
   alias Backend.Hearthstone.LineupDeck
+  # alias Backend.Hearthstone.CardBackCategory
+  # alias Backend.Hearthstone.Class
+  # alias Backend.Hearthstone.GameMode
+  # alias Backend.Hearthstone.Keyword
+  # alias Backend.Hearthstone.MercenaryRole
+  # alias Backend.Hearthstone.MinionType
+  # alias Backend.Hearthstone.Rarity
+  # alias Backend.Hearthstone.SetGroup
+  # alias Backend.Hearthstone.Set
+  # alias Backend.Hearthstone.SpellSchool
+  # alias Backend.Hearthstone.Type
   alias Backend.HearthstoneJson
-  alias Backend.HearthstoneJson.Card
+  alias Hearthstone.Api
   require Logger
+
+  def update_metadata() do
+    with {:ok,
+          %{
+            card_back_categories: card_back_categories,
+            classes: classes,
+            game_modes: game_modes,
+            keywords: keywords,
+            mercenary_roles: mercenary_roles,
+            minion_types: minion_types,
+            rarities: rarities,
+            set_groups: set_groups,
+            sets: sets,
+            spell_schools: spell_schools,
+            types: types
+          }} <- Api.get_metadata() do
+      [
+        {Backend.Hearthstone.CardBackCategory, card_back_categories},
+        {Backend.Hearthstone.Class, classes},
+        {Backend.Hearthstone.GameMode, game_modes},
+        {Backend.Hearthstone.Keyword, keywords},
+        {Backend.Hearthstone.MercenaryRole, mercenary_roles},
+        {Backend.Hearthstone.MinionType, minion_types},
+        {Backend.Hearthstone.Rarity, rarities},
+        {Backend.Hearthstone.SetGroup, set_groups},
+        {Backend.Hearthstone.Set, sets},
+        {Backend.Hearthstone.SpellSchool, spell_schools},
+        {Backend.Hearthstone.Type, types}
+      ]
+      |> Enum.reduce(Multi.new(), &metadata_multi_insert/2)
+      |> Repo.transaction()
+    end
+  end
+
+  @spec metadata_multi_insert({atom(), Map.t()}, Multi.t()) :: Multi.t()
+  defp metadata_multi_insert({struct_module, values}, multi) do
+    values
+    |> Enum.reduce(multi, fn val, m ->
+      base_struct = struct(struct_module)
+      cs = apply(struct_module, :changeset, [base_struct, val])
+
+      {uniq_val, conflict_target} =
+        case Map.get(val, :id) do
+          nil -> {Map.get(val, :slug), :slug}
+          val -> {val, :id}
+        end
+
+      Multi.insert(m, "#{struct_module}__insert__#{uniq_val}", cs,
+        on_conflict: {:replace_all_except, [:inserted_at]},
+        conflict_target: conflict_target
+      )
+    end)
+  end
 
   @spec create_or_get_deck(String.t() | Deck.t()) :: {:ok, Deck.t()} | {:error, any()}
   def create_or_get_deck(deckcode) when is_binary(deckcode),
@@ -187,6 +251,9 @@ defmodule Backend.Hearthstone do
   defp name_for_sort(%{name: name}), do: name
   defp name_for_sort(_), do: nil
 
+  defp cost_for_sort({%{mana_cost: cost}, _}), do: cost
+  defp cost_for_sort({_, %{mana_cost: cost}}), do: cost
+  defp cost_for_sort(%{mana_cost: cost}), do: cost
   defp cost_for_sort({%{cost: cost}, _}), do: cost
   defp cost_for_sort({_, %{cost: cost}}), do: cost
   defp cost_for_sort(%{cost: cost}), do: cost
@@ -254,45 +321,6 @@ defmodule Backend.Hearthstone do
 
     query
     |> Repo.all()
-  end
-
-  def rotating?(card) do
-    cond do
-      staying_in_core?(card) ->
-        false
-
-      card.set in [
-        # Initiate
-        "DEMON_HUNTER_INITIATE",
-        # Galakronds Awakening
-        "YEAR_OF_THE_DRAGON",
-        # Descent of Dragons
-        "DRAGONS",
-        # Saviors of UIlduum
-        "ULDUM",
-        # Rise of Shadows
-        "DALARAN",
-        # Basic
-        "BASIC",
-        # Classic and basic?
-        "VANILLA",
-        # Classic
-        "EXPERT1"
-      ] ->
-        true
-
-      true ->
-        false
-    end
-  end
-
-  def staying_in_core?(card) do
-    false
-
-    HearthstoneJson.collectible_cards()
-    |> Enum.filter(&(&1.set == "CORE"))
-    |> Enum.find(&(&1.name == card.name))
-    |> Card.same_effect?(card)
   end
 
   def parse_gm_season("2020_2"), do: {:ok, {2020, 2}}

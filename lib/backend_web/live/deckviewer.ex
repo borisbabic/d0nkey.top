@@ -61,7 +61,9 @@ defmodule BackendWeb.DeckviewerLive do
               <div :if={{ cd || @deckcodes |> Enum.count() > 1}} class="column is-narrow">
                 <button phx-click="toggle_compare" class="button" type="button">{{ compare_button_text(@compare_decks) }}</button>
               </div>
-              <div :if={{ @deckcodes |> Enum.count() > 0}} class="column is-narrow">
+
+              {{ #DISABLED }}
+              <div :if={{ false && @deckcodes |> Enum.count() > 0 }} class="column is-narrow">
                 <button :on-click="toggle_rotation" class="button" type="button">{{ rotation_text(@rotation) }}</button>
               </div>
 
