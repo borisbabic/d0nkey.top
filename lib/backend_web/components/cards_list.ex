@@ -54,13 +54,7 @@ defmodule Components.CardsList do
     """
   end
 
-  def rotation_class(highlight, card) do
-    if highlight && Backend.Hearthstone.rotating?(card) do
-      "not-in-list"
-    else
-      ""
-    end
-  end
+  def rotation_class(highlight, card), do: ""
 
   defp comparison_class(%{rarity: "LEGENDARY"}, _), do: "card-comparison-legendary"
   defp comparison_class(_, count), do: "card-comparison-count-#{count}"

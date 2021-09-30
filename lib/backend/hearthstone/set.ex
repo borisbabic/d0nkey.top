@@ -1,0 +1,44 @@
+defmodule Backend.Hearthstone.Set do
+  @moduledoc false
+
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @primary_key {:id, :integer, []}
+  schema "hs_sets" do
+    field :collectible_count, :integer
+    field :collectible_revealed_count, :integer
+    field :name, :string
+    field :non_collectible_count, :integer
+    field :non_collectible_revelead_count, :integer
+    field :slug, :string
+    field :type, :string
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(set, %Hearthstone.Metadata.Set{} = struct) do
+    attrs = Map.from_struct(struct)
+
+    set
+    |> cast(attrs, [
+      :id,
+      :name,
+      :slug,
+      :collectible_count,
+      :collectible_revealed_count,
+      :non_collectible_count,
+      :non_collectible_revelead_count,
+      :type
+    ])
+    |> validate_required([
+      :id,
+      :name,
+      :slug,
+      :collectible_count,
+      :collectible_revealed_count,
+      :non_collectible_count
+    ])
+  end
+end

@@ -171,7 +171,9 @@ defmodule Backend.Hearthstone.Deck do
   @spec format_name(integer) :: String.t()
   def format_name(1), do: "Wild"
   def format_name(2), do: "Standard"
+  def format_name(3), do: "Classic"
   def format_name(9001), do: "Duels"
+  def format_name(666), do: "Mercenaries"
 
   def get_canonical_hero(hero) when is_integer(hero) do
     hero
