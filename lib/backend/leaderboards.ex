@@ -270,7 +270,7 @@ defmodule Backend.Leaderboards do
 
   defp compose_snapshot_query({"region", region}, query) do
     query
-    |> where([s], s.region == ^region)
+    |> where([s], s.region == ^to_string(region))
   end
 
   defp compose_snapshot_query({"season_id", season_id}, query) do
