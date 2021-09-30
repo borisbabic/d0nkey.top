@@ -313,6 +313,10 @@ defmodule BackendWeb.LeaderboardView do
     do:
       "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
 
+  def warning(%{season_id: 95, region: "AP", leaderboard_id: "STD"}, "Jay"),
+    do:
+      "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
+
   def warning(%{season_id: 94, region: "EU", leaderboard_id: "STD"}, "XiaoT"),
     do: "Has previously gotten a second invite from a ladder finish, so I'm not counting them"
 
