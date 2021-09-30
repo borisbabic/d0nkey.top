@@ -59,6 +59,20 @@ defmodule Backend.PlayerInfo do
     ])
   end
 
+  def relegated_gms_for_promotion({2022, 1}) do
+    MapSet.new([
+      # AMERICAS
+      "CaelesLuna",
+
+      # APAC
+      "blitzchung",
+      "trahison",
+
+      # EUROPE
+      "Bozzzton"
+    ])
+  end
+
   def relegated_gms_for_promotion(_), do: MapSet.new()
 
   @nationality_to_region %{
@@ -261,23 +275,8 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters_for_promotion(season = {2021, 2}),
     do: get_grandmasters(:Dalaran, relegated_gms_for_promotion(season))
 
-  def get_grandmasters_for_promotion({2022, 1}),
-    do:
-      get_grandmasters_for_promotion({2021, 2}) ++
-        [
-          "Gaby",
-          "Bunnyhoppor",
-          "Floki",
-          "J4YOU",
-          "CaelesLuna",
-          "McBanterFace",
-          "Eggowaffle",
-          "DimitriKazov",
-          "trahison",
-          "lambyseries",
-          "okasinnsuke",
-          "grr"
-        ]
+  def get_grandmasters_for_promotion(season = {2022, 1}),
+    do: get_grandmasters(:Stormwind, relegated_gms_for_promotion(season))
 
   def get_grandmasters_for_promotion(_), do: []
 
