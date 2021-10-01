@@ -31,8 +31,6 @@ defmodule Backend.Leaderboards do
 
   # Auguest 2021 constructed EU+AM leaderboards were overwritten by the first few days of september
   defp should_avoid_fetching?(r, l, 94) when r in ["EU", "US"] and l != "BG", do: true
-  # September 2021
-  # defp should_avoid_fetching?(r, l, 95) when r in ["AP"] and l != "BG", do: true
   defp should_avoid_fetching?(_r, _l, _s), do: false
 
   def get_leaderboard(region, leaderboard, season) do
@@ -112,7 +110,7 @@ defmodule Backend.Leaderboards do
   end
 
   # TEMPORARY FIX, october 2021 entries are being added to September 2021
-  defp create_ldb(l = %{season_id: 95, region: r}) when r in ["AP", :AP, "EU", :EU],
+  defp create_ldb(l = %{season_id: 95}),
     do: l |> Map.put(:season_id, 96) |> create_ldb()
 
   defp create_ldb(l = %Blizzard.Leaderboard{}) do
