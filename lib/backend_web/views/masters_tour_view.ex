@@ -737,6 +737,11 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def earnings_warning({2021, 2}, "justsaiyan"), do: "Retired from GM"
+  def earnings_warning({2022, 1}, "Surrender"), do: "Announced retirement from GM"
+  def earnings_warning({2022, 1}, "Eddie"), do: "Announced retirement from GM"
+  def earnings_warning({2022, 1}, "TIZS"), do: "Announced retirement from GM"
+  def earnings_warning({2022, 1}, "muzzy"), do: "Announced retirement from GM"
+  def earnings_warning({2022, 1}, "blitzchung"), do: "Announced retirement from GM"
   def earnings_warning(_, _), do: nil
 
   def render("earnings.html", %{
