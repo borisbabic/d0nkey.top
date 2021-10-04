@@ -62,13 +62,22 @@ defmodule Backend.PlayerInfo do
   def relegated_gms_for_promotion({2022, 1}) do
     MapSet.new([
       # AMERICAS
+      "Rami94",
+      "Eddie",
+      "Eggowaffle",
       "CaelesLuna",
 
       # APAC
-      "blitzchung",
+      "Che0nsu",
+      "che0nsu",
       "trahison",
+      "DawN",
+      "blitzchung",
 
       # EUROPE
+      "Thijs",
+      "Floki",
+      "Warma",
       "Bozzzton"
     ])
   end
