@@ -123,6 +123,14 @@
   border-color: var(--color-border, var(--color-dark-grey));
   box-sizing: content-box;
   padding: 1px;
+}
+.decklist-card-tile {
+  width: 100%;
+  height: 23px;
+  position: absolute;
+  top: 1px;
+  right: 15px;
+  box-sizing: content-box;
   background-position: right;
   background-size: contain;
   background-origin: content-box;
@@ -135,10 +143,11 @@
 .decklist-card-background {
   background: var(--color-gradient);
 }
+
 .decklist-card-gradient {
-  background: -moz-linear-gradient(90deg, var(--color-gradient) 0%, var(--color-gradient) 70%, transparent);
-  background: -webkit-linear-gradient(90deg, var(--color-gradient) 0%, var(--color-gradient) 70%, transparent);
-  background: linear-gradient(90deg, var(--color-gradient) 0%, var(--color-gradient) 70%, transparent);
+  background: -moz-linear-gradient(90deg, var(--color-gradient) 0%, var(--color-gradient) 55%, transparent);
+  background: -webkit-linear-gradient(90deg, var(--color-gradient) 0%, var(--color-gradient) 55%, transparent);
+  background: linear-gradient(90deg, var(--color-gradient) 0%, var(--color-gradient) 55%, transparent);
 }
 
 
@@ -214,6 +223,7 @@
   /*padding-bottom: 13%;*/
 }
 .deck-text {
+  z-index: 1;
   text-shadow: 1px 1px #000000;
   font-size: small;
   display: flex;
@@ -269,7 +279,7 @@
 
 .decklist-card-image {
   position: absolute;
-  z-index: 1;
+  z-index: 10;
   top: -85px;
   left: 70px;
   height: 384px;
