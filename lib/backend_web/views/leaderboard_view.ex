@@ -476,10 +476,10 @@ defmodule BackendWeb.LeaderboardView do
       end)
 
     leaderboards_options =
-      ["STD", "WLD", "CLS", "BG"]
+      Blizzard.leaderboards()
       |> Enum.map(fn l ->
         %{
-          value: l,
+          value: to_string(l),
           name: l |> Blizzard.get_leaderboard_name(:long),
           display: l |> Blizzard.get_leaderboard_name(:long),
           selected:
