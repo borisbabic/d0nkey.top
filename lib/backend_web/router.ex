@@ -142,18 +142,14 @@ defmodule BackendWeb.Router do
     live "/fantasy/leagues/:league_id", FantasyLeagueLive
     live "/fantasy/leagues/join/:join_code", JoinLeagueLive
 
+    get "/util/twitter/callback/reqtop100", TwitterController, :req_top100_callback
+
     get "/discord", SocialController, :discord
-
     get "/paypal", SocialController, :paypal
-
     get "/twitch", SocialController, :twitch
-
     get "/patreon", SocialController, :patreon
-
     get "/twitter", SocialController, :twitter
-
     get "/notion", SocialController, :notion
-
     get "/liberapay", SocialController, :liberapay
 
     live "/gm/lineups", GrandmastersLineup

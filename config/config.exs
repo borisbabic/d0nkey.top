@@ -14,6 +14,7 @@ config :backend, QuantumScheduler,
     {"0 12 * * Mon", fn -> Backend.Fantasy.advance_gm_round() end},
     {"13 * * * *", fn -> Backend.MastersTour.qualifiers_update() end},
     {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
+    {"37 13 * * *", fn -> Backend.ReqvamTop100Tweeter.check_and_tweet() end},
     {"37 5 * * *", fn -> Backend.PrioritizedBattletagCache.update_cache() end},
     # {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},
     {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
@@ -91,6 +92,12 @@ config :backend,
     consumer_secret: System.get_env("GMS_CONSUMER_SECRET"),
     access_token: System.get_env("GMS_ACCESS_TOKEN"),
     access_token_secret: System.get_env("GMS_ACCESS_TOKEN_SECRET")
+  ],
+  req_t100_twitter_info: [
+    consumer_key: System.get_env("REQT100_CONSUMER_KEY"),
+    consumer_secret: System.get_env("REQT100_CONSUMER_SECRET"),
+    access_token: System.get_env("REQT100_ACCESS_TOKEN"),
+    access_token_secret: System.get_env("REQT100_ACCESS_TOKEN_SECRET")
   ],
   admin_config_vars_cutoff_date: "3000-12-31"
 
