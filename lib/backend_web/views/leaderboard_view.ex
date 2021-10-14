@@ -35,6 +35,8 @@ defmodule BackendWeb.LeaderboardView do
     entries =
       leaderboard |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num)
 
+    show_ratings = Enum.any?(entries, & &1.rating)
+
     render("leaderboard.html", %{
       entries: entries,
       crystal: get_crystal("STD"),
@@ -44,6 +46,7 @@ defmodule BackendWeb.LeaderboardView do
       dropdowns: create_dropdowns(params),
       old: old?(leaderboard),
       season_id: leaderboard && leaderboard.season_id,
+      show_ratings: show_ratings,
       conn: conn,
       ladder_invite_num: ladder_invite_num,
       highlighted: process_highlighted(highlight, entries)
