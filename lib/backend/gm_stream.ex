@@ -56,6 +56,7 @@ defmodule Backend.GMStream do
     ExTwitter.configure(:process, config)
   end
 
+  @impl true
   def handle_info(%{topic: "streaming:hs:twitch_live", payload: %{streams: streams}}, state) do
     handle_live_streams(streams)
 
