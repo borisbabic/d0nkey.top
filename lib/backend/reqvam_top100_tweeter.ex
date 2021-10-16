@@ -16,7 +16,7 @@ defmodule Backend.ReqvamTop100Tweeter do
     end
   end
 
-  def pick_msg([msgs]), do: msgs |> Enum.random() |> pick_msg()
+  def pick_msg(msgs) when is_list(msgs), do: msgs |> Enum.random() |> pick_msg()
   def pick_msg(msg), do: msg
 
   def msg(%{rank: 69}, _date), do: "Nice!"
