@@ -16,22 +16,24 @@ defmodule Backend.ReqvamTop100Tweeter do
     end
   end
 
+  @spec pick_msg([String.t] | String.t()) :: String.t()
   def pick_msg(msgs) when is_list(msgs), do: msgs |> Enum.random() |> pick_msg()
   def pick_msg(msg), do: msg
 
+  @spec msg(Backend.Blizzard.Leaderboard.Entry.t(), Date.t()) :: String.t() | [String.t()]
   def msg(%{rank: 69}, _date), do: "Nice!"
   def msg(%{rank: 42}, _date), do: "\"What rank is reqvam on NA\" is probably not the ultimate question, but the answer is the same: 42"
   def msg(%{rank: 1}, _date), do: "Reqvam is #1 ! On NA! Maybe it's time to play on a tougher server?"
-  def msg(%{rank: 24}, _date), do: "Reqvam is top 100, he is 4! ie 24, 4 factorial 🤓"
+  def msg(%{rank: 24}, _date), do: ["Reqvam is top 100, he is 4! ie 24, surprise factorial! 🤓", top_100_messages(24)]
   def msg(%{rank: 101}, _), do: "Reqvam is not top 100, he is 101. Ha! Ha!"
-  def msg(%{rank: rank}, _date) when rank < 100, do: top_100_messages(rank)
-  def msg(%{rank: rank}, %{day: 1, month: 1}) when rank < 100, do: "Reqvam is #{rank} ! Seems like somebody didn't have new years plans"
-  def msg(%{rank: rank}, %{day: 1}) when rank < 100, do: "Reqvam is #{rank} ! Seems like somebody had some free time to get to legend already"
-  def msg(%{rank: rank}, %{day: 2}) when rank < 100, do: "Reqvam is #{rank} ! But it's day 1 so is it even that good?"
-  def msg(%{rank: rank}, %{day: day}) when rank < 100 and day < 5, do: [
+  def msg(%{rank: rank}, %{day: 1, month: 1}) when rank < 101, do: "Reqvam is #{rank} ! Seems like somebody didn't have new years plans"
+  def msg(%{rank: rank}, %{day: 1}) when rank < 101, do: "Reqvam is #{rank} ! Seems like somebody had some free time to get to legend already"
+  def msg(%{rank: rank}, %{day: 2}) when rank < 101, do: "Reqvam is #{rank} ! But it's basically day 1 so is it even that high?"
+  def msg(%{rank: rank}, %{day: day}) when rank < 101 and day < 5, do: [
     "Reqvam is #{rank} ! But is it really that impressive this early?",
     "Reqvam is #{rank} ! But it's early, will it hold?"
   ]
+  def msg(%{rank: rank}, _date) when rank < 101, do: top_100_messages(rank)
   def msg(_entry, %{day: day}) when day < 5, do:
       [
         "Reqvam is not top 100, but it's still early",

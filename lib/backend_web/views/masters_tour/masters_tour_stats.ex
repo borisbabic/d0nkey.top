@@ -126,9 +126,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
   defp process_sorting(sort_by_raw, direction_raw) do
     case {sort_by_raw, direction_raw} do
-      {s, d} when is_atom(d and is_binary(s)) -> {s, d}
+      {s, d} when is_atom(d) and is_binary(s) -> {s, d}
       {s, _} when is_binary(s) -> {s, :desc}
-      _ -> {"Winrate %", :desc}
+      _ -> {"Matches Won", :desc}
     end
   end
 
