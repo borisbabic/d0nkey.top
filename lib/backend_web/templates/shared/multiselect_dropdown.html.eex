@@ -29,7 +29,7 @@
                         <label for="<%= @attr %>[<%= value %>]" data-target-value="<%= name %>" class="dropdown-item <%= @search_class %>">
                             <div class="is-flex">
                                 <span class="multi-select-text"><%= display %></span>
-                                <%= checkbox @form, "#{@attr}[#{value}]", hidden_input: false, class: @checkbox_class, style: "margin-left: auto", value: selected %>
+                                <input class="<%= @checkbox_class %>" id="<%= #{@attr}[#{value}] %>" name="<%= #{@attr}[#{value}] %>" style="margin-left: auto" type="checkbox" value="<%= selected %>">
                             </div>
                         </label>
                     <% end %>
@@ -45,4 +45,3 @@
             </div>
         </div>
     </div>
-
