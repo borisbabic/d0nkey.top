@@ -15,20 +15,13 @@ defmodule Backend.Battlefy.Stage do
   end
 
   @spec from_raw_map(map) :: __MODULE__.t()
-  def from_raw_map(map = %{"startTime" => _}) do
-    Recase.Enumerable.convert_keys(
-      map,
-      &Recase.to_snake/1
-    )
-    |> from_raw_map
-  end
 
   def from_raw_map(
         map = %{
-          "start_time" => start_time,
-          "has_started" => has_started,
+          "startTime" => start_time,
+          "hasStarted" => has_started,
           "name" => name,
-          "standing_ids" => standing_ids
+          "standingIDs" => standing_ids
         }
       ) do
     %__MODULE__{
@@ -37,7 +30,7 @@ defmodule Backend.Battlefy.Stage do
       has_started: has_started,
       standing_ids: standing_ids,
       name: name,
-      current_round: map["current_round"],
+      current_round: map["currentRound"],
       matches:
         if(is_list(map["matches"]),
           do: map["matches"] |> Enum.map(&Battlefy.Match.from_raw_map/1),
@@ -69,19 +62,14 @@ defmodule Backend.Battlefy.Bracket do
   end
 
   def from_raw_map(map) do
-    snake_case =
-      Recase.Enumerable.convert_keys(
-        map,
-        &Recase.to_snake/1
-      )
 
     %__MODULE__{
-      type: snake_case["type"],
-      style: snake_case["style"],
-      tiebreaker_method: snake_case["tiebreaker_method"],
-      rounds_count: snake_case["rounds_count"],
-      teams_count: snake_case["teams_count"],
-      current_round_number: snake_case["current_round_number"]
+      type: map["type"],
+      style: map["style"],
+      tiebreaker_method: map["tiebreakerMethod"],
+      rounds_count: map["roundsCount"],
+      teams_count: map["teamsCount"],
+      current_round_number: map["currentRoundNumber"]
     }
   end
 

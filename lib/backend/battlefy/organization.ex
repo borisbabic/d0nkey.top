@@ -13,22 +13,14 @@ defmodule Backend.Battlefy.Organization do
   end
 
   @spec from_raw_map(map) :: Backend.Battlefy.Organization.t()
-  def from_raw_map(map = %{"ownerID" => _}) do
-    Recase.Enumerable.convert_keys(
-      map,
-      &Recase.to_snake/1
-    )
-    |> from_raw_map
-  end
-
   def from_raw_map(map = %{"slug" => slug}) do
     %__MODULE__{
       id: map["_id"] || map["id"],
       name: map["name"],
       slug: slug,
-      owner_id: map["owner_id"],
-      banner_url: map["banner_url"],
-      logo_url: map["logo_url"]
+      owner_id: map["ownerID"],
+      banner_url: map["bannerUrl"],
+      logo_url: map["logoUrl"]
     }
   end
 

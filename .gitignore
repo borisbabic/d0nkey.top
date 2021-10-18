@@ -43,3 +43,4 @@ npm-debug.log
 /tunnel.sh
 /.direnv/
 .envrc
+/incendium/

@@ -46,22 +46,14 @@ defmodule Backend.Battlefy.Match do
 
   def from_raw_map([match]), do: from_raw_map(match)
 
-  def from_raw_map(map = %{"roundNumber" => _}) do
-    Recase.Enumerable.convert_keys(
-      map,
-      &Recase.to_snake/1
-    )
-    |> from_raw_map
-  end
-
   def from_raw_map(
         map = %{
-          "round_number" => round_number,
-          "match_number" => match_number,
+          "roundNumber" => round_number,
+          "matchNumber" => match_number,
           "bottom" => bottom,
           "top" => top,
-          "is_bye" => is_bye,
-          "stage_id" => stage_id
+          "isBye" => is_bye,
+          "stageID" => stage_id
           # "is_complete" => is_complete
         }
       ) do
@@ -71,9 +63,9 @@ defmodule Backend.Battlefy.Match do
       bottom: MatchTeam.from_raw_map(bottom),
       round_number: round_number,
       match_number: match_number,
-      double_loss: map["double_loss"] || false,
+      double_loss: map["doubleLoss"] || false,
       is_bye: is_bye,
-      completed_at: map["completed_at"] |> Util.naive_date_time_or_nil(),
+      completed_at: map["completedAt"] |> Util.naive_date_time_or_nil(),
       stats: MatchStats.from_raw_map(map["stats"]) || [],
       stage_id: stage_id
       # is_complete: is_complete
@@ -289,18 +281,10 @@ defmodule Backend.Battlefy.Match.MatchStats do
     maps |> Enum.map(&from_raw_map/1)
   end
 
-  def from_raw_map(map = %{"gameNumber" => _}) do
-    Recase.Enumerable.convert_keys(
-      map,
-      &Recase.to_snake/1
-    )
-    |> from_raw_map
-  end
-
-  def from_raw_map(map = %{"stats" => stats, "game_number" => game_number}) do
+  def from_raw_map(map = %{"stats" => stats, "gameNumber" => game_number}) do
     %__MODULE__{
       stats: Stats.from_raw_map(stats),
-      created_at: map["created_at"] |> Util.naive_date_time_or_nil(),
+      created_at: map["createdAt"] |> Util.naive_date_time_or_nil(),
       game_number: game_number
     }
   end
@@ -320,15 +304,7 @@ defmodule Backend.Battlefy.Match.MatchStats.Stats do
     field :is_complete, boolean
   end
 
-  def from_raw_map(map = %{"isComplete" => _}) do
-    Recase.Enumerable.convert_keys(
-      map,
-      &Recase.to_snake/1
-    )
-    |> from_raw_map
-  end
-
-  def from_raw_map(%{"bottom" => bottom, "top" => top, "is_complete" => is_complete}) do
+  def from_raw_map(%{"bottom" => bottom, "top" => top, "isComplete" => is_complete}) do
     %__MODULE__{
       top: StatsTeam.from_raw_map(top),
       bottom: StatsTeam.from_raw_map(bottom),

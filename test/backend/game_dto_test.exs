@@ -1,4 +1,4 @@
-defmodule Backend.DeckTrackerTest do
+defmodule Backend.GameDtoTest do
   use Backend.DataCase
 
   describe "game_dto" do
