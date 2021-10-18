@@ -610,6 +610,8 @@ defmodule Backend.MastersTour do
       #
       # Battlefy
       "wiwi" -> "麻煩"
+      # dm from youth
+      "虎牙丶季岁" -> "Youth"
       n -> n
     end
   end

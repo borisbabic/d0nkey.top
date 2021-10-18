@@ -16,9 +16,9 @@ defmodule BackendWeb.FantasyIndexLive do
         <div class="title is-2">Fantasy Leagues</div>
         <div class="level">
           <div class="level-left">
-            <FantasyModal id="create_modal" title="Create Fantasy League"/> 
+            <FantasyModal id="create_modal" title="Create Fantasy League"/>
             <a class="is-link button" href="/fantasy/leagues/join/157c95da-07f3-48b9-9663-a1fa56e322ec">Join GM Fantasy</a>
-            <a :if={{ show_mt?(:Silvermoon) }} class="is-link button" href="/fantasy/leagues/join/c0973385-9f12-4c2f-b1f8-11866fa7dbf5">Play Silvermoon Fantasy</a>
+            <a :if={{ show_mt?(:Stormwind) }} class="is-link button" href="/fantasy/leagues/join/e4a503ef-0392-43c5-b34e-25c8f37ec8fc">Play Stormwind Fantasy</a>
             <a :for={{ {tour, link} <- Dreamhack.current_fantasy() }} class="is-link button" href="{{ link }}">Join DH {{ tour }}</a>
           </div>
         </div>
