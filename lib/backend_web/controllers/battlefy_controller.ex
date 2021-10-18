@@ -17,6 +17,12 @@ defmodule BackendWeb.BattlefyController do
 
   defp show_earnings?(_), do: false
 
+  defp show_lineups(%{"show_lineups" => <<"top_"::binary, to_show::bitstring>>}) do
+    case Integer.parse(to_show) do
+    {num, _} -> num
+    _ -> false
+    end
+  end
   defp show_lineups(%{"show_lineups" => "yes"}), do: true
   defp show_lineups(_), do: false
 
@@ -47,6 +53,7 @@ defmodule BackendWeb.BattlefyController do
       |> Backend.Fantasy.get_battlefy_or_mt_user_picks(tournament_id)
       |> Enum.map(&(&1.pick |> Backend.Battlenet.Battletag.shorten()))
 
+    show_lineups = show_lineups(params)
     render(
       conn,
       "tournament.html",
@@ -55,9 +62,9 @@ defmodule BackendWeb.BattlefyController do
         show_earnings: show_earnings,
         earnings: earnings,
         fantasy_picks: fantasy_picks,
-        show_lineups: show_lineups(params),
+        show_lineups: show_lineups,
         highlight_fantasy: highlight_fantasy(params),
-        lineups: lineups(params),
+        lineups: lineups(show_lineups, params["tournament_id"]),
         country_highlight: multi_select_to_array(params["country"]),
         page_title: tournament.name,
         stage_id: params["stage_id"],
@@ -67,10 +74,10 @@ defmodule BackendWeb.BattlefyController do
     )
   end
 
-  def lineups(%{"show_lineups" => "yes", "tournament_id" => tournament_id}),
+  def lineups(show_lineups, tournament_id) when is_integer(show_lineups) or show_lineups == true,
     do: Battlefy.lineups(tournament_id)
 
-  def lineups(_), do: []
+  def lineups(_, _), do: []
 
   defp add_matches_standings(existing, params = %{"stage_id" => stage_id}) do
     standings = Battlefy.get_stage_standings(stage_id)

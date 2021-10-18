@@ -15,7 +15,7 @@
             <%= if @show_earnings do %>
                 <th><abbr title="Earnings for the next season of GM">Earnings</abbr></th>
             <% end %>
-            <%= if @deck_num > 0 do %>
+            <%= if @show_decks do %>
                 <th>Decks</th>
             <% end %>
         </tr>
@@ -48,10 +48,10 @@
             <%= if @show_earnings do %>
                 <td><%= earnings %></td>
             <% end %>
-            <%= if @deck_num > 0 do %>
+            <%= if @show_decks do %>
                 <td>
                     <%= if lineup do %>
-                        <%= live_render(@conn, BackendWeb.ExpandableLineupLive, session: %{"lineup_id" => lineup.id, "classes" => lineup.decks |> Enum.map(& &1.class)}) %>
+                        <%= lineup %>
                     <% end %>
                 </td>
             <% end %>

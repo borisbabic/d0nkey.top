@@ -7,15 +7,14 @@ defmodule BackendWeb.ExpandableLineupLive do
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(lineup_id, :list)
-  data(classes, :list)
   data(current_index, :number, default: 0)
   data(user, :any)
   data(show_cards, :boolean)
 
-  def mount(_params, p = %{"lineup_id" => lineup_id, "classes" => classes}, socket) do
+  def mount(_params, p = %{"lineup_id" => lineup_id}, socket) do
     {:ok,
      socket
-     |> assign(lineup_id: lineup_id, classes: classes, show_cards: !!p["show_cards"])
+     |> assign(lineup_id: lineup_id, show_cards: !!p["show_cards"])
      |> assign_defaults(p)}
   end
 

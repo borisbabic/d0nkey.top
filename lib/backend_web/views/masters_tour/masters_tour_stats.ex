@@ -134,6 +134,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
   defp masters_tour_column_name(name), do: masters_tour_name_fixer(name) <> " swiss"
 
+  @spec masters_tour_name_fixer(String.t()) :: String.t()
   def masters_tour_name_fixer(name),
     do: ~r/^Master(s)? Tour( Online: )?/ |> Regex.replace(to_string(name), "")
 
