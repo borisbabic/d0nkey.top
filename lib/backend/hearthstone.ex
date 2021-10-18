@@ -316,7 +316,6 @@ defmodule Backend.Hearthstone do
     query =
       from l in Lineup,
         where: l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source,
-        preload: [:decks],
         select: l
 
     query

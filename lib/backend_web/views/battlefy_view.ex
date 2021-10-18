@@ -465,7 +465,8 @@ defmodule BackendWeb.BattlefyView do
         conn,
         use_countries,
         earnings,
-        lineups
+        lineups,
+        show_lineups
       )
 
     highlight = if params.highlight == nil, do: [], else: params.highlight
@@ -520,12 +521,83 @@ defmodule BackendWeb.BattlefyView do
       show_stage_selection: Enum.count(stages) > 1,
       show_ongoing: show_ongoing,
       show_earnings: show_earnings,
-      deck_num: max_decks(lineups),
+      show_decks: Enum.any?(lineups),
       stage_selection_text:
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
   end
+
+
+  @spec prepare_standings(
+          [Battelfy.Standings.t()] | nil,
+          Battlefy.Tournament.t(),
+          [{String.t(), String.t()}],
+          Plug.Conn,
+          boolean,
+          MastersTour.gm_money_rankings(),
+          [Lineup.t()],
+          integer() | boolean
+        ) :: [
+          standings
+        ]
+  def prepare_standings(nil, _, _, _, _, _, _, _), do: []
+
+  def prepare_standings(
+        standings_raw,
+        %{id: tournament_id},
+        ongoing,
+        conn,
+        use_countries,
+        earnings,
+        lineups,
+        show_lineups
+      ) do
+    lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
+
+    standings_raw
+    |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
+    |> Enum.sort_by(fn s -> s.losses end)
+    |> Enum.sort_by(fn s -> s.wins end, :desc)
+    |> Enum.sort_by(fn s -> s.place end)
+    |> Enum.with_index()
+    |> Enum.map(fn {s, index} ->
+      {country, pre_name_cell} =
+        with true <- use_countries,
+             cc when is_binary(cc) <- Backend.PlayerInfo.get_country(s.team.name) do
+          {cc, country_flag(cc)}
+        else
+          _ -> {nil, ""}
+        end
+
+      place = if(s.place && s.place > 0, do: s.place, else: "?")
+      lineup = should_render_lineup(index, show_lineups) && render_lineup(lineup_map[s.team.name], conn)
+
+      %{
+        place: place,
+        country: country,
+        name: s.team.name,
+        name_class: if(s.disqualified, do: "disqualified-player", else: ""),
+        earnings: player_earnings(earnings, s.team.name),
+        pre_name_cell: pre_name_cell,
+        name_link: "/battlefy/tournament/#{tournament_id}/player/#{URI.encode_www_form(s.team.name)}",
+        has_score: s.wins && s.losses,
+        score: "#{s.wins} - #{s.losses}",
+        wins: s.wins,
+        losses: s.losses,
+        ongoing: ongoing |> Map.get(s.team.name),
+        lineup: lineup
+      }
+    end)
+  end
+
+
+  defp should_render_lineup(index, cutoff) when is_integer(cutoff), do: index < cutoff
+  defp should_render_lineup(_index, show_lineups), do: show_lineups
+
+  defp render_lineup(nil, _conn), do: nil
+  defp render_lineup(lineup, conn), do:
+    live_render(conn, BackendWeb.ExpandableLineupLive, session: %{"lineup_id" => lineup.id})
 
   @spec create_player_options([Battlefy.Standings.t()], [String.t]) :: list()
   defp create_player_options(standings, highlight) do
@@ -588,16 +660,25 @@ defmodule BackendWeb.BattlefyView do
       [
         {[
            %{
-             display: ~E"""
-             <span><%= warning_triangle() %> Yes</span>
-             """,
-             selected: show_lineups,
+             display: ~E"<span><%= warning_triangle() %> Yes</span>",
+             selected: show_lineups == true,
              link:
                Routes.battlefy_path(
                  conn,
                  :tournament,
                  tournament.id,
                  Map.put(conn.query_params, "show_lineups", "yes")
+               )
+           },
+           %{
+             display: "Top 64",
+             selected: show_lineups == 64,
+             link:
+               Routes.battlefy_path(
+                 conn,
+                 :tournament,
+                 tournament.id,
+                 Map.put(conn.query_params, "show_lineups", "top_64")
                )
            },
            %{
@@ -614,11 +695,6 @@ defmodule BackendWeb.BattlefyView do
          ], "Show lineups"}
       ]
   end
-
-  defp max_decks(lineups = [%{decks: _} | _]),
-    do: lineups |> Enum.map(&(&1.decks |> Enum.count())) |> Enum.max()
-
-  defp max_decks(_), do: 0
 
   def get_ongoing_dropdown(conn, tournament, show_ongoing) do
     {[
@@ -681,63 +757,12 @@ defmodule BackendWeb.BattlefyView do
     end)
   end
 
-  @spec prepare_standings(
-          [Battelfy.Standings.t()] | nil,
-          Battlefy.Tournament.t(),
-          [{String.t(), String.t()}],
-          Plug.Conn,
-          boolean,
-          MastersTour.gm_money_rankings(),
-          [Lineup.t()]
-        ) :: [
-          standings
-        ]
-  def prepare_standings(nil, _, _, _, _, _, _), do: []
-
-  def prepare_standings(
-        standings_raw,
-        %{id: tournament_id},
-        ongoing,
-        conn,
-        use_countries,
-        earnings,
-        lineups
-      ) do
-    lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
-
-    standings_raw
-    |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
-    |> Enum.sort_by(fn s -> s.losses end)
-    |> Enum.sort_by(fn s -> s.wins end, :desc)
-    |> Enum.sort_by(fn s -> s.place end)
-    |> Enum.map(fn s ->
-      {country, pre_name_cell} =
-        with true <- use_countries,
-             cc when is_binary(cc) <- Backend.PlayerInfo.get_country(s.team.name) do
-          {cc, country_flag(cc)}
-        else
-          _ -> {nil, ""}
-        end
-
-      %{
-        place: if(s.place && s.place > 0, do: s.place, else: "?"),
-        country: country,
-        name: s.team.name,
-        name_class: if(s.disqualified, do: "disqualified-player", else: ""),
-        earnings: player_earnings(earnings, s.team.name),
-        pre_name_cell: pre_name_cell,
-        name_link: "/battlefy/tournament/#{tournament_id}/player/#{URI.encode_www_form(s.team.name)}",
-        # name_link: Routes.battlefy_path(conn, :tournament_player, tournament_id, s.team.name),
-        has_score: s.wins && s.losses,
-        score: "#{s.wins} - #{s.losses}",
-        wins: s.wins,
-        losses: s.losses,
-        ongoing: ongoing |> Map.get(s.team.name),
-        # hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, s.team.name),
-        lineup: lineup_map[s.team.name],
-        # yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, s.team.name)
-      }
-    end)
+  defp prepare_lineup_map(lineups, conn) do
+    lineups |> Util.async_map(fn lineup ->
+      rendered = live_render(conn, BackendWeb.ExpandableLineupLive, session: %{"lineup_id" => lineup.id})
+      {lineup.name, rendered}
+      end
+     ) |> Map.new()
   end
 
   def render("user_tournaments.html", %{

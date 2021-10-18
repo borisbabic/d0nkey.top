@@ -55,7 +55,7 @@ defmodule Util do
   def async_map(enum, fun) do
     enum
     |> Enum.map(fn e -> Task.async(fn -> fun.(e) end) end)
-    |> Enum.map(&Task.await/1)
+    |> Task.await_many()
   end
 
   @doc """
