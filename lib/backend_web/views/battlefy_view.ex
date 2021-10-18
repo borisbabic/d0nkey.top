@@ -496,17 +496,7 @@ defmodule BackendWeb.BattlefyView do
 
     selected_stage = stages |> Enum.find_value(fn s -> s.selected && s end)
 
-    player_options =
-      standings
-      |> Enum.map(fn s ->
-        %{
-          name: s.name,
-          selected: s.name in highlight,
-          display: s.name,
-          value: s.name
-        }
-      end)
-      |> Enum.sort_by(fn p -> p.name end)
+    player_options = create_player_options(standings, highlight)
 
     dropdowns =
       [get_ongoing_dropdown(conn, tournament, show_ongoing)]
@@ -535,6 +525,20 @@ defmodule BackendWeb.BattlefyView do
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
+  end
+
+  @spec create_player_options([Battlefy.Standings.t()], [String.t]) :: list()
+  defp create_player_options(standings, highlight) do
+    standings
+    |> Enum.map(fn s ->
+      %{
+        name: s.name,
+        selected: s.name in highlight,
+        display: s.name,
+        value: s.name
+      }
+    end)
+    |> Enum.sort_by(fn p -> p.name end)
   end
 
   def use_countries?(true, _), do: true
@@ -722,15 +726,16 @@ defmodule BackendWeb.BattlefyView do
         name_class: if(s.disqualified, do: "disqualified-player", else: ""),
         earnings: player_earnings(earnings, s.team.name),
         pre_name_cell: pre_name_cell,
-        name_link: Routes.battlefy_path(conn, :tournament_player, tournament_id, s.team.name),
+        name_link: "/battlefy/tournament/#{tournament_id}/player/#{URI.encode_www_form(s.team.name)}",
+        # name_link: Routes.battlefy_path(conn, :tournament_player, tournament_id, s.team.name),
         has_score: s.wins && s.losses,
         score: "#{s.wins} - #{s.losses}",
         wins: s.wins,
         losses: s.losses,
         ongoing: ongoing |> Map.get(s.team.name),
-        hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, s.team.name),
+        # hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, s.team.name),
         lineup: lineup_map[s.team.name],
-        yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, s.team.name)
+        # yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, s.team.name)
       }
     end)
   end

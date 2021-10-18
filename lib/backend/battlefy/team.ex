@@ -39,16 +39,14 @@ defmodule Backend.Battlefy.Team.Player do
     field :slug, String.t() | nil
   end
 
-  def from_raw_map(map = %{"userID" => _}),
-    do: Recase.Enumerable.convert_keys(map, &Recase.to_snake/1) |> from_raw_map()
 
-  def from_raw_map(map = %{"user_id" => _}) do
+  def from_raw_map(map = %{"userID" => _}) do
     %__MODULE__{
-      in_game_name: map["in_game_name"],
-      user_id: map["user_id"],
+      in_game_name: map["inGameNAme"],
+      user_id: map["userID"],
       battletag: get_in(map, ["user", "accounts", "battlenet", "battletag"]),
       twitch: get_in(map, ["user", "accounts", "twitch"]),
-      country_code: get_in(map, ["user", "country_code"]),
+      country_code: get_in(map, ["user", "countryCode"]),
       slug: map["slug"]
     }
   end

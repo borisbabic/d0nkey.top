@@ -5,6 +5,7 @@ defmodule Backend.Battlefy.Tournament do
   alias Backend.Battlefy.Util
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Tournament.Game
+  alias __MODULE__
 
   typedstruct enforce: true do
     field :id, Battlefy.tournament_id()
@@ -20,27 +21,13 @@ defmodule Backend.Battlefy.Tournament do
     field :game, Game
   end
 
-  @spec from_raw_map(map) :: Backend.Battlefy.Tournament.t()
-  def from_raw_map(map = %{"startTime" => _}) do
-    Recase.Enumerable.convert_keys(
-      map,
-      &Recase.to_snake/1
-    )
-    |> from_raw_map
-  end
-
   def has_bracket(%{status: "registration-closed"}), do: true
 
   def has_bracket(%{start_time: start_time}),
     do: NaiveDateTime.utc_now() |> NaiveDateTime.compare(start_time) == :gt
 
-  def from_raw_map(
-        map = %{
-          "start_time" => start_time,
-          "slug" => slug,
-          "name" => name
-        }
-      ) do
+  @spec from_raw_map(map) :: Tournament.t()
+  def from_raw_map(map = %{"startTime" => start_time, "slug" => slug, "name" => name}) do
     region =
       case map["region"] do
         "Americas" -> :US
@@ -51,11 +38,11 @@ defmodule Backend.Battlefy.Tournament do
 
     %__MODULE__{
       id: map["id"] || map["_id"],
-      stage_ids: map["stage_ids"] || [],
+      stage_ids: map["stageIDs"] || [],
       slug: slug,
       name: name,
       start_time: NaiveDateTime.from_iso8601!(start_time),
-      last_completed_match_at: Util.parse_date(map["last_completed_match_at"]),
+      last_completed_match_at: Util.parse_date(map["lastCompletedMatchAt"]),
       region: region,
       organization: extract_organization(map),
       game: Game.from_raw_map(map["game"]),
@@ -64,7 +51,7 @@ defmodule Backend.Battlefy.Tournament do
     }
   end
 
-  def extract_stages(%{"stages" => stages = [%{"start_time" => _} | _]}) do
+  def extract_stages(%{"stages" => stages = [%{"startTime" => _} | _]}) do
     stages |> Enum.map(&Battlefy.Stage.from_raw_map/1)
   end
 

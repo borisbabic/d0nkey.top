@@ -56,7 +56,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [url])
     Logger.debug("Got masters qualifiers #{url} in #{div(u_secs, 1000)} ms")
 
-    Poison.decode!(response.body)
+    Jason.decode!(response.body)
     |> Enum.map(fn %{
                      "startTime" => start_time,
                      "name" => name,
@@ -88,7 +88,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(u_secs, 1000)} ms"
     )
 
-    Poison.decode!(response.body)
+    Jason.decode!(response.body)
     |> Enum.map(
       fn invited = %{
            "battletag" => battletag_full,
@@ -116,7 +116,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}?extend[matches][top.team][players][user]=true&extend[matches][top.team][persistentTeam]=true&extend[matches][bottom.team][players][user]=true&extend[matches][bottom.team][persistentTeam]=true&extend[groups][teams]=true&extend[groups][matches][top.team][players][user]=true&extend[groups][matches][top.team][persistentTeam]=true&extend[groups][matches][bottom.team][players][user]=true&extend[groups][matches][bottom.team][persistentTeam]=true"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> case do
       [r] -> r
       r -> raise("WTF #{r |> Enum.count()}")
@@ -129,7 +129,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Backend.Battlefy.Stage.from_raw_map()
   end
 
@@ -138,7 +138,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/standings"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Backend.Battlefy.Standings.from_raw_map_list()
   end
 
@@ -149,7 +149,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/rounds/#{round}/standings"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Backend.Battlefy.Standings.from_raw_map_list()
   end
 
@@ -159,7 +159,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Enum.at(0)
     |> Backend.Battlefy.Tournament.from_raw_map()
   end
@@ -176,7 +176,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       end
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Util.async_map(&Match.from_raw_map/1)
   end
 
@@ -221,7 +221,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       "https://majestic.battlefy.com/tournaments/#{tournament_id}/matches/#{match_id}/deckstrings"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> MatchDeckstrings.from_raw_map()
   end
 
@@ -229,7 +229,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url = "https://dtmwra1jsgyb0.cloudfront.net/profile/#{slug}"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Profile.from_raw_map()
   end
 
@@ -238,7 +238,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url = "https://dtmwra1jsgyb0.cloudfront.net/organizations?slug=#{slug}"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Enum.map(&Organization.from_raw_map/1)
     # dunno when we'll get more or this won't equal, but just in case :shrug:
     |> Enum.filter(fn o -> o.slug == slug end)
@@ -350,7 +350,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     raw =
       get_body(url)
-      |> Poison.decode!()
+      |> Jason.decode!()
 
     raw["tournaments"]
     |> Enum.map(&Tournament.from_raw_map/1)
@@ -382,7 +382,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     raw =
       get_body(url)
-      |> Poison.decode!()
+      |> Jason.decode!()
 
     (raw["tournaments"] || [])
     |> Enum.map(&Tournament.from_raw_map/1)
@@ -519,7 +519,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url = "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}/teams"
 
     get_body(url)
-    |> Poison.decode!()
+    |> Jason.decode!()
     |> Enum.map(&Team.from_raw_map/1)
   end
 end
