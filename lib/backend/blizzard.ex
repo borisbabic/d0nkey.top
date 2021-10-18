@@ -544,7 +544,7 @@ defmodule Backend.Blizzard do
   def get_grandmasters_lineups(gm_season, stage_title) do
     tournament = gm_lineup_tournament_id(gm_season, stage_title)
 
-    Hearthstone.get_lineups(tournament, "grandmasters")
+    Hearthstone.lineups([{"tournament_id", tournament}, {"tournament_source", "grandmasters"}])
     |> case do
       lineups = [_ | _] ->
         lineups
