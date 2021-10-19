@@ -141,9 +141,9 @@ defmodule Backend.Battlefy.MatchTeam do
       winner: map["winner"],
       name: map["name"],
       team: team,
-      banned_class: map["banned_class"],
-      banned_at: Util.parse_date(map["banned_at"]),
-      ready_at: Util.parse_date(map["ready_at"]),
+      banned_class: map["bannedClass"],
+      banned_at: Util.parse_date(map["bannedAt"]),
+      ready_at: Util.parse_date(map["readyAt"]),
       score: map["score"] || 0
     }
   end
