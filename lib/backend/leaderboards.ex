@@ -47,16 +47,14 @@ defmodule Backend.Leaderboards do
   end
 
   def get_by_info(region, leaderboard, season) do
-    [
-      {"order_by", {:desc, :upstream_updated_at}},
-      {"limit", 1},
-      {"leaderboard_id", leaderboard},
-      {"season_id", season},
-      {"region", region}
-    ]
+    get_criteria(:latest)
+    |> Kernel.++([{"leaderboard_id", leaderboard}, {"region", region}])
+    |> add_season(season)
     |> snapshots()
     |> Enum.at(0)
   end
+  defp add_season(criteria, nil), do: criteria
+  defp add_season(criteria, season), do: [{"season_id", season} | criteria]
 
   def get_comparison(snap = %Snapshot{}, min_ago) do
     get_criteria(snap, [:latest, :season, min_ago])
@@ -134,7 +132,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  defp get_criteria(:latest), do: [{"order_by", {:desc, :upstream_updated_at}}, {"limit", 1}]
+  defp get_criteria(:latest), do: [{"order_by", {:desc, :upstream_updated_at}}, {"limit", 1}, {"updated_at_exists"}]
 
   defp get_criteria(l, criteria) when is_list(criteria),
     do: criteria |> Enum.flat_map(fn c -> get_criteria(l, c) end)
@@ -285,6 +283,10 @@ defmodule Backend.Leaderboards do
   defp compose_snapshot_query({"leaderboard_id", leaderboard_id}, query) do
     query
     |> where([s], s.leaderboard_id == ^leaderboard_id)
+  end
+
+  defp compose_snapshot_query({"updated_at_exists"}, query) do
+    query |> where([s], not is_nil(s.upstream_updated_at))
   end
 
   defp compose_snapshot_query({"updated_at", nil}, query) do
