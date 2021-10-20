@@ -2,6 +2,7 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
   import Plug.BasicAuth
+  require Incendium
 
   pipeline :auth do
     plug Backend.UserManager.Pipeline
@@ -51,6 +52,10 @@ defmodule BackendWeb.Router do
     put "/dt/game", DeckTrackerController, :put_game
   end
 
+  scope "/incendium", BackendWeb do
+    Incendium.routes(IncendiumController)
+  end
+
   scope "/", BackendWeb do
     pipe_through [:browser, :auth]
 
@@ -81,6 +86,8 @@ defmodule BackendWeb.Router do
 
     live "/battlefy/tournament/:tournament_id/match/:match_id", BattlefyMatchLive
     live "/battlefy/tournament/:tournament_id/lineups", BattlefyTournamentDecksLive
+
+    get "/profile/battlefy/tournament/:tournament_id", BattlefyController, :profile_tournament
     get "/battlefy/tournament/:tournament_id", BattlefyController, :tournament
 
     get "/battlefy/tournament/:tournament_id/player/:team_name",

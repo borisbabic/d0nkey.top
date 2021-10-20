@@ -43,6 +43,12 @@ defmodule BackendWeb.BattlefyController do
     end
   end
 
+  # Activate the incendium decorators
+  use Incendium.Decorator
+  # Each invocation of the `index/2` function will be traced and profiled.
+  @decorate incendium_profile_with_tracing()
+  def profile_tournament(conn, params), do: tournament(conn, params)
+
   def tournament(conn, params = %{"tournament_id" => tournament_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
     {earnings, show_earnings} = earnings(params, tournament_id)
