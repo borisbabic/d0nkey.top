@@ -41,7 +41,7 @@ defmodule BackendWeb.StreamingNowLive do
             <div class="dropdown-menu" role="menu">
                 <div class="dropdown-content">
                   <div :for={{ {display, val} <- [{"Newest", "newest"}, {"Oldest", "oldest"}, {"Most Viewers", "most_viewers"}, {"Fewest Viewers", "fewest_viewers"}] }}>
-                      <LivePatch 
+                      <LivePatch
                         class="{{ "dropdown-item " <> if @filter_sort["sort"] == val, do: "is-active", else: ""  }}"
                         to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val)) }}"
                         >
@@ -59,8 +59,8 @@ defmodule BackendWeb.StreamingNowLive do
                     <LivePatch to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode")) }}" class="dropdown-item" >
                       Any
                     </LivePatch>
-                    <div :for={{ m <- ["Standard", "Battlegrounds", "Duels",  "Wild", "Arena", "Tavern Brawl", "Fireside Gathering", "Classic", "Unknown"] }}>
-                      <LivePatch 
+                    <div :for={{ m <- ["Standard", "Battlegrounds", "Mercenaries", "Wild", "Duels",  "Arena", "Tavern Brawl", "Fireside Gathering", "Classic", "Unknown"] }}>
+                      <LivePatch
                         class="{{ "dropdown-item " <> if @filter_sort["filter_mode"] == m, do: "is-active", else: ""  }}"
                         to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", m)) }}"
                         >
@@ -80,7 +80,7 @@ defmodule BackendWeb.StreamingNowLive do
                         Any
                       </LivePatch>
                       <div :for={{ l <- @streaming_now |> Enum.map(fn s -> s.language end) |> Enum.uniq() |> Enum.sort() }}>
-                        <LivePatch 
+                        <LivePatch
                           class="{{  "dropdown-item " <> if @filter_sort["filter_language"] == l, do: "is-active", else: ""  }}"
                           to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_language", l)) }}"
                           >
@@ -100,7 +100,7 @@ defmodule BackendWeb.StreamingNowLive do
                         Any
                       </LivePatch>
                       <div :for={{ l <- [100, 200, 500, 1000, 5000] }}>
-                        <LivePatch 
+                        <LivePatch
                         class="{{ "dropdown-item " <> if @filter_sort["filter_legend"] == to_string(l), do: "is-active", else: ""  }}"
                           to="{{ Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_legend", l)) }}"
                           >
@@ -115,7 +115,7 @@ defmodule BackendWeb.StreamingNowLive do
 
 
         <div class="columns is-multiline">
-          <div class="column is-narrow" :for={{ ls <- @streaming_now |> filter_sort_streaming(@filter_sort)}} > 
+          <div class="column is-narrow" :for={{ ls <- @streaming_now |> filter_sort_streaming(@filter_sort)}} >
             <div>
               <LiveStreamer live_streamer={{ ls }}>
                 <Components.ExpandableDecklist :if={{ ls.deckcode }} id={{ "deck_#{ls.stream_id}_#{ls.deckcode}" }} show_cards={{ false }} deck={{ ls.deckcode |> Backend.Hearthstone.Deck.decode!() }} guess_archetype={{ true }}/>
