@@ -29,7 +29,7 @@
                         <label for="<%= @attr %>[<%= value %>]" data-target-value="<%= name %>" class="dropdown-item <%= @search_class %>">
                             <div class="is-flex">
                                 <span class="multi-select-text"><%= display %></span>
-                                <input class="<%= @checkbox_class %>" id="<%= #{@attr}[#{value}] %>" name="<%= #{@attr}[#{value}] %>" style="margin-left: auto" type="checkbox" value="<%= selected %>">
+                                <input class="<%= @checkbox_class %>" id="<%= "#{@attr}[#{value}]" %>" name="<%= "#{@attr}[#{value}]" %>" style="margin-left: auto" type="checkbox" value="true" <%= if selected, do: "checked"%> >
                             </div>
                         </label>
                     <% end %>
