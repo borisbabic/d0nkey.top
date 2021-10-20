@@ -27,11 +27,14 @@ defmodule Hearthstone.Enums.BnetGameType do
   def battlegrounds_friendly, do: 51
   def pvpdr_paid, do: 54
   def pvpdr, do: 55
-  def reserved_18_22, do: 56
-  def reserved_18_23, do: 57
+  def mercenaries_pvp, do: 56
+  def mercenaries_pve, do: 57
 
   def ranked_classic, do: 58
   def casual_classic, do: 59
+
+  def mercenaries_pve_coop, do: 60
+  def mercenaries_friendly, do: 61
 
   def duels_types(), do: [pvpdr(), pvpdr_paid()]
   def duels?(type), do: type in duels_types()
@@ -69,6 +72,9 @@ defmodule Hearthstone.Enums.BnetGameType do
   def classic_types(), do: [ranked_classic(), casual_classic()]
   def classic?(type), do: type in classic_types()
 
+  def mercenaries_types(), do: [mercenaries_pvp(), mercenaries_pve(), mercenaries_pve_coop(), mercenaries_friendly()]
+  def mercenaries?(type), do: type in mercenaries_types()
+
   def ranked_types(),
     do: [
       pvpdr_paid(),
@@ -100,6 +106,7 @@ defmodule Hearthstone.Enums.BnetGameType do
       fsg?(type) -> "Fireside Gathering"
       arena?(type) -> "Arena"
       classic?(type) -> "Classic"
+      mercenaries?(type) -> "Mercenaries"
       true -> "Unknown"
     end
   end
