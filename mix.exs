@@ -77,6 +77,7 @@ defmodule Backend.MixProject do
       {:extwitter, "~> 0.12"},
       {:ueberauth_twitch, "~> 0.0.2"},
       {:bcrypt_elixir, "~> 2.3.0"},
+      {:incendium, "~>0.3.1"},
       {:quantum, "~> 2.3"}
     ]
   end
