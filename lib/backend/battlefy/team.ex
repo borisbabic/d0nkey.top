@@ -42,7 +42,7 @@ defmodule Backend.Battlefy.Team.Player do
 
   def from_raw_map(map = %{"userID" => _}) do
     %__MODULE__{
-      in_game_name: map["inGameNAme"],
+      in_game_name: map["inGameName"],
       user_id: map["userID"],
       battletag: get_in(map, ["user", "accounts", "battlenet", "battletag"]),
       twitch: get_in(map, ["user", "accounts", "twitch"]),
