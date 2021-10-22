@@ -2,9 +2,17 @@ defmodule Backend.Battlefy.Team do
   @moduledoc false
   use TypedStruct
   alias Backend.Battlefy.Team.Player
+  alias Backend.Battlefy.Util
 
   typedstruct do
     field :name, String.t()
+    field :checked_in_at, NaiveDateTime.t() | nil
+    field :created_at, NaiveDateTime.t() | nil
+    field :updated_at, NaiveDateTime.t() | nil
+    field :user_id, String.t()
+    field :owner_id, String.t()
+    field :captain_id, String.t()
+    field :custom_fields, [any()]
     field :players, [Player.t()]
   end
 
@@ -17,6 +25,13 @@ defmodule Backend.Battlefy.Team do
   def from_raw_map(map = %{"name" => name}) do
     %__MODULE__{
       name: name,
+      user_id: map["userID"],
+      owner_id: map["ownerID"],
+      captain_id: map["captainID"],
+      created_at: Util.parse_date(map["createdAt"]),
+      updated_at: Util.parse_date(map["updatedAt"]),
+      checked_in_at: Util.parse_date(map["checkedInAt"]),
+      custom_fields: map["customFields"],
       players:
         if(map["players"] |> is_list(),
           do: map["players"] |> Enum.map(&Player.from_raw_map/1),
