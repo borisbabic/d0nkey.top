@@ -41,7 +41,9 @@ defmodule Backend.PrioritizedBattletagCache do
 
   def get_long_or_short(bt) when is_binary(bt) do
     full = get(bt)
-    shortened = bt |> InvitedPlayer.shorten_battletag() |> get()
+    shortened = with nil <- bt |> InvitedPlayer.shorten_battletag() |> get() do
+      bt |> InvitedPlayer.shorten_battletag() |> Backend.MastersTour.name_hacks() |> get
+    end
 
     {full, shortened}
 

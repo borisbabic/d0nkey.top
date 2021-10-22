@@ -576,7 +576,10 @@ defmodule Backend.MastersTour do
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def name_hacks(name) do
-    case name do
+    name
+    # Chinese players had it added. It's not valid in a battletag
+    |> String.replace(".", "")
+    |> case do
       "香菇奾汁" -> "ShroomJuice"
       "撒旦降臨" -> "GivePLZ"
       "LFbleau" -> "LFBleau"
@@ -612,6 +615,23 @@ defmodule Backend.MastersTour do
       "wiwi" -> "麻煩"
       # dm from youth
       "虎牙丶季岁" -> "Youth"
+
+      "LPOmegaZero" -> "OmegaZero"
+      "RNGKylinS" -> "RNGKylin"
+      "LFyueying" -> "LFYueying"
+      "水墨烬千年" -> "ShuiMoo"
+      "TGcaimiao" -> "Caimiao"
+      "LGDCaimiao" -> "Caimiao"
+      "不忘初心丶天命" -> "Tianming"
+      "于是乎" -> "WolfWarriors2"
+      "不忘初心丶石头记" -> "WEStone"
+      "虎牙丶元素" -> "WEYuansu"
+      "儒雅随和丨小菜泫" -> "RyshHyunGod"
+      "不忘初心丶麻辣烫" -> "DarrenF"
+      "不要自闭" -> "yuki"
+      "不忘初心丶小惕" -> "XiaoT"
+      "斗鱼丶古明地觉" -> "Satori"
+      "虎牙丶特兰克斯" -> "LPTrunks"
       n -> n
     end
   end
