@@ -42,7 +42,7 @@ defmodule Backend.ReqvamTop100Tweeter do
   def pick_msg(msg), do: msg
 
   @spec pic(message_info()) :: String.t()
-  def pic(%{entry: %{rank: rank}}) when rank < 100, do: "still_top_100.jpg"
+  def pic(%{entry: %{rank: rank}}) when rank < 101, do: "still_top_100.jpg"
   def pic(_), do: nil
 
   def tweet({message, picture}, _), do: tweet(message, picture)
