@@ -4,6 +4,8 @@ defmodule Command.FantasyMTFixer do
   alias Ecto.Multi
   alias Backend.Repo
   alias Backend.Fantasy.LeagueTeamPick
+  alias Backend.Battlefy
+  alias Backend.MastersTour.TourStop
 
   def get_changes(document_url) do
     %{body: body} = HTTPoison.get!(document_url, [], follow_redirect: true)
@@ -34,6 +36,21 @@ defmodule Command.FantasyMTFixer do
     |> apply_changes(mt)
   end
 
+  def fix_from_participants(mt) do
+    mt
+    |> get_participants_changes()
+    |> apply_changes(mt)
+  end
+
+  def get_participants_changes(mt) do
+    mt
+    |> TourStop.get_battlefy_id!()
+    |> Battlefy.get_participants()
+    |> Enum.flat_map(fn
+        %{name: new, players: [%{in_game_name: old}]} -> [{old, new}]
+        _ -> []
+      end)
+  end
   def apply_changes(changes, mt) do
     tour_stop = to_string(mt)
 
