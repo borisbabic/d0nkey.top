@@ -3,6 +3,8 @@ defmodule BackendWeb.BattlefyController do
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
+  alias Backend.MastersTour.TourStop
+
   defp direction("desc"), do: :desc
   defp direction("asc"), do: :asc
   defp direction(_), do: nil
@@ -32,10 +34,10 @@ defmodule BackendWeb.BattlefyController do
   defp earnings(params, tournament_id) do
     with true <- show_earnings?(params),
          ts = %{id: ts_id} <-
-           Backend.MastersTour.TourStop.all()
+           TourStop.all()
            |> Enum.find(fn ts -> ts.battlefy_id == tournament_id end),
          {:ok, season} <- Backend.Blizzard.get_promotion_season_for_gm(ts_id),
-         {:ok, point_system} <- Backend.MastersTour.TourStop.gm_point_system(ts),
+         {:ok, point_system} <- TourStop.gm_point_system(ts),
          earnings <- Backend.MastersTour.get_gm_money_rankings(season, point_system) do
       {earnings, true}
     else
@@ -51,6 +53,7 @@ defmodule BackendWeb.BattlefyController do
 
   def tournament(conn, params = %{"tournament_id" => tournament_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
+    invited_mapset = invited_mapset(params, tournament)
     {earnings, show_earnings} = earnings(params, tournament_id)
 
     fantasy_picks =
@@ -66,6 +69,7 @@ defmodule BackendWeb.BattlefyController do
       %{
         tournament: tournament,
         show_earnings: show_earnings,
+        invited_mapset: invited_mapset,
         earnings: earnings,
         fantasy_picks: fantasy_picks,
         show_lineups: show_lineups,
@@ -79,6 +83,31 @@ defmodule BackendWeb.BattlefyController do
       |> add_matches_standings(params)
     )
   end
+  def invited_mapset(%{"show_invited" => ts}, tournament = %{id: id}) do
+    with invited = [_|_] <- Backend.MastersTour.list_invited_players(ts),
+      participants = [_|_] <- Battlefy.get_participants(id) do
+        invited_ms = invited |> MapSet.new(& &1.battletag_full)
+        participants_ms =
+          participants
+          |> Enum.flat_map(fn
+            %{name: name, players: [%{in_game_name: ign}]} ->
+              [{name, name}, {name, ign}]
+            %{name: name} -> [{name, name}]
+            _ -> []
+          end)
+          |> Enum.flat_map(fn {name, to_check} ->
+            if MapSet.member?(invited_ms, to_check) do
+              [name]
+            else
+              []
+            end
+          end)
+          |> MapSet.new()
+    else
+      _ -> MapSet.new([])
+    end
+  end
+  def invited_mapset(_, _), do: MapSet.new([])
 
   def lineups(show_lineups, tournament_id) when is_integer(show_lineups) or show_lineups == true,
     do: Battlefy.lineups(tournament_id)

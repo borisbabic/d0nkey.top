@@ -450,6 +450,7 @@ defmodule BackendWeb.BattlefyView do
           fantasy_picks: fantasy_picks,
           show_lineups: show_lineups,
           highlight_fantasy: highlight_fantasy,
+          invited_mapset: invited_mapset,
           matches: matches
         }
       ) do
@@ -466,7 +467,8 @@ defmodule BackendWeb.BattlefyView do
         use_countries,
         earnings,
         lineups,
-        show_lineups
+        show_lineups,
+        invited_mapset
       )
 
     highlight = if params.highlight == nil, do: [], else: params.highlight
@@ -521,6 +523,7 @@ defmodule BackendWeb.BattlefyView do
       show_stage_selection: Enum.count(stages) > 1,
       show_ongoing: show_ongoing,
       show_earnings: show_earnings,
+      show_invited: MapSet.size(invited_mapset) > 0,
       show_decks: Enum.any?(lineups),
       stage_selection_text:
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
@@ -537,11 +540,12 @@ defmodule BackendWeb.BattlefyView do
           boolean,
           MastersTour.gm_money_rankings(),
           [Lineup.t()],
-          integer() | boolean
+          integer() | boolean,
+          MapSet.t()
         ) :: [
           standings
         ]
-  def prepare_standings(nil, _, _, _, _, _, _, _), do: []
+  def prepare_standings(nil, _, _, _, _, _, _, _, _), do: []
 
   def prepare_standings(
         standings_raw,
@@ -551,7 +555,8 @@ defmodule BackendWeb.BattlefyView do
         use_countries,
         earnings,
         lineups,
-        show_lineups
+        show_lineups,
+        invited_mapset
       ) do
     lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
 
@@ -573,6 +578,12 @@ defmodule BackendWeb.BattlefyView do
       place = if(s.place && s.place > 0, do: s.place, else: "?")
       lineup = should_render_lineup(index, show_lineups) && render_lineup(lineup_map[s.team.name], conn)
 
+      invited = if MapSet.member?(invited_mapset, s.team.name) do
+        ~E" <span class=\"tag is-success\">✓</span>"
+      else
+        ""
+      end
+
       %{
         place: place,
         country: country,
@@ -586,6 +597,7 @@ defmodule BackendWeb.BattlefyView do
         wins: s.wins,
         losses: s.losses,
         ongoing: ongoing |> Map.get(s.team.name),
+        invited: invited,
         lineup: lineup
       }
     end)
