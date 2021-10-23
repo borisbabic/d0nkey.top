@@ -26,7 +26,6 @@ defmodule Backend.ReqvamTop100Tweeter do
       message = info |> msg() |> pick_msg()
       picture = info |> pic()
       tweet(message, picture)
-      ExTwitter.update(message)
     end
   end
 
