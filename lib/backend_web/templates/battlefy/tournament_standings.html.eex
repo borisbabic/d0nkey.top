@@ -2,6 +2,9 @@
     <thead>
         <tr>
             <th>Place</th>
+            <%= if @show_invited do %>
+                <th><abbr title="Invited to the selected MT">Invited</abbr></th>
+            <% end %>
             <th>Name</th>
             <%= if @show_score do %>
                 <th>Score</th>
@@ -21,9 +24,12 @@
         </tr>
     </thead>
     <tbody>
-    <%= for %{earnings: earnings, name_class: name_class, pre_name_cell: pre_name_cell, place: place, name: name, score: score, name_link: name_link, ongoing: ongoing, lineup: lineup} <- @standings do %>
+    <%= for %{earnings: earnings, name_class: name_class, pre_name_cell: pre_name_cell, place: place, name: name, score: score, name_link: name_link, ongoing: ongoing, lineup: lineup, invited: invited} <- @standings do %>
         <tr>
             <td><%= place %></td>
+            <%= if @show_invited do %>
+                <td><%=invited%></td>
+            <% end %>
             <td> <span ><%= pre_name_cell %></span> <a href="<%= name_link%>">
                     <span class="<%= name_class %>">
                     <%= render_player_name(name) %>
