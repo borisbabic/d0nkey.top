@@ -602,8 +602,22 @@ defmodule Backend.MastersTour do
       "무에서유창조" -> "Crefno"
       "mueseoyuchangjo" -> "Crefno"
       "현명한로나" -> "LoNa"
-      "슬퍼하지마노노노" -> "wellmadekimchi"
-      "ZizonZzang" -> "wellmadekimchi"
+
+      "슬퍼하지마노노노" -> "SuperKimchi"
+      "ZizonZzang" -> "SuperKimchi"
+      "wellmadekimchi" -> "SuperKimchi"
+
+      "잔악무도유관우" -> "kwanwoo"
+      "신명수" -> "soo"
+      "독도는한국" -> "DokdonuenKR"
+      "달라라면" -> "Dallara"
+
+      "호랑이들어와요" -> "Hodeulyo"
+      "ilikeryan" -> "Hodeulyo"
+      "현명한라이언" -> "Hodeulyo"
+
+      "지기" -> "keeper"
+
       "현명한라이언" -> "ilikeryan"
       "막강한올빼미" -> "Makganghanol"
       "이스티" -> "LuiSti"
