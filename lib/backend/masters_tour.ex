@@ -598,7 +598,9 @@ defmodule Backend.MastersTour do
       "AjjXiGuan" -> "BilibiliXG"
       "Backup2" -> "GamerRvg"
       # <zflow> https://docs.google.com/document/d/1AhHUQWVJeBjPLHveFtJ2fwfVikZAiNsDXRO3CQiXaKQ/edit
-      "게임이기기봇" -> "Che0nsu"
+      "게임이기기봇" -> "che0nsu"
+      "Che0nsu" -> "che0nsu"
+
       "무에서유창조" -> "Crefno"
       "mueseoyuchangjo" -> "Crefno"
       "현명한로나" -> "LoNa"
