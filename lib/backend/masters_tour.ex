@@ -649,6 +649,9 @@ defmodule Backend.MastersTour do
       "不忘初心丶小惕" -> "XiaoT"
       "斗鱼丶古明地觉" -> "Satori"
       "虎牙丶特兰克斯" -> "LPTrunks"
+
+      "msbc" -> "VKmsbc"
+      "WEBaKu" -> "VKmsbc"
       n -> n
     end
   end
