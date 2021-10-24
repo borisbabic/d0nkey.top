@@ -138,4 +138,43 @@ defmodule ScratchPad do
     IO.inspect("Expected: #{expected} Expected_alt: #{expected_alt} fudov: #{fudov}")
     sum
   end
+
+  def all_mt_participants() do
+    Backend.MastersTour.TourStop.all()
+    |> Enum.filter(& &1.battlefy_id)
+    # |> Enum.flat_map(& Backend.Battlefy.get_participants(&1.battlefy_id))
+    |> Enum.flat_map(fn %{id: id, battlefy_id: battlefy_id} ->
+      battlefy_id
+      |> Backend.Battlefy.get_participants()
+      |> Enum.map(fn %{name: name, user_id: user_id} ->
+        {fix_name(name), user_id, id}
+      end)
+    end)
+  end
+  def fix_name(name) do
+    name |> Backend.MastersTour.fix_name() |> Backend.Grandmasters.PromotionCalculator.get_group_by()
+  end
+  def find_same_mt_players() do
+    all_mt_participants()
+    |> find_same_mt_players()
+  end
+  def find_same_mt_players(all_participants) do
+    all_participants
+    # |> Enum.map(& {fix_name(&1.name), &1.user_id})
+    |> Enum.group_by(& elem(&1, 1))
+    |> Enum.map(fn {user_id, list} -> {user_id, Enum.uniq_by(list, & elem(&1, 0))} end)
+    |> Enum.filter(fn {user_id, list} -> Enum.count(list) > 1 end)
+  end
+
+  def create_map({_user_id, parts}), do: parts |> Enum.reverse() |> create_map()
+  def create_map([curr = {<<"Backup", _::bitstring>>, _, _} | rest]), do: create_map(rest ++ [curr])
+  def create_map([{current, _, _} | rest]) do
+    rest
+    |> Enum.map(fn {name, _, _} ->
+      """
+      "#{name}" -> "#{current}"
+      """
+    end)
+    |> Enum.join("\n")
+  end
 end

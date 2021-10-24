@@ -576,7 +576,7 @@ defmodule Backend.MastersTour do
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def name_hacks(name) do
-    name
+    new = name
     # Chinese players had it added. It's not valid in a battletag
     |> String.replace(".", "")
     |> case do
@@ -590,7 +590,6 @@ defmodule Backend.MastersTour do
       "LojomHS" -> "lojom"
       "執念の蒼汁" -> "Aojiru"
       "Syuunen No Aojiru" -> "Aojiru"
-      "LPOmegazero" -> "LPOmegaZero"
       "VK.xhx" -> "VKxhx"
       "yuyi" -> "WEYuyi"
       "유워리" -> "6worry"
@@ -632,13 +631,18 @@ defmodule Backend.MastersTour do
       # dm from youth
       "虎牙丶季岁" -> "Youth"
 
+      "LPOmegazero" -> "OmegaZero"
       "LPOmegaZero" -> "OmegaZero"
+
       "RNGKylinS" -> "RNGKylin"
       "LFyueying" -> "LFYueying"
       "水墨烬千年" -> "ShuiMoo"
       "TGcaimiao" -> "Caimiao"
       "LGDCaimiao" -> "Caimiao"
+
       "不忘初心丶天命" -> "Tianming"
+      "VKTianming" -> "Tianming"
+
       "于是乎" -> "WolfWarrior2"
       "WolfWarriors2" -> "WolfWarrior2"
       "不忘初心丶石头记" -> "WEStone"
@@ -651,8 +655,226 @@ defmodule Backend.MastersTour do
       "虎牙丶特兰克斯" -> "LPTrunks"
 
       "msbc" -> "VKmsbc"
-      "WEBaKu" -> "VKmsbc"
+      "WEBaKu" -> "VKmsbc" #https://twitter.com/1ArchangelCN/status/1452317525220470787
+
+      "destiny" -> "LPdestiny"
+      "Lpdestiny" -> "LPdestiny"
+
+      "LPXHope" -> "LPXhope"
+
+      "TNCAnswer" -> "VKAnswer" # I Assume
+
+      "LFBleau3" -> "LFBleau" # I Assume
+
+      "BLGMelody" -> "Melody"
+      "和同学们分享思维" -> "Melody" # through battlefy user id
+      "马皇" -> "Melody" # through battlefy user id
+
+      "我觉得你有点严格" -> "paopao" # through battlefy user id
+      "元气满满的泡泡" -> "paopao" # through battlefy user id
+
+      ### <AUTOMATED through battlefy id>
+      "紅蓮聖天八極式" -> "hirosueryouko"
+
+      "広末涼子" -> "hirosueryouko"
+
+      "素芬儿别走" -> "M1racle"
+
+      "양봉꾼" -> "Beekeeper"
+
+      "Backup5" -> "MinusFace"
+
+      "StarPatron" -> "WedgmBql"
+
+      "周郎神的粉丝" -> "LFBleau"
+
+      "DikiyZver" -> "WildAnimalHS"
+
+      "雷霸霸" -> "LBB"
+
+      "虎牙丶白给雷霸霸" -> "LBB"
+
+      "WGLBB" -> "LBB"
+
+      "illusion" -> "虎牙丶幻觉"
+
+      "Backup6" -> "虎牙丶幻觉"
+
+      "あなる王子" -> "Theprince"
+
+      "라이언" -> "Hodeulyo"
+
+      "jerry" -> "Jerry"
+
+      "BloodyfaceCN" -> "XiaoT"
+
+      # "一生所爱丶小梦佳" -> "Xiaomengjia"
+
+      # "ifbdz" -> "Xiaomengjia"
+
+      # "Buduzhou" -> "Xiaomengjia"
+
+      # "KT8298" -> "XilingHangHS"
+
+      "Backup3" -> "XilingHangHS"
+
+      # "西陵珩" -> "XilingHangHS"
+
+      # "youngjoon" -> "hemlock"
+
+      # "TIAhuanxiong" -> "VKxhx"
+
+      # "mighty" -> "Makganghanol"
+
+      "Backup4" -> "Tomas"
+
+      "약강" -> "SsamMyway"
+
+      "Ssam-myway" -> "SsamMyway"
+
+      "山下智久" -> "G9Malygos"
+
+      "MiracleRogue" -> "M1racle"
+
+      "則龍之王" -> "jaylong"
+
+      "진원치킨" -> "Woobin"
+
+      "てっぺ" -> "tepepe"
+
+      "WEChengxin" -> "SNCx"
+
+      "ПашаТехник" -> "MCTech"
+
+      "애대박" -> "Aedaebak"
+
+      "JrsJokerRing" -> "JokerRing"
+
+      "자바" -> "Sidnell"
+
+      "JaeWon" -> "재언"
+
+      "Alex" -> "AlexJP"
+
+      "AlexHS" -> "AlexJP"
+
+      "あれっくす" -> "AlexJP"
+
+      "Backup1" -> "NoGlocko"
+
+      "DarrenF" -> "DarranF"
+
+      "哈利" -> "Harry"
+
+      "IziBot" -> "Danneskjöld"
+
+      "튀긴새우" -> "zriag"
+
+      "BadBoy" -> "Badboy"
+
+      "샹하이" -> "Shanghigh"
+
+      "中壢邰智源" -> "LzJohn"
+
+      "マイマイ" -> "maimai"
+
+      "상추" -> "Sangchu"
+
+      "プラス" -> "plus"
+
+      "AjjStone" -> "WEStone"
+
+      "gallon" -> "Gallon"
+
+      "anartica" -> "아나티카"
+
+      "로좀" -> "lojom"
+
+      "Moriaty" -> "Moriarty"
+
+      # "Amazing" -> "UchihaMadara"
+
+      "承泰不要" -> "Bloodtrail"
+
+      "HérosFunky" -> "Thedemon"
+
+      "SNRugal" -> "为何介么叼"
+
+      "MANHATTAN" -> "Kranich"
+
+      "不忘初心丶小王" -> "LGDXiaoWang"
+
+      # "Intro" -> "jwrobel"
+
+      "WEYoulove" -> "WELuckyLove"
+
+      "WEYouLove" -> "WELuckyLove"
+
+      "タコ3" -> "Octopus3"
+
+      "佳静" -> "Cyberostrich"
+
+      "cyberostrich" -> "Cyberostrich"
+
+      "destinyfan" -> "VKDiana"
+
+      "sakura" -> "Sakura"
+
+      "聖水洋洋" -> "holywater"
+
+      "Lucasdmnasc" -> "lucasdmnasc"
+
+      "살아있는양심" -> "sheepheart"
+
+      # "MAWANG" -> "LGDMurphy"
+
+      "WedgmMurphy" -> "LGDMurphy"
+
+      "FiveKSMeng" -> "Mengmengda"
+
+      "神秘的萌萌哒" -> "Mengmengda"
+
+      "HyunMini" -> "현명한현민이"
+
+      "にん" -> "Nin"
+
+      "JrsConley" -> "JrsRandolph"
+
+      "jrsConley" -> "JrsRandolph"
+
+      "龜毛老頭" -> "GMLT"
+
+      "자유조퇴권" -> "Jajo"
+
+      "cagnetta99" -> "lattosio"
+
+      # "cdkFoot" -> "FiveKSJioJio"
+
+      "조치" -> "Zochi"
+
+      "Dragonmaster" -> "PrestX"
+
+      "虎牙深海羽翼" -> "KZGYuYi"
+
+      "WEYuyi" -> "KZGYuYi"
+
+      "WEYuYi" -> "KZGYuYi"
+
+      # "WedgmBql" -> "KZGXiaobai"
+
+      # "Baiqinli" -> "KZGXiaobai"
+
+      "Alan870806" -> "AlanC86"
+
+      "WedgmXmg" -> "KZGXmg"
+
+      ### </AUTOMATED>
       n -> n
+    end
+    if new == name do
+      new
+    else
+      name_hacks(new)
     end
   end
 
