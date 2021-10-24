@@ -46,7 +46,7 @@ defmodule BackendWeb.PlayerController do
     mt_stats =
       MastersTour.masters_tours_stats()
       |> MastersTour.create_mt_stats_collection()
-      |> Enum.find_value([], fn {name, tts} -> name == short_bt && tts end)
+      |> Enum.find_value([], fn {name, tts} -> MastersTour.name_hacks(name) == MastersTour.name_hacks(short_bt) && tts end)
 
     finishes = Backend.Leaderboards.finishes_for_battletag(bt)
 
