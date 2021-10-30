@@ -1,0 +1,72 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "Cancel", to: Routes.invited_player_path(@conn, :index), class: "torch-button" %>
+  </div>
+</section>
+
+<section id="torch-header-and-content">
+  <div class="torch-container">
+    <div class="header">
+      <h3>New Invited player</h3>
+    </div>
+    <%= form_for :batch, Routes.invited_player_path(@conn, :batch_insert), [multipart: true, id: "torch-form"], fn f -> %>
+      <fieldset class="torch-panel">
+        <legend>
+          <span>Details</span>
+        </legend>
+
+        <div class="torch-form-group">
+          <%= label f, :battletag_full %>
+          <%= textarea f, :battletag_full %>
+          <%= error_tag f, :battletag_full %>
+        </div>
+
+        <div class="torch-form-group">
+          <%= label f, :tour_stop %>
+          <%= textarea f, :tour_stop %>
+          <%= error_tag f, :tour_stop %>
+        </div>
+
+        <div class="torch-form-group">
+          <%= label f, :type %>
+          <%= text_input f, :type %>
+          <%= error_tag f, :type %>
+        </div>
+
+        <div class="torch-form-group">
+          <%= label f, :reason %>
+          <%= text_input f, :reason %>
+          <%= error_tag f, :reason %>
+        </div>
+
+        <div class="torch-form-group">
+          <%= label f, :upstream_time %>
+          <%= datetime_select f, :upstream_time %>
+          <%= error_tag f, :upstream_time %>
+        </div>
+
+        <div class="torch-form-group">
+          <%= label f, :tournament_slug %>
+          <%= text_input f, :tournament_slug %>
+          <%= error_tag f, :tournament_slug %>
+        </div>
+
+        <div class="torch-form-group">
+          <%= label f, :tournament_id %>
+          <%= text_input f, :tournament_id %>
+          <%= error_tag f, :tournament_id %>
+        </div>
+
+        <div class="torch-form-group">
+          <%= label f, :official %>
+          <%= checkbox f, :official %>
+          <%= error_tag f, :official %>
+        </div>
+
+        <div class="torch-submit-form">
+          <%= submit "Submit", class: "torch-submit-button" %>
+        </div>
+      </fieldset>
+    <% end %>
+  </div>
+</section>

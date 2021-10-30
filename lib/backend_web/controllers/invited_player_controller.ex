@@ -24,6 +24,28 @@ defmodule BackendWeb.InvitedPlayerController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  @spec batch(Plug.Conn.t(), any) :: Plug.Conn.t()
+  def batch(conn, _params) do
+    render(conn, "batch.html")
+  end
+
+  def batch_insert(conn, %{"batch" => batch}) do
+    batch_insert(batch)
+    redirect(conn, to: Routes.invited_player_path(conn, :index))
+  end
+
+  def batch_insert(batch) do
+    for ts <- split(batch["tour_stop"]), btag <- split(batch["battletag_full"]) do
+      batch
+      |> Map.new()
+      |> Map.merge(%{"tour_stop" => ts, "battletag_full" => btag})
+      |> MastersTour.create_invited_player()
+    end
+  end
+
+  def split(string), do:
+    string |> String.replace("\r", "") |> String.split("\n") |> Enum.map(&String.trim/1) |> Enum.filter(& &1 != "")
+
   def create(conn, %{"invited_player" => invited_player_params}) do
     case MastersTour.create_invited_player(invited_player_params) do
       {:ok, invited_player} ->
