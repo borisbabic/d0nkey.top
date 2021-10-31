@@ -10,7 +10,7 @@ defmodule BackendWeb.LeaderboardController do
     compare_to = params["compare_to"]
     comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
-    show_flags = parse_show_flags(params)
+    show_flags = parse_show_flags(params |> IO.inspect(), leaderboard)
     {invited, ladder_invite_num} = leaderboard |> get_season_info()
 
     render(conn, "index.html", %{
@@ -37,8 +37,10 @@ defmodule BackendWeb.LeaderboardController do
     index(conn, new_params)
   end
 
-  def parse_show_flags(%{"show_flags" => "yes"}), do: "yes"
-  def parse_show_flags(_), do: "no"
+  def parse_show_flags(%{"show_flags" => sf}, _) when sf in ["no", "yes"], do: sf
+  def parse_show_flags(_, %{leaderboard_id: "STD"}), do: "yes"
+  def parse_show_flags(_, _), do: "no"
+
   def parse_ladder_mode(%{"ladder_mode" => "no"}), do: "no"
   def parse_ladder_mode(_), do: "yes"
 
