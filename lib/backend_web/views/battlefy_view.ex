@@ -451,6 +451,7 @@ defmodule BackendWeb.BattlefyView do
           show_lineups: show_lineups,
           highlight_fantasy: highlight_fantasy,
           invited_mapset: invited_mapset,
+          participants: participants,
           matches: matches
         }
       ) do
@@ -458,6 +459,7 @@ defmodule BackendWeb.BattlefyView do
     is_tour_stop = tour_stop?(tournament)
     use_countries = use_countries?(is_tour_stop, tournament)
 
+    participants_map = participants |> Enum.map(& {&1.name, &1}) |> Map.new()
     standings =
       prepare_standings(
         standings_raw,
@@ -468,7 +470,8 @@ defmodule BackendWeb.BattlefyView do
         earnings,
         lineups,
         show_lineups,
-        invited_mapset
+        invited_mapset,
+        participants_map
       )
 
     highlight = if params.highlight == nil, do: [], else: params.highlight
@@ -541,11 +544,12 @@ defmodule BackendWeb.BattlefyView do
           MastersTour.gm_money_rankings(),
           [Lineup.t()],
           integer() | boolean,
-          MapSet.t()
+          MapSet.t(),
+          Map.t()
         ) :: [
           standings
         ]
-  def prepare_standings(nil, _, _, _, _, _, _, _, _), do: []
+  def prepare_standings(nil, _, _, _, _, _, _, _, _, _), do: []
 
   def prepare_standings(
         standings_raw,
@@ -556,7 +560,8 @@ defmodule BackendWeb.BattlefyView do
         earnings,
         lineups,
         show_lineups,
-        invited_mapset
+        invited_mapset,
+        participants_map
       ) do
     lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
 
@@ -587,7 +592,7 @@ defmodule BackendWeb.BattlefyView do
       %{
         place: place,
         country: country,
-        name: s.team.name,
+        name: team_name(s.team.name, participants_map),
         name_class: if(s.disqualified, do: "disqualified-player", else: ""),
         earnings: player_earnings(earnings, s.team.name),
         pre_name_cell: pre_name_cell,
@@ -603,6 +608,12 @@ defmodule BackendWeb.BattlefyView do
     end)
   end
 
+  defp team_name(name, participants_map) do
+    case Map.get(participants_map, name) do
+      %{players: [%{in_game_name: ign}]} -> ign
+      _ -> name
+    end
+  end
 
   defp should_render_lineup(index, cutoff) when is_integer(cutoff), do: index < cutoff
   defp should_render_lineup(_index, show_lineups), do: show_lineups
