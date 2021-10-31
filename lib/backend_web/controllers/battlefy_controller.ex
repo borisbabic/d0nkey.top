@@ -54,6 +54,7 @@ defmodule BackendWeb.BattlefyController do
   def tournament(conn, params = %{"tournament_id" => tournament_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
     invited_mapset = invited_mapset(params, tournament)
+    participants = participants(params, tournament)
     {earnings, show_earnings} = earnings(params, tournament_id)
 
     fantasy_picks =
@@ -78,11 +79,14 @@ defmodule BackendWeb.BattlefyController do
         country_highlight: multi_select_to_array(params["country"]),
         page_title: tournament.name,
         stage_id: params["stage_id"],
+        participants: participants,
         highlight: get_highlight(params)
       }
       |> add_matches_standings(params)
     )
   end
+  def participants(%{"show_actual_battletag" => "yes"}, %{id: id}), do: Battlefy.get_participants(id)
+  def participants(_, _), do: []
   def invited_mapset(%{"show_invited" => ts}, tournament = %{id: id}) do
     with invited = [_|_] <- Backend.MastersTour.list_invited_players(ts),
       participants = [_|_] <- Battlefy.get_participants(id) do
