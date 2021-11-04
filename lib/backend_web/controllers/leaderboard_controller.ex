@@ -10,7 +10,7 @@ defmodule BackendWeb.LeaderboardController do
     compare_to = params["compare_to"]
     comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
-    show_flags = parse_show_flags(params |> IO.inspect(), leaderboard)
+    show_flags = parse_show_flags(params, leaderboard)
     {invited, ladder_invite_num} = leaderboard |> get_season_info()
 
     render(conn, "index.html", %{

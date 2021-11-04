@@ -33,6 +33,7 @@ defmodule Backend.Leaderboards do
   defp should_avoid_fetching?(r, l, 94) when r in ["EU", "US"] and l != "BG", do: true
   defp should_avoid_fetching?(_r, _l, _s), do: false
 
+  def get_leaderboard(region, leaderboard, season) when is_atom(leaderboard), do: get_leaderboard(region, to_string(leaderboard), season)
   def get_leaderboard(region, leaderboard, season) do
     if should_avoid_fetching?(region, leaderboard, season) do
       get_by_info(region, leaderboard, season)
@@ -282,7 +283,7 @@ defmodule Backend.Leaderboards do
 
   defp compose_snapshot_query({"leaderboard_id", leaderboard_id}, query) do
     query
-    |> where([s], s.leaderboard_id == ^leaderboard_id)
+    |> where([s], s.leaderboard_id == ^to_string(leaderboard_id))
   end
 
   defp compose_snapshot_query({"updated_at_exists"}, query) do
