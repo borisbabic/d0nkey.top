@@ -99,7 +99,7 @@ defmodule Bot.MessageHandler do
       )
 
     default = %{
-      season_id: Blizzard.get_season_id(Date.utc_today()),
+      season_id: Blizzard.get_season_id(Date.utc_today(), :STD),
       leaderboard_id: :STD,
       region: :EU
     }
