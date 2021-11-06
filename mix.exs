@@ -78,6 +78,7 @@ defmodule Backend.MixProject do
       {:ueberauth_twitch, "~> 0.0.2"},
       {:bcrypt_elixir, "~> 2.3.0"},
       {:incendium, "~>0.3.1"},
+      {:table_rex, "~> 3.1.1"},
       {:quantum, "~> 2.3"}
     ]
   end

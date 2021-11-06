@@ -38,17 +38,13 @@ defmodule Bot.LdbMessageHandler do
     categorized
     |> Enum.filter(fn {entries, _, _} -> Enum.any?(entries) end)
     |> Enum.map(fn {entries, region, leaderboard} ->
-      body =
-        entries
-        |> Enum.map_join(
-          "\n",
-          fn le ->
-            "#{String.pad_trailing(to_string(le.rank), 3, [" "])}\t#{le.account_id}"
-          end
-        )
-
-      "#{String.pad_trailing(to_string(region), 3, [" "])}\t#{leaderboard}\n#{body}"
+      title = "#{Backend.Blizzard.get_region_name(region)} #{Backend.Blizzard.get_leaderboard_name(leaderboard, :long)}"
+      rows = Enum.map(entries, fn %{rank: rank, account_id: account_id, rating: rating} ->
+        rating_append = if rating, do: [rating], else: []
+        [account_id, rank] ++ rating_append
+      end)
+      TableRex.quick_render!(rows, [], title)
     end)
-    |> Enum.join("\n")
+    |> Enum.join("\n\n")
   end
 end
