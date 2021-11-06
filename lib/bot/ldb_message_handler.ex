@@ -13,7 +13,7 @@ defmodule Bot.LdbMessageHandler do
 
     message =
       if String.trim(table) != "" do
-        "```#{table}\n```"
+        "```\n#{table}\n```"
       else
         "Nema nikoga, svi suckamo"
       end
@@ -45,6 +45,6 @@ defmodule Bot.LdbMessageHandler do
       end)
       TableRex.quick_render!(rows, [], title)
     end)
-    |> Enum.join("\n\n")
+    |> Enum.join("\n")
   end
 end
