@@ -65,6 +65,10 @@ defmodule Backend.ReqvamTop100Tweeter do
   def msg(%{entry: %{rank: rank}, date: %{day: 1, month: 1}}) when rank < 101, do: "Reqvam is #{rank} ! Seems like somebody didn't have new years plans"
   def msg(%{entry: %{rank: rank}, date: %{day: 1}}) when rank < 101, do: "Reqvam is #{rank} ! Seems like somebody had some free time to get to legend already"
   def msg(%{entry: %{rank: rank}, date: %{day: 2}}) when rank < 101, do: "Reqvam is #{rank} ! But it's basically day 1 so is it even that high?"
+  def msg(%{entry: %{rank: 5}}), do: "Reqvam is #5 ! If only he'd let Paul play maybe he'd be rank 1 by now"
+  def msg(%{entry: %{rank: rank}, date: %{year: 2021, month: 11, day: day}}) when rank < 16 and day > 28, do: "Reqvam is #{rank} ! Top 16 and the month is almost over! Which actually isn't too suprising because ladder doesn't matter KEKW"
+  def msg(%{entry: %{rank: rank}, date: %{day: 31}}) when rank < 101, do: "Reqvam is #{rank} ! Is he actually going to finish top 100 😮???"
+  def msg(%{entry: %{rank: 45}}), do: "Reqvam is 45 ! If he keeps at it maybe some day he will be top 16 on Americas ladder"
   def msg(%{entry: %{rank: rank}, date: %{day: day}}) when rank < 101 and day < 5, do: [
     "Reqvam is #{rank} ! But is it really that impressive this early?",
     "Reqvam is #{rank} ! But it's early, will it hold?"
@@ -113,6 +117,7 @@ defmodule Backend.ReqvamTop100Tweeter do
 
         https://www.twitch.tv/reqvam
         """,
+        "Another day of reqvam pretending it's not actually Paul that is top 100 (currently #{rank})",
         "Reqvam is #{rank} ! Yes, the space before the ! is there so people can't make factorial jokes.",
         "Reqvam is #{rank} ! *insert amusing comment* - coming up with these aint easy, if you have a suggestion fill this out: https://forms.gle/X6Wovae9aHGpvACZ7"
       ]
