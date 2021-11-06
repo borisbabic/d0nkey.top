@@ -123,9 +123,9 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Season")}
   end
 
-  def create_season_dropdown(conn, season, _) do
+  def create_season_dropdown(conn, season, ldb) do
     options =
-      create_selectable_seasons(Date.utc_today())
+      create_selectable_seasons(Date.utc_today(), ldb)
       |> Enum.map(fn {name, s} ->
         %{
           display: name,
@@ -215,9 +215,9 @@ defmodule BackendWeb.LeaderboardView do
       DateTime.diff(DateTime.utc_now(), ~U[2021-09-01T07:00:00Z]) < 0
   end
 
-  def old?(%{upstream_updated_at: updated_at, season_id: season_id}) do
+  def old?(%{upstream_updated_at: updated_at, season_id: season_id, leaderboard_id: ldb}) do
     updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 &&
-      season_id >= get_season_id(Date.utc_today())
+      season_id >= get_season_id(Date.utc_today(), ldb)
   end
 
   def old?(_), do: false
@@ -258,15 +258,17 @@ defmodule BackendWeb.LeaderboardView do
     If it's the last of the month it put's the next month in second place
     (see examples)
     ## Example
-    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-01-01])
+    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-01-01], "STD")
     [{:January, 75}, {:December, 74}, {:November, 73}, {:October, 72}, {:September, 71}, {:August, 70}]
-    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-31])
+    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-31], :WLD)
     [{:January, 75}, {:December, 74}, {:November, 73}, {:October, 72}, {:September, 71}, {:August, 70}]
+    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2022-04-11], :MRC)
+    [{:April, 6}, {:March, 5}, {:February, 4}, {:January, 3}, {:December, 2}, {:November, 1}]
   """
-  @spec create_selectable_seasons(Calendar.date()) :: [selectable_season]
-  def create_selectable_seasons(today) do
+  @spec create_selectable_seasons(Calendar.date(), String.t() | atom()) :: [selectable_season]
+  def create_selectable_seasons(today, ldb) do
     tomorrow = Date.add(today, 1)
-    tomorrow_id = get_season_id(tomorrow)
+    tomorrow_id = get_season_id(tomorrow, ldb)
     # if it's the first day of jan or last day of dec we want to show [dec, jan, nov]
     [0, -1, -2, -3, -4, -5]
     |> Enum.map(fn month_diff ->

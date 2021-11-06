@@ -43,21 +43,39 @@ defmodule Backend.Blizzard do
   @typedoc "{year, season}"
   @type gm_season :: {number, number}
 
-  #  @ladder_finish_order [:AP, :EU, :US]
+  @type leaderboard_id :: leaderboard | String.t()
+
+  @ladder_finish_order [:AP, :EU, :US]
+
+  @spec season_id_def(leaderboard_id()) :: {start_year :: integer(), month_offset :: integer()}
+  def season_id_def(ldb) when ldb in [:MRC, "MRC"] do
+    {2021, 10}
+  end
+  def season_id_def(_) do
+    {2013, 10}
+  end
+
+  @spec get_month_start(integer) :: Date.t()
+  def get_month_start(season_id), do: get_month_start(season_id, :STD)
 
   @doc """
   Gets the year and month from a season_id
 
   ## Example
-    iex> Backend.Blizzard.get_month_start(75)
+    iex> Backend.Blizzard.get_month_start(75, :STD)
     ~D[2020-01-01]
-    iex> Backend.Blizzard.get_month_start(74)
+    iex> Backend.Blizzard.get_month_start(74, "WLD")
     ~D[2019-12-01]
+    iex> Backend.Blizzard.get_month_start(2, :MRC)
+    ~D[2021-12-01]
+    iex> Backend.Blizzard.get_month_start(3, :MRC)
+    ~D[2022-01-01]
   """
-  @spec get_month_start(integer) :: Date.t()
-  def get_month_start(season_id) do
-    month = Util.normalize_month(rem(season_id - 62, 12))
-    year = 2019 + div(season_id - month - 62, 12)
+  @spec get_month_start(integer(), leaderboard_id()) :: Date.t()
+  def get_month_start(season_id, ldb) do
+    {start_year, month_offset} = season_id_def(ldb)
+    month = Util.normalize_month(rem(season_id + month_offset, 12))
+    year = start_year + div(season_id - month + month_offset, 12)
 
     case Date.new(year, month, 1) do
       {:ok, date} -> date
@@ -66,18 +84,25 @@ defmodule Backend.Blizzard do
     end
   end
 
+
+  @spec get_season_id(Calendar.date() | %{month: number, year: number}) :: number
+  def get_season_id(date), do: get_season_id(date, :STD)
+
   @doc """
   Gets the season id for a date
 
   ## Example
-    iex> Backend.Blizzard.get_season_id(~D[2019-12-01])
+    iex> Backend.Blizzard.get_season_id(~D[2019-12-01], :WLD)
     74
-    iex> Backend.Blizzard.get_season_id(~D[2020-01-31])
+    iex> Backend.Blizzard.get_season_id(~D[2020-01-31], "STD")
     75
+    iex> Backend.Blizzard.get_season_id(~D[2022-01-04], :MRC)
+    3
   """
-  @spec get_season_id(Calendar.date() | %{month: number, year: number}) :: number
-  def get_season_id(date) do
-    62 + (date.year - 2019) * 12 + date.month
+  @spec get_season_id(Calendar.date(), leaderboard) :: number()
+  def get_season_id(date, ldb) do
+    {year_start, month_offset} = season_id_def(ldb)
+    (date.year - year_start) * 12 + date.month - month_offset
   end
 
   @doc """
@@ -481,8 +506,10 @@ defmodule Backend.Blizzard do
   @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: Leaderboard
   def get_leaderboard_name(region, leaderboard, season_id, length \\ :long)
 
-  def get_leaderboard_name(region, "BG", season_id, length),
-    do: get_leaderboard_name(region, :BG, season_id, length)
+  for ldb <- [:BG, :MRC]  do
+    def get_leaderboard_name(region, unquote(to_string(ldb)), season_id, length),
+      do: get_leaderboard_name(region, unquote(ldb), season_id, length)
+  end
 
   def get_leaderboard_name(region, :BG, season_id, length) do
     r = get_region_name(region, length)
@@ -490,11 +517,13 @@ defmodule Backend.Blizzard do
     "#{ldb} #{r} #{get_season_name(season_id, :BG)}"
   end
 
+  def get_leaderboard_name(region)
+
   def get_season_name(season, "BG"), do: get_season_name(season, :BG)
   def get_season_name(season, :BG), do: "Season #{season + 1}"
 
   def get_leaderboard_name(region, leaderboard, season_id, length) do
-    %{year: year, month: month} = get_month_start(season_id)
+    %{year: year, month: month} = get_month_start(season_id, leaderboard)
     m = Util.get_month_name(month)
     r = get_region_name(region, length)
     ldb = get_leaderboard_name(leaderboard, length)
@@ -637,7 +666,6 @@ defmodule Backend.Blizzard do
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
 
-  def get_current_ladder_season("BG"), do: get_current_ladder_season(:BG)
-  def get_current_ladder_season(:BG), do: @current_bg_season_id
-  def get_current_ladder_season(_ldb), do: get_season_id(Date.utc_today())
+  def get_current_ladder_season(ldb) when ldb in [:BG, "BG"], do: @current_bg_season_id
+  def get_current_ladder_season(ldb), do: get_season_id(Date.utc_today(), ldb)
 end

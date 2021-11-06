@@ -35,7 +35,7 @@ defmodule Command.ImportOldLeaderboards do
          {year, _} <- Integer.parse(year_raw),
          {:ok, date} <- Date.new(year, month, 13),
          {:ok, updated_at} <- NaiveDateTime.new(year, month, 13, 0, 0, 0),
-         season_id <- Blizzard.get_season_id(date) do
+         season_id <- Blizzard.get_season_id(date, ldb_id) do
       {:ok,
        %Leaderboard{
          season_id: season_id,
