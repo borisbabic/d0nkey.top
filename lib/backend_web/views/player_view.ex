@@ -191,17 +191,40 @@ defmodule BackendWeb.PlayerView do
 
           leaderboard_title =
             Blizzard.get_leaderboard_name(f.region, f.leaderboard_id, f.season_id)
-
+          score = if pe.rating do
+            history_link = history_link(conn, f, pe.account_id, :rating)
+            ~E"""
+            <%= pe.rating %> <%= history_link %>
+            """
+          else
+            ""
+          end
           [
             %{
               competition: simple_link(leaderboard_link, leaderboard_title),
               time: f.upstream_updated_at,
-              position: simple_link(leaderboard_link, pe.rank),
-              score: pe.rating || ""
+              position: concat(simple_link(leaderboard_link, pe.rank), history_link(conn, f, pe.account_id, :rank)),
+              score: score
             }
           ]
       end
     end)
+  end
+
+  def concat(first, second) do
+    ~E"""
+    <%= first %> <%= second %>
+    """
+  end
+  def history_link(conn, ss, player, attr \\ "rank") do
+    link = Routes.leaderboard_path(conn, :player_history, ss.region, ss.season_id, ss.leaderboard_id, player, attr: attr)
+    ~E"""
+      <a href="<%= link %>">
+        <span class="icon">
+          <i class="fas fa-history"></i>
+        </span>
+      </a>
+    """
   end
 
   def get_competition_options(competitions) do

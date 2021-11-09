@@ -11,6 +11,13 @@ defmodule Backend.Leaderboards do
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
 
+  @type player_history_entry :: %{
+    rank: integer(),
+    rating: integer() | nil,
+    upstream_updated_at: NaiveDateTime.t(),
+    snapshot_id: integer()
+  }
+
   @type entry :: %{
           battletag: String.t(),
           position: number,
@@ -310,6 +317,11 @@ defmodule Backend.Leaderboards do
     |> limit(^limit)
   end
 
+  defp compose_snapshot_query({"after", date = %NaiveDateTime{}}, query) do
+    query
+    |> where([s], s.upstream_updated_at > ^date)
+  end
+
   defp compose_snapshot_query({"up_to", date = %NaiveDateTime{}}, query) do
     query
     |> where([s], s.upstream_updated_at < ^date)
@@ -344,4 +356,32 @@ defmodule Backend.Leaderboards do
 
   def finishes_for_battletag(battletag_full),
     do: [{:latest_in_season}, {"battletag_full", battletag_full}] |> snapshots()
+
+  @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [player_history_entry()]
+  def player_history(player, region, season_id, leaderboard_id, changed_attr \\ :rank) do
+    [{"battletag_full", player}, {"region", region}, {"season_id", season_id}, {"leaderboard_id", leaderboard_id}]
+    |> snapshots()
+    |> player_history(player, changed_attr)
+  end
+  @spec player_history(String.t(), [Snapshot.t()]) :: [player_history_entry()]
+  def player_history(snapshots, name, changed_attr \\ :rank) do
+    snapshots
+    |> Enum.sort_by(& &1.upstream_updated_at, :asc)
+    |> Enum.flat_map(fn ss ->
+      ss.entries
+      |> Enum.find(fn %{account_id: account_id} ->
+        account_id == name
+      end)
+      |> case do
+        e = %{rank: rank} -> [%{
+          rank: rank,
+          rating: e.rating,
+          upstream_updated_at: ss.upstream_updated_at,
+          snapshot_id: ss.id
+        }]
+        _ -> []
+      end
+    end )
+    |> Enum.dedup_by(& Map.get(&1, changed_attr))
+  end
 end
