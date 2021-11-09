@@ -12,12 +12,13 @@ defmodule BackendWeb.LeaderboardView do
 
   def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
     has_rating = player_history |> Enum.any?(& &1.rating)
-    dropdowns = player_history_dropdowns(has_rating, conn, attr)
+    dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
     sorted_history = Enum.sort_by(player_history, & &1.upstream_updated_at, :desc)
     graph = player_history_graph(player_history, attr)
     render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph})
   end
 
+  def player_history_graph([], _), do: ""
   def player_history_graph(player_history, attr) do
     # data = Enum.map(player_history, & {&1.upstream_updated_at, Map.get(&1, attr)})
     # attr_name = attr |> to_string() |> Macro.camelize()
@@ -28,21 +29,58 @@ defmodule BackendWeb.LeaderboardView do
     |> Contex.Plot.to_svg()
   end
 
-  def player_history_dropdowns(true, conn, current) do
+  def player_history_dropdowns(conn) do
+    [
+      create_region_dropdown(conn.params["region"], history_updater(conn, "region")),
+      create_leaderboard_dropdown(conn.params["leaderboard_id"], history_updater(conn, "leaderboard_id")),
+      create_period_dropdown(conn.params["period"], conn.params["leaderboard_id"], history_updater(conn,"period"))
+    ]
+  end
+
+  def create_period_dropdown(period, ldb, update_link) do
+    seasons =
+      create_selectable_seasons(Date.utc_today(), ldb)
+      |> Enum.take(3)
+      |> Enum.map(fn {name, val} ->
+        {name, "season_#{val}"}
+      end)
+    options =
+      [
+        {"Past Day", "past_days_1"},
+        {"Past 3 Days", "past_days_3"},
+        {"Past Week", "past_weeks_1"},
+        {"Past 2 Weeks", "past_weeks_2"},
+        {"Past Month", "past_months_1"},
+      ]
+      ++ seasons
+      |> Enum.map(fn {name, val} ->
+        %{
+          display: name,
+          selected: val == period,
+          link: update_link.(val)
+        }
+      end)
+    {options, dropdown_title(options, "Period")}
+  end
+
+  def add_attr_dropdown(dropdowns, conn, current, true) do
     options =
       [:rank, :rating]
       |> Enum.map(fn attr ->
         %{
           display: attr |> to_string() |> Macro.camelize(),
           selected: attr == current,
-          link: update_player_history_link(conn, attr)
+          link: update_player_history_link(conn, "attr", attr)
         }
-
       end)
-    [{options, dropdown_title(options, "Attribute")}]
+    [{options, dropdown_title(options, "Attribute")} | dropdowns]
   end
-  def update_player_history_link(conn, attr) do
-    %{"season_id" => s, "region" => r, "leaderboard_id" => l, "player" => p} = conn.path_params
+  def add_attr_dropdown(dropdowns, _, _, _), do: dropdowns
+  defp history_updater(conn, key), do: & update_player_history_link(conn, key, &1)
+  def update_player_history_link(conn, key, val) do
+    attr = BackendWeb.LeaderboardController.history_attr(conn.params)
+    params = conn.params |> Map.put("attr", attr) |> Map.put(key, val)
+    %{"period" => s, "region" => r, "leaderboard_id" => l, "player" => p , "attr"=> a} = params
     Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: attr)
   end
   def player_history_dropdowns(false, _, _), do: []
@@ -117,47 +155,44 @@ defmodule BackendWeb.LeaderboardView do
     ]
   end
 
-  def create_region_dropdown(conn, region) do
+
+  def create_region_dropdown(conn = %Plug.Conn{}, region) do
+    create_region_dropdown(
+      region,
+      & Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "region", &1))
+    )
+  end
+  def create_region_dropdown(region, update_link) do
     options =
       Backend.Blizzard.qualifier_regions_with_name()
       |> Enum.map(fn {r, name} ->
         %{
           display: name,
           selected: to_string(r) == to_string(region),
-          link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "region", r))
+          link: update_link.(r)
         }
       end)
 
     {options, dropdown_title(options, "Region")}
   end
 
-  def create_leaderboard_dropdown(conn, leaderboard_id) do
+  def create_leaderboard_dropdown(conn = %Plug.Conn{}, leaderboard_id) do
+    create_leaderboard_dropdown(
+      leaderboard_id,
+      & Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "leaderboardId", &1))
+    )
+  end
+  def create_leaderboard_dropdown(leaderboard_id, update_link) do
     options =
       Backend.Blizzard.leaderboards_with_name()
       |> Enum.map(fn {id, name} ->
         %{
           display: name,
           selected: to_string(id) == to_string(leaderboard_id),
-          link:
-            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "leaderboardId", id))
+          link: update_link.(id)
         }
       end)
-
     {options, dropdown_title(options, "Leaderboard")}
-  end
-
-  def create_season_dropdown(conn, season, "BG") do
-    options =
-      Blizzard.get_current_ladder_season(:BG)..0
-      |> Enum.map(fn s ->
-        %{
-          display: Blizzard.get_season_name(s, :BG),
-          selected: to_string(s) == to_string(season),
-          link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "seasonId", s))
-        }
-      end)
-
-    {options, dropdown_title(options, "Season")}
   end
 
   def create_season_dropdown(conn, season, ldb) do
@@ -303,6 +338,14 @@ defmodule BackendWeb.LeaderboardView do
     [{:April, 6}, {:March, 5}, {:February, 4}, {:January, 3}, {:December, 2}, {:November, 1}]
   """
   @spec create_selectable_seasons(Calendar.date(), String.t() | atom()) :: [selectable_season]
+  def create_selectable_seasons(_today, ldb ) when ldb in [:BG, "BG"] do
+      Blizzard.get_current_ladder_season(:BG)..0
+      |> Enum.take(7)
+      |> Enum.map(fn s ->
+        name = Blizzard.get_season_name(s, :BG)
+        {name, s}
+      end)
+  end
   def create_selectable_seasons(today, ldb) do
     tomorrow = Date.add(today, 1)
     tomorrow_id = get_season_id(tomorrow, ldb)
@@ -388,7 +431,8 @@ defmodule BackendWeb.LeaderboardView do
         else
           _ -> ""
         end
-      history_link = BackendWeb.PlayerView.history_link(BackendWeb.Endpoint, snapshot, account_id)
+      history_attr = if le.rating, do: "rating", else: "rank"
+      history_link = BackendWeb.PlayerView.history_link(BackendWeb.Endpoint, snapshot, account_id, history_attr, "past_weeks_1")
       {
         le
         |> Map.put_new(:qualified, qualified)
