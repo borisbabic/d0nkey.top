@@ -81,7 +81,7 @@ defmodule BackendWeb.LeaderboardView do
     attr = BackendWeb.LeaderboardController.history_attr(conn.params)
     params = conn.params |> Map.put("attr", attr) |> Map.put(key, val)
     %{"period" => s, "region" => r, "leaderboard_id" => l, "player" => p , "attr"=> a} = params
-    Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: attr)
+    Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: a)
   end
   def player_history_dropdowns(false, _, _), do: []
 
