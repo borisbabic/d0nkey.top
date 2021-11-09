@@ -61,6 +61,7 @@ defmodule BackendWeb.Router do
 
     get "/leaderboard", LeaderboardController, :index
     get "/leaderboard/player-stats", LeaderboardController, :player_stats
+    get "/leaderboard/player-history/region/:region/season_id/:season_id/leaderboard_id/:leaderboard_id/player/:player", LeaderboardController, :player_history
 
     live "/", FeedLive
     get "/incubator", PageController, :incubator

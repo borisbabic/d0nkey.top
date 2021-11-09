@@ -159,6 +159,14 @@ defmodule BackendWeb.LeaderboardController do
     })
   end
 
+  def history_attr(%{"attr" => "rating"}), do: :rating
+  def history_attr(_), do: :rank
+  def player_history(conn, params = %{"leaderboard_id" => ldb, "region" => region, "season_id" => season, "player" => player}) do
+    attr = history_attr(params)
+    player_history = Backend.Leaderboards.player_history(player, region, season, ldb, attr)
+    render(conn, "player_history.html", %{player_history: player_history, player: player, attr: attr})
+  end
+
   defp add_not_current_season_critera(criteria, []),
     do: add_not_current_season_critera(criteria, ["STD"])
 

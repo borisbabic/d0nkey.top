@@ -10,6 +10,32 @@ defmodule BackendWeb.LeaderboardView do
   @type selectable_season :: {String.t(), integer()}
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
 
+  def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
+    has_rating = player_history |> Enum.any?(& &1.rating)
+    dropdowns = player_history_dropdowns(has_rating, conn, attr)
+    sorted_history = Enum.sort_by(player_history, & &1.upstream_updated_at, :desc)
+    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating})
+  end
+
+  def player_history_dropdowns(true, conn, current) do
+    options =
+      [:rank, :rating]
+      |> Enum.map(fn attr ->
+        %{
+          display: attr |> to_string() |> Macro.camelize(),
+          selected: attr == current,
+          link: update_player_history_link(conn, attr)
+        }
+
+      end)
+    [{options, dropdown_title(options, "Attribute")}]
+  end
+  def update_player_history_link(conn, attr) do
+    %{"season_id" => s, "region" => r, "leaderboard_id" => l, "player" => p} = conn.path_params
+    Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: attr)
+  end
+  def player_history_dropdowns(false, _, _), do: []
+
   def render("index.html", params = %{leaderboard: nil}) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
   end
