@@ -262,4 +262,9 @@ defmodule Hearthstone.Enums.Format do
   def all() do
     @all |> Enum.map(fn {_, id, name} -> {id, name} end)
   end
+
+  @spec all(:atoms) :: [{integer(), atom()}]
+  def all(:atoms) do
+    @all |> Enum.map(fn {atom, id, _name} -> {id, atom} end)
+  end
 end
