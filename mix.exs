@@ -79,6 +79,7 @@ defmodule Backend.MixProject do
       {:bcrypt_elixir, "~> 2.3.0"},
       {:incendium, "~>0.3.1"},
       {:table_rex, "~> 3.1.1"},
+      {:contex, "~> 0.4.0"},
       {:quantum, "~> 2.3"}
     ]
   end

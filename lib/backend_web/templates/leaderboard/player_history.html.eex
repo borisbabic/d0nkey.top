@@ -1,6 +1,9 @@
 <div class="title is-2"><%= @player %> Rank History</div>
 
 <%= render_dropdowns(@dropdowns) %>
+<div class="svg-container">
+    <%= @graph %>
+</div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>
