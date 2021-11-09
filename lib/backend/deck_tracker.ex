@@ -5,6 +5,8 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Repo
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
+  alias Hearthstone.Enums.Format
+  alias Hearthstone.Enums.GameType
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   @type deck_stats :: %{deck: Deck.t(), wins: integer(), losses: integer()}
@@ -23,6 +25,21 @@ defmodule Hearthstone.DeckTracker do
 
   def handle_game(_), do: {:error, :missing_game_id}
 
+
+  def sum_stats(stats) do
+    stats
+    |> Enum.reduce(%{losses: 0, wins: 0,  total: 0}, fn s, acc ->
+      %{
+        wins: s.wins + acc.wins,
+        losses: s.losses + acc.losses,
+        total: s.total + acc.total
+      }
+    end)
+    |> recalculate_winrate()
+  end
+
+  def recalculate_winrate(m = %{wins: wins, total: total}), do: Map.put(m, :winrate, wins/total)
+
   @spec deck_stats(integer(), list()) :: [deck_stats()]
   def deck_stats(deck_id, additional_criteria) do
     deck_stats([{"player_deck_id", deck_id} | additional_criteria])
@@ -39,14 +56,76 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
+  @spec detailed_stats(integer(), list()) :: [deck_stats()]
+  def detailed_stats(deck_id, additional_criteria \\ []) when is_integer(deck_id) do
+    opponent_class_stats([{"player_deck_id", deck_id} | additional_criteria])
+  end
+
+  def total_stats(criteria) do
+    base_total_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+  def class_stats(criteria) do
+    base_class_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+  @doc """
+  Stats grouped by opponent's class
+  """
+  def opponent_class_stats(criteria) do
+    base_opponent_class_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_opponent_class_stats_query() do
+    base_stats_query()
+    |> group_by([g], g.opponent_class)
+    |> select_merge([g],
+      %{
+        opponent_class: g.opponent_class
+      }
+    )
+    |> where([g], not is_nil(g.opponent_class))
+  end
   defp base_deck_stats_query() do
+    base_stats_query()
+    |> group_by([g], g.player_deck_id)
+    |> select_merge([g],
+      %{
+        deck_id: g.player_deck_id
+      }
+    )
+    |> where([g], not is_nil(g.player_deck_id))
+  end
+  defp base_class_stats_query() do
+    base_stats_query()
+    |> group_by([g], g.player_class)
+    |> select_merge([g],
+      %{
+        player_class: g.player_class
+      }
+    )
+    |> where([g], not is_nil(g.player_class))
+  end
+  defp base_total_stats_query() do
+    base_stats_query()
+  end
+
+  @total_select_pos 3
+  @winrate_select_pos 4
+  @total_fragment "CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END"
+  defp base_stats_query() do
     from g in Game,
-      join: pd in assoc(g, :player_deck),
-      group_by: pd.id,
-      select: %{
-        deck: pd,
+    join: pd in assoc(g, :player_deck),
+    select:
+      %{
         wins: sum(fragment("CASE WHEN ? = 'win' THEN 1 ELSE 0 END", g.status)),
-        losses: sum(fragment("CASE WHEN ? = 'loss' THEN 1 ELSE 0 END", g.status))
+        losses: sum(fragment("CASE WHEN ? = 'loss' THEN 1 ELSE 0 END", g.status)),
+        total: sum(fragment(@total_fragment, g.status)),
+        winrate: fragment("cast(SUM(CASE WHEN ? = 'win' THEN 1 ELSE 0 END) as float) / COALESCE(NULLIF(SUM(CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END), 0), 1)", g.status, g.status)
       }
   end
 
@@ -88,23 +167,42 @@ defmodule Hearthstone.DeckTracker do
   defp build_games_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_games_query/2)
 
-  defp compose_games_query(:past_week, query),
+  defp compose_games_query(period, query) when period in [:past_week, :past_day, :past_3_days],
+    do: compose_games_query(["period", to_string(period)], query)
+
+  defp compose_games_query(["period", "past_week"], query),
     do: query |> where([g], g.inserted_at >= ago(1, "week"))
 
-  defp compose_games_query(:past_day, query),
+  defp compose_games_query(["period", "past_day"], query),
     do: query |> where([g], g.inserted_at >= ago(1, "day"))
 
-  defp compose_games_query(:past_3_days, query),
+  defp compose_games_query(["period", "past_3_days"], query),
     do: query |> where([g], g.inserted_at >= ago(3, "day"))
 
-  defp compose_games_query(:legend, query),
+  defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend],
+    do: compose_games_query(["rank", to_string(rank)], query)
+
+  defp compose_games_query(["rank", "legend"], query),
     do: query |> where([g], g.player_rank >= 51)
 
-  defp compose_games_query(:diamond_to_legend, query),
+  defp compose_games_query(["rank", "diamond_to_legend"], query),
     do: query |> where([g], g.player_rank >= 41)
 
-  defp compose_games_query(:latest, query),
+  defp compose_games_query(["order_by", "latest"], query),
     do: query |> order_by([g], desc: g.inserted_at)
+
+  defp compose_games_query(["order_by", "total"], query),
+    do: query |> order_by([g], desc: @total_select_pos)
+
+  defp compose_games_query(["order_by", "winrate"], query),
+    do: query |> order_by([], desc: @winrate_select_pos)
+
+
+  defp compose_games_query(order_by, query) when order_by in [:latest, :winrate, :total],
+    do: compose_games_query(["order_by", to_string(order_by)], query)
+
+  defp compose_games_query({"player_deck_includes", cards}, query),
+    do: query |> where([_, pd], fragment("? @> ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_id", deck_id}, query),
     do: query |> where([g], g.player_deck_id == ^deck_id)
@@ -117,6 +215,9 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"player_rank", rank}, query),
     do: query |> where([g], g.player_rank == ^rank)
+
+  defp compose_games_query({"min_games", min_games}, query),
+    do: query |> having([g], sum(fragment(@total_fragment, g.status)) >= ^min_games)
 
   defp compose_games_query({"player_legend_rank", legend_rank}, query),
     do: query |> where([g], g.player_legend_rank == ^legend_rank)
@@ -142,8 +243,13 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"region", region}, query),
     do: query |> where([g], g.region == ^region)
 
+  defp compose_games_query(:ranked, query), do: compose_games_query({"game_type", 7}, query)
   defp compose_games_query({"game_type", game_type}, query),
     do: query |> where([g], g.game_type == ^game_type)
+
+  for {id, atom} <- Format.all(:atoms) do
+    defp compose_games_query(unquote(atom), query), do: compose_games_query({"format", unquote(id)}, query)
+  end
 
   defp compose_games_query({"format", format}, query),
     do: query |> where([g], g.format == ^format)
