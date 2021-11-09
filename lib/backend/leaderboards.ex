@@ -208,12 +208,30 @@ defmodule Backend.Leaderboards do
 
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
+  def player_history(player, criteria) do
+    new_criteria = [{"players", [player]} | criteria]
+    base_player_history_query(player)
+    |> build_snapshot_query(new_criteria)
+    |> Repo.all()
+  end
   def snapshots(criteria) do
     base_snapshots_query()
     |> build_snapshot_query(criteria)
     |> Repo.all()
   end
 
+  defp base_player_history_query(player) do
+    from s in Snapshot,
+      inner_lateral_join: e in fragment("jsonb_array_elements(to_jsonb(?))", s.entries),
+      on: fragment("?->>'account_id' LIKE ?", e, ^player),
+      select: %{
+        rank: fragment("(?->>'rank')::INTEGER", e),
+        rating: fragment("(?->>'rating')::INTEGER", e),
+        upstream_updated_at: s.upstream_updated_at,
+        snapshot_id: s.id
+      },
+      where: not like(s.leaderboard_id, "invalid_%")
+  end
   defp base_snapshots_query() do
     from s in Snapshot,
       where: not like(s.leaderboard_id, "invalid_%")
@@ -359,29 +377,16 @@ defmodule Backend.Leaderboards do
 
   @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [player_history_entry()]
   def player_history(player, region, season_id, leaderboard_id, changed_attr \\ :rank) do
-    [{"battletag_full", player}, {"region", region}, {"season_id", season_id}, {"leaderboard_id", leaderboard_id}]
-    |> snapshots()
-    |> player_history(player, changed_attr)
+    criteria = [{"region", region}, {"season_id", season_id}, {"leaderboard_id", leaderboard_id}]
+    player_history(player, criteria)
+    |> dedup_player_histories(changed_attr)
   end
-  @spec player_history(String.t(), [Snapshot.t()]) :: [player_history_entry()]
-  def player_history(snapshots, name, changed_attr \\ :rank) do
-    snapshots
+
+
+  @spec player_history([player_history_entry()], atom()) :: [player_history_entry()]
+  def dedup_player_histories(histories, changed_attr) do
+    histories
     |> Enum.sort_by(& &1.upstream_updated_at, :asc)
-    |> Enum.flat_map(fn ss ->
-      ss.entries
-      |> Enum.find(fn %{account_id: account_id} ->
-        account_id == name
-      end)
-      |> case do
-        e = %{rank: rank} -> [%{
-          rank: rank,
-          rating: e.rating,
-          upstream_updated_at: ss.upstream_updated_at,
-          snapshot_id: ss.id
-        }]
-        _ -> []
-      end
-    end )
     |> Enum.dedup_by(& Map.get(&1, changed_attr))
   end
 end
