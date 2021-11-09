@@ -208,16 +208,6 @@ defmodule Backend.Leaderboards do
 
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
-  def ids_to_snapshots(ids), do: [{"id", ids}] |> snapshots()
-
-  def snapshot_ids(criteria) do
-    query = from s in Snapshot,
-      select: s.id,
-      where: not like(s.leaderboard_id, "invalid_%")
-    query
-    |> build_snapshot_query(criteria)
-    |> Repo.all()
-  end
   def snapshots(criteria) do
     base_snapshots_query()
     |> build_snapshot_query(criteria)
@@ -272,10 +262,6 @@ defmodule Backend.Leaderboards do
     end)
   end
 
-  defp compose_snapshot_query({"id", ids}, query) when is_list(ids) do
-    query
-    |> where([s], s.id in ^ids)
-  end
   defp compose_snapshot_query({"id", id}, query) do
     query
     |> where([s], s.id == ^id)
@@ -374,15 +360,13 @@ defmodule Backend.Leaderboards do
   @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [player_history_entry()]
   def player_history(player, region, season_id, leaderboard_id, changed_attr \\ :rank) do
     [{"battletag_full", player}, {"region", region}, {"season_id", season_id}, {"leaderboard_id", leaderboard_id}]
-    |> snapshot_ids()
-    |> Enum.chunk_every(300)
-    |> Util.async_map(& &1 |> ids_to_snapshots() |> player_history(player))
-    |> Enum.flat_map(& &1)
-    |> dedup_player_histories(changed_attr)
+    |> snapshots()
+    |> player_history(player, changed_attr)
   end
-  @spec player_history([Snapshot.t()], String.t()) :: [player_history_entry()]
-  def player_history(snapshots, name) do
+  @spec player_history(String.t(), [Snapshot.t()]) :: [player_history_entry()]
+  def player_history(snapshots, name, changed_attr \\ :rank) do
     snapshots
+    |> Enum.sort_by(& &1.upstream_updated_at, :asc)
     |> Enum.flat_map(fn ss ->
       ss.entries
       |> Enum.find(fn %{account_id: account_id} ->
@@ -397,12 +381,7 @@ defmodule Backend.Leaderboards do
         }]
         _ -> []
       end
-    end)
-  end
-
-  def dedup_player_histories(histories, changed_attr) do
-    histories
-    |> Enum.sort_by(& &1.upstream_updated_at, :asc)
+    end )
     |> Enum.dedup_by(& Map.get(&1, changed_attr))
   end
 end
