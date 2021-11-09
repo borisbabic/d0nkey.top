@@ -14,7 +14,18 @@ defmodule BackendWeb.LeaderboardView do
     has_rating = player_history |> Enum.any?(& &1.rating)
     dropdowns = player_history_dropdowns(has_rating, conn, attr)
     sorted_history = Enum.sort_by(player_history, & &1.upstream_updated_at, :desc)
-    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating})
+    graph = player_history_graph(player_history, attr)
+    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph})
+  end
+
+  def player_history_graph(player_history, attr) do
+    # data = Enum.map(player_history, & {&1.upstream_updated_at, Map.get(&1, attr)})
+    # attr_name = attr |> to_string() |> Macro.camelize()
+    dataset = Contex.Dataset.new(player_history)
+    point_plot = Contex.PointPlot.new(dataset, mapping: %{x_col: :upstream_updated_at, y_cols: [attr]})
+
+    Contex.Plot.new(900, 200, point_plot)
+    |> Contex.Plot.to_svg()
   end
 
   def player_history_dropdowns(true, conn, current) do
@@ -377,7 +388,7 @@ defmodule BackendWeb.LeaderboardView do
         else
           _ -> ""
         end
-
+      history_link = BackendWeb.PlayerView.history_link(BackendWeb.Endpoint, snapshot, account_id)
       {
         le
         |> Map.put_new(:qualified, qualified)
@@ -385,6 +396,7 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:ineligible, ineligible)
         |> Map.put_new(:prev_rank, prev_rank)
         |> Map.put_new(:warning, warning)
+        |> Map.put_new(:history_link, history_link)
         |> Map.put_new(:flag, flag)
         |> Map.put_new(:prev_rating, prev_rating),
         if qualified || ineligible do
