@@ -356,8 +356,25 @@ defmodule Backend.Leaderboards do
 
   defp compose_snapshot_query({"until", {num, unit}}, query) do
     query
-    |> where([s], s.upstream_updated_at < ago(^num, ^unit))
+    |> where([s], s.upstream_updated_at > ago(^num, ^unit))
   end
+  defp compose_snapshot_query({"period", <<"past_weeks_"::binary, weeks_raw::bitstring>>}, query) do
+    {weeks, _} = Integer.parse(weeks_raw)
+    query
+    |> where([s], s.upstream_updated_at > ago(^weeks, "week"))
+  end
+  defp compose_snapshot_query({"period", <<"past_months_"::binary, months_raw::bitstring>>}, query) do
+    {months, _} = Integer.parse(months_raw)
+    query
+    |> where([s], s.upstream_updated_at > ago(^months, "month"))
+  end
+  defp compose_snapshot_query({"period", <<"past_days_"::binary, days_raw::bitstring>>}, query) do
+    {days, _} = Integer.parse(days_raw)
+    query
+    |> where([s], s.upstream_updated_at > ago(^days, "day"))
+  end
+  defp compose_snapshot_query({"period", <<"season_"::binary, season_id::bitstring>>}, query),
+    do: compose_snapshot_query({"season_id", season_id}, query)
 
   defp compose_snapshot_query({"battletag_full", battletag_full}, query) do
     players = Backend.PlayerInfo.leaderboard_names(battletag_full)
@@ -376,8 +393,8 @@ defmodule Backend.Leaderboards do
     do: [{:latest_in_season}, {"battletag_full", battletag_full}] |> snapshots()
 
   @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [player_history_entry()]
-  def player_history(player, region, season_id, leaderboard_id, changed_attr \\ :rank) do
-    criteria = [{"region", region}, {"season_id", season_id}, {"leaderboard_id", leaderboard_id}]
+  def player_history(player, region, period, leaderboard_id, changed_attr \\ :rank) do
+    criteria = [{"period", period}, {"region", region}, {"leaderboard_id", leaderboard_id}]
     player_history(player, criteria)
     |> dedup_player_histories(changed_attr)
   end

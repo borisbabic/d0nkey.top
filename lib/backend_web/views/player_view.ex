@@ -216,8 +216,9 @@ defmodule BackendWeb.PlayerView do
     <%= first %> <%= second %>
     """
   end
-  def history_link(conn, ss, player, attr \\ "rank") do
-    link = Routes.leaderboard_path(conn, :player_history, ss.region, ss.season_id, ss.leaderboard_id, player, attr: attr)
+  def history_link(conn, ss, player, attr \\ "rank", period_param \\ nil) do
+    period = if period_param, do: period_param, else: "season_#{ss.season_id}"
+    link = Routes.leaderboard_path(conn, :player_history, ss.region, period, ss.leaderboard_id, player, attr: attr)
     ~E"""
       <a href="<%= link %>">
         <span class="icon">
