@@ -15,7 +15,8 @@ defmodule BackendWeb.LeaderboardView do
     dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
     sorted_history = Enum.reverse(player_history)
     graph = player_history_graph(player_history, attr)
-    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph})
+    title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
+    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph, title: title})
   end
 
   def player_history_graph([], _), do: ""

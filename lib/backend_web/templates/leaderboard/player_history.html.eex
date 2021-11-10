@@ -1,4 +1,4 @@
-<div class="title is-2"><%= @player %> Rank History</div>
+<div class="title is-2"><%= @title %></div>
 
 <%= render_dropdowns(@dropdowns) %>
 <div class="svg-container">
