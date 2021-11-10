@@ -356,35 +356,13 @@ defmodule Backend.Leaderboards do
 
   defp compose_snapshot_query({"until", {num, unit}}, query) do
     query
-    |> where([s], s.upstream_updated_at > ago(^num, ^unit))
+    |> where([s], s.upstream_updated_at < ago(^num, ^unit))
   end
   for unit <- ["minute", "day", "hour", "week", "month", "year"] do
     defp compose_snapshot_query({"period", <<"past_"::binary, unquote(unit)::binary, "s_"::binary, raw::bitstring>>}, query),
       do: past_period(query, raw, unquote(unit))
   end
-  # defp compose_snapshot_query({"period", <<"past_hours_"::binary, hours_raw::bitstring>>}, query),
-  #   do: past_period(hours_raw, "hour")
-  # defp compose_snapshot_query({"period", <<"past_weeks_"::binary, weeks_raw::bitstring>>}, query),
-  #   do: past_period(weeks_raw, "week")
 
-  # defp compose_snapshot_query({"period", <<"past_hours_"::binary, hours_raw::bitstring>>}, query),
-  #   do: past_period(hours_raw, "hour")
-
-  # defp compose_snapshot_query({"period", <<"past_weeks_"::binary, weeks_raw::bitstring>>}, query) do
-  #   {weeks, _} = Integer.parse(weeks_raw)
-  #   query
-  #   |> where([s], s.upstream_updated_at > ago(^weeks, "week"))
-  # end
-  # defp compose_snapshot_query({"period", <<"past_months_"::binary, months_raw::bitstring>>}, query) do
-  #   {months, _} = Integer.parse(months_raw)
-  #   query
-  #   |> where([s], s.upstream_updated_at > ago(^months, "month"))
-  # end
-  # defp compose_snapshot_query({"period", <<"past_days_"::binary, days_raw::bitstring>>}, query) do
-  #   {days, _} = Integer.parse(days_raw)
-  #   query
-  #   |> where([s], s.upstream_updated_at > ago(^days, "day"))
-  # end
   defp compose_snapshot_query({"period", <<"season_"::binary, season_id::bitstring>>}, query),
     do: compose_snapshot_query({"season_id", season_id}, query)
 
