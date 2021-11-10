@@ -20,14 +20,32 @@ defmodule BackendWeb.LeaderboardView do
 
   def player_history_graph([], _), do: ""
   def player_history_graph(player_history, attr) do
-    # data = Enum.map(player_history, & {&1.upstream_updated_at, Map.get(&1, attr)})
-    # attr_name = attr |> to_string() |> Macro.camelize()
-    dataset = Contex.Dataset.new(player_history)
-    point_plot = Contex.PointPlot.new(dataset, mapping: %{x_col: :upstream_updated_at, y_cols: [attr]})
+    data = Enum.map(player_history, & {&1.upstream_updated_at, player_history_data(&1, attr)})
+    attr_name = attr |> to_string() |> Macro.camelize()
+    dataset = Contex.Dataset.new(data)
+    y_scale = yscale(data)
+    point_plot = Contex.PointPlot.new(dataset, custom_y_scale: y_scale, custom_y_formatter: & &1 |> trunc() |> abs())
 
     Contex.Plot.new(900, 200, point_plot)
     |> Contex.Plot.to_svg()
   end
+
+  @doc"""
+  Ensure th that the interval size is never below 1
+  """
+  defp yscale(data) do
+    {{_, min}, {_, max}} = Enum.min_max_by(data, & elem(&1, 1))
+    distance = abs(max - min) |> IO.inspect()
+    scale = Contex.ContinuousLinearScale.new()
+      |> Contex.ContinuousLinearScale.domain(min, max)
+    if distance < 10 do
+      scale |> Contex.ContinuousLinearScale.interval_count(distance + 1)
+    else
+      scale
+    end
+  end
+  defp player_history_data(ph, :rank), do: -1 * ph.rank
+  defp player_history_data(ph, attr), do: Map.get(ph, attr)
 
   def player_history_dropdowns(conn) do
     [
@@ -46,6 +64,7 @@ defmodule BackendWeb.LeaderboardView do
       end)
     options =
       [
+        {"Past 6 Hours", "past_hours_6"},
         {"Past Day", "past_days_1"},
         {"Past 3 Days", "past_days_3"},
         {"Past Week", "past_weeks_1"},
