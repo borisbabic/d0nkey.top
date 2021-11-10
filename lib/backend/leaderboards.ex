@@ -421,7 +421,7 @@ defmodule Backend.Leaderboards do
   @spec player_history([player_history_entry()], atom()) :: [player_history_entry()]
   def dedup_player_histories(histories, changed_attr) do
     histories
-    |> Enum.sort_by(& &1.upstream_updated_at, :asc)
+    |> Enum.sort_by(& &1.upstream_updated_at, & NaiveDateTime.compare(&1, &2) == :lt)
     |> Enum.dedup_by(& Map.get(&1, changed_attr))
   end
 end
