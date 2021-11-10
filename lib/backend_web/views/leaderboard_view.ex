@@ -13,7 +13,7 @@ defmodule BackendWeb.LeaderboardView do
   def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
     has_rating = player_history |> Enum.any?(& &1.rating)
     dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
-    sorted_history = Enum.sort_by(player_history, & &1.upstream_updated_at, :desc)
+    sorted_history = Enum.reverse(player_history)
     graph = player_history_graph(player_history, attr)
     render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph})
   end
@@ -35,7 +35,7 @@ defmodule BackendWeb.LeaderboardView do
   """
   defp yscale(data) do
     {{_, min}, {_, max}} = Enum.min_max_by(data, & elem(&1, 1))
-    distance = abs(max - min) |> IO.inspect()
+    distance = abs(max - min)
     scale = Contex.ContinuousLinearScale.new()
       |> Contex.ContinuousLinearScale.domain(min, max)
     if distance < 10 do
