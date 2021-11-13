@@ -11,6 +11,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy.Organization
   import Backend.Battlefy.Communicator
   @behaviour Backend.Battlefy.Communicator
+  @type join_state :: Communicator.join_state()
   @type signup_options :: Communicator.signup_options()
   @type qualifier :: Communicator.qualifier()
 
@@ -388,6 +389,68 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Enum.map(&Tournament.from_raw_map/1)
   end
 
+  @spec get_join_state(signup_options) :: {:ok, [join_state]} | {:error, any}
+  def get_join_state(%{token: token, tournament_id: tournament_id, user_id: user_id}) do
+    headers = headers(token)
+    url = "https://majestic.battlefy.com/tournaments/#{tournament_id}/user/#{user_id}/join-state"
+
+    with {:ok, %{status_code: 200, body: body}} <- HTTPoison.get(url, headers),
+      {:ok, decoded} when is_list(decoded) <- Jason.decode(body) do
+        {:ok, Enum.map(decoded, fn %{"type" => type} ->
+          %{type: type}
+        end)}
+    else
+      {_, other} -> {:error, other}
+    end
+  end
+  @spec signup_for_tournament(signup_options) :: {:ok, any} | {:error, any}
+  def signup_for_tournament(options) do
+    with {:ok, join_state} <- get_join_state(options) do
+      do_signup_for_tournament(options, join_state)
+    end
+  end
+
+  defp do_signup_for_tournament(options, join_state) do
+    errors = Enum.reduce(join_state, [], fn join_state, carry ->
+      case signup_request(options, join_state) do
+        {:ok, _} -> carry
+        {:error, reason} -> [reason | carry]
+      end
+    end)
+    do_join_tournament(options, errors)
+  end
+
+  def signup_request(options, %{type: "SubmitConquestHSDecks"}), do: submit_decks(options)
+  def signup_request(options, %{type: "ConnectBattleNet"}), do: connect_battlenet(options)
+  def signup_request(options, %{type: "CriticalRules"}), do: accept_rules(options)
+  def signup_request(options, %{type: "CustomFields"}), do: custom_values(options)
+  def signup_request(options, %{type: "CustomValues"}), do: custom_values(options)
+
+  @spec custom_values(signup_options) :: {:ok, any} | {:error, any}
+  def custom_values(signup_options) do
+    custom_values(signup_options, Map.get(signup_options, :custom_values, []))
+  end
+  @spec custom_values(signup_options, [Communicator.custom_value]) :: {:ok, any} | {:error, any}
+  def custom_values(options = %{tournament_id: tournament_id}, custom_values) do
+    value = Enum.map(custom_values, fn cv = %{name: name, value: value} ->
+      %{
+        "name" => name,
+        "public" => Map.get(cv, :public, false),
+        "_id" => tournament_id,
+        "value" => value,
+        "errorCode" => nil,
+      }
+    end)
+    body =
+      %{
+        "name" => "CustomFields",
+        "value" => value      }
+      |> Poison.encode!()
+
+    put_form_fields(options, body)
+  end
+
+
   @spec signup_for_qualifier(signup_options) :: {:ok, any} | {:error, any}
   def signup_for_qualifier(options) do
     prev_errors =
@@ -407,13 +470,18 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         end
       end)
 
+    do_join_tournament(options, prev_errors)
+  end
+
+  @spec do_join_tournament(signup_options, [any()]) :: {:ok, nil} | {:error, [any()]}
+  defp do_join_tournament(options, prev_errors) do
     case join_tournament(options) do
       {:error, reason} ->
         {:error, [reason | prev_errors]}
 
       {:ok, _} ->
         Logger.debug(
-          "Successfully signed up #{options.battletag_full} fo #{options.tournament_id}"
+          "Successfully signed up #{options.battletag_full} for #{options.tournament_id}"
         )
 
         {:ok, nil}
@@ -423,7 +491,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec put_form_fields(signup_options, String.t()) :: {:ok, any} | {:error, any}
   def put_form_fields(options = %{token: token}, body) do
     url = form_fields_link(options)
-    headers = ["Content-type": "application/json", Authorization: " Bearer #{token}"]
+    headers = headers(token)
 
     case HTTPoison.put(url, body, headers) do
       {:ok, response = %{status_code: 200}} ->
@@ -468,23 +536,9 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   @spec submit_discord(signup_options) :: {:ok, any} | {:error, any}
-  def submit_discord(options = %{tournament_id: tournament_id, discord: discord}) do
-    body =
-      %{
-        "name" => "CustomFields",
-        "value" => [
-          %{
-            "name" => "Discord Name",
-            "public" => false,
-            "_id" => tournament_id,
-            "value" => discord,
-            "errorCode" => nil
-          }
-        ]
-      }
-      |> Poison.encode!()
-
-    put_form_fields(options, body)
+  def submit_discord(options = %{discord: discord}) do
+    custom_values = [%{name: "Discord Name", value: discord, public: false}]
+    custom_values(options, custom_values)
   end
 
   @spec submit_decks(signup_options) :: {:ok, any} | {:error, any}
@@ -499,7 +553,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   def join_tournament(%{tournament_id: tournament_id, user_id: user_id, token: token}) do
     url = "https://majestic.battlefy.com/tournaments/#{tournament_id}/1v1-join/#{user_id}"
     body = %{"userID" => user_id} |> Poison.encode!()
-    headers = ["Content-type": "application/json", Authorization: "Bearer #{token}"]
+    headers = headers(token)
 
     case HTTPoison.post(url, body, headers) do
       {:ok, response = %{status_code: 200}} ->
@@ -521,5 +575,9 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     get_body(url)
     |> Jason.decode!()
     |> Enum.map(&Team.from_raw_map/1)
+  end
+
+  defp headers(token) do
+    ["Content-type": "application/json", Authorization: "Bearer #{token}"]
   end
 end
