@@ -10,13 +10,22 @@ defmodule Backend.Battlefy.Communicator do
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Team
 
+  @type custom_value :: %{
+    name: String.t(),
+    public: boolean() | nil,
+    value: any()
+  }
+  @type join_state :: %{
+    type: String.t()
+  }
   @type signup_options :: %{
           tournament_id: Battlefy.tournament_id(),
           user_id: Battlefy.user_id(),
           token: String.t(),
           battletag_full: Blizzard.battletag(),
           battlenet_id: String.t(),
-          discord: String.t()
+          custom_values: [custom_value] | nil,
+          discord: String.t() | nil
         }
   @callback signup_for_qualifier(signup_options) :: {:ok, any} | {:error, any}
   @type qualifier :: %{

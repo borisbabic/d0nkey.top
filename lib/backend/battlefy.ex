@@ -767,4 +767,22 @@ defmodule Backend.Battlefy do
   def get_match!(match_id) do
     Api.get_match!(match_id)
   end
+
+  @spec get_organization_tournaments(String.t(), Date.t(), Date.t(), boolean) :: [Tournament.t()]
+  def get_organization_tournaments(slug_or_id, from, to, only_hearthstone \\ true) do
+    org_id = case Api.get_organization(slug_or_id) do
+      %{id: id} -> id
+      _ -> slug_or_id
+    end
+    Api.get_organization_tournaments_from_to(org_id, from, to)
+    |> filter_hearthstone(only_hearthstone)
+  end
+
+  @spec filter_hearthstone([Tournament.t()], only_hearthstone :: boolean()) :: [Tournament.t()]
+  def filter_hearthstone(tournaments, false), do: tournaments
+  def filter_hearthstone(tournaments, true), do: filter_hearthstone(tournaments)
+
+  @spec filter_hearthstone([Tournament.t()]) :: [Tournament.t()]
+  def filter_hearthstone(tournaments),
+    do: Enum.filter(tournaments, &Tournament.Game.is_hearthstone/1)
 end
