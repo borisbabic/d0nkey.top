@@ -220,7 +220,8 @@ defmodule BackendWeb.MastersTourController do
     tour_stops =
       TourStop.all() |> Enum.filter(fn ts -> ts.battlefy_id end) |> Enum.map(fn ts -> ts.id end)
 
-    tournament_team_stats = MastersTour.masters_tours_stats()
+    years = multi_select_to_array(params["years"])
+    tournament_team_stats = MastersTour.masters_tours_stats(years)
     direction = direction(params["direction"])
     selected_columns = multi_select_to_array(params["columns"])
 
@@ -232,6 +233,7 @@ defmodule BackendWeb.MastersTourController do
       sort_by: params["sort_by"],
       tour_stops: tour_stops,
       page_title: "MT Stats",
+      years: years,
       tournament_team_stats: tournament_team_stats
     })
   end

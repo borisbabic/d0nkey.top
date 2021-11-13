@@ -17,6 +17,13 @@ f-> %>
         selected_first: false,
         attr: "columns"
     } %>
+    <%= render_multiselect_dropdown %{
+        form: f,
+        title: "Years",
+        options: @years_options,
+        selected_first: false,
+        attr: "years"
+    } %>
 
     <%= render_countries_multiselect_dropdown(f, @selected_countries) %>
 <% end %>
@@ -39,4 +46,3 @@ f-> %>
         <% end %>
     </tbody>
 </table>
-

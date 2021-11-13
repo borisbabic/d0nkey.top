@@ -5,6 +5,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.TournamentStats.TeamStats
   alias Backend.MastersTour
+  alias Backend.MastersTour.TourStop
   alias Backend.PlayerInfo
   alias BackendWeb.ViewUtil
   import BackendWeb.SortHelper
@@ -143,6 +144,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         sort_by: sort_by_raw,
         direction: direction_raw,
         selected_columns: selected_columns,
+        years: years,
         tour_stops: tour_stops,
         countries: countries,
         tournament_team_stats: tts
@@ -218,6 +220,8 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       |> Enum.take(limit)
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
+    years_options = years_options(years)
+
     columns_options =
       columns
       |> Enum.map(fn h ->
@@ -237,11 +241,28 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       headers: headers,
       rows: rows,
       columns_options: columns_options,
+      years_options: years_options,
       conn: conn,
       selected_countries: countries,
       prev_button: prev_button,
       next_button: next_button,
       dropdowns: [limit_dropdown]
     })
+  end
+
+  defp years_options(years) do
+    TourStop.all()
+    |> Enum.map(& to_string(&1.year))
+    |> Enum.filter(& &1)
+    |> Enum.uniq()
+    |> Enum.sort()
+    |> Enum.map(fn y ->
+      %{
+        selected: !Enum.any?(years) || y in years,
+        display: y,
+        name: y,
+        value: y
+      }
+    end)
   end
 end

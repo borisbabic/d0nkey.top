@@ -22,6 +22,7 @@ defmodule BackendWeb.TournamentStatsView do
           conn: conn,
           tournaments_stats: tournaments_stats,
           selected_columns: selected_columns_raw,
+          years: years,
           sort_by: sort_by,
           min_matches: min_matches_raw,
           min_tournaments: min_tournaments_raw,

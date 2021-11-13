@@ -53,7 +53,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2019-06-14 16:00:00],
         min_qualifiers_for_winrate: nil,
         swiss_rounds: 13,
-        year: 2020
+        year: 2019
       },
       %__MODULE__{
         id: :Seoul,
@@ -79,7 +79,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2019-10-18 06:00:00],
         min_qualifiers_for_winrate: nil,
         swiss_rounds: 9,
-        year: 2020
+        year: 2019
       },
       %__MODULE__{
         id: :Arlington,
