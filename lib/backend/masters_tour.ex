@@ -1111,9 +1111,10 @@ defmodule Backend.MastersTour do
     |> add_missing_top_cut(ts)
   end
 
-  @spec masters_tours_stats() :: [[TournamentTeamStats.t()]]
-  def masters_tours_stats() do
+  @spec masters_tours_stats([integer|String.t()]) :: [[TournamentTeamStats.t()]]
+  def masters_tours_stats(years \\ []) do
     TourStop.all()
+    |> filter_years(years)
     |> Enum.filter(fn ts -> ts.battlefy_id end)
     |> Enum.filter(&TourStop.started?/1)
     |> Enum.map(fn ts ->
@@ -1124,6 +1125,12 @@ defmodule Backend.MastersTour do
       |> Backend.TournamentStats.create_tournament_team_stats(ts.id, ts.battlefy_id)
     end)
     |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
+  end
+
+  defp filter_years(tour_stops, []), do: tour_stops
+  defp filter_years(tour_stops, years) do
+    years_string = Enum.map(years, &to_string/1)
+    Enum.filter(tour_stops, & to_string(&1.year) in years_string)
   end
 
   @spec create_mt_stats_collection([[TournamentTeamStats.t()]]) :: [
