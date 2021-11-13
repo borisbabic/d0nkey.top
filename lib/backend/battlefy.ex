@@ -31,12 +31,13 @@ defmodule Backend.Battlefy do
     "houserivalries",
     "super-girl-gamer-pro",
     "ilh-events",
-    "fantastic-pro-league",
+    # "fantastic-pro-league",
     "tierras-de-fuego-hs",
     "akg-games",
     "liga-kombatklub-de-hearthstone",
     "btw-esports",
     "juega-duro-hearthstone",
+    "black-claws",
     "osc-esports"
   ]
   @organization_stats_configs for num <- [6, 5, 4, 3, 2],
@@ -48,6 +49,20 @@ defmodule Backend.Battlefy do
                                     pattern: ~r/GRITO DE GUERRA #{num}/i
                                   },
                                   into: [
+                                    %{
+                                      from: ~D[2021-10-20],
+                                      organization_slug: "black-claws",
+                                      title: "Black Claws x America's Navy",
+                                      stats_slug: "black-claws-x-americas-navy",
+                                      pattern: ~r/750 - Black Claws x America's Navy/i
+                                    },
+                                    %{
+                                      from: ~D[2021-11-11],
+                                      organization_slug: "black-claws",
+                                      title: "Black Claws x Bang & Olufsen",
+                                      stats_slug: "black-claws-x-bang-olufsen",
+                                      pattern: ~r/Black Claws x Bang & Olufsen/i
+                                    },
                                     %{
                                       from: ~D[2020-06-01],
                                       organization_slug: "juega-duro-hearthstone",
