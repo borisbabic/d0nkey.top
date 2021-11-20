@@ -869,6 +869,30 @@ defmodule Backend.MastersTour do
       "WedgmXmg" -> "KZGXmg"
 
       ### </AUTOMATED>
+
+      # SAME Battlefy User Undercity
+      "SNBrox" -> "WBGBrox"
+      "SNCx" -> "WBGCx"
+      "SNJing" -> "WBGJing"
+      "Hachikuji Ma" -> "HachikujiMay"
+
+      "거인의어깨위에서" -> "Tori"
+      "기링" -> "donggiring"
+      "SuperKimchi" -> "DOLGALLERY"
+
+      "DenBut" -> "Patek"
+      "サバンナ" -> "savanna"
+
+      # zflow undercity
+      "진원치킨" -> "Woobin"
+      "자네누군가" -> "whoyou99"
+      "와와" -> "Wawa"
+      "에렛지디" -> "EretdGD"
+      "가끔들어옴" -> "rkRma"
+      "거인의어깨위에서" -> "Tori"
+      "동기링" -> "donggiring"
+      "투블럭컷밥말리" -> "twobob"
+
       n -> n
     end
     if new == name do
