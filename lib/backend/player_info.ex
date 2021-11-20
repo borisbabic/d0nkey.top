@@ -284,8 +284,10 @@ defmodule Backend.PlayerInfo do
   def get_grandmasters_for_promotion(season = {2021, 2}),
     do: get_grandmasters(:Dalaran, relegated_gms_for_promotion(season))
 
-  def get_grandmasters_for_promotion(season = {2022, 1}),
-    do: get_grandmasters(:Stormwind, relegated_gms_for_promotion(season))
+  def get_grandmasters_for_promotion(season = {2022, 1}) do
+    relegated = relegated_gms_for_promotion(season)
+    get_grandmasters({2021, 2}) |> remove_relegated(relegated)
+  end
 
   def get_grandmasters_for_promotion(_), do: []
 
@@ -324,8 +326,13 @@ defmodule Backend.PlayerInfo do
     |> Enum.map(fn %{battletag_full: bf} ->
       Backend.MastersTour.InvitedPlayer.shorten_battletag(bf)
     end)
-    |> Enum.filter(fn n -> !MapSet.member?(relegated, n) end)
+    |> remove_relegated(relegated)
     |> Enum.uniq()
+  end
+
+  def remove_relegated(gms, relegated) do
+    gms
+    |> Enum.filter(fn n -> !MapSet.member?(relegated, n) end)
   end
 
   def get_esportsgold_nationality(player) do
