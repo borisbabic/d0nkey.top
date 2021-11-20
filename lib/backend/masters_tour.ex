@@ -893,6 +893,15 @@ defmodule Backend.MastersTour do
       "동기링" -> "donggiring"
       "투블럭컷밥말리" -> "twobob"
 
+      #edward ed
+      "八九寺真宵" -> "HachikujiMay"
+      "嗨賴保證書" -> "highlight"
+      "星殞晨風" -> "StarfallMW"
+      "StarfallMW" -> "nemutagenaku"
+
+        #maybe there are more Kevin's
+      "Kevin" -> "KevinXuan"
+
       n -> n
     end
     if new == name do
