@@ -716,7 +716,7 @@ defmodule BackendWeb.MastersTourView do
 
   def get_player_score(name, standings) do
     standings
-    |> Enum.find(fn %{team: %{name: full}} -> InvitedPlayer.shorten_battletag(full) == name end)
+    |> Enum.find(fn %{team: %{name: full}} -> MastersTour.fix_name(name) == full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name() end)
     |> case do
       %{wins: wins, losses: losses, disqualified: disqualified} ->
         class =
