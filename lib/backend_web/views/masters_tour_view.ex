@@ -672,7 +672,7 @@ defmodule BackendWeb.MastersTourView do
 
   def create_season_dropdown(conn, {year, season}) do
     options =
-      [{2020, 2}, {2021, 1}, {2021, 2}, {2022, 1}]
+      [{2020, 2}, {2021, 1}, {2021, 2}, {2022, 1}, {2022, 2}]
       |> Enum.map(fn {y, s} ->
         %{
           display: "#{y} Season #{s}",

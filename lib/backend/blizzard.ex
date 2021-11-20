@@ -364,6 +364,9 @@ defmodule Backend.Blizzard do
       {2022, 1} ->
         {:ok, [:Ironforge, :Orgrimmar, :Dalaran, :Silvermoon, :Stormwind, :Undercity]}
 
+      {2022, 2} ->
+        {:ok, [:Silvermoon, :Stormwind, :Undercity]}
+
       _ ->
         {:error, "Unknown/unsupported gm_season"}
     end
