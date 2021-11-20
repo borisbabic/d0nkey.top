@@ -822,7 +822,7 @@ defmodule Backend.MastersTour do
 
       "聖水洋洋" -> "holywater"
 
-      "Lucasdmnasc" -> "lucasdmnasc"
+      "lucasdmnasc" -> "Lucasdmnasc"
 
       "살아있는양심" -> "sheepheart"
 
