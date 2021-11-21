@@ -897,7 +897,7 @@ defmodule Backend.MastersTour do
       "八九寺真宵" -> "HachikujiMay"
       "嗨賴保證書" -> "highlight"
       "星殞晨風" -> "StarfallMW"
-      "StarfallMW" -> "nemutagenaku"
+      "眠たげなクマ" -> "nemutagenaku"
 
         #maybe there are more Kevin's
       "Kevin" -> "KevinXuan"
