@@ -288,6 +288,22 @@ defmodule Backend.PlayerInfo do
     relegated = relegated_gms_for_promotion(season)
     get_grandmasters({2021, 2}) |> remove_relegated(relegated)
   end
+  def get_grandmasters_for_promotion(season = {2022, 2}) do
+    relegated = relegated_gms_for_promotion(season)
+    newly_promoted = [
+      #AM
+      "Pun", "Pascoa", "CaelesLuna", "LeandroLeal", "GamerRvg",
+      #APAC
+      "DragonMan", "Mighty", "trahison", "DOLGALLERY", "MegaGliscor", "che0nsu",
+      #EU
+      "Furyhunter", "Floki", "SuperFake", "ZloyGruzin",
+    ]
+    retired = ["Thijs", "Surrender", "Blitzchung", "TISZ", "Muzzy", "Eddie"]
+    get_grandmasters_for_promotion({2022, 1})
+    |> Kernel.++(newly_promoted)
+    |> Kernel.--(retired)
+    |> remove_relegated(relegated)
+  end
 
   def get_grandmasters_for_promotion(_), do: []
 
