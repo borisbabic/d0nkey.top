@@ -6,11 +6,12 @@ defmodule Backend.PlayerIconBag do
   @name :player_icon_cache
   @picture_icons [
     {"D0nkey#2470", {:image, "/favicon.ico"}},
-    {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}},
+    # {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}},
     {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
-    {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
-    {"Dragoninja#1573", {:image, "/images/icons/dragoninja.png"}}
+    # {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
+    # {"Dragoninja#1573", {:image, "/images/icons/dragoninja.png"}},
+    {"Ajani#2766", {:image, "/images/icons/ajani.jpg"}}
   ]
   @type player_icon :: {:image, String.t()} | {:unicode, String.t()}
 
