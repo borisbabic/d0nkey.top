@@ -8,22 +8,22 @@ defmodule Components.GMStandingsTable do
   prop(region, :atom)
 
   def render(assigns) do
-    ~H"""
+    ~F"""
       <table class="table is-fullwidth"> 
         <thead>
           <tr>
             <th>#</th>
             <th>Player</th>
-            <th class="is-hidden-mobile" :for={{ week <- weeks() }}>{{ week }}</th>
+            <th class="is-hidden-mobile" :for={week <- weeks()}>{week}</th>
             <th>Total Points</th>
           </tr>
         </thead>
         <tbody>
-          <tr :for.with_index={{ {{player, total_results}, index} <- Grandmasters.region_results(@region) }} class="{{ class(index) }}" >
-            <td>{{ index + 1 }}.</td>
-            <td><GMProfileLink link_class={{ class(index) }} gm={{player}}/></td>
-            <td class="is-hidden-mobile" :for={{ week <- weeks() }}>{{ weekly_results(player, week) }}</td>
-            <td>{{ total_results }}</td>
+          <tr :for.with_index={{{player, total_results}, index} <- Grandmasters.region_results(@region)} class={"#{class(index)}"} >
+            <td>{index + 1}.</td>
+            <td><GMProfileLink link_class={class(index)} gm={player}/></td>
+            <td class="is-hidden-mobile" :for={week <- weeks()}>{weekly_results(player, week)}</td>
+            <td>{total_results}</td>
           </tr>
         </tbody>
       </table>

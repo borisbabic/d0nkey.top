@@ -6,7 +6,7 @@ defmodule Components.DraftPicksTable do
   prop(league, :map)
 
   def render(assigns) do
-    ~H"""
+    ~F"""
       <table class="table is-fullwidth is-striped"> 
         <thead>
           <th>
@@ -20,10 +20,10 @@ defmodule Components.DraftPicksTable do
           </th>
         </thead>
         <tbody>
-          <tr :for={{ pick <- @league |> picks()}} >
-            <td>{{ pick.name }}</td>
-            <td>{{ pick.team_name }}</td>
-            <td>{{ pick.picked_at |> render_datetime() }}</td>
+          <tr :for={pick <- @league |> picks()} >
+            <td>{pick.name}</td>
+            <td>{pick.team_name}</td>
+            <td>{pick.picked_at |> render_datetime()}</td>
           </tr>
         </tbody>
       </table>

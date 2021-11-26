@@ -13,12 +13,12 @@ defmodule Components.GMProfileLink do
   prop(link_class, :css_class, default: "")
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <span>
-      <a :if={{ name = name(@gm) }}  :if={{ @link_text }} class="link is-text {{ @link_class }}" href="{{ link(name, @week) }}">
-        {{ @link_text }}
+      <a :if={name = name(@gm)}  :if={@link_text} class={"link is-text #{@link_class}"} href={"#{link(name, @week)}"}>
+        {@link_text}
       </a>
-      <PlayerName :if={{ name = name(@gm) }} :if={{ ! @link_text }} flag={{ true }} player={{ name }} text_link={{ link(name, @week) }} link_class={{ @link_class }}/>
+      <PlayerName :if={name = name(@gm)} :if={! @link_text} flag={true} player={name} text_link={link(name, @week)} link_class={@link_class}/>
     </span>
     """
   end

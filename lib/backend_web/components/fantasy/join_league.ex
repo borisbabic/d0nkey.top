@@ -8,11 +8,11 @@ defmodule Components.JoinLeague do
   prop(show_error, :map, default: false)
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div>
       <button class="button" type="button" :on-click="join"> Join League</button>
-      <div :if={{ @show_success }} class="notification is-success tag">Success!</div>
-      <div :if={{ @show_error }} class="notification is-warning tag">Failure!</div>
+      <div :if={@show_success} class="notification is-success tag">Success!</div>
+      <div :if={@show_error} class="notification is-warning tag">Failure!</div>
     </div>
     """
   end

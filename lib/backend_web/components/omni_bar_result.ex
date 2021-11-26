@@ -6,8 +6,8 @@ defmodule Components.OmniBarResult do
   prop(result, :map, required: true)
 
   def render(assigns) do
-    ~H"""
-      <a href={{ @result.link }}>{{@result.display_value}}</a>
+    ~F"""
+      <a href={@result.link}>{@result.display_value}</a>
     """
   end
 end

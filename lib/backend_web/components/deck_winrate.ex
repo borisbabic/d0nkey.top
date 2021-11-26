@@ -9,9 +9,9 @@ defmodule Components.DeckWinrate do
   prop(min_sample_size, :integer, default: 100)
 
   def render(assigns) do
-    ~H"""
-      <div class="tag column" :if={{ s = winrate(@deck_id, @period, @ranks, @min_sample_size) }}>
-        Winrate: {{ Float.round((s.wins/ (s.losses + s.wins)) * 100, 1) }}% ({{s.wins}} - {{s.losses}})
+    ~F"""
+      <div class="tag column" :if={s = winrate(@deck_id, @period, @ranks, @min_sample_size)}>
+        Winrate: {Float.round((s.wins/ (s.losses + s.wins)) * 100, 1)}% ({s.wins} - {s.losses})
       </div>
     """
   end

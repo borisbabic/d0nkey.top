@@ -26,37 +26,37 @@ defmodule BackendWeb.GrandmasterProfileLive do
   end
 
   def render(assigns) do
-    ~H"""
-     <Context put={{ user: @user }}>
+    ~F"""
+     <Context put={user: @user}>
       <div class="container">
         <div class="title is-2">
-          {{ @gm }} {{ @week }}
+          {@gm} {@week}
         </div>
         <div class="subtitle is-5">
-          Week Points: {{ points(@gm, @week) }} Total Points: {{ points(@gm) }}
+          Week Points: {points(@gm, @week)} Total Points: {points(@gm)}
         </div>
 
         <div class="level is-mobile">
           <div class="level-left">
-            <a class="is-link button level-item" href="{{ grandmasters_link(@socket, @week, @gm) }}"> Grandmasters Overview</a>
+            <a class="is-link button level-item" href={"#{grandmasters_link(@socket, @week, @gm)}"}> Grandmasters Overview</a>
             <div class="level-item">
-              <Dropdown title={{ @week }} >
-                <a class="dropdown-item {{ @week == week && 'is-active' || '' }}" :for={{ week <- GrandmastersLive.weeks() }} :on-click="change-week" phx-value-week={{ week }}>
-                  {{ week }}
+              <Dropdown title={@week} >
+                <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- GrandmastersLive.weeks()} :on-click="change-week" phx-value-week={week}>
+                  {week}
                 </a>
               </Dropdown>
             </div>
-            <div class="level-item" :if={{ region = region(@gm) }}>
-              <GMStandingsModal region={{ region }} id="gm_standings_modal_total" button_title="Total Standings" title="{{GrandmastersLive.gm_region_display(region)}} Standings" />
+            <div class="level-item" :if={region = region(@gm)}>
+              <GMStandingsModal region={region} id="gm_standings_modal_total" button_title="Total Standings" title={"#{GrandmastersLive.gm_region_display(region)} Standings"} />
             </div>
-            <div class="level-item" :if={{ region = region(@gm) }}>
-              <GMStandingsModal region={{ region }} id="gm_standings_modal_week" week={{ @week }} button_title="Week Standings" title="{{GrandmastersLive.gm_region_display(region)}} Standings" />
+            <div class="level-item" :if={region = region(@gm)}>
+              <GMStandingsModal region={region} id="gm_standings_modal_week" week={@week} button_title="Week Standings" title={"#{GrandmastersLive.gm_region_display(region)} Standings"} />
             </div>
           </div>
         </div>
-        <ExpandableLineup :if={{ lineup = lineup(@gm, @week) }} id="{{ @gm }}_profile_lineup" lineup={{ lineup }}/>
+        <ExpandableLineup :if={lineup = lineup(@gm, @week)} id={"#{@gm}_profile_lineup"} lineup={lineup}/>
         <br>
-        <GMResultsTable :if={{ region = region(@gm) }}week={{ @week }} region={{ region }} match_filter={{ match_filter(@gm) }}/>
+        <GMResultsTable :if={region = region(@gm)}week={@week} region={region} match_filter={match_filter(@gm)}/>
         <div class="title is-4">
           All weeks
         </div>
@@ -68,9 +68,9 @@ defmodule BackendWeb.GrandmasterProfileLive do
             </tr>
           </thead>
           <tbody>
-            <tr :for={{ week <- BackendWeb.GrandmastersLive.weeks() }}>
-              <td><GMProfileLink week="{{ week }}" gm={{@gm}} link_text={{ week }}/></td>
-              <td>{{ points(@gm, week) }}</td>
+            <tr :for={week <- BackendWeb.GrandmastersLive.weeks()}>
+              <td><GMProfileLink week={"#{week}"} gm={@gm} link_text={week}/></td>
+              <td>{points(@gm, week)}</td>
             </tr>
           </tbody>
         </table>

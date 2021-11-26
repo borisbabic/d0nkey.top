@@ -16,13 +16,13 @@ defmodule Components.DeckFeedItem do
         _ -> nil
       end
 
-    ~H"""
-    <div :if={{ deck }} class="card" style="width: calc(var(--decklist-width) + 15px);">
+    ~F"""
+    <div :if={deck} class="card" style="width: calc(var(--decklist-width) + 15px);">
       <div class="card-image" style="margin:7.5px;">
-        <Decklist deck={{ deck }} name={{ name }} />
+        <Decklist deck={deck} name={name} />
       </div>
       <div class="columns is-multiline is-mobile is-text-overflow" style="margin:7.5px">
-        <DeckStreamingInfo deck_id={{ deck.id }}/>
+        <DeckStreamingInfo deck_id={deck.id}/>
       </div>
     </div>
     """

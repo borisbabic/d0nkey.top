@@ -15,11 +15,11 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
   end
 
   def render(assigns) do
-    ~H"""
-    <Context  put={{ user: @user }}>
+    ~F"""
+    <Context  put={user: @user}>
       <div class="container">
         <div class="title is-1">Explore Decks</div>
-        <TournamentLineupExplorer id={{ "lineup_explorer#{@tournament_id}" }}tournament_id={{ @tournament_id }} tournament_source={{ "battlefy" }}/>
+        <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"}/>
       </div>
     </Context>
     """

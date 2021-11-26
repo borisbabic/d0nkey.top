@@ -11,17 +11,17 @@ defmodule Components.ExpandableLineup do
   prop(stats, :map, default: nil)
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div>
         <span :on-click="show_cards" class="is-clickable is-pulled-left" style="margin-top: 0.75em;">
           <span class="icon">
-            <i :if={{ !@show_cards }} class="fas fa-eye"></i>
-            <i :if={{ @show_cards }} class="fas fa-eye-slash"></i>
+            <i :if={!@show_cards} class="fas fa-eye"></i>
+            <i :if={@show_cards} class="fas fa-eye-slash"></i>
           </span>
         </span>
       <div class="columns">
-        <div class=" column is-narrow" :for={{ deck <- @lineup.decks |> sort(@stats) }}  >
-          <Decklist deck={{ deck }} show_cards={{ @show_cards }} comparison={{ comparison_map(@lineup.decks) }}/>
+        <div class=" column is-narrow" :for={deck <- @lineup.decks |> sort(@stats)}  >
+          <Decklist deck={deck} show_cards={@show_cards} comparison={comparison_map(@lineup.decks)}/>
         </div>
       </div>
     </div>

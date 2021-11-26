@@ -10,22 +10,22 @@ defmodule Components.LeagueInfoModal do
   prop(button_title, :string, default: "League Info")
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div>
-      <button class="button" type="button" :on-click="show_modal">{{ @button_title }}</button>
-      <div class="modal is-active" :if={{ @show_modal }}>
+      <button class="button" type="button" :on-click="show_modal">{@button_title}</button>
+      <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">{{ @league.name }} League Info</p>
+              <p class="modal-card-title">{@league.name} League Info</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section class="modal-card-body content">
               <table class="table is-fullwidth is-striped">
                 <tbody>
-                 <tr :for={{ {info, value} <- info(@league)}}>
-                  <td>{{ info }}</td>
-                  <td>{{ value }}</td>
+                 <tr :for={{info, value} <- info(@league)}>
+                  <td>{info}</td>
+                  <td>{value}</td>
                 </tr>
                   
                 </tbody>

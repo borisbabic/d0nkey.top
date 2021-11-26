@@ -13,36 +13,36 @@ defmodule Components.FantasyLeague do
   prop(round, :any, default: nil)
 
   def render(assigns = %{league: %{id: _}}) do
-    ~H"""
+    ~F"""
       <div>
-        <Context get={{ user: user }} >
-          <div class="title is-2">{{ @league.name }} </div>
+        <Context get={user: user} >
+          <div class="title is-2">{@league.name} </div>
 
           <div class="level is-mobile ">
             <div class="level-left">
 
-              <div class="level-item" :if={{ League.can_manage?(@league, user) }} >
-                  <FantasyModal id={{ "edit_modal_#{@league.id}" }} league={{ @league }} title="Edit League"/>
+              <div class="level-item" :if={League.can_manage?(@league, user)} >
+                  <FantasyModal id={"edit_modal_#{@league.id}"} league={@league} title="Edit League"/>
               </div>
-              <div class="level-item" :if={{ !League.can_manage?(@league, user) }} >
-                  <LeagueInfoModal id={{ "league_info_modal_#{@league.id}" }} league={{ @league }}/>
+              <div class="level-item" :if={!League.can_manage?(@league, user)} >
+                  <LeagueInfoModal id={"league_info_modal_#{@league.id}"} league={@league}/>
               </div>
 
               <div class="level-item dropdown is-hoverable">
-                <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">{{ round_title(@league, @round) }}</button></div>
+                <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">{round_title(@league, @round)}</button></div>
                 <div class="dropdown-menu" role="menu">
                     <div class="dropdown-content">
-                        <a  :for={{ r <- round_options(@league) }} :on-click="set_round" phx-value-round={{ r }} class="dropdown-item is-link {{ current_round_option(@league, @round) == r && 'is-active' || '' }}">{{ round_title(r) }}</a>
+                        <a  :for={r <- round_options(@league)} :on-click="set_round" phx-value-round={r} class={"dropdown-item is-link #{current_round_option(@league, @round) == r && 'is-active' || ''}"}>{round_title(r)}</a>
                     </div>
                 </div>
               </div>
 
               <div class="level-item">
-                <a class="is-link button"  href="/fantasy/leagues/{{ @league.id }}/draft">{{ draft_title(@league) }}</a>
+                <a class="is-link button"  href={"/fantasy/leagues/#{@league.id}/draft"}>{draft_title(@league)}</a>
               </div>
 
-              <div class="level-item" :if={{ League.can_manage?(@league, user) }} >
-                <a class="is-link button"  href="/fantasy/leagues/join/{{ @league.join_code }}">Join Link</a>
+              <div class="level-item" :if={League.can_manage?(@league, user)} >
+                <a class="is-link button"  href={"/fantasy/leagues/join/#{@league.join_code}"}>Join Link</a>
               </div>
 
 
@@ -56,12 +56,12 @@ defmodule Components.FantasyLeague do
               <th>Actions</th>
             </thead>
             <tbody>
-             <tr :for={{ {lt, points} <- teams_with_points(@league, @round) }}>
-              <td>{{ lt |> LeagueTeam.display_name() }}</td>
-              <td>{{ points }}</td>
+             <tr :for={{lt, points} <- teams_with_points(@league, @round)}>
+              <td>{lt |> LeagueTeam.display_name()}</td>
+              <td>{points}</td>
               <td>
-                <button  :if={{ can_remove?(@league, user, lt) }} class="button" type="button" :on-click="remove_league_team" phx-value-id="{{ lt.id }}">Remove</button>
-                <RosterModal id="roster_modal_{{lt.id}}" league_team={{ lt }} />
+                <button  :if={can_remove?(@league, user, lt)} class="button" type="button" :on-click="remove_league_team" phx-value-id={"#{lt.id}"}>Remove</button>
+                <RosterModal id={"roster_modal_#{lt.id}"} league_team={lt} />
               </td>
             </tr>
 
@@ -74,7 +74,7 @@ defmodule Components.FantasyLeague do
   end
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div class="title is-2">League not found</div>
     """
   end

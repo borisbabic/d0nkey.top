@@ -12,19 +12,19 @@ defmodule BackendWeb.FeedLive do
   def render(assigns) do
     items = Feed.get_current_items()
 
-    ~H"""
-    <Context put={{ user: @user }} >
+    ~F"""
+    <Context put={user: @user} >
       <div class="container">
         <br>
         <div class="level is-mobile">
-          <div :if={{ true }} class="level-item">
+          <div :if={true} class="level-item">
             <OmniBar id="omni_bar_id"/>
           </div>
-          <div :if={{ false }} class="level-item title is-2">Well Met!</div>
+          <div :if={false} class="level-item title is-2">Well Met!</div>
         </div>
         <div class="columns is-multiline is-mobile is-narrow is-centered">
-          <div :for={{ item <- items }} :if={{ item.type == "deck" }} class="column is-narrow">
-            <DeckFeedItem item={{ item }}/>
+          <div :for={item <- items} :if={item.type == "deck"} class="column is-narrow">
+            <DeckFeedItem item={item}/>
           </div>
         </div>
       </div>

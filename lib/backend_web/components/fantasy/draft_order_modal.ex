@@ -9,20 +9,20 @@ defmodule Components.DraftOrderModal do
   prop(button_title, :string, default: "Draft Order")
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div>
-      <button class="button" type="button" :on-click="show_modal">{{ @button_title }}</button>
-      <div class="modal is-active" :if={{ @show_modal }}>
+      <button class="button" type="button" :on-click="show_modal">{@button_title}</button>
+      <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">{{ @league.name }} Draft Order</p>
+              <p class="modal-card-title">{@league.name} Draft Order</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section class="modal-card-body content">
-              <div class="level" :for={{ row <- pick_order_chunks(@league) }}> 
-                <div class="level-item {{ pick_class(@league, index) }} tag" :for={{ {id, index} <- row }}>
-                  {{ League.league_team!(@league, id) |> LeagueTeam.display_name() }}
+              <div class="level" :for={row <- pick_order_chunks(@league)}> 
+                <div class={"level-item #{pick_class(@league, index)} tag"} :for={{id, index} <- row}>
+                  {League.league_team!(@league, id) |> LeagueTeam.display_name()}
                 </div>
               </div>
             </section>

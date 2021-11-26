@@ -13,12 +13,12 @@ defmodule Components.OmniBar do
   prop(results, :list, default: [])
 
   def render(assigns) do
-    ~H"""
+    ~F"""
       <div>
         <div class="level is-mobile">
           <div class="level-item">
-            <Form for={{:search}} change="change" submit="change">
-              <TextInput value={{@search}} class="input" opts={{ placeholder: "Type or paste" }}/>
+            <Form for={:search} change="change" submit="change">
+              <TextInput value={@search} class="input" opts={placeholder: "Type or paste"}/>
             </Form>
           </div>
 
@@ -26,11 +26,11 @@ defmodule Components.OmniBar do
             <OmniBarHelp id="omni_bar_help" />
           </div>
         </div>
-        <div :if={{ @results |> Enum.any?() }} class="dropdown is-active">
+        <div :if={@results |> Enum.any?()} class="dropdown is-active">
           <div class="dropdown-menu">
             <div class="dropdown-content">
-              <div :for={{ result <- sorted(@results) }} class="dropdown-item">
-                <OmniBarResult result={{ result }} />
+              <div :for={result <- sorted(@results)} class="dropdown-item">
+                <OmniBarResult result={result} />
               </div>
             </div>
           </div>
