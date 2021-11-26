@@ -14,26 +14,26 @@ defmodule Components.RosterModal do
   prop(button_title, :string, default: "View Roster")
 
   def render(assigns) do
-    ~H"""
-    <Context get={{ user: user }}>
+    ~F"""
+    <Context get={user: user}>
     <div>
-      <button class="button" type="button" :on-click="show_modal">{{ @button_title }}</button>
-      <div class="modal is-active" :if={{ @show_modal }}>
+      <button class="button" type="button" :on-click="show_modal">{@button_title}</button>
+      <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">{{ @league_team |> LeagueTeam.display_name() }}</p>
+              <p class="modal-card-title">{@league_team |> LeagueTeam.display_name()}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section class="modal-card-body">
               <div class="content">
-                <ul :for={{ {pick_name, points} <- picks_with_points(@league_team, @include_points, round(@league_team, @round)) }}>
-                  <li><span :if={{ @include_points }}>{{ points }} - </span>{{ show_pick_name(@league_team, user, pick_name, round(@league_team, @round)) }}</li>
+                <ul :for={{pick_name, points} <- picks_with_points(@league_team, @include_points, round(@league_team, @round))}>
+                  <li><span :if={@include_points}>{points} - </span>{show_pick_name(@league_team, user, pick_name, round(@league_team, @round))}</li>
                 </ul>
-                <a target="_blank" :if={{ standings_link = standings_link(@league_team) }} class="button is-link " href="{{ standings_link }}">View in standings</a>
+                <a target="_blank" :if={standings_link = standings_link(@league_team)} class="button is-link " href={"#{standings_link}"}>View in standings</a>
               </div>
             </section>
-            <div class="modal-card-foot" :if={{ show_round_footer(@league_team) }} :if={{ round = round(@league_team, @round) }}>
+            <div class="modal-card-foot" :if={show_round_footer(@league_team)} :if={round = round(@league_team, @round)}>
 
               <button type="button" class="button" :on-click="dec_round" >
                 <i class="fas fa-caret-left"></i>
@@ -41,7 +41,7 @@ defmodule Components.RosterModal do
               <button type="button" class="button" :on-click="inc_round">
                 <i class="fas fa-caret-right"></i>
               </button>
-              <p>Round {{ round }}</p>
+              <p>Round {round}</p>
             </div>
           </div>
         </div>

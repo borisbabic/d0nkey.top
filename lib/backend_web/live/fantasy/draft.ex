@@ -35,46 +35,46 @@ defmodule BackendWeb.FantasyDraftLive do
   end
 
   def render(assigns) do
-    ~H"""
-    <Context put={{ user: @user }} >
+    ~F"""
+    <Context put={user: @user} >
       <div class="container">
-        <div class="title is-2">{{ @league.name }} Draft</div>
+        <div class="title is-2">{@league.name} Draft</div>
         <div class="subtitle is-4">
-          Online now: {{ @present |> Enum.uniq() |> Enum.join(" | ") }}
+          Online now: {@present |> Enum.uniq() |> Enum.join(" | ")}
         </div>
-        <div :if={{ !League.draft_started?(@league) }} >
+        <div :if={!League.draft_started?(@league)} >
           Draft Not Started
         </div>
-        <div :if={{ League.draft_started?(@league) &&  @league.real_time_draft}} class="level">
+        <div :if={League.draft_started?(@league) &&  @league.real_time_draft} class="level">
           <div class="level-left">
-            <DraftOrderModal id="draft_order_modal_{{@league.id}}" league={{ @league }} button_title="Draft Order" />
-            <div :if={{ now = League.drafting_now(@league) }} class="level-item" ><RosterModal include_points={{ false }} id="drafting_now_{{now.id}}" league_team={{ now }} button_title="Drafting Now: {{ now |> LeagueTeam.display_name() }}" /></div>
-            <div :if={{ next = League.drafting_next(@league) }} class="level-item" ><RosterModal include_points={{ false }} id="drafting_next_{{next.id}}" league_team={{ next }} button_title="Drafting next: {{ next |> LeagueTeam.display_name() }}" /></div>
-            <div :if={{ next = League.drafting_pos(@league, 2) }} class="level-item" ><RosterModal include_points={{ false }} id="drafting_2_{{next.id}}" league_team={{ next }} button_title="{{ next |> LeagueTeam.display_name() }}" /></div>
-            <div :if={{ next = League.drafting_pos(@league, 3) }} class="level-item" ><RosterModal include_points={{ false }} id="drafting_3_{{next.id}}" league_team={{ next }} button_title="{{ next |> LeagueTeam.display_name() }}" /></div>
+            <DraftOrderModal id={"draft_order_modal_#{@league.id}"} league={@league} button_title="Draft Order" />
+            <div :if={now = League.drafting_now(@league)} class="level-item" ><RosterModal include_points={false} id={"drafting_now_#{now.id}"} league_team={now} button_title={"Drafting Now: #{now |> LeagueTeam.display_name()}"} /></div>
+            <div :if={next = League.drafting_next(@league)} class="level-item" ><RosterModal include_points={false} id={"drafting_next_#{next.id}"} league_team={next} button_title={"Drafting next: #{next |> LeagueTeam.display_name()}"} /></div>
+            <div :if={next = League.drafting_pos(@league, 2)} class="level-item" ><RosterModal include_points={false} id={"drafting_2_#{next.id}"} league_team={next} button_title={"#{next |> LeagueTeam.display_name()}"} /></div>
+            <div :if={next = League.drafting_pos(@league, 3)} class="level-item" ><RosterModal include_points={false} id={"drafting_3_#{next.id}"} league_team={next} button_title={"#{next |> LeagueTeam.display_name()}"} /></div>
           </div>
         </div>
         <div class="level is-mobile">
           <div class="level-left">
-            <div class="level-item notification is-warning" :if={{ League.draft_deadline_passed?(@league) }}>
+            <div class="level-item notification is-warning" :if={League.draft_deadline_passed?(@league)}>
               Draft Deadline Passed!
             </div>
-            <a class="is-link level-item button" href="/fantasy/leagues/{{ @league.id }}">View League</a>
-            <div :if={{ lt = League.team_for_user(@league, @user)}} style="position: sticky; top: 0; z-index: 10;">
-              <RosterModal :if={{ @league }} id={{ "self_roster_modal_{{lt.id}}" }} league_team={{ lt }} button_title="Your roster: {{ LeagueTeam.current_roster_size(lt) }} / {{ @league.roster_size }}" />
+            <a class="is-link level-item button" href={"/fantasy/leagues/#{@league.id}"}>View League</a>
+            <div :if={lt = League.team_for_user(@league, @user)} style="position: sticky; top: 0; z-index: 10;">
+              <RosterModal :if={@league} id={"self_roster_modal_{{lt.id}}"} league_team={lt} button_title={"Your roster: #{LeagueTeam.current_roster_size(lt)} / #{@league.roster_size}"} />
             </div>
             <div class="level-item">
-              <LeagueInfoModal id={{ "league_info_modal_#{@league.id}" }} league={{ @league }}/>
+              <LeagueInfoModal id={"league_info_modal_#{@league.id}"} league={@league}/>
             </div>
 
-            <button class="button level-item" type="button" :on-click="start_draft" :if={{ @user && League.can_manage?(@league, @user) && !League.draft_started?(@league) }} >
+            <button class="button level-item" type="button" :on-click="start_draft" :if={@user && League.can_manage?(@league, @user) && !League.draft_started?(@league)} >
               Start Draft
             </button>
-            <button :if={{ show_draft_picks_table_button(@league) }} class="button level-item" type="button" :on-click="toggle_draft_picks_table">{{ toggle_draft_picks_table_button_name(@show_draft_picks_table) }}</button>
+            <button :if={show_draft_picks_table_button(@league)} class="button level-item" type="button" :on-click="toggle_draft_picks_table">{toggle_draft_picks_table_button_name(@show_draft_picks_table)}</button>
           </div>
         </div>
-        <DraftPicksTable :if={{ show_draft_picks_table(@league, @show_draft_picks_table)}} id="draft_picks_table_{{ @league.id }}" league={{ @league }} />
-        <CompetitorsTable id="competitors_{{ @league.id }}" league={{ @league }} user={{ @user }}/>
+        <DraftPicksTable :if={show_draft_picks_table(@league, @show_draft_picks_table)} id={"draft_picks_table_#{@league.id}"} league={@league} />
+        <CompetitorsTable id={"competitors_#{@league.id}"} league={@league} user={@user}/>
       </div>
     </Context>
     """

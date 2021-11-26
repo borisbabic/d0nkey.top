@@ -19,9 +19,9 @@ defmodule BackendWeb.ExpandableLineupLive do
   end
 
   def render(assigns) do
-    ~H"""
-    <Context :if={{ lineup = Backend.Hearthstone.lineup(@lineup_id) }} put={{ user: @user }}>
-      <ExpandableLineup id={{ @lineup_id }} lineup={{ lineup }} />
+    ~F"""
+    <Context :if={lineup = Backend.Hearthstone.lineup(@lineup_id)} put={user: @user}>
+      <ExpandableLineup id={@lineup_id} lineup={lineup} />
     </Context>
     """
   end

@@ -37,16 +37,16 @@ defmodule BackendWeb.DeckLive do
   end
 
   def render(assigns = %{deck: _}) do
-    ~H"""
-    <Context put={{user: @user}}>
+    ~F"""
+    <Context put={user: @user}>
       <div class="container">
         <br>
         <div class="columns is-narrow is-mobile is-multiline">
           <div class="column">
-            <Decklist deck={{ @deck }}/>
+            <Decklist deck={@deck}/>
           </div>
-          <div class="column" :if={{ @deck.id }}>
-            <DeckStreamingInfo deck_id={{ @deck.id }}/>
+          <div class="column" :if={@deck.id}>
+            <DeckStreamingInfo deck_id={@deck.id}/>
           </div>
         </div>
       </div>
@@ -55,7 +55,7 @@ defmodule BackendWeb.DeckLive do
   end
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <h2>Whooops</h2>
     Invalid deck, please go back, queue wild, or try again
     """

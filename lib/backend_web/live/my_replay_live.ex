@@ -24,8 +24,8 @@ defmodule BackendWeb.MyReplaysLive do
     # opponent class
     # player rank
     # region
-    ~H"""
-    <Context put={{ user: @user }}>
+    ~F"""
+    <Context put={user: @user}>
       <div class="container">
         <div class="level">
           <div class="level-item title is-2">My Replays</div>
@@ -41,19 +41,19 @@ defmodule BackendWeb.MyReplaysLive do
             </tr>
           </thead>
           <tbody>
-            <tr :for={{ game <- games(@user, @limit, @offset) }} class="{{class(game)}}" >
-              <td><ExpandableDecklist id={{ "replay_decklist_#{game.id}" }} deck={{ game.player_deck }} guess_archetype={{ true }}/></td>
+            <tr :for={game <- games(@user, @limit, @offset)} class={"#{class(game)}"} >
+              <td><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
               <td>
                 <span>
                   <span class="icon">
-                    <img src="{{ BackendWeb.BattlefyView.class_url(game.opponent_class) }}" >
+                    <img src={"#{BackendWeb.BattlefyView.class_url(game.opponent_class)}"} >
                   </span>
-                  {{ game.opponent_btag }}
+                  {game.opponent_btag}
                 </span>
               </td>
-              <td>{{ game_mode(game) }}</td>
-              <td><a href="{{ replay_link(game) }}" target="_blank">View Replay</a></td>
-              <td>{{ Timex.format!(game.inserted_at, "{relative}", :relative) }}</td>
+              <td>{game_mode(game)}</td>
+              <td><a href={"#{replay_link(game)}"} target="_blank">View Replay</a></td>
+              <td>{Timex.format!(game.inserted_at, "{relative}", :relative)}</td>
             </tr>
           </tbody>
         </table>

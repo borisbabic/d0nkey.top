@@ -16,10 +16,10 @@ defmodule BackendWeb.FantasyLeagueLive do
   end
 
   def render(assigns) do
-    ~H"""
-    <Context put={{ user: @user }} >
+    ~F"""
+    <Context put={user: @user} >
       <div class="container">
-        <FantasyLeague id={{"fantasy_league_#{@league_id}"}} league={{ @league }} />
+        <FantasyLeague id={"fantasy_league_#{@league_id}"} league={@league} />
       </div>
     </Context>
     """

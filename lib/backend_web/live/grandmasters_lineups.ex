@@ -20,18 +20,18 @@ defmodule BackendWeb.GrandmastersLineup do
   end
 
   def render(assigns) do
-    ~H"""
-    <Context  put={{ user: @user }}>
+    ~F"""
+    <Context  put={user: @user}>
       <div class="container">
-        <div :if={{ lineups = Backend.Blizzard.get_grandmasters_lineups(@week) }} >
-          <div :if={{ Lineup.stats(lineups) }} >
+        <div :if={lineups = Backend.Blizzard.get_grandmasters_lineups(@week)} >
+          <div :if={Lineup.stats(lineups)} >
             <div class="title is-2">Grandmasters Decks</div>
-            <div class="subtitle is-5">{{ subtitle(@week) }}</div>
+            <div class="subtitle is-5">{subtitle(@week)}</div>
 
-            <TournamentLineupExplorer id="grandmasters_tournament_lineup_{{ @week }}" tournament_id="{{ tournament_id(@week) }}" tournament_source="grandmasters" show_page_dropdown={{ false }} gm_week={{ @week }} filters={{ %{"order_by" => {:asc, :name}} }} page_size={{ 100 }}>
-              <Dropdown title={{ @week }} >
-                <a class="dropdown-item {{ @week == week && 'is-active' || '' }}" :for={{ week <- weeks() }} :on-click="change-week" phx-value-week={{ week }}>
-                  {{ week }}
+            <TournamentLineupExplorer id={"grandmasters_tournament_lineup_#{@week}"} tournament_id={"#{tournament_id(@week)}"} tournament_source="grandmasters" show_page_dropdown={false} gm_week={@week} filters={%{"order_by" => {:asc, :name}}} page_size={100}>
+              <Dropdown title={@week} >
+                <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>
+                  {week}
                 </a>
               </Dropdown>
             </TournamentLineupExplorer>

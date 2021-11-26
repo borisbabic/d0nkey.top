@@ -19,18 +19,18 @@ defmodule Components.DeckStreamingInfo do
       ) do
     legend_rank = render_legend_rank(peak)
 
-    ~H"""
-      <div class="tag column" :if={{ pb }}>
-        Peaked By: {{ pb }}
+    ~F"""
+      <div class="tag column" :if={pb}>
+        Peaked By: {pb}
       </div>
-      <div :if={{ legend_rank }}> {{ legend_rank }} </div>
-      <div class="tag column" if:={{ fsb }}>
-        First Streamed: {{ fsb }}
+      <div :if={legend_rank}> {legend_rank} </div>
+      <div class="tag column" if:={fsb}>
+        First Streamed: {fsb}
       </div>
-      <a href="{{ sdp }}" class="tag column is-link" if:= {{ s }}>
-        # Streamed: {{ s |> Enum.count() }}
+      <a href={"#{sdp}"} class="tag column is-link" if:= {s}>
+        # Streamed: {s |> Enum.count()}
       </a>
-      <StreamingDeckNow deck={{ deck }}/>
+      <StreamingDeckNow deck={deck}/>
 
     """
   end
@@ -49,7 +49,7 @@ defmodule Components.DeckStreamingInfo do
   end
 
   def render(assigns),
-    do: ~H"""
+    do: ~F"""
     """
 
   def create_info(sd) when length(sd) > 0 do

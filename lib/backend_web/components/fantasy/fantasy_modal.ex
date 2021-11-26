@@ -32,80 +32,80 @@ defmodule Components.FantasyModal do
   def render(assigns) do
     competition_type = selected_competition_type(assigns.current_params, assigns.league)
 
-    ~H"""
+    ~F"""
     <div>
-      <button class="button" type="button" :on-click="show_modal">{{ @title }}</button>
-      <div :if={{ @show_success }} class="notification is-success tag">{{ @success_message }}</div>
-      <div class="modal is-active" :if={{ @show_modal }} >
-        <Form for={{ :league }} change="change" submit="submit">
+      <button class="button" type="button" :on-click="show_modal">{@title}</button>
+      <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
+      <div class="modal is-active" :if={@show_modal} >
+        <Form for={:league} change="change" submit="submit">
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">{{ @title }}</p>
+              <p class="modal-card-title">{@title}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section class="modal-card-body">
 
               <Field name="name">
                 <Label class="label">Name</Label>
-                <TextInput class="input is-small" value={{ @current_params["name"] || @league.name }}/>
+                <TextInput class="input is-small" value={@current_params["name"] || @league.name}/>
               </Field>
 
               <Field name="max_teams">
                 <Label class="label">Max Teams</Label>
-                <NumberInput class="input is-small" value={{ @current_params["max_teams"] || @league.max_teams }}/>
+                <NumberInput class="input is-small" value={@current_params["max_teams"] || @league.max_teams}/>
               </Field>
 
               <Field name="roster_size">
                 <Label class="label">Roster Size</Label>
-                <NumberInput class="input is-small" value= {{ @current_params["roster_size"] || @league.roster_size }}/>
+                <NumberInput class="input is-small" value= {@current_params["roster_size"] || @league.roster_size}/>
               </Field>
 
               <Field name="competition_type">
                 <Label class="label">Competition Type</Label>
-                <Select selected={{ competition_type }} class="select" options={{ competition_type_options() }}/>
+                <Select selected={competition_type} class="select" options={competition_type_options()}/>
               </Field>
 
-              <Field name="competition" :if={{ competition_type != "battlefy" }}>
+              <Field name="competition" :if={competition_type != "battlefy"}>
                 <Label class="label">Competition</Label>
-                <Select selected={{ @current_params["competition"] || @league.competition }} class="select" options={{ competition_type |> competition_options() }} />
+                <Select selected={@current_params["competition"] || @league.competition} class="select" options={competition_type |> competition_options()} />
               </Field>
 
-              <Field name="competition" :if={{ competition_type == "battlefy" }}>
+              <Field name="competition" :if={competition_type == "battlefy"}>
                 <Label class="label">Battlefy tournament id</Label>
-                <TextInput class="input is-small" value={{ (@current_params["competition"] || @league.competition) |> battlefy_tournament_id()}} />
+                <TextInput class="input is-small" value={(@current_params["competition"] || @league.competition) |> battlefy_tournament_id()} />
               </Field>
 
 
-              <Field name="changes_between_rounds" :if={{ competition_type == "grandmasters" }}>
+              <Field name="changes_between_rounds" :if={competition_type == "grandmasters"}>
                 <Label class="label">Changes Between Rounds</Label>
-                <NumberInput class="input is-small" value= {{ @current_params["changes_between_rounds"] || @league.changes_between_rounds }}/>
+                <NumberInput class="input is-small" value= {@current_params["changes_between_rounds"] || @league.changes_between_rounds}/>
               </Field>
 
               <Field name="real_time_draft">
                 <Label class="label">Real Time Draft</Label>
-                <Checkbox value={{ @current_params["real_time_draft"] || @league.real_time_draft }} />
+                <Checkbox value={@current_params["real_time_draft"] || @league.real_time_draft} />
               </Field>
 
-              <Field :if={{ @league.draft_deadline || !@league.real_time_draft || @show_deadline }} name="deadline" >
+              <Field :if={@league.draft_deadline || !@league.real_time_draft || @show_deadline} name="deadline" >
                 <Label class="label">Draft Deadline (UTC!)</Label>
-                <DateTimeLocalInput value={{ @current_params["deadline"] || draft_deadline_value(@league, competition_type) }} />
+                <DateTimeLocalInput value={@current_params["deadline"] || draft_deadline_value(@league, competition_type)} />
               </Field>
 
               <Field name="point_system">
                 <Label class="label">Point System</Label>
-                <Select selected={{ @current_params["point_system"] || @league.point_system }} class="select" options={{ competition_type |> point_system_options()}} />
+                <Select selected={@current_params["point_system"] || @league.point_system} class="select" options={competition_type |> point_system_options()} />
               </Field>
 
-              <Field :if={{ @league.join_code }} name="join_code">
+              <Field :if={@league.join_code} name="join_code">
                 <Label class="label">Join Code</Label>
-                {{ @league.join_code }}
+                {@league.join_code}
                 <button class="button" type="button" :on-click="regenerate_join_code">Regenerate</button>
               </Field>
 
               <Field name="owner_id">
-                <Context get={{ user: user }}>
-                  <HiddenInput value={{ user.id }}/>
+                <Context get={user: user}>
+                  <HiddenInput value={user.id}/>
                 </Context>
               </Field>
 
@@ -114,7 +114,7 @@ defmodule Components.FantasyModal do
             <footer class="modal-card-foot">
               <Submit label="Save" class="button is-success" />
               <button class="button" type="button" :on-click="hide_modal">Cancel</button>
-              <div :if={{ @show_error }} class="notification is-warning tag">{{ @error_message }}</div>
+              <div :if={@show_error} class="notification is-warning tag">{@error_message}</div>
             </footer>
           </div>
         </Form>

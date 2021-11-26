@@ -20,54 +20,54 @@ defmodule BackendWeb.ProfileSettingsLive do
   end
 
   def render(assigns) do
-    ~H"""
-     <Context put={{ user: @user }}>
+    ~F"""
+     <Context put={user: @user}>
       <div class="container">
         <div class="title is-2">Profile Settings</div>
-        <div :if={{ @user }}>
-          <Form for={{ :user }} submit="submit">
+        <div :if={@user}>
+          <Form for={:user} submit="submit">
             <Field name="battlefy_slug">
               <Label class="label" >Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</Label>
-              <TextInput class="input is-small" value={{ @user.battlefy_slug }}/>
+              <TextInput class="input is-small" value={@user.battlefy_slug}/>
             </Field>
             <br>
             <Field name="country_code">
               <Label class="label" >Enter 2 character <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">alpha2 country code</a></Label>
-              <TextInput value={{ @user.country_code }} class="input is-small" />
+              <TextInput value={@user.country_code} class="input is-small" />
               <ErrorTag field="country_code"/>
             </Field>
             <br>
             <Field name="unicode_icon">
-              <Select selected={{ @user.unicode_icon }} class="select" options={{ [{"None", nil}, {pride_flag(), pride_flag()}] }}/>
+              <Select selected={@user.unicode_icon} class="select" options={[{"None", nil}, {pride_flag(), pride_flag()}]}/>
               <Label>Player Icon</Label>
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
             <Label class="label">Decklist Options</Label>
             <Field name="border">
-              <Select selected={{ DecklistOptions.border(@user.decklist_options) }} class="select" options={{ "Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey" }}/>
+              <Select selected={DecklistOptions.border(@user.decklist_options)} class="select" options={"Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey"}/>
               <Label>Border Color</Label>
             </Field>
             <Field name="gradient">
-              <Select selected={{ DecklistOptions.gradient(@user.decklist_options) }} class="select" options={{  "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey" }}/>
+              <Select selected={DecklistOptions.gradient(@user.decklist_options)} class="select" options={ "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey"}/>
               <Label>Gradient Color</Label>
             </Field>
             <br>
             <Field name="replay_preference">
-              <Select selected={{ @user.replay_preference }} class="select" options={{ [{"All", :all}, {"Streamed", :streamed}, {"None", :none}] }}/>
+              <Select selected={@user.replay_preference} class="select" options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
               <Label>Which replays do you want to be considered public? (only affects new replays)</Label>
             </Field>
 
             <Submit label="Save" class="button"/>
-            <div :if={{ @user.twitch_id }} >
-              <button class="button" type="button" :on-click="disconnect_twitch">Disconnect Twitch {{ twitch_username(@user) }}        </button>
+            <div :if={@user.twitch_id} >
+              <button class="button" type="button" :on-click="disconnect_twitch">Disconnect Twitch {twitch_username(@user)}        </button>
             </div>
-            <div :if={{ !@user.twitch_id }} >
+            <div :if={!@user.twitch_id} >
               <a class="button" href="/auth/twitch">Connect Twitch</a>
             </div>
           </Form>
         </div>
-        <div :if={{ !@user }}>Not Logged In</div>
+        <div :if={!@user}>Not Logged In</div>
       </div>
     </Context>
     """

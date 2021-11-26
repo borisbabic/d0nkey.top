@@ -35,28 +35,28 @@ defmodule Components.Decklist do
 
     name = deck_name(assigns[:name], deck, hero)
 
-    ~H"""
+    ~F"""
       <div>
 
-          <div :if={{ @show_hero }} class=" decklist-hero {{ class_class }}" style="margin-bottom: 0px;"> 
+          <div :if={@show_hero} class={" decklist-hero #{class_class}"} style="margin-bottom: 0px;"> 
               <div class="level is-mobile">
-                  <div phx-click="deck_copied" phx-value-deckcode="{{ deck.deckcode }}" class="level-left"> 
-                      {{ deckcode }}
+                  <div phx-click="deck_copied" phx-value-deckcode={"#{deck.deckcode}"} class="level-left"> 
+                      {deckcode}
                   </div>
                   <div class="level-left deck-text"> 
                     <div class="deck-title">
-                      <span><span style="font-size:0;">### </span> <span>{{ name }}</span>
+                      <span><span style="font-size:0;">### </span> <span>{name}</span>
                       <span style="font-size: 0; line-size:0; display:block">
-                      {{ @deck |> Deck.deckcode() }}</span></span>
+                      {@deck |> Deck.deckcode()}</span></span>
                     </div> 
                   </div> 
                   <div class="level-right"> 
-                      <slot name="right_button"/>
+                      <#slot name="right_button"/>
                   </div>
               </div>
           </div>
-          <div :if={{ @show_cards }}>
-            <CardsList comparison={{ @comparison }} cards={{ deck.cards }} deck_class={{ deck_class }} highlight_rotation={{ @highlight_rotation }}/>
+          <div :if={@show_cards}>
+            <CardsList comparison={@comparison} cards={deck.cards} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
           </div>
           <span style="font-size: 0; line-size:0; display:block">
             # You really like to select a lot of stuff, don't ya you beautiful being! 🤎 D0nkey

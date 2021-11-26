@@ -9,7 +9,7 @@ defmodule Components.GMResultsTable do
   prop(match_filter, :fun, default: nil)
 
   def render(assigns) do
-    ~H"""
+    ~F"""
         <table class="table is-fullwidth is-striped"> 
           <thead>
             <tr>
@@ -20,11 +20,11 @@ defmodule Components.GMResultsTable do
             </tr>
           </thead>
           <tbody>
-          <tr :for={{ match <- matches(@region, @week) |> filter(@match_filter) |> sort()}} >
-              <td>{{ Backend.Grandmasters.bracket(match.bracket_id).name }}</td>
-              <td><GMProfileLink week="{{ @week }}" gm={{ Match.match_info(match).top }} /></td>
-              <td><a href="{{ match_link(match) }}">{{ Match.match_info(match).score }}</a></td>
-              <td><GMProfileLink week="{{ @week }}" gm={{ Match.match_info(match).bottom }} /></td>
+          <tr :for={match <- matches(@region, @week) |> filter(@match_filter) |> sort()} >
+              <td>{Backend.Grandmasters.bracket(match.bracket_id).name}</td>
+              <td><GMProfileLink week={"#{@week}"} gm={Match.match_info(match).top} /></td>
+              <td><a href={"#{match_link(match)}"}>{Match.match_info(match).score}</a></td>
+              <td><GMProfileLink week={"#{@week}"} gm={Match.match_info(match).bottom} /></td>
             </tr>
           </tbody>
         </table>

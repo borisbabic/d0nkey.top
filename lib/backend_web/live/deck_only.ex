@@ -15,9 +15,9 @@ defmodule BackendWeb.DeckOnlyLive do
   def render(assigns) do
     deck = Deck.decode!(assigns[:deckcode])
 
-    ~H"""
-    <Context put={{ user: @user }} >
-      <Decklist deck={{deck}} />
+    ~F"""
+    <Context put={user: @user} >
+      <Decklist deck={deck} />
     </Context>
     """
   end

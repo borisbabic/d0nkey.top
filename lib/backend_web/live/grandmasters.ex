@@ -25,8 +25,8 @@ defmodule BackendWeb.GrandmastersLive do
   end
 
   def render(assigns) do
-    ~H"""
-     <Context put={{ user: @user }}>
+    ~F"""
+     <Context put={user: @user}>
       <div class="container">
         <div class="title is-2">
           Grandmasters
@@ -34,26 +34,26 @@ defmodule BackendWeb.GrandmastersLive do
         <div class="level is-mobile">
           <div class="level-left">
             <div class="level-item">
-              <Dropdown title={{ @week }} >
-                <a class="dropdown-item {{ @week == week && 'is-active' || '' }}" :for={{ week <- weeks() }} :on-click="change-week" phx-value-week={{ week }}>
-                  {{ week }}
+              <Dropdown title={@week} >
+                <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>
+                  {week}
                 </a>
               </Dropdown>
             </div>
             <div class="level-item">
-              <Dropdown title={{ @region |> gm_region_display() }} >
-                <a class="dropdown-item {{ @region == region && 'is-active' || '' }}" :for={{ region <- [:NA, :APAC, :EU]}} :on-click="change-region" phx-value-region={{ region }}>
-                  {{ gm_region_display(region) }}
+              <Dropdown title={@region |> gm_region_display()} >
+                <a class={"dropdown-item #{@region == region && 'is-active' || ''}"} :for={region <- [:NA, :APAC, :EU]} :on-click="change-region" phx-value-region={region}>
+                  {gm_region_display(region)}
                 </a>
               </Dropdown>
             </div>
             <div class="level-item">
-              <GMStandingsModal id="gm_standings_modal_week" button_title="Week Standings" week={{ @week }} region={{ @region }} title="{{gm_region_display(@region)}} Standings" />
+              <GMStandingsModal id="gm_standings_modal_week" button_title="Week Standings" week={@week} region={@region} title={"#{gm_region_display(@region)} Standings"} />
             </div>
           </div>
         </div>
-        <GMStandingsTable region={{ @region }} />
-        <GMResultsTable week={{ @week }} region={{ @region }} />
+        <GMStandingsTable region={@region} />
+        <GMResultsTable week={@week} region={@region} />
       </div>
     </Context>
     """

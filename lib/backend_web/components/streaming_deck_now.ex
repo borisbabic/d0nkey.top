@@ -15,14 +15,14 @@ defmodule Components.StreamingDeckNow do
 
     link = Routes.live_path(BackendWeb.Endpoint, StreamingNowLive, %{"deckcode" => deckcode})
 
-    ~H"""
-      <a :if={{ count > 0 }} href="{{ link }}" class="tag column is-twitch" >
-        # Live: {{ count }}
+    ~F"""
+      <a :if={count > 0} href={"#{link}"} class="tag column is-twitch" >
+        # Live: {count}
       </a>
     """
   end
 
   def render(assigns),
-    do: ~H"""
+    do: ~F"""
     """
 end

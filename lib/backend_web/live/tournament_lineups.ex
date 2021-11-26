@@ -15,13 +15,13 @@ defmodule BackendWeb.TournamentLineups do
   end
 
   def render(assigns) do
-    ~H"""
-    <Context  put={{ user: @user }}>
+    ~F"""
+    <Context  put={user: @user}>
       <div class="container">
-        <div :if={{ lineups = Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source) }} >
-          <div :if={{ Lineup.stats(lineups) }} >
+        <div :if={lineups = Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
+          <div :if={Lineup.stats(lineups)} >
             <div class="title is-2">Lineups</div>
-            <TournamentLineupExplorer id="tournament_lineup_explorer_{{ @tournament_source }}_{{ @tournament_id }}" tournament_id="{{ @tournament_id }}" tournament_source="{{ @tournament_source }}" />
+            <TournamentLineupExplorer id={"tournament_lineup_explorer_#{@tournament_source}_#{@tournament_id}"} tournament_id={"#{@tournament_id}"} tournament_source={"#{@tournament_source}"} />
           </div>
         </div>
       </div>

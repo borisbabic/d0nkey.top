@@ -6,22 +6,22 @@ defmodule Components.OmniBarHelp do
   prop(title, :string, default: "Omni Bar")
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div>
       <button class="button icon" type="button" :on-click="show_modal"><i class="fas fa-info-circle"></i></button>
-      <div class="modal is-active" :if={{ @show_modal }}>
+      <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">{{ @title }}</p>
+              <p class="modal-card-title">{@title}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section class="modal-card-body content">
               <div>
                 Type or paste something to get relevant links. Currently supported:
               </div>
-              <ul :for={{ thing <- ["Battlefy link", "Deckcode", "Battletags"] }}>
-                <li>{{ thing }}</li>
+              <ul :for={thing <- ["Battlefy link", "Deckcode", "Battletags"]}>
+                <li>{thing}</li>
               </ul>
               <div>
                 More is planned! If you have an idea join my discord to share it after checking the pinned post

@@ -20,38 +20,38 @@ defmodule BackendWeb.BattlefyMatchLive do
   end
 
   def render(assigns) do
-    ~H"""
-    <Context  put={{ user: @user }}>
+    ~F"""
+    <Context  put={user: @user}>
       <div class="container">
         <div class="title is-2">
-          <a href="{{ Battlefy.get_match_url(@tournament, @match) }}">
-            {{ title(@match) }}
+          <a href={"#{Battlefy.get_match_url(@tournament, @match)}"}>
+            {title(@match)}
           </a>
         </div>
         <div class="subtitle is-5">
-          {{ subtitle(@match) }}
+          {subtitle(@match)}
         </div>
         <table class="table is-fullwidth"> 
           <thead>
             <tr>
-              <th>{{ @match.top |> MatchTeam.get_name() |> player(@tournament) }}</th>
+              <th>{@match.top |> MatchTeam.get_name() |> player(@tournament)}</th>
               <th>Score</th>
-              <th>{{ @match.bottom |> MatchTeam.get_name() |> player(@tournament) }}</th>
+              <th>{@match.bottom |> MatchTeam.get_name() |> player(@tournament)}</th>
               <th>When</th>
             </tr>
           </thead>
           <tbody>
-            <tr :for={{ times <- times(@match) }} > 
-              <td>{{ times.top }}</td>
+            <tr :for={times <- times(@match)} > 
+              <td>{times.top}</td>
               <td></td>
-              <td>{{ times.bottom }}</td>
-              <td>{{ times.when || "?" }} min ago</td>
+              <td>{times.bottom}</td>
+              <td>{times.when || "?"} min ago</td>
             </tr>
-            <tr :for={{ game <- games(@match) }} >
-              <td>{{ game.top_class |> Deck.class_name() }}</td>
-              <td>{{ game.score }}</td>
-              <td>{{ game.bottom_class |> Deck.class_name() }}  </td>
-              <td>{{ game.finished || "?" }} min ago</td>
+            <tr :for={game <- games(@match)} >
+              <td>{game.top_class |> Deck.class_name()}</td>
+              <td>{game.score}</td>
+              <td>{game.bottom_class |> Deck.class_name()}  </td>
+              <td>{game.finished || "?"} min ago</td>
             </tr>
           </tbody>
         </table>

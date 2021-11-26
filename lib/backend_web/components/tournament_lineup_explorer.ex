@@ -21,18 +21,18 @@ defmodule Components.TournamentLineupExplorer do
   alias Backend.Hearthstone.Deck
 
   def render(assigns) do
-    ~H"""
+    ~F"""
     <div>
-      <div :if={{ lineups = lineups(@tournament_id, @tournament_source, @filters) }}>
-        <slot />
-        <Dropdown title="Page" :if={{ @show_page_dropdown }}>
-          <a :for={{ page <- page_range(lineups, @page_size) }}class="dropdown-item {{ page == @page && 'is-active' || ''}}" :on-click="set-page" phx-value-page={{ page }} >
-            {{ page }}
+      <div :if={lineups = lineups(@tournament_id, @tournament_source, @filters)}>
+        <#slot />
+        <Dropdown title="Page" :if={@show_page_dropdown}>
+          <a :for={page <- page_range(lineups, @page_size)}class={"dropdown-item #{page == @page && 'is-active' || ''}"} :on-click="set-page" phx-value-page={page} >
+            {page}
           </a>
         </Dropdown>
         <button class="button" type="button" :on-click="show_modal">Filter</button>
-        <div>Total: {{ lineups |> Enum.count() }}</div>
-        <div class="modal is-active" :if={{ @show_modal }}>
+        <div>Total: {lineups |> Enum.count()}</div>
+        <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
@@ -40,16 +40,16 @@ defmodule Components.TournamentLineupExplorer do
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section class="modal-card-body" style="min-height: 400px;">
-              <div :for.with_index={{ {deck, index} <- decks(@temp_filters)}} class="level">
+              <div :for.with_index={{deck, index} <- decks(@temp_filters)} class="level">
                 <div class="level-left">
-                  <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={{ index }}>Remove deck</button>
-                  <Dropdown title="{{ deck["class"] && deck["class"] |> Deck.class_name() || "Class" }}">
-                    <a class="dropdown-item {{ deck["class"] == class && 'is-active' || '' }}" :for={{ class <- Deck.classes() }} :on-click="filter-class" phx-value-index={{ index }} phx-value-class={{ class }}>
-                      {{ class |> Deck.class_name() }}
+                  <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={index}>Remove deck</button>
+                  <Dropdown title={"#{deck["class"] && deck["class"] |> Deck.class_name() || "Class"}"}>
+                    <a class={"dropdown-item #{deck["class"] == class && 'is-active' || ''}"} :for={class <- Deck.classes()} :on-click="filter-class" phx-value-index={index} phx-value-class={class}>
+                      {class |> Deck.class_name()}
                     </a>
                   </Dropdown>
-                  <PlayableCardSelect id="include_cards_deck_{{index}}" update_fun={{ update_cards(@id, @temp_filters, index, "include_cards")}} selected={{ deck["include_cards"] }} title="Include cards"/>
-                  <PlayableCardSelect id="exclude_cards_deck_{{index}}" update_fun={{ update_cards(@id, @temp_filters, index, "exclude_cards")}} selected={{ deck["exclude_cards"] }} title="Exclude cards"/>
+                  <PlayableCardSelect id={"include_cards_deck_#{index}"} update_fun={update_cards(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
+                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} update_fun={update_cards(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
 
                 </div>
               </div>
@@ -68,11 +68,11 @@ defmodule Components.TournamentLineupExplorer do
             </tr>
           </thead>
           <tbody>
-            <tr :for={{ lineup <- lineups |> paginate(@page, @page_size) }}>
-              <td :if={{ @gm_week }}> <GMProfileLink week={{ @gm_week }} gm={{ lineup.name }}/> </td>
-              <td :if={{ !@gm_week }}>{{ lineup.name }}</td>
+            <tr :for={lineup <- lineups |> paginate(@page, @page_size)}>
+              <td :if={@gm_week}> <GMProfileLink week={@gm_week} gm={lineup.name}/> </td>
+              <td :if={!@gm_week}>{lineup.name}</td>
               <td>
-                <ExpandableLineup lineup={{ lineup }} id={{"modal_lineup_#{lineup.id}"}}/>
+                <ExpandableLineup lineup={lineup} id={"modal_lineup_#{lineup.id}"}/>
               </td>
             </tr>
           </tbody>

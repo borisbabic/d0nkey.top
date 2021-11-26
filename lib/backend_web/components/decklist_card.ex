@@ -53,19 +53,19 @@ defmodule Components.DecklistCard do
     # rarity_color = "--color-dark-#{rarity(card.rarity)}"
     # deck_class_color = "--color-#{class(card.card_class)}"
 
-    ~H"""
+    ~F"""
       <div>
-        <div onmouseover="set_display('{{ id }}', 'flex')" onmouseout="set_display('{{ id }}', 'none')">
-          <div style="--color-border: {{ border }}; --color-gradient: {{ gradient }};" class="decklist-card-container decklist-card {{ html_id }} is-flex is-align-items-center">
+        <div onmouseover={"set_display('#{id}', 'flex')"} onmouseout={"set_display('#{id}', 'none')"}>
+          <div style={"--color-border: #{border}; --color-gradient: #{gradient};"} class={"decklist-card-container decklist-card #{html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
-            <span :if={{ @show_mana_cost }}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{{ card.cost }}</span>
-            <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped"><span style="font-size: 0;"># {{ @count }}x ({{ @card.cost }}) </span>{{ card.name }}
+            <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{card.cost}</span>
+            <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped"><span style="font-size: 0;"># {@count}x ({@card.cost}) </span>{card.name}
 
             </div>
-            <div style="background-image: url('{{ tile_url }}');" class="decklist-card-tile">
+            <div style={"background-image: url('#{tile_url}');"} class="decklist-card-tile">
             </div>
-            <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable"> {{ @count }}</span>
-            <div id="{{ id }}" class="decklist-card-image" style="background-image: url('{{ card_url }}')"></div>
+            <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable"> {@count}</span>
+            <div id={"#{id}"} class="decklist-card-image" style={"background-image: url('#{card_url}')"}></div>
           </div>
         </div>
         <div></div>

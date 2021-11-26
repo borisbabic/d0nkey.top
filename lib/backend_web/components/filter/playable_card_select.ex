@@ -11,20 +11,20 @@ defmodule Components.Filter.PlayableCardSelect do
   prop(search, :string, default: "")
 
   def render(assigns) do
-    ~H"""
-      <Dropdown title="{{ @title }}">
-        <Form for={{ :search }} change="search" submit="search" opts={{ autocomplete: "off" }}>
+    ~F"""
+      <Dropdown title={"#{@title}"}>
+        <Form for={:search} change="search" submit="search" opts={autocomplete: "off"}>
           <div class="columns is-mobile is-multiline">
             <div class="column is-narrow">
-              <TextInput class="input" opts={{ placeholder: "Search" }}/>
+              <TextInput class="input" opts={placeholder: "Search"}/>
             </div>
           </div>
         </Form>
-        <a class="dropdown-item is-active" :on-click="remove_card" :for={{ selected <- @selected }} phx-value-card={{ selected }}>
-          {{ Backend.HearthstoneJson.get_card(selected).name }}
+        <a class="dropdown-item is-active" :on-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
+          {Backend.HearthstoneJson.get_card(selected).name}
         </a>
-        <a class="dropdown-item" :for={{ card <- cards(@search, @selected) }} :on-click="add_card" phx-value-card={{ card.dbf_id }}>
-          {{ card.name }}
+        <a class="dropdown-item" :for={card <- cards(@search, @selected)} :on-click="add_card" phx-value-card={card.dbf_id}>
+          {card.name}
         </a>
       </Dropdown>
 

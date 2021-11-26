@@ -7,7 +7,7 @@ defmodule Components.FantasyLeaguesTable do
   prop(leagues, :list, required: true)
 
   def render(assigns) do
-    ~H"""
+    ~F"""
       <table class="table is-striped is-fullwidth">
         <thead>
           <th>
@@ -24,18 +24,18 @@ defmodule Components.FantasyLeaguesTable do
           </th>
         </thead>
         <tbody>
-          <tr :for={{ league <- @leagues |> Enum.uniq_by(& &1.id)}}>
+          <tr :for={league <- @leagues |> Enum.uniq_by(& &1.id)}>
             <td>
-              <a href="/fantasy/leagues/{{ league.id }}">{{ league.name }}</a>
+              <a href={"/fantasy/leagues/#{league.id}"}>{league.name}</a>
             </td>
             <td>
-              {{ league |> competition_name() }}
+              {league |> competition_name()}
             </td>
             <td>
-              {{ league.owner |> User.display_name() }}
+              {league.owner |> User.display_name()}
             </td>
             <td>
-              {{ league |> League.teams() |> Enum.count() }}
+              {league |> League.teams() |> Enum.count()}
             </td>
           </tr>
         </tbody>

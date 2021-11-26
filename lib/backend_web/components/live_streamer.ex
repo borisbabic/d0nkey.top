@@ -31,33 +31,33 @@ defmodule Components.LiveStreamer do
 
     link = s |> Twitch.Stream.login() |> Backend.Twitch.create_channel_link()
 
-    ~H"""
+    ~F"""
     <div class="cestor card live-streamer twitch" >
-        <div class="is-parent" style="width: {{ thumbnail_width }}px;">
+        <div class="is-parent" style={"width: #{thumbnail_width}px;"}>
             <div class="card-image" style="margin: 7.5px;">
-              <a href="{{ link }}" target="_blank">
-                <img src="{{ thumbnail_url}}" alt="{{ @live_streamer.user_name }}"/>
+              <a href={"#{link}"} target="_blank">
+                <img src={"#{thumbnail_url}"} alt={"#{@live_streamer.user_name}"}/>
               </a>
             </div>
             <div style="margin-left: 7.5px; margin-right: 7.5px;">
               <div style="margin-bottom: 3.75px;">
-                <a href="{{ link }}" target="_blank" >
+                <a href={"#{link}"} target="_blank" >
                   <div class="title is-6">
-                    {{ @live_streamer.title }}
+                    {@live_streamer.title}
                   </div>
                 </a>
               </div>
               <div style="margin-bottom: 3.75px;">
                 <div class="tags" style="margin-bottom: 0px;">
-                  <strong class="tag is-twitch"> {{ s.user_name }} </strong>
-                  <div class="tag is-info"> <i class="fas fa-users"></i><p> {{ s.viewer_count }}</p></div>
-                  {{ game_type }}
-                  <div class="tag is-info"> {{ duration }} </div>
-                  <div :if={{ legend_rank }}> {{ legend_rank }} </div>
+                  <strong class="tag is-twitch"> {s.user_name} </strong>
+                  <div class="tag is-info"> <i class="fas fa-users"></i><p> {s.viewer_count}</p></div>
+                  {game_type}
+                  <div class="tag is-info"> {duration} </div>
+                  <div :if={legend_rank}> {legend_rank} </div>
                 </div>
-                <div :if={{ show_deck }} >
+                <div :if={show_deck} >
                   <div class="is-deck-wide">
-                    <slot/>
+                    <#slot/>
                   </div>
                 </div>
               </div>
