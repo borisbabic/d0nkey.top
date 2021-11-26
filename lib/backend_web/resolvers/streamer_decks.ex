@@ -1,5 +1,5 @@
 defmodule BackendWeb.Resolvers.StreamerDecks do
-  def list_streamer_decks(_parent, raw_args, resolution) do
+  def list_streamer_decks(_parent, raw_args, _resolution) do
     args =
       %{limit: 50, order_by: {:desc, :last_played}}
       |> Map.merge(raw_args)

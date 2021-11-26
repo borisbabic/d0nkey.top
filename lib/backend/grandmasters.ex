@@ -79,9 +79,9 @@ defmodule Backend.Grandmasters do
       Map.update!(r, prev_winner, &add_winner_points/1)
     end)
   end
+  def add_season_winner_points(results_map, _), do: results_map
 
   def add_winner_points(%{points: p, results: r}), do: %{points: p + 5, results: r}
-  def add_season_winner_points(results_map, _), do: results_map
 
   defp set_brackets(response, table) do
     response

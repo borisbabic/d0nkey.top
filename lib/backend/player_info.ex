@@ -1,10 +1,7 @@
 defmodule Backend.PlayerInfo do
   @moduledoc false
   alias Backend.Blizzard
-  alias Backend.Battlenet
-  alias Backend.MastersTour
   alias Backend.MastersTour.InvitedPlayer
-  alias Backend.Infrastructure.PlayerNationalityCache, as: PlayerNationality
   alias Backend.EsportsEarnings
   alias Backend.PrioritizedBattletagCache
   @type country_code :: <<_::2>>

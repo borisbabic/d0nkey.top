@@ -11,7 +11,6 @@ defmodule Backend.Fantasy do
 
   alias Backend.Blizzard
   alias Backend.Fantasy.League
-  alias Backend.Fantasy.Draft
   alias Backend.UserManager.User
 
   @pagination [page_size: 15]
@@ -174,17 +173,6 @@ defmodule Backend.Fantasy do
   """
   def change_league(%League{} = league, attrs \\ %{}) do
     League.changeset(league, attrs)
-  end
-
-  defp filter_config(:leagues) do
-    defconfig do
-      text(:name)
-      text(:competition)
-      text(:competition_type)
-      text(:point_system)
-      number(:max_teams)
-      number(:roster_size)
-    end
   end
 
   import Torch.Helpers, only: [sort: 1, paginate: 4]
@@ -355,6 +343,24 @@ defmodule Backend.Fantasy do
     end
   end
 
+  defp filter_config(:league_team_picks) do
+    defconfig do
+      text(:pick)
+    end
+  end
+
+  defp filter_config(:leagues) do
+    defconfig do
+      text(:name)
+      text(:competition)
+      text(:competition_type)
+      text(:point_system)
+      number(:max_teams)
+      number(:roster_size)
+    end
+  end
+
+
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
 
@@ -516,12 +522,6 @@ defmodule Backend.Fantasy do
     LeagueTeamPick.changeset(league_team_pick, attrs)
   end
 
-  defp filter_config(:league_team_picks) do
-    defconfig do
-      text(:pick)
-    end
-  end
-
   @spec get_user_leagues(User.t()) :: [League.t()]
   def get_user_leagues(%User{} = user) do
     query =
@@ -572,26 +572,6 @@ defmodule Backend.Fantasy do
     Repo.all(query)
   end
 
-  @spec get_draft(String.t()) :: Draft.t()
-  def get_draft(draft_id) do
-    query =
-      from d in Draft,
-        preload: [:league],
-        where: d.id == ^draft_id
-
-    Repo.one(query)
-  end
-
-  @spec get_league_draft(String.t()) :: Draft.t()
-  def get_league_draft(league_id) do
-    query =
-      from d in Draft,
-        preload: [:league],
-        where: d.league_id == ^league_id
-
-    Repo.one(query)
-  end
-
   @spec start_draft(League.t()) :: {:ok, League.t()} | {:error, any()}
   def start_draft(league) do
     if League.draft_started?(league) do
@@ -615,7 +595,7 @@ defmodule Backend.Fantasy do
   end
 
   def make_pick(%{real_time_draft: false, current_round: cr} = league, user, name) do
-    with league_team = %{id: id} <- League.team_for_user(league, user),
+    with league_team = %{id: _id} <- League.team_for_user(league, user),
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
            %LeagueTeamPick{}
@@ -681,6 +661,8 @@ defmodule Backend.Fantasy do
     Repo.all(query)
   end
 
+  def get_battlefy_user_picks(_, _), do: []
+
   def unpick(league_team_id, user, pick) do
     with lt = %LeagueTeam{} <- get_league_team(league_team_id),
          true <- LeagueTeam.can_manage?(lt, user),
@@ -692,8 +674,6 @@ defmodule Backend.Fantasy do
       Repo.update(cs)
     end
   end
-
-  def get_battlefy_user_picks(_, _), do: []
 
   def stale_leagues(comp_type, comp, current_round) do
     query =

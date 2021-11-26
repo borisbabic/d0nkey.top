@@ -256,7 +256,6 @@ end
 
 defmodule Backend.TournamentStats.TournamentTeamStats do
   @moduledoc false
-  alias Backend.TournamentStats.TeamStandings
   alias Backend.TournamentStats.TeamStats
   @type stats_type :: :total | Backend.Tournament.bracket_type()
   use TypedStruct

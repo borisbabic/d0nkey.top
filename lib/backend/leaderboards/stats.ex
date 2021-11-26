@@ -2,6 +2,7 @@ defmodule Backend.Leaderboards.PlayerStats do
   @moduledoc false
   use TypedStruct
   alias Backend.Leaderboards.Snapshot
+  alias __MODULE__
 
   typedstruct do
     field :account_id, :string
@@ -21,10 +22,6 @@ defmodule Backend.Leaderboards.PlayerStats do
       account_id: account_id,
       ranks: player_entries |> Enum.map(fn e -> e.rank end)
     }
-  end
-
-  @spec create(Snapshot.t()) :: PlayerStats.t()
-  def create(e) do
   end
 
   @spec num_top(__MODULE__.t(), integer) :: integer

@@ -158,6 +158,10 @@ defmodule Backend.Grandmasters.Response do
     |> Map.values()
   end
 
+  def decklists(r, stage_title, match_filter) when is_binary(stage_title) do
+    decklists(r, &(&1.title == stage_title), match_filter)
+  end
+
   defp merge_competitor_decklists({competitor, lists}, decklists_map) do
     existing_lists =
       decklists_map
@@ -179,10 +183,6 @@ defmodule Backend.Grandmasters.Response do
       |> Enum.uniq()
 
     decklists_map |> Map.put(competitor.name, {competitor, filtered})
-  end
-
-  def decklists(r, stage_title, match_filter) when is_binary(stage_title) do
-    decklists(r, &(&1.title == stage_title), match_filter)
   end
 end
 

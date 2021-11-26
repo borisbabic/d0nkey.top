@@ -32,9 +32,7 @@ defmodule Backend.Battlenet.Battletag do
     |> add_short()
   end
 
-  @doc """
-  If the changeset includes just the full battletag the short one will also be added
-  """
+  # If the changeset includes just the full battletag the short one will also be added
   @spec add_short(Ecto.Changset.t()) :: Ecto.Changeset.t()
   defp add_short(cs) do
     with :error <- cs |> fetch_change(:battletag_short),

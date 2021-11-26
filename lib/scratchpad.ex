@@ -76,7 +76,6 @@ defmodule ScratchPad do
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
-    to_encode =
       ([
          0,
          1,
@@ -163,7 +162,7 @@ defmodule ScratchPad do
     # |> Enum.map(& {fix_name(&1.name), &1.user_id})
     |> Enum.group_by(& elem(&1, 1))
     |> Enum.map(fn {user_id, list} -> {user_id, Enum.uniq_by(list, & elem(&1, 0))} end)
-    |> Enum.filter(fn {user_id, list} -> Enum.count(list) > 1 end)
+    |> Enum.filter(fn {_user_id, list} -> Enum.count(list) > 1 end)
   end
 
   def create_map({_user_id, parts}), do: parts |> Enum.reverse() |> create_map()

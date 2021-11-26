@@ -2,7 +2,7 @@ defmodule Bot.MatchupMessageHandler do
   @moduledoc false
   alias BackendWeb.Router.Helpers, as: Routes
   alias Nostrum.Api
-  alias Bot.MessageHandler, as: HandlerUtil
+  alias Bot.MessageHandlerUtil, as: HandlerUtil
   alias Backend.HSReplay
   alias Backend.HSReplay.ArchetypeMatchups
 

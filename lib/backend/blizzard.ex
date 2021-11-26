@@ -45,8 +45,6 @@ defmodule Backend.Blizzard do
 
   @type leaderboard_id :: leaderboard | String.t()
 
-  @ladder_finish_order [:AP, :EU, :US]
-
   @spec season_id_def(leaderboard_id()) :: {start_year :: integer(), month_offset :: integer()}
   def season_id_def(ldb) when ldb in [:MRC, "MRC"] do
     {2021, 10}
@@ -493,6 +491,20 @@ defmodule Backend.Blizzard do
     end
   end
 
+  @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: Leaderboard
+  def get_leaderboard_name(region, leaderboard, season_id, length \\ :long)
+
+  def get_leaderboard_name(region, :BG, season_id, length) do
+    r = get_region_name(region, length)
+    ldb = get_leaderboard_name(:BG, length)
+    "#{ldb} #{r} #{get_season_name(season_id, :BG)}"
+  end
+
+  for ldb <- [:BG, :MRC]  do
+    def get_leaderboard_name(region, unquote(to_string(ldb)), season_id, length),
+      do: get_leaderboard_name(region, unquote(ldb), season_id, length)
+  end
+
   @spec get_tour_stops_for_year(integer) :: [tour_stop()]
   def get_tour_stops_for_year(year) do
     TourStop.all()
@@ -505,22 +517,6 @@ defmodule Backend.Blizzard do
     # todo pick season_id when nil
     Api.get_leaderboard(region, leaderboard, season_id)
   end
-
-  @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: Leaderboard
-  def get_leaderboard_name(region, leaderboard, season_id, length \\ :long)
-
-  for ldb <- [:BG, :MRC]  do
-    def get_leaderboard_name(region, unquote(to_string(ldb)), season_id, length),
-      do: get_leaderboard_name(region, unquote(ldb), season_id, length)
-  end
-
-  def get_leaderboard_name(region, :BG, season_id, length) do
-    r = get_region_name(region, length)
-    ldb = get_leaderboard_name(:BG, length)
-    "#{ldb} #{r} #{get_season_name(season_id, :BG)}"
-  end
-
-  def get_leaderboard_name(region)
 
   def get_season_name(season, "BG"), do: get_season_name(season, :BG)
   def get_season_name(season, :BG), do: "Season #{season + 1}"
@@ -556,6 +552,8 @@ defmodule Backend.Blizzard do
     end
   end
 
+  def ineligible?(_, nil), do: false
+
   @spec get_single_gm_lineup(String.t(), String.t()) :: Hearthstone.Lineup.t() | nil
   def get_single_gm_lineup(stage_title, gm),
     do: current_gm_season() |> get_single_gm_lineup(stage_title, gm)
@@ -565,8 +563,6 @@ defmodule Backend.Blizzard do
     get_grandmasters_lineups(season, stage_title)
     |> Enum.find(&(&1.name == gm))
   end
-
-  def ineligible?(_, nil), do: false
 
   def gm_tournament_title(season), do: "gm_#{gm_season_string(season)}"
 

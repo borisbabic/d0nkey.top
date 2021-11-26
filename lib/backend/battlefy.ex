@@ -142,11 +142,11 @@ defmodule Backend.Battlefy do
     get_stage_round_standings(id, round + 1)
   end
 
-  def battlefy_id?(id), do: id |> String.match?(~r/^[a-f\d]{24}$/i)
-
   def get_stage_standings(stage) do
     create_standings_from_matches(stage)
   end
+
+  def battlefy_id?(id), do: id |> String.match?(~r/^[a-f\d]{24}$/i)
 
   def get_stage_round_standings(stage_id, round) when round > 0 do
     case Api.get_round_standings(stage_id, round) do
@@ -254,7 +254,7 @@ defmodule Backend.Battlefy do
 
     auto_losses =
       matches
-      |> Enum.flat_map(fn %{double_loss: double_loss, top: top, bottom: bottom} ->
+      |> Enum.flat_map(fn %{double_loss: _double_loss, top: _top, bottom: _bottom} ->
         cond do
           # not counting these because of new masters tour qualifier rules
           # double_loss -> [top.team.name, bottom.team.name]
@@ -368,6 +368,20 @@ defmodule Backend.Battlefy do
   def create_standings_from_matches(%{id: id}),
     do: id |> get_matches() |> create_standings_from_matches()
 
+  def create_standings_from_matches(matches = [_ | _]) do
+    matches
+    |> Enum.reduce(%{}, fn m = %{top: top, bottom: bottom}, acc ->
+      acc
+      |> add_team_to_stats(top, bottom, m)
+      |> add_team_to_stats(bottom, top, m)
+    end)
+    |> Map.values()
+  end
+
+  def create_standings_from_matches(_) do
+    nil
+  end
+
   defp auto_win?(_, _, %{is_bye: true}), do: true
 
   defp auto_win?(winner, loser, _),
@@ -415,20 +429,6 @@ defmodule Backend.Battlefy do
   end
 
   def add_team_to_stats(team_map, _, _, _), do: team_map
-
-  def create_standings_from_matches(matches = [_ | _]) do
-    matches
-    |> Enum.reduce(%{}, fn m = %{top: top, bottom: bottom}, acc ->
-      acc
-      |> add_team_to_stats(top, bottom, m)
-      |> add_team_to_stats(bottom, top, m)
-    end)
-    |> Map.values()
-  end
-
-  def create_standings_from_matches(_) do
-    nil
-  end
 
   def get_all_tournament_standings(%{stage_ids: stage_ids}),
     do: stage_ids |> Enum.map(&get_stage_standings/1)

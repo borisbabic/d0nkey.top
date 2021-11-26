@@ -1,8 +1,6 @@
 defmodule BackendWeb.AdminController do
   use BackendWeb, :controller
   alias Backend.MastersTour
-  alias Backend.Blizzard
-  alias Backend.MastersTour.InvitedPlayer
   alias Backend.MastersTour.TourStop
 
   def get_all_leaderboards(conn, _params) do
@@ -68,7 +66,6 @@ defmodule BackendWeb.AdminController do
 
   def recalculate_archetypes(conn, %{"minutes_ago" => min_ago}) do
     Task.start(fn ->
-      resp =
         min_ago
         |> Backend.Hearthstone.recalculate_archetypes()
         |> inspect(pretty: true)
@@ -103,44 +100,4 @@ defmodule BackendWeb.AdminController do
     text(conn, response)
   end
 
-  def check_new_region_data(conn, _) do
-    csv =
-      {2021, 1}
-      |> MastersTour.get_gm_money_rankings(:earnings_2020)
-      |> Enum.flat_map(fn {name, total, _} ->
-        new_region = Backend.PlayerInfo.new_get_region(name)
-        old_region = Backend.PlayerInfo.old_get_region(name)
-
-        if old_region && new_region != old_region do
-          new_country = Backend.PlayerInfo.new_get_country(name)
-          old_country = Backend.PlayerInfo.old_get_country(name)
-
-          [
-            {
-              name |> InvitedPlayer.shorten_battletag(),
-              new_region |> Blizzard.get_region_name(),
-              old_region |> Blizzard.get_region_name(),
-              new_country |> Util.get_country_name(),
-              old_country |> Util.get_country_name(),
-              total
-            }
-          ]
-        else
-          []
-        end
-      end)
-      |> Enum.sort_by(fn {_, _, _, _, _, t} -> t end)
-      |> Enum.map(fn t -> t |> Tuple.to_list() |> Enum.join("|") end)
-      |> Enum.join("\n")
-
-    response =
-      if csv == "" do
-        "No discrepancies"
-      else
-        "Name|New Region|Old Region|New Country|Old Country|Total Earnings\n" <>
-          csv
-      end
-
-    text(conn, response)
-  end
 end

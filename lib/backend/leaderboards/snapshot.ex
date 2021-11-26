@@ -31,16 +31,6 @@ defmodule Backend.Leaderboards.Snapshot do
     |> unique_constraint(:region, name: :snapshot_unique_index)
   end
 
-  defp map_raw_rows(rows_raw),
-    do:
-      rows_raw
-      |> Enum.map(fn row ->
-        %{
-          battletag: row["accountid"],
-          position: row["rank"],
-          rating: row["rating"]
-        }
-      end)
 
   def extract_updated_at(%{"last_updated_time" => last_updated_time}) do
     with {:error, _reason} <-

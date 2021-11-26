@@ -1,6 +1,5 @@
 defmodule Hearthstone.DeckTracker.InsertListener do
   alias Hearthstone.DeckTracker
-  alias Backend.UserManager
   @moduledoc "Listen to inserts"
   use GenServer
   @name :dt_games_insert_listener

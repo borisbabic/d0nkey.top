@@ -509,9 +509,9 @@ defmodule Util do
           {:ok, list()} | {:error, any()}
   def map_abort_on_error(enum, map_fun), do: do_map_abort_on_error(enum, map_fun, {:ok, []})
 
-  defp do_map_abort_on_error([], map_fun, {:ok, values}), do: {:ok, values |> Enum.reverse()}
+  defp do_map_abort_on_error([], _map_fun, {:ok, values}), do: {:ok, values |> Enum.reverse()}
 
-  defp do_map_abort_on_error([current | rest], map_fun, carry = {:ok, cards}) do
+  defp do_map_abort_on_error([current | rest], map_fun, _carry = {:ok, cards}) do
     case map_fun.(current) do
       {:ok, mapped} -> do_map_abort_on_error(rest, map_fun, {:ok, [mapped | cards]})
       e = {:error, _} -> e

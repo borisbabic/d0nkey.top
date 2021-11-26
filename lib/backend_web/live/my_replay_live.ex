@@ -1,7 +1,6 @@
 defmodule BackendWeb.MyReplaysLive do
   @moduledoc false
   use Surface.LiveView
-  alias Backend.Feed
   alias Components.ExpandableDecklist
   alias Backend.UserManager.User
   alias Hearthstone.DeckTracker
@@ -20,8 +19,6 @@ defmodule BackendWeb.MyReplaysLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-    items = Feed.get_current_items()
-
     # filters
     # player class
     # opponent class
@@ -80,6 +77,7 @@ defmodule BackendWeb.MyReplaysLive do
   def class(_), do: ""
 
   @default_limit 25
+  @spec limit(String.t() | integer()) :: integer()
   def limit(l) when is_binary(l) do
     case Integer.parse(l) do
       {l, _} -> limit(l)
@@ -89,9 +87,16 @@ defmodule BackendWeb.MyReplaysLive do
   def limit(l) when is_integer(l), do: Enum.min([l, 100])
   def limit(_), do: @default_limit
 
-  def offset(o) when is_binary(o), do: Util.parse_int(o, nil)
+  @default_limit 25
+  @spec offset(String.t() | integer()) :: integer()
+  def offset(l) when is_binary(l) do
+    case Integer.parse(l) do
+      {l, _} -> offset(l)
+      _ -> @default_offset
+    end
+  end
   def offset(o) when is_integer(o), do: o
-  def offset(_), do: 0
+  def offset(_), do: @default_offset
 
   @spec games(User.t(), integer, integer) :: [Game.t()]
   def games(%{battletag: battletag}, limit, offset) do

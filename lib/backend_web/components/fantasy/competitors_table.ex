@@ -29,7 +29,7 @@ defmodule Components.CompetitorsTable do
             </div>
           </div>
         </Form>
-        <table class="table is-fullwidth is-striped"> 
+        <table class="table is-fullwidth is-striped">
           <thead>
             <th>
               Competitor
@@ -83,6 +83,21 @@ defmodule Components.CompetitorsTable do
 
   defp competition_specific_columns(_, _), do: []
 
+  defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),
+    do: league |> League.picked_by(name)
+
+  defp picked_by(league = %{real_time_draft: false}, %{name: name}, user),
+    do: !League.pickable?(league, user, name) && League.team_for_user(league, user)
+
+  # defp current_team(league, user), do: league |> League.team_for_user(user)
+  defp has_current_pick?(league = %{real_time_draft: false, roster_size: roster_size}, user) do
+    lt = league |> League.team_for_user(user)
+    lt && roster_size > LeagueTeam.current_roster_size(lt)
+  end
+
+  defp has_current_pick?(league = %{real_time_draft: true}, user),
+    do: league |> League.drafting_now() |> LeagueTeam.can_manage?(user)
+
   def handle_event(
         "unpick",
         %{"pick" => pick, "league_team" => lt_string_id},
@@ -98,21 +113,6 @@ defmodule Components.CompetitorsTable do
 
     {:noreply, new_socket}
   end
-
-  defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),
-    do: league |> League.picked_by(name)
-
-  defp picked_by(league = %{real_time_draft: false}, %{name: name}, user),
-    do: !League.pickable?(league, user, name) && League.team_for_user(league, user)
-
-  # defp current_team(league, user), do: league |> League.team_for_user(user)
-  defp has_current_pick?(league = %{real_time_draft: false, roster_size: roster_size}, user) do
-    lt = league |> League.team_for_user(user)
-    lt && roster_size > LeagueTeam.current_roster_size(lt)
-  end
-
-  defp has_current_pick?(league = %{real_time_draft: true}, user),
-    do: league |> League.drafting_now() |> LeagueTeam.can_manage?(user)
 
   def handle_event("search", %{"search" => [search]}, socket),
     do: {:noreply, assign(socket, :search, search)}

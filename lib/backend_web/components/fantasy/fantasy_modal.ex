@@ -108,7 +108,7 @@ defmodule Components.FantasyModal do
                   <HiddenInput value={{ user.id }}/>
                 </Context>
               </Field>
-              
+
 
             </section>
             <footer class="modal-card-foot">
@@ -258,17 +258,6 @@ defmodule Components.FantasyModal do
     |> handle_result(socket)
   end
 
-  def add_round(attrs) do
-    attrs
-    |> Map.put(
-      "current_round",
-      Backend.FantasyCompetitionFetcher.current_round(
-        attrs["competition_type"],
-        attrs["competition"]
-      )
-    )
-  end
-
   def handle_event("regenerate_join_code", _, socket = %{assigns: %{league: league}}) do
     new_league = league |> Map.put(:join_code, Ecto.UUID.generate())
 
@@ -286,15 +275,22 @@ defmodule Components.FantasyModal do
     {:noreply, socket |> assign(show_modal: false) |> reset_messages()}
   end
 
+  def add_round(attrs) do
+    attrs
+    |> Map.put(
+      "current_round",
+      Backend.FantasyCompetitionFetcher.current_round(
+        attrs["competition_type"],
+        attrs["competition"]
+      )
+    )
+  end
+
   defp assign_temp_vals(socket, %{"league" => league_params}) do
     socket
     |> assign(:show_deadline, league_params["real_time_draft"] == "false")
     |> assign(:current_params, league_params)
   end
-
-  defp string_to_bool("true"), do: true
-  defp string_to_bool("false"), do: false
-  defp string_to_bool(_), do: nil
 
   def reset_messages(socket), do: socket |> assign(show_error: false, show_succes: false)
 

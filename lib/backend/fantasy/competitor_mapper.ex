@@ -5,8 +5,6 @@ defmodule Backend.Fantasy.MTCompetitorMapper do
   """
 
   import Ecto.Query, warn: false
-  alias Backend.Repo
-  alias Ecto.Multi
   alias Backend.Fantasy.LeagueTeamPick
 
   def map_existing(mt = :Dalaran) do

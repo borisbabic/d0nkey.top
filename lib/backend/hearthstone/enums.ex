@@ -130,8 +130,6 @@ defmodule Hearthstone.Enums.BnetGameType do
 
   def game_type_name(_), do: "Unknown"
 
-  def from_type_and_format(game_type, format) do
-  end
 end
 
 defmodule Hearthstone.Enums.GameType do

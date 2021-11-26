@@ -3,10 +3,10 @@ defmodule Backend.EsportsGold.PlayerDetails do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :alias, string
-    field :nationality, string
-    field :twitter, string
-    field :twitch, string
+    field :alias, String.t()
+    field :nationality, String.t()
+    field :twitter, String.t()
+    field :twitch, String.t()
   end
 
   def from_raw_map(nil) do
