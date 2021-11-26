@@ -11,7 +11,6 @@ defmodule BackendWeb.ProfileSettingsLive do
   alias Surface.Components.Form.Submit
   alias Surface.Components.Form.Select
   alias Surface.Components.Form.Label
-  alias Surface.Components.Form.ErrorTag
 
   data(user, :map)
 
@@ -34,7 +33,6 @@ defmodule BackendWeb.ProfileSettingsLive do
             <Field name="country_code">
               <Label class="label" >Enter 2 character <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">alpha2 country code</a></Label>
               <TextInput value={@user.country_code} class="input is-small" />
-              <ErrorTag field="country_code"/>
             </Field>
             <br>
             <Field name="unicode_icon">
