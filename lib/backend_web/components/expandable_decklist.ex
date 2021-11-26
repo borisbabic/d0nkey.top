@@ -9,12 +9,13 @@ defmodule Components.ExpandableDecklist do
   prop(guess_archetype, :boolean, default: false)
 
   def render(assigns = %{name: n, guess_archetype: ga, deck: d}) do
-    name =
-      if n == nil && ga do
-        Backend.HSReplay.guess_archetype(d)
-      else
-        n
-      end
+    name = with nil <- n,
+        true <- ga,
+        %{name: name} <- Backend.HSReplay.guess_archetype(d) do
+      name
+    else
+      _ -> n
+    end
 
     ~H"""
       <Decklist deck={{ @deck }} show_cards={{ @show_cards }} name={{ name }}>

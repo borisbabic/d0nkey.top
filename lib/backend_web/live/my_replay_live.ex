@@ -22,6 +22,11 @@ defmodule BackendWeb.MyReplaysLive do
   def render(assigns) do
     items = Feed.get_current_items()
 
+    # filters
+    # player class
+    # opponent class
+    # player rank
+    # region
     ~H"""
     <Context put={{ user: @user }}>
       <div class="container">
@@ -35,14 +40,23 @@ defmodule BackendWeb.MyReplaysLive do
               <th>Opponent</th>
               <th>Game Mode</th>
               <th>Replay Link</th>
+              <th>Played</th>
             </tr>
           </thead>
           <tbody>
             <tr :for={{ game <- games(@user, @limit, @offset) }} class="{{class(game)}}" >
               <td><ExpandableDecklist id={{ "replay_decklist_#{game.id}" }} deck={{ game.player_deck }} guess_archetype={{ true }}/></td>
-              <td>{{ game.opponent_btag }}</td>
+              <td>
+                <span>
+                  <span class="icon">
+                    <img src="{{ BackendWeb.BattlefyView.class_url(game.opponent_class) }}" >
+                  </span>
+                  {{ game.opponent_btag }}
+                </span>
+              </td>
               <td>{{ game_mode(game) }}</td>
               <td><a href="{{ replay_link(game) }}" target="_blank">View Replay</a></td>
+              <td>{{ Timex.format!(game.inserted_at, "{relative}", :relative) }}</td>
             </tr>
           </tbody>
         </table>
@@ -61,10 +75,19 @@ defmodule BackendWeb.MyReplaysLive do
 
   def game_mode(_), do: ""
   def replay_link(game), do: DeckTracker.replay_link(game)
+  def class(%{status: :won}), do: "game-won"
+  def class(%{status: :lost}), do: "game-lost"
   def class(_), do: ""
-  def limit(l) when is_binary(l), do: Util.parse_int(l, nil)
-  def limit(l) when is_integer(l), do: Enum.min([25, 100])
-  def limit(_), do: 25
+
+  @default_limit 25
+  def limit(l) when is_binary(l) do
+    case Integer.parse(l) do
+      {l, _} -> limit(l)
+      _ -> @default_limit
+    end
+  end
+  def limit(l) when is_integer(l), do: Enum.min([l, 100])
+  def limit(_), do: @default_limit
 
   def offset(o) when is_binary(o), do: Util.parse_int(o, nil)
   def offset(o) when is_integer(o), do: o

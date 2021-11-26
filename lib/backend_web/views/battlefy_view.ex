@@ -311,7 +311,8 @@ defmodule BackendWeb.BattlefyView do
     """
   end
 
-  defp class_url(class), do: "/images/icons/#{class}.png"
+  # todo move elsewhere
+  def class_url(class), do: "/images/icons/#{String.downcase(class)}.png"
 
   @win_color "hsl(141, 53%, 53%)"
   @loss_color "hsl(348, 86%, 61%)"
