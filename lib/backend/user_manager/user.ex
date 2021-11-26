@@ -35,6 +35,7 @@ defmodule Backend.UserManager.User do
       :admin_roles,
       :hide_ads,
       :twitch_id,
+      :replay_preference,
       :unicode_icon
     ])
     |> cast_embed(:decklist_options)
