@@ -83,6 +83,7 @@ defmodule Hearthstone.Enums.BnetGameType do
       ranked_standard_new_player(),
       ranked_wild(),
       ranked_classic(),
+      mercenaries_pvp(),
       battlegrounds()
     ]
 

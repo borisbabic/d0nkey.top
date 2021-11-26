@@ -29,6 +29,8 @@ defmodule Hearthstone.DeckTracker.Game do
     field :duration, :integer
     field :turns, :integer
 
+    field :public, :boolean, default: false
+
     belongs_to :created_by, ApiUser
     timestamps()
   end

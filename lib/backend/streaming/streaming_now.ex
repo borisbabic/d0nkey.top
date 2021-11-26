@@ -87,6 +87,7 @@ defmodule Backend.Streaming.StreamingNow do
   @battlegrounds_patterns ["[bg]", "[battlegrounds]", "[bgs]", "[battleground]"]
   @arena_patterns ["[arena]", "[arn]"]
   @classic_patterns ["[classic]"]
+  @mercenaries_patterns ["[mercenaries]", "[mrc]"]
   def guess_from_title(title) do
     down = title |> String.downcase()
 
@@ -108,6 +109,9 @@ defmodule Backend.Streaming.StreamingNow do
 
       down |> String.contains?(@classic_patterns) ->
         BnetGameType.ranked_classic()
+
+      down |> String.contains?(@mercenaries_patterns) ->
+        BnetGameType.mercenaries_pvp()
 
       true ->
         nil

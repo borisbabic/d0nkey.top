@@ -13,6 +13,7 @@ defmodule Backend.UserManager.User do
     field :hide_ads, :boolean
     field :unicode_icon, :string
     field :twitch_id, :string
+    field :replay_preference, Ecto.Enum, values: [all: 0, streamed: 8, none: 16]
     embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
 
     timestamps()
@@ -79,6 +80,11 @@ defmodule Backend.UserManager.User do
 
   def decklist_options(%{decklist_options: deck_opts}) when is_map(deck_opts), do: deck_opts
   def decklist_options(_), do: %{}
+
+  def replay_public?(%{replay_preference: :all}, _stream_live), do: true
+  def replay_public?(%{replay_preference: :streamed}, stream_live), do: stream_live
+  def replay_public?(%{replay_preference: :none}, _stream_live), do: false
+  def replay_public?(_, _), do: false
 end
 
 defmodule Backend.UserManager.User.DecklistOptions do

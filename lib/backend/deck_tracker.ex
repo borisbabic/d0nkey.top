@@ -6,16 +6,21 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.Enums.Format
-  alias Hearthstone.Enums.GameType
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
+  alias Backend.UserManager
+  alias Backend.UserManager.User
+
   @type deck_stats :: %{deck: Deck.t(), wins: integer(), losses: integer()}
 
   @spec get_game(integer) :: Game.t() | nil
   def get_game(id), do: Repo.get(Game, id) |> Repo.preload(:player_deck)
 
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
-    attrs = GameDto.to_ecto_attrs(game_dto, &handle_deck/1)
+    attrs =
+      GameDto.to_ecto_attrs(game_dto, &handle_deck/1)
+      |> IO.inspect()
+      |> set_public()
 
     case get_existing(game_id) do
       game = %{game_id: ^game_id} -> update_game(game, attrs)
@@ -24,6 +29,17 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def handle_game(_), do: {:error, :missing_game_id}
+
+  defp set_public(attrs), do: Map.put(attrs, "public", public?(attrs))
+  defp public?(%{"player_btag" => btag}) do
+    with {:ok, user} <- UserManager.get_by_btag(btag),
+                  live <- Twitch.HearthstoneLive.twitch_id_live?(user.twitch_id) do
+        User.replay_public?(user, live)
+    else
+      _ -> false
+    end
+  end
+  defp public?(_), do: false
 
 
   def sum_stats(stats) do
