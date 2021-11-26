@@ -21,7 +21,7 @@ defmodule Backend.ApiTest do
 
     test "paginate_api_users/1 returns paginated list of api_users" do
       for _ <- 1..20 do
-        api_user_fixture()
+        api_user_fixture(%{username: Ecto.UUID.generate()})
       end
 
       {:ok, %{api_users: api_users} = page} = Api.paginate_api_users(%{})

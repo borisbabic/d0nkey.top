@@ -19,7 +19,6 @@ defmodule Hearthstone.DeckTracker do
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
     attrs =
       GameDto.to_ecto_attrs(game_dto, &handle_deck/1)
-      |> IO.inspect()
       |> set_public()
 
     case get_existing(game_id) do

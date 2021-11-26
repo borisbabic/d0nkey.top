@@ -13,7 +13,9 @@ defmodule BackendWeb.TournamentStatsView do
   end
 
   def render("tournaments_stats.html", params = %{tournaments_stats: _}) do
-    render("tournaments_stats_table.html", params)
+    curr_url = link_creator(params.conn).(%{})
+    new_params = Map.put(params, :curr_url, curr_url)
+    render("tournaments_stats_table.html", new_params)
   end
 
   def render(
@@ -22,7 +24,6 @@ defmodule BackendWeb.TournamentStatsView do
           conn: conn,
           tournaments_stats: tournaments_stats,
           selected_columns: selected_columns_raw,
-          years: years,
           sort_by: sort_by,
           min_matches: min_matches_raw,
           min_tournaments: min_tournaments_raw,

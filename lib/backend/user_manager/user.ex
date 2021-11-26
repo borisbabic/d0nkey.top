@@ -13,7 +13,7 @@ defmodule Backend.UserManager.User do
     field :hide_ads, :boolean
     field :unicode_icon, :string
     field :twitch_id, :string
-    field :replay_preference, Ecto.Enum, values: [all: 0, streamed: 8, none: 16]
+    field :replay_preference, Ecto.Enum, values: [all: 0, streamed: 8, none: 16], default: :streamed
     embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
 
     timestamps()
