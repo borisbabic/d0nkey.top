@@ -59,6 +59,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :format,
       :status,
       :region,
+      :public,
       :duration,
       :turns
     ])

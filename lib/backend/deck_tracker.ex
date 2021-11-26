@@ -31,8 +31,8 @@ defmodule Hearthstone.DeckTracker do
 
   defp set_public(attrs), do: Map.put(attrs, "public", public?(attrs))
   defp public?(%{"player_btag" => btag}) do
-    with {:ok, user} <- UserManager.get_by_btag(btag),
-                  live <- Twitch.HearthstoneLive.twitch_id_live?(user.twitch_id) do
+    with user = %{twitch_id: twitch_id} <- UserManager.get_by_btag(btag),
+                  live <- Twitch.HearthstoneLive.twitch_id_live?(twitch_id) do
         User.replay_public?(user, live)
     else
       _ -> false

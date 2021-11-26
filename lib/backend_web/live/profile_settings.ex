@@ -38,25 +38,24 @@ defmodule BackendWeb.ProfileSettingsLive do
             </Field>
             <br>
             <Field name="unicode_icon">
-              <Label>Player Icon</Label>
               <Select selected={{ @user.unicode_icon }} class="select" options={{ [{"None", nil}, {pride_flag(), pride_flag()}] }}/>
+              <Label>Player Icon</Label>
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
             <Label class="label">Decklist Options</Label>
             <Field name="border">
-              <Label>Border Color</Label>
               <Select selected={{ DecklistOptions.border(@user.decklist_options) }} class="select" options={{ "Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey" }}/>
+              <Label>Border Color</Label>
             </Field>
             <Field name="gradient">
-              <Label>Gradient Color</Label>
               <Select selected={{ DecklistOptions.gradient(@user.decklist_options) }} class="select" options={{  "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey" }}/>
+              <Label>Gradient Color</Label>
             </Field>
             <br>
             <Field name="replay_preference">
-              <Label>Replay Preference</Label>
               <Select selected={{ @user.replay_preference }} class="select" options={{ [{"All", :all}, {"Streamed", :streamed}, {"None", :none}] }}/>
-              Which replays you want to consider public (applied to new replays)
+              <Label>Which replays do you want to be considered public? (only affects new replays)</Label>
             </Field>
 
             <Submit label="Save" class="button"/>
