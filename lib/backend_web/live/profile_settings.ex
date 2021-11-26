@@ -38,7 +38,7 @@ defmodule BackendWeb.ProfileSettingsLive do
             </Field>
             <br>
             <Field name="unicode_icon">
-              <Label>Player Icon</Label> 
+              <Label>Player Icon</Label>
               <Select selected={{ @user.unicode_icon }} class="select" options={{ [{"None", nil}, {pride_flag(), pride_flag()}] }}/>
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
@@ -51,6 +51,12 @@ defmodule BackendWeb.ProfileSettingsLive do
             <Field name="gradient">
               <Label>Gradient Color</Label>
               <Select selected={{ DecklistOptions.gradient(@user.decklist_options) }} class="select" options={{  "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey" }}/>
+            </Field>
+            <br>
+            <Field name="replay_preference">
+              <Label>Replay Preference</Label>
+              <Select selected={{ @user.replay_preference }} class="select" options={{ [{"All", :all}, {"Streamed", :streamed}, {"None", :none}] }}/>
+              Which replays you want to consider public (applied to new replays)
             </Field>
 
             <Submit label="Save" class="button"/>
