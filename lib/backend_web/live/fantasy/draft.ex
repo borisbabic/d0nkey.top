@@ -43,7 +43,7 @@ defmodule BackendWeb.FantasyDraftLive do
           Online now: {{ @present |> Enum.uniq() |> Enum.join(" | ") }}
         </div>
         <div :if={{ !League.draft_started?(@league) }} >
-          Draft Not Started 
+          Draft Not Started
         </div>
         <div :if={{ League.draft_started?(@league) &&  @league.real_time_draft}} class="level">
           <div class="level-left">
@@ -63,7 +63,9 @@ defmodule BackendWeb.FantasyDraftLive do
             <div :if={{ lt = League.team_for_user(@league, @user)}} style="position: sticky; top: 0; z-index: 10;">
               <RosterModal :if={{ @league }} id={{ "self_roster_modal_{{lt.id}}" }} league_team={{ lt }} button_title="Your roster: {{ LeagueTeam.current_roster_size(lt) }} / {{ @league.roster_size }}" />
             </div>
-            <LeagueInfoModal class="level-item" id={{ "league_info_modal_#{@league.id}" }} league={{ @league }}/>
+            <div class="level-item">
+              <LeagueInfoModal id={{ "league_info_modal_#{@league.id}" }} league={{ @league }}/>
+            </div>
 
             <button class="button level-item" type="button" :on-click="start_draft" :if={{ @user && League.can_manage?(@league, @user) && !League.draft_started?(@league) }} >
               Start Draft

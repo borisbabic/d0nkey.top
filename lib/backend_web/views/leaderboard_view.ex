@@ -10,19 +10,9 @@ defmodule BackendWeb.LeaderboardView do
   @type selectable_season :: {String.t(), integer()}
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
 
-  def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
-    has_rating = player_history |> Enum.any?(& &1.rating)
-    dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
-    sorted_history = Enum.reverse(player_history)
-    graph = player_history_graph(player_history, attr)
-    title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
-    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph, title: title})
-  end
-
   def player_history_graph([], _), do: ""
   def player_history_graph(player_history, attr) do
     data = Enum.map(player_history, & {&1.upstream_updated_at, player_history_data(&1, attr)})
-    attr_name = attr |> to_string() |> Macro.camelize()
     dataset = Contex.Dataset.new(data)
     y_scale = yscale(data)
     point_plot = Contex.PointPlot.new(dataset, custom_y_scale: y_scale, custom_y_formatter: & &1 |> trunc() |> abs())
@@ -31,9 +21,7 @@ defmodule BackendWeb.LeaderboardView do
     |> Contex.Plot.to_svg()
   end
 
-  @doc"""
-  Ensure th that the interval size is never below 1
-  """
+  # Ensure th that the interval size is never below 1
   defp yscale(data) do
     {{_, min}, {_, max}} = Enum.min_max_by(data, & elem(&1, 1))
     distance = abs(max - min)
@@ -105,6 +93,15 @@ defmodule BackendWeb.LeaderboardView do
   end
   def player_history_dropdowns(false, _, _), do: []
 
+  def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
+    has_rating = player_history |> Enum.any?(& &1.rating)
+    dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
+    sorted_history = Enum.reverse(player_history)
+    graph = player_history_graph(player_history, attr)
+    title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
+    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph, title: title})
+  end
+
   def render("index.html", params = %{leaderboard: nil}) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
   end
@@ -145,6 +142,142 @@ defmodule BackendWeb.LeaderboardView do
       conn: conn,
       ladder_invite_num: ladder_invite_num,
       highlighted: process_highlighted(highlight, entries)
+    })
+  end
+
+  def render("stats.html", %{
+        conn: conn,
+        leaderboards: leaderboards,
+        regions: regions,
+        stats: stats,
+        min: min_raw,
+        countries: countries,
+        show_flags: show_flags,
+        sort_by: sort_by_raw,
+        direction: direction_raw
+      }) do
+    min_to_show = min_raw || 5
+    {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
+
+    sortable_headers = [
+      "Player",
+      "Top 1",
+      "Top 10",
+      "Top 25",
+      "Top 50",
+      "Top 100",
+      "Best",
+      "Worst",
+      "Average Finish",
+      "Total Finishes"
+    ]
+
+    headers =
+      (["#"] ++ sortable_headers)
+      |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn) end)
+
+    sort_key = sortable_headers |> Enum.find("Total Finishes", fn h -> h == sort_by end)
+
+    update_link = fn new_params ->
+      Routes.leaderboard_path(conn, :player_stats, conn.query_params |> Map.merge(new_params))
+    end
+
+    %{
+      limit: limit,
+      offset: offset,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
+      )
+
+    rows =
+      stats
+      |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
+      |> filter_countries(countries)
+      |> create_player_rows(conn, show_flags == "yes")
+      |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
+      |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
+      |> Enum.with_index(1 + offset)
+      |> Enum.map(fn {row, pos} ->
+        [pos | sortable_headers |> Enum.map(fn h -> row[h] || "" end)]
+      end)
+
+    region_options =
+      Blizzard.qualifier_regions()
+      |> Enum.map(fn r ->
+        %{
+          value: r,
+          name: r |> Blizzard.get_region_name(:long),
+          display: r |> Blizzard.get_region_name(:long),
+          selected: regions == [] || regions |> Enum.member?(to_string(r))
+        }
+      end)
+
+    min_list =
+      @min_finishes_options
+      |> Enum.map(fn min ->
+        %{
+          display: "Min #{min}",
+          selected: min == min_to_show,
+          link:
+            Routes.leaderboard_path(
+              conn,
+              :player_stats,
+              Map.put(conn.query_params, "min", min)
+            )
+        }
+      end)
+
+    leaderboards_options =
+      Blizzard.leaderboards()
+      |> Enum.map(fn l ->
+        %{
+          value: to_string(l),
+          name: l |> Blizzard.get_leaderboard_name(:long),
+          display: l |> Blizzard.get_leaderboard_name(:long),
+          selected:
+            (leaderboards == [] && "STD" == l) || leaderboards |> Enum.member?(to_string(l))
+        }
+      end)
+
+    show_flags_list =
+      ["Yes", "No"]
+      |> Enum.map(fn o ->
+        %{
+          display: o,
+          selected: show_flags == String.downcase(o),
+          link:
+            Routes.leaderboard_path(
+              conn,
+              :player_stats,
+              Map.put(conn.query_params, "show_flags", o |> String.downcase())
+            )
+        }
+      end)
+
+    dropdowns = [
+      limit_dropdown,
+      {min_list, min_dropdown_title(min_to_show)},
+      {show_flags_list, "Show Country Flags"}
+    ]
+
+    render("player_stats.html", %{
+      headers: headers,
+      rows: rows,
+      conn: conn,
+      min: min_to_show,
+      region_options: region_options,
+      dropdowns: dropdowns,
+      selected_countries: countries,
+      prev_button: prev_button,
+      next_button: next_button,
+      leaderboards_options: leaderboards_options
     })
   end
 
@@ -491,142 +624,6 @@ defmodule BackendWeb.LeaderboardView do
       {s, _} when is_binary(s) -> {s, :desc}
       _ -> {"Total Finishes", :desc}
     end
-  end
-
-  def render("stats.html", %{
-        conn: conn,
-        leaderboards: leaderboards,
-        regions: regions,
-        stats: stats,
-        min: min_raw,
-        countries: countries,
-        show_flags: show_flags,
-        sort_by: sort_by_raw,
-        direction: direction_raw
-      }) do
-    min_to_show = min_raw || 5
-    {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
-
-    sortable_headers = [
-      "Player",
-      "Top 1",
-      "Top 10",
-      "Top 25",
-      "Top 50",
-      "Top 100",
-      "Best",
-      "Worst",
-      "Average Finish",
-      "Total Finishes"
-    ]
-
-    headers =
-      (["#"] ++ sortable_headers)
-      |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn) end)
-
-    sort_key = sortable_headers |> Enum.find("Total Finishes", fn h -> h == sort_by end)
-
-    update_link = fn new_params ->
-      Routes.leaderboard_path(conn, :player_stats, conn.query_params |> Map.merge(new_params))
-    end
-
-    %{
-      limit: limit,
-      offset: offset,
-      prev_button: prev_button,
-      next_button: next_button,
-      dropdown: limit_dropdown
-    } =
-      ViewUtil.handle_pagination(conn.query_params, update_link,
-        default_limit: 200,
-        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
-      )
-
-    rows =
-      stats
-      |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
-      |> filter_countries(countries)
-      |> create_player_rows(conn, show_flags == "yes")
-      |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
-      |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
-      |> Enum.drop(offset)
-      |> Enum.take(limit)
-      |> Enum.with_index(1 + offset)
-      |> Enum.map(fn {row, pos} ->
-        [pos | sortable_headers |> Enum.map(fn h -> row[h] || "" end)]
-      end)
-
-    region_options =
-      Blizzard.qualifier_regions()
-      |> Enum.map(fn r ->
-        %{
-          value: r,
-          name: r |> Blizzard.get_region_name(:long),
-          display: r |> Blizzard.get_region_name(:long),
-          selected: regions == [] || regions |> Enum.member?(to_string(r))
-        }
-      end)
-
-    min_list =
-      @min_finishes_options
-      |> Enum.map(fn min ->
-        %{
-          display: "Min #{min}",
-          selected: min == min_to_show,
-          link:
-            Routes.leaderboard_path(
-              conn,
-              :player_stats,
-              Map.put(conn.query_params, "min", min)
-            )
-        }
-      end)
-
-    leaderboards_options =
-      Blizzard.leaderboards()
-      |> Enum.map(fn l ->
-        %{
-          value: to_string(l),
-          name: l |> Blizzard.get_leaderboard_name(:long),
-          display: l |> Blizzard.get_leaderboard_name(:long),
-          selected:
-            (leaderboards == [] && "STD" == l) || leaderboards |> Enum.member?(to_string(l))
-        }
-      end)
-
-    show_flags_list =
-      ["Yes", "No"]
-      |> Enum.map(fn o ->
-        %{
-          display: o,
-          selected: show_flags == String.downcase(o),
-          link:
-            Routes.leaderboard_path(
-              conn,
-              :player_stats,
-              Map.put(conn.query_params, "show_flags", o |> String.downcase())
-            )
-        }
-      end)
-
-    dropdowns = [
-      limit_dropdown,
-      {min_list, min_dropdown_title(min_to_show)},
-      {show_flags_list, "Show Country Flags"}
-    ]
-
-    render("player_stats.html", %{
-      headers: headers,
-      rows: rows,
-      conn: conn,
-      min: min_to_show,
-      region_options: region_options,
-      dropdowns: dropdowns,
-      selected_countries: countries,
-      prev_button: prev_button,
-      next_button: next_button,
-      leaderboards_options: leaderboards_options
-    })
   end
 
   def min_dropdown_title(1), do: "Min 1 Finish"

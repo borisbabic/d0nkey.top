@@ -141,31 +141,10 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
-  def add_stats_dropdown(dropdowns, _, nil), do: dropdowns
-
-  def add_stats_dropdown(dropdowns, conn, org) do
-    case org.slug |> Battlefy.organization_stats() do
-      stats_configs = [_ | _] ->
-        options =
-          stats_configs
-          |> Enum.map(fn %{title: title, stats_slug: ss} ->
-            %{
-              selected: false,
-              display: title,
-              link: Routes.battlefy_path(conn, :organization_tournament_stats, ss)
-            }
-          end)
-
-        dropdowns ++ [{options, "Stats"}]
-
-      _ ->
-        dropdowns
-    end
-  end
-
-  def create_org_tour_link(range, conn) do
-    new_params = conn.query_params |> Util.update_from_to_params(range)
-    Routes.battlefy_path(conn, :organization_tournaments, new_params)
+  def render("class_match_stats.html", %{class: class, bans: 1}) do
+    ~E"""
+    <img class="image is-32x32" style="opacity:0.2;" src="<%= class_url(class) %>" >
+    """
   end
 
   def render(
@@ -220,127 +199,8 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
-  def handle_player_matches(player_matches, team_name, tournament, conn) do
-    player_matches
-    |> Enum.map_reduce(%{}, fn match = %{top: top, bottom: bottom, round_number: rn}, acc ->
-      {player, opponent, player_place, opponent_place} =
-        case {top.team, bottom.team} do
-          {%{name: ^team_name}, _} ->
-            {top, bottom || Battlefy.MatchTeam.empty(), :top, :bottom}
-
-          {_, %{name: ^team_name}} ->
-            {bottom, top || Battlefy.MatchTeam.empty(), :bottom, :top}
-
-          _ ->
-            Logger.warn("No team is the players team, wtf #{top.team} #{bottom.team}")
-            {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty(), nil, nil}
-        end
-
-      class_stats = Match.create_class_stats(match, player_place)
-      opponent_class_stats = Match.create_class_stats(match, opponent_place)
-
-      {
-        %{
-          score: "#{player.score} - #{opponent.score} ",
-          match_url: Battlefy.get_match_url(tournament, match),
-          opponent: handle_opponent_team(opponent, tournament, conn),
-          class_stats: class_stats,
-          opponent_class_stats: opponent_class_stats,
-          current_round: rn
-        },
-        class_stats
-        |> Battlefy.ClassMatchStats.merge_collections(acc)
-      }
-    end)
-  end
-
-  @spec calculate_ongoing([Match.t()], boolean, Battlefy.Tournament.t(), Plug.Conn.t()) :: Map.t()
-
-  def calculate_ongoing(_, _show_ongoing = false, _, _), do: Map.new()
-
-  def calculate_ongoing(matches, _show_ongoing = true, tournament, conn) do
-    matches
-    |> Enum.filter(&Match.ongoing?/1)
-    |> Enum.flat_map(fn m = %{top: t, bottom: b} ->
-      [
-        {
-          t |> MatchTeam.get_name(),
-          %{
-            score: "#{t.score} - #{b.score}",
-            match_url: Battlefy.get_match_url(tournament, m),
-            opponent: b |> MatchTeam.get_name(),
-            opponent_link:
-              Routes.battlefy_path(
-                conn,
-                :tournament_player,
-                tournament.id,
-                b |> MatchTeam.get_name() || ""
-              )
-          }
-        },
-        {
-          b |> MatchTeam.get_name(),
-          %{
-            score: "#{b.score} - #{t.score}",
-            match_url: Battlefy.get_match_url(tournament, m),
-            opponent: t |> MatchTeam.get_name(),
-            opponent_link:
-              if t |> MatchTeam.get_name() do
-                Routes.battlefy_path(
-                  conn,
-                  :tournament_player,
-                  tournament.id,
-                  t |> MatchTeam.get_name()
-                )
-              else
-                nil
-              end
-          }
-        }
-      ]
-    end)
-    |> Map.new()
-  end
-
-  def tour_stop?(%{id: id}),
-    do: !!Backend.MastersTour.TourStop.get_by(:battlefy_id, id)
-
-  def render("class_match_stats.html", %{class: class, bans: 1}) do
-    ~E"""
-    <img class="image is-32x32" style="opacity:0.2;" src="<%= class_url(class) %>" >
-    """
-  end
-
-  # todo move elsewhere
-  def class_url(class), do: "/images/icons/#{String.downcase(class)}.png"
-
-  @win_color "hsl(141, 53%, 53%)"
-  @loss_color "hsl(348, 86%, 61%)"
-  @result_width 2
-  @border_width 1
-  @border_color "black"
-  defp build_box_shadow(wins, losses) do
-    {
-      @border_width + (wins + losses) * @result_width,
-      """
-      border_radius: 100%;
-      box-shadow: 0 0 0 #{@border_width}px #{@border_color}
-        , 0 0 0 #{@border_width + losses * @result_width}px #{@loss_color}
-        , 0 0 0 #{@border_width + (wins + losses) * @result_width}px #{@win_color}
-        ;
-      """
-    }
-  end
-
   def render("class_match_stats.html", %{class: class, bans: 0, wins: wins, losses: losses}) do
     image_url = class_url(class)
-
-    text_coloring_class =
-      case wins - losses do
-        # n when n > 0 -> "has-text-success"
-        # _ -> "has-text-danger"
-        _ -> "has-text-dark"
-      end
 
     {offset, border_css} = build_box_shadow(wins, losses)
     size = 32 - offset
@@ -353,7 +213,7 @@ defmodule BackendWeb.BattlefyView do
     """
   end
 
-  def render(u = "tournaments_stats.html", p = %{conn: conn, tournaments: tournaments}) do
+  def render("tournaments_stats.html", p = %{conn: conn, tournaments: tournaments}) do
     tournaments_string =
       tournaments
       |> Enum.map(fn %{name: name, id: id} ->
@@ -392,49 +252,6 @@ defmodule BackendWeb.BattlefyView do
       title: "Tournament Stats",
       edit: edit
     })
-  end
-
-  def ongoing_count(ongoing) do
-    total = Enum.count(ongoing) |> div(2)
-
-    not_nil_nil =
-      ongoing
-      |> Enum.filter(fn {_, %{score: score}} -> score != "0 - 0" end)
-      |> Enum.count()
-      |> div(2)
-
-    {total, not_nil_nil}
-  end
-
-  def tournament_subtitle(tournament, standings, ongoing) do
-    []
-    |> add_duration_subtitle(tournament)
-    |> add_player_count_subtitle(standings)
-    |> add_ongoing_subtitle(ongoing)
-    |> Enum.join(" ")
-  end
-
-  def add_duration_subtitle(subtitles, tournament) do
-    subtitles ++
-      case Backend.Battlefy.Tournament.get_duration(tournament) do
-        nil -> ["Duration: ?"]
-        duration -> ["Duration: #{Util.human_duration(duration)}"]
-      end
-  end
-
-  def add_player_count_subtitle(subtitles, standings) do
-    subtitles ++
-      case standings |> Enum.count() do
-        0 -> []
-        num -> ["Players: #{num}"]
-      end
-  end
-
-  def add_ongoing_subtitle(subtitles, ongoing) when ongoing == %{}, do: subtitles
-
-  def add_ongoing_subtitle(subtitles, ongoing) do
-    {total_ongoing, not_nil_nil_ongoing} = ongoing_count(ongoing)
-    subtitles ++ ["Ongoing: #{total_ongoing}", "Ongoing(not 0-0): #{not_nil_nil_ongoing}"]
   end
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
@@ -533,6 +350,202 @@ defmodule BackendWeb.BattlefyView do
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
       show_score: standings |> Enum.any?(fn s -> s.has_score end)
     })
+  end
+
+  def render("user_tournaments.html", %{
+        slug: slug,
+        page: page,
+        tournaments: tournaments,
+        conn: conn
+      }) do
+    render(
+      "user_tournaments.html",
+      %{
+        title: "#{slug}'s Battlefy Tournaments",
+        subtitle: "Public tournaments only",
+        tournaments: tournaments,
+        conn: conn,
+        slug: slug,
+        prev_button: prev_button(conn, page - 1, slug),
+        next_button: next_button(conn, page + 1, slug)
+      }
+    )
+  end
+
+  def add_stats_dropdown(dropdowns, _, nil), do: dropdowns
+
+  def add_stats_dropdown(dropdowns, conn, org) do
+    case org.slug |> Battlefy.organization_stats() do
+      stats_configs = [_ | _] ->
+        options =
+          stats_configs
+          |> Enum.map(fn %{title: title, stats_slug: ss} ->
+            %{
+              selected: false,
+              display: title,
+              link: Routes.battlefy_path(conn, :organization_tournament_stats, ss)
+            }
+          end)
+
+        dropdowns ++ [{options, "Stats"}]
+
+      _ ->
+        dropdowns
+    end
+  end
+
+  def create_org_tour_link(range, conn) do
+    new_params = conn.query_params |> Util.update_from_to_params(range)
+    Routes.battlefy_path(conn, :organization_tournaments, new_params)
+  end
+
+  def handle_player_matches(player_matches, team_name, tournament, conn) do
+    player_matches
+    |> Enum.map_reduce(%{}, fn match = %{top: top, bottom: bottom, round_number: rn}, acc ->
+      {player, opponent, player_place, opponent_place} =
+        case {top.team, bottom.team} do
+          {%{name: ^team_name}, _} ->
+            {top, bottom || Battlefy.MatchTeam.empty(), :top, :bottom}
+
+          {_, %{name: ^team_name}} ->
+            {bottom, top || Battlefy.MatchTeam.empty(), :bottom, :top}
+
+          _ ->
+            Logger.warn("No team is the players team, wtf #{top.team} #{bottom.team}")
+            {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty(), nil, nil}
+        end
+
+      class_stats = Match.create_class_stats(match, player_place)
+      opponent_class_stats = Match.create_class_stats(match, opponent_place)
+
+      {
+        %{
+          score: "#{player.score} - #{opponent.score} ",
+          match_url: Battlefy.get_match_url(tournament, match),
+          opponent: handle_opponent_team(opponent, tournament, conn),
+          class_stats: class_stats,
+          opponent_class_stats: opponent_class_stats,
+          current_round: rn
+        },
+        class_stats
+        |> Battlefy.ClassMatchStats.merge_collections(acc)
+      }
+    end)
+  end
+
+  @spec calculate_ongoing([Match.t()], boolean, Battlefy.Tournament.t(), Plug.Conn.t()) :: Map.t()
+
+  def calculate_ongoing(_, _show_ongoing = false, _, _), do: Map.new()
+
+  def calculate_ongoing(matches, _show_ongoing = true, tournament, conn) do
+    matches
+    |> Enum.filter(&Match.ongoing?/1)
+    |> Enum.flat_map(fn m = %{top: t, bottom: b} ->
+      [
+        {
+          t |> MatchTeam.get_name(),
+          %{
+            score: "#{t.score} - #{b.score}",
+            match_url: Battlefy.get_match_url(tournament, m),
+            opponent: b |> MatchTeam.get_name(),
+            opponent_link:
+              Routes.battlefy_path(
+                conn,
+                :tournament_player,
+                tournament.id,
+                b |> MatchTeam.get_name() || ""
+              )
+          }
+        },
+        {
+          b |> MatchTeam.get_name(),
+          %{
+            score: "#{b.score} - #{t.score}",
+            match_url: Battlefy.get_match_url(tournament, m),
+            opponent: t |> MatchTeam.get_name(),
+            opponent_link:
+              if t |> MatchTeam.get_name() do
+                Routes.battlefy_path(
+                  conn,
+                  :tournament_player,
+                  tournament.id,
+                  t |> MatchTeam.get_name()
+                )
+              else
+                nil
+              end
+          }
+        }
+      ]
+    end)
+    |> Map.new()
+  end
+
+  def tour_stop?(%{id: id}),
+    do: !!Backend.MastersTour.TourStop.get_by(:battlefy_id, id)
+
+  # todo move elsewhere
+  def class_url(class), do: "/images/icons/#{String.downcase(class)}.png"
+
+  @win_color "hsl(141, 53%, 53%)"
+  @loss_color "hsl(348, 86%, 61%)"
+  @result_width 2
+  @border_width 1
+  @border_color "black"
+  defp build_box_shadow(wins, losses) do
+    {
+      @border_width + (wins + losses) * @result_width,
+      """
+      border_radius: 100%;
+      box-shadow: 0 0 0 #{@border_width}px #{@border_color}
+        , 0 0 0 #{@border_width + losses * @result_width}px #{@loss_color}
+        , 0 0 0 #{@border_width + (wins + losses) * @result_width}px #{@win_color}
+        ;
+      """
+    }
+  end
+
+  def ongoing_count(ongoing) do
+    total = Enum.count(ongoing) |> div(2)
+
+    not_nil_nil =
+      ongoing
+      |> Enum.filter(fn {_, %{score: score}} -> score != "0 - 0" end)
+      |> Enum.count()
+      |> div(2)
+
+    {total, not_nil_nil}
+  end
+
+  def tournament_subtitle(tournament, standings, ongoing) do
+    []
+    |> add_duration_subtitle(tournament)
+    |> add_player_count_subtitle(standings)
+    |> add_ongoing_subtitle(ongoing)
+    |> Enum.join(" ")
+  end
+
+  def add_duration_subtitle(subtitles, tournament) do
+    subtitles ++
+      case Backend.Battlefy.Tournament.get_duration(tournament) do
+        nil -> ["Duration: ?"]
+        duration -> ["Duration: #{Util.human_duration(duration)}"]
+      end
+  end
+
+  def add_player_count_subtitle(subtitles, standings) do
+    subtitles ++
+      case standings |> Enum.count() do
+        0 -> []
+        num -> ["Players: #{num}"]
+      end
+  end
+
+  def add_ongoing_subtitle(subtitles, ongoing) when ongoing == %{}, do: subtitles
+
+  def add_ongoing_subtitle(subtitles, ongoing) do
+    {total_ongoing, not_nil_nil_ongoing} = ongoing_count(ongoing)
+    subtitles ++ ["Ongoing: #{total_ongoing}", "Ongoing(not 0-0): #{not_nil_nil_ongoing}"]
   end
 
 
@@ -779,34 +792,6 @@ defmodule BackendWeb.BattlefyView do
     |> Enum.find_value(fn {name, total, _} ->
       MastersTour.same_player?(name, player) && total
     end)
-  end
-
-  defp prepare_lineup_map(lineups, conn) do
-    lineups |> Util.async_map(fn lineup ->
-      rendered = live_render(conn, BackendWeb.ExpandableLineupLive, session: %{"lineup_id" => lineup.id})
-      {lineup.name, rendered}
-      end
-     ) |> Map.new()
-  end
-
-  def render("user_tournaments.html", %{
-        slug: slug,
-        page: page,
-        tournaments: tournaments,
-        conn: conn
-      }) do
-    render(
-      "user_tournaments.html",
-      %{
-        title: "#{slug}'s Battlefy Tournaments",
-        subtitle: "Public tournaments only",
-        tournaments: tournaments,
-        conn: conn,
-        slug: slug,
-        prev_button: prev_button(conn, page - 1, slug),
-        next_button: next_button(conn, page + 1, slug)
-      }
-    )
   end
 
   @spec next_button(Plug.Conn.t(), integer(), String.t()) :: Phoenix.HTML.Safe.t()

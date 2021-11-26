@@ -451,13 +451,6 @@ defmodule Backend.MastersTour do
     Util.get_range(:month)
   end
 
-  defp get_latest_tuesday() do
-    %{year: year, month: month, day: day} = now = Date.utc_today()
-    day_of_the_week = :calendar.day_of_the_week(year, month, day)
-    days_to_subtract = 0 - rem(day_of_the_week + 5, 7)
-    Date.add(now, days_to_subtract)
-  end
-
   def get_qualifiers_for_tour(tour_stop) do
     {start_date, end_date} =
       TourStop.get(tour_stop, :qualifiers_period) || guess_qualifier_range(tour_stop)
@@ -619,7 +612,6 @@ defmodule Backend.MastersTour do
 
       "지기" -> "keeper"
 
-      "현명한라이언" -> "ilikeryan"
       "막강한올빼미" -> "Makganghanol"
       "이스티" -> "LuiSti"
       "ESti" -> "LuiSti"
@@ -632,7 +624,6 @@ defmodule Backend.MastersTour do
       "虎牙丶季岁" -> "Youth"
 
       "LPOmegazero" -> "OmegaZero"
-      "LPOmegaZero" -> "OmegaZero"
 
       "RNGKylinS" -> "RNGKylin"
       "LFyueying" -> "LFYueying"
@@ -876,7 +867,6 @@ defmodule Backend.MastersTour do
       "SNJing" -> "WBGJing"
       "Hachikuji Ma" -> "HachikujiMay"
 
-      "거인의어깨위에서" -> "Tori"
       "기링" -> "donggiring"
       "SuperKimchi" -> "DOLGALLERY"
 
@@ -884,7 +874,6 @@ defmodule Backend.MastersTour do
       "サバンナ" -> "savanna"
 
       # zflow undercity
-      "진원치킨" -> "Woobin"
       "자네누군가" -> "whoyou99"
       "와와" -> "Wawa"
       "에렛지디" -> "EretdGD"

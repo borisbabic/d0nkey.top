@@ -44,12 +44,6 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     """
   end
 
-  defp get_sort_index(headers, sort_by, default \\ "Winrate %") do
-    headers |> Enum.find_index(fn a -> a == sort_by end) ||
-      headers |> Enum.find_index(fn a -> a == default end) ||
-      0
-  end
-
   defp filter_columns(column_map, columns_to_show) do
     columns_to_show
     |> Enum.map(fn c -> column_map[c] || "" end)

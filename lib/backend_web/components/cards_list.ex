@@ -54,7 +54,7 @@ defmodule Components.CardsList do
     """
   end
 
-  def rotation_class(highlight, card), do: ""
+  def rotation_class(_highlight, _card), do: ""
 
   defp comparison_class(%{rarity: "LEGENDARY"}, _), do: "card-comparison-legendary"
   defp comparison_class(_, count), do: "card-comparison-count-#{count}"

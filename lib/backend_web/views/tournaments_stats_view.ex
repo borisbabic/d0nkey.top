@@ -1,6 +1,5 @@
 defmodule BackendWeb.TournamentStatsView do
   use BackendWeb, :view
-  alias Backend.Battlef
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.TournamentStats.TeamStats
   import BackendWeb.SortHelper

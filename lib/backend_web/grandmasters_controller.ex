@@ -3,7 +3,7 @@ defmodule BackendWeb.GrandmastersController do
   alias Backend.Battlefy
   @moduledoc false
 
-  def grandmasters_season(conn, params = %{"season" => "2020_2"}) do
+  def grandmasters_season(conn, %{"season" => "2020_2"}) do
     tournaments =
       [
         # APAC W1

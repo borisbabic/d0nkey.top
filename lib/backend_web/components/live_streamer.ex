@@ -21,7 +21,7 @@ defmodule Components.LiveStreamer do
 
     legend_rank = render_legend_rank(s.legend_rank)
 
-    {show_deck, deck} =
+    {show_deck, _deck} =
       with deckcode when is_binary(deckcode) <- s.deckcode,
            {:ok, deck} <- Backend.Hearthstone.Deck.decode(deckcode) do
         {BnetGameType.constructed?(s.game_type), deck}
@@ -32,7 +32,7 @@ defmodule Components.LiveStreamer do
     link = s |> Twitch.Stream.login() |> Backend.Twitch.create_channel_link()
 
     ~H"""
-    <div class="cestor card live-streamer twitch" > 
+    <div class="cestor card live-streamer twitch" >
         <div class="is-parent" style="width: {{ thumbnail_width }}px;">
             <div class="card-image" style="margin: 7.5px;">
               <a href="{{ link }}" target="_blank">
@@ -56,7 +56,7 @@ defmodule Components.LiveStreamer do
                   <div :if={{ legend_rank }}> {{ legend_rank }} </div>
                 </div>
                 <div :if={{ show_deck }} >
-                  <div class="is-deck-wide"> 
+                  <div class="is-deck-wide">
                     <slot/>
                   </div>
                 </div>

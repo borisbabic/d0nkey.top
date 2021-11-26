@@ -37,16 +37,13 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   @doc """
-  Get's the qualifiers that start between the start and end date (inclusive)
+  Get's the qualifiers that start between the start and end date or time (inclusive)
   """
   @spec get_masters_qualifiers(Date.t(), Date.t()) :: [qualifier]
   def get_masters_qualifiers(start_date = %Date{}, end_date = %Date{}) do
     get_masters_qualifiers(Util.day_start(start_date, :naive), Util.day_end(end_date, :naive))
   end
 
-  @doc """
-  Get's the qualifiers that start between the start and end_time
-  """
   @spec get_masters_qualifiers(NaiveDateTime.t(), NaiveDateTime.t()) :: [qualifier]
   def get_masters_qualifiers(start_time = %NaiveDateTime{}, end_time = %NaiveDateTime{}) do
     url =

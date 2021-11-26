@@ -12,7 +12,6 @@ defmodule Backend.Leaderboards.Snapshot do
   ]
   @required [:season_id, :leaderboard_id, :region]
   @embed_attrs [:entries]
-  @all_attrs @non_embed_attrs ++ @embed_attrs
   schema "leaderboard_snapshot" do
     field :upstream_updated_at, :utc_datetime
     field :season_id, :integer

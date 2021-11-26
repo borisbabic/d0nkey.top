@@ -2,7 +2,6 @@ defmodule BackendWeb.PlayerView do
   use BackendWeb, :view
 
   alias Backend.Blizzard
-  alias Backend.MastersTour
   alias Backend.MastersTour.PlayerStats
   alias Backend.MastersTour.TourStop
   alias Backend.TournamentStats.TeamStats

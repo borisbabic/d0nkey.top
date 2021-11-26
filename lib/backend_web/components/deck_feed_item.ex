@@ -3,7 +3,6 @@ defmodule Components.DeckFeedItem do
   use Surface.Component
   alias Components.Decklist
   alias Components.DeckStreamingInfo
-  alias Components.DeckWinrate
   prop(item, :map, required: true)
 
   def render(assigns = %{item: %{value: deck_id}}) do

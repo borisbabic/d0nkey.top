@@ -23,17 +23,26 @@ defmodule BackendWeb.AuthController do
   end
 
   def callback(
-        conn = %{assigns: %{ueberauth_auth: auth = %{provider: :twitch, uid: twitch_id}}},
+        conn = %{assigns: %{ueberauth_auth: %{provider: :twitch, uid: twitch_id}}},
         _params
       ) do
     case Guardian.Plug.current_resource(conn) do
-      user = %{battletag: bt} ->
+      user = %{battletag: _bt} ->
         UserManager.set_twitch(user, twitch_id)
         conn |> redirect(to: "/profile/settings")
 
       _ ->
         render(conn, "user_expected.html", %{})
     end
+  end
+
+  def callback(conn, _params) do
+    conn
+    |> put_flash(
+      :error,
+      "Unknown issue when authing, please contact d0nkey if it persists after trying again later"
+    )
+    |> redirect(to: "/")
   end
 
   @spec get_bnet_info(any()) :: UserManager.bnet_info()
@@ -53,25 +62,16 @@ defmodule BackendWeb.AuthController do
 
   def get_bnet_info(_), do: raise("Can't get bnet info")
 
-  def login_welcome(conn, params) do
+  def login_welcome(conn, _params) do
     response =
       conn
       |> Guardian.Plug.current_resource()
       |> case do
-        user = %{battletag: bt} -> render(conn, "login_welcome.html", %{user: user})
+        user = %{battletag: _bt} -> render(conn, "login_welcome.html", %{user: user})
         _ -> render(conn, "user_expected.html", %{})
       end
 
     text(conn, response)
-  end
-
-  def callback(conn, _params) do
-    conn
-    |> put_flash(
-      :error,
-      "Unknown issue when authing, please contact d0nkey if it persists after trying again later"
-    )
-    |> redirect(to: "/")
   end
 
   def who_am_i(conn, _params) do

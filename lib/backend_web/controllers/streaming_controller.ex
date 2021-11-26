@@ -84,10 +84,8 @@ defmodule BackendWeb.StreamingController do
     })
   end
 
-  @doc """
-  The params was renamed from legend to best_legend_rank.
-  I included other legend filters and wanted to keep it consistent in the queries
-  """
+  # The params was renamed from legend to best_legend_rank.
+  # I included other legend filters and wanted to keep it consistent in the queries
   defp handle_old_peak_param(params = %{"legend" => best}),
     do: params |> Map.put("best_legend_rank", best) |> Map.delete("legend")
 

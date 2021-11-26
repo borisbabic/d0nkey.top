@@ -60,7 +60,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
         <div class="title is-4">
           All weeks
         </div>
-        <table class="table is-fullwidth is-striped"> 
+        <table class="table is-fullwidth is-striped">
           <thead>
             <tr>
               <th>Week</th>
@@ -111,6 +111,11 @@ defmodule BackendWeb.GrandmasterProfileLive do
      )}
   end
 
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
+  end
+
   def gm(%{assigns: %{gm: gm}}), do: gm
 
   def lineup(gm, week) do
@@ -139,9 +144,4 @@ defmodule BackendWeb.GrandmasterProfileLive do
   end
 
   defp current_params(%{assigns: %{week: week}}), do: %{week: week}
-
-  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
-    Tracker.inc_copied(code)
-    {:noreply, socket}
-  end
 end

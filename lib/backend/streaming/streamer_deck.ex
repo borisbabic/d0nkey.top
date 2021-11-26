@@ -64,7 +64,7 @@ defmodule Backend.Streaming.StreamerDeck do
     cs |> put_change(:losses, old_wins + 1)
   end
 
-  def add_wins_losses(cs, attrs) do
+  def add_wins_losses(cs, _attrs) do
     cs
   end
 

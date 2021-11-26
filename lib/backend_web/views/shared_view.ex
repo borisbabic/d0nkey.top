@@ -29,15 +29,6 @@ defmodule BackendWeb.SharedView do
     """
   end
 
-  defp css_color(name) do
-    normalized =
-      name
-      |> String.replace(" ", "")
-      |> String.downcase()
-
-    "var(--color-#{normalized})"
-  end
-
   def render("empty.html", _) do
     ~E"""
 
@@ -70,5 +61,14 @@ defmodule BackendWeb.SharedView do
     ~E"""
       <span><%= icon_part %><%= name %></span>
     """
+  end
+
+  defp css_color(name) do
+    normalized =
+      name
+      |> String.replace(" ", "")
+      |> String.downcase()
+
+    "var(--color-#{normalized})"
   end
 end

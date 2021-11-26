@@ -1,5 +1,5 @@
 defmodule Twitch.TokenRefresher do
-  @defmodule false
+  @moduledoc false
   alias Twitch.Token
   use Tesla
   plug Tesla.Middleware.BaseUrl, "https://id.twitch.tv"

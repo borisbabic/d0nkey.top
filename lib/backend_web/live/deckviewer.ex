@@ -3,7 +3,6 @@ defmodule BackendWeb.DeckviewerLive do
   import BackendWeb.LiveHelpers
   alias Components.Decklist
   alias Backend.DeckInteractionTracker, as: Tracker
-  alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson
   alias Backend.HSDeckViewer
