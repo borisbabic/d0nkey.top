@@ -47,13 +47,7 @@ defmodule Backend.HSReplay.Archetype do
   def signature_core(%{standard_cpp_signature_core: core}, 2), do: core
   def signature_core(_, _), do: nil
 
-  defp compare_as_of(a = %__MODULE__{}, b = %__MODULE__{}, format) do
-    a_core = a |> signature_core(format)
-    b_core = b |> signature_core(format)
-    NaiveDateTime.compare(a_core, b_core)
-  end
-
-  def highlander?(a = %{name: name}), do: name =~ "Highlander"
+  def highlander?(%{name: name}), do: name =~ "Highlander"
 end
 
 defmodule Backend.HSReplay.Archetype.CcpSignatureCore do

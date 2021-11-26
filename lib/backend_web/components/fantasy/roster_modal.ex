@@ -50,12 +50,6 @@ defmodule Components.RosterModal do
     """
   end
 
-  def handle_event("inc_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
-    do: {:noreply, socket |> assign(round: round(lt, r) + 1)}
-
-  def handle_event("dec_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
-    do: {:noreply, socket |> assign(round: round(lt, r) - 1)}
-
   def round(lt, round), do: League.round(lt.league, round)
 
   def show_round_footer(%{league: %{current_round: current_round}}) when current_round > 1,
@@ -124,6 +118,13 @@ defmodule Components.RosterModal do
     end)
     |> Enum.sort_by(&(&1 |> elem(0)), :desc)
   end
+
+
+  def handle_event("inc_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
+    do: {:noreply, socket |> assign(round: round(lt, r) + 1)}
+
+  def handle_event("dec_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
+    do: {:noreply, socket |> assign(round: round(lt, r) - 1)}
 
   def handle_event("show_modal", _, socket) do
     {:noreply, socket |> assign(show_modal: true)}

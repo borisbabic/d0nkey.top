@@ -48,17 +48,6 @@ defmodule Backend.FantasyCompetitionFetcher do
     end)
   end
 
-  def current_round("grandmasters", <<"gm_"::binary, gm_season_raw::binary>>) do
-    with {:ok, gm_season} <- Hearthstone.parse_gm_season(gm_season_raw),
-         {_, round} <- Blizzard.current_gm_week(gm_season) do
-      round
-    else
-      _ -> 1
-    end
-  end
-
-  def current_round(_, _), do: 1
-
   def get_participants(%{
         competition_type: "grandmasters",
         competition: <<"gm_"::binary, gm_season_raw::binary>>
@@ -75,6 +64,17 @@ defmodule Backend.FantasyCompetitionFetcher do
         []
     end
   end
+
+  def current_round("grandmasters", <<"gm_"::binary, gm_season_raw::binary>>) do
+    with {:ok, gm_season} <- Hearthstone.parse_gm_season(gm_season_raw),
+         {_, round} <- Blizzard.current_gm_week(gm_season) do
+      round
+    else
+      _ -> 1
+    end
+  end
+
+  def current_round(_, _), do: 1
 
   defp gm_stage_matching(season, round), do: Blizzard.gm_week_title(season, round)
 
@@ -125,7 +125,7 @@ defmodule Backend.FantasyCompetitionFetcher do
   def fetch_results(
         %{
           competition_type: "grandmasters",
-          competition: competition = <<"gm_"::binary, gm_season_raw::binary>>
+          competition: <<"gm_"::binary, gm_season_raw::binary>>
         },
         round
       ) do

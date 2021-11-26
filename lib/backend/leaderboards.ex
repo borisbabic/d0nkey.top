@@ -366,12 +366,6 @@ defmodule Backend.Leaderboards do
   defp compose_snapshot_query({"period", <<"season_"::binary, season_id::bitstring>>}, query),
     do: compose_snapshot_query({"season_id", season_id}, query)
 
-  defp past_period(query, raw, unit) do
-    {val, _} = Integer.parse(raw)
-    query
-    |> where([s], s.upstream_updated_at > ago(^val, ^unit))
-  end
-
   defp compose_snapshot_query({"battletag_full", battletag_full}, query) do
     players = Backend.PlayerInfo.leaderboard_names(battletag_full)
     compose_snapshot_query({"players", players}, query)
@@ -383,6 +377,12 @@ defmodule Backend.Leaderboards do
     query
     # it's over 100 times faster when first converting to jsonb, DO NOT REMOVE IT unless you test the speed
     |> where([s], fragment("to_jsonb(?)::text SIMILAR TO ?", s.entries, ^similar_search))
+  end
+
+  defp past_period(query, raw, unit) do
+    {val, _} = Integer.parse(raw)
+    query
+    |> where([s], s.upstream_updated_at > ago(^val, ^unit))
   end
 
   def finishes_for_battletag(battletag_full),

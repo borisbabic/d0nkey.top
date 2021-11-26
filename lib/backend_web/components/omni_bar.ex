@@ -78,7 +78,6 @@ defmodule Components.OmniBar do
     assign(socket, assigns)
   end
 
-  @spec
   def create_handle_result(pid) do
     fn results ->
       if is_list(results) do

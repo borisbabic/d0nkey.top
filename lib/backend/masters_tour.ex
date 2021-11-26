@@ -430,7 +430,7 @@ defmodule Backend.MastersTour do
         invited_player_changeset(%{
           tour_stop: to,
           battletag_full: gm.battletag_full,
-          reason: gm.reason <> reason_append,
+          reason: reason || gm.reason <> reason_append,
           official: false,
           upstream_time: gm.upstream_time
         })

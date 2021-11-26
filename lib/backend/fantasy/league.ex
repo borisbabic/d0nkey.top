@@ -6,7 +6,6 @@ defmodule Backend.Fantasy.League do
   alias Backend.UserManager.User
   alias Backend.Fantasy.LeagueTeam
   alias Backend.Fantasy.League
-  alias Backend.Blizzard
 
   schema "leagues" do
     field :competition, :string
@@ -107,7 +106,7 @@ defmodule Backend.Fantasy.League do
   def add_pick(league = %League{real_time_draft: false, roster_size: roster_size}, user) do
     with true <- draft_started?(league),
          true <- picked_on_time?(league),
-         picking_team = %{id: id} <- team_for_user(league, user),
+         picking_team = %{id: _id} <- team_for_user(league, user),
          currently_picked when currently_picked < roster_size <-
            picking_team |> LeagueTeam.current_roster_size() do
       {:ok, league |> cast(%{last_pick_at: NaiveDateTime.utc_now()}, [:last_pick_at])}
