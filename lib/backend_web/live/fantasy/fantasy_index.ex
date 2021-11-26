@@ -28,16 +28,6 @@ defmodule BackendWeb.FantasyIndexLive do
     """
   end
 
-  def show_mt?(mt) do
-    now = NaiveDateTime.utc_now()
-
-    mt_start =
-      mt
-      |> Backend.MastersTour.TourStop.get_start_time()
-
-    :lt == NaiveDateTime.compare(now, mt_start)
-  end
-
   def render(assigns) do
     ~H"""
     <Context put={{ user: @user }} >
@@ -46,6 +36,16 @@ defmodule BackendWeb.FantasyIndexLive do
       </div>
     </Context>
     """
+  end
+
+  def show_mt?(mt) do
+    now = NaiveDateTime.utc_now()
+
+    mt_start =
+      mt
+      |> Backend.MastersTour.TourStop.get_start_time()
+
+    :lt == NaiveDateTime.compare(now, mt_start)
   end
 
   defp get_user_leagues(user = %Backend.UserManager.User{}) do

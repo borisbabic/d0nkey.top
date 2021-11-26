@@ -87,26 +87,25 @@ defmodule BackendWeb.BattlefyController do
   end
   def participants(%{"show_actual_battletag" => "yes"}, %{id: id}), do: Battlefy.get_participants(id)
   def participants(_, _), do: []
-  def invited_mapset(%{"show_invited" => ts}, tournament = %{id: id}) do
+  def invited_mapset(%{"show_invited" => ts}, %{id: id}) do
     with invited = [_|_] <- Backend.MastersTour.list_invited_players(ts),
       participants = [_|_] <- Battlefy.get_participants(id) do
         invited_ms = invited |> MapSet.new(& &1.battletag_full)
-        participants_ms =
-          participants
-          |> Enum.flat_map(fn
-            %{name: name, players: [%{in_game_name: ign}]} ->
-              [{name, name}, {name, ign}]
-            %{name: name} -> [{name, name}]
-            _ -> []
-          end)
-          |> Enum.flat_map(fn {name, to_check} ->
-            if MapSet.member?(invited_ms, to_check) do
-              [name]
-            else
-              []
-            end
-          end)
-          |> MapSet.new()
+        participants
+        |> Enum.flat_map(fn
+          %{name: name, players: [%{in_game_name: ign}]} ->
+            [{name, name}, {name, ign}]
+          %{name: name} -> [{name, name}]
+          _ -> []
+        end)
+        |> Enum.flat_map(fn {name, to_check} ->
+          if MapSet.member?(invited_ms, to_check) do
+            [name]
+          else
+            []
+          end
+        end)
+        |> MapSet.new()
     else
       _ -> MapSet.new([])
     end
@@ -198,7 +197,7 @@ defmodule BackendWeb.BattlefyController do
         to: Routes.battlefy_path(conn, :tournaments_stats, %{tournament_ids: ids, title: title})
       )
     else
-      something ->
+      _ ->
         text(
           conn,
           "Something went wrong, did you tamper with the link you naughty " <>

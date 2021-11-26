@@ -3,10 +3,7 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
 
   import BackendWeb.LiveHelpers
   use Surface.LiveView
-  alias Components.ExpandableLineup
   alias Components.TournamentLineupExplorer
-  alias Backend.Hearthstone.Deck
-  alias Backend.DeckInteractionTracker, as: Tracker
 
   data(tournament_id, :list)
   data(user, :any)

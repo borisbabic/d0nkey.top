@@ -6,20 +6,19 @@ defmodule Components.FantasyLeague do
   alias Components.RosterModal
   alias Backend.Fantasy.League
   alias Backend.Fantasy.LeagueTeam
-  alias Backend.UserManager.User
   alias Backend.Fantasy
   alias Backend.FantasyCompetitionFetcher, as: ResultsFetcher
   use BackendWeb.ViewHelpers
   prop(league, :any)
   prop(round, :any, default: nil)
 
-  def render(assigns = %{league: league = %{id: _}}) do
+  def render(assigns = %{league: %{id: _}}) do
     ~H"""
       <div>
         <Context get={{ user: user }} >
           <div class="title is-2">{{ @league.name }} </div>
-        
-          <div class="level is-mobile "> 
+
+          <div class="level is-mobile ">
             <div class="level-left">
 
               <div class="level-item" :if={{ League.can_manage?(@league, user) }} >
@@ -65,7 +64,7 @@ defmodule Components.FantasyLeague do
                 <RosterModal id="roster_modal_{{lt.id}}" league_team={{ lt }} />
               </td>
             </tr>
-              
+
             </tbody>
           </table>
 
@@ -73,6 +72,13 @@ defmodule Components.FantasyLeague do
       </div>
     """
   end
+
+  def render(assigns) do
+    ~H"""
+    <div class="title is-2">League not found</div>
+    """
+  end
+
 
   def draft_title(%{real_time_draft: true}), do: "View Draft"
   def draft_title(%{real_time_draft: false}), do: "Manage Roster"
@@ -87,6 +93,11 @@ defmodule Components.FantasyLeague do
       end
 
     {:noreply, socket |> assign(round: round_val)}
+  end
+
+  def handle_event("remove_league_team", %{"id" => id}, socket) do
+    Fantasy.delete_league_team(id)
+    {:noreply, socket}
   end
 
   def round_title(league, round), do: current_round_option(league, round) |> round_title()
@@ -133,15 +144,4 @@ defmodule Components.FantasyLeague do
   defp results_rounds(league, :all), do: 1..league.current_round |> Enum.into([])
   defp results_rounds(_, round) when is_integer(round), do: [round]
   defp results_rounds(league, _), do: [league.current_round]
-
-  def render(assigns) do
-    ~H"""
-    <div class="title is-2">League not found</div>
-    """
-  end
-
-  def handle_event("remove_league_team", %{"id" => id}, socket) do
-    Fantasy.delete_league_team(id)
-    {:noreply, socket}
-  end
 end

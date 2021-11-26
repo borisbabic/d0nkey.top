@@ -50,7 +50,7 @@ defmodule Components.TournamentLineupExplorer do
                   </Dropdown>
                   <PlayableCardSelect id="include_cards_deck_{{index}}" update_fun={{ update_cards(@id, @temp_filters, index, "include_cards")}} selected={{ deck["include_cards"] }} title="Include cards"/>
                   <PlayableCardSelect id="exclude_cards_deck_{{index}}" update_fun={{ update_cards(@id, @temp_filters, index, "exclude_cards")}} selected={{ deck["exclude_cards"] }} title="Exclude cards"/>
-                  
+
                 </div>
               </div>
             </section>
@@ -71,7 +71,7 @@ defmodule Components.TournamentLineupExplorer do
             <tr :for={{ lineup <- lineups |> paginate(@page, @page_size) }}>
               <td :if={{ @gm_week }}> <GMProfileLink week={{ @gm_week }} gm={{ lineup.name }}/> </td>
               <td :if={{ !@gm_week }}>{{ lineup.name }}</td>
-              <td> 
+              <td>
                 <ExpandableLineup lineup={{ lineup }} id={{"modal_lineup_#{lineup.id}"}}/>
               </td>
             </tr>
@@ -95,6 +95,28 @@ defmodule Components.TournamentLineupExplorer do
     filters
     |> Map.merge(%{"tournament_id" => tournament_id, "tournament_source" => tournament_source})
     |> Backend.Hearthstone.lineups()
+  end
+
+  def update_cards(id, temp_filters, index, param) do
+    fn value ->
+      new_temp_filters = update_temp_filters(temp_filters, index, param, value)
+      send_update(__MODULE__, id: id, temp_filters: new_temp_filters)
+    end
+  end
+
+  def update_temp_filters(%{assigns: %{temp_filters: temp_filters}}, deck_index, key, val),
+    do: update_temp_filters(temp_filters, deck_index, key, val)
+
+  def update_temp_filters(temp_filters, deck_index, key, val) do
+    decks = temp_filters |> decks()
+
+    deck =
+      decks
+      |> Enum.at(deck_index)
+      |> Map.put(key, val)
+
+    new_decks = decks |> List.replace_at(deck_index, deck)
+    temp_filters |> Map.put("decks", new_decks)
   end
 
   def handle_event("set-page", %{"page" => page_raw}, socket) do
@@ -122,28 +144,6 @@ defmodule Components.TournamentLineupExplorer do
        filters: socket.assigns.temp_filters,
        show_modal: false
      )}
-  end
-
-  def update_cards(id, temp_filters, index, param) do
-    fn value ->
-      new_temp_filters = update_temp_filters(temp_filters, index, param, value)
-      send_update(__MODULE__, id: id, temp_filters: new_temp_filters)
-    end
-  end
-
-  def update_temp_filters(%{assigns: %{temp_filters: temp_filters}}, deck_index, key, val),
-    do: update_temp_filters(temp_filters, deck_index, key, val)
-
-  def update_temp_filters(temp_filters, deck_index, key, val) do
-    decks = temp_filters |> decks()
-
-    deck =
-      decks
-      |> Enum.at(deck_index)
-      |> Map.put(key, val)
-
-    new_decks = decks |> List.replace_at(deck_index, deck)
-    temp_filters |> Map.put("decks", new_decks)
   end
 
   def handle_event(

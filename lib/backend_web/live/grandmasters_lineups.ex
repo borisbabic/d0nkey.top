@@ -63,6 +63,11 @@ defmodule BackendWeb.GrandmastersLineup do
     {:noreply, socket |> push_patch(to: Routes.live_path(socket, __MODULE__, %{week: week}))}
   end
 
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
+  end
+
   def handle_params(params, _uri, socket) do
     week = params["week"] || Blizzard.current_or_default_week_title()
     {:noreply, socket |> assign(week: week)}
@@ -78,10 +83,5 @@ defmodule BackendWeb.GrandmastersLineup do
       |> Blizzard.gm_week_title(week)
       |> Util.bangify()
     end)
-  end
-
-  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
-    Tracker.inc_copied(code)
-    {:noreply, socket}
   end
 end

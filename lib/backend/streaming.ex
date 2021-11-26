@@ -1,7 +1,6 @@
 defmodule Backend.Streaming do
   @moduledoc false
   import Ecto.Query, warn: false
-  alias Ecto.Multi
   alias Backend.Repo
   alias Backend.HSReplay
   alias Backend.Streaming.Streamer
@@ -204,8 +203,6 @@ defmodule Backend.Streaming do
 
   def update_streamer_deck(ds = %StreamerDeck{}, sn) do
     if should_update?(ds, sn) do
-      %{rank: rank, legend_rank: legend_rank} = ranks(sn)
-
       dto = StreamerDeckInfoDto.create(sn)
       update_streamer_deck(ds, dto)
     else
@@ -227,7 +224,7 @@ defmodule Backend.Streaming do
   When a streamer spectates somebody upstream will sends us the streamers deck but the spectatee's rank
   So we want to reject obvious mismatches, >25% diff outside of the top 50
   ## Example
-  iex> Backend.Streaming.reasonable_legend_change?(%{latest_legend_rank: 1}, %{legend_rank: 2, rank: 0, game_type: 2}) 
+  iex> Backend.Streaming.reasonable_legend_change?(%{latest_legend_rank: 1}, %{legend_rank: 2, rank: 0, game_type: 2})
   true
   iex> Backend.Streaming.reasonable_legend_change?(%{latest_legend_rank: 900}, %{legend_rank: 800, rank: 0, game_type: 2})
   true

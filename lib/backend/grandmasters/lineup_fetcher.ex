@@ -5,8 +5,6 @@ defmodule Backend.Grandmasters.LineupFetcher do
   alias Backend.Infrastructure.GrandmastersCommunicator, as: Api
   alias Backend.Grandmasters.Response
   alias Backend.Blizzard
-  alias Ecto.Multi
-  alias Backend.Repo
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"stage_title" => stage_title}}) do

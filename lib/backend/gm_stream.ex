@@ -43,6 +43,7 @@ defmodule Backend.GMStream do
     GenServer.start_link(__MODULE__, default, name: @name)
   end
 
+  @impl true
   def init(_args) do
     "streaming:hs:twitch_live"
     |> BackendWeb.Endpoint.subscribe()
@@ -113,6 +114,7 @@ defmodule Backend.GMStream do
     |> Enum.filter(&(!(to_string(&1.id) in existing_ids)))
   end
 
+  @impl true
   def handle_cast({:notify, login, stream, title}, state) do
     if Application.fetch_env!(:backend, :gm_stream_send_tweet) do
       message = """

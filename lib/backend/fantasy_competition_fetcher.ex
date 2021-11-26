@@ -5,10 +5,8 @@ defmodule Backend.FantasyCompetitionFetcher do
   alias Backend.MastersTour.TourStop
   alias Backend.Battlefy
   alias Backend.Hearthstone
-  alias Backend.Infrastructure.GrandmastersCommunicator
   alias Backend.Blizzard
   alias Backend.MastersTour
-  alias Backend.Grandmasters.Response, as: GM
 
   def get_participants(%{competition_type: "card_changes"}) do
     Backend.HearthstoneJson.playable_cards()

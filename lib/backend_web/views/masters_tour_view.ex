@@ -296,222 +296,6 @@ defmodule BackendWeb.MastersTourView do
   # def warning(min, _) when min < 5, do: warning_triangle()
   def warning(_, _), do: ""
 
-  def render("qualifier_stats.html", %{
-        period: period,
-        total: total,
-        stats: stats,
-        sort_by: sort_by_raw,
-        direction: direction_raw,
-        min: min_raw,
-        countries: countries,
-        show_flags: show_flags,
-        hide_qualified: hide_qualified,
-        selected_columns: selected_columns,
-        invited_players: invited_players,
-        conn: conn
-      }) do
-    min_to_show = min_raw || min_cups(total) |> max_for_mt(period)
-
-    update_link = fn new_params ->
-      Routes.masters_tour_path(
-        conn,
-        :qualifier_stats,
-        period,
-        conn.query_params |> Map.merge(new_params)
-      )
-    end
-
-    {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
-
-    %{
-      limit: limit,
-      offset: offset,
-      prev_button: prev_button,
-      next_button: next_button,
-      dropdown: limit_dropdown
-    } =
-      ViewUtil.handle_pagination(conn.query_params, update_link,
-        default_limit: 200,
-        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
-      )
-
-    invited_set =
-      invited_players
-      |> Enum.filter(&(!(String.downcase(&1.reason) =~ "winrate")))
-      |> MapSet.new(fn ip -> String.trim(ip.battletag_full) <> ip.tour_stop end)
-
-    eligible_ts = eligible_tour_stops()
-
-    sortable_headers =
-      [
-        "Player",
-        "Cups",
-        "Top 8 %",
-        "Top 8",
-        "Top 16",
-        "Best",
-        "Worst",
-        "Median",
-        "Only Losses",
-        "Only Losses %",
-        "Cups Won",
-        "Num 2nd",
-        "Num Matches",
-        "Matches Won",
-        "Matches Lost",
-        "Packs Earned",
-        # "Winrate percentile",
-        # "Winrate percentile (qualified)",
-        "2020 MTs qualified",
-        "2021 MTs qualified"
-      ] ++
-        (eligible_ts |> Enum.map(&to_string/1)) ++
-        [
-          "Winrate %",
-          "Projected % (using 0.5)",
-          "Projected % (using 0.6)",
-          "Projected % (using 0.65)"
-        ]
-
-    is_ts = is_atom(period) and period != :all
-
-    ts =
-      if is_ts do
-        TourStop.get(period)
-      else
-        nil
-      end
-
-    columns_to_show =
-      case {selected_columns, ts} do
-        {columns, _} when is_list(columns) ->
-          sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
-
-        {_, %{id: id, min_qualifiers_for_winrate: min}} when is_integer(min) ->
-          ["Player", "Cups", "Best", to_string(id), "Winrate %"]
-
-        {_, %{id: id}} ->
-          ["Player", "Cups", "Top 8", to_string(id), "Winrate %"]
-
-        _ ->
-          ["Player", "Cups", "Top 8", "Top 16", "Winrate %"]
-      end
-
-    headers =
-      (["#"] ++ columns_to_show)
-      |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn, period) end)
-
-    sort_key = sortable_headers |> Enum.find("Winrate %", fn h -> h == sort_by end)
-
-    rows =
-      stats
-      |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
-      |> filter_countries(countries)
-      |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set)
-      |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
-      |> sort_for_qualifier_winrate(ts)
-      |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
-      |> Enum.with_index(1)
-      |> Enum.drop(offset)
-      |> Enum.take(limit)
-      |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
-
-    ts_list =
-      ([:all] ++ eligible_years() ++ eligible_tour_stops())
-      |> Enum.map(fn ts ->
-        %{
-          display: ts |> period_title(),
-          selected: to_string(ts) == to_string(period),
-          link:
-            Routes.masters_tour_path(
-              conn,
-              :qualifier_stats,
-              ts,
-              Map.delete(conn.query_params, "min")
-            )
-        }
-      end)
-
-    min_list =
-      @min_cups_options
-      |> Enum.map(fn min ->
-        warning = warning(min, period)
-
-        display = ~E"""
-        <span><%= warning %>Min <%= min %></span>
-        """
-
-        %{
-          display: display,
-          selected: min == min_to_show,
-          link:
-            Routes.masters_tour_path(
-              conn,
-              :qualifier_stats,
-              period,
-              Map.put(conn.query_params, "min", min)
-            )
-        }
-      end)
-
-    show_flags_list =
-      ["Yes", "No"]
-      |> Enum.map(fn o ->
-        %{
-          display: o,
-          selected: show_flags == String.downcase(o),
-          link:
-            Routes.masters_tour_path(
-              conn,
-              :qualifier_stats,
-              period,
-              Map.put(conn.query_params, "show_flags", o |> String.downcase())
-            )
-        }
-      end)
-
-    flag_title = ~E"""
-    <span class="icon">
-      <i class="far fa-flag"></i>
-    </span>
-    """
-
-    dropdowns =
-      [
-        limit_dropdown,
-        {ts_list, period |> period_title},
-        {min_list, "Min #{min_to_show} cups"},
-        {show_flags_list, flag_title}
-      ]
-      |> add_qualified_filter(conn, is_ts, period, hide_qualified)
-
-    columns_options =
-      sortable_headers
-      |> Enum.map(fn h ->
-        %{
-          selected: h in columns_to_show,
-          display: h,
-          name: h,
-          value: h
-        }
-      end)
-
-    render("qualifier_stats.html", %{
-      title: "#{period |> period_title()} qualifier stats",
-      subtitle: "Total cups: #{total}",
-      headers: headers,
-      rows: rows,
-      columns_options: columns_options,
-      selected_countries: countries,
-      period: period,
-      min: min_to_show,
-      conn: conn,
-      prev_button: prev_button,
-      next_button: next_button,
-      dropdowns: dropdowns
-    })
-  end
-
   def sort_for_qualifier_winrate(rows, %{min_qualifiers_for_winrate: min}) when is_integer(min) do
     rows
     |> Enum.sort_by(& &1["Cups"], :desc)
@@ -744,6 +528,253 @@ defmodule BackendWeb.MastersTourView do
   def earnings_warning({2022, 1}, "blitzchung"), do: "Announced retirement from GM"
   def earnings_warning(_, _), do: nil
 
+  def show_current_score_dropdown?(gm_season) do
+    with current_ts when not is_nil(current_ts) <- MastersTour.TourStop.get_current(),
+         {:ok, ts_season} <- Backend.Blizzard.get_promotion_season_for_gm(current_ts) do
+      gm_season == ts_season
+    else
+      _ -> false
+    end
+  end
+
+  @spec add_qualifier_winner(
+          Backend.Battlefy.Communicator.qualifier(),
+          [Qualifier.t()],
+          Plug.Conn.t()
+        ) :: Backend.Battlefy.Communicator.qualifier() | Map.t()
+  def add_qualifier_winner(q = %{id: id}, qualifiers, conn) do
+    winner =
+      qualifiers
+      |> Enum.find(&(&1.tournament_id == id))
+      |> case do
+        %{winner: winner, tournament_id: tournament_id} ->
+          ~E"""
+          <a href="<%= Routes.battlefy_path(conn, :tournament_player, tournament_id, winner)%>"><%= render_player_name(winner) %></a>
+          """
+
+        _ ->
+          nil
+      end
+
+    q |> Map.put(:winner, winner)
+  end
+
+  def render("qualifier_stats.html", %{
+        period: period,
+        total: total,
+        stats: stats,
+        sort_by: sort_by_raw,
+        direction: direction_raw,
+        min: min_raw,
+        countries: countries,
+        show_flags: show_flags,
+        hide_qualified: hide_qualified,
+        selected_columns: selected_columns,
+        invited_players: invited_players,
+        conn: conn
+      }) do
+    min_to_show = min_raw || min_cups(total) |> max_for_mt(period)
+
+    update_link = fn new_params ->
+      Routes.masters_tour_path(
+        conn,
+        :qualifier_stats,
+        period,
+        conn.query_params |> Map.merge(new_params)
+      )
+    end
+
+    {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
+
+    %{
+      limit: limit,
+      offset: offset,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
+      )
+
+    invited_set =
+      invited_players
+      |> Enum.filter(&(!(String.downcase(&1.reason) =~ "winrate")))
+      |> MapSet.new(fn ip -> String.trim(ip.battletag_full) <> ip.tour_stop end)
+
+    eligible_ts = eligible_tour_stops()
+
+    sortable_headers =
+      [
+        "Player",
+        "Cups",
+        "Top 8 %",
+        "Top 8",
+        "Top 16",
+        "Best",
+        "Worst",
+        "Median",
+        "Only Losses",
+        "Only Losses %",
+        "Cups Won",
+        "Num 2nd",
+        "Num Matches",
+        "Matches Won",
+        "Matches Lost",
+        "Packs Earned",
+        # "Winrate percentile",
+        # "Winrate percentile (qualified)",
+        "2020 MTs qualified",
+        "2021 MTs qualified"
+      ] ++
+        (eligible_ts |> Enum.map(&to_string/1)) ++
+        [
+          "Winrate %",
+          "Projected % (using 0.5)",
+          "Projected % (using 0.6)",
+          "Projected % (using 0.65)"
+        ]
+
+    is_ts = is_atom(period) and period != :all
+
+    ts =
+      if is_ts do
+        TourStop.get(period)
+      else
+        nil
+      end
+
+    columns_to_show =
+      case {selected_columns, ts} do
+        {columns, _} when is_list(columns) ->
+          sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
+
+        {_, %{id: id, min_qualifiers_for_winrate: min}} when is_integer(min) ->
+          ["Player", "Cups", "Best", to_string(id), "Winrate %"]
+
+        {_, %{id: id}} ->
+          ["Player", "Cups", "Top 8", to_string(id), "Winrate %"]
+
+        _ ->
+          ["Player", "Cups", "Top 8", "Top 16", "Winrate %"]
+      end
+
+    headers =
+      (["#"] ++ columns_to_show)
+      |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn, period) end)
+
+    sort_key = sortable_headers |> Enum.find("Winrate %", fn h -> h == sort_by end)
+
+    rows =
+      stats
+      |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
+      |> filter_countries(countries)
+      |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set)
+      |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
+      |> sort_for_qualifier_winrate(ts)
+      |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
+      |> Enum.with_index(1)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
+      |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
+
+    ts_list =
+      ([:all] ++ eligible_years() ++ eligible_tour_stops())
+      |> Enum.map(fn ts ->
+        %{
+          display: ts |> period_title(),
+          selected: to_string(ts) == to_string(period),
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifier_stats,
+              ts,
+              Map.delete(conn.query_params, "min")
+            )
+        }
+      end)
+
+    min_list =
+      @min_cups_options
+      |> Enum.map(fn min ->
+        warning = warning(min, period)
+
+        display = ~E"""
+        <span><%= warning %>Min <%= min %></span>
+        """
+
+        %{
+          display: display,
+          selected: min == min_to_show,
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifier_stats,
+              period,
+              Map.put(conn.query_params, "min", min)
+            )
+        }
+      end)
+
+    show_flags_list =
+      ["Yes", "No"]
+      |> Enum.map(fn o ->
+        %{
+          display: o,
+          selected: show_flags == String.downcase(o),
+          link:
+            Routes.masters_tour_path(
+              conn,
+              :qualifier_stats,
+              period,
+              Map.put(conn.query_params, "show_flags", o |> String.downcase())
+            )
+        }
+      end)
+
+    flag_title = ~E"""
+    <span class="icon">
+      <i class="far fa-flag"></i>
+    </span>
+    """
+
+    dropdowns =
+      [
+        limit_dropdown,
+        {ts_list, period |> period_title},
+        {min_list, "Min #{min_to_show} cups"},
+        {show_flags_list, flag_title}
+      ]
+      |> add_qualified_filter(conn, is_ts, period, hide_qualified)
+
+    columns_options =
+      sortable_headers
+      |> Enum.map(fn h ->
+        %{
+          selected: h in columns_to_show,
+          display: h,
+          name: h,
+          value: h
+        }
+      end)
+
+    render("qualifier_stats.html", %{
+      title: "#{period |> period_title()} qualifier stats",
+      subtitle: "Total cups: #{total}",
+      headers: headers,
+      rows: rows,
+      columns_options: columns_options,
+      selected_countries: countries,
+      period: period,
+      min: min_to_show,
+      conn: conn,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdowns: dropdowns
+    })
+  end
+
   def render("earnings.html", %{
         tour_stops: tour_stops_all,
         earnings: earnings,
@@ -808,37 +839,6 @@ defmodule BackendWeb.MastersTourView do
       conn: conn,
       rows: rows
     })
-  end
-
-  def show_current_score_dropdown?(gm_season) do
-    with current_ts when not is_nil(current_ts) <- MastersTour.TourStop.get_current(),
-         {:ok, ts_season} <- Backend.Blizzard.get_promotion_season_for_gm(current_ts) do
-      gm_season == ts_season
-    else
-      _ -> false
-    end
-  end
-
-  @spec add_qualifier_winner(
-          Backend.Battlefy.Communicator.qualifier(),
-          [Qualifier.t()],
-          Plug.Conn.t()
-        ) :: Backend.Battlefy.Communicator.qualifier() | Map.t()
-  def add_qualifier_winner(q = %{id: id}, qualifiers, conn) do
-    winner =
-      qualifiers
-      |> Enum.find(&(&1.tournament_id == id))
-      |> case do
-        %{winner: winner, tournament_id: tournament_id} ->
-          ~E"""
-          <a href="<%= Routes.battlefy_path(conn, :tournament_player, tournament_id, winner)%>"><%= render_player_name(winner) %></a>
-          """
-
-        _ ->
-          nil
-      end
-
-    q |> Map.put(:winner, winner)
   end
 
   def render(
@@ -929,6 +929,12 @@ defmodule BackendWeb.MastersTourView do
       latest: latest
     })
   end
+
+  def render("tour_stops.html", %{conn: conn, tournaments: tournaments}) do
+    render("tour_stops.html", %{conn: conn, raw: tournaments, slug: "hsesports"})
+  end
+
+  def render(t = "masters_tours_stats.html", params), do: MastersToursStats.render(t, params)
 
   @spec create_dropdown_qualifier_links(any) :: [qualifiers_dropdown_link]
   def create_dropdown_qualifier_links(conn) do
@@ -1028,10 +1034,4 @@ defmodule BackendWeb.MastersTourView do
       invited_at: invited_player.upstream_time
     }
   end
-
-  def render("tour_stops.html", %{conn: conn, tournaments: tournaments}) do
-    render("tour_stops.html", %{conn: conn, raw: tournaments, slug: "hsesports"})
-  end
-
-  def render(t = "masters_tours_stats.html", params), do: MastersToursStats.render(t, params)
 end

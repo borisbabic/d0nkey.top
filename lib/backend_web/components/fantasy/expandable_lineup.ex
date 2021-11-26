@@ -45,7 +45,7 @@ defmodule Components.ExpandableLineup do
 
   def sort(decks, _), do: decks |> Deck.sort()
 
-  def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old, lineup: l}}) do
+  def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old}}) do
     {
       :noreply,
       socket

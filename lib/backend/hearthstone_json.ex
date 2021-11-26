@@ -80,10 +80,9 @@ defmodule Backend.HearthstoneJson do
 
   def table(), do: :ets.whereis(@name)
 
-  """
+  @doc """
   If the hero isn't available then it defaults to the basic hero for the class
   """
-
   @spec get_hero(Deck.t()) :: Backend.HearthstoneJson.Card.t()
   def get_hero(deck) do
     deck.hero

@@ -144,6 +144,10 @@ defmodule BackendWeb.MastersTourController do
     })
   end
 
+  def earnings(conn, params) do
+    earnings(conn, Map.merge(params, %{"show_gms" => "no"}))
+  end
+
   def tour_stops(conn, _params) do
     tournaments = MastersTour.tour_stops_tournaments()
 
@@ -152,10 +156,6 @@ defmodule BackendWeb.MastersTourController do
       page_title: "Tour Stops",
       tournaments: tournaments
     })
-  end
-
-  def earnings(conn, params) do
-    earnings(conn, Map.merge(params, %{"show_gms" => "no"}))
   end
 
   defp direction("desc"), do: :desc
