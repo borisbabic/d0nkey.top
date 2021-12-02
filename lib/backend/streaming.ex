@@ -335,6 +335,12 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"include_cards", cards}, query),
     do: query |> where([_sd, _s, d], fragment("? @> ?", d.cards, ^cards))
 
+  defp compose_streamer_deck_query({"alterac_valley", "yes"}, query) do
+    card_ids = alterac_valley_card_ids()
+
+    query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+  end
+
   defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"exclude_cards", cards}, query),
@@ -388,4 +394,13 @@ defmodule Backend.Streaming do
   end
 
   defp compose_streamer_deck_query(_unrecognized, query), do: query
+
+  defp alterac_valley_card_ids() do
+    Backend.HearthstoneJson.collectible_cards()
+    |> Enum.filter(fn c ->
+      # no Vanndar nor Drek'Thar
+      c.set == "ALTERAC_VALLEY" && c.id not in ["AV_223", "AV_100"]
+    end)
+    |> Enum.map(& &1.dbf_id)
+  end
 end

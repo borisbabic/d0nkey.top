@@ -142,6 +142,7 @@ defmodule BackendWeb.StreamingView do
       create_format_dropdown(conn),
       create_class_dropdown(conn),
       create_min_minutes_played_dropdown(conn),
+      create_alterac_valley_dropdown(conn),
       create_last_played_dropdown(conn)
       # keep below last :shrug:
       # create_show_archetypes_dropdown(conn)
@@ -196,6 +197,20 @@ defmodule BackendWeb.StreamingView do
     <%= deck %>
     <%= twitch %>
     """
+  end
+
+  def create_alterac_valley_dropdown(conn) do
+    options =
+      [{"yes", "Includes Alterac Valley cards"}, {"no", "Any decks"}]
+      |> Enum.map(fn {val, display} ->
+        %{
+          link: update_link(conn, "alterac_valley", val),
+          selected: to_string(val) == conn.query_params["alterac_valley"],
+          display: display
+        }
+      end)
+
+    {options, "Alterac Valley"}
   end
 
   def create_min_minutes_played_dropdown(conn) do
