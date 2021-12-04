@@ -7,7 +7,6 @@ defmodule Backend.Hearthstone.CardBag do
   @five_min 300_000
 
   def tile_card_url(card_id) do
-    # {Backend.HearthstoneJson.tile_url(card_id), Backend.HearthstoneJson.card_url(card_id)}
     case card(card_id) do
       %{crop_image: crop_image, image: %{"en_us" => image}} ->
         {crop_image, image}
