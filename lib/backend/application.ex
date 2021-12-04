@@ -86,6 +86,10 @@ defmodule Backend.Application do
           start: {Hearthstone.Api, :start_link, [[]]}
         },
         %{
+          id: Backend.Hearthstone.CardBag,
+          start: {Backend.Hearthstone.CardBag, :start_link, [[]]}
+        },
+        %{
           id: Backend.Grandmasters,
           start: {Backend.Grandmasters, :start_link, [[]]}
         },

@@ -46,6 +46,7 @@ defmodule Components.DecklistCard do
     tile_url = card.id |> HearthstoneJson.tile_url()
     id = Ecto.UUID.generate()
     card_url = card |> HearthstoneJson.card_url()
+    # {tile_url, card_url} = Backend.Hearthstone.CardBag.tile_card_url(card.dbf_id)
 
     %{border: border, gradient: gradient} =
       colors(card, assigns[:deck_class], assigns[:decklist_options])
