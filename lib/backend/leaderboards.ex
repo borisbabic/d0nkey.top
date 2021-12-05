@@ -42,6 +42,7 @@ defmodule Backend.Leaderboards do
 
   def get_leaderboard(region, leaderboard, season) when is_atom(leaderboard), do: get_leaderboard(region, to_string(leaderboard), season)
   def get_leaderboard(region, leaderboard, season) do
+    curr_season = Blizzard.get_current_ladder_season(leaderboard) || 0
     if should_avoid_fetching?(region, leaderboard, season) do
       get_by_info(region, leaderboard, season)
     else
@@ -49,8 +50,18 @@ defmodule Backend.Leaderboards do
       |> get_latest_matching()
       |> case do
         nil -> get_by_info(region, leaderboard, season)
+        # if the official site is messed up and is returning an older season
+        ldb = %{season_id: s} when s < curr_season and s != curr_season and season == nil ->
+          get_newer(region, leaderboard, curr_season, ldb)
         ldb -> ldb
       end
+    end
+  end
+
+  defp get_newer(region, leaderboard, season, older) do
+    case get_leaderboard(region, leaderboard, season) do
+      newer = %{season_id: _}  -> newer
+      _ -> older
     end
   end
 
