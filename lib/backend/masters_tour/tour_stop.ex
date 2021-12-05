@@ -249,9 +249,7 @@ defmodule Backend.MastersTour.TourStop do
   def get(tour_stop, attr, default \\ nil)
   def get(tour_stop, attr, default)
       when (is_tour_stop(tour_stop) or is_binary(tour_stop)) and is_atom(attr) do
-    tour_stop
-    |> get()
-    |> case do
+    case get(tour_stop) do
       ts = %{id: _} -> ts |> Map.get(attr, default)
       _ -> default
     end
@@ -293,6 +291,7 @@ defmodule Backend.MastersTour.TourStop do
 
   def get_id_for_season!(season_id), do: Util.bangify(get_id_for_season(season_id))
 
+  def get(nil), do: nil
   def get(tour_stop) when is_tour_stop(tour_stop) do
     all()
     |> Enum.find(fn ts -> ts.id == tour_stop end)

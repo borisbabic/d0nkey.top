@@ -72,8 +72,13 @@ defmodule Backend.Leaderboards do
 
   def save_current() do
     for region <- Blizzard.qualifier_regions(),
-        ldb <- Blizzard.leaderboards(),
-        do: get_and_save(region, ldb, nil)
+        ldb <- Blizzard.leaderboards() do
+      latest_season = Blizzard.get_current_ladder_season(ldb) || 0
+      case get_and_save(region, ldb, nil)  do
+        ldb = %{season_id: s} when s >= latest_season -> ldb
+        _ -> get_and_save(region, ldb, latest_season)
+      end
+    end
   end
 
   def save_old() do
