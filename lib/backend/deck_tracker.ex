@@ -183,33 +183,46 @@ defmodule Hearthstone.DeckTracker do
     do: Enum.reduce(criteria, query, &compose_games_query/2)
 
   defp compose_games_query(period, query) when period in [:past_week, :past_day, :past_3_days],
-    do: compose_games_query(["period", to_string(period)], query)
+    do: compose_games_query({"period", to_string(period)}, query)
 
-  defp compose_games_query(["period", "past_week"], query),
+  defp compose_games_query({"period", "past_2_weeks"}, query),
+    do: query |> where([g], g.inserted_at >= ago(2, "week"))
+
+  defp compose_games_query({"period", "past_week"}, query),
     do: query |> where([g], g.inserted_at >= ago(1, "week"))
 
-  defp compose_games_query(["period", "past_day"], query),
+  defp compose_games_query({"period", "past_day"}, query),
     do: query |> where([g], g.inserted_at >= ago(1, "day"))
 
-  defp compose_games_query(["period", "past_3_days"], query),
+  defp compose_games_query({"period", "past_3_days"}, query),
     do: query |> where([g], g.inserted_at >= ago(3, "day"))
 
-  defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend],
-    do: compose_games_query(["rank", to_string(rank)], query)
+  defp compose_games_query({"period", "past_30_days"}, query),
+    do: query |> where([g], g.inserted_at >= ago(30, "day"))
 
-  defp compose_games_query(["rank", "legend"], query),
+  defp compose_games_query({"period", "alterac_valley"}, query) do
+    av_release = ~N[2021-12-07 18:00:00]
+    query |> where([g], g.inserted_at >= ^av_release)
+  end
+
+  defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend],
+    do: compose_games_query({"rank", to_string(rank)}, query)
+
+  defp compose_games_query({"rank", "legend"}, query),
     do: query |> where([g], g.player_rank >= 51)
 
-  defp compose_games_query(["rank", "diamond_to_legend"], query),
+  defp compose_games_query({"rank", "diamond_to_legend"}, query),
     do: query |> where([g], g.player_rank >= 41)
+  defp compose_games_query({"rank", "all"}, query),
+    do: query
 
-  defp compose_games_query(["order_by", "latest"], query),
+  defp compose_games_query({"order_by", "latest"}, query),
     do: query |> order_by([g], desc: g.inserted_at)
 
-  defp compose_games_query(["order_by", "total"], query),
+  defp compose_games_query({"order_by", "total"}, query),
     do: query |> order_by([g], desc: @total_select_pos)
 
-  defp compose_games_query(["order_by", "winrate"], query),
+  defp compose_games_query({"order_by", "winrate"}, query),
     do: query |> order_by([], desc: @winrate_select_pos)
 
 
@@ -230,6 +243,13 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"player_rank", rank}, query),
     do: query |> where([g], g.player_rank == ^rank)
+
+  defp compose_games_query({"min_games", min_games_string}, query) when is_binary(min_games_string) do
+    case Integer.parse(min_games_string) do
+      {min, _} -> compose_games_query({"min_games", min}, query)
+      _ -> query
+    end
+  end
 
   defp compose_games_query({"min_games", min_games}, query),
     do: query |> having([g], sum(fragment(@total_fragment, g.status)) >= ^min_games)

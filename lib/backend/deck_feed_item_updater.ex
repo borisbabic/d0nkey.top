@@ -4,7 +4,7 @@ defmodule Backend.DeckFeedItemUpdater do
   alias Backend.Feed.DeckInteraction
   alias Hearthstone.DeckTracker
 
-  @threshold 69
+  @threshold 1
   @feed_item_type :deck
 
   def update_deck_items() do
