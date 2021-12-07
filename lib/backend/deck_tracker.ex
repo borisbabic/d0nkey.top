@@ -53,6 +53,7 @@ defmodule Hearthstone.DeckTracker do
     |> recalculate_winrate()
   end
 
+  def recalculate_winrate(m = %{total: 0}), do: Map.put(m, :winrate, 0)
   def recalculate_winrate(m = %{wins: wins, total: total}), do: Map.put(m, :winrate, wins/total)
 
   @spec deck_stats(integer(), list()) :: [deck_stats()]
@@ -233,7 +234,7 @@ defmodule Hearthstone.DeckTracker do
     do: query |> where([_, pd], fragment("? @> ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_excludes", cards}, query),
-    do: query |> where([_, pd], not(fragment("? @> ?", pd.cards, ^cards)))
+    do: query |> where([_, pd], not(fragment("NOT(? && ?)", pd.cards, ^cards)))
 
   defp compose_games_query({"player_deck_id", deck_id}, query),
     do: query |> where([g], g.player_deck_id == ^deck_id)
