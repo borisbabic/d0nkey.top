@@ -4,9 +4,11 @@ defmodule BackendWeb.DecksLive do
   alias Backend.Blizzard
   alias Backend.Hearthstone.Deck
   alias Components.DeckWithStats
+  alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Hearthstone.Enums.Format
+  alias BackendWeb.Router.Helpers, as: Routes
   import BackendWeb.LiveHelpers
 
   @default_limit 15
@@ -108,6 +110,8 @@ defmodule BackendWeb.DecksLive do
           selected_params={filters}
           live_view={__MODULE__} />
 
+        <PlayableCardSelect id={"player_deck_includes"} update_fun={update_cards(@filters, "player_deck_includes")} selected={filters["player_deck_includes"] || []} title="Include cards"/>
+        <PlayableCardSelect id={"player_deck_excludes"} update_fun={update_cards(@filters, "player_deck_excludes")} selected={filters["player_deck_excludes"] || []} title="Exclude cards"/>
         <br>
         <br>
 
@@ -126,6 +130,17 @@ defmodule BackendWeb.DecksLive do
       </div>
     </Context>
     """
+  end
+
+  defp update_cards(params, param) do
+    fn val ->
+      new_params = Map.put(params, param, val)
+      Process.send_after(self(), {:update_params, new_params}, 0)
+    end
+  end
+
+  def handle_info({:update_params, params}, socket) do
+    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
 
   def rank_options(), do: [{"legend", "Legend"}, {"diamond_to_legend", "Diamond-Legend"}, {"all", "All"}]
@@ -155,8 +170,8 @@ defmodule BackendWeb.DecksLive do
 
   def extract_filters(params) do
     params
-    |> Map.take(["rank", "period", "limit", "order_by", "player_class", "opponent_class", "format", "offset", "region", "min_games"])
-    |> parse_int(["limit", "min_games", "format", "offset"])
+    |> Map.take(["rank", "period", "limit", "order_by", "player_class", "opponent_class", "format", "offset", "region", "min_games", "player_deck_includes", "player_deck_excludes"])
+    |> parse_int(["limit", "min_games", "format", "offset", "player_deck_includes", "player_deck_excludes"])
   end
 
   defp parse_int(params, to_parse) when is_list(to_parse), do:
@@ -164,7 +179,12 @@ defmodule BackendWeb.DecksLive do
 
   defp parse_int(params, param) do
     curr = Map.get(params, param)
-    new_val = Util.to_int_or_orig(curr)
+    new_val = if is_list(curr) do
+      Enum.map(curr, &Util.to_int_or_orig/1)
+    else
+      Util.to_int_or_orig(curr)
+    end
+
     if new_val && new_val != curr do
       Map.put(params, param, new_val)
     else
