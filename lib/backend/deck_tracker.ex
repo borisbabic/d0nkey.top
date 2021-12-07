@@ -227,7 +227,7 @@ defmodule Hearthstone.DeckTracker do
 
 
   defp compose_games_query(order_by, query) when order_by in [:latest, :winrate, :total],
-    do: compose_games_query(["order_by", to_string(order_by)], query)
+    do: compose_games_query({"order_by", to_string(order_by)}, query)
 
   defp compose_games_query({"player_deck_includes", cards}, query),
     do: query |> where([_, pd], fragment("? @> ?", pd.cards, ^cards))

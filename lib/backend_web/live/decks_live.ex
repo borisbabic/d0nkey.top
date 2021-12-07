@@ -9,6 +9,7 @@ defmodule BackendWeb.DecksLive do
   alias Hearthstone.DeckTracker
   alias Hearthstone.Enums.Format
   alias BackendWeb.Router.Helpers, as: Routes
+  alias Components.ClassStatsModal
   import BackendWeb.LiveHelpers
 
   @default_limit 15
@@ -110,6 +111,8 @@ defmodule BackendWeb.DecksLive do
           selected_params={filters}
           live_view={__MODULE__} />
 
+        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.class_stats(filters) end} title="As Class" />
+        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.opponent_class_stats(filters) end} title={"Vs Class"}/>
         <PlayableCardSelect id={"player_deck_includes"} update_fun={update_cards(@filters, "player_deck_includes")} selected={filters["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={update_cards(@filters, "player_deck_excludes")} selected={filters["player_deck_excludes"] || []} title="Exclude cards"/>
         <br>
@@ -119,7 +122,7 @@ defmodule BackendWeb.DecksLive do
           <div :for={deck_with_stats <- deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} />
           </div>
-          <div :if={!Enum.any?(deck_stats)} >
+          <div :if={!(Enum.any?(deck_stats))} >
             <br>
             <br>
             <br>
