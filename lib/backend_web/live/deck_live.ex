@@ -9,6 +9,7 @@ defmodule BackendWeb.DeckLive do
 
   data(deck, :any)
   data(streamer_decks, :any)
+  data(fitlers, :map)
   data(user, :any)
 
   def mount(_, session, socket) do

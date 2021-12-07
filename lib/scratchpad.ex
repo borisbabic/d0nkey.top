@@ -1,5 +1,9 @@
 defmodule ScratchPad do
   @moduledoc false
+  import Ecto.Query, warn: false
+  alias Ecto.Multi
+  alias Backend.Repo
+  alias Backend.Hearthstone.Deck
   alias Backend.MastersTour.InvitedPlayer
 
   def num_finals_losers_first_3_weeks_qualified(tour_stop) do
@@ -175,5 +179,38 @@ defmodule ScratchPad do
       """
     end)
     |> Enum.join("\n")
+  end
+
+  #imported decks from prod and had duplicates
+  # I don't know how the fuck that happened either
+  def deduplicate_decks() do
+    deck_ids = duplicate_deck_ids()
+    query = from d in Deck,
+      where: d.id in ^deck_ids
+
+    decks = Repo.all(query)
+    decks
+    |> Enum.group_by(& &1.id)
+    |> Enum.chunk_every(50)
+    |> Enum.each(&delete_grouped_by/1)
+  end
+
+  defp delete_grouped_by(grouped_by) do
+    grouped_by
+    |> Enum.reduce(Multi.new(), fn {_, [a| _]}, multi ->
+      query = from d in Deck,
+        where: d.id == ^a.id,
+        where: d.inserted_at == ^a.inserted_at,
+        where: d.deckcode == ^a.deckcode
+      Multi.delete_all(multi, "deck_id_#{a.id}", query)
+    end)
+    |> Repo.transaction()
+  end
+  defp duplicate_deck_ids() do
+    query = from d in Deck,
+      group_by: d.id,
+      having: count(1) > 1,
+      select: d.id
+    Repo.all(query)
   end
 end
