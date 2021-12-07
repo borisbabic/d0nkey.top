@@ -16,4 +16,8 @@ defmodule BackendWeb.PageController do
   def about(conn, _params) do
     render(conn, "about.html")
   end
+
+  def privacy(conn, _params) do
+    render(conn, "privacy.html")
+  end
 end

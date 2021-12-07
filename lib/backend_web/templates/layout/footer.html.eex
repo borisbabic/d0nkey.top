@@ -25,7 +25,8 @@
         </div>
         <div class="level has-text-centered">
           <div class="level-item">
-            <div id="ncmp-consent-link"></div>
+            <a class="link" href="/privacy">Privacy Policy</a>
+            <div class="link" id="ncmp-consent-link"></div>
             <div class="tag">
               <span data-ccpa-link="1"></span>
             </div>

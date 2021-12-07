@@ -68,6 +68,7 @@ defmodule BackendWeb.Router do
     get "/incubator", PageController, :incubator
     get "/about", PageController, :about
     get "/donate-follow", PageController, :donate_follow
+    get "/privacy", PageController, :privacy
 
     get "/invited/:tour_stop", MastersTourController, :invited_players
     get "/invited/", MastersTourController, :invited_players
