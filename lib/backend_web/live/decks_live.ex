@@ -113,8 +113,8 @@ defmodule BackendWeb.DecksLive do
 
         <PlayableCardSelect id={"player_deck_includes"} update_fun={update_cards(@filters, "player_deck_includes")} selected={filters["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={update_cards(@filters, "player_deck_excludes")} selected={filters["player_deck_excludes"] || []} title="Exclude cards"/>
-        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.class_stats(filters) end} title="As Class" />
-        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.opponent_class_stats(filters) end} title={"Vs Class"}/>
+        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
+        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> filters |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
         <br>
         <br>
 
@@ -135,6 +135,7 @@ defmodule BackendWeb.DecksLive do
     """
   end
 
+  defp class_stats_filters(filters), do: Map.delete(filters, "min_games")
   defp update_cards(params, param) do
     fn val ->
       new_params = Map.put(params, param, val)
@@ -213,7 +214,7 @@ defmodule BackendWeb.DecksLive do
   defp week_past_alterac_valley?() do
     NaiveDateTime.utc_now()
     |> NaiveDateTime.add(-7 * 24 * 60 * 60, :second)
-    |> NaiveDateTime.compare(~N[2021-11-07 18:00:00])
+    |> NaiveDateTime.compare(~N[2021-12-07 18:00:00])
     |> case do
       :lt -> false
       _ -> true
@@ -221,7 +222,7 @@ defmodule BackendWeb.DecksLive do
   end
   defp alterac_valley_out?() do
     NaiveDateTime.utc_now()
-    |> NaiveDateTime.compare(~N[2021-11-07 18:00:00])
+    |> NaiveDateTime.compare(~N[2021-12-08 02:00:00])
     |> case do
       :lt -> false
       _ -> true
