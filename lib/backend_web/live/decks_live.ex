@@ -111,10 +111,10 @@ defmodule BackendWeb.DecksLive do
           selected_params={filters}
           live_view={__MODULE__} />
 
-        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.class_stats(filters) end} title="As Class" />
-        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.opponent_class_stats(filters) end} title={"Vs Class"}/>
         <PlayableCardSelect id={"player_deck_includes"} update_fun={update_cards(@filters, "player_deck_includes")} selected={filters["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={update_cards(@filters, "player_deck_excludes")} selected={filters["player_deck_excludes"] || []} title="Exclude cards"/>
+        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.class_stats(filters) end} title="As Class" />
+        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> Hearthstone.DeckTracker.opponent_class_stats(filters) end} title={"Vs Class"}/>
         <br>
         <br>
 
