@@ -388,6 +388,11 @@
   background-color: lightgray;
 }
 
+.basic-black-text {
+  text-shadow: none;
+  color: black;
+}
+
 
 /*.live-streamer.twitch {*/
   /*border-color: var(--color-twitch);*/

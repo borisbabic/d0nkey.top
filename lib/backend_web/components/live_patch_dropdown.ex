@@ -8,6 +8,7 @@ defmodule Components.LivePatchDropdown do
   prop(options, :list, required: true)
   prop(param, :string, required: true)
   prop(live_view, :any, required: true)
+  prop(path_params, :list, default: [])
   prop(url_params, :map, required: true)
   prop(title, :string, required: false)
 
@@ -18,6 +19,12 @@ defmodule Components.LivePatchDropdown do
   prop(current_val, :any, required: false)
   prop(normalizer, :fun, required: false)
 
+  @spec render(%{
+          :normalizer => any,
+          :selected_as_title => boolean,
+          :title => any,
+          optional(any) => any
+        }) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     normalizer = assigns.normalizer || & &1
     current = current(assigns, normalizer)
@@ -27,12 +34,19 @@ defmodule Components.LivePatchDropdown do
         <div :for={opt <- @options}>
           <LivePatch
             class={"dropdown-item", "is-active": current == normalizer.(value(opt))}
-            to={Routes.live_path(@socket, @live_view, update_params(@url_params, @param, value(opt)))}>
+            to={link(@socket, @live_view, @path_params, update_params(@url_params, @param, value(opt)))}>
             {display(opt)}
           </LivePatch>
         </div>
       </Dropdown>
     """
+  end
+
+  def link(socket, live_view, [], params) do
+    Routes.live_path(socket, live_view, params)
+  end
+  def link(socket, live_view, path_params, params) do
+    Routes.live_path(socket, live_view, path_params, params)
   end
 
   def update_params(url_params, param, nil), do: Map.delete(url_params, param)

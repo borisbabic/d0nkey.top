@@ -6,11 +6,13 @@ defmodule BackendWeb.DeckLive do
   alias Backend.Hearthstone.Deck
   alias Components.DeckStreamingInfo
   alias Components.Decklist
+  alias Components.DeckCard
+  alias Components.DeckStatsTable
 
   data(deck, :any)
   data(streamer_decks, :any)
-  data(fitlers, :map)
   data(user, :any)
+  data(deck_stats_params, :map)
 
   def mount(_, session, socket) do
     {:ok, assign_defaults(socket, session)}
@@ -24,7 +26,7 @@ defmodule BackendWeb.DeckLive do
     |> handle_params(session, socket)
   end
 
-  def handle_params(%{"deck" => deck}, _session, socket) do
+  def handle_params(params = %{"deck" => deck}, _session, socket) do
     deck =
       with :error <- Integer.parse(deck),
            {:ok, deck} <- Deck.decode(deck) do
@@ -34,7 +36,9 @@ defmodule BackendWeb.DeckLive do
         _ -> []
       end
 
-    {:noreply, socket |> assign(deck: deck) |> assign_meta()}
+    deck_stats_params = params |> Map.take(DeckStatsTable.param_keys())
+
+    {:noreply, socket |> assign(deck: deck) |> assign_meta() |> assign(:deck_stats_params, deck_stats_params)}
   end
 
   def render(assigns = %{deck: _}) do
@@ -42,12 +46,17 @@ defmodule BackendWeb.DeckLive do
     <Context put={user: @user}>
       <div class="container">
         <br>
-        <div class="columns is-narrow is-mobile is-multiline">
-          <div class="column">
-            <Decklist deck={@deck}/>
+        <div class="columns is-multiline is-mobile is-narrow is-centered">
+          <div class="column is-narrow-mobile">
+            <DeckCard>
+              <Decklist deck={@deck} archetype_as_name={true} />
+              <:after_deck>
+                <DeckStreamingInfo deck_id={@deck.id}/>
+              </:after_deck>
+            </DeckCard>
           </div>
-          <div class="column" :if={@deck.id}>
-            <DeckStreamingInfo deck_id={@deck.id}/>
+          <div class="column is-narrow-mobile">
+            <DeckStatsTable id="deck_stats" deck_id={@deck.id} live_view={__MODULE__} path_params={[to_string(@deck.id)]} params={@deck_stats_params} />
           </div>
         </div>
       </div>

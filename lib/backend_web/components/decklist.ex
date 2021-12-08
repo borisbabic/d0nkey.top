@@ -5,6 +5,7 @@ defmodule Components.Decklist do
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson.Card
   use BackendWeb.ViewHelpers
+
   prop(deck, :map, required: true)
   prop(name, :string, required: false)
   prop(archetype_as_name, :boolean, default: false)
@@ -33,6 +34,8 @@ defmodule Components.Decklist do
   defp deck_class(_, %{card_class: c}) when is_binary(c), do: c
   defp deck_class(_, _), do: "NEUTRAL"
 
+  defp link_part(%{id: id}) when not is_nil(id), do: id
+  defp link_part(%{deckcode: deckcode}), do: deckcode
   def render(assigns) do
     deck = assigns[:deck]
 
@@ -47,16 +50,16 @@ defmodule Components.Decklist do
     ~F"""
       <div>
 
-          <div :if={@show_hero} class={" decklist-hero #{class_class}"} style="margin-bottom: 0px;">
+          <div :if={@show_hero} class={"decklist-hero",  class_class} style="margin-bottom: 0px;">
               <div class="level is-mobile">
-                  <div phx-click="deck_copied" phx-value-deckcode={"#{deck.deckcode}"} class="level-left">
+                  <div phx-click="deck_copied" phx-value-deckcode={@deck.deckcode} class="level-left">
                       {deckcode}
                   </div>
                   <div class="level-left deck-text">
                     <div class="deck-title">
-                      <span><span style="font-size:0;">### </span> <span>{name}</span>
+                      <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={"/deck/#{link_part(@deck)}"}>{name}</a>
                       <span style="font-size: 0; line-size:0; display:block">
-                      {@deck |> Deck.deckcode()}</span></span>
+                      {Deck.deckcode(@deck)}</span></span>
                     </div>
                   </div>
                   <div class="level-right">

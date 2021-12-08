@@ -75,7 +75,7 @@ defmodule BackendWeb.DecksLive do
           live_view={__MODULE__} />
 
         <LivePatchDropdown
-          options={class_options()}
+          options={class_options("Any Class")}
           title={"Class"}
           param={"player_class"}
           url_params={@filters}
@@ -83,7 +83,7 @@ defmodule BackendWeb.DecksLive do
           live_view={__MODULE__} />
 
         <LivePatchDropdown
-          options={class_options()}
+          options={class_options("Any Opponent")}
           title={"Opponent Class"}
           param={"opponent_class"}
           url_params={@filters}
@@ -133,7 +133,7 @@ defmodule BackendWeb.DecksLive do
     """
   end
 
-  defp class_stats_filters(filters), do: Map.delete(filters, "min_games")
+  defp class_stats_filters(filters), do: Map.delete(filters, "min_games") |> Map.delete("order_by")
   defp update_cards(params, param) do
     fn val ->
       new_params = Map.put(params, param, val)
@@ -148,7 +148,7 @@ defmodule BackendWeb.DecksLive do
   def rank_options(), do: [{"legend", "Legend"}, {"diamond_to_legend", "Diamond-Legend"}, {"all", "All"}]
   def period_options(), do: [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}]
   def limit_options(), do: [10, 15, 20, 25, 30]
-  def class_options(), do: [{nil, "Any"} | Enum.map(Deck.classes(), & {&1, Deck.class_name(&1)})]
+  def class_options(any_name \\ "Any"), do: [{nil, any_name} | Enum.map(Deck.classes(), & {&1, Deck.class_name(&1)})]
   def format_options(), do:
     Enum.map(Format.all(), fn {id, name} ->
       {to_string(id), name}
