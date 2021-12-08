@@ -12,6 +12,11 @@ defmodule Components.DeckStatsTable do
   prop(deck_id, :integer, required: true)
 
   def render(assigns) do
+    selected_params =
+      assigns.params
+      |> Map.take(param_keys())
+      |> Map.put_new("rank", "diamond_to_legend")
+      |> Map.put_new("period", "past_week")
     ~F"""
     <div>
         <LivePatchDropdown
@@ -20,6 +25,7 @@ defmodule Components.DeckStatsTable do
           title={"Rank"}
           param={"rank"}
           url_params={@params}
+          selected_params={selected_params}
           live_view={@live_view} />
 
         <LivePatchDropdown
@@ -28,24 +34,13 @@ defmodule Components.DeckStatsTable do
           title={"Period"}
           param={"period"}
           url_params={@params}
+          selected_params={selected_params}
           live_view={@live_view} />
 
-        <ClassStatsTable :if={stats = stats(@deck_id, @params)} stats={stats} />
+        <ClassStatsTable :if={stats = DeckTracker.detailed_stats(@deck_id, Enum.to_list(selected_params))} stats={stats} />
     </div>
     """
   end
-
-  def stats(id, raw_params) do
-    params =
-      raw_params
-      |> Map.take(param_keys())
-      |> Map.put_new("rank", "diamond_to_legend")
-      |> Map.put_new("period", "past_week")
-      |> Enum.to_list()
-
-    DeckTracker.detailed_stats(id, params)
-  end
-
   def param_keys(), do: ["rank", "period"]
 
 end
