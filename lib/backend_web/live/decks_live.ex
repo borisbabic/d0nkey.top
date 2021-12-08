@@ -78,7 +78,6 @@ defmodule BackendWeb.DecksLive do
           options={class_options()}
           title={"Class"}
           param={"player_class"}
-          selected_as_title={false}
           url_params={@filters}
           selected_params={filters}
           live_view={__MODULE__} />
@@ -87,7 +86,6 @@ defmodule BackendWeb.DecksLive do
           options={class_options()}
           title={"Opponent Class"}
           param={"opponent_class"}
-          selected_as_title={false}
           url_params={@filters}
           selected_params={filters}
           live_view={__MODULE__} />
