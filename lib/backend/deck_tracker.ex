@@ -53,7 +53,7 @@ defmodule Hearthstone.DeckTracker do
     |> recalculate_winrate()
   end
 
-  def recalculate_winrate(m = %{total: 0}), do: Map.put(m, :winrate, 0)
+  def recalculate_winrate(m = %{total: 0}), do: Map.put(m, :winrate, 0.0)
   def recalculate_winrate(m = %{wins: wins, total: total}), do: Map.put(m, :winrate, wins/total)
 
   @spec deck_stats(integer(), list()) :: [deck_stats()]
