@@ -22,7 +22,7 @@ defmodule Components.ClassStatsTable do
           </tr>
           <tr :if={total_stats = Hearthstone.DeckTracker.sum_stats(@stats)}>
             <td>Total</td>
-            <td>{Float.round(total_stats.winrate * 100, 1)}</td>
+            <td><span class="tag" style={Components.DeckStats.winrate_style(total_stats.winrate)}><span class={"basic-black-text"}>{Float.round(total_stats.winrate * 100, 1)}</span></span></td>
             <td>{total_stats.total}</td>
           </tr>
         </tbody>
