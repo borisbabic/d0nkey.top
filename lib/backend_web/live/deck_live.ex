@@ -8,11 +8,13 @@ defmodule BackendWeb.DeckLive do
   alias Components.Decklist
   alias Components.DeckCard
   alias Components.DeckStatsTable
+  alias Backend.DeckInteractionTracker, as: Tracker
 
   data(deck, :any)
   data(streamer_decks, :any)
   data(user, :any)
   data(deck_stats_params, :map)
+
 
   def mount(_, session, socket) do
     {:ok, assign_defaults(socket, session)}
@@ -71,6 +73,10 @@ defmodule BackendWeb.DeckLive do
     """
   end
 
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
+  end
   def assign_meta(socket = %{assigns: %{deck: deck}}) do
     socket
     |> assign_meta_tags(%{
