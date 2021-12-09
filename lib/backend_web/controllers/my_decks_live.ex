@@ -24,7 +24,7 @@ defmodule BackendWeb.MyDecksLive do
           default_order_by="latest"
           default_rank="all"
           period_options={[{"all", "All time"}, {"past_60_days", "Past 60 Days"}, {"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}]}
-          default_min_games={20}
+          default_min_games={1}
           min_games_floor={1}
           additional_params={%{"player_btag" => btag}}
           live_view={__MODULE__}
