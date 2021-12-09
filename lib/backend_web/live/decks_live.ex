@@ -10,7 +10,6 @@ defmodule BackendWeb.DecksLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-
     ~F"""
     <Context put={user: @user} >
       <div class="container">
@@ -28,6 +27,10 @@ defmodule BackendWeb.DecksLive do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
 
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
+  end
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 
   def handle_params(params, _uri, socket) do
