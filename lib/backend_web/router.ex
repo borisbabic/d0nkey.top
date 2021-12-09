@@ -169,6 +169,7 @@ defmodule BackendWeb.Router do
     live "/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups
 
     live "/my-replays", MyReplaysLive
+    live "/my-decks", MyDecksLive
 
     get "/wild", FunController, :wild
   end

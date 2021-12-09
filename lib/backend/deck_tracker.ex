@@ -201,6 +201,12 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"period", "past_30_days"}, query),
     do: query |> where([g], g.inserted_at >= ago(30, "day"))
 
+  defp compose_games_query({"period", "past_60_days"}, query),
+    do: query |> where([g], g.inserted_at >= ago(60, "day"))
+
+  defp compose_games_query({"period", "all"}, query),
+    do: query
+
   defp compose_games_query({"period", "alterac_valley"}, query) do
     av_release = ~N[2021-12-07 18:00:00]
     query |> where([g], g.inserted_at >= ^av_release)
@@ -218,7 +224,7 @@ defmodule Hearthstone.DeckTracker do
     do: query
 
   defp compose_games_query({"order_by", "latest"}, query),
-    do: query |> order_by([g], desc: g.inserted_at)
+    do: query |> order_by([g], desc: max(g.inserted_at))
 
   defp compose_games_query({"order_by", "total"}, query),
     do: query |> order_by([g], desc: @total_select_pos)

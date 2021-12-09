@@ -2,7 +2,7 @@ defmodule Components.DeckStatsTable do
   @moduledoc false
   use Surface.LiveComponent
   alias Components.ClassStatsTable
-  alias BackendWeb.DecksLive
+  alias Components.DecksExplorer
   alias Hearthstone.DeckTracker
   alias Components.LivePatchDropdown
 
@@ -20,7 +20,7 @@ defmodule Components.DeckStatsTable do
     ~F"""
     <div>
         <LivePatchDropdown
-          options={DecksLive.rank_options()}
+          options={DecksExplorer.rank_options()}
           path_params={@path_params}
           title={"Rank"}
           param={"rank"}
@@ -29,7 +29,7 @@ defmodule Components.DeckStatsTable do
           live_view={@live_view} />
 
         <LivePatchDropdown
-          options={DecksLive.period_options()}
+          options={DecksExplorer.default_period_options()}
           path_params={@path_params}
           title={"Period"}
           param={"period"}
