@@ -22,6 +22,7 @@
           <div class="navbar-dropdown">
             <%= if @user do %>
               <a class="navbar-item" href='<%= Routes.player_path(@conn, :player_profile, @user) %>'>Player Profile</a>
+              <a class="navbar-item" href='<%= Routes.live_path(@conn, BackendWeb.MyDecksLive) %>'>My Decks</a>
               <a class="navbar-item" href='/profile/settings'>Settings</a>
               <%= if user(@conn) && user(@conn).battlefy_slug do %>
                 <a class="navbar-item" href='<%= Routes.battlefy_path(@conn, :user_tournaments, user(@conn).battlefy_slug)%>'>

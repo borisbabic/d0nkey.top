@@ -56,6 +56,10 @@ defmodule Backend.UserManager.User do
     end
   end
 
+  def battletag!(%{battletag: btag}), do: btag
+  def battletag(%{battletag: btag}), do: btag
+  def battletag(_), do: nil
+
   def display_name(%__MODULE__{battletag: bt}),
     do: bt |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
 

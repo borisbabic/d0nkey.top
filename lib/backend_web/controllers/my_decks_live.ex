@@ -1,8 +1,9 @@
-defmodule BackendWeb.DecksLive do
+defmodule BackendWeb.MyDecksLive do
   @moduledoc false
   use Surface.LiveView
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.DecksExplorer
+  alias Backend.UserManager.User
   import BackendWeb.LiveHelpers
 
   data(user, :any)
@@ -13,12 +14,21 @@ defmodule BackendWeb.DecksLive do
 
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div :if={btag = User.battletag(@user)} class="container">
         <div class="title is-2">Decks</div>
         <div class="subtitle is-6">
-        To contribute use <a href="https://www.firestoneapp.com/">Firestone</a>
+        Powered by <a href="https://www.firestoneapp.com/">Firestone</a>
         </div>
-        <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters}/>
+        <DecksExplorer
+          id="decks_explorer"
+          default_order_by="latest"
+          default_rank="all"
+          period_options={[{"all", "All time"}, {"past_60_days", "Past 60 Days"}, {"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}]}
+          default_min_games={20}
+          min_games_floor={1}
+          additional_params={%{"player_btag" => btag}}
+          live_view={__MODULE__}
+          params={@filters}/>
       </div>
     </Context>
     """
