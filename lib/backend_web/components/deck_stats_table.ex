@@ -17,8 +17,10 @@ defmodule Components.DeckStatsTable do
       |> Map.take(param_keys())
       |> Map.put_new("rank", "diamond_to_legend")
       |> Map.put_new("period", "past_week")
+      |> Map.put_new("players", "all_players")
     ~F"""
     <div>
+      <Context get={user: user}>
         <LivePatchDropdown
           options={DecksExplorer.rank_options()}
           path_params={@path_params}
@@ -37,10 +39,28 @@ defmodule Components.DeckStatsTable do
           selected_params={selected_params}
           live_view={@live_view} />
 
-        <ClassStatsTable :if={stats = DeckTracker.detailed_stats(@deck_id, Enum.to_list(selected_params))} stats={stats} />
+          <LivePatchDropdown :if={Backend.UserManager.User.battletag(user)}
+            options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
+            path_params={@path_params}
+            title={"Players"}
+            param={"players"}
+            url_params={@params}
+            selected_params={selected_params}
+            live_view={@live_view} />
+        <ClassStatsTable :if={stats = DeckTracker.detailed_stats(@deck_id, params(selected_params, user))} stats={stats} />
+      </Context>
     </div>
     """
   end
-  def param_keys(), do: ["rank", "period"]
+
+  defp params(selected, user) do
+    selected
+    |> Map.pop("players", "all_players")
+    |> set_user_param(user)
+    |> Enum.to_list()
+  end
+  defp set_user_param({"my_games", params}, %{battletag: battletag}), do: params |> Map.put_new("player_btag", battletag)
+  defp set_user_param({_, params}, _), do: params
+  def param_keys(), do: ["rank", "period", "players"]
 
 end
