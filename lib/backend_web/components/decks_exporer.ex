@@ -107,8 +107,8 @@ defmodule Components.DecksExplorer do
         selected_params={params}
         live_view={@live_view} />
 
-      <PlayableCardSelect id={"player_deck_includes"} update_fun={update_cards(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
-      <PlayableCardSelect id={"player_deck_excludes"} update_fun={update_cards(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+      <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
+      <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
       <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
       <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
       <br>
@@ -150,12 +150,6 @@ defmodule Components.DecksExplorer do
   end
 
   defp class_stats_filters(filters), do: Map.delete(filters, "min_games") |> Map.delete("order_by")
-  defp update_cards(params, param) do
-    fn val ->
-      new_params = Map.put(params, param, val)
-      Process.send_after(self(), {:update_params, new_params}, 0)
-    end
-  end
 
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
@@ -186,10 +180,10 @@ defmodule Components.DecksExplorer do
     |> parse_int(["limit", "min_games", "format", "offset", "player_deck_includes", "player_deck_excludes"])
   end
 
-  defp parse_int(params, to_parse) when is_list(to_parse), do:
+  def parse_int(params, to_parse) when is_list(to_parse), do:
     Enum.reduce(to_parse, params, &parse_int(&2, &1))
 
-  defp parse_int(params, param) do
+  def parse_int(params, param) do
     curr = Map.get(params, param)
     new_val = if is_list(curr) do
       Enum.map(curr, &Util.to_int_or_orig/1)
@@ -204,7 +198,7 @@ defmodule Components.DecksExplorer do
     end
   end
 
-  defp apply_defaults(filters, defaults) do
+  def apply_defaults(filters, defaults) do
     Enum.reduce(defaults, filters, fn {key, val}, carry ->
       Map.put_new(carry, key, val)
     end)
@@ -235,14 +229,13 @@ defmodule Components.DecksExplorer do
     end
   end
 
-
-  defp cap_param(params, param, max),
+  def cap_param(params, param, max),
     do: limit_param(params, param, max, &Kernel.>/2)
 
-  defp floor_param(params, param, min),
+  def floor_param(params, param, min),
     do: limit_param(params, param, min, &Kernel.</2)
 
-  defp limit_param(params, param, limit, limiter) do
+  def limit_param(params, param, limit, limiter) do
     curr = Map.get(params, param)
     if curr && limiter.(curr, limit) do
       Map.put(params, param, limit)

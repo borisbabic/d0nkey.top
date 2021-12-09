@@ -15,7 +15,7 @@ defmodule BackendWeb.MyDecksLive do
     ~F"""
     <Context put={user: @user} >
       <div :if={btag = User.battletag(@user)} class="container">
-        <div class="title is-2">Decks</div>
+        <div class="title is-2">My Decks</div>
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a>
         </div>

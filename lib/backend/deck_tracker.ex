@@ -223,6 +223,9 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"rank", "all"}, query),
     do: query
 
+  defp compose_games_query({"order_by", "latest"}, query = %{group_bys: []}),
+    do: query |> order_by([g], desc: g.inserted_at)
+
   defp compose_games_query({"order_by", "latest"}, query),
     do: query |> order_by([g], desc: max(g.inserted_at))
 
@@ -295,6 +298,9 @@ defmodule Hearthstone.DeckTracker do
   for {id, atom} <- Format.all(:atoms) do
     defp compose_games_query(unquote(atom), query), do: compose_games_query({"format", unquote(id)}, query)
   end
+
+  defp compose_games_query({"format", "all"}, query),
+    do: query
 
   defp compose_games_query({"format", format}, query),
     do: query |> where([g], g.format == ^format)

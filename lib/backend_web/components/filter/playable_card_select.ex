@@ -62,4 +62,11 @@ defmodule Components.Filter.PlayableCardSelect do
     |> Enum.filter(&(!(&1.dbf_id in selected)))
     |> Enum.take(num_to_show)
   end
+
+  def update_cards_fun(params, param, name \\ :update_params) do
+    fn val ->
+      new_params = Map.put(params, param, val)
+      Process.send_after(self(), {:update_params, new_params}, 0)
+    end
+  end
 end
