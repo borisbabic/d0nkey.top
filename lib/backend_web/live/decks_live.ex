@@ -4,6 +4,7 @@ defmodule BackendWeb.DecksLive do
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.DecksExplorer
   import BackendWeb.LiveHelpers
+  alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :any)
   data(filters, :map)
