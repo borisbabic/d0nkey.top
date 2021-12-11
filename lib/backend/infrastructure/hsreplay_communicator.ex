@@ -6,17 +6,48 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
   alias Backend.HSReplay.Archetype
   alias Backend.HSReplay.Streaming
   @behaviour Backend.HSReplay.Communicator
+
+  # def get_streams(mode \\ "standard") do
+  #   get_body("https://hsreplay.net/api/v1/streams/" <> mode)
+  #   |> Poison.decode!()
+  #   |> Enum.map(fn ->
+  # end
+
+  # def get_dekc_streams(hsr_deck_id, mode \\ "standard") do
+  #   get_body("https://hsreplay.net/api/v1/streams/#{mode}/?deck_id=#{hsr_deck_id}")
+  #   |> Poison.decode!()
+  #   |> Enum.map(fn ->
+  # end
+
   def get_replay_feed() do
     get_body("https://hsreplay.net/api/v1/live/replay_feed/")
-    |> Poison.decode!()
-    |> Access.get("data")
-    |> Enum.map(&ReplayFeedEntry.from_raw_map/1)
+    |> decode(fn decoded ->
+      decoded
+      |> Access.get("data")
+      |> Enum.map(&ReplayFeedEntry.from_raw_map/1)
+    end, [])
   end
 
   def get_archetypes() do
     get_body("https://hsreplay.net/api/v1/archetypes/")
-    |> Poison.decode!()
-    |> Enum.map(&Archetype.from_raw_map/1)
+    |> decode(fn decoded ->
+      decoded
+      |> Enum.map(&Archetype.from_raw_map/1)
+    end, [])
+  end
+
+  defp decode(body, fun, default \\ nil) do
+    case Poison.decode(body) do
+      {:ok, decoded} ->
+        try do
+          fun.(default)
+        rescue
+          e ->
+            Logger.warn("Error decoding hsreplay response", error: e)
+            default
+        end
+      _ -> default
+    end
   end
 
   def get_archetype_matchups() do
@@ -24,8 +55,10 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
       "https://hsreplay.net/analytics/query/head_to_head_archetype_matchups/?GameType=RANKED_STANDARD&RankRange=LEGEND_THROUGH_TWENTY&Region=ALL&TimeRange=LAST_7_DAYS"
 
     get_body(url)
-    |> Poison.decode!()
-    |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
+    |> decode(fn decoded ->
+      decoded
+      |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
+    end)
   end
 
   def get_archetype_matchups(cookies) when is_nil(cookies) do
@@ -42,8 +75,10 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     Logger.info("Got #{url} in #{div(u_secs, 1000)} ms")
 
     response.body
-    |> Poison.decode!()
-    |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
+    |> decode(fn decoded ->
+      decoded
+      |> Backend.HSReplay.ArchetypeMatchups.from_raw_map()
+    end, [])
   end
 
   @spec get_streaming_now() :: [Streaming.t()]
