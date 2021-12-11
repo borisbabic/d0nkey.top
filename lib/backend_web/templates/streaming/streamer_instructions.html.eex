@@ -2,14 +2,14 @@
 
 <div class="title is-3">Firestone</div>
 <li>
-    <%= if user(@conn) do %> 
+    <%= if user(@conn) do %>
         <span>Done ✓</span>
 
     <% end %>
     Ensure you are logged in. If you are not you can do so <a target="_blank" href="/auth/bnet">here</a>
 </li>
 <li>
-    <%= if user(@conn) && user(@conn).twitch_id do %> 
+    <%= if user(@conn) && user(@conn).twitch_id do %>
         <span>Done ✓</span>
     <% end %>
     Go to settings and connect your twitch account, or click <a target="_blank" href="/auth/twitch">here</a> to connect your twitch account
@@ -24,6 +24,7 @@ NOTE: Streaming now functionality is still a work in progress
 
 
 <div class="title is-3">HDT</div>
+<span class="tag is-warning is-hidden-mobile">There is an issue with recognizing HDT decks. Streamers can use Firestone until it's resolved</span>
 <div>
 You need to be using the Hearthstone Deck Tracker with the twitch HDT extension and allow sharing to hsreplay to make the info public. You can still use other deck tracker overlays, it's enough that a properly setup HDT is running in the background.
 </div>
@@ -59,4 +60,3 @@ You need to be using the Hearthstone Deck Tracker with the twitch HDT extension 
         If everything seems fine try going <a href="https://hsreplay.net/account/social/connections/">here</a> then removing twitch and reconnecting
     </li>
 <ul>
-
