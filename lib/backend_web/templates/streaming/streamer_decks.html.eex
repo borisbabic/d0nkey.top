@@ -1,5 +1,5 @@
 <div class="title is-2"><%= @title %></div>
-<div class="subtitle is-6"><a href="<%= Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)%>">Instructions for streamers</a></div>
+<div class="subtitle is-6"><span class="tag is-warning is-hidden-mobile">There is an issue with recognizing HDT decks. Streamers can use Firestone until it's resolved</span><a href="<%= Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)%>">Instructions for streamers</a></div>
 
 
 <div class="columns is-pulled-left">
@@ -65,7 +65,7 @@ f-> %>
         <%= for r <- @rows do %>
         <tr>
             <td>
-                <%= live_render(@conn, BackendWeb.ExpandableDeckLive, session: %{"code" => r.code, "show_cards" => false, "name" => if(r.archetype, do: r.archetype.name, else: r.class)}) %> 
+                <%= live_render(@conn, BackendWeb.ExpandableDeckLive, session: %{"code" => r.code, "show_cards" => false, "name" => if(r.archetype, do: r.archetype.name, else: r.class)}) %>
             </td>
             <td>
                 <span><%= r.streamer %></span>
