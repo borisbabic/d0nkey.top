@@ -1,5 +1,6 @@
 defmodule BackendWeb.PageController do
   use BackendWeb, :controller
+  require Logger
 
   def index(conn, _params) do
     render(conn, "index.html")
@@ -19,5 +20,14 @@ defmodule BackendWeb.PageController do
 
   def privacy(conn, _params) do
     render(conn, "privacy.html")
+  end
+
+  def log(conn, params) do
+    ret = Jason.encode!(params, pretty: true)
+    IO.inspect(conn)
+    Logger.info(ret)
+    Logger.info(ret)
+
+    text(conn, ret)
   end
 end

@@ -1,0 +1,2294 @@
+{
+    "id": 10010,
+    "availableLanguages": [
+      "en",
+      "es-mx",
+      "pt",
+      "pl",
+      "ru",
+      "es-es",
+      "fr",
+      "de",
+      "it",
+      "en-gb",
+      "ko",
+      "zh-cn",
+      "ja",
+      "th",
+      "zh-tw"
+    ],
+    "game": "HEARTHSTONE",
+    "region": "XX",
+    "location": "Online",
+    "featured": true,
+    "draft": false,
+    "prize": "$500,000.00 USD",
+    "handle": "world-championship-2021",
+    "title": "Hearthstone World Championship 2021",
+    "detail": "The Hearthstone 2021 World Championship is here! Eight exceptional players from around the globe—six from Grandmasters and two from the Chinese Gold Series—come together to duel <a href=\"https://www.youtube.com/hearthstoneesports\">online</a> for the title of Hearthstone 2021 World Champion and their share of a $500,000 prize pool! Two groups of four players will compete in a dual-tournament format until only four remain, after which the competition will shift to a single-elimination bracket. All matches will be played in a best-of-five conquest format with a ban.",
+    "stages": [
+      {
+        "id": 11191,
+        "availableLanguages": [
+          "en"
+        ],
+        "title": "Top 8",
+        "detail": "Top 8",
+        "brackets": [
+          {
+            "id": 8731,
+            "availableLanguages": [
+              "en"
+            ],
+            "name": "Group A",
+            "bestOf": 5,
+            "matchConclusionValue": 5,
+            "matchConclusionStrategy": "BEST_OF",
+            "winners": 2,
+            "competitorSize": 4,
+            "teamSize": 0,
+            "repeatableMatchUps": 0,
+            "stageId": 11191,
+            "type": "DE",
+            "rankings": {
+              "content": [
+                {
+                  "competitor": {
+                    "id": 14721,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Gaby",
+                    "description": "2021 HSGM S2",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Jeanne",
+                    "givenName": "Gabriel",
+                    "nationality": "FR",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Gaby.jpg",
+                    "user": {
+                      "id": 6083
+                    },
+                    "@etag": "8374e13e",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "competitor": {
+                    "id": 10660,
+                    "availableLanguages": [
+                      "en",
+                      "es-es",
+                      "es-mx",
+                      "zh-tw",
+                      "pt"
+                    ],
+                    "name": "Nalguidan",
+                    "description": "Nalguidan started playing Hearthstone while queuing for other multiplayer games. In just a few short years, he found himself one win away from playing at the Hearthstone World Championship by cracking the bracket of HCT Summer. Nalguidan is currently studying architecture and likes to go swimming in his free time.",
+                    "homeLocation": "Buenos Aires",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Pruzzo",
+                    "givenName": "Facundo",
+                    "nationality": "AR",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Nalguidan.png",
+                    "user": {
+                      "id": 2832
+                    },
+                    "@etag": "bcfa78a5",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "competitor": {
+                    "id": 15063,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Tianming",
+                    "description": "Worlds 2021",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Ming",
+                    "givenName": "Tian",
+                    "nationality": "CN",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Tianming.png",
+                    "user": {
+                      "id": 6233
+                    },
+                    "@etag": "2a593dd3",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "competitor": {
+                    "id": 12233,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Posesi",
+                    "homeLocation": "Hiroshima",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Ishibashi",
+                    "givenName": "Wataru",
+                    "nationality": "JP",
+                    "headshot": "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/HPDWDPGWU8Q61586292818374.jpg",
+                    "user": {
+                      "id": 2965
+                    },
+                    "@etag": "4a61282d",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "comparisons": [
+                "MATCH_WIN_PERCENTAGE",
+                "MATCH_DIFFERENTIAL",
+                "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                "ADVANTAGE",
+                "MATCH_GAME_DIFFERENTIAL",
+                "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                "GAME_HEAD_TO_HEAD_DIFFERENTIAL"
+              ],
+              "totalMatches": 5,
+              "matchesConcluded": 0
+            },
+            "matches": [
+              {
+                "id": 38811,
+                "competitors": [
+                  {
+                    "id": 10660,
+                    "availableLanguages": [
+                      "en",
+                      "es-es",
+                      "es-mx",
+                      "zh-tw",
+                      "pt"
+                    ],
+                    "name": "Nalguidan",
+                    "description": "Nalguidan started playing Hearthstone while queuing for other multiplayer games. In just a few short years, he found himself one win away from playing at the Hearthstone World Championship by cracking the bracket of HCT Summer. Nalguidan is currently studying architecture and likes to go swimming in his free time.",
+                    "homeLocation": "Buenos Aires",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Pruzzo",
+                    "givenName": "Facundo",
+                    "nationality": "AR",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Nalguidan.png",
+                    "user": {
+                      "id": 2832
+                    },
+                    "@etag": "bcfa78a5",
+                    "type": "PLAYER"
+                  },
+                  {
+                    "id": 15063,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Tianming",
+                    "description": "Worlds 2021",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Ming",
+                    "givenName": "Tian",
+                    "nationality": "CN",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Tianming.png",
+                    "user": {
+                      "id": 6233
+                    },
+                    "@etag": "2a593dd3",
+                    "type": "PLAYER"
+                  }
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 1,
+                "ordinal": 1,
+                "winnersNextMatch": 38813,
+                "losersNextMatch": 38815,
+                "winnerRound": 2,
+                "winnerOrdinal": 1,
+                "loserRound": -1,
+                "loserOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  "competitor_1": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "rogue",
+                        "deckCode": "AAECAZurBAafzQOk0QPF+QO9gAT7igT3nwQM3r4D4L4DqssDx84Di9UD590D890DqOsDq+sD/u4DjvQD9p8EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "druid",
+                        "deckCode": "AAECAZarBAa60APk7gO/gAS1igSJiwTvpAQM6LoDm84D8NQDieADiuADleADpOEDwOwDxvkDr4AEsIAE2p8EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "demonhunter",
+                        "deckCode": "AAECAZvoAwTQ3QP39gOL9wPQ+QMN6b4D1tED3dMD+dUDx90D2d4D8+MDlegD/e0DivcDxfkDtKAE7KAEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "warrior",
+                        "deckCode": "AAECAeP5AwSO7wOm7wOY9gO/gAQNtd4D/ucDkugD1fEDlfYDlvYDl/YDz/sDm4EEnIEEpooEraAEr6AEAA=="
+                      }
+                    ]
+                  },
+                  "competitor_2": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "mage",
+                        "deckCode": "AAECAf3VAwaSywPgzAPU6gOn9wP0/APonwQMwbgDx84Dzc4D99EDheQD0OwD0ewDrvcDsvcDqIEEio0E/J4EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "rogue",
+                        "deckCode": "AAECAZvDAwaVzQOfzQPHzgPF+QPQ+QP7igQM3r4D4L4DqssDi9UD590D890DqOsDq+sD/u4DjvQD9p8E958EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "shaman",
+                        "deckCode": "AAECAeD5AwiczgOq3gP83gOm7wPQ+QOG+gOoigTDkQQL4cwD8NQDs9wDp94DkuQD4+4D1vUD04AEuZEElZIE3JIEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "demonhunter",
+                        "deckCode": "AAECAea5AwTQ3QP39gOL9wPQ+QMN6b4D1tED3dMD+dUDx90D2d4D8+MDlegD/e0DivcDxfkDtKAE7KAEAA=="
+                      }
+                    ]
+                  }
+                },
+                "attributesVersion": "3.1.0",
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8731,
+                "dateCreated": 1633422816993,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639844100000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "e7a86966"
+              },
+              {
+                "id": 38812,
+                "competitors": [
+                  {
+                    "id": 12233,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Posesi",
+                    "homeLocation": "Hiroshima",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Ishibashi",
+                    "givenName": "Wataru",
+                    "nationality": "JP",
+                    "headshot": "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/HPDWDPGWU8Q61586292818374.jpg",
+                    "user": {
+                      "id": 2965
+                    },
+                    "@etag": "4a61282d",
+                    "type": "PLAYER"
+                  },
+                  {
+                    "id": 14721,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Gaby",
+                    "description": "2021 HSGM S2",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Jeanne",
+                    "givenName": "Gabriel",
+                    "nationality": "FR",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Gaby.jpg",
+                    "user": {
+                      "id": 6083
+                    },
+                    "@etag": "8374e13e",
+                    "type": "PLAYER"
+                  }
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 1,
+                "ordinal": 2,
+                "winnersNextMatch": 38813,
+                "losersNextMatch": 38815,
+                "winnerRound": 2,
+                "winnerOrdinal": 1,
+                "loserRound": -1,
+                "loserOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  "competitor_1": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "demonhunter",
+                        "deckCode": "AAECAea5AwTQ3QP39gOL9wPQ+QMN6b4D1tED3dMD+dUDx90D2d4D8+MDlegD/e0DivcDxfkDtKAE7KAEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "druid",
+                        "deckCode": "AAECAZICCOa6A7rQA+TuA7CABL+ABLWKBImLBO+kBAvougObzgPw1AOJ4AOK4AOV4AOk4QPA7APG+QOvgATanwQA"
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "hunter",
+                        "deckCode": "AAECAR8E4c4Dj+MD3OoD5e8DDd6+A9zMA6LOA4LQA7nSA4vVA4biA/DsA/f4A8X7A8OABLugBOGkBAA="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "rogue",
+                        "deckCode": "AAECAaIHBJ/NA8X5A/uKBPefBA3evgPgvgOqywPHzgOL1QPn3QPz3QOo6wOr6wP+7gOO9AO9gAT2nwQA"
+                      }
+                    ]
+                  },
+                  "competitor_2": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "hunter",
+                        "deckCode": "AAECAZ/DAwKP4wPl7wMO3r4D3MwDos4D4c4DgtADudIDhuID3OoD8OwD9/gDxfsDw4AEu6AE4aQEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "warlock",
+                        "deckCode": "AAECAa35Awb7zgPy7QOwkQTxkQSxnwSXoAQM6b4DrMsDm80DkuQDk+QD1+0DvfED0PkDg/sDxYAE15IE56AEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "rogue",
+                        "deckCode": "AAECAYO6AgSfzQPF+QPQ+QP7igQN3r4D4L4DqssDx84Di9UD590D890DqOsDq+sD/u4DjvQDvYAE9p8EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "demonhunter",
+                        "deckCode": "AAECAea5AwTQ3QP39gOL9wPQ+QMN6b4D1tED3dMD+dUDx90D2d4D8+MDlegD/e0DivcDxfkDtKAE7KAEAA=="
+                      }
+                    ]
+                  }
+                },
+                "attributesVersion": "3.1.0",
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8731,
+                "dateCreated": 1633422816996,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639848600000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "8336ccb4"
+              },
+              {
+                "id": 38813,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 2,
+                "ordinal": 1,
+                "losersNextMatch": 38814,
+                "loserRound": -2,
+                "loserOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8731,
+                "dateCreated": 1633422816997,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639862100000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "4a1f2a6a"
+              },
+              {
+                "id": 38814,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": -2,
+                "ordinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8731,
+                "dateCreated": 1633422816997,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639930500000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "f2cdee02"
+              },
+              {
+                "id": 38815,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": -1,
+                "ordinal": 1,
+                "winnersNextMatch": 38814,
+                "winnerRound": -2,
+                "winnerOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8731,
+                "dateCreated": 1633422816997,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639871100000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "cdc4295c"
+              }
+            ],
+            "clientHints": [
+              "group"
+            ],
+            "advantageComparing": "AFTER_MATCH",
+            "thirdPlaceMatch": false,
+            "allowDraw": false,
+            "competitors": [
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8731
+                },
+                "competitor": {
+                  "id": 14721,
+                  "availableLanguages": [
+                    "en"
+                  ],
+                  "name": "Gaby",
+                  "description": "2021 HSGM S2",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Jeanne",
+                  "givenName": "Gabriel",
+                  "nationality": "FR",
+                  "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Gaby.jpg",
+                  "user": {
+                    "id": 6083
+                  },
+                  "@etag": "8374e13e",
+                  "type": "PLAYER"
+                }
+              },
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8731
+                },
+                "competitor": {
+                  "id": 10660,
+                  "availableLanguages": [
+                    "en",
+                    "es-es",
+                    "es-mx",
+                    "zh-tw",
+                    "pt"
+                  ],
+                  "name": "Nalguidan",
+                  "description": "Nalguidan started playing Hearthstone while queuing for other multiplayer games. In just a few short years, he found himself one win away from playing at the Hearthstone World Championship by cracking the bracket of HCT Summer. Nalguidan is currently studying architecture and likes to go swimming in his free time.",
+                  "homeLocation": "Buenos Aires",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Pruzzo",
+                  "givenName": "Facundo",
+                  "nationality": "AR",
+                  "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Nalguidan.png",
+                  "user": {
+                    "id": 2832
+                  },
+                  "@etag": "bcfa78a5",
+                  "type": "PLAYER"
+                }
+              },
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8731
+                },
+                "competitor": {
+                  "id": 15063,
+                  "availableLanguages": [
+                    "en"
+                  ],
+                  "name": "Tianming",
+                  "description": "Worlds 2021",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Ming",
+                  "givenName": "Tian",
+                  "nationality": "CN",
+                  "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Tianming.png",
+                  "user": {
+                    "id": 6233
+                  },
+                  "@etag": "2a593dd3",
+                  "type": "PLAYER"
+                }
+              },
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8731
+                },
+                "competitor": {
+                  "id": 12233,
+                  "availableLanguages": [
+                    "en"
+                  ],
+                  "name": "Posesi",
+                  "homeLocation": "Hiroshima",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Ishibashi",
+                  "givenName": "Wataru",
+                  "nationality": "JP",
+                  "headshot": "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/HPDWDPGWU8Q61586292818374.jpg",
+                  "user": {
+                    "id": 2965
+                  },
+                  "@etag": "4a61282d",
+                  "type": "PLAYER"
+                }
+              }
+            ],
+            "@etag": "7ec2d2f5"
+          },
+          {
+            "id": 8727,
+            "availableLanguages": [
+              "en"
+            ],
+            "name": "Group B",
+            "bestOf": 5,
+            "matchConclusionValue": 5,
+            "matchConclusionStrategy": "BEST_OF",
+            "winners": 2,
+            "competitorSize": 4,
+            "teamSize": 0,
+            "repeatableMatchUps": 0,
+            "stageId": 11191,
+            "type": "DE",
+            "rankings": {
+              "content": [
+                {
+                  "competitor": {
+                    "id": 14114,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Frenetic",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Neila Quiñones",
+                    "givenName": "David ",
+                    "nationality": "ES",
+                    "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt5b6b1df5d1e5bf41/606def2a7d31670cde6a1544/Frenetic.png",
+                    "user": {
+                      "id": 5683
+                    },
+                    "@etag": "13f1d53f",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "competitor": {
+                    "id": 14692,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "McBanterFace",
+                    "description": "2021 HSGM S2",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Spigelman",
+                    "givenName": "Kyle",
+                    "nationality": "US",
+                    "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt78bd9dc2325575c6/60de386967d3385db9b806e2/MCBanterFace500x500.jpg",
+                    "user": {
+                      "id": 6054
+                    },
+                    "@etag": "a1a09a17",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "competitor": {
+                    "id": 6665,
+                    "availableLanguages": [
+                      "en",
+                      "zh-tw",
+                      "pt",
+                      "es-mx"
+                    ],
+                    "name": "glory",
+                    "description": "Glory, who was born and raised in Japan, started playing Hearthstone with a budget Mech Mage deck in January 2016. Glory has several impressive placements, including taking first place at the APAC Summer Playoffs. He loves anime and manga.",
+                    "homeLocation": "Yokohama",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Sato",
+                    "givenName": "Kenta",
+                    "nationality": "JP",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/glory.png",
+                    "user": {
+                      "id": 1646
+                    },
+                    "@etag": "2b86e88d",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "competitor": {
+                    "id": 15071,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "KZG.Xiaobai",
+                    "description": "Worlds 2021",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Bai",
+                    "givenName": "Xiao",
+                    "nationality": "CN",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Kzgxiaobai.png",
+                    "user": {
+                      "id": 6234
+                    },
+                    "@etag": "1f5844af",
+                    "type": "PLAYER"
+                  },
+                  "placement": 1,
+                  "advantage": 0,
+                  "records": [
+                    {
+                      "matchWin": 0,
+                      "matchLoss": 0,
+                      "matchDraw": 0,
+                      "matchBye": 0,
+                      "gameWin": 0,
+                      "gameLoss": 0,
+                      "gameTie": 0,
+                      "gamePointsFor": 0,
+                      "gamePointsAgainst": 0,
+                      "tournamentPoints": 0,
+                      "comparisons": [
+                        {
+                          "key": "MATCH_WIN_PERCENTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "ADVANTAGE",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_GAME_DIFFERENTIAL",
+                          "value": 0
+                        },
+                        {
+                          "key": "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        },
+                        {
+                          "key": "GAME_HEAD_TO_HEAD_DIFFERENTIAL",
+                          "value": null
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "comparisons": [
+                "MATCH_WIN_PERCENTAGE",
+                "MATCH_DIFFERENTIAL",
+                "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                "ADVANTAGE",
+                "MATCH_GAME_DIFFERENTIAL",
+                "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                "GAME_HEAD_TO_HEAD_DIFFERENTIAL"
+              ],
+              "totalMatches": 5,
+              "matchesConcluded": 0
+            },
+            "matches": [
+              {
+                "id": 38821,
+                "competitors": [
+                  {
+                    "id": 15071,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "KZG.Xiaobai",
+                    "description": "Worlds 2021",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Bai",
+                    "givenName": "Xiao",
+                    "nationality": "CN",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Kzgxiaobai.png",
+                    "user": {
+                      "id": 6234
+                    },
+                    "@etag": "1f5844af",
+                    "type": "PLAYER"
+                  },
+                  {
+                    "id": 6665,
+                    "availableLanguages": [
+                      "en",
+                      "zh-tw",
+                      "pt",
+                      "es-mx"
+                    ],
+                    "name": "glory",
+                    "description": "Glory, who was born and raised in Japan, started playing Hearthstone with a budget Mech Mage deck in January 2016. Glory has several impressive placements, including taking first place at the APAC Summer Playoffs. He loves anime and manga.",
+                    "homeLocation": "Yokohama",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Sato",
+                    "givenName": "Kenta",
+                    "nationality": "JP",
+                    "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/glory.png",
+                    "user": {
+                      "id": 1646
+                    },
+                    "@etag": "2b86e88d",
+                    "type": "PLAYER"
+                  }
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 1,
+                "ordinal": 1,
+                "winnersNextMatch": 38823,
+                "losersNextMatch": 38825,
+                "winnerRound": 2,
+                "winnerOrdinal": 1,
+                "loserRound": -1,
+                "loserOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  "competitor_1": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "warlock",
+                        "deckCode": "AAECAf0GCPLtA6bvA9D5A8WABLCRBPGRBLGfBJegBAvpvgOsywObzQP7zgOS5AOT5APX7QO98QOD+wPXkgTnoAQA"
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "rogue",
+                        "deckCode": "AAECAaIHBp/NA8X5A9D5A72ABPuKBPefBAzevgPgvgOqywPHzgOL1QPn3QPz3QOo6wOr6wP+7gOO9AP2nwQA"
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "paladin",
+                        "deckCode": "AAECAZ8FCITBA5XNA5PQA/voA5HsA8f5A9n5A+CLBAv9uAPquQPruQPsuQPKwQPA0QPM6wPw9gON+APhpAT5pAQA"
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "shaman",
+                        "deckCode": "AAECAaoICJzOA7PcA/zeA5LkA6bvA9D5A4b6A8ORBAvgzAPw1AOn3gPW9QPTgASogQS5kQT5kQSVkgTckgTblAQA"
+                      }
+                    ]
+                  },
+                  "competitor_2": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "paladin",
+                        "deckCode": "AAECAZ8FBoTBA5PQA/voA5HsA9n5A+CLBAz9uAPquQPruQPsuQPKwQOVzQPA0QPM6wPw9gON+APhpAT5pAQA"
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "druid",
+                        "deckCode": "AAECAZICBrrQA+TuA7+ABLWKBImLBO+kBAzougObzgPw1AOJ4AOK4AOV4AOk4QPA7APG+QOvgASwgATanwQA"
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "demonhunter",
+                        "deckCode": "AAECAea5AwTQ3QP39gOL9wPIgAQN6b4D1tED3dMD+dUDx90D2d4D8+MDlegD/e0DivcDxfkDtKAE7KAEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "hunter",
+                        "deckCode": "AAECAR8E4c4Dj+MD3OoD5e8DDd6+A9zMA6LOA4LQA7nSA4vVA4biA/DsA/f4A8X7A8OABLugBOGkBAA="
+                      }
+                    ]
+                  }
+                },
+                "attributesVersion": "3.1.0",
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8727,
+                "dateCreated": 1633422895203,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639853100000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "9c43ba79"
+              },
+              {
+                "id": 38822,
+                "competitors": [
+                  {
+                    "id": 14114,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "Frenetic",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Neila Quiñones",
+                    "givenName": "David ",
+                    "nationality": "ES",
+                    "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt5b6b1df5d1e5bf41/606def2a7d31670cde6a1544/Frenetic.png",
+                    "user": {
+                      "id": 5683
+                    },
+                    "@etag": "13f1d53f",
+                    "type": "PLAYER"
+                  },
+                  {
+                    "id": 14692,
+                    "availableLanguages": [
+                      "en"
+                    ],
+                    "name": "McBanterFace",
+                    "description": "2021 HSGM S2",
+                    "game": "HEARTHSTONE",
+                    "familyName": "Spigelman",
+                    "givenName": "Kyle",
+                    "nationality": "US",
+                    "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt78bd9dc2325575c6/60de386967d3385db9b806e2/MCBanterFace500x500.jpg",
+                    "user": {
+                      "id": 6054
+                    },
+                    "@etag": "a1a09a17",
+                    "type": "PLAYER"
+                  }
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 1,
+                "ordinal": 2,
+                "winnersNextMatch": 38823,
+                "losersNextMatch": 38825,
+                "winnerRound": 2,
+                "winnerOrdinal": 1,
+                "loserRound": -1,
+                "loserOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  "competitor_1": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "warrior",
+                        "deckCode": "AAECAeP5AwSO7wOm7wOY9gO/gAQNtd4D/ucDkugD1fEDlfYDlvYDl/YDz/sDm4EEnIEEpooEraAEr6AEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "druid",
+                        "deckCode": "AAECAaHDAwa60APk7gO/gAS1igSJiwTvpAQM6LoDm84D8NQDieADiuADleADpOEDwOwDxvkDr4AEsIAE2p8EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "demonhunter",
+                        "deckCode": "AAECAc7WAwTQ3QP39gOL9wPQ+QMN6b4D1tED3dMD+dUDx90D2d4D8+MDlegD/e0DivcDxfkDtKAE7KAEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "rogue",
+                        "deckCode": "AAECAZvDAwafzQOk0QPF+QO9gAT7igT3nwQM3r4D4L4DqssDx84Di9UD590D890DqOsDq+sD/u4DjvQD9p8EAA=="
+                      }
+                    ]
+                  },
+                  "competitor_2": {
+                    "decklist": [
+                      {
+                        "attributes": "None",
+                        "class": "demonhunter",
+                        "deckCode": "AAECAbn5AwTQ3QP39gOL9wPIgAQN6b4D1tED3dMD+dUDx90D2d4D8+MDlegD/e0DivcDxfkDtKAE7KAEAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "druid",
+                        "deckCode": "AAECAaPABAa60APk7gO/gAS1igSJiwTvpAQM6LoDm84D8NQDieADiuADleADpOEDwOwDxvkDr4AEsIAE2p8EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "rogue",
+                        "deckCode": "AAECAd75AwSfzQPF+QP7igT3nwQN3r4D4L4DqssDx84Di9UD590D890DqOsDq+sD/u4DjvQDvYAE9p8EAA=="
+                      },
+                      {
+                        "attributes": "None",
+                        "class": "warlock",
+                        "deckCode": "AAECAcn1Agby7QOm7wPH+QOE+wOH+wOwkQQMm80D184DwdEDi9UDk+QD6+0D8O0D8e0DxvkDg/sDxIAE56AEAA=="
+                      }
+                    ]
+                  }
+                },
+                "attributesVersion": "3.1.0",
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8727,
+                "dateCreated": 1633422895206,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639857600000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "2312dc0d"
+              },
+              {
+                "id": 38823,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 2,
+                "ordinal": 1,
+                "losersNextMatch": 38824,
+                "loserRound": -2,
+                "loserOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8727,
+                "dateCreated": 1633422895206,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639866600000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "cca5d460"
+              },
+              {
+                "id": 38824,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": -2,
+                "ordinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8727,
+                "dateCreated": 1633422895206,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639935000000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "beaf1ee9"
+              },
+              {
+                "id": 38825,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": -1,
+                "ordinal": 1,
+                "winnersNextMatch": 38824,
+                "winnerRound": -2,
+                "winnerOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8727,
+                "dateCreated": 1633422895206,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639875600000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "66afc6c9"
+              }
+            ],
+            "clientHints": [
+              "group"
+            ],
+            "advantageComparing": "AFTER_MATCH",
+            "thirdPlaceMatch": false,
+            "allowDraw": false,
+            "competitors": [
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8727
+                },
+                "competitor": {
+                  "id": 14114,
+                  "availableLanguages": [
+                    "en"
+                  ],
+                  "name": "Frenetic",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Neila Quiñones",
+                  "givenName": "David ",
+                  "nationality": "ES",
+                  "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt5b6b1df5d1e5bf41/606def2a7d31670cde6a1544/Frenetic.png",
+                  "user": {
+                    "id": 5683
+                  },
+                  "@etag": "13f1d53f",
+                  "type": "PLAYER"
+                }
+              },
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8727
+                },
+                "competitor": {
+                  "id": 14692,
+                  "availableLanguages": [
+                    "en"
+                  ],
+                  "name": "McBanterFace",
+                  "description": "2021 HSGM S2",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Spigelman",
+                  "givenName": "Kyle",
+                  "nationality": "US",
+                  "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt78bd9dc2325575c6/60de386967d3385db9b806e2/MCBanterFace500x500.jpg",
+                  "user": {
+                    "id": 6054
+                  },
+                  "@etag": "a1a09a17",
+                  "type": "PLAYER"
+                }
+              },
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8727
+                },
+                "competitor": {
+                  "id": 6665,
+                  "availableLanguages": [
+                    "en",
+                    "zh-tw",
+                    "pt",
+                    "es-mx"
+                  ],
+                  "name": "glory",
+                  "description": "Glory, who was born and raised in Japan, started playing Hearthstone with a budget Mech Mage deck in January 2016. Glory has several impressive placements, including taking first place at the APAC Summer Playoffs. He loves anime and manga.",
+                  "homeLocation": "Yokohama",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Sato",
+                  "givenName": "Kenta",
+                  "nationality": "JP",
+                  "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/glory.png",
+                  "user": {
+                    "id": 1646
+                  },
+                  "@etag": "2b86e88d",
+                  "type": "PLAYER"
+                }
+              },
+              {
+                "advantage": 0,
+                "status": "ACTIVE",
+                "bracket": {
+                  "id": 8727
+                },
+                "competitor": {
+                  "id": 15071,
+                  "availableLanguages": [
+                    "en"
+                  ],
+                  "name": "KZG.Xiaobai",
+                  "description": "Worlds 2021",
+                  "game": "HEARTHSTONE",
+                  "familyName": "Bai",
+                  "givenName": "Xiao",
+                  "nationality": "CN",
+                  "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Kzgxiaobai.png",
+                  "user": {
+                    "id": 6234
+                  },
+                  "@etag": "1f5844af",
+                  "type": "PLAYER"
+                }
+              }
+            ],
+            "@etag": "4ba1d74e"
+          }
+        ],
+        "tournamentId": 10010,
+        "@etag": "118f7505"
+      },
+      {
+        "id": 11201,
+        "availableLanguages": [
+          "en"
+        ],
+        "title": "Top 4",
+        "detail": "Top 4",
+        "brackets": [
+          {
+            "id": 8725,
+            "availableLanguages": [
+              "en"
+            ],
+            "name": "Top 4",
+            "bestOf": 5,
+            "matchConclusionValue": 5,
+            "matchConclusionStrategy": "BEST_OF",
+            "winners": 1,
+            "competitorSize": 4,
+            "teamSize": 0,
+            "repeatableMatchUps": 0,
+            "stageId": 11201,
+            "type": "SE",
+            "rankings": {
+              "comparisons": [
+                "MATCH_WIN_PERCENTAGE",
+                "MATCH_DIFFERENTIAL",
+                "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                "ADVANTAGE",
+                "MATCH_GAME_DIFFERENTIAL",
+                "MATCH_HEAD_TO_HEAD_DIFFERENTIAL",
+                "GAME_HEAD_TO_HEAD_DIFFERENTIAL"
+              ],
+              "totalMatches": 3,
+              "matchesConcluded": 0
+            },
+            "matches": [
+              {
+                "id": 38802,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 1,
+                "ordinal": 1,
+                "winnersNextMatch": 38804,
+                "winnerRound": 2,
+                "winnerOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8725,
+                "dateCreated": 1633422567105,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639939500000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "19ec2501"
+              },
+              {
+                "id": 38803,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 1,
+                "ordinal": 2,
+                "winnersNextMatch": 38804,
+                "winnerRound": 2,
+                "winnerOrdinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8725,
+                "dateCreated": 1633422567105,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639944000000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "87ec278d"
+              },
+              {
+                "id": 38804,
+                "competitors": [
+                  null,
+                  null
+                ],
+                "scores": [
+                  {
+                    "value": 0
+                  },
+                  {
+                    "value": 0
+                  }
+                ],
+                "round": 2,
+                "ordinal": 1,
+                "bestOf": 5,
+                "conclusionValue": 5,
+                "conclusionStrategy": "BEST_OF",
+                "home": null,
+                "state": "PENDING",
+                "status": "PENDING",
+                "statusReason": "NORMAL",
+                "attributes": {
+                  
+                },
+                "games": [
+                  
+                ],
+                "clientHints": [
+                  
+                ],
+                "bracketId": 8725,
+                "dateCreated": 1633422567106,
+                "flags": [
+                  
+                ],
+                "competitorStatuses": [
+                  "NORMAL",
+                  "NORMAL"
+                ],
+                "timeZone": "America/Los_Angeles",
+                "startDate": 1639948500000,
+                "endDate": null,
+                "showStartTime": true,
+                "showEndTime": true,
+                "@etag": "045984d3"
+              }
+            ],
+            "clientHints": [
+              
+            ],
+            "advantageComparing": "AFTER_MATCH",
+            "thirdPlaceMatch": false,
+            "allowDraw": false,
+            "competitors": [
+              
+            ],
+            "@etag": "97459306"
+          }
+        ],
+        "tournamentId": 10010,
+        "@etag": "d60b2202"
+      }
+    ],
+    "competitors": [
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 12233,
+          "availableLanguages": [
+            "en"
+          ],
+          "name": "Posesi",
+          "homeLocation": "Hiroshima",
+          "game": "HEARTHSTONE",
+          "familyName": "Ishibashi",
+          "givenName": "Wataru",
+          "nationality": "JP",
+          "headshot": "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/HPDWDPGWU8Q61586292818374.jpg",
+          "user": {
+            "id": 2965
+          },
+          "@etag": "4a61282d",
+          "type": "PLAYER"
+        }
+      },
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 10660,
+          "availableLanguages": [
+            "en",
+            "es-es",
+            "es-mx",
+            "zh-tw",
+            "pt"
+          ],
+          "name": "Nalguidan",
+          "description": "Nalguidan started playing Hearthstone while queuing for other multiplayer games. In just a few short years, he found himself one win away from playing at the Hearthstone World Championship by cracking the bracket of HCT Summer. Nalguidan is currently studying architecture and likes to go swimming in his free time.",
+          "homeLocation": "Buenos Aires",
+          "game": "HEARTHSTONE",
+          "familyName": "Pruzzo",
+          "givenName": "Facundo",
+          "nationality": "AR",
+          "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Nalguidan.png",
+          "user": {
+            "id": 2832
+          },
+          "@etag": "bcfa78a5",
+          "type": "PLAYER"
+        }
+      },
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 14114,
+          "availableLanguages": [
+            "en"
+          ],
+          "name": "Frenetic",
+          "game": "HEARTHSTONE",
+          "familyName": "Neila Quiñones",
+          "givenName": "David ",
+          "nationality": "ES",
+          "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt5b6b1df5d1e5bf41/606def2a7d31670cde6a1544/Frenetic.png",
+          "user": {
+            "id": 5683
+          },
+          "@etag": "13f1d53f",
+          "type": "PLAYER"
+        }
+      },
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 14721,
+          "availableLanguages": [
+            "en"
+          ],
+          "name": "Gaby",
+          "description": "2021 HSGM S2",
+          "game": "HEARTHSTONE",
+          "familyName": "Jeanne",
+          "givenName": "Gabriel",
+          "nationality": "FR",
+          "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Gaby.jpg",
+          "user": {
+            "id": 6083
+          },
+          "@etag": "8374e13e",
+          "type": "PLAYER"
+        }
+      },
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 6665,
+          "availableLanguages": [
+            "en",
+            "zh-tw",
+            "pt",
+            "es-mx"
+          ],
+          "name": "glory",
+          "description": "Glory, who was born and raised in Japan, started playing Hearthstone with a budget Mech Mage deck in January 2016. Glory has several impressive placements, including taking first place at the APAC Summer Playoffs. He loves anime and manga.",
+          "homeLocation": "Yokohama",
+          "game": "HEARTHSTONE",
+          "familyName": "Sato",
+          "givenName": "Kenta",
+          "nationality": "JP",
+          "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/glory.png",
+          "user": {
+            "id": 1646
+          },
+          "@etag": "2b86e88d",
+          "type": "PLAYER"
+        }
+      },
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 14692,
+          "availableLanguages": [
+            "en"
+          ],
+          "name": "McBanterFace",
+          "description": "2021 HSGM S2",
+          "game": "HEARTHSTONE",
+          "familyName": "Spigelman",
+          "givenName": "Kyle",
+          "nationality": "US",
+          "headshot": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt78bd9dc2325575c6/60de386967d3385db9b806e2/MCBanterFace500x500.jpg",
+          "user": {
+            "id": 6054
+          },
+          "@etag": "a1a09a17",
+          "type": "PLAYER"
+        }
+      },
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 15063,
+          "availableLanguages": [
+            "en"
+          ],
+          "name": "Tianming",
+          "description": "Worlds 2021",
+          "game": "HEARTHSTONE",
+          "familyName": "Ming",
+          "givenName": "Tian",
+          "nationality": "CN",
+          "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Tianming.png",
+          "user": {
+            "id": 6233
+          },
+          "@etag": "2a593dd3",
+          "type": "PLAYER"
+        }
+      },
+      {
+        "tournament": {
+          "id": 10010
+        },
+        "competitor": {
+          "id": 15071,
+          "availableLanguages": [
+            "en"
+          ],
+          "name": "KZG.Xiaobai",
+          "description": "Worlds 2021",
+          "game": "HEARTHSTONE",
+          "familyName": "Bai",
+          "givenName": "Xiao",
+          "nationality": "CN",
+          "headshot": "https://cdn.eslgaming.com/misc/gfx/media/play/hearthstone/portal/Kzgxiaobai.png",
+          "user": {
+            "id": 6234
+          },
+          "@etag": "1f5844af",
+          "type": "PLAYER"
+        }
+      }
+    ],
+    "attributes": {
+      "displayOnSite": true,
+      "eventRules": {
+        "slug": "world-championship-2021-rules",
+        "url": "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/z6/Z610AMJDGZ9F1613155526948.pdf"
+      },
+      "header": {
+        "headerLogo": "https://images.blz-contentstack.com/v3/assets/bltc965041283bac56c/blt44bcc810e3391499/5f6a8e35c445d40d7b77d200/HS_MS03_Grandmasters_World_Championship_Final_(1).png"
+      },
+      "location": {
+        "address": "Hearthstone Esports Youtube Channel"
+      },
+      "program": {
+        "event_type": "grandmasters",
+        "programType": "masters",
+        "season": 3,
+        "year": 2021
+      },
+      "schedule": {
+        "slug": "world-championship-2021-schedule"
+      },
+      "streamLinks": [
+        {
+          "contentProvider": "youtube",
+          "value": "https://www.youtube.com/hearthstoneesports"
+        }
+      ]
+    },
+    "attributesVersion": "1.1.0",
+    "subEvents": [
+      {
+        "id": 30067,
+        "availableLanguages": [
+          "en"
+        ],
+        "tournament": {
+          "id": 10010
+        },
+        "name": "World Championship - Day 1",
+        "startDate": 1639843200000,
+        "endDate": 1639886400000,
+        "showStartTime": true,
+        "showEndTime": true,
+        "timeZone": "America/Los_Angeles",
+        "hyperlinks": [
+          
+        ],
+        "eventType": {
+          "id": 2
+        },
+        "@etag": "f7fd427b"
+      },
+      {
+        "id": 30077,
+        "availableLanguages": [
+          "en"
+        ],
+        "tournament": {
+          "id": 10010
+        },
+        "name": "World Championship - Day 2",
+        "startDate": 1639929600000,
+        "endDate": 1639962000000,
+        "showStartTime": true,
+        "showEndTime": true,
+        "timeZone": "America/Los_Angeles",
+        "hyperlinks": [
+          
+        ],
+        "eventType": {
+          "id": 2
+        },
+        "@etag": "bc3041c9"
+      }
+    ],
+    "awards": [
+      {
+        "id": 4741,
+        "forPlacement": {
+          "lower": 1
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 200000,
+          "monetary": true
+        },
+        "@etag": "9982bae3"
+      },
+      {
+        "id": 4742,
+        "forPlacement": {
+          "lower": 2
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 100000,
+          "monetary": true
+        },
+        "@etag": "16c9d165"
+      },
+      {
+        "id": 4743,
+        "forPlacement": {
+          "lower": 3
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 50000,
+          "monetary": true
+        },
+        "@etag": "48c99319"
+      },
+      {
+        "id": 4744,
+        "forPlacement": {
+          "lower": 4
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 50000,
+          "monetary": true
+        },
+        "@etag": "eca3736c"
+      },
+      {
+        "id": 4745,
+        "forPlacement": {
+          "lower": 5
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 25000,
+          "monetary": true
+        },
+        "@etag": "32a37138"
+      },
+      {
+        "id": 4746,
+        "forPlacement": {
+          "lower": 6
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 25000,
+          "monetary": true
+        },
+        "@etag": "e588daf6"
+      },
+      {
+        "id": 4747,
+        "forPlacement": {
+          "lower": 7
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 25000,
+          "monetary": true
+        },
+        "@etag": "23881802"
+      },
+      {
+        "id": 4748,
+        "forPlacement": {
+          "lower": 8
+        },
+        "prize": {
+          "code": "USD",
+          "amount": 25000,
+          "monetary": true
+        },
+        "@etag": "8ed59190"
+      }
+    ],
+    "@etag": "4d433ea7"
+  }

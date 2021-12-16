@@ -9,7 +9,10 @@ defmodule BackendWeb.DeckTrackerController do
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker
 
-  def put_game(conn = %{assigns: %{api_user: api_user}}, params) do
+  defp api_user(%{assigns: %{api_user: api_user}}), do: api_user
+  defp api_user(_), do: nil
+  def put_game(conn, params) do
+    api_user = api_user(conn)
     params
     |> GameDto.from_raw_map(api_user)
     |> DeckTracker.handle_game()
