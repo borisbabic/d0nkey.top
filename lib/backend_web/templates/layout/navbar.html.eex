@@ -110,6 +110,10 @@
          <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.FantasyIndexLive) %>'>Fantasy</a>
        <% end %>
 
+       <%= if :gt == NaiveDateTime.compare(~N[2021-12-21 13:37:00], NaiveDateTime.utc_now()) do %>
+         <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.WC2021Live) %>'>WC 2021</a>
+       <% end %>
+
        <%= current_mt @conn %>
        <!-- <%= grandmasters @conn %> -->
 

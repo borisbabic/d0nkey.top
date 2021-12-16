@@ -76,16 +76,20 @@ defmodule Backend.Grandmasters.Response do
     |> Map.new()
   end
 
-  def matches(r, stage_title) when is_binary(stage_title) do
-    matches(r, &(&1.title == stage_title))
-  end
 
-  def matches(%{requested_season_tournaments: tournaments}, stage_matcher) do
+  def matches(tournaments, stage_matcher) when is_list(tournaments) and is_function(stage_matcher) do
     tournaments
     |> Enum.flat_map(& &1.stages)
     |> Enum.filter(stage_matcher)
     |> Enum.flat_map(& &1.brackets)
     |> Enum.flat_map(& &1.matches)
+  end
+  def matches(r, stage_title) when is_binary(stage_title) do
+    matches(r, &(&1.title == stage_title))
+  end
+
+  def matches(%{requested_season_tournaments: tournaments}, stage_matcher) do
+    matches(tournaments, stage_matcher)
   end
 
   def matches(_, _), do: []
@@ -94,9 +98,8 @@ defmodule Backend.Grandmasters.Response do
     tournaments
     |> Enum.map(fn t ->
       competitors =
-        t.stages
-        |> Enum.flat_map(& &1.brackets)
-        |> Enum.flat_map(& &1.matches)
+        t
+        |> Tournament.matches()
         |> Enum.flat_map(& &1.competitors)
         |> Enum.filter(& &1)
         |> Enum.uniq_by(& &1.id)
@@ -105,6 +108,14 @@ defmodule Backend.Grandmasters.Response do
     end)
   end
 
+
+  def decklists(matches = [%{} | _]) do
+    matches
+    |> Enum.flat_map(&Match.decklists/1)
+    |> Enum.filter(fn {competitor, lists} -> competitor != nil && lists |> Enum.any?() end)
+    |> Enum.reduce(%{}, &merge_competitor_decklists/2)
+    |> Map.values()
+  end
   def decklists(r) do
     decklists(r, fn %{brackets: [b | _]} ->
       b.matches
@@ -152,10 +163,7 @@ defmodule Backend.Grandmasters.Response do
     r
     |> matches(stage_matcher)
     |> Enum.filter(match_filter)
-    |> Enum.flat_map(&Match.decklists/1)
-    |> Enum.filter(fn {competitor, lists} -> competitor != nil && lists |> Enum.any?() end)
-    |> Enum.reduce(%{}, &merge_competitor_decklists/2)
-    |> Map.values()
+    |> decklists()
   end
 
   def decklists(r, stage_title, match_filter) when is_binary(stage_title) do
@@ -190,6 +198,7 @@ defmodule Backend.Grandmasters.Response.Tournament do
   @moduledoc false
   use TypedStruct
 
+  alias Backend.Grandmasters.Response
   alias Backend.Grandmasters.Response.Stage
 
   typedstruct enforce: true do
@@ -202,6 +211,17 @@ defmodule Backend.Grandmasters.Response.Tournament do
     field :title, String.t()
     field :stages, [Stage.t()]
     field :etag, String.t()
+  end
+
+  def matches(%{stages: stages}, stage_matcher \\ & &1), do:
+    stages
+    |> Enum.filter(stage_matcher)
+    |> Enum.flat_map(&Stage.matches/1)
+
+  def decklists(tournament), do: decklists(tournament, & &1)
+  def decklists(tournament, stage_matcher \\ & &1) do
+    matches(tournament, stage_matcher)
+    |> Response.decklists()
   end
 
   def from_raw_map(map = %{"availableLanguages" => _}),
@@ -234,6 +254,7 @@ defmodule Backend.Grandmasters.Response.Stage do
     field :title, String.t()
     field :detail, String.t()
     field :tournament_id, integer
+    field :brackets, Bracket.t()
     field :etag, String.t()
   end
 
@@ -251,6 +272,8 @@ defmodule Backend.Grandmasters.Response.Stage do
       brackets: map["brackets"] |> Enum.map(&Bracket.from_raw_map/1)
     }
   end
+
+  def matches(%{brackets: brackets}), do: Enum.flat_map(brackets, &Bracket.matches/1)
 end
 
 defmodule Backend.Grandmasters.Response.Bracket do
@@ -292,6 +315,8 @@ defmodule Backend.Grandmasters.Response.Bracket do
       matches: map["matches"] |> Enum.map(&Match.from_raw_map/1)
     }
   end
+
+  def matches(%{matches: matches}), do: matches
 end
 
 defmodule Backend.Grandmasters.Response.Score do

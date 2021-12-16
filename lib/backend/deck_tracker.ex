@@ -311,6 +311,8 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
 
+  def replay_link(%{api_user: nil, game_id: game_id}),
+    do: "https://hsreplay.net/replay/#{game_id}"
   def replay_link(%{game_id: game_id}),
     do: "https://replays.firestoneapp.com/?reviewId=#{game_id}"
 end

@@ -1,4 +1,5 @@
 defmodule Backend.Grandmasters.LineupFetcher do
+
   @moduledoc false
   use Oban.Worker, queue: :grandmasters_lineups, unique: [period: 300]
 
@@ -20,18 +21,19 @@ defmodule Backend.Grandmasters.LineupFetcher do
   def save_lineups(r = %{requested_season: rs}, stage_title) do
     decklists = r |> Response.latest_decklists(stage_title)
     tournament_id = Blizzard.gm_lineup_tournament_id({rs.year, rs.season}, stage_title)
+    save_decklists(decklists, tournament_id)
+    :ok
+  end
 
-    decklists
-    |> Enum.map(fn {%{name: name}, codes} ->
+  def save_decklists(decklists, tournament_id, source \\ "grandmasters") when is_list(decklists) do
+     Enum.map(decklists, fn {%{name: name}, codes} ->
       Backend.Hearthstone.get_or_create_lineup(
         tournament_id,
-        "grandmasters",
+        source,
         name,
         codes
       )
     end)
-
-    :ok
   end
 
   def save_lineups(_, _), do: :error

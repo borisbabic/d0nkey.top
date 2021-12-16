@@ -29,7 +29,6 @@ defmodule BackendWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug :api_auth
   end
 
   defp api_auth(conn, _opts) do
@@ -45,8 +44,18 @@ defmodule BackendWeb.Router do
     plug :basic_auth, username: "admin", password: Application.fetch_env!(:backend, :admin_pass)
   end
 
+
+  scope "/api/public", BackendWeb do
+    pipe_through [:api]
+    post "/dt/game", DeckTrackerController, :put_game
+    put "/dt/game", DeckTrackerController, :put_game
+    get "/log", PageController, :log
+    post "/log", PageController, :log
+    put "/log", PageController, :log
+  end
+
   scope "/api", BackendWeb do
-    pipe_through [:api_auth]
+    pipe_through [:api]
     get "/who-am-i", ApiController, :who_am_i
     post "/dt/game", DeckTrackerController, :put_game
     put "/dt/game", DeckTrackerController, :put_game
@@ -69,6 +78,10 @@ defmodule BackendWeb.Router do
     get "/about", PageController, :about
     get "/donate-follow", PageController, :donate_follow
     get "/privacy", PageController, :privacy
+
+    get "/log", PageController, :log
+    put "/log", PageController, :log
+    post "/log", PageController, :log
 
     get "/invited/:tour_stop", MastersTourController, :invited_players
     get "/invited/", MastersTourController, :invited_players
@@ -167,6 +180,8 @@ defmodule BackendWeb.Router do
     live "/gm", GrandmastersLive
     live "/gm/profile/:gm", GrandmasterProfileLive
     live "/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups
+
+    live "/wc/2021", WC2021Live
 
     live "/my-replays", MyReplaysLive
     live "/my-decks", MyDecksLive
