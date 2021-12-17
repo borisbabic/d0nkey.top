@@ -10,6 +10,7 @@ config :backend,
   warmup_cache: true,
   auto_migrate: false,
   goatcounter_analytics: false,
+  cloudflare_analytics: true,
   gm_stream_send_tweet: true,
   enable_bot: true
 
