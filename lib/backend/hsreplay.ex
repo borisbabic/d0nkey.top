@@ -49,9 +49,10 @@ defmodule Backend.HSReplay do
   end
 
   def get_archetypes() do
-    case get_archetypes(:cache) do
-      nil -> get_archetypes(:fresh) |> cache_archetypes()
-      cache -> cache
+    case {get_archetypes(:cache), Application.get_env(:backend, :disable_hsreplay)} do
+      {_, true} -> []
+      {nil, _} -> get_archetypes(:fresh) |> cache_archetypes()
+      {cache, _} -> cache
     end
   end
 
