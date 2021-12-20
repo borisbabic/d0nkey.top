@@ -26,10 +26,6 @@ defmodule Backend.Application do
           start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
         },
         %{
-          id: Backend.Infrastructure.HSReplayLatestCache,
-          start: {Backend.Infrastructure.HSReplayLatestCache, :start_link, [[]]}
-        },
-        %{
           id: Backend.Infrastructure.PlayerStatsCache,
           start: {Backend.Infrastructure.PlayerStatsCache, :start_link, [[]]}
         },
@@ -41,10 +37,10 @@ defmodule Backend.Application do
           id: Twitch.HearthstoneLive,
           start: {Twitch.HearthstoneLive, :start_link, [[]]}
         },
-        %{
-          id: Backend.HSReplay.StreamingNow,
-          start: {Backend.HSReplay.StreamingNow, :start_link, [[]]}
-        },
+        # %{
+        #   id: Backend.HSReplay.StreamingNow,
+        #   start: {Backend.HSReplay.StreamingNow, :start_link, [[]]}
+        # },
         %{
           id: Backend.Streaming.StreamingNow,
           start: {Backend.Streaming.StreamingNow, :start_link, [[]]}
