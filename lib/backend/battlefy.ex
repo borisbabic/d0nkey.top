@@ -491,11 +491,13 @@ defmodule Backend.Battlefy do
     Api.get_matches(stage_id, opts)
   end
 
-  @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]
-  def get_future_and_player_matches(tournament_id, team_name) do
-    tournament = Api.get_tournament(tournament_id)
-    [stage | _] = tournament.stages
-    matches = get_matches(stage.id)
+  @spec get_future_and_player_stage_matches(stage_id, String.t()) :: [Match.t()]
+  def get_future_and_player_stage_matches(stage_id, team_name),
+    do: stage_id |> get_stage() |> get_future_and_player_matches(team_name)
+
+  @spec get_future_and_player_matches(Stage.t(), String.t()) :: [Match.t()]
+  def get_future_and_player_matches(stage = %Stage{id: id}, team_name) do
+    matches = get_matches(id)
     total_rounds = stage.bracket && stage.bracket.rounds_count
     future_opponents = get_future_opponents(matches, total_rounds, team_name)
 
@@ -506,6 +508,17 @@ defmodule Backend.Battlefy do
 
     {future_opponents, player_matches}
   end
+  @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]
+  def get_future_and_player_matches(tournament_id, team_name) when is_binary(tournament_id) do
+    tournament_id
+    |> get_tournament()
+    |> Map.get(:stages)
+    |> case do
+      [first | _] -> get_future_and_player_matches(first, team_name)
+      _ -> {[], []}
+    end
+  end
+  def get_future_and_player_matches(_, _), do: {[], []}
 
   @spec get_future_opponents(tournament_id, String.t()) :: [Match.t()]
   def get_future_opponents(tournament_id, team_name) do

@@ -237,6 +237,84 @@ defmodule Backend.MastersTour.TourStop do
         min_qualifiers_for_winrate: 20,
         swiss_rounds: 8,
         year: 2021
+      },
+      %__MODULE__{
+        id: :MT_2022_1,
+        battlefy_id: nil,
+        ladder_priority: :timezone,
+        ladder_seasons: [99],
+        ladder_invites: 50,
+        region: :AP,
+        start_time: ~N[2022-02-19 13:00:00],
+        qualifiers_period: {~D[2022-01-01], ~D[2022-01-31]},
+        min_qualifiers_for_winrate: 10,
+        swiss_rounds: 8,
+        year: 2022
+      },
+      %__MODULE__{
+        id: :MT_2022_2,
+        battlefy_id: nil,
+        ladder_priority: :timezone,
+        ladder_seasons: [100],
+        ladder_invites: 50,
+        region: :AP,
+        start_time: ~N[2022-03-19 13:00:00],
+        qualifiers_period: {~D[2022-02-01], ~D[2022-02-28]},
+        min_qualifiers_for_winrate: 10,
+        swiss_rounds: 8,
+        year: 2022
+      },
+      %__MODULE__{
+        id: :MT_2022_3,
+        battlefy_id: nil,
+        ladder_priority: :timezone,
+        ladder_seasons: [101],
+        ladder_invites: 50,
+        region: :AP,
+        start_time: ~N[2022-04-19 13:00:00],
+        qualifiers_period: {~D[2022-03-01], ~D[2022-03-31]},
+        min_qualifiers_for_winrate: 10,
+        swiss_rounds: 8,
+        year: 2022
+      },
+      %__MODULE__{
+        id: :MT_2022_4,
+        battlefy_id: nil,
+        ladder_priority: :timezone,
+        ladder_seasons: [101],
+        ladder_invites: 50,
+        region: :AP,
+        start_time: ~N[2022-05-19 13:00:00],
+        qualifiers_period: {~D[2022-04-01], ~D[2022-04-30]},
+        min_qualifiers_for_winrate: 10,
+        swiss_rounds: 8,
+        year: 2022
+      },
+      %__MODULE__{
+        id: :MT_2022_5,
+        battlefy_id: nil,
+        ladder_priority: :timezone,
+        ladder_seasons: [102],
+        ladder_invites: 50,
+        region: :AP,
+        start_time: ~N[2022-06-19 13:00:00],
+        qualifiers_period: {~D[2022-05-01], ~D[2022-05-30]},
+        min_qualifiers_for_winrate: 10,
+        swiss_rounds: 8,
+        year: 2022
+      },
+      %__MODULE__{
+        id: :MT_2022_6,
+        battlefy_id: nil,
+        ladder_priority: :timezone,
+        ladder_seasons: [103],
+        ladder_invites: 50,
+        region: :AP,
+        start_time: ~N[2022-07-19 13:00:00],
+        qualifiers_period: {~D[2022-06-01], ~D[2022-06-30]},
+        min_qualifiers_for_winrate: 10,
+        swiss_rounds: 8,
+        year: 2022
       }
     ]
   end
