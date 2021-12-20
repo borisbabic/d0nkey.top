@@ -16,6 +16,19 @@
     <% end %>
 </div>
 
+<%= if @show_stage_selection do %>
+    <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@stage_selection_text%></button></div>
+        <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+            <%= for %{name: name, selected: selected, link: link} <- @stages do %>
+                <a class="dropdown-item <%= selected && 'is-active' || '' %>" href="<%= link %>"><%=name%></a>
+            <% end %>
+        </div>
+        </div>
+    </div>
+<% end %>
+
 <%= if @show_class_stats do %>
     <div class="title is-5">Class Stats</div>
     <table class="table is-striped is-fullwidth is-narrow">
@@ -32,7 +45,7 @@
                 <tr>
                     <td>
                         <figure>
-                            <img class="image is-32x32" src="<%= class_url(class) %>" > 
+                            <img class="image is-32x32" src="<%= class_url(class) %>" >
                         </figure>
                     </td>
                     <td><%= bans %></td>

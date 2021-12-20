@@ -161,17 +161,17 @@ defmodule BackendWeb.BattlefyController do
     render(conn, BackendWeb.SharedView, "empty.html", %{})
   end
 
-  def tournament_player(conn, %{
+  def tournament_player(conn, params = %{
         "tournament_id" => tournament_id,
         "team_name" => team_name
       }) do
+    {opponent_matches, player_matches} =
+      future_and_player(params)
+
     deckcodes =
       Battlefy.get_deckstrings(%{tournament_id: tournament_id, battletag_full: team_name})
 
     tournament = Battlefy.get_tournament(tournament_id)
-
-    {opponent_matches, player_matches} =
-      Battlefy.get_future_and_player_matches(tournament_id, team_name)
 
     render(conn, "profile.html", %{
       tournament: tournament,
@@ -180,9 +180,19 @@ defmodule BackendWeb.BattlefyController do
       page_title: team_name,
       deckcodes: deckcodes,
       team_name: team_name,
+      stage_id: params["stage_id"],
       conn: conn
     })
   end
+  defp future_and_player(%{"stage_id" => stage_id, "team_name" => team_name}),
+    do: Battlefy.get_future_and_player_stage_matches(stage_id, team_name)
+
+  defp future_and_player(%{"tournament_id" => tournament_id, "team_name" => team_name}),
+    do: Battlefy.get_future_and_player_matches(tournament_id, team_name)
+
+  defp future_and_player(_),
+    do: {[], []}
+
 
   def organization_tournament_stats(conn, %{"stats_slug" => stats_slug}) do
     with %{organization_slug: org_slug, from: from, pattern: pattern, title: title} <-
