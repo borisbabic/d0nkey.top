@@ -153,7 +153,7 @@ defmodule BackendWeb.BattlefyView do
           tournament: tournament,
           opponent_matches: opponent_matches,
           player_matches: player_matches,
-          deckcodes: deckcodes,
+          deckcodes: deckcodes_raw,
           team_name: team_name,
           conn: conn
         }
@@ -181,6 +181,8 @@ defmodule BackendWeb.BattlefyView do
     hsdeckviewer = Routes.battlefy_path(conn, :tournament_decks, tournament.id, team_name)
     yaytears = Backend.Yaytears.create_deckstrings_link(tournament.id, team_name)
     class_stats = class_stats_raw |> Enum.map(fn {_k, v} -> v end)
+
+    deckcodes = Enum.filter(deckcodes_raw, &Backend.Hearthstone.Deck.valid?/1)
 
     render(
       "future_opponents.html",
