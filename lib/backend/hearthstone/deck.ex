@@ -86,6 +86,7 @@ defmodule Backend.Hearthstone.Deck do
   @spec decode!(String.t()) :: Deck
   def decode!(deckcode), do: deckcode |> decode() |> Util.bangify()
 
+  #todo make 任务贼：AAECAaIHBsPhA6b5A8f5A72ABL+ABO2ABAyqywPf3QPn3QPz3QOq6wOf9AOh9AOi9AOj9QOm9QP1nwT2nwQA decodeable
   @doc """
   Decode a deckcode into a Deck struct
   ## Example
