@@ -239,7 +239,7 @@ defmodule Backend.MastersTour.TourStop do
         year: 2021
       },
       %__MODULE__{
-        id: :MT_2022_1,
+        id: :"Masters Tour One",
         battlefy_id: nil,
         ladder_priority: :timezone,
         ladder_seasons: [99],
@@ -252,7 +252,7 @@ defmodule Backend.MastersTour.TourStop do
         year: 2022
       },
       %__MODULE__{
-        id: :MT_2022_2,
+        id: :"Masters Tour Two",
         battlefy_id: nil,
         ladder_priority: :timezone,
         ladder_seasons: [100],
@@ -265,7 +265,7 @@ defmodule Backend.MastersTour.TourStop do
         year: 2022
       },
       %__MODULE__{
-        id: :MT_2022_3,
+        id: :"Masters Tour Three",
         battlefy_id: nil,
         ladder_priority: :timezone,
         ladder_seasons: [101],
@@ -278,7 +278,7 @@ defmodule Backend.MastersTour.TourStop do
         year: 2022
       },
       %__MODULE__{
-        id: :MT_2022_4,
+        id: :"Masters Tour Four",
         battlefy_id: nil,
         ladder_priority: :timezone,
         ladder_seasons: [101],
@@ -291,7 +291,7 @@ defmodule Backend.MastersTour.TourStop do
         year: 2022
       },
       %__MODULE__{
-        id: :MT_2022_5,
+        id: :"Masters Tour Five",
         battlefy_id: nil,
         ladder_priority: :timezone,
         ladder_seasons: [102],
@@ -304,7 +304,7 @@ defmodule Backend.MastersTour.TourStop do
         year: 2022
       },
       %__MODULE__{
-        id: :MT_2022_6,
+        id: :"Masters Tour Six",
         battlefy_id: nil,
         ladder_priority: :timezone,
         ladder_seasons: [103],
