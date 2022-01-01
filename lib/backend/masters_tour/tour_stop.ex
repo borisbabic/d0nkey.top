@@ -20,7 +20,13 @@ defmodule Backend.MastersTour.TourStop do
         :Dalaran,
         :Silvermoon,
         :Stormwind,
-        :Undercity
+        :Undercity,
+        :"Masters Tour One",
+        :"Masters Tour Two",
+        :"Masters Tour Three",
+        :"Masters Tour Four",
+        :"Masters Tour Five",
+        :"Masters Tour Six"
       ]
     end
   end
