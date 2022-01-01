@@ -22,6 +22,13 @@ defmodule Backend.Blizzard do
           | :Silvermoon
           | :Stormwind
           | :Undercity
+          | :"Masters Tour One"
+          | :"Masters Tour Two"
+          | :"Masters Tour Three"
+          | :"Masters Tour Four"
+          | :"Masters Tour Five"
+          | :"Masters Tour Six"
+
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @current_bg_season_id 4
@@ -363,7 +370,7 @@ defmodule Backend.Blizzard do
         {:ok, [:Ironforge, :Orgrimmar, :Dalaran, :Silvermoon, :Stormwind, :Undercity]}
 
       {2022, 2} ->
-        {:ok, [:Silvermoon, :Stormwind, :Undercity]}
+        {:ok, [:Silvermoon, :Stormwind, :Undercity, :"Masters Tour One", :"Masters Tour One", :"Masters Tour Two", :"Masters Tour Three"]}
 
       _ ->
         {:error, "Unknown/unsupported gm_season"}
@@ -389,6 +396,9 @@ defmodule Backend.Blizzard do
       :Silvermoon -> {:ok, {2022, 1}}
       :Stormwind -> {:ok, {2022, 1}}
       :Undercity -> {:ok, {2022, 1}}
+      :"Masters Tour One" -> {:ok, {2022, 2}}
+      :"Masters Tour Two" -> {:ok, {2022, 2}}
+      :"Masters Tour Three" -> {:ok, {2022, 2}}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
