@@ -18,7 +18,12 @@ defmodule Hearthstone.DeckTracker.GameDto do
     field :created_by, Backend.Api.ApiUser.t()
   end
 
-  @spec from_raw_map(Map.t(), ApiUser.t()) :: PlayerDto.t()
+  @spec from_raw_map(Map.t(), ApiUser.t()) :: GameDto.t()
+  def from_raw_map(map = %{"GameId" => _}, created_by),
+    do: map |> to_snake() |> from_raw_map(created_by)
+
+  def from_raw_map(map = %{"gameId" => _}, created_by),
+    do: map |> to_snake() |> from_raw_map(created_by)
   def from_raw_map(map = %{}, created_by) do
     %GameDto{
       player: map["player"] |> PlayerDto.from_raw_map(),
@@ -35,6 +40,8 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   def from_raw_map(_, created_by), do: %{} |> from_raw_map(created_by)
+
+  defp to_snake(map), do: Recase.Enumerable.convert_keys(map, &Recase.to_snake/1)
 
   def to_ecto_attrs(dto = %GameDto{}, deckcode_handler) do
     %{

@@ -16,6 +16,16 @@ defmodule Hearthstone.DeckTracker do
   @spec get_game(integer) :: Game.t() | nil
   def get_game(id), do: Repo.get(Game, id) |> Repo.preload(:player_deck)
 
+  @spec get_game_by_game_id(String.t()) :: Game.t() | nil
+  def get_game_by_game_id(game_id) do
+    query = from g in Game,
+      preload: :player_deck,
+      where: g.game_id == ^game_id
+
+    Repo.one(query)
+  end
+
+
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
     attrs =
       GameDto.to_ecto_attrs(game_dto, &handle_deck/1)
@@ -212,6 +222,12 @@ defmodule Hearthstone.DeckTracker do
     query |> where([g], g.inserted_at >= ^av_release)
   end
 
+  defp compose_games_query({"period", "bc_2021-12-20"}, query) do
+    # they were an hour late
+    balance_changes = ~N[2021-12-20 19:00:00]
+    query |> where([g], g.inserted_at >= ^balance_changes)
+  end
+
   defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend],
     do: compose_games_query({"rank", to_string(rank)}, query)
 
@@ -311,6 +327,7 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
 
+  @spec replay_link(%{:game_id => any, optional(any) => any}) :: <<_::64, _::_*8>>
   def replay_link(%{api_user: nil, game_id: game_id}),
     do: "https://hsreplay.net/replay/#{game_id}"
   def replay_link(%{game_id: game_id}),

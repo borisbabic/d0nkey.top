@@ -20,7 +20,7 @@ defmodule Components.DecksExplorer do
   # @default_order_by "winrate"
   # data(user, :any)
 
-  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}]
+  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}, {"bc_2021-12-20", "AV Balance Changes #1"}]
   prop(default_order_by, :string, default: "winrate")
   prop(default_format, :number, default: 2)
   prop(default_rank, :string, default: "diamond_to_legend")
