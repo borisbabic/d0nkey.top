@@ -399,6 +399,10 @@ defmodule Backend.Blizzard do
       :"Masters Tour One" -> {:ok, {2022, 2}}
       :"Masters Tour Two" -> {:ok, {2022, 2}}
       :"Masters Tour Three" -> {:ok, {2022, 2}}
+      # todo see if this is needed, there
+      :"Masters Tour Four" -> {:ok, {2023, 1}}
+      :"Masters Tour Five" -> {:ok, {2023, 1}}
+      :"Masters Tour Six" -> {:ok, {2023, 1}}
       _ -> {:error, "Unknown tour stop #{tour_stop}"}
     end
   end
