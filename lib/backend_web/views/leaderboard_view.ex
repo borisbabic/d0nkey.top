@@ -561,8 +561,9 @@ defmodule BackendWeb.LeaderboardView do
   def warning(_, _), do: nil
 
   # todo move somewhere else
-  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "Jay") when season in 99..110,
-    do: "US Jay (Jay#12424) is banned until 2023-01-03"
+  # Jay#12424 is banned indefinitely, can appeal after Jan 3rd 2023.
+  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "Jay") when season >= 99,
+    do: "Jay#12424 is banned from competitive HS"
   def banned(_, _),
     do: nil
 
