@@ -45,6 +45,9 @@
                 <%= if e.warning do %>
                     <span data-balloon-pos="up" aria-label="<%=e.warning%>" class="tag is-warning">HOVER ME!</span>
                 <% end %>
+                <%= if e.banned do %>
+                    <span data-balloon-pos="up" aria-label="<%=e.banned%>" class="tag is-warning">Banned</span>
+                <% end %>
                 </td>
             <% end %>
             <%= if @show_ratings do %>

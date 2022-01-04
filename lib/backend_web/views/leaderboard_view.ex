@@ -559,6 +559,13 @@ defmodule BackendWeb.LeaderboardView do
     do: "Has previously gotten a second invite from a ladder finish, so I'm not counting them"
 
   def warning(_, _), do: nil
+
+  # todo move somewhere else
+  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "Jay") when season in 99..110,
+    do: "US Jay (Jay#12424) is banned until 2023-01-03"
+  def banned(_, _),
+    do: nil
+
   def process_entries(nil, _, _, _, _), do: []
 
   def process_entries(
@@ -571,9 +578,11 @@ defmodule BackendWeb.LeaderboardView do
     Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
+      banned = banned(snapshot, account_id)
 
       ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
-      qualifying = {!qualified && !ineligible && acc <= num_invited, acc}
+      skip_for_invite = qualified || ineligible || banned
+      qualifying = {!skip_for_invite && acc <= num_invited, acc}
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
 
@@ -593,10 +602,11 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:ineligible, ineligible)
         |> Map.put_new(:prev_rank, prev_rank)
         |> Map.put_new(:warning, warning)
+        |> Map.put_new(:banned, banned)
         |> Map.put_new(:history_link, history_link)
         |> Map.put_new(:flag, flag)
         |> Map.put_new(:prev_rating, prev_rating),
-        if qualified || ineligible do
+        if skip_for_invite do
           acc
         else
           acc + 1
