@@ -3,6 +3,7 @@
 
 
 <div class="notification is-warning">There is an issue with recognizing HDT decks. Streamers can use Firestone until it's resolved</div>
+<div class="notification is-info">Alpha version of an HDT extension is available for testing, see <a href="https://twitter.com/D0nkeyHS/status/1478508340418424834">here</a></div>
 <div class="columns is-pulled-left">
 <%= @prev_button %>
 <%= @next_button %>
