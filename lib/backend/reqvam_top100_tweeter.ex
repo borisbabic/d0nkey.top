@@ -58,7 +58,7 @@ defmodule Backend.ReqvamTop100Tweeter do
   @spec msg(message_info()) :: msg() | [msg()]
   def msg(%{entry: %{rank: 69}}), do: "Nice!"
   def msg(%{entry: %{rank: 42}}), do: "\"What rank is reqvam on NA\" is probably not the ultimate question, but the answer is the same: 42"
-  def msg(%{entry: %{rank: 1}}), do: "Reqvam is #1 ! On NA! Maybe it's time to play on a tougher server?"
+  def msg(%{entry: %{rank: 1}}), do: ["Reqvam is #1 ! On NA! Maybe it's time to play on a tougher server?", "Reqvam is rank 1! That's 1 factorial and just RANK 1 ! What an amazing achievement by such an amazing skeleton"]
   def msg(%{entry: %{rank: 21}}), do: "Reqvam is 21 - I remember when he was top 20 NA"
   def msg(%{entry: %{rank: 24}}), do: ["Reqvam is top 100, he is 4! ie 24, surprise factorial! 🤓", top_100_messages(24)]
   def msg(%{entry: %{rank: 101}}), do: {"Reqvam is not top 100, he is 101.", "ha-ha.jpg"}
@@ -83,6 +83,7 @@ defmodule Backend.ReqvamTop100Tweeter do
 
   def msg(info = %{entry: %{rank: rank}}) when rank < 101, do: top_100_messages(rank) |> add_gaby(info)
 
+  def msg(%{date: %{day: 15}}), do: "Oh, no, reqvam isn't top 100. He should put Noz in his decks because he needs to do some serious climbing"
   def msg(%{date: %{day: day}}) when day < 5, do:
       [
         "Reqvam is not top 100, but it's still early",
