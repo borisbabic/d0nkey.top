@@ -71,8 +71,6 @@ defmodule Backend.Grandmasters do
     :ets.insert(table, {"raw_response", response})
   end
 
-  {2021, 20}
-
   def add_season_winner_points(results_map, %{requested_season: %{year: 2021, season: 2}}) do
     ["Frenetic", "Posesi", "Nalguidan"]
     |> Enum.reduce(results_map, fn prev_winner, r ->
