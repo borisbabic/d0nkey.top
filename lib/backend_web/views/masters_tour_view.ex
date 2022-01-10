@@ -203,7 +203,7 @@ defmodule BackendWeb.MastersTourView do
         eligible_tour_stops,
         invited_set,
         conn,
-        _period,
+        period,
         show_flags
       ) do
     player_stats
@@ -221,6 +221,10 @@ defmodule BackendWeb.MastersTourView do
       </a>
       """
 
+      projection_min = case TourStop.get(period) do
+        %{min_qualifiers_for_winrate: min} when is_integer(min) -> min
+        _ -> 20
+      end
       %{
         "Player" => player_cell,
         "_country" => country,
@@ -241,15 +245,18 @@ defmodule BackendWeb.MastersTourView do
         "Packs Earned" => ps.positions |> Enum.map(&MastersTour.get_packs_earned/1) |> Enum.sum(),
         "Winrate %" => ps |> PlayerStats.matches_won_percent() |> Float.round(2),
         "Projected % (using 0.5)" =>
-          ps |> PlayerStats.projected_matches_won_percent(20, 0.5) |> Float.round(2),
+          ps |> PlayerStats.projected_matches_won_percent(projection_min, 0.5) |> Float.round(2),
         "Projected % (using 0.6)" =>
-          ps |> PlayerStats.projected_matches_won_percent(20, 0.6) |> Float.round(2),
+          ps |> PlayerStats.projected_matches_won_percent(projection_min, 0.6) |> Float.round(2),
         "Projected % (using 0.65)" =>
-          ps |> PlayerStats.projected_matches_won_percent(20, 0.65) |> Float.round(2)
+          ps |> PlayerStats.projected_matches_won_percent(projection_min, 0.65) |> Float.round(2),
+        "Projected % (using 0.70)" =>
+          ps |> PlayerStats.projected_matches_won_percent(projection_min, 0.70) |> Float.round(2)
       }
       |> Map.merge(ts_cells)
     end)
   end
+
 
   # way too big of a performance hit
   def add_percentile_rows(rows, period) do
@@ -626,7 +633,8 @@ defmodule BackendWeb.MastersTourView do
         # "Winrate percentile",
         # "Winrate percentile (qualified)",
         "2020 MTs qualified",
-        "2021 MTs qualified"
+        "2021 MTs qualified",
+        "2022 MTs qualified",
       ] ++
         (eligible_ts |> Enum.map(&to_string/1)) ++
         [
@@ -966,7 +974,7 @@ defmodule BackendWeb.MastersTourView do
     date_ranges ++ tour_stop_ranges
   end
 
-  def eligible_years(), do: [2020, 2021]
+  def eligible_years(), do: [2020, 2021, 2022]
 
   def eligible_tour_stops() do
     Blizzard.tour_stops()

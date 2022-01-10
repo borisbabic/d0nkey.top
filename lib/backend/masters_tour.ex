@@ -116,7 +116,8 @@ defmodule Backend.MastersTour do
   end
 
   def warmup_stats_cache() do
-    [2020, 2021]
+    %{year: current_year} = Date.utc_today()
+    2020..current_year
     |> Enum.flat_map(fn y -> [y | Backend.Blizzard.get_tour_stops_for_year(y)] end)
     |> List.insert_at(0, :all)
     |> Enum.each(&Backend.MastersTour.get_player_stats/1)
