@@ -31,14 +31,41 @@ defmodule Hearthstone.DeckTracker do
       GameDto.to_ecto_attrs(game_dto, &handle_deck/1)
       |> set_public()
 
-    case get_existing(game_id) do
+    with nil <- get_existing(game_id),
+      nil <- get_same_game(attrs) do
+        create_game(attrs)
+    else
       game = %{game_id: ^game_id} -> update_game(game, attrs)
+      # different deck tracker so don't update
+      game = %{game_id: _game_id} -> {:ok, game}
       _ -> create_game(attrs)
     end
   end
 
   def handle_game(_), do: {:error, :missing_game_id}
 
+  defp get_same_game(attrs) do
+    query = from g in Game,
+      where: g.inserted_at > ago(90, "second")
+
+    query
+      |> equals(:player_btag, attrs["player_btag"])
+      |> equals(:player_class, attrs["player_class"])
+      |> equals(:opponent_class, attrs["opponent_class"])
+      |> equals(:opponent_btag, attrs["opponent_btag"])
+      |> equals(:format, attrs["format"])
+      |> equals(:game_type, attrs["game_type"])
+      |> limit(1)
+      |> Repo.one()
+  end
+  defp equals(query, column, nil)  do
+    query
+    |> where([g], is_nil(field(g, ^column)))
+  end
+  defp equals(query, column, value)  do
+    query
+    |> where([g], field(g, ^column) == ^value)
+  end
   defp set_public(attrs), do: Map.put(attrs, "public", public?(attrs))
   defp public?(%{"player_btag" => btag}) do
     with user = %{twitch_id: twitch_id} <- UserManager.get_by_btag(btag),

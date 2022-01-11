@@ -564,6 +564,9 @@ defmodule BackendWeb.LeaderboardView do
   # Jay#12424 is banned indefinitely, can appeal after Jan 3rd 2023.
   def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "Jay") when season >= 99,
     do: "Jay#12424 is banned from competitive HS"
+  # EpicMingo#1244 is banned until Apr 3, 2022
+  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "EpicMinfo") when season in 99..102,
+    do: "EpicMingo#1244 is banned from competitive HS until 2022-04-03"
   def banned(_, _),
     do: nil
 
