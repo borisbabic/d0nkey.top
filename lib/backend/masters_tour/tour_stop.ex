@@ -375,11 +375,11 @@ defmodule Backend.MastersTour.TourStop do
 
   def get_id_for_season!(season_id), do: Util.bangify(get_id_for_season(season_id))
 
-  def get(nil), do: nil
   def get(tour_stop) when is_tour_stop(tour_stop) do
     all()
     |> Enum.find(fn ts -> ts.id == tour_stop end)
   end
+  def get(_), do: nil
 
   def get(tour_stop) when is_binary(tour_stop) do
     all()

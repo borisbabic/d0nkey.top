@@ -343,7 +343,7 @@ defmodule BackendWeb.MastersTourView do
     dropdowns ++ [{options, "Hide Qualified"}]
   end
 
-  def period_title(:all), do: "2020-2021"
+  def period_title(:all), do: "2020-#{Date.utc_today().year}"
   def period_title(period), do: period
 
   def filter_countries(target, []), do: target
