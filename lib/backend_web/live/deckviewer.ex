@@ -152,14 +152,7 @@ defmodule BackendWeb.DeckviewerLive do
         %{"new_deck" => %{"new_code" => new_code}},
         socket = %{assigns: %{deckcodes: dc}}
       ) do
-    new_codes =
-      cond do
-        HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
-        Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
-        our_link?(new_code) -> extract_codes(new_code)
-        true -> [new_code]
-      end
-      |> Deck.shorten_codes()
+    new_codes = extract_decks(new_code)
 
     {
       :noreply,
@@ -173,6 +166,16 @@ defmodule BackendWeb.DeckviewerLive do
           )
       )
     }
+  end
+
+  def extract_decks(new_code) do
+      cond do
+        HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
+        Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
+        our_link?(new_code) -> extract_codes(new_code)
+        true -> [new_code]
+      end
+      |> Deck.shorten_codes()
   end
 
   def handle_event("delete", %{"index" => index}, socket = %{assigns: %{deckcodes: dc}}) do

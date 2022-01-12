@@ -105,6 +105,12 @@
        </div>
          <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.DecksLive) %>'>Decks<p><sup class="is-size-7 has-text-danger"> New!</p></sup></a>
          <a class="navbar-item" href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
+         <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.MaxNations2022Live) %>'>
+          Max Nations
+          <%= if Backend.MaxNations2022.live?() do %>
+            <p><sup class="is-size-7 has-text-info"> Live!</p>
+          <% end %>
+        </a>
 
        <%= if show_fantasy?() do %>
          <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.FantasyIndexLive) %>'>Fantasy</a>

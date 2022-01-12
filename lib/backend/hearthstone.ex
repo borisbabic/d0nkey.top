@@ -274,13 +274,7 @@ defmodule Backend.Hearthstone do
         {:ok, ln}
 
       nil ->
-        decks =
-          deckstrings
-          |> Enum.filter(&Deck.valid?/1)
-          |> Enum.map(&(&1 |> create_or_get_deck() |> Util.nilify()))
-          |> Enum.filter(& &1)
-
-        create_lineup(attrs, decks)
+        insert_lineup(attrs, deckstrings)
     end
   end
 
@@ -306,9 +300,18 @@ defmodule Backend.Hearthstone do
     Repo.one(query)
   end
 
-  def create_lineup(attrs, decks) do
+  def create_lineup(attrs, deckstrings) do
+    decks = deckstrings
+      |> Enum.filter(&Deck.valid?/1)
+      |> Enum.map(&(&1 |> create_or_get_deck() |> Util.nilify()))
+      |> Enum.filter(& &1)
+
     %Lineup{}
     |> Lineup.changeset(attrs, decks)
+  end
+
+  def insert_lineup(attrs, deckstrings) do
+    create_lineup(attrs, deckstrings)
     |> Repo.insert()
   end
 

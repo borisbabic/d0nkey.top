@@ -445,6 +445,18 @@ defmodule Util do
   def median(sortable_list),
     do: sortable_list |> Enum.sort() |> Enum.at(Enum.count(sortable_list) |> div(2))
 
+  def get_country_code(name) do
+    with %{alpha2: code} <- get_country(name) do
+      code
+    end
+  end
+
+  def get_country(name) do
+    with nil <- Countriex.get_by(:name, name) do
+      Countriex.all()
+      |> Enum.find(& name in &1.unofficial_names)
+    end
+  end
   def get_country_name(nil), do: nil
 
   def get_country_name(cc) do
