@@ -12,6 +12,7 @@ defmodule Components.TournamentLineupExplorer do
   prop(show_page_dropdown, :boolean, default: true)
   prop(gm_week, :string, default: nil)
   slot(default)
+  slot(lineup_name, args: [:lineup_name])
 
   alias Components.GMProfileLink
   alias Components.ExpandableLineup
@@ -70,7 +71,8 @@ defmodule Components.TournamentLineupExplorer do
           <tbody>
             <tr :for={lineup <- lineups |> paginate(@page, @page_size)}>
               <td :if={@gm_week}> <GMProfileLink week={@gm_week} gm={lineup.name}/> </td>
-              <td :if={!@gm_week}>{lineup.name}</td>
+              <td :if={!@gm_week && slot_assigned?(:lineup_name)}><#slot name="lineup_name" :args={lineup_name: lineup.name}/></td>
+              <td :if={!@gm_week && !slot_assigned?(:lineup_name)}>{lineup.name}</td>
               <td>
                 <ExpandableLineup lineup={lineup} id={"modal_lineup_#{lineup.id}"}/>
               </td>

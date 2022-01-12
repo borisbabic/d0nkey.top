@@ -183,6 +183,10 @@ defmodule BackendWeb.Router do
 
     live "/wc/2021", WC2021Live
 
+    live "/max/nations-2022", MaxNations2022Live
+    live "/max/nations-2022/nation/:nation", MaxNations2022NationLive
+    live "/max/nations-2022/player/:player", MaxNations2022PlayerLive
+
     live "/my-replays", MyReplaysLive
     live "/my-decks", MyDecksLive
 
