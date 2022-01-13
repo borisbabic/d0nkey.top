@@ -892,6 +892,10 @@ defmodule Backend.MastersTour do
         #maybe there are more Kevin's
       "Kevin" -> "KevinXuan"
 
+      # max nations
+      "Syf" -> "iGSyf"
+      "快樂之潛行者" -> "RNGLeaoh"
+
       n -> n
     end
     if new == name do

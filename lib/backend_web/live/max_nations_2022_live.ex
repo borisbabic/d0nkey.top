@@ -17,7 +17,7 @@ defmodule BackendWeb.MaxNations2022Live do
     ~F"""
     <Context put={user: @user} >
       <div class="container">
-        <div class="title is-2">Max Nations 2022</div>
+        <div class="title is-2">Max League of Nations 2022</div>
         <div class="subtitle is-2">
           <a href="https://www.twitch.tv/MAXTeamTV">
             <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>

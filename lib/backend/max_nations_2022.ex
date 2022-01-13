@@ -4,6 +4,7 @@ defmodule Backend.MaxNations2022 do
   import Ecto.Query, warn: false
   alias Backend.Repo
   alias Backend.Hearthstone.Lineup
+  alias Backend.Battlenet.Battletag
 
   def rosters() do
     %{
@@ -74,9 +75,14 @@ defmodule Backend.MaxNations2022 do
       }
   end
 
+  defp normalize_btag(btag), do: btag |> Battletag.shorten() |> String.downcase()
   def get_nation(battletag) do
     Enum.find_value(rosters(), fn {country, roster} ->
-      battletag in roster && country
+      normalized_btag = normalize_btag(battletag)
+      normalized_roster = Enum.map(roster, &normalize_btag/1)
+      if normalized_btag in normalized_roster do
+        country
+      end
     end)
   end
 

@@ -63,9 +63,11 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       total = tts |> Enum.count()
 
       {flag, country} =
-        case player_name |> Backend.PlayerInfo.get_country() do
-          nil -> {"", nil}
-          cc -> {cc |> country_flag(), cc}
+        with nil <- PlayerInfo.get_country(player_name),
+             nil <- Util.get_country_code(player_name) do
+              {"", nil}
+        else
+          cc -> {country_flag(cc), cc}
         end
 
       profile_name = MastersTour.mt_profile_name(player_name)
@@ -133,6 +135,40 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   def masters_tour_name_fixer(name),
     do: ~r/^Master(s)? Tour( Online: )?/ |> Regex.replace(to_string(name), "")
 
+  def create_grouping_func("country") do
+    fn n ->
+      n
+      |> get_mt_name()
+      |> PlayerInfo.get_country()
+      |> Util.get_country_name()
+    end
+  end
+
+  def create_grouping_func("max_nations_2022") do
+    downcase_roster_map =
+      Backend.MaxNations2022.rosters()
+      |> Enum.flat_map(fn {country, country_roster} ->
+        Enum.map(country_roster, fn btag ->
+          {
+            btag|> get_mt_name() |> String.downcase(),
+            country
+          }
+        end)
+      end)
+      |> Map.new()
+    fn n ->
+      normalized_name = n |> get_mt_name() |> String.downcase()
+      Map.get(downcase_roster_map, normalized_name)
+    end
+  end
+
+  def create_grouping_func(_), do: &get_mt_name/1
+
+  defp get_mt_name(n),
+    do:
+      n
+      |> InvitedPlayer.shorten_battletag()
+      |> MastersTour.fix_name()
   def render("masters_tours_stats.html", %{
         conn: conn,
         sort_by: sort_by_raw,
@@ -141,6 +177,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         years: years,
         tour_stops: tour_stops,
         countries: countries,
+        group_by: group_by,
         tournament_team_stats: tts
       }) do
     {sort_by, direction} = process_sorting(sort_by_raw, direction_raw)
@@ -198,10 +235,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
     rows =
       tts
-      |> Backend.TournamentStats.create_team_stats_collection(fn n ->
-        n
-        |> InvitedPlayer.shorten_battletag()
-        |> MastersTour.fix_name()
+      |> Backend.TournamentStats.create_team_stats_collection(create_grouping_func(group_by))
+      |> Enum.filter(fn {name, _} ->
+        name
       end)
       |> Enum.filter(fn {name, _} ->
         countries == nil || countries == [] ||
@@ -240,8 +276,19 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       selected_countries: countries,
       prev_button: prev_button,
       next_button: next_button,
-      dropdowns: [limit_dropdown]
+      dropdowns: [limit_dropdown, create_group_by_dropdown(group_by, update_link)]
     })
+  end
+  defp create_group_by_dropdown(group_by, update_params) do
+    options = [{"max_nations_2022", "Max Nations 2022"}, {"country", "Country"}, {"player", "Player"}]
+      |> Enum.map(fn {val, display} ->
+        %{
+          selected: group_by == val,
+          display: display,
+          link: update_params.(%{"group_by" => val})
+        }
+      end)
+      {options, "Group By"}
   end
 
   defp years_options(years) do
