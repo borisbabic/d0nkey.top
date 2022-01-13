@@ -235,6 +235,7 @@ defmodule BackendWeb.MastersTourController do
       tour_stops: tour_stops,
       page_title: "MT Stats",
       years: years,
+      group_by: params["group_by"],
       tournament_team_stats: tournament_team_stats
     })
   end
