@@ -63,7 +63,7 @@ defmodule Backend.MaxNations2022 do
         "A" => [ "Brazil", "Spain", "Poland", "Australia" ],
         "B" => [ "Argentina", "Thailand", "Serbia", "Austria" ],
         "C" => [ "Canada", "Croatia", "Romania", "Philippines" ],
-        "D" => [ "USA", "Portugal", "India", "Russia" ],
+        "D" => [ "United States", "Portugal", "India", "Russia" ],
         "E" => [ "UK", "Mexico", "Netherlands", "New Zealand" ],
         "F" => [ "France", "Denmark", "Malaysia", "Uruguay" ],
         "G" => [ "Sweden", "Germany", "Israel", "Peru" ],
@@ -109,7 +109,7 @@ defmodule Backend.MaxNations2022 do
     search = "%#{thing}%"
     base_lineup_query()
     |> preload([l], :decks)
-    |> where([l], like(l.name, ^search))
+    |> where([l], ilike(l.name, ^search))
     |> Repo.all()
   end
 
@@ -123,4 +123,5 @@ defmodule Backend.MaxNations2022 do
     Twitch.HearthstoneLive.streams()
     |> Enum.any?(& &1.user_name == "MAXTeamTV" && String.downcase(&1.title) =~ "nation")
   end
+
 end

@@ -162,6 +162,23 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     end
   end
 
+
+  def create_grouping_func("max_nations_2022_groups") do
+    group_map =
+      Backend.MaxNations2022.first_stage_groups()
+      |> Enum.flat_map(fn {group, countries} ->
+        Enum.map(countries, & {&1, "Group #{group}"})
+      end)
+      |> Map.new()
+    nations_grouping = create_grouping_func("max_nations_2022")
+    fn n ->
+      case nations_grouping.(n) do
+        nil -> nil
+        nation -> Map.get(group_map, nation)
+      end
+    end
+  end
+
   def create_grouping_func(_), do: &get_mt_name/1
 
   defp get_mt_name(n),
@@ -280,7 +297,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     })
   end
   defp create_group_by_dropdown(group_by, update_params) do
-    options = [{"max_nations_2022", "Max Nations 2022"}, {"country", "Country"}, {"player", "Player"}]
+    options = [{"max_nations_2022", "Max Nations 2022"}, {"max_nations_2022_groups", "Max Nations Groups"}, {"country", "Country"}, {"player", "Player"}]
       |> Enum.map(fn {val, display} ->
         %{
           selected: group_by == val,
