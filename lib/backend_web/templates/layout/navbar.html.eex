@@ -129,14 +129,6 @@
      </div>
 
      <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable">
-            <div class="navbar-link">Choose Theme</div> <div class="navbar-dropdown">
-                <%= for theme <- ["darkly", "flatly"] do %>
-                  <a href="" class="navbar-item" id="theme-select-<%=theme%>" onclick='selectTheme("<%=theme%>")
-                  '><%=theme%></a>
-                <% end %>
-            </div>
-        </div>
      </div>
    </div>
  </nav>
@@ -199,33 +191,5 @@ document.addEventListener('DOMContentLoaded', () => {
           </nav>
         </header>
     </noscript>
-    <script>
-      var allowed_themes = ['flatly', 'darkly'];
-      var link = document.createElement('link');
-      link.rel = 'stylesheet';
-      var theme = localStorage.getItem('theme');
-      if (!theme || allowed_themes.indexOf(theme) < 0) {
-        theme = 'darkly'
-      }
-      href = "https://unpkg.com/bulmaswatch/" + theme + "/bulmaswatch.min.css"
-      var link = document.getElementById('theme-stylesheet');
-      if (!link) {
-        console.log("Couldn't grab the link");
-      } else if (link.href != href) {
-        link.href = href;
-        console.log("Changed the theme to " + theme);
-      } else {
-        console.log("The theme is already correct");
-      }
-      var selectTheme = function(selected_theme) {
-        if (allowed_themes.indexOf(selected_theme) > -1) {
-          localStorage.setItem('theme', selected_theme);
-          console.log("Setting theme to " + selected_theme + " and reloading");
-          location.reload();
-        } else {
-          console.log("Got an invalid theme, refusing to select!");
-        }
-      }
-    </script>
   </body>
 </html>
