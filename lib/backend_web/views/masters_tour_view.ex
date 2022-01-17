@@ -641,7 +641,8 @@ defmodule BackendWeb.MastersTourView do
           "Winrate %",
           "Projected % (using 0.5)",
           "Projected % (using 0.6)",
-          "Projected % (using 0.65)"
+          "Projected % (using 0.65)",
+          "Projected % (using 0.70)"
         ]
 
     is_ts = is_atom(period) and period != :all
