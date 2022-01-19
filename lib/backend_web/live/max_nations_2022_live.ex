@@ -37,18 +37,18 @@ defmodule BackendWeb.MaxNations2022Live do
     </Context>
     """
   end
-  def yhandle_event("change-week", %{"week" => week}, socket) do
+  def handle_event("change-week", %{"week" => week}, socket) do
     {:noreply, socket |> push_patch(to: Routes.live_path(socket, __MODULE__, %{week: week}))}
+  end
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
   end
   def weeks(), do: MaxNations2022.get_possible_lineups_tournament_id()
 
   def handle_params(params, _uri, socket) do
     week = params["week"] || MaxNations2022.get_latest_lineups_tournament_id()
     {:noreply, socket |> assign(week: week)}
-  end
-  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
-    Tracker.inc_copied(code)
-    {:noreply, socket}
   end
 
 end
