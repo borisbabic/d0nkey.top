@@ -1,5 +1,6 @@
 defmodule Bot.MessageHandlerUtil do
   @moduledoc false
+  require Logger
   alias Nostrum.Api
   alias Nostrum.Struct.Channel
 
@@ -51,5 +52,20 @@ defmodule Bot.MessageHandlerUtil do
     content
     |> get_options(:list)
     |> Enum.join(" ")
+  end
+
+  @spec send_message({:ok, String.t()} | {:error, String.t() | atom} | String.t(), String.t() | Nostrum.Struct.Message.t()) :: any() | {:ok, Message.t()}
+  def send_message(message_tuple, %{channel_id: channel_id}), do: send_message(message_tuple, channel_id)
+  def send_message({:ok, message}, channel_id) do
+    Api.create_message(channel_id, message)
+  end
+  def send_message({:error, reason}, channel_id) when is_atom(reason) or is_binary(reason) do
+    Logger.warn("Couldn't send discord message to #{channel_id}, reason: #{reason}")
+  end
+  def send_message(message, channel_id) when is_binary(message) do
+    Api.create_message(channel_id, message)
+  end
+  def send_message(_, channel_id) do
+    Logger.error("Couldn't send discord message to #{channel_id}")
   end
 end
