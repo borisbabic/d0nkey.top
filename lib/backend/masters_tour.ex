@@ -1329,6 +1329,36 @@ defmodule Backend.MastersTour do
     end
   end
 
+  def get_recent_qualifiers(hours_ago \\ 24) do
+    now = NaiveDateTime.utc_now()
+    before = NaiveDateTime.add(now, -60 * 60 * hours_ago)
+    BattlefyCommunicator.get_masters_qualifiers(before, now)
+  end
+  def get_ongoing_qualifiers() do
+    today = Date.utc_today()
+    start_date = Date.add(today, -2)
+    end_date = Date.add(today, 1)
+    qualifiers_in_range = BattlefyCommunicator.get_masters_qualifiers(start_date, end_date)
+
+    finished =
+      qualifiers_in_range
+      |> Enum.map(& &1.id)
+      |> list_qualifiers_by_tournament_ids()
+      |> Enum.map(& &1.tournament_id)
+      |> MapSet.new()
+
+    qualifiers_in_range
+      |> Enum.filter(&has_qualifier_started?/1)
+      |> Enum.filter(& MapSet.member?(finished, &1.id))
+  end
+
+  def list_qualifiers_by_tournament_ids(tournament_ids) do
+    query = from q in Qualifier,
+      where: q.tournament_id in ^tournament_ids
+
+    Repo.all(query)
+  end
+
   @doc """
   Paginate the list of invited_player using filtrex
   filters.
