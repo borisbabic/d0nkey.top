@@ -575,7 +575,7 @@ defmodule BackendWeb.MastersTourView do
         min: min_raw,
         countries: countries,
         show_flags: show_flags,
-        hide_qualified: hide_qualified,
+        hide_qualified: hide_qualified_raw,
         selected_columns: selected_columns,
         invited_players: invited_players,
         conn: conn
@@ -645,7 +645,12 @@ defmodule BackendWeb.MastersTourView do
           "Projected % (using 0.70)"
         ]
 
-    is_ts = is_atom(period) and period != :all
+    {is_ts, _ts, has_winrate_qual} = case TourStop.get(period) do
+      ts = %{id: _, min_qualifiers_for_winrate: min} ->
+        {true, ts, is_integer(min)}
+      _ -> {false, nil, false}
+    end
+    hide_qualified = default_hiding_for_winrate(conn.params, has_winrate_qual, hide_qualified_raw)
 
     ts =
       if is_ts do
@@ -659,8 +664,8 @@ defmodule BackendWeb.MastersTourView do
         {columns, _} when is_list(columns) ->
           sortable_headers |> Enum.filter(fn c -> Enum.member?(columns, c) end)
 
-        {_, %{id: id, min_qualifiers_for_winrate: min}} when is_integer(min) ->
-          ["Player", "Cups", "Best", to_string(id), "Winrate %"]
+        {_, %{min_qualifiers_for_winrate: min}} when is_integer(min) ->
+          ["Player", "Cups", "Best", "Matches Won", "Winrate %"]
 
         {_, %{id: id}} ->
           ["Player", "Cups", "Top 8", to_string(id), "Winrate %"]
@@ -778,6 +783,7 @@ defmodule BackendWeb.MastersTourView do
       period: period,
       min: min_to_show,
       conn: conn,
+      has_winrate_qual: has_winrate_qual,
       prev_button: prev_button,
       next_button: next_button,
       dropdowns: dropdowns
@@ -944,6 +950,15 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def render(t = "masters_tours_stats.html", params), do: MastersToursStats.render(t, params)
+
+  # If it's not explicitly set for a tour stop that has winrate % qual default to "yes"
+  def default_hiding_for_winrate(params, has_winrate_qual, hide_qualified) do
+    if !has_winrate_qual || Map.has_key?(params, "hide_qualified") do
+      hide_qualified
+    else
+      "yes"
+    end
+  end
 
   @spec create_dropdown_qualifier_links(any) :: [qualifiers_dropdown_link]
   def create_dropdown_qualifier_links(conn) do

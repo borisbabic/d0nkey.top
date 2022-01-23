@@ -33,8 +33,10 @@ defmodule BackendWeb do
       end
 
       def multi_select_to_array(multi), do: []
-      def parse_yes_no("yes"), do: "yes"
-      def parse_yes_no(_), do: "no"
+      def parse_yes_no(yes_or_no, default \\ "no")
+      def parse_yes_no("yes", _), do: "yes"
+      def parse_yes_no("no", _), do: "no"
+      def parse_yes_no(_, default), do: default
 
       use PhoenixMetaTags.TagController
     end

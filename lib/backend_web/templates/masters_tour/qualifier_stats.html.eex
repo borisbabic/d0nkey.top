@@ -1,5 +1,11 @@
 <div class="title is-2"><%= @title %></div>
-<div class="subtitle is-6"><%= @subtitle %></div>
+<div class="subtitle is-6">
+    <%= @subtitle %>
+    <%= if @has_winrate_qual do %>
+        | <a href="https://twitter.com/Abar_HS/status/1426893531281383428" target="_blank">Tiebreakers</a> - h2h not implemented here
+        | <a href="https://hearthstone.doc-x.net/" target="_blank">Official Top 50</a>
+    <% end %>
+</div>
 
 
 <%= form_for @conn, Routes.masters_tour_path(@conn, :qualifier_stats, @period, @conn.query_params),

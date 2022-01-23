@@ -379,12 +379,12 @@ defmodule Backend.MastersTour.TourStop do
     all()
     |> Enum.find(fn ts -> ts.id == tour_stop end)
   end
-  def get(_), do: nil
 
   def get(tour_stop) when is_binary(tour_stop) do
     all()
     |> Enum.find(fn ts -> to_string(ts.id) == tour_stop end)
   end
+  def get(_), do: nil
 
   def get_current(hours_before_start \\ 1, hours_after_start \\ 96) do
     all()
