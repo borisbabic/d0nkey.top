@@ -198,7 +198,7 @@ defmodule BackendWeb.MastersTourController do
       total: total,
       sort_by: params["sort_by"],
       direction: direction,
-      show_flags: parse_yes_no(params["show_flags"]),
+      show_flags: parse_yes_no(params["show_flags"], "yes"),
       countries: multi_select_to_array(params["country"]),
       selected_columns: selected_columns,
       invited_players: invited_players,

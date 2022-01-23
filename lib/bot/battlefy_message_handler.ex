@@ -12,7 +12,7 @@ defmodule Bot.BattlefyMessageHandler do
 
   def handle_tournament_standings(battlefy_id, message) when is_binary(battlefy_id) do
     create_standings_message(battlefy_id, message)
-    |> send(message)
+    |> send_message(message)
   end
 
   def create_standings_message(battlefy_id, _message = %{guild_id: guild_id}) do

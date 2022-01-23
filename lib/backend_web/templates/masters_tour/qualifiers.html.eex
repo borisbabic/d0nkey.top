@@ -1,4 +1,13 @@
 <div class="title is-2">Qualifiers</div>
+<div class="subtitle is-6">
+    <a href="https://battlefy.com/hsesports#faq" target="_blank">
+        Help / Official Site
+    </a>
+
+    | <a href="<%=Routes.masters_tour_path(@conn, :qualifier_stats) %>">
+        Stats
+    </a>
+</div>
 <a class="button icon is-link" href="<%= @before_link %>">
   <i class="fas fa-caret-left"></i>
 </a>
