@@ -4,6 +4,7 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.PlayerInfo
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
+  alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
   alias BackendWeb.ViewUtil
 
@@ -141,6 +142,7 @@ defmodule BackendWeb.LeaderboardView do
       show_ratings: show_ratings,
       conn: conn,
       ladder_invite_num: ladder_invite_num,
+      official_link: Snapshot.official_link(leaderboard),
       highlighted: process_highlighted(highlight, entries)
     })
   end
