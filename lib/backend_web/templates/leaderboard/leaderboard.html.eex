@@ -1,9 +1,13 @@
 <div class="title is-2">Leaderboard</div>
+<div class="subtitle is-6">
+    <%= if @updated_at do %>
+        Updated at <%= render_datetime @updated_at %>
+    <% end %>
+    <%= if @official_link do %>
+        <a target="_blank" href="<%= @official_link %>">Official Site</a>
+    <% end %>
+</div>
 <%= render_dropdowns @dropdowns %>
-
-<%= if @updated_at do %>
-    <div class="subtitle is-6">Updated at <%= render_datetime @updated_at %></div>
-<% end %>
 <%= if @old do %>
     <div class="notification is-warning">
         WARNING: THE DATA FOR THIS LEADERBOARD IS OLD

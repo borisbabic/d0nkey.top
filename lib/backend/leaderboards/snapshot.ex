@@ -51,6 +51,11 @@ defmodule Backend.Leaderboards.Snapshot do
   def extract_updated_at(_) do
     nil
   end
+
+  def official_link(%{region: r, leaderboard_id: ldb, season_id: s}) do
+    "https://playhearthstone.com/en-us/community/leaderboards?region=#{r}&leaderboardId=#{ldb}&seasonId=#{s}"
+  end
+  def official_link(_), do: nil
 end
 
 defmodule Backend.Leaderboards.Snapshot.Entry do

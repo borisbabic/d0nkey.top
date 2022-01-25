@@ -665,17 +665,31 @@ defmodule Backend.Blizzard do
     do: break_weeks |> Enum.filter(&(&1 <= week)) |> Enum.count()
 
   def weeks_so_far(
-        season_def = %{week_one: week_one, break_weeks: break_weeks, playoffs_week: playoffs}
+        season_def = %{break_weeks: break_weeks, playoffs_week: playoffs}
       ) do
-    {_year, current} = Util.current_week()
-
-    week_one..current
+    week_range(season_def)
     |> Enum.filter(&(!(&1 in break_weeks) && &1 <= playoffs))
     |> Enum.map(&gm_week(season_def, &1))
   end
 
   def weeks_so_far(season), do: season |> gm_season_definition() |> weeks_so_far()
 
+
+  def week_range(%{week_one: week_one}) do
+    {_year, current} = Util.current_week()
+
+    if week_one > current do
+      []
+    else
+      week_one..current
+    end
+  end
+
+  @spec gm_season_definition({2021, 1 | 2}) :: %{
+          break_weeks: [17 | 35, ...],
+          playoffs_week: 22 | 40,
+          week_one: 14 | 32
+        }
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
 
