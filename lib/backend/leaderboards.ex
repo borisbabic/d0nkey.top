@@ -224,6 +224,7 @@ defmodule Backend.Leaderboards do
 
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
+  @spec player_history(String.t(), list()) ::  Snapshot.t()
   def player_history(player, criteria) do
     new_criteria = [{"players", [player]} | criteria]
     base_player_history_query(player)
@@ -412,7 +413,7 @@ defmodule Backend.Leaderboards do
   end
 
 
-  @spec player_history([player_history_entry()], atom()) :: [player_history_entry()]
+  @spec dedup_player_histories([player_history_entry()], atom()) :: [player_history_entry()]
   def dedup_player_histories(histories, changed_attr) do
     histories
     |> Enum.sort_by(& &1.upstream_updated_at, & NaiveDateTime.compare(&1, &2) == :lt)
