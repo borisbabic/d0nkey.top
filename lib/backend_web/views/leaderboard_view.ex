@@ -97,11 +97,21 @@ defmodule BackendWeb.LeaderboardView do
   def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
     has_rating = player_history |> Enum.any?(& &1.rating)
     dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
-    sorted_history = Enum.reverse(player_history)
+    sorted_history =
+      player_history
+      |> Enum.reduce({[], nil, nil}, fn ph, {all, prev_rating, prev_rank} ->
+        new = ph
+        |> Map.put(:prev_rating, prev_rating)
+        |> Map.put(:prev_rank, prev_rank)
+        {[new | all], ph.rating, ph.rank}
+      end)
+      |> elem(0)
+      |> Enum.take(420)
     graph = player_history_graph(player_history, attr)
     title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
     render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph, title: title})
   end
+
 
   def render("index.html", params = %{leaderboard: nil}) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
