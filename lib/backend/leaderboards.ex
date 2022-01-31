@@ -15,7 +15,9 @@ defmodule Backend.Leaderboards do
     rank: integer(),
     rating: integer() | nil,
     upstream_updated_at: NaiveDateTime.t(),
-    snapshot_id: integer()
+    snapshot_id: integer(),
+    prev_rank: integer() | nil,
+    prev_rating: integer() | nil
   }
 
   @type entry :: %{
@@ -224,11 +226,13 @@ defmodule Backend.Leaderboards do
 
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
-  @spec player_history(String.t(), list()) ::  Snapshot.t()
-  def player_history(player, criteria) do
+  @spec player_history(String.t(), list(), nil | atom()) ::  [player_history_entry()]
+  def player_history(player, criteria, dedup_by \\ nil) do
     new_criteria = [{"players", [player]} | criteria]
     base_player_history_query(player)
     |> build_snapshot_query(new_criteria)
+    |> add_player_history_previous()
+    |> dedup_player_history(dedup_by)
     |> Repo.all()
   end
   def snapshots(criteria) do
@@ -237,15 +241,39 @@ defmodule Backend.Leaderboards do
     |> Repo.all()
   end
 
+  defp add_player_history_previous(query) do
+    from e in subquery(query),
+      windows: [w: [order_by: e.upstream_updated_at]],
+      select: %{
+        rank: e.rank,
+        rating: e.rating,
+        upstream_updated_at: e.upstream_updated_at,
+        snapshot_id: e.snapshot_id,
+        prev_rating: lag(e.rating) |> over(:w),
+        prev_rank: lag(e.rank) |> over(:w)
+      }
+  end
+  defp dedup_player_history(query, nil), do: query
+  defp dedup_player_history(query, dedup_by) do
+    {curr, prev} = dedup_fields(dedup_by)
+    from d in subquery(query),
+      where: field(d, ^curr) != field(d, ^prev)
+  end
+
+  def dedup_fields(:rank), do: {:rank, :prev_rank}
+  def dedup_fields(:rating), do: {:rating, :prev_rating}
+
+  @rank_fragment "(?->>'rank')::INTEGER"
+  @rating_fragment "(?->>'rating')::INTEGER"
   defp base_player_history_query(player) do
     from s in Snapshot,
       inner_lateral_join: e in fragment("jsonb_array_elements(to_jsonb(?))", s.entries),
       on: fragment("?->>'account_id' LIKE ?", e, ^player),
       select: %{
-        rank: fragment("(?->>'rank')::INTEGER", e),
-        rating: fragment("(?->>'rating')::INTEGER", e),
+        rank: fragment(@rank_fragment, e),
+        rating: fragment(@rating_fragment, e),
         upstream_updated_at: s.upstream_updated_at,
-        snapshot_id: s.id
+        snapshot_id: s.id,
       },
       where: not like(s.leaderboard_id, "invalid_%")
   end
@@ -408,8 +436,8 @@ defmodule Backend.Leaderboards do
   @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [player_history_entry()]
   def player_history(player, region, period, leaderboard_id, changed_attr \\ :rank) do
     criteria = [{"period", period}, {"region", region}, {"leaderboard_id", leaderboard_id}]
-    player_history(player, criteria)
-    |> dedup_player_histories(changed_attr)
+    player_history(player, criteria, changed_attr)
+    # |> dedup_player_histories(changed_attr)
   end
 
 
