@@ -39,6 +39,8 @@
       <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "590f08dce08a492fb4b4d49be7a3ee87"}'></script>
     <!-- End Cloudflare Web Analytics -->
     <br>
+    <%= render("ads_all.html", %{conn: @conn}) %>
   </body>
+
   <%= render("footer.html", %{conn: @conn}) %>
 </html>
