@@ -401,5 +401,8 @@ defmodule Backend.PlayerInfo do
     end
   end
 
-  def leaderboard_names(battletag_full), do: [InvitedPlayer.shorten_battletag(battletag_full)]
+  def leaderboard_names(bts) when is_list(bts),
+    do: Enum.flat_map(bts, &leaderboard_names/1)
+  def leaderboard_names(battletag_full),
+    do: [InvitedPlayer.shorten_battletag(battletag_full)]
 end

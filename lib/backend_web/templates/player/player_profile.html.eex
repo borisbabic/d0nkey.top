@@ -24,7 +24,7 @@
     </div>
 </div>
 <%= for row <- @rows do %>
-    <div class="tag is-info"> 
+    <div class="tag is-info">
         <%= row %>
     </div>
 <% end %>
@@ -40,4 +40,3 @@
         <% end %>
     </tbody>
 </table>
-

@@ -41,6 +41,21 @@ defmodule Backend.MastersTour.PlayerStats do
     |> update(s)
   end
 
+  @spec merge(PlayerStats.t(), PlayerStats.t()) :: PlayerStats.t()
+  def merge(first, second) do
+    %__MODULE__{
+      battletag_full: first.battletag_full,
+      wins: first.wins + second.wins,
+      losses: first.losses + second.losses,
+      num_won: first.num_won + second.num_won,
+      only_losses: first.only_losses + second.only_losses,
+      no_results: first.no_results + second.no_results,
+      top8: first.top8 + second.top8,
+      top16: first.top16 + second.top16,
+      positions: first.positions ++ second.positions
+    }
+  end
+
   @spec update(Player.t(), Standings.t()) :: Player.t()
   @spec update(Standings.t(), Player.t()) :: Player.t()
   def update(s, p = %__MODULE__{}), do: update(p, s)

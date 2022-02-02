@@ -42,6 +42,9 @@
             <%= if can_access?(@conn, :fantasy_leagues) do %>
               <a href="/torch/fantasy-leagues">Fantasy Leagues</a>
             <% end %>
+            <%= if can_access?(@conn, :old_battletags) do %>
+              <a href="/torch/old-battletags">Old Battletags</a>
+            <% end %>
           </nav>
         </div>
       </section>
@@ -52,4 +55,3 @@
     <script src="<%= Routes.static_path(@conn, "/torch/torch.js") %>"></script>
   </body>
 </html>
-

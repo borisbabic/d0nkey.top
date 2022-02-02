@@ -1,0 +1,32 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "Edit", to: Routes.old_battletag_path(@conn, :edit, @old_battletag), class: "torch-button" %>
+    <%= link "Back", to: Routes.old_battletag_path(@conn, :index), class: "torch-button" %>
+  </div>
+</section>
+
+<section id="torch-header-and-content">
+  <div class="torch-container">
+    <div class="header">
+      <h3>Old battletag Details</h3>
+    </div>
+    <ul>
+
+        <li>
+          <div class="torch-show-label">Old battletag:</div>
+          <div class="torch-show-data"><%= @old_battletag.old_battletag %></div>
+        </li>
+
+        <li>
+          <div class="torch-show-label">New battletag:</div>
+          <div class="torch-show-data"><%= @old_battletag.new_battletag %></div>
+        </li>
+
+        <li>
+          <div class="torch-show-label">Source:</div>
+          <div class="torch-show-data"><%= @old_battletag.source %></div>
+        </li>
+
+    </ul>
+  </div>
+</section>

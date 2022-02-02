@@ -177,16 +177,20 @@ defmodule Backend.MastersTour do
 
   @spec list_qualifiers_for_player(Blizzard.battletag()) :: [Qualifier]
   def list_qualifiers_for_player(battletag_full) do
-    search = "%#{battletag_full}%"
+    search = bt_search(battletag_full)
 
     query =
       from q in Qualifier,
         select: q,
-        where: like(fragment("to_jsonb(?)::text", q.standings), ^search),
+        where: fragment("to_jsonb(?)::text SIMILAR TO ?", q.standings, ^search),
         order_by: [desc: q.start_time]
 
     query |> Repo.all()
   end
+
+  def bt_search(bts) when is_list(bts), do: "%(#{Enum.join(bts, "|")})%"
+  def bt_search(bt), do: bt_search([bt])
+
 
   def list_qualifiers_in_range(start_date = %Date{}, end_date = %Date{}),
     do:
