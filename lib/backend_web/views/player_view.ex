@@ -2,6 +2,7 @@ defmodule BackendWeb.PlayerView do
   use BackendWeb, :view
 
   alias Backend.Blizzard
+  alias Backend.Battlenet.Battletag
   alias Backend.MastersTour.PlayerStats
   alias Backend.MastersTour.TourStop
   alias Backend.TournamentStats.TeamStats
@@ -16,16 +17,19 @@ defmodule BackendWeb.PlayerView do
   def render(
         "player_profile.html",
         %{
-          battletag_full: battletag_full,
+          battletags: battletags,
           qualifier_stats: qs,
           player_info: pi,
           tournaments: t,
+          battletag_full: battletag_full,
           finishes: finishes,
           competitions: competitions,
           tournament_team_stats: tts,
           conn: conn
         }
       ) do
+
+    short_btags = Enum.map(battletags, &Battletag.shorten/1)
     stats_rows =
       qs
       |> Enum.flat_map(fn {period, ps} ->
@@ -101,11 +105,9 @@ defmodule BackendWeb.PlayerView do
         }
       end)
 
-    qualifier_rows = qualifier_rows(t, battletag_full, conn)
+    qualifier_rows = qualifier_rows(t, battletags, conn)
 
-    leaderboard_names = Backend.PlayerInfo.leaderboard_names(battletag_full)
-
-    leaderboard_rows = leaderboard_rows(finishes, leaderboard_names, conn)
+    leaderboard_rows = leaderboard_rows(finishes, short_btags, conn)
 
     table_rows =
       pick_competitions(competitions, %{
@@ -135,11 +137,11 @@ defmodule BackendWeb.PlayerView do
     })
   end
 
-  def qualifier_rows(tournaments, battletag_full, conn) do
+  def qualifier_rows(tournaments, battletags, conn) do
     tournaments
     |> Enum.flat_map(fn t ->
       t.standings
-      |> Enum.find(fn ps -> ps.battletag_full == battletag_full end)
+      |> Enum.find(fn ps -> ps.battletag_full in battletags end)
       |> case do
         # this shouldn't be possible, but let's be safe
         nil ->
@@ -151,7 +153,7 @@ defmodule BackendWeb.PlayerView do
           tournament_title = Recase.to_title(t.tournament_slug)
 
           player_link =
-            Routes.battlefy_path(conn, :tournament_player, t.tournament_id, battletag_full)
+            Routes.battlefy_path(conn, :tournament_player, t.tournament_id, ps.battletag_full)
 
           [
             %{

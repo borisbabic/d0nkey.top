@@ -5,6 +5,7 @@ defmodule Backend.UserManager do
 
   import Ecto.Query, warn: false
   alias Backend.Repo
+  alias Ecto.Multi
   @type bnet_info :: %{battletag: String.t(), bnet_id: String.t()}
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
@@ -192,11 +193,24 @@ defmodule Backend.UserManager do
   Finds the bnet user if it exists, creates one if it doesn't.
   """
   @spec ensure_bnet_user(bnet_info()) :: User
-  def ensure_bnet_user(%{bnet_id: id} = bnet_info) do
+  def ensure_bnet_user(%{bnet_id: id, battletag: info_btag} = bnet_info) do
     case Repo.get_by(User, bnet_id: id) do
       nil -> create_bnet_user!(bnet_info)
+      user = %{battletag: db_btag} when db_btag != info_btag -> update_battletag(user, info_btag)
       user -> user
     end
+  end
+
+  def update_battletag(user, new_btag) do
+    cs = User.changeset(user, %{battletag: new_btag})
+
+    battletag_cs = Backend.Battlenet.battletag_change_changeset(user, new_btag)
+    Multi.new()
+    |> Multi.update("update_user_btag_#{user.id}", cs)
+    |> Multi.insert("old_battletag_for_user#{user.id}", battletag_cs)
+    |> Repo.transaction()
+
+    get_user!(user.id)
   end
 
   @doc """

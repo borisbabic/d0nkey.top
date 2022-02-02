@@ -105,4 +105,96 @@ defmodule Backend.BattlenetTest do
       assert %Ecto.Changeset{} = Battlenet.change_battletag(battletag)
     end
   end
+
+  alias Backend.Battlenet.OldBattletag
+
+  @valid_attrs %{old_battletag: "some old_battletag", source: "some source"}
+  @update_attrs %{old_battletag: "some updated old_battletag", source: "some updated source"}
+  @invalid_attrs %{old_battletag: nil, source: nil}
+
+  describe "#paginate_old_battletags/1" do
+    test "returns paginated list of old_battletags" do
+      for _ <- 1..20 do
+        old_battletag_fixture()
+      end
+
+      {:ok, %{old_battletags: old_battletags} = page} = Battlenet.paginate_old_battletags(%{})
+
+      assert length(old_battletags) == 15
+      assert page.page_number == 1
+      assert page.page_size == 15
+      assert page.total_pages == 2
+      assert page.total_entries == 20
+      assert page.distance == 5
+      assert page.sort_field == "inserted_at"
+      assert page.sort_direction == "desc"
+    end
+  end
+
+  describe "#list_old_battletags/0" do
+    test "returns all old_battletags" do
+      old_battletag = old_battletag_fixture()
+      assert Battlenet.list_old_battletags() == [old_battletag]
+    end
+  end
+
+  describe "#get_old_battletag!/1" do
+    test "returns the old_battletag with given id" do
+      old_battletag = old_battletag_fixture()
+      assert Battlenet.get_old_battletag!(old_battletag.id) == old_battletag
+    end
+  end
+
+  describe "#create_old_battletag/1" do
+    test "with valid data creates a old_battletag" do
+      assert {:ok, %OldBattletag{} = old_battletag} = Battlenet.create_old_battletag(@valid_attrs)
+      assert old_battletag.old_battletag == "some old_battletag"
+      assert old_battletag.source == "some source"
+    end
+
+    test "with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Battlenet.create_old_battletag(@invalid_attrs)
+    end
+  end
+
+  describe "#update_old_battletag/2" do
+    test "with valid data updates the old_battletag" do
+      old_battletag = old_battletag_fixture()
+      assert {:ok, old_battletag} = Battlenet.update_old_battletag(old_battletag, @update_attrs)
+      assert %OldBattletag{} = old_battletag
+      assert old_battletag.old_battletag == "some updated old_battletag"
+      assert old_battletag.source == "some updated source"
+    end
+
+    test "with invalid data returns error changeset" do
+      old_battletag = old_battletag_fixture()
+      assert {:error, %Ecto.Changeset{}} = Battlenet.update_old_battletag(old_battletag, @invalid_attrs)
+      assert old_battletag == Battlenet.get_old_battletag!(old_battletag.id)
+    end
+  end
+
+  describe "#delete_old_battletag/1" do
+    test "deletes the old_battletag" do
+      old_battletag = old_battletag_fixture()
+      assert {:ok, %OldBattletag{}} = Battlenet.delete_old_battletag(old_battletag)
+      assert_raise Ecto.NoResultsError, fn -> Battlenet.get_old_battletag!(old_battletag.id) end
+    end
+  end
+
+  describe "#change_old_battletag/1" do
+    test "returns a old_battletag changeset" do
+      old_battletag = old_battletag_fixture()
+      assert %Ecto.Changeset{} = Battlenet.change_old_battletag(old_battletag)
+    end
+  end
+
+  def old_battletag_fixture(attrs \\ %{}) do
+    {:ok, old_battletag} =
+      attrs
+      |> Enum.into(@valid_attrs)
+      |> Battlenet.create_old_battletag()
+
+    old_battletag
+  end
+
 end

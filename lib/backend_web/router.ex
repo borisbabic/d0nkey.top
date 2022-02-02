@@ -210,6 +210,7 @@ defmodule BackendWeb.Router do
     resources "/feed_items", FeedItemController
     resources "/fantasy-leagues", LeagueController
     resources "/api-users", ApiUserController
+    resources "/old-battletags", OldBattletagController
   end
 
   scope "/admin", BackendWeb do
