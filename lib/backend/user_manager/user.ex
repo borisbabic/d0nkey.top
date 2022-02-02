@@ -51,7 +51,7 @@ defmodule Backend.UserManager.User do
     cs
     |> fetch_change(:country_code)
     |> case do
-      {:ok, cc} -> cs |> put_change(:country_code, String.upcase(cc))
+      {:ok, cc} when is_binary(cs) -> cs |> put_change(:country_code, String.upcase(cc))
       _ -> cs
     end
   end

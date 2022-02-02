@@ -31,13 +31,13 @@ defmodule BackendWeb.ProfileSettingsLive do
             </Field>
             <br>
             <Field name="country_code">
-              <Label class="label" >Enter 2 character <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">alpha2 country code</a></Label>
-              <TextInput value={@user.country_code} class="input is-small" />
+              <Label class="label" >Country Flag</Label>
+              <Select class="select" options={[{"Select Country", nil} | country_options()]} selected={@user.country_code} />
             </Field>
             <br>
             <Field name="unicode_icon">
+              <Label class="label">Player Icon</Label>
               <Select selected={@user.unicode_icon} class="select" options={[{"None", nil}, {pride_flag(), pride_flag()}]}/>
-              <Label>Player Icon</Label>
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
@@ -71,6 +71,11 @@ defmodule BackendWeb.ProfileSettingsLive do
     """
   end
 
+  def country_options() do
+    Enum.map(Countriex.all(), fn %{name: name, alpha2: code} ->
+      {name, code}
+    end)
+  end
   def pride_flag() do
     <<0xF0, 0x9F, 0x8F, 0xB3, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x8C, 0x88>>
   end
