@@ -47,12 +47,16 @@ defmodule Components.DeckStatsTable do
             url_params={@params}
             selected_params={selected_params}
             live_view={@live_view} />
-        <ClassStatsTable :if={stats = DeckTracker.detailed_stats(@deck_id, params(selected_params, user))} stats={stats} />
+        <ClassStatsTable :if={stats = stats(@deck_id, params(selected_params, user))} stats={stats} />
       </Context>
     </div>
     """
   end
 
+  def stats(nil, _), do: []
+  def stats(deck, params) do
+    DeckTracker.detailed_stats(@deck_id, params)
+  end
   defp params(selected, user) do
     selected
     |> Map.pop("players", "all_players")
