@@ -25,8 +25,10 @@
       </script>
       <script async src="https://s.nitropay.com/ads-909.js"></script>
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8835820092180114" crossorigin="anonymous"></script>
+      <%= render_tags_all(assigns[:meta_tags] || %{}) %>
     <% end %>
-    <%= render_tags_all(assigns[:meta_tags] || %{}) %>
+
+    <%= render("ads_all.html", %{conn: @conn}) %>
   </head>
   <%= render("navbar.html", %{conn: @conn, handle_user: true}) %>
   <body>
@@ -39,7 +41,6 @@
       <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "590f08dce08a492fb4b4d49be7a3ee87"}'></script>
     <!-- End Cloudflare Web Analytics -->
     <br>
-    <%= render("ads_all.html", %{conn: @conn}) %>
   </body>
 
   <%= render("footer.html", %{conn: @conn}) %>
