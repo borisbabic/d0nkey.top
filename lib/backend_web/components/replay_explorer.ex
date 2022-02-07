@@ -88,7 +88,7 @@ defmodule Components.ReplayExplorer do
         </Form>
       </div>
 
-      <div :if={replays = DeckTracker.games(["has_result" | Enum.to_list(search_filters)])}>
+      <div :if={replays = DeckTracker.games(search_filters)}>
         <ReplaysTable replays={replays}/>
         <div :if={!(Enum.any?(replays))} >
           <br>

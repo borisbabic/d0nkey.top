@@ -75,9 +75,9 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "WIN" -> :win
       "WON" -> :win
       "LOSS" -> :loss
-      "LOST" -> :lost
-      "TIED" -> :tied
-      "TIE" -> :tie
+      "LOST" -> :loss
+      "TIED" -> :draw
+      "TIE" -> :draw
       "DRAW" -> :draw
       nil -> :in_progress
       other ->
@@ -85,12 +85,6 @@ defmodule Hearthstone.DeckTracker.GameDto do
         :unknown
     end
   end
-
-  def status(s) when s in ["WIN", "WON"], do: :win
-  def status("LOST"), do: :loss
-  def status("TIED"), do: :draw
-  def status(nil), do: :in_progress
-  def status(_), do: :unknown
 
   def region("REGION_" <> region), do: region(region)
   def region("EU"), do: :EU
