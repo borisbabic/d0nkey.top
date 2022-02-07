@@ -54,8 +54,8 @@ defmodule Components.DeckStatsTable do
   end
 
   def stats(nil, _), do: []
-  def stats(deck, params) do
-    DeckTracker.detailed_stats(@deck_id, params)
+  def stats(deck_id, params) do
+    DeckTracker.detailed_stats(deck_id, params)
   end
   defp params(selected, user) do
     selected
