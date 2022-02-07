@@ -48,7 +48,7 @@ defmodule BackendWeb.DeckLive do
     <Context put={user: @user}>
       <div class="container">
         <br>
-        <div class="columns is-multiline is-mobile is-narrow is-centered">
+        <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
           <div class="column is-narrow-mobile">
             <DeckCard>
               <Decklist deck={@deck} archetype_as_name={true} />
@@ -57,14 +57,21 @@ defmodule BackendWeb.DeckLive do
               </:after_deck>
             </DeckCard>
           </div>
-          <div class="column is-narrow-mobile">
+          <div :if={nil != @deck.id} class="column is-narrow-mobile">
             <DeckStatsTable id="deck_stats" deck_id={@deck.id} live_view={__MODULE__} path_params={[to_string(@deck.id)]} params={@deck_stats_params} />
           </div>
+        </div>
+        <div :if={!valid?(@deck)} class="title is-2">
+          Not a valid deck.
         </div>
       </div>
     </Context>
     """
   end
+
+
+  defp valid?(%{id: id}), do: true
+  defp valid?(_), do: false
 
   def render(assigns) do
     ~F"""
@@ -77,11 +84,12 @@ defmodule BackendWeb.DeckLive do
     Tracker.inc_copied(code)
     {:noreply, socket}
   end
-  def assign_meta(socket = %{assigns: %{deck: deck}}) do
+  def assign_meta(socket = %{assigns: %{deck: deck = %{id: id}}}) do
     socket
     |> assign_meta_tags(%{
       description: deck |> Deck.deckcode(),
       title: deck.class |> Deck.class_name()
     })
   end
+  def assign_meta(socket), do: socket
 end
