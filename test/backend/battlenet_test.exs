@@ -108,8 +108,8 @@ defmodule Backend.BattlenetTest do
 
   alias Backend.Battlenet.OldBattletag
 
-  @valid_attrs %{old_battletag: "some old_battletag", source: "some source"}
-  @update_attrs %{old_battletag: "some updated old_battletag", source: "some updated source"}
+  @valid_attrs %{old_battletag: "some old_battletag", new_battletag: "new", source: "some source"}
+  @update_attrs %{old_battletag: "some updated old_battletag", new_battletag: "new", source: "some updated source"}
   @invalid_attrs %{old_battletag: nil, source: nil}
 
   describe "#paginate_old_battletags/1" do
