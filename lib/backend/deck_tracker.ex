@@ -351,6 +351,11 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"status", status}, query),
     do: query |> where([g], g.status == ^status)
 
+  defp compose_games_query("has_result", query) do
+    results = ["win", "loss", "draw"]
+    query |> where([g], g.status in ^results)
+  end
+
   defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
 

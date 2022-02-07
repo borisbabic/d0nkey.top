@@ -12,6 +12,8 @@ defmodule Components.ReplayExplorer do
   alias Components.ClassStatsModal
   alias Components.DecksExplorer
   alias Components.ReplaysTable
+  alias Surface.Components.Form
+  alias Surface.Components.Form.TextInput
 
   # @default_limit 15
   # @max_limit 30
@@ -36,53 +38,57 @@ defmodule Components.ReplayExplorer do
 
     ~F"""
     <div :if={{params, search_filters} = parse_params(@params, assigns)}>
-      <LivePatchDropdown
-        options={format_options()}
-        title={"Format"}
-        param={"format"}
-        url_params={@params}
-        selected_params={params}
-        normalizer={&to_string/1}
-        live_view={@live_view} />
+      <div class="level is-mobile level-left">
+        <LivePatchDropdown
+          options={format_options()}
+          title={"Format"}
+          param={"format"}
+          url_params={@params}
+          selected_params={params}
+          normalizer={&to_string/1}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={DecksExplorer.rank_options()}
-        title={"Rank"}
-        param={"rank"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={DecksExplorer.rank_options()}
+          title={"Rank"}
+          param={"rank"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={@period_options}
-        title={"Period"}
-        param={"period"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={@period_options}
+          title={"Period"}
+          param={"period"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={DecksExplorer.class_options("Any Class")}
-        title={"Class"}
-        param={"player_class"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={DecksExplorer.class_options("Any Class")}
+          title={"Class"}
+          param={"player_class"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={DecksExplorer.class_options("Any Opponent")}
-        title={"Opponent Class"}
-        param={"opponent_class"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={DecksExplorer.class_options("Any Opponent")}
+          title={"Opponent Class"}
+          param={"opponent_class"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
-      <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
-      <br>
-      <br>
+        <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
+        <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
+        <Form for={:search} change="change" submit="change">
+          <TextInput class={"input"} opts={placeholder: "Search opponent"}/>
+        </Form>
+      </div>
 
-      <div :if={replays = DeckTracker.games(search_filters)}>
+      <div :if={replays = DeckTracker.games(["has_result" | Enum.to_list(search_filters)])}>
         <ReplaysTable replays={replays}/>
         <div :if={!(Enum.any?(replays))} >
           <br>
@@ -94,6 +100,15 @@ defmodule Components.ReplayExplorer do
       </div>
     </div>
     """
+  end
+
+  def handle_event("change", %{"search" => [search]}, socket) do
+    {:noreply, update_search(socket, search)}
+  end
+
+  def update_search(socket = %{assigns: %{params: p}}, search) do
+    p = Map.put(p, "opponent_btag_like", search)
+    assign(socket, params: p)
   end
 
   defp parse_params(raw_params, assigns) do
@@ -114,7 +129,7 @@ defmodule Components.ReplayExplorer do
 
   def filter_relevant(params) do
     params
-    |> Map.take(["rank", "period", "limit", "order_by", "player_class", "opponent_class", "format", "offset", "region", "player_deck_includes", "player_deck_excludes"])
+    |> Map.take(["rank", "period", "limit", "order_by", "player_class", "opponent_class", "format", "offset", "region", "player_deck_includes", "player_deck_excludes", "opponent_btag_like"])
     |> DecksExplorer.parse_int(["limit", "format", "offset", "player_deck_includes", "player_deck_excludes"])
   end
 

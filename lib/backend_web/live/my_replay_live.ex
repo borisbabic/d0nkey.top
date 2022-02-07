@@ -3,6 +3,7 @@ defmodule BackendWeb.MyReplaysLive do
   use Surface.LiveView
   alias Backend.UserManager.User
   alias Components.ReplayExplorer
+  alias BackendWeb.Router.Helpers, as: Routes
   import BackendWeb.LiveHelpers
 
   data(user, :any)
