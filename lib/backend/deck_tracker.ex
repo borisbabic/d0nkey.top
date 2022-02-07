@@ -360,6 +360,8 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
 
   @spec replay_link(%{:game_id => any, optional(any) => any}) :: <<_::64, _::_*8>>
+  def replay_link(%{replay_url: url}) when is_binary(url), do: url
+
   def replay_link(%{api_user: nil, game_id: game_id}),
     do: "https://hsreplay.net/replay/#{game_id}"
   def replay_link(%{game_id: game_id}),

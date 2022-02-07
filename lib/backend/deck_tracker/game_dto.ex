@@ -4,6 +4,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
   alias __MODULE__
   alias Hearthstone.DeckTracker.PlayerDto
   alias Backend.Hearthstone.Deck
+  require Logger
 
   typedstruct do
     field :player, PlayerDto.t()
@@ -15,6 +16,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
     field :region, String.t()
     field :duration, integer()
     field :turns, integer()
+    field :replay_url, String.t()
     field :created_by, Backend.Api.ApiUser.t()
   end
 
@@ -32,6 +34,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
       game_type: map["game_type"],
       format: map["format"],
       result: map["result"],
+      replay_url: map["replay_url"],
       region: map["region"],
       duration: map["duration"],
       turns: map["turns"],
@@ -58,15 +61,32 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "game_id" => dto.game_id,
       "game_type" => dto.game_type,
       "format" => dto.format,
-      "status" => status(dto.result),
+      "status" => status(dto),
       "region" => region(dto.region),
       "turns" => dto.turns,
       "duration" => dto.duration,
+      "replay_url" => dto.replay_url,
       "created_by" => dto.created_by
     }
   end
 
-  def status("WON"), do: :win
+  def status(dto) do
+    case dto.result do
+      "WIN" -> :win
+      "WON" -> :win
+      "LOSS" -> :loss
+      "LOST" -> :lost
+      "TIED" -> :tied
+      "TIE" -> :tie
+      "DRAW" -> :draw
+      nil -> :in_progress
+      other ->
+        Logger.warn("Unknown status: #{other} for game #{dto.game_id}")
+        :unknown
+    end
+  end
+
+  def status(s) when s in ["WIN", "WON"], do: :win
   def status("LOST"), do: :loss
   def status("TIED"), do: :draw
   def status(nil), do: :in_progress
