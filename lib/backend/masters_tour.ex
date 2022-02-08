@@ -242,6 +242,13 @@ defmodule Backend.MastersTour do
     PlayerStatsCache.delete(:all)
   end
 
+  def refresh_current_invited() do
+    with %{id: id} = TourStop.get_current_qualifiers() do
+      id
+      |> to_string()
+      |> fetch()
+    end
+  end
   def qualifiers_update() do
     TourStop.get_current_qualifiers(:id)
     |> qualifiers_update()
@@ -354,9 +361,12 @@ defmodule Backend.MastersTour do
   end
 
   def fetch(tour_stop) do
-    BattlefyCommunicator.get_invited_players(tour_stop)
-    |> filter_existing(tour_stop)
-    |> insert_all
+    fetched = BattlefyCommunicator.get_invited_players(tour_stop)
+    filtered = filter_existing(fetched, tour_stop)
+    Multi.new()
+    |> prepare_insert_all(filtered)
+    |> prepare_delete_official_removed(fetched, tour_stop)
+    |> Repo.transaction()
   end
 
   def fetch() do
@@ -378,14 +388,28 @@ defmodule Backend.MastersTour do
     |> insert_all
   end
 
-  def insert_all(new_players) do
+  def prepare_insert_all(multi, new_players) do
     new_players
     |> Enum.filter(fn np -> np.battletag_full && np.tour_stop end)
     |> Enum.uniq_by(&InvitedPlayer.uniq_string/1)
-    |> Enum.reduce(Multi.new(), fn np, multi ->
+    |> Enum.reduce(multi, fn np, multi ->
       changeset = invited_player_changeset(np)
       Multi.insert(multi, InvitedPlayer.uniq_string(np), changeset)
     end)
+  end
+
+  def prepare_delete_official_removed(multi, fetched, tour_stop) do
+    battletags = Enum.map(fetched, & &1.battletag_full)
+    query = from ip in InvitedPlayer,
+      where: ip.tour_stop == ^tour_stop
+         and ip.official == true
+         and ip.battletag_full not in ^battletags
+    Multi.delete_all(multi, :delete_official_removed, query)
+  end
+
+  def insert_all(new_players) do
+    Multi.new()
+    |> prepare_insert_all(new_players)
     |> Repo.transaction()
   end
 

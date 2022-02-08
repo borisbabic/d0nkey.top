@@ -21,6 +21,7 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.Grandmasters.update() end},
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
     {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
+    {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end}
   ]
 
