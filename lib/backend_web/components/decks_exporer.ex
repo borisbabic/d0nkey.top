@@ -37,93 +37,95 @@ defmodule Components.DecksExplorer do
   def render(assigns) do
 
     ~F"""
-    <div :if={{params, search_filters} = parse_params(@params, assigns)}>
-      <LivePatchDropdown
-        options={format_options()}
-        title={"Format"}
-        param={"format"}
-        url_params={@params}
-        selected_params={params}
-        normalizer={&to_string/1}
-        live_view={@live_view} />
-      <LivePatchDropdown
-        options={rank_options()}
-        title={"Rank"}
-        param={"rank"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+    <div>
+      <div :if={{params, search_filters} = parse_params(@params, assigns)}>
+        <LivePatchDropdown
+          options={format_options()}
+          title={"Format"}
+          param={"format"}
+          url_params={@params}
+          selected_params={params}
+          normalizer={&to_string/1}
+          live_view={@live_view} />
+        <LivePatchDropdown
+          options={rank_options()}
+          title={"Rank"}
+          param={"rank"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={@period_options}
-        title={"Period"}
-        param={"period"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={@period_options}
+          title={"Period"}
+          param={"period"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={limit_options()}
-        title={"Decks"}
-        param={"limit"}
-        selected_as_title={false}
-        url_params={@params}
-        selected_params={params}
-        normalizer={&to_string/1}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={limit_options()}
+          title={"Decks"}
+          param={"limit"}
+          selected_as_title={false}
+          url_params={@params}
+          selected_params={params}
+          normalizer={&to_string/1}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={class_options("Any Class")}
-        title={"Class"}
-        param={"player_class"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={class_options("Any Class")}
+          title={"Class"}
+          param={"player_class"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={class_options("Any Opponent")}
-        title={"Opponent Class"}
-        param={"opponent_class"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={class_options("Any Opponent")}
+          title={"Opponent Class"}
+          param={"opponent_class"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
 
-      <LivePatchDropdown
-        options={min_games_options(@min_games_options, @min_games_floor)}
-        title={"Min Games"}
-        param={"min_games"}
-        selected_as_title={false}
-        url_params={@params}
-        selected_params={params}
-        normalizer={&to_string/1}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={min_games_options(@min_games_options, @min_games_floor)}
+          title={"Min Games"}
+          param={"min_games"}
+          selected_as_title={false}
+          url_params={@params}
+          selected_params={params}
+          normalizer={&to_string/1}
+          live_view={@live_view} />
 
-      <LivePatchDropdown
-        options={order_by_options()}
-        title={"Order By"}
-        param={"order_by"}
-        url_params={@params}
-        selected_params={params}
-        live_view={@live_view} />
+        <LivePatchDropdown
+          options={order_by_options()}
+          title={"Order By"}
+          param={"order_by"}
+          url_params={@params}
+          selected_params={params}
+          live_view={@live_view} />
 
-      <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
-      <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
-      <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
-      <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
-      <br>
-      <br>
+        <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
+        <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
+        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
+        <br>
+        <br>
 
-      <div :if={deck_stats = DeckTracker.deck_stats(search_filters)} class="columns is-multiline is-mobile is-narrow is-centered">
-        <div :for={deck_with_stats <- deck_stats} class="column is-narrow">
-          <DeckWithStats deck_with_stats={deck_with_stats} />
-        </div>
-        <div :if={!(Enum.any?(deck_stats))} >
-          <br>
-          <br>
-          <br>
-          <br>
-          No decks available for these filters
+        <div :if={deck_stats = DeckTracker.deck_stats(search_filters)} class="columns is-multiline is-mobile is-narrow is-centered">
+          <div :for={deck_with_stats <- deck_stats} class="column is-narrow">
+            <DeckWithStats deck_with_stats={deck_with_stats} />
+          </div>
+          <div :if={!(Enum.any?(deck_stats))} >
+            <br>
+            <br>
+            <br>
+            <br>
+            No decks available for these filters
+          </div>
         </div>
       </div>
     </div>
@@ -210,6 +212,7 @@ defmodule Components.DecksExplorer do
       _ -> "past_week"
     end
   end
+
 
   defp week_past_alterac_valley?() do
     NaiveDateTime.utc_now()

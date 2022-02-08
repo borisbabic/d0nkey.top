@@ -1,10 +1,9 @@
 defmodule BackendWeb.FantasyIndexLive do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
   alias Backend.Fantasy
   alias Components.FantasyLeaguesTable
   alias Components.FantasyModal
-  import BackendWeb.LiveHelpers
 
   data(user, :any)
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
@@ -12,7 +11,7 @@ defmodule BackendWeb.FantasyIndexLive do
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-2">Fantasy Leagues</div>
         <div class="level">
           <div class="level-left">
@@ -31,7 +30,7 @@ defmodule BackendWeb.FantasyIndexLive do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-3">Please login to access Fantasy Leagues!</div>
       </div>
     </Context>

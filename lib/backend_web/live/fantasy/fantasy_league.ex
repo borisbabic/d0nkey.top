@@ -1,6 +1,6 @@
 defmodule BackendWeb.FantasyLeagueLive do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
   alias Backend.Fantasy
   alias Components.FantasyLeague
   import BackendWeb.LiveHelpers
@@ -18,7 +18,7 @@ defmodule BackendWeb.FantasyLeagueLive do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <FantasyLeague id={"fantasy_league_#{@league_id}"} league={@league} />
       </div>
     </Context>

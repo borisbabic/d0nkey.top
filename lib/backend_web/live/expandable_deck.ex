@@ -1,10 +1,9 @@
 defmodule BackendWeb.ExpandableDeckLive do
   @moduledoc false
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view_no_layout
   alias Components.Decklist
   alias Backend.Hearthstone.Deck
   alias Backend.DeckInteractionTracker, as: Tracker
-  use Surface.LiveView
   data(deckcode, :string)
   data(name, :string)
   data(show_cards, :boolean)

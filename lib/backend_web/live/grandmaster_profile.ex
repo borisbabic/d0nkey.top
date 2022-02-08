@@ -1,10 +1,8 @@
 defmodule BackendWeb.GrandmasterProfileLive do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
 
   alias Components.GMResultsTable
-  alias BackendWeb.Router.Helpers, as: Routes
-  import BackendWeb.LiveHelpers
 
   alias Components.ExpandableLineup
   alias Components.GMProfileLink
@@ -28,7 +26,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
   def render(assigns) do
     ~F"""
      <Context put={user: @user}>
-      <div class="container">
+      <div>
         <div class="title is-2">
           {@gm} {@week}
         </div>

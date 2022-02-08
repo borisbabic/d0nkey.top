@@ -58,6 +58,37 @@ defmodule BackendWeb do
     end
   end
 
+
+  def surface_live_view do
+    quote do
+      use Surface.LiveView,
+        layout: {BackendWeb.LayoutView, "live.html"}
+
+      import BackendWeb.LiveHelpers
+      alias BackendWeb.Router.Helpers, as: Routes
+      unquote(view_helpers())
+    end
+  end
+  def surface_live_view_no_layout do
+    quote do
+      use Surface.LiveView
+
+      import BackendWeb.LiveHelpers
+      alias BackendWeb.Router.Helpers, as: Routes
+      unquote(view_helpers())
+    end
+  end
+
+  def surface_live_component do
+    quote do
+      use Surface.LiveComponent
+      alias BackendWeb.Router.Helpers, as: Routes
+      import BackendWeb.LiveHelpers
+
+      unquote(view_helpers())
+    end
+  end
+
   def live_view do
     quote do
       use Phoenix.LiveView,

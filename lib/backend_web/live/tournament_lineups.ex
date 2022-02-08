@@ -1,6 +1,5 @@
 defmodule BackendWeb.TournamentLineups do
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
   alias Components.TournamentLineupExplorer
   alias Backend.Hearthstone.Lineup
   alias Backend.DeckInteractionTracker, as: Tracker
@@ -17,7 +16,7 @@ defmodule BackendWeb.TournamentLineups do
   def render(assigns) do
     ~F"""
     <Context  put={user: @user}>
-      <div class="container">
+      <div>
         <div :if={lineups = Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
           <div :if={Lineup.stats(lineups)} >
             <div class="title is-2">Lineups</div>

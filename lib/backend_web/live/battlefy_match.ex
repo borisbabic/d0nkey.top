@@ -1,7 +1,6 @@
 defmodule BackendWeb.BattlefyMatchLive do
   @moduledoc false
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
 
   data(user, :any)
   data(tournament, :map)
@@ -11,7 +10,6 @@ defmodule BackendWeb.BattlefyMatchLive do
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
   alias Backend.Hearthstone.Deck
-  alias BackendWeb.Router.Helpers, as: Routes
 
   def mount(_params, session, socket) do
     {:ok,
@@ -22,7 +20,7 @@ defmodule BackendWeb.BattlefyMatchLive do
   def render(assigns) do
     ~F"""
     <Context  put={user: @user}>
-      <div class="container">
+      <div>
         <div class="title is-2">
           <a href={"#{Battlefy.get_match_url(@tournament, @match)}"}>
             {title(@match)}
@@ -31,7 +29,7 @@ defmodule BackendWeb.BattlefyMatchLive do
         <div class="subtitle is-5">
           {subtitle(@match)}
         </div>
-        <table class="table is-fullwidth"> 
+        <table class="table is-fullwidth">
           <thead>
             <tr>
               <th>{@match.top |> MatchTeam.get_name() |> player(@tournament)}</th>
@@ -41,7 +39,7 @@ defmodule BackendWeb.BattlefyMatchLive do
             </tr>
           </thead>
           <tbody>
-            <tr :for={times <- times(@match)} > 
+            <tr :for={times <- times(@match)} >
               <td>{times.top}</td>
               <td></td>
               <td>{times.bottom}</td>

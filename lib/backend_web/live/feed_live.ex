@@ -1,10 +1,9 @@
 defmodule BackendWeb.FeedLive do
   @moduledoc false
-  use Surface.LiveView
   alias Backend.Feed
   alias Components.DeckFeedItem
   alias Components.OmniBar
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
 
   data(user, :any)
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
@@ -14,7 +13,7 @@ defmodule BackendWeb.FeedLive do
 
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <br>
         <div class="level is-mobile">
           <div :if={true} class="level-item">

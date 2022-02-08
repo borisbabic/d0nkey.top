@@ -1,9 +1,7 @@
 defmodule BackendWeb.DecksLive do
   @moduledoc false
-  use Surface.LiveView
-  alias BackendWeb.Router.Helpers, as: Routes
+  use BackendWeb, :surface_live_view
   alias Components.DecksExplorer
-  import BackendWeb.LiveHelpers
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :any)
@@ -13,7 +11,7 @@ defmodule BackendWeb.DecksLive do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-2">Decks</div>
         <div class="subtitle is-6">
         To contribute use <a href="https://www.firestoneapp.com/">Firestone</a>

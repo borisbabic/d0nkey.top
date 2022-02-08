@@ -348,6 +348,11 @@ defmodule Backend.Hearthstone do
   defp build_lineups_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_lineups_query/2)
 
+  # should return no results
+  defp compose_lineups_query({"tournament_id", nil}, query) do
+    query
+    |> where([lineup: l], 1 == 2)
+  end
   defp compose_lineups_query({"tournament_id", tournament_id}, query) do
     query
     |> where([lineup: l], l.tournament_id == ^tournament_id)

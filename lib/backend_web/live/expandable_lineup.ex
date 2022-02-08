@@ -1,8 +1,7 @@
 defmodule BackendWeb.ExpandableLineupLive do
   @moduledoc false
 
-  import BackendWeb.LiveHelpers
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view_no_layout
   alias Components.ExpandableLineup
   alias Backend.DeckInteractionTracker, as: Tracker
 

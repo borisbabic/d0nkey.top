@@ -1,8 +1,6 @@
 defmodule BackendWeb.MaxNations2022NationLive do
   @moduledoc false
-  use Surface.LiveView
-  use BackendWeb.ViewHelpers
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.MaxNations2022
   alias Components.MaxNations2022LineupName, as: LineupName
@@ -15,7 +13,7 @@ defmodule BackendWeb.MaxNations2022NationLive do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-2">{@nation}</div>
           <table class="table" :if={lineups = MaxNations2022.get_nation_lineups(@nation)}>
             <thead>

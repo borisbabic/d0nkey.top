@@ -1,13 +1,11 @@
 defmodule BackendWeb.GrandmastersLive do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
 
   alias Components.GMResultsTable
   alias Components.GMStandingsTable
   alias Components.GMStandingsModal
   alias Components.Dropdown
-  alias BackendWeb.Router.Helpers, as: Routes
-  import BackendWeb.LiveHelpers
 
   alias Backend.Blizzard
 
@@ -27,7 +25,7 @@ defmodule BackendWeb.GrandmastersLive do
   def render(assigns) do
     ~F"""
      <Context put={user: @user}>
-      <div class="container">
+      <div>
         <div class="title is-2">
           Grandmasters
         </div>

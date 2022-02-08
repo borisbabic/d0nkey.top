@@ -1,11 +1,9 @@
 defmodule BackendWeb.StreamingNowLive do
   @moduledoc false
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
   alias Components.LiveStreamer
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Surface.Components.LivePatch
-  alias BackendWeb.Router.Helpers, as: Routes
   @subscriptions ["streaming:hs:streaming_now"]
   data(streaming_now, :map)
   data(filter_sort, :map)
@@ -32,7 +30,7 @@ defmodule BackendWeb.StreamingNowLive do
 
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-2">Streaming Now</div>
         <div class="subtitle is-6"><a href={"#{instructions_link}"}>Instructions for streamers</a></div>
 

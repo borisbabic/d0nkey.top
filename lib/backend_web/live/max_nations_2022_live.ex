@@ -1,8 +1,7 @@
 defmodule BackendWeb.MaxNations2022Live do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
   import BackendWeb.LiveHelpers
-  alias BackendWeb.Router.Helpers, as: Routes
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Components.Dropdown
   alias Backend.MaxNations2022
@@ -16,7 +15,7 @@ defmodule BackendWeb.MaxNations2022Live do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-2">Max League of Nations 2022</div>
         <div class="subtitle is-2">
           <a href="https://www.twitch.tv/MAXTeamTV">
