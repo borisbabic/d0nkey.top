@@ -31,14 +31,14 @@ defmodule BackendWeb.Router do
     plug :accepts, ["json"]
   end
 
-  defp api_auth(conn, _opts) do
-    with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
-         {:ok, api_user} <- Backend.Api.verify_user(user, pass) do
-      assign(conn, :api_user, api_user)
-    else
-      _ -> conn |> Plug.BasicAuth.request_basic_auth() |> halt()
-    end
-  end
+  # defp api_auth(conn, _opts) do
+  #   with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
+  #        {:ok, api_user} <- Backend.Api.verify_user(user, pass) do
+  #     assign(conn, :api_user, api_user)
+  #   else
+  #     _ -> conn |> Plug.BasicAuth.request_basic_auth() |> halt()
+  #   end
+  # end
 
   pipeline :admins_only do
     plug :basic_auth, username: "admin", password: Application.fetch_env!(:backend, :admin_pass)
@@ -82,6 +82,8 @@ defmodule BackendWeb.Router do
     get "/log", PageController, :log
     put "/log", PageController, :log
     post "/log", PageController, :log
+
+    get "/test", PageController, :test
 
     get "/invited/:tour_stop", MastersTourController, :invited_players
     get "/invited/", MastersTourController, :invited_players

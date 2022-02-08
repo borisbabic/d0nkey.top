@@ -22,6 +22,10 @@ defmodule BackendWeb.PageController do
     render(conn, "privacy.html")
   end
 
+  def test(conn, params) do
+    render(conn, "test.html", params)
+  end
+
   def log(conn, params) do
     ret = Jason.encode!(params, pretty: true)
     IO.inspect(conn)

@@ -80,4 +80,29 @@ defmodule BackendWeb.LayoutView do
   defp ongoing_mt_fantasy?(), do: !!Backend.MastersTour.TourStop.get_current(120, 96)
   defp ongoing_dreamhack_fantasy?(), do: Enum.any?(Dreamhack.current_fantasy())
   defp highlight_fantasy_for_gm?(), do: false
+
+  @spec enable_nitropay?(Plug.Conn.t()) :: boolean
+  def enable_nitropay?(%{params: %{"nitropay_test" => "yes"}}), do: true
+  def enable_nitropay?(_), do: false
+
+
+  @spec hide_ads?(Plug.Conn.t()) :: boolean
+  def hide_ads?(conn) do
+    conn
+    |> user()
+    |> Backend.UserManager.User.hide_ads?()
+  end
+  @spec show_ads?(Plug.Conn.t()) :: boolean
+  def show_ads?(conn), do: !hide_ads?(conn)
+
+  @spec space_for_ads?(Plug.Conn.t()) :: boolean
+  def space_for_ads?(conn), do: enable_nitropay?(conn) && show_ads?(conn)
+
+  def container_classes(conn) do
+    if enable_nitropay?(conn) && show_ads?(conn)do
+      "container is-fluid space-for-ads"
+    else
+      "container"
+    end
+  end
 end
