@@ -24,23 +24,28 @@
         };
       </script>
       <script async src="https://s.nitropay.com/ads-909.js"></script>
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8835820092180114" crossorigin="anonymous"></script>
-      <%= render_tags_all(assigns[:meta_tags] || %{}) %>
-    <% end %>
 
-    <%= render("ads_all.html", %{conn: @conn}) %>
-  </head>
-  <%= render("navbar.html", %{conn: @conn, handle_user: true}) %>
-  <body>
-    <%= @inner_content %>
+      <%= if @conn.params && "yes" == Map.get(@conn.params, "nitropay_test") do %>
+          <%= render("ads_all.html", %{conn: @conn}) %>
+      <% else %>
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8835820092180114" crossorigin="anonymous"></script>
+      <% end %>
+    <% end %>
+    <%= render_tags_all(assigns[:meta_tags] || %{}) %>
+
     <%= if Application.get_env(:backend, :goatcounter_analytics) do %>
     <script data-goatcounter="https://d0nkeytop.goatcounter.com/count"
               async src="//gc.zgo.at/count.js"></script>
     <% end %>
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "590f08dce08a492fb4b4d49be7a3ee87"}'></script>
+  </head>
+  <%= render("navbar.html", %{conn: @conn, handle_user: true}) %>
+  <body>
+    <%= @inner_content %>
     <!-- Cloudflare Web Analytics -->
-      <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "590f08dce08a492fb4b4d49be7a3ee87"}'></script>
     <!-- End Cloudflare Web Analytics -->
     <br>
+    <div id="responsive-anchor-phone"></div>
   </body>
 
   <%= render("footer.html", %{conn: @conn}) %>
