@@ -312,29 +312,29 @@ defmodule BackendWeb.MastersTourView do
 
   def sort_for_qualifier_winrate(rows, _), do: rows
 
-  def filter_qualified(rows, true, "yes", ts, invited_set) do
+  def filter_qualified(rows, _, "no", _, _), do: rows
+  def filter_qualified(rows, true, _, ts, invited_set) do
     rows
     |> Enum.filter(fn p ->
       !MapSet.member?(invited_set, p.battletag_full <> ts)
     end)
   end
 
-  def filter_qualified(rows, _, _, _, _), do: rows
 
-  def add_qualified_filter(dropdowns, _, false, _, _), do: dropdowns
+  def add_qualified_filter(dropdowns, _, nil, _, _), do: dropdowns
 
-  def add_qualified_filter(dropdowns, conn, _, ts, hide_qualified) do
+  def add_qualified_filter(dropdowns, conn, ts, period, hide_qualified) do
     options =
-      ["yes", "no"]
-      |> Enum.map(fn v ->
+      qualified_filter_options(ts)
+      |> Enum.map(fn {v, display} ->
         %{
-          display: Recase.to_title(v),
+          display: display,
           selected: v == hide_qualified,
           link:
             Routes.masters_tour_path(
               conn,
               :qualifier_stats,
-              ts,
+              period,
               Map.put(conn.query_params, "hide_qualified", v)
             )
         }
@@ -342,6 +342,11 @@ defmodule BackendWeb.MastersTourView do
 
     dropdowns ++ [{options, "Hide Qualified"}]
   end
+
+  defp qualified_filter_options(%{min_qualifiers_for_winrate: min}) when is_integer(min) do
+    [{"yes", "All"}, {"for_winrate", "For Winrate"}, {"no", "No"}]
+  end
+  defp qualified_filter_options(_), do: [{"yes", "Yes"}, {"no", "No"}]
 
   def period_title(:all), do: "2020-#{Date.utc_today().year}"
   def period_title(period), do: period
@@ -605,10 +610,6 @@ defmodule BackendWeb.MastersTourView do
         limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
       )
 
-    invited_set =
-      invited_players
-      |> Enum.filter(&(!(String.downcase(&1.reason) =~ "winrate")))
-      |> MapSet.new(fn ip -> String.trim(ip.battletag_full) <> ip.tour_stop end)
 
     eligible_ts = eligible_tour_stops()
 
@@ -645,19 +646,20 @@ defmodule BackendWeb.MastersTourView do
           "Projected % (using 0.70)"
         ]
 
-    {is_ts, _ts, has_winrate_qual} = case TourStop.get(period) do
+    {is_ts, ts, has_winrate_qual} = case TourStop.get(period) do
       ts = %{id: _, min_qualifiers_for_winrate: min} ->
         {true, ts, is_integer(min)}
       _ -> {false, nil, false}
     end
     hide_qualified = default_hiding_for_winrate(conn.params, has_winrate_qual, hide_qualified_raw)
 
-    ts =
-      if is_ts do
-        TourStop.get(period)
-      else
-        nil
-      end
+    invited_set =
+      invited_players
+      |> MapSet.new(fn ip -> String.trim(ip.battletag_full) <> ip.tour_stop end)
+    invited_set_for_hiding =
+      invited_players
+      |> filter_invites(ts, hide_qualified)
+      |> MapSet.new(fn ip -> String.trim(ip.battletag_full) <> ip.tour_stop end)
 
     columns_to_show =
       case {selected_columns, ts} do
@@ -684,7 +686,7 @@ defmodule BackendWeb.MastersTourView do
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
       |> filter_countries(countries)
-      |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set)
+      |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set_for_hiding)
       |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
       |> sort_for_qualifier_winrate(ts)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
@@ -760,7 +762,7 @@ defmodule BackendWeb.MastersTourView do
         {min_list, "Min #{min_to_show} cups"},
         {show_flags_list, flag_title}
       ]
-      |> add_qualified_filter(conn, is_ts, period, hide_qualified)
+      |> add_qualified_filter(conn, ts, period, hide_qualified)
 
     columns_options =
       sortable_headers
@@ -956,7 +958,7 @@ defmodule BackendWeb.MastersTourView do
     if !has_winrate_qual || Map.has_key?(params, "hide_qualified") do
       hide_qualified
     else
-      "yes"
+      "for_winrate"
     end
   end
 
@@ -1003,6 +1005,18 @@ defmodule BackendWeb.MastersTourView do
 
     Routes.masters_tour_path(conn, :qualifiers, new_params)
   end
+
+  @spec filter_invites([InvitedPlayer.t()], TourStop.t() | nil, String.t()) :: [InvitedPlayer.t()]
+  def filter_invites(invites, ts, hide_qualified)
+  def filter_invites(invites, %{min_qualifiers_for_winrate: min, qualifiers_period: {_, %{year: y, month: m, day: d}}}, "for_winrate") when is_integer(min) do
+    {:ok, limit} = NaiveDateTime.new(y, m, d, 0, 0, 0)
+    invites
+    |> Enum.filter(&(!(String.downcase(&1.reason) =~ "winrate")))
+    |> Enum.filter(fn %{upstream_time: ut} ->
+      :lt == NaiveDateTime.compare(ut, limit)
+    end)
+  end
+  def filter_invites(invites, _, _), do: invites
 
   @spec process_invited_player(
           %{

@@ -202,7 +202,7 @@ defmodule BackendWeb.MastersTourController do
       countries: multi_select_to_array(params["country"]),
       selected_columns: selected_columns,
       invited_players: invited_players,
-      hide_qualified: parse_yes_no(params["hide_qualified"]),
+      hide_qualified: parse(params["hide_qualified"], ["yes", "for_winrate", "no"], "no"),
       page_title: "#{period} Qualifier Stats",
       stats: stats
     })

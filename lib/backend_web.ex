@@ -37,6 +37,14 @@ defmodule BackendWeb do
       def parse_yes_no("yes", _), do: "yes"
       def parse_yes_no("no", _), do: "no"
       def parse_yes_no(_, default), do: default
+      def parse(val, options, default) do
+        options
+        |> Enum.find(& &1 == val)
+        |> case do
+          nil -> default
+          v -> v
+        end
+      end
 
       use PhoenixMetaTags.TagController
     end
