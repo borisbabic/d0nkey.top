@@ -1,44 +1,42 @@
-<%= if @conn.params && "yes" == Map.get(@conn.params, "nitropay_test") do %>
-    <script>
-    window['nitroAds'].createAd('responsive-anchor-phone', {
-    "refreshLimit": 10,
-    "refreshTime": 90,
-    "format": "anchor",
-    "anchor": "bottom",
-    "anchorPersistClose": true,
-    "report": {
-        "enabled": true,
-        "wording": "Report Ad",
-        "position": "top-right"
-    },
-    "mediaQuery": "(min-width: 768px) and (max-width: 1024px), (min-width: 320px) and (max-width: 767px)"
-    });
-    </script>
-    <script>
-    window['nitroAds'].createAd('sticky-rails-desktop-tablet', {
-    "refreshLimit": 10,
-    "refreshTime": 90,
-    "format": "rail",
-    "rail": "left",
-    "railOffsetTop": 0,
-    "railOffsetBottom": 0,
-    "railCollisionWhitelist": [],
-    "sizes": [
-        [
-        "160",
-        "600"
-        ],
-        [
-        "300",
-        "600"
-        ]
+<script>
+window['nitroAds'].createAd('responsive-anchor-phone', {
+"refreshLimit": 10,
+"refreshTime": 90,
+"format": "anchor",
+"anchor": "bottom",
+"anchorPersistClose": true,
+"report": {
+    "enabled": true,
+    "wording": "Report Ad",
+    "position": "top-right"
+},
+"mediaQuery": "(min-width: 768px) and (max-width: 1024px), (min-width: 320px) and (max-width: 767px)"
+});
+</script>
+<script>
+window['nitroAds'].createAd('sticky-rails-desktop-tablet', {
+"refreshLimit": 10,
+"refreshTime": 90,
+"format": "rail",
+"rail": "left",
+"railOffsetTop": 0,
+"railOffsetBottom": 0,
+"railCollisionWhitelist": [],
+"sizes": [
+    [
+    "160",
+    "600"
     ],
-    "report": {
-        "enabled": true,
-        "wording": "Report Ad",
-        "position": "top-right"
-    },
-    "mediaQuery": "(min-width: 768px) and (max-width: 1024px), (min-width: 320px) and (max-width: 767px)"
-    });
-    </script>
-<% end %>
+    [
+    "300",
+    "600"
+    ]
+],
+"report": {
+    "enabled": true,
+    "wording": "Report Ad",
+    "position": "top-right"
+},
+"mediaQuery": "(min-width: 768px) and (max-width: 1024px), (min-width: 320px) and (max-width: 767px)"
+});
+</script>
