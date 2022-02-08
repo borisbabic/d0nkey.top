@@ -1,6 +1,6 @@
 defmodule BackendWeb.DeckviewerLive do
   @moduledoc false
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
   alias Components.Decklist
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
@@ -11,8 +11,6 @@ defmodule BackendWeb.DeckviewerLive do
   alias Surface.Components.Form.Field
   alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.Submit
-  alias BackendWeb.Router.Helpers, as: Routes
-  use Surface.LiveView
   data(deckcodes, :any)
   data(current_link, :string)
   data(compare_decks, :boolean)
@@ -41,7 +39,7 @@ defmodule BackendWeb.DeckviewerLive do
     ~F"""
 
     <Context put={user: @user}>
-      <div class="container">
+      <div>
         <div class="title is-1" :if={@title}> {@title}</div>
         <br>
         <Form for={:new_deck} submit="submit" opts={autocomplete: "off"}>

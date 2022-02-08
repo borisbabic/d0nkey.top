@@ -1,10 +1,8 @@
 defmodule BackendWeb.MyReplaysLive do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
   alias Backend.UserManager.User
   alias Components.ReplayExplorer
-  alias BackendWeb.Router.Helpers, as: Routes
-  import BackendWeb.LiveHelpers
 
   data(user, :any)
   data(filters, :map)
@@ -18,7 +16,7 @@ defmodule BackendWeb.MyReplaysLive do
     # region
     ~F"""
     <Context put={user: @user}>
-      <div class="container">
+      <div>
         <div class="title is-2">My Replays</div>
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a>

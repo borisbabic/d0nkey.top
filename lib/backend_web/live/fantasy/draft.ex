@@ -1,6 +1,6 @@
 defmodule BackendWeb.FantasyDraftLive do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
   alias Backend.Fantasy
   alias Backend.Fantasy.League
   alias Backend.Fantasy.LeagueTeam
@@ -11,7 +11,6 @@ defmodule BackendWeb.FantasyDraftLive do
   alias Components.RosterModal
   alias Components.DraftOrderModal
   alias Components.LeagueInfoModal
-  import BackendWeb.LiveHelpers
 
   data(league, :map)
   data(user, :any)
@@ -37,7 +36,7 @@ defmodule BackendWeb.FantasyDraftLive do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-2">{@league.name} Draft</div>
         <div class="subtitle is-4">
           Online now: {@present |> Enum.uniq() |> Enum.join(" | ")}

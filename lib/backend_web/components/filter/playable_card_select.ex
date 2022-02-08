@@ -66,7 +66,7 @@ defmodule Components.Filter.PlayableCardSelect do
   def update_cards_fun(params, param, name \\ :update_params) do
     fn val ->
       new_params = Map.put(params, param, val)
-      Process.send_after(self(), {:update_params, new_params}, 0)
+      Process.send_after(self(), {name, new_params}, 0)
     end
   end
 end

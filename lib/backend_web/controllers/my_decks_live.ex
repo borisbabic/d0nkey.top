@@ -1,10 +1,8 @@
 defmodule BackendWeb.MyDecksLive do
   @moduledoc false
-  use Surface.LiveView
-  alias BackendWeb.Router.Helpers, as: Routes
+  use BackendWeb, :surface_live_view
   alias Components.DecksExplorer
   alias Backend.UserManager.User
-  import BackendWeb.LiveHelpers
 
   data(user, :any)
   data(filters, :map)
@@ -14,7 +12,7 @@ defmodule BackendWeb.MyDecksLive do
 
     ~F"""
     <Context put={user: @user} >
-      <div :if={btag = User.battletag(@user)} class="container">
+      <div :if={btag = User.battletag(@user)}>
         <div class="title is-2">My Decks</div>
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a>

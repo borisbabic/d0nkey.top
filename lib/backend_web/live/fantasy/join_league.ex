@@ -1,12 +1,10 @@
 defmodule BackendWeb.JoinLeagueLive do
   @moduledoc false
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
   alias Backend.Fantasy
   alias Backend.Fantasy.League
   alias Backend.UserManager.User
   alias Components.JoinLeague
-  import BackendWeb.LiveHelpers
-  use BackendWeb.ViewHelpers
 
   data(league, :map)
   data(user, :map)
@@ -15,7 +13,7 @@ defmodule BackendWeb.JoinLeagueLive do
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div :if={@league} >
           <div class="title is-2"> Join {@league.name}</div>
           <div class="subtitle is-5 tag"> League owner: {@league.owner |> User.display_name()}</div>
@@ -32,7 +30,7 @@ defmodule BackendWeb.JoinLeagueLive do
             <JoinLeague id={"join_league_@user.id_"} user={@user} league={@league} />
           </div>
         </div>
-        <div :if = {!@league}> 
+        <div :if = {!@league}>
           <div class="title is-2">League Not Found. Maybe the join link/code changed?</div>
         </div>
       </div>
@@ -43,7 +41,7 @@ defmodule BackendWeb.JoinLeagueLive do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-3">Please login to join Fantasy Leagues!</div>
       </div>
     </Context>

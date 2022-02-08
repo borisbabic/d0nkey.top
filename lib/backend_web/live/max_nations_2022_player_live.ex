@@ -1,8 +1,6 @@
 defmodule BackendWeb.MaxNations2022PlayerLive do
   @moduledoc false
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
-  alias BackendWeb.Router.Helpers, as: Routes
+  use BackendWeb, :surface_live_view
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.MaxNations2022
   alias Components.ExpandableLineup
@@ -14,7 +12,7 @@ defmodule BackendWeb.MaxNations2022PlayerLive do
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
-      <div class="container">
+      <div>
         <div class="title is-2"><a href={Routes.player_path(BackendWeb.Endpoint, :player_profile, @player)}>{@player}</a></div>
         <div class="subtitle is-5" :if={nation = MaxNations2022.get_nation(@player)}><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.MaxNations2022NationLive, nation)}>{nation}</a></div>
         <table class="table" :if={lineups = MaxNations2022.get_player_lineups(@player)}>

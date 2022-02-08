@@ -1,14 +1,12 @@
 defmodule BackendWeb.GrandmastersLineup do
   @moduledoc false
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
 
   alias Components.TournamentLineupExplorer
   alias Backend.Hearthstone.Lineup
   alias Backend.Blizzard
   alias Components.Dropdown
   alias Backend.DeckInteractionTracker, as: Tracker
-  alias BackendWeb.Router.Helpers, as: Routes
 
   data(user, :any)
   data(week, :string)
@@ -22,7 +20,7 @@ defmodule BackendWeb.GrandmastersLineup do
   def render(assigns) do
     ~F"""
     <Context  put={user: @user}>
-      <div class="container">
+      <div>
         <div :if={lineups = Backend.Blizzard.get_grandmasters_lineups(@week)} >
           <div :if={Lineup.stats(lineups)} >
             <div class="title is-2">Grandmasters Decks</div>

@@ -1,14 +1,12 @@
 defmodule BackendWeb.WC2021Live do
   @moduledoc false
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
 
   alias Components.TournamentLineupExplorer
   alias Backend.Hearthstone.Lineup
   alias Backend.Blizzard
   alias Components.Dropdown
   alias Backend.DeckInteractionTracker, as: Tracker
-  alias BackendWeb.Router.Helpers, as: Routes
 
   data(user, :any)
 
@@ -21,7 +19,7 @@ defmodule BackendWeb.WC2021Live do
   def render(assigns) do
     ~F"""
     <Context  put={user: @user}>
-      <div class="container">
+      <div>
         <div>
           <div>
             <div class="title is-2">WC 2021 decks</div>

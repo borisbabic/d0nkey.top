@@ -1,7 +1,6 @@
 defmodule BackendWeb.DeckLive do
   @moduledoc false
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view_no_layout
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Components.DeckStreamingInfo
@@ -46,7 +45,7 @@ defmodule BackendWeb.DeckLive do
   def render(assigns = %{deck: _}) do
     ~F"""
     <Context put={user: @user}>
-      <div class="container">
+      <div>
         <br>
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
           <div class="column is-narrow-mobile">

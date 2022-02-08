@@ -1,7 +1,6 @@
 defmodule BackendWeb.ProfileSettingsLive do
   @moduledoc false
-  use Surface.LiveView
-  import BackendWeb.LiveHelpers
+  use BackendWeb, :surface_live_view
   alias Backend.Streaming
   alias Backend.UserManager
   alias Backend.UserManager.User.DecklistOptions
@@ -21,7 +20,7 @@ defmodule BackendWeb.ProfileSettingsLive do
   def render(assigns) do
     ~F"""
      <Context put={user: @user}>
-      <div class="container">
+      <div>
         <div class="title is-2">Profile Settings</div>
         <div :if={@user}>
           <Form for={:user} submit="submit">

@@ -1,8 +1,6 @@
 defmodule Components.DeckCard do
   @moduledoc false
   use Surface.Component
-  alias Components.Decklist
-  alias Components.DeckStreamingInfo
   slot(before_deck, required: false)
   slot(default, required:  true)
   slot(after_deck, required:  true)

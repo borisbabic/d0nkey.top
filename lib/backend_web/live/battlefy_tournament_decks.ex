@@ -1,8 +1,6 @@
 defmodule BackendWeb.BattlefyTournamentDecksLive do
   @moduledoc false
-
-  import BackendWeb.LiveHelpers
-  use Surface.LiveView
+  use BackendWeb, :surface_live_view
   alias Components.TournamentLineupExplorer
 
   data(tournament_id, :list)
@@ -17,7 +15,7 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
   def render(assigns) do
     ~F"""
     <Context  put={user: @user}>
-      <div class="container">
+      <div>
         <div class="title is-1">Explore Decks</div>
         <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"}/>
       </div>
