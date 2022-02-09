@@ -12,6 +12,7 @@ config :backend,
   goatcounter_analytics: false,
   cloudflare_analytics: true,
   gm_stream_send_tweet: true,
+  nitropay_demo: true,
   enable_bot: true
 
 config :ueberauth, Ueberauth,

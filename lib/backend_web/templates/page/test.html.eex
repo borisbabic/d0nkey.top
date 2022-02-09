@@ -13,6 +13,7 @@ window['nitroAds'].createAd('banner-ad-test', {
   "refreshTime": 90,
   "renderVisibleOnly": true,
   "refreshVisibleOnly": true,
+  "demo": true,
   "sizes": [
     [
       "970",
