@@ -19,9 +19,14 @@ defmodule Twitch.Api do
   end
 
   defp fetch_hearthstone_streams(cursor) do
-    token = Twitch.TokenRefresher.get_token()
     query = [game_id: @hearthstone_id, after: cursor]
-    get("/helix/streams/", query: query, headers: [Authorization: "Bearer #{token}"])
+    do_get("/helix/streams/", query)
+  end
+
+  @spec do_get(binary | Tesla.Client.t(), list(), list()) :: {:error, any} | {:ok, Tesla.Env.t()}
+  def do_get(url, query \\ [], extra_headers \\ []) do
+    token = Twitch.TokenRefresher.get_token()
+    get(url, query: query, headers: [{:Authorization, "Bearer #{token}"} | extra_headers])
   end
 
   def hearthstone_streams_after(pagination) do

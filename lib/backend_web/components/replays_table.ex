@@ -23,7 +23,8 @@ defmodule Components.ReplaysTable do
         </thead>
         <tbody>
           <tr :for={game <- @replays} >
-            <td><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
+            <td :if={game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
+            <td :if={!game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
             <td>
               <span>
                 <span class="icon">

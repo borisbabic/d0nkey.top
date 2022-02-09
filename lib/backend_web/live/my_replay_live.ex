@@ -21,11 +21,19 @@ defmodule BackendWeb.MyReplaysLive do
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a>
         </div>
-        <ReplayExplorer id="my-replays" additional_params={%{"player_btag" => User.battletag(@user)}} params={@filters} live_view={__MODULE__}/>
+        <ReplayExplorer id="my-replays" additional_params={additional_params(@user)} params={@filters} live_view={__MODULE__}/>
       </div>
     </Context>
     """
   end
+
+  def additional_params(user) do
+    %{
+      "player_btag" => User.battletag(user),
+      "game_type" => Hearthstone.Enums.GameType.constructed_types()
+    }
+  end
+
 
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}

@@ -213,7 +213,7 @@ defmodule Hearthstone.DeckTracker do
 
   defp base_games_query() do
     from g in Game,
-      join: pd in assoc(g, :player_deck),
+      left_join: pd in assoc(g, :player_deck),
       preload: [player_deck: pd]
   end
 
@@ -335,6 +335,10 @@ defmodule Hearthstone.DeckTracker do
     do: query |> where([g], g.region == ^region)
 
   defp compose_games_query(:ranked, query), do: compose_games_query({"game_type", 7}, query)
+
+  defp compose_games_query({"game_type", game_types}, query) when is_list(game_types),
+    do: query |> where([g], g.game_type in ^game_types)
+
   defp compose_games_query({"game_type", game_type}, query),
     do: query |> where([g], g.game_type == ^game_type)
 

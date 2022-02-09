@@ -129,5 +129,4 @@ defmodule Components.ReplayExplorer do
     |> Map.take(["rank", "period", "limit", "order_by", "player_class", "opponent_class", "format", "offset", "region", "player_deck_includes", "player_deck_excludes", "opponent_btag_like"])
     |> DecksExplorer.parse_int(["limit", "format", "offset", "player_deck_includes", "player_deck_excludes"])
   end
-
 end
