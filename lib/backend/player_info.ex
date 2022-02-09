@@ -348,21 +348,6 @@ defmodule Backend.PlayerInfo do
     |> Enum.filter(fn n -> !MapSet.member?(relegated, n) end)
   end
 
-  def get_esportsgold_nationality(player) do
-    ((pi = Backend.EsportsGold.get_cached_info(player)) &&
-       pi &&
-       pi.nationality &&
-       @nationality_to_region[pi.nationality]) || nil
-  end
-
-  def get_esports_earnings_region(player) do
-    player
-    |> EsportsEarnings.get_player_country()
-    |> case do
-      nil -> nil
-      a2 -> @alpha2_to_region[a2]
-    end
-  end
 
   # for people that appear differently in my source
   def hack_name(name) do

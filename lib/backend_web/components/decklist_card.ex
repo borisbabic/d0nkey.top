@@ -72,12 +72,13 @@ defmodule Components.DecklistCard do
     """
   end
 
+  @spec tile_card_url(Backend.HearthstoneJson.Card.t()) :: {String.t(), String.t()}
   defp tile_card_url(card = %{dbf_id: dbf_id}) do
-    {tile_url, card_url} = Backend.Hearthstone.CardBag.tile_card_url(dbf_id)
+    {tile_url, _card_url} = Backend.Hearthstone.CardBag.tile_card_url(dbf_id)
 
     {
       tile_url || HearthstoneJson.tile_url(card),
-      HearthstoneJson.card_url(card) || card_url
+      HearthstoneJson.card_url(card)
     }
   end
 end

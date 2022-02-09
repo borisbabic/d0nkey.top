@@ -15,7 +15,7 @@ defmodule Components.Decklist do
   prop(show_hero, :any, default: true)
   slot(right_button)
 
-  @spec deck_name(String.t() | nil, Deck.t(), Card.t()) :: String.t()
+  @spec deck_name(Map.t() | nil, Deck.t(), Card.t()) :: String.t()
   def deck_name(%{name: name}, _, _) when is_binary(name) and bit_size(name) > 0, do: name
   def deck_name(assigns = %{archetype_as_name: true}, deck, hero) do
     with id when not is_nil(id) <- deck.hsreplay_archetype,
