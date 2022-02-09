@@ -184,6 +184,8 @@ defmodule Hearthstone.Enums.GameType do
     |> elem(1)
   end
 
+  def constructed_types(), do: [ranked(), casual(), vs_friend()]
+
   # renamed
   def pvpcwtestdr, do: test_ai_vs_ai()
 
