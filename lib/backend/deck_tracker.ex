@@ -98,7 +98,7 @@ defmodule Hearthstone.DeckTracker do
     deck_stats([{"player_deck_id", deck_id} | additional_criteria])
   end
 
-  @spec deck_stats(integer() | list()) :: [deck_stats()]
+  @spec deck_stats(integer() | list() | Map.t()) :: [deck_stats()]
   def deck_stats(deck_id) when is_integer(deck_id) do
     deck_stats(deck_id, [])
   end

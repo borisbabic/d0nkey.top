@@ -30,7 +30,6 @@ If you use direnv you can just add the following
 ```
 export BNET_CLIENT_SECRET='' 
 export SIGNUP_TOKEN='' # battlefy token, for autosignup, not necessary
-export ESPORTS_EARNINGS_API_KEY='' 
 export DISCORD_TOKEN=''
 
 ```
