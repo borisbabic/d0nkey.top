@@ -101,6 +101,7 @@ config :backend,
     access_token: System.get_env("REQT100_ACCESS_TOKEN"),
     access_token_secret: System.get_env("REQT100_ACCESS_TOKEN_SECRET")
   ],
+  nitropay_demo: true,
   admin_config_vars_cutoff_date: "3000-12-31"
 
 # Configures Elixir's Logger

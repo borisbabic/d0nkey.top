@@ -105,4 +105,8 @@ defmodule BackendWeb.LayoutView do
       "container"
     end
   end
+
+  def nitropay_demo?() do
+    Application.get_env(:backend, :nitropay_demo, true)
+  end
 end

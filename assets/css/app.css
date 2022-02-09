@@ -75,8 +75,10 @@
   min-height: 100%;
 }
 
-.container.space-for-ads {
-  padding-right: var(--sticky-stack-width) !important;
+@media only screen and (min-width: 1025px) {
+  .container.space-for-ads {
+    padding-right: var(--sticky-stack-width) !important;
+  }
 }
 
 .card_tile_fade_box {
