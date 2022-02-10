@@ -51,6 +51,7 @@ defmodule Backend.Streaming.StreamerDeck do
       :minutes_played
     ])
     |> cast_assoc(:deck)
+    |> add_wins_losses(a)
     |> validate_required([:last_played, :best_rank, :best_legend_rank])
   end
 
