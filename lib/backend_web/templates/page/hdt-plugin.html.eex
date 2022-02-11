@@ -1,0 +1,56 @@
+<div class="title is-2">HDT Plugin</div>
+<div class="subtitle is-6">The HDT plugin is currently in Beta</div>
+
+
+<div class="subtitle is-4">Quick Instructions</div>
+
+<li>
+    Download the <a target="_blank" href="https://drive.google.com/file/d/1Vn_i3-VKAbJ87DHdCDRNtOmFCX4tb2aI/view?usp=sharing">latest version</a> into %appdata%\HearthstoneDeckTracker\Plugins
+</li>
+
+<li>
+    Restart HDT
+</li>
+
+<li>
+<%= if user(@conn) && user(@conn).twitch_id do %>
+    <span>✓ You've connected your twitch so you're ready for <a href="/streamer-decks">Streamer Decks</a></span>
+<% else %>
+    For Streamers:
+    <%= if !user(@conn) do %>
+        <span><a target="_blank" href="/auth/bnet">Login</a> then </span>
+    <% end %>
+    <a target="_blank" href="/auth/twitch">Connect</a> your twitch account
+<% end %>
+
+</li>
+
+
+<br>
+<div class="subtitle is-4">Known Issues</div>
+<li>
+    Replay link in <a target="_blank" href="/my-replays">My Replays</a> is wrong (it opens a Firestone link for an invalid game)
+</li>
+<li>
+    Streaming now functionality doesn't work (but streamer decks does - it updates after you finish games)
+</li>
+<li>
+    No update mechanism, ie you have to manually download new versions for future updates
+</li>
+
+
+<br>
+<div class="subtitle is-4">Troubleshooting</div>
+<li>
+You can check that it is installed by going to Options -> Plugins and also verify that it is enabled and which version it is
+</li>
+<li>
+If it's not installing then perhaps HDT is installed in a non default location? Also check <a target="_blank" href="http://localhost:8994/hdt-plugin">HDT instructions</a> for installing plugins
+</li>
+<li>
+For feedback or additional help see the #hdt-extension channel in my <a target="_blank" href="/discord">Discord</a>
+Include the hdt log file located here %appdata%\HearthstoneDeckTracker\Logs\hdt_logs.txt - this file is recreated if you restart hdt, there will be others in the folder so if it's in an old file
+</li>
+<li>
+Older versions available <a target="_blank" href="https://drive.google.com/drive/folders/17uaVxEkhKpilzA1LAOZQi2_NXllsa3Lm?usp=sharing">here</a>
+</li>
