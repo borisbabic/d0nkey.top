@@ -2,6 +2,7 @@ defmodule BackendWeb.StreamingView do
   use BackendWeb, :view
   alias Backend.Hearthstone.Deck
   alias Backend.Streaming.Streamer
+  alias Backend.Streaming.StreamerDeck
   alias Hearthstone.Enums.Format
 
   def twitch_link(streamer) do
@@ -127,6 +128,7 @@ defmodule BackendWeb.StreamingView do
           best_legend_rank: legend_rank(sd.best_legend_rank),
           worst_legend_rank: legend_rank(sd.worst_legend_rank),
           latest_legend_rank: legend_rank(sd.latest_legend_rank),
+          win_loss: win_loss(sd),
           amount_played: amount_played(sd),
           archetype: get_archetype(sd.deck),
           links: links(sd)
@@ -189,6 +191,21 @@ defmodule BackendWeb.StreamingView do
     end)
   end
 
+  def win_loss(sd = %{wins: w, losses: l}) do
+    winrate = StreamerDeck.winrate(sd)
+    style = if w + l > 5 do
+      Components.DeckStats.winrate_style(winrate)
+    else
+      ""
+    end
+    if winrate do
+      ~E"""
+      <div class="tag" style="<%= style %>"><%="#{w} - #{l}"%></div>
+      """
+    else
+      ""
+    end
+  end
   def links(sd) do
     deck = deckcode_links(deckcode(sd.deck))
     twitch = twitch_link(sd.streamer |> Streamer.twitch_login(), "twitch", ["tag", "is-link"])

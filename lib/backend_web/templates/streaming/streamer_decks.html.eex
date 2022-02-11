@@ -58,7 +58,8 @@ f-> %>
             <th><abbr title="Legend Peak">Peak</abbr></th>
             <th class="is-hidden-mobile"><abbr title="Latest Legend Rank">Latest</abbr></th>
             <th class="is-hidden-mobile"><abbr title="Worst Legend Rank">Worst</abbr></th>
-            <th class="is-hidden-mobile"><abbr title="Games Played or estimated time played when games unknown">Amount Played</abbr></th>
+            <%# <th class="is-hidden-mobile"><abbr title="Games Played or estimated time played when games unknown">Amount Played</abbr></th> %>
+            <th class="is-hidden-mobile">Win - Loss</th>
             <th>Links</th>
             <th class="is-hidden-mobile">Last Played</th>
         </tr>
@@ -76,7 +77,7 @@ f-> %>
             <td><%= render_legend_rank r.best_legend_rank %></td>
             <td class="is-hidden-mobile"><%= render_legend_rank r.latest_legend_rank %></td>
             <td class="is-hidden-mobile"><%= render_legend_rank r.worst_legend_rank %></td>
-            <td class="is-hidden-mobile"><%= r.amount_played %></td>
+            <td class="is-hidden-mobile"><%= r.win_loss %></td>
             <td>
                 <a href="<%= r.deck_link %>">
                     <span class="icon tag is-link">
