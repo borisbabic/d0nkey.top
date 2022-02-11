@@ -6,6 +6,7 @@ defmodule Hearthstone.DeckTracker.Game do
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.Hearthstone.Deck
+  alias Hearthstone.DeckTracker.Source
   alias Backend.Api.ApiUser
 
   schema "dt_games" do
@@ -31,6 +32,7 @@ defmodule Hearthstone.DeckTracker.Game do
     field :replay_url, :string, default: nil
 
     field :public, :boolean, default: false
+    belongs_to :source, Source
 
     belongs_to :created_by, ApiUser
     timestamps()
@@ -70,6 +72,7 @@ defmodule Hearthstone.DeckTracker.Game do
     |> put_assoc_from_attrs(attrs, :player_deck)
     |> put_assoc_from_attrs(attrs, :opponent_deck)
     |> put_assoc_from_attrs(attrs, :created_by)
+    |> put_assoc_from_attrs(attrs, :source)
     |> validate_required([
       :player_btag,
       :status,

@@ -5,6 +5,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Repo
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
+  alias Hearthstone.DeckTracker.Source
   alias Hearthstone.Enums.Format
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
@@ -19,7 +20,7 @@ defmodule Hearthstone.DeckTracker do
   @spec get_game_by_game_id(String.t()) :: Game.t() | nil
   def get_game_by_game_id(game_id) do
     query = from g in Game,
-      preload: :player_deck,
+      preload: [:player_deck, :source],
       where: g.game_id == ^game_id
 
     Repo.one(query)
@@ -28,7 +29,7 @@ defmodule Hearthstone.DeckTracker do
 
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
     attrs =
-      GameDto.to_ecto_attrs(game_dto, &handle_deck/1)
+      GameDto.to_ecto_attrs(game_dto, &handle_deck/1, &get_or_create_source/2)
       |> set_public()
 
     with nil <- get_existing(game_id),
@@ -182,6 +183,27 @@ defmodule Hearthstone.DeckTracker do
       }
   end
 
+  def get_or_create_source(source, version) when is_binary(source) and is_binary(version) do
+    with {:ok, nil} <- {:ok, get_source(source, version)},
+        {:error, %{errors: [%{source: {_, [constraint: :unique]}}]}} <- create_source(source, version),
+        {:ok, nil} <- {:ok, get_source(source, version)} do
+      {:error, :could_not_get_or_create_deck}
+    end
+  end
+  def get_or_create_source(_, _), do: {:error, :invalid_arguments}
+
+  def create_source(source, version) do
+    %Source{}
+    |> Source.changeset(%{source: source, version: version})
+    |> Repo.insert()
+  end
+  def get_source(source, version) when is_binary(source) and is_binary(version) do
+    query = from s in Source,
+      where: s.source == ^source and s.version == ^version
+
+    Repo.one(query)
+  end
+  def get_source(_, _), do: nil
   defp handle_deck(code) when is_binary(code), do: Hearthstone.create_or_get_deck(code)
   defp handle_deck(nil), do: {:ok, nil}
 
