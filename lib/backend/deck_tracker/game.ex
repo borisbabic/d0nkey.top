@@ -65,6 +65,8 @@ defmodule Hearthstone.DeckTracker.Game do
       :duration,
       :turns
     ])
+    |> fix_rank(:player_rank, :player_legend_rank)
+    |> fix_rank(:opponent_rank, :opponent_legend_rank)
     |> put_assoc_from_attrs(attrs, :player_deck)
     |> put_assoc_from_attrs(attrs, :opponent_deck)
     |> put_assoc_from_attrs(attrs, :created_by)
@@ -75,6 +77,23 @@ defmodule Hearthstone.DeckTracker.Game do
       :game_id
     ])
     |> unique_constraint(:game_id)
+  end
+
+  defp fix_rank(cs, rank_attr, legend_attr) do
+    current_rank_val = get_change(cs, rank_attr)
+    current_legend_val = get_change(cs, legend_attr)
+    {rank, legend} = ranks(current_rank_val, current_legend_val)
+    cs
+    |> put_change(rank_attr, rank)
+    |> put_change(legend_attr, legend)
+  end
+
+  defp ranks(nil, nil), do: {0, 0}
+  defp ranks(_, legend_rank) when is_integer(legend_rank) and legend_rank > 0 do
+    {51, legend_rank}
+  end
+  defp ranks(rank, legend_rank) do
+    {rank, legend_rank}
   end
 
   defp put_assoc_from_attrs(cs, attrs, attr) do
