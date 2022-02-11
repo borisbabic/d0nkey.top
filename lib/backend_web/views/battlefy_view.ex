@@ -280,7 +280,7 @@ defmodule BackendWeb.BattlefyView do
       ) do
     ongoing = calculate_ongoing(matches, show_ongoing, tournament, conn)
     is_tour_stop = tour_stop?(tournament)
-    use_countries = use_countries?(is_tour_stop, tournament)
+    use_countries = true
 
     participants_map = participants |> Enum.map(& {&1.name, &1}) |> Map.new()
     standings =
@@ -668,11 +668,6 @@ defmodule BackendWeb.BattlefyView do
     end)
     |> Enum.sort_by(fn p -> p.name end)
   end
-
-  def use_countries?(true, _), do: true
-  # max open 7
-  def use_countries?(_, %{id: "6061eff7c649e9119bb7594b"}), do: true
-  def use_countries?(_, _), do: false
 
   def add_highlight_fantasy_dropdown(dds, conn, highlight_fantasy, tournament, [_ | _]) do
     dds ++

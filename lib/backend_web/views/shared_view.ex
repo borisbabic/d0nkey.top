@@ -55,10 +55,14 @@ defmodule BackendWeb.SharedView do
     end
   end
 
-  def render("player_name.html", %{name: name}) do
+  def render("player_name.html", p = %{name: name}) do
     icon_part = render_player_icon(name)
+    country = Map.get(p, :country)
 
     ~E"""
+      <%= if country do%>
+        <%= country_flag(country) %>
+      <% end %>
       <span><%= icon_part %><%= name %></span>
     """
   end
