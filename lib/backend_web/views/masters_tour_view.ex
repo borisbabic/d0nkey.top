@@ -561,7 +561,7 @@ defmodule BackendWeb.MastersTourView do
       |> case do
         %{winner: winner, tournament_id: tournament_id} ->
           ~E"""
-          <a href="<%= Routes.battlefy_path(conn, :tournament_player, tournament_id, winner)%>"><%= render_player_name(winner) %></a>
+          <a href="<%= Routes.battlefy_path(conn, :tournament_player, tournament_id, winner)%>"><%= render_player_name(winner, true) %></a>
           """
 
         _ ->

@@ -153,6 +153,15 @@ defmodule BackendWeb.ViewHelpers do
         )
       end
 
+      def render_player_name(name, _with_country = false), do: render_player_name(name)
+      def render_player_name(name, _with_country = true) do
+        render(
+          BackendWeb.SharedView,
+          "player_name.html",
+          %{name: name, country: Backend.PlayerInfo.get_country(name)}
+        )
+      end
+
       def warning_triangle(),
         do: ~E"""
         <span class="icon is-small">
