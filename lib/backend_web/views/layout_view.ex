@@ -83,7 +83,7 @@ defmodule BackendWeb.LayoutView do
 
   @spec enable_nitropay?(Plug.Conn.t()) :: boolean
   def enable_nitropay?(%{params: %{"nitropay_test" => "yes"}}), do: true
-  def enable_nitropay?(_), do: false
+  def enable_nitropay?(_), do: Application.get_env(:backend, :enable_nitropay, false)
 
 
   @spec hide_ads?(Plug.Conn.t()) :: boolean
