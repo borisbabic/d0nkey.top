@@ -17,6 +17,8 @@ defmodule Hearthstone.DeckTracker.GameDto do
     field :duration, integer()
     field :turns, integer()
     field :replay_url, String.t()
+    field :source, String.t()
+    field :source_version, String.t()
     field :created_by, Backend.Api.ApiUser.t()
   end
 
@@ -38,6 +40,8 @@ defmodule Hearthstone.DeckTracker.GameDto do
       region: map["region"],
       duration: map["duration"],
       turns: map["turns"],
+      source: map["source"],
+      source_version: map["source_version"],
       created_by: created_by
     }
   end
@@ -46,7 +50,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   defp to_snake(map), do: Recase.Enumerable.convert_keys(map, &Recase.to_snake/1)
 
-  def to_ecto_attrs(dto = %GameDto{}, deckcode_handler) do
+  def to_ecto_attrs(dto = %GameDto{}, deckcode_handler, source_handler) do
     %{
       "player_btag" => dto.player.battletag,
       "player_rank" => dto.player.rank,
@@ -66,6 +70,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "turns" => dto.turns,
       "duration" => dto.duration,
       "replay_url" => dto.replay_url,
+      "source" => source_handler.(dto.source, dto.source_version) |> Util.or_nil(),
       "created_by" => dto.created_by
     }
   end
