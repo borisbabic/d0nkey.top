@@ -86,6 +86,7 @@ config :backend,
   bnet_client_id: bnet_client_id,
   bnet_client_secret: bnet_client_secret,
   admin_pass: "admin",
+  enable_nitropay: true,
   gm_stream_send_tweet: false,
   gm_stream_twitter_info: [
     consumer_key: System.get_env("GMS_CONSUMER_KEY"),
