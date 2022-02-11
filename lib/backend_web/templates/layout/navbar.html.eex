@@ -103,7 +103,7 @@
            <a class="navbar-item" href='<%=Routes.page_path(@conn, :about) %>'>About</a>
          </div>
        </div>
-         <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.DecksLive) %>'>Decks<p><sup class="is-size-7 has-text-danger"> New!</p></sup></a>
+         <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.DecksLive) %>'>Decks</a>
          <a class="navbar-item" href='<%=Routes.streaming_path(@conn, :streamer_decks) %>'>Streamer Decks</a>
          <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.MaxNations2022Live) %>'>
           Max Nations

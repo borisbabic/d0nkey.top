@@ -1,9 +1,9 @@
 <div class="title is-2"><%= @title %></div>
-<div class="subtitle is-6"><a href="<%= Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)%>">Instructions for streamers</a></div>
-
-
-<div class="notification is-warning">There is an issue with recognizing HDT decks. Streamers can use Firestone until it's resolved</div>
-<div class="notification is-info">Alpha version of an HDT extension is available for testing, see <a href="https://twitter.com/D0nkeyHS/status/1478508340418424834">here</a></div>
+<div class="subtitle is-6">
+    <p>
+        <a href="<%= Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)%>">Instructions for streamers</a> <a href="/hdt-plugin" target="_blank"><sup class="is-size-7 has-text-danger">HDT plugin available!</sup></a>
+    </p>
+</div>
 <div class="columns is-pulled-left">
 <%= @prev_button %>
 <%= @next_button %>

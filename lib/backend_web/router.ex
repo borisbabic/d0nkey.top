@@ -79,6 +79,8 @@ defmodule BackendWeb.Router do
     get "/donate-follow", PageController, :donate_follow
     get "/privacy", PageController, :privacy
 
+    get "/hdt-plugin", PageController, :hdt_plugin
+
     get "/log", PageController, :log
     put "/log", PageController, :log
     post "/log", PageController, :log

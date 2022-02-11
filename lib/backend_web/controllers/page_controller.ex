@@ -22,6 +22,10 @@ defmodule BackendWeb.PageController do
     render(conn, "privacy.html")
   end
 
+  def hdt_plugin(conn, _params) do
+    render(conn, "hdt-plugin.html")
+  end
+
   def test(conn, params) do
     render(conn, "test.html", params)
   end
