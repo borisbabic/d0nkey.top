@@ -4,9 +4,14 @@ defmodule Components.Feed.LatestHSArticles do
 
   def render(assigns) do
     ~F"""
-      <div class="card" style="width: calc(2*(var(--decklist-width) + 15px));">
+      <div :if={[latest| rest] = get_latest_articles()} class="card" style="width: calc(2*(var(--decklist-width) + 15px));">
         <div class="card-content">
-          <HSArticle :for={a <- get_latest_articles()} article={a}/>
+          <div>
+            <HSArticle article={latest}/>
+          </div>
+          <div class="is-hidden-mobile">
+            <HSArticle :for={a <- rest} article={a}/>
+          </div>
         </div>
       </div>
     """
