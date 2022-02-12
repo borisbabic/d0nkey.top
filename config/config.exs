@@ -102,6 +102,9 @@ config :backend,
     access_token_secret: System.get_env("REQT100_ACCESS_TOKEN_SECRET")
   ],
   nitropay_demo: true,
+  nostrum_slash_commands: [Bot.SlashCommands.MTQCommand],
+  # d0nkey guild id
+  nostrum_slash_command_target: 666596230100549652,
   admin_config_vars_cutoff_date: "3000-12-31"
 
 # Configures Elixir's Logger
