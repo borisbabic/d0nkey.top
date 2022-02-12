@@ -19,6 +19,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
     field :replay_url, String.t()
     field :source, String.t()
     field :source_version, String.t()
+    field :player_has_coin, boolean()
     field :created_by, Backend.Api.ApiUser.t()
   end
 
@@ -39,12 +40,17 @@ defmodule Hearthstone.DeckTracker.GameDto do
       replay_url: map["replay_url"],
       region: map["region"],
       duration: map["duration"],
+      player_has_coin: player_has_coin(map),
       turns: map["turns"],
       source: map["source"],
       source_version: map["source_version"],
       created_by: created_by
     }
   end
+
+  defp player_has_coin(%{"coin" => coin}), do: coin
+  defp player_has_coin(%{"player_has_coin" => coin}), do: coin
+  defp player_has_coin(_), do: nil
 
   def from_raw_map(_, created_by), do: %{} |> from_raw_map(created_by)
 
@@ -70,6 +76,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "turns" => dto.turns,
       "duration" => dto.duration,
       "replay_url" => dto.replay_url,
+      "player_has_coin" => dto.player_has_coin,
       "source" => source_handler.(dto.source, dto.source_version) |> Util.or_nil(),
       "created_by" => dto.created_by
     }

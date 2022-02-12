@@ -29,6 +29,7 @@ defmodule Hearthstone.DeckTracker.Game do
     field :region, Ecto.Enum, values: [:AM, :AP, :EU, :CN, :unknown]
     field :duration, :integer
     field :turns, :integer
+    field :player_has_coin, :boolean, default: nil
     field :replay_url, :string, default: nil
 
     field :public, :boolean, default: false
@@ -64,6 +65,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :region,
       :public,
       :replay_url,
+      :player_has_coin,
       :duration,
       :turns
     ])
