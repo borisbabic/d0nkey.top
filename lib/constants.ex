@@ -5,6 +5,7 @@ defmodule Constants do
   def patreon(), do: "https://www.patreon.com/d0nkey"
   def liberapay(), do: "https://liberapay.com/d0nkeyhs"
   def paypal(), do: "https://www.paypal.me/d0nkeyhs"
+  def btc(), do: "https://discord.gg/6KGageG"
 
   def notion(),
     do:

@@ -28,4 +28,8 @@ defmodule BackendWeb.SocialController do
   def liberapay(conn, _) do
     redirect(conn, external: Constants.liberapay())
   end
+
+  def btc(conn, _) do
+    redirect(conn, external: Constants.btc())
+  end
 end
