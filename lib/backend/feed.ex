@@ -125,6 +125,7 @@ defmodule Backend.Feed do
     |> Repo.insert()
   end
 
+
   @spec update_feed_item_points(FeedItem.t(), number()) :: {:ok, FeedItem.t()} | {:error, any()}
   def update_feed_item_points(fi = %FeedItem{}, points) do
     attrs = %{points: points}
@@ -214,4 +215,41 @@ defmodule Backend.Feed do
 
   @spec get_feed_item!(integer()) :: FeedItem.t()
   def get_feed_item!(id), do: Repo.get!(FeedItem, id)
+
+  def handle_articles_item(latest, start_params) do
+    query = from fi in FeedItem,
+      where: fi.type == "latest_hs_articles",
+      order_by: [desc: fi.inserted_at],
+      limit: 1
+    query
+    |> Repo.one()
+    |> ensure_articles_item()
+    |> update_articles_item(latest, start_params)
+  end
+
+  defp ensure_articles_item(nil) do
+    create_feed_item("latest_hs_articles", "dummy_value", 0)
+    |> Util.bangify()
+  end
+  defp ensure_articles_item(item), do: item
+
+  defp update_articles_item(item = %{value: v}, latest, _) when v == latest, do: {:ok, item}
+  defp update_articles_item(item, latest, start_params) do
+    query = from fi in FeedItem,
+      where: fi.type != "latest_hs_articles",
+      order_by: [desc: fi.decayed_points],
+      select: fi.decayed_points,
+      limit: 1
+
+    highest = Repo.one(query) || 0
+    points = highest + start_params[:head_start]
+    attrs = %{
+      points: points,
+      decayed_points: points,
+      decay_rate: start_params[:decay],
+      cumulative_decay: 1,
+      value: latest
+    }
+    update_feed_item(item, attrs)
+  end
 end

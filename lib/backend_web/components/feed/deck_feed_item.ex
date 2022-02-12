@@ -1,4 +1,4 @@
-defmodule Components.DeckFeedItem do
+defmodule Components.Feed.DeckFeedItem do
   @moduledoc false
   use Surface.Component
   alias Components.Decklist
@@ -7,10 +7,9 @@ defmodule Components.DeckFeedItem do
   prop(item, :map, required: true)
 
   def render(assigns = %{item: %{value: deck_id}}) do
-    deck = Backend.Hearthstone.deck(deck_id)
 
     ~F"""
-    <DeckCard>
+    <DeckCard :if={deck = deck(deck_id)}>
       <Decklist deck={deck} archetype_as_name={true} />
       <:after_deck>
         <DeckStreamingInfo deck_id={deck.id}/>
@@ -18,4 +17,5 @@ defmodule Components.DeckFeedItem do
     </DeckCard>
     """
   end
+  def deck(deck_id), do: Backend.Hearthstone.deck(deck_id)
 end

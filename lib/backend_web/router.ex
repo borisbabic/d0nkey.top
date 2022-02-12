@@ -87,6 +87,8 @@ defmodule BackendWeb.Router do
 
     get "/test", PageController, :test
 
+    get "/hs/patch-notes", HearthstoneController, :patch_notes
+
     get "/invited/:tour_stop", MastersTourController, :invited_players
     get "/invited/", MastersTourController, :invited_players
     get "/qualifiers", MastersTourController, :qualifiers

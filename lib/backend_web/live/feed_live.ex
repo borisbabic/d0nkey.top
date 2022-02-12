@@ -1,7 +1,8 @@
 defmodule BackendWeb.FeedLive do
   @moduledoc false
   alias Backend.Feed
-  alias Components.DeckFeedItem
+  alias Components.Feed.DeckFeedItem
+  alias Components.Feed.LatestHSArticles
   alias Components.OmniBar
   use BackendWeb, :surface_live_view
 
@@ -10,7 +11,6 @@ defmodule BackendWeb.FeedLive do
 
   def render(assigns) do
     items = Feed.get_current_items()
-
     ~F"""
     <Context put={user: @user} >
       <div>
@@ -22,8 +22,13 @@ defmodule BackendWeb.FeedLive do
           <div :if={false} class="level-item title is-2">Well Met!</div>
         </div>
         <div class="columns is-multiline is-mobile is-narrow is-centered">
-          <div :for={item <- items} :if={item.type == "deck"} class="column is-narrow">
-            <DeckFeedItem item={item}/>
+          <div :for={item <- items} class="column is-narrow">
+            <div :if={item.type == "deck"}>
+              <DeckFeedItem item={item}/>
+            </div>
+            <div :if={item.type == "latest_hs_articles"}>
+              <LatestHSArticles />
+            </div>
           </div>
         </div>
       </div>
