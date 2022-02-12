@@ -107,4 +107,42 @@ defmodule Hearthstone.DeckTracker.Game do
       val -> put_assoc(cs, attr, val)
     end
   end
+
+
+  def player_rank_text(%{player_legend_rank: legend}) when legend > 0 do
+    "##{legend} Legend"
+  end
+
+  def player_rank_text(%{player_rank: rank}) when rank > 0 do
+    case convert_rank(rank) do
+      {level, num} -> "#{level} #{num}"
+      level -> "#{level}"
+    end
+  end
+  def player_rank_text(_), do: "Unknown"
+
+  def convert_rank(num) when is_integer(num) and num > 0 do
+    rank = 10 - rem(num - 1, 10)
+    case div(num - 1, 10) do
+      0 -> {:Bronze, rank}
+      1 -> {:Silver, rank}
+      2 -> {:Gold, rank}
+      3 -> {:Platinum, rank}
+      4 -> {:Diamond, rank}
+      5 -> :Legend
+      _ -> :Unknown
+    end
+  end
+
+  def convert_rank(:Legend), do: 51
+  def convert_rank({level, rank}) do
+    level_part = 10 * case level do
+      :Bronze -> 0
+      :Silver -> 1
+      :Gold -> 2
+      :Platinum -> 3
+      :Diamond -> 4
+    end
+    level_part - rank + 11
+  end
 end
