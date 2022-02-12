@@ -21,7 +21,8 @@ config :backend, QuantumScheduler,
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
     {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
     {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
-    {"* * * * *", fn -> Backend.Leaderboards.save_current() end}
+    {"* * * * *", fn -> Backend.Leaderboards.save_current() end},
+    {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
 bnet_client_id =

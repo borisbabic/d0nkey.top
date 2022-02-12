@@ -89,6 +89,10 @@ defmodule Backend.Application do
           id: Backend.Grandmasters,
           start: {Backend.Grandmasters, :start_link, [[]]}
         },
+        %{
+          id: Backend.LatestHSArticles,
+          start: {Backend.LatestHSArticles, :start_link, [[]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
