@@ -26,6 +26,31 @@ defmodule Hearthstone.DeckTracker do
     Repo.one(query)
   end
 
+  def convert_rank(num) when is_integer(num) do
+    rank = 10 - rem(num - 1, 10)
+    case div(num - 1, 10) do
+      0 -> {:Bronze, rank}
+      1 -> {:Silver, rank}
+      2 -> {:Gold, rank}
+      3 -> {:Platinum, rank}
+      4 -> {:Diamond, rank}
+      5 -> :Legend
+      _ -> :Unknown
+    end
+  end
+
+  def convert_rank(:Legend), do: 51
+  def convert_rank({level, rank}) do
+    level_part = 10 * case level do
+      :Bronze -> 0
+      :Silver -> 1
+      :Gold -> 2
+      :Platinum -> 3
+      :Diamond -> 4
+    end
+    level_part - rank + 11
+  end
+
 
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
     attrs =

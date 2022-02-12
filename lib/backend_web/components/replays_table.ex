@@ -4,6 +4,7 @@ defmodule Components.ReplaysTable do
   alias Components.ExpandableDecklist
   alias Components.PlayerName
   alias Hearthstone.DeckTracker
+  alias Hearthstone.DeckTracker.Game
   alias Hearthstone.Enums.GameType
   alias Hearthstone.Enums.Format
   alias BackendWeb.Router.Helpers, as: Routes
@@ -17,6 +18,7 @@ defmodule Components.ReplaysTable do
             <th>Deck</th>
             <th>Opponent</th>
             <th>Game Mode</th>
+            <th>Rank</th>
             <th>Replay Link</th>
             <th>Played</th>
           </tr>
@@ -34,6 +36,7 @@ defmodule Components.ReplaysTable do
               </span>
             </td>
             <td><p class={"tag", class(game)}>{game_mode(game)}</p></td>
+            <td>{Game.player_rank_text(game)}</td>
             <td><a href={"#{replay_link(game)}"} target="_blank">View Replay</a></td>
             <td>{Timex.format!(game.inserted_at, "{relative}", :relative)}</td>
           </tr>
