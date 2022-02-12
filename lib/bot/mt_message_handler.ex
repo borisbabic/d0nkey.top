@@ -13,7 +13,17 @@ defmodule Bot.MTMessageHandler do
     end
   end
 
-  def recent_qualifier_standings(msg = %{guild_id: guild_id}) do
+
+  def standings_message(guild_id, num) when is_integer(num) do
+    with %{id: id} <- MastersTour.get_qualifier(num),
+        {:ok, msg} <- Bot.BattlefyMessageHandler.create_standings_message(id, %{guild_id: guild_id}) do
+        msg
+    else
+      _ -> standings_message(guild_id)
+    end
+  end
+  def standings_message(guild_id, _), do: standings_message(guild_id)
+  def standings_message(guild_id) do
     battletags = get_guild_battletags!(guild_id)
     base_message = MastersTour.get_recent_qualifiers()
     |> Enum.map(fn q ->
@@ -30,12 +40,15 @@ defmodule Bot.MTMessageHandler do
     |> Enum.filter(& &1)
     |> Enum.join("\n")
 
-    message = """
+    """
     ```
     #{base_message}
     ```
     """
+  end
 
+  def recent_qualifier_standings(msg = %{guild_id: guild_id}) do
+    message = standings_message(guild_id)
     send_message(message, msg.channel_id)
   end
 end

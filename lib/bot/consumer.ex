@@ -1,6 +1,7 @@
 defmodule Bot.Consumer do
   @moduledoc false
   use Nostrum.Consumer
+  use Bot.SlashCommandHandler
   require Logger
 
   def start_link do

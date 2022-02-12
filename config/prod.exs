@@ -13,6 +13,7 @@ config :backend,
   cloudflare_analytics: true,
   gm_stream_send_tweet: true,
   nitropay_demo: false,
+  nostrum_slash_command_target: :global,
   enable_bot: true
 
 config :ueberauth, Ueberauth,
