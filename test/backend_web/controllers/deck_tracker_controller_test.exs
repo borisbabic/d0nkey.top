@@ -53,6 +53,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       "Result" => "LOSS",
       "Source" => "hdt-plugin",
       "SourceVersion" => version,
+      "Coin" => true,
       "Turns" => 0
     }
     %{
@@ -83,7 +84,8 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       } = valid_hdt_request()
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
       assert text_response(conn, 200) =~ "Success"
-      assert %{game_id: ^game_id} = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
+      coin = request["Coin"]
+      assert %{game_id: ^game_id, player_has_coin: ^coin} = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
     end
 
     test "same game with different id isn't duplicated", %{conn: conn} do
