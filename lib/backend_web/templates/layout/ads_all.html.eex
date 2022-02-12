@@ -27,3 +27,28 @@
     }
   });
 </script>
+<script>
+window['nitroAds'].createAd('below-title-leaderboard', {
+  "refreshLimit": 10,
+  "refreshTime": 60,
+  "renderVisibleOnly": true,
+  "refreshVisibleOnly": true,
+  "demo": true,
+  "sizes": [
+    [
+      "728",
+      "90"
+    ],
+    [
+      "970",
+      "90"
+    ]
+  ],
+  "report": {
+    "enabled": true,
+    "wording": "Report Ad",
+    "position": "top-right"
+  },
+  "mediaQuery": "(min-width: 1025px), (min-width: 768px) and (max-width: 1024px)"
+});
+</script>
