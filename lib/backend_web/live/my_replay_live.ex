@@ -19,7 +19,7 @@ defmodule BackendWeb.MyReplaysLive do
       <div>
         <div class="title is-2">My Replays</div>
         <div class="subtitle is-6">
-        Powered by <a href="https://www.firestoneapp.com/">Firestone</a>
+        Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Pludin</a>
         </div>
         <ReplayExplorer id="my-replays" additional_params={additional_params(@user)} params={@filters} live_view={__MODULE__}/>
       </div>
