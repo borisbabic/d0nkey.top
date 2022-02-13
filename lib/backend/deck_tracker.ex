@@ -410,11 +410,13 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
 
-  @spec replay_link(%{:game_id => any, optional(any) => any}) :: <<_::64, _::_*8>>
+  @spec replay_link(%{:game_id => any, optional(any) => any}) :: String.t() |nil
   def replay_link(%{replay_url: url}) when is_binary(url), do: url
 
-  def replay_link(%{api_user: nil, game_id: game_id}),
-    do: "https://hsreplay.net/replay/#{game_id}"
-  def replay_link(%{game_id: game_id}),
+  # def replay_link(%{api_user: nil, game_id: game_id}),
+  #   do: "https://hsreplay.net/replay/#{game_id}"
+  def replay_link(%{created_by_id: id, game_id: game_id}) when not is_nil(id),
     do: "https://replays.firestoneapp.com/?reviewId=#{game_id}"
+
+  def replay_link(_), do: nil
 end

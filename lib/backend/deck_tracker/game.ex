@@ -42,7 +42,7 @@ defmodule Hearthstone.DeckTracker.Game do
   @doc false
   def changeset(game = %{game_id: game_id}, attrs) when is_binary(game_id) do
     game
-    |> cast(attrs, [:status, :duration, :turns, :player_class, :opponent_class, :replay_url, :player_has_coin])
+    |> cast(attrs, [:status, :duration, :turns, :player_class, :opponent_class, :replay_url, :player_has_coin, :region, :opponent_rank, :opponent_legend_rank, :public])
     |> unique_constraint(:game_id)
   end
 
