@@ -67,6 +67,7 @@ config :backend, Backend.UserManager.Guardian,
   issuer: "d0nkey.top",
   secret_key: "CyjJAVTbtJgJwS+NbkbTpVTPDJeMKqcn+GakxrO4E5j/kB3SgcgF3CqfsxpxzQKM"
 
+hdt_plugin_latest_version = "0.3.1"
 # auto sign me up
 config :backend,
   su_token: System.get_env("SIGNUP_TOKEN") || nil,
@@ -105,6 +106,8 @@ config :backend,
   nostrum_slash_commands: [Bot.SlashCommands.MTQCommand],
   # d0nkey guild id
   nostrum_slash_command_target: 666596230100549652,
+  hdt_plugin_latest_version: hdt_plugin_latest_version,
+  hdt_plugin_latest_file: "hdt_plugin/#{hdt_plugin_latest_version}.dll",
   admin_config_vars_cutoff_date: "3000-12-31"
 
 # Configures Elixir's Logger

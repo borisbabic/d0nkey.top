@@ -42,6 +42,21 @@ defmodule BackendWeb.DeckTrackerController do
     end
   end
 
+  def hdt_plugin_latest_version(conn, _params) do
+    case Application.get_env(:backend, :hdt_plugin_latest_version, nil) do
+      nil -> conn |> put_status(500) |> text("No latest version")
+      ver -> conn |> put_status(200) |> text(ver)
+    end
+  end
+
+  def hdt_plugin_latest_file(conn, _params) do
+    case Application.get_env(:backend, :hdt_plugin_latest_file, nil) do
+      path when is_binary(path) -> conn |> send_file(200, path)
+      nil -> conn |> put_status(500) |> text("No latest version")
+    end
+  end
+
+
   defp log_if_hdt(to_log, %{"source" => "hdt_plugin"}) do
     Logger.error(inspect(to_log))
     to_log

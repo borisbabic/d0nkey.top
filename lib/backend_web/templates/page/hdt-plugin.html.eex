@@ -1,11 +1,16 @@
 <div class="title is-2">HDT Plugin</div>
-<div class="subtitle is-6">The HDT plugin is currently in Beta</div>
 
 
+<div class="subtitle is-6">
+    Not just for <a target="_blank" href="/streamer-decks">Streamer Decks</a>.
+</div>
+Contribute to <a target="_blank" href="/decks">Decks</a>, enjoy <a target="_blank" href="/my-decks">My Decks</a> and <a target="_blank" href="/my-replays">My Replays</a> and more to come (all also available for <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> users)
+<br>
+<br>
 <div class="subtitle is-4">Quick Instructions</div>
 
 <li>
-    Download the <a target="_blank" href="https://drive.google.com/file/d/1Fy13MMH3J9sE6LbVfmmml31bsS3-0npT/view?usp=sharing">latest version</a> into %appdata%\HearthstoneDeckTracker\Plugins or drag and drop the file into the plugins window in HDT (Options -> Plugins)
+    Download the <a target="_blank" href="/hdt-plugin/d0nkey.top plugin.dll">latest version</a> and open the plugins window in HDT (Options -> Plugins)  and drag and drop the file onto the window <a href="/images/hdt_plugin_ss.png" target="_blank">(Example ScreenShot)</a>. Alternatively copy the file into <code>%appdata%\HearthstoneDeckTracker\Plugins\</code>
 </li>
 
 <li>
@@ -29,13 +34,7 @@
 <br>
 <div class="subtitle is-4">Known Issues</div>
 <li>
-    <s> Replay link in <a target="_blank" href="/my-replays">My Replays</a> is wrong (it opens a Firestone link for an invalid game)</s> This has been fixed in 0.2.0 and later. Very rarely there may not be a replay because it is added afterwards, if you care about them don't rage and unplug your pc immediately after the game and you should be fine.
-</li>
-<li>
-    Streaming now functionality doesn't work (but streamer decks does - it updates after you finish games)
-</li>
-<li>
-    No update mechanism, ie you have to manually download new versions for future updates
+    Streaming now functionality doesn't work (but don't worry streamer decks does)
 </li>
 
 
@@ -50,7 +49,4 @@ If it's not installing then perhaps HDT is installed in a non default location? 
 <li>
 For feedback or additional help see the #hdt-extension channel in my <a target="_blank" href="/discord">Discord</a>
 Include the hdt log file located here %appdata%\HearthstoneDeckTracker\Logs\hdt_logs.txt - this file is recreated if you restart hdt, there will be others in the folder so if it's in an old file
-</li>
-<li>
-Older versions available <a target="_blank" href="https://drive.google.com/drive/folders/17uaVxEkhKpilzA1LAOZQi2_NXllsa3Lm?usp=sharing">here</a>
 </li>
