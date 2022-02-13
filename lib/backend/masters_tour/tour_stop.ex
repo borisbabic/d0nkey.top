@@ -246,13 +246,13 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour One",
-        battlefy_id: nil,
+        battlefy_id: "61fa914887d821355e9372fe",
         ladder_priority: :timezone,
         ladder_seasons: [99],
         ladder_invites: 50,
         region: :AP,
-        start_time: ~N[2022-02-19 13:00:00],
-        qualifiers_period: {~D[2022-01-01], ~D[2022-01-31]},
+        start_time: ~N[2022-02-17 22:15:00],
+        qualifiers_period: {~D[2022-01-01], ~D[2022-01-30]},
         min_qualifiers_for_winrate: 10,
         swiss_rounds: 8,
         year: 2022
@@ -265,7 +265,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_invites: 50,
         region: :AP,
         start_time: ~N[2022-03-19 13:00:00],
-        qualifiers_period: {~D[2022-02-01], ~D[2022-02-28]},
+        qualifiers_period: {~D[2022-02-01], ~D[2022-02-27]},
         min_qualifiers_for_winrate: 10,
         swiss_rounds: 8,
         year: 2022
