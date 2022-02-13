@@ -37,7 +37,7 @@ defmodule Components.ReplaysTable do
             </td>
             <td><p class={"tag", class(game)}>{game_mode(game)}</p></td>
             <td>{Game.player_rank_text(game)}</td>
-            <td><a href={"#{replay_link(game)}"} target="_blank">View Replay</a></td>
+            <td><a :if={link = replay_link(game)} href={"#{link}"} target="_blank">View Replay</a></td>
             <td>{Timex.format!(game.inserted_at, "{relative}", :relative)}</td>
           </tr>
         </tbody>
