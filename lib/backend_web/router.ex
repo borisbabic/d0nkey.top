@@ -101,6 +101,10 @@ defmodule BackendWeb.Router do
     get "/mtq/:mtq_num", MastersTourController, :qualifier_redirect
     get "/mtq/:mtq_num/*rest", MastersTourController, :qualifier_redirect
 
+    get "/hdt-plugin/latest-version", DeckTrackerController, :hdt_plugin_latest_version
+    get "/hdt-plugin/latest", DeckTrackerController, :hdt_plugin_latest_file
+    get "/hdt-plugin/d0nkey.top plugin.dll", DeckTrackerController, :hdt_plugin_latest_file
+
     get "/battlefy/third-party-tournaments/stats/:stats_slug",
         BattlefyController,
         :organization_tournament_stats
