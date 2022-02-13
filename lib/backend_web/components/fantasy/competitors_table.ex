@@ -1,12 +1,13 @@
 defmodule Components.CompetitorsTable do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
 
   alias Backend.Fantasy
   alias Backend.Fantasy.League
   alias Backend.Fantasy.Competition.Participant
   alias Backend.Fantasy.LeagueTeam
   alias Surface.Components.Form
+  alias Components.PlayerName
   alias Surface.Components.Form.TextInput
 
   prop(league, :map)
@@ -42,8 +43,16 @@ defmodule Components.CompetitorsTable do
             </th>
           </thead>
           <tbody>
-            <tr :for={participant <- @participants |> filter(@search) |> cut(@league)} >
-              <td>{participant.name}</td>
+            <tr :for={participant <- @participants |> filter(@search) |> cut(@league) |> Enum.uniq_by(& &1.name)} >
+              <td>
+
+                {#if @league.competition_type == "masters_tour"}
+                  <PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, participant.name)} player={participant.name}/>
+                {#else}
+                  <span>{participant.name}</span>
+                {/if}
+
+              </td>
               <td :for={value <- competition_specific_columns(@league, participant)}>
                 {value}
               </td>
