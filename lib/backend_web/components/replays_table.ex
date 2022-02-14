@@ -10,11 +10,13 @@ defmodule Components.ReplaysTable do
   alias BackendWeb.Router.Helpers, as: Routes
 
   prop(replays, :list, required: true)
+  prop(show_player_btag, :boolean, default: false)
   def render(assigns) do
     ~F"""
       <table class="table is-fullwidth">
         <thead>
           <tr>
+            <th :if={@show_player_btag}>Player</th>
             <th>Deck</th>
             <th>Opponent</th>
             <th>Game Mode</th>
@@ -25,6 +27,7 @@ defmodule Components.ReplaysTable do
         </thead>
         <tbody>
           <tr :for={game <- @replays} >
+            <td :if={@show_player_btag}><PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, game.player_btag)} player={game.player_btag}/></td>
             <td :if={game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
             <td :if={!game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
             <td>

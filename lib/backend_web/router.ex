@@ -201,8 +201,11 @@ defmodule BackendWeb.Router do
     live "/my-replays", MyReplaysLive
     live "/my-decks", MyDecksLive
 
+    live "/groups/:group_id/decks", GroupDecksLive
+    live "/groups/:group_id/replays", GroupReplaysLive
     live "/groups/:group_id", GroupLive
     live "/groups", MyGroupsLive
+    live "/my-groups", MyGroupsLive
 
     get "/wild", FunController, :wild
   end

@@ -27,9 +27,16 @@ defmodule BackendWeb.GroupLive do
             <div class="level is-mobile">
               <div class="level-left">
 
+                <div class="level-item" :if={membership}>
+                  <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupReplaysLive, @group_id)}>Group Replays</a>
+                </div>
+                <div class="level-item" :if={membership}>
+                  <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupDecksLive, @group_id)}>Group Decks</a>
+                </div>
                 <div class="level-item" :if={!membership}>
                   {#if  @join_code && @join_code == group.join_code}
                     <button class="button" :on-click="join_group">Join Group</button>
+                    Your private replays and stats will be visible to the group
                   {#else }
                     You're not a member of this group. Contact the owner for access
                   {/if}

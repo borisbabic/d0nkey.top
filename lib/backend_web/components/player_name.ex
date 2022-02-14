@@ -22,5 +22,5 @@ defmodule Components.PlayerName do
     """
   end
 
-  def country(player), do: Backend.UserManagerInfo.get_country(player)
+  def country(player), do: Backend.PlayerInfo.get_country(player)
 end

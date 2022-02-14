@@ -16,7 +16,7 @@ defmodule BackendWeb.GroupMembershipController do
       error ->
         conn
         |> put_flash(:error, "There was an error rendering Group memberships. #{inspect(error)}")
-        |> redirect(to: Routes.group_memberships_path(conn, :index))
+        |> redirect(to: Routes.group_membership_path(conn, :index))
     end
   end
 
@@ -30,7 +30,7 @@ defmodule BackendWeb.GroupMembershipController do
       {:ok, group_membership} ->
         conn
         |> put_flash(:info, "Group membership created successfully.")
-        |> redirect(to: Routes.group_memberships_path(conn, :show, group_membership))
+        |> redirect(to: Routes.group_membership_path(conn, :show, group_membership))
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -54,7 +54,7 @@ defmodule BackendWeb.GroupMembershipController do
       {:ok, group_membership} ->
         conn
         |> put_flash(:info, "Group membership updated successfully.")
-        |> redirect(to: Routes.group_memberships_path(conn, :show, group_membership))
+        |> redirect(to: Routes.group_membership_path(conn, :show, group_membership))
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", group_membership: group_membership, changeset: changeset)
     end
@@ -66,6 +66,6 @@ defmodule BackendWeb.GroupMembershipController do
 
     conn
     |> put_flash(:info, "Group membership deleted successfully.")
-    |> redirect(to: Routes.group_memberships_path(conn, :index))
+    |> redirect(to: Routes.group_membership_path(conn, :index))
   end
 end
