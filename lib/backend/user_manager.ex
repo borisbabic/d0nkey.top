@@ -14,6 +14,8 @@ defmodule Backend.UserManager do
   @pagination_distance 5
 
   alias Backend.UserManager.User
+  alias Backend.UserManager.Group
+  alias Backend.UserManager.GroupMembership
 
   @doc """
   Returns the list of users.
@@ -101,7 +103,7 @@ defmodule Backend.UserManager do
 
   def update_user_info({:ok, user} = ret) do
     Backend.Battlenet.update_user_country(user)
-    Backend.PlayerIconBag.set_user_icons(user)
+    Backend.UserManagerIconBag.set_user_icons(user)
     ret
   end
 
@@ -189,6 +191,22 @@ defmodule Backend.UserManager do
     end
   end
 
+  defp filter_config(:groups) do
+    defconfig do
+      number :owner_id
+      text :name
+      text :discord
+      text :join_code
+    end
+  end
+
+  defp filter_config(:group_memberships) do
+    defconfig do
+      text :role
+    end
+  end
+
+
   @doc """
   Finds the bnet user if it exists, creates one if it doesn't.
   """
@@ -239,5 +257,388 @@ defmodule Backend.UserManager do
     user
     |> User.changeset(%{twitch_id: nil})
     |> Repo.update()
+  end
+
+
+  @doc """
+  Paginate the list of groups using filtrex
+  filters.
+
+  ## Examples
+
+      iex> list_groups(%{})
+      %{groups: [%Group{}], ...}
+  """
+  @spec paginate_groups(map) :: {:ok, map} | {:error, any}
+  def paginate_groups(params \\ %{}) do
+    params =
+      params
+      |> Map.put_new("sort_direction", "desc")
+      |> Map.put_new("sort_field", "inserted_at")
+
+    {:ok, sort_direction} = Map.fetch(params, "sort_direction")
+    {:ok, sort_field} = Map.fetch(params, "sort_field")
+
+    with {:ok, filter} <- Filtrex.parse_params(filter_config(:groups), params["group"] || %{}),
+        %Scrivener.Page{} = page <- do_paginate_groups(filter, params) do
+      {:ok,
+        %{
+          groups: page.entries,
+          page_number: page.page_number,
+          page_size: page.page_size,
+          total_pages: page.total_pages,
+          total_entries: page.total_entries,
+          distance: @pagination_distance,
+          sort_field: sort_field,
+          sort_direction: sort_direction
+        }
+      }
+    else
+      {:error, error} -> {:error, error}
+      error -> {:error, error}
+    end
+  end
+
+  defp do_paginate_groups(filter, params) do
+    Group
+    |> Filtrex.query(filter)
+    |> order_by(^sort(params))
+    |> paginate(Repo, params, @pagination)
+  end
+
+  @doc """
+  Returns the list of groups.
+
+  ## Examples
+
+      iex> list_groups()
+      [%Group{}, ...]
+
+  """
+  def list_groups do
+    Repo.all(Group)
+  end
+
+  @doc """
+  Gets a single group.
+
+  Raises `Ecto.NoResultsError` if the Group does not exist.
+
+  ## Examples
+
+      iex> get_group!(123)
+      %Group{}
+
+      iex> get_group!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_group!(id), do: Repo.get!(Group, id) |> Repo.preload(:owner)
+
+  def get_group(id), do: Repo.get(Group, id) |> Repo.preload(:owner)
+
+  @doc """
+  Creates a group.
+
+  ## Examples
+
+      iex> create_group(%{field: value})
+      {:ok, %Group{}}
+
+      iex> create_group(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_group(attrs = %{"owner" => owner}) do
+    with {:ok, group} <- %Group{} |> Group.changeset(attrs) |> Repo.insert(),
+        {:ok, group_membership} <- %{role: "Owner", group: group, user: owner} |> create_group_membership() do
+          IO.inspect(group_membership)
+          {:ok, group}
+    end
+  end
+
+  def create_group(attrs, owner_id) do
+    case get_user(owner_id) do
+      nil -> {:error, :no_owner}
+      owner ->
+        attrs
+        |> Map.put("owner", owner)
+        |> create_group()
+    end
+  end
+
+  @doc """
+  Updates a group.
+
+  ## Examples
+
+      iex> update_group(group, %{field: new_value})
+      {:ok, %Group{}}
+
+      iex> update_group(group, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_group(%Group{} = group, attrs) do
+    group
+    |> Group.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Group.
+
+  ## Examples
+
+      iex> delete_group(group)
+      {:ok, %Group{}}
+
+      iex> delete_group(group)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_group(%Group{} = group) do
+    Repo.delete(group)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking group changes.
+
+  ## Examples
+
+      iex> change_group(group)
+      %Ecto.Changeset{source: %Group{}}
+
+  """
+  def change_group(%Group{} = group, attrs \\ %{}) do
+    Group.changeset(group, attrs)
+  end
+
+  @doc """
+  Paginate the list of group_memberships using filtrex
+  filters.
+
+  ## Examples
+
+      iex> list_group_memberships(%{})
+      %{group_memberships: [%GroupMembership{}], ...}
+  """
+  @spec paginate_group_memberships(map) :: {:ok, map} | {:error, any}
+  def paginate_group_memberships(params \\ %{}) do
+    params =
+      params
+      |> Map.put_new("sort_direction", "desc")
+      |> Map.put_new("sort_field", "inserted_at")
+
+    {:ok, sort_direction} = Map.fetch(params, "sort_direction")
+    {:ok, sort_field} = Map.fetch(params, "sort_field")
+
+    with {:ok, filter} <- Filtrex.parse_params(filter_config(:group_memberships), params["group_membership"] || %{}),
+        %Scrivener.Page{} = page <- do_paginate_group_memberships(filter, params) do
+      {:ok,
+        %{
+          group_memberships: page.entries,
+          page_number: page.page_number,
+          page_size: page.page_size,
+          total_pages: page.total_pages,
+          total_entries: page.total_entries,
+          distance: @pagination_distance,
+          sort_field: sort_field,
+          sort_direction: sort_direction
+        }
+      }
+    else
+      {:error, error} -> {:error, error}
+      error -> {:error, error}
+    end
+  end
+
+  defp do_paginate_group_memberships(filter, params) do
+    GroupMembership
+    |> Filtrex.query(filter)
+    |> preload(:owner)
+    |> order_by(^sort(params))
+    |> paginate(Repo, params, @pagination)
+  end
+
+  @doc """
+  Returns the list of group_memberships.
+
+  ## Examples
+
+      iex> list_group_memberships()
+      [%GroupMembership{}, ...]
+
+  """
+  def list_group_memberships do
+    Repo.all(GroupMembership)
+  end
+
+  @doc """
+  Gets a single group_membership.
+
+  Raises `Ecto.NoResultsError` if the Group membership does not exist.
+
+  ## Examples
+
+      iex> get_group_membership!(123)
+      %GroupMembership{}
+
+      iex> get_group_membership!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_group_membership!(id), do: Repo.get!(GroupMembership, id)
+
+  @doc """
+  Creates a group_membership.
+
+  ## Examples
+
+      iex> create_group_membership(%{field: value})
+      {:ok, %GroupMembership{}}
+
+      iex> create_group_membership(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_group_membership(attrs \\ %{}) do
+    %GroupMembership{}
+    |> GroupMembership.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_group_membership(attrs, group_id, user_id) do
+    with {:user, user = %{id: _id}} <- {:user, get_user(user_id)},
+         {:group, group = %{id: _id}} <- {:group, get_group(group_id)} do
+          attrs
+          |> Map.put("user", user)
+          |> Map.put("group", group)
+          |> create_group_membership()
+    else
+      {:user, _} -> {:error, :could_not_get_user}
+      {:group, _} -> {:error, :could_not_get_group}
+    end
+
+  end
+
+  @doc """
+  Updates a group_membership.
+
+  ## Examples
+
+      iex> update_group_membership(group_membership, %{field: new_value})
+      {:ok, %GroupMembership{}}
+
+      iex> update_group_membership(group_membership, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_group_membership(%GroupMembership{} = group_membership, attrs) do
+    group_membership
+    |> GroupMembership.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a GroupMembership.
+
+  ## Examples
+
+      iex> delete_group_membership(group_membership)
+      {:ok, %GroupMembership{}}
+
+      iex> delete_group_membership(group_membership)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_group_membership(%GroupMembership{} = group_membership) do
+    Repo.delete(group_membership)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking group_membership changes.
+
+  ## Examples
+
+      iex> change_group_membership(group_membership)
+      %Ecto.Changeset{source: %GroupMembership{}}
+
+  """
+  def change_group_membership(%GroupMembership{} = group_membership, attrs \\ %{}) do
+    GroupMembership.changeset(group_membership, attrs)
+  end
+
+  def user_groups(%{id: user_id}) do
+    query = from g in Group,
+      select: g,
+      preload: [:owner],
+      left_join: gm in GroupMembership,
+      on: [group_id: gm.id],
+      where: gm.user_id == ^user_id or g.owner_id == ^user_id
+
+      query |> Repo.all()
+  end
+
+  def user_groups(_), do: []
+
+  @spec group_membership(Group.t(), User.t()) :: GroupMembership.t() | nil
+  def group_membership(group, user) do
+    query = from gm in GroupMembership,
+      select: gm,
+      preload: [:group, :user],
+      where: gm.group_id == ^group.id,
+      where: gm.user_id == ^user.id
+
+    Repo.one(query)
+  end
+
+  def get_memberships(%Group{id: group_id}) do
+    query = from gm in GroupMembership,
+      select: gm,
+      preload: [:user, :group]
+    Repo.all(query)
+  end
+
+  def kick_user(user_id, group_id, admin) do
+    with group = %{id: _id} <- get_group(group_id),
+         user = %{id: _id} <- get_user(user_id),
+         user_membership = %{id: _id} <- group_membership(group, user),
+         admin_membership = %{id: _id} <- group_membership(group, admin),
+         true <- GroupMembership.admin?(admin_membership) do
+      delete_group_membership(user_membership)
+    else
+      false -> {:error, :not_an_admin}
+      _ -> {:error, :could_not_kick_user}
+    end
+  end
+  def make_admin(user_id, group_id, admin) do
+    with group = %{id: _id} <- get_group(group_id),
+         user = %{id: _id} <- get_user(user_id),
+         user_membership = %{id: _id} <- group_membership(group, user),
+         admin_membership = %{id: _id} <- group_membership(group, admin),
+         true <- GroupMembership.admin?(admin_membership) do
+      update_group_membership(user_membership, %{role: "Admin"})
+    else
+      false -> {:error, :not_an_admin}
+      _ -> {:error, :could_not_kick_user}
+    end
+  end
+  def remove_admin(user_id, group_id, admin) do
+    with group = %{id: _id} <- get_group(group_id),
+         user = %{id: _id} <- get_user(user_id),
+         user_membership = %{id: _id} <- group_membership(group, user),
+         admin_membership = %{id: _id} <- group_membership(group, admin),
+         true <- GroupMembership.owner?(admin_membership) do
+      update_group_membership(user_membership, %{role: "User"})
+    else
+      false -> {:error, :not_the_owner}
+      _ -> {:error, :could_not_kick_user}
+    end
+  end
+  def join_group(user, group_id, join_code) do
+    with group = %{join_code: ^join_code} <- get_group(group_id) do
+      create_group_membership(%{role: "User", group: group, user: user})
+    end
   end
 end

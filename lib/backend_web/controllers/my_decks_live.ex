@@ -32,6 +32,8 @@ defmodule BackendWeb.MyDecksLive do
     """
   end
 
+  @spec handle_info({:update_params, any}, Phoenix.LiveView.Socket.t()) ::
+          {:noreply, Phoenix.LiveView.Socket.t()}
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end

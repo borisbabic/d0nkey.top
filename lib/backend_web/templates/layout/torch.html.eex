@@ -45,6 +45,12 @@
             <%= if can_access?(@conn, :old_battletags) do %>
               <a href="/torch/old-battletags">Old Battletags</a>
             <% end %>
+            <%= if can_access?(@conn, :groups) do %>
+              <a href="/torch/groups">Groups</a>
+            <% end %>
+            <%= if can_access?(@conn, :group_memberships) do %>
+              <a href="/torch/group-memberships">Group Memberships</a>
+            <% end %>
           </nav>
         </div>
       </section>

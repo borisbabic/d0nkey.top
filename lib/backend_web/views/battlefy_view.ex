@@ -605,7 +605,7 @@ defmodule BackendWeb.BattlefyView do
     |> Enum.map(fn {s, index} ->
       {country, pre_name_cell} =
         with true <- use_countries,
-             cc when is_binary(cc) <- Backend.PlayerInfo.get_country(s.team.name) do
+             cc when is_binary(cc) <- Backend.UserManagerInfo.get_country(s.team.name) do
           {cc, country_flag(cc)}
         else
           _ -> {nil, ""}

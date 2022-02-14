@@ -201,6 +201,9 @@ defmodule BackendWeb.Router do
     live "/my-replays", MyReplaysLive
     live "/my-decks", MyDecksLive
 
+    live "/groups/:group_id", GroupLive
+    live "/groups", MyGroupsLive
+
     get "/wild", FunController, :wild
   end
 
@@ -221,6 +224,8 @@ defmodule BackendWeb.Router do
     resources "/feed_items", FeedItemController
     resources "/fantasy-leagues", LeagueController
     resources "/api-users", ApiUserController
+    resources "/groups", GroupController
+    resources "/group-memberships", GroupMembershipController
     resources "/old-battletags", OldBattletagController
   end
 

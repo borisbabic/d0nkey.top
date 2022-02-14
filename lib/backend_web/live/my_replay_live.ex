@@ -27,6 +27,7 @@ defmodule BackendWeb.MyReplaysLive do
     """
   end
 
+  @spec additional_params(any) :: %{optional(<<_::72, _::_*16>>) => any}
   def additional_params(user) do
     %{
       "player_btag" => User.battletag(user),

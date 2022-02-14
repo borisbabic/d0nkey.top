@@ -398,6 +398,7 @@ defmodule Backend.MastersTour do
     end)
   end
 
+  @spec prepare_delete_official_removed(Ecto.Multi.t(), any, any) :: Ecto.Multi.t()
   def prepare_delete_official_removed(multi, fetched, tour_stop) do
     battletags = Enum.map(fetched, & &1.battletag_full)
     query = from ip in InvitedPlayer,

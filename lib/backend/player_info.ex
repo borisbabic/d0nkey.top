@@ -1,8 +1,7 @@
-defmodule Backend.PlayerInfo do
+defmodule Backend.UserManagerInfo do
   @moduledoc false
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
-  alias Backend.EsportsEarnings
   alias Backend.PrioritizedBattletagCache
   @type country_code :: <<_::2>>
   @type player_info :: %{region: Blizzard.region() | nil, country: country_code | nil}

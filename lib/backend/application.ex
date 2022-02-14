@@ -70,8 +70,8 @@ defmodule Backend.Application do
           start: {Backend.GMStream, :start_link, [[]]}
         },
         %{
-          id: Backend.PlayerIconBag,
-          start: {Backend.PlayerIconBag, :start_link, [[]]}
+          id: Backend.UserManagerIconBag,
+          start: {Backend.UserManagerIconBag, :start_link, [[]]}
         },
         %{
           id: Hearthstone.DeckTracker.InsertListener,
