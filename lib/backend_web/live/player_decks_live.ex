@@ -1,10 +1,11 @@
-defmodule BackendWeb.MyDecksLive do
+defmodule BackendWeb.PlayerDecksLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.DecksExplorer
   alias Backend.UserManager.User
 
   data(user, :any)
+  data(player_btag, :any)
   data(filters, :map)
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
@@ -12,11 +13,10 @@ defmodule BackendWeb.MyDecksLive do
 
     ~F"""
     <Context put={user: @user} >
-      <div :if={btag = User.battletag(@user)}>
-        <div class="title is-2">My Decks</div>
+      <div>
+        <div class="title is-2">{@player_btag}'s Decks</div>
         <div class="subtitle is-6">
-          <abbr title="Share your public decks"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerDecksLive, @user.battletag)} target="_blank">Share</a></abbr>
-          | Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Pludin</a>
+        Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Pludin</a>
         </div>
         <DecksExplorer
           id="decks_explorer"
@@ -25,8 +25,9 @@ defmodule BackendWeb.MyDecksLive do
           period_options={[{"all", "All time"}, {"past_60_days", "Past 60 Days"}, {"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}]}
           default_min_games={1}
           min_games_floor={1}
-          additional_params={%{"player_btag" => btag}}
+          additional_params={%{"player_btag" => @player_btag, "public" => true}}
           live_view={__MODULE__}
+          path_params={@player_btag}
           params={@filters}/>
       </div>
     </Context>
@@ -35,6 +36,9 @@ defmodule BackendWeb.MyDecksLive do
 
   @spec handle_info({:update_params, any}, Phoenix.LiveView.Socket.t()) ::
           {:noreply, Phoenix.LiveView.Socket.t()}
+  def handle_info({:update_params, params}, socket = %{assigns: %{player_btag: player_btag}}) do
+    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, player_btag, params))}
+  end
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
@@ -43,6 +47,6 @@ defmodule BackendWeb.MyDecksLive do
 
   def handle_params(params, _uri, socket) do
     filters = DecksExplorer.filter_relevant(params)
-    {:noreply, assign(socket, :filters, filters)}
+    {:noreply, assign(socket, :filters, filters) |> assign(:player_btag, params["player_btag"]) }
   end
 end
