@@ -1,0 +1,59 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "New Group membership", to: Routes.group_memberships_path(@conn, :new) %>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find Group memberships</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+
+          <div class="field">
+            <label>Role</label>
+            <%= filter_select(:group_membership, :role, @conn.params) %>
+            <%= filter_string_input(:group_membership, :role, @conn.params) %>
+          </div>
+
+
+
+
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: Routes.group_memberships_path(@conn, :index) %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@group_memberships) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+
+              <th><%= table_link(@conn, "Role", :role) %></th>
+
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for group_membership <- @group_memberships do %>
+            <tr>
+
+                <td><%= group_membership.role %></td>
+
+              <td class="torch-actions">
+                <span><%= link "Show", to: Routes.group_memberships_path(@conn, :show, group_membership) %></span>
+                <span><%= link "Edit", to: Routes.group_memberships_path(@conn, :edit, group_membership) %></span>
+                <span><%= link "Delete", to: Routes.group_memberships_path(@conn, :delete, group_membership), method: :delete, data: [confirm: "Are you sure?"] %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+    <% else %>
+      <p class="torch-no-data">No Group memberships match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>

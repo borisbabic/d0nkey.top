@@ -54,7 +54,7 @@ defmodule Backend.FantasyCompetitionFetcher do
     |> Hearthstone.parse_gm_season()
     |> case do
       {:ok, gm_season} ->
-        Backend.PlayerInfo.get_grandmasters(gm_season)
+        Backend.UserManagerInfo.get_grandmasters(gm_season)
         |> Enum.sort_by(&String.upcase/1)
         |> Enum.map(&%Participant{name: &1})
 

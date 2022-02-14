@@ -412,7 +412,7 @@ defmodule Backend.Leaderboards do
     do: compose_snapshot_query({"season_id", season_id}, query)
 
   defp compose_snapshot_query({"battletag_full", battletag_full}, query) do
-    players = Backend.PlayerInfo.leaderboard_names(battletag_full)
+    players = Backend.UserManagerInfo.leaderboard_names(battletag_full)
     compose_snapshot_query({"players", players}, query)
   end
 

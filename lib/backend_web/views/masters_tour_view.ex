@@ -4,7 +4,7 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.MastersTour
   alias Backend.MastersTour.TourStop
   alias Backend.Blizzard
-  alias Backend.PlayerInfo
+  alias Backend.UserManagerInfo
   alias Backend.MastersTour.PlayerStats
   alias BackendWeb.MastersTour.MastersToursStats
   alias BackendWeb.ViewUtil
@@ -211,7 +211,7 @@ defmodule BackendWeb.MastersTourView do
       total = ps |> PlayerStats.with_result()
 
       ts_cells = create_tour_stop_cells(ps, eligible_tour_stops, invited_set)
-      country = Backend.PlayerInfo.get_country(ps.battletag_full)
+      country = Backend.UserManagerInfo.get_country(ps.battletag_full)
       flag_part = if show_flags && country, do: country_flag(country), else: ""
 
       player_cell = ~E"""

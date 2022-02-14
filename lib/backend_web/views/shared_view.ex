@@ -37,7 +37,7 @@ defmodule BackendWeb.SharedView do
 
   def render("player_icon.html", %{name: name}) do
     name
-    |> Backend.PlayerIconBag.get()
+    |> Backend.UserManagerIconBag.get()
     |> case do
       {:unicode, icon} ->
         ~E"""
