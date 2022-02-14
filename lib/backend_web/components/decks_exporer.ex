@@ -33,6 +33,7 @@ defmodule Components.DecksExplorer do
   prop(live_view, :module, required: true)
   prop(additional_params, :map, default: %{})
   prop(params, :map, required: true)
+  prop(path_params, :any, default: nil)
 
   def render(assigns) do
 
@@ -44,6 +45,7 @@ defmodule Components.DecksExplorer do
           title={"Format"}
           param={"format"}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           normalizer={&to_string/1}
           live_view={@live_view} />
@@ -52,6 +54,7 @@ defmodule Components.DecksExplorer do
           title={"Rank"}
           param={"rank"}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           live_view={@live_view} />
 
@@ -60,6 +63,7 @@ defmodule Components.DecksExplorer do
           title={"Period"}
           param={"period"}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           live_view={@live_view} />
 
@@ -69,6 +73,7 @@ defmodule Components.DecksExplorer do
           param={"limit"}
           selected_as_title={false}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           normalizer={&to_string/1}
           live_view={@live_view} />
@@ -78,6 +83,7 @@ defmodule Components.DecksExplorer do
           title={"Class"}
           param={"player_class"}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           live_view={@live_view} />
 
@@ -86,6 +92,7 @@ defmodule Components.DecksExplorer do
           title={"Opponent Class"}
           param={"opponent_class"}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           live_view={@live_view} />
 
@@ -96,6 +103,7 @@ defmodule Components.DecksExplorer do
           param={"min_games"}
           selected_as_title={false}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           normalizer={&to_string/1}
           live_view={@live_view} />
@@ -105,6 +113,7 @@ defmodule Components.DecksExplorer do
           title={"Order By"}
           param={"order_by"}
           url_params={@params}
+          path_params={@path_params}
           selected_params={params}
           live_view={@live_view} />
 
@@ -153,6 +162,9 @@ defmodule Components.DecksExplorer do
 
   defp class_stats_filters(filters), do: Map.delete(filters, "min_games") |> Map.delete("order_by")
 
+  def handle_info({:update_params, params}, socket = %{assigns: %{path_params: path_params}}) when not is_nil(path_params) do
+    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params, params))}
+  end
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end

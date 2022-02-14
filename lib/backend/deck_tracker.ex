@@ -11,6 +11,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Hearthstone.Deck
   alias Backend.UserManager
   alias Backend.UserManager.User
+  alias Backend.UserManager.GroupMembership
 
   @type deck_stats :: %{deck: Deck.t(), wins: integer(), losses: integer()}
 
@@ -405,6 +406,12 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query("has_result", query) do
     results = ["win", "loss", "draw"]
     query |> where([g], g.status in ^results)
+  end
+  defp compose_games_query({"in_group", %GroupMembership{group_id: group_id}}, query) do
+    query
+    |> join(:inner, [g], u in User, on: u.battletag == g.player_btag)
+    |> join(:inner, [_g, d, u], gm in GroupMembership, on: gm.user_id == u.id)
+    |> where([_g, _d, _u, gm], gm.group_id == ^group_id)
   end
 
   defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)

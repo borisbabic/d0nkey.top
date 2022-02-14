@@ -6,7 +6,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   alias Backend.TournamentStats.TeamStats
   alias Backend.MastersTour
   alias Backend.MastersTour.TourStop
-  alias Backend.UserManagerInfo
+  alias Backend.PlayerInfo
   alias BackendWeb.ViewUtil
   import BackendWeb.SortHelper
 

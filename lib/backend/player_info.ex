@@ -1,4 +1,4 @@
-defmodule Backend.UserManagerInfo do
+defmodule Backend.PlayerInfo do
   @moduledoc false
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer

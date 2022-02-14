@@ -1,7 +1,7 @@
 <section id="torch-toolbar">
   <div class="torch-container">
-    <%= link "Edit", to: Routes.group_memberships_path(@conn, :edit, @group_membership), class: "torch-button" %>
-    <%= link "Back", to: Routes.group_memberships_path(@conn, :index), class: "torch-button" %>
+    <%= link "Edit", to: Routes.group_membership_path(@conn, :edit, @group_membership), class: "torch-button" %>
+    <%= link "Back", to: Routes.group_membership_path(@conn, :index), class: "torch-button" %>
   </div>
 </section>
 

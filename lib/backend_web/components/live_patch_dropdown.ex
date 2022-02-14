@@ -8,7 +8,7 @@ defmodule Components.LivePatchDropdown do
   prop(options, :list, required: true)
   prop(param, :string, required: true)
   prop(live_view, :any, required: true)
-  prop(path_params, :list, default: [])
+  prop(path_params, :struct, default: nil)
   prop(url_params, :map, required: true)
   prop(title, :string, required: false)
 
@@ -42,7 +42,7 @@ defmodule Components.LivePatchDropdown do
     """
   end
 
-  def link(socket, live_view, [], params) do
+  def link(socket, live_view, nil, params) do
     Routes.live_path(socket, live_view, params)
   end
   def link(socket, live_view, path_params, params) do

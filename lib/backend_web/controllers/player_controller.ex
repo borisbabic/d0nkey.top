@@ -1,7 +1,7 @@
 defmodule BackendWeb.PlayerController do
   @moduledoc false
   use BackendWeb, :controller
-  alias Backend.UserManagerInfo
+  alias Backend.PlayerInfo
   alias Backend.MastersTour
   alias Backend.MastersTour.TourStop
   alias Backend.Battlenet.Battletag

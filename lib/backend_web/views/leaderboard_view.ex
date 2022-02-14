@@ -1,7 +1,7 @@
 defmodule BackendWeb.LeaderboardView do
   use BackendWeb, :view
   import Backend.Blizzard
-  alias Backend.UserManagerInfo
+  alias Backend.PlayerInfo
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.Leaderboards.Snapshot
@@ -600,7 +600,7 @@ defmodule BackendWeb.LeaderboardView do
 
       flag =
         with true <- show_flags,
-             cc when is_binary(cc) <- Backend.UserManagerInfo.get_country(account_id) do
+             cc when is_binary(cc) <- Backend.PlayerInfo.get_country(account_id) do
           country_flag(cc)
         else
           _ -> ""
@@ -700,7 +700,7 @@ defmodule BackendWeb.LeaderboardView do
       total = ps.ranks |> Enum.count()
       avg = ((ps.ranks |> Enum.sum()) / total) |> Float.round(2)
 
-      country = Backend.UserManagerInfo.get_country(ps.account_id)
+      country = Backend.PlayerInfo.get_country(ps.account_id)
       flag_part = if show_flags && country, do: country_flag(country), else: ""
 
       %{

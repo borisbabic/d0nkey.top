@@ -1,4 +1,4 @@
-defmodule Backend.UserManagerIconBag do
+defmodule Backend.PlayerIconBag do
   @moduledoc """
   Holds cached player icons
   """

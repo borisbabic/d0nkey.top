@@ -28,6 +28,8 @@ defmodule Components.ReplayExplorer do
   prop(live_view, :module, required: true)
   prop(additional_params, :map, default: %{})
   prop(params, :map, required: true)
+  prop(path_params, :any, default: nil)
+  prop(show_player_btag, :boolean, default: false)
 
   def render(assigns) do
 
@@ -40,6 +42,7 @@ defmodule Components.ReplayExplorer do
             title={"Format"}
             param={"format"}
             url_params={@params}
+            path_params={@path_params}
             selected_params={params}
             normalizer={&to_string/1}
             live_view={@live_view} />
@@ -49,6 +52,7 @@ defmodule Components.ReplayExplorer do
             title={"Rank"}
             param={"rank"}
             url_params={@params}
+            path_params={@path_params}
             selected_params={params}
             live_view={@live_view} />
 
@@ -57,6 +61,7 @@ defmodule Components.ReplayExplorer do
             title={"Period"}
             param={"period"}
             url_params={@params}
+            path_params={@path_params}
             selected_params={params}
             live_view={@live_view} />
 
@@ -65,6 +70,7 @@ defmodule Components.ReplayExplorer do
             title={"Class"}
             param={"player_class"}
             url_params={@params}
+            path_params={@path_params}
             selected_params={params}
             live_view={@live_view} />
 
@@ -73,6 +79,7 @@ defmodule Components.ReplayExplorer do
             title={"Opponent Class"}
             param={"opponent_class"}
             url_params={@params}
+            path_params={@path_params}
             selected_params={params}
             live_view={@live_view} />
 
@@ -85,7 +92,7 @@ defmodule Components.ReplayExplorer do
         </div>
 
         <div :if={replays = DeckTracker.games(search_filters)}>
-          <ReplaysTable replays={replays}/>
+          <ReplaysTable show_player_btag={@show_player_btag} replays={replays}/>
           <div :if={!(Enum.any?(replays))} >
             <br>
             <br>

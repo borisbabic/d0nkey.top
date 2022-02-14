@@ -97,7 +97,7 @@ defmodule BackendWeb.ViewHelpers do
 
       def countries_options(selected_countries) do
         countries_options =
-          Backend.UserManagerInfo.get_eligible_countries()
+          Backend.PlayerInfo.get_eligible_countries()
           |> Enum.map(fn cc ->
             %{
               selected: cc && cc in selected_countries,
@@ -158,7 +158,7 @@ defmodule BackendWeb.ViewHelpers do
         render(
           BackendWeb.SharedView,
           "player_name.html",
-          %{name: name, country: Backend.UserManagerInfo.get_country(name)}
+          %{name: name, country: Backend.PlayerInfo.get_country(name)}
         )
       end
 
