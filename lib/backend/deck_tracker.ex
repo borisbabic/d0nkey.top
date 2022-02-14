@@ -407,6 +407,9 @@ defmodule Hearthstone.DeckTracker do
     results = ["win", "loss", "draw"]
     query |> where([g], g.status in ^results)
   end
+  defp compose_games_query({"public", public}, query) do
+    query |> where([g], g.public == ^public)
+  end
   defp compose_games_query({"in_group", %GroupMembership{group_id: group_id}}, query) do
     query
     |> join(:inner, [g], u in User, on: u.battletag == g.player_btag)
