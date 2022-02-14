@@ -117,7 +117,7 @@ defmodule Components.GroupModal do
   end
 
   def button_title(%{id: id}) when not is_nil(id), do: "Edit Group"
-  def button_title(_), do: "Edit Group"
+  def button_title(_), do: "Create Group"
   def title(%{name: name}) when not is_nil(name), do: name
   def title(_), do: "Create Group"
 
