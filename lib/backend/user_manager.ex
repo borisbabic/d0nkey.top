@@ -624,6 +624,24 @@ defmodule Backend.UserManager do
       _ -> {:error, :could_not_kick_user}
     end
   end
+  def transfer_ownership(user_id, group_id, admin) do
+    with group = %{id: _id} <- get_group(group_id),
+         user = %{id: _id} <- get_user(user_id),
+         user_membership = %{id: _id} <- group_membership(group, user),
+         admin_membership = %{id: _id} <- group_membership(group, admin),
+         true <- GroupMembership.owner?(admin_membership) do
+      Repo.transaction(fn ->
+        update_group_membership(user_membership, %{role: "Owner"})
+        update_group_membership(admin_membership, %{role: "Admin"})
+        query = from g in Group,
+          where: g.id == ^group.id
+        Repo.update_all(query, set: [owner_id: user.id])
+      end)
+    else
+      false -> {:error, :not_an_admin}
+      _ -> {:error, :could_not_kick_user}
+    end
+  end
   def remove_admin(user_id, group_id, admin) do
     with group = %{id: _id} <- get_group(group_id),
          user = %{id: _id} <- get_user(user_id),
@@ -639,6 +657,17 @@ defmodule Backend.UserManager do
   def join_group(user, group_id, join_code) do
     with group = %{join_code: ^join_code} <- get_group(group_id) do
       create_group_membership(%{role: "User", group: group, user: user})
+    end
+  end
+  def leave_group(user, group_id) do
+    with group = %{id: _} <- get_group(group_id),
+         membership = %{id: _} <- group_membership(group, user),
+         false <- GroupMembership.owner?(membership) do
+      delete_group_membership(membership)
+    else
+      true -> {:error, :owner_cant_leave}
+      e = {:error, _} -> e
+      _ -> {:error, :could_not_leave}
     end
   end
 end
