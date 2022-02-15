@@ -33,6 +33,9 @@ defmodule BackendWeb.GroupLive do
                 <div class="level-item" :if={membership}>
                   <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupDecksLive, @group_id)}>Group Decks</a>
                 </div>
+                <div class="level-item" :if={membership && !GroupMembership.owner?(membership)}>
+                  <button class="is-link button" :on-click="leave_group"}>Leave Group</button>
+                </div>
                 <div class="level-item" :if={!membership}>
                   {#if  @join_code && @join_code == group.join_code}
                     <button class="button" :on-click="join_group">Join Group</button>
@@ -46,7 +49,7 @@ defmodule BackendWeb.GroupLive do
                   <div class="notification is-warning tag">{@error_message}</div>
                 </div>
 
-                <div :if={GroupMembership.owner?(membership)} class="level-item">
+                <div :if={GroupMembership.admin?(membership)} class="level-item">
                   <GroupModal id="edit_group_modal"} group={group} />
                 </div>
 
@@ -72,6 +75,7 @@ defmodule BackendWeb.GroupLive do
                     <button :if={!GroupMembership.admin?(gm)} class="button" :on-click="kick_user" phx-value-user_id={gm.user.id}>Kick User</button>
                     <button :if={!GroupMembership.admin?(gm)} class="button" :on-click="make_admin" phx-value-user_id={gm.user.id}>Make Admin</button>
                     <button :if={GroupMembership.admin?(gm) && !GroupMembership.owner?(gm) && GroupMembership.owner?(membership)} class="button" :on-click="remove_admin" phx-value-user_id={gm.user.id}>Remove Admin</button>
+                    <button :if={!GroupMembership.owner?(gm) && GroupMembership.owner?(membership)} class="button" :on-click="transfer_ownership" phx-value-user_id={gm.user.id}>Transfer Ownership</button>
                   </th>
                 </tr>
               </tbody>
@@ -101,7 +105,7 @@ defmodule BackendWeb.GroupLive do
     group = UserManager.get_group(group_id)
     membership = case group do
       nil -> nil
-      g -> UserManager.group_membership(group, user)
+      g -> UserManager.group_membership(g, user)
     end
     {group, membership}
   end
@@ -136,6 +140,25 @@ defmodule BackendWeb.GroupLive do
           to: Routes.live_path(socket, __MODULE__, group_id)
         )
       _ -> socket |> assign(:error_message, "Error joining league")
+    end
+    {:noreply, socket}
+  end
+
+  def handle_event("leave_group", _, socket = %{assigns: %{user: user, group_id: group_id}}) do
+    socket = case UserManager.leave_group(user, group_id) do
+      {:ok, _membership} ->
+        socket
+        |> push_redirect(
+          to: Routes.live_path(socket, BackendWeb.MyGroupsLive)
+        )
+      _ -> socket |> assign(:error_message, "Error leaving league")
+    end
+    {:noreply, socket}
+  end
+  def handle_event("transfer_ownership", %{"user_id" => user_id}, socket = %{assigns: %{user: user, group_id: group_id}}) do
+    socket = case UserManager.transfer_ownership(user_id, group_id, user) do
+      {:error, error} -> socket |> assign(:error_message, error)
+      _ -> socket
     end
     {:noreply, socket}
   end
