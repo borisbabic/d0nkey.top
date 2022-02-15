@@ -9,6 +9,7 @@ defmodule Backend.UserManager.GroupMembership do
     field :role, :string
     belongs_to :group, Group
     belongs_to :user, User
+    field :include_data, :boolean, default: true
 
     timestamps()
   end
@@ -16,7 +17,7 @@ defmodule Backend.UserManager.GroupMembership do
   @doc false
   def changeset(group_membership, attrs) do
     group_membership
-    |> cast(attrs, [:role])
+    |> cast(attrs, [:role, :include_data])
     |> set_assoc(attrs, :group)
     |> set_assoc(attrs, :user)
     |> validate_required([:role])
