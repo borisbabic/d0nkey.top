@@ -596,7 +596,8 @@ defmodule Backend.UserManager do
   def get_memberships(%Group{id: group_id}) do
     query = from gm in GroupMembership,
       select: gm,
-      preload: [:user, :group]
+      preload: [:user, :group],
+      where: gm.group_id == ^group_id
     Repo.all(query)
   end
 
