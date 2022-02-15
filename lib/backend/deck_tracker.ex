@@ -414,7 +414,7 @@ defmodule Hearthstone.DeckTracker do
     query
     |> join(:inner, [g], u in User, on: u.battletag == g.player_btag)
     |> join(:inner, [_g, d, u], gm in GroupMembership, on: gm.user_id == u.id)
-    |> where([_g, _d, _u, gm], gm.group_id == ^group_id)
+    |> where([_g, _d, _u, gm], gm.group_id == ^group_id and gm.include_data == true)
   end
 
   defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)

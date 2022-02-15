@@ -11,11 +11,12 @@ defmodule BackendWeb.GroupLive do
   data(group_id, :string)
   data(error_message, :string, default: nil)
   data(join_code, :string)
+  data(rerender, :any, default: true)
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
       <Context put={user: @user}>
-        <div :if={({group, membership} = group_membership(@group_id, @user)) && group}>
+        <div :if={({group, membership} = group_membership(@group_id, @user)) && group && @rerender}>
           <div class="title is-2">{group.name}</div>
           <div class="subtitle is-6">
             Owner: {User.battletag(group.owner)}
@@ -64,6 +65,7 @@ defmodule BackendWeb.GroupLive do
                 <tr>
                   <th>Member</th>
                   <th>Role</th>
+                  <th>Included in data</th>
                   <th :if={GroupMembership.admin?(membership)}>Manage</th>
                 </tr>
               </thead>
@@ -71,12 +73,17 @@ defmodule BackendWeb.GroupLive do
                 <tr :for={gm <- memberships(group)}>
                   <td>{gm.user.battletag}</td>
                   <td>{gm.role}</td>
-                  <th :if={GroupMembership.admin?(membership)}>
+                  <td>
+                  {included(gm)}
+                    <button :if={({event, text} = include_data_button_props(gm)) && GroupMembership.admin?(membership)}
+                      class="button" :on-click={event} phx-value-user_id={gm.user.id}>{text}</button>
+                  </td>
+                  <td :if={GroupMembership.admin?(membership)}>
                     <button :if={!GroupMembership.admin?(gm)} class="button" :on-click="kick_user" phx-value-user_id={gm.user.id}>Kick User</button>
                     <button :if={!GroupMembership.admin?(gm)} class="button" :on-click="make_admin" phx-value-user_id={gm.user.id}>Make Admin</button>
                     <button :if={GroupMembership.admin?(gm) && !GroupMembership.owner?(gm) && GroupMembership.owner?(membership)} class="button" :on-click="remove_admin" phx-value-user_id={gm.user.id}>Remove Admin</button>
                     <button :if={!GroupMembership.owner?(gm) && GroupMembership.owner?(membership)} class="button" :on-click="transfer_ownership" phx-value-user_id={gm.user.id}>Transfer Ownership</button>
-                  </th>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -85,7 +92,6 @@ defmodule BackendWeb.GroupLive do
       </Context>
     """
   end
-
   def render(assigns) do
     ~F"""
     <Context put={user: @user} >
@@ -95,6 +101,11 @@ defmodule BackendWeb.GroupLive do
     </Context>
     """
   end
+
+  defp include_data_button_props(%{include_data: false}), do: {"start_using_data", "Start Using Data"}
+  defp include_data_button_props(_), do: {"stop_using_data", "Stop Using Data"}
+  defp included(%{include_data: false}), do: "No"
+  defp included(_), do: "Yes"
 
   @spec memberships(Group.t()) :: [GroupMembership.t()]
   def memberships(group) do
@@ -119,47 +130,49 @@ defmodule BackendWeb.GroupLive do
 
   def handle_event("kick_user", %{"user_id" => user_id}, socket = %{assigns: %{user: user, group_id: group_id}}) do
     UserManager.kick_user(user_id, group_id, user)
-    {:noreply, socket}
+    |> handle_error(socket, rerender_fun())
   end
   def handle_event("make_admin", %{"user_id" => user_id}, socket = %{assigns: %{user: user, group_id: group_id}}) do
     UserManager.make_admin(user_id, group_id, user)
-    {:noreply, socket}
+    |> handle_error(socket, rerender_fun())
   end
   def handle_event("remove_admin", %{"user_id" => user_id}, socket = %{assigns: %{user: user, group_id: group_id}}) do
-    socket = case UserManager.remove_admin(user_id, group_id, user) do
-      {:error, error} -> socket |> assign(:error_message, error)
-      _ -> socket
-    end
-    {:noreply, socket}
+    UserManager.remove_admin(user_id, group_id, user)
+    |> handle_error(socket, rerender_fun())
   end
   def handle_event("join_group", _, socket = %{assigns: %{user: user, join_code: join_code, group_id: group_id}}) do
-    socket = case UserManager.join_group(user, group_id, join_code) do
-      {:ok, _membership} ->
-        socket
-        |> push_patch(
-          to: Routes.live_path(socket, __MODULE__, group_id)
-        )
-      _ -> socket |> assign(:error_message, "Error joining league")
-    end
-    {:noreply, socket}
+    UserManager.join_group(user, group_id, join_code)
+    |> handle_error(socket, fn s ->
+      push_patch(s, to: Routes.live_path(socket, __MODULE__, group_id))
+    end)
   end
 
   def handle_event("leave_group", _, socket = %{assigns: %{user: user, group_id: group_id}}) do
-    socket = case UserManager.leave_group(user, group_id) do
-      {:ok, _membership} ->
-        socket
-        |> push_redirect(
-          to: Routes.live_path(socket, BackendWeb.MyGroupsLive)
-        )
-      _ -> socket |> assign(:error_message, "Error leaving league")
-    end
-    {:noreply, socket}
+    UserManager.leave_group(user, group_id)
+    |> handle_error(socket, fn s ->
+      push_redirect(s, to: Routes.live_path(socket, BackendWeb.MyGroupsLive))
+    end)
   end
   def handle_event("transfer_ownership", %{"user_id" => user_id}, socket = %{assigns: %{user: user, group_id: group_id}}) do
-    socket = case UserManager.transfer_ownership(user_id, group_id, user) do
-      {:error, error} -> socket |> assign(:error_message, error)
-      _ -> socket
-    end
-    {:noreply, socket}
+    UserManager.transfer_ownership(user_id, group_id, user)
+    |> handle_error(socket, rerender_fun())
+  end
+
+  def handle_event("start_using_data", %{"user_id" => user_id}, socket = %{assigns: %{user: user, group_id: group_id}}) do
+    UserManager.change_include_data(user_id, group_id, user, true)
+    |> handle_error(socket, rerender_fun())
+  end
+
+  def handle_event("stop_using_data", %{"user_id" => user_id}, socket = %{assigns: %{user: user, group_id: group_id}}) do
+    UserManager.change_include_data(user_id, group_id, user, false)
+    |> handle_error(socket, rerender_fun())
+  end
+
+  defp handle_error({:error, error}, socket, _on_success \\ & &1), do: {:noreply, assign(socket, :error_message, error)}
+  defp handle_error(_, socket, on_success), do: {:noreply, on_success.(socket)}
+
+  # stupid hack, think of something better
+  defp rerender_fun(), do: fn socket ->
+    socket |> assign(:rerender, Ecto.UUID.generate())
   end
 end
