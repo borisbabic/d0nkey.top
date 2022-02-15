@@ -29,7 +29,7 @@ Contribute to <a target="_blank" href="/decks">Decks</a>, enjoy <a target="_blan
     <%= if !user(@conn) do %>
         <span><a target="_blank" href="/auth/bnet">Login</a> then </span>
     <% end %>
-    <a target="_blank" href="/auth/twitch">Connect</a> your twitch account
+    <a target="_blank" href="/auth/twitch">Connect</a> your twitch account with this site
 <% end %>
 
 </li>
