@@ -10,7 +10,11 @@ Contribute to <a target="_blank" href="/decks">Decks</a>, enjoy <a target="_blan
 <div class="subtitle is-4">Instructions</div>
 
 <li>
-    Download the <a target="_blank" href="/hdt-plugin/d0nkey.top plugin.dll">latest version</a> (you can right click -> save) and open the plugins window in HDT (Options -> Plugins)  and drag and drop the file onto the window <a href="/images/hdt_plugin_ss.png" target="_blank">(Example ScreenShot)</a>. Alternatively copy the file into <code>%appdata%\HearthstoneDeckTracker\Plugins\</code>
+      Download the <a target="_blank" href="/hdt-plugin/d0nkey.top plugin.dll">latest version</a> - if clicking on the link trys to run it then you can right cick -> save
+</li>
+
+<li>
+    Open the plugins window in HDT (Options -> Plugins) and drag and drop the file onto the window <a href="/images/hdt_plugin_ss.png" target="_blank">(Example ScreenShot)</a>. Alternatively copy the file into <code>%appdata%\HearthstoneDeckTracker\Plugins\</code>
 </li>
 
 <li>
