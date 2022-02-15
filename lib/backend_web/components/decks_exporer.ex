@@ -148,6 +148,7 @@ defmodule Components.DecksExplorer do
       {"format", assigns.default_format},
       {"order_by", assigns.default_order_by},
       {"period", default_period()},
+      {"game_type", Hearthstone.Enums.GameType.constructed_types()},
       {"rank", assigns.default_rank},
     ]
 
