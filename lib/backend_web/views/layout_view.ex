@@ -102,7 +102,7 @@ defmodule BackendWeb.LayoutView do
     if enable_nitropay?(conn) && show_ads?(conn)do
       "container is-fluid space-for-ads"
     else
-      "container"
+      "container is-fluid"
     end
   end
 
