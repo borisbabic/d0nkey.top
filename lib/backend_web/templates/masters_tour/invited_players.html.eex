@@ -1,5 +1,12 @@
 <div class="title is-2">Invited Players</div>
-<div class="title is-6"><a target="_blank" href="https://battlefy.com/hsesports/invites"></a></div>
+<div class="subtitle is-6">
+    <a target="_blank" href="https://battlefy.com/hsesports/invites">
+        Official List
+    </a>
+    <%= if @latest do %>
+        | <span>Latest: </span><%=render_datetime(@latest)%>
+    <% end %>
+</div>
 <div class="dropdown is-hoverable">
     <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@selected_ts%></button></div>
     <div class="dropdown-menu" role="menu">
@@ -10,9 +17,6 @@
     </div>
     </div>
 </div>
-<%= if @latest do %>
-    <div class="subtitle is-6"><span>Latest: </span><%=render_datetime(@latest)%></div>
-<% end %>
 
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>

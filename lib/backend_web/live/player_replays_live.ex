@@ -21,7 +21,7 @@ defmodule BackendWeb.PlayerReplaysLive do
       <div>
         <div class="title is-2">{@player_btag}'s Replays</div>
         <div class="subtitle is-6">
-        Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Pludin</a>
+        Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
         <ReplayExplorer show_player_btag={true} path_params={@player_btag}} id="my-replays" additional_params={additional_params(@player_btag)} params={@filters} live_view={__MODULE__}/>
       </div>

@@ -14,7 +14,7 @@ defmodule BackendWeb.DecksLive do
       <div>
         <div class="title is-2">Decks</div>
         <div class="subtitle is-6">
-        To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Pludin</a>
+        To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
         <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters}/>
       </div>
