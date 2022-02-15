@@ -80,6 +80,7 @@ defmodule Backend.MixProject do
       {:incendium, "~>0.3.1"},
       {:table_rex, "~> 3.1.1"},
       {:contex, "~> 0.4.0"},
+      {:surface_bulma, "~> 0.2.0"},
       {:etop, "~> 0.7"},
       {:quantum, "~> 2.3"}
     ]

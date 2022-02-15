@@ -17,6 +17,7 @@ defmodule Backend.MastersTour do
   alias Backend.Battlefy
   alias Backend.Battlefy.Stage
   alias Backend.Battlefy.Standings
+  alias Backend.Battlenet.Battletag
   alias Backend.Grandmasters.PromotionCalculator
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.Infrastructure.ApiCache
@@ -402,7 +403,7 @@ defmodule Backend.MastersTour do
   def prepare_delete_official_removed(multi, fetched, tour_stop) do
     battletags = Enum.map(fetched, & &1.battletag_full)
     query = from ip in InvitedPlayer,
-      where: ip.tour_stop == ^tour_stop
+      where: ip.tour_stop == ^to_string(tour_stop)
          and ip.official == true
          and ip.battletag_full not in ^battletags
     Multi.delete_all(multi, :delete_official_removed, query)
@@ -593,7 +594,8 @@ defmodule Backend.MastersTour do
   end
 
   def fix_name(name) do
-    Regex.replace(~r/^\d\d\d - /, name, "")
+    short = Battletag.shorten(name)
+    Regex.replace(~r/^\d\d\d - /, short, "")
     |> name_hacks()
   end
 
@@ -1174,9 +1176,6 @@ defmodule Backend.MastersTour do
     |> Enum.filter(fn ts -> ts.battlefy_id end)
     |> Enum.filter(&TourStop.started?/1)
     |> Enum.map(fn ts ->
-      # ts.battlefy_id
-      # |> Battlefy.get_tournament()
-      # |> Battlefy.create_tournament_stats()
       get_mt_tournament_stages_standings(ts)
       |> Backend.TournamentStats.create_tournament_team_stats(ts.id, ts.battlefy_id)
     end)
@@ -1196,7 +1195,6 @@ defmodule Backend.MastersTour do
     tts
     |> Backend.TournamentStats.create_team_stats_collection(fn n ->
       n
-      |> InvitedPlayer.shorten_battletag()
       |> fix_name()
     end)
   end
@@ -1275,8 +1273,7 @@ defmodule Backend.MastersTour do
   end
 
   def same_player?(one, two) do
-    one |> InvitedPlayer.shorten_battletag() |> fix_name() ==
-      two |> InvitedPlayer.shorten_battletag() |> fix_name()
+    fix_name(one) == fix_name(two)
   end
 
   def mt_profile_name(short_or_full) do

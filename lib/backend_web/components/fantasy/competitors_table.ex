@@ -3,94 +3,146 @@ defmodule Components.CompetitorsTable do
   use BackendWeb, :surface_live_component
 
   alias Backend.Fantasy
+  alias Backend.MastersTour
   alias Backend.Fantasy.League
   alias Backend.Fantasy.Competition.Participant
   alias Backend.Fantasy.LeagueTeam
   alias Surface.Components.Form
   alias Components.PlayerName
   alias Surface.Components.Form.TextInput
+  alias SurfaceBulma.Table
+  alias SurfaceBulma.Table.Column
+
+  alias Backend.TournamentStats.TournamentTeamStats
+  alias Backend.TournamentStats.TeamStats
 
   prop(league, :map)
   prop(participants, :list, default: [])
   prop(search, :any, default: nil)
   prop(user, :any)
+  prop(mt_stats, :map, default: nil)
 
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> add_participants()}
+    {:ok, socket |> assign(assigns) |> add_participants() |> add_mt_stats()}
   end
+
+  # def render(assigns) do
+  #   ~F"""
+
+  #    <div>
+  #       <Form for={:search} change="search" submit="search" opts={autocomplete: "off"}>
+  #         <div class="columns is-mobile is-multiline">
+  #           <div class="column is-narrow">
+  #             <TextInput class="input" opts={placeholder: "Search"}/>
+  #           </div>
+  #         </div>
+  #       </Form>
+  #       <table class="table is-fullwidth is-striped">
+  #         <thead>
+  #           <th>
+  #             Competitor
+  #           </th>
+  #           <th :for={column <- competition_specific_columns(@league)}>
+  #             {column}
+  #           </th>
+  #           <th>
+  #             Status
+  #           </th>
+  #         </thead>
+  #         <tbody>
+  #           <tr :for={participant <- @participants |> filter(@search) |> Enum.uniq_by(& &1.name) |> cut(@league)} >
+  #             <td>
+
+  #               {#if @league.competition_type == "masters_tour"}
+  #                 <PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, participant.name)} player={participant.name}/>
+  #               {#else}
+  #                 <span>{participant.name}</span>
+  #               {/if}
+
+  #             </td>
+  #             <td :for={value <- competition_specific_columns(@league, participant)}>
+  #               {value}
+  #             </td>
+  #             <td>
+  #               <div :if={picked_by = picked_by(@league, participant, @user)}>
+  #                 <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)}class="tag is-info"> {picked_by |> LeagueTeam.display_name()}</div>
+  #                 <button :if={League.unpickable?(@league, picked_by, @user, participant.name)} class="button" type="button" :on-click="unpick" phx-value-league_team={"#{picked_by.id}"} phx-value-pick={"#{participant.name}"}>
+  #                   Unpick
+  #                 </button>
+  #               </div>
+  #               <div :if={has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
+  #                 <button class="button" type="button" :on-click="pick" phx-value-name={"#{participant.name}"}>Pick</button>
+  #               </div>
+  #               <div :if={!has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
+  #                 <div class="tag">Available</div>
+  #               </div>
+  #             </td>
+  #           </tr>
+  #         </tbody>
+  #       </table>
+  #     </div>
+  #   """
+  # end
 
   def render(assigns) do
     ~F"""
+    <div>
 
-     <div>
-        <Form for={:search} change="search" submit="search" opts={autocomplete: "off"}>
-          <div class="columns is-mobile is-multiline">
-            <div class="column is-narrow">
-              <TextInput class="input" opts={placeholder: "Search"}/>
-            </div>
+      <Form for={:search} change="search" submit="search" opts={autocomplete: "off"}>
+        <div class="columns is-mobile is-multiline">
+          <div class="column is-narrow">
+            <TextInput class="input" opts={placeholder: "Search"}/>
           </div>
-        </Form>
-        <table class="table is-fullwidth is-striped">
-          <thead>
-            <th>
-              Competitor
-            </th>
-            <th :for={column <- competition_specific_columns(@league)}>
-              {column}
-            </th>
-            <th>
-              Status
-            </th>
-          </thead>
-          <tbody>
-            <tr :for={participant <- @participants |> filter(@search) |> cut(@league) |> Enum.uniq_by(& &1.name)} >
-              <td>
-
-                {#if @league.competition_type == "masters_tour"}
-                  <PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, participant.name)} player={participant.name}/>
-                {#else}
-                  <span>{participant.name}</span>
-                {/if}
-
-              </td>
-              <td :for={value <- competition_specific_columns(@league, participant)}>
-                {value}
-              </td>
-              <td>
-                <div :if={picked_by = picked_by(@league, participant, @user)}>
-                  <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)}class="tag is-info"> {picked_by |> LeagueTeam.display_name()}</div>
-                  <button :if={League.unpickable?(@league, picked_by, @user, participant.name)} class="button" type="button" :on-click="unpick" phx-value-league_team={"#{picked_by.id}"} phx-value-pick={"#{participant.name}"}>
-                    Unpick
-                  </button>
-                </div>
-                <div :if={has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
-                  <button class="button" type="button" :on-click="pick" phx-value-name={"#{participant.name}"}>Pick</button>
-                </div>
-                <div :if={!has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
-                  <div class="tag">Available</div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        </div>
+      </Form>
+      <div :if={prepared = prepare_data(@participants, @league, @search)}>
+        <Table id="competitiors_table" data={participant <- prepared} striped>
+          <Column label="Competitor">
+            {#if mt?(@league)}
+              <PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, participant.name)} player={participant.name}/>
+            {#else}
+              <span>{participant.name}</span>
+            {/if}
+          </Column>
+          <Column label="Signed Up">
+            {#if Participant.in_battlefy?(participant) }
+            Yes
+            {#else}
+            No
+            {/if}
+          </Column>
+          <Column label="MTs Played">
+            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :total])}
+          </Column>
+          <Column label="MT Winrate %">
+            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :winrate])}
+          </Column>
+          <Column label="Status">
+            <div :if={picked_by = picked_by(@league, participant, @user)}>
+              <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)}class="tag is-info"> {picked_by |> LeagueTeam.display_name()}</div>
+              <button :if={League.unpickable?(@league, picked_by, @user, participant.name)} class="button" type="button" :on-click="unpick" phx-value-league_team={"#{picked_by.id}"} phx-value-pick={"#{participant.name}"}>
+                Unpick
+              </button>
+            </div>
+            <div :if={has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
+              <button class="button" type="button" :on-click="pick" phx-value-name={"#{participant.name}"}>Pick</button>
+            </div>
+            <div :if={!has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
+              <div class="tag">Available</div>
+            </div>
+          </Column>
+        </Table>
       </div>
+    </div>
     """
   end
+  def prepare_data(participants, league, search), do: participants |> filter(search) |> Enum.uniq_by(& &1.name) |> cut(league)
+
+  def mt?(%{competition_type: "masters_tour"}), do: true
+  def mt?(_), do: false
 
   defp cut(participants, %{competition_type: "card_changes"}), do: participants |> Enum.take(20)
   defp cut(participants, _), do: participants |> Enum.take(500)
-  defp competition_specific_columns(%{competition_type: "masters_tour"}), do: ["Signed Up"]
-  defp competition_specific_columns(_), do: []
-
-  defp competition_specific_columns(%{competition_type: "masters_tour"}, p) do
-    if p |> Participant.in_battlefy?() do
-      ["Yes"]
-    else
-      ["No"]
-    end
-  end
-
-  defp competition_specific_columns(_, _), do: []
 
   defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),
     do: league |> League.picked_by(name)
@@ -98,7 +150,6 @@ defmodule Components.CompetitorsTable do
   defp picked_by(league = %{real_time_draft: false}, %{name: name}, user),
     do: !League.pickable?(league, user, name) && League.team_for_user(league, user)
 
-  # defp current_team(league, user), do: league |> League.team_for_user(user)
   defp has_current_pick?(league = %{real_time_draft: false, roster_size: roster_size}, user) do
     lt = league |> League.team_for_user(user)
     lt && roster_size > LeagueTeam.current_roster_size(lt)
@@ -144,4 +195,27 @@ defmodule Components.CompetitorsTable do
   end
 
   defp add_participants(socket), do: socket
+
+  defp add_mt_stats(socket = %{assigns: %{league: %{competition_type: "masters_tour"}}}) do
+    map =
+      Backend.MastersTour.masters_tours_stats()
+      |> Backend.MastersTour.create_mt_stats_collection()
+      |> Enum.map(fn {name, tts} ->
+        stats =
+          tts
+          |> Enum.map(&TournamentTeamStats.total_stats/1)
+          |> TeamStats.calculate_team_stats()
+        {
+          name,
+          %{
+            total: tts |> Enum.count(),
+            wins: stats.wins,
+            winrate: stats |> TeamStats.matches_won_percent() |> Float.round(2),
+          }
+        }
+      end)
+      |> Map.new()
+    socket |> assign(:mt_stats, map)
+  end
+  defp add_mt_stats(socket), do: socket
 end
