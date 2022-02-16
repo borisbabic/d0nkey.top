@@ -19,11 +19,11 @@ defmodule Components.ReplayExplorer do
   # @default_order_by "winrate"
   # data(user, :any)
 
-  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}]
   prop(default_order_by, :string, default: "latest")
   prop(default_format, :number, default: "all")
   prop(default_limit, :number, default: 20)
-  prop(period_options, :list, default: @default_period_options)
+  prop(period_options, :list, default: Components.DecksExplorer.default_period_options())
+  prop(extra_period_options, :list, default: [])
   prop(default_rank, :string, default: "diamond_to_legend")
   prop(live_view, :module, required: true)
   prop(additional_params, :map, default: %{})
@@ -57,7 +57,7 @@ defmodule Components.ReplayExplorer do
             live_view={@live_view} />
 
           <LivePatchDropdown
-            options={@period_options}
+            options={@extra_period_options ++ @period_options}
             title={"Period"}
             param={"period"}
             url_params={@params}

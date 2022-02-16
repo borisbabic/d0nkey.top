@@ -23,7 +23,13 @@ defmodule BackendWeb.MyReplaysLive do
           <abbr title="Share your public replays"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerReplaysLive, @user.battletag)} target="_blank">Share</a></abbr>
           | Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
-        <ReplayExplorer id="my-replays" additional_params={additional_params(@user)} params={@filters} live_view={__MODULE__}/>
+        <ReplayExplorer
+          id="my-replays"
+          additional_params={additional_params(@user)}
+          params={@filters}
+          live_view={__MODULE__}
+          extra_period_options={[{"all", "All time"}, {"past_60_days", "Past 60 Days"}]}
+        />
       </div>
     </Context>
     """

@@ -20,11 +20,14 @@ defmodule Components.DecksExplorer do
   # @default_order_by "winrate"
   # data(user, :any)
 
-  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}, {"bc_2021-12-20", "AV Balance Changes #1"}]
+  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"alterac_valley", "Alterac Valley"}, {"onyxias_lair", "Onyxia's Lair"}]
+
+  def default_period_options(), do: @default_period_options
   prop(default_order_by, :string, default: "winrate")
   prop(default_format, :number, default: 2)
   prop(default_rank, :string, default: "diamond_to_legend")
   prop(period_options, :list, default: @default_period_options)
+  prop(extra_period_options, :list, default: [])
   prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200])
   prop(default_min_games, :integer, default: 100)
   prop(min_games_floor, :integer, default: 50)
@@ -59,7 +62,7 @@ defmodule Components.DecksExplorer do
           live_view={@live_view} />
 
         <LivePatchDropdown
-          options={@period_options}
+          options={@extra_period_options ++ @period_options}
           title={"Period"}
           param={"period"}
           url_params={@params}
@@ -219,31 +222,7 @@ defmodule Components.DecksExplorer do
     end)
   end
 
-  defp default_period() do
-    case {alterac_valley_out?(), week_past_alterac_valley?()} do
-      {true, false} -> "alterac_valley"
-      _ -> "past_week"
-    end
-  end
-
-
-  defp week_past_alterac_valley?() do
-    NaiveDateTime.utc_now()
-    |> NaiveDateTime.add(-7 * 24 * 60 * 60, :second)
-    |> NaiveDateTime.compare(~N[2021-12-07 18:00:00])
-    |> case do
-      :lt -> false
-      _ -> true
-    end
-  end
-  defp alterac_valley_out?() do
-    NaiveDateTime.utc_now()
-    |> NaiveDateTime.compare(~N[2021-12-08 02:00:00])
-    |> case do
-      :lt -> false
-      _ -> true
-    end
-  end
+  defp default_period(), do: "onyxias_lair"
 
   def cap_param(params, param, max),
     do: limit_param(params, param, max, &Kernel.>/2)

@@ -23,7 +23,15 @@ defmodule BackendWeb.GroupReplaysLive do
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
-        <ReplayExplorer show_player_btag={true} path_params={@group_id}} id="my-replays" additional_params={additional_params(membership)} params={@filters} live_view={__MODULE__}/>
+        <ReplayExplorer
+          show_player_btag={true}
+          path_params={@group_id}}
+          id="my-replays"
+          additional_params={additional_params(membership)}
+          params={@filters}
+          live_view={__MODULE__}
+          extra_period_options={[{"all", "All time"}, {"past_60_days", "Past 60 Days"}]}
+          />
       </div>
     </Context>
     """

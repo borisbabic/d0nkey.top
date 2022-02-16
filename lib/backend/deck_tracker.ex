@@ -297,6 +297,12 @@ defmodule Hearthstone.DeckTracker do
     query |> where([g], g.inserted_at >= ^av_release)
   end
 
+  defp compose_games_query({"period", "onyxias_lair"}, query) do
+    release = ~N[2022-02-15 18:15:00]
+    query |> where([g], g.inserted_at >= ^release)
+  end
+
+
   defp compose_games_query({"period", "bc_2021-12-20"}, query) do
     # they were an hour late
     balance_changes = ~N[2021-12-20 19:00:00]
