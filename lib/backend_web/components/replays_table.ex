@@ -27,7 +27,7 @@ defmodule Components.ReplaysTable do
         </thead>
         <tbody>
           <tr :for={game <- @replays} >
-            <td :if={@show_player_btag}><PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, game.player_btag)} player={game.player_btag}/></td>
+            <td :if={@show_player_btag}><PlayerName flag={true} player={game.player_btag}/></td>
             <td :if={game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
             <td :if={!game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
             <td>
@@ -35,7 +35,7 @@ defmodule Components.ReplaysTable do
                 <span class="icon">
                   <img src={"#{BackendWeb.BattlefyView.class_url(game.opponent_class)}"} >
                 </span>
-                <PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, game.opponent_btag)} player={game.opponent_btag}/>
+                <PlayerName player={game.opponent_btag}/>
               </span>
             </td>
             <td><p class={"tag", class(game)}>{game_mode(game)}</p></td>

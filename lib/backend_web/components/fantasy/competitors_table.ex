@@ -26,64 +26,6 @@ defmodule Components.CompetitorsTable do
     {:ok, socket |> assign(assigns) |> add_participants() |> add_mt_stats()}
   end
 
-  # def render(assigns) do
-  #   ~F"""
-
-  #    <div>
-  #       <Form for={:search} change="search" submit="search" opts={autocomplete: "off"}>
-  #         <div class="columns is-mobile is-multiline">
-  #           <div class="column is-narrow">
-  #             <TextInput class="input" opts={placeholder: "Search"}/>
-  #           </div>
-  #         </div>
-  #       </Form>
-  #       <table class="table is-fullwidth is-striped">
-  #         <thead>
-  #           <th>
-  #             Competitor
-  #           </th>
-  #           <th :for={column <- competition_specific_columns(@league)}>
-  #             {column}
-  #           </th>
-  #           <th>
-  #             Status
-  #           </th>
-  #         </thead>
-  #         <tbody>
-  #           <tr :for={participant <- @participants |> filter(@search) |> Enum.uniq_by(& &1.name) |> cut(@league)} >
-  #             <td>
-
-  #               {#if @league.competition_type == "masters_tour"}
-  #                 <PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, participant.name)} player={participant.name}/>
-  #               {#else}
-  #                 <span>{participant.name}</span>
-  #               {/if}
-
-  #             </td>
-  #             <td :for={value <- competition_specific_columns(@league, participant)}>
-  #               {value}
-  #             </td>
-  #             <td>
-  #               <div :if={picked_by = picked_by(@league, participant, @user)}>
-  #                 <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)}class="tag is-info"> {picked_by |> LeagueTeam.display_name()}</div>
-  #                 <button :if={League.unpickable?(@league, picked_by, @user, participant.name)} class="button" type="button" :on-click="unpick" phx-value-league_team={"#{picked_by.id}"} phx-value-pick={"#{participant.name}"}>
-  #                   Unpick
-  #                 </button>
-  #               </div>
-  #               <div :if={has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
-  #                 <button class="button" type="button" :on-click="pick" phx-value-name={"#{participant.name}"}>Pick</button>
-  #               </div>
-  #               <div :if={!has_current_pick?(@league, @user) && League.pickable?(@league, @user, participant.name)}>
-  #                 <div class="tag">Available</div>
-  #               </div>
-  #             </td>
-  #           </tr>
-  #         </tbody>
-  #       </table>
-  #     </div>
-  #   """
-  # end
-
   def render(assigns) do
     ~F"""
     <div>
@@ -99,7 +41,7 @@ defmodule Components.CompetitorsTable do
         <Table id="competitiors_table" data={participant <- prepared} striped>
           <Column label="Competitor">
             {#if mt?(@league)}
-              <PlayerName flag={true} text_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, participant.name)} player={participant.name}/>
+              <PlayerName player={participant.name}/>
             {#else}
               <span>{participant.name}</span>
             {/if}

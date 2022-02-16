@@ -18,7 +18,7 @@ defmodule Components.GMProfileLink do
       <a :if={name = name(@gm)}  :if={@link_text} class={"link is-text #{@link_class}"} href={"#{link(name, @week)}"}>
         {@link_text}
       </a>
-      <PlayerName :if={name = name(@gm)} :if={! @link_text} flag={true} player={name} text_link={link(name, @week)} link_class={@link_class}/>
+      <PlayerName :if={name = name(@gm)} :if={! @link_text} player={name} text_link={link(name, @week)} link_class={@link_class}/>
     </span>
     """
   end

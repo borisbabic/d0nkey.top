@@ -5,6 +5,7 @@ defmodule BackendWeb.GroupLive do
   alias Backend.UserManager.Group
   alias Backend.UserManager.GroupMembership
   alias Components.GroupModal
+  alias Components.PlayerName
 
 
   data(user, :any)
@@ -51,7 +52,7 @@ defmodule BackendWeb.GroupLive do
                 </div>
 
                 <div :if={GroupMembership.admin?(membership)} class="level-item">
-                  <GroupModal id="edit_group_modal"} group={group} />
+                  <GroupModal id="edit_group_modal" group={group} />
                 </div>
 
                 <div class="level-item" :if={GroupMembership.admin?(membership)} >
@@ -71,7 +72,7 @@ defmodule BackendWeb.GroupLive do
               </thead>
               <tbody>
                 <tr :for={gm <- memberships(group)}>
-                  <td>{gm.user.battletag}</td>
+                  <td><PlayerName player={gm.user.battletag} /></td>
                   <td>{gm.role}</td>
                   <td>
                   {included(gm)}
