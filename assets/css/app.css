@@ -67,6 +67,13 @@
   --sticky-stack-width: 300px;
 }
 
+@media only screen and (max-width: 700px) {
+  .container.is-fluid {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+}
+
 .sticky-stack {
   width: var(--sticky-stack-width);
   right: 0px;
