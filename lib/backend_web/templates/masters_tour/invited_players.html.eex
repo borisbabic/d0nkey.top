@@ -7,6 +7,7 @@
         | <span>Latest: </span><%=render_datetime(@latest)%>
     <% end %>
 </div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 <div class="dropdown is-hoverable">
     <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@selected_ts%></button></div>
     <div class="dropdown-menu" role="menu">

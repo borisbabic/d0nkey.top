@@ -29,6 +29,7 @@ defmodule BackendWeb.BattlefyMatchLive do
         <div class="subtitle is-5">
           {subtitle(@match)}
         </div>
+        <div id="nitropay-below-title-leaderboard"></div><br>
         <table class="table is-fullwidth">
           <thead>
             <tr>

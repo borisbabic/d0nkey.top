@@ -8,6 +8,7 @@
         Stats
     </a>
 </div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 <a class="button icon is-link" href="<%= @before_link %>">
   <i class="fas fa-caret-left"></i>
 </a>

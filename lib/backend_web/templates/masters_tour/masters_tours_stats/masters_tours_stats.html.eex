@@ -1,4 +1,5 @@
 <div class="title is-2">MT Stats</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 
 <div>
 <%= form_for @conn, Routes.masters_tour_path(@conn, :masters_tours_stats, @conn.query_params),

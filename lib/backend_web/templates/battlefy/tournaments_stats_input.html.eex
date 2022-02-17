@@ -1,4 +1,5 @@
 <div class="title is-2">Tournaments Stats</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 
 
 Enter battlefy tournament links or ids below, one per line
@@ -6,7 +7,6 @@ Enter battlefy tournament links or ids below, one per line
 f -> %>
     <%= textarea f, "tournaments", class: "textarea", value: @edit %>
 
-    <%= submit "Submit", class: "button" %> 
+    <%= submit "Submit", class: "button" %>
 
 <% end %>
-

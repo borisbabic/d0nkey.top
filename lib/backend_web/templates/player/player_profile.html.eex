@@ -1,4 +1,5 @@
 <div class="title is-2"><%= @bt %></div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 
 <%= if @bt =~ "Norwis" do %>
 <blockquote class="twitter-tweet" data-theme="dark"><p lang="en" dir="ltr">Don&#39;t know who to support for the upcoming Master&#39;s Tour? Be sure to cheer on <a href="https://twitter.com/Norwis135?ref_src=twsrc%5Etfw">@Norwis135</a> and meet him live at the Jackbox MT afterparty on Saturday Feb 19th... 🤣🤣🤣 <a href="https://t.co/wcFAwVWLyp">pic.twitter.com/wcFAwVWLyp</a></p>&mdash; Sgt TBag ༼ຈل͜ຈ༽ﾉ (@Sgt_Tbag) <a href="https://twitter.com/Sgt_Tbag/status/1492928208878153735?ref_src=twsrc%5Etfw">February 13, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

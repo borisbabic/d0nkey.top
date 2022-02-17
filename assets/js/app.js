@@ -8,8 +8,11 @@ import css from "../css/app.css"
 // in "webpack.config.js".
 //
 // Import dependencies
-//
 import "phoenix_html"
+
+import Alpine from 'alpinejs'
+window.Alpine = Alpine
+Alpine.start()
 
 // Import local files
 //
@@ -67,6 +70,13 @@ window.location_href_by_datalist = function(input_id, datalist_id) {
         console.log("Can't location href, no input or input value")
     }
 }
+window.canCloseDropdown = function(event) {
+    var skipElement = function(element) {
+        return element && (element.className == "report-link" || element.nodeName == "iframe")
+    }
+    return !skipElement(event.target) && !skipElement(event.relatedTarget);
+}
+
 window.uncheck = function(target_class) {
     var elements = document.getElementsByClassName(target_class);
     Array.prototype.forEach.call(elements, function (thing) {
@@ -112,7 +122,14 @@ import {Socket} from "phoenix"
 import LiveSocket from "phoenix_live_view"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, {
+    params: {_csrf_token: csrfToken},
+    dom: {
+        onBeforeElUpdated(from, to){
+          if(from.__x){ window.Alpine.clone(from.__x, to) }
+        }
+    }
+})
 
 // Connect if there are any LiveViews on the page
 liveSocket.connect()

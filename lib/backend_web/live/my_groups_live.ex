@@ -14,6 +14,7 @@ defmodule BackendWeb.MyGroupsLive do
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
+        <div id="nitropay-below-title-leaderboard"></div><br>
       </div>
 
       <GroupModal id="group_modal" />

@@ -1,4 +1,5 @@
 <div class="title is-2">Leaderboard</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 <%= render_dropdowns @dropdowns %>
 
 <div class="notification is-warning">

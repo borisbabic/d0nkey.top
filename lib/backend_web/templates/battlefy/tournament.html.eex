@@ -1,5 +1,6 @@
 <div class="title is-2"><a href=<%= @link %>> <%= @name %></a></div>
 <div class="subtitle is-6"><%=@subtitle%></div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 
 <div>
 <%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @id), [method: :get], fn
