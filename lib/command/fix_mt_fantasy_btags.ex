@@ -16,6 +16,7 @@ defmodule Command.FantasyMTFixer do
       line
       |> String.split(",")
       |> Enum.map(&String.trim/1)
+      |> Enum.map(&remove_after_space/1)
       |> Enum.filter(&(&1 =~ "#"))
       |> case do
         [old, new] when old != new -> [{old, new}]
@@ -24,6 +25,10 @@ defmodule Command.FantasyMTFixer do
     end)
   end
 
+  defp remove_after_space(string), do: String.split(string, " ") |> Enum.at(0)
+
+  def make_url(doc_id),
+    do: "https://docs.google.com/spreadsheets/d/#{doc_id}/export?gid=0&format=csv"
   def get_url!(:Silvermoon),
     do:
       "https://docs.google.com/spreadsheets/d/1uo6B4ABU_rPU6jcForpUccwdI49xhhYD6-rKw0h6EHo/export?gid=0&format=csv"
