@@ -28,7 +28,7 @@
   });
 </script>
 <script>
-window['nitroAds'].createAd('below-title-leaderboard', {
+window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
   "refreshLimit": 10,
   "refreshTime": 60,
   "renderVisibleOnly": true,

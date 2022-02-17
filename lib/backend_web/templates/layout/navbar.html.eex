@@ -13,9 +13,9 @@
 
    <div id="burger-toggle" class="navbar-menu">
      <div class="navbar-start">
-        <div class="navbar-item has-dropdown is-hoverable">
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
           <%= if @user do %>
-            <div class="navbar-link"><%= @user %></div>
+            <div @mouseover="open=true" class="navbar-link"><%= @user %></div>
           <% else %>
             <div class="navbar-link"><i class="far fa-user"></i></div>
           <% end %>
@@ -52,8 +52,8 @@
             <% end %>
           </div>
         </div>
-       <div class="navbar-item has-dropdown is-hoverable">
-         <a class="navbar-item navbar-link" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a>
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+         <a @mouseover="open=true" class="navbar-item navbar-link" href="<%=Routes.leaderboard_path(@conn, :index)%>">Leaderboard</a>
 
          <div class="navbar-dropdown">
            <a class="navbar-item" href='<%=Routes.leaderboard_path(@conn, :player_stats) %>'>Player Stats</a>
@@ -64,8 +64,8 @@
             <% end %>
          </div>
        </div>
-       <div class="navbar-item has-dropdown is-hoverable">
-         <div class="navbar-link">
+       <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+         <div @mouseover="open=true" class="navbar-link">
            Masters Tour
          </div>
 
@@ -78,19 +78,19 @@
            <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :masters_tours_stats)%>">Stats</a>
          </div>
        </div>
-       <div class="navbar-item has-dropdown is-hoverable">
-         <a class="navbar-item navbar-link" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLive) %>'>GM</a>
+      <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open, 'blablacar': !open}">
+        <a @mouseover="open=true" class="navbar-item navbar-link" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLive) %>'>GM</a>
 
-         <div class="navbar-dropdown">
+        <div class="navbar-dropdown">
             <%= for region <- [:EU, :APAC, :NA] do %>
               <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLive, %{region: region}) %>'><%= BackendWeb.GrandmastersLive.gm_region_display(region) %></a>
             <% end %>
-           <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLineup) %>'>Lineups</a>
-           <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Promotion</a>
-         </div>
-       </div>
-       <div class="navbar-item has-dropdown is-hoverable">
-         <div class="navbar-link">
+          <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.GrandmastersLineup) %>'>Lineups</a>
+          <a class="navbar-item" href="<%=Routes.masters_tour_path(@conn, :earnings)%>">Promotion</a>
+        </div>
+      </div>
+       <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+         <div @mouseover="open=true" class="navbar-link">
            Misc
          </div>
 

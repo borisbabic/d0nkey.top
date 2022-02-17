@@ -32,6 +32,7 @@ defmodule BackendWeb.WC2021Live do
                 Stream
               </a>
             </div>
+            <div id="nitropay-below-title-leaderboard"></div>
 
             <TournamentLineupExplorer id={"wc_2021"} tournament_id={"wc_2021"} tournament_source="import_command" show_page_dropdown={false} filters={%{"order_by" => {:asc, :name}}} page_size={100}>
             </TournamentLineupExplorer>

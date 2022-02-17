@@ -15,6 +15,7 @@ defmodule BackendWeb.MaxNations2022NationLive do
     <Context put={user: @user} >
       <div>
         <div class="title is-2">{@nation}</div>
+        <div id="nitropay-below-title-leaderboard"></div><br>
           <table class="table" :if={lineups = MaxNations2022.get_nation_lineups(@nation)}>
             <thead>
               <tr>

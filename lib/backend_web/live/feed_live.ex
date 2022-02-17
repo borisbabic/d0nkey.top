@@ -19,6 +19,9 @@ defmodule BackendWeb.FeedLive do
           <div :if={true} class="level-item">
             <OmniBar id="omni_bar_id"/>
           </div>
+          <div class="level-item">
+            <div id="nitropay-below-title-leaderboard"></div>
+          </div>
           <div :if={false} class="level-item title is-2">Well Met!</div>
         </div>
         <div class="columns is-multiline is-mobile is-narrow is-centered">

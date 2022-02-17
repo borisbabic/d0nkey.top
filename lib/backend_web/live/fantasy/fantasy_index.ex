@@ -13,6 +13,7 @@ defmodule BackendWeb.FantasyIndexLive do
     <Context put={user: @user} >
       <div>
         <div class="title is-2">Fantasy Leagues</div>
+        <div id="nitropay-below-title-leaderboard"></div><br>
         <div class="level">
           <div class="level-left">
             <FantasyModal id="create_modal" title="Create Fantasy League"/>

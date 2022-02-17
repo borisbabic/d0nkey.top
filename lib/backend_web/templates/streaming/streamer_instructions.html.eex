@@ -1,4 +1,5 @@
 <div class="title is-2">Streamer Instructions</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 
 <li>
     <%= if user(@conn) do %>

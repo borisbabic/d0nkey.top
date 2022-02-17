@@ -25,6 +25,7 @@ defmodule BackendWeb.GroupLive do
               | <a href={group.discord} target="_blank">Discord</a>
             </span>
           </div>
+          <div id="nitropay-below-title-leaderboard"></div><br>
 
             <div class="level is-mobile">
               <div class="level-left">

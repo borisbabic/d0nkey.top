@@ -7,6 +7,7 @@
         <a target="_blank" href="<%= @official_link %>">Official Site</a>
     <% end %>
 </div>
+<div id="nitropay-below-title-leaderboard"></div><br>
 <%= render_dropdowns @dropdowns %>
 <%= if @old do %>
     <div class="notification is-warning">

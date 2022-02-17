@@ -32,6 +32,8 @@ defmodule BackendWeb.GrandmastersLive do
         <div class="subtitle is-6">
           <a target"_blank" href="https://playhearthstone.com/en-us/esports/standings/">Official Site</a>
         </div>
+        <div id="nitropay-below-title-leaderboard"></div>
+
         <div class="level is-mobile">
           <div class="level-left">
             <div class="level-item">

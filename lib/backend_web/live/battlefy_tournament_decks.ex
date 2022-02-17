@@ -16,7 +16,8 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
     ~F"""
     <Context  put={user: @user}>
       <div>
-        <div class="title is-1">Explore Decks</div>
+        <div class="title is-2">Explore Decks</div>
+        <div id="nitropay-below-title-leaderboard"></div>
         <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"}/>
       </div>
     </Context>
