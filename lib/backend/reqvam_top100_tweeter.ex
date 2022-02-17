@@ -55,8 +55,47 @@ defmodule Backend.ReqvamTop100Tweeter do
     end
   end
 
+  defp get_mt_score(mt) do
+    with {:ok, battlefy_id} <- Backend.MastersTour.TourStop.get_battlefy_id(mt),
+        %{stages: [stage | _]} <- Backend.Battlefy.get_tournament(battlefy_id),
+        stage_standings <- Backend.Battlefy.get_stage_standings(stage),
+        %{wins: wins, losses: losses} <- Enum.find(stage_standings, & &1.team && &1.team.name =~ "reqvam#") do
+          {:ok, {wins, losses}}
+    else
+      nil -> {:error, :not_playing}
+      _ -> {:error, :couldnot_get_results}
+    end
+  end
+
+  defp mt_message_rank_part(rank) when rank <= 100 do
+    ["reqvam is currently #{rank} on NA"]
+  end
+  defp mt_message_rank_part(_) do
+    ["reqvam isn't top 100 NA"]
+  end
+
+  defp mt_message_score_part({:ok, {wins, losses = 0}}), do: ["He is #{wins} - #{losses} ! Go Paul! Go! Carry reqvam!"]
+  defp mt_message_score_part({:ok, {wins, losses}}) when wins > 6, do: ["He is #{wins} - #{losses}. Top 16 wooohoooo"]
+  defp mt_message_score_part({:ok, {wins = 0, losses}}), do: ["He is #{wins} - #{losses} Sadge. Where is Paul when you need somebody to carry you"]
+  defp mt_message_score_part({:ok, {wins, losses = 1}}) when wins < 7, do: ["He is #{wins} - #{losses}. Top 16 incoming Copium"]
+  defp mt_message_score_part({:ok, {wins, losses}}), do: ["He is #{wins} - #{losses}. That's better than 0 - #{wins + losses} !!!"]
+  defp mt_message_score_part({:error, :not_playing}), do: ["He is... not playing??"]
+  defp mt_message_score_part(_), do: [" Well, just check d0nkey.top, duhhh"]
+  defp mt_message(score, rank) do
+    rank_parts = mt_message_rank_part(rank)
+    score_parts = mt_message_score_part(score)
+    for rank_part <- rank_parts, score_part <- score_parts, do:
+      "#{rank_part} but what about the MT? #{score_part}"
+  end
+  def handle_mt(mt, entry) do
+    get_mt_score(mt) |> mt_message(get_rank(entry))
+  end
+  def get_rank(%{entry: %{rank: rank}}), do: rank
+  def get_rank(_), do: nil
   @spec msg(message_info()) :: msg() | [msg()]
   def msg(%{entry: %{rank: 69}}), do: "Nice!"
+  def msg(%{date: %{year: 2022, month: 2, day: day}, entry: entry}) when day in [18, 19],
+    do: handle_mt(:"Masters Tour One", entry)
   def msg(%{entry: %{rank: 42}}), do: "\"What rank is reqvam on NA\" is probably not the ultimate question, but the answer is the same: 42"
   def msg(%{entry: %{rank: 1}}), do: ["Reqvam is #1 ! On NA! Maybe it's time to play on a tougher server?", "Reqvam is rank 1! That's 1 factorial and just RANK 1 ! What an amazing achievement by such an amazing skeleton"]
   def msg(%{entry: %{rank: 21}}), do: "Reqvam is 21 - I remember when he was top 20 NA"
