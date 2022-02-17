@@ -52,3 +52,9 @@ window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
   "mediaQuery": "(min-width: 1025px), (min-width: 768px) and (max-width: 1024px)"
 });
 </script>
+<script>
+window['nitroAds'].createAd('nitropay-interstitial', {
+  "format": "interstitial",
+  "mediaQuery": "(min-width: 320px) and (max-width: 767px)"
+});
+</script>
