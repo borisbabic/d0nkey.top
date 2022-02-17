@@ -573,9 +573,9 @@ defmodule Backend.UserManager do
     query = from g in Group,
       select: g,
       preload: [:owner],
-      left_join: gm in GroupMembership,
-      on: [group_id: gm.id],
-      where: gm.user_id == ^user_id or g.owner_id == ^user_id
+      inner_join: gm in GroupMembership,
+      on: g.id == gm.group_id,
+      where: gm.user_id == ^user_id
 
       query |> Repo.all()
   end
