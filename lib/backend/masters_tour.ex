@@ -927,6 +927,10 @@ defmodule Backend.MastersTour do
       "Syf" -> "iGSyf"
       "快樂之潛行者" -> "RNGLeaoh"
 
+      # MTOne
+      "iGShuiMoo" -> "ShuiMoo"
+      "Sensei6" -> "sensei6"
+
       n -> n
     end
     if new == name do

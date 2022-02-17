@@ -17,7 +17,7 @@
           <%= if @user do %>
             <div @mouseover="open=true" class="navbar-link"><%= @user %></div>
           <% else %>
-            <div class="navbar-link"><i class="far fa-user"></i></div>
+            <div @mouseover="open=true" class="navbar-link"><i class="far fa-user"></i></div>
           <% end %>
           <div class="navbar-dropdown">
             <%= if @user do %>
