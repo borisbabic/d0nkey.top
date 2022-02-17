@@ -2,23 +2,20 @@
 
 
 <div class="subtitle is-6">
-    Not just for <a target="_blank" href="/streamer-decks">Streamer Decks</a>.
+    Not just for <a target="_blank" href="/streamer-decks">Streamer Decks</a>.  Contribute to <a target="_blank" href="/decks">Decks</a>, enjoy and share your <a target="_blank" href="/my-decks">Decks</a> and <a target="_blank" href="/my-replays">Replays</a> (all also available for <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> users)
 </div>
-Contribute to <a target="_blank" href="/decks">Decks</a>, enjoy <a target="_blank" href="/my-decks">My Decks</a> and <a target="_blank" href="/my-replays">My Replays</a> and more to come (all also available for <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> users)
-<br>
-<br>
-<div class="subtitle is-4">Instructions</div>
+<a class="is-link is-size-1"target="_blank" href="/hdt-plugin/d0nkey.top plugin.dll">Latest Version</a> Right Click -> Save Link
 
+<div class="subtitle is-4">Text Instructions</div>
 <li>
-      Download the <a target="_blank" href="/hdt-plugin/d0nkey.top plugin.dll">latest version</a> - if clicking on the link trys to run it then you can right cick -> save
+    Right click and save the latest version above
+</li>
+<li>
+    Open the plugins window in HDT (Options -> Plugins) and drag and drop the file you saved onto the window.
 </li>
 
 <li>
-    Open the plugins window in HDT (Options -> Plugins) and drag and drop the file onto the window <a href="/images/hdt_plugin_ss.png" target="_blank">(Example ScreenShot)</a>. Alternatively copy the file into <code>%appdata%\HearthstoneDeckTracker\Plugins\</code>
-</li>
-
-<li>
-    Restart HDT
+    Enable the plugin and Restart HDT
 </li>
 
 <li>
@@ -34,6 +31,12 @@ Contribute to <a target="_blank" href="/decks">Decks</a>, enjoy <a target="_blan
 
 </li>
 
+
+<br>
+<div class="subtitle is-4">Video Guide</div>
+<iframe width="420" height="315"
+    src="https://www.youtube.com/embed/b8TsjZLnwJQ">
+</iframe>
 
 <br>
 <div class="subtitle is-4">Known Issues</div>
@@ -52,5 +55,5 @@ If it's not installing then perhaps HDT is installed in a non default location? 
 </li>
 <li>
 For feedback or additional help see the #hdt-extension channel in my <a target="_blank" href="/discord">Discord</a>
-Include the hdt log file located here %appdata%\HearthstoneDeckTracker\Logs\hdt_logs.txt - this file is recreated if you restart hdt, there will be others in the folder so if it's in an old file
+Include the hdt log file located here <code>%appdata%\HearthstoneDeckTracker\Logs\hdt_logs.txt</code> - this file is recreated if you restart hdt, there will be others in the folder so if it's in an old file
 </li>
