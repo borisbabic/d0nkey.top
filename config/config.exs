@@ -21,6 +21,7 @@ config :backend, QuantumScheduler,
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
     {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
     {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
+    {"* * * * *", fn -> Backend.AdsTxtCache.update() end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
@@ -108,6 +109,8 @@ config :backend,
   nostrum_slash_command_target: 666596230100549652,
   hdt_plugin_latest_version: hdt_plugin_latest_version,
   hdt_plugin_latest_file: "hdt_plugin/#{hdt_plugin_latest_version}.dll",
+  nitropay_ads_txt_url: "https://api.nitropay.com/v1/ads-909.txt",
+  enable_adsense: true,
   admin_config_vars_cutoff_date: "3000-12-31"
 
 # Configures Elixir's Logger

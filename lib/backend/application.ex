@@ -93,6 +93,10 @@ defmodule Backend.Application do
           id: Backend.LatestHSArticles,
           start: {Backend.LatestHSArticles, :start_link, [[]]}
         },
+        %{
+          id: Backend.AdsTxtCache,
+          start: {Backend.AdsTxtCache, :start_link, [[]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]

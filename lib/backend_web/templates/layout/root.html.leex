@@ -30,9 +30,10 @@
 
       <%= if enable_nitropay?(@conn) do %>
           <%= render("ads_all.html", %{conn: @conn}) %>
-      <% else %>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8835820092180114" crossorigin="anonymous"></script>
       <% end %>
+      <%= if enable_adsense?(@conn) && show_ads?(@conn) do %>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8835820092180114" crossorigin="anonymous"></script>
+      <%= end %>
     <% end %>
     <%= render_tags_all(assigns[:meta_tags] || %{}) %>
 
