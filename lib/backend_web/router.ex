@@ -211,6 +211,8 @@ defmodule BackendWeb.Router do
     live "/player/:player_btag/replays", PlayerReplaysLive
 
     get "/wild", FunController, :wild
+
+    get "/ads.txt", PageController, :ads_txt
   end
 
   scope "/", BackendWeb do

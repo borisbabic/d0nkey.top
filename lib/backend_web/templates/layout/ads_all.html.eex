@@ -55,6 +55,7 @@ window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
 <script>
 window['nitroAds'].createAd('nitropay-interstitial', {
   "format": "interstitial",
+  "demo": <%= nitropay_demo?() %>,
   "mediaQuery": "(min-width: 320px) and (max-width: 767px)"
 });
 </script>

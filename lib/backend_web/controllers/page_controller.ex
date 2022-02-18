@@ -38,4 +38,15 @@ defmodule BackendWeb.PageController do
 
     text(conn, ret)
   end
+
+  def ads_txt(conn, params) do
+    if Application.get_env(:backend, :enable_adsense, true) do
+      ads_txt = Backend.AdsTxtCache.get()
+      text(conn, ads_txt)
+    else
+      conn
+      |> put_status(302)
+      |> redirect(external: Backend.AdsTxtCache.nitropay_url())
+    end
+  end
 end
