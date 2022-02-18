@@ -33,7 +33,7 @@ window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
   "refreshTime": 60,
   "renderVisibleOnly": true,
   "refreshVisibleOnly": true,
-  "demo": true,
+  demo: <%= nitropay_demo?() %>,
   "sizes": [
     [
       "728",
