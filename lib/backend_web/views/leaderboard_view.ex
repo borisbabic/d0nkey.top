@@ -7,6 +7,7 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
   alias BackendWeb.ViewUtil
+  require Backend.LobbyLegends
 
   @type selectable_season :: {String.t(), integer()}
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
@@ -435,10 +436,18 @@ defmodule BackendWeb.LeaderboardView do
     }
   end
 
-  def show_mt_column?(%{leaderboard_id: "STD", season_id: season_id}),
-    do: elem(get_ladder_tour_stop(season_id), 0) == :ok
+  def show_mt_column?(%{leaderboard_id: "BG", season_id: s}) when Backend.LobbyLegends.is_lobby_legends(s) do
+    "Lobby Legends"
+  end
+  def show_mt_column?(%{leaderboard_id: "STD", season_id: season_id}) do
 
-  def show_mt_column?(_), do: false
+    case elem(get_ladder_tour_stop(season_id), 0) do
+      :ok -> "Masters Tour"
+      _ -> nil
+    end
+  end
+
+  def show_mt_column?(_), do: nil
 
   def old?(%{upstream_updated_at: updated_at, season_id: 94, leaderboard_id: "STD", region: "US"}) do
     updated_at && DateTime.diff(DateTime.utc_now(), updated_at) &&
@@ -578,6 +587,14 @@ defmodule BackendWeb.LeaderboardView do
   def banned(_, _),
     do: nil
 
+  def wrong_region(%{leaderboard_id: "BG", season_id: s, region: region}, account) when Backend.LobbyLegends.is_lobby_legends(s) do
+    case Backend.PlayerInfo.get_country(account) do
+      nil -> false
+      cc -> region != IO.inspect(cc) |> Backend.PlayerInfo.country_to_region() |> to_string() |> IO.inspect()
+    end
+  end
+  def wrong_region(_, _), do: false
+
   def process_entries(nil, _, _, _, _), do: []
 
   def process_entries(
@@ -591,9 +608,10 @@ defmodule BackendWeb.LeaderboardView do
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
       banned = banned(snapshot, account_id)
+      wrong_region = wrong_region(snapshot, account_id)
 
       ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
-      skip_for_invite = qualified || ineligible || banned
+      skip_for_invite = qualified || ineligible || banned || wrong_region
       qualifying = {!skip_for_invite && acc <= num_invited, acc}
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
@@ -614,6 +632,7 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:ineligible, ineligible)
         |> Map.put_new(:prev_rank, prev_rank)
         |> Map.put_new(:warning, warning)
+        |> Map.put_new(:wrong_region, wrong_region)
         |> Map.put_new(:banned, banned)
         |> Map.put_new(:history_link, history_link)
         |> Map.put_new(:flag, flag)
