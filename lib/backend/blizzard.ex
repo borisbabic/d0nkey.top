@@ -370,7 +370,7 @@ defmodule Backend.Blizzard do
         {:ok, [:Ironforge, :Orgrimmar, :Dalaran, :Silvermoon, :Stormwind, :Undercity]}
 
       {2022, 2} ->
-        {:ok, [:Silvermoon, :Stormwind, :Undercity, :"Masters Tour One", :"Masters Tour One", :"Masters Tour Two", :"Masters Tour Three"]}
+        {:ok, [:Silvermoon, :Stormwind, :Undercity, :"Masters Tour One", :"Masters Tour Two", :"Masters Tour Three"]}
 
       _ ->
         {:error, "Unknown/unsupported gm_season"}
