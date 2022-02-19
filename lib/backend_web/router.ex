@@ -210,6 +210,9 @@ defmodule BackendWeb.Router do
     live "/player/:player_btag/decks", PlayerDecksLive
     live "/player/:player_btag/replays", PlayerReplaysLive
 
+    live "/pony-dojo/power-rankings", PonyDojoLive
+    get "/pony-dojo/update-power-rankings", UtilController, :update_pony_dojo
+
     get "/wild", FunController, :wild
 
     get "/ads.txt", PageController, :ads_txt
