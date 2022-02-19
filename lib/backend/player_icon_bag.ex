@@ -9,9 +9,10 @@ defmodule Backend.PlayerIconBag do
     # {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}},
     {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
+    {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}}, #MTOne Fantasy
     # {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
     # {"Dragoninja#1573", {:image, "/images/icons/dragoninja.png"}},
-    {"Ajani#2766", {:image, "/images/icons/ajani.jpg"}}
+    # {"Ajani#2766", {:image, "/images/icons/ajani.jpg"}}
   ]
   @type player_icon :: {:image, String.t()} | {:unicode, String.t()}
 

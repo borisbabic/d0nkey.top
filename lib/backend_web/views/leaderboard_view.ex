@@ -587,12 +587,13 @@ defmodule BackendWeb.LeaderboardView do
   def banned(_, _),
     do: nil
 
-  def wrong_region(%{leaderboard_id: "BG", season_id: s, region: region}, account) when Backend.LobbyLegends.is_lobby_legends(s) do
-    case Backend.PlayerInfo.get_country(account) do
-      nil -> false
-      cc -> region != IO.inspect(cc) |> Backend.PlayerInfo.country_to_region() |> to_string() |> IO.inspect()
-    end
-  end
+  # this rule has been changed
+  # def wrong_region(%{leaderboard_id: "BG", season_id: s, region: region}, account) when Backend.LobbyLegends.is_lobby_legends(s) do
+  #   case Backend.PlayerInfo.get_country(account) do
+  #     nil -> false
+  #     cc -> region != Backend.PlayerInfo.country_to_region() |> to_string()
+  #   end
+  # end
   def wrong_region(_, _), do: false
 
   def process_entries(nil, _, _, _, _), do: []
