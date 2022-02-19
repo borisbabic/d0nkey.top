@@ -22,6 +22,7 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
     {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
     {"* * * * *", fn -> Backend.AdsTxtCache.update() end},
+    {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]

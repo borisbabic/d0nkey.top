@@ -97,6 +97,10 @@ defmodule Backend.Application do
           id: Backend.AdsTxtCache,
           start: {Backend.AdsTxtCache, :start_link, [[]]}
         },
+        %{
+          id: Backend.PonyDojo,
+          start: {Backend.PonyDojo, :start_link, [[]]}
+        },
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
