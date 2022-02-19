@@ -17,7 +17,7 @@ defmodule Components.PonyDojoPlayer do
           </div>
         </header>
         <div class="card-image">
-          <figure :if={@player.image_url} class="image is-2by3">
+          <figure :if={@player.image_url} class="image is-1by1">
             <img src={@player.image_url}>
           </figure>
         </div>
