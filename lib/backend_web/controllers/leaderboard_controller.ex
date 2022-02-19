@@ -4,6 +4,7 @@ defmodule BackendWeb.LeaderboardController do
   alias Backend.Blizzard
   alias Backend.Leaderboards
   alias Backend.MastersTour
+  require Backend.LobbyLegends
 
   def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
     leaderboard = get_leaderboard(params)
@@ -38,6 +39,7 @@ defmodule BackendWeb.LeaderboardController do
   end
 
   def parse_show_flags(%{"show_flags" => sf}, _) when sf in ["no", "yes"], do: sf
+  def parse_show_flags(_, %{leaderboard_id: "BG", season_id: s}) when Backend.LobbyLegends.is_lobby_legends(s), do: "yes"
   def parse_show_flags(_, %{leaderboard_id: "STD"}), do: "yes"
   def parse_show_flags(_, _), do: "no"
 
@@ -45,6 +47,7 @@ defmodule BackendWeb.LeaderboardController do
   def parse_ladder_mode(_), do: "yes"
 
   def get_season_info(nil), do: {[], 0}
+  def get_season_info(%{leaderboard_id: "BG", season_id: s}) when Backend.LobbyLegends.is_lobby_legends(s), do: {[], 16}
   def get_season_info(%{season_id: season_id}), do: get_season_info(season_id)
 
   def get_season_info(season_id) do

@@ -366,15 +366,18 @@ defmodule Backend.PlayerInfo do
     end
   end
 
-  @spec get_region(String.t()) :: Blizzard.region()
+  @spec get_region(String.t()) :: Blizzard.region() | nil
   def get_region(full_or_short) do
     full_or_short
     |> get_country()
     |> case do
       nil -> nil
-      cc -> @alpha2_to_region[cc]
+      cc -> country_to_region(cc)
     end
   end
+
+  @spec country_to_region(String.t()) :: Blizzard.region() | nil
+  def country_to_region(cc), do: Map.get(@alpha2_to_region, cc)
 
   @spec get_country(Blizzard.battletag()) :: country_code
   def get_country(battletag_full) do
