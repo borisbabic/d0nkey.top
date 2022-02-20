@@ -143,6 +143,17 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       |> Util.get_country_name()
     end
   end
+  def create_grouping_func("region") do
+    fn n ->
+      n
+      |> get_mt_name()
+      |> PlayerInfo.get_region()
+      |> case do
+        nil -> "Unknown/Other"
+        r -> Backend.Blizzard.get_region_name(r, :long)
+      end
+    end
+  end
 
   def create_grouping_func("max_nations_2022") do
     downcase_roster_map =
@@ -297,7 +308,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     })
   end
   defp create_group_by_dropdown(group_by, update_params) do
-    options = [{"max_nations_2022", "Max Nations 2022"}, {"max_nations_2022_groups", "Max Nations Groups"}, {"country", "Country"}, {"player", "Player"}]
+    options = [{"max_nations_2022", "Max Nations 2022"}, {"max_nations_2022_groups", "Max Nations Groups"}, {"country", "Country"}, {"region", "Region"}, {"player", "Player"}]
       |> Enum.map(fn {val, display} ->
         %{
           selected: group_by == val,
