@@ -932,16 +932,16 @@ defmodule Backend.MastersTour do
       "Sensei6" -> "sensei6"
 
       # MT ONE zflow dm
-      "슬퍼하지마노노노" -> "hyung "
-      "가끔들어옴" -> "rkRma "
-      "잔악무도유관우" -> "kwanwoo "
-      "투야" -> "Tuya "
-      "시이나마히루" -> "shiinamahiru "
-      "살아있는양심" -> "sheepheart "
-      "호랑이들어와요" -> "TigerIsComin "
-      "달라라면" -> "Dallara "
-      "최석중" -> "ChoiSeokJoon "
-      "조치" -> "Zochi "
+      "슬퍼하지마노노노" -> "hyung"
+      "가끔들어옴" -> "rkRma"
+      "잔악무도유관우" -> "kwanwoo"
+      "투야" -> "Tuya"
+      "시이나마히루" -> "shiinamahiru"
+      "살아있는양심" -> "sheepheart"
+      "호랑이들어와요" -> "TigerIsComin"
+      "달라라면" -> "Dallara"
+      "최석중" -> "ChoiSeokJoon"
+      "조치" -> "Zochi"
 
       n -> n
     end
