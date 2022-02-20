@@ -16,7 +16,7 @@ defmodule BackendWeb.PonyDojoLive do
         Pony Dojo Power Rankings
       </div>
       <div class="columns is-mobile is-narrow is-multiline">
-        <div :for={{p, index} <- Backend.PonyDojo.players() |> Enum.with_index()} class="column">
+        <div :for={{p, index} <- Backend.PonyDojo.players() |> Enum.take(50) |> Enum.with_index()} class="column">
           <PonyDojoPlayer num={index + 1} player={p} />
         </div>
       </div>
