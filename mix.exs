@@ -81,7 +81,9 @@ defmodule Backend.MixProject do
       {:table_rex, "~> 3.1.1"},
       {:contex, "~> 0.4.0"},
       {:surface_bulma, "~> 0.2.0"},
+      {:tmi, "~> 0.3.0"},
       {:etop, "~> 0.7"},
+      {:solid, "~> 0.10"},
       {:quantum, "~> 2.3"}
     ]
   end
