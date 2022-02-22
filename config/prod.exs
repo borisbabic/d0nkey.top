@@ -14,6 +14,79 @@ config :backend,
   gm_stream_send_tweet: true,
   nitropay_demo: false,
   nostrum_slash_command_target: :global,
+  twitch_bot_message_config:
+    %{
+      "sgt_tbag" => [
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "RonkaPoo \"{{ message }}\"",
+          sender: "goofyronak",
+          sender_regex?: false,
+          type: :custom
+        }
+      ],
+      "d0nkeyhs" => [
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "RonkaPoo : \"{{ message }}\"",
+          sender: "goofyronak",
+          sender_regex?: false,
+          type: :custom
+        },
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "{{ deck_url }}",
+          sender: nil,
+          sender_regex?: false,
+          type: :deck
+        },
+        %{
+          message: "!replay",
+          message_regex?: false,
+          response: "My last replay: {{ latest_replay_url}}",
+          sender: nil,
+          sender_regex?: false,
+          type: :custom
+        }
+      ],
+      "d0nkeytop" => [
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "DDANCE : \"{{ message }}\"",
+          sender: "d0nKeyhs",
+          sender_regex?: false,
+          type: :custom
+        },
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "RonkaPoo : \"{{ message }}\"",
+          sender: "goofyronak",
+          sender_regex?: false,
+          type: :custom
+        },
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "Said once by somebody while pooping in Versailles : \"{{ message }}\"",
+          sender: "Sgt_TBag",
+          sender_regex?: false,
+          type: :custom
+        },
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "{{ deck_url }}",
+          sender: nil,
+          sender_regex?: false,
+          type: :deck
+        }
+      ]
+    },
   enable_bot: true
 
 config :ueberauth, Ueberauth,

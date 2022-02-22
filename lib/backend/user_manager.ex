@@ -352,7 +352,6 @@ defmodule Backend.UserManager do
   def create_group(attrs = %{"owner" => owner}) do
     with {:ok, group} <- %Group{} |> Group.changeset(attrs) |> Repo.insert(),
         {:ok, group_membership} <- %{role: "Owner", group: group, user: owner} |> create_group_membership() do
-          IO.inspect(group_membership)
           {:ok, group}
     end
   end

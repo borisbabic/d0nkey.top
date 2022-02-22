@@ -101,6 +101,7 @@ defmodule Backend.Application do
           id: Backend.PonyDojo,
           start: {Backend.PonyDojo, :start_link, [[]]}
         },
+        {TMI.Supervisor, Application.fetch_env!(:backend, :twitch_bot_config)},
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]

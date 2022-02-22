@@ -92,6 +92,12 @@ config :backend,
   admin_pass: "admin",
   enable_nitropay: true,
   gm_stream_send_tweet: false,
+  twitch_bot_config: [
+    user: "d0nkeytop",
+    pass: System.get_env("TWITCH_BOT_OAUTH"),
+    chats: ["Sgt_TBag", "d0nkeyhs", "d0nkeytop"],
+    handler: TwitchBot.Handler
+  ],
   gm_stream_twitter_info: [
     consumer_key: System.get_env("GMS_CONSUMER_KEY"),
     consumer_secret: System.get_env("GMS_CONSUMER_SECRET"),
