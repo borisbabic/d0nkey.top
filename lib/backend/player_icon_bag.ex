@@ -10,6 +10,7 @@ defmodule Backend.PlayerIconBag do
     {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
     {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}}, #MTOne Fantasy
+    {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
     # {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
     # {"Dragoninja#1573", {:image, "/images/icons/dragoninja.png"}},
     # {"Ajani#2766", {:image, "/images/icons/ajani.jpg"}}
@@ -23,6 +24,7 @@ defmodule Backend.PlayerIconBag do
 
   def start_link(default), do: GenServer.start_link(__MODULE__, default, name: @name)
 
+  @spec init(any) :: {:ok, %{table: atom | :ets.tid()}}
   def init(_args) do
     table = :ets.new(@name, [:named_table])
     update_table(table)
