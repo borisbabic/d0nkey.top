@@ -159,7 +159,7 @@ defmodule Components.FantasyModal do
     end
   end
 
-  defp competition_options("grandmasters"), do: ["gm_2021_2"] |> competition_options()
+  defp competition_options("grandmasters"), do: ["gm_2022_1"] |> competition_options()
 
   defp competition_options("card_changes"),
     do: ["buffs_may_2021", "nerfs_may_2021"] |> competition_options()

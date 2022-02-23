@@ -943,6 +943,8 @@ defmodule Backend.MastersTour do
       "최석중" -> "ChoiSeokJoon"
       "조치" -> "Zochi"
 
+      #GMS
+      "ЗлойГрузин" -> "ZloyGruzin"
       n -> n
     end
     if new == name do

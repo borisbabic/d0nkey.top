@@ -332,6 +332,59 @@ defmodule Backend.PlayerInfo do
     ) ++ ["GivePLZ", "AlanC86", "Posesi"]
   end
 
+  def get_grandmasters({2022, 1}) do
+    [
+      "AlanC86",
+      "Alutemu",
+      "Bankyugi",
+      "Bunnyhoppor",
+      "CaelesLuna",
+      "Casie",
+      "che0nsu",
+      "DimitriKazov",
+      "DragonMan",
+      "DreadEye",
+      "Felkeine",
+      "Fled",
+      "Floki",
+      "Fr0zen",
+      "Frenetic",
+      "Furyhunter",
+      "Gaby",
+      "GamerRvg",
+      "GivePLZ",
+      "glory",
+      "grr",
+      "hyung",
+      "J4YOU",
+      "Jarla",
+      "killinallday",
+      "lambyseries",
+      "LeandroLeal",
+      "Leta",
+      "lnguagehackr",
+      "lunaloveee",
+      "McBanterFace",
+      "MegaGliscor",
+      "Mighty",
+      "Monsanto",
+      "Nalguidan",
+      "NoHandsGamer",
+      "okasinnsuke",
+      "Pascoa",
+      "Posesi",
+      "Pun",
+      "Rdu",
+      "Seiko",
+      "Shaxy",
+      "SuperFake",
+      "trahison",
+      "Viper",
+      "xBlyzes",
+      "ZloyGruzin"
+    ]
+  end
+
   def get_grandmasters(rts = _reference_tour_stop, relegated) do
     Backend.MastersTour.list_invited_players(rts)
     |> Enum.filter(fn %{reason: r, official: _o} -> String.contains?(r, "Grandmaster") end)
