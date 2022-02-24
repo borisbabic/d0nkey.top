@@ -26,9 +26,13 @@ defmodule Backend.Grandmasters do
   end
 
   defp update_table(table) do
-    # with {:ok, response} <- Communicator.get_gm() do
-    #   update_table(response, table)
-    # end
+    try do
+      with {:ok, response} <- Communicator.get_gm() do
+        update_table(response, table)
+      end
+    rescue
+      _ -> nil
+    end
   end
 
   defp update_table(response, table) do
