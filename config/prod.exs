@@ -16,6 +16,36 @@ config :backend,
   nostrum_slash_command_target: :global,
   twitch_bot_message_config:
     %{
+      "norwis_" => [
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "RonkaPoo \"{{ message }}\"",
+          sender: "goofyronak",
+          sender_regex?: false,
+          type: :custom
+        }
+      ],
+      "branka279" => [
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "RonkaPoo \"{{ message }}\"",
+          sender: "goofyronak",
+          sender_regex?: false,
+          type: :custom
+        }
+      ],
+      "dettomon" => [
+        %{
+          message: nil,
+          message_regex?: false,
+          response: "RonkaPoo \"{{ message }}\"",
+          sender: "goofyronak",
+          sender_regex?: false,
+          type: :custom
+        }
+      ],
       "sgt_tbag" => [
         %{
           message: nil,
