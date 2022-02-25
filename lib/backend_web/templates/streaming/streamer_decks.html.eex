@@ -17,13 +17,6 @@ f-> %>
     <% end %>
     <%= render_multiselect_dropdown %{
         form: f,
-        title: "Archetypes",
-        options: @archetypes_options,
-        attr: "hsreplay_archetypes",
-        placeholder: "Archetype",
-        search_id: "sd-archetype-select"} %>
-    <%= render_multiselect_dropdown %{
-        form: f,
         title: "Include Cards",
         options: @include_options,
         attr: "include_cards",
