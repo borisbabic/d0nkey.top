@@ -27,7 +27,7 @@ defmodule Backend.Grandmasters do
 
   defp update_table(table) do
     try do
-      with {:ok, response} <- Communicator.get_gm() do
+      with {:ok, response = %{requested_season_tournaments: [_|_]}} <- Communicator.get_gm() do
         update_table(response, table)
       end
     rescue
