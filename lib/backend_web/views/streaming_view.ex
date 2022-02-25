@@ -139,27 +139,16 @@ defmodule BackendWeb.StreamingView do
     dropdowns = [
       create_limit_dropdown(conn, limit),
       create_legend_dropdown(conn, "legend", "Peak"),
-      create_legend_dropdown(conn, "latest_legend_rank", "Latest"),
-      create_legend_dropdown(conn, "worst_legend_rank", "Worst"),
+      # create_legend_dropdown(conn, "latest_legend_rank", "Latest"),
+      # create_legend_dropdown(conn, "worst_legend_rank", "Worst"),
       create_format_dropdown(conn),
       create_class_dropdown(conn),
-      create_min_minutes_played_dropdown(conn),
-      create_alterac_valley_dropdown(conn),
+      # create_min_minutes_played_dropdown(conn),
+      # create_alterac_valley_dropdown(conn),
       create_last_played_dropdown(conn)
       # keep below last :shrug:
       # create_show_archetypes_dropdown(conn)
     ]
-
-    archetypes_options =
-      Backend.HSReplay.get_latest_archetypes()
-      |> Enum.map(fn a ->
-        %{
-          selected: a && a.id in archetypes,
-          display: a.name,
-          name: a.name,
-          value: a.id
-        }
-      end)
 
     include_options = card_options(include)
     exclude_options = card_options(exclude)
@@ -172,7 +161,6 @@ defmodule BackendWeb.StreamingView do
       prev_button: prev_button(conn, prev_offset, offset),
       show_archetype: true,
       conn: conn,
-      archetypes_options: archetypes_options,
       include_options: include_options,
       exclude_options: exclude_options,
       next_button: next_button(conn, next_offset)
@@ -287,18 +275,21 @@ defmodule BackendWeb.StreamingView do
   end
 
   def create_last_played_dropdown(conn) do
+    last_played = Map.get(conn.query_params, "last_played")
     options =
       [
         {"Last hour", "min_ago_60"},
         {"Last day", "min_ago_1440"},
         {"Last 3 days", "min_ago_4320"},
         {"Last 7 days", "min_ago_10080"},
-        {"Last 15 days", "min_ago_21600"}
+        {"Last 15 days", "min_ago_21600"},
+        {"Last 30 days", "min_ago_43200"},
+        {"Last 120 days", "min_ago_172800"}
       ]
       |> Enum.map(fn {display, lp} ->
         %{
           link: update_link(conn, "last_played", lp),
-          selected: to_string(Map.get(conn.query_params, "last_played")) == to_string(lp),
+          selected: last_played == to_string(lp),
           display: display
         }
       end)
