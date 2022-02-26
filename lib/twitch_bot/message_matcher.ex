@@ -49,7 +49,7 @@ defmodule TwitchBot.MessageMatcher do
     true
   end
   defp string_matches(target, matcher, _regex = true) when is_binary(matcher) do
-    case Regex.compile(matcher) do
+    case Regex.compile(matcher, "iu") do
       {:ok, r} -> string_matches(target, r, true)
       _ -> nil
     end
