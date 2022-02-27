@@ -12,6 +12,7 @@ defmodule BackendWeb.LeaderboardController do
     comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
     show_flags = parse_show_flags(params, leaderboard)
+    skip_cn = parse_skip_cn(params, leaderboard)
     {invited, ladder_invite_num} = leaderboard |> get_season_info()
 
     render(conn, "index.html", %{
@@ -24,10 +25,13 @@ defmodule BackendWeb.LeaderboardController do
       compare_to: params["compare_to"],
       show_flags: show_flags,
       page_title: "Ladder Leaderboard",
+      skip_cn: skip_cn,
       comparison: comparison,
       ladder_mode: ladder_mode
     })
   end
+  def parse_skip_cn(%{"skip_cn" => skip}, _) when skip in ["all", "previously_skipped", "none"], do: skip
+  def parse_skip_cn(_, _), do: "all"
 
   def index(conn, params) do
     new_params =

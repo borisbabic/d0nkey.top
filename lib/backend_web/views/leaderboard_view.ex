@@ -121,16 +121,17 @@ defmodule BackendWeb.LeaderboardView do
           other_ladders: other_ladders,
           leaderboard: leaderboard,
           show_flags: show_flags,
-          comparison: comparison
+          comparison: comparison,
+          skip_cn: skip_cn
         }
       ) do
     invited =
       leaderboard
       |> process_invited(invited_raw)
-      |> add_other_ladders(other_ladders, ladder_invite_num)
+      |> add_other_ladders(other_ladders, ladder_invite_num, skip_cn)
 
     entries =
-      leaderboard |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num)
+      leaderboard |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num, skip_cn)
 
     show_ratings = Enum.any?(entries, & &1.rating)
 
@@ -293,7 +294,7 @@ defmodule BackendWeb.LeaderboardView do
     |> create_dropdowns()
   end
 
-  def create_dropdowns(%{
+  def create_dropdowns(params = %{
         conn: conn,
         leaderboard: %{
           leaderboard_id: leaderboard_id,
@@ -308,12 +309,40 @@ defmodule BackendWeb.LeaderboardView do
       create_region_dropdown(conn, region),
       create_leaderboard_dropdown(conn, leaderboard_id),
       create_season_dropdown(conn, season_id, leaderboard_id),
-      create_ladder_mode_dropdown(conn, ladder_mode),
+      create_ladder_mode_dropdown(conn, ladder_mode, leaderboard_id),
       create_show_flags_dropdown(conn, show_flags),
+      create_skip_cn_dropdown(params),
       create_compare_to_dropdown(conn, compare_to)
     ]
+    |> Enum.filter(& &1)
   end
 
+  def create_skip_cn_dropdown(%{skip_cn: skip_cn, conn: conn, leaderboard: leaderboard})do
+    case skip_cn_opts(leaderboard) do
+      opts = [_|_] ->
+        options = Enum.map(opts, fn {val, name} ->
+          %{
+            display: name,
+            selected: val == skip_cn,
+            link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "skip_cn", val))
+          }
+        end)
+        {options, new("Skip CN")}
+      _ ->  nil
+    end
+  end
+
+  def new(text) do
+    ~E"""
+      <span>
+        <p><%= text %><sup class="is-hidden-mobile is-size-7 has-text-danger"> New!</sup></p>
+      </span>
+    """
+  end
+
+  defp skip_cn_opts(%{leaderboard_id: "STD", season_id: s}) when s > 98, do: [{"all", "All"}, {"previously_skipped", "Previously Officially Skipped"}, {"none", "None"}]
+  defp skip_cn_opts(%{leaderboard_id: "BG", season_id: s}) when s > 4, do: [{"all", "All"}, {"none", "None"}]
+  defp skip_cn_opts(_), do: nil
 
   def create_region_dropdown(conn = %Plug.Conn{}, region) do
     create_region_dropdown(
@@ -368,7 +397,7 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Season")}
   end
 
-  def create_ladder_mode_dropdown(conn, ladder_mode) do
+  def create_ladder_mode_dropdown(conn, ladder_mode, "STD") do
     options =
       ["yes", "no"]
       |> Enum.map(fn mode ->
@@ -382,6 +411,7 @@ defmodule BackendWeb.LeaderboardView do
 
     {options, "Ladder Mode"}
   end
+  def create_ladder_mode_dropdown(_, _ ,_), do: nil
 
   def create_show_flags_dropdown(conn, show_flags) do
     options =
@@ -461,10 +491,10 @@ defmodule BackendWeb.LeaderboardView do
 
   def old?(_), do: false
 
-  def add_other_ladders(invited, other_ladders, ladder_invite_num) do
+  def add_other_ladders(invited, other_ladders, ladder_invite_num, skip_cn) do
     other_ladders
     |> Enum.flat_map(fn leaderboard ->
-      process_entries(leaderboard, invited, nil, false, ladder_invite_num)
+      process_entries(leaderboard, invited, nil, false, ladder_invite_num, skip_cn)
       |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
       |> Enum.with_index(1)
       |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, leaderboard.region, pos}} end)
@@ -588,28 +618,51 @@ defmodule BackendWeb.LeaderboardView do
     do: nil
 
   # this rule has been changed
-  # def wrong_region(%{leaderboard_id: "BG", season_id: s, region: region}, account) when Backend.LobbyLegends.is_lobby_legends(s) do
+  # defp wrong_region(%{leaderboard_id: "BG", season_id: s, region: region}, account) when Backend.LobbyLegends.is_lobby_legends(s) do
   #   case Backend.PlayerInfo.get_country(account) do
   #     nil -> false
   #     cc -> region != Backend.PlayerInfo.country_to_region() |> to_string()
   #   end
   # end
-  def wrong_region(_, _), do: false
+  @confirmed_std_chinese [
+    "XiaoT",  # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    "Jiuqianyu", # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    "WEYuansu", # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    "Wolfrider", # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+  ]
+  defp wrong_region(%{leaderboard_id: "STD", season_id: s}, account, "previously_skipped") when s > 98 and account in @confirmed_std_chinese do
+    true
+  end
+  defp wrong_region(%{leaderboard_id: "BG", season_id: s}, account, "all") when s > 4 do
+    is_chinese?(account)
+  end
+  defp wrong_region(%{leaderboard_id: "STD", season_id: s}, account, "all") when s > 98 do
+    is_chinese?(account) || account in @confirmed_std_chinese
+  end
+  defp wrong_region(_, _, _), do: false
 
-  def process_entries(nil, _, _, _, _), do: []
+  def is_chinese?(account) do
+    case Backend.PlayerInfo.get_country(account) do
+      nil -> false
+      cc ->  :CN == Backend.PlayerInfo.country_to_region(cc)
+    end
+  end
+
+  def process_entries(nil, _, _, _, _, _), do: []
 
   def process_entries(
         snapshot = %{entries: entries, upstream_updated_at: upstream_updated_at},
         invited,
         comparison,
         show_flags,
-        num_invited
+        num_invited,
+        skip_cn
       ) do
     Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
       banned = banned(snapshot, account_id)
-      wrong_region = wrong_region(snapshot, account_id)
+      wrong_region = wrong_region(snapshot, account_id, skip_cn)
 
       ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
       skip_for_invite = qualified || ineligible || banned || wrong_region
