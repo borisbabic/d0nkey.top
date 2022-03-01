@@ -49,7 +49,6 @@ defmodule TwitchBot.MessageCreator do
 
   defp add_latest_replay(previous_values, %{battletag: battletag}) do
     criteria = [{"player_btag", battletag}, {"order_by", "latest"}, {"limit", 10}, {"public", true}]
-    |> IO.inspect(label: "criteria")
     Hearthstone.DeckTracker.games(criteria)
     |> Enum.find_value(&Hearthstone.DeckTracker.replay_link/1)
     |> case do

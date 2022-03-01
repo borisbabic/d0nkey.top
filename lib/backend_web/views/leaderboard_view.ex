@@ -491,17 +491,16 @@ defmodule BackendWeb.LeaderboardView do
 
   def old?(_), do: false
 
-  def add_other_ladders(invited, other_ladders, ladder_invite_num, skip_cn) do
-    other_ladders
-    |> Enum.flat_map(fn leaderboard ->
-      process_entries(leaderboard, invited, nil, false, ladder_invite_num, skip_cn)
-      |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
-      |> Enum.with_index(1)
-      |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, leaderboard.region, pos}} end)
-    end)
+  def add_other_ladders(invited, [current | rest], ladder_invite_num, skip_cn) do
+    process_entries(current, invited, nil, false, ladder_invite_num, skip_cn)
+    |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
+    |> Enum.with_index(1)
+    |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, current.region, pos}} end)
     |> Map.new()
     |> Map.merge(invited)
+    |> add_other_ladders(rest, ladder_invite_num, skip_cn)
   end
+  def add_other_ladders(invited, _, _, _), do: invited
 
   def get_crystal(leaderboard_id) do
     case leaderboard_id do
