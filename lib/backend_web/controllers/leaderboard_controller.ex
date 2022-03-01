@@ -65,25 +65,33 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  def get_other_ladders(%{season_id: s, leaderboard_id: "STD", region: r}, "yes") do
+  def get_other_ladders(%{season_id: s, leaderboard_id: ldb = "BG", region: r}, "yes") do
+    Blizzard.ladders_to_check(s, ldb, r)
+    |> other_ladders(ldb, s)
+  end
+  def get_other_ladders(%{season_id: s, leaderboard_id: ldb = "STD", region: r}, "yes") do
     s
     |> MastersTour.TourStop.get_by_ladder()
     |> case do
       {:ok, _} ->
-        Blizzard.ladders_to_check(s, r)
-        |> Enum.flat_map(fn region ->
-          case get_leaderboard(region, "STD", s) do
-            nil -> []
-            leaderboard -> [leaderboard]
-          end
-        end)
-
+        Blizzard.ladders_to_check(s, ldb, r)
+        |> other_ladders(ldb, s)
       _ ->
         []
     end
   end
 
   def get_other_ladders(_, _), do: []
+
+  defp other_ladders(regions, ldb, s) do
+    regions
+    |> Enum.flat_map(fn region ->
+      case get_leaderboard(region, ldb, s) do
+        nil -> []
+        leaderboard -> [leaderboard]
+      end
+    end)
+  end
 
   def parse_highlight(params) do
     case params["highlight"] do
