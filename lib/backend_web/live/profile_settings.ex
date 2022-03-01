@@ -37,7 +37,7 @@ defmodule BackendWeb.ProfileSettingsLive do
             <br>
             <Field name="unicode_icon">
               <Label class="label">Player Icon</Label>
-              <Select selected={@user.unicode_icon} class="select" options={[{"None", nil}, {pride_flag(), pride_flag()}]}/>
+              <Select selected={@user.unicode_icon} class="select" options={[{"None", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}]}/>
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
@@ -78,6 +78,10 @@ defmodule BackendWeb.ProfileSettingsLive do
   end
   def pride_flag() do
     <<0xF0, 0x9F, 0x8F, 0xB3, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x8C, 0x88>>
+  end
+
+  def peace_symbol() do
+    <<0xE2, 0x98, 0xAE>>
   end
 
   def twitch_username(%{twitch_id: nil}), do: nil
