@@ -207,8 +207,38 @@ defmodule Backend.Blizzard do
     end
   end
 
-  def get_ladder_priority!(%{ladder_priority: :timezone}), do: [:AP, :EU, :US]
+
+  @timezone_order [:AP, :EU, :US]
+  def get_ladder_priority!(%{ladder_priority: :timezone}), do: @timezone_order
   def get_ladder_priority!(_), do: throw("Unsupported tour stop")
+
+  # credo:disable-next-line
+  # todo Perhaps move to leaderboard module?
+  @doc """
+  Get the ladders that should be checked when viewing this
+
+  ## Example
+    iex> Backend.Blizzard.ladders_to_check(99, :STD, :EU)
+    [:AP]
+    iex> Backend.Blizzard.ladders_to_check(5, :BG, :US)
+    [:AP, :EU]
+    iex> Backend.Blizzard.ladders_to_check(100, :STD, :AP)
+    []
+  """
+  @spec ladders_to_check(integer, leaderboard | String.t(), region | String.t()) :: [region]
+  def ladders_to_check(season_id, ldb, region) when is_integer(season_id) and ldb in ["STD", :STD] do
+    case get_ladder_tour_stop(season_id) do
+      {:ok, tour_stop} -> ladders_to_check(tour_stop, region)
+      {:error, _} -> []
+    end
+  end
+  def ladders_to_check(season_id, ldb, region) when is_integer(season_id) and ldb in ["BG", :BG] do
+    if season_id > 4 do
+      skip_current(@timezone_order, region)
+    else
+      []
+    end
+  end
 
   # credo:disable-next-line
   # todo Perhaps move to leaderboard module?
@@ -219,25 +249,19 @@ defmodule Backend.Blizzard do
     iex> Backend.Blizzard.ladders_to_check(:"Asia-Pacific", :EU)
     [:AP, :US]
   """
-  @spec ladders_to_check(tour_stop | integer, region | String.t()) :: [region]
-  def ladders_to_check(season_id, region) when is_integer(season_id) do
-    case get_ladder_tour_stop(season_id) do
-      {:ok, tour_stop} -> ladders_to_check(tour_stop, region)
-      {:error, _} -> []
-    end
-  end
-
+  @spec ladders_to_check(tour_stop | atom, region | String.t()) :: [region]
   def ladders_to_check(tour_stop, region) when is_atom(tour_stop) do
-    different_region = fn r -> to_string(r) != to_string(region) end
-
     tour_stop
     |> get_ladder_priority!()
-    |> Enum.take_while(different_region)
-    |> MapSet.new()
-    |> MapSet.to_list()
+    |> skip_current(region)
   end
 
-  @spec current_ladder_tour_stop() :: tour_stop
+  defp skip_current(regions, current) do
+    Enum.take_while(regions, & to_string(&1) != to_string(current))
+    |> Enum.uniq()
+  end
+
+
   def current_ladder_tour_stop() do
     case get_ladder_tour_stop(get_season_id(Date.utc_today())) do
       {:ok, ts} -> ts

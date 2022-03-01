@@ -397,7 +397,7 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Season")}
   end
 
-  def create_ladder_mode_dropdown(conn, ladder_mode, "STD") do
+  def create_ladder_mode_dropdown(conn, ladder_mode, ldb) when ldb in ["BG", "STD"] do
     options =
       ["yes", "no"]
       |> Enum.map(fn mode ->
