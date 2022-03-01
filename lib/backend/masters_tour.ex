@@ -629,10 +629,6 @@ defmodule Backend.MastersTour do
       "mueseoyuchangjo" -> "Crefno"
       "현명한로나" -> "LoNa"
 
-      "슬퍼하지마노노노" -> "SuperKimchi"
-      "ZizonZzang" -> "SuperKimchi"
-      "wellmadekimchi" -> "SuperKimchi"
-
       "잔악무도유관우" -> "kwanwoo"
       "신명수" -> "soo"
       "독도는한국" -> "DokdonuenKR"
@@ -900,7 +896,6 @@ defmodule Backend.MastersTour do
       "Hachikuji Ma" -> "HachikujiMay"
 
       "기링" -> "donggiring"
-      "SuperKimchi" -> "DOLGALLERY"
 
       "DenBut" -> "Patek"
       "サバンナ" -> "savanna"
@@ -932,7 +927,6 @@ defmodule Backend.MastersTour do
       "Sensei6" -> "sensei6"
 
       # MT ONE zflow dm
-      "슬퍼하지마노노노" -> "hyung"
       "가끔들어옴" -> "rkRma"
       "잔악무도유관우" -> "kwanwoo"
       "투야" -> "Tuya"
@@ -945,6 +939,14 @@ defmodule Backend.MastersTour do
 
       #GMS
       "ЗлойГрузин" -> "ZloyGruzin"
+
+
+      # AAAAAAAAAAAAAA
+      "슬퍼하지마노노노" -> "SuperKimchi"
+      "ZizonZzang" -> "SuperKimchi"
+      "wellmadekimchi" -> "SuperKimchi"
+      "SuperKimchi" -> "DOLGALLERY"
+      "DOLGALLERY" -> "hyung"
       n -> n
     end
     if new == name do

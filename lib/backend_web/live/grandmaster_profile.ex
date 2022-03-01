@@ -7,6 +7,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
   alias Components.ExpandableLineup
   alias Components.GMProfileLink
   alias Components.Dropdown
+  alias Components.PlayerName
   alias Components.GMStandingsModal
   alias BackendWeb.GrandmastersLive
 
@@ -28,7 +29,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
      <Context put={user: @user}>
       <div>
         <div class="title is-2">
-          {@gm} {@week}
+          <PlayerName player={@gm}/> {@week}
         </div>
         <div class="subtitle is-5">
           Week Points: {points(@gm, @week)} Total Points: {points(@gm)}

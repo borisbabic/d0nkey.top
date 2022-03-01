@@ -16,9 +16,7 @@ defmodule TwitchBot.Handler do
     }
 
     matching = TwitchBot.MessageMatcher.match(config, message_info)
-    IO.inspect(matching, label: "matching")
     responses = TwitchBot.MessageCreator.create_messages(matching, message_info)
-    IO.inspect(responses, label: "resposnes")
     Enum.each(responses, & TMI.message(chat, &1))
   end
 end
