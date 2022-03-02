@@ -255,7 +255,7 @@ defmodule BackendWeb.Router do
 
   scope "/" do
     pipe_through [:browser, :admins_only]
-    live_dashboard "/dashboard", metrics: Backend.Telemetry
+    live_dashboard "/dashboard", metrics: Backend.Telemetry, ecto_repos: [Backend.Repo]
   end
 
   scope "/auth", BackendWeb do
