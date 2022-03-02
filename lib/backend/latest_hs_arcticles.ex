@@ -32,7 +32,7 @@ defmodule Backend.LatestHSArticles do
 
   def handle_call(:get, _, articles), do: {:reply, articles, articles}
   def handle_cast(:update, old_state) do
-    case update() do
+    case do_update() do
       {:ok, articles} -> {:noreply, articles}
       _ -> {:noreply, old_state}
     end

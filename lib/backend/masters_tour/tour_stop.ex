@@ -264,8 +264,8 @@ defmodule Backend.MastersTour.TourStop do
         ladder_seasons: [100],
         ladder_invites: 50,
         region: :AP,
-        start_time: ~N[2022-03-19 13:00:00],
-        qualifiers_period: {~D[2022-02-01], ~D[2022-02-27]},
+        start_time: ~N[2022-03-18 15:00:00],
+        qualifiers_period: {~D[2022-02-01], ~D[2022-02-28]},
         min_qualifiers_for_winrate: 10,
         swiss_rounds: 8,
         year: 2022
