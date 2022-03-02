@@ -239,6 +239,7 @@ defmodule Backend.Hearthstone do
     |> Enum.filter(&(&1 |> elem(0)))
     |> sort_cards()
   end
+  def ordered_frequencies(_), do: []
 
   def sort_cards(cards) do
     cards
