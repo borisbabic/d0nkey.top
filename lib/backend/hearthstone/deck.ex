@@ -255,7 +255,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def canonical_constructed_deckcode(code) do
+  def canonical_constructed_deckcode(code) when is_binary(code) do
     case Deck.decode(code) do
       {:ok, deck = %{cards: cards}} when length(cards) > 14 and length(cards) < 31 ->
         {:ok, deck |> deckcode()}
@@ -264,6 +264,8 @@ defmodule Backend.Hearthstone.Deck do
         {:error, "Not a constructed deckcode"}
     end
   end
+
+  def canonical_constructed_deckcode(_), do: {:error, "Invalid argument"}
 
   def sort(decks), do: decks |> Enum.sort_by(&class/1)
 
