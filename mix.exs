@@ -84,6 +84,7 @@ defmodule Backend.MixProject do
       {:tmi, "~> 0.3.0"},
       {:etop, "~> 0.7"},
       {:solid, "~> 0.10"},
+      {:ecto_psql_extras, "~> 0.6"},
       {:quantum, "~> 2.3"}
     ]
   end
