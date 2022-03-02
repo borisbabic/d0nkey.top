@@ -48,14 +48,6 @@ config :backend,
       ],
       "sgt_tbag" => [
         %{
-          message: "branka",
-          message_regex?: true,
-          response: "branka2Wine",
-          sender: nil,
-          sender_regex?: false,
-          type: :custom
-        },
-        %{
           message: "drunka",
           message_regex?: true,
           response: "branka2Wine",
@@ -73,6 +65,14 @@ config :backend,
         }
       ],
       "d0nkeyhs" => [
+        %{
+          message: "drunka",
+          message_regex?: true,
+          response: "branka2Wine",
+          sender: nil,
+          sender_regex?: false,
+          type: :custom
+        },
         %{
           message: nil,
           message_regex?: false,
