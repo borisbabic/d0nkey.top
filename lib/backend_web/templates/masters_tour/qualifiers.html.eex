@@ -7,6 +7,9 @@
     | <a href="<%=Routes.masters_tour_path(@conn, :qualifier_stats) %>">
         Stats
     </a>
+    | <a href="http://offcurve.com/masterstour">
+        Offcurve (deck stats)
+    </a>
 </div>
 <div id="nitropay-below-title-leaderboard"></div><br>
 <a class="button icon is-link" href="<%= @before_link %>">
