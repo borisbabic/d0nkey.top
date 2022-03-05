@@ -14,8 +14,12 @@ defmodule Bot.MessageHandlerUtil do
   @spec process_battletags([Nostrum.Struct.Message.t()]) :: [String.t()]
   def process_battletags(messages) do
     messages
-    |> Enum.map(fn %{content: c} -> c end)
-    |> Enum.filter(&Backend.Blizzard.is_battletag?/1)
+    |> Enum.flat_map(fn %{content: c} ->
+      case Backend.Battlenet.Battletag.extract_battletag(c) do
+        {:ok, btag} -> [btag]
+        _ -> []
+      end
+    end)
   end
 
   @spec get_channel_battletags!(Api.channel_id() | Channel.t()) :: [String.t()]

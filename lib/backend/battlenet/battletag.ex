@@ -15,7 +15,18 @@ defmodule Backend.Battlenet.Battletag do
   end
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
+  @battletag_capture_regex ~r/(([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})/
   @short_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
+
+  @spec extract_battletag(String.t()) :: {:ok, battletag :: String.t()} | :error
+  def extract_battletag(some_string) when is_binary(some_string) do
+    case Regex.run(@battletag_capture_regex, some_string) do
+      [battletag | _] -> {:ok, battletag}
+      _ -> :error
+    end
+  end
+
+  def extract_battletag(_), do: :error
 
   @doc false
   def changeset(battletag, attrs) do
