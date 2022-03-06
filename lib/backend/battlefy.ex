@@ -814,4 +814,13 @@ defmodule Backend.Battlefy do
   @spec filter_hearthstone([Tournament.t()]) :: [Tournament.t()]
   def filter_hearthstone(tournaments),
     do: Enum.filter(tournaments, &Tournament.Game.is_hearthstone/1)
+
+  @spec sort_standings([Standings.t()]) :: [Standings.t()]
+  def sort_standings(standings) do
+    standings
+    |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
+    |> Enum.sort_by(fn s -> s.losses end)
+    |> Enum.sort_by(fn s -> s.wins end, :desc)
+    |> Enum.sort_by(fn s -> s.place end)
+  end
 end
