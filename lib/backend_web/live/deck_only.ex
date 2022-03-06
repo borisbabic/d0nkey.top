@@ -1,9 +1,12 @@
 defmodule BackendWeb.DeckOnlyLive do
   @moduledoc false
+  use BackendWeb, :surface_live_view_no_layout
+
   import BackendWeb.LiveHelpers
   alias Components.Decklist
   alias Backend.Hearthstone.Deck
-  use BackendWeb, :surface_live_view_no_layout
+  alias Backend.DeckInteractionTracker, as: Tracker
+
   data(deckcode, :string)
   data(user, :any)
 

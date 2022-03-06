@@ -37,6 +37,7 @@ defmodule Backend.Battlefy do
     "liga-kombatklub-de-hearthstone",
     "btw-esports",
     "juega-duro-hearthstone",
+    "dreamhack-community-clash",
     "black-claws",
     "osc-esports"
   ]
