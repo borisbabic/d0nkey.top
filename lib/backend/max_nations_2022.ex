@@ -76,7 +76,7 @@ defmodule Backend.MaxNations2022 do
   end
 
   defp normalize_btag(btag), do: btag |> Battletag.shorten() |> String.downcase()
-  def get_nation(battletag) do
+  def get_nation(battletag) when is_binary(battletag) do
     Enum.find_value(rosters(), fn {country, roster} ->
       normalized_btag = normalize_btag(battletag)
       normalized_roster = Enum.map(roster, &normalize_btag/1)
@@ -85,6 +85,7 @@ defmodule Backend.MaxNations2022 do
       end
     end)
   end
+  def get_nation(_), do: nil
 
   def lineup_tournament_source(), do: "max_nations_2022"
 
