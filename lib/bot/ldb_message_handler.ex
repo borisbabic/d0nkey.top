@@ -11,14 +11,11 @@ defmodule Bot.LdbMessageHandler do
       |> get_leaderboard_entries()
       |> create_message()
 
-    message =
-      if String.trim(table) != "" do
-        "```\n#{table}\n```"
-      else
-        "Nema nikoga, svi suckamo"
-      end
-
-    Api.create_message(channel_id, message)
+    if String.trim(table) != "" do
+      Api.create_message(channel_id, "```\n#{table}\n```")
+    else
+      Api.create_message(channel_id, file: "assets/static/images/travolta.gif")
+    end
   end
 
   @spec get_leaderboard_entries(Nostrum.Struct.Channel.t() | Api.channel_id()) ::
