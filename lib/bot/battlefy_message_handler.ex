@@ -16,7 +16,8 @@ defmodule Bot.BattlefyMessageHandler do
   end
 
   def create_standings_message(battlefy_id, _message = %{guild_id: guild_id}) do
-    with standings = [_|_] <- Battlefy.get_standings(battlefy_id),
+    with unsorted = [_|_] <- Battlefy.get_standings(battlefy_id),
+         standings = Battlefy.sort_standings(unsorted),
          battletags = [_|_] <- get_guild_battletags!(guild_id) do
           {:ok, create_message(battletags, standings)}
     else

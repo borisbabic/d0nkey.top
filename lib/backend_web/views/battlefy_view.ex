@@ -597,10 +597,7 @@ defmodule BackendWeb.BattlefyView do
     lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
 
     standings_raw
-    |> Enum.sort_by(fn s -> String.upcase(s.team.name) end)
-    |> Enum.sort_by(fn s -> s.losses end)
-    |> Enum.sort_by(fn s -> s.wins end, :desc)
-    |> Enum.sort_by(fn s -> s.place end)
+    |> Battlefy.sort_standings()
     |> Enum.with_index()
     |> Enum.map(fn {s, index} ->
       {country, pre_name_cell} =
