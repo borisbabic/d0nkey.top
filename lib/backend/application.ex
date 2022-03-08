@@ -119,10 +119,8 @@ defmodule Backend.Application do
 
   def twitch_bot_config() do
     base_config = Application.fetch_env!(:backend, :twitch_bot_config)
-    case Application.fetch_env(:backend, :twitch_bot_chats) do
-      chats = [_|_] -> Map.put(base_config, :chats, chats)
-      _ -> base_config
-    end
+    chats = Application.fetch_env!(:backend, :twitch_bot_chats)
+    Keyword.put(base_config, :chats, chats)
   end
 
   def migrate() do
