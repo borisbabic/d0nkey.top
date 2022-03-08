@@ -27,7 +27,8 @@ defmodule Backend.Grandmasters do
 
   defp update_table(table) do
     try do
-      with {:ok, response = %{requested_season_tournaments: [_|_]}} <- Communicator.get_gm() do
+      with {:ok, response = %{requested_season_tournaments: [_|_]}} <- Communicator.get_gm(),
+          false <- Map.equal?(raw_response(), response) do
         update_table(response, table)
       end
     rescue
@@ -44,7 +45,7 @@ defmodule Backend.Grandmasters do
         :ets.insert(table, {results_key(stage), sort_results(results)})
 
         Task.start(fn ->
-          response |> LineupFetcher.save_lineups(stage)
+          LineupFetcher.save_lineups(response, stage)
         end)
 
         results
