@@ -116,7 +116,7 @@ defmodule Backend.Grandmasters.Response do
     |> Enum.reduce(%{}, &merge_competitor_decklists/2)
     |> Map.values()
   end
-  def decklists(r) do
+  def decklists(r = %{}) do
     decklists(r, fn %{brackets: [b | _]} ->
       b.matches
       |> case do
@@ -137,6 +137,7 @@ defmodule Backend.Grandmasters.Response do
       end
     end)
   end
+  def decklists(_), do: []
 
   def latest_decklists(r, stage_title, max_match_age_sec \\ 60 * 60 * 24) do
     latest_start =
