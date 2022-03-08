@@ -85,13 +85,12 @@ defmodule Backend.Streaming do
     |> Repo.one()
   end
 
-  def get_or_create_streamer(twitch_id) do
+  def get_or_create_streamer(twitch_id, other_attrs \\ %{}) do
     case get_streamer_by_twitch_id(twitch_id) do
-      nil -> create_streamer(nil, nil, twitch_id)
+      nil -> create_streamer(twitch_id, other_attrs)
       s -> {:ok, s}
     end
   end
-
   def get_or_create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
     case get_streamer_by_twitch_id(twitch_id) do
       nil -> create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id)
@@ -99,16 +98,20 @@ defmodule Backend.Streaming do
     end
   end
 
-  def create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
-    attrs = %{
-      hsreplay_twitch_login: hsreplay_twitch_login,
-      hsreplay_twitch_display: hsreplay_twitch_display,
-      twitch_id: twitch_id
-    }
+  def create_streamer(twitch_id, other_attrs \\ %{}) do
+    attrs = Map.put(other_attrs, :twitch_id, twitch_id)
 
     %Streamer{}
     |> Streamer.changeset(attrs)
     |> Repo.insert()
+  end
+  def create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
+    other_attrs = %{
+      hsreplay_twitch_login: hsreplay_twitch_login,
+      hsreplay_twitch_display: hsreplay_twitch_display
+    }
+
+    create_streamer(twitch_id, other_attrs)
   end
 
   def get_or_create_streamer_deck(deck, streamer, sn) do

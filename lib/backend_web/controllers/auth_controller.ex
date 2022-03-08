@@ -23,18 +23,24 @@ defmodule BackendWeb.AuthController do
   end
 
   def callback(
-        conn = %{assigns: %{ueberauth_auth: %{provider: :twitch, uid: twitch_id}}},
+        conn = %{assigns: %{ueberauth_auth: uberauth = %{provider: :twitch, uid: twitch_id}}},
         _params
       ) do
     case Guardian.Plug.current_resource(conn) do
       user = %{battletag: _bt} ->
         UserManager.set_twitch(user, twitch_id)
+        create_streamer_from_info(twitch_id, uberauth)
         conn |> redirect(to: "/profile/settings")
 
       _ ->
         render(conn, "user_expected.html", %{})
     end
   end
+
+  defp create_streamer_from_info(twitch_id, %{info: %{name: twitch_display, nickname: twitch_login}}) do
+    Backend.Streaming.get_or_create_streamer(twitch_id, %{twitch_login: twitch_login, twitch_display: twitch_display})
+  end
+  defp create_streamer_from_info(_), do: nil
 
   def callback(conn, _params) do
     conn
