@@ -91,6 +91,10 @@ defmodule Backend.TwitchBot do
 
   def get_twitch_command(id), do: Repo.get(TwitchCommand, id)
 
+  @spec create_twitch_command(
+          :invalid
+          | %{optional(:__struct__) => none, optional(atom | binary) => any}
+        ) :: any
   @doc """
   Creates a twitch_command.
 
@@ -198,7 +202,7 @@ defmodule Backend.TwitchBot do
 
   @spec can_manage?(TwitchCommand.t(), User.t() |nil) :: boolean
   def can_manage?(%{user_id: user_id}, %{id: id}) when id == user_id, do: true
-  def can_manage?(_, user = %{id: id}), do: User.can_access?(user, "twitch_commands")
+  def can_manage?(_, user = %{id: _id}), do: User.can_access?(user, "twitch_commands")
   def can_manage?(_, _), do: false
 
 

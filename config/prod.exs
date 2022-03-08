@@ -14,7 +14,7 @@ config :backend,
   gm_stream_send_tweet: true,
   nitropay_demo: false,
   nostrum_slash_command_target: :global,
-  twitch_bot_chats: ["sgt_tbag", "d0nkeyhs", "d0nkeytop", "branka279", "dettomon", "norwis_", "otters_tv", "goofyronak"],
+  twitch_bot_chats: ["sgt_tbag", "d0nkeyhs", "d0nkeytop", "branka279", "dettomon", "norwis_", "otters_tv", "goofyronak", "reqvam"],
   enable_bot: true
 
 config :ueberauth, Ueberauth,

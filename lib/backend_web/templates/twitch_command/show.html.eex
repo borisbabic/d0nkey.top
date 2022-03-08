@@ -11,62 +11,67 @@
       <h3>Twitch command Details</h3>
     </div>
     <ul>
-      
+
         <li>
           <div class="torch-show-label">Type:</div>
           <div class="torch-show-data"><%= @twitch_command.type %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Name:</div>
           <div class="torch-show-data"><%= @twitch_command.name %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Enabled:</div>
           <div class="torch-show-data"><%= @twitch_command.enabled %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Message:</div>
           <div class="torch-show-data"><%= @twitch_command.message %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Response:</div>
           <div class="torch-show-data"><%= @twitch_command.response %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Message regex:</div>
           <div class="torch-show-data"><%= @twitch_command.message_regex %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Message regex flags:</div>
           <div class="torch-show-data"><%= @twitch_command.message_regex_flags %></div>
         </li>
-      
+
+        <li>
+          <div class="torch-show-label">User ID:</div>
+          <div class="torch-show-data"><%= @twitch_command.user_id %></div>
+        </li>
+
         <li>
           <div class="torch-show-label">Sender:</div>
           <div class="torch-show-data"><%= @twitch_command.sender %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Sender regex:</div>
           <div class="torch-show-data"><%= @twitch_command.sender_regex %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Sender regex flags:</div>
           <div class="torch-show-data"><%= @twitch_command.sender_regex_flags %></div>
         </li>
-      
+
         <li>
           <div class="torch-show-label">Random chance:</div>
           <div class="torch-show-data"><%= @twitch_command.random_chance %></div>
         </li>
-      
+
     </ul>
   </div>
 </section>

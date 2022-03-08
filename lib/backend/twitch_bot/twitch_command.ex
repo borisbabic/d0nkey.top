@@ -24,7 +24,7 @@ defmodule Backend.TwitchBot.TwitchCommand do
   def changeset(twitch_command, attrs) do
     twitch_command
     |> cast(attrs, [:type, :name, :enabled, :message, :response, :message_regex, :message_regex_flags, :sender, :sender_regex, :sender_regex_flags, :random_chance, :user_id])
-    |> validate_required([:type, :enabled, :response])
+    |> validate_required([:type, :response])
     |> foreign_key_constraint(:user_id)
   end
 

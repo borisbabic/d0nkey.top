@@ -85,10 +85,10 @@ defmodule Components.NewTwitchCommand do
   defp get_template("leaderboard"), do:
   %{
     type: "custom",
-    message: "^!ldb (?<ldb_player>\w+)",
+    message: "^!ldb (?<ldb_player>\\w+)",
     message_regex: true,
     message_regex_flags: "u",
-    response: "{{ ldb_player }} leaderboard status: {{ leaderboard_status }}"
+    response: "{{ ldb_player }} is on the following leaderboards: {{ leaderboard_status }}"
   }
   defp get_template("ronkapoo"), do: %{type: "custom", response: "RonkaPoo : \"{{ message }}\"", sender: "goofyronak", random_chance: 13}
   defp get_template("streamer_decks"), do: %{type: "custom", response: "You can view all my decks at {{ streamer_decks_url }}", message: "!decks"}

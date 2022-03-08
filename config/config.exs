@@ -95,7 +95,7 @@ config :backend,
   twitch_bot_config: [
     user: "d0nkeytop",
     pass: System.get_env("TWITCH_BOT_OAUTH"),
-    chats: ["sgt_tbag", "d0nkeyhs", "d0nkeytop", "branka279", "dettomon", "norwis_", "otters_tv", "goofyronak"],
+    chats: ["d0nkeytop"],
     handler: TwitchBot.Handler
   ],
   gm_stream_twitter_info: [

@@ -7,7 +7,7 @@ defmodule TwitchBot.MessageCreator do
 
   def create_messages(matching, message_info = %{chat: chat}) when is_list(matching) do
     user_values = user_values(chat)
-    values = base_values(message_info) |> Map.merge(user_values) |> add_leaderboard_status()
+    values = base_values(message_info) |> Map.merge(user_values)
     Enum.map(matching, & create_message(&1, message_info, values))
   end
 
@@ -20,7 +20,7 @@ defmodule TwitchBot.MessageCreator do
 
   def create_message(config, %{chat: chat}, base_values) do
     extra_values = Map.get(config, :extra_values, %{})
-    values = Map.merge(base_values, extra_values)
+    values = Map.merge(base_values, extra_values) |> add_leaderboard_status()
     with {:ok, template} <- Solid.parse(config.response),
         message when is_binary(message) <- Solid.render(template, values) do
           message
