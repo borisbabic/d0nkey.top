@@ -216,6 +216,9 @@ defmodule BackendWeb.Router do
     get "/wild", FunController, :wild
 
     get "/ads.txt", PageController, :ads_txt
+
+    live "/twitch/bot", TwitchBotLive
+    live "/twitch/bot/new-command", TwitchNewCommandLive
   end
 
   scope "/", BackendWeb do
@@ -238,6 +241,7 @@ defmodule BackendWeb.Router do
     resources "/groups", GroupController
     resources "/group-memberships", GroupMembershipController
     resources "/old-battletags", OldBattletagController
+    resources "/twitch-commands", TwitchCommandController
   end
 
   scope "/admin", BackendWeb do

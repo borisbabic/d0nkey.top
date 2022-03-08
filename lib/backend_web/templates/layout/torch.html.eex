@@ -45,6 +45,9 @@
             <%= if can_access?(@conn, :old_battletags) do %>
               <a href="/torch/old-battletags">Old Battletags</a>
             <% end %>
+            <%= if can_access?(@conn, :twitch_commands) do %>
+              <a href="/torch/twitch-commands">Twitch Commands</a>
+            <% end %>
             <%= if can_access?(@conn, :groups) do %>
               <a href="/torch/groups">Groups</a>
             <% end %>

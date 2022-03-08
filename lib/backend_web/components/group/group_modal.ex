@@ -39,7 +39,7 @@ defmodule Components.GroupModal do
               <section class="modal-card-body">
                 <Field name="name">
                   <Label class="label">Name</Label>
-                  <TextInput class="input is-small" value={@current_params["name"] || IO.inspect(@group.name)}/>
+                  <TextInput class="input is-small" value={@current_params["name"]}/>
                 </Field>
                 <Field name="discord">
                   <Label class="label">Discord link (optional)</Label>
