@@ -1,14 +1,14 @@
 defmodule TwitchBot.Handler do
+  import TwitchBot.Util
   use TMI.Handler
   @type message_info :: %{
     message: String.t(),
     sender: String.t(),
     chat: String.t(),
-    config: [TwitchBot.ConfigManager.message_config()]
   }
   @impl true
   def handle_message(message, sender, chat) do
-    config =  TwitchBot.ConfigManager.config(chat)
+    config = chat |> parse_chat() |> Backend.TwitchBot.commands()
     message_info = %{
       message: message,
       sender: sender,

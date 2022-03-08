@@ -7,7 +7,7 @@ defmodule TwitchBot.MessageCreator do
 
   def create_messages(matching, message_info = %{chat: chat}) when is_list(matching) do
     user_values = user_values(chat)
-    values = base_values(message_info) |> Map.merge(user_values)
+    values = base_values(message_info) |> Map.merge(user_values) |> add_leaderboard_status()
     Enum.map(matching, & create_message(&1, message_info, values))
   end
 
@@ -27,6 +27,7 @@ defmodule TwitchBot.MessageCreator do
     end
   end
 
+  @spec user_values(any) :: %{optional(<<_::64, _::_*8>>) => any}
   def user_values(chat) do
     case chat |> parse_chat() |> get_user() do
       nil -> %{}
@@ -47,6 +48,23 @@ defmodule TwitchBot.MessageCreator do
     Repo.one(query)
   end
 
+  def add_leaderboard_status(values = %{"ldb_player" => player}) do
+    status = Backend.Leaderboards.get_player_entries([player])
+    |> Enum.filter(& &1 |> elem(0) |> Enum.any?())
+    |> Enum.map_join(" | ", fn {[%{rank: rank, rating: rating} | _], region, leaderboard} ->
+      [
+        Backend.Blizzard.get_region_name(region, :short),
+        Backend.Blizzard.get_leaderboard_name(leaderboard, :short),
+        rank,
+        rating
+      ]
+      |> Enum.filter(& &1)
+      |> Enum.join(" ")
+    end)
+
+    Map.put(values, "leaderboard_status", status)
+  end
+  def add_leaderboard_status(values), do: values
   defp add_latest_replay(previous_values, %{battletag: battletag}) do
     criteria = [{"player_btag", battletag}, {"order_by", "latest"}, {"limit", 10}, {"public", true}]
     Hearthstone.DeckTracker.games(criteria)

@@ -65,7 +65,7 @@ defmodule Backend.UserManager.User do
 
   @spec all_admin_roles() :: [atom()]
   def all_admin_roles(),
-    do: [:super, :battletag_info, :users, :invites, :feed_items, :fantasy_leagues, :api_users, :old_battletags, :groups]
+    do: [:super, :battletag_info, :users, :invites, :feed_items, :fantasy_leagues, :api_users, :old_battletags, :groups, :twitch_commands]
 
   @spec string_admin_roles() :: [String.t()]
   def string_admin_roles(), do: all_admin_roles() |> Enum.map(&to_string/1)

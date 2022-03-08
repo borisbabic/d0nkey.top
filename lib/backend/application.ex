@@ -101,7 +101,7 @@ defmodule Backend.Application do
           id: Backend.PonyDojo,
           start: {Backend.PonyDojo, :start_link, [[]]}
         },
-        {TMI.Supervisor, Application.fetch_env!(:backend, :twitch_bot_config)},
+        {TMI.Supervisor, twitch_bot_config()},
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
@@ -115,6 +115,14 @@ defmodule Backend.Application do
     # Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
     #    Backend.Hearthstone.add_class_and_regenerate_deckcode()
     start_result
+  end
+
+  def twitch_bot_config() do
+    base_config = Application.fetch_env!(:backend, :twitch_bot_config)
+    case Application.fetch_env(:backend, :twitch_bot_chats) do
+      chats = [_|_] -> Map.put(base_config, :chats, chats)
+      _ -> base_config
+    end
   end
 
   def migrate() do

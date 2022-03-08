@@ -25,6 +25,9 @@
               <a class="navbar-item" href='<%= Routes.live_path(@conn, BackendWeb.MyDecksLive) %>'>My Decks</a>
               <a class="navbar-item" href='<%= Routes.live_path(@conn, BackendWeb.MyReplaysLive) %>'>My Replays</a>
               <a class="navbar-item" href='<%= Routes.live_path(@conn, BackendWeb.MyGroupsLive) %>'>My Groups</a>
+              <%= if @conn |> user() |> twitchbot?() do %>
+                <a class="navbar-item" href="/twitch/bot">My Twitch Bot</a>
+              <% end %>
               <a class="navbar-item" href='/profile/settings'>Settings</a>
               <%= if user(@conn) && user(@conn).battlefy_slug do %>
                 <a class="navbar-item" href='<%= Routes.battlefy_path(@conn, :user_tournaments, user(@conn).battlefy_slug)%>'>

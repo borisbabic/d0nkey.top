@@ -77,6 +77,16 @@ defmodule BackendWeb.LayoutView do
       highlight_fantasy_for_gm?()
   end
 
+  def twitchbot?(user) do
+    with %{twitch_id: twitch_id} when not is_nil(twitch_id) <- user,
+        %{twitch_login: twitch_login} <- Backend.Streaming.streamer_by_twitch_id(twitch_id),
+        bot_config <- Application.get_env(:backend, :twitch_bot_config, chats: []),
+        chats <- Keyword.get(bot_config, :chats) do
+          twitch_login in chats
+    else
+      _ -> false
+    end
+  end
   defp ongoing_mt_fantasy?(), do: !!Backend.MastersTour.TourStop.get_current(120, 60)
   defp ongoing_dreamhack_fantasy?(), do: Enum.any?(Dreamhack.current_fantasy())
   defp highlight_fantasy_for_gm?(), do: false

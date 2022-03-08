@@ -1,0 +1,86 @@
+<%= form_for @changeset, @action, [multipart: true, id: "torch-form"], fn f -> %>
+  <fieldset class="torch-panel">
+    <legend>
+      <span>Details</span>
+    </legend>
+    <%= if @changeset.action do %>
+      <p class="torch-form-error">Oops, something went wrong! Please check the errors below.</p>
+    <% end %>
+
+    <div class="torch-form-group">
+      <%= label f, :user_id %>
+      <%= number_input f, :user_id, step: "any" %>
+      <%= error_tag f, :user_id %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :type %>
+      <%= text_input f, :type %>
+      <%= error_tag f, :type %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :name %>
+      <%= text_input f, :name %>
+      <%= error_tag f, :name %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :enabled %>
+      <%= checkbox f, :enabled %>
+      <%= error_tag f, :enabled %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :message %>
+      <%= textarea f, :message %>
+      <%= error_tag f, :message %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :response %>
+      <%= textarea f, :response %>
+      <%= error_tag f, :response %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :message_regex %>
+      <%= checkbox f, :message_regex %>
+      <%= error_tag f, :message_regex %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :message_regex_flags %>
+      <%= text_input f, :message_regex_flags %>
+      <%= error_tag f, :message_regex_flags %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :sender %>
+      <%= text_input f, :sender %>
+      <%= error_tag f, :sender %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :sender_regex %>
+      <%= checkbox f, :sender_regex %>
+      <%= error_tag f, :sender_regex %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :sender_regex_flags %>
+      <%= text_input f, :sender_regex_flags %>
+      <%= error_tag f, :sender_regex_flags %>
+    </div>
+
+    <div class="torch-form-group">
+      <%= label f, :random_chance %>
+      <%= number_input f, :random_chance, step: "any" %>
+      <%= error_tag f, :random_chance %>
+    </div>
+
+    <div class="torch-submit-form">
+      <%= submit "Submit", class: "torch-submit-button" %>
+    </div>
+  </fieldset>
+<% end %>

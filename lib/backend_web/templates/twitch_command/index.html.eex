@@ -1,0 +1,156 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "New Twitch command", to: Routes.twitch_command_path(@conn, :new) %>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find Twitch commands</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+
+          <div class="field">
+            <label>Type</label>
+            <%= filter_select(:twitch_command, :type, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :type, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>User ID</label>
+            <%= filter_select(:twitch_command, :user_id, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :user_id, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Name</label>
+            <%= filter_select(:twitch_command, :name, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :name, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Message</label>
+            <%= filter_select(:twitch_command, :message, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :message, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Response</label>
+            <%= filter_select(:twitch_command, :response, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :response, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Message regex flags</label>
+            <%= filter_select(:twitch_command, :message_regex_flags, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :message_regex_flags, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Sender</label>
+            <%= filter_select(:twitch_command, :sender, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :sender, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Sender regex flags</label>
+            <%= filter_select(:twitch_command, :sender_regex_flags, @conn.params) %>
+            <%= filter_string_input(:twitch_command, :sender_regex_flags, @conn.params) %>
+          </div>
+
+
+          <div class="field">
+            <label>Enabled</label>
+            <%= filter_boolean_input(:twitch_command, :enabled, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Message regex</label>
+            <%= filter_boolean_input(:twitch_command, :message_regex, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Sender regex</label>
+            <%= filter_boolean_input(:twitch_command, :sender_regex, @conn.params) %>
+          </div>
+
+
+
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: Routes.twitch_command_path(@conn, :index) %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@twitch_commands) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+
+              <th><%= table_link(@conn, "Type", :type) %></th>
+
+              <th><%= table_link(@conn, "Name", :name) %></th>
+
+              <th><%= table_link(@conn, "Enabled", :enabled) %></th>
+
+              <th><%= table_link(@conn, "Message", :message) %></th>
+
+              <th><%= table_link(@conn, "Response", :response) %></th>
+
+              <th><%= table_link(@conn, "Message regex", :message_regex) %></th>
+
+              <th><%= table_link(@conn, "Message regex flags", :message_regex_flags) %></th>
+
+              <th><%= table_link(@conn, "Sender", :sender) %></th>
+
+              <th><%= table_link(@conn, "Sender regex", :sender_regex) %></th>
+
+              <th><%= table_link(@conn, "Sender regex flags", :sender_regex_flags) %></th>
+
+              <th><%= table_link(@conn, "Random chance", :random_chance) %></th>
+
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for twitch_command <- @twitch_commands do %>
+            <tr>
+
+                <td><%= twitch_command.type %></td>
+
+                <td><%= twitch_command.name %></td>
+
+                <td><%= twitch_command.enabled %></td>
+
+                <td><%= twitch_command.message %></td>
+
+                <td><%= twitch_command.response %></td>
+
+                <td><%= twitch_command.message_regex %></td>
+
+                <td><%= twitch_command.message_regex_flags %></td>
+
+                <td><%= twitch_command.sender %></td>
+
+                <td><%= twitch_command.sender_regex %></td>
+
+                <td><%= twitch_command.sender_regex_flags %></td>
+
+                <td><%= twitch_command.random_chance %></td>
+
+              <td class="torch-actions">
+                <span><%= link "Show", to: Routes.twitch_command_path(@conn, :show, twitch_command) %></span>
+                <span><%= link "Edit", to: Routes.twitch_command_path(@conn, :edit, twitch_command) %></span>
+                <span><%= link "Delete", to: Routes.twitch_command_path(@conn, :delete, twitch_command), method: :delete, data: [confirm: "Are you sure?"] %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+    <% else %>
+      <p class="torch-no-data">No Twitch commands match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>
