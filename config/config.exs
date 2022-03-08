@@ -91,11 +91,11 @@ config :backend,
   bnet_client_secret: bnet_client_secret,
   admin_pass: "admin",
   enable_nitropay: true,
+  twitch_bot_chats: ["d0nkeyhs", "d0nkeytop"],
   gm_stream_send_tweet: false,
   twitch_bot_config: [
     user: "d0nkeytop",
     pass: System.get_env("TWITCH_BOT_OAUTH"),
-    chats: ["d0nkeytop"],
     handler: TwitchBot.Handler
   ],
   gm_stream_twitter_info: [
