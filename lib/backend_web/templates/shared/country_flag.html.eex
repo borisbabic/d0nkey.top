@@ -6,4 +6,7 @@
   width="64"
   height="48"
   >
+  <%= if @cross_out_country do %>
+    <img src="/images/cross.png" width="64" height="48" class="cross-image">
+  <% end %>
 </span>

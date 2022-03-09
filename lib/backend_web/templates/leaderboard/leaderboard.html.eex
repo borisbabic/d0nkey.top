@@ -19,6 +19,6 @@
         WARNING: I'm assuming Americas is the "host" region for Ironforge based on the timezone. Ladder Mode regional priority is done according to last years rules until we get updated rules
     </div>
 <% end %>
-<%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn) %>
+<%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn, show_flags: @show_flags) %>
 
-<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entries, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn, ladder_invite_num: @ladder_invite_num, show_ratings: @show_ratings) %>
+<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entries, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn, ladder_invite_num: @ladder_invite_num, show_ratings: @show_ratings, show_flags: @show_flags) %>

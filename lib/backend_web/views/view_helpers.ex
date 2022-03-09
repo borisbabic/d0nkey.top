@@ -86,13 +86,16 @@ defmodule BackendWeb.ViewHelpers do
         selected_title || default
       end
 
-      def country_flag(country) do
+      def country_flag(country, user_preferences \\ %{}) do
         name = Util.get_country_name(country)
 
-        render(BackendWeb.SharedView, "country_flag.html", %{
-          country: country |> String.downcase(),
-          country_name: name
-        })
+        assigns =
+          user_preferences
+          |> Map.put_new(:cross_out_country, false)
+          |> Map.put(:country, String.downcase(country))
+          |> Map.put(:country_name, name)
+
+        render(BackendWeb.SharedView, "country_flag.html", assigns)
       end
 
       def countries_options(selected_countries) do

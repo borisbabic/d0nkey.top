@@ -5,6 +5,7 @@ defmodule BackendWeb.ProfileSettingsLive do
   alias Backend.UserManager
   alias Backend.UserManager.User.DecklistOptions
   alias Surface.Components.Form
+  alias Surface.Components.Form.Checkbox
   alias Surface.Components.Form.Field
   alias Surface.Components.Form.TextInput
   alias Surface.Components.Form.Submit
@@ -33,6 +34,10 @@ defmodule BackendWeb.ProfileSettingsLive do
             <Field name="country_code">
               <Label class="label" >Country Flag</Label>
               <Select class="select" options={[{"Select Country", nil} | country_options()]} selected={@user.country_code} />
+            </Field>
+            <Field name="cross_out_country">
+              <Label class="label" >Cross Out Country</Label>
+              <Checkbox value={@user.cross_out_country} />
             </Field>
             <br>
             <Field name="unicode_icon">
