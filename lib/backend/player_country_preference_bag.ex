@@ -43,7 +43,7 @@ defmodule Backend.PlayerCountryPreferenceBag do
     :ets.insert(table, {key(battletag, country), pref})
     :ets.insert(table, {key(short, country), pref})
   end
-  defp update_user(user, table), do: table
+  defp update_user(_user, table), do: table
 
   defp key(btag, country_code) do
     "#{btag}_#{String.upcase(country_code)}"
