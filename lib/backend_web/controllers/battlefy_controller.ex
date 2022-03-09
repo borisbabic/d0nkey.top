@@ -4,6 +4,7 @@ defmodule BackendWeb.BattlefyController do
   alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.MastersTour.TourStop
+  require Logger
 
   defp direction("desc"), do: :desc
   defp direction("asc"), do: :asc
@@ -53,17 +54,22 @@ defmodule BackendWeb.BattlefyController do
 
   def tournament(conn, params = %{"tournament_id" => tournament_id}) do
     tournament = Battlefy.get_tournament(tournament_id)
+    Logger.debug("Fetched tournament")
     invited_mapset = invited_mapset(params, tournament)
     participants = participants(params, tournament)
+    Logger.debug("Fetched participants")
     {earnings, show_earnings} = earnings(params, tournament_id)
+    Logger.debug("Earnings")
 
     fantasy_picks =
       conn
       |> BackendWeb.AuthUtils.user()
       |> Backend.Fantasy.get_battlefy_or_mt_user_picks(tournament_id)
       |> Enum.map(&(&1.pick |> Backend.Battlenet.Battletag.shorten()))
+    Logger.debug("fetched fantasy picks")
 
     show_lineups = show_lineups(params)
+    Logger.debug("Preparing to render tournament from controller")
     render(
       conn,
       "tournament.html",

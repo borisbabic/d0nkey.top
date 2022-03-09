@@ -279,10 +279,12 @@ defmodule BackendWeb.BattlefyView do
         }
       ) do
     ongoing = calculate_ongoing(matches, show_ongoing, tournament, conn)
+    Logger.debug("calculated ongoing")
     is_tour_stop = tour_stop?(tournament)
     use_countries = true
 
     participants_map = participants |> Enum.map(& {&1.name, &1}) |> Map.new()
+    Logger.debug("created participants map")
     standings =
       prepare_standings(
         standings_raw,
@@ -297,6 +299,7 @@ defmodule BackendWeb.BattlefyView do
         participants_map,
         params[:stage_id]
       )
+    Logger.debug("prepared standings")
 
     highlight = if params.highlight == nil, do: [], else: params.highlight
     country_highlight = if params.country_highlight == nil, do: [], else: params.country_highlight
@@ -322,6 +325,7 @@ defmodule BackendWeb.BattlefyView do
       |> add_earnings_dropdown(is_tour_stop, conn, tournament, show_earnings)
       |> add_highlight_fantasy_dropdown(conn, highlight_fantasy, tournament, fantasy_picks)
 
+    Logger.debug("preparing to render")
     render(
       "tournament.html",
        %{
