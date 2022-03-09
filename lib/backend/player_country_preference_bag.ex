@@ -34,7 +34,7 @@ defmodule Backend.PlayerCountryPreferenceBag do
     end
     {:noreply, state}
   end
-  defp update_user(%{battletag: battletag, cross_out_country: coc, show_region: sr, country_code: country}, table) do
+  defp update_user(%{battletag: battletag, cross_out_country: coc, show_region: sr, country_code: country}, table) when is_binary(country) do
     pref = %{
       cross_out_country: coc,
       show_region: sr
@@ -53,7 +53,8 @@ defmodule Backend.PlayerCountryPreferenceBag do
   def get(_), do: default()
   def get(nil, _country), do: default()
   def get(_btag, nil), do: default()
-  def get(btag, country), do: table() |> Util.ets_lookup(key(btag, country), default())
+  def get(btag, country) when is_binary(btag) and is_binary(country), do: table() |> Util.ets_lookup(key(btag, country), default())
+  def get(_btag, _country), do: default()
 
   defp table(), do: :ets.whereis(@name)
   def default() do
