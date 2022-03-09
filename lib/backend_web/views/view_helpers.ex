@@ -88,7 +88,7 @@ defmodule BackendWeb.ViewHelpers do
 
       def country_flag(country, player) when is_binary(player) do
         pref = Backend.PlayerCountryPreferenceBag.get(player, country)
-        country_flag(country, player)
+        country_flag(country, pref)
       end
       def country_flag(country, %{show_region: true}) do
         %{world_region: region} = Countriex.get_by(:alpha2, country)
