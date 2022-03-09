@@ -10,7 +10,6 @@ defmodule Backend.PlayerCountryPreferenceBag do
   @spec init(any) :: {:ok, %{table: atom | :ets.tid()}}
   def init(_args) do
     table = :ets.new(@name, [:named_table])
-    update_table(table)
     {:ok, %{table: table}, {:continue, :init}}
   end
 
