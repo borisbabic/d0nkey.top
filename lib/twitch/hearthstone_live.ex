@@ -32,5 +32,5 @@ defmodule Twitch.HearthstoneLive do
   defp send_loop(after_ms \\ 60_000), do: Process.send_after(self(), :loop, after_ms)
 
   def twitch_id_live?(nil), do: false
-  def twitch_id_live?(twitch_id), do: streams() |> Enum.any?(&(&1.user_id == twitch_id))
+  def twitch_id_live?(twitch_id), do: streams() |> Enum.any?(&(to_string(&1.user_id) == to_string(twitch_id)))
 end

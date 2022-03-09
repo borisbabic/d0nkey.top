@@ -113,7 +113,7 @@
           <a class="navbar-item" href='<%=Routes.live_path(@conn, BackendWeb.MaxNations2022Live) %>'>
             Max Nations
             <%= if Backend.MaxNations2022.live?() do %>
-              <p><sup class="is-size-7 has-text-info"> Live!</p>
+              <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
             <% end %>
          <% end %>
         </a>
@@ -135,7 +135,14 @@
      </div>
 
      <div class="navbar-end">
-         <a class="navbar-item" href="/hdt-plugin">HDT Plugin <p><sup class="is-size-7 has-text-danger"> New!</sup></p></a>
+        <%= if Twitch.HearthstoneLive.twitch_id_live?("139592098") do %>
+          <div class="navbar-item">
+            <a href="https://www.twitch.tv/d0nkeyhs">
+              <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
+            </a>
+          </div>
+        <% end %>
+        <a class="navbar-item" href="/hdt-plugin">HDT Plugin <p><sup class="is-size-7 has-text-danger"> New!</sup></p></a>
      </div>
    </div>
  </nav>
