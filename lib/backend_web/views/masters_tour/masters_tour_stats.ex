@@ -67,7 +67,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
              nil <- Util.get_country_code(player_name) do
               {"", nil}
         else
-          cc -> {country_flag(cc), cc}
+          cc -> {country_flag(cc, player_name), cc}
         end
 
       profile_name = MastersTour.mt_profile_name(player_name)

@@ -431,3 +431,10 @@
 /*.live-streamer a {*/
   /*[>color: black;<]*/
 /*}*/
+
+.cross-image {
+  z-index: 1;
+  position: absolute;
+  top: 3px;
+
+}

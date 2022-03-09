@@ -31,7 +31,7 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def create_country_tag(%{country: nil}), do: ""
-  def create_country_tag(%{country: cc}), do: country_flag(cc)
+  def create_country_tag(%{country: cc, name: name}), do: country_flag(cc, name)
 
   def create_name_cell(pr = %{name: name}, conn) do
     region = create_region_tag(pr)
@@ -212,7 +212,7 @@ defmodule BackendWeb.MastersTourView do
 
       ts_cells = create_tour_stop_cells(ps, eligible_tour_stops, invited_set)
       country = Backend.PlayerInfo.get_country(ps.battletag_full)
-      flag_part = if show_flags && country, do: country_flag(country), else: ""
+      flag_part = if show_flags && country, do: country_flag(country, ps.battletag_full), else: ""
 
       player_cell = ~E"""
       <%= flag_part %>
@@ -451,7 +451,7 @@ defmodule BackendWeb.MastersTourView do
 
         %{
           display: ~E"""
-          <%= country_flag(cc) %> <span> <%= country_name %> </span>
+          <%= country_flag(cc, %{}) %> <span> <%= country_name %> </span>
           """,
           link:
             Routes.masters_tour_path(

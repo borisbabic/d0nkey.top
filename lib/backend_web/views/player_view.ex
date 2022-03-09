@@ -43,24 +43,6 @@ defmodule BackendWeb.PlayerView do
         end
       end)
 
-    player_rows =
-      case {pi.country, pi.region} do
-        {nil, nil} ->
-          []
-
-        {country, nil} ->
-          [{"Country", country |> Util.get_country_name()}]
-
-        {nil, region} ->
-          [{"Region", region |> Blizzard.get_region_name(:long)}]
-
-        {country, region} ->
-          [
-            {"Country", country |> Util.get_country_name()},
-            {"Region", region |> Blizzard.get_region_name(:long)}
-          ]
-      end
-
     mt_total_stats =
       tts |> Enum.map(&TournamentTeamStats.total_stats/1) |> TeamStats.calculate_team_stats()
 
@@ -72,7 +54,7 @@ defmodule BackendWeb.PlayerView do
       end
 
     rows =
-      (player_rows ++ stats_rows ++ mt_total_row)
+      (stats_rows ++ mt_total_row)
       |> Enum.map(fn {title, val} -> "#{title}: #{val}" end)
 
     table_headers =
