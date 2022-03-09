@@ -35,7 +35,7 @@
         <tr>
         <td>
             <%= if country do %>
-                <%= country_flag(country) %>
+                <%= country_flag(country, battletag) %>
             <% end %>
             <%= render_player_icon(battletag) %>
             <a href="<%=player.profile_link%>"> <%= battletag %> </a>

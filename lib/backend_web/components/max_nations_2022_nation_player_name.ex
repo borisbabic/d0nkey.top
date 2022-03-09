@@ -9,7 +9,7 @@ defmodule Components.MaxNations2022NationPlayerName do
   def render(assigns) do
     ~F"""
       <span>
-        <a :if={nation = nation(@nation, @player)} href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.MaxNations2022NationLive, nation)}>{Util.get_country_code(nation) |> country_flag()}</a>
+        <a :if={nation = nation(@nation, @player)} href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.MaxNations2022NationLive, nation)}>{Util.get_country_code(nation) |> country_flag(@player)}</a>
         <a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.MaxNations2022PlayerLive, @player)}>{@player}</a>
       </span>
     """

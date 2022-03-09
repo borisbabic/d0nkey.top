@@ -766,7 +766,7 @@ defmodule BackendWeb.LeaderboardView do
       avg = ((ps.ranks |> Enum.sum()) / total) |> Float.round(2)
 
       country = Backend.PlayerInfo.get_country(ps.account_id)
-      flag_part = if show_flags && country, do: country_flag(country), else: ""
+      flag_part = if show_flags && country, do: country_flag(country, %{}), else: ""
 
       %{
         "Player" => ~E"""

@@ -39,6 +39,10 @@ defmodule BackendWeb.ProfileSettingsLive do
               <Label class="label" >Cross Out Country</Label>
               <Checkbox value={@user.cross_out_country} />
             </Field>
+            <Field name="show_region">
+              <Label class="label" >Show Region Instead of Country</Label>
+              <Checkbox value={@user.show_region} />
+            </Field>
             <br>
             <Field name="unicode_icon">
               <Label class="label">Player Icon</Label>

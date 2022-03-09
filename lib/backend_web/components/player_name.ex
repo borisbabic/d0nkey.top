@@ -14,7 +14,7 @@ defmodule Components.PlayerName do
   def render(assigns) do
     ~F"""
     <span>
-      <span :if={(country = country(@player)) && @flag}>{country_flag(country)}</span>
+      <span :if={(country = country(@player)) && @flag}>{country_flag(country, @player)}</span>
       <span :if={@icon}>{render_player_icon(@player)}</span>
       <a class={@link_class} href={text_link(@text_link, @player)}>{text(@player, @shorten)}</a>
     </span>

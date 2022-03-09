@@ -603,7 +603,7 @@ defmodule BackendWeb.BattlefyView do
       {country, pre_name_cell} =
         with true <- use_countries,
              cc when is_binary(cc) <- Backend.PlayerInfo.get_country(s.team.name) do
-          {cc, country_flag(cc)}
+          {cc, country_flag(cc, s.team.name)}
         else
           _ -> {nil, ""}
         end

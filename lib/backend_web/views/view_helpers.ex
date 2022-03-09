@@ -86,7 +86,17 @@ defmodule BackendWeb.ViewHelpers do
         selected_title || default
       end
 
-      def country_flag(country, user_preferences \\ %{}) do
+      def country_flag(country, player) when is_binary(player) do
+        pref = Backend.PlayerCountryPreferenceBag.get(player, country)
+        country_flag(country, player)
+      end
+      def country_flag(country, %{show_region: true}) do
+        %{world_region: region} = Countriex.get_by(:alpha2, country)
+        image = "/images/region_#{String.downcase(region)}.png"
+
+        render(BackendWeb.SharedView, "region_flag.html", %{image: image, region: region})
+      end
+      def country_flag(country, user_preferences) do
         name = Util.get_country_name(country)
 
         assigns =
