@@ -104,6 +104,7 @@ defmodule Backend.UserManager do
   def update_user_info({:ok, user} = ret) do
     Backend.Battlenet.update_user_country(user)
     Backend.PlayerIconBag.set_user_icons(user)
+    Backend.PlayerCountryPreferenceBag.update_user(user)
     ret
   end
 

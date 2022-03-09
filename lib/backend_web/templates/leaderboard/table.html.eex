@@ -19,9 +19,8 @@
                 <%= render_comparison(position, prev_rank, true) %>
             </td>
             <td>
-                <%= e.flag %>
                 <a href="<%= Routes.player_path(@conn, :player_profile, battletag) %>">
-                    <%= render_player_name(battletag) %>
+                    <%= render_player_name(battletag, @show_flags == "yes") %>
                 </a>
                 <%= history_link %>
             </td>

@@ -148,6 +148,7 @@ defmodule BackendWeb.LeaderboardView do
       conn: conn,
       ladder_invite_num: ladder_invite_num,
       official_link: Snapshot.official_link(leaderboard),
+      show_flags: show_flags,
       highlighted: process_highlighted(highlight, entries)
     })
   end
@@ -669,13 +670,6 @@ defmodule BackendWeb.LeaderboardView do
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
 
-      flag =
-        with true <- show_flags,
-             cc when is_binary(cc) <- Backend.PlayerInfo.get_country(account_id) do
-          country_flag(cc)
-        else
-          _ -> ""
-        end
       history_attr = if le.rating, do: "rating", else: "rank"
       history_link = BackendWeb.PlayerView.history_link(BackendWeb.Endpoint, snapshot, account_id, history_attr, "past_weeks_1")
       {
@@ -688,7 +682,6 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:wrong_region, wrong_region)
         |> Map.put_new(:banned, banned)
         |> Map.put_new(:history_link, history_link)
-        |> Map.put_new(:flag, flag)
         |> Map.put_new(:prev_rating, prev_rating),
         if skip_for_invite do
           acc
