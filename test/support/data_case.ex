@@ -22,15 +22,24 @@ defmodule Backend.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Backend.DataCase
+
+      def create_temp_user(attrs \\ %{}) do
+        {:ok, user} =
+          attrs
+          |> Enum.into(
+          %{
+            battletag: Ecto.UUID.generate(),
+            bnet_id: :rand.uniform(2147483646)
+          })
+          |> Backend.UserManager.create_user()
+
+        user
+      end
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, {:shared, self()})
-    end
+    setup_db(tags)
 
     :ok
   end
@@ -49,5 +58,11 @@ defmodule Backend.DataCase do
         opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
       end)
     end)
+  end
+
+  def setup_db(tags) do
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Backend.Repo, shared: not tags[:async])
+    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+    :ok
   end
 end

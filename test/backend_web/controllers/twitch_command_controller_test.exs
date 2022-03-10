@@ -8,11 +8,13 @@ defmodule BackendWeb.TwitchCommandControllerTest do
   @invalid_attrs %{enabled: nil, message: nil, message_regex: nil, message_regex_flags: nil, name: nil, random_chance: nil, response: nil, sender: nil, sender_regex: nil, sender_regex_flags: nil, type: nil}
 
   def fixture(:twitch_command) do
-    {:ok, twitch_command} = TwitchBot.create_twitch_command(@create_attrs)
+    {:ok, twitch_command} = TwitchBot.create_twitch_command(add_user_id(@create_attrs))
     twitch_command
   end
 
   describe "index" do
+    @describetag :authenticated
+    @describetag :twitch_commands
     test "lists all twitch_commands", %{conn: conn} do
       conn = get conn, Routes.twitch_command_path(conn, :index)
       assert html_response(conn, 200) =~ "Twitch commands"
@@ -20,6 +22,8 @@ defmodule BackendWeb.TwitchCommandControllerTest do
   end
 
   describe "new twitch_command" do
+    @describetag :authenticated
+    @describetag :twitch_commands
     test "renders form", %{conn: conn} do
       conn = get conn, Routes.twitch_command_path(conn, :new)
       assert html_response(conn, 200) =~ "New Twitch command"
@@ -27,8 +31,10 @@ defmodule BackendWeb.TwitchCommandControllerTest do
   end
 
   describe "create twitch_command" do
+    @describetag :authenticated
+    @describetag :twitch_commands
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post conn, Routes.twitch_command_path(conn, :create), twitch_command: @create_attrs
+      conn = post conn, Routes.twitch_command_path(conn, :create), twitch_command: add_user_id(@create_attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.twitch_command_path(conn, :show, id)
@@ -38,12 +44,14 @@ defmodule BackendWeb.TwitchCommandControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, Routes.twitch_command_path(conn, :create), twitch_command: @invalid_attrs
+      conn = post conn, Routes.twitch_command_path(conn, :create), twitch_command: add_user_id(@invalid_attrs)
       assert html_response(conn, 200) =~ "New Twitch command"
     end
   end
 
   describe "edit twitch_command" do
+    @describetag :authenticated
+    @describetag :twitch_commands
     setup [:create_twitch_command]
 
     test "renders form for editing chosen twitch_command", %{conn: conn, twitch_command: twitch_command} do
@@ -53,6 +61,8 @@ defmodule BackendWeb.TwitchCommandControllerTest do
   end
 
   describe "update twitch_command" do
+    @describetag :authenticated
+    @describetag :twitch_commands
     setup [:create_twitch_command]
 
     test "redirects when data is valid", %{conn: conn, twitch_command: twitch_command} do
@@ -70,6 +80,8 @@ defmodule BackendWeb.TwitchCommandControllerTest do
   end
 
   describe "delete twitch_command" do
+    @describetag :authenticated
+    @describetag :twitch_commands
     setup [:create_twitch_command]
 
     test "deletes chosen twitch_command", %{conn: conn, twitch_command: twitch_command} do
@@ -84,5 +96,10 @@ defmodule BackendWeb.TwitchCommandControllerTest do
   defp create_twitch_command(_) do
     twitch_command = fixture(:twitch_command)
     {:ok, twitch_command: twitch_command}
+  end
+
+  def add_user_id(command) do
+    user = create_temp_user()
+    Map.put(command, :user_id, user.id)
   end
 end

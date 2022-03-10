@@ -6,7 +6,7 @@ defmodule Backend.TwitchBotTest do
   alias Backend.TwitchBot.TwitchCommand
 
   @valid_attrs %{user_id: 1, enabled: true, message: "some message", message_regex: true, message_regex_flags: "some message_regex_flags", name: "some name", random_chance: 120.5, response: "some response", sender: "some sender", sender_regex: true, sender_regex_flags: "some sender_regex_flags", type: "some type"}
-  @update_attrs %{enabled: false, message: "some updated message", message_regex: false, message_regex_flags: "some updated message_regex_flags", name: "some updated name", random_chance: 456.7, response: "some updated response", sender: "some updated sender", sender_regex: false, sender_regex_flags: "some updated sender_regex_flags", type: "some updated type"}
+  @update_attrs %{user_id: 1, enabled: false, message: "some updated message", message_regex: false, message_regex_flags: "some updated message_regex_flags", name: "some updated name", random_chance: 456.7, response: "some updated response", sender: "some updated sender", sender_regex: false, sender_regex_flags: "some updated sender_regex_flags", type: "some updated type"}
   @invalid_attrs %{enabled: nil, message: nil, message_regex: nil, message_regex_flags: nil, name: nil, random_chance: nil, response: nil, sender: nil, sender_regex: nil, sender_regex_flags: nil, type: nil}
 
   describe "#paginate_twitch_commands/1" do
@@ -44,7 +44,8 @@ defmodule Backend.TwitchBotTest do
 
   describe "#create_twitch_command/1" do
     test "with valid data creates a twitch_command" do
-      assert {:ok, %TwitchCommand{} = twitch_command} = TwitchBot.create_twitch_command(@valid_attrs)
+      attrs = add_user_id(@valid_attrs)
+      assert {:ok, %TwitchCommand{} = twitch_command} = TwitchBot.create_twitch_command(attrs)
       assert twitch_command.enabled == true
       assert twitch_command.message == "some message"
       assert twitch_command.message_regex == true
@@ -66,7 +67,8 @@ defmodule Backend.TwitchBotTest do
   describe "#update_twitch_command/2" do
     test "with valid data updates the twitch_command" do
       twitch_command = twitch_command_fixture()
-      assert {:ok, twitch_command} = TwitchBot.update_twitch_command(twitch_command, @update_attrs)
+      attrs = Map.put(@update_attrs, :user_id, twitch_command.user_id)
+      assert {:ok, twitch_command} = TwitchBot.update_twitch_command(twitch_command, attrs)
       assert %TwitchCommand{} = twitch_command
       assert twitch_command.enabled == false
       assert twitch_command.message == "some updated message"
@@ -107,9 +109,15 @@ defmodule Backend.TwitchBotTest do
     {:ok, twitch_command} =
       attrs
       |> Enum.into(@valid_attrs)
+      |> add_user_id()
       |> TwitchBot.create_twitch_command()
 
     twitch_command
+  end
+
+  def add_user_id(command) do
+    user = create_temp_user()
+    Map.put(command, :user_id, user.id)
   end
 
 end

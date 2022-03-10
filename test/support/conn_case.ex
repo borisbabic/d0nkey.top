@@ -24,6 +24,19 @@ defmodule BackendWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint BackendWeb.Endpoint
+
+      def create_temp_user(attrs \\ %{}) do
+        {:ok, user} =
+          attrs
+          |> Enum.into(
+          %{
+            battletag: Ecto.UUID.generate(),
+            bnet_id: :rand.uniform(2147483646)
+          })
+          |> Backend.UserManager.create_user()
+
+        user
+      end
     end
   end
 
@@ -36,11 +49,7 @@ defmodule BackendWeb.ConnCase do
   @signing_opts Plug.Session.init(Keyword.put(@default_opts, :encrypt, false))
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, {:shared, self()})
-    end
+    Backend.DataCase.setup_db(tags)
 
     opts =
       [conn: Phoenix.ConnTest.build_conn()]
@@ -49,7 +58,7 @@ defmodule BackendWeb.ConnCase do
 
     # {conn, user, api_user} =
     # cond do
-    # tags[:authenticated] -> 
+    # tags[:authenticated] ->
     # {:ok, user} = create_auth_user_from_tags(tags, tags[:other_battletag])
 
     # conn =
@@ -58,7 +67,7 @@ defmodule BackendWeb.ConnCase do
 
     # {conn, user, nil}
     # tags[:api_user] ->
-    # true -> 
+    # true ->
     # {Phoenix.ConnTest.build_conn(), nil, nil}
 
     # end
