@@ -1,0 +1,82 @@
+<div class="title is-2">Qualifiers</div>
+<div class="subtitle is-6">
+    <a href="https://battlefy.com/hsesports#faq" target="_blank">
+        Help / Official Site
+    </a>
+
+    | <a href={"#{Routes.masters_tour_path(@conn, :qualifier_stats) }"}>
+        Stats
+    </a>
+    | <a href="http://offcurve.com/masterstour">
+        Offcurve (deck stats)
+    </a>
+</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
+<a class="button icon is-link" href={"#{ @before_link }"}>
+  <i class="fas fa-caret-left"></i>
+</a>
+<a class="button icon is-link" href={"#{ @after_link }"}>
+  <i class="fas fa-caret-right"></i>
+</a>
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Select Range</button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for %{display: display, link: link} <- @dropdown_links do %>
+            <a class="dropdown-item" href={"#{ link }"}><%=display%></a>
+        <% end %>
+    </div>
+    </div>
+</div>
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%= @region || "Filter Region"%></button></div>
+    <div class="dropdown-menu" role="menu">
+    <div class="dropdown-content">
+        <%= for %{display: display, link: link} <- @region_links do %>
+            <a class="dropdown-item" href={"#{ link }"}><%=display%></a>
+        <% end %>
+    </div>
+    </div>
+</div>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Winner</th>
+            <th>Start Time</th>
+            <th>Region</th>
+            <%= if @show_signed_up do %>
+                <th>Signed Up</th>
+            <% end %>
+            <th>Standings</th>
+        </tr>
+    </thead>
+    <tbody>
+    <%= for t = %{region: region, start_time: start_time, name: name, link: link, standings_link: standings_link, signed_up: signed_up} <- @qualifiers do %>
+        <tr>
+            <td>
+                <a class="is-link" href={"#{ link }"}>
+                    <%= name %>
+                </a>
+            </td>
+            <td><%= t.winner %></td>
+            <td><%= render_datetime start_time %></td>
+            <td><%= region %></td>
+            <%= if @show_signed_up do %>
+                <td>
+                    <%= if signed_up do %>
+                        <span class="tag is-success">✓</span>
+                    <% end %>
+                </td>
+            <% end %>
+            <td>
+                <%= if t |> Backend.Battlefy.Tournament.has_bracket() do %>
+                    <a class="is-link" href={"#{ standings_link }"}>
+                        standings
+                    </a>
+                <% end %>
+            </td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>

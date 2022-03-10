@@ -1,0 +1,47 @@
+<div class="title is-2"><%= @title %></div>
+<div class="subtitle is-6">
+    <%= @subtitle %>
+    <%= if @has_winrate_qual do %>
+        | <a href="https://twitter.com/Abar_HS/status/1426893531281383428" target="_blank">Tiebreakers</a> - h2h not implemented here
+        | <a href="https://hearthstone.doc-x.net/" target="_blank">Official Top 50</a>
+    <% end %>
+</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
+
+
+<%= form_for @conn, Routes.masters_tour_path(@conn, :qualifier_stats, @period, @conn.query_params),
+[method: :get], fn
+f-> %>
+    <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+        <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
+    <% end %>
+    <%= @prev_button %>
+    <%= @next_button %>
+    <%= render_dropdowns @dropdowns %>
+    <%= render_multiselect_dropdown %{
+        form: f,
+        title: "Columns",
+        options: @columns_options,
+        selected_first: false,
+        attr: "columns"
+    } %>
+    <%= render_countries_multiselect_dropdown(f, @selected_countries) %>
+<% end %>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <%= for hd <- @headers do %>
+                <th> <%= hd %> </th>
+            <% end %>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for row <- @rows do %>
+            <tr>
+                <%= for cell <- row do %>
+                    <td> <%= cell %> </td>
+                <% end %>
+            </tr>
+        <% end %>
+    </tbody>
+</table>

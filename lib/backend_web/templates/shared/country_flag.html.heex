@@ -1,0 +1,11 @@
+<span data-balloon-pos="up" aria-label={"#{ @country_name } "}class="icon">
+<img
+  src={"https://flagcdn.com/64x48/#{ @country }.png"}
+  srcset={"https://flagcdn.com/128x96/#{ @country }.png 2x,\n  https://flagcdn.com/192x144/#{ @country }.png 3x"}
+  width="64"
+  height="48"
+  >
+  <%= if @cross_out_country do %>
+    <img src="/images/cross.png" width="64" height="48" class="cross-image">
+  <% end %>
+</span>

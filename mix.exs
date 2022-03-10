@@ -86,7 +86,6 @@ defmodule Backend.MixProject do
       {:etop, "~> 0.7"},
       {:solid, "~> 0.10"},
       {:ecto_psql_extras, "~> 0.6"},
-      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
       {:quantum, "~> 2.3"}
     ]
   end
