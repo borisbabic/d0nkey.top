@@ -31,6 +31,7 @@ defmodule BackendWeb.GrandmastersLive do
         </div>
         <div class="subtitle is-6">
           <a target"_blank" href="https://playhearthstone.com/en-us/esports/standings/">Official Site</a>
+          | <a href="{lineup_url(@week)}">Lineups</a>
         </div>
         <div id="nitropay-below-title-leaderboard"></div>
 
@@ -61,6 +62,8 @@ defmodule BackendWeb.GrandmastersLive do
     </Context>
     """
   end
+
+  def lineup_url(week), do: Routes.live_path(BackendWeb.Endpoint, GrandmastersLineups, %{"week" => week})
 
   def weeks() do
     season = Blizzard.current_gm_season()
