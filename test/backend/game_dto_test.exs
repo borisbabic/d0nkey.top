@@ -30,7 +30,7 @@ defmodule Backend.GameDtoTest do
                %GameDto{player: %PlayerDto{}, opponent: %PlayerDto{}} =
                GameDto.from_raw_map(@valid_map, nil)
 
-      assert %{"status" => :win, "region" => :AP} = GameDto.to_ecto_attrs(dto, &{:ok, &1})
+      assert %{"status" => :win, "region" => :AP} = GameDto.to_ecto_attrs(dto, &{:ok, &1}, fn _, _ -> {:error, nil} end)
     end
   end
 end

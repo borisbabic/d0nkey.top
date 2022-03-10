@@ -6,6 +6,7 @@ defmodule BackendWeb.GroupMembershipController do
 
 
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
+  plug(Backend.Plug.AdminAuth, role: :groups)
   plug(:put_layout, false)
 
 
