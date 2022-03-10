@@ -1,0 +1,60 @@
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <th>Position</th>
+            <th>Battletag</th>
+            <%= if @show_ratings do %>
+                <th>Rating</th>
+            <% end %>
+            <%= if @show_mt_column do %>
+                <th><%= @show_mt_column %></th>
+            <% end %>
+        </tr>
+    </thead>
+    <tbody>
+<%= for e = %{history_link: history_link, qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying, prev_rank: prev_rank, prev_rating: prev_rating, ineligible: ineligible}
+ <- @table_entries do %>
+        <tr>
+            <td>
+                <%= render_comparison(position, prev_rank, true) %>
+            </td>
+            <td>
+                <a href={"#{ Routes.player_path(@conn, :player_profile, battletag) }"}>
+                    <%= render_player_name(battletag, @show_flags == "yes") %>
+                </a>
+                <%= history_link %>
+            </td>
+            <%= if @show_ratings do %>
+                <td><%= render_comparison(rating, prev_rating, false) %></td>
+            <% end %>
+            <%= if @show_mt_column do %>
+                <td>
+                <%= case {qualified, qualifying, ineligible} do%>
+                    <% {_, _, true} -> %>
+                        <p class="tag is-dark" data-balloon-pos="up" aria-label="Blizz employees and others are ineligible ">Ineligible</p>
+                    <% {_, {true, pos}, _} -> %>
+                        <p class="tag is-success" data-balloon-pos="up" aria-label={"The top #{ @ladder_invite_num } uninvited earn an MT invite. ##{ pos } uninvited"}>Top <%= @ladder_invite_num %></p>
+                    <% {:official, _, _} -> %>
+                        <p class="tag is-info" data-balloon-pos="up" aria-label="Officially invited to the MT">Official</p>
+                    <% {:unofficial, _, _} -> %>
+                        <p class="tag is-warning" data-balloon-pos="up" aria-label="Earned a spot but hasn't yet been officially invited">Unofficial</p>
+                    <% {{:other_ladder, region, pos}, _, _} -> %>
+                        <p class="tag is-danger" data-balloon-pos="up" aria-label={"##{pos} uninvited in\n                        #{region}, which has a higher priority according to MT rules"}><%="#{region} ##{pos}"%></p>
+                    <% {_, {false, _}, _} -> %> <span></span>
+                <% end %>
+
+                <%= if e.warning do %>
+                    <span data-balloon-pos="up" aria-label={"#{e.warning}"} class="tag is-warning">HOVER ME!</span>
+                <% end %>
+                <%= if e.banned do %>
+                    <span data-balloon-pos="up" aria-label={"#{e.banned}"} class="tag is-warning">Banned</span>
+                <% end %>
+                <%= if e.wrong_region do %>
+                    <span data-balloon-pos="up" aria-label="Wrong region to earn an invite" class="tag is-warning">Wrong Region</span>
+                <% end %>
+                </td>
+            <% end %>
+        </tr>
+<% end %>
+    </tbody>
+</table>

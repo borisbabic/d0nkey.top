@@ -1,0 +1,20 @@
+<div class="title is-2">Leaderboard</div>
+<div class="subtitle is-6">
+    <a target="_blank" href={"#{ Routes.leaderboard_path(@conn, :player_stats) }"}>Stats</a>
+    <%= if @official_link do %>
+    |    <a target="_blank" href={"#{ @official_link }"}>Official Site</a>
+    <% end %>
+    <%= if @updated_at do %>
+    |     Updated at <%= render_datetime @updated_at %>
+    <% end %>
+</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
+<%= render_dropdowns @dropdowns %>
+<%= if @old do %>
+    <div class="notification is-warning">
+        WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
+    </div>
+<% end %>
+<%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn, show_flags: @show_flags) %>
+
+<%= render("table.html", leaderboard_id: @leaderboard_id, table_entries: @entries, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn, ladder_invite_num: @ladder_invite_num, show_ratings: @show_ratings, show_flags: @show_flags) %>

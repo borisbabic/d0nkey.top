@@ -1,0 +1,205 @@
+<!-- template: navbar.html.eex -->
+
+ <nav id="main-navbar" class="navbar is-dark" role="navigation" aria-label="main navigation" style="display:none">
+   <div class="navbar-brand">
+     <a class="navbar-item" href="/"><img src="/favicon.ico" alt="d0nkey"></a>
+
+     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="burger-toggle">
+       <span aria-hidden="true"></span>
+       <span aria-hidden="true"></span>
+       <span aria-hidden="true"></span>
+     </a>
+   </div>
+
+   <div id="burger-toggle" class="navbar-menu">
+     <div class="navbar-start">
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+          <%= if @user do %>
+            <div @mouseover="open=true" class="navbar-link"><%= @user %></div>
+          <% else %>
+            <div @mouseover="open=true" class="navbar-link"><i class="far fa-user"></i></div>
+          <% end %>
+          <div class="navbar-dropdown">
+            <%= if @user do %>
+              <a class="navbar-item" href={"#{ Routes.player_path(@conn, :player_profile, @user) }"}>Player Profile</a>
+              <a class="navbar-item" href={"#{ Routes.live_path(@conn, BackendWeb.MyDecksLive) }"}>My Decks</a>
+              <a class="navbar-item" href={"#{ Routes.live_path(@conn, BackendWeb.MyReplaysLive) }"}>My Replays</a>
+              <a class="navbar-item" href={"#{ Routes.live_path(@conn, BackendWeb.MyGroupsLive) }"}>My Groups</a>
+              <%= if @conn |> user() |> twitchbot?() do %>
+                <a class="navbar-item" href="/twitch/bot">My Twitch Bot</a>
+              <% end %>
+              <a class="navbar-item" href='/profile/settings'>Settings</a>
+              <%= if user(@conn) && user(@conn).battlefy_slug do %>
+                <a class="navbar-item" href={"#{ Routes.battlefy_path(@conn, :user_tournaments, user(@conn).battlefy_slug)}"}>
+                  Battlefy Tournaments
+                </a>
+              <% end %>
+              <a class="navbar-item" href='/logout'>Logout</a>
+              <%= if can_access?(@conn, :battletag_info) do %>
+                <a class="navbar-item" href="/torch/battletag_info">Admin - Battletag Info</a>
+              <% end %>
+              <%= if can_access?(@conn, :users) do %>
+                <a class="navbar-item" href="/torch/users">Admin - Users</a>
+              <% end %>
+              <%= if can_access?(@conn, :invites) do %>
+                <a class="navbar-item" href="/torch/invited_player">Admin - Invites</a>
+              <% end %>
+              <%= if can_access?(@conn, :feed_items) do %>
+                <a class="navbar-item" href="/torch/feed_items">Admin - Feed Items</a>
+              <% end %>
+              <%= if can_access?(@conn, :fantasy_leagues) do %>
+                <a class="navbar-item" href="/torch/fantasy-leagues">Admin - Fantasy Leagues</a>
+              <% end %>
+            <% else %>
+              <a class="navbar-item" href='/auth/bnet'>Sign in (Battlenet) </a>
+            <% end %>
+          </div>
+        </div>
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+         <a @mouseover="open=true" class="navbar-item navbar-link" href={"#{Routes.leaderboard_path(@conn, :index)}"}>Leaderboard</a>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href={"#{Routes.leaderboard_path(@conn, :player_stats) }"}>Player Stats</a>
+            <%= for {region, region_name} <- Backend.Blizzard.qualifier_regions_with_name() do %>
+                    <a class="navbar-item is-link"
+                    href={"#{ Routes.leaderboard_path(@conn, :index, %{"region" => region})
+                    }"}><%= region_name %></a>
+            <% end %>
+         </div>
+       </div>
+       <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+         <div @mouseover="open=true" class="navbar-link">
+           Masters Tour
+         </div>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :invited_players) }"}>Invited</a>
+           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :qualifiers)}"}>Qualifiers</a>
+           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :qualifier_stats)}"}>Qualifier Stats</a>
+           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :earnings)}"}>GM Promotion</a>
+           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :tour_stops)}"}>Tour Stops</a>
+           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :masters_tours_stats)}"}>Stats</a>
+         </div>
+       </div>
+      <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open, 'blablacar': !open}">
+        <a @mouseover="open=true" class="navbar-item navbar-link" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
+
+        <div class="navbar-dropdown">
+            <%= for region <- [:EU, :APAC, :NA] do %>
+              <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive, %{region: region}) }"}><%= BackendWeb.GrandmastersLive.gm_region_display(region) %></a>
+            <% end %>
+          <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLineup) }"}>Lineups</a>
+          <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :earnings)}"}>Promotion</a>
+        </div>
+      </div>
+       <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+         <div @mouseover="open=true" class="navbar-link">
+           Misc
+         </div>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :organization_tournaments) }"}>3rd Party Tournaments</a>
+           <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
+           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.StreamingNowLive)}"}>Streaming Now</a>
+           <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournaments_stats) }"}>Battlefy Tournaments Stats</a>
+           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DeckviewerLive)}"}>Deckviewer</a>
+           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
+           <a class="navbar-item" href={"#{Routes.page_path(@conn, :about) }"}>About</a>
+         </div>
+       </div>
+         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
+         <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
+         <%= if !show_fantasy?() do %>
+          <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.MaxNations2022Live) }"}>
+            Max Nations
+            <%= if Backend.MaxNations2022.live?() do %>
+              <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
+            <% end %>
+          </a>
+         <% end %>
+
+       <%= if show_fantasy?() do %>
+         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
+       <% end %>
+
+       <%= if :gt == NaiveDateTime.compare(~N[2021-12-21 13:37:00], NaiveDateTime.utc_now()) do %>
+         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.WC2021Live) }"}>WC 2021</a>
+       <% end %>
+
+       <%= current_mt @conn %>
+
+       <%= current_dreamhack @conn %>
+
+
+     </div>
+
+     <div class="navbar-end">
+        <%= if Twitch.HearthstoneLive.twitch_id_live?("139592098") do %>
+          <div class="navbar-item">
+            <a href="https://www.twitch.tv/d0nkeyhs">
+              <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
+            </a>
+          </div>
+        <% end %>
+        <a class="navbar-item" href="/hdt-plugin">HDT Plugin <p><sup class="is-size-7 has-text-danger"> New!</sup></p></a>
+     </div>
+   </div>
+ </nav>
+<script>
+   var navbar = document.getElementById('main-navbar');
+   if (navbar) {
+   navbar.style.display = '';
+   } else {
+       console.log("Couldn't get navbar!")
+   }
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Get all "navbar-burger" elements
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+  // Check if there are any navbar burgers
+  if ($navbarBurgers.length > 0) {
+
+    // Add a click event on each of them
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+
+        // Get the target from the "data-target" attribute
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+
+        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+
+      });
+    });
+  }
+
+});
+</script>
+<noscript>
+  <header class="container">
+    <nav role="navigation">
+      <a href="/">🏠</a>
+      <a href={"#{Routes.leaderboard_path(@conn, :index)}"}>Leaderboard</a>
+      |
+      <a href={"#{Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop()) }"}>Invited</a>
+      |
+      <a href={"#{Routes.masters_tour_path(@conn, :qualifiers)}"}>Qualifiers</a>
+      |
+      <a href={"#{Routes.masters_tour_path(@conn, :qualifier_stats, Backend.Blizzard.current_ladder_tour_stop())}"}>Qualifier Stats</a>
+      |
+      <a href={"#{Routes.masters_tour_path(@conn, :earnings)}"}>GM Promotion</a>
+      |
+      <a href={"#{Routes.masters_tour_path(@conn, :tour_stops)}"}>Tour Stops</a>
+      |
+      <a href={"#{Routes.battlefy_path(@conn, :organization_tournaments) }"}>3rd Party Tournaments</a>
+      |
+      <a href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
+      |
+      <a href={"#{Routes.page_path(@conn, :donate_follow)}"}>Donate/Follow</a>
+    </nav>
+  </header>
+</noscript>

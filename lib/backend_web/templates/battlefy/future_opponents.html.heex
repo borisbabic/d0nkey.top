@@ -1,0 +1,142 @@
+<div class="title is-2">
+    <a class="is-link" href={"#{ Routes.player_path(BackendWeb.Endpoint, :player_profile, @team_name) }"}><%= @team_name%></a>
+</div>
+
+<div class="subtitle is-6">
+    <a class="tag is-button" href={"#{ @standings_link }"}>⤎ Standings</a>
+    <a class="tag is-link" href={"#{ @hsdeckviewer }"}>HSDeckViewer</a>
+    <a class="tag is-link" href={"#{ @yaytears}"}>yaytears</a>
+</div>
+<div id="nitropay-below-title-leaderboard"></div><br>
+
+<div class="columns is-multiline is-mobile is-hidden-mobile">
+    <%= for code <- @deckcodes do %>
+        <div class="column is-narrow">
+            <%= live_render(@conn, BackendWeb.DeckOnlyLive, session: %{"code" => code}) %>
+        </div>
+    <% end %>
+</div>
+
+<%= if @team_name =~ "Norwis" do %>
+    <blockquote class="twitter-tweet" data-theme="dark"><p lang="en" dir="ltr">Don&#39;t know who to support for the upcoming Master&#39;s Tour? Be sure to cheer on <a href="https://twitter.com/Norwis135?ref_src=twsrc%5Etfw">@Norwis135</a> and meet him live at the Jackbox MT afterparty on Saturday Feb 19th... 🤣🤣🤣 <a href="https://t.co/wcFAwVWLyp">pic.twitter.com/wcFAwVWLyp</a></p>&mdash; Sgt TBag ༼ຈل͜ຈ༽ﾉ (@Sgt_Tbag) <a href="https://twitter.com/Sgt_Tbag/status/1492928208878153735?ref_src=twsrc%5Etfw">February 13, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<% end %>
+
+<%= if @show_stage_selection do %>
+    <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@stage_selection_text%></button></div>
+        <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+            <%= for %{name: name, selected: selected, link: link} <- @stages do %>
+                <a class={"dropdown-item #{ selected && 'is-active' || '' }"} href={"#{ link }"}><%=name%></a>
+            <% end %>
+        </div>
+        </div>
+    </div>
+<% end %>
+
+<%= if @show_class_stats do %>
+    <div class="title is-5">Class Stats</div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Class</th>
+                <th>Banned</th>
+                <th>Wins</th>
+                <th>Losses</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{class: class, bans: bans, wins: wins, losses: losses} <- @class_stats do %>
+                <tr>
+                    <td>
+                        <figure>
+                            <img class="image is-32x32" src={"#{ class_url(class) }"} >
+                        </figure>
+                    </td>
+                    <td><%= bans %></td>
+                    <td><%= wins %></td>
+                    <td><%= losses %></td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+<% end %>
+<%= if @show_player do %>
+    <div class="title is-5">Player matches</div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th class="is-hidden-mobile">Player Stats</th>
+                <th>Score</th>
+                <th>Opponent</th>
+                <th>Opponent Stats</th>
+                <th class="is-hidden-mobile">Opponent Decks</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{opponent: opponent, match_url: match_url, score: score, current_round: current_round, class_stats: class_stats, opponent_class_stats: opponent_class_stats} <- @player_matches do %>
+                <tr>
+                    <td><%= current_round %></td>
+                    <td class="is-hidden-mobile">
+                        <div class="is-flex is-justify-content-center">
+                            <%= for {_, stats} <- class_stats do %>
+                                <%= render("class_match_stats.html", stats |> Map.to_list()) %>
+                            <% end %>
+                        </div>
+                    </td>
+                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
+                    <%= if opponent == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href={"#{ opponent.link }"}> <%= opponent.name %></a></td>
+                        <td class="is-hidden-mobile">
+                            <div class="is-flex is-justify-content-center">
+                                <%= for {_, stats} <- opponent_class_stats do %>
+                                    <%= render("class_match_stats.html", stats |> Map.to_list()) %>
+                                <% end %>
+                            </div>
+                        </td>
+                        <td><a class="tag is-link" href={"#{ opponent.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ opponent.yaytears }"}>yaytears</a></td>
+                    <% end %>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+<% end %>
+
+<%= if @show_future do %>
+    <div class="title is-5">Future opponents</div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th>Top</th>
+                <th>Top Decks</th>
+                <th>Score</th>
+                <th>Bottom</th>
+                <th>Bottom Decks</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @future_matches do %>
+                <tr>
+                    <td><%= current_round %></td>
+                    <%= if top == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href={"#{ top.link }"}> <%= top.name %></a></td>
+                        <td><a class="tag is-link" href={"#{ top.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ top.yaytears }"}>yaytears</a></td>
+                    <% end %>
+                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
+                    <%= if bottom == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href={"#{ bottom.link }"}> <%= bottom.name %></a></td>
+                        <td><a class="tag is-link" href={"#{ bottom.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ bottom.yaytears }"}>yaytears</a></td>
+                    <% end %>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+<% end %>

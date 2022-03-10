@@ -1,0 +1,23 @@
+<div class="title is-2">Live Feed</div>
+<table class="table is-striped is-fullwidth is-narrow">
+    <thead>
+        <tr>
+            <th>P1Rank</th>
+            <th>P1Deck</th>
+            <th>vs</th>
+            <th>P2Deck</th>
+            <th>P2Rank</th>
+        </tr>
+    </thead>
+    <tbody>
+    <%= for %{url: url, p1deck: p1deck, p1rank: p1rank, p2deck: p2deck, p2rank: p2rank} <- @replays do %>
+        <tr>
+            <td><%= p1rank %></td>
+            <td><%= p1deck %></td>
+            <td><a href={"#{ url }"}>VS</a></td>
+            <td><%= p2deck %></td>
+            <td><%= p2rank %></td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>
