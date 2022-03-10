@@ -1,10 +1,11 @@
 <div class="title is-2">Leaderboard</div>
 <div class="subtitle is-6">
-    <%= if @updated_at do %>
-        Updated at <%= render_datetime @updated_at %>
-    <% end %>
+    <a target="_blank" href="<%= Routes.leaderboard_path(@conn, :player_stats) %>">Stats</a>
     <%= if @official_link do %>
-        <a target="_blank" href="<%= @official_link %>">Official Site</a>
+    |    <a target="_blank" href="<%= @official_link %>">Official Site</a>
+    <% end %>
+    <%= if @updated_at do %>
+    |     Updated at <%= render_datetime @updated_at %>
     <% end %>
 </div>
 <div id="nitropay-below-title-leaderboard"></div><br>
@@ -12,11 +13,6 @@
 <%= if @old do %>
     <div class="notification is-warning">
         WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
-    </div>
-<% end %>
-<%= if @leaderboard_id == "STD" and @season_id == 87 do %>
-    <div class="notification is-warning">
-        WARNING: I'm assuming Americas is the "host" region for Ironforge based on the timezone. Ladder Mode regional priority is done according to last years rules until we get updated rules
     </div>
 <% end %>
 <%= @highlighted && render("table.html", leaderboard_id: @leaderboard_id, table_entries: @highlighted, crystal: @crystal, show_mt_column: @show_mt_column, conn: @conn, show_flags: @show_flags) %>
