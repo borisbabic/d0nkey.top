@@ -2,7 +2,6 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
   import Plug.BasicAuth
-  require Incendium
 
   pipeline :auth do
     plug Backend.UserManager.Pipeline
@@ -59,10 +58,6 @@ defmodule BackendWeb.Router do
     get "/who-am-i", ApiController, :who_am_i
     post "/dt/game", DeckTrackerController, :put_game
     put "/dt/game", DeckTrackerController, :put_game
-  end
-
-  scope "/incendium", BackendWeb do
-    Incendium.routes(IncendiumController)
   end
 
   scope "/", BackendWeb do

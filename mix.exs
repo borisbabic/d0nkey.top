@@ -34,12 +34,19 @@ defmodule Backend.MixProject do
   defp deps do
     [
       {:cowlib, "~> 2.8.0", override: true},
-      {:phoenix, "~> 1.5.0"},
+      {:phoenix, "~> 1.6.0"},
+      {:phoenix_html, "~> 3.0"},
+      {:phoenix_live_view, "~> 0.16.4"},
+      {:phoenix_live_dashboard, "~> 0.5"},
+      {:telemetry_poller, "~> 0.5"},
+      {:telemetry_metrics, "~> 0.6"},
+      {:torch, git: "https://github.com/mojotech/torch.git", branch: "v4"},
+
+
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.1"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
@@ -52,13 +59,9 @@ defmodule Backend.MixProject do
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:varint, "~> 1.0.0"},
       {:timex, "~> 3.5"},
-      {:phoenix_live_view, "~> 0.15.0"},
       {:floki, ">= 0.27.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
       {:tesla, "~> 1.3.0"},
       {:tesla_cache, "~> 1.1.0"},
-      {:telemetry_metrics, "~> 0.4"},
       {:guardian, "~> 2.0"},
       {:ueberauth, "~>0.6"},
       {:ueberauth_bnet, "~>0.2"},
@@ -69,7 +72,6 @@ defmodule Backend.MixProject do
       {:absinthe_relay, "~> 1.5.0"},
       {:surface, "~> 0.5.0"},
       {:wait_for_it, "~>1.1"},
-      {:torch, "~> 3.4"},
       {:oban, "~> 2.5"},
       {:postgrex_pubsub, "~> 0.2.0"},
       {:phoenix_meta_tags, ">= 0.1.8"},
@@ -77,7 +79,6 @@ defmodule Backend.MixProject do
       {:extwitter, "~> 0.12"},
       {:ueberauth_twitch, "~> 0.0.2"},
       {:bcrypt_elixir, "~> 2.3.0"},
-      {:incendium, "~>0.3.1"},
       {:table_rex, "~> 3.1.1"},
       {:contex, "~> 0.4.0"},
       {:surface_bulma, "~> 0.2.0"},
@@ -85,6 +86,7 @@ defmodule Backend.MixProject do
       {:etop, "~> 0.7"},
       {:solid, "~> 0.10"},
       {:ecto_psql_extras, "~> 0.6"},
+      {:esbuild, "~> 0.2", runtime: Mix.env() == :dev},
       {:quantum, "~> 2.3"}
     ]
   end
