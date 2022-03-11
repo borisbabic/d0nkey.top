@@ -44,13 +44,13 @@ defmodule BackendWeb.DeckviewerLive do
         <br>
         <div class="level">
           <div class="level-item">
-            <Form for={:new_deck} submit="submit" opts={autocomplete: "off"}>
+            <Form submit="submit" for={:new_deck} opts={autocomplete: "off", id: "add_deck_form"}>
               <div class="columns is-mobile is-multiline">
-                <Field name="new_code">
                   <div class="column is-narrow">
-                    <TextArea class="textarea has-fixed-size small" opts={placeholder: "Paste deckcode or link", size: "30", rows: "1"}/>
+                    <Field name="new_code">
+                        <TextArea class="textarea has-fixed-size small" opts={placeholder: "Paste deckcode or link", size: "30", rows: "1"}/>
+                    </Field>
                   </div>
-                </Field>
                   <div class="column is-narrow">
                     <Submit label="Add" class="button"/>
                   </div>
@@ -152,6 +152,17 @@ defmodule BackendWeb.DeckviewerLive do
     end
   end
 
+
+  def extract_decks(new_code) do
+      cond do
+        HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
+        Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
+        our_link?(new_code) -> extract_codes(new_code)
+        true -> [new_code]
+      end
+      |> Deck.shorten_codes()
+  end
+
   def handle_event(
         "submit",
         %{"new_deck" => %{"new_code" => new_code}},
@@ -171,16 +182,6 @@ defmodule BackendWeb.DeckviewerLive do
           )
       )
     }
-  end
-
-  def extract_decks(new_code) do
-      cond do
-        HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
-        Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
-        our_link?(new_code) -> extract_codes(new_code)
-        true -> [new_code]
-      end
-      |> Deck.shorten_codes()
   end
 
   def handle_event("delete", %{"index" => index}, socket = %{assigns: %{deckcodes: dc}}) do
