@@ -7,7 +7,7 @@ defmodule BackendWeb.LeaderboardController do
   require Backend.LobbyLegends
 
   def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
-    leaderboard = get_leaderboard(params)
+    leaderboard = get_leaderboard(params) |> hack_lobby_legends_season(params)
     compare_to = params["compare_to"]
     comparison = get_comparison(leaderboard, compare_to)
     ladder_mode = parse_ladder_mode(params)
@@ -30,6 +30,9 @@ defmodule BackendWeb.LeaderboardController do
       ladder_mode: ladder_mode
     })
   end
+  defp hack_lobby_legends_season(ldb = %{}, %{"seasonId" => new_season = "lobby_legends" <> _}), do: Map.put(ldb, :season_id, new_season)
+  defp hack_lobby_legends_season(ldb,_), do: ldb
+
   def parse_skip_cn(%{"skip_cn" => skip}, _) when skip in ["all", "previously_skipped", "none"], do: skip
   def parse_skip_cn(_, _), do: "all"
 

@@ -1,6 +1,7 @@
 defmodule Backend.Blizzard do
   @moduledoc false
 
+  require Backend.LobbyLegends
   alias Backend.Infrastructure.BlizzardCommunicator, as: Api
   alias Backend.Blizzard.Leaderboard
   alias Backend.Hearthstone
@@ -232,13 +233,10 @@ defmodule Backend.Blizzard do
       {:error, _} -> []
     end
   end
-  def ladders_to_check(season_id, ldb, region) when is_integer(season_id) and ldb in ["BG", :BG] do
-    if season_id > 4 do
-      skip_current(@timezone_order, region)
-    else
-      []
-    end
-  end
+
+  def ladders_to_check(s, ldb, region) when ldb in ["BG", :BG] and Backend.LobbyLegends.is_lobby_legends(s),
+    do: skip_current(@timezone_order, region)
+  def ladders_to_check(_, ldb, _) when ldb in ["BG", :BG], do: []
 
   # credo:disable-next-line
   # todo Perhaps move to leaderboard module?

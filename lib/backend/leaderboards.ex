@@ -29,6 +29,7 @@ defmodule Backend.Leaderboards do
 
   @type categorized_entries :: [{[entry], Blizzard.region(), Blizzard.leaderboard()}]
 
+  defp should_avoid_fetching?(_r, _l, "lobby_legends_" <> _), do: true
   defp should_avoid_fetching?(r, l, s) when is_binary(s),
     do: should_avoid_fetching?(r, l, Util.to_int(s, nil))
 
@@ -340,6 +341,20 @@ defmodule Backend.Leaderboards do
     |> where([s], s.region == ^to_string(region))
   end
 
+  defp compose_snapshot_query({"season_id", "lobby_legends_" <> season}, query) do
+    case lobby_legends_ends(season) do
+      %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id} ->
+        new_query = query
+        |> where(
+          [s],
+             (s.region == "AP" and s.upstream_updated_at <= ^ap_end)
+          or (s.region == "EU" and s.upstream_updated_at <= ^eu_end)
+          or (s.region == "US" and s.upstream_updated_at <= ^us_end)
+          )
+          compose_snapshot_query({"season_id", season_id}, new_query)
+      _ -> query
+    end
+  end
   defp compose_snapshot_query({"season_id", season_id}, query) do
     query
     |> where([s], s.season_id == ^season_id)
@@ -447,4 +462,22 @@ defmodule Backend.Leaderboards do
     |> Enum.sort_by(& &1.upstream_updated_at, & NaiveDateTime.compare(&1, &2) == :lt)
     |> Enum.dedup_by(& Map.get(&1, changed_attr))
   end
+
+  def lobby_legends_config() do
+    %{
+      "2" => %{
+        season_id: 5,
+        ap: ~N[2022-03-31T16:00:00],
+        eu: ~N[2022-03-31T22:00:00],
+        us: ~N[2022-04-01T07:00:00]
+      },
+      "1" => %{
+        season_id: 5,
+        ap: ~N[2022-02-28T16:00:00],
+        eu: ~N[2022-02-28T23:00:00],
+        us: ~N[2022-03-01T08:00:00]
+      }
+    }
+  end
+  defp lobby_legends_ends(lls), do: lobby_legends_config() |> Map.get(lls)
 end
