@@ -4,6 +4,7 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.PlayerInfo
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
+  alias Backend.Leaderboards
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
   alias BackendWeb.ViewUtil
@@ -480,6 +481,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def show_mt_column?(_), do: nil
 
+  def old?(%{season_id: s, leaderboard_id: "BG"}) when Backend.LobbyLegends.is_lobby_legends(s), do: false
   def old?(%{upstream_updated_at: updated_at, season_id: 94, leaderboard_id: "STD", region: "US"}) do
     updated_at && DateTime.diff(DateTime.utc_now(), updated_at) &&
       DateTime.diff(DateTime.utc_now(), ~U[2021-09-01T07:00:00Z]) < 0
@@ -536,12 +538,23 @@ defmodule BackendWeb.LeaderboardView do
   """
   @spec create_selectable_seasons(Calendar.date(), String.t() | atom()) :: [selectable_season]
   def create_selectable_seasons(_today, ldb ) when ldb in [:BG, "BG"] do
-      Blizzard.get_current_ladder_season(:BG)..0
-      |> Enum.take(7)
-      |> Enum.map(fn s ->
-        name = Blizzard.get_season_name(s, :BG)
-        {name, s}
-      end)
+      regular =
+        Blizzard.get_current_ladder_season(:BG)..0
+        |> Enum.take(7)
+        |> Enum.map(fn s ->
+          name = Blizzard.get_season_name(s, :BG)
+          {name, s}
+        end)
+
+      lobby_legends =
+        Leaderboards.lobby_legends_config()
+        |> Map.keys()
+        |> Enum.sort(:desc)
+        |> Enum.map(fn num ->
+          {"Lobby Legends #{num}", "lobby_legends_#{num}"}
+        end)
+
+      lobby_legends ++ regular
   end
   def create_selectable_seasons(today, ldb) do
     tomorrow = Date.add(today, 1)
