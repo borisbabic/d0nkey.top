@@ -59,6 +59,10 @@ defmodule BackendWeb.ProfileSettingsLive do
               <Select selected={DecklistOptions.gradient(@user.decklist_options)} class="select" options={ "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey"}/>
               <Label>Gradient Color</Label>
             </Field>
+            <Field name="show_one">
+              <Checkbox value={DecklistOptions.show_one(@user.decklist_options)} />
+              <Label>Show 1 for singleton cards</Label>
+            </Field>
             <br>
             <Field name="replay_preference">
               <Select selected={@user.replay_preference} class="select" options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
@@ -134,14 +138,19 @@ defmodule BackendWeb.ProfileSettingsLive do
   def parse_decklist_options(attrs) do
     decklist_options =
       %{}
-      |> parse_decklist_option(attrs, "gradient")
-      |> parse_decklist_option(attrs, "border")
+      |> parse_decklist_color_option(attrs, "gradient")
+      |> parse_decklist_color_option(attrs, "border")
+      |> parse_decklist_option(attrs, "show_one", DecklistOptions.show_one_default())
 
     attrs |> Map.put("decklist_options", decklist_options)
   end
 
-  def parse_decklist_option(attrs, params, key) do
-    if params[key] && DecklistOptions.valid?(params[key]) do
+  def parse_decklist_option(attrs, params, key, default) do
+    val = Map.get(params, key, default)
+    Map.put(attrs, key, val)
+  end
+  def parse_decklist_color_option(attrs, params, key) do
+    if params[key] && DecklistOptions.valid_color?(params[key]) do
       attrs |> Map.put(key, params[key])
     else
       attrs
