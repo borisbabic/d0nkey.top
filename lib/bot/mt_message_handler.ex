@@ -30,7 +30,7 @@ defmodule Bot.MTMessageHandler do
       num = Backend.MastersTour.Qualifier.num(q)
       title = "MTQ #{num}"
 
-      standings = Backend.Battlefy.get_standings(q.id)
+      standings = Backend.Battlefy.get_standings(q.id) |> Backend.Battlefy.sort_standings()
       rows = Bot.BattlefyMessageHandler.create_message_cells(battletags, standings)
       case rows do
         [] -> nil
