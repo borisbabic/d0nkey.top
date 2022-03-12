@@ -101,18 +101,23 @@ defmodule Backend.UserManager.User.DecklistOptions do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @default_show_one false
   @primary_key false
   embedded_schema do
     field :border, :string
+    field :show_one, :boolean, default: @default_show_one
     field :gradient, :string
   end
 
   @doc false
   def changeset(entry, attrs) do
     entry
-    |> cast(attrs, [:border, :gradient])
+    |> cast(attrs, [:border, :gradient, :show_one])
     |> validate_colors([:border, :gradient])
   end
+
+  def show_one(%{show_one: show_one}), do: show_one
+  def show_one(_), do: false
 
   def border(%{border: b}), do: b
   def border(_), do: "dark_grey"
@@ -120,13 +125,15 @@ defmodule Backend.UserManager.User.DecklistOptions do
   def gradient(%{gradient: g}), do: g
   def gradient(_), do: "rarity"
 
-  def valid?(opt), do: opt in ["dark_grey", "card_class", "deck_class", "rarity"]
+  def valid_color?(opt), do: opt in ["dark_grey", "card_class", "deck_class", "rarity"]
+
+  def show_one_default(), do: @default_show_one
 
   def validate_colors(changeset, fields) do
     fields
     |> Enum.reduce(changeset, fn f, cs ->
       validate_change(cs, f, fn f, value ->
-        if valid?(value) do
+        if valid_color?(value) do
           []
         else
           [{f, "Invalid color for decklist options"}]

@@ -2,6 +2,7 @@ defmodule Components.DecklistCard do
   @moduledoc false
   use Surface.Component
   alias Backend.HearthstoneJson
+  alias Backend.UserManager.User.DecklistOptions
   prop(count, :integer, required: true)
   prop(card, :map, required: true)
   prop(deck_class, :string, default: "NEUTRAL")
@@ -63,7 +64,7 @@ defmodule Components.DecklistCard do
             </div>
             <div style={"background-image: url('#{tile_url}');"} class="decklist-card-tile">
             </div>
-            <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable"> {@count}</span>
+            <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable">{count(@count, @card, @decklist_options)}</span>
             <div id={"#{id}"} class="decklist-card-image" style={"background-image: url('#{card_url}')"}></div>
           </div>
         </div>
@@ -72,6 +73,13 @@ defmodule Components.DecklistCard do
     """
   end
 
+  defp count(1, %{rarity: "LEGENDARY"}, _), do: "⋆"
+  defp count(1, _, decklist_options) do
+    if DecklistOptions.show_one(decklist_options) do
+      1
+    end
+  end
+  defp count(count, _, _), do: count
   @spec tile_card_url(Backend.HearthstoneJson.Card.t()) :: {String.t(), String.t()}
   defp tile_card_url(card = %{dbf_id: dbf_id}) do
     {tile_url, _card_url} = Backend.Hearthstone.CardBag.tile_card_url(dbf_id)
