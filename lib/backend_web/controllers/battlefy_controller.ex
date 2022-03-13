@@ -49,6 +49,7 @@ defmodule BackendWeb.BattlefyController do
   def profile_tournament(conn, params), do: tournament(conn, params)
 
   def tournament(conn, params = %{"tournament_id" => tournament_id}) do
+    Logger.debug("tournament params #{inspect(params)}")
     tournament = Battlefy.get_tournament(tournament_id)
     Logger.debug("Fetched tournament")
     invited_mapset = invited_mapset(params, tournament)
@@ -129,7 +130,7 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
-    existing |> Map.merge(%{standings: standings, matches: matches, show_ongoing: show_ongoing})
+    existing |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
   end
 
   defp add_matches_standings(existing = %{tournament: tournament}, params) do
@@ -142,7 +143,7 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
-    existing |> Map.merge(%{standings: standings, matches: matches, show_ongoing: show_ongoing})
+    existing |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
   end
 
   def get_highlight(params), do: multi_select_to_array(params["player"])

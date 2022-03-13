@@ -3,7 +3,7 @@
 <div id="nitropay-below-title-leaderboard"></div><br>
 
 <div>
-<%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @id), [method: :get], fn
+<%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @tournament.id), [method: :get], fn
 f-> %>
     <%= if @show_stage_selection do %>
         <div class="dropdown is-hoverable">
@@ -35,7 +35,10 @@ f-> %>
 <% end %>
 </div>
 
-<%= if Enum.any?(@highlight) do %>
-    <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlight, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
+<%= if Enum.any?(@highlighted_standings) do %>
+    <div id="highlighted_standings">
+        <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlighted_standings, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
+        <br>
+    </div>
 <% end %>
 <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @standings, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
