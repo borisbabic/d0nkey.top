@@ -10,13 +10,13 @@
                 <th>Score</th>
             <% end %>
             <%= if @show_ongoing do %>
-                <th><abbr title="Ongoing Match Score">Ongoing</abbr></th>
+                <th class="ongoing_score_column"><abbr title="Ongoing Match Score">Ongoing</abbr></th>
             <% end %>
             <%= if @show_ongoing do %>
-                <th><abbr title="Ongoing Match Opponent">Opponent</abbr></th>
+                <th class="ongoing_opponent_column"><abbr title="Ongoing Match Opponent">Opponent</abbr></th>
             <% end %>
             <%= if @show_earnings do %>
-                <th><abbr title="Earnings for the next season of GM">Earnings</abbr></th>
+                <th class="earnings_column"><abbr title="Earnings for the next season of GM">Earnings</abbr></th>
             <% end %>
             <%= if @show_decks do %>
                 <th>Decks</th>
