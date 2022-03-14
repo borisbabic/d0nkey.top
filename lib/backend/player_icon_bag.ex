@@ -10,6 +10,7 @@ defmodule Backend.PlayerIconBag do
     {"Faeli#2572", {:image, "/images/icons/faeli.png"}}, #donation, remove in summer 2022? maybe?
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
     {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}}, #MTOne Fantasy
+    {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}}, # MTOne Fantasy
     {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
     {"otters#11111", {:image, "/images/icons/otters.png"}}, # patreon
     # {"BruTo#21173", {:image, "/images/icons/bruto.png"}},

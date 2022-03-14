@@ -284,6 +284,7 @@ defmodule BackendWeb.BattlefyView do
     |> Map.put(:use_countries, true)
     |> handle_standings()
     |> handle_highlights()
+    |> put_param(:user_subtitle, &user_subtitle/1)
     |> put_param(:subtitle, &tournament_subtitle/1)
     |> put_param(:player_options, &create_player_options/1)
     |> put_param(:dropdowns, &create_tournament_dropdowns/1)
@@ -514,14 +515,30 @@ defmodule BackendWeb.BattlefyView do
     {total, not_nil_nil}
   end
 
-  def tournament_subtitle(%{tournament: tournament, standings: standings, ongoing: ongoing}) do
+  def tournament_subtitle(params = %{tournament: tournament, standings: standings, ongoing: ongoing}) do
     []
     |> add_duration_subtitle(tournament)
     |> add_player_count_subtitle(standings)
     |> add_ongoing_subtitle(ongoing)
-    |> Enum.join(" ")
+    |> Enum.join(" | ")
   end
 
+  defp user_subtitle(params = %{conn: conn, standings: standings, tournament: %{id: id}}) do
+    with %{battletag: battletag} <- BackendWeb.AuthUtils.user(conn),
+        [_|_] <- standings,
+        true <- Enum.any?(standings, & &1.name == battletag) do
+          assigns = %{}
+            ~H"""
+            <a href={Routes.battlefy_path(conn, :tournament_player, id, battletag)}>
+              <%= battletag %>
+            </a>
+            """
+    else
+      _ -> nil
+    end
+  end
+
+  defp user_subtitle(_), do: nil
   def add_duration_subtitle(subtitles, tournament) do
     subtitles ++
       case Backend.Battlefy.Tournament.get_duration(tournament) do
