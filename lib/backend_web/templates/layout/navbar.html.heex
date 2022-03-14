@@ -109,7 +109,7 @@
        </div>
          <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
          <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
-         <%= if !show_fantasy?() do %>
+         <%= if !show_fantasy?()  || Backend.MastersTour.TourStop.get_current() in [:"Masters Tour Two"] do %>
           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.MaxNations2022Live) }"}>
             Max Nations
             <%= if Backend.MaxNations2022.live?() do %>

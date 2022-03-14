@@ -49,7 +49,7 @@ defmodule Backend.MaxNations2022 do
       "Spain" => [ "L3bjorge#2966", "Frenetic#2377", "BruTo#21173" ],
       "Sweden" => [ "Orange#23456", "Chewie#21810", "Sensei6#2330" ],
       "Switzerland" => [ "TheRabbin#2401", "GAP1698#2858", "RockyN1#2773" ],
-      "Taiwan" => [ "Shaxy#4385", "山下智久#3502", "西陵珩#3799" ],
+      "Taiwan" => [ "Shaxy#4385", "山下智久#3502", "西陵珩#3799" , "聖水洋洋#4496"],
       "Thailand" => [ "Bankyugi#1988", "eCrazy#11771", "Phai#11410" ],
       "Turkey" => [ "Hypnos#21372", "Rocco#22899", "Whiterun#21522" ],
       "United Kingdom" => [ "DeadDraw#2311", "Jambre#1597", "PocketTrain#2645" ],
