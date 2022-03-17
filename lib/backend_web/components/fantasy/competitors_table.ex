@@ -37,7 +37,7 @@ defmodule Components.CompetitorsTable do
           </div>
         </div>
       </Form>
-      <div :if={prepared = prepare_data(@participants, @league, @search)}>
+      <div :if={prepared = prepare_data(@participants, @league, @search) |> sort(@mt_stats)}>
         <Table id="competitiors_table" data={participant <- prepared} striped>
           <Column label="Competitor">
             {#if player_profile?(@league)}
@@ -45,6 +45,19 @@ defmodule Components.CompetitorsTable do
             {#else}
               <span>{participant.name}</span>
             {/if}
+          </Column>
+          <Column label="Signed Up">
+            {#if Participant.in_battlefy?(participant) }
+            Yes
+            {#else}
+            No
+            {/if}
+          </Column>
+          <Column label="MTs Played">
+            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :total])}
+          </Column>
+          <Column label="MT Winrate %">
+            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :winrate])}
           </Column>
           <Column label="Status">
             <div :if={picked_by = picked_by(@league, participant, @user)}>
@@ -65,6 +78,14 @@ defmodule Components.CompetitorsTable do
     </div>
     """
   end
+
+  defp sort(data, nil), do: data
+  defp sort(data, mt_stats) do
+    Enum.sort_by(data, fn %{name: name} ->
+      get_in(mt_stats, [MastersTour.fix_name(name), :wins]) || 0
+    end, :desc)
+  end
+
   def prepare_data(participants, league, search), do: participants |> filter(search) |> Enum.uniq_by(& &1.name) |> cut(league)
 
   def player_profile?(league), do: gm?(league) || mt?(league)
