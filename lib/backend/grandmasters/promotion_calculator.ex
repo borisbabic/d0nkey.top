@@ -136,6 +136,12 @@ defmodule Backend.Grandmasters.PromotionCalculator do
     end)
   end
 
+  def swiss_points(standings, :match_wins, _), do: match_wins(standings)
+
+  defp match_wins(standings), do: Enum.map(standings, fn %{team: %{name: name}, wins: wins, place: place} ->
+    {name, wins, place}
+  end)
+
   @first_earnings {32_500, 1}
   @second_earnings {22_500, 2}
   @top4_earnings {15_000, 3}
@@ -185,14 +191,15 @@ defmodule Backend.Grandmasters.PromotionCalculator do
       {name, points, place}
     end)
   end
+  def top_cut_points(standings, :match_wins, _), do: match_wins(standings)
 
   # 2020 9-16 in swiss are treated as 9th
   # https://twitter.com/GnimshTV/status/1398550231634034688
   defp normalize_2021_swiss_place(place) when place > 8 and place < 17, do: 9
   defp normalize_2021_swiss_place(place), do: place
 
-  defp merge_points(:points_2021, swiss, top), do: swiss + top
   defp merge_points(:earnings_2020, _, top), do: top
+  defp merge_points(_, swiss, top), do: swiss + top
 
   @spec convert_to_legacy([PromotionRanking.t()]) :: MastersTour.gm_money_rankings()
   def convert_to_legacy(promotion) do

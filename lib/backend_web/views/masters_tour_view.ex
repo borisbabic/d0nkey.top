@@ -419,7 +419,7 @@ defmodule BackendWeb.MastersTourView do
 
   def create_point_system_dropdown(conn) do
     options =
-      [{"2020 Earnings", "mt_earnings_2020"}, {"2021 Points", "gm_points_2021"}]
+      [{"2020 Earnings", "mt_earnings_2020"}, {"2021 Points", "gm_points_2021"}, {"2022 Season Championships", "match_wins"}]
       |> Enum.map(fn {name, val} ->
         %{
           display: name,
@@ -468,10 +468,11 @@ defmodule BackendWeb.MastersTourView do
 
   def create_season_dropdown(conn, {year, season}) do
     options =
-      [{2020, 2}, {2021, 1}, {2021, 2}, {2022, 1}, {2022, 2}]
+      [{2020, 2}, {2021, 1}, {2021, 2}, {2022, 1}, {2022, 2}, {2022, :summer}, {2022, :fall}]
+      |> Enum.reverse()
       |> Enum.map(fn {y, s} ->
         %{
-          display: "#{y} Season #{s}",
+          display: season_display(y, s),
           selected: y == year && s == season,
           link:
             Routes.masters_tour_path(
@@ -484,6 +485,10 @@ defmodule BackendWeb.MastersTourView do
 
     {options, "Select Season"}
   end
+
+  defp season_display(2022, 2), do: "2022 Last Call"
+  defp season_display(year, season) when is_integer(season), do: "#{year} Season #{season}"
+  defp season_display(year, season), do: "#{year} #{season |> to_string() |> String.capitalize()}"
 
   def create_current_score_dropdown(conn, show_current_score) do
     {[
