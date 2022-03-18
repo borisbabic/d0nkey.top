@@ -961,6 +961,7 @@ defmodule Backend.MastersTour do
 
   defp mt_tournament_cache_key(%{id: id}), do: "mt_tournament_#{id}"
 
+  def get_mt_tournament(nil), do: nil
   def get_mt_tournament(ts) when is_atom(ts) or is_binary(ts),
     do: ts |> TourStop.get() |> get_mt_tournament()
 

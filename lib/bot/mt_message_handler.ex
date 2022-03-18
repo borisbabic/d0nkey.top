@@ -2,6 +2,34 @@ defmodule Bot.MTMessageHandler do
   @moduledoc false
   import Bot.MessageHandlerUtil
   alias Backend.MastersTour
+  alias Backend.MastersTour.TourStop
+  require Logger
+
+  def handle_mt_standings(msg = %{content: content}) do
+    content
+      |> get_options(:string)
+      |> TourStop.get()
+      |> or_current_mt()
+      |> mt_message(msg)
+      |> send_or_travolta(msg.channel_id)
+  end
+
+  def mt_message(ts = %{battlefy_id: battlefy_id}, message) when is_binary(battlefy_id) do
+    Logger.debug("Getting mt message for #{ts.id} #{battlefy_id} ")
+    with %{stages: [s | _ ] } <- MastersTour.get_mt_tournament(ts),
+        standings <- MastersTour.get_mt_stage_standings(s, ts),
+        battletags = [_|_] <- get_guild_battletags!(message.guild_id) do
+          Bot.BattlefyMessageHandler.create_message(battletags, standings, &MastersTour.fix_name/1)
+    else
+      other ->
+        Logger.debug("Unable to create standings message: #{inspect(other)}")
+        ""
+    end
+  end
+  def mt_message(_, _), do: ""
+
+  defp or_current_mt(mt = %{id: _}), do: mt
+  defp or_current_mt(_), do: TourStop.get_current(-1, 240) |> TourStop.get()
 
   def handle_qualifier_standings(msg = %{content: content}) do
     with {num, _} <- content |> get_options(:string) |> Integer.parse(),
@@ -12,7 +40,6 @@ defmodule Bot.MTMessageHandler do
         recent_qualifier_standings(msg)
     end
   end
-
 
   def standings_message(guild_id, num) when is_integer(num) do
     with %{id: id} <- MastersTour.get_qualifier(num),
@@ -49,6 +76,6 @@ defmodule Bot.MTMessageHandler do
 
   def recent_qualifier_standings(msg = %{guild_id: guild_id}) do
     message = standings_message(guild_id)
-    send_message(message, msg.channel_id)
+    send_or_travolta(message, msg.channel_id)
   end
 end

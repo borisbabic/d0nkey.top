@@ -3,6 +3,7 @@ defmodule Bot.BattlefyMessageHandler do
   alias Nostrum.Api
   alias Backend.Battlefy
   import Bot.MessageHandlerUtil
+  require Logger
 
   def handle_tournament_standings(message = %{content: content}),
     do:
@@ -21,7 +22,9 @@ defmodule Bot.BattlefyMessageHandler do
          battletags = [_|_] <- get_guild_battletags!(guild_id) do
           {:ok, create_message(battletags, standings)}
     else
-      _ -> {:error, :could_not_create_message}
+      other ->
+        Logger.debug("Unable to create standings message: #{inspect(other)}")
+        {:error, :could_not_create_message}
     end
   end
 
@@ -35,17 +38,18 @@ defmodule Bot.BattlefyMessageHandler do
     Api.create_message(channel_id, message)
   end
 
-  @spec create_message([String.t()], [Battlefy.Standings.t()]) :: String.t()
-  def create_message(battletags, standings) do
-    create_message_cells(battletags, standings)
+  @spec create_message([String.t()], [Battlefy.Standings.t()], (String.t() :: String.t())) :: String.t()
+  def create_message(battletags, standings, name_mapper \\ & &1) do
+    create_message_cells(battletags, standings, name_mapper)
     |> Enum.map_join("\n", &cells_to_msg/1)
   end
 
   def cells_to_msg(cells), do: Enum.join(cells, " ")
 
-  def create_message_cells(battletags, standings) do
+  def create_message_cells(unmapped, standings, mapper \\ & &1) do
+    battletags = Enum.map(unmapped, mapper)
     standings
-    |> Enum.filter(&(&1.team && &1.team.name in battletags))
+    |> Enum.filter(&(&1.team && mapper.(&1.team.name) in battletags))
     |> Enum.map(fn s ->
       score =
         if s.wins && s.losses do
