@@ -29,7 +29,7 @@ defmodule Bot.MTMessageHandler do
   def mt_message(_, _), do: ""
 
   defp or_current_mt(mt = %{id: _}), do: mt
-  defp or_current_mt(_), do: TourStop.get_current(-1, 240) |> TourStop.get()
+  defp or_current_mt(_), do: TourStop.get_current(1, 240) |> TourStop.get()
 
   def handle_qualifier_standings(msg = %{content: content}) do
     with {num, _} <- content |> get_options(:string) |> Integer.parse(),
