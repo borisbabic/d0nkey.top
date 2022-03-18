@@ -72,4 +72,15 @@ defmodule Bot.MessageHandlerUtil do
   def send_message(_, channel_id) do
     Logger.error("Couldn't send discord message to #{channel_id}")
   end
+
+  def send_travolta(channel_id), do:
+    Api.create_message(channel_id, file: "assets/static/images/travolta.gif")
+
+  def send_or_travolta(message, channel_id) do
+    if String.replace(message, "`", "") |> String.trim() |> String.first() do
+      send_message(message, channel_id)
+    else
+      send_travolta(channel_id)
+    end
+  end
 end

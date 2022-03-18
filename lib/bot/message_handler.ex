@@ -22,6 +22,7 @@ defmodule Bot.MessageHandler do
       <<"!matchup", _::binary>> -> Bot.MatchupMessageHandler.handle_matchup(msg)
       <<"!battlefy", _::binary>> -> Bot.BattlefyMessageHandler.handle_tournament_standings(msg)
       <<"!mtq", _::binary>> -> Bot.MTMessageHandler.handle_qualifier_standings(msg)
+      <<"!mt", _::binary>> -> Bot.MTMessageHandler.handle_mt_standings(msg)
       _ -> :ignore
     end
   end
