@@ -25,7 +25,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
     ### #{class_name}
     # Class: #{class_name}
     # Format: #{format |> Deck.format_name()}
-    # 
+    #
     #{cards_part}
     #
     #{deckcode}
