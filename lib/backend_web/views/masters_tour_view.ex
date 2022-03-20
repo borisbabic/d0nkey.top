@@ -547,8 +547,8 @@ defmodule BackendWeb.MastersTourView do
 
   def show_current_score_dropdown?(gm_season) do
     with current_ts when not is_nil(current_ts) <- MastersTour.TourStop.get_current(),
-         {:ok, ts_season} <- Backend.Blizzard.get_promotion_season_for_gm(current_ts) do
-      gm_season == ts_season
+         {:ok, tour_stops} <- Backend.Blizzard.get_tour_stops_for_gm(gm_season) do
+      current_ts in tour_stops
     else
       _ -> false
     end
