@@ -948,8 +948,12 @@ defmodule Backend.MastersTour do
       "SuperKimchi" -> "DOLGALLERY"
       "DOLGALLERY" -> "hyung"
       "JrsLoveStorm" -> "RNGLoveStorm"
-      "SNBrox" -> "WBGBrox#1783"
+      "SNBrox" -> "WBGBrox"
       "jiuqianyu" -> "WBGJiuqianyu"
+
+
+      ###
+      "RyshHyunGod" -> "RyshSmallHyun"
       n -> n
     end
     if new == name do
