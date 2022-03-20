@@ -115,7 +115,7 @@
        </div>
          <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
          <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
-         <%= if !show_fantasy?()  || Backend.MastersTour.TourStop.get_current(96) in [:"Masters Tour Two"] do %>
+         <%= if :gt == NaiveDateTime.compare(~N[2022-03-28 13:37:00], NaiveDateTime.utc_now()) &&(!show_fantasy?()  || Backend.MastersTour.TourStop.get_current(96) in [:"Masters Tour Two"]) do %>
           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.MaxNations2022Live) }"}>
             Max Nations
             <%= if Backend.MaxNations2022.live?() do %>
