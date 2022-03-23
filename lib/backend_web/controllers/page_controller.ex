@@ -49,4 +49,10 @@ defmodule BackendWeb.PageController do
       |> redirect(external: Backend.AdsTxtCache.nitropay_url())
     end
   end
+
+  def rick_astley(conn, params) do
+    conn
+    |> put_status(302)
+    |> redirect(external: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+  end
 end
