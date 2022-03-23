@@ -125,10 +125,27 @@ defmodule Backend.MastersTour do
   end
 
   def create_and_cache_stats(qualifiers, period) do
-    stats = PlayerStats.create_collection(qualifiers)
+    stats = PlayerStats.create_collection(qualifiers, full_btag_grouping_func())
     ret = {stats, Enum.count(qualifiers)}
     PlayerStatsCache.set(period, ret)
     ret
+  end
+
+  def full_btag_grouping_func() do
+    all_btags =
+      Repo.all(Backend.Battlenet.OldBattletag)
+      |> Enum.map(& {&1.old_battletag, &1.new_battletag})
+      |> Map.new()
+    fn %{battletag_full: btag} ->
+      do_full_btag_grouping(btag, all_btags)
+    end
+  end
+  defp do_full_btag_grouping(btag, map) do
+    case Map.get(map, btag) do
+      nil -> btag
+      new when new == btag -> new
+      new -> do_full_btag_grouping(new, map)
+    end
   end
 
   def get_player_stats(:all) do
