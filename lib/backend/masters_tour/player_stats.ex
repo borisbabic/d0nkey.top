@@ -15,13 +15,20 @@ defmodule Backend.MastersTour.PlayerStats do
     field :positions, {:array, :integer}
   end
 
-  def create_collection(qualifiers) do
+  def create_collection(qualifiers, btag_func \\ & &1.battletag_full) do
     qualifiers
     |> Enum.flat_map(fn q -> q.standings end)
-    |> Enum.group_by(fn p -> p.battletag_full end)
+    |> Enum.group_by(btag_func, & Map.put(&1, :battletag_full, btag_func.(&1)))
     |> Enum.map(&calculate_player_stats/1)
   end
 
+  @spec calculate_player_stats(
+          nonempty_maybe_improper_list
+          | {any,
+             nonempty_maybe_improper_list
+             | {any,
+                nonempty_maybe_improper_list | {any, nonempty_maybe_improper_list | {any, any}}}}
+        ) :: any
   def calculate_player_stats({_, ps}), do: calculate_player_stats(ps)
   def calculate_player_stats([first | rest]), do: rest |> Enum.reduce(create(first), &update/2)
 
