@@ -667,7 +667,7 @@ defmodule Backend.Blizzard do
     end
   end
 
-  def playin_weeks({2022, 2}), do: 3
+  def playin_weeks({2022, 1}), do: 3
   def playin_weeks(_), do: 7
 
   def current_gm_week(season),

@@ -909,11 +909,16 @@ defmodule Backend.MastersTour do
       "동기링" -> "donggiring"
       "투블럭컷밥말리" -> "twobob"
 
+      #dm
+      "HachikujiMay" -> "Hachikuji"
       #edward ed
       "八九寺真宵" -> "HachikujiMay"
       "嗨賴保證書" -> "highlight"
       "星殞晨風" -> "StarfallMW"
       "眠たげなクマ" -> "nemutagenaku"
+
+      #newer
+      "nemutagenaku" -> "nemutagenakuma"
 
         #maybe there are more Kevin's
       "Kevin" -> "KevinXuan"
@@ -954,6 +959,7 @@ defmodule Backend.MastersTour do
 
       ###
       "RyshHyunGod" -> "RyshSmallHyun"
+
       n -> n
     end
     if new == name do
