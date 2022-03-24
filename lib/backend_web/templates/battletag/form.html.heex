@@ -27,7 +27,7 @@
   
     <div class="torch-form-group">
       <%= label f, :priority %>
-      <%= number_input f, :priority, value: 5000 %>
+      <%= number_input f, :priority, value: @changeset.data.priority || 5000 %>
       <%= error_tag f, :priority %>
     </div>
 
