@@ -8,12 +8,6 @@ defmodule Backend.FantasyCompetitionFetcher do
   alias Backend.Blizzard
   alias Backend.MastersTour
 
-  def get_participants(%{competition_type: "card_changes"}) do
-    Backend.HearthstoneJson.playable_cards()
-    |> Enum.map(&%Participant{name: &1.name})
-    |> Enum.uniq_by(& &1.name)
-  end
-
   def get_participants(%{competition_type: "battlefy", competition: battlefy_id}) do
     battlefy_id
     |> get_battlefy_participants()
