@@ -143,8 +143,7 @@ defmodule Components.FantasyModal do
     end
     |> Kernel.++([
       {"Grandmasters", "grandmasters"},
-      {"Battlefy", "battlefy"},
-      {"Card Changes", "card_changes"}
+      {"Battlefy", "battlefy"}
     ])
   end
 
@@ -160,9 +159,6 @@ defmodule Components.FantasyModal do
   end
 
   defp competition_options("grandmasters"), do: ["gm_2022_1"] |> competition_options()
-
-  defp competition_options("card_changes"),
-    do: ["buffs_may_2021", "nerfs_may_2021"] |> competition_options()
 
   defp competition_options("masters_tour") do
     current_tour_stop()
@@ -184,9 +180,6 @@ defmodule Components.FantasyModal do
 
   defp point_system_options("battlefy"),
     do: ["swiss_wins"] |> point_system_options()
-
-  defp point_system_options("card_changes"),
-    do: ["num_correct"] |> point_system_options()
 
   defp point_system_options(point_systems) when is_list(point_systems),
     do: point_systems |> Enum.map(&{&1 |> Fantasy.League.scoring_display(), &1})

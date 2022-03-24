@@ -94,7 +94,6 @@ defmodule Components.CompetitorsTable do
   def mt?(%{competition_type: "masters_tour"}), do: true
   def mt?(_), do: false
 
-  defp cut(participants, %{competition_type: "card_changes"}), do: participants |> Enum.take(20)
   defp cut(participants, _), do: participants |> Enum.take(500)
 
   defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),
