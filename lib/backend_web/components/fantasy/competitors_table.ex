@@ -88,6 +88,7 @@ defmodule Components.CompetitorsTable do
 
   def prepare_data(participants, league, search), do: participants |> filter(search) |> Enum.uniq_by(& &1.name) |> cut(league)
 
+  @spec player_profile?(any) :: boolean
   def player_profile?(league), do: gm?(league) || mt?(league)
   def gm?(%{competition_type: "grandmasters"}), do: true
   def gm?(_), do: false
@@ -107,6 +108,7 @@ defmodule Components.CompetitorsTable do
     lt && roster_size > LeagueTeam.current_roster_size(lt)
   end
 
+  @spec has_current_pick?(League.t(), User.t()) :: boolean
   defp has_current_pick?(league = %{real_time_draft: true}, user),
     do: league |> League.drafting_now() |> LeagueTeam.can_manage?(user)
 

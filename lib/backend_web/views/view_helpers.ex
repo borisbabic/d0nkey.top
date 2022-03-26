@@ -175,12 +175,7 @@ defmodule BackendWeb.ViewHelpers do
         )
       end
 
-      def warning_triangle(),
-        do: ~E"""
-        <span class="icon is-small">
-          <i class="fas fa-exclamation-triangle"></i>
-        </span>
-        """
+      def warning_triangle(), do: Components.Helper.warning_triangle()
     end
   end
 end

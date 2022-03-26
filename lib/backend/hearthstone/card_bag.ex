@@ -2,6 +2,7 @@ defmodule Backend.Hearthstone.CardBag do
   @moduledoc "Contains in memory cache for cards"
 
   use GenServer
+  alias Hearthstone.Card
   @name :hearthstone_card_bag
   @ten_hours 36_000_000
   @five_min 300_000
@@ -16,7 +17,15 @@ defmodule Backend.Hearthstone.CardBag do
     end
   end
 
-  def raw_response(), do: Util.ets_lookup(table(), :raw_response)
+
+  @spec card(String.t() | integer()) :: Card.t() | nil
+  def card(card_id), do: Util.ets_lookup(table(), "card_id_#{card_id}")
+
+  ##### /Public Api
+
+  def update(after_ms \\ 0) do
+    GenServer.cast(@name, {:send_loop, after_ms})
+  end
 
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: @name)
@@ -66,6 +75,7 @@ defmodule Backend.Hearthstone.CardBag do
     end
   end
 
+  @spec set_cards(reference(), [Card.t()]) :: reference()
   defp set_cards(table, cards) do
     cards
     |> Enum.each(fn card ->
@@ -73,12 +83,6 @@ defmodule Backend.Hearthstone.CardBag do
     end)
 
     table
-  end
-
-  def card(card_id), do: Util.ets_lookup(table(), "card_id_#{card_id}")
-
-  def update(after_ms \\ 0) do
-    GenServer.cast(@name, {:send_loop, after_ms})
   end
 
   defp send_loop(after_ms), do: Process.send_after(self(), :loop, after_ms)

@@ -468,12 +468,11 @@ defmodule Backend.Battlefy do
     Api.get_tournament(tournament_id)
   end
 
-  def get_tournament_matches(id_or_tournament, opts \\ [])
-
   @spec get_tournament_matches(
           Tournament.t() | %{stage_ids: [stage_id]},
           get_tournament_matches_options
         ) :: [Match.t()]
+  def get_tournament_matches(id_or_tournament, opts \\ [])
   def get_tournament_matches(%{stage_ids: stage_ids}, opts) do
     stage_ids
     |> Enum.at(opts[:stage] || 0)
