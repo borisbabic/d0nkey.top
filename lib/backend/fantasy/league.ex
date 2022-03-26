@@ -76,8 +76,8 @@ defmodule Backend.Fantasy.League do
     l |> cast(attrs, [:updated_at])
   end
 
-  @spec add_pick(__MODULE__, User.t()) ::
-          {:ok, Ecto.Changeset.t()} | {:ok, __MODULE__} | {:error, atom()}
+  @spec add_pick(League, User.t()) ::
+          {:ok, Ecto.Changeset.t()} | {:ok, League} | {:error, atom()}
   def add_pick(league = %League{real_time_draft: true}, user) do
     with true <- draft_started?(league),
          true <- picked_on_time?(league),
@@ -117,10 +117,10 @@ defmodule Backend.Fantasy.League do
     end
   end
 
-  @spec right_picker?(__MODULE__, LeagueTeam.t()) :: boolean()
+  @spec right_picker?(League, LeagueTeam.t()) :: boolean()
   def right_picker?(league, %{id: id}), do: league.pick_order[league.current_pick_number] == id
 
-  @spec picked_on_time?(__MODULE__) :: boolean()
+  @spec picked_on_time?(League) :: boolean()
   def picked_on_time?(%League{time_per_pick: 0, real_time_draft: true}), do: true
 
   def picked_on_time?(%League{time_per_pick: seconds, last_pick_at: last, real_time_draft: true}) do

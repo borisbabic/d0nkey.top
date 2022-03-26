@@ -5,7 +5,6 @@ defmodule Backend.Battlefy.Tournament do
   alias Backend.Battlefy.Util
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Tournament.Game
-  alias __MODULE__
 
   typedstruct enforce: true do
     field :id, Battlefy.tournament_id()
@@ -26,7 +25,7 @@ defmodule Backend.Battlefy.Tournament do
   def has_bracket(%{start_time: start_time}),
     do: NaiveDateTime.utc_now() |> NaiveDateTime.compare(start_time) == :gt
 
-  @spec from_raw_map(map) :: Tournament.t()
+  @spec from_raw_map(map) :: t()
   def from_raw_map(map = %{"startTime" => start_time, "slug" => slug, "name" => name}) do
     region =
       case map["region"] do

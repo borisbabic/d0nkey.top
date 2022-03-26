@@ -179,7 +179,6 @@ defmodule Components.DecksExplorer do
   def rank_options(), do: [{"legend", "Legend"}, {"diamond_to_legend", "Diamond-Legend"}, {"all", "All"}]
   def limit_options(), do: [10, 15, 20, 25, 30]
   def class_options(any_name \\ "Any"), do: [{nil, any_name} | Enum.map(Deck.classes(), & {&1, Deck.class_name(&1)})]
-  def default_period_options(), do: @default_period_options
   def format_options(), do:
     Enum.map(Format.all(), fn {id, name} ->
       {to_string(id), name}

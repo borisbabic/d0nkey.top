@@ -663,6 +663,7 @@ defmodule Backend.Fantasy do
 
   def get_battlefy_user_picks(_, _), do: []
 
+  @spec unpick(integer, User.t(), String.t()) :: {:ok, League.t()} | {:error, any()}
   def unpick(league_team_id, user, pick) do
     with lt = %LeagueTeam{} <- get_league_team(league_team_id),
          true <- LeagueTeam.can_manage?(lt, user),
@@ -670,8 +671,9 @@ defmodule Backend.Fantasy do
          ltp = %LeagueTeamPick{} <- get_league_team_pick(lt.id, pick, lt.league.current_round),
          {:ok, _} <- delete_league_team_pick(ltp),
          league = %{id: _} <- get_league(lt.league_id),
-         cs <- League.inc_updated_at(league) do
-      Repo.update(cs)
+         cs <- League.inc_updated_at(league),
+         {:ok, league = %League{}} <- Repo.update(cs) do
+      {:ok, league}
     end
   end
 
