@@ -13,6 +13,7 @@ defmodule Backend.PlayerIconBag do
     {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}}, # MTOne Fantasy
     {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
     {"otters#11111", {:image, "/images/icons/otters.png"}}, # patreon
+    {"Montu#11356", {:image, "/images/icons/montu.png"}}, # patreon
     # {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
     # {"Dragoninja#1573", {:image, "/images/icons/dragoninja.png"}},
     # {"Ajani#2766", {:image, "/images/icons/ajani.jpg"}}
