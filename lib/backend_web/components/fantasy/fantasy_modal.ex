@@ -13,6 +13,7 @@ defmodule Components.FantasyModal do
   prop(show_deadline, :boolean, default: false)
   prop(current_params, :map, default: %{})
 
+  alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
   alias Surface.Components.Form.TextInput
@@ -132,6 +133,9 @@ defmodule Components.FantasyModal do
 
   defp battlefy_tournament_id(_), do: nil
 
+
+  defp current_lobby_legends(), do: LobbyLegendsSeason.current(120, 0)
+
   defp current_tour_stop(), do: TourStop.get_current(120, 0)
   defp current_tour_stop?(), do: nil != current_tour_stop()
 
@@ -141,10 +145,19 @@ defmodule Components.FantasyModal do
     else
       []
     end
+    |> add_lobby_legends()
     |> Kernel.++([
       {"Grandmasters", "grandmasters"},
       {"Battlefy", "battlefy"}
     ])
+  end
+
+  defp add_lobby_legends(competition_types)  do
+    if current_lobby_legends() do
+      [{"Lobby Legends", "lobby_legends"} | competition_types]
+    else
+      competition_types
+    end
   end
 
   defp selected_competition_type(%{"competition_type" => type}, _) when is_binary(type), do: type
@@ -168,12 +181,22 @@ defmodule Components.FantasyModal do
     end
   end
 
+  defp competition_options("lobby_legends") do
+    case current_lobby_legends() do
+      nil -> []
+      %{slug: slug} -> [slug] |> competition_options()
+    end
+  end
+
   defp competition_options(competitions) when is_list(competitions),
     do: competitions |> Enum.map(&{&1 |> competition_name(), &1})
 
   defp competition_options(_), do: []
 
   defp point_system_options("grandmasters"), do: ["total_wins"] |> point_system_options()
+
+  defp point_system_options("lobby_legends"),
+    do: ["total_points"] |> point_system_options()
 
   defp point_system_options("masters_tour"),
     do: ["swiss_wins", "gm_points_2021"] |> point_system_options()
@@ -200,10 +223,24 @@ defmodule Components.FantasyModal do
   defp draft_deadline_value(%{competition_type: "masters_tour"}, _),
     do: TourStop.get_next() |> TourStop.get_start_time()
 
+  defp draft_deadline_value(%{competition_type: "lobby_legends", competition: ll_raw}, _) do
+    case LobbyLegendsSeason.get(ll_raw) do
+      %{start_time: start_time} when not is_nil(start_time) -> start_time
+      _ -> nil
+    end
+  end
+
   defp draft_deadline_value(%{}, "grandmasters"), do: gm_2021_1_start()
 
   defp draft_deadline_value(%{}, "masters_tour"),
     do: current_tour_stop() |> TourStop.get_start_time()
+
+  defp draft_deadline_value(%{}, "lobby_legends") do
+    case current_lobby_legends() do
+      %{start_time: start_time} -> start_time
+      _ -> nil
+    end
+  end
 
   defp draft_deadline_value(_, _), do: nil
 

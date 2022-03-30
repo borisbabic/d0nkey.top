@@ -74,6 +74,7 @@ defmodule BackendWeb.LayoutView do
   def show_fantasy?() do
     ongoing_dreamhack_fantasy?() ||
       ongoing_mt_fantasy?() ||
+      ongoing_lobby_legends_fantasy?() ||
       highlight_fantasy_for_gm?()
   end
 
@@ -86,6 +87,7 @@ defmodule BackendWeb.LayoutView do
       _ -> false
     end
   end
+  defp ongoing_lobby_legends_fantasy?(), do: !!Backend.LobbyLegends.LobbyLegendsSeason.current(120, 60)
   defp ongoing_mt_fantasy?(), do: !!Backend.MastersTour.TourStop.get_current(120, 60)
   defp ongoing_dreamhack_fantasy?(), do: Enum.any?(Dreamhack.current_fantasy())
   defp highlight_fantasy_for_gm?(), do: false
