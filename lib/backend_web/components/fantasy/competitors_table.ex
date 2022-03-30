@@ -46,19 +46,6 @@ defmodule Components.CompetitorsTable do
               <span>{participant.name}</span>
             {/if}
           </Column>
-          <Column label="Signed Up">
-            {#if Participant.in_battlefy?(participant) }
-            Yes
-            {#else}
-            No
-            {/if}
-          </Column>
-          <Column label="MTs Played">
-            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :total])}
-          </Column>
-          <Column label="MT Winrate %">
-            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :winrate])}
-          </Column>
           <Column label="Status">
             <div :if={picked_by = picked_by(@league, participant, @user)}>
               <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)}class="tag is-info"> {picked_by |> LeagueTeam.display_name()}</div>

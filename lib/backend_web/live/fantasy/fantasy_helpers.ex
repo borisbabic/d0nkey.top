@@ -12,6 +12,7 @@ defmodule BackendWeb.FantasyHelper do
     end
   end
 
+  def competition_name("lobby_legends_" <> num), do: "Lobby Legends #{num}"
   def competition_name("buffs_may_2021"), do: "Buffs May 2021"
   def competition_name("nerfs_may_2021"), do: "Nerfs May 2021"
 

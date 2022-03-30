@@ -7,7 +7,15 @@ defmodule Backend.FantasyCompetitionFetcher do
   alias Backend.Hearthstone
   alias Backend.Blizzard
   alias Backend.MastersTour
+  alias Backend.LobbyLegends.LobbyLegendsSeason
 
+  def get_participants(%{competition_type: "lobby_legends", competition: c}) do
+    c
+    |> LobbyLegendsSeason.get()
+    |> LobbyLegendsSeason.players()
+    |> Enum.map(& %{name: &1})
+
+  end
   def get_participants(%{competition_type: "battlefy", competition: battlefy_id}) do
     battlefy_id
     |> get_battlefy_participants()
@@ -82,6 +90,7 @@ defmodule Backend.FantasyCompetitionFetcher do
 
   def fetch_results(l), do: fetch_results(l, 1)
 
+  def fetch_results(%{competition_type: "lobby_legends"}, _), do: Map.new()
   def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
     do: get_battlefy_results(competition, l)
 
