@@ -463,21 +463,9 @@ defmodule Backend.Leaderboards do
     |> Enum.dedup_by(& Map.get(&1, changed_attr))
   end
 
-  def lobby_legends_config() do
-    %{
-      "2" => %{
-        season_id: 5,
-        ap: ~N[2022-03-31T16:00:00],
-        eu: ~N[2022-03-31T22:00:00],
-        us: ~N[2022-04-01T07:00:00]
-      },
-      "1" => %{
-        season_id: 5,
-        ap: ~N[2022-02-28T16:00:00],
-        eu: ~N[2022-02-28T23:00:00],
-        us: ~N[2022-03-01T08:00:00]
-      }
-    }
+  defp lobby_legends_ends(lls) do
+    with %{ladder: ladder} <- LobbyLegendsSeason.get(lls) do
+      ladder
+    end
   end
-  defp lobby_legends_ends(lls), do: lobby_legends_config() |> Map.get(lls)
 end

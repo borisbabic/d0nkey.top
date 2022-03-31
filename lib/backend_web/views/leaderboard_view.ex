@@ -4,7 +4,7 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.PlayerInfo
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
-  alias Backend.Leaderboards
+  alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
   alias BackendWeb.ViewUtil
@@ -96,6 +96,25 @@ defmodule BackendWeb.LeaderboardView do
   end
   def player_history_dropdowns(false, _, _), do: []
 
+  defp actual_end(assigns = %{deadline: deadline, other: other}) do
+    season_display = Map.get(assigns, :season_display, "The season")
+    ~H"""
+      <span><%= season_display %> ends at <%= render_datetime(deadline) %> not <%= render_datetime(other) %></span>
+    """
+  end
+  defp other_warning(%{leaderboard_id: "BG", season_id: s, region: "EU"}) when s in [5, "5", "lobby_legends_2"] do
+    now = NaiveDateTime.utc_now()
+    %{ladder: %{eu: deadline}} = LobbyLegendsSeason.get("lobby_legends_2")
+    if NaiveDateTime.compare(now, deadline) == :lt do
+      hour_before = NaiveDateTime.add(deadline, -1 * 60 * 60)
+      assigns = %{deadline: deadline, other: hour_before, season_display: "Lobby Legends 2 qualification"}
+      actual_end(assigns)
+    end
+  end
+
+  defp other_warning(_), do: nil
+
+
   def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
     has_rating = player_history |> Enum.any?(& &1.rating)
     dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
@@ -147,6 +166,7 @@ defmodule BackendWeb.LeaderboardView do
       season_id: leaderboard && leaderboard.season_id,
       show_ratings: show_ratings,
       conn: conn,
+      other_warning: other_warning(leaderboard),
       ladder_invite_num: ladder_invite_num,
       official_link: Snapshot.official_link(leaderboard),
       show_flags: show_flags,
@@ -547,11 +567,10 @@ defmodule BackendWeb.LeaderboardView do
         end)
 
       lobby_legends =
-        Leaderboards.lobby_legends_config()
-        |> Map.keys()
-        |> Enum.sort(:desc)
-        |> Enum.map(fn num ->
-          {"Lobby Legends #{num}", "lobby_legends_#{num}"}
+        LobbyLegendsSeason.all()
+        |> Enum.reverse()
+        |> Enum.map(fn ll ->
+          {LobbyLegendsSeason.display_name(ll), ll.slug}
         end)
 
       lobby_legends ++ regular
