@@ -88,6 +88,7 @@ defmodule BackendWeb.ProfileSettingsLive do
     Enum.map(Countriex.all(), fn %{name: name, alpha2: code} ->
       {name, code}
     end)
+    |> Enum.sort_by(& elem(&1, 0), :asc)
   end
   def pride_flag() do
     <<0xF0, 0x9F, 0x8F, 0xB3, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x8C, 0x88>>
