@@ -14,9 +14,31 @@ defmodule Backend.LatestHSArticles do
   defp do_update() do
     with {:ok, %{body: body}} <- HTTPoison.get("https://playhearthstone.com/en-us/api/blog/articleList/?page=1&pageSize=100"),
          {:ok, decoded} <- Jason.decode(body),
-         sorted <- Enum.sort_by(decoded, & &1["publish"], :desc),
+         sorted <- Enum.sort_by(decoded, & &1["publish"], :desc) |> add_april_fools(),
          {:ok, _feed_item} <- update_feed_item(sorted) do
       {:ok, sorted}
+    end
+  end
+
+  def add_april_fools(articles) do
+    now = NaiveDateTime.utc_now()
+    start_time = ~N[2022-04-01T17:00:00]
+    end_time = ~N[2022-04-02T06:00:00]
+    if Util.in_range?(now, {start_time, end_time}) do
+      [
+        %{
+          "uid" => "april_fools_hahaha",
+          "tags" => ["esports"],
+          "blogId" => 23790401,
+          "thumbnail" => %{
+            "mimeType" => "imageblabla",
+            "url" => "//bnetcmsus-a.akamaihd.net/cms/blog_header/s1/S1AU2IQCZ0VN1544570147263.jpg"
+          },
+          "title" => "Dive Deep in 2022’s Wild Open!"
+        } | articles
+      ]
+    else
+      articles
     end
   end
 
