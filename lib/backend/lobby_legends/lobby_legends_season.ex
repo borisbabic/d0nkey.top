@@ -1,6 +1,12 @@
 defmodule Backend.LobbyLegends.LobbyLegendsSeason do
   import TypedStruct
 
+  @type ladder_config :: %{
+    season_id: integer(),
+    ap: NaiveDateTime.t(),
+    eu: NaiveDateTime.t(),
+    us: NaiveDateTime.t()
+  }
   defmacro is_lobby_legends(lobby_legends) do
     quote do
       atoms = [
@@ -15,6 +21,7 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
     field :slug, String.t()
     field :start_time, NaiveDateTime.t(), enforce: false
     field :other_streams, [String.t()]
+    field :ladder, ladder_config()
     field :player_streams, %{String.t() => String.t()}
   end
 
@@ -22,6 +29,12 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
     [
       %__MODULE__{
         slug: "lobby_legends_1",
+        ladder: %{
+          season_id: 5,
+          ap: ~N[2022-02-28T16:00:00],
+          eu: ~N[2022-02-28T23:00:00],
+          us: ~N[2022-03-01T08:00:00]
+        },
         other_streams: %{
           "https://twitch.tv/AntoZ31" => "AntoZ31",
           "https://www.twitch.tv/autumnwater_hs" => "AutumnWater_HS",
@@ -65,6 +78,17 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           "BeNice" => "https://www.twitch.tv/benice92",
         },
         start_time: ~N[2022-04-02 15:00:00]
+      },
+      %__MODULE__{
+        slug: "lobby_legends_2",
+        player_streams: %{},
+        other_streams: %{},
+        ladder: %{
+          season_id: 5,
+          ap: ~N[2022-03-31T16:00:00],
+          eu: ~N[2022-03-31T23:00:00], # confirmed by eric in comp battlegrounds server https://discord.com/channels/939711967134887998/939720236599496778/959160404163035167
+          us: ~N[2022-04-01T07:00:00]
+        },
       }
     ]
   end
@@ -87,4 +111,7 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
 
   def players(%{player_streams: player_streams}), do: Map.keys(player_streams)
   def players(_), do: []
+
+  def display_name(%{slug: "lobby_legends_" <> num}), do: "Lobby Legends #{num}"
+  def display_name(_), do: nil
 end
