@@ -8,6 +8,7 @@ defmodule Backend.Leaderboards do
   import Ecto.Query
   alias Backend.Repo
   alias Backend.Blizzard
+  alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
 
@@ -341,9 +342,9 @@ defmodule Backend.Leaderboards do
     |> where([s], s.region == ^to_string(region))
   end
 
-  defp compose_snapshot_query({"season_id", "lobby_legends_" <> season}, query) do
-    case lobby_legends_ends(season) do
-      %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id} ->
+  defp compose_snapshot_query({"season_id", season = "lobby_legends_" <> _}, query) do
+    case LobbyLegendsSeason.get(season) do
+      %{ladder: %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id}} ->
         new_query = query
         |> where(
           [s],
@@ -463,9 +464,4 @@ defmodule Backend.Leaderboards do
     |> Enum.dedup_by(& Map.get(&1, changed_attr))
   end
 
-  defp lobby_legends_ends(lls) do
-    with %{ladder: ladder} <- LobbyLegendsSeason.get(lls) do
-      ladder
-    end
-  end
 end
