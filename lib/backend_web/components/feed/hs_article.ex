@@ -23,7 +23,7 @@ defmodule Components.Feed.HSArticle do
 
   def image(%{"thumbnail" => %{"mimeType"=> <<"image"::binary, _::binary>>, "url" => url}}), do: "https:#{url}"
 
+  def url(%{"blogId" => id}), do: "/hs/article/#{id}"
   def url(%{"defaultUrl" => url}), do: url
   def title(%{"title" => title}), do: title
-  def time(%{"publish" => p}), do: p |> DateTime.from_unix!(:millisecond) |> DateTime.to_naive()
 end

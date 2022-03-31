@@ -63,7 +63,9 @@ defmodule BackendWeb.Router do
   scope "/", BackendWeb do
     pipe_through [:browser, :auth]
 
+    get "/hs/article/:blog_id", HearthstoneController, :article
     get "/battlefy/tournament/020fface81eb7119705c0df5*bla", PageController, :rick_astley
+
     get "/leaderboard", LeaderboardController, :index
     get "/leaderboard/player-stats", LeaderboardController, :player_stats
     get "/leaderboard/player-history/region/:region/period/:period/leaderboard_id/:leaderboard_id/player/:player", LeaderboardController, :player_history
