@@ -39,7 +39,7 @@ defmodule BackendWeb.PageController do
     text(conn, ret)
   end
 
-  def ads_txt(conn, params) do
+  def ads_txt(conn, _params) do
     if Application.get_env(:backend, :enable_adsense, true) do
       ads_txt = Backend.AdsTxtCache.get()
       text(conn, ads_txt)
@@ -51,8 +51,9 @@ defmodule BackendWeb.PageController do
   end
 
   def rick_astley(conn, params) do
-    conn
-    |> put_status(302)
-    |> redirect(external: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    render(conn, "rick_roll.html", params)
+    # conn
+    # |> put_status(302)
+    # |> redirect(external: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
   end
 end
