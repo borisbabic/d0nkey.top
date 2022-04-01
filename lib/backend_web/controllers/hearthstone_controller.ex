@@ -9,10 +9,9 @@ defmodule BackendWeb.HearthstoneController do
   end
 
   def article(conn, %{"blog_id" => "23790401"}) do
-    conn
-    |> put_status(302)
-    |> redirect(external: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    render(conn, BackendWeb.PageView, "rick_roll.html", %{})
   end
+
   def article(conn, %{"blog_id" => blog_id}) do
     url = "https://playhearthstone.com/blog/#{blog_id}"
     redirect(conn, external: url)
