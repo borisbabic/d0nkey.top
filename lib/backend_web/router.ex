@@ -215,6 +215,8 @@ defmodule BackendWeb.Router do
 
     get "/ads.txt", PageController, :ads_txt
 
+    live "/lobby-legends", LobbyLegendsLive
+
     live "/twitch/bot", TwitchBotLive
     live "/twitch/bot/new-command", TwitchNewCommandLive
   end
