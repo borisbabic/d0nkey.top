@@ -36,28 +36,28 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           us: ~N[2022-03-01T08:00:00]
         },
         other_streams: %{
-          "https://twitch.tv/AntoZ31" => "AntoZ31",
-          "https://www.twitch.tv/autumnwater_hs" => "AutumnWater_HS",
-          "https://www.twitch.tv/ayrok_hs" => "AyRoK_HS",
-          "https://www.twitch.tv/bofur_hs" => "Bofur_HS",
-          "https://www.twitch.tv/dapunia" => "Dapunia",
-          "https://www.twitch.tv/bobsleague" => "Bob’s League",
-          "https://www.twitch.tv/cerealforme" => "Cereal For Me",
-          "https://youtube.com/c/HeartCoreChannel" => "HeartCore",
-          "https://www.twitch.tv/budilicious" => "Budilicious",
-          "https://www.twitch.tv/howardmoonbg" => "HowardMoonBG",
-          "https://www.twitch.tv/droodthund3r" => "DroodThund3r",
-          "https://www.twitch.tv/liihs" => "LiiHS",
-          "https://www.twitch.tv/fahrettinyalcinkaya" => "Fahrettin Yalçınkaya",
-          "https://www.twitch.tv/jerakal" => "Jerakal",
-          "https://www.twitch.tv/itsben321" => "ItsBen321",
-          "https://www.twitch.tv/pockyplays" => "PockyPlays",
-          "https://www.twitch.tv/rdulive" => "RDU",
-          "https://www.twitch.tv/Sway_bae" => "Sway_bae",
-          "https://www.twitch.tv/SolaryHS" => "SolaryHS",
-          "https://www.twitch.tv/teamamerica" => "TeamAmericaHS",
-          "https://www.twitch.tv/thefishougo" => "TheFishOugo",
-          "https://www.twitch.tv/victorg_hs/videos" => "VictorG_HS"
+          "AntoZ31" => "https://twitch.tv/AntoZ31",
+          "AutumnWater_HS" => "https://www.twitch.tv/autumnwater_hs",
+          "AyRoK_HS" => "https://www.twitch.tv/ayrok_hs",
+          "Bofur_HS" => "https://www.twitch.tv/bofur_hs",
+          "Dapunia" => "https://www.twitch.tv/dapunia",
+          "Bob’s League" => "https://www.twitch.tv/bobsleague",
+          "Cereal For Me" => "https://www.twitch.tv/cerealforme",
+          "HeartCore" => "https://youtube.com/c/HeartCoreChannel",
+          "Budilicious" => "https://www.twitch.tv/budilicious",
+          "HowardMoonBG" => "https://www.twitch.tv/howardmoonbg",
+          "DroodThund3r" => "https://www.twitch.tv/droodthund3r",
+          "LiiHS" => "https://www.twitch.tv/liihs",
+          "Fahrettin Yalçınkaya" => "https://www.twitch.tv/fahrettinyalcinkaya",
+          "Jerakal" => "https://www.twitch.tv/jerakal",
+          "ItsBen321" => "https://www.twitch.tv/itsben321",
+          "PockyPlays" => "https://www.twitch.tv/pockyplays",
+          "RDU" => "https://www.twitch.tv/rdulive",
+          "Sway_bae" => "https://www.twitch.tv/Sway_bae",
+          "SolaryHS" => "https://www.twitch.tv/SolaryHS",
+          "TeamAmericaHS" => "https://www.twitch.tv/teamamerica",
+          "TheFishOugo" => "https://www.twitch.tv/thefishougo",
+          "VictorG_HS" => "https://www.twitch.tv/victorg_hs",
         },
         player_streams: %{
           "baiyu" => nil,
@@ -94,12 +94,19 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
   end
 
   @spec current(integer(), integer()) :: t() | nil
-  def current(hours_before_start \\ 1, hours_after_start \\ 96) do
+  def current(hours_before_start \\ 1, hours_after_start \\ 48) do
     Enum.find(all(), & current?(&1, hours_before_start, hours_after_start))
   end
 
   def get(slug) do
     Enum.find(all(), & to_string(slug) == to_string(&1.slug))
+  end
+
+  @spec get_or_current(String.t(), integer(), integer()) :: t() | nil
+  def get_or_current(slug, hours_before_start \\ 1, hours_after_start \\ 96) do
+    with nil <- get(slug) do
+      current(hours_before_start, hours_after_start)
+    end
   end
 
   def current?(%{start_time: start_time}, hours_before_start \\ 1, hours_after_start \\ 96) do

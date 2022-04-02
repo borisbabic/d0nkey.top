@@ -17,6 +17,7 @@ defmodule Components.Socials do
     """
   end
 
+  def twitch(channel) when is_binary(channel), do: %{link: "https://www.twitch.tv/#{channel}"} |> twitch()
   def twitch(assigns = %{link: _link}) do
     ~H"""
       <a href={@link}>

@@ -71,6 +71,10 @@ defmodule BackendWeb.LayoutView do
     end
   end
 
+  def show_lobby_legends?() do
+    Backend.LobbyLegends.LobbyLegendsSeason.current(1, 48)
+  end
+
   def show_fantasy?() do
     ongoing_dreamhack_fantasy?() ||
       ongoing_mt_fantasy?() ||
