@@ -100,14 +100,14 @@ defmodule Backend.FantasyCompetitionFetcher do
     "summer" => 8.5,
     "Maks7k" => 3.5,
 
-    "Curt" => 0,
-    "guDDummit" => 0,
-    "hof" => 0,
-    "KenKen" => 0,
-    "Satellite" => 0,
-    "SeseiSei" => 0,
-    "yjSJMR" => 0,
-    "BeNice" => 0,
+    "Curt" => 12,
+    "guDDummit" => 12,
+    "hof" => 12,
+    "KenKen" => 14,
+    "Satellite" => 8,
+    "SeseiSei" => 6,
+    "yjSJMR" => 6,
+    "BeNice" => 14,
   })
   def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
     do: get_battlefy_results(competition, l)
