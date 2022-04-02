@@ -90,7 +90,25 @@ defmodule Backend.FantasyCompetitionFetcher do
 
   def fetch_results(l), do: fetch_results(l, 1)
 
-  def fetch_results(%{competition_type: "lobby_legends"}, _), do: Map.new()
+  def fetch_results(%{competition_type: "lobby_legends"}, _), do: Map.new(%{
+    "EducatedCollins" => 16.5,
+    "baiyu" => 13.5,
+    "Ponpata07" => 12,
+    "BaboFat" => 10.5,
+    "keromon" => 10,
+    "ZoinhU" => 9.5,
+    "summer" => 8.5,
+    "Maks7k" => 3.5,
+
+    "Curt" => 0,
+    "guDDummit" => 0,
+    "hof" => 0,
+    "KenKen" => 0,
+    "Satellite" => 0,
+    "SeseiSei" => 0,
+    "yjSJMR" => 0,
+    "BeNice" => 0,
+  })
   def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
     do: get_battlefy_results(competition, l)
 

@@ -25,7 +25,7 @@ defmodule BackendWeb.LobbyLegendsLive do
     <Context put={user: @user} >
       <div>
         <div class="title is-2">Lobby Legends</div>
-        <div class="subtitle is-5 level-left">Official Streams: {Socials.twitch("playhearthstone")} | <a href="https://www.youtube.com/hearthstoneesports/live">Youtube</a></div>
+        <div class="subtitle is-5 level-left is-mobile">Official Streams: {Socials.twitch("playhearthstone")} | <a href="https://www.youtube.com/hearthstoneesports/live">Youtube</a></div>
 
         <div class="title is-3">Player Streams</div>
         <div id="live_streamers" class="columns is-multiline">
