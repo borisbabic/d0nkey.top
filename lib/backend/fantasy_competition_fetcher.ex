@@ -91,23 +91,23 @@ defmodule Backend.FantasyCompetitionFetcher do
   def fetch_results(l), do: fetch_results(l, 1)
 
   def fetch_results(%{competition_type: "lobby_legends"}, _), do: Map.new(%{
-    "EducatedCollins" => 16.5,
-    "baiyu" => 13.5,
-    "Ponpata07" => 12,
-    "BaboFat" => 10.5,
+    "EducatedCollins" => 16.5 + 15.5,
+    "baiyu" => 13.5 + 13,
+    "Ponpata07" => 12 + 10.5,
+    "BaboFat" => 10.5 + 17.5,
     "keromon" => 10,
     "ZoinhU" => 9.5,
     "summer" => 8.5,
     "Maks7k" => 3.5,
 
-    "Curt" => 12,
+    "Curt" => 12 + 18,
     "guDDummit" => 12,
-    "hof" => 12,
-    "KenKen" => 14,
+    "hof" => 12 + 19.5,
+    "KenKen" => 14 + 18.5,
     "Satellite" => 8,
     "SeseiSei" => 6,
     "yjSJMR" => 6,
-    "BeNice" => 14,
+    "BeNice" => 14 + 27.5,
   })
   def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
     do: get_battlefy_results(competition, l)
