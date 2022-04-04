@@ -109,12 +109,16 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
     end
   end
 
-  def current?(%{start_time: start_time}, hours_before_start \\ 1, hours_after_start \\ 96) do
+  @spec current?(t(), integer(), integer()) :: boolean()
+  def current?(season, hours_before_start \\ 1, hours_after_start \\ 96)
+  def current?(%{start_time: start_time}, hours_before_start, hours_after_start) when not is_nil(start_time) do
     now = NaiveDateTime.utc_now()
     lower = NaiveDateTime.add(start_time, hours_before_start * -3600)
     upper = NaiveDateTime.add(start_time, hours_after_start * 3600)
     Util.in_range?(now, {lower, upper})
   end
+
+  def current?(_, _, _), do: false
 
   def players(%{player_streams: player_streams}), do: Map.keys(player_streams)
   def players(_), do: []
