@@ -43,6 +43,9 @@ defmodule Backend.HearthstoneJson do
     {:ok, %{table: table, fetch_fresh: args[:fetch_fresh]}}
   end
 
+  @spec canonical_id(integer() | String.t()) :: integer() | any()
+  def canonical_id(dbf_id), do: Util.ets_lookup(table(), "canonical_id_#{to_string(dbf_id)}", dbf_id)
+
   @spec tile_url(Card.t() | String.t()) :: String.t()
   def tile_url(%{id: id}), do: tile_url(id)
   def tile_url(id), do: "https://art.hearthstonejson.com/v1/tiles/#{id}.png"
@@ -68,9 +71,47 @@ defmodule Backend.HearthstoneJson do
       :ets.insert(table, {"card_class_#{c.dbf_id}", c.card_class})
     end)
 
+    collectible_cards = Enum.filter(cards, & &1.collectible)
+    insert_canonical_ids(table, collectible_cards)
+
     :ets.insert(table, {"all_cards", cards})
-    :ets.insert(table, {"collectible_cards", cards |> Enum.filter(& &1.collectible)})
+    :ets.insert(table, {"collectible_cards", collectible_cards})
     :ets.insert(table, {"playable_cards", cards |> Enum.filter(&Card.playable?/1)})
+  end
+
+  @canonical_set_priority [
+    # core year of the hydra, 2022
+    1810,
+    "CORE"
+  ]
+  defp insert_canonical_ids(table, collectible_cards) do
+    collectible_cards
+    |> Enum.group_by(&Card.group_by/1)
+    |> Enum.map(& elem(&1, 1))
+    |> Enum.filter(fn cards ->
+      Enum.any?(cards, & &1.set in @canonical_set_priority)
+    end)
+    |> Enum.each(& insert_canonical_group(table, &1))
+  end
+
+  defp insert_canonical_group(table, cards) do
+
+    non_classic =  cards
+    # skip if classic mode card
+    |> Enum.filter(& &1.set != "VANILLA")
+
+    with %{dbf_id: canonical_id} <- find_canonical(non_classic) do
+      Enum.each(non_classic, fn %{dbf_id: dbf_id} ->
+        if dbf_id != canonical_id do
+          :ets.insert(table, {"canonical_id_#{dbf_id}", canonical_id})
+        end
+      end)
+    end
+  end
+  defp find_canonical(cards) do
+    Enum.find_value(@canonical_set_priority, fn set ->
+      Enum.find(cards, & &1.set == set)
+    end)
   end
 
   def get_class(dbf_id) do
