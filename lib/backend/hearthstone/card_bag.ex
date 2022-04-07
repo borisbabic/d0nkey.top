@@ -21,6 +21,11 @@ defmodule Backend.Hearthstone.CardBag do
   @spec card(String.t() | integer()) :: Card.t() | nil
   def card(card_id), do: Util.ets_lookup(table(), "card_id_#{card_id}")
 
+  @spec all() :: [Card.t()]
+  def all() do
+    :ets.match_object(table(), {:_, :"$1"})
+  end
+
   ##### /Public Api
 
   def update(after_ms \\ 0) do

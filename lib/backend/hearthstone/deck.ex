@@ -3,10 +3,10 @@ defmodule Backend.Hearthstone.Deck do
 
   use Ecto.Schema
   import Ecto.Changeset
-  alias __MODULE__
   alias Backend.Hearthstone
   @required [:cards, :hero, :format, :deckcode]
   @optional [:hsreplay_archetype, :class]
+  @type t :: %__MODULE__{}
   schema "deck" do
     field :cards, {:array, :integer}
     field :deckcode, :string
@@ -31,7 +31,7 @@ defmodule Backend.Hearthstone.Deck do
     |> validate_required(@required)
   end
 
-  @spec deckcode(Deck) :: String.t()
+  @spec deckcode(t()) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f}), do: deckcode(c, h, f)
 
   @doc """
@@ -42,6 +42,7 @@ defmodule Backend.Hearthstone.Deck do
   def deckcode(cards, hero, format) do
     cards =
       cards
+      |> canonicalize_cards()
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
@@ -52,6 +53,8 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.into(<<>>, fn i -> Varint.LEB128.encode(i) end)
     |> Base.encode64()
   end
+
+  defp canonicalize_cards(cards), do: Enum.map(cards, &Backend.HearthstoneJson.canonical_id/1)
 
   @spec deckcode_part([integer] | nil) :: [integer]
   defp deckcode_part(nil), do: [0]
@@ -83,7 +86,7 @@ defmodule Backend.Hearthstone.Deck do
   def valid?(code) when is_binary(code), do: :ok == code |> decode() |> elem(0)
   def valid?(_), do: false
 
-  @spec decode!(String.t()) :: Deck
+  @spec decode!(String.t()) :: t()
   def decode!(deckcode), do: deckcode |> decode() |> Util.bangify()
 
   #todo make 任务贼：AAECAaIHBsPhA6b5A8f5A72ABL+ABO2ABAyqywPf3QPn3QPz3QOq6wOf9AOh9AOi9AOj9QOm9QP1nwT2nwQA decodeable
@@ -95,7 +98,7 @@ defmodule Backend.Hearthstone.Deck do
   iex> {:ok, deck} = Backend.Hearthstone.Deck.decode("AAECAR8BugMAAA=="); deck.deckcode
   "AAECAR8BugMAAA=="
   """
-  @spec decode(String.t()) :: {:ok, Deck} | {:error, String.t() | any}
+  @spec decode(String.t()) :: {:ok, t()} | {:error, String.t() | any}
   def decode(""), do: {:error, "Couldn't decode deckstring"}
 
   def decode(deckcode) do
@@ -104,7 +107,8 @@ defmodule Backend.Hearthstone.Deck do
          list <- :binary.bin_to_list(decoded),
          chunked <- chunk_parts(list),
          [0, 1, format, 1, hero | card_parts] <- parts(chunked),
-         cards <- decode_cards_parts(card_parts, 1, []) do
+         uncanonical_cards <- decode_cards_parts(card_parts, 1, []),
+         cards <- canonicalize_cards(uncanonical_cards) do
       {:ok, %__MODULE__{format: format, hero: hero, cards: cards, deckcode: no_comments}}
     else
       {:error, reason} -> {:error, reason}
@@ -256,7 +260,7 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   def canonical_constructed_deckcode(code) when is_binary(code) do
-    case Deck.decode(code) do
+    case decode(code) do
       {:ok, deck = %{cards: cards}} when length(cards) > 14 and length(cards) < 31 ->
         {:ok, deck |> deckcode()}
 
@@ -276,10 +280,10 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   def create_comparison_map(decklists = [code | _]) when is_binary(code) do
-    decklists |> Enum.map(&Deck.decode!/1) |> create_comparison_map()
+    decklists |> Enum.map(&decode!/1) |> create_comparison_map()
   end
 
-  def create_comparison_map(decks = [%Deck{} | _]) do
+  def create_comparison_map(decks = [%__MODULE__{} | _]) do
     decks
     |> Enum.flat_map(& &1.cards)
     |> Enum.uniq()
