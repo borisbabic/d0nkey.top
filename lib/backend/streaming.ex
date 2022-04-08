@@ -1,6 +1,7 @@
 defmodule Backend.Streaming do
   @moduledoc false
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Backend.Repo
   alias Backend.HSReplay
   alias Backend.Streaming.Streamer
@@ -75,6 +76,14 @@ defmodule Backend.Streaming do
     end)
   end
 
+  def get_streamer_by_login(twitch_login) do
+    query =
+      from s in Streamer,
+        where: s.twitch_login == ^twitch_login,
+        select: s
+
+    Repo.one(query)
+  end
   def get_streamer_by_twitch_id(twitch_id) do
     query =
       from s in Streamer,
@@ -165,6 +174,8 @@ defmodule Backend.Streaming do
   end
 
   def update_twitch_info(twitch_streams) do
+    insert_new(twitch_streams)
+
     twitch_streams
     |> Util.async_map(fn ts ->
       login = ts |> Twitch.Stream.login()
@@ -180,6 +191,24 @@ defmodule Backend.Streaming do
 
       Repo.update_all(from(s in Streamer, where: s.twitch_id == ^id), set: updates)
     end)
+  end
+
+  defp insert_new(twitch_streams) do
+    ids = Enum.map(twitch_streams, & to_string(&1.user_id))
+    query = from s in Streamer,
+      where: s.twitch_id in ^ids,
+      select: s.twitch_id
+
+    existing = Repo.all(query) |> Enum.map(&to_string/1)
+    twitch_streams
+    |> Enum.reject(& to_string(&1.user_id) in existing)
+    |> Enum.reduce(Multi.new(), fn stream, multi ->
+      attrs = %{twitch_login: Twitch.Stream.login(stream), twitch_display: stream.user_name, twitch_id: stream.user_id}
+      cs = %Streamer{} |> Streamer.changeset(attrs)
+      Multi.insert(multi, "twitch_id_insert" <> to_string(stream.user_id), cs)
+    end)
+    |> Repo.transaction()
+
   end
 
   def update_streamer_deck(ds = %StreamerDeck{}, dto = %StreamerDeckInfoDto{}) do
