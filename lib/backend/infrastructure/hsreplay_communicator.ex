@@ -96,7 +96,6 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     end
   end
 
-  @spec get_deck(any) :: {:error, any} | {:ok, any}
   def get_deck(hsr_deck_id) do
     url = "https://hsreplay.net/decks/#{hsr_deck_id}/"
     with {:ok, body} <- throttled_body(url) do

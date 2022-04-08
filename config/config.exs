@@ -24,7 +24,7 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.AdsTxtCache.update() end},
     {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end},
-    {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
+    # {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
