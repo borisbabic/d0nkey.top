@@ -59,7 +59,7 @@ defmodule Backend.MixProject do
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:varint, "~> 1.0.0"},
       {:timex, "~> 3.5"},
-      {:floki, ">= 0.27.0", only: :test},
+      {:floki, ">= 0.27.0"},
       {:tesla, "~> 1.3.0"},
       {:tesla_cache, "~> 1.1.0"},
       {:guardian, "~> 2.0"},

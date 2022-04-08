@@ -24,6 +24,7 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.AdsTxtCache.update() end},
     {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end},
+    {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
@@ -140,7 +141,7 @@ config :torch,
 config :backend, Oban,
   repo: Backend.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [default: 10, battlefy_lineups: 20, grandmasters_lineups: 3, gm_stream_live: 4]
+  queues: [default: 10, battlefy_lineups: 20, grandmasters_lineups: 3, gm_stream_live: 4, hsreplay_deck_mapper: 1, hsreplay_streamer_deck_inserter: 1]
 
 config :phoenix_meta_tags,
   title: "d0nkey",

@@ -5,8 +5,15 @@ defmodule Backend.HSReplay do
   alias Backend.Infrastructure.ApiCache
   alias Backend.HSReplay.Archetype
   alias Backend.HSReplay.Streaming
-  @type archetype_id :: integer
+  alias Backend.HSReplay.Deck
+  alias Backend.HSReplay.DeckMap
+  alias Backend.HSReplay.DeckMapper
+  alias Backend.HSReplay.StreamerDeckInserter
+  alias Backend.Streaming.StreamerDeck
+  import Ecto.Query, warn: false
+  alias Backend.Repo
 
+  @type archetype_id :: integer
   def update_latest() do
     Api.get_replay_feed()
     |> Enum.map(fn rf -> {rf.id, rf} end)
@@ -195,6 +202,7 @@ defmodule Backend.HSReplay do
     |> match_archetypes(d)
   end
 
+  @spec get_highlander(%{:cards => any, :format => any, optional(any) => any}) :: any
   def get_highlander(d = %{class: class_name}) when not is_nil(class_name) do
     get_highlander(class_name, d)
   end
@@ -257,5 +265,61 @@ defmodule Backend.HSReplay do
     end)
     |> Enum.sort_by(fn a -> a.name end, :asc)
     |> Enum.sort_by(fn a -> a.player_class_name end, :asc)
+  end
+
+  def insert_map(hsr_deck_id, %{id: id}) when is_integer(id) do
+    attrs = %{hsr_deck_id: hsr_deck_id, deck_id: id}
+    %DeckMap{}
+    |> DeckMap.changeset(attrs)
+    |> Repo.insert()
+  end
+  def insert_map(hsr_deck_id, deckcode_or_deck) do
+    with {:ok, deck = %{id: _id}} <- Backend.Hearthstone.create_or_get_deck(deckcode_or_deck) do
+      insert_map(hsr_deck_id, deck)
+    end
+  end
+
+  def handle_live_decks() do
+    ["standard", "wild", "classic"]
+    |> Enum.each(&handle_live_decks/1)
+  end
+
+  def handle_live_decks(mode) do
+    with {:ok, decks} <- Api.get_live_decks(mode),
+      mapped_decks <- mapped_decks(decks),
+      existing_streamer_decks <- existing_streamer_decks(decks) do
+        DeckMapper.enqueue_jobs(decks -- mapped_decks)
+        StreamerDeckInserter.enqueue_jobs(mode, mapped_decks -- existing_streamer_decks)
+    end
+  end
+
+  defp mapped_decks(hsr_deck_ids) do
+    query = from dm in DeckMap,
+      where: dm.hsr_deck_id in ^hsr_deck_ids,
+      select: dm.hsr_deck_id
+
+    Repo.all(query)
+  end
+
+  defp existing_streamer_decks(hsr_deck_ids) do
+    query = from dm in DeckMap,
+      inner_join: sd in StreamerDeck,
+      on: sd.deck_id == dm.deck_id,
+      where: dm.hsr_deck_id in ^hsr_deck_ids,
+      select: dm.hsr_deck_id
+
+    Repo.all(query)
+  end
+
+  def get_deck(hsr_deck_id) do
+    query = from dm in DeckMap,
+      join: d in assoc(dm, :deck),
+      where: dm.hsr_deck_id == ^hsr_deck_id,
+      select: d
+
+    case Repo.all(query) do
+      [deck] -> {:ok, deck}
+      _ -> :error
+    end
   end
 end
