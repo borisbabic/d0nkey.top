@@ -21,7 +21,7 @@ defmodule Components.Filter.PlayableCardSelect do
           </div>
         </Form>
         <a class="dropdown-item is-active" :on-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
-          {Backend.HearthstoneJson.get_card(selected).name}
+          {name(selected)}
         </a>
         <a class="dropdown-item" :for={card <- cards(@search, @selected)} :on-click="add_card" phx-value-card={card.dbf_id}>
           {card.name}
@@ -61,6 +61,13 @@ defmodule Components.Filter.PlayableCardSelect do
     |> Enum.filter(&(String.downcase(&1.name) =~ String.downcase(search)))
     |> Enum.filter(&(!(&1.dbf_id in selected)))
     |> Enum.take(num_to_show)
+  end
+
+  def name(selected) do
+    case Backend.HearthstoneJson.get_card(selected) do
+      %{name: name} -> name
+      _ -> nil
+    end
   end
 
   def update_cards_fun(params, param, name \\ :update_params) do
