@@ -292,6 +292,11 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"period", "all"}, query),
     do: query
 
+  defp compose_games_query({"period", "sunken_city"}, query) do
+    release = ~N[2021-04-12 17:00:00]
+    query |> where([g], g.inserted_at >= ^release)
+  end
+
   defp compose_games_query({"period", "alterac_valley"}, query) do
     av_release = ~N[2021-12-07 18:00:00]
     query |> where([g], g.inserted_at >= ^av_release)
