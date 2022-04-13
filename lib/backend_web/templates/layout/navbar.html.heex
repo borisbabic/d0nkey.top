@@ -81,17 +81,19 @@
            <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :masters_tours_stats)}"}>Stats</a>
          </div>
        </div>
-      <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open, 'blablacar': !open}">
-        <a @mouseover="open=true" class="navbar-item navbar-link" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
+       <%= if false do %>
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open, 'blablacar': !open}">
+          <a @mouseover="open=true" class="navbar-item navbar-link" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
 
-        <div class="navbar-dropdown">
-            <%= for region <- [:EU, :APAC, :NA] do %>
-              <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive, %{region: region}) }"}><%= BackendWeb.GrandmastersLive.gm_region_display(region) %></a>
-            <% end %>
-          <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLineup) }"}>Lineups</a>
-          <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :earnings)}"}>Promotion</a>
+          <div class="navbar-dropdown">
+              <%= for region <- [:EU, :APAC, :NA] do %>
+                <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive, %{region: region}) }"}><%= BackendWeb.GrandmastersLive.gm_region_display(region) %></a>
+              <% end %>
+            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLineup) }"}>Lineups</a>
+            <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :earnings)}"}>Promotion</a>
+          </div>
         </div>
-      </div>
+       <% end %>
        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
          <div @mouseover="open=true" class="navbar-link">
            Misc
@@ -103,6 +105,7 @@
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.StreamingNowLive)}"}>Streaming Now</a>
            <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournaments_stats) }"}>Battlefy Tournaments Stats</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DeckviewerLive)}"}>Deckviewer</a>
+           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.MaxNations2022Live) }"}>
              Max Nations
