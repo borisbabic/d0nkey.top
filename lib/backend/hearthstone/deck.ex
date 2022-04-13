@@ -70,6 +70,7 @@ defmodule Backend.Hearthstone.Deck do
     deckcode_string
     |> String.split(["\n", "\r\n"])
     |> Enum.find(fn l -> l |> String.at(0) != "#" end)
+    |> Kernel.||("")
   end
 
   @spec extract_name(String.t()) :: String.t()
