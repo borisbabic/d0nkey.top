@@ -89,6 +89,17 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           eu: ~N[2022-03-31T23:00:00], # confirmed by eric in comp battlegrounds server https://discord.com/channels/939711967134887998/939720236599496778/959160404163035167
           us: ~N[2022-04-01T07:00:00]
         },
+      },
+      %__MODULE__{
+        slug: "lobby_legends_3",
+        player_streams: %{},
+        other_streams: %{},
+        ladder: %{
+          season_id: 5,
+          ap: ~N[2022-04-30T16:00:00],
+          eu: ~N[2022-04-30T23:00:00],
+          us: ~N[2022-05-01T07:00:00]
+        },
       }
     ]
   end
