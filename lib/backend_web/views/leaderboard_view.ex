@@ -362,7 +362,7 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  defp skip_cn_opts(%{leaderboard_id: "STD", season_id: s}) when s > 98, do: [{"all", "All"}, {"previously_skipped", "Previously Officially Skipped"}, {"none", "None"}]
+  defp skip_cn_opts(%{leaderboard_id: "STD", season_id: s}) when s > 98, do: [{"all", "All"}, {"none", "None"}]
   defp skip_cn_opts(%{leaderboard_id: "BG", season_id: s}) when s > 4, do: [{"all", "All"}, {"none", "None"}]
   defp skip_cn_opts(_), do: nil
 
@@ -646,8 +646,45 @@ defmodule BackendWeb.LeaderboardView do
   # EpicMingo#1244 is banned until Apr 3, 2022
   def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "EpicMingo") when season in 99..102,
     do: "EpicMingo#1244 is banned from competitive HS until 2022-04-03"
+
+  def banned(snapshot, name) when name in ["ADVO", "SilverName"] do
+    banned_deadline(name, snapshot, ~D[2022-03-30], ~D[2022-10-01])
+  end
+
+  def banned(snapshot, name) when name in ["Mirko", "iziboulbi", "Enki"] do
+    banned_deadline(name, snapshot, ~D[2022-01-05], ~D[2023-03-01])
+  end
+
+  def banned(snapshot, name) when name in ["Jekyll"] do
+    banned_deadline(name, snapshot, ~D[2022-01-18], ~D[2023-01-18])
+  end
+
+  def banned(snapshot, name) when name in ["MrF2P"] do
+    banned_deadline(name, snapshot, ~D[2021-07-15], ~D[2022-07-15])
+  end
+
+  def banned(snapshot, name) when name in ["Matador"] do
+    banned_deadline(name, snapshot, ~D[2021-08-12], ~D[2022-08-12])
+  end
+
+  def banned(_snapshot, name) when name in ["Zalae", "Purple"] do
+    "#{name} is banned from hsesports"
+  end
+
   def banned(_, _),
     do: nil
+
+  defp banned_deadline(name, %{upstream_updated_at: updated_at}, start_date, end_date) do
+    with {:ok, time} = Time.new(12, 0, 0),
+      {:ok, deadline} = NaiveDateTime.new(end_date, time),
+      {:ok, start} = NaiveDateTime.new(start_date, time),
+      :gt <- NaiveDateTime.compare(updated_at, start),
+      :lt <- NaiveDateTime.compare(updated_at, deadline) do
+        "#{name} is banned until #{end_date}"
+    else
+      _ -> nil
+    end
+  end
 
   # this rule has been changed
   # defp wrong_region(%{leaderboard_id: "BG", season_id: s, region: region}, account) when Backend.LobbyLegends.is_lobby_legends(s) do
