@@ -107,12 +107,7 @@
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DeckviewerLive)}"}>Deckviewer</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
-           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.MaxNations2022Live) }"}>
-             Max Nations
-             <%= if Backend.MaxNations2022.live?() do %>
-               <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-             <% end %>
-           </a>
+           <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournament, "6201700047b9e406d9908f27", %{stage_id: "62017079b5a9a57b56cc25b8"}) }"}>Max Open 8</a>
            <a class="navbar-item" href={"#{Routes.page_path(@conn, :about) }"}>About</a>
          </div>
        </div>
