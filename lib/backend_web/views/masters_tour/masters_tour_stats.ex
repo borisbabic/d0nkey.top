@@ -88,7 +88,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
           {swiss,
            Map.put_new(
              acc,
-             ts.tournament_name |> masters_tour_column_name(),
+             TourStop.get_by(:battlefy_id, ts.tournament_id) |> TourStop.display_name() |> masters_tour_column_name(),
              "#{swiss.wins} - #{swiss.losses}"
              |> tournament_score_cell(ts.team_name, ts.tournament_id, conn)
            )}
@@ -234,7 +234,11 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       [
         "Player"
       ] ++
-        (tour_stops |> Enum.map(&masters_tour_column_name/1)) ++
+        (tour_stops |> Enum.map(fn ts ->
+          ts
+          |> TourStop.display_name()
+          |> masters_tour_column_name()
+        end)) ++
         [
           "Tour Stops",
           "Won",

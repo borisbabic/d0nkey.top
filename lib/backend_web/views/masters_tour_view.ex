@@ -50,7 +50,7 @@ defmodule BackendWeb.MastersTourView do
       <th>#</th>
       <th>Name</th>
       <%= for ts <- tour_stops do %>
-        <th class="is-hidden-mobile"><%=ts%></th>
+        <th class="is-hidden-mobile"><%=TourStop.display_name(ts)%></th>
       <% end %>
       <%= if show_current_score do %>
         <th>Current Score</th>
@@ -192,7 +192,7 @@ defmodule BackendWeb.MastersTourView do
           ""
         end
 
-      {to_string(tour_stop), cell}
+      {TourStop.display_name(tour_stop), cell}
     end)
     |> Map.new()
     |> Map.merge(qualified_per_year)
@@ -349,7 +349,13 @@ defmodule BackendWeb.MastersTourView do
   defp qualified_filter_options(_), do: [{"yes", "Yes"}, {"no", "No"}]
 
   def period_title(:all), do: "2020-#{Date.utc_today().year}"
-  def period_title(period), do: period
+  def period_title(period) do
+    case TourStop.get(period) do
+      ts = %{id: _} -> TourStop.display_name(ts)
+      _ -> to_string(period)
+    end
+  end
+
 
   def filter_countries(target, []), do: target
 
@@ -642,7 +648,7 @@ defmodule BackendWeb.MastersTourView do
         "2021 MTs qualified",
         "2022 MTs qualified",
       ] ++
-        (eligible_ts |> Enum.map(&to_string/1)) ++
+        (eligible_ts |> Enum.map(&TourStop.display_name/1)) ++
         [
           "Winrate %",
           "Projected % (using 0.5)",
@@ -675,7 +681,7 @@ defmodule BackendWeb.MastersTourView do
           ["Player", "Cups", "Best", "Matches Won", "Winrate %"]
 
         {_, %{id: id}} ->
-          ["Player", "Cups", "Top 8", to_string(id), "Winrate %"]
+          ["Player", "Cups", "Top 8", TourStop.display_name(id), "Winrate %"]
 
         _ ->
           ["Player", "Cups", "Top 8", "Top 16", "Winrate %"]
@@ -701,11 +707,14 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     ts_list =
-      ([:all] ++ eligible_years() ++ eligible_tour_stops())
-      |> Enum.map(fn ts ->
+      (
+        [:all]
+        ++ eligible_years()
+        ++ eligible_tour_stops()
+      ) |> Enum.map(fn ts ->
         %{
           display: ts |> period_title(),
-          selected: to_string(ts) == to_string(period),
+          selected: to_string(ts) == to_string(period) || TourStop.equal?(ts, period),
           link:
             Routes.masters_tour_path(
               conn,
@@ -934,19 +943,20 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.map(fn ip -> process_invited_player(ip, conn) end)
       |> Enum.sort_by(fn ip -> ip.invited_at |> NaiveDateTime.to_iso8601() end, :desc)
 
-    tour_stop_list =
-      Backend.Blizzard.tour_stops()
+    tour_stop_options =
+      TourStop.all()
+      |> Enum.reverse()
       |> Enum.map(fn ts ->
         %{
-          ts: ts,
-          selected: to_string(ts) == to_string(selected_ts),
-          link: Routes.masters_tour_path(conn, :invited_players, ts)
+          display: TourStop.display_name(ts),
+          selected: to_string(ts.id) == to_string(selected_ts),
+          link: Routes.masters_tour_path(conn, :invited_players, ts.id)
         }
       end)
 
     render("invited_players.html", %{
       invited_players: invited_players,
-      ts_list: tour_stop_list,
+      dropdowns: [{tour_stop_options, dropdown_title(tour_stop_options, "Select Tour Stop")}],
       selected_ts: selected_ts,
       latest: latest
     })
@@ -980,7 +990,7 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.reverse()
       |> Enum.map(fn ts ->
         %{
-          display: ts.id,
+          display: TourStop.display_name(ts),
           link: ts.qualifiers_period |> create_qualifiers_link(conn)
         }
       end)
