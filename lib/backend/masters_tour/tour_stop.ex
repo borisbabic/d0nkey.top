@@ -331,8 +331,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-06-30 23:00:00],
         qualifiers_period: {~D[2022-04-01], ~D[2022-05-02]},
         min_qualifiers_for_winrate: 10,
-        aliases: [],
-        display_name: nil,
+        aliases: ["Vashj'ir", "Vashjir"],
+        display_name: "Vashj'ir",
         swiss_rounds: 8,
         year: 2022
       },
