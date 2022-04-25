@@ -43,6 +43,8 @@ defmodule Backend.MastersTour.TourStop do
     field :ladder_priority, atom
     field :min_qualifiers_for_winrate, integer | nil
     field :swiss_rounds, integer
+    field :aliases, [String.t()]
+    field :display_name, String.t() | nil
     field :year, integer
   end
 
@@ -58,6 +60,8 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2019-03-05], ~D[2019-04-29]},
         start_time: ~N[2019-06-14 16:00:00],
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 13,
         year: 2019
       },
@@ -71,6 +75,8 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2019-05-07], ~D[2019-07-01]},
         start_time: ~N[2019-08-16 01:00:00],
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 13,
         year: 2019
       },
@@ -85,6 +91,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2019-10-18 06:00:00],
         min_qualifiers_for_winrate: nil,
         swiss_rounds: 9,
+        aliases: [],
+        display_name: nil,
         year: 2019
       },
       %__MODULE__{
@@ -97,6 +105,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-01-31 15:00:00],
         qualifiers_period: {~D[2019-10-04], ~D[2019-11-24]},
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2020
       },
@@ -110,6 +120,8 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2019-12-13], ~D[2020-01-26]},
         start_time: ~N[2020-03-20 16:00:00],
         min_qualifiers_for_winrate: nil,
+        aliases: ["Los Angeles"],
+        display_name: "Los Angeles",
         swiss_rounds: 9,
         year: 2020
       },
@@ -123,6 +135,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-06-12 12:15:00],
         qualifiers_period: {~D[2020-02-07], ~D[2020-03-29]},
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2020
       },
@@ -136,6 +150,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-07-17 00:00:00],
         qualifiers_period: {~D[2020-04-03], ~D[2020-05-24]},
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2020
       },
@@ -150,6 +166,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-09-11 15:15:00],
         qualifiers_period: {~D[2020-06-05], ~D[2020-07-26]},
         min_qualifiers_for_winrate: nil,
+        aliases: ["Montreal"],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2020
       },
@@ -163,6 +181,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2020-10-23 12:15:00],
         qualifiers_period: {~D[2020-08-07], ~D[2020-09-27]},
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2020
       },
@@ -176,6 +196,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-03-12 16:15:00],
         qualifiers_period: {~D[2021-01-28], ~D[2021-02-28]},
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2021
       },
@@ -189,6 +211,8 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2021-03-04], ~D[2021-04-12]},
         start_time: ~N[2021-04-30 12:15:00],
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2021
       },
@@ -202,6 +226,8 @@ defmodule Backend.MastersTour.TourStop do
         region: :AP,
         start_time: ~N[2021-06-18 22:00:00],
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 9,
         year: 2021
       },
@@ -215,6 +241,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-08-27 17:15:00],
         qualifiers_period: {~D[2021-06-03], ~D[2021-07-19]},
         min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 8,
         year: 2021
       },
@@ -228,6 +256,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-10-22 12:15:00],
         qualifiers_period: {~D[2021-07-22], ~D[2021-09-06]},
         min_qualifiers_for_winrate: 20,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 8,
         year: 2021
       },
@@ -241,6 +271,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2021-11-19 13:00:00],
         qualifiers_period: {~D[2021-09-09], ~D[2021-10-18]},
         min_qualifiers_for_winrate: 20,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 8,
         year: 2021
       },
@@ -254,6 +286,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-02-17 22:15:00],
         qualifiers_period: {~D[2022-01-01], ~D[2022-01-30]},
         min_qualifiers_for_winrate: 10,
+        aliases: ["Onyxia's Lair", "Onyxia"],
+        display_name: "Onyxia's Lair",
         swiss_rounds: 8,
         year: 2022
       },
@@ -267,6 +301,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-03-18 14:00:00],
         qualifiers_period: {~D[2022-02-01], ~D[2022-02-28]},
         min_qualifiers_for_winrate: 10,
+        aliases: ["Ruins of Alterac", "Alterac"],
+        display_name: "Ruins of Alterac",
         swiss_rounds: 8,
         year: 2022
       },
@@ -280,6 +316,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-04-29 06:00:00],
         qualifiers_period: {~D[2022-03-01], ~D[2022-03-30]},
         min_qualifiers_for_winrate: 10,
+        aliases: ["Voyage to the Sunken City", "Sunken City", "Sunken"],
+        display_name: "Sunken City",
         swiss_rounds: 8,
         year: 2022
       },
@@ -293,6 +331,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-06-30 23:00:00],
         qualifiers_period: {~D[2022-04-01], ~D[2022-05-02]},
         min_qualifiers_for_winrate: 10,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 8,
         year: 2022
       },
@@ -306,6 +346,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-06-19 13:00:00],
         qualifiers_period: {~D[2022-05-04], ~D[2022-05-30]},
         min_qualifiers_for_winrate: 10,
+        aliases: [],
+        display_name: nil,
         swiss_rounds: 8,
         year: 2022
       },
@@ -320,6 +362,8 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2022-06-01], ~D[2022-06-30]},
         min_qualifiers_for_winrate: 10,
         swiss_rounds: 8,
+        aliases: [],
+        display_name: nil,
         year: 2022
       }
     ]
@@ -331,10 +375,11 @@ defmodule Backend.MastersTour.TourStop do
   end
 
   def get(tour_stop, attr, default \\ nil)
+  def get(ts = %__MODULE__{}, attr, default), do: Map.get(ts, attr, default)
   def get(tour_stop, attr, default)
       when (is_tour_stop(tour_stop) or is_binary(tour_stop)) and is_atom(attr) do
     case get(tour_stop) do
-      ts = %{id: _} -> ts |> Map.get(attr, default)
+      ts = %{id: _} -> Map.get(ts, attr, default)
       _ -> default
     end
   end
@@ -375,6 +420,7 @@ defmodule Backend.MastersTour.TourStop do
 
   def get_id_for_season!(season_id), do: Util.bangify(get_id_for_season(season_id))
 
+  def get(ts = %__MODULE__{}), do: ts
   def get(tour_stop) when is_tour_stop(tour_stop) do
     all()
     |> Enum.find(fn ts -> ts.id == tour_stop end)
@@ -382,9 +428,20 @@ defmodule Backend.MastersTour.TourStop do
 
   def get(tour_stop) when is_binary(tour_stop) do
     all()
-    |> Enum.find(fn ts -> to_string(ts.id) == tour_stop end)
+    |> Enum.find(fn ts -> to_string(ts.id) == tour_stop || tour_stop in ts.aliases end)
   end
   def get(_), do: nil
+
+  @spec display_name(t()) :: String.t() | nil
+  def display_name(%{display_name: name}) when is_binary(name), do: name
+  def display_name(%{id: id}), do: to_string(id)
+  def display_name(tour_stop) when is_binary(tour_stop) or is_atom(tour_stop) do
+    case get(tour_stop) do
+      ts = %{id: _} -> display_name(ts)
+      _ -> nil
+    end
+  end
+  def display_name(_), do: nil
 
   def get_current(hours_before_start \\ 1, hours_after_start \\ 96) do
     all()
@@ -451,4 +508,9 @@ defmodule Backend.MastersTour.TourStop do
   def gm_point_system(%{year: 2020}), do: {:ok, :earnings_2020}
   def gm_point_system(%{year: 2021}), do: {:ok, :points_2021}
   def gm_point_system(_), do: {:error, :no_point_system}
+
+  @spec equal?(any, any) :: boolean
+  def equal?(first, second) do
+    get(first) == get(second) && get(first) != nil
+  end
 end

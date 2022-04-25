@@ -8,16 +8,7 @@
     <% end %>
 </div>
 <div id="nitropay-below-title-leaderboard"></div><br>
-<div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@selected_ts%></button></div>
-    <div class="dropdown-menu" role="menu">
-    <div class="dropdown-content">
-        <%= for %{ts: ts, selected: selected, link: link} <- @ts_list do %>
-            <a class={"dropdown-item #{ selected && 'is-active' || '' }"} href={"#{ link }"}><%=ts%></a>
-        <% end %>
-    </div>
-    </div>
-</div>
+<%= render_dropdowns(@dropdowns) %>
 
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>

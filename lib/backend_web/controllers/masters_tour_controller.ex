@@ -180,9 +180,7 @@ defmodule BackendWeb.MastersTourController do
           year
 
         :error ->
-          ts
-          |> to_string()
-          |> String.to_existing_atom()
+          TourStop.get(ts, :id)
       end
 
     {stats, total} = MastersTour.get_player_stats(period)
