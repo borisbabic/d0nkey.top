@@ -23,19 +23,15 @@ defmodule Twitch.Api do
     do_get("/helix/streams/", query)
   end
 
+  @spec hearthstone_streams_after(any) :: {:error, any} | {:ok, Tesla.Env.t()}
+  def hearthstone_streams_after(pagination) do
+    do_get("/helix/streams/", [game_id: @hearthstone_id, after: pagination])
+  end
+
   @spec do_get(binary | Tesla.Client.t(), list(), list()) :: {:error, any} | {:ok, Tesla.Env.t()}
   def do_get(url, query \\ [], extra_headers \\ []) do
     token = Twitch.TokenRefresher.get_token()
     get(url, query: query, headers: [{:Authorization, "Bearer #{token}"} | extra_headers])
-  end
-
-  def hearthstone_streams_after(pagination) do
-    token = Twitch.TokenRefresher.get_token()
-
-    get("/helix/streams/",
-      query: [game_id: @hearthstone_id, after: pagination],
-      headers: [Authorization: "Bearer #{token}"]
-    )
   end
 
   defp data_cursor({:ok, %{body: %{"data" => data, "pagination" => %{"cursor" => cursor}}}}),

@@ -20,7 +20,7 @@ defmodule Components.DecksExplorer do
   # @default_order_by "winrate"
   # data(user, :any)
 
-  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"sunken_city", "Sunken City"}]
+  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"sunken_city", "Sunken City"}, {"patch_2022-04-26", "April 26th Patch"}]
 
   def default_period_options(), do: @default_period_options
   prop(default_order_by, :string, default: "winrate")
@@ -221,7 +221,15 @@ defmodule Components.DecksExplorer do
     end)
   end
 
-  defp default_period(), do: "sunken_city"
+  defp default_period() do
+    now = NaiveDateTime.utc_now()
+    use_patch_after = ~N[2022-04-28 20:30:00]
+    if :lt == NaiveDateTime.compare(now, use_patch_after) do
+      "sunken_city"
+    else
+      "patch_2022-04-26"
+    end
+  end
 
   def cap_param(params, param, max),
     do: limit_param(params, param, max, &Kernel.>/2)
