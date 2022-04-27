@@ -15,7 +15,7 @@ defmodule Components.ClassStatsTable do
           </tr>
         </thead>
         <tbody>
-          <tr :for={stat <- @stats}>
+          <tr :for={stat <- filter_weird_classes(@stats)}>
             <td><span class={"tag","player-name", extract_class(stat) |> String.downcase()}><span class={"basic-black-text"}>{class_name(stat)}</span></span></td>
             <td><span class="tag" style={Components.DeckStats.winrate_style(stat.winrate)}><span class={"basic-black-text"}>{Float.round(stat.winrate * 100, 1)}</span></span></td>
             <td>{stat.total}</td>
@@ -28,6 +28,13 @@ defmodule Components.ClassStatsTable do
         </tbody>
       </table>
     """
+  end
+
+  def filter_weird_classes(stats) do
+    Enum.filter(stats, fn stat ->
+      class = extract_class(stat)
+      class in Backend.Hearthstone.Deck.classes()
+    end)
   end
 
   def class_name(stat) do
