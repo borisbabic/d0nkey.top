@@ -497,11 +497,11 @@ defmodule BackendWeb.MastersTourView do
   # todo move
   def default_points_system(season_def) do
     case season_def do
-      {2020, 2} -> :mt_earnings_2020
-      {2021, 1} -> :mt_earnings_2020
-      {2021, 2} -> :gm_points_2021
-      {2022, 1} -> :gm_points_2021
-      {2022, 2} -> :gm_points_2021
+      {2020, 2} -> :earnings_2020
+      {2021, 1} -> :earnings_2020
+      {2021, 2} -> :points_2021
+      {2022, 1} -> :points_2021
+      {2022, 2} -> :points_2021
       {2022, :summer} -> :match_wins
       {2022, :fall} -> :match_wins
       _ -> :match_wins
