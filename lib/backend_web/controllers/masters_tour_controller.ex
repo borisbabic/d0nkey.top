@@ -90,7 +90,7 @@ defmodule BackendWeb.MastersTourController do
     qualifiers(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 
-  @default_season {2022, 2}
+  @default_season {2022, :summer}
   def parse_season("2020_2"), do: {2020, 2}
   def parse_season("2021_1"), do: {2021, 1}
   def parse_season("2021_2"), do: {2021, 2}
@@ -100,9 +100,9 @@ defmodule BackendWeb.MastersTourController do
   def parse_season("2022_fall"), do: {2022, :fall}
   def parse_season(_), do: @default_season
 
-  def parse_points_system(%{"points_system" => "mt_earnings_2020"}), do: :earnings_2020
-  def parse_points_system(%{"points_system" => "match_wins"}), do: :match_wins
-  def parse_points_system(_), do: :points_2021
+  def parse_points_system(%{"points_system" => "mt_earnings_2020"}, _), do: :earnings_2020
+  def parse_points_system(%{"points_system" => "match_wins"}, _), do: :match_wins
+  def parse_points_system(_, default), do: default
 
   defp show_current_score?(%{"show_current_score" => current_score})
        when is_binary(current_score),
@@ -112,7 +112,7 @@ defmodule BackendWeb.MastersTourController do
 
   def earnings(conn, params = %{"show_gms" => show_gms}) do
     gm_season = params["season"] |> parse_season()
-    points_system = parse_points_system(params)
+    points_system = parse_points_system(params, BackendWeb.MastersTourView.default_points_system(gm_season))
     gms = Backend.PlayerInfo.get_grandmasters_for_promotion(gm_season)
     tour_stops = Backend.Blizzard.get_tour_stops_for_gm!(gm_season)
     earnings = MastersTour.get_gm_money_rankings(gm_season, points_system)

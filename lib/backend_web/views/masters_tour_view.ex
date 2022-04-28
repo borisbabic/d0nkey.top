@@ -478,13 +478,15 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.reverse()
       |> Enum.map(fn {y, s} ->
         %{
-          display: season_display(y, s),
+          display: season_display({y, s}),
           selected: y == year && s == season,
           link:
             Routes.masters_tour_path(
               conn,
               :earnings,
-              Map.put(conn.query_params, "season", "#{y}_#{s}")
+              conn.query_params
+              |> Map.put("season", "#{y}_#{s}")
+              |> Map.put("points_system", default_points_system({y, s}))
             )
         }
       end)
@@ -492,9 +494,23 @@ defmodule BackendWeb.MastersTourView do
     {options, "Select Season"}
   end
 
-  defp season_display(2022, 2), do: "2022 Last Call"
-  defp season_display(year, season) when is_integer(season), do: "#{year} Season #{season}"
-  defp season_display(year, season), do: "#{year} #{season |> to_string() |> String.capitalize()}"
+  # todo move
+  def default_points_system(season_def) do
+    case season_def do
+      {2020, 2} -> :mt_earnings_2020
+      {2021, 1} -> :mt_earnings_2020
+      {2021, 2} -> :gm_points_2021
+      {2022, 1} -> :gm_points_2021
+      {2022, 2} -> :gm_points_2021
+      {2022, :summer} -> :match_wins
+      {2022, :fall} -> :match_wins
+      _ -> :match_wins
+    end
+  end
+
+  defp season_display({2022, 2}), do: "2022 Last Call"
+  defp season_display({year, season}) when is_integer(season), do: "#{year} Season #{season}"
+  defp season_display({year, season}), do: "#{year} #{season |> to_string() |> String.capitalize()}"
 
   def create_current_score_dropdown(conn, show_current_score) do
     {[
