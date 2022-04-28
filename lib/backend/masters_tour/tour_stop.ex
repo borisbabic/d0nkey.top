@@ -313,7 +313,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_seasons: [101],
         ladder_invites: 50,
         region: :AP,
-        start_time: ~N[2022-04-29 06:00:00],
+        start_time: ~N[2022-04-29 05:00:00],
         qualifiers_period: {~D[2022-03-01], ~D[2022-03-30]},
         min_qualifiers_for_winrate: 10,
         aliases: ["Voyage to the Sunken City", "Sunken City", "Sunken", "Three"],
