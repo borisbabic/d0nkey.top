@@ -286,7 +286,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-02-17 22:15:00],
         qualifiers_period: {~D[2022-01-01], ~D[2022-01-30]},
         min_qualifiers_for_winrate: 10,
-        aliases: ["Onyxia's Lair", "Onyxia"],
+        aliases: ["Onyxia's Lair", "Onyxia", "One"],
         display_name: "Onyxia's Lair",
         swiss_rounds: 8,
         year: 2022
@@ -301,14 +301,14 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-03-18 14:00:00],
         qualifiers_period: {~D[2022-02-01], ~D[2022-02-28]},
         min_qualifiers_for_winrate: 10,
-        aliases: ["Ruins of Alterac", "Alterac"],
+        aliases: ["Ruins of Alterac", "Alterac", "Two"],
         display_name: "Ruins of Alterac",
         swiss_rounds: 8,
         year: 2022
       },
       %__MODULE__{
         id: :"Masters Tour Three",
-        battlefy_id: nil,
+        battlefy_id: "624d91cfdcea614f50cfcc50",
         ladder_priority: :timezone,
         ladder_seasons: [101],
         ladder_invites: 50,
@@ -316,7 +316,7 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-04-29 06:00:00],
         qualifiers_period: {~D[2022-03-01], ~D[2022-03-30]},
         min_qualifiers_for_winrate: 10,
-        aliases: ["Voyage to the Sunken City", "Sunken City", "Sunken"],
+        aliases: ["Voyage to the Sunken City", "Sunken City", "Sunken", "Three"],
         display_name: "Sunken City",
         swiss_rounds: 8,
         year: 2022
@@ -428,7 +428,10 @@ defmodule Backend.MastersTour.TourStop do
 
   def get(tour_stop) when is_binary(tour_stop) do
     all()
-    |> Enum.find(fn ts -> to_string(ts.id) == tour_stop || tour_stop in ts.aliases end)
+    |> Enum.find(fn
+      ts -> to_string(ts.id) == tour_stop
+      || String.downcase(tour_stop) in Enum.map(ts.aliases, &String.downcase/1)
+    end)
   end
   def get(_), do: nil
 
