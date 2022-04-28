@@ -391,15 +391,15 @@ defmodule BackendWeb.StreamingView do
     link =
       case {Map.get(conn.query_params, "twitch_id"), Map.get(conn.query_params, "twitch_login")} do
         {^twitch_id, _} ->
-          remove_from_link(conn, ["twitch_id", "twitch_login"])
+          remove_from_link(conn, ["twitch_id", "twitch_login", "offset"])
 
         {_, ^tl} ->
-          remove_from_link(conn, ["twitch_id", "twitch_login"])
+          remove_from_link(conn, ["twitch_id", "twitch_login", "offset"])
 
         _ ->
           new_params =
             conn.query_params
-            |> Map.drop(["deck_id", "twitch_login"])
+            |> Map.drop(["deck_id", "twitch_login", "offset"])
             |> Map.put("twitch_id", twitch_id)
 
           Routes.streaming_path(conn, :streamer_decks, new_params)
