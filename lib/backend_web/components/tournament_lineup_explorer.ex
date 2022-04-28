@@ -1,6 +1,6 @@
 defmodule Components.TournamentLineupExplorer do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
 
   prop(tournament_id, :string)
   prop(tournament_source, :string)
@@ -70,9 +70,19 @@ defmodule Components.TournamentLineupExplorer do
           </thead>
           <tbody>
             <tr :for={lineup <- lineups |> paginate(@page, @page_size)}>
-              <td :if={@gm_week}> <GMProfileLink week={@gm_week} gm={lineup.name}/> </td>
-              <td :if={!@gm_week && slot_assigned?(:lineup_name)}><#slot name="lineup_name" :args={lineup_name: lineup.name}/></td>
-              <td :if={!@gm_week && !slot_assigned?(:lineup_name)}>{lineup.name}</td>
+              <td>
+                {#if @gm_week}
+                  <GMProfileLink week={@gm_week} gm={lineup.name}/>
+                {#elseif slot_assigned?(:lineup_name)}
+                  <#slot name="lineup_name" :args={lineup_name: lineup.name}/>
+                {#elseif "battlefy" == @tournament_source}
+                  <a href={Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, @tournament_id, lineup.name)}>
+                    {lineup.name}
+                  </a>
+                {#else}
+                  {lineup.name}
+                {/if}
+              </td>
               <td>
                 <ExpandableLineup lineup={lineup} id={"modal_lineup_#{lineup.id}"}/>
               </td>
