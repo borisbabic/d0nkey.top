@@ -970,12 +970,15 @@ defmodule Backend.MastersTour do
       "SuperKimchi" -> "DOLGALLERY"
       "DOLGALLERY" -> "hyung"
       "JrsLoveStorm" -> "RNGLoveStorm"
-      "SNBrox" -> "WBGBrox"
       "jiuqianyu" -> "WBGJiuqianyu"
 
 
       ###
       "RyshHyunGod" -> "RyshSmallHyun"
+
+      ###
+      "cgg" -> "KC2022"
+      "JokerRing" -> "aikekegaogao"
 
       n -> n
     end
