@@ -1,9 +1,10 @@
 <div class="title is-2"><a href={"#{ @link }"}> <%= @name %></a></div>
-<div class="subtitle is-6">
+<div class="subtitle is-6 level is-mobile level-left">
     <%= if @user_subtitle do %>
         <%= @user_subtitle %> | 
     <% end %>
-    <%=@subtitle%>
+    <%= @subtitle %>
+    <%= @streams_subtitle %>
 </div>
 <div id="nitropay-below-title-leaderboard"></div><br>
 
