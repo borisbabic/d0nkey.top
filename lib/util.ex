@@ -75,6 +75,13 @@ defmodule Util do
     |> String.replace("T", " ")
   end
 
+  @doc """
+  Checks wether the target NaiveDateTime is within {min, max}
+  iex> Util.in_range?(~N[2019-12-01 23:00:00], {~N[2020-03-01 23:00:00], ~N[2022-03-01 00:00:00]})
+  false
+  iex> Util.in_range?(~N[2020-12-01 23:00:00], {~N[2020-03-01 23:00:00], ~N[2022-03-01 00:00:00]})
+  true
+  """
   def in_range?(target = %NaiveDateTime{}, {min = %NaiveDateTime{}, max = %NaiveDateTime{}}) do
     NaiveDateTime.compare(target, min) != :lt &&
       NaiveDateTime.compare(target, max) != :gt

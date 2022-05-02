@@ -42,14 +42,19 @@ defmodule Twitch.HearthstoneLive do
     end
   end
 
+  def twitch_display_live?(twitch_display), do: !! get_by_twitch_display(twitch_display)
+
+
   @spec get_by_twitch_display(String.t()) :: Twitch.Stream.t() | nil
+  def get_by_twitch_display(nil), do: nil
   def get_by_twitch_display(twitch_display) do
-    Enum.find(streams(), & &1.user_name == twitch_display)
+    Enum.find(streams(), & String.downcase(&1.user_name) == String.downcase(twitch_display))
   end
 
   @spec get_by_twitch_login(String.t()) :: Twitch.Stream.t() | nil
+  def get_by_twitch_login(nil), do: nil
   def get_by_twitch_login(twitch_login) do
-    Enum.find(streams(), & twitch_login && Twitch.Stream.login(&1.titch_login) == twitch_login)
+    Enum.find(streams(), & twitch_login && Twitch.Stream.login(&1) == twitch_login)
   end
 
 end
