@@ -33,6 +33,7 @@ defmodule Components.ClassStatsTable do
   def filter_weird_classes(stats) do
     Enum.filter(stats, fn stat ->
       class = extract_class(stat)
+      IO.inspect(class)
       class in Backend.Hearthstone.Deck.classes()
     end)
   end
