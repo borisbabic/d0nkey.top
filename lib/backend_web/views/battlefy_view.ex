@@ -289,9 +289,10 @@ defmodule BackendWeb.BattlefyView do
     |> put_param(:player_options, &create_player_options/1)
     |> put_param(:dropdowns, &create_tournament_dropdowns/1)
     |> add_tournament_stage_attrs()
-    |> Kernel.then( fn p ->
+    |> Kernel.then(fn p ->
       Map.merge(p, %{
         link: Battlefy.create_tournament_link(p.tournament),
+        streams_subtitle: streams_subtitle(p.tournament),
         name: p.tournament.name,
         show_invited: MapSet.size(p.invited_mapset) > 0,
         show_decks: Enum.any?(p.lineups),
@@ -306,6 +307,22 @@ defmodule BackendWeb.BattlefyView do
       new_params
     )
   end
+
+  defp streams_subtitle(%{streams: streams}) when is_list(streams) do
+    twitch_streams = Enum.filter(streams, &Backend.Battlefy.Tournament.Stream.twitch?/1)
+    assigns = %{streams: twitch_streams}
+    ~H"""
+    <span class="level-left">
+     <%= for stream <- @streams do %>
+        <p>| </p>
+        <a href={stream.link}>
+          <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
+        </a>
+     <% end %>
+    </span>
+    """
+  end
+  defp streams_subtitle(_), do: nil
 
   defp handle_highlights(params) do
     highlight = if params.highlight == nil, do: [], else: params.highlight

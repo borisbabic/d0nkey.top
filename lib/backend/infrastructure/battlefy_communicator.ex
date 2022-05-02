@@ -154,7 +154,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t()
   def get_tournament(tournament_id) do
     url =
-      "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true"
+      "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true&extend[streams]=true"
 
     get_body(url)
     |> Jason.decode!()
