@@ -9,21 +9,24 @@ defmodule Bot.BattlefyMessageHandler do
     do:
       content
       |> get_options(:string)
+      |> String.trim()
+      |> IO.inspect()
       |> handle_tournament_standings(message)
 
   def handle_tournament_standings(battlefy_id, message) when is_binary(battlefy_id) do
     create_standings_message(battlefy_id, message)
+    |> IO.inspect()
     |> send_message(message)
   end
 
   def create_standings_message(battlefy_id, _message = %{guild_id: guild_id}) do
-    with unsorted = [_|_] <- Battlefy.get_standings(battlefy_id),
+    with unsorted when is_list(unsorted) <- Battlefy.get_standings(battlefy_id),
          standings = Battlefy.sort_standings(unsorted),
-         battletags = [_|_] <- get_guild_battletags!(guild_id) do
+         battletags = [_|_] <- get_guild_battletags!(guild_id) |> IO.inspect() do
           {:ok, create_message(battletags, standings)}
     else
       other ->
-        Logger.debug("Unable to create standings message: #{inspect(other)}")
+        Logger.warn("Unable to create standings message: #{inspect(other)}")
         {:error, :could_not_create_message}
     end
   end

@@ -160,9 +160,9 @@ defmodule Backend.Battlefy do
 
   @spec get_standings(tournament_id() | stage_id()) :: [Standings.t()]
   def get_standings(some_id) do
-    with nil <- get_tournament_standings(some_id),
+    with [] <- get_tournament_standings(some_id),
          stage when not is_nil(stage) <- get_stage(some_id),
-         nil <- get_stage_standings(stage) do
+         s when s in [nil, []] <- get_stage_standings(stage) do
       []
     else
       standings -> standings || []
@@ -457,11 +457,13 @@ defmodule Backend.Battlefy do
   end
 
   @spec get_tournament_standings(tournament_id) :: [Standings.t()]
-  def get_tournament_standings(tournament_id) do
+  def get_tournament_standings(tournament_id) when is_binary(tournament_id) do
     tournament_id
     |> get_tournament()
     |> get_tournament_standings()
   end
+
+  def get_tournament_standings(_), do: []
 
   @spec get_tournament(tournament_id) :: Tournament.t()
   def get_tournament(tournament_id) do
