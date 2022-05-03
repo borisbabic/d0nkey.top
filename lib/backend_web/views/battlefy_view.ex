@@ -310,16 +310,14 @@ defmodule BackendWeb.BattlefyView do
 
   defp streams_subtitle(%{streams: streams}) when is_list(streams) do
     twitch_streams = Enum.filter(streams, &Backend.Battlefy.Tournament.Stream.twitch?/1)
-    assigns = %{streams: twitch_streams}
+    assigns = %{twitch_streams: twitch_streams}
     ~H"""
-    <span class="level-left">
-     <%= for stream <- @streams do %>
-        <p>| </p>
-        <a href={stream.link}>
-          <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
+    <%= for stream <- @twitch_streams do %>
+        <a href={stream.link} class="dropdown">
+            <img style="height: 20px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
         </a>
-     <% end %>
-    </span>
+        |
+    <% end %>
     """
   end
   defp streams_subtitle(_), do: nil

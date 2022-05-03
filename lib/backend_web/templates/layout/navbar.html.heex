@@ -123,14 +123,14 @@
          <% end %>
 
          <%= if Twitch.HearthstoneLive.twitch_display_live?("MAXTeamTV", "MAX Open Cup 8") do %>
-          <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournament, "6201700047b9e406d9908f27", %{stage_id: "62017079b5a9a57b56cc25b8"}) }"}>
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6201700047b9e406d9908f27", %{stage_id: "62017079b5a9a57b56cc25b8"}) }>
           Max Open 8
           <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
           </a>
          <% end %>
 
          <%= if Util.in_range?(NaiveDateTime.utc_now(), {~N[2022-05-03 05:01:00], ~N[2022-05-06 08:00:00]}) do %>
-          <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournament, "6201700047b9e406d9908f27", %{stage_id: "62017079b5a9a57b56cc25b8"}) }"}>
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "625e7176b31e652df4f63a63")}>
           Orange Open
           <%= if Twitch.HearthstoneLive.twitch_display_live?("orangehs", "Open") do %>
             <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
