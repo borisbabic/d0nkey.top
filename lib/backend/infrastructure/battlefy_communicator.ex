@@ -151,15 +151,18 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Backend.Battlefy.Standings.from_raw_map_list()
   end
 
-  @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t()
+  @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t() | nil
   def get_tournament(tournament_id) do
     url =
       "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true&extend[streams]=true"
 
-    get_body(url)
-    |> Jason.decode!()
-    |> Enum.at(0)
-    |> Backend.Battlefy.Tournament.from_raw_map()
+
+    with body <- get_body(url),
+         {:ok, [decoded]} <- Poison.decode(body) do
+      Tournament.from_raw_map(decoded)
+    else
+      _ -> nil
+    end
   end
 
   @spec get_matches(Battlefy.stage_id(), Battlefy.get_matches_options()) :: [Match.t()]
