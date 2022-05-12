@@ -40,9 +40,7 @@ defmodule Backend.MixProject do
       {:phoenix_live_dashboard, "~> 0.5"},
       {:telemetry_poller, "~> 0.5"},
       {:telemetry_metrics, "~> 0.6"},
-      {:torch, git: "https://github.com/mojotech/torch.git", branch: "v4"},
-
-
+      {:torch, "~> 4.1"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.1"},
