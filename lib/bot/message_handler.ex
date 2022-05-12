@@ -12,21 +12,53 @@ defmodule Bot.MessageHandler do
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle(msg) do
     case msg.content do
-      "!ping" -> Api.create_message(msg.channel_id, "pong")
-      <<"!create_highlight", _::binary>> -> handle_highlight(msg)
-      <<"!c_h", _::binary>> -> handle_highlight(msg)
-      <<"!ch", _::binary>> -> handle_highlight(msg)
-      <<"!leaderboard", _::binary>> -> handle_leaderboard(msg)
-      <<"!ldb", _::binary>> -> Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
-      <<"!matchups_link", _::binary>> -> Bot.MatchupMessageHandler.handle_matchups_link(msg)
-      <<"!matchup", _::binary>> -> Bot.MatchupMessageHandler.handle_matchup(msg)
-      <<"!battlefy", _::binary>> -> Bot.BattlefyMessageHandler.handle_tournament_standings(msg)
-      <<"!mtq", _::binary>> -> Bot.MTMessageHandler.handle_qualifier_standings(msg)
-      <<"!mt", _::binary>> -> Bot.MTMessageHandler.handle_mt_standings(msg)
-      <<"!orangeopen", _::binary>> -> Bot.BattlefyMessageHandler.handle_tournament_standings("625e7176b31e652df4f63a63", msg)
-      <<"!oo", _::binary>> -> Bot.BattlefyMessageHandler.handle_tournament_standings("625e7176b31e652df4f63a63", msg)
-      <<"!maxopen8", _::binary>> -> Bot.BattlefyMessageHandler.handle_tournament_standings("62017079b5a9a57b56cc25b8", msg)
-      _ -> :ignore
+      "!ping" ->
+        Api.create_message(msg.channel_id, "pong")
+
+      <<"!create_highlight", _::binary>> ->
+        handle_highlight(msg)
+
+      <<"!c_h", _::binary>> ->
+        handle_highlight(msg)
+
+      <<"!ch", _::binary>> ->
+        handle_highlight(msg)
+
+      <<"!leaderboard", _::binary>> ->
+        handle_leaderboard(msg)
+
+      <<"!ldb", _::binary>> ->
+        Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
+
+      <<"!matchups_link", _::binary>> ->
+        Bot.MatchupMessageHandler.handle_matchups_link(msg)
+
+      <<"!matchup", _::binary>> ->
+        Bot.MatchupMessageHandler.handle_matchup(msg)
+
+      <<"!battlefy", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings(msg)
+
+      <<"!mtq", _::binary>> ->
+        Bot.MTMessageHandler.handle_qualifier_standings(msg)
+
+      <<"!mt", _::binary>> ->
+        Bot.MTMessageHandler.handle_mt_standings(msg)
+
+      <<"!orangeopen", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("625e7176b31e652df4f63a63", msg)
+
+      <<"!oo", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("625e7176b31e652df4f63a63", msg)
+
+      <<"!maxopen8", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("62017079b5a9a57b56cc25b8", msg)
+
+      <<"!tch", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("6271bd62d44c844993e4e1a7", msg)
+
+      _ ->
+        :ignore
     end
   end
 
