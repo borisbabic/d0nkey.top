@@ -1,4 +1,5 @@
 defmodule Components.Feed.HSArticle do
+  @moduledoc false
   use BackendWeb, :surface_component
   prop(article, :map, required: true)
 
@@ -20,8 +21,18 @@ defmodule Components.Feed.HSArticle do
     """
   end
 
+  def image(%{
+        "thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => url = "http" <> _}
+      }),
+      do: url
 
-  def image(%{"thumbnail" => %{"mimeType"=> <<"image"::binary, _::binary>>, "url" => url}}), do: "https:#{url}"
+  def image(%{
+        "thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => url = "//" <> _}
+      }),
+      do: "https:#{url}"
+
+  def image(%{"thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => url}}),
+    do: "https://#{url}"
 
   def url(%{"blogId" => id}), do: "/hs/article/#{id}"
   def url(%{"defaultUrl" => url}), do: url
