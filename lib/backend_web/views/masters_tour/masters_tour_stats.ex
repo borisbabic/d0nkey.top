@@ -65,7 +65,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       {flag, country} =
         with nil <- PlayerInfo.get_country(player_name),
              nil <- Util.get_country_code(player_name) do
-              {"", nil}
+          {"", nil}
         else
           cc -> {country_flag(cc, player_name), cc}
         end
@@ -88,7 +88,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
           {swiss,
            Map.put_new(
              acc,
-             TourStop.get_by(:battlefy_id, ts.tournament_id) |> TourStop.display_name() |> masters_tour_column_name(),
+             TourStop.get_by(:battlefy_id, ts.tournament_id)
+             |> TourStop.display_name()
+             |> masters_tour_column_name(),
              "#{swiss.wins} - #{swiss.losses}"
              |> tournament_score_cell(ts.team_name, ts.tournament_id, conn)
            )}
@@ -143,6 +145,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       |> Util.get_country_name()
     end
   end
+
   def create_grouping_func("region") do
     fn n ->
       n
@@ -161,27 +164,29 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       |> Enum.flat_map(fn {country, country_roster} ->
         Enum.map(country_roster, fn btag ->
           {
-            btag|> get_mt_name() |> String.downcase(),
+            btag |> get_mt_name() |> String.downcase(),
             country
           }
         end)
       end)
       |> Map.new()
+
     fn n ->
       normalized_name = n |> get_mt_name() |> String.downcase()
       Map.get(downcase_roster_map, normalized_name)
     end
   end
 
-
   def create_grouping_func("max_nations_2022_groups") do
     group_map =
       Backend.MaxNations2022.first_stage_groups()
       |> Enum.flat_map(fn {group, countries} ->
-        Enum.map(countries, & {&1, "Group #{group}"})
+        Enum.map(countries, &{&1, "Group #{group}"})
       end)
       |> Map.new()
+
     nations_grouping = create_grouping_func("max_nations_2022")
+
     fn n ->
       case nations_grouping.(n) do
         nil -> nil
@@ -197,6 +202,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       n
       |> InvitedPlayer.shorten_battletag()
       |> MastersTour.fix_name()
+
   def render("masters_tours_stats.html", %{
         conn: conn,
         sort_by: sort_by_raw,
@@ -234,11 +240,12 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       [
         "Player"
       ] ++
-        (tour_stops |> Enum.map(fn ts ->
-          ts
-          |> TourStop.display_name()
-          |> masters_tour_column_name()
-        end)) ++
+        (tour_stops
+         |> Enum.map(fn ts ->
+           ts
+           |> TourStop.display_name()
+           |> masters_tour_column_name()
+         end)) ++
         [
           "Tour Stops",
           "Won",
@@ -269,11 +276,9 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       tts
       |> Backend.TournamentStats.create_team_stats_collection(create_grouping_func(group_by))
       |> Enum.filter(fn {name, _} ->
-        name
-      end)
-      |> Enum.filter(fn {name, _} ->
-        countries == nil || countries == [] ||
-          PlayerInfo.get_country(name) in countries
+        name &&
+          (countries == nil || countries == [] ||
+             PlayerInfo.get_country(name) in countries)
       end)
       |> create_player_rows(conn)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
@@ -311,8 +316,10 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
       dropdowns: [limit_dropdown, create_group_by_dropdown(group_by, update_link)]
     })
   end
+
   defp create_group_by_dropdown(group_by, update_params) do
-    options = [{"max_nations_2022", "Max Nations 2022"}, {"max_nations_2022_groups", "Max Nations Groups"}, {"country", "Country"}, {"region", "Region"}, {"player", "Player"}]
+    options =
+      [{"country", "Country"}, {"region", "Region"}, {"player", "Player"}]
       |> Enum.map(fn {val, display} ->
         %{
           selected: group_by == val,
@@ -320,12 +327,13 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
           link: update_params.(%{"group_by" => val})
         }
       end)
-      {options, "Group By"}
+
+    {options, "Group By"}
   end
 
   defp years_options(years) do
     TourStop.all()
-    |> Enum.map(& to_string(&1.year))
+    |> Enum.map(&to_string(&1.year))
     |> Enum.filter(& &1)
     |> Enum.uniq()
     |> Enum.sort()
