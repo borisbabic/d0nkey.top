@@ -30,9 +30,8 @@ defmodule Backend.Blizzard do
           | :"Masters Tour Five"
           | :"Masters Tour Six"
 
-
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
-  @current_bg_season_id 5
+  @current_bg_season_id 6
 
   defmacro is_old_bg_season(season_id) do
     quote do
@@ -57,6 +56,7 @@ defmodule Backend.Blizzard do
   def season_id_def(ldb) when ldb in [:MRC, "MRC"] do
     {2021, 10}
   end
+
   def season_id_def(_) do
     {2013, 10}
   end
@@ -89,7 +89,6 @@ defmodule Backend.Blizzard do
       {:error, reason} -> throw(reason)
     end
   end
-
 
   @spec get_season_id(Calendar.date() | %{month: number, year: number}) :: number
   def get_season_id(date), do: get_season_id(date, :STD)
@@ -208,7 +207,6 @@ defmodule Backend.Blizzard do
     end
   end
 
-
   @timezone_order [:AP, :EU, :US]
   def get_ladder_priority!(%{ladder_priority: :timezone}), do: @timezone_order
   def get_ladder_priority!(_), do: throw("Unsupported tour stop")
@@ -227,15 +225,18 @@ defmodule Backend.Blizzard do
     []
   """
   @spec ladders_to_check(integer, leaderboard | String.t(), region | String.t()) :: [region]
-  def ladders_to_check(season_id, ldb, region) when is_integer(season_id) and ldb in ["STD", :STD] do
+  def ladders_to_check(season_id, ldb, region)
+      when is_integer(season_id) and ldb in ["STD", :STD] do
     case get_ladder_tour_stop(season_id) do
       {:ok, tour_stop} -> ladders_to_check(tour_stop, region)
       {:error, _} -> []
     end
   end
 
-  def ladders_to_check(s, ldb, region) when ldb in ["BG", :BG] and Backend.LobbyLegends.is_lobby_legends(s),
-    do: skip_current(@timezone_order, region)
+  def ladders_to_check(s, ldb, region)
+      when ldb in ["BG", :BG] and Backend.LobbyLegends.is_lobby_legends(s),
+      do: skip_current(@timezone_order, region)
+
   def ladders_to_check(_, ldb, _) when ldb in ["BG", :BG], do: []
 
   # credo:disable-next-line
@@ -255,10 +256,9 @@ defmodule Backend.Blizzard do
   end
 
   defp skip_current(regions, current) do
-    Enum.take_while(regions, & to_string(&1) != to_string(current))
+    Enum.take_while(regions, &(to_string(&1) != to_string(current)))
     |> Enum.uniq()
   end
-
 
   def current_ladder_tour_stop() do
     case get_ladder_tour_stop(get_season_id(Date.utc_today())) do
@@ -392,7 +392,15 @@ defmodule Backend.Blizzard do
         {:ok, [:Ironforge, :Orgrimmar, :Dalaran, :Silvermoon, :Stormwind, :Undercity]}
 
       {2022, 2} ->
-        {:ok, [:Silvermoon, :Stormwind, :Undercity, :"Masters Tour One", :"Masters Tour Two", :"Masters Tour Three"]}
+        {:ok,
+         [
+           :Silvermoon,
+           :Stormwind,
+           :Undercity,
+           :"Masters Tour One",
+           :"Masters Tour Two",
+           :"Masters Tour Three"
+         ]}
 
       {2022, :summer} ->
         {:ok, [:"Masters Tour One", :"Masters Tour Two", :"Masters Tour Three"]}
@@ -542,7 +550,7 @@ defmodule Backend.Blizzard do
     "#{ldb} #{r} #{get_season_name(season_id, :BG)}"
   end
 
-  for ldb <- [:BG, :MRC]  do
+  for ldb <- [:BG, :MRC] do
     def get_leaderboard_name(region, unquote(to_string(ldb)), season_id, length),
       do: get_leaderboard_name(region, unquote(ldb), season_id, length)
   end
@@ -693,16 +701,13 @@ defmodule Backend.Blizzard do
   defp break_weeks_so_far(week, break_weeks),
     do: break_weeks |> Enum.filter(&(&1 <= week)) |> Enum.count()
 
-  def weeks_so_far(
-        season_def = %{break_weeks: break_weeks, playoffs_week: playoffs}
-      ) do
+  def weeks_so_far(season_def = %{break_weeks: break_weeks, playoffs_week: playoffs}) do
     week_range(season_def)
     |> Enum.filter(&(!(&1 in break_weeks) && &1 <= playoffs))
     |> Enum.map(&gm_week(season_def, &1))
   end
 
   def weeks_so_far(season), do: season |> gm_season_definition() |> weeks_so_far()
-
 
   def week_range(%{week_one: week_one}) do
     {_year, current} = Util.current_week()
