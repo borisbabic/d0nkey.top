@@ -2,16 +2,17 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
   import TypedStruct
 
   @type ladder_config :: %{
-    season_id: integer(),
-    ap: NaiveDateTime.t(),
-    eu: NaiveDateTime.t(),
-    us: NaiveDateTime.t()
-  }
+          season_id: integer(),
+          ap: NaiveDateTime.t(),
+          eu: NaiveDateTime.t(),
+          us: NaiveDateTime.t()
+        }
   defmacro is_lobby_legends(lobby_legends) do
     quote do
       atoms = [
         :lobby_legends_1
       ]
+
       all = Enum.map(atoms, &to_string) ++ atoms
       unquote(lobby_legends) in all
     end
@@ -57,7 +58,7 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           "SolaryHS" => "https://www.twitch.tv/SolaryHS",
           "TeamAmericaHS" => "https://www.twitch.tv/teamamerica",
           "TheFishOugo" => "https://www.twitch.tv/thefishougo",
-          "VictorG_HS" => "https://www.twitch.tv/victorg_hs",
+          "VictorG_HS" => "https://www.twitch.tv/victorg_hs"
         },
         player_streams: %{
           "baiyu" => nil,
@@ -75,7 +76,7 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           "summer" => nil,
           "yjSJMR" => nil,
           "ZoinhU" => "https://www.twitch.tv/zoinhu",
-          "BeNice" => "https://www.twitch.tv/benice92",
+          "BeNice" => "https://www.twitch.tv/benice92"
         },
         start_time: ~N[2022-04-02 15:00:00]
       },
@@ -86,9 +87,10 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
         ladder: %{
           season_id: 5,
           ap: ~N[2022-03-31T16:00:00],
-          eu: ~N[2022-03-31T23:00:00], # confirmed by eric in comp battlegrounds server https://discord.com/channels/939711967134887998/939720236599496778/959160404163035167
+          # confirmed by eric in comp battlegrounds server https://discord.com/channels/939711967134887998/939720236599496778/959160404163035167
+          eu: ~N[2022-03-31T23:00:00],
           us: ~N[2022-04-01T07:00:00]
-        },
+        }
       },
       %__MODULE__{
         slug: "lobby_legends_3",
@@ -99,18 +101,30 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           ap: ~N[2022-04-30T16:00:00],
           eu: ~N[2022-04-30T23:00:00],
           us: ~N[2022-05-01T07:00:00]
-        },
+        }
+      },
+      %__MODULE__{
+        slug: "lobby_legends_4",
+        player_streams: %{},
+        other_streams: %{},
+        ladder: %{
+          season_id: 6,
+          ap: ~N[2022-05-31T16:00:00],
+          # confirmed by eric in comp battlegrounds server https://discord.com/channels/939711967134887998/939720236599496778/959160404163035167
+          eu: ~N[2022-05-31T23:00:00],
+          us: ~N[2022-06-01T07:00:00]
+        }
       }
     ]
   end
 
   @spec current(integer(), integer()) :: t() | nil
   def current(hours_before_start \\ 1, hours_after_start \\ 48) do
-    Enum.find(all(), & current?(&1, hours_before_start, hours_after_start))
+    Enum.find(all(), &current?(&1, hours_before_start, hours_after_start))
   end
 
   def get(slug) do
-    Enum.find(all(), & to_string(slug) == to_string(&1.slug))
+    Enum.find(all(), &(to_string(slug) == to_string(&1.slug)))
   end
 
   @spec get_or_current(String.t(), integer(), integer()) :: t() | nil
@@ -122,7 +136,9 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
 
   @spec current?(t(), integer(), integer()) :: boolean()
   def current?(season, hours_before_start \\ 1, hours_after_start \\ 96)
-  def current?(%{start_time: start_time}, hours_before_start, hours_after_start) when not is_nil(start_time) do
+
+  def current?(%{start_time: start_time}, hours_before_start, hours_after_start)
+      when not is_nil(start_time) do
     now = NaiveDateTime.utc_now()
     lower = NaiveDateTime.add(start_time, hours_before_start * -3600)
     upper = NaiveDateTime.add(start_time, hours_after_start * 3600)

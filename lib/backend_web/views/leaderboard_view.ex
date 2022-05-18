@@ -14,11 +14,17 @@ defmodule BackendWeb.LeaderboardView do
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
 
   def player_history_graph([], _), do: ""
+
   def player_history_graph(player_history, attr) do
-    data = Enum.map(player_history, & {&1.upstream_updated_at, player_history_data(&1, attr)})
+    data = Enum.map(player_history, &{&1.upstream_updated_at, player_history_data(&1, attr)})
     dataset = Contex.Dataset.new(data)
     y_scale = yscale(data)
-    point_plot = Contex.PointPlot.new(dataset, custom_y_scale: y_scale, custom_y_formatter: & &1 |> trunc() |> abs())
+
+    point_plot =
+      Contex.PointPlot.new(dataset,
+        custom_y_scale: y_scale,
+        custom_y_formatter: &(&1 |> trunc() |> abs())
+      )
 
     Contex.Plot.new(900, 200, point_plot)
     |> Contex.Plot.to_svg()
@@ -26,24 +32,35 @@ defmodule BackendWeb.LeaderboardView do
 
   # Ensure th that the interval size is never below 1
   defp yscale(data) do
-    {{_, min}, {_, max}} = Enum.min_max_by(data, & elem(&1, 1))
+    {{_, min}, {_, max}} = Enum.min_max_by(data, &elem(&1, 1))
     distance = abs(max - min)
-    scale = Contex.ContinuousLinearScale.new()
+
+    scale =
+      Contex.ContinuousLinearScale.new()
       |> Contex.ContinuousLinearScale.domain(min, max)
+
     if distance < 10 do
       scale |> Contex.ContinuousLinearScale.interval_count(distance + 1)
     else
       scale
     end
   end
+
   defp player_history_data(ph, :rank), do: -1 * ph.rank
   defp player_history_data(ph, attr), do: Map.get(ph, attr)
 
   def player_history_dropdowns(conn) do
     [
       create_region_dropdown(conn.params["region"], history_updater(conn, "region")),
-      create_leaderboard_dropdown(conn.params["leaderboard_id"], history_updater(conn, "leaderboard_id")),
-      create_period_dropdown(conn.params["period"], conn.params["leaderboard_id"], history_updater(conn,"period"))
+      create_leaderboard_dropdown(
+        conn.params["leaderboard_id"],
+        history_updater(conn, "leaderboard_id")
+      ),
+      create_period_dropdown(
+        conn.params["period"],
+        conn.params["leaderboard_id"],
+        history_updater(conn, "period")
+      )
     ]
   end
 
@@ -54,16 +71,17 @@ defmodule BackendWeb.LeaderboardView do
       |> Enum.map(fn {name, val} ->
         {name, "season_#{val}"}
       end)
+
     options =
-      [
-        {"Past 6 Hours", "past_hours_6"},
-        {"Past Day", "past_days_1"},
-        {"Past 3 Days", "past_days_3"},
-        {"Past Week", "past_weeks_1"},
-        {"Past 2 Weeks", "past_weeks_2"},
-        {"Past Month", "past_months_1"},
-      ]
-      ++ seasons
+      ([
+         {"Past 6 Hours", "past_hours_6"},
+         {"Past Day", "past_days_1"},
+         {"Past 3 Days", "past_days_3"},
+         {"Past Week", "past_weeks_1"},
+         {"Past 2 Weeks", "past_weeks_2"},
+         {"Past Month", "past_months_1"}
+       ] ++
+         seasons)
       |> Enum.map(fn {name, val} ->
         %{
           display: name,
@@ -71,6 +89,7 @@ defmodule BackendWeb.LeaderboardView do
           link: update_link.(val)
         }
       end)
+
     {options, dropdown_title(options, "Period")}
   end
 
@@ -84,48 +103,76 @@ defmodule BackendWeb.LeaderboardView do
           link: update_player_history_link(conn, "attr", attr)
         }
       end)
+
     [{options, dropdown_title(options, "Attribute")} | dropdowns]
   end
+
   def add_attr_dropdown(dropdowns, _, _, _), do: dropdowns
-  defp history_updater(conn, key), do: & update_player_history_link(conn, key, &1)
+  defp history_updater(conn, key), do: &update_player_history_link(conn, key, &1)
+
   def update_player_history_link(conn, key, val) do
     attr = BackendWeb.LeaderboardController.history_attr(conn.params)
     params = conn.params |> Map.put("attr", attr) |> Map.put(key, val)
-    %{"period" => s, "region" => r, "leaderboard_id" => l, "player" => p , "attr"=> a} = params
+    %{"period" => s, "region" => r, "leaderboard_id" => l, "player" => p, "attr" => a} = params
     Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: a)
   end
+
   def player_history_dropdowns(false, _, _), do: []
 
   defp actual_end(assigns = %{deadline: deadline, other: other}) do
     season_display = Map.get(assigns, :season_display, "The season")
+
     ~H"""
       <span><%= season_display %> ends at <%= render_datetime(deadline) %> not <%= render_datetime(other) %></span>
     """
   end
-  defp other_warning(%{leaderboard_id: "BG", season_id: s, region: "EU"}) when s in [5, "5", "lobby_legends_2"] do
+
+  defp other_warning(%{leaderboard_id: "BG", season_id: s, region: "EU"})
+       when s in [5, "5", "lobby_legends_2"] do
     now = NaiveDateTime.utc_now()
     %{ladder: %{eu: deadline}} = LobbyLegendsSeason.get("lobby_legends_2")
+
     if NaiveDateTime.compare(now, deadline) == :lt do
       hour_before = NaiveDateTime.add(deadline, -1 * 60 * 60)
-      assigns = %{deadline: deadline, other: hour_before, season_display: "Lobby Legends 2 qualification"}
+
+      assigns = %{
+        deadline: deadline,
+        other: hour_before,
+        season_display: "Lobby Legends 2 qualification"
+      }
+
       actual_end(assigns)
     end
   end
 
   defp other_warning(_), do: nil
 
-
-  def render("player_history.html", %{player_history: player_history, attr: attr, player: player, conn: conn}) do
+  def render("player_history.html", %{
+        player_history: player_history,
+        attr: attr,
+        player: player,
+        conn: conn
+      }) do
     has_rating = player_history |> Enum.any?(& &1.rating)
     dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
+
     sorted_history =
       player_history
       |> Enum.reverse()
+
     graph = player_history_graph(player_history, attr)
     title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
-    render("player_history.html", %{dropdowns: dropdowns, player: player, player_history: sorted_history, conn: conn, has_rating: has_rating, graph: graph, title: title})
-  end
 
+    render("player_history.html", %{
+      dropdowns: dropdowns,
+      player: player,
+      player_history: sorted_history,
+      conn: conn,
+      has_rating: has_rating,
+      graph: graph,
+      title: title
+    })
+  end
 
   def render("index.html", params = %{leaderboard: nil}) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
@@ -151,7 +198,8 @@ defmodule BackendWeb.LeaderboardView do
       |> add_other_ladders(other_ladders, ladder_invite_num, skip_cn)
 
     entries =
-      leaderboard |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num, skip_cn)
+      leaderboard
+      |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num, skip_cn)
 
     show_ratings = Enum.any?(entries, & &1.rating)
 
@@ -316,17 +364,19 @@ defmodule BackendWeb.LeaderboardView do
     |> create_dropdowns()
   end
 
-  def create_dropdowns(params = %{
-        conn: conn,
-        leaderboard: %{
-          leaderboard_id: leaderboard_id,
-          region: region,
-          season_id: season_id
-        },
-        show_flags: show_flags,
-        ladder_mode: ladder_mode,
-        compare_to: compare_to
-      }) do
+  def create_dropdowns(
+        params = %{
+          conn: conn,
+          leaderboard: %{
+            leaderboard_id: leaderboard_id,
+            region: region,
+            season_id: season_id
+          },
+          show_flags: show_flags,
+          ladder_mode: ladder_mode,
+          compare_to: compare_to
+        }
+      ) do
     [
       create_region_dropdown(conn, region),
       create_leaderboard_dropdown(conn, leaderboard_id),
@@ -339,18 +389,23 @@ defmodule BackendWeb.LeaderboardView do
     |> Enum.filter(& &1)
   end
 
-  def create_skip_cn_dropdown(%{skip_cn: skip_cn, conn: conn, leaderboard: leaderboard})do
+  def create_skip_cn_dropdown(%{skip_cn: skip_cn, conn: conn, leaderboard: leaderboard}) do
     case skip_cn_opts(leaderboard) do
-      opts = [_|_] ->
-        options = Enum.map(opts, fn {val, name} ->
-          %{
-            display: name,
-            selected: val == skip_cn,
-            link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "skip_cn", val))
-          }
-        end)
+      opts = [_ | _] ->
+        options =
+          Enum.map(opts, fn {val, name} ->
+            %{
+              display: name,
+              selected: val == skip_cn,
+              link:
+                Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "skip_cn", val))
+            }
+          end)
+
         {options, new("Skip CN")}
-      _ ->  nil
+
+      _ ->
+        nil
     end
   end
 
@@ -362,16 +417,21 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  defp skip_cn_opts(%{leaderboard_id: "STD", season_id: s}) when s > 98, do: [{"all", "All"}, {"none", "None"}]
-  defp skip_cn_opts(%{leaderboard_id: "BG", season_id: s}) when s > 4, do: [{"all", "All"}, {"none", "None"}]
+  defp skip_cn_opts(%{leaderboard_id: "STD", season_id: s}) when s > 98,
+    do: [{"all", "All"}, {"none", "None"}]
+
+  defp skip_cn_opts(%{leaderboard_id: "BG", season_id: s}) when s > 4,
+    do: [{"all", "All"}, {"none", "None"}]
+
   defp skip_cn_opts(_), do: nil
 
   def create_region_dropdown(conn = %Plug.Conn{}, region) do
     create_region_dropdown(
       region,
-      & Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "region", &1))
+      &Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "region", &1))
     )
   end
+
   def create_region_dropdown(region, update_link) do
     options =
       Backend.Blizzard.qualifier_regions_with_name()
@@ -389,9 +449,10 @@ defmodule BackendWeb.LeaderboardView do
   def create_leaderboard_dropdown(conn = %Plug.Conn{}, leaderboard_id) do
     create_leaderboard_dropdown(
       leaderboard_id,
-      & Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "leaderboardId", &1))
+      &Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "leaderboardId", &1))
     )
   end
+
   def create_leaderboard_dropdown(leaderboard_id, update_link) do
     options =
       Backend.Blizzard.leaderboards_with_name()
@@ -402,6 +463,7 @@ defmodule BackendWeb.LeaderboardView do
           link: update_link.(id)
         }
       end)
+
     {options, dropdown_title(options, "Leaderboard")}
   end
 
@@ -433,7 +495,8 @@ defmodule BackendWeb.LeaderboardView do
 
     {options, "Ladder Mode"}
   end
-  def create_ladder_mode_dropdown(_, _ ,_), do: nil
+
+  def create_ladder_mode_dropdown(_, _, _), do: nil
 
   def create_show_flags_dropdown(conn, show_flags) do
     options =
@@ -488,11 +551,12 @@ defmodule BackendWeb.LeaderboardView do
     }
   end
 
-  def show_mt_column?(%{leaderboard_id: "BG", season_id: s}) when Backend.LobbyLegends.is_lobby_legends(s) do
+  def show_mt_column?(%{leaderboard_id: "BG", season_id: s})
+      when Backend.LobbyLegends.is_lobby_legends(s) do
     "Lobby Legends"
   end
-  def show_mt_column?(%{leaderboard_id: "STD", season_id: season_id}) do
 
+  def show_mt_column?(%{leaderboard_id: "STD", season_id: season_id}) do
     case elem(get_ladder_tour_stop(season_id), 0) do
       :ok -> "Masters Tour"
       _ -> nil
@@ -501,7 +565,9 @@ defmodule BackendWeb.LeaderboardView do
 
   def show_mt_column?(_), do: nil
 
-  def old?(%{season_id: s, leaderboard_id: "BG"}) when Backend.LobbyLegends.is_lobby_legends(s), do: false
+  def old?(%{season_id: s, leaderboard_id: "BG"}) when Backend.LobbyLegends.is_lobby_legends(s),
+    do: false
+
   def old?(%{upstream_updated_at: updated_at, season_id: 94, leaderboard_id: "STD", region: "US"}) do
     updated_at && DateTime.diff(DateTime.utc_now(), updated_at) &&
       DateTime.diff(DateTime.utc_now(), ~U[2021-09-01T07:00:00Z]) < 0
@@ -523,6 +589,7 @@ defmodule BackendWeb.LeaderboardView do
     |> Map.merge(invited)
     |> add_other_ladders(rest, ladder_invite_num, skip_cn)
   end
+
   def add_other_ladders(invited, _, _, _), do: invited
 
   def get_crystal(leaderboard_id) do
@@ -557,24 +624,25 @@ defmodule BackendWeb.LeaderboardView do
     [{:April, 6}, {:March, 5}, {:February, 4}, {:January, 3}, {:December, 2}, {:November, 1}]
   """
   @spec create_selectable_seasons(Calendar.date(), String.t() | atom()) :: [selectable_season]
-  def create_selectable_seasons(_today, ldb ) when ldb in [:BG, "BG"] do
-      regular =
-        Blizzard.get_current_ladder_season(:BG)..0
-        |> Enum.take(7)
-        |> Enum.map(fn s ->
-          name = Blizzard.get_season_name(s, :BG)
-          {name, s}
-        end)
+  def create_selectable_seasons(_today, ldb) when ldb in [:BG, "BG"] do
+    regular =
+      Blizzard.get_current_ladder_season(:BG)..0
+      |> Enum.take(7)
+      |> Enum.map(fn s ->
+        name = Blizzard.get_season_name(s, :BG)
+        {name, s}
+      end)
 
-      lobby_legends =
-        LobbyLegendsSeason.all()
-        |> Enum.reverse()
-        |> Enum.map(fn ll ->
-          {LobbyLegendsSeason.display_name(ll), ll.slug}
-        end)
+    lobby_legends =
+      LobbyLegendsSeason.all()
+      |> Enum.reverse()
+      |> Enum.map(fn ll ->
+        {LobbyLegendsSeason.display_name(ll), ll.slug}
+      end)
 
-      lobby_legends ++ regular
+    lobby_legends ++ regular
   end
+
   def create_selectable_seasons(today, ldb) do
     tomorrow = Date.add(today, 1)
     tomorrow_id = get_season_id(tomorrow, ldb)
@@ -640,12 +708,16 @@ defmodule BackendWeb.LeaderboardView do
   # Jay#12424 is banned indefinitely, can appeal after Jan 3rd 2023.
   def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "Jay") when season >= 99,
     do: "Jay#12424 is banned from competitive HS"
-  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "notjayhuang") when season >= 99,
-    do: "This is a Jay#12424 alt and theyare banned from competitive HS. Come on Jay, if you have any hope of redemption in the future stop with this. It'll also make it easier on me :)"
+
+  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "notjayhuang")
+      when season >= 99,
+      do:
+        "This is a Jay#12424 alt and theyare banned from competitive HS. Come on Jay, if you have any hope of redemption in the future stop with this. It'll also make it easier on me :)"
 
   # EpicMingo#1244 is banned until Apr 3, 2022
-  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "EpicMingo") when season in 99..102,
-    do: "EpicMingo#1244 is banned from competitive HS until 2022-04-03"
+  def banned(%{season_id: season, region: "US", leaderboard_id: "STD"}, "EpicMingo")
+      when season in 99..102,
+      do: "EpicMingo#1244 is banned from competitive HS until 2022-04-03"
 
   def banned(snapshot, name) when name in ["ADVO", "SilverName"] do
     banned_deadline(name, snapshot, ~D[2022-03-30], ~D[2022-10-01])
@@ -667,6 +739,9 @@ defmodule BackendWeb.LeaderboardView do
     banned_deadline(name, snapshot, ~D[2021-08-12], ~D[2022-08-12])
   end
 
+  def banned(snapshot, name) when name in ["Moritz20099", "Orange"],
+    do: banned_deadline(name, snapshot, ~D[2022-05-13], ~D[2023-06-01])
+
   def banned(_snapshot, name) when name in ["Zalae", "Purple"] do
     "#{name} is banned from hsesports"
   end
@@ -676,11 +751,11 @@ defmodule BackendWeb.LeaderboardView do
 
   defp banned_deadline(name, %{upstream_updated_at: updated_at}, start_date, end_date) do
     with {:ok, time} = Time.new(12, 0, 0),
-      {:ok, deadline} = NaiveDateTime.new(end_date, time),
-      {:ok, start} = NaiveDateTime.new(start_date, time),
-      :gt <- NaiveDateTime.compare(updated_at, start),
-      :lt <- NaiveDateTime.compare(updated_at, deadline) do
-        "#{name} is banned until #{end_date}"
+         {:ok, deadline} = NaiveDateTime.new(end_date, time),
+         {:ok, start} = NaiveDateTime.new(start_date, time),
+         :gt <- NaiveDateTime.compare(updated_at, start),
+         :lt <- NaiveDateTime.compare(updated_at, deadline) do
+      "#{name} is banned until #{end_date}"
     else
       _ -> nil
     end
@@ -694,26 +769,34 @@ defmodule BackendWeb.LeaderboardView do
   #   end
   # end
   @confirmed_std_chinese [
-    "XiaoT",  # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
-    "Jiuqianyu", # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
-    "WEYuansu", # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
-    "Wolfrider", # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    "XiaoT",
+    # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    "Jiuqianyu",
+    # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    "WEYuansu",
+    # https://www.d0nkey.top/leaderboard?region=EU&seasonId=99
+    "Wolfrider"
   ]
-  defp wrong_region(%{leaderboard_id: "STD", season_id: s}, account, "previously_skipped") when s > 98 and account in @confirmed_std_chinese do
+  defp wrong_region(%{leaderboard_id: "STD", season_id: s}, account, "previously_skipped")
+       when s > 98 and account in @confirmed_std_chinese do
     true
   end
+
   defp wrong_region(%{leaderboard_id: "BG", season_id: s}, account, "all") when s > 4 do
     is_chinese?(account)
   end
+
   defp wrong_region(%{leaderboard_id: "STD", season_id: s}, account, "all") when s > 98 do
     is_chinese?(account) || account in @confirmed_std_chinese
   end
+
   defp wrong_region(_, _, _), do: false
 
   def is_chinese?(account) do
     case Backend.PlayerInfo.get_country(account) do
       nil -> false
-      cc ->  :CN == Backend.PlayerInfo.country_to_region(cc)
+      cc -> :CN == Backend.PlayerInfo.country_to_region(cc)
     end
   end
 
@@ -740,7 +823,16 @@ defmodule BackendWeb.LeaderboardView do
       {prev_rank, prev_rating} = prev(comparison, account_id)
 
       history_attr = if le.rating, do: "rating", else: "rank"
-      history_link = BackendWeb.PlayerView.history_link(BackendWeb.Endpoint, snapshot, account_id, history_attr, "past_weeks_1")
+
+      history_link =
+        BackendWeb.PlayerView.history_link(
+          BackendWeb.Endpoint,
+          snapshot,
+          account_id,
+          history_attr,
+          "past_weeks_1"
+        )
+
       {
         le
         |> Map.put_new(:qualified, qualified)
