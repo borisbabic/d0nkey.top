@@ -90,7 +90,7 @@ defmodule Backend.Hearthstone.Deck do
   @spec decode!(String.t()) :: t()
   def decode!(deckcode), do: deckcode |> decode() |> Util.bangify()
 
-  #todo make 任务贼：AAECAaIHBsPhA6b5A8f5A72ABL+ABO2ABAyqywPf3QPn3QPz3QOq6wOf9AOh9AOi9AOj9QOm9QP1nwT2nwQA decodeable
+  # todo make 任务贼：AAECAaIHBsPhA6b5A8f5A72ABL+ABO2ABAyqywPf3QPn3QPz3QOq6wOf9AOh9AOi9AOj9QOm9QP1nwT2nwQA decodeable
   @doc """
   Decode a deckcode into a Deck struct
   ## Example
@@ -134,9 +134,8 @@ defmodule Backend.Hearthstone.Deck do
     with :error <- fixed |> Base.decode64(),
          :error <- (fixed <> "==") |> Base.decode64(),
          :error <- (fixed <> "++") |> Base.decode64(),
-         :error <- (fixed <> "+") |> Base.decode64(),
-         :error <- (fixed <> "=") |> Base.decode64() do
-      :error
+         :error <- (fixed <> "+") |> Base.decode64() do
+      (fixed <> "=") |> Base.decode64()
     end
   end
 
@@ -331,4 +330,19 @@ defmodule Backend.Hearthstone.Deck do
       "WARRIOR"
     ]
   end
+
+  def cost(%{cards: cards}) do
+    cards
+    |> Enum.map(&card_cost/1)
+    |> Enum.sum()
+  end
+
+  defp card_cost(card) when is_integer(card), do: Hearthstone.get_card(card) |> card_cost()
+  defp card_cost(%{set: "CORE"}), do: 0
+  defp card_cost(%{rarity: "FREE"}), do: 0
+  defp card_cost(%{rarity: "COMMON"}), do: 40
+  defp card_cost(%{rarity: "RARE"}), do: 100
+  defp card_cost(%{rarity: "EPIC"}), do: 400
+  defp card_cost(%{rarity: "LEGENDARY"}), do: 1600
+  defp card_cost(_), do: 0
 end
