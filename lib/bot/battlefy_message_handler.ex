@@ -10,20 +10,18 @@ defmodule Bot.BattlefyMessageHandler do
       content
       |> get_options(:string)
       |> String.trim()
-      |> IO.inspect()
       |> handle_tournament_standings(message)
 
   def handle_tournament_standings(battlefy_id, message) when is_binary(battlefy_id) do
     create_standings_message(battlefy_id, message)
-    |> IO.inspect()
     |> send_message(message)
   end
 
   def create_standings_message(battlefy_id, _message = %{guild_id: guild_id}) do
     with unsorted when is_list(unsorted) <- Battlefy.get_standings(battlefy_id),
          standings = Battlefy.sort_standings(unsorted),
-         battletags = [_|_] <- get_guild_battletags!(guild_id) |> IO.inspect() do
-          {:ok, create_message(battletags, standings)}
+         battletags = [_ | _] <- get_guild_battletags!(guild_id) do
+      {:ok, create_message(battletags, standings)}
     else
       other ->
         Logger.warn("Unable to create standings message: #{inspect(other)}")
@@ -41,7 +39,8 @@ defmodule Bot.BattlefyMessageHandler do
     Api.create_message(channel_id, message)
   end
 
-  @spec create_message([String.t()], [Battlefy.Standings.t()], (String.t() :: String.t())) :: String.t()
+  @spec create_message([String.t()], [Battlefy.Standings.t()], String.t() :: String.t()) ::
+          String.t()
   def create_message(battletags, standings, name_mapper \\ & &1) do
     create_message_cells(battletags, standings, name_mapper)
     |> Enum.map_join("\n", &cells_to_msg/1)
@@ -51,6 +50,7 @@ defmodule Bot.BattlefyMessageHandler do
 
   def create_message_cells(unmapped, standings, mapper \\ & &1) do
     battletags = Enum.map(unmapped, mapper)
+
     standings
     |> Enum.filter(&(&1.team && mapper.(&1.team.name) in battletags))
     |> Enum.map(fn s ->
@@ -60,6 +60,7 @@ defmodule Bot.BattlefyMessageHandler do
         else
           s.place
         end
+
       [score, s.team.name]
     end)
   end
