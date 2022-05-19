@@ -23,6 +23,7 @@ config :backend, QuantumScheduler,
     {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
     {"* * * * *", fn -> Backend.AdsTxtCache.update() end},
     {"41 * * * *", fn -> Backend.PonyDojo.update() end},
+    {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end},
     # {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
@@ -114,7 +115,7 @@ config :backend,
   nitropay_demo: true,
   nostrum_slash_commands: [Bot.SlashCommands.MTQCommand],
   # d0nkey guild id
-  nostrum_slash_command_target: 666596230100549652,
+  nostrum_slash_command_target: 666_596_230_100_549_652,
   hdt_plugin_latest_version: hdt_plugin_latest_version,
   hdt_plugin_latest_file: "hdt_plugin/#{hdt_plugin_latest_version}.dll",
   nitropay_ads_txt_url: "https://api.nitropay.com/v1/ads-909.txt",
@@ -141,7 +142,14 @@ config :torch,
 config :backend, Oban,
   repo: Backend.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [default: 10, battlefy_lineups: 20, grandmasters_lineups: 3, gm_stream_live: 4, hsreplay_deck_mapper: 1, hsreplay_streamer_deck_inserter: 1]
+  queues: [
+    default: 10,
+    battlefy_lineups: 20,
+    grandmasters_lineups: 3,
+    gm_stream_live: 4,
+    hsreplay_deck_mapper: 1,
+    hsreplay_streamer_deck_inserter: 1
+  ]
 
 config :phoenix_meta_tags,
   title: "d0nkey",
