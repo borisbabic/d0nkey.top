@@ -57,8 +57,20 @@ defmodule Bot.MessageHandler do
       <<"!tch", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("6271bd62d44c844993e4e1a7", msg)
 
-      _ ->
-        :ignore
+      content ->
+        with {:ok, deck} <- Backend.Hearthstone.Deck.decode(content),
+             false <- content =~ "#",
+             {:ok, message} <- create_deck_message(deck) do
+          Api.create_message(msg.channel_id, message)
+        else
+          _ -> :ignore
+        end
+    end
+  end
+
+  def create_deck_message(deck) do
+    with {:ok, from_db} <- Backend.Hearthstone.create_or_get_deck(deck) do
+      {:ok, Backend.Hearthstone.DeckcodeEmbiggener.embiggen(from_db)}
     end
   end
 
