@@ -93,7 +93,7 @@ config :backend,
   bnet_client_secret: bnet_client_secret,
   admin_pass: "admin",
   enable_nitropay: true,
-  twitch_bot_chats: ["d0nkeyhs", "d0nkeytop", "otters_tv"],
+  twitch_bot_chats: ["d0nkeyhs", "d0nkeytop"],
   gm_stream_send_tweet: false,
   twitch_bot_config: [
     user: "d0nkeytop",

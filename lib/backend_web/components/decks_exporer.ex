@@ -20,7 +20,15 @@ defmodule Components.DecksExplorer do
   # @default_order_by "winrate"
   # data(user, :any)
 
-  @default_period_options [{"past_30_days", "Past 30 Days"}, {"past_2_weeks", "Past 2 Weeks"}, {"past_week", "Past Week"}, {"past_day", "Past Day"}, {"past_3_days", "Past 3 Days"}, {"sunken_city", "Sunken City"}, {"patch_2022-04-26", "April 26th Patch"}]
+  @default_period_options [
+    {"past_30_days", "Past 30 Days"},
+    {"past_2_weeks", "Past 2 Weeks"},
+    {"past_week", "Past Week"},
+    {"past_day", "Past Day"},
+    {"past_3_days", "Past 3 Days"},
+    {"sunken_city", "Sunken City"},
+    {"patch_2022-05-19", "May 19th Patch"}
+  ]
 
   def default_period_options(), do: @default_period_options
   prop(default_order_by, :string, default: "winrate")
@@ -39,7 +47,6 @@ defmodule Components.DecksExplorer do
   prop(path_params, :any, default: nil)
 
   def render(assigns) do
-
     ~F"""
     <div>
       <div :if={{params, search_filters} = parse_params(@params, assigns)}>
@@ -152,61 +159,95 @@ defmodule Components.DecksExplorer do
       {"order_by", assigns.default_order_by},
       {"period", default_period()},
       {"game_type", Hearthstone.Enums.GameType.constructed_types()},
-      {"rank", assigns.default_rank},
+      {"rank", assigns.default_rank}
     ]
 
-    params = raw_params
-    |> filter_relevant()
-    |> apply_defaults(defaults)
-    |> cap_param("limit", assigns.limit_cap)
-    |> floor_param("min_games", assigns.min_games_floor)
+    params =
+      raw_params
+      |> filter_relevant()
+      |> apply_defaults(defaults)
+      |> cap_param("limit", assigns.limit_cap)
+      |> floor_param("min_games", assigns.min_games_floor)
+
     search_filters = Map.merge(assigns.additional_params, params)
     {params, search_filters}
   end
 
-  defp class_stats_filters(filters), do: Map.delete(filters, "min_games") |> Map.delete("order_by")
+  defp class_stats_filters(filters),
+    do: Map.delete(filters, "min_games") |> Map.delete("order_by")
 
-  def handle_info({:update_params, params}, socket = %{assigns: %{path_params: path_params}}) when not is_nil(path_params) do
+  def handle_info({:update_params, params}, socket = %{assigns: %{path_params: path_params}})
+      when not is_nil(path_params) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params, params))}
   end
+
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
 
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 
+  def rank_options(),
+    do: [{"legend", "Legend"}, {"diamond_to_legend", "Diamond-Legend"}, {"all", "All"}]
 
-  def rank_options(), do: [{"legend", "Legend"}, {"diamond_to_legend", "Diamond-Legend"}, {"all", "All"}]
   def limit_options(), do: [10, 15, 20, 25, 30]
-  def class_options(any_name \\ "Any"), do: [{nil, any_name} | Enum.map(Deck.classes(), & {&1, Deck.class_name(&1)})]
-  def format_options(), do:
-    Enum.map(Format.all(), fn {id, name} ->
-      {to_string(id), name}
-    end)
-  def region_options(), do:
-    [
+
+  def class_options(any_name \\ "Any"),
+    do: [{nil, any_name} | Enum.map(Deck.classes(), &{&1, Deck.class_name(&1)})]
+
+  def format_options(),
+    do:
+      Enum.map(Format.all(), fn {id, name} ->
+        {to_string(id), name}
+      end)
+
+  def region_options(),
+    do: [
       {nil, "All Regions"}
-      | Enum.map(Blizzard.regions(), & {to_string(&1), Blizzard.get_region_name(&1, :long)})
+      | Enum.map(Blizzard.regions(), &{to_string(&1), Blizzard.get_region_name(&1, :long)})
     ]
-  def min_games_options(options, min), do: options |> Enum.sort() |> Enum.drop_while(& &1 < min)
+
+  def min_games_options(options, min), do: options |> Enum.sort() |> Enum.drop_while(&(&1 < min))
   def order_by_options(), do: [{"winrate", "Winrate %"}, {"total", "Total Games"}]
 
   def filter_relevant(params) do
     params
-    |> Map.take(["rank", "period", "limit", "order_by", "player_class", "opponent_class", "format", "offset", "region", "min_games", "player_deck_includes", "player_deck_excludes"])
-    |> parse_int(["limit", "min_games", "format", "offset", "player_deck_includes", "player_deck_excludes"])
+    |> Map.take([
+      "rank",
+      "period",
+      "limit",
+      "order_by",
+      "player_class",
+      "opponent_class",
+      "format",
+      "offset",
+      "region",
+      "min_games",
+      "player_deck_includes",
+      "player_deck_excludes"
+    ])
+    |> parse_int([
+      "limit",
+      "min_games",
+      "format",
+      "offset",
+      "player_deck_includes",
+      "player_deck_excludes"
+    ])
   end
 
-  def parse_int(params, to_parse) when is_list(to_parse), do:
-    Enum.reduce(to_parse, params, &parse_int(&2, &1))
+  def parse_int(params, to_parse) when is_list(to_parse),
+    do: Enum.reduce(to_parse, params, &parse_int(&2, &1))
 
   def parse_int(params, param) do
     curr = Map.get(params, param)
-    new_val = if is_list(curr) do
-      Enum.map(curr, &Util.to_int_or_orig/1)
-    else
-      Util.to_int_or_orig(curr)
-    end
+
+    new_val =
+      if is_list(curr) do
+        Enum.map(curr, &Util.to_int_or_orig/1)
+      else
+        Util.to_int_or_orig(curr)
+      end
 
     if new_val && new_val != curr do
       Map.put(params, param, new_val)
@@ -223,11 +264,12 @@ defmodule Components.DecksExplorer do
 
   defp default_period() do
     now = NaiveDateTime.utc_now()
-    use_patch_after = ~N[2022-04-28 20:30:00]
+    use_patch_after = ~N[2022-05-21 01:30:00]
+
     if :lt == NaiveDateTime.compare(now, use_patch_after) do
-      "sunken_city"
-    else
       "patch_2022-04-26"
+    else
+      "patch_2022-05-19"
     end
   end
 
@@ -239,11 +281,11 @@ defmodule Components.DecksExplorer do
 
   def limit_param(params, param, limit, limiter) do
     curr = Map.get(params, param)
+
     if curr && limiter.(curr, limit) do
       Map.put(params, param, limit)
     else
       params
     end
   end
-
 end

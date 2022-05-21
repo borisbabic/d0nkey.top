@@ -20,15 +20,17 @@ defmodule Hearthstone.DeckTracker do
 
   @spec get_game_by_game_id(String.t()) :: Game.t() | nil
   def get_game_by_game_id(game_id) do
-    query = from g in Game,
-      preload: [:player_deck, :source],
-      where: g.game_id == ^game_id
+    query =
+      from g in Game,
+        preload: [:player_deck, :source],
+        where: g.game_id == ^game_id
 
     Repo.one(query)
   end
 
   def convert_rank(num) when is_integer(num) do
     rank = 10 - rem(num - 1, 10)
+
     case div(num - 1, 10) do
       0 -> {:Bronze, rank}
       1 -> {:Silver, rank}
@@ -41,17 +43,22 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def convert_rank(:Legend), do: 51
+
   def convert_rank({level, rank}) do
-    level_part = 10 * case level do
-      :Bronze -> 0
-      :Silver -> 1
-      :Gold -> 2
-      :Platinum -> 3
-      :Diamond -> 4
-    end
+    level_part =
+      10 *
+        case level do
+          :Bronze -> 0
+          :Silver -> 1
+          :Gold -> 2
+          :Platinum -> 3
+          :Diamond -> 4
+        end
+
     level_part - rank + 11
   end
 
+  def convert_rank(nil), do: nil
 
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
     attrs =
@@ -59,8 +66,8 @@ defmodule Hearthstone.DeckTracker do
       |> set_public()
 
     with nil <- get_existing(game_id),
-      nil <- get_same_game(attrs) do
-        create_game(attrs)
+         nil <- get_same_game(attrs) do
+      create_game(attrs)
     else
       game = %{game_id: ^game_id} -> update_game(game, attrs)
       # different deck tracker so don't update
@@ -72,42 +79,47 @@ defmodule Hearthstone.DeckTracker do
   def handle_game(_), do: {:error, :missing_game_id}
 
   defp get_same_game(attrs) do
-    query = from g in Game,
-      where: g.inserted_at > ago(90, "second")
+    query =
+      from g in Game,
+        where: g.inserted_at > ago(90, "second")
 
     query
-      |> equals(:player_btag, attrs["player_btag"])
-      |> equals(:player_class, attrs["player_class"])
-      |> equals(:opponent_class, attrs["opponent_class"])
-      |> equals(:opponent_btag, attrs["opponent_btag"])
-      |> equals(:format, attrs["format"])
-      |> equals(:game_type, attrs["game_type"])
-      |> limit(1)
-      |> Repo.one()
+    |> equals(:player_btag, attrs["player_btag"])
+    |> equals(:player_class, attrs["player_class"])
+    |> equals(:opponent_class, attrs["opponent_class"])
+    |> equals(:opponent_btag, attrs["opponent_btag"])
+    |> equals(:format, attrs["format"])
+    |> equals(:game_type, attrs["game_type"])
+    |> limit(1)
+    |> Repo.one()
   end
-  defp equals(query, column, nil)  do
+
+  defp equals(query, column, nil) do
     query
     |> where([g], is_nil(field(g, ^column)))
   end
-  defp equals(query, column, value)  do
+
+  defp equals(query, column, value) do
     query
     |> where([g], field(g, ^column) == ^value)
   end
+
   defp set_public(attrs), do: Map.put(attrs, "public", public?(attrs))
+
   defp public?(%{"player_btag" => btag}) do
     with user = %{twitch_id: twitch_id} <- UserManager.get_by_btag(btag),
-                  live <- Twitch.HearthstoneLive.twitch_id_live?(twitch_id) do
-        User.replay_public?(user, live)
+         live <- Twitch.HearthstoneLive.twitch_id_live?(twitch_id) do
+      User.replay_public?(user, live)
     else
       _ -> false
     end
   end
-  defp public?(_), do: false
 
+  defp public?(_), do: false
 
   def sum_stats(stats) do
     stats
-    |> Enum.reduce(%{losses: 0, wins: 0,  total: 0}, fn s, acc ->
+    |> Enum.reduce(%{losses: 0, wins: 0, total: 0}, fn s, acc ->
       %{
         wins: s.wins + acc.wins,
         losses: s.losses + acc.losses,
@@ -118,7 +130,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def recalculate_winrate(m = %{total: 0}), do: Map.put(m, :winrate, 0.0)
-  def recalculate_winrate(m = %{wins: wins, total: total}), do: Map.put(m, :winrate, wins/total)
+  def recalculate_winrate(m = %{wins: wins, total: total}), do: Map.put(m, :winrate, wins / total)
 
   @spec deck_stats(integer(), list()) :: [deck_stats()]
   def deck_stats(deck_id, additional_criteria) do
@@ -146,11 +158,13 @@ defmodule Hearthstone.DeckTracker do
     |> build_games_query(criteria)
     |> Repo.all()
   end
+
   def class_stats(criteria) do
     base_class_stats_query()
     |> build_games_query(criteria)
     |> Repo.all()
   end
+
   @doc """
   Stats grouped by opponent's class
   """
@@ -163,33 +177,39 @@ defmodule Hearthstone.DeckTracker do
   defp base_opponent_class_stats_query() do
     base_stats_query()
     |> group_by([g], g.opponent_class)
-    |> select_merge([g],
+    |> select_merge(
+      [g],
       %{
         opponent_class: g.opponent_class
       }
     )
     |> where([g], not is_nil(g.opponent_class))
   end
+
   defp base_deck_stats_query() do
     base_stats_query()
     |> group_by([g], g.player_deck_id)
-    |> select_merge([g],
+    |> select_merge(
+      [g],
       %{
         deck_id: g.player_deck_id
       }
     )
     |> where([g], not is_nil(g.player_deck_id))
   end
+
   defp base_class_stats_query() do
     base_stats_query()
     |> group_by([g], g.player_class)
-    |> select_merge([g],
+    |> select_merge(
+      [g],
       %{
         player_class: g.player_class
       }
     )
     |> where([g], not is_nil(g.player_class))
   end
+
   defp base_total_stats_query() do
     base_stats_query()
   end
@@ -199,23 +219,29 @@ defmodule Hearthstone.DeckTracker do
   @total_fragment "CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END"
   defp base_stats_query() do
     from g in Game,
-    join: pd in assoc(g, :player_deck),
-    select:
-      %{
+      join: pd in assoc(g, :player_deck),
+      select: %{
         wins: sum(fragment("CASE WHEN ? = 'win' THEN 1 ELSE 0 END", g.status)),
         losses: sum(fragment("CASE WHEN ? = 'loss' THEN 1 ELSE 0 END", g.status)),
         total: sum(fragment(@total_fragment, g.status)),
-        winrate: fragment("cast(SUM(CASE WHEN ? = 'win' THEN 1 ELSE 0 END) as float) / COALESCE(NULLIF(SUM(CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END), 0), 1)", g.status, g.status)
+        winrate:
+          fragment(
+            "cast(SUM(CASE WHEN ? = 'win' THEN 1 ELSE 0 END) as float) / COALESCE(NULLIF(SUM(CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END), 0), 1)",
+            g.status,
+            g.status
+          )
       }
   end
 
   def get_or_create_source(source, version) when is_binary(source) and is_binary(version) do
     with {:ok, nil} <- {:ok, get_source(source, version)},
-        {:error, %{errors: [%{source: {_, [constraint: :unique]}}]}} <- create_source(source, version),
-        {:ok, nil} <- {:ok, get_source(source, version)} do
+         {:error, %{errors: [%{source: {_, [constraint: :unique]}}]}} <-
+           create_source(source, version),
+         {:ok, nil} <- {:ok, get_source(source, version)} do
       {:error, :could_not_get_or_create_deck}
     end
   end
+
   def get_or_create_source(_, _), do: {:error, :invalid_arguments}
 
   def create_source(source, version) do
@@ -223,12 +249,15 @@ defmodule Hearthstone.DeckTracker do
     |> Source.changeset(%{source: source, version: version})
     |> Repo.insert()
   end
+
   def get_source(source, version) when is_binary(source) and is_binary(version) do
-    query = from s in Source,
-      where: s.source == ^source and s.version == ^version
+    query =
+      from s in Source,
+        where: s.source == ^source and s.version == ^version
 
     Repo.one(query)
   end
+
   def get_source(_, _), do: nil
   defp handle_deck(code) when is_binary(code), do: Hearthstone.create_or_get_deck(code)
   defp handle_deck(nil), do: {:ok, nil}
@@ -292,10 +321,16 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"period", "all"}, query),
     do: query
 
+  defp compose_games_query({"period", "patch_2022-05-19"}, query) do
+    release = ~N[2022-05-19 17:15:00]
+    query |> where([g], g.inserted_at >= ^release)
+  end
+
   defp compose_games_query({"period", "sunken_city"}, query) do
     release = ~N[2022-04-12 17:00:00]
     query |> where([g], g.inserted_at >= ^release)
   end
+
   defp compose_games_query({"period", "patch_2022-04-26"}, query) do
     release = ~N[2022-04-26 20:30:00]
     query |> where([g], g.inserted_at >= ^release)
@@ -311,7 +346,6 @@ defmodule Hearthstone.DeckTracker do
     query |> where([g], g.inserted_at >= ^release)
   end
 
-
   defp compose_games_query({"period", "bc_2021-12-20"}, query) do
     # they were an hour late
     balance_changes = ~N[2021-12-20 19:00:00]
@@ -326,6 +360,7 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"rank", "diamond_to_legend"}, query),
     do: query |> where([g], g.player_rank >= 41)
+
   defp compose_games_query({"rank", "all"}, query),
     do: query
 
@@ -341,7 +376,6 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"order_by", "winrate"}, query),
     do: query |> order_by([], desc: @winrate_select_pos)
 
-
   defp compose_games_query(order_by, query) when order_by in [:latest, :winrate, :total],
     do: compose_games_query({"order_by", to_string(order_by)}, query)
 
@@ -349,7 +383,7 @@ defmodule Hearthstone.DeckTracker do
     do: query |> where([_, pd], fragment("? @> ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_excludes", cards}, query),
-    do: query |> where([_, pd], not(fragment("? @> ?", pd.cards, ^cards)))
+    do: query |> where([_, pd], not fragment("? @> ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_id", deck_id}, query),
     do: query |> where([g], g.player_deck_id == ^deck_id)
@@ -363,7 +397,8 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_rank", rank}, query),
     do: query |> where([g], g.player_rank == ^rank)
 
-  defp compose_games_query({"min_games", min_games_string}, query) when is_binary(min_games_string) do
+  defp compose_games_query({"min_games", min_games_string}, query)
+       when is_binary(min_games_string) do
     case Integer.parse(min_games_string) do
       {min, _} -> compose_games_query({"min_games", min}, query)
       _ -> query
@@ -406,7 +441,8 @@ defmodule Hearthstone.DeckTracker do
     do: query |> where([g], g.game_type == ^game_type)
 
   for {id, atom} <- Format.all(:atoms) do
-    defp compose_games_query(unquote(atom), query), do: compose_games_query({"format", unquote(id)}, query)
+    defp compose_games_query(unquote(atom), query),
+      do: compose_games_query({"format", unquote(id)}, query)
   end
 
   defp compose_games_query({"format", "all"}, query),
@@ -422,9 +458,11 @@ defmodule Hearthstone.DeckTracker do
     results = ["win", "loss", "draw"]
     query |> where([g], g.status in ^results)
   end
+
   defp compose_games_query({"public", public}, query) do
     query |> where([g], g.public == ^public)
   end
+
   defp compose_games_query({"in_group", %GroupMembership{group_id: group_id}}, query) do
     query
     |> join(:inner, [g], u in User, on: u.battletag == g.player_btag)
@@ -435,7 +473,7 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
 
-  @spec replay_link(%{:game_id => any, optional(any) => any}) :: String.t() |nil
+  @spec replay_link(%{:game_id => any, optional(any) => any}) :: String.t() | nil
   def replay_link(%{replay_url: url}) when is_binary(url), do: url
 
   # def replay_link(%{api_user: nil, game_id: game_id}),
