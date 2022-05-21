@@ -3,8 +3,8 @@ defmodule Components.ClassStatsTable do
   use Surface.Component
 
   prop(stats, :list, required: true)
-  def render(assigns) do
 
+  def render(assigns) do
     ~F"""
       <table class="table is-fullwidth is-striped">
         <thead>
@@ -33,7 +33,6 @@ defmodule Components.ClassStatsTable do
   def filter_weird_classes(stats) do
     Enum.filter(stats, fn stat ->
       class = extract_class(stat)
-      IO.inspect(class)
       class in Backend.Hearthstone.Deck.classes()
     end)
   end
@@ -43,8 +42,8 @@ defmodule Components.ClassStatsTable do
     |> extract_class()
     |> Backend.Hearthstone.Deck.class_name()
   end
+
   def extract_class(%{player_class: class}), do: class
   def extract_class(%{opponent_class: class}), do: class
   def extract_class(%{class: class}), do: class
-
 end

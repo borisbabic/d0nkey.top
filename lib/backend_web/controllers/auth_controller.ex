@@ -37,11 +37,6 @@ defmodule BackendWeb.AuthController do
     end
   end
 
-  defp create_streamer_from_info(twitch_id, %{info: %{name: twitch_display, nickname: twitch_login}}) do
-    Backend.Streaming.get_or_create_streamer(twitch_id, %{twitch_login: twitch_login, twitch_display: twitch_display})
-  end
-  defp create_streamer_from_info(_), do: nil
-
   def callback(conn, _params) do
     conn
     |> put_flash(
@@ -50,6 +45,17 @@ defmodule BackendWeb.AuthController do
     )
     |> redirect(to: "/")
   end
+
+  defp create_streamer_from_info(twitch_id, %{
+         info: %{name: twitch_display, nickname: twitch_login}
+       }) do
+    Backend.Streaming.get_or_create_streamer(twitch_id, %{
+      twitch_login: twitch_login,
+      twitch_display: twitch_display
+    })
+  end
+
+  defp create_streamer_from_info(_, _), do: nil
 
   @spec get_bnet_info(any()) :: UserManager.bnet_info()
   def get_bnet_info(%{extra: %{user: %{"battletag" => bt, "id" => id}}}) do

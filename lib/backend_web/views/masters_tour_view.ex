@@ -221,10 +221,12 @@ defmodule BackendWeb.MastersTourView do
       </a>
       """
 
-      projection_min = case TourStop.get(period) do
-        %{min_qualifiers_for_winrate: min} when is_integer(min) -> min
-        _ -> 20
-      end
+      projection_min =
+        case TourStop.get(period) do
+          %{min_qualifiers_for_winrate: min} when is_integer(min) -> min
+          _ -> 20
+        end
+
       %{
         "Player" => player_cell,
         "_country" => country,
@@ -256,7 +258,6 @@ defmodule BackendWeb.MastersTourView do
       |> Map.merge(ts_cells)
     end)
   end
-
 
   # way too big of a performance hit
   def add_percentile_rows(rows, period) do
@@ -313,13 +314,13 @@ defmodule BackendWeb.MastersTourView do
   def sort_for_qualifier_winrate(rows, _), do: rows
 
   def filter_qualified(rows, _, "no", _, _), do: rows
+
   def filter_qualified(rows, true, _, ts, invited_set) do
     rows
     |> Enum.filter(fn p ->
       !MapSet.member?(invited_set, p.battletag_full <> ts)
     end)
   end
-
 
   def add_qualified_filter(dropdowns, _, nil, _, _), do: dropdowns
 
@@ -346,16 +347,17 @@ defmodule BackendWeb.MastersTourView do
   defp qualified_filter_options(%{min_qualifiers_for_winrate: min}) when is_integer(min) do
     [{"yes", "All"}, {"for_winrate", "For Winrate"}, {"no", "No"}]
   end
+
   defp qualified_filter_options(_), do: [{"yes", "Yes"}, {"no", "No"}]
 
   def period_title(:all), do: "2020-#{Date.utc_today().year}"
+
   def period_title(period) do
     case TourStop.get(period) do
       ts = %{id: _} -> TourStop.display_name(ts)
       _ -> to_string(period)
     end
   end
-
 
   def filter_countries(target, []), do: target
 
@@ -425,7 +427,11 @@ defmodule BackendWeb.MastersTourView do
 
   def create_point_system_dropdown(conn) do
     options =
-      [{"2020 Earnings", "mt_earnings_2020"}, {"2021 Points", "gm_points_2021"}, {"2022 Season Championships", "match_wins"}]
+      [
+        {"2020 Earnings", "mt_earnings_2020"},
+        {"2021 Points", "gm_points_2021"},
+        {"2022 Season Championships", "match_wins"}
+      ]
       |> Enum.map(fn {name, val} ->
         %{
           display: name,
@@ -510,7 +516,9 @@ defmodule BackendWeb.MastersTourView do
 
   defp season_display({2022, 2}), do: "2022 Last Call"
   defp season_display({year, season}) when is_integer(season), do: "#{year} Season #{season}"
-  defp season_display({year, season}), do: "#{year} #{season |> to_string() |> String.capitalize()}"
+
+  defp season_display({year, season}),
+    do: "#{year} #{season |> to_string() |> String.capitalize()}"
 
   def create_current_score_dropdown(conn, show_current_score) do
     {[
@@ -539,7 +547,10 @@ defmodule BackendWeb.MastersTourView do
 
   def get_player_score(name, standings) do
     standings
-    |> Enum.find(fn %{team: %{name: full}} -> MastersTour.fix_name(name) == full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name() end)
+    |> Enum.find(fn %{team: %{name: full}} ->
+      MastersTour.fix_name(name) ==
+        full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name()
+    end)
     |> case do
       %{wins: wins, losses: losses, disqualified: disqualified} ->
         class =
@@ -615,11 +626,13 @@ defmodule BackendWeb.MastersTourView do
     min_to_show = min_raw || min_cups(total) |> max_for_mt(period)
 
     update_link = fn new_params ->
+      merged_params = conn.query_params |> Map.merge(new_params)
+
       Routes.masters_tour_path(
         conn,
         :qualifier_stats,
         period,
-        conn.query_params |> Map.merge(new_params)
+        merged_params
       )
     end
 
@@ -636,7 +649,6 @@ defmodule BackendWeb.MastersTourView do
         default_limit: 200,
         limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
       )
-
 
     eligible_ts = eligible_tour_stops()
 
@@ -662,7 +674,7 @@ defmodule BackendWeb.MastersTourView do
         # "Winrate percentile (qualified)",
         "2020 MTs qualified",
         "2021 MTs qualified",
-        "2022 MTs qualified",
+        "2022 MTs qualified"
       ] ++
         (eligible_ts |> Enum.map(&TourStop.display_name/1)) ++
         [
@@ -673,16 +685,21 @@ defmodule BackendWeb.MastersTourView do
           "Projected % (using 0.70)"
         ]
 
-    {is_ts, ts, has_winrate_qual} = case TourStop.get(period) do
-      ts = %{id: _, min_qualifiers_for_winrate: min} ->
-        {true, ts, is_integer(min)}
-      _ -> {false, nil, false}
-    end
+    {is_ts, ts, has_winrate_qual} =
+      case TourStop.get(period) do
+        ts = %{id: _, min_qualifiers_for_winrate: min} ->
+          {true, ts, is_integer(min)}
+
+        _ ->
+          {false, nil, false}
+      end
+
     hide_qualified = default_hiding_for_winrate(conn.params, has_winrate_qual, hide_qualified_raw)
 
     invited_set =
       invited_players
       |> MapSet.new(fn ip -> String.trim(ip.battletag_full) <> ip.tour_stop end)
+
     invited_set_for_hiding =
       invited_players
       |> filter_invites(ts, hide_qualified)
@@ -723,11 +740,10 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.map(fn {row, pos} -> [pos | filter_columns(row, columns_to_show)] end)
 
     ts_list =
-      (
-        [:all]
-        ++ eligible_years()
-        ++ eligible_tour_stops()
-      ) |> Enum.map(fn ts ->
+      ([:all] ++
+         eligible_years() ++
+         eligible_tour_stops())
+      |> Enum.map(fn ts ->
         %{
           display: ts |> period_title(),
           selected: to_string(ts) == to_string(period) || TourStop.equal?(ts, period),
@@ -1039,14 +1055,22 @@ defmodule BackendWeb.MastersTourView do
 
   @spec filter_invites([InvitedPlayer.t()], TourStop.t() | nil, String.t()) :: [InvitedPlayer.t()]
   def filter_invites(invites, ts, hide_qualified)
-  def filter_invites(invites, %{min_qualifiers_for_winrate: min, qualifiers_period: {_, %{year: y, month: m, day: d}}}, "for_winrate") when is_integer(min) do
+
+  def filter_invites(
+        invites,
+        %{min_qualifiers_for_winrate: min, qualifiers_period: {_, %{year: y, month: m, day: d}}},
+        "for_winrate"
+      )
+      when is_integer(min) do
     {:ok, limit} = NaiveDateTime.new(y, m, d, 0, 0, 0)
+
     invites
     |> Enum.filter(&(!(String.downcase(&1.reason) =~ "winrate")))
     |> Enum.filter(fn %{upstream_time: ut} ->
       :lt == NaiveDateTime.compare(ut, limit)
     end)
   end
+
   def filter_invites(invites, _, _), do: invites
 
   @spec process_invited_player(

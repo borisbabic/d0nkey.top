@@ -36,4 +36,15 @@ defmodule BackendWeb.MastersTourControllerTest do
     conn = get(conn, url)
     assert html_response(conn, 200)
   end
+
+  test "GET /mt/qualifier-stats/Masters+Tour+Five%3Fcolumns[Player]=true&columns[Cups]=true&columns[Best]=true&columns[Matches+Won]=true&columns[Winrate+%2525]=true&country[GR]=true returns 200",
+       %{conn: conn} do
+    conn =
+      get(
+        conn,
+        "/mt/qualifier-stats/Masters+Tour+Five%3Fcolumns[Player]=true&columns[Cups]=true&columns[Best]=true&columns[Matches+Won]=true&columns[Winrate+%2525]=true&country[GR]=true"
+      )
+
+    assert html_response(conn, 200)
+  end
 end
