@@ -46,7 +46,7 @@ defmodule BackendWeb.ProfileSettingsLive do
             <br>
             <Field name="unicode_icon">
               <Label class="label">Player Icon</Label>
-              <Select selected={@user.unicode_icon} class="select" options={[{"None", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}]}/>
+              <Select selected={@user.unicode_icon} class="select" options={[{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}]}/>
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
@@ -88,8 +88,9 @@ defmodule BackendWeb.ProfileSettingsLive do
     Enum.map(Countriex.all(), fn %{name: name, alpha2: code} ->
       {name, code}
     end)
-    |> Enum.sort_by(& elem(&1, 0), :asc)
+    |> Enum.sort_by(&elem(&1, 0), :asc)
   end
+
   def pride_flag() do
     <<0xF0, 0x9F, 0x8F, 0xB3, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x8C, 0x88>>
   end
@@ -150,6 +151,7 @@ defmodule BackendWeb.ProfileSettingsLive do
     val = Map.get(params, key, default)
     Map.put(attrs, key, val)
   end
+
   def parse_decklist_color_option(attrs, params, key) do
     if params[key] && DecklistOptions.valid_color?(params[key]) do
       attrs |> Map.put(key, params[key])
