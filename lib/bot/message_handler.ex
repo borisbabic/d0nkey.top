@@ -7,6 +7,8 @@ defmodule Bot.MessageHandler do
   alias Nostrum.Api
   alias Backend.Blizzard
   alias Backend.Leaderboards
+  alias Backend.HearthstoneJson
+  alias Nostrum.Struct.Embed
   import Bot.MessageHandlerUtil
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
@@ -57,14 +59,51 @@ defmodule Bot.MessageHandler do
       <<"!tch", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("6271bd62d44c844993e4e1a7", msg)
 
-      content ->
-        with {:ok, deck} <- Backend.Hearthstone.Deck.decode(content),
-             false <- content =~ "#",
-             {:ok, message} <- create_deck_message(deck) do
-          Api.create_message(msg.channel_id, message)
-        else
-          _ -> :ignore
-        end
+      <<"[[", _::binary>> ->
+        handle_card(msg)
+
+      _ ->
+        [
+          handle_deck(msg),
+          handle_card(msg)
+        ]
+        |> Enum.find(:ignore, &(&1 != :ignore))
+    end
+  end
+
+  def handle_card(msg) do
+    with matches = [_ | _] <- Regex.scan(~r/\[\[(.+?)\]\]/, msg.content, capture: :all_but_first) do
+      embeds =
+        matches
+        |> Enum.map(&create_card_embed/1)
+        |> Enum.filter(& &1)
+
+      Api.create_message(msg.channel_id, embeds: embeds)
+    else
+      _ -> :ignore
+    end
+  end
+
+  defp create_card_embed([match]), do: create_card_embed(match)
+
+  defp create_card_embed(match) do
+    with [{_, card} | _] <- HearthstoneJson.closest_collectible(match),
+         card_url when is_binary(card_url) <- HearthstoneJson.card_url(card) do
+      %Embed{}
+      |> Embed.put_title(card.name)
+      |> Embed.put_image(card_url)
+    else
+      _ -> nil
+    end
+  end
+
+  def handle_deck(msg) do
+    with {:ok, deck} <- Backend.Hearthstone.Deck.decode(msg.content),
+         false <- msg.content =~ "#",
+         {:ok, message} <- create_deck_message(deck) do
+      Api.create_message(msg.channel_id, message)
+    else
+      _ -> :ignore
     end
   end
 
