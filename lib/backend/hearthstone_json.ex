@@ -11,6 +11,29 @@ defmodule Backend.HearthstoneJson do
     GenServer.start_link(__MODULE__, default, name: @name)
   end
 
+  @min_jaro_distance 0.85
+  @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]
+  def closest_collectible(card_name, cutoff \\ @min_jaro_distance),
+    do: collectible_cards() |> do_closest(card_name, cutoff)
+
+  @spec closest(String.t(), number()) :: [{number(), Card.t()}]
+  def closest(card_name, cutoff \\ @min_jaro_distance),
+    do: cards() |> do_closest(card_name, cutoff)
+
+  @spec do_closest([Card.t()], String.t(), number()) :: [{number(), Card.t()}]
+  defp do_closest(cards, card_name, cutoff) do
+    Enum.flat_map(cards, fn card ->
+      distance = String.jaro_distance(String.downcase(card_name), String.downcase(card.name))
+
+      if distance >= cutoff do
+        [{distance, card}]
+      else
+        []
+      end
+    end)
+    |> Enum.sort_by(&elem(&1, 0), :desc)
+  end
+
   def get_card(dbf_id), do: table() |> Util.ets_lookup("card_#{dbf_id}")
 
   @spec get_fresh() :: [Card]
@@ -44,7 +67,8 @@ defmodule Backend.HearthstoneJson do
   end
 
   @spec canonical_id(integer() | String.t()) :: integer() | any()
-  def canonical_id(dbf_id), do: Util.ets_lookup(table(), "canonical_id_#{to_string(dbf_id)}", dbf_id)
+  def canonical_id(dbf_id),
+    do: Util.ets_lookup(table(), "canonical_id_#{to_string(dbf_id)}", dbf_id)
 
   @spec tile_url(Card.t() | String.t()) :: String.t()
   def tile_url(%{id: id}), do: tile_url(id)
@@ -87,18 +111,18 @@ defmodule Backend.HearthstoneJson do
   defp insert_canonical_ids(table, collectible_cards) do
     collectible_cards
     |> Enum.group_by(&Card.group_by/1)
-    |> Enum.map(& elem(&1, 1))
+    |> Enum.map(&elem(&1, 1))
     |> Enum.filter(fn cards ->
-      Enum.any?(cards, & &1.set in @canonical_set_priority)
+      Enum.any?(cards, &(&1.set in @canonical_set_priority))
     end)
-    |> Enum.each(& insert_canonical_group(table, &1))
+    |> Enum.each(&insert_canonical_group(table, &1))
   end
 
   defp insert_canonical_group(table, cards) do
-
-    non_classic =  cards
-    # skip if classic mode card
-    |> Enum.filter(& &1.set != "VANILLA")
+    non_classic =
+      cards
+      # skip if classic mode card
+      |> Enum.filter(&(&1.set != "VANILLA"))
 
     with %{dbf_id: canonical_id} <- find_canonical(non_classic) do
       Enum.each(non_classic, fn %{dbf_id: dbf_id} ->
@@ -108,9 +132,10 @@ defmodule Backend.HearthstoneJson do
       end)
     end
   end
+
   defp find_canonical(cards) do
     Enum.find_value(@canonical_set_priority, fn set ->
-      Enum.find(cards, & &1.set == set)
+      Enum.find(cards, &(&1.set == set))
     end)
   end
 
