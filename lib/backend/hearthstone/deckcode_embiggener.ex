@@ -12,7 +12,8 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
   def embiggen(deckcode) when is_binary(deckcode), do: deckcode |> Deck.decode!() |> embiggen()
 
   def embiggen(d = %{cards: cards, deckcode: deckcode, format: format}) do
-    class_name = d |> class_name()
+    deck_name = Deck.name(d)
+    class_name = Deck.class_name(d)
 
     cards_part =
       cards
@@ -26,7 +27,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
       end
 
     """
-    ### #{class_name}
+    ### #{deck_name}
     # Class: #{class_name}
     # Format: #{format |> Deck.format_name()}
     # Cost: #{Deck.cost(d)}
@@ -49,12 +50,5 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
       end
 
     "# #{rarity} #{freq}x (#{card.cost}) #{card.name}"
-  end
-
-  @spec class_name(Deck.t()) :: String.t()
-  defp class_name(d) do
-    (d.class || HearthstoneJson.get_class(d.hero))
-    |> String.upcase()
-    |> Deck.class_name()
   end
 end

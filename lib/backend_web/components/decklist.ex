@@ -8,7 +8,7 @@ defmodule Components.Decklist do
 
   prop(deck, :map, required: true)
   prop(name, :string, required: false)
-  prop(archetype_as_name, :boolean, default: false)
+  prop(archetype_as_name, :boolean, default: true)
   prop(show_cards, :boolean, default: true)
   prop(comparison, :any, required: false)
   prop(highlight_rotation, :boolean, default: false)
@@ -17,14 +17,14 @@ defmodule Components.Decklist do
 
   @spec deck_name(Map.t() | nil, Deck.t(), Card.t()) :: String.t()
   def deck_name(%{name: name}, _, _) when is_binary(name) and bit_size(name) > 0, do: name
+
   def deck_name(assigns = %{archetype_as_name: true}, deck, hero) do
-    with id when not is_nil(id) <- deck.hsreplay_archetype,
-          %{name: name} <- Backend.HSReplay.get_archetype(id) do
-      name
-    else
-      _ -> assigns |> Map.put(:archetype_as_name, false) |> deck_name(deck, hero)
+    with nil <- deck.archetype,
+         nil <- Backend.Hearthstone.DeckArchetyper.archetype(deck) do
+      Map.put(assigns, :archetype_as_name, false) |> deck_name(deck, hero)
     end
   end
+
   def deck_name(_, %{class: c}, _) when is_binary(c), do: c |> Deck.class_name()
   def deck_name(_, _, %{card_class: c}) when is_binary(c), do: c |> Deck.class_name()
   def deck_name(_, _, _), do: ""
@@ -36,6 +36,7 @@ defmodule Components.Decklist do
 
   defp link_part(%{id: id}) when not is_nil(id), do: id
   defp link_part(%{deckcode: deckcode}), do: deckcode
+
   def render(assigns) do
     deck = assigns[:deck]
 

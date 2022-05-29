@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone.Deck do
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.Hearthstone
+  alias Backend.HearthstoneJson
   @required [:cards, :hero, :format, :deckcode]
   @optional [:hsreplay_archetype, :class]
   @type t :: %__MODULE__{}
@@ -13,6 +14,7 @@ defmodule Backend.Hearthstone.Deck do
     field :format, :integer
     field :hero, :integer
     field :class, :string
+    field :archetype, Ecto.Atom, default: nil
     field :hsreplay_archetype, :integer, default: nil
     timestamps()
   end
@@ -54,16 +56,34 @@ defmodule Backend.Hearthstone.Deck do
     |> Base.encode64()
   end
 
-  defp canonicalize_cards(cards), do: Enum.map(cards, &Backend.HearthstoneJson.canonical_id/1)
+  defp canonicalize_cards(cards), do: Enum.map(cards, &HearthstoneJson.canonical_id/1)
 
   @spec deckcode_part([integer] | nil) :: [integer]
   defp deckcode_part(nil), do: [0]
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 
-  @spec class_name(String.t()) :: String.t()
+  @spec class_name(String.t() | Deck.t()) :: String.t()
+  def class_name(%__MODULE__{class: class}) when is_binary(class),
+    do: class |> String.upcase() |> class_name()
+
+  def class_name(%__MODULE__{hero: h}) do
+    case Hearthstone.class(h) do
+      nil -> ""
+      class -> class |> String.upcase() |> class_name()
+    end
+  end
+
   def class_name("DEMONHUNTER"), do: "Demon Hunter"
   def class_name(c) when is_binary(c), do: c |> Recase.to_title()
   def class_name(other), do: other
+
+  def name(%{archetype: a}) when not is_nil(a), do: a
+
+  def name(deck) do
+    with nil <- Backend.Hearthstone.DeckArchetyper.archetype(deck) do
+      class_name(deck)
+    end
+  end
 
   @spec remove_comments(String.t()) :: String.t()
   def remove_comments(deckcode_string) do
@@ -110,7 +130,14 @@ defmodule Backend.Hearthstone.Deck do
          [0, 1, format, 1, hero | card_parts] <- parts(chunked),
          uncanonical_cards <- decode_cards_parts(card_parts, 1, []),
          cards <- canonicalize_cards(uncanonical_cards) do
-      {:ok, %__MODULE__{format: format, hero: hero, cards: cards, deckcode: no_comments}}
+      {:ok,
+       %__MODULE__{
+         format: format,
+         hero: hero,
+         cards: cards,
+         deckcode: no_comments,
+         class: Hearthstone.class(hero)
+       }}
     else
       {:error, reason} -> {:error, reason}
       _ -> String.slice(deckcode, 0, String.length(deckcode) - 1) |> decode()
