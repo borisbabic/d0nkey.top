@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone do
   alias Ecto.Multi
   alias Backend.Repo
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.DeckArchetyper
   alias Backend.Hearthstone.Lineup
   alias Backend.Hearthstone.LineupDeck
   # alias Backend.Hearthstone.CardBackCategory
@@ -114,7 +115,15 @@ defmodule Backend.Hearthstone do
   def deck(cards, hero, format), do: Deck.deckcode(cards, hero, format) |> deck()
 
   def create_deck(cards, hero, format) do
-    temp_attrs = %{cards: cards, hero: hero, format: format, class: class(hero)}
+    class = class(hero)
+
+    temp_attrs = %{
+      cards: cards,
+      hero: hero,
+      format: format,
+      class: class,
+      archetype: DeckArchetyper.archetype(format, cards, class)
+    }
 
     hsreplay_archetype =
       Backend.HSReplay.guess_archetype(temp_attrs)
@@ -239,6 +248,7 @@ defmodule Backend.Hearthstone do
     |> Enum.filter(&(&1 |> elem(0)))
     |> sort_cards()
   end
+
   def ordered_frequencies(_), do: []
 
   def sort_cards(cards) do
@@ -302,7 +312,8 @@ defmodule Backend.Hearthstone do
   end
 
   def create_lineup(attrs, deckstrings) do
-    decks = deckstrings
+    decks =
+      deckstrings
       |> Enum.filter(&Deck.valid?/1)
       |> Enum.map(&(&1 |> create_or_get_deck() |> Util.nilify()))
       |> Enum.filter(& &1)
@@ -355,6 +366,7 @@ defmodule Backend.Hearthstone do
     query
     |> where([lineup: l], 1 == 2)
   end
+
   defp compose_lineups_query({"tournament_id", tournament_id}, query) do
     query
     |> where([lineup: l], l.tournament_id == ^tournament_id)
