@@ -49,7 +49,7 @@ defmodule BackendWeb.LeaderboardView do
   defp player_history_data(ph, :rank), do: -1 * ph.rank
   defp player_history_data(ph, attr), do: Map.get(ph, attr)
 
-  def player_history_dropdowns(conn) do
+  def player_history_dropdowns(%{conn: conn}) do
     [
       create_region_dropdown(conn.params["region"], history_updater(conn, "region")),
       create_leaderboard_dropdown(
@@ -93,7 +93,7 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Period")}
   end
 
-  def add_attr_dropdown(dropdowns, conn, current, true) do
+  defp add_attr_dropdown(dropdowns, conn, current, true) do
     options =
       [:rank, :rating]
       |> Enum.map(fn attr ->
@@ -107,14 +107,59 @@ defmodule BackendWeb.LeaderboardView do
     [{options, dropdown_title(options, "Attribute")} | dropdowns]
   end
 
-  def add_attr_dropdown(dropdowns, _, _, _), do: dropdowns
+  defp add_attr_dropdown(dropdowns, _, _, _), do: dropdowns
+
+  defp add_ignore_dropdown(dropdowns, %{conn: conn, attr: :rank, ignore_rank: ignore}) do
+    nil_option = %{
+      display: "Ignore Nothing",
+      selected: ignore == nil,
+      link: update_player_history_link(conn, "ignore_rank_changes", "none")
+    }
+
+    num_options =
+      Enum.map(1..3, fn num ->
+        val = ignore_rank_changes_val(num)
+
+        %{
+          display: "Ignore <= #{num}",
+          selected: ignore == num,
+          link: update_player_history_link(conn, "ignore_rank_changes", val)
+        }
+      end)
+
+    options = [nil_option | num_options]
+    dropdowns ++ [{options, dropdown_title(options, "Ignore Rank Changes")}]
+  end
+
+  defp add_ignore_dropdown(dropdowns, _attrs), do: dropdowns
+
+  defp ignore_rank_changes_val(val) when is_integer(val), do: "less_than_equal_#{val}"
+  defp ignore_rank_changes_val(_), do: "none"
+
   defp history_updater(conn, key), do: &update_player_history_link(conn, key, &1)
 
   def update_player_history_link(conn, key, val) do
     attr = BackendWeb.LeaderboardController.history_attr(conn.params)
-    params = conn.params |> Map.put("attr", attr) |> Map.put(key, val)
-    %{"period" => s, "region" => r, "leaderboard_id" => l, "player" => p, "attr" => a} = params
-    Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: a)
+
+    ignore_rank_changes =
+      BackendWeb.LeaderboardController.ignore_rank(conn.params) |> ignore_rank_changes_val()
+
+    params =
+      conn.params
+      |> Map.put("attr", attr)
+      |> Map.put("ignore_rank_changes", ignore_rank_changes)
+      |> Map.put(key, val)
+
+    %{
+      "period" => s,
+      "region" => r,
+      "leaderboard_id" => l,
+      "player" => p,
+      "attr" => a,
+      "ignore_rank_changes" => irc
+    } = params
+
+    Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: a, ignore_rank_changes: irc)
   end
 
   def player_history_dropdowns(false, _, _), do: []
@@ -147,17 +192,34 @@ defmodule BackendWeb.LeaderboardView do
 
   defp other_warning(_), do: nil
 
-  def render("player_history.html", %{
-        player_history: player_history,
-        attr: attr,
-        player: player,
-        conn: conn
-      }) do
+  defp filter_player_history_changes(player_history, %{attr: :rank, ignore_rank: ignore})
+       when is_integer(ignore) do
+    Enum.filter(player_history, fn ph ->
+      abs(ph.rank - ph.prev_rank) > ignore
+    end)
+  end
+
+  defp filter_player_history_changes(player_history, _), do: player_history
+
+  def render(
+        "player_history.html",
+        attrs = %{
+          player_history: player_history,
+          attr: attr,
+          player: player,
+          conn: conn
+        }
+      ) do
     has_rating = player_history |> Enum.any?(& &1.rating)
-    dropdowns = player_history_dropdowns(conn) |> add_attr_dropdown(conn, attr, has_rating)
+
+    dropdowns =
+      player_history_dropdowns(attrs)
+      |> add_attr_dropdown(conn, attr, has_rating)
+      |> add_ignore_dropdown(attrs)
 
     sorted_history =
       player_history
+      |> filter_player_history_changes(attrs)
       |> Enum.reverse()
 
     graph = player_history_graph(player_history, attr)

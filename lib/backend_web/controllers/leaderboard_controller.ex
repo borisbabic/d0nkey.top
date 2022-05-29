@@ -30,10 +30,15 @@ defmodule BackendWeb.LeaderboardController do
       ladder_mode: ladder_mode
     })
   end
-  defp hack_lobby_legends_season(ldb = %{}, %{"seasonId" => new_season = "lobby_legends" <> _}), do: Map.put(ldb, :season_id, new_season)
-  defp hack_lobby_legends_season(ldb,_), do: ldb
 
-  def parse_skip_cn(%{"skip_cn" => skip}, _) when skip in ["all", "previously_skipped", "none"], do: skip
+  defp hack_lobby_legends_season(ldb = %{}, %{"seasonId" => new_season = "lobby_legends" <> _}),
+    do: Map.put(ldb, :season_id, new_season)
+
+  defp hack_lobby_legends_season(ldb, _), do: ldb
+
+  def parse_skip_cn(%{"skip_cn" => skip}, _) when skip in ["all", "previously_skipped", "none"],
+    do: skip
+
   def parse_skip_cn(_, _), do: "all"
 
   def index(conn, params) do
@@ -46,7 +51,11 @@ defmodule BackendWeb.LeaderboardController do
   end
 
   def parse_show_flags(%{"show_flags" => sf}, _) when sf in ["no", "yes"], do: sf
-  def parse_show_flags(_, %{leaderboard_id: "BG", season_id: s}) when Backend.LobbyLegends.is_lobby_legends(s), do: "yes"
+
+  def parse_show_flags(_, %{leaderboard_id: "BG", season_id: s})
+      when Backend.LobbyLegends.is_lobby_legends(s),
+      do: "yes"
+
   def parse_show_flags(_, %{leaderboard_id: "STD"}), do: "yes"
   def parse_show_flags(_, _), do: "no"
 
@@ -54,7 +63,11 @@ defmodule BackendWeb.LeaderboardController do
   def parse_ladder_mode(_), do: "yes"
 
   def get_season_info(nil), do: {[], 0}
-  def get_season_info(%{leaderboard_id: "BG", season_id: s}) when Backend.LobbyLegends.is_lobby_legends(s), do: {[], 16}
+
+  def get_season_info(%{leaderboard_id: "BG", season_id: s})
+      when Backend.LobbyLegends.is_lobby_legends(s),
+      do: {[], 16}
+
   def get_season_info(%{season_id: season_id}), do: get_season_info(season_id)
 
   def get_season_info(season_id) do
@@ -72,6 +85,7 @@ defmodule BackendWeb.LeaderboardController do
     Blizzard.ladders_to_check(s, ldb, r)
     |> other_ladders(ldb, s)
   end
+
   def get_other_ladders(%{season_id: s, leaderboard_id: ldb = "STD", region: r}, "yes") do
     s
     |> MastersTour.TourStop.get_by_ladder()
@@ -79,6 +93,7 @@ defmodule BackendWeb.LeaderboardController do
       {:ok, _} ->
         Blizzard.ladders_to_check(s, ldb, r)
         |> other_ladders(ldb, s)
+
       _ ->
         []
     end
@@ -179,17 +194,52 @@ defmodule BackendWeb.LeaderboardController do
 
   def history_attr(%{"attr" => "rating"}), do: :rating
   def history_attr(_), do: :rank
-  def player_history_old(conn, params = %{"leaderboard_id" => ldb, "region" => region, "season_id" => season, "player" => player}) do
+  @default_ignore_rank nil
+  def ignore_rank(%{"ignore_rank_changes" => "less_than_equal_" <> num_part}),
+    do: Util.to_int(num_part, @default_ignore_rank)
+
+  def ignore_rank(_), do: @default_ignore_rank
+
+  def player_history_old(
+        conn,
+        params = %{
+          "leaderboard_id" => ldb,
+          "region" => region,
+          "season_id" => season,
+          "player" => player
+        }
+      ) do
     attr = history_attr(params)
-    link = Routes.leaderboard_path(conn, :player_history, region, "season_#{season}", ldb, player, attr: attr)
+
+    link =
+      Routes.leaderboard_path(conn, :player_history, region, "season_#{season}", ldb, player,
+        attr: attr
+      )
+
     conn
     |> Plug.Conn.put_status(302)
     |> redirect(to: link)
   end
-  def player_history(conn, params = %{"leaderboard_id" => ldb, "region" => region, "period" => period, "player" => player}) do
+
+  def player_history(
+        conn,
+        params = %{
+          "leaderboard_id" => ldb,
+          "region" => region,
+          "period" => period,
+          "player" => player
+        }
+      ) do
     attr = history_attr(params)
+    ignore_rank = ignore_rank(params)
     player_history = Backend.Leaderboards.player_history(player, region, period, ldb, attr)
-    render(conn, "player_history.html", %{player_history: player_history, player: player, attr: attr})
+
+    render(conn, "player_history.html", %{
+      player_history: player_history,
+      player: player,
+      attr: attr,
+      ignore_rank: ignore_rank
+    })
   end
 
   defp add_not_current_season_critera(criteria, []),
