@@ -90,15 +90,6 @@ defmodule Components.DecksExplorer do
           live_view={@live_view} />
 
         <LivePatchDropdown
-          options={archetype_options(search_filters)}
-          title={"Archetype"}
-          param={"archetype"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          live_view={@live_view}
-          />
-        <LivePatchDropdown
           options={class_options("Any Class")}
           title={"Class"}
           param={"player_class"}
