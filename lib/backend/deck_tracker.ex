@@ -288,6 +288,31 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
+  @spec archetypes(list()) :: [atom()]
+  def archetypes(raw_criteria) do
+    criteria =
+      Enum.reject(raw_criteria, fn crit ->
+        case crit do
+          {"order_by", _} -> true
+          {"min_games", _} -> true
+          _ -> false
+        end
+      end)
+
+    base_archetypes_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_archetypes_query(),
+    do:
+      from(g in Game,
+        left_join: pd in assoc(g, :player_deck),
+        select: pd.archetype,
+        distinct: pd.archetype,
+        where: not is_nil(pd.archetype)
+      )
+
   defp base_games_query() do
     from g in Game,
       left_join: pd in assoc(g, :player_deck),

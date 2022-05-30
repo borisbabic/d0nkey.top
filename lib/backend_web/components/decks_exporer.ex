@@ -127,6 +127,17 @@ defmodule Components.DecksExplorer do
           selected_params={params}
           live_view={@live_view} />
 
+        <LivePatchDropdown
+          options={archetype_options(search_filters)}
+          title={"Archetype"}
+          param={"archetype"}
+          url_params={@params}
+          path_params={@path_params}
+          selected_params={params}
+          live_view={@live_view}
+          />
+
+
         <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
@@ -209,6 +220,11 @@ defmodule Components.DecksExplorer do
 
   def min_games_options(options, min), do: options |> Enum.sort() |> Enum.drop_while(&(&1 < min))
   def order_by_options(), do: [{"winrate", "Winrate %"}, {"total", "Total Games"}]
+
+  defp archetype_options(filters) do
+    archetypes = DeckTracker.archetypes(filters)
+    Enum.zip(archetypes, archetypes)
+  end
 
   def filter_relevant(params) do
     params
