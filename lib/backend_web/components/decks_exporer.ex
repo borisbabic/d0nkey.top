@@ -89,6 +89,15 @@ defmodule Components.DecksExplorer do
           live_view={@live_view} />
 
         <LivePatchDropdown
+          options={archetype_options(search_filters)}
+          title={"Archetype"}
+          param={"archetype"}
+          url_params={@params}
+          path_params={@path_params}
+          selected_params={params}
+          live_view={@live_view}
+          />
+        <LivePatchDropdown
           options={class_options("Any Class")}
           title={"Class"}
           param={"player_class"}
@@ -127,15 +136,6 @@ defmodule Components.DecksExplorer do
           selected_params={params}
           live_view={@live_view} />
 
-        <LivePatchDropdown
-          options={archetype_options(search_filters)}
-          title={"Archetype"}
-          param={"archetype"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          live_view={@live_view}
-          />
 
 
         <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
@@ -170,6 +170,7 @@ defmodule Components.DecksExplorer do
       {"order_by", assigns.default_order_by},
       {"period", default_period()},
       {"game_type", Hearthstone.Enums.GameType.constructed_types()},
+      {"archetype", "any"},
       {"rank", assigns.default_rank}
     ]
 
@@ -223,7 +224,7 @@ defmodule Components.DecksExplorer do
 
   defp archetype_options(filters) do
     archetypes = DeckTracker.archetypes(filters)
-    Enum.zip(archetypes, archetypes)
+    [{"any", "Any Archetype"} | Enum.zip(archetypes, archetypes)]
   end
 
   def filter_relevant(params) do
@@ -240,6 +241,7 @@ defmodule Components.DecksExplorer do
       "region",
       "min_games",
       "player_deck_includes",
+      "archetype",
       "player_deck_excludes"
     ])
     |> parse_int([
