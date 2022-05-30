@@ -27,7 +27,8 @@ defmodule Components.DecksExplorer do
     {"past_day", "Past Day"},
     {"past_3_days", "Past 3 Days"},
     {"sunken_city", "Sunken City"},
-    {"patch_2022-05-19", "May 19th Patch"}
+    {"patch_2022-05-19", "May 19th Patch"},
+    {"throne_of_the_tides", "Throne of the Tides"}
   ]
 
   def default_period_options(), do: @default_period_options
@@ -280,14 +281,14 @@ defmodule Components.DecksExplorer do
     end)
   end
 
-  defp default_period() do
+  def default_period() do
     now = NaiveDateTime.utc_now()
-    use_patch_after = ~N[2022-05-21 01:30:00]
+    use_patch_after = ~N[2022-06-01 13:00:00]
 
     if :lt == NaiveDateTime.compare(now, use_patch_after) do
-      "patch_2022-04-26"
-    else
       "patch_2022-05-19"
+    else
+      "throne_of_the_tides"
     end
   end
 

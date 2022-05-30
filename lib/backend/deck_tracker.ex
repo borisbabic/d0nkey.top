@@ -165,6 +165,12 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
+  def archetype_stats(criteria) do
+    base_archetype_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
   @doc """
   Stats grouped by opponent's class
   """
@@ -184,6 +190,18 @@ defmodule Hearthstone.DeckTracker do
       }
     )
     |> where([game: g], not is_nil(g.opponent_class))
+  end
+
+  defp base_archetype_stats_query() do
+    base_stats_query()
+    |> group_by([player_deck: pd], pd.archetype)
+    |> select_merge(
+      [player_deck: pd],
+      %{
+        archetype: pd.archetype
+      }
+    )
+    |> where([player_deck: pd], not is_nil(pd.archetype))
   end
 
   defp base_deck_stats_query() do
@@ -352,6 +370,11 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"period", "all"}, query),
     do: query
+
+  defp compose_games_query({"period", "throne_of_the_tides"}, query) do
+    release = ~N[2022-06-01 17:15:00]
+    query |> where([game: g], g.inserted_at >= ^release)
+  end
 
   defp compose_games_query({"period", "patch_2022-05-19"}, query) do
     release = ~N[2022-05-19 17:15:00]
