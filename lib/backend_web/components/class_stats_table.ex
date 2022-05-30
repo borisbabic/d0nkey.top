@@ -2,6 +2,8 @@ defmodule Components.ClassStatsTable do
   @moduledoc false
   use Surface.Component
 
+  alias Components.WinrateTag
+
   prop(stats, :list, required: true)
 
   def render(assigns) do
@@ -17,12 +19,12 @@ defmodule Components.ClassStatsTable do
         <tbody>
           <tr :for={stat <- filter_weird_classes(@stats)}>
             <td><span class={"tag","player-name", extract_class(stat) |> String.downcase()}><span class={"basic-black-text"}>{class_name(stat)}</span></span></td>
-            <td><span class="tag" style={Components.DeckStats.winrate_style(stat.winrate)}><span class={"basic-black-text"}>{Float.round(stat.winrate * 100, 1)}</span></span></td>
+            <td><WinrateTag winrate={stat.winrate} /></td>
             <td>{stat.total}</td>
           </tr>
           <tr :if={total_stats = Hearthstone.DeckTracker.sum_stats(@stats)}>
             <td>Total</td>
-            <td><span class="tag" style={Components.DeckStats.winrate_style(total_stats.winrate)}><span class={"basic-black-text"}>{Float.round(total_stats.winrate * 100, 1)}</span></span></td>
+            <td><WinrateTag winrate={total_stats.winrate} /></td>
             <td>{total_stats.total}</td>
           </tr>
         </tbody>

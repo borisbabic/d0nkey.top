@@ -3,6 +3,7 @@ defmodule BackendWeb.FeedLive do
   alias Backend.Feed
   alias Components.Feed.DeckFeedItem
   alias Components.Feed.LatestHSArticles
+  alias Components.Feed.TierList
   alias Components.OmniBar
   use BackendWeb, :surface_live_view
 
@@ -10,7 +11,15 @@ defmodule BackendWeb.FeedLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-    items = Feed.get_current_items()
+    base_items = Feed.get_current_items()
+
+    items =
+      if is_a_me?(assigns) do
+        [%{type: "tier_list"} | base_items]
+      else
+        base_items
+      end
+
     ~F"""
     <Context put={user: @user} >
       <div>
@@ -32,6 +41,9 @@ defmodule BackendWeb.FeedLive do
             <div :if={item.type == "latest_hs_articles"}>
               <LatestHSArticles />
             </div>
+            <div :if={item.type == "tier_list"}>
+              <TierList />
+            </div>
           </div>
         </div>
       </div>
@@ -40,6 +52,8 @@ defmodule BackendWeb.FeedLive do
   end
 
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
+  def is_a_me?(%{user: %{id: 1}}), do: true
+  def is_a_me?(_), do: false
 
   def handle_info({:incoming_result, result}, socket) do
     OmniBar.incoming_result(result, "omni_bar_id")
