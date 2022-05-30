@@ -81,6 +81,7 @@ defmodule Hearthstone.DeckTracker do
   defp get_same_game(attrs) do
     query =
       from g in Game,
+        as: :game,
         where: g.inserted_at > ago(90, "second")
 
     query
@@ -285,6 +286,7 @@ defmodule Hearthstone.DeckTracker do
   defp get_existing(game_id) do
     query =
       from g in Game,
+        as: :game,
         where: g.game_id == ^game_id
 
     Repo.one(query)
@@ -315,6 +317,7 @@ defmodule Hearthstone.DeckTracker do
         case crit do
           {"order_by", _} -> true
           {"min_games", _} -> true
+          {"archetype", _} -> true
           _ -> false
         end
       end)
