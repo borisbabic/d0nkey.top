@@ -164,6 +164,56 @@ defmodule Backend.Hearthstone do
   end
 
   def recalculate_archetypes(minutes_ago) when is_integer(minutes_ago) do
+    query =
+      from d in Deck,
+        distinct: d,
+        left_join: dtg in Hearthstone.DeckTracker.Game,
+        on: dtg.player_deck_id == d.id,
+        left_join: ld in LineupDeck,
+        on: ld.deck_id == d.id,
+        left_join: l in Lineup,
+        on: l.id == ld.lineup_id,
+        where:
+          d.inserted_at >= ago(^minutes_ago, "minute") or
+            dtg.inserted_at >= ago(^minutes_ago, "minute") or
+            l.inserted_at >= ago(^minutes_ago, "minute")
+
+    decks = Repo.all(query)
+    Logger.warn("Recalculating archetypes for latest #{decks |> Enum.count()} decks")
+    recalculate_decks_archetypes(decks)
+
+    {:ok, "Done"}
+  end
+
+  def recalculate_decks_archetypes(decks) do
+    decks
+    |> Enum.chunk_every(100)
+    |> Enum.each(fn chunk ->
+      Logger.info("Recalculating archetypes...")
+
+      chunk
+      |> Enum.reduce(Multi.new(), fn d, multi ->
+        new_archetype = Backend.Hearthstone.DeckArchetyper.archetype(d)
+        updated = d |> Deck.changeset(%{archetype: new_archetype, deckcode: d.deckcode})
+        Multi.update(multi, to_string(d.id), updated)
+      end)
+      |> Repo.transaction()
+    end)
+  end
+
+  @spec recalculate_hsreplay_archetypes(Integer.t() | String.t()) ::
+          {:ok, any()} | {:error, any()}
+  def recalculate_hsreplay_archetypes(<<"min_ago_"::binary, min_ago::bitstring>>),
+    do: recalculate_hsreplay_archetypes(min_ago)
+
+  def recalculate_hsreplay_archetypes(minutes_ago) when is_binary(minutes_ago) do
+    case Integer.parse(minutes_ago) do
+      {num, _} -> recalculate_hsreplay_archetypes(num)
+      _ -> {:error, "Couldn't parse integer"}
+    end
+  end
+
+  def recalculate_hsreplay_archetypes(minutes_ago) when is_integer(minutes_ago) do
     decks = decks([{"latest", minutes_ago}])
     Logger.info("Recalculating archetypes for #{decks |> Enum.count()} decks")
 
@@ -184,13 +234,28 @@ defmodule Backend.Hearthstone do
     {:ok, "Done"}
   end
 
+  @spec decks(list()) :: [Deck.t()]
   def decks(criteria) do
     base_decks_query()
     |> build_decks_query(criteria)
     |> Repo.all()
   end
 
+  @spec archetypes(list()) :: [atom()]
+  def archetypes(criteria) do
+    base_archetypes_query()
+    |> build_decks_query(criteria)
+    |> Repo.all()
+  end
+
   defp base_decks_query(), do: from(d in Deck, as: :deck)
+
+  defp base_archetypes_query(),
+    do:
+      from(d in Deck, as: :deck)
+      |> select([deck: d], d.archetype)
+      |> distinct([deck: d], d.archetype)
+      |> where([deck: d], not is_nil(d.archetype))
 
   defp build_decks_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_decks_query/2)
@@ -217,6 +282,27 @@ defmodule Backend.Hearthstone do
 
   defp compose_decks_query({"latest", min_ago}, query) when is_integer(min_ago),
     do: query |> where([deck: d], d.inserted_at >= ago(^min_ago, "minute"))
+
+  defp compose_decks_query(
+         {"recently_played", <<"min_ago_"::binary, min_ago::bitstring>>},
+         query
+       ) do
+    min_ago
+    |> Integer.parse()
+    |> case do
+      {num, _} -> compose_decks_query({"recently_played", num}, query)
+      _ -> query
+    end
+  end
+
+  defp compose_decks_query({"recently_played", min_ago}, query) when is_integer(min_ago),
+    do:
+      query
+      |> join(:inner, [deck: d], dtg in Hearthstone.DeckTracker.Game,
+        on: dtg.player_deck_id == d.id,
+        as: :game
+      )
+      |> where([game: g], g.inserted_at >= ago(^min_ago, "minute"))
 
   defp compose_decks_query({"include_cards", cards = [_ | _]}, query),
     do: query |> where([deck: d], fragment("? @> ?", d.cards, ^cards))

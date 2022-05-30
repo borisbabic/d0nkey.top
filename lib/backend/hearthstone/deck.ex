@@ -6,7 +6,7 @@ defmodule Backend.Hearthstone.Deck do
   alias Backend.Hearthstone
   alias Backend.HearthstoneJson
   @required [:cards, :hero, :format, :deckcode]
-  @optional [:hsreplay_archetype, :class]
+  @optional [:hsreplay_archetype, :class, :archetype]
   @type t :: %__MODULE__{}
   schema "deck" do
     field :cards, {:array, :integer}
@@ -25,12 +25,15 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @doc false
-  def changeset(c, a) do
-    attrs = Map.put(a, :deckcode, deckcode(a))
-
+  def changeset(c, attrs = %{deckcode: _}) do
     c
     |> cast(attrs, @required ++ @optional)
     |> validate_required(@required)
+  end
+
+  def changeset(c, a) do
+    attrs = Map.put(a, :deckcode, deckcode(a))
+    changeset(c, attrs)
   end
 
   @spec deckcode(t()) :: String.t()

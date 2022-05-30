@@ -185,10 +185,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
     cond do
       highlander?(c) ->
-        String.to_existing_atom("Highlander #{class_name}")
+        String.to_atom("Highlander #{class_name}")
 
       quest?(full_cards) || questline?(full_cards) ->
-        String.to_existing_atom("Quest #{class_name}")
+        String.to_atom("Quest #{class_name}")
 
       boar?(card_names) ->
         String.to_atom("Boar #{class_name}")
