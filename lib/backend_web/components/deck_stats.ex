@@ -4,6 +4,7 @@ defmodule Components.DeckStats do
   prop(total, :number, required: false)
   prop(winrate, :number, required: false)
   prop(element_class, :css_class, default: "")
+
   def render(assigns) do
     ~F"""
       <div :if={@winrate} class={"column", "tag"} style={winrate_style(@winrate)}>
@@ -15,10 +16,5 @@ defmodule Components.DeckStats do
     """
   end
 
-  def winrate_style(winrate) do
-    red = 255 - 255 * winrate
-    green = 255 * winrate
-    blue = min(red, green)
-    "background-color: rgb(#{red}, #{green}, #{blue}"
-  end
+  def winrate_style(winrate), do: Components.WinrateTag.winrate_style(winrate)
 end

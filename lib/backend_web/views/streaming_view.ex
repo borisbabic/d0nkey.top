@@ -181,11 +181,14 @@ defmodule BackendWeb.StreamingView do
 
   def win_loss(sd = %{wins: w, losses: l}) do
     winrate = StreamerDeck.winrate(sd)
-    style = if w + l > 5 do
-      Components.DeckStats.winrate_style(winrate)
-    else
-      ""
-    end
+
+    style =
+      if w + l > 5 do
+        Components.WinrateTag.winrate_style(winrate)
+      else
+        ""
+      end
+
     if winrate do
       ~E"""
       <div class="tag" style="<%= style %>"><%="#{w} - #{l}"%></div>
@@ -194,6 +197,7 @@ defmodule BackendWeb.StreamingView do
       ""
     end
   end
+
   def links(sd) do
     deck = deckcode_links(deckcode(sd.deck))
     twitch = twitch_link(sd.streamer |> Streamer.twitch_login(), "twitch", ["tag", "is-link"])
@@ -276,6 +280,7 @@ defmodule BackendWeb.StreamingView do
 
   def create_last_played_dropdown(conn) do
     last_played = Map.get(conn.query_params, "last_played")
+
     options =
       [
         {"Last hour", "min_ago_60"},
