@@ -163,26 +163,30 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  def recalculate_archetypes(minutes_ago) when is_integer(minutes_ago) do
+  def recalculate_archetypes(minutes_ago, min_id \\ 0) when is_integer(minutes_ago) do
+    cutoff = NaiveDateTime.utc_now() |> NaiveDateTime.add(-1 * 60 * minutes_ago)
+    do_recalculate_archetypes(cutoff, min_id)
+  end
+
+  defp do_recalculate_archetypes(cutoff, min_id) do
     query =
       from d in Deck,
-        distinct: d,
+        distinct: d.id,
         left_join: dtg in Hearthstone.DeckTracker.Game,
         on: dtg.player_deck_id == d.id,
-        left_join: ld in LineupDeck,
-        on: ld.deck_id == d.id,
-        left_join: l in Lineup,
-        on: l.id == ld.lineup_id,
-        where:
-          d.inserted_at >= ago(^minutes_ago, "minute") or
-            dtg.inserted_at >= ago(^minutes_ago, "minute") or
-            l.inserted_at >= ago(^minutes_ago, "minute")
+        order_by: [asc: :id],
+        limit: 100,
+        where: d.id > ^min_id and (d.inserted_at >= ^cutoff or dtg.inserted_at >= ^cutoff)
 
-    decks = Repo.all(query)
-    Logger.warn("Recalculating archetypes for latest #{decks |> Enum.count()} decks")
-    recalculate_decks_archetypes(decks)
+    case Repo.all(query) do
+      [] ->
+        {:ok, "done"}
 
-    {:ok, "Done"}
+      decks ->
+        recalculate_decks_archetypes(decks)
+        %{id: new_min} = Enum.max_by(decks, & &1.id)
+        do_recalculate_archetypes(cutoff, new_min)
+    end
   end
 
   def recalculate_decks_archetypes(decks) do
