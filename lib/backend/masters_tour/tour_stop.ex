@@ -344,7 +344,7 @@ defmodule Backend.MastersTour.TourStop do
         ladder_invites: 50,
         region: :AP,
         start_time: ~N[2022-06-19 13:00:00],
-        qualifiers_period: {~D[2022-05-04], ~D[2022-05-30]},
+        qualifiers_period: {~D[2022-05-04], ~D[2022-05-31]},
         min_qualifiers_for_winrate: 10,
         aliases: [],
         display_name: nil,
@@ -376,6 +376,7 @@ defmodule Backend.MastersTour.TourStop do
 
   def get(tour_stop, attr, default \\ nil)
   def get(ts = %__MODULE__{}, attr, default), do: Map.get(ts, attr, default)
+
   def get(tour_stop, attr, default)
       when (is_tour_stop(tour_stop) or is_binary(tour_stop)) and is_atom(attr) do
     case get(tour_stop) do
@@ -421,6 +422,7 @@ defmodule Backend.MastersTour.TourStop do
   def get_id_for_season!(season_id), do: Util.bangify(get_id_for_season(season_id))
 
   def get(ts = %__MODULE__{}), do: ts
+
   def get(tour_stop) when is_tour_stop(tour_stop) do
     all()
     |> Enum.find(fn ts -> ts.id == tour_stop end)
@@ -429,21 +431,25 @@ defmodule Backend.MastersTour.TourStop do
   def get(tour_stop) when is_binary(tour_stop) do
     all()
     |> Enum.find(fn
-      ts -> to_string(ts.id) == tour_stop
-      || String.downcase(tour_stop) in Enum.map(ts.aliases, &String.downcase/1)
+      ts ->
+        to_string(ts.id) == tour_stop ||
+          String.downcase(tour_stop) in Enum.map(ts.aliases, &String.downcase/1)
     end)
   end
+
   def get(_), do: nil
 
   @spec display_name(t()) :: String.t() | nil
   def display_name(%{display_name: name}) when is_binary(name), do: name
   def display_name(%{id: id}), do: to_string(id)
+
   def display_name(tour_stop) when is_binary(tour_stop) or is_atom(tour_stop) do
     case get(tour_stop) do
       ts = %{id: _} -> display_name(ts)
       _ -> nil
     end
   end
+
   def display_name(_), do: nil
 
   def get_current(hours_before_start \\ 1, hours_after_start \\ 96) do
