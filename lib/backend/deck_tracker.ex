@@ -96,12 +96,12 @@ defmodule Hearthstone.DeckTracker do
 
   defp equals(query, column, nil) do
     query
-    |> where([g], is_nil(field(g, ^column)))
+    |> where([game: g], is_nil(field(g, ^column)))
   end
 
   defp equals(query, column, value) do
     query
-    |> where([g], field(g, ^column) == ^value)
+    |> where([game: g], field(g, ^column) == ^value)
   end
 
   defp set_public(attrs), do: Map.put(attrs, "public", public?(attrs))
@@ -176,38 +176,38 @@ defmodule Hearthstone.DeckTracker do
 
   defp base_opponent_class_stats_query() do
     base_stats_query()
-    |> group_by([g], g.opponent_class)
+    |> group_by([game: g], g.opponent_class)
     |> select_merge(
-      [g],
+      [game: g],
       %{
         opponent_class: g.opponent_class
       }
     )
-    |> where([g], not is_nil(g.opponent_class))
+    |> where([game: g], not is_nil(g.opponent_class))
   end
 
   defp base_deck_stats_query() do
     base_stats_query()
-    |> group_by([g], g.player_deck_id)
+    |> group_by([game: g], g.player_deck_id)
     |> select_merge(
-      [g],
+      [game: g],
       %{
         deck_id: g.player_deck_id
       }
     )
-    |> where([g], not is_nil(g.player_deck_id))
+    |> where([game: g], not is_nil(g.player_deck_id))
   end
 
   defp base_class_stats_query() do
     base_stats_query()
-    |> group_by([g], g.player_class)
+    |> group_by([game: g], g.player_class)
     |> select_merge(
-      [g],
+      [game: g],
       %{
         player_class: g.player_class
       }
     )
-    |> where([g], not is_nil(g.player_class))
+    |> where([game: g], not is_nil(g.player_class))
   end
 
   defp base_total_stats_query() do
@@ -219,7 +219,9 @@ defmodule Hearthstone.DeckTracker do
   @total_fragment "CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END"
   defp base_stats_query() do
     from g in Game,
+      as: :game,
       join: pd in assoc(g, :player_deck),
+      as: :player_deck,
       select: %{
         wins: sum(fragment("CASE WHEN ? = 'win' THEN 1 ELSE 0 END", g.status)),
         losses: sum(fragment("CASE WHEN ? = 'loss' THEN 1 ELSE 0 END", g.status)),
@@ -306,8 +308,11 @@ defmodule Hearthstone.DeckTracker do
 
   defp base_archetypes_query(),
     do:
-      from(g in Game,
-        left_join: pd in assoc(g, :player_deck),
+      from(pd in Deck,
+        as: :player_deck,
+        inner_join: g in Game,
+        on: g.player_deck_id == pd.id,
+        as: :game,
         select: pd.archetype,
         distinct: pd.archetype,
         where: not is_nil(pd.archetype)
@@ -315,7 +320,9 @@ defmodule Hearthstone.DeckTracker do
 
   defp base_games_query() do
     from g in Game,
+      as: :game,
       left_join: pd in assoc(g, :player_deck),
+      as: :player_deck,
       preload: [player_deck: pd]
   end
 
@@ -326,77 +333,77 @@ defmodule Hearthstone.DeckTracker do
     do: compose_games_query({"period", to_string(period)}, query)
 
   defp compose_games_query({"period", "past_2_weeks"}, query),
-    do: query |> where([g], g.inserted_at >= ago(2, "week"))
+    do: query |> where([game: g], g.inserted_at >= ago(2, "week"))
 
   defp compose_games_query({"period", "past_week"}, query),
-    do: query |> where([g], g.inserted_at >= ago(1, "week"))
+    do: query |> where([game: g], g.inserted_at >= ago(1, "week"))
 
   defp compose_games_query({"period", "past_day"}, query),
-    do: query |> where([g], g.inserted_at >= ago(1, "day"))
+    do: query |> where([game: g], g.inserted_at >= ago(1, "day"))
 
   defp compose_games_query({"period", "past_3_days"}, query),
-    do: query |> where([g], g.inserted_at >= ago(3, "day"))
+    do: query |> where([game: g], g.inserted_at >= ago(3, "day"))
 
   defp compose_games_query({"period", "past_30_days"}, query),
-    do: query |> where([g], g.inserted_at >= ago(30, "day"))
+    do: query |> where([game: g], g.inserted_at >= ago(30, "day"))
 
   defp compose_games_query({"period", "past_60_days"}, query),
-    do: query |> where([g], g.inserted_at >= ago(60, "day"))
+    do: query |> where([game: g], g.inserted_at >= ago(60, "day"))
 
   defp compose_games_query({"period", "all"}, query),
     do: query
 
   defp compose_games_query({"period", "patch_2022-05-19"}, query) do
     release = ~N[2022-05-19 17:15:00]
-    query |> where([g], g.inserted_at >= ^release)
+    query |> where([game: g], g.inserted_at >= ^release)
   end
 
   defp compose_games_query({"period", "sunken_city"}, query) do
     release = ~N[2022-04-12 17:00:00]
-    query |> where([g], g.inserted_at >= ^release)
+    query |> where([game: g], g.inserted_at >= ^release)
   end
 
   defp compose_games_query({"period", "patch_2022-04-26"}, query) do
     release = ~N[2022-04-26 20:30:00]
-    query |> where([g], g.inserted_at >= ^release)
+    query |> where([game: g], g.inserted_at >= ^release)
   end
 
   defp compose_games_query({"period", "alterac_valley"}, query) do
     av_release = ~N[2021-12-07 18:00:00]
-    query |> where([g], g.inserted_at >= ^av_release)
+    query |> where([game: g], g.inserted_at >= ^av_release)
   end
 
   defp compose_games_query({"period", "onyxias_lair"}, query) do
     release = ~N[2022-02-15 18:15:00]
-    query |> where([g], g.inserted_at >= ^release)
+    query |> where([game: g], g.inserted_at >= ^release)
   end
 
   defp compose_games_query({"period", "bc_2021-12-20"}, query) do
     # they were an hour late
     balance_changes = ~N[2021-12-20 19:00:00]
-    query |> where([g], g.inserted_at >= ^balance_changes)
+    query |> where([game: g], g.inserted_at >= ^balance_changes)
   end
 
   defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend],
     do: compose_games_query({"rank", to_string(rank)}, query)
 
   defp compose_games_query({"rank", "legend"}, query),
-    do: query |> where([g], g.player_rank >= 51)
+    do: query |> where([game: g], g.player_rank >= 51)
 
   defp compose_games_query({"rank", "diamond_to_legend"}, query),
-    do: query |> where([g], g.player_rank >= 41)
+    do: query |> where([game: g], g.player_rank >= 41)
 
   defp compose_games_query({"rank", "all"}, query),
     do: query
 
   defp compose_games_query({"order_by", "latest"}, query = %{group_bys: []}),
-    do: query |> order_by([g], desc: g.inserted_at)
+    do: query |> order_by([game: g], desc: g.inserted_at)
 
   defp compose_games_query({"order_by", "latest"}, query),
-    do: query |> order_by([g], desc: max(g.inserted_at))
+    do: query |> order_by([game: g], desc: max(g.inserted_at))
 
   defp compose_games_query({"order_by", "total"}, query),
-    do: query |> order_by([g], desc: @total_select_pos)
+    do: query |> order_by([game: g], desc: @total_select_pos)
 
   defp compose_games_query({"order_by", "winrate"}, query),
     do: query |> order_by([], desc: @winrate_select_pos)
@@ -405,22 +412,30 @@ defmodule Hearthstone.DeckTracker do
     do: compose_games_query({"order_by", to_string(order_by)}, query)
 
   defp compose_games_query({"player_deck_includes", cards}, query),
-    do: query |> where([_, pd], fragment("? @> ?", pd.cards, ^cards))
+    do: query |> where([player_deck: pd], fragment("? @> ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_excludes", cards}, query),
-    do: query |> where([_, pd], not fragment("? @> ?", pd.cards, ^cards))
+    do: query |> where([player_deck: pd], not fragment("? @> ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_id", deck_id}, query),
-    do: query |> where([g], g.player_deck_id == ^deck_id)
+    do: query |> where([game: g], g.player_deck_id == ^deck_id)
 
   defp compose_games_query({"player_btag", btag}, query),
-    do: query |> where([g], g.player_btag == ^btag)
+    do: query |> where([game: g], g.player_btag == ^btag)
 
   defp compose_games_query({"player_class", class}, query),
-    do: query |> where([g], g.player_class == ^String.upcase(class))
+    do: query |> where([game: g], g.player_class == ^String.upcase(class))
 
   defp compose_games_query({"player_rank", rank}, query),
-    do: query |> where([g], g.player_rank == ^rank)
+    do: query |> where([game: g], g.player_rank == ^rank)
+
+  defp compose_games_query({"archetype", "any"}, query), do: query
+
+  defp compose_games_query({"archetype", "other"}, query),
+    do: query |> where([player_deck: pd], is_nil(pd.archetype))
+
+  defp compose_games_query({"archetype", archetype}, query),
+    do: query |> where([player_deck: pd], pd.archetype == ^archetype)
 
   defp compose_games_query({"min_games", min_games_string}, query)
        when is_binary(min_games_string) do
@@ -431,39 +446,39 @@ defmodule Hearthstone.DeckTracker do
   end
 
   defp compose_games_query({"min_games", min_games}, query),
-    do: query |> having([g], sum(fragment(@total_fragment, g.status)) >= ^min_games)
+    do: query |> having([game: g], sum(fragment(@total_fragment, g.status)) >= ^min_games)
 
   defp compose_games_query({"player_legend_rank", legend_rank}, query),
-    do: query |> where([g], g.player_legend_rank == ^legend_rank)
+    do: query |> where([game: g], g.player_legend_rank == ^legend_rank)
 
   defp compose_games_query({"opponent_class", class}, query),
-    do: query |> where([g], g.opponent_class == ^String.upcase(class))
+    do: query |> where([game: g], g.opponent_class == ^String.upcase(class))
 
   defp compose_games_query({"opponent_rank", rank}, query),
-    do: query |> where([g], g.opponent_rank == ^rank)
+    do: query |> where([game: g], g.opponent_rank == ^rank)
 
   defp compose_games_query({"opponent_legend_rank", legend_rank}, query),
-    do: query |> where([g], g.opponent_legend_rank == ^legend_rank)
+    do: query |> where([game: g], g.opponent_legend_rank == ^legend_rank)
 
   defp compose_games_query({"opponent_btag_like", btag}, query),
-    do: query |> where([g], ilike(g.opponent_btag, ^"%#{btag}%"))
+    do: query |> where([game: g], ilike(g.opponent_btag, ^"%#{btag}%"))
 
   defp compose_games_query({"turns", turns}, query),
-    do: query |> where([g], g.turns == ^turns)
+    do: query |> where([game: g], g.turns == ^turns)
 
   defp compose_games_query({"duration", duration}, query),
-    do: query |> where([g], g.duration == ^duration)
+    do: query |> where([game: g], g.duration == ^duration)
 
   defp compose_games_query({"region", region}, query),
-    do: query |> where([g], g.region == ^region)
+    do: query |> where([game: g], g.region == ^region)
 
   defp compose_games_query(:ranked, query), do: compose_games_query({"game_type", 7}, query)
 
   defp compose_games_query({"game_type", game_types}, query) when is_list(game_types),
-    do: query |> where([g], g.game_type in ^game_types)
+    do: query |> where([game: g], g.game_type in ^game_types)
 
   defp compose_games_query({"game_type", game_type}, query),
-    do: query |> where([g], g.game_type == ^game_type)
+    do: query |> where([game: g], g.game_type == ^game_type)
 
   for {id, atom} <- Format.all(:atoms) do
     defp compose_games_query(unquote(atom), query),
@@ -474,23 +489,23 @@ defmodule Hearthstone.DeckTracker do
     do: query
 
   defp compose_games_query({"format", format}, query),
-    do: query |> where([g], g.format == ^format)
+    do: query |> where([game: g], g.format == ^format)
 
   defp compose_games_query({"status", status}, query),
-    do: query |> where([g], g.status == ^status)
+    do: query |> where([game: g], g.status == ^status)
 
   defp compose_games_query("has_result", query) do
     results = ["win", "loss", "draw"]
-    query |> where([g], g.status in ^results)
+    query |> where([game: g], g.status in ^results)
   end
 
   defp compose_games_query({"public", public}, query) do
-    query |> where([g], g.public == ^public)
+    query |> where([game: g], g.public == ^public)
   end
 
   defp compose_games_query({"in_group", %GroupMembership{group_id: group_id}}, query) do
     query
-    |> join(:inner, [g], u in User, on: u.battletag == g.player_btag)
+    |> join(:inner, [game: g], u in User, on: u.battletag == g.player_btag)
     |> join(:inner, [_g, d, u], gm in GroupMembership, on: gm.user_id == u.id)
     |> where([_g, _d, _u, gm], gm.group_id == ^group_id and gm.include_data == true)
   end
