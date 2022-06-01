@@ -11,14 +11,7 @@ defmodule BackendWeb.FeedLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-    base_items = Feed.get_current_items()
-
-    items =
-      if is_a_me?(assigns) do
-        [%{type: "tier_list"} | base_items]
-      else
-        base_items
-      end
+    items = Feed.get_current_items()
 
     ~F"""
     <Context put={user: @user} >
