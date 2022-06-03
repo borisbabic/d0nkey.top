@@ -239,9 +239,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp thief_rogue?(card_names), do: "Maestra of the Masquerade" in card_names
 
   defp mine_rogue?(card_names),
-    do: "Naval Mine" in card_names && "Desecrated Graveyard" in card_names
+    do: "Naval Mine" in card_names && "Snowfall Graveyard" in card_names
 
-  defp deathrattle_rogue?(card_names), do: "Desecrated Graveyard" in card_names
+  defp deathrattle_rogue?(card_names), do: "Snowfall Graveyard" in card_names
 
   defp naga_mage?(card_names), do: "Spitelash Siren" in card_names
   defp mech_mage?(card_names), do: "Mecha-Shark" in card_names
