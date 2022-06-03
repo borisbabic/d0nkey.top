@@ -43,7 +43,6 @@ defmodule BackendWeb.Router do
     plug :basic_auth, username: "admin", password: Application.fetch_env!(:backend, :admin_pass)
   end
 
-
   scope "/api/public", BackendWeb do
     pipe_through [:api]
     post "/dt/game", DeckTrackerController, :put_game
@@ -68,8 +67,14 @@ defmodule BackendWeb.Router do
 
     get "/leaderboard", LeaderboardController, :index
     get "/leaderboard/player-stats", LeaderboardController, :player_stats
-    get "/leaderboard/player-history/region/:region/period/:period/leaderboard_id/:leaderboard_id/player/:player", LeaderboardController, :player_history
-    get "/leaderboard/player-history/region/:region/season_id/:season_id/leaderboard_id/:leaderboard_id/player/:player", LeaderboardController, :player_history_old
+
+    get "/leaderboard/player-history/region/:region/period/:period/leaderboard_id/:leaderboard_id/player/:player",
+        LeaderboardController,
+        :player_history
+
+    get "/leaderboard/player-history/region/:region/season_id/:season_id/leaderboard_id/:leaderboard_id/player/:player",
+        LeaderboardController,
+        :player_history_old
 
     live "/", FeedLive
     get "/incubator", PageController, :incubator
@@ -191,6 +196,7 @@ defmodule BackendWeb.Router do
     live "/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups
 
     live "/wc/2021", WC2021Live
+    live "/seasonal/2022/summer", SummerChamps2022Live
 
     live "/max/nations-2022", MaxNations2022Live
     live "/max/nations-2022/nation/:nation", MaxNations2022NationLive
