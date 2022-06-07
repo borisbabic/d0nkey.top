@@ -7,13 +7,20 @@ defmodule Backend.PlayerIconBag do
   @picture_icons [
     {"D0nkey#2470", {:image, "/favicon.ico"}},
     # {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}},
-    {"Faeli#2572", {:image, "/images/icons/faeli.png"}}, #donation, remove in summer 2022? maybe?
+    # donation, remove in summer 2022? maybe?
+    {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
-    {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}}, #MTOne Fantasy
-    {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}}, # MTOne Fantasy
+    # MTOne Fantasy
+    {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}},
+    # MTOne Fantasy
+    {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}},
     {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
-    {"otters#11111", {:image, "/images/icons/otters.png"}}, # patreon
-    {"Montu#11356", {:image, "/images/icons/montu.png"}}, # patreon
+    # patreon
+    {"otters#11111", {:image, "/images/icons/otters.png"}},
+    # patreon
+    {"Montu#11356", {:image, "/images/icons/montu.png"}},
+    {"JustinTime#1277	", {:unicode, <<0xE2, 0x8C, 0x9A>>}}
+
     # {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
     # {"Dragoninja#1573", {:image, "/images/icons/dragoninja.png"}},
     # {"Ajani#2766", {:image, "/images/icons/ajani.jpg"}}
