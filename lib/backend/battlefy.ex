@@ -31,6 +31,7 @@ defmodule Backend.Battlefy do
     "houserivalries",
     "super-girl-gamer-pro",
     "ilh-events",
+    "hearthstone-esports-thailand",
     # "fantastic-pro-league",
     "tierras-de-fuego-hs",
     "akg-games",
@@ -475,6 +476,7 @@ defmodule Backend.Battlefy do
           get_tournament_matches_options
         ) :: [Match.t()]
   def get_tournament_matches(id_or_tournament, opts \\ [])
+
   def get_tournament_matches(%{stage_ids: stage_ids}, opts) do
     stage_ids
     |> Enum.at(opts[:stage] || 0)
@@ -510,6 +512,7 @@ defmodule Backend.Battlefy do
 
     {future_opponents, player_matches}
   end
+
   @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]
   def get_future_and_player_matches(tournament_id, team_name) when is_binary(tournament_id) do
     tournament_id
@@ -520,6 +523,7 @@ defmodule Backend.Battlefy do
       _ -> {[], []}
     end
   end
+
   def get_future_and_player_matches(_, _), do: {[], []}
 
   @spec get_future_opponents(tournament_id, String.t()) :: [Match.t()]
@@ -685,9 +689,7 @@ defmodule Backend.Battlefy do
         %{id: tournament_id, slug: tournament_slug, organization: %{slug: org_slug}},
         %{id: match_id, stage_id: stage_id}
       ) do
-    "https://battlefy.com/#{org_slug}/#{tournament_slug}/#{tournament_id}/stage/#{stage_id}/match/#{
-      match_id
-    }"
+    "https://battlefy.com/#{org_slug}/#{tournament_slug}/#{tournament_id}/stage/#{stage_id}/match/#{match_id}"
   end
 
   @spec get_tour_stop_id!(Blizzard.tour_stop()) :: tournament_id()
@@ -800,10 +802,12 @@ defmodule Backend.Battlefy do
 
   @spec get_organization_tournaments(String.t(), Date.t(), Date.t(), boolean) :: [Tournament.t()]
   def get_organization_tournaments(slug_or_id, from, to, only_hearthstone \\ true) do
-    org_id = case Api.get_organization(slug_or_id) do
-      %{id: id} -> id
-      _ -> slug_or_id
-    end
+    org_id =
+      case Api.get_organization(slug_or_id) do
+        %{id: id} -> id
+        _ -> slug_or_id
+      end
+
     Api.get_organization_tournaments_from_to(org_id, from, to)
     |> filter_hearthstone(only_hearthstone)
   end
