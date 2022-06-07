@@ -15,7 +15,7 @@ defmodule Components.OmniBar do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="level is-mobile">
+        <div class="level is-mobile" style="margin-bottom: 0;">
           <div class="level-item">
             <Form for={:search} change="change" submit="change">
               <TextInput value={@search} class="input" opts={placeholder: "Type or paste"}/>
