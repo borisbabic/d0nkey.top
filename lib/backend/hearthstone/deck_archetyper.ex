@@ -193,6 +193,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       boar?(card_names) ->
         String.to_atom("Boar #{class_name}")
 
+      odd?(card_names) ->
+        String.to_atom("Odd #{class_name}")
+
+      even?(card_names) ->
+        String.to_atom("Even #{class_name}")
+
       true ->
         nil
     end
@@ -357,6 +363,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp vanndar?(card_names), do: "Vanndar Stormpike" in card_names
   defp quest?(full_cards), do: Enum.any?(full_cards, &(&1.text && &1.text =~ "Quest:"))
   defp questline?(full_cards), do: Enum.any?(full_cards, &(&1.text && &1.text =~ "Questline:"))
+
+  defp odd?(card_names), do: "Baku the Mooneater" in card_names
+  defp even?(card_names), do: "Grenn Greymane" in card_names
 
   defp full_cards(cards) do
     Enum.map(cards, fn c ->
