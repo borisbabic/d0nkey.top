@@ -1,6 +1,5 @@
 defmodule Backend.Hearthstone.DeckcodeEmbiggener do
   @moduledoc false
-  alias Backend.HearthstoneJson
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone
   @type style :: :basic | :pretty
@@ -11,9 +10,8 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
   @spec embiggen(Deck.t() | String.t()) :: String.t()
   def embiggen(deckcode) when is_binary(deckcode), do: deckcode |> Deck.decode!() |> embiggen()
 
-  def embiggen(d = %{cards: cards, deckcode: deckcode, format: format}) do
+  def embiggen(d = %{cards: cards, deckcode: deckcode}) do
     deck_name = Deck.name(d)
-    class_name = Deck.class_name(d)
 
     cards_part =
       cards
@@ -22,21 +20,20 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
     link_part =
       case Map.get(d, :id) do
-        nil -> ""
-        id -> "You can view this deck at https://www.d0nkey.top/deck/#{id}"
+        nil ->
+          ""
+
+        id ->
+          """
+          You can view this deck at https://www.d0nkey.top/deck/#{id}"
+          """
       end
 
     """
     ### #{deck_name}
-    # Class: #{class_name}
-    # Format: #{format |> Deck.format_name()}
     # Cost: #{Deck.cost(d)}
-    #
     #{cards_part}
-    #
-    #{deckcode}
-    # #{link_part}
-    # To use this deck, copy it to your clipboard and create a new deck in Hearthstone
+    #{deckcode}#{link_part}
     """
   end
 
