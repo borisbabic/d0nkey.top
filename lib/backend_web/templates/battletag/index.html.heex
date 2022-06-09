@@ -70,6 +70,8 @@
               <th><%= table_link(@conn, "Reported by", :reported_by) %></th>
 
               <th><%= table_link(@conn, "Comment", :comment) %></th>
+
+              <th><%= table_link(@conn, "Updated at", :updated_at) %></th>
             
             <th><span>Actions</span></th>
           </tr>
@@ -89,6 +91,8 @@
                 <td><%= battletag.reported_by %></td>
 
                 <td><%= battletag.comment %></td>
+
+                <td><%= render_datetime(battletag.updated_at) %></td>
               
               <td class="torch-actions">
                 <span><%= link "Show", to: Routes.battletag_path(@conn, :show, battletag) %></span>
