@@ -4,6 +4,7 @@ defmodule Backend.Battlenet do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Backend.Repo
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
@@ -186,195 +187,226 @@ defmodule Backend.Battlenet do
 
   @spec update_user_country(Backend.UserManager.User.t()) :: any()
   def update_user_country(%{battletag: bt, country_code: cc}) when not is_nil(cc) do
-    from(b in Battletag,
-      where: b.battletag_full == ^bt and b.reported_by == ^bt,
-      select: b
-    )
-    |> Repo.one()
-    |> case do
-      nil ->
-        %{battletag_full: bt, reported_by: bt, country: cc, priority: @self_reported_priority}
-        |> create_battletag()
+    update_query =
+      from(b in Battletag,
+        where: b.battletag_full == ^bt and b.reported_by == ^bt
+      )
 
-      battletag ->
-        battletag |> update_battletag(%{country: cc})
+    attrs = %{
+      battletag_full: bt,
+      reported_by: bt,
+      country: cc,
+      priority: @self_reported_priority
+    }
+
+    current? =
+      from(b in Battletag,
+        where:
+          b.battletag_full == ^bt and b.reported_by == ^bt and b.country == ^cc and b.priority > 0
+      )
+      |> Repo.all()
+      |> Enum.any?()
+
+    if !current? do
+      cs = %Battletag{} |> Battletag.changeset(attrs)
+
+      Multi.new()
+      |> Multi.update_all(:update_all, update_query, set: [priority: 0])
+      |> Multi.insert(:new, cs)
+      |> Repo.transaction()
     end
   end
 
   def update_user_country(_), do: nil
-import Torch.Helpers, only: [sort: 1, paginate: 4]
-import Filtrex.Type.Config
+  import Torch.Helpers, only: [sort: 1, paginate: 4]
+  import Filtrex.Type.Config
 
-alias Backend.Battlenet.OldBattletag
+  alias Backend.Battlenet.OldBattletag
 
-@pagination [page_size: 15]
-@pagination_distance 5
+  @pagination [page_size: 15]
+  @pagination_distance 5
 
-@doc """
-Paginate the list of old_battletags using filtrex
-filters.
+  @doc """
+  Paginate the list of old_battletags using filtrex
+  filters.
 
-## Examples
+  ## Examples
 
-    iex> list_old_battletags(%{})
-    %{old_battletags: [%OldBattletag{}], ...}
-"""
-@spec paginate_old_battletags(map) :: {:ok, map} | {:error, any}
-def paginate_old_battletags(params \\ %{}) do
-  params =
-    params
-    |> Map.put_new("sort_direction", "desc")
-    |> Map.put_new("sort_field", "inserted_at")
+      iex> list_old_battletags(%{})
+      %{old_battletags: [%OldBattletag{}], ...}
+  """
+  @spec paginate_old_battletags(map) :: {:ok, map} | {:error, any}
+  def paginate_old_battletags(params \\ %{}) do
+    params =
+      params
+      |> Map.put_new("sort_direction", "desc")
+      |> Map.put_new("sort_field", "inserted_at")
 
-  {:ok, sort_direction} = Map.fetch(params, "sort_direction")
-  {:ok, sort_field} = Map.fetch(params, "sort_field")
+    {:ok, sort_direction} = Map.fetch(params, "sort_direction")
+    {:ok, sort_field} = Map.fetch(params, "sort_field")
 
-  with {:ok, filter} <- Filtrex.parse_params(filter_config(:old_battletags), params["old_battletag"] || %{}),
-       %Scrivener.Page{} = page <- do_paginate_old_battletags(filter, params) do
-    {:ok,
-      %{
-        old_battletags: page.entries,
-        page_number: page.page_number,
-        page_size: page.page_size,
-        total_pages: page.total_pages,
-        total_entries: page.total_entries,
-        distance: @pagination_distance,
-        sort_field: sort_field,
-        sort_direction: sort_direction
-      }
-    }
-  else
-    {:error, error} -> {:error, error}
-    error -> {:error, error}
+    with {:ok, filter} <-
+           Filtrex.parse_params(filter_config(:old_battletags), params["old_battletag"] || %{}),
+         %Scrivener.Page{} = page <- do_paginate_old_battletags(filter, params) do
+      {:ok,
+       %{
+         old_battletags: page.entries,
+         page_number: page.page_number,
+         page_size: page.page_size,
+         total_pages: page.total_pages,
+         total_entries: page.total_entries,
+         distance: @pagination_distance,
+         sort_field: sort_field,
+         sort_direction: sort_direction
+       }}
+    else
+      {:error, error} -> {:error, error}
+      error -> {:error, error}
+    end
   end
-end
 
-defp do_paginate_old_battletags(filter, params) do
-  OldBattletag
-  |> Filtrex.query(filter)
-  |> order_by(^sort(params))
-  |> paginate(Repo, params, @pagination)
-end
+  defp do_paginate_old_battletags(filter, params) do
+    OldBattletag
+    |> Filtrex.query(filter)
+    |> order_by(^sort(params))
+    |> paginate(Repo, params, @pagination)
+  end
 
-@doc """
-Returns the list of old_battletags.
+  @doc """
+  Returns the list of old_battletags.
 
-## Examples
+  ## Examples
 
-    iex> list_old_battletags()
-    [%OldBattletag{}, ...]
+      iex> list_old_battletags()
+      [%OldBattletag{}, ...]
 
-"""
-def list_old_battletags do
-  Repo.all(OldBattletag)
-end
+  """
+  def list_old_battletags do
+    Repo.all(OldBattletag)
+  end
 
-@doc """
-Gets a single old_battletag.
+  @doc """
+  Gets a single old_battletag.
 
-Raises `Ecto.NoResultsError` if the Old battletag does not exist.
+  Raises `Ecto.NoResultsError` if the Old battletag does not exist.
 
-## Examples
+  ## Examples
 
-    iex> get_old_battletag!(123)
+      iex> get_old_battletag!(123)
+      %OldBattletag{}
+
+      iex> get_old_battletag!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_old_battletag!(id), do: Repo.get!(OldBattletag, id)
+
+  @spec get_old_for_user(Backend.UserManager.User.t()) :: [OldBattletag.t()]
+  def get_old_for_user(user) do
+    query =
+      from ob in OldBattletag,
+        preload: :user,
+        where: ob.user_id == ^user.id
+
+    Repo.all(query)
+  end
+
+  def get_old_for_btag(btag) do
+    query =
+      from ob in OldBattletag,
+        where:
+          ^btag in [
+            ob.old_battletag,
+            ob.new_battletag,
+            ob.old_battletag_short,
+            ob.new_battletag_short
+          ]
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Creates a old_battletag.
+
+  ## Examples
+
+      iex> create_old_battletag(%{field: value})
+      {:ok, %OldBattletag{}}
+
+      iex> create_old_battletag(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_old_battletag(attrs \\ %{}) do
     %OldBattletag{}
-
-    iex> get_old_battletag!(456)
-    ** (Ecto.NoResultsError)
-
-"""
-def get_old_battletag!(id), do: Repo.get!(OldBattletag, id)
-
-@spec get_old_for_user(Backend.UserManager.User.t()) :: [OldBattletag.t()]
-def get_old_for_user(user) do
-  query = from ob in OldBattletag,
-    preload: :user,
-    where: ob.user_id == ^user.id
-  Repo.all(query)
-end
-def get_old_for_btag(btag) do
-  query = from ob in OldBattletag,
-    where: ^btag in [ob.old_battletag, ob.new_battletag, ob.old_battletag_short, ob.new_battletag_short]
-  Repo.all(query)
-end
-
-@doc """
-Creates a old_battletag.
-
-## Examples
-
-    iex> create_old_battletag(%{field: value})
-    {:ok, %OldBattletag{}}
-
-    iex> create_old_battletag(%{field: bad_value})
-    {:error, %Ecto.Changeset{}}
-
-"""
-def create_old_battletag(attrs \\ %{}) do
-  %OldBattletag{}
-  |> OldBattletag.changeset(attrs)
-  |> Repo.insert()
-end
-
-def battletag_change_changeset(user = %{battletag: battletag}, new_btag) do
-  attrs = %{old_battletag: battletag, new_battletag: new_btag, user_id: user.id, source: "battlenet"}
-  %OldBattletag{}
-  |> OldBattletag.changeset(attrs)
-end
-
-@doc """
-Updates a old_battletag.
-
-## Examples
-
-    iex> update_old_battletag(old_battletag, %{field: new_value})
-    {:ok, %OldBattletag{}}
-
-    iex> update_old_battletag(old_battletag, %{field: bad_value})
-    {:error, %Ecto.Changeset{}}
-
-"""
-def update_old_battletag(%OldBattletag{} = old_battletag, attrs) do
-  old_battletag
-  |> OldBattletag.changeset(attrs)
-  |> Repo.update()
-end
-
-@doc """
-Deletes a OldBattletag.
-
-## Examples
-
-    iex> delete_old_battletag(old_battletag)
-    {:ok, %OldBattletag{}}
-
-    iex> delete_old_battletag(old_battletag)
-    {:error, %Ecto.Changeset{}}
-
-"""
-def delete_old_battletag(%OldBattletag{} = old_battletag) do
-  Repo.delete(old_battletag)
-end
-
-@doc """
-Returns an `%Ecto.Changeset{}` for tracking old_battletag changes.
-
-## Examples
-
-    iex> change_old_battletag(old_battletag)
-    %Ecto.Changeset{source: %OldBattletag{}}
-
-"""
-def change_old_battletag(%OldBattletag{} = old_battletag, attrs \\ %{}) do
-  OldBattletag.changeset(old_battletag, attrs)
-end
-
-defp filter_config(:old_battletags) do
-  defconfig do
-    text :new_battletag
-    text :old_battletag
-    text :source
-
+    |> OldBattletag.changeset(attrs)
+    |> Repo.insert()
   end
-end
+
+  def battletag_change_changeset(%{battletag: battletag} = user, new_btag) do
+    attrs = %{
+      old_battletag: battletag,
+      new_battletag: new_btag,
+      user_id: user.id,
+      source: "battlenet"
+    }
+
+    %OldBattletag{}
+    |> OldBattletag.changeset(attrs)
+  end
+
+  @doc """
+  Updates a old_battletag.
+
+  ## Examples
+
+      iex> update_old_battletag(old_battletag, %{field: new_value})
+      {:ok, %OldBattletag{}}
+
+      iex> update_old_battletag(old_battletag, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_old_battletag(%OldBattletag{} = old_battletag, attrs) do
+    old_battletag
+    |> OldBattletag.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a OldBattletag.
+
+  ## Examples
+
+      iex> delete_old_battletag(old_battletag)
+      {:ok, %OldBattletag{}}
+
+      iex> delete_old_battletag(old_battletag)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_old_battletag(%OldBattletag{} = old_battletag) do
+    Repo.delete(old_battletag)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking old_battletag changes.
+
+  ## Examples
+
+      iex> change_old_battletag(old_battletag)
+      %Ecto.Changeset{source: %OldBattletag{}}
+
+  """
+  def change_old_battletag(%OldBattletag{} = old_battletag, attrs \\ %{}) do
+    OldBattletag.changeset(old_battletag, attrs)
+  end
+
+  defp filter_config(:old_battletags) do
+    defconfig do
+      text(:new_battletag)
+      text(:old_battletag)
+      text(:source)
+    end
+  end
 end

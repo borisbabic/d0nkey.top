@@ -309,7 +309,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp bloodlust_shaman?(card_names), do: "Bloodlust" in card_names
 
   defp phylactery_warlock?(card_names),
-    do: "Tamsin's Phlactery" in card_names && "Tamsin Roame" in card_names
+    do: "Tamsin's Phylactery" in card_names && "Tamsin Roame" in card_names
 
   defp abyssal_warlock?(card_names),
     do:
