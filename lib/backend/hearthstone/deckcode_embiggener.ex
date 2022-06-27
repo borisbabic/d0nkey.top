@@ -25,7 +25,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
         id ->
           """
-          You can view this deck at https://www.d0nkey.top/deck/#{id}"
+          You can view this deck at https://www.d0nkey.top/deck/#{id}
           """
       end
 
@@ -33,7 +33,8 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
     ### #{deck_name}
     # Cost: #{Deck.cost(d)}
     #{cards_part}
-    #{deckcode}#{link_part}
+    #{deckcode}
+    # #{link_part}
     """
   end
 
