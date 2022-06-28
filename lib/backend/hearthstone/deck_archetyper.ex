@@ -25,9 +25,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       quest?(full_cards) || questline?(full_cards) -> :"Quest Demon Hunter"
       deathrattle_dh?(card_names) -> :"Deathrattle DH"
       big_dh?(card_names) -> :"Big Demon Hunter"
-      jace_dh?(card_names) -> :"Jace Demon Hunter"
       murloc?(card_names) -> :"Murloc Demon Hunter"
-      aggro_dh?(card_names) -> :"Aggro Demon Hunter"
+      fel_dh?(card_names) -> :"Fel Demon Hunter"
       true -> "Demon Hunter"
     end
   end
@@ -54,7 +53,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     cond do
       highlander?(c) -> :"Highlander Hunter"
       quest?(full_cards) || questline?(full_cards) -> :"Quest Hunter"
+      vanndar?(card_names) && big_beast_hunter?(card_names) -> :"Vanndar Beast Hunter"
+      vanndar?(card_names) -> :"Vanndar Hunter"
       big_beast_hunter?(card_names) -> :"Big Beast Hunter"
+      beast_hunter?(card_names) -> :"Beast Hunter"
       murloc?(card_names) -> :"Murloc Hunter"
       boar?(card_names) -> :"Boar Hunter"
       aggro_hunter?(card_names) -> :"Aggro Hunter"
@@ -71,6 +73,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       vanndar?(card_names) -> "Vanndar Mage"
       naga_mage?(card_names) -> :"Naga Mage"
       mech_mage?(card_names) -> :"Mech Mage"
+      ping_mage?(card_names) -> :"Ping Mage"
       big_spell_mage?(card_names) -> :"Big Spell Mage"
       murloc?(card_names) -> :"Murloc Mage"
       boar?(card_names) -> :"Boar Mage"
@@ -140,6 +143,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       vanndar?(card_names) -> :"Vanndar Shaman"
       elemental_shaman?(card_names) -> :"Elemental Shaman"
       burn_shaman?(card_names) -> :"Burn Shaman"
+      moist_shaman?(card_names) -> :"Moist Shaman"
       control_shaman?(card_names) -> :"Control Shaman"
       murloc?(card_names) -> :"Murloc Shaman"
       bloodlust_shaman?(card_names) -> :"Bloodlust Shaman"
@@ -158,6 +162,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       phylactery_warlock?(card_names) -> :"Phylactery Warlock"
       agony_warlock?(card_names) -> :"Agony Warlock"
       abyssal_warlock?(card_names) -> :"Abyssal Warlock"
+      "Lord Jaraxxus" in card_names -> :"J-Lock"
       true -> nil
     end
   end
@@ -206,17 +211,25 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   def archetype(_), do: nil
 
-  defp jace_dh?(card_names), do: "Jace Darkweaver" in card_names
-
   defp deathrattle_dh?(card_names),
     do:
       "Death Speaker Blackthorn" in card_names ||
         ("Tuskpiercier" in card_names && "Razorboar" in card_names)
 
-  defp aggro_dh?(card_names),
-    do:
-      "Drek'Thar" in card_names || "Battlefiend" in card_names || "Irondeep Trogg" in card_names ||
-        "Peasant" in card_names || "Metamorfin" in card_names
+  defp fel_dh?(card_names) do
+    min_count?(card_names, 4, [
+      "Fury (Rank 1)",
+      "Chaos Strike",
+      "Fel Barrage",
+      "Predation",
+      "Multi Strike"
+    ]) &&
+      min_count?(card_names, 1, [
+        "Fossil Fanatic",
+        "Jace Darkweaver",
+        "Felgorger"
+      ])
+  end
 
   defp big_dh?(card_names), do: "Sigil of Reckoning" in card_names || vanndar?(card_names)
 
@@ -231,7 +244,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Peasant" in card_names || "Encumbered Pack Mule" in card_names
 
   defp big_beast_hunter?(card_names),
-    do: "Azsharan Saber" in card_names || "Wing Commander Ichman" in card_names
+    do:
+      beast_hunter?(card_names) &&
+        min_count?(card_names, 1, ["King Krush", "Wing Commander Ichman"])
+
+  defp beast_hunter?(card_names),
+    do:
+      min_count?(card_names, 2, [
+        "Selective Breeder",
+        "Stormpike Battle Ram",
+        "Azsharan Saber",
+        "Revive Pet",
+        "Pet Collector"
+      ])
 
   defp aggro_hunter?(card_names),
     do:
@@ -251,6 +276,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp naga_mage?(card_names), do: "Spitelash Siren" in card_names
   defp mech_mage?(card_names), do: "Mecha-Shark" in card_names
+  defp ping_mage?(card_names), do: "Wildfire" in card_names
 
   defp big_spell_mage?(card_names),
     do:
@@ -285,10 +311,28 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Bioluminescence"
       ])
 
+  defp moist_shaman?(card_names),
+    do:
+      "Schooling" in card_names &&
+        min_count?(card_names, 4, [
+          "Amalgam of the Deep",
+          "Clownfish",
+          "Cookie the Cook",
+          "Gorloc Ravager",
+          "Mutanus the Devourer"
+        ])
+
   defp control_shaman?(card_names),
     do:
-      !burn_shaman?(card_names) && "Bolner Hammerbeak" in card_names &&
-        "Brann Bronzebeard" in card_names && "Bru'kan of the Elements" in card_names
+      !burn_shaman?(card_names) &&
+        min_count?(card_names, 4, [
+          "Bolner Hammerbeak",
+          "Brann Bronzebeard",
+          "Bru'kan of the Elements",
+          "Mutanus the Devourer",
+          "Chain Lightning (Rank 1)",
+          "Maelstrom Portal"
+        ])
 
   defp elemental_shaman?(card_names),
     do:
