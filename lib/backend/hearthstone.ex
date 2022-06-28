@@ -193,7 +193,11 @@ defmodule Backend.Hearthstone do
     decks
     |> Enum.chunk_every(100)
     |> Enum.each(fn chunk ->
-      Logger.info("Recalculating archetypes...")
+      id_ints = Enum.map(chunk, & &1.id)
+      ids = id_ints |> Enum.join(" ")
+      {min, max} = Enum.min_max(id_ints)
+      Logger.info("Recalculating archetypes from #{min} to #{max}")
+      Logger.debug("Recalculating ids: #{ids}")
 
       chunk
       |> Enum.reduce(Multi.new(), fn d, multi ->
