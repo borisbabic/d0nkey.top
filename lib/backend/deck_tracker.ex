@@ -379,6 +379,16 @@ defmodule Hearthstone.DeckTracker do
     query |> where([game: g], g.inserted_at >= ^release)
   end
 
+  defp compose_games_query({"period", "patch_prince_renathal"}, query) do
+    release = ~N[2022-06-27 17:15:00]
+    query |> where([game: g], g.inserted_at >= ^release)
+  end
+
+  defp compose_games_query({"period", "patch_2022-06-16"}, query) do
+    release = ~N[2022-06-16 17:15:00]
+    query |> where([game: g], g.inserted_at >= ^release)
+  end
+
   defp compose_games_query({"period", "patch_2022-05-19"}, query) do
     release = ~N[2022-05-19 17:15:00]
     query |> where([game: g], g.inserted_at >= ^release)
