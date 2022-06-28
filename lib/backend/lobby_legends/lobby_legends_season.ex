@@ -1,4 +1,5 @@
 defmodule Backend.LobbyLegends.LobbyLegendsSeason do
+  @moduledoc false
   import TypedStruct
 
   @type ladder_config :: %{
@@ -109,10 +110,22 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
         other_streams: %{},
         ladder: %{
           season_id: 6,
-          ap: ~N[2022-05-31T16:00:00],
+          ap: ~N[2022-05-31T15:00:00],
           # confirmed by eric in comp battlegrounds server https://discord.com/channels/939711967134887998/939720236599496778/959160404163035167
           eu: ~N[2022-05-31T23:00:00],
           us: ~N[2022-06-01T07:00:00]
+        }
+      },
+      %__MODULE__{
+        slug: "lobby_legends_5",
+        player_streams: %{},
+        other_streams: %{},
+        ladder: %{
+          season_id: 6,
+          # https://twitter.com/HSesports/status/1541483238866046977 
+          ap: ~N[2022-06-30T15:00:00],
+          eu: ~N[2022-06-30T22:00:00],
+          us: ~N[2022-07-01T07:00:00]
         }
       }
     ]
