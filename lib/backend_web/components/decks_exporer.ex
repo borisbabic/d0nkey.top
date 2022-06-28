@@ -275,12 +275,12 @@ defmodule Components.DecksExplorer do
 
   def default_period() do
     now = NaiveDateTime.utc_now()
-    use_patch_after = ~N[2022-06-30 12:00:00]
+    use_patch_after = ~N[2022-06-27 23:00:00]
 
     if :lt == NaiveDateTime.compare(now, use_patch_after) do
-      "patch_prince_renathal"
-    else
       "patch_2022-06-16"
+    else
+      "patch_prince_renathal"
     end
   end
 
