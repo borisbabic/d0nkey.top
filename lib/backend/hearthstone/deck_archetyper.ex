@@ -42,6 +42,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       celestial_druid?(card_names) -> :"Celestial Druid"
       ramp_druid?(card_names) -> :"Ramp Druid"
       murloc?(card_names) -> :"Murloc Druid"
+      "Lady Prestor" in card_names -> :"Prestor Druid"
       aggro_druid?(card_names) -> :"Aggro Druid"
       true -> nil
     end
