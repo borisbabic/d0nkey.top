@@ -46,7 +46,7 @@ defmodule Components.Decklist do
     deck_class = deck_class(deck, hero)
     class_class = deck_class |> String.downcase()
 
-    name = deck_name(assigns, deck, hero)
+    name = deck_name(assigns, deck, hero) |> add_xl(deck)
 
     ~F"""
       <div>
@@ -77,4 +77,14 @@ defmodule Components.Decklist do
       </div>
     """
   end
+
+  defp add_xl(name, %{cards: cards}) when is_list(cards) do
+    if Enum.count(cards) == 40 do
+      "XL #{name}"
+    else
+      name
+    end
+  end
+
+  defp add_xl(name, _), do: name
 end
