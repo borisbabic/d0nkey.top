@@ -42,7 +42,19 @@ defmodule Hearthstone.DeckTracker.Game do
   @doc false
   def changeset(game = %{game_id: game_id}, attrs) when is_binary(game_id) do
     game
-    |> cast(attrs, [:status, :duration, :turns, :player_class, :opponent_class, :replay_url, :player_has_coin, :region, :opponent_rank, :opponent_legend_rank, :public])
+    |> cast(attrs, [
+      :status,
+      :duration,
+      :turns,
+      :player_class,
+      :opponent_class,
+      :replay_url,
+      :player_has_coin,
+      :region,
+      :opponent_rank,
+      :opponent_legend_rank,
+      :public
+    ])
     |> unique_constraint(:game_id)
   end
 
@@ -88,15 +100,18 @@ defmodule Hearthstone.DeckTracker.Game do
     current_rank_val = get_change(cs, rank_attr)
     current_legend_val = get_change(cs, legend_attr)
     {rank, legend} = ranks(current_rank_val, current_legend_val)
+
     cs
     |> put_change(rank_attr, rank)
     |> put_change(legend_attr, legend)
   end
 
   defp ranks(nil, nil), do: {0, 0}
+
   defp ranks(_, legend_rank) when is_integer(legend_rank) and legend_rank > 0 do
     {51, legend_rank}
   end
+
   defp ranks(rank, legend_rank) do
     {rank, legend_rank}
   end
@@ -110,7 +125,6 @@ defmodule Hearthstone.DeckTracker.Game do
     end
   end
 
-
   def player_rank_text(%{player_legend_rank: legend}) when legend > 0 do
     "##{legend} Legend"
   end
@@ -121,10 +135,12 @@ defmodule Hearthstone.DeckTracker.Game do
       level -> "#{level}"
     end
   end
+
   def player_rank_text(_), do: "Unknown"
 
   def convert_rank(num) when is_integer(num) and num > 0 do
     rank = 10 - rem(num - 1, 10)
+
     case div(num - 1, 10) do
       0 -> {:Bronze, rank}
       1 -> {:Silver, rank}
@@ -137,14 +153,20 @@ defmodule Hearthstone.DeckTracker.Game do
   end
 
   def convert_rank(:Legend), do: 51
+
   def convert_rank({level, rank}) do
-    level_part = 10 * case level do
-      :Bronze -> 0
-      :Silver -> 1
-      :Gold -> 2
-      :Platinum -> 3
-      :Diamond -> 4
-    end
+    level_part =
+      10 *
+        case level do
+          :Bronze -> 0
+          :Silver -> 1
+          :Gold -> 2
+          :Platinum -> 3
+          :Diamond -> 4
+        end
+
     level_part - rank + 11
   end
+
+  def convert_rank(nil), do: nil
 end
