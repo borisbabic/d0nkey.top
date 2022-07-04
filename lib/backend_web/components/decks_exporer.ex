@@ -4,6 +4,7 @@ defmodule Components.DecksExplorer do
   alias Backend.Blizzard
   alias Backend.Hearthstone.Deck
   alias Components.DeckWithStats
+  alias Components.Filter.ArchetypeSelect
   alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
@@ -129,8 +130,7 @@ defmodule Components.DecksExplorer do
           selected_params={params}
           live_view={@live_view} />
 
-
-
+        <ArchetypeSelect id={"player_deck_archetype"} update_fun={ArchetypeSelect.update_archetypes_fun(@params, "player_deck_archetype")} selected={params["player_deck_archetype"] || []} title="Archetypes" />
         <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
