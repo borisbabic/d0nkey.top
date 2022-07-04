@@ -62,8 +62,16 @@ defmodule Backend.HearthstoneJson do
 
   def init(args \\ [fetch_fresh: false]) do
     table = :ets.new(@name, [:named_table])
+    state = %{table: table, fetch_fresh: args[:fetch_fresh]}
+
+    # init with json
+    # get
+    state
+    |> Map.put(:fetch_fresh, false)
+    |> update_table()
+
     update_cards()
-    {:ok, %{table: table, fetch_fresh: args[:fetch_fresh]}}
+    {:ok, state}
   end
 
   @spec canonical_id(integer() | String.t()) :: integer() | any()
