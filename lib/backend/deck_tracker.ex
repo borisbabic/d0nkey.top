@@ -473,6 +473,9 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"archetype", archetype}, query),
     do: query |> where([player_deck: pd], pd.archetype == ^archetype)
 
+  defp compose_games_query({"player_deck_archetype", archetypes}, query) when is_list(archetypes),
+    do: query |> where([player_deck: pd], pd.archetype in(^archetypes))
+
   defp compose_games_query({"min_games", min_games_string}, query)
        when is_binary(min_games_string) do
     case Integer.parse(min_games_string) do
