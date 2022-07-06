@@ -118,4 +118,9 @@ defmodule BackendWeb.Live.DecksTest do
     refute html =~ @warlock_code
     assert html =~ @priest_code
   end
+  test "player_deck_arthcetype exludes warlcok and includes priest", %{conn: conn} do
+    {:ok, view, html} = live(conn, "/decks?format=1&player_deck_archetype[]=Highlander Priest&player_deck_archetype[]=Bla Bla")
+    refute html =~ @warlock_code
+    assert html =~ @priest_code
+  end
 end
