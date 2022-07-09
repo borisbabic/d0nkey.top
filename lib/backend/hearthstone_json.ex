@@ -25,7 +25,7 @@ defmodule Backend.HearthstoneJson do
     Enum.flat_map(cards, fn card ->
       distance = String.jaro_distance(String.downcase(card_name), String.downcase(card.name))
 
-      if distance >= cutoff do
+      if distance >= cutoff && card.set != "HERO_SKINS" do
         [{distance, card}]
       else
         []
