@@ -29,6 +29,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   def from_raw_map(map = %{"gameId" => _}, created_by),
     do: map |> to_snake() |> from_raw_map(created_by)
+
   def from_raw_map(map = %{}, created_by) do
     %GameDto{
       player: map["player"] |> PlayerDto.from_raw_map(),
@@ -48,11 +49,11 @@ defmodule Hearthstone.DeckTracker.GameDto do
     }
   end
 
+  def from_raw_map(_, created_by), do: %{} |> from_raw_map(created_by)
+
   defp player_has_coin(%{"coin" => coin}), do: coin
   defp player_has_coin(%{"player_has_coin" => coin}), do: coin
   defp player_has_coin(_), do: nil
-
-  def from_raw_map(_, created_by), do: %{} |> from_raw_map(created_by)
 
   defp to_snake(map), do: Recase.Enumerable.convert_keys(map, &Recase.to_snake/1)
 
@@ -84,14 +85,30 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   def status(dto) do
     case dto.result do
-      "WIN" -> :win
-      "WON" -> :win
-      "LOSS" -> :loss
-      "LOST" -> :loss
-      "TIED" -> :draw
-      "TIE" -> :draw
-      "DRAW" -> :draw
-      nil -> :in_progress
+      "WIN" ->
+        :win
+
+      "WON" ->
+        :win
+
+      "LOSS" ->
+        :loss
+
+      "LOST" ->
+        :loss
+
+      "TIED" ->
+        :draw
+
+      "TIE" ->
+        :draw
+
+      "DRAW" ->
+        :draw
+
+      nil ->
+        :in_progress
+
       other ->
         Logger.warn("Unknown status: #{other} for game #{dto.game_id}")
         :unknown
