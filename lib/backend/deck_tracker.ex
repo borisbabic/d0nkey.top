@@ -60,6 +60,9 @@ defmodule Hearthstone.DeckTracker do
 
   def convert_rank(nil), do: nil
 
+  def handle_self_report(game_dto) do
+  end
+
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
     attrs =
       GameDto.to_ecto_attrs(game_dto, &handle_deck/1, &get_or_create_source/2)
@@ -474,7 +477,7 @@ defmodule Hearthstone.DeckTracker do
     do: query |> where([player_deck: pd], pd.archetype == ^archetype)
 
   defp compose_games_query({"player_deck_archetype", archetypes}, query) when is_list(archetypes),
-    do: query |> where([player_deck: pd], pd.archetype in(^archetypes))
+    do: query |> where([player_deck: pd], pd.archetype in ^archetypes)
 
   defp compose_games_query({"min_games", min_games_string}, query)
        when is_binary(min_games_string) do
@@ -537,6 +540,9 @@ defmodule Hearthstone.DeckTracker do
     results = ["win", "loss", "draw"]
     query |> where([game: g], g.status in ^results)
   end
+
+  defp compose_games_query(:not_self_report, query),
+    do: query |> where([game: g], g.source != "SELF_REPORT")
 
   defp compose_games_query({"public", public}, query) do
     query |> where([game: g], g.public == ^public)
