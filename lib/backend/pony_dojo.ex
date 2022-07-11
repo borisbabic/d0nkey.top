@@ -1,4 +1,5 @@
 defmodule Backend.PonyDojo do
+  @moduledoc false
   use GenServer
 
   alias Backend.Grandmasters.PromotionCalculator
@@ -7,18 +8,17 @@ defmodule Backend.PonyDojo do
   alias Backend.TournamentStats.TournamentTeamStats
 
   @type points :: %{
-    qualified: integer(),
-    swiss: integer(),
-    promotion: integer(),
-    worlds: integer(),
-  }
+          qualified: integer(),
+          wins: integer(),
+          worlds: integer()
+        }
   @type player :: %{
-    battletag: String.t(),
-    image_url: String.t(),
-    worlds_points: integer(),
-    points: points(),
-    world_champ?: boolean()
-  }
+          battletag: String.t(),
+          image_url: String.t(),
+          worlds_points: integer(),
+          points: points(),
+          world_champ?: boolean()
+        }
   @csv_url "https://docs.google.com/spreadsheets/d/1B0xz1JmSYoD_a61q_nS9w6g0u10gZMYsbgo2etAuRlU/export?gid=0&format=csv"
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -29,10 +29,12 @@ defmodule Backend.PonyDojo do
   end
 
   def handle_continue(:init, old_state) do
-    new_state = case create_state() do
-      {:ok, state} -> state
-      _ -> old_state
-    end
+    new_state =
+      case create_state() do
+        {:ok, state} -> state
+        _ -> old_state
+      end
+
     {:noreply, new_state}
   end
 
@@ -41,11 +43,14 @@ defmodule Backend.PonyDojo do
   def players(), do: GenServer.call(__MODULE__, :players)
 
   def handle_call(:players, _from, state = %{players: players}), do: {:reply, players, state}
+
   def handle_cast(:update, old_state) do
-    new_state = case create_state() do
-      {:ok, s} -> s
-      _ -> old_state
-    end
+    new_state =
+      case create_state() do
+        {:ok, s} -> s
+        _ -> old_state
+      end
+
     {:noreply, new_state}
   end
 
@@ -57,18 +62,19 @@ defmodule Backend.PonyDojo do
         |> create_players()
         |> calculate_points()
         |> sort()
+
       {:ok, %{players: players}}
     end
   end
 
   defp create_players(body) do
-
     body
     |> String.split(["\n", "\r\n"])
     |> Enum.drop(1)
     |> Enum.map(fn line ->
       [btag, image_url, points_raw | _] = String.split(line, ",")
       points = Util.to_int(points_raw, 0)
+
       %{
         battletag: btag,
         image_url: image_url,
@@ -81,31 +87,32 @@ defmodule Backend.PonyDojo do
   def calculate_points(players) do
     mts = latest_six_mts()
     promotion_points = promotion_points(mts)
+
     mt_stats =
       mts
       |> Backend.MastersTour.masters_tours_stats()
       |> Backend.TournamentStats.create_team_stats_collection(&MastersTour.fix_name/1)
 
     invited_num = invited_counts(mts)
+
     Enum.map(players, fn p ->
       invited = 2000 * Map.get(invited_num, p.battletag, 0)
-      promotion = 1000 * Enum.find_value(promotion_points, 0, fn %{player: short, total: t} ->
-        same(p.battletag, short) && t
-      end)
-      swiss = 500 * Enum.find_value(mt_stats, 0, fn {short, tts} ->
-        with true <- same(p.battletag, short) do
-          tts
-          |> Enum.map(& TournamentTeamStats.filter_stages(&1, :swiss))
-          |> TeamStats.calculate_team_stats()
-          |> Map.get(:wins)
-        end
-      end)
+
+      wins =
+        2000 *
+          Enum.find_value(mt_stats, 0, fn {short, tts} ->
+            with true <- same(p.battletag, short) do
+              tts
+              |> Enum.map(&TournamentTeamStats.total_stats/1)
+              |> TeamStats.calculate_team_stats()
+              |> Map.get(:wins)
+            end
+          end)
+
       Map.put(p, :points, %{
         qualified: invited,
-        promotion: promotion,
-        swiss: swiss,
+        wins: wins,
         worlds: p.worlds_points
-
       })
     end)
   end
@@ -124,6 +131,7 @@ defmodule Backend.PonyDojo do
     end)
     |> Enum.frequencies()
   end
+
   defp promotion_points(mts) do
     mts
     |> Enum.flat_map(&PromotionCalculator.ts_points(&1.id, :points_2021))
@@ -132,19 +140,20 @@ defmodule Backend.PonyDojo do
 
   defp latest_six_mts() do
     now = NaiveDateTime.utc_now()
+
     Backend.MastersTour.TourStop.all()
     |> Enum.reverse()
     |> Enum.drop_while(fn %{start_time: st} ->
-      !st || (:lt == NaiveDateTime.compare(now, st))
+      !st || :lt == NaiveDateTime.compare(now, st)
     end)
     |> Enum.take(6)
     |> Enum.reverse()
   end
 
-  def champ?(points), do:  points > 66000
+  def champ?(points), do: points > 90_000
 
   def total(%{points: points}), do: total(points)
-  def total(%{qualified: q, swiss: s, promotion: p, worlds: w}), do: q + s + p + w
+  def total(%{qualified: q, wins: s, worlds: w}), do: q + s + w
   def total(_), do: 0
 
   defp sort(players), do: Enum.sort(players, &sorter/2)
