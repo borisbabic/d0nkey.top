@@ -87,11 +87,24 @@ defmodule Bot.MessageHandler do
   defp create_card_embed([match]), do: create_card_embed(match)
 
   defp create_card_embed(match) do
-    with [{_, card} | _] <- HearthstoneJson.closest_collectible(match),
+    with nil <- do_match_card(match, &HearthstoneJson.closest_collectible/1),
+         nil <- do_match_card(match, &HearthstoneJson.closest/1) do
+      nil
+    else
+      {card, card_url} ->
+        %Embed{}
+        |> Embed.put_title(card.name)
+        |> Embed.put_image(card_url)
+
+      _ ->
+        nil
+    end
+  end
+
+  defp do_match_card(match, matcher) do
+    with [{_, card} | _] <- matcher.(match),
          card_url when is_binary(card_url) <- HearthstoneJson.card_url(card) do
-      %Embed{}
-      |> Embed.put_title(card.name)
-      |> Embed.put_image(card_url)
+      {card, card_url}
     else
       _ -> nil
     end
