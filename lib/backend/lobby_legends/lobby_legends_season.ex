@@ -122,10 +122,23 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
         other_streams: %{},
         ladder: %{
           season_id: 6,
-          # https://twitter.com/HSesports/status/1541483238866046977 
+          # https://twitter.com/HSesports/status/1541483238866046977
           ap: ~N[2022-06-30T15:00:00],
           eu: ~N[2022-06-30T22:00:00],
           us: ~N[2022-07-01T07:00:00]
+        }
+      },
+      %__MODULE__{
+        slug: "lobby_legends_6",
+        player_streams: %{},
+        other_streams: %{},
+        ladder: %{
+          season_id: 6,
+          # Based on previous season
+          # https://twitter.com/HSesports/status/1541483238866046977
+          ap: ~N[2022-07-31T15:00:00],
+          eu: ~N[2022-07-31T22:00:00],
+          us: ~N[2022-07-31T07:00:00]
         }
       }
     ]
