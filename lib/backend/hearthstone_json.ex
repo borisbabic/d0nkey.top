@@ -23,7 +23,22 @@ defmodule Backend.HearthstoneJson do
   @spec do_closest([Card.t()], String.t(), number()) :: [{number(), Card.t()}]
   defp do_closest(cards, card_name, cutoff) do
     Enum.flat_map(cards, fn card ->
-      distance = String.jaro_distance(String.downcase(card_name), String.downcase(card.name))
+      distance_orig = do_distance(card_name, card.name)
+      distance_normalized = do_distance(card_name, card.name, &normalize_card_name/1)
+
+      piece_distance =
+        String.split(card.name, " ")
+        |> Enum.filter(&(String.length(&1) > 2))
+        |> Enum.flat_map(fn piece ->
+          [
+            do_distance(piece, card_name),
+            do_distance(piece, card_name, &normalize_card_name/1)
+          ]
+        end)
+        |> Enum.max()
+        |> Kernel.*(cutoff)
+
+      distance = Enum.max([distance_orig, distance_normalized, piece_distance])
 
       if distance >= cutoff && card.set != "HERO_SKINS" do
         [{distance, card}]
@@ -32,6 +47,18 @@ defmodule Backend.HearthstoneJson do
       end
     end)
     |> Enum.sort_by(&elem(&1, 0), :desc)
+  end
+
+  defp do_distance(first, second, normalizer \\ &String.downcase/1) do
+    String.jaro_distance(normalizer.(first), normalizer.(second))
+  end
+
+  defp normalize_card_name(name) do
+    name
+    |> String.replace("(Rank 1)", "")
+    |> String.replace(~r/\[,-';:\]/, "")
+    |> String.downcase()
+    |> String.trim()
   end
 
   def get_card(dbf_id), do: table() |> Util.ets_lookup("card_#{dbf_id}")
