@@ -121,7 +121,7 @@ defmodule Backend.PonyDojo do
     MastersTour.fix_name(player_one) == MastersTour.fix_name(player_two)
   end
 
-  defp invited_counts(mts) do
+  def invited_counts(mts) do
     mts
     |> Enum.flat_map(fn %{id: id} ->
       id
@@ -138,7 +138,7 @@ defmodule Backend.PonyDojo do
     |> PromotionCalculator.group_ts_rankings()
   end
 
-  defp latest_six_mts() do
+  def latest_six_mts() do
     now = NaiveDateTime.utc_now()
 
     Backend.MastersTour.TourStop.all()
