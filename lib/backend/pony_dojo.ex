@@ -96,7 +96,7 @@ defmodule Backend.PonyDojo do
     invited_num = invited_counts(mts)
 
     Enum.map(players, fn p ->
-      invited = 2000 * Map.get(invited_num, p.battletag, 0)
+      invited = 2000 * Map.get(invited_num, MastersTour.fix_name(p.battletag), 0)
 
       wins =
         2000 *
@@ -126,7 +126,7 @@ defmodule Backend.PonyDojo do
     |> Enum.flat_map(fn %{id: id} ->
       id
       |> Backend.MastersTour.list_invited_players()
-      |> Enum.map(& &1.battletag_full)
+      |> Enum.map(&MastersTour.fix_name(&1.battletag_full))
       |> Enum.uniq()
     end)
     |> Enum.frequencies()
