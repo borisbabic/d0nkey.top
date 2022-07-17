@@ -14,7 +14,18 @@ config :backend,
   gm_stream_send_tweet: true,
   nitropay_demo: false,
   nostrum_slash_command_target: :global,
-  twitch_bot_chats: ["sgt_tbag", "d0nkeyhs", "d0nkeytop", "branka279", "dettomon", "norwis_", "otters_tv", "goofyronak", "reqvam", "emerald_boa"],
+  twitch_bot_chats: [
+    "sgt_tbag",
+    "d0nkeyhs",
+    "d0nkeytop",
+    "branka279",
+    "dettomon",
+    "norwis_",
+    "otters_tv",
+    "goofyronak",
+    "reqvam",
+    "emerald_boa"
+  ],
   enable_bot: true
 
 config :ueberauth, Ueberauth,
@@ -39,6 +50,12 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
 # before starting your production server.
 config :backend, BackendWeb.Endpoint,
   url: [scheme: "https", host: "www.d0nkey.top", port: 443],
+  check_origin: [
+    "//d0nkey.top",
+    "//hsguru.com",
+    "https://www.d0nkey.top",
+    "https://www.hsguru.com"
+  ],
   # force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
