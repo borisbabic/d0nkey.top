@@ -118,6 +118,7 @@ defmodule Backend.MastersTour do
 
   def warmup_stats_cache() do
     %{year: current_year} = Date.utc_today()
+
     2020..current_year
     |> Enum.flat_map(fn y -> [y | Backend.Blizzard.get_tour_stops_for_year(y)] end)
     |> List.insert_at(0, :all)
@@ -134,12 +135,14 @@ defmodule Backend.MastersTour do
   def full_btag_grouping_func() do
     all_btags =
       Repo.all(Backend.Battlenet.OldBattletag)
-      |> Enum.map(& {&1.old_battletag, &1.new_battletag})
+      |> Enum.map(&{&1.old_battletag, &1.new_battletag})
       |> Map.new()
+
     fn %{battletag_full: btag} ->
       do_full_btag_grouping(btag, all_btags)
     end
   end
+
   defp do_full_btag_grouping(btag, map) do
     case Map.get(map, btag) do
       nil -> btag
@@ -209,7 +212,6 @@ defmodule Backend.MastersTour do
   def bt_search(bts) when is_list(bts), do: "%(#{Enum.join(bts, "|")})%"
   def bt_search(bt), do: bt_search([bt])
 
-
   def list_qualifiers_in_range(start_date = %Date{}, end_date = %Date{}),
     do:
       list_qualifiers_in_range(
@@ -267,6 +269,7 @@ defmodule Backend.MastersTour do
       |> fetch()
     end
   end
+
   def qualifiers_update() do
     TourStop.get_current_qualifiers(:id)
     |> qualifiers_update()
@@ -381,6 +384,7 @@ defmodule Backend.MastersTour do
   def fetch(tour_stop) do
     fetched = BattlefyCommunicator.get_invited_players(tour_stop)
     filtered = filter_existing(fetched, tour_stop)
+
     Multi.new()
     |> prepare_insert_all(filtered)
     |> prepare_delete_official_removed(fetched, tour_stop)
@@ -419,10 +423,14 @@ defmodule Backend.MastersTour do
   @spec prepare_delete_official_removed(Ecto.Multi.t(), any, any) :: Ecto.Multi.t()
   def prepare_delete_official_removed(multi, fetched, tour_stop) do
     battletags = Enum.map(fetched, & &1.battletag_full)
-    query = from ip in InvitedPlayer,
-      where: ip.tour_stop == ^to_string(tour_stop)
-         and ip.official == true
-         and ip.battletag_full not in ^battletags
+
+    query =
+      from ip in InvitedPlayer,
+        where:
+          ip.tour_stop == ^to_string(tour_stop) and
+            ip.official == true and
+            ip.battletag_full not in ^battletags
+
     Multi.delete_all(multi, :delete_official_removed, query)
   end
 
@@ -612,376 +620,271 @@ defmodule Backend.MastersTour do
 
   def fix_name(name) do
     short = Battletag.shorten(name)
+
     Regex.replace(~r/^\d\d\d - /, short, "")
     |> name_hacks()
   end
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def name_hacks(name) do
-    new = name
-    # Chinese players had it added. It's not valid in a battletag
-    |> String.replace(".", "")
-    |> case do
-      "香菇奾汁" -> "ShroomJuice"
-      "撒旦降臨" -> "GivePLZ"
-      "LFbleau" -> "LFBleau"
-      "ChungLiTaiChihYuan" -> "LzJohn"
-      "Liooon" -> "VKLiooon"
-      "brimful" -> "Briarthorn"
-      "SphnxManatee" -> "Briarthorn"
-      "LojomHS" -> "lojom"
-      "執念の蒼汁" -> "Aojiru"
-      "Syuunen No Aojiru" -> "Aojiru"
-      "VK.xhx" -> "VKxhx"
-      "yuyi" -> "WEYuyi"
-      "유워리" -> "6worry"
-      "bloodyface" -> "lunaloveee"
-      "AjjXiGuan" -> "BilibiliXG"
-      "Backup2" -> "GamerRvg"
-      # <zflow> https://docs.google.com/document/d/1AhHUQWVJeBjPLHveFtJ2fwfVikZAiNsDXRO3CQiXaKQ/edit
-      "게임이기기봇" -> "che0nsu"
-      "Che0nsu" -> "che0nsu"
+    new =
+      name
+      # Chinese players had it added. It's not valid in a battletag
+      |> String.replace(".", "")
+      |> case do
+        "香菇奾汁" -> "ShroomJuice"
+        "撒旦降臨" -> "GivePLZ"
+        "LFbleau" -> "LFBleau"
+        "ChungLiTaiChihYuan" -> "LzJohn"
+        "Liooon" -> "VKLiooon"
+        "brimful" -> "Briarthorn"
+        "SphnxManatee" -> "Briarthorn"
+        "LojomHS" -> "lojom"
+        "執念の蒼汁" -> "Aojiru"
+        "Syuunen No Aojiru" -> "Aojiru"
+        "VK.xhx" -> "VKxhx"
+        "yuyi" -> "WEYuyi"
+        "유워리" -> "6worry"
+        "bloodyface" -> "lunaloveee"
+        "AjjXiGuan" -> "BilibiliXG"
+        "Backup2" -> "GamerRvg"
+        # <zflow> https://docs.google.com/document/d/1AhHUQWVJeBjPLHveFtJ2fwfVikZAiNsDXRO3CQiXaKQ/edit
+        "게임이기기봇" -> "che0nsu"
+        "Che0nsu" -> "che0nsu"
+        "무에서유창조" -> "Crefno"
+        "mueseoyuchangjo" -> "Crefno"
+        "현명한로나" -> "LoNa"
+        "잔악무도유관우" -> "kwanwoo"
+        "신명수" -> "soo"
+        "독도는한국" -> "DokdonuenKR"
+        "달라라면" -> "Dallara"
+        "호랑이들어와요" -> "Hodeulyo"
+        "ilikeryan" -> "Hodeulyo"
+        "현명한라이언" -> "Hodeulyo"
+        "지기" -> "keeper"
+        "막강한올빼미" -> "Makganghanol"
+        "이스티" -> "LuiSti"
+        "ESti" -> "LuiSti"
+        "최석중" -> "ChoiSeokJoon"
+        # </zflow>
+        #
+        # Battlefy
+        "wiwi" -> "麻煩"
+        # dm from youth
+        "虎牙丶季岁" -> "Youth"
+        "LPOmegazero" -> "OmegaZero"
+        "RNGKylinS" -> "RNGKylin"
+        "LFyueying" -> "LFYueying"
+        "水墨烬千年" -> "ShuiMoo"
+        "TGcaimiao" -> "Caimiao"
+        "LGDCaimiao" -> "Caimiao"
+        "不忘初心丶天命" -> "Tianming"
+        "VKTianming" -> "Tianming"
+        "于是乎" -> "WolfWarrior2"
+        "WolfWarriors2" -> "WolfWarrior2"
+        "不忘初心丶石头记" -> "WEStone"
+        "虎牙丶元素" -> "WEYuansu"
+        "儒雅随和丨小菜泫" -> "RyshHyunGod"
+        "不忘初心丶麻辣烫" -> "DarrenF"
+        "不要自闭" -> "yuki"
+        "不忘初心丶小惕" -> "XiaoT"
+        "斗鱼丶古明地觉" -> "Satori"
+        "虎牙丶特兰克斯" -> "LPTrunks"
+        "msbc" -> "VKmsbc"
+        # https://twitter.com/1ArchangelCN/status/1452317525220470787
+        "WEBaKu" -> "VKmsbc"
+        "destiny" -> "LPdestiny"
+        "Lpdestiny" -> "LPdestiny"
+        "LPXHope" -> "LPXhope"
+        # I Assume
+        "TNCAnswer" -> "VKAnswer"
+        # I Assume
+        "LFBleau3" -> "LFBleau"
+        "BLGMelody" -> "Melody"
+        # through battlefy user id
+        "和同学们分享思维" -> "Melody"
+        # through battlefy user id
+        "马皇" -> "Melody"
+        # through battlefy user id
+        "我觉得你有点严格" -> "paopao"
+        # through battlefy user id
+        "元气满满的泡泡" -> "paopao"
+        ### <AUTOMATED through battlefy id>
+        "紅蓮聖天八極式" -> "hirosueryouko"
+        "広末涼子" -> "hirosueryouko"
+        "素芬儿别走" -> "M1racle"
+        "양봉꾼" -> "Beekeeper"
+        "Backup5" -> "MinusFace"
+        "StarPatron" -> "WedgmBql"
+        "周郎神的粉丝" -> "LFBleau"
+        "DikiyZver" -> "WildAnimalHS"
+        "雷霸霸" -> "LBB"
+        "虎牙丶白给雷霸霸" -> "LBB"
+        "WGLBB" -> "LBB"
+        "illusion" -> "虎牙丶幻觉"
+        "Backup6" -> "虎牙丶幻觉"
+        "あなる王子" -> "Theprince"
+        "라이언" -> "Hodeulyo"
+        "jerry" -> "Jerry"
+        "BloodyfaceCN" -> "XiaoT"
+        # "一生所爱丶小梦佳" -> "Xiaomengjia"
+
+        # "ifbdz" -> "Xiaomengjia"
+
+        # "Buduzhou" -> "Xiaomengjia"
+
+        # "KT8298" -> "XilingHangHS"
+
+        "Backup3" -> "XilingHangHS"
+        # "西陵珩" -> "XilingHangHS"
+
+        # "youngjoon" -> "hemlock"
+
+        # "TIAhuanxiong" -> "VKxhx"
+
+        # "mighty" -> "Makganghanol"
+
+        "Backup4" -> "Tomas"
+        "약강" -> "SsamMyway"
+        "Ssam-myway" -> "SsamMyway"
+        "山下智久" -> "G9Malygos"
+        "MiracleRogue" -> "M1racle"
+        "則龍之王" -> "jaylong"
+        "진원치킨" -> "Woobin"
+        "てっぺ" -> "tepepe"
+        "WEChengxin" -> "SNCx"
+        "ПашаТехник" -> "MCTech"
+        "애대박" -> "Aedaebak"
+        "JrsJokerRing" -> "JokerRing"
+        "자바" -> "Sidnell"
+        "JaeWon" -> "재언"
+        "Alex" -> "AlexJP"
+        "AlexHS" -> "AlexJP"
+        "あれっくす" -> "AlexJP"
+        "Backup1" -> "NoGlocko"
+        "DarrenF" -> "DarranF"
+        "哈利" -> "Harry"
+        "IziBot" -> "Danneskjöld"
+        "튀긴새우" -> "zriag"
+        "BadBoy" -> "Badboy"
+        "샹하이" -> "Shanghigh"
+        "中壢邰智源" -> "LzJohn"
+        "マイマイ" -> "maimai"
+        "상추" -> "Sangchu"
+        "プラス" -> "plus"
+        "AjjStone" -> "WEStone"
+        "gallon" -> "Gallon"
+        "anartica" -> "아나티카"
+        "로좀" -> "lojom"
+        "Moriaty" -> "Moriarty"
+        # "Amazing" -> "UchihaMadara"
+
+        "承泰不要" -> "Bloodtrail"
+        "HérosFunky" -> "Thedemon"
+        "SNRugal" -> "为何介么叼"
+        "MANHATTAN" -> "Kranich"
+        "不忘初心丶小王" -> "LGDXiaoWang"
+        # "Intro" -> "jwrobel"
+
+        "WEYoulove" -> "WELuckyLove"
+        "WEYouLove" -> "WELuckyLove"
+        "タコ3" -> "Octopus3"
+        "佳静" -> "Cyberostrich"
+        "cyberostrich" -> "Cyberostrich"
+        "destinyfan" -> "VKDiana"
+        "sakura" -> "Sakura"
+        "聖水洋洋" -> "holywater"
+        "lucasdmnasc" -> "Lucasdmnasc"
+        "살아있는양심" -> "sheepheart"
+        # "MAWANG" -> "LGDMurphy"
+
+        "WedgmMurphy" -> "LGDMurphy"
+        "FiveKSMeng" -> "Mengmengda"
+        "神秘的萌萌哒" -> "Mengmengda"
+        "HyunMini" -> "현명한현민이"
+        "にん" -> "Nin"
+        "JrsConley" -> "JrsRandolph"
+        "jrsConley" -> "JrsRandolph"
+        "龜毛老頭" -> "GMLT"
+        "자유조퇴권" -> "Jajo"
+        "cagnetta99" -> "lattosio"
+        # "cdkFoot" -> "FiveKSJioJio"
+
+        "조치" -> "Zochi"
+        "Dragonmaster" -> "PrestX"
+        "虎牙深海羽翼" -> "KZGYuYi"
+        "WEYuyi" -> "KZGYuYi"
+        "WEYuYi" -> "KZGYuYi"
+        # "WedgmBql" -> "KZGXiaobai"
+
+        # "Baiqinli" -> "KZGXiaobai"
+
+        "Alan870806" -> "AlanC86"
+        "WedgmXmg" -> "KZGXmg"
+        ### </AUTOMATED>
+
+        # SAME Battlefy User Undercity
+        "SNBrox" -> "WBGBrox"
+        "SNCx" -> "WBGCx"
+        "SNJing" -> "WBGJing"
+        "Hachikuji Ma" -> "HachikujiMay"
+        "기링" -> "donggiring"
+        "DenBut" -> "Patek"
+        "サバンナ" -> "savanna"
+        # zflow undercity
+        "자네누군가" -> "whoyou99"
+        "와와" -> "Wawa"
+        "에렛지디" -> "EretdGD"
+        "가끔들어옴" -> "rkRma"
+        "거인의어깨위에서" -> "Tori"
+        "동기링" -> "donggiring"
+        "투블럭컷밥말리" -> "twobob"
+        # dm
+        "HachikujiMay" -> "Hachikuji"
+        # edward ed
+        "八九寺真宵" -> "HachikujiMay"
+        "嗨賴保證書" -> "highlight"
+        "星殞晨風" -> "StarfallMW"
+        "眠たげなクマ" -> "nemutagenaku"
+        # newer
+        "nemutagenaku" -> "nemutagenakuma"
+        # maybe there are more Kevin's
+        "Kevin" -> "KevinXuan"
+        # max nations
+        "Syf" -> "iGSyf"
+        "快樂之潛行者" -> "RNGLeaoh"
+        # MTOne
+        "iGShuiMoo" -> "ShuiMoo"
+        "Sensei6" -> "sensei6"
+        # MT ONE zflow dm
+        "가끔들어옴" -> "rkRma"
+        "잔악무도유관우" -> "kwanwoo"
+        "투야" -> "Tuya"
+        "시이나마히루" -> "shiinamahiru"
+        "살아있는양심" -> "sheepheart"
+        "호랑이들어와요" -> "TigerIsComin"
+        "달라라면" -> "Dallara"
+        "최석중" -> "ChoiSeokJoon"
+        "조치" -> "Zochi"
+        # GMS
+        "ЗлойГрузин" -> "ZloyGruzin"
+        # AAAAAAAAAAAAAA
+        "슬퍼하지마노노노" -> "SuperKimchi"
+        "ZizonZzang" -> "SuperKimchi"
+        "wellmadekimchi" -> "SuperKimchi"
+        "SuperKimchi" -> "DOLGALLERY"
+        "DOLGALLERY" -> "hyung"
+        "hyung" -> "PutGochu"
+        "JrsLoveStorm" -> "RNGLoveStorm"
+        "jiuqianyu" -> "WBGJiuqianyu"
+        ###
+        "RyshHyunGod" -> "RyshSmallHyun"
+        ###
+        "cgg" -> "KC2022"
+        "JokerRing" -> "aikekegaogao"
+        n -> n
+      end
 
-      "무에서유창조" -> "Crefno"
-      "mueseoyuchangjo" -> "Crefno"
-      "현명한로나" -> "LoNa"
-
-      "잔악무도유관우" -> "kwanwoo"
-      "신명수" -> "soo"
-      "독도는한국" -> "DokdonuenKR"
-      "달라라면" -> "Dallara"
-
-      "호랑이들어와요" -> "Hodeulyo"
-      "ilikeryan" -> "Hodeulyo"
-      "현명한라이언" -> "Hodeulyo"
-
-      "지기" -> "keeper"
-
-      "막강한올빼미" -> "Makganghanol"
-      "이스티" -> "LuiSti"
-      "ESti" -> "LuiSti"
-      "최석중" -> "ChoiSeokJoon"
-      # </zflow>
-      #
-      # Battlefy
-      "wiwi" -> "麻煩"
-      # dm from youth
-      "虎牙丶季岁" -> "Youth"
-
-      "LPOmegazero" -> "OmegaZero"
-
-      "RNGKylinS" -> "RNGKylin"
-      "LFyueying" -> "LFYueying"
-      "水墨烬千年" -> "ShuiMoo"
-      "TGcaimiao" -> "Caimiao"
-      "LGDCaimiao" -> "Caimiao"
-
-      "不忘初心丶天命" -> "Tianming"
-      "VKTianming" -> "Tianming"
-
-      "于是乎" -> "WolfWarrior2"
-      "WolfWarriors2" -> "WolfWarrior2"
-      "不忘初心丶石头记" -> "WEStone"
-      "虎牙丶元素" -> "WEYuansu"
-      "儒雅随和丨小菜泫" -> "RyshHyunGod"
-      "不忘初心丶麻辣烫" -> "DarrenF"
-      "不要自闭" -> "yuki"
-      "不忘初心丶小惕" -> "XiaoT"
-      "斗鱼丶古明地觉" -> "Satori"
-      "虎牙丶特兰克斯" -> "LPTrunks"
-
-      "msbc" -> "VKmsbc"
-      "WEBaKu" -> "VKmsbc" #https://twitter.com/1ArchangelCN/status/1452317525220470787
-
-      "destiny" -> "LPdestiny"
-      "Lpdestiny" -> "LPdestiny"
-
-      "LPXHope" -> "LPXhope"
-
-      "TNCAnswer" -> "VKAnswer" # I Assume
-
-      "LFBleau3" -> "LFBleau" # I Assume
-
-      "BLGMelody" -> "Melody"
-      "和同学们分享思维" -> "Melody" # through battlefy user id
-      "马皇" -> "Melody" # through battlefy user id
-
-      "我觉得你有点严格" -> "paopao" # through battlefy user id
-      "元气满满的泡泡" -> "paopao" # through battlefy user id
-
-      ### <AUTOMATED through battlefy id>
-      "紅蓮聖天八極式" -> "hirosueryouko"
-
-      "広末涼子" -> "hirosueryouko"
-
-      "素芬儿别走" -> "M1racle"
-
-      "양봉꾼" -> "Beekeeper"
-
-      "Backup5" -> "MinusFace"
-
-      "StarPatron" -> "WedgmBql"
-
-      "周郎神的粉丝" -> "LFBleau"
-
-      "DikiyZver" -> "WildAnimalHS"
-
-      "雷霸霸" -> "LBB"
-
-      "虎牙丶白给雷霸霸" -> "LBB"
-
-      "WGLBB" -> "LBB"
-
-      "illusion" -> "虎牙丶幻觉"
-
-      "Backup6" -> "虎牙丶幻觉"
-
-      "あなる王子" -> "Theprince"
-
-      "라이언" -> "Hodeulyo"
-
-      "jerry" -> "Jerry"
-
-      "BloodyfaceCN" -> "XiaoT"
-
-      # "一生所爱丶小梦佳" -> "Xiaomengjia"
-
-      # "ifbdz" -> "Xiaomengjia"
-
-      # "Buduzhou" -> "Xiaomengjia"
-
-      # "KT8298" -> "XilingHangHS"
-
-      "Backup3" -> "XilingHangHS"
-
-      # "西陵珩" -> "XilingHangHS"
-
-      # "youngjoon" -> "hemlock"
-
-      # "TIAhuanxiong" -> "VKxhx"
-
-      # "mighty" -> "Makganghanol"
-
-      "Backup4" -> "Tomas"
-
-      "약강" -> "SsamMyway"
-
-      "Ssam-myway" -> "SsamMyway"
-
-      "山下智久" -> "G9Malygos"
-
-      "MiracleRogue" -> "M1racle"
-
-      "則龍之王" -> "jaylong"
-
-      "진원치킨" -> "Woobin"
-
-      "てっぺ" -> "tepepe"
-
-      "WEChengxin" -> "SNCx"
-
-      "ПашаТехник" -> "MCTech"
-
-      "애대박" -> "Aedaebak"
-
-      "JrsJokerRing" -> "JokerRing"
-
-      "자바" -> "Sidnell"
-
-      "JaeWon" -> "재언"
-
-      "Alex" -> "AlexJP"
-
-      "AlexHS" -> "AlexJP"
-
-      "あれっくす" -> "AlexJP"
-
-      "Backup1" -> "NoGlocko"
-
-      "DarrenF" -> "DarranF"
-
-      "哈利" -> "Harry"
-
-      "IziBot" -> "Danneskjöld"
-
-      "튀긴새우" -> "zriag"
-
-      "BadBoy" -> "Badboy"
-
-      "샹하이" -> "Shanghigh"
-
-      "中壢邰智源" -> "LzJohn"
-
-      "マイマイ" -> "maimai"
-
-      "상추" -> "Sangchu"
-
-      "プラス" -> "plus"
-
-      "AjjStone" -> "WEStone"
-
-      "gallon" -> "Gallon"
-
-      "anartica" -> "아나티카"
-
-      "로좀" -> "lojom"
-
-      "Moriaty" -> "Moriarty"
-
-      # "Amazing" -> "UchihaMadara"
-
-      "承泰不要" -> "Bloodtrail"
-
-      "HérosFunky" -> "Thedemon"
-
-      "SNRugal" -> "为何介么叼"
-
-      "MANHATTAN" -> "Kranich"
-
-      "不忘初心丶小王" -> "LGDXiaoWang"
-
-      # "Intro" -> "jwrobel"
-
-      "WEYoulove" -> "WELuckyLove"
-
-      "WEYouLove" -> "WELuckyLove"
-
-      "タコ3" -> "Octopus3"
-
-      "佳静" -> "Cyberostrich"
-
-      "cyberostrich" -> "Cyberostrich"
-
-      "destinyfan" -> "VKDiana"
-
-      "sakura" -> "Sakura"
-
-      "聖水洋洋" -> "holywater"
-
-      "lucasdmnasc" -> "Lucasdmnasc"
-
-      "살아있는양심" -> "sheepheart"
-
-      # "MAWANG" -> "LGDMurphy"
-
-      "WedgmMurphy" -> "LGDMurphy"
-
-      "FiveKSMeng" -> "Mengmengda"
-
-      "神秘的萌萌哒" -> "Mengmengda"
-
-      "HyunMini" -> "현명한현민이"
-
-      "にん" -> "Nin"
-
-      "JrsConley" -> "JrsRandolph"
-
-      "jrsConley" -> "JrsRandolph"
-
-      "龜毛老頭" -> "GMLT"
-
-      "자유조퇴권" -> "Jajo"
-
-      "cagnetta99" -> "lattosio"
-
-      # "cdkFoot" -> "FiveKSJioJio"
-
-      "조치" -> "Zochi"
-
-      "Dragonmaster" -> "PrestX"
-
-      "虎牙深海羽翼" -> "KZGYuYi"
-
-      "WEYuyi" -> "KZGYuYi"
-
-      "WEYuYi" -> "KZGYuYi"
-
-      # "WedgmBql" -> "KZGXiaobai"
-
-      # "Baiqinli" -> "KZGXiaobai"
-
-      "Alan870806" -> "AlanC86"
-
-      "WedgmXmg" -> "KZGXmg"
-
-      ### </AUTOMATED>
-
-      # SAME Battlefy User Undercity
-      "SNBrox" -> "WBGBrox"
-      "SNCx" -> "WBGCx"
-      "SNJing" -> "WBGJing"
-      "Hachikuji Ma" -> "HachikujiMay"
-
-      "기링" -> "donggiring"
-
-      "DenBut" -> "Patek"
-      "サバンナ" -> "savanna"
-
-      # zflow undercity
-      "자네누군가" -> "whoyou99"
-      "와와" -> "Wawa"
-      "에렛지디" -> "EretdGD"
-      "가끔들어옴" -> "rkRma"
-      "거인의어깨위에서" -> "Tori"
-      "동기링" -> "donggiring"
-      "투블럭컷밥말리" -> "twobob"
-
-      #dm
-      "HachikujiMay" -> "Hachikuji"
-      #edward ed
-      "八九寺真宵" -> "HachikujiMay"
-      "嗨賴保證書" -> "highlight"
-      "星殞晨風" -> "StarfallMW"
-      "眠たげなクマ" -> "nemutagenaku"
-
-      #newer
-      "nemutagenaku" -> "nemutagenakuma"
-
-        #maybe there are more Kevin's
-      "Kevin" -> "KevinXuan"
-
-      # max nations
-      "Syf" -> "iGSyf"
-      "快樂之潛行者" -> "RNGLeaoh"
-
-      # MTOne
-      "iGShuiMoo" -> "ShuiMoo"
-      "Sensei6" -> "sensei6"
-
-      # MT ONE zflow dm
-      "가끔들어옴" -> "rkRma"
-      "잔악무도유관우" -> "kwanwoo"
-      "투야" -> "Tuya"
-      "시이나마히루" -> "shiinamahiru"
-      "살아있는양심" -> "sheepheart"
-      "호랑이들어와요" -> "TigerIsComin"
-      "달라라면" -> "Dallara"
-      "최석중" -> "ChoiSeokJoon"
-      "조치" -> "Zochi"
-
-      #GMS
-      "ЗлойГрузин" -> "ZloyGruzin"
-
-
-      # AAAAAAAAAAAAAA
-      "슬퍼하지마노노노" -> "SuperKimchi"
-      "ZizonZzang" -> "SuperKimchi"
-      "wellmadekimchi" -> "SuperKimchi"
-      "SuperKimchi" -> "DOLGALLERY"
-      "DOLGALLERY" -> "hyung"
-      "JrsLoveStorm" -> "RNGLoveStorm"
-      "jiuqianyu" -> "WBGJiuqianyu"
-
-
-      ###
-      "RyshHyunGod" -> "RyshSmallHyun"
-
-      ###
-      "cgg" -> "KC2022"
-      "JokerRing" -> "aikekegaogao"
-
-      n -> n
-    end
     if new == name do
       new
     else
@@ -995,6 +898,7 @@ defmodule Backend.MastersTour do
   defp mt_tournament_cache_key(%{id: id}), do: "mt_tournament_#{id}"
 
   def get_mt_tournament(nil), do: nil
+
   def get_mt_tournament(ts) when is_atom(ts) or is_binary(ts),
     do: ts |> TourStop.get() |> get_mt_tournament()
 
@@ -1223,9 +1127,10 @@ defmodule Backend.MastersTour do
     |> add_missing_top_cut(ts)
   end
 
-  @spec masters_tours_stats([integer|String.t()] | TourStop.t()) :: [[TournamentTeamStats.t()]]
+  @spec masters_tours_stats([integer | String.t()] | TourStop.t()) :: [[TournamentTeamStats.t()]]
   def masters_tours_stats(years \\ [])
-  def masters_tours_stats(tour_stops = [%TourStop{} |_ ]) do
+
+  def masters_tours_stats(tour_stops = [%TourStop{} | _]) do
     tour_stops
     |> Enum.filter(fn ts -> ts.battlefy_id end)
     |> Enum.filter(&TourStop.started?/1)
@@ -1235,17 +1140,18 @@ defmodule Backend.MastersTour do
     end)
     |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
   end
+
   def masters_tours_stats(years) do
     TourStop.all()
     |> filter_years(years)
     |> masters_tours_stats()
   end
 
-
   defp filter_years(tour_stops, []), do: tour_stops
+
   defp filter_years(tour_stops, years) do
     years_string = Enum.map(years, &to_string/1)
-    Enum.filter(tour_stops, & to_string(&1.year) in years_string)
+    Enum.filter(tour_stops, &(to_string(&1.year) in years_string))
   end
 
   @spec create_mt_stats_collection([[TournamentTeamStats.t()]]) :: [
@@ -1420,6 +1326,7 @@ defmodule Backend.MastersTour do
     before = NaiveDateTime.add(now, -60 * 60 * hours_ago)
     BattlefyCommunicator.get_masters_qualifiers(before, now)
   end
+
   def get_ongoing_qualifiers() do
     today = Date.utc_today()
     start_date = Date.add(today, -2)
@@ -1434,13 +1341,14 @@ defmodule Backend.MastersTour do
       |> MapSet.new()
 
     qualifiers_in_range
-      |> Enum.filter(&has_qualifier_started?/1)
-      |> Enum.filter(& MapSet.member?(finished, &1.id))
+    |> Enum.filter(&has_qualifier_started?/1)
+    |> Enum.filter(&MapSet.member?(finished, &1.id))
   end
 
   def list_qualifiers_by_tournament_ids(tournament_ids) do
-    query = from q in Qualifier,
-      where: q.tournament_id in ^tournament_ids
+    query =
+      from q in Qualifier,
+        where: q.tournament_id in ^tournament_ids
 
     Repo.all(query)
   end
