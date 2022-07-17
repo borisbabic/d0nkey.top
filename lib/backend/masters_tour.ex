@@ -882,6 +882,25 @@ defmodule Backend.MastersTour do
         ###
         "cgg" -> "KC2022"
         "JokerRing" -> "aikekegaogao"
+        ### By Battlefy User Id
+        "pardal" -> "Pardal"
+        "Idaho" -> "Juvens"
+        "LPOmegaZero" -> "OmegaZero"
+        "FiveKSBoat" -> "LFBoat"
+        "VKMelody" -> "Melody"
+        "WBGJiuqianyu" -> "Jiuqianyu"
+        "MTVBack02" -> "Gonkra"
+        "TRDMrLucky" -> "MrLucky"
+        "RNGLeaoh" -> "Leaoh"
+        "WBGBrox" -> "Brox"
+        "WETianming" -> "Tianming"
+        "RNGLoveStorm" -> "LoveStorm"
+        "FiveKSLoveStorm" -> "LoveStorm"
+        "WBGCx" -> "Cx"
+        "WBGXiaoT" -> "XiaoT"
+        "Lko" -> "LKO"
+        "crefno" -> "Crefno"
+        "TigerIsComin" -> "TigerComing"
         n -> n
       end
 

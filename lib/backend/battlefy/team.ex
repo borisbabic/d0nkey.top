@@ -54,7 +54,6 @@ defmodule Backend.Battlefy.Team.Player do
     field :slug, String.t() | nil
   end
 
-
   def from_raw_map(map = %{"userID" => _}) do
     %__MODULE__{
       in_game_name: map["inGameName"],
@@ -65,4 +64,6 @@ defmodule Backend.Battlefy.Team.Player do
       slug: map["slug"]
     }
   end
+
+  def from_raw_map(_), do: %{}
 end
