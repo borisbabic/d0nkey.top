@@ -133,7 +133,6 @@ defmodule Components.FantasyModal do
 
   defp battlefy_tournament_id(_), do: nil
 
-
   defp current_lobby_legends(), do: LobbyLegendsSeason.current(120, 0)
 
   defp current_tour_stop(), do: TourStop.get_current(120, 0)
@@ -152,7 +151,7 @@ defmodule Components.FantasyModal do
     ])
   end
 
-  defp add_lobby_legends(competition_types)  do
+  defp add_lobby_legends(competition_types) do
     if current_lobby_legends() do
       [{"Lobby Legends", "lobby_legends"} | competition_types]
     else
@@ -171,7 +170,7 @@ defmodule Components.FantasyModal do
     end
   end
 
-  defp competition_options("grandmasters"), do: ["gm_2022_1"] |> competition_options()
+  defp competition_options("grandmasters"), do: ["gm_2022_2"] |> competition_options()
 
   defp competition_options("masters_tour") do
     current_tour_stop()

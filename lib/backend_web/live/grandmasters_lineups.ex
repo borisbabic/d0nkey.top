@@ -42,19 +42,27 @@ defmodule BackendWeb.GrandmastersLineup do
   end
 
   def subtitle(week) do
-    ""
-    # case week do
-    #   "Week 1" -> "Format: Conquest"
-    #   "Week 2" -> "Format: Conquest"
-    #     # assigns = %{}
-    #     # ~F"""
-    #     # Format: <a href="https://playhearthstone.com/en-us/news/23761137/hearthstone-grandmasters-2022-kicks-off-this-weekend" target="_blank">Trio</a>
-    #     # """
-    #   "Week 3" -> "Format: Conquest"
-    #   "Playoffs" -> "Format: Conquest"
-    #   _ -> ""
+    case week do
+      "Week 1" ->
+        "Format: Conquest"
 
-    # end
+      "Week 2" ->
+        assigns = %{}
+
+        ~F"""
+        Format: <a href="https://playhearthstone.com/en-us/news/23761137/hearthstone-grandmasters-2022-kicks-off-this-weekend" target="_blank">Trio</a>
+        """
+
+      "Week 3" ->
+        "Format: LHS"
+
+      "Playoffs" ->
+        "Format: Bo7 Conquest"
+
+      _ ->
+        ""
+    end
+
     # case week do
     #   "Week 1" -> "Format: Conquest"
     #   "Week 2" -> "Format: LHS"
