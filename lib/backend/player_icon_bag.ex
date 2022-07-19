@@ -11,12 +11,12 @@ defmodule Backend.PlayerIconBag do
     {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
     # MTOne Fantasy
-    {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}},
+    # {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}},
     # MTOne Fantasy
-    {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}},
+    # {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}},
     {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
     # patreon
-    {"otters#11111", {:image, "/images/icons/otters.png"}},
+    # {"otters#11111", {:image, "/images/icons/otters.png"}},
     # patreon
     {"Montu#11356", {:image, "/images/icons/montu.png"}},
     {"JustinTime#1277	", {:unicode, <<0xE2, 0x8C, 0x9A>>}}
