@@ -31,7 +31,7 @@ defmodule BackendWeb.GrandmastersLive do
         </div>
         <div class="subtitle is-6">
           <a target"_blank" href="https://playhearthstone.com/en-us/esports/standings/">Official Site</a>
-          | <a href="{lineup_url(@week)}">Lineups</a>
+          | <a href={lineup_url(@week)}>Lineups</a>
         </div>
         <div id="nitropay-below-title-leaderboard"></div>
 
@@ -41,13 +41,6 @@ defmodule BackendWeb.GrandmastersLive do
               <Dropdown title={@week} >
                 <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>
                   {week}
-                </a>
-              </Dropdown>
-            </div>
-            <div class="level-item">
-              <Dropdown title={@region |> gm_region_display()} >
-                <a class={"dropdown-item #{@region == region && 'is-active' || ''}"} :for={region <- [:NA, :APAC, :EU]} :on-click="change-region" phx-value-region={region}>
-                  {gm_region_display(region)}
                 </a>
               </Dropdown>
             </div>
@@ -63,7 +56,8 @@ defmodule BackendWeb.GrandmastersLive do
     """
   end
 
-  def lineup_url(week), do: Routes.live_path(BackendWeb.Endpoint, GrandmastersLineups, %{"week" => week})
+  def lineup_url(week),
+    do: Routes.live_path(BackendWeb.Endpoint, BackendWeb.GrandmastersLineup, %{"week" => week})
 
   def weeks() do
     season = Blizzard.current_gm_season()
@@ -104,11 +98,12 @@ defmodule BackendWeb.GrandmastersLive do
 
   def handle_params(params, _uri, socket) do
     week = params["week"] || Blizzard.current_or_default_week_title()
-    region = params["region"] |> Backend.Grandmasters.parse_region()
+    region = params["region"] |> Backend.Grandmasters.parse_region(:LC)
     {:noreply, socket |> assign(week: week, region: region)}
   end
 
   def gm_region_display(:APAC), do: "Asia-Pacific"
   def gm_region_display(:EU), do: "Europe"
   def gm_region_display(:NA), do: "Americas"
+  def gm_region_display(:LC), do: "Last Call"
 end

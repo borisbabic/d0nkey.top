@@ -641,7 +641,7 @@ defmodule Backend.Blizzard do
   def get_grandmasters_lineups(),
     do: current_or_default_week_title() |> get_grandmasters_lineups()
 
-  def current_gm_season(), do: {2022, 1}
+  def current_gm_season(), do: {2022, 2}
 
   def current_or_default_week_title(), do: current_gm_season() |> current_or_default_week_title()
 
@@ -724,6 +724,9 @@ defmodule Backend.Blizzard do
           playoffs_week: integer(),
           week_one: integer()
         }
+  def gm_season_definition({2022, 2}),
+    do: %{week_one: 29, playoffs_week: 34, break_weeks: [31, 32]}
+
   def gm_season_definition({2022, 1}), do: %{week_one: 8, playoffs_week: 12, break_weeks: [11]}
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
