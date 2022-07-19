@@ -9,11 +9,11 @@ defmodule Backend.LatestHSArticles do
   end
 
   def handle_continue(:update_articles, _) do
-    {:ok, articles} = do_update()
+    {:ok, articles} = fetch()
     {:noreply, articles}
   end
 
-  defp do_update() do
+  def fetch() do
     with {:ok, %{body: body}} <-
            HTTPoison.get(
              "https://playhearthstone.com/en-us/api/blog/articleList/?page=1&pageSize=100"
@@ -52,10 +52,10 @@ defmodule Backend.LatestHSArticles do
   def get(), do: GenServer.call(__MODULE__, :get)
   def update(), do: GenServer.cast(__MODULE__, :update)
 
-  def patch_notes_url(),
-    do:
-      get()
-      |> Enum.find_value(&(patch_notes?(&1) && url(&1)))
+  def patch_notes_url(), do: get() |> patch_notes_url()
+
+  def patch_notes_url(articles),
+    do: articles |> Enum.find_value(&(patch_notes?(&1) && url(&1)))
 
   defp patch_notes?(article), do: "patch" in article["tags"] || "Patch Note" =~ article["title"]
 
@@ -65,7 +65,7 @@ defmodule Backend.LatestHSArticles do
   def handle_call(:get, _, articles), do: {:reply, articles, articles}
 
   def handle_cast(:update, old_state) do
-    case do_update() do
+    case fetch() do
       {:ok, articles} -> {:noreply, articles}
       _ -> {:noreply, old_state}
     end
