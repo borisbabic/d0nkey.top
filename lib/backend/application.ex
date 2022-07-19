@@ -51,7 +51,7 @@ defmodule Backend.Application do
         },
         %{
           id: Backend.HearthstoneJson,
-          start: {Backend.HearthstoneJson, :start_link, [[fetch_fresh: fetch_fresh()]]}
+          start: {Backend.HearthstoneJson, :start_link, [[fetch_fresh: fetch_fresh?()]]}
         },
         %{
           id: Backend.StreamerTwitchInfoUpdater,
@@ -122,13 +122,17 @@ defmodule Backend.Application do
   end
 
   def twitch_bot_config() do
-    base_config = Application.fetch_env!(:backend, :twitch_bot_config)
-    chats = Application.fetch_env!(:backend, :twitch_bot_chats)
-    Keyword.put(base_config, :chats, chats)
+    with {:ok, config} <- Application.fetch_env(:backend, :twitch_bot_config),
+         {{:ok, chats}, _} <- {Application.fetch_env(:backend, :twitch_bot_chats), config} do
+      Keyword.put(config, :chats, chats)
+    else
+      {:error, config} when is_list(config) -> config
+      _ -> []
+    end
   end
 
   def migrate() do
-    if Application.fetch_env!(:backend, :auto_migrate) do
+    with {:ok, true} <- Application.fetch_env(:backend, :auto_migrate) do
       try do
         Ecto.Migrator.run(Backend.Repo, "priv/repo/migrations", :up, all: true)
       rescue
@@ -137,13 +141,17 @@ defmodule Backend.Application do
     end
   end
 
-  def fetch_fresh(), do: Application.fetch_env!(:backend, :hearthstone_json_fetch_fresh)
+  def fetch_fresh?(default \\ false) do
+    case Application.fetch_env(:backend, :hearthstone_json_fetch_fresh) do
+      {:ok, fetch_fresh} -> fetch_fresh
+      _ -> default
+    end
+  end
 
   def check_bot(prev) do
-    if Application.fetch_env!(:backend, :enable_bot) do
-      prev ++ [Bot.Consumer]
-    else
-      prev
+    case Application.fetch_env(:backend, :enable_bot) do
+      {:ok, true} -> prev ++ [Bot.Consumer]
+      prev -> prev
     end
   end
 
@@ -155,7 +163,7 @@ defmodule Backend.Application do
   end
 
   def warmup_cache() do
-    if Application.fetch_env!(:backend, :warmup_cache) do
+    with {:ok, true} <- Application.fetch_env(:backend, :warmup_cache) do
       [
         &Backend.MastersTour.warmup_stats_cache/0,
         &Backend.MastersTour.warmup_player_nationality_cache/0
