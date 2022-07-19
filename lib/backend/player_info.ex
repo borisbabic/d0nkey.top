@@ -284,17 +284,33 @@ defmodule Backend.PlayerInfo do
     relegated = relegated_gms_for_promotion(season)
     get_grandmasters({2021, 2}) |> remove_relegated(relegated)
   end
+
   def get_grandmasters_for_promotion(season = {2022, 2}) do
     relegated = relegated_gms_for_promotion(season)
+
     newly_promoted = [
-      #AM
-      "Pun", "Pascoa", "CaelesLuna", "LeandroLeal", "GamerRvg",
-      #APAC
-      "DragonMan", "Mighty", "trahison", "DOLGALLERY", "MegaGliscor", "che0nsu",
-      #EU
-      "Furyhunter", "Floki", "SuperFake", "ZloyGruzin",
+      # AM
+      "Pun",
+      "Pascoa",
+      "CaelesLuna",
+      "LeandroLeal",
+      "GamerRvg",
+      # APAC
+      "DragonMan",
+      "Mighty",
+      "trahison",
+      "DOLGALLERY",
+      "MegaGliscor",
+      "che0nsu",
+      # EU
+      "Furyhunter",
+      "Floki",
+      "SuperFake",
+      "ZloyGruzin"
     ]
+
     retired = ["Thijs", "Surrender", "Blitzchung", "TISZ", "Muzzy", "Eddie"]
+
     get_grandmasters_for_promotion({2022, 1})
     |> Kernel.++(newly_promoted)
     |> Kernel.--(retired)
@@ -385,6 +401,27 @@ defmodule Backend.PlayerInfo do
     ]
   end
 
+  def get_grandmasters({2022, 2}) do
+    [
+      "Bunnyhoppor",
+      "DimitriKazov",
+      "Fled",
+      "Furyhunter",
+      "Habugabu",
+      "Judgement",
+      "Mighty",
+      "Pascoa",
+      "Posesi",
+      "Pun",
+      "SuperFake",
+      "ZloyGruzin",
+      "che0nsu",
+      "levik",
+      "okasinnsuke",
+      "xBlyzes"
+    ]
+  end
+
   def get_grandmasters(rts = _reference_tour_stop, relegated) do
     Backend.MastersTour.list_invited_players(rts)
     |> Enum.filter(fn %{reason: r, official: _o} -> String.contains?(r, "Grandmaster") end)
@@ -399,7 +436,6 @@ defmodule Backend.PlayerInfo do
     gms
     |> Enum.filter(fn n -> !MapSet.member?(relegated, n) end)
   end
-
 
   # for people that appear differently in my source
   def hack_name(name) do
@@ -443,6 +479,7 @@ defmodule Backend.PlayerInfo do
 
   def leaderboard_names(bts) when is_list(bts),
     do: Enum.flat_map(bts, &leaderboard_names/1)
+
   def leaderboard_names(battletag_full),
     do: [InvitedPlayer.shorten_battletag(battletag_full)]
 end
