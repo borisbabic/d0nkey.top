@@ -46,19 +46,6 @@ defmodule Components.CompetitorsTable do
               <span>{participant.name}</span>
             {/if}
           </Column>
-          <Column label="Signed Up">
-            {#if Participant.in_battlefy?(participant) }
-            Yes
-            {#else}
-            No
-            {/if}
-          </Column>
-          <Column label="MTs Played">
-            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :total])}
-          </Column>
-          <Column label="MT Winrate %">
-            {get_in(@mt_stats, [MastersTour.fix_name(participant.name), :winrate])}
-          </Column>
           <Column label="Status">
             <div :if={picked_by = picked_by(@league, participant, @user)}>
               <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)}class="tag is-info"> {picked_by |> LeagueTeam.display_name()}</div>
@@ -80,13 +67,19 @@ defmodule Components.CompetitorsTable do
   end
 
   defp sort(data, nil), do: data
+
   defp sort(data, mt_stats) do
-    Enum.sort_by(data, fn %{name: name} ->
-      get_in(mt_stats, [MastersTour.fix_name(name), :wins]) || 0
-    end, :desc)
+    Enum.sort_by(
+      data,
+      fn %{name: name} ->
+        get_in(mt_stats, [MastersTour.fix_name(name), :wins]) || 0
+      end,
+      :desc
+    )
   end
 
-  def prepare_data(participants, league, search), do: participants |> filter(search) |> Enum.uniq_by(& &1.name) |> cut(league)
+  def prepare_data(participants, league, search),
+    do: participants |> filter(search) |> Enum.uniq_by(& &1.name) |> cut(league)
 
   @spec player_profile?(any) :: boolean
   def player_profile?(league), do: gm?(league) || mt?(league)
@@ -159,17 +152,20 @@ defmodule Components.CompetitorsTable do
           tts
           |> Enum.map(&TournamentTeamStats.total_stats/1)
           |> TeamStats.calculate_team_stats()
+
         {
           name,
           %{
             total: tts |> Enum.count(),
             wins: stats.wins,
-            winrate: stats |> TeamStats.matches_won_percent() |> Float.round(2),
+            winrate: stats |> TeamStats.matches_won_percent() |> Float.round(2)
           }
         }
       end)
       |> Map.new()
+
     socket |> assign(:mt_stats, map)
   end
+
   defp add_mt_stats(socket), do: socket
 end
