@@ -1,7 +1,9 @@
 defmodule Backend.LatestHSArticles do
+  @moduledoc "Updates and caches latest hs arcticles from the main site"
   use GenServer
 
   def start_link(default), do: GenServer.start_link(__MODULE__, default, name: __MODULE__)
+
   def init(_args) do
     {:ok, [], {:continue, :update_articles}}
   end
@@ -12,7 +14,10 @@ defmodule Backend.LatestHSArticles do
   end
 
   defp do_update() do
-    with {:ok, %{body: body}} <- HTTPoison.get("https://playhearthstone.com/en-us/api/blog/articleList/?page=1&pageSize=100"),
+    with {:ok, %{body: body}} <-
+           HTTPoison.get(
+             "https://playhearthstone.com/en-us/api/blog/articleList/?page=1&pageSize=100"
+           ),
          {:ok, decoded} <- Jason.decode(body),
          sorted <- Enum.sort_by(decoded, & &1["publish"], :desc) |> add_april_fools(),
          {:ok, _feed_item} <- update_feed_item(sorted) do
@@ -24,18 +29,20 @@ defmodule Backend.LatestHSArticles do
     now = NaiveDateTime.utc_now()
     start_time = ~N[2022-04-01T17:00:00]
     end_time = ~N[2022-04-02T06:00:00]
+
     if Util.in_range?(now, {start_time, end_time}) do
       [
         %{
           "uid" => "april_fools_hahaha",
           "tags" => ["esports"],
-          "blogId" => 23790401,
+          "blogId" => 23_790_401,
           "thumbnail" => %{
             "mimeType" => "imageblabla",
             "url" => "//bnetcmsus-a.akamaihd.net/cms/blog_header/s1/S1AU2IQCZ0VN1544570147263.jpg"
           },
           "title" => "Dive Deep in 2022’s Wild Open!"
-        } | articles
+        }
+        | articles
       ]
     else
       articles
@@ -45,14 +52,18 @@ defmodule Backend.LatestHSArticles do
   def get(), do: GenServer.call(__MODULE__, :get)
   def update(), do: GenServer.cast(__MODULE__, :update)
 
-  def patch_notes_url(), do:
-    get()
-    |> Enum.find_value(& "patch" in &1["tags"] && url(&1))
+  def patch_notes_url(),
+    do:
+      get()
+      |> Enum.find_value(&(patch_notes?(&1) && url(&1)))
+
+  defp patch_notes?(article), do: "patch" in article["tags"] || "Patch Note" =~ article["title"]
 
   def url(%{"defaultUrl" => url}), do: url
   def url(_), do: nil
 
   def handle_call(:get, _, articles), do: {:reply, articles, articles}
+
   def handle_cast(:update, old_state) do
     case do_update() do
       {:ok, articles} -> {:noreply, articles}
@@ -73,5 +84,4 @@ defmodule Backend.LatestHSArticles do
       [decay: 0.95, head_start: 10]
     end
   end
-
 end
