@@ -44,10 +44,10 @@ defmodule Hearthstone.Card do
         id: id,
         artist_name: map["artist_name"],
         attack: map["attack"],
-        card_set_id: map["card_set_id"],
+        card_set_id: map["card_set_id"] |> map_set_id(),
         card_type_id: map["card_type_id"],
         child_ids: map["child_ids"],
-        class_id: is_list(map["class_id"]) || [],
+        class_id: map["class_id"],
         collectible: map["collectible"] == 1,
         copy_of_card_id: map["copy_of_card_id"],
         crop_image: map["crop_image"],
@@ -57,10 +57,10 @@ defmodule Hearthstone.Card do
         health: map["health"],
         image: map["image"],
         image_gold: map["image_gold"],
-        keyword_ids: is_list(map["keyword_ids"]) || [],
+        keyword_ids: list_or_default(map["keyword_ids"], []),
         mana_cost: map["mana_cost"],
         minion_type_id: map["minion_type_id"],
-        multi_class_ids: is_list(map["multi_class_ids"]) || [],
+        multi_class_ids: list_or_default(map["multi_class_ids"], []),
         name: map["name"],
         rarity_id: map["rarity_id"],
         slug: map["slug"],
@@ -72,6 +72,20 @@ defmodule Hearthstone.Card do
   end
 
   def from_raw_map(_), do: {:error, :unable_to_parse_card}
+
+  # FIX YOUR API BLIZZ!!!!!!!!!!!!!!!!
+  # HOW CAN YOU HAVE CARDS WITH CARD SETS NOT PRESENT IN YOUR API FOR CARD SETS
+  @spec map_set_id(integer()) :: integer()
+  # half of legacy seems to be in 3 so moving them all there
+  def map_set_id(3), do: 1635
+  # hall of fame? Pushing it into legacy too, sigh
+  def map_set_id(4), do: 1635
+  # some heros? Pushing it into legacy too, sigh
+  def map_set_id(17), do: 1635
+  def map_set_id(id), do: id
+
+  defp list_or_default(list, _) when is_list(list), do: list
+  defp list_or_default(_, default), do: default
 
   # it's the same card in these cases
   def same_effect?(%__MODULE__{copy_of_card_id: same_id}, %__MODULE__{copy_of_card_id: same_id}),
@@ -85,6 +99,12 @@ defmodule Hearthstone.Card do
     [:attack, :health, :mana_cost, :text, :card_type_id]
     |> Enum.all?(&(Map.get(first, &1) == Map.get(second, &1)))
   end
+
+  def class_ids(%{multi_class_ids: [_ | _] = classes}),
+    do: classes
+
+  def class_ids(%{class_id: class_id}),
+    do: [class_id]
 
   # DO NOT COMMIT
   def playable?(%{collectible: collectible}), do: collectible

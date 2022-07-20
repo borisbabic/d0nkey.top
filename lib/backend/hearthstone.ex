@@ -7,20 +7,24 @@ defmodule Backend.Hearthstone do
   alias Backend.Hearthstone.DeckArchetyper
   alias Backend.Hearthstone.Lineup
   alias Backend.Hearthstone.LineupDeck
-  # alias Backend.Hearthstone.CardBackCategory
-  # alias Backend.Hearthstone.Class
-  # alias Backend.Hearthstone.GameMode
-  # alias Backend.Hearthstone.Keyword
-  # alias Backend.Hearthstone.MercenaryRole
-  # alias Backend.Hearthstone.MinionType
-  # alias Backend.Hearthstone.Rarity
-  # alias Backend.Hearthstone.SetGroup
-  # alias Backend.Hearthstone.Set
-  # alias Backend.Hearthstone.SpellSchool
-  # alias Backend.Hearthstone.Type
+  alias Backend.Hearthstone.CardBackCategory
+  alias Backend.Hearthstone.Class
+  alias Backend.Hearthstone.GameMode
+  alias Backend.Hearthstone.Keyword
+  alias Backend.Hearthstone.MercenaryRole
+  alias Backend.Hearthstone.MinionType
+  alias Backend.Hearthstone.Rarity
+  alias Backend.Hearthstone.SetGroup
+  alias Backend.Hearthstone.Set
+  alias Backend.Hearthstone.SpellSchool
+  alias Backend.Hearthstone.Type
+  alias Backend.Hearthstone.Card
   alias Backend.HearthstoneJson
   alias Hearthstone.Api
+  alias Hearthstone.Card, as: ApiCard
   require Logger
+
+  @type insertable_card :: ApiCard
 
   def update_metadata() do
     with {:ok,
@@ -38,17 +42,17 @@ defmodule Backend.Hearthstone do
             types: types
           }} <- Api.get_metadata() do
       [
-        {Backend.Hearthstone.CardBackCategory, card_back_categories},
-        {Backend.Hearthstone.Class, classes},
-        {Backend.Hearthstone.GameMode, game_modes},
-        {Backend.Hearthstone.Keyword, keywords},
-        {Backend.Hearthstone.MercenaryRole, mercenary_roles},
-        {Backend.Hearthstone.MinionType, minion_types},
-        {Backend.Hearthstone.Rarity, rarities},
-        {Backend.Hearthstone.SetGroup, set_groups},
-        {Backend.Hearthstone.Set, sets},
-        {Backend.Hearthstone.SpellSchool, spell_schools},
-        {Backend.Hearthstone.Type, types}
+        {CardBackCategory, card_back_categories},
+        {Class, classes},
+        {GameMode, game_modes},
+        {Keyword, keywords},
+        {MercenaryRole, mercenary_roles},
+        {MinionType, minion_types},
+        {Rarity, rarities},
+        {SetGroup, set_groups},
+        {Set, sets},
+        {SpellSchool, spell_schools},
+        {Type, types}
       ]
       |> Enum.reduce(Multi.new(), &metadata_multi_insert/2)
       |> Repo.transaction()
@@ -89,6 +93,78 @@ defmodule Backend.Hearthstone do
       nil -> create_deck(cards, hero, format)
       deck -> {:ok, deck}
     end
+  end
+
+  def all_cards() do
+    query =
+      from c in Card,
+        preload: [
+          :card_set,
+          :card_type,
+          :copy_of_card,
+          :keywords,
+          :classes,
+          :minion_type,
+          :rarity,
+          :spell_school
+        ]
+
+    Repo.all(query)
+  end
+
+  @spec upsert_cards([insertable_card()]) :: {:ok, [Card.t()]} | {:error, any()}
+  def upsert_cards(cards) do
+    cards_map = Map.new(cards, fn c -> {c.id, c} end)
+    # using ecto on_conflict upsert support causes issues with the many_to_many relationships
+    # they want to get inserted again
+    # so we fetch first instead
+    ids = Enum.map(cards, & &1.id)
+    existing_query = from c in Card, preload: [:classes, :keywords], where: c.id in ^ids
+    existing = Repo.all(existing_query)
+    existing_ids = Enum.map(existing, & &1.id)
+    new = Enum.reject(cards, &(&1.id in existing_ids))
+    multi = Enum.reduce(new, Multi.new(), &card_multi_insert/2)
+
+    Enum.reduce(existing, multi, fn old, m ->
+      new_card = Map.get(cards_map, old.id)
+      changeset = card_changeset(new_card, old)
+      Multi.update(m, "update_card_#{old.id}", changeset)
+    end)
+    |> Repo.transaction()
+  end
+
+  @spec card_multi_insert(insertable_card(), Multi.t()) :: Multi.t()
+  defp card_multi_insert(card, multi) do
+    changeset = card_changeset(card)
+
+    Multi.insert(
+      multi,
+      "card_insert_#{card.id}",
+      changeset,
+      on_conflict: {:replace_all_except, [:id, :keywords, :classes]},
+      conflict_target: :id
+    )
+  end
+
+  @spec card_changeset(insertable_card(), Card.t()) :: Ecto.Changeset.t()
+  def card_changeset(upstream_card, card \\ %Card{}) do
+    card
+    |> Card.changeset(upstream_card)
+    |> add_card_assocs(upstream_card)
+  end
+
+  @spec add_card_assocs(Ecto.Changeset.t(), insertable_card()) :: Ecto.Changeset.t()
+  defp add_card_assocs(changeset, %ApiCard{} = api_card) do
+    keyword_ids = api_card.keyword_ids
+    class_ids = ApiCard.class_ids(api_card)
+    keyword_query = from k in Keyword, where: k.id in ^keyword_ids
+    class_query = from c in Class, where: c.id in ^class_ids
+    keywords = Repo.all(keyword_query)
+    classes = Repo.all(class_query)
+
+    changeset
+    |> Card.put_keywords(keywords)
+    |> Card.put_classes(classes)
   end
 
   def deck(%{id: id}) when is_integer(id), do: deck(id)
