@@ -901,6 +901,7 @@ defmodule Backend.MastersTour do
         "Lko" -> "LKO"
         "crefno" -> "Crefno"
         "TigerIsComin" -> "TigerComing"
+        "Paradox" -> "Paraducks"
         n -> n
       end
 
