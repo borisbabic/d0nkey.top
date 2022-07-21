@@ -12,6 +12,8 @@ defmodule Backend.Hearthstone.Card do
     Type
   }
 
+  @type card() :: %__MODULE__{} | Backend.HearthstoneJson.Card.t()
+
   @primary_key {:id, :integer, []}
   schema "hs_cards" do
     field :artist_name, :string
@@ -102,4 +104,39 @@ defmodule Backend.Hearthstone.Card do
 
   def put_keywords(changeset, keywords), do: changeset |> put_assoc(:keywords, keywords)
   def put_classes(changeset, classes), do: changeset |> put_assoc(:classes, classes)
+
+  @spec rarity(card()) :: String.t()
+  def rarity(%{rarity: rarity}), do: Rarity.upcase(rarity)
+
+  @spec rarity(card()) :: String.t()
+  def type(%{card_type: type}), do: Type.upcase(type)
+  def type(%{type: type}), do: Type.upcase(type)
+
+  @spec classes(card()) :: [String.t()]
+  def classes(%{card_class: card_class}), do: [card_class]
+  def classes(%{classes: classes}), do: Enum.map(classes, &Class.upcase/1)
+
+  @spec in_class?(card(), String.t()) :: boolean()
+  def in_class?(card, class), do: class in classes(card)
+
+  @spec class(card()) :: {:ok, String.t()} | {:error, atom()}
+  def class(card) do
+    case classes(card) do
+      [class] -> {:ok, class}
+      _ -> {:error, :in_multiple_classes}
+    end
+  end
+
+  @spec class(card(), String.t()) :: {:ok, String.t()} | {:error, atom()}
+  def class(card, specific_class) do
+    case {classes(card), in_class?(card, specific_class)} do
+      {[class], _} -> {:ok, class}
+      {_, true} -> {:ok, specific_class}
+      _ -> {:error, :in_multiple_classes}
+    end
+  end
+
+  @spec cost(card()) :: String.t()
+  def cost(%{cost: cost}), do: cost
+  def cost(%{mana_cost: cost}), do: cost
 end

@@ -27,6 +27,8 @@ defmodule Backend.Hearthstone.CardBag do
 
   ##### /Public Api
 
+  def refresh_table(), do: GenServer.cast(@name, :refresh_table)
+
   def update(after_ms \\ 0) do
     GenServer.cast(@name, {:send_loop, after_ms})
   end
@@ -52,6 +54,11 @@ defmodule Backend.Hearthstone.CardBag do
     {:noreply, state}
   end
 
+  def handle_cast(:refresh_table, state = %{table: table}) do
+    set_table(table)
+    {:noreply, state}
+  end
+
   def handle_info(:loop, state = %{table: table, last_success_response: prev_response}) do
     last_success =
       case do_update_table(table, prev_response) do
@@ -71,7 +78,7 @@ defmodule Backend.Hearthstone.CardBag do
 
   defp do_update_table(table, prev_response) do
     case Hearthstone.Api.next_page(prev_response) do
-      {:ok, response = %{cards: cards}} ->
+      {:ok, response = %{cards: cards = [_ | _]}} ->
         Task.start(fn ->
           Backend.Hearthstone.upsert_cards(cards)
         end)
@@ -84,6 +91,7 @@ defmodule Backend.Hearthstone.CardBag do
         :ok
 
       _ ->
+        set_table(table)
         {:error, prev_response}
     end
   end

@@ -440,7 +440,11 @@ defmodule Backend.Hearthstone do
   defp cost_for_sort(%{cost: cost}), do: cost
   defp cost_for_sort(_), do: nil
 
-  def get_card(dbf_id), do: HearthstoneJson.get_card(dbf_id)
+  def get_card(dbf_id) do
+    with nil <- Backend.Hearthstone.CardBag.card(dbf_id) do
+      Backend.HearthstoneJson.get_card(dbf_id)
+    end
+  end
 
   @spec get_or_create_lineup(String.t() | integer(), String.t(), String.t(), [String.t()]) ::
           {:ok, Lineup.t()} | {:error, any()}

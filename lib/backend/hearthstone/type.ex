@@ -1,4 +1,5 @@
 defmodule Backend.Hearthstone.Type do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -19,4 +20,9 @@ defmodule Backend.Hearthstone.Type do
     |> cast(attrs, [:id, :name, :slug, :game_modes])
     |> validate_required([:id, :name, :slug, :game_modes])
   end
+
+  @spec upcase(%__MODULE__{} | String.t()) :: String.t()
+  def upcase(%{slug: slug}), do: upcase(slug)
+  def upcase(slug) when is_binary(slug), do: String.upcase(slug)
+  def upcase(nil), do: nil
 end

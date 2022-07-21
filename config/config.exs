@@ -25,6 +25,8 @@ config :backend, QuantumScheduler,
     {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
     {"* * * * *", fn -> Backend.Leaderboards.save_current() end},
+    {"37 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
+    {"11 * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
     # {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
