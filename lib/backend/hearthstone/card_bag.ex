@@ -6,6 +6,7 @@ defmodule Backend.Hearthstone.CardBag do
   @name :hearthstone_card_bag
   @ten_hours 36_000_000
   @five_min 300_000
+  @get_cards_opts %{collectible: "0,1"}
 
   def tile_card_url(card_id) do
     case card(card_id) do
@@ -77,7 +78,7 @@ defmodule Backend.Hearthstone.CardBag do
   end
 
   defp do_update_table(table, prev_response) do
-    case Hearthstone.Api.next_page(prev_response) do
+    case Hearthstone.Api.next_page(prev_response, @get_cards_opts) do
       {:ok, response = %{cards: cards = [_ | _]}} ->
         Task.start(fn ->
           Backend.Hearthstone.upsert_cards(cards)
