@@ -139,4 +139,8 @@ defmodule Backend.Hearthstone.Card do
   @spec cost(card()) :: String.t()
   def cost(%{cost: cost}), do: cost
   def cost(%{mana_cost: cost}), do: cost
+
+  @spec class(card()) :: integer()
+  def dbf_id(%{dbf_id: id}), do: id
+  def dbf_id(%{id: id}), do: id
 end

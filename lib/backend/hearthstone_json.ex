@@ -112,6 +112,18 @@ defmodule Backend.HearthstoneJson do
   @spec card_url(Card.t() | String.t()) :: String.t()
   def card_url(card), do: card_url(card, :"256x")
 
+  @spec tile_card_url(Card.t() | integer()) :: {String.t(), String.t()}
+  def tile_card_url(dbf_id) when is_integer(dbf_id), do: get_card(dbf_id) |> tile_card_url
+
+  def tile_card_url(card = %{id: id}) when is_binary(id) do
+    {
+      tile_url(card),
+      card_url(card)
+    }
+  end
+
+  def tile_card_url(_), do: {nil, nil}
+
   @spec card_url(Card.t() | String.t(), :"256x" | :"512x") :: String.t()
   def card_url(%{id: id}, size), do: card_url(id, size)
 

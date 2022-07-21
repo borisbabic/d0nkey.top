@@ -96,21 +96,26 @@ defmodule Backend.Hearthstone do
   end
 
   def all_cards() do
-    query =
-      from c in Card,
-        preload: [
-          :card_set,
-          :card_type,
-          :copy_of_card,
-          :keywords,
-          :classes,
-          :minion_type,
-          :rarity,
-          :spell_school
-        ]
+    query = from(c in Card)
 
-    Repo.all(query)
+    query
+    |> preload_cards()
+    |> Repo.all()
   end
+
+  def preload_cards(query),
+    do:
+      query
+      |> preload([
+        :card_set,
+        :card_type,
+        :copy_of_card,
+        :keywords,
+        :classes,
+        :minion_type,
+        :rarity,
+        :spell_school
+      ])
 
   @spec upsert_cards([insertable_card()]) :: {:ok, [Card.t()]} | {:error, any()}
   def upsert_cards(cards) do
@@ -519,6 +524,82 @@ defmodule Backend.Hearthstone do
   def parse_gm_season(_), do: :error
 
   def parse_gm_season!(s), do: s |> parse_gm_season() |> Util.bangify()
+
+  def similar_cards(search) do
+    query =
+      from c in Card,
+        order_by: [desc: fragment("similarity(?, ?)", c.name, ^search)],
+        limit: 7
+
+    query
+    |> preload_cards()
+    |> Repo.all()
+  end
+
+  @default_cards_limit 100
+  def cards(criteria) do
+    base_cards_query()
+    |> build_cards_query(criteria)
+    |> Repo.all()
+  end
+
+  defp build_cards_query(query, criteria),
+    do: Enum.reduce(criteria, query, &compose_cards_query/2)
+
+  defp compose_cards_query({"order_by", "name_similarity_" <> search_target}, query) do
+    query
+    |> order_by([card: c], desc: fragment("similarity(?, ?)", c.name, ^search_target))
+  end
+
+  defp compose_cards_query({"limit", limit}, query), do: limit(query, ^limit)
+
+  defp compose_cards_query({"collectible", collectible}, query) when is_binary(collectible),
+    do: query |> where([card: c], c.collectible == ^collectible)
+
+  defp compose_cards_query({"collectible", col}, query) when col in ["no", "false"],
+    do: compose_cards_query({"collectible", false}, query)
+
+  defp compose_cards_query({"collectible", _}, query),
+    do: compose_cards_query({"collectible", true}, query)
+
+  defp compose_cards_query({"health", health}, query),
+    do: query |> where([card: c], c.health == ^health)
+
+  defp compose_cards_query({"mana_cost", mana_cost}, query),
+    do: query |> where([card: c], c.mana_cost == ^mana_cost)
+
+  defp compose_cards_query({"class", class}, query),
+    do: query |> where([classes: cl], ilike(cl.name, ^class) or ilike(cl.slug, ^class))
+
+  defp compose_cards_query({"attack", attack}, query),
+    do: query |> where([card: c], c.attack == ^attack)
+
+  defp compose_cards_query({"rarity", rarity}, query) do
+    query
+    |> where([rarity: r], ilike(r.name, ^rarity) or ilike(r.slug, ^rarity))
+  end
+
+  defp base_cards_query() do
+    from(c in Card,
+      as: :card,
+      left_join: cs in assoc(c, :card_set),
+      as: :card_set,
+      left_join: ct in assoc(c, :card_type),
+      as: :card_type,
+      left_join: k in assoc(c, :keywords),
+      as: :keywords,
+      left_join: cl in assoc(c, :classes),
+      as: :classes,
+      left_join: mt in assoc(c, :minion_type),
+      as: :minion_type,
+      left_join: r in assoc(c, :rarity),
+      as: :rarity,
+      left_join: ss in assoc(c, :spell_school),
+      as: :spell_school,
+      limit: @default_cards_limit
+    )
+    |> preload_cards()
+  end
 
   def lineups(criteria) do
     base_lineups_query()
