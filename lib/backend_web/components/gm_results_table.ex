@@ -10,7 +10,7 @@ defmodule Components.GMResultsTable do
 
   def render(assigns) do
     ~F"""
-        <table class="table is-fullwidth is-striped"> 
+        <table class="table is-fullwidth is-striped">
           <thead>
             <tr>
               <th>Stage</th>
