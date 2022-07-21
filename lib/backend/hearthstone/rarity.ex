@@ -44,4 +44,9 @@ defmodule Backend.Hearthstone.Rarity do
       ])
 
   defp put_crafting_costs(cs, _), do: cs
+
+  @spec upcase(%__MODULE__{} | String.t()) :: String.t()
+  def upcase(%{slug: slug}), do: upcase(slug)
+  def upcase(rarity) when is_binary(rarity), do: String.upcase(rarity)
+  def upcase(nil), do: nil
 end

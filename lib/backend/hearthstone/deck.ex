@@ -368,6 +368,9 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   defp card_cost(card) when is_integer(card), do: Hearthstone.get_card(card) |> card_cost()
+  # core_set
+  defp card_cost(%{card_set_id: 1637}), do: 0
+  defp card_cost(%{rarity: %{normal_crafting_cost: cost}}), do: cost
   defp card_cost(%{set: "CORE"}), do: 0
   defp card_cost(%{rarity: "FREE"}), do: 0
   defp card_cost(%{rarity: "COMMON"}), do: 40
