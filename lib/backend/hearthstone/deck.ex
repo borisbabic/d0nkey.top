@@ -291,7 +291,7 @@ defmodule Backend.Hearthstone.Deck do
 
   def canonical_constructed_deckcode(code) when is_binary(code) do
     case decode(code) do
-      {:ok, deck = %{cards: cards}} when length(cards) > 14 and length(cards) < 31 ->
+      {:ok, deck = %{cards: cards}} when length(cards) > 14 and length(cards) < 41 ->
         {:ok, deck |> deckcode()}
 
       _ ->
