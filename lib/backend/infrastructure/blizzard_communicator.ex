@@ -22,9 +22,7 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
 
   def create_link(region, leaderboard_id, nil),
     do:
-      "https://playhearthstone.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{
-        leaderboard_id
-      }"
+      "https://hearthstone.blizzard.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{leaderboard_id}"
 
   def create_link(region, leaderboard_id, season_id),
     do: "#{create_link(region, leaderboard_id, nil)}&seasonId=#{season_id}"

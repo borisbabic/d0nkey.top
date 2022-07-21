@@ -22,7 +22,7 @@ defmodule BackendWeb.SummerChamps2022Live do
           <div>
             <div class="title is-2">Summer Champs Decks</div>
             <div class="subtitle is-5">
-              <a class="link" href="https://playhearthstone.com/en-us/news/23788539" target="_blank">
+              <a class="link" href="https://hearthstone.blizzard.com/en-us/news/23788539" target="_blank">
                 Info
               </a>
 

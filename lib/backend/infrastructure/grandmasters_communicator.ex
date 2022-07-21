@@ -8,7 +8,7 @@ defmodule Backend.Infrastructure.GrandmastersCommunicator do
 
   def get_gm() do
     url =
-      "https://playhearthstone.com/en-us/api/esports/schedule/grandmasters/?season=null&year=null"
+      "https://hearthstone.blizzard.com/en-us/api/esports/schedule/grandmasters/?season=null&year=null"
 
     with {:ok, %{body: body}} <- get(url),
          {:ok, decoded} <- Poison.decode(body) do

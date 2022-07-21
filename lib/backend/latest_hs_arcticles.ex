@@ -16,7 +16,7 @@ defmodule Backend.LatestHSArticles do
   def fetch() do
     with {:ok, %{body: body}} <-
            HTTPoison.get(
-             "https://playhearthstone.com/en-us/api/blog/articleList/?page=1&pageSize=100"
+             "https://hearthstone.blizzard.com/en-us/api/blog/articleList/?page=1&pageSize=100"
            ),
          {:ok, decoded} <- Jason.decode(body),
          sorted <- Enum.sort_by(decoded, & &1["publish"], :desc) |> add_april_fools(),

@@ -32,7 +32,7 @@ defmodule Components.GMResultsTable do
     """
   end
 
-  def match_link(%{id: id}), do: "https://playhearthstone.com/en-us/esports/match/#{id}"
+  def match_link(%{id: id}), do: "https://hearthstone.blizzard.com/en-us/esports/match/#{id}"
   def matches(region, week), do: Backend.Grandmasters.region_matches(region, week)
   def filter(matches, fun) when is_function(fun), do: matches |> Enum.filter(fun)
   def filter(matches, _), do: matches
