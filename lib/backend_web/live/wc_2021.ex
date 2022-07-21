@@ -24,7 +24,7 @@ defmodule BackendWeb.WC2021Live do
           <div>
             <div class="title is-2">WC 2021 decks</div>
             <div class="subtitle is-5">
-              <a class="link" href="https://playhearthstone.com/en-gb/esports/tournament/world-championship-2021" target="_blank">
+              <a class="link" href="https://hearthstone.blizzard.com/en-gb/esports/tournament/world-championship-2021" target="_blank">
                 Standings
               </a>
 

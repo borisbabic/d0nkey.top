@@ -30,7 +30,7 @@ defmodule BackendWeb.GrandmastersLive do
           Grandmasters
         </div>
         <div class="subtitle is-6">
-          <a target"_blank" href="https://playhearthstone.com/en-us/esports/standings/">Official Site</a>
+          <a target"_blank" href="https://hearthstone.blizzard.com/en-us/esports/standings/">Official Site</a>
           | <a href={lineup_url(@week)}>Lineups</a>
         </div>
         <div id="nitropay-below-title-leaderboard"></div>
