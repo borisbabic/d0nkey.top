@@ -98,12 +98,12 @@ defmodule BackendWeb.GrandmastersLive do
 
   def handle_params(params, _uri, socket) do
     week = params["week"] || Blizzard.current_or_default_week_title()
-    region = params["region"] |> Backend.Grandmasters.parse_region(:LC)
+    region = params["region"] |> Backend.Grandmasters.parse_region(:XX)
     {:noreply, socket |> assign(week: week, region: region)}
   end
 
   def gm_region_display(:APAC), do: "Asia-Pacific"
   def gm_region_display(:EU), do: "Europe"
   def gm_region_display(:NA), do: "Americas"
-  def gm_region_display(:LC), do: "Last Call"
+  def gm_region_display(:XX), do: "Last Call"
 end

@@ -93,12 +93,15 @@ defmodule Components.DecklistCard do
 
   defp count(count, _, _), do: count
   @spec tile_card_url(Card.t() | Backend.HearthstoneJson.Card.t()) :: {String.t(), String.t()}
-  defp tile_card_url(card = %{dbf_id: dbf_id}) do
-    {tile_url, _card_url} = CardBag.tile_card_url(dbf_id)
+  defp tile_card_url(card) do
+    dbf_id = Card.dbf_id(card)
+
+    {tile_url, card_url} = CardBag.tile_card_url(dbf_id)
+    {hsj_tile_url, hsj_card_url} = HearthstoneJson.tile_card_url(dbf_id)
 
     {
-      tile_url || HearthstoneJson.tile_url(card),
-      HearthstoneJson.card_url(card)
+      tile_url || hsj_tile_url,
+      card_url || hsj_card_url
     }
   end
 

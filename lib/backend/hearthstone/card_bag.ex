@@ -6,7 +6,7 @@ defmodule Backend.Hearthstone.CardBag do
   @name :hearthstone_card_bag
   @ten_hours 36_000_000
   @five_min 300_000
-  @get_cards_opts %{collectible: "0,1"}
+  @get_cards_opts %{collectible: "1"}
 
   def tile_card_url(card_id) do
     case card(card_id) do
