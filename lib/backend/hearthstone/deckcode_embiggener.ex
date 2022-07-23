@@ -1,6 +1,7 @@
 defmodule Backend.Hearthstone.DeckcodeEmbiggener do
   @moduledoc false
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.Card
   alias Backend.Hearthstone
   @type style :: :basic | :pretty
 
@@ -47,6 +48,6 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
         _ -> "⬜"
       end
 
-    "# #{rarity} #{freq}x (#{card.cost}) #{card.name}"
+    "# #{rarity} #{freq}x (#{Card.cost(card)}) #{card.name}"
   end
 end

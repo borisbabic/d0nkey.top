@@ -32,7 +32,7 @@ defmodule Hearthstone.Api do
   end
 
   @spec get_cards(Map.t()) :: {:ok, Cards.t()} | {:error, any()}
-  def get_cards(opts \\ %{}) do
+  def get_cards(opts \\ %{collectible: "0,1"}) do
     query = URI.encode_query(opts)
     url = "#{@base_url}/cards?#{query}"
 
