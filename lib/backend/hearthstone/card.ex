@@ -140,7 +140,27 @@ defmodule Backend.Hearthstone.Card do
   def cost(%{cost: cost}), do: cost
   def cost(%{mana_cost: cost}), do: cost
 
+  @spec set_name(card()) :: String.t() | nil
+  def set_name(%{card_set: %{name: name}}), do: name
+  def set_name(_), do: nil
+
   @spec class(card()) :: integer()
   def dbf_id(%{dbf_id: id}), do: id
   def dbf_id(%{id: id}), do: id
+
+  @spec matches_filter?(card(), String.t()) :: boolean
+  def matches_filter?(card, search) do
+    down_search = String.downcase(search)
+
+    [
+      card.name,
+      rarity(card),
+      set_name(card),
+      card.text
+      | classes(card)
+    ]
+    |> Enum.filter(& &1)
+    |> Enum.map(&String.downcase/1)
+    |> Enum.any?(&(&1 =~ down_search))
+  end
 end

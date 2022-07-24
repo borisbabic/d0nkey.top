@@ -15,7 +15,11 @@ defmodule Backend.UserManager.User do
     field :twitch_id, :string
     field :cross_out_country, :boolean, default: false
     field :show_region, :boolean, default: false
-    field :replay_preference, Ecto.Enum, values: [all: 0, streamed: 8, none: 16], default: :streamed
+
+    field :replay_preference, Ecto.Enum,
+      values: [all: 0, streamed: 8, none: 16],
+      default: :streamed
+
     embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
 
     timestamps()
@@ -69,7 +73,18 @@ defmodule Backend.UserManager.User do
 
   @spec all_admin_roles() :: [atom()]
   def all_admin_roles(),
-    do: [:super, :battletag_info, :users, :invites, :feed_items, :fantasy_leagues, :api_users, :old_battletags, :groups, :twitch_commands]
+    do: [
+      :super,
+      :battletag_info,
+      :users,
+      :invites,
+      :feed_items,
+      :fantasy_leagues,
+      :api_users,
+      :old_battletags,
+      :groups,
+      :twitch_commands
+    ]
 
   @spec string_admin_roles() :: [String.t()]
   def string_admin_roles(), do: all_admin_roles() |> Enum.map(&to_string/1)
@@ -102,22 +117,27 @@ defmodule Backend.UserManager.User.DecklistOptions do
   import Ecto.Changeset
 
   @default_show_one false
+  @default_show_one_for_legendaries false
   @primary_key false
   embedded_schema do
     field :border, :string
     field :show_one, :boolean, default: @default_show_one
+    field :show_one_for_legendaries, :boolean, default: @default_show_one_for_legendaries
     field :gradient, :string
   end
 
   @doc false
   def changeset(entry, attrs) do
     entry
-    |> cast(attrs, [:border, :gradient, :show_one])
+    |> cast(attrs, [:border, :gradient, :show_one, :show_one_for_legendaries])
     |> validate_colors([:border, :gradient])
   end
 
   def show_one(%{show_one: show_one}), do: show_one
-  def show_one(_), do: false
+  def show_one(_), do: @default_show_one
+
+  def show_one_for_legendaries(%{show_one_for_legendaries: show_one}), do: show_one
+  def show_one_for_legendaries(_), do: @default_show_one_for_legendaries
 
   def border(%{border: b}), do: b
   def border(_), do: "dark_grey"
@@ -127,6 +147,7 @@ defmodule Backend.UserManager.User.DecklistOptions do
 
   def valid_color?(opt), do: opt in ["dark_grey", "card_class", "deck_class", "rarity"]
 
+  def show_one_for_legendaries_default(), do: @default_show_one_for_legendaries
   def show_one_default(), do: @default_show_one
 
   def validate_colors(changeset, fields) do

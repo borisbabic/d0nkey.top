@@ -5,6 +5,7 @@ defmodule Backend.FantasyCompetitionFetcher do
   alias Backend.MastersTour.TourStop
   alias Backend.Battlefy
   alias Backend.Hearthstone
+  alias Backend.Hearthstone.Card
   alias Backend.Blizzard
   alias Backend.MastersTour
   alias Backend.LobbyLegends.LobbyLegendsSeason
@@ -13,9 +14,9 @@ defmodule Backend.FantasyCompetitionFetcher do
     c
     |> LobbyLegendsSeason.get()
     |> LobbyLegendsSeason.players()
-    |> Enum.map(& %{name: &1})
-
+    |> Enum.map(&%{name: &1})
   end
+
   def get_participants(%{competition_type: "battlefy", competition: battlefy_id}) do
     battlefy_id
     |> get_battlefy_participants()
@@ -65,6 +66,14 @@ defmodule Backend.FantasyCompetitionFetcher do
     end
   end
 
+  def get_participants(%{competition_type: "card_nerfs"}),
+    do:
+      Hearthstone.cards([{"format", "wild"}, {"collectible", true}])
+      |> Enum.sort_by(&Card.cost(&1), :asc)
+      |> Enum.sort_by(&(Card.classes(&1) |> Enum.at(0)), :asc)
+      |> Enum.sort_by(& &1.card_set_id, :desc)
+      |> Enum.map(&%Participant{name: &1.name, meta: %{card: &1}})
+
   def current_round("grandmasters", <<"gm_"::binary, gm_season_raw::binary>>) do
     with {:ok, gm_season} <- Hearthstone.parse_gm_season(gm_season_raw),
          {_, round} <- Blizzard.current_gm_week(gm_season) do
@@ -90,27 +99,35 @@ defmodule Backend.FantasyCompetitionFetcher do
 
   def fetch_results(l), do: fetch_results(l, 1)
 
-  def fetch_results(%{competition_type: "lobby_legends"}, _), do: Map.new(%{
-    "EducatedCollins" => 16.5 + 15.5,
-    "baiyu" => 13.5 + 13,
-    "Ponpata07" => 12 + 10.5,
-    "BaboFat" => 10.5 + 17.5,
-    "keromon" => 10,
-    "ZoinhU" => 9.5,
-    "summer" => 8.5,
-    "Maks7k" => 3.5,
+  def fetch_results(%{competition_type: "lobby_legends"}, _),
+    do:
+      Map.new(%{
+        "EducatedCollins" => 16.5 + 15.5,
+        "baiyu" => 13.5 + 13,
+        "Ponpata07" => 12 + 10.5,
+        "BaboFat" => 10.5 + 17.5,
+        "keromon" => 10,
+        "ZoinhU" => 9.5,
+        "summer" => 8.5,
+        "Maks7k" => 3.5,
+        "Curt" => 12 + 18,
+        "guDDummit" => 12,
+        "hof" => 12 + 19.5,
+        "KenKen" => 14 + 18.5,
+        "Satellite" => 8,
+        "SeseiSei" => 6,
+        "yjSJMR" => 6,
+        "BeNice" => 14 + 27.5
+      })
 
-    "Curt" => 12 + 18,
-    "guDDummit" => 12,
-    "hof" => 12 + 19.5,
-    "KenKen" => 14 + 18.5,
-    "Satellite" => 8,
-    "SeseiSei" => 6,
-    "yjSJMR" => 6,
-    "BeNice" => 14 + 27.5,
-  })
   def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
     do: get_battlefy_results(competition, l)
+
+  def fetch_results(
+        %{competition_type: "card_nerfs", competition: "murder-at-castle-nathria"},
+        _
+      ),
+      do: []
 
   def fetch_results(%{competition_type: "card_changes", competition: "nerfs_may_2021"}, _),
     do:
