@@ -41,7 +41,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
   def create_card_part({card, freq}) do
     rarity =
-      case card.rarity do
+      case Card.rarity(card) do
         "LEGENDARY" -> "🟨"
         "EPIC" -> "🟪"
         "RARE" -> "🟦"
