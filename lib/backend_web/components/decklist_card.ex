@@ -83,7 +83,13 @@ defmodule Components.DecklistCard do
     """
   end
 
-  defp count(1, "LEGENDARY", _), do: "⋆"
+  defp count(1, "LEGENDARY", decklist_options) do
+    if DecklistOptions.show_one_for_legendaries(decklist_options) do
+      1
+    else
+      "⋆"
+    end
+  end
 
   defp count(1, _, decklist_options) do
     if DecklistOptions.show_one(decklist_options) do

@@ -536,7 +536,6 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
-  @default_cards_limit 100
   def cards(criteria) do
     base_cards_query()
     |> build_cards_query(criteria)
@@ -553,7 +552,7 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({"limit", limit}, query), do: limit(query, ^limit)
 
-  defp compose_cards_query({"collectible", collectible}, query) when is_binary(collectible),
+  defp compose_cards_query({"collectible", collectible}, query) when is_boolean(collectible),
     do: query |> where([card: c], c.collectible == ^collectible)
 
   defp compose_cards_query({"collectible", col}, query) when col in ["no", "false"],
@@ -579,6 +578,21 @@ defmodule Backend.Hearthstone do
     |> where([rarity: r], ilike(r.name, ^rarity) or ilike(r.slug, ^rarity))
   end
 
+  defp compose_cards_query({"format", format}, query) when format in ["standard", "wild"] do
+    subquery = set_group_sets_query(format)
+
+    query
+    |> where([card_set: s], s.slug in subquery(subquery))
+  end
+
+  defp compose_cards_query({"format", _}, query), do: query
+
+  def set_group_sets_query(slug) do
+    from sg in SetGroup,
+      where: sg.slug == ^slug,
+      select: fragment("UNNEST(?)", sg.card_sets)
+  end
+
   defp base_cards_query() do
     from(c in Card,
       as: :card,
@@ -595,8 +609,7 @@ defmodule Backend.Hearthstone do
       left_join: r in assoc(c, :rarity),
       as: :rarity,
       left_join: ss in assoc(c, :spell_school),
-      as: :spell_school,
-      limit: @default_cards_limit
+      as: :spell_school
     )
     |> preload_cards()
   end

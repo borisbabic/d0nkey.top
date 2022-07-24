@@ -5,6 +5,7 @@ defmodule Components.CompetitorsTable do
   alias Backend.Fantasy
   alias Backend.MastersTour
   alias Backend.Fantasy.League
+  alias Backend.Hearthstone.Card
   alias Backend.Fantasy.Competition.Participant
   alias Backend.Fantasy.LeagueTeam
   alias Surface.Components.Form
@@ -42,6 +43,12 @@ defmodule Components.CompetitorsTable do
           <Column label="Competitor">
             {#if player_profile?(@league)}
               <PlayerName player={participant.name}/>
+            {#elseif card?(participant)}
+              <div class="decklist_card_container">
+                <Context get={user: user}>
+                  <Components.DecklistCard card={participant.meta.card} deck_class={"NEUTRAL"} count={card_points(participant.meta.card, @league)} decklist_options={decklist_options(user)}/>
+                </Context>
+              </div>
             {#else}
               <span>{participant.name}</span>
             {/if}
@@ -66,6 +73,23 @@ defmodule Components.CompetitorsTable do
     """
   end
 
+  defp decklist_options(user) do
+    Backend.UserManager.User.decklist_options(user)
+    |> Map.merge(%{show_one: true, show_one_for_legendaries: true})
+  end
+
+  defp card?(%{meta: %{card: %Card{}}}), do: true
+  defp card?(_), do: false
+
+  defp card_points(%{card_set: %{slug: same_slug}}, %{
+         competition: same_slug,
+         point_system: "3_new_1_old"
+       }),
+       do: 3
+
+  defp card_points(_, %{point_system: "3_new_1_old"}), do: 1
+  defp card_points(_, _), do: nil
+
   defp sort(data, nil), do: data
 
   defp sort(data, mt_stats) do
@@ -88,6 +112,7 @@ defmodule Components.CompetitorsTable do
   def mt?(%{competition_type: "masters_tour"}), do: true
   def mt?(_), do: false
 
+  defp cut(participants, %{competition_type: "card_nerfs"}), do: participants |> Enum.take(150)
   defp cut(participants, _), do: participants |> Enum.take(500)
 
   defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),

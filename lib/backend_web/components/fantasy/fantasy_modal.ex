@@ -144,11 +144,25 @@ defmodule Components.FantasyModal do
     else
       []
     end
+    |> add_card_nerfs()
     |> add_lobby_legends()
     |> Kernel.++([
       {"Grandmasters", "grandmasters"},
       {"Battlefy", "battlefy"}
     ])
+  end
+
+  defp add_card_nerfs(previous) do
+    if current_card_nerfs?() do
+      [{"Card Nerfs", "card_nerfs"} | previous]
+    else
+      previous
+    end
+  end
+
+  defp current_card_nerfs?() do
+    today = Date.utc_today()
+    Date.compare(today, ~D[2022-08-03]) == :lt
   end
 
   defp add_lobby_legends(competition_types) do
@@ -187,6 +201,10 @@ defmodule Components.FantasyModal do
     end
   end
 
+  defp competition_options("card_nerfs") do
+    ["murder-at-castle-nathria"]
+  end
+
   defp competition_options(competitions) when is_list(competitions),
     do: competitions |> Enum.map(&{&1 |> competition_name(), &1})
 
@@ -202,6 +220,9 @@ defmodule Components.FantasyModal do
 
   defp point_system_options("battlefy"),
     do: ["swiss_wins"] |> point_system_options()
+
+  defp point_system_options("card_nerfs"),
+    do: ["3_new_1_old"] |> point_system_options()
 
   defp point_system_options(point_systems) when is_list(point_systems),
     do: point_systems |> Enum.map(&{&1 |> Fantasy.League.scoring_display(), &1})

@@ -237,6 +237,7 @@ defmodule Backend.Fantasy.League do
       "total_wins" -> "Total Wins"
       "total_points" -> "Total Points"
       "num_correct" -> "Num Correct"
+      "3_new_1_old" -> "3pts new, 1pt old"
     end
   end
 
