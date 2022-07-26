@@ -84,6 +84,9 @@ defmodule BackendWeb.DeckLive do
               additional_params={replay_params(@deck)}
               path_params={[to_string(@deck.id)]}
               params={@filters}
+              show_deck={false}
+              show_opponent={false}
+              format_filter={false}
               player_class_filter={false}
               includes_filter={false}
               excludes_filter={false}
