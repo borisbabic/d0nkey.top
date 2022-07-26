@@ -186,10 +186,6 @@ defmodule Components.DecksExplorer do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params, params))}
   end
 
-  def handle_info({:update_params, params}, socket) do
-    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
-  end
-
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 
   def rank_options(),
