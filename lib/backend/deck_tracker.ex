@@ -536,6 +536,11 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"status", status}, query),
     do: query |> where([game: g], g.status == ^status)
 
+  defp compose_games_query({"has_replay_url", true}, query),
+    do: query |> where([game: g], not is_nil(g.replay_url))
+
+  defp compose_games_query({"has_replay_url", _}, query), do: query
+
   defp compose_games_query("has_result", query) do
     results = ["win", "loss", "draw"]
     query |> where([game: g], g.status in ^results)
@@ -543,6 +548,12 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query(:not_self_report, query),
     do: query |> where([game: g], g.source != "SELF_REPORT")
+
+  defp compose_games_query({"public", public}, query) when public in ["true", "yes"],
+    do: compose_games_query({"public", true}, query)
+
+  defp compose_games_query({"public", public}, query) when public in ["false", "no"],
+    do: compose_games_query({"public", false}, query)
 
   defp compose_games_query({"public", public}, query) do
     query |> where([game: g], g.public == ^public)
