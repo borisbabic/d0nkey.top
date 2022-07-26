@@ -29,7 +29,15 @@ defmodule Components.ReplayExplorer do
   prop(additional_params, :map, default: %{})
   prop(params, :map, required: true)
   prop(path_params, :any, default: nil)
+
   prop(show_player_btag, :boolean, default: false)
+  prop(show_deck, :boolean, default: true)
+  prop(show_opponent, :boolean, default: true)
+  prop(show_mode, :boolean, default: true)
+  prop(show_rank, :boolean, default: true)
+  prop(show_replay_link, :boolean, default: true)
+  prop(show_played, :boolean, default: true)
+
   prop(format_filter, :boolean, default: true)
   prop(rank_filter, :boolean, default: true)
   prop(period_filter, :boolean, default: true)
@@ -101,7 +109,15 @@ defmodule Components.ReplayExplorer do
         </div>
 
         <div :if={replays = DeckTracker.games(search_filters)}>
-          <ReplaysTable show_player_btag={@show_player_btag} replays={replays}/>
+          <ReplaysTable
+          show_player_btag={@show_player_btag}
+          show_deck={@show_deck}
+          show_opponent={@show_opponent}
+          show_mode={@show_mode}
+          show_rank={@show_rank}
+          show_replay_link={@show_replay_link}
+          show_played={@show_played}
+          replays={replays}/>
           <div :if={!(Enum.any?(replays))} >
             <br>
             <br>
