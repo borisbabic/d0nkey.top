@@ -41,9 +41,11 @@ defmodule Backend.PrioritizedBattletagCache do
 
   def get_long_or_short(bt) when is_binary(bt) do
     full = get(bt)
-    shortened = with nil <- bt |> InvitedPlayer.shorten_battletag() |> get() do
-      bt |> InvitedPlayer.shorten_battletag() |> Backend.MastersTour.name_hacks() |> get
-    end
+
+    shortened =
+      with nil <- bt |> InvitedPlayer.shorten_battletag() |> get() do
+        bt |> InvitedPlayer.shorten_battletag() |> Backend.MastersTour.name_hacks() |> get
+      end
 
     {full, shortened}
 
@@ -54,6 +56,8 @@ defmodule Backend.PrioritizedBattletagCache do
       {f, _} -> f
     end
   end
+
+  def get_long_or_short(_), do: nil
 
   @spec get([String.t()] | String.t()) :: Battletag.t() | nil
   def get(list) when is_list(list), do: list |> Enum.find(nil, &get/1)

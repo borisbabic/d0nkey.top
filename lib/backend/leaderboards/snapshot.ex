@@ -66,11 +66,16 @@ defmodule Backend.Leaderboards.Snapshot.Entry do
   @required [:account_id, :rank]
   @primary_key {:rank, :integer, autogenerate: false}
   embedded_schema do
-    field :account_id, :string
+    field :account_id, :string, default: "------"
     field :rating, :integer
   end
 
   @doc false
+  def changeset(entry, attrs = %{account_id: nil}) do
+    new_attrs = Map.put(attrs, :account_id, "------")
+    changeset(entry, new_attrs)
+  end
+
   def changeset(entry, attrs) do
     entry
     |> cast(attrs, @all_attrs)
