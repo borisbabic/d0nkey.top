@@ -59,3 +59,28 @@ window['nitroAds'].createAd('nitropay-interstitial', {
   "mediaQuery": "(min-width: 320px) and (max-width: 767px)"
 });
 </script>
+
+
+<script type="text/javascript">
+  window["nitroAds"].createAd("nitropay-video-test", {
+    format: "video-slider",
+    demo: false,
+    sizes: [
+      [
+        "426",
+        "240"
+      ],
+      [
+        "640",
+        "360"
+      ]
+
+    ],
+    report: {
+      enabled: true,
+      wording: "Report Ad",
+      position: "fixed-bottom-right"
+    },
+    mediaQuery: "(min-width: 1025px), (min-width: 768px) and (max-width: 1024px)"
+  });
+</script>
