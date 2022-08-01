@@ -21,4 +21,16 @@ defmodule Backend.Hearthstone.Keyword do
     |> cast(attrs, [:id, :name, :slug, :game_modes, :ref_text, :text])
     |> validate_required([:id, :name, :slug, :game_modes, :ref_text, :text])
   end
+
+  @spec secret?(%__MODULE__{}) :: boolean
+  def secret?(%{slug: "secret"}), do: true
+  def secret?(_), do: false
+
+  @spec questline?(%__MODULE__{}) :: boolean
+  def questline?(%{slug: "questline"}), do: true
+  def questline?(_), do: false
+
+  @spec quest?(%__MODULE__{}) :: boolean
+  def quest?(%{slug: "quest"}), do: true
+  def quest?(_), do: false
 end

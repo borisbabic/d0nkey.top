@@ -2,7 +2,9 @@
 defmodule Backend.Hearthstone.DeckArchetyper do
   @moduledoc "Determines the archetype of a deck"
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.Card
 
+  @type card_info :: %{card_names: [String.t()], full_cards: [Card.t()]}
   @spec archetype(integer(), [integer()], String.t()) :: atom() | nil
   def archetype(format, cards, class),
     do: archetype(%{format: format, cards: cards, class: class})
@@ -17,241 +19,290 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   def archetype(%{format: 2, cards: c, class: "DEMONHUNTER"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander DH"
-      boar?(card_names) -> :"Boar Demon Hunter"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Demon Hunter"
-      deathrattle_dh?(card_names) -> :"Deathrattle DH"
-      big_dh?(card_names) -> :"Big Demon Hunter"
-      murloc?(card_names) -> :"Murloc Demon Hunter"
-      fel_dh?(card_names) -> :"Fel Demon Hunter"
-      true -> "Demon Hunter"
+      boar?(card_info) -> :"Boar Demon Hunter"
+      quest?(card_info) || questline?(card_info) -> :"Quest Demon Hunter"
+      deathrattle_dh?(card_info) -> :"Deathrattle DH"
+      clean_slate_dh?(card_info) -> :"Clean Slate DH"
+      big_dh?(card_info) -> :"Big Demon Hunter"
+      murloc?(card_info) -> :"Murloc Demon Hunter"
+      fel_dh?(card_info) -> :"Fel Demon Hunter"
+      true -> minion_type_fallback(card_info, "Demon Hunter")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "DRUID"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Druid"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Druid"
-      boar?(card_names) -> :"Boar Druid"
-      vanndar?(card_names) -> :"Vanndar Druid"
-      celestial_druid?(card_names) -> :"Celestial Druid"
-      ramp_druid?(card_names) -> :"Ramp Druid"
-      murloc?(card_names) -> :"Murloc Druid"
-      "Lady Prestor" in card_names -> :"Prestor Druid"
-      aggro_druid?(card_names) -> :"Aggro Druid"
-      true -> nil
+      quest?(card_info) || questline?(card_info) -> :"Quest Druid"
+      boar?(card_info) -> :"Boar Druid"
+      vanndar?(card_info) -> :"Vanndar Druid"
+      celestial_druid?(card_info) -> :"Celestial Druid"
+      ramp_druid?(card_info) -> :"Ramp Druid"
+      murloc?(card_info) -> :"Murloc Druid"
+      "Lady Prestor" in card_info.card_names -> :"Prestor Druid"
+      aggro_druid?(card_info) -> :"Aggro Druid"
+      true -> minion_type_fallback(card_info, "Druid")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "HUNTER"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Hunter"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Hunter"
-      vanndar?(card_names) && big_beast_hunter?(card_names) -> :"Vanndar Beast Hunter"
-      vanndar?(card_names) -> :"Vanndar Hunter"
-      big_beast_hunter?(card_names) -> :"Big Beast Hunter"
-      beast_hunter?(card_names) -> :"Beast Hunter"
-      murloc?(card_names) -> :"Murloc Hunter"
-      boar?(card_names) -> :"Boar Hunter"
-      aggro_hunter?(card_names) -> :"Aggro Hunter"
-      true -> nil
+      quest?(card_info) || questline?(card_info) -> :"Quest Hunter"
+      vanndar?(card_info) && big_beast_hunter?(card_info) -> :"Vanndar Beast Hunter"
+      vanndar?(card_info) -> :"Vanndar Hunter"
+      big_beast_hunter?(card_info) -> :"Big Beast Hunter"
+      beast_hunter?(card_info) -> :"Beast Hunter"
+      murloc?(card_info) -> :"Murloc Hunter"
+      boar?(card_info) -> :"Boar Hunter"
+      aggro_hunter?(card_info) -> :"Aggro Hunter"
+      wildseed_hunter?(card_info) -> :"Wildseed Hunter"
+      true -> minion_type_fallback(card_info, "Hunter")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "MAGE"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Mage"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Mage"
-      vanndar?(card_names) -> "Vanndar Mage"
-      naga_mage?(card_names) -> :"Naga Mage"
-      mech_mage?(card_names) -> :"Mech Mage"
-      ping_mage?(card_names) -> :"Ping Mage"
-      big_spell_mage?(card_names) -> :"Big Spell Mage"
-      murloc?(card_names) -> :"Murloc Mage"
-      boar?(card_names) -> :"Boar Mage"
-      true -> nil
+      quest?(card_info) || questline?(card_info) -> :"Quest Mage"
+      vanndar?(card_info) -> :"Vanndar Mage"
+      secret_mage?(card_info) -> :"Secret Mage"
+      naga_mage?(card_info) -> :"Naga Mage"
+      mech_mage?(card_info) -> :"Mech Mage"
+      ping_mage?(card_info) -> :"Ping Mage"
+      skeleton_mage?(card_info) -> :"Spooky Mage"
+      big_spell_mage?(card_info) -> :"Big Spell Mage"
+      murloc?(card_info) -> :"Murloc Mage"
+      boar?(card_info) -> :"Boar Mage"
+      true -> minion_type_fallback(card_info, "Mage")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "PALADIN"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
+      highlander?(c) && pure_paladin?(card_info) -> :"Highlander Pure Paladin"
+      pure_paladin?(card_info) -> :"Pure Paladin"
       highlander?(c) -> :"Highlander Paladin"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Paladin"
-      handbuff_paladin?(card_names) -> :"Handbuff Paladin"
-      mech_paladin?(card_names) -> :"Mech Paladin"
-      holy_paladin?(card_names) -> :"Holy Paladin"
-      kazakusan?(card_names) -> :"Kazakusan Paladin"
-      vanndar?(card_names) -> "Vanndar Paladin"
-      murloc?(card_names) -> :"Murloc Paladin"
-      boar?(card_names) -> :"Boar Paladin"
-      true -> nil
+      quest?(card_info) || questline?(card_info) -> :"Quest Paladin"
+      handbuff_paladin?(card_info) -> :"Handbuff Paladin"
+      mech_paladin?(card_info) -> :"Mech Paladin"
+      holy_paladin?(card_info) -> :"Holy Paladin"
+      kazakusan?(card_info) -> :"Kazakusan Paladin"
+      vanndar?(card_info) -> :"Vanndar Paladin"
+      murloc?(card_info) -> :"Murloc Paladin"
+      boar?(card_info) -> :"Boar Paladin"
+      true -> minion_type_fallback(card_info, "Paladin")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "PRIEST"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Priest"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Priest"
-      boar?(card_names) -> :"Boar Priest"
-      wig_priest?(card_names) -> :"Wig Priest"
-      shellfish_priest?(card_names) -> :"Shellfish Priest"
-      vanndar?(card_names) && shadow_priest?(card_names) -> :"Vanndar Shadow Priest"
-      vanndar?(card_names) -> :"Vanndar Priest"
-      shadow_priest?(card_names) -> :"Shadow Priest"
-      murloc?(card_names) -> :"Murloc Priest"
-      true -> nil
+      quest?(card_info) || questline?(card_info) -> :"Quest Priest"
+      boar?(card_info) -> :"Boar Priest"
+      wig_priest?(card_info) -> :"Wig Priest"
+      shellfish_priest?(card_info) -> :"Shellfish Priest"
+      vanndar?(card_info) && shadow_priest?(card_info) -> :"Vanndar Shadow Priest"
+      vanndar?(card_info) -> :"Vanndar Priest"
+      thief_priest?(card_info) -> :"Thief Priest"
+      shadow_priest?(card_info) -> :"Shadow Priest"
+      murloc?(card_info) -> :"Murloc Priest"
+      true -> minion_type_fallback(card_info, "Priest")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "ROGUE"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Rogue"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Rogue"
-      mine_rogue?(card_names) -> :"Mine Rogue"
-      pirate_rogue?(card_names) && thief_rogue?(card_names) -> :"Pirate Thief Rogue"
-      thief_rogue?(card_names) -> :"Thief Rogue"
-      boar?(card_names) -> :"Boar Rogue"
-      pirate_rogue?(card_names) -> :"Pirate Rogue"
-      vanndar?(card_names) -> :"Vanndar Rogue"
-      deathrattle_rogue?(card_names) -> :"Deathrattle Rogue"
-      murloc?(card_names) -> :"Murloc Rogue"
-      true -> nil
+      quest?(card_info) || questline?(card_info) -> :"Quest Rogue"
+      mine_rogue?(card_info) -> :"Mine Rogue"
+      pirate_rogue?(card_info) && thief_rogue?(card_info) -> :"Pirate Thief Rogue"
+      thief_rogue?(card_info) -> :"Thief Rogue"
+      boar?(card_info) -> :"Boar Rogue"
+      pirate_rogue?(card_info) -> :"Pirate Rogue"
+      vanndar?(card_info) -> :"Vanndar Rogue"
+      secret_rogue?(card_info) -> :"Secret Rogue"
+      miracle_rogue?(card_info) -> :"Miracle Rogue"
+      deathrattle_rogue?(card_info) -> :"Deathrattle Rogue"
+      true -> minion_type_fallback(card_info, "Rogue")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "SHAMAN"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Shaman"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Shaman"
-      boar?(card_names) -> :"Boar Shaman"
-      vanndar?(card_names) -> :"Vanndar Shaman"
-      elemental_shaman?(card_names) -> :"Elemental Shaman"
-      burn_shaman?(card_names) -> :"Burn Shaman"
-      moist_shaman?(card_names) -> :"Moist Shaman"
-      control_shaman?(card_names) -> :"Control Shaman"
-      murloc?(card_names) -> :"Murloc Shaman"
-      bloodlust_shaman?(card_names) -> :"Bloodlust Shaman"
+      quest?(card_info) || questline?(card_info) -> :"Quest Shaman"
+      boar?(card_info) -> :"Boar Shaman"
+      vanndar?(card_info) -> :"Vanndar Shaman"
+      "Gigantotem" in card_info.card_names -> :"Totem Shaman"
+      elemental_shaman?(card_info) -> :"Elemental Shaman"
+      evolve_shaman?(card_info) -> :"Evolve Shaman"
+      burn_shaman?(card_info) -> :"Burn Shaman"
+      moist_shaman?(card_info) -> :"Moist Shaman"
+      control_shaman?(card_info) -> :"Control Shaman"
+      murloc?(card_info) -> :"Murloc Shaman"
+      minion_type_fallback(card_info, "Shaman") -> minion_type_fallback(card_info, "Shaman")
+      bloodlust_shaman?(card_info) -> :"Bloodlust Shaman"
       true -> nil
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "WARLOCK"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Warlock"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Warlock"
-      murloc?(card_names) -> :"Murloc Warlock"
-      boar?(card_names) -> :"Boar Warlock"
-      phylactery_warlock?(card_names) -> :"Phylactery Warlock"
-      agony_warlock?(card_names) -> :"Agony Warlock"
-      abyssal_warlock?(card_names) -> :"Abyssal Warlock"
-      "Lord Jaraxxus" in card_names -> :"J-Lock"
-      true -> nil
+      quest?(card_info) || questline?(card_info) -> :"Quest Warlock"
+      murloc?(card_info) -> :"Murloc Warlock"
+      boar?(card_info) -> :"Boar Warlock"
+      implock?(card_info) -> :Implock
+      phylactery_warlock?(card_info) -> :"Phylactery Warlock"
+      handlock?(card_info) -> :Handlock
+      agony_warlock?(card_info) -> :"Agony Warlock"
+      abyssal_warlock?(card_info) -> :"Abyssal Warlock"
+      "Lord Jaraxxus" in card_info.card_names -> :"J-Lock"
+      true -> minion_type_fallback(card_info, "Warlock")
     end
   end
 
   def archetype(%{format: 2, cards: c, class: "WARRIOR"}) do
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) -> :"Highlander Warrior"
-      questline?(full_cards) && warrior_aoe?(card_names) -> :"Quest Control Warrior"
-      quest?(full_cards) || questline?(full_cards) -> :"Quest Warrior"
-      galvangar_combo?(card_names) -> :"Charge Warrior"
-      warrior_aoe?(card_names) -> :"Control Warrior"
-      warrior_aoe?(card_names) -> :"Control Warrior"
-      weapon_warrior?(card_names) -> :"Weapon Warrior"
-      murloc?(card_names) -> :"Murloc Warrior"
-      boar?(card_names) -> :"Boar Warrior"
-      true -> nil
+      questline?(card_info) && warrior_aoe?(card_info) -> :"Quest Control Warrior"
+      quest?(card_info) || questline?(card_info) -> :"Quest Warrior"
+      galvangar_combo?(card_info) -> :"Charge Warrior"
+      enrage?(card_info) -> :"Enrage Warrior"
+      warrior_aoe?(card_info) -> :"Control Warrior"
+      weapon_warrior?(card_info) -> :"Weapon Warrior"
+      murloc?(card_info) -> :"Murloc Warrior"
+      boar?(card_info) -> :"Boar Warrior"
+      true -> minion_type_fallback(card_info, "Warrior")
     end
   end
 
   def archetype(%{class: class, cards: c, format: 1}) do
     class_name = Deck.class_name(class)
-    {full_cards, card_names} = full_cards(c)
+    card_info = full_cards(c)
 
     cond do
       highlander?(c) ->
         String.to_atom("Highlander #{class_name}")
 
-      quest?(full_cards) || questline?(full_cards) ->
+      quest?(card_info) || questline?(card_info) ->
         String.to_atom("Quest #{class_name}")
 
-      boar?(card_names) ->
+      boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
 
-      odd?(card_names) ->
+      odd?(card_info) ->
         String.to_atom("Odd #{class_name}")
 
-      even?(card_names) ->
+      even?(card_info) ->
         String.to_atom("Even #{class_name}")
 
       true ->
-        nil
+        minion_type_fallback(card_info, class_name)
     end
   end
 
   def archetype(_), do: nil
 
-  defp deathrattle_dh?(card_names),
+  defp deathrattle_dh?(%{card_names: card_names}),
     do:
       "Death Speaker Blackthorn" in card_names ||
         ("Tuskpiercier" in card_names && "Razorboar" in card_names)
 
-  defp fel_dh?(card_names) do
-    min_count?(card_names, 4, [
+  defp fel_dh?(ci) do
+    min_count?(ci, 4, [
       "Fury (Rank 1)",
       "Chaos Strike",
       "Fel Barrage",
       "Predation",
       "Multi Strike"
     ]) &&
-      min_count?(card_names, 1, [
+      min_count?(ci, 1, [
         "Fossil Fanatic",
         "Jace Darkweaver",
         "Felgorger"
       ])
   end
 
-  defp big_dh?(card_names), do: "Sigil of Reckoning" in card_names || vanndar?(card_names)
+  defp big_dh?(ci = %{card_names: card_names}),
+    do: "Sigil of Reckoning" in card_names || vanndar?(ci)
 
-  defp celestial_druid?(card_names), do: "Celestial Alignment" in card_names
-
-  defp ramp_druid?(card_names),
-    do: "Wildheart Guff" in card_names && ("Wild Growth" in card_names || "Nourish" in card_names)
-
-  defp aggro_druid?(card_names),
+  defp clean_slate_dh?(ci),
     do:
-      "Oracle of Elune" in card_names || "Clawflury Adept" in card_names ||
-        "Peasant" in card_names || "Encumbered Pack Mule" in card_names
+      min_count?(ci, 4, [
+        "Dispose of Evidence",
+        "Magnifying Glaive",
+        "Kryxis the Voracious",
+        "Bibliomite"
+      ])
 
-  defp big_beast_hunter?(card_names),
+  defp relic?(ci),
     do:
-      beast_hunter?(card_names) &&
-        min_count?(card_names, 1, ["King Krush", "Wing Commander Ichman"])
+      min_count?(ci, 4, [
+        "Relic of Extinction",
+        "Relic of Phantasms",
+        "Relic Vault",
+        "Relic Of Dimensions",
+        "Artificer Xy'mox"
+      ])
 
-  defp beast_hunter?(card_names),
+  def prepend_relic(name, ci) do
+    if relic?(ci) do
+      "Relic " <> to_string(name)
+    else
+      name
+    end
+  end
+
+  defp celestial_druid?(%{card_names: card_names}), do: "Celestial Alignment" in card_names
+
+  defp big_druid?(ci),
     do:
-      min_count?(card_names, 2, [
+      min_count?(ci, 3, [
+        "Abominable Lieutenant",
+        "Sesselle of the Fae Court",
+        "Neptulon the Tidehunter",
+        "Stoneborn General"
+      ])
+
+  defp ramp_druid?(ci = %{card_names: card_names}),
+    do:
+      "Wildheart Guff" in card_names &&
+        min_count?(ci, 2, ["Wild Growth", "Nourish", "Widowbloom Seedsman"])
+
+  defp aggro_druid?(ci),
+    do:
+      min_count?(ci, 1, ["Oracle of Elune", "Clawflury Adept", "Peasant", "Encumbered Pack Mule"])
+
+  defp big_beast_hunter?(ci),
+    do: beast_hunter?(ci) && min_count?(ci, 1, ["King Krush", "Wing Commander Ichman"])
+
+  defp beast_hunter?(ci),
+    do:
+      min_count?(ci, 2, [
         "Selective Breeder",
         "Stormpike Battle Ram",
         "Azsharan Saber",
@@ -259,63 +310,147 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Pet Collector"
       ])
 
-  defp aggro_hunter?(card_names),
+  defp aggro_hunter?(ci),
     do:
-      ("Quick Shot" in card_names || "Piercing Shot" in card_names) &&
-        ("Peasant" in card_names || "Irondeep Trogg" in card_names ||
-           "Gnome Private" in card_names)
+      (min_count?(ci, 1, ["Bloodseeker", "Quick Shot", "Piercing Shot"]) &&
+         min_count?(ci, 1, ["Peasant", "Irondeep Trogg", "Gnome Private"])) ||
+        "Beaststalker Tavish" not in ci.card_names
 
-  defp pirate_rogue?(card_names),
-    do: "Swordfish" in card_names || "Pirate Admiral Hooktusk" in card_names
+  def wildseed_hunter?(ci),
+    do: min_count?(ci, 3, ["Spirit Poacher", "Stag Charge", "Wild Spirits", "Ara'lon"])
 
-  defp thief_rogue?(card_names), do: "Maestra of the Masquerade" in card_names
+  defp pirate_rogue?(ci),
+    do: min_count?(ci, 1, ["Swordfish", "Pirate Admiral Hooktusk"])
 
-  defp mine_rogue?(card_names),
-    do: "Naval Mine" in card_names && "Snowfall Graveyard" in card_names
+  defp thief_rogue?(%{card_names: card_names}), do: "Maestra of the Masquerade" in card_names
 
-  defp deathrattle_rogue?(card_names), do: "Snowfall Graveyard" in card_names
+  defp mine_rogue?(ci),
+    do: min_count?(ci, 2, ["Naval Mine", "Snowfall Graveyard"])
 
-  defp naga_mage?(card_names), do: "Spitelash Siren" in card_names
-  defp mech_mage?(card_names), do: "Mecha-Shark" in card_names
-  defp ping_mage?(card_names), do: "Wildfire" in card_names
-
-  defp big_spell_mage?(card_names),
+  defp secret_rogue?(ci),
     do:
-      !mech_mage?(card_names) && "Grey Sage Parrot" in card_names &&
-        ("Rune of the Archmage" in card_names || "Drakefire Amulet" in card_names)
+      min_secret_count?(ci, 3) &&
+        min_count?(ci, 2, [
+          "Ghastly Gravedigger",
+          "Halkias",
+          "Private Eye",
+          "Anonymous Informant",
+          "Sketchy Stranger",
+          "Sunreaver Spy",
+          "Crossroads Gossiper",
+          "Scuttlebutt Ghoul"
+        ])
 
-  defp mech_paladin?(card_names), do: "Radar Detector" in card_names
+  defp miracle_rogue?(ci),
+    do:
+      min_count?(ci, 4, [
+        "Necrolord Draka",
+        "Gadgetzan Auctioneer",
+        "Field Contact",
+        "Sketchy Information",
+        "Sinstone Graveyard",
+        "Loan Shark"
+      ])
 
-  defp holy_paladin?(card_names),
+  defp deathrattle_rogue?(%{card_names: card_names}), do: "Snowfall Graveyard" in card_names
+
+  defp skeleton_mage?(ci),
+    do:
+      min_count?(ci, 4, [
+        "Volatile Skeleton",
+        "Nightcloak Sanctum",
+        "Cold Case",
+        "Deathborne",
+        "Kel'Thuzad, the Inevitable"
+      ])
+
+  defp secret_mage?(ci),
+    do:
+      min_count?(ci, 2, [
+        "Anonymous Informant",
+        "Chatty Bartender",
+        "Orion, Mansion Manager",
+        "Sunreaver Spy",
+        "Crossroads Gossiper",
+        "Scuttlebutt Ghoul"
+      ]) ||
+        min_secret_count?(ci, 3)
+
+  defp naga_mage?(%{card_names: card_names}), do: "Spitelash Siren" in card_names
+  defp mech_mage?(%{card_names: card_names}), do: "Mecha-Shark" in card_names
+  defp ping_mage?(%{card_names: card_names}), do: "Wildfire" in card_names
+
+  defp big_spell_mage?(ci = %{card_names: card_names}),
+    do:
+      !mech_mage?(ci) && "Grey Sage Parrot" in card_names &&
+        min_count?(ci, 1, ["Rune of the Archmage", "Drakefire Amulet"])
+
+  defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &not_paladin?/1)
+
+  defp not_paladin?(card) do
+    case Card.class(card, "PALADIN") do
+      {:ok, "PALADIN"} -> false
+      _ -> true
+    end
+  end
+
+  defp mech_paladin?(%{card_names: card_names}), do: "Radar Detector" in card_names
+
+  defp holy_paladin?(ci = %{card_names: card_names}),
     do:
       "The Garden's Grace" in card_names &&
-        ("Righteous Defense" in card_names || "Battle Vicar" in card_names ||
-           "Knight of Anointment" in card_names)
+        min_count?(ci, 1, ["Righteous Defense", "Battle Vicar", "Knight of Anointment"])
 
-  defp handbuff_paladin?(card_names),
+  defp handbuff_paladin?(%{card_names: card_names}),
     do:
       "Prismatic Jewel Kit" in card_names &&
         ("First Blade of Wyrnn" in card_names || "Overlord Runthak" in card_names)
 
-  defp shellfish_priest?(card_names),
+  defp shellfish_priest?(%{card_names: card_names}),
     do: "Selfish Shellfish" in card_names && "Xyrella, the Devout" in card_names
 
-  defp wig_priest?(card_names), do: "Serpent Wig" in card_names
-  defp shadow_priest?(card_names), do: "Darkbishop Benedictus" in card_names
+  defp wig_priest?(%{card_names: card_names}), do: "Serpent Wig" in card_names
+  defp shadow_priest?(%{card_names: card_names}), do: "Darkbishop Benedictus" in card_names
 
-  defp burn_shaman?(card_names),
+  defp thief_priest?(ci),
     do:
-      min_count?(card_names, 3, [
+      min_count?(
+        ci,
+        5,
+        [
+          "Psychic Conjurer",
+          "Mysterious Visitor",
+          "Soothsayer's Caravan",
+          "Copycat",
+          "Identity Theft",
+          "Murloc Holmes",
+          "The Harvester of Envy"
+        ]
+      )
+
+  defp burn_shaman?(ci),
+    do:
+      min_count?(ci, 3, [
         "Frostbite",
         "Lightning Bolt",
         "Scalding Geyser",
         "Bioluminescence"
       ])
 
-  defp moist_shaman?(card_names),
+  defp evolve_shaman?(ci),
+    do:
+      min_count?(ci, 3, [
+        "Convincing Disguise",
+        "Muck Pools",
+        "Primordial Wave",
+        "Baroness Vashj",
+        "Tiny Toys"
+      ])
+
+  defp moist_shaman?(ci = %{card_names: card_names}),
     do:
       "Schooling" in card_names &&
-        min_count?(card_names, 4, [
+        min_count?(ci, 4, [
           "Amalgam of the Deep",
           "Clownfish",
           "Cookie the Cook",
@@ -323,10 +458,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           "Mutanus the Devourer"
         ])
 
-  defp control_shaman?(card_names),
+  defp control_shaman?(ci),
     do:
-      !burn_shaman?(card_names) &&
-        min_count?(card_names, 4, [
+      !burn_shaman?(ci) &&
+        min_count?(ci, 4, [
           "Bolner Hammerbeak",
           "Brann Bronzebeard",
           "Bru'kan of the Elements",
@@ -335,9 +470,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           "Maelstrom Portal"
         ])
 
-  defp elemental_shaman?(card_names),
+  defp elemental_shaman?(ci),
     do:
-      min_count?(card_names, 4, [
+      min_count?(ci, 4, [
         "Kindling Elemental",
         "Wailing Vapor",
         "Menacing Nimbus",
@@ -351,42 +486,73 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Tar Creeper"
       ])
 
-  defp bloodlust_shaman?(card_names), do: "Bloodlust" in card_names
+  defp bloodlust_shaman?(%{card_names: card_names}), do: "Bloodlust" in card_names
 
-  defp phylactery_warlock?(card_names),
+  defp implock?(ci),
+    do:
+      min_count?(ci, 6, [
+        "Flame Imp",
+        "Flustered Librarian",
+        "Bloodbound Imp",
+        "Imp Swarm (Rank 1)",
+        "Impending Catastrophe",
+        "Fiendish Circle",
+        "Imp Gang Boss",
+        "Piggyback Imp",
+        "Mischievous Imp",
+        "Imp King Rafaam"
+      ])
+
+  defp phylactery_warlock?(%{card_names: card_names}),
     do: "Tamsin's Phylactery" in card_names && "Tamsin Roame" in card_names
 
-  defp abyssal_warlock?(card_names),
-    do:
-      min_count?(card_names, 3, ["Dragged Below", "Sira'kess Cultist", "Za'qul", "Abyssal Wave"])
+  defp abyssal_warlock?(ci),
+    do: min_count?(ci, 3, ["Dragged Below", "Sira'kess Cultist", "Za'qul", "Abyssal Wave"])
 
-  defp agony_warlock?(card_names), do: "Curse of Agony" in card_names
+  defp agony_warlock?(%{card_names: card_names}), do: "Curse of Agony" in card_names
 
-  defp galvangar_combo?(card_names, min_count \\ 4),
+  defp handlock?(ci),
+    do: min_count?(ci, 2, ["Anetheron", "Dark Alley Pact", "Entitled Customer", "Twilight Drake"])
+
+  defp enrage?(ci) do
+    min_count?(ci, 5, [
+      "Sanguine Depths",
+      "Warsong Envoy",
+      "Whirlwind",
+      "Anima Extractor",
+      "Crazed Wretch",
+      "Cruel Taskmaster",
+      "Frothing Berserker",
+      "Imbued Axe",
+      "Barrens Blacksmith",
+      "Grommash Hellscream"
+    ])
+  end
+
+  defp galvangar_combo?(ci, min_count \\ 4),
     do:
-      min_count?(card_names, min_count, [
+      min_count?(ci, min_count, [
         "Captain Galvangar",
         "Faceless Manipulator",
         "Battleground Battlemaster",
         "To the Front!"
       ])
 
-  defp warrior_aoe?(card_names, min_count \\ 2),
-    do:
-      min_count?(card_names, min_count, ["Shield Shatter", "Brawl", "Rancor", "Man the Cannons"])
+  defp warrior_aoe?(ci, min_count \\ 2),
+    do: min_count?(ci, min_count, ["Shield Shatter", "Brawl", "Rancor", "Man the Cannons"])
 
-  defp weapon_warrior?(card_names),
+  defp weapon_warrior?(ci),
     do:
-      min_count?(card_names, 3, [
+      min_count?(ci, 3, [
         "Azsharan Trident",
         "Outrider's Axe",
         "Blacksmithing Hammer",
         "Lady Ashvane"
       ])
 
-  defp murloc?(card_names),
+  defp murloc?(ci),
     do:
-      min_count?(card_names, 4, [
+      min_count?(ci, 4, [
         "Murloc Tinyfin",
         "Murloc Tidecaller",
         "Lushwater Scout",
@@ -398,27 +564,66 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Gorloc Ravager"
       ])
 
-  defp min_count?(card_names, min, cards) do
-    min <= cards |> Enum.filter(&(&1 in card_names)) |> Enum.count()
+  defp min_count?(%{card_names: cn}, min, cards) do
+    min <= cards |> Enum.filter(&(&1 in cn)) |> Enum.count()
   end
 
-  defp boar?(card_names), do: "Elwynn Boar" in card_names
-  defp kazakusan?(card_names), do: "Kazakusan" in card_names
+  defp boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names
+  defp kazakusan?(%{card_names: card_names}), do: "Kazakusan" in card_names
   defp highlander?(cards), do: Enum.count(cards) == Enum.count(Enum.uniq(cards))
-  defp vanndar?(card_names), do: "Vanndar Stormpike" in card_names
-  defp quest?(full_cards), do: Enum.any?(full_cards, &(&1.text && &1.text =~ "Quest:"))
-  defp questline?(full_cards), do: Enum.any?(full_cards, &(&1.text && &1.text =~ "Questline:"))
+  defp vanndar?(%{card_names: card_names}), do: "Vanndar Stormpike" in card_names
+  defp quest?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.quest?/1)
+  defp questline?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.questline?/1)
 
-  defp odd?(card_names), do: "Baku the Mooneater" in card_names
-  defp even?(card_names), do: "Grenn Greymane" in card_names
+  defp odd?(%{card_names: card_names}), do: "Baku the Mooneater" in card_names
+  defp even?(%{card_names: card_names}), do: "Grenn Greymane" in card_names
 
+  defp minion_type_fallback(ci, class_part, fallback \\ nil, min_count \\ 6) do
+    with counts = [_ | _] <- minion_type_counts(ci),
+         {type, count} when count >= min_count <- Enum.max_by(counts, &elem(&1, 1)) do
+      "#{type} #{class_part}"
+    else
+      _ -> fallback
+    end
+  end
+
+  defp min_secret_count?(%{full_cards: fc}, min) do
+    secret_count =
+      fc
+      |> Enum.uniq_by(&Card.dbf_id/1)
+      |> Enum.count(&Card.secret?/1)
+
+    min <= secret_count
+  end
+
+  @spec full_cards([integer()]) :: card_info()
   defp full_cards(cards) do
-    Enum.map(cards, fn c ->
-      with card = %{name: name} <- Backend.HearthstoneJson.get_card(c) do
-        {card, name}
-      end
-    end)
-    |> Enum.filter(& &1)
-    |> Enum.unzip()
+    {full_cards, card_names} =
+      Enum.map(cards, fn c ->
+        with card = %{name: name} <- Backend.Hearthstone.get_card(c) do
+          {card, name}
+        end
+      end)
+      |> Enum.filter(& &1)
+      |> Enum.unzip()
+
+    %{full_cards: full_cards, card_names: card_names}
+  end
+
+  @spec minion_type_counts(card_info()) :: [{String.t(), integer()}]
+  defp minion_type_counts(%{full_cards: fc}) do
+    base_counts =
+      fc
+      |> Enum.uniq_by(&Card.dbf_id/1)
+      |> Enum.flat_map(fn
+        %{minion_type: %{name: name}} -> [name]
+        _ -> []
+      end)
+      |> Enum.frequencies()
+
+    {all_count, without_all} = Map.pop(base_counts, "all", 0)
+
+    without_all
+    |> Enum.map(fn {key, val} -> {key, val + all_count} end)
   end
 end
