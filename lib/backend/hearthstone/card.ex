@@ -1,4 +1,5 @@
 defmodule Backend.Hearthstone.Card do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -81,7 +82,7 @@ defmodule Backend.Hearthstone.Card do
     |> validate_required([:id, :name])
   end
 
-  defp update_duels(map = %{duels: %{constructed: cons, relevant: rel}}) do
+  defp update_duels(%{duels: %{constructed: cons, relevant: rel}} = map) do
     map
     |> Map.put(:duels_constructed, cons)
     |> Map.put(:duels_relevant, rel)
@@ -144,7 +145,7 @@ defmodule Backend.Hearthstone.Card do
   def set_name(%{card_set: %{name: name}}), do: name
   def set_name(_), do: nil
 
-  @spec class(card()) :: integer()
+  @spec dbf_id(card()) :: integer()
   def dbf_id(%{dbf_id: id}), do: id
   def dbf_id(%{id: id}), do: id
 
@@ -163,4 +164,16 @@ defmodule Backend.Hearthstone.Card do
     |> Enum.map(&String.downcase/1)
     |> Enum.any?(&(&1 =~ down_search))
   end
+
+  @spec secret?(%__MODULE__{}) :: boolean()
+  def secret?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.secret?/1)
+  def secret?(_), do: false
+
+  @spec questline?(%__MODULE__{}) :: boolean()
+  def questline?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.questline?/1)
+  def questline?(_), do: false
+
+  @spec quest?(%__MODULE__{}) :: boolean()
+  def quest?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.quest?/1)
+  def quest?(_), do: false
 end
