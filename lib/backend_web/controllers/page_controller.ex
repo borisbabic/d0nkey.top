@@ -30,6 +30,10 @@ defmodule BackendWeb.PageController do
     render(conn, "test.html", params)
   end
 
+  def disabled(conn, params) do
+    text(conn, "This page has been temporarily disabled")
+  end
+
   def log(conn, params) do
     ret = Jason.encode!(params, pretty: true)
     IO.inspect(conn)
