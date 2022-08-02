@@ -96,6 +96,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       pure_paladin?(card_info) -> :"Pure Paladin"
       highlander?(c) -> :"Highlander Paladin"
       quest?(card_info) || questline?(card_info) -> :"Quest Paladin"
+      dude_paladin?(card_info) -> :"Dude Paladin"
       handbuff_paladin?(card_info) -> :"Handbuff Paladin"
       mech_paladin?(card_info) -> :"Mech Paladin"
       holy_paladin?(card_info) -> :"Holy Paladin"
@@ -405,6 +406,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     do:
       "Prismatic Jewel Kit" in card_names &&
         ("First Blade of Wyrnn" in card_names || "Overlord Runthak" in card_names)
+
+  defp dude_paladin?(ci),
+    do:
+      min_count?(ci, 2, [
+        "Promotion",
+        "Soldier's Caravan",
+        "Stewart the Steward",
+        "Warhorse Trainer",
+        "Stand Against Darkness"
+      ])
 
   defp shellfish_priest?(%{card_names: card_names}),
     do: "Selfish Shellfish" in card_names && "Xyrella, the Devout" in card_names
