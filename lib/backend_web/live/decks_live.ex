@@ -8,7 +8,7 @@ defmodule BackendWeb.DecksLive do
   data(filters, :map)
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
-  def render(assigns) do
+  def render(assigns = %{not_disabled: true}) do
     ~F"""
     <Context put={user: @user} >
       <div>
@@ -21,6 +21,12 @@ defmodule BackendWeb.DecksLive do
         <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters}/>
       </div>
     </Context>
+    """
+  end
+
+  def render(assigns) do
+    ~F"""
+    This page has been temporarily disabled. May I suggest trying <a href="/streamer-decks">Streamer Decks</a> in the meantime? Or checking the <a href="/">frontpage</a>
     """
   end
 
