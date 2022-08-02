@@ -138,7 +138,7 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           # https://twitter.com/HSesports/status/1541483238866046977
           ap: ~N[2022-07-31T15:00:00],
           eu: ~N[2022-07-31T22:00:00],
-          us: ~N[2022-07-31T07:00:00]
+          us: ~N[2022-08-01T07:00:00]
         }
       }
     ]
