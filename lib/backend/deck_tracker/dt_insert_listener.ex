@@ -12,7 +12,7 @@ defmodule Hearthstone.DeckTracker.InsertListener do
     {:ok, %{}}
   end
 
-  def handle_info(%{event: "insert", topic: "entity_dt_games", payload: %{id: id}}, state) do
+  def handle_info(%{event: "INSERT", topic: "entity_dt_games", payload: %{id: id}}, state) do
     process_inserted_id(id)
     {:noreply, state}
   end
@@ -27,6 +27,8 @@ defmodule Hearthstone.DeckTracker.InsertListener do
   end
 
   def handle_live_dt_game(game, twitch_id) do
-    Backend.Streaming.log_streamer_game(twitch_id, game)
+    with {:ok, streamer_deck} <- Backend.Streaming.log_streamer_game(twitch_id, game) do
+      Backend.Streaming.StreamerDeckBag.log(streamer_deck)
+    end
   end
 end
