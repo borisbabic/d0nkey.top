@@ -84,6 +84,7 @@ defmodule Backend.Streaming do
 
     Repo.one(query)
   end
+
   def get_streamer_by_twitch_id(twitch_id) do
     query =
       from s in Streamer,
@@ -100,6 +101,7 @@ defmodule Backend.Streaming do
       s -> {:ok, s}
     end
   end
+
   def get_or_create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
     case get_streamer_by_twitch_id(twitch_id) do
       nil -> create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id)
@@ -114,6 +116,7 @@ defmodule Backend.Streaming do
     |> Streamer.changeset(attrs)
     |> Repo.insert()
   end
+
   def create_streamer(hsreplay_twitch_login, hsreplay_twitch_display, twitch_id) do
     other_attrs = %{
       hsreplay_twitch_login: hsreplay_twitch_login,
@@ -194,21 +197,28 @@ defmodule Backend.Streaming do
   end
 
   defp insert_new(twitch_streams) do
-    ids = Enum.map(twitch_streams, & to_string(&1.user_id))
-    query = from s in Streamer,
-      where: s.twitch_id in ^ids,
-      select: s.twitch_id
+    ids = Enum.map(twitch_streams, &to_string(&1.user_id))
+
+    query =
+      from s in Streamer,
+        where: s.twitch_id in ^ids,
+        select: s.twitch_id
 
     existing = Repo.all(query) |> Enum.map(&to_string/1)
+
     twitch_streams
-    |> Enum.reject(& to_string(&1.user_id) in existing)
+    |> Enum.reject(&(to_string(&1.user_id) in existing))
     |> Enum.reduce(Multi.new(), fn stream, multi ->
-      attrs = %{twitch_login: Twitch.Stream.login(stream), twitch_display: stream.user_name, twitch_id: stream.user_id}
+      attrs = %{
+        twitch_login: Twitch.Stream.login(stream),
+        twitch_display: stream.user_name,
+        twitch_id: stream.user_id
+      }
+
       cs = %Streamer{} |> Streamer.changeset(attrs)
       Multi.insert(multi, "twitch_id_insert" <> to_string(stream.user_id), cs)
     end)
     |> Repo.transaction()
-
   end
 
   def update_streamer_deck(ds = %StreamerDeck{}, dto = %StreamerDeckInfoDto{}) do
@@ -341,6 +351,9 @@ defmodule Backend.Streaming do
       s.hsreplay_twitch_login in ^twitch_login or s.twitch_login in ^twitch_login
     )
   end
+
+  defp compose_streamer_deck_query({"twitch_id", twitch_id}, query) when is_integer(twitch_id),
+    do: compose_streamer_deck_query({"twitch_id", to_string(twitch_id)}, query)
 
   defp compose_streamer_deck_query({"twitch_id", <<twitch_id::binary>>}, query),
     do: compose_streamer_deck_query({"twitch_id", String.split(twitch_id, ",")}, query)
