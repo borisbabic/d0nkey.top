@@ -9,14 +9,15 @@ defmodule Components.DeckStreamingInfo do
 
   def render(
         assigns = %{
-          info: %{
-            peak: peak,
-            peaked_by: pb,
-            streamers: s,
-            first_streamed_by: fsb
-          },
+          info:
+            %{
+              peak: peak,
+              peaked_by: pb,
+              streamers: s,
+              first_streamed_by: fsb
+            } = info,
           deck: deck,
-          streamer_decks_path: sdp
+          streamer_deck_path: sdp
         }
       ) do
     legend_rank = render_legend_rank(peak)
@@ -26,10 +27,10 @@ defmodule Components.DeckStreamingInfo do
         Peaked By: {pb}
       </div>
       <div :if={legend_rank}> {legend_rank} </div>
-      <div class="tag column" if:={is_binary(fsb)}>
+      <div class="tag column" :if={is_binary(fsb)}>
         First Streamed: {fsb}
       </div>
-      <a href={"#{sdp}"} class="tag column is-link" if:= {s && Enum.any?(s)}>
+      <a href={"#{sdp}"} class="tag column is-link" :if= {s && Enum.any?(s)}>
         # Streamed: {s |> Enum.count()}
       </a>
       <StreamingDeckNow deck={deck}/>
