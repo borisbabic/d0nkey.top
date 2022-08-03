@@ -114,6 +114,10 @@ defmodule Backend.Application do
           start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
         },
         %{
+          id: Backend.Streaming.StreamerDeckBag,
+          start: {Backend.Streaming.StreamerDeckBag, :start_link, [[]]}
+        },
+        %{
           id: Backend.PlayerCountryPreferenceBag,
           start: {Backend.PlayerCountryPreferenceBag, :start_link, [[]]}
         },

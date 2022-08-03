@@ -2,6 +2,9 @@ defmodule BackendWeb.StreamingController do
   use BackendWeb, :controller
   @moduledoc false
 
+  alias Backend.Streaming.StreamerDeckBag
+  alias Backend.Streaming
+
   def streamer_instructions(conn, params) do
     render(
       conn,
@@ -36,7 +39,44 @@ defmodule BackendWeb.StreamingController do
   def streamer_decks(conn, %{"twitch_id" => "141981764"}) do
     render(conn, BackendWeb.PageView, "rick_roll.html", %{})
   end
+
   def streamer_decks(conn, params) do
+    streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :hsreplay_twitch_display}})
+
+    page_title =
+      case params["twitch_login"] do
+        nil -> "Streamer decks"
+        tl -> "#{tl}'s decks"
+      end
+
+    attrs =
+      base_streamer_deck_attrs(params)
+      |> Map.merge(%{
+        page_title: page_title,
+        streamers: streamers,
+        conn: conn
+      })
+
+    render(conn, "streamer_decks.html", attrs)
+  end
+
+  defp base_streamer_deck_attrs(params) do
+    case StreamerDeckBag.get(params) do
+      {:ok, streamer_decks} ->
+        %{
+          streamer_decks: Enum.take(streamer_decks, 20),
+          archetypes: [],
+          include_cards: [],
+          exclude_cards: [],
+          criteria: params |> Map.merge(%{"offset" => 0, "limit" => 20})
+        }
+
+      _ ->
+        base_attrs_from_params(params)
+    end
+  end
+
+  def base_attrs_from_params(params) do
     # used to only be include cards, but then I added exclude_cards so cards is there for backwards compatibility
     include_cards =
       ["cards", "include_cards"]
@@ -70,25 +110,15 @@ defmodule BackendWeb.StreamingController do
       |> Map.put("exclude_cards", exclude_cards)
       |> add_archetypes_filter(archetypes)
 
-    streamer_decks = Backend.Streaming.streamer_decks(criteria)
-    streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :hsreplay_twitch_display}})
+    streamer_decks = Streaming.streamer_decks(criteria)
 
-    page_title =
-      case params["twitch_login"] do
-        nil -> "Streamer decks"
-        tl -> "#{tl}'s decks"
-      end
-
-    render(conn, "streamer_decks.html", %{
+    %{
       streamer_decks: streamer_decks,
-      conn: conn,
-      streamers: streamers,
       archetypes: archetypes,
-      page_title: page_title,
       include_cards: include_cards,
       exclude_cards: exclude_cards,
       criteria: criteria
-    })
+    }
   end
 
   # The params was renamed from legend to best_legend_rank.
