@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone do
   alias Ecto.Multi
   alias Backend.Repo
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.DeckBag
   alias Backend.Hearthstone.DeckArchetyper
   alias Backend.Hearthstone.Lineup
   alias Backend.Hearthstone.LineupDeck
@@ -174,7 +175,11 @@ defmodule Backend.Hearthstone do
 
   def deck(%{id: id}) when is_integer(id), do: deck(id)
   def deck(%{cards: cards, hero: hero, format: format}), do: deck(cards, hero, format)
-  def deck(id) when is_integer(id), do: Repo.get(Deck, id)
+  def deck(id) when is_integer(id), do: DeckBag.get(id)
+
+  def get_deck(id) do
+    Repo.get(Deck, id)
+  end
 
   def deck(id_or_deckcode) when is_binary(id_or_deckcode) do
     id_or_deckcode

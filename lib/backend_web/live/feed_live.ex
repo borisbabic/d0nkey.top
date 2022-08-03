@@ -1,6 +1,6 @@
 defmodule BackendWeb.FeedLive do
   @moduledoc false
-  alias Backend.Feed
+  alias Backend.Feed.FeedBag
   alias Components.Feed.DeckFeedItem
   alias Components.Feed.LatestHSArticles
   alias Components.Feed.TierList
@@ -11,7 +11,7 @@ defmodule BackendWeb.FeedLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-    items = Feed.get_current_items()
+    items = FeedBag.get_current_items()
 
     ~F"""
     <Context put={user: @user} >

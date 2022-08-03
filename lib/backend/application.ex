@@ -102,6 +102,18 @@ defmodule Backend.Application do
           start: {Backend.PonyDojo, :start_link, [[]]}
         },
         %{
+          id: Backend.Feed.FeedBag,
+          start: {Backend.Feed.FeedBag, :start_link, [[]]}
+        },
+        %{
+          id: Backend.Hearthstone.DeckBag,
+          start: {Backend.Hearthstone.DeckBag, :start_link, [[]]}
+        },
+        %{
+          id: Backend.Streaming.DeckStreamingInfoBag,
+          start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
+        },
+        %{
           id: Backend.PlayerCountryPreferenceBag,
           start: {Backend.PlayerCountryPreferenceBag, :start_link, [[]]}
         },
