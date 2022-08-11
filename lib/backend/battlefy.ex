@@ -631,16 +631,20 @@ defmodule Backend.Battlefy do
     end
   end
 
-  @spec get_deckstrings(%{tournament_id: tournament_id, battletag_full: Blizzard.battletag()}) ::
+  @spec get_deckstrings(%{
+          stage_id: stage_id | nil,
+          tournament_id: tournament_id,
+          battletag_full: Blizzard.battletag()
+        }) ::
           [Blizzard.deckstring()]
-  def get_deckstrings(%{tournament_id: tournament_id, battletag_full: battletag_full}) do
+  def get_deckstrings(info = %{tournament_id: tournament_id, battletag_full: battletag_full}) do
     # with nil <-
     # Hearthstone.lineup(%{
     # tournament_id: tournament_id,
     # tournament_source: "battlefy",
     # name: battletag_full
     # }),
-    with matches <- get_tournament_matches(tournament_id, round: 1),
+    with matches <- get_deckstrings_matches(info),
          {match, position} <- get_team_match_position(matches, battletag_full) do
       deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
 
@@ -654,6 +658,12 @@ defmodule Backend.Battlefy do
       _ -> []
     end
   end
+
+  defp get_deckstrings_matches(%{stage_id: stage_id}) when is_binary(stage_id),
+    do: get_matches(stage_id)
+
+  defp get_deckstrings_matches(%{tournament_id: tournament_id}),
+    do: get_tournament_matches(tournament_id, round: 1)
 
   @spec get_team_match_position([Match.t()], Blizzard.battletag()) :: {Match.t(), atom()}
   def get_team_match_position(matches, battletag_full) do

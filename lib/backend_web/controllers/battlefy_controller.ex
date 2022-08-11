@@ -22,10 +22,11 @@ defmodule BackendWeb.BattlefyController do
 
   defp show_lineups(%{"show_lineups" => <<"top_"::binary, to_show::bitstring>>}) do
     case Integer.parse(to_show) do
-    {num, _} -> num
-    _ -> false
+      {num, _} -> num
+      _ -> false
     end
   end
+
   defp show_lineups(%{"show_lineups" => "yes"}), do: true
   defp show_lineups(_), do: false
 
@@ -63,10 +64,12 @@ defmodule BackendWeb.BattlefyController do
       |> BackendWeb.AuthUtils.user()
       |> Backend.Fantasy.get_battlefy_or_mt_user_picks(tournament_id)
       |> Enum.map(&(&1.pick |> Backend.Battlenet.Battletag.shorten()))
+
     Logger.debug("fetched fantasy picks")
 
     show_lineups = show_lineups(params)
     Logger.debug("Preparing to render tournament from controller")
+
     render(
       conn,
       "tournament.html",
@@ -88,31 +91,41 @@ defmodule BackendWeb.BattlefyController do
       |> add_matches_standings(params)
     )
   end
-  def participants(%{"show_actual_battletag" => "yes"}, %{id: id}), do: Battlefy.get_participants(id)
+
+  def participants(%{"show_actual_battletag" => "yes"}, %{id: id}),
+    do: Battlefy.get_participants(id)
+
   def participants(_, _), do: []
+
   def invited_mapset(%{"show_invited" => ts}, %{id: id}) do
-    with invited = [_|_] <- Backend.MastersTour.list_invited_players(ts),
-      participants = [_|_] <- Battlefy.get_participants(id) do
-        invited_ms = invited |> MapSet.new(& &1.battletag_full)
-        participants
-        |> Enum.flat_map(fn
-          %{name: name, players: [%{in_game_name: ign}]} ->
-            [{name, name}, {name, ign}]
-          %{name: name} -> [{name, name}]
-          _ -> []
-        end)
-        |> Enum.flat_map(fn {name, to_check} ->
-          if MapSet.member?(invited_ms, to_check) do
-            [name]
-          else
-            []
-          end
-        end)
-        |> MapSet.new()
+    with invited = [_ | _] <- Backend.MastersTour.list_invited_players(ts),
+         participants = [_ | _] <- Battlefy.get_participants(id) do
+      invited_ms = invited |> MapSet.new(& &1.battletag_full)
+
+      participants
+      |> Enum.flat_map(fn
+        %{name: name, players: [%{in_game_name: ign}]} ->
+          [{name, name}, {name, ign}]
+
+        %{name: name} ->
+          [{name, name}]
+
+        _ ->
+          []
+      end)
+      |> Enum.flat_map(fn {name, to_check} ->
+        if MapSet.member?(invited_ms, to_check) do
+          [name]
+        else
+          []
+        end
+      end)
+      |> MapSet.new()
     else
       _ -> MapSet.new([])
     end
   end
+
   def invited_mapset(_, _), do: MapSet.new([])
 
   def lineups(show_lineups, tournament_id) when is_integer(show_lineups) or show_lineups == true,
@@ -130,7 +143,8 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
-    existing |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
+    existing
+    |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
   end
 
   defp add_matches_standings(existing = %{tournament: tournament}, params) do
@@ -143,7 +157,8 @@ defmodule BackendWeb.BattlefyController do
         {[], false}
       end
 
-    existing |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
+    existing
+    |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
   end
 
   def get_highlight(params), do: multi_select_to_array(params["player"])
@@ -164,15 +179,23 @@ defmodule BackendWeb.BattlefyController do
     render(conn, BackendWeb.SharedView, "empty.html", %{})
   end
 
-  def tournament_player(conn, params = %{
-        "tournament_id" => tournament_id,
-        "team_name" => team_name
-      }) do
-    {opponent_matches, player_matches} =
-      future_and_player(params)
+  def tournament_player(
+        conn,
+        params = %{
+          "tournament_id" => tournament_id,
+          "team_name" => team_name
+        }
+      ) do
+    {opponent_matches, player_matches} = future_and_player(params)
+
+    stage_id = params["stage_id"]
 
     deckcodes =
-      Battlefy.get_deckstrings(%{tournament_id: tournament_id, battletag_full: team_name})
+      Battlefy.get_deckstrings(%{
+        stage_id: stage_id,
+        tournament_id: tournament_id,
+        battletag_full: team_name
+      })
 
     tournament = Battlefy.get_tournament(tournament_id)
 
@@ -183,10 +206,11 @@ defmodule BackendWeb.BattlefyController do
       page_title: team_name,
       deckcodes: deckcodes,
       team_name: team_name,
-      stage_id: params["stage_id"],
+      stage_id: stage_id,
       conn: conn
     })
   end
+
   defp future_and_player(%{"stage_id" => stage_id, "team_name" => team_name}),
     do: Battlefy.get_future_and_player_stage_matches(stage_id, team_name)
 
@@ -195,7 +219,6 @@ defmodule BackendWeb.BattlefyController do
 
   defp future_and_player(_),
     do: {[], []}
-
 
   def organization_tournament_stats(conn, %{"stats_slug" => stats_slug}) do
     with %{organization_slug: org_slug, from: from, pattern: pattern, title: title} <-
