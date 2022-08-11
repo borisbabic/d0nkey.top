@@ -338,15 +338,15 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour Five",
-        battlefy_id: nil,
+        battlefy_id: "62dfd83d5324e12299816774",
         ladder_priority: :timezone,
         ladder_seasons: [103],
         ladder_invites: 50,
-        region: :AP,
+        region: :AM,
         start_time: ~N[2022-08-12 14:15:00],
         qualifiers_period: {~D[2022-05-04], ~D[2022-05-30]},
         min_qualifiers_for_winrate: 10,
-        aliases: [],
+        aliases: ["Murder at Castle Nathria", "Murder", "Nathria", "Castle Nathria"],
         display_name: nil,
         swiss_rounds: 8,
         year: 2022
@@ -357,13 +357,13 @@ defmodule Backend.MastersTour.TourStop do
         ladder_priority: :timezone,
         ladder_seasons: [104],
         ladder_invites: 50,
-        region: :AP,
+        region: :EU,
         start_time: ~N[2022-09-30 08:15:00],
         qualifiers_period: {~D[2022-06-01], ~D[2022-07-30]},
         min_qualifiers_for_winrate: 10,
-        swiss_rounds: 8,
         aliases: [],
         display_name: nil,
+        swiss_rounds: 8,
         year: 2022
       }
     ]

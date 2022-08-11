@@ -79,8 +79,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       secret_mage?(card_info) -> :"Secret Mage"
       naga_mage?(card_info) -> :"Naga Mage"
       mech_mage?(card_info) -> :"Mech Mage"
-      ping_mage?(card_info) -> :"Ping Mage"
       skeleton_mage?(card_info) -> :"Spooky Mage"
+      ping_mage?(card_info) -> :"Ping Mage"
       big_spell_mage?(card_info) -> :"Big Spell Mage"
       murloc?(card_info) -> :"Murloc Mage"
       boar?(card_info) -> :"Boar Mage"
@@ -102,6 +102,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       holy_paladin?(card_info) -> :"Holy Paladin"
       kazakusan?(card_info) -> :"Kazakusan Paladin"
       vanndar?(card_info) -> :"Vanndar Paladin"
+      big_paladin?(card_info) -> :"Vanndar Paladin"
       murloc?(card_info) -> :"Murloc Paladin"
       boar?(card_info) -> :"Boar Paladin"
       true -> minion_type_fallback(card_info, "Paladin")
@@ -141,6 +142,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       secret_rogue?(card_info) -> :"Secret Rogue"
       miracle_rogue?(card_info) -> :"Miracle Rogue"
       deathrattle_rogue?(card_info) -> :"Deathrattle Rogue"
+      min_secret_count?(card_info, 3) -> :"Secret Rogue"
       true -> minion_type_fallback(card_info, "Rogue")
     end
   end
@@ -171,14 +173,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
     cond do
       highlander?(c) -> :"Highlander Warlock"
+      implock?(card_info) && (quest?(card_info) || questline?(card_info)) -> :"Quest Implock"
       quest?(card_info) || questline?(card_info) -> :"Quest Warlock"
       murloc?(card_info) -> :"Murloc Warlock"
+      implock?(card_info) && boar?(card_info) -> :"Boar Implock"
       boar?(card_info) -> :"Boar Warlock"
-      implock?(card_info) -> :Implock
+      implock?(card_info) && phylactery_warlock?(card_info) -> :"Phylactery Implock"
       phylactery_warlock?(card_info) -> :"Phylactery Warlock"
+      implock?(card_info) && handlock?(card_info) -> :"Hand Implock"
       handlock?(card_info) -> :Handlock
+      implock?(card_info) && agony_warlock?(card_info) -> :"Agony Implock"
       agony_warlock?(card_info) -> :"Agony Warlock"
+      implock?(card_info) && abyssal_warlock?(card_info) -> :"Abyssal Implock"
       abyssal_warlock?(card_info) -> :"Abyssal Warlock"
+      implock?(card_info) -> :Implock
       "Lord Jaraxxus" in card_info.card_names -> :"J-Lock"
       true -> minion_type_fallback(card_info, "Warlock")
     end
@@ -323,7 +331,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp pirate_rogue?(ci),
     do: min_count?(ci, 1, ["Swordfish", "Pirate Admiral Hooktusk"])
 
-  defp thief_rogue?(%{card_names: card_names}), do: "Maestra of the Masquerade" in card_names
+  defp thief_rogue?(ci = %{card_names: card_names}),
+    do:
+      "Maestra of the Masquerade" in card_names ||
+        min_count?(ci, 2, ["Tess Greymane", "Contraband Stash"])
 
   defp mine_rogue?(ci),
     do: min_count?(ci, 2, ["Naval Mine", "Snowfall Graveyard"])
@@ -396,6 +407,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp mech_paladin?(%{card_names: card_names}), do: "Radar Detector" in card_names
+
+  defp big_paladin?(ci),
+    do: min_count?(ci, 2, ["Front Lines", "Cavalry Horn"])
 
   defp holy_paladin?(ci = %{card_names: card_names}),
     do:
