@@ -902,6 +902,19 @@ defmodule Backend.MastersTour do
         "crefno" -> "Crefno"
         "TigerIsComin" -> "TigerComing"
         "Paradox" -> "Paraducks"
+        ### masters tour five
+        "5KSLoveStorm" -> "LoveStorm"
+        "5KSLeaoh" -> "Leaoh"
+        "WDGSxwl" -> "Sxwl"
+        "WDG3Woods" -> "3Woods"
+        ### Battlefy id
+        "DragonMan" -> "KsDraNeko"
+        "YellowCoconut" -> "Coconut"
+        "Cx" -> "Cxx"
+        "Promise" -> "MisaPromise"
+        "LGDXiaoT" -> "XiaoT"
+        "Hodeulyo" -> "TigerComing"
+        "TigerComing" -> "TigerIsComing"
         n -> n
       end
 
