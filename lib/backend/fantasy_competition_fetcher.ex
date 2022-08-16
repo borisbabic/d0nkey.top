@@ -127,7 +127,15 @@ defmodule Backend.FantasyCompetitionFetcher do
         %{competition_type: "card_nerfs", competition: "murder-at-castle-nathria"},
         _
       ),
-      do: []
+      do: %{
+        "Celestial Alignment" => 1,
+        "Spirit Poacher" => 3,
+        "Stag Charge" => 3,
+        "Wild Spirits" => 3,
+        "Ara'lon" => 3,
+        "Snowfall Guardian" => 1,
+        "Vile Library" => 3
+      }
 
   def fetch_results(%{competition_type: "card_changes", competition: "nerfs_may_2021"}, _),
     do:
