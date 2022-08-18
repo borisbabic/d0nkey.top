@@ -27,11 +27,8 @@ defmodule Components.DecksExplorer do
     {"past_week", "Past Week"},
     {"past_3_days", "Past 3 Days"},
     {"past_day", "Past Day"},
-    {"murder", "Murder"},
-    # {"sunken_city", "Sunken City"},
-    {"patch_prince_renathal", "Renathal Patch"},
-    {"patch_2022-06-16", "June 16th Patch"},
-    {"throne_of_the_tides", "Throne of the Tides"}
+    {"patch_2022-08-16", "Aug 16th Patch"},
+    {"murder", "Murder"}
   ]
 
   def default_period_options(), do: @default_period_options
@@ -41,7 +38,7 @@ defmodule Components.DecksExplorer do
   prop(period_options, :list, default: @default_period_options)
   prop(extra_period_options, :list, default: [])
   prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200])
-  prop(default_min_games, :integer, default: 100)
+  prop(default_min_games, :integer, default: 200)
   prop(min_games_floor, :integer, default: 50)
   prop(limit_cap, :integer, default: 30)
   prop(default_limit, :integer, default: 15)
@@ -272,7 +269,7 @@ defmodule Components.DecksExplorer do
   end
 
   def default_period() do
-    "murder"
+    "patch_2022-08-16"
     # now = NaiveDateTime.utc_now()
     # use_patch_after = ~N[2022-06-27 23:00:00]
 

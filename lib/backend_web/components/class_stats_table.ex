@@ -45,7 +45,8 @@ defmodule Components.ClassStatsTable do
     |> Backend.Hearthstone.Deck.class_name()
   end
 
-  def extract_class(%{player_class: class}), do: class
-  def extract_class(%{opponent_class: class}), do: class
-  def extract_class(%{class: class}), do: class
+  def extract_class(%{player_class: class}) when is_binary(class), do: class
+  def extract_class(%{opponent_class: class}) when is_binary(class), do: class
+  def extract_class(%{class: class}) when is_binary(class), do: class
+  def extract_class(_), do: nil
 end
