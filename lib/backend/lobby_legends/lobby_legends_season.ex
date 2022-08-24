@@ -140,6 +140,31 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           eu: ~N[2022-07-31T22:00:00],
           us: ~N[2022-08-01T07:00:00]
         }
+      },
+      %__MODULE__{
+        slug: "lobby_legends_7",
+        player_streams: %{},
+        other_streams: %{},
+        ladder: %{
+          season_id: 6,
+          # Abar said it's happening with the reset
+          # And the reset should be at this time
+          ap: ~N[2022-07-30T17:00:00],
+          eu: ~N[2022-07-30T17:00:00],
+          us: ~N[2022-07-30T17:00:00]
+        }
+      },
+      %__MODULE__{
+        slug: "lobby_legends_5",
+        player_streams: %{},
+        other_streams: %{},
+        ladder: %{
+          season_id: 6,
+          # https://twitter.com/HSesports/status/1541483238866046977
+          ap: ~N[2022-09-30T15:00:00],
+          eu: ~N[2022-09-30T22:00:00],
+          us: ~N[2022-10-01T07:00:00]
+        }
       }
     ]
   end

@@ -725,7 +725,7 @@ defmodule Backend.Blizzard do
           week_one: integer()
         }
   def gm_season_definition({2022, 2}),
-    do: %{week_one: 29, playoffs_week: 34, break_weeks: [31, 32]}
+    do: %{week_one: 29, playoffs_week: 33, break_weeks: [31, 32]}
 
   def gm_season_definition({2022, 1}), do: %{week_one: 8, playoffs_week: 12, break_weeks: [11]}
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
