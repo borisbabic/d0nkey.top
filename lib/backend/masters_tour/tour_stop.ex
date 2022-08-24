@@ -347,7 +347,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2022-05-04], ~D[2022-05-30]},
         min_qualifiers_for_winrate: 10,
         aliases: ["Murder at Castle Nathria", "Murder", "Nathria", "Castle Nathria"],
-        display_name: nil,
+        display_name: "Murder",
         swiss_rounds: 8,
         year: 2022
       },
