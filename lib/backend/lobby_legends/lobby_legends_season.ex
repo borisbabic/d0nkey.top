@@ -149,9 +149,9 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
           season_id: 6,
           # Abar said it's happening with the reset
           # And the reset should be at this time
-          ap: ~N[2022-07-30T17:00:00],
-          eu: ~N[2022-07-30T17:00:00],
-          us: ~N[2022-07-30T17:00:00]
+          ap: ~N[2022-08-30T17:02:00],
+          eu: ~N[2022-08-30T17:02:00],
+          us: ~N[2022-08-30T17:02:00]
         }
       },
       %__MODULE__{
