@@ -51,6 +51,31 @@ defmodule Backend.Leaderboards do
   defp should_avoid_fetching?(r, l, 94) when r in ["EU", "US"] and l != "BG", do: true
   defp should_avoid_fetching?(_r, _l, _s), do: false
 
+  def get_leaderboard_shim(s) do
+    season = season_for_fetch(s)
+    entries = [{"season", season}, {"max_rank", 500}, {"order_by", "rank"}] |> entries()
+    %{inserted_at: updated_at} = Enum.max_by(entries, &NaiveDateTime.to_iso8601(&1.inserted_at))
+
+    %{
+      season_id: season.season_id,
+      leaderboard_id: season.leaderboard_id,
+      region: season.region,
+      upstream_updated_at: DateTime.from_naive!(updated_at, "Etc/UTC"),
+      entries: entries
+    }
+  end
+
+  defp season_for_fetch(season = %{season_id: season_id}) when not is_nil(season_id) do
+    season
+  end
+
+  defp season_for_fetch(s) do
+    case Api.get_page(s) do
+      {:ok, %{season: season}} -> season
+      _ -> SeasonBag.get(s)
+    end
+  end
+
   def get_leaderboard(region, leaderboard, season) when is_atom(leaderboard),
     do: get_leaderboard(region, to_string(leaderboard), season)
 
@@ -130,7 +155,7 @@ defmodule Backend.Leaderboards do
 
     case Task.await(task) do
       {:ok, response} ->
-        update_entries(response)
+        handle_response(response)
         continue?(response) && handle_page(season, page + 1, 0)
 
       _ ->
@@ -141,7 +166,7 @@ defmodule Backend.Leaderboards do
   defp continue?(%{leaderboard: %{rows: [_ | _]}, pagination: p}), do: p != nil
   defp continue?(_), do: false
 
-  defp update_entries(%{leaderboard: %{rows: rows = [_ | _]}, season: season}) do
+  defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}) do
     now = NaiveDateTime.utc_now()
     {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
     existing = entries([{"season", season}, {"min_rank", min_rank}, {"max_rank", max_rank}])
@@ -152,7 +177,7 @@ defmodule Backend.Leaderboards do
     |> create_entries(season)
   end
 
-  defp update_entries(_, _) do
+  defp handle_response(_, _) do
     nil
   end
 
@@ -619,6 +644,11 @@ defmodule Backend.Leaderboards do
   defp compose_entries_query({"max_rank", rank}, query) do
     query
     |> where([entry: s], s.rank <= ^rank)
+  end
+
+  defp compose_entries_query({"order_by", "rank"}, query) do
+    query
+    |> order_by([entry: e], asc: e.rank)
   end
 
   defp past_period(query, raw, unit) do

@@ -135,6 +135,11 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
+  def get_leaderboard(params) do
+    create_season(params)
+    |> Leaderboards.get_leaderboard_shim()
+  end
+
   def get_leaderboard(params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
     get_leaderboard(region, leaderboard_id, params["seasonId"])
   end
@@ -145,6 +150,16 @@ defmodule BackendWeb.LeaderboardController do
     rescue
       _ -> nil
     end
+  end
+
+  defp create_season(params) do
+    %Hearthstone.Leaderboards.Season{
+      region: params["region"],
+      leaderboard_id: params["leaderboard_id"] || params["leaderboardId"],
+      season_id: params["season_id"] || params["seasonId"]
+    }
+    |> Hearthstone.Leaderboards.Season.ensure_region()
+    |> Hearthstone.Leaderboards.Season.ensure_leaderboard_id()
   end
 
   defp get_comparison(_, nil), do: nil
