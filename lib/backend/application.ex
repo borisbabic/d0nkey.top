@@ -121,6 +121,10 @@ defmodule Backend.Application do
           id: Backend.PlayerCountryPreferenceBag,
           start: {Backend.PlayerCountryPreferenceBag, :start_link, [[]]}
         },
+        %{
+          id: Backend.Leaderboards.SeasonBag,
+          start: {Backend.Leaderboards.SeasonBag, :start_link, [[]]}
+        },
         # {TMI.Supervisor, twitch_bot_config()},
         {Task, &warmup_cache/0},
         QuantumScheduler
