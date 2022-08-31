@@ -31,7 +31,7 @@ defmodule Backend.Leaderboards.SeasonBag do
       |> ApiSeason.ensure_region()
       |> ApiSeason.ensure_leaderboard_id()
 
-    :ets.foldl(&max_season_id/2, filled, table())
+    {:ok, :ets.foldl(&max_season_id/2, filled, table())}
   end
 
   def get(season) do
@@ -44,7 +44,8 @@ defmodule Backend.Leaderboards.SeasonBag do
   end
 
   defp max_season_id({_, s}, acc) do
-    if s.leaderboard_id == acc.leaderboard_id and s.region == acc.region and
+    if to_string(s.leaderboard_id) == to_string(acc.leaderboard_id) and
+         to_string(s.region) == to_string(acc.region) and
          s.season_id > (acc.season_id || 0) do
       s
     else

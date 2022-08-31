@@ -7,7 +7,7 @@ defmodule Backend.Leaderboards.Entry do
   schema "leaderboards_entry" do
     field :account_id, :string
     field :rank, :integer
-    field :rating, :integer
+    field :rating, :integer, default: nil
     belongs_to :season, Season
 
     timestamps()
