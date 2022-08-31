@@ -145,7 +145,42 @@ defmodule Backend.Leaderboards do
     |> Task.await_many(:infinity)
   end
 
-  def save_all(season), do: handle_page(season, 1, 0)
+  def save_all(s) do
+    with {:ok, r} <- fetch_pages(s, 100) do
+      handle_response(r)
+    end
+  end
+
+  def fetch_pages(season, num_pages) do
+    case Api.get_page(season) do
+      {:ok, response = %{leaderboard: %{pagination: %{total_pages: total_pages}}}} ->
+        pages = min(total_pages, num_pages)
+
+        tasks =
+          Enum.map(2..pages, fn page ->
+            Task.async(fn ->
+              with {:ok, response} <- Api.get_page(season, page) do
+                response
+              end
+            end)
+          end)
+
+        all =
+          [response | Task.await_many(tasks, :infinity)]
+          |> Enum.flat_map(fn r ->
+            case r do
+              %{leaderboard: %{rows: rows}} -> rows
+              _ -> []
+            end
+          end)
+
+        {:ok, Map.put(response, :entries, all)}
+
+      _ ->
+        Logger.warn("Couldn't get first page for #{inspect(season)}")
+        :error
+    end
+  end
 
   def handle_page(season, page, repetitions) when repetitions > 5,
     do: handle_page(season, page + 1, 0)
@@ -166,7 +201,7 @@ defmodule Backend.Leaderboards do
   defp continue?(%{leaderboard: %{rows: [_ | _], pagination: p}}), do: p != nil
   defp continue?(_), do: false
 
-  defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}) do
+  defp handle_rows(rows, season) do
     now = NaiveDateTime.utc_now()
     {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
     existing = entries([{"season", season}, {"min_rank", min_rank}, {"max_rank", max_rank}])
@@ -176,6 +211,9 @@ defmodule Backend.Leaderboards do
     |> Enum.filter(updated)
     |> create_entries(season)
   end
+
+  defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
+    do: handle_rows(rows, season)
 
   defp handle_response(_) do
     nil
