@@ -263,7 +263,7 @@ defmodule BackendWeb.LeaderboardView do
       leaderboard
       |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num, skip_cn)
 
-    show_ratings = Enum.any?(entries, & &1.rating)
+    show_ratings = to_string(leaderboard.leaderboard_id) in ["MRC", "BG"]
 
     render("leaderboard.html", %{
       entries: entries,
@@ -723,6 +723,8 @@ defmodule BackendWeb.LeaderboardView do
 
   def process_invited(invited_raw, updated_at) do
     not_invited_afterwards = fn ip ->
+      true
+
       ip.upstream_time
       |> NaiveDateTime.compare(updated_at)
       |> Kernel.==(:lt)
@@ -812,9 +814,9 @@ defmodule BackendWeb.LeaderboardView do
     do: nil
 
   defp banned_deadline(name, %{upstream_updated_at: updated_at}, start_date, end_date) do
-    with {:ok, time} = Time.new(12, 0, 0),
-         {:ok, deadline} = NaiveDateTime.new(end_date, time),
-         {:ok, start} = NaiveDateTime.new(start_date, time),
+    with {:ok, time} <- Time.new(12, 0, 0),
+         {:ok, deadline} <- NaiveDateTime.new(end_date, time),
+         {:ok, start} <- NaiveDateTime.new(start_date, time),
          :gt <- NaiveDateTime.compare(updated_at, start),
          :lt <- NaiveDateTime.compare(updated_at, deadline) do
       "#{name} is banned until #{end_date}"

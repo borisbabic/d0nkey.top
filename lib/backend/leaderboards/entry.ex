@@ -1,4 +1,5 @@
 defmodule Backend.Leaderboards.Entry do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -7,7 +8,7 @@ defmodule Backend.Leaderboards.Entry do
   schema "leaderboards_entry" do
     field :account_id, :string
     field :rank, :integer
-    field :rating, :integer, default: nil
+    field :rating, :float, default: nil
     belongs_to :season, Season
 
     timestamps()
