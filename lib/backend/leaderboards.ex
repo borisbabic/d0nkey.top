@@ -53,16 +53,31 @@ defmodule Backend.Leaderboards do
 
   def get_leaderboard_shim(s) do
     season = season_for_fetch(s)
-    entries = [{"season", season}, {"max_rank", 500}, {"order_by", "rank"}] |> entries()
-    %{inserted_at: updated_at} = Enum.max_by(entries, &NaiveDateTime.to_iso8601(&1.inserted_at))
+
+    entries =
+      [:latest_in_season, {"season", season}, {"max_rank", 500}, {"order_by", "rank"}]
+      |> entries()
+
+    updated_at = updated_at(entries)
 
     %{
       season_id: season.season_id,
       leaderboard_id: season.leaderboard_id,
       region: season.region,
-      upstream_updated_at: DateTime.from_naive!(updated_at, "Etc/UTC"),
+      upstream_updated_at: updated_at,
       entries: entries
     }
+  end
+
+  def updated_at(entries) do
+    with [_ | _] <- entries,
+         %{inserted_at: naive_updated_at} <-
+           Enum.max_by(entries, &NaiveDateTime.to_iso8601(&1.inserted_at)),
+         {:ok, updated_at} <- DateTime.from_naive(naive_updated_at, "Etc/UTC") do
+      updated_at
+    else
+      _ -> nil
+    end
   end
 
   defp season_for_fetch(season = %{season_id: season_id}) when not is_nil(season_id) do
@@ -204,7 +219,15 @@ defmodule Backend.Leaderboards do
   defp handle_rows(rows, season) do
     now = NaiveDateTime.utc_now()
     {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
-    existing = entries([{"season", season}, {"min_rank", min_rank}, {"max_rank", max_rank}])
+
+    existing =
+      entries([
+        :latest_in_season,
+        {"season", season},
+        {"min_rank", min_rank},
+        {"max_rank", max_rank}
+      ])
+
     updated = get_updated_filter(existing, now)
 
     rows
@@ -601,7 +624,6 @@ defmodule Backend.Leaderboards do
   def entries(criteria) do
     base_entries_query()
     |> build_entries_query(criteria)
-    |> latest_in_season(criteria)
     |> Repo.all()
   end
 
@@ -614,30 +636,6 @@ defmodule Backend.Leaderboards do
 
   defp build_entries_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_entries_query/2)
-
-  defp latest_in_season(query, criteria) do
-    subquery = latest_in_season_subquery(criteria)
-
-    query
-    |> join(:inner, [entry: e], l in subquery(subquery),
-      on: e.rank == l.rank and e.season_id == l.season_id and e.inserted_at == l.max
-    )
-  end
-
-  defp latest_in_season_subquery(criteria) do
-    base_latest_in_season_subquery()
-    |> build_entries_query(criteria)
-  end
-
-  defp base_latest_in_season_subquery() do
-    base_entries_query()
-    |> group_by([entry: e], [e.rank, e.season_id])
-    |> select([entry: e], %{
-      rank: e.rank,
-      season_id: e.season_id,
-      max: max(e.inserted_at)
-    })
-  end
 
   defp compose_entries_query({"season", %{id: id}}, query) when is_integer(id) do
     query
@@ -659,14 +657,48 @@ defmodule Backend.Leaderboards do
     build_entries_query(query, season_criteria)
   end
 
+  defp compose_entries_query({"season_id", season = "lobby_legends_" <> _}, query) do
+    case LobbyLegendsSeason.get(season) do
+      %{ladder: %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id}} ->
+        new_query =
+          query
+          |> where(
+            [entry: e, season: s],
+            (s.region == "AP" and e.inserted_at <= ^ap_end) or
+              (s.region == "EU" and e.inserted_at <= ^eu_end) or
+              (s.region == "US" and e.inserted_at <= ^us_end)
+          )
+
+        compose_snapshot_query({"season_id", season_id}, new_query)
+
+      _ ->
+        query
+    end
+  end
+
+  defp compose_entries_query({"season_id", ids}, query) when is_list(ids) do
+    query
+    |> where([season: s], s.season_id in ^ids)
+  end
+
   defp compose_entries_query({"season_id", id}, query) do
     query
     |> where([season: s], s.season_id == ^id)
   end
 
+  defp compose_entries_query({"leaderboard_id", ids}, query) when is_list(ids) do
+    query
+    |> where([season: s], s.leaderboard_id in ^ids)
+  end
+
   defp compose_entries_query({"leaderboard_id", id}, query) do
     query
     |> where([season: s], s.leaderboard_id == ^id)
+  end
+
+  defp compose_entries_query({"region", regions}, query) when is_list(regions) do
+    query
+    |> where([season: s], s.region in ^regions)
   end
 
   defp compose_entries_query({"region", region}, query) do
@@ -684,9 +716,109 @@ defmodule Backend.Leaderboards do
     |> where([entry: s], s.rank <= ^rank)
   end
 
-  defp compose_entries_query({"order_by", "rank"}, query) do
+  defp compose_entries_query({"order_by", {direction, field}}, query) do
     query
-    |> order_by([entry: e], asc: e.rank)
+    |> order_by([{^direction, ^field}])
+  end
+
+  defp compose_entries_query({"order_by", "rank"}, query),
+    do: compose_entries_query({"order_by", {:asc, :rank}}, query)
+
+  defp compose_entries_query({"order_by", "inserted_at"}, query),
+    do: compose_entries_query({"order_by", {:desc, :inserted_at}}, query)
+
+  defp compose_entries_query({"limit", limit}, query) do
+    query
+    |> limit(^limit)
+  end
+
+  defp compose_entries_query({"offset", offset}, query) do
+    query
+    |> offset(^offset)
+  end
+
+  defp compose_entries_query({"after", date = %NaiveDateTime{}}, query) do
+    query
+    |> where([entry: e], e.inserted_at > ^date)
+  end
+
+  defp compose_entries_query({"up_to", date = %NaiveDateTime{}}, query) do
+    query
+    |> where([entry: e], e.inserted_at < ^date)
+  end
+
+  defp compose_entries_query({"until", {string_num, unit}}, query) when is_binary(string_num) do
+    string_num
+    |> Integer.parse()
+    |> case do
+      {num, _} -> compose_entries_query({"until", {num, unit}}, query)
+      :error -> raise "Invalid until, can't parse string_num"
+    end
+  end
+
+  defp compose_entries_query({"until", {num, unit}}, query) do
+    query
+    |> where([entry: e], e.inserted_at < ago(^num, ^unit))
+  end
+
+  defp compose_entries_query({:not_current_season, leaderboards}, query) do
+    leaderboards
+    |> Enum.reduce(query, fn ldb, q ->
+      season_id = Blizzard.get_current_ladder_season(ldb)
+
+      q
+      |> where([season: s], not (s.season_id == ^season_id and s.leaderboard_id == ^ldb))
+    end)
+  end
+
+  for unit <- ["minute", "day", "hour", "week", "month", "year"] do
+    defp compose_entries_query(
+           {"period", <<"past_"::binary, unquote(unit)::binary, "s_"::binary, raw::bitstring>>},
+           query
+         ),
+         do: entries_past_period(query, raw, unquote(unit))
+  end
+
+  defp compose_entries_query({"period", <<"season_"::binary, season_id::bitstring>>}, query),
+    do: compose_entries_query({"season_id", season_id}, query)
+
+  defp compose_entries_query({"battletag_full", battletag_full}, query) do
+    players = Backend.PlayerInfo.leaderboard_names(battletag_full)
+    compose_entries_query({"players", players}, query)
+  end
+
+  defp compose_entries({"players", players}, query) do
+    query
+    |> where([entry: e], e.account_id in ^players)
+  end
+
+  defp entries_past_period(query, raw, unit) do
+    {val, _} = Integer.parse(raw)
+
+    query
+    |> where([entry: e], e.inserted_At > ago(^val, ^unit))
+  end
+
+  defp compose_entries_query(:latest_in_season, query) do
+    subquery =
+      base_entries_query()
+      |> group_by([entry: e], [e.rank, e.season_id])
+      |> select([entry: e], %{
+        rank: e.rank,
+        season_id: e.season_id,
+        max: max(e.inserted_at)
+      })
+
+    query
+    |> join(
+      :inner,
+      [entry: e],
+      sub in subquery(subquery),
+      on:
+        e.season_id == sub.season_id and
+          e.rank == sub.rank and
+          e.inserted_at == sub.max
+    )
   end
 
   defp past_period(query, raw, unit) do
