@@ -154,7 +154,7 @@ defmodule Backend.Leaderboards do
   end
 
   def save_all(s) do
-    with {:ok, rows} <- fetch_pages(s, 8) do
+    with {:ok, rows} <- fetch_pages(s, 200) do
       handle_rows(rows, s)
     end
   end
