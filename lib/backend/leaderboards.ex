@@ -135,7 +135,6 @@ defmodule Backend.Leaderboards do
         }
         |> save_all()
       end)
-      |> Task.await()
 
       # latest_season = Blizzard.get_current_ladder_season(ldb) || 0
       # case get_and_save(region, ldb, nil)  do
@@ -143,6 +142,7 @@ defmodule Backend.Leaderboards do
       #   _ -> get_and_save(region, ldb, latest_season)
       # end
     end
+    |> Task.await_many(:infinity)
   end
 
   def save_all(season), do: handle_page(season, 1, 0)
@@ -153,7 +153,7 @@ defmodule Backend.Leaderboards do
   def handle_page(season, page, repetitions) do
     task = Task.async(fn -> Api.get_page(season, page) end)
 
-    case Task.await(task) do
+    case Task.await(task, :infinity) do
       {:ok, response} ->
         handle_response(response)
         continue?(response) && handle_page(season, page + 1, 0)
@@ -163,7 +163,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  defp continue?(%{leaderboard: %{rows: [_ | _]}, pagination: p}), do: p != nil
+  defp continue?(%{leaderboard: %{rows: [_ | _], pagination: p}}), do: p != nil
   defp continue?(_), do: false
 
   defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}) do
@@ -177,7 +177,7 @@ defmodule Backend.Leaderboards do
     |> create_entries(season)
   end
 
-  defp handle_response(_, _) do
+  defp handle_response(_) do
     nil
   end
 

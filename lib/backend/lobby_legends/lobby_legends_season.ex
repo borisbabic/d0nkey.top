@@ -155,11 +155,11 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
         }
       },
       %__MODULE__{
-        slug: "lobby_legends_5",
+        slug: "lobby_legends_8",
         player_streams: %{},
         other_streams: %{},
         ladder: %{
-          season_id: 6,
+          season_id: 7,
           # https://twitter.com/HSesports/status/1541483238866046977
           ap: ~N[2022-09-30T15:00:00],
           eu: ~N[2022-09-30T22:00:00],
