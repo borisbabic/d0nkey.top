@@ -1,4 +1,5 @@
 defmodule Hearthstone.Leaderboards.Api do
+  @moduledoc false
   require Logger
   alias Hearthstone.Leaderboards.Response
   alias Hearthstone.Leaderboards.Season
@@ -36,7 +37,7 @@ defmodule Hearthstone.Leaderboards.Api do
     base_link = base_link(season, page)
 
     case season do
-      %{season_id: season_id} when is_binary(season_id) ->
+      %{season_id: season_id} when season_id != nil ->
         base_link <> "&seasonId=#{season_id}"
 
       _ ->
