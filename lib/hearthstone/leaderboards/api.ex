@@ -48,7 +48,7 @@ defmodule Hearthstone.Leaderboards.Api do
     "/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{ldb_id(leaderboard_id)}&page=#{page}"
   end
 
-  defp ldb_id(ldb_id) do
+  def ldb_id(ldb_id) do
     Map.get(@ldb_id_map, ldb_id, ldb_id)
   end
 end

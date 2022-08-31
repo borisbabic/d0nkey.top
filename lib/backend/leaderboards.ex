@@ -52,21 +52,21 @@ defmodule Backend.Leaderboards do
   defp should_avoid_fetching?(_r, _l, _s), do: false
 
   def get_leaderboard_shim(s) do
-    season = season_for_fetch(s)
+    with {:ok, season} <- SeasonBag.get(s) do
+      entries =
+        [:latest_in_season, {"season", season}, {"limit", 200}, {"order_by", "rank"}]
+        |> entries()
 
-    entries =
-      [:latest_in_season, {"season", season}, {"max_rank", 500}, {"order_by", "rank"}]
-      |> entries()
+      updated_at = updated_at(entries)
 
-    updated_at = updated_at(entries)
-
-    %{
-      season_id: season.season_id,
-      leaderboard_id: season.leaderboard_id,
-      region: season.region,
-      upstream_updated_at: updated_at,
-      entries: entries
-    }
+      %{
+        season_id: season.season_id,
+        leaderboard_id: season.leaderboard_id,
+        region: season.region,
+        upstream_updated_at: updated_at,
+        entries: entries
+      }
+    end
   end
 
   def updated_at(entries) do
@@ -82,13 +82,6 @@ defmodule Backend.Leaderboards do
 
   defp season_for_fetch(season = %{season_id: season_id}) when not is_nil(season_id) do
     season
-  end
-
-  defp season_for_fetch(s) do
-    case Api.get_page(s) do
-      {:ok, %{season: season}} -> season
-      _ -> SeasonBag.get(s)
-    end
   end
 
   def get_leaderboard(region, leaderboard, season) when is_atom(leaderboard),
@@ -145,7 +138,7 @@ defmodule Backend.Leaderboards do
         ldb <- Blizzard.leaderboards() do
       Task.async(fn ->
         %ApiSeason{
-          region: region,
+          region: to_string(region),
           leaderboard_id: to_string(ldb)
         }
         |> save_all()
@@ -161,8 +154,8 @@ defmodule Backend.Leaderboards do
   end
 
   def save_all(s) do
-    with {:ok, r} <- fetch_pages(s, 100) do
-      handle_response(r)
+    with {:ok, rows} <- fetch_pages(s, 8) do
+      handle_rows(rows, s)
     end
   end
 
@@ -171,17 +164,10 @@ defmodule Backend.Leaderboards do
       {:ok, response = %{leaderboard: %{pagination: %{total_pages: total_pages}}}} ->
         pages = min(total_pages, num_pages)
 
-        tasks =
-          Enum.map(2..pages, fn page ->
-            Task.async(fn ->
-              with {:ok, response} <- Api.get_page(season, page) do
-                response
-              end
-            end)
-          end)
+        extra_pages = fetch_extra_pages(season, pages)
 
         all =
-          [response | Task.await_many(tasks, :infinity)]
+          [response | extra_pages]
           |> Enum.flat_map(fn r ->
             case r do
               %{leaderboard: %{rows: rows}} -> rows
@@ -189,13 +175,26 @@ defmodule Backend.Leaderboards do
             end
           end)
 
-        {:ok, Map.put(response, :entries, all)}
+        {:ok, all}
 
       _ ->
         Logger.warn("Couldn't get first page for #{inspect(season)}")
         :error
     end
   end
+
+  defp fetch_extra_pages(season, pages) when pages > 1 do
+    Enum.map(2..pages, fn page ->
+      Task.async(fn ->
+        with {:ok, response} <- Api.get_page(season, page) do
+          response
+        end
+      end)
+    end)
+    |> Task.await_many(:infinity)
+  end
+
+  defp fetch_extra_pages(_, _), do: []
 
   def handle_page(season, page, repetitions) when repetitions > 5,
     do: handle_page(season, page + 1, 0)
@@ -216,7 +215,7 @@ defmodule Backend.Leaderboards do
   defp continue?(%{leaderboard: %{rows: [_ | _], pagination: p}}), do: p != nil
   defp continue?(_), do: false
 
-  defp handle_rows(rows, season) do
+  def handle_rows(rows, season) do
     now = NaiveDateTime.utc_now()
     {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
 
@@ -243,8 +242,10 @@ defmodule Backend.Leaderboards do
   end
 
   defp get_updated_filter(existing, now) do
+    map = Map.new(existing, &{&1.rank, &1})
+
     fn api_entry ->
-      Enum.find(existing, &(&1.rank == api_entry.rank))
+      Map.get(map, api_entry.rank)
       |> should_update?(api_entry, now)
     end
   end
@@ -643,8 +644,9 @@ defmodule Backend.Leaderboards do
   end
 
   defp compose_entries_query({"season", s = %{season_id: nil}}, query) do
-    season = SeasonBag.get(s)
-    compose_entries_query({"season", season}, query)
+    with {:ok, season = %{season_id: sid}} when nil != sid <- SeasonBag.get(s) do
+      compose_entries_query({"season", season}, query)
+    end
   end
 
   defp compose_entries_query({"season", %{season_id: s, region: r, leaderboard_id: l}}, query) do
@@ -851,7 +853,7 @@ defmodule Backend.Leaderboards do
     Enum.reduce(rows, Multi.new(), fn row, multi ->
       attrs = row |> Map.from_struct() |> Map.put(:season_id, id)
       cs = %Entry{} |> Entry.changeset(attrs)
-      Multi.insert(multi, "#{row.rank}_#{row.account_id}", cs)
+      Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}", cs)
     end)
     |> Repo.transaction()
   end

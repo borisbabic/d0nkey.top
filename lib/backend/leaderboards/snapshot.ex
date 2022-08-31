@@ -30,6 +30,23 @@ defmodule Backend.Leaderboards.Snapshot do
     |> unique_constraint(:region, name: :snapshot_unique_index)
   end
 
+  @spec extract_updated_at(any) ::
+          nil
+          | %{
+              :__struct__ => DateTime | NaiveDateTime,
+              :calendar => atom,
+              :day => pos_integer,
+              :hour => non_neg_integer,
+              :microsecond => {non_neg_integer, non_neg_integer},
+              :minute => non_neg_integer,
+              :month => pos_integer,
+              :second => non_neg_integer,
+              :year => integer,
+              optional(:std_offset) => integer,
+              optional(:time_zone) => binary,
+              optional(:utc_offset) => integer,
+              optional(:zone_abbr) => binary
+            }
   def extract_updated_at(%{"last_updated_time" => last_updated_time}) do
     with {:error, _reason} <-
            last_updated_time |> Timex.parse("{YYYY}/{M}/{D} {ISOtime} {WDshort}"),
@@ -52,7 +69,7 @@ defmodule Backend.Leaderboards.Snapshot do
   end
 
   def official_link(%{region: r, leaderboard_id: ldb, season_id: s}) do
-    "https://hearthstone.blizzard.com/en-us/community/leaderboards?region=#{r}&leaderboardId=#{ldb}&seasonId=#{s}"
+    "https://hearthstone.blizzard.com/en-us/community/leaderboards?region=#{r}&leaderboardId=#{Hearthstone.Leaderboards.Api.ldb_id(ldb)}&seasonId=#{s}"
   end
 
   def official_link(_), do: nil
