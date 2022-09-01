@@ -1,5 +1,6 @@
 defmodule Backend.Leaderboards.SeasonBag do
   @moduledoc false
+  require Backend.Blizzard
   use GenServer
   alias Backend.Leaderboards
   alias Backend.Leaderboards.Season
@@ -27,12 +28,16 @@ defmodule Backend.Leaderboards.SeasonBag do
   def get(s = %Season{id: id}) when is_integer(id), do: {:ok, s}
 
   def get(base = %{season_id: nil}) do
-    filled =
-      base
-      |> ApiSeason.ensure_region()
-      |> ApiSeason.ensure_leaderboard_id()
+    filled = ensure(base)
 
     {:ok, :ets.foldl(&max_season_id/2, filled, table())}
+  end
+
+  def get(season = %{season_id: id, leaderboard_id: l})
+      when is_integer(id) and l in ["BG", :BG] and Backend.Blizzard.is_unrealistic_bg_season(id) do
+    season
+    |> Map.delete(:season_id)
+    |> get()
   end
 
   def get(season = %{season_id: id}) when is_integer(id) do
@@ -44,7 +49,10 @@ defmodule Backend.Leaderboards.SeasonBag do
     end
   end
 
-  def get(season), do: {:ok, season}
+  def get(season), do: {:ok, ensure(season)}
+
+  defp ensure(season),
+    do: season |> ApiSeason.ensure_region() |> ApiSeason.ensure_leaderboard_id()
 
   defp max_season_id({_, s}, acc) do
     if to_string(s.leaderboard_id) == to_string(acc.leaderboard_id) and
