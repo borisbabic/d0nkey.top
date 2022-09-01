@@ -39,6 +39,12 @@ defmodule Backend.Blizzard do
     end
   end
 
+  defmacro is_unrealistic_bg_season(season_id) do
+    quote do
+      unquote(season_id) > unquote(@current_bg_season_id) + 1
+    end
+  end
+
   @type region :: :EU | :US | :AP | :CN
   @regions [:EU, :US, :AP, :CN]
   @qualifier_regions [:EU, :US, :AP]
