@@ -251,6 +251,7 @@ defmodule BackendWeb.LeaderboardView do
           leaderboard: leaderboard,
           show_flags: show_flags,
           comparison: comparison,
+          show_ratings: show_ratings,
           skip_cn: skip_cn
         }
       ) do
@@ -262,8 +263,6 @@ defmodule BackendWeb.LeaderboardView do
     entries =
       leaderboard
       |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num, skip_cn)
-
-    show_ratings = to_string(leaderboard.leaderboard_id) in ["MRC", "BG"]
 
     render("leaderboard.html", %{
       entries: entries,

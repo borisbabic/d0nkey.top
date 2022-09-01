@@ -3,6 +3,7 @@ defmodule Backend.Leaderboards.SeasonBag do
   use GenServer
   alias Backend.Leaderboards
   alias Backend.Leaderboards.Season
+  alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
 
   def start_link(default), do: GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -34,7 +35,7 @@ defmodule Backend.Leaderboards.SeasonBag do
     {:ok, :ets.foldl(&max_season_id/2, filled, table())}
   end
 
-  def get(season) do
+  def get(season = %{season_id: id}) when is_integer(id) do
     key = key(season)
 
     case Util.ets_lookup(table(), key) do
@@ -42,6 +43,8 @@ defmodule Backend.Leaderboards.SeasonBag do
       _ -> GenServer.call(__MODULE__, {:create_season, season})
     end
   end
+
+  def get(season), do: {:ok, season}
 
   defp max_season_id({_, s}, acc) do
     if to_string(s.leaderboard_id) == to_string(acc.leaderboard_id) and

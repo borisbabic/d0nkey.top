@@ -28,8 +28,8 @@ defmodule BackendWeb.PlayerView do
           conn: conn
         }
       ) do
-
     short_btags = Enum.map(battletags, &Battletag.shorten/1)
+
     stats_rows =
       qs
       |> Enum.flat_map(fn {period, ps} ->
@@ -174,19 +174,27 @@ defmodule BackendWeb.PlayerView do
 
           leaderboard_title =
             Blizzard.get_leaderboard_name(f.region, f.leaderboard_id, f.season_id)
-          score = if pe.rating do
-            history_link = history_link(conn, f, pe.account_id, :rating)
-            ~E"""
-            <%= pe.rating %> <%= history_link %>
-            """
-          else
-            ""
-          end
+
+          score =
+            if pe.rating do
+              history_link = history_link(conn, f, pe.account_id, :rating)
+
+              ~E"""
+              <%= pe.rating %> <%= history_link %>
+              """
+            else
+              ""
+            end
+
           [
             %{
               competition: simple_link(leaderboard_link, leaderboard_title),
               time: f.upstream_updated_at,
-              position: concat(simple_link(leaderboard_link, pe.rank), history_link(conn, f, pe.account_id, :rank)),
+              position:
+                concat(
+                  simple_link(leaderboard_link, pe.rank),
+                  history_link(conn, f, pe.account_id, :rank)
+                ),
               score: score
             }
           ]
@@ -199,9 +207,18 @@ defmodule BackendWeb.PlayerView do
     <%= first %> <%= second %>
     """
   end
-  def history_link(conn, ss, player, attr \\ "rank", period_param \\ nil) do
+
+  def history_link(conn, ss, player, attr \\ "rank", period_param \\ nil)
+  def history_link(_conn, _ss, nil, _attr, _period_param), do: nil
+
+  def history_link(conn, ss, player, attr, period_param) do
     period = if period_param, do: period_param, else: "season_#{ss.season_id}"
-    link = Routes.leaderboard_path(conn, :player_history, ss.region, period, ss.leaderboard_id, player, attr: attr)
+
+    link =
+      Routes.leaderboard_path(conn, :player_history, ss.region, period, ss.leaderboard_id, player,
+        attr: attr
+      )
+
     ~E"""
       <a href="<%= link %>">
         <span class="icon">
