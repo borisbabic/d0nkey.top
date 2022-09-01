@@ -215,7 +215,7 @@ defmodule Backend.Leaderboards do
   defp continue?(%{leaderboard: %{rows: [_ | _], pagination: p}}), do: p != nil
   defp continue?(_), do: false
 
-  def handle_rows(rows, season) do
+  def handle_rows(rows = [_ | _], season) do
     now = NaiveDateTime.utc_now()
     {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
 
@@ -233,6 +233,8 @@ defmodule Backend.Leaderboards do
     |> Enum.filter(updated)
     |> create_entries(season)
   end
+
+  def handle_rows(_, _), do: []
 
   defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
     do: handle_rows(rows, season)
