@@ -154,8 +154,8 @@ defmodule Backend.Leaderboards do
   end
 
   def save_all(s) do
-    with {:ok, rows} <- fetch_pages(s, 200) do
-      handle_rows(rows, s)
+    with {:ok, rows, season} <- fetch_pages(s, 200) do
+      handle_rows(rows, season)
     end
   end
 
@@ -164,7 +164,7 @@ defmodule Backend.Leaderboards do
       {:ok, response = %{leaderboard: %{pagination: %{total_pages: total_pages}}}} ->
         pages = min(total_pages, num_pages)
 
-        extra_pages = fetch_extra_pages(season, pages)
+        extra_pages = fetch_extra_pages(response.season, pages)
 
         all =
           [response | extra_pages]
@@ -175,7 +175,7 @@ defmodule Backend.Leaderboards do
             end
           end)
 
-        {:ok, all}
+        {:ok, all, response.season}
 
       _ ->
         Logger.warn("Couldn't get first page for #{inspect(season)}")
