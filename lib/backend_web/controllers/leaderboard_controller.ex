@@ -27,9 +27,16 @@ defmodule BackendWeb.LeaderboardController do
       page_title: "Ladder Leaderboard",
       skip_cn: skip_cn,
       comparison: comparison,
+      show_ratings: show_ratings(params, leaderboard),
       ladder_mode: ladder_mode
     })
   end
+
+  defp show_ratings(%{"show_ratings" => sr}, _leaderboard) when sr in ["yes", "true"], do: true
+  defp show_ratings(%{"show_ratings" => sr}, _leaderboard) when sr in ["no", "false"], do: false
+
+  defp show_ratings(_params, leaderboard),
+    do: to_string(leaderboard.leaderboard_id) in ["MRC", "BG"]
 
   defp hack_lobby_legends_season(ldb = %{}, %{"seasonId" => new_season = "lobby_legends" <> _}),
     do: Map.put(ldb, :season_id, new_season)

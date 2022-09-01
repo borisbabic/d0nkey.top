@@ -53,9 +53,8 @@ defmodule Backend.Leaderboards do
 
   def get_leaderboard_shim(s) do
     with {:ok, season} <- SeasonBag.get(s) do
-      entries =
-        [:latest_in_season, {"season", season}, {"limit", 200}, {"order_by", "rank"}]
-        |> entries()
+      criteria = [:latest_in_season, {"season", season}, {"limit", 200}, {"order_by", "rank"}]
+      entries = entries(criteria)
 
       updated_at = updated_at(entries)
 
@@ -673,7 +672,7 @@ defmodule Backend.Leaderboards do
               (s.region == "US" and e.inserted_at <= ^us_end)
           )
 
-        compose_snapshot_query({"season_id", season_id}, new_query)
+        compose_entries_query({"season_id", season_id}, new_query)
 
       _ ->
         query
