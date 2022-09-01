@@ -171,7 +171,7 @@ defmodule Backend.Application do
   def check_bot(prev) do
     case Application.fetch_env(:backend, :enable_bot) do
       {:ok, true} -> prev ++ [Bot.Consumer]
-      prev -> prev
+      _ -> prev
     end
   end
 
