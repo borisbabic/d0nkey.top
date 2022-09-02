@@ -461,9 +461,10 @@ defmodule Util do
   def get_country(name) do
     with nil <- Countriex.get_by(:name, name) do
       Countriex.all()
-      |> Enum.find(& name in &1.unofficial_names)
+      |> Enum.find(&(name in &1.unofficial_names))
     end
   end
+
   def get_country_name(nil), do: nil
 
   def get_country_name(cc) do
@@ -537,4 +538,9 @@ defmodule Util do
       _ -> {:error, :invalid_mapper_function_return}
     end
   end
+
+  defp prepend_non_nil(list, nil), do: list
+  defp prepend_non_nil(list, val) when is_list(list), do: [val | list]
+  defp prepend_non_nil(list, nil, to_prepend), do: list
+  defp prepend_non_nil(list, _to_check, to_prepend) when is_list(list), do: [to_prepend | list]
 end

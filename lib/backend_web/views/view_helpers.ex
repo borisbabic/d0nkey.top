@@ -72,7 +72,7 @@ defmodule BackendWeb.ViewHelpers do
 
         render(BackendWeb.SharedView, "comparison.html", %{
           class: class,
-          diff: abs(current - prev),
+          diff: abs((current || 0) - prev),
           arrow: arrow,
           current: current
         })
@@ -90,12 +90,14 @@ defmodule BackendWeb.ViewHelpers do
         pref = Backend.PlayerCountryPreferenceBag.get(player, country)
         country_flag(country, pref)
       end
+
       def country_flag(country, %{show_region: true}) do
         %{world_region: region} = Countriex.get_by(:alpha2, country)
         image = "/images/region_#{String.downcase(region)}.png"
 
         render(BackendWeb.SharedView, "region_flag.html", %{image: image, region: region})
       end
+
       def country_flag(country, user_preferences) do
         name = Util.get_country_name(country)
 
@@ -167,6 +169,7 @@ defmodule BackendWeb.ViewHelpers do
       end
 
       def render_player_name(name, _with_country = false), do: render_player_name(name)
+
       def render_player_name(name, _with_country = true) do
         render(
           BackendWeb.SharedView,

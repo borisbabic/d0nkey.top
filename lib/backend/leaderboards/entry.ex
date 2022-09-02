@@ -17,7 +17,7 @@ defmodule Backend.Leaderboards.Entry do
   @doc false
   def changeset(entry, attrs) do
     entry
-    |> cast(attrs, [:rank, :account_id, :rating, :season_id])
+    |> cast(attrs, [:rank, :account_id, :rating, :season_id, :inserted_at])
     |> validate_required([:rank, :season_id])
   end
 end

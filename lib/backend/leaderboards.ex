@@ -15,7 +15,6 @@ defmodule Backend.Leaderboards do
   alias Backend.Leaderboards.Entry
   alias Backend.Leaderboards.Season
   alias Backend.Leaderboards.SeasonBag
-  alias Backend.Leaderboards.CurrentSnapshot
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
   alias Hearthstone.Leaderboards.Api
 
@@ -50,6 +49,27 @@ defmodule Backend.Leaderboards do
   # Auguest 2021 constructed EU+AM leaderboards were overwritten by the first few days of september
   defp should_avoid_fetching?(r, l, 94) when r in ["EU", "US"] and l != "BG", do: true
   defp should_avoid_fetching?(_r, _l, _s), do: false
+
+  def get_shim(criteria) do
+    {"season", season} =
+      List.keyfind(
+        criteria,
+        "season",
+        0,
+        {"season", %{season_id: nil, region: nil, leaderboard_id: nil}}
+      )
+
+    entries = entries(criteria)
+    updated_at = updated_at(entries)
+
+    %{
+      season_id: season.season_id,
+      leaderboard_id: season.leaderboard_id,
+      region: season.region,
+      upstream_updated_at: updated_at,
+      entries: entries
+    }
+  end
 
   def get_leaderboard_shim(s) do
     with {:ok, season} <- SeasonBag.get(s) do
@@ -296,13 +316,16 @@ defmodule Backend.Leaderboards do
 
   def create_snapshot_attrs(l = %Blizzard.Leaderboard{}) do
     %{
-      entries: l.entries |> Enum.map(&Map.from_struct/1),
+      entries: l.entries |> Enum.map(&to_attrs/1),
       season_id: l.season_id,
       leaderboard_id: l.leaderboard_id,
       region: l.region,
       upstream_updated_at: l.updated_at
     }
   end
+
+  def to_attrs(struct) when is_struct(struct), do: Map.from_struct(struct)
+  def to_attrs(a), do: a
 
   # TEMPORARY FIX, october 2021 entries are being added to September 2021
   defp create_ldb(l = %{season_id: 95}),
@@ -625,6 +648,7 @@ defmodule Backend.Leaderboards do
 
   def entries(criteria) do
     base_entries_query()
+    |> latest_in_season(criteria)
     |> build_entries_query(criteria)
     |> Repo.all()
   end
@@ -790,9 +814,59 @@ defmodule Backend.Leaderboards do
     compose_entries_query({"players", players}, query)
   end
 
-  defp compose_entries({"players", players}, query) do
+  defp compose_entries_query({"players", players}, query) do
     query
     |> where([entry: e], e.account_id in ^players)
+  end
+
+  defp compose_entries_query(:latest_in_season, query), do: query
+  # defp compose_entries_query(:latest_in_season, query) do
+  #   subquery =
+  #     base_entries_query()
+  #     |> group_by([entry: e], [e.rank, e.season_id])
+  #     |> select([entry: e], %{
+  #       rank: e.rank,
+  #       season_id: e.season_id,
+  #       max: max(e.inserted_at)
+  #     })
+
+  #   query
+  #   |> join(
+  #     :inner,
+  #     [entry: e],
+  #     sub in subquery(subquery),
+  #     on:
+  #       e.season_id == sub.season_id and
+  #         e.rank == sub.rank and
+  #         e.inserted_at == sub.max
+  #   )
+  # end
+
+  defp latest_in_season(query, criteria) do
+    if Enum.any?(criteria, &(&1 == :latest_in_season)) do
+      subquery =
+        base_entries_query()
+        |> build_entries_query(criteria)
+        |> group_by([entry: e], [e.rank, e.season_id])
+        |> select([entry: e], %{
+          rank: e.rank,
+          season_id: e.season_id,
+          max: max(e.inserted_at)
+        })
+
+      query
+      |> join(
+        :inner,
+        [entry: e],
+        sub in subquery(subquery),
+        on:
+          e.season_id == sub.season_id and
+            e.rank == sub.rank and
+            e.inserted_at == sub.max
+      )
+    else
+      query
+    end
   end
 
   defp entries_past_period(query, raw, unit) do
@@ -800,28 +874,6 @@ defmodule Backend.Leaderboards do
 
     query
     |> where([entry: e], e.inserted_At > ago(^val, ^unit))
-  end
-
-  defp compose_entries_query(:latest_in_season, query) do
-    subquery =
-      base_entries_query()
-      |> group_by([entry: e], [e.rank, e.season_id])
-      |> select([entry: e], %{
-        rank: e.rank,
-        season_id: e.season_id,
-        max: max(e.inserted_at)
-      })
-
-    query
-    |> join(
-      :inner,
-      [entry: e],
-      sub in subquery(subquery),
-      on:
-        e.season_id == sub.season_id and
-          e.rank == sub.rank and
-          e.inserted_at == sub.max
-    )
   end
 
   defp past_period(query, raw, unit) do
@@ -852,9 +904,9 @@ defmodule Backend.Leaderboards do
 
   def create_entries(rows, %Season{id: id}) do
     Enum.reduce(rows, Multi.new(), fn row, multi ->
-      attrs = row |> Map.from_struct() |> Map.put(:season_id, id)
+      attrs = row |> to_attrs() |> Map.put(:season_id, id)
       cs = %Entry{} |> Entry.changeset(attrs)
-      Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}", cs)
+      Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}_#{row.rating}", cs)
     end)
     |> Repo.transaction()
   end
@@ -873,7 +925,7 @@ defmodule Backend.Leaderboards do
 
   def create_season(season) do
     %Season{}
-    |> Season.changeset(Map.from_struct(season))
+    |> Season.changeset(to_attrs(season))
     |> Repo.insert()
   end
 end
