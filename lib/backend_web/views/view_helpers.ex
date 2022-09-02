@@ -69,7 +69,9 @@ defmodule BackendWeb.ViewHelpers do
 
       def render_comparison(current, prev, flip, dff) do
         {class, arrow} =
-          if current > prev == flip, do: {"has-text-danger", "↓"}, else: {"has-text-success", "↑"}
+          if (current || 0) > (prev || 0) == flip,
+            do: {"has-text-danger", "↓"},
+            else: {"has-text-success", "↑"}
 
         diff = abs((current || 0) - prev)
 
