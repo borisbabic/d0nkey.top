@@ -63,16 +63,19 @@ defmodule BackendWeb.ViewHelpers do
         })
       end
 
-      def render_comparison(current, nil, _), do: current
-      def render_comparison(current, prev, _) when current == prev, do: current
+      def render_comparison(current, prev, flip, diff_format_fun \\ & &1)
+      def render_comparison(current, nil, _, _), do: current
+      def render_comparison(current, prev, _, _) when current == prev, do: current
 
-      def render_comparison(current, prev, flip) do
+      def render_comparison(current, prev, flip, dff) do
         {class, arrow} =
           if current > prev == flip, do: {"has-text-danger", "↓"}, else: {"has-text-success", "↑"}
 
+        diff = abs((current || 0) - prev)
+
         render(BackendWeb.SharedView, "comparison.html", %{
           class: class,
-          diff: abs((current || 0) - prev),
+          diff: dff.(diff),
           arrow: arrow,
           current: current
         })
