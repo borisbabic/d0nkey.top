@@ -3,13 +3,15 @@ defmodule BackendWeb.LeaderboardController do
   use BackendWeb, :controller
   alias Backend.Blizzard
   alias Backend.Leaderboards
+  alias Backend.Leaderboards.SeasonBag
   alias Backend.MastersTour
   require Backend.LobbyLegends
 
   def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
-    leaderboard = get_leaderboard(params) |> hack_lobby_legends_season(params)
+    criteria = create_criteria(params)
+    leaderboard = Leaderboards.get_shim(criteria) |> hack_lobby_legends_season(params)
     compare_to = params["compare_to"]
-    comparison = get_comparison(leaderboard, compare_to)
+    comparison = get_comparison(criteria, compare_to)
     ladder_mode = parse_ladder_mode(params)
     show_flags = parse_show_flags(params, leaderboard)
     skip_cn = parse_skip_cn(params, leaderboard)
@@ -20,7 +22,7 @@ defmodule BackendWeb.LeaderboardController do
       invited: invited,
       ladder_invite_num: ladder_invite_num,
       highlight: parse_highlight(params),
-      other_ladders: leaderboard |> get_other_ladders(ladder_mode),
+      other_ladders: get_other_ladders(leaderboard, ladder_mode, criteria),
       leaderboard: leaderboard,
       compare_to: params["compare_to"],
       show_flags: show_flags,
@@ -30,6 +32,45 @@ defmodule BackendWeb.LeaderboardController do
       show_ratings: show_ratings(params, leaderboard),
       ladder_mode: ladder_mode
     })
+  end
+
+  defp create_criteria(params) do
+    [:latest_in_season, {"order_by", "rank"}]
+    |> parse_up_to(params)
+    |> parse_season(params)
+    |> parse_pagination(params)
+  end
+
+  defp parse_pagination(criteria, params) do
+    limit = Map.get(params, "limit", 200)
+    offset = Map.get(params, "offset", 0)
+
+    [
+      {"limit", limit},
+      {"offset", offset}
+      | criteria
+    ]
+  end
+
+  defp parse_up_to(criteria, %{"up_to" => raw}) do
+    case Timex.parse(raw, "{RFC3339z}") do
+      {:ok, date} ->
+        [{"up_to", date} | criteria]
+
+      _ ->
+        criteria
+    end
+  end
+
+  defp parse_up_to(criteria, _), do: criteria
+
+  defp parse_season(criteria, params) do
+    from_params = create_season(params)
+
+    case SeasonBag.get(from_params) do
+      {:ok, s} -> [{"season", s} | criteria]
+      _ -> [{"season", from_params} | criteria]
+    end
   end
 
   defp show_ratings(%{"show_ratings" => sr}, _leaderboard) when sr in ["yes", "true"], do: true
@@ -88,73 +129,40 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  def get_other_ladders(%{season_id: s, leaderboard_id: ldb = "BG", region: r}, "yes") do
-    Blizzard.ladders_to_check(s, ldb, r)
-    |> other_ladders(ldb, s)
+  def get_other_ladders(ldb, other_ladders, criteria) do
+    with {{"season", s}, p} <- List.keytake(criteria, "season", 0) do
+      ladders_to_check(ldb, other_ladders)
+      |> Enum.map(fn r ->
+        new_season = Map.put(s, :region, r)
+
+        [{"season", new_season} | p]
+        |> Leaderboards.get_shim()
+      end)
+    end
   end
 
-  def get_other_ladders(%{season_id: s, leaderboard_id: ldb = "STD", region: r}, "yes") do
+  def ladders_to_check(%{season_id: s, leaderboard_id: ldb = "BG", region: r}, "yes") do
+    Blizzard.ladders_to_check(s, ldb, r)
+  end
+
+  def ladders_to_check(%{season_id: s, leaderboard_id: ldb = "STD", region: r}, "yes") do
     s
     |> MastersTour.TourStop.get_by_ladder()
     |> case do
       {:ok, _} ->
         Blizzard.ladders_to_check(s, ldb, r)
-        |> other_ladders(ldb, s)
 
       _ ->
         []
     end
   end
 
-  def get_other_ladders(_, _), do: []
-
-  defp other_ladders(regions, ldb, s) do
-    regions
-    |> Enum.flat_map(fn region ->
-      case get_leaderboard(region, ldb, s) do
-        nil -> []
-        leaderboard -> [leaderboard]
-      end
-    end)
-  end
+  def ladders_to_check(_, _), do: []
 
   def parse_highlight(params) do
     case params["highlight"] do
       string when is_binary(string) -> MapSet.new([string])
       list when is_list(list) -> MapSet.new(list)
-      _ -> nil
-    end
-  end
-
-  def get_leaderboard(%{"database_id" => id}), do: Leaderboards.snapshot(id)
-
-  def get_leaderboard(%{
-        "up_to" => string_date,
-        "region" => region,
-        "leaderboardId" => leaderboard
-      }) do
-    case string_date |> Timex.parse("{RFC3339z}") do
-      {:error, _} ->
-        nil
-
-      {:ok, date} ->
-        Leaderboards.latest_up_to(region, leaderboard, date)
-    end
-  end
-
-  def get_leaderboard(params) do
-    create_season(params)
-    |> Leaderboards.get_leaderboard_shim()
-  end
-
-  def get_leaderboard(params = %{"region" => region, "leaderboardId" => leaderboard_id}) do
-    get_leaderboard(region, leaderboard_id, params["seasonId"])
-  end
-
-  defp get_leaderboard(r, l, s) do
-    try do
-      Leaderboards.get_leaderboard(r, l, s)
-    rescue
       _ -> nil
     end
   end
@@ -169,15 +177,26 @@ defmodule BackendWeb.LeaderboardController do
     |> Hearthstone.Leaderboards.Season.ensure_leaderboard_id()
   end
 
-  defp get_comparison(_, nil), do: nil
+  defp get_comparison(criteria, "min_ago_" <> min_ago) do
+    case Integer.parse(min_ago) do
+      {min, _} ->
+        {base_time, partial} =
+          case List.keytake(criteria, "up_to", 0) do
+            {{"up_to", time}, p} -> {time, p}
+            _ -> {NaiveDateTime.utc_now(), criteria}
+          end
 
-  defp get_comparison(l, c_t) do
-    try do
-      Leaderboards.get_comparison(l, c_t)
-    rescue
-      _ -> nil
+        comparison_time = NaiveDateTime.add(base_time, -60 * min)
+
+        [{"up_to", comparison_time} | partial]
+        |> Leaderboards.get_shim()
+
+      _ ->
+        nil
     end
   end
+
+  defp get_comparison(_, _), do: nil
 
   def player_stats(conn, params) do
     direction =

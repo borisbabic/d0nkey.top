@@ -152,7 +152,6 @@ defmodule BackendWeb.ProfileSettingsLive do
         "show_one_for_legendaries",
         DecklistOptions.show_one_for_legendaries_default()
       )
-      |> IO.inspect()
 
     attrs |> Map.put("decklist_options", decklist_options)
   end
