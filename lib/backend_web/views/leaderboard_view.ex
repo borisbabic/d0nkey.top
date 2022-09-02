@@ -100,7 +100,7 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Period")}
   end
 
-  defp add_attr_dropdown(dropdowns, conn, current, true) do
+  defp add_attr_dropdown(dropdowns, conn, current) do
     options =
       [:rank, :rating]
       |> Enum.map(fn attr ->
@@ -113,8 +113,6 @@ defmodule BackendWeb.LeaderboardView do
 
     [{options, dropdown_title(options, "Attribute")} | dropdowns]
   end
-
-  defp add_attr_dropdown(dropdowns, _, _, _), do: dropdowns
 
   defp add_ignore_dropdown(dropdowns, %{conn: conn, attr: :rank, ignore_rank: ignore}) do
     nil_option = %{
@@ -232,7 +230,7 @@ defmodule BackendWeb.LeaderboardView do
 
     dropdowns =
       player_history_dropdowns(attrs)
-      |> add_attr_dropdown(conn, attr, has_rating)
+      |> add_attr_dropdown(conn, attr)
       |> add_ignore_dropdown(attrs)
 
     ldb = conn.params["leaderboard_id"]
