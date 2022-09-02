@@ -16,16 +16,14 @@
         </tr>
     </thead>
     <tbody>
-        <%= for ph = %{rank: r, upstream_updated_at: time, snapshot_id: id} <- @player_history do %>
+        <%= for ph = %{rank: r, upstream_updated_at: time} <- @player_history do %>
             <tr>
                 <td><%= render_comparison(r, ph.prev_rank, true) %></td>
                 <td>
-                    <a href={"#{ Routes.leaderboard_path(@conn, :index, database_id: id) }"}>
-                        <%= render_datetime(time) %>
-                    </a>
+                    <%= render_datetime(time) %>
                 </td>
                 <%= if @has_rating do %>
-                    <td><%= render_comparison(ph.rating, ph.prev_rating, false) %></td>
+                    <td><%= render_comparison(ph.rating, ph.prev_rating, false, &trunc_rating/1) %></td>
                 <% end %>
             </tr>
         <% end %>

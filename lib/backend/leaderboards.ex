@@ -22,7 +22,6 @@ defmodule Backend.Leaderboards do
           rank: integer(),
           rating: integer() | nil,
           upstream_updated_at: NaiveDateTime.t(),
-          snapshot_id: integer(),
           prev_rank: integer() | nil,
           prev_rating: integer() | nil
         }
@@ -418,6 +417,29 @@ defmodule Backend.Leaderboards do
   end
 
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
+
+  @spec player_history(String.t(), list(), nil | atom()) :: [player_history_entry()]
+  def entries_player_history(player, criteria, dedup_by \\ nil) do
+    new_criteria = [{"players", [player]} | criteria]
+
+    base_entries_query()
+    |> build_entries_query(new_criteria)
+    |> player_history_previous()
+    |> dedup_player_history(dedup_by)
+    |> Repo.all()
+  end
+
+  defp player_history_previous(query) do
+    from e in subquery(query),
+      windows: [w: [order_by: e.inserted_at]],
+      select: %{
+        rank: e.rank,
+        rating: e.rating,
+        upstream_updated_at: e.inserted_at,
+        prev_rating: lag(e.rating) |> over(:w),
+        prev_rank: lag(e.rank) |> over(:w)
+      }
+  end
 
   @spec player_history(String.t(), list(), nil | atom()) :: [player_history_entry()]
   def player_history(player, criteria, dedup_by \\ nil) do
@@ -873,7 +895,7 @@ defmodule Backend.Leaderboards do
     {val, _} = Integer.parse(raw)
 
     query
-    |> where([entry: e], e.inserted_At > ago(^val, ^unit))
+    |> where([entry: e], e.inserted_at > ago(^val, ^unit))
   end
 
   defp past_period(query, raw, unit) do
@@ -891,7 +913,7 @@ defmodule Backend.Leaderboards do
         ]
   def player_history(player, region, period, leaderboard_id, changed_attr \\ :rank) do
     criteria = [{"period", period}, {"region", region}, {"leaderboard_id", leaderboard_id}]
-    player_history(player, criteria, changed_attr)
+    entries_player_history(player, criteria, changed_attr)
     # |> dedup_player_histories(changed_attr)
   end
 

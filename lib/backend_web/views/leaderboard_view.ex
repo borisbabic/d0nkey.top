@@ -13,6 +13,13 @@ defmodule BackendWeb.LeaderboardView do
   @type selectable_season :: {String.t(), integer()}
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
 
+  @alter_ratings_ldbs ["STD", :STD, "CLS", :CLS, "WLD", :WLD]
+  defmacro float_display?(ldb) do
+    quote do
+      unquote(ldb) in unquote(@alter_ratings_ldbs)
+    end
+  end
+
   def player_history_graph([], _), do: ""
 
   def player_history_graph(player_history, attr) do
@@ -201,6 +208,17 @@ defmodule BackendWeb.LeaderboardView do
 
   defp filter_player_history_changes(player_history, _), do: player_history
 
+  defp update_ph_ratings(ph, ldb) do
+    rating_display = rating_display_func(ldb)
+
+    ph
+    |> Enum.map(fn r ->
+      r
+      |> Map.put(:rating, rating_display.(r.rating))
+      |> Map.put(:prev_rating, rating_display.(r.prev_rating))
+    end)
+  end
+
   def render(
         "player_history.html",
         attrs = %{
@@ -217,12 +235,15 @@ defmodule BackendWeb.LeaderboardView do
       |> add_attr_dropdown(conn, attr, has_rating)
       |> add_ignore_dropdown(attrs)
 
+    ldb = conn.params["leaderboard_id"]
+
     sorted_history =
       player_history
       |> filter_player_history_changes(attrs)
+      |> update_ph_ratings(ldb)
       |> Enum.reverse()
 
-    graph = player_history_graph(player_history, attr)
+    graph = player_history_graph(sorted_history, attr)
     title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
 
     render("player_history.html", %{
@@ -866,13 +887,19 @@ defmodule BackendWeb.LeaderboardView do
   def process_entries(nil, _, _, _, _, _), do: []
 
   def process_entries(
-        snapshot = %{entries: entries, upstream_updated_at: upstream_updated_at},
+        snapshot = %{
+          entries: entries,
+          upstream_updated_at: upstream_updated_at,
+          leaderboard_id: ldb
+        },
         invited,
         comparison,
         show_flags,
         num_invited,
         skip_cn
       ) do
+    rating_display = rating_display_func(ldb)
+
     Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
@@ -898,6 +925,7 @@ defmodule BackendWeb.LeaderboardView do
 
       {
         le
+        |> Map.update(:rating, le.rating, rating_display)
         |> Map.put_new(:qualified, qualified)
         |> Map.put_new(:qualifying, qualifying)
         |> Map.put_new(:ineligible, ineligible)
@@ -906,7 +934,7 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:wrong_region, wrong_region)
         |> Map.put_new(:banned, banned)
         |> Map.put_new(:history_link, history_link)
-        |> Map.put_new(:prev_rating, prev_rating),
+        |> Map.put_new(:prev_rating, rating_display.(prev_rating)),
         if skip_for_invite do
           acc
         else
@@ -1009,4 +1037,20 @@ defmodule BackendWeb.LeaderboardView do
       }
     end)
   end
+
+  defp rating_display_func(ldb) do
+    fn rating ->
+      rating_display(rating, ldb)
+    end
+  end
+
+  defp rating_display(nil, _ldb), do: nil
+
+  defp rating_display(rating, ldb) when float_display?(ldb) do
+    trunc_rating(1000 * rating)
+  end
+
+  defp rating_display(rating, _), do: trunc_rating(rating)
+
+  defp trunc_rating(rating), do: (1.0 * rating) |> Float.round(0) |> trunc()
 end

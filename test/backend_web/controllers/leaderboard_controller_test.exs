@@ -46,19 +46,19 @@ defmodule BackendWeb.LeaderboardControllerTest do
       %{
         account_id: "D0nkey",
         rank: 1,
-        rating: 91,
+        rating: 91.0,
         inserted_at: NaiveDateTime.add(now, -60)
       },
       %{
         account_id: "D0nkey",
         rank: 1,
-        rating: 334,
+        rating: 334.0,
         inserted_at: NaiveDateTime.add(now, -60 * 12)
       },
       %{
         account_id: "D0nkey",
         rank: 1,
-        rating: 1,
+        rating: 1.0,
         inserted_at: NaiveDateTime.add(now, -60 * 22)
       }
     ]
@@ -93,19 +93,19 @@ defmodule BackendWeb.LeaderboardControllerTest do
       %{
         account_id: "D0nkey",
         rank: 1,
-        rating: 91,
+        rating: 91.0,
         inserted_at: NaiveDateTime.add(now, -60)
       },
       %{
         account_id: "D0nkey",
         rank: 1,
-        rating: 334,
+        rating: 334.0,
         inserted_at: NaiveDateTime.add(now, -60 * 12)
       },
       %{
         account_id: "D0nkey",
         rank: 1,
-        rating: 88,
+        rating: 88.0,
         inserted_at: NaiveDateTime.add(now, -60 * 22)
       }
     ]
@@ -122,8 +122,59 @@ defmodule BackendWeb.LeaderboardControllerTest do
     conn = get(conn, url)
     Backend.Repo.delete_all(from e in Entry, where: e.season_id == ^season.id)
     Backend.Repo.delete(season)
-    refute html_response(conn, 200) =~ "91.0"
-    assert html_response(conn, 200) =~ "↑246.0"
-    refute html_response(conn, 200) =~ "88.0"
+    refute html_response(conn, 200) =~ "91"
+    assert html_response(conn, 200) =~ "↑246"
+  end
+
+  test "player rating history returns the right diff", %{conn: conn} do
+    s = %Hearthstone.Leaderboards.Season{
+      leaderboard_id: "STD",
+      season_id: -50,
+      region: "EU"
+    }
+
+    {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+
+    now = NaiveDateTime.utc_now()
+
+    rows = [
+      %{
+        account_id: "D0nkey",
+        rank: 1,
+        rating: 91.0,
+        inserted_at: NaiveDateTime.add(now, -60)
+      },
+      %{
+        account_id: "D0nkey",
+        rank: 1,
+        rating: 334.0,
+        inserted_at: NaiveDateTime.add(now, -60 * 12)
+      },
+      %{
+        account_id: "D0nkey",
+        rank: 1,
+        rating: 88.0,
+        inserted_at: NaiveDateTime.add(now, -60 * 22)
+      }
+    ]
+
+    Backend.Leaderboards.create_entries(rows, s)
+
+    url =
+      Routes.leaderboard_path(
+        conn,
+        :player_history,
+        s.region,
+        "past_weeks_1",
+        s.leaderboard_id,
+        "D0nkey",
+        %{"attr" => "rating"}
+      )
+
+    conn = get(conn, url)
+    Backend.Repo.delete_all(from e in Entry, where: e.season_id == ^season.id)
+    Backend.Repo.delete(season)
+    assert html_response(conn, 200) =~ "↓243"
+    assert html_response(conn, 200) =~ "↑246"
   end
 end
