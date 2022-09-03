@@ -666,7 +666,6 @@ defmodule BackendWeb.LeaderboardView do
     |> Enum.with_index(1)
     |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, current.region, pos}} end)
     |> Map.new()
-    |> Map.merge(invited)
     |> add_other_ladders(rest, ladder_invite_num, skip_cn)
   end
 

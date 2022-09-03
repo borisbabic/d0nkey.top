@@ -691,20 +691,16 @@ defmodule Backend.Leaderboards do
   end
 
   defp compose_entries_query({"season", s = %{season_id: nil}}, query) do
-    with {:ok, season = %{season_id: sid}} when nil != sid <- SeasonBag.get(s) do
-      compose_entries_query({"season", season}, query)
+    case SeasonBag.get(s) do
+      {:ok, season = %{id: id}} when is_integer(id) ->
+        compose_entries_query({"season", season}, query)
+
+      {:ok, season} ->
+        do_season_criteria(query, season)
     end
   end
 
-  defp compose_entries_query({"season", %{season_id: s, region: r, leaderboard_id: l}}, query) do
-    season_criteria = [
-      {"season_id", s},
-      {"region", r},
-      {"leaderboard_id", l}
-    ]
-
-    build_entries_query(query, season_criteria)
-  end
+  defp compose_entries_query({"season", season}, query), do: do_season_criteria(query, season)
 
   defp compose_entries_query({"season_id", season = "lobby_legends_" <> _}, query) do
     case LobbyLegendsSeason.get(season) do
@@ -863,6 +859,19 @@ defmodule Backend.Leaderboards do
   #         e.inserted_at == sub.max
   #   )
   # end
+
+  defp do_season_criteria(query, season) do
+    criteria = season_criteria(season)
+    build_entries_query(query, criteria)
+  end
+
+  def season_criteria(%{season_id: s, leaderboard_id: l, region: r}) do
+    [
+      {"season_id", s},
+      {"region", r},
+      {"leaderboard_id", l}
+    ]
+  end
 
   defp latest_in_season(query, criteria) do
     if Enum.any?(criteria, &(&1 == :latest_in_season)) do
