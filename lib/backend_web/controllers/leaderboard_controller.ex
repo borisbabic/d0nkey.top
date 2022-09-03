@@ -133,7 +133,11 @@ defmodule BackendWeb.LeaderboardController do
     with {{"season", s}, p} <- List.keytake(criteria, "season", 0) do
       ladders_to_check(ldb, other_ladders)
       |> Enum.map(fn r ->
-        new_season = Map.put(s, :region, r)
+        new_season = %Hearthstone.Leaderboards.Season{
+          season_id: s.season_id,
+          leaderboard_id: s.leaderboard_id,
+          region: to_string(r)
+        }
 
         [{"season", new_season} | p]
         |> Leaderboards.get_shim()
@@ -171,7 +175,7 @@ defmodule BackendWeb.LeaderboardController do
     %Hearthstone.Leaderboards.Season{
       region: params["region"],
       leaderboard_id: params["leaderboard_id"] || params["leaderboardId"],
-      season_id: params["season_id"] || params["seasonId"]
+      season_id: (params["season_id"] || params["seasonId"]) |> Util.to_int_or_orig()
     }
     |> Hearthstone.Leaderboards.Season.ensure_region()
     |> Hearthstone.Leaderboards.Season.ensure_leaderboard_id()

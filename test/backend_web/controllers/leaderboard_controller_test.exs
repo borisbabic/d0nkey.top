@@ -177,4 +177,76 @@ defmodule BackendWeb.LeaderboardControllerTest do
     assert html_response(conn, 200) =~ "↓243"
     assert html_response(conn, 200) =~ "↑246"
   end
+
+  test "player rating returns other ladder", %{conn: conn} do
+    s = %Hearthstone.Leaderboards.Season{
+      leaderboard_id: "STD",
+      # Orgrimmar
+      season_id: 88,
+      region: "EU"
+    }
+
+    {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+    {:ok, other_season} = s |> Map.put(:region, "AP") |> Backend.Leaderboards.SeasonBag.get()
+
+    now = NaiveDateTime.utc_now()
+
+    rows = [
+      %{
+        account_id: "D0nley",
+        rank: 1,
+        rating: 91.0,
+        inserted_at: NaiveDateTime.add(now, -60)
+      },
+      %{
+        account_id: "BlaBLa",
+        rank: 3,
+        rating: 91.0,
+        inserted_at: NaiveDateTime.add(now, -60)
+      }
+    ]
+
+    Backend.Leaderboards.create_entries(rows, s)
+
+    other_rows = [
+      %{
+        account_id: "AAAAAAAAAAAAAAAAAAAaa",
+        rank: 1,
+        rating: 61.0,
+        inserted_at: NaiveDateTime.add(now, -90)
+      },
+      %{
+        account_id: "D0nley",
+        rank: 2,
+        rating: 61.0,
+        inserted_at: NaiveDateTime.add(now, -90)
+      },
+      %{
+        account_id: "AAAAAAA",
+        rank: 3,
+        rating: 61.0,
+        inserted_at: NaiveDateTime.add(now, -90)
+      },
+      %{
+        account_id: "PLEASE NO",
+        rank: 4,
+        rating: 66.0,
+        inserted_at: NaiveDateTime.add(now, -90)
+      }
+    ]
+
+    Backend.Leaderboards.create_entries(other_rows, other_season)
+
+    params = Map.from_struct(s)
+
+    url = Routes.leaderboard_path(conn, :index, params)
+    conn = get(conn, url)
+    Backend.Repo.delete_all(from e in Entry, where: e.season_id in [^season.id, ^other_season.id])
+    Backend.Repo.delete(season)
+    Backend.Repo.delete(other_season)
+    assert html_response(conn, 200) =~ "D0nley"
+    refute html_response(conn, 200) =~ "PLEASE NO"
+    refute html_response(conn, 200) =~ "AP #3"
+    assert html_response(conn, 200) =~ "AP #2"
+  end
 end
