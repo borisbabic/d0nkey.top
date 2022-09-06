@@ -171,8 +171,8 @@ defmodule Backend.Leaderboards do
     |> Task.await_many(:infinity)
   end
 
-  def save_all(s) do
-    with {:ok, rows, season} <- fetch_pages(s, 200) do
+  def save_all(s, pages \\ 40) do
+    with {:ok, rows, season} <- fetch_pages(s, pages) do
       handle_rows(rows, season)
     end
   end
