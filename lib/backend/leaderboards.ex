@@ -378,24 +378,17 @@ defmodule Backend.Leaderboards do
 
   @spec get_current_player_entries([String.t()]) :: categorized_entries
   def get_current_player_entries(players) do
-    for region <- Backend.Blizzard.qualifier_regions(),
-        ldb <- Backend.Blizzard.leaderboards(),
-        into: [] do
-      season_id = Blizzard.get_current_ladder_season(ldb)
+    seasons = current_ladder_seasons()
 
-      criteria = [
-        :latest_in_season,
-        {"region", region},
-        {"leaderboard_id", ldb},
-        {"season_id", season_id},
-        {"players", players}
-      ]
-
-      {entries(criteria), region, ldb}
-    end
+    [:latest_in_season, :preload_season, {"seasons", seasons}, {"players", players}]
+    |> entries()
+    |> Enum.group_by(& &1.season_id)
+    |> Enum.map(fn {_, entries = [%{season: %{leaderboard_id: l, region: r}} | _]} ->
+      {entries, r, l}
+    end)
   end
 
-  def current_leader_seasons() do
+  def current_ladder_seasons() do
     for region <- Backend.Blizzard.qualifier_regions(),
         ldb <- Backend.Blizzard.leaderboards(),
         into: [] do

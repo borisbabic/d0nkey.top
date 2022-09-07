@@ -88,7 +88,7 @@ defmodule Backend.Leaderboards.SeasonBag do
 
   def get_database_id(s) do
     case get(s) do
-      %{id: id} when is_integer(id) -> {:ok, id}
+      {:ok, %{id: id}} when is_integer(id) -> {:ok, id}
       _ -> :error
     end
   end
