@@ -424,7 +424,7 @@ defmodule Backend.Leaderboards do
     table |> Enum.filter(fn e -> MapSet.member?(short_set, e.account_id) end)
   end
 
-  def stats(criteria), do: snapshots(criteria) |> PlayerStats.create_collection()
+  def stats(criteria), do: entries(criteria) |> PlayerStats.create_collection()
 
   def latest_up_to(region, leaderboard, date) do
     ([

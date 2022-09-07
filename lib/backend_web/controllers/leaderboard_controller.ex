@@ -217,7 +217,7 @@ defmodule BackendWeb.LeaderboardController do
 
     criteria =
       [{:latest_in_season}]
-      |> add_not_current_season_critera(leaderboards)
+      |> add_not_current_season_criteria(leaderboards)
       |> add_region_criteria(regions)
       |> add_leaderboard_criteria(leaderboards)
 
@@ -287,10 +287,10 @@ defmodule BackendWeb.LeaderboardController do
     })
   end
 
-  defp add_not_current_season_critera(criteria, []),
-    do: add_not_current_season_critera(criteria, ["STD"])
+  defp add_not_current_season_criteria(criteria, []),
+    do: add_not_current_season_criteria(criteria, ["STD"])
 
-  defp add_not_current_season_critera(criteria, ids), do: [{:not_current_season, ids} | criteria]
+  defp add_not_current_season_criteria(criteria, ids), do: [{:not_current_season, ids} | criteria]
 
   defp add_leaderboard_criteria(criteria, []), do: add_leaderboard_criteria(criteria, nil)
   defp add_leaderboard_criteria(criteria, nil), do: [{"leaderboard_id", ["STD"]} | criteria]
