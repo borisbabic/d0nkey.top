@@ -65,7 +65,10 @@ defmodule Backend.PlayerIconBag do
   def update(), do: GenServer.cast(@name, :update)
 
   def set_user_icons(%{battletag: btag, unicode_icon: nil}) do
-    GenServer.cast(@name, {:delete_icon, btag})
+    case List.keyfind(@picture_icons, btag, 0) do
+      config = {^btag, _icon} -> GenServer.cast(@name, {:set_icon, config})
+      _ -> GenServer.cast(@name, {:delete_icon, btag})
+    end
   end
 
   def set_user_icons(%{battletag: btag, unicode_icon: icon}) do
