@@ -5,14 +5,14 @@ defmodule Bot.LdbMessageHandler do
   alias Backend.MastersTour.InvitedPlayer
   import Bot.MessageHandlerUtil
 
-  def handle_battletags_leaderboard(%{channel_id: channel_id, guild_id: guild_id}) do
+  def handle_battletags_leaderboard(msg) do
     table =
-      get_guild_battletags!(guild_id)
+      options_or_guild_battletags(msg)
       |> get_leaderboard_entries()
       |> create_message()
 
     message = "```\n#{table}\n```"
-    send_or_travolta(message, channel_id)
+    send_or_travolta(message, msg.channel_id)
   end
 
   def get_leaderboard_entries(battletags_long) do
@@ -25,7 +25,7 @@ defmodule Bot.LdbMessageHandler do
   def create_message(categorized) do
     categorized
     |> Enum.filter(fn {entries, _, _} -> Enum.any?(entries) end)
-    |> Enum.map(fn {entries, region, leaderboard} ->
+    |> Enum.map_join("\n", fn {entries, region, leaderboard} ->
       title =
         "#{Backend.Blizzard.get_region_name(region)} #{Backend.Blizzard.get_leaderboard_name(leaderboard, :long)}"
 
@@ -37,6 +37,5 @@ defmodule Bot.LdbMessageHandler do
 
       TableRex.quick_render!(rows, [], title)
     end)
-    |> Enum.join("\n")
   end
 end
