@@ -151,54 +151,48 @@ defmodule BackendWeb.PlayerView do
 
   def leaderboard_rows(finishes, leaderboard_names, conn) do
     finishes
-    |> Enum.flat_map(fn f ->
-      f.entries
-      |> Enum.find(fn e -> leaderboard_names |> Enum.member?(e.account_id) end)
-      |> case do
-        # this shouldn't be possible, but let's be safe
-        nil ->
-          []
+    |> Enum.map(fn e ->
+      leaderboard_link =
+        Routes.leaderboard_path(
+          conn,
+          :index,
+          %{
+            "leaderboardId" => e.season.leaderboard_id,
+            "seasonId" => e.season.season_id,
+            "region" => e.season.region
+            #                   "highlight" => [pe.account_id |> Backend.MastersTour.InvitedPlayer.shorten_battletag()]
+          }
+        )
 
-        pe ->
-          leaderboard_link =
-            Routes.leaderboard_path(
-              conn,
-              :index,
-              %{
-                "leaderboardId" => f.leaderboard_id,
-                "seasonId" => f.season_id,
-                "region" => f.region
-                #                   "highlight" => [pe.account_id |> Backend.MastersTour.InvitedPlayer.shorten_battletag()]
-              }
-            )
+      leaderboard_title =
+        Blizzard.get_leaderboard_name(
+          e.season.region,
+          e.season.leaderboard_id,
+          e.season.season_id
+        )
 
-          leaderboard_title =
-            Blizzard.get_leaderboard_name(f.region, f.leaderboard_id, f.season_id)
+      score =
+        if e.rating do
+          history_link = history_link(conn, e.season, e.account_id, :rating)
+          assigns = %{rating: e.rating, link: history_link}
 
-          score =
-            if pe.rating do
-              history_link = history_link(conn, f, pe.account_id, :rating)
+          ~H"""
+          <%= @rating %> <%= @link %>
+          """
+        else
+          ""
+        end
 
-              ~E"""
-              <%= pe.rating %> <%= history_link %>
-              """
-            else
-              ""
-            end
-
-          [
-            %{
-              competition: simple_link(leaderboard_link, leaderboard_title),
-              time: f.upstream_updated_at,
-              position:
-                concat(
-                  simple_link(leaderboard_link, pe.rank),
-                  history_link(conn, f, pe.account_id, :rank)
-                ),
-              score: score
-            }
-          ]
-      end
+      %{
+        competition: simple_link(leaderboard_link, leaderboard_title),
+        time: e.inserted_at,
+        position:
+          concat(
+            simple_link(leaderboard_link, e.rank),
+            history_link(conn, e.season, e.account_id, :rank)
+          ),
+        score: score
+      }
     end)
   end
 
