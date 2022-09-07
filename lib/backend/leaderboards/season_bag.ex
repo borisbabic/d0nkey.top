@@ -82,4 +82,14 @@ defmodule Backend.Leaderboards.SeasonBag do
   defp key(season), do: Season.uniq_string(season)
 
   def table(), do: :ets.whereis(__MODULE__)
+
+  @spec get_database_id(Season.t() | ApiSeason.t()) :: {:ok, integer()} | :error
+  def get_database_id(%{id: id}) when is_integer(id), do: {:ok, id}
+
+  def get_database_id(s) do
+    case get(s) do
+      %{id: id} when is_integer(id) -> {:ok, id}
+      _ -> :error
+    end
+  end
 end
