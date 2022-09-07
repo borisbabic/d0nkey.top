@@ -183,6 +183,16 @@ defmodule BackendWeb.ViewHelpers do
         )
       end
 
+      def render_player_link(name, link \\ nil, with_country \\ true)
+
+      def render_player_link(name, link, with_country) do
+        render(
+          BackendWeb.SharedView,
+          "player_link.html",
+          %{name: name, with_country: with_country, link: link || "/player_profile/#{name}"}
+        )
+      end
+
       def warning_triangle(), do: Components.Helper.warning_triangle()
     end
   end

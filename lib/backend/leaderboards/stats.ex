@@ -22,6 +22,8 @@ defmodule Backend.Leaderboards.PlayerStats do
     |> Enum.map(&create_player_stats/1)
   end
 
+  def create_collection([]), do: []
+
   @spec create_player_stats([Snapshot.Entry]) :: PlayerStats
   def create_player_stats({account_id, player_entries}) do
     %__MODULE__{

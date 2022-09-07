@@ -216,8 +216,8 @@ defmodule BackendWeb.LeaderboardController do
     min = with raw when is_binary(raw) <- params["min"], {val, _} <- Integer.parse(raw), do: val
 
     criteria =
-      [{:latest_in_season}]
-      |> add_not_current_season_criteria(leaderboards)
+      [:latest_in_season]
+      # |> add_not_current_season_criteria(leaderboards)
       |> add_region_criteria(regions)
       |> add_leaderboard_criteria(leaderboards)
 
@@ -284,6 +284,25 @@ defmodule BackendWeb.LeaderboardController do
       player: player,
       attr: attr,
       ignore_rank: ignore_rank
+    })
+  end
+
+  def rank_history(
+        conn,
+        params = %{
+          "leaderboard_id" => ldb,
+          "region" => region,
+          "period" => period,
+          "rank" => rank_raw
+        }
+      ) do
+    rank = Util.to_int(rank_raw, 1)
+    history = Backend.Leaderboards.rank_history(rank, region, period, ldb)
+
+    render(conn, "rank_history.html", %{
+      rank_history: history,
+      conn: conn,
+      rank: rank
     })
   end
 

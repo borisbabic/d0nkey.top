@@ -18,7 +18,7 @@ defmodule Backend.Leaderboards do
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
   alias Hearthstone.Leaderboards.Api
 
-  @type player_history_entry :: %{
+  @type history_entry :: %{
           rank: integer(),
           rating: integer() | nil,
           upstream_updated_at: NaiveDateTime.t(),
@@ -439,37 +439,48 @@ defmodule Backend.Leaderboards do
 
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
-  @spec entries_player_history(String.t(), list(), nil | atom()) :: [player_history_entry()]
+  @spec entries_player_history(String.t(), list(), nil | atom()) :: [history_entry()]
   def entries_player_history(player, criteria, dedup_by \\ nil) do
-    new_criteria = [{"players", [player]} | criteria]
+    [{"players", [player]} | criteria]
+    |> entries_history(dedup_by)
+  end
 
+  @spec entries_player_history(integer(), list(), nil | atom()) :: [history_entry()]
+  def entries_rank_history(rank, criteria, dedup_by \\ nil) do
+    [{"rank", rank} | criteria]
+    |> entries_history(dedup_by)
+  end
+
+  @spec entries_player_history(integer(), list(), nil | atom()) :: [history_entry()]
+  def entries_history(criteria, dedup_by \\ nil) do
     base_entries_query()
-    |> build_entries_query(new_criteria)
-    |> player_history_previous()
-    |> dedup_player_history(dedup_by)
+    |> build_entries_query(criteria)
+    |> entries_history_previous()
+    |> dedup_history(dedup_by)
     |> Repo.all()
   end
 
-  defp player_history_previous(query) do
+  defp entries_history_previous(query) do
     from e in subquery(query),
       windows: [w: [order_by: e.inserted_at]],
       select: %{
         rank: e.rank,
         rating: e.rating,
         upstream_updated_at: e.inserted_at,
+        account_id: e.account_id,
         prev_rating: lag(e.rating) |> over(:w),
         prev_rank: lag(e.rank) |> over(:w)
       }
   end
 
-  @spec player_history(String.t(), list(), nil | atom()) :: [player_history_entry()]
+  @spec player_history(String.t(), list(), nil | atom()) :: [history_entry()]
   def player_history(player, criteria, dedup_by \\ nil) do
     new_criteria = [{"players", [player]} | criteria]
 
     base_player_history_query(player)
     |> build_snapshot_query(new_criteria)
     |> add_player_history_previous()
-    |> dedup_player_history(dedup_by)
+    |> dedup_history(dedup_by)
     |> Repo.all()
   end
 
@@ -492,9 +503,9 @@ defmodule Backend.Leaderboards do
       }
   end
 
-  defp dedup_player_history(query, nil), do: query
+  defp dedup_history(query, nil), do: query
 
-  defp dedup_player_history(query, dedup_by) do
+  defp dedup_history(query, dedup_by) do
     {curr, prev} = dedup_fields(dedup_by)
 
     from d in subquery(query),
@@ -888,6 +899,11 @@ defmodule Backend.Leaderboards do
     |> where([entry: e], e.account_id in ^players)
   end
 
+  defp compose_entries_query({"rank", rank}, query) do
+    query
+    |> where([entry: e], e.rank == ^rank)
+  end
+
   defp compose_entries_query(:preload_season, query), do: query
 
   defp compose_entries_query(:latest_in_season, query), do: query
@@ -981,7 +997,7 @@ defmodule Backend.Leaderboards do
     do: [:latest_in_season, :preload_season, {"battletag_full", battletag_full}] |> entries()
 
   @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [
-          player_history_entry()
+          history_entry()
         ]
   def player_history(player, region, period, leaderboard_id, changed_attr \\ :rank) do
     criteria = [{"period", period}, {"region", region}, {"leaderboard_id", leaderboard_id}]
@@ -989,7 +1005,12 @@ defmodule Backend.Leaderboards do
     # |> dedup_player_histories(changed_attr)
   end
 
-  @spec dedup_player_histories([player_history_entry()], atom()) :: [player_history_entry()]
+  def rank_history(rank, region, period, leaderboard_id) do
+    criteria = [{"period", period}, {"region", region}, {"leaderboard_id", leaderboard_id}]
+    entries_rank_history(rank, criteria, nil)
+  end
+
+  @spec dedup_player_histories([history_entry()], atom()) :: [history_entry()]
   def dedup_player_histories(histories, changed_attr) do
     histories
     |> Enum.sort_by(& &1.upstream_updated_at, &(NaiveDateTime.compare(&1, &2) == :lt))

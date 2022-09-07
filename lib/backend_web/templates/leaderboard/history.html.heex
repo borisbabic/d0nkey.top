@@ -9,6 +9,7 @@
     <thead>
         <tr>
             <th>Rank</th>
+            <th>Player</th>
             <th>Time</th>
             <%= if @has_rating do %>
                 <th>Rating</th>
@@ -16,9 +17,10 @@
         </tr>
     </thead>
     <tbody>
-        <%= for ph = %{rank: r, upstream_updated_at: time} <- @player_history do %>
+        <%= for ph = %{rank: r, upstream_updated_at: time} <- @history do %>
             <tr>
                 <td><%= render_comparison(r, ph.prev_rank, true) %></td>
+                <td><%= render_player_link(ph.account_id) %></td>
                 <td>
                     <%= render_datetime(time) %>
                 </td>
