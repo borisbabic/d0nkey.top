@@ -189,7 +189,7 @@ defmodule BackendWeb.ViewHelpers do
         render(
           BackendWeb.SharedView,
           "player_link.html",
-          %{name: name, with_country: with_country, link: link || "/player_profile/#{name}"}
+          %{name: name, with_country: with_country, link: link || "/player-profile/#{name}"}
         )
       end
 
