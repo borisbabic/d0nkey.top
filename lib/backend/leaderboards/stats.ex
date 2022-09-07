@@ -9,7 +9,13 @@ defmodule Backend.Leaderboards.PlayerStats do
     field :ranks, :string
   end
 
-  def create_collection(snapshots) do
+  def create_collection([%{account_id: _} | _] = entries) do
+    entries
+    |> Enum.group_by(fn e -> e.account_id end)
+    |> Enum.map(&create_player_stats/1)
+  end
+
+  def create_collection([%{upstream_updated_at: _} | _] = snapshots) do
     snapshots
     |> Enum.flat_map(fn s -> s.entries end)
     |> Enum.group_by(fn e -> e.account_id end)
