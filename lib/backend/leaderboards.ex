@@ -958,6 +958,7 @@ defmodule Backend.Leaderboards do
   defp filter_not_latest_in_season(criteria) do
     Enum.filter(criteria, fn
       {"players", _} -> false
+      {"battletag_full", _} -> false
       _ -> true
     end)
   end
@@ -977,7 +978,7 @@ defmodule Backend.Leaderboards do
   end
 
   def finishes_for_battletag(battletag_full),
-    do: [{:latest_in_season}, {"battletag_full", battletag_full}] |> snapshots()
+    do: [:latest_in_season, :preload_season, {"battletag_full", battletag_full}] |> entries()
 
   @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [
           player_history_entry()
@@ -1020,5 +1021,30 @@ defmodule Backend.Leaderboards do
     %Season{}
     |> Season.changeset(to_attrs(season))
     |> Repo.insert()
+  end
+
+  def convert_snapshots(snapshots) do
+    Enum.reduce(snapshots, Multi.new(), &snapshot_conversion/2)
+    |> Repo.transaction()
+  end
+
+  def snapshot_conversion(snapshot, multi) do
+    with {:ok, season = %{id: id}} <-
+           SeasonBag.get(%{
+             season_id: snapshot.season_id,
+             leaderboard_id: snapshot.leaderboard_id,
+             region: snapshot.region
+           }) do
+      Enum.reduce(snapshot.entries, multi, fn e, m ->
+        attrs =
+          e
+          |> to_attrs()
+          |> Map.put(:season_id, id)
+          |> Map.put(:inserted_at, snapshot.upstream_updated_at)
+
+        cs = %Entry{} |> Entry.changeset(attrs)
+        Multi.insert(m, "#{Season.uniq_string(season)}_#{e.rank}_#{e.account_id}", cs)
+      end)
+    end
   end
 end
