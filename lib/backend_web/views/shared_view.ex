@@ -68,6 +68,14 @@ defmodule BackendWeb.SharedView do
     """
   end
 
+  def render("player_link.html", assigns) do
+    ~E"""
+      <a href="<%= @link %>">
+          <%= render_player_name(@name, assigns.with_country) %>
+      </a>
+    """
+  end
+
   defp css_color(name) do
     normalized =
       name

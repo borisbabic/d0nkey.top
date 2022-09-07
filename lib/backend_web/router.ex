@@ -72,6 +72,10 @@ defmodule BackendWeb.Router do
         LeaderboardController,
         :player_history
 
+    get "/leaderboard/rank-history/region/:region/period/:period/leaderboard_id/:leaderboard_id/rank/:rank",
+        LeaderboardController,
+        :rank_history
+
     get "/leaderboard/player-history/region/:region/season_id/:season_id/leaderboard_id/:leaderboard_id/player/:player",
         LeaderboardController,
         :player_history_old

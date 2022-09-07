@@ -20,9 +20,9 @@ defmodule BackendWeb.LeaderboardView do
     end
   end
 
-  def player_history_graph([], _), do: ""
+  def history_graph([], _), do: ""
 
-  def player_history_graph(player_history, attr) do
+  def history_graph(player_history, attr) do
     data = Enum.map(player_history, &{&1.upstream_updated_at, player_history_data(&1, attr)})
     dataset = Contex.Dataset.new(data)
     y_scale = yscale(data)
@@ -39,7 +39,7 @@ defmodule BackendWeb.LeaderboardView do
 
   # Ensure th that the interval size is never below 1
   defp yscale(data) do
-    {{_, min}, {_, max}} = Enum.min_max_by(data, &elem(&1, 1))
+    {min, max} = data |> Enum.map(&elem(&1, 1)) |> Enum.filter(& &1) |> Enum.min_max()
     distance = abs(max - min)
 
     scale =
@@ -56,17 +56,17 @@ defmodule BackendWeb.LeaderboardView do
   defp player_history_data(ph, :rank), do: -1 * ph.rank
   defp player_history_data(ph, attr), do: Map.get(ph, attr)
 
-  def player_history_dropdowns(%{conn: conn}) do
+  def history_dropdowns(%{conn: conn}, history \\ :player) do
     [
-      create_region_dropdown(conn.params["region"], history_updater(conn, "region")),
+      create_region_dropdown(conn.params["region"], history_updater(conn, "region", history)),
       create_leaderboard_dropdown(
         conn.params["leaderboard_id"],
-        history_updater(conn, "leaderboard_id")
+        history_updater(conn, "leaderboard_id", history)
       ),
       create_period_dropdown(
         conn.params["period"],
         conn.params["leaderboard_id"],
-        history_updater(conn, "period")
+        history_updater(conn, "period", history)
       )
     ]
   end
@@ -141,7 +141,24 @@ defmodule BackendWeb.LeaderboardView do
   defp ignore_rank_changes_val(val) when is_integer(val), do: "less_than_equal_#{val}"
   defp ignore_rank_changes_val(_), do: "none"
 
-  defp history_updater(conn, key), do: &update_player_history_link(conn, key, &1)
+  defp history_updater(conn, key, history \\ :player)
+  defp history_updater(conn, key, :player), do: &update_player_history_link(conn, key, &1)
+  defp history_updater(conn, key, :rank), do: &update_rank_history_link(conn, key, &1)
+
+  def update_rank_history_link(conn, key, val) do
+    params =
+      conn.params
+      |> Map.put(key, val)
+
+    %{
+      "period" => s,
+      "region" => r,
+      "leaderboard_id" => l,
+      "rank" => rank
+    } = params
+
+    Routes.leaderboard_path(conn, :rank_history, r, s, l, rank)
+  end
 
   def update_player_history_link(conn, key, val) do
     attr = BackendWeb.LeaderboardController.history_attr(conn.params)
@@ -167,7 +184,7 @@ defmodule BackendWeb.LeaderboardView do
     Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: a, ignore_rank_changes: irc)
   end
 
-  def player_history_dropdowns(false, _, _), do: []
+  def history_dropdowns(false, _, _), do: []
 
   defp actual_end(assigns = %{deadline: deadline, other: other}) do
     season_display = Map.get(assigns, :season_display, "The season")
@@ -197,14 +214,14 @@ defmodule BackendWeb.LeaderboardView do
 
   defp other_warning(_), do: nil
 
-  defp filter_player_history_changes(player_history, %{attr: :rank, ignore_rank: ignore})
+  defp filter_history_changes(player_history, %{attr: :rank, ignore_rank: ignore})
        when is_integer(ignore) do
     Enum.filter(player_history, fn ph ->
       abs(ph.rank - ph.prev_rank) > ignore
     end)
   end
 
-  defp filter_player_history_changes(player_history, _), do: player_history
+  defp filter_history_changes(player_history, _), do: player_history
 
   defp update_ph_ratings(ph, ldb) do
     rating_display = rating_display_func(ldb)
@@ -215,6 +232,40 @@ defmodule BackendWeb.LeaderboardView do
       |> Map.put(:rating, rating_display.(r.rating))
       |> Map.put(:prev_rating, rating_display.(r.prev_rating))
     end)
+  end
+
+  def render(
+        "rank_history.html",
+        attrs = %{rank_history: history, rank: rank, conn: conn}
+      ) do
+    has_rating = history |> Enum.any?(& &1.rating)
+    dropdowns = history_dropdowns(attrs, :rank)
+
+    ldb = conn.params["leaderboard_id"]
+
+    sorted_history =
+      history
+      |> filter_history_changes(attrs)
+      |> update_ph_ratings(ldb)
+      |> Enum.reverse()
+
+    graph =
+      if has_rating do
+        history_graph(sorted_history, :rating)
+      else
+        nil
+      end
+
+    title = "Rank ##{rank} History"
+
+    render("history.html", %{
+      dropdowns: dropdowns,
+      history: sorted_history,
+      conn: conn,
+      has_rating: has_rating,
+      graph: graph,
+      title: title
+    })
   end
 
   def render(
@@ -229,7 +280,7 @@ defmodule BackendWeb.LeaderboardView do
     has_rating = player_history |> Enum.any?(& &1.rating)
 
     dropdowns =
-      player_history_dropdowns(attrs)
+      history_dropdowns(attrs)
       |> add_attr_dropdown(conn, attr)
       |> add_ignore_dropdown(attrs)
 
@@ -237,17 +288,16 @@ defmodule BackendWeb.LeaderboardView do
 
     sorted_history =
       player_history
-      |> filter_player_history_changes(attrs)
+      |> filter_history_changes(attrs)
       |> update_ph_ratings(ldb)
       |> Enum.reverse()
 
-    graph = player_history_graph(sorted_history, attr)
+    graph = history_graph(sorted_history, attr)
     title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
 
-    render("player_history.html", %{
+    render("history.html", %{
       dropdowns: dropdowns,
-      player: player,
-      player_history: sorted_history,
+      history: sorted_history,
       conn: conn,
       has_rating: has_rating,
       graph: graph,
@@ -323,6 +373,7 @@ defmodule BackendWeb.LeaderboardView do
       "Top 25",
       "Top 50",
       "Top 100",
+      "Top 200",
       "Best",
       "Worst",
       "Average Finish",
@@ -911,7 +962,7 @@ defmodule BackendWeb.LeaderboardView do
 
       history_attr = if le.rating, do: "rating", else: "rank"
 
-      history_link =
+      player_history_link =
         BackendWeb.PlayerView.history_link(
           BackendWeb.Endpoint,
           snapshot,
@@ -919,6 +970,20 @@ defmodule BackendWeb.LeaderboardView do
           history_attr,
           "past_weeks_1"
         )
+
+      rank_history_link =
+        %{
+          link:
+            Routes.leaderboard_path(
+              BackendWeb.Endpoint,
+              :rank_history,
+              snapshot.region,
+              "past_weeks_1",
+              snapshot.leaderboard_id,
+              le.rank
+            )
+        }
+        |> BackendWeb.PlayerView.history_link()
 
       {
         le
@@ -930,7 +995,8 @@ defmodule BackendWeb.LeaderboardView do
         |> Map.put_new(:warning, warning)
         |> Map.put_new(:wrong_region, wrong_region)
         |> Map.put_new(:banned, banned)
-        |> Map.put_new(:history_link, history_link)
+        |> Map.put_new(:player_history_link, player_history_link)
+        |> Map.put_new(:rank_history_link, rank_history_link)
         |> Map.put_new(:prev_rating, rating_display.(prev_rating)),
         if skip_for_invite do
           acc
@@ -1027,6 +1093,7 @@ defmodule BackendWeb.LeaderboardView do
         "Top 25" => ps |> PlayerStats.num_top(25),
         "Top 50" => ps |> PlayerStats.num_top(50),
         "Top 100" => ps |> PlayerStats.num_top(100),
+        "Top 200" => ps |> PlayerStats.num_top(200),
         "Best" => ps.ranks |> Enum.min(),
         "Worst" => ps.ranks |> Enum.max(),
         "Average Finish" => avg,
