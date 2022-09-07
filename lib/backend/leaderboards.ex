@@ -376,6 +376,34 @@ defmodule Backend.Leaderboards do
 
   defp get_criteria(%{updated_at: updated_at}, :updated_at), do: [{"updated_at", updated_at}]
 
+  @spec get_current_player_entries([String.t()]) :: categorized_entries
+  def get_current_player_entries(players) do
+    for region <- Backend.Blizzard.qualifier_regions(),
+        ldb <- Backend.Blizzard.leaderboards(),
+        into: [] do
+      season_id = Blizzard.get_current_ladder_season(ldb)
+
+      criteria = [
+        :latest_in_season,
+        {"region", region},
+        {"leaderboard_id", ldb},
+        {"season_id", season_id},
+        {"players", players}
+      ]
+
+      {entries(criteria), region, ldb}
+    end
+  end
+
+  def current_leader_seasons() do
+    for region <- Backend.Blizzard.qualifier_regions(),
+        ldb <- Backend.Blizzard.leaderboards(),
+        into: [] do
+      season_id = Blizzard.get_current_ladder_season(ldb)
+      %Hearthstone.Leaderboards.Season{season_id: season_id, leaderboard_id: ldb, region: region}
+    end
+  end
+
   @spec get_player_entries([String.t()]) :: categorized_entries
   def get_player_entries(battletags_short) do
     short_set = MapSet.new(battletags_short)
@@ -418,7 +446,7 @@ defmodule Backend.Leaderboards do
 
   def snapshot(id), do: [{"id", id}] |> snapshots() |> Enum.at(0)
 
-  @spec player_history(String.t(), list(), nil | atom()) :: [player_history_entry()]
+  @spec entries_player_history(String.t(), list(), nil | atom()) :: [player_history_entry()]
   def entries_player_history(player, criteria, dedup_by \\ nil) do
     new_criteria = [{"players", [player]} | criteria]
 
@@ -672,7 +700,24 @@ defmodule Backend.Leaderboards do
     base_entries_query()
     |> latest_in_season(criteria)
     |> build_entries_query(criteria)
+    |> preload_entries(criteria)
     |> Repo.all()
+  end
+
+  defp preload_entries(query, criteria) do
+    [{:preload_season, &preload_entries_season/1}]
+    |> Enum.reduce(query, fn {crit, func}, q ->
+      if Enum.any?(criteria, &(&1 == crit)) do
+        func.(q)
+      else
+        q
+      end
+    end)
+  end
+
+  defp preload_entries_season(query) do
+    query
+    |> preload([entry: e, season: s], season: s)
   end
 
   defp base_entries_query() do
@@ -701,6 +746,19 @@ defmodule Backend.Leaderboards do
   end
 
   defp compose_entries_query({"season", season}, query), do: do_season_criteria(query, season)
+
+  defp compose_entries_query({"seasons", seasons = [%{} | _]}, query) do
+    ids =
+      Enum.flat_map(seasons, fn s ->
+        case SeasonBag.get_database_id(s) do
+          {:ok, id} -> [id]
+          _ -> []
+        end
+      end)
+
+    query
+    |> where([entry: e], e.season_id in ^ids)
+  end
 
   defp compose_entries_query({"season_id", season = "lobby_legends_" <> _}, query) do
     case LobbyLegendsSeason.get(season) do
@@ -738,7 +796,7 @@ defmodule Backend.Leaderboards do
 
   defp compose_entries_query({"leaderboard_id", id}, query) do
     query
-    |> where([season: s], s.leaderboard_id == ^id)
+    |> where([season: s], s.leaderboard_id == ^to_string(id))
   end
 
   defp compose_entries_query({"region", regions}, query) when is_list(regions) do
@@ -748,7 +806,7 @@ defmodule Backend.Leaderboards do
 
   defp compose_entries_query({"region", region}, query) do
     query
-    |> where([season: s], s.region == ^region)
+    |> where([season: s], s.region == ^to_string(region))
   end
 
   defp compose_entries_query({"min_rank", rank}, query) do
@@ -837,6 +895,8 @@ defmodule Backend.Leaderboards do
     |> where([entry: e], e.account_id in ^players)
   end
 
+  defp compose_entries_query(:preload_season, query), do: query
+
   defp compose_entries_query(:latest_in_season, query), do: query
   # defp compose_entries_query(:latest_in_season, query) do
   #   subquery =
@@ -875,9 +935,11 @@ defmodule Backend.Leaderboards do
 
   defp latest_in_season(query, criteria) do
     if Enum.any?(criteria, &(&1 == :latest_in_season)) do
+      new_criteria = filter_not_latest_in_season(criteria)
+
       subquery =
         base_entries_query()
-        |> build_entries_query(criteria)
+        |> build_entries_query(new_criteria)
         |> group_by([entry: e], [e.rank, e.season_id])
         |> select([entry: e], %{
           rank: e.rank,
@@ -898,6 +960,13 @@ defmodule Backend.Leaderboards do
     else
       query
     end
+  end
+
+  defp filter_not_latest_in_season(criteria) do
+    Enum.filter(criteria, fn
+      {"players", _} -> false
+      _ -> true
+    end)
   end
 
   defp entries_past_period(query, raw, unit) do
