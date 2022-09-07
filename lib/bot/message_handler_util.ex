@@ -9,6 +9,13 @@ defmodule Bot.MessageHandlerUtil do
     get_options(content, :list)
   end
 
+  def options_or_guild_battletags(%{content: content, guild_id: guild_id}) do
+    case get_options(content) do
+      [_ | _] = battletags -> battletags
+      _ -> get_guild_battletags!(guild_id)
+    end
+  end
+
   def get_guild_battletags!(guild_id), do: Backend.DiscordBot.get_battletags(guild_id)
 
   @spec get_options(String.t(), :list) :: [String.t()]
