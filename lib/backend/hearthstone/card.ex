@@ -80,6 +80,7 @@ defmodule Backend.Hearthstone.Card do
       :text
     ])
     |> validate_required([:id, :name])
+    |> foreign_key_constraint(:card_set_id, name: :hs_cards_card_set_id_fkey)
   end
 
   defp update_duels(%{duels: %{constructed: cons, relevant: rel}} = map) do
