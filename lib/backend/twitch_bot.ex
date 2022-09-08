@@ -1,10 +1,10 @@
 defmodule Backend.TwitchBot do
-    @moduledoc """
-    The TwitchBot context.
-    """
+  @moduledoc """
+  The TwitchBot context.
+  """
 
-    import Ecto.Query, warn: false
-    alias Backend.Repo
+  import Ecto.Query, warn: false
+  alias Backend.Repo
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
 
@@ -33,20 +33,20 @@ defmodule Backend.TwitchBot do
     {:ok, sort_direction} = Map.fetch(params, "sort_direction")
     {:ok, sort_field} = Map.fetch(params, "sort_field")
 
-    with {:ok, filter} <- Filtrex.parse_params(filter_config(:twitch_commands), params["twitch_command"] || %{}),
-        %Scrivener.Page{} = page <- do_paginate_twitch_commands(filter, params) do
+    with {:ok, filter} <-
+           Filtrex.parse_params(filter_config(:twitch_commands), params["twitch_command"] || %{}),
+         %Scrivener.Page{} = page <- do_paginate_twitch_commands(filter, params) do
       {:ok,
-        %{
-          twitch_commands: page.entries,
-          page_number: page.page_number,
-          page_size: page.page_size,
-          total_pages: page.total_pages,
-          total_entries: page.total_entries,
-          distance: @pagination_distance,
-          sort_field: sort_field,
-          sort_direction: sort_direction
-        }
-      }
+       %{
+         twitch_commands: page.entries,
+         page_number: page.page_number,
+         page_size: page.page_size,
+         total_pages: page.total_pages,
+         total_entries: page.total_entries,
+         distance: @pagination_distance,
+         sort_field: sort_field,
+         sort_direction: sort_direction
+       }}
     else
       {:error, error} -> {:error, error}
       error -> {:error, error}
@@ -162,65 +162,67 @@ defmodule Backend.TwitchBot do
 
   @spec commands(twitch_chat :: String.t()) :: [TwitchCommand.t()]
   def commands(chat) do
-    query = from tc in TwitchCommand,
-      inner_join: u in assoc(tc, :user),
-      inner_join: s in Backend.Streaming.Streamer,
-      on: s.twitch_id == fragment("?::INTEGER", u.twitch_id),
-      where: ilike(^chat, s.twitch_login) or ilike(^chat, s.hsreplay_twitch_login)
+    query =
+      from tc in TwitchCommand,
+        inner_join: u in assoc(tc, :user),
+        inner_join: s in Backend.Streaming.Streamer,
+        on: s.twitch_id == fragment("?::INTEGER", u.twitch_id),
+        where: ilike(^chat, s.twitch_login) or ilike(^chat, s.hsreplay_twitch_login)
 
     Repo.all(query)
   end
+
   @spec user_commands(user :: User.t() | user_id :: integer()) :: [TwitchCommand.t()]
   def user_commands(%{id: id}), do: user_commands(id)
+
   def user_commands(id) do
-    query = from tc in TwitchCommand,
-      where: tc.user_id == ^id
+    query =
+      from tc in TwitchCommand,
+        where: tc.user_id == ^id
 
     Repo.all(query)
   end
 
   def enable(id, user) do
-    with command = %{id: _} = get_twitch_command(id),
-      true <- can_manage?(command, user) do
-        update_twitch_command(command, %{enabled: true})
+    with command = %{id: _} <- get_twitch_command(id),
+         true <- can_manage?(command, user) do
+      update_twitch_command(command, %{enabled: true})
     end
   end
 
   def disable(id, user) do
-    with command = %{id: _} = get_twitch_command(id),
-      true <- can_manage?(command, user) do
-        update_twitch_command(command, %{enabled: false})
+    with command = %{id: _} <- get_twitch_command(id),
+         true <- can_manage?(command, user) do
+      update_twitch_command(command, %{enabled: false})
     end
   end
 
   def delete(id, user) do
-    with command = %{id: _} = get_twitch_command(id),
-      true <- can_manage?(command, user) do
-        delete_twitch_command(command)
+    with command = %{id: _} <- get_twitch_command(id),
+         true <- can_manage?(command, user) do
+      delete_twitch_command(command)
     end
   end
 
-  @spec can_manage?(TwitchCommand.t(), User.t() |nil) :: boolean
+  @spec can_manage?(TwitchCommand.t(), User.t() | nil) :: boolean
   def can_manage?(%{user_id: user_id}, %{id: id}) when id == user_id, do: true
   def can_manage?(_, user = %{id: _id}), do: User.can_access?(user, "twitch_commands")
   def can_manage?(_, _), do: false
 
-
   defp filter_config(:twitch_commands) do
     defconfig do
-      text :type
-        text :name
-        boolean :enabled
-        text :message
-        text :response
-        boolean :message_regex
-        text :message_regex_flags
-        text :sender
-        boolean :sender_regex
-        text :sender_regex_flags
-        number :user_id
-        #TODO add config for random_chance of type float
-
+      text(:type)
+      text(:name)
+      boolean(:enabled)
+      text(:message)
+      text(:response)
+      boolean(:message_regex)
+      text(:message_regex_flags)
+      text(:sender)
+      boolean(:sender_regex)
+      text(:sender_regex_flags)
+      number(:user_id)
+      # TODO add config for random_chance of type float
     end
   end
 end
