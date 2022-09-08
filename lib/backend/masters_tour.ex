@@ -263,7 +263,7 @@ defmodule Backend.MastersTour do
   end
 
   def refresh_current_invited() do
-    with %{id: id} = TourStop.get_current_qualifiers() do
+    with %{id: id} <- TourStop.get_current_qualifiers() do
       id
       |> to_string()
       |> fetch()
