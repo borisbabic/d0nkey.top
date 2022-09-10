@@ -589,7 +589,7 @@ defmodule Hearthstone.DeckTracker do
 
   # def replay_link(%{api_user: nil, game_id: game_id}),
   #   do: "https://hsreplay.net/replay/#{game_id}"
-  def replay_link(%{created_by_id: id, game_id: game_id}) when not is_nil(id),
+  def replay_link(%{source_id: id, game_id: game_id}) when is_nil(id),
     do: "https://replays.firestoneapp.com/?reviewId=#{game_id}"
 
   def replay_link(_), do: nil
