@@ -27,7 +27,7 @@ defmodule Components.DecksExplorer do
     {"past_week", "Past Week"},
     {"past_3_days", "Past 3 Days"},
     {"past_day", "Past Day"},
-    {"patch_2022-08-16", "Aug 16th Patch"},
+    {"patch_2022-09-09", "Sep 9th Patch"},
     {"murder", "Murder"}
   ]
 
@@ -269,15 +269,15 @@ defmodule Components.DecksExplorer do
   end
 
   def default_period() do
-    "patch_2022-08-16"
-    # now = NaiveDateTime.utc_now()
-    # use_patch_after = ~N[2022-06-27 23:00:00]
+    "patch_2022-09-09"
+    now = NaiveDateTime.utc_now()
+    use_patch_until = ~N[2022-09-19 23:00:00]
 
-    # if :lt == NaiveDateTime.compare(now, use_patch_after) do
-    #   "patch_2022-06-16"
-    # else
-    #   "patch_prince_renathal"
-    # end
+    if :lt == NaiveDateTime.compare(now, use_patch_until) do
+      "patch_2022-09-09"
+    else
+      "past_2_weeks"
+    end
   end
 
   def cap_param(params, param, max),
