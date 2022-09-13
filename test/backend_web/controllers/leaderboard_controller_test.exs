@@ -31,6 +31,41 @@ defmodule BackendWeb.LeaderboardControllerTest do
     assert html_response(conn, 200) =~ "/player-profile/D0nkey"
   end
 
+  test "return ldb with nil account id", %{conn: conn} do
+    s = %Hearthstone.Leaderboards.Season{
+      leaderboard_id: "STD",
+      season_id: -50,
+      region: "EU"
+    }
+
+    {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+
+    now = NaiveDateTime.utc_now()
+
+    rows = [
+      %{
+        account_id: "D0nkeyHot",
+        rank: 1,
+        rating: 91.0
+      },
+      %{
+        account_id: nil,
+        rank: 2,
+        rating: 1.0
+      }
+    ]
+
+    Backend.Leaderboards.create_entries(rows, s)
+
+    params = Map.from_struct(s)
+
+    url = Routes.leaderboard_path(conn, :index, params)
+    conn = get(conn, url)
+    Backend.Repo.delete_all(from e in Entry, where: e.season_id == ^season.id)
+    Backend.Repo.delete(season)
+    assert html_response(conn, 200) =~ "D0nkeyHot"
+  end
+
   test "compare to return the right diff", %{conn: conn} do
     s = %Hearthstone.Leaderboards.Season{
       leaderboard_id: "STD",

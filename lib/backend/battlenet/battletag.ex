@@ -54,11 +54,13 @@ defmodule Backend.Battlenet.Battletag do
     end
   end
 
-  @spec shorten(%{battletag_full: String.t()} | String.t()) :: String.t()
+  @spec shorten(%{battletag_full: String.t()} | String.t() | nil) :: String.t() | nil
   def shorten(%{battletag_full: full}) when is_binary(full), do: full |> shorten()
 
   def shorten(full) when is_binary(full),
     do: full |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
+
+  def shorten(nil), do: nil
 
   def long?(string) do
     String.match?(string, @battletag_regex)
