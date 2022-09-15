@@ -533,7 +533,7 @@ defmodule BackendWeb.LeaderboardView do
             }
           end)
 
-        {options, new("Skip CN")}
+        {options, "Skip CN"}
 
       _ ->
         nil
