@@ -3,9 +3,11 @@ defmodule Backend.Hearthstone.CardBag do
 
   use GenServer
   alias Backend.Hearthstone.Card
+  alias Backend.CardMatcher
   @name :hearthstone_card_bag
-  @ten_hours 36_000_000
+  @one_hour 3_600_000
   @five_min 300_000
+  @one_second 1_000
   @get_cards_opts %{collectible: "1"}
 
   def tile_card_url(card_id) do
@@ -41,7 +43,7 @@ defmodule Backend.Hearthstone.CardBag do
   def init(_args) do
     table = :ets.new(@name, [:named_table])
 
-    send_loop(@five_min)
+    send_loop(@one_second)
     {:ok, %{table: table, last_success_response: nil}, {:continue, :init}}
   end
 
@@ -68,7 +70,7 @@ defmodule Backend.Hearthstone.CardBag do
           last_success
 
         :ok ->
-          send_loop(@ten_hours)
+          send_loop(@one_hour)
           nil
       end
 
@@ -115,4 +117,15 @@ defmodule Backend.Hearthstone.CardBag do
   defp send_loop(after_ms), do: Process.send_after(self(), :loop, after_ms)
 
   defp table(), do: :ets.whereis(@name)
+
+  @min_jaro_distance 0.85
+  @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]
+  def closest_collectible(card_name, cutoff \\ @min_jaro_distance),
+    do:
+      all()
+      |> Enum.flat_map(fn
+        {_, c = %{collectible: true}} -> [c]
+        _ -> []
+      end)
+      |> CardMatcher.match_name(card_name, cutoff)
 end

@@ -150,6 +150,10 @@ defmodule Backend.Hearthstone.Card do
   def dbf_id(%{dbf_id: id}), do: id
   def dbf_id(%{id: id}), do: id
 
+  @spec card_url(card()) :: String.t() | nil
+  def card_url(%{image: image}) when is_binary(image), do: image
+  def card_url(%Backend.HearthstoneJson.Card{} = c), do: Backend.HearthstoneJson.card_url(c)
+
   @spec matches_filter?(card(), String.t()) :: boolean
   def matches_filter?(card, search) do
     down_search = String.downcase(search)

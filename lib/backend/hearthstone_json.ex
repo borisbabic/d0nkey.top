@@ -6,6 +6,7 @@ defmodule Backend.HearthstoneJson do
   alias Backend.Infrastructure.HearthstoneJsonCommunicator, as: Api
   alias Backend.HearthstoneJson.Card
   alias Backend.Hearthstone.Deck
+  alias Backend.CardMatcher
 
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: @name)
@@ -14,52 +15,11 @@ defmodule Backend.HearthstoneJson do
   @min_jaro_distance 0.85
   @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]
   def closest_collectible(card_name, cutoff \\ @min_jaro_distance),
-    do: collectible_cards() |> do_closest(card_name, cutoff)
+    do: collectible_cards() |> CardMatcher.match_name(card_name, cutoff)
 
   @spec closest(String.t(), number()) :: [{number(), Card.t()}]
   def closest(card_name, cutoff \\ @min_jaro_distance),
-    do: cards() |> do_closest(card_name, cutoff)
-
-  @spec do_closest([Card.t()], String.t(), number()) :: [{number(), Card.t()}]
-  defp do_closest(cards, card_name, cutoff) do
-    Enum.flat_map(cards, fn card ->
-      distance_orig = do_distance(card_name, card.name)
-      distance_normalized = do_distance(card_name, card.name, &normalize_card_name/1)
-
-      piece_distance =
-        String.split(card.name, " ")
-        |> Enum.filter(&(String.length(&1) > 2))
-        |> Enum.flat_map(fn piece ->
-          [
-            do_distance(piece, card_name),
-            do_distance(piece, card_name, &normalize_card_name/1)
-          ]
-        end)
-        |> Enum.max()
-        |> Kernel.*(cutoff)
-
-      distance = Enum.max([distance_orig, distance_normalized, piece_distance])
-
-      if distance >= cutoff && card.set != "HERO_SKINS" do
-        [{distance, card}]
-      else
-        []
-      end
-    end)
-    |> Enum.sort_by(&elem(&1, 0), :desc)
-  end
-
-  defp do_distance(first, second, normalizer \\ &String.downcase/1) do
-    String.jaro_distance(normalizer.(first), normalizer.(second))
-  end
-
-  defp normalize_card_name(name) do
-    name
-    |> String.replace("(Rank 1)", "")
-    |> String.replace(~r/\[,-';:\]/, "")
-    |> String.downcase()
-    |> String.trim()
-  end
+    do: cards() |> CardMatcher.match_name(card_name, cutoff)
 
   def get_card(dbf_id), do: table() |> Util.ets_lookup("card_#{dbf_id}")
 
