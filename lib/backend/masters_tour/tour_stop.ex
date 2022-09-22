@@ -361,8 +361,8 @@ defmodule Backend.MastersTour.TourStop do
         start_time: ~N[2022-10-07 08:15:00],
         qualifiers_period: {~D[2022-06-01], ~D[2022-07-30]},
         min_qualifiers_for_winrate: 10,
-        aliases: [],
-        display_name: nil,
+        aliases: ["The Maw and Disorder", "Maw and Disorder"],
+        display_name: "Disorder",
         swiss_rounds: 8,
         year: 2022
       }
