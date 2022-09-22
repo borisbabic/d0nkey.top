@@ -8,6 +8,8 @@ defmodule Bot.MessageHandler do
   alias Backend.Blizzard
   alias Backend.Leaderboards
   alias Backend.HearthstoneJson
+  alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.CardBag
   alias Nostrum.Struct.Embed
   import Bot.MessageHandlerUtil
 
@@ -72,14 +74,14 @@ defmodule Bot.MessageHandler do
   end
 
   def handle_card(msg) do
-    with matches = [_ | _] <- Regex.scan(~r/\[\[(.+?)\]\]/, msg.content, capture: :all_but_first) do
-      embeds =
-        matches
-        |> Enum.map(&create_card_embed/1)
-        |> Enum.filter(& &1)
+    case Regex.scan(~r/\[\[(.+?)\]\]/, msg.content, capture: :all_but_first) do
+      matches = [_ | _] ->
+        embeds =
+          matches
+          |> Enum.map(&create_card_embed/1)
+          |> Enum.filter(& &1)
 
-      Api.create_message(msg.channel_id, embeds: embeds)
-    else
+        Api.create_message(msg.channel_id, embeds: embeds)
       _ -> :ignore
     end
   end
@@ -87,7 +89,8 @@ defmodule Bot.MessageHandler do
   defp create_card_embed([match]), do: create_card_embed(match)
 
   defp create_card_embed(match) do
-    with nil <- do_match_card(match, &HearthstoneJson.closest_collectible/1),
+    with nil <- do_match_card(match, &CardBag.closest_collectible/1),
+         nil <- do_match_card(match, &HearthstoneJson.closest_collectible/1),
          nil <- do_match_card(match, &HearthstoneJson.closest/1) do
       nil
     else
@@ -103,7 +106,7 @@ defmodule Bot.MessageHandler do
 
   defp do_match_card(match, matcher) do
     with [{_, card} | _] <- matcher.(match),
-         card_url when is_binary(card_url) <- HearthstoneJson.card_url(card) do
+         card_url when is_binary(card_url) <- Card.card_url(card) do
       {card, card_url}
     else
       _ -> nil
