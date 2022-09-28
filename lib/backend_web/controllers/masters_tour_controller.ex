@@ -110,7 +110,7 @@ defmodule BackendWeb.MastersTourController do
 
   defp show_current_score?(_), do: false
 
-  def earnings(conn, params = %{"show_gms" => show_gms}) do
+  def points(conn, params = %{"show_gms" => show_gms}) do
     gm_season = params["season"] |> parse_season()
 
     points_system =
@@ -150,8 +150,16 @@ defmodule BackendWeb.MastersTourController do
     })
   end
 
+  def points(conn, params) do
+    points(conn, Map.merge(params, %{"show_gms" => "no"}))
+  end
+
   def earnings(conn, params) do
-    earnings(conn, Map.merge(params, %{"show_gms" => "no"}))
+    link = Routes.masters_tour_path(conn, :points, params)
+
+    conn
+    |> Plug.Conn.put_status(301)
+    |> redirect(to: link)
   end
 
   def tour_stops(conn, _params) do
