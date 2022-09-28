@@ -353,7 +353,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour Six",
-        battlefy_id: nil,
+        battlefy_id: "632c2f3650477e51b2fd7789",
         ladder_priority: :timezone,
         ladder_seasons: [104],
         ladder_invites: 50,
