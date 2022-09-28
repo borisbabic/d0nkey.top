@@ -9,7 +9,7 @@ defmodule BackendWeb.LeaderboardController do
 
   def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
     criteria = create_criteria(params)
-    leaderboard = Leaderboards.get_shim(criteria) |> hack_lobby_legends_season(params)
+    leaderboard = get_shim(criteria, params)
     compare_to = params["compare_to"]
     comparison = get_comparison(criteria, compare_to)
     ladder_mode = parse_ladder_mode(params)
@@ -38,15 +38,23 @@ defmodule BackendWeb.LeaderboardController do
     [:latest_in_season, {"order_by", "rank"}]
     |> parse_up_to(params)
     |> parse_season(params)
-    |> parse_pagination(params)
+    |> parse_offset(params)
   end
 
-  defp parse_pagination(criteria, params) do
-    limit = Map.get(params, "limit", 200)
+  defp get_shim(criteria, params) do
+    criteria
+    |> Leaderboards.get_shim()
+    |> Map.update(:entries, [], fn e ->
+      limit = Map.get(params, "limit") |> Util.to_int(200)
+      Enum.take(e, limit)
+    end)
+    |> hack_lobby_legends_season(params)
+  end
+
+  defp parse_offset(criteria, params) do
     offset = Map.get(params, "offset", 0)
 
     [
-      {"limit", limit},
       {"offset", offset}
       | criteria
     ]
