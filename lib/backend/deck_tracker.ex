@@ -438,6 +438,11 @@ defmodule Hearthstone.DeckTracker do
     query |> where([game: g], g.inserted_at >= ^balance_changes)
   end
 
+  defp compose_games_query({"period", "disorder"}, query) do
+    release = ~N[2022-09-27 17:15:00]
+    query |> where([game: g], g.inserted_at >= ^release)
+  end
+
   defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend],
     do: compose_games_query({"rank", to_string(rank)}, query)
 
