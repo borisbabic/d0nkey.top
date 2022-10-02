@@ -230,6 +230,7 @@ defmodule Components.DecksExplorer do
       "min_games",
       "player_deck_includes",
       "archetype",
+      "no_archetype",
       "player_deck_excludes",
       "player_deck_archetype"
     ])

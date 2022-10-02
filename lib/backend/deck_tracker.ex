@@ -542,6 +542,9 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"game_type", game_type}, query),
     do: query |> where([game: g], g.game_type == ^game_type)
 
+  defp compose_games_query({"no_archetype", _}, query),
+    do: query |> where([player_deck: pd], is_nil(pd.archetype))
+
   for {id, atom} <- Format.all(:atoms) do
     defp compose_games_query(unquote(atom), query),
       do: compose_games_query({"format", unquote(id)}, query)
