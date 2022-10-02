@@ -1068,4 +1068,16 @@ defmodule Backend.Leaderboards do
       end)
     end
   end
+
+  @alter_ratings_ldbs ["STD", :STD, "CLS", :CLS, "WLD", :WLD]
+
+  def rating_display(nil, _ldb), do: nil
+
+  def rating_display(rating, ldb) when ldb in @alter_ratings_ldbs do
+    trunc_rating(1000 * rating)
+  end
+
+  def rating_display(rating, _), do: trunc_rating(rating)
+
+  def trunc_rating(rating), do: (1.0 * rating) |> Float.round(0) |> trunc()
 end

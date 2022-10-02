@@ -25,7 +25,7 @@
                     <%= render_datetime(time) %>
                 </td>
                 <%= if @has_rating do %>
-                    <td><%= render_comparison(ph.rating, ph.prev_rating, false, &trunc_rating/1) %></td>
+                    <td><%= render_comparison(ph.rating, ph.prev_rating, false, &Backend.Leaderboards.trunc_rating/1) %></td>
                 <% end %>
             </tr>
         <% end %>

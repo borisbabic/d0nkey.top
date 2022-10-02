@@ -31,7 +31,9 @@ defmodule Bot.LdbMessageHandler do
 
       rows =
         Enum.map(entries, fn %{rank: rank, account_id: account_id, rating: rating} ->
-          rating_append = if rating, do: [rating], else: []
+          rating_append =
+            if rating, do: [Leaderboards.rating_display(rating, leaderboard)], else: []
+
           [account_id, rank] ++ rating_append
         end)
 
