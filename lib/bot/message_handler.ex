@@ -49,6 +49,10 @@ defmodule Bot.MessageHandler do
       <<"!mt", _::binary>> ->
         Bot.MTMessageHandler.handle_mt_standings(msg)
 
+      <<"!patchnotes", _::binary>> ->
+        content = Backend.LatestHSArticles.patch_notes_url()
+        Api.create_message(msg.channel_id, content)
+
       <<"!orangeopen", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("625e7176b31e652df4f63a63", msg)
 
@@ -82,7 +86,9 @@ defmodule Bot.MessageHandler do
           |> Enum.filter(& &1)
 
         Api.create_message(msg.channel_id, embeds: embeds)
-      _ -> :ignore
+
+      _ ->
+        :ignore
     end
   end
 
