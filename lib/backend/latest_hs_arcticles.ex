@@ -27,20 +27,20 @@ defmodule Backend.LatestHSArticles do
 
   def add_april_fools(articles) do
     now = NaiveDateTime.utc_now()
-    start_time = ~N[2022-04-01T17:00:00]
-    end_time = ~N[2022-04-02T06:00:00]
+    start_time = ~N[2023-04-01T17:00:00]
+    end_time = ~N[2023-04-02T06:00:00]
 
     if Util.in_range?(now, {start_time, end_time}) do
       [
         %{
           "uid" => "april_fools_hahaha",
           "tags" => ["esports"],
-          "blogId" => 23_790_401,
+          "blogId" => 69_790_401,
           "thumbnail" => %{
             "mimeType" => "imageblabla",
             "url" => "//bnetcmsus-a.akamaihd.net/cms/blog_header/s1/S1AU2IQCZ0VN1544570147263.jpg"
           },
-          "title" => "Dive Deep in 2022’s Wild Open!"
+          "title" => "Dive Deep in 2023’s Wild Open!"
         }
         | articles
       ]
