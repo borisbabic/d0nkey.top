@@ -5,6 +5,7 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.Blizzard
   alias Backend.MastersTour.InvitedPlayer
   alias Backend.LobbyLegends.LobbyLegendsSeason
+  alias Backend.Leaderboards
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
   alias BackendWeb.ViewUtil
@@ -12,13 +13,6 @@ defmodule BackendWeb.LeaderboardView do
 
   @type selectable_season :: {String.t(), integer()}
   @min_finishes_options [1, 2, 3, 5, 7, 10, 15, 20]
-
-  @alter_ratings_ldbs ["STD", :STD, "CLS", :CLS, "WLD", :WLD]
-  defmacro float_display?(ldb) do
-    quote do
-      unquote(ldb) in unquote(@alter_ratings_ldbs)
-    end
-  end
 
   def history_graph([], _), do: ""
 
@@ -1102,19 +1096,9 @@ defmodule BackendWeb.LeaderboardView do
     end)
   end
 
-  defp rating_display_func(ldb) do
+  def rating_display_func(ldb) do
     fn rating ->
-      rating_display(rating, ldb)
+      Leaderboards.rating_display(rating, ldb)
     end
   end
-
-  defp rating_display(nil, _ldb), do: nil
-
-  defp rating_display(rating, ldb) when float_display?(ldb) do
-    trunc_rating(1000 * rating)
-  end
-
-  defp rating_display(rating, _), do: trunc_rating(rating)
-
-  defp trunc_rating(rating), do: (1.0 * rating) |> Float.round(0) |> trunc()
 end
