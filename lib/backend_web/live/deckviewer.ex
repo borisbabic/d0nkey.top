@@ -152,15 +152,15 @@ defmodule BackendWeb.DeckviewerLive do
     end
   end
 
-
+  # def extract_decks(decks) when is_list(decks), do: Enum.map(decks, &extract_decks/1)
   def extract_decks(new_code) do
-      cond do
-        HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
-        Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
-        our_link?(new_code) -> extract_codes(new_code)
-        true -> [new_code]
-      end
-      |> Deck.shorten_codes()
+    cond do
+      HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
+      Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
+      our_link?(new_code) -> extract_codes(new_code)
+      true -> [new_code]
+    end
+    |> Deck.shorten_codes()
   end
 
   def handle_event(

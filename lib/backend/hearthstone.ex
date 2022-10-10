@@ -498,6 +498,7 @@ defmodule Backend.Hearthstone do
   def create_lineup(attrs, deckstrings) do
     decks =
       deckstrings
+      |> Enum.uniq()
       |> Enum.filter(&Deck.valid?/1)
       |> Enum.map(&(&1 |> create_or_get_deck() |> Util.nilify()))
       |> Enum.filter(& &1)
@@ -656,6 +657,11 @@ defmodule Backend.Hearthstone do
     |> Enum.reduce(query, &lineup_deck_subquery/2)
   end
 
+  defp compose_lineups_query({"name", name}, query) do
+    query
+    |> where([lineup: l], l.name == ^name)
+  end
+
   defp compose_lineups_query({"order_by", {direction, field}}, query) do
     query
     |> order_by([{^direction, ^field}])
@@ -671,5 +677,31 @@ defmodule Backend.Hearthstone do
 
     sub_query = criteria |> Enum.reduce(base_query, &compose_decks_query/2)
     query |> where([lineup: l], l.id in subquery(sub_query))
+  end
+
+  def get_tournament_ids_for_source(source) do
+    query =
+      from l in Lineup,
+        select: l.tournament_id,
+        where: l.tournament_source == ^source,
+        group_by: l.tournament_id
+
+    Repo.all(query)
+  end
+
+  def get_latest_tournament_id_for_source(source) do
+    query =
+      from l in Lineup,
+        where: l.tournament_source == ^source,
+        order_by: [desc: l.inserted_at],
+        select: l.tournament_id,
+        limit: 1
+
+    Repo.one(query)
+  end
+
+  def lineup_history(source, name) do
+    [{"tournament_source", source}, {"name", name}, {"order_by", {:desc, :inserted_at}}]
+    |> lineups()
   end
 end

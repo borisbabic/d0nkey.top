@@ -169,6 +169,9 @@ defmodule BackendWeb.Router do
     live "/deckviewer", DeckviewerLive
     live "/decks", DecksLive
 
+    live "/hcm-2022", HCM2022Live
+    live "/lineup-history/:source/:name", LineupHistoryLive
+
     # get "/decks", PageController, :disabled
     live "/deck/*deck", DeckLive
 
@@ -229,6 +232,7 @@ defmodule BackendWeb.Router do
     get "/ads.txt", PageController, :ads_txt
 
     live "/lobby-legends", LobbyLegendsLive
+    live "/lineup-submitter/hcm_2022", LineupSubmitterLive
 
     live "/twitch/bot", TwitchBotLive
     live "/twitch/bot/new-command", TwitchNewCommandLive
