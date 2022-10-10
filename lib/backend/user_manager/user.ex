@@ -95,6 +95,10 @@ defmodule Backend.UserManager.User do
 
   def can_access?(_, _), do: false
 
+  def super_admin?(%{admin_roles: ar}) do
+    is_list(ar) && ("super" in ar || :super in ar)
+  end
+
   @spec is_role?(atom() | String.t()) :: boolean()
   def is_role?(atom_or_string), do: (atom_or_string |> to_string()) in string_admin_roles()
 

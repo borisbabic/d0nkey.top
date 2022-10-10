@@ -92,7 +92,7 @@ defmodule Backend.Hearthstone.Deck do
   def remove_comments(deckcode_string) do
     deckcode_string
     |> String.split(["\n", "\r\n"])
-    |> Enum.find(fn l -> l |> String.at(0) != "#" end)
+    |> Enum.find(fn l -> String.trim(l) != "" && l |> String.at(0) != "#" end)
     |> Kernel.||("")
   end
 
