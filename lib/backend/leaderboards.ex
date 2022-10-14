@@ -721,15 +721,25 @@ defmodule Backend.Leaderboards do
 
   defp preload_entries_season(query) do
     query
+    |> add_season_join()
     |> preload([entry: e, season: s], season: s)
   end
 
   defp base_entries_query() do
     from e in Entry,
-      as: :entry,
-      inner_join: s in assoc(e, :season),
-      as: :season
+      as: :entry
   end
+
+  defp add_season_join(query) do
+    if has_named_binding?(query, :season) do
+      query
+    else
+      join_season(query)
+    end
+  end
+
+  defp join_season(query),
+    do: query |> join(:inner, [entry: e], s in Season, on: s.id == e.season_id, as: :season)
 
   defp build_entries_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_entries_query/2)
@@ -769,6 +779,7 @@ defmodule Backend.Leaderboards do
       %{ladder: %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id}} ->
         new_query =
           query
+          |> add_season_join()
           |> where(
             [entry: e, season: s],
             (s.region == "AP" and e.inserted_at <= ^ap_end) or
@@ -785,41 +796,49 @@ defmodule Backend.Leaderboards do
 
   defp compose_entries_query({"season_id", ids}, query) when is_list(ids) do
     query
+    |> add_season_join()
     |> where([season: s], s.season_id in ^ids)
   end
 
   defp compose_entries_query({"season_id", id}, query) do
     query
+    |> add_season_join()
     |> where([season: s], s.season_id == ^id)
   end
 
   defp compose_entries_query({"leaderboard_id", ids}, query) when is_list(ids) do
     query
+    |> add_season_join()
     |> where([season: s], s.leaderboard_id in ^ids)
   end
 
   defp compose_entries_query({"leaderboard_id", id}, query) do
     query
+    |> add_season_join()
     |> where([season: s], s.leaderboard_id == ^to_string(id))
   end
 
   defp compose_entries_query({"region", regions}, query) when is_list(regions) do
     query
+    |> add_season_join()
     |> where([season: s], s.region in ^regions)
   end
 
   defp compose_entries_query({"region", region}, query) do
     query
+    |> add_season_join()
     |> where([season: s], s.region == ^to_string(region))
   end
 
   defp compose_entries_query({"min_rank", rank}, query) do
     query
+    |> add_season_join()
     |> where([entry: s], s.rank >= ^rank)
   end
 
   defp compose_entries_query({"max_rank", rank}, query) do
     query
+    |> add_season_join()
     |> where([entry: s], s.rank <= ^rank)
   end
 
@@ -874,6 +893,7 @@ defmodule Backend.Leaderboards do
       season_id = Blizzard.get_current_ladder_season(ldb)
 
       q
+      |> add_season_join()
       |> where([season: s], not (s.season_id == ^season_id and s.leaderboard_id == ^ldb))
     end)
   end
