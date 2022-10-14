@@ -11,7 +11,7 @@ defmodule Backend.Leaderboards.Entry do
     field :rating, :float, default: nil
     belongs_to :season, Season
 
-    timestamps()
+    timestamps(updated_at: false)
   end
 
   @doc false
