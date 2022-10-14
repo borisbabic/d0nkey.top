@@ -176,7 +176,7 @@ defmodule BackendWeb.PlayerView do
           history_link = history_link(conn, e.season, e.account_id, :rating)
 
           assigns = %{
-            rating: Leaderboards.rating_display(e.rating, e.season.leaderboard_id),
+            rating: Backend.Leaderboards.rating_display(e.rating, e.season.leaderboard_id),
             link: history_link
           }
 
