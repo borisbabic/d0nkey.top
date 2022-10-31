@@ -8,8 +8,17 @@ User-Agent: *
 Disallow: /battlefy/tournament/*/future/*
 Disallow: /battlefy/tournament/*/player/*
 Disallow: /battlefy/tournament/*/decks/*
+Disallow: /battlefy/tournament?*
+Disallow: /battlefy/tournament?
 Disallow: /streamer-decks?*
+Disallow: /streamer-decks?
+Disallow: /streamer-decks*
+Disallow: /streamer-decks
 Disallow: /leaderboard/player-history/*
+Disallow: /leaderboard/player-history/
+Disallow: /leaderboard?*
+Disallow: /leaderboard?
+Disallow: /leaderboard?
 Disallow: /admin*
 Disallow: *?*limit*
 Disallow: *?*offset*
