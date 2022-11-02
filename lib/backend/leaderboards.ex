@@ -1037,13 +1037,15 @@ defmodule Backend.Leaderboards do
     |> Enum.dedup_by(&Map.get(&1, changed_attr))
   end
 
-  def create_entries(rows, %Season{id: id}) do
-    Enum.reduce(rows, Multi.new(), fn row, multi ->
-      attrs = row |> to_attrs() |> Map.put(:season_id, id)
-      cs = %Entry{} |> Entry.changeset(attrs)
-      Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}_#{row.rating}", cs)
-    end)
-    |> Repo.transaction()
+  def create_entries(r, %Season{id: id}) do
+    for rows <- Enum.chunk_every(r, 1000) do
+      Enum.reduce(rows, Multi.new(), fn row, multi ->
+        attrs = row |> to_attrs() |> Map.put(:season_id, id)
+        cs = %Entry{} |> Entry.changeset(attrs)
+        Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}_#{row.rating}", cs)
+      end)
+      |> Repo.transaction()
+    end
   end
 
   def create_entries(rows, s) do
