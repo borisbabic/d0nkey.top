@@ -169,6 +169,8 @@ defmodule Backend.Leaderboards do
       # end
     end
     |> Task.await_many(:infinity)
+
+    refresh_latest()
   end
 
   def save_all(s, pages \\ 40) do
@@ -725,6 +727,11 @@ defmodule Backend.Leaderboards do
     |> preload([entry: e, season: s], season: s)
   end
 
+  defp base_entries_latest_view_query() do
+    from e in "leaderboards_entry_latest",
+      as: :entry
+  end
+
   defp base_entries_query() do
     from e in Entry,
       as: :entry
@@ -967,13 +974,13 @@ defmodule Backend.Leaderboards do
       new_criteria = filter_not_latest_in_season(criteria)
 
       subquery =
-        base_entries_query()
+        base_entries_latest_view_query()
         |> build_entries_query(new_criteria)
         |> group_by([entry: e], [e.rank, e.season_id])
         |> select([entry: e], %{
           rank: e.rank,
           season_id: e.season_id,
-          max: max(e.inserted_at)
+          inserted_at: max(e.inserted_at)
         })
 
       query
@@ -984,7 +991,7 @@ defmodule Backend.Leaderboards do
         on:
           e.season_id == sub.season_id and
             e.rank == sub.rank and
-            e.inserted_at == sub.max
+            e.inserted_at == sub.inserted_at
       )
     else
       query
@@ -1102,4 +1109,10 @@ defmodule Backend.Leaderboards do
   def rating_display(rating, _), do: trunc_rating(rating)
 
   def trunc_rating(rating), do: (1.0 * rating) |> Float.round(0) |> trunc()
+
+  def refresh_latest() do
+    Repo.query!("REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest WITH DATA", [],
+      timeout: 666_000
+    )
+  end
 end
