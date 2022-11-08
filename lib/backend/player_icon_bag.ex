@@ -18,7 +18,7 @@ defmodule Backend.PlayerIconBag do
     # patreon
     # {"otters#11111", {:image, "/images/icons/otters.png"}},
     # patreon
-    {"Montu#11356", {:image, "/images/icons/montu.png"}},
+    # {"Montu#11356", {:image, "/images/icons/montu.png"}},
     {"JustinTime#1277	", {:unicode, <<0xE2, 0x8C, 0x9A>>}}
 
     # {"BruTo#21173", {:image, "/images/icons/bruto.png"}},
