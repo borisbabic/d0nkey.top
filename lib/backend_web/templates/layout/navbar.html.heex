@@ -96,8 +96,9 @@
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DeckviewerLive)}"}>Deckviewer</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
-           <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournament, "6201700047b9e406d9908f27", %{stage_id: "62017079b5a9a57b56cc25b8"}) }"}>Max Open 8</a>
-           <a class="navbar-item" href={"#{Routes.page_path(@conn, :about) }"}>About</a>
+
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6319a0dec4fa012b14cd0f4b", %{stage_id: "6319a13f8196801c559cc30f"}) }>Max Open 9</a>
+          <a class="navbar-item" href={"#{Routes.page_path(@conn, :about) }"}>About</a>
          </div>
        </div>
          <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
@@ -112,9 +113,9 @@
          <% end %>
 
 
-         <%= if Twitch.HearthstoneLive.twitch_display_live?("MAXTeamTV", "MAX Open Cup 8") do %>
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6201700047b9e406d9908f27", %{stage_id: "62017079b5a9a57b56cc25b8"}) }>
-          Max Open 8
+         <%= if Twitch.HearthstoneLive.twitch_display_live?("MAXTeamTV", "MAX Open Cup 9") do %>
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6319a0dec4fa012b14cd0f4b", %{stage_id: "6319a13f8196801c559cc30f"}) }>
+          Max Open 9
           <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
           </a>
          <% end %>
