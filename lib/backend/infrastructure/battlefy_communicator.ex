@@ -17,6 +17,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
   use Tesla
   plug Tesla.Middleware.Cache, ttl: :timer.seconds(30)
+  plug Tesla.Middleware.Headers, [{"content-type", "application/json"}]
 
   def get_body(url) do
     response = get_response(url)
@@ -47,9 +48,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   @spec get_masters_qualifiers(NaiveDateTime.t(), NaiveDateTime.t()) :: [qualifier]
   def get_masters_qualifiers(start_time = %NaiveDateTime{}, end_time = %NaiveDateTime{}) do
     url =
-      "https://majestic.battlefy.com/hearthstone-masters/tournaments?start=#{
-        NaiveDateTime.to_iso8601(start_time)
-      }&end=#{NaiveDateTime.to_iso8601(end_time)}"
+      "https://majestic.battlefy.com/hearthstone-masters/tournaments?start=#{NaiveDateTime.to_iso8601(start_time)}&end=#{NaiveDateTime.to_iso8601(end_time)}"
 
     {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [url])
     Logger.debug("Got masters qualifiers #{url} in #{div(u_secs, 1000)} ms")
@@ -131,14 +130,17 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Backend.Battlefy.Stage.from_raw_map()
   end
 
-  @spec get_standings(Backend.Battlefy.stage_id()) :: [Backend.Battlefy.Standings.t()]
+  @spec get_standings(Backend.Battlefy.stage_id()) :: {:ok, [Backend.Battlefy.Standings.t()]}
   def get_standings(stage_id) do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/standings"
 
-    get_body(url)
-    |> Jason.decode!()
-    |> Backend.Battlefy.Standings.from_raw_map_list()
+    with {:ok, %{body: body}} <- get(url),
+         {:ok, decoded} <- Jason.decode() do
+      {:ok, Standings.from_raw_map_list()}
+    end
   end
+
+  def get_standings(stage_id), do: stage_id |> get_standings() |> Util.bangify()
 
   @spec get_round_standings(Backend.Battlefy.stage_id(), integer | String.t()) :: [
           Backend.Battlefy.Standings.t()
@@ -155,7 +157,6 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   def get_tournament(tournament_id) do
     url =
       "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true&extend[streams]=true"
-
 
     with body <- get_body(url),
          {:ok, [decoded]} <- Poison.decode(body) do
@@ -345,9 +346,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   def get_organization_tournaments(org_id, period, page \\ 1, size \\ 25) do
     # they return max 25 regardless of size. I don't feel like paginating or being smart about it
     url =
-      "https://search.battlefy.com/tournament/organization/#{org_id}/#{period}?page=#{page}&size=#{
-        size
-      }"
+      "https://search.battlefy.com/tournament/organization/#{org_id}/#{period}?page=#{page}&size=#{size}"
 
     raw =
       get_body(url)
@@ -395,14 +394,16 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url = "https://majestic.battlefy.com/tournaments/#{tournament_id}/user/#{user_id}/join-state"
 
     with {:ok, %{status_code: 200, body: body}} <- HTTPoison.get(url, headers),
-      {:ok, decoded} when is_list(decoded) <- Jason.decode(body) do
-        {:ok, Enum.map(decoded, fn %{"type" => type} ->
-          %{type: type}
-        end)}
+         {:ok, decoded} when is_list(decoded) <- Jason.decode(body) do
+      {:ok,
+       Enum.map(decoded, fn %{"type" => type} ->
+         %{type: type}
+       end)}
     else
       {_, other} -> {:error, other}
     end
   end
+
   @spec signup_for_tournament(signup_options) :: {:ok, any} | {:error, any}
   def signup_for_tournament(options) do
     with {:ok, join_state} <- get_join_state(options) do
@@ -411,12 +412,14 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   defp do_signup_for_tournament(options, join_state) do
-    errors = Enum.reduce(join_state, [], fn join_state, carry ->
-      case signup_request(options, join_state) do
-        {:ok, _} -> carry
-        {:error, reason} -> [reason | carry]
-      end
-    end)
+    errors =
+      Enum.reduce(join_state, [], fn join_state, carry ->
+        case signup_request(options, join_state) do
+          {:ok, _} -> carry
+          {:error, reason} -> [reason | carry]
+        end
+      end)
+
     do_join_tournament(options, errors)
   end
 
@@ -430,26 +433,29 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   def custom_values(signup_options) do
     custom_values(signup_options, Map.get(signup_options, :custom_values, []))
   end
-  @spec custom_values(signup_options, [Communicator.custom_value]) :: {:ok, any} | {:error, any}
+
+  @spec custom_values(signup_options, [Communicator.custom_value()]) :: {:ok, any} | {:error, any}
   def custom_values(options = %{tournament_id: tournament_id}, custom_values) do
-    value = Enum.map(custom_values, fn cv = %{name: name, value: value} ->
-      %{
-        "name" => name,
-        "public" => Map.get(cv, :public, false),
-        "_id" => tournament_id,
-        "value" => value,
-        "errorCode" => nil,
-      }
-    end)
+    value =
+      Enum.map(custom_values, fn cv = %{name: name, value: value} ->
+        %{
+          "name" => name,
+          "public" => Map.get(cv, :public, false),
+          "_id" => tournament_id,
+          "value" => value,
+          "errorCode" => nil
+        }
+      end)
+
     body =
       %{
         "name" => "CustomFields",
-        "value" => value      }
+        "value" => value
+      }
       |> Poison.encode!()
 
     put_form_fields(options, body)
   end
-
 
   @spec signup_for_qualifier(signup_options) :: {:ok, any} | {:error, any}
   def signup_for_qualifier(options) do
