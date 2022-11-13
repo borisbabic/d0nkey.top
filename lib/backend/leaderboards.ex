@@ -969,12 +969,25 @@ defmodule Backend.Leaderboards do
     ]
   end
 
+  defp needs_regular_base?({criteria, _value}),
+    do: to_string(criteria) in ["up_to", "after", "until"]
+
+  defp needs_regular_base?(_), do: false
+
+  defp latest_in_season_base(criteria) do
+    if Enum.any?(criteria, &needs_regular_base?/1) do
+      base_entries_query()
+    else
+      base_entries_latest_view_query()
+    end
+  end
+
   defp latest_in_season(query, criteria) do
     if Enum.any?(criteria, &(&1 == :latest_in_season)) do
       new_criteria = filter_not_latest_in_season(criteria)
 
       subquery =
-        base_entries_latest_view_query()
+        latest_in_season_base(new_criteria)
         |> build_entries_query(new_criteria)
         |> group_by([entry: e], [e.rank, e.season_id])
         |> select([entry: e], %{
