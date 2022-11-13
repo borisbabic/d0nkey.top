@@ -44,7 +44,7 @@
                             <a href={"#{ ongoing.match_url }"}> <%= ongoing.score %></a>
                         </td>
                         <td>
-                            <a href={"#{ ongoing.opponent_link }"}> <%= ongoing.opponent %></a>
+                            <a href={"#{ ongoing.opponent_link }"}> <%= render_player_name(ongoing.opponent) %></a>
                         </td>
                     <% else %>
                         <td></td>
