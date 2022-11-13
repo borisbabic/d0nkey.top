@@ -117,7 +117,7 @@ defmodule Backend.Battlefy do
   end
 
   def get_stage_standings(%{id: id, standing_ids: [_ | _]}) do
-    Api.get_standings(id)
+    Api.get_standings!(id)
   end
 
   def get_stage_standings(%{id: id, current_round: 1}) do

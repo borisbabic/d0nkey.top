@@ -11,13 +11,13 @@ defmodule Backend.Battlefy.Communicator do
   alias Backend.Battlefy.Team
 
   @type custom_value :: %{
-    name: String.t(),
-    public: boolean() | nil,
-    value: any()
-  }
+          name: String.t(),
+          public: boolean() | nil,
+          value: any()
+        }
   @type join_state :: %{
-    type: String.t()
-  }
+          type: String.t()
+        }
   @type signup_options :: %{
           tournament_id: Battlefy.tournament_id(),
           user_id: Battlefy.user_id(),
@@ -50,7 +50,8 @@ defmodule Backend.Battlefy.Communicator do
   @callback get_invited_players(Blizzard.tour_stop() | nil | String.t()) :: [invited_player]
 
   @callback get_tournament(Battlefy.tournament_id()) :: Tournament.t()
-  @callback get_standings(Battlefy.stage_id()) :: [Standings.t()]
+  @callback get_standings(Battlefy.stage_id()) :: {:ok, [Standings.t()]}
+  @callback get_standings!(Battlefy.stage_id()) :: [Standings.t()]
   @callback get_round_standings(Battlefy.stage_id(), integer | String.t()) :: [Standings.t()]
   @callback get_match(Battlefy.match_id()) :: {:ok, Match.t()} | {:error, any()}
   @callback get_match!(Battlefy.match_id()) :: Match.t()
