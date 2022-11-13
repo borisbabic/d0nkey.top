@@ -140,7 +140,7 @@ defmodule BackendWeb.TournamentStatsView do
     player_cell = ~E"""
 
     <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, player_name)%>">
-    <%= render_player_name(player_name) %>
+    <%= render_player_name(player_name, true) %>
     </a>
     """
 
