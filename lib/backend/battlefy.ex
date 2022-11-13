@@ -451,6 +451,10 @@ defmodule Backend.Battlefy do
            id
            |> Api.get_stage()
            |> get_stage_standings()
+           |> case do
+             [] -> nil
+             s -> s
+           end
          end) do
       nil -> []
       standings -> standings
