@@ -1,5 +1,5 @@
 <div class="title is-2">
-    <a class="is-link" href={"#{ Routes.player_path(BackendWeb.Endpoint, :player_profile, @team_name) }"}><%= render_player_name(@team_name) %></a>
+    <a class="is-link" href={"#{ Routes.player_path(BackendWeb.Endpoint, :player_profile, @team_name) }"}><%= render_player_name(@team_name, true) %></a>
 </div>
 
 <div class="subtitle is-6">
@@ -85,7 +85,7 @@
                     <%= if opponent == nil do %>
                         <td></td><td></td>
                     <% else %>
-                        <td><a href={"#{ opponent.link }"}> <%= render_player_name(opponent.name) %></a></td>
+                        <td><a href={"#{ opponent.link }"}> <%= render_player_name(opponent.name, true) %></a></td>
                         <td class="is-hidden-mobile">
                             <div class="is-flex is-justify-content-center">
                                 <%= for {_, stats} <- opponent_class_stats do %>
@@ -121,14 +121,14 @@
                     <%= if top == nil do %>
                         <td></td><td></td>
                     <% else %>
-                        <td><a href={"#{ top.link }"}> <%= render_player_name(top.name) %></a></td>
+                        <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
                         <td><a class="tag is-link" href={"#{ top.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ top.yaytears }"}>yaytears</a></td>
                     <% end %>
                     <td><a href={"#{ match_url }"}> <%= score %></a></td>
                     <%= if bottom == nil do %>
                         <td></td><td></td>
                     <% else %>
-                        <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name) %></a></td>
+                        <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
                         <td><a class="tag is-link" href={"#{ bottom.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ bottom.yaytears }"}>yaytears</a></td>
                     <% end %>
                 </tr>
