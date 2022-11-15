@@ -29,7 +29,7 @@ config :backend, QuantumScheduler,
     {"*/2 * * * *", fn -> Backend.Leaderboards.save_current() end},
     {"37 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
     {"11 * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
-    {"*/9 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
+    {"1-59/2 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
     # {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]

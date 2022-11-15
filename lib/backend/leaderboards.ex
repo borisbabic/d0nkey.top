@@ -169,8 +169,6 @@ defmodule Backend.Leaderboards do
       # end
     end
     |> Task.await_many(:infinity)
-
-    refresh_latest()
   end
 
   def save_all(s, pages \\ 40) do
