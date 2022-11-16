@@ -9,6 +9,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Organization
+  alias Backend.Battlefy.Standings
   import Backend.Battlefy.Communicator
   @behaviour Backend.Battlefy.Communicator
   @type join_state :: Communicator.join_state()
@@ -130,17 +131,18 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Backend.Battlefy.Stage.from_raw_map()
   end
 
-  @spec get_standings(Backend.Battlefy.stage_id()) :: {:ok, [Backend.Battlefy.Standings.t()]}
+  @spec get_standings(Backend.Battlefy.stage_id()) :: {:ok, [Standings.t()]}
   def get_standings(stage_id) do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/standings"
 
     with {:ok, %{body: body}} <- get(url),
-         {:ok, decoded} <- Jason.decode() do
-      {:ok, Standings.from_raw_map_list()}
+         {:ok, decoded} <- Jason.decode(body) do
+      {:ok, Standings.from_raw_map_list(decoded)}
     end
   end
 
-  def get_standings(stage_id), do: stage_id |> get_standings() |> Util.bangify()
+  @spec get_standings(Backend.Battlefy.stage_id()) :: [Standings.t()]
+  def get_standings!(stage_id), do: stage_id |> get_standings() |> Util.bangify()
 
   @spec get_round_standings(Backend.Battlefy.stage_id(), integer | String.t()) :: [
           Backend.Battlefy.Standings.t()
