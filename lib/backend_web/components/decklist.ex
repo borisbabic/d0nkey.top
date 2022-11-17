@@ -46,7 +46,7 @@ defmodule Components.Decklist do
     deck_class = deck_class(deck, hero)
     class_class = deck_class |> String.downcase()
 
-    name = deck_name(assigns, deck, hero) |> add_xl(deck)
+    name = deck_name(assigns, deck, hero) |> add_runes(deck) |> add_xl(deck)
 
     ~F"""
       <div>
@@ -87,4 +87,16 @@ defmodule Components.Decklist do
   end
 
   defp add_xl(name, _), do: name
+
+  defp add_runes(name, %{cards: cards} = deck) when is_list(cards) do
+    deck
+    |> Deck.rune_cost()
+    |> Hearthstone.Card.RuneCost.shorthand()
+    # next two lines append " " if it's not empty
+    |> Kernel.<>(" ")
+    |> String.trim_leading()
+    |> Kernel.<>(to_string(name))
+  end
+
+  defp add_runes(name, _), do: name
 end

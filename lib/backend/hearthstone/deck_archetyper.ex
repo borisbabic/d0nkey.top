@@ -18,6 +18,18 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  def archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"}) do
+    card_info = full_cards(c)
+
+    cond do
+      highlander?(c) -> :"Highlander DK"
+      boar?(card_info) -> :"Boar DK"
+      quest?(card_info) || questline?(card_info) -> :"Quest DK"
+      murloc?(card_info) -> :"Murloc DK"
+      true -> minion_type_fallback(card_info, "DK")
+    end
+  end
+
   def archetype(%{format: 2, cards: c, class: "DEMONHUNTER"}) do
     card_info = full_cards(c)
 

@@ -9,6 +9,7 @@ defmodule Backend.Hearthstone.Card do
     Keyword,
     MinionType,
     Rarity,
+    RuneCost,
     SpellSchool,
     Type
   }
@@ -42,6 +43,8 @@ defmodule Backend.Hearthstone.Card do
     belongs_to :spell_school, SpellSchool
     # field :mercenary_hero, MercenaryHero.t()
     field :text, :string
+
+    embeds_one :rune_cost, RuneCost
 
     timestamps()
   end
@@ -79,6 +82,7 @@ defmodule Backend.Hearthstone.Card do
       :spell_school_id,
       :text
     ])
+    |> cast_embed(:rune_cost)
     |> validate_required([:id, :name])
     |> foreign_key_constraint(:card_set_id, name: :hs_cards_card_set_id_fkey)
   end
@@ -181,4 +185,21 @@ defmodule Backend.Hearthstone.Card do
   @spec quest?(%__MODULE__{}) :: boolean()
   def quest?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.quest?/1)
   def quest?(_), do: false
+end
+
+defmodule Backend.Hearthstone.RuneCost do
+  @moduledoc "A player entry in the leaderboard snapshot"
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  embedded_schema do
+    field :blood, :integer, default: 0
+    field :frost, :integer, default: 0
+    field :unholy, :integer, default: 0
+  end
+
+  def changeset(entry, attrs) do
+    entry
+    |> cast(Map.from_struct(attrs), [:blood, :frost, :unholy])
+  end
 end

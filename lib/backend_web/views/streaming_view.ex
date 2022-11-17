@@ -305,6 +305,7 @@ defmodule BackendWeb.StreamingView do
   def create_class_dropdown(conn) do
     options =
       [
+        "DEATHKNIGHT",
         "DEMONHUNTER",
         "DRUID",
         "HUNTER",
