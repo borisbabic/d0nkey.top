@@ -226,6 +226,8 @@ defmodule Backend.Hearthstone do
   end
 
   def class(%{hero: hero}), do: class(hero)
+  # TODO: remove, this is temp before hearthstonejson gets it.
+  def class(78_065), do: "DEATHKNIGHT"
   def class(dbf_id), do: HearthstoneJson.get_class(dbf_id)
 
   def add_class_and_regenerate_deckcode() do

@@ -36,6 +36,7 @@
 
   --color-darker-grey: #2b2d2f;
   --color-decklist-card: #2b2d2f;
+  --color-deathknight: rgb(108,105,154);
   --color-demonhunter: rgb(37, 111, 61);
   --color-druid: rgb(255, 127, 14);
   --color-hunter: rgb(44, 160, 44);
@@ -186,6 +187,11 @@
 }
 
 
+.player-name.deathknight {
+  border-color: var(--color-deathknight);
+  background-color: var(--color-deathknight);
+  /*background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_demonhunter-74b078df0873e39c69ded4395fe044bec4a0509b7604781a93fba4ffa3de8c79c641e0168002428adef337e0a1038c1fa7862748d0c0dac90afaccea84cc1e99.jpg");*/
+}
 .player-name.demonhunter {
   border-color: var(--color-demonhunter);
   background-color: var(--color-demonhunter);
@@ -237,6 +243,11 @@
   background-color: var(--color-warrior)
 }
 
+.decklist-hero.deathknight {
+  border-color: var(--color-deathknight);
+  background-color: var(--color-deathknight);
+  /*background-image: url("https://d2q63o9r0h0ohi.cloudfront.net/images/deckbuilder/deckbuilder_portrait_deathknight-74b078df0873e39c69ded4395fe044bec4a0509b7604781a93fba4ffa3de8c79c641e0168002428adef337e0a1038c1fa7862748d0c0dac90afaccea84cc1e99.jpg");*/
+}
 .decklist-hero.demonhunter {
   border-color: var(--color-demonhunter);
   background-color: var(--color-demonhunter);

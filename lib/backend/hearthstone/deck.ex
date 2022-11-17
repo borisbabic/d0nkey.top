@@ -3,8 +3,10 @@ defmodule Backend.Hearthstone.Deck do
 
   use Ecto.Schema
   import Ecto.Changeset
+  alias Hearthstone.Card.RuneCost
   alias Backend.Hearthstone
   alias Backend.HearthstoneJson
+
   @required [:cards, :hero, :format, :deckcode]
   @optional [:hsreplay_archetype, :class, :archetype]
   @type t :: %__MODULE__{}
@@ -76,6 +78,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
+  def class_name("DEATHKNIGHT"), do: "Death Knight"
   def class_name("DEMONHUNTER"), do: "Demon Hunter"
   def class_name(c) when is_binary(c), do: c |> Recase.to_title()
   def class_name(other), do: other
@@ -225,6 +228,8 @@ defmodule Backend.Hearthstone.Deck do
     class
     |> normalize_class_name()
     |> case do
+      # TODO: CHECK THIS
+      "DEATHKNIGHT" -> 78_065
       "DEMONHUNTER" -> 56_550
       "DRUID" -> 274
       "HUNTER" -> 31
@@ -248,6 +253,8 @@ defmodule Backend.Hearthstone.Deck do
   "DEMONHUNTER"
   iex> Backend.Hearthstone.Deck.normalize_class_name("ROGUE")
   "ROGUE"
+  iex> Backend.Hearthstone.Deck.normalize_class_name("Death knight")
+  "DEATHKNIGHT"
 
   """
 
@@ -348,6 +355,7 @@ defmodule Backend.Hearthstone.Deck do
 
   def classes() do
     [
+      "DEATHKNIGHT",
       "DEMONHUNTER",
       "DRUID",
       "HUNTER",
@@ -359,6 +367,13 @@ defmodule Backend.Hearthstone.Deck do
       "WARLOCK",
       "WARRIOR"
     ]
+  end
+
+  @spec rune_cost(t()) :: RuneCost.t()
+  def rune_cost(%{cards: cards}) do
+    cards
+    |> Enum.map(&(&1 |> Hearthstone.get_card() |> Map.get(:rune_cost)))
+    |> Enum.reduce(RuneCost.empty(), &RuneCost.maximum/2)
   end
 
   def cost(%{cards: cards}) do

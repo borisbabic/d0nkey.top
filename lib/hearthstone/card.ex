@@ -2,6 +2,7 @@ defmodule Hearthstone.Card do
   @moduledoc false
   alias Hearthstone.Card.Duels
   alias Hearthstone.Card.MercenaryHero
+  alias Hearthstone.Card.RuneCost
 
   use TypedStruct
 
@@ -31,6 +32,7 @@ defmodule Hearthstone.Card do
     field :slug, String.t()
     field :spell_school_id, integer()
     field :mercenary_hero, MercenaryHero.t()
+    field :rune_cost, RuneCost.t()
     field :text, String.t()
   end
 
@@ -66,6 +68,7 @@ defmodule Hearthstone.Card do
         slug: map["slug"],
         spell_school_id: map["spell_school_id"],
         mercenary_hero: MercenaryHero.from_raw_map(map["mercenary_hero"]),
+        rune_cost: RuneCost.from_raw_map(map["rune_cost"]),
         text: map["text"]
       }
     }
@@ -132,6 +135,60 @@ defmodule Hearthstone.Card.Duels do
       constructed: false,
       relevant: false
     }
+  end
+end
+
+defmodule Hearthstone.Card.RuneCost do
+  @moduledoc false
+
+  use TypedStruct
+
+  typedstruct enforce: true do
+    field :blood, integer()
+    field :frost, integer()
+    field :unholy, integer()
+  end
+
+  def from_raw_map(%{
+        "blood" => b,
+        "frost" => f,
+        "unholy" => u
+      }) do
+    %__MODULE__{
+      blood: b,
+      frost: f,
+      unholy: u
+    }
+  end
+
+  def from_raw_map(nil), do: nil
+
+  def empty() do
+    %__MODULE__{
+      blood: 0,
+      frost: 0,
+      unholy: 0
+    }
+  end
+
+  @spec maximum(t() | nil, t() | nil) :: t()
+  def maximum(%{blood: bf, frost: ff, unholy: uf}, %{blood: bs, frost: fs, unholy: us}) do
+    %__MODULE__{
+      blood: max(bf, bs),
+      frost: max(ff, fs),
+      unholy: max(uf, us)
+    }
+  end
+
+  def maximum(%__MODULE__{} = first, _second), do: first
+  def maximum(_first, %__MODULE__{} = second), do: second
+  def maximum(_, _), do: empty()
+
+  @spec shorthand(t()) :: String.t()
+  def shorthand(%{blood: blood, frost: frost, unholy: unholy}) do
+    String.duplicate("B", blood) <>
+      String.duplicate("F", frost) <>
+      String.duplicate("U", unholy)
   end
 end
 
