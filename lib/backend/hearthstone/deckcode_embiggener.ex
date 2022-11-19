@@ -26,7 +26,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
         id ->
           """
-          You can view this deck at https://www.d0nkey.top/deck/#{id}
+          You can view this deck at https://www.hsguru.com/deck/#{id}
           """
       end
 

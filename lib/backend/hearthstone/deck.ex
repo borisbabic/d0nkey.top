@@ -372,7 +372,9 @@ defmodule Backend.Hearthstone.Deck do
   @spec rune_cost(t()) :: RuneCost.t()
   def rune_cost(%{cards: cards}) do
     cards
-    |> Enum.map(&(&1 |> Hearthstone.get_card() |> Map.get(:rune_cost)))
+    |> Enum.map(&(&1 |> Hearthstone.get_card()))
+    |> Enum.filter(& &1)
+    |> Enum.map(&Map.get(&1, :rune_cost))
     |> Enum.reduce(RuneCost.empty(), &RuneCost.maximum/2)
   end
 

@@ -16,6 +16,7 @@ defmodule Backend.Battlefy.LineupFetcher do
     :ok
   end
 
+  @spec fetch(any, Backend.Battlefy.Match.t()) :: nil | {:error, any} | {:ok, any}
   def fetch(tournament_id, match = %Match{}) do
     deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
     insert(tournament_id, match.top, deckstrings.top)
