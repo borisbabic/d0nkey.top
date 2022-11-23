@@ -380,7 +380,13 @@ defmodule Backend.Leaderboards do
   def get_current_player_entries(players) do
     seasons = current_ladder_seasons()
 
-    [:latest_in_season, :preload_season, {"seasons", seasons}, {"players", players}]
+    [
+      :latest_in_season,
+      :preload_season,
+      {"seasons", seasons},
+      {"players", players},
+      {"order_by", "rank"}
+    ]
     |> entries()
     |> Enum.group_by(& &1.season_id)
     |> Enum.map(fn {_, entries = [%{season: %{leaderboard_id: l, region: r}} | _]} ->

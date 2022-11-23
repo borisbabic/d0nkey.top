@@ -1,18 +1,23 @@
 defmodule Bot.LdbMessageHandler do
   @moduledoc false
-  alias Nostrum.Api
   alias Backend.Leaderboards
   alias Backend.MastersTour.InvitedPlayer
   import Bot.MessageHandlerUtil
 
   def handle_battletags_leaderboard(msg) do
-    table =
-      options_or_guild_battletags(msg)
-      |> get_leaderboard_entries()
-      |> create_message()
+    msg
+    |> options_or_guild_battletags()
+    |> get_leaderboard_entries()
+    |> create_tables()
+    |> join_tables()
+    |> send_tables(msg.channel_id)
+  end
 
+  def send_tables(tables, channel_id), do: Enum.each(tables, &send_table(&1, channel_id))
+
+  def send_table(table, channel_id) do
     message = "```\n#{table}\n```"
-    send_or_travolta(message, msg.channel_id)
+    send_or_travolta(message, channel_id)
   end
 
   def get_leaderboard_entries(battletags_long) do
@@ -21,11 +26,23 @@ defmodule Bot.LdbMessageHandler do
     |> Leaderboards.get_current_player_entries()
   end
 
-  @spec create_message(Leaderboards.categorized_entries()) :: String.t()
-  def create_message(categorized) do
+  def join_tables(tables) do
+    Enum.reduce(tables, [""], fn t, [current | prev] ->
+      joined = current <> "\n" <> t
+
+      if String.length(joined) > 1950 do
+        [t, current | prev]
+      else
+        [joined | prev]
+      end
+    end)
+  end
+
+  @spec create_tables(Leaderboards.categorized_entries()) :: String.t()
+  def create_tables(categorized) do
     categorized
     |> Enum.filter(fn {entries, _, _} -> Enum.any?(entries) end)
-    |> Enum.map_join("\n", fn {entries, region, leaderboard} ->
+    |> Enum.map(fn {entries, region, leaderboard} ->
       title =
         "#{Backend.Blizzard.get_region_name(region)} #{Backend.Blizzard.get_leaderboard_name(leaderboard, :long)}"
 
