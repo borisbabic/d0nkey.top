@@ -915,6 +915,48 @@ defmodule Backend.MastersTour do
         "LGDXiaoT" -> "XiaoT"
         "Hodeulyo" -> "TigerComing"
         "TigerComing" -> "TigerIsComing"
+        ### MT SIX battlefy id
+        "RyshSmallHyu" -> "RyshSmallHyun"
+        "兄弟象68" -> "BrothersElep"
+        "Chu" -> "bilibilichu"
+        "FiveKSLStorm" -> "LoveStorm"
+        "Dallara" -> "Dallaramion"
+        "Cxx" -> "Chengxin"
+        "freejayhuang" -> "y0ungchrisT"
+        "ProYun" -> "KONAKONA"
+        "denker" -> "Markoh"
+        "LBB" -> "LBB2022"
+        "road" -> "RNGLys"
+        "RNGLys" -> "Lys"
+        "coolkid2001" -> "Farbz"
+        "iGShuiMo" -> "ShuiMo"
+        "ShuiMoo" -> "ShuiMo"
+        "sjyndzls" -> "RyshSmallHyun"
+        # PREVIOUS
+        # US
+        "Villian" -> "Dylan"
+        # PL
+        "Intro" -> "jwrobel"
+        # RU:w
+        "Amazing" -> "UchihaMadara"
+        # KR
+        "레몬박하" -> "Lemonpepper"
+        # BR???
+        "Ben10" -> "Fled"
+        # FR
+        "magicgeek" -> "JoachimAG"
+        # KR
+        "Woobin" -> "jwc"
+        # KR
+        "youngjoon" -> "hemlock"
+        # TW
+        "西陵珩" -> "KT8298"
+        # TW
+        "XilingHangHS" -> "KT8298"
+        # KR:w
+        "Miracle7" -> "CHEOL"
+        "ADU" -> "CJkaka"
+        "iGShuiMoo" -> "ShuiMo"
         n -> n
       end
 
