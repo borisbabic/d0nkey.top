@@ -62,8 +62,14 @@ defmodule Bot.MessageHandler do
       <<"!maxopen8", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("62017079b5a9a57b56cc25b8", msg)
 
+      <<"!maxopen", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("6319a0dec4fa012b14cd0f4b", msg)
+
       <<"!maxopen9", _::binary>> ->
-        Bot.BattlefyMessageHandler.handle_tournament_standings("6319a13f8196801c559cc30f", msg)
+        Bot.BattlefyMessageHandler.handle_tournament_standings("6319a0dec4fa012b14cd0f4b", msg)
+
+      <<"!bunnyopen", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("636ec2c1a2fbe70578c33023", msg)
 
       <<"!tch", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("6271bd62d44c844993e4e1a7", msg)
