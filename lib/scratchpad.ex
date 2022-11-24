@@ -80,19 +80,19 @@ defmodule ScratchPad do
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
-      ([
-         0,
-         1,
-         d["format"],
-         1,
-         d["hero"],
-         Enum.count(cards[1])
-       ] ++
-         cards[1] ++
-         [Enum.count(cards[2])] ++
-         cards[2] ++
-         [0])
-      |> Enum.into([], fn bit -> Varint.LEB128.encode(bit) end)
+    ([
+       0,
+       1,
+       d["format"],
+       1,
+       d["hero"],
+       Enum.count(cards[1])
+     ] ++
+       cards[1] ++
+       [Enum.count(cards[2])] ++
+       cards[2] ++
+       [0])
+    |> Enum.into([], fn bit -> Varint.LEB128.encode(bit) end)
   end
 
   def parse_hearthstone_json() do
@@ -150,27 +150,36 @@ defmodule ScratchPad do
       battlefy_id
       |> Backend.Battlefy.get_participants()
       |> Enum.map(fn %{name: name, user_id: user_id} ->
-        {fix_name(name), user_id, id}
+        fixed_name = fix_name(name)
+        {fix_name(name), user_id, Backend.PlayerInfo.get_country(fixed_name), id}
       end)
     end)
   end
+
   def fix_name(name) do
-    name |> Backend.MastersTour.fix_name() |> Backend.Grandmasters.PromotionCalculator.get_group_by()
+    name
+    |> Backend.MastersTour.fix_name()
+    |> Backend.Grandmasters.PromotionCalculator.get_group_by()
   end
+
   def find_same_mt_players() do
     all_mt_participants()
     |> find_same_mt_players()
   end
+
   def find_same_mt_players(all_participants) do
     all_participants
     # |> Enum.map(& {fix_name(&1.name), &1.user_id})
-    |> Enum.group_by(& elem(&1, 1))
-    |> Enum.map(fn {user_id, list} -> {user_id, Enum.uniq_by(list, & elem(&1, 0))} end)
+    |> Enum.group_by(&elem(&1, 1))
+    |> Enum.map(fn {user_id, list} -> {user_id, Enum.uniq_by(list, &elem(&1, 0))} end)
     |> Enum.filter(fn {_user_id, list} -> Enum.count(list) > 1 end)
   end
 
   def create_map({_user_id, parts}), do: parts |> Enum.reverse() |> create_map()
-  def create_map([curr = {<<"Backup", _::bitstring>>, _, _} | rest]), do: create_map(rest ++ [curr])
+
+  def create_map([curr = {<<"Backup", _::bitstring>>, _, _} | rest]),
+    do: create_map(rest ++ [curr])
+
   def create_map([{current, _, _} | rest]) do
     rest
     |> Enum.map(fn {name, _, _} ->
@@ -181,14 +190,17 @@ defmodule ScratchPad do
     |> Enum.join("\n")
   end
 
-  #imported decks from prod and had duplicates
+  # imported decks from prod and had duplicates
   # I don't know how the fuck that happened either
   def deduplicate_decks() do
     deck_ids = duplicate_deck_ids()
-    query = from d in Deck,
-      where: d.id in ^deck_ids
+
+    query =
+      from d in Deck,
+        where: d.id in ^deck_ids
 
     decks = Repo.all(query)
+
     decks
     |> Enum.group_by(& &1.id)
     |> Enum.chunk_every(50)
@@ -197,20 +209,25 @@ defmodule ScratchPad do
 
   defp delete_grouped_by(grouped_by) do
     grouped_by
-    |> Enum.reduce(Multi.new(), fn {_, [a| _]}, multi ->
-      query = from d in Deck,
-        where: d.id == ^a.id,
-        where: d.inserted_at == ^a.inserted_at,
-        where: d.deckcode == ^a.deckcode
+    |> Enum.reduce(Multi.new(), fn {_, [a | _]}, multi ->
+      query =
+        from d in Deck,
+          where: d.id == ^a.id,
+          where: d.inserted_at == ^a.inserted_at,
+          where: d.deckcode == ^a.deckcode
+
       Multi.delete_all(multi, "deck_id_#{a.id}", query)
     end)
     |> Repo.transaction()
   end
+
   defp duplicate_deck_ids() do
-    query = from d in Deck,
-      group_by: d.id,
-      having: count(1) > 1,
-      select: d.id
+    query =
+      from d in Deck,
+        group_by: d.id,
+        having: count(1) > 1,
+        select: d.id
+
     Repo.all(query)
   end
 end
