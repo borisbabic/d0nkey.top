@@ -931,7 +931,7 @@ defmodule Backend.MastersTour do
         "coolkid2001" -> "Farbz"
         "iGShuiMo" -> "ShuiMo"
         "ShuiMoo" -> "ShuiMo"
-        "sjyndzls" -> "RyshSmallHyun"
+        # "sjyndzls" -> "RyshSmallHyun" THIS IS NOT TRUEEEEE
         # PREVIOUS
         # US
         "Villian" -> "Dylan"
