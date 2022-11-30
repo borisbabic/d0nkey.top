@@ -191,7 +191,7 @@ defmodule BackendWeb.MastersTourController do
           year
 
         :error ->
-          TourStop.get(ts, :id) || current_qualifiers_ts() |> TourStop.get(:id)
+          TourStop.get(ts, :id) || current_qualifiers_ts() |> TourStop.get(:id, :all)
       end
 
     {stats, total} = MastersTour.get_player_stats(period)
