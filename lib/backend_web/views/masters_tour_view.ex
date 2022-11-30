@@ -726,12 +726,15 @@ defmodule BackendWeb.MastersTourView do
 
     sort_key = sortable_headers |> Enum.find("Winrate %", fn h -> h == sort_by end)
 
-    rows =
+    filtered =
       stats
       |> Enum.filter(fn ps -> ps |> PlayerStats.with_result() >= min_to_show end)
       |> filter_countries(countries)
       |> filter_qualified(is_ts, hide_qualified, to_string(period), invited_set_for_hiding)
       |> create_player_rows(eligible_tour_stops(), invited_set, conn, period, show_flags == "yes")
+
+    rows =
+      filtered
       |> sort_for_qualifier_winrate(ts)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.with_index(1)
@@ -823,7 +826,7 @@ defmodule BackendWeb.MastersTourView do
 
     render("qualifier_stats.html", %{
       title: "#{period |> period_title()} qualifier stats",
-      subtitle: "Total cups: #{total}",
+      subtitle: "Total cups: #{total} | Filtered players: #{filtered |> Enum.count()}",
       headers: headers,
       rows: rows,
       columns_options: columns_options,
