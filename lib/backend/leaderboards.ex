@@ -1019,6 +1019,8 @@ defmodule Backend.Leaderboards do
     Enum.filter(criteria, fn
       {"players", _} -> false
       {"battletag_full", _} -> false
+      {"offset", _} -> false
+      {"limit", _} -> false
       _ -> true
     end)
   end
