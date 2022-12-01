@@ -386,6 +386,12 @@ defmodule Backend.Streaming do
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
   end
 
+  defp compose_streamer_deck_query({"lich_king", "yes"}, query) do
+    card_ids = lich_king_card_ids()
+
+    query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+  end
+
   defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"exclude_cards", cards}, query),
@@ -445,6 +451,15 @@ defmodule Backend.Streaming do
     |> Enum.filter(fn c ->
       # no Vanndar nor Drek'Thar
       c.set == "ALTERAC_VALLEY" && c.id not in ["AV_223", "AV_100"]
+    end)
+    |> Enum.map(& &1.dbf_id)
+  end
+
+  defp lich_king_card_ids() do
+    Backend.HearthstoneJson.collectible_cards()
+    |> Enum.filter(fn c ->
+      # no Vanndar nor Drek'Thar
+      c.set in ["PATH_OF_ARTHAS", "RETURN_OF_THE_LICH_KING"] && c.id not in ["BAR_025"]
     end)
     |> Enum.map(& &1.dbf_id)
   end
