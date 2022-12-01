@@ -9,6 +9,7 @@ defmodule Backend.Streaming do
   alias Hearthstone.Enums.BnetGameType
   alias Hearthstone.DeckTracker.Game
   alias Backend.Hearthstone
+  alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.Deck
   alias Backend.Streaming.StreamerDeckInfoDto
 
@@ -459,7 +460,7 @@ defmodule Backend.Streaming do
     Backend.HearthstoneJson.collectible_cards()
     |> Enum.filter(fn c ->
       # no Vanndar nor Drek'Thar
-      c.set in ["PATH_OF_ARTHAS", "RETURN_OF_THE_LICH_KING"] && c.id not in ["BAR_025"]
+      c.set in ["PATH_OF_ARTHAS", "RETURN_OF_THE_LICH_KING"] && Card.dbf_id(c) not in [86_228]
     end)
     |> Enum.map(& &1.dbf_id)
   end
