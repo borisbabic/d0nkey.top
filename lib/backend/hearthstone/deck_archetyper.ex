@@ -153,7 +153,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
     cond do
       highlander?(c) -> :"Highlander Rogue"
+      coc_rogue?(card_info) && (quest?(card_info) || questline?(card_info)) -> :"Quest Coc Rogue"
       quest?(card_info) || questline?(card_info) -> :"Quest Rogue"
+      coc_rogue?(card_info) -> :"Coc Rogue"
       mine_rogue?(card_info) -> :"Mine Rogue"
       pirate_rogue?(card_info) && thief_rogue?(card_info) -> :"Pirate Thief Rogue"
       jackpot_rogue?(card_info) -> :"Jackpot Rogue"
@@ -418,6 +420,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     do:
       "Maestra of the Masquerade" in card_names ||
         min_count?(ci, 2, ["Tess Greymane", "Contraband Stash"])
+
+  defp coc_rogue?(ci),
+    do:
+      min_count?(ci, 4, [
+        "Concoctor",
+        "Ghoulish Alchemist",
+        "Potion Belt",
+        "Potionmaster Putricide",
+        "Vile Apothecary"
+      ])
 
   defp mine_rogue?(ci),
     do: min_count?(ci, 2, ["Naval Mine", "Snowfall Graveyard"])
