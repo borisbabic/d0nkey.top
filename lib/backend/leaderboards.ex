@@ -1134,4 +1134,29 @@ defmodule Backend.Leaderboards do
       timeout: 666_000
     )
   end
+
+  def prune(%Season{id: id}) when is_integer(id) do
+    Repo.query!(
+      "DELETE FROM public.leaderboards_entry WHERE season_id = ? AND id NOT IN (SELECT le.id FROM public.leaderboards_entry le INNER JOIN (SELECT i.rank as r, MAX(i.inserted_at) as ia FROM public.leaderboards_entry i WHERE i.season_id = ? GROUP BY i.rank) AS inn ON inn.r = rank AND inn.ia = inserted_at WHERE season_id = ?);",
+      [id, id, id],
+      timeout: 120_000
+    )
+  end
+
+  def prune_old(curr_constructed, curr_mercs, curr_bgs) do
+    Repo.query!(
+      """
+      do $$
+        declare arrow record;
+        begin
+          for arrow in (SELECT id FROM public.leaderboards_seasons WHERE (leaderboard_id = 'MRC' AND season_id < ?) OR (leaderboard_id in ('CLS', 'WLD', 'STD') AND season_id < ?) OR (leaderboard_id = 'BG' AND season_id < ?)) loop
+            DELETE FROM public.leaderboards_entry WHERE season_id = arrow.id AND id NOT IN (SELECT le.id FROM public.leaderboards_entry le INNER JOIN (SELECT i.rank as r, MAX(i.inserted_at) as ia FROM public.leaderboards_entry i WHERE i.season_id = arrow.id GROUP BY i.rank) AS inn ON inn.r = rank AND inn.ia = inserted_at WHERE season_id = arrow.id);
+          end loop;
+        end; $$
+        ;
+      """,
+      [curr_mercs, curr_constructed, curr_bgs],
+      timeout: 666_000
+    )
+  end
 end
