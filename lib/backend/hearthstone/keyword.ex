@@ -33,4 +33,9 @@ defmodule Backend.Hearthstone.Keyword do
   @spec quest?(%__MODULE__{}) :: boolean
   def quest?(%{slug: "quest"}), do: true
   def quest?(_), do: false
+
+  @spec matches?(%__MODULE__{}, String.t()) :: boolean
+  def matches?(%{slug: matching}, matching), do: true
+  def matches?(%{name: matching}, matching), do: true
+  def matches?(_, _), do: false
 end

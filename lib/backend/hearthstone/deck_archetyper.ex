@@ -23,6 +23,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
     cond do
       highlander?(c) -> :"Highlander DK"
+      burn_dk?(card_info) -> :"Burn DK"
+      handbuff_dk?(card_info) -> :"Handbuff DK"
+      aggro_dk?(card_info) -> :"Aggro DK"
       boar?(card_info) -> :"Boar DK"
       quest?(card_info) || questline?(card_info) -> :"Quest DK"
       murloc?(card_info) -> :"Murloc DK"
@@ -30,25 +33,103 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  def burn_dk?(c),
+    do: min_count?(c, 2, ["Bloodmage Thalnos", "Talented Arcanist", "Guild Trader"])
+
+  def aggro_dk?(c),
+    do:
+      min_count?(c, 4, [
+        "Body Bagger",
+        "Hawkstrider Rancher",
+        "Irondeep Trogg",
+        "Incorporeal Corporal",
+        "Peasant"
+      ])
+
+  def handbuff_dk?(c),
+    do:
+      min_count?(c, 3, [
+        "Blood Tap",
+        "Darkfallen Neophyte",
+        "Vicious Bloodworm",
+        "Overlord Runthak",
+        "Ram Commander",
+        "Encumbered Pack Mule"
+      ])
+
   def archetype(%{format: 2, cards: c, class: "DEMONHUNTER"}) do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander DH"
-      boar?(card_info) -> :"Boar Demon Hunter"
-      quest?(card_info) || questline?(card_info) -> :"Quest Demon Hunter"
-      deathrattle_dh?(card_info) -> :"Deathrattle DH"
-      clean_slate_dh?(card_info) -> :"Clean Slate DH"
-      big_dh?(card_info) -> :"Big Demon Hunter"
-      murloc?(card_info) -> :"Murloc Demon Hunter"
-      aggro_dh?(card_info) && relic_dh?(card_info) -> :"Aggro Relic DH"
-      aggro_dh?(card_info) -> :"Aggro Demon Hunter"
-      fel_dh?(card_info) && relic_dh?(card_info) -> :"Felic Demon Hunter"
-      fel_dh?(card_info) -> :"Fel Demon Hunter"
-      relic_dh?(card_info) -> :"Relic Demon Hunter"
-      true -> minion_type_fallback(card_info, "Demon Hunter")
+      highlander?(c) ->
+        :"Highlander DH"
+
+      boar?(card_info) ->
+        :"Boar Demon Hunter"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest Demon Hunter"
+
+      deathrattle_dh?(card_info) ->
+        :"Deathrattle DH"
+
+      clean_slate_dh?(card_info) ->
+        :"Clean Slate DH"
+
+      big_dh?(card_info) ->
+        :"Big Demon Hunter"
+
+      murloc?(card_info) ->
+        :"Murloc Demon Hunter"
+
+      aggro_dh?(card_info) && outcast_dh?(card_info) ->
+        :"Aggro Outcast DH"
+
+      aggro_dh?(card_info) && relic_dh?(card_info) ->
+        :"Aggro Relic DH"
+
+      aggro_dh?(card_info) ->
+        :"Aggro Demon Hunter"
+
+      outcast_dh?(card_info) ->
+        :"Outcast DH"
+
+      fel_dh?(card_info) && spell_dh?(card_info) && relic_dh?(card_info) ->
+        :"Spffellic Demon Hunter"
+
+      spell_dh?(card_info) && fel_dh?(card_info) ->
+        :"Spffell Demon Hunter"
+
+      spell_dh?(card_info) && relic_dh?(card_info) ->
+        :"Spellic Demon Hunter"
+
+      fel_dh?(card_info) && relic_dh?(card_info) ->
+        :"Felic Demon Hunter"
+
+      spell_dh?(card_info) ->
+        :"Spellic Demon Hunter"
+
+      fel_dh?(card_info) ->
+        :"Fel Demon Hunter"
+
+      relic_dh?(card_info) ->
+        :"Relic Demon Hunter"
+
+      true ->
+        minion_type_fallback(card_info, "Demon Hunter")
     end
   end
+
+  def spell_dh?(c),
+    do:
+      min_count?(c, 3, [
+        "Souleater's Scythe",
+        "Mark of Scorn",
+        "Fel'dorei Warband",
+        "Deal with a Devil"
+      ])
+
+  def outcast_dh?(c), do: min_keyword_count?(c, 4, "outcast")
 
   def archetype(%{format: 2, cards: c, class: "DRUID"}) do
     card_info = full_cards(c)
@@ -76,6 +157,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       quest?(card_info) || questline?(card_info) -> :"Quest Hunter"
       vanndar?(card_info) && big_beast_hunter?(card_info) -> :"Vanndar Beast Hunter"
       vanndar?(card_info) -> :"Vanndar Hunter"
+      arcane_hunter?(card_info) -> :"Arcane Hunter"
       rat_hunter?(card_info) -> :"Rattata Hunter"
       big_beast_hunter?(card_info) -> :"Big Beast Hunter"
       beast_hunter?(card_info) -> :"Beast Hunter"
@@ -87,24 +169,83 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  defp arcane_hunter?(card_info),
+    do:
+      min_count?(card_info, 2, ["Halduron Brightwing", "Silvermoon Farstrider", "Arcane Quiver"]) &&
+        min_spell_school_count?(card_info, 4, "arcane")
+
   def archetype(%{format: 2, cards: c, class: "MAGE"}) do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Mage"
-      quest?(card_info) || questline?(card_info) -> :"Quest Mage"
-      vanndar?(card_info) -> :"Vanndar Mage"
-      secret_mage?(card_info) -> :"Secret Mage"
-      naga_mage?(card_info) -> :"Naga Mage"
-      mech_mage?(card_info) -> :"Mech Mage"
-      skeleton_mage?(card_info) -> :"Spooky Mage"
-      ping_mage?(card_info) -> :"Ping Mage"
-      big_spell_mage?(card_info) -> :"Big Spell Mage"
-      murloc?(card_info) -> :"Murloc Mage"
-      boar?(card_info) -> :"Boar Mage"
-      true -> minion_type_fallback(card_info, "Mage")
+      highlander?(c) ->
+        :"Highlander Mage"
+
+      arcane_mage?(card_info) && (quest?(card_info) || questline?(card_info)) ->
+        :"Arcane Quest Mage"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest Mage"
+
+      vanndar?(card_info) ->
+        :"Vanndar Mage"
+
+      arcane_mage?(card_info) ->
+        :"Arcane Mage"
+
+      secret_mage?(card_info) ->
+        :"Secret Mage"
+
+      naga_mage?(card_info) && casino_mage?(card_info) ->
+        :"Naga Casino Mage"
+
+      casino_mage?(card_info) ->
+        :"Casino Mage"
+
+      naga_mage?(card_info) ->
+        :"Naga Mage"
+
+      mech_mage?(card_info) ->
+        :"Mech Mage"
+
+      skeleton_mage?(card_info) ->
+        :"Spooky Mage"
+
+      ping_mage?(card_info) ->
+        :"Ping Mage"
+
+      big_spell_mage?(card_info) ->
+        :"Big Spell Mage"
+
+      murloc?(card_info) ->
+        :"Murloc Mage"
+
+      boar?(card_info) ->
+        :"Boar Mage"
+
+      true ->
+        minion_type_fallback(card_info, "Mage")
     end
   end
+
+  def arcane_mage?(card_info),
+    do:
+      min_count?(card_info, 3, [
+        "Vexalllus",
+        "Arcsplitter",
+        "Arcane Wyrm",
+        "Magister's Apprentice"
+      ]) && min_spell_school_count?(card_info, 4, "arcane")
+
+  def casino_mage?(card_info),
+    do:
+      min_count?(card_info, 3, [
+        "Energy Shaper",
+        "Grand Magister Rommath",
+        "The Sunwell",
+        "Vast Wisdowm",
+        "Prismatic Elemental"
+      ])
 
   def archetype(%{format: 2, cards: c, class: "PALADIN"}) do
     card_info = full_cards(c)
@@ -114,6 +255,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       pure_paladin?(card_info) && dude_paladin?(card_info) -> :Chadadin
       pure_paladin?(card_info) -> :"Pure Paladin"
       highlander?(c) -> :"Highlander Paladin"
+      aggro_paladin?(card_info) -> :"Aggro Paladin"
       quest?(card_info) || questline?(card_info) -> :"Quest Paladin"
       dude_paladin?(card_info) -> :"Dude Paladin"
       handbuff_paladin?(card_info) -> :"Handbuff Paladin"
@@ -129,24 +271,78 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  defp aggro_paladin?(card_info),
+    do:
+      min_count?(card_info, 5, [
+        "For Quel'Thalas!",
+        "Seal of Blood",
+        "Blessing of Kings",
+        "Sunwing Squawker",
+        "Foul Egg",
+        "Sanguine Soldier",
+        "Blood Matriarch Liadrin",
+        "Nerubian Egg",
+        "Righteous Protector"
+      ])
+
   def archetype(%{format: 2, cards: c, class: "PRIEST"}) do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Priest"
-      quest?(card_info) || questline?(card_info) -> :"Quest Priest"
-      boar?(card_info) -> :"Boar Priest"
-      naga_priest?(card_info) -> :"Naga Priest"
-      boon_priest?(card_info) -> :"Boon Priest"
-      shellfish_priest?(card_info) -> :"Shellfish Priest"
-      vanndar?(card_info) && shadow_priest?(card_info) -> :"Vanndar Shadow Priest"
-      vanndar?(card_info) -> :"Vanndar Priest"
-      thief_priest?(card_info) -> :"Thief Priest"
-      shadow_priest?(card_info) -> :"Shadow Priest"
-      murloc?(card_info) -> :"Murloc Priest"
-      true -> minion_type_fallback(card_info, "Priest")
+      highlander?(c) ->
+        :"Highlander Priest"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest Priest"
+
+      boar?(card_info) ->
+        :"Boar Priest"
+
+      naga_priest?(card_info) ->
+        :"Naga Priest"
+
+      boon_priest?(card_info) ->
+        :"Boon Priest"
+
+      shellfish_priest?(card_info) ->
+        :"Shellfish Priest"
+
+      vanndar?(card_info) && shadow_priest?(card_info) ->
+        :"Vanndar Shadow Priest"
+
+      vanndar?(card_info) ->
+        :"Vanndar Priest"
+
+      thief_priest?(card_info) ->
+        :"Thief Priest"
+
+      shadow_priest?(card_info) && "Voidtouched Attendant" in card_info.card_names ->
+        :"Shaggro Priest"
+
+      rager_priest?(card_info) ->
+        :"Rager Priest"
+
+      svalna_priest?(card_info) ->
+        :"Svalna Priest"
+
+      shadow_priest?(card_info) ->
+        :"Shadow Priest"
+
+      murloc?(card_info) ->
+        :"Murloc Priest"
+
+      true ->
+        minion_type_fallback(card_info, "Priest")
     end
   end
+
+  defp svalna_priest?(card_info),
+    do: min_count?(card_info, 3, ["Radiant Elemental", "Animate Dead", "Sister Svalna"])
+
+  defp rager_priest?(card_info),
+    do:
+      "Scourge Rager" in card_info.card_names and
+        min_count?(card_info, 2, ["Animate Dead", "Grave Digging", "High Cultist Basaleph"])
 
   def archetype(%{format: 2, cards: c, class: "ROGUE"}) do
     card_info = full_cards(c)
@@ -155,6 +351,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       highlander?(c) -> :"Highlander Rogue"
       coc_rogue?(card_info) && (quest?(card_info) || questline?(card_info)) -> :"Quest Coc Rogue"
       quest?(card_info) || questline?(card_info) -> :"Quest Rogue"
+      coc_rogue?(card_info) && miracle_rogue?(card_info) -> :"Cocacle Rogue"
+      coc_rogue?(card_info) && thief_rogue?(card_info) -> :"Coc Thief Rogue"
       coc_rogue?(card_info) -> :"Coc Rogue"
       mine_rogue?(card_info) -> :"Mine Rogue"
       pirate_rogue?(card_info) && thief_rogue?(card_info) -> :"Pirate Thief Rogue"
@@ -165,7 +363,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       pirate_rogue?(card_info) -> :"Pirate Rogue"
       vanndar?(card_info) -> :"Vanndar Rogue"
       secret_rogue?(card_info) -> :"Secret Rogue"
-      miracle_rogue?(card_info) -> :"Miracle Rogue"
+      shark_rogue?(card_info) -> :"Shark Rogue"
       deathrattle_rogue?(card_info) -> :"Deathrattle Rogue"
       min_secret_count?(card_info, 3) -> :"Secret Rogue"
       true -> minion_type_fallback(card_info, "Rogue")
@@ -175,11 +373,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   def archetype(%{format: 2, cards: c, class: "SHAMAN"}) do
     card_info = full_cards(c)
 
+    Backend.Hearthstone.CardBag.all()
+    |> Enum.map(&elem(&1, 1))
+    |> Enum.find(&(&1.name =~ "Find the Imposter"))
+    |> Backend.Hearthstone.Card.questline?()
+
     cond do
       highlander?(c) -> :"Highlander Shaman"
       quest?(card_info) || questline?(card_info) -> :"Quest Shaman"
       boar?(card_info) -> :"Boar Shaman"
       vanndar?(card_info) -> :"Vanndar Shaman"
+      "Barbaric Sorceress" in card_info.card_names -> :"Big Spell Shaman"
+      aggro_shaman?(card_info) -> :"Aggro Shaman"
+      big_bone_shaman?(card_info) -> :"Big Bone Shaman"
       "Gigantotem" in card_info.card_names -> :"Totem Shaman"
       elemental_shaman?(card_info) -> :"Elemental Shaman"
       evolve_shaman?(card_info) -> :"Evolve Shaman"
@@ -192,6 +398,21 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true -> nil
     end
   end
+
+  defp big_bone_shaman?(ci),
+    do:
+      "Bonelord Frostwhisper" in ci.card_names and
+        min_count?(ci, 2, ["Al'Akir the Windlord", "Prescience", "Criminal Lineup"])
+
+  defp aggro_shaman?(ci),
+    do:
+      min_count?(ci, 3, [
+        "Hawkstrider Rancher",
+        "Irondeep Trogg",
+        "Rotgill",
+        "Sourge Troll",
+        "Incorporeal Corporal"
+      ])
 
   def archetype(%{format: 2, cards: c, class: "WARLOCK"}) do
     card_info = full_cards(c)
@@ -421,9 +642,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Maestra of the Masquerade" in card_names ||
         min_count?(ci, 2, ["Tess Greymane", "Contraband Stash"])
 
+  defp miracle_rogue?(ci), do: min_count?(ci, 1, ["Mailbox Dancer"]) && miracle_wincon?(ci)
+  defp miracle_wincon?(ci), do: min_count?(ci, 2, ["Sinstone Graveyard", "Necrolord Draka"])
+
   defp coc_rogue?(ci),
     do:
-      min_count?(ci, 4, [
+      min_count?(ci, 3, [
         "Concoctor",
         "Ghoulish Alchemist",
         "Potion Belt",
@@ -448,16 +672,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           "Scuttlebutt Ghoul"
         ])
 
-  defp miracle_rogue?(ci),
-    do:
-      min_count?(ci, 4, [
-        "Necrolord Draka",
-        "Gadgetzan Auctioneer",
-        "Field Contact",
-        "Sketchy Information",
-        "Sinstone Graveyard",
-        "Loan Shark"
-      ])
+  defp shark_rogue?(ci),
+    do: "Loan Shark" in ci.card_names && miracle_wincon?(ci)
 
   defp deathrattle_rogue?(%{card_names: card_names}), do: "Snowfall Graveyard" in card_names
 
@@ -707,6 +923,24 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp min_count?(%{card_names: cn}, min, cards) do
     min <= cards |> Enum.filter(&(&1 in cn)) |> Enum.count()
+  end
+
+  defp min_keyword_count?(%{full_cards: full_cards}, min, keyword_slug) do
+    num =
+      full_cards
+      |> Enum.filter(&Card.has_keyword?(&1, keyword_slug))
+      |> Enum.count()
+
+    num >= min
+  end
+
+  defp min_spell_school_count?(%{full_cards: full_cards}, min, spell_school) do
+    num =
+      full_cards
+      |> Enum.filter(&Card.has_spell_school?(&1, spell_school))
+      |> Enum.count()
+
+    num >= min
   end
 
   defp boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names

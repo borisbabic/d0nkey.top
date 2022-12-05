@@ -185,6 +185,16 @@ defmodule Backend.Hearthstone.Card do
   @spec quest?(%__MODULE__{}) :: boolean()
   def quest?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.quest?/1)
   def quest?(_), do: false
+
+  @spec has_keyword?(%__MODULE__{}, String.t()) :: boolean()
+  def has_keyword?(%{keywords: kw}, keyword_slug),
+    do: Enum.any?(kw, &Keyword.matches?(&1, keyword_slug))
+
+  def has_keyword?(_, _), do: false
+
+  @spec has_spell_school?(%__MODULE__{}, String.t()) :: boolean()
+  def has_spell_school?(%{spell_school: ss}, slug), do: SpellSchool.matches?(ss, slug)
+  def has_spell_school?(_, _), do: false
 end
 
 defmodule Backend.Hearthstone.RuneCost do
