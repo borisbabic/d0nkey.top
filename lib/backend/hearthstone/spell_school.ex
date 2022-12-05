@@ -18,4 +18,9 @@ defmodule Backend.Hearthstone.SpellSchool do
     |> cast(attrs, [:id, :name, :slug])
     |> validate_required([:id, :name, :slug])
   end
+
+  @spec matches?(%__MODULE__{}, String.t()) :: boolean
+  def matches?(%{slug: matching}, matching), do: true
+  def matches?(%{name: matching}, matching), do: true
+  def matches?(_, _), do: false
 end
