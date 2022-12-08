@@ -53,7 +53,7 @@ defmodule Backend.Hearthstone.Deck do
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
-    ([0, 1, format, 1, get_canonical_hero(hero)] ++
+    ([0, 1, format, 1, get_canonical_hero(hero, cards)] ++
        deckcode_part(cards[1]) ++
        deckcode_part(cards[2]) ++
        [0])
@@ -142,12 +142,26 @@ defmodule Backend.Hearthstone.Deck do
          hero: hero,
          cards: cards,
          deckcode: no_comments,
-         class: Hearthstone.class(hero)
+         class: deckcode_class(hero, cards)
        }}
     else
       {:error, reason} -> {:error, reason}
       _ -> String.slice(deckcode, 0, String.length(deckcode) - 1) |> decode()
     end
+  end
+
+  defp deckcode_class(hero, cards) do
+    with nil <- Hearthstone.class(hero) do
+      most_frequent_class(cards)
+    end
+  end
+
+  defp most_frequent_class(cards) do
+    cards
+    |> Enum.map(&Hearthstone.class/1)
+    |> Enum.frequencies()
+    |> Enum.max_by(&elem(&1, 1))
+    |> elem(0)
   end
 
   defp parts(chunked) do
@@ -213,9 +227,9 @@ defmodule Backend.Hearthstone.Deck do
   def format_name(9001), do: "Duels"
   def format_name(666), do: "Mercenaries"
 
-  def get_canonical_hero(hero) when is_integer(hero) do
+  def get_canonical_hero(hero, cards) when is_integer(hero) do
     hero
-    |> Hearthstone.class()
+    |> deckcode_class(cards)
     |> case do
       class when is_binary(class) -> get_basic_hero(class)
       _ -> hero
