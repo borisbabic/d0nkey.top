@@ -46,14 +46,14 @@ defmodule Backend.Hearthstone.Deck do
   Doesn't support decks with more than 2 copies of a card
   """
   @spec deckcode([integer], integer, integer) :: String.t()
-  def deckcode(cards, hero, format) do
+  def deckcode(c, hero, format) do
     cards =
-      cards
+      c
       |> canonicalize_cards()
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
-    ([0, 1, format, 1, get_canonical_hero(hero, cards)] ++
+    ([0, 1, format, 1, get_canonical_hero(hero, c)] ++
        deckcode_part(cards[1]) ++
        deckcode_part(cards[2]) ++
        [0])
@@ -150,7 +150,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  defp deckcode_class(hero, cards) do
+  def deckcode_class(hero, cards) do
     with nil <- Hearthstone.class(hero) do
       most_frequent_class(cards)
     end
@@ -160,8 +160,10 @@ defmodule Backend.Hearthstone.Deck do
     cards
     |> Enum.map(&Hearthstone.class/1)
     |> Enum.frequencies()
-    |> Enum.max_by(&elem(&1, 1))
-    |> elem(0)
+    |> Enum.sort_by(&elem(&1, 1))
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.filter(&(&1 != "NEUTRAL"))
+    |> Enum.at(0)
   end
 
   defp parts(chunked) do
