@@ -14,6 +14,7 @@ config :backend,
   gm_stream_send_tweet: true,
   nitropay_demo: false,
   nostrum_slash_command_target: :global,
+  thl_discord_id: 534_455_756_129_435_649,
   twitch_bot_chats: [
     "sgt_tbag",
     "d0nkeyhs",
