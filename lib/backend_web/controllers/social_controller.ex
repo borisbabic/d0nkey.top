@@ -32,4 +32,8 @@ defmodule BackendWeb.SocialController do
   def btc(conn, _) do
     redirect(conn, external: Constants.btc())
   end
+
+  def discord_bot(conn, _) do
+    redirect(conn, external: Constants.discord_bot())
+  end
 end

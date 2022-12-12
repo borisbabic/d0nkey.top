@@ -192,6 +192,8 @@ defmodule BackendWeb.Router do
 
     get "/util/twitter/callback/reqtop100", TwitterController, :req_top100_callback
 
+    get "/discord-bot", SocialController, :discord_bot
+    get "/discord_bot", SocialController, :discord_bot
     get "/discord", SocialController, :discord
     get "/paypal", SocialController, :paypal
     get "/twitch", SocialController, :twitch
