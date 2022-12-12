@@ -66,4 +66,12 @@ defmodule Bot.MessageHandlerUtil do
       send_travolta(channel_id)
     end
   end
+
+  @spec split_discord_tag(String.t()) :: {:ok, {String.t(), String.t()}} | {:error, any()}
+  def split_discord_tag(tag) do
+    case String.split(tag, "#") do
+      [username, discriminator] -> {:ok, {username, discriminator}}
+      _ -> {:error, :invalid_discord_tag}
+    end
+  end
 end

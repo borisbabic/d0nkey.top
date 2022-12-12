@@ -74,6 +74,9 @@ defmodule Bot.MessageHandler do
       <<"!tch", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("6271bd62d44c844993e4e1a7", msg)
 
+      <<"!thl", _::binary>> ->
+        Bot.ThlMessageHandler.handle_thl(msg)
+
       <<"[[", _::binary>> ->
         handle_card(msg)
 
