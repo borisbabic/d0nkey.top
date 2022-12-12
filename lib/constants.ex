@@ -1,6 +1,11 @@
 defmodule Constants do
   def twitter(), do: "https://twitter.com/D0nkeyHS"
   def discord(), do: "https://discord.gg/DKYDu2Q"
+
+  def discord_bot(),
+    do:
+      "https://discord.com/api/oauth2/authorize?client_id=666624466352078848&permissions=8&scope=bot"
+
   def twitch(), do: "https://www.twitch.tv/d0nkeyhs"
   def patreon(), do: "https://www.patreon.com/d0nkey"
   def liberapay(), do: "https://liberapay.com/d0nkeyhs"
