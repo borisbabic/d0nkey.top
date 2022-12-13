@@ -39,6 +39,10 @@ defmodule Backend.HearthstoneJson do
     GenServer.cast(@name, {:update_cards})
   end
 
+  def update_cards(cards) do
+    GenServer.cast(@name, {:update_cards, cards})
+  end
+
   @spec get_json() :: [Card]
   defp get_json() do
     with {:ok, body} <- File.read("lib/data/collectible.json"),
@@ -174,6 +178,11 @@ defmodule Backend.HearthstoneJson do
   def cards(), do: table() |> Util.ets_lookup("all_cards", [])
   def collectible_cards(), do: table() |> Util.ets_lookup("collectible_cards", [])
   def playable_cards(), do: table() |> Util.ets_lookup("playable_cards", [])
+
+  def handle_cast({:update_cards, cards}, state = %{table: table}) do
+    update_table(cards, table)
+    {:noreply, state}
+  end
 
   def handle_cast({:update_cards}, state) do
     update_table(state)
