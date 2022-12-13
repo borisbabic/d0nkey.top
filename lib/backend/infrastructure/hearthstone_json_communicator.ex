@@ -3,15 +3,17 @@ defmodule Backend.Infrastructure.HearthstoneJsonCommunicator do
   @behaviour Backend.HearthstoneJson.Communicator
   alias Backend.HearthstoneJson.Card
 
-  @spec get_collectible_cards() :: {:ok, [Card]} | {:error, any()}
-  def get_collectible_cards(),
-    do: get("https://api.hearthstonejson.com/v1/latest/enUS/cards.collectible.json")
+  @spec get_collectible_cards(String.t() | number) :: {:ok, [Card]} | {:error, any()}
+  def get_collectible_cards(build \\ "latest"),
+    do: get("https://api.hearthstonejson.com/v1/#{build}/enUS/cards.collectible.json")
 
-  @spec get_cards!() :: [Card]
-  def get_cards!(), do: get_cards() |> Util.bangify()
+  @spec get_cards!(String.t() | number) :: [Card]
+  def get_cards!(build \\ "latest"), do: get_cards(build) |> Util.bangify()
 
   @spec get_cards() :: {:ok, [Card]} | {:error, any()}
-  def get_cards(), do: get("https://api.hearthstonejson.com/v1/latest/enUS/cards.json")
+  @spec get_cards(String.t() | number) :: {:ok, [Card]} | {:error, any()}
+  def get_cards(build \\ "latest"),
+    do: get("https://api.hearthstonejson.com/v1/#{build}/enUS/cards.json")
 
   defp get(url) do
     with {:ok, %{body: body}} <- HTTPoison.get(url, [], follow_redirect: true),
