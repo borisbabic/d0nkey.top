@@ -22,3 +22,7 @@ Disallow: /leaderboard?
 Disallow: /admin*
 Disallow: *?*limit*
 Disallow: *?*offset*
+Disallow: *?*rank
+Disallow: *?*period
+Disallow: *?*page
+Disallow: /deck/*?*

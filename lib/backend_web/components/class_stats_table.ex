@@ -17,7 +17,7 @@ defmodule Components.ClassStatsTable do
           </tr>
         </thead>
         <tbody>
-          <tr :for={stat <- filter_weird_classes(@stats)}>
+          <tr :for={stat <- filter_weird_classes(@stats) |> order_by_class()}>
             <td><span class={"tag","player-name", extract_class(stat) |> String.downcase()}><span class={"basic-black-text"}>{class_name(stat)}</span></span></td>
             <td><WinrateTag winrate={stat.winrate} /></td>
             <td>{stat.total}</td>
@@ -37,6 +37,10 @@ defmodule Components.ClassStatsTable do
       class = extract_class(stat)
       class in Backend.Hearthstone.Deck.classes()
     end)
+  end
+
+  def order_by_class(stats) do
+    Enum.sort_by(stats, &extract_class/1, :asc)
   end
 
   def class_name(stat) do
