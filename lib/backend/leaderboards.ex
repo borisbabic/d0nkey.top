@@ -161,14 +161,10 @@ defmodule Backend.Leaderboards do
         }
         |> save_all()
       end)
-
-      # latest_season = Blizzard.get_current_ladder_season(ldb) || 0
-      # case get_and_save(region, ldb, nil)  do
-      #   ldb = %{season_id: s} when s >= latest_season -> ldb
-      #   _ -> get_and_save(region, ldb, latest_season)
-      # end
     end
     |> Task.await_many(:infinity)
+
+    refresh_latest()
   end
 
   def save_all(s, pages \\ 40) do
@@ -938,27 +934,6 @@ defmodule Backend.Leaderboards do
   defp compose_entries_query(:preload_season, query), do: query
 
   defp compose_entries_query(:latest_in_season, query), do: query
-  # defp compose_entries_query(:latest_in_season, query) do
-  #   subquery =
-  #     base_entries_query()
-  #     |> group_by([entry: e], [e.rank, e.season_id])
-  #     |> select([entry: e], %{
-  #       rank: e.rank,
-  #       season_id: e.season_id,
-  #       max: max(e.inserted_at)
-  #     })
-
-  #   query
-  #   |> join(
-  #     :inner,
-  #     [entry: e],
-  #     sub in subquery(subquery),
-  #     on:
-  #       e.season_id == sub.season_id and
-  #         e.rank == sub.rank and
-  #         e.inserted_at == sub.max
-  #   )
-  # end
 
   defp do_season_criteria(query, season) do
     criteria = season_criteria(season)
@@ -1130,7 +1105,19 @@ defmodule Backend.Leaderboards do
   def trunc_rating(rating), do: (1.0 * rating) |> Float.round(0) |> trunc()
 
   def refresh_latest() do
-    Repo.query!("REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest WITH DATA", [],
+    Repo.query!(
+      "
+    DO $$
+    DECLARE cnt int;
+    declare r record;
+    begin
+      SELECT count(1) INTO cnt FROM pg_stat_activity WHERE query LIKE '%REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest%' and pid != pg_backend_pid();
+      IF cnt < 1 then
+        REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest WITH DATA ;
+      END IF;
+    END $$;
+    ",
+      [],
       timeout: 666_000
     )
   end
