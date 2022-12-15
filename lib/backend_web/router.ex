@@ -208,6 +208,7 @@ defmodule BackendWeb.Router do
     live "/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups
 
     live "/wc/2021", WC2021Live
+    live "/wc/2022", WC2022Live
     live "/seasonal/2022/summer", SummerChamps2022Live
 
     live "/max/nations-2022", MaxNations2022Live
