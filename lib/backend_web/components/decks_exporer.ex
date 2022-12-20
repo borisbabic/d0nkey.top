@@ -30,7 +30,8 @@ defmodule Components.DecksExplorer do
     # {"patch_2022-09-09", "Sep 9th Patch"},
     # {"koft_he", "DK Event"},
     {"lich_king", "March of the Lich King"},
-    {"patch_2022-12-09", "Denathrius Nerf"}
+    {"patch_2022-12-09", "Denathrius Nerf"},
+    {"patch_2022-12-19", "Renathal Nerf"}
     # {"murder", "Murder"}
   ]
 
@@ -273,15 +274,14 @@ defmodule Components.DecksExplorer do
   end
 
   def default_period() do
-    "patch_2022-12-09"
-    # now = NaiveDateTime.utc_now()
-    # use_patch_until = ~N[2022-12-06 23:00:00]
+    now = NaiveDateTime.utc_now()
+    use_patch_until = ~N[2022-12-29 23:00:00]
 
-    # if :lt == NaiveDateTime.compare(now, use_patch_until) do
-    #   "koft_he"
-    # else
-    #   "lich_king"
-    # end
+    if :lt == NaiveDateTime.compare(now, use_patch_until) do
+      "patch_2022-12-19"
+    else
+      "past_week"
+    end
   end
 
   def cap_param(params, param, max),
