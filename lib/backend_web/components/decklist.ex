@@ -41,7 +41,6 @@ defmodule Components.Decklist do
     deck = assigns[:deck]
 
     hero = Backend.HearthstoneJson.get_hero(deck)
-    deckcode = render_deckcode(deck.deckcode, false)
 
     deck_class = deck_class(deck, hero)
     class_class = deck_class |> String.downcase()
@@ -53,8 +52,8 @@ defmodule Components.Decklist do
 
           <div :if={@show_hero} class={"decklist-hero",  class_class} style="margin-bottom: 0px;">
               <div class="level is-mobile">
-                  <div phx-click="deck_copied" phx-value-deckcode={@deck.deckcode} class="level-left">
-                      {deckcode}
+                  <div :if={deckcode = Deck.deckcode(@deck)} phx-click="deck_copied" phx-value-deckcode={deckcode} class="level-left">
+                      {render_deckcode(deckcode, false)}
                   </div>
                   <div class="level-left deck-text">
                     <div class="deck-title">

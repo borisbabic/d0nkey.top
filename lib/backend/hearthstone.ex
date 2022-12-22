@@ -232,12 +232,36 @@ defmodule Backend.Hearthstone do
 
   def add_class_and_regenerate_deckcode() do
     decks([{"class", nil}])
+    |> regenerate_class_and_deckcode()
+  end
+
+  def regenerate_class_and_deckcode(decks) do
+    decks
     |> Enum.reduce(Multi.new(), fn d, multi ->
       deckcode = Deck.deckcode(d)
-      updated = d |> Deck.changeset(%{deckcode: deckcode, class: class(d)})
+
+      class =
+        case Deck.decode(deckcode) do
+          {:ok, deck} -> class(deck)
+          _ -> class(d)
+        end
+
+      updated = d |> Deck.changeset(%{deckcode: deckcode, class: class})
       Multi.update(multi, to_string(d.id) <> deckcode, updated)
     end)
     |> Repo.transaction()
+  end
+
+  def regenerate_false_neutral_deckcodes(limit \\ 1000) do
+    false_neutral_deckcodes()
+    |> limit(^limit)
+    |> Repo.all()
+    |> regenerate_class_and_deckcode()
+  end
+
+  def false_neutral_deckcodes() do
+    from d in Deck,
+      where: like(d.deckcode, "AAECAdrLAg%") or d.class == "NEUTRAL"
   end
 
   @spec recalculate_archetypes(Integer.t() | String.t()) :: {:ok, any()} | {:error, any()}

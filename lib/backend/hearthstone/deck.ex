@@ -136,13 +136,15 @@ defmodule Backend.Hearthstone.Deck do
          [0, 1, format, 1, hero | card_parts] <- parts(chunked),
          uncanonical_cards <- decode_cards_parts(card_parts, 1, []),
          cards <- canonicalize_cards(uncanonical_cards) do
+      {class, hero} = deckcode_class_hero(hero, cards)
+
       {:ok,
        %__MODULE__{
          format: format,
          hero: hero,
          cards: cards,
          deckcode: no_comments,
-         class: deckcode_class(hero, cards)
+         class: class
        }}
     else
       {:error, reason} -> {:error, reason}
@@ -150,10 +152,19 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def deckcode_class(hero, cards) do
-    with nil <- Hearthstone.class(hero) do
-      most_frequent_class(cards)
+  @spec deckcode_class_hero(integer, [integer]) :: {String.t(), String.t()}
+  def deckcode_class_hero(hero, cards) do
+    with {c, _h} when c in [nil, "NEUTRAL"] <- {Hearthstone.class(hero), hero} do
+      class = most_frequent_class(cards) || "NEUTRAL"
+      hero = get_basic_hero(class)
+      {class, hero}
     end
+  end
+
+  @spec deckcode_class(integer, [integer]) :: String.t()
+  def deckcode_class(hero, cards) do
+    {class, _hero} = deckcode_class_hero(hero, cards)
+    class
   end
 
   defp most_frequent_class(cards) do
