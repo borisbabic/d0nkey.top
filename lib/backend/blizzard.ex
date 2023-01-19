@@ -31,7 +31,7 @@ defmodule Backend.Blizzard do
           | :"Masters Tour Six"
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
-  @current_bg_season_id 7
+  @current_bg_season_id 8
 
   defmacro is_old_bg_season(season_id) do
     quote do
