@@ -65,27 +65,7 @@ defmodule BackendWeb.PlayerView do
       ]
       |> Enum.map(fn h -> ~E"<th><%= h %></th>" end)
 
-    mt_rows =
-      tts
-      |> Enum.map(fn ts ->
-        swiss = ts |> TournamentTeamStats.filter_stages(:swiss)
-        stats = ts |> TournamentTeamStats.total_stats()
-        position = stats |> TeamStats.best()
-        tournament_link = Routes.battlefy_path(conn, :tournament, ts.tournament_id)
-        tournament_title = "MT #{ts.tournament_name |> to_string()}"
-        score = "#{swiss.wins} - #{swiss.losses}"
-        tour_stop = TourStop.get(ts.tournament_name)
-
-        player_link =
-          Routes.battlefy_path(conn, :tournament_player, ts.tournament_id, ts.team_name)
-
-        %{
-          competition: simple_link(tournament_link, tournament_title),
-          time: tour_stop.start_time,
-          position: simple_link(player_link, position),
-          score: score
-        }
-      end)
+    mt_rows = mt_rows(tts, conn)
 
     qualifier_rows = qualifier_rows(t, battletags, conn)
 
@@ -117,6 +97,29 @@ defmodule BackendWeb.PlayerView do
       competition_options: get_competition_options(competitions),
       table_rows: table_rows
     })
+  end
+
+  @spec mt_rows([TournamentTeamStats.t()], Plug.Conn.t()) :: [any()]
+  def mt_rows(tts, conn) do
+    tts
+    |> Enum.map(fn ts ->
+      swiss = ts |> TournamentTeamStats.filter_stages(:swiss)
+      stats = ts |> TournamentTeamStats.total_stats()
+      position = stats |> TeamStats.best()
+      tour_stop = TourStop.get(ts.tournament_name)
+      tournament_link = Routes.battlefy_path(conn, :tournament, ts.tournament_id)
+      tournament_title = "MT #{TourStop.display_name(tour_stop) |> to_string()}"
+      score = "#{swiss.wins} - #{swiss.losses}"
+
+      player_link = Routes.battlefy_path(conn, :tournament_player, ts.tournament_id, ts.team_name)
+
+      %{
+        competition: simple_link(tournament_link, tournament_title),
+        time: tour_stop.start_time,
+        position: simple_link(player_link, position),
+        score: score
+      }
+    end)
   end
 
   def qualifier_rows(tournaments, battletags, conn) do
