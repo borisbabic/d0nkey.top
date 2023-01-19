@@ -90,8 +90,11 @@ defmodule Bot.ThlMessageHandler do
          username,
          discriminator
        )
-       when d == discriminator and u == username,
-       do: id
+       when d == discriminator do
+    if String.upcase(u) == String.upcase(username) do
+      id
+    end
+  end
 
   defp extract_matching_id(_, _, _), do: nil
 
