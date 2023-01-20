@@ -15,7 +15,7 @@ defmodule BackendWeb.LeaderboardController do
     ladder_mode = parse_ladder_mode(params)
     show_flags = parse_show_flags(params, leaderboard)
     skip_cn = parse_skip_cn(params, leaderboard)
-    {invited, ladder_invite_num} = leaderboard |> get_season_info()
+    {invited, ladder_invite_num, ladder_points} = leaderboard |> get_season_info()
 
     render(conn, "index.html", %{
       conn: conn,
@@ -29,6 +29,7 @@ defmodule BackendWeb.LeaderboardController do
       page_title: "Ladder Leaderboard",
       skip_cn: skip_cn,
       comparison: comparison,
+      ladder_points: ladder_points,
       show_ratings: show_ratings(params, leaderboard),
       ladder_mode: ladder_mode
     })
@@ -118,22 +119,42 @@ defmodule BackendWeb.LeaderboardController do
   def parse_ladder_mode(%{"ladder_mode" => "no"}), do: "no"
   def parse_ladder_mode(_), do: "yes"
 
-  def get_season_info(nil), do: {[], 0}
+  def get_season_info(nil), do: {[], 0, nil}
+
+  def get_season_info(%{leaderboard_id: "BG", season_id: s})
+      when Backend.LobbyLegends.is_lobby_legends_points(s),
+      do: {
+        [],
+        0,
+        [
+          {{1, 1}, 8},
+          {{2, 5}, 7},
+          {{6, 10}, 6},
+          {{11, 20}, 5},
+          {{21, 30}, 4},
+          {{31, 40}, 3},
+          {{41, 50}, 2},
+          {{51, 100}, 1}
+        ]
+      }
 
   def get_season_info(%{leaderboard_id: "BG", season_id: s})
       when Backend.LobbyLegends.is_lobby_legends(s),
-      do: {[], 16}
+      do: {[], 16, nil}
 
   def get_season_info(%{season_id: season_id}), do: get_season_info(season_id)
 
   def get_season_info(season_id) do
-    case Blizzard.get_ladder_tour_stop(season_id) do
+    with {:ok, ts} <- Blizzard.get_ladder_tour_stop(season_id),
+         %{ladder_points: points} <- MastersTour.TourStop.get(ts) do
+      {[], 0, points}
+    else
       {:ok, tour_stop} ->
         {MastersTour.list_invited_players(tour_stop),
-         MastersTour.TourStop.ladder_invites(tour_stop)}
+         MastersTour.TourStop.ladder_invites(tour_stop), nil}
 
-      {:error, _} ->
-        {[], 0}
+      _ ->
+        {[], 0, nil}
     end
   end
 

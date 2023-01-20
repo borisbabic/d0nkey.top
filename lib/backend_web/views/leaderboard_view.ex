@@ -307,25 +307,20 @@ defmodule BackendWeb.LeaderboardView do
         "index.html",
         params = %{
           conn: conn,
-          invited: invited_raw,
           ladder_invite_num: ladder_invite_num,
           highlight: highlight,
           other_ladders: other_ladders,
           leaderboard: leaderboard,
           show_flags: show_flags,
-          comparison: comparison,
-          show_ratings: show_ratings,
-          skip_cn: skip_cn
+          show_ratings: show_ratings
         }
       ) do
     invited =
-      leaderboard
-      |> process_invited(invited_raw)
-      |> add_other_ladders(other_ladders, ladder_invite_num, skip_cn)
+      params
+      |> process_invited()
+      |> add_other_ladders(params)
 
-    entries =
-      leaderboard
-      |> process_entries(invited, comparison, show_flags == "yes", ladder_invite_num, skip_cn)
+    entries = process_entries(params, invited)
 
     render("leaderboard.html", %{
       entries: entries,
@@ -677,7 +672,8 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   def show_mt_column?(%{leaderboard_id: "BG", season_id: s})
-      when Backend.LobbyLegends.is_lobby_legends(s) do
+      when Backend.LobbyLegends.is_lobby_legends(s) or
+             Backend.LobbyLegends.is_lobby_legends_points(s) do
     "Lobby Legends"
   end
 
@@ -705,16 +701,21 @@ defmodule BackendWeb.LeaderboardView do
 
   def old?(_), do: false
 
-  def add_other_ladders(invited, [current | rest], ladder_invite_num, skip_cn) do
-    process_entries(current, invited, nil, false, ladder_invite_num, skip_cn)
+  def add_other_ladders(invited, params = %{other_ladders: other}),
+    do: add_other_ladders(invited, other, params)
+
+  def add_other_ladders(invited, [current | rest], params) do
+    params
+    |> Map.put(:leaderboard, current)
+    |> process_entries(invited)
     |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
     |> Enum.with_index(1)
     |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, current.region, pos}} end)
     |> Map.new()
-    |> add_other_ladders(rest, ladder_invite_num, skip_cn)
+    |> add_other_ladders(rest, params)
   end
 
-  def add_other_ladders(invited, _, _, _), do: invited
+  def add_other_ladders(invited, _, _), do: invited
 
   def get_crystal(leaderboard_id) do
     case leaderboard_id do
@@ -778,9 +779,10 @@ defmodule BackendWeb.LeaderboardView do
     end)
   end
 
-  def process_invited(nil, invited_raw), do: process_invited(invited_raw, NaiveDateTime.utc_now())
+  def process_invited(%{leaderboard: nil, invited: invited_raw}),
+    do: process_invited(invited_raw, NaiveDateTime.utc_now())
 
-  def process_invited(%{upstream_updated_at: updated_at}, invited_raw),
+  def process_invited(%{leaderboard: %{upstream_updated_at: updated_at}, invited: invited_raw}),
     do: process_invited(invited_raw, updated_at)
 
   def process_invited(invited_raw, updated_at) do
@@ -926,19 +928,22 @@ defmodule BackendWeb.LeaderboardView do
     end
   end
 
-  def process_entries(nil, _, _, _, _, _), do: []
+  def process_entries(%{leaderboard: nil}, _), do: []
 
   def process_entries(
-        snapshot = %{
-          entries: entries,
-          upstream_updated_at: upstream_updated_at,
-          leaderboard_id: ldb
+        %{
+          leaderboard:
+            snapshot = %{
+              entries: entries,
+              upstream_updated_at: upstream_updated_at,
+              leaderboard_id: ldb
+            },
+          comparison: comparison,
+          ladder_invite_num: num_invited,
+          ladder_points: ladder_points,
+          skip_cn: skip_cn
         },
-        invited,
-        comparison,
-        show_flags,
-        num_invited,
-        skip_cn
+        invited
       ) do
     rating_display = rating_display_func(ldb)
 
@@ -950,7 +955,16 @@ defmodule BackendWeb.LeaderboardView do
 
       ineligible = Blizzard.ineligible?(account_id, upstream_updated_at)
       skip_for_invite = qualified || ineligible || banned || wrong_region
-      qualifying = {!skip_for_invite && acc <= num_invited, acc}
+
+      qualifying =
+        with [_ | _] <- ladder_points,
+             {_, points} <-
+               Enum.find(ladder_points, fn {{min, max}, _} -> le.rank >= min && le.rank <= max end) do
+          {:points, points}
+        else
+          _ ->
+            {!skip_for_invite && acc <= num_invited, acc}
+        end
 
       {prev_rank, prev_rating} = prev(comparison, account_id)
 
