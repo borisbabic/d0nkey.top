@@ -201,7 +201,7 @@ defmodule Backend.Blizzard do
     :US
   """
   @spec get_ladder_priority!(tour_stop | TourStop.t()) :: [region]
-  def get_ladder_priority!(ts) when is_atom(ts) or is_binary(ts),
+  def get_ladder_priority!(ts) when ts != nil and (is_atom(ts) or is_binary(ts)),
     do: ts |> TourStop.get() |> get_ladder_priority!()
 
   def get_ladder_priority!(%{ladder_priority: :regional, region: region}) do
@@ -215,6 +215,7 @@ defmodule Backend.Blizzard do
 
   @timezone_order [:AP, :EU, :US]
   def get_ladder_priority!(%{ladder_priority: :timezone}), do: @timezone_order
+  def get_ladder_priority!(%{ladder_priority: nil}), do: []
   def get_ladder_priority!(_), do: throw("Unsupported tour stop")
 
   # credo:disable-next-line
