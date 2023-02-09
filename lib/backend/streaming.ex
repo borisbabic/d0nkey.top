@@ -128,6 +128,13 @@ defmodule Backend.Streaming do
   end
 
   def get_or_create_streamer_deck(deck, streamer, sn) do
+    case get_streamer_deck(deck, streamer) do
+      nil -> create_streamer_deck(deck, streamer, sn)
+      sd -> update_streamer_deck(sd, sn)
+    end
+  end
+
+  def get_streamer_deck(deck, streamer) do
     query =
       from sd in StreamerDeck,
         join: s in assoc(sd, :streamer),
@@ -138,10 +145,6 @@ defmodule Backend.Streaming do
 
     query
     |> Repo.one()
-    |> case do
-      nil -> create_streamer_deck(deck, streamer, sn)
-      sd -> update_streamer_deck(sd, sn)
-    end
   end
 
   def create_streamer_deck(deck, streamer, dto = %StreamerDeckInfoDto{}) do
