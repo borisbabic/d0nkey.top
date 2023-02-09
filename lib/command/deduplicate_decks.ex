@@ -151,6 +151,7 @@ defmodule Command.DeduplicateDecks do
     decks
     |> Enum.group_by(&Enum.sort(&1.cards))
     |> Enum.map(&elem(&1, 1))
+    |> Enum.filter(&(Enum.count(&1) > 1))
   end
 
   def generate_test_data() do
