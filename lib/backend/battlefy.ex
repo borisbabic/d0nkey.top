@@ -40,7 +40,8 @@ defmodule Backend.Battlefy do
     "juega-duro-hearthstone",
     "dreamhack-community-clash",
     "black-claws",
-    "osc-esports"
+    "osc-esports",
+    "classic-hearthstone"
   ]
   @organization_stats_configs for num <- [6, 5, 4, 3, 2],
                                   do: %{
@@ -106,6 +107,27 @@ defmodule Backend.Battlefy do
                                       title: "Zephrys the Great Tournament",
                                       stats_slug: "osc-zephrys-the-great-tournament",
                                       pattern: ~r/Zephrys the Great Tournament/i
+                                    },
+                                    %{
+                                      from: ~D[2022-06-01],
+                                      organization_slug: "classic-hearthstone",
+                                      title: "Classic Hearthstone",
+                                      stats_slug: "classic-hearthstone",
+                                      pattern: ~r/Classic Hearthstone /i
+                                    },
+                                    %{
+                                      from: ~D[2022-06-01],
+                                      organization_slug: "classic-hearthstone",
+                                      title: "Classic Hearthstone EU",
+                                      stats_slug: "classic-hearthstone-eu",
+                                      pattern: ~r/Classic Hearthstone EU/i
+                                    },
+                                    %{
+                                      from: ~D[2022-06-01],
+                                      organization_slug: "classic-hearthstone",
+                                      title: "Classic Hearthstone NA",
+                                      stats_slug: "classic-hearthstone-na",
+                                      pattern: ~r/Classic Hearthstone NA/i
                                     }
                                   ]
 
