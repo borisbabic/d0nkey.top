@@ -96,10 +96,8 @@ defmodule Backend.Streaming.StreamerDeck do
   defp set_streamer(c, _), do: c
 
   def winrate(%{wins: wins, losses: losses}) when wins + losses > 0 do
-    (wins) / (wins + losses)
+    wins / (wins + losses)
   end
 
   def winrate(_), do: nil
-
-
 end
