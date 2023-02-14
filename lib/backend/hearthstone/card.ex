@@ -195,6 +195,10 @@ defmodule Backend.Hearthstone.Card do
   @spec has_spell_school?(%__MODULE__{}, String.t()) :: boolean()
   def has_spell_school?(%{spell_school: ss}, slug), do: SpellSchool.matches?(ss, slug)
   def has_spell_school?(_, _), do: false
+
+  @spec spell_schools(%__MODULE__{}) :: [String.t()]
+  def spell_schools(%{spell_school: %{slug: slug}}), do: [slug]
+  def spell_schools(_), do: []
 end
 
 defmodule Backend.Hearthstone.RuneCost do

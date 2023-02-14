@@ -169,11 +169,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
-  defp arcane_hunter?(card_info),
-    do:
-      min_count?(card_info, 2, ["Halduron Brightwing", "Silvermoon Farstrider", "Arcane Quiver"]) &&
-        min_spell_school_count?(card_info, 4, "arcane")
-
   def archetype(%{format: 2, cards: c, class: "MAGE"}) do
     card_info = full_cards(c)
 
@@ -201,6 +196,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       casino_mage?(card_info) ->
         :"Casino Mage"
+
+      frost_mage?(card_info) ->
+        :"Frost Mage"
 
       naga_mage?(card_info) ->
         :"Naga Mage"
@@ -580,6 +578,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Pride's Fury"
       ])
 
+  defp arcane_hunter?(card_info),
+    do:
+      min_count?(card_info, 2, ["Halduron Brightwing", "Silvermoon Farstrider", "Arcane Quiver"]) &&
+        min_spell_school_count?(card_info, 4, "arcane")
+
   defp rat_hunter?(ci),
     do:
       min_count?(ci, 4, [
@@ -676,6 +679,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     do: "Loan Shark" in ci.card_names && miracle_wincon?(ci)
 
   defp deathrattle_rogue?(%{card_names: card_names}), do: "Snowfall Graveyard" in card_names
+
+  defp frost_mage?(ci) do
+    case spell_school_map(ci) |> Map.to_list() do
+      # only frost
+      [{"frost", _}] -> true
+      _ -> false
+    end
+  end
 
   defp skeleton_mage?(ci),
     do:
@@ -937,10 +948,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp min_spell_school_count?(%{full_cards: full_cards}, min, spell_school) do
     num =
       full_cards
-      |> Enum.filter(&Card.has_spell_school?(&1, spell_school))
-      |> Enum.count()
+      |> spell_school_map()
+      |> Map.get(spell_school, 0)
 
     num >= min
+  end
+
+  defp spell_school_map(%{full_cards: full_cards}) do
+    full_cards
+    |> Enum.flat_map(&Card.spell_schools/1)
+    |> Enum.frequencies()
   end
 
   defp boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names
