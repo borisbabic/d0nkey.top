@@ -945,9 +945,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     num >= min
   end
 
-  defp min_spell_school_count?(%{full_cards: full_cards}, min, spell_school) do
+  defp min_spell_school_count?(ci, min, spell_school) do
     num =
-      full_cards
+      ci
       |> spell_school_map()
       |> Map.get(spell_school, 0)
 
