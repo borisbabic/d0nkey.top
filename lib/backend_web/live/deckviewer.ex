@@ -59,6 +59,7 @@ defmodule BackendWeb.DeckviewerLive do
                   </div>
                   <div :if={cd || @deckcodes |> Enum.count() > 1} class="column is-narrow">
                     <button phx-click="toggle_compare" class="button" type="button">{compare_button_text(@compare_decks)}</button>
+                    <button phx-click="class_sort_decks" class="button" type="button">Class Sort</button>
                   </div>
 
                   {!-- DISABLED --}
@@ -212,6 +213,23 @@ defmodule BackendWeb.DeckviewerLive do
       socket
       |> push_patch(
         to: Routes.live_path(socket, __MODULE__, current_params(socket) |> add_compare_param(!cd))
+      )
+    }
+  end
+
+  def handle_event("class_sort_decks", _, socket = %{assigns: %{deckcodes: dc}}) do
+    new_codes = dc |> Enum.sort_by(&(&1 |> Deck.decode!() |> Deck.class()))
+
+    {
+      :noreply,
+      socket
+      |> push_patch(
+        to:
+          Routes.live_path(
+            socket,
+            __MODULE__,
+            current_params(socket) |> add_code_param(new_codes)
+          )
       )
     }
   end
