@@ -138,6 +138,15 @@
           </a>
          <% end %>
 
+         <%= if Util.in_range?(NaiveDateTime.utc_now(), {~N[2023-02-18 16:30:00], ~N[2023-02-21 08:00:00]}) do %>
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "63ed758e3ff61558589ddc12")}>
+          THL Trio Tunament
+          <%= if Twitch.HearthstoneLive.twitch_display_live?("teamhearthleague") do %>
+            <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
+          <% end %>
+          </a>
+         <% end %>
+
          <%= if Util.in_range?(NaiveDateTime.utc_now(), {~N[2022-05-13 11:01:00], ~N[2022-05-16 08:00:00]}) do %>
           <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6271bd62d44c844993e4e1a7")}>
           Torneo Comunidad Hispana
