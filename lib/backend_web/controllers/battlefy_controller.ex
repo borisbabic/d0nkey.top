@@ -183,9 +183,10 @@ defmodule BackendWeb.BattlefyController do
         conn,
         params = %{
           "tournament_id" => tournament_id,
-          "team_name" => team_name
+          "team_name" => team_name_raw
         }
       ) do
+    team_name = URI.decode_www_form(team_name_raw)
     {opponent_matches, player_matches} = future_and_player(params)
 
     stage_id = params["stage_id"]
