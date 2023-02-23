@@ -67,6 +67,14 @@ defmodule BackendWeb.ProfileSettingsLive do
               <Checkbox value={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} />
               <Label>Show 1 for singleton legendaries</Label>
             </Field>
+            <Field name="show_dust_above">
+              <Checkbox value={DecklistOptions.show_dust_above(@user.decklist_options)} />
+              <Label>Show dust above cards</Label>
+            </Field>
+            <Field name="show_dust_below">
+              <Checkbox value={DecklistOptions.show_dust_below(@user.decklist_options)} />
+              <Label>Show dust below cards</Label>
+            </Field>
             <br>
             <Field name="replay_preference">
               <Select selected={@user.replay_preference} class="select" options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
@@ -147,6 +155,16 @@ defmodule BackendWeb.ProfileSettingsLive do
       |> parse_decklist_color_option(attrs, "gradient")
       |> parse_decklist_color_option(attrs, "border")
       |> parse_decklist_option(attrs, "show_one", DecklistOptions.show_one_default())
+      |> parse_decklist_option(
+        attrs,
+        "show_dust_above",
+        DecklistOptions.default_show_dust_above()
+      )
+      |> parse_decklist_option(
+        attrs,
+        "show_dust_below",
+        DecklistOptions.default_show_dust_below()
+      )
       |> parse_decklist_option(
         attrs,
         "show_one_for_legendaries",

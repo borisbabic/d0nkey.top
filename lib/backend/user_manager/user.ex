@@ -122,18 +122,29 @@ defmodule Backend.UserManager.User.DecklistOptions do
 
   @default_show_one false
   @default_show_one_for_legendaries false
+  @default_show_dust_above false
+  @default_show_dust_below true
   @primary_key false
   embedded_schema do
     field :border, :string
     field :show_one, :boolean, default: @default_show_one
     field :show_one_for_legendaries, :boolean, default: @default_show_one_for_legendaries
     field :gradient, :string
+    field :show_dust_above, :boolean, default: @default_show_dust_above
+    field :show_dust_below, :boolean, default: @default_show_dust_below
   end
 
   @doc false
   def changeset(entry, attrs) do
     entry
-    |> cast(attrs, [:border, :gradient, :show_one, :show_one_for_legendaries])
+    |> cast(attrs, [
+      :border,
+      :gradient,
+      :show_one,
+      :show_one_for_legendaries,
+      :show_dust_above,
+      :show_dust_below
+    ])
     |> validate_colors([:border, :gradient])
   end
 
@@ -142,6 +153,14 @@ defmodule Backend.UserManager.User.DecklistOptions do
 
   def show_one_for_legendaries(%{show_one_for_legendaries: show_one}), do: show_one
   def show_one_for_legendaries(_), do: @default_show_one_for_legendaries
+
+  def default_show_dust_above(), do: @default_show_dust_above
+  def show_dust_above(%{show_dust_above: show}), do: show
+  def show_dust_above(_), do: @default_show_dust_above
+
+  def default_show_dust_below(), do: @default_show_dust_below
+  def show_dust_below(%{show_dust_below: show}), do: show
+  def show_dust_below(_), do: @default_show_dust_below
 
   def border(%{border: b}), do: b
   def border(_), do: "dark_grey"
