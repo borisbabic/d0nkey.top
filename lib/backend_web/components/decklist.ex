@@ -2,8 +2,11 @@ defmodule Components.Decklist do
   @moduledoc false
   use Surface.Component
   alias Components.CardsList
+  alias Components.DustBar
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson.Card
+  alias Backend.UserManager.User
+  alias Backend.UserManager.User.DecklistOptions
   use BackendWeb.ViewHelpers
 
   prop(deck, :map, required: true)
@@ -50,7 +53,7 @@ defmodule Components.Decklist do
     ~F"""
       <div>
 
-          <div :if={@show_hero} class={"decklist-hero",  class_class} style="margin-bottom: 0px;">
+          <div :if={@show_hero} class={"decklist-info",  class_class} style="margin-bottom: 0px;">
               <div class="level is-mobile">
                   <div :if={deckcode = Deck.deckcode(@deck)} phx-click="deck_copied" phx-value-deckcode={deckcode} class="level-left">
                       {render_deckcode(deckcode, false)}
@@ -68,7 +71,11 @@ defmodule Components.Decklist do
               </div>
           </div>
           <div :if={@show_cards}>
-            <CardsList comparison={@comparison} cards={deck.cards} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
+            <Context get={user: user}>
+              <DustBar :if={show_above(user)} deck={@deck} class={class_class}/>
+              <CardsList comparison={@comparison} cards={@deck.cards} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
+              <DustBar :if={show_below(user)} deck={@deck} class={class_class} />
+            </Context>
           </div>
           <span style="font-size: 0; line-size:0; display:block">
             # You really like to select a lot of stuff, don't ya you beautiful being! 🤎 D0nkey
@@ -76,6 +83,9 @@ defmodule Components.Decklist do
       </div>
     """
   end
+
+  def show_above(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_above()
+  def show_below(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_below()
 
   defp add_xl(name, %{cards: cards}) when is_list(cards) do
     if Enum.count(cards) == 40 do
