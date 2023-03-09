@@ -152,7 +152,7 @@ defmodule Backend.Leaderboards do
     |> Enum.at(0)
   end
 
-  def save_current() do
+  def save_current(num \\ nil) do
     for region <- Blizzard.qualifier_regions(),
         ldb <- Blizzard.leaderboards() do
       Task.async(fn ->
@@ -160,7 +160,7 @@ defmodule Backend.Leaderboards do
           region: to_string(region),
           leaderboard_id: to_string(ldb)
         }
-        |> save_all()
+        |> save_all(num)
       end)
     end
     |> Task.await_many(:infinity)
@@ -168,16 +168,17 @@ defmodule Backend.Leaderboards do
     refresh_latest()
   end
 
-  def save_all(s, pages \\ 40) do
-    with {:ok, rows, season} <- fetch_pages(s, pages) do
+  def save_all(s, num \\ nil) do
+    with {:ok, rows, season} <- fetch_pages(s, num) do
       handle_rows(rows, season)
     end
   end
 
-  def fetch_pages(season, num_pages) do
+  @page_size 25
+  def fetch_pages(season, num_entries \\ nil) do
     case Api.get_page(season) do
       {:ok, response = %{leaderboard: %{pagination: %{total_pages: total_pages}}}} ->
-        pages = min(total_pages, num_pages)
+        pages = ceil(min(total_pages * @page_size, num_entries) / @page_size)
 
         extra_pages = fetch_extra_pages(response.season, pages)
 
@@ -1048,7 +1049,7 @@ defmodule Backend.Leaderboards do
         cs = %Entry{} |> Entry.changeset(attrs)
         Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}_#{row.rating}", cs)
       end)
-      |> Repo.transaction()
+      |> Repo.transaction(timeout: 360_000)
     end
   end
 

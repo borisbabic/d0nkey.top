@@ -493,7 +493,6 @@ defmodule BackendWeb.LeaderboardView do
             season_id: season_id
           },
           show_flags: show_flags,
-          ladder_mode: ladder_mode,
           compare_to: compare_to
         }
       ) do
@@ -501,32 +500,10 @@ defmodule BackendWeb.LeaderboardView do
       create_region_dropdown(conn, region),
       create_leaderboard_dropdown(conn, leaderboard_id),
       create_season_dropdown(conn, season_id, leaderboard_id),
-      create_ladder_mode_dropdown(conn, ladder_mode, leaderboard_id),
       create_show_flags_dropdown(conn, show_flags),
-      create_skip_cn_dropdown(params),
       create_compare_to_dropdown(conn, compare_to)
     ]
     |> Enum.filter(& &1)
-  end
-
-  def create_skip_cn_dropdown(%{skip_cn: skip_cn, conn: conn, leaderboard: leaderboard}) do
-    case skip_cn_opts(leaderboard) do
-      opts = [_ | _] ->
-        options =
-          Enum.map(opts, fn {val, name} ->
-            %{
-              display: name,
-              selected: val == skip_cn,
-              link:
-                Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "skip_cn", val))
-            }
-          end)
-
-        {options, "Skip CN"}
-
-      _ ->
-        nil
-    end
   end
 
   def new(text) do
@@ -536,14 +513,6 @@ defmodule BackendWeb.LeaderboardView do
       </span>
     """
   end
-
-  defp skip_cn_opts(%{leaderboard_id: "STD", season_id: s}) when s > 98,
-    do: [{"all", "All"}, {"none", "None"}]
-
-  defp skip_cn_opts(%{leaderboard_id: "BG", season_id: s}) when s > 4,
-    do: [{"all", "All"}, {"none", "None"}]
-
-  defp skip_cn_opts(_), do: nil
 
   def create_region_dropdown(conn = %Plug.Conn{}, region) do
     create_region_dropdown(
@@ -612,23 +581,6 @@ defmodule BackendWeb.LeaderboardView do
 
     {options, dropdown_title(options, "Season")}
   end
-
-  def create_ladder_mode_dropdown(conn, ladder_mode, ldb) when ldb in ["BG", "STD"] do
-    options =
-      ["yes", "no"]
-      |> Enum.map(fn mode ->
-        %{
-          display: Recase.to_title(mode),
-          selected: mode == ladder_mode,
-          link:
-            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "ladder_mode", mode))
-        }
-      end)
-
-    {options, "Ladder Mode"}
-  end
-
-  def create_ladder_mode_dropdown(_, _, _), do: nil
 
   def create_show_flags_dropdown(conn, show_flags) do
     options =
