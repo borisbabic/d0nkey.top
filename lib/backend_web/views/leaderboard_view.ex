@@ -322,17 +322,33 @@ defmodule BackendWeb.LeaderboardView do
 
     entries = process_entries(params, invited)
 
+    update_link = fn new_params ->
+      Routes.leaderboard_path(conn, :index, conn.query_params |> Map.merge(new_params))
+    end
+
+    %{
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
+      )
+
     render("leaderboard.html", %{
       entries: entries,
       crystal: get_crystal("STD"),
       show_mt_column: show_mt_column?(leaderboard),
       leaderboard_id: leaderboard.leaderboard_id,
       updated_at: leaderboard.upstream_updated_at,
-      dropdowns: create_dropdowns(params),
+      dropdowns: [limit_dropdown | create_dropdowns(params)],
       old: old?(leaderboard),
       season_id: leaderboard && leaderboard.season_id,
       show_ratings: show_ratings,
       conn: conn,
+      prev_button: prev_button,
+      next_button: next_button,
       other_warning: other_warning(leaderboard),
       ladder_invite_num: ladder_invite_num,
       official_link: Snapshot.official_link(leaderboard),
@@ -478,6 +494,15 @@ defmodule BackendWeb.LeaderboardView do
     })
   end
 
+  def update_index_link(conn, param, value, to_delete \\ []) do
+    new_params =
+      conn.query_params
+      |> Map.drop(to_delete)
+      |> Map.put(param, value)
+
+    Routes.leaderboard_path(conn, :index, new_params)
+  end
+
   def create_dropdowns(params = %{leaderboard: nil}) do
     params
     |> Map.put(:leaderboard, %{leaderboard_id: nil, region: nil, season_id: nil})
@@ -517,7 +542,7 @@ defmodule BackendWeb.LeaderboardView do
   def create_region_dropdown(conn = %Plug.Conn{}, region) do
     create_region_dropdown(
       region,
-      &Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "region", &1))
+      &update_index_link(conn, "region", &1, ["offset", "limit"])
     )
   end
 
@@ -538,12 +563,7 @@ defmodule BackendWeb.LeaderboardView do
   def create_leaderboard_dropdown(conn = %Plug.Conn{}, leaderboard_id) do
     create_leaderboard_dropdown(
       leaderboard_id,
-      &Routes.leaderboard_path(
-        conn,
-        :index,
-        Map.put(conn.query_params, "leaderboardId", &1)
-        |> delete_incompatible_season_id(&1, leaderboard_id)
-      )
+      &update_index_link(conn, "leaderboard_id", &1, ["offset", "limit", "season_id"])
     )
   end
 
@@ -561,13 +581,6 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Leaderboard")}
   end
 
-  # compatible season_ids
-  defp delete_incompatible_season_id(params, new, old)
-       when new in ["STD", "CLS", "WLD"] and old in ["STD", "CLS", "WLD"],
-       do: params
-
-  defp delete_incompatible_season_id(params, _, _), do: Map.delete(params, "seasonId")
-
   def create_season_dropdown(conn, season, ldb) do
     options =
       create_selectable_seasons(Date.utc_today(), ldb)
@@ -575,7 +588,7 @@ defmodule BackendWeb.LeaderboardView do
         %{
           display: name,
           selected: to_string(s) == to_string(season),
-          link: Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "seasonId", s))
+          link: update_index_link(conn, "season_id", s, ["offset", "limit"])
         }
       end)
 
@@ -589,8 +602,7 @@ defmodule BackendWeb.LeaderboardView do
         %{
           display: title,
           selected: mode == show_flags,
-          link:
-            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "show_flags", mode))
+          link: update_index_link(conn, "show_flags", "mode")
         }
       end)
 
@@ -619,8 +631,7 @@ defmodule BackendWeb.LeaderboardView do
         %{
           display: display,
           selected: id && id == compare_to,
-          link:
-            Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "compare_to", id))
+          link: update_index_link(conn, "compare_to", id)
         }
       end)
 

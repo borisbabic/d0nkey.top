@@ -32,7 +32,7 @@ defmodule BackendWeb.ViewUtil do
 
   def prev_button(_, prev_offset, offset) when prev_offset == offset do
     ~E"""
-    <span class="icon button is-link">
+    <span class="button is-link">
         <i class="fas fa-caret-left"></i>
     </span>
     """
@@ -42,7 +42,7 @@ defmodule BackendWeb.ViewUtil do
     link = update_link.(%{"offset" => prev_offset})
 
     ~E"""
-    <a class="icon button is-link" href="<%= link %>">
+    <a class="button is-link" href="<%= link %>">
       <i class="fas fa-caret-left"></i>
     </a>
     """
@@ -52,7 +52,7 @@ defmodule BackendWeb.ViewUtil do
     link = update_link.(%{"offset" => next_offset})
 
     ~E"""
-    <a class="icon button is-link" href="<%= link %>">
+    <a class="button is-link" href="<%= link %>">
       <i class="fas fa-caret-right"></i>
     </a>
     """

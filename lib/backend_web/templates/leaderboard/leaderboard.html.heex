@@ -9,7 +9,19 @@
     <% end %>
 </div>
 <div id="nitropay-below-title-leaderboard"></div><br>
-<%= render_dropdowns @dropdowns %>
+<div class="level level-left">
+    <%= @prev_button %>
+    <%= @next_button %>
+    <%= render_dropdowns @dropdowns %>
+    <%= form_for @conn, Routes.leaderboard_path(@conn, :index, @conn.query_params), [method: :get], fn f -> %>
+        <%= search_input f, :search, class: "input" %>
+        <%= for k <- ["leaderboardId", "region", "seasonId", "compare_to", "show_flags"], v = Map.get(@conn.query_params, k), v != nil do %>
+            <%= hidden_input f, k, value: v %>
+        <% end %>
+    <% end %>
+</div>
+
+
 <%= if @old do %>
     <div class="notification is-warning">
         WARNING: THE DATA FOR THIS LEADERBOARD IS OLD
