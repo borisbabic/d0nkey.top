@@ -158,15 +158,15 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
 
   typedstruct do
     field :name, String.t()
-    field :rating_id, integer()
+    field :rating_id, integer() | nil
     field :seasons, [integer()]
   end
 
   @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
-  def from_raw_map(%{"name" => name, "ratingId" => rating_id, "seasons" => seasons}) do
+  def from_raw_map(m = %{"name" => name, "seasons" => seasons}) do
     %__MODULE__{
       name: name,
-      rating_id: rating_id,
+      rating_id: Map.get(m, "ratingId"),
       seasons: seasons
     }
   end
