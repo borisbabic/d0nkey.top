@@ -4,6 +4,7 @@ defmodule BackendWeb.StreamingView do
   alias Backend.Streaming.Streamer
   alias Backend.Streaming.StreamerDeck
   alias Hearthstone.Enums.Format
+  alias BackendWeb.ViewUtil
 
   def twitch_link(streamer) do
     twitch_link(Streamer.twitch_login(streamer), Streamer.twitch_display(streamer))
@@ -25,34 +26,6 @@ defmodule BackendWeb.StreamingView do
 
   def get_surrounding(offset, limit),
     do: get_surrounding(Util.to_int_or_orig(offset), Util.to_int_or_orig(limit))
-
-  def prev_button(_, prev_offset, offset) when prev_offset == offset do
-    ~E"""
-    <span class="icon button is-link">
-        <i class="fas fa-caret-left"></i>
-    </span>
-    """
-  end
-
-  def prev_button(conn, prev_offset, _) do
-    link = update_link(conn, "offset", prev_offset, false)
-
-    ~E"""
-    <a class="icon button is-link" href="<%= link %>">
-      <i class="fas fa-caret-left"></i>
-    </a>
-    """
-  end
-
-  def next_button(conn, next_offset) do
-    link = update_link(conn, "offset", next_offset, false)
-
-    ~E"""
-    <a class="icon button is-link" href="<%= link %>">
-      <i class="fas fa-caret-right"></i>
-    </a>
-    """
-  end
 
   def create_streamer_list(conn, streamers) do
     ~E"""
@@ -136,8 +109,22 @@ defmodule BackendWeb.StreamingView do
       end)
       |> filter_archetypes(archetypes)
 
+    update_link = fn new_params ->
+      Routes.streaming_path(conn, :streamer_decks, conn.query_params |> Map.merge(new_params))
+    end
+
+    %{
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 20,
+        limit_options: [5, 10, 20, 30, 40, 50]
+      )
+
     dropdowns = [
-      create_limit_dropdown(conn, limit),
+      limit_dropdown,
       create_legend_dropdown(conn, "legend", "Peak"),
       # create_legend_dropdown(conn, "latest_legend_rank", "Latest"),
       # create_legend_dropdown(conn, "worst_legend_rank", "Worst"),
@@ -158,12 +145,12 @@ defmodule BackendWeb.StreamingView do
       title: title,
       dropdowns: dropdowns,
       streamer_list: create_streamer_list(conn, streamers),
-      prev_button: prev_button(conn, prev_offset, offset),
+      prev_button: prev_button,
       show_archetype: true,
       conn: conn,
       include_options: include_options,
       exclude_options: exclude_options,
-      next_button: next_button(conn, next_offset)
+      next_button: next_button
     })
   end
 
@@ -256,28 +243,6 @@ defmodule BackendWeb.StreamingView do
       end)
 
     {options, "Show Archetypes"}
-  end
-
-  def create_limit_dropdown(conn, limit) do
-    options =
-      [
-        5,
-        10,
-        20,
-        30,
-        40,
-        50
-      ]
-      |> Enum.map(fn l ->
-        %{
-          link:
-            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "limit", l)),
-          selected: to_string(limit) == to_string(l),
-          display: "Show #{l}"
-        }
-      end)
-
-    {options, dropdown_title(options, "Page Size")}
   end
 
   def create_last_played_dropdown(conn) do
