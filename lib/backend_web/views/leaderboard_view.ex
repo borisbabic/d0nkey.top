@@ -569,9 +569,21 @@ defmodule BackendWeb.LeaderboardView do
   def create_leaderboard_dropdown(conn = %Plug.Conn{}, leaderboard_id) do
     create_leaderboard_dropdown(
       leaderboard_id,
-      &Routes.leaderboard_path(conn, :index, Map.put(conn.query_params, "leaderboardId", &1))
+      &Routes.leaderboard_path(
+        conn,
+        :index,
+        Map.put(conn.query_params, "leaderboardId", &1)
+        |> delete_incompatible_season_id(&1, leaderboard_id)
+      )
     )
   end
+
+  # compatible season_ids
+  defp delete_incompatible_season_id(params, new, old)
+       when new in ["STD", "CLS", "WLD"] and old in ["STD", "CLS", "WLD"],
+       do: params
+
+  defp delete_incompatible_season_id(params, _, _), do: Map.delete(params, "seasonId")
 
   def create_leaderboard_dropdown(leaderboard_id, update_link) do
     options =
