@@ -563,7 +563,7 @@ defmodule BackendWeb.LeaderboardView do
   def create_leaderboard_dropdown(conn = %Plug.Conn{}, leaderboard_id) do
     create_leaderboard_dropdown(
       leaderboard_id,
-      &update_index_link(conn, "leaderboard_id", &1, ["offset", "limit", "season_id"])
+      &update_index_link(conn, "leaderboardId", &1, ["offset", "limit", "seasonId"])
     )
   end
 
@@ -588,7 +588,7 @@ defmodule BackendWeb.LeaderboardView do
         %{
           display: name,
           selected: to_string(s) == to_string(season),
-          link: update_index_link(conn, "season_id", s, ["offset", "limit"])
+          link: update_index_link(conn, "seasonId", s, ["offset", "limit"])
         }
       end)
 
