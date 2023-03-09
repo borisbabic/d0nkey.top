@@ -578,13 +578,6 @@ defmodule BackendWeb.LeaderboardView do
     )
   end
 
-  # compatible season_ids
-  defp delete_incompatible_season_id(params, new, old)
-       when new in ["STD", "CLS", "WLD"] and old in ["STD", "CLS", "WLD"],
-       do: params
-
-  defp delete_incompatible_season_id(params, _, _), do: Map.delete(params, "seasonId")
-
   def create_leaderboard_dropdown(leaderboard_id, update_link) do
     options =
       Backend.Blizzard.leaderboards_with_name()
@@ -598,6 +591,13 @@ defmodule BackendWeb.LeaderboardView do
 
     {options, dropdown_title(options, "Leaderboard")}
   end
+
+  # compatible season_ids
+  defp delete_incompatible_season_id(params, new, old)
+       when new in ["STD", "CLS", "WLD"] and old in ["STD", "CLS", "WLD"],
+       do: params
+
+  defp delete_incompatible_season_id(params, _, _), do: Map.delete(params, "seasonId")
 
   def create_season_dropdown(conn, season, ldb) do
     options =
@@ -762,22 +762,12 @@ defmodule BackendWeb.LeaderboardView do
   """
   @spec create_selectable_seasons(Calendar.date(), String.t() | atom()) :: [selectable_season]
   def create_selectable_seasons(_today, ldb) when ldb in [:BG, "BG"] do
-    regular =
-      Blizzard.get_current_ladder_season(:BG)..0
-      |> Enum.take(7)
-      |> Enum.map(fn s ->
-        name = Blizzard.get_season_name(s, :BG)
-        {name, s}
-      end)
-
-    lobby_legends =
-      LobbyLegendsSeason.all()
-      |> Enum.reverse()
-      |> Enum.map(fn ll ->
-        {LobbyLegendsSeason.display_name(ll), ll.slug}
-      end)
-
-    lobby_legends ++ regular
+    Blizzard.get_current_ladder_season(:BG)..0
+    |> Enum.take(7)
+    |> Enum.map(fn s ->
+      name = Blizzard.get_season_name(s, :BG)
+      {name, s}
+    end)
   end
 
   def create_selectable_seasons(today, ldb) do
