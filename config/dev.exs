@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :backend,
   auto_migrate: false,
