@@ -884,6 +884,13 @@ defmodule Backend.Leaderboards do
     |> where([entry: e], e.inserted_at < ^date)
   end
 
+  defp compose_entries_query({"search", search}, query) do
+    s = "%#{search}%"
+
+    query
+    |> where([entry: e], ilike(e.account_id, ^s))
+  end
+
   defp compose_entries_query({"until", {string_num, unit}}, query) when is_binary(string_num) do
     string_num
     |> Integer.parse()
@@ -996,6 +1003,7 @@ defmodule Backend.Leaderboards do
 
   defp filter_not_latest_in_season(criteria) do
     Enum.filter(criteria, fn
+      {"search", _} -> false
       {"players", _} -> false
       {"battletag_full", _} -> false
       {"offset", _} -> false

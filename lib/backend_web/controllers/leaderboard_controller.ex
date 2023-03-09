@@ -27,6 +27,7 @@ defmodule BackendWeb.LeaderboardController do
       compare_to: params["compare_to"],
       show_flags: show_flags,
       page_title: "Ladder Leaderboard",
+      search: params["search"],
       skip_cn: skip_cn,
       comparison: comparison,
       ladder_points: ladder_points,
@@ -40,6 +41,7 @@ defmodule BackendWeb.LeaderboardController do
     |> parse_up_to(params)
     |> parse_season(params)
     |> parse_offset(params)
+    |> parse_search(params)
   end
 
   defp get_shim(criteria, params) do
@@ -60,6 +62,9 @@ defmodule BackendWeb.LeaderboardController do
       | criteria
     ]
   end
+
+  defp parse_search(criteria, %{"search" => search}), do: [{"search", search} | criteria]
+  defp parse_search(criteria, _), do: criteria
 
   defp parse_up_to(criteria, %{"up_to" => raw}) do
     case Timex.parse(raw, "{RFC3339z}") do
