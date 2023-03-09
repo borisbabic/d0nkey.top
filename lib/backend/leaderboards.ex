@@ -17,6 +17,7 @@ defmodule Backend.Leaderboards do
   alias Backend.Leaderboards.SeasonBag
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
   alias Hearthstone.Leaderboards.Api
+  alias Hearthstone.Leaderboards.Response
 
   @type history_entry :: %{
           rank: integer(),
@@ -182,12 +183,7 @@ defmodule Backend.Leaderboards do
 
         all =
           [response | extra_pages]
-          |> Enum.flat_map(fn r ->
-            case r do
-              %{leaderboard: %{rows: rows}} -> rows
-              _ -> []
-            end
-          end)
+          |> Enum.flat_map(&Response.rows/1)
 
         {:ok, all, response.season}
 
@@ -229,7 +225,12 @@ defmodule Backend.Leaderboards do
   defp continue?(%{leaderboard: %{rows: [_ | _], pagination: p}}), do: p != nil
   defp continue?(_), do: false
 
-  def handle_rows(rows = [_ | _], season) do
+  def handle_rows(rows, season) do
+    {target, rest} = Enum.split(rows, 200)
+    handle_rows(target, season, rest)
+  end
+
+  def handle_rows(rows = [_ | _], season, rest) do
     now = NaiveDateTime.utc_now()
     {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
 
@@ -246,9 +247,11 @@ defmodule Backend.Leaderboards do
     rows
     |> Enum.filter(updated)
     |> create_entries(season)
+
+    handle_rows(rest, season)
   end
 
-  def handle_rows(_, _), do: []
+  def handle_rows(_, _, _), do: []
 
   defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
     do: handle_rows(rows, season)
@@ -1094,6 +1097,7 @@ defmodule Backend.Leaderboards do
 
   @alter_ratings_ldbs ["STD", :STD, "CLS", :CLS, "WLD", :WLD]
 
+  @spec rating_display(nil | number, any) :: nil | integer
   def rating_display(nil, _ldb), do: nil
 
   def rating_display(rating, ldb) when ldb in @alter_ratings_ldbs do

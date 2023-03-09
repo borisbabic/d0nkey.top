@@ -11,6 +11,10 @@ defmodule Hearthstone.Leaderboards.Response do
     field :season_metadata, SeasonMetadata.t()
   end
 
+  @spec rows(Response.t()) :: [Hearthstone.Leaderboards.Response.Row.t()]
+  def rows(%{leaderboard: %{rows: rows}}), do: rows
+  def rows(_), do: []
+
   @spec from_raw_map(Map.t(), integer() | Season.t() | nil) ::
           {:ok, Response.t()} | {:error, any()}
   def from_raw_map(raw, leaderboard_id \\ nil)
