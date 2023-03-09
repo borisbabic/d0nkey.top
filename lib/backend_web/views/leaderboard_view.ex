@@ -602,7 +602,7 @@ defmodule BackendWeb.LeaderboardView do
         %{
           display: title,
           selected: mode == show_flags,
-          link: update_index_link(conn, "show_flags", "mode")
+          link: update_index_link(conn, "show_flags", mode)
         }
       end)
 
