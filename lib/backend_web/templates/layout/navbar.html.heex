@@ -82,7 +82,6 @@
          </div>
        </div>
 
-       <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
          <div @mouseover="open=true" class="navbar-link">
            Misc
@@ -94,7 +93,6 @@
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.StreamingNowLive)}"}>Streaming Now</a>
            <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournaments_stats) }"}>Battlefy Tournaments Stats</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DeckviewerLive)}"}>Deckviewer</a>
-           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.GrandmastersLive) }"}>GM</a>
            <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
 
           <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6319a0dec4fa012b14cd0f4b", %{stage_id: "6319a13f8196801c559cc30f"}) }>Max Open 9</a>

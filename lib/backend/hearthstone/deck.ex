@@ -134,7 +134,10 @@ defmodule Backend.Hearthstone.Deck do
          list <- :binary.bin_to_list(decoded),
          chunked <- chunk_parts(list),
          [0, 1, format, 1, hero | card_parts] <- parts(chunked),
-         uncanonical_cards <- decode_cards_parts(card_parts, 1, []),
+         {singles, rest} <- take_singles(card_parts),
+         {doubles, rest} <- take_doubles(rest),
+         {multi, _rest} <- take_multi(rest),
+         uncanonical_cards <- singles ++ doubles ++ multi,
          cards <- canonicalize_cards(uncanonical_cards) do
       {class, hero} = deckcode_class_hero(hero, cards)
 
@@ -150,6 +153,26 @@ defmodule Backend.Hearthstone.Deck do
       {:error, reason} -> {:error, reason}
       _ -> String.slice(deckcode, 0, String.length(deckcode) - 1) |> decode()
     end
+  end
+
+  def take_singles([count | rest]), do: Enum.split(rest, count)
+
+  def take_doubles([count | rest]) do
+    {to_double, new_rest} = Enum.split(rest, count)
+    {to_double ++ to_double, new_rest}
+  end
+
+  def take_multi([count | rest]) do
+    {multi, new_rest} = Enum.split(rest, count * 2)
+
+    cards =
+      multi
+      |> Enum.chunk_every(2)
+      |> Enum.flat_map(fn [card, count] ->
+        for _ <- 1..count, do: card
+      end)
+
+    {cards, new_rest}
   end
 
   @spec deckcode_class_hero(integer, [integer]) :: {String.t(), String.t()}
@@ -198,21 +221,6 @@ defmodule Backend.Hearthstone.Deck do
       (fixed <> "=") |> Base.decode64()
     end
   end
-
-  @spec decode_cards_parts([integer], integer, [integer]) :: [integer]
-  defp decode_cards_parts([0], _, cards), do: cards
-
-  defp decode_cards_parts([to_take | parts], num_copies, acc_cards) do
-    cards = parts |> Enum.take(to_take)
-
-    decode_cards_parts(
-      parts |> Enum.drop(to_take),
-      num_copies + 1,
-      acc_cards ++ for(c <- cards, _ <- 1..num_copies, do: c)
-    )
-  end
-
-  defp decode_cards_parts(_, _, cards), do: cards
 
   @spec chunk_parts([byte()]) :: [[byte()]]
   defp chunk_parts(parts) do
