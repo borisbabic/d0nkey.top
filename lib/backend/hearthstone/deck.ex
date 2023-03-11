@@ -6,6 +6,7 @@ defmodule Backend.Hearthstone.Deck do
   alias Hearthstone.Card.RuneCost
   alias Backend.Hearthstone
   alias Backend.HearthstoneJson
+  alias Backend.Hearthstone.Deck.Sideboard
 
   @required [:cards, :hero, :format, :deckcode]
   @optional [:hsreplay_archetype, :class, :archetype]
@@ -18,6 +19,7 @@ defmodule Backend.Hearthstone.Deck do
     field :class, :string
     field :archetype, Ecto.Atom, default: nil
     field :hsreplay_archetype, :integer, default: nil
+    embeds_many(:sideboards, Sideboard)
     timestamps()
   end
 
@@ -30,6 +32,7 @@ defmodule Backend.Hearthstone.Deck do
   def changeset(c, attrs = %{deckcode: _}) do
     c
     |> cast(attrs, @required ++ @optional)
+    |> cast_embed(:sideboards)
     |> validate_required(@required)
   end
 
@@ -39,14 +42,14 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @spec deckcode(t()) :: String.t()
-  def deckcode(%{cards: c, hero: h, format: f}), do: deckcode(c, h, f)
+  def deckcode(%{cards: c, hero: h, format: f, sideboards: s}), do: deckcode(c, h, f, s)
 
   @doc """
   Calculate the deckcode from deck parts.
   Doesn't support decks with more than 2 copies of a card
   """
   @spec deckcode([integer], integer, integer) :: String.t()
-  def deckcode(c, hero, format) do
+  def deckcode(c, hero, format, sideboards \\ []) do
     cards =
       c
       |> canonicalize_cards()
@@ -56,9 +59,57 @@ defmodule Backend.Hearthstone.Deck do
     ([0, 1, format, 1, get_canonical_hero(hero, c)] ++
        deckcode_part(cards[1]) ++
        deckcode_part(cards[2]) ++
-       [0])
+       multi_deckcode_part(cards) ++
+       sideboards_deckcode_part(sideboards))
     |> Enum.into(<<>>, fn i -> Varint.LEB128.encode(i) end)
     |> Base.encode64()
+  end
+
+  defp sideboards_deckcode_part([]), do: []
+
+  defp sideboards_deckcode_part(sideboards) do
+    {optimized, unoptimized} =
+      sideboards
+      |> Enum.group_by(& &1.count)
+      |> Map.put_new(1, [])
+      |> Map.put_new(2, [])
+      |> Map.split([1, 2])
+
+    optimized_parts =
+      optimized
+      |> Enum.flat_map(fn {_count, sideboards} ->
+        s =
+          sideboards
+          |> Enum.sort_by(& &1.sideboard)
+          |> Enum.sort_by(& &1.card)
+          |> Enum.flat_map(&[&1.card, &1.sideboard])
+
+        [Enum.count(sideboards) | s]
+      end)
+
+    unoptimized_parts =
+      unoptimized
+      |> Enum.flat_map(fn {_, sideboards} ->
+        sideboards
+        |> Enum.sort_by(& &1.sideboard)
+        |> Enum.sort_by(& &1.card)
+        |> Enum.flat_map(&[&1.count, &1.card, &1.sideboard])
+      end)
+
+    [1 | optimized_parts] ++ [Enum.count(unoptimized_parts) | unoptimized_parts]
+  end
+
+  defp multi_deckcode_part(cards) do
+    multi_cards = Map.drop(cards, [0, 1, 2])
+
+    multi_part =
+      Enum.flat_map(multi_cards, fn {count, cards} ->
+        cards
+        |> Enum.sort()
+        |> Enum.flat_map(&[&1, count])
+      end)
+
+    [Enum.count(multi_cards) | multi_part]
   end
 
   defp canonicalize_cards(cards), do: Enum.map(cards, &HearthstoneJson.canonical_id/1)
@@ -136,7 +187,8 @@ defmodule Backend.Hearthstone.Deck do
          [0, 1, format, 1, hero | card_parts] <- parts(chunked),
          {singles, rest} <- take_singles(card_parts),
          {doubles, rest} <- take_doubles(rest),
-         {multi, _rest} <- take_multi(rest),
+         {multi, rest} <- take_multi(rest),
+         {sideboards, _rest} <- parse_sideboard(rest),
          uncanonical_cards <- singles ++ doubles ++ multi,
          cards <- canonicalize_cards(uncanonical_cards) do
       {class, hero} = deckcode_class_hero(hero, cards)
@@ -147,6 +199,7 @@ defmodule Backend.Hearthstone.Deck do
          hero: hero,
          cards: cards,
          deckcode: no_comments,
+         sideboards: sideboards,
          class: class
        }}
     else
@@ -155,14 +208,58 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def take_singles([count | rest]), do: Enum.split(rest, count)
+  defp parse_sideboard([]), do: {[], []}
+  defp parse_sideboard([0 | rest]), do: {[], rest}
 
-  def take_doubles([count | rest]) do
+  defp parse_sideboard([1 | sideboard]) do
+    {singles, after_singles} = sideboard_optimized(sideboard, 1)
+    {doubles, after_doubles} = sideboard_optimized(after_singles, 2)
+    {multis, rest} = sideboard_multi(after_doubles)
+    {singles ++ doubles ++ multis, rest}
+  end
+
+  defp sideboard_optimized([count | left], copies) do
+    {raw, rest} = Enum.split(left, count * 2)
+
+    sideboards =
+      raw
+      |> Enum.chunk_every(2)
+      |> Enum.map(fn [card, sideboard] ->
+        create_sideboard(card, sideboard, copies)
+      end)
+
+    {sideboards, rest}
+  end
+
+  defp sideboard_multi([count | left]) do
+    {raw, rest} = Enum.split(left, count * 3)
+
+    sideboards =
+      raw
+      |> Enum.chunk_every(2)
+      |> Enum.map(fn [card, sideboard, copies] ->
+        create_sideboard(card, sideboard, copies)
+      end)
+
+    {sideboards, rest}
+  end
+
+  defp create_sideboard(card, sideboard, count) do
+    %{
+      card: card,
+      sideboard: sideboard,
+      count: count
+    }
+  end
+
+  defp take_singles([count | rest]), do: Enum.split(rest, count)
+
+  defp take_doubles([count | rest]) do
     {to_double, new_rest} = Enum.split(rest, count)
     {to_double ++ to_double, new_rest}
   end
 
-  def take_multi([count | rest]) do
+  defp take_multi([count | rest]) do
     {multi, new_rest} = Enum.split(rest, count * 2)
 
     cards =
@@ -431,4 +528,23 @@ defmodule Backend.Hearthstone.Deck do
   defp card_cost(%{rarity: "EPIC"}), do: 400
   defp card_cost(%{rarity: "LEGENDARY"}), do: 1600
   defp card_cost(_), do: 0
+end
+
+defmodule Backend.Hearthstone.Deck.Sideboard do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @all_attrs [:card, :sideboard, :count]
+  @primary_key false
+  embedded_schema do
+    field :card, :integer
+    field :sideboard, :integer
+    field :count, :integer
+  end
+
+  def changeset(sideboard, attrs) do
+    sideboard
+    |> cast(attrs, @all_attrs)
+    |> validate_required(@all_attrs)
+  end
 end

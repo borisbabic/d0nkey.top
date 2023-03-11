@@ -84,14 +84,14 @@ defmodule Backend.Hearthstone do
   def create_or_get_deck(deckcode) when is_binary(deckcode),
     do: deckcode |> Deck.decode!() |> create_or_get_deck()
 
-  def create_or_get_deck(%Deck{cards: cards, hero: hero, format: format}),
-    do: create_or_get_deck(cards, hero, format)
+  def create_or_get_deck(%Deck{cards: cards, hero: hero, format: format, sideboards: sideboards}),
+    do: create_or_get_deck(cards, hero, format, sideboards)
 
   @spec create_or_get_deck([integer()], integer(), integer()) :: {:ok, Deck.t()} | {:error, any()}
-  def create_or_get_deck(cards, hero, format) do
-    deck(cards, hero, format)
+  def create_or_get_deck(cards, hero, format, sideboards \\ []) do
+    deck(cards, hero, format, sideboards)
     |> case do
-      nil -> create_deck(cards, hero, format)
+      nil -> create_deck(cards, hero, format, sideboards)
       deck -> {:ok, deck}
     end
   end
@@ -198,9 +198,10 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  def deck(cards, hero, format), do: Deck.deckcode(cards, hero, format) |> deck()
+  def deck(cards, hero, format, sideboards \\ []),
+    do: Deck.deckcode(cards, hero, format, sideboards) |> deck()
 
-  def create_deck(cards, hero, format) do
+  def create_deck(cards, hero, format, sideboards \\ []) do
     class = class(hero)
 
     temp_attrs = %{
@@ -208,7 +209,8 @@ defmodule Backend.Hearthstone do
       hero: hero,
       format: format,
       class: class,
-      archetype: DeckArchetyper.archetype(format, cards, class)
+      archetype: DeckArchetyper.archetype(format, cards, class),
+      sideboards: sideboards
     }
 
     hsreplay_archetype =
