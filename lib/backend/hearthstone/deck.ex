@@ -256,7 +256,7 @@ defmodule Backend.Hearthstone.Deck do
 
   defp take_doubles([count | rest]) do
     {to_double, new_rest} = Enum.split(rest, count)
-    {to_double ++ to_double, new_rest}
+    {Enum.sort(to_double ++ to_double), new_rest}
   end
 
   defp take_multi([count | rest]) do
