@@ -8,6 +8,7 @@ defmodule Components.DecklistCard do
   prop(count, :integer, required: true)
   prop(card, :map, required: true)
   prop(deck_class, :string, default: "NEUTRAL")
+  prop(sideboarded_in, :boolean, default: false)
   prop(show_mana_cost, :boolean, default: true)
   prop(decklist_options, :map, default: %{})
   defp rarity(nil), do: rarity("COMMON")
@@ -69,8 +70,10 @@ defmodule Components.DecklistCard do
           <div style={"--color-border: #{border}; --color-gradient: #{gradient};"} class={"decklist-card-container decklist-card #{html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
             <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{Card.cost(card)}</span>
-            <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped"><span style="font-size: 0;"># {@count}x ({Card.cost(@card)}) </span>{card.name}
-
+            <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped">
+              <span style="font-size: 0;"># {@count}x ({Card.cost(@card)}) </span>
+              <span :if={@sideboarded_in}><i class="fas fa-sign-in-alt"></i></span>
+              {card.name}
             </div>
             <div style={"background-image: url('#{tile_url}');"} class="decklist-card-tile">
             </div>
@@ -110,6 +113,4 @@ defmodule Components.DecklistCard do
       card_url || hsj_card_url
     }
   end
-
-  defp tile_card_url(%{id: id}), do: CardBag.tile_card_url(id)
 end

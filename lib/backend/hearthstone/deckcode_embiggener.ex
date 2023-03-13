@@ -17,7 +17,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
     cards_part =
       cards
       |> Hearthstone.ordered_frequencies()
-      |> Enum.map_join("\n", &create_card_part(&1))
+      |> Enum.map_join("\n", &create_card_part(&1, d.sideboards))
 
     link_part =
       case Map.get(d, :id) do
@@ -39,7 +39,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
     """
   end
 
-  def create_card_part({card, freq}) do
+  def create_card_part({card, freq}, sideboards) do
     rarity =
       case Card.rarity(card) do
         "LEGENDARY" -> "🟨"
@@ -49,5 +49,22 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
       end
 
     "# #{rarity} #{freq}x (#{Card.cost(card)}) #{card.name}"
+    |> add_sideboards(card, sideboards)
+  end
+
+  defp add_sideboards(base, card, sideboards) do
+    names =
+      sideboards
+      |> Enum.filter(&(&1.card == card.id))
+      |> Enum.map(&Hearthstone.get_card(&1.sideboard))
+      |> Enum.flat_map(fn
+        %{name: name} -> [name]
+        _ -> []
+      end)
+
+    case names do
+      [] -> base
+      n -> "#{base} (#{Enum.join(names, ", ")})"
+    end
   end
 end
