@@ -23,7 +23,7 @@ defmodule Bot.LdbMessageHandler do
   def get_leaderboard_entries(battletags_long) do
     battletags_long
     |> Enum.map(&InvitedPlayer.shorten_battletag/1)
-    |> Leaderboards.get_current_player_entries()
+    |> Leaderboards.get_current_player_entries([{"limit", 100}])
   end
 
   def join_tables(tables) do
