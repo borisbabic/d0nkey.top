@@ -10,6 +10,15 @@ defmodule Backend.HearthstoneTest do
     assert {:ok, %{cards: [_ | _]}} = Backend.Hearthstone.Deck.decode(test_code)
   end
 
+  test "should correctly decode weird highlander code" do
+    test_code =
+      "AAEBAQce38QC9s8CkvgC/KMDkbED9sID cIDk9AD99QDtt4Dju0Dpu8DxfUDm4EEvIoE YwE owEn58EhqAEiaAEi7cEjtQEmNQEmtQEnNQEuNkEw5IFy5IFzJIF4qQFAAA="
+
+    assert {:ok, %{cards: cards}} = Backend.Hearthstone.Deck.decode(test_code)
+    assert 30 = cards |> Enum.count()
+    assert 30 = cards |> Enum.uniq() |> Enum.count()
+  end
+
   test "should encode then decode deckcode with gazillion cards" do
     raw_cards = [
       254,
