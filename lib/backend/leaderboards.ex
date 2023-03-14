@@ -1027,8 +1027,10 @@ defmodule Backend.Leaderboards do
     |> where([s], s.upstream_updated_at > ago(^val, ^unit))
   end
 
-  def finishes_for_battletag(battletag_full),
-    do: [:latest_in_season, :preload_season, {"battletag_full", battletag_full}] |> entries()
+  def finishes_for_battletag(battletag_full, extra_criteria \\ []),
+    do:
+      [:latest_in_season, :preload_season, {"battletag_full", battletag_full} | extra_criteria]
+      |> entries()
 
   @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [
           history_entry()

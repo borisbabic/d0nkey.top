@@ -7,6 +7,7 @@ defmodule BackendWeb.PlayerView do
   alias Backend.MastersTour.TourStop
   alias Backend.TournamentStats.TeamStats
   alias Backend.TournamentStats.TournamentTeamStats
+  alias BackendWeb.ViewUtil
 
   defp simple_link(href, text) do
     ~E"""
@@ -29,6 +30,29 @@ defmodule BackendWeb.PlayerView do
         }
       ) do
     short_btags = Enum.map(battletags, &Battletag.shorten/1)
+
+    update_link = fn new_params ->
+      merged_params = conn.query_params |> Map.merge(new_params)
+
+      Routes.player_path(
+        conn,
+        :player_profile,
+        battletag_full,
+        merged_params
+      )
+    end
+
+    %{
+      limit: limit,
+      offset: offset,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000, 4000, 5000]
+      )
 
     stats_rows =
       qs
@@ -79,6 +103,8 @@ defmodule BackendWeb.PlayerView do
       })
       # sorted descending. trial and errored it, ofc
       |> Enum.sort_by(fn r -> r.time end, fn a, b -> NaiveDateTime.compare(a, b) == :gt end)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
       |> Enum.map(fn r ->
         ~E"""
         <tr>
@@ -89,14 +115,69 @@ defmodule BackendWeb.PlayerView do
         """
       end)
 
+    dropdowns = [
+      limit_dropdown,
+      ldb_leaderboard_dropdown(conn),
+      ldb_region_dropdown(conn)
+    ]
+
     render("player_profile.html", %{
       bt: battletag_full,
       rows: rows,
       table_headers: table_headers,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdowns: dropdowns,
       conn: conn,
       competition_options: get_competition_options(competitions),
       table_rows: table_rows
     })
+  end
+
+  @leaderboard_key "ldb_leaderboard_id"
+  defp ldb_leaderboard_dropdown(conn) do
+    current = Map.get(conn.query_params, @leaderboard_key)
+
+    options =
+      Backend.Blizzard.leaderboards_with_name()
+      |> Enum.map(fn {id, name} ->
+        %{
+          display: name,
+          selected: to_string(id) == current,
+          link:
+            Routes.player_path(
+              conn,
+              :player_profile,
+              conn.params["battletag_full"],
+              Map.put(conn.query_params, @leaderboard_key, id)
+            )
+        }
+      end)
+
+    {options, dropdown_title(options, "Leaderboard")}
+  end
+
+  @ldb_region_key "ldb_region"
+  defp ldb_region_dropdown(conn) do
+    current = Map.get(conn.query_params, @ldb_region_key)
+
+    options =
+      Backend.Blizzard.qualifier_regions_with_name()
+      |> Enum.map(fn {r, name} ->
+        %{
+          display: name,
+          selected: to_string(r) == current,
+          link:
+            Routes.player_path(
+              conn,
+              :player_profile,
+              conn.params["battletag_full"],
+              Map.put(conn.query_params, @ldb_region_key, r)
+            )
+        }
+      end)
+
+    {options, dropdown_title(options, "Leaderboard Region")}
   end
 
   @spec mt_rows([TournamentTeamStats.t()], Plug.Conn.t()) :: [any()]

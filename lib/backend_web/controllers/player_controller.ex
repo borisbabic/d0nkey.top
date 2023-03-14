@@ -16,15 +16,18 @@ defmodule BackendWeb.PlayerController do
   defp player_profile_battletags(bt) do
     # move this elsewhere and don't do it like this
     case Backend.Battlenet.get_old_for_btag(bt) do
-      [] -> [bt]
+      [] ->
+        [bt]
+
       changes ->
-        Enum.flat_map(changes, & [&1.old_battletag, &1.new_battletag])
+        Enum.flat_map(changes, &[&1.old_battletag, &1.new_battletag])
         |> Enum.uniq()
     end
   end
 
   def qualifier_stats(battletags) do
     %{year: year} = Date.utc_today()
+
     2020..year
     |> Enum.to_list()
     |> add_current_qualifiers()
@@ -39,10 +42,12 @@ defmodule BackendWeb.PlayerController do
       end
     end)
   end
+
   def player_profile(conn, params = %{"battletag_full" => bt}) do
     battletags = player_profile_battletags(bt) |> Enum.reverse()
     short_btags = Enum.map(battletags, &Battletag.shorten/1)
     mt_names = Enum.map(short_btags, &MastersTour.name_hacks/1)
+
     qualifier_stats =
       if Battletag.long?(bt) do
         qualifier_stats(battletags)
@@ -72,7 +77,13 @@ defmodule BackendWeb.PlayerController do
         tts ++ carry
       end)
 
-    finishes = Backend.Leaderboards.finishes_for_battletag(battletags)
+    ldb_criteria =
+      Enum.flat_map(params, fn
+        {"ldb_" <> actual_key, val} -> [{actual_key, val}]
+        _ -> []
+      end)
+
+    finishes = Backend.Leaderboards.finishes_for_battletag(battletags, ldb_criteria)
 
     render(conn, "player_profile.html", %{
       qualifier_stats: qualifier_stats,
