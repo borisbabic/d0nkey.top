@@ -255,11 +255,14 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   defp take_singles([count | rest]), do: Enum.split(rest, count)
+  defp take_singles([]), do: {[], []}
 
   defp take_doubles([count | rest]) do
     {to_double, new_rest} = Enum.split(rest, count)
     {Enum.sort(to_double ++ to_double), new_rest}
   end
+
+  defp take_doubles([]), do: {[], []}
 
   defp take_multi([count | rest]) do
     {multi, new_rest} = Enum.split(rest, count * 2)
@@ -273,6 +276,8 @@ defmodule Backend.Hearthstone.Deck do
 
     {cards, new_rest}
   end
+
+  defp take_multi([]), do: {[], []}
 
   @spec deckcode_class_hero(integer, [integer]) :: {String.t(), String.t()}
   def deckcode_class_hero(hero, cards) do
