@@ -376,8 +376,8 @@ defmodule Backend.Leaderboards do
 
   defp get_criteria(%{updated_at: updated_at}, :updated_at), do: [{"updated_at", updated_at}]
 
-  @spec get_current_player_entries([String.t()]) :: categorized_entries
-  def get_current_player_entries(players) do
+  @spec get_current_player_entries([String.t()], list()) :: categorized_entries
+  def get_current_player_entries(players, extra_criteria \\ []) do
     seasons = current_ladder_seasons()
 
     [
@@ -386,6 +386,7 @@ defmodule Backend.Leaderboards do
       {"seasons", seasons},
       {"players", players},
       {"order_by", "rank"}
+      | extra_criteria
     ]
     |> entries()
     |> Enum.group_by(& &1.season_id)
