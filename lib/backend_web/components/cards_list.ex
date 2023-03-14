@@ -46,30 +46,29 @@ defmodule Components.CardsList do
     to_check =
       comparison || Enum.map(cards_map, fn {_, {c, _}} -> c end) |> Hearthstone.sort_cards()
 
-    base_cards =
-      to_check
-      |> Enum.flat_map(fn c ->
-        {class, count} =
-          case {Map.get(comparison_map, c.id), Map.get(cards_map, c.id)} do
-            {cc, {_, count}} when not is_nil(cc) -> {comparison_class(cc, count), count}
-            {nil, {card, count}} -> {rotation_class(highlight_rotation, card), count}
-            {_, nil} -> {"not-in-list", nil}
-          end
+    to_check
+    |> Enum.flat_map(fn c ->
+      {class, count} =
+        case {Map.get(comparison_map, c.id), Map.get(cards_map, c.id)} do
+          {cc, {_, count}} when not is_nil(cc) -> {comparison_class(cc, count), count}
+          {nil, {card, count}} -> {rotation_class(highlight_rotation, card), count}
+          {_, nil} -> {"not-in-list", nil}
+        end
 
-        actual = %{card: c, count: count, class: class, sideboarded_in: false}
+      actual = %{card: c, count: count, class: class, sideboarded_in: false}
 
-        sideboards_after =
-          sideboard
-          |> Enum.filter(&(&1.card == c.id))
-          |> Enum.flat_map(&sideboard_display(&1, highlight_rotation))
+      sideboards_after =
+        sideboard
+        |> Enum.filter(&(&1.sideboard == c.id))
+        |> Enum.flat_map(&sideboard_display(&1, highlight_rotation))
 
-        [actual | sideboards_after]
-      end)
+      [actual | sideboards_after]
+    end)
   end
 
   @spec sideboard_display(Sideboard.t(), boolean) :: [display_info]
-  defp sideboard_display(%{sideboard: s, count: count}, highlight_rotation) do
-    case Hearthstone.get_card(s) do
+  defp sideboard_display(%{card: c, count: count}, highlight_rotation) do
+    case Hearthstone.get_card(c) do
       nil ->
         []
 
