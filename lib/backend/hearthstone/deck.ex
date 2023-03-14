@@ -48,7 +48,7 @@ defmodule Backend.Hearthstone.Deck do
   Calculate the deckcode from deck parts.
   Doesn't support decks with more than 2 copies of a card
   """
-  @spec deckcode([integer], integer, integer) :: String.t()
+  @spec deckcode([integer], integer, integer, [Sideboard.t()]) :: String.t()
   def deckcode(c, hero, format, sideboards \\ []) do
     cards =
       c
@@ -109,10 +109,10 @@ defmodule Backend.Hearthstone.Deck do
         |> Enum.flat_map(&[&1, count])
       end)
 
-    [Enum.count(multi_cards) | multi_part]
+    [Enum.count(multi_part) | multi_part]
   end
 
-  defp canonicalize_cards(cards), do: Enum.map(cards, &HearthstoneJson.canonical_id/1)
+  def canonicalize_cards(cards), do: Enum.map(cards, &HearthstoneJson.canonical_id/1)
 
   @spec deckcode_part([integer] | nil) :: [integer]
   defp deckcode_part(nil), do: [0]
@@ -217,6 +217,8 @@ defmodule Backend.Hearthstone.Deck do
     {multis, rest} = sideboard_multi(after_doubles)
     {singles ++ doubles ++ multis, rest}
   end
+
+  defp parse_sideboard(_), do: {:error, :malformed_sideboard}
 
   defp sideboard_optimized([count | left], copies) do
     {raw, rest} = Enum.split(left, count * 2)
@@ -531,6 +533,7 @@ defmodule Backend.Hearthstone.Deck do
 end
 
 defmodule Backend.Hearthstone.Deck.Sideboard do
+  @moduledoc "Holds optional for sideboard info"
   use Ecto.Schema
   import Ecto.Changeset
 
