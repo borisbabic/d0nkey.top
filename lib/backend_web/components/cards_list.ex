@@ -61,6 +61,7 @@ defmodule Components.CardsList do
         sideboard
         |> Enum.filter(&(&1.sideboard == c.id))
         |> Enum.flat_map(&sideboard_display(&1, highlight_rotation))
+        |> Hearthstone.sort_cards(& &1.card)
 
       [actual | sideboards_after]
     end)

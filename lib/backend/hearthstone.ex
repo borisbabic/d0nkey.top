@@ -462,10 +462,10 @@ defmodule Backend.Hearthstone do
 
   def ordered_frequencies(_), do: []
 
-  def sort_cards(cards) do
+  def sort_cards(cards, extract_card \\ & &1) do
     cards
-    |> Enum.sort_by(&name_for_sort/1)
-    |> Enum.sort_by(&cost_for_sort/1)
+    |> Enum.sort_by(&(extract_card.(&1) |> name_for_sort()))
+    |> Enum.sort_by(&(extract_card.(&1) |> cost_for_sort()))
   end
 
   defp name_for_sort({%{name: name}, _}), do: name
