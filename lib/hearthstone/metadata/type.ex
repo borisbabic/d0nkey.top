@@ -10,12 +10,12 @@ defmodule Hearthstone.Metadata.Type do
     field :game_modes, [integer()]
   end
 
-  def from_raw_map(%{"id" => id, "name" => name, "slug" => slug, "gameModes" => game_modes}) do
+  def from_raw_map(m = %{"id" => id, "name" => name, "slug" => slug}) do
     %__MODULE__{
       id: id,
       name: name,
       slug: slug,
-      game_modes: game_modes
+      game_modes: Map.get(m, "gameModes", [])
     }
   end
 end

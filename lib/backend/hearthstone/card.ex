@@ -102,10 +102,12 @@ defmodule Backend.Hearthstone.Card do
   end
 
   defp use_english_field(field, map) do
-    case get_in(map, [field, "en_us"]) do
-      nil -> Map.put(map, field, nil)
-      val -> Map.put(map, field, val)
-    end
+    new_val =
+      with new_map = %{} <- Map.get(map, field, nil) do
+        Map.get(new_map, "en_us", nil)
+      end
+
+    Map.put(map, field, new_val)
   end
 
   def put_keywords(changeset, keywords), do: changeset |> put_assoc(:keywords, keywords)
