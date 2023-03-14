@@ -1,6 +1,9 @@
 <div class="title is-2"><%= render_player_name(@bt, true) %></div>
 <div id="nitropay-below-title-leaderboard"></div><br>
 
+<%= @prev_button %>
+<%= @next_button %>
+<%= render_dropdowns @dropdowns %>
 <div class="dropdown is-hoverable">
     <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Competitions</button></div>
     <div class="dropdown-menu" role="menu">
