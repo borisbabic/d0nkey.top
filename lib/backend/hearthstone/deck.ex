@@ -516,10 +516,18 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.reduce(RuneCost.empty(), &RuneCost.maximum/2)
   end
 
-  def cost(%{cards: cards}) do
-    cards
-    |> Enum.map(&card_cost/1)
-    |> Enum.sum()
+  def cost(d = %{cards: cards}) do
+    cards_cost =
+      cards
+      |> Enum.map(&card_cost/1)
+      |> Enum.sum()
+
+    sideboards_cost =
+      Map.get(d, :sideboards, [])
+      |> Enum.map(&(card_cost(&1.card) * &1.count))
+      |> Enum.sum()
+
+    cards_cost + sideboards_cost
   end
 
   defp card_cost(card) when is_integer(card), do: Hearthstone.get_card(card) |> card_cost()
