@@ -87,8 +87,9 @@ defmodule Backend.Hearthstone do
   def create_or_get_deck(%Deck{cards: cards, hero: hero, format: format, sideboards: sideboards}),
     do: create_or_get_deck(cards, hero, format, sideboards)
 
-  @spec create_or_get_deck([integer()], integer(), integer()) :: {:ok, Deck.t()} | {:error, any()}
-  def create_or_get_deck(cards, hero, format, sideboards \\ []) do
+  @spec create_or_get_deck([integer()], integer(), integer(), integer()) ::
+          {:ok, Deck.t()} | {:error, any()}
+  def create_or_get_deck(cards, hero, format, sideboards) do
     deck(cards, hero, format, sideboards)
     |> case do
       nil -> create_deck(cards, hero, format, sideboards)
@@ -174,7 +175,10 @@ defmodule Backend.Hearthstone do
   end
 
   def deck(%{id: id}) when is_integer(id), do: deck(id)
-  def deck(%{cards: cards, hero: hero, format: format}), do: deck(cards, hero, format)
+
+  def deck(%{cards: cards, hero: hero, format: format, sideboards: sideboards}),
+    do: deck(cards, hero, format, sideboards)
+
   def deck(id) when is_integer(id), do: DeckBag.get(id)
 
   def get_deck(id) do
@@ -198,10 +202,10 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  def deck(cards, hero, format, sideboards \\ []),
+  def deck(cards, hero, format, sideboards),
     do: Deck.deckcode(cards, hero, format, sideboards) |> deck()
 
-  def create_deck(cards, hero, format, sideboards \\ []) do
+  def create_deck(cards, hero, format, sideboards) do
     class = class(hero)
 
     temp_attrs = %{
