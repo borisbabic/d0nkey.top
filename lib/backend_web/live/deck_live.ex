@@ -28,11 +28,11 @@ defmodule BackendWeb.DeckLive do
     |> handle_params(session, socket)
   end
 
-  def handle_params(params = %{"deck" => deck}, _session, socket) do
+  def handle_params(params = %{"deck" => deck_raw}, _session, socket) do
     deck =
-      with :error <- Integer.parse(deck),
-           {:ok, deck} <- Deck.decode(deck) do
-        Hearthstone.deck(deck) || deck
+      with :error <- Integer.parse(deck_raw),
+           {:ok, deck_actual} <- Deck.decode(deck_raw) do
+        Hearthstone.deck(deck_actual) || deck_actual
       else
         {deck_id, _} when is_integer(deck_id) -> Hearthstone.deck(deck_id)
         _ -> []

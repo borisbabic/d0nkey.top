@@ -70,7 +70,7 @@ defmodule Backend.Streaming do
     streaming_now
     |> Enum.filter(&relevant_bnet_game_type?/1)
     |> Enum.map(fn sn ->
-      with {:ok, deck} <- Hearthstone.create_or_get_deck(sn.deck, sn.hero, sn.format),
+      with {:ok, deck} <- Hearthstone.create_or_get_deck(sn.deck, sn.hero, sn.format, []),
            {:ok, streamer} <-
              get_or_create_streamer(sn.twitch.login, sn.twitch.display_name, sn.twitch.id),
            do: get_or_create_streamer_deck(deck, streamer, sn)
