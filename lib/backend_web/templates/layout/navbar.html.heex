@@ -67,40 +67,42 @@
             <% end %>
          </div>
        </div>
-       <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
-         <div @mouseover="open=true" class="navbar-link">
-           Masters Tour
-         </div>
-
-         <div class="navbar-dropdown">
-           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :invited_players) }"}>Invited</a>
-           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :qualifiers)}"}>Qualifiers</a>
-           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :qualifier_stats)}"}>Qualifier Stats</a>
-           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :points)}"}>Points</a>
-           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :tour_stops)}"}>Tour Stops</a>
-           <a class="navbar-item" href={"#{Routes.masters_tour_path(@conn, :masters_tours_stats)}"}>Stats</a>
-         </div>
-       </div>
-
+        <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
+        <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
          <div @mouseover="open=true" class="navbar-link">
            Misc
          </div>
 
-         <div class="navbar-dropdown">
-           <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :organization_tournaments) }"}>3rd Party Tournaments</a>
-           <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
-           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.StreamingNowLive)}"}>Streaming Now</a>
-           <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournaments_stats) }"}>Battlefy Tournaments Stats</a>
-           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DeckviewerLive)}"}>Deckviewer</a>
-           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
+          <div class="navbar-dropdown">
+            <div class="nested dropdown navbar-item">
+              <div class="dropdown-trigger is-flex">
+                <div aria-haspopup="true" aria-controls="masters-tour-menu">
+                  <span>Masters Tours</span>
+                  <span class="has-text-right">></span>
+                </div>
+              </div>
 
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6319a0dec4fa012b14cd0f4b", %{stage_id: "6319a13f8196801c559cc30f"}) }>Max Open 9</a>
-          <a class="navbar-item" href={"#{Routes.page_path(@conn, :about) }"}>About</a>
-         </div>
-       </div>
-         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
-         <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
+              <div class="dropdown-menu" id="masters-tour-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item" href={"#{Routes.masters_tour_path(@conn, :invited_players) }"}>Invited</a>
+                  <a class="dropdown-item" href={"#{Routes.masters_tour_path(@conn, :qualifiers)}"}>Qualifiers</a>
+                  <a class="dropdown-item" href={"#{Routes.masters_tour_path(@conn, :qualifier_stats)}"}>Qualifier Stats</a>
+                  <a class="dropdown-item" href={"#{Routes.masters_tour_path(@conn, :points)}"}>Points</a>
+                  <a class="dropdown-item" href={"#{Routes.masters_tour_path(@conn, :tour_stops)}"}>Tour Stops</a>
+                  <a class="dropdown-item" href={"#{Routes.masters_tour_path(@conn, :masters_tours_stats)}"}>Stats</a>
+                </div>
+              </div>
+          </div>
+              <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :organization_tournaments) }"}>3rd Party Tournaments</a>
+              <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
+              <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.StreamingNowLive)}"}>Streaming Now</a>
+              <a class="navbar-item" href={"#{Routes.battlefy_path(@conn, :tournaments_stats) }"}>Battlefy Tournaments Stats</a>
+              <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DeckviewerLive)}"}>Deckviewer</a>
+              <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
+              <a class="navbar-item" href={"#{Routes.page_path(@conn, :about) }"}>About</a>
+            </div>
+          </div>
          <%= if :gt == NaiveDateTime.compare(~N[2022-03-28 13:37:00], NaiveDateTime.utc_now()) &&(!show_fantasy?()  || Backend.MastersTour.TourStop.get_current(96) in [:"Masters Tour Two"]) do %>
           <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.MaxNations2022Live) }"}>
             Max Nations
