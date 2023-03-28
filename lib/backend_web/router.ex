@@ -80,6 +80,8 @@ defmodule BackendWeb.Router do
         LeaderboardController,
         :player_history_old
 
+    get "/leaderboard/points", LeaderboardController, :points
+
     live "/", FeedLive
     get "/incubator", PageController, :incubator
     get "/about", PageController, :about

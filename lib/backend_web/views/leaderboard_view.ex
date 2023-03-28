@@ -8,6 +8,7 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.Leaderboards
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
+  alias Backend.LeaderboardsPoints
   alias BackendWeb.ViewUtil
   require Backend.LobbyLegends
 
@@ -226,6 +227,96 @@ defmodule BackendWeb.LeaderboardView do
       |> Map.put(:rating, rating_display.(r.rating))
       |> Map.put(:prev_rating, rating_display.(r.prev_rating))
     end)
+  end
+
+  defp filter_columns(column_map, columns_to_show) do
+    columns_to_show
+    |> Enum.map(fn c -> column_map[c] || "" end)
+  end
+
+  def render(
+        "points.html",
+        params = %{
+          conn: conn,
+          points: points,
+          points_season: ps,
+          leaderboard_id: ldb,
+          region: region,
+          countries: countries
+        }
+      ) do
+    season_map =
+      LeaderboardsPoints.get_relevant_ldb_seasons(ps)
+      |> Enum.sort(:asc)
+      |> Enum.map(&{&1, Blizzard.get_month_start(&1) |> Util.get_month_name()})
+      |> Map.new()
+
+    update_link = fn new_params ->
+      Routes.leaderboard_path(
+        conn,
+        :points,
+        conn.query_params |> Map.merge(new_params)
+      )
+    end
+
+    %{
+      limit: limit,
+      offset: offset,
+      prev_button: prev_button,
+      next_button: next_button,
+      dropdown: limit_dropdown
+    } =
+      ViewUtil.handle_pagination(conn.query_params, update_link,
+        default_limit: 200,
+        limit_options: [50, 100, 150, 200, 250, 300, 350, 500, 750, 1000, 2000, 3000]
+      )
+
+    columns_to_show = ["Player" | Map.values(season_map)] ++ ["Total"]
+    headers = ["#" | columns_to_show]
+
+    rows =
+      points
+      |> Enum.map(fn {player, season_points, total} ->
+        per_season =
+          season_points
+          |> Enum.map(fn {id, _, points} -> {Map.get(season_map, id, id), points} end)
+          |> Map.new()
+
+        %{
+          name: player,
+          total: total,
+          per_season: per_season,
+          region: PlayerInfo.get_region(player),
+          country: PlayerInfo.get_country(player)
+        }
+      end)
+      |> filter_region(region)
+      |> filter_countries(countries)
+      |> Enum.sort_by(& &1.total, :desc)
+      |> Enum.with_index(1)
+      |> Enum.drop(offset)
+      |> Enum.take(limit)
+      |> Enum.map(fn {row, pos} ->
+        cell_map =
+          Map.merge(row.per_season, %{
+            "Player" => BackendWeb.MastersTourView.create_name_cell(row, conn),
+            "Total" => row.total
+          })
+
+        [pos | filter_columns(cell_map, columns_to_show)]
+      end)
+
+    render("points.html", %{
+      conn: conn,
+      prev_button: prev_button,
+      next_button: next_button,
+      page_title:
+        "#{LeaderboardsPoints.points_season_display(ps)} #{Blizzard.get_leaderboard_name(ldb)}",
+      rows: rows,
+      headers: headers,
+      selected_countries: countries,
+      dropdowns: [limit_dropdown | create_points_dropdowns(params)]
+    })
   end
 
   def render(
@@ -503,6 +594,15 @@ defmodule BackendWeb.LeaderboardView do
     Routes.leaderboard_path(conn, :index, new_params)
   end
 
+  def update_points_link(conn, param, value, to_delete \\ []) do
+    new_params =
+      conn.query_params
+      |> Map.drop(to_delete)
+      |> Map.put(param, value)
+
+    Routes.leaderboard_path(conn, :points, new_params)
+  end
+
   def create_dropdowns(params = %{leaderboard: nil}) do
     params
     |> Map.put(:leaderboard, %{leaderboard_id: nil, region: nil, season_id: nil})
@@ -510,7 +610,7 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   def create_dropdowns(
-        params = %{
+        _params = %{
           conn: conn,
           leaderboard: %{
             leaderboard_id: leaderboard_id,
@@ -531,12 +631,65 @@ defmodule BackendWeb.LeaderboardView do
     |> Enum.filter(& &1)
   end
 
+  def create_points_dropdowns(%{conn: conn}) do
+    [
+      # create_leaderboard_dropdown(conn.params["leaderboard_id"], &update_points_link(conn, "leaderboard_id", &1)),
+      create_points_season_dropdown(
+        conn.params["points_season"],
+        &update_points_link(conn, "points_system", &1)
+      ),
+      create_points_region_dropdown(conn)
+    ]
+  end
+
+  def create_points_region_dropdown(conn) do
+    region = conn.query_params["region"]
+
+    title =
+      case region do
+        nil -> "Region"
+        r -> Blizzard.get_region_name(r, :long)
+      end
+
+    all_option = %{
+      display: "All",
+      selected: region == nil,
+      link: Routes.leaderboard_path(conn, :points, Map.delete(conn.query_params, "region"))
+    }
+
+    region_options =
+      Blizzard.regions()
+      |> Enum.map(fn r ->
+        %{
+          display: Blizzard.get_region_name(r, :long),
+          selected: region == r,
+          link: update_points_link(conn, "region", r)
+        }
+      end)
+
+    {[all_option | region_options], title}
+  end
+
   def new(text) do
     ~E"""
       <span>
         <p><%= text %><sup class="is-hidden-mobile is-size-7 has-text-danger"> New!</sup></p>
       </span>
     """
+  end
+
+  def create_points_season_dropdown(points_season, update_link) do
+    options =
+      LeaderboardsPoints.points_seasons()
+      |> Enum.map(fn ps ->
+        %{
+          display: LeaderboardsPoints.points_season_display(ps),
+          selected: ps == points_season,
+          link: update_link.(ps)
+        }
+      end)
+
+    {options, dropdown_title(options, "Points Season")}
   end
 
   def create_region_dropdown(conn = %Plug.Conn{}, region) do
@@ -1042,10 +1195,19 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
+  def filter_region(players, nil), do: players
+
+  def filter_region(players, region) do
+    region_string = to_string(region)
+
+    players
+    |> Enum.filter(fn %{region: r} -> to_string(region) == to_string(r) end)
+  end
+
   def filter_countries(target, []), do: target
 
   def filter_countries(r, countries),
-    do: r |> Enum.filter(fn p -> (p.account_id |> PlayerInfo.get_country()) in countries end)
+    do: r |> Enum.filter(fn %{country: c} -> c in countries end)
 
   def create_player_rows(player_stats, conn, show_flags) do
     player_stats
