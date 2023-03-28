@@ -13,8 +13,7 @@ defmodule Backend.LeaderboardsPointsTest do
       )
     end
 
-    points =
-      LeaderboardsPoints.calculate(%{"points_season" => "2023_spring", "leaderboard_id" => "STD"})
+    points = LeaderboardsPoints.calculate("2023_spring", "STD")
 
     {"TEST PERSON", season_points, 14} = points |> Enum.find(&(elem(&1, 0) == "TEST PERSON"))
     # January

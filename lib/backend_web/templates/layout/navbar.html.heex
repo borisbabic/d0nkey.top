@@ -60,6 +60,7 @@
 
          <div class="navbar-dropdown">
            <a class="navbar-item" href={"#{Routes.leaderboard_path(@conn, :player_stats) }"}>Player Stats</a>
+           <a class="navbar-item" href={"#{Routes.leaderboard_path(@conn, :points) }"}>HSEsports Points</a>
             <%= for {region, region_name} <- Backend.Blizzard.qualifier_regions_with_name() do %>
                     <a class="navbar-item is-link"
                     href={"#{ Routes.leaderboard_path(@conn, :index, %{"region" => region})

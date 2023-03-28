@@ -5,7 +5,31 @@ defmodule BackendWeb.LeaderboardController do
   alias Backend.Leaderboards
   alias Backend.Leaderboards.SeasonBag
   alias Backend.MastersTour
+  alias Backend.LeaderboardsPoints
   require Backend.LobbyLegends
+
+  def points(conn, params = %{"points_season" => ps, "leaderboard_id" => ldb}) do
+    points = LeaderboardsPoints.calculate(ps, ldb)
+
+    render(conn, "points.html", %{
+      conn: conn,
+      points_season: ps,
+      leaderboard_id: ldb,
+      region: params["region"],
+      countries: multi_select_to_array(params["country"]),
+      points: points,
+      page_title: "HSEsports Leaderboards Points"
+    })
+  end
+
+  def points(conn, params_raw) do
+    params =
+      params_raw
+      |> Map.put_new("points_season", LeaderboardsPoints.current_points_season())
+      |> Map.put_new("leaderboard_id", "STD")
+
+    points(conn, params)
+  end
 
   def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
     criteria = create_criteria(params)

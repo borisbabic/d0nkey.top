@@ -19,7 +19,7 @@
                 <%= render_comparison(position, prev_rank, true) %>
                 <%= if position == 1 do %>
                     <%= rank_history_link %>
-                <%= end %>
+                <% end %>
             </td>
             <td>
                 <%= render_player_link(battletag, nil, @show_flags == "yes") %>

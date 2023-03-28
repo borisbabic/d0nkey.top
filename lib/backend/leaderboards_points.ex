@@ -18,9 +18,8 @@ defmodule Backend.LeaderboardsPoints do
     {"2023", "fall", 119}
   ]
 
-  def calculate(params) do
-    params
-    |> create_criteria()
+  def calculate(ps, leaderboard_id) do
+    create_criteria(ps, leaderboard_id)
     |> Leaderboards.entries()
     |> group_by_player()
     |> Enum.map(&calculate_player_row/1)
@@ -61,15 +60,17 @@ defmodule Backend.LeaderboardsPoints do
   defp points_for_rank(r) when r <= 50, do: 2
   defp points_for_rank(r) when r <= 100, do: 1
 
-  def create_criteria(params) do
-    ldb = Map.get(params, "leaderboard_id", "STD")
-    ps = Map.get_lazy(params, "points_season", &current_points_season/0)
-    leaderboard_seasons = get_leaderboard_seasons(ps) |> remove_non_past()
+  def create_criteria(ps, leaderboard_id) do
+    leaderboard_seasons = get_relevant_ldb_seasons(ps)
 
     seasons =
       for r <- Blizzard.regions(),
           s <- leaderboard_seasons,
-          do: %Hearthstone.Leaderboards.Season{season_id: s, region: r, leaderboard_id: ldb}
+          do: %Hearthstone.Leaderboards.Season{
+            season_id: s,
+            region: r,
+            leaderboard_id: leaderboard_id
+          }
 
     [
       {"seasons", seasons},
@@ -100,7 +101,14 @@ defmodule Backend.LeaderboardsPoints do
     Enum.filter(seasons, &(&1 < current))
   end
 
-  defp get_leaderboard_seasons(points_season) do
+  @doc """
+  Gets the leaderboard seasons used for calculating points for the points season `ps`
+  """
+  def get_relevant_ldb_seasons(ps) do
+    get_leaderboard_seasons(ps) |> remove_non_past()
+  end
+
+  def get_leaderboard_seasons(points_season) do
     case String.split(points_season, "_") do
       [year, season] ->
         Enum.filter(@season_mapper, fn {y, s, _} -> y == year && s == season end)
@@ -112,4 +120,16 @@ defmodule Backend.LeaderboardsPoints do
   end
 
   defp extract_season({_, _, s}), do: s
+
+  def points_seasons() do
+    @season_mapper
+    |> Enum.flat_map(fn {year, season, _} -> [year, "#{year}_#{season}"] end)
+    |> Enum.uniq()
+  end
+
+  def points_season_display(season) do
+    String.split(season)
+    |> Enum.map(&Recase.to_title/1)
+    |> Enum.join(" ")
+  end
 end
