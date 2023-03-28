@@ -37,11 +37,15 @@ defmodule Backend.DataCase do
     end
   end
 
-  setup tags do
-    setup_db(tags)
+  setup [:setup_db]
+  # setup do
+  #   raise "ttttttttttttttttttttttttt"
+  # end
+  # setup tags do
+  #   setup_db(tags)
 
-    :ok
-  end
+  #   :ok
+  # end
 
   @doc """
   A helper that transforms changeset errors into a map of messages.
@@ -60,16 +64,14 @@ defmodule Backend.DataCase do
   end
 
   def setup_db(tags) do
+    # pid = Ecto.Adapters.SQL.Sandbox.start_owner!(MyApp.Repo, shared: not tags[:async])
+    # on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
 
-    # unless tags[:async] do
-    # Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, {:shared, self()})
-    # end
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, {:shared, self()})
+    end
 
-    # :ok
-
-    # Ecto.Adapters.SQL.Sandbox.start_owner!(Backend.Repo, shared: not tags[:async])
-    # on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
-    # :ok
+    :ok
   end
 end

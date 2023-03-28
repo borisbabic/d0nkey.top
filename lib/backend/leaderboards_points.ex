@@ -1,0 +1,115 @@
+defmodule Backend.LeaderboardsPoints do
+  @moduledoc false
+  alias Backend.Blizzard
+  alias Backend.Leaderboards
+  @type season_points :: {season_id :: integer(), best_rank :: integer(), points :: integer()}
+  @type player_row ::
+          {account_id :: String.t(), season_points :: [season_points], total_points :: integer()}
+
+  @season_mapper [
+    {"2023", "spring", 111},
+    {"2023", "spring", 112},
+    {"2023", "spring", 113},
+    {"2023", "summer", 114},
+    {"2023", "summer", 115},
+    {"2023", "summer", 116},
+    {"2023", "fall", 117},
+    {"2023", "fall", 118},
+    {"2023", "fall", 119}
+  ]
+
+  def calculate(params) do
+    params
+    |> create_criteria()
+    |> Leaderboards.entries()
+    |> group_by_player()
+    |> Enum.map(&calculate_player_row/1)
+    |> Enum.sort_by(&elem(&1, 2), :desc)
+  end
+
+  defp group_by_player(entries) do
+    Enum.group_by(entries, fn %{account_id: a} -> a end)
+  end
+
+  @spec calculate_player_row({String.t(), [Backend.Leaderboards.Entry.t()]}) :: player_row
+  defp calculate_player_row({account_id, entries}) do
+    season_points =
+      entries
+      |> Enum.group_by(&season_id_grouping/1)
+      |> Enum.map(&create_season_points/1)
+
+    total_points = season_points |> Enum.map(&elem(&1, 2)) |> Enum.sum()
+    {account_id, season_points, total_points}
+  end
+
+  @spec create_season_points({integer(), [Backend.Leaderboards.Entry.t()]}) :: season_points
+  defp create_season_points({season_id, entries}) do
+    best_rank = entries |> Enum.map(& &1.rank) |> Enum.min()
+    points = points_for_rank(best_rank)
+    {season_id, best_rank, points}
+  end
+
+  defp season_id_grouping(%{season: %{season_id: season_id}}), do: season_id
+
+  defp points_for_rank(r) when r < 1, do: {:error, :rank_below_one}
+  defp points_for_rank(1), do: 8
+  defp points_for_rank(r) when r <= 5, do: 7
+  defp points_for_rank(r) when r <= 10, do: 6
+  defp points_for_rank(r) when r <= 20, do: 5
+  defp points_for_rank(r) when r <= 30, do: 4
+  defp points_for_rank(r) when r <= 40, do: 3
+  defp points_for_rank(r) when r <= 50, do: 2
+  defp points_for_rank(r) when r <= 100, do: 1
+
+  def create_criteria(params) do
+    ldb = Map.get(params, "leaderboard_id", "STD")
+    ps = Map.get_lazy(params, "points_season", &current_points_season/0)
+    leaderboard_seasons = get_leaderboard_seasons(ps) |> remove_non_past()
+
+    seasons =
+      for r <- Blizzard.regions(),
+          s <- leaderboard_seasons,
+          do: %Hearthstone.Leaderboards.Season{season_id: s, region: r, leaderboard_id: ldb}
+
+    [
+      {"seasons", seasons},
+      {"max_rank", 100},
+      :preload_season
+    ]
+  end
+
+  def current_points_season() do
+    current = current_season_id()
+
+    case Enum.find(@season_mapper, &(current == elem(&1, 2))) do
+      {year, season, _} -> "#{year}_#{season}"
+      _ -> now().year |> to_string()
+    end
+  end
+
+  defp current_season_id() do
+    now() |> Timex.to_date() |> Blizzard.get_season_id()
+  end
+
+  defp now() do
+    Timex.now("US/Pacific")
+  end
+
+  defp remove_non_past(seasons) do
+    current = current_season_id()
+    Enum.filter(seasons, &(&1 < current))
+  end
+
+  defp get_leaderboard_seasons(points_season) do
+    case String.split(points_season, "_") do
+      [year, season] ->
+        Enum.filter(@season_mapper, fn {y, s, _} -> y == year && s == season end)
+        |> Enum.map(&extract_season/1)
+
+      [year] ->
+        Enum.filter(@season_mapper, fn {y, _, _} -> y == year end) |> Enum.map(&extract_season/1)
+    end
+  end
+
+  defp extract_season({_, _, s}), do: s
+end
