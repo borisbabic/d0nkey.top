@@ -75,6 +75,7 @@ defmodule Backend.LeaderboardsPoints do
     [
       {"seasons", seasons},
       {"max_rank", 100},
+      :latest_in_season,
       :preload_season
     ]
   end
