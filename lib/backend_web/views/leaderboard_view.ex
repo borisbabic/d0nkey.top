@@ -634,7 +634,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def create_points_dropdowns(%{conn: conn}) do
     [
-      # create_leaderboard_dropdown(conn.params["leaderboard_id"], &update_points_link(conn, "leaderboard_id", &1)),
+      create_points_leaderboard_dropdown(conn),
       create_points_season_dropdown(
         conn.params["points_season"],
         &update_points_link(conn, "points_season", &1)
@@ -642,6 +642,25 @@ defmodule BackendWeb.LeaderboardView do
       create_points_region_dropdown(conn),
       create_use_current_dropdown(conn)
     ]
+  end
+
+  def create_points_leaderboard_dropdown(conn) do
+    current = Map.get(conn.query_params, "leaderboard_id", "STD")
+
+    options =
+      [
+        {"STD", Blizzard.get_leaderboard_name("STD")},
+        {"BG_LL", Blizzard.get_leaderboard_name("BG")}
+      ]
+      |> Enum.map(fn {v, display} ->
+        %{
+          display: display,
+          selected: current == v,
+          link: update_points_link(conn, "leaderboard_id", v)
+        }
+      end)
+
+    {options, dropdown_title(options, "Game Mode")}
   end
 
   def create_use_current_dropdown(conn) do
