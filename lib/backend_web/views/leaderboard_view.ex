@@ -242,11 +242,12 @@ defmodule BackendWeb.LeaderboardView do
           points_season: ps,
           leaderboard_id: ldb,
           region: region,
+          use_current: use_current,
           countries: countries
         }
       ) do
     season_map =
-      LeaderboardsPoints.get_relevant_ldb_seasons(ps)
+      LeaderboardsPoints.get_relevant_ldb_seasons(ps, use_current)
       |> Enum.sort(:asc)
       |> Enum.map(&{&1, Blizzard.get_month_start(&1) |> Util.get_month_name()})
       |> Map.new()
@@ -636,10 +637,25 @@ defmodule BackendWeb.LeaderboardView do
       # create_leaderboard_dropdown(conn.params["leaderboard_id"], &update_points_link(conn, "leaderboard_id", &1)),
       create_points_season_dropdown(
         conn.params["points_season"],
-        &update_points_link(conn, "points_system", &1)
+        &update_points_link(conn, "points_season", &1)
       ),
-      create_points_region_dropdown(conn)
+      create_points_region_dropdown(conn),
+      create_use_current_dropdown(conn)
     ]
+  end
+
+  def create_use_current_dropdown(conn) do
+    options =
+      ["Yes", "No"]
+      |> Enum.map(fn o ->
+        %{
+          display: o,
+          selected: conn.query_params["use_current_season"] == String.downcase(o),
+          link: update_points_link(conn, "use_current_season", String.downcase(o))
+        }
+      end)
+
+    {options, "Use Current Season"}
   end
 
   def create_points_region_dropdown(conn) do

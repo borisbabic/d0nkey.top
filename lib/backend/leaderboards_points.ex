@@ -18,8 +18,8 @@ defmodule Backend.LeaderboardsPoints do
     {"2023", "fall", 119}
   ]
 
-  def calculate(ps, leaderboard_id) do
-    create_criteria(ps, leaderboard_id)
+  def calculate(ps, leaderboard_id, use_current \\ false) do
+    create_criteria(ps, leaderboard_id, use_current)
     |> Leaderboards.entries()
     |> group_by_player()
     |> Enum.map(&calculate_player_row/1)
@@ -60,8 +60,8 @@ defmodule Backend.LeaderboardsPoints do
   defp points_for_rank(r) when r <= 50, do: 2
   defp points_for_rank(r) when r <= 100, do: 1
 
-  def create_criteria(ps, leaderboard_id) do
-    leaderboard_seasons = get_relevant_ldb_seasons(ps)
+  def create_criteria(ps, leaderboard_id, use_current \\ false) do
+    leaderboard_seasons = get_relevant_ldb_seasons(ps, use_current)
 
     seasons =
       for r <- Blizzard.regions(),
@@ -97,16 +97,17 @@ defmodule Backend.LeaderboardsPoints do
     Timex.now("US/Pacific")
   end
 
-  defp remove_non_past(seasons) do
+  defp remove_too_soon(seasons, use_current \\ false) do
+    comparator = if use_current, do: &Kernel.<=/2, else: &Kernel.</2
     current = current_season_id()
-    Enum.filter(seasons, &(&1 < current))
+    Enum.filter(seasons, &comparator.(&1, current))
   end
 
   @doc """
   Gets the leaderboard seasons used for calculating points for the points season `ps`
   """
-  def get_relevant_ldb_seasons(ps) do
-    get_leaderboard_seasons(ps) |> remove_non_past()
+  def get_relevant_ldb_seasons(ps, use_current \\ false) do
+    get_leaderboard_seasons(ps) |> remove_too_soon(use_current)
   end
 
   def get_leaderboard_seasons(points_season) do
@@ -130,7 +131,6 @@ defmodule Backend.LeaderboardsPoints do
 
   def points_season_display(season) do
     String.split(season)
-    |> Enum.map(&Recase.to_title/1)
-    |> Enum.join(" ")
+    |> Enum.map_join(" ", &Recase.to_title/1)
   end
 end
