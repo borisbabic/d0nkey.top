@@ -30,13 +30,13 @@ defmodule Backend.Grandmasters.PromotionRanking do
 
   def compare(%{total: a_tot}, %{total: b_tot}), do: a_tot > b_tot
   defp compare_ts_points(a, b), do: compare_lists(TSPoints.tiebreaks(a), TSPoints.tiebreaks(b))
-  defp compare_lists(_list, []), do: true
-  defp compare_lists([], _list), do: false
+  def compare_lists(_list, []), do: true
+  def compare_lists([], _list), do: false
 
-  defp compare_lists([a_val | a_rem], [b_val | b_rem]) when a_val == b_val,
+  def compare_lists([a_val | a_rem], [b_val | b_rem]) when a_val == b_val,
     do: compare_lists(a_rem, b_rem)
 
-  defp compare_lists([a_val | _], [b_val | _]), do: a_val < b_val
+  def compare_lists([a_val | _], [b_val | _]), do: a_val < b_val
 end
 
 defmodule Backend.Grandmasters.TourStopPromotionPoints do

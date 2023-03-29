@@ -23,7 +23,22 @@ defmodule Backend.LeaderboardsPoints do
     |> Leaderboards.entries()
     |> group_by_player()
     |> Enum.map(&calculate_player_row/1)
-    |> Enum.sort_by(&elem(&1, 2), :desc)
+    |> Enum.sort(&sorter/2)
+
+    # |> Enum.sort_by(&elem(&1, 2), :desc)
+  end
+
+  def sorter({_, season_points_a, total_a}, {_, season_points_b, total_b})
+      when total_a == total_b,
+      do: compare_best_finishes(season_points_a, season_points_b)
+
+  def sorter({_, _, total_a}, {_, _, total_b}), do: total_a < total_b
+
+  def compare_best_finishes(sp_a, sp_b) do
+    best_ranks_a = Enum.map(sp_a, &elem(&1, 1)) |> Enum.sort(:asc)
+    best_ranks_b = Enum.map(sp_b, &elem(&1, 1)) |> Enum.sort(:asc)
+
+    Backend.Grandmasters.PromotionRanking.compare_lists(best_ranks_a, best_ranks_b)
   end
 
   defp group_by_player(entries) do
