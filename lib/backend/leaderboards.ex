@@ -786,6 +786,8 @@ defmodule Backend.Leaderboards do
     |> where([entry: e], e.season_id in ^ids)
   end
 
+  defp compose_entries_query({"seasons", _seasons = []}, query), do: query |> where(1 == 2)
+
   defp compose_entries_query({"season_id", season = "lobby_legends_" <> _}, query) do
     case LobbyLegendsSeason.get(season) do
       %{ladder: %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id}} ->

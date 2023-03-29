@@ -13,6 +13,8 @@ defmodule Backend.LeaderboardsPointsTest do
       )
     end
 
+    Backend.Leaderboards.refresh_latest()
+
     points = LeaderboardsPoints.calculate("2023_spring", "STD")
 
     {"TEST PERSON", season_points, 14} = points |> Enum.find(&(elem(&1, 0) == "TEST PERSON"))

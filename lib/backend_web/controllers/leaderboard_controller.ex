@@ -8,11 +8,16 @@ defmodule BackendWeb.LeaderboardController do
   alias Backend.LeaderboardsPoints
   require Backend.LobbyLegends
 
+  defp parse_use_current(%{"use_current_season" => "yes"}), do: true
+  defp parse_use_current(_), do: false
+
   def points(conn, params = %{"points_season" => ps, "leaderboard_id" => ldb}) do
-    points = LeaderboardsPoints.calculate(ps, ldb)
+    use_current = parse_use_current(params)
+    points = LeaderboardsPoints.calculate(ps, ldb, use_current)
 
     render(conn, "points.html", %{
       conn: conn,
+      use_current: use_current,
       points_season: ps,
       leaderboard_id: ldb,
       region: params["region"],
