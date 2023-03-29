@@ -707,12 +707,18 @@ defmodule Backend.Leaderboards do
     |> where([s], fragment("to_jsonb(?)::text SIMILAR TO ?", s.entries, ^similar_search))
   end
 
-  def entries(criteria) do
-    base_entries_query()
-    |> latest_in_season(criteria)
-    |> build_entries_query(criteria)
-    |> preload_entries(criteria)
-    |> Repo.all()
+  def entries(criteria, timeout \\ nil) do
+    query =
+      base_entries_query()
+      |> latest_in_season(criteria)
+      |> build_entries_query(criteria)
+      |> preload_entries(criteria)
+
+    if timeout do
+      Repo.all(query, timeout: timeout)
+    else
+      Repo.all(query)
+    end
   end
 
   defp preload_entries(query, criteria) do
@@ -1164,4 +1170,54 @@ defmodule Backend.Leaderboards do
       timeout: 666_000
     )
   end
+
+  @doc """
+  Copy entries from bgs to bg lobby legends
+  """
+  def copy_to_bg_lobby_legends(year, month) do
+    with {:ok, date} <- Date.new(year, month, 1) do
+      copy_to_bg_lobby_legends(date)
+    end
+  end
+
+  def copy_to_bg_lobby_legends(date = %Date{}) do
+    for {r, timezone} <- regions_with_timezone() do
+      up_to =
+        DateTime.new!(date, ~T[00:00:00], timezone)
+        |> Timex.beginning_of_month()
+        |> Timex.shift(months: 1)
+        # small buffer
+        |> Timex.shift(minutes: 2)
+        |> Timex.Timezone.convert("UTC")
+        |> DateTime.to_naive()
+
+      criteria = [
+        {"season", %ApiSeason{leaderboard_id: "BG", region: r}},
+        {"max_rank", 200},
+        {"order_by", "rank"},
+        {"up_to", up_to},
+        :latest_in_season
+      ]
+
+      entries =
+        entries(criteria, 180_000)
+        |> Enum.sort_by(& &1.rank, :desc)
+        |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
+        |> Enum.uniq_by(&{&1.rank, &1.account_id, &1.rating})
+
+      season_id = Blizzard.get_season_id(date)
+
+      create_entries(entries, %ApiSeason{
+        season_id: season_id,
+        region: to_string(r),
+        leaderboard_id: "BG_LL"
+      })
+    end
+  end
+
+  def copy_last_month_to_lobby_legends() do
+    Date.utc_today() |> Timex.shift(months: -1) |> copy_to_bg_lobby_legends()
+  end
+
+  def regions_with_timezone(), do: [{:US, "US/Pacific"}, {:AP, "Asia/Seoul"}, {:EU, "CET"}]
 end
