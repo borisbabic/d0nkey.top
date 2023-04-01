@@ -324,6 +324,7 @@ defmodule BackendWeb.BattlefyController do
     tournaments =
       tournament_ids
       |> list_or_comma_separated()
+      |> Enum.filter(&(&1 && &1 != ""))
       |> Enum.map(&Battlefy.get_tournament/1)
 
     tournaments_stats =
