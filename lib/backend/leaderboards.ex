@@ -10,6 +10,7 @@ defmodule Backend.Leaderboards do
   alias Backend.Repo
   alias Backend.Blizzard
   alias Backend.LobbyLegends.LobbyLegendsSeason
+  alias Backend.Leaderboards.PageFetcher
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.PlayerStats
   alias Backend.Leaderboards.Entry
@@ -153,6 +154,13 @@ defmodule Backend.Leaderboards do
   end
 
   def save_current(num \\ nil) do
+    tasks_per_current_api_season(&save_all(&1, num))
+    |> Task.await_many(:infinity)
+
+    refresh_latest()
+  end
+
+  defp tasks_per_current_api_season(func) do
     for region <- Blizzard.qualifier_regions(),
         ldb <- Blizzard.leaderboards() do
       Task.async(fn ->
@@ -160,13 +168,28 @@ defmodule Backend.Leaderboards do
           region: to_string(region),
           leaderboard_id: to_string(ldb)
         }
-        |> save_all(num)
+        |> func.()
       end)
     end
-    |> Task.await_many(:infinity)
-
-    refresh_latest()
   end
+
+  def save_current_with_retry(max_num \\ nil, min_num \\ 1) do
+    tasks_per_current_api_season(&save_with_retry(&1, max_num, min_num))
+    |> Task.await_many(:infinity)
+  end
+
+  def save_with_retry(season, max_num \\ nil, min_num \\ 1) do
+    max_page = count_to_page_num(max_num)
+    min_page = count_to_page_num(min_num)
+
+    with {:ok, response} <- Api.get_page(season) do
+      PageFetcher.enqueue_all(response, max_page, min_page)
+    end
+  end
+
+  @page_size 25
+  def count_to_page_num(nil), do: nil
+  def count_to_page_num(count), do: ceil(count / @page_size)
 
   def save_all(s, num \\ nil) do
     with {:ok, rows, season} <- fetch_pages(s, num) do
@@ -174,7 +197,6 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  @page_size 25
   def fetch_pages(season, num_entries \\ nil) do
     case Api.get_page(season) do
       {:ok, response = %{leaderboard: %{pagination: %{total_pages: total_pages}}}} ->
@@ -1078,6 +1100,10 @@ defmodule Backend.Leaderboards do
     end
   end
 
+  def season(db_id) do
+    Repo.get(Season, db_id)
+  end
+
   def all_seasons() do
     Repo.all(Season)
   end
@@ -1219,5 +1245,6 @@ defmodule Backend.Leaderboards do
     Date.utc_today() |> Timex.shift(months: -1) |> copy_to_bg_lobby_legends()
   end
 
+  @spec regions_with_timezone :: [{:AP, <<_::80>>} | {:EU, <<_::24>>} | {:US, <<_::80>>}, ...]
   def regions_with_timezone(), do: [{:US, "US/Pacific"}, {:AP, "Asia/Seoul"}, {:EU, "CET"}]
 end

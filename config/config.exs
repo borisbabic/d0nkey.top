@@ -27,8 +27,8 @@ config :backend, QuantumScheduler,
     {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
     {"*/2 * * * *", fn -> Backend.Leaderboards.save_current(200) end},
-    {"1 * * * *", fn -> Backend.Leaderboards.save_current(2000) end},
-    {"43 18 * * *", fn -> Backend.Leaderboards.save_current() end},
+    {"0 * * * *", fn -> Backend.Leaderboards.save_current_with_retry(5000, 201) end},
+    {"43 18 * * *", fn -> Backend.Leaderboards.save_current_with_retry(nil, 201) end},
     {"37 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
     {"11 * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
     {"*/9 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
@@ -159,6 +159,7 @@ config :backend, Oban,
     grandmasters_lineups: 3,
     gm_stream_live: 4,
     hsreplay_deck_mapper: 1,
+    leaderboards_pages_fetching: 100,
     hsreplay_streamer_deck_inserter: 1
   ]
 
