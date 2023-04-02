@@ -408,7 +408,7 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2023-04-07 08:15:00],
+        start_time: nil,
         qualifiers_period: {~D[2023-03-01], ~D[2022-03-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
@@ -433,7 +433,7 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2023-08-07 08:15:00],
+        start_time: nil,
         qualifiers_period: {~D[2023-06-01], ~D[2022-06-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
@@ -458,7 +458,7 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2023-11-07 08:15:00],
+        start_time: nil,
         qualifiers_period: {~D[2023-09-01], ~D[2022-09-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
@@ -557,7 +557,11 @@ defmodule Backend.MastersTour.TourStop do
     |> Enum.find_value(fn ts -> ts |> current?(hours_before_start, hours_after_start) && ts.id end)
   end
 
-  def current?(%{start_time: start_time}, hours_before_start \\ 1, hours_after_start \\ 96) do
+  @spec current?(t(), hours_before_start :: integer(), hours_after_start :: integer()) :: boolean
+  def current?(tour_stop, hours_before_start \\ 1, hours_after_start \\ 96)
+  def current?(%{start_time: nil}, _, _), do: false
+
+  def current?(%{start_time: start_time}, hours_before_start, hours_after_start) do
     now = NaiveDateTime.utc_now()
     lower = NaiveDateTime.add(start_time, hours_before_start * -3600)
     upper = NaiveDateTime.add(start_time, hours_after_start * 3600)
