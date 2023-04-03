@@ -10,6 +10,9 @@ defmodule Backend.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      preferred_cli_env: [
+        "test.watch": :test
+      ],
       deps: deps()
     ]
   end
@@ -85,6 +88,7 @@ defmodule Backend.MixProject do
       {:solid, "~> 0.10"},
       {:ecto_psql_extras, "~> 0.6"},
       {:csv, "~> 2.5"},
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:quantum, "~> 2.3"}
     ]
   end
