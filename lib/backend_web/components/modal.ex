@@ -16,7 +16,6 @@ defmodule Components.Modal do
   slot(footer, required: false)
   slot(default, required: true)
 
-
   @message_reset_assigns [show_error: false, show_success: false]
   def render(assigns) do
     ~F"""
@@ -54,7 +53,17 @@ defmodule Components.Modal do
 
   @message_reset_assigns [show_error: false, show_success: false]
 
+  def handle_result(result, socket, modal_id) do
+    additional_assigns =
+      case result do
+        {:ok, _} -> [show_success: true, show_error: false, show_modal: false]
+        {:error, _} -> [show_error: true]
+      end
+
+    send_update(__MODULE__, [{:id, modal_id} | additional_assigns])
+  end
+
   def reset_messages(modal_id) when is_binary(modal_id) do
-    send_update(__MODULE__, [{:id, modal_id}| @message_reset_assigns])
+    send_update(__MODULE__, [{:id, modal_id} | @message_reset_assigns])
   end
 end
