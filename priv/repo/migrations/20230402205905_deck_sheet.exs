@@ -7,7 +7,7 @@ defmodule Backend.Repo.Migrations.DeckSheet do
       add :name, :string, null: false
       add :owner_id, references(:users, on_delete: :delete_all), null: false
       add :group_id, references(:groups, on_delete: :nilify_all), null: true
-      add :group_role, :string, default: "editor"
+      add :group_role, :string, default: "contributor"
       add :public_role, :string, default: "nothing"
       add :extra_columns, {:array, :string}, null: false
 

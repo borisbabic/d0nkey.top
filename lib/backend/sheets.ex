@@ -4,14 +4,16 @@ defmodule Backend.Sheets do
   alias Backend.Sheets.DeckSheet
   alias Backend.Sheets.DeckSheetListing
   alias Backend.UserManager
-  alias Backend.UserManager.Group
   alias Backend.UserManager.User
   alias Backend.Repo
 
-  @spec create_deck_sheet(User.t(), String.t(), Group.t()) ::
+  @spec create_deck_sheet(User.t(), String.t(), Map.t()) ::
           {:ok, DeckSheet.t()} | {:error, any()}
-  def create_deck_sheet(owner, name, group \\ nil) do
-    attrs = %{owner: owner, name: name, group: group}
+  def create_deck_sheet(owner, name, other_attrs \\ %{}) do
+    attrs =
+      for {key, val} <- other_attrs,
+          into: %{"owner" => owner, "name" => name},
+          do: {to_string(key), val}
 
     DeckSheet.changeset(%DeckSheet{}, attrs)
     |> Repo.insert()
@@ -35,6 +37,14 @@ defmodule Backend.Sheets do
     else
       {:error, :insufficient_permissions}
     end
+  end
+
+  def viewable_deck_sheets(user), do: owned_deck_sheets(user)
+
+  def owned_deck_sheets(%User{id: id}) do
+    query = from ds in DeckSheet, where: ds.owner_id == ^id, preload: [:owner, :group]
+
+    Repo.all(query)
   end
 
   @spec create_deck_sheet_listing(DeckSheet.t(), Deck.t(), User.t() | nil, Map.t()) ::

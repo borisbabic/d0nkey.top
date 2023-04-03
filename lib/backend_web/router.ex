@@ -1,4 +1,5 @@
 defmodule BackendWeb.Router do
+  alias BackendWeb.DeckSheetsIndex
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
   import Plug.BasicAuth
@@ -170,6 +171,7 @@ defmodule BackendWeb.Router do
     live "/youtube/bnet-chat/:video_id", YoutubeChatLive
     live "/deckviewer", DeckviewerLive
     live "/decks", DecksLive
+    live "/deck-sheets", DeckSheetsIndexLive
 
     live "/hcm-2022", HCM2022Live
     live "/lineup-history/:source/:name", LineupHistoryLive
