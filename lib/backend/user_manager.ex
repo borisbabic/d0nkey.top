@@ -194,19 +194,18 @@ defmodule Backend.UserManager do
 
   defp filter_config(:groups) do
     defconfig do
-      number :owner_id
-      text :name
-      text :discord
-      text :join_code
+      number(:owner_id)
+      text(:name)
+      text(:discord)
+      text(:join_code)
     end
   end
 
   defp filter_config(:group_memberships) do
     defconfig do
-      text :role
+      text(:role)
     end
   end
-
 
   @doc """
   Finds the bnet user if it exists, creates one if it doesn't.
@@ -224,6 +223,7 @@ defmodule Backend.UserManager do
     cs = User.changeset(user, %{battletag: new_btag})
 
     battletag_cs = Backend.Battlenet.battletag_change_changeset(user, new_btag)
+
     Multi.new()
     |> Multi.update("update_user_btag_#{user.id}", cs)
     |> Multi.insert("old_battletag_for_user#{user.id}", battletag_cs)
@@ -260,7 +260,6 @@ defmodule Backend.UserManager do
     |> Repo.update()
   end
 
-
   @doc """
   Paginate the list of groups using filtrex
   filters.
@@ -281,19 +280,18 @@ defmodule Backend.UserManager do
     {:ok, sort_field} = Map.fetch(params, "sort_field")
 
     with {:ok, filter} <- Filtrex.parse_params(filter_config(:groups), params["group"] || %{}),
-        %Scrivener.Page{} = page <- do_paginate_groups(filter, params) do
+         %Scrivener.Page{} = page <- do_paginate_groups(filter, params) do
       {:ok,
-        %{
-          groups: page.entries,
-          page_number: page.page_number,
-          page_size: page.page_size,
-          total_pages: page.total_pages,
-          total_entries: page.total_entries,
-          distance: @pagination_distance,
-          sort_field: sort_field,
-          sort_direction: sort_direction
-        }
-      }
+       %{
+         groups: page.entries,
+         page_number: page.page_number,
+         page_size: page.page_size,
+         total_pages: page.total_pages,
+         total_entries: page.total_entries,
+         distance: @pagination_distance,
+         sort_field: sort_field,
+         sort_direction: sort_direction
+       }}
     else
       {:error, error} -> {:error, error}
       error -> {:error, error}
@@ -352,14 +350,17 @@ defmodule Backend.UserManager do
   """
   def create_group(attrs = %{"owner" => owner}) do
     with {:ok, group} <- %Group{} |> Group.changeset(attrs) |> Repo.insert(),
-        {:ok, group_membership} <- %{role: "Owner", group: group, user: owner} |> create_group_membership() do
-          {:ok, group}
+         {:ok, group_membership} <-
+           %{role: "Owner", group: group, user: owner} |> create_group_membership() do
+      {:ok, group}
     end
   end
 
   def create_group(attrs, owner_id) do
     case get_user(owner_id) do
-      nil -> {:error, :no_owner}
+      nil ->
+        {:error, :no_owner}
+
       owner ->
         attrs
         |> Map.put("owner", owner)
@@ -433,20 +434,23 @@ defmodule Backend.UserManager do
     {:ok, sort_direction} = Map.fetch(params, "sort_direction")
     {:ok, sort_field} = Map.fetch(params, "sort_field")
 
-    with {:ok, filter} <- Filtrex.parse_params(filter_config(:group_memberships), params["group_membership"] || %{}),
-        %Scrivener.Page{} = page <- do_paginate_group_memberships(filter, params) do
+    with {:ok, filter} <-
+           Filtrex.parse_params(
+             filter_config(:group_memberships),
+             params["group_membership"] || %{}
+           ),
+         %Scrivener.Page{} = page <- do_paginate_group_memberships(filter, params) do
       {:ok,
-        %{
-          group_memberships: page.entries,
-          page_number: page.page_number,
-          page_size: page.page_size,
-          total_pages: page.total_pages,
-          total_entries: page.total_entries,
-          distance: @pagination_distance,
-          sort_field: sort_field,
-          sort_direction: sort_direction
-        }
-      }
+       %{
+         group_memberships: page.entries,
+         page_number: page.page_number,
+         page_size: page.page_size,
+         total_pages: page.total_pages,
+         total_entries: page.total_entries,
+         distance: @pagination_distance,
+         sort_field: sort_field,
+         sort_direction: sort_direction
+       }}
     else
       {:error, error} -> {:error, error}
       error -> {:error, error}
@@ -511,15 +515,14 @@ defmodule Backend.UserManager do
   def create_group_membership(attrs, group_id, user_id) do
     with {:user, user = %{id: _id}} <- {:user, get_user(user_id)},
          {:group, group = %{id: _id}} <- {:group, get_group(group_id)} do
-          attrs
-          |> Map.put("user", user)
-          |> Map.put("group", group)
-          |> create_group_membership()
+      attrs
+      |> Map.put("user", user)
+      |> Map.put("group", group)
+      |> create_group_membership()
     else
       {:user, _} -> {:error, :could_not_get_user}
       {:group, _} -> {:error, :could_not_get_group}
     end
-
   end
 
   @doc """
@@ -570,34 +573,40 @@ defmodule Backend.UserManager do
   end
 
   def user_groups(%{id: user_id}) do
-    query = from g in Group,
-      select: g,
-      preload: [:owner],
-      inner_join: gm in GroupMembership,
-      on: g.id == gm.group_id,
-      where: gm.user_id == ^user_id
+    query =
+      from g in Group,
+        select: g,
+        preload: [:owner],
+        inner_join: gm in GroupMembership,
+        on: g.id == gm.group_id,
+        where: gm.user_id == ^user_id
 
-      query |> Repo.all()
+    query |> Repo.all()
   end
 
   def user_groups(_), do: []
 
   @spec group_membership(Group.t(), User.t()) :: GroupMembership.t() | nil
-  def group_membership(group, user) do
-    query = from gm in GroupMembership,
-      select: gm,
-      preload: [:group, :user],
-      where: gm.group_id == ^group.id,
-      where: gm.user_id == ^user.id
+  def group_membership(%{id: group_id}, %{id: user_id}) do
+    query =
+      from gm in GroupMembership,
+        select: gm,
+        preload: [:group, :user],
+        where: gm.group_id == ^group_id,
+        where: gm.user_id == ^user_id
 
     Repo.one(query)
   end
 
+  def group_membership(_, _), do: nil
+
   def get_memberships(%Group{id: group_id}) do
-    query = from gm in GroupMembership,
-      select: gm,
-      preload: [:user, :group],
-      where: gm.group_id == ^group_id
+    query =
+      from gm in GroupMembership,
+        select: gm,
+        preload: [:user, :group],
+        where: gm.group_id == ^group_id
+
     Repo.all(query)
   end
 
@@ -613,9 +622,11 @@ defmodule Backend.UserManager do
       _ -> {:error, :could_not_kick_user}
     end
   end
+
   def make_admin(user_id, group_id, admin) do
     change_membership(user_id, group_id, admin, %{role: "Admin"})
   end
+
   def transfer_ownership(user_id, group_id, admin) do
     with group = %{id: _id} <- get_group(group_id),
          user = %{id: _id} <- get_user(user_id),
@@ -625,9 +636,10 @@ defmodule Backend.UserManager do
       Repo.transaction(fn ->
         update_group_membership(user_membership, %{role: "Owner"})
         update_group_membership(admin_membership, %{role: "Admin"})
-        query = from g in Group,
-          where: g.id == ^group.id
 
+        query =
+          from g in Group,
+            where: g.id == ^group.id
 
         Repo.update_all(query, set: [owner_id: user.id])
       end)
@@ -636,6 +648,7 @@ defmodule Backend.UserManager do
       _ -> {:error, :could_not_kick_user}
     end
   end
+
   def remove_admin(user_id, group_id, admin) do
     with group = %{id: _id} <- get_group(group_id),
          user = %{id: _id} <- get_user(user_id),
@@ -648,11 +661,13 @@ defmodule Backend.UserManager do
       _ -> {:error, :could_not_kick_user}
     end
   end
+
   def join_group(user, group_id, join_code) do
     with group = %{join_code: ^join_code} <- get_group(group_id) do
       create_group_membership(%{role: "User", group: group, user: user})
     end
   end
+
   def leave_group(user, group_id) do
     with group = %{id: _} <- get_group(group_id),
          membership = %{id: _} <- group_membership(group, user),
