@@ -20,12 +20,12 @@ defmodule Backend.SheetsTest do
       assert {:ok, %{name: ^new_name}} = Sheets.edit_deck_sheet(sheet, %{name: new_name}, owner)
     end
 
-    test "successfully allow anybody to edit" do
+    test "successfully allow anybody to admin" do
       new_name = Ecto.UUID.generate()
       %{sheet: sheet, owner: owner} = create_sheet()
       # can't edit anonymously before changing
       assert {:error, _} = Sheets.edit_deck_sheet(sheet, %{name: new_name}, nil)
-      assert {:ok, edited} = Sheets.edit_deck_sheet(sheet, %{public_role: :editor}, owner)
+      assert {:ok, edited} = Sheets.edit_deck_sheet(sheet, %{public_role: :admin}, owner)
 
       assert {:ok, %{name: ^new_name}} = Sheets.edit_deck_sheet(edited, %{name: new_name}, nil)
     end
@@ -59,6 +59,20 @@ defmodule Backend.SheetsTest do
         )
 
       assert {:ok, listing} = Sheets.create_deck_sheet_listing(sheet, deck, owner)
+    end
+
+    test "create new listing with comment" do
+      %{sheet: sheet, owner: owner} = create_sheet()
+
+      comment = Ecto.UUID.generate()
+
+      {:ok, deck} =
+        Hearthstone.create_or_get_deck(
+          "AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA="
+        )
+
+      assert {:ok, %{comment: ^comment}} =
+               Sheets.create_deck_sheet_listing(sheet, deck, owner, %{comment: comment})
     end
 
     test "Successfully change name, source, and comment" do

@@ -18,7 +18,7 @@ defmodule BackendWeb.DeckSheetsIndexLive do
           <DeckSheetsModal id="new_modal" user={@user}/>
         </div>
         <Table id="deck_sheets_table" data={sheet <- sheets(@user)} striped>
-          <Column label="Name">{sheet.name}</Column>
+          <Column label="Name"><a href={"/deck-sheets/#{sheet.id}"} target="#">{sheet.name}</a></Column>
           <Column label="Owner">{User.display_name(sheet.owner)}</Column>
           <Column label="Group">{group_name(sheet)}</Column>
           <Column label="Actions">
