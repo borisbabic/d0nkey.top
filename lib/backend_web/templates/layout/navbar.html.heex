@@ -22,6 +22,7 @@
           <div class="navbar-dropdown">
             <%= if @user do %>
               <a class="navbar-item" href={"#{ Routes.player_path(@conn, :player_profile, @user) }"}>Player Profile</a>
+              <a class="navbar-item" href={"#{ Routes.live_path(@conn, BackendWeb.DeckSheetsIndexLive) }"}>Deck Sheets</a>
               <a class="navbar-item" href={"#{ Routes.live_path(@conn, BackendWeb.MyDecksLive) }"}>My Decks</a>
               <a class="navbar-item" href={"#{ Routes.live_path(@conn, BackendWeb.MyReplaysLive) }"}>My Replays</a>
               <a class="navbar-item" href={"#{ Routes.live_path(@conn, BackendWeb.MyGroupsLive) }"}>My Groups</a>
