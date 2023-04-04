@@ -7,6 +7,8 @@ defmodule BackendWeb.DeckSheetViewLive do
   alias Components.DeckSheetsModal
   alias Components.DeckListingModal
   alias Components.ExpandableDecklist
+  alias Components.DeckCard
+  alias Components.Decklist
   alias SurfaceBulma.Table
   alias SurfaceBulma.Table.Column
   alias Components.LivePatchDropdown
@@ -18,6 +20,7 @@ defmodule BackendWeb.DeckSheetViewLive do
   data(sheet_id, :integer)
   data(user, :any)
   data(deck_filters, :any)
+  data(view_mode, :string, default: "sheet")
 
   def mount(params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> assign_sheet(params)}
@@ -38,17 +41,25 @@ defmodule BackendWeb.DeckSheetViewLive do
             {/if}
 
           <LivePatchDropdown
+            options={[{"sheet", "Sheet"}, {"decks", "Decks"}]}
+            title={"View Mode"}
+            param={"view_mode"}
+            url_params={url_params(assigns)}
+            path_params={path_params(assigns)}
+            selected_params={url_params(assigns)}
+            live_view={__MODULE__} />
+          <LivePatchDropdown
             options={DecksExplorer.class_options("Any Class")}
             title={"Class"}
             param={"deck_class"}
-            url_params={@deck_filters}
+            url_params={url_params(assigns)}
             path_params={path_params(assigns)}
-            selected_params={@deck_filters}
+            selected_params={url_params(assigns)}
             live_view={__MODULE__} />
             <PlayableCardSelect id={"deck_include_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_include_cards")} selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
             <PlayableCardSelect id={"deck_exclude_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_exclude_cards")} selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
           </div>
-          <Table id="deck_sheet_listing_table" data={listing <- Sheets.get_listings!(@sheet, @user, @deck_filters)} striped>
+          <Table :if={@view_mode == "sheet"} id="deck_sheet_listing_table" data={listing <- Sheets.get_listings!(@sheet, @user, @deck_filters)} striped>
             <Column label="Deck"><ExpandableDecklist deck={listing.deck} name={listing.name} id={"expandable_deck_for_listing_#{listing.id}"}/> </Column>
             <Column label="Source">{listing.source}</Column>
             <Column label="Comment">{listing.comment}</Column>
@@ -56,6 +67,19 @@ defmodule BackendWeb.DeckSheetViewLive do
               <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
             </Column>
           </Table>
+          <div :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
+            <div :for={listing <- Sheets.get_listings!(@sheet, @user, @deck_filters)} class="column is-narrow">
+              <DeckCard>
+                <Decklist deck={listing.deck} name={listing.name} id={"deck_for_#{listing.id}"} />
+                <:after_deck>
+                  <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
+                  <div class="tag column is-info" :if={listing.source}>{listing.source}</div>
+                  <p class="column has-text-centered" :if={listing.comment && listing.comment != ""}>{listing.comment}</p>
+                </:after_deck>
+              </DeckCard>
+            </div>
+
+          </div>
         {#else}
           <span>Can't view sheet, insufficient permissions</span>
         {/if}
@@ -99,7 +123,9 @@ defmodule BackendWeb.DeckSheetViewLive do
       Map.take(params, ["deck_include_cards", "deck_exclude_cards", "deck_class"])
       |> DecksExplorer.parse_int(["deck_include_cards", "deck_exclude_cards"])
 
-    {:noreply, assign(socket, :deck_filters, filters)}
+    view_mode = Map.get(params, "view_mode", "sheet")
+
+    {:noreply, assign(socket, :deck_filters, filters) |> assign(:view_mode, view_mode)}
   end
 
   def handle_info({:update_params, params}, socket = %{assigns: assigns}) do
@@ -108,4 +134,6 @@ defmodule BackendWeb.DeckSheetViewLive do
   end
 
   defp path_params(%{sheet: %{id: id}}), do: id
+
+  defp url_params(%{deck_filters: df, view_mode: vm}), do: Map.put(df, "view_mode", vm)
 end

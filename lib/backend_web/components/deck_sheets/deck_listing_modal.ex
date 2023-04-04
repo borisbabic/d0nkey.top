@@ -20,11 +20,17 @@ defmodule Components.DeckListingModal do
   prop(button_title, :any, default: nil)
   prop(button_class, :css_class, default: "button")
 
+  data(modal_part_id, :string)
+
+  def mount(socket) do
+    {:ok, assign(socket, :modal_part_id, Ecto.UUID.generate())}
+  end
+
   def render(assigns) do
     ~F"""
       <div>
       <Modal
-        id={id(@existing, @deck)}
+        id={id(@existing, @deck) <> @modal_part_id}
         :if={can_contribute?(@sheet, @user)}
         button_title={button_title(@button_title, @existing)}
         button_class={@button_class}
@@ -93,7 +99,7 @@ defmodule Components.DeckListingModal do
   def handle_event(
         "submit",
         %{"listing" => attrs},
-        socket = %{assigns: %{user: user, existing: existing, deck: deck}}
+        socket = %{assigns: %{user: user, existing: existing, deck: deck, modal_part_id: id_part}}
       ) do
     if existing do
       Sheets.edit_deck_sheet_listing(existing, attrs, user)
@@ -105,7 +111,7 @@ defmodule Components.DeckListingModal do
         Sheets.create_deck_sheet_listing(sheet, deck, user, rest)
       end
     end
-    |> Modal.handle_result(socket, id(existing, deck))
+    |> Modal.handle_result(socket, id(existing, deck) <> id_part)
 
     {:noreply, socket}
   end
