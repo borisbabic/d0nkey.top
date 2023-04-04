@@ -5,12 +5,47 @@ defmodule Bot.LdbMessageHandler do
   import Bot.MessageHandlerUtil
 
   def handle_battletags_leaderboard(msg) do
-    msg
-    |> options_or_guild_battletags()
-    |> get_leaderboard_entries()
+    {battletags, additional_criteria} = battletags_and_criteria(msg)
+
+    get_leaderboard_entries(battletags, additional_criteria)
     |> create_tables()
     |> join_tables()
     |> send_tables(msg.channel_id)
+  end
+
+  def battletags_and_criteria(%{content: content, guild_id: guild_id}) do
+    {criteria, rest} =
+      content
+      |> get_options()
+      |> Enum.reduce({[], []}, fn part, {c, r} ->
+        case String.split(part, ":") do
+          [p] -> {c, [p | r]}
+          crit -> {[List.to_tuple(crit) | c], r}
+        end
+      end)
+
+    battletags =
+      case rest do
+        [] -> get_guild_battletags!(guild_id)
+        b -> b
+      end
+
+    use_max_rank = !Enum.any?(rest)
+
+    {
+      battletags,
+      criteria |> Map.new() |> add_default_criteria(use_max_rank)
+    }
+  end
+
+  defp add_default_criteria(criteria, use_max_rank) do
+    if use_max_rank do
+      %{"max_rank" => 5000}
+    else
+      %{}
+    end
+    |> Map.put("limit", 100)
+    |> Map.merge(criteria)
   end
 
   def send_tables(tables, channel_id), do: Enum.each(tables, &send_table(&1, channel_id))
@@ -20,10 +55,13 @@ defmodule Bot.LdbMessageHandler do
     send_or_travolta(message, channel_id)
   end
 
-  def get_leaderboard_entries(battletags_long) do
+  def get_leaderboard_entries(battletags_long, additional_criteria) do
+    # ensure it's a list
+    criteria = Enum.map(additional_criteria, & &1)
+
     battletags_long
     |> Enum.map(&InvitedPlayer.shorten_battletag/1)
-    |> Leaderboards.get_current_player_entries([{"limit", 100}])
+    |> Leaderboards.get_current_player_entries(criteria)
   end
 
   def join_tables(tables) do

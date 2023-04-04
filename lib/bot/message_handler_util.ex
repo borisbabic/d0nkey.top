@@ -2,7 +2,6 @@ defmodule Bot.MessageHandlerUtil do
   @moduledoc false
   require Logger
   alias Nostrum.Api
-  alias Nostrum.Struct.Channel
 
   @spec get_options(String.t()) :: [String.t()]
   def get_options(content) do

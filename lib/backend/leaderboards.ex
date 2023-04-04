@@ -784,6 +784,18 @@ defmodule Backend.Leaderboards do
   defp build_entries_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_entries_query/2)
 
+  defp compose_entries_query({season_shorthand, season_id}, query)
+       when season_shorthand in ["s", "ssn"],
+       do: compose_entries_query({"season_id", season_id}, query)
+
+  defp compose_entries_query({region_shorthand, region}, query)
+       when region_shorthand in ["r", "rgn"],
+       do: compose_entries_query({"region", region}, query)
+
+  defp compose_entries_query({ldb_shorthand, leaderboard_id}, query)
+       when ldb_shorthand in ["l", "ldb", "ldb_id"],
+       do: compose_entries_query({"leaderboard_id", leaderboard_id}, query)
+
   defp compose_entries_query({"season", %{id: id}}, query) when is_integer(id) do
     query
     |> where([entry: e], e.season_id == ^id)
@@ -875,13 +887,13 @@ defmodule Backend.Leaderboards do
   defp compose_entries_query({"min_rank", rank}, query) do
     query
     |> add_season_join()
-    |> where([entry: s], s.rank >= ^rank)
+    |> where([entry: s], s.rank >= ^Util.to_int_or_orig(rank))
   end
 
   defp compose_entries_query({"max_rank", rank}, query) do
     query
     |> add_season_join()
-    |> where([entry: s], s.rank <= ^rank)
+    |> where([entry: s], s.rank <= ^Util.to_int_or_orig(rank))
   end
 
   defp compose_entries_query({"order_by", {direction, field}}, query) do
