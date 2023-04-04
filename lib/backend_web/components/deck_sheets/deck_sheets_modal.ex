@@ -14,14 +14,15 @@ defmodule Components.DeckSheetsModal do
 
   prop(user, :any, required: true)
   prop(existing, :any, default: nil)
+  prop(button_title, :string, default: nil)
 
   def render(assigns) do
     ~F"""
     <div>
       <Modal
         id={id(@existing)}
-        button_title={button_title(@existing)}
-        :if={can_access_sheet?(@existing, @user)}
+        button_title={@button_title || button_title(@existing)}
+        :if={Sheets.can_admin?(@existing, @user)}
         title={title(@existing)}>
         <Form for={:deck_sheet} submit="submit" opts={id: "sheet_form_#{id(@existing)}"}>
           <Field name={:name}>
@@ -77,7 +78,7 @@ defmodule Components.DeckSheetsModal do
   defp id(%{id: id}), do: "edit_deck_sheet_inner_#{id}"
   defp id(_), do: "new_deck_sheet_inner"
   defp can_access_sheet?(nil, _), do: true
-  defp can_access_sheet?(sheet, user), do: Sheets.can_edit?(sheet, user)
+  defp can_access_sheet?(sheet, user), do: Sheets.can_admin?(sheet, user)
 
   defp button_title(%{id: id}) when is_integer(id), do: "Edit"
   defp button_title(_), do: "New"

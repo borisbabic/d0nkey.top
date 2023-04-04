@@ -1,4 +1,4 @@
-defmodule BackendWeb.DeckSheetsIndexTest do
+defmodule BackendWeb.DeckSheetsIndexLiveTest do
   use BackendWeb.ConnCase
   import Phoenix.LiveViewTest
   alias Backend.Sheets
@@ -25,6 +25,20 @@ defmodule BackendWeb.DeckSheetsIndexTest do
   @tag :authenticated
   test "includes sheet", %{conn: conn, user: user} do
     %{sheet: %{name: name}} = create_sheet(user)
+    {:ok, _view, html} = live(conn, "/deck-sheets")
+    assert html =~ name
+  end
+
+  @tag :authenticated
+  test "includes group sheet", %{conn: conn, user: user} do
+    other_user = create_temp_user()
+
+    {:ok, group = %{join_code: join_code, id: group_id}} =
+      Backend.UserManager.create_group(%{"name" => "Test Group"}, other_user.id)
+
+    {:ok, _} = Backend.UserManager.join_group(user, group_id, join_code)
+
+    %{sheet: %{name: name}} = create_sheet(other_user, %{group: group})
     {:ok, _view, html} = live(conn, "/deck-sheets")
     assert html =~ name
   end

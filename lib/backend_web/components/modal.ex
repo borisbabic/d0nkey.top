@@ -1,6 +1,7 @@
 defmodule Components.Modal do
   use BackendWeb, :surface_live_component
   prop(button_title, :string, required: false, default: nil)
+  prop(button_class, :string, required: false, default: "button")
   prop(title, :string, required: true)
   prop(show_modal, :boolean, default: false)
   prop(show_success, :boolean, default: false)
@@ -20,7 +21,7 @@ defmodule Components.Modal do
   def render(assigns) do
     ~F"""
     <div>
-      <button class="button" type="button" :on-click="show_modal">{@button_title || @title} </button>
+      <button class={@button_class} type="button" :on-click="show_modal">{@button_title || @title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div :if={@show_modal} class="modal is-active">
         <div class="modal-background"><#slot name="background"/></div>

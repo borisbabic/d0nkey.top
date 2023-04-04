@@ -72,10 +72,13 @@ defmodule Components.Decklist do
           </div>
           <div :if={@show_cards}>
             <Context get={user: user}>
-              <DustBar :if={show_above(user)} deck={@deck} class={class_class}/>
-              <CardsList comparison={@comparison} sideboard={@deck.sideboards} cards={@deck.cards} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
-              <DustBar :if={show_below(user)} deck={@deck} class={class_class} />
+              <Context put={user: user}>
+                <DustBar :if={show_above(user)} deck={@deck} class={class_class}/>
+                <CardsList comparison={@comparison} sideboard={@deck.sideboards} cards={@deck.cards} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
+                <DustBar :if={show_below(user)} deck={@deck} class={class_class} />
+              </Context>
             </Context>
+
           </div>
           <span style="font-size: 0; line-size:0; display:block">
             # You really like to select a lot of stuff, don't ya you beautiful being! 🤎 D0nkey
