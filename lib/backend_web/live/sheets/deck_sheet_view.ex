@@ -12,7 +12,6 @@ defmodule BackendWeb.DeckSheetViewLive do
   alias SurfaceBulma.Table
   alias SurfaceBulma.Table.Column
   alias Components.LivePatchDropdown
-  alias Components.Filter.ArchetypeSelect
   alias Components.Filter.PlayableCardSelect
   alias Components.DecksExplorer
 
@@ -69,12 +68,12 @@ defmodule BackendWeb.DeckSheetViewLive do
           </Table>
           <div :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
             <div :for={listing <- Sheets.get_listings!(@sheet, @user, @deck_filters)} class="column is-narrow">
-              <DeckCard>
+              <DeckCard after_deck_class={"columns is-multiline is-mobile"}>
                 <Decklist deck={listing.deck} name={listing.name} id={"deck_for_#{listing.id}"} />
                 <:after_deck>
                   <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
                   <div class="tag column is-info" :if={listing.source}>{listing.source}</div>
-                  <p class="column has-text-centered" :if={listing.comment && listing.comment != ""}>{listing.comment}</p>
+                  <p class="column has-text-centered is-word-wrap" :if={listing.comment && listing.comment != ""}>{listing.comment}</p>
                 </:after_deck>
               </DeckCard>
             </div>
