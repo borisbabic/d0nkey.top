@@ -142,6 +142,48 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
 
   # end
 
+  @tag :authenticated
+  test "view mode sheet doesn't include card name", %{conn: conn, user: user} do
+    %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
+    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?view_mode=sheet")
+    assert html =~ sheet_name
+    assert html =~ listing_name
+    refute html =~ "Hydralodon"
+  end
+
+  @tag :authenticated
+  test "view mode decks doesn't include card name", %{conn: conn, user: user} do
+    %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
+    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?view_mode=decks")
+    assert html =~ sheet_name
+    assert html =~ listing_name
+    assert html =~ "Hydralodon"
+  end
+
+  @tag :authenticated
+  test "view mode sheet works with duplicated deck", %{conn: conn, user: user} do
+    %{sheet: sheet = %{name: sheet_name, id: id}, listing: %{name: listing_name, deck: deck}} =
+      create_listing(user)
+
+    %{listing: %{name: other_listing_name}} = create_listing(user, sheet, %{deck: deck})
+    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?view_mode=sheet")
+    assert html =~ sheet_name
+    assert html =~ listing_name
+    assert html =~ other_listing_name
+  end
+
+  @tag :authenticated
+  test "view mode decks works with duplicated deck", %{conn: conn, user: user} do
+    %{sheet: sheet = %{name: sheet_name, id: id}, listing: %{name: listing_name, deck: deck}} =
+      create_listing(user)
+
+    %{listing: %{name: other_listing_name}} = create_listing(user, sheet, %{deck: deck})
+    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?view_mode=decks")
+    assert html =~ sheet_name
+    assert html =~ listing_name
+    assert html =~ other_listing_name
+  end
+
   #### HELPERS
   defp create_listing_and_sheet(user, extra_sheet_attrs \\ %{}, extra_listing_attrs \\ %{}) do
     sheet_ret = %{sheet: sheet} = create_sheet(user, extra_sheet_attrs)
