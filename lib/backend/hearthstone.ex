@@ -389,6 +389,18 @@ defmodule Backend.Hearthstone do
   defp build_decks_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_decks_query/2)
 
+  def add_deck_criteria(query, criteria, joiner) do
+    deck_criteria = for {"deck_" <> new_key, val} <- criteria, do: {new_key, val}
+
+    if Enum.any?(deck_criteria) do
+      query
+      |> joiner.()
+      |> build_decks_query(deck_criteria)
+    else
+      query
+    end
+  end
+
   defp compose_decks_query({"class", nil}, query), do: query |> where([deck: d], is_nil(d.class))
 
   defp compose_decks_query({"class", class}, query),
@@ -420,7 +432,7 @@ defmodule Backend.Hearthstone do
     |> Integer.parse()
     |> case do
       {num, _} -> compose_decks_query({"recently_played", num}, query)
-      _ -> query
+      c -> query
     end
   end
 
