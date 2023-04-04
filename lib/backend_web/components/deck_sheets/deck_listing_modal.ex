@@ -86,7 +86,14 @@ defmodule Components.DeckListingModal do
   defp sheet_id(_, _), do: nil
 
   defp sheet_options(user) do
-    Sheets.contributeable_sheets(user)
+    case Sheets.contributeable_sheets(user) do
+      [] ->
+        {:ok, sheet} = Sheets.create_deck_sheet(user, "First Sheet")
+        [sheet]
+
+      sheets ->
+        sheets
+    end
     |> Enum.map(&{&1.name, &1.id})
   end
 
