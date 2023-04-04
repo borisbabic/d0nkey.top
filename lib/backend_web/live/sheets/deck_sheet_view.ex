@@ -9,10 +9,15 @@ defmodule BackendWeb.DeckSheetViewLive do
   alias Components.ExpandableDecklist
   alias SurfaceBulma.Table
   alias SurfaceBulma.Table.Column
+  alias Components.LivePatchDropdown
+  alias Components.Filter.ArchetypeSelect
+  alias Components.Filter.PlayableCardSelect
+  alias Components.DecksExplorer
 
   data(sheet, :integer)
   data(sheet_id, :integer)
   data(user, :any)
+  data(deck_filters, :any)
 
   def mount(params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> assign_sheet(params)}
@@ -31,8 +36,19 @@ defmodule BackendWeb.DeckSheetViewLive do
             {#if Sheets.can_contribute?(@sheet, @user)}
               <DeckListingModal button_title="Add Deck" id={"create_new_listing"} sheet={@sheet} user={@user}/>
             {/if}
+
+          <LivePatchDropdown
+            options={DecksExplorer.class_options("Any Class")}
+            title={"Class"}
+            param={"deck_class"}
+            url_params={@deck_filters}
+            path_params={path_params(assigns)}
+            selected_params={@deck_filters}
+            live_view={__MODULE__} />
+            <PlayableCardSelect id={"deck_include_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_include_cards")} selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
+            <PlayableCardSelect id={"deck_exclude_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_exclude_cards")} selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
           </div>
-          <Table id="deck_sheet_listing_table" data={listing <- Sheets.get_listings!(@sheet, @user)} striped>
+          <Table id="deck_sheet_listing_table" data={listing <- Sheets.get_listings!(@sheet, @user, @deck_filters)} striped>
             <Column label="Deck"><ExpandableDecklist deck={listing.deck} name={listing.name} id={"expandable_deck_for_listing_#{listing.id}"}/> </Column>
             <Column label="Source">{listing.source}</Column>
             <Column label="Comment">{listing.comment}</Column>
@@ -77,4 +93,19 @@ defmodule BackendWeb.DeckSheetViewLive do
       socket
     }
   end
+
+  def handle_params(params, _uri, socket) do
+    filters =
+      Map.take(params, ["deck_include_cards", "deck_exclude_cards", "deck_class"])
+      |> DecksExplorer.parse_int(["deck_include_cards", "deck_exclude_cards"])
+
+    {:noreply, assign(socket, :deck_filters, filters)}
+  end
+
+  def handle_info({:update_params, params}, socket = %{assigns: assigns}) do
+    {:noreply,
+     push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params(assigns), params))}
+  end
+
+  defp path_params(%{sheet: %{id: id}}), do: id
 end

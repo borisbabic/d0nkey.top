@@ -5,6 +5,8 @@ defmodule Backend.Sheets do
   alias Backend.Sheets.DeckSheetListing
   alias Backend.UserManager
   alias Backend.UserManager.User
+  alias Backend.Hearthstone
+  alias Backend.Hearthstone.Deck
   alias Backend.Repo
 
   @spec create_deck_sheet(User.t(), String.t(), Map.t()) ::
@@ -35,16 +37,18 @@ defmodule Backend.Sheets do
     Repo.one(query)
   end
 
-  @spec get_listings(DeckSheet.t(), User.t() | nil) :: {:ok, [DeckSheetListing]} | {:error, any()}
-  def get_listings(deck_sheet, user) do
+  @spec get_listings(DeckSheet.t(), User.t() | nil, Map.t() | list()) ::
+          {:ok, [DeckSheetListing]} | {:error, any()}
+  def get_listings(deck_sheet, user, additional_criteria \\ []) do
     if can_view?(deck_sheet, user) do
-      {:ok, do_get_listings(deck_sheet)}
+      {:ok, do_get_listings(deck_sheet, additional_criteria)}
     else
       {:error, :insufficient_permissions}
     end
   end
 
-  def get_listings!(deck_sheet, user), do: get_listings(deck_sheet, user) |> Util.bangify()
+  def get_listings!(deck_sheet, user, additional_criteria \\ []),
+    do: get_listings(deck_sheet, user, additional_criteria) |> Util.bangify()
 
   def viewable_deck_sheets(user), do: owned_deck_sheets(user) |> add_group_sheets(user, :viewer)
 
@@ -110,11 +114,26 @@ defmodule Backend.Sheets do
     |> preload_sheet()
   end
 
-  @spec do_get_listings(DeckSheet.t()) :: [DeckSheetListing.t()]
-  defp do_get_listings(%{id: id}) do
-    query = from dsl in DeckSheetListing, where: dsl.sheet_id == ^id, preload: [:deck, :sheet]
+  @spec do_get_listings(DeckSheet.t(), Map.t() | list()) :: [DeckSheetListing.t()]
+  defp do_get_listings(%{id: id}, additional_criteria) do
+    query =
+      from(dsl in DeckSheetListing,
+        as: :listing,
+        where: dsl.sheet_id == ^id,
+        preload: [:deck, :sheet]
+      )
+      |> handle_deck_criteria(additional_criteria)
 
     Repo.all(query)
+  end
+
+  defp join_deck(query) do
+    query
+    |> join(:inner, [listing: l], d in Deck, on: d.id == l.deck_id, as: :deck)
+  end
+
+  defp handle_deck_criteria(query, criteria) do
+    Hearthstone.add_deck_criteria(query, criteria, &join_deck/1)
   end
 
   defp do_create_deck_sheet_listing(sheet, deck, attrs) do
