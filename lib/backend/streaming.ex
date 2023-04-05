@@ -396,6 +396,12 @@ defmodule Backend.Streaming do
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
   end
 
+  defp compose_streamer_deck_query({"festival_of_legends", "yes"}, query) do
+    card_ids = festival_of_legends_card_ids()
+
+    query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+  end
+
   defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"exclude_cards", cards}, query),
@@ -449,6 +455,19 @@ defmodule Backend.Streaming do
   end
 
   defp compose_streamer_deck_query(_unrecognized, query), do: query
+
+  def festival_of_legends_card_ids(filter_out \\ [90_749]), do: filter_card_set(1809, filter_out)
+
+  defp filter_card_set(card_set_id, filter_out_ids) do
+    Backend.Hearthstone.CardBag.all_cards()
+    |> Enum.flat_map(fn c ->
+      if c.card_set_id == card_set_id && c.id not in filter_out_ids do
+        [c.id]
+      else
+        []
+      end
+    end)
+  end
 
   defp alterac_valley_card_ids() do
     Backend.HearthstoneJson.collectible_cards()
