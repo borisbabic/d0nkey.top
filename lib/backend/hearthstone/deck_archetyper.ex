@@ -371,8 +371,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   def archetype(%{format: 2, cards: c, class: "SHAMAN"}) do
     card_info = full_cards(c)
 
-    Backend.Hearthstone.CardBag.all()
-    |> Enum.map(&elem(&1, 1))
+    Backend.Hearthstone.CardBag.all_cards()
     |> Enum.find(&(&1.name =~ "Find the Imposter"))
     |> Backend.Hearthstone.Card.questline?()
 

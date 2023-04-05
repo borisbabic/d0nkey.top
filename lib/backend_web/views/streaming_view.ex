@@ -196,19 +196,19 @@ defmodule BackendWeb.StreamingView do
   end
 
   def create_lk_dropdown(conn) do
-    curr = with nil <- conn.query_params["lich_king"], do: "no"
+    curr = with nil <- conn.query_params["festival_of_legends"], do: "no"
 
     options =
-      [{"yes", "Includes New Cards"}, {"no", "Any decks"}]
+      [{"yes", "Includes FoL Cards"}, {"no", "Any decks"}]
       |> Enum.map(fn {val, display} ->
         %{
-          link: update_link(conn, "lich_king", val),
+          link: update_link(conn, "festival_of_legends", val),
           selected: val == curr,
           display: display
         }
       end)
 
-    {options, "New Cards"}
+    {options, "Festival of Legends"}
   end
 
   def create_min_minutes_played_dropdown(conn) do
