@@ -108,15 +108,6 @@ defmodule BackendWeb.DeckSheetViewLive do
     {:noreply, socket}
   end
 
-  def handle_event("toggle_cards", params, socket) do
-    Components.ExpandableDecklist.toggle_cards(params)
-
-    {
-      :noreply,
-      socket
-    }
-  end
-
   def handle_params(params, _uri, socket) do
     filters =
       Map.take(params, ["deck_include_cards", "deck_exclude_cards", "deck_class"])
