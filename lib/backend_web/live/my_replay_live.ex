@@ -3,6 +3,7 @@ defmodule BackendWeb.MyReplaysLive do
   use BackendWeb, :surface_live_view
   alias Backend.UserManager.User
   alias Components.ReplayExplorer
+  use Components.ExpandableDecklist
 
   data(user, :any)
   data(filters, :map)
@@ -44,26 +45,17 @@ defmodule BackendWeb.MyReplaysLive do
     }
   end
 
-
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
 
   def handle_params(params, _uri, socket) do
     filters = ReplayExplorer.filter_relevant(params)
+
     {
       :noreply,
       socket
       |> assign(:filters, filters)
-    }
-  end
-
-  def handle_event("toggle_cards", params, socket) do
-    Components.ExpandableDecklist.toggle_cards(params)
-
-    {
-      :noreply,
-      socket
     }
   end
 

@@ -4,6 +4,8 @@ defmodule BackendWeb.StreamingNowLive do
   alias Components.LiveStreamer
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Surface.Components.LivePatch
+  use Components.ExpandableDecklist
+
   @subscriptions ["streaming:hs:streaming_now"]
   data(streaming_now, :map)
   data(filter_sort, :map)
@@ -130,15 +132,6 @@ defmodule BackendWeb.StreamingNowLive do
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
     {:noreply, socket}
-  end
-
-  def handle_event("toggle_cards", params, socket) do
-    Components.ExpandableDecklist.toggle_cards(params)
-
-    {
-      :noreply,
-      socket
-    }
   end
 
   def handle_info(

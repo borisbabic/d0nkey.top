@@ -4,6 +4,7 @@ defmodule BackendWeb.PlayerReplaysLive do
   alias Backend.UserManager.User
   alias Backend.UserManager
   alias Components.ReplayExplorer
+  use Components.ExpandableDecklist
 
   data(user, :any)
   data(player_btag, :any)
@@ -44,30 +45,22 @@ defmodule BackendWeb.PlayerReplaysLive do
     }
   end
 
-
   def handle_info({:update_params, params}, socket = %{assigns: %{player_btag: player_btag}}) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, player_btag, params))}
   end
+
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
 
   def handle_params(params, _uri, socket) do
     filters = ReplayExplorer.filter_relevant(params)
+
     {
       :noreply,
       socket
       |> assign(:filters, filters)
       |> assign(:player_btag, params["player_btag"])
-    }
-  end
-
-  def handle_event("toggle_cards", params, socket) do
-    Components.ExpandableDecklist.toggle_cards(params)
-
-    {
-      :noreply,
-      socket
     }
   end
 

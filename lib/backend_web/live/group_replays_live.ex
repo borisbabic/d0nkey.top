@@ -4,6 +4,7 @@ defmodule BackendWeb.GroupReplaysLive do
   alias Backend.UserManager.User
   alias Backend.UserManager
   alias Components.ReplayExplorer
+  use Components.ExpandableDecklist
 
   data(user, :any)
   data(group_id, :any)
@@ -45,30 +46,22 @@ defmodule BackendWeb.GroupReplaysLive do
     }
   end
 
-
   def handle_info({:update_params, params}, socket = %{assigns: %{group_id: group_id}}) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, group_id, params))}
   end
+
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
 
   def handle_params(params, _uri, socket) do
     filters = ReplayExplorer.filter_relevant(params)
+
     {
       :noreply,
       socket
       |> assign(:filters, filters)
       |> assign(:group_id, params["group_id"])
-    }
-  end
-
-  def handle_event("toggle_cards", params, socket) do
-    Components.ExpandableDecklist.toggle_cards(params)
-
-    {
-      :noreply,
-      socket
     }
   end
 

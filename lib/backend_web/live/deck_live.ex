@@ -9,6 +9,7 @@ defmodule BackendWeb.DeckLive do
   alias Components.DeckStatsTable
   alias Components.ReplayExplorer
   alias Backend.DeckInteractionTracker, as: Tracker
+  use Components.ExpandableDecklist
 
   data(deck, :any)
   data(streamer_decks, :any)
@@ -120,15 +121,6 @@ defmodule BackendWeb.DeckLive do
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
     {:noreply, socket}
-  end
-
-  def handle_event("toggle_cards", params, socket) do
-    Components.ExpandableDecklist.toggle_cards(params)
-
-    {
-      :noreply,
-      socket
-    }
   end
 
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
