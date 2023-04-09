@@ -186,7 +186,7 @@ defmodule BackendWeb.BattlefyView do
 
     render(
       "future_opponents.html",
-       %{
+      %{
         conn: conn,
         show_future: opponent |> Enum.any?(),
         show_player: player |> Enum.any?(),
@@ -200,7 +200,12 @@ defmodule BackendWeb.BattlefyView do
         show_class_stats: class_stats |> Enum.count() > 0,
         standings_link: Routes.battlefy_path(conn, :tournament, tournament.id),
         yaytears: yaytears
-      } |> add_stage_attrs(tournament, params[:stage_id], & Routes.battlefy_path(conn, :tournament_player, tournament.id, team_name, %{stage_id: &1}))
+      }
+      |> add_stage_attrs(
+        tournament,
+        params[:stage_id],
+        &Routes.battlefy_path(conn, :tournament_player, tournament.id, team_name, %{stage_id: &1})
+      )
     )
   end
 
@@ -262,10 +267,11 @@ defmodule BackendWeb.BattlefyView do
   defp put_param(params, key, func) do
     Map.put(params, key, func.(params))
   end
+
   defp add_tournament_stage_attrs(params) do
     add_stage_attrs(
       params,
-      & Routes.battlefy_path(
+      &Routes.battlefy_path(
         params.conn,
         :tournament,
         params.tournament.id,
@@ -273,35 +279,37 @@ defmodule BackendWeb.BattlefyView do
       )
     )
   end
+
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def render(
         "tournament.html",
         params = %{standings_raw: _}
       ) do
-    new_params = params
-    |> put_param(:ongoing, &calculate_ongoing/1)
-    |> put_param(:is_tour_stop, &tour_stop?/1)
-    |> Map.put(:use_countries, true)
-    |> handle_standings()
-    |> handle_highlights()
-    |> put_param(:user_subtitle, &user_subtitle/1)
-    |> put_param(:subtitle, &tournament_subtitle/1)
-    |> put_param(:player_options, &create_player_options/1)
-    |> put_param(:dropdowns, &create_tournament_dropdowns/1)
-    |> add_tournament_stage_attrs()
-    |> Kernel.then(fn p ->
-      Map.merge(p, %{
-        link: Battlefy.create_tournament_link(p.tournament),
-        streams_subtitle: streams_subtitle(p.tournament),
-        name: p.tournament.name,
-        show_invited: MapSet.size(p.invited_mapset) > 0,
-        show_decks: Enum.any?(p.lineups),
-        show_score: Enum.any?(p.standings, fn s -> s.has_score end)
-      })
-    end)
-
+    new_params =
+      params
+      |> put_param(:ongoing, &calculate_ongoing/1)
+      |> put_param(:is_tour_stop, &tour_stop?/1)
+      |> Map.put(:use_countries, true)
+      |> handle_standings()
+      |> handle_highlights()
+      |> put_param(:user_subtitle, &user_subtitle/1)
+      |> put_param(:subtitle, &tournament_subtitle/1)
+      |> put_param(:player_options, &create_player_options/1)
+      |> put_param(:dropdowns, &create_tournament_dropdowns/1)
+      |> add_tournament_stage_attrs()
+      |> Kernel.then(fn p ->
+        Map.merge(p, %{
+          link: Battlefy.create_tournament_link(p.tournament),
+          streams_subtitle: streams_subtitle(p.tournament),
+          name: p.tournament.name,
+          show_invited: MapSet.size(p.invited_mapset) > 0,
+          show_decks: Enum.any?(p.lineups),
+          show_score: Enum.any?(p.standings, fn s -> s.has_score end)
+        })
+      end)
 
     Logger.debug("preparing to render")
+
     render(
       "tournament.html",
       new_params
@@ -311,6 +319,7 @@ defmodule BackendWeb.BattlefyView do
   defp streams_subtitle(%{streams: streams}) when is_list(streams) do
     twitch_streams = Enum.filter(streams, &Backend.Battlefy.Tournament.Stream.twitch?/1)
     assigns = %{twitch_streams: twitch_streams}
+
     ~H"""
     <%= for stream <- @twitch_streams do %>
         <a href={stream.link} class="dropdown">
@@ -320,6 +329,7 @@ defmodule BackendWeb.BattlefyView do
     <% end %>
     """
   end
+
   defp streams_subtitle(_), do: nil
 
   defp handle_highlights(params) do
@@ -336,14 +346,16 @@ defmodule BackendWeb.BattlefyView do
           fantasy_highlight |> Enum.member?(s.name) ||
           fantasy_highlight |> Enum.member?(s.name |> Battletag.shorten())
       end)
-      params
-      |> Map.put(:highlighted_standings, highlighted_standings)
-      |> Map.put(:highlight, highlight)
-      |> Map.put(:selected_countries, country_highlight)
+
+    params
+    |> Map.put(:highlighted_standings, highlighted_standings)
+    |> Map.put(:highlight, highlight)
+    |> Map.put(:selected_countries, country_highlight)
   end
 
-  defp add_stage_attrs(attrs = %{tournament: tournament, stage_id: stage_id}, create_link), do:
-    add_stage_attrs(attrs, tournament, stage_id, create_link)
+  defp add_stage_attrs(attrs = %{tournament: tournament, stage_id: stage_id}, create_link),
+    do: add_stage_attrs(attrs, tournament, stage_id, create_link)
+
   defp add_stage_attrs(attrs, tournament, stage_id, create_link) do
     stages =
       (tournament.stages || [])
@@ -356,13 +368,13 @@ defmodule BackendWeb.BattlefyView do
       end)
 
     selected_stage = stages |> Enum.find_value(fn s -> s.selected && s end)
+
     attrs
     |> Map.merge(%{
       stages: stages,
       show_stage_selection: Enum.count(stages) > 1,
       stage_selection_text:
-        if(selected_stage == nil, do: "Select Stage", else: selected_stage.name),
-
+        if(selected_stage == nil, do: "Select Stage", else: selected_stage.name)
     })
   end
 
@@ -447,8 +459,18 @@ defmodule BackendWeb.BattlefyView do
     end)
   end
 
-  @spec calculate_ongoing(%{matches: [Match.t()], show_ongoing: boolean, tournament: Battlefy.Tournament.t(), conn: Plug.Conn.t()}) :: Map.t()
-  defp calculate_ongoing(%{matches: matches, show_ongoing: true, tournament: tournament, conn: conn}) do
+  @spec calculate_ongoing(%{
+          matches: [Match.t()],
+          show_ongoing: boolean,
+          tournament: Battlefy.Tournament.t(),
+          conn: Plug.Conn.t()
+        }) :: Map.t()
+  defp calculate_ongoing(%{
+         matches: matches,
+         show_ongoing: true,
+         tournament: tournament,
+         conn: conn
+       }) do
     matches
     |> Enum.filter(&Match.ongoing?/1)
     |> Enum.flat_map(fn m = %{top: t, bottom: b} ->
@@ -491,13 +513,16 @@ defmodule BackendWeb.BattlefyView do
     end)
     |> Map.new()
   end
+
   defp calculate_ongoing(_), do: Map.new()
 
   def tour_stop?(%{tournament: tournament}), do: tour_stop?(tournament)
+
   def tour_stop?(%{id: id}),
     do: !!Backend.MastersTour.TourStop.get_by(:battlefy_id, id)
 
   # todo move elsewhere
+  def class_url(nil), do: nil
   def class_url(class), do: "/images/icons/#{String.downcase(class)}.png"
 
   @win_color "hsl(141, 53%, 53%)"
@@ -530,7 +555,9 @@ defmodule BackendWeb.BattlefyView do
     {total, not_nil_nil}
   end
 
-  def tournament_subtitle(params = %{tournament: tournament, standings: standings, ongoing: ongoing}) do
+  def tournament_subtitle(
+        params = %{tournament: tournament, standings: standings, ongoing: ongoing}
+      ) do
     []
     |> add_duration_subtitle(tournament)
     |> add_player_count_subtitle(standings)
@@ -540,20 +567,22 @@ defmodule BackendWeb.BattlefyView do
 
   defp user_subtitle(params = %{conn: conn, standings: standings, tournament: %{id: id}}) do
     with %{battletag: battletag} <- BackendWeb.AuthUtils.user(conn),
-        [_|_] <- standings,
-        true <- Enum.any?(standings, & &1.name == battletag) do
-          assigns = %{}
-            ~H"""
-            <a href={Routes.battlefy_path(conn, :tournament_player, id, battletag)}>
-              <%= battletag %>
-            </a>
-            """
+         [_ | _] <- standings,
+         true <- Enum.any?(standings, &(&1.name == battletag)) do
+      assigns = %{}
+
+      ~H"""
+      <a href={Routes.battlefy_path(conn, :tournament_player, id, battletag)}>
+        <%= battletag %>
+      </a>
+      """
     else
       _ -> nil
     end
   end
 
   defp user_subtitle(_), do: nil
+
   def add_duration_subtitle(subtitles, tournament) do
     subtitles ++
       case Backend.Battlefy.Tournament.get_duration(tournament) do
@@ -577,21 +606,24 @@ defmodule BackendWeb.BattlefyView do
     subtitles ++ ["Ongoing: #{total_ongoing}", "Ongoing(not 0-0): #{not_nil_nil_ongoing}"]
   end
 
-
   defp handle_standings(params) do
-    updates = case prepare_standings(params) do
-      prepared = [_|_] ->
-        %{
-          standings: prepared,
-          show_participants: false,
-          participants_rows: []
-        }
-        _ ->  %{
-          standings: params.standings_raw,
-          show_participants: true,
-          participants_row: prepare_participants(params)
-        }
-    end
+    updates =
+      case prepare_standings(params) do
+        prepared = [_ | _] ->
+          %{
+            standings: prepared,
+            show_participants: false,
+            participants_rows: []
+          }
+
+        _ ->
+          %{
+            standings: params.standings_raw,
+            show_participants: true,
+            participants_row: prepare_participants(params)
+          }
+      end
+
     Map.merge(params, updates)
     |> Map.delete(:standings_raw)
   end
@@ -599,22 +631,20 @@ defmodule BackendWeb.BattlefyView do
   defp prepare_participants(_), do: []
 
   @spec prepare_standings(Map.t()) :: [standings]
-  defp prepare_standings(
-        %{
-          standings_raw: standings_raw = [_|_],
-          conn: conn,
-          earnings: earnings,
-          lineups: lineups,
-          show_lineups: show_lineups,
-          invited_mapset: invited_mapset,
-          stage_id: stage_id,
-          tournament: tournament,
-          ongoing: ongoing,
-          use_countries: use_countries,
-          participants: participants
-        }
-      ) do
-    participants_map = participants |> Enum.map(& {&1.name, &1}) |> Map.new()
+  defp prepare_standings(%{
+         standings_raw: standings_raw = [_ | _],
+         conn: conn,
+         earnings: earnings,
+         lineups: lineups,
+         show_lineups: show_lineups,
+         invited_mapset: invited_mapset,
+         stage_id: stage_id,
+         tournament: tournament,
+         ongoing: ongoing,
+         use_countries: use_countries,
+         participants: participants
+       }) do
+    participants_map = participants |> Enum.map(&{&1.name, &1}) |> Map.new()
     lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
 
     standings_raw
@@ -630,13 +660,16 @@ defmodule BackendWeb.BattlefyView do
         end
 
       place = if(s.place && s.place > 0, do: s.place, else: "?")
-      lineup = should_render_lineup(index, show_lineups) && render_lineup(lineup_map[s.team.name], conn)
 
-      invited = if MapSet.member?(invited_mapset, s.team.name) do
-        ~E" <span class=\"tag is-success\">✓</span>"
-      else
-        ""
-      end
+      lineup =
+        should_render_lineup(index, show_lineups) && render_lineup(lineup_map[s.team.name], conn)
+
+      invited =
+        if MapSet.member?(invited_mapset, s.team.name) do
+          ~E" <span class=\"tag is-success\">✓</span>"
+        else
+          ""
+        end
 
       %{
         place: place,
@@ -645,7 +678,9 @@ defmodule BackendWeb.BattlefyView do
         name_class: if(s.disqualified, do: "disqualified-player", else: ""),
         earnings: player_earnings(earnings, s.team.name),
         pre_name_cell: pre_name_cell,
-        name_link: "/battlefy/tournament/#{tournament.id}/player/#{URI.encode_www_form(s.team.name)}" |> add_stage_id(stage_id),
+        name_link:
+          "/battlefy/tournament/#{tournament.id}/player/#{URI.encode_www_form(s.team.name)}"
+          |> add_stage_id(stage_id),
         has_score: s.wins && s.losses,
         score: "#{s.wins} - #{s.losses}",
         wins: s.wins,
@@ -656,6 +691,7 @@ defmodule BackendWeb.BattlefyView do
       }
     end)
   end
+
   defp prepare_standings(_) do
     Logger.info("Skipping standings preparation because invalid parameters")
     []
@@ -683,10 +719,12 @@ defmodule BackendWeb.BattlefyView do
   defp should_render_lineup(_index, show_lineups), do: show_lineups
 
   defp render_lineup(nil, _conn), do: nil
-  defp render_lineup(lineup, conn), do:
-    live_render(conn, BackendWeb.ExpandableLineupLive, session: %{"lineup_id" => lineup.id})
 
-  @spec create_player_options(%{standings: [Battlefy.Standings.t()], highlight: [String.t]}) :: list()
+  defp render_lineup(lineup, conn),
+    do: live_render(conn, BackendWeb.ExpandableLineupLive, session: %{"lineup_id" => lineup.id})
+
+  @spec create_player_options(%{standings: [Battlefy.Standings.t()], highlight: [String.t()]}) ::
+          list()
   defp create_player_options(%{standings: standings, highlight: highlight}) do
     standings
     |> Enum.map(fn s ->
@@ -700,7 +738,12 @@ defmodule BackendWeb.BattlefyView do
     |> Enum.sort_by(fn p -> p.name end)
   end
 
-  def add_highlight_fantasy_dropdown(dds, %{conn: conn, highlight_fantasy: highlight_fantasy, tournament: tournament, fantasy_picks: [_ | _]}) do
+  def add_highlight_fantasy_dropdown(dds, %{
+        conn: conn,
+        highlight_fantasy: highlight_fantasy,
+        tournament: tournament,
+        fantasy_picks: [_ | _]
+      }) do
     dds ++
       [
         {[
@@ -732,10 +775,15 @@ defmodule BackendWeb.BattlefyView do
 
   def add_highlight_fantasy_dropdown(dds, _), do: dds
 
-  def add_earnings_dropdown(dds, %{is_tour_stop: true, conn: conn, tournament: tournament, show_earnings: show_earnings}),
-    do: dds ++ [get_earnings_dropdown(conn, tournament, show_earnings)]
-  def add_earnings_dropdown(dds, _), do: dds
+  def add_earnings_dropdown(dds, %{
+        is_tour_stop: true,
+        conn: conn,
+        tournament: tournament,
+        show_earnings: show_earnings
+      }),
+      do: dds ++ [get_earnings_dropdown(conn, tournament, show_earnings)]
 
+  def add_earnings_dropdown(dds, _), do: dds
 
   def add_lineups_dropdown(dds, %{conn: conn, show_lineups: show_lineups, tournament: tournament}) do
     dds ++

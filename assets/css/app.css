@@ -474,3 +474,9 @@
   font-weight: 400;
   height: 2em;
 }
+
+.sticky-top {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+}
