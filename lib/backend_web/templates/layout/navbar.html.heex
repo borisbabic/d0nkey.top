@@ -233,17 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <a href="/">🏠</a>
       <a href={"#{Routes.leaderboard_path(@conn, :index)}"}>Leaderboard</a>
       |
-      <a href={"#{Routes.masters_tour_path(@conn, :invited_players, Backend.Blizzard.current_ladder_tour_stop()) }"}>Invited</a>
+      <a href={"#{Routes.leaderboard_path(@conn, :points) }"}>HSEsports Points</a>
       |
-      <a href={"#{Routes.masters_tour_path(@conn, :qualifiers)}"}>Qualifiers</a>
-      |
-      <a href={"#{Routes.masters_tour_path(@conn, :qualifier_stats, Backend.Blizzard.current_ladder_tour_stop())}"}>Qualifier Stats</a>
-      |
-      <a href={"#{Routes.masters_tour_path(@conn, :points)}"}>Points</a>
-      |
-      <a href={"#{Routes.masters_tour_path(@conn, :tour_stops)}"}>Tour Stops</a>
-      |
-      <a href={"#{Routes.battlefy_path(@conn, :organization_tournaments) }"}>3rd Party Tournaments</a>
+      <a href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
       |
       <a href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
       |
