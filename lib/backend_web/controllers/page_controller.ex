@@ -54,6 +54,11 @@ defmodule BackendWeb.PageController do
     end
   end
 
+
+  def bla_bla(conn, params) do
+    render(conn, "bla_bla.html", params)
+  end
+
   def rick_astley(conn, params) do
     render(conn, "rick_roll.html", params)
     # conn

@@ -179,6 +179,7 @@ defmodule BackendWeb.Router do
 
     # get "/decks", PageController, :disabled
     live "/deck/*deck", DeckLive
+    live "/deck-tracker/*deck", DeckTrackerLive
 
     get "/grandmasters/season/:season", GrandmastersController, :grandmasters_season
 
@@ -238,6 +239,8 @@ defmodule BackendWeb.Router do
     get "/wild", FunController, :wild
 
     get "/ads.txt", PageController, :ads_txt
+
+    get "/bla-bla", PageController, :bla_bla
 
     live "/lobby-legends", LobbyLegendsLive
     live "/lineup-submitter/hcm_2022", LineupSubmitterLive
