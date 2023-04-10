@@ -241,6 +241,7 @@ defmodule BackendWeb.Router do
     get "/ads.txt", PageController, :ads_txt
 
     get "/bla-bla", PageController, :bla_bla
+    get "/always-error", PageController, :always_error
 
     live "/lobby-legends", LobbyLegendsLive
     live "/lineup-submitter/hcm_2022", LineupSubmitterLive

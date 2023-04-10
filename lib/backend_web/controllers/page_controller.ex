@@ -54,9 +54,18 @@ defmodule BackendWeb.PageController do
     end
   end
 
-
   def bla_bla(conn, params) do
     render(conn, "bla_bla.html", params)
+  end
+
+  def always_error(conn, params) do
+    error =
+      case params do
+        %{"error" => error} -> error
+        _ -> "Random error #{Ecto.UUID.generate()}"
+      end
+
+    raise error
   end
 
   def rick_astley(conn, params) do
