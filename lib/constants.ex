@@ -1,6 +1,7 @@
 defmodule Constants do
   def twitter(), do: "https://twitter.com/D0nkeyHS"
   def discord(), do: "https://discord.gg/DKYDu2Q"
+  def discord_bugs(), do: "https://discord.gg/hqdX53E2z6"
 
   def discord_bot(),
     do:
