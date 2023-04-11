@@ -35,7 +35,10 @@ config :backend, QuantumScheduler,
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
     {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     # {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
-    {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
+    {"* * * * *", fn -> Backend.LatestHSArticles.update() end},
+    #### RUN ONCE THEN DELETE
+    {"00 18 11 APR *",
+     fn -> Backend.Streaming.festival_of_legends_card_ids() |> Backend.Feed.reduce_old_decks() end}
   ]
 
 bnet_client_id =
@@ -71,11 +74,17 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
   client_secret: bnet_client_secret,
   send_redirect_uri: false
 
-base_bnet_oath = [client_id: "3f839935169e4d6e9c1fc893301d242a", client_secret: System.get_env("BNET_CLIENT_SECRET") || ""]
-bnet_oath = case System.get_env("BNET_REGION") do
-  nil -> base_bnet_oath
-  r -> [{:region, r} | base_bnet_oath]
-end
+base_bnet_oath = [
+  client_id: "3f839935169e4d6e9c1fc893301d242a",
+  client_secret: System.get_env("BNET_CLIENT_SECRET") || ""
+]
+
+bnet_oath =
+  case System.get_env("BNET_REGION") do
+    nil -> base_bnet_oath
+    r -> [{:region, r} | base_bnet_oath]
+  end
+
 config :ueberauth, Ueberauth.Strategy.Bnet.OAuth, bnet_oath
 
 config :backend, Backend.UserManager.Guardian,
