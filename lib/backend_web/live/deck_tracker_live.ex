@@ -2,6 +2,7 @@ defmodule BackendWeb.DeckTrackerLive do
   @moduledoc "For self reporting deck stuff"
   use BackendWeb, :surface_live_view
   use Components.ExpandableDecklist
+  alias Components.Form.RankSelect
   alias Components.WinrateTag
   alias Hearthstone.Enums.GameType
   alias Hearthstone.Enums.Format
@@ -129,6 +130,8 @@ defmodule BackendWeb.DeckTrackerLive do
           <Select class="select" prompt="On Coin?" selected={Map.get(@form_values, "coin")} field={:coin} options={Coin: true, "No Coin": false} />
           <Select field={:turns} class="select" prompt="Turns" options={1..45} selected={Map.get(@form_values, "selected")} />
           <TextInput field={:opponent_battletag} value={Map.get(@form_values, "opponent_battletag")} class="input is-small" opts={placeholder: "Opponent Battletag", style: "width: 200px;"} />
+          <RankSelect rank_title={"Player Rank"} id="player_rank" rank_field={:player_rank} rank={@form_values["player_rank"]} legend_rank_field={:player_legend_rank} legend_rank={@form_values["player_legend_rank"]} />
+          <RankSelect rank_title={"Opponent Rank"} id="opponent_rank" rank_field={:opponent_rank} rank={@form_values["opponent_rank"]} legend_rank_field={:opponent_legend_rank} legend_rank={@form_values["opponent_legend_rank"]} />
         </div>
         <HiddenInput field={:game_id} value={Map.get(@form_values, "game_id")} />
         <HiddenInput field={:source} value="Self Report" />
@@ -229,7 +232,7 @@ defmodule BackendWeb.DeckTrackerLive do
   defp reset_form_values(socket = %{assigns: %{form_values: form_values, deck: deck}}) do
     new_values =
       form_values
-      |> Map.take(["rank", "legend_rank"])
+      |> Map.take(["player_rank", "player_legend_rank", "opponent_rank", "opponent_legend_rank"])
       |> Map.merge(default_form_values(deck))
 
     socket |> assign(form_values: new_values)

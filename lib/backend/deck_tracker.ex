@@ -44,7 +44,10 @@ defmodule Hearthstone.DeckTracker do
 
   def convert_rank(:Legend), do: 51
 
-  def convert_rank({level, rank}) do
+  def convert_rank({:Legend, _}), do: 51
+  def convert_rank({_, nil}), do: nil
+
+  def convert_rank({level, rank}) when is_atom(level) and is_integer(rank) do
     level_part =
       10 *
         case level do
