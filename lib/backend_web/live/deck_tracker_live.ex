@@ -288,4 +288,8 @@ defmodule BackendWeb.DeckTrackerLive do
   def handle_event("deck_expanded", _, socket) do
     {:noreply, socket}
   end
+
+  @spec url(Deck.t()) :: String.t()
+  def url(%{id: id}) when is_integer(id), do: "/deck-tracker/#{id}"
+  def url(deck), do: "/deck-tracker/#{Deck.deckcode(deck)}"
 end
