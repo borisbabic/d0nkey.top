@@ -96,22 +96,40 @@ defmodule BackendWeb.DeckTrackerLive do
       <Form for={:game} submit="submit" change="validate">
 
         <br>
-        <div class="sticky-top columns is-narrow is-multiline is-mobile">
-          <span>{@wins}-{@losses}<WinrateTag winrate={@winrate}/></span>
-          <Submit label="Save" class="button is-success" opts={disabled: !@valid}/>
-          <div :if={@message} class="tag is-info">{@message}</div>
-          <div :if={@error_message} class="tag is-error">{@message}</div>
-          <ExpandableDecklist deck={@deck} id={"deck_tracker_expanded_deck"}/>
+        <div class="">
+          <div class="columns is-mobile is-multiline is-vcentered is-centered">
+              <span class=" is-narrow">{@wins}-{@losses}<WinrateTag winrate={@winrate}/></span>
+              <div :if={@message} class=" is-narrow tag is-info">{@message}</div>
+              <div :if={@error_message} class=" is-narrow tag is-error">{@message}</div>
+          </div>
+          <div class="columns is-mobile is-vcentered is-centered" style="z-index: 1;">
+            <Submit label="Save" class=" is-narrow button is-success" opts={disabled: !@valid}/>
+            <ExpandableDecklist deck={@deck} id={"deck_tracker_expanded_deck"}/>
+          </div>
         </div>
         <br>
-        <Select class="select" prompt="Result" selected={Map.get(@form_values, "result")} field={:result} options={"Win": "WIN", "Loss": "LOSS", "Tie": "DRAW"} />
-        <Select class="select" prompt="Opponent's class" selected={Map.get(@form_values, "opponent_class")} field={:opponent_class} options={class_options()} />
-        <Select class="select" field={:game_type} selected={Map.get(@form_values, "game_type", GameType.ranked())} options={game_type_options()} />
-        <Select class="select" field={:format} selected={Map.get(@form_values, "format", @deck.format)} options={format_options()} />
-        <Label class="label">Optional:</Label>
-        <Select class="select" prompt="On Coin?" selected={Map.get(@form_values, "coin")} field={:coin} options={Coin: true, "No Coin": false} />
-        <Select field={:turns} class="select" prompt="Turns" options={1..45} selected={Map.get(@form_values, "selected")} />
-        <TextInput field={:opponent_battletag} value={Map.get(@form_values, "opponent_battletag")} class="input is-small" opts={placeholder: "Opponent Battletag", style: "width: 200px;"} />
+        <div class="columns is-mobile is-multiline is-vcentered is-centered">
+          <div class=" is-narrow">
+            <Select class="select" prompt="Result" selected={Map.get(@form_values, "result")} field={:result} options={"Win": "WIN", "Loss": "LOSS", "Tie": "DRAW"} />
+          </div>
+          <div class=" is-narrow">
+            <Select class="select" prompt="Opponent's class" selected={Map.get(@form_values, "opponent_class")} field={:opponent_class} options={class_options()} />
+          </div>
+          <div class=" is-narrow">
+            <Select class="select" field={:game_type} selected={Map.get(@form_values, "game_type", GameType.ranked())} options={game_type_options()} />
+          </div>
+          <div class=" is-narrow">
+            <Select class="select" field={:format} selected={Map.get(@form_values, "format", @deck.format)} options={format_options()} />
+          </div>
+        </div>
+        <div class="columns is-mobile is-vcentered is-centered">
+          <Label class="label">Optional:</Label>
+        </div>
+        <div class="columns is-mobile is-multiline is-vcentered is-centered">
+          <Select class="select" prompt="On Coin?" selected={Map.get(@form_values, "coin")} field={:coin} options={Coin: true, "No Coin": false} />
+          <Select field={:turns} class="select" prompt="Turns" options={1..45} selected={Map.get(@form_values, "selected")} />
+          <TextInput field={:opponent_battletag} value={Map.get(@form_values, "opponent_battletag")} class="input is-small" opts={placeholder: "Opponent Battletag", style: "width: 200px;"} />
+        </div>
         <HiddenInput field={:game_id} value={Map.get(@form_values, "game_id")} />
         <HiddenInput field={:source} value="Self Report" />
         <HiddenInput field={:source_version} value="0" />
@@ -221,7 +239,10 @@ defmodule BackendWeb.DeckTrackerLive do
     do:
       ["Good Job", "Nice Highroll", "Well Played", "ggwp", "GG WP", "ggwp no re"] |> Enum.random()
 
-  def get_message(:loss), do: ["Tough luck", "Better luck", "Next Ones"] |> Enum.random()
+  def get_message(:loss),
+    do:
+      ["Tough luck", "Better luck next time", "Next Ones The charm", "Time for a break?"]
+      |> Enum.random()
 
   def get_message(:draw),
     do: ["A draw?!?!", "Woaah Legend-draw", "Legen-waitforit-DRAW?!?!?!"] |> Enum.random()
