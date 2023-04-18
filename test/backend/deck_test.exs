@@ -1,4 +1,4 @@
-defmodule Backend.HearthstoneTest do
+defmodule Backend.Hearthstone.DeckTest do
   use Backend.DataCase, async: true
 
   alias Backend.Hearthstone.Deck
