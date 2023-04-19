@@ -948,6 +948,8 @@ defmodule Backend.Leaderboards do
     |> where([entry: e], e.inserted_at < ago(^num, ^unit))
   end
 
+  defp compose_entries_query({"use_freshest_data", _}, query), do: query
+
   defp compose_entries_query({:not_current_season, leaderboards}, query) do
     leaderboards
     |> Enum.reduce(query, fn ldb, q ->
@@ -1001,6 +1003,8 @@ defmodule Backend.Leaderboards do
       {"leaderboard_id", l}
     ]
   end
+
+  defp needs_regular_base?({"use_freshest_data", "yes"}), do: true
 
   defp needs_regular_base?({criteria, _value}),
     do: to_string(criteria) in ["up_to", "after", "until"]

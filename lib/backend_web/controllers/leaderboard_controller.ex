@@ -71,6 +71,7 @@ defmodule BackendWeb.LeaderboardController do
     |> parse_season(params)
     |> parse_offset(params)
     |> parse_search(params)
+    |> parse_use_freshest(params)
   end
 
   defp get_shim(criteria, params) do
@@ -92,6 +93,10 @@ defmodule BackendWeb.LeaderboardController do
     ]
   end
 
+  defp parse_use_freshest(criteria, %{"use_freshest_data" => "yes"}),
+    do: [{"use_freshest_data", "yes"} | criteria]
+
+  defp parse_use_freshest(criteria, _), do: criteria
   defp parse_search(criteria, %{"search" => search}), do: [{"search", search} | criteria]
   defp parse_search(criteria, _), do: criteria
 
