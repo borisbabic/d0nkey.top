@@ -70,6 +70,7 @@ defmodule BackendWeb.LeaderboardController do
     |> parse_up_to(params)
     |> parse_season(params)
     |> parse_offset(params)
+    |> parse_limit(params)
     |> parse_search(params)
     |> parse_use_freshest(params)
   end
@@ -77,10 +78,6 @@ defmodule BackendWeb.LeaderboardController do
   defp get_shim(criteria, params) do
     criteria
     |> Leaderboards.get_shim()
-    |> Map.update(:entries, [], fn e ->
-      limit = Map.get(params, "limit") |> Util.to_int(200)
-      Enum.take(e, limit)
-    end)
     |> hack_lobby_legends_season(params)
   end
 
@@ -89,6 +86,15 @@ defmodule BackendWeb.LeaderboardController do
 
     [
       {"offset", offset}
+      | criteria
+    ]
+  end
+
+  defp parse_limit(criteria, params) do
+    limit = Map.get(params, "limit", 200)
+
+    [
+      {"limit", limit}
       | criteria
     ]
   end
