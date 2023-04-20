@@ -730,11 +730,12 @@ defmodule Backend.Leaderboards do
   end
 
   def entries(criteria, timeout \\ nil) do
+    {q, new_criteria} = base_entries_query() |> latest_in_season(criteria)
+
     query =
-      base_entries_query()
-      |> latest_in_season(criteria)
-      |> build_entries_query(criteria)
-      |> preload_entries(criteria)
+      q
+      |> build_entries_query(new_criteria)
+      |> preload_entries(new_criteria)
 
     if timeout do
       Repo.all(query, timeout: timeout)
@@ -1022,6 +1023,7 @@ defmodule Backend.Leaderboards do
   defp latest_in_season(query, criteria) do
     if Enum.any?(criteria, &(&1 == :latest_in_season)) do
       new_criteria = filter_not_latest_in_season(criteria)
+      remaining_criteria = remove_filtered_in_latest(criteria)
 
       subquery =
         latest_in_season_base(new_criteria)
@@ -1033,19 +1035,48 @@ defmodule Backend.Leaderboards do
           inserted_at: max(e.inserted_at)
         })
 
-      query
-      |> join(
-        :inner,
-        [entry: e],
-        sub in subquery(subquery),
-        on:
-          e.season_id == sub.season_id and
-            e.rank == sub.rank and
-            e.inserted_at == sub.inserted_at
-      )
+      {
+        query
+        |> join(
+          :inner,
+          [entry: e],
+          sub in subquery(subquery),
+          on:
+            e.season_id == sub.season_id and
+              e.rank == sub.rank and
+              e.inserted_at == sub.inserted_at
+        ),
+        remaining_criteria
+      }
     else
-      query
+      {query, criteria}
     end
+  end
+
+  defp remove_filtered_in_latest(criteria) do
+    Enum.reject(criteria, fn
+      {crit, _}
+      when crit in [
+             "min_rank",
+             "max_rank",
+             "seasons",
+             "season_id",
+             "season",
+             "s",
+             "ssn",
+             "r",
+             "rgn",
+             "region",
+             "l",
+             "ldb",
+             "ldb_id",
+             "leaderboard_id"
+           ] ->
+        true
+
+      _ ->
+        false
+    end)
   end
 
   defp filter_not_latest_in_season(criteria) do
