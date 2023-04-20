@@ -2,7 +2,7 @@
 
 pkgs.mkShell {
   nativeBuildInputs = with pkgs; [ 
-    beam.packages.erlangR23.elixir_1_13
+    beam.packages.erlangR23.elixir_1_14
     docker-compose 
     nodejs-slim-14_x # for npm
     watchexec # for test_watch
