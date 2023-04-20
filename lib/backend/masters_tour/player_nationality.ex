@@ -8,8 +8,8 @@ defmodule Backend.MastersTour.PlayerNationality do
     field :mt_battletag_full, :string
     field :tour_stop, :string
     field :nationality, :string
-    field :actual_battletag_full, :string, null: true
-    field :twitch, :string, null: true
+    field :actual_battletag_full, :string, default: nil
+    field :twitch, :string, default: nil
     timestamps()
   end
 
