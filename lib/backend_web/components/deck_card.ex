@@ -10,13 +10,13 @@ defmodule Components.DeckCard do
     ~F"""
     <div class="card" style="width: calc(var(--decklist-width) + 15px);">
       <div class="columns is-multiline is-mobile is-text-overflow" style="margin:7.5px">
-        <#slot name="before_deck" />
+        <#slot {@before_deck} />
       </div>
       <div class="card-image" style="margin:7.5px;">
         <#slot />
       </div>
       <div class={@after_deck_class} style="margin:7.5px">
-        <#slot name="after_deck" />
+        <#slot {@after_deck} />
       </div>
     </div>
     """

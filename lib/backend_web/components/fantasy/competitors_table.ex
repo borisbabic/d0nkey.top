@@ -11,8 +11,8 @@ defmodule Components.CompetitorsTable do
   alias Surface.Components.Form
   alias Components.PlayerName
   alias Surface.Components.Form.TextInput
-  alias SurfaceBulma.Table
-  alias SurfaceBulma.Table.Column
+  alias Components.SurfaceBulma.Table
+  alias Components.SurfaceBulma.Table.Column
 
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.TournamentStats.TeamStats

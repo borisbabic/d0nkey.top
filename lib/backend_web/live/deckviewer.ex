@@ -85,9 +85,9 @@ defmodule BackendWeb.DeckviewerLive do
         <div class="columns is-mobile is-multiline">
           <div class="column is-narrow" :for.with_index = {{deck, index} <- @deckcodes} :if={@compare_decks == @compare_decks}>
             <Decklist deck={deck |> Deck.decode!()} name={"#{deck |> Deck.extract_name()}"} comparison={comparison} highlight_rotation={@rotation}>
-              <#template slot="right_button">
+              <:right_button>
                 <a class="delete" phx-click="delete" phx-value-index={index}/>
-              </#template>
+              </:right_button>
             </Decklist>
           </div>
         </div>
