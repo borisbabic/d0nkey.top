@@ -21,14 +21,14 @@ defmodule BackendWeb.ExpandableDeckLive do
     ~F"""
     <Context put={user: @user} >
       <Decklist deck={deck} show_cards={@show_cards} name={@name}>
-        <#template slot="right_button">
+        <:right_button>
           <span phx-click="show_cards" class="is-clickable" >
             <span class="icon">
               <i :if={!@show_cards} class="fas fa-eye"></i>
               <i :if={@show_cards} class="fas fa-eye-slash"></i>
             </span>
           </span>
-        </#template>
+        </:right_button>
       </Decklist>
     </Context>
     """

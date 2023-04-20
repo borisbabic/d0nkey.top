@@ -66,7 +66,7 @@ defmodule Components.Decklist do
                     </div>
                   </div>
                   <div class="level-right">
-                      <#slot name="right_button"/>
+                      <#slot {@right_button} />
                   </div>
               </div>
           </div>

@@ -24,7 +24,7 @@ defmodule Components.Modal do
       <button class={@button_class} type="button" :on-click="show_modal">{@button_title || @title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div :if={@show_modal} class="modal is-active">
-        <div class="modal-background"><#slot name="background"/></div>
+        <div class="modal-background"><#slot {@background} /></div>
         <div class="modal-card">
           <header class="modal-card-head">
               <p class="modal-card-title">{@title}</p>
@@ -34,7 +34,7 @@ defmodule Components.Modal do
             <#slot/>
           </section>
           <footer :if={@show_footer} class="modal-card-foot">
-            <#slot name="footer"/>
+            <#slot {@footer} />
             <button :if={@show_cancel_button} class="button" type="button" :on-click="hide_modal">{@cancel_button_message}</button>
             <div :if={@show_error} class="notification is-warning tag">{@error_message}</div>
           </footer>

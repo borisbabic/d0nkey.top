@@ -9,8 +9,8 @@ defmodule BackendWeb.DeckSheetViewLive do
   alias Components.ExpandableDecklist
   alias Components.DeckCard
   alias Components.Decklist
-  alias SurfaceBulma.Table
-  alias SurfaceBulma.Table.Column
+  alias Components.SurfaceBulma.Table
+  alias Components.SurfaceBulma.Table.Column
   alias Components.LivePatchDropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.DecksExplorer

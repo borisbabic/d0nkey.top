@@ -75,7 +75,7 @@ defmodule Components.TournamentLineupExplorer do
                 {#if @gm_week}
                   <GMProfileLink week={@gm_week} gm={lineup.name}/>
                 {#elseif slot_assigned?(:lineup_name)}
-                  <#slot name="lineup_name" :args={lineup_name: lineup.name}/>
+                  <#slot {@lineup_name, lineup_name: lineup.name} />
                 {#elseif "battlefy" == @tournament_source}
                   <a href={Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, @tournament_id, lineup.name)}>
                     <PlayerName player={lineup.name}/>

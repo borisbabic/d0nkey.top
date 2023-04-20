@@ -4,8 +4,8 @@ defmodule BackendWeb.DeckSheetsIndexLive do
   alias Backend.Sheets
   alias Backend.UserManager.User
   alias Components.DeckSheetsModal
-  alias SurfaceBulma.Table
-  alias SurfaceBulma.Table.Column
+  alias Components.SurfaceBulma.Table
+  alias Components.SurfaceBulma.Table.Column
 
   data(user, :any)
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
