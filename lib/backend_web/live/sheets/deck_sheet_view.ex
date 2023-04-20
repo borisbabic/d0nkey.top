@@ -1,12 +1,12 @@
 defmodule BackendWeb.DeckSheetViewLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
+  use Components.ExpandableDecklist
   alias Backend.Sheets
   alias Backend.UserManager.User
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Components.DeckSheetsModal
   alias Components.DeckListingModal
-  alias Components.ExpandableDecklist
   alias Components.DeckCard
   alias Components.Decklist
   alias Components.SurfaceBulma.Table
