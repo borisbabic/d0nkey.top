@@ -26,15 +26,16 @@ defmodule Components.LivePatchDropdown do
           optional(any) => any
         }) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
-    normalizer = assigns.normalizer || & &1
+    normalizer = assigns.normalizer || (& &1)
     current = current(assigns, normalizer)
     title = title(assigns, current, normalizer)
+
     ~F"""
       <Dropdown title={title}>
         <div :for={opt <- @options}>
           <LivePatch
             class={"dropdown-item", "is-active": current == normalizer.(value(opt))}
-            to={link(@socket, @live_view, @path_params, update_params(@url_params, @param, value(opt)))}>
+            to={link(BackendWeb.Endpoint, @live_view, @path_params, update_params(@url_params, @param, value(opt)))}>
             {display(opt)}
           </LivePatch>
         </div>
@@ -45,6 +46,7 @@ defmodule Components.LivePatchDropdown do
   def link(socket, live_view, nil, params) do
     Routes.live_path(socket, live_view, params)
   end
+
   def link(socket, live_view, path_params, params) do
     Routes.live_path(socket, live_view, path_params, params)
   end
@@ -53,8 +55,9 @@ defmodule Components.LivePatchDropdown do
   def update_params(url_params, param, val), do: Map.put(url_params, param, val)
 
   def title(%{selected_as_title: false, title: title}, _, _), do: title
-  def title(%{selected_as_title: true, title: title, options: options}, current, normalizer), do:
-    Enum.find_value(options, title, & normalizer.(value(&1)) == current && display(&1))
+
+  def title(%{selected_as_title: true, title: title, options: options}, current, normalizer),
+    do: Enum.find_value(options, title, &(normalizer.(value(&1)) == current && display(&1)))
 
   def value({value, _display}), do: value
   def value(value), do: value
@@ -69,6 +72,7 @@ defmodule Components.LivePatchDropdown do
 
   def current(%{url_params: params, param: param}, normalizer),
     do: do_current(params, param, normalizer)
+
   def current(_, _), do: nil
 
   defp do_current(params, param, normalizer) do

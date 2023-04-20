@@ -44,7 +44,7 @@ defmodule BackendWeb.StreamingNowLive do
                   <div :for={{display, val} <- [{"Newest", "newest"}, {"Oldest", "oldest"}, {"Most Viewers", "most_viewers"}, {"Fewest Viewers", "fewest_viewers"}]}>
                       <LivePatch
                         class={"#{"dropdown-item " <> if @filter_sort["sort"] == val, do: "is-active", else: "" }"}
-                        to={"#{Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val))}"}
+                        to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val))}"}
                         >
                       {display}
                       </LivePatch>
@@ -57,13 +57,13 @@ defmodule BackendWeb.StreamingNowLive do
             <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Mode</button></div>
             <div class="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                    <LivePatch to={"#{Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode"))}"} class="dropdown-item" >
+                    <LivePatch to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode"))}"} class="dropdown-item" >
                       Any
                     </LivePatch>
                     <div :for={m <- ["Standard", "Battlegrounds", "Mercenaries", "Wild", "Duels",  "Arena", "Tavern Brawl", "Fireside Gathering", "Classic", "Unknown"]}>
                       <LivePatch
                         class={"#{"dropdown-item " <> if @filter_sort["filter_mode"] == m, do: "is-active", else: "" }"}
-                        to={"#{Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", m))}"}
+                        to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", m))}"}
                         >
                       {m}
                       </LivePatch>
@@ -77,13 +77,13 @@ defmodule BackendWeb.StreamingNowLive do
             <div class="dropdown-menu" role="menu">
                 <div class="dropdown-content">
                   <div class="dropdown-content">
-                      <LivePatch to={"#{Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_language"))}"} class="dropdown-item" >
+                      <LivePatch to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_language"))}"} class="dropdown-item" >
                         Any
                       </LivePatch>
                       <div :for={l <- @streaming_now |> Enum.map(fn s -> s.language end) |> Enum.uniq() |> Enum.sort()}>
                         <LivePatch
                           class={"#{ "dropdown-item " <> if @filter_sort["filter_language"] == l, do: "is-active", else: "" }"}
-                          to={"#{Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_language", l))}"}
+                          to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_language", l))}"}
                           >
                         {l}
                         </LivePatch>
@@ -97,13 +97,13 @@ defmodule BackendWeb.StreamingNowLive do
             <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Legend Rank</button></div>
             <div class="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                      <LivePatch to={"#{Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend"))}"} class="dropdown-item" >
+                      <LivePatch to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend"))}"} class="dropdown-item" >
                         Any
                       </LivePatch>
                       <div :for={l <- [100, 200, 500, 1000, 5000]}>
                         <LivePatch
                         class={"#{"dropdown-item " <> if @filter_sort["filter_legend"] == to_string(l), do: "is-active", else: "" }"}
-                          to={"#{Routes.live_path(@socket, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_legend", l))}"}
+                          to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_legend", l))}"}
                           >
                         {l}
                         </LivePatch>
