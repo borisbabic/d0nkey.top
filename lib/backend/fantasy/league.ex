@@ -20,7 +20,7 @@ defmodule Backend.Fantasy.League do
     field :current_pick_number, :integer, default: 0
     field :last_pick_at, :utc_datetime
     field :real_time_draft, :boolean, default: true
-    field :draft_deadline, :utc_datetime, null: true
+    field :draft_deadline, :utc_datetime, default: nil
     field :current_round, :integer, default: 1
     field :changes_between_rounds, :integer, default: 0
     belongs_to :owner, User

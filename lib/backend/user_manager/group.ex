@@ -8,7 +8,7 @@ defmodule Backend.UserManager.Group do
     field :name, :string
     belongs_to :owner, User
     field :join_code, Ecto.UUID, autogenerate: true
-    field :discord, :string, null: true
+    field :discord, :string, default: nil
 
     timestamps()
   end
