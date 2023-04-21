@@ -146,7 +146,6 @@ defmodule BackendWeb.Router do
 
     get "/battlefy/user-tournaments/:slug", BattlefyController, :user_tournaments
 
-    get "/hsreplay/live_feed", HSReplayController, :live_feed
     get "/hsreplay/matchups", HSReplayController, :matchups
 
     get "/discord/broadcasts", DiscordController, :broadcasts
