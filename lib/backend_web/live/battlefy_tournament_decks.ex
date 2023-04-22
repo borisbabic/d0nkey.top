@@ -18,7 +18,7 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
       <div>
         <div class="title is-2">Explore Decks</div>
         <div id="nitropay-below-title-leaderboard"></div>
-        <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"}/>
+        <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"} standings_url={"/battlefy/tournament/#{@tournament_id}"}/>
       </div>
     </Context>
     """

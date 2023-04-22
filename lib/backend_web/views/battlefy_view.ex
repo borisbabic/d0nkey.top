@@ -298,6 +298,7 @@ defmodule BackendWeb.BattlefyView do
       |> put_param(:player_options, &create_player_options/1)
       |> put_param(:dropdowns, &create_tournament_dropdowns/1)
       |> put_param(:streams_subtitle, &create_streams_subtitle/1)
+      |> put_param(:explore_decks, &create_explore_decks/1)
       |> add_tournament_stage_attrs()
       |> Kernel.then(fn p ->
         Map.merge(p, %{
@@ -316,6 +317,15 @@ defmodule BackendWeb.BattlefyView do
       "tournament.html",
       new_params
     )
+  end
+
+  defp create_explore_decks(assigns) do
+    ~H"""
+    <%= if @has_lineups do %>
+      <a class="link" href={"/battlefy/tournament/#{@tournament.id}/lineups"}>Lineups</a>
+      |
+    <% end %>
+    """
   end
 
   defp create_streams_subtitle(assigns) do

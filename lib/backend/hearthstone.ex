@@ -559,6 +559,16 @@ defmodule Backend.Hearthstone do
     |> Repo.insert()
   end
 
+  def has_lineups?(tournament_id, tournament_source) do
+    query =
+      from l in Lineup,
+        where: l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source,
+        select: 1,
+        limit: 1
+
+    !!Repo.one(query)
+  end
+
   def get_lineups(tournament_id, tournament_source) do
     query =
       from l in Lineup,
