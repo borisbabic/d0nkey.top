@@ -9,6 +9,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.Battlefy.MatchTeam
   alias Backend.MastersTour
   alias Backend.Battlenet.Battletag
+  alias Backend.UserManager.User
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -301,6 +302,7 @@ defmodule BackendWeb.BattlefyView do
         Map.merge(p, %{
           link: Battlefy.create_tournament_link(p.tournament),
           streams_subtitle: streams_subtitle(p.tournament),
+          manage_stream_button: manage_stream_button(params),
           name: p.tournament.name,
           show_invited: MapSet.size(p.invited_mapset) > 0,
           show_decks: Enum.any?(p.lineups),
@@ -315,6 +317,19 @@ defmodule BackendWeb.BattlefyView do
       new_params
     )
   end
+
+  defp manage_stream_button(%{conn: conn, tournament: %{id: id}}) do
+    with user = %User{} <- BackendWeb.AuthUtils.user(conn),
+         true <- User.streamer?(user) do
+      assigns = %{user: user, conn: conn, id: id}
+
+      ~H"""
+        <%= live_render(@conn, BackendWeb.TournamentStreamManagerModalOnlyLive, session: %{"tournament_source" => "battlefy", "tournament_id" => @id}) %>
+      """
+    end
+  end
+
+  defp manage_stream_button(_), do: nil
 
   defp streams_subtitle(%{streams: streams}) when is_list(streams) do
     twitch_streams =

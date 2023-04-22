@@ -745,6 +745,9 @@ defmodule Backend.Battlefy do
     Backend.MastersTour.TourStop.get_battlefy_id(tour_stop)
   end
 
+  def create_tournament_link(tournament_id) when is_binary(tournament_id),
+    do: get_tournament(tournament_id) |> create_tournament_link()
+
   def create_tournament_link(%{slug: slug, id: id, organization: %{slug: org_slug}}) do
     create_tournament_link(slug, id, org_slug)
   end

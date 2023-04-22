@@ -1,10 +1,17 @@
 <div class="title is-2"><a href={"#{ @link }"}> <%= @name %></a></div>
 <div class="subtitle is-6">
-    <%= @streams_subtitle %>
-    <%= if @user_subtitle do %>
-        <%= @user_subtitle %> | 
-    <% end %>
-    <%= @subtitle %>
+    <div class="level">
+        <div class="level-left">
+            <%= @streams_subtitle %>
+            <%= if @user_subtitle do %>
+                <%= @user_subtitle %> |
+            <% end %>
+            <%= if @manage_stream_button do %>
+                <%= @manage_stream_button %> |
+            <% end %>
+            <%= @subtitle %>
+        </div>
+    </div>
 </div>
 <div id="nitropay-below-title-leaderboard"></div><br>
 

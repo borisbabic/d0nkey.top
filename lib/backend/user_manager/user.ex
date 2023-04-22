@@ -83,6 +83,7 @@ defmodule Backend.UserManager.User do
       :api_users,
       :old_battletags,
       :groups,
+      :tournament_streams,
       :twitch_commands
     ]
 
@@ -113,6 +114,17 @@ defmodule Backend.UserManager.User do
   def replay_public?(%{replay_preference: :streamed}, stream_live), do: stream_live
   def replay_public?(%{replay_preference: :none}, _stream_live), do: false
   def replay_public?(_, _), do: false
+
+  @spec streamer?(User.t() | nil) :: boolean()
+  def streamer?(%{twitch_id: twitch}) when is_binary(twitch), do: true
+  def streamer?(_), do: false
+
+  @spec stream_tuples(User.t() | nil) :: [{String.t(), String.t()}]
+  def stream_tuples(%{twitch_id: twitch_id}) when is_binary(twitch_id) do
+    [{"twitch", twitch_id}]
+  end
+
+  def stream_tuples(_), do: []
 end
 
 defmodule Backend.UserManager.User.DecklistOptions do

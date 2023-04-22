@@ -54,6 +54,9 @@
             <%= if can_access?(@conn, :group_memberships) do %>
               <a href="/torch/group-memberships">Group Memberships</a>
             <% end %>
+            <%= if can_access?(@conn, :tournament_streams) do %>
+              <a href="/torch/tournament-streams">Tournament Streams</a>
+            <% end %>
           </nav>
         </div>
       </section>
