@@ -42,7 +42,7 @@ defmodule BackendWeb.BattlefyView do
       name: name,
       yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
       hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, name),
-      link: Routes.battlefy_path(conn, :tournament_player, tournament_id, name)
+      link: Routes.battlefy_path(conn, :tournament_player, tournament_id, name, conn.query_params)
     }
   end
 
