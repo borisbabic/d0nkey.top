@@ -54,7 +54,6 @@ defmodule Components.Form.RankSelect do
   end
 
   def handle_event("legend_change", params, socket) do
-    IO.inspect(params, label: :params)
     {l, _} = Integer.parse(params["value"])
     {:no_reply, assign(socket, legend_rank: l, rank: 51)}
   end

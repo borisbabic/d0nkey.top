@@ -152,7 +152,15 @@ defmodule BackendWeb.StreamingNowLive do
 
   def extract_filter_sort(params),
     do:
-      params |> Map.take(["filter_mode", "filter_language", "sort", "filter_legend", "deckcode"])
+      params
+      |> Map.take([
+        "filter_mode",
+        "filter_language",
+        "sort",
+        "filter_legend",
+        "deckcode",
+        "for_tournament"
+      ])
 
   def filter_sort_streaming(streaming, filter_params),
     do: filter_params |> Enum.reduce(streaming, &filter_sort/2)
@@ -163,6 +171,20 @@ defmodule BackendWeb.StreamingNowLive do
       |> Enum.filter(fn s ->
         Hearthstone.Enums.BnetGameType.game_type_name(s.game_type) == mode
       end)
+
+  def filter_sort({"for_tournament", tournament_string}, streaming_now) do
+    [source, id] = String.split(tournament_string, "|")
+
+    tournament_streams =
+      Backend.TournamentStreams.get_for_tournament({source, id})
+      |> Enum.map(& &1.stream_id)
+      |> MapSet.new()
+
+    streaming_now
+    |> Enum.filter(fn s ->
+      MapSet.member?(tournament_streams, s.stream_id)
+    end)
+  end
 
   def filter_sort({"filter_language", language}, streaming_now),
     do: streaming_now |> Enum.filter(fn s -> s.language == language end)
