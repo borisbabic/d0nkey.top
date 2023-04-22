@@ -88,7 +88,7 @@ defmodule Backend.Streaming do
 
   def twitch_id_to_display(twitch_id, unknown \\ "Unknown twitch display???") do
     case get_streamer_by_twitch_id(twitch_id) do
-      %{id: _} = streamer -> Streamer.display(streamer)
+      %{id: _} = streamer -> Streamer.twitch_display(streamer)
       _ -> unknown
     end
   end
