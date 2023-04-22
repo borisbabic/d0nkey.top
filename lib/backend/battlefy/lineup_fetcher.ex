@@ -35,23 +35,23 @@ defmodule Backend.Battlefy.LineupFetcher do
   def insert(_, _, _), do: nil
 
   @spec enqueue_jobs(Tournament.t() | String.t()) :: {:ok, [Oban.Job.t()]} | {:error, any()}
-  def enqueue_jobs(%Tournament{id: id}), do: enqueue_jobs(id)
+  def enqueue_jobs(%Tournament{stages: stages, id: id}) when is_list(stages) do
+    stages
+    |> Enum.flat_map(&Battlefy.get_matches(&1, round: 1))
+    |> enqueue_matches(id)
+  end
 
-  def enqueue_jobs(id) do
-    id
-    |> Battlefy.get_tournament_matches(round: 1)
-    |> case do
-      [] ->
-        {:error, :no_matches}
+  def enqueue_jobs(id), do: Battlefy.get_tournament(id) |> enqueue_jobs()
 
-      matches ->
-        {
-          :ok,
-          matches
-          |> Enum.map(&(%{"match_id" => &1.id, "tournament_id" => id} |> new()))
-          |> Enum.map(&Oban.insert/1)
-        }
-    end
+  defp enqueue_matches([], _), do: {:error, :no_matches}
+
+  defp enqueue_matches(matches, id) do
+    {
+      :ok,
+      matches
+      |> Enum.map(&(%{"match_id" => &1.id, "tournament_id" => id} |> new()))
+      |> Enum.map(&Oban.insert/1)
+    }
   end
 
   def fetch_async(id_or_tournament), do: Task.start(fn -> enqueue_jobs(id_or_tournament) end)
