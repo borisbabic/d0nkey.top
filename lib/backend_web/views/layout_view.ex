@@ -21,10 +21,17 @@ defmodule BackendWeb.LayoutView do
         ""
 
       {:ok, id} ->
-        assigns = %{conn: conn, tour_stop: tour_stop, id: id}
+        name =
+          case Backend.MastersTour.TourStop.get(tour_stop) do
+            %{display_name: dn} when is_binary(dn) -> dn
+            %{id: id} -> id
+            _ -> tour_stop
+          end
 
-        ~E"""
-          <a class="navbar-item" href='<%=Routes.battlefy_path(@conn, :tournament, id) %>'><%= tour_stop %> </a>
+        assigns = %{conn: conn, name: name, id: id}
+
+        ~H"""
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, id)}><%= name %> </a>
         """
     end
   end
@@ -84,14 +91,17 @@ defmodule BackendWeb.LayoutView do
 
   def twitchbot?(user) do
     with %{twitch_id: twitch_id} when not is_nil(twitch_id) <- user,
-        %{twitch_login: twitch_login} <- Backend.Streaming.streamer_by_twitch_id(twitch_id),
-        chats <- Application.get_env(:backend, :twitch_bot_chats) do
-          twitch_login in chats
+         %{twitch_login: twitch_login} <- Backend.Streaming.streamer_by_twitch_id(twitch_id),
+         chats <- Application.get_env(:backend, :twitch_bot_chats) do
+      twitch_login in chats
     else
       _ -> false
     end
   end
-  defp ongoing_lobby_legends_fantasy?(), do: !!Backend.LobbyLegends.LobbyLegendsSeason.current(120, 60)
+
+  defp ongoing_lobby_legends_fantasy?(),
+    do: !!Backend.LobbyLegends.LobbyLegendsSeason.current(120, 60)
+
   defp ongoing_mt_fantasy?(), do: !!Backend.MastersTour.TourStop.get_current(120, 60)
   defp ongoing_dreamhack_fantasy?(), do: Enum.any?(Dreamhack.current_fantasy())
   defp highlight_fantasy_for_gm?(), do: false
@@ -103,13 +113,13 @@ defmodule BackendWeb.LayoutView do
   @spec enable_adsense?(Plug.Conn.t()) :: boolean
   def enable_adsense?(_), do: Application.get_env(:backend, :enable_adsense, false)
 
-
   @spec hide_ads?(Plug.Conn.t()) :: boolean
   def hide_ads?(conn) do
     conn
     |> user()
     |> Backend.UserManager.User.hide_ads?()
   end
+
   @spec show_ads?(Plug.Conn.t()) :: boolean
   def show_ads?(conn), do: !hide_ads?(conn)
 
@@ -117,7 +127,7 @@ defmodule BackendWeb.LayoutView do
   def space_for_ads?(conn), do: enable_nitropay?(conn) && show_ads?(conn)
 
   def container_classes(conn) do
-    if enable_nitropay?(conn) && show_ads?(conn)do
+    if enable_nitropay?(conn) && show_ads?(conn) do
       "container is-fluid space-for-ads"
     else
       "container is-fluid"

@@ -105,15 +105,6 @@
               <a class="navbar-item" href={"#{Routes.page_path(@conn, :about) }"}>About</a>
             </div>
           </div>
-         <%= if :gt == NaiveDateTime.compare(~N[2022-03-28 13:37:00], NaiveDateTime.utc_now()) &&(!show_fantasy?()  || Backend.MastersTour.TourStop.get_current(96) in [:"Masters Tour Two"]) do %>
-          <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.MaxNations2022Live) }"}>
-            Max Nations
-            <%= if Backend.MaxNations2022.live?() do %>
-              <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-            <% end %>
-          </a>
-         <% end %>
-
 
          <%= if Twitch.HearthstoneLive.twitch_display_live?("MAXTeamTV", "MAX Open Cup 9") do %>
           <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6319a0dec4fa012b14cd0f4b", %{stage_id: "6319a13f8196801c559cc30f"}) }>

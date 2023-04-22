@@ -408,7 +408,7 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2023-04-22 16:00:00],
+        start_time: ~N[2023-04-21 16:00:00],
         qualifiers_period: {~D[2023-03-01], ~D[2022-03-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
@@ -437,7 +437,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2023-06-01], ~D[2022-06-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
-        display_name: "MT 2023-02",
+        display_name: "MT Summer Championship",
         swiss_rounds: 0,
         year: 2023
       },
@@ -462,7 +462,7 @@ defmodule Backend.MastersTour.TourStop do
         qualifiers_period: {~D[2023-09-01], ~D[2022-09-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
-        display_name: "MT 2023-03",
+        display_name: "MT Fall Championship",
         swiss_rounds: 0,
         year: 2023
       }
