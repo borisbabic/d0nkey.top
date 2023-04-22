@@ -9,6 +9,7 @@ defmodule Backend.TournamentStreams do
   import Filtrex.Type.Config
 
   alias Backend.TournamentStreams.TournamentStream
+  alias Backend.UserManager.User
 
   @pagination [page_size: 15]
   @pagination_distance 5
@@ -134,16 +135,28 @@ defmodule Backend.TournamentStreams do
 
   ## Examples
 
-      iex> delete_tournament_stream(tournament_stream)
+      iex> delete_tournament_stream(tournament_stream, %User{})
       {:ok, %TournamentStream{}}
 
-      iex> delete_tournament_stream(tournament_stream)
+      iex> delete_tournament_stream(tournament_stream, %User{})
       {:error, %Ecto.Changeset{}}
 
+      iex> delete_tournament_stream(tournament_stream, %User{})
+      {:error, :insufficient_permissions}
   """
-  def delete_tournament_stream(%TournamentStream{} = tournament_stream) do
+  def delete_tournament_stream(%TournamentStream{} = tournament_stream, user) do
+    if same_user?(tournament_stream, user) or User.can_access?(user, :tournament_streams) do
+      do_delete_tournament_stream(tournament_stream)
+    else
+      {:error, :insufficient_permissions}
+    end
+  end
+
+  defp do_delete_tournament_stream(%TournamentStream{} = tournament_stream) do
     Repo.delete(tournament_stream)
   end
+
+  defp same_user?(%{user_id: user_id}, %{id: current_user_id}), do: user_id == current_user_id
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking tournament_stream changes.
@@ -167,7 +180,7 @@ defmodule Backend.TournamentStreams do
     end
   end
 
-  def get_for_tournament(tournament_tuple, user) do
+  def get_for_tournament(tournament_tuple) do
     tournament_tuple
     |> get_for_tournament_query()
     |> Repo.all()

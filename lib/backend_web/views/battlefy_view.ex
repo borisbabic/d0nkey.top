@@ -297,11 +297,11 @@ defmodule BackendWeb.BattlefyView do
       |> put_param(:subtitle, &tournament_subtitle/1)
       |> put_param(:player_options, &create_player_options/1)
       |> put_param(:dropdowns, &create_tournament_dropdowns/1)
+      |> put_param(:streams_subtitle, &create_streams_subtitle/1)
       |> add_tournament_stage_attrs()
       |> Kernel.then(fn p ->
         Map.merge(p, %{
           link: Battlefy.create_tournament_link(p.tournament),
-          streams_subtitle: streams_subtitle(p.tournament),
           manage_stream_button: manage_stream_button(params),
           name: p.tournament.name,
           show_invited: MapSet.size(p.invited_mapset) > 0,
@@ -316,6 +316,16 @@ defmodule BackendWeb.BattlefyView do
       "tournament.html",
       new_params
     )
+  end
+
+  defp create_streams_subtitle(assigns) do
+    ~H"""
+    <%= streams_subtitle(@tournament)%>
+    <%= if Enum.any?(@other_streams) do %>
+      <a href={"/streaming-now?for_tournament=battlefy|#{@tournament.id}"}>Other Streams</a>
+      |
+    <% end %>
+    """
   end
 
   defp manage_stream_button(%{conn: conn, tournament: %{id: id}}) do

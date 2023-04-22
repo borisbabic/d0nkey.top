@@ -28,13 +28,17 @@ defmodule BackendWeb.TournamentStreamControllerTest do
   end
 
   describe "index" do
+    @describetag :authenticated
+    @describetag :tournament_streams
     test "lists all tournament_streams", %{conn: conn} do
       conn = get(conn, Routes.tournament_stream_path(conn, :index))
-      assert html_response(conn, 200) =~ "Costreams"
+      assert html_response(conn, 200) =~ "Tournament Streams"
     end
   end
 
   describe "new tournament_stream" do
+    @describetag :authenticated
+    @describetag :tournament_streams
     test "renders form", %{conn: conn} do
       conn = get(conn, Routes.tournament_stream_path(conn, :new))
       assert html_response(conn, 200) =~ "New Tournament stream"
@@ -42,6 +46,8 @@ defmodule BackendWeb.TournamentStreamControllerTest do
   end
 
   describe "create tournament_stream" do
+    @describetag :authenticated
+    @describetag :tournament_streams
     test "redirects to show when data is valid", %{conn: conn} do
       conn =
         post conn, Routes.tournament_stream_path(conn, :create), tournament_stream: @create_attrs
@@ -62,6 +68,8 @@ defmodule BackendWeb.TournamentStreamControllerTest do
   end
 
   describe "edit tournament_stream" do
+    @describetag :authenticated
+    @describetag :tournament_streams
     setup [:create_tournament_stream]
 
     test "renders form for editing chosen tournament_stream", %{
@@ -74,6 +82,8 @@ defmodule BackendWeb.TournamentStreamControllerTest do
   end
 
   describe "update tournament_stream" do
+    @describetag :authenticated
+    @describetag :tournament_streams
     setup [:create_tournament_stream]
 
     test "redirects when data is valid", %{conn: conn, tournament_stream: tournament_stream} do
@@ -100,6 +110,8 @@ defmodule BackendWeb.TournamentStreamControllerTest do
   end
 
   describe "delete tournament_stream" do
+    @describetag :authenticated
+    @describetag :tournament_streams
     setup [:create_tournament_stream]
 
     test "deletes chosen tournament_stream", %{conn: conn, tournament_stream: tournament_stream} do

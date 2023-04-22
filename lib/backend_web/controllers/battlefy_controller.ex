@@ -4,6 +4,7 @@ defmodule BackendWeb.BattlefyController do
   alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.MastersTour.TourStop
+  alias Backend.TournamentStreams
   require Logger
 
   defp direction("desc"), do: :desc
@@ -79,6 +80,8 @@ defmodule BackendWeb.BattlefyController do
         invited_mapset: invited_mapset,
         earnings: earnings,
         fantasy_picks: fantasy_picks,
+        other_streams:
+          TournamentStreams.get_for_tournament({"battlefy", params["tournament_id"]}),
         show_lineups: show_lineups,
         highlight_fantasy: highlight_fantasy(params),
         lineups: lineups(show_lineups, params["tournament_id"]),

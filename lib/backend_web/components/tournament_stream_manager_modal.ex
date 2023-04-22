@@ -40,9 +40,13 @@ defmodule Components.TournamentStreamManagerModal do
     assign(socket, :existing, existing)
   end
 
-  def handle_event("delete_existing", %{"id" => id}, %{assigns: %{existing: existing}} = socket) do
+  def handle_event(
+        "delete_existing",
+        %{"id" => id},
+        %{assigns: %{existing: existing, user: user}} = socket
+      ) do
     with existing when not is_nil(existing) <- Enum.find(existing, &(to_string(&1.id) == id)) do
-      TournamentStreams.delete_tournament_stream(existing)
+      TournamentStreams.delete_tournament_stream(existing, user)
     end
 
     {:noreply, assign_existing(socket)}
@@ -59,15 +63,13 @@ defmodule Components.TournamentStreamManagerModal do
           }
         } = socket
       ) do
-    attrs =
-      %{
-        streaming_platform: platform,
-        stream_id: id,
-        user_id: user_id,
-        tournament_source: source,
-        tournament_id: tournament_id
-      }
-      |> IO.inspect(label: :attrs)
+    attrs = %{
+      streaming_platform: platform,
+      stream_id: id,
+      user_id: user_id,
+      tournament_source: source,
+      tournament_id: tournament_id
+    }
 
     TournamentStreams.create_tournament_stream(attrs)
     {:noreply, assign_existing(socket)}

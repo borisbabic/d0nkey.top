@@ -64,7 +64,12 @@ defmodule BackendWeb.TournamentStreamController do
 
   def delete(conn, %{"id" => id}) do
     tournament_stream = TournamentStreams.get_tournament_stream!(id)
-    {:ok, _tournament_stream} = TournamentStreams.delete_tournament_stream(tournament_stream)
+
+    {:ok, _tournament_stream} =
+      TournamentStreams.delete_tournament_stream(
+        tournament_stream,
+        BackendWeb.AuthUtils.user(conn)
+      )
 
     conn
     |> put_flash(:info, "Tournament stream deleted successfully.")
