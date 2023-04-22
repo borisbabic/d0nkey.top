@@ -190,7 +190,12 @@ defmodule BackendWeb.PlayerView do
       tour_stop = TourStop.get(ts.tournament_name)
       tournament_link = Routes.battlefy_path(conn, :tournament, ts.tournament_id)
       tournament_title = "MT #{TourStop.display_name(tour_stop) |> to_string()}"
-      score = "#{swiss.wins} - #{swiss.losses}"
+
+      score =
+        case swiss do
+          %{wins: wins, losses: losses} -> "#{swiss.wins} - #{swiss.losses}"
+          _ -> ""
+        end
 
       player_link = Routes.battlefy_path(conn, :tournament_player, ts.tournament_id, ts.team_name)
 
