@@ -1,0 +1,46 @@
+<.form let={f} for={@changeset} action={@action} id="torch-form" enctype="multipart/form-data">
+  <fieldset class="torch-panel">
+    <legend>
+      <span>Details</span>
+    </legend>
+    <%= if @changeset.action do %>
+      <p class="torch-form-error">Oops, something went wrong! Please check the errors below.</p>
+    <% end %>
+  
+    <div class="torch-form-group">
+      <%= label f, :tournament_source %>
+      <div class="torch-form-group-input">
+        <%= text_input f, :tournament_source %>
+        <%= error_tag f, :tournament_source %>
+      </div>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :tournament_id %>
+      <div class="torch-form-group-input">
+        <%= text_input f, :tournament_id %>
+        <%= error_tag f, :tournament_id %>
+      </div>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :streaming_platform %>
+      <div class="torch-form-group-input">
+        <%= text_input f, :streaming_platform %>
+        <%= error_tag f, :streaming_platform %>
+      </div>
+    </div>
+  
+    <div class="torch-form-group">
+      <%= label f, :stream_id %>
+      <div class="torch-form-group-input">
+        <%= text_input f, :stream_id %>
+        <%= error_tag f, :stream_id %>
+      </div>
+    </div>
+  
+    <div class="torch-submit-form">
+      <%= submit "Submit", class: "torch-submit-button" %>
+    </div>
+  </fieldset>
+</.form>

@@ -86,6 +86,13 @@ defmodule Backend.Streaming do
     Repo.one(query)
   end
 
+  def twitch_id_to_display(twitch_id, unknown \\ "Unknown twitch display???") do
+    case get_streamer_by_twitch_id(twitch_id) do
+      %{id: _} = streamer -> Streamer.display(streamer)
+      _ -> unknown
+    end
+  end
+
   def get_streamer_by_twitch_id(twitch_id) do
     query =
       from s in Streamer,

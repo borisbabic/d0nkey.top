@@ -114,10 +114,7 @@ defmodule BackendWeb.ProfileSettingsLive do
   def twitch_username(%{twitch_id: nil}), do: nil
 
   def twitch_username(%{twitch_id: twitch_id}) do
-    case Streaming.streamer_by_twitch_id(twitch_id) do
-      streamer = %{id: _} -> Streaming.Streamer.twitch_display(streamer)
-      _ -> "Unknown twitch display???"
-    end
+    Streaming.twitch_id_to_display(twitch_id)
   end
 
   def handle_event("disconnect_twitch", _, socket = %{assigns: %{user: user}}) do

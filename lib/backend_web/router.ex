@@ -252,6 +252,9 @@ defmodule BackendWeb.Router do
   scope "/", BackendWeb do
     pipe_through [:browser, :auth, :ensure_auth]
     live "/profile/settings", ProfileSettingsLive
+
+    live "tournament-streams/:tournament_source/:tournament_id/manager",
+         TournamentStreamManagerLive
   end
 
   scope "/torch", BackendWeb do
@@ -260,6 +263,7 @@ defmodule BackendWeb.Router do
     post "/battletag_info/batch-insert", BattletagController, :batch_insert
     resources "/battletag_info", BattletagController
     resources "/users", UserController
+    resources "/tournament-streams", TournamentStreamController
     get "/invited_player/batch", InvitedPlayerController, :batch
     post "/invited_player/batch-insert", InvitedPlayerController, :batch_insert
     resources "/invited_player", InvitedPlayerController

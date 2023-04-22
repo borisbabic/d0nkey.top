@@ -1,0 +1,89 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "New Tournament stream", to: Routes.tournament_stream_path(@conn, :new) %>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find tournament_streams</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+
+          <div class="field">
+            <label>Tournament source</label>
+            <%= filter_select(:tournament_stream, :tournament_source, @conn.params) %>
+            <%= filter_string_input(:tournament_stream, :tournament_source, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Tournament</label>
+            <%= filter_select(:tournament_stream, :tournament_id, @conn.params) %>
+            <%= filter_string_input(:tournament_stream, :tournament_id, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Streaming platform</label>
+            <%= filter_select(:tournament_stream, :streaming_platform, @conn.params) %>
+            <%= filter_string_input(:tournament_stream, :streaming_platform, @conn.params) %>
+          </div>
+
+          <div class="field">
+            <label>Stream</label>
+            <%= filter_select(:tournament_stream, :stream_id, @conn.params) %>
+            <%= filter_string_input(:tournament_stream, :stream_id, @conn.params) %>
+          </div>
+
+
+
+
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: Routes.tournament_stream_path(@conn, :index) %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@tournament_streams) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+
+              <th><%= table_link(@conn, "Tournament source", :tournament_source) %></th>
+
+              <th><%= table_link(@conn, "Tournament", :tournament_id) %></th>
+
+              <th><%= table_link(@conn, "Streaming platform", :streaming_platform) %></th>
+
+              <th><%= table_link(@conn, "Stream", :stream_id) %></th>
+
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for tournament_stream <- @tournament_streams do %>
+            <tr>
+
+                <td><%= tournament_stream.tournament_source %></td>
+
+                <td><%= tournament_stream.tournament_id %></td>
+
+                <td><%= tournament_stream.streaming_platform %></td>
+
+                <td><%= tournament_stream.stream_id %></td>
+
+              <td class="torch-actions">
+                <span><%= link "Show", to: Routes.tournament_stream_path(@conn, :show, tournament_stream) %></span>
+                <span><%= link "Edit", to: Routes.tournament_stream_path(@conn, :edit, tournament_stream) %></span>
+                <span><%= link "Delete", to: Routes.tournament_stream_path(@conn, :delete, tournament_stream), method: :delete, data: [confirm: "Are you sure?"] %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+    <% else %>
+      <p class="torch-no-data">No tournament_streams match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>
