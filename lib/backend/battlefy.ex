@@ -516,8 +516,11 @@ defmodule Backend.Battlefy do
     |> get_tournament_matches(opts)
   end
 
-  @spec get_matches(stage_id, get_matches_options) :: [Match.t()]
-  def get_matches(stage_id, opts \\ []) do
+  @spec get_matches(stage_id | Stage.t(), get_matches_options) :: [Match.t()]
+  def get_matches(stage_or_id, opts \\ [])
+  def get_matches(%Stage{id: id}, opts), do: get_matches(id, opts)
+
+  def get_matches(stage_id, opts) do
     Api.get_matches(stage_id, opts)
   end
 

@@ -393,7 +393,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour 2023_1",
-        battlefy_id: nil,
+        battlefy_id: "64399a194e7f0e0f9b334be9",
         ladder_priority: nil,
         ladder_seasons: [111, 112, 113],
         ladder_invites: nil,
@@ -408,11 +408,11 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: nil,
+        start_time: ~N[2023-04-22 16:00:00],
         qualifiers_period: {~D[2023-03-01], ~D[2022-03-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
-        display_name: "MT 2023-01",
+        display_name: "MT Spring Championship",
         swiss_rounds: 0,
         year: 2023
       },
