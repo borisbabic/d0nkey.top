@@ -179,7 +179,6 @@ defmodule BackendWeb.StreamingNowLive do
       Backend.TournamentStreams.get_for_tournament({source, id})
       |> Enum.map(& &1.stream_id)
       |> MapSet.new()
-      |> IO.inspect(label: :streams)
 
     streaming_now
     |> Enum.filter(fn s ->
