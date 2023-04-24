@@ -6,6 +6,7 @@ defmodule BackendWeb.DeckSheetsIndexLive do
   alias Components.DeckSheetsModal
   alias Components.SurfaceBulma.Table
   alias Components.SurfaceBulma.Table.Column
+  alias Components.DeleteModal
 
   data(user, :any)
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
@@ -22,7 +23,10 @@ defmodule BackendWeb.DeckSheetsIndexLive do
           <Column label="Owner">{User.display_name(sheet.owner)}</Column>
           <Column label="Group">{group_name(sheet)}</Column>
           <Column label="Actions">
-            <DeckSheetsModal id={"edit_modal_#{sheet.id}"} user={@user} existing={sheet}/>
+            <div class="level level-left">
+              <DeleteModal :if={Sheets.can_admin?(sheet, @user)} id={"delete_modal_#{sheet.id}"} on_delete={fn -> Backend.Sheets.delete_sheet(sheet, @user) end}/>
+              <DeckSheetsModal id={"edit_modal_#{sheet.id}"} user={@user} existing={sheet}/>
+            </div>
           </Column>
         </Table>
       </Context>

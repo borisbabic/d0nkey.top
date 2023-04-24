@@ -198,4 +198,28 @@ defmodule Backend.Sheets do
   defp preload_tuple({:error, error}, _), do: {:error, error}
   defp preload_tuple({:ok, thing}, to_preload), do: {:ok, Repo.preload(thing, to_preload)}
   defp preload_tuple(thing, to_preload), do: {:ok, Repo.preload(thing, to_preload)}
+
+  def delete_listing(listing = %{sheet: sheet}, user) do
+    if can_contribute?(sheet, user) do
+      do_delete_listing(listing)
+    else
+      {:error, :insufficient_permissions}
+    end
+  end
+
+  defp do_delete_listing(listing) do
+    Repo.delete(listing)
+  end
+
+  def delete_sheet(sheet, user) do
+    if can_admin?(sheet, user) do
+      do_delete_sheet(sheet)
+    else
+      {:error, :insufficient_permissions}
+    end
+  end
+
+  defp do_delete_sheet(sheet) do
+    Repo.delete(sheet)
+  end
 end

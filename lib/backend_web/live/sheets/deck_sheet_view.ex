@@ -14,6 +14,7 @@ defmodule BackendWeb.DeckSheetViewLive do
   alias Components.LivePatchDropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.DecksExplorer
+  alias Components.DeleteModal
 
   data(sheet, :integer)
   data(sheet_id, :integer)
@@ -63,7 +64,10 @@ defmodule BackendWeb.DeckSheetViewLive do
             <Column label="Source">{listing.source}</Column>
             <Column label="Comment">{listing.comment}</Column>
             <Column label="Actions">
-              <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
+              <div class="level level-left">
+                <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
+                <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
+              </div>
             </Column>
           </Table>
           <div :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
@@ -72,6 +76,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                 <Decklist deck={listing.deck} name={listing.name} id={"deck_for_#{listing.id}"} />
                 <:after_deck>
                   <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
+                  <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
                   <div class="tag column is-info" :if={listing.source}>{listing.source}</div>
                   <p class="column has-text-centered is-word-wrap" :if={listing.comment && listing.comment != ""}>{listing.comment}</p>
                 </:after_deck>
