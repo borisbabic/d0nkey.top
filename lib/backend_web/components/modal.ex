@@ -9,6 +9,7 @@ defmodule Components.Modal do
   prop(success_message, :string, default: "Success")
   prop(error_message, :string, default: "Error")
   prop(cancel_button_message, :string, default: "Cancel")
+  prop(show_body, :boolean, default: true)
 
   prop(show_footer, :boolean, default: true)
   prop(show_cancel_button, :boolean, default: true)
@@ -30,7 +31,7 @@ defmodule Components.Modal do
               <p class="modal-card-title">{@title}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
           </header>
-          <section class="modal-card-body">
+          <section :if={@show_body} class="modal-card-body">
             <#slot/>
           </section>
           <footer :if={@show_footer} class="modal-card-foot">
