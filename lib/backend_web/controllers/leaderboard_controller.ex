@@ -1,5 +1,4 @@
 defmodule BackendWeb.LeaderboardController do
-  require Logger
   use BackendWeb, :controller
   alias Backend.Blizzard
   alias Backend.Leaderboards
@@ -7,6 +6,7 @@ defmodule BackendWeb.LeaderboardController do
   alias Backend.MastersTour
   alias Backend.LeaderboardsPoints
   require Backend.LobbyLegends
+  require Logger
 
   defp parse_use_current(%{"use_current_season" => "yes"}), do: true
   defp parse_use_current(_), do: false
