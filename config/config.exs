@@ -35,10 +35,7 @@ config :backend, QuantumScheduler,
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
     {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     # {"* * * * *", fn -> Backend.HSReplay.handle_live_decks() end},
-    {"* * * * *", fn -> Backend.LatestHSArticles.update() end},
-    #### RUN ONCE THEN DELETE
-    {"00 18 11 APR *",
-     fn -> Backend.Streaming.festival_of_legends_card_ids() |> Backend.Feed.reduce_old_decks() end}
+    {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
 bnet_client_id =
