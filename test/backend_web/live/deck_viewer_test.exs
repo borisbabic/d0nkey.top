@@ -44,6 +44,7 @@ defmodule BackendWeb.Live.DeckViewerTest do
     urls = [
       "https://www.yaytears.com/conquest/AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D",
       "https://www.d0nkey.top/deckviewer?code=AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D&compare_decks=false&rotation=false",
+      "https://hsdeckviewer.github.io/?deckstring=AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D",
       "https://hsdeckviewer.com/?deckstring=AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D"
     ]
 
