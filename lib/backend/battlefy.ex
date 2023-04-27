@@ -669,15 +669,20 @@ defmodule Backend.Battlefy do
     matches = get_deckstrings_matches(info)
 
     Util.async_map(battletags, fn btag ->
-      {match, position} = get_team_match_position(matches, btag)
+      case get_team_match_position(matches, btag) do
+        {match, position} ->
+          deckstrings =
+            get_match_deckstrings(tournament_id, match.id)
+            |> MatchDeckstrings.get(position)
+            |> Enum.map(&MatchDeckstrings.remove_comments/1)
 
-      deckstrings =
-        get_match_deckstrings(tournament_id, match.id)
-        |> MatchDeckstrings.get(position)
-        |> Enum.map(&MatchDeckstrings.remove_comments/1)
+          {btag, deckstrings}
 
-      {btag, deckstrings}
+        _ ->
+          nil
+      end
     end)
+    |> Enum.filter(& &1)
     |> Map.new()
   end
 

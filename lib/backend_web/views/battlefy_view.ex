@@ -532,12 +532,14 @@ defmodule BackendWeb.BattlefyView do
           tournament: Battlefy.Tournament.t(),
           conn: Plug.Conn.t()
         }) :: Map.t()
-  defp calculate_ongoing(%{
-         matches: matches,
-         show_ongoing: true,
-         tournament: tournament,
-         conn: conn
-       }) do
+  defp calculate_ongoing(
+         params = %{
+           matches: matches,
+           show_ongoing: true,
+           tournament: tournament,
+           conn: conn
+         }
+       ) do
     matches
     |> Enum.filter(&Match.ongoing?/1)
     |> Enum.flat_map(fn m = %{top: t, bottom: b} ->
@@ -559,7 +561,8 @@ defmodule BackendWeb.BattlefyView do
                 conn,
                 :tournament_player,
                 tournament.id,
-                b |> MatchTeam.get_name() || ""
+                b |> MatchTeam.get_name() || "",
+                stage_query_param(params)
               )
           }
         },
@@ -581,7 +584,8 @@ defmodule BackendWeb.BattlefyView do
                   conn,
                   :tournament_player,
                   tournament.id,
-                  t |> MatchTeam.get_name()
+                  t |> MatchTeam.get_name(),
+                  stage_query_param(params)
                 )
               else
                 nil
@@ -594,6 +598,17 @@ defmodule BackendWeb.BattlefyView do
   end
 
   defp calculate_ongoing(_), do: Map.new()
+
+  defp stage_query_param(%{stage_id: stage_id}) when is_binary(stage_id),
+    do: %{stage_id: stage_id}
+
+  # at least two stages. don't wanna add it if there is 1 stage
+  defp stage_query_param(%{tournament: %{stages: [_ | [_ | _]] = stages}}) do
+    stage_id = Enum.reverse(stages) |> Enum.find_value(&Map.get(&1, :id))
+    %{stage_id: stage_id}
+  end
+
+  defp stage_query_param(_), do: %{}
 
   def tour_stop?(%{tournament: tournament}), do: tour_stop?(tournament)
 
@@ -651,7 +666,7 @@ defmodule BackendWeb.BattlefyView do
       assigns = %{}
 
       ~H"""
-      <a href={Routes.battlefy_path(conn, :tournament_player, id, battletag)}>
+      <a href={Routes.battlefy_path(conn, :tournament_player, id, battletag, stage_query_param(params))}>
         <%= battletag %>
       </a>
       """
@@ -710,19 +725,21 @@ defmodule BackendWeb.BattlefyView do
   defp prepare_participants(_), do: []
 
   @spec prepare_standings(Map.t()) :: [standings]
-  defp prepare_standings(%{
-         standings_raw: standings_raw = [_ | _],
-         conn: conn,
-         earnings: earnings,
-         lineups: lineups,
-         show_lineups: show_lineups,
-         invited_mapset: invited_mapset,
-         stage_id: stage_id,
-         tournament: tournament,
-         ongoing: ongoing,
-         use_countries: use_countries,
-         participants: participants
-       }) do
+  defp prepare_standings(
+         %{
+           standings_raw: standings_raw = [_ | _],
+           conn: conn,
+           earnings: earnings,
+           lineups: lineups,
+           show_lineups: show_lineups,
+           invited_mapset: invited_mapset,
+           stage_id: stage_id,
+           tournament: tournament,
+           ongoing: ongoing,
+           use_countries: use_countries,
+           participants: participants
+         } = params
+       ) do
     participants_map = participants |> Enum.map(&{&1.name, &1}) |> Map.new()
     lineup_map = lineups |> Enum.map(&{&1.name, &1}) |> Map.new()
 
@@ -758,7 +775,13 @@ defmodule BackendWeb.BattlefyView do
         earnings: player_earnings(earnings, s.team.name),
         pre_name_cell: pre_name_cell,
         name_link:
-          "/battlefy/tournament/#{tournament.id}/player/#{URI.encode_www_form(s.team.name)}"
+          Routes.battlefy_path(
+            conn,
+            :tournament_player,
+            tournament.id,
+            s.team.name,
+            stage_query_param(params)
+          )
           |> add_stage_id(stage_id),
         has_score: s.wins && s.losses,
         score: "#{s.wins} - #{s.losses}",
