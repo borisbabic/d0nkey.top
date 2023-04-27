@@ -33,7 +33,7 @@ defmodule BackendWeb.BattlefyView do
 
   @spec handle_opponent_team(Battlefy.MatchTeam.t(), Map.t()) ::
           nil
-  def handle_opponent_team(%{team: nil}, _, _) do
+  def handle_opponent_team(%{team: nil}, _) do
     nil
   end
 
