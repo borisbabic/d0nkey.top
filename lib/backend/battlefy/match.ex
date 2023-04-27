@@ -279,6 +279,7 @@ defmodule Backend.Battlefy.Match.MatchStats do
     field :stats, Stats.t()
     field :game_number, integer
     field :created_at, NaiveDateTime.t() | nil
+    field :game_id, String.t() | nil
   end
 
   def from_raw_map(maps) when is_list(maps) do
@@ -289,6 +290,7 @@ defmodule Backend.Battlefy.Match.MatchStats do
     %__MODULE__{
       stats: Stats.from_raw_map(stats),
       created_at: map["createdAt"] |> Util.naive_date_time_or_nil(),
+      game_id: map["gameID"],
       game_number: game_number
     }
   end

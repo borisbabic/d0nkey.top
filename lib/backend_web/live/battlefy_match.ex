@@ -5,11 +5,15 @@ defmodule BackendWeb.BattlefyMatchLive do
   data(user, :any)
   data(tournament, :map)
   data(match, :map)
+  data(top_decks, :list)
+  data(bottom_decks, :list)
 
   alias Backend.Battlefy
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
   alias Backend.Hearthstone.Deck
+  alias Components.CompactLineup
+  use Components.ExpandableDecklist
 
   def mount(_params, session, socket) do
     {:ok,
@@ -19,7 +23,7 @@ defmodule BackendWeb.BattlefyMatchLive do
 
   def render(assigns) do
     ~F"""
-    <Context  put={user: @user}>
+    <Context put={user: @user}>
       <div>
         <div class="title is-2">
           <a href={"#{Battlefy.get_match_url(@tournament, @match)}"}>
@@ -40,16 +44,22 @@ defmodule BackendWeb.BattlefyMatchLive do
             </tr>
           </thead>
           <tbody>
-            <tr :for={times <- times(@match)} >
-              <td>{times.top}</td>
+            <tr :if={Enum.any?(@top_decks) or Enum.any?(@bottom_decks)}>
+              <td><CompactLineup extra_decks={@top_decks} id="top_lineup"/></td>
               <td></td>
+              <td><CompactLineup extra_decks={@bottom_decks} id="bottom_lineup"/></td>
+              <td></td>
+            </tr>
+            <tr :for={times <- times(@match, @top_decks, @bottom_decks)} >
+              <td>{times.top}</td>
+              <td>{Map.get(times, :score)}</td>
               <td>{times.bottom}</td>
               <td>{times.when || "?"} min ago</td>
             </tr>
             <tr :for={game <- games(@match)} >
-              <td>{game.top_class |> Deck.class_name()}</td>
+              <td>{decks(@top_decks, game.top_class) |> render_decks(game.game_identifier <> "_top")}</td>
               <td>{game.score}</td>
-              <td>{game.bottom_class |> Deck.class_name()}  </td>
+              <td>{decks(@bottom_decks, game.bottom_class) |> render_decks(game.game_identifier <> "_bottom")}</td>
               <td>{game.finished || "?"} min ago</td>
             </tr>
           </tbody>
@@ -57,6 +67,37 @@ defmodule BackendWeb.BattlefyMatchLive do
       </div>
     </Context>
     """
+  end
+
+  defp game_identifier(%{game_id: game_id, game_number: game_number}),
+    do: "#{game_id}_#{game_number}"
+
+  defp game_identifier(_), do: "Unknown_game_identifier_#{Ecto.UUID.generate()}"
+
+  def render_decks([deck], id) do
+    assigns = %{deck: deck, id: id}
+
+    ~F"""
+    <ExpandableDecklist id={@id} deck={@deck}/>
+    """
+  end
+
+  def render_decks([], id), do: ""
+
+  def render_decks(decks, id) do
+    assigns = %{decks: decks, id: id}
+
+    ~F"""
+    <CompactLineup id={@id} extra_decks={@decks}/>
+    """
+  end
+
+  def decks(decks, lower_class) do
+    class = String.upcase(lower_class)
+
+    Enum.filter(decks, fn d ->
+      Deck.class(d) == class
+    end)
   end
 
   def player(nil, _), do: ""
@@ -69,7 +110,7 @@ defmodule BackendWeb.BattlefyMatchLive do
     """
   end
 
-  def times(%{top: top, bottom: bottom}) do
+  def times(%{top: top, bottom: bottom}, top_decks, bottom_decks) do
     now = NaiveDateTime.utc_now()
 
     [
@@ -79,8 +120,9 @@ defmodule BackendWeb.BattlefyMatchLive do
         bottom: ""
       },
       %{
-        top: "Banned",
+        top: top && decks(top_decks, top.banned_class) |> render_decks("banned_top"),
         when: top && top.banned_at,
+        score: "Banned",
         bottom: ""
       },
       %{
@@ -89,8 +131,10 @@ defmodule BackendWeb.BattlefyMatchLive do
         top: ""
       },
       %{
-        bottom: "Banned",
+        bottom:
+          bottom && decks(bottom_decks, bottom.banned_class) |> render_decks("banned_bottom"),
         when: bottom && bottom.banned_at,
+        score: "Banned",
         top: ""
       }
     ]
@@ -128,27 +172,30 @@ defmodule BackendWeb.BattlefyMatchLive do
       %{
         created_at: created_at,
         stats: %{bottom: %{class: bottom_class, winner: bw}, top: %{class: top_class, winner: tw}}
-      } ->
+      } = g ->
         %{
           top_class: top_class,
           bottom_class: bottom_class,
           finished: min_ago(created_at, now),
+          game_identifier: game_identifier(g),
           score: "#{score(tw)} - #{score(bw)}"
         }
 
-      %{created_at: created_at} ->
+      %{created_at: created_at} = g ->
         %{
           top_class: "",
           bottom_class: "",
           finished: min_ago(created_at, now),
+          identifier: game_identifier(g),
           score: ""
         }
 
-      _ ->
+      g ->
         %{
           top_class: "",
           bottom_class: "",
           finished: "?",
+          identifier: game_identifier(g),
           score: ""
         }
     end)
@@ -179,18 +226,33 @@ defmodule BackendWeb.BattlefyMatchLive do
       case Integer.parse(match_id) do
         {match_num, ""} ->
           tournament
-          |> Backend.Battlefy.get_tournament_matches()
+          |> Battlefy.get_tournament_matches()
           |> Match.find(match_num)
 
         _ ->
           Battlefy.get_match!(match_id)
       end
 
-    {:noreply, socket |> assign(match: match, tournament: tournament)}
+    {top_decks, bottom_decks} = get_decks(tournament, match)
+
+    {:noreply,
+     socket
+     |> assign(
+       match: match,
+       tournament: tournament,
+       top_decks: top_decks,
+       bottom_decks: bottom_decks
+     )}
   end
 
-  # def handle_event("deck_copied", %{"deckcode" => code}, socket) do
-  # Tracker.inc_copied(code)
-  # {:noreply, socket}
-  # end
+  defp get_decks(%{id: tournament_id}, %{id: match_id}) do
+    case Battlefy.get_match_deckstrings(tournament_id, match_id) do
+      %{top: top, bottom: bottom} -> {decks(top), decks(bottom)}
+      _ -> {[], []}
+    end
+  end
+
+  defp decks(strings) do
+    for s <- strings, {:ok, deck} = Deck.decode(s), do: deck
+  end
 end
