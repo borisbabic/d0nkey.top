@@ -672,7 +672,7 @@ defmodule Backend.Battlefy do
       {match, position} = get_team_match_position(matches, btag)
 
       deckstrings =
-        Api.get_match_deckstrings(tournament_id, match.id)
+        get_match_deckstrings(tournament_id, match.id)
         |> MatchDeckstrings.get(position)
         |> Enum.map(&MatchDeckstrings.remove_comments/1)
 
@@ -680,6 +680,9 @@ defmodule Backend.Battlefy do
     end)
     |> Map.new()
   end
+
+  def get_match_deckstrings(tournament_id, match_id),
+    do: Api.get_match_deckstrings(tournament_id, match_id)
 
   @spec get_deckstrings(%{
           stage_id: stage_id | nil,
