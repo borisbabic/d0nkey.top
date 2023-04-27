@@ -26,7 +26,9 @@ defmodule BackendWeb.DeckcodeSearchProvider do
     code = Deck.deckcode(deck)
 
     currently_streaming =
-      StreamingNow.streaming_now() |> Enum.filter(&Deck.equals(deck, &1.deckcode)) |> Enum.count()
+      StreamingNow.streaming_now()
+      |> Enum.filter(&Deck.equals?(deck, &1.deckcode))
+      |> Enum.count()
 
     if currently_streaming > 0 do
       %Result{
