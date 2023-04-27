@@ -82,7 +82,7 @@ defmodule BackendWeb.BattlefyMatchLive do
     """
   end
 
-  def render_decks([], id), do: ""
+  def render_decks([], _id), do: ""
 
   def render_decks(decks, id) do
     assigns = %{decks: decks, id: id}
@@ -92,13 +92,15 @@ defmodule BackendWeb.BattlefyMatchLive do
     """
   end
 
-  def decks(decks, lower_class) do
+  def decks(decks, lower_class) when is_binary(lower_class) do
     class = String.upcase(lower_class)
 
     Enum.filter(decks, fn d ->
       Deck.class(d) == class
     end)
   end
+
+  def decks(_, _), do: []
 
   def player(nil, _), do: ""
 
