@@ -546,7 +546,13 @@ defmodule BackendWeb.BattlefyView do
           t |> MatchTeam.get_name(),
           %{
             score: "#{t.score} - #{b.score}",
-            match_url: Battlefy.get_match_url(tournament, m),
+            match_url:
+              Routes.live_path(
+                BackendWeb.Endpoint,
+                BackendWeb.BattlefyMatchLive,
+                tournament.id,
+                m.id
+              ),
             opponent: b |> MatchTeam.get_name(),
             opponent_link:
               Routes.battlefy_path(
@@ -561,7 +567,13 @@ defmodule BackendWeb.BattlefyView do
           b |> MatchTeam.get_name(),
           %{
             score: "#{b.score} - #{t.score}",
-            match_url: Battlefy.get_match_url(tournament, m),
+            match_url:
+              Routes.live_path(
+                BackendWeb.Endpoint,
+                BackendWeb.BattlefyMatchLive,
+                tournament.id,
+                m.id
+              ),
             opponent: t |> MatchTeam.get_name(),
             opponent_link:
               if t |> MatchTeam.get_name() do
