@@ -97,7 +97,7 @@
                                 <% end %>
                             </div>
                         </td>
-                        <td class="is-hidden-mobile"><a class="tag is-link" href={"#{ opponent.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ opponent.yaytears }"}>yaytears</a></td>
+                        <td class="is-hidden-mobile"><%= opponent.decks%></td>
                     <% end %>
                 </tr>
             <% end %>
@@ -126,14 +126,14 @@
                         <td></td><td></td>
                     <% else %>
                         <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><a class="tag is-link" href={"#{ top.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ top.yaytears }"}>yaytears</a></td>
+                        <td class="is-hidden-mobile"><%= top.decks %></td>
                     <% end %>
                     <td><a href={"#{ match_url }"}> <%= score %></a></td>
                     <%= if bottom == nil do %>
                         <td></td><td></td>
                     <% else %>
                         <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><a class="tag is-link" href={"#{ bottom.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ bottom.yaytears }"}>yaytears</a></td>
+                        <td class="is-hidden-mobile"><%= bottom.decks %></td>
                     <% end %>
                 </tr>
             <% end %>

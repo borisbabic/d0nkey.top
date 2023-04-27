@@ -257,6 +257,10 @@ defmodule Backend.Battlefy.MatchDeckstrings do
     }
   end
 
+  @spec get(t(), position :: :top | :bottom) :: [String.t()]
+  def get(%{top: top}, :top), do: top
+  def get(%{bottom: top}, :bottom), do: top
+
   # todo move to blizzard or hearthstone
   def remove_comments(deckstring) do
     deckstring

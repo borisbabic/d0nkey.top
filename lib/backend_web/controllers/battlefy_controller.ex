@@ -2,6 +2,7 @@ defmodule BackendWeb.BattlefyController do
   use BackendWeb, :controller
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
+  alias Backend.Battlefy.MatchTeam
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.MastersTour.TourStop
   alias Backend.TournamentStreams
@@ -193,14 +194,17 @@ defmodule BackendWeb.BattlefyController do
     team_name = URI.decode_www_form(team_name_raw)
     {opponent_matches, player_matches} = future_and_player(params)
 
+    needed_deckcodes = [team_name | get_battletags(opponent_matches ++ player_matches)]
+
     stage_id = params["stage_id"]
 
-    deckcodes =
-      Battlefy.get_deckstrings(%{
-        stage_id: stage_id,
-        tournament_id: tournament_id,
-        battletag_full: team_name
-      })
+    all_deckcodes =
+      Battlefy.get_deckstrings(
+        %{stage_id: stage_id, tournament_id: tournament_id},
+        needed_deckcodes
+      )
+
+    deckcodes = Map.get(all_deckcodes, team_name)
 
     tournament = Battlefy.get_tournament(tournament_id)
 
@@ -210,10 +214,20 @@ defmodule BackendWeb.BattlefyController do
       player_matches: player_matches,
       page_title: team_name,
       deckcodes: deckcodes,
+      all_deckcodes: all_deckcodes,
       team_name: team_name,
       stage_id: stage_id,
       conn: conn
     })
+  end
+
+  defp get_battletags(matches) do
+    Enum.reduce(matches, MapSet.new(), fn %{top: top, bottom: bottom}, acc ->
+      acc
+      |> MapSet.put(MatchTeam.get_name(top))
+      |> MapSet.put(MatchTeam.get_name(bottom))
+    end)
+    |> MapSet.to_list()
   end
 
   defp future_and_player(%{"stage_id" => stage_id, "team_name" => team_name}),

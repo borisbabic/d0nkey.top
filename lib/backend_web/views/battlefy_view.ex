@@ -15,6 +15,7 @@ defmodule BackendWeb.BattlefyView do
           name: String.t(),
           yaytears: String.t(),
           hsdeckviewer: String.t(),
+          decks: any(),
           link: String.t()
         }
 
@@ -30,18 +31,31 @@ defmodule BackendWeb.BattlefyView do
           yaytears: String.t()
         }
 
-  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Battlefy.Tournament.t(), Plug.Conn.t()) ::
+  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Map.t()) ::
           nil
   def handle_opponent_team(%{team: nil}, _, _) do
     nil
   end
 
-  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Battlefy.Tournament.t(), Plug.Conn.t()) ::
-          future_opponent_team
-  def handle_opponent_team(%{team: %{name: name}}, %{id: tournament_id}, conn) do
+  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Map.t()) :: future_opponent_team
+  def handle_opponent_team(%{team: %{name: name}}, %{
+        tournament: %{id: tournament_id},
+        conn: conn,
+        all_deckcodes: all_deckcodes
+      }) do
+    decks =
+      case Map.get(all_deckcodes, name) do
+        nil ->
+          ""
+
+        codes ->
+          live_render(conn, BackendWeb.CompactLineupOnly, session: %{"extra_decks" => codes})
+      end
+
     %{
       name: name,
       yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
+      decks: decks,
       hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, name),
       link: Routes.battlefy_path(conn, :tournament_player, tournament_id, name, conn.query_params)
     }
@@ -153,6 +167,7 @@ defmodule BackendWeb.BattlefyView do
         params = %{
           tournament: tournament,
           opponent_matches: opponent_matches,
+          all_deckcodes: all_deckcodes_raw,
           player_matches: player_matches,
           deckcodes: deckcodes_raw,
           team_name: team_name,
@@ -163,8 +178,8 @@ defmodule BackendWeb.BattlefyView do
       opponent_matches
       |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
         %{
-          top: handle_opponent_team(top, tournament, conn),
-          bottom: handle_opponent_team(bottom, tournament, conn),
+          top: handle_opponent_team(top, params),
+          bottom: handle_opponent_team(bottom, params),
           match_url:
             Routes.live_path(
               BackendWeb.Endpoint,
@@ -178,7 +193,7 @@ defmodule BackendWeb.BattlefyView do
       end)
       |> Enum.sort_by(fn o -> o.current_round end, :desc)
 
-    {player, class_stats_raw} = handle_player_matches(player_matches, team_name, tournament, conn)
+    {player, class_stats_raw} = handle_player_matches(params)
     hsdeckviewer = Routes.battlefy_path(conn, :tournament_decks, tournament.id, team_name)
     yaytears = Backend.Yaytears.create_deckstrings_link(tournament.id, team_name)
     class_stats = class_stats_raw |> Enum.map(fn {_k, v} -> v end)
@@ -464,7 +479,14 @@ defmodule BackendWeb.BattlefyView do
     Routes.battlefy_path(conn, :organization_tournaments, new_params)
   end
 
-  def handle_player_matches(player_matches, team_name, tournament, conn) do
+  def handle_player_matches(
+        %{
+          player_matches: player_matches,
+          team_name: team_name,
+          tournament: tournament,
+          conn: conn
+        } = params
+      ) do
     player_matches
     |> Enum.map_reduce(%{}, fn match = %{top: top, bottom: bottom, round_number: rn}, acc ->
       {player, opponent, player_place, opponent_place} =
@@ -487,7 +509,7 @@ defmodule BackendWeb.BattlefyView do
         %{
           score: "#{player.score} - #{opponent.score} ",
           match_url: Battlefy.get_match_url(tournament, match),
-          opponent: handle_opponent_team(opponent, tournament, conn),
+          opponent: handle_opponent_team(opponent, params),
           class_stats: class_stats,
           opponent_class_stats: opponent_class_stats,
           current_round: rn
