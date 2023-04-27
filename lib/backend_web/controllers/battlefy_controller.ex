@@ -204,7 +204,7 @@ defmodule BackendWeb.BattlefyController do
         needed_deckcodes
       )
 
-    deckcodes = Map.get(all_deckcodes, team_name)
+    deckcodes = Map.get(all_deckcodes, team_name, [])
 
     tournament = Battlefy.get_tournament(tournament_id)
 
