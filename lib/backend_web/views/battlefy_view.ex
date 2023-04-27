@@ -508,7 +508,13 @@ defmodule BackendWeb.BattlefyView do
       {
         %{
           score: "#{player.score} - #{opponent.score} ",
-          match_url: Battlefy.get_match_url(tournament, match),
+          match_url:
+            Routes.live_path(
+              BackendWeb.Endpoint,
+              BackendWeb.BattlefyMatchLive,
+              tournament.id,
+              match.id
+            ),
           opponent: handle_opponent_team(opponent, params),
           class_stats: class_stats,
           opponent_class_stats: opponent_class_stats,
