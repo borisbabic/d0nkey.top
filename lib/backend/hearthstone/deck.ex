@@ -5,7 +5,9 @@ defmodule Backend.Hearthstone.Deck do
   import Ecto.Changeset
   alias Hearthstone.Card.RuneCost
   alias Backend.Hearthstone
+  alias Backend.Hearthstone.Card
   alias Backend.HearthstoneJson
+  alias Backend.HearthstoneJson.Card, as: JsonCard
   alias Backend.Hearthstone.Deck.Sideboard
 
   @required [:cards, :hero, :format, :deckcode]
@@ -134,11 +136,35 @@ defmodule Backend.Hearthstone.Deck do
   def class_name(c) when is_binary(c), do: c |> Recase.to_title()
   def class_name(other), do: other
 
+  def short_class_name(class) do
+    case class_name(class) do
+      "Death Knight" -> "DK"
+      "Demon Hunter" -> "DH"
+      "Paladin" -> "Pa"
+      "Priest" -> "Pr"
+      "Warrior" -> "Warr"
+      "Warlock" -> "Wlk"
+      other -> String.at(other, 0)
+    end
+  end
+
   def name(%{archetype: a}) when not is_nil(a), do: a
 
   def name(deck) do
     with nil <- Backend.Hearthstone.DeckArchetyper.archetype(deck) do
       class_name(deck)
+    end
+  end
+
+  @doc """
+  If the hero isn't available then it defaults to the basic hero for the class
+  """
+  @spec hero(Deck.t()) :: Card.t() | JsonCard.t()
+  def hero(%{hero: hero} = deck) do
+    with nil <- Hearthstone.get_card(hero) do
+      deck.class
+      |> get_basic_hero()
+      |> Hearthstone.get_card()
     end
   end
 
@@ -448,9 +474,11 @@ defmodule Backend.Hearthstone.Deck do
 
   def sort(decks), do: decks |> Enum.sort_by(&class/1)
 
+  @spec class(t()) :: String.t()
   def class(deck) do
-    with nil <- deck.class do
-      deck.hero |> Hearthstone.class()
+    with nil <- deck.class,
+         nil <- Hearthstone.class(deck.hero) do
+      "NEUTRAL"
     end
   end
 
@@ -466,7 +494,7 @@ defmodule Backend.Hearthstone.Deck do
     |> Hearthstone.sort_cards()
   end
 
-  def equals(first, second), do: equal([first, second])
+  def equals?(first, second), do: equal([first, second])
 
   def equal(decks) when is_list(decks) do
     num_different =

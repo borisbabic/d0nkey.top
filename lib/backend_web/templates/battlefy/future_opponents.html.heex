@@ -17,6 +17,10 @@
     <% end %>
 </div>
 
+<div class="is-hidden-tablet">
+    <%= live_render(@conn, BackendWeb.CompactLineupOnly, session: %{"extra_decks" => @deckcodes}) %>
+</div>
+
 <%= if @show_stage_selection do %>
     <div class="dropdown is-hoverable">
         <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@stage_selection_text%></button></div>
@@ -66,7 +70,7 @@
                 <th class="is-hidden-mobile">Player Stats</th>
                 <th>Score</th>
                 <th>Opponent</th>
-                <th>Opponent Stats</th>
+                <th class="is-hidden-mobile">Opponent Stats</th>
                 <th class="is-hidden-mobile">Opponent Decks</th>
             </tr>
         </thead>
@@ -93,7 +97,7 @@
                                 <% end %>
                             </div>
                         </td>
-                        <td><a class="tag is-link" href={"#{ opponent.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ opponent.yaytears }"}>yaytears</a></td>
+                        <td class="is-hidden-mobile"><a class="tag is-link" href={"#{ opponent.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ opponent.yaytears }"}>yaytears</a></td>
                     <% end %>
                 </tr>
             <% end %>
@@ -108,10 +112,10 @@
             <tr>
                 <th>Round</th>
                 <th>Top</th>
-                <th>Top Decks</th>
+                <th class="is-hidden-mobile">Top Decks</th>
                 <th>Score</th>
                 <th>Bottom</th>
-                <th>Bottom Decks</th>
+                <th class="is-hidden-mobile">Bottom Decks</th>
             </tr>
         </thead>
         <tbody>
@@ -122,14 +126,14 @@
                         <td></td><td></td>
                     <% else %>
                         <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
-                        <td><a class="tag is-link" href={"#{ top.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ top.yaytears }"}>yaytears</a></td>
+                        <td class="is-hidden-mobile"><a class="tag is-link" href={"#{ top.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ top.yaytears }"}>yaytears</a></td>
                     <% end %>
                     <td><a href={"#{ match_url }"}> <%= score %></a></td>
                     <%= if bottom == nil do %>
                         <td></td><td></td>
                     <% else %>
                         <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
-                        <td><a class="tag is-link" href={"#{ bottom.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ bottom.yaytears }"}>yaytears</a></td>
+                        <td class="is-hidden-mobile"><a class="tag is-link" href={"#{ bottom.hsdeckviewer }"}>HSDeckViewer</a> <a class="tag is-link" href={"#{ bottom.yaytears }"}>yaytears</a></td>
                     <% end %>
                 </tr>
             <% end %>

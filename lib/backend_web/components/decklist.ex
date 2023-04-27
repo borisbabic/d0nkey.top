@@ -1,10 +1,10 @@
 defmodule Components.Decklist do
   @moduledoc false
   use Surface.Component
+  alias Hearthstone.Card.RuneCost
   alias Components.CardsList
   alias Components.DustBar
   alias Backend.Hearthstone.Deck
-  alias Backend.HearthstoneJson.Card
   alias Backend.UserManager.User
   alias Backend.UserManager.User.DecklistOptions
   use BackendWeb.ViewHelpers
@@ -18,24 +18,9 @@ defmodule Components.Decklist do
   prop(show_hero, :any, default: true)
   slot(right_button)
 
-  @spec deck_name(Map.t() | nil, Deck.t(), Card.t()) :: String.t()
-  def deck_name(%{name: name}, _, _) when is_binary(name) and bit_size(name) > 0, do: name
-
-  def deck_name(assigns = %{archetype_as_name: true}, deck, hero) do
-    with nil <- deck.archetype,
-         nil <- Backend.Hearthstone.DeckArchetyper.archetype(deck) do
-      Map.put(assigns, :archetype_as_name, false) |> deck_name(deck, hero)
-    end
-  end
-
-  def deck_name(_, %{class: c}, _) when is_binary(c), do: c |> Deck.class_name()
-  def deck_name(_, _, %{card_class: c}) when is_binary(c), do: c |> Deck.class_name()
-  def deck_name(_, _, _), do: ""
-
-  @spec deck_class(Deck.t(), Card.t()) :: String.t()
-  defp deck_class(%{class: c}, _) when is_binary(c), do: c
-  defp deck_class(_, %{card_class: c}) when is_binary(c), do: c
-  defp deck_class(_, _), do: "NEUTRAL"
+  @spec deck_name(Map.t() | nil, Deck.t()) :: String.t()
+  def deck_name(%{name: name}, _) when is_binary(name) and bit_size(name) > 0, do: name
+  def deck_name(%{archetype_as_name: true}, deck), do: Deck.name(deck)
 
   defp link_part(%{id: id}) when not is_nil(id), do: id
   defp link_part(%{deckcode: deckcode}), do: deckcode
@@ -43,12 +28,10 @@ defmodule Components.Decklist do
   def render(assigns) do
     deck = assigns[:deck]
 
-    hero = Backend.HearthstoneJson.get_hero(deck)
-
-    deck_class = deck_class(deck, hero)
+    deck_class = Deck.class(deck)
     class_class = deck_class |> String.downcase()
 
-    name = deck_name(assigns, deck, hero) |> add_runes(deck) |> add_xl(deck)
+    name = deck_name(assigns, deck) |> add_runes(deck) |> add_xl(deck)
 
     ~F"""
       <div>
@@ -103,7 +86,7 @@ defmodule Components.Decklist do
   defp add_runes(name, %{cards: cards} = deck) when is_list(cards) do
     deck
     |> Deck.rune_cost()
-    |> Hearthstone.Card.RuneCost.shorthand()
+    |> RuneCost.shorthand()
     # next two lines append " " if it's not empty
     |> Kernel.<>(" ")
     |> String.trim_leading()

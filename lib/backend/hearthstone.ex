@@ -26,6 +26,7 @@ defmodule Backend.Hearthstone do
   require Logger
 
   @type insertable_card :: ApiCard
+  @type card :: Card.t() | Backend.HearthstoneJson.Card.t()
 
   def update_metadata() do
     with {:ok,
@@ -497,6 +498,7 @@ defmodule Backend.Hearthstone do
   defp cost_for_sort(%{cost: cost}), do: cost
   defp cost_for_sort(_), do: nil
 
+  @spec get_card(integer) :: card() | nil
   def get_card(dbf_id) do
     with nil <- Backend.Hearthstone.CardBag.card(dbf_id) do
       Backend.HearthstoneJson.get_card(dbf_id)
@@ -760,5 +762,17 @@ defmodule Backend.Hearthstone do
   def lineup_history(source, name) do
     [{"tournament_source", source}, {"name", name}, {"order_by", {:desc, :inserted_at}}]
     |> lineups()
+  end
+
+  @doc """
+  If the hero isn't available then it defaults to the basic hero for the class
+  """
+  @spec hero(Deck.t()) :: card()
+  def hero(%{hero: hero} = deck) do
+    with nil <- get_card(hero) do
+      deck.class
+      |> Deck.get_basic_hero()
+      |> get_card()
+    end
   end
 end

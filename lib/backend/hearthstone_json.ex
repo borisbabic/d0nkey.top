@@ -157,24 +157,6 @@ defmodule Backend.HearthstoneJson do
 
   def table(), do: :ets.whereis(@name)
 
-  @doc """
-  If the hero isn't available then it defaults to the basic hero for the class
-  """
-  @spec get_hero(Deck.t()) :: Backend.HearthstoneJson.Card.t()
-  def get_hero(deck) do
-    deck.hero
-    |> get_card()
-    |> case do
-      nil ->
-        deck.class
-        |> Deck.get_basic_hero()
-        |> get_card()
-
-      hero ->
-        hero
-    end
-  end
-
   def cards(), do: table() |> Util.ets_lookup("all_cards", [])
   def collectible_cards(), do: table() |> Util.ets_lookup("collectible_cards", [])
   def playable_cards(), do: table() |> Util.ets_lookup("playable_cards", [])
