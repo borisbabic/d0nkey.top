@@ -6,6 +6,7 @@ defmodule Backend.Battlefy do
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.MatchTeam
   alias Backend.Battlefy.Match
+  alias Backend.Battlefy.MatchDeckstrings
   alias Backend.Battlefy.Stage
   alias Backend.BattlefyUtil
   alias Backend.Hearthstone
@@ -660,32 +661,34 @@ defmodule Backend.Battlefy do
     end
   end
 
+  @spec get_deckstrings(%{stage_id: stage_id, tournament_id: tournament_id}, [
+          Blizzard.battletag()
+        ]) :: Map.t()
+  def get_deckstrings(info = %{tournament_id: tournament_id}, battletags)
+      when is_list(battletags) do
+    matches = get_deckstrings_matches(info)
+
+    Util.async_map(battletags, fn btag ->
+      {match, position} = get_team_match_position(matches, btag)
+
+      deckstrings =
+        Api.get_match_deckstrings(tournament_id, match.id)
+        |> MatchDeckstrings.get(position)
+        |> Enum.map(&MatchDeckstrings.remove_comments/1)
+
+      {btag, deckstrings}
+    end)
+    |> Map.new()
+  end
+
   @spec get_deckstrings(%{
           stage_id: stage_id | nil,
           tournament_id: tournament_id,
           battletag_full: Blizzard.battletag()
         }) ::
           [Blizzard.deckstring()]
-  def get_deckstrings(info = %{tournament_id: tournament_id, battletag_full: battletag_full}) do
-    # with nil <-
-    # Hearthstone.lineup(%{
-    # tournament_id: tournament_id,
-    # tournament_source: "battlefy",
-    # name: battletag_full
-    # }),
-    with matches <- get_deckstrings_matches(info),
-         {match, position} <- get_team_match_position(matches, battletag_full) do
-      deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
-
-      case position do
-        :top -> deckstrings.top
-        :bottom -> deckstrings.bottom
-      end
-      |> Enum.map(&Backend.Battlefy.MatchDeckstrings.remove_comments/1)
-    else
-      %{decks: decks} -> decks |> Enum.map(&Deck.deckcode/1)
-      _ -> []
-    end
+  def get_deckstrings(info = %{battletag_full: battletag_full}) do
+    get_deckstrings(info, [battletag_full]) |> Map.get(battletag_full)
   end
 
   defp get_deckstrings_matches(%{stage_id: stage_id}) when is_binary(stage_id),
