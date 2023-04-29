@@ -537,7 +537,7 @@ defmodule Hearthstone.DeckTracker do
     do: query |> where([player_deck: pd], fragment("? @> ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_excludes", cards}, query),
-    do: query |> where([player_deck: pd], not fragment("? @> ?", pd.cards, ^cards))
+    do: query |> where([player_deck: pd], not fragment("? && ?", pd.cards, ^cards))
 
   defp compose_games_query({"player_deck_id", deck_id}, query),
     do: query |> where([game: g], g.player_deck_id == ^deck_id)
