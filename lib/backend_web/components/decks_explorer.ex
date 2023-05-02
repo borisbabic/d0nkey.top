@@ -46,7 +46,7 @@ defmodule Components.DecksExplorer do
   prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200])
   prop(default_min_games, :integer, default: 200)
   prop(min_games_floor, :integer, default: 50)
-  prop(limit_cap, :integer, default: 30)
+  prop(limit_cap, :integer, default: 200)
   prop(default_limit, :integer, default: 15)
   prop(live_view, :module, required: true)
   prop(additional_params, :map, default: %{})
