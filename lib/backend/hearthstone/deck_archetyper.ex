@@ -1036,7 +1036,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     |> Enum.frequencies()
   end
 
-  defp menagerie?(%{card_names: card_names}), do: "The One-Amalgam Band"
+  defp menagerie?(%{card_names: card_names}), do: "The One-Amalgam Band" in card_names
   defp boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names
   defp kazakusan?(%{card_names: card_names}), do: "Kazakusan" in card_names
   defp highlander?(cards), do: Enum.count(cards) == Enum.count(Enum.uniq(cards))
