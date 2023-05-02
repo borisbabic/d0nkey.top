@@ -3,6 +3,7 @@ defmodule Hearthstone.DeckTracker do
 
   import Ecto.Query
   alias Backend.Repo
+  alias Backend.Hearthstone.DeckBag
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.DeckTracker.Source
@@ -286,7 +287,10 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def get_source(_, _), do: nil
-  defp handle_deck(code) when is_binary(code), do: Hearthstone.create_or_get_deck(code)
+
+  defp handle_deck(code) when is_binary(code),
+    do: Hearthstone.create_or_get_deck(code) |> DeckBag.check_archetype()
+
   defp handle_deck(nil), do: {:ok, nil}
 
   defp get_existing(game_id) do

@@ -17,16 +17,23 @@ defmodule Backend.Hearthstone.DeckBag do
     with nil <- get_fresh(id) do
       update(id)
     end
-    |> tap(&check_archetype/1)
+    |> check_archetype()
   end
 
-  defp check_archetype(deck) do
+  @spec check_archetype(any) :: any
+  def check_archetype({:ok, deck}) do
+    {:ok, check_archetype(deck)}
+  end
+
+  def check_archetype(deck) do
     Task.start(fn ->
       if needs_archetype_update?(deck) do
         Hearthstone.recalculate_decks_archetypes([deck])
         update(deck.id)
       end
     end)
+
+    deck
   end
 
   defp needs_archetype_update?(%{archetype: archetype} = deck)
