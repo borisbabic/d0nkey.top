@@ -152,6 +152,10 @@ config :logger, level: :warning
 config :phoenix, :json_library, Jason
 
 config :nostrum,
+  gateway_intents: [
+    :guild_messages,
+    :message_content
+  ],
   num_shards: :auto
 
 config :torch,

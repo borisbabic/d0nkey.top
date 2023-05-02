@@ -55,7 +55,7 @@ defmodule Backend.MixProject do
       {:httpoison, "~> 1.6"},
       {:poison, "~> 3.1"},
       {:recase, "~> 0.5"},
-      {:nostrum, "~> 0.4"},
+      {:nostrum, "~> 0.6"},
       {:typed_struct, "~> 0.1.4"},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
       {:varint, "~> 1.0.0"},
