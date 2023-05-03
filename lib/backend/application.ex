@@ -22,18 +22,22 @@ defmodule Backend.Application do
         {Oban, oban_config()},
         Backend.PostgrexPubsubListener,
         %{
+          # can  multiserver, prolly
           id: Backend.Infrastructure.ApiCache,
           start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
         },
         %{
+          # can  multiserver, prolly
           id: Backend.Infrastructure.PlayerStatsCache,
           start: {Backend.Infrastructure.PlayerStatsCache, :start_link, [[]]}
         },
         %{
+          # can multiserver, I think
           id: Twitch.TokenRefresher,
           start: {Twitch.TokenRefresher, :start_link, [[]]}
         },
         %{
+          # can  multiserver
           id: Twitch.HearthstoneLive,
           start: {Twitch.HearthstoneLive, :start_link, [[]]}
         },
@@ -42,86 +46,107 @@ defmodule Backend.Application do
         #   start: {Backend.HSReplay.StreamingNow, :start_link, [[]]}
         # },
         %{
+          # can multiserver
           id: Backend.Streaming.StreamingNow,
           start: {Backend.Streaming.StreamingNow, :start_link, [[]]}
         },
         %{
+          # might have acceptable issues multiservering
           id: Backend.Infrastructure.PlayerNationalityCache,
           start: {Backend.Infrastructure.PlayerNationalityCache, :start_link, [[]]}
         },
         %{
+          # multiserverable, might get out of sync if multiple?
           id: Backend.HearthstoneJson,
           start: {Backend.HearthstoneJson, :start_link, [[fetch_fresh: fetch_fresh?()]]}
         },
         %{
+          # might have acceptable issues multiservering
           id: Backend.StreamerTwitchInfoUpdater,
           start: {Backend.StreamerTwitchInfoUpdater, :start_link, [[]]}
         },
         %{
+          # sync issues multiserviering? might be fine
           id: Backend.PrioritizedBattletagCache,
           start: {Backend.PrioritizedBattletagCache, :start_link, [[]]}
         },
         %{
+          # can multiserver
           id: Backend.DeckInteractionTracker,
           start: {Backend.DeckInteractionTracker, :start_link, [[]]}
         },
         %{
+          # who cares
           id: Backend.GMStream,
           start: {Backend.GMStream, :start_link, [[]]}
         },
         %{
+          # can multi server
           id: Backend.PlayerIconBag,
           start: {Backend.PlayerIconBag, :start_link, [[]]}
         },
         %{
+          # TODO: CANNOT MULTISERVER, prolly. NEEDS ATTENTION
           id: Hearthstone.DeckTracker.InsertListener,
           start: {Hearthstone.DeckTracker.InsertListener, :start_link, [[]]}
         },
         %{
+          # can prolly multiserver
           id: Hearthstone.Api,
           start: {Hearthstone.Api, :start_link, [[]]}
         },
         %{
+          # can multiserver with acceptable potential desync issues
           id: Backend.Hearthstone.CardBag,
           start: {Backend.Hearthstone.CardBag, :start_link, [[]]}
         },
         %{
+          # who cares
           id: Backend.Grandmasters,
           start: {Backend.Grandmasters, :start_link, [[]]}
         },
         %{
+          # can multiserver with acceptable issues
           id: Backend.LatestHSArticles,
           start: {Backend.LatestHSArticles, :start_link, [[]]}
         },
         %{
+          # can multiserver, prolly
           id: Backend.AdsTxtCache,
           start: {Backend.AdsTxtCache, :start_link, [[]]}
         },
         %{
+          # can multiserver, prolly, who cares
           id: Backend.PonyDojo,
           start: {Backend.PonyDojo, :start_link, [[]]}
         },
         %{
+          # TODO: CANNOT MULTISERVER
           id: Backend.Feed.FeedBag,
           start: {Backend.Feed.FeedBag, :start_link, [[]]}
         },
         %{
+          # can multiserver
           id: Backend.Hearthstone.DeckBag,
           start: {Backend.Hearthstone.DeckBag, :start_link, [[]]}
         },
         %{
+          # can multiserver
           id: Backend.Streaming.DeckStreamingInfoBag,
           start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
         },
         %{
+          # TODO: CANNOT MULTISERVEr
           id: Backend.Streaming.StreamerDeckBag,
           start: {Backend.Streaming.StreamerDeckBag, :start_link, [[]]}
         },
         %{
+          # TODO: CANNOT MULTISERVEr
           id: Backend.PlayerCountryPreferenceBag,
           start: {Backend.PlayerCountryPreferenceBag, :start_link, [[]]}
         },
         %{
+          # TODO: CANNOT MULTISERVEr
           id: Backend.Leaderboards.SeasonBag,
           start: {Backend.Leaderboards.SeasonBag, :start_link, [[]]}
         },
