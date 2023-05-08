@@ -75,8 +75,8 @@ defmodule Bot.ThlMessageHandler do
 
   @spec get_thl_user_id(String.t(), number | String.t()) :: {:ok, String.t()} | {:error, any()}
   def get_thl_user_id(username, discriminator) do
-    with {:ok, url} <- search_url(username),
-         {:ok, response} <- Api.request(:get, url),
+    with {:ok, url} <- search_url(),
+         {:ok, response} <- Api.request(:get, url, "", query: username),
          {:ok, decoded} <- Poison.decode(response) do
       case Enum.find_value(decoded, &extract_matching_id(&1, username, discriminator)) do
         nil -> {:error, :could_not_find_user}
@@ -98,10 +98,10 @@ defmodule Bot.ThlMessageHandler do
 
   defp extract_matching_id(_, _, _), do: nil
 
-  @spec get_thl_user_id(String.t()) :: {:ok, String.t()} | {:error, any()}
-  def search_url(username) do
+  @spec search_url() :: {:ok, String.t()} | {:error, any()}
+  def search_url() do
     with {:ok, discord_id} <- get_discord_id() do
-      {:ok, "/guilds/#{discord_id}/members/search?query=#{username}"}
+      {:ok, "/guilds/#{discord_id}/members/search"}
     end
   end
 
