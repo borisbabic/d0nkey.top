@@ -1137,7 +1137,7 @@ defmodule Backend.Leaderboards do
         cs = %Entry{} |> Entry.changeset(attrs)
         Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}_#{row.rating}", cs)
       end)
-      |> Repo.transaction(timeout: 360_000)
+      |> Repo.transaction(timeout: 600_000)
     end
   end
 
@@ -1273,7 +1273,7 @@ defmodule Backend.Leaderboards do
       ]
 
       entries =
-        entries(criteria, 180_000)
+        entries(criteria, 600_000)
         |> Enum.sort_by(& &1.rank, :desc)
         |> Enum.sort_by(& &1.inserted_at, {:desc, NaiveDateTime})
         |> Enum.uniq_by(&{&1.rank, &1.account_id, &1.rating})
