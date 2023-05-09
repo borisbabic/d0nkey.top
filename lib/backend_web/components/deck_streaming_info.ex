@@ -9,13 +9,12 @@ defmodule Components.DeckStreamingInfo do
 
   def render(
         assigns = %{
-          info:
-            %{
-              peak: peak,
-              peaked_by: pb,
-              streamers: s,
-              first_streamed_by: fsb
-            } = info,
+          info: %{
+            peak: peak,
+            peaked_by: pb,
+            streamers: s,
+            first_streamed_by: fsb
+          },
           deck: deck,
           streamer_deck_path: sdp
         }
@@ -34,24 +33,24 @@ defmodule Components.DeckStreamingInfo do
         # Streamed: {s |> Enum.count()}
       </a>
       <StreamingDeckNow deck={deck}/>
-
     """
   end
 
-  def render(%{deck_id: deck_id, socket: socket}) when is_integer(deck_id) do
+  def render(%{deck_id: deck_id} = assigns) when is_integer(deck_id) do
     %{
       streamer_deck_path:
         Routes.streaming_path(BackendWeb.Endpoint, :streamer_decks, %{"deck_id" => deck_id}),
       deck: Backend.Hearthstone.deck(deck_id),
-      socket: socket,
       info: DeckStreamingInfoBag.get(deck_id)
     }
+    |> Map.merge(assigns)
     |> render()
   end
 
-  def render(assigns),
-    do: ~F"""
+  def render(assigns) do
+    ~F"""
     """
+  end
 
   def create_info(_), do: %{}
 end
