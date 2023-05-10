@@ -31,7 +31,7 @@ defmodule Backend.Blizzard do
           | :"Masters Tour Six"
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
-  @current_bg_season_id 8
+  @current_bg_season_id 9
 
   defmacro is_old_bg_season(season_id) do
     quote do
@@ -517,9 +517,10 @@ defmodule Backend.Blizzard do
     get_leaderboard_name(leaderboard, :long)
   end
 
-  @spec get_leaderboard_name(String.t() | leaderboard()) :: String.t()
+  @spec get_leaderboard_name(String.t() | leaderboard(), :short | :long) :: String.t()
   def get_leaderboard_name(leaderboard, :long) when is_atom(leaderboard) do
     case leaderboard do
+      :BG_LL -> "BGs Monthly"
       :BG -> "Battlegrounds"
       :STD -> "Standard"
       :WLD -> "Wild"
@@ -528,9 +529,9 @@ defmodule Backend.Blizzard do
     end
   end
 
-  @spec get_leaderboard_name(String.t() | leaderboard(), :short | :long) :: String.t()
   def get_leaderboard_name(leaderboard, :short) when is_atom(leaderboard) do
     case leaderboard do
+      :BG_LL -> "BG_LL"
       :BG -> "BG"
       :STD -> "STD"
       :WLD -> "WLD"
@@ -538,6 +539,8 @@ defmodule Backend.Blizzard do
       :MRC -> "MRC"
     end
   end
+
+  def get_leaderboard_name("BG_LL", length), do: get_leaderboard_name(:BG_LL, length)
 
   def get_leaderboard_name(leaderboard, length) when is_binary(leaderboard) do
     @leaderboards
