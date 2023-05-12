@@ -74,7 +74,9 @@ defmodule BackendWeb.BattlefyMatchLive do
 
   defp game_identifier(_), do: "Unknown_game_identifier_#{Ecto.UUID.generate()}"
 
-  def render_decks([deck], id) do
+  def render_decks(decks, id, fallback \\ "")
+
+  def render_decks([deck], id, _fallback) do
     assigns = %{deck: deck, id: id}
 
     ~F"""
@@ -82,9 +84,9 @@ defmodule BackendWeb.BattlefyMatchLive do
     """
   end
 
-  def render_decks([], _id), do: ""
+  def render_decks([], _id, fallback), do: fallback
 
-  def render_decks(decks, id) do
+  def render_decks(decks, id, _fallback) do
     assigns = %{decks: decks, id: id}
 
     ~F"""
@@ -122,7 +124,7 @@ defmodule BackendWeb.BattlefyMatchLive do
         bottom: ""
       },
       %{
-        top: top && decks(top_decks, top.banned_class) |> render_decks("banned_top"),
+        top: top && decks(top_decks, top.banned_class) |> render_decks("banned_top", "???"),
         when: top && top.banned_at,
         score: "Banned",
         bottom: ""
@@ -134,7 +136,8 @@ defmodule BackendWeb.BattlefyMatchLive do
       },
       %{
         bottom:
-          bottom && decks(bottom_decks, bottom.banned_class) |> render_decks("banned_bottom"),
+          bottom &&
+            decks(bottom_decks, bottom.banned_class) |> render_decks("banned_bottom", "???"),
         when: bottom && bottom.banned_at,
         score: "Banned",
         top: ""
