@@ -23,7 +23,7 @@ defmodule Components.Filter.PlayableCardSelect do
         <a class="dropdown-item is-active" :on-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
           {name(selected)}
         </a>
-        <a class="dropdown-item" :for={card <- cards(@search, @selected)} :on-click="add_card" phx-value-card={card.dbf_id}>
+        <a class="dropdown-item" :for={card <- cards(@search, @selected)} :on-click="add_card" phx-value-card={card.id}>
           {card.name}
         </a>
       </Dropdown>
@@ -39,8 +39,8 @@ defmodule Components.Filter.PlayableCardSelect do
         %{"card" => card},
         socket = %{assigns: %{update_fun: update_fun, selected: selected}}
       ) do
-    {dbf_id, _} = Integer.parse(card)
-    update_fun.(selected -- [dbf_id])
+    {id, _} = Integer.parse(card)
+    update_fun.(selected -- [id])
     {:noreply, socket}
   end
 
@@ -49,17 +49,17 @@ defmodule Components.Filter.PlayableCardSelect do
         %{"card" => card},
         socket = %{assigns: %{update_fun: update_fun, selected: selected}}
       ) do
-    {dbf_id, _} = Integer.parse(card)
-    update_fun.([dbf_id | selected])
+    {id, _} = Integer.parse(card)
+    update_fun.([id | selected])
     {:noreply, socket}
   end
 
   def cards(search, selected) do
     num_to_show = (7 - Enum.count(selected)) |> max(3)
 
-    Backend.HearthstoneJson.playable_cards()
+    Backend.Hearthstone.CardBag.standard_first()
     |> Enum.filter(&(String.downcase(&1.name) =~ String.downcase(search)))
-    |> Enum.filter(&(!(&1.dbf_id in selected)))
+    |> Enum.filter(&(!(&1.id in selected)))
     |> Enum.take(num_to_show)
   end
 

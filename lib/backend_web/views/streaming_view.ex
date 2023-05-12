@@ -155,11 +155,11 @@ defmodule BackendWeb.StreamingView do
   end
 
   def card_options(selected) do
-    Backend.HearthstoneJson.playable_cards()
+    Backend.Hearthstone.CardBag.standard_first()
     |> Enum.map(fn c ->
       %{
-        selected: c.dbf_id in selected,
-        value: c.dbf_id,
+        selected: c.id in selected,
+        value: c.id,
         name: c.name,
         display: c.name
       }
