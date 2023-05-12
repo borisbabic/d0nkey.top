@@ -23,17 +23,30 @@ defmodule Backend.Hearthstone.CardBag do
   @spec card(String.t() | integer()) :: Card.t() | nil
   def card(card_id), do: Util.ets_lookup(table(), "card_id_#{card_id}")
 
-  @spec all() :: [Card.t()] | Stream.t()
-  def all_cards() do
-    all()
-    |> Stream.map(&elem(&1, 1))
-  end
-
   defp all() do
     :ets.match_object(table(), {:_, :"$1"})
   end
 
   ##### /Public Api
+
+  def standard_first() do
+    standard = Backend.Hearthstone.standard_card_sets() |> MapSet.new()
+
+    all_cards()
+    |> Enum.sort_by(
+      fn
+        %{card_set: %{slug: slug}} -> MapSet.member?(standard, slug)
+        _ -> false
+      end,
+      :desc
+    )
+  end
+
+  @spec all_cards() :: [Card.t()] | Stream.t()
+  def all_cards() do
+    all()
+    |> Stream.map(&elem(&1, 1))
+  end
 
   def refresh_table(), do: GenServer.cast(@name, :refresh_table)
 
@@ -133,4 +146,7 @@ defmodule Backend.Hearthstone.CardBag do
         _ -> []
       end)
       |> CardMatcher.match_name(card_name, cutoff)
+
+  def standard_cards() do
+  end
 end

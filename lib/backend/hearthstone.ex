@@ -28,6 +28,19 @@ defmodule Backend.Hearthstone do
   @type insertable_card :: ApiCard
   @type card :: Card.t() | Backend.HearthstoneJson.Card.t()
 
+  def set_groups() do
+    Repo.all(SetGroup)
+  end
+
+  def standard_card_sets() do
+    query =
+      from sg in SetGroup,
+        where: sg.slug == "standard",
+        select: sg.card_sets
+
+    Repo.one(query)
+  end
+
   def update_metadata() do
     with {:ok,
           %{
