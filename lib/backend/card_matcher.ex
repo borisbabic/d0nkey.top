@@ -1,4 +1,5 @@
 defmodule Backend.CardMatcher do
+  @moduledoc "Match cards based on name"
   @min_jaro_distance 0.85
   def match_name(cards, card_name, cutoff \\ @min_jaro_distance) do
     Enum.flat_map(cards, fn card ->
@@ -46,7 +47,7 @@ defmodule Backend.CardMatcher do
   defp normalize_card_name(name) do
     name
     |> String.replace("(Rank 1)", "")
-    |> String.replace(~r/\[,-';:\]/, "")
+    |> String.replace(~r/[,\-';:]/, "")
     |> String.downcase()
     |> String.trim()
   end
