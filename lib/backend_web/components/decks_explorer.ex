@@ -277,7 +277,7 @@ defmodule Components.DecksExplorer do
 
   def default_period() do
     now = NaiveDateTime.utc_now()
-    use_patch_after = ~N[2023-05-18 22:15:00]
+    use_patch_after = ~N[2023-05-19 22:15:00]
     use_patch_until = ~N[2023-05-27 22:00:00]
 
     case {NaiveDateTime.compare(now, use_patch_after),
