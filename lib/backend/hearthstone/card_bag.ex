@@ -8,7 +8,7 @@ defmodule Backend.Hearthstone.CardBag do
   @one_hour 3_600_000
   @five_min 300_000
   @one_second 1_000
-  @get_cards_opts %{collectible: "1"}
+  @get_cards_opts %{collectible: "1", locale: "en_US"}
 
   def tile_card_url(card_id) do
     case card(card_id) do
