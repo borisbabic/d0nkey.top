@@ -1267,12 +1267,9 @@ defmodule BackendWeb.LeaderboardView do
       avg = ((ps.ranks |> Enum.sum()) / total) |> Float.round(2)
 
       country = Backend.PlayerInfo.get_country(ps.account_id)
-      flag_part = if show_flags && country, do: country_flag(country, %{}), else: ""
 
       %{
-        "Player" => ~E"""
-          <%= flag_part %> <a href="<%= Routes.player_path(conn, :player_profile, ps.account_id)%>"><%= ps.account_id %></a>
-        """,
+        "Player" => render_player_link(ps.account_id, nil, show_flags),
         "_country" => country,
         "Top 1" => ps |> PlayerStats.num_top(1),
         "Top 10" => ps |> PlayerStats.num_top(10),
