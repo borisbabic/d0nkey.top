@@ -1189,9 +1189,12 @@ defmodule Backend.Leaderboards do
   end
 
   @alter_ratings_ldbs ["STD", :STD, "CLS", :CLS, "WLD", :WLD]
+  @preserve_ratings [:arena, "arena"]
 
   @spec rating_display(nil | number, any) :: nil | integer
   def rating_display(nil, _ldb), do: nil
+
+  def rating_display(rating, ldb) when ldb in @preserve_ratings, do: rating
 
   def rating_display(rating, ldb) when ldb in @alter_ratings_ldbs do
     trunc_rating(1000 * rating)
