@@ -319,17 +319,23 @@ defmodule BackendWeb.PlayerView do
     """
   end
 
-  def get_competition_options(competitions) do
-    [{"qualifiers", "Qualifiers"}, {"leaderboard", "Leaderboards"}, {"mt", "MTs"}]
-    |> Enum.map(fn {v, n} -> {v, n, competitions == [] || Enum.member?(competitions, v)} end)
+  @skip_by_default ["qualifiers"]
+  def selected?(competition, []) do
+    !Enum.member?(@skip_by_default, to_string(competition))
   end
 
-  def pick_competitions([], rows), do: rows |> Enum.flat_map(fn {_, r} -> r end)
+  def selected?(competition, selected_competitions) do
+    Enum.member?(selected_competitions, to_string(competition))
+  end
+
+  def get_competition_options(competitions) do
+    [{"qualifiers", "Qualifiers"}, {"leaderboard", "Leaderboards"}, {"mt", "MTs"}]
+    |> Enum.map(fn {v, n} -> {v, n, selected?(v, competitions)} end)
+  end
 
   def pick_competitions(competitions, rows) do
-    rows
-    |> Enum.flat_map(fn {k, r} ->
-      if Enum.member?(competitions, to_string(k)) do
+    Enum.flat_map(rows, fn {k, r} ->
+      if selected?(k, competitions) do
         r
       else
         []
