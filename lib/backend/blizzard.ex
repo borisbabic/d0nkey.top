@@ -32,6 +32,7 @@ defmodule Backend.Blizzard do
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @current_bg_season_id 9
+  @current_arena_season_id 37
 
   defmacro is_old_bg_season(season_id) do
     quote do
@@ -48,8 +49,8 @@ defmodule Backend.Blizzard do
   @type region :: :EU | :US | :AP | :CN
   @regions [:EU, :US, :AP, :CN]
   @qualifier_regions [:EU, :US, :AP]
-  @type leaderboard :: :BG | :STD | :WLD | :CLS | :MRC
-  @leaderboards [:BG, :STD, :WLD, :CLS, :MRC]
+  @type leaderboard :: :BG | :STD | :WLD | :CLS | :MRC | :arena
+  @leaderboards [:BG, :STD, :WLD, :CLS, :MRC, :arena]
   # @type battletag :: <<_::binary, "#", _::binary>>
   @type battletag :: String.t()
   @type deckstring :: String.t()
@@ -526,6 +527,7 @@ defmodule Backend.Blizzard do
       :WLD -> "Wild"
       :CLS -> "Classic"
       :MRC -> "Mercenaries"
+      :arena -> "Arena"
     end
   end
 
@@ -537,6 +539,7 @@ defmodule Backend.Blizzard do
       :WLD -> "WLD"
       :CLS -> "CLS"
       :MRC -> "MRC"
+      :arena -> "arena"
     end
   end
 
@@ -551,35 +554,19 @@ defmodule Backend.Blizzard do
     end
   end
 
-  @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: Leaderboard
+  @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: String.t()
   def get_leaderboard_name(region, leaderboard, season_id, length \\ :long)
 
-  def get_leaderboard_name(region, :BG, season_id, length) do
+  def get_leaderboard_name(region, ldb, season_id, length) when ldb in [:arena, :BG] do
     r = get_region_name(region, length)
-    ldb = get_leaderboard_name(:BG, length)
-    "#{ldb} #{r} #{get_season_name(season_id, :BG)}"
+    leaderboard = get_leaderboard_name(ldb, length)
+    "#{leaderboard} #{r} #{get_season_name(season_id, ldb)}"
   end
 
-  for ldb <- [:BG, :MRC] do
+  for ldb <- [:BG, :MRC, :arena] do
     def get_leaderboard_name(region, unquote(to_string(ldb)), season_id, length),
       do: get_leaderboard_name(region, unquote(ldb), season_id, length)
   end
-
-  @spec get_tour_stops_for_year(integer) :: [tour_stop()]
-  def get_tour_stops_for_year(year) do
-    TourStop.all()
-    |> Enum.filter(&(&1.year == year))
-    |> Enum.map(& &1.id)
-  end
-
-  @spec get_leaderboard(region(), leaderboard(), integer | nil) :: Leaderboard
-  def get_leaderboard(region, leaderboard, season_id) do
-    # todo pick season_id when nil
-    Api.get_leaderboard(region, leaderboard, season_id)
-  end
-
-  def get_season_name(season, "BG"), do: get_season_name(season, :BG)
-  def get_season_name(season, :BG), do: "Season #{season + 1}"
 
   def get_leaderboard_name(region, leaderboard, season_id, length) do
     %{year: year, month: month} = get_month_start(season_id, leaderboard)
@@ -589,12 +576,30 @@ defmodule Backend.Blizzard do
     "#{ldb} #{r} #{m} #{year}"
   end
 
+  @spec get_leaderboard(region(), leaderboard(), integer | nil) :: Leaderboard
+  def get_leaderboard(region, leaderboard, season_id) do
+    # todo pick season_id when nil
+    Api.get_leaderboard(region, leaderboard, season_id)
+  end
+
+  @spec get_tour_stops_for_year(integer) :: [tour_stop()]
+  def get_tour_stops_for_year(year) do
+    TourStop.all()
+    |> Enum.filter(&(&1.year == year))
+    |> Enum.map(& &1.id)
+  end
+
+  def get_season_name(season, "BG"), do: get_season_name(season, :BG)
+  def get_season_name(season, :BG), do: "Season #{season + 1}"
+  def get_season_name(season, ldb) when ldb in [:arena, "arena"], do: "Season #{season}"
+
   def get_ineligible_players() do
     [
       %{battletag_short: "Archangel", from: ~D[2019-01-01]},
       %{battletag_short: "Chakki", from: ~D[2019-01-01]},
       %{battletag_short: "Gallon", from: ~D[2020-08-01]},
-      %{battletag_short: "BoarControl", from: ~D[2020-10-01]}
+      %{battletag_short: "BoarControl", from: ~D[2020-10-01]},
+      %{battletag_short: "RHat", from: ~D[2023-05-08]}
     ]
   end
 
@@ -741,6 +746,7 @@ defmodule Backend.Blizzard do
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
 
+  def get_current_ladder_season(ldb) when ldb in [:arena, "arena"], do: @current_arena_season_id
   def get_current_ladder_season(ldb) when ldb in [:BG, "BG"], do: @current_bg_season_id
   def get_current_ladder_season(ldb), do: get_season_id(Date.utc_today(), ldb)
 end
