@@ -87,6 +87,8 @@ defmodule BackendWeb.DeckTrackerLive do
     do: %{
       "game_type" => GameType.ranked(),
       "format" => deck.format,
+      "result" => nil,
+      "opponent_class" => nil,
       "game_id" => Ecto.UUID.generate()
     }
 
@@ -235,7 +237,7 @@ defmodule BackendWeb.DeckTrackerLive do
       |> Map.take(["player_rank", "player_legend_rank", "opponent_rank", "opponent_legend_rank"])
       |> Map.merge(default_form_values(deck))
 
-    socket |> assign(form_values: new_values)
+    socket |> assign(form_values: new_values, valid: false)
   end
 
   def get_message(:win),
