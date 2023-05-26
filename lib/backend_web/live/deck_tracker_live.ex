@@ -43,26 +43,56 @@ defmodule BackendWeb.DeckTrackerLive do
   end
 
   def handle_params(%{"deck" => deck_raw}, _session, socket) do
+    latest_replay_result = latest_replay(socket)
+
     deck =
       with :error <- Integer.parse(deck_raw),
            {:ok, deck} <- Deck.decode(deck_raw) do
         Hearthstone.deck(deck) || deck
       else
-        {deck_id, _} when is_integer(deck_id) -> Hearthstone.deck(deck_id)
-        _ -> []
+        {deck_id, _} when is_integer(deck_id) ->
+          Hearthstone.deck(deck_id)
+
+        _ ->
+          case latest_replay_result do
+            {:ok, %{player_deck: deck}} -> deck
+            _ -> nil
+          end
       end
 
     {:noreply,
      socket
      |> assign(deck: deck)
-     |> assign_default_form_values()
+     |> assign_default_form_values(additional_values(latest_replay_result))
      |> assign_stats()
      |> assign_meta()}
   end
 
-  defp assign_default_form_values(%{assigns: %{deck: deck}} = socket) do
+  defp latest_replay(%{assigns: %{user: %{battletag: battletag}}}) do
+    case DeckTracker.games([{"player_btag", battletag}, {"limit", 1}, :latest]) do
+      [replay | _] -> {:ok, replay}
+      _ -> {:error, :no_previous_replays}
+    end
+  end
+
+  defp latest_replay(_) do
+    {:error, :no_user_battletag}
+  end
+
+  defp additional_values({:ok, replay = %{player_rank: rank}}) do
+    %{"player_rank" => rank}
+    # |> Map.put("region", Map.get(replay, "region"))
+  end
+
+  defp additional_values(_) do
+    %{}
+  end
+
+  defp assign_default_form_values(%{assigns: %{deck: deck}} = socket, additional_values) do
+    form_values = Map.merge(additional_values, default_form_values(deck))
+
     socket
-    |> assign(:form_values, default_form_values(deck))
+    |> assign(:form_values, form_values)
   end
 
   defp assign_meta(socket = %{assigns: %{deck: deck = %{id: _id}}}) do

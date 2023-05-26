@@ -12,29 +12,40 @@ defmodule Components.Form.RankSelect do
   prop(rank_field, :atom, default: :rank)
   prop(legend_rank_field, :atom, default: :legend_rank)
   prop(rank_title, :string, default: "Rank")
+  prop(use_ranks_as_title, :boolean, default: true)
   prop(sub_rank_title, :string, default: "#")
 
   data(rank_parts, :any)
 
-  def mount(socket) do
-    {:ok, assign_rank_parts(socket)}
+  def update(assigns, socket) do
+    {:ok,
+     assign(
+       socket,
+       assigns |> Util.vals_to_int_or_orig([:rank, :legend_rank]) |> set_rank_parts()
+     )}
   end
+
+  defp set_rank_parts(assigns = %{rank: r}) when is_integer(r) do
+    Map.put(assigns, :rank_parts, DeckTracker.convert_rank(r))
+  end
+
+  defp set_rank_parts(assigns), do: Map.put(assigns, :rank_parts, {nil, nil})
 
   def render(assigns) do
     ~F"""
       <div>
-        <Dropdown title={@rank_title}>
+        <Dropdown title={rank_title(@use_ranks_as_title, @rank_title, @rank_parts)}>
           <a :for={level <-levels()} class={"dropdown-item", "is-active": matches_level?(@rank_parts, level)} :on-click="change_level" phx-value-level={level}>
           {level}
           </a>
         </Dropdown>
 
-        <Dropdown :if={num = num_sub_ranks(@rank_parts)} title={@sub_rank_title}>
+        <Dropdown :if={num = num_sub_ranks(@rank_parts)} title={sub_rank_title(@use_ranks_as_title, @sub_rank_title, @rank_parts)}>
           <a :for={rank <- 1..num} class={"dropdown-item", "is-active": matches_rank?(@rank_parts, rank)} :on-click="change_rank" phx-value-rank={rank}>
           {rank}
           </a>
         </Dropdown>
-        <NumberInput :if={@rank_parts == :Legend} class="input" field={@legend_rank_field} :if={:Legend == @rank_parts} value={@legend_rank || 0} opts={style: "width: 100px;"}/>
+        <NumberInput :if={@rank_parts == :Legend} class="input" field={@legend_rank_field} value={@legend_rank || 0} opts={style: "width: 100px;"}/>
         <HiddenInput :if={@rank_parts != :Legend} field={@legend_rank_field} value={@legend_rank || 0} />
 
         <HiddenInput field={@rank_field} value={@rank} />
@@ -52,6 +63,12 @@ defmodule Components.Form.RankSelect do
       :Bronze
     ]
   end
+
+  def rank_title(true, _, {rank, _}) when not is_nil(rank), do: rank
+  def rank_title(true, _, rank) when is_atom(rank) or is_binary(rank), do: rank
+  def rank_title(_, title, _), do: title
+  def sub_rank_title(true, _, {_, sub_rank}) when not is_nil(sub_rank), do: sub_rank
+  def sub_rank_title(_, title, _), do: title
 
   def handle_event("legend_change", params, socket) do
     {l, _} = Integer.parse(params["value"])
@@ -91,12 +108,6 @@ defmodule Components.Form.RankSelect do
     do: 10
 
   defp num_sub_ranks(_), do: nil
-
-  defp assign_rank_parts(socket = %{assigns: %{rank: r}}) when is_integer(r) do
-    assign(socket, rank_parts: DeckTracker.convert_rank(r))
-  end
-
-  defp assign_rank_parts(socket), do: assign(socket, rank_parts: {nil, nil})
 
   defp assign_rank(socket = %{assigns: %{rank_parts: :Legend}}), do: assign(socket, rank: 51)
 
