@@ -314,6 +314,10 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.insert()
   end
 
+  def latest_game(%{battletag: battletag}) do
+    games([{"player_btag"}])
+  end
+
   def games(criteria) do
     base_games_query()
     |> build_games_query(criteria)

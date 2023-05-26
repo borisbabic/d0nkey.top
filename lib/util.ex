@@ -246,6 +246,21 @@ defmodule Util do
   def to_int_or_orig(orig), do: to_int(orig, orig)
 
   @doc """
+  iex> Util.vals_to_int_or_orig(%{a: "1", b: "2", c: "3", d: "test"}, [:a, :b, :c, :d])
+  %{a: 1, b: 2, c: 3, d: "test"}
+
+  iex> Util.vals_to_int_or_orig(%{a: "1", b: %{c: "3"}, d: "test"}, [:a, [:b, :c]])
+  %{a: 1, b: %{c: 3}, d: "test"}
+
+  """
+  @spec vals_to_int_or_orig(Access.t(), [term() | [term()]]) :: Access.t()
+  def vals_to_int_or_orig(orig, keys_or_lists) do
+    Enum.reduce(keys_or_lists, orig, fn keys, carry ->
+      update_in(carry, to_list(keys), &to_int_or_orig/1)
+    end)
+  end
+
+  @doc """
   Transform to an integer while ignoring the binary remainder or returns the fallback
 
   ## Example
