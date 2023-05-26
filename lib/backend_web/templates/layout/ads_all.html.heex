@@ -62,23 +62,13 @@ window['nitroAds'].createAd('nitropay-interstitial', {
 
 
 <script type="text/javascript">
-  window["nitroAds"].createAd("nitropay-video-test", {
+  window["nitroAds"].createAd("nitropay-video-decks", {
     format: "video-nc",
-    demo: <%= nitropay_demo?() %>,
-    sizes: [
-      [426, 240],
-      [640, 360],
-      [300, 250],
-      [300, 600],
-      [120, 600],
-      [160, 600],
-      [320, 50]
-    ],
     video: {
-      float: true,
+      float: "always",
       hide_playlist: true,
-      mobile: true
-    }
+      mobile: "compact"
+    },
     report: {
       enabled: true,
       wording: "Report Ad",
