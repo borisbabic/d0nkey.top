@@ -3,6 +3,7 @@ defmodule Backend.Hearthstone do
   import Ecto.Query, warn: false
   alias Ecto.Multi
   alias Backend.Repo
+  alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.DeckBag
   alias Backend.Hearthstone.DeckArchetyper
@@ -188,16 +189,16 @@ defmodule Backend.Hearthstone do
     |> Card.put_classes(classes)
   end
 
+  def get_deck(id) do
+    Repo.get(Deck, id)
+  end
+
   def deck(%{id: id}) when is_integer(id), do: deck(id)
 
   def deck(%{cards: cards, hero: hero, format: format, sideboards: sideboards}),
     do: deck(cards, hero, format, sideboards)
 
   def deck(id) when is_integer(id), do: DeckBag.get(id)
-
-  def get_deck(id) do
-    Repo.get(Deck, id)
-  end
 
   def deck(id_or_deckcode) when is_binary(id_or_deckcode) do
     id_or_deckcode
@@ -446,7 +447,7 @@ defmodule Backend.Hearthstone do
     |> Integer.parse()
     |> case do
       {num, _} -> compose_decks_query({"recently_played", num}, query)
-      c -> query
+      _ -> query
     end
   end
 
@@ -513,7 +514,7 @@ defmodule Backend.Hearthstone do
 
   @spec get_card(integer) :: card() | nil
   def get_card(dbf_id) do
-    with nil <- Backend.Hearthstone.CardBag.card(dbf_id) do
+    with nil <- CardBag.card(dbf_id) do
       Backend.HearthstoneJson.get_card(dbf_id)
     end
   end
@@ -786,6 +787,31 @@ defmodule Backend.Hearthstone do
       deck.class
       |> Deck.get_basic_hero()
       |> get_card()
+    end
+  end
+
+  @spec update_collectible_cards() :: any()
+  def update_collectible_cards() do
+    do_update_cards(%{collectible: "1", locale: "en_US"})
+  end
+
+  defp do_update_cards(args, attempt \\ 1)
+
+  defp do_update_cards(args, attempt) when attempt > 4,
+    do: Logger.error("Too many retries, giving up on updating #{inspect(args)}")
+
+  defp do_update_cards(args, attempt) do
+    case Api.get_all_cards(args) do
+      {:ok, cards} ->
+        Logger.info("Fetched cards for updating")
+        upsert_cards(cards)
+        CardBag.refresh_table()
+
+      {:error, error} ->
+        Logger.error("Error updating cards (retry: #{attempt}) #{inspect(error)} ")
+        Process.sleep(15_000)
+        Logger.info("Retrying")
+        do_update_cards(args, attempt + 1)
     end
   end
 end

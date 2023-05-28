@@ -5,10 +5,6 @@ defmodule Backend.Hearthstone.CardBag do
   alias Backend.Hearthstone.Card
   alias Backend.CardMatcher
   @name :hearthstone_card_bag
-  @one_hour 3_600_000
-  @five_min 300_000
-  @one_second 1_000
-  @get_cards_opts %{collectible: "1", locale: "en_US"}
 
   def tile_card_url(card_id) do
     case card(card_id) do
@@ -61,7 +57,6 @@ defmodule Backend.Hearthstone.CardBag do
   def init(_args) do
     table = :ets.new(@name, [:named_table])
 
-    send_loop(@one_second)
     {:ok, %{table: table, last_success_response: nil}, {:continue, :init}}
   end
 
@@ -70,51 +65,9 @@ defmodule Backend.Hearthstone.CardBag do
     {:noreply, state}
   end
 
-  def handle_cast({:send_loop, after_ms}, state) do
-    send_loop(after_ms)
-    {:noreply, state}
-  end
-
   def handle_cast(:refresh_table, state = %{table: table}) do
     set_table(table)
     {:noreply, state}
-  end
-
-  def handle_info(:loop, state = %{table: table, last_success_response: prev_response}) do
-    last_success =
-      case do_update_table(table, prev_response) do
-        {:error, last_success} ->
-          send_loop(@five_min)
-          last_success
-
-        :ok ->
-          send_loop(@one_hour)
-          nil
-      end
-
-    new_state = Map.put(state, :last_success_response, last_success)
-
-    {:noreply, new_state}
-  end
-
-  defp do_update_table(table, prev_response) do
-    case Hearthstone.Api.next_page(prev_response, @get_cards_opts) do
-      {:ok, response = %{cards: cards = [_ | _]}} ->
-        Task.start(fn ->
-          Backend.Hearthstone.upsert_cards(cards)
-        end)
-
-        table
-        |> do_update_table(response)
-
-      {:error, :already_at_last_pag} ->
-        set_table(table)
-        :ok
-
-      _ ->
-        set_table(table)
-        {:error, prev_response}
-    end
   end
 
   @spec set_cards(reference(), [Card.t()]) :: reference()
@@ -132,21 +85,16 @@ defmodule Backend.Hearthstone.CardBag do
     set_cards(table, cards)
   end
 
-  defp send_loop(after_ms), do: Process.send_after(self(), :loop, after_ms)
-
   defp table(), do: :ets.whereis(@name)
 
   @min_jaro_distance 0.85
   @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]
-  def closest_collectible(card_name, cutoff \\ @min_jaro_distance),
-    do:
-      all()
-      |> Enum.flat_map(fn
-        {_, c = %{collectible: true}} -> [c]
-        _ -> []
-      end)
-      |> CardMatcher.match_name(card_name, cutoff)
-
-  def standard_cards() do
+  def closest_collectible(card_name, cutoff \\ @min_jaro_distance) do
+    all()
+    |> Enum.flat_map(fn
+      {_, c = %{collectible: true}} -> [c]
+      _ -> []
+    end)
+    |> CardMatcher.match_name(card_name, cutoff)
   end
 end

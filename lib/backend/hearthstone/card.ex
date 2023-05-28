@@ -44,7 +44,7 @@ defmodule Backend.Hearthstone.Card do
     # field :mercenary_hero, MercenaryHero.t()
     field :text, :string
 
-    embeds_one :rune_cost, RuneCost
+    embeds_one :rune_cost, RuneCost, on_replace: :delete
 
     timestamps()
   end
