@@ -88,6 +88,7 @@ defmodule Backend.MixProject do
       {:ecto_psql_extras, "~> 0.6"},
       {:csv, "~> 2.5"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:akin, "~> 0.1.8"},
       {:quantum, "~> 2.3"}
     ]
   end

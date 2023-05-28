@@ -87,14 +87,10 @@ defmodule Backend.Hearthstone.CardBag do
 
   defp table(), do: :ets.whereis(@name)
 
-  @min_jaro_distance 0.85
+  @min_distance 0.7
   @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]
-  def closest_collectible(card_name, cutoff \\ @min_jaro_distance) do
-    all()
-    |> Enum.flat_map(fn
-      {_, c = %{collectible: true}} -> [c]
-      _ -> []
-    end)
+  def closest_collectible(card_name, cutoff \\ @min_distance) do
+    for(c = %{collectible: true} <- standard_first(), do: c)
     |> CardMatcher.match_name(card_name, cutoff)
   end
 end
