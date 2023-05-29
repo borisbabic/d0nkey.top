@@ -26,9 +26,14 @@ defmodule Backend.Hearthstone.CardBag do
   ##### /Public Api
 
   def standard_first() do
+    all_cards()
+    |> order_by_standard()
+  end
+
+  defp order_by_standard(cards) do
     standard = Backend.Hearthstone.standard_card_sets() |> MapSet.new()
 
-    all_cards()
+    cards
     |> Enum.sort_by(
       fn
         %{card_set: %{slug: slug}} -> MapSet.member?(standard, slug)
@@ -41,6 +46,7 @@ defmodule Backend.Hearthstone.CardBag do
   @spec all_cards() :: [Card.t()] | Stream.t()
   def all_cards() do
     all()
+    |> Stream.filter(&(elem(&1, 0) =~ "card_id_"))
     |> Stream.map(&elem(&1, 1))
   end
 
@@ -83,6 +89,16 @@ defmodule Backend.Hearthstone.CardBag do
   defp set_table(table) do
     cards = Backend.Hearthstone.all_cards()
     set_cards(table, cards)
+
+    collectible_for_match =
+      cards
+      |> Enum.filter(& &1.collectible)
+      |> order_by_standard()
+      |> CardMatcher.prepared_match()
+
+    all_for_match = cards |> order_by_standard() |> CardMatcher.prepared_match()
+    :ets.insert(table, {"all_for_match", all_for_match})
+    :ets.insert(table, {"collectible_for_match", collectible_for_match})
   end
 
   defp table(), do: :ets.whereis(@name)
@@ -90,7 +106,7 @@ defmodule Backend.Hearthstone.CardBag do
   @min_distance 0.7
   @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]
   def closest_collectible(card_name, cutoff \\ @min_distance) do
-    for(c = %{collectible: true} <- standard_first(), do: c)
-    |> CardMatcher.match_name(card_name, cutoff)
+    Util.ets_lookup(table(), "collectible_for_match")
+    |> CardMatcher.match_optimized(card_name, cutoff)
   end
 end
