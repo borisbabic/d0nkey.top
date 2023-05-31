@@ -94,11 +94,9 @@ defmodule Backend.Hearthstone.CardBag do
       cards
       |> Enum.filter(& &1.collectible)
       |> order_by_standard()
-      |> CardMatcher.prepared_match()
+      |> CardMatcher.prepare_for_match()
 
-    all_for_match = cards |> order_by_standard() |> CardMatcher.prepared_match()
-    :ets.insert(table, {"all_for_match", all_for_match})
-    :ets.insert(table, {"collectible_for_match", collectible_for_match})
+    :ets.insert(table, {:collectible_for_match, collectible_for_match})
   end
 
   defp table(), do: :ets.whereis(@name)
@@ -106,7 +104,7 @@ defmodule Backend.Hearthstone.CardBag do
   @min_distance 0.7
   @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]
   def closest_collectible(card_name, cutoff \\ @min_distance) do
-    Util.ets_lookup(table(), "collectible_for_match")
+    Util.ets_lookup(table(), :collectible_for_match)
     |> CardMatcher.match_optimized(card_name, cutoff)
   end
 end
