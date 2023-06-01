@@ -296,17 +296,38 @@ defmodule Backend.Hearthstone do
   end
 
   def regenerate_classes_for_decks(decks) do
-    for d <- decks,
-        class_by_cards = Deck.most_frequent_class(d.cards),
-        class_by_cards != Deck.class(d),
-        reduce: Multi.new() do
-      multi ->
-        hero = Deck.get_basic_hero(class_by_cards)
-        deckcode = Deck.deckcode(d.cards, hero, d.format, d.sideboards)
-        cs = Deck.changeset(d, %{class: class_by_cards, hero: hero, deckcode: deckcode})
-        Multi.update(multi, "deck_id_#{d.id}_class_#{class_by_cards}", cs)
-    end
-    |> Repo.transaction(timeout: 360_000)
+    {multi, conflicts} =
+      for d <- decks,
+          class_by_cards = Deck.most_frequent_class(d.cards),
+          class_by_cards != Deck.class(d),
+          reduce: {Multi.new(), []} do
+        {multi, conflicted} ->
+          hero = Deck.get_basic_hero(class_by_cards)
+          deckcode = Deck.deckcode(d.cards, hero, d.format, d.sideboards)
+
+          case deck(deckcode) do
+            nil ->
+              cs = Deck.changeset(d, %{class: class_by_cards, hero: hero, deckcode: deckcode})
+              new_multi = Multi.update(multi, "deck_id_#{d.id}_class_#{class_by_cards}", cs)
+              {new_multi, conflicted}
+
+            existing ->
+              {multi, [{deckcode, d}, {deckcode, existing} | conflicted]}
+          end
+      end
+
+    transaction_result = Repo.transaction(multi, timeout: 360_000)
+
+    conflict_result =
+      conflicts
+      |> Enum.group_by(fn {deckcode, _deck} -> deckcode end)
+      |> Enum.map(fn {deckcode, decks} ->
+        decks
+        |> Enum.map(fn {_deckcode, deck} -> deck end)
+        |> Command.DeduplicateDecks.deduplicate_group(&(&1.deckcode == deckcode), :desc)
+      end)
+
+    {transaction_result, conflict_result}
   end
 
   def regenerate_false_neutral_deckcodes(limit \\ 1000) do
