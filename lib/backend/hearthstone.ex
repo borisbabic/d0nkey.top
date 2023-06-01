@@ -270,10 +270,43 @@ defmodule Backend.Hearthstone do
           _ -> class(d)
         end
 
-      updated = d |> Deck.changeset(%{deckcode: deckcode, class: class})
+      updated =
+        d |> Deck.changeset(%{deckcode: deckcode, class: class, hero: Deck.get_basic_hero(class)})
+
       Multi.update(multi, to_string(d.id) <> deckcode, updated)
     end)
-    |> Repo.transaction()
+    |> Repo.transaction(timeout: 360_000)
+  end
+
+  defp add_limit(query, limit) when is_integer(limit), do: query |> limit(^limit)
+  defp add_limit(query, _), do: query
+
+  def regenerate_classes(containing_card_ids, min_ago \\ 60 * 24, min_id \\ 0, limit \\ nil) do
+    cutoff = NaiveDateTime.utc_now() |> NaiveDateTime.add(-1 * 60 * min_ago)
+
+    query =
+      from d in Deck,
+        where: fragment("? && ?", d.cards, ^containing_card_ids),
+        where: d.id > ^min_id and d.inserted_at >= ^cutoff
+
+    query
+    |> add_limit(limit)
+    |> Repo.all(timeout: 360_000)
+    |> regenerate_classes_for_decks()
+  end
+
+  def regenerate_classes_for_decks(decks) do
+    for d <- decks,
+        class_by_cards = Deck.most_frequent_class(d.cards),
+        class_by_cards != Deck.class(d),
+        reduce: Multi.new() do
+      multi ->
+        hero = Deck.get_basic_hero(class_by_cards)
+        deckcode = Deck.deckcode(d.cards, hero, d.format, d.sideboards)
+        cs = Deck.changeset(d, %{class: class_by_cards, hero: hero, deckcode: deckcode})
+        Multi.update(multi, "deck_id_#{d.id}_class_#{class_by_cards}", cs)
+    end
+    |> Repo.transaction(timeout: 360_000)
   end
 
   def regenerate_false_neutral_deckcodes(limit \\ 1000) do
@@ -341,7 +374,7 @@ defmodule Backend.Hearthstone do
         updated = d |> Deck.changeset(%{archetype: new_archetype, deckcode: d.deckcode})
         Multi.update(multi, to_string(d.id), updated)
       end)
-      |> Repo.transaction()
+      |> Repo.transaction(timeout: 60_000)
     end)
   end
 
@@ -372,7 +405,7 @@ defmodule Backend.Hearthstone do
         updated = d |> Deck.changeset(%{hsreplay_archetype: new_archetype, deckcode: d.deckcode})
         Multi.update(multi, to_string(d.id), updated)
       end)
-      |> Repo.transaction()
+      |> Repo.transaction(timeout: 60_000)
     end)
 
     {:ok, "Done"}

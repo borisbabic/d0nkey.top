@@ -46,7 +46,10 @@ defmodule Backend.Hearthstone.CardBag do
   @spec all_cards() :: [Card.t()] | Stream.t()
   def all_cards() do
     all()
-    |> Stream.filter(&(elem(&1, 0) =~ "card_id_"))
+    |> Stream.filter(fn
+      {"card_id_" <> _, _} -> true
+      _ -> false
+    end)
     |> Stream.map(&elem(&1, 1))
   end
 

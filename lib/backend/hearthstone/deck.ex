@@ -320,7 +320,7 @@ defmodule Backend.Hearthstone.Deck do
     class
   end
 
-  defp most_frequent_class(cards) do
+  def most_frequent_class(cards) do
     cards
     |> Enum.map(&Hearthstone.class/1)
     |> Enum.frequencies()
