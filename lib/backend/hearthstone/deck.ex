@@ -324,7 +324,7 @@ defmodule Backend.Hearthstone.Deck do
     cards
     |> Enum.map(&Hearthstone.class/1)
     |> Enum.frequencies()
-    |> Enum.sort_by(&elem(&1, 1))
+    |> Enum.sort_by(&elem(&1, 1), :desc)
     |> Enum.map(&elem(&1, 0))
     |> Enum.filter(&(&1 != "NEUTRAL"))
     |> Enum.at(0)
