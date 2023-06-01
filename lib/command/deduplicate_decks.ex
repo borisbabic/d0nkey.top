@@ -24,8 +24,8 @@ defmodule Command.DeduplicateDecks do
     |> Enum.each(&deduplicate_group/1)
   end
 
-  def deduplicate_group(group) do
-    [actual | rest] = Enum.sort_by(group, & &1.inserted_at, :asc)
+  def deduplicate_group(group, sorter \\ & &1.inserted_at, direction \\ :asc) do
+    [actual | rest] = Enum.sort_by(group, sorter, direction)
     ids = Enum.map(rest, & &1.id)
     IO.puts("Changing #{inspect(ids)} to #{actual.id}")
 
