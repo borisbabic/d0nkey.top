@@ -79,8 +79,8 @@ base_bnet_oath = [
 
 bnet_oath =
   case System.get_env("BNET_REGION") do
-    nil -> base_bnet_oath
-    r -> [{:region, r} | base_bnet_oath]
+    r when r in ["us", "apac", "eu"] -> [{:region, r} | base_bnet_oath]
+    _ -> base_bnet_oath
   end
 
 config :ueberauth, Ueberauth.Strategy.Bnet.OAuth, bnet_oath
