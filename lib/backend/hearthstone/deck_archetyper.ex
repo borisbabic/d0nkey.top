@@ -143,6 +143,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       quest?(card_info) || questline?(card_info) -> :"Quest Druid"
       boar?(card_info) -> :"Boar Druid"
       vanndar?(card_info) -> :"Vanndar Druid"
+      chad_druid?(card_info) -> :"Chad Druid"
       big_druid?(card_info) -> :"Big Druid"
       celestial_druid?(card_info) -> :"Celestial Druid"
       ramp_druid?(card_info) -> :"Ramp Druid"
@@ -164,21 +165,58 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Hunter"
-      quest?(card_info) || questline?(card_info) -> :"Quest Hunter"
-      vanndar?(card_info) && big_beast_hunter?(card_info) -> :"Vanndar Beast Hunter"
-      vanndar?(card_info) -> :"Vanndar Hunter"
-      arcane_hunter?(card_info) -> :"Arcane Hunter"
-      rat_hunter?(card_info) -> :"Rattata Hunter"
-      big_beast_hunter?(card_info) -> :"Big Beast Hunter"
-      beast_hunter?(card_info) -> :"Beast Hunter"
-      murloc?(card_info) -> :"Murloc Hunter"
-      boar?(card_info) -> :"Boar Hunter"
-      menagerie?(card_info) -> :"Menagerie Hunter"
-      aggro_hunter?(card_info) -> :"Aggro Hunter"
-      wildseed_hunter?(card_info) -> :"Wildseed Hunter"
-      true -> minion_type_fallback(card_info, "Hunter")
+      highlander?(c) ->
+        :"Highlander Hunter"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest Hunter"
+
+      vanndar?(card_info) && big_beast_hunter?(card_info) ->
+        :"Vanndar Beast Hunter"
+
+      vanndar?(card_info) ->
+        :"Vanndar Hunter"
+
+      arcane_hunter?(card_info) && (big_beast_hunter?(card_info) or beast_hunter?(card_info)) ->
+        :"Arcane Beast Hunter"
+
+      arcane_hunter?(card_info) ->
+        :"Arcane Hunter"
+
+      rat_hunter?(card_info) ->
+        :"Rattata Hunter"
+
+      big_beast_hunter?(card_info) ->
+        :"Big Beast Hunter"
+
+      beast_hunter?(card_info) ->
+        :"Beast Hunter"
+
+      murloc?(card_info) ->
+        :"Murloc Hunter"
+
+      boar?(card_info) ->
+        :"Boar Hunter"
+
+      menagerie?(card_info) ->
+        :"Menagerie Hunter"
+
+      aggro_hunter?(card_info) ->
+        :"Aggro Hunter"
+
+      shockspitter?(card_info) ->
+        :"Shockspitter Hunter"
+
+      wildseed_hunter?(card_info) ->
+        :"Wildseed Hunter"
+
+      true ->
+        minion_type_fallback(card_info, "Hunter")
     end
+  end
+
+  def shockspitter?(ci) do
+    "Shockspitter" in ci.card_names
   end
 
   def archetype(%{format: 2, cards: c, class: "MAGE"}) do
@@ -206,6 +244,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       secret_mage?(card_info) ->
         :"Secret Mage"
 
+      burn_mage?(card_info) && secret_mage?(card_info) ->
+        :"Burn Secret Mage"
+
       naga_mage?(card_info) && casino_mage?(card_info) ->
         :"Naga Casino Mage"
 
@@ -215,11 +256,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       frost_mage?(card_info) ->
         :"Frost Mage"
 
+      burn_mage?(card_info) && naga_mage?(card_info) ->
+        :"Burn Naga Mage"
+
       naga_mage?(card_info) ->
         :"Naga Mage"
 
       mech_mage?(card_info) ->
         :"Mech Mage"
+
+      burn_mage?(card_info) && skeleton_mage?(card_info) ->
+        :"Burn Spooky Mage"
+
+      burn_mage?(card_info) ->
+        :"Burn Mage"
 
       skeleton_mage?(card_info) ->
         :"Spooky Mage"
@@ -240,6 +290,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         minion_type_fallback(card_info, "Mage")
     end
   end
+
+  def burn_mage?(ci), do: min_count?(ci, 2, ["Vexallus", "Aegwynn, the Guardian"])
 
   def arcane_mage?(card_info),
     do:
@@ -342,6 +394,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       rager_priest?(card_info) ->
         :"Rager Priest"
 
+      overheal_priest?(card_info) ->
+        :"Overheal Priest"
+
       svalna_priest?(card_info) ->
         :"Svalna Priest"
 
@@ -354,6 +409,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         minion_type_fallback(card_info, "Priest")
     end
+  end
+
+  defp overheal_priest?(ci) do
+    min_count?(ci, 3, [
+      "Crimson Clergy",
+      "Funnel Cake",
+      "Dreamboat",
+      "Holy Champion",
+      "Mana Geode",
+      "Heartthrob",
+      "Ambient Lightspawn",
+      "Heartbreaker Hedanis"
+    ])
   end
 
   defp svalna_priest?(card_info),
@@ -436,25 +504,76 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Warlock"
-      implock?(card_info) && (quest?(card_info) || questline?(card_info)) -> :"Quest Implock"
-      quest?(card_info) || questline?(card_info) -> :"Quest Warlock"
-      menagerie?(card_info) -> :"Menagerie Warlock"
-      murloc?(card_info) -> :"Murloc Warlock"
-      implock?(card_info) && boar?(card_info) -> :"Boar Implock"
-      boar?(card_info) -> :"Boar Warlock"
-      implock?(card_info) && phylactery_warlock?(card_info) -> :"Phylactery Implock"
-      phylactery_warlock?(card_info) -> :"Phylactery Warlock"
-      implock?(card_info) && handlock?(card_info) -> :"Hand Implock"
-      handlock?(card_info) -> :Handlock
-      implock?(card_info) && agony_warlock?(card_info) -> :"Agony Implock"
-      agony_warlock?(card_info) -> :"Agony Warlock"
-      implock?(card_info) && abyssal_warlock?(card_info) -> :"Abyssal Implock"
-      abyssal_warlock?(card_info) -> :"Abyssal Warlock"
-      implock?(card_info) -> :Implock
-      "Lord Jaraxxus" in card_info.card_names -> :"J-Lock"
-      true -> minion_type_fallback(card_info, "Warlock")
+      highlander?(c) ->
+        :"Highlander Warlock"
+
+      implock?(card_info) && (quest?(card_info) || questline?(card_info)) ->
+        :"Quest Implock"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest Warlock"
+
+      menagerie?(card_info) ->
+        :"Menagerie Warlock"
+
+      murloc?(card_info) ->
+        :"Murloc Warlock"
+
+      implock?(card_info) && boar?(card_info) ->
+        :"Boar Implock"
+
+      boar?(card_info) ->
+        :"Boar Warlock"
+
+      implock?(card_info) && phylactery_warlock?(card_info) ->
+        :"Phylactery Implock"
+
+      phylactery_warlock?(card_info) ->
+        :"Phylactery Warlock"
+
+      implock?(card_info) && abyssal_warlock?(card_info) && chad?(card_info) ->
+        :"Abyssal Chimplock"
+
+      implock?(card_info) && chad?(card_info) ->
+        :Chimplock
+
+      implock?(card_info) && handlock?(card_info) ->
+        :"Hand Implock"
+
+      handlock?(card_info) ->
+        :Handlock
+
+      implock?(card_info) && agony_warlock?(card_info) ->
+        :"Agony Implock"
+
+      agony_warlock?(card_info) ->
+        :"Agony Warlock"
+
+      abyssal_warlock?(card_info) && chad?(card_info) ->
+        :"Abyssal Chadlock"
+
+      implock?(card_info) && abyssal_warlock?(card_info) ->
+        :"Abyssal Implock"
+
+      chad?(card_info) ->
+        :Chadlock
+
+      abyssal_warlock?(card_info) ->
+        :"Abyssal Warlock"
+
+      implock?(card_info) ->
+        :Implock
+
+      "Lord Jaraxxus" in card_info.card_names ->
+        :"J-Lock"
+
+      true ->
+        minion_type_fallback(card_info, "Warlock")
     end
+  end
+
+  defp chad?(ci) do
+    min_count?(ci, 2, ["Amorphous Slime", "Thaddius, Monstrosity"])
   end
 
   def archetype(%{format: 2, cards: c, class: "WARRIOR"}) do
@@ -613,6 +732,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp celestial_druid?(%{card_names: card_names}), do: "Celestial Alignment" in card_names
 
+  defp chad_druid?(ci) do
+    min_count?(ci, 2, [
+      "Flesh Behemoth",
+      "Thaddius, Monstrosity"
+    ])
+  end
+
   defp big_druid?(ci),
     do:
       min_count?(ci, 3, [
@@ -632,12 +758,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp aggro_druid?(ci),
     do:
-      min_count?(ci, 1, [
-        "Oracle of Elune",
-        "Clawflury Adept",
-        "Peasant",
-        "Encumbered Pack Mule",
-        "Pride's Fury"
+      min_count?(ci, 3, [
+        "Herald of Nature",
+        "Lingering Zombie",
+        "Vicious Slitherspear",
+        "Mark of the Wild",
+        "Soul of the Forest",
+        "Blood Treant",
+        "Elder Nadox"
       ])
 
   defp arcane_hunter?(card_info),
@@ -712,7 +840,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp thief_rogue?(ci = %{card_names: card_names}),
     do:
       "Maestra of the Masquerade" in card_names ||
-        min_count?(ci, 2, ["Tess Greymane", "Contraband Stash"])
+        min_count?(ci, 4, [
+          "Tess Greymane",
+          "Mixtape",
+          "Hipster",
+          "Plagiarizarrr",
+          "Jackpot!",
+          "Hench-Clan Burglar",
+          "Sketchy Stranger",
+          "Invitation Courier",
+          "Swashburglar",
+          "Ransack",
+          "Murloc Holmes",
+          "Plagiarize"
+        ])
 
   defp miracle_rogue?(ci), do: min_count?(ci, 1, ["Mailbox Dancer"]) && miracle_wincon?(ci)
   defp miracle_wincon?(ci), do: min_count?(ci, 2, ["Sinstone Graveyard", "Necrolord Draka"])
@@ -805,7 +946,17 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         min_count?(ci, 2, ["The Jailer", "Reno Jackson", "The Countess"])
 
   defp big_paladin?(ci),
-    do: min_count?(ci, 2, ["Front Lines", "Cavalry Horn"])
+    do:
+      min_count?(ci, 1, ["Front Lines", "Kangor, Dancing King", "Lead Dancer"]) &&
+        min_count?(ci, 2, [
+          "Ragnaros the Firelord",
+          "Annoy-o-Troupe",
+          "Tirion Fordring",
+          "Stoneborn General",
+          "Neptulon the Tidehunter",
+          "Flesh Behemoth",
+          "Thaddius, Monstrosity"
+        ])
 
   defp holy_paladin?(ci = %{card_names: card_names}),
     do:
@@ -967,8 +1118,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Crazed Wretch",
       "Cruel Taskmaster",
       "Frothing Berserker",
+      "Sunfury Champion",
+      "Jam Session",
       "Imbued Axe",
-      "Barrens Blacksmith",
       "Grommash Hellscream"
     ])
   end
