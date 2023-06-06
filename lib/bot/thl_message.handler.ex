@@ -54,6 +54,7 @@ defmodule Bot.ThlMessageHandler do
     |> Enum.map(&create_checkable/1)
   end
 
+  @spec create_checkable(String.t()) :: checkable
   defp create_checkable(checkable) do
     case String.split(checkable, ":") do
       [title, discord_tag] -> {title, discord_tag}
