@@ -70,6 +70,7 @@ defmodule Bot.MessageHandlerUtil do
   def split_discord_tag(tag) do
     case String.split(tag, "#") do
       [username, discriminator] -> {:ok, {username, discriminator}}
+      [username] -> {:ok, {username, "0"}}
       _ -> {:error, :invalid_discord_tag}
     end
   end
