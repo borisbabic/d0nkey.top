@@ -176,7 +176,13 @@ defmodule BackendWeb.LeaderboardView do
       "ignore_rank_changes" => irc
     } = params
 
-    Routes.leaderboard_path(conn, :player_history, r, s, l, p, attr: a, ignore_rank_changes: irc)
+    query_params =
+      BackendWeb.LeaderboardController.extract_min_max_criteria(conn.params)
+      |> Map.new()
+      |> Map.put("attr", a)
+      |> Map.put("ignore_rank_changes", irc)
+
+    Routes.leaderboard_path(conn, :player_history, r, s, l, p, query_params)
   end
 
   def history_dropdowns(false, _, _), do: []
@@ -350,6 +356,7 @@ defmodule BackendWeb.LeaderboardView do
       conn: conn,
       has_rating: has_rating,
       graph: graph,
+      numeric_filters: false,
       title: title
     })
   end
@@ -360,6 +367,7 @@ defmodule BackendWeb.LeaderboardView do
           player_history: player_history,
           attr: attr,
           player: player,
+          min_max_criteria: min_max_criteria,
           conn: conn
         }
       ) do
@@ -381,14 +389,18 @@ defmodule BackendWeb.LeaderboardView do
     graph = history_graph(sorted_history, attr)
     title = "#{player} #{attr |> to_string() |> Macro.camelize()} History"
 
-    render("history.html", %{
-      dropdowns: dropdowns,
-      history: sorted_history,
-      conn: conn,
-      has_rating: has_rating,
-      graph: graph,
-      title: title
-    })
+    render(
+      "history.html",
+      %{
+        dropdowns: dropdowns,
+        history: sorted_history,
+        conn: conn,
+        has_rating: has_rating,
+        graph: graph,
+        title: title
+      }
+      |> add_numeric_filters(min_max_criteria)
+    )
   end
 
   def render("index.html", params = %{leaderboard: nil}) do
@@ -1289,5 +1301,54 @@ defmodule BackendWeb.LeaderboardView do
     fn rating ->
       Leaderboards.rating_display(rating, ldb)
     end
+  end
+
+  defp add_min_max_attrs(attrs, min_max_criteria) do
+    for k <- [:min_rating, :max_rating, :min_rank, :max_rank], into: attrs do
+      case List.keyfind(min_max_criteria, to_string(k), 0) do
+        {_, v} -> {k, v}
+        _ -> {k, 0}
+      end
+    end
+  end
+
+  defp add_numeric_filters(attrs, min_max_criteria) do
+    numeric_filters =
+      attrs
+      |> add_min_max_attrs(min_max_criteria)
+      |> Map.put(:curr_url, update_player_history_link(attrs.conn, nil, nil))
+      |> create_numeric_filters()
+
+    Map.put(attrs, :numeric_filters, numeric_filters)
+  end
+
+  defp create_numeric_filters(assigns) do
+    style = "width: 8em;"
+
+    ~H"""
+      <%= form_for @conn, @curr_url,
+      [method: :get], fn
+      f-> %>
+          <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+              <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
+          <% end %>
+          <%= for {key, list} when is_list(list) <- @conn.query_params, value <- list do %>
+              <input name={"#{ key }[]"} type="hidden" value={"#{ value }"}>
+          <% end %>
+          <div class="is-pulled-right">
+              <%= number_input f, "max_rank", class: "input", placeholder: "Max Rank", style: style %>
+          </div>
+          <div class="is-pulled-right">
+              <%= number_input f, "min_rank", class: "input", placeholder: "Min Rank", style: style %>
+          </div>
+          <div class="is-pulled-right">
+              <%= number_input f, "max_rating", class: "input", placeholder: "Max Rating", style: style %>
+          </div>
+          <div class="is-pulled-right">
+              <%= number_input f, "min_rating", class: "input", placeholder: "Min Rating", style: style %>
+          </div>
+          <input type="submit" class="is-hidden"/>
+      <% end %>
+    """
   end
 end

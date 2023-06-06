@@ -1,10 +1,14 @@
 <div class="title is-2"><%= @title %></div>
 <div id="nitropay-below-title-leaderboard"></div><br>
 
+<%= if @numeric_filters do %>
+    <%= @numeric_filters %>
+<% end %>
 <%= render_dropdowns(@dropdowns) %>
 <div class="svg-container">
     <%= @graph %>
 </div>
+
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
         <tr>

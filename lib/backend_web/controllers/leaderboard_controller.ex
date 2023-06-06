@@ -369,13 +369,17 @@ defmodule BackendWeb.LeaderboardController do
         }
       ) do
     attr = history_attr(params)
+    min_max_criteria = extract_min_max_criteria(params)
     ignore_rank = ignore_rank(params)
-    player_history = Backend.Leaderboards.player_history(player, region, period, ldb, attr)
+
+    player_history =
+      Backend.Leaderboards.player_history(player, region, period, ldb, attr, min_max_criteria)
 
     render(conn, "player_history.html", %{
       player_history: player_history,
       player: player,
       attr: attr,
+      min_max_criteria: min_max_criteria,
       ignore_rank: ignore_rank
     })
   end
@@ -397,6 +401,14 @@ defmodule BackendWeb.LeaderboardController do
       conn: conn,
       rank: rank
     })
+  end
+
+  def extract_min_max_criteria(params) do
+    for key <- ["min_rank", "max_rank", "min_rating", "max_rating"],
+        val = Map.get(params, key),
+        val != "" do
+      {key, Util.to_int_or_orig(val)}
+    end
   end
 
   defp add_not_current_season_criteria(criteria, []),

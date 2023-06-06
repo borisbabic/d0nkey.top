@@ -897,6 +897,18 @@ defmodule Backend.Leaderboards do
     |> where([entry: s], s.rank <= ^Util.to_int_or_orig(rank))
   end
 
+  defp compose_entries_query({"min_rating", rank}, query) do
+    query
+    |> add_season_join()
+    |> where([entry: s], s.rating >= ^Util.to_int_or_orig(rank))
+  end
+
+  defp compose_entries_query({"max_rating", rank}, query) do
+    query
+    |> add_season_join()
+    |> where([entry: s], s.rating <= ^Util.to_int_or_orig(rank))
+  end
+
   defp compose_entries_query({"order_by", {direction, field}}, query) do
     query
     |> order_by([{^direction, ^field}])
@@ -1109,17 +1121,34 @@ defmodule Backend.Leaderboards do
       [:latest_in_season, :preload_season, {"battletag_full", battletag_full} | extra_criteria]
       |> entries()
 
-  @spec player_history(String.t(), String.t(), integer() | String.t(), String.t()) :: [
+  @spec player_history(String.t(), String.t(), integer() | String.t(), String.t(), List.t()) :: [
           history_entry()
         ]
-  def player_history(player, region, period, leaderboard_id, changed_attr \\ :rank) do
-    criteria = [{"period", period}, {"region", region}, {"leaderboard_id", leaderboard_id}]
+  def player_history(
+        player,
+        region,
+        period,
+        leaderboard_id,
+        changed_attr \\ :rank,
+        additional_criteria \\ []
+      ) do
+    criteria = [
+      {"period", period},
+      {"region", region},
+      {"leaderboard_id", leaderboard_id} | additional_criteria
+    ]
+
     entries_player_history(player, criteria, changed_attr)
     # |> dedup_player_histories(changed_attr)
   end
 
-  def rank_history(rank, region, period, leaderboard_id) do
-    criteria = [{"period", period}, {"region", region}, {"leaderboard_id", leaderboard_id}]
+  def rank_history(rank, region, period, leaderboard_id, additional_criteria \\ []) do
+    criteria = [
+      {"period", period},
+      {"region", region},
+      {"leaderboard_id", leaderboard_id} | additional_criteria
+    ]
+
     entries_rank_history(rank, criteria, nil)
   end
 
