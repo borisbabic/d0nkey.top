@@ -453,7 +453,8 @@ defmodule Backend.Leaderboards do
     table |> Enum.filter(fn e -> MapSet.member?(short_set, e.account_id) end)
   end
 
-  def stats(criteria), do: entries(criteria) |> PlayerStats.create_collection()
+  def stats(criteria, timeout \\ nil),
+    do: entries(criteria, timeout) |> PlayerStats.create_collection()
 
   def latest_up_to(region, leaderboard, date) do
     ([
@@ -903,10 +904,22 @@ defmodule Backend.Leaderboards do
     |> where([entry: s], s.rating >= ^Util.to_int_or_orig(rank))
   end
 
+  defp compose_entries_query({"conditional_min_rating", rank}, query) do
+    query
+    |> add_season_join()
+    |> where([entry: e], is_nil(e.rating) or e.rating >= ^Util.to_int_or_orig(rank))
+  end
+
   defp compose_entries_query({"max_rating", rank}, query) do
     query
     |> add_season_join()
     |> where([entry: s], s.rating <= ^Util.to_int_or_orig(rank))
+  end
+
+  defp compose_entries_query({"conditional_max_rating", rank}, query) do
+    query
+    |> add_season_join()
+    |> where([entry: s], is_nil(s.rating) or s.rating <= ^Util.to_int_or_orig(rank))
   end
 
   defp compose_entries_query({"order_by", {direction, field}}, query) do
@@ -1098,6 +1111,10 @@ defmodule Backend.Leaderboards do
       {"battletag_full", _} -> false
       {"offset", _} -> false
       {"limit", _} -> false
+      {"conditional_min_rating", _} -> false
+      {"conditional_max_rating", _} -> false
+      {"min_rating", _} -> false
+      {"max_rating", _} -> false
       _ -> true
     end)
   end

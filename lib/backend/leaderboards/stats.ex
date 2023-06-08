@@ -24,7 +24,7 @@ defmodule Backend.Leaderboards.PlayerStats do
 
   def create_collection([]), do: []
 
-  @spec create_player_stats([Snapshot.Entry]) :: PlayerStats
+  @spec create_player_stats({String.t()[Snapshot.Entry]}) :: PlayerStats
   def create_player_stats({account_id, player_entries}) do
     %__MODULE__{
       account_id: account_id,
