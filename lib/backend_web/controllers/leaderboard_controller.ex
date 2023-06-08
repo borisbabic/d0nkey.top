@@ -313,8 +313,9 @@ defmodule BackendWeb.LeaderboardController do
       # |> add_not_current_season_criteria(leaderboards)
       |> add_region_criteria(regions)
       |> add_leaderboard_criteria(leaderboards)
+      |> add_min_rating_criteria()
 
-    stats = Leaderboards.stats(criteria)
+    stats = Leaderboards.stats(criteria, 30_000)
 
     render(conn, "stats.html", %{
       conn: conn,
@@ -419,6 +420,16 @@ defmodule BackendWeb.LeaderboardController do
   defp add_leaderboard_criteria(criteria, []), do: add_leaderboard_criteria(criteria, nil)
   defp add_leaderboard_criteria(criteria, nil), do: [{"leaderboard_id", ["STD"]} | criteria]
   defp add_leaderboard_criteria(criteria, ids), do: [{"leaderboard_id", ids} | criteria]
+
+  defp add_min_rating_criteria(criteria) do
+    with {"leaderboard_id", ids} <- List.keyfind(criteria, "leaderboard_id", 0),
+         true <- "BG" in ids or "BG_LL" in ids do
+      criteria
+      [{"conditional_min_rating", 8000} | criteria]
+    else
+      _ -> criteria
+    end
+  end
 
   defp add_region_criteria(criteria, []), do: criteria
   defp add_region_criteria(criteria, nil), do: criteria

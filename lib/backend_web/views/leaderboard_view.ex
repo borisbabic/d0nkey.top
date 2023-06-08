@@ -1269,8 +1269,12 @@ defmodule BackendWeb.LeaderboardView do
 
   def filter_countries(target, []), do: target
 
-  def filter_countries(r, countries),
-    do: r |> Enum.filter(fn %{country: c} -> c in countries end)
+  def filter_countries(r, countries) do
+    Enum.filter(r, fn
+      %{country: c} -> c in countries
+      %{account_id: a} -> PlayerInfo.get_country(a) in countries
+    end)
+  end
 
   def create_player_rows(player_stats, conn, show_flags) do
     player_stats
@@ -1278,7 +1282,7 @@ defmodule BackendWeb.LeaderboardView do
       total = ps.ranks |> Enum.count()
       avg = ((ps.ranks |> Enum.sum()) / total) |> Float.round(2)
 
-      country = Backend.PlayerInfo.get_country(ps.account_id)
+      country = PlayerInfo.get_country(ps.account_id)
 
       %{
         "Player" => render_player_link(ps.account_id, nil, show_flags),
