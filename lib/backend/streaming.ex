@@ -191,6 +191,7 @@ defmodule Backend.Streaming do
     insert_new(twitch_streams)
 
     twitch_streams
+    |> Enum.uniq_by(& &1.user_id)
     |> Util.async_map(fn ts ->
       login = ts |> Twitch.Stream.login()
       id = ts.user_id
@@ -219,6 +220,7 @@ defmodule Backend.Streaming do
 
     twitch_streams
     |> Enum.reject(&(to_string(&1.user_id) in existing))
+    |> Enum.uniq_by(& &1.user_id)
     |> Enum.reduce(Multi.new(), fn stream, multi ->
       attrs = %{
         twitch_login: Twitch.Stream.login(stream),
