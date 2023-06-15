@@ -39,7 +39,7 @@ defmodule Backend.Hearthstone do
         where: sg.slug == "standard",
         select: sg.card_sets
 
-    Repo.one(query)
+    Repo.one(query) || []
   end
 
   def update_metadata() do
