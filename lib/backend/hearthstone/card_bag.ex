@@ -30,10 +30,10 @@ defmodule Backend.Hearthstone.CardBag do
     |> order_by_standard()
   end
 
-  defp order_by_standard(cards) when is_list(cards) do
+  defp order_by_standard(cards) do
     standard = Backend.Hearthstone.standard_card_sets() |> MapSet.new()
 
-    cards
+    (cards || [])
     |> Enum.sort_by(
       fn
         %{card_set: %{slug: slug}} -> MapSet.member?(standard, slug)
@@ -42,8 +42,6 @@ defmodule Backend.Hearthstone.CardBag do
       :desc
     )
   end
-
-  defp order_by_standard(_), do: []
 
   @spec all_cards() :: [Card.t()] | Stream.t()
   def all_cards() do
