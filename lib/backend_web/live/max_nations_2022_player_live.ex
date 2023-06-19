@@ -15,7 +15,7 @@ defmodule BackendWeb.MaxNations2022PlayerLive do
       <div>
         <div class="title is-2"><a href={Routes.player_path(BackendWeb.Endpoint, :player_profile, @player)}>{@player}</a></div>
         <div class="subtitle is-5" :if={nation = MaxNations2022.get_nation(@player)}><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.MaxNations2022NationLive, nation)}>{nation}</a></div>
-        <div id="nitropay-below-title-leaderboard"></div><br>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
         <table class="table" :if={lineups = MaxNations2022.get_player_lineups(@player)}>
           <thead>
             <tr>
@@ -39,9 +39,9 @@ defmodule BackendWeb.MaxNations2022PlayerLive do
     player = params["player"]
     {:noreply, socket |> assign(player: player)}
   end
+
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
     {:noreply, socket}
   end
-
 end

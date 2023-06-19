@@ -6,7 +6,7 @@
         | <a href="https://hearthstone.doc-x.net/" target="_blank">Official Top 50</a>
     <% end %>
 </div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 
 
 <%= form_for @conn, Routes.masters_tour_path(@conn, :qualifier_stats, @period, @conn.query_params),

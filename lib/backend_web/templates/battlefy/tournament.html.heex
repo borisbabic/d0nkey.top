@@ -14,7 +14,7 @@
         </div>
     </div>
 </div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 
 <div>
 <%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @tournament.id), [method: :get], fn

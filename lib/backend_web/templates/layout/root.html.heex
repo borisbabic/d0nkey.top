@@ -46,7 +46,7 @@
   <body>
     <main role="main" class={"#{ container_classes(@conn) }"}>
       <%= if enable_nitropay?(@conn) && show_ads?(@conn) do %>
-        <div class="is-hidden-mobile sticky-stack column" id="nitropay-sticky-stack">
+        <div class="is-hidden-mobile sticky-stack column" phx-update="ignore" id="nitropay-sticky-stack">
         </div>
       <% end %>
       <%= @inner_content %>

@@ -22,7 +22,7 @@ defmodule BackendWeb.MaxNations2022Live do
             <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
           </a>
         </div>
-        <div id="nitropay-below-title-leaderboard"></div>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
           <TournamentLineupExplorer id={"max_lineups_explorer"} tournament_id={@week} tournament_source={MaxNations2022.lineup_tournament_source()} show_page_dropdown={false} filters={%{"order_by" => {:asc, :name}}} page_size={150}>
               <Dropdown title={@week} >
                 <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>
@@ -37,18 +37,20 @@ defmodule BackendWeb.MaxNations2022Live do
     </Context>
     """
   end
+
   def handle_event("change-week", %{"week" => week}, socket) do
     {:noreply, socket |> push_patch(to: Routes.live_path(socket, __MODULE__, %{week: week}))}
   end
+
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
     {:noreply, socket}
   end
+
   def weeks(), do: MaxNations2022.get_possible_lineups_tournament_id()
 
   def handle_params(params, _uri, socket) do
     week = params["week"] || MaxNations2022.get_latest_lineups_tournament_id()
     {:noreply, socket |> assign(week: week)}
   end
-
 end

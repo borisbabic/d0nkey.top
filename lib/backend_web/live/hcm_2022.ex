@@ -14,7 +14,7 @@ defmodule BackendWeb.HCM2022Live do
     <Context put={user: @user} >
       <div>
         <div class="title is-2">Hearthstone Collegiate Masters</div>
-        <div id="nitropay-below-title-leaderboard"></div>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
         <TournamentLineupExplorer id={"hcm_2022"} tournament_id={@week} tournament_source={"hcm_2022"} show_page_dropdown={false} filters={%{"order_by" => {:asc, :name}}} page_size={150}>
             <Dropdown title={@week} >
               <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>

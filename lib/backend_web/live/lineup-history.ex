@@ -13,7 +13,7 @@ defmodule BackendWeb.LineupHistoryLive do
     <Context put={user: @user} >
       <div>
         <div class="title is-2"><a href={Routes.player_path(BackendWeb.Endpoint, :player_profile, @name)}>{@name}</a></div>
-        <div id="nitropay-below-title-leaderboard"></div><br>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
         <table class="table" :if={lineups = Backend.Hearthstone.lineup_history(@source, @name)}>
           <thead>
             <tr>

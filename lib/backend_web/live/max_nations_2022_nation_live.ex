@@ -15,7 +15,7 @@ defmodule BackendWeb.MaxNations2022NationLive do
     <Context put={user: @user} >
       <div>
         <div class="title is-2">{@nation}</div>
-        <div id="nitropay-below-title-leaderboard"></div><br>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
           <table class="table" :if={lineups = MaxNations2022.get_nation_lineups(@nation)}>
             <thead>
               <tr>
@@ -41,9 +41,9 @@ defmodule BackendWeb.MaxNations2022NationLive do
     nation = params["nation"]
     {:noreply, socket |> assign(nation: nation)}
   end
+
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
     {:noreply, socket}
   end
-
 end

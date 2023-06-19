@@ -1,5 +1,5 @@
 <div class="title is-2"><%= @title %> </div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 <a class="button is-link" href={"#{ @before_link }"}>⤎</a>
 <a class="button is-link" href={"#{ @after_link }"}>⤏</a>
 <%= render_dropdowns @dropdowns %>

@@ -1,5 +1,5 @@
 <div class="title is-2">Leaderboard Stats</div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 
 <div>
 <%= form_for @conn, Routes.leaderboard_path(@conn, :player_stats), [method: :get], fn

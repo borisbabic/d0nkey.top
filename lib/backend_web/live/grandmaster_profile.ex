@@ -34,7 +34,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
         <div class="subtitle is-5">
           Week Points: {points(@gm, @week)} Total Points: {points(@gm)}
         </div>
-        <div id="nitropay-below-title-leaderboard"></div>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
 
         <div class="level is-mobile">
           <div class="level-left">
