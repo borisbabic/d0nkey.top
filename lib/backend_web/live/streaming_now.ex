@@ -35,7 +35,7 @@ defmodule BackendWeb.StreamingNowLive do
       <div>
         <div class="title is-2">Streaming Now</div>
         <div class="subtitle is-6"><a href={"#{instructions_link}"}>Instructions for streamers</a></div>
-        <div id="nitropay-below-title-leaderboard"></div>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
 
         <div class="dropdown is-hoverable">
             <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Sort</button></div>

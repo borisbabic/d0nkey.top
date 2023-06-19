@@ -1,6 +1,6 @@
 <div class="title is-2">Grandmasters tournaments</div>
 <div class="subtitle is-6">This isn't automatic. If I'm missing a battlefy link please send it to me so I can add it</div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 <a class="tag is-link" href="https://hearthstone.blizzard.com/en-us/esports/standings/">Official site</a>
 <a class="tag is-link" href="https://yaytears.com/grandmasters">Yaytears</a>
 <%= render(BackendWeb.BattlefyView, "tournament_table.html", %{raw: @tournaments, conn: @conn}) %>

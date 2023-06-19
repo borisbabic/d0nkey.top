@@ -10,7 +10,6 @@ defmodule BackendWeb.GroupDecksLive do
   def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
 
   def render(assigns) do
-
     ~F"""
     <Context put={user: @user} >
       <div :if={({group, membership} = BackendWeb.GroupLive.group_membership(@group_id, @user)) && group && membership}>
@@ -18,7 +17,7 @@ defmodule BackendWeb.GroupDecksLive do
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
-        <div id="nitropay-below-title-leaderboard"></div><br>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
         <DecksExplorer
           id="decks_explorer"
           default_order_by="latest"
@@ -40,6 +39,7 @@ defmodule BackendWeb.GroupDecksLive do
   def handle_info({:update_params, params}, socket = %{assigns: %{group_id: group_id}}) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, group_id, params))}
   end
+
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
@@ -48,6 +48,6 @@ defmodule BackendWeb.GroupDecksLive do
 
   def handle_params(params, _uri, socket) do
     filters = DecksExplorer.filter_relevant(params)
-    {:noreply, assign(socket, :filters, filters) |> assign(:group_id, params["group_id"]) }
+    {:noreply, assign(socket, :filters, filters) |> assign(:group_id, params["group_id"])}
   end
 end

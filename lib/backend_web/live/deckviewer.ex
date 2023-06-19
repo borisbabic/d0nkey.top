@@ -79,7 +79,7 @@ defmodule BackendWeb.DeckviewerLive do
             </Form>
           </div>
           <div class="level-item">
-            <div id="nitropay-below-title-leaderboard"></div>
+            <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
           </div>
         </div>
         <div class="columns is-mobile is-multiline">

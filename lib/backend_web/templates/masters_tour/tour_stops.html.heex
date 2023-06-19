@@ -1,3 +1,3 @@
 <div class="title is-2">Tour Stops</div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 <%= render(BackendWeb.BattlefyView, "tournament_table.html", conn: @conn, raw: @raw, slug: @slug) %>

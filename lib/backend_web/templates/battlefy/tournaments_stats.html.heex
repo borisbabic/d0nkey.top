@@ -1,4 +1,4 @@
 <div class="title is-2"><%= @title %></div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 
 <%= BackendWeb.TournamentStatsView.render("tournaments_stats_table.html", @table_params) %>

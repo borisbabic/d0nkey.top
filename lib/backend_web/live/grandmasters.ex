@@ -33,7 +33,7 @@ defmodule BackendWeb.GrandmastersLive do
           <a target"_blank" href="https://hearthstone.blizzard.com/en-us/esports/standings/">Official Site</a>
           | <a href={lineup_url(@week)}>Lineups</a>
         </div>
-        <div id="nitropay-below-title-leaderboard"></div>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
 
         <div class="level is-mobile">
           <div class="level-left">

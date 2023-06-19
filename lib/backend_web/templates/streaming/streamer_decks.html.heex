@@ -4,7 +4,7 @@
         <a href={"#{ Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)}"}>Instructions for streamers</a> <a href="/hdt-plugin" target="_blank"></a>
     </p>
 </div>
-<div id="nitropay-below-title-leaderboard"></div><br>
+<div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
 <div class="columns is-pulled-left">
 <%= @prev_button %>
 <%= @next_button %>

@@ -20,7 +20,7 @@ defmodule BackendWeb.TournamentLineups do
         <div :if={lineups = Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
           <div>
             <div class="title is-2">Lineups</div>
-            <div id="nitropay-below-title-leaderboard"></div>
+            <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
             <TournamentLineupExplorer id={"tournament_lineup_explorer_#{@tournament_source}_#{@tournament_id}"} tournament_id={"#{@tournament_id}"} tournament_source={"#{@tournament_source}"} />
           </div>
         </div>

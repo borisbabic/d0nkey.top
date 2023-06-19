@@ -22,7 +22,7 @@ defmodule BackendWeb.JoinLeagueLive do
           <div class="subtitle is-5 tag"> Roster Size: {@league.roster_size} </div>
           <div :if={@league.draft_deadline} class="subtitle is-5 tag"> Draft Deadline: {render_datetime(@league.draft_deadline )} </div>
             <br>
-          <div id="nitropay-below-title-leaderboard"></div><br>
+          <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
           <a class="link" href={"/fantasy/leagues/#{@league.id}"}>View League</a>
           <div :if={true == already_member?(@league, @user)}>
             You're already a member!
