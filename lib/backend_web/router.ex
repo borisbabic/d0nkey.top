@@ -51,6 +51,8 @@ defmodule BackendWeb.Router do
     get "/log", PageController, :log
     post "/log", PageController, :log
     put "/log", PageController, :log
+
+    post "/patreon/webhook", PatreonController, :webhook
   end
 
   scope "/api", BackendWeb do
