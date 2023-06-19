@@ -11,6 +11,20 @@ defmodule BackendWeb.AuthController do
     |> redirect(to: "/")
   end
 
+  def callback(
+        conn = %{assigns: %{ueberauth_auth: auth = %{provider: :patreon, uid: patreon_id}}},
+        params
+      ) do
+    case Guardian.Plug.current_resource(conn) do
+      user = %{battletag: _bt} ->
+        UserManager.set_patreon(user, patreon_id)
+        conn |> redirect(to: "/profile/settings")
+
+      _ ->
+        render(conn, "user_expected.html", %{})
+    end
+  end
+
   def callback(conn = %{assigns: %{ueberauth_auth: auth = %{provider: :bnet}}}, _params) do
     user =
       auth
@@ -37,7 +51,7 @@ defmodule BackendWeb.AuthController do
     end
   end
 
-  def callback(conn, _params) do
+  def callback(conn, params) do
     conn
     |> put_flash(
       :error,

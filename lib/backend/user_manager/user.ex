@@ -13,6 +13,7 @@ defmodule Backend.UserManager.User do
     field :hide_ads, :boolean
     field :unicode_icon, :string
     field :twitch_id, :string
+    field :patreon_id, :string
     field :cross_out_country, :boolean, default: false
     field :show_region, :boolean, default: false
 
@@ -41,6 +42,7 @@ defmodule Backend.UserManager.User do
       :admin_roles,
       :hide_ads,
       :twitch_id,
+      :patreon_id,
       :cross_out_country,
       :show_region,
       :replay_preference,
@@ -51,6 +53,7 @@ defmodule Backend.UserManager.User do
     |> validate_length(:country_code, min: 2, max: 2)
     |> capitalize_country_code()
     |> unique_constraint(:twitch_id)
+    |> unique_constraint(:patreon_id)
     |> unique_constraint(:bnet_id)
   end
 

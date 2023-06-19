@@ -260,6 +260,18 @@ defmodule Backend.UserManager do
     |> Repo.update()
   end
 
+  def set_patreon(user, patreon_id) do
+    user
+    |> User.changeset(%{patreon_id: patreon_id})
+    |> Repo.update()
+  end
+
+  def remove_patreon(user) do
+    user
+    |> User.changeset(%{patreon_id: nil})
+    |> Repo.update()
+  end
+
   @doc """
   Paginate the list of groups using filtrex
   filters.

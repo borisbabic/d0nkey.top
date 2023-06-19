@@ -55,9 +55,18 @@ config :backend, BackendWeb.Endpoint,
 config :ueberauth, Ueberauth,
   providers: [
     bnet: {Ueberauth.Strategy.Bnet, []},
+    patreon: {
+      Ueberauth.Strategy.Patreon,
+      [default_scope: "identity"]
+    },
     twitch:
       {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
   ]
+
+config :ueberauth, Ueberauth.Strategy.Patreon.OAuth,
+  client_id: System.get_env("PATREON_CLIENT_ID"),
+  client_secret: System.get_env("PATREON_CLIENT_SECRET"),
+  redirect_uri: System.get_env("PATREON_REDIRECT_URI")
 
 bnet_client_id =
   System.get_env("BNET_CLIENT_ID") ||
