@@ -41,7 +41,7 @@ defmodule Backend.Battlefy.LineupFetcher do
     |> enqueue_matches(id)
   end
 
-  def enqueue_jobs(id), do: Battlefy.get_tournament(id) |> enqueue_jobs()
+  def enqueue_jobs(id) when is_binary(id), do: Battlefy.get_tournament(id) |> enqueue_jobs()
 
   defp enqueue_matches([], _), do: {:error, :no_matches}
 

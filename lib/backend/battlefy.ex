@@ -11,7 +11,6 @@ defmodule Backend.Battlefy do
   alias Backend.BattlefyUtil
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Lineup
-  alias Backend.Hearthstone.Deck
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
   @type region :: :Asia | :Europe | :Americas
@@ -189,14 +188,14 @@ defmodule Backend.Battlefy do
          s when s in [nil, []] <- get_stage_standings(stage) do
       []
     else
-      standings -> standings || []
+      standings -> standings
     end
   end
 
   def create_standings_from_round1_matches(%{
         id: id
       }) do
-    matches = get_matches(id, %{round: 1}) || []
+    matches = get_matches(id, round: 1) || []
 
     # num_losers = Enum.count(matches, fn %{top: top, bottom: bottom} -> top.winner || bottom.winnere end)
     # num_people = matches
