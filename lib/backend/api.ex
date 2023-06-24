@@ -53,7 +53,7 @@ defmodule Backend.Api do
   end
 
   defp do_paginate_api_users(filter, params) do
-    ApiUser
+    from(au in ApiUser)
     |> Filtrex.query(filter)
     |> order_by(^sort(params))
     |> paginate(Repo, params, @pagination)
@@ -163,9 +163,10 @@ defmodule Backend.Api do
   @spec verify_user(String.t(), String.t()) :: {:ok, ApiUser.t()} | {:error, reason :: atom()}
   def verify_user(username, password) do
     query =
-      from u in ApiUser,
+      from(u in ApiUser,
         where: u.username == ^username,
         select: u
+      )
 
     with user = %{id: _id} <- Repo.one(query),
          true <- ApiUser.verify_password?(user, password) do

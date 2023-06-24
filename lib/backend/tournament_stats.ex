@@ -1,5 +1,5 @@
 defprotocol Backend.TournamentStats.Standings do
-  @spec create_team_standings(t) :: Backend.TournamentStats.TeamStats.t()
+  @spec create_team_standings(t) :: Backend.TournamentStats.TeamStandings.t()
   def create_team_standings(standings)
 end
 
@@ -8,12 +8,12 @@ defmodule Backend.TournamentStats.TeamStandings do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :position, integer
-    field :name, String.t()
-    field :wins, integer
-    field :losses, integer
-    field :auto_wins, integer
-    field :auto_losses, integer
+    field(:position, integer)
+    field(:name, String.t())
+    field(:wins, integer)
+    field(:losses, integer)
+    field(:auto_wins, integer)
+    field(:auto_losses, integer)
   end
 
   def actual_wins(ts = %__MODULE__{}), do: ts.wins - ts.auto_wins
@@ -30,14 +30,14 @@ defmodule Backend.TournamentStats.TeamStats do
   alias Backend.TournamentStats.TeamStandings
   @type stats_type :: :actual | :all
   typedstruct enforce: true do
-    field :name, String.t()
-    field :wins, integer
-    field :losses, integer
-    field :auto_wins, integer
-    field :auto_losses, integer
-    field :only_losses, integer
-    field :no_results, integer
-    field :positions, [integer]
+    field(:name, String.t())
+    field(:wins, integer)
+    field(:losses, integer)
+    field(:auto_wins, integer)
+    field(:auto_losses, integer)
+    field(:only_losses, integer)
+    field(:no_results, integer)
+    field(:positions, [integer])
   end
 
   @spec create_collection([TeamStandings.t()]) :: [TeamStats.t()]
@@ -261,10 +261,10 @@ defmodule Backend.TournamentStats.TournamentTeamStats do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :tournament_name, String.t()
-    field :tournament_id, String.t()
-    field :team_name, String.t()
-    field :stage_stats, [{Backend.Tournament.bracket_type(), TeamStats.t()}]
+    field(:tournament_name, String.t())
+    field(:tournament_id, String.t())
+    field(:team_name, String.t())
+    field(:stage_stats, [{Backend.Tournament.bracket_type(), TeamStats.t()}])
   end
 
   @doc """
