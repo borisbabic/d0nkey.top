@@ -611,6 +611,55 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
+  def archetype(%{class: class, cards: c, format: 4}) do
+    class_name = Deck.class_name(class)
+    card_info = full_cards(c)
+
+    cond do
+      highlander?(c) ->
+        String.to_atom("Highlander #{class_name}")
+
+      quest?(card_info) || questline?(card_info) ->
+        String.to_atom("Quest #{class_name}")
+
+      boar?(card_info) ->
+        String.to_atom("Boar #{class_name}")
+
+      "King Togwaggle" in card_info.card_names ->
+        String.to_atom("Tog #{class_name}")
+
+      # DEMON HUNTER
+      outcast_dh?(card_info) ->
+        :"Outcast DH"
+
+      # DRUID
+      "Linecracker" in card_info.card_names && class_name == "Druid" ->
+        :"Linecracker Druid"
+
+        # MAGE
+        "Ping Mage"
+
+      # ROGUE
+      "Kingsbane" in card_info.card_names ->
+        :"Kingsbane Rogue"
+
+      # SHAMAN
+      "Shudderwock" in card_info.card_names ->
+        :"Shudderwock Shaman"
+
+      # WARLOCK
+      phylactery_warlock?(card_info) ->
+        "Phylactery Warlock"
+
+      # FALLBACKS
+      min_secret_count?(card_info, 4) ->
+        String.to_atom("Secret #{class_name}")
+
+      true ->
+        minion_type_fallback(card_info, class_name)
+    end
+  end
+
   def archetype(%{class: class, cards: c, format: 1}) do
     class_name = Deck.class_name(class)
     card_info = full_cards(c)

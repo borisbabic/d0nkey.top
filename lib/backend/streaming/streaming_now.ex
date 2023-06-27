@@ -87,6 +87,8 @@ defmodule Backend.Streaming.StreamingNow do
   @battlegrounds_patterns ["[bg]", "[battlegrounds]", "[bgs]", "[battleground]"]
   @arena_patterns ["[arena]", "[arn]"]
   @classic_patterns ["[classic]"]
+  # TODO twist add below
+  @twist_patterns ["[twist]"]
   @mercenaries_patterns ["[mercenaries]", "[mrc]"]
   def guess_from_title(title) do
     down = title |> String.downcase()

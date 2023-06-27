@@ -36,6 +36,10 @@ defmodule Hearthstone.Enums.BnetGameType do
   def mercenaries_pve_coop, do: 60
   def mercenaries_friendly, do: 61
 
+  # TODO twist check if my guess is correct
+  def ranked_twist, do: 62
+  def casual_twist, do: 63
+
   def duels_types(), do: [pvpdr(), pvpdr_paid()]
   def duels?(type), do: type in duels_types()
 
@@ -72,7 +76,12 @@ defmodule Hearthstone.Enums.BnetGameType do
   def classic_types(), do: [ranked_classic(), casual_classic()]
   def classic?(type), do: type in classic_types()
 
-  def mercenaries_types(), do: [mercenaries_pvp(), mercenaries_pve(), mercenaries_pve_coop(), mercenaries_friendly()]
+  def twist_types(), do: [ranked_twist(), casual_twist()]
+  def twist?(type), do: type in twist_types()
+
+  def mercenaries_types(),
+    do: [mercenaries_pvp(), mercenaries_pve(), mercenaries_pve_coop(), mercenaries_friendly()]
+
   def mercenaries?(type), do: type in mercenaries_types()
 
   def ranked_types(),
@@ -83,6 +92,7 @@ defmodule Hearthstone.Enums.BnetGameType do
       ranked_standard_new_player(),
       ranked_wild(),
       ranked_classic(),
+      ranked_twist(),
       mercenaries_pvp(),
       battlegrounds()
     ]
@@ -107,6 +117,7 @@ defmodule Hearthstone.Enums.BnetGameType do
       fsg?(type) -> "Fireside Gathering"
       arena?(type) -> "Arena"
       classic?(type) -> "Classic"
+      twist?(type) -> "Twist"
       mercenaries?(type) -> "Mercenaries"
       true -> "Unknown"
     end
@@ -123,13 +134,13 @@ defmodule Hearthstone.Enums.BnetGameType do
       "Duels",
       "Fireside Gathering",
       "Arena",
+      "Twist",
       "Classic"
     ]
     |> Enum.find("Unknown", &(normalize.(&1) == normalize.(type)))
   end
 
   def game_type_name(_), do: "Unknown"
-
 end
 
 defmodule Hearthstone.Enums.GameType do
@@ -195,7 +206,8 @@ defmodule Hearthstone.Enums.GameType do
     [
       {Format.wild(), BnetGameType.ranked_wild()},
       {Format.standard(), BnetGameType.ranked_standard()},
-      {Format.classic(), BnetGameType.ranked_classic()}
+      {Format.classic(), BnetGameType.ranked_classic()},
+      {Format.twist(), BnetGameType.ranked_twist()}
     ]
     |> List.keyfind(format, 0, {0, BnetGameType.unknown()})
     |> elem(1)
@@ -204,8 +216,9 @@ defmodule Hearthstone.Enums.GameType do
   def as_bnet(@casual, format) do
     [
       {Format.wild(), BnetGameType.casual_wild()},
-      {Format.standard(), BnetGameType.casual_standard()},
-      {Format.classic(), BnetGameType.casual_classic()}
+      {Format.standard(), BnetGameType.casual_standard_normal()},
+      {Format.classic(), BnetGameType.casual_classic()},
+      {Format.twist(), BnetGameType.casual_twist()}
     ]
     |> List.keyfind(format, 0, {0, BnetGameType.unknown()})
     |> elem(1)
@@ -238,7 +251,12 @@ end
 
 defmodule Hearthstone.Enums.Format do
   @moduledoc false
-  @all [{:wild, 1, "Wild"}, {:standard, 2, "Standard"}, {:classic, 3, "Classic"}]
+  @all [
+    {:wild, 1, "Wild"},
+    {:standard, 2, "Standard"},
+    {:classic, 3, "Classic"},
+    {:twist, 4, "Twist"}
+  ]
 
   @all
   |> Enum.each(fn {down, num, name} ->

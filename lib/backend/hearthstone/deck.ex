@@ -14,13 +14,13 @@ defmodule Backend.Hearthstone.Deck do
   @optional [:hsreplay_archetype, :class, :archetype]
   @type t :: %__MODULE__{}
   schema "deck" do
-    field :cards, {:array, :integer}
-    field :deckcode, :string
-    field :format, :integer
-    field :hero, :integer
-    field :class, :string
-    field :archetype, Ecto.Atom, default: nil
-    field :hsreplay_archetype, :integer, default: nil
+    field(:cards, {:array, :integer})
+    field(:deckcode, :string)
+    field(:format, :integer)
+    field(:hero, :integer)
+    field(:class, :string)
+    field(:archetype, Ecto.Atom, default: nil)
+    field(:hsreplay_archetype, :integer, default: nil)
     embeds_many(:sideboards, Sideboard)
     timestamps()
   end
@@ -114,6 +114,7 @@ defmodule Backend.Hearthstone.Deck do
     [Enum.count(multi_part) | multi_part]
   end
 
+  @spec canonicalize_cards([integer]) :: [integer]
   def canonicalize_cards(cards), do: Enum.map(cards, &HearthstoneJson.canonical_id/1)
 
   @spec deckcode_part([integer] | nil) :: [integer]
@@ -214,7 +215,7 @@ defmodule Backend.Hearthstone.Deck do
          {singles, rest} <- take_singles(card_parts),
          {doubles, rest} <- take_doubles(rest),
          {multi, rest} <- take_multi(rest),
-         {sideboards, _rest} <- parse_sideboard(rest),
+         {_success, sideboards, _rest} <- parse_sideboard(rest),
          uncanonical_cards <- singles ++ doubles ++ multi,
          cards <- canonicalize_cards(uncanonical_cards) do
       {class, hero} = deckcode_class_hero(hero, cards)
@@ -234,17 +235,19 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  defp parse_sideboard([]), do: {[], []}
-  defp parse_sideboard([0 | rest]), do: {[], rest}
+  @spec parse_sideboard([integer]) :: {:ok | :error, [integer], [integer]}
+  defp parse_sideboard([]), do: {:ok, [], []}
+  defp parse_sideboard([0 | rest]), do: {:ok, [], rest}
 
   defp parse_sideboard([1 | sideboard]) do
     {singles, after_singles} = sideboard_optimized(sideboard, 1)
     {doubles, after_doubles} = sideboard_optimized(after_singles, 2)
     {multis, rest} = sideboard_multi(after_doubles)
-    {singles ++ doubles ++ multis, rest}
+    {:ok, singles ++ doubles ++ multis, rest}
   end
 
-  defp parse_sideboard(_), do: {:error, :malformed_sideboard}
+  # we got 
+  defp parse_sideboard(rest), do: {:error, [], rest}
 
   defp sideboard_optimized([count | left], copies) do
     {raw, rest} = Enum.split(left, count * 2)
@@ -374,16 +377,14 @@ defmodule Backend.Hearthstone.Deck do
   def format_name(1), do: "Wild"
   def format_name(2), do: "Standard"
   def format_name(3), do: "Classic"
+  def format_name(4), do: "Twist"
   def format_name(9001), do: "Duels"
   def format_name(666), do: "Mercenaries"
 
   def get_canonical_hero(hero, cards) when is_integer(hero) do
     hero
     |> deckcode_class(cards)
-    |> case do
-      class when is_binary(class) -> get_basic_hero(class)
-      _ -> hero
-    end
+    |> get_basic_hero()
   end
 
   @spec get_basic_hero(String.t() | integer) :: integer
@@ -463,7 +464,7 @@ defmodule Backend.Hearthstone.Deck do
   def canonical_constructed_deckcode(code) when is_binary(code) do
     case decode(code) do
       {:ok, deck = %{cards: cards}} when length(cards) > 14 and length(cards) < 41 ->
-        {:ok, deck |> deckcode()}
+        {:ok, deckcode(deck)}
 
       _ ->
         {:error, "Not a constructed deckcode"}
@@ -580,9 +581,9 @@ defmodule Backend.Hearthstone.Deck.Sideboard do
   @all_attrs [:card, :sideboard, :count]
   @primary_key false
   embedded_schema do
-    field :card, :integer
-    field :sideboard, :integer
-    field :count, :integer
+    field(:card, :integer)
+    field(:sideboard, :integer)
+    field(:count, :integer)
   end
 
   def changeset(sideboard, attrs) do

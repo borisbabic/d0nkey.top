@@ -274,7 +274,7 @@ defmodule Backend.HSReplay do
   end
 
   def handle_live_decks() do
-    ["standard", "wild", "classic"]
+    ["standard", "wild", "classic", "twist"]
     |> Enum.each(&handle_live_decks/1)
   end
 
