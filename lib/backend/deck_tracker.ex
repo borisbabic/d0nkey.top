@@ -22,9 +22,10 @@ defmodule Hearthstone.DeckTracker do
   @spec get_game_by_game_id(String.t()) :: Game.t() | nil
   def get_game_by_game_id(game_id) do
     query =
-      from g in Game,
+      from(g in Game,
         preload: [:player_deck, :source],
         where: g.game_id == ^game_id
+      )
 
     Repo.one(query)
   end
@@ -87,9 +88,10 @@ defmodule Hearthstone.DeckTracker do
 
   defp get_same_game(attrs) do
     query =
-      from g in Game,
+      from(g in Game,
         as: :game,
         where: g.inserted_at > ago(90, "second")
+      )
 
     query
     |> equals(:player_btag, attrs["player_btag"])
@@ -244,7 +246,7 @@ defmodule Hearthstone.DeckTracker do
   @winrate_select_pos 4
   @total_fragment "CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END"
   defp base_stats_query() do
-    from g in Game,
+    from(g in Game,
       as: :game,
       join: pd in assoc(g, :player_deck),
       as: :player_deck,
@@ -259,6 +261,7 @@ defmodule Hearthstone.DeckTracker do
             g.status
           )
       }
+    )
   end
 
   def get_or_create_source(source, version) when is_binary(source) and is_binary(version) do
@@ -280,8 +283,9 @@ defmodule Hearthstone.DeckTracker do
 
   def get_source(source, version) when is_binary(source) and is_binary(version) do
     query =
-      from s in Source,
+      from(s in Source,
         where: s.source == ^source and s.version == ^version
+      )
 
     Repo.one(query)
   end
@@ -295,9 +299,10 @@ defmodule Hearthstone.DeckTracker do
 
   defp get_existing(game_id) do
     query =
-      from g in Game,
+      from(g in Game,
         as: :game,
         where: g.game_id == ^game_id
+      )
 
     Repo.one(query)
   end
@@ -350,11 +355,12 @@ defmodule Hearthstone.DeckTracker do
       )
 
   defp base_games_query() do
-    from g in Game,
+    from(g in Game,
       as: :game,
       left_join: pd in assoc(g, :player_deck),
       as: :player_deck,
       preload: [player_deck: pd]
+    )
   end
 
   defp build_games_query(query, criteria),
@@ -522,6 +528,11 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"period", "patch_26.4.3"}, query) do
     release = ~N[2023-06-15 17:20:00]
+    query |> where([game: g], g.inserted_at >= ^release)
+  end
+
+  defp compose_games_query({"period", "patch_26.6.0"}, query) do
+    release = ~N[2023-06-27 17:20:00]
     query |> where([game: g], g.inserted_at >= ^release)
   end
 
