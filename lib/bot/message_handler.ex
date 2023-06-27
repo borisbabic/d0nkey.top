@@ -143,7 +143,8 @@ defmodule Bot.MessageHandler do
 
   def create_deck_message(deck) do
     with {:ok, from_db} <- Backend.Hearthstone.create_or_get_deck(deck) do
-      {:ok, "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(from_db)}\n```"}
+      {:ok,
+       "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(from_db)}\n```\nhttps://www.hsguru.com/deck/#{from_db.id}"}
     end
   end
 
