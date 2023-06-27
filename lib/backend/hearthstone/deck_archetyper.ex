@@ -22,15 +22,35 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander DK"
-      burn_dk?(card_info) -> :"Burn DK"
-      handbuff_dk?(card_info) -> :"Handbuff DK"
-      aggro_dk?(card_info) -> :"Aggro DK"
-      menagerie?(card_info) -> :"Menagerie DK"
-      boar?(card_info) -> :"Boar DK"
-      quest?(card_info) || questline?(card_info) -> :"Quest DK"
-      murloc?(card_info) -> :"Murloc DK"
-      true -> minion_type_fallback(card_info, "DK")
+      highlander?(c) ->
+        :"Highlander DK"
+
+      burn_dk?(card_info) ->
+        :"Burn DK"
+
+      handbuff_dk?(card_info) ->
+        :"Handbuff DK"
+
+      aggro_dk?(card_info) ->
+        :"Aggro DK"
+
+      menagerie?(card_info) ->
+        :"Menagerie DK"
+
+      boar?(card_info) ->
+        :"Boar DK"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest DK"
+
+      murloc?(card_info) ->
+        :"Murloc DK"
+
+      true ->
+        case minion_type_fallback(card_info, "DK") do
+          "Undead DK" -> nil
+          mtf -> mtf
+        end
     end
   end
 
