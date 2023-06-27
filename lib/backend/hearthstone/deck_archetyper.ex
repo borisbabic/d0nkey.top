@@ -636,12 +636,37 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Linecracker" in card_info.card_names && class_name == "Druid" ->
         :"Linecracker Druid"
 
-        # MAGE
-        "Ping Mage"
+      # HUNTER
+      big_beast_hunter?(card_info) ->
+        :"Big Beast Hunter"
+
+      # MAGE
+      ping_mage?(card_info) ->
+        :"Ping Mage"
+
+      "Mozaki, Master Duelist" in card_info.card_names ->
+        :"Mozaki Mage"
+
+      haleh_mage?(card_info) ->
+        :"Haleh Mage"
+
+      spell_mage?(card_info) ->
+        :"Spell Mage"
+
+      # PALADIN
+      libram_paladin?(card_info) ->
+        :"Libram Paladin"
+
+      # PRIEST
+      miracle_priest?(card_info) ->
+        :"Miracle Priest"
 
       # ROGUE
       "Kingsbane" in card_info.card_names ->
         :"Kingsbane Rogue"
+
+      weapon_rogue?(card_info) ->
+        :"Weapon Rogue"
 
       # SHAMAN
       "Shudderwock" in card_info.card_names ->
@@ -649,15 +674,89 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       # WARLOCK
       phylactery_warlock?(card_info) ->
-        "Phylactery Warlock"
+        :"Phylactery Warlock"
 
-      # FALLBACKS
-      min_secret_count?(card_info, 4) ->
-        String.to_atom("Secret #{class_name}")
+      fatigue_warlock?(card_info) ->
+        :"Fatigue Warlock"
+
+      # FALLBACK to standard
+      vanndar?(card_info) ->
+        String.to_atom("Vanndar #{class_name}")
 
       true ->
-        minion_type_fallback(card_info, class_name)
+        archetype(%{class: class, cards: c, format: 2})
     end
+  end
+
+  defp weapon_rogue?(card_info) do
+    "Swinetusk Shank" in card_info.card_names &&
+      min_count?(card_info, 3, [
+        "Deadly Poison",
+        "Paralytic Poison",
+        "Silverleaf Poison",
+        "Harmonic Hip Hop",
+        "Mic Drop",
+        "Cutting Class",
+        "Nitroboost Poison"
+      ])
+  end
+
+  defp haleh_mage?(card_info) do
+    min_count?(card_info, 2, ["Hot Streak", "Haleh, Matron Protectorate", "Drakefire Amulet"])
+  end
+
+  defp spell_mage?(card_info) do
+    min_count?(card_info, 3, [
+      "Deck of Lunacy",
+      "Incanter's Flow",
+      "Refreshing Spring Water"
+    ])
+  end
+
+  defp fatigue_warlock?(card_info) do
+    min_count?(
+      card_info,
+      5,
+      [
+        "Altar of Fire",
+        "Blood Shard Bristleback",
+        "Soul Rend",
+        "Neeru Fireblade",
+        "Barrens Scavenger",
+        "Tickatus",
+        "Fanottem, Lord of the Opera"
+      ]
+    )
+  end
+
+  defp miracle_priest?(card_info) do
+    min_count?(card_info, 5, [
+      "Gift of Luminance",
+      "Nazmani Bloodweaver",
+      "Switcheroo",
+      "Psyche Split",
+      "Power Word: Fortitude"
+    ])
+  end
+
+  defp ping_mage?(card_info) do
+    min_count?(card_info, 4, [
+      "Wildfire",
+      "Reckless Apprentice",
+      "Magister Dawngrasp",
+      "Mordresh Fire Eye"
+    ])
+  end
+
+  defp libram_paladin?(card_info) do
+    min_count?(card_info, 5, [
+      "Aldor Attendant",
+      "Libram of Wisdom",
+      "Libram of Justice",
+      "Aldor Truthseeker",
+      "Libram of Judgment",
+      "Libram of Hope"
+    ])
   end
 
   def archetype(%{class: class, cards: c, format: 1}) do
