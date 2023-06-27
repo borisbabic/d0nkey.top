@@ -5,7 +5,7 @@ defmodule Hearthstone.Leaderboards.Api do
   alias Hearthstone.Leaderboards.Season
 
   use Tesla
-  plug Tesla.Middleware.BaseUrl, "https://hearthstone.blizzard.com"
+  plug(Tesla.Middleware.BaseUrl, "https://hearthstone.blizzard.com")
   @default_page 1
   @ldb_id_map %{
     "STD" => "standard",

@@ -5,10 +5,10 @@ defmodule Hearthstone.Leaderboards.Response do
   alias Hearthstone.Leaderboards.Season
 
   typedstruct do
-    field :leaderboard, Leaderboard.t()
-    field :season, Season.t()
-    field :raw_response, Map.t()
-    field :season_metadata, SeasonMetadata.t()
+    field(:leaderboard, Leaderboard.t())
+    field(:season, Season.t())
+    field(:raw_response, Map.t())
+    field(:season_metadata, SeasonMetadata.t())
   end
 
   @spec rows(Response.t()) :: [Hearthstone.Leaderboards.Response.Row.t()]
@@ -44,9 +44,9 @@ defmodule Hearthstone.Leaderboards.Response.Leaderboard do
   alias Hearthstone.Leaderboards.Response.Pagination
 
   typedstruct do
-    field :columns, [String.t()]
-    field :rows, [Row.t()]
-    field :pagination, Pagination.t() | nil
+    field(:columns, [String.t()])
+    field(:rows, [Row.t()])
+    field(:pagination, Pagination.t() | nil)
   end
 
   @spec from_raw_map(Map.t()) :: Leaderboard.t()
@@ -63,9 +63,9 @@ defmodule Hearthstone.Leaderboards.Response.Row do
   use TypedStruct
 
   typedstruct do
-    field :account_id, integer(), enforce: true
-    field :rank, integer(), enforce: true
-    field :rating, integer() | nil, enforce: false
+    field(:account_id, integer(), enforce: true)
+    field(:rank, integer(), enforce: true)
+    field(:rating, integer() | nil, enforce: false)
   end
 
   @spec from_raw_list([Map.t()]) :: [Row.t()]
@@ -85,8 +85,8 @@ defmodule Hearthstone.Leaderboards.Response.Pagination do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :total_pages, integer()
-    field :total_size, integer()
+    field(:total_pages, integer())
+    field(:total_size, integer())
   end
 
   @spec from_raw_map(Map.t()) :: Pagination.t()
@@ -105,9 +105,9 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata do
   alias Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata
 
   typedstruct do
-    field :ap, RegionMetadata.t()
-    field :eu, RegionMetadata.t()
-    field :us, RegionMetadata.t()
+    field(:ap, RegionMetadata.t())
+    field(:eu, RegionMetadata.t())
+    field(:us, RegionMetadata.t())
   end
 
   @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
@@ -124,30 +124,33 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
   use TypedStruct
   alias Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata
 
-  typedstruct enforce: true do
-    field :arena, LeaderboardMetadata.t()
-    field :battlegrounds, LeaderboardMetadata.t()
-    field :classic, LeaderboardMetadata.t()
-    field :mercenaries, LeaderboardMetadata.t()
-    field :standard, LeaderboardMetadata.t()
-    field :wild, LeaderboardMetadata.t()
+  typedstruct enforce: false do
+    field(:arena, LeaderboardMetadata.t(), enforce: true)
+    field(:battlegrounds, LeaderboardMetadata.t(), enforce: true)
+    field(:classic, LeaderboardMetadata.t())
+    field(:mercenaries, LeaderboardMetadata.t(), enforce: true)
+    field(:standard, LeaderboardMetadata.t(), enforce: true)
+    field(:twist, LeaderboardMetadata.t())
+    field(:wild, LeaderboardMetadata.t(), enforce: true)
   end
 
   @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
-  def from_raw_map(%{
-        "arena" => arena,
-        "battlegrounds" => battlegrounds,
-        "classic" => classic,
-        "mercenaries" => mercenaries,
-        "standard" => standard,
-        "wild" => wild
-      }) do
+  def from_raw_map(
+        %{
+          "arena" => arena,
+          "battlegrounds" => battlegrounds,
+          "mercenaries" => mercenaries,
+          "standard" => standard,
+          "wild" => wild
+        } = map
+      ) do
     %__MODULE__{
       arena: LeaderboardMetadata.from_raw_map(arena),
       battlegrounds: LeaderboardMetadata.from_raw_map(battlegrounds),
-      classic: LeaderboardMetadata.from_raw_map(classic),
+      classic: LeaderboardMetadata.from_raw_map(map["classic"]),
       mercenaries: LeaderboardMetadata.from_raw_map(mercenaries),
       standard: LeaderboardMetadata.from_raw_map(standard),
+      twist: LeaderboardMetadata.from_raw_map(map["twist"]),
       wild: LeaderboardMetadata.from_raw_map(wild)
     }
   end
@@ -157,9 +160,9 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
   use TypedStruct
 
   typedstruct do
-    field :name, String.t()
-    field :rating_id, integer() | nil
-    field :seasons, [integer()]
+    field(:name, String.t())
+    field(:rating_id, integer() | nil)
+    field(:seasons, [integer()])
   end
 
   @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
