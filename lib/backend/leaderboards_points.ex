@@ -42,7 +42,8 @@ defmodule Backend.LeaderboardsPoints do
   end
 
   defp group_by_player(entries) do
-    Enum.group_by(entries, fn %{account_id: a} -> a end)
+    mapping = Backend.Battlenet.create_mapping()
+    Enum.group_by(entries, fn %{account_id: a} -> Map.get(mapping, a, a) end)
   end
 
   @spec calculate_player_row({String.t(), [Backend.Leaderboards.Entry.t()]}) :: player_row
