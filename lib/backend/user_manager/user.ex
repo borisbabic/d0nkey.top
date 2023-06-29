@@ -183,7 +183,8 @@ defmodule Backend.UserManager.User.DecklistOptions do
   def gradient(%{gradient: g}), do: g
   def gradient(_), do: "rarity"
 
-  def valid_color?(opt), do: opt in ["dark_grey", "card_class", "deck_class", "rarity"]
+  def valid_color?(opt),
+    do: opt in ["dark_grey", "card_class", "deck_class", "rarity", "deck_format"]
 
   def show_one_for_legendaries_default(), do: @default_show_one_for_legendaries
   def show_one_default(), do: @default_show_one

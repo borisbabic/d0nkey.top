@@ -4,13 +4,16 @@ defmodule Components.DecklistCard do
   alias Backend.HearthstoneJson
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardBag
+  alias Backend.Hearthstone.Deck
   alias Backend.UserManager.User.DecklistOptions
   prop(count, :integer, required: true)
   prop(card, :map, required: true)
+  prop(deck, :map, default: %{})
   prop(deck_class, :string, default: "NEUTRAL")
   prop(sideboarded_in, :boolean, default: false)
   prop(show_mana_cost, :boolean, default: true)
   prop(decklist_options, :map, default: %{})
+
   defp rarity(nil), do: rarity("COMMON")
   defp rarity("FREE"), do: rarity("COMMON")
   defp rarity(rarity), do: rarity |> String.downcase()
@@ -19,9 +22,13 @@ defmodule Components.DecklistCard do
   defp color_option("rarity", %{rarity: rarity}), do: "var(--color-dark-#{rarity})"
   defp color_option("card_class", %{card_class: card_class}), do: "var(--color-#{card_class})"
   defp color_option("deck_class", %{deck_class: deck_class}), do: "var(--color-#{deck_class})"
+
+  defp color_option("deck_format", %{deck_format: deck_format}),
+    do: "var(--color-#{deck_format |> Deck.format_name() |> String.downcase()})"
+
   defp color_option(_, _), do: "var(--color-darker-grey)"
 
-  defp colors(card, deck_class, opts) do
+  defp colors(card, deck_class, opts, deck) do
     rarity = Card.rarity(card)
     filtered_opts = opts |> Map.to_list() |> Enum.filter(fn {_, v} -> v end) |> Map.new()
 
@@ -35,7 +42,8 @@ defmodule Components.DecklistCard do
     color_opts = %{
       rarity: rarity(rarity),
       card_class: card_class(card, deck_class) |> class(),
-      deck_class: class(deck_class)
+      deck_class: class(deck_class),
+      deck_format: Map.get(deck, :format, 0)
     }
 
     %{
@@ -59,7 +67,7 @@ defmodule Components.DecklistCard do
     id = Ecto.UUID.generate()
 
     %{border: border, gradient: gradient} =
-      colors(card, assigns[:deck_class], assigns[:decklist_options])
+      colors(card, assigns[:deck_class], assigns[:decklist_options], assigns[:deck])
 
     # rarity_color = "--color-dark-#{rarity(card.rarity)}"
     # deck_class_color = "--color-#{class(card.card_class)}"
