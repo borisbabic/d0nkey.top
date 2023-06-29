@@ -304,16 +304,42 @@ defmodule Backend.Battlenet do
   @spec get_old_for_user(Backend.UserManager.User.t()) :: [OldBattletag.t()]
   def get_old_for_user(user) do
     query =
-      from ob in OldBattletag,
+      from(ob in OldBattletag,
         preload: :user,
         where: ob.user_id == ^user.id
+      )
 
     Repo.all(query)
   end
 
+  @spec create_mapping({atom(), atom()}) ::
+          {(String.t() -> String.t()), (String.t() -> String.t())}
+  def create_mapping({old_key, new_key} \\ {:old_battletag_short, :new_battletag_short}) do
+    query =
+      from(ob in OldBattletag,
+        order_by: [desc: :inserted_at]
+      )
+
+    battletags = Repo.all(query)
+
+    for bt <- battletags,
+        new = Map.get(bt, new_key),
+        old = Map.get(bt, old_key),
+        old != nil,
+        new != nil,
+        reduce: %{} do
+      acc ->
+        # if there is one that means the player changed the name again!
+        case Map.get(acc, new) do
+          nil -> Map.put(acc, old, new)
+          actual_new -> Map.put(acc, old, actual_new)
+        end
+    end
+  end
+
   def get_old_for_btag(btag) do
     query =
-      from ob in OldBattletag,
+      from(ob in OldBattletag,
         where:
           ^btag in [
             ob.old_battletag,
@@ -321,6 +347,7 @@ defmodule Backend.Battlenet do
             ob.old_battletag_short,
             ob.new_battletag_short
           ]
+      )
 
     Repo.all(query)
   end
