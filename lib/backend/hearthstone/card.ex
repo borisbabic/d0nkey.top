@@ -18,33 +18,33 @@ defmodule Backend.Hearthstone.Card do
 
   @primary_key {:id, :integer, []}
   schema "hs_cards" do
-    field :artist_name, :string
-    field :attack, :integer
-    belongs_to :card_set, Set
-    belongs_to :card_type, Type
-    field :child_ids, {:array, :integer}
-    field :collectible, :boolean
-    belongs_to :copy_of_card, Backend.Hearthstone.Card
-    field :crop_image, :string
-    field :durability, :integer
-    field :duels_constructed, :boolean, default: false
-    field :duels_relevant, :boolean, default: false
-    field :flavor_text, :string
-    field :health, :integer
-    field :image, :string
-    field :image_gold, :string
-    many_to_many :keywords, Keyword, join_through: "hs_cards_keywords", on_replace: :delete
-    many_to_many :classes, Class, join_through: "hs_cards_classes", on_replace: :delete
-    field :mana_cost, :integer
-    belongs_to :minion_type, MinionType
-    field :name, :string
-    belongs_to :rarity, Rarity
-    field :slug, :string
-    belongs_to :spell_school, SpellSchool
+    field(:artist_name, :string)
+    field(:attack, :integer)
+    belongs_to(:card_set, Set)
+    belongs_to(:card_type, Type)
+    field(:child_ids, {:array, :integer})
+    field(:collectible, :boolean)
+    belongs_to(:copy_of_card, Backend.Hearthstone.Card)
+    field(:crop_image, :string)
+    field(:durability, :integer)
+    field(:duels_constructed, :boolean, default: false)
+    field(:duels_relevant, :boolean, default: false)
+    field(:flavor_text, :string)
+    field(:health, :integer)
+    field(:image, :string)
+    field(:image_gold, :string)
+    many_to_many(:keywords, Keyword, join_through: "hs_cards_keywords", on_replace: :delete)
+    many_to_many(:classes, Class, join_through: "hs_cards_classes", on_replace: :delete)
+    field(:mana_cost, :integer)
+    belongs_to(:minion_type, MinionType)
+    field(:name, :string)
+    belongs_to(:rarity, Rarity)
+    field(:slug, :string)
+    belongs_to(:spell_school, SpellSchool)
     # field :mercenary_hero, MercenaryHero.t()
-    field :text, :string
+    field(:text, :string)
 
-    embeds_one :rune_cost, RuneCost, on_replace: :delete
+    embeds_one(:rune_cost, RuneCost, on_replace: :delete)
 
     timestamps()
   end
@@ -116,7 +116,7 @@ defmodule Backend.Hearthstone.Card do
   @spec rarity(card()) :: String.t()
   def rarity(%{rarity: rarity}), do: Rarity.upcase(rarity)
 
-  @spec rarity(card()) :: String.t()
+  @spec type(card()) :: String.t()
   def type(%{card_type: type}), do: Type.upcase(type)
   def type(%{type: type}), do: Type.upcase(type)
 
@@ -135,6 +135,10 @@ defmodule Backend.Hearthstone.Card do
     end
   end
 
+  @doc """
+  Retrieve the class of the `card`
+  If the card is in multiple classes and `specific_class` is one of them then it returns `specific_class`
+  """
   @spec class(card(), String.t()) :: {:ok, String.t()} | {:error, atom()}
   def class(card, specific_class) do
     case {classes(card), in_class?(card, specific_class)} do
@@ -209,9 +213,9 @@ defmodule Backend.Hearthstone.RuneCost do
   import Ecto.Changeset
 
   embedded_schema do
-    field :blood, :integer, default: 0
-    field :frost, :integer, default: 0
-    field :unholy, :integer, default: 0
+    field(:blood, :integer, default: 0)
+    field(:frost, :integer, default: 0)
+    field(:unholy, :integer, default: 0)
   end
 
   def changeset(entry, attrs) do

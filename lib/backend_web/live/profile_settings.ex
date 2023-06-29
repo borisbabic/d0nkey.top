@@ -52,11 +52,11 @@ defmodule BackendWeb.ProfileSettingsLive do
             <br>
             <Label class="label">Decklist Options</Label>
             <Field name="border">
-              <Select selected={DecklistOptions.border(@user.decklist_options)} class="select" options={"Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey"}/>
+              <Select selected={DecklistOptions.border(@user.decklist_options)} class="select" options={"Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
               <Label>Border Color</Label>
             </Field>
             <Field name="gradient">
-              <Select selected={DecklistOptions.gradient(@user.decklist_options)} class="select" options={ "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey"}/>
+              <Select selected={DecklistOptions.gradient(@user.decklist_options)} class="select" options={ "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
               <Label>Gradient Color</Label>
             </Field>
             <Field name="show_one">
