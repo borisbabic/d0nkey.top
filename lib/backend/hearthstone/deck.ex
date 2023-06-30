@@ -6,6 +6,7 @@ defmodule Backend.Hearthstone.Deck do
   alias Hearthstone.Card.RuneCost
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.DeckArchetyper
   alias Backend.HearthstoneJson
   alias Backend.HearthstoneJson.Card, as: JsonCard
   alias Backend.Hearthstone.Deck.Sideboard
@@ -149,10 +150,42 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def name(%{archetype: a}) when not is_nil(a), do: a
+  def archetype(%{archetype: a}) when is_binary(a), do: a
+  def archetype(deck), do: DeckArchetyper.archetype(deck)
 
   def name(deck) do
-    with nil <- Backend.Hearthstone.DeckArchetyper.archetype(deck) do
+    deck
+    |> base_name()
+    |> add_runes(deck)
+    |> add_xl(deck)
+  end
+
+  defp add_xl(name, %{cards: cards}) when is_list(cards) do
+    if Enum.count(cards) == 40 do
+      "XL #{name}"
+    else
+      name
+    end
+  end
+
+  defp add_xl(name, _), do: name
+
+  defp add_runes(name, %{cards: cards} = deck) when is_list(cards) do
+    deck
+    |> rune_cost()
+    |> RuneCost.shorthand()
+    # next two lines append " " if it's not empty
+    |> Kernel.<>(" ")
+    |> String.trim_leading()
+    |> Kernel.<>(to_string(name))
+  end
+
+  defp add_runes(name, _), do: name
+
+  def base_name(%{archetype: a}) when not is_nil(a), do: a
+
+  def base_name(deck) do
+    with nil <- DeckArchetyper.archetype(deck) do
       class_name(deck)
     end
   end
