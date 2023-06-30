@@ -18,9 +18,12 @@ defmodule Components.Decklist do
   prop(show_hero, :any, default: true)
   slot(right_button)
 
-  @spec deck_name(Map.t() | nil, Deck.t()) :: String.t()
-  def deck_name(%{name: name}, _) when is_binary(name) and bit_size(name) > 0, do: name
-  def deck_name(%{archetype_as_name: true}, deck), do: Deck.name(deck)
+  @spec deck_name(Deck.t(), String.t() | nil, boolean) :: String.t()
+  def deck_name(_deck, name, _archetype_as_name) when is_binary(name) and bit_size(name) > 0,
+    do: name
+
+  def deck_name(deck, _name, true), do: Deck.name(deck)
+  def deck_name(deck, _name, _archetype_as_name), do: Deck.class_name(deck)
 
   defp link_part(%{id: id}) when not is_nil(id), do: id
   defp link_part(%{deckcode: deckcode}), do: deckcode
@@ -30,8 +33,6 @@ defmodule Components.Decklist do
 
     deck_class = Deck.class(deck)
     class_class = deck_class |> String.downcase()
-
-    name = deck_name(assigns, deck) |> add_runes(deck) |> add_xl(deck)
 
     ~F"""
       <div>
@@ -43,7 +44,7 @@ defmodule Components.Decklist do
                   </div>
                   <div class="level-left deck-text">
                     <div class="deck-title">
-                      <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={"/deck/#{link_part(@deck)}"}>{name}</a>
+                      <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={"/deck/#{link_part(@deck)}"}>{deck_name(@deck, @name, @archetype_as_name)}</a>
                       <span style="font-size: 0; line-size:0; display:block">
                       {Deck.deckcode(@deck)}</span></span>
                     </div>
@@ -72,26 +73,4 @@ defmodule Components.Decklist do
 
   def show_above(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_above()
   def show_below(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_below()
-
-  defp add_xl(name, %{cards: cards}) when is_list(cards) do
-    if Enum.count(cards) == 40 do
-      "XL #{name}"
-    else
-      name
-    end
-  end
-
-  defp add_xl(name, _), do: name
-
-  defp add_runes(name, %{cards: cards} = deck) when is_list(cards) do
-    deck
-    |> Deck.rune_cost()
-    |> RuneCost.shorthand()
-    # next two lines append " " if it's not empty
-    |> Kernel.<>(" ")
-    |> String.trim_leading()
-    |> Kernel.<>(to_string(name))
-  end
-
-  defp add_runes(name, _), do: name
 end
