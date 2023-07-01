@@ -41,8 +41,86 @@ npm
 
 You can use the shell.nix provided, possibly in combination with direnv and 
 
-## API 
+## API
+### Resources
+#### Deck Info
+archetype: the deck archetype, without runes or XL
+name: the name. The deck archetype or class with runes and XL
+deckcode: canonical short deckcode used by the site
 
+```json
+example
+{
+  "archetype": "Control Priest",
+  "deckcode": "AAECAa0GCOWwBKi2BJfvBO+RBYakBf3EBc/GBc2eBhCi6AOEnwShtgSktgSWtwT52wS43AS63ASGgwXgpAW7xAW7xwX7+AW4ngbPngbRngYAAQPwnwT9xAXFpQX9xAX++AX9xAUAAA==",
+  "name": "XL Control Priest"
+}
+```
+
+### Rest
+#### GET "/api/deck-info/$DECKCODE"
+Responds with 200 and a Deck Info resource for decodable deckcodes
+Responds with 400 for undecodable deckcodes
+
+example GET "/api/deck-info/AAEBAdH6AwLN9AKG+gMOlQGUA74Gnv0CvYUDtJcD2qUD8NQDqt4D1vUD+rQE9NAFwJ4G5p4GAAA="
+response
+```
+{
+    "archetype": "Even Shaman",
+    "deckcode": "AAEBAaoIAs30Aob6Aw6VAZQDvgae/QK9hQO0lwPapQPw1AOq3gPW9QP6tAT00AXAngbmngYA",
+    "name": "Even Shaman"
+}
+```
+
+#### POST "/api/deck-info"
+Batch get deck info
+Request format:
+```json
+{
+  "decks": [$CODE1, $CODE2,...]
+}
+```
+Response format:
+```
+{
+  $CODE1: {deck_info resource},
+  $CODE2: {deck_info resource},
+  ...
+}
+```
+The root keys are always the requested deckcode, not the canonical code found in the deck info resource. 
+Undecodable deckcodes are ignored 
+
+example POST "/api/deck-info"
+Request Body
+```json
+{
+    "decks": [
+        "AAEBAdH6AwLN9AKG+gMOlQGUA74Gnv0CvYUDtJcD2qUD8NQDqt4D1vUD+rQE9NAFwJ4G5p4GAAA=",
+        "This will be skipped",
+        "### Multiline deckcode\nAAEBAa0GHOUEiA76DrW7ApO6A9fOA7TRA/jjA5HkA/voA9TtA62KBISfBISjBImjBIqjBIujBOWwBMeyBPTTBPXTBJrUBPrbBLjcBIaDBeKkBbvHBfv4BQH28AQA\n"
+    ]
+}
+```
+Response Body
+```json
+{
+    "### Multiline deckcode\nAAEBAa0GHOUEiA76DrW7ApO6A9fOA7TRA/jjA5HkA/voA9TtA62KBISfBISjBImjBIqjBIujBOWwBMeyBPTTBPXTBJrUBPrbBLjcBIaDBeKkBbvHBfv4BQH28AQA\n": {
+        "archetype": null,
+        "deckcode": "AAEBAa0GHOUEiA76DrW7ApO6A9fOA7TRA/jjA5HkA/voA9TtA62KBISfBISjBImjBIqjBIujBOWwBMeyBPTTBPXTBJrUBPrbBLjcBIaDBeKkBbvHBfv4BQH28AQA",
+        "name": "Priest"
+    },
+    "AAEBAdH6AwLN9AKG+gMOlQGUA74Gnv0CvYUDtJcD2qUD8NQDqt4D1vUD+rQE9NAFwJ4G5p4GAAA=": {
+        "archetype": "Even Shaman",
+        "deckcode": "AAEBAaoIAs30Aob6Aw6VAZQDvgae/QK9hQO0lwPapQPw1AOq3gPW9QP6tAT00AXAngbmngYA",
+        "name": "Even Shaman"
+    }
+}```
+
+Note how the order is not preserved. Also to reiterate that the deckcode that is the root key for the shaman deck is the one that is requested, not the one returned in the deck info resource since the canonical deckcode is different
+
+
+### Graphql
 Graphql api is available at /api/graphql
 
 GraphiQL playground should be available at /graphiql
