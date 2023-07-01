@@ -6,7 +6,8 @@ defmodule BackendWeb.DeckTrackerControllerTest do
 
   def valid_fs_request() do
     game_id = Ecto.UUID.generate()
-     request  = %{
+
+    request = %{
       "player" => %{
         "battletag" => "D0nkey#2470",
         "rank" => 51,
@@ -24,12 +25,14 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       "format" => 2,
       "region" => "KR"
     }
+
     {game_id, request}
   end
 
   def valid_hdt_request(attrs \\ %{}) do
     game_id = Ecto.UUID.generate()
     version = Ecto.UUID.generate()
+
     request = %{
       "Duration" => 9,
       "Format" => 2,
@@ -46,7 +49,8 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       "Player" => %{
         "Battletag" => "D0nkey#2470",
         "Class" => "Priest",
-        "Deckcode" => "AAECAa0GHh6XAskGigf2B9MK65sD/KMDmakDn6kD8qwDha0DgbEDjrEDkbEDk7oDm7oDr7oDyL4DyMAD3swDlc0Dy80D184D49ED+9ED/tEDndgD4t4D+OMDAAA=",
+        "Deckcode" =>
+          "AAECAa0GHh6XAskGigf2B9MK65sD/KMDmakDn6kD8qwDha0DgbEDjrEDkbEDk7oDm7oDr7oDyL4DyMAD3swDlc0Dy80D184D49ED+9ED/tEDndgD4t4D+OMDAAA=",
         "LegendRank" => 0,
         "Rank" => 0
       },
@@ -56,6 +60,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       "Coin" => true,
       "Turns" => 0
     }
+
     %{
       game_id: game_id,
       request: request,
@@ -73,34 +78,47 @@ defmodule BackendWeb.DeckTrackerControllerTest do
     test "create new game", %{conn: conn} do
       {game_id, request} = valid_fs_request()
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
-      assert text_response(conn, 200) =~ "Success"
+      assert json_response(conn, 200)
       assert %{game_id: ^game_id} = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
     end
 
     test "create hdt game", %{conn: conn} do
       %{
         game_id: game_id,
-        request: request,
+        request: request
       } = valid_hdt_request()
+
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
-      assert text_response(conn, 200) =~ "Success"
+
+      assert %{
+               "player_deck" => %{
+                 "archetype" => "Highlander Priest",
+                 "name" => "Highlander Priest"
+               }
+             } = json_response(conn, 200)
+
       coin = request["Coin"]
-      assert %{game_id: ^game_id, player_has_coin: ^coin} = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
+
+      assert %{game_id: ^game_id, player_has_coin: ^coin} =
+               Hearthstone.DeckTracker.get_game_by_game_id(game_id)
     end
 
     test "same game with different id isn't duplicated", %{conn: conn} do
       %{
         game_id: first_game_id,
-        request: first_request,
+        request: first_request
       } = valid_hdt_request()
+
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), first_request)
-      assert text_response(conn, 200) =~ "Success"
-      assert %{game_id: ^first_game_id} = Hearthstone.DeckTracker.get_game_by_game_id(first_game_id)
+      assert json_response(conn, 200)
+
+      assert %{game_id: ^first_game_id} =
+               Hearthstone.DeckTracker.get_game_by_game_id(first_game_id)
 
       second_game_id = Ecto.UUID.generate()
       second_request = Map.put(first_request, "GameId", second_game_id)
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), second_request)
-      assert text_response(conn, 200) =~ "Success"
+      assert json_response(conn, 200)
       refute Hearthstone.DeckTracker.get_game_by_game_id(second_game_id)
     end
 
@@ -110,13 +128,16 @@ defmodule BackendWeb.DeckTrackerControllerTest do
         request: request,
         source_version: source_version
       } = valid_hdt_request()
+
       refute Hearthstone.DeckTracker.get_source(request["Source"], request["SourceVersion"])
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
-      assert text_response(conn, 200) =~ "Success"
-      assert %{version: ^source_version} = Hearthstone.DeckTracker.get_source(request["Source"], request["SourceVersion"])
-      assert %{source: %{version: ^source_version}} = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
+      assert json_response(conn, 200)
+
+      assert %{version: ^source_version} =
+               Hearthstone.DeckTracker.get_source(request["Source"], request["SourceVersion"])
+
+      assert %{source: %{version: ^source_version}} =
+               Hearthstone.DeckTracker.get_game_by_game_id(game_id)
     end
-
   end
-
 end

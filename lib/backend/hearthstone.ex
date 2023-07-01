@@ -35,9 +35,10 @@ defmodule Backend.Hearthstone do
 
   def standard_card_sets() do
     query =
-      from sg in SetGroup,
+      from(sg in SetGroup,
         where: sg.slug == "standard",
         select: sg.card_sets
+      )
 
     Repo.one(query) || []
   end
@@ -141,7 +142,7 @@ defmodule Backend.Hearthstone do
     # they want to get inserted again
     # so we fetch first instead
     ids = Enum.map(cards, & &1.id)
-    existing_query = from c in Card, preload: [:classes, :keywords], where: c.id in ^ids
+    existing_query = from(c in Card, preload: [:classes, :keywords], where: c.id in ^ids)
     existing = Repo.all(existing_query)
     existing_ids = Enum.map(existing, & &1.id)
     new = Enum.reject(cards, &(&1.id in existing_ids))
@@ -179,8 +180,8 @@ defmodule Backend.Hearthstone do
   defp add_card_assocs(changeset, %ApiCard{} = api_card) do
     keyword_ids = api_card.keyword_ids
     class_ids = ApiCard.class_ids(api_card)
-    keyword_query = from k in Keyword, where: k.id in ^keyword_ids
-    class_query = from c in Class, where: c.id in ^class_ids
+    keyword_query = from(k in Keyword, where: k.id in ^keyword_ids)
+    class_query = from(c in Class, where: c.id in ^class_ids)
     keywords = Repo.all(keyword_query)
     classes = Repo.all(class_query)
 
@@ -209,9 +210,10 @@ defmodule Backend.Hearthstone do
 
       _ ->
         query =
-          from d in Deck,
+          from(d in Deck,
             where: d.deckcode == ^id_or_deckcode,
             limit: 1
+          )
 
         Repo.one(query)
     end
@@ -285,9 +287,10 @@ defmodule Backend.Hearthstone do
     cutoff = NaiveDateTime.utc_now() |> NaiveDateTime.add(-1 * 60 * min_ago)
 
     query =
-      from d in Deck,
+      from(d in Deck,
         where: fragment("? && ?", d.cards, ^containing_card_ids),
         where: d.id > ^min_id and d.inserted_at >= ^cutoff
+      )
 
     query
     |> add_limit(limit)
@@ -338,8 +341,9 @@ defmodule Backend.Hearthstone do
   end
 
   def false_neutral_deckcodes() do
-    from d in Deck,
+    from(d in Deck,
       where: like(d.deckcode, "AAECAdrLAg%") or d.class == "NEUTRAL"
+    )
   end
 
   @spec recalculate_archetypes(Integer.t() | String.t()) :: {:ok, any()} | {:error, any()}
@@ -360,13 +364,14 @@ defmodule Backend.Hearthstone do
 
   defp do_recalculate_archetypes(cutoff, min_id) do
     query =
-      from d in Deck,
+      from(d in Deck,
         distinct: d.id,
         left_join: dtg in Hearthstone.DeckTracker.Game,
         on: dtg.player_deck_id == d.id,
         order_by: [asc: :id],
         limit: 100,
         where: d.id > ^min_id and (d.inserted_at >= ^cutoff or dtg.inserted_at >= ^cutoff)
+      )
 
     case Repo.all(query) do
       [] ->
@@ -592,22 +597,24 @@ defmodule Backend.Hearthstone do
 
   def lineup(%{tournament_id: tournament_id, tournament_source: tournament_source, name: name}) do
     query =
-      from l in Lineup,
+      from(l in Lineup,
         where:
           l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source and
             l.name == ^name,
         preload: [:decks],
         select: l
+      )
 
     Repo.one(query)
   end
 
   def lineup(id) do
     query =
-      from l in Lineup,
+      from(l in Lineup,
         select: l,
         preload: [:decks],
         where: l.id == ^id
+      )
 
     Repo.one(query)
   end
@@ -631,19 +638,21 @@ defmodule Backend.Hearthstone do
 
   def has_lineups?(tournament_id, tournament_source) do
     query =
-      from l in Lineup,
+      from(l in Lineup,
         where: l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source,
         select: 1,
         limit: 1
+      )
 
     !!Repo.one(query)
   end
 
   def get_lineups(tournament_id, tournament_source) do
     query =
-      from l in Lineup,
+      from(l in Lineup,
         where: l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source,
         select: l
+      )
 
     query
     |> Repo.all()
@@ -660,9 +669,10 @@ defmodule Backend.Hearthstone do
 
   def similar_cards(search) do
     query =
-      from c in Card,
+      from(c in Card,
         order_by: [desc: fragment("similarity(?, ?)", c.name, ^search)],
         limit: 7
+      )
 
     query
     |> preload_cards()
@@ -721,9 +731,10 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"format", _}, query), do: query
 
   def set_group_sets_query(slug) do
-    from sg in SetGroup,
+    from(sg in SetGroup,
       where: sg.slug == ^slug,
       select: fragment("UNNEST(?)", sg.card_sets)
+    )
   end
 
   defp base_cards_query() do
@@ -754,10 +765,11 @@ defmodule Backend.Hearthstone do
   end
 
   defp base_lineups_query() do
-    from l in Lineup,
+    from(l in Lineup,
       as: :lineup,
       join: ld in assoc(l, :decks),
       preload: [decks: ld]
+    )
   end
 
   defp build_lineups_query(query, criteria),
@@ -796,11 +808,12 @@ defmodule Backend.Hearthstone do
 
   defp lineup_deck_subquery(criteria, query) do
     base_query =
-      from ld in LineupDeck,
+      from(ld in LineupDeck,
         as: :lineup_deck,
         join: d in assoc(ld, :deck),
         as: :deck,
         select: ld.lineup_id
+      )
 
     sub_query = criteria |> Enum.reduce(base_query, &compose_decks_query/2)
     query |> where([lineup: l], l.id in subquery(sub_query))
@@ -808,21 +821,23 @@ defmodule Backend.Hearthstone do
 
   def get_tournament_ids_for_source(source) do
     query =
-      from l in Lineup,
+      from(l in Lineup,
         select: l.tournament_id,
         where: l.tournament_source == ^source,
         group_by: l.tournament_id
+      )
 
     Repo.all(query)
   end
 
   def get_latest_tournament_id_for_source(source) do
     query =
-      from l in Lineup,
+      from(l in Lineup,
         where: l.tournament_source == ^source,
         order_by: [desc: l.inserted_at],
         select: l.tournament_id,
         limit: 1
+      )
 
     Repo.one(query)
   end
@@ -867,5 +882,15 @@ defmodule Backend.Hearthstone do
         Logger.info("Retrying")
         do_update_cards(args, attempt + 1)
     end
+  end
+
+  @type deck_info :: %{archetype: String.t(), deckcode: String.t(), name: String.t()}
+  @spec deck_info(Deck.t()) :: deck_info()
+  def deck_info(deck) do
+    %{
+      archetype: Deck.archetype(deck),
+      deckcode: Deck.deckcode(deck),
+      name: Deck.name(deck)
+    }
   end
 end

@@ -90,6 +90,7 @@ defmodule Hearthstone.DeckTracker do
     query =
       from(g in Game,
         as: :game,
+        preload: [:player_deck],
         where: g.inserted_at > ago(90, "second")
       )
 
@@ -301,6 +302,7 @@ defmodule Hearthstone.DeckTracker do
     query =
       from(g in Game,
         as: :game,
+        preload: [:player_deck],
         where: g.game_id == ^game_id
       )
 
