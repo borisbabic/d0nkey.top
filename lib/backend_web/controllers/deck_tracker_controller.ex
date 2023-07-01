@@ -6,11 +6,13 @@ defmodule BackendWeb.DeckTrackerController do
   """
 
   require Logger
+  alias Backend.Hearthstone.Deck
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker
 
   defp api_user(%{assigns: %{api_user: api_user}}), do: api_user
   defp api_user(_), do: nil
+
   def put_game(conn, params) do
     api_user = api_user(conn)
 
@@ -18,7 +20,14 @@ defmodule BackendWeb.DeckTrackerController do
     |> GameDto.from_raw_map(api_user)
     |> DeckTracker.handle_game()
     |> case do
-      {:ok, _} ->
+      {:ok, %{player_deck: pd = %{id: _}}} ->
+        conn
+        |> put_status(200)
+        |> json(%{
+          "player_deck" => Backend.Hearthstone.deck_info(pd)
+        })
+
+      {:ok, other} ->
         conn
         |> put_status(200)
         |> text("Success")
