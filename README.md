@@ -44,12 +44,12 @@ You can use the shell.nix provided, possibly in combination with direnv and
 ## API
 ### Resources
 #### Deck Info
-archetype: the deck archetype, without runes or XL
-name: the name. The deck archetype or class with runes and XL
-deckcode: canonical short deckcode used by the site
+`archetype`: the deck archetype, without runes or XL
+`name`: the name. The deck archetype or class with runes and XL
+`deckcode`: canonical short deckcode used by the site
 
+Example:
 ```json
-example
 {
   "archetype": "Control Priest",
   "deckcode": "AAECAa0GCOWwBKi2BJfvBO+RBYakBf3EBc/GBc2eBhCi6AOEnwShtgSktgSWtwT52wS43AS63ASGgwXgpAW7xAW7xwX7+AW4ngbPngbRngYAAQPwnwT9xAXFpQX9xAX++AX9xAUAAA==",
@@ -73,6 +73,9 @@ response
 ```
 
 #### POST "/api/deck-info"
+WARNING: This may currently not work and is considered low priority, if you would like this to be prioritized contact D0nkey, preferrable in their discord https://www.d0nkey.top/discord
+
+
 Batch get deck info
 Request format:
 ```json
@@ -115,7 +118,8 @@ Response Body
         "deckcode": "AAEBAaoIAs30Aob6Aw6VAZQDvgae/QK9hQO0lwPapQPw1AOq3gPW9QP6tAT00AXAngbmngYA",
         "name": "Even Shaman"
     }
-}```
+}
+```
 
 Note how the order is not preserved. Also to reiterate that the deckcode that is the root key for the shaman deck is the one that is requested, not the one returned in the deck info resource since the canonical deckcode is different
 
