@@ -43,6 +43,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
     """
     ### #{deck_name}
     # Cost: #{Deck.cost(d)}
+    # Format: #{Deck.format_name(d.format)}
     #{cards_part}
     #{deckcode}
     # #{link_part}
@@ -60,7 +61,4 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
     "# #{rarity} #{sideboard_prefix}#{freq}x (#{Card.cost(card)}) #{card.name}"
   end
-
-  defp sideboard_prefix(true), do: "  "
-  defp sideboard_prefix(_), do: ""
 end
