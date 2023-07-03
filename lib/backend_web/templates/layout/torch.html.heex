@@ -62,7 +62,7 @@
       </section>
     </header>
 
-    <%= Torch.FlashView.render("_flash_messages.html", assigns) %>
+    <Torch.Component.flash_messages flash={@flash} />
     <%= @inner_content %>
     <script src={"#{ Routes.static_path(@conn, "/torch/torch.js") }"}></script>
   </body>

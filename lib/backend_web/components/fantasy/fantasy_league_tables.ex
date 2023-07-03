@@ -44,6 +44,6 @@ defmodule Components.FantasyLeaguesTable do
   end
 
   def update_leagues(id, leagues) do
-    send_update(__MODULE__, id: id, leagues: leagues)
+    Phoenix.Component.send_update(__MODULE__, id: id, leagues: leagues)
   end
 end

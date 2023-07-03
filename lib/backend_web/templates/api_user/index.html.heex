@@ -60,7 +60,7 @@
           <% end %>
         </tbody>
       </table>
-      <%= render Torch.PaginationView, "_pagination.html", assigns %>
+      <%= Torch.PaginationView.pagination(@conn) %>
     <% else %>
       <p class="torch-no-data">No Api users match your search.</p>
     <% end %>

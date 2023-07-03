@@ -5,6 +5,7 @@ defmodule BackendWeb.StreamingView do
   alias Backend.Streaming.StreamerDeck
   alias Hearthstone.Enums.Format
   alias BackendWeb.ViewUtil
+  import Phoenix.Component, only: [live_render: 3]
 
   def twitch_link(streamer) do
     twitch_link(Streamer.twitch_login(streamer), Streamer.twitch_display(streamer))

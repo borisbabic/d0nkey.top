@@ -13,7 +13,7 @@
 
    <div id="burger-toggle" class="navbar-menu">
      <div class="navbar-start">
-        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" x-bind:class="{'is-active': open}">
           <%= if @user do %>
             <div @mouseover="open=true" class="navbar-link"><%= @user %></div>
           <% else %>
@@ -56,7 +56,7 @@
             <% end %>
           </div>
         </div>
-        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" x-bind:class="{'is-active': open}">
          <a @mouseover="open=true" class="navbar-item navbar-link" href={"#{Routes.leaderboard_path(@conn, :index)}"}>Leaderboard</a>
 
          <div class="navbar-dropdown">
@@ -71,7 +71,7 @@
        </div>
         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
         <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
-       <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" :class="{'is-active': open}">
+       <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" x-bind:class="{'is-active': open}">
          <div @mouseover="open=true" class="navbar-link">
            Misc
          </div>
