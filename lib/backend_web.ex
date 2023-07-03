@@ -37,9 +37,10 @@ defmodule BackendWeb do
       def parse_yes_no("yes", _), do: "yes"
       def parse_yes_no("no", _), do: "no"
       def parse_yes_no(_, default), do: default
+
       def parse(val, options, default) do
         options
-        |> Enum.find(& &1 == val)
+        |> Enum.find(&(&1 == val))
         |> case do
           nil -> default
           v -> v
@@ -61,11 +62,13 @@ defmodule BackendWeb do
       import Phoenix.Controller,
         only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
 
+      # , only: [live_render: 3, form: 1]
+      import Phoenix.Component
+
       unquote(view_helpers())
       use PhoenixMetaTags.TagView
     end
   end
-
 
   def surface_live_view do
     quote do
@@ -75,6 +78,7 @@ defmodule BackendWeb do
       unquote(surface())
     end
   end
+
   def surface_live_view_no_layout do
     quote do
       use Surface.LiveView
@@ -90,6 +94,7 @@ defmodule BackendWeb do
       unquote(surface())
     end
   end
+
   def surface_component do
     quote do
       use Surface.Component
@@ -157,7 +162,6 @@ defmodule BackendWeb do
       use BackendWeb.ViewHelpers
     end
   end
-
 
   @doc """
   When used, dispatch to the appropriate controller/view/etc.

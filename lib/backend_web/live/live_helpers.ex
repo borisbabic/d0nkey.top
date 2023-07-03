@@ -1,5 +1,6 @@
 defmodule BackendWeb.LiveHelpers do
   import Phoenix.LiveView
+  import Phoenix.Component, only: [assign: 3]
 
   def assign_defaults(socket, session) do
     user = load_user(session)
