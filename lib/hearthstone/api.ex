@@ -13,6 +13,7 @@ defmodule Hearthstone.Api do
   }
 
   @default_locale "en_US"
+  @default_page_size 420_069
   @base_url "https://eu.api.blizzard.com/hearthstone"
 
   @spec get_metadata(String.t()) :: {:ok, Metadata.t()} | {:error, any()}
@@ -32,7 +33,9 @@ defmodule Hearthstone.Api do
   end
 
   @spec get_cards(Map.t()) :: {:ok, Cards.t()} | {:error, any()}
-  def get_cards(opts \\ %{collectible: "0,1", locale: @default_locale}) do
+  def get_cards(
+        opts \\ %{collectible: "0,1", locale: @default_locale, pageSize: @default_page_size}
+      ) do
     query = URI.encode_query(opts)
     url = "#{@base_url}/cards?#{query}"
 
@@ -58,7 +61,9 @@ defmodule Hearthstone.Api do
   end
 
   @spec get_all_cards(Map.t()) :: {:ok, [Hearthstone.Card.t()]} | {:error, any()}
-  def get_all_cards(opts \\ %{}) do
+  def get_all_cards(
+        opts \\ %{collectible: "1", locale: @default_locale, pageSize: @default_page_size}
+      ) do
     do_get_all_cards(opts, nil, [])
   end
 
@@ -68,6 +73,7 @@ defmodule Hearthstone.Api do
 
   defp do_get_all_cards(opts, prev_response, carry) do
     with {:ok, response = %{cards: cards}} <- next_page(prev_response, opts) do
+      Process.sleep(1000)
       do_get_all_cards(opts, response, cards ++ carry)
     end
   end

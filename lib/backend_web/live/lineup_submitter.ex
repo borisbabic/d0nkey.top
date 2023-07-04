@@ -50,7 +50,7 @@ defmodule BackendWeb.LineupSubmitterLive do
   def allowed(_), do: false
 
   def handle_event("submit", %{"new_round" => attrs_raw}, socket) do
-    csv_url = url(attrs_raw)
+    csv_url = csv_url(attrs_raw)
     ignore_columns = Util.to_int(attrs_raw["ignore_columns"], 1)
 
     Command.ImportLineups.import_from_csv_url(
@@ -64,7 +64,7 @@ defmodule BackendWeb.LineupSubmitterLive do
     {:noreply, socket}
   end
 
-  def url(attrs = %{"sheet_id" => sheet_id}) do
+  def csv_url(attrs = %{"sheet_id" => sheet_id}) do
     "https://docs.google.com/spreadsheets/d/#{sheet_id}/export?format=csv"
     |> append_gid(attrs)
   end

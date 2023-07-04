@@ -107,6 +107,7 @@ defmodule BackendWeb do
     quote do
       alias BackendWeb.Router.Helpers, as: Routes
       import BackendWeb.LiveHelpers
+      use Phoenix.VerifiedRoutes, router: BackendWeb.Router, endpoint: BackendWeb.Endpoint
       unquote(view_helpers())
 
       defp put_user_in_context(%{assigns: %{user: user}} = socket) do

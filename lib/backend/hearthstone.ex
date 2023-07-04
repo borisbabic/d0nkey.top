@@ -571,6 +571,10 @@ defmodule Backend.Hearthstone do
   defp cost_for_sort(%{cost: cost}), do: cost
   defp cost_for_sort(_), do: nil
 
+  @doc """
+  Gets a card with the dbfId `dbf_id` from the official api cache. 
+  Fallbacks to HSJson card
+  """
   @spec get_card(integer) :: card() | nil
   def get_card(dbf_id) do
     with nil <- CardBag.card(dbf_id) do
@@ -679,6 +683,29 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
+  @doc """
+  Gets a the card with the dbfId `card_id` from the database (ie official api)
+  """
+  @spec card(integer() | String.t()) :: Card.t() | nil
+  def card(card_id) do
+    query = from(c in Card, where: c.id == ^card_id)
+
+    query
+    |> preload_cards()
+    |> Repo.one()
+  end
+
+  @spec child_cards(Card.t()) :: [Card.t()]
+  def child_cards(%{child_ids: no_children}) when no_children in [[], nil], do: []
+
+  def child_cards(%{child_ids: ids}) do
+    query = from(c in Card, where: c.id in ^ids)
+
+    query
+    |> preload_cards()
+    |> Repo.all()
+  end
+
   def cards(criteria) do
     base_cards_query()
     |> build_cards_query(criteria)
@@ -688,12 +715,17 @@ defmodule Backend.Hearthstone do
   defp build_cards_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_cards_query/2)
 
+  defp compose_cards_query({"order_by", "latest"}, query) do
+    query
+    |> order_by([card: c], desc: c.inserted_at)
+  end
+
   defp compose_cards_query({"order_by", "name_similarity_" <> search_target}, query) do
     query
     |> order_by([card: c], desc: fragment("similarity(?, ?)", c.name, ^search_target))
   end
 
-  defp compose_cards_query({"limit", limit}, query), do: limit(query, ^limit)
+  defp compose_cards_query({"fake_limit", limit}, query), do: limit(query, ^limit)
 
   defp compose_cards_query({"collectible", collectible}, query) when is_boolean(collectible),
     do: query |> where([card: c], c.collectible == ^collectible)
@@ -753,9 +785,17 @@ defmodule Backend.Hearthstone do
       left_join: r in assoc(c, :rarity),
       as: :rarity,
       left_join: ss in assoc(c, :spell_school),
-      as: :spell_school
+      as: :spell_school,
+      # preload like this to avoid an extra query and also so that ecto deduplicates many_to_many caused duplication
+      preload: [
+        card_set: cs,
+        card_type: ct,
+        keywords: k,
+        classes: cl,
+        minion_type: mt,
+        spell_school: ss
+      ]
     )
-    |> preload_cards()
   end
 
   def lineups(criteria) do
@@ -859,9 +899,16 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  @spec update_collectible_cards() :: any()
-  def update_collectible_cards() do
-    do_update_cards(%{collectible: "1", locale: "en_US"})
+  @spec update_collectible_cards(Map.t()) :: any()
+  def update_collectible_cards(additional_args \\ %{}) do
+    args = Map.merge(%{collectible: "1", locale: "en_US", pageSize: 420_069}, additional_args)
+    do_update_cards(args)
+  end
+
+  @spec update_all_cards(Map.t()) :: any()
+  def update_all_cards(additional_args \\ %{}) do
+    args = Map.merge(%{collectible: "0,1", locale: "en_US", pageSize: 420_069}, additional_args)
+    do_update_cards(args)
   end
 
   defp do_update_cards(args, attempt \\ 1)

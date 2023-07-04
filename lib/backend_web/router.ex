@@ -189,6 +189,10 @@ defmodule BackendWeb.Router do
     get("/streamer-instructions", StreamingController, :streamer_instructions)
     live("/streaming-now", StreamingNowLive)
     live("/youtube/bnet-chat/:video_id", YoutubeChatLive)
+
+    live("/cards", CardsLive)
+    live("/card/:card_id", CardLive)
+
     live("/deckviewer", DeckviewerLive)
     live("/decks", DecksLive)
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)

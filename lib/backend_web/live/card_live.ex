@@ -1,0 +1,56 @@
+defmodule BackendWeb.CardLive do
+  @moduledoc false
+  use BackendWeb, :surface_live_view
+  alias Components.Card
+  alias Components.CardInfo
+  alias Backend.Hearthstone
+
+  data(user, :any)
+  data(card_id, :any)
+  data(card, :any)
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_meta()}
+
+  def handle_params(%{"card_id" => card_id}, _session, socket) do
+    card = Hearthstone.card(card_id)
+
+    {
+      :noreply,
+      socket
+      |> assign(card: card, card_id: card_id)
+    }
+  end
+
+  def render(%{card: nil} = assigns) do
+    ~F"""
+    <div class="title is-3">
+      Oops! No card found for {@card_id}, did you tamper with the url? Or copy it partially?
+    </div>
+    """
+  end
+
+  def render(assigns) do
+    ~F"""
+      <div>
+        <Card id={"card_#{@card.id}"} card={@card} />
+        <br>
+        <Card :for={child <- Hearthstone.child_cards(@card)} id={"card_#{child.id}"} card={child} />
+        <CardInfo id={"card_info_{@card.id}"} card={@card}/>
+      </div>
+    """
+  end
+
+  def assign_meta(socket = %{assigns: %{card: card = %{name: name}}}) do
+    socket
+    |> assign_meta_tags(%{
+      title: name |> add_card_set(card),
+      description: Map.get(card, :flavor_text)
+    })
+  end
+
+  def assign_meta(socket), do: socket
+
+  defp add_card_set(base, %{card_set: %{name: name}}), do: "#{base} #{name}"
+  defp add_card_set(base, _), do: base
+end
