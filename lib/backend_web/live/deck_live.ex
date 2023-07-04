@@ -127,8 +127,8 @@ defmodule BackendWeb.DeckLive do
   def assign_meta(socket = %{assigns: %{deck: deck = %{id: _id}}}) do
     socket
     |> assign_meta_tags(%{
-      description: deck |> Deck.deckcode(),
-      title: deck.class |> Deck.class_name()
+      description: Deck.deckcode(deck),
+      title: Deck.name(deck)
     })
   end
 
