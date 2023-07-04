@@ -10,12 +10,12 @@ defmodule BackendWeb.TournamentLineups do
   def mount(_params, session, socket) do
     {:ok,
      socket
-     |> assign_defaults(session)}
+     |> assign_defaults(session)
+     |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context  put={user: @user}>
       <div>
         <div :if={lineups = Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
           <div>
@@ -25,7 +25,6 @@ defmodule BackendWeb.TournamentLineups do
           </div>
         </div>
       </div>
-    </Context>
     """
   end
 

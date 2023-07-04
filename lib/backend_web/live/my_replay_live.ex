@@ -7,7 +7,9 @@ defmodule BackendWeb.MyReplaysLive do
 
   data(user, :any)
   data(filters, :map)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     # filters
@@ -16,7 +18,6 @@ defmodule BackendWeb.MyReplaysLive do
     # player rank
     # region
     ~F"""
-    <Context put={user: @user}>
       <div>
         <div class="title is-2">My Replays</div>
         <div class="subtitle is-6">
@@ -33,7 +34,6 @@ defmodule BackendWeb.MyReplaysLive do
           extra_period_options={[{"all", "All time"}, {"past_60_days", "Past 60 Days"}]}
         />
       </div>
-    </Context>
     """
   end
 

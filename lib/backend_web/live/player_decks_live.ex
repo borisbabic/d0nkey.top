@@ -7,11 +7,12 @@ defmodule BackendWeb.PlayerDecksLive do
   data(user, :any)
   data(player_btag, :any)
   data(filters, :map)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2">{@player_btag}'s Decks</div>
         <div class="subtitle is-6">
@@ -30,7 +31,6 @@ defmodule BackendWeb.PlayerDecksLive do
           path_params={@player_btag}
           params={@filters}/>
       </div>
-    </Context>
     """
   end
 

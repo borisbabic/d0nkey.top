@@ -14,7 +14,11 @@ defmodule BackendWeb.StreamingNowLive do
   def mount(_params, session, socket) do
     streaming_now = Backend.Streaming.StreamingNow.streaming_now()
     subscribe_to_messages()
-    {:ok, assign(socket, streaming_now: streaming_now) |> assign_defaults(session)}
+
+    {:ok,
+     assign(socket, streaming_now: streaming_now)
+     |> assign_defaults(session)
+     |> put_user_in_context()}
   end
 
   def handle_params(params, _uri, socket) do
@@ -31,7 +35,6 @@ defmodule BackendWeb.StreamingNowLive do
     instructions_link = Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)
 
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2">Streaming Now</div>
         <div class="subtitle is-6"><a href={"#{instructions_link}"}>Instructions for streamers</a></div>
@@ -125,7 +128,6 @@ defmodule BackendWeb.StreamingNowLive do
           </div>
         </div>
       </div>
-    </Context>
     """
   end
 

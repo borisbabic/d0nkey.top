@@ -1,7 +1,6 @@
 defmodule Components.Decklist do
   @moduledoc false
   use Surface.Component
-  alias Hearthstone.Card.RuneCost
   alias Components.CardsList
   alias Components.DustBar
   alias Backend.Hearthstone.Deck
@@ -16,6 +15,7 @@ defmodule Components.Decklist do
   prop(comparison, :any, required: false)
   prop(highlight_rotation, :boolean, default: false)
   prop(show_hero, :any, default: true)
+  prop(user, :map, from_context: :user)
   slot(right_button)
 
   @spec deck_name(Deck.t(), String.t() | nil, boolean) :: String.t()
@@ -33,6 +33,7 @@ defmodule Components.Decklist do
 
     deck_class = Deck.class(deck)
     class_class = deck_class |> String.downcase()
+    IO.inspect(assigns.user, label: :user)
 
     ~F"""
       <div>
@@ -55,13 +56,9 @@ defmodule Components.Decklist do
               </div>
           </div>
           <div :if={@show_cards}>
-            <Context get={user: user}>
-              <Context put={user: user}>
-                <DustBar :if={show_above(user)} deck={@deck} class={class_class}/>
-                <CardsList comparison={@comparison} sideboard={@deck.sideboards} deck={@deck} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
-                <DustBar :if={show_below(user)} deck={@deck} class={class_class} />
-              </Context>
-            </Context>
+            <DustBar :if={show_above(@user)} deck={@deck} class={class_class}/>
+            <CardsList comparison={@comparison} sideboard={@deck.sideboards} deck={@deck} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
+            <DustBar :if={show_below(@user)} deck={@deck} class={class_class} />
 
           </div>
           <span style="font-size: 0; line-size:0; display:block">

@@ -3,7 +3,6 @@ defmodule Components.GroupModal do
 
   require Logger
 
-
   prop(group, :map, default: %Backend.UserManager.Group{})
   prop(show_modal, :boolean, default: false)
   prop(show_success, :boolean, default: false)
@@ -12,6 +11,7 @@ defmodule Components.GroupModal do
   prop(error_message, :string, default: "Error")
   prop(cancel_button_message, :string, default: "Cancel")
   prop(current_params, :map, default: %{})
+  prop(user, :map, from_context: :user)
 
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
@@ -51,9 +51,7 @@ defmodule Components.GroupModal do
                   <button class="button" type="button" :on-click="regenerate_join_code">Regenerate</button>
                 </Field>
                 <Field name="owner_id">
-                  <Context get={user: user}>
-                    <HiddenInput value={user.id}/>
-                  </Context>
+                  <HiddenInput value={@user.id}/>
                 </Field>
               </section>
               <footer class="modal-card-foot">
@@ -68,7 +66,6 @@ defmodule Components.GroupModal do
     </div>
     """
   end
-
 
   def handle_event("show_modal", _, socket) do
     {:noreply, socket |> assign(show_modal: true) |> assign(@message_reset_assigns)}
@@ -102,6 +99,7 @@ defmodule Components.GroupModal do
   def handle_event("change", params, socket) do
     {:noreply, socket |> assign_temp_vals(params)}
   end
+
   def handle_event("regenerate_join_code", _, socket = %{assigns: %{group: group}}) do
     new_group = group |> Map.put(:join_code, Ecto.UUID.generate())
 
@@ -113,7 +111,7 @@ defmodule Components.GroupModal do
 
   defp assign_temp_vals(socket, %{"group" => params}) do
     socket
-    |> assign([current_params: params])
+    |> assign(current_params: params)
   end
 
   def button_title(%{id: id}) when not is_nil(id), do: "Edit Group"

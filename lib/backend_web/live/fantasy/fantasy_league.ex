@@ -10,18 +10,16 @@ defmodule BackendWeb.FantasyLeagueLive do
   data(league, :any)
 
   def mount(params, session, s) do
-    socket = s |> assign_defaults(session) |> assign_league(params)
+    socket = s |> assign_defaults(session) |> assign_league(params |> put_user_in_context())
     BackendWeb.Endpoint.subscribe("entity_leagues_#{socket.assigns.league_id}")
     {:ok, socket}
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <FantasyLeague id={"fantasy_league_#{@league_id}"} league={@league} />
       </div>
-    </Context>
     """
   end
 

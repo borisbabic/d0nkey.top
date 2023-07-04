@@ -9,11 +9,12 @@ defmodule BackendWeb.DeckSheetsIndexLive do
   alias Components.DeleteModal
 
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-      <Context put={user: @user} >
         <div>
           <div class="title is-1">Deck Sheets</div>
           <DeckSheetsModal id="new_modal" user={@user}/>
@@ -29,7 +30,6 @@ defmodule BackendWeb.DeckSheetsIndexLive do
             </div>
           </Column>
         </Table>
-      </Context>
     """
   end
 

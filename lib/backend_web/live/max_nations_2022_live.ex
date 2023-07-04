@@ -10,11 +10,12 @@ defmodule BackendWeb.MaxNations2022Live do
 
   data(week, :string)
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2">Max League of Nations 2022</div>
         <div class="subtitle is-2">
@@ -34,7 +35,6 @@ defmodule BackendWeb.MaxNations2022Live do
               </:lineup_name>
           </TournamentLineupExplorer>
       </div>
-    </Context>
     """
   end
 

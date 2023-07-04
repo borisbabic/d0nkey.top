@@ -14,7 +14,7 @@ defmodule BackendWeb.GrandmastersLive do
   data(region, :atom)
 
   def mount(_params, session, socket) do
-    {:ok, assign_defaults(socket, session) |> assign_default_week()}
+    {:ok, assign_defaults(socket, session) |> assign_default_week() |> put_user_in_context()}
   end
 
   defp assign_default_week(socket) do
@@ -24,7 +24,6 @@ defmodule BackendWeb.GrandmastersLive do
 
   def render(assigns) do
     ~F"""
-     <Context put={user: @user}>
       <div>
         <div class="title is-2">
           Grandmasters
@@ -52,7 +51,6 @@ defmodule BackendWeb.GrandmastersLive do
         <GMStandingsTable region={@region} />
         <GMResultsTable week={@week} region={@region} />
       </div>
-    </Context>
     """
   end
 

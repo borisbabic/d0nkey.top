@@ -4,11 +4,12 @@ defmodule BackendWeb.MyGroupsLive do
   alias Components.GroupModal
 
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-    <Context put={user: @user}>
       <div>
         <div class="title is-2">My Groups</div>
         <div class="subtitle is-6">
@@ -35,17 +36,14 @@ defmodule BackendWeb.MyGroupsLive do
           </tr>
         </tbody>
       </table>
-    </Context>
     """
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-3">Please login to access Groups</div>
       </div>
-    </Context>
     """
   end
 

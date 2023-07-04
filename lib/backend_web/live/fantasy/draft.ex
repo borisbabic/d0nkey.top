@@ -18,7 +18,7 @@ defmodule BackendWeb.FantasyDraftLive do
   data(show_draft_picks_table, :boolean)
 
   def mount(params, session, s) do
-    socket = s |> assign_defaults(session) |> assign_league(params)
+    socket = s |> assign_defaults(session) |> assign_league(params |> put_user_in_context())
 
     user = socket.assigns.user
 
@@ -35,7 +35,6 @@ defmodule BackendWeb.FantasyDraftLive do
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2">{@league.name} Draft</div>
         <div class="subtitle is-4">
@@ -76,7 +75,6 @@ defmodule BackendWeb.FantasyDraftLive do
         <DraftPicksTable :if={show_draft_picks_table(@league, @show_draft_picks_table)} id={"draft_picks_table_#{@league.id}"} league={@league} />
         <CompetitorsTable id={"competitors_#{@league.id}"} league={@league} user={@user}/>
       </div>
-    </Context>
     """
   end
 

@@ -7,11 +7,12 @@ defmodule BackendWeb.HCM2022Live do
 
   data(match, :string)
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2">Hearthstone Collegiate Masters</div>
         <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
@@ -26,7 +27,6 @@ defmodule BackendWeb.HCM2022Live do
             </:lineup_name>
         </TournamentLineupExplorer>
       </div>
-    </Context>
     """
   end
 

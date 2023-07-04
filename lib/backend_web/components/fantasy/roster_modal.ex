@@ -12,10 +12,10 @@ defmodule Components.RosterModal do
   prop(round, :number, default: nil)
 
   prop(button_title, :string, default: "View Roster")
+  prop(user, :map, from_context: :user)
 
   def render(assigns) do
     ~F"""
-    <Context get={user: user}>
     <div>
       <button class="button" type="button" :on-click="show_modal">{@button_title}</button>
       <div class="modal is-active" :if={@show_modal}>
@@ -28,7 +28,7 @@ defmodule Components.RosterModal do
             <section class="modal-card-body">
               <div class="content">
                 <ul :for={{pick_name, points} <- picks_with_points(@league_team, @include_points, round(@league_team, @round))}>
-                  <li><span :if={@include_points}>{points} - </span>{show_pick_name(@league_team, user, pick_name, round(@league_team, @round))}</li>
+                  <li><span :if={@include_points}>{points} - </span>{show_pick_name(@league_team, @user, pick_name, round(@league_team, @round))}</li>
                 </ul>
                 <a target="_blank" :if={standings_link = standings_link(@league_team)} class="button is-link " href={"#{standings_link}"}>View in standings</a>
               </div>
@@ -46,7 +46,6 @@ defmodule Components.RosterModal do
           </div>
         </div>
     </div>
-    </Context>
     """
   end
 
@@ -118,7 +117,6 @@ defmodule Components.RosterModal do
     end)
     |> Enum.sort_by(&(&1 |> elem(0)), :desc)
   end
-
 
   def handle_event("inc_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
     do: {:noreply, socket |> assign(round: round(lt, r) + 1)}

@@ -16,14 +16,11 @@ defmodule BackendWeb.BattlefyMatchLive do
   use Components.ExpandableDecklist
 
   def mount(_params, session, socket) do
-    {:ok,
-     socket
-     |> assign_defaults(session)}
+    {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user}>
       <div>
         <div class="title is-2">
           <a href={"#{Battlefy.get_match_url(@tournament, @match)}"}>
@@ -65,7 +62,6 @@ defmodule BackendWeb.BattlefyMatchLive do
           </tbody>
         </table>
       </div>
-    </Context>
     """
   end
 

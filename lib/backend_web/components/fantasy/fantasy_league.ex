@@ -11,20 +11,20 @@ defmodule Components.FantasyLeague do
   use BackendWeb.ViewHelpers
   prop(league, :any)
   prop(round, :any, default: nil)
+  prop(user, :map, from_context: :user)
 
   def render(assigns = %{league: %{id: _}}) do
     ~F"""
       <div>
-        <Context get={user: user} >
           <div class="title is-2">{@league.name} </div>
 
           <div class="level is-mobile ">
             <div class="level-left">
 
-              <div class="level-item" :if={League.can_manage?(@league, user)} >
+              <div class="level-item" :if={League.can_manage?(@league, @user)} >
                   <FantasyModal id={"edit_modal_#{@league.id}"} league={@league} title="Edit League"/>
               </div>
-              <div class="level-item" :if={!League.can_manage?(@league, user)} >
+              <div class="level-item" :if={!League.can_manage?(@league, @user)} >
                   <LeagueInfoModal id={"league_info_modal_#{@league.id}"} league={@league}/>
               </div>
 
@@ -41,7 +41,7 @@ defmodule Components.FantasyLeague do
                 <a class="is-link button"  href={"/fantasy/leagues/#{@league.id}/draft"}>{draft_title(@league)}</a>
               </div>
 
-              <div class="level-item" :if={League.can_manage?(@league, user)} >
+              <div class="level-item" :if={League.can_manage?(@league, @user)} >
                 <a class="is-link button"  href={"/fantasy/leagues/join/#{@league.join_code}"}>Join Link</a>
               </div>
 
@@ -60,7 +60,7 @@ defmodule Components.FantasyLeague do
               <td>{lt |> LeagueTeam.display_name()}</td>
               <td>{points}</td>
               <td>
-                <button  :if={can_remove?(@league, user, lt)} class="button" type="button" :on-click="remove_league_team" phx-value-id={"#{lt.id}"}>Remove</button>
+                <button  :if={can_remove?(@league, @user, lt)} class="button" type="button" :on-click="remove_league_team" phx-value-id={"#{lt.id}"}>Remove</button>
                 <RosterModal id={"roster_modal_#{lt.id}"} league_team={lt} />
               </td>
             </tr>
@@ -68,7 +68,6 @@ defmodule Components.FantasyLeague do
             </tbody>
           </table>
 
-        </Context>
       </div>
     """
   end
@@ -78,7 +77,6 @@ defmodule Components.FantasyLeague do
     <div class="title is-2">League not found</div>
     """
   end
-
 
   def draft_title(%{real_time_draft: true}), do: "View Draft"
   def draft_title(%{real_time_draft: false}), do: "Manage Roster"

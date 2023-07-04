@@ -7,11 +7,12 @@ defmodule BackendWeb.GroupDecksLive do
   data(user, :any)
   data(group_id, :any)
   data(filters, :map)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div :if={({group, membership} = BackendWeb.GroupLive.group_membership(@group_id, @user)) && group && membership}>
         <div class="title is-2">{group.name} Decks</div>
         <div class="subtitle is-6">
@@ -30,7 +31,6 @@ defmodule BackendWeb.GroupDecksLive do
           path_params={@group_id}
           params={@filters}/>
       </div>
-    </Context>
     """
   end
 

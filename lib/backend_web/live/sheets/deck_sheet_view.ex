@@ -23,12 +23,11 @@ defmodule BackendWeb.DeckSheetViewLive do
   data(view_mode, :string, default: "sheet")
 
   def mount(params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> assign_sheet(params)}
+    do: {:ok, socket |> assign_defaults(session) |> assign_sheet(params) |> put_user_in_context()}
 
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{sheet: %{}}) do
     ~F"""
-      <Context put={user: @user}>
         {#if Sheets.can_view?(@sheet, @user)}
           <div class="title is-1">{@sheet.name}</div>
           <div class="subtitle is-5">Owner: {User.display_name(@sheet.owner)}</div>
@@ -87,7 +86,6 @@ defmodule BackendWeb.DeckSheetViewLive do
         {#else}
           <span>Can't view sheet, insufficient permissions</span>
         {/if}
-      </Context>
     """
   end
 

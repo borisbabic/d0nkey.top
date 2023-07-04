@@ -20,7 +20,7 @@ defmodule Components.CompetitorsTable do
   prop(league, :map)
   prop(participants, :list, default: [])
   prop(search, :any, default: nil)
-  prop(user, :any)
+  prop(user, :map, from_context: :user)
   prop(mt_stats, :map, default: nil)
 
   def update(assigns, socket) do
@@ -45,9 +45,7 @@ defmodule Components.CompetitorsTable do
               <PlayerName player={participant.name}/>
             {#elseif card?(participant)}
               <div class="decklist_card_container">
-                <Context get={user: user}>
-                  <Components.DecklistCard card={participant.meta.card} deck_class={"NEUTRAL"} count={card_points(participant.meta.card, @league)} decklist_options={decklist_options(user)}/>
-                </Context>
+                <Components.DecklistCard card={participant.meta.card} deck_class={"NEUTRAL"} count={card_points(participant.meta.card, @league)} decklist_options={decklist_options(@user)}/>
               </div>
             {#else}
               <span>{participant.name}</span>

@@ -8,13 +8,14 @@ defmodule BackendWeb.FeedLive do
   use BackendWeb, :surface_live_view
 
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     items = FeedBag.get_current_items()
 
     ~F"""
-    <Context put={user: @user} >
       <div>
         <br>
         <div class="level is-mobile">
@@ -40,7 +41,6 @@ defmodule BackendWeb.FeedLive do
           </div>
         </div>
       </div>
-    </Context>
     """
   end
 

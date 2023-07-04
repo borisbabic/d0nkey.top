@@ -12,6 +12,7 @@ defmodule Components.FantasyModal do
   prop(error_message, :string, default: "Error Saving League!")
   prop(show_deadline, :boolean, default: false)
   prop(current_params, :map, default: %{})
+  prop(user, :map, from_context: :user)
 
   alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Surface.Components.Form
@@ -105,9 +106,7 @@ defmodule Components.FantasyModal do
               </Field>
 
               <Field name="owner_id">
-                <Context get={user: user}>
-                  <HiddenInput value={user.id}/>
-                </Context>
+                <HiddenInput value={@user.id}/>
               </Field>
 
 

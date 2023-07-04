@@ -13,12 +13,12 @@ defmodule BackendWeb.WC2022Live do
   def mount(_params, session, socket) do
     {:ok,
      socket
-     |> assign_defaults(session)}
+     |> assign_defaults(session)
+     |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context  put={user: @user}>
       <div>
         <div>
           <div>
@@ -39,7 +39,6 @@ defmodule BackendWeb.WC2022Live do
           </div>
         </div>
       </div>
-    </Context>
     """
   end
 

@@ -12,14 +12,14 @@ defmodule BackendWeb.ExpandableDeckLive do
     {:ok,
      socket
      |> assign(deckcode: code, show_cards: !!p["show_cards"], name: p["name"])
-     |> assign_defaults(p)}
+     |> assign_defaults(p)
+     |> put_user_in_context()}
   end
 
   def render(assigns) do
     deck = Deck.decode!(assigns[:deckcode])
 
     ~F"""
-    <Context put={user: @user} >
       <Decklist deck={deck} show_cards={@show_cards} name={@name}>
         <:right_button>
           <span phx-click="show_cards" class="is-clickable" >
@@ -30,7 +30,6 @@ defmodule BackendWeb.ExpandableDeckLive do
           </span>
         </:right_button>
       </Decklist>
-    </Context>
     """
   end
 
