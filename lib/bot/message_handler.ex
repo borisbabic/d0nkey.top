@@ -107,18 +107,27 @@ defmodule Bot.MessageHandler do
   defp create_card_embed([match]), do: create_card_embed(match)
 
   defp create_card_embed(match) do
+    embed =
+      %Embed{}
+      |> Embed.put_author(
+        match,
+        "https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)}",
+        nil
+      )
+
     with nil <- do_match_card(match, &CardBag.closest_collectible/1),
          nil <- do_match_card(match, &HearthstoneJson.closest_collectible/1),
          nil <- do_match_card(match, &HearthstoneJson.closest/1) do
-      nil
+      embed
     else
       {card, card_url} ->
-        %Embed{}
+        embed
         |> Embed.put_title(card.name)
         |> Embed.put_image(card_url)
+        |> Embed.put_url("https://www.hsguru.com/card/#{card.id}")
 
       _ ->
-        nil
+        embed
     end
   end
 
