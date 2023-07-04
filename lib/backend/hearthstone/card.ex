@@ -71,6 +71,7 @@ defmodule Backend.Hearthstone.Card do
       :durability,
       :duels_constructed,
       :duels_relevant,
+      :flavor_text,
       :health,
       :image,
       :image_gold,
