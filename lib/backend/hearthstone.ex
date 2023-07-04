@@ -43,6 +43,11 @@ defmodule Backend.Hearthstone do
     Repo.one(query) || []
   end
 
+  @spec card_sets() :: [Set.t()]
+  def card_sets() do
+    Repo.all(Set)
+  end
+
   def update_metadata() do
     with {:ok,
           %{
@@ -136,7 +141,14 @@ defmodule Backend.Hearthstone do
       ])
 
   @spec upsert_cards([insertable_card()]) :: {:ok, [Card.t()]} | {:error, any()}
-  def upsert_cards(cards) do
+  def upsert_cards(cards_raw) do
+    known_sets_ids = card_sets() |> MapSet.new(& &1.id)
+
+    cards =
+      cards_raw
+      |> Enum.filter(fn %{card_set_id: set_id} -> MapSet.member?(known_sets_ids, set_id) end)
+      |> Enum.uniq_by(& &1.id)
+
     cards_map = Map.new(cards, fn c -> {c.id, c} end)
     # using ecto on_conflict upsert support causes issues with the many_to_many relationships
     # they want to get inserted again
@@ -144,8 +156,8 @@ defmodule Backend.Hearthstone do
     ids = Enum.map(cards, & &1.id)
     existing_query = from(c in Card, preload: [:classes, :keywords], where: c.id in ^ids)
     existing = Repo.all(existing_query)
-    existing_ids = Enum.map(existing, & &1.id)
-    new = Enum.reject(cards, &(&1.id in existing_ids))
+    existing_ids = MapSet.new(existing, & &1.id)
+    new = Enum.reject(cards, &MapSet.member?(existing_ids, &1.id))
     multi = Enum.reduce(new, Multi.new(), &card_multi_insert/2)
 
     Enum.reduce(existing, multi, fn old, m ->
