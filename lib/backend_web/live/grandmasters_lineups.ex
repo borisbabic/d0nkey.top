@@ -12,14 +12,11 @@ defmodule BackendWeb.GrandmastersLineup do
   data(week, :string)
 
   def mount(_params, session, socket) do
-    {:ok,
-     socket
-     |> assign_defaults(session)}
+    {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context  put={user: @user}>
       <div>
         <div :if={lineups = Backend.Blizzard.get_grandmasters_lineups(@week)} >
           <div :if={Lineup.stats(lineups)} >
@@ -37,7 +34,6 @@ defmodule BackendWeb.GrandmastersLineup do
           </div>
         </div>
       </div>
-    </Context>
     """
   end
 

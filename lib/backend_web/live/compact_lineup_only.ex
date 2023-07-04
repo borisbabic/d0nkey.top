@@ -16,14 +16,12 @@ defmodule BackendWeb.CompactLineupOnly do
       component_id: "compact_lineup_" <> Ecto.UUID.generate()
     ]
 
-    {:ok, socket |> assign(assigns) |> assign_defaults(session)}
+    {:ok, socket |> assign(assigns) |> assign_defaults(session) |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <CompactLineup id={@component_id} extra_decks={@extra_decks} lineup={@lineup} />
-    </Context>
     """
   end
 end

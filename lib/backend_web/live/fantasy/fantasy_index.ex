@@ -6,11 +6,12 @@ defmodule BackendWeb.FantasyIndexLive do
   alias Components.FantasyModal
 
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2">Fantasy Leagues</div>
         <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
@@ -25,17 +26,14 @@ defmodule BackendWeb.FantasyIndexLive do
         </div>
         <FantasyLeaguesTable leagues={get_user_leagues(@user)} />
       </div>
-    </Context>
     """
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-3">Please login to access Fantasy Leagues!</div>
       </div>
-    </Context>
     """
   end
 

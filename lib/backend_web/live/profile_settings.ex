@@ -15,12 +15,11 @@ defmodule BackendWeb.ProfileSettingsLive do
   data(user, :map)
 
   def mount(_params, session, socket) do
-    {:ok, assign_defaults(socket, session)}
+    {:ok, assign_defaults(socket, session) |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-     <Context put={user: @user}>
       <div>
         <div class="title is-2">Profile Settings</div>
         <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
@@ -92,7 +91,6 @@ defmodule BackendWeb.ProfileSettingsLive do
         </div>
         <div :if={!@user}>Not Logged In</div>
       </div>
-    </Context>
     """
   end
 

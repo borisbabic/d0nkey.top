@@ -6,11 +6,12 @@ defmodule BackendWeb.MyDecksLive do
 
   data(user, :any)
   data(filters, :map)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div :if={btag = User.battletag(@user)}>
         <div class="title is-2">My Decks</div>
         <div class="subtitle is-6">
@@ -29,7 +30,6 @@ defmodule BackendWeb.MyDecksLive do
           live_view={__MODULE__}
           params={@filters}/>
       </div>
-    </Context>
     """
   end
 

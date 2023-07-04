@@ -21,12 +21,11 @@ defmodule BackendWeb.GrandmasterProfileLive do
   data(week, :string)
 
   def mount(_params, session, socket) do
-    {:ok, assign_defaults(socket, session)}
+    {:ok, assign_defaults(socket, session) |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-     <Context put={user: @user}>
       <div>
         <div class="title is-2">
           <PlayerName player={@gm}/> {@week}
@@ -75,7 +74,6 @@ defmodule BackendWeb.GrandmasterProfileLive do
           </tbody>
         </table>
       </div>
-    </Context>
     """
   end
 

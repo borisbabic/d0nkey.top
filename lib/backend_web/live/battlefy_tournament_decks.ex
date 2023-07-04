@@ -9,18 +9,17 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
   def mount(_params, session, socket) do
     {:ok,
      socket
-     |> assign_defaults(session)}
+     |> assign_defaults(session)
+     |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context  put={user: @user}>
       <div>
         <div class="title is-2">Explore Decks</div>
         <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
         <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"} standings_url={"/battlefy/tournament/#{@tournament_id}"}/>
       </div>
-    </Context>
     """
   end
 

@@ -8,11 +8,12 @@ defmodule BackendWeb.JoinLeagueLive do
 
   data(league, :map)
   data(user, :map)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div :if={@league} >
           <div class="title is-2"> Join {@league.name}</div>
@@ -35,17 +36,14 @@ defmodule BackendWeb.JoinLeagueLive do
           <div class="title is-2">League Not Found. Maybe the join link/code changed?</div>
         </div>
       </div>
-    </Context>
     """
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-3">Please login to join Fantasy Leagues!</div>
       </div>
-    </Context>
     """
   end
 

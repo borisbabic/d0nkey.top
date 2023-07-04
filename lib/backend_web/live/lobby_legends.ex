@@ -8,13 +8,16 @@ defmodule BackendWeb.LobbyLegendsLive do
   data(streaming_now, :map)
   data(season, :any)
   data(user, :any)
+
   def mount(_params, session, socket) do
     streaming_now = Backend.Streaming.StreamingNow.streaming_now()
     subscribe_to_messages()
+
     {
-    :ok,
-    socket
+      :ok,
+      socket
       |> assign_defaults(session)
+      |> put_user_in_context()
       |> assign(streaming_now: streaming_now, season: nil)
       |> assign_meta_tags(%{title: "Lobby Legends"})
     }
@@ -22,7 +25,6 @@ defmodule BackendWeb.LobbyLegendsLive do
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2">Lobby Legends</div>
         <div class="subtitle is-5 level-left is-mobile">Official Streams: {Socials.twitch("playhearthstone")} | <a href="https://www.youtube.com/hearthstoneesports/live">Youtube</a></div>
@@ -42,36 +44,40 @@ defmodule BackendWeb.LobbyLegendsLive do
         </div>
 
       </div>
-    </Context>
     """
   end
 
   defp live_players(streaming, %{player_streams: player_streams}) do
     live(streaming, player_streams)
   end
+
   defp live_players(_streaming, _season), do: []
+
   defp live_other(streaming, %{other_streams: other_streams}) do
     live(streaming, other_streams)
   end
+
   defp live_other(_streaming, _season), do: []
 
   defp live(streaming, streams_raw) do
-    streams = streams_raw
-    |> Map.values()
-    |> Enum.filter(& &1)
-    |> Enum.map(fn s ->
-      String.split(s, "/")
-      |> Enum.reverse()
-      |> hd()
-      |> String.downcase()
-    end)
-    |> MapSet.new()
+    streams =
+      streams_raw
+      |> Map.values()
+      |> Enum.filter(& &1)
+      |> Enum.map(fn s ->
+        String.split(s, "/")
+        |> Enum.reverse()
+        |> hd()
+        |> String.downcase()
+      end)
+      |> MapSet.new()
 
     Enum.filter(streaming, fn s ->
       downcase_login = Twitch.Stream.login(s) |> String.downcase()
       MapSet.member?(streams, downcase_login)
     end)
   end
+
   defp season(slug), do: LobbyLegendsSeason.get_or_current(slug)
 
   defp subscribe_to_messages() do

@@ -7,11 +7,12 @@ defmodule BackendWeb.MaxNations2022PlayerLive do
 
   data(player, :string)
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2"><a href={Routes.player_path(BackendWeb.Endpoint, :player_profile, @player)}>{@player}</a></div>
         <div class="subtitle is-5" :if={nation = MaxNations2022.get_nation(@player)}><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.MaxNations2022NationLive, nation)}>{nation}</a></div>
@@ -31,7 +32,6 @@ defmodule BackendWeb.MaxNations2022PlayerLive do
           </tbody>
         </table>
       </div>
-    </Context>
     """
   end
 

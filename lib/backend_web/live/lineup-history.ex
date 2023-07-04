@@ -6,11 +6,12 @@ defmodule BackendWeb.LineupHistoryLive do
   data(name, :string)
   data(source, :string)
   data(user, :any)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-2"><a href={Routes.player_path(BackendWeb.Endpoint, :player_profile, @name)}>{@name}</a></div>
         <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
@@ -29,7 +30,6 @@ defmodule BackendWeb.LineupHistoryLive do
           </tbody>
         </table>
       </div>
-    </Context>
     """
   end
 

@@ -21,7 +21,7 @@ defmodule BackendWeb.DeckviewerLive do
 
   def mount(_params, session, socket) do
     case WaitForIt.wait(HearthstoneJson.up?(), frequency: 500, timeout: 20_000) do
-      _ -> {:ok, socket |> assign_defaults(session)}
+      _ -> {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
     end
   end
 
@@ -38,7 +38,6 @@ defmodule BackendWeb.DeckviewerLive do
 
     ~F"""
 
-    <Context put={user: @user}>
       <div>
         <div class="title is-1" :if={@title}> {@title}</div>
         <br>
@@ -92,7 +91,6 @@ defmodule BackendWeb.DeckviewerLive do
           </div>
         </div>
       </div>
-    </Context>
     """
   end
 

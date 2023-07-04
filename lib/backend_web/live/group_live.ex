@@ -13,11 +13,13 @@ defmodule BackendWeb.GroupLive do
   data(error_message, :string, default: nil)
   data(join_code, :string)
   data(rerender, :any, default: true)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do:
+      {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> put_user_in_context()}
 
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-      <Context put={user: @user}>
         <div :if={({group, membership} = group_membership(@group_id, @user)) && group && @rerender}>
           <div class="title is-2">{group.name}</div>
           <div class="subtitle is-6">
@@ -91,18 +93,14 @@ defmodule BackendWeb.GroupLive do
               </tbody>
             </table>
           </div>
-
-      </Context>
     """
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-3">Please login to access this group</div>
       </div>
-    </Context>
     """
   end
 

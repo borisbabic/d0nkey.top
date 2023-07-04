@@ -11,6 +11,7 @@ defmodule Components.CardsList do
   prop(highlight_rotation, :boolean, required: false)
   prop(deck_class, :string, required: false, default: "NEUTRAL")
   prop(sideboard, :list, default: [])
+  prop(user, :map, from_context: :user)
 
   @type display_info :: %{
           card: Card.t(),
@@ -21,46 +22,37 @@ defmodule Components.CardsList do
 
   def render(assigns) do
     ~F"""
-      <Context get={user: user}>
-        <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboarded_in: s_in} <- cards_to_display(@deck.cards, @comparison, @sideboard, @highlight_rotation)} style="margin: 0; padding: 0;">
-            <div class={class}>
-              <DecklistCard
-                show_mana_cost={true}
-                deck_class={@deck_class}
-                card={card}
-                deck={@deck}
-                count={count}
-                decklist_options={User.decklist_options(user)}
-                sideboarded_in={s_in}
-              />
-            </div>
-        </div>
-      </Context>
+      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboarded_in: s_in} <- cards_to_display(@deck.cards, @comparison, @sideboard, @highlight_rotation)} style="margin: 0; padding: 0;">
+          <div class={class}>
+            <DecklistCard
+              show_mana_cost={true}
+              deck_class={@deck_class}
+              card={card}
+              count={count}
+              deck={@deck}
+              decklist_options={User.decklist_options(@user)}
+              sideboarded_in={s_in}
+            />
+          </div>
+      </div>
     """
   end
 
-  @spec cards_to_display([integer], [integer] | nil, [Sideboard.t()], boolean) ::
-          [display_info]
+  @spec cards_to_display([integer], [integer] | nil, [Sideboard.t()], boolean) :: [display_info]
   defp cards_to_display(cards, comparison, sideboard, highlight_rotation) do
     cards_map = card_map(cards)
     comparison_map = (comparison || []) |> Enum.map(&{&1.id, &1}) |> Map.new()
 
     to_check =
-      comparison ||
-        Enum.map(cards_map, fn {_, {c, _}} -> c end) |> Hearthstone.sort_cards()
+      comparison || Enum.map(cards_map, fn {_, {c, _}} -> c end) |> Hearthstone.sort_cards()
 
     to_check
     |> Enum.flat_map(fn c ->
       {class, count} =
         case {Map.get(comparison_map, c.id), Map.get(cards_map, c.id)} do
-          {cc, {_, count}} when not is_nil(cc) ->
-            {comparison_class(cc, count), count}
-
-          {nil, {card, count}} ->
-            {rotation_class(highlight_rotation, card), count}
-
-          {_, nil} ->
-            {"not-in-list", nil}
+          {cc, {_, count}} when not is_nil(cc) -> {comparison_class(cc, count), count}
+          {nil, {card, count}} -> {rotation_class(highlight_rotation, card), count}
+          {_, nil} -> {"not-in-list", nil}
         end
 
       actual = %{card: c, count: count, class: class, sideboarded_in: false}
@@ -93,8 +85,6 @@ defmodule Components.CardsList do
     end
   end
 
-  defp add_sideboards(_), do: []
-
   defp card_map(cards) do
     cards
     |> Hearthstone.ordered_frequencies()
@@ -107,9 +97,6 @@ defmodule Components.CardsList do
   def rotation_class(_highlight, _card), do: ""
 
   defp comparison_class(%{rarity_id: 5}, _), do: "card-comparison-legendary"
-
-  defp comparison_class(%{rarity: "LEGENDARY"}, _),
-    do: "card-comparison-legendary"
-
+  defp comparison_class(%{rarity: "LEGENDARY"}, _), do: "card-comparison-legendary"
   defp comparison_class(_, count), do: "card-comparison-count-#{count}"
 end

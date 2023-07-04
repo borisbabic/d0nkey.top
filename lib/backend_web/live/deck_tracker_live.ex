@@ -28,11 +28,13 @@ defmodule BackendWeb.DeckTrackerLive do
   data(winrate, :number)
 
   def mount(_params, session, socket),
-    do:
-      {:ok,
-       socket
-       |> assign_defaults(session)
-       |> assign(error_message: nil, message: nil, valid: false)}
+    do: {
+      :ok,
+      socket
+      |> assign_defaults(session)
+      |> put_user_in_context()
+      |> assign(error_message: nil, message: nil, valid: false)
+    }
 
   def handle_params(params = %{"deck" => deck_parts}, session, socket) when is_list(deck_parts) do
     new_deck = deck_parts |> Enum.join("/")
@@ -125,7 +127,6 @@ defmodule BackendWeb.DeckTrackerLive do
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-    <Context put={user: @user} >
       <Form for={:game} submit="submit" change="validate">
 
         <br>
@@ -169,7 +170,6 @@ defmodule BackendWeb.DeckTrackerLive do
         <HiddenInput field={:source} value="Self Report" />
         <HiddenInput field={:source_version} value="0" />
       </Form>
-    </Context>
     """
   end
 
@@ -189,11 +189,9 @@ defmodule BackendWeb.DeckTrackerLive do
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user} >
       <div>
         <div class="title is-3">Please login to Track your decks</div>
       </div>
-    </Context>
     """
   end
 

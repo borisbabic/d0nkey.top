@@ -14,14 +14,15 @@ defmodule BackendWeb.ExpandableLineupLive do
     {:ok,
      socket
      |> assign(lineup_id: lineup_id, show_cards: !!p["show_cards"])
-     |> assign_defaults(p)}
+     |> assign_defaults(p)
+     |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context :if={lineup = Backend.Hearthstone.lineup(@lineup_id)} put={user: @user}>
-      <ExpandableLineup id={@lineup_id} lineup={lineup} />
-    </Context>
+      <div :if={lineup = Backend.Hearthstone.lineup(@lineup_id)}>
+        <ExpandableLineup id={@lineup_id} lineup={lineup} />
+      </div>
     """
   end
 

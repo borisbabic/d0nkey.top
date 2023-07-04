@@ -11,12 +11,12 @@ defmodule BackendWeb.LineupSubmitterLive do
   def mount(_params, session, socket) do
     {:ok,
      socket
-     |> assign_defaults(session)}
+     |> assign_defaults(session)
+     |> put_user_in_context()}
   end
 
   def render(assigns) do
     ~F"""
-    <Context put={user: @user}>
       <div>
         <div :if={allowed(@user)}>
           <Form for={:new_round} submit="submit">
@@ -43,7 +43,6 @@ defmodule BackendWeb.LineupSubmitterLive do
           </Form>
         </div>
       </div>
-    </Context>
     """
   end
 

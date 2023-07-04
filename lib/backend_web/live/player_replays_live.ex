@@ -1,15 +1,15 @@
 defmodule BackendWeb.PlayerReplaysLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
-  alias Backend.UserManager.User
-  alias Backend.UserManager
   alias Components.ReplayExplorer
   use Components.ExpandableDecklist
 
   data(user, :any)
   data(player_btag, :any)
   data(filters, :map)
-  def mount(_params, session, socket), do: {:ok, socket |> assign_defaults(session)}
+
+  def mount(_params, session, socket),
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context}
 
   def render(assigns) do
     # filters
@@ -18,7 +18,6 @@ defmodule BackendWeb.PlayerReplaysLive do
     # player rank
     # region
     ~F"""
-    <Context put={user: @user}>
       <div>
         <div class="title is-2">{@player_btag}'s Replays</div>
         <div class="subtitle is-6">
@@ -33,7 +32,6 @@ defmodule BackendWeb.PlayerReplaysLive do
           params={@filters}
           live_view={__MODULE__}/>
       </div>
-    </Context>
     """
   end
 

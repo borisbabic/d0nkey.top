@@ -18,7 +18,7 @@ defmodule BackendWeb.DeckLive do
   data(filters, :any)
 
   def mount(_, session, socket) do
-    {:ok, assign_defaults(socket, session)}
+    {:ok, assign_defaults(socket, session) |> put_user_in_context()}
   end
 
   def handle_params(params = %{"deck" => deck_parts}, session, socket) when is_list(deck_parts) do
@@ -64,7 +64,6 @@ defmodule BackendWeb.DeckLive do
 
   def render(assigns = %{deck: _}) do
     ~F"""
-    <Context put={user: @user}>
       <div>
         <br>
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
@@ -101,7 +100,6 @@ defmodule BackendWeb.DeckLive do
           Not a valid deck.
         </div>
       </div>
-    </Context>
     """
   end
 

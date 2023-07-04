@@ -73,7 +73,7 @@ defmodule BackendWeb do
   def surface_live_view do
     quote do
       use Surface.LiveView,
-        layout: {BackendWeb.LayoutView, "live.html"}
+        layout: {BackendWeb.LayoutView, :live}
 
       unquote(surface())
     end
@@ -108,13 +108,21 @@ defmodule BackendWeb do
       alias BackendWeb.Router.Helpers, as: Routes
       import BackendWeb.LiveHelpers
       unquote(view_helpers())
+
+      defp put_user_in_context(%{assigns: %{user: user}} = socket) do
+        Surface.Components.Context.put(socket, user: user)
+      end
+
+      defp put_user_in_context(socket) do
+        Surface.Components.Context.put(socket, user: nil)
+      end
     end
   end
 
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {BackendWeb.LayoutView, "live.html"}
+        layout: {BackendWeb.LayoutView, :live}
 
       import BackendWeb.LiveHelpers
       unquote(view_helpers())
