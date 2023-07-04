@@ -124,7 +124,7 @@ defmodule Bot.MessageHandler do
         embed
         |> Embed.put_title(card.name)
         |> Embed.put_image(card_url)
-        |> Embed.put_url("https://www.hsguru.com/card/#{card.id}")
+        |> Embed.put_url("https://www.hsguru.com/card/#{Card.dbf_id(card.id)}")
 
       _ ->
         embed
