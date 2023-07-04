@@ -463,6 +463,12 @@
 .nested.dropdown:hover > .dropdown-menu {
   display: block;
 }
+.nested.dropdown:active > .dropdown-menu {
+  display: block;
+}
+.nested.dropdown:focus > .dropdown-menu {
+  display: block;
+}
 .nested.dropdown .dropdown-menu {
   top: -15px;
   margin-left: 100%;
