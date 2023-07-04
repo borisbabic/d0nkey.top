@@ -1,6 +1,6 @@
 defmodule Components.DecklistCard do
   @moduledoc false
-  use Surface.Component
+  use BackendWeb, :surface_component
   alias Backend.HearthstoneJson
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardBag
@@ -73,7 +73,7 @@ defmodule Components.DecklistCard do
     # deck_class_color = "--color-#{class(card.card_class)}"
 
     ~F"""
-      <div>
+      <a href={~p"/card/#{@card}"}>
         <div onmouseover={"set_display('#{id}', 'flex')"} onmouseout={"set_display('#{id}', 'none')"}>
           <div style={"--color-border: #{border}; --color-gradient: #{gradient};"} class={"decklist-card-container decklist-card #{html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
@@ -90,7 +90,7 @@ defmodule Components.DecklistCard do
           </div>
         </div>
         <div></div>
-      </div>
+      </a>
     """
   end
 

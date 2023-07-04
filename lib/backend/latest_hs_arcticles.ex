@@ -55,12 +55,12 @@ defmodule Backend.LatestHSArticles do
   def patch_notes_url(), do: get() |> patch_notes_url()
 
   def patch_notes_url(articles),
-    do: articles |> Enum.find_value(&(patch_notes?(&1) && url(&1)))
+    do: articles |> Enum.find_value(&(patch_notes?(&1) && pn_url(&1)))
 
   defp patch_notes?(article), do: "patch" in article["tags"] || "Patch Note" =~ article["title"]
 
-  def url(%{"defaultUrl" => url}), do: url
-  def url(_), do: nil
+  def pn_url(%{"defaultUrl" => url}), do: url
+  def pn_url(_), do: nil
 
   def handle_call(:get, _, articles), do: {:reply, articles, articles}
 

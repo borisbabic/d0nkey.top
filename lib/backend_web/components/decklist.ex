@@ -33,7 +33,6 @@ defmodule Components.Decklist do
 
     deck_class = Deck.class(deck)
     class_class = deck_class |> String.downcase()
-    IO.inspect(assigns.user, label: :user)
 
     ~F"""
       <div>

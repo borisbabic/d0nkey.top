@@ -5,7 +5,7 @@ defmodule Components.Feed.HSArticle do
 
   def render(assigns) do
     ~F"""
-      <a href={url(@article)} target="_blank">
+      <a href={article_url(@article)} target="_blank">
         <article class="media">
           <div :if={image = image(@article)} class="media-left" style="width: calc(var(--decklist-width)/2);">
             <figure class="image is-2by1">
@@ -34,7 +34,7 @@ defmodule Components.Feed.HSArticle do
   def image(%{"thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => url}}),
     do: "https://#{url}"
 
-  def url(%{"blogId" => id}), do: "/hs/article/#{id}"
-  def url(%{"defaultUrl" => url}), do: url
+  def article_url(%{"blogId" => id}), do: "/hs/article/#{id}"
+  def article_url(%{"defaultUrl" => url}), do: url
   def title(%{"title" => title}), do: title
 end
