@@ -281,6 +281,26 @@ defmodule Util do
   def to_int(_, fallback), do: fallback
 
   @doc """
+  Like Util.to_int/2 but returns the original value if it is already an integer
+  Raises an error if neither int_val nor fallback can be an integer
+  """
+
+  @spec to_int!(integer | any(), integer() | any() | [integer()] | [any()]) :: integer()
+  def to_int!(val, fallback \\ :will_raise_error_if_val_isnt_an_int)
+
+  def to_int!(val, fallbacks) when is_list(fallbacks),
+    do: [val | fallbacks] |> Enum.map(&to_int_or_orig/1) |> first_int!()
+
+  def to_int!(val, fallback), do: to_int!(val, [fallback])
+
+  def first_int!(maybe_ints) do
+    case Enum.find(maybe_ints, &is_integer/1) do
+      nil -> raise("No integer in the list!")
+      val -> val
+    end
+  end
+
+  @doc """
   Takes and {:ok,_} | {:error, _ } and returns the value on :ok and nil on :error
   """
   @spec nilify({:ok | :error, any()}) :: any() | nil

@@ -7,33 +7,33 @@ defmodule Hearthstone.Card do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :artist_name, String.t()
-    field :attack, integer()
-    field :card_set_id, integer()
-    field :card_type_id, integer()
-    field :child_ids, [integer()]
-    field :class_id, integer()
-    field :collectible, integer()
-    field :copy_of_card_id, integer()
-    field :crop_image, String.t()
-    field :durability, integer()
-    field :duels, Duels.t()
-    field :flavor_text, String.t()
-    field :health, integer()
-    field :id, integer()
-    field :image, String.t()
-    field :image_gold, String.t()
-    field :keyword_ids, [integer()]
-    field :mana_cost, integer()
-    field :minion_type_id, integer()
-    field :multi_class_ids, [integer()]
-    field :name, String.t()
-    field :rarity_id, integer()
-    field :slug, String.t()
-    field :spell_school_id, integer()
-    field :mercenary_hero, MercenaryHero.t()
-    field :rune_cost, RuneCost.t()
-    field :text, String.t()
+    field(:artist_name, String.t())
+    field(:attack, integer())
+    field(:card_set_id, integer())
+    field(:card_type_id, integer())
+    field(:child_ids, [integer()])
+    field(:class_id, integer())
+    field(:collectible, integer())
+    field(:copy_of_card_id, integer())
+    field(:crop_image, String.t())
+    field(:durability, integer())
+    field(:duels, Duels.t())
+    field(:flavor_text, String.t())
+    field(:health, integer())
+    field(:id, integer())
+    field(:image, String.t())
+    field(:image_gold, String.t())
+    field(:keyword_ids, [integer()])
+    field(:mana_cost, integer())
+    field(:minion_type_id, integer())
+    field(:multi_class_ids, [integer()])
+    field(:name, String.t())
+    field(:rarity_id, integer())
+    field(:slug, String.t())
+    field(:spell_school_id, integer())
+    field(:mercenary_hero, MercenaryHero.t())
+    field(:rune_cost, RuneCost.t())
+    field(:text, String.t())
   end
 
   @spec from_raw_map(Map.t()) :: {:ok, __MODULE__.t()} | {:error, any()}
@@ -119,8 +119,8 @@ defmodule Hearthstone.Card.Duels do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :constructed, boolean()
-    field :relevant, boolean()
+    field(:constructed, boolean())
+    field(:relevant, boolean())
   end
 
   def from_raw_map(map = %{"relevant" => r}) do
@@ -144,9 +144,9 @@ defmodule Hearthstone.Card.RuneCost do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :blood, integer()
-    field :frost, integer()
-    field :unholy, integer()
+    field(:blood, integer())
+    field(:frost, integer())
+    field(:unholy, integer())
   end
 
   def from_raw_map(%{
@@ -200,13 +200,13 @@ defmodule Hearthstone.Card.MercenaryHero do
   alias Hearthstone.Card.MercenaryHero.StatsByLevel
 
   typedstruct enforce: true do
-    field :collectible, boolean()
-    field :crafting_cost, integer()
-    field :default, boolean()
-    field :merc_id, integer()
-    field :rarity, integer()
-    field :role_id, integer()
-    field :stats_by_level, [StatsByLevel.t()]
+    field(:collectible, boolean())
+    field(:crafting_cost, integer())
+    field(:default, boolean())
+    field(:merc_id, integer())
+    field(:rarity, integer())
+    field(:role_id, integer())
+    field(:stats_by_level, [StatsByLevel.t()])
   end
 
   def from_raw_map(%{
@@ -238,9 +238,9 @@ defmodule Hearthstone.Card.MercenaryHero.StatsByLevel do
   use TypedStruct
 
   typedstruct enforce: true do
-    field :level, integer()
-    field :attack, integer()
-    field :health, integer()
+    field(:level, integer())
+    field(:attack, integer())
+    field(:health, integer())
   end
 
   @spec list_from_map(Map.t()) :: [StatsByLevel]

@@ -718,10 +718,31 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
-  def cards(criteria) do
+  def cards(criteria_raw) do
+    {post_processer, criteria} = use_fake_limit(criteria_raw)
+
     base_cards_query()
     |> build_cards_query(criteria)
     |> Repo.all()
+    |> post_processer.()
+  end
+
+  defp use_fake_limit(old_filters) do
+    old_filters
+    |> Enum.to_list()
+    |> List.keytake("limit", 0)
+    |> case do
+      nil ->
+        {& &1, old_filters}
+
+      {{"limit", old_limit}, temp_filters} ->
+        limit = Util.to_int!(old_limit, 10)
+
+        {
+          &Enum.take(&1, limit),
+          [{"fake_limit", Util.to_int_or_orig(limit) * 5} | temp_filters]
+        }
+    end
   end
 
   defp build_cards_query(query, criteria),
