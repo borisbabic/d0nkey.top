@@ -32,6 +32,18 @@ defmodule Bot.MessageHandlerUtil do
     |> Enum.join(" ")
   end
 
+  @spec get_criteria(String.t()) :: {[{String.t() | String.t()}], list()}
+  def get_criteria(content) do
+    content
+    |> get_options()
+    |> Enum.reduce({[], []}, fn part, {c, r} ->
+      case String.split(part, ":") do
+        [p] -> {c, [p | r]}
+        crit -> {[List.to_tuple(crit) | c], r}
+      end
+    end)
+  end
+
   @spec send_message(
           {:ok, String.t()} | {:error, String.t() | atom} | String.t(),
           String.t() | Nostrum.Struct.Message.t()

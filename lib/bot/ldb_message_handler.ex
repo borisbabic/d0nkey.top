@@ -14,15 +14,7 @@ defmodule Bot.LdbMessageHandler do
   end
 
   def battletags_and_criteria(%{content: content, guild_id: guild_id}) do
-    {criteria, rest} =
-      content
-      |> get_options()
-      |> Enum.reduce({[], []}, fn part, {c, r} ->
-        case String.split(part, ":") do
-          [p] -> {c, [p | r]}
-          crit -> {[List.to_tuple(crit) | c], r}
-        end
-      end)
+    {criteria, rest} = get_criteria(content)
 
     battletags =
       case rest do

@@ -43,6 +43,9 @@ defmodule Bot.MessageHandler do
       <<"!battlefy", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings(msg)
 
+      <<"!cards", _::binary>> ->
+        Bot.CardMessageHandler.handle_cards(msg)
+
       <<"!mtq", _::binary>> ->
         Bot.MTMessageHandler.handle_qualifier_standings(msg)
 
@@ -121,10 +124,7 @@ defmodule Bot.MessageHandler do
       embed
     else
       {card, card_url} ->
-        embed
-        |> Embed.put_title(card.name)
-        |> Embed.put_image(card_url)
-        |> Embed.put_url("https://www.hsguru.com/card/#{Card.dbf_id(card.id)}")
+        Bot.CardMessageHandler.create_card_embed(card, embed: embed, card_url: card_url)
 
       _ ->
         embed

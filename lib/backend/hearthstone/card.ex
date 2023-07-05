@@ -206,6 +206,8 @@ defmodule Backend.Hearthstone.Card do
   @spec spell_schools(%__MODULE__{}) :: [String.t()]
   def spell_schools(%{spell_school: %{slug: slug}}), do: [slug]
   def spell_schools(_), do: []
+
+  def our_url(%{id: id}), do: "https://www.hsguru.com/card/#{id}"
 end
 
 defmodule Backend.Hearthstone.RuneCost do
