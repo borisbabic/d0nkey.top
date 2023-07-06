@@ -24,21 +24,21 @@ defmodule Bot.LdbMessageHandler do
 
     use_max_rank = !Enum.any?(rest)
 
+    default_criteria = default_criteria(use_max_rank)
+
     {
       battletags,
-      criteria |> Map.new() |> add_default_criteria(use_max_rank)
+      criteria |> add_default_criteria(default_criteria)
     }
   end
 
-  defp add_default_criteria(criteria, use_max_rank) do
-    if use_max_rank do
-      %{"max_rank" => 5000}
-    else
-      %{}
-    end
-    |> Map.put("limit", 100)
-    |> Map.merge(criteria)
+  defp default_criteria(use_max_rank) do
+    base = max_rank_criteria(use_max_rank)
+    [{"limit", 100} | base]
   end
+
+  defp max_rank_criteria(true), do: [{"max_rank", 5000}]
+  defp max_rank_criteria(_), do: []
 
   def send_tables(tables, channel_id), do: Enum.each(tables, &send_table(&1, channel_id))
 

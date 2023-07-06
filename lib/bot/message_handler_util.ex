@@ -44,6 +44,12 @@ defmodule Bot.MessageHandlerUtil do
     end)
   end
 
+  def add_default_criteria(criteria, default) do
+    for {key, val} <- default, !List.keymember?(criteria, key, 0), reduce: criteria do
+      acc -> [{key, val} | acc]
+    end
+  end
+
   @spec send_message(
           {:ok, String.t()} | {:error, String.t() | atom} | String.t(),
           String.t() | Nostrum.Struct.Message.t()

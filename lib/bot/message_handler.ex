@@ -46,6 +46,9 @@ defmodule Bot.MessageHandler do
       <<"!cards", _::binary>> ->
         Bot.CardMessageHandler.handle_cards(msg)
 
+      <<"!card-stats", _::binary>> ->
+        Bot.CardMessageHandler.handle_card_stats(msg)
+
       <<"!mtq", _::binary>> ->
         Bot.MTMessageHandler.handle_qualifier_standings(msg)
 
@@ -236,5 +239,19 @@ defmodule Bot.MessageHandler do
     }
 
     Map.merge(default, parsed)
+  end
+
+  # guild: D0nkey, channel: #botspam_private
+  def test_message(
+        content,
+        channel_id \\ 669_190_514_591_006_731,
+        guild_id \\ 666_596_230_100_549_652
+      ) do
+    %Nostrum.Struct.Message{
+      content: content,
+      channel_id: channel_id,
+      guild_id: guild_id
+    }
+    |> handle()
   end
 end

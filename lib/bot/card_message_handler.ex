@@ -3,32 +3,45 @@ defmodule Bot.CardMessageHandler do
   alias Nostrum.Api
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.CardAggregate
   alias Nostrum.Struct.Embed
   import Bot.MessageHandlerUtil
+
+  @default_cards_criteria [
+    {"collectible", "yes"},
+    {"limit", 3},
+    {"order_by", "latest"}
+  ]
+
+  @default_card_stats_criteria [
+    {"collectible", "yes"},
+    {"format", "standard"}
+  ]
+
+  def handle_card_stats(msg) do
+    reply = create_card_stats_message(msg)
+
+    message = """
+    ```
+    #{reply}
+    ```
+    """
+
+    send_message(message, msg.channel_id)
+  end
 
   def handle_cards(msg) do
     {criteria, _rest} = get_criteria(msg.content)
 
     cards =
       criteria
-      |> add_default_criteria()
+      |> add_default_criteria(@default_cards_criteria)
       |> ensure_sane_limit()
       |> Hearthstone.cards()
 
     embeds = create_card_embeds(cards)
 
     Api.create_message(msg.channel_id, embeds: embeds)
-  end
-
-  @default_criteria [
-    {"collectible", true},
-    {"limit", 3},
-    {"order_by", "latest"}
-  ]
-  defp add_default_criteria(criteria) do
-    for {key, val} <- @default_criteria, !List.keymember?(criteria, key, 0), reduce: criteria do
-      acc -> [{key, val} | acc]
-    end
   end
 
   def ensure_sane_limit(criteria) do
@@ -48,5 +61,20 @@ defmodule Bot.CardMessageHandler do
     |> Embed.put_title(card.name)
     |> Embed.put_image(card_url)
     |> Embed.put_url("https://www.hsguru.com/card/#{Card.dbf_id(card)}")
+  end
+
+  def create_card_stats_message(%{content: content}) do
+    {criteria, _rest} = get_criteria(content)
+
+    cards =
+      criteria
+      |> add_default_criteria(@default_card_stats_criteria)
+      |> Hearthstone.cards()
+
+    cards
+    |> CardAggregate.aggregate()
+    |> CardAggregate.string_fields_list()
+    |> Enum.map(&Tuple.to_list/1)
+    |> TableRex.quick_render!([])
   end
 end
