@@ -19,7 +19,7 @@ defmodule BackendWeb.LineupSubmitterLive do
     ~F"""
       <div>
         <div :if={allowed(@user)}>
-          <Form for={:new_round} submit="submit">
+          <Form for={%{}} as={:new_round} submit="submit">
               <Field name="tournament_source">
                 <HiddenInput value={"hcm_2022"}/>
               </Field>

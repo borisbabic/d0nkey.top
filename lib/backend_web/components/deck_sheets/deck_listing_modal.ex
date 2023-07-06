@@ -35,7 +35,7 @@ defmodule Components.DeckListingModal do
         button_title={button_title(@button_title, @existing)}
         button_class={@button_class}
         title={title(@existing)}>
-        <Form for={:listing} submit="submit" opts={id: form_id(@existing, @deck)}>
+        <Form for={%{}} as={:listing} submit="submit" opts={id: form_id(@existing, @deck)}>
           <Field name={:deckcode}>
             <Label class="label">Deckcode</Label>
             <TextInput class="input is-small" value={deckcode(@existing, @deck)} opts={disabled: !!@existing}/>

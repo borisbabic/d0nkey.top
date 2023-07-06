@@ -13,7 +13,7 @@ defmodule Components.Filter.PlayableCardSelect do
   def render(assigns) do
     ~F"""
       <Dropdown title={"#{@title}"}>
-        <Form for={:search} change="search" submit="search" opts={autocomplete: "off"}>
+        <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
           <div class="columns is-mobile is-multiline">
             <div class="column is-narrow">
               <TextInput class="input" opts={placeholder: "Search"}/>

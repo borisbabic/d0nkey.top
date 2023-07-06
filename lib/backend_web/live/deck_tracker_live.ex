@@ -127,7 +127,7 @@ defmodule BackendWeb.DeckTrackerLive do
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-      <Form for={:game} submit="submit" change="validate">
+      <Form for={%{}} as={:game} submit="submit" change="validate">
 
         <br>
         <div class="">

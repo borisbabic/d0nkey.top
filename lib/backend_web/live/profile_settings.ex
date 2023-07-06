@@ -24,7 +24,7 @@ defmodule BackendWeb.ProfileSettingsLive do
         <div class="title is-2">Profile Settings</div>
         <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
         <div :if={@user}>
-          <Form for={:user} submit="submit">
+          <Form for={%{}} as={:user} submit="submit">
             <Field name="battlefy_slug">
               <Label class="label" >Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</Label>
               <TextInput class="input is-small" value={@user.battlefy_slug}/>

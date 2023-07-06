@@ -17,7 +17,7 @@ defmodule Components.OmniBar do
       <div>
         <div class="level is-mobile" style="margin-bottom: 0;">
           <div class="level-item">
-            <Form for={:search} change="change" submit="change">
+            <Form for={%{}} as={:search} change="change" submit="change">
               <TextInput value={@search} class="input" opts={placeholder: "Type or paste"}/>
             </Form>
           </div>
