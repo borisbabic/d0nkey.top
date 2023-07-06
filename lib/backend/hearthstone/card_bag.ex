@@ -25,8 +25,12 @@ defmodule Backend.Hearthstone.CardBag do
 
   ##### /Public Api
 
+  @doc """
+  Collectible cards sorted by standard first
+  """
   def standard_first() do
     all_cards()
+    |> Enum.filter(& &1.collectible)
     |> order_by_standard()
   end
 
