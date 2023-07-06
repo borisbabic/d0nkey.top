@@ -6,6 +6,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Hearthstone.DeckBag
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
+  alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
   alias Hearthstone.Enums.Format
   alias Backend.Hearthstone
@@ -696,4 +697,14 @@ defmodule Hearthstone.DeckTracker do
     do: "https://replays.firestoneapp.com/?reviewId=#{game_id}"
 
   def replay_link(_), do: nil
+
+  @spec raw_stats_for_game(Game.t()) :: RawPlayerCardStats.t() | nil
+  def raw_stats_for_game(%{id: id}) do
+    query =
+      from r in RawPlayerCardStats,
+        where: r.game_id == ^id,
+        limit: 1
+
+    Repo.one(query)
+  end
 end

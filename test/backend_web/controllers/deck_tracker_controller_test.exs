@@ -140,4 +140,24 @@ defmodule BackendWeb.DeckTrackerControllerTest do
                Hearthstone.DeckTracker.get_game_by_game_id(game_id)
     end
   end
+
+  test "raw_player_card_stats are saved", %{conn: conn} do
+    {game_id, request_raw} = valid_fs_request()
+
+    request =
+      request_raw
+      |> put_in(["player", "cardsInHandAfterMulligan"], [
+        %{"cardId" => "CORE_BLA_BLA", "kept" => false}
+      ])
+      |> put_in(["player", "cardsDrawnFromInitialDeck"], [
+        %{"cardId" => "CORE_FOO", "turn" => 1},
+        %{"cardId" => "CORE_BAR", "turn" => 3}
+      ])
+
+    conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
+    assert json_response(conn, 200)
+
+    game = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
+    assert %{id: _} = Hearthstone.DeckTracker.raw_stats_for_game(game)
+  end
 end
