@@ -118,7 +118,11 @@ defmodule Bot.MessageHandler do
         nil
       )
 
-    case Backend.Hearthstone.cards([{"order_by", "name_similarity_#{match}"}, {"limit", 1}]) do
+    case Backend.Hearthstone.cards([
+           {"order_by", "name_similarity_#{match}"},
+           {"limit", 1},
+           {"collectible", "yes"}
+         ]) do
       [card | _] -> Bot.CardMessageHandler.create_card_embed(card, embed: embed)
       _ -> embed
     end
