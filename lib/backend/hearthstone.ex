@@ -775,18 +775,25 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"mana_cost", mana_cost}, query),
     do: query |> where([card: c], c.mana_cost == ^mana_cost)
 
-  defp compose_cards_query({"class", class}, query),
-    do: query |> where([classes: cl], ilike(cl.name, ^class) or ilike(cl.slug, ^class))
-
-  defp compose_cards_query({"attack", attack}, query),
-    do: query |> where([card: c], c.attack == ^attack)
-
-  defp compose_cards_query({"rarity", rarity}, query) do
-    query
-    |> where([rarity: r], ilike(r.name, ^rarity) or ilike(r.slug, ^rarity))
+  @ilike_name_or_slug_fields [
+    {["set", "sets", "card_set", "card_sets"], :card_set},
+    {["type", "types", "card_type", "card_types"], :card_type},
+    {["class", "classes"], :classes},
+    {["keywords", "keyword"], :keywords},
+    {["rarity", "rarities"], :rarity},
+    {["school", "schools", "spell_school", "spell_schools"], :spell_school}
+  ]
+  for {search_fields, join_field} <- @ilike_name_or_slug_fields, search <- search_fields do
+    defp compose_cards_query({unquote(search), value}, query),
+      do: ilike_name_or_slug(value, query, unquote(join_field))
   end
 
-  defp compose_cards_query({"format", format}, query) when format in ["standard", "wild"] do
+  @default_splitter "|"
+  defp compose_cards_query({"minion_type", value}, query),
+    do: ilike_name_or_slug(value <> @default_splitter, query, :minion_type)
+
+  defp compose_cards_query({"format", format}, query)
+       when format in ["standard", "wild"] do
     subquery = set_group_sets_query(format)
 
     query
@@ -794,6 +801,21 @@ defmodule Backend.Hearthstone do
   end
 
   defp compose_cards_query({"format", _}, query), do: query
+
+  defp ilike_name_or_slug(searches, query, on_thing) when is_list(searches) do
+    conditions =
+      Enum.reduce(searches, false, fn s, prev ->
+        dynamic([{^on_thing, t}], ilike(t.name, ^s) or ilike(t.slug, ^s) or ^prev)
+      end)
+
+    query
+    |> where(^conditions)
+  end
+
+  defp ilike_name_or_slug(search, query, on_thing, splitter \\ @default_splitter) do
+    String.split(search, splitter)
+    |> ilike_name_or_slug(query, on_thing)
+  end
 
   def set_group_sets_query(slug) do
     from(sg in SetGroup,
