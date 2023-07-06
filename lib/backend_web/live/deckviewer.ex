@@ -43,7 +43,7 @@ defmodule BackendWeb.DeckviewerLive do
         <br>
         <div class="level">
           <div class="level-item">
-            <Form submit="submit" for={:new_deck} opts={autocomplete: "off", id: "add_deck_form"}>
+            <Form submit="submit" for={%{}} as={:new_deck} opts={autocomplete: "off", id: "add_deck_form"}>
               <div class="columns is-mobile is-multiline">
                   <div class="column is-narrow">
                     <Field name="new_code">

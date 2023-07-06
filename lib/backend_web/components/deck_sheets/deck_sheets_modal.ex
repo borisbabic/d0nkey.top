@@ -24,7 +24,7 @@ defmodule Components.DeckSheetsModal do
         button_title={@button_title || button_title(@existing)}
         :if={Sheets.can_admin?(@existing, @user)}
         title={title(@existing)}>
-        <Form for={:deck_sheet} submit="submit" opts={id: "sheet_form_#{id(@existing)}"}>
+        <Form for={%{}} as={:deck_sheet} submit="submit" opts={id: "sheet_form_#{id(@existing)}"}>
           <Field name={:name}>
             <Label class="label">Name</Label>
             <TextInput class="input is-small" value={name(@existing)}/>

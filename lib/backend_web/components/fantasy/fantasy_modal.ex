@@ -39,7 +39,7 @@ defmodule Components.FantasyModal do
       <button class="button" type="button" :on-click="show_modal">{@title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div class="modal is-active" :if={@show_modal} >
-        <Form for={:league} change="change" submit="submit">
+        <Form for={%{}} as={:league} change="change" submit="submit">
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
