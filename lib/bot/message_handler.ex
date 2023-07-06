@@ -7,9 +7,6 @@ defmodule Bot.MessageHandler do
   alias Nostrum.Api
   alias Backend.Blizzard
   alias Backend.Leaderboards
-  alias Backend.HearthstoneJson
-  alias Backend.Hearthstone.Card
-  alias Backend.Hearthstone.CardBag
   alias Nostrum.Struct.Embed
   import Bot.MessageHandlerUtil
 
@@ -121,25 +118,9 @@ defmodule Bot.MessageHandler do
         nil
       )
 
-    with nil <- do_match_card(match, &CardBag.closest_collectible/1),
-         nil <- do_match_card(match, &HearthstoneJson.closest_collectible/1),
-         nil <- do_match_card(match, &HearthstoneJson.closest/1) do
-      embed
-    else
-      {card, card_url} ->
-        Bot.CardMessageHandler.create_card_embed(card, embed: embed, card_url: card_url)
-
-      _ ->
-        embed
-    end
-  end
-
-  defp do_match_card(match, matcher) do
-    with [{_, card} | _] <- matcher.(match),
-         card_url when is_binary(card_url) <- Card.card_url(card) do
-      {card, card_url}
-    else
-      _ -> nil
+    case Backend.Hearthstone.cards([{"order_by", "name_similarity_#{match}"}, {"limit", 1}]) do
+      [card | _] -> Bot.CardMessageHandler.create_card_embed(card, embed: embed)
+      _ -> embed
     end
   end
 
