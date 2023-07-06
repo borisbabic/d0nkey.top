@@ -81,7 +81,26 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "source" => source_handler.(dto.source, dto.source_version) |> Util.or_nil(),
       "created_by" => dto.created_by
     }
+    |> add_raw_stats_ecto_attrs(dto)
   end
+
+  def add_raw_stats_ecto_attrs(
+        attrs,
+        %{
+          player: %{
+            cards_in_hand_after_mulligan: [_ | _] = mull,
+            cards_drawn_from_initial_deck: [_ | _] = drawn
+          }
+        }
+      ) do
+    attrs
+    |> Map.put("raw_player_card_stats", %{
+      "cards_drawn_from_initial_deck" => drawn,
+      "cards_in_hand_after_mulligan" => mull
+    })
+  end
+
+  def add_raw_stats_ecto_attrs(attrs, _dto), do: attrs
 
   def status(dto) do
     case dto.result do
@@ -135,6 +154,8 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
     field :rank, String.t()
     field :legend_rank, String.t()
     field :deckcode, String.t()
+    field :cards_in_hand_after_mulligan, Map.t() | nil
+    field :cards_drawn_from_initial_deck, Map.t() | nil
     field :class, String.t()
   end
 
@@ -144,6 +165,10 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
       battletag: map["battletag"] || map["battleTag"],
       rank: map["rank"],
       legend_rank: map["legend_rank"] || map["legendRank"],
+      cards_in_hand_after_mulligan:
+        map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"],
+      cards_drawn_from_initial_deck:
+        map["cards_drawn_from_initial_deck"] || map["cardsDrawnFromInitialDeck"],
       class: map["class"],
       deckcode: map["deckcode"]
     }

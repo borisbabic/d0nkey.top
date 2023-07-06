@@ -6,6 +6,7 @@ defmodule Hearthstone.DeckTracker.Game do
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.Hearthstone.Deck
+  alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
   alias Backend.Api.ApiUser
 
@@ -30,6 +31,7 @@ defmodule Hearthstone.DeckTracker.Game do
     field :duration, :integer
     field :turns, :integer
     field :player_has_coin, :boolean, default: nil
+    has_one(:raw_player_card_stats, RawPlayerCardStats)
     field :replay_url, :string, default: nil
 
     field :public, :boolean, default: false
@@ -42,6 +44,7 @@ defmodule Hearthstone.DeckTracker.Game do
   @doc false
   def changeset(game = %{game_id: game_id}, attrs) when is_binary(game_id) do
     game
+    |> Backend.Repo.preload(:raw_player_card_stats)
     |> cast(attrs, [
       :status,
       :duration,
@@ -55,12 +58,14 @@ defmodule Hearthstone.DeckTracker.Game do
       :opponent_legend_rank,
       :public
     ])
+    |> build_raw_player_card_stats(attrs)
     |> unique_constraint(:game_id)
   end
 
   @doc false
   def changeset(game, attrs) do
     game
+    |> Backend.Repo.preload(:raw_player_card_stats)
     |> cast(attrs, [
       :player_btag,
       :player_rank,
@@ -81,6 +86,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :duration,
       :turns
     ])
+    |> build_raw_player_card_stats(attrs)
     |> fix_rank(:player_rank, :player_legend_rank)
     |> fix_rank(:opponent_rank, :opponent_legend_rank)
     |> put_assoc_from_attrs(attrs, :player_deck)
@@ -94,6 +100,15 @@ defmodule Hearthstone.DeckTracker.Game do
       :game_id
     ])
     |> unique_constraint(:game_id)
+  end
+
+  defp build_raw_player_card_stats(cs, %{"raw_player_card_stats" => _raw}) do
+    cs
+    |> cast_assoc(:raw_player_card_stats)
+  end
+
+  defp build_raw_player_card_stats(cs, _attrs) do
+    cs
   end
 
   defp fix_rank(cs, rank_attr, legend_attr) do
