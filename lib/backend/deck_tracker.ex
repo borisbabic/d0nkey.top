@@ -4,6 +4,7 @@ defmodule Hearthstone.DeckTracker do
   import Ecto.Query
   alias Backend.Repo
   alias Backend.Hearthstone.DeckBag
+  alias Hearthstone.DeckTracker.CardGameTally
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.DeckTracker.RawPlayerCardStats
@@ -711,5 +712,14 @@ defmodule Hearthstone.DeckTracker do
         limit: 1
 
     Repo.one(query)
+  end
+
+  @spec card_tallies_for_game(Game.t()) :: [CardGameTall.t()]
+  def card_tallies_for_game(%{id: id}) do
+    query =
+      from r in CardGameTally,
+        where: r.game_id == ^id
+
+    Repo.all(query)
   end
 end

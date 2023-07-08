@@ -141,7 +141,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
     end
   end
 
-  test "raw_player_card_stats are saved", %{conn: conn} do
+  test "raw_player_card_stats are saved and no tallies are saved", %{conn: conn} do
     {game_id, request_raw} = valid_fs_request()
 
     request =
@@ -159,5 +159,26 @@ defmodule BackendWeb.DeckTrackerControllerTest do
 
     game = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
     assert %{id: _} = Hearthstone.DeckTracker.raw_stats_for_game(game)
+    assert [] = Hearthstone.DeckTracker.card_tallies_for_game(game)
+  end
+
+  test "card_tallies are saved and raw stats arent", %{conn: conn} do
+    {game_id, request_raw} = valid_fs_request()
+
+    request =
+      request_raw
+      |> put_in(["player", "cardsInHandAfterMulligan"], [
+        %{"cardDbfId" => 79407, "kept" => false}
+      ])
+      |> put_in(["player", "cardsDrawnFromInitialDeck"], [
+        %{"cardId" => 79407, "turn" => 1}
+      ])
+
+    conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
+    assert json_response(conn, 200)
+
+    game = Hearthstone.DeckTracker.get_game_by_game_id(game_id)
+    assert is_nil(Hearthstone.DeckTracker.raw_stats_for_game(game))
+    assert [_ | _] = Hearthstone.DeckTracker.card_tallies_for_game(game)
   end
 end

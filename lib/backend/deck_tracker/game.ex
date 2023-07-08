@@ -8,6 +8,7 @@ defmodule Hearthstone.DeckTracker.Game do
   alias Backend.Hearthstone.Deck
   alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
+  alias Hearthstone.DeckTracker.CardGameTally
   alias Backend.Api.ApiUser
 
   schema "dt_games" do
@@ -36,6 +37,7 @@ defmodule Hearthstone.DeckTracker.Game do
 
     field :public, :boolean, default: false
     belongs_to :source, Source
+    has_many :card_tallies, CardGameTally
 
     belongs_to :created_by, ApiUser
     timestamps()
@@ -44,7 +46,7 @@ defmodule Hearthstone.DeckTracker.Game do
   @doc false
   def changeset(game = %{game_id: game_id}, attrs) when is_binary(game_id) do
     game
-    |> Backend.Repo.preload(:raw_player_card_stats)
+    |> Backend.Repo.preload([:raw_player_card_stats, :card_tallies])
     |> cast(attrs, [
       :status,
       :duration,
@@ -59,6 +61,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :public
     ])
     |> build_raw_player_card_stats(attrs)
+    |> build_card_tallies(attrs)
     |> unique_constraint(:game_id)
   end
 
@@ -87,6 +90,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :turns
     ])
     |> build_raw_player_card_stats(attrs)
+    |> build_card_tallies(attrs)
     |> fix_rank(:player_rank, :player_legend_rank)
     |> fix_rank(:opponent_rank, :opponent_legend_rank)
     |> put_assoc_from_attrs(attrs, :player_deck)
@@ -108,6 +112,15 @@ defmodule Hearthstone.DeckTracker.Game do
   end
 
   defp build_raw_player_card_stats(cs, _attrs) do
+    cs
+  end
+
+  defp build_card_tallies(cs, %{"card_tallies" => _}) do
+    cs
+    |> cast_assoc(:card_tallies)
+  end
+
+  defp build_card_tallies(cs, _attrs) do
     cs
   end
 
