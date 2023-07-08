@@ -21,7 +21,19 @@ defmodule Backend.HearthstoneJson do
   def closest(card_name, cutoff \\ @min_jaro_distance),
     do: cards() |> CardMatcher.match_name(card_name, cutoff)
 
+  @spec get_card(integer()) :: Card.t() | nil
   def get_card(dbf_id), do: table() |> Util.ets_lookup("card_#{dbf_id}")
+
+  @spec get_dbf_by_card_id(String.t()) :: integer() | nil
+  def get_dbf_by_card_id(card_id) do
+    case get_by_card_id(card_id) do
+      %{dbf_id: id} -> id
+      _ -> nil
+    end
+  end
+
+  @spec get_by_card_id(String.t()) :: Card.t() | nil
+  def get_by_card_id(card_id), do: table() |> Util.ets_lookup("card_id_#{card_id}")
 
   @spec get_fresh() :: [Card]
   def get_fresh() do
@@ -102,6 +114,7 @@ defmodule Backend.HearthstoneJson do
   def update_table(cards, table) do
     cards
     |> Enum.each(fn c ->
+      :ets.insert(table, {"card_id_#{c.id}", c})
       :ets.insert(table, {"card_#{c.dbf_id}", c})
       :ets.insert(table, {"card_class_#{c.dbf_id}", c.card_class})
     end)

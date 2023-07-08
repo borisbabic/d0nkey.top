@@ -81,10 +81,10 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "source" => source_handler.(dto.source, dto.source_version) |> Util.or_nil(),
       "created_by" => dto.created_by
     }
-    |> add_raw_stats_ecto_attrs(dto)
+    |> add_card_info(dto)
   end
 
-  def add_raw_stats_ecto_attrs(
+  def add_card_info(
         attrs,
         %{
           player: %{
@@ -93,14 +93,65 @@ defmodule Hearthstone.DeckTracker.GameDto do
           }
         }
       ) do
-    attrs
-    |> Map.put("raw_player_card_stats", %{
-      "cards_drawn_from_initial_deck" => drawn,
-      "cards_in_hand_after_mulligan" => mull
-    })
+    case create_card_tally_ecto_attrs(mull, drawn) do
+      {:ok, tallies} ->
+        Map.put(attrs, "card_tallies", tallies)
+
+      {:error, _error} ->
+        Map.put(attrs, "raw_player_card_stats", create_raw_stats_attrs(mull, drawn))
+    end
   end
 
-  def add_raw_stats_ecto_attrs(attrs, _dto), do: attrs
+  def add_card_info(attrs, _dto), do: attrs
+
+  def create_card_tally_ecto_attrs(mull, drawn) do
+    Enum.reduce(mull ++ drawn, {:ok, []}, &to_tally_attrs_reducer/2)
+  end
+
+  def to_tally_attrs_reducer(_mull_or_drawn, {:error, error}), do: {:error, error}
+
+  def to_tally_attrs_reducer(mull_or_drawn, {:ok, acc}) do
+    with {:ok, dbf_id} <- dbf_id(mull_or_drawn) do
+      attrs = to_tally_attrs(dbf_id, mull_or_drawn)
+      {:ok, [attrs | acc]}
+    end
+  end
+
+  defp to_tally_attrs(id, %{turn: turn}) do
+    %{
+      "card_id" => id,
+      "drawn" => true,
+      "mulligan" => false,
+      "turn" => turn,
+      "kept" => false
+    }
+  end
+
+  defp to_tally_attrs(id, %{kept: kept}) do
+    %{
+      "card_id" => id,
+      "drawn" => true,
+      "mulligan" => true,
+      "turn" => 0,
+      "kept" => kept
+    }
+  end
+
+  defp create_raw_stats_attrs(mull, drawn) do
+    %{
+      "cards_drawn_from_initial_deck" => drawn,
+      "cards_in_hand_after_mulligan" => mull
+    }
+  end
+
+  defp dbf_id(%{card_dbf_id: id}) when is_integer(id), do: {:ok, id}
+
+  defp dbf_id(%{card_id: card_id}) do
+    case Backend.HearthstoneJson.get_dbf_by_card_id(card_id) do
+      id when is_integer(id) -> {:ok, id}
+      _ -> {:error, :could_not_get_dbf_id}
+    end
+  end
 
   def status(dto) do
     case dto.result do
@@ -147,7 +198,8 @@ end
 defmodule Hearthstone.DeckTracker.PlayerDto do
   @moduledoc "handles player info"
   use TypedStruct
-  alias __MODULE__
+  alias Hearthstone.DeckTracker.CardDrawnDto
+  alias Hearthstone.DeckTracker.CardMulliganDto
 
   typedstruct do
     field :battletag, String.t()
@@ -161,18 +213,70 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
 
   @spec from_raw_map(Map.t()) :: PlayerDto.t()
   def from_raw_map(map) when is_map(map) do
-    %PlayerDto{
+    mull_raw = map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"]
+
+    drawn_raw = map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"]
+
+    %__MODULE__{
       battletag: map["battletag"] || map["battleTag"],
       rank: map["rank"],
       legend_rank: map["legend_rank"] || map["legendRank"],
-      cards_in_hand_after_mulligan:
-        map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"],
-      cards_drawn_from_initial_deck:
-        map["cards_drawn_from_initial_deck"] || map["cardsDrawnFromInitialDeck"],
+      cards_in_hand_after_mulligan: CardMulliganDto.from_raw_list(mull_raw),
+      cards_drawn_from_initial_deck: CardDrawnDto.from_raw_list(drawn_raw),
       class: map["class"],
       deckcode: map["deckcode"]
     }
   end
 
   def from_raw_map(_), do: %{} |> from_raw_map()
+end
+
+defmodule Hearthstone.DeckTracker.CardMulliganDto do
+  @moduledoc "handles card entry info"
+  use TypedStruct
+
+  @derive Jason.Encoder
+
+  typedstruct do
+    field :card_id, integer()
+    field :card_dbf_id, integer() | nil
+    field :kept, boolean()
+  end
+
+  def from_raw_list(list) when is_list(list), do: Enum.map(list, &from_raw_map/1)
+  def from_raw_list(_), do: nil
+  def from_raw_map(nil), do: nil
+
+  def from_raw_map(map) do
+    %__MODULE__{
+      card_id: map["card_id"] || map["cardId"],
+      card_dbf_id: map["card_dbf_id"] || map["cardDbfId"],
+      kept: map["kept"]
+    }
+  end
+end
+
+defmodule Hearthstone.DeckTracker.CardDrawnDto do
+  @moduledoc "Holds info about a card that was drawn"
+  use TypedStruct
+
+  @derive Jason.Encoder
+
+  typedstruct do
+    field :card_id, integer()
+    field :card_dbf_id, integer() | nil
+    field :turn, integer()
+  end
+
+  def from_raw_list(list) when is_list(list), do: Enum.map(list, &from_raw_map/1)
+  def from_raw_list(_), do: nil
+  def from_raw_map(nil), do: nil
+
+  def from_raw_map(map) do
+    %__MODULE__{
+      card_id: map["card_id"] || map["cardId"],
+      card_dbf_id: map["card_dbf_id"] || map["cardDbfId"],
+      turn: map["turn"]
+    }
+  end
 end
