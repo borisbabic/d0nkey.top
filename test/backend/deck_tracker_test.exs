@@ -6,6 +6,7 @@ defmodule Backend.DeckTrackerTest do
     alias Hearthstone.DeckTracker.Game
     alias Hearthstone.DeckTracker.GameDto
     alias Hearthstone.DeckTracker.PlayerDto
+    alias Hearthstone.DeckTracker.RawPlayerCardStats
 
     @valid_dto %GameDto{
       player: %PlayerDto{
@@ -112,6 +113,45 @@ defmodule Backend.DeckTrackerTest do
 
       preloaded = Backend.Repo.preload(game, :card_tallies)
       assert %{card_tallies: [_ | _]} = preloaded
+    end
+
+    test "doesn't convert freshly inserted raw_stats" do
+      assert {:ok, %Game{status: :win, turns: nil, duration: nil, game_id: "bla bla car"} = game} =
+               DeckTracker.handle_game(@with_unknown_card_stats)
+
+      assert %{cards_in_hand_after_mulligan: _} = DeckTracker.raw_stats_for_game(game)
+
+      DeckTracker.convert_raw_stats_to_card_tallies()
+
+      assert [] = DeckTracker.card_tallies_for_game(game)
+      assert %{cards_drawn_from_initial_deck: _} = DeckTracker.raw_stats_for_game(game)
+    end
+
+    test "converts raw_stats_with_known_cards" do
+      game_dto = @valid_dto |> Map.put("game_id", Ecto.UUID.generate())
+      assert {:ok, %Game{id: id} = game} = DeckTracker.handle_game(game_dto)
+
+      raw_attrs = %{
+        "game_id" => id,
+        "cards_drawn_from_initial_deck" => [
+          %{
+            "card_dbf_id" => 74097,
+            "turn" => 5
+          }
+        ]
+      }
+
+      {:ok, %{id: raw_stats_id}} =
+        %RawPlayerCardStats{}
+        |> RawPlayerCardStats.changeset(raw_attrs)
+        |> Repo.insert()
+
+      assert %{cards_in_hand_after_mulligan: _} = DeckTracker.raw_stats_for_game(game)
+
+      DeckTracker.convert_raw_stats_to_card_tallies(min_id: raw_stats_id - 1)
+
+      assert is_nil(DeckTracker.raw_stats_for_game(game))
+      assert [_ | _] = DeckTracker.card_tallies_for_game(game)
     end
   end
 end
