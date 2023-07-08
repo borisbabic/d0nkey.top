@@ -2,6 +2,8 @@ defmodule Hearthstone.DeckTracker do
   @moduledoc false
 
   import Ecto.Query
+  alias Ecto.Multi
+
   alias Backend.Repo
   alias Backend.Hearthstone.DeckBag
   alias Hearthstone.DeckTracker.CardGameTally
@@ -719,6 +721,77 @@ defmodule Hearthstone.DeckTracker do
     query =
       from r in CardGameTally,
         where: r.game_id == ^id
+
+    Repo.all(query)
+  end
+
+  @default_convert_raw_stats_to_card_tallies_opts [
+    chunk_size: 100,
+    per_query_timeout: 120_000,
+    min_id: 0,
+    times: :infinite
+  ]
+  def convert_raw_stats_to_card_tallies(
+        opts_raw \\ @default_convert_raw_stats_to_card_tallies_opts
+      ) do
+    opts = Keyword.merge(@default_convert_raw_stats_to_card_tallies_opts, opts_raw)
+
+    limit = Keyword.get(opts, :limit)
+    timeout = Keyword.get(opts, :per_query_timeout)
+    times = Keyword.get(opts, :times)
+    min_id = Keyword.get(opts, :min_id)
+
+    raw_stats(limit, min_id)
+    |> do_convert_raw_stats_to_card_tallies(limit, timeout, times)
+  end
+
+  defp do_convert_raw_stats_to_card_tallies(_, limit, timeout, times, min_in \\ 0)
+
+  defp do_convert_raw_stats_to_card_tallies(_, _limit, _timeout, times, _min_id)
+       when is_integer(times) and times < 1,
+       do: :ok
+
+  defp do_convert_raw_stats_to_card_tallies([], _limit, _timeout, _times, _max_id), do: :ok
+
+  defp do_convert_raw_stats_to_card_tallies(fetched, limit, timeout, times, min_id) do
+    {multi, new_min_id} =
+      fetched
+      |> Enum.reduce({Multi.new(), min_id}, fn raw_stats, {multi, max_id} ->
+        %{drawn: drawn, mull: mull} = RawPlayerCardStats.dtos(raw_stats)
+        attrs_result = GameDto.create_card_tally_ecto_attrs(mull, drawn, raw_stats.game_id)
+
+        new_multi =
+          case attrs_result do
+            {:ok, attrs} ->
+              multi
+              |> Multi.insert_all(
+                "insert_tallies_from_#{raw_stats.id}_for_#{raw_stats.game_id}",
+                CardGameTally,
+                attrs
+              )
+              |> Multi.delete("delete_raw_stats_#{raw_stats.id}", raw_stats)
+
+            {:error, _} ->
+              multi
+          end
+
+        {new_multi, Enum.max([max_id, raw_stats.id])}
+      end)
+
+    Repo.transaction(multi, timeout: timeout)
+
+    new_times = if is_integer(times), do: times - 1, else: times
+
+    raw_stats(limit, new_min_id)
+    |> do_convert_raw_stats_to_card_tallies(limit, timeout, times, new_min_id)
+  end
+
+  def raw_stats(limit, min_id \\ 0) do
+    query =
+      from r in RawPlayerCardStats,
+        where: r.id > ^min_id,
+        order_by: [asc: r.id],
+        limit: ^limit
 
     Repo.all(query)
   end

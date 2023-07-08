@@ -104,8 +104,14 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   def add_card_info(attrs, _dto), do: attrs
 
+  def create_card_tally_ecto_attrs(mull, drawn, game_id) do
+    with {:ok, attrs} <- create_card_tally_ecto_attrs(mull, drawn) do
+      {:ok, Enum.map(attrs, &Map.put(&1, :game_id, game_id))}
+    end
+  end
+
   def create_card_tally_ecto_attrs(mull, drawn) do
-    Enum.reduce(mull ++ drawn, {:ok, []}, &to_tally_attrs_reducer/2)
+    Enum.reduce((mull || []) ++ (drawn || []), {:ok, []}, &to_tally_attrs_reducer/2)
   end
 
   def to_tally_attrs_reducer(_mull_or_drawn, {:error, error}), do: {:error, error}
@@ -118,22 +124,36 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   defp to_tally_attrs(id, %{turn: turn}) do
+    # %{
+    #   "card_id" => id,
+    #   "drawn" => true,
+    #   "mulligan" => false,
+    #   "turn" => turn,
+    #   "kept" => false
+    # }
     %{
-      "card_id" => id,
-      "drawn" => true,
-      "mulligan" => false,
-      "turn" => turn,
-      "kept" => false
+      card_id: id,
+      drawn: true,
+      mulligan: false,
+      turn: turn,
+      kept: false
     }
   end
 
   defp to_tally_attrs(id, %{kept: kept}) do
+    # %{
+    #   "card_id" => id,
+    #   "drawn" => true,
+    #   "mulligan" => true,
+    #   "turn" => 0,
+    #   "kept" => kept
+    # }
     %{
-      "card_id" => id,
-      "drawn" => true,
-      "mulligan" => true,
-      "turn" => 0,
-      "kept" => kept
+      card_id: id,
+      drawn: true,
+      mulligan: true,
+      turn: 0,
+      kept: kept
     }
   end
 
