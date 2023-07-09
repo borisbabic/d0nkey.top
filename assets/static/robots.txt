@@ -26,3 +26,5 @@ Disallow: *?*rank
 Disallow: *?*period
 Disallow: *?*page
 Disallow: /deck/*?*
+Disallow: /card-stats
+Disallow: /card-stats*?*
