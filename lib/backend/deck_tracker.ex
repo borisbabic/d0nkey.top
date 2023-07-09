@@ -186,6 +186,70 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
+  @type card_stats :: %{
+          card_id: integer(),
+          drawn_count: integer(),
+          drawn_impact: float(),
+          mull_count: integer(),
+          mull_impact: float()
+        }
+
+  @spec merge_card_deck_stats(list()) :: [card_stats]
+  def merge_card_deck_stats(criteria) do
+    deck_card_stats = deck_card_stats(criteria)
+    deck_stats = deck_stats(criteria)
+    merge_card_deck_stats(deck_card_stats, deck_stats)
+  end
+
+  @spec merge_card_deck_stats(list(), list()) :: [card_stats]
+  def merge_card_deck_stats(deck_card_stats, deck_stats) do
+    deck_winrate_map =
+      for %{deck_id: id, winrate: winrate} <- deck_stats, into: %{}, do: {id, winrate}
+
+    deck_card_stats
+    |> Enum.reduce(%{}, fn ct, acc ->
+      deck_winrate = deck_winrate_map[ct.deck_id]
+
+      drawn_total = ct.drawn_wins + ct.drawn_losses
+      drawn_winrate = safe_div(ct.drawn_wins, drawn_total)
+      drawn_diff = drawn_winrate - deck_winrate
+
+      mull_total = ct.mulligan_wins + ct.mulligan_losses
+      mull_winrate = safe_div(ct.mulligan_wins, mull_total)
+      mull_diff = mull_winrate - deck_winrate
+
+      Map.put_new(acc, ct.card_id, %{
+        cum_drawn_diff: 0,
+        drawn_total: 0,
+        cum_mull_diff: 0,
+        mull_total: 0
+      })
+      |> update_in([ct.card_id, :cum_drawn_diff], &(&1 + drawn_diff * drawn_total))
+      |> update_in([ct.card_id, :drawn_total], &(&1 + drawn_total))
+      |> update_in([ct.card_id, :cum_mull_diff], &(&1 + mull_diff * mull_total))
+      |> update_in([ct.card_id, :mull_total], &(&1 + mull_total))
+    end)
+    |> Enum.map(fn {card_id, cum} ->
+      %{
+        card_id: card_id,
+        drawn_count: cum.drawn_total,
+        drawn_impact: safe_div(cum.cum_drawn_diff, cum.drawn_total),
+        mull_count: cum.mull_total,
+        mull_impact: safe_div(cum.cum_mull_diff, cum.mull_total)
+      }
+    end)
+  end
+
+  defp safe_div(0, _divisor), do: 0 / 1
+  defp safe_div(_dividend, 0), do: 0 / 1
+  defp safe_div(dividend, divisor), do: dividend / divisor
+
+  def deck_card_stats(criteria) do
+    base_deck_card_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
   @doc """
   Stats grouped by opponent's class
   """
@@ -265,6 +329,29 @@ defmodule Hearthstone.DeckTracker do
             g.status,
             g.status
           )
+      }
+    )
+  end
+
+  defp base_deck_card_stats_query() do
+    from(ct in CardGameTally,
+      as: :card_tally,
+      join: g in assoc(ct, :game),
+      as: :game,
+      join: pd in assoc(g, :player_deck),
+      as: :player_deck,
+      group_by: [ct.card_id, pd.id],
+      select: %{
+        drawn_wins:
+          sum(fragment("CASE WHEN ? = 'win' AND ? THEN 1 ELSE 0 END", g.status, ct.drawn)),
+        drawn_losses:
+          sum(fragment("CASE WHEN ? = 'loss' AND ? THEN 1 ELSE 0 END", g.status, ct.drawn)),
+        mulligan_wins:
+          sum(fragment("CASE WHEN ? = 'win' AND ? THEN 1 ELSE 0 END", g.status, ct.mulligan)),
+        mulligan_losses:
+          sum(fragment("CASE WHEN ? = 'loss' AND ? THEN 1 ELSE 0 END", g.status, ct.mulligan)),
+        card_id: ct.card_id,
+        deck_id: pd.id
       }
     )
   end
@@ -726,7 +813,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @default_convert_raw_stats_to_card_tallies_opts [
-    chunk_size: 100,
+    limit: 100,
     per_query_timeout: 120_000,
     min_id: 0,
     times: :infinite

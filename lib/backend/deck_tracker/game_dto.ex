@@ -124,13 +124,6 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   defp to_tally_attrs(id, %{turn: turn}) do
-    # %{
-    #   "card_id" => id,
-    #   "drawn" => true,
-    #   "mulligan" => false,
-    #   "turn" => turn,
-    #   "kept" => false
-    # }
     %{
       card_id: id,
       drawn: true,
@@ -141,13 +134,6 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   defp to_tally_attrs(id, %{kept: kept}) do
-    # %{
-    #   "card_id" => id,
-    #   "drawn" => true,
-    #   "mulligan" => true,
-    #   "turn" => 0,
-    #   "kept" => kept
-    # }
     %{
       card_id: id,
       drawn: true,
