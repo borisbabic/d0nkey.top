@@ -17,8 +17,10 @@ defmodule Bot.MessageHandlerUtil do
 
   def get_guild_battletags!(guild_id), do: Backend.DiscordBot.get_battletags(guild_id)
 
-  @spec get_options(String.t(), :list) :: [String.t()]
-  @spec get_options(String.t(), :string) :: String.t()
+  @spec get_options(Nostrum.Message.t() | String.t(), :list) :: [String.t()]
+  @spec get_options(Nostrum.Message.t() | String.t(), :string) :: String.t()
+  def get_options(%{content: content}, format), do: get_options(content, format)
+
   def get_options(content, :list) do
     content
     |> String.splitter(" ")

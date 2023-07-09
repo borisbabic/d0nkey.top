@@ -31,6 +31,12 @@ defmodule Bot.MessageHandler do
       <<"!ldb", _::binary>> ->
         Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
 
+      <<"!reveals", _::binary>> ->
+        Bot.RevealMessageHandler.handle_reveals(msg)
+
+      <<"!all-reveals", _::binary>> ->
+        Bot.RevealMessageHandler.handle_all_reveals(msg)
+
       <<"!matchups_link", _::binary>> ->
         Bot.MatchupMessageHandler.handle_matchups_link(msg)
 
