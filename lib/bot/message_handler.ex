@@ -10,6 +10,126 @@ defmodule Bot.MessageHandler do
   alias Nostrum.Struct.Embed
   import Bot.MessageHandlerUtil
 
+  @help_definitions %{
+    "dhelp" => """
+    ## dhelp (Help command)
+    `!dhelp [command]`
+    `!dhelp` - prints help for all commands (avoid using this),
+    `!dhelp $command` ex `!dhelp !ldb` or `!dhelp ldb` - prints help for the specific command
+    """,
+    "ldb" => """
+    ## `ldb` (Leaderboards command)
+    `!ldb [$battletags] [$filters]`
+
+    Display current leaderboards either for supplied battletags or for server battletags (see below) with available filters (see below)
+    `!ldb` # uses server battletags (see `!dhelp server battletags` for info), currently doesn't show all ranks by defaults, max 5000
+    `!ldb D0nkey SomeOtherBtag` Searches for D0nkey and SomeOtherBtag, shows all ranks by default
+
+    ### Filters
+    filter syntax is `filter:value`, example `leaderboard_id:BG`
+    some filters have shorthands like `ldb` instead of `leaderboard_id`
+    available filters with shorthands are:
+
+    - `s`, `ssn`, `season_id`
+    - `l`, `ldb`, `ldb_id`, `leaderboard_id`
+    - `r`, `rgn`, `region`
+    - `min_rank`
+    - `max_rank`
+    - `min_rating`
+    - `max_rating`
+
+    example:
+    `!ldb D0nkey SomeOtherBtag ldb:BG region:EU` Searches for D0nkey and SomeOtherBtag on EU BG leaderboards
+    """,
+    "ping" => """
+    ## ping
+    pong
+    """,
+    "reveals" => """
+    ## `reveals` (Card Reveals)
+    `!reveals [$options]`
+    `!reveals format:text`
+    Get the next reveals, it has two formats `embed` (default) and `text`.
+    Checks the period from 1h ago to 24h ahead.
+    Will look further in the future in order to show the minimum (3)
+    """,
+    "all-reveals" => """
+    ## `all-reveals` (Card Reveals All)
+    `!reveals format:text`
+    Like !reveals, but shows all the reveals, but requires format:text since discord limits embeds
+    """,
+    "cards" => """
+    ## `cards` (Latest HS Cards)
+    `!cards [$filters]`
+    Replies with latest hs cards, can be filtered (see below). Not all cards in the past are ordered correctly
+    ## Filters
+    filter syntax is `filter:value`, example `class:warrior`
+    some filters have alt forms
+
+    ### Filters
+    - `limit` - how many cards to return default: `3`, max: `10`
+    - `collectible` - ex: `collectible:no`, default: `yes`
+    - `format` - `standard` or `wild`, currently no support for twist/new age
+    - `order_by` - default: `latest`, also possible: `name_similarity_$search_without_spaces`
+    - `mana_cost` - exact cost, comparisons are planned
+    - `health` - exact health, comparisons are planned
+    - `attack` - exact attack, comparisons are planned
+    - `set`, `sets`, `card_set`, `card_sets`  - can specify multiple using | as a separator
+    - `type`, `types`, `card_type`, `card_types` - can specify multiple using | as a separator
+    - `class`, `classes` - can specify multiple using | as a separator
+    - `keywords`, `keyword` - can specify multiple using | as a separator
+    - `rarity`, `rarities` - can specify multiple using | as a separator
+    - `school`, `schools`, `spell_school`, `spell_schools` - can specify multiple using | as a separator
+    - `minion_type` - can specify multiple using | as a separator
+    """,
+    "card-stats" => """
+    ## `card-stats`
+    `!card-stats [$filters]`
+    Replies with a summary of card stats for the supplied filters.
+    Shares the same possible filters with `!cards`, see `!dhelp cards` for a list of possible Filters
+    default filters: `collectible:yes format:standard`
+    """,
+    "patchnotes" => """
+    ## `patchnotes` (Hearthstone Patchnotes)
+    `!patchnotes`
+    Responds with a link to the latest patchnotes
+    Note: only tagged patch notes on the site are included
+    Hotfix forum post patch notes aren't considered
+    """,
+    "battlefy" => """
+    ## `battletfy` (Battlefy Standings)
+    `!battlefy $tournament_id`
+    Shows the standings for a battelfy tournament for server battletags (see `!dhelp server battletags`) 
+    Some notable third party tournaments get shorthands like `!bunnyopen`
+    """,
+    "thl" => """
+    ## `thl` (Team Hearth LEAGUE)
+    `!thl [name:]$discord_tags`
+    Makes it easier to link to THL servers discord users.
+    Intedend for use to make it easier for teammates to contact opponents.
+    Only usable by people in the thl server.
+    example:
+    `!thl d0nkey`
+    `!thl my_title:d0nkey`
+    `!thl my_title:d0nkey thispersondoesnotexist somebodyelsenonexistent OldTag#1234`
+    """,
+    "mt" => """
+    ## `mt` (Masters Tour)
+    `!mt [$mt]`
+    Shows standings for a masters tour for server battletags (see `!dhelp server battletags`) 
+    If no mt is supplied it will default to the current mt, if there is one
+    """,
+    "mtq" => """
+    ## `mtq` (Masters Tour Qualifiers)
+    RIP
+    """,
+    "server battletags" => """
+    ### Server Battletags
+    Server battletags are sourced from a channel in the server that starts with #battletags
+    Battletags are saved on the server for speed reasons
+    Only new messages in that channel are evaluated, ie message edits or deletions are ignored
+    """
+  }
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle(msg) do
     case msg.content do
@@ -86,6 +206,9 @@ defmodule Bot.MessageHandler do
       <<"!thl", _::binary>> ->
         Bot.ThlMessageHandler.handle_thl(msg)
 
+      <<"!dhelp", _::binary>> ->
+        handle_help(msg)
+
       <<"[[", _::binary>> ->
         handle_card(msg)
 
@@ -96,6 +219,34 @@ defmodule Bot.MessageHandler do
         ]
         |> Enum.find(:ignore, &(&1 != :ignore))
     end
+  end
+
+  def get_help(target) do
+    case Map.get(@help_definitions, target) do
+      command_specific when is_binary(command_specific) -> command_specific
+      _ -> general_help_reply()
+    end
+  end
+
+  def general_help_reply() do
+    command_specific =
+      for {key, _} <- @help_definitions, !(key =~ " ") do
+        "`\t!dhelp #{key}`"
+      end
+      |> Enum.join("\n")
+
+    "Check individual command helps: \n#{command_specific}"
+  end
+
+  def handle_help(msg) do
+    reply_content =
+      msg
+      |> get_options(:string)
+      |> String.trim()
+      |> String.trim("!")
+      |> get_help()
+
+    Api.create_message(msg, content: reply_content)
   end
 
   def handle_card(msg) do
