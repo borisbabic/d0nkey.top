@@ -142,7 +142,7 @@ defmodule Components.DecksExplorer do
         <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
         <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
         <a class="button" target="_blank" href={~p"/card-stats?#{@params}"}>
-          Class Stats (WIP!)
+          Card Stats (WIP!)
         </a>
         <br>
         <br>
