@@ -1,4 +1,4 @@
-defmodule BackendWeb.CardStatsTableLive do
+defmodule BackendWeb.CardStatsLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.CardStatsTable
@@ -16,7 +16,7 @@ defmodule BackendWeb.CardStatsTableLive do
       <div>
         <div class="title is-2"> Card Stats </div>
       <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
-        <CardStatsTable id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} />
+        <CardStatsTable id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
   end
@@ -26,11 +26,14 @@ defmodule BackendWeb.CardStatsTableLive do
   end
 
   def handle_params(params, _uri, socket) do
+    default = CardStatsTable.default_criteria()
+    decks_criteria = DecksExplorer.filter_relevant(params)
+
     criteria =
-      DecksExplorer.filter_relevant(params)
+      Map.merge(default, decks_criteria)
       |> add_deck_id(params)
 
-    filters = CardStatsTable.filter_relevant(params)
+    filters = CardStatsTable.filter_relevant(params) |> CardStatsTable.with_default_filters()
 
     {:noreply, assign(socket, filters: filters, criteria: criteria)}
   end

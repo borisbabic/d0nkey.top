@@ -1,6 +1,6 @@
 defmodule Components.DecksExplorer do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
   alias Backend.Blizzard
   alias Backend.Hearthstone.Deck
   alias Components.DeckWithStats
@@ -141,6 +141,9 @@ defmodule Components.DecksExplorer do
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
         <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
+        <a class="button" target="_blank" href={~p"/card-stats?#{@params}"}>
+          Class Stats (WIP!)
+        </a>
         <br>
         <br>
 
@@ -199,8 +202,10 @@ defmodule Components.DecksExplorer do
 
   def limit_options(), do: [10, 15, 20, 25, 30]
 
-  def class_options(any_name \\ "Any"),
-    do: [{nil, any_name} | Enum.map(Deck.classes(), &{&1, Deck.class_name(&1)})]
+  def class_options(any_name \\ "Any", name_prefix \\ ""),
+    do: [
+      {nil, any_name} | Enum.map(Deck.classes(), &{&1, "#{name_prefix}#{Deck.class_name(&1)}"})
+    ]
 
   def format_options(),
     do:
