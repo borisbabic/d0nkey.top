@@ -108,7 +108,12 @@ defmodule BackendWeb do
       alias BackendWeb.Router.Helpers, as: Routes
       import BackendWeb.LiveHelpers
       use Phoenix.VerifiedRoutes, router: BackendWeb.Router, endpoint: BackendWeb.Endpoint
+
       unquote(view_helpers())
+
+      def user_from_context(assigns) do
+        Surface.Components.Context.get(assigns, :user)
+      end
 
       defp put_user_in_context(%{assigns: %{user: user}} = socket) do
         Surface.Components.Context.put(socket, user: user)

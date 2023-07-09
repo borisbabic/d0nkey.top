@@ -194,7 +194,7 @@ defmodule BackendWeb.Router do
     live("/card/:card_id", CardLive)
 
     live("/deckviewer", DeckviewerLive)
-    live("/card-stats", CardStatsTableLive)
+    live("/card-stats", CardStatsLive)
     live("/decks", DecksLive)
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)

@@ -2,16 +2,71 @@ defmodule Components.CardStatsTable do
   @moduledoc false
   use BackendWeb, :surface_live_component
   alias Components.DecklistCard
+  alias Components.LivePatchDropdown
+  alias Components.DecksExplorer
 
   prop(card_stats, :list)
-  prop(limit, :integer, default: 40)
   prop(filters, :map, default: %{})
+  prop(criteria, :any, default: %{})
   prop(live_view, :module, required: true)
+  prop(path_params, :any, default: nil)
 
   def render(assigns) do
     ~F"""
       <div>
-        <table class="table is-fullwidth is-striped">
+        <LivePatchDropdown
+          options={DecksExplorer.default_period_options()}
+          title={"Period"}
+          param={"period"}
+          url_params={Map.merge(@criteria, @filters)}
+          path_params={@path_params}
+          selected_params={@criteria}
+          live_view={@live_view} />
+        <LivePatchDropdown
+          options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+          title={"Min Mull Count"}
+          param={"min_mull_count"}
+          selected_as_title={false}
+          url_params={Map.merge(@criteria, @filters)}
+          path_params={@path_params}
+          selected_params={@filters}
+          live_view={@live_view} />
+        <LivePatchDropdown
+          options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+          title={"Min Drawn Count"}
+          param={"min_drawn_count"}
+          selected_as_title={false}
+          url_params={Map.merge(@criteria, @filters)}
+          path_params={@path_params}
+          selected_params={@filters}
+          live_view={@live_view} />
+        <LivePatchDropdown
+          options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
+          title={"Show Counts"}
+          param={"show_counts"}
+          selected_as_title={true}
+          url_params={Map.merge(@criteria, @filters)}
+          path_params={@path_params}
+          selected_params={@filters}
+          live_view={@live_view} />
+        <LivePatchDropdown
+          options={DecksExplorer.rank_options()}
+          title={"Rank"}
+          param={"rank"}
+          url_params={Map.merge(@criteria, @filters)}
+          path_params={@path_params}
+          selected_params={@criteria}
+          live_view={@live_view} />
+
+        <LivePatchDropdown
+          options={DecksExplorer.class_options("Any Class", "VS ")}
+          title={"Opponent's Class"}
+          param={"opponent_class"}
+          url_params={Map.merge(@criteria, @filters)}
+          path_params={@path_params}
+          selected_params={@criteria}
+          live_view={@live_view} />
+        <table class="table is-fullwidth is-striped is-narrow">
           <thead>
             <th>
               <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")}>
@@ -23,7 +78,7 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Mulligan Impact", "mull_impact", @filters)}
               </a>
             </th>
-              <th>
+              <th :if={show_counts(@filters)}>
               <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
                 {add_arrow("Mulligan Count", "mull_count", @filters)}
               </a> 
@@ -33,7 +88,7 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Drawn Impact", "drawn_impact", @filters)}
               </a>
             </th>
-              <th>
+              <th :if={show_counts(@filters)}>
               <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")}>
                 {add_arrow("Drawn Count", "drawn_count", @filters)}
               </a>
@@ -49,9 +104,9 @@ defmodule Components.CardStatsTable do
 
                 </td>
               <td>{to_percent(cs.mull_impact)}</td>
-              <td>{cs.mull_count}</td>
+              <td :if={show_counts(@filters)}>{cs.mull_count}</td>
               <td>{to_percent(cs.drawn_impact)}</td>
-              <td>{cs.drawn_count}</td>
+              <td :if={show_counts(@filters)}>{cs.drawn_count}</td>
             </tr>
           </tbody>
         </table>
@@ -76,7 +131,7 @@ defmodule Components.CardStatsTable do
     do: flip_direction(s)
 
   defp sort_direction(_, _), do: "desc"
-  defp flip_direction("desc"), do: "asc"
+  defp flip_direction(dir) when dir in [:desc, "desc"], do: "asc"
   defp flip_direction(_), do: "desc"
 
   def count(%{mull_impact: mi, drawn_impact: di}, filters) do
@@ -93,7 +148,7 @@ defmodule Components.CardStatsTable do
   def default_count_minimum(%{"player_deck_id" => _}), do: 0
 
   def default_count_minimum(%{"min_count" => min_count}), do: min_count
-  def default_count_minimum(_), do: 50
+  def default_count_minimum(_), do: 200
 
   def map_filter(stats, filters) do
     default_min = default_count_minimum(filters)
@@ -155,16 +210,64 @@ defmodule Components.CardStatsTable do
       "min_mull_count",
       "min_drawn_count",
       "min_count",
+      "show_counts",
       "player_deck_id",
       "deck_id",
       "sort_by",
-      "direction"
+      "sort_direction"
     ])
-    |> Components.DecksExplorer.parse_int(["min_mull_count", "min_drawn_count", "min_count"])
+    |> DecksExplorer.parse_int(["min_mull_count", "min_drawn_count", "min_count"])
   end
 
-  def handle_event("change_sort", sort, %{assigns: %{filters: old_filters}} = socket) do
+  def default_criteria() do
+    %{
+      "period" => DecksExplorer.default_period()
+    }
+  end
+
+  def default_filters() do
+    %{
+      "show_counts" => "no"
+    }
+  end
+
+  def with_default_filters(filters) do
+    Map.merge(default_filters(), filters)
+  end
+
+  def handle_event(
+        "change_sort",
+        sort,
+        %{
+          assigns: %{
+            filters: old_filters,
+            criteria: criteria,
+            path_params: path_params,
+            live_view: lv
+          }
+        } = socket
+      ) do
     new_filters = Map.merge(old_filters, sort)
-    {:noreply, socket |> assign(filters: new_filters)}
+
+    {:noreply,
+     socket
+     |> push_patch(
+       to:
+         LivePatchDropdown.link(
+           BackendWeb.Endpoint,
+           lv,
+           @path_params,
+           Map.merge(criteria, new_filters)
+         )
+     )}
+  end
+
+  def show_counts(filters) do
+    show_counts =
+      filters
+      |> with_default_filters()
+      |> Map.get("show_counts", "no")
+
+    show_counts != "no"
   end
 end
