@@ -3,6 +3,11 @@ defmodule ScratchPad do
   import Ecto.Query, warn: false
   alias Ecto.Multi
   alias Backend.Repo
+  alias Hearthstone.DeckTracker.CardGameTally
+  alias Hearthstone.DeckTracker.Game
+  alias Hearthstone.DeckTracker.GameDto
+  alias Hearthstone.DeckTracker.CardMulliganDto
+  alias Hearthstone.DeckTracker.CardDrawnDto
   alias Backend.Hearthstone.Deck
   alias Backend.MastersTour.InvitedPlayer
 
@@ -229,5 +234,50 @@ defmodule ScratchPad do
         select: d.id
 
     Repo.all(query)
+  end
+
+  def generate_false_card_stats(%{
+        id: game_id,
+        player_deck: %{cards: cards},
+        player_has_coin: coin
+      }) do
+    shuffled = Enum.shuffle(cards)
+    mull_num = if coin, do: 4, else: 3
+    drawn_num = Enum.random(1..20)
+
+    mull_dtos =
+      shuffled
+      |> Enum.take(mull_num)
+      |> Enum.map(fn card_id ->
+        %CardMulliganDto{
+          card_dbf_id: card_id,
+          kept: Enum.random([true, false])
+        }
+      end)
+
+    drawn_dtos =
+      shuffled
+      |> Enum.drop(mull_num)
+      |> Enum.take(drawn_num)
+      |> Enum.map(fn card_id ->
+        %CardDrawnDto{
+          card_dbf_id: card_id,
+          turn: Enum.random(1..10)
+        }
+      end)
+
+    {:ok, ecto_attrs} = GameDto.create_card_tally_ecto_attrs(mull_dtos, drawn_dtos, game_id)
+    Repo.insert_all(CardGameTally, ecto_attrs)
+  end
+
+  def generate_false_card_stats(num_games) when is_integer(num_games) do
+    from(g in Game,
+      join: pd in assoc(g, :player_deck),
+      preload: [player_deck: pd],
+      where: pd.format == 2,
+      limit: ^num_games
+    )
+    |> Repo.all()
+    |> Enum.each(&generate_false_card_stats/1)
   end
 end
