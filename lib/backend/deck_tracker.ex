@@ -196,8 +196,23 @@ defmodule Hearthstone.DeckTracker do
 
   @spec merge_card_deck_stats(list()) :: [card_stats]
   def merge_card_deck_stats(criteria) do
-    deck_card_stats = deck_card_stats(criteria)
-    deck_stats = deck_stats(criteria)
+    {_, query_timeout} =
+      criteria
+      |> Enum.to_list()
+      |> List.keyfind("timeout", 0, {"timeout", 15_000})
+
+    await_timeout = 1000 + Util.to_int!(query_timeout, 15_000)
+
+    [
+      deck_card_stats,
+      deck_stats
+    ] =
+      [
+        Task.async(fn -> deck_card_stats(criteria) end),
+        Task.async(fn -> deck_stats(criteria) end)
+      ]
+      |> Task.await_many(await_timeout)
+
     merge_card_deck_stats(deck_card_stats, deck_stats)
   end
 
@@ -456,8 +471,9 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  defp build_games_query(query, criteria),
-    do: Enum.reduce(criteria, query, &compose_games_query/2)
+  defp build_games_query(query, criteria) do
+    Enum.reduce(criteria, query, &compose_games_query/2)
+  end
 
   defp compose_games_query(period, query) when period in [:past_week, :past_day, :past_3_days],
     do: compose_games_query({"period", to_string(period)}, query)
