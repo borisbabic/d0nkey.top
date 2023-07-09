@@ -73,6 +73,7 @@ defmodule BackendWeb.DeckLive do
               <:after_deck>
                 <DeckStreamingInfo deck_id={@deck.id}/>
                 <a :if={@user} class="tag column is-link" href={BackendWeb.DeckTrackerLive.url(@deck)}>Track Games</a>
+                <a :if={nil != @deck.id} class="tag column is-link" href={~p"/card-stats?deck_id=#{@deck.id}"}>Card Stats (WIP!)</a>
               </:after_deck>
             </DeckCard>
           </div>
