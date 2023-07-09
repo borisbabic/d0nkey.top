@@ -19,11 +19,11 @@ defmodule Components.CardStatsTable do
             <th>Drawn Count</th>
           </thead>
           <tbody>
-            <tr :for={cs <- @card_stats |> filter(@filters) |> sort(@filters)}>
+            <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters)}>
               <td>
 
               <div class="decklist_card_container">
-                <DecklistCard deck_class="NEUTRAL" card={card(cs.card_id)} count={count(cs, @filters)}/>
+                <DecklistCard deck_class="NEUTRAL" card={cs.card} count={count(cs, @filters)}/>
               </div>
 
                 </td>
@@ -54,10 +54,18 @@ defmodule Components.CardStatsTable do
   def default_count_minimum(%{"min_count" => min_count}), do: min_count
   def default_count_minimum(_), do: 50
 
-  def filter(stats, filters) do
+  def map_filter(stats, filters) do
     default_min = default_count_minimum(filters)
     mull_min = Map.get(filters, "min_mull_count", default_min)
     drawn_min = Map.get(filters, "min_drawn_count", default_min)
+
+    for %{mull_count: mull, drawn_count: drawn, card_id: card_id} = cs <- stats,
+        mull > mull_min,
+        drawn > drawn_min,
+        card = card(card_id),
+        card != nil do
+      Map.put(cs, :card, card)
+    end
 
     Enum.filter(stats, fn %{mull_count: mull, drawn_count: dc} ->
       mull > mull_min and dc > drawn_min
@@ -71,7 +79,7 @@ defmodule Components.CardStatsTable do
     |> Map.get(:name)
   end
 
-  def to_percent(int) when is_integer(int), do: Float.from()
+  def to_percent(int) when is_integer(int), do: int / 1
   def to_percent(num), do: "#{Float.round(num * 100, 2)}%"
 
   def sort(stats, filters) do
