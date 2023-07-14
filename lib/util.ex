@@ -590,4 +590,12 @@ defmodule Util do
   @spec unpack(any() | [any()]) :: any()
   def unpack([thing]), do: thing
   def unpack(thing), do: thing
+
+  def success?(:ok), do: true
+  def success?(tuple) when is_tuple(tuple), do: elem(tuple, 0) == :ok
+  def success?(_), do: false
+
+  def failure?(:error), do: true
+  def failure?(tuple) when is_tuple(tuple), do: elem(tuple, 0) == :error
+  def failure?(_), do: false
 end

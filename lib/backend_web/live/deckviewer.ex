@@ -6,6 +6,7 @@ defmodule BackendWeb.DeckviewerLive do
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson
   alias Backend.HSDeckViewer
+  alias Backend.HSReplay
   alias Backend.Yaytears
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
@@ -147,16 +148,25 @@ defmodule BackendWeb.DeckviewerLive do
   def extract_codes(link, opts \\ []) do
     query_params = Keyword.get(opts, :query_params, ["deckcode", "code", "deckcodes", "codes"])
     separators = Keyword.get(opts, :separators, [",", ".", "|"])
+    parsed = URI.parse(link)
 
-    with %{query: query_raw} when is_binary(query_raw) <- link |> URI.parse(),
-         query <- URI.decode_query(query_raw) do
-      for {_, val} <- Map.take(query, query_params),
-          code <- String.split(val, separators),
-          Deck.valid?(code),
-          do: code
-    else
-      _ -> []
-    end
+    from_query =
+      with %{query: query_raw} when is_binary(query_raw) <- parsed,
+           query <- URI.decode_query(query_raw) do
+        for {_, val} <- Map.take(query, query_params),
+            code <- String.split(val, separators),
+            Deck.valid?(code),
+            do: code
+      else
+        _ -> []
+      end
+
+    # extract from path
+    for part <- String.split(parsed.path, "/"),
+        decoded = URI.decode(part),
+        Deck.valid?(decoded),
+        into: from_query,
+        do: decoded
   end
 
   # def extract_decks(decks) when is_list(decks), do: Enum.map(decks, &extract_decks/1)
@@ -172,6 +182,12 @@ defmodule BackendWeb.DeckviewerLive do
 
       Yaytears.yt_link?(new_code) ->
         Yaytears.extract_codes(new_code)
+
+      HSReplay.hsreplay_link?(new_code) ->
+        case HSReplay.extract_deck(new_code) do
+          {:ok, deck} -> [Deck.deckcode(deck)]
+          _ -> []
+        end
 
       our_link?(new_code) ->
         extract_codes(new_code)
