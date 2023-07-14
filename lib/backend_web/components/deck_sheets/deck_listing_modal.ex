@@ -111,16 +111,38 @@ defmodule Components.DeckListingModal do
     if existing do
       Sheets.edit_deck_sheet_listing(existing, attrs, user)
     else
-      with {deckcode, rest} <- Map.pop(attrs, "deckcode"),
-           {:ok, deck} <- Hearthstone.create_or_get_deck(deckcode),
+      with {deckcode_or_link, rest} <- Map.pop(attrs, "deckcode"),
+           deckcodes <- BackendWeb.DeckviewerLive.extract_decks(deckcode_or_link),
            {sheet_id, rest} <- Map.pop(rest, "sheet_id"),
-           sheet = %{id: _} <- Sheets.get_sheet(sheet_id) do
-        Sheets.create_deck_sheet_listing(sheet, deck, user, rest)
+           sheet = %{id: _} <- Sheets.get_sheet(sheet_id),
+           {:ok, decks} <- create_decks(deckcodes) do
+        errors =
+          Enum.map(decks, &Sheets.create_deck_sheet_listing(sheet, &1, user, rest))
+          |> Enum.reject(&Util.success?/1)
+
+        if Enum.any?(errors) do
+          {:error, errors}
+        else
+          {:ok, :success}
+        end
       end
     end
     |> Modal.handle_result(socket, id(existing, deck) <> id_part)
 
     {:noreply, socket}
+  end
+
+  @doc """
+  Ignores decks that error
+  """
+  defp create_decks(deckcodes) do
+    decks = for code <- deckcodes, {:ok, deck} <- [Hearthstone.create_or_get_deck(code)], do: deck
+
+    if Enum.any?(decks) do
+      {:ok, decks}
+    else
+      {:error, :could_not_create_a_single_deck}
+    end
   end
 
   defp button_title(nil, %{id: _id}), do: "Edit"
