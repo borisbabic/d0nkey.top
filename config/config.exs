@@ -166,6 +166,7 @@ config :phoenix, :json_library, Jason
 config :nostrum,
   gateway_intents: [
     :guild_messages,
+    :direct_messages,
     :message_content
   ],
   num_shards: :auto
