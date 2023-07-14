@@ -185,11 +185,12 @@ defmodule Backend.HSReplay do
 
   def guess_non_highlander(d = %{class: class_name, format: format}) do
     get_archetypes()
-    |> Enum.filter(fn a -> a.player_class_name == class_name end)
     |> Enum.filter(fn a ->
-      core = a |> Archetype.signature_core(format)
-      limit = NaiveDateTime.utc_now() |> NaiveDateTime.add(-60 * 60 * 24 * 30)
-      core && NaiveDateTime.compare(core.as_of, limit) == :gt && !Archetype.highlander?(a)
+      with true <- a.player_class_name == class_name do
+        core = a |> Archetype.signature_core(format)
+        limit = NaiveDateTime.utc_now() |> NaiveDateTime.add(-60 * 60 * 24 * 30)
+        core && NaiveDateTime.compare(core.as_of, limit) == :gt && !Archetype.highlander?(a)
+      end
     end)
     |> match_archetypes(d)
   end
@@ -305,6 +306,30 @@ defmodule Backend.HSReplay do
         select: dm.hsr_deck_id
 
     Repo.all(query)
+  end
+
+  def hsreplay_link?(url), do: url =~ "hsreplay.net"
+
+  def extract_deck(url) do
+    with %{path: path} when is_binary(path) <- URI.parse(url),
+         ["", "decks", hsr_deck_id | _] <- String.split(path, "/") do
+      get_deck_by_hsr_id(hsr_deck_id)
+    else
+      _ -> {:error, :could_not_extract_deck}
+    end
+  end
+
+  def get_deck_by_hsr_id(hsr_deck_id) do
+    with :error <- get_deck(hsr_deck_id) do
+      get_deck_from_api(hsr_deck_id)
+    end
+  end
+
+  defp get_deck_from_api(hsr_deck_id) do
+    with {:ok, deck} <- Api.get_deck(hsr_deck_id) do
+      Task.start(fn -> insert_map(hsr_deck_id, deck) end)
+      {:ok, deck}
+    end
   end
 
   def get_deck(hsr_deck_id) do
