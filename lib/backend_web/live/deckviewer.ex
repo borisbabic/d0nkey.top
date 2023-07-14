@@ -139,13 +139,21 @@ defmodule BackendWeb.DeckviewerLive do
     }
   end
 
-  def our_link?(new_code) when is_binary(new_code), do: new_code =~ "d0nkey.top"
+  def our_link?(new_code) when is_binary(new_code),
+    do: new_code =~ "d0nkey.top" or new_code =~ "hsguru.com"
+
   def our_link?(_), do: false
 
-  def extract_codes(link) do
-    with %{query: query} when is_binary(query) <- link |> URI.parse(),
-         <<"code="::binary, codes_part::binary>> <- URI.decode(query) do
-      codes_part |> String.split(",") |> Enum.filter(&(bit_size(&1) > 0))
+  def extract_codes(link, opts \\ []) do
+    query_params = Keyword.get(opts, :query_params, ["deckcode", "code", "deckcodes", "codes"])
+    separators = Keyword.get(opts, :separators, [",", ".", "|"])
+
+    with %{query: query_raw} when is_binary(query_raw) <- link |> URI.parse(),
+         query <- URI.decode_query(query_raw) do
+      for {_, val} <- Map.take(query, query_params),
+          code <- String.split(val, separators),
+          Deck.valid?(code),
+          do: code
     else
       _ -> []
     end
@@ -153,11 +161,23 @@ defmodule BackendWeb.DeckviewerLive do
 
   # def extract_decks(decks) when is_list(decks), do: Enum.map(decks, &extract_decks/1)
   def extract_decks(new_code) do
+    extracted = extract_codes(new_code)
+
     cond do
-      HSDeckViewer.hdv_link?(new_code) -> HSDeckViewer.extract_codes(new_code)
-      Yaytears.yt_link?(new_code) -> Yaytears.extract_codes(new_code)
-      our_link?(new_code) -> extract_codes(new_code)
-      true -> [new_code]
+      extracted != [] ->
+        extracted
+
+      HSDeckViewer.hdv_link?(new_code) ->
+        HSDeckViewer.extract_codes(new_code)
+
+      Yaytears.yt_link?(new_code) ->
+        Yaytears.extract_codes(new_code)
+
+      our_link?(new_code) ->
+        extract_codes(new_code)
+
+      true ->
+        [new_code]
     end
     |> Deck.shorten_codes()
   end
