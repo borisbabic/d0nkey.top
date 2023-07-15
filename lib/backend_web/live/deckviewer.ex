@@ -151,7 +151,7 @@ defmodule BackendWeb.DeckviewerLive do
     parsed = URI.parse(link)
 
     from_query =
-      with %{query: query_raw} when is_binary(query_raw) <- parsed,
+      with %{query: query_raw, host: h} when is_binary(query_raw) and is_binary(h) <- parsed,
            query <- URI.decode_query(query_raw) do
         for {_, val} <- Map.take(query, query_params),
             code <- String.split(val, separators),
@@ -162,7 +162,8 @@ defmodule BackendWeb.DeckviewerLive do
       end
 
     # extract from path
-    for part <- String.split(parsed.path, "/"),
+    for %{host: h, path: path} when is_binary(h) and is_binary(path) <- [parsed],
+        part <- String.split(parsed.path, "/"),
         decoded = URI.decode(part),
         Deck.valid?(decoded),
         into: from_query,
