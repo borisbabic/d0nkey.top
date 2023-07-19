@@ -286,15 +286,47 @@ defmodule Bot.MessageHandler do
   end
 
   def handle_deck(msg) do
-    with {:ok, deck} <- Backend.Hearthstone.Deck.decode(msg.content),
-         false <- msg.content =~ "#",
-         {:ok, message} <- create_deck_message(deck) do
-      Api.create_message(msg.channel_id, message)
+    with false <- msg.content =~ "##",
+         {:ok, decks} <- extract_decks_from_msg(msg) do
+      send_deck_messages(decks, msg)
     else
-      _ -> :ignore
+      {:error, {:too_many_decks, num_decks}} ->
+        message =
+          "Found too many decks (#{num_decks}). You must tag the bot to enable sending more than 1 deck"
+
+        reply(msg, message)
+
+      _ ->
+        :ignore
     end
   end
 
+  defp send_deck_messages(decks, msg) do
+    for {:ok, message} <- Enum.map(decks, &create_deck_message/1) do
+      reply(msg, content: message)
+    end
+  end
+
+  def extract_decks_from_content(content) when is_binary(content) do
+    for part <- String.split(content),
+        String.length(part) > 15,
+        codes = BackendWeb.DeckviewerLive.extract_decks(part),
+        Enum.any?(codes),
+        reduce: [] do
+      acc -> acc ++ codes
+    end
+  end
+
+  def extract_decks_from_msg(msg) do
+    case {extract_decks_from_content(msg.content), mentioned?(msg)} do
+      {[], _} -> {:error, :no_decks}
+      {[deck], _} -> {:ok, [deck]}
+      {decks, false} -> {:error, {:too_many_decks, Enum.count(decks)}}
+      {decks, true} -> {:ok, decks}
+    end
+  end
+
+  @spec create_deck_message(String.t()) :: {:ok, String.t()} | {:error, any()}
   def create_deck_message(deck) do
     with {:ok, from_db} <- Backend.Hearthstone.create_or_get_deck(deck) do
       {:ok,
