@@ -2,6 +2,8 @@ defmodule Bot.MessageHandlerUtil do
   @moduledoc false
   require Logger
   alias Nostrum.Api
+  alias Nostrum.Struct.Message
+  alias Nostrum.Struct.User
 
   @spec get_options(String.t()) :: [String.t()]
   def get_options(content) do
@@ -52,6 +54,17 @@ defmodule Bot.MessageHandlerUtil do
     end
   end
 
+  @spec reply(Message.t(), String.t() | list()) :: {:ok, Message.t()}
+  def reply(%{channel_id: channel_id, id: id}, options) when is_list(options) do
+    with_reference = [{:message_reference, %{message_id: id}} | options]
+
+    Api.create_message(channel_id, with_reference)
+  end
+
+  def reply(msg, content) when is_binary(content) do
+    reply(msg, content: content)
+  end
+
   @spec send_message(
           {:ok, String.t()} | {:error, String.t() | atom} | String.t(),
           String.t() | Nostrum.Struct.Message.t()
@@ -94,4 +107,24 @@ defmodule Bot.MessageHandlerUtil do
       _ -> {:error, :invalid_discord_tag}
     end
   end
+
+  @doc """
+  Checks if a user was mentioned in a message
+  If no user is specified the current user is checked
+  """
+  @spec mentioned?(Message.t(), User.t() | nil) :: boolean
+  def mentioned?(msg, user \\ nil)
+
+  def mentioned?(msg, nil) do
+    case Api.get_current_user() do
+      {:ok, user} -> mentioned?(msg, user)
+      _ -> false
+    end
+  end
+
+  def mentioned?(%{mentions: mentions}, %{id: id}) when is_list(mentions) do
+    Enum.any?(mentions, &(&1.id == id))
+  end
+
+  def mentioned?(_, _), do: false
 end

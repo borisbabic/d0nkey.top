@@ -598,4 +598,12 @@ defmodule Util do
   def failure?(:error), do: true
   def failure?(tuple) when is_tuple(tuple), do: elem(tuple, 0) == :error
   def failure?(_), do: false
+
+  def success_if(thing, bool_func, error \\ {:erorr, :failed}) do
+    if bool_func.(thing) do
+      {:ok, thing}
+    else
+      error
+    end
+  end
 end
