@@ -39,13 +39,13 @@ defmodule BackendWeb.Live.DeckViewerTest do
 
   test "Add urls through form", %{conn: conn} do
     deckcode =
-      "AAECAea5Awb39gOL9wOw+QPQ+QOHiwSEsAQM1tEDzNIDzdID3dMD+dUD8+MDlegD/e0DivcDyIAEs6AEtKAEAA=="
+      "AECAea5Awb39gOL9wOw+QOHiwSEsATNngYM1tEDzNIDzdID+dUDlegD/e0DivcDyIAEs6AEtKAE4fgF4/gFAA=="
 
     urls = [
-      "https://www.yaytears.com/conquest/AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D",
-      "https://www.d0nkey.top/deckviewer?code=AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D&compare_decks=false&rotation=false",
-      "https://hsdeckviewer.github.io/?deckstring=AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D",
-      "https://hsdeckviewer.com/?deckstring=AAECAea5Awb39gOL9wOw%2BQPQ%2BQOHiwSEsAQM1tEDzNIDzdID3dMD%2BdUD8%2BMDlegD%2Fe0DivcDyIAEs6AEtKAEAA%3D%3D"
+      "https://www.yaytears.com/conquest/AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA.AAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D",
+      "https://www.d0nkey.top/deckviewer?code=AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA%2CAAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D&compare_decks=false&rotation=false",
+      "https://hsdeckviewer.github.io/?deckstring=AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA&deckstring=AAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D",
+      "https://hsdeckviewer.com/?deckstring=AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA&deckstring=AAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D"
     ]
 
     {:ok, view, html} = live(conn, "/deckviewer")
