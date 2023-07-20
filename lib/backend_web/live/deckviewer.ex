@@ -150,24 +150,27 @@ defmodule BackendWeb.DeckviewerLive do
     separators = Keyword.get(opts, :separators, [",", ".", "|"])
     parsed = URI.parse(link)
 
-    from_query =
+    from_query_potential =
       with %{query: query_raw, host: h} when is_binary(query_raw) and is_binary(h) <- parsed,
            query <- URI.decode_query(query_raw) do
-        for {_, val} <- Map.take(query, query_params),
-            code <- String.split(val, separators),
-            Deck.valid?(code),
-            do: code
+        Map.take(query, query_params)
+        |> Map.values()
       else
         _ -> []
       end
 
     # extract from path
-    for %{host: h, path: path} when is_binary(h) and is_binary(path) <- [parsed],
-        part <- String.split(parsed.path, "/"),
-        decoded = URI.decode(part),
-        Deck.valid?(decoded),
-        into: from_query,
-        do: decoded
+    potential =
+      for %{host: h, path: path} when is_binary(h) and is_binary(path) <- [parsed],
+          part <- String.split(parsed.path, "/"),
+          decoded = URI.decode(part),
+          into: from_query_potential,
+          do: decoded
+
+    for val <- potential,
+        code <- String.split(val, separators),
+        Deck.valid?(code),
+        do: code
   end
 
   # def extract_decks(decks) when is_list(decks), do: Enum.map(decks, &extract_decks/1)
