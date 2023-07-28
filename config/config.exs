@@ -41,13 +41,10 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
-bnet_client_id =
-  config :backend,
-    ecto_repos: [Backend.Repo]
-
 # Configures the endpoint
 config :backend, BackendWeb.Endpoint,
   url: [host: "localhost"],
+  http: [protocol_options: [max_request_line_length: 32_768, max_header_value_length: 32_768]],
   secret_key_base: "Hm4BqSotrad1PnidcjfF1FVR5I2Yw4YXEs64ZczPSBkDDXBsTPjMyC9TmGXJ3Kh2",
   render_errors: [view: BackendWeb.ErrorView, accepts: ~w(html json)],
   # pubsub: [name: Backend.PubSub, adapter: Phoenix.PubSub.PG2]
