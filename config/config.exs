@@ -148,6 +148,7 @@ config :backend,
   hdt_plugin_latest_file: "hdt_plugin/#{hdt_plugin_latest_version}.dll",
   nitropay_ads_txt_url: "https://api.nitropay.com/v1/ads-909.txt",
   enable_adsense: true,
+  ecto_repos: [Backend.Repo],
   admin_config_vars_cutoff_date: "3000-12-31"
 
 config :tesla, adapter: Tesla.Adapter.Hackney
