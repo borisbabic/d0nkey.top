@@ -51,6 +51,7 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
 # before starting your production server.
 config :backend, BackendWeb.Endpoint,
   url: [scheme: "https", host: "www.d0nkey.top", port: 443],
+  http: [protocol_options: [max_request_line_length: 32_768, max_header_value_length: 32_768]],
   check_origin: [
     "//d0nkey.top",
     "//hsguru.com",
