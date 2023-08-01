@@ -99,7 +99,7 @@ defmodule Bot.MessageHandler do
     "battlefy" => """
     ## `battletfy` (Battlefy Standings)
     `!battlefy $tournament_id`
-    Shows the standings for a battelfy tournament for server battletags (see `!dhelp server battletags`) 
+    Shows the standings for a battelfy tournament for server battletags (see `!dhelp server battletags`)
     Some notable third party tournaments get shorthands like `!bunnyopen`
     """,
     "thl" => """
@@ -116,7 +116,7 @@ defmodule Bot.MessageHandler do
     "mt" => """
     ## `mt` (Masters Tour)
     `!mt [$mt]`
-    Shows standings for a masters tour for server battletags (see `!dhelp server battletags`) 
+    Shows standings for a masters tour for server battletags (see `!dhelp server battletags`)
     If no mt is supplied it will default to the current mt, if there is one
     """,
     "mtq" => """
@@ -310,6 +310,7 @@ defmodule Bot.MessageHandler do
   def extract_decks_from_content(content) when is_binary(content) do
     for part <- String.split(content),
         String.length(part) > 15,
+        Regex.match?(Backend.Hearthstone.Deck.deckcode_regex(), part),
         codes = BackendWeb.DeckviewerLive.extract_decks(part),
         Enum.any?(codes),
         reduce: [] do

@@ -279,7 +279,7 @@ defmodule Backend.Hearthstone.Deck do
     {:ok, singles ++ doubles ++ multis, rest}
   end
 
-  # we got 
+  # we got
   defp parse_sideboard(rest), do: {:error, [], rest}
 
   defp sideboard_optimized([count | left], copies) do
@@ -333,6 +333,7 @@ defmodule Backend.Hearthstone.Deck do
       multi
       |> Enum.chunk_every(2)
       |> Enum.flat_map(fn [card, count] ->
+        if count > 40, do: raise("Count too high")
         for _ <- 1..count, do: card
       end)
 
@@ -553,6 +554,10 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   def equal(_), do: false
+
+  def deckcode_regex() do
+    ~r/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{15,}=)?$/
+  end
 
   def classes() do
     [
