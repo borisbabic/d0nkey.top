@@ -51,11 +51,29 @@ defmodule Components.DecksExplorer do
   prop(additional_params, :map, default: %{})
   prop(params, :map, required: true)
   prop(path_params, :any, default: nil)
+  data(streams, :any)
+  data(search_filters, :any)
+  data(actual_params, :any)
+
+  def update(assigns, socket) do
+    {actual_params, search_filters} = parse_params(assigns)
+
+    deck_stats =
+      DeckTracker.deck_stats(search_filters) |> Enum.map(&Map.put_new(&1, :id, &1.deck_id))
+
+    {
+      :ok,
+      socket
+      |> assign(assigns)
+      |> assign(actual_params: actual_params, search_filters: search_filters)
+      |> stream(:deck_stats, deck_stats, reset: true)
+    }
+  end
 
   def render(assigns) do
     ~F"""
     <div>
-      <div :if={{params, search_filters} = parse_params(@params, assigns)}>
+      <div :if={{params, search_filters} = {@actual_params, @search_filters}}>
         <LivePatchDropdown
           options={format_options()}
           title={"Format"}
@@ -144,11 +162,11 @@ defmodule Components.DecksExplorer do
         <br>
         <br>
 
-        <div :if={deck_stats = DeckTracker.deck_stats(search_filters)} class="columns is-multiline is-mobile is-narrow is-centered">
-          <div :for={deck_with_stats <- deck_stats} class="column is-narrow">
+        <div class="columns is-multiline is-mobile is-narrow is-centered">
+          <div :for={{_dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} />
           </div>
-          <div :if={!(Enum.any?(deck_stats))} >
+          <div :if={false} >
             <br>
             <br>
             <br>
@@ -159,6 +177,10 @@ defmodule Components.DecksExplorer do
       </div>
     </div>
     """
+  end
+
+  defp parse_params(assigns = %{params: params}) do
+    parse_params(params, assigns)
   end
 
   defp parse_params(raw_params, assigns) do
