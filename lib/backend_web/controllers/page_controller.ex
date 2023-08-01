@@ -30,7 +30,7 @@ defmodule BackendWeb.PageController do
     render(conn, "test.html", params)
   end
 
-  def disabled(conn, params) do
+  def disabled(conn, _params) do
     text(conn, "This page has been temporarily disabled")
   end
 
