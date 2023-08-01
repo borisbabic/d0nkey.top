@@ -17,6 +17,30 @@ defmodule BackendWeb do
   and import those modules here.
   """
 
+  def html do
+    quote do
+      use Phoenix.Component
+      # Import convenience functions from controllers
+      import Phoenix.Controller,
+        only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      unquote(view_helpers())
+    end
+  end
+
+  def html_controller do
+    quote do
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: BackendWeb.Layouts]
+
+      import Plug.Conn
+      import BackendWeb.Gettext
+
+      unquote(verified_routes())
+    end
+  end
+
   def controller do
     quote do
       use Phoenix.Controller, namespace: BackendWeb
@@ -25,6 +49,7 @@ defmodule BackendWeb do
       import BackendWeb.Gettext
       import Phoenix.LiveView.Controller
       alias BackendWeb.Router.Helpers, as: Routes
+      unquote(verified_routes())
 
       def multi_select_to_array(multi = %{}) do
         multi
@@ -107,7 +132,6 @@ defmodule BackendWeb do
     quote do
       alias BackendWeb.Router.Helpers, as: Routes
       import BackendWeb.LiveHelpers
-      use Phoenix.VerifiedRoutes, router: BackendWeb.Router, endpoint: BackendWeb.Endpoint
 
       unquote(view_helpers())
 
@@ -122,6 +146,12 @@ defmodule BackendWeb do
       defp put_user_in_context(socket) do
         Surface.Components.Context.put(socket, user: nil)
       end
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes, router: BackendWeb.Router, endpoint: BackendWeb.Endpoint
     end
   end
 
@@ -174,6 +204,7 @@ defmodule BackendWeb do
       import BackendWeb.Gettext
       alias BackendWeb.Router.Helpers, as: Routes
       use BackendWeb.ViewHelpers
+      unquote(verified_routes())
     end
   end
 
