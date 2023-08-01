@@ -1,0 +1,22 @@
+<.form :let={f} for={@changeset} action={@action} id="torch-form" enctype="multipart/form-data">
+  <fieldset class="torch-panel">
+    <legend>
+      <span>Details</span>
+    </legend>
+    <%= if @changeset.action do %>
+      <p class="torch-form-error">Oops, something went wrong! Please check the errors below.</p>
+    <% end %>
+    <.torch_input label="Slug" field={f[:slug]} type="string" />
+    <.torch_input label="Display" field={f[:display]} type="string" />
+    <.torch_input label="Type" field={f[:type]} type="string" />
+    <.torch_input label="Period start" field={f[:period_start]} type="datetime-local" />
+    <.torch_input label="Period end" field={f[:period_end]} type="datetime-local" />
+    <.torch_input label="Hours ago" field={f[:hours_ago]} type="number" />
+    <.torch_input label="Include in personal filters" field={f[:include_in_personal_filters]} type="checkbox" />
+    <.torch_input label="Include in deck filters" field={f[:include_in_deck_filters]} type="checkbox" />
+    <.torch_input label="Auto aggregate" field={f[:auto_aggregate]} type="checkbox" />
+    <div class="torch-submit-form">
+      <button type="submit" class="torch-submit-button"><%= Torch.I18n.message("Submit") %></button>
+    </div>
+  </fieldset>
+</.form>

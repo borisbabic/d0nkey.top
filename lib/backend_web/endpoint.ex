@@ -4,7 +4,8 @@ defmodule BackendWeb.Endpoint do
   @session_options store: :cookie,
                    key: "_backend_key",
                    signing_salt: "tbOo3n69",
-                   max_age: 60 * 60 * 24 * 365 # one year
+                   # one year
+                   max_age: 60 * 60 * 24 * 365
 
   socket "/socket", BackendWeb.UserSocket,
     # timeout for heroku

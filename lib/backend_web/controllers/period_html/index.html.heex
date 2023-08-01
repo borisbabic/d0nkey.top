@@ -1,0 +1,134 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <.link href={~p"/torch/periods/new"} class="torch-button">New Period</.link>
+  </div>
+</section>
+<section id="torch-index-content">
+  <div class="torch-container">
+    <section id="torch-filters">
+      <h3>Find Periods</h3>
+      <%= form_tag @conn.request_path, method: :get, id: "torch-filters-form" do %>
+        
+          <div class="field">
+            <label>Slug</label>
+            <%= filter_select(:period, :slug, @conn.params) %>
+            <%= filter_string_input(:period, :slug, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Display</label>
+            <%= filter_select(:period, :display, @conn.params) %>
+            <%= filter_string_input(:period, :display, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Type</label>
+            <%= filter_select(:period, :type, @conn.params) %>
+            <%= filter_string_input(:period, :type, @conn.params) %>
+          </div>
+        
+        
+          <div class="field">
+            <label>Include in personal filters</label>
+            <%= filter_boolean_input(:period, :include_in_personal_filters, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Include in deck filters</label>
+            <%= filter_boolean_input(:period, :include_in_deck_filters, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Auto aggregate</label>
+            <%= filter_boolean_input(:period, :auto_aggregate, @conn.params) %>
+          </div>
+        
+        
+          <div class="field">
+            <label>Period start</label>
+            <%= filter_date_input(:period, :period_start, @conn.params) %>
+          </div>
+        
+          <div class="field">
+            <label>Period end</label>
+            <%= filter_date_input(:period, :period_end, @conn.params) %>
+          </div>
+        
+        
+          <div class="field">
+            <label>Hours ago</label>
+            <%= number_filter_select(:period, :hours_ago, @conn.params) %>
+            <%= filter_number_input(:period, :hours_ago, @conn.params) %>
+          </div>
+        
+        <button type="submit" class="torch-button">Search</button>
+        <%= link "Clear Filters", to: ~p"/torch/periods" %>
+      <% end %>
+
+    </section>
+
+    <section id="torch-table">
+    <%= if length(@periods) > 0 do %>
+      <table>
+        <thead>
+          <tr>
+            
+              <th><%= table_link(@conn, "Slug", :slug) %></th>
+            
+              <th><%= table_link(@conn, "Display", :display) %></th>
+            
+              <th><%= table_link(@conn, "Type", :type) %></th>
+            
+              <th><%= table_link(@conn, "Period start", :period_start) %></th>
+            
+              <th><%= table_link(@conn, "Period end", :period_end) %></th>
+            
+              <th><%= table_link(@conn, "Hours ago", :hours_ago) %></th>
+            
+              <th><%= table_link(@conn, "Include in personal filters", :include_in_personal_filters) %></th>
+            
+              <th><%= table_link(@conn, "Include in deck filters", :include_in_deck_filters) %></th>
+            
+              <th><%= table_link(@conn, "Auto aggregate", :auto_aggregate) %></th>
+            
+            <th><span>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for period <- @periods do %>
+            <tr>
+              
+                <td><%= period.slug %></td>
+              
+                <td><%= period.display %></td>
+              
+                <td><%= period.type %></td>
+              
+                <td><%= period.period_start %></td>
+              
+                <td><%= period.period_end %></td>
+              
+                <td><%= period.hours_ago %></td>
+              
+                <td><%= period.include_in_personal_filters %></td>
+              
+                <td><%= period.include_in_deck_filters %></td>
+              
+                <td><%= period.auto_aggregate %></td>
+              
+              <td class="torch-actions">
+                <span><.link href={~p"/torch/periods/#{period}"}><%= Torch.I18n.message("Show") %></.link></span>
+                <span><.link href={~p"/torch/periods/#{period}/edit"}><%= Torch.I18n.message("Edit") %></.link></span>
+                <span><.link href={~p"/torch/periods/#{period}"} method="delete" data-confirm={Torch.I18n.message("Are you sure?")}><%= Torch.I18n.message("Delete") %></.link></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= Torch.PaginationView.pagination(@conn) %>
+    <% else %>
+      <p class="torch-no-data">No Periods match your search.</p>
+    <% end %>
+    </section>
+  </div>
+</section>

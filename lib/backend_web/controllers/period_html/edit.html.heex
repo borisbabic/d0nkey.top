@@ -1,0 +1,14 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <.link href={~p"/torch/periods"} class="torch-button"><%= Torch.I18n.message("Cancel") %></.link>
+  </div>
+</section>
+
+<section id="torch-header-and-content">
+  <div class="torch-container">
+    <div class="header">
+      <h3>Edit Period</h3>
+    </div>
+    <.period_form changeset={@changeset} action={~p"/periods/#{@period}"} />
+  </div>
+</section>
