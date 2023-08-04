@@ -4,6 +4,8 @@ import Config
 #  jobs: [
 #  ]
 
+import_config "cron_bot.exs"
+
 twitch_redirect = "https://www.d0nkey.top/auth/twitch/callback"
 
 config :backend,
@@ -27,7 +29,7 @@ config :backend,
     "reqvam",
     "emerald_boa"
   ],
-  enable_bot: true
+  enable_bot: false
 
 config :ueberauth, Ueberauth,
   providers: [

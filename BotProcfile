@@ -1,0 +1,1 @@
+web: elixir --sname bot -S mix 
