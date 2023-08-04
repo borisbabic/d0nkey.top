@@ -1,7 +1,11 @@
 import Config
 
+import_config "cron_web.exs"
+import_config "cron_bot.exs"
+
 config :backend,
   auto_migrate: false,
+  dt_insert_listener: true,
   enable_bot: !is_nil(System.get_env("DISCORD_TOKEN")) || !is_nil(System.get_env("ENABLE_BOT"))
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,

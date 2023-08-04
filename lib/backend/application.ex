@@ -86,11 +86,6 @@ defmodule Backend.Application do
           start: {Backend.PlayerIconBag, :start_link, [[]]}
         },
         %{
-          # TODO: CANNOT MULTISERVER, prolly. NEEDS ATTENTION
-          id: Hearthstone.DeckTracker.InsertListener,
-          start: {Hearthstone.DeckTracker.InsertListener, :start_link, [[]]}
-        },
-        %{
           # can prolly multiserver
           id: Hearthstone.Api,
           start: {Hearthstone.Api, :start_link, [[]]}
@@ -122,6 +117,7 @@ defmodule Backend.Application do
         },
         %{
           # TODO: CANNOT MULTISERVER
+          # HUH? Can multisever just needs updating on each
           id: Backend.Feed.FeedBag,
           start: {Backend.Feed.FeedBag, :start_link, [[]]}
         },
@@ -154,6 +150,7 @@ defmodule Backend.Application do
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
+      |> add_dt_insert_listener()
       |> check_bot()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -190,6 +187,24 @@ defmodule Backend.Application do
     case Application.fetch_env(:backend, :hearthstone_json_fetch_fresh) do
       {:ok, fetch_fresh} -> fetch_fresh
       _ -> default
+    end
+  end
+
+  def add_dt_insert_listener(prev) do
+    case Application.fetch_env(:backend, :dt_insert_listener) do
+      {:ok, true} ->
+        prev ++
+          [
+            %{
+              # TODO: CANNOT MULTISERVER, prolly. NEEDS ATTENTION
+              # CAN do bot separate config
+              id: Hearthstone.DeckTracker.InsertListener,
+              start: {Hearthstone.DeckTracker.InsertListener, :start_link, [[]]}
+            }
+          ]
+
+      _ ->
+        prev
     end
   end
 
