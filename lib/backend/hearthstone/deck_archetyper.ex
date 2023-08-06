@@ -639,7 +639,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp nature_shaman?(ci),
     do:
       min_count?(ci, 2, [
-        "Flash Lightning",
+        "Flash of Lightning",
         "Crash of Thunder",
         "Champion of Storms"
       ])
