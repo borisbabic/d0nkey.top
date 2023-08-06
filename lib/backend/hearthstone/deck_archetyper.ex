@@ -31,6 +31,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
+      plague_dk?(card_info) ->
+        :"Plague DK"
+
       aggro_dk?(card_info) ->
         :"Aggro DK"
 
@@ -53,6 +56,17 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         end
     end
   end
+
+  def plague_dk?(ci),
+    do:
+      min_count?(ci, 3, [
+        "Staff of the Primus",
+        "Distressed Kvaldir",
+        "Down with the Ship",
+        "Helya",
+        "Tomb Traitor",
+        "Chained Guardian"
+      ])
 
   def burn_dk?(c),
     do: min_count?(c, 2, ["Bloodmage Thalnos", "Talented Arcanist", "Guild Trader"])
@@ -168,15 +182,27 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       celestial_druid?(card_info) -> :"Celestial Druid"
       ramp_druid?(card_info) -> :"Ramp Druid"
       menagerie?(card_info) -> :"Menagerie Druid"
+      treant_druid?(card_info) -> :"Treant Druid"
       murloc?(card_info) -> :"Murloc Druid"
       "Lady Prestor" in card_info.card_names -> :"Prestor Druid"
       aggro_druid?(card_info) -> :"Aggro Druid"
       "Tony, King of Piracy" in card_info.card_names -> :"Tony Druid"
       zok_druid?(card_info) -> :"Zok Druid"
       hero_power_druid?(card_info) -> :"Hero Power Druid"
+      choose_one?(card_info) -> :"Choose Druid"
+      afk_druid?(card_info) -> :"AFK Druid"
       true -> minion_type_fallback(card_info, "Druid")
     end
   end
+
+  defp treant_druid?(ci),
+    do: min_count?(ci, 2, ["Witchwood Apple", "Conservator Nymph", "Blood Treant", "Cultivation"])
+
+  defp afk_druid?(ci),
+    do: min_count?(ci, 2, ["Rhythm and Roots", "Timber Tambourine"])
+
+  defp choose_one?(ci),
+    do: min_count?(ci, 3, ["Embrace Nature", "Disciple of Eonar"])
 
   defp zok_druid?(ci),
     do: min_count?(ci, 2, ["Zok Fogsnout", "Anub'Rekhan"])
@@ -206,6 +232,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       rat_hunter?(card_info) ->
         :"Rattata Hunter"
 
+      secret_hunter?(card_info) ->
+        :"Secret Hunter"
+
       big_beast_hunter?(card_info) ->
         :"Big Beast Hunter"
 
@@ -227,6 +256,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       shockspitter?(card_info) ->
         :"Shockspitter Hunter"
 
+      egg_hunter?(card_info) ->
+        :"Egg Hunter"
+
       wildseed_hunter?(card_info) ->
         :"Wildseed Hunter"
 
@@ -234,6 +266,18 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         minion_type_fallback(card_info, "Hunter")
     end
   end
+
+  defp egg_hunter?(ci),
+    do: min_count?(ci, 3, ["Foul Egg", "Nerubian Egg", "Ravenous Kraken", "Yelling Yodeler"])
+
+  defp secret_hunter?(ci),
+    do:
+      min_count?(ci, 3, [
+        "Costumed Singer",
+        "Anonymous Informant",
+        "Titanforged Traps",
+        "Starstrung Bow"
+      ])
 
   def shockspitter?(ci) do
     "Shockspitter" in ci.card_names
@@ -257,6 +301,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       menagerie?(card_info) ->
         :"Menagerie Mage"
+
+      rainbow_mage?(card_info) ->
+        :"Rainbow Mage"
 
       arcane_mage?(card_info) ->
         :"Arcane Mage"
@@ -311,6 +358,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  def rainbow_mage?(ci),
+    do:
+      min_count?(ci, 3, [
+        "Discovery of Magic",
+        "Inquisitive Creation",
+        "Sif",
+        "Elemental Inspiration"
+      ])
+
   def burn_mage?(ci), do: min_count?(ci, 2, ["Vexallus", "Aegwynn, the Guardian"])
 
   def arcane_mage?(card_info),
@@ -338,6 +394,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     cond do
       highlander?(c) && pure_paladin?(card_info) -> :"Highlander Pure Paladin"
       pure_paladin?(card_info) && dude_paladin?(card_info) -> :Chadadin
+      earthen_paladin?(card_info) && pure_paladin?(card_info) -> :"Gaia Pure Paladin"
       pure_paladin?(card_info) -> :"Pure Paladin"
       highlander?(c) -> :"Highlander Paladin"
       aggro_paladin?(card_info) -> :"Aggro Paladin"
@@ -346,6 +403,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       dude_paladin?(card_info) -> :"Dude Paladin"
       handbuff_paladin?(card_info) -> :"Handbuff Paladin"
       mech_paladin?(card_info) -> :"Mech Paladin"
+      earthen_paladin?(card_info) -> :"Gaia Paladin"
       holy_paladin?(card_info) -> :"Holy Paladin"
       kazakusan?(card_info) -> :"Kazakusan Paladin"
       big_paladin?(card_info) -> :"Big Paladin"
@@ -408,6 +466,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       thief_priest?(card_info) ->
         :"Thief Priest"
 
+      automaton_priest?(card_info) ->
+        :"Automaton Priest"
+
       shadow_priest?(card_info) ->
         :"Shaggro Priest"
 
@@ -430,6 +491,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         minion_type_fallback(card_info, "Priest")
     end
   end
+
+  defp automaton_priest?(ci),
+    do:
+      "Astral Automaton" in ci.card_names and
+        min_count?(ci, 3, [
+          "Celestial Projectionist",
+          "Creation Protocol",
+          "Ra-den",
+          "Power Chord: Synchronize",
+          "Zola the Gordon",
+          "Creepy Painting",
+          "Ravenous Kraken",
+          "Cover Artist"
+        ])
 
   defp overheal_priest?(ci) do
     min_count?(ci, 3, [
@@ -456,28 +531,83 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Rogue"
-      coc_rogue?(card_info) && (quest?(card_info) || questline?(card_info)) -> :"Quest Coc Rogue"
-      quest?(card_info) || questline?(card_info) -> :"Quest Rogue"
-      menagerie?(card_info) -> :"Menagerie Rogue"
-      coc_rogue?(card_info) && miracle_rogue?(card_info) -> :"Cocacle Rogue"
-      coc_rogue?(card_info) && thief_rogue?(card_info) -> :"Coc Thief Rogue"
-      coc_rogue?(card_info) -> :"Coc Rogue"
-      mine_rogue?(card_info) -> :"Mine Rogue"
-      pirate_rogue?(card_info) && thief_rogue?(card_info) -> :"Pirate Thief Rogue"
-      jackpot_rogue?(card_info) -> :"Jackpot Rogue"
-      edwin_rogue?(card_info) -> :"Edwin Rogue"
-      thief_rogue?(card_info) -> :"Thief Rogue"
-      boar?(card_info) -> :"Boar Rogue"
-      pirate_rogue?(card_info) -> :"Pirate Rogue"
-      vanndar?(card_info) -> :"Vanndar Rogue"
-      secret_rogue?(card_info) -> :"Secret Rogue"
-      shark_rogue?(card_info) -> :"Shark Rogue"
-      deathrattle_rogue?(card_info) -> :"Deathrattle Rogue"
-      min_secret_count?(card_info, 3) -> :"Secret Rogue"
-      true -> minion_type_fallback(card_info, "Rogue")
+      highlander?(c) ->
+        :"Highlander Rogue"
+
+      coc_rogue?(card_info) && (quest?(card_info) || questline?(card_info)) ->
+        :"Quest Coc Rogue"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest Rogue"
+
+      menagerie?(card_info) ->
+        :"Menagerie Rogue"
+
+      miracle_rogue?(card_info) && "Mimiron, the Mastermind" in card_info.card_names ->
+        :"Mimicle Rogue"
+
+      coc_rogue?(card_info) && mech_rogue?(card_info) ->
+        :"Mech Rogue"
+
+      coc_rogue?(card_info) && miracle_rogue?(card_info) ->
+        :"Cocacle Rogue"
+
+      coc_rogue?(card_info) && thief_rogue?(card_info) ->
+        :"Coc Thief Rogue"
+
+      mech_rogue?(card_info) ->
+        :"Mech Rogue"
+
+      coc_rogue?(card_info) ->
+        :"Coc Rogue"
+
+      mine_rogue?(card_info) ->
+        :"Mine Rogue"
+
+      pirate_rogue?(card_info) && thief_rogue?(card_info) ->
+        :"Pirate Thief Rogue"
+
+      jackpot_rogue?(card_info) ->
+        :"Jackpot Rogue"
+
+      edwin_rogue?(card_info) ->
+        :"Edwin Rogue"
+
+      thief_rogue?(card_info) ->
+        :"Thief Rogue"
+
+      boar?(card_info) ->
+        :"Boar Rogue"
+
+      pirate_rogue?(card_info) ->
+        :"Pirate Rogue"
+
+      vanndar?(card_info) ->
+        :"Vanndar Rogue"
+
+      secret_rogue?(card_info) ->
+        :"Secret Rogue"
+
+      shark_rogue?(card_info) ->
+        :"Shark Rogue"
+
+      deathrattle_rogue?(card_info) ->
+        :"Deathrattle Rogue"
+
+      min_secret_count?(card_info, 3) ->
+        :"Secret Rogue"
+
+      true ->
+        minion_type_fallback(card_info, "Rogue")
     end
   end
+
+  defp miracle_rogue?(ci),
+    do:
+      miracle_wincon?(ci) &&
+        min_count?(ci, 2, ["Queen Azshara", "Preparation", "Serrated Bone Spike"])
+
+  defp mech_rogue?(ci), do: type_count(ci, "Mech") > 5
 
   def archetype(%{format: 2, cards: c, class: "SHAMAN"}) do
     card_info = full_cards(c)
@@ -493,6 +623,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       big_bone_shaman?(card_info) -> :"Big Bone Shaman"
       "Gigantotem" in card_info.card_names -> :"Totem Shaman"
       elemental_shaman?(card_info) -> :"Elemental Shaman"
+      nature_shaman?(card_info) -> :"Nature Shaman"
       overload_shaman?(card_info) -> :"Overload Shaman"
       evolve_shaman?(card_info) -> :"Evolve Shaman"
       burn_shaman?(card_info) -> :"Burn Shaman"
@@ -504,6 +635,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true -> nil
     end
   end
+
+  defp nature_shaman?(ci),
+    do:
+      min_count?(ci, 2, [
+        "Flash Lightning",
+        "Crash of Thunder",
+        "Champion of Storms"
+      ])
 
   defp big_bone_shaman?(ci),
     do:
@@ -610,6 +749,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       enrage?(card_info) -> :"Enrage Warrior"
       n_roll?(card_info) -> :"Rock 'n' Roll Warrior"
       warrior_aoe?(card_info) -> :"Control Warrior"
+      "Odyn, Prime Designate" in card_info.card_names -> :"Odyn Warrior"
       riff_warrior?(card_info) -> :"Riff Warrior"
       weapon_warrior?(card_info) -> :"Weapon Warrior"
       murloc?(card_info) -> :"Murloc Warrior"
@@ -1023,8 +1163,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           "Plagiarize"
         ])
 
-  defp miracle_rogue?(ci), do: min_count?(ci, 1, ["Mailbox Dancer"]) && miracle_wincon?(ci)
-  defp miracle_wincon?(ci), do: min_count?(ci, 2, ["Sinstone Graveyard", "Necrolord Draka"])
+  defp miracle_wincon?(ci), do: min_count?(ci, 1, ["Sinstone Graveyard", "Necrolord Draka"])
 
   defp coc_rogue?(ci),
     do:
@@ -1136,6 +1275,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Prismatic Jewel Kit" in card_names &&
         ("First Blade of Wyrnn" in card_names || "Overlord Runthak" in card_names)
 
+  defp earthen_paladin?(ci),
+    do: min_count?(ci, 2, ["Stoneheart King", "Disciple of Amitus"])
+
   defp dude_paladin?(ci),
     do:
       min_count?(ci, 3, [
@@ -1143,6 +1285,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Promotion",
         "Soldier's Caravan",
         "Stewart the Steward",
+        "Muster for Battle",
+        "Lothraxion the Redeemed",
+        "Jukebox Totem",
         "Warhorse Trainer",
         "Stand Against Darkness"
       ])
