@@ -45,7 +45,11 @@ signing_salt =
     raise "environment variable LIVE_SIGNING_SALT is missing."
 
 config :backend, BackendWeb.Endpoint,
-  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
+  http: [
+    :inet6,
+    protocol_options: [max_request_line_length: 32_768, max_header_value_length: 32_768],
+    port: String.to_integer(System.get_env("PORT") || "4000")
+  ],
   secret_key_base: secret_key_base,
   live_view: [signing_salt: signing_salt]
 
