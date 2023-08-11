@@ -248,33 +248,34 @@ defmodule Backend.Leaderboards do
   defp continue?(%{leaderboard: %{rows: [_ | _], pagination: p}}), do: p != nil
   defp continue?(_), do: false
 
-  def handle_rows(rows, season) do
-    {target, rest} = Enum.split(rows, 200)
-    handle_rows(target, season, rest)
-  end
-
-  def handle_rows(rows = [_ | _], season, rest) do
-    now = NaiveDateTime.utc_now()
-    {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
-
-    existing =
-      entries([
-        :latest_in_season,
-        {"season", season},
-        {"min_rank", min_rank},
-        {"max_rank", max_rank}
-      ])
-
-    updated = get_updated_filter(existing, now)
-
-    rows
-    |> Enum.filter(updated)
-    |> create_entries(season)
-
-    handle_rows(rest, season)
-  end
-
-  def handle_rows(_, _, _), do: []
+  def handle_rows(rows, season), do: create_entries(rows, season)
+  # def handle_rows(rows, season) do
+  #   {target, rest} = Enum.split(rows, 200)
+  #   handle_rows(target, season, rest)
+  # end
+  #
+  # def handle_rows(rows = [_ | _], season, rest) do
+  #   now = NaiveDateTime.utc_now()
+  #   {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
+  #
+  #   existing =
+  #     entries([
+  #       :latest_in_season,
+  #       {"season", season},
+  #       {"min_rank", min_rank},
+  #       {"max_rank", max_rank}
+  #     ])
+  #
+  #   updated = get_updated_filter(existing, now)
+  #
+  #   rows
+  #   |> Enum.filter(updated)
+  #   |> create_entries(season)
+  #
+  #   handle_rows(rest, season)
+  # end
+  #
+  # def handle_rows(_, _, _), do: []
 
   defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
     do: handle_rows(rows, season)
@@ -283,28 +284,28 @@ defmodule Backend.Leaderboards do
     nil
   end
 
-  defp get_updated_filter(existing, now) do
-    map = Map.new(existing, &{&1.rank, &1})
-
-    fn api_entry ->
-      Map.get(map, api_entry.rank)
-      |> should_update?(api_entry, now)
-    end
-  end
-
-  defp should_update?(nil, _api, _now), do: true
-
-  defp should_update?(db, api, now) do
-    different?(db, api) && older?(db, now)
-  end
-
-  defp different?(db, api) do
-    db.account_id != api.account_id || db.rating != api.rating
-  end
-
-  defp older?(db_entry, now) do
-    :lt == NaiveDateTime.compare(db_entry.inserted_at, now)
-  end
+  # defp get_updated_filter(existing, now) do
+  #   map = Map.new(existing, &{&1.rank, &1})
+  #
+  #   fn api_entry ->
+  #     Map.get(map, api_entry.rank)
+  #     |> should_update?(api_entry, now)
+  #   end
+  # end
+  #
+  # defp should_update?(nil, _api, _now), do: true
+  #
+  # defp should_update?(db, api, now) do
+  #   different?(db, api) && older?(db, now)
+  # end
+  #
+  # defp different?(db, api) do
+  #   db.account_id != api.account_id || db.rating != api.rating
+  # end
+  #
+  # defp older?(db_entry, now) do
+  #   :lt == NaiveDateTime.compare(db_entry.inserted_at, now)
+  # end
 
   def save_old() do
     for region <- Blizzard.qualifier_regions(),
@@ -731,7 +732,7 @@ defmodule Backend.Leaderboards do
   end
 
   def entries(criteria, timeout \\ nil) do
-    {q, new_criteria} = base_entries_query() |> latest_in_season(criteria)
+    {q, new_criteria} = base_entries_query(criteria)
 
     query =
       q
@@ -762,8 +763,8 @@ defmodule Backend.Leaderboards do
     |> preload([entry: e, season: s], season: s)
   end
 
-  defp base_entries_latest_view_query() do
-    from e in "leaderboards_entry_latest",
+  defp base_current_entries_query() do
+    from e in {"leaderboards_current_entries", Entry},
       as: :entry
   end
 
@@ -1030,52 +1031,49 @@ defmodule Backend.Leaderboards do
     ]
   end
 
-  defp needs_regular_base?({"use_freshest_data", "yes"}), do: true
-
   defp needs_regular_base?({criteria, _value}),
     do: to_string(criteria) in ["up_to", "after", "until"]
 
   defp needs_regular_base?(_), do: false
 
-  defp latest_in_season_base(criteria) do
-    if Enum.any?(criteria, &needs_regular_base?/1) do
-      base_entries_query()
-    else
-      base_entries_latest_view_query()
+  defp base_entries_query(criteria) do
+    latest = Enum.any?(criteria, &(&1 == :latest_in_season))
+    regular = Enum.any?(criteria, &needs_regular_base?/1)
+
+    cond do
+      latest && regular -> latest_via_regular_base(criteria)
+      latest -> {base_current_entries_query(), criteria}
+      true -> {base_entries_query(), criteria}
     end
   end
 
-  defp latest_in_season(query, criteria) do
-    if Enum.any?(criteria, &(&1 == :latest_in_season)) do
-      new_criteria = filter_not_latest_in_season(criteria)
-      remaining_criteria = remove_filtered_in_latest(criteria)
+  defp latest_via_regular_base(criteria) do
+    new_criteria = filter_not_latest_in_season(criteria)
+    remaining_criteria = remove_filtered_in_latest(criteria)
 
-      subquery =
-        latest_in_season_base(new_criteria)
-        |> build_entries_query(new_criteria)
-        |> group_by([entry: e], [e.rank, e.season_id])
-        |> select([entry: e], %{
-          rank: e.rank,
-          season_id: e.season_id,
-          inserted_at: max(e.inserted_at)
-        })
+    subquery =
+      base_entries_query()
+      |> build_entries_query(new_criteria)
+      |> group_by([entry: e], [e.rank, e.season_id])
+      |> select([entry: e], %{
+        rank: e.rank,
+        season_id: e.season_id,
+        inserted_at: max(e.inserted_at)
+      })
 
-      {
-        query
-        |> join(
-          :inner,
-          [entry: e],
-          sub in subquery(subquery),
-          on:
-            e.season_id == sub.season_id and
-              e.rank == sub.rank and
-              e.inserted_at == sub.inserted_at
-        ),
-        remaining_criteria
-      }
-    else
-      {query, criteria}
-    end
+    {
+      base_entries_query()
+      |> join(
+        :inner,
+        [entry: e],
+        sub in subquery(subquery),
+        on:
+          e.season_id == sub.season_id and
+            e.rank == sub.rank and
+            e.inserted_at == sub.inserted_at
+      ),
+      remaining_criteria
+    }
   end
 
   defp remove_filtered_in_latest(criteria) do
@@ -1176,20 +1174,45 @@ defmodule Backend.Leaderboards do
     |> Enum.dedup_by(&Map.get(&1, changed_attr))
   end
 
+  @conflict_options [
+    on_conflict: {:replace_all_except, [:inserted_at, :id]},
+    stale_error_field: :stale,
+    conflict_target: [:season_id, :rank]
+  ]
   def create_entries(r, %Season{id: id}) do
-    for rows <- Enum.chunk_every(r, 1000) do
-      Enum.reduce(rows, Multi.new(), fn row, multi ->
-        attrs = row |> to_attrs() |> Map.put(:season_id, id)
-        cs = %Entry{} |> Entry.changeset(attrs)
-        Multi.insert(multi, "#{id}_#{row.rank}_#{row.account_id}_#{row.rating}", cs)
-      end)
-      |> Repo.transaction(timeout: 600_000)
-    end
+    r
+    |> prepare_rows(id)
+    |> Enum.chunk_every(1000)
+    |> Enum.each(&insert_prepared_entries/1)
   end
 
   def create_entries(rows, s) do
     with {:ok, season = %{id: _id}} <- SeasonBag.get(s) do
       create_entries(rows, season)
+    end
+  end
+
+  defp insert_prepared_entries(vals) do
+    Repo.insert_all(
+      Entry.current(),
+      vals,
+      @conflict_options
+    )
+  end
+
+  defp prepare_rows(rows, id) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    for row <- rows, {:ok, data} <- [row_to_value(row, id, now)], do: data
+  end
+
+  defp row_to_value(row, season_id, inserted_at) do
+    attrs = row |> to_attrs() |> Map.put(:season_id, season_id)
+
+    with {:ok, data} <- %Entry{} |> Entry.changeset(attrs) |> Ecto.Changeset.apply_action(:insert) do
+      {:ok,
+       Map.from_struct(data)
+       |> Map.drop([:__meta__, :season, :id])
+       |> Map.put(:inserted_at, inserted_at)}
     end
   end
 
