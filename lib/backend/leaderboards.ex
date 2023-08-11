@@ -1360,6 +1360,16 @@ defmodule Backend.Leaderboards do
     end
   end
 
+  def prune_empty_seasons() do
+    Repo.query!(
+      "DELETE FROM public.leaderboards_seasons WHERE id NOT IN (SELECT DISTINCT(season_id) FROM public.leaderboards_entry) AND inserted_at < now() - INTERVAL '2 min';",
+      [],
+      timeout: 666_000
+    )
+
+    SeasonBag.update()
+  end
+
   def copy_last_month_to_lobby_legends() do
     Date.utc_today() |> Timex.shift(months: -1) |> copy_to_bg_lobby_legends()
   end
