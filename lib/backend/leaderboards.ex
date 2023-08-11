@@ -1251,21 +1251,21 @@ defmodule Backend.Leaderboards do
   def trunc_rating(rating), do: (1.0 * rating) |> Float.round(0) |> trunc()
 
   def refresh_latest() do
-    Repo.query!(
-      "
-    DO $$
-    DECLARE cnt int;
-    declare r record;
-    begin
-      SELECT count(1) INTO cnt FROM pg_stat_activity WHERE query LIKE '%REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest%' and pid != pg_backend_pid();
-      IF cnt < 1 then
-        REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest WITH DATA ;
-      END IF;
-    END $$;
-    ",
-      [],
-      timeout: 666_000
-    )
+    # Repo.query!(
+    #   "
+    # DO $$
+    # DECLARE cnt int;
+    # declare r record;
+    # begin
+    #   SELECT count(1) INTO cnt FROM pg_stat_activity WHERE query LIKE '%REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest%' and pid != pg_backend_pid();
+    #   IF cnt < 1 then
+    #     REFRESH MATERIALIZED VIEW CONCURRENTLY leaderboards_entry_latest WITH DATA ;
+    #   END IF;
+    # END $$;
+    # ",
+    #   [],
+    #   timeout: 666_000
+    # )
   end
 
   def prune(%Season{id: id}) when is_integer(id) do
