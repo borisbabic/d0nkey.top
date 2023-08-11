@@ -18,6 +18,13 @@ defmodule Backend.Leaderboards.Entry do
   def changeset(entry, attrs) do
     entry
     |> cast(attrs, [:rank, :account_id, :rating, :season_id, :inserted_at])
+    # on the current table
+    |> unique_constraint([:account_id, :rank, :rating, :season_id],
+      name: :leaderboards_current_entries_unique_index
+    )
     |> validate_required([:rank, :season_id])
   end
+
+  def current_table(), do: :leaderboards_current_entries
+  def current(), do: {current_table(), __MODULE__}
 end
