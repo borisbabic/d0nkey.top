@@ -4,7 +4,6 @@ defmodule Backend.Leaderboards.SeasonBag do
   use GenServer
   alias Backend.Leaderboards
   alias Backend.Leaderboards.Season
-  alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
 
   def start_link(default), do: GenServer.start_link(__MODULE__, default, name: __MODULE__)
@@ -21,9 +20,11 @@ defmodule Backend.Leaderboards.SeasonBag do
 
   def update_table(table) do
     season_objects = Leaderboards.all_seasons() |> Enum.map(&{key(&1), &1})
+    :ets.delete_all_objects(table)
     :ets.insert(table, season_objects)
   end
 
+  def update(), do: GenServer.cast(__MODULE__, :update)
   @spec get(Season.t() | ApiSeason.t()) :: {:ok, Season.t()} | {:error, any()}
   def get(s = %Season{id: id}) when is_integer(id), do: {:ok, s}
 
@@ -62,6 +63,11 @@ defmodule Backend.Leaderboards.SeasonBag do
     else
       acc
     end
+  end
+
+  def handle_cast(:update, state) do
+    update_table(state.table)
+    {:noreply, state}
   end
 
   def handle_call({:create_season, season}, _, state) do
