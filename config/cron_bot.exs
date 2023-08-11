@@ -23,7 +23,7 @@ config :backend, QuantumScheduler,
     {"13 * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
     {"11 * * * *", fn -> Backend.Hearthstone.update_collectible_cards() end},
     {"17 08 * * *", fn -> Backend.Hearthstone.update_all_cards() end},
-    {"*/9 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
+    # {"*/9 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
     {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}

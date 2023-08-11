@@ -59,7 +59,6 @@ defmodule BackendWeb.LeaderboardController do
       search: params["search"],
       skip_cn: skip_cn,
       comparison: comparison,
-      use_freshest_data: extract_use_freshest(criteria),
       ladder_points: ladder_points,
       show_ratings: show_ratings(params, leaderboard),
       ladder_mode: ladder_mode
@@ -73,8 +72,8 @@ defmodule BackendWeb.LeaderboardController do
     |> parse_offset(params)
     |> parse_limit(params)
     |> parse_search(params)
+
     # keep freshest after season
-    |> parse_use_freshest(params)
   end
 
   defp get_shim(criteria, params) do
@@ -99,27 +98,6 @@ defmodule BackendWeb.LeaderboardController do
       {"limit", limit}
       | criteria
     ]
-  end
-
-  defp parse_use_freshest(criteria, %{"use_freshest_data" => use_freshest}) do
-    [{"use_freshest_data", use_freshest} | criteria]
-  end
-
-  defp parse_use_freshest(criteria, _) do
-    use_freshest =
-      case List.keyfind(criteria, "season", 0) do
-        {"season", %{leaderboard_id: ldb_id}} when ldb_id not in ["BG", :BG] -> "yes"
-        _ -> "no"
-      end
-
-    [{"use_freshest_data", use_freshest} | criteria]
-  end
-
-  defp extract_use_freshest(criteria) do
-    {"use_freshest_data", val} =
-      List.keyfind(criteria, "use_freshest_data", 0, {"use_freshest_data", "no"})
-
-    val
   end
 
   defp parse_search(criteria, %{"search" => search}), do: [{"search", search} | criteria]

@@ -157,7 +157,7 @@ defmodule Backend.Leaderboards do
     tasks_per_current_api_season(&save_all(&1, num))
     |> Task.await_many(:infinity)
 
-    refresh_latest()
+    # refresh_latest()
   end
 
   defp tasks_per_current_api_season(func) do

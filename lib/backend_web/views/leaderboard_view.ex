@@ -630,7 +630,6 @@ defmodule BackendWeb.LeaderboardView do
             region: region,
             season_id: season_id
           },
-          use_freshest_data: use_freshest_data,
           show_flags: show_flags,
           compare_to: compare_to
         }
@@ -640,7 +639,6 @@ defmodule BackendWeb.LeaderboardView do
       create_leaderboard_dropdown(conn, leaderboard_id),
       create_season_dropdown(conn, season_id, leaderboard_id),
       create_show_flags_dropdown(conn, show_flags),
-      create_use_freshest_dropdown(conn, use_freshest_data),
       create_compare_to_dropdown(conn, compare_to)
     ]
     |> Enum.filter(& &1)
@@ -739,20 +737,6 @@ defmodule BackendWeb.LeaderboardView do
       end)
 
     {options, dropdown_title(options, "Points Season")}
-  end
-
-  def create_use_freshest_dropdown(conn = %Plug.Conn{}, use_freshest) do
-    options =
-      [{"yes", "Fresh Data"}, {"no", "Cached Data"}]
-      |> Enum.map(fn {val, display} ->
-        %{
-          display: display,
-          selected: use_freshest == val,
-          link: update_index_link(conn, "use_freshest_data", val)
-        }
-      end)
-
-    {options, dropdown_title(options, "Data Freshness")}
   end
 
   def create_region_dropdown(conn = %Plug.Conn{}, region) do
