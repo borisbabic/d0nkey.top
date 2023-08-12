@@ -249,33 +249,6 @@ defmodule Backend.Leaderboards do
   defp continue?(_), do: false
 
   def handle_rows(rows, season), do: create_entries(rows, season)
-  # def handle_rows(rows, season) do
-  #   {target, rest} = Enum.split(rows, 200)
-  #   handle_rows(target, season, rest)
-  # end
-  #
-  # def handle_rows(rows = [_ | _], season, rest) do
-  #   now = NaiveDateTime.utc_now()
-  #   {%{rank: min_rank}, %{rank: max_rank}} = Enum.min_max_by(rows, & &1.rank)
-  #
-  #   existing =
-  #     entries([
-  #       :latest_in_season,
-  #       {"season", season},
-  #       {"min_rank", min_rank},
-  #       {"max_rank", max_rank}
-  #     ])
-  #
-  #   updated = get_updated_filter(existing, now)
-  #
-  #   rows
-  #   |> Enum.filter(updated)
-  #   |> create_entries(season)
-  #
-  #   handle_rows(rest, season)
-  # end
-  #
-  # def handle_rows(_, _, _), do: []
 
   defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
     do: handle_rows(rows, season)
@@ -283,29 +256,6 @@ defmodule Backend.Leaderboards do
   defp handle_response(_) do
     nil
   end
-
-  # defp get_updated_filter(existing, now) do
-  #   map = Map.new(existing, &{&1.rank, &1})
-  #
-  #   fn api_entry ->
-  #     Map.get(map, api_entry.rank)
-  #     |> should_update?(api_entry, now)
-  #   end
-  # end
-  #
-  # defp should_update?(nil, _api, _now), do: true
-  #
-  # defp should_update?(db, api, now) do
-  #   different?(db, api) && older?(db, now)
-  # end
-  #
-  # defp different?(db, api) do
-  #   db.account_id != api.account_id || db.rating != api.rating
-  # end
-  #
-  # defp older?(db_entry, now) do
-  #   :lt == NaiveDateTime.compare(db_entry.inserted_at, now)
-  # end
 
   def save_old() do
     for region <- Blizzard.qualifier_regions(),
