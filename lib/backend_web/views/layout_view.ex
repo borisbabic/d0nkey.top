@@ -83,10 +83,11 @@ defmodule BackendWeb.LayoutView do
   end
 
   def show_fantasy?() do
-    ongoing_dreamhack_fantasy?() ||
-      ongoing_mt_fantasy?() ||
-      ongoing_lobby_legends_fantasy?() ||
-      highlight_fantasy_for_gm?()
+    false &&
+      (ongoing_dreamhack_fantasy?() ||
+         ongoing_mt_fantasy?() ||
+         ongoing_lobby_legends_fantasy?() ||
+         highlight_fantasy_for_gm?())
   end
 
   def twitchbot?(user) do
