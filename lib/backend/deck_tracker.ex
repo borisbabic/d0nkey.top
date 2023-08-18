@@ -473,7 +473,9 @@ defmodule Hearthstone.DeckTracker do
       as: :game,
       left_join: pd in assoc(g, :player_deck),
       as: :player_deck,
-      preload: [player_deck: pd]
+      left_join: source in assoc(g, :source),
+      as: :source,
+      preload: [player_deck: pd, source: source]
     )
   end
 
@@ -815,10 +817,15 @@ defmodule Hearthstone.DeckTracker do
 
   # def replay_link(%{api_user: nil, game_id: game_id}),
   #   do: "https://hsreplay.net/replay/#{game_id}"
+  def replay_link(%{source: %{source: "firestone"}, game_id: game_id}),
+    do: firestone_replay(game_id)
+
   def replay_link(%{source_id: id, game_id: game_id}) when is_nil(id),
-    do: "https://replays.firestoneapp.com/?reviewId=#{game_id}"
+    do: firestone_replay(game_id)
 
   def replay_link(_), do: nil
+
+  def firestone_replay(game_id), do: "https://replays.firestoneapp.com/?reviewId=#{game_id}"
 
   @spec raw_stats_for_game(Game.t()) :: RawPlayerCardStats.t() | nil
   def raw_stats_for_game(%{id: id}) do
