@@ -418,7 +418,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour 2023_2",
-        battlefy_id: nil,
+        battlefy_id: "64d1c90aa7f1f73b08054d38",
         ladder_priority: nil,
         ladder_seasons: [114, 115, 116],
         ladder_invites: nil,
@@ -433,7 +433,7 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: nil,
+        start_time: ~N[2023-08-19 16:00:00],
         qualifiers_period: {~D[2023-06-01], ~D[2022-06-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
@@ -552,7 +552,7 @@ defmodule Backend.MastersTour.TourStop do
 
   def display_name(_), do: nil
 
-  def get_current(hours_before_start \\ 1, hours_after_start \\ 96) do
+  def get_current(hours_before_start \\ 24, hours_after_start \\ 96) do
     all()
     |> Enum.find_value(fn ts -> ts |> current?(hours_before_start, hours_after_start) && ts.id end)
   end
