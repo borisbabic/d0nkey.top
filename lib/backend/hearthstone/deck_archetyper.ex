@@ -302,20 +302,32 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Mage"
 
+      naga_mage?(card_info) && rainbow_mage?(card_info) ->
+        :"Rainbow Naga Mage"
+
       rainbow_mage?(card_info) ->
         :"Rainbow Mage"
 
       arcane_mage?(card_info) ->
         :"Arcane Mage"
 
+      naga_mage?(card_info) && arcane_mage?(card_info) ->
+        :"Arcane Naga Mage"
+
       secret_mage?(card_info) ->
         :"Secret Mage"
+
+      naga_mage?(card_info) && secret_mage?(card_info) ->
+        :"Secret Naga Mage"
 
       burn_mage?(card_info) && secret_mage?(card_info) ->
         :"Burn Secret Mage"
 
+      naga_mage?(card_info) && burn_mage?(card_info) && secret_mage?(card_info) ->
+        :"Secret Burn Naga Mage"
+
       naga_mage?(card_info) && casino_mage?(card_info) ->
-        :"Naga Casino Mage"
+        :"Casino Naga Mage"
 
       casino_mage?(card_info) ->
         :"Casino Mage"
@@ -325,6 +337,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       burn_mage?(card_info) && naga_mage?(card_info) ->
         :"Burn Naga Mage"
+
+      naga_mage?(card_info) && skeleton_mage?(card_info) ->
+        :"Spooky Naga Mage"
 
       naga_mage?(card_info) ->
         :"Naga Mage"
