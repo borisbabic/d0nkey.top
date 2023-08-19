@@ -611,8 +611,7 @@ defmodule BackendWeb.BattlefyView do
     do: %{stage_id: stage_id}
 
   # at least two stages. don't wanna add it if there is 1 stage
-  defp stage_query_param(%{tournament: %{stages: [_ | [_ | _]] = stages}}) do
-    stage_id = Enum.reverse(stages) |> Enum.find_value(&Map.get(&1, :id))
+  defp stage_query_param(%{tournament: %{stages: [_ | [_ | _]]}, standings_stage_id: stage_id}) do
     %{stage_id: stage_id}
   end
 
@@ -789,8 +788,7 @@ defmodule BackendWeb.BattlefyView do
             tournament.id,
             s.team.name,
             stage_query_param(params)
-          )
-          |> add_stage_id(stage_id),
+          ),
         has_score: s.wins && s.losses,
         score: "#{s.wins} - #{s.losses}",
         wins: s.wins,
@@ -808,15 +806,11 @@ defmodule BackendWeb.BattlefyView do
   end
 
   defp create_tournament_dropdowns(params) do
-    dropdowns =
-      [get_ongoing_dropdown(params)]
-      |> add_lineups_dropdown(params)
-      |> add_earnings_dropdown(params)
-      |> add_highlight_fantasy_dropdown(params)
+    [get_ongoing_dropdown(params)]
+    |> add_lineups_dropdown(params)
+    |> add_earnings_dropdown(params)
+    |> add_highlight_fantasy_dropdown(params)
   end
-
-  defp add_stage_id(link, nil), do: link
-  defp add_stage_id(link, stage_id), do: "#{link}?stage_id=#{stage_id}"
 
   defp team_name(name, participants_map) do
     case Map.get(participants_map, name) do

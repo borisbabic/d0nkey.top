@@ -276,18 +276,19 @@ defmodule Backend.Battlefy do
       end)
       |> Enum.frequencies()
 
-    auto_losses =
-      matches
-      |> Enum.flat_map(fn %{double_loss: _double_loss, top: _top, bottom: _bottom} ->
-        cond do
-          # not counting these because of new masters tour qualifier rules
-          # double_loss -> [top.team.name, bottom.team.name]
-          # top.ready_at != nil && bottom.ready_at == nil -> [bottom.team.name]
-          # top.ready_at == nil && bottom.ready_at != nil -> [top.team.name]
-          true -> []
-        end
-      end)
-      |> Enum.frequencies()
+    auto_losses = %{}
+    # matches
+    # |> Enum.flat_map(fn %{double_loss: _double_loss, top: _top, bottom: _bottom} ->
+
+    # cond do
+    # not counting these because of new masters tour qualifier rules
+    # double_loss -> [top.team.name, bottom.team.name]
+    # top.ready_at != nil && bottom.ready_at == nil -> [bottom.team.name]
+    # top.ready_at == nil && bottom.ready_at != nil -> [top.team.name]
+    # true -> []
+    # end
+    # end)
+    # |> Enum.frequencies()
 
     {auto_wins, auto_losses}
   end
@@ -465,21 +466,33 @@ defmodule Backend.Battlefy do
     Api.get_stage(stage_id)
   end
 
+  @spec get_tournament_standings_and_stage_id(Tournament.t()) ::
+          {:ok, {stage_id(), [Standings.t()]}} | :error
+  def get_tournament_standings_and_stage_id(%{stage_ids: stage_ids}) do
+    result =
+      stage_ids
+      |> Enum.reverse()
+      |> Enum.find_value(fn id ->
+        id
+        |> Api.get_stage()
+        |> get_stage_standings()
+        |> case do
+          [] -> nil
+          s -> {id, s}
+        end
+      end)
+
+    case result do
+      nil -> :error
+      result -> {:ok, result}
+    end
+  end
+
   @spec get_tournament_standings(Tournament.t() | %{stage_ids: [stage_id]}) :: [Standings.t()]
-  def get_tournament_standings(%{stage_ids: stage_ids}) do
-    case stage_ids
-         |> Enum.reverse()
-         |> Enum.find_value(fn id ->
-           id
-           |> Api.get_stage()
-           |> get_stage_standings()
-           |> case do
-             [] -> nil
-             s -> s
-           end
-         end) do
-      nil -> []
-      standings -> standings
+  def get_tournament_standings(tournament) do
+    case get_tournament_standings_and_stage_id(tournament) do
+      {:ok, {_, standings}} -> standings
+      _ -> []
     end
   end
 
@@ -491,6 +504,12 @@ defmodule Backend.Battlefy do
   end
 
   def get_tournament_standings(_), do: []
+
+  @spec stage_id_for_standings(Tournament.t()) :: stage_id()
+  def stage_id_for_standings(%{stage_ids: stage_ids}) do
+    stage_ids
+    |> Enum.reverse()
+  end
 
   @spec get_tournament(tournament_id) :: Tournament.t()
   def get_tournament(tournament_id) do
@@ -833,9 +852,10 @@ defmodule Backend.Battlefy do
 
   @spec lineups(tournament_id) :: [Lineup]
   def lineups(tournament_id) do
-    with lineups = [_ | _] <- Hearthstone.get_lineups(tournament_id, "battlefy") do
-      lineups
-    else
+    case Hearthstone.get_lineups(tournament_id, "battlefy") do
+      lineups = [_ | _] ->
+        lineups
+
       _ ->
         Backend.Battlefy.LineupFetcher.fetch_async(tournament_id)
         []
