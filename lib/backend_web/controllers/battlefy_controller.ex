@@ -149,11 +149,16 @@ defmodule BackendWeb.BattlefyController do
       end
 
     existing
-    |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
+    |> Map.merge(%{
+      standings_raw: standings,
+      matches: matches,
+      show_ongoing: show_ongoing,
+      standings_stage_id: stage_id
+    })
   end
 
   defp add_matches_standings(existing = %{tournament: tournament}, params) do
-    standings = Battlefy.get_tournament_standings(tournament)
+    {:ok, {stage_id, standings}} = Battlefy.get_tournament_standings_and_stage_id(tournament)
 
     {matches, show_ongoing} =
       if is_ongoing(params) do
@@ -163,7 +168,12 @@ defmodule BackendWeb.BattlefyController do
       end
 
     existing
-    |> Map.merge(%{standings_raw: standings, matches: matches, show_ongoing: show_ongoing})
+    |> Map.merge(%{
+      standings_raw: standings,
+      matches: matches,
+      show_ongoing: show_ongoing,
+      standings_stage_id: stage_id
+    })
   end
 
   def get_highlight(params), do: multi_select_to_array(params["player"])
