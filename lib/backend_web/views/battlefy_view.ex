@@ -200,6 +200,13 @@ defmodule BackendWeb.BattlefyView do
 
     deckcodes = Enum.filter(deckcodes_raw, &Backend.Hearthstone.Deck.valid?/1)
 
+    standings_link_params =
+      if params[:stage_id] do
+        [stage_id: params[:stage_id]]
+      else
+        []
+      end
+
     render(
       "future_opponents.html",
       %{
@@ -214,7 +221,8 @@ defmodule BackendWeb.BattlefyView do
         tournament: tournament,
         class_stats: class_stats,
         show_class_stats: class_stats |> Enum.count() > 0,
-        standings_link: Routes.battlefy_path(conn, :tournament, tournament.id),
+        standings_link:
+          Routes.battlefy_path(conn, :tournament, tournament.id, standings_link_params),
         yaytears: yaytears
       }
       |> add_stage_attrs(
