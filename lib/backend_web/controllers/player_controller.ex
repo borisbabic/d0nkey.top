@@ -43,10 +43,19 @@ defmodule BackendWeb.PlayerController do
     end)
   end
 
+  @default_competitions ["leaderboard", "mt"]
+  def default_competitions(), do: @default_competitions
+
   def player_profile(conn, params = %{"battletag_full" => bt}) do
     battletags = player_profile_battletags(bt) |> Enum.reverse()
     short_btags = Enum.map(battletags, &Battletag.shorten/1)
     mt_names = Enum.map(short_btags, &MastersTour.name_hacks/1)
+
+    competitions =
+      case multi_select_to_array(params["competition"]) do
+        [] -> @default_competitions
+        c -> c
+      end
 
     qualifier_stats =
       if Battletag.long?(bt) do
@@ -57,23 +66,18 @@ defmodule BackendWeb.PlayerController do
 
     country = PlayerInfo.get_country(bt)
 
-    tournaments = Backend.MastersTour.list_qualifiers_for_player(battletags)
-
-    mt_earnings =
-      Backend.MastersTour.get_gm_money_rankings({2021, 1}, :earnings_2020)
-      |> Enum.find(fn {player, _total, _per_stop} ->
-        player in short_btags
-      end)
-      |> case do
-        nil -> 0
-        {_, earnings, _} -> earnings
+    tournaments =
+      if "qualifiers" in competitions do
+        Backend.MastersTour.list_qualifiers_for_player(battletags)
+      else
+        []
       end
 
     mt_stats =
       MastersTour.masters_tours_stats()
       |> MastersTour.create_mt_stats_collection()
-      |> Enum.filter(fn {name, tts} -> MastersTour.name_hacks(name) in mt_names end)
-      |> Enum.reduce([], fn {name, tts}, carry ->
+      |> Enum.filter(fn {name, _tts} -> MastersTour.name_hacks(name) in mt_names end)
+      |> Enum.reduce([], fn {_name, tts}, carry ->
         tts ++ carry
       end)
 
@@ -83,7 +87,12 @@ defmodule BackendWeb.PlayerController do
         _ -> []
       end)
 
-    finishes = Backend.Leaderboards.finishes_for_battletag(battletags, ldb_criteria)
+    finishes =
+      if "leaderboard" in competitions do
+        Backend.Leaderboards.finishes_for_battletag(battletags, ldb_criteria)
+      else
+        []
+      end
 
     render(conn, "player_profile.html", %{
       qualifier_stats: qualifier_stats,
@@ -91,11 +100,10 @@ defmodule BackendWeb.PlayerController do
       battletags: battletags,
       tournaments: tournaments,
       finishes: finishes,
-      competitions: multi_select_to_array(params["competition"]),
+      competitions: competitions,
       battletag_full: bt,
       page_title: bt,
-      tournament_team_stats: mt_stats,
-      mt_earnings: mt_earnings
+      tournament_team_stats: mt_stats
     })
   end
 end
