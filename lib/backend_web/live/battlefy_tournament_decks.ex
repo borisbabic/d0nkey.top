@@ -2,6 +2,7 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.TournamentLineupExplorer
+  alias Backend.DeckInteractionTracker, as: Tracker
 
   data(tournament_id, :list)
   data(user, :any)
@@ -30,5 +31,10 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
       :noreply,
       socket |> assign(tournament_id: tournament_id, show_cards: false)
     }
+  end
+
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
   end
 end
