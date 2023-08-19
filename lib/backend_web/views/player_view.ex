@@ -319,10 +319,8 @@ defmodule BackendWeb.PlayerView do
     """
   end
 
-  @skip_by_default ["qualifiers"]
-  def selected?(competition, []) do
-    !Enum.member?(@skip_by_default, to_string(competition))
-  end
+  @default_competitions ["leaderboard", "mt"]
+  def default_competitions(), do: @default_competitions
 
   def selected?(competition, selected_competitions) do
     Enum.member?(selected_competitions, to_string(competition))
@@ -332,6 +330,8 @@ defmodule BackendWeb.PlayerView do
     [{"qualifiers", "Qualifiers"}, {"leaderboard", "Leaderboards"}, {"mt", "MTs"}]
     |> Enum.map(fn {v, n} -> {v, n, selected?(v, competitions)} end)
   end
+
+  def pick_competitions([], rows), do: pick_competitions(@default_competitions, rows)
 
   def pick_competitions(competitions, rows) do
     Enum.flat_map(rows, fn {k, r} ->
