@@ -332,11 +332,8 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   end
 
   defp years_options(years) do
-    TourStop.all()
-    |> Enum.map(&to_string(&1.year))
-    |> Enum.filter(& &1)
-    |> Enum.uniq()
-    |> Enum.sort()
+    MastersTour.eligible_stats_years()
+    |> Enum.map(&to_string(&1))
     |> Enum.map(fn y ->
       %{
         selected: !Enum.any?(years) || y in years,
