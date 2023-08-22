@@ -1222,12 +1222,14 @@ defmodule Backend.MastersTour do
     |> masters_tours_stats()
   end
 
-  defp filter_years(tour_stops, []), do: tour_stops
+  defp filter_years(tour_stops, []), do: filter_years(tour_stops, eligible_stats_years())
 
   defp filter_years(tour_stops, years) do
     years_string = Enum.map(years, &to_string/1)
     Enum.filter(tour_stops, &(to_string(&1.year) in years_string))
   end
+
+  def eligible_stats_years(), do: 2019..2022
 
   @spec create_mt_stats_collection([[TournamentTeamStats.t()]]) :: [
           {String.t(), [TournamentTeamStats.t()]}
