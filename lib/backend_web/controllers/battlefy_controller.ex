@@ -204,7 +204,10 @@ defmodule BackendWeb.BattlefyController do
     team_name = URI.decode_www_form(team_name_raw)
     {opponent_matches, player_matches} = future_and_player(params)
 
-    needed_deckcodes = [team_name | get_battletags(opponent_matches ++ player_matches)]
+    needed_deckcodes = [
+      team_name
+      | get_battletags(opponent_matches.winner ++ opponent_matches.loser ++ player_matches)
+    ]
 
     stage_id = params["stage_id"]
 
@@ -247,7 +250,7 @@ defmodule BackendWeb.BattlefyController do
     do: Battlefy.get_future_and_player_matches(tournament_id, team_name)
 
   defp future_and_player(_),
-    do: {[], []}
+    do: {%{winner: [], loser: []}, []}
 
   def organization_tournament_stats(conn, %{"stats_slug" => stats_slug}) do
     with %{organization_slug: org_slug, from: from, pattern: pattern, title: title} <-

@@ -6,6 +6,7 @@ defmodule Backend.Battlefy do
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.MatchTeam
   alias Backend.Battlefy.Match
+  alias Backend.Battlefy.Match.Next
   alias Backend.Battlefy.MatchDeckstrings
   alias Backend.Battlefy.Stage
   alias Backend.BattlefyUtil
@@ -26,6 +27,7 @@ defmodule Backend.Battlefy do
   @type get_matches_options :: [get_matches_opt]
   @type get_tournament_matches_opt :: {:stage, integer()} | get_matches_opt
   @type get_tournament_matches_options :: [get_tournament_matches_opt]
+  @type future_opponents :: %{winner: [Match.t()], loser: [Match.t()]}
 
   @organization_slugs [
     "houserivalries",
@@ -548,17 +550,50 @@ defmodule Backend.Battlefy do
     do: stage_id |> get_stage() |> get_future_and_player_matches(team_name)
 
   @spec get_future_and_player_matches(Stage.t(), String.t()) :: [Match.t()]
-  def get_future_and_player_matches(stage = %Stage{id: id}, team_name) do
+  def get_future_and_player_matches(%Stage{id: id}, team_name) do
     matches = get_matches(id)
-    total_rounds = stage.bracket && stage.bracket.rounds_count
-    future_opponents = get_future_opponents(matches, total_rounds, team_name)
+    # total_rounds = stage.bracket && stage.bracket.rounds_count
 
-    player_matches =
+    [latest | _] =
+      player_matches =
       matches
       |> Match.filter_team(team_name)
       |> Match.sort_by_round(:desc)
 
+    future_opponents = future_opponents(matches, latest)
+    # future_opponents = get_future_opponents(matches, total_rounds, team_name)
+
     {future_opponents, player_matches}
+  end
+
+  def future_opponents(matches, %{id: id, next: %{winner: winner, loser: loser}}) do
+    %{
+      winner: future_opponents(matches, winner, id),
+      loser: future_opponents(matches, loser, id)
+    }
+  end
+
+  def future_opponents(_, _), do: %{winner: [], loser: []}
+
+  @spec future_opponents([Match.t()], Match.NextRound.t() | nil, String.t() | match_id()) :: [
+          Match.t()
+        ]
+  def future_opponents(matches, %{match_id: match_id}, id) do
+    possible_future_opponents(matches, match_id, id)
+  end
+
+  def future_opponents(_, _, _), do: []
+
+  def possible_future_opponents(matches, future_match_id, current_match_id \\ nil) do
+    matches
+    |> Enum.filter(
+      &(Map.get(&1, :next) |> Next.has_match_id?(future_match_id) && &1.id != current_match_id)
+    )
+    |> Enum.flat_map(fn
+      %{top: %{winner: top}, bottom: %{winner: bot}} when top == true or bot == true -> []
+      match = %{top: %{winner: false}, bottom: %{winner: false}} -> [match]
+      match -> [match | possible_future_opponents(matches, match.id)]
+    end)
   end
 
   @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]

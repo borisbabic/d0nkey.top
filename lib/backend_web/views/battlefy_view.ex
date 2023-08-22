@@ -167,31 +167,37 @@ defmodule BackendWeb.BattlefyView do
         params = %{
           tournament: tournament,
           opponent_matches: opponent_matches,
-          all_deckcodes: all_deckcodes_raw,
-          player_matches: player_matches,
           deckcodes: deckcodes_raw,
           team_name: team_name,
           conn: conn
         }
       ) do
-    opponent =
-      opponent_matches
-      |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
-        %{
-          top: handle_opponent_team(top, params),
-          bottom: handle_opponent_team(bottom, params),
-          match_url:
-            Routes.live_path(
-              BackendWeb.Endpoint,
-              BackendWeb.BattlefyMatchLive,
-              tournament.id,
-              match.id
-            ),
-          current_round: current_round,
-          score: "#{top.score} - #{bottom.score}"
-        }
-      end)
-      |> Enum.sort_by(fn o -> o.current_round end, :desc)
+    winner_opponent =
+      prepare_future_opponents(opponent_matches.winner, params, tournament)
+      |> render_future_opponents("Winner's Future Opponents")
+
+    loser_opponent =
+      prepare_future_opponents(opponent_matches.loser, params, tournament)
+      |> render_future_opponents("Loser's Future Opponents")
+
+    # opponent =
+    #   opponent_matches
+    #   |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
+    #     %{
+    #       top: handle_opponent_team(top, params),
+    #       bottom: handle_opponent_team(bottom, params),
+    #       match_url:
+    #         Routes.live_path(
+    #           BackendWeb.Endpoint,
+    #           BackendWeb.BattlefyMatchLive,
+    #           tournament.id,
+    #           match.id
+    #         ),
+    #       current_round: current_round,
+    #       score: "#{top.score} - #{bottom.score}"
+    #     }
+    #   end)
+    #   |> Enum.sort_by(fn o -> o.current_round end, :desc)
 
     {player, class_stats_raw} = handle_player_matches(params)
     hsdeckviewer = Routes.battlefy_path(conn, :tournament_decks, tournament.id, team_name)
@@ -211,9 +217,9 @@ defmodule BackendWeb.BattlefyView do
       "future_opponents.html",
       %{
         conn: conn,
-        show_future: opponent |> Enum.any?(),
+        winner_future: winner_opponent,
+        loser_future: loser_opponent,
         show_player: player |> Enum.any?(),
-        future_matches: opponent,
         player_matches: player,
         team_name: team_name,
         hsdeckviewer: hsdeckviewer,
@@ -231,6 +237,69 @@ defmodule BackendWeb.BattlefyView do
         &Routes.battlefy_path(conn, :tournament_player, tournament.id, team_name, %{stage_id: &1})
       )
     )
+  end
+
+  def prepare_future_opponents([_ | _] = matches, params, tournament) do
+    matches
+    |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
+      %{
+        top: handle_opponent_team(top, params),
+        bottom: handle_opponent_team(bottom, params),
+        match_url:
+          Routes.live_path(
+            BackendWeb.Endpoint,
+            BackendWeb.BattlefyMatchLive,
+            tournament.id,
+            match.id
+          ),
+        current_round: current_round,
+        score: "#{top.score} - #{bottom.score}"
+      }
+    end)
+    |> Enum.sort_by(fn o -> o.current_round end, :desc)
+  end
+
+  def prepare_future_opponents(_, _params, _tournament), do: []
+
+  def render_future_opponents(future_matches, title \\ "Future Opponents")
+  def render_future_opponents([], _), do: false
+
+  def render_future_opponents(future_matches, title) do
+    ~E"""
+    <div class="title is-5"><%= title %> </div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th>Top</th>
+                <th class="is-hidden-mobile">Top Decks</th>
+                <th>Score</th>
+                <th>Bottom</th>
+                <th class="is-hidden-mobile">Bottom Decks</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- future_matches do %>
+                <tr>
+                    <td><%= current_round %></td>
+                    <%= if top == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
+                        <td class="is-hidden-mobile"><%= top.decks %></td>
+                    <% end %>
+                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
+                    <%= if bottom == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
+                        <td class="is-hidden-mobile"><%= bottom.decks %></td>
+                    <% end %>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+    """
   end
 
   def render("class_match_stats.html", %{class: class, bans: 0, wins: wins, losses: losses}) do
