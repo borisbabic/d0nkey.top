@@ -26,7 +26,8 @@ defmodule Components.DecksExplorer do
     {"past_week", "Past Week"},
     {"past_3_days", "Past 3 Days"},
     {"past_day", "Past Day"},
-    {"titans", "TITANS!"}
+    {"titans", "TITANS!"},
+    {"patch_27.2", "27.2"}
     # {"patch_2022-09-09", "Sep 9th Patch"},
     # {"koft_he", "DK Event"},
     # {"lich_king", "March of the Lich King"},
@@ -303,13 +304,13 @@ defmodule Components.DecksExplorer do
 
   def default_period() do
     now = NaiveDateTime.utc_now()
-    use_patch_after = ~N[2023-08-01 18:20:00]
-    use_patch_until = ~N[2023-08-10 22:00:00]
+    use_patch_after = ~N[2023-08-22 21:20:00]
+    use_patch_until = ~N[2023-08-30 22:00:00]
 
     case {NaiveDateTime.compare(now, use_patch_after),
           NaiveDateTime.compare(now, use_patch_until)} do
       {:lt, :lt} -> "past_week"
-      {:gt, :lt} -> "titans"
+      {:gt, :lt} -> "patch_27.2"
       _ -> "past_week"
     end
   end
