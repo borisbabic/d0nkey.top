@@ -5,6 +5,7 @@ defmodule Backend.Battlefy.Match do
   alias Backend.Battlefy.MatchTeam
   alias Backend.Battlefy.ClassMatchStats
   alias Backend.Battlefy.Match.MatchStats
+  alias Backend.Battlefy.Match.Next
 
   typedstruct enforce: true do
     field :id, Backend.Battlefy.match_id()
@@ -17,6 +18,7 @@ defmodule Backend.Battlefy.Match do
     field :is_bye, boolean
     field :completed_at, NaiveDateTime.t()
     field :stats, [MatchStats.t()] | nil
+    field :next, Next.t() | nil
     # field :is_complete, boolean
   end
 
@@ -66,6 +68,7 @@ defmodule Backend.Battlefy.Match do
       double_loss: map["doubleLoss"] || false,
       is_bye: is_bye,
       completed_at: map["completedAt"] |> Util.naive_date_time_or_nil(),
+      next: Next.from_raw_map(map["next"]),
       stats: MatchStats.from_raw_map(map["stats"]) || [],
       stage_id: stage_id
       # is_complete: is_complete
@@ -329,6 +332,53 @@ defmodule Backend.Battlefy.Match.MatchStats.Stats do
       !team_stats.winner -> collection |> ClassMatchStats.add_loss(team_stats.class)
     end
   end
+end
+
+defmodule Backend.Battlefy.Match.Next do
+  use TypedStruct
+  alias Backend.Battlefy.Match.NextRound
+
+  typedstruct enforce: true do
+    field :winner, NextRound.t() | nil
+    field :loser, NextRound.t() | nil
+  end
+
+  def from_raw_map(nil), do: nil
+
+  def from_raw_map(params) do
+    winner = params |> Map.get("winner") |> NextRound.from_raw_map()
+    loser = params |> Map.get("loser") |> NextRound.from_raw_map()
+
+    %__MODULE__{
+      winner: winner,
+      loser: loser
+    }
+  end
+
+  def has_match_id?(%{winner: winner, loser: loser}, match_id) do
+    NextRound.has_match_id?(winner, match_id) or
+      NextRound.has_match_id?(loser, match_id)
+  end
+
+  def has_match_id?(_, _), do: false
+end
+
+defmodule Backend.Battlefy.Match.NextRound do
+  use TypedStruct
+
+  typedstruct enforce: true do
+    field :position, String.t()
+    field :match_id, String.t()
+  end
+
+  def from_raw_map(params = %{"position" => position}) do
+    match_id = params["match_id"] || params["matchId"] || params["matchID"]
+    %__MODULE__{position: position, match_id: match_id}
+  end
+
+  def from_raw_map(_), do: nil
+  def has_match_id?(%{match_id: next_round_id}, target_id), do: next_round_id == target_id
+  def has_match_id?(_, _), do: false
 end
 
 defmodule Backend.Battlefy.Match.MatchStats.Stats.StatsTeam do

@@ -105,38 +105,10 @@
     </table>
 <% end %>
 
-<%= if @show_future do %>
-    <div class="title is-5">Future opponents</div>
-    <table class="table is-striped is-fullwidth is-narrow">
-        <thead>
-            <tr>
-                <th>Round</th>
-                <th>Top</th>
-                <th class="is-hidden-mobile">Top Decks</th>
-                <th>Score</th>
-                <th>Bottom</th>
-                <th class="is-hidden-mobile">Bottom Decks</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @future_matches do %>
-                <tr>
-                    <td><%= current_round %></td>
-                    <%= if top == nil do %>
-                        <td></td><td></td>
-                    <% else %>
-                        <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><%= top.decks %></td>
-                    <% end %>
-                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
-                    <%= if bottom == nil do %>
-                        <td></td><td></td>
-                    <% else %>
-                        <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><%= bottom.decks %></td>
-                    <% end %>
-                </tr>
-            <% end %>
-        </tbody>
-    </table>
+<%= if @winner_future do %>
+    <%= @winner_future %>
 <% end %>
+<%= if @loser_future do %>
+    <%= @loser_future %>
+<% end %>
+
