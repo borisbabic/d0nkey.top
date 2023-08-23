@@ -1318,7 +1318,7 @@ defmodule Backend.Leaderboards do
     Repo.query!(
       "DELETE FROM public.leaderboards_seasons WHERE id NOT IN (SELECT DISTINCT(season_id) FROM public.leaderboards_entry) AND inserted_at < now() - INTERVAL '2 min';",
       [],
-      timeout: 666_000
+      timeout: 69_666_000
     )
 
     SeasonBag.update()
