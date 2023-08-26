@@ -270,7 +270,7 @@ defmodule Bot.MessageHandler do
     embed =
       %Embed{}
       |> Embed.put_author(
-        match,
+        "#{match} (Other potential matches)",
         "https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)}",
         nil
       )
