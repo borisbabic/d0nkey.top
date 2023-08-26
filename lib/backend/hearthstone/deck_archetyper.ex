@@ -50,10 +50,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Murloc DK"
 
       true ->
-        case minion_type_fallback(card_info, "DK") do
-          "Undead DK" -> nil
-          mtf -> mtf
-        end
+        fallbacks(card_info, "DK", ignore_types: "Undead")
     end
   end
 
@@ -154,7 +151,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Outcast DH"
 
       true ->
-        minion_type_fallback(card_info, "Demon Hunter")
+        fallbacks(card_info, "Demon Hunter")
     end
   end
 
@@ -182,6 +179,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       celestial_druid?(card_info) -> :"Celestial Druid"
       ramp_druid?(card_info) -> :"Ramp Druid"
       menagerie?(card_info) -> :"Menagerie Druid"
+      moonbeam_druid?(card_info) -> :"Moonbeam Druid"
       treant_druid?(card_info) -> :"Treant Druid"
       murloc?(card_info) -> :"Murloc Druid"
       "Lady Prestor" in card_info.card_names -> :"Prestor Druid"
@@ -191,8 +189,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       hero_power_druid?(card_info) -> :"Hero Power Druid"
       choose_one?(card_info) -> :"Choose Druid"
       afk_druid?(card_info) -> :"AFK Druid"
-      true -> minion_type_fallback(card_info, "Druid")
+      true -> fallbacks(card_info, "Druid")
     end
+  end
+
+  defp moonbeam_druid?(ci) do
+    "Moonbeam" in ci.card_names &&
+      min_count?(ci, 2, ["Bloodmage Thalnos", "Kobold Geomancer", "Rainbow Glowscale"])
   end
 
   defp treant_druid?(ci),
@@ -226,14 +229,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       arcane_hunter?(card_info) && (big_beast_hunter?(card_info) or beast_hunter?(card_info)) ->
         :"Arcane Beast Hunter"
 
+      secret_hunter?(card_info) ->
+        :"Secret Hunter"
+
       arcane_hunter?(card_info) ->
         :"Arcane Hunter"
 
       rat_hunter?(card_info) ->
         :"Rattata Hunter"
-
-      secret_hunter?(card_info) ->
-        :"Secret Hunter"
 
       big_beast_hunter?(card_info) ->
         :"Big Beast Hunter"
@@ -263,7 +266,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Wildseed Hunter"
 
       true ->
-        minion_type_fallback(card_info, "Hunter")
+        fallbacks(card_info, "Hunter")
     end
   end
 
@@ -369,7 +372,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Boar Mage"
 
       true ->
-        minion_type_fallback(card_info, "Mage")
+        fallbacks(card_info, "Mage")
     end
   end
 
@@ -426,8 +429,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       vanndar?(card_info) -> :"Vanndar Paladin"
       murloc?(card_info) -> :"Murloc Paladin"
       boar?(card_info) -> :"Boar Paladin"
-      true -> minion_type_fallback(card_info, "Paladin")
+      oathbreaker_paladin?(card_info) -> :"Oathbreaker Paladin"
+      true -> fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp oathbreaker_paladin?(card_info) do
+    min_count?(card_info, 1, ["Tour Guide", "Hawkstrider Rancher", "Magatha, Bane of Music"])
   end
 
   defp aggro_paladin?(card_info),
@@ -503,9 +511,21 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Murloc Priest"
 
       true ->
-        minion_type_fallback(card_info, "Priest")
+        fallbacks(card_info, "Priest")
     end
   end
+
+  @type fallbacks_opt :: minion_type_fallback_opt()
+  @spec fallbacks(card_info(), String.t(), fallbacks_opt()) :: String.t()
+  defp fallbacks(ci, class_name, opts \\ []) do
+    cond do
+      miracle_chad?(ci) -> "Miracle Chad #{class_name}"
+      "Rivendare, Warrider" in ci.card_names -> "Rivendare #{class_name}"
+      true -> minion_type_fallback(ci, class_name, opts)
+    end
+  end
+
+  defp miracle_chad?(ci), do: min_count?(ci, 2, ["Thaddius, Monstrosity", "Cover Artist"])
 
   defp automaton_priest?(ci),
     do:
@@ -613,7 +633,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Secret Rogue"
 
       true ->
-        minion_type_fallback(card_info, "Rogue")
+        fallbacks(card_info, "Rogue")
     end
   end
 
@@ -636,7 +656,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Barbaric Sorceress" in card_info.card_names -> :"Big Spell Shaman"
       aggro_shaman?(card_info) -> :"Aggro Shaman"
       big_bone_shaman?(card_info) -> :"Big Bone Shaman"
-      "Gigantotem" in card_info.card_names -> :"Totem Shaman"
+      totem_shaman?(card_info) -> :"Totem Shaman"
       elemental_shaman?(card_info) -> :"Elemental Shaman"
       nature_shaman?(card_info) -> :"Nature Shaman"
       overload_shaman?(card_info) -> :"Overload Shaman"
@@ -645,10 +665,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       moist_shaman?(card_info) -> :"Moist Shaman"
       control_shaman?(card_info) -> :"Control Shaman"
       murloc?(card_info) -> :"Murloc Shaman"
-      minion_type_fallback(card_info, "Shaman") -> minion_type_fallback(card_info, "Shaman")
       bloodlust_shaman?(card_info) -> :"Bloodlust Shaman"
-      true -> nil
+      "From De Other Side" in card_info.card_names -> "FDOS Shaman"
+      true -> fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp totem_shaman?(ci) do
+    min_count?(ci, 2, ["Gigantotem", "Grand Totem Eys'or", "The Stonewright"])
   end
 
   defp nature_shaman?(ci),
@@ -742,7 +766,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"J-Lock"
 
       true ->
-        minion_type_fallback(card_info, "Warlock")
+        fallbacks(card_info, "Warlock")
     end
   end
 
@@ -769,7 +793,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       weapon_warrior?(card_info) -> :"Weapon Warrior"
       murloc?(card_info) -> :"Murloc Warrior"
       boar?(card_info) -> :"Boar Warrior"
-      true -> minion_type_fallback(card_info, "Warrior")
+      true -> fallbacks(card_info, "Warrior")
     end
   end
 
@@ -954,6 +978,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       even?(card_info) ->
         String.to_atom("Even #{class_name}")
 
+      pure_paladin?(card_info) ->
+        :"Pure Paladin"
+
       "Kingsbane" in card_info.card_names ->
         :"Kingsbane Rogue"
 
@@ -973,7 +1000,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Outcast DH"
 
       true ->
-        minion_type_fallback(card_info, class_name)
+        fallbacks(card_info, class_name)
     end
   end
 
@@ -1527,8 +1554,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp odd?(%{card_names: card_names}), do: "Baku the Mooneater" in card_names
   defp even?(%{card_names: card_names}), do: "Genn Greymane" in card_names
 
-  defp minion_type_fallback(ci, class_part, fallback \\ nil, min_count \\ 6) do
+  @type minion_type_fallback_opt ::
+          {:fallback, String.t() | nil} | {:min_count, number()} | {:ignore_types, [String.t()]}
+  @spec minion_type_fallback(card_info(), String.t(), [minion_type_fallback_opt()]) :: String.t()
+  defp minion_type_fallback(
+         ci,
+         class_part,
+         opts \\ [fallback: nil, min_count: 6, ignore_types: []]
+       ) do
+    fallback = Keyword.get(opts, :fallback, nil)
+    min_count = Keyword.get(opts, :min_count, 6)
+    ignore_types = Keyword.get(opts, :ignore_types, [])
+
     with counts = [_ | _] <- minion_type_counts(ci),
+         filtered <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
          {type, count} when count >= min_count <- Enum.max_by(counts, &elem(&1, 1)) do
       "#{type} #{class_part}"
     else
