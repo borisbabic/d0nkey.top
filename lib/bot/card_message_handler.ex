@@ -58,7 +58,7 @@ defmodule Bot.CardMessageHandler do
     embed = Keyword.get(opts, :embed, %Embed{})
 
     embed
-    |> Embed.put_title(card.name)
+    |> Embed.put_title("#{card.name} (View card and tokens)")
     |> Embed.put_image(card_url)
     |> Embed.put_url("https://www.hsguru.com/card/#{Card.dbf_id(card)}")
   end
