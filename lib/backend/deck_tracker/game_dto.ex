@@ -221,7 +221,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
   def from_raw_map(map) when is_map(map) do
     mull_raw = map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"]
 
-    drawn_raw = map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"]
+    drawn_raw = map["cards_drawn_from_initial_deck"] || map["cardsDrawnFromInitialDeck"]
 
     %__MODULE__{
       battletag: map["battletag"] || map["battleTag"],
