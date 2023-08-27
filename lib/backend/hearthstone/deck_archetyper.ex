@@ -50,7 +50,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Murloc DK"
 
       true ->
-        fallbacks(card_info, "DK", ignore_types: "Undead")
+        fallbacks(card_info, "DK", ignore_types: ["Undead"])
     end
   end
 
