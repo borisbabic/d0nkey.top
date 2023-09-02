@@ -37,7 +37,7 @@ defmodule Components.DeckListingModal do
         title={title(@existing)}>
         <Form for={%{}} as={:listing} submit="submit" opts={id: form_id(@existing, @deck)}>
           <Field name={:deckcode}>
-            <Label class="label">Deckcode</Label>
+            <Label class="label">Deckcode or link</Label>
             <TextInput class="input is-small" value={deckcode(@existing, @deck)} opts={disabled: !!@existing}/>
           </Field>
           <Field name={:sheet_id}>
@@ -66,7 +66,7 @@ defmodule Components.DeckListingModal do
   end
 
   defp title(%{name: name}) when is_binary(name), do: name
-  defp title(_), do: "Add Deck to sheet"
+  defp title(_), do: "Add Deck(s) to sheet"
   defp deckcode(%{deck: deck = %Deck{}}, _), do: Deck.deckcode(deck)
   defp deckcode(_, deck = %Deck{}), do: Deck.deckcode(deck)
   defp deckcode(_, code) when is_binary(code), do: code
