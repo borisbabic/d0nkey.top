@@ -75,11 +75,11 @@ defmodule Backend.Application do
           id: Backend.DeckInteractionTracker,
           start: {Backend.DeckInteractionTracker, :start_link, [[]]}
         },
-        %{
-          # who cares
-          id: Backend.GMStream,
-          start: {Backend.GMStream, :start_link, [[]]}
-        },
+        # %{
+        #   # who cares
+        #   id: Backend.GMStream,
+        #   start: {Backend.GMStream, :start_link, [[]]}
+        # },
         %{
           # can multi server
           id: Backend.PlayerIconBag,
@@ -95,11 +95,11 @@ defmodule Backend.Application do
           id: Backend.Hearthstone.CardBag,
           start: {Backend.Hearthstone.CardBag, :start_link, [[]]}
         },
-        %{
-          # who cares
-          id: Backend.Grandmasters,
-          start: {Backend.Grandmasters, :start_link, [[]]}
-        },
+        # %{
+        #   # who cares
+        #   id: Backend.Grandmasters,
+        #   start: {Backend.Grandmasters, :start_link, [[]]}
+        # },
         %{
           # can multiserver with acceptable issues
           id: Backend.LatestHSArticles,
@@ -110,11 +110,11 @@ defmodule Backend.Application do
           id: Backend.AdsTxtCache,
           start: {Backend.AdsTxtCache, :start_link, [[]]}
         },
-        %{
-          # can multiserver, prolly, who cares
-          id: Backend.PonyDojo,
-          start: {Backend.PonyDojo, :start_link, [[]]}
-        },
+        # %{
+        #   # can multiserver, prolly, who cares
+        #   id: Backend.PonyDojo,
+        #   start: {Backend.PonyDojo, :start_link, [[]]}
+        # },
         %{
           # TODO: CANNOT MULTISERVER
           # HUH? Can multisever just needs updating on each
