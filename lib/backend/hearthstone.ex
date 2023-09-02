@@ -1021,8 +1021,10 @@ defmodule Backend.Hearthstone do
 
   def canonical_id(id, prev \\ []) do
     copy_of_card_id =
-      case get_card(id) do
-        %{copy_of_card_id: copy_id} -> copy_id
+      with %{copy_of_card_id: copy_id} <- get_card(id),
+           %{id: _} <- get_card(copy_id) do
+        copy_id
+      else
         _ -> nil
       end
 
@@ -1031,6 +1033,27 @@ defmodule Backend.Hearthstone do
       id in prev -> Enum.min(prev)
       copy_of_card_id -> canonical_id(copy_of_card_id, [id | prev])
       true -> id
+    end
+    |> hack_canonical_id()
+  end
+
+  # {copy_of_card_id, id}
+  # these copy_of_card_id cards ddon't exist
+  @hacks [
+    {62349, 89144},
+    {67855, 1186},
+    {62463, 89145},
+    {643, 69939},
+    {66862, 89149},
+    {62490, 89146},
+    {66863, 89150},
+    {66259, 89148},
+    {67975, 493}
+  ]
+  def hack_canonical_id(id) do
+    case List.keyfind(@hacks, id, 0) do
+      {bad_id, good_id} -> good_id
+      _ -> id
     end
   end
 end
