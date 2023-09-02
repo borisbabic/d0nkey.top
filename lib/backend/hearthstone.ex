@@ -273,6 +273,29 @@ defmodule Backend.Hearthstone do
     |> regenerate_class_and_deckcode()
   end
 
+  def deduplicate_decks(limit \\ 100) do
+    get_duplicated_deck_ids(limit)
+    |> Util.async_map(&deduplicate_ids/1)
+  end
+
+  def get_duplicated_deck_ids(limit \\ 30, timeout \\ 69_000) do
+    query =
+      from d in Backend.Hearthstone.Deck,
+        select: %{ids: fragment("array_agg(?)", d.id)},
+        group_by: [d.cards, d.format, d.hero, d.sideboards],
+        having: count(d.id) > 1,
+        order_by: [desc: fragment("MAX(?)", d.inserted_at)],
+        limit: ^limit
+
+    Repo.all(query, timeout: timeout)
+  end
+
+  def deduplicate_ids(%{ids: ids}), do: deduplicate_ids(ids)
+
+  def deduplicate_ids(ids) do
+    Enum.map(ids, &get_deck/1) |> Command.DeduplicateDecks.deduplicate_group()
+  end
+
   def regenerate_class_and_deckcode(decks) do
     decks
     |> Enum.reduce(Multi.new(), fn d, multi ->
