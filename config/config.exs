@@ -152,6 +152,7 @@ config :backend, Oban,
     gm_stream_live: 4,
     hsreplay_deck_mapper: 1,
     leaderboards_pages_fetching: 100,
+    deck_deduplicator: 3,
     hsreplay_streamer_deck_inserter: 1
   ]
 
