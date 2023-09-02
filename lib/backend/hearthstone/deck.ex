@@ -342,6 +342,7 @@ defmodule Backend.Hearthstone.Deck do
     {cards, new_rest}
   end
 
+  defp take_multi([0]), do: {[], []}
   defp take_multi([]), do: {[], []}
 
   @spec deckcode_class_hero(integer, [integer]) :: {String.t(), String.t()}
