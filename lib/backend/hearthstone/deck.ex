@@ -260,7 +260,7 @@ defmodule Backend.Hearthstone.Deck do
          format: format,
          hero: hero,
          cards: cards,
-         deckcode: no_comments,
+         deckcode: deckcode(cards, hero, format, sideboards),
          sideboards: sideboards,
          class: class
        }}
