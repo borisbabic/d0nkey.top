@@ -11,7 +11,7 @@ defmodule Backend.Hearthstone.DeckDeduplicator do
   def enqueue(args), do: args |> new() |> Oban.insert()
 
   def enqueue_next(num \\ 1000) do
-    Hearthstone.get_duplicated_deck_ids(num)
+    Hearthstone.get_duplicated_deck_ids(num, 666_000)
     |> Enum.chunk_every(10)
     |> Enum.map(&insert_all/1)
   end
@@ -20,6 +20,6 @@ defmodule Backend.Hearthstone.DeckDeduplicator do
     Enum.reduce(list_of_ids, Ecto.Multi.new(), fn arg, multi ->
       Oban.insert(multi, Jason.encode(arg), new(arg))
     end)
-    |> Repo.transaction()
+    |> Repo.transaction(timeout: 666_000)
   end
 end
