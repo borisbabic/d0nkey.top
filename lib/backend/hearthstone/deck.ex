@@ -68,7 +68,7 @@ defmodule Backend.Hearthstone.Deck do
     |> Base.encode64()
   end
 
-  defp sideboards_deckcode_part([]), do: []
+  defp sideboards_deckcode_part([]), do: [0]
 
   defp sideboards_deckcode_part(sideboards) do
     {optimized, unoptimized} =
@@ -115,8 +115,10 @@ defmodule Backend.Hearthstone.Deck do
     [Enum.count(multi_part) | multi_part]
   end
 
+  # Keeping old around for db uniquness purposes but using the new for display purposes
+
   @spec canonicalize_cards([integer]) :: [integer]
-  def canonicalize_cards(cards), do: Enum.map(cards, &HearthstoneJson.canonical_id/1)
+  def canonicalize_cards(cards), do: Enum.map(cards, &Hearthstone.canonical_id/1)
 
   @spec deckcode_part([integer] | nil) :: [integer]
   defp deckcode_part(nil), do: [0]
