@@ -12,7 +12,7 @@ defmodule Backend.Hearthstone.DeckDeduplicator do
 
   def enqueue_next(num \\ 1000) do
     Hearthstone.get_duplicated_deck_ids(num, 666_000)
-    |> Enum.chunk_every(10)
+    |> Enum.chunk_every(100)
     |> Enum.map(&insert_all/1)
   end
 
