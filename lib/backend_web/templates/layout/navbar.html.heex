@@ -69,7 +69,15 @@
             <% end %>
          </div>
        </div>
-        <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
+        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" x-bind:class="{'is-active': open}">
+         <a @mouseover="open=true" class="navbar-item navbar-link" href={~p"/decks"}>Decks</a>
+
+         <div class="navbar-dropdown">
+           <a class="navbar-item" href={~p"/decks?format=2"}>Standard</a>
+           <a class="navbar-item" href={~p"/decks?format=1"}>Wild</a>
+           <a class="navbar-item" href={~p"/decks?format=4"}>Twist</a>
+         </div>
+       </div>
         <a class="navbar-item" href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
        <div x-data="{open: false}" @mouseleave="if(window.canCloseDropdown($event)) open=false;" class="navbar-item has-dropdown" x-bind:class="{'is-active': open}">
          <div @mouseover="open=true" class="navbar-link">
