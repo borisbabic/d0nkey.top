@@ -275,7 +275,7 @@ defmodule Backend.Hearthstone do
 
   def deduplicate_decks(limit \\ 100) do
     get_duplicated_deck_ids(limit)
-    |> Util.async_map(&deduplicate_ids/1)
+    |> Enum.map(&deduplicate_ids/1)
   end
 
   def get_duplicated_deck_ids(limit \\ 30, timeout \\ 69_000) do
