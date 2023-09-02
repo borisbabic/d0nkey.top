@@ -558,7 +558,7 @@ defmodule Backend.Hearthstone.Deck do
   def equal(_), do: false
 
   def deckcode_regex() do
-    ~r/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{15,})?$/
+    ~r/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{15,})(?:[=]){0,5}?$/
   end
 
   def classes() do
