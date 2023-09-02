@@ -995,4 +995,19 @@ defmodule Backend.Hearthstone do
       name: Deck.name(deck)
     }
   end
+
+  def canonical_id(id, prev \\ []) do
+    copy_of_card_id =
+      case get_card(id) do
+        %{copy_of_card_id: copy_id} -> copy_id
+        _ -> nil
+      end
+
+    cond do
+      # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
+      id in prev -> Enum.min(prev)
+      copy_of_card_id -> canonical_id(copy_of_card_id, [id | prev])
+      true -> id
+    end
+  end
 end
