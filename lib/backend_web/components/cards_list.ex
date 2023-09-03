@@ -87,6 +87,9 @@ defmodule Components.CardsList do
 
   defp card_map(cards) do
     cards
+    # using the canoncial id fixes an issues with some cards not being shown
+    # might be hacky might be useful overall
+    |> Enum.map(&Hearthstone.canonical_id/1)
     |> Hearthstone.ordered_frequencies()
     |> Enum.map(fn {card, count} ->
       {card.id, {card, count}}
