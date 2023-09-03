@@ -8,6 +8,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
+  alias Hearthstone.DeckTracker.ArchetypeBag
   alias Hearthstone.Enums.Format
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.ClassStatsModal
@@ -244,7 +245,7 @@ defmodule Components.DecksExplorer do
   def order_by_options(), do: [{"winrate", "Winrate %"}, {"total", "Total Games"}]
 
   defp archetype_options(filters) do
-    archetypes = DeckTracker.archetypes(filters)
+    archetypes = ArchetypeBag.archetypes(filters)
     [{"any", "Any Archetype"} | Enum.zip(archetypes, archetypes)]
   end
 
