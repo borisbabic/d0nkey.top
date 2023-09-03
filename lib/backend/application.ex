@@ -146,6 +146,11 @@ defmodule Backend.Application do
           id: Backend.Leaderboards.SeasonBag,
           start: {Backend.Leaderboards.SeasonBag, :start_link, [[]]}
         },
+        %{
+          # can multiserver, prolly?
+          id: Hearthstone.DeckTracker.ArchetypeBag,
+          start: {Hearthstone.DeckTracker.ArchetypeBag, :start_link, [[]]}
+        },
         # {TMI.Supervisor, twitch_bot_config()},
         {Task, &warmup_cache/0},
         QuantumScheduler
