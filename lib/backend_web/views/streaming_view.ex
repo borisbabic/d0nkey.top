@@ -120,8 +120,8 @@ defmodule BackendWeb.StreamingView do
       dropdown: limit_dropdown
     } =
       ViewUtil.handle_pagination(conn.query_params, update_link,
-        default_limit: 20,
-        limit_options: [5, 10, 20, 30, 40, 50]
+        default_limit: 40,
+        limit_options: [5, 10, 20, 30, 40, 50, 75, 100]
       )
 
     dropdowns = [
