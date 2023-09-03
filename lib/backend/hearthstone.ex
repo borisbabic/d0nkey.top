@@ -293,7 +293,21 @@ defmodule Backend.Hearthstone do
   def deduplicate_ids(%{ids: ids}), do: deduplicate_ids(ids)
 
   def deduplicate_ids(ids) do
-    Enum.map(ids, &get_deck/1) |> Command.DeduplicateDecks.deduplicate_group()
+    Enum.map(ids, &get_deck/1)
+    |> Command.DeduplicateDecks.deduplicate_group(&deduplication_sorter/1, :desc)
+  end
+
+  # want the one with the correct code first, then secondary ordered by latest 
+  defp deduplication_sorter(deck) do
+    prepend =
+      if deck.deckcode == Deck.deckcode(deck) do
+        "PUTTHISAHEAD"
+      else
+        ""
+      end
+
+    date_part = NaiveDateTime.to_iso8601(deck.inserted_at)
+    "#{prepend}#{date_part}"
   end
 
   def regenerate_class_and_deckcode(decks) do
