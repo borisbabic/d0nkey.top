@@ -328,21 +328,26 @@ defmodule Backend.Hearthstone.Deck do
 
   defp take_doubles([]), do: {[], []}
 
+  defp take_multi([0]), do: {[], []}
+
   defp take_multi([count | rest]) do
     {multi, new_rest} = Enum.split(rest, count * 2)
 
     cards =
       multi
       |> Enum.chunk_every(2)
-      |> Enum.flat_map(fn [card, count] ->
-        if count > 40, do: raise("Count too high")
-        for _ <- 1..count, do: card
+      |> Enum.flat_map(fn
+        [0] ->
+          []
+
+        [card, count] ->
+          if count > 40, do: raise("Count too high")
+          for _ <- 1..count, do: card
       end)
 
     {cards, new_rest}
   end
 
-  defp take_multi([0]), do: {[], []}
   defp take_multi([]), do: {[], []}
 
   @spec deckcode_class_hero(integer, [integer]) :: {String.t(), String.t()}
