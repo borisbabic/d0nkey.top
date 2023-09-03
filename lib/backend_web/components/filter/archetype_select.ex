@@ -4,6 +4,7 @@ defmodule Components.Filter.ArchetypeSelect do
   alias Components.Dropdown
   alias Surface.Components.Form
   alias Surface.Components.Form.TextInput
+  alias Hearthstone.DeckTracker.ArchetypeBag
   prop(update_fun, :fun)
   prop(selected, :list, default: [])
   prop(title, :string, default: "Select Archetype")
@@ -62,7 +63,16 @@ defmodule Components.Filter.ArchetypeSelect do
     |> Enum.take(num_to_show)
   end
 
-  defp archetypes([], criteria), do: Backend.Hearthstone.archetypes(criteria)
+  defp archetypes([], criteria) do
+    case List.keyfind(criteria, "format", 0) do
+      {"format", format} when is_integer(format) or is_binary(format) ->
+        ArchetypeBag.get_archetypes(format)
+
+      _ ->
+        ArchetypeBag.get_archetypes()
+    end
+  end
+
   defp archetypes(selectable, _), do: selectable
 
   def update_archetypes_fun(params, param, name \\ :update_params) do
