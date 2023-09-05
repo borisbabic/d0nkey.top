@@ -1017,7 +1017,7 @@ defmodule Backend.Hearthstone do
 
       {:error, error} ->
         Logger.error("Error updating cards (retry: #{attempt}) #{inspect(error)} ")
-        Process.sleep(15_000)
+        Process.sleep(25_000)
         Logger.info("Retrying")
         do_update_cards(args, attempt + 1)
     end

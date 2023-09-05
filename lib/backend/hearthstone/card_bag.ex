@@ -2,6 +2,7 @@ defmodule Backend.Hearthstone.CardBag do
   @moduledoc "Contains in memory cache for cards"
 
   use GenServer
+  alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
   alias Backend.CardMatcher
   @name :hearthstone_card_bag
@@ -93,8 +94,30 @@ defmodule Backend.Hearthstone.CardBag do
     table
   end
 
+  defp set_deckcode_copy_id(table, cards) do
+    set_groups = Hearthstone.standard_card_sets()
+
+    grouped =
+      cards
+      |> Enum.group_by(&Hearthstone.canonical_id(&1.id))
+      |> Enum.filter(fn
+        # min two
+        {_, g = [_ | [_ | _]]} -> Enum.any?(g, &(&1.card_set.slug in set_groups))
+        _ -> false
+      end)
+
+    for {_, group} <- grouped,
+        %{id: target_id} = Enum.find(group, &(&1.card_set.slug in set_groups)),
+        %{id: id} when id != target_id <- group do
+      :ets.insert(table, {key_for_deckcode_copy_id(id), target_id})
+    end
+  end
+
+  defp key_for_deckcode_copy_id(id), do: "deckcode_copy_id_#{id}"
+
   defp set_table(table) do
-    cards = Backend.Hearthstone.all_cards()
+    cards = Hearthstone.all_cards()
+    set_deckcode_copy_id(table, cards)
     set_cards(table, cards)
 
     collectible_for_match =
@@ -113,5 +136,12 @@ defmodule Backend.Hearthstone.CardBag do
   def closest_collectible(card_name, cutoff \\ @min_distance) do
     Util.ets_lookup(table(), :collectible_for_match)
     |> CardMatcher.match_optimized(card_name, cutoff)
+  end
+
+  @spec deckcode_copy_id(integer()) :: integer()
+  @doc "Find the id of the version of the card to use in copied deck codes"
+  def deckcode_copy_id(id) do
+    key = key_for_deckcode_copy_id(id)
+    Util.ets_lookup(table(), key, id)
   end
 end

@@ -6,8 +6,8 @@ defmodule Backend.Hearthstone.Deck do
   alias Hearthstone.Card.RuneCost
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.DeckArchetyper
-  alias Backend.HearthstoneJson
   alias Backend.HearthstoneJson.Card, as: JsonCard
   alias Backend.Hearthstone.Deck.Sideboard
 
@@ -55,7 +55,7 @@ defmodule Backend.Hearthstone.Deck do
   def deckcode(c, hero, format, sideboards \\ []) do
     cards =
       c
-      |> canonicalize_cards()
+      |> Enum.map(&CardBag.deckcode_copy_id/1)
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
@@ -114,8 +114,6 @@ defmodule Backend.Hearthstone.Deck do
 
     [Enum.count(multi_part) | multi_part]
   end
-
-  # Keeping old around for db uniquness purposes but using the new for display purposes
 
   @spec canonicalize_cards([integer]) :: [integer]
   def canonicalize_cards(cards), do: Enum.map(cards, &Hearthstone.canonical_id/1)
