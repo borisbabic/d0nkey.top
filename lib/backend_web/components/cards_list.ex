@@ -6,6 +6,7 @@ defmodule Components.CardsList do
   alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.UserManager.User
   alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.CardBag
   prop(deck, :map, required: true)
   prop(comparison, :any, required: false, default: nil)
   prop(highlight_rotation, :boolean, required: false)
@@ -89,7 +90,7 @@ defmodule Components.CardsList do
     cards
     # using the canoncial id fixes an issues with some cards not being shown
     # might be hacky might be useful overall
-    |> Enum.map(&Hearthstone.canonical_id/1)
+    |> Enum.map(&CardBag.deckcode_copy_id/1)
     |> Hearthstone.ordered_frequencies()
     |> Enum.map(fn {card, count} ->
       {card.id, {card, count}}
