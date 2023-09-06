@@ -566,14 +566,29 @@ defmodule Backend.Battlefy do
     {future_opponents, player_matches}
   end
 
-  def future_opponents(matches, %{id: id, next: %{winner: winner, loser: loser}}) do
+  def future_opponents(matches, %{
+        id: id,
+        next: %{winner: winner, loser: loser},
+        top: %{team: top},
+        bottom: %{team: bottom}
+      })
+      when top != nil and bottom != nil do
     %{
       winner: future_opponents(matches, winner, id),
+      waiting: [],
       loser: future_opponents(matches, loser, id)
     }
   end
 
-  def future_opponents(_, _), do: %{winner: [], loser: []}
+  def future_opponents(matches, %{id: id}) do
+    %{
+      winner: [],
+      waiting: possible_future_opponents(matches, id, id),
+      loser: []
+    }
+  end
+
+  def future_opponents(_, _), do: %{winner: [], loser: [], waiting: []}
 
   @spec future_opponents([Match.t()], Match.NextRound.t() | nil, String.t() | match_id()) :: [
           Match.t()
@@ -590,9 +605,15 @@ defmodule Backend.Battlefy do
       &(Map.get(&1, :next) |> Next.has_match_id?(future_match_id) && &1.id != current_match_id)
     )
     |> Enum.flat_map(fn
-      %{top: %{winner: top}, bottom: %{winner: bot}} when top == true or bot == true -> []
-      match = %{top: %{winner: false}, bottom: %{winner: false}} -> [match]
-      match -> [match | possible_future_opponents(matches, match.id)]
+      %{top: %{winner: top}, bottom: %{winner: bot}} when top == true or bot == true ->
+        []
+
+      match = %{top: %{winner: false, team: top}, bottom: %{winner: false, team: bot}}
+      when top != nil and bot != nil ->
+        [match]
+
+      match ->
+        [match | possible_future_opponents(matches, match.id)]
     end)
   end
 
