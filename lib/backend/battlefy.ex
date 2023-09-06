@@ -490,22 +490,21 @@ defmodule Backend.Battlefy do
     end
   end
 
-  @spec get_tournament_standings(Tournament.t() | %{stage_ids: [stage_id]}) :: [Standings.t()]
-  def get_tournament_standings(tournament) do
+  @spec get_tournament_standings(tournament_id() | Tournament.t() | %{stage_ids: [stage_id]}) :: [
+          Standings.t()
+        ]
+  def get_tournament_standings(id) when is_binary(id) or is_integer(id),
+    do: get_tournament(id) |> get_tournament_standings()
+
+  def get_tournament_standings(%Tournament{} = tournament) do
     case get_tournament_standings_and_stage_id(tournament) do
-      {:ok, {_, standings}} -> standings
-      _ -> []
+      {:ok, {_, standings}} ->
+        standings
+
+      _ ->
+        []
     end
   end
-
-  @spec get_tournament_standings(tournament_id) :: [Standings.t()]
-  def get_tournament_standings(tournament_id) when is_binary(tournament_id) do
-    tournament_id
-    |> get_tournament()
-    |> get_tournament_standings()
-  end
-
-  def get_tournament_standings(_), do: []
 
   @spec stage_id_for_standings(Tournament.t()) :: stage_id()
   def stage_id_for_standings(%{stage_ids: stage_ids}) do

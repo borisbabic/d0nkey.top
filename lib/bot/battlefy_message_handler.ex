@@ -17,6 +17,16 @@ defmodule Bot.BattlefyMessageHandler do
     |> send_message(message)
   end
 
+  def handle_tournament_standings(standings, %{channel_id: channel_id, guild_id: guild_id})
+      when is_list(standings) do
+    message =
+      guild_id
+      |> get_guild_battletags!()
+      |> create_message(standings)
+
+    Api.create_message(channel_id, message)
+  end
+
   def create_standings_message(battlefy_id, _message = %{guild_id: guild_id}) do
     with unsorted when is_list(unsorted) <- Battlefy.get_standings(battlefy_id),
          standings = Battlefy.sort_standings(unsorted),
@@ -29,17 +39,7 @@ defmodule Bot.BattlefyMessageHandler do
     end
   end
 
-  def handle_tournament_standings(standings, %{channel_id: channel_id, guild_id: guild_id})
-      when is_list(standings) do
-    message =
-      guild_id
-      |> get_guild_battletags!()
-      |> create_message(standings)
-
-    Api.create_message(channel_id, message)
-  end
-
-  @spec create_message([String.t()], [Battlefy.Standings.t()], String.t() :: String.t()) ::
+  @spec create_message([String.t()], [Battlefy.Standings.t()], String.t()) ::
           String.t()
   def create_message(battletags, standings, name_mapper \\ & &1) do
     create_message_cells(battletags, standings, name_mapper)
