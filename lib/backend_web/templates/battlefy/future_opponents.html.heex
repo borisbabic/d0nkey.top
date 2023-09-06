@@ -85,11 +85,11 @@
                             <% end %>
                         </div>
                     </td>
-                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
+                    <td><a href={match_url}> <%= score %></a></td>
                     <%= if opponent == nil do %>
                         <td></td><td></td>
                     <% else %>
-                        <td><a href={"#{ opponent.link }"}> <%= render_player_name(opponent.name, true) %></a></td>
+                        <td><a href={opponent.link}> <%= render_player_name(opponent.name, true) %></a></td>
                         <td class="is-hidden-mobile">
                             <div class="is-flex is-justify-content-center">
                                 <%= for {_, stats} <- opponent_class_stats do %>

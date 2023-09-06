@@ -265,8 +265,10 @@ defmodule BackendWeb.BattlefyView do
   def render_future_opponents([], _), do: false
 
   def render_future_opponents(future_matches, title) do
-    ~E"""
-    <div class="title is-5"><%= title %> </div>
+    assigns = %{future_matches: future_matches, title: title}
+
+    ~H"""
+    <div class="title is-5"><%= @title %> </div>
     <table class="table is-striped is-fullwidth is-narrow">
         <thead>
             <tr>
@@ -279,7 +281,7 @@ defmodule BackendWeb.BattlefyView do
             </tr>
         </thead>
         <tbody>
-            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- future_matches do %>
+            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @future_matches do %>
                 <tr>
                     <td><%= current_round %></td>
                     <%= if top == nil do %>
