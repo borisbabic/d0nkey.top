@@ -180,6 +180,10 @@ defmodule BackendWeb.BattlefyView do
       prepare_future_opponents(opponent_matches.loser, params, tournament)
       |> render_future_opponents("Loser's Future Opponents")
 
+    waiting_opponent =
+      prepare_future_opponents(opponent_matches.waiting, params, tournament)
+      |> render_future_opponents("Next Opponents")
+
     # opponent =
     #   opponent_matches
     #   |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
@@ -219,6 +223,7 @@ defmodule BackendWeb.BattlefyView do
         conn: conn,
         winner_future: winner_opponent,
         loser_future: loser_opponent,
+        waiting_future: waiting_opponent,
         show_player: player |> Enum.any?(),
         player_matches: player,
         team_name: team_name,

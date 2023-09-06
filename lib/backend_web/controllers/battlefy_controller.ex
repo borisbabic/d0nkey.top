@@ -250,7 +250,7 @@ defmodule BackendWeb.BattlefyController do
     do: Battlefy.get_future_and_player_matches(tournament_id, team_name)
 
   defp future_and_player(_),
-    do: {%{winner: [], loser: []}, []}
+    do: {%{winner: [], loser: [], waiting: []}, []}
 
   def organization_tournament_stats(conn, %{"stats_slug" => stats_slug}) do
     with %{organization_slug: org_slug, from: from, pattern: pattern, title: title} <-
