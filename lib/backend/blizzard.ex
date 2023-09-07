@@ -521,7 +521,7 @@ defmodule Backend.Blizzard do
   @spec get_leaderboard_name(String.t() | leaderboard(), :short | :long) :: String.t()
   def get_leaderboard_name(leaderboard, :long) when is_atom(leaderboard) do
     case leaderboard do
-      :BG_LL -> "BGs Monthly"
+      :BG_LL -> "BGs LL/Monthly"
       :BG -> "Battlegrounds"
       :STD -> "Standard"
       :WLD -> "Wild"
