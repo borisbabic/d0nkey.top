@@ -1249,12 +1249,12 @@ defmodule Backend.Leaderboards do
     )
   end
 
-  def prune_old_query(curr_constructed, curr_mercs, curr_bgs) do
+  def prune_old_query(curr_constructed, curr_mercs, curr_bgs, curr_arena) do
     """
     do $$
       declare arrow record;
       begin
-        for arrow in (SELECT id FROM public.leaderboards_seasons WHERE (leaderboard_id = 'MRC' AND season_id < #{curr_mercs}) OR (leaderboard_id in ('CLS', 'WLD', 'STD') AND season_id < #{curr_constructed}) OR (leaderboard_id = 'BG' AND season_id < #{curr_bgs})) loop
+        for arrow in (SELECT id FROM public.leaderboards_seasons WHERE (leaderboard_id = 'arena' AND season_id < #{curr_arena}) OR (leaderboard_id = 'MRC' AND season_id < #{curr_mercs}) OR (leaderboard_id in ('CLS', 'WLD', 'STD') AND season_id < #{curr_constructed}) OR (leaderboard_id = 'BG' AND season_id < #{curr_bgs})) loop
           DELETE FROM public.leaderboards_entry WHERE season_id = arrow.id AND id NOT IN (SELECT le.id FROM public.leaderboards_entry le INNER JOIN (SELECT i.rank as r, MAX(i.inserted_at) as ia FROM public.leaderboards_entry i WHERE i.season_id = arrow.id GROUP BY i.rank) AS inn ON inn.r = rank AND inn.ia = inserted_at WHERE season_id = arrow.id);
         end loop;
       end; $$
@@ -1262,9 +1262,9 @@ defmodule Backend.Leaderboards do
     """
   end
 
-  def prune_old(curr_constructed, curr_mercs, curr_bgs) do
+  def prune_old(curr_constructed, curr_mercs, curr_bgs, curr_arena) do
     Repo.query!(
-      prune_old_query(curr_constructed, curr_mercs, curr_bgs),
+      prune_old_query(curr_constructed, curr_mercs, curr_bgs, curr_arena),
       [],
       timeout: 666_000
     )
@@ -1273,13 +1273,13 @@ defmodule Backend.Leaderboards do
   @doc """
   Copy entries from bgs to bg lobby legends
   """
-  def copy_to_bg_lobby_legends(year, month) do
+  def copy_to_bg_lobby_legends(year, month) when is_integer(year) and is_integer(month) do
     with {:ok, date} <- Date.new(year, month, 1) do
       copy_to_bg_lobby_legends(date)
     end
   end
 
-  def copy_to_bg_lobby_legends(date = %Date{}) do
+  def copy_to_bg_lobby_legends(date = %Date{}, bg_season_id \\ nil) do
     for {r, timezone} <- regions_with_timezone() do
       up_to =
         DateTime.new!(date, ~T[00:00:00], timezone)
@@ -1291,7 +1291,7 @@ defmodule Backend.Leaderboards do
         |> DateTime.to_naive()
 
       criteria = [
-        {"season", %ApiSeason{leaderboard_id: "BG", region: r}},
+        {"season", %ApiSeason{leaderboard_id: "BG", region: r, season_id: bg_season_id}},
         {"max_rank", 200},
         {"order_by", "rank"},
         {"up_to", up_to},
