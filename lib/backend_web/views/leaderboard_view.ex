@@ -769,7 +769,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def create_leaderboard_dropdown(leaderboard_id, update_link) do
     options =
-      [{"BG_LL", "BGs Monthly"} | Backend.Blizzard.leaderboards_with_name()]
+      [{"BG_LL", "BGs LL/Monthly"} | Backend.Blizzard.leaderboards_with_name()]
       |> Enum.map(fn {id, name} ->
         %{
           display: name,
