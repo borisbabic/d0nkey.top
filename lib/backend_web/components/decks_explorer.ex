@@ -193,7 +193,7 @@ defmodule Components.DecksExplorer do
       {"format", assigns.default_format},
       {"order_by", assigns.default_order_by},
       {"period", default_period()},
-      {"game_type", Hearthstone.Enums.GameType.constructed_types()},
+      {"game_type", [7]},
       {"archetype", "any"},
       {"rank", assigns.default_rank}
     ]
@@ -266,6 +266,7 @@ defmodule Components.DecksExplorer do
       "archetype",
       "no_archetype",
       "player_deck_excludes",
+      "use_aggregated",
       "player_deck_archetype"
     ])
     |> parse_int([

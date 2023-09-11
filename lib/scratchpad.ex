@@ -3,6 +3,7 @@ defmodule ScratchPad do
   import Ecto.Query, warn: false
   alias Ecto.Multi
   alias Backend.Repo
+  alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.CardGameTally
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.DeckTracker.GameDto
@@ -279,5 +280,21 @@ defmodule ScratchPad do
     )
     |> Repo.all()
     |> Enum.each(&generate_false_card_stats/1)
+  end
+
+  def deduplicate_played(
+        criteria \\ [
+          {"period", "past_2_weeks"},
+          {"rank", "diamond_to_legend"},
+          {"min_games", 100}
+        ]
+      ) do
+    DeckTracker.deck_stats(criteria)
+    |> Enum.map(fn %{deck_id: deck_id, total: total} -> {total, deck_id} end)
+    |> Enum.group_by(fn {_, d} -> Backend.Hearthstone.get_deck(d) |> Deck.deckcode() end)
+    |> Enum.filter(fn {_, g} -> Enum.count(g) > 1 end)
+    |> Enum.sort_by(fn {_, g} -> Enum.map(g, &elem(&1, 0)) |> Enum.sum() end, :desc)
+    |> Enum.map(fn {_, g} -> Enum.map(g, &elem(&1, 1)) end)
+    |> Enum.each(&Backend.Hearthstone.deduplicate_ids/1)
   end
 end
