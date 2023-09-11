@@ -7,6 +7,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Repo
   alias Backend.Hearthstone.DeckBag
   alias Hearthstone.DeckTracker.CardGameTally
+  alias Hearthstone.DeckTracker.DeckStats
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.DeckTracker.Period
@@ -164,8 +165,9 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def deck_stats(criteria) do
-    base_deck_stats_query()
-    |> build_games_query(criteria)
+    {base_query, new_criteria} = base_deck_stats_query(criteria)
+
+    build_games_query(base_query, new_criteria)
     |> Repo.all()
   end
 
@@ -304,6 +306,41 @@ defmodule Hearthstone.DeckTracker do
     |> where([player_deck: pd], not is_nil(pd.archetype))
   end
 
+  defp base_aggregated_deck_stats_query() do
+    from(ds in DeckStats,
+      as: :deck_stats,
+      join: pd in assoc(ds, :deck),
+      as: :player_deck,
+      group_by: ds.deck_id,
+      select: %{
+        wins: sum(ds.wins),
+        losses: sum(ds.losses),
+        total: sum(ds.total),
+        winrate: sum(1.0 * ds.wins) / sum(ds.total),
+        deck_id: ds.deck_id
+      }
+    )
+  end
+
+  defp base_deck_stats_query(criteria) do
+    list_criteria = Enum.to_list(criteria)
+
+    case List.keyfind(list_criteria, "use_aggregated", 0, :nomatch) do
+      {"use_aggregated", _} ->
+        {base_aggregated_deck_stats_query(), ensure_opponent_class(list_criteria)}
+
+      _ ->
+        {base_deck_stats_query(), list_criteria}
+    end
+  end
+
+  defp ensure_opponent_class(criteria) do
+    case List.keyfind(criteria, "opponent_class", 0) do
+      {"opponent_class", c} when is_binary(c) -> criteria
+      _ -> [{"opponent_class", "ALL"} | criteria]
+    end
+  end
+
   defp base_deck_stats_query() do
     base_stats_query()
     |> group_by([game: g], g.player_deck_id)
@@ -352,6 +389,9 @@ defmodule Hearthstone.DeckTracker do
           )
       }
     )
+  end
+
+  defp base_agreggated_stats_query() do
   end
 
   defp base_deck_card_stats_query() do
@@ -483,29 +523,9 @@ defmodule Hearthstone.DeckTracker do
     Enum.reduce(criteria, query, &compose_games_query/2)
   end
 
+  @aggregated_query %{from: %{as: :deck_stats}}
   defp compose_games_query(period, query) when period in [:past_week, :past_day, :past_3_days],
     do: compose_games_query({"period", to_string(period)}, query)
-
-  defp compose_games_query({"period", "past_2_weeks"}, query),
-    do: query |> where([game: g], g.inserted_at >= ago(2, "week"))
-
-  defp compose_games_query({"period", "past_week"}, query),
-    do: query |> where([game: g], g.inserted_at >= ago(1, "week"))
-
-  defp compose_games_query({"period", "past_day"}, query),
-    do: query |> where([game: g], g.inserted_at >= ago(1, "day"))
-
-  defp compose_games_query({"period", "past_3_days"}, query),
-    do: query |> where([game: g], g.inserted_at >= ago(3, "day"))
-
-  defp compose_games_query({"period", "past_30_days"}, query),
-    do: query |> where([game: g], g.inserted_at >= ago(30, "day"))
-
-  defp compose_games_query({"period", "past_60_days"}, query),
-    do: query |> where([game: g], g.inserted_at >= ago(60, "day"))
-
-  defp compose_games_query({"period", "all"}, query),
-    do: query
 
   defp compose_games_query({"period", "throne_of_the_tides"}, query) do
     release = ~N[2022-06-01 17:15:00]
@@ -658,26 +678,71 @@ defmodule Hearthstone.DeckTracker do
     query |> where([game: g], g.inserted_at >= ^release)
   end
 
-  defp compose_games_query({"period", "titans"}, query) do
-    release = ~N[2023-08-01 17:20:00]
-    query |> where([game: g], g.inserted_at >= ^release)
+  # defp compose_games_query({"period", "titans"}, query) do
+  #   release = ~N[2023-08-01 17:20:00]
+  #   query |> where([game: g], g.inserted_at >= ^release)
+  # end
+  #
+  # defp compose_games_query({"period", "patch_27.2"}, query) do
+  #   release = ~N[2023-08-22 17:20:00]
+  #   query |> where([game: g], g.inserted_at >= ^release)
+  # end
+
+  # defp compose_games_query({"period", "patch_27.2.2"}, query) do
+  #   release = ~N[2023-08-30 16:20:00]
+  #   query |> where([game: g], g.inserted_at >= ^release)
+  # end
+
+  for {param, ago_num, ago_period} <- [
+        {"past_2_weeks", 2, "week"},
+        {"past_week", 1, "week"},
+        {"past_day", 1, "day"},
+        {"past_3_days", 3, "day"},
+        {"past_30_days", 30, "day"},
+        {"past_60_days", 60, "day"}
+      ] do
+    defp compose_games_query({"period", unquote(param)}, query = @aggregated_query) do
+      query
+      |> where([deck_stats: ds], ds.hour_start >= ago(unquote(ago_num), unquote(ago_period)))
+    end
+
+    defp compose_games_query({"period", unquote(param)}, query) do
+      query |> where([game: g], g.inserted_at >= ago(unquote(ago_num), unquote(ago_period)))
+    end
   end
 
-  defp compose_games_query({"period", "patch_27.2"}, query) do
-    release = ~N[2023-08-22 17:20:00]
-    query |> where([game: g], g.inserted_at >= ^release)
+  for {param, start} <- [
+        {"patch_27.2.2", "2023-08-30 16:20:00"},
+        {"titans", "2023-08-01 17:20:00"},
+        {"patch_27.2", "2023-08-22 17:20:00"}
+      ] do
+    defp compose_games_query({"period", unquote(param)}, query = @aggregated_query) do
+      {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
+      query |> where([deck_stats: ds], ds.hour_start >= ^start_time)
+    end
+
+    defp compose_games_query({"period", unquote(param)}, query) do
+      {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
+      query |> where([game: g], g.inserted_at >= ^start_time)
+    end
   end
 
-  defp compose_games_query({"period", "patch_27.2.2"}, query) do
-    release = ~N[2023-08-30 16:20:00]
-    query |> where([game: g], g.inserted_at >= ^release)
+  defp compose_games_query({:in_range, start, finish}, query) do
+    query
+    |> where([game: g], g.inserted_at >= ^start and g.inserted_at < ^finish)
   end
 
-  defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend],
+  defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend, :top_legend],
     do: compose_games_query({"rank", to_string(rank)}, query)
+
+  defp compose_games_query({"rank", r}, query = @aggregated_query),
+    do: query |> where([deck_stats: ds], ds.rank == ^r)
 
   defp compose_games_query({"rank", "legend"}, query),
     do: query |> where([game: g], g.player_rank >= 51)
+
+  defp compose_games_query({"rank", "top_legend"}, query),
+    do: query |> where([game: g], g.player_rank >= 51 and g.player_legend_rank <= 1000)
 
   defp compose_games_query({"rank", "diamond_to_legend"}, query),
     do: query |> where([game: g], g.player_rank >= 41)
@@ -692,7 +757,7 @@ defmodule Hearthstone.DeckTracker do
     do: query |> order_by([game: g], desc: max(g.inserted_at))
 
   defp compose_games_query({"order_by", "total"}, query),
-    do: query |> order_by([game: g], desc: @total_select_pos)
+    do: query |> order_by([], desc: @total_select_pos)
 
   defp compose_games_query({"order_by", "winrate"}, query),
     do: query |> order_by([], desc: @winrate_select_pos)
@@ -737,11 +802,17 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
+  defp compose_games_query({"min_games", min_games}, query = @aggregated_query),
+    do: query |> having([deck_stats: ds], sum(ds.total) >= ^min_games)
+
   defp compose_games_query({"min_games", min_games}, query),
     do: query |> having([game: g], sum(fragment(@total_fragment, g.status)) >= ^min_games)
 
   defp compose_games_query({"player_legend_rank", legend_rank}, query),
     do: query |> where([game: g], g.player_legend_rank == ^legend_rank)
+
+  defp compose_games_query({"opponent_class", class}, query = @aggregated_query),
+    do: query |> where([deck_stats: ds], ds.opponent_class == ^String.upcase(class))
 
   defp compose_games_query({"opponent_class", class}, query),
     do: query |> where([game: g], g.opponent_class == ^String.upcase(class))
@@ -764,7 +835,11 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"region", region}, query),
     do: query |> where([game: g], g.region == ^region)
 
+  defp compose_games_query(:ranked, @aggregated_query = query), do: query
   defp compose_games_query(:ranked, query), do: compose_games_query({"game_type", 7}, query)
+
+  defp compose_games_query({"game_type", [7]}, @aggregated_query = query),
+    do: query
 
   defp compose_games_query({"game_type", game_types}, query) when is_list(game_types),
     do: query |> where([game: g], g.game_type in ^game_types)
@@ -783,6 +858,9 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"format", "all"}, query),
     do: query
 
+  defp compose_games_query({"format", format}, query = @aggregated_query),
+    do: query |> where([player_deck: pd], pd.format == ^format)
+
   defp compose_games_query({"format", format}, query),
     do: query |> where([game: g], g.format == ^format)
 
@@ -798,6 +876,8 @@ defmodule Hearthstone.DeckTracker do
     results = ["win", "loss", "draw"]
     query |> where([game: g], g.status in ^results)
   end
+
+  defp compose_games_query({"use_aggregated", _}, query), do: query
 
   defp compose_games_query(:not_self_report, query),
     do: query |> where([game: g], g.source != "SELF_REPORT")
@@ -819,7 +899,9 @@ defmodule Hearthstone.DeckTracker do
     |> where([_g, _d, _u, gm], gm.group_id == ^group_id and gm.include_data == true)
   end
 
-  defp compose_games_query({"limit", limit}, query), do: query |> limit(^limit)
+  defp compose_games_query({"limit", limit}, query) when is_integer(limit) or is_binary(limit),
+    do: query |> limit(^limit)
+
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
 
   @spec replay_link(%{:game_id => any, optional(any) => any}) :: String.t() | nil
@@ -1020,4 +1102,58 @@ defmodule Hearthstone.DeckTracker do
   def change_period(%Period{} = period, attrs \\ %{}) do
     Period.changeset(period, attrs)
   end
+
+  @one_hour %Timex.Duration{microseconds: 0, seconds: 3_600, megaseconds: 0}
+
+  def aggregate_deck_stats(class, rank)
+      when (is_binary(class) or is_nil(class)) and is_binary(rank) do
+    NaiveDateTime.utc_now()
+    |> Timex.subtract(@one_hour)
+    |> Util.hour_start()
+    |> aggregate_deck_stats(class, rank)
+  end
+
+  def aggregate_deck_stats(%NaiveDateTime{} = start, class, rank)
+      when (is_binary(class) or is_nil(class)) and is_binary(rank) do
+    finish = Timex.add(start, @one_hour)
+
+    if :gt == NaiveDateTime.compare(finish, NaiveDateTime.utc_now()) do
+      raise "Can't aggregate an unfinished period"
+    end
+
+    base_criteria = [
+      {:in_range, start, finish},
+      {"rank", rank}
+    ]
+
+    criteria =
+      base_criteria
+      |> add_opponent_class_criteria(class)
+
+    query =
+      base_deck_stats_query()
+      |> build_games_query(criteria)
+
+    constants = %{hour_start: start, opponent_class: class, rank: rank}
+
+    Repo.all(query, timeout: 666_000)
+    |> Enum.reduce(Multi.new(), fn ds, multi ->
+      attrs = Map.merge(ds, constants)
+
+      cs = DeckStats.changeset(%DeckStats{}, attrs)
+      name = to_string(attrs.deck_id)
+      Multi.insert(multi, name, cs)
+    end)
+    |> Repo.transaction(timeout: 666_000)
+  end
+
+  def aggregate_deck_stats(%Date{} = date, hour, class) when is_integer(hour) do
+    with {:ok, time} <- Time.new(hour, 0, 0),
+         {:ok, start} <- NaiveDateTime.new(date, time) do
+      aggregate_deck_stats(start, class)
+    end
+  end
+
+  defp add_opponent_class_criteria(criteria, all) when all in [nil, "ALL", "all"], do: criteria
+  defp add_opponent_class_criteria(criteria, class), do: [{"opponent_class", class} | criteria]
 end

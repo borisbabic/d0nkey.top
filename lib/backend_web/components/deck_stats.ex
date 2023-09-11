@@ -8,7 +8,7 @@ defmodule Components.DeckStats do
   def render(assigns) do
     ~F"""
       <div :if={@winrate} class={"column", "tag"} style={winrate_style(@winrate)}>
-        {Float.round(@winrate * 100, 1)} %
+        {round_winrate(@winrate)} %
       </div>
       <div :if={@total} class="column tag">
         Games: {@total}
@@ -16,5 +16,7 @@ defmodule Components.DeckStats do
     """
   end
 
+  def round_winrate(val) when is_float(val), do: Float.round(val * 100, 1)
+  def round_winrate(val), do: val
   def winrate_style(winrate), do: Components.WinrateTag.winrate_style(winrate)
 end

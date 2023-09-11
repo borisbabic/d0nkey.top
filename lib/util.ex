@@ -606,4 +606,11 @@ defmodule Util do
       error
     end
   end
+
+  def hour_start(%NaiveDateTime{} = datetime) do
+    {:ok, start} =
+      NaiveDateTime.new(datetime.year, datetime.month, datetime.day, datetime.hour, 0, 0)
+
+    start
+  end
 end
