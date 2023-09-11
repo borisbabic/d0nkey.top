@@ -24,9 +24,10 @@ config :backend, QuantumScheduler,
     {"11 * * * *", fn -> Backend.Hearthstone.update_collectible_cards() end},
     {"17 08 * * *", fn -> Backend.Hearthstone.update_all_cards() end},
     # {"*/9 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
-    {"3 * * * *", fn -> Backend.Leaderboards.prune_empty_seasons() end},
+    {"7 * * * *", fn -> Backend.Leaderboards.prune_empty_seasons() end},
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
     {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     {"*/8 * * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end},
+    {"3 * * * *", fn -> Hearthstone.DeckTracker.DeckStatsAggregator.enqueue_last_hour() end},
     {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
