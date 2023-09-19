@@ -10,9 +10,9 @@ config :backend, QuantumScheduler,
     {"48 * * * *", fn -> Backend.Feed.FeedBag.update() end},
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
     {"* * * * *", fn -> Backend.AdsTxtCache.update() end},
-    # {"37 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
+    {"37 18 * * *", fn -> Backend.Hearthstone.update_metadata() end},
     {"13 * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
-    # {"11 * * * *", fn -> Backend.Hearthstone.update_collectible_cards() end},
-    {"*/8 * * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end}
-    # {"* * * * *", fn -> Backend.LatestHSArticles.update() end}
+    {"*/8 * * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end},
+    {"11 */2 * * *", fn -> Backend.Hearthstone.update_collectible_cards() end},
+    {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
