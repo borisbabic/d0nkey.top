@@ -184,13 +184,24 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       murloc?(card_info) -> :"Murloc Druid"
       "Lady Prestor" in card_info.card_names -> :"Prestor Druid"
       aggro_druid?(card_info) -> :"Aggro Druid"
+      "Gadgetzan Auctioneer" in card_info.card_names -> :"Miracle Druid"
+      ignis_druid?(card_info) -> :"Ignis Druid"
       "Tony, King of Piracy" in card_info.card_names -> :"Tony Druid"
       zok_druid?(card_info) -> :"Zok Druid"
       hero_power_druid?(card_info) -> :"Hero Power Druid"
       choose_one?(card_info) -> :"Choose Druid"
       afk_druid?(card_info) -> :"AFK Druid"
+      "Drum Circle" in card_info.card_names -> :"Drum Druid"
       true -> fallbacks(card_info, "Druid")
     end
+  end
+
+  defp ignis_druid?(ci) do
+    min_count?(ci, 2, ["Forbidden Fruit", "Ignis, the Eternal Flame"])
+  end
+
+  defp deathrattle_druid?(ci) do
+    min_count?(ci, 2, ["Hedge Maze", "Death Blossom Whomper"])
   end
 
   defp moonbeam_druid?(ci) do
@@ -521,11 +532,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     cond do
       miracle_chad?(ci) -> "Miracle Chad #{class_name}"
       "Rivendare, Warrider" in ci.card_names -> "Rivendare #{class_name}"
+      tentacle(ci) -> "Tentacle #{class_name}"
+      "Gadgetzan Auctioneer" -> "Miracle #{class_name}"
       true -> minion_type_fallback(ci, class_name, opts)
     end
   end
 
+  defp tentacle(ci), do: "Chaotic Tendril" in ci.card_names
+
   defp miracle_chad?(ci), do: min_count?(ci, 2, ["Thaddius, Monstrosity", "Cover Artist"])
+
+  defp yogg_priest?(ci) do
+    "Yogg Saron, Unleashed" in ci.card_names and min_count?(ci, 2, "Yogg Saron, Unleashed")
+  end
 
   defp automaton_priest?(ci),
     do:
@@ -600,7 +619,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Mine Rogue"
 
       pirate_rogue?(card_info) && thief_rogue?(card_info) ->
-        :"Pirate Thief Rogue"
+        :"Pirate Thief Rogue:"
 
       jackpot_rogue?(card_info) ->
         :"Jackpot Rogue"
@@ -631,6 +650,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       min_secret_count?(card_info, 3) ->
         :"Secret Rogue"
+
+      miracle_rogue?(card_info) ->
+        :"Miracle Rogue"
 
       true ->
         fallbacks(card_info, "Rogue")
@@ -762,12 +784,36 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       implock?(card_info) ->
         :Implock
 
+      control_warlock?(card_info) ->
+        :"Control Warlock"
+
+      insanity_warlock?(card_info) ->
+        :"Insanity Warlock"
+
       "Lord Jaraxxus" in card_info.card_names ->
         :"J-Lock"
 
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp insanity_warlock?(ci) do
+    min_count?(ci, 2, ["Lady Darkvein", "Encroaching Insanity"])
+  end
+
+  defp control_warlock?(ci) do
+    min_count?(ci, 5, [
+      "Sargeras, the Destroyer",
+      "Symphony of Sins",
+      "Defile",
+      "Drain Soul",
+      "Mortal Eradication",
+      "Thornveil Tentacle",
+      "Armor Vendor",
+      "Prison of Yogg-Saron",
+      "Gigafin"
+    ])
   end
 
   defp chad?(ci) do
@@ -1190,12 +1236,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp thief_rogue?(ci = %{card_names: card_names}),
     do:
       "Maestra of the Masquerade" in card_names ||
-        min_count?(ci, 4, [
+        min_count?(ci, 3, [
           "Tess Greymane",
           "Mixtape",
           "Hipster",
           "Plagiarizarrr",
           "Jackpot!",
+          "Kaja'mite Creation",
           "Hench-Clan Burglar",
           "Sketchy Stranger",
           "Invitation Courier",
