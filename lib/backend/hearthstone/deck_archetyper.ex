@@ -533,7 +533,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       miracle_chad?(ci) -> "Miracle Chad #{class_name}"
       "Rivendare, Warrider" in ci.card_names -> "Rivendare #{class_name}"
       tentacle(ci) -> "Tentacle #{class_name}"
-      "Gadgetzan Auctioneer" -> "Miracle #{class_name}"
+      "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
       true -> minion_type_fallback(ci, class_name, opts)
     end
   end
