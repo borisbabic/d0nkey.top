@@ -164,7 +164,8 @@ defmodule BackendWeb.DeckviewerLive do
       for %{host: h, path: path} when is_binary(h) and is_binary(path) <- [parsed],
           part <- String.split(parsed.path, "/"),
           decoded = URI.decode(part),
-          into: from_query_potential,
+          # add link to potential incase the whole thing is valid
+          into: [link | from_query_potential],
           do: decoded
 
     for val <- potential,
