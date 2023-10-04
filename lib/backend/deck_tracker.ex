@@ -712,6 +712,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   for {param, start} <- [
+        {"patch_27.4.3", "2023-10-03 17:40:00"},
         {"patch_27.4.2", "2023-09-28 17:20:00"},
         {"patch_27.2.2", "2023-08-30 16:20:00"},
         {"miniset_titans", "2023-09-19 17:10:00"},
