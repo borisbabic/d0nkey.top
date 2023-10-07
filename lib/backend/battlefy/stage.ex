@@ -20,15 +20,14 @@ defmodule Backend.Battlefy.Stage do
         map = %{
           "startTime" => start_time,
           "hasStarted" => has_started,
-          "name" => name,
-          "standingIDs" => standing_ids
+          "name" => name
         }
       ) do
     %__MODULE__{
       id: map["id"] || map["_id"],
       start_time: NaiveDateTime.from_iso8601!(start_time),
       has_started: has_started,
-      standing_ids: standing_ids,
+      standing_ids: map["standingIDs"] || [],
       name: name,
       current_round: map["currentRound"],
       matches:
@@ -62,7 +61,6 @@ defmodule Backend.Battlefy.Bracket do
   end
 
   def from_raw_map(map) do
-
     %__MODULE__{
       type: map["type"],
       style: map["style"],
