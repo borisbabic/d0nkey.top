@@ -177,7 +177,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       chad_druid?(card_info) -> :"Chad Druid"
       big_druid?(card_info) -> :"Big Druid"
       celestial_druid?(card_info) -> :"Celestial Druid"
-      ramp_druid?(card_info) -> :"Ramp Druid"
       menagerie?(card_info) -> :"Menagerie Druid"
       moonbeam_druid?(card_info) -> :"Moonbeam Druid"
       treant_druid?(card_info) -> :"Treant Druid"
@@ -192,6 +191,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       choose_one?(card_info) -> :"Choose Druid"
       afk_druid?(card_info) -> :"AFK Druid"
       "Drum Circle" in card_info.card_names -> :"Drum Druid"
+      ramp_druid?(card_info) -> :"Ramp Druid"
       true -> fallbacks(card_info, "Druid")
     end
   end
@@ -1145,9 +1145,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       ])
 
   defp ramp_druid?(ci = %{card_names: card_names}),
-    do:
-      "Wildheart Guff" in card_names &&
-        min_count?(ci, 2, ["Wild Growth", "Nourish", "Widowbloom Seedsman"])
+    do: "Nourish" in card_names or min_count?(ci, 2, ["Wild Growth", "Widowbloom Seedsman"])
 
   defp hero_power_druid?(ci),
     do: min_count?(ci, 2, ["Free Spirit", "Groovy Cat"])
