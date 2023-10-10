@@ -1051,6 +1051,23 @@ defmodule Backend.Hearthstone do
     |> hack_canonical_id()
   end
 
+  def detect_circular(id, prev \\ []) do
+    copy_of_card_id =
+      with %{copy_of_card_id: copy_id} <- get_card(id),
+           %{id: _} <- get_card(copy_id) do
+        copy_id
+      else
+        _ -> nil
+      end
+
+    cond do
+      # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
+      id in prev -> get_card(id).name
+      copy_of_card_id -> detect_circular(copy_of_card_id, [id | prev])
+      true -> nil
+    end
+  end
+
   # {copy_of_card_id, id}
   # these copy_of_card_id cards ddon't exist
   @hacks [

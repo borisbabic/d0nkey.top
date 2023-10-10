@@ -253,7 +253,7 @@ defmodule BackendWeb.LeaderboardView do
         }
       ) do
     season_map =
-      LeaderboardsPoints.get_relevant_ldb_seasons(ps, use_current)
+      LeaderboardsPoints.get_relevant_ldb_seasons(ps, ldb, use_current)
       |> Enum.sort(:asc)
       |> Enum.map(&{&1, Blizzard.get_month_start(&1) |> Util.get_month_name()})
       |> Map.new()
