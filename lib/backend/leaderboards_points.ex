@@ -7,15 +7,17 @@ defmodule Backend.LeaderboardsPoints do
           {account_id :: String.t(), season_points :: [season_points], total_points :: integer()}
 
   @season_mapper [
-    {"2023", "spring", 111},
-    {"2023", "spring", 112},
-    {"2023", "spring", 113},
-    {"2023", "summer", 114},
-    {"2023", "summer", 115},
-    {"2023", "summer", 116},
-    {"2023", "fall", 117},
-    {"2023", "fall", 118},
-    {"2023", "fall", 119}
+    {"2023", "spring", 111, ["BG", "STD"]},
+    {"2023", "spring", 112, ["BG", "STD"]},
+    {"2023", "spring", 113, ["BG", "STD"]},
+    {"2023", "summer", 114, ["BG", "STD"]},
+    {"2023", "summer", 115, ["BG", "STD"]},
+    {"2023", "summer", 116, ["BG", "STD"]},
+    {"2023", "fall", 117, ["BG", "STD"]},
+    {"2023", "fall", 118, ["BG", "STD"]},
+    {"2023", "fall", 119, ["BG", "STD"]},
+    {"2023", nil, 120, ["STD"]},
+    {"2023", nil, 121, ["STD"]}
   ]
 
   def calculate(ps, leaderboard_id, use_current \\ false) do
@@ -77,7 +79,7 @@ defmodule Backend.LeaderboardsPoints do
   defp points_for_rank(r) when r <= 100, do: 1
 
   def create_criteria(ps, leaderboard_id, use_current \\ false) do
-    leaderboard_seasons = get_relevant_ldb_seasons(ps, use_current)
+    leaderboard_seasons = get_relevant_ldb_seasons(ps, leaderboard_id, use_current)
 
     seasons =
       for r <- Blizzard.regions(),
@@ -99,8 +101,8 @@ defmodule Backend.LeaderboardsPoints do
   def current_points_season() do
     current = current_season_id()
 
-    case Enum.find(@season_mapper, &(current == elem(&1, 2))) do
-      {year, season, _} -> "#{year}_#{season}"
+    case Enum.find(@season_mapper, &(current == elem(&1, 2) && elem(&1, 1))) do
+      {year, season, _, _} -> "#{year}_#{season}"
       _ -> now().year |> to_string()
     end
   end
@@ -122,26 +124,30 @@ defmodule Backend.LeaderboardsPoints do
   @doc """
   Gets the leaderboard seasons used for calculating points for the points season `ps`
   """
-  def get_relevant_ldb_seasons(ps, use_current \\ false) do
-    get_leaderboard_seasons(ps) |> remove_too_soon(use_current)
+  def get_relevant_ldb_seasons(ps, leaderboard_id, use_current) do
+    get_leaderboard_seasons(ps, leaderboard_id) |> remove_too_soon(use_current)
   end
 
-  def get_leaderboard_seasons(points_season) do
+  def get_leaderboard_seasons(points_season, leaderboard_id_raw) do
+    id = to_string(leaderboard_id_raw)
+
     case String.split(points_season, "_") do
       [year, season] ->
-        Enum.filter(@season_mapper, fn {y, s, _} -> y == year && s == season end)
+        Enum.filter(@season_mapper, fn {y, s, _, ids} -> y == year && s == season && id in ids end)
         |> Enum.map(&extract_season/1)
 
       [year] ->
-        Enum.filter(@season_mapper, fn {y, _, _} -> y == year end) |> Enum.map(&extract_season/1)
+        Enum.filter(@season_mapper, fn {y, _, _, ids} -> y == year && id in ids end)
+        |> Enum.map(&extract_season/1)
     end
   end
 
-  defp extract_season({_, _, s}), do: s
+  defp extract_season({_, _, s, _}), do: s
 
   def points_seasons() do
     @season_mapper
-    |> Enum.flat_map(fn {year, season, _} -> [year, "#{year}_#{season}"] end)
+    |> Enum.filter(&elem(&1, 1))
+    |> Enum.flat_map(fn {year, season, _, _} -> [year, "#{year}_#{season}"] end)
     |> Enum.uniq()
   end
 
