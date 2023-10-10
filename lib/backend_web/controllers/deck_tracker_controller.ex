@@ -6,7 +6,6 @@ defmodule BackendWeb.DeckTrackerController do
   """
 
   require Logger
-  alias Backend.Hearthstone.Deck
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker
 
@@ -18,6 +17,7 @@ defmodule BackendWeb.DeckTrackerController do
 
     params
     |> GameDto.from_raw_map(api_user)
+    |> log_game(params)
     |> DeckTracker.handle_game()
     |> case do
       {:ok, %{player_deck: pd = %{id: _}}} ->
@@ -46,6 +46,17 @@ defmodule BackendWeb.DeckTrackerController do
         |> put_status(500)
         |> text("Unknown error")
     end
+  end
+
+  defp log_game(dto = %{player: %{battletag: "D0nkey#2470"}}, params),
+    do: log_game(:error, dto, params)
+
+  defp log_game(dto, params), do: log_game(:debug, dto, params)
+
+  defp log_game(level, dto, params) do
+    Logger.log(level, "params: #{inspect(params)}")
+    Logger.log(level, "dto: #{inspect(dto)}")
+    dto
   end
 
   def hdt_plugin_latest_version(conn, _params) do
