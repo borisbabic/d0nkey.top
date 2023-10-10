@@ -612,9 +612,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       mech_rogue?(card_info) ->
         :"Mech Rogue"
 
-      coc_rogue?(card_info) ->
-        :"Coc Rogue"
-
       mine_rogue?(card_info) ->
         :"Mine Rogue"
 
@@ -653,6 +650,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       miracle_rogue?(card_info) ->
         :"Miracle Rogue"
+
+      coc_rogue?(card_info) ->
+        :"Coc Rogue"
 
       true ->
         fallbacks(card_info, "Rogue")
