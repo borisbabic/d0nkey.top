@@ -23,7 +23,7 @@ defmodule BackendWeb.PlayerDecksLive do
           id="decks_explorer"
           default_order_by="latest"
           default_rank="all"
-          extra_period_options={[{"all", "All time"}, {"past_60_days", "Past 60 Days"}]}
+          period_context={:personal}
           default_min_games={1}
           min_games_floor={1}
           additional_params={%{"player_btag" => @player_btag, "public" => true}}

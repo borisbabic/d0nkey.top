@@ -15,7 +15,7 @@ defmodule Components.CardStatsTable do
     ~F"""
       <div>
         <LivePatchDropdown
-          options={DecksExplorer.default_period_options()}
+          options={DeckTracker.period_filters(:public)}
           title={"Period"}
           param={"period"}
           url_params={Map.merge(@criteria, @filters)}

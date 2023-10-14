@@ -678,21 +678,6 @@ defmodule Hearthstone.DeckTracker do
     query |> where([game: g], g.inserted_at >= ^release)
   end
 
-  # defp compose_games_query({"period", "titans"}, query) do
-  #   release = ~N[2023-08-01 17:20:00]
-  #   query |> where([game: g], g.inserted_at >= ^release)
-  # end
-  #
-  # defp compose_games_query({"period", "patch_27.2"}, query) do
-  #   release = ~N[2023-08-22 17:20:00]
-  #   query |> where([game: g], g.inserted_at >= ^release)
-  # end
-
-  # defp compose_games_query({"period", "patch_27.2.2"}, query) do
-  #   release = ~N[2023-08-30 16:20:00]
-  #   query |> where([game: g], g.inserted_at >= ^release)
-  # end
-
   for {param, ago_num, ago_period} <- [
         {"past_2_weeks", 2, "week"},
         {"past_week", 1, "week"},
@@ -728,6 +713,30 @@ defmodule Hearthstone.DeckTracker do
       {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
       query |> where([game: g], g.inserted_at >= ^start_time)
     end
+  end
+
+  defp compose_games_query({"period", slug}, query = @aggregated_query) do
+    subquery = period_start_query(slug)
+
+    query
+    |> where([deck_stats: ds], ds.hour_start >= subquery(subquery))
+  end
+
+  defp compose_games_query({"period", slug}, query) do
+    subquery = period_start_query(slug)
+    query |> where([game: g], g.inserted_at >= subquery(subquery))
+  end
+
+  def period_start_query(slug) do
+    from p in Period,
+      where: p.slug == ^slug,
+      limit: 1,
+      select:
+        fragment(
+          "COALESCE (?, now() - CONCAT(?, ' hours')::interval)",
+          p.period_start,
+          p.hours_ago
+        )
   end
 
   defp compose_games_query({:in_range, start, finish}, query) do
@@ -925,9 +934,10 @@ defmodule Hearthstone.DeckTracker do
   @spec raw_stats_for_game(Game.t()) :: RawPlayerCardStats.t() | nil
   def raw_stats_for_game(%{id: id}) do
     query =
-      from r in RawPlayerCardStats,
+      from(r in RawPlayerCardStats,
         where: r.game_id == ^id,
         limit: 1
+      )
 
     Repo.one(query)
   end
@@ -935,8 +945,9 @@ defmodule Hearthstone.DeckTracker do
   @spec card_tallies_for_game(Game.t()) :: [CardGameTall.t()]
   def card_tallies_for_game(%{id: id}) do
     query =
-      from r in CardGameTally,
+      from(r in CardGameTally,
         where: r.game_id == ^id
+      )
 
     Repo.all(query)
   end
@@ -1004,10 +1015,11 @@ defmodule Hearthstone.DeckTracker do
 
   def raw_stats(limit, min_id \\ 0) do
     query =
-      from r in RawPlayerCardStats,
+      from(r in RawPlayerCardStats,
         where: r.id > ^min_id,
         order_by: [asc: r.id],
         limit: ^limit
+      )
 
     Repo.all(query)
   end
@@ -1159,4 +1171,39 @@ defmodule Hearthstone.DeckTracker do
 
   defp add_opponent_class_criteria(criteria, all) when all in [nil, "ALL", "all"], do: criteria
   defp add_opponent_class_criteria(criteria, class), do: [{"opponent_class", class} | criteria]
+
+  @spec period_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
+  def period_filters(context) do
+    [{:context, context}]
+    |> periods()
+    |> Enum.map(&Period.to_option/1)
+  end
+
+  def get_period_by_slug(slug) do
+    query = from(p in Period, where: p.slug == ^slug)
+
+    Repo.one(query)
+  end
+
+  def periods(criteria) do
+    base_periods_query()
+    |> build_periods_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_periods_query() do
+    from(p in Period, as: :period)
+  end
+
+  defp build_periods_query(query, criteria) do
+    Enum.reduce(criteria, query, &compose_periods_query/2)
+  end
+
+  defp compose_periods_query({:context, :public}, query) do
+    query |> where([period: p], p.include_in_deck_filters == true)
+  end
+
+  defp compose_periods_query({:context, :personal}, query) do
+    query |> where([period: p], p.include_in_personal_filters == true)
+  end
 end
