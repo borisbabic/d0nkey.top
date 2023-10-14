@@ -6,6 +6,7 @@ defmodule Components.DecksExplorer do
   alias Components.DeckWithStats
   alias Components.Filter.ArchetypeSelect
   alias Components.Filter.PlayableCardSelect
+  alias Components.Filter.PeriodDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.ArchetypeBag
@@ -22,30 +23,14 @@ defmodule Components.DecksExplorer do
   # @default_order_by "winrate"
   # data(user, :any)
 
-  @default_period_options [
-    {"past_2_weeks", "Past 2 Weeks"},
-    {"past_week", "Past Week"},
-    {"past_3_days", "Past 3 Days"},
-    {"past_day", "Past Day"},
-    {"titans", "TITANS!"},
-    {"miniset_titans", "Mini-Set"},
-    {"patch_27.4.2", "27.4.2"},
-    {"patch_27.4.3", "27.4.3"}
-    # {"patch_2022-09-09", "Sep 9th Patch"},
-    # {"koft_he", "DK Event"},
-    # {"lich_king", "March of the Lich King"},
-    # {"patch_2022-12-09", "Denathrius Nerf"},
-    # {"patch_2022-12-19", "Renathal Nerf"},
-    # {"patch_2023-01-26", "Astalor Nerf"}
-    # {"murder", "Murder"}
-  ]
+  def default_period_options() do
+    DeckTracker.period_filters(:public)
+  end
 
-  def default_period_options(), do: @default_period_options
   prop(default_order_by, :string, default: "winrate")
   prop(default_format, :number, default: 2)
   prop(default_rank, :string, default: "diamond_to_legend")
-  prop(period_options, :list, default: @default_period_options)
-  prop(extra_period_options, :list, default: [])
+  prop(period_context, :atom, default: :public)
   prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200])
   prop(default_min_games, :integer, default: 200)
   prop(min_games_floor, :integer, default: 50)
@@ -70,9 +55,13 @@ defmodule Components.DecksExplorer do
       socket
       |> assign(assigns)
       |> assign(actual_params: actual_params, search_filters: search_filters)
+      |> LivePatchDropdown.update_context(assigns.live_view, assigns.params, assigns.path_params)
       |> stream(:deck_stats, deck_stats, reset: true)
     }
   end
+
+  def period_options([_ | _] = options), do: options
+  def period_options(_empty), do: default_period_options()
 
   def render(assigns) do
     ~F"""
@@ -82,57 +71,30 @@ defmodule Components.DecksExplorer do
           options={format_options()}
           title={"Format"}
           param={"format"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          normalizer={&to_string/1}
-          live_view={@live_view} />
+          normalizer={&to_string/1} />
         <LivePatchDropdown
           options={rank_options()}
           title={"Rank"}
-          param={"rank"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          live_view={@live_view} />
+          param={"rank"} />
 
-        <LivePatchDropdown
-          options={@extra_period_options ++ @period_options}
-          title={"Period"}
-          param={"period"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          live_view={@live_view} />
+        <PeriodDropdown id="peroid_dropdown" filter_context={@period_context} />
 
         <LivePatchDropdown
           options={limit_options()}
-          title={"Decks"}
+          title={"# Decks"}
           param={"limit"}
           selected_as_title={false}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          normalizer={&to_string/1}
-          live_view={@live_view} />
+          normalizer={&to_string/1} />
 
         <LivePatchDropdown
           options={class_options("Any Class")}
           title={"Class"}
-          param={"player_class"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          live_view={@live_view} />
+          param={"player_class"} />
 
         <LivePatchDropdown
           options={class_options("Any Opponent")}
           title={"Opponent Class"}
-          param={"opponent_class"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          live_view={@live_view} />
+          param={"opponent_class"} />
 
 
         <LivePatchDropdown
@@ -140,20 +102,12 @@ defmodule Components.DecksExplorer do
           title={"Min Games"}
           param={"min_games"}
           selected_as_title={false}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          normalizer={&to_string/1}
-          live_view={@live_view} />
+          normalizer={&to_string/1} />
 
         <LivePatchDropdown
           options={order_by_options()}
           title={"Order By"}
-          param={"order_by"}
-          url_params={@params}
-          path_params={@path_params}
-          selected_params={params}
-          live_view={@live_view} />
+          param={"order_by"} />
 
         <ArchetypeSelect id={"player_deck_archetype"} update_fun={ArchetypeSelect.update_archetypes_fun(@params, "player_deck_archetype")} selected={params["player_deck_archetype"] || []} title="Archetypes" />
         <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
@@ -307,16 +261,17 @@ defmodule Components.DecksExplorer do
   end
 
   def default_period() do
-    now = NaiveDateTime.utc_now()
-    use_patch_after = ~N[2023-09-28 23:20:00]
-    use_patch_until = ~N[2023-10-11 21:00:00]
-
-    case {NaiveDateTime.compare(now, use_patch_after),
-          NaiveDateTime.compare(now, use_patch_until)} do
-      {:lt, :lt} -> "past_week"
-      {:gt, :lt} -> "patch_27.4.3"
-      _ -> "past_week"
-    end
+    "past_week"
+    # now = NaiveDateTime.utc_now()
+    # use_patch_after = ~N[2023-09-28 23:20:00]
+    # use_patch_until = ~N[2023-10-11 21:00:00]
+    #
+    # case {NaiveDateTime.compare(now, use_patch_after),
+    #       NaiveDateTime.compare(now, use_patch_until)} do
+    #   {:lt, :lt} -> "past_week"
+    #   {:gt, :lt} -> "patch_27.4.3"
+    #   _ -> "past_week"
+    # end
   end
 
   def cap_param(params, param, max),

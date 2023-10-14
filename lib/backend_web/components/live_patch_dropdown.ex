@@ -7,13 +7,13 @@ defmodule Components.LivePatchDropdown do
   # either a list of {value, display} tuples, or a list of one value when value == display
   prop(options, :list, required: true)
   prop(param, :string, required: true)
-  prop(live_view, :any, required: true)
-  prop(path_params, :struct, default: nil)
-  prop(url_params, :map, required: true)
+  prop(live_view, :any, required: true, from_context: {__MODULE__, :live_view})
+  prop(path_params, :struct, from_context: {__MODULE__, :path_params})
+  prop(url_params, :map, required: true, from_context: {__MODULE__, :url_params})
   prop(title, :string, required: false)
 
   # If the params we want to use to decide whether it's selected differ from the url params
-  prop(selected_params, :map, required: false)
+  prop(selected_params, :any, from_context: {__MODULE__, :selected_params})
   prop(selected_as_title, :boolean, default: true)
 
   prop(current_val, :any, required: false)
@@ -79,5 +79,31 @@ defmodule Components.LivePatchDropdown do
     with curr when not is_nil(curr) <- Map.get(params, param) do
       normalizer.(curr)
     end
+  end
+
+  @doc """
+  Useful to avoid repetition when using multiple livepatch dropdown, ex:
+  ```
+  def update(assigns, socket) do
+    selected = calculate_selected(assigns)
+    {
+      :ok,
+      socket
+      |> assign(assigns)
+      |> LivePatchDropdown.update_context(assigns.live_view, assigns.url_params, assigns.path_params, selected)
+    }
+  end
+  ```
+  """
+  def update_context(socket, live_view, url_params, path_params \\ nil, selected_params \\ nil) do
+    context = [
+      url_params: url_params,
+      path_params: path_params,
+      selected_params: selected_params,
+      live_view: live_view
+    ]
+
+    socket
+    |> Surface.Components.Context.put(__MODULE__, context)
   end
 end

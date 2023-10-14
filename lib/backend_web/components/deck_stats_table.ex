@@ -32,7 +32,7 @@ defmodule Components.DeckStatsTable do
           live_view={@live_view} />
 
         <LivePatchDropdown
-          options={DecksExplorer.default_period_options()}
+          options={DeckTracker.period_filters(:public)}
           path_params={@path_params}
           title={"Period"}
           param={"period"}

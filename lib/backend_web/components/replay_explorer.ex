@@ -5,6 +5,7 @@ defmodule Components.ReplayExplorer do
   alias Hearthstone.DeckTracker
   alias Components.ClassStatsModal
   alias Components.Filter.PlayableCardSelect
+  alias Components.Filter.PeriodDropdown
   alias Components.DecksExplorer
   alias Components.ReplaysTable
   alias Surface.Components.Form
@@ -22,8 +23,6 @@ defmodule Components.ReplayExplorer do
   prop(default_order_by, :string, default: "latest")
   prop(default_format, :number, default: "all")
   prop(default_limit, :number, default: 20)
-  prop(period_options, :list, default: Components.DecksExplorer.default_period_options())
-  prop(extra_period_options, :list, default: [])
   prop(default_rank, :string, default: "diamond_to_legend")
   prop(live_view, :module, required: true)
   prop(additional_params, :map, default: %{})
@@ -41,12 +40,26 @@ defmodule Components.ReplayExplorer do
   prop(format_filter, :boolean, default: true)
   prop(rank_filter, :boolean, default: true)
   prop(period_filter, :boolean, default: true)
+  prop(period_context, :atom, default: :public)
   prop(player_class_filter, :boolean, default: true)
   prop(opponent_class_filter, :boolean, default: true)
   prop(includes_filter, :boolean, default: true)
   prop(excludes_filter, :boolean, default: true)
   prop(class_stats_modal, :boolean, default: true)
   prop(search_filter, :boolean, default: true)
+
+  def update(assigns, socket) do
+    {
+      :ok,
+      socket
+      |> assign(assigns)
+      |> LivePatchDropdown.update_context(
+        assigns.live_view,
+        assigns.params,
+        assigns.path_params
+      )
+    }
+  end
 
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
@@ -58,47 +71,24 @@ defmodule Components.ReplayExplorer do
             options={format_options()}
             title={"Format"}
             param={"format"}
-            url_params={@params}
-            path_params={@path_params}
-            selected_params={params}
-            normalizer={&to_string/1}
-            live_view={@live_view} />
+            normalizer={&to_string/1} />
 
           <LivePatchDropdown :if={@rank_filter}
             options={DecksExplorer.rank_options()}
             title={"Rank"}
-            param={"rank"}
-            url_params={@params}
-            path_params={@path_params}
-            selected_params={params}
-            live_view={@live_view} />
+            param={"rank"} />
 
-          <LivePatchDropdown :if={@period_filter}
-            options={@extra_period_options ++ @period_options}
-            title={"Period"}
-            param={"period"}
-            url_params={@params}
-            path_params={@path_params}
-            selected_params={params}
-            live_view={@live_view} />
+          <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@period_context} />
 
           <LivePatchDropdown :if={@player_class_filter}
             options={DecksExplorer.class_options("Any Class")}
             title={"Class"}
-            param={"player_class"}
-            url_params={@params}
-            path_params={@path_params}
-            selected_params={params}
-            live_view={@live_view} />
+            param={"player_class"} />
 
           <LivePatchDropdown :if={@opponent_class_filter}
             options={DecksExplorer.class_options("Any Opponent")}
             title={"Opponent Class"}
-            param={"opponent_class"}
-            url_params={@params}
-            path_params={@path_params}
-            selected_params={params}
-            live_view={@live_view} />
+            param={"opponent_class"} />
 
           <PlayableCardSelect :if={@includes_filter} id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
           <PlayableCardSelect :if={@excludes_filter} id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
