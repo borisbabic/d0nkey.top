@@ -7,15 +7,15 @@ defmodule Backend.LeaderboardsPoints do
           {account_id :: String.t(), season_points :: [season_points], total_points :: integer()}
 
   @season_mapper [
-    {"2023", "spring", 111, ["BG", "STD"]},
-    {"2023", "spring", 112, ["BG", "STD"]},
-    {"2023", "spring", 113, ["BG", "STD"]},
-    {"2023", "summer", 114, ["BG", "STD"]},
-    {"2023", "summer", 115, ["BG", "STD"]},
-    {"2023", "summer", 116, ["BG", "STD"]},
-    {"2023", "fall", 117, ["BG", "STD"]},
-    {"2023", "fall", 118, ["BG", "STD"]},
-    {"2023", "fall", 119, ["BG", "STD"]},
+    {"2023", "spring", 111, ["BG_LL", "STD"]},
+    {"2023", "spring", 112, ["BG_LL", "STD"]},
+    {"2023", "spring", 113, ["BG_LL", "STD"]},
+    {"2023", "summer", 114, ["BG_LL", "STD"]},
+    {"2023", "summer", 115, ["BG_LL", "STD"]},
+    {"2023", "summer", 116, ["BG_LL", "STD"]},
+    {"2023", "fall", 117, ["BG_LL", "STD"]},
+    {"2023", "fall", 118, ["BG_LL", "STD"]},
+    {"2023", "fall", 119, ["BG_LL", "STD"]},
     {"2023", nil, 120, ["STD"]},
     {"2023", nil, 121, ["STD"]}
   ]
