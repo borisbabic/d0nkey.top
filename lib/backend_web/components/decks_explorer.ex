@@ -55,7 +55,7 @@ defmodule Components.DecksExplorer do
       socket
       |> assign(assigns)
       |> assign(actual_params: actual_params, search_filters: search_filters)
-      |> LivePatchDropdown.update_context(assigns.live_view, assigns.params, assigns.path_params)
+      |> LivePatchDropdown.update_context(assigns.live_view, actual_params, assigns.path_params)
       |> stream(:deck_stats, deck_stats, reset: true)
     }
   end
