@@ -20,6 +20,12 @@
             <%= filter_select(:period, :display, @conn.params) %>
             <%= filter_string_input(:period, :display, @conn.params) %>
           </div>
+
+          <div class="field">
+            <label>Order Priority</label>
+            <%= filter_select(:period, :order_priority, @conn.params) %>
+            <%= filter_string_input(:period, :order_priority, @conn.params) %>
+          </div>
         
           <div class="field">
             <label>Type</label>
@@ -76,6 +82,8 @@
               <th><%= table_link(@conn, "Slug", :slug) %></th>
             
               <th><%= table_link(@conn, "Display", :display) %></th>
+
+              <th><%= table_link(@conn, "Order Priority", :order_priority) %></th>
             
               <th><%= table_link(@conn, "Type", :type) %></th>
             
@@ -101,6 +109,8 @@
                 <td><%= period.slug %></td>
               
                 <td><%= period.display %></td>
+
+                <td><%= period.order_priority %></td>
               
                 <td><%= period.type %></td>
               

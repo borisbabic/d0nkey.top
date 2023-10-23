@@ -10,6 +10,7 @@ defmodule Hearthstone.DeckTracker.Period do
     field(:include_in_personal_filters, :boolean, default: false)
     field(:period_end, :naive_datetime)
     field(:period_start, :naive_datetime)
+    field(:order_priority, :integer)
     field(:slug, :string)
     field(:type, :string)
 
@@ -26,6 +27,7 @@ defmodule Hearthstone.DeckTracker.Period do
       :period_start,
       :period_end,
       :hours_ago,
+      :order_priority,
       :include_in_personal_filters,
       :include_in_deck_filters,
       :auto_aggregate

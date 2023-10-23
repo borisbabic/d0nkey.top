@@ -1174,7 +1174,7 @@ defmodule Hearthstone.DeckTracker do
 
   @spec period_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
   def period_filters(context) do
-    [{:context, context}]
+    [{:context, context}, {:order_by, {:order_priority, :desc}}]
     |> periods()
     |> Enum.map(&Period.to_option/1)
   end
@@ -1205,5 +1205,13 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_periods_query({:context, :personal}, query) do
     query |> where([period: p], p.include_in_personal_filters == true)
+  end
+
+  defp compose_periods_query({:order_by, {field, direction}}, query) do
+    query
+    |> order_by(
+      [period: p],
+      [{^direction, field(p, ^field)}]
+    )
   end
 end
