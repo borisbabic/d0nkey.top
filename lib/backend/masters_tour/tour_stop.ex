@@ -443,7 +443,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour 2023_3",
-        battlefy_id: nil,
+        battlefy_id: "653708cd1138c96e02a38e28",
         ladder_priority: nil,
         ladder_seasons: [117, 118, 119],
         ladder_invites: nil,
@@ -458,7 +458,7 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: nil,
+        start_time: ~N[2023-10-28 16:00:00],
         qualifiers_period: {~D[2023-09-01], ~D[2022-09-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
