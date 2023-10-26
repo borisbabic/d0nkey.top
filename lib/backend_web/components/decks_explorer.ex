@@ -261,7 +261,7 @@ defmodule Components.DecksExplorer do
   end
 
   def default_period() do
-    "past_week"
+    DeckTracker.default_period()
     # now = NaiveDateTime.utc_now()
     # use_patch_after = ~N[2023-09-28 23:20:00]
     # use_patch_until = ~N[2023-10-11 21:00:00]
