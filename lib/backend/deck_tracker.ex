@@ -1214,4 +1214,30 @@ defmodule Hearthstone.DeckTracker do
       [{^direction, field(p, ^field)}]
     )
   end
+
+  defp compose_periods_query({:in_range, field, start, finish}, query) do
+    query |> where([period: p], field(p, ^field) >= ^start and field(p, ^field) < ^finish)
+  end
+
+  defp compose_periods_query({:type, type}, query) do
+    query |> where([period: p], p.type == ^type)
+  end
+
+  @spec default_period() :: String.t()
+  def default_period() do
+    now = NaiveDateTime.utc_now()
+    start = now |> Timex.shift(days: -10)
+    finish = now |> Timex.shift(hours: -5)
+
+    criteria = [
+      {:type, "patch"},
+      {:in_range, :period_start, start, finish},
+      {:order_by, {:period_start, :desc}}
+    ]
+
+    case periods(criteria) do
+      [%{slug: slug} | _] -> slug
+      _ -> "past_week"
+    end
+  end
 end
