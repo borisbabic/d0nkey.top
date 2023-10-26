@@ -724,18 +724,22 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"period", slug}, query) do
     subquery = period_start_query(slug)
-    query |> where([game: g], g.inserted_at >= subquery(subquery))
+    period_start = %{} = Repo.one(subquery)
+
+    query
+    |> where([game: g], g.inserted_at >= ^period_start)
   end
 
   def period_start_query(slug) do
     from p in Period,
       where: p.slug == ^slug,
-      limit: 1,
       select:
-        fragment(
-          "COALESCE (?, now() - CONCAT(?, ' hours')::interval)",
-          p.period_start,
-          p.hours_ago
+        max(
+          fragment(
+            "COALESCE (?, now() - CONCAT(?, ' hours')::interval)",
+            p.period_start,
+            p.hours_ago
+          )
         )
   end
 
