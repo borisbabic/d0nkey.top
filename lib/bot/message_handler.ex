@@ -48,15 +48,15 @@ defmodule Bot.MessageHandler do
     "reveals" => """
     ## `reveals` (Card Reveals)
     `!reveals [$options]`
-    `!reveals format:text`
-    Get the next reveals, it has two formats `embed` (default) and `text`.
+    `!reveals format:embed`
+    Get the next reveals, it has two formats `embed` and `text` (embed).
     Checks the period from 1h ago to 24h ahead.
     Will look further in the future in order to show the minimum (3)
     """,
     "all-reveals" => """
     ## `all-reveals` (Card Reveals All)
-    `!reveals format:text`
-    Like !reveals, but shows all the reveals, but requires format:text since discord limits embeds
+    `!all-reveals `
+    Like !reveals, but shows all the reveals, discord limits embeds so format:embed won't work.
     """,
     "cards" => """
     ## `cards` (Latest HS Cards)

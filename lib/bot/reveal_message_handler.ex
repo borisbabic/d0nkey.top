@@ -50,7 +50,7 @@ defmodule Bot.RevealMessageHandler do
   def format(msg) do
     msg
     |> get_options()
-    |> Enum.find_value("embed", fn
+    |> Enum.find_value("text", fn
       "format:" <> format -> format
       _ -> false
     end)
