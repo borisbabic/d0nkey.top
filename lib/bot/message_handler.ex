@@ -9,6 +9,7 @@ defmodule Bot.MessageHandler do
   alias Backend.Leaderboards
   alias Nostrum.Struct.Embed
   import Bot.MessageHandlerUtil
+  require Logger
 
   @help_definitions %{
     "dhelp" => """
@@ -49,7 +50,7 @@ defmodule Bot.MessageHandler do
     ## `reveals` (Card Reveals)
     `!reveals [$options]`
     `!reveals format:embed`
-    Get the next reveals, it has two formats `embed` and `text` (embed).
+    Get the next reveals, it has two formats `embed` and `text` (default).
     Checks the period from 1h ago to 24h ahead.
     Will look further in the future in order to show the minimum (3)
     """,
@@ -132,6 +133,8 @@ defmodule Bot.MessageHandler do
   }
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle(msg) do
+    log_message(msg)
+
     case msg.content do
       "!ping" ->
         Api.create_message(msg.channel_id, "pong")
@@ -221,6 +224,27 @@ defmodule Bot.MessageHandler do
     end
   end
 
+  @spec log_message(Nostrum.Struct.Message.t()) :: any()
+  defp log_message(msg) do
+    Task.start(fn -> do_log_message(msg) end)
+  end
+
+  defp do_log_message(%{content: content, guild_id: guild_id}) do
+    with command = "!" <> _ <-
+           String.split(content, "\s") |> Enum.at(0) do
+      write_log(command, guild_id)
+    end
+  end
+
+  defp write_log(command, guild_id, level \\ :error) do
+    memory = (:erlang.memory(:total) / :math.pow(1024, 2)) |> Float.round(2)
+
+    Logger.log(
+      level,
+      "BOT MESSAGE ||| command: #{command} guild_id: #{guild_id} mem: #{memory} MiB"
+    )
+  end
+
   def get_help(target) do
     case Map.get(@help_definitions, target) do
       command_specific when is_binary(command_specific) -> command_specific
@@ -252,6 +276,10 @@ defmodule Bot.MessageHandler do
   def handle_card(msg) do
     case Regex.scan(~r/\[\[(.+?)\]\]/, msg.content, capture: :all_but_first) do
       matches = [_ | _] ->
+        Task.start(fn ->
+          write_log("card match #{Enum.join(matches, "|")}", msg.guild_id)
+        end)
+
         embeds =
           matches
           |> Enum.map(&create_card_embed/1)
@@ -280,14 +308,21 @@ defmodule Bot.MessageHandler do
            {"limit", 1},
            {"collectible", "yes"}
          ]) do
-      [card | _] -> Bot.CardMessageHandler.create_card_embed(card, embed: embed)
-      _ -> embed
+      [card | _] ->
+        Bot.CardMessageHandler.create_card_embed(card, embed: embed)
+
+      _ ->
+        embed
     end
   end
 
   def handle_deck(msg) do
     with false <- msg.content =~ "##",
          {:ok, decks} <- extract_decks_from_msg(msg) do
+      Task.start(fn ->
+        write_log("deck command #{Enum.join(decks, ",")}", msg.guild_id)
+      end)
+
       send_deck_messages(decks, msg)
     else
       {:error, {:too_many_decks, num_decks}} ->

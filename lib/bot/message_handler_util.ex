@@ -5,7 +5,9 @@ defmodule Bot.MessageHandlerUtil do
   alias Nostrum.Struct.Message
   alias Nostrum.Struct.User
 
-  @spec get_options(String.t()) :: [String.t()]
+  @spec get_options(Nostrum.Message.t() | String.t()) :: [String.t()]
+  def get_options(%{content: content}), do: get_options(content)
+
   def get_options(content) do
     get_options(content, :list)
   end
