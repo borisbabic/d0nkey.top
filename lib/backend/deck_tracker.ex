@@ -396,7 +396,7 @@ defmodule Hearthstone.DeckTracker do
       as: :card_tally,
       join: g in assoc(ct, :game),
       as: :game,
-      join: pd in assoc(g, :player_deck),
+      join: pd in assoc(ct, :deck),
       as: :player_deck,
       group_by: [ct.card_id, pd.id],
       select: %{
@@ -803,6 +803,9 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"player_deck_excludes", cards}, query),
     do: query |> where([player_deck: pd], not fragment("? && ?", pd.cards, ^cards))
+
+  defp compose_games_query({"player_deck_id", deck_id}, query = @card_query),
+    do: query |> where([card_tally: ct], ct.deck_id == ^deck_id)
 
   defp compose_games_query({"player_deck_id", deck_id}, query),
     do: query |> where([game: g], g.player_deck_id == ^deck_id)

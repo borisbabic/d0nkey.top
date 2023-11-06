@@ -4,6 +4,7 @@ defmodule Hearthstone.DeckTracker.CardGameTally do
   import Ecto.Changeset
   alias Hearthstone.DeckTracker.Game
   alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.Deck
 
   schema "dt_card_game_tally" do
     belongs_to :game, Game
