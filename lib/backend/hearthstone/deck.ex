@@ -26,6 +26,11 @@ defmodule Backend.Hearthstone.Deck do
     timestamps()
   end
 
+  def unique_cards_with_sideboards(%{cards: cards, sideboards: sideboards}) do
+    sideboard_cards = Enum.map(sideboards, & &1.card)
+    Enum.uniq(cards ++ sideboard_cards)
+  end
+
   @doc false
   def changeset(c, attrs = %{hsreplay_archetype: %{id: id}}) do
     changeset(c, attrs |> Map.put(:hsreplay_archetype, id))

@@ -95,7 +95,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
       ) do
     case create_card_tally_ecto_attrs(mull, drawn) do
       {:ok, tallies} ->
-        Map.put(attrs, "card_tallies", tallies)
+        Map.put(attrs, "card_tallies", add_deck_id(tallies, attrs["player_deck"]))
 
       {:error, _error} ->
         Map.put(attrs, "raw_player_card_stats", create_raw_stats_attrs(mull, drawn))
@@ -103,6 +103,12 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   def add_card_info(attrs, _dto), do: attrs
+
+  defp add_deck_id(tallies, %{player_deck_id: deck_id}) when is_integer(deck_id) do
+    Enum.map(tallies, &Map.put(&1, :deck_id, deck_id))
+  end
+
+  defp add_deck_id(tallies, _deck), do: tallies
 
   def create_card_tally_ecto_attrs(mull, drawn, game_id) do
     with {:ok, attrs} <- create_card_tally_ecto_attrs(mull, drawn) do

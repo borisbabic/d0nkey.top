@@ -76,9 +76,6 @@ defmodule Hearthstone.DeckTracker do
 
   def convert_rank(nil), do: nil
 
-  def handle_self_report(game_dto) do
-  end
-
   def handle_game(game_dto = %{game_id: game_id}) when is_binary(game_id) do
     attrs =
       GameDto.to_ecto_attrs(game_dto, &handle_deck/1, &get_or_create_source/2)
@@ -524,6 +521,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @aggregated_query %{from: %{as: :deck_stats}}
+  @card_query %{from: %{as: :card_tally}}
   defp compose_games_query(period, query) when period in [:past_week, :past_day, :past_3_days],
     do: compose_games_query({"period", to_string(period)}, query)
 
@@ -686,6 +684,11 @@ defmodule Hearthstone.DeckTracker do
         {"past_30_days", 30, "day"},
         {"past_60_days", 60, "day"}
       ] do
+    defp compose_games_query({"period", unquote(param)}, query = @card_query) do
+      query
+      |> where([card_tally: ct], ct.inserted_at >= ago(unquote(ago_num), unquote(ago_period)))
+    end
+
     defp compose_games_query({"period", unquote(param)}, query = @aggregated_query) do
       query
       |> where([deck_stats: ds], ds.hour_start >= ago(unquote(ago_num), unquote(ago_period)))
@@ -713,13 +716,27 @@ defmodule Hearthstone.DeckTracker do
       {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
       query |> where([game: g], g.inserted_at >= ^start_time)
     end
+
+    defp compose_games_query({"period", unquote(param)}, query = @card_query) do
+      {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
+      query |> where([card_tally: c], c.inserted_at >= ^start_time)
+    end
   end
 
   defp compose_games_query({"period", slug}, query = @aggregated_query) do
     subquery = period_start_query(slug)
+    period_start = %{} = Repo.one(subquery)
 
     query
-    |> where([deck_stats: ds], ds.hour_start >= subquery(subquery))
+    |> where([deck_stats: ds], ds.hour_start >= ^period_start)
+  end
+
+  defp compose_games_query({"period", slug}, query = @card_query) do
+    subquery = period_start_query(slug)
+    period_start = %{} = Repo.one(subquery)
+
+    query
+    |> where([card_tally: ct], ct.inserted_at >= ^period_start)
   end
 
   defp compose_games_query({"period", slug}, query) do

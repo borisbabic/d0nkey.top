@@ -4,6 +4,8 @@ defmodule Components.CardStatsTable do
   alias Components.DecklistCard
   alias Components.LivePatchDropdown
   alias Components.DecksExplorer
+  alias Hearthstone.DeckTracker
+  alias Backend.Hearthstone.Deck
 
   prop(card_stats, :list)
   prop(filters, :map, default: %{})
@@ -82,7 +84,7 @@ defmodule Components.CardStatsTable do
               <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
                 {add_arrow("Mulligan Count", "mull_count", @filters)}
               </a> 
-            </th>
+              </th>
               <th>
               <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
                 {add_arrow("Drawn Impact", "drawn_impact", @filters)}
@@ -95,7 +97,7 @@ defmodule Components.CardStatsTable do
             </th>
           </thead>
           <tbody>
-            <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters)}>
+            <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters) |> filter_same_deck(@filters)}>
               <td>
 
               <div class="decklist_card_container">
@@ -149,6 +151,26 @@ defmodule Components.CardStatsTable do
 
   def default_count_minimum(%{"min_count" => min_count}), do: min_count
   def default_count_minimum(_), do: 200
+
+  defp filter_same_deck(stats, filters) do
+    with id when not is_nil(id) <- deck_id(filters),
+         deck = %Deck{} = Backend.Hearthstone.get_deck(id) do
+      filter_cards(stats, Deck.unique_cards_with_sideboards(deck))
+    else
+      _ -> stats
+    end
+  end
+
+  defp filter_cards(stats, cards) do
+    canonical = Enum.map(cards, &Backend.Hearthstone.canonical_id/1)
+
+    stats
+    |> Enum.filter(&(&1.card_id && Backend.Hearthstone.canonical_id(&1.card_id) in canonical))
+  end
+
+  defp deck_id(%{"deck_id" => d}), do: d
+  defp deck_id(%{"player_deck_id" => d}), do: d
+  defp deck_id(_), do: nil
 
   def map_filter(stats, filters) do
     default_min = default_count_minimum(filters)
