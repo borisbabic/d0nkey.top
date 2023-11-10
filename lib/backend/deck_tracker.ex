@@ -198,8 +198,7 @@ defmodule Hearthstone.DeckTracker do
           mull_count: integer(),
           mull_impact: float(),
           kept_count: integer(),
-          kept_impact: float(),
-          kept_percent: float()
+          kept_impact: float()
         }
 
   @spec merge_card_deck_stats(list()) :: [card_stats]
@@ -268,8 +267,7 @@ defmodule Hearthstone.DeckTracker do
         mull_count: cum.mull_total,
         mull_impact: safe_div(cum.cum_mull_diff, cum.mull_total),
         kept_count: cum.kept_total,
-        kept_impact: safe_div(cum.cum_kept_diff, cum.kept_total),
-        kept_percent: safe_div(cum.kept_total, cum.mull_total)
+        kept_impact: safe_div(cum.cum_kept_diff, cum.kept_total)
       }
     end)
   end
