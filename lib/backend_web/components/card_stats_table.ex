@@ -75,9 +75,10 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Card", "card", @filters)}
               </a>
             </th>
+
               <th>
               <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
-                {add_arrow("Mulligan Impact", "mull_impact", @filters)}
+                {add_arrow("Mulligan Impact", "mull_impact", @filters, true)}
               </a>
             </th>
               <th :if={show_counts(@filters)}>
@@ -85,6 +86,24 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Mulligan Count", "mull_count", @filters)}
               </a> 
               </th>
+
+              <th>
+              <a :on-click="change_sort" phx-value-sort_by={"kept_percent"} phx-value-sort_direction={sort_direction(@filters, "kept_percent")}>
+                {add_arrow("Kept Percent", "kept_percent", @filters)}
+              </a>
+            </th>
+
+              <th>
+              <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
+                {add_arrow("Kept Impact", "kept_impact", @filters)}
+              </a>
+            </th>
+              <th :if={show_counts(@filters)}>
+              <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
+                {add_arrow("Kept Count", "kept_count", @filters)}
+              </a> 
+              </th>
+
               <th>
               <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
                 {add_arrow("Drawn Impact", "drawn_impact", @filters)}
@@ -95,6 +114,7 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Drawn Count", "drawn_count", @filters)}
               </a>
             </th>
+
           </thead>
           <tbody>
             <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters) |> filter_same_deck(@filters)}>
@@ -107,6 +127,12 @@ defmodule Components.CardStatsTable do
                 </td>
               <td>{to_percent(cs.mull_impact)}</td>
               <td :if={show_counts(@filters)}>{cs.mull_count}</td>
+
+              <td>{to_percent(cs.kept_percent)}</td>
+
+              <td>{to_percent(cs.kept_impact)}</td>
+              <td :if={show_counts(@filters)}>{cs.kept_count}</td>
+
               <td>{to_percent(cs.drawn_impact)}</td>
               <td :if={show_counts(@filters)}>{cs.drawn_count}</td>
             </tr>
@@ -116,7 +142,9 @@ defmodule Components.CardStatsTable do
     """
   end
 
-  def add_arrow(base, column_sort_key, %{"sort_by" => sort_key} = f)
+  def add_arrow(base, column_sort_key, filters, default \\ false)
+
+  def add_arrow(base, column_sort_key, %{"sort_by" => sort_key} = f, _default)
       when sort_key == column_sort_key do
     arrow =
       case get_direction(f) do
@@ -127,7 +155,10 @@ defmodule Components.CardStatsTable do
     "#{base}#{arrow}"
   end
 
-  def add_arrow(base, _, _), do: base
+  def add_arrow(base, column_sort_key, _, true),
+    do: add_arrow(base, column_sort_key, %{"sort_by" => column_sort_key})
+
+  def add_arrow(base, _, _, _), do: base
 
   defp sort_direction(%{"sort_by" => existing, "sort_direction" => s}, new) when new == existing,
     do: flip_direction(s)
