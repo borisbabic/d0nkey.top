@@ -135,23 +135,21 @@ defmodule Components.CardStatsTable do
     """
   end
 
-  def add_arrow(base, column_sort_key, filters, default \\ false)
-
-  def add_arrow(base, column_sort_key, %{"sort_by" => sort_key} = f, _default)
-      when sort_key == column_sort_key do
+  def add_arrow(base, column_sort_key, filters, is_default \\ false) do
     arrow =
-      case get_direction(f) do
+      case get_direction(filters) do
         :asc -> "↑"
         _ -> "↓"
       end
 
-    "#{base}#{arrow}"
+    from_filters = Map.get(filters, "sort_by")
+
+    cond do
+      from_filters == column_sort_key -> "#{base}#{arrow}"
+      from_filters == nil and is_default -> "#{base}#{arrow}"
+      true -> "#{base}"
+    end
   end
-
-  def add_arrow(base, column_sort_key, _, true),
-    do: add_arrow(base, column_sort_key, %{"sort_by" => column_sort_key})
-
-  def add_arrow(base, _, _, _), do: base
 
   defp sort_direction(%{"sort_by" => existing, "sort_direction" => s}, new) when new == existing,
     do: flip_direction(s)
