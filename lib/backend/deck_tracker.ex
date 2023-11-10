@@ -196,7 +196,10 @@ defmodule Hearthstone.DeckTracker do
           drawn_count: integer(),
           drawn_impact: float(),
           mull_count: integer(),
-          mull_impact: float()
+          mull_impact: float(),
+          kept_count: integer(),
+          kept_impact: float(),
+          kept_percent: float()
         }
 
   @spec merge_card_deck_stats(list()) :: [card_stats]
@@ -228,7 +231,7 @@ defmodule Hearthstone.DeckTracker do
 
     deck_card_stats
     |> Enum.reduce(%{}, fn ct, acc ->
-      deck_winrate = deck_winrate_map[ct.deck_id]
+      deck_winrate = deck_winrate_map[ct.deck_id] || 0
 
       drawn_total = ct.drawn_wins + ct.drawn_losses
       drawn_winrate = safe_div(ct.drawn_wins, drawn_total)
@@ -238,16 +241,24 @@ defmodule Hearthstone.DeckTracker do
       mull_winrate = safe_div(ct.mulligan_wins, mull_total)
       mull_diff = mull_winrate - deck_winrate
 
+      kept_total = ct.kept_wins + ct.kept_losses
+      kept_winrate = safe_div(ct.kept_wins, kept_total)
+      kept_diff = kept_winrate - deck_winrate
+
       Map.put_new(acc, ct.card_id, %{
         cum_drawn_diff: 0,
         drawn_total: 0,
         cum_mull_diff: 0,
-        mull_total: 0
+        mull_total: 0,
+        cum_kept_diff: 0,
+        kept_total: 0
       })
       |> update_in([ct.card_id, :cum_drawn_diff], &(&1 + drawn_diff * drawn_total))
       |> update_in([ct.card_id, :drawn_total], &(&1 + drawn_total))
       |> update_in([ct.card_id, :cum_mull_diff], &(&1 + mull_diff * mull_total))
       |> update_in([ct.card_id, :mull_total], &(&1 + mull_total))
+      |> update_in([ct.card_id, :cum_kept_diff], &(&1 + kept_diff * kept_total))
+      |> update_in([ct.card_id, :kept_total], &(&1 + kept_total))
     end)
     |> Enum.map(fn {card_id, cum} ->
       %{
@@ -255,7 +266,10 @@ defmodule Hearthstone.DeckTracker do
         drawn_count: cum.drawn_total,
         drawn_impact: safe_div(cum.cum_drawn_diff, cum.drawn_total),
         mull_count: cum.mull_total,
-        mull_impact: safe_div(cum.cum_mull_diff, cum.mull_total)
+        mull_impact: safe_div(cum.cum_mull_diff, cum.mull_total),
+        kept_count: cum.kept_total,
+        kept_impact: safe_div(cum.cum_kept_diff, cum.kept_total),
+        kept_percent: safe_div(cum.kept_total, cum.mull_total)
       }
     end)
   end
@@ -388,9 +402,6 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  defp base_agreggated_stats_query() do
-  end
-
   defp base_deck_card_stats_query() do
     from(ct in CardGameTally,
       as: :card_tally,
@@ -400,6 +411,24 @@ defmodule Hearthstone.DeckTracker do
       as: :player_deck,
       group_by: [ct.card_id, pd.id],
       select: %{
+        kept_wins:
+          sum(
+            fragment(
+              "CASE WHEN ? = 'win' AND ? AND ? THEN 1 ELSE 0 END",
+              g.status,
+              ct.kept,
+              ct.mulligan
+            )
+          ),
+        kept_losses:
+          sum(
+            fragment(
+              "CASE WHEN ? = 'loss' AND ? AND ? THEN 1 ELSE 0 END",
+              g.status,
+              ct.kept,
+              ct.mulligan
+            )
+          ),
         drawn_wins:
           sum(fragment("CASE WHEN ? = 'win' AND ? THEN 1 ELSE 0 END", g.status, ct.drawn)),
         drawn_losses:
