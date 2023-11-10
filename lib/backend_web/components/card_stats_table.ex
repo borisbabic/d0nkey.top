@@ -88,12 +88,6 @@ defmodule Components.CardStatsTable do
               </th>
 
               <th>
-              <a :on-click="change_sort" phx-value-sort_by={"kept_percent"} phx-value-sort_direction={sort_direction(@filters, "kept_percent")}>
-                {add_arrow("Kept Percent", "kept_percent", @filters)}
-              </a>
-            </th>
-
-              <th>
               <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
                 {add_arrow("Kept Impact", "kept_impact", @filters)}
               </a>
@@ -128,8 +122,6 @@ defmodule Components.CardStatsTable do
                 </td>
               <td>{to_percent(cs.mull_impact)}</td>
               <td :if={show_counts(@filters)}>{cs.mull_count}</td>
-
-              <td>{to_percent(cs.kept_percent)}</td>
 
               <td>{to_percent(cs.kept_impact)}</td>
               <td :if={show_counts(@filters)}>{cs.kept_count}</td>
