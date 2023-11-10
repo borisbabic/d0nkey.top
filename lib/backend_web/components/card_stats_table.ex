@@ -98,6 +98,7 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Kept Impact", "kept_impact", @filters)}
               </a>
             </th>
+
               <th :if={show_counts(@filters)}>
               <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
                 {add_arrow("Kept Count", "kept_count", @filters)}
@@ -185,7 +186,7 @@ defmodule Components.CardStatsTable do
 
   defp filter_same_deck(stats, filters) do
     with id when not is_nil(id) <- deck_id(filters),
-         deck = %Deck{} = Backend.Hearthstone.get_deck(id) do
+         deck = %Deck{} <- Backend.Hearthstone.get_deck(id) do
       filter_cards(stats, Deck.unique_cards_with_sideboards(deck))
     else
       _ -> stats
@@ -251,6 +252,9 @@ defmodule Components.CardStatsTable do
       "mull_count" -> & &1.mull_count
       "drawn_impact" -> & &1.drawn_impact
       "drawn_count" -> & &1.drawn_count
+      "kept_percent" -> & &1.kept_percent
+      "kept_impact" -> & &1.kept_impact
+      "kept_count" -> & &1.kept_count
       _ -> & &1.mull_impact
     end
   end
