@@ -104,7 +104,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   def add_card_info(attrs, _dto), do: attrs
 
-  defp add_deck_id(tallies, %{player_deck_id: deck_id}) when is_integer(deck_id) do
+  defp add_deck_id(tallies, %{id: deck_id}) when is_integer(deck_id) do
     Enum.map(tallies, &Map.put(&1, :deck_id, deck_id))
   end
 
