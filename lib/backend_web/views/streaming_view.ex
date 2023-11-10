@@ -132,7 +132,7 @@ defmodule BackendWeb.StreamingView do
       create_format_dropdown(conn),
       create_class_dropdown(conn),
       # create_min_minutes_played_dropdown(conn),
-      create_lk_dropdown(conn),
+      create_expansion_dropdown(conn, "badlands", "Badlands Cards", "Includes Badlands Cards"),
       create_last_played_dropdown(conn)
       # keep below last :shrug:
       # create_show_archetypes_dropdown(conn)
@@ -196,20 +196,20 @@ defmodule BackendWeb.StreamingView do
     """
   end
 
-  def create_lk_dropdown(conn) do
-    curr = with nil <- conn.query_params["festival_of_legends"], do: "no"
+  def create_expansion_dropdown(conn, query_param, default_title, yes_option_display) do
+    curr = with nil <- conn.query_params[query_param], do: "no"
 
     options =
-      [{"yes", "Includes FoL Cards"}, {"no", "Any decks"}]
+      [{"yes", yes_option_display}, {"no", "Any decks"}]
       |> Enum.map(fn {val, display} ->
         %{
-          link: update_link(conn, "festival_of_legends", val),
+          link: update_link(conn, query_param, val),
           selected: val == curr,
           display: display
         }
       end)
 
-    {options, "Festival of Legends"}
+    {options, default_title}
   end
 
   def create_min_minutes_played_dropdown(conn) do

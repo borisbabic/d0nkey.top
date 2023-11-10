@@ -10,6 +10,7 @@ defmodule Backend.Streaming do
   alias Hearthstone.DeckTracker.Game
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.Deck
   alias Backend.Streaming.StreamerDeckInfoDto
 
@@ -411,6 +412,12 @@ defmodule Backend.Streaming do
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
   end
 
+  defp compose_streamer_deck_query({"badlands", "yes"}, query) do
+    card_ids = badlands_ids()
+
+    query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+  end
+
   defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"exclude_cards", cards}, query),
@@ -451,6 +458,7 @@ defmodule Backend.Streaming do
     end
   end
 
+  # create_lk_dropdown(conn),
   defp compose_streamer_deck_query(
          {"first_played", <<"min_ago_"::binary, min_ago::bitstring>>},
          query
@@ -467,15 +475,12 @@ defmodule Backend.Streaming do
 
   def festival_of_legends_card_ids(filter_out \\ [90_749]), do: filter_card_set(1809, filter_out)
 
+  def badlands_ids(filter_out \\ [102_902]), do: filter_card_set(1892, filter_out)
+
   defp filter_card_set(card_set_id, filter_out_ids) do
-    Backend.Hearthstone.CardBag.all_cards()
-    |> Enum.flat_map(fn c ->
-      if c.card_set_id == card_set_id && c.id not in filter_out_ids do
-        [c.id]
-      else
-        []
-      end
-    end)
+    for c <- CardBag.all_cards(),
+        c.card_set_id == card_set_id and c.id not in filter_out_ids,
+        do: c.id
   end
 
   defp alterac_valley_card_ids() do
