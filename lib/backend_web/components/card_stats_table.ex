@@ -3,6 +3,8 @@ defmodule Components.CardStatsTable do
   use BackendWeb, :surface_live_component
   alias Components.DecklistCard
   alias Components.LivePatchDropdown
+  alias Components.Filter.PeriodDropdown
+  alias Components.Filter.RankDropdown
   alias Components.DecksExplorer
   alias Hearthstone.DeckTracker
   alias Backend.Hearthstone.Deck
@@ -13,61 +15,45 @@ defmodule Components.CardStatsTable do
   prop(live_view, :module, required: true)
   prop(path_params, :any, default: nil)
 
+  def update(assigns, socket) do
+    {
+      :ok,
+      socket
+      |> assign(assigns)
+      |> LivePatchDropdown.update_context(
+        assigns.live_view,
+        Map.merge(assigns.criteria, assigns.filters),
+        assigns.path_params,
+        assigns.criteria
+      )
+    }
+  end
+
   def render(assigns) do
     ~F"""
       <div>
-        <LivePatchDropdown
-          options={DeckTracker.period_filters(:public)}
-          title={"Period"}
-          param={"period"}
-          url_params={Map.merge(@criteria, @filters)}
-          path_params={@path_params}
-          selected_params={@criteria}
-          live_view={@live_view} />
+        <PeriodDropdown id="period_dropdown"/>
         <LivePatchDropdown
           options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Mull Count"}
           param={"min_mull_count"}
-          selected_as_title={false}
-          url_params={Map.merge(@criteria, @filters)}
-          path_params={@path_params}
-          selected_params={@filters}
-          live_view={@live_view} />
+          selected_as_title={false}/>
         <LivePatchDropdown
           options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Drawn Count"}
           param={"min_drawn_count"}
-          selected_as_title={false}
-          url_params={Map.merge(@criteria, @filters)}
-          path_params={@path_params}
-          selected_params={@filters}
-          live_view={@live_view} />
+          selected_as_title={false} />
         <LivePatchDropdown
           options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
           title={"Show Counts"}
           param={"show_counts"}
-          selected_as_title={true}
-          url_params={Map.merge(@criteria, @filters)}
-          path_params={@path_params}
-          selected_params={@filters}
-          live_view={@live_view} />
-        <LivePatchDropdown
-          options={DecksExplorer.rank_options()}
-          title={"Rank"}
-          param={"rank"}
-          url_params={Map.merge(@criteria, @filters)}
-          path_params={@path_params}
-          selected_params={@criteria}
-          live_view={@live_view} />
+          selected_as_title={true} />
+        <RankDropdown id="rank_dropdown"/>
 
         <LivePatchDropdown
           options={DecksExplorer.class_options("Any Class", "VS ")}
           title={"Opponent's Class"}
-          param={"opponent_class"}
-          url_params={Map.merge(@criteria, @filters)}
-          path_params={@path_params}
-          selected_params={@criteria}
-          live_view={@live_view} />
+          param={"opponent_class"} />
         <table class="table is-fullwidth is-striped is-narrow">
           <thead>
             <th>
@@ -268,7 +254,8 @@ defmodule Components.CardStatsTable do
 
   def default_criteria() do
     %{
-      "period" => DecksExplorer.default_period()
+      "period" => DeckTracker.default_period(),
+      "rank" => DeckTracker.default_rank()
     }
   end
 

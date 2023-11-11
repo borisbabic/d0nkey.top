@@ -13,6 +13,7 @@ defmodule Hearthstone.DeckTracker.Rank do
     field :min_rank, :integer, default: 0
     field :order_priority, :integer, default: 0
     field :slug, :string
+    field :default, :boolean, default: false
 
     timestamps()
   end
@@ -30,6 +31,7 @@ defmodule Hearthstone.DeckTracker.Rank do
       :include_in_personal_filters,
       :include_in_deck_filters,
       :order_priority,
+      :default,
       :auto_aggregate
     ])
     |> validate_required([
@@ -42,4 +44,6 @@ defmodule Hearthstone.DeckTracker.Rank do
       :auto_aggregate
     ])
   end
+
+  def to_option(%{slug: slug, display: display}), do: {slug, display}
 end

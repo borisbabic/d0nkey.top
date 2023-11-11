@@ -1,9 +1,9 @@
-defmodule Components.Filter.PeriodDropdown do
+defmodule Components.Filter.RankDropdown do
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
-  prop(title, :string, default: "Period")
-  prop(param, :string, default: "period")
+  prop(title, :string, default: "Rank")
+  prop(param, :string, default: "rank")
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
@@ -24,10 +24,10 @@ defmodule Components.Filter.PeriodDropdown do
   end
 
   def options(context) do
-    DeckTracker.period_filters(context)
+    DeckTracker.rank_filters(context)
   end
 
   def default(_context \\ :public) do
-    DeckTracker.default_period()
+    DeckTracker.default_rank()
   end
 end

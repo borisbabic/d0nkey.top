@@ -33,7 +33,7 @@ defmodule BackendWeb.GroupReplaysLive do
           additional_params={additional_params(membership)}
           params={@filters}
           live_view={__MODULE__}
-          period_context={:personal}
+          filter_context={:personal}
           />
       </div>
     """

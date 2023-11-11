@@ -7,6 +7,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.ArchetypeSelect
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
+  alias Components.Filter.RankDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.ArchetypeBag
@@ -30,7 +31,7 @@ defmodule Components.DecksExplorer do
   prop(default_order_by, :string, default: "winrate")
   prop(default_format, :number, default: 2)
   prop(default_rank, :string, default: "diamond_to_legend")
-  prop(period_context, :atom, default: :public)
+  prop(filter_context, :atom, default: :public)
   prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200])
   prop(default_min_games, :integer, default: 200)
   prop(min_games_floor, :integer, default: 50)
@@ -72,12 +73,9 @@ defmodule Components.DecksExplorer do
           title={"Format"}
           param={"format"}
           normalizer={&to_string/1} />
-        <LivePatchDropdown
-          options={rank_options()}
-          title={"Rank"}
-          param={"rank"} />
 
-        <PeriodDropdown id="peroid_dropdown" filter_context={@period_context} />
+        <RankDropdown id="rank_dropdown" filter_context={@filter_context} />
+        <PeriodDropdown id="peroid_dropdown" filter_context={@filter_context} />
 
         <LivePatchDropdown
           options={limit_options()}
@@ -173,9 +171,6 @@ defmodule Components.DecksExplorer do
   end
 
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
-
-  def rank_options(),
-    do: [{"legend", "Legend"}, {"diamond_to_legend", "Diamond-Legend"}, {"all", "All"}]
 
   def limit_options(), do: [10, 15, 20, 25, 30]
 
