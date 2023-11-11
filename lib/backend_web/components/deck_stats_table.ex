@@ -5,6 +5,8 @@ defmodule Components.DeckStatsTable do
   alias Components.DecksExplorer
   alias Hearthstone.DeckTracker
   alias Components.LivePatchDropdown
+  alias Components.Filter.RankDropdown
+  alias Components.Filter.PeriodDropdown
 
   prop(live_view, :module, required: true)
   prop(params, :map, required: true)
@@ -12,43 +14,39 @@ defmodule Components.DeckStatsTable do
   prop(deck_id, :integer, required: true)
   prop(user, :map, from_context: :user)
 
-  def render(assigns) do
+  def update(assigns, socket) do
     selected_params =
       assigns.params
       |> Map.take(param_keys())
-      |> Map.put_new("rank", "diamond_to_legend")
-      |> Map.put_new("period", "past_week")
+      |> Map.put_new("rank", RankDropdown.default())
+      |> Map.put_new("period", PeriodDropdown.default())
       |> Map.put_new("players", "all_players")
 
+    {
+      :ok,
+      socket
+      |> assign(assigns)
+      |> assign(selected_params: selected_params)
+      |> LivePatchDropdown.update_context(
+        assigns.live_view,
+        assigns.params,
+        assigns.path_params,
+        selected_params
+      )
+    }
+  end
+
+  def render(assigns) do
     ~F"""
     <div>
-        <LivePatchDropdown
-          options={DecksExplorer.rank_options()}
-          path_params={@path_params}
-          title={"Rank"}
-          param={"rank"}
-          url_params={@params}
-          selected_params={selected_params}
-          live_view={@live_view} />
-
-        <LivePatchDropdown
-          options={DeckTracker.period_filters(:public)}
-          path_params={@path_params}
-          title={"Period"}
-          param={"period"}
-          url_params={@params}
-          selected_params={selected_params}
-          live_view={@live_view} />
+        <RankDropdown id="rank_dropdown"/>
+        <PeriodDropdown id="period_dropdown" />
 
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
-            path_params={@path_params}
             title={"Players"}
-            param={"players"}
-            url_params={@params}
-            selected_params={selected_params}
-            live_view={@live_view} />
-        <ClassStatsTable :if={stats = stats(@deck_id, params(selected_params, @user))} stats={stats} />
+            param={"players"} />
+        <ClassStatsTable :if={stats = stats(@deck_id, params(@selected_params, @user))} stats={stats} />
     </div>
     """
   end

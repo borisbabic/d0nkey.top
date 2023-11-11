@@ -31,7 +31,7 @@ defmodule BackendWeb.MyReplaysLive do
           additional_params={additional_params(@user)}
           params={@filters}
           live_view={__MODULE__}
-          period_context={:personal}
+          filter_context={:personal}
         />
       </div>
     """

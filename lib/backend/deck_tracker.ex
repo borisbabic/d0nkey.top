@@ -548,7 +548,7 @@ defmodule Hearthstone.DeckTracker do
     Enum.reduce(criteria, query, &compose_games_query/2)
   end
 
-  @aggregated_query %{from: %{as: :deck_stats}}
+  @old_aggregated_query %{from: %{as: :deck_stats}}
   @card_query %{from: %{as: :card_tally}}
   defp compose_games_query(period, query) when period in [:past_week, :past_day, :past_3_days],
     do: compose_games_query({"period", to_string(period)}, query)
@@ -717,7 +717,7 @@ defmodule Hearthstone.DeckTracker do
       |> where([card_tally: ct], ct.inserted_at >= ago(unquote(ago_num), unquote(ago_period)))
     end
 
-    defp compose_games_query({"period", unquote(param)}, query = @aggregated_query) do
+    defp compose_games_query({"period", unquote(param)}, query = @old_aggregated_query) do
       query
       |> where([deck_stats: ds], ds.hour_start >= ago(unquote(ago_num), unquote(ago_period)))
     end
@@ -735,7 +735,7 @@ defmodule Hearthstone.DeckTracker do
         {"titans", "2023-08-01 17:20:00"},
         {"patch_27.2", "2023-08-22 17:20:00"}
       ] do
-    defp compose_games_query({"period", unquote(param)}, query = @aggregated_query) do
+    defp compose_games_query({"period", unquote(param)}, query = @old_aggregated_query) do
       {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
       query |> where([deck_stats: ds], ds.hour_start >= ^start_time)
     end
@@ -751,7 +751,7 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  defp compose_games_query({"period", slug}, query = @aggregated_query) do
+  defp compose_games_query({"period", slug}, query = @old_aggregated_query) do
     subquery = period_start_query(slug)
     period_start = %{} = Repo.one(subquery)
 
@@ -796,7 +796,7 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query(rank, query) when rank in [:legend, :diamond_to_legend, :top_legend],
     do: compose_games_query({"rank", to_string(rank)}, query)
 
-  defp compose_games_query({"rank", r}, query = @aggregated_query),
+  defp compose_games_query({"rank", r}, query = @old_aggregated_query),
     do: query |> where([deck_stats: ds], ds.rank == ^r)
 
   defp compose_games_query({"rank", "legend"}, query),
@@ -810,6 +810,49 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"rank", "all"}, query),
     do: query
+
+  defp compose_games_query({"rank", slug}, query) do
+    rank = get_rank_by_slug(slug)
+
+    query
+    |> filter_rank(rank, :game, :player_rank, :player_legend_rank)
+  end
+
+  defp filter_rank(
+         query,
+         %{
+           min_rank: min_rank,
+           max_rank: max_rank,
+           min_legend_rank: min_legend_rank,
+           max_legend_rank: max_legend_rank
+         },
+         target,
+         rank_field,
+         legend_field
+       ) do
+    [
+      {
+        min_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^rank_field) >= ^min_rank)
+      },
+      {
+        is_integer(max_rank) and max_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^rank_field) <= ^max_rank)
+      },
+      {
+        min_legend_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^legend_field) >= ^min_legend_rank)
+      },
+      {
+        is_integer(max_legend_rank) and max_legend_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^legend_field) <= ^max_legend_rank)
+      }
+    ]
+    |> Enum.reduce(query, fn
+      {true, apply}, acc_query -> apply.(acc_query)
+      {false, _apply}, acc_query -> acc_query
+    end)
+  end
 
   defp compose_games_query({"order_by", "latest"}, query = %{group_bys: []}),
     do: query |> order_by([game: g], desc: g.inserted_at)
@@ -866,7 +909,7 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  defp compose_games_query({"min_games", min_games}, query = @aggregated_query),
+  defp compose_games_query({"min_games", min_games}, query = @old_aggregated_query),
     do: query |> having([deck_stats: ds], sum(ds.total) >= ^min_games)
 
   defp compose_games_query({"min_games", min_games}, query),
@@ -875,7 +918,7 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_legend_rank", legend_rank}, query),
     do: query |> where([game: g], g.player_legend_rank == ^legend_rank)
 
-  defp compose_games_query({"opponent_class", class}, query = @aggregated_query),
+  defp compose_games_query({"opponent_class", class}, query = @old_aggregated_query),
     do: query |> where([deck_stats: ds], ds.opponent_class == ^String.upcase(class))
 
   defp compose_games_query({"opponent_class", class}, query),
@@ -899,10 +942,10 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"region", region}, query),
     do: query |> where([game: g], g.region == ^region)
 
-  defp compose_games_query(:ranked, @aggregated_query = query), do: query
+  defp compose_games_query(:ranked, @old_aggregated_query = query), do: query
   defp compose_games_query(:ranked, query), do: compose_games_query({"game_type", 7}, query)
 
-  defp compose_games_query({"game_type", [7]}, @aggregated_query = query),
+  defp compose_games_query({"game_type", [7]}, @old_aggregated_query = query),
     do: query
 
   defp compose_games_query({"game_type", game_types}, query) when is_list(game_types),
@@ -922,7 +965,7 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"format", "all"}, query),
     do: query
 
-  defp compose_games_query({"format", format}, query = @aggregated_query),
+  defp compose_games_query({"format", format}, query = @old_aggregated_query),
     do: query |> where([player_deck: pd], pd.format == ^format)
 
   defp compose_games_query({"format", format}, query),
@@ -1224,6 +1267,64 @@ defmodule Hearthstone.DeckTracker do
   defp add_opponent_class_criteria(criteria, all) when all in [nil, "ALL", "all"], do: criteria
   defp add_opponent_class_criteria(criteria, class), do: [{"opponent_class", class} | criteria]
 
+  @spec rank_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
+  def rank_filters(context) do
+    [{:context, context}, {:order_by, {:order_priority, :desc}}]
+    |> ranks()
+    |> Enum.map(&Rank.to_option/1)
+  end
+
+  def get_rank_by_slug(slug) do
+    query = from(p in Rank, where: p.slug == ^slug)
+
+    Repo.one(query)
+  end
+
+  def ranks(criteria) do
+    base_ranks_query()
+    |> build_ranks_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_ranks_query() do
+    from(p in Rank, as: :rank)
+  end
+
+  defp build_ranks_query(query, criteria) do
+    Enum.reduce(criteria, query, &compose_ranks_query/2)
+  end
+
+  defp compose_ranks_query({:context, :public}, query) do
+    query |> where([rank: p], p.include_in_deck_filters == true)
+  end
+
+  defp compose_ranks_query({:context, :personal}, query) do
+    query |> where([rank: p], p.include_in_personal_filters == true)
+  end
+
+  defp compose_ranks_query({:default, default}, query) do
+    query |> where([rank: p], p.default == ^default)
+  end
+
+  defp compose_ranks_query({:order_by, {field, direction}}, query) do
+    query
+    |> order_by(
+      [rank: p],
+      [{^direction, field(p, ^field)}]
+    )
+  end
+
+  @spec default_rank() :: String.t()
+  def default_rank() do
+    [{:default, true}, {:order_by, {:order_priority, :desc}}]
+    |> ranks()
+    |> case do
+      [%{slug: slug} | _] -> slug
+      _ -> "diamond_to_legend"
+    end
+  end
+
+  ########################
   @spec period_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
   def period_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]

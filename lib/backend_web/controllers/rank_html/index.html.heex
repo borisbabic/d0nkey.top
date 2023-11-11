@@ -37,6 +37,11 @@
             <%= filter_boolean_input(:rank, :auto_aggregate, @conn.params) %>
           </div>
         
+          <div class="field">
+            <label>Default</label>
+            <%= filter_boolean_input(:rank, :default, @conn.params) %>
+          </div>
+        
         
         
           <div class="field">
@@ -100,6 +105,7 @@
               <th><%= table_link(@conn, "Auto aggregate", :auto_aggregate) %></th>
 
               <th><%= table_link(@conn, "Order Priority", :order_priority) %></th>
+              <th><%= table_link(@conn, "Default", :default) %></th>
             
             <th><span>Actions</span></th>
           </tr>
@@ -127,6 +133,8 @@
                 <td><%= rank.auto_aggregate %></td>
 
                 <td><%= rank.order_priority %></td>
+
+                <td><%= rank.default %></td>
               
               <td class="torch-actions">
                 <span><.link href={~p"/torch/ranks/#{rank}"}><%= Torch.I18n.message("Show") %></.link></span>

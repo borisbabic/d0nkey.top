@@ -6,6 +6,7 @@ defmodule Components.ReplayExplorer do
   alias Components.ClassStatsModal
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
+  alias Components.Filter.RankDropdown
   alias Components.DecksExplorer
   alias Components.ReplaysTable
   alias Surface.Components.Form
@@ -40,7 +41,7 @@ defmodule Components.ReplayExplorer do
   prop(format_filter, :boolean, default: true)
   prop(rank_filter, :boolean, default: true)
   prop(period_filter, :boolean, default: true)
-  prop(period_context, :atom, default: :public)
+  prop(filter_context, :atom, default: :public)
   prop(player_class_filter, :boolean, default: true)
   prop(opponent_class_filter, :boolean, default: true)
   prop(includes_filter, :boolean, default: true)
@@ -73,12 +74,8 @@ defmodule Components.ReplayExplorer do
             param={"format"}
             normalizer={&to_string/1} />
 
-          <LivePatchDropdown :if={@rank_filter}
-            options={DecksExplorer.rank_options()}
-            title={"Rank"}
-            param={"rank"} />
-
-          <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@period_context} />
+          <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
+          <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
 
           <LivePatchDropdown :if={@player_class_filter}
             options={DecksExplorer.class_options("Any Class")}
