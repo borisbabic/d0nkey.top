@@ -5,6 +5,7 @@ defmodule Components.CardStatsTable do
   alias Components.LivePatchDropdown
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
+  alias Components.Filter.FormatDropdown
   alias Components.DecksExplorer
   alias Hearthstone.DeckTracker
   alias Backend.Hearthstone.Deck
@@ -12,6 +13,7 @@ defmodule Components.CardStatsTable do
   prop(card_stats, :list)
   prop(filters, :map, default: %{})
   prop(criteria, :any, default: %{})
+  prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
   prop(path_params, :any, default: nil)
 
@@ -32,7 +34,8 @@ defmodule Components.CardStatsTable do
   def render(assigns) do
     ~F"""
       <div>
-        <PeriodDropdown id="period_dropdown"/>
+        <PeriodDropdown id="period_dropdown" filter_context={@filter_context}/>
+        <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
         <LivePatchDropdown
           options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Mull Count"}
@@ -48,7 +51,7 @@ defmodule Components.CardStatsTable do
           title={"Show Counts"}
           param={"show_counts"}
           selected_as_title={true} />
-        <RankDropdown id="rank_dropdown"/>
+        <RankDropdown id="rank_dropdown" fitler_context={@filter_context}/>
 
         <LivePatchDropdown
           options={DecksExplorer.class_options("Any Class", "VS ")}
@@ -252,10 +255,11 @@ defmodule Components.CardStatsTable do
     |> DecksExplorer.parse_int(["min_mull_count", "min_drawn_count", "min_count"])
   end
 
-  def default_criteria() do
+  def default_criteria(context) do
     %{
-      "period" => DeckTracker.default_period(),
-      "rank" => DeckTracker.default_rank()
+      "period" => PeriodDropdown.default(context),
+      "rank" => RankDropdown.default(context),
+      "format" => FormatDropdown.default(context)
     }
   end
 

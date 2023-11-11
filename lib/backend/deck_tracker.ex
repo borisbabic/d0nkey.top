@@ -13,8 +13,9 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
-  alias Hearthstone.Enums.Format
+  alias Hearthstone.Enums.Format, as: FormatEnum
   alias Hearthstone.DeckTracker.Rank
+  alias Hearthstone.DeckTracker.Format
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.UserManager
@@ -957,12 +958,15 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"no_archetype", _}, query),
     do: query |> where([player_deck: pd], is_nil(pd.archetype))
 
-  for {id, atom} <- Format.all(:atoms) do
+  for {id, atom} <- FormatEnum.all(:atoms) do
     defp compose_games_query(unquote(atom), query),
       do: compose_games_query({"format", unquote(id)}, query)
   end
 
   defp compose_games_query({"format", "all"}, query),
+    do: query
+
+  defp compose_games_query({"format", nil}, query),
     do: query
 
   defp compose_games_query({"format", format}, query = @old_aggregated_query),
@@ -1267,6 +1271,64 @@ defmodule Hearthstone.DeckTracker do
   defp add_opponent_class_criteria(criteria, all) when all in [nil, "ALL", "all"], do: criteria
   defp add_opponent_class_criteria(criteria, class), do: [{"opponent_class", class} | criteria]
 
+  @spec format_filters(:public | :personal) :: [{value :: String.t(), display :: String.t()}]
+  def format_filters(context) do
+    [{:context, context}, {:order_by, {:order_priority, :desc}}]
+    |> formats()
+    |> Enum.map(&Format.to_option/1)
+  end
+
+  def get_format_by_value(value) do
+    query = from(p in Format, where: p.value == ^value)
+
+    Repo.one(query)
+  end
+
+  def formats(criteria) do
+    base_formats_query()
+    |> build_formats_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_formats_query() do
+    from(p in Format, as: :format)
+  end
+
+  defp build_formats_query(query, criteria) do
+    Enum.reduce(criteria, query, &compose_formats_query/2)
+  end
+
+  defp compose_formats_query({:context, :public}, query) do
+    query |> where([format: p], p.include_in_deck_filters == true)
+  end
+
+  defp compose_formats_query({:context, :personal}, query) do
+    query |> where([format: p], p.include_in_personal_filters == true)
+  end
+
+  defp compose_formats_query({:default, default}, query) do
+    query |> where([format: p], p.default == ^default)
+  end
+
+  defp compose_formats_query({:order_by, {field, direction}}, query) do
+    query
+    |> order_by(
+      [format: p],
+      [{^direction, field(p, ^field)}]
+    )
+  end
+
+  @spec default_format(:public | :personal) :: String.t()
+  def default_format(context) do
+    [{:default, true}, {:order_by, {:order_priority, :desc}}, {:context, context}]
+    |> formats()
+    |> case do
+      [%{value: value} | _] -> value
+      _ -> "diamond_to_legend"
+    end
+  end
+
+  ######
   @spec rank_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
   def rank_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]
@@ -1314,9 +1376,9 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  @spec default_rank() :: String.t()
-  def default_rank() do
-    [{:default, true}, {:order_by, {:order_priority, :desc}}]
+  @spec default_rank(:public | :personal) :: String.t()
+  def default_rank(context) do
+    [{:default, true}, {:order_by, {:order_priority, :desc}}, {:context, context}]
     |> ranks()
     |> case do
       [%{slug: slug} | _] -> slug
@@ -1491,5 +1553,104 @@ defmodule Hearthstone.DeckTracker do
   """
   def change_rank(%Rank{} = rank, attrs \\ %{}) do
     Rank.changeset(rank, attrs)
+  end
+
+  use Torch.Pagination,
+    repo: Backend.Repo,
+    model: Hearthstone.DeckTracker.Format,
+    name: :formats
+
+  @doc """
+  Returns the list of formats.
+
+  ## Examples
+
+      iex> list_formats()
+      [%Format{}, ...]
+
+  """
+  def list_formats do
+    Repo.all(Format)
+  end
+
+  @doc """
+  Gets a single format.
+
+  Raises `Ecto.NoResultsError` if the Format does not exist.
+
+  ## Examples
+
+      iex> get_format!(123)
+      %Format{}
+
+      iex> get_format!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_format!(id), do: Repo.get!(Format, id)
+
+  @doc """
+  Creates a format.
+
+  ## Examples
+
+      iex> create_format(%{field: value})
+      {:ok, %Format{}}
+
+      iex> create_format(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_format(attrs \\ %{}) do
+    %Format{}
+    |> Format.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a format.
+
+  ## Examples
+
+      iex> update_format(format, %{field: new_value})
+      {:ok, %Format{}}
+
+      iex> update_format(format, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_format(%Format{} = format, attrs) do
+    format
+    |> Format.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Format.
+
+  ## Examples
+
+      iex> delete_format(format)
+      {:ok, %Format{}}
+
+      iex> delete_format(format)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_format(%Format{} = format) do
+    Repo.delete(format)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking format changes.
+
+  ## Examples
+
+      iex> change_format(format)
+      %Ecto.Changeset{source: %Format{}}
+
+  """
+  def change_format(%Format{} = format, attrs \\ %{}) do
+    Format.changeset(format, attrs)
   end
 end

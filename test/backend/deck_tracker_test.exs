@@ -424,4 +424,129 @@ defmodule Hearthstone.DeckTrackerTest do
 
     rank
   end
+
+  alias Hearthstone.DeckTracker.Format
+
+  @valid_attrs %{
+    auto_aggregate: true,
+    default: true,
+    display: "some display",
+    include_in_deck_filters: true,
+    include_in_personal_filters: true,
+    order_priority: 42,
+    value: 42
+  }
+  @update_attrs %{
+    auto_aggregate: false,
+    default: false,
+    display: "some updated display",
+    include_in_deck_filters: false,
+    include_in_personal_filters: false,
+    order_priority: 43,
+    value: 43
+  }
+  @invalid_attrs %{
+    auto_aggregate: nil,
+    default: nil,
+    display: nil,
+    include_in_deck_filters: nil,
+    include_in_personal_filters: nil,
+    order_priority: nil,
+    value: nil
+  }
+
+  describe "#paginate_formats/1" do
+    test "returns paginated list of formats" do
+      for _ <- 1..20 do
+        format_fixture()
+      end
+
+      {:ok, %{formats: formats} = page} = DeckTracker.paginate_formats(%{})
+
+      assert length(formats) == 15
+      assert page.page_number == 1
+      assert page.page_size == 15
+      assert page.total_pages == 2
+      assert page.total_entries == 20
+      assert page.distance == 5
+      assert page.sort_field == "inserted_at"
+      assert page.sort_direction == "desc"
+    end
+  end
+
+  describe "#list_formats/0" do
+    test "returns all formats" do
+      format = format_fixture()
+      assert DeckTracker.list_formats() == [format]
+    end
+  end
+
+  describe "#get_format!/1" do
+    test "returns the format with given id" do
+      format = format_fixture()
+      assert DeckTracker.get_format!(format.id) == format
+    end
+  end
+
+  describe "#create_format/1" do
+    test "with valid data creates a format" do
+      assert {:ok, %Format{} = format} = DeckTracker.create_format(@valid_attrs)
+      assert format.auto_aggregate == true
+      assert format.default == true
+      assert format.display == "some display"
+      assert format.include_in_deck_filters == true
+      assert format.include_in_personal_filters == true
+      assert format.order_priority == 42
+      assert format.value == 42
+    end
+
+    test "with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = DeckTracker.create_format(@invalid_attrs)
+    end
+  end
+
+  describe "#update_format/2" do
+    test "with valid data updates the format" do
+      format = format_fixture()
+      assert {:ok, format} = DeckTracker.update_format(format, @update_attrs)
+      assert %Format{} = format
+      assert format.auto_aggregate == false
+      assert format.default == false
+      assert format.display == "some updated display"
+      assert format.include_in_deck_filters == false
+      assert format.include_in_personal_filters == false
+      assert format.order_priority == 43
+      assert format.value == 43
+    end
+
+    test "with invalid data returns error changeset" do
+      format = format_fixture()
+      assert {:error, %Ecto.Changeset{}} = DeckTracker.update_format(format, @invalid_attrs)
+      assert format == DeckTracker.get_format!(format.id)
+    end
+  end
+
+  describe "#delete_format/1" do
+    test "deletes the format" do
+      format = format_fixture()
+      assert {:ok, %Format{}} = DeckTracker.delete_format(format)
+      assert_raise Ecto.NoResultsError, fn -> DeckTracker.get_format!(format.id) end
+    end
+  end
+
+  describe "#change_format/1" do
+    test "returns a format changeset" do
+      format = format_fixture()
+      assert %Ecto.Changeset{} = DeckTracker.change_format(format)
+    end
+  end
+
+  def format_fixture(attrs \\ %{}) do
+    {:ok, format} =
+      attrs
+      |> Enum.into(@valid_attrs)
+      |> DeckTracker.create_format()
+
+    format
+  end
 end

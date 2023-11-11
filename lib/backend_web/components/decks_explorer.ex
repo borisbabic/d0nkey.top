@@ -8,6 +8,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
+  alias Components.Filter.FormatDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.ArchetypeBag
@@ -24,13 +25,10 @@ defmodule Components.DecksExplorer do
   # @default_order_by "winrate"
   # data(user, :any)
 
-  def default_period_options() do
-    DeckTracker.period_filters(:public)
-  end
-
   prop(default_order_by, :string, default: "winrate")
-  prop(default_format, :number, default: 2)
-  prop(default_rank, :string, default: "diamond_to_legend")
+  prop(default_format, :number, default: nil)
+  prop(default_rank, :string, default: nil)
+  prop(default_period, :string, default: nil)
   prop(filter_context, :atom, default: :public)
   prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200])
   prop(default_min_games, :integer, default: 200)
@@ -61,19 +59,12 @@ defmodule Components.DecksExplorer do
     }
   end
 
-  def period_options([_ | _] = options), do: options
-  def period_options(_empty), do: default_period_options()
-
   def render(assigns) do
     ~F"""
     <div>
       <div :if={{params, search_filters} = {@actual_params, @search_filters}}>
-        <LivePatchDropdown
-          options={format_options()}
-          title={"Format"}
-          param={"format"}
-          normalizer={&to_string/1} />
 
+        <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
         <RankDropdown id="rank_dropdown" filter_context={@filter_context} />
         <PeriodDropdown id="peroid_dropdown" filter_context={@filter_context} />
 
@@ -143,12 +134,12 @@ defmodule Components.DecksExplorer do
     defaults = [
       {"limit", assigns.default_limit},
       {"min_games", assigns.default_min_games},
-      {"format", assigns.default_format},
+      {"format", assigns.default_format || FormatDropdown.default(assigns.filter_context)},
       {"order_by", assigns.default_order_by},
-      {"period", default_period()},
+      {"period", assigns.default_period || PeriodDropdown.default(assigns.filter_context)},
       {"game_type", [7]},
       {"archetype", "any"},
-      {"rank", assigns.default_rank}
+      {"rank", assigns.default_rank || RankDropdown.default(assigns.filter_context)}
     ]
 
     params =
@@ -178,12 +169,6 @@ defmodule Components.DecksExplorer do
     do: [
       {nil, any_name} | Enum.map(Deck.classes(), &{&1, "#{name_prefix}#{Deck.class_name(&1)}"})
     ]
-
-  def format_options(),
-    do:
-      Enum.map(Format.all(), fn {id, name} ->
-        {to_string(id), name}
-      end)
 
   def region_options(),
     do: [
@@ -253,20 +238,6 @@ defmodule Components.DecksExplorer do
     Enum.reduce(defaults, filters, fn {key, val}, carry ->
       Map.put_new(carry, key, val)
     end)
-  end
-
-  def default_period() do
-    DeckTracker.default_period()
-    # now = NaiveDateTime.utc_now()
-    # use_patch_after = ~N[2023-09-28 23:20:00]
-    # use_patch_until = ~N[2023-10-11 21:00:00]
-    #
-    # case {NaiveDateTime.compare(now, use_patch_after),
-    #       NaiveDateTime.compare(now, use_patch_until)} do
-    #   {:lt, :lt} -> "past_week"
-    #   {:gt, :lt} -> "patch_27.4.3"
-    #   _ -> "past_week"
-    # end
   end
 
   def cap_param(params, param, max),

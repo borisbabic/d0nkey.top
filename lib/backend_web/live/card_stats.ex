@@ -26,7 +26,7 @@ defmodule BackendWeb.CardStatsLive do
   end
 
   def handle_params(params, _uri, socket) do
-    default = CardStatsTable.default_criteria()
+    default = CardStatsTable.default_criteria(:public)
     decks_criteria = DecksExplorer.filter_relevant(params)
 
     criteria =

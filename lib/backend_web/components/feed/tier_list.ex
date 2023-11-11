@@ -29,7 +29,7 @@ defmodule Components.Feed.TierList do
 
   defp get_tier_list() do
     Hearthstone.DeckTracker.archetype_stats([
-      {"period", Components.DecksExplorer.default_period()},
+      {"period", Components.Filter.PeriodDropdown.default(:public)},
       :diamond_to_legend,
       {"format", 2}
     ])
