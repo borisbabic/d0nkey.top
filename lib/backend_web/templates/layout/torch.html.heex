@@ -63,6 +63,9 @@
             <%= if can_access?(@conn, :ranks) do %>
               <a href="/torch/ranks">Ranks</a>
             <% end %>
+            <%= if can_access?(@conn, :formats) do %>
+              <a href="/torch/formats">Formats</a>
+            <% end %>
           </nav>
         </div>
       </section>

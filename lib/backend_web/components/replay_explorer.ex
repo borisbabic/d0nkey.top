@@ -7,24 +7,17 @@ defmodule Components.ReplayExplorer do
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
+  alias Components.Filter.FormatDropdown
   alias Components.DecksExplorer
   alias Components.ReplaysTable
   alias Surface.Components.Form
   alias Surface.Components.Form.TextInput
 
-  # @default_limit 15
-  # @max_limit 30
-  # @min_min_games 50
-  # @default_min_games 100
-  # # standard
-  # @default_format 2
-  # @default_order_by "winrate"
-  # data(user, :any)
-
   prop(default_order_by, :string, default: "latest")
-  prop(default_format, :number, default: "all")
+  prop(default_format, :number, default: nil)
   prop(default_limit, :number, default: 20)
-  prop(default_rank, :string, default: "diamond_to_legend")
+  prop(default_rank, :string, default: nil)
+  prop(default_period, :string, default: nil)
   prop(live_view, :module, required: true)
   prop(additional_params, :map, default: %{})
   prop(params, :map, required: true)
@@ -68,12 +61,7 @@ defmodule Components.ReplayExplorer do
       <div>
         <div :if={{params, search_filters} = parse_params(@params, assigns)}>
           <div class="level is-mobile level-left">
-            <LivePatchDropdown :if={@format_filter}
-            options={format_options()}
-            title={"Format"}
-            param={"format"}
-            normalizer={&to_string/1} />
-
+          <FormatDropdown id="format_dropdown" :if={@format_filter} filter_context={@filter_context} />
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
 
@@ -130,7 +118,9 @@ defmodule Components.ReplayExplorer do
   defp parse_params(raw_params, assigns) do
     defaults = [
       {"limit", assigns.default_limit},
-      {"format", assigns.default_format},
+      {"format", assigns.default_format || FormatDropdown.default(assigns.filter_context)},
+      {"rank", assigns.default_rank || RankDropdown.default(assigns.filter_context)},
+      {"period", assigns.default_period || PeriodDropdown.default(assigns.filter_context)},
       {"order_by", assigns.default_order_by}
     ]
 

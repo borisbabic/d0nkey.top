@@ -47,4 +47,24 @@ defmodule Hearthstone.DeckTrackerFixtures do
 
     rank
   end
+
+  @doc """
+  Generate a format.
+  """
+  def format_fixture(attrs \\ %{}) do
+    {:ok, format} =
+      attrs
+      |> Enum.into(%{
+        auto_aggregate: true,
+        default: true,
+        display: "some display",
+        include_in_deck_filters: true,
+        include_in_personal_filters: true,
+        order_priority: 42,
+        value: 42
+      })
+      |> Hearthstone.DeckTracker.create_format()
+
+    format
+  end
 end

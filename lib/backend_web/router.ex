@@ -304,6 +304,7 @@ defmodule BackendWeb.Router do
     resources("/twitch-commands", TwitchCommandController)
     resources("/periods", PeriodController)
     resources("/ranks", RankController)
+    resources("/formats", FormatController)
   end
 
   scope "/admin", BackendWeb do
