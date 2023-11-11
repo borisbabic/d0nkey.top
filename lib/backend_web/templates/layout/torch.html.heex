@@ -60,6 +60,9 @@
             <%= if can_access?(@conn, :periods) do %>
               <a href="/torch/periods">Periods</a>
             <% end %>
+            <%= if can_access?(@conn, :ranks) do %>
+              <a href="/torch/ranks">Ranks</a>
+            <% end %>
           </nav>
         </div>
       </section>

@@ -25,4 +25,26 @@ defmodule Hearthstone.DeckTrackerFixtures do
 
     period
   end
+
+  @doc """
+  Generate a rank.
+  """
+  def rank_fixture(attrs \\ %{}) do
+    {:ok, rank} =
+      attrs
+      |> Enum.into(%{
+        auto_aggregate: true,
+        display: "some display",
+        include_in_deck_filters: true,
+        include_in_personal_filters: true,
+        max_legend_rank: 42,
+        max_rank: 42,
+        min_legend_rank: 42,
+        min_rank: 42,
+        slug: "some slug"
+      })
+      |> Hearthstone.DeckTracker.create_rank()
+
+    rank
+  end
 end

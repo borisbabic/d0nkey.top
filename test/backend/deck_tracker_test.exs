@@ -289,4 +289,139 @@ defmodule Hearthstone.DeckTrackerTest do
 
     period
   end
+
+  alias Hearthstone.DeckTracker.Rank
+
+  @valid_attrs %{
+    auto_aggregate: true,
+    display: "some display",
+    include_in_deck_filters: true,
+    include_in_personal_filters: true,
+    max_legend_rank: 42,
+    max_rank: 42,
+    min_legend_rank: 42,
+    min_rank: 42,
+    slug: "some slug"
+  }
+  @update_attrs %{
+    auto_aggregate: false,
+    display: "some updated display",
+    include_in_deck_filters: false,
+    include_in_personal_filters: false,
+    max_legend_rank: 43,
+    max_rank: 43,
+    min_legend_rank: 43,
+    min_rank: 43,
+    slug: "some updated slug"
+  }
+  @invalid_attrs %{
+    auto_aggregate: nil,
+    display: nil,
+    include_in_deck_filters: nil,
+    include_in_personal_filters: nil,
+    max_legend_rank: nil,
+    max_rank: nil,
+    min_legend_rank: nil,
+    min_rank: nil,
+    slug: nil
+  }
+
+  describe "#paginate_ranks/1" do
+    test "returns paginated list of ranks" do
+      for _ <- 1..20 do
+        rank_fixture()
+      end
+
+      {:ok, %{ranks: ranks} = page} = DeckTracker.paginate_ranks(%{})
+
+      assert length(ranks) == 15
+      assert page.page_number == 1
+      assert page.page_size == 15
+      assert page.total_pages == 2
+      assert page.total_entries == 20
+      assert page.distance == 5
+      assert page.sort_field == "inserted_at"
+      assert page.sort_direction == "desc"
+    end
+  end
+
+  describe "#list_ranks/0" do
+    test "returns all ranks" do
+      rank = rank_fixture()
+      assert DeckTracker.list_ranks() == [rank]
+    end
+  end
+
+  describe "#get_rank!/1" do
+    test "returns the rank with given id" do
+      rank = rank_fixture()
+      assert DeckTracker.get_rank!(rank.id) == rank
+    end
+  end
+
+  describe "#create_rank/1" do
+    test "with valid data creates a rank" do
+      assert {:ok, %Rank{} = rank} = DeckTracker.create_rank(@valid_attrs)
+      assert rank.auto_aggregate == true
+      assert rank.display == "some display"
+      assert rank.include_in_deck_filters == true
+      assert rank.include_in_personal_filters == true
+      assert rank.max_legend_rank == 42
+      assert rank.max_rank == 42
+      assert rank.min_legend_rank == 42
+      assert rank.min_rank == 42
+      assert rank.slug == "some slug"
+    end
+
+    test "with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = DeckTracker.create_rank(@invalid_attrs)
+    end
+  end
+
+  describe "#update_rank/2" do
+    test "with valid data updates the rank" do
+      rank = rank_fixture()
+      assert {:ok, rank} = DeckTracker.update_rank(rank, @update_attrs)
+      assert %Rank{} = rank
+      assert rank.auto_aggregate == false
+      assert rank.display == "some updated display"
+      assert rank.include_in_deck_filters == false
+      assert rank.include_in_personal_filters == false
+      assert rank.max_legend_rank == 43
+      assert rank.max_rank == 43
+      assert rank.min_legend_rank == 43
+      assert rank.min_rank == 43
+      assert rank.slug == "some updated slug"
+    end
+
+    test "with invalid data returns error changeset" do
+      rank = rank_fixture()
+      assert {:error, %Ecto.Changeset{}} = DeckTracker.update_rank(rank, @invalid_attrs)
+      assert rank == DeckTracker.get_rank!(rank.id)
+    end
+  end
+
+  describe "#delete_rank/1" do
+    test "deletes the rank" do
+      rank = rank_fixture()
+      assert {:ok, %Rank{}} = DeckTracker.delete_rank(rank)
+      assert_raise Ecto.NoResultsError, fn -> DeckTracker.get_rank!(rank.id) end
+    end
+  end
+
+  describe "#change_rank/1" do
+    test "returns a rank changeset" do
+      rank = rank_fixture()
+      assert %Ecto.Changeset{} = DeckTracker.change_rank(rank)
+    end
+  end
+
+  def rank_fixture(attrs \\ %{}) do
+    {:ok, rank} =
+      attrs
+      |> Enum.into(@valid_attrs)
+      |> DeckTracker.create_rank()
+
+    rank
+  end
 end
