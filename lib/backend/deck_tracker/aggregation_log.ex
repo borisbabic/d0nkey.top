@@ -2,6 +2,7 @@ defmodule Hearthstone.DeckTracker.AggregationLog do
   @moduledoc "Holds a log aggregations including what was logged"
   use Ecto.Schema
 
+  @primary_key false
   schema "logs_dt_aggregation" do
     field :formats, {:array, :integer}
     field :ranks, {:array, :string}

@@ -613,4 +613,11 @@ defmodule Util do
 
     start
   end
+
+  def keyfind_value(list, key, position \\ 0, default \\ nil) when is_list(list) do
+    case List.keyfind(list, key, position, default) do
+      {^key, value} -> value
+      _ -> default
+    end
+  end
 end
