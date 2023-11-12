@@ -1,9 +1,10 @@
 defmodule Components.Helper do
   use Phoenix.Component
 
-  def warning_triangle(assigns \\ %{}) do
+  def warning_triangle(assigns \\ %{before: nil}) do
     ~H"""
-      <span class="icon is-small">
+    <span :if={@before}><%= @before %></span>
+    <span class="icon is-small">
         <i class="fas fa-exclamation-triangle"></i>
       </span>
     """

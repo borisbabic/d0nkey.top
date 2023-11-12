@@ -24,7 +24,14 @@ defmodule Components.Filter.PeriodDropdown do
   end
 
   def options(context) do
-    DeckTracker.period_filters(context)
+    %{periods: aggregated} = DeckTracker.get_latest_agg_log_entry()
+
+    for %{slug: slug, display: d} <- DeckTracker.periods_for_filters(context) do
+      display =
+        if slug in aggregated, do: d, else: Components.Helper.warning_triangle(%{before: d})
+
+      {slug, display}
+    end
   end
 
   def default(_context \\ :public) do
