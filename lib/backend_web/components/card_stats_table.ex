@@ -27,7 +27,7 @@ defmodule Components.CardStatsTable do
         assigns.live_view,
         Map.merge(assigns.criteria, assigns.filters),
         assigns.path_params,
-        assigns.criteria
+        Map.merge(assigns.criteria, assigns.filters)
       )
     }
   end
@@ -41,11 +41,13 @@ defmodule Components.CardStatsTable do
           options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Mull Count"}
           param={"min_mull_count"}
+          normalizer={&Util.to_int_or_orig/1}
           selected_as_title={false}/>
         <LivePatchDropdown
           options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Drawn Count"}
           param={"min_drawn_count"}
+          normalizer={&Util.to_int_or_orig/1}
           selected_as_title={false} />
         <LivePatchDropdown
           options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
@@ -111,13 +113,12 @@ defmodule Components.CardStatsTable do
 
                 </td>
               <td>{to_percent(Util.get(cs, :mull_impact))}</td>
-              <td :if={show_counts(@filters)}>{Util.get(cs, :mull_count)}</td>
+              <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
               <td>{to_percent(Util.get(cs, :kept_impact))}</td>
-              <td :if={show_counts(@filters)}>{Util.get(cs, :kept_count)}</td>
-
+              <td :if={show_counts(@filters)}>{Util.get(cs, :kept_total)}</td>
               <td>{to_percent(Util.get(cs, :drawn_impact))}</td>
-              <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_count)}</td>
+              <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_total)}</td>
             </tr>
           </tbody>
         </table>
@@ -204,8 +205,8 @@ defmodule Components.CardStatsTable do
     drawn_min = Map.get(filters, "min_drawn_count", default_min)
 
     Enum.flat_map(stats, fn cs ->
-      mull = Util.get(cs, :mull_count)
-      drawn = Util.get(cs, :drawn_count)
+      mull = Util.get(cs, :mull_total)
+      drawn = Util.get(cs, :drawn_total)
       card = card(Util.get(cs, :card_id))
 
       if mull > mull_min and drawn > drawn_min and card != nil do
@@ -247,12 +248,12 @@ defmodule Components.CardStatsTable do
   defp get_sorter(by) do
     case to_string(by) do
       "card" -> &Util.get(&1.card, :name)
-      "mull_count" -> &Util.get(&1, :mull_count)
+      "mull_count" -> &Util.get(&1, :mull_total)
       "drawn_impact" -> &Util.get(&1, :drawn_impact)
-      "drawn_count" -> &Util.get(&1, :drawn_count)
+      "drawn_count" -> &Util.get(&1, :drawn_total)
       "kept_percent" -> &Util.get(&1, :kept_percent)
       "kept_impact" -> &Util.get(&1, :kept_impact)
-      "kept_count" -> &Util.get(&1, :kept_count)
+      "kept_count" -> &Util.get(&1, :kept_total)
       _ -> &Util.get(&1, :mull_impact)
     end
   end
