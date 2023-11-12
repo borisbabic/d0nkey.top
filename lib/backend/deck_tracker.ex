@@ -399,7 +399,29 @@ defmodule Hearthstone.DeckTracker do
     |> where([player_deck: pd], not is_nil(pd.archetype))
   end
 
-  defp base_agg_deck_stats_query(criteria) do
+  def agg_deck_card_stats(criteria) do
+    base_agg_deck_card_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_agg_deck_card_stats_query() do
+    from(ag in AggregatedStats,
+      as: :agg_deck_stats,
+      left_join: pd in assoc(ag, :deck),
+      as: :player_deck,
+      select: %{
+        wins: ag.wins,
+        losses: ag.losses,
+        total: ag.total,
+        winrate: ag.winrate,
+        deck_id: ag.deck_id,
+        card_stats: ag.card_stats
+      }
+    )
+  end
+
+  defp base_agg_deck_stats_query() do
     from(ag in AggregatedStats,
       as: :agg_deck_stats,
       join: pd in assoc(ag, :deck),
@@ -419,7 +441,7 @@ defmodule Hearthstone.DeckTracker do
 
     with :nomatch <- List.keyfind(list_criteria, "force_fresh", 0, :nomatch),
          {:ok, new_criteria} <- convert_deck_criteria_to_aggregate(list_criteria) do
-      {base_agg_deck_stats_query(new_criteria), new_criteria}
+      {base_agg_deck_stats_query(), new_criteria}
     else
       r ->
         {base_deck_stats_query(), list_criteria}
@@ -972,11 +994,12 @@ defmodule Hearthstone.DeckTracker do
   end
 
   defp compose_games_query({"player_deck_id", deck_id}, query = @agg_deck_query) do
+    actual_deck_id = deck_id || @nil_agg_deck_id
+
     query
     |> where(
       [agg_deck_stats: ag],
-      fragment("COALESCE (?, ?)", ag.deck_id, ^@nil_agg_deck_id) ==
-        fragment("COALESCE (?, ?)", ^deck_id, ^@nil_agg_deck_id)
+      fragment("COALESCE (?, ?)", ag.deck_id, ^@nil_agg_deck_id) == ^actual_deck_id
     )
   end
 

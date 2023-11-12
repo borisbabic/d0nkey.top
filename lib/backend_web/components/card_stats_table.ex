@@ -9,6 +9,7 @@ defmodule Components.CardStatsTable do
   alias Components.DecksExplorer
   alias Hearthstone.DeckTracker
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone
 
   prop(card_stats, :list)
   prop(filters, :map, default: %{})
@@ -105,18 +106,18 @@ defmodule Components.CardStatsTable do
               <td>
 
               <div class="decklist_card_container">
-                <DecklistCard deck_class="NEUTRAL" card={cs.card} count={count(cs, @filters)}/>
+                <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)}/>
               </div>
 
                 </td>
-              <td>{to_percent(cs.mull_impact)}</td>
-              <td :if={show_counts(@filters)}>{cs.mull_count}</td>
+              <td>{to_percent(Util.get(cs, :mull_impact))}</td>
+              <td :if={show_counts(@filters)}>{Util.get(cs, :mull_count)}</td>
 
-              <td>{to_percent(cs.kept_impact)}</td>
-              <td :if={show_counts(@filters)}>{cs.kept_count}</td>
+              <td>{to_percent(Util.get(cs, :kept_impact))}</td>
+              <td :if={show_counts(@filters)}>{Util.get(cs, :kept_count)}</td>
 
-              <td>{to_percent(cs.drawn_impact)}</td>
-              <td :if={show_counts(@filters)}>{cs.drawn_count}</td>
+              <td>{to_percent(Util.get(cs, :drawn_impact))}</td>
+              <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_count)}</td>
             </tr>
           </tbody>
         </table>
@@ -147,8 +148,19 @@ defmodule Components.CardStatsTable do
   defp flip_direction(dir) when dir in [:desc, "desc"], do: "asc"
   defp flip_direction(_), do: "desc"
 
-  def count(%{mull_impact: mi, drawn_impact: di}, filters) do
-    num = if Map.get(filters, "sort_by") in [nil, "mull_impact", "mull_count"], do: mi, else: di
+  def count(cs, filters) do
+    mi = Util.get(cs, :mull_impact)
+    di = Util.get(cs, :drawn_impact)
+    ki = Util.get(cs, :kept_impact)
+
+    sort_filters = Map.get(filters, "sort_by", "mull_impact")
+
+    num =
+      cond do
+        sort_filters =~ "drawn_" -> di
+        sort_filters =~ "kept_" -> ki
+        true -> mi
+      end
 
     cond do
       num > 0 -> "↑"
@@ -165,7 +177,7 @@ defmodule Components.CardStatsTable do
 
   defp filter_same_deck(stats, filters) do
     with id when not is_nil(id) <- deck_id(filters),
-         deck = %Deck{} <- Backend.Hearthstone.get_deck(id) do
+         deck = %Deck{} <- Hearthstone.get_deck(id) do
       filter_cards(stats, Deck.unique_cards_with_sideboards(deck))
     else
       _ -> stats
@@ -173,10 +185,13 @@ defmodule Components.CardStatsTable do
   end
 
   defp filter_cards(stats, cards) do
-    canonical = Enum.map(cards, &Backend.Hearthstone.canonical_id/1)
+    canonical = Enum.map(cards, &Hearthstone.canonical_id/1)
 
     stats
-    |> Enum.filter(&(&1.card_id && Backend.Hearthstone.canonical_id(&1.card_id) in canonical))
+    |> Enum.filter(fn cs ->
+      card_id = Util.get(cs, :card_id)
+      card_id && Hearthstone.canonical_id(card_id) in canonical
+    end)
   end
 
   defp deck_id(%{"deck_id" => d}), do: d
@@ -188,13 +203,17 @@ defmodule Components.CardStatsTable do
     mull_min = Map.get(filters, "min_mull_count", default_min)
     drawn_min = Map.get(filters, "min_drawn_count", default_min)
 
-    for %{mull_count: mull, drawn_count: drawn, card_id: card_id} = cs <- stats,
-        mull > mull_min,
-        drawn > drawn_min,
-        card = card(card_id),
-        card != nil do
-      Map.put(cs, :card, card)
-    end
+    Enum.flat_map(stats, fn cs ->
+      mull = Util.get(cs, :mull_count)
+      drawn = Util.get(cs, :drawn_count)
+      card = card(Util.get(cs, :card_id))
+
+      if mull > mull_min and drawn > drawn_min and card != nil do
+        [Map.put(cs, :card, card)]
+      else
+        []
+      end
+    end)
   end
 
   def card(card_id), do: Backend.Hearthstone.CardBag.card(card_id)
@@ -227,14 +246,14 @@ defmodule Components.CardStatsTable do
 
   defp get_sorter(by) do
     case to_string(by) do
-      "card" -> & &1.card.name
-      "mull_count" -> & &1.mull_count
-      "drawn_impact" -> & &1.drawn_impact
-      "drawn_count" -> & &1.drawn_count
-      "kept_percent" -> & &1.kept_percent
-      "kept_impact" -> & &1.kept_impact
-      "kept_count" -> & &1.kept_count
-      _ -> & &1.mull_impact
+      "card" -> &Util.get(&1.card, :name)
+      "mull_count" -> &Util.get(&1, :mull_count)
+      "drawn_impact" -> &Util.get(&1, :drawn_impact)
+      "drawn_count" -> &Util.get(&1, :drawn_count)
+      "kept_percent" -> &Util.get(&1, :kept_percent)
+      "kept_impact" -> &Util.get(&1, :kept_impact)
+      "kept_count" -> &Util.get(&1, :kept_count)
+      _ -> &Util.get(&1, :mull_impact)
     end
   end
 
@@ -259,6 +278,7 @@ defmodule Components.CardStatsTable do
     %{
       "period" => PeriodDropdown.default(context),
       "rank" => RankDropdown.default(context),
+      "opponent_class" => "any",
       "format" => FormatDropdown.default(context)
     }
   end

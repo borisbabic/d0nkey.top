@@ -22,7 +22,9 @@ defmodule BackendWeb.CardStatsLive do
   end
 
   defp stats(filters) do
-    Hearthstone.DeckTracker.merge_card_deck_stats(filters)
+    with [%{card_stats: card_stats}] <- Hearthstone.DeckTracker.agg_deck_card_stats(filters) do
+      card_stats
+    end
   end
 
   def handle_params(params, _uri, socket) do
@@ -38,10 +40,11 @@ defmodule BackendWeb.CardStatsLive do
     {:noreply, assign(socket, filters: filters, criteria: criteria)}
   end
 
-  def add_deck_id(criteria, %{"deck_id" => id}), do: Map.put(criteria, "player_deck_id", id)
+  def add_deck_id(criteria, %{"deck_id" => id}),
+    do: Map.put(criteria, "player_deck_id", Util.to_int_or_orig(id))
 
   def add_deck_id(criteria, %{"player_deck_id" => id}),
-    do: Map.put(criteria, "player_deck_id", id)
+    do: Map.put(criteria, "player_deck_id", Util.to_int_or_orig(id))
 
   def add_deck_id(criteria, _), do: criteria
 end
