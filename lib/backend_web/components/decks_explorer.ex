@@ -138,6 +138,7 @@ defmodule Components.DecksExplorer do
       {"order_by", assigns.default_order_by},
       {"period", assigns.default_period || PeriodDropdown.default(assigns.filter_context)},
       {"game_type", [7]},
+      {"opponent_class", "any"},
       {"archetype", "any"},
       {"rank", assigns.default_rank || RankDropdown.default(assigns.filter_context)}
     ]

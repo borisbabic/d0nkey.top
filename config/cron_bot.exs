@@ -29,5 +29,6 @@ config :backend, QuantumScheduler,
     {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     {"*/8 * * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end},
     # {"3 * * * *", fn -> Hearthstone.DeckTracker.DeckStatsAggregator.enqueue_last_hour() end},
+    {"23 */2 * * *", fn -> Hearthstone.DeckTracker.refresh_agg_stats() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
