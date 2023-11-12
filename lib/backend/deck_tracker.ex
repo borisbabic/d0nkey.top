@@ -1021,7 +1021,16 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_rank", rank}, query),
     do: query |> where([game: g], g.player_rank == ^rank)
 
-  defp compose_games_query({"archetype", "any"}, query), do: query
+  defp compose_games_query({"archetype", archetype}, query = @agg_deck_query) do
+    arch = archetype || @nil_agg_archetype
+
+    query
+    |> where(
+      [agg_deck_stats: ag],
+      fragment("COALESCE(?, ?)", ag.archetype, @nil_agg_archetype) == ^arch
+    )
+  end
+
   defp compose_games_query({"archetype", "any"}, query), do: query
 
   defp compose_games_query({"archetype", "other"}, query),
