@@ -15,6 +15,7 @@ defmodule BackendWeb.CardStatsLive do
     ~F"""
       <div>
         <div class="title is-2"> Card Stats </div>
+        <div :if={deck_id = deck_id(@criteria)} class="subtitle is-5"><a href={~p"/deck/#{deck_id}"}>Deck Stats</a></div>
       <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
         <CardStatsTable id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
       </div>
@@ -26,6 +27,9 @@ defmodule BackendWeb.CardStatsLive do
       card_stats
     end
   end
+
+  defp deck_id(%{"player_deck_id" => deck_id}), do: deck_id
+  defp deck_id(_), do: nil
 
   def handle_params(params, _uri, socket) do
     default = CardStatsTable.default_criteria(:public)
