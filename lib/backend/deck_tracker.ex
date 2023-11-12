@@ -443,8 +443,8 @@ defmodule Hearthstone.DeckTracker do
          {:ok, new_criteria} <- convert_deck_criteria_to_aggregate(list_criteria) do
       {base_agg_deck_stats_query(), new_criteria}
     else
-      r ->
-        {base_deck_stats_query(), list_criteria}
+      _ ->
+        {base_deck_stats_query(), List.keydelete(list_criteria, "force_fresh", 0)}
     end
   end
 
@@ -1067,6 +1067,8 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"opponent_class", class}, query = @old_aggregated_query),
     do: query |> where([deck_stats: ds], ds.opponent_class == ^String.upcase(class))
+
+  defp compose_games_query({"opponent_class", "any"}, query), do: query
 
   defp compose_games_query({"opponent_class", class}, query),
     do: query |> where([game: g], g.opponent_class == ^String.upcase(class))
