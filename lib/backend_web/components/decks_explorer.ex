@@ -200,6 +200,7 @@ defmodule Components.DecksExplorer do
       "no_archetype",
       "player_deck_excludes",
       "use_aggregated",
+      "force_fresh",
       "player_deck_archetype"
     ])
     |> parse_int([
