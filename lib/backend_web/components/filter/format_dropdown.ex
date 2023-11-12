@@ -24,7 +24,14 @@ defmodule Components.Filter.FormatDropdown do
   end
 
   def options(context) do
-    DeckTracker.format_filters(context)
+    %{formats: aggregated} = DeckTracker.get_latest_agg_log_entry()
+
+    for %{value: value, display: d} <- DeckTracker.formats_for_filters(context) do
+      display =
+        if value in aggregated, do: d, else: Components.Helper.warning_triangle(%{before: d})
+
+      {value, display}
+    end
   end
 
   def default(context \\ :public) do

@@ -1403,9 +1403,14 @@ defmodule Hearthstone.DeckTracker do
 
   @spec format_filters(:public | :personal) :: [{value :: String.t(), display :: String.t()}]
   def format_filters(context) do
+    formats_for_filters(context)
+    |> Enum.map(&Format.to_option/1)
+  end
+
+  @spec formats_for_filters(:public | :personal) :: [Format.t()]
+  def formats_for_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]
     |> formats()
-    |> Enum.map(&Format.to_option/1)
   end
 
   def get_format_by_value(value) do
@@ -1461,9 +1466,14 @@ defmodule Hearthstone.DeckTracker do
   ######
   @spec rank_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
   def rank_filters(context) do
+    ranks_for_filters(context)
+    |> Enum.map(&Rank.to_option/1)
+  end
+
+  @spec ranks_for_filters(:public | :personal) :: [Rank.t()]
+  def ranks_for_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]
     |> ranks()
-    |> Enum.map(&Rank.to_option/1)
   end
 
   def get_rank_by_slug(slug) do
@@ -1519,9 +1529,14 @@ defmodule Hearthstone.DeckTracker do
   ########################
   @spec period_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
   def period_filters(context) do
+    periods_for_filters(context)
+    |> Enum.map(&Period.to_option/1)
+  end
+
+  @spec periods_for_filters(:public | :personal) :: [Period.t()]
+  def periods_for_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]
     |> periods()
-    |> Enum.map(&Period.to_option/1)
   end
 
   def get_period_by_slug(slug) do

@@ -24,7 +24,12 @@ defmodule Components.Filter.RankDropdown do
   end
 
   def options(context) do
-    DeckTracker.rank_filters(context)
+    %{ranks: aggregated} = DeckTracker.get_latest_agg_log_entry()
+
+    for %{slug: slug, display: d} <- DeckTracker.ranks_for_filters(context) do
+      display = if slug in aggregated, do: d, else: Components.Helper.warning_triangle(d)
+      {slug, display}
+    end
   end
 
   def default(context \\ :public) do
