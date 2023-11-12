@@ -1442,18 +1442,26 @@ defmodule Hearthstone.DeckTracker do
   def default_period() do
     now = NaiveDateTime.utc_now()
     start = now |> Timex.shift(days: -10)
-    finish = now |> Timex.shift(hours: -5)
+    finish_patch = now |> Timex.shift(hours: -5)
+    finish_release = now
 
     criteria = [
-      {:type, "patch"},
-      {:in_range, :period_start, start, finish},
       {:order_by, {:period_start, :desc}}
     ]
 
-    case periods(criteria) do
-      [%{slug: slug} | _] -> slug
-      _ -> "past_week"
-    end
+    periods(criteria)
+    |> Enum.find_value("past_week", fn
+      %{type: "patch", period_start: ps, slug: slug} ->
+        NaiveDateTime.compare(ps, start) == :gt and NaiveDateTime.compare(ps, finish_patch) == :lt &&
+          slug
+
+      %{type: "release", period_start: ps, slug: slug} ->
+        NaiveDateTime.compare(ps, start) == :gt and
+          NaiveDateTime.compare(ps, finish_release) == :lt && slug
+
+      _ ->
+        false
+    end)
   end
 
   use Torch.Pagination,
