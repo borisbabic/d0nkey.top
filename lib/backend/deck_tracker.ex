@@ -1124,10 +1124,7 @@ defmodule Hearthstone.DeckTracker do
       do: compose_games_query({"format", unquote(id)}, query)
   end
 
-  defp compose_games_query({"format", "all"}, query),
-    do: query
-
-  defp compose_games_query({"format", nil}, query),
+  defp compose_games_query({"format", all}, query) when all in [nil, "", "all"],
     do: query
 
   defp compose_games_query({"format", format}, query = @agg_deck_query),
