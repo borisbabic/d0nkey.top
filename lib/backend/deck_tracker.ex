@@ -1840,17 +1840,17 @@ defmodule Hearthstone.DeckTracker do
 
   def refresh_agg_stats() do
     Repo.query!(
-      "
-    DO $$
-    DECLARE cnt int;
-    declare r record;
-    begin
-      SELECT count(1) INTO cnt FROM pg_stat_activity WHERE query LIKE '%REFRESH MATERIALIZED VIEW CONCURRENTLY dt_aggregated_stats%' and pid != pg_backend_pid();
-      IF cnt < 1 then
-        REFRESH MATERIALIZED VIEW CONCURRENTLY dt_aggregated_stats WITH DATA ;
-      END IF;
-    END $$;
-    ",
+      """
+      DO $$
+      DECLARE cnt int;
+      begin
+        SELECT count(1) INTO cnt FROM pg_stat_activity WHERE query LIKE '%update_dt_aggregated_stats%' and pid != pg_backend_pid();
+        IF cnt < 1 then
+          PERFORM update_dt_aggregated_stats();
+          INSERT INTO logs_dt_aggregation (formats, ranks, periods, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), now() FROM public. dt_aggregated_stats;
+        END IF;
+      END $$;
+      """,
       [],
       timeout: :infinity
     )
