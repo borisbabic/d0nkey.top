@@ -31,7 +31,7 @@ defmodule Backend.Repo.Migrations.RecursiveAggStatsRefresh do
   end
 
   def drop_function() do
-    execute("DROP FUNCTION recursive_aggregation_refresh")
+    execute("DROP FUNCTION IF EXISTS recursive_aggregation_refresh")
   end
 
   def create_trigger() do
