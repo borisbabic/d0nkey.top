@@ -36,6 +36,22 @@ defmodule BackendWeb.DecksLive do
 
   def handle_params(params, _uri, socket) do
     filters = DecksExplorer.filter_relevant(params)
-    {:noreply, assign(socket, :filters, filters)}
+    {:noreply, assign(socket, :filters, filters) |> assign_meta()}
   end
+
+  defp assign_meta(socket = %{assigns: %{filters: filters}}) do
+    format_part =
+      case Map.get(filters, "format") do
+        nil -> ""
+        f -> "#{Backend.Hearthstone.Deck.format_name(f)} "
+      end
+
+    socket
+    |> assign_meta_tags(%{
+      description: "Hearthstone #{format_part}Decks and Deck Stats",
+      title: "#{format_part}Decks "
+    })
+  end
+
+  defp assign_meta(socket), do: socket
 end

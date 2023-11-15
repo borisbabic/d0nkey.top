@@ -28,7 +28,9 @@ defmodule Components.Filter.RankDropdown do
 
     for %{slug: slug, display: d} <- DeckTracker.ranks_for_filters(context) do
       display =
-        if slug in aggregated, do: d, else: Components.Helper.warning_triangle(%{before: d})
+        if slug in (aggregated || []),
+          do: d,
+          else: Components.Helper.warning_triangle(%{before: d})
 
       {slug, display}
     end
