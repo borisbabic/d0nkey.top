@@ -155,7 +155,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def archetype(%{archetype: a}) when is_binary(a), do: a
+  def archetype(%{archetype: a}) when is_binary(a) or is_atom(a), do: a
   def archetype(deck), do: DeckArchetyper.archetype(deck)
 
   def name(deck) do

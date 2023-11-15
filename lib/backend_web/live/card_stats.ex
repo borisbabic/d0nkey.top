@@ -8,6 +8,7 @@ defmodule BackendWeb.CardStatsLive do
   data(user, :any)
   data(criteria, :map)
   data(filters, :map)
+  data(deck, :map)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_meta()}
@@ -18,6 +19,7 @@ defmodule BackendWeb.CardStatsLive do
         <div class="title is-2"> Card Stats </div>
         <div :if={@deck} class="subtitle is-5">
           <a href={~p"/deck/#{@deck.id}"}>Deck Stats</a>
+          <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?archetype=#{archetype}"}>Archetype Card Stats</a>
         </div>
       <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
         <CardStatsTable id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
@@ -67,12 +69,13 @@ defmodule BackendWeb.CardStatsLive do
     end
   end
 
-  def assign_meta(socket = %{assigns: %{deck: deck}}) do
+  def assign_deck(socket), do: assign(socket, :deck, nil)
+
+  def assign_meta(socket = %{assigns: %{deck: deck = %Deck{format: format}}}) do
     socket
     |> assign_meta_tags(%{
-      description:
-        "Hearthstone Cards Stats for #{Deck.format_name(deck.format)} #{Deck.name(deck)}",
-      title: "#{Deck.name(deck)} Deck Card Stats (#{Deck.format_name(deck.format)})"
+      description: "Hearthstone Cards Stats for #{Deck.format_name(format)} #{Deck.name(deck)}",
+      title: "#{Deck.name(deck)} Deck Card Stats (#{Deck.format_name(format)})"
     })
   end
 
