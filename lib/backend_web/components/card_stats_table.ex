@@ -38,13 +38,13 @@ defmodule Components.CardStatsTable do
         <PeriodDropdown id="period_dropdown" filter_context={@filter_context}/>
         <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
         <LivePatchDropdown
-          options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+          options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Mull Count"}
           param={"min_mull_count"}
           normalizer={&Util.to_int_or_orig/1}
           selected_as_title={false}/>
         <LivePatchDropdown
-          options={[0, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+          options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Drawn Count"}
           param={"min_drawn_count"}
           normalizer={&Util.to_int_or_orig/1}
@@ -171,11 +171,22 @@ defmodule Components.CardStatsTable do
     end
   end
 
-  def default_count_minimum(%{"deck_id" => _}), do: 0
-  def default_count_minimum(%{"player_deck_id" => _}), do: 0
+  @default_min_mull_count 50
+  @default_min_drawn_count 200
+  def default_minimum_counts(%{"deck_id" => _}),
+    do: %{"min_mull_count" => 0, "min_drawn_count" => 0}
 
-  def default_count_minimum(%{"min_count" => min_count}), do: min_count
-  def default_count_minimum(_), do: 200
+  def default_minimum_counts(%{"player_deck_id" => _}),
+    do: %{"min_mull_count" => 0, "min_drawn_count" => 0}
+
+  def default_minimum_counts(%{"min_count" => min_count}),
+    do: %{"min_mull_count" => 0, "min_drawn_count" => 0}
+
+  def default_minimum_counts(_),
+    do: %{
+      "min_mull_count" => @default_min_mull_count,
+      "min_drawn_count" => @default_min_drawn_count
+    }
 
   defp filter_same_deck(stats, filters) do
     with id when not is_nil(id) <- deck_id(filters),
@@ -201,9 +212,11 @@ defmodule Components.CardStatsTable do
   defp deck_id(_), do: nil
 
   def map_filter(stats, filters) do
-    default_min = default_count_minimum(filters)
-    mull_min = Map.get(filters, "min_mull_count", default_min)
-    drawn_min = Map.get(filters, "min_drawn_count", default_min)
+    %{"min_mull_count" => default_mull_min, "min_drawn_count" => default_drawn_min} =
+      default_minimum_counts(filters)
+
+    mull_min = Map.get(filters, "min_mull_count", default_mull_min)
+    drawn_min = Map.get(filters, "min_drawn_count", default_drawn_min)
 
     Enum.flat_map(stats, fn cs ->
       mull = Util.get(cs, :mull_total)
@@ -292,7 +305,9 @@ defmodule Components.CardStatsTable do
   end
 
   def with_default_filters(filters) do
-    Map.merge(default_filters(), filters)
+    default_filters()
+    |> Map.merge(default_minimum_counts(filters))
+    |> Map.merge(filters)
   end
 
   def handle_event(
