@@ -28,7 +28,9 @@ defmodule Components.Filter.FormatDropdown do
 
     for %{value: value, display: d} <- DeckTracker.formats_for_filters(context) do
       display =
-        if value in aggregated, do: d, else: Components.Helper.warning_triangle(%{before: d})
+        if value in (aggregated || []),
+          do: d,
+          else: Components.Helper.warning_triangle(%{before: d})
 
       {value, display}
     end

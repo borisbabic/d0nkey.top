@@ -129,7 +129,7 @@ defmodule BackendWeb.DeckLive do
     socket
     |> assign_meta_tags(%{
       description: Deck.deckcode(deck),
-      title: Deck.name(deck)
+      title: "#{Deck.name(deck)} #{Deck.format_name(deck.format)} Deck"
     })
   end
 

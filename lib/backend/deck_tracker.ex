@@ -205,7 +205,7 @@ defmodule Hearthstone.DeckTracker do
       !opponent_class? ->
         {:error, :no_opponent_class_for_agg}
 
-      format && Util.to_int_or_orig(format) not in formats ->
+      format && Util.to_int_or_orig(format) not in (formats || []) ->
         {:error, "format #{format} not aggregated"}
 
       rank not in ranks ->
