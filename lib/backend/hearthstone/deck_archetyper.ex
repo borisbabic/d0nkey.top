@@ -18,6 +18,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  @neutral_excavate ["Kobold Miner", "Burrow Buster"]
   def archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"}) do
     card_info = full_cards(c)
 
@@ -129,6 +130,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       spell_dh?(card_info) ->
         :"Spell Demon Hunter"
 
+      naga_dh?(card_info) ->
+        :"Naga Demon Hunter"
+
       menagerie?(card_info) ->
         :"Menagerie DH"
 
@@ -153,6 +157,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  def naga_dh?(ci) do
+    "Blindeye Sharpshooter" in ci.card_names and type_count(ci, "Naga") >= 4
   end
 
   def spell_dh?(c),
@@ -534,6 +542,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Rivendare, Warrider" in ci.card_names -> "Rivendare #{class_name}"
       tentacle(ci) -> "Tentacle #{class_name}"
       "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
+      ogre?(ci) -> "Ogre #{class_name}"
       true -> minion_type_fallback(ci, class_name, opts)
     end
   end
@@ -611,6 +620,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       mech_rogue?(card_info) ->
         :"Mech Rogue"
+
+      ogre?(card_info) ->
+        :"Ogre Rogue"
 
       mine_rogue?(card_info) ->
         :"Mine Rogue"
@@ -784,6 +796,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       implock?(card_info) ->
         :Implock
 
+      snek?(card_info) ->
+        :"Snek Warlock"
+
       control_warlock?(card_info) ->
         :"Control Warlock"
 
@@ -931,6 +946,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         archetype(%{class: class, cards: c, format: 2})
     end
+  end
+
+  defp snek?(ci) do
+    min_count?(ci, 4, [
+      "Smokestack",
+      "Mo'arg Drillfist",
+      "Tram Conductor Gerry" | @neutral_excavate
+    ])
   end
 
   defp weapon_rogue?(card_info) do
@@ -1586,6 +1609,18 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     full_cards
     |> Enum.flat_map(&Card.spell_schools/1)
     |> Enum.frequencies()
+  end
+
+  defp ogre?(ci) do
+    # Stupid API has one in the picture and one in the api
+    min_count?(ci, 2, [
+      "Ogre Gang Outlaw",
+      "Ogre-Gang Outlaw",
+      "Ogre Gang Rider",
+      "Ogre-Gang Rider",
+      "Ogre-Gang Ace",
+      "Ogre Gang Ace"
+    ]) and "Kingpin Pud" in ci.card_names
   end
 
   defp menagerie?(%{card_names: card_names}), do: "The One-Amalgam Band" in card_names
