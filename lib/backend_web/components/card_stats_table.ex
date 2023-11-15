@@ -76,19 +76,7 @@ defmodule Components.CardStatsTable do
               <th :if={show_counts(@filters)}>
               <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
                 {add_arrow("Mulligan Count", "mull_count", @filters)}
-              </a> 
-              </th>
-
-              <th>
-              <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
-                {add_arrow("Kept Impact", "kept_impact", @filters)}
               </a>
-            </th>
-
-              <th :if={show_counts(@filters)}>
-              <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
-                {add_arrow("Kept Count", "kept_count", @filters)}
-              </a> 
               </th>
 
               <th>
@@ -101,6 +89,18 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Drawn Count", "drawn_count", @filters)}
               </a>
             </th>
+
+              <th>
+              <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
+                {add_arrow("Kept Impact", "kept_impact", @filters)}
+              </a>
+            </th>
+
+              <th :if={show_counts(@filters)}>
+              <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
+                {add_arrow("Kept Count", "kept_count", @filters)}
+              </a>
+              </th>
 
           </thead>
           <tbody>
@@ -115,10 +115,11 @@ defmodule Components.CardStatsTable do
               <td>{to_percent(Util.get(cs, :mull_impact))}</td>
               <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
-              <td>{to_percent(Util.get(cs, :kept_impact))}</td>
-              <td :if={show_counts(@filters)}>{Util.get(cs, :kept_total)}</td>
               <td>{to_percent(Util.get(cs, :drawn_impact))}</td>
               <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_total)}</td>
+
+              <td>{to_percent(Util.get(cs, :kept_impact))}</td>
+              <td :if={show_counts(@filters)}>{Util.get(cs, :kept_total)}</td>
             </tr>
           </tbody>
         </table>
