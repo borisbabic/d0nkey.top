@@ -35,6 +35,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       plague_dk?(card_info) ->
         :"Plague DK"
 
+      excavate_dk?(card_info) ->
+        :"Excavate DK"
+
       aggro_dk?(card_info) ->
         :"Aggro DK"
 
@@ -51,8 +54,17 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         :"Murloc DK"
 
       true ->
-        fallbacks(card_info, "DK", ignore_types: ["Undead"])
+        fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  def excavate_dk?(ci) do
+    min_count?(ci, 4, [
+      "Pile of Bones",
+      "Reap What You Sow",
+      "Skeleton Crew",
+      "Harrowing Ox" | @neutral_excavate
+    ])
   end
 
   def plague_dk?(ci),
@@ -395,6 +407,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  def excavate_mage?(ci) do
+    min_count?(ci, 3, [
+      "Cryopreservation",
+      "Reliquary Researcher",
+      "Blastmage Miner" | @neutral_excavate
+    ])
+  end
+
   def rainbow_mage?(ci),
     do:
       min_count?(ci, 3, [
@@ -606,23 +626,23 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Rogue"
 
-      miracle_rogue?(card_info) && "Mimiron, the Mastermind" in card_info.card_names ->
-        :"Mimicle Rogue"
-
-      coc_rogue?(card_info) && mech_rogue?(card_info) ->
-        :"Mech Rogue"
-
-      coc_rogue?(card_info) && miracle_rogue?(card_info) ->
-        :"Cocacle Rogue"
-
-      coc_rogue?(card_info) && thief_rogue?(card_info) ->
-        :"Coc Thief Rogue"
-
       mech_rogue?(card_info) ->
         :"Mech Rogue"
 
+      miracle_rogue?(card_info) ->
+        :"Miracle Rogue"
+
+      coin_rogue?(card_info) and secret_rogue?(card_info) ->
+        :"Secret Coin Rogue"
+
+      coin_rogue?(card_info) ->
+        :"Coin Rogue"
+
       ogre?(card_info) ->
         :"Ogre Rogue"
+
+      excavate_rogue?(card_info) ->
+        :"Drilling Rogue"
 
       mine_rogue?(card_info) ->
         :"Mine Rogue"
@@ -669,6 +689,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp excavate_rogue?(ci) do
+    min_count?(ci, 3, [
+      "Antique Flinger",
+      "Drilly the Kid",
+      "Bloodrock Co Shovel",
+      "Bloodrock Co. Shovel" | @neutral_excavate
+    ])
+  end
+
+  defp coin_rogue?(ci) do
+    "Wishing Well" in ci.card_names and
+      min_count?(ci, 2, ["Dart Throw", "Greedy Partner", "Bounty Wrangler"])
   end
 
   defp miracle_rogue?(ci),
@@ -763,6 +797,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       phylactery_warlock?(card_info) ->
         :"Phylactery Warlock"
 
+      snek?(card_info) ->
+        :"Snek Warlock"
+
       implock?(card_info) && abyssal_warlock?(card_info) && chad?(card_info) ->
         :"Abyssal Chimplock"
 
@@ -796,8 +833,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       implock?(card_info) ->
         :Implock
 
-      snek?(card_info) ->
-        :"Snek Warlock"
+      sludgelock?(card_info) ->
+        :"Sludge Warlock"
 
       control_warlock?(card_info) ->
         :"Control Warlock"
@@ -811,6 +848,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp sludgelock?(ci) do
+    min_count?(ci, 3, [
+      "Tram Mechanic",
+      "Disposal Assistant",
+      "Sludge On Wheels",
+      "Pop'gar The Putrid"
+    ])
   end
 
   defp insanity_warlock?(ci) do
@@ -850,6 +896,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       n_roll?(card_info) -> :"Rock 'n' Roll Warrior"
       warrior_aoe?(card_info) -> :"Control Warrior"
       "Odyn, Prime Designate" in card_info.card_names -> :"Odyn Warrior"
+      excavate_warrior?(card_info) -> :"Excavate Warrior"
       riff_warrior?(card_info) -> :"Riff Warrior"
       weapon_warrior?(card_info) -> :"Weapon Warrior"
       murloc?(card_info) -> :"Murloc Warrior"
@@ -857,6 +904,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true -> fallbacks(card_info, "Warrior")
     end
   end
+
+  defp excavate_warrior?(ci),
+    do:
+      min_count?(ci, 3, [
+        "Blast Charge",
+        "Reinforced Plating",
+        "Slagmaw the Slumbering",
+        "Badlands Brawler" | @neutral_excavate
+      ])
 
   defp riff_warrior?(ci), do: min_count?(ci, 3, ["Verse Riff", "Chorus Riff", "Bridge Riff"])
   defp n_roll?(card_info), do: "Blackrock 'n' Roll" in card_info.card_names
