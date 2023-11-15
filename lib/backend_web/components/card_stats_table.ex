@@ -90,13 +90,13 @@ defmodule Components.CardStatsTable do
               </a>
             </th>
 
-              <th>
+              <th class="is-hidden-mobile">
               <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
                 {add_arrow("Kept Impact", "kept_impact", @filters)}
               </a>
             </th>
 
-              <th :if={show_counts(@filters)}>
+              <th :if={show_counts(@filters)} class="is-hidden-mobile">
               <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
                 {add_arrow("Kept Count", "kept_count", @filters)}
               </a>
@@ -118,8 +118,8 @@ defmodule Components.CardStatsTable do
               <td>{to_percent(Util.get(cs, :drawn_impact))}</td>
               <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_total)}</td>
 
-              <td>{to_percent(Util.get(cs, :kept_impact))}</td>
-              <td :if={show_counts(@filters)}>{Util.get(cs, :kept_total)}</td>
+              <td class="is-hidden-mobile">{to_percent(Util.get(cs, :kept_impact))}</td>
+              <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
             </tr>
           </tbody>
         </table>
