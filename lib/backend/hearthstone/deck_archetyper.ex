@@ -272,6 +272,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       big_beast_hunter?(card_info) ->
         :"Big Beast Hunter"
 
+      cleave_hunter?(card_info) ->
+        :"Cleave Hunter"
+
       beast_hunter?(card_info) ->
         :"Beast Hunter"
 
