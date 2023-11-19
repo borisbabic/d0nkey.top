@@ -60,7 +60,7 @@ defmodule Components.CardStatsTable do
           options={DecksExplorer.class_options("Any Class", "VS ")}
           title={"Opponent's Class"}
           param={"opponent_class"} />
-        <table class="table is-fullwidth is-striped is-narrow">
+        <table class="table is-fullwidth is-striped is-gapless">
           <thead>
             <th>
               <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")}>

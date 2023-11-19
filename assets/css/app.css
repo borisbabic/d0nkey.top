@@ -13,6 +13,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.table.is-gapless td, .table.is-gapless th {
+  padding: 0;
+}
 
 :root {
   /*--color-common: rgb(255, 255, 255);*/
