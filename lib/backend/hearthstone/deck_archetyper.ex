@@ -381,6 +381,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       mech_mage?(card_info) ->
         :"Mech Mage"
 
+      excavate_mage?(card_info) ->
+        :"Excavate Mage"
+
       burn_mage?(card_info) && skeleton_mage?(card_info) ->
         :"Burn Spooky Mage"
 
@@ -407,7 +410,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
-  def excavate_mage?(ci) do
+  defp excavate_mage?(ci) do
     min_count?(ci, 3, [
       "Cryopreservation",
       "Reliquary Researcher",
@@ -477,19 +480,23 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     min_count?(card_info, 1, ["Tour Guide", "Hawkstrider Rancher", "Magatha, Bane of Music"])
   end
 
-  defp aggro_paladin?(card_info),
-    do:
-      min_count?(card_info, 5, [
-        "For Quel'Thalas!",
-        "Seal of Blood",
-        "Blessing of Kings",
-        "Sunwing Squawker",
-        "Foul Egg",
-        "Sanguine Soldier",
-        "Blood Matriarch Liadrin",
-        "Nerubian Egg",
-        "Righteous Protector"
-      ])
+  defp aggro_paladin?(card_info) do
+    min_count?(card_info, 5, [
+      "For Quel'Thalas!",
+      "Seal of Blood",
+      "Blessing of Kings",
+      "Sunwing Squawker",
+      "Foul Egg",
+      "Sanguine Soldier",
+      "Blood Matriarch Liadrin",
+      "Sinstone Totem",
+      "Crooked Cook",
+      "Sea Giant",
+      "Buffet Biggun",
+      "Nerubian Egg",
+      "Righteous Protector"
+    ])
+  end
 
   def archetype(%{format: 2, cards: c, class: "PRIEST"}) do
     card_info = full_cards(c)
@@ -797,7 +804,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       phylactery_warlock?(card_info) ->
         :"Phylactery Warlock"
 
-      snek?(card_info) ->
+      snek?(card_info) && neutral_bouncers?(card_info) ->
         :"Snek Warlock"
 
       implock?(card_info) && abyssal_warlock?(card_info) && chad?(card_info) ->
@@ -836,6 +843,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       sludgelock?(card_info) ->
         :"Sludge Warlock"
 
+      snek?(card_info) ->
+        :"Snek Warlock"
+
       control_warlock?(card_info) ->
         :"Control Warlock"
 
@@ -850,12 +860,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  defp neutral_bouncers?(ci, min_count \\ 2) do
+    min_count?(ci, min_count, ["Youthful Brewmaster", "Saloon Brewmaster", "Zola the Gorgon"])
+  end
+
   defp sludgelock?(ci) do
     min_count?(ci, 3, [
       "Tram Mechanic",
       "Disposal Assistant",
-      "Sludge On Wheels",
-      "Pop'gar The Putrid"
+      "Sludge on Wheels",
+      "Pop'gar the Putrid"
     ])
   end
 
@@ -1240,6 +1254,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Blood Treant",
         "Elder Nadox"
       ])
+
+  defp cleave_hunter?(card_info) do
+    min_count?(card_info, 3, ["Hollow Hound", "Stonebound Gargon", "Always a Bigger Jormungar"]) &&
+      min_count?(card_info, 2, [
+        "Absorbent Parasite",
+        "Beastial Madness",
+        "Messenger Buzzard",
+        "Hope of Quel'Thalas"
+      ])
+  end
 
   defp arcane_hunter?(card_info),
     do:
