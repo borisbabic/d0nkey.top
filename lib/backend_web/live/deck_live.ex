@@ -6,6 +6,7 @@ defmodule BackendWeb.DeckLive do
   alias Components.DeckStreamingInfo
   alias Components.Decklist
   alias Components.DeckCard
+  alias Components.CardStatsTable
   alias Components.DeckStatsTable
   alias Components.ReplayExplorer
   alias Backend.DeckInteractionTracker, as: Tracker
@@ -15,6 +16,8 @@ defmodule BackendWeb.DeckLive do
   data(streamer_decks, :any)
   data(user, :any)
   data(deck_stats_params, :map)
+  data(card_stats_params, :map)
+  data(path_params, :map)
   data(filters, :any)
 
   def mount(_, session, socket) do
@@ -40,12 +43,21 @@ defmodule BackendWeb.DeckLive do
       end
 
     deck_stats_params = params |> Map.take(DeckStatsTable.param_keys())
+    card_stats_params = params |> CardStatsTable.filter_relevant()
+
+    path_params =
+      case deck do
+        %{id: id} when is_integer(id) -> [to_string(id)]
+        _ -> [deck_raw]
+      end
 
     {
       :noreply,
       socket
       |> assign(deck: deck)
       |> assign_meta()
+      |> assign(:path_params, path_params)
+      |> assign(:card_stats_params, card_stats_params)
       |> assign(:deck_stats_params, deck_stats_params)
       |> assign_filters(params)
     }
@@ -78,7 +90,10 @@ defmodule BackendWeb.DeckLive do
             </DeckCard>
           </div>
           <div :if={nil != @deck.id} class="column is-narrow-mobile">
-            <DeckStatsTable id="deck_stats" deck_id={@deck.id} live_view={__MODULE__} path_params={[to_string(@deck.id)]} params={@deck_stats_params} />
+            <CardStatsTable id="card_stats" full_page={false} live_view={__MODULE__} path_params={@path_params} params={@card_stats_params} />
+          </div>
+          <div :if={nil != @deck.id} class="column is-narrow-mobile">
+            <DeckStatsTable id="deck_stats" deck_id={@deck.id} live_view={__MODULE__} path_params={@path_params} params={@deck_stats_params} />
           </div>
           <div :if={false} :if={nil != @deck.id} class="column is-narrow-mobile">
             <ReplayExplorer

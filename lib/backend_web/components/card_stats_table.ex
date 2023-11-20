@@ -18,12 +18,14 @@ defmodule Components.CardStatsTable do
   prop(live_view, :module, required: true)
   prop(path_params, :any, default: nil)
   prop(user, :map, from_context: :user)
+  prop(full_page, :boolean, default: true)
 
   def update(assigns, socket) do
     {
       :ok,
       socket
       |> assign(assigns)
+      |> assign(card_stats: card_stats(assigns.criteria))
       |> LivePatchDropdown.update_context(
         assigns.live_view,
         Map.merge(assigns.criteria, assigns.filters),
@@ -36,32 +38,36 @@ defmodule Components.CardStatsTable do
   def render(assigns) do
     ~F"""
       <div>
-        <PeriodDropdown id="period_dropdown" filter_context={@filter_context}/>
-        <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
+        <PeriodDropdown id={"#{@id}_cs_period_dropdown"} filter_context={@filter_context}/>
+        <FormatDropdown :if={@full_page} id={"#{@id}_cs_format_dropdown"} filter_context={@filter_context} />
         <LivePatchDropdown
+          :if={@full_page}
           options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Mull Count"}
           param={"min_mull_count"}
           normalizer={&Util.to_int_or_orig/1}
           selected_as_title={false}/>
         <LivePatchDropdown
+          :if={@full_page}
           options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
           title={"Min Drawn Count"}
           param={"min_drawn_count"}
           normalizer={&Util.to_int_or_orig/1}
           selected_as_title={false} />
         <LivePatchDropdown
+          :if={@full_page}
           options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
           title={"Show Counts"}
           param={"show_counts"}
           selected_as_title={true} />
-        <RankDropdown id="rank_dropdown" fitler_context={@filter_context}/>
+        <RankDropdown id={"#{@id}_cs_rank_dropdown"} fitler_context={@filter_context}/>
 
         <LivePatchDropdown
           options={DecksExplorer.class_options("Any Class", "VS ")}
           title={"Opponent's Class"}
           param={"opponent_class"} />
-        <table class="table is-fullwidth is-striped is-gapless">
+
+        <table class={"table", "is-striped", "is-narrower", "is-fullwidth": @full_page}>
           <thead>
             <th>
               <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")}>
@@ -74,7 +80,7 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Mulligan Impact", "mull_impact", @filters, true)}
               </a>
             </th>
-              <th :if={show_counts(@filters)}>
+              <th :if={show_counts(@filters) && @full_page}>
               <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
                 {add_arrow("Mulligan Count", "mull_count", @filters)}
               </a>
@@ -85,19 +91,19 @@ defmodule Components.CardStatsTable do
                 {add_arrow("Drawn Impact", "drawn_impact", @filters)}
               </a>
             </th>
-              <th :if={show_counts(@filters)}>
+              <th :if={show_counts(@filters) && @full_page}>
               <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")}>
                 {add_arrow("Drawn Count", "drawn_count", @filters)}
               </a>
             </th>
 
-              <th class="is-hidden-mobile">
+              <th class="is-hidden-mobile" :if={@full_page}>
               <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
                 {add_arrow("Kept Impact", "kept_impact", @filters)}
               </a>
             </th>
 
-              <th :if={show_counts(@filters)} class="is-hidden-mobile">
+              <th :if={show_counts(@filters) && @full_page} class="is-hidden-mobile">
               <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
                 {add_arrow("Kept Count", "kept_count", @filters)}
               </a>
@@ -126,6 +132,12 @@ defmodule Components.CardStatsTable do
         </table>
       </div>
     """
+  end
+
+  defp card_stats(criteria) do
+    with [%{card_stats: card_stats}] <- DeckTracker.agg_deck_card_stats(criteria) do
+      card_stats
+    end
   end
 
   def add_arrow(base, column_sort_key, filters, is_default \\ false) do

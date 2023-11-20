@@ -22,15 +22,9 @@ defmodule BackendWeb.CardStatsLive do
           <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?archetype=#{archetype}"}>Archetype Card Stats</a>
         </div>
       <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
-        <CardStatsTable id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
+        <CardStatsTable id="main_card_stats_table" filters={@filters} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
-  end
-
-  defp stats(filters) do
-    with [%{card_stats: card_stats}] <- Hearthstone.DeckTracker.agg_deck_card_stats(filters) do
-      card_stats
-    end
   end
 
   defp deck_id(%{"player_deck_id" => deck_id}), do: deck_id
