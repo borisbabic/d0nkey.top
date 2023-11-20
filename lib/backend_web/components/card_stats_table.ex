@@ -17,6 +17,7 @@ defmodule Components.CardStatsTable do
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
   prop(path_params, :any, default: nil)
+  prop(user, :map, from_context: :user)
 
   def update(assigns, socket) do
     {
@@ -108,7 +109,7 @@ defmodule Components.CardStatsTable do
               <td>
 
               <div class="decklist_card_container">
-                <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)}/>
+                <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
               </div>
 
                 </td>
