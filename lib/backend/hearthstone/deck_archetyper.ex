@@ -1772,7 +1772,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       end)
       |> Enum.frequencies()
 
-    {all_count, without_all} = Map.pop(base_counts, "all", 0)
+    {all_count, without_all} = Map.pop(base_counts, "All", 0)
 
     without_all
     |> Enum.map(fn {key, val} -> {key, val + all_count} end)
