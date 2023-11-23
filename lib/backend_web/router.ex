@@ -195,6 +195,7 @@ defmodule BackendWeb.Router do
 
     live("/deckviewer", DeckviewerLive)
     live("/card-stats", CardStatsLive)
+    live("/meta", MetaLive)
     live("/decks", DecksLive)
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)

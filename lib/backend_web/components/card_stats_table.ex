@@ -172,8 +172,8 @@ defmodule Components.CardStatsTable do
     end
   end
 
-  @default_min_mull_count 50
-  @default_min_drawn_count 200
+  @default_min_mull_count 200
+  @default_min_drawn_count 1600
   def default_minimum_counts(%{"deck_id" => _}),
     do: %{"min_mull_count" => 0, "min_drawn_count" => 0}
 

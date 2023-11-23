@@ -12,7 +12,6 @@ defmodule Components.DecksExplorer do
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.ArchetypeBag
-  alias Hearthstone.Enums.Format
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.ClassStatsModal
 
