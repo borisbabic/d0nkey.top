@@ -9,11 +9,12 @@ defmodule Components.Filter.PeriodDropdown do
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
+  prop(aggregated_only, :boolean, default: false)
 
   def render(assigns) do
     ~F"""
       <LivePatchDropdown
-        options={options(@filter_context)}
+        options={options(@filter_context, @aggregated_only)}
         title={@title}
         param={@param}
         url_params={@url_params}
@@ -23,12 +24,15 @@ defmodule Components.Filter.PeriodDropdown do
     """
   end
 
-  def options(context) do
-    %{periods: aggregated} = DeckTracker.get_latest_agg_log_entry()
+  def options(context, aggregated_only \\ false) do
+    aggregated =
+      DeckTracker.get_latest_agg_log_entry()
+      |> Map.get(:periods, [])
 
-    for %{slug: slug, display: d} <- DeckTracker.periods_for_filters(context) do
+    for %{slug: slug, display: d} <- DeckTracker.periods_for_filters(context),
+        !aggregated_only or slug in aggregated do
       display =
-        if slug in (aggregated || []),
+        if slug in aggregated,
           do: d,
           else: Components.Helper.warning_triangle(%{before: d})
 
