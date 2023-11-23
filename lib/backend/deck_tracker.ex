@@ -421,6 +421,27 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
+  def archetype_agg_stats(criteria) do
+    base_agg_archetype_stats()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_agg_archetype_stats() do
+    from(ag in AggregatedStats,
+      as: :agg_deck_stats,
+      select: %{
+        wins: ag.wins,
+        losses: ag.losses,
+        total: ag.total,
+        winrate: ag.winrate,
+        archetype: ag.archetype
+      },
+      where: fragment("COALESCE(?, 'any')", ag.archetype) != "any",
+      where: fragment("COALESCE(?, -1)", ag.deck_id) == -1
+    )
+  end
+
   defp base_agg_deck_stats_query() do
     from(ag in AggregatedStats,
       as: :agg_deck_stats,

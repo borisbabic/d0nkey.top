@@ -23,7 +23,7 @@ defmodule BackendWeb.CardStatsLive do
           <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?archetype=#{archetype}"}>Archetype Card Stats</a>
         </div>
       <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
-        <CardStatsTable params={@params} id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
+        <CardStatsTable params={@params}id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
   end
