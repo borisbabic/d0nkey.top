@@ -7,7 +7,6 @@ defmodule Components.CardStatsTable do
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
   alias Components.DecksExplorer
-  alias Hearthstone.DeckTracker
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone
 
@@ -17,6 +16,7 @@ defmodule Components.CardStatsTable do
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
   prop(path_params, :any, default: nil)
+  prop(params, :map)
   prop(user, :map, from_context: :user)
 
   def update(assigns, socket) do
@@ -26,7 +26,7 @@ defmodule Components.CardStatsTable do
       |> assign(assigns)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
-        Map.merge(assigns.criteria, assigns.filters),
+        assigns.params,
         assigns.path_params,
         Map.merge(assigns.criteria, assigns.filters)
       )
