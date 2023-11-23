@@ -9,11 +9,12 @@ defmodule Components.Filter.FormatDropdown do
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
+  prop(aggregated_only, :boolean, default: false)
 
   def render(assigns) do
     ~F"""
       <LivePatchDropdown
-        options={options(@filter_context)}
+        options={options(@filter_context, @aggregated_only)}
         title={@title}
         param={@param}
         url_params={@url_params}
@@ -23,12 +24,15 @@ defmodule Components.Filter.FormatDropdown do
     """
   end
 
-  def options(context) do
-    %{formats: aggregated} = DeckTracker.get_latest_agg_log_entry()
+  def options(context, only_aggregated \\ false) do
+    aggregated =
+      DeckTracker.get_latest_agg_log_entry()
+      |> Map.get(:formats, [])
 
-    for %{value: value, display: d} <- DeckTracker.formats_for_filters(context) do
+    for %{value: value, display: d} <- DeckTracker.formats_for_filters(context),
+        !only_aggregated or value in aggregated do
       display =
-        if value in (aggregated || []),
+        if value in aggregated,
           do: d,
           else: Components.Helper.warning_triangle(%{before: d})
 
