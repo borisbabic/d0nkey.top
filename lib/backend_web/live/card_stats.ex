@@ -9,6 +9,7 @@ defmodule BackendWeb.CardStatsLive do
   data(criteria, :map)
   data(filters, :map)
   data(deck, :map)
+  data(params, :map)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_meta()}
@@ -22,7 +23,7 @@ defmodule BackendWeb.CardStatsLive do
           <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?archetype=#{archetype}"}>Archetype Card Stats</a>
         </div>
       <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
-        <CardStatsTable id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
+        <CardStatsTable params={@params} id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
   end
@@ -47,7 +48,9 @@ defmodule BackendWeb.CardStatsLive do
     filters = CardStatsTable.filter_relevant(params) |> CardStatsTable.with_default_filters()
 
     {:noreply,
-     assign(socket, filters: filters, criteria: criteria) |> assign_deck() |> assign_meta()}
+     assign(socket, filters: filters, criteria: criteria, params: params)
+     |> assign_deck()
+     |> assign_meta()}
   end
 
   def add_deck_id(criteria, %{"deck_id" => id}),
