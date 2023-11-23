@@ -1,63 +1,16 @@
-defmodule Backend.Repo.Migrations.UseViewSwappingToUpdateAggregatedStats do
+defmodule Backend.Repo.Migrations.FixOpponentClassNullAggStats do
   use Ecto.Migration
 
   def up do
     create_update_function()
-    create_recursive_function()
-    create_trigger()
   end
 
   def down do
-    drop_trigger()
-    drop_recursive_function()
-    drop_update_function()
   end
 
-  def create_recursive_function do
-    create_function = """
-    CREATE FUNCTION recursive_aggregation_refresh() RETURNS event_trigger LANGUAGE plpgsql AS
-    $$
-    DECLARE cnt int;
-    DECLARE mview text;
-    declare r record;
-    begin
-      SELECT objid::regclass::text INTO mview FROM pg_event_trigger_ddl_commands() WHERE object_type = 'materialized view';
-      SELECT count(1) INTO cnt FROM pg_stat_activity WHERE query LIKE '%REFRESH MATERIALIZED VIEW CONCURRENTLY dt_aggregated_stats%' and pid != pg_backend_pid();
-      IF cnt < 1 and mview LIKE 'dt_aggregated_stats' then
-        SELECT update_dt_aggregated_stats();
-      END IF;
-    END $$;
-    """
-
-    execute(create_function)
-  end
-
-  def drop_recursive_function() do
-    execute("DROP FUNCTION IF EXISTS recursive_aggregation_refresh")
-  end
-
-  def create_trigger() do
-    sql = """
-      CREATE EVENT TRIGGER recursive_aggregation_refresh ON ddl_command_end
-        WHEN TAG IN ('REFRESH MATERIALIZED VIEW')
-        EXECUTE FUNCTION recursive_aggregation_refresh();
-    """
-
-    execute(sql)
-  end
-
-  def drop_trigger() do
-    execute("DROP EVENT TRIGGER IF EXISTS recursive_aggregation_refresh")
-  end
-
-  def drop_update_function() do
-    execute("DROP FUNCTION IF EXISTS update_dt_aggregated_stats")
-  end
-
-  ### UPDATED in later migration
   def create_update_function() do
     """
-    CREATE FUNCTION update_dt_aggregated_stats()
+    CREATE OR REPLACE FUNCTION update_dt_aggregated_stats()
     RETURNS VOID
     LANGUAGE plpgsql
     AS
@@ -171,6 +124,7 @@ defmodule Backend.Repo.Migrations.UseViewSwappingToUpdateAggregatedStats do
           WHERE
               dg.inserted_at <= now()
               AND dg.game_type = 7
+              AND dg.opponent_class IS NOT NULL
               AND dg.player_deck_id IS NOT NULL
           GROUP BY
               1,
@@ -254,6 +208,7 @@ defmodule Backend.Repo.Migrations.UseViewSwappingToUpdateAggregatedStats do
               )
           WHERE
               dcgt.inserted_at <= now()
+              AND dg.opponent_class IS NOT NULL
               AND dg.game_type = 7
           GROUP BY
               1,
@@ -339,7 +294,7 @@ defmodule Backend.Repo.Migrations.UseViewSwappingToUpdateAggregatedStats do
               cs.opponent_class,
               COALESCE(d.archetype, initcap(d.class)) AS archetype,
               cs.format,
-              json_build_object(
+              jsonb_build_object(
                   'card_id',
                   cs.card_id,
                   'kept_total',
@@ -383,7 +338,7 @@ defmodule Backend.Repo.Migrations.UseViewSwappingToUpdateAggregatedStats do
               cs.opponent_class,
               cs.archetype,
               cs.format,
-              json_agg(cs.card_stats) AS card_stats
+              jsonb_agg(cs.card_stats) AS card_stats
           FROM
               prepared_card_stats cs
           GROUP BY
