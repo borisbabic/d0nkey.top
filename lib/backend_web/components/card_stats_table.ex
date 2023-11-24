@@ -105,7 +105,7 @@ defmodule Components.CardStatsTable do
 
           </thead>
           <tbody>
-            <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters) |> filter_same_deck(@filters)}>
+            <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
               <td>
 
               <div class="decklist_card_container">
@@ -127,6 +127,9 @@ defmodule Components.CardStatsTable do
       </div>
     """
   end
+
+  def is_selected(%{card: %{id: id}}, [_ | _] = to_highlight), do: id in to_highlight
+  def is_selected(_, _), do: false
 
   def add_arrow(base, column_sort_key, filters, is_default \\ false) do
     arrow =
