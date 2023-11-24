@@ -7,6 +7,7 @@ defmodule Components.CardStatsTable do
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
   alias Components.DecksExplorer
+  alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone
 
@@ -35,96 +36,96 @@ defmodule Components.CardStatsTable do
 
   def render(assigns) do
     ~F"""
-      <div>
-        <PeriodDropdown id="period_dropdown" filter_context={@filter_context}/>
-        <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
-        <LivePatchDropdown
-          options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
-          title={"Min Mull Count"}
-          param={"min_mull_count"}
-          normalizer={&Util.to_int_or_orig/1}
-          selected_as_title={false}/>
-        <LivePatchDropdown
-          options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
-          title={"Min Drawn Count"}
-          param={"min_drawn_count"}
-          normalizer={&Util.to_int_or_orig/1}
-          selected_as_title={false} />
-        <LivePatchDropdown
-          options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
-          title={"Show Counts"}
-          param={"show_counts"}
-          selected_as_title={true} />
-        <RankDropdown id="rank_dropdown" fitler_context={@filter_context}/>
+    <div>
+      <PeriodDropdown id="period_dropdown" filter_context={@filter_context}/>
+      <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
+      <LivePatchDropdown
+        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+        title={"Min Mull Count"}
+        param={"min_mull_count"}
+        normalizer={&Util.to_int_or_orig/1}
+        selected_as_title={false}/>
+      <LivePatchDropdown
+        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+        title={"Min Drawn Count"}
+        param={"min_drawn_count"}
+        normalizer={&Util.to_int_or_orig/1}
+        selected_as_title={false} />
+      <LivePatchDropdown
+        options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
+        title={"Show Counts"}
+        param={"show_counts"}
+        selected_as_title={true} />
+      <RankDropdown id="rank_dropdown" fitler_context={@filter_context}/>
 
-        <LivePatchDropdown
-          options={DecksExplorer.class_options("Any Class", "VS ")}
-          title={"Opponent's Class"}
-          param={"opponent_class"} />
-        <table class="table is-fullwidth is-striped is-gapless">
-          <thead>
+      <LivePatchDropdown
+        options={DecksExplorer.class_options("Any Class", "VS ")}
+        title={"Opponent's Class"}
+        param={"opponent_class"} />
+      <table class="table is-fullwidth is-striped is-gapless">
+        <thead>
+          <th>
+            <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")}>
+              {add_arrow("Card", "card", @filters)}
+            </a>
+          </th>
+
             <th>
-              <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")}>
-                {add_arrow("Card", "card", @filters)}
-              </a>
+            <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
+              {add_arrow("Mulligan Impact", "mull_impact", @filters, true)}
+            </a>
+          </th>
+            <th :if={show_counts(@filters)}>
+            <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
+              {add_arrow("Mulligan Count", "mull_count", @filters)}
+            </a>
             </th>
 
-              <th>
-              <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
-                {add_arrow("Mulligan Impact", "mull_impact", @filters, true)}
-              </a>
-            </th>
-              <th :if={show_counts(@filters)}>
-              <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
-                {add_arrow("Mulligan Count", "mull_count", @filters)}
-              </a>
-              </th>
+            <th>
+            <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
+              {add_arrow("Drawn Impact", "drawn_impact", @filters)}
+            </a>
+          </th>
+            <th :if={show_counts(@filters)}>
+            <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")}>
+              {add_arrow("Drawn Count", "drawn_count", @filters)}
+            </a>
+          </th>
 
-              <th>
-              <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
-                {add_arrow("Drawn Impact", "drawn_impact", @filters)}
-              </a>
-            </th>
-              <th :if={show_counts(@filters)}>
-              <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")}>
-                {add_arrow("Drawn Count", "drawn_count", @filters)}
-              </a>
-            </th>
+            <th class="is-hidden-mobile">
+            <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
+              {add_arrow("Kept Impact", "kept_impact", @filters)}
+            </a>
+          </th>
 
-              <th class="is-hidden-mobile">
-              <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
-                {add_arrow("Kept Impact", "kept_impact", @filters)}
-              </a>
+            <th :if={show_counts(@filters)} class="is-hidden-mobile">
+            <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
+              {add_arrow("Kept Count", "kept_count", @filters)}
+            </a>
             </th>
 
-              <th :if={show_counts(@filters)} class="is-hidden-mobile">
-              <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
-                {add_arrow("Kept Count", "kept_count", @filters)}
-              </a>
-              </th>
+        </thead>
+        <tbody>
+          <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
+            <td>
 
-          </thead>
-          <tbody>
-            <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
-              <td>
+            <div class="decklist_card_container">
+              <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
+            </div>
 
-              <div class="decklist_card_container">
-                <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
-              </div>
+              </td>
+            <td><WinrateTag class={"is-small"} round_digits={1} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/></td>
+            <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
-                </td>
-              <td>{to_percent(Util.get(cs, :mull_impact))}</td>
-              <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
+            <td><WinrateTag shift_for_color={0.5} round_digits={1} winrate={Util.get(cs, :drawn_impact)}/></td>
+            <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_total)}</td>
 
-              <td>{to_percent(Util.get(cs, :drawn_impact))}</td>
-              <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_total)}</td>
-
-              <td class="is-hidden-mobile">{to_percent(Util.get(cs, :kept_impact))}</td>
-              <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            <td class="is-hidden-mobile"><WinrateTag round_digits={1} shift_for_color={0.5} winrate={Util.get(cs, :kept_impact)}/></td>
+            <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     """
   end
 
@@ -241,9 +242,6 @@ defmodule Components.CardStatsTable do
     card(card_id)
     |> Map.get(:name)
   end
-
-  def to_percent(int) when is_integer(int), do: int / 1
-  def to_percent(num), do: "#{Float.round(num * 100, 2)}%"
 
   def sort(stats, %{"sort_by" => "card"} = filters) do
     direction = get_direction(filters)
