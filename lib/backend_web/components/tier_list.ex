@@ -7,7 +7,6 @@ defmodule Components.TierList do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
-  import Components.CardStatsTable, only: [to_percent: 1]
   import Components.DecksExplorer, only: [parse_int: 2, class_options: 2]
 
   prop(data, :list, default: [])
@@ -88,4 +87,7 @@ defmodule Components.TierList do
       "format" => FormatDropdown.default(:public)
     }
   end
+
+  def to_percent(int) when is_integer(int), do: int / 1
+  def to_percent(num), do: "#{Float.round(num * 100, 2)}%"
 end
