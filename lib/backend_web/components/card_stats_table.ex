@@ -317,14 +317,13 @@ defmodule Components.CardStatsTable do
         sort,
         %{
           assigns: %{
-            filters: old_filters,
-            criteria: criteria,
+            params: params,
             path_params: path_params,
             live_view: lv
           }
         } = socket
       ) do
-    new_filters = Map.merge(old_filters, sort)
+    new_params = Map.merge(params, sort)
 
     {:noreply,
      socket
@@ -333,8 +332,8 @@ defmodule Components.CardStatsTable do
          LivePatchDropdown.link(
            BackendWeb.Endpoint,
            lv,
-           @path_params,
-           Map.merge(criteria, new_filters)
+           path_params,
+           new_params
          )
      )}
   end
