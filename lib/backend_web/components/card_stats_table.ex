@@ -129,7 +129,9 @@ defmodule Components.CardStatsTable do
     """
   end
 
-  def is_selected(%{card: %{id: id}}, [_ | _] = to_highlight), do: id in to_highlight
+  def is_selected(%{card: %{id: id}}, [_ | _] = to_highlight),
+    do: Hearthstone.canonical_id(id) in to_highlight
+
   def is_selected(_, _), do: false
 
   def add_arrow(base, column_sort_key, filters, is_default \\ false) do
