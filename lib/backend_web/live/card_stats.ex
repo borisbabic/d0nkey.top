@@ -10,6 +10,7 @@ defmodule BackendWeb.CardStatsLive do
   data(filters, :map)
   data(deck, :map)
   data(params, :map)
+  data(title, :string)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_meta()}
@@ -75,11 +76,14 @@ defmodule BackendWeb.CardStatsLive do
   def assign_deck(socket), do: assign(socket, :deck, nil)
 
   def assign_meta(socket = %{assigns: %{deck: deck = %Deck{format: format}}}) do
+    title = "#{Deck.name(deck)} Deck Card Stats (#{Deck.format_name(format)})"
+
     socket
     |> assign_meta_tags(%{
       description: "Hearthstone Cards Stats for #{Deck.format_name(format)} #{Deck.name(deck)}",
-      title: "#{Deck.name(deck)} Deck Card Stats (#{Deck.format_name(format)})"
+      title: title
     })
+    |> assign(title: title)
   end
 
   def assign_meta(socket = %{assigns: %{criteria: criteria = %{"archetype" => archetype}}}) do
@@ -89,20 +93,26 @@ defmodule BackendWeb.CardStatsLive do
         f -> "#{Deck.format_name(f)}"
       end
 
+    title = "#{archetype} Archetype Card Stats (#{format_part})"
+
     socket
     |> assign_meta_tags(%{
       description: "Hearthstone Cards Stats for #{format_part} #{archetype}",
-      title: "#{archetype} Archetype Card Stats (#{format_part})"
+      title: title
     })
+    |> assign(title: title)
   end
 
   def assign_meta(socket), do: assign_generic_meta(socket)
 
   def assign_generic_meta(socket) do
+    title = "Card Stats"
+
     socket
     |> assign_meta_tags(%{
       description: "Hearthstone Card Stats",
-      title: "Card Stats"
+      title: title
     })
+    |> assign(title: title)
   end
 end
