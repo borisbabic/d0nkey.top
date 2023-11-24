@@ -41,13 +41,13 @@ defmodule Components.CardStatsTable do
       <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={true}/>
       <RankDropdown id="rank_dropdown" fitler_context={@filter_context} aggregated_only={true}/>
       <LivePatchDropdown
-        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
         title={"Min Mull Count"}
         param={"min_mull_count"}
         normalizer={&Util.to_int_or_orig/1}
         selected_as_title={false}/>
       <LivePatchDropdown
-        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
+        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
         title={"Min Drawn Count"}
         param={"min_drawn_count"}
         normalizer={&Util.to_int_or_orig/1}
