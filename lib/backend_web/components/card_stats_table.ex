@@ -37,8 +37,9 @@ defmodule Components.CardStatsTable do
   def render(assigns) do
     ~F"""
     <div>
-      <PeriodDropdown id="period_dropdown" filter_context={@filter_context}/>
-      <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
+      <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={true}/>
+      <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={true}/>
+      <RankDropdown id="rank_dropdown" fitler_context={@filter_context} aggregated_only={true}/>
       <LivePatchDropdown
         options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400]}
         title={"Min Mull Count"}
@@ -56,7 +57,6 @@ defmodule Components.CardStatsTable do
         title={"Show Counts"}
         param={"show_counts"}
         selected_as_title={true} />
-      <RankDropdown id="rank_dropdown" fitler_context={@filter_context}/>
 
       <LivePatchDropdown
         options={DecksExplorer.class_options("Any Class", "VS ")}
@@ -114,7 +114,7 @@ defmodule Components.CardStatsTable do
             </div>
 
               </td>
-            <td><WinrateTag class={"is-small"} round_digits={1} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/></td>
+            <td><WinrateTag class={""} round_digits={1} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/></td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
             <td><WinrateTag shift_for_color={0.5} round_digits={1} winrate={Util.get(cs, :drawn_impact)}/></td>
