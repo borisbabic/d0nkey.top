@@ -172,7 +172,7 @@ defmodule BackendWeb.StreamingView do
 
     style =
       if w + l > 5 do
-        Components.WinrateTag.winrate_style(winrate)
+        Components.WinrateTag.winrate_style(winrate, 120, 0, 50, 5)
       else
         ""
       end
