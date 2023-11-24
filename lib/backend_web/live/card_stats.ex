@@ -77,6 +77,7 @@ defmodule BackendWeb.CardStatsLive do
       |> Enum.filter(&is_integer/1)
 
     Enum.uniq(cards_from_deck ++ cards_from_params)
+    |> Deck.canonicalize_cards()
   end
 
   def add_deck_id(criteria, %{"deck_id" => id}),
