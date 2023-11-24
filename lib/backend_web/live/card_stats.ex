@@ -10,6 +10,7 @@ defmodule BackendWeb.CardStatsLive do
   data(filters, :map)
   data(deck, :map)
   data(params, :map)
+  data(highlight_cards, :list)
   data(title, :string)
 
   def mount(_params, session, socket),
@@ -18,13 +19,13 @@ defmodule BackendWeb.CardStatsLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2"> Card Stats </div>
+        <div class="title is-2">{@title || "Card Stats"}</div>
         <div :if={@deck} class="subtitle is-5">
           <a href={~p"/deck/#{@deck.id}"}>Deck Stats</a>
-          <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?archetype=#{archetype}"}>Archetype Card Stats</a>
+          <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?archetype=#{archetype}&highlight_deck=#{@deck.id}"}>Archetype Card Stats</a>
         </div>
       <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
-        <CardStatsTable params={@params}id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
+        <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria)} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
   end
@@ -41,6 +42,7 @@ defmodule BackendWeb.CardStatsLive do
   def handle_params(params, _uri, socket) do
     default = CardStatsTable.default_criteria(:public)
     decks_criteria = DecksExplorer.filter_relevant(params)
+    highlight_cards = highlight_cards(params)
 
     criteria =
       Map.merge(default, decks_criteria)
@@ -49,9 +51,32 @@ defmodule BackendWeb.CardStatsLive do
     filters = CardStatsTable.filter_relevant(params) |> CardStatsTable.with_default_filters()
 
     {:noreply,
-     assign(socket, filters: filters, criteria: criteria, params: params)
+     assign(socket,
+       filters: filters,
+       criteria: criteria,
+       params: params,
+       highlight_cards: highlight_cards
+     )
      |> assign_deck()
      |> assign_meta()}
+  end
+
+  def highlight_cards(params) do
+    cards_from_deck =
+      with id when not is_nil(id) <- Map.get(params, "highlight_deck"),
+           %{cards: cards} <- Backend.Hearthstone.get_deck(id) do
+        cards
+      else
+        _ -> []
+      end
+
+    cards_from_params =
+      Map.get(params, "highlight_cards", [])
+      |> Util.to_list()
+      |> Enum.map(&Util.to_int_or_orig/1)
+      |> Enum.filter(&is_integer/1)
+
+    Enum.uniq(cards_from_deck ++ cards_from_params)
   end
 
   def add_deck_id(criteria, %{"deck_id" => id}),
