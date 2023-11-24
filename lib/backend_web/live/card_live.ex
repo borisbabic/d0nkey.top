@@ -33,8 +33,14 @@ defmodule BackendWeb.CardLive do
   def render(assigns) do
     ~F"""
       <div>
+        <div class="title is-2">{@card.name}</div>
+        <div class="subtitle is-5">
+          <a href={"https://hearthstone.wiki.gg/wiki/#{@card.name}"}>Wiki</a>
+          <a href={~p"/decks?player_deck_includes[]=#{Hearthstone.canonical_id(@card.id)}"}>Find Decks</a>
+          <a href={~p"/streamer-decks?#{%{include_cards: %{Hearthstone.canonical_id(@card.id) => true}}}"}>Find Streamer Decks</a>
+        </div>
         <Card id={"card_#{@card.id}"} card={@card} />
-        <br>
+        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
         <Card :for={child <- Hearthstone.child_cards(@card)} id={"card_#{child.id}"} card={child} />
         <CardInfo id={"card_info_{@card.id}"} card={@card}/>
       </div>
