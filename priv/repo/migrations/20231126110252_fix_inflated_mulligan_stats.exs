@@ -1,15 +1,14 @@
-defmodule Backend.Repo.Migrations.FixOpponentClassNullAggStats do
+defmodule Backend.Repo.Migrations.FixInflatedMulliganStats do
   use Ecto.Migration
 
   def up do
-    create_update_function()
+    update_agg_update_function()
   end
 
   def down do
   end
 
-  # replaced in later migration
-  def create_update_function() do
+  def update_agg_update_function() do
     """
     CREATE OR REPLACE FUNCTION update_dt_aggregated_stats()
     RETURNS VOID
@@ -248,7 +247,7 @@ defmodule Backend.Repo.Migrations.FixOpponentClassNullAggStats do
               (cs.mulligan_wins + cs.mulligan_losses) mull_total,
               (
                   CASE
-                      WHEN cs.mulligan_wins > 0 THEN (cs.mulligan_wins + cs.mulligan_losses) * (
+                      WHEN (cs.mulligan_wins + cs.mulligan_losses) > 0 THEN (cs.mulligan_wins + cs.mulligan_losses) * (
                           cs.mulligan_wins :: float / (cs.mulligan_wins + cs.mulligan_losses) - ds.winrate
                       )
                       ELSE 0
