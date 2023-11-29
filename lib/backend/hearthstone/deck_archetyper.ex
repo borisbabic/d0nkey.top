@@ -339,6 +339,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Mage"
 
+      "Grand Magister Rommath" in card_info.card_names ->
+        :"Rommath Mage"
+
       naga_mage?(card_info) && rainbow_mage?(card_info) ->
         :"Rainbow Naga Mage"
 
@@ -492,6 +495,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Foul Egg",
       "Sanguine Soldier",
       "Blood Matriarch Liadrin",
+      "Gold Panner",
+      "Crusader Aura",
       "Sinstone Totem",
       "Crooked Cook",
       "Sea Giant",
@@ -555,6 +560,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       shadow_priest?(card_info) ->
         :"Shadow Priest"
+
+      "Photographer Fizzle" in card_info.card_names ->
+        :"Fizzle Priest"
+
+      "Pip the Potent" in card_info.card_names ->
+        :"Pip Priest"
 
       murloc?(card_info) ->
         :"Murloc Priest"
