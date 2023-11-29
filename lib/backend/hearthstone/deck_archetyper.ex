@@ -23,7 +23,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         :"Highlander DK"
 
       burn_dk?(card_info) ->
@@ -106,7 +106,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         :"Highlander DH"
 
       boar?(card_info) ->
@@ -190,7 +190,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Druid"
+      highlander?(card_info, c) -> :"Highlander Druid"
       quest?(card_info) || questline?(card_info) -> :"Quest Druid"
       boar?(card_info) -> :"Boar Druid"
       vanndar?(card_info) -> :"Vanndar Druid"
@@ -245,7 +245,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         :"Highlander Hunter"
 
       quest?(card_info) || questline?(card_info) ->
@@ -324,7 +324,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         :"Highlander Mage"
 
       arcane_mage?(card_info) && (quest?(card_info) || questline?(card_info)) ->
@@ -455,11 +455,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) && pure_paladin?(card_info) -> :"Highlander Pure Paladin"
+      highlander?(card_info, c) && pure_paladin?(card_info) -> :"Highlander Pure Paladin"
       pure_paladin?(card_info) && dude_paladin?(card_info) -> :Chadadin
       earthen_paladin?(card_info) && pure_paladin?(card_info) -> :"Gaia Pure Paladin"
       pure_paladin?(card_info) -> :"Pure Paladin"
-      highlander?(c) -> :"Highlander Paladin"
+      highlander?(card_info, c) -> :"Highlander Paladin"
       aggro_paladin?(card_info) -> :"Aggro Paladin"
       menagerie?(card_info) -> :"Menagerie Paladin"
       quest?(card_info) || questline?(card_info) -> :"Quest Paladin"
@@ -505,7 +505,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         :"Highlander Priest"
 
       quest?(card_info) || questline?(card_info) ->
@@ -624,7 +624,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         :"Highlander Rogue"
 
       coc_rogue?(card_info) && (quest?(card_info) || questline?(card_info)) ->
@@ -726,7 +726,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Shaman"
+      highlander?(card_info, c) -> :"Highlander Shaman"
       quest?(card_info) || questline?(card_info) -> :"Quest Shaman"
       boar?(card_info) -> :"Boar Shaman"
       vanndar?(card_info) -> :"Vanndar Shaman"
@@ -780,7 +780,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         :"Highlander Warlock"
 
       implock?(card_info) && (quest?(card_info) || questline?(card_info)) ->
@@ -902,7 +902,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) -> :"Highlander Warrior"
+      highlander?(card_info, c) -> :"Highlander Warrior"
       questline?(card_info) && warrior_aoe?(card_info) -> :"Quest Control Warrior"
       quest?(card_info) || questline?(card_info) -> :"Quest Warrior"
       galvangar_combo?(card_info) -> :"Charge Warrior"
@@ -949,7 +949,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         String.to_atom("Highlander #{class_name}")
 
       quest?(card_info) || questline?(card_info) ->
@@ -1105,7 +1105,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     card_info = full_cards(c)
 
     cond do
-      highlander?(c) ->
+      highlander?(card_info, c) ->
         String.to_atom("Highlander #{class_name}")
 
       quest?(card_info) || questline?(card_info) ->
@@ -1709,10 +1709,25 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp menagerie?(%{card_names: card_names}), do: "The One-Amalgam Band" in card_names
   defp boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names
   defp kazakusan?(%{card_names: card_names}), do: "Kazakusan" in card_names
-  defp highlander?(cards), do: Enum.count(cards) == Enum.count(Enum.uniq(cards))
+
+  defp highlander?(card_info, cards) do
+    num_dupl = num_duplicates(cards)
+    num_dupl == 0 or (num_dupl < 4 and highlander_payoff?(card_info))
+  end
+
+  defp num_duplicates(cards) do
+    cards
+    |> Enum.frequencies()
+    |> Enum.filter(fn {_, count} -> count > 1 end)
+    |> Enum.count()
+  end
+
   defp vanndar?(%{card_names: card_names}), do: "Vanndar Stormpike" in card_names
   defp quest?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.quest?/1)
   defp questline?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.questline?/1)
+
+  defp highlander_payoff?(%{full_cards: full_cards}),
+    do: Enum.any?(full_cards, &Card.highlander?/1)
 
   defp odd?(%{card_names: card_names}), do: "Baku the Mooneater" in card_names
   defp even?(%{card_names: card_names}), do: "Genn Greymane" in card_names

@@ -117,6 +117,18 @@ defmodule Backend.Hearthstone.Card do
   @spec rarity(card()) :: String.t()
   def rarity(%{rarity: rarity}), do: Rarity.upcase(rarity)
 
+  for {method, rarity} <- [
+        common?: "COMMON",
+        epic?: "EPIC",
+        rare?: "RARE",
+        legendary?: "LEGENDARY",
+        free?: "FREE"
+      ] do
+    @doc "Check if the card is of the right rarity"
+    @spec unquote(method)(card()) :: boolean
+    def unquote(method)(card), do: unquote(rarity) == card
+  end
+
   @spec type(card()) :: String.t()
   def type(%{card_type: type}), do: Type.upcase(type)
   def type(%{type: type}), do: Type.upcase(type)
@@ -188,6 +200,12 @@ defmodule Backend.Hearthstone.Card do
   @spec questline?(%__MODULE__{}) :: boolean()
   def questline?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.questline?/1)
   def questline?(_), do: false
+
+  @spec highlander?(%__MODULE__{}) :: boolean()
+  def highlander?(%{text: text}) when is_binary(text),
+    do: String.downcase(text) =~ "no duplicates"
+
+  def highlander?(_), do: false
 
   @spec quest?(%__MODULE__{}) :: boolean()
   def quest?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.quest?/1)
