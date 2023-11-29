@@ -114,13 +114,13 @@ defmodule Components.CardStatsTable do
             </div>
 
               </td>
-            <td><WinrateTag class={""} round_digits={1} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/></td>
+            <td><WinrateTag class={""} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/></td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
-            <td><WinrateTag shift_for_color={0.5} round_digits={1} winrate={Util.get(cs, :drawn_impact)}/></td>
+            <td><WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :drawn_impact)}/></td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_total)}</td>
 
-            <td class="is-hidden-mobile"><WinrateTag round_digits={1} shift_for_color={0.5} winrate={Util.get(cs, :kept_impact)}/></td>
+            <td class="is-hidden-mobile"><WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :kept_impact)}/></td>
             <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
           </tr>
         </tbody>

@@ -8,7 +8,7 @@ defmodule Components.DeckStats do
 
   def render(assigns) do
     ~F"""
-      <WinrateTag :if={@winrate} class={"column"} winrate={@winrate} round_digits={1}/>
+      <WinrateTag :if={@winrate} class={"column"} winrate={@winrate}/>
       <div :if={@total} class="column tag">
         Games: {@total}
       </div>

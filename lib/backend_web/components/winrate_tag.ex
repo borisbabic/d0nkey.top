@@ -4,7 +4,7 @@ defmodule Components.WinrateTag do
 
   prop(winrate, :number, required: true)
   prop(shift_for_color, :number, default: 0)
-  prop(round_digits, :number, default: 2)
+  prop(round_digits, :number, default: 1)
   prop(positive_hue, :number, default: 120)
   prop(negative_hue, :number, default: 0)
   prop(class, :css_class)
