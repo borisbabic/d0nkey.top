@@ -206,6 +206,12 @@ defmodule Bot.MessageHandler do
       <<"!tch", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("6271bd62d44c844993e4e1a7", msg)
 
+      <<"!bod", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("653e9d91e73f05464d894a51", msg)
+
+      <<"!botd", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("653e9d91e73f05464d894a51", msg)
+
       <<"!thl", _::binary>> ->
         Bot.ThlMessageHandler.handle_thl(msg)
 
