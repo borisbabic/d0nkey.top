@@ -2,6 +2,7 @@ defmodule Backend.Battlefy do
   @moduledoc false
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.Battlefy.Tournament
+  alias Backend.Battlefy.Tournament.CustomField
   alias Backend.Battlefy.Standings
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.MatchTeam
@@ -954,5 +955,64 @@ defmodule Backend.Battlefy do
     |> Enum.sort_by(fn s -> s.losses end)
     |> Enum.sort_by(fn s -> s.wins end, :desc)
     |> Enum.sort_by(fn s -> s.place end)
+  end
+
+  def custom_field_value(struct, field_id, default \\ nil)
+
+  def custom_field_value(%{team: t}, field_id, default),
+    do: custom_field_value(t, field_id, default)
+
+  def custom_field_value(struct, field_id, default),
+    do: CustomField.value(struct, field_id, default)
+
+  def merge_standings_by_custom_field(
+        standings,
+        field_id,
+        opts \\ [value_mapper: & &1, display_map: %{}]
+      ) do
+    merged_opts = Keyword.merge([value_mapper: & &1, display_map: %{}], opts)
+    mapper = Keyword.get(merged_opts, :value_mapper)
+    display_map = Keyword.get(merged_opts, :display_map)
+
+    standings
+    |> Enum.group_by(fn s ->
+      with val when not is_nil(val) <- custom_field_value(s, field_id) do
+        mapper.(val)
+      end
+    end)
+    |> Map.drop([nil])
+    |> Enum.map(fn {grouped_by, standings} ->
+      new_name = Map.get(display_map, grouped_by, grouped_by)
+      merge_standings(standings, new_name)
+    end)
+  end
+
+  @doc "Merge the win/loss record of the `standings` together into one fake standings with the team name `name`"
+  @spec merge_standings([Standings.t()], String.t()) :: Standings.t()
+  def merge_standings(standings, name \\ nil) do
+    # use the first team name if no name supplied
+    name_to_use = name || get_in(standings, [Access.at(0), Access.key(:team), Access.key(:name)])
+
+    merged =
+      Enum.reduce(standings, %{wins: 0, losses: 0, auto_wins: 0, auto_losses: 0}, fn s, acc ->
+        %{
+          wins: Map.get(s, :wins, 0) + acc.wins,
+          auto_wins: Map.get(s, :auto_wins, 0) + acc.auto_wins,
+          losses: Map.get(s, :losses, 0) + acc.losses,
+          auto_losses: Map.get(s, :auto_losses, 0) + acc.auto_losses
+        }
+      end)
+
+    %Standings{
+      losses: merged.losses,
+      wins: merged.wins,
+      auto_losses: merged.auto_losses,
+      auto_wins: merged.auto_wins,
+      place: nil,
+      team: %Team{
+        players: [],
+        name: name_to_use
+      }
+    }
   end
 end

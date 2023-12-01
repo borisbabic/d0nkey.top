@@ -6,12 +6,14 @@ defmodule Backend.Battlefy.Tournament do
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Tournament.Game
   alias Backend.Battlefy.Tournament.Stream
+  alias Backend.Battlefy.Tournament.CustomField
 
   typedstruct enforce: true do
     field :id, Battlefy.tournament_id()
     field :stage_ids, [Battlefy.stage_id()]
     field :stages, [Battlefy.Stage.t()]
     field :start_time, Calendar.datetime()
+    field :custom_fields, [CustomField.t()]
     field :last_completed_match_at, Calendar.datetime() | nil
     field :name, String.t()
     field :slug, String.t()
@@ -45,6 +47,7 @@ defmodule Backend.Battlefy.Tournament do
       start_time: NaiveDateTime.from_iso8601!(start_time),
       last_completed_match_at: Util.parse_date(map["lastCompletedMatchAt"]),
       region: region,
+      custom_fields: CustomField.from_raw_map(map["customFields"]),
       organization: extract_organization(map),
       game: Game.from_raw_map(map["game"]),
       streams: Stream.from_raw_map(map["streams"]),
@@ -76,6 +79,45 @@ defmodule Backend.Battlefy.Tournament do
   end
 end
 
+defmodule Backend.Battlefy.Tournament.CustomField do
+  use TypedStruct
+
+  typedstruct enforce: false do
+    field :id, Battlefy.tournament_id()
+    field :name, String.t()
+    field :public, boolean()
+  end
+
+  def from_raw_map(nil), do: nil
+
+  def from_raw_map(maps) when is_list(maps),
+    do: Enum.map(maps, &from_raw_map/1) |> Enum.filter(& &1)
+
+  def from_raw_map(raw) do
+    %__MODULE__{
+      id: raw["_id"],
+      name: raw["name"],
+      public: raw["public"] || false
+    }
+  end
+
+  def value(target, field_id, default \\ nil)
+  def value(%{id: id, value: value}, field_id, _default) when id == field_id, do: value
+
+  def value(%{custom_fields: cf}, field_id, default), do: value(cf, field_id, default)
+
+  def value(fields, field_id, default) when is_list(fields) do
+    Enum.find_value(fields, default, fn
+      %{id: ^field_id, value: value} -> value
+      # raw
+      %{"_id" => ^field_id, "value" => value} -> value
+      _ -> false
+    end)
+  end
+
+  def value(_, _, default), do: default
+end
+
 defmodule Backend.Battlefy.Tournament.Game do
   @moduledoc false
 
@@ -104,7 +146,6 @@ defmodule Backend.Battlefy.Tournament.Game do
 end
 
 defmodule Backend.Battlefy.Tournament.Stream do
-
   use TypedStruct
 
   typedstruct do
@@ -117,7 +158,10 @@ defmodule Backend.Battlefy.Tournament.Stream do
   end
 
   def from_raw_map(nil), do: nil
-  def from_raw_map(maps) when is_list(maps), do: Enum.map(maps, &from_raw_map/1) |> Enum.filter(& &1)
+
+  def from_raw_map(maps) when is_list(maps),
+    do: Enum.map(maps, &from_raw_map/1) |> Enum.filter(& &1)
+
   def from_raw_map(raw) do
     %__MODULE__{
       link: raw["link"],
@@ -130,6 +174,7 @@ defmodule Backend.Battlefy.Tournament.Stream do
   end
 
   defp parse_date(nil), do: nil
+
   defp parse_date(date) do
     case NaiveDateTime.from_iso8601(date) do
       {:ok, date} -> date
