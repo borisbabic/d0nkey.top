@@ -114,6 +114,7 @@ defmodule Bot.MessageHandler do
     `!thl my_title:d0nkey`
     `!thl my_title:d0nkey thispersondoesnotexist somebodyelsenonexistent OldTag#1234`
     """,
+    "botd" => Bot.BattleOfTheDiscordsMessageHandler.help_message("botd"),
     "mt" => """
     ## `mt` (Masters Tour)
     `!mt [$mt]`
@@ -207,10 +208,10 @@ defmodule Bot.MessageHandler do
         Bot.BattlefyMessageHandler.handle_tournament_standings("6271bd62d44c844993e4e1a7", msg)
 
       <<"!bod", _::binary>> ->
-        Bot.BattlefyMessageHandler.handle_tournament_standings("653e9d91e73f05464d894a51", msg)
+        Bot.BattleOfTheDiscordsMessageHandler.handle(msg)
 
       <<"!botd", _::binary>> ->
-        Bot.BattlefyMessageHandler.handle_tournament_standings("653e9d91e73f05464d894a51", msg)
+        Bot.BattleOfTheDiscordsMessageHandler.handle(msg)
 
       <<"!thl", _::binary>> ->
         Bot.ThlMessageHandler.handle_thl(msg)
