@@ -1,5 +1,6 @@
 defmodule BackendWeb.LayoutView do
   use BackendWeb, :view
+  alias BackendWeb.FunctionComponents.LayoutComponent
 
   def current_mt(conn) do
     case Backend.MastersTour.TourStop.get_current() do
@@ -13,6 +14,11 @@ defmodule BackendWeb.LayoutView do
     #      {2020, 6, day} when day > 11 and day < 18 -> show_mt(conn, :"Jönköping")
     #      _ -> ""
     #    end
+  end
+
+  def render_battlefy_link(assigns) do
+    ~H"""
+    """
   end
 
   def show_mt(conn, tour_stop) do

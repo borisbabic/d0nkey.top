@@ -17,6 +17,14 @@ defmodule BackendWeb do
   and import those modules here.
   """
 
+  def component do
+    quote do
+      use Phoenix.Component
+
+      unquote(view_helpers())
+    end
+  end
+
   def html do
     quote do
       use Phoenix.Component
