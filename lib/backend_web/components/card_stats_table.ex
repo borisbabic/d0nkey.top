@@ -106,7 +106,7 @@ defmodule Components.CardStatsTable do
 
         </thead>
         <tbody>
-          <tr :for={cs <- @card_stats |> map_filter(@filters) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
+          <tr :for={cs <- @card_stats |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
             <td>
 
             <div class="decklist_card_container">
@@ -114,11 +114,18 @@ defmodule Components.CardStatsTable do
             </div>
 
               </td>
-            <td><WinrateTag class={""} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/></td>
+            <td>
+              <WinrateTag class={""} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/>
+              <span :if={!cs.sufficient_mull and !show_counts(@filters)}>⚠️</span>
+            </td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
-            <td><WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :drawn_impact)}/></td>
-            <td :if={show_counts(@filters)}>{Util.get(cs, :drawn_total)}</td>
+            <td>
+              <WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :drawn_impact)}/>
+              <span :if={!cs.sufficient_drawn and !show_counts(@filters)}>⚠️</span>
+            </td>
+            <td :if={show_counts(@filters)}>
+              {Util.get(cs, :drawn_total)}</td>
 
             <td class="is-hidden-mobile"><WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :kept_impact)}/></td>
             <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
@@ -187,7 +194,7 @@ defmodule Components.CardStatsTable do
     do: %{"min_mull_count" => 0, "min_drawn_count" => 0}
 
   def default_minimum_counts(%{"min_count" => min_count}),
-    do: %{"min_mull_count" => 0, "min_drawn_count" => 0}
+    do: %{"min_mull_count" => min_count, "min_drawn_count" => min_count}
 
   def default_minimum_counts(_),
     do: %{
@@ -218,7 +225,7 @@ defmodule Components.CardStatsTable do
   defp deck_id(%{"player_deck_id" => d}), do: d
   defp deck_id(_), do: nil
 
-  def map_filter(stats, filters) do
+  def map_filter(stats, filters, to_highlight) do
     %{"min_mull_count" => default_mull_min, "min_drawn_count" => default_drawn_min} =
       default_minimum_counts(filters)
 
@@ -229,9 +236,17 @@ defmodule Components.CardStatsTable do
       mull = Util.get(cs, :mull_total)
       drawn = Util.get(cs, :drawn_total)
       card = card(Util.get(cs, :card_id))
+      sufficient_mull = mull >= mull_min
+      sufficient_drawn = drawn >= drawn_min
+      in_highlight = card != nil and Hearthstone.canonical_id(card.id) in to_highlight
 
-      if mull > mull_min and drawn > drawn_min and card != nil do
-        [Map.put(cs, :card, card)]
+      if in_highlight or (sufficient_mull and sufficient_drawn and card != nil) do
+        [
+          cs
+          |> Map.put(:card, card)
+          |> Map.put(:sufficient_mull, sufficient_mull)
+          |> Map.put(:sufficient_drawn, sufficient_drawn)
+        ]
       else
         []
       end
