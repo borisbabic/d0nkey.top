@@ -117,80 +117,27 @@
             </div>
           </div>
 
-         <%= if Twitch.HearthstoneLive.twitch_display_live?("MAXTeamTV", "MAX Open Cup 9") do %>
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6319a0dec4fa012b14cd0f4b", %{stage_id: "6319a13f8196801c559cc30f"}) }>
-          Max Open 9
-          <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-          </a>
-         <% end %>
-
-         <%= if Util.in_range?(NaiveDateTime.utc_now(), {~N[2022-05-03 05:01:00], ~N[2022-05-06 08:00:00]}) do %>
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "625e7176b31e652df4f63a63")}>
-          Orange Open
-          <%= if Twitch.HearthstoneLive.twitch_display_live?("orange_hs", "Open") do %>
-            <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-          <% end %>
-          </a>
-         <% end %>
-
-         <%= if Util.in_range?(NaiveDateTime.utc_now(), {~N[2022-11-25 12:01:00], ~N[2022-11-28 08:00:00]}) do %>
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "636ec2c1a2fbe70578c33023")}>
-          Bunny Open
-          <%= if Twitch.HearthstoneLive.twitch_display_live?("bunnyhoppor", "Open") do %>
-            <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-          <% end %>
-          </a>
-         <% end %>
-
-         <%= if Util.in_range?(NaiveDateTime.utc_now(), {~N[2023-02-18 16:30:00], ~N[2023-02-21 08:00:00]}) do %>
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "63ed758e3ff61558589ddc12")}>
-          THL Trio Tunament
-          <%= if Twitch.HearthstoneLive.twitch_display_live?("teamhearthleague") do %>
-            <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-          <% end %>
-          </a>
-         <% end %>
-
-         <%= if Util.in_range?(NaiveDateTime.utc_now(), {~N[2022-05-13 11:01:00], ~N[2022-05-16 08:00:00]}) do %>
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, "6271bd62d44c844993e4e1a7")}>
-          Torneo Comunidad Hispana
-          </a>
-         <% end %>
-
-       <%= if show_fantasy?() do %>
-         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.FantasyIndexLive) }"}>Fantasy</a>
-       <% end %>
-       <%= if show_lobby_legends?() do %>
-         <a class="navbar-item" href="/lobby-legends">Lobby Legends</a>
-       <% end %>
-
-       <%= if :gt == NaiveDateTime.compare(~N[2021-12-21 13:37:00], NaiveDateTime.utc_now()) do %>
-         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.WC2021Live) }"}>WC 2021</a>
-       <% end %>
-
-       <%= if :gt == NaiveDateTime.compare(~N[2022-12-20 13:37:00], NaiveDateTime.utc_now()) do %>
-         <a class="navbar-item" href={"#{Routes.live_path(@conn, BackendWeb.WC2022Live) }"}>WC 2022</a>
-       <% end %>
-
-       <%= if :gt == NaiveDateTime.compare(~N[2022-06-06 13:37:00], NaiveDateTime.utc_now()) do %>
-         <a class="navbar-item" href={"/seasonal/2022/summer"}>Summer Champs</a>
-       <% end %>
+        <LayoutComponent.live_battlefy 
+          display={"Solary"} 
+          start={~N[2023-12-02 12:00:00]} 
+          finish={~N[2023-12-03 23:30:00]} 
+          battlefy_id={"65698104b4c24914dc78b569"}
+          twitch={"solaryhs"}
+        />
+        <LayoutComponent.live_battlefy 
+          display={"BotD"} 
+          start={~N[2023-12-02 16:00:00]} 
+          finish={~N[2023-12-04 05:30:00]} 
+          battlefy_id={Bot.BattleOfTheDiscordsMessageHandler.battlefy_id()}
+          twitch={"teamhearthleague"}
+        />
 
        <%= current_mt @conn %>
 
        <%= current_dreamhack @conn %>
-
-
      </div>
 
      <div class="navbar-end">
-        <%= if Twitch.HearthstoneLive.twitch_id_live?("139592098") do %>
-          <div class="navbar-item">
-            <a href="https://www.twitch.tv/d0nkeyhs">
-              <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
-            </a>
-          </div>
-        <% end %>
         <a class="navbar-item" href="/hdt-plugin">HDT Plugin </a>
      </div>
    </div>
@@ -200,7 +147,7 @@
    if (navbar) {
    navbar.style.display = '';
    } else {
-       console.log("Couldn't get navbar!")
+       conyole.log("Couldn't get navbar!")
    }
 
 document.addEventListener('DOMContentLoaded', () => {
