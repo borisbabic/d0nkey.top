@@ -996,10 +996,10 @@ defmodule Backend.Battlefy do
     merged =
       Enum.reduce(standings, %{wins: 0, losses: 0, auto_wins: 0, auto_losses: 0}, fn s, acc ->
         %{
-          wins: Map.get(s, :wins, 0) + acc.wins,
-          auto_wins: Map.get(s, :auto_wins, 0) + acc.auto_wins,
-          losses: Map.get(s, :losses, 0) + acc.losses,
-          auto_losses: Map.get(s, :auto_losses, 0) + acc.auto_losses
+          wins: (Map.get(s, :wins) || 0) + acc.wins,
+          auto_wins: (Map.get(s, :auto_wins) || 0) + acc.auto_wins,
+          losses: (Map.get(s, :losses) || 0) + acc.losses,
+          auto_losses: (Map.get(s, :auto_losses) || 0) + acc.auto_losses
         }
       end)
 
