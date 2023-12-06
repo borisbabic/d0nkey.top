@@ -13,7 +13,7 @@ defmodule BackendWeb.CardsLive do
     ~F"""
       <div>
         <div class="title is-2">Hearthstone Cards</div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+        <FunctionComponents.Ads.below_title/>
         <CardsExplorer id="cards_explorer" filters={@filters} />
       </div>
     """

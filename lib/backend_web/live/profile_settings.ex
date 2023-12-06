@@ -22,7 +22,7 @@ defmodule BackendWeb.ProfileSettingsLive do
     ~F"""
       <div>
         <div class="title is-2">Profile Settings</div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+        <FunctionComponents.Ads.below_title/>
         <div :if={@user}>
           <Form for={%{}} as={:user} submit="submit">
             <Field name="battlefy_slug">

@@ -28,7 +28,7 @@ defmodule BackendWeb.GroupLive do
               | <a href={group.discord} target="_blank">Discord</a>
             </span>
           </div>
-          <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+          <FunctionComponents.Ads.below_title/>
 
             <div class="level is-mobile">
               <div class="level-left">

@@ -14,7 +14,7 @@ defmodule BackendWeb.MetaLive do
     ~F"""
       <div>
         <div class="title is-2">Meta</div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+        <FunctionComponents.Ads.below_title/>
         <TierList id="tier_list" criteria={@criteria} params={@params} live_view={__MODULE__}/>
       </div>
     """

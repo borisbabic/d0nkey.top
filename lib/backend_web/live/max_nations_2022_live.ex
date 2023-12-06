@@ -23,7 +23,7 @@ defmodule BackendWeb.MaxNations2022Live do
             <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
           </a>
         </div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
+        <FunctionComponents.Ads.below_title/>
           <TournamentLineupExplorer id={"max_lineups_explorer"} tournament_id={@week} tournament_source={MaxNations2022.lineup_tournament_source()} show_page_dropdown={false} filters={%{"order_by" => {:asc, :name}}} page_size={150}>
               <Dropdown title={@week} >
                 <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>

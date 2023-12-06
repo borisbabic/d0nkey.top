@@ -77,3 +77,34 @@ window['nitroAds'].createAd('nitropay-interstitial', {
     mediaQuery: "(min-width: 1025px), (min-width: 768px) and (max-width: 1024px)"
   });
 </script>
+
+<script type="text/javascript">
+  window["nitroAds"].createAd("nitropay-video-mobile", {
+    format: "video-nc",
+    video: {
+      float: "after",
+      hide_playlist: true,
+      mobile: "full"
+    },
+    report: {
+      enabled: true,
+      wording: "Report Ad",
+      position: "fixed-bottom-right"
+    },
+    mediaQuery: "(max-width: 768px)"
+  });
+  window["nitroAds"].createAd("nitropay-video-mobile-floating", {
+    format: "video-nc",
+    video: {
+      float: "always",
+      hide_playlist: true,
+      mobile: "compact"
+    },
+    report: {
+      enabled: true,
+      wording: "Report Ad",
+      position: "fixed-bottom-right"
+    },
+    mediaQuery: "(max-width: 768px)"
+  });
+</script>

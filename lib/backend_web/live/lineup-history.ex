@@ -14,7 +14,7 @@ defmodule BackendWeb.LineupHistoryLive do
     ~F"""
       <div>
         <div class="title is-2"><a href={Routes.player_path(BackendWeb.Endpoint, :player_profile, @name)}>{@name}</a></div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+        <FunctionComponents.Ads.below_title/>
         <table class="table" :if={lineups = Backend.Hearthstone.lineup_history(@source, @name)}>
           <thead>
             <tr>

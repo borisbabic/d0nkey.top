@@ -40,7 +40,7 @@ defmodule BackendWeb.FantasyDraftLive do
         <div class="subtitle is-4">
           Online now: {@present |> Enum.uniq() |> Enum.join(" | ")}
         </div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
+        <FunctionComponents.Ads.below_title/>
         <div :if={!League.draft_started?(@league)} >
           Draft Not Started
         </div>

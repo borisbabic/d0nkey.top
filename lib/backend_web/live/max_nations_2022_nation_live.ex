@@ -16,7 +16,7 @@ defmodule BackendWeb.MaxNations2022NationLive do
     ~F"""
       <div>
         <div class="title is-2">{@nation}</div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+        <FunctionComponents.Ads.below_title/>
           <table class="table" :if={lineups = MaxNations2022.get_nation_lineups(@nation)}>
             <thead>
               <tr>

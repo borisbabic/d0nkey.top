@@ -40,7 +40,7 @@ defmodule BackendWeb.CardLive do
           <a href={~p"/streamer-decks?#{%{include_cards: %{Hearthstone.canonical_id(@card.id) => true}}}"}>Find Streamer Decks</a>
         </div>
         <Card id={"card_#{@card.id}"} card={@card} />
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
+        <FunctionComponents.Ads.below_title/>
         <Card :for={child <- Hearthstone.child_cards(@card)} id={"card_#{child.id}"} card={child} />
         <CardInfo id={"card_info_{@card.id}"} card={@card}/>
       </div>
