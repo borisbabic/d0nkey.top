@@ -30,7 +30,7 @@ defmodule BackendWeb.SummerChamps2022Live do
                 Stream
               </a>
             </div>
-            <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
+            <FunctionComponents.Ads.below_title/>
 
             <TournamentLineupExplorer id={"summer_champs_2022"} tournament_id={"62974ac9a643830800c8d125"} tournament_source="battlefy" show_page_dropdown={false} filters={%{"order_by" => {:asc, :name}}} page_size={100}>
             </TournamentLineupExplorer>

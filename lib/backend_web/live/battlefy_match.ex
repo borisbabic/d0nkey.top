@@ -30,7 +30,7 @@ defmodule BackendWeb.BattlefyMatchLive do
         <div class="subtitle is-5">
           {subtitle(@match)}
         </div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+        <FunctionComponents.Ads.below_title/>
         <table class="table is-fullwidth">
           <thead>
             <tr>

@@ -32,7 +32,7 @@ defmodule BackendWeb.WC2022Live do
                 Stream
               </a>
             </div>
-            <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
+            <FunctionComponents.Ads.below_title/>
 
             <TournamentLineupExplorer id={"wc_2022"} tournament_id={"gm_2022_3_Group Stage"} tournament_source="grandmasters" show_page_dropdown={false} filters={%{"order_by" => {:asc, :name}}} page_size={100}>
             </TournamentLineupExplorer>

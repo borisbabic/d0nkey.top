@@ -22,7 +22,7 @@ defmodule BackendWeb.GrandmastersLineup do
           <div :if={Lineup.stats(lineups)} >
             <div class="title is-2">Grandmasters Decks</div>
             <div class="subtitle is-5">{subtitle(@week)}</div>
-            <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div>
+            <FunctionComponents.Ads.below_title/>
 
             <TournamentLineupExplorer id={"grandmasters_tournament_lineup_#{@week}"} tournament_id={"#{tournament_id(@week)}"} tournament_source="grandmasters" show_page_dropdown={false} gm_week={@week} filters={%{"order_by" => {:asc, :name}}} page_size={100}>
               <Dropdown title={@week} >

@@ -1,4 +1,4 @@
-defmodule BackendWeb.FunctionComponents.LayoutComponent do
+defmodule FunctionComponents.LayoutComponent do
   @moduledoc "Function components for the layout, primarily the navbar"
   use BackendWeb, :component
 

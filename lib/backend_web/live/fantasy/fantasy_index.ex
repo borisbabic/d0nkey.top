@@ -14,7 +14,7 @@ defmodule BackendWeb.FantasyIndexLive do
     ~F"""
       <div>
         <div class="title is-2">Fantasy Leagues</div>
-        <div phx-update="ignore" id="nitropay-below-title-leaderboard"></div><br>
+        <FunctionComponents.Ads.below_title/>
         <div class="level">
           <div class="level-left">
             <FantasyModal id="create_modal" title="Create Fantasy League"/>
