@@ -7,8 +7,6 @@ defmodule FunctionComponents.Ads do
   attr :br, :boolean, default: true
 
   def below_title(assigns) do
-    IO.inspect(assigns, label: :assigns)
-
     ~H"""
       <.below_title_leaderboard :if={@leaderboard} />
       <.mobile_video :if={@mobile_video} />

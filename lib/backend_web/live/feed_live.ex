@@ -4,6 +4,7 @@ defmodule BackendWeb.FeedLive do
   alias Components.Feed.DeckFeedItem
   alias Components.Feed.LatestHSArticles
   alias Components.Feed.TierList
+  alias Components.Feed.Tweet
   alias Components.OmniBar
   use BackendWeb, :surface_live_view
 
@@ -23,7 +24,7 @@ defmodule BackendWeb.FeedLive do
             <OmniBar id="omni_bar_id"/>
           </div>
           <div class="level-item">
-            <FunctionComponents.Ads.below_title mobile_video_floating={true} />
+            <FunctionComponents.Ads.below_title mobile_video={true} />
           </div>
           <div :if={false} class="level-item title is-2">Well Met!</div>
         </div>
@@ -34,6 +35,9 @@ defmodule BackendWeb.FeedLive do
             </div>
             <div :if={item.type == "latest_hs_articles"}>
               <LatestHSArticles />
+            </div>
+            <div :if={item.type == "tweet"}>
+              <Tweet item={item}/>
             </div>
             <div :if={item.type == "tier_list"}>
               <TierList />
