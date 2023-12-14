@@ -194,6 +194,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       quest?(card_info) || questline?(card_info) -> :"Quest Druid"
       boar?(card_info) -> :"Boar Druid"
       vanndar?(card_info) -> :"Vanndar Druid"
+      fire_druid?(card_info) -> :"Fire Druid"
       chad_druid?(card_info) -> :"Chad Druid"
       big_druid?(card_info) -> :"Big Druid"
       celestial_druid?(card_info) -> :"Celestial Druid"
@@ -260,11 +261,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       arcane_hunter?(card_info) && (big_beast_hunter?(card_info) or beast_hunter?(card_info)) ->
         :"Arcane Beast Hunter"
 
-      secret_hunter?(card_info) ->
-        :"Secret Hunter"
-
       arcane_hunter?(card_info) ->
         :"Arcane Hunter"
+
+      secret_hunter?(card_info) ->
+        :"Secret Hunter"
 
       rat_hunter?(card_info) ->
         :"Rattata Hunter"
@@ -293,6 +294,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       shockspitter?(card_info) ->
         :"Shockspitter Hunter"
 
+      zoo_hunter?(card_info) ->
+        :"Zoo Hunter"
+
       egg_hunter?(card_info) ->
         :"Egg Hunter"
 
@@ -302,6 +306,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp zoo_hunter?(ci) do
+    min_count?(ci, 3, ["Observer of Myths", "Hawkstrider Rancher", "Saddle Up!", "Shadehound"])
   end
 
   defp egg_hunter?(ci),
@@ -1234,6 +1242,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp celestial_druid?(%{card_names: card_names}), do: "Celestial Alignment" in card_names
+
+  defp fire_druid?(ci) do
+    min_count?(ci, 2, [
+      "Pyrotechnician",
+      "Thaddius, Monstrosity"
+    ])
+  end
 
   defp chad_druid?(ci) do
     min_count?(ci, 2, [
