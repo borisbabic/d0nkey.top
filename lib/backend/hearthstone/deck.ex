@@ -549,6 +549,8 @@ defmodule Backend.Hearthstone.Deck do
       down =~ "warrior" -> "WARRIOR"
       name_or_archetype =~ "DK" -> "DEATHKNIGHT"
       name_or_archetype =~ "DH" -> "DEMONHUNTER"
+      String.ends_with?(down, "lock") -> "WARLOCK"
+      String.ends_with?(down, "adin") -> "PALADIN"
       true -> "UNKNOWN"
     end
   end
