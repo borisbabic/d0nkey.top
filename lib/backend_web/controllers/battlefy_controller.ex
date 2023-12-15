@@ -158,22 +158,32 @@ defmodule BackendWeb.BattlefyController do
   end
 
   defp add_matches_standings(existing = %{tournament: tournament}, params) do
-    {:ok, {stage_id, standings}} = Battlefy.get_tournament_standings_and_stage_id(tournament)
+    case Battlefy.get_tournament_standings_and_stage_id(tournament) do
+      {:ok, {stage_id, standings}} ->
+        {matches, show_ongoing} =
+          if is_ongoing(params) do
+            {Battlefy.get_tournament_matches(tournament), true}
+          else
+            {[], false}
+          end
 
-    {matches, show_ongoing} =
-      if is_ongoing(params) do
-        {Battlefy.get_tournament_matches(tournament), true}
-      else
-        {[], false}
-      end
+        existing
+        |> Map.merge(%{
+          standings_raw: standings,
+          matches: matches,
+          show_ongoing: show_ongoing,
+          standings_stage_id: stage_id
+        })
 
-    existing
-    |> Map.merge(%{
-      standings_raw: standings,
-      matches: matches,
-      show_ongoing: show_ongoing,
-      standings_stage_id: stage_id
-    })
+      _ ->
+        existing
+        |> Map.merge(%{
+          standings_raw: [],
+          matches: [],
+          standings_stage_id: nil,
+          show_ongoing: is_ongoing(params)
+        })
+    end
   end
 
   def get_highlight(params), do: multi_select_to_array(params["player"])
