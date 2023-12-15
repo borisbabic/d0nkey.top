@@ -7,6 +7,8 @@ defmodule Components.TierList do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
+  alias Components.WinrateTag
+  alias Backend.Hearthstone.Deck
   import Components.DecksExplorer, only: [parse_int: 2, class_options: 2]
 
   prop(data, :list, default: [])
@@ -55,8 +57,14 @@ defmodule Components.TierList do
           </thead>
           <tbody>
             <tr :for={as <- stats(@data, @criteria)}>
-              <td><a href={~p"/card-stats?archetype=#{as.archetype}"}>{as.archetype}</a></td>
-              <td>{to_percent(as.winrate)}</td>
+              <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
+                <a class="basic-black-text deck-title" href={~p"/card-stats?archetype=#{as.archetype}"}>
+                  {as.archetype}
+                </a>
+              </td>
+              <td>
+                <WinrateTag winrate={as.winrate}/>
+              </td>
               <td>{as.total}</td>
             </tr>
           </tbody>

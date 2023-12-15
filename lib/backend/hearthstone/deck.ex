@@ -529,6 +529,30 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
+  @spec extract_class(String.t()) :: String.t()
+  def extract_class(name_or_archetype) when is_binary(name_or_archetype) do
+    down = String.downcase(name_or_archetype)
+
+    cond do
+      down =~ "death knight" -> "DEATHKNIGHT"
+      down =~ "deathknight" -> "DEATHKNIGHT"
+      down =~ "demon hunter" -> "DEMONHUNTER"
+      down =~ "demonhunter" -> "DEMONHUNTER"
+      down =~ "druid" -> "DRUID"
+      down =~ "hunter" -> "HUNTER"
+      down =~ "mage" -> "MAGE"
+      down =~ "paladin" -> "PALADIN"
+      down =~ "priest" -> "PRIEST"
+      down =~ "rogue" -> "ROGUE"
+      down =~ "shaman" -> "SHAMAN"
+      down =~ "warlock" -> "WARLOCK"
+      down =~ "warrior" -> "WARRIOR"
+      name_or_archetype =~ "DK" -> "DEATHKNIGHT"
+      name_or_archetype =~ "DH" -> "DEMONHUNTER"
+      true -> "UNKNOWN"
+    end
+  end
+
   def create_comparison_map(decklists = [code | _]) when is_binary(code) do
     decklists |> Enum.map(&decode!/1) |> create_comparison_map()
   end
