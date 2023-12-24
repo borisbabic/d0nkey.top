@@ -41,7 +41,7 @@ defmodule Hearthstone.DeckTracker.ArchetypeBag do
 
   def get_archetypes(format \\ "all") when is_binary(format) or is_integer(format) do
     key = format_key(format)
-    table() |> Util.ets_lookup(key)
+    Util.ets_lookup(table(), key) || []
   end
 
   def update(), do: GenServer.cast(__MODULE__, :update)
