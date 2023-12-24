@@ -43,11 +43,11 @@ defmodule Components.Decklist do
                       {render_deckcode(deckcode, false)}
                   </div>
                   <div class="level-left deck-text">
-                    <div class="deck-title">
+                    <h2 class="deck-title">
                       <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={"/deck/#{link_part(@deck)}"}>{deck_name(@deck, @name, @archetype_as_name)}</a>
                       <span style="font-size: 0; line-size:0; display:block">
                       {Deck.deckcode(@deck)}</span></span>
-                    </div>
+                    </h2>
                   </div>
                   <div class="level-right">
                       <#slot {@right_button} />
