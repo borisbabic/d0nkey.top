@@ -57,7 +57,7 @@ defmodule Components.Filter.ArchetypeSelect do
   def archetypes(search, selected, selectable_archetypes, criteria) do
     num_to_show = (7 - Enum.count(selected)) |> max(3)
 
-    archetypes(selectable_archetypes, criteria)
+    (archetypes(selectable_archetypes, criteria) || [])
     |> Enum.filter(&(String.downcase(to_string(&1)) =~ String.downcase(search)))
     |> Enum.reject(&(to_string(&1) in selected))
     |> Enum.take(num_to_show)
