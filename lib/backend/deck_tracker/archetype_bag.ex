@@ -18,18 +18,16 @@ defmodule Hearthstone.DeckTracker.ArchetypeBag do
   end
 
   defp update_table(table) do
-    base_criteria = [{"period", "past_2_weeks"}]
-
     for {_, format, _} <- Hearthstone.Enums.Format.all() do
       key = format_key(format)
 
-      DeckTracker.archetypes([{"format", format} | base_criteria])
+      DeckTracker.currently_aggregated_archetypes(format)
       |> insert_archetypes(table, key)
     end
 
     key = format_key("all")
 
-    DeckTracker.archetypes(base_criteria)
+    DeckTracker.currently_aggregated_archetypes()
     |> insert_archetypes(table, key)
   end
 

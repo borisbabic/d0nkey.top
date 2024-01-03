@@ -646,6 +646,23 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
+  def currently_aggregated_archetypes() do
+    base_currently_aggregated_archetypes()
+    |> Repo.all()
+  end
+
+  def currently_aggregated_archetypes(format) do
+    base_currently_aggregated_archetypes()
+    |> where([ag], ag.format == ^format)
+    |> Repo.all()
+  end
+
+  def base_currently_aggregated_archetypes() do
+    from ag in AggregatedStats,
+      select: ag.archetype,
+      distinct: ag.archetype
+  end
+
   defp base_archetypes_query(),
     do:
       from(pd in Deck,
