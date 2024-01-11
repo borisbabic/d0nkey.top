@@ -24,13 +24,13 @@ defmodule FunctionComponents.LayoutComponent do
 
   attr :sub_menus, :list, required: false, default: []
   attr :display, :string, required: true
-  attr :main_link, :string, required: false, default: nil
+  attr :main_link, :string, required: false, default: "#"
   slot :inner_block, required: true
 
   def navbar_dropdown(assigns) do
     ~H"""
       <div class="navbar-item has-dropdown" @mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data={"{#{init_to_false(["open" | @sub_menus])}}"} x-bind:class="{'is-active': open}">
-        <a @mouseover="open=true" class="navbar-item navbar-link" {%{href: @main_link}}>
+        <a @keydown.down="open=true" @keydown.enter.prevent="open=true" @mouseover="open=true" class="navbar-item navbar-link" {%{href: @main_link}}>
           <%= @display %>
         </a>
           <div class="navbar-dropdown">
@@ -45,7 +45,7 @@ defmodule FunctionComponents.LayoutComponent do
 
   def navbar_item_link(assigns) do
     ~H"""
-    <a class="navbar-item" href={@link}><%= @display %></a>
+    <a class="navbar-item" tabindex="0" href={@link}><%= @display %></a>
     """
   end
 
