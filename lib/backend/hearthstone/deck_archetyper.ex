@@ -200,10 +200,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       celestial_druid?(card_info) -> :"Celestial Druid"
       menagerie?(card_info) -> :"Menagerie Druid"
       moonbeam_druid?(card_info) -> :"Moonbeam Druid"
-      treant_druid?(card_info) -> :"Treant Druid"
       murloc?(card_info) -> :"Murloc Druid"
       "Lady Prestor" in card_info.card_names -> :"Prestor Druid"
-      aggro_druid?(card_info) -> :"Aggro Druid"
       "Gadgetzan Auctioneer" in card_info.card_names -> :"Miracle Druid"
       ignis_druid?(card_info) -> :"Ignis Druid"
       "Tony, King of Piracy" in card_info.card_names -> :"Tony Druid"
@@ -211,6 +209,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       hero_power_druid?(card_info) -> :"Hero Power Druid"
       choose_one?(card_info) -> :"Choose Druid"
       afk_druid?(card_info) -> :"AFK Druid"
+      "Topior the Shrubbagazzor" in card_info.card_names -> :"Topior Druid"
+      treant_druid?(card_info) -> :"Treant Druid"
+      aggro_druid?(card_info) -> :"Aggro Druid"
       "Drum Circle" in card_info.card_names -> :"Drum Druid"
       ramp_druid?(card_info) -> :"Ramp Druid"
       true -> fallbacks(card_info, "Druid")
@@ -725,6 +726,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Antique Flinger",
       "Drilly the Kid",
       "Bloodrock Co Shovel",
+      "Scourge Illusionist",
       "Bloodrock Co. Shovel" | @neutral_excavate
     ])
   end
@@ -1154,6 +1156,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Linecracker" in card_info.card_names && class_name == "Druid" ->
         :"Linecracker Druid"
 
+      "Darkbishop Benedictus" in card_info.card_names && class_name == "Priest" ->
+        :"Shadow Priest"
+
+      class_name == "Rogue" && wild_thief_rogue?(card_info) ->
+        :"Thief Rogue"
+
+      class_name == "Rogue" && wild_miracle_rogue?(card_info) ->
+        :"Miracle Rogue"
+
+      class_name == "Demon Hunter" && "Jace Darkweaver" in card_info.card_names &&
+          min_spell_school_count?(card_info, 5, "Fel") ->
+        :"Jace Demon Hunter"
+
       min_secret_count?(card_info, 4) ->
         String.to_atom("Secret #{class_name}")
 
@@ -1166,6 +1181,27 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   def archetype(_), do: nil
+
+  defp wild_miracle_rogue?(card_info) do
+    min_count?(card_info, 2, ["Mailbox Dancer", "Arcane Giant", "Edwin VanCleef"])
+  end
+
+  defp wild_thief_rogue?(card_info) do
+    min_count?(
+      card_info,
+      4,
+      [
+        "Kaj'mite Creation",
+        "Shell Game",
+        "Obsidian Shard",
+        "Velarok Windblade",
+        "Vendetta",
+        "Wildpaw Gnoll",
+        "Stick Up",
+        "Flint Firearm"
+      ]
+    )
+  end
 
   defp deathrattle_dh?(%{card_names: card_names}),
     do:
