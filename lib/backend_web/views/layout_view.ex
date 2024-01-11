@@ -1,6 +1,6 @@
 defmodule BackendWeb.LayoutView do
   use BackendWeb, :view
-  alias FunctionComponents.LayoutComponent
+  import FunctionComponents.LayoutComponent
 
   def current_mt(conn) do
     case Backend.MastersTour.TourStop.get_current() do
