@@ -58,7 +58,7 @@ defmodule Components.TierList do
           <tbody>
             <tr :for={as <- stats(@data, @criteria)}>
               <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
-                <a class="basic-black-text deck-title" href={~p"/card-stats?archetype=#{as.archetype}"}>
+                <a class="basic-black-text deck-title" href={~p"/card-stats?#{card_stats_params(@params, as.archetype)}"}>
                   {as.archetype}
                 </a>
               </td>
@@ -98,4 +98,10 @@ defmodule Components.TierList do
 
   def to_percent(int) when is_integer(int), do: int / 1
   def to_percent(num), do: "#{Float.round(num * 100, 2)}%"
+
+  defp card_stats_params(params, archetype) do
+    params
+    |> Map.take(["format", "opponent_class", "period", "rank"])
+    |> Map.put("archetype", archetype)
+  end
 end
