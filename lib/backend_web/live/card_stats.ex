@@ -22,12 +22,22 @@ defmodule BackendWeb.CardStatsLive do
         <div class="title is-2">{@title || "Card Stats"}</div>
         <div :if={@deck} class="subtitle is-5">
           <a href={~p"/deck/#{@deck.id}"}>Deck Stats</a>
-          <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?archetype=#{archetype}&highlight_deck=#{@deck.id}"}>Archetype Card Stats</a>
+          <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"}>Archetype Card Stats</a>
         </div>
       <FunctionComponents.Ads.below_title/>
         <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria) || []} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
+  end
+
+  defp create_archetype_filters(params, archetype) do
+    base_filters =
+      case Map.pop(params, "deck_id") do
+        {nil, rest} -> rest
+        {deck_id, rest} -> Map.put(rest, "higlight_deck", deck_id)
+      end
+
+    Map.put(base_filters, "archetype", archetype)
   end
 
   defp stats(filters) do
