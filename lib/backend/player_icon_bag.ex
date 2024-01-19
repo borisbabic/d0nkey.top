@@ -108,12 +108,8 @@ defmodule Backend.PlayerIconBag do
   def get(player) do
     table = table()
 
-    with [] <- :ets.lookup(table, player),
-         [] <- :ets.lookup(table, Battletag.shorten(player)) do
-      nil
-    else
-      [{_, value}] -> value
-      other -> other
+    with nil <- Util.ets_lookup(table, player) do
+      Util.ets_lookup(table, Battletag.shorten(player))
     end
   end
 end

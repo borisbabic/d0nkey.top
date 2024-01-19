@@ -125,12 +125,12 @@ defmodule Backend.Streaming.StreamerDeckBag do
   def get(criteria) do
     with true <- supports?(criteria),
          {:ok, key} <- key(criteria),
-         [{^key, sd}] <- :ets.lookup(table(), key) do
+         sd when sd != :not_set <- Util.ets_lookup(table(), key, :not_set) do
       {:ok, sd}
     else
       false -> {:error, :unsupported_criteria}
       :error -> {:error, :couldnt_create_key}
-      [] -> GenServer.call(__MODULE__, {:init, criteria})
+      :not_set -> GenServer.call(__MODULE__, {:init, criteria})
     end
   end
 
