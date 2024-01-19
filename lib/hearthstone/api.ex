@@ -133,15 +133,15 @@ defmodule Hearthstone.Api do
 
   @spec access_token() :: {:ok, String.t()} | {:error, any()}
   def access_token() do
-    case :ets.lookup(table(), :access_token) do
-      [{:access_token, token}] ->
-        {:ok, token}
-
-      _ ->
+    case Util.ets_lookup(table(), :access_token, nil) do
+      nil ->
         with {:ok, token} <- create_access_token() do
           set_access_token(token)
           {:ok, token}
         end
+
+      token ->
+        {:ok, token}
     end
   end
 

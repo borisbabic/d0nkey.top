@@ -34,12 +34,7 @@ defmodule Backend.Infrastructure.ApiCache do
   def handle_call({:get, key}, _from, state) do
     %{table: table} = state
 
-    value =
-      case :ets.lookup(table, key) do
-        [{found_key, value}] when found_key == key -> value
-        [] -> nil
-        other -> other
-      end
+    value = Util.ets_lookup(table, key, nil)
 
     {:reply, value, state}
   end

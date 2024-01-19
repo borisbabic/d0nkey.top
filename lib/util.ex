@@ -532,16 +532,26 @@ defmodule Util do
     end
   end
 
-  def ets_lookup(table, key, default \\ nil)
+  def ets_lookup(table_or_ref, key, default \\ nil)
   def ets_lookup(:undefined, _, default), do: default
 
-  def ets_lookup(table, key, default) do
-    case :ets.lookup(table, key) do
-      [{found_key, value}] when found_key == key -> value
+  def ets_lookup(table_or_ref, key, default) do
+    with ref when is_reference(ref) <- ets_table_reference(table_or_ref),
+         [{found_key, value}] when found_key == key <- :ets.lookup(ref, key) do
+      value
+    else
+      # no table
+      :undefined -> default
+      # no result
       [] -> default
+      # ???
       other -> other
     end
   end
+
+  def ets_table_reference(reference) when is_reference(reference), do: reference
+  def ets_table_reference(table) when is_atom(table), do: :ets.whereis(table)
+  def ets_table_reference(_), do: :undefined
 
   def or_nil({:ok, thing}), do: thing
   def or_nil({:error, _}), do: nil
