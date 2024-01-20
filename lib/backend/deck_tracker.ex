@@ -621,7 +621,15 @@ defmodule Hearthstone.DeckTracker do
     %Game{}
     |> Game.changeset(attrs)
     |> Repo.insert()
+    |> broadcast_game()
   end
+
+  defp broadcast_game({:ok, %Game{} = game}) do
+    BackendWeb.Endpoint.broadcast_from(self(), "hs:decktracker:game", "insert", game)
+    {:ok, game}
+  end
+
+  defp broadcast_game(ret), do: ret
 
   def games(criteria) do
     base_games_query()
