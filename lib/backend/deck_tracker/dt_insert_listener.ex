@@ -8,18 +8,23 @@ defmodule Hearthstone.DeckTracker.InsertListener do
   end
 
   def init(_args) do
-    BackendWeb.Endpoint.subscribe("entity_dt_games")
+    BackendWeb.Endpoint.subscribe("hs:decktracker:game")
     {:ok, %{}}
   end
 
-  def handle_info(%{event: "INSERT", topic: "entity_dt_games", payload: %{id: id}}, state) do
-    process_inserted_id(id)
+  def handle_info(%{topic: "hs:decktracker:game", event: "insert", payload: game}, state) do
+    process_game(game)
     {:noreply, state}
   end
 
   def process_inserted_id(id) do
-    with game = %{id: _} <- DeckTracker.get_game(id),
-         %{twitch_id: twitch_id} when is_binary(twitch_id) <-
+    with game = %{id: _} <- DeckTracker.get_game(id) do
+      process_game(game)
+    end
+  end
+
+  def process_game(game) do
+    with %{twitch_id: twitch_id} when is_binary(twitch_id) <-
            Backend.UserManager.get_by_btag(game.player_btag),
          true <- Twitch.HearthstoneLive.twitch_id_live?(twitch_id) do
       handle_live_dt_game(game, twitch_id)
