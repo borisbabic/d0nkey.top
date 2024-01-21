@@ -34,7 +34,7 @@ defmodule BackendWeb.CardStatsLive do
     base_filters =
       case Map.pop(params, "deck_id") do
         {nil, rest} -> rest
-        {deck_id, rest} -> Map.put(rest, "higlight_deck", deck_id)
+        {deck_id, rest} -> Map.put(rest, "highlight_deck", deck_id)
       end
 
     Map.put(base_filters, "archetype", archetype)
