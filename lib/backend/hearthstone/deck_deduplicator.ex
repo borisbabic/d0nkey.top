@@ -27,8 +27,19 @@ defmodule Backend.Hearthstone.DeckDeduplicator do
     |> Repo.transaction(timeout: 666_000)
   end
 
-  def enqueue_played(num \\ 1000) when is_integer(num) do
-    [{"period", "past_2_weeks"}, {"min_games", 50}, {"limit", num}]
+  @default_criteria %{
+    "period" => "past_week",
+    "format" => 2,
+    "rank" => "all",
+    "opponent_class" => nil,
+    "min_games" => 50
+  }
+  def enqueue_played(num \\ 1000)
+  def enqueue_played(num) when is_integer(num), do: enqueue_played(%{"limit" => num})
+
+  def enqueue_played(criteria_override) when is_map(criteria_override) do
+    Map.merge(@default_criteria, criteria_override)
+    |> Enum.to_list()
     |> enqueue_played()
   end
 
