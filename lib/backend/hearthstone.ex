@@ -231,8 +231,25 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  def deck(cards, hero, format, sideboards),
-    do: Deck.deckcode(cards, hero, format, sideboards) |> deck()
+  def deck(cards, hero, format, sideboards) do
+    with nil <- Deck.deckcode(cards, hero, format, sideboards) |> deck(),
+         [] <- decks_from_parts(cards, hero, format, sideboards) do
+      nil
+    else
+      %Deck{} = deck -> deck
+      [%Deck{} = deck | _] -> deck
+      _ -> nil
+    end
+  end
+
+  def decks_from_parts(cards, hero, format, sideboards) do
+    decks([
+      {"cards", cards},
+      {"hero", hero},
+      {"format", format},
+      {"sideboards", sideboards}
+    ])
+  end
 
   def create_deck(cards, hero, format, sideboards) do
     class = class(hero)
@@ -523,6 +540,23 @@ defmodule Backend.Hearthstone do
       query
     end
   end
+
+  defp compose_decks_query({"hero", hero}, query), do: query |> where([deck: d], d.hero == ^hero)
+
+  defp compose_decks_query({"format", format}, query),
+    do: query |> where([deck: d], d.format == ^format)
+
+  defp compose_decks_query({"cards", cards}, query),
+    do: query |> where([deck: d], d.cards == ^cards)
+
+  defp compose_decks_query({"sideboards", empty}, query) when empty in [nil, []],
+    do: query |> where([deck: d], is_nil(d.sideboards) or d.sideboards == [])
+
+  defp compose_decks_query({"sideboards", sideboards}, query),
+    do: query |> where([deck: d], d.sideboards == ^sideboards)
+
+  defp compose_decks_query({"limit", limit}, query),
+    do: query |> limit(^limit)
 
   defp compose_decks_query({"class", nil}, query), do: query |> where([deck: d], is_nil(d.class))
 
