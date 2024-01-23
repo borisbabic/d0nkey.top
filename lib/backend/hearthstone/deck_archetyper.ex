@@ -472,6 +472,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       earthen_paladin?(card_info) && pure_paladin?(card_info) -> :"Gaia Pure Paladin"
       pure_paladin?(card_info) -> :"Pure Paladin"
       highlander?(card_info, c) -> :"Highlander Paladin"
+      excavate_paladin?(card_info) -> :"Excavate Paladin"
       aggro_paladin?(card_info) -> :"Aggro Paladin"
       menagerie?(card_info) -> :"Menagerie Paladin"
       quest?(card_info) || questline?(card_info) -> :"Quest Paladin"
@@ -486,9 +487,26 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       vanndar?(card_info) -> :"Vanndar Paladin"
       murloc?(card_info) -> :"Murloc Paladin"
       boar?(card_info) -> :"Boar Paladin"
-      oathbreaker_paladin?(card_info) -> :"Oathbreaker Paladin"
       true -> fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp excavate_paladin?(card_info) do
+    min_count?(
+      card_info,
+      3,
+      ["Shroomscavate", "Sir Finley, the Intrepid", "Fossilized Kaleidosaur" | @neutral_excavate]
+    )
+  end
+
+  defp excavate_paladin?(ci) do
+    min_count?(ci, 3, [
+      "Antique Flinger",
+      "Drilly the Kid",
+      "Bloodrock Co Shovel",
+      "Scourge Illusionist",
+      "Bloodrock Co. Shovel" | @neutral_excavate
+    ])
   end
 
   defp oathbreaker_paladin?(card_info) do
@@ -768,6 +786,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "From De Other Side" in card_info.card_names -> "FDOS Shaman"
       true -> fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp excavate_shaman?(card_info) do
+    min_count?(
+      card_info,
+      3,
+      ["Shroomscavate", "Sir Finley, the Intrepid", "Digging Straight Down" | @neutral_excavate]
+    )
   end
 
   defp totem_shaman?(ci) do
@@ -1302,8 +1328,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Stoneborn General"
       ])
 
-  defp ramp_druid?(ci = %{card_names: card_names}),
-    do: "Nourish" in card_names or min_count?(ci, 2, ["Wild Growth", "Widowbloom Seedsman"])
+  defp ramp_druid?(ci),
+    do:
+      min_count?(ci, 1, ["Nourish", "Crystal Cluster"]) or
+        min_count?(ci, 2, ["Wild Growth", "Widowbloom Seedsman"])
 
   defp hero_power_druid?(ci),
     do: min_count?(ci, 2, ["Free Spirit", "Groovy Cat"])
