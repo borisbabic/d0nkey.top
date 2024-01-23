@@ -153,7 +153,7 @@ config :backend, Oban,
     hsreplay_deck_mapper: 1,
     leaderboards_pages_fetching: 100,
     deck_stats_aggregator: 10,
-    deck_deduplicator: 20,
+    deck_deduplicator: 5,
     hsreplay_streamer_deck_inserter: 1
   ]
 
