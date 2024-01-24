@@ -20,9 +20,10 @@ defmodule BackendWeb.CardStatsLive do
     ~F"""
       <div>
         <div class="title is-2">{@title || "Card Stats"}</div>
-        <div :if={@deck} class="subtitle is-5">
-          <a href={~p"/deck/#{@deck.id}"}>Deck Stats</a>
-          <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"}>Archetype Card Stats</a>
+        <div class="subtitle is-6">
+          <span :if={@deck}><a href={~p"/deck/#{@deck.id}"}> Deck Stats</a> | </span>
+          <span :if={archetype = Deck.archetype(@deck)}><a href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"}>Archetype Card Stats</a> | </span>
+           <a href={~p"/stats/explanation"}>Stats Explanation</a> | To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>
         </div>
       <FunctionComponents.Ads.below_title/>
         <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria) || []} criteria={@criteria} live_view={__MODULE__}/>
