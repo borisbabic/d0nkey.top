@@ -28,3 +28,15 @@ Disallow: *?*page
 Disallow: /deck/*?*
 Disallow: /card-stats
 Disallow: /card-stats*?*
+Disallow: /qualifiers
+Disallow: /qualifiers*
+Disallow: /qualifiers?*
+Disallow: /mt/qualifier-stats
+Disallow: /mt/qualifier-stats*
+Disallow: /mt/qualifier-stats?*
+Disallow: /mt/points
+Disallow: /mt/points*
+Disallow: /mt/points?*
+Disallow: /mt/stats
+Disallow: /mt/stats*
+Disallow: /mt/stats?*
