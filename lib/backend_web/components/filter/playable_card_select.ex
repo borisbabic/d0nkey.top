@@ -57,10 +57,14 @@ defmodule Components.Filter.PlayableCardSelect do
   def cards(search, selected) do
     num_to_show = (7 - Enum.count(selected)) |> max(3)
 
-    Backend.Hearthstone.CardBag.standard_first()
-    |> Enum.filter(&(String.downcase(&1.name) =~ String.downcase(search)))
-    |> Enum.filter(&(!(&1.id in selected)))
-    |> Enum.take(num_to_show)
+    criteria = [
+      {"collectible", true},
+      {"order_by", "name_similarity_#{search}"},
+      {"id_not_in", selected},
+      {"limit", num_to_show}
+    ]
+
+    Backend.Hearthstone.cards(criteria)
   end
 
   def name(selected) do
