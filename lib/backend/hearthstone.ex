@@ -824,6 +824,11 @@ defmodule Backend.Hearthstone do
     |> order_by([card: c], desc: c.inserted_at)
   end
 
+  defp compose_cards_query({"id_not_in", ids}, query) when is_list(ids) do
+    query
+    |> where([card: c], c.id not in ^ids)
+  end
+
   defp compose_cards_query({"order_by", "name_similarity_" <> search_target}, query) do
     query
     |> order_by([card: c], desc: fragment("similarity(?, ?)", c.name, ^search_target))
