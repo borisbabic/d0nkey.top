@@ -72,7 +72,9 @@ defmodule Components.CardStatsTable do
 
             <th>
             <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
-              {add_arrow("Mulligan Impact", "mull_impact", @filters, true)}
+              <span data-balloon-pos="up" aria-label={"Mull (kept + unkept) winrate - deck winrate"}>
+                {add_arrow("Mulligan Impact", "mull_impact", @filters, true)}
+              </span>
             </a>
           </th>
             <th :if={show_counts(@filters)}>
@@ -83,7 +85,9 @@ defmodule Components.CardStatsTable do
 
             <th>
             <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
-              {add_arrow("Drawn Impact", "drawn_impact", @filters)}
+              <span data-balloon-pos="up" aria-label={"Drawn winrate - deck winrate"}>
+                {add_arrow("Drawn Impact", "drawn_impact", @filters)}
+              </span>
             </a>
           </th>
             <th :if={show_counts(@filters)}>
@@ -94,7 +98,9 @@ defmodule Components.CardStatsTable do
 
             <th class="is-hidden-mobile">
             <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
-              {add_arrow("Kept Impact", "kept_impact", @filters)}
+              <span data-balloon-pos="up" aria-label={"Winrate when kept - deck winrate"}>
+                {add_arrow("Kept Impact", "kept_impact", @filters)}
+              </span>
             </a>
           </th>
 
