@@ -315,6 +315,7 @@ defmodule BackendWeb.LeaderboardView do
 
     render("points.html", %{
       conn: conn,
+      subtitle: points_subtitle(ps),
       prev_button: prev_button,
       next_button: next_button,
       page_title:
@@ -325,6 +326,35 @@ defmodule BackendWeb.LeaderboardView do
       dropdowns: [limit_dropdown | create_points_dropdowns(params)]
     })
   end
+
+  def announcement_link_subtitle(assigns) do
+    ~H"""
+      <div class="subtitle is-5">
+          <a href={@link} target="_blank"><%= @display %></a>
+      </div>
+    """
+  end
+
+  @default_subtitle_year "2024"
+  def points_subtitle(ps) when is_atom(ps), do: ps |> to_string() |> points_subtitle()
+
+  def points_subtitle("2023" <> _) do
+    announcement_link_subtitle(%{
+      link: "https://hearthstone.blizzard.com/news/23904520",
+      display: "2023 Announcement"
+    })
+  end
+
+  def points_subtitle("2024" <> _) do
+    announcement_link_subtitle(%{
+      link: "https://hearthstone.blizzard.com/news/24056180",
+      display: "2024 Announcement"
+    })
+  end
+
+  # guard to prevent accidental infinite loop
+  def points_subtitle(ps) when ps != @default_subtitle_year,
+    do: points_subtitle(@default_subtitle_year)
 
   def render(
         "rank_history.html",

@@ -1,7 +1,7 @@
 <div class="title is-2"><%= @page_title %></div>
-<div class="subtitle is-5">
-    <a href="https://hearthstone.blizzard.com/news/23904520">2023 Announcement</a>
-</div>
+<%= if @subtitle do %>
+  <%= @subtitle %>
+<% end %>
 <%= form_for @conn, Routes.leaderboard_path(@conn, :points, @conn.query_params),
 [method: :get], fn
 f-> %>
