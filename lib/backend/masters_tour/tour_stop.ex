@@ -465,6 +465,56 @@ defmodule Backend.MastersTour.TourStop do
         display_name: "MT Fall Championship",
         swiss_rounds: 0,
         year: 2023
+      },
+      %__MODULE__{
+        id: :"Masters Tour 2024_1",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [124, 125],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 8},
+          {{2, 5}, 7},
+          {{6, 10}, 6},
+          {{11, 20}, 5},
+          {{21, 30}, 4},
+          {{31, 40}, 3},
+          {{41, 50}, 2},
+          {{51, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2023-04-21 16:00:00],
+        qualifiers_period: {~D[2023-03-01], ~D[2022-03-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "MT Spring Championship",
+        swiss_rounds: 0,
+        year: 2024
+      },
+      %__MODULE__{
+        id: :"Masters Tour 2023_2",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [128, 129],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 8},
+          {{2, 5}, 7},
+          {{6, 10}, 6},
+          {{11, 20}, 5},
+          {{21, 30}, 4},
+          {{31, 40}, 3},
+          {{41, 50}, 2},
+          {{51, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2023-08-19 16:00:00],
+        qualifiers_period: {~D[2023-06-01], ~D[2022-06-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "MT Summer Championship",
+        swiss_rounds: 0,
+        year: 2024
       }
     ]
   end
