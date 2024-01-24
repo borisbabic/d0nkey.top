@@ -17,7 +17,13 @@ defmodule Backend.LeaderboardsPoints do
     {"2023", "fall", 118, ["BG_LL", "STD"]},
     {"2023", "fall", 119, ["BG_LL", "STD"]},
     {"2023", nil, 120, ["STD"]},
-    {"2023", nil, 121, ["STD"]}
+    {"2023", nil, 121, ["STD"]},
+    {"2024", "spring", 124, ["STD"]},
+    {"2024", "spring", 125, ["STD"]},
+    {"2024", "summer", 128, ["STD"]},
+    {"2024", "summer", 129, ["STD"]},
+    {"2024", nil, 132, ["STD"]},
+    {"2024", nil, 133, ["STD"]}
   ]
 
   def calculate(ps, leaderboard_id, use_current \\ false) do
