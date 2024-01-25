@@ -1,7 +1,7 @@
 import Config
 
-import_config "cron_web.exs"
-import_config "cron_bot.exs"
+import_config "config_web.exs"
+import_config "config_bot.exs"
 
 config :backend,
   auto_migrate: false,

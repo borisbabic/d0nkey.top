@@ -142,21 +142,6 @@ config :torch,
   otp_app: :backend,
   template_format: "eex"
 
-config :backend, Oban,
-  repo: Backend.Repo,
-  plugins: [Oban.Plugins.Pruner],
-  queues: [
-    default: 10,
-    battlefy_lineups: 20,
-    grandmasters_lineups: 3,
-    gm_stream_live: 4,
-    hsreplay_deck_mapper: 1,
-    leaderboards_pages_fetching: 100,
-    deck_stats_aggregator: 10,
-    deck_deduplicator: 5,
-    hsreplay_streamer_deck_inserter: 1
-  ]
-
 config :phoenix_meta_tags,
   title: "d0nkey",
   description: "Hearthstone Streamer Decks and Esports Info",

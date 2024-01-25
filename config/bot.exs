@@ -1,6 +1,6 @@
 import Config
 
-import_config "cron_bot.exs"
+import_config "config_bot.exs"
 
 config :backend,
   warmup_cache: true,

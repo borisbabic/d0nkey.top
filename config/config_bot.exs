@@ -32,3 +32,17 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Hearthstone.DeckTracker.refresh_agg_stats() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
+
+config :backend, Oban,
+  repo: Backend.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [
+    default: 10,
+    battlefy_lineups: 20,
+    grandmasters_lineups: 1,
+    gm_stream_live: 4,
+    hsreplay_deck_mapper: 1,
+    leaderboards_pages_fetching: 20,
+    deck_deduplicator: 10,
+    hsreplay_streamer_deck_inserter: 1
+  ]
