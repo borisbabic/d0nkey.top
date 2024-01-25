@@ -30,9 +30,7 @@ defmodule Backend.Hearthstone.CardBag do
   Collectible cards sorted by standard first
   """
   def standard_first() do
-    all_cards()
-    |> Enum.filter(& &1.collectible)
-    |> order_by_standard()
+    Util.ets_lookup(table(), :standard_first, [])
   end
 
   defp order_by_standard(cards) do
@@ -120,12 +118,16 @@ defmodule Backend.Hearthstone.CardBag do
     set_deckcode_copy_id(table, cards)
     set_cards(table, cards)
 
-    collectible_for_match =
+    standard_first =
       cards
       |> Enum.filter(& &1.collectible)
       |> order_by_standard()
+
+    collectible_for_match =
+      standard_first
       |> CardMatcher.prepare_for_match()
 
+    :ets.insert(table, {:standard_first, standard_first})
     :ets.insert(table, {:collectible_for_match, collectible_for_match})
   end
 
