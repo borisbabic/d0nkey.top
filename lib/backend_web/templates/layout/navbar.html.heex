@@ -30,6 +30,9 @@
             <%= if can_access?(@conn, :periods) do %>
               <.navbar_item_link link={~p"/torch/periods"} display={"Admin - Periods"} />
             <% end %>
+            <%= if can_access?(@conn, :super) do %>
+              <.navbar_item_link link={~p"/dashboard"} display={"Dashboard"} />
+            <% end %>
             <.navbar_item_link link={~p"/logout"} display={"Logout"} />
           </.navbar_dropdown>
         <%= else %>
