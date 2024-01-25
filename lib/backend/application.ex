@@ -123,11 +123,6 @@ defmodule Backend.Application do
         },
         %{
           # can multiserver
-          id: Backend.Hearthstone.DeckBag,
-          start: {Backend.Hearthstone.DeckBag, :start_link, [[]]}
-        },
-        %{
-          # can multiserver
           id: Backend.Streaming.DeckStreamingInfoBag,
           start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
         },
