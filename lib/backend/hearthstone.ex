@@ -101,6 +101,28 @@ defmodule Backend.Hearthstone do
     end)
   end
 
+  @spec check_archetype(any) :: any
+  def check_archetype({:ok, deck}) do
+    {:ok, check_archetype(deck)}
+  end
+
+  def check_archetype(deck) do
+    Task.start(fn ->
+      if needs_archetype_update?(deck) do
+        recalculate_decks_archetypes([deck])
+      end
+    end)
+
+    deck
+  end
+
+  defp needs_archetype_update?(%{archetype: archetype} = deck)
+       when is_binary(archetype) or is_atom(archetype) do
+    to_string(archetype) != to_string(DeckArchetyper.archetype(deck))
+  end
+
+  defp needs_archetype_update?(_), do: true
+
   @spec create_or_get_deck(String.t() | Deck.t()) :: {:ok, Deck.t()} | {:error, any()}
   def create_or_get_deck(deckcode) when is_binary(deckcode),
     do: deckcode |> Deck.decode!() |> create_or_get_deck()
@@ -211,7 +233,7 @@ defmodule Backend.Hearthstone do
   def deck(%{cards: cards, hero: hero, format: format, sideboards: sideboards}),
     do: deck(cards, hero, format, sideboards)
 
-  def deck(id) when is_integer(id), do: DeckBag.get(id)
+  def deck(id) when is_integer(id), do: get_deck(id)
 
   def deck(id_or_deckcode) when is_binary(id_or_deckcode) do
     id_or_deckcode

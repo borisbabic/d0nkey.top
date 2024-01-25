@@ -5,7 +5,6 @@ defmodule Hearthstone.DeckTracker do
   alias Ecto.Multi
 
   alias Backend.Repo
-  alias Backend.Hearthstone.DeckBag
   alias Hearthstone.DeckTracker.AggregatedStats
   alias Hearthstone.DeckTracker.AggregationLog
   alias Hearthstone.DeckTracker.CardGameTally
@@ -596,7 +595,7 @@ defmodule Hearthstone.DeckTracker do
   def get_source(_, _), do: nil
 
   defp handle_deck(code) when is_binary(code),
-    do: Hearthstone.create_or_get_deck(code) |> DeckBag.check_archetype()
+    do: Hearthstone.create_or_get_deck(code) |> Hearthstone.check_archetype()
 
   defp handle_deck(nil), do: {:ok, nil}
 
