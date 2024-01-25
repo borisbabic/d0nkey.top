@@ -28,6 +28,8 @@ defmodule BackendWeb.StreamingView do
   def get_surrounding(offset, limit),
     do: get_surrounding(Util.to_int_or_orig(offset), Util.to_int_or_orig(limit))
 
+  def create_streamer_list(_conn, []), do: false
+
   def create_streamer_list(conn, streamers) do
     ~E"""
           <option data-link="<%= remove_from_link(conn, ["twitch_id", "twitch_login"]) %>" value="All Streamers">
