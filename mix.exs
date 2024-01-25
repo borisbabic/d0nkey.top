@@ -57,12 +57,7 @@ defmodule Backend.MixProject do
       {:poison, "~> 3.1"},
       {:recase, "~> 0.5"},
       {:nostrum,
-       runtime: false,
-       only: [:prod, :test],
-       github: "Kraigie/nostrum",
-       ref: "1ec397fda41d4dd345aaeba471b88c8ccded920f"},
-      {:nostrum,
-       only: [:dev, :bot],
+       runtime: Mix.env() in [:dev, :bot],
        github: "Kraigie/nostrum",
        ref: "1ec397fda41d4dd345aaeba471b88c8ccded920f"},
       # nostrum wants 2.0, tesla wants less, but it's optional there
