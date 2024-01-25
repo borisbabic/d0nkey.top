@@ -30,7 +30,7 @@ f-> %>
         placeholder: "Card Name",
         search_id: "sd-exclude-card-select"} %>
 <% end %>
-    <div class="field is-pulled-right is-shown-js" style="display: none">
+    <div :if={@streamer_list} class="field is-pulled-right is-shown-js" style="display: none">
         <input
         list="streamers"
         name="streamers"

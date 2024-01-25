@@ -41,7 +41,12 @@ defmodule BackendWeb.StreamingController do
   end
 
   def streamer_decks(conn, params) do
-    streamers = Backend.Streaming.streamers(%{"order_by" => {:asc, :hsreplay_twitch_display}})
+    streamers =
+      if Map.has_key?(params, "twitch_login") or Map.has_key?(params, "twitch_id") do
+        []
+      else
+        Backend.Streaming.streamers(%{"order_by" => {:asc, :hsreplay_twitch_display}})
+      end
 
     page_title =
       case params["twitch_login"] do
