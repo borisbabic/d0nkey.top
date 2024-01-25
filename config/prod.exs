@@ -4,7 +4,7 @@ import Config
 #  jobs: [
 #  ]
 
-import_config "cron_bot.exs"
+import_config "config_web.exs"
 
 twitch_redirect = "https://www.d0nkey.top/auth/twitch/callback"
 

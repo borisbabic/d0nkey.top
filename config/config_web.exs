@@ -16,3 +16,10 @@ config :backend, QuantumScheduler,
     {"11 */2 * * *", fn -> Backend.Hearthstone.update_collectible_cards() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
+
+config :backend, Oban,
+  repo: Backend.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [
+    default: 1
+  ]
