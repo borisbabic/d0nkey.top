@@ -672,4 +672,9 @@ defmodule Backend.Hearthstone.Deck.Sideboard do
     |> cast(attrs, @all_attrs)
     |> validate_required(@all_attrs)
   end
+
+  def init(%__MODULE__{} = sideboard), do: sideboard
+
+  def init(%{sideboard: sideboard, count: count, card: card}),
+    do: %__MODULE__{sideboard: sideboard, card: card, count: count}
 end

@@ -5,6 +5,7 @@ defmodule Backend.Hearthstone do
   alias Backend.Repo
   alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.Hearthstone.DeckBag
   alias Backend.Hearthstone.DeckArchetyper
   alias Backend.Hearthstone.Lineup
@@ -590,7 +591,7 @@ defmodule Backend.Hearthstone do
     do: query |> where([deck: d], is_nil(d.sideboards) or d.sideboards == fragment("'{}'"))
 
   defp compose_decks_query({"sideboards", sideboards}, query),
-    do: query |> where([deck: d], d.sideboards == ^sideboards)
+    do: query |> where([deck: d], d.sideboards == ^Enum.map(sideboards, &Sideboard.init/1))
 
   defp compose_decks_query({"limit", limit}, query),
     do: query |> limit(^limit)
