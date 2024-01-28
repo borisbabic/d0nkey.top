@@ -123,6 +123,15 @@ defmodule Backend.Hearthstone do
 
   defp needs_archetype_update?(_), do: true
 
+  @doc """
+  Gets all decks with the same parts, including the submitted deck
+  """
+  @spec get_same(Deck.t()) :: [Deck.t()]
+  def get_same(%Deck{format: format, hero: hero, cards: cards, sideboards: sideboards}) do
+    [{"format", format}, {"hero", hero}, {"cards", cards}, {"sideboards", sideboards}]
+    |> decks()
+  end
+
   @spec create_or_get_deck(String.t() | Deck.t()) :: {:ok, Deck.t()} | {:error, any()}
   def create_or_get_deck(deckcode) when is_binary(deckcode),
     do: deckcode |> Deck.decode!() |> create_or_get_deck()
@@ -138,6 +147,12 @@ defmodule Backend.Hearthstone do
       nil -> create_deck(cards, hero, format, sideboards)
       deck -> {:ok, deck}
     end
+  end
+
+  def change_format(%Deck{} = deck, format) do
+    deck
+    |> Deck.change_format(format)
+    |> Repo.update()
   end
 
   def all_cards() do

@@ -44,6 +44,11 @@ defmodule Backend.Hearthstone.Deck do
     |> validate_required(@required)
   end
 
+  def change_format(deck, format) do
+    deck
+    |> cast(%{format: format}, [:format])
+  end
+
   def changeset(c, a) do
     attrs = Map.put(a, :deckcode, deckcode(a))
     changeset(c, attrs)

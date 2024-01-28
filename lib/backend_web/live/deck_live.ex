@@ -8,6 +8,7 @@ defmodule BackendWeb.DeckLive do
   alias Components.DeckCard
   alias Components.DeckStatsTable
   alias Components.ReplayExplorer
+  alias Components.DeckAdmin
   alias Backend.DeckInteractionTracker, as: Tracker
   use Components.ExpandableDecklist
 
@@ -74,6 +75,7 @@ defmodule BackendWeb.DeckLive do
                 <DeckStreamingInfo deck_id={@deck.id}/>
                 <a :if={@user} class="tag column is-link" href={BackendWeb.DeckTrackerLive.url(@deck)}>Track Games</a>
                 <a :if={nil != @deck.id} class="tag column is-link" href={~p"/card-stats?deck_id=#{@deck.id}&format=#{@deck.format}"}>Card Stats</a>
+                <DeckAdmin id={"deck_admin_#{@deck.id}"}:if={DeckAdmin.can_admin?(@user)} user={@user} deck={@deck}/>
               </:after_deck>
             </DeckCard>
           </div>
