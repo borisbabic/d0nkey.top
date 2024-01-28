@@ -56,7 +56,8 @@ defmodule Backend.Hearthstone.DeckDeduplicator do
         join: d2 in Deck,
         on:
           d.cards == d2.cards and d.format == d2.format and d.hero == d2.hero and
-            d.sideboards == d2.sideboards and d.id != d2.id,
+            ((is_nil(d.sideboards) and is_nil(d2.sideboards)) or
+               d.sideboards == d2.sideboards) and d.id != d2.id,
         where: d.id in ^deck_ids,
         select: %{ids: [d.id, d2.id]}
 
