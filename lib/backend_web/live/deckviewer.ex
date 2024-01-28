@@ -62,8 +62,7 @@ defmodule BackendWeb.DeckviewerLive do
                     <button phx-click="class_sort_decks" class="button" type="button">Class Sort</button>
                   </div>
 
-                  {!-- DISABLED --}
-                  <div :if={false && @deckcodes |> Enum.count() > 0} class="column is-narrow">
+                  <div :if={@deckcodes |> Enum.count() > 0} class="column is-narrow">
                     <button :on-click="toggle_rotation" class="button" type="button">{rotation_text(@rotation)}</button>
                   </div>
 
