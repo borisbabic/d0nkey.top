@@ -86,6 +86,10 @@ defmodule Backend.UserManager.User do
       :api_users,
       :old_battletags,
       :groups,
+      :deck,
+      :period,
+      :format,
+      :rank,
       :tournament_streams,
       :twitch_commands
     ]
