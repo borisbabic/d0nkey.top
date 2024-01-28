@@ -18,7 +18,7 @@ defmodule BackendWeb.MyReplaysLive do
     # player rank
     # region
     ~F"""
-      <div>
+      <div :if={@user}>
         <div class="title is-2">My Replays</div>
         <div class="subtitle is-6">
 
