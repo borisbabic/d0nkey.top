@@ -42,7 +42,9 @@ defmodule Components.CardsList do
   @spec cards_to_display([integer], [integer] | nil, [Sideboard.t()], boolean) :: [display_info]
   defp cards_to_display(cards, comparison, sideboard, highlight_rotation) do
     cards_map = card_map(cards)
-    comparison_map = (comparison || []) |> Enum.map(&{&1.id, &1}) |> Map.new()
+
+    comparison_map =
+      (comparison || []) |> Enum.map(&{Hearthstone.canonical_id(&1.id), &1}) |> Map.new()
 
     to_check =
       comparison || Enum.map(cards_map, fn {_, {c, _}} -> c end) |> Hearthstone.sort_cards()
@@ -50,7 +52,7 @@ defmodule Components.CardsList do
     to_check
     |> Enum.flat_map(fn c ->
       {class, count} =
-        case {Map.get(comparison_map, c.id), Map.get(cards_map, c.id)} do
+        case {Map.get(comparison_map, Hearthstone.canonical_id(c.id)), Map.get(cards_map, c.id)} do
           {cc, {_, count}} when not is_nil(cc) -> {comparison_class(cc, count), count}
           {nil, {card, count}} -> {rotation_class(highlight_rotation, card), count}
           {_, nil} -> {"not-in-list", nil}
