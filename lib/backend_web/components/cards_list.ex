@@ -98,6 +98,33 @@ defmodule Components.CardsList do
     |> Map.new()
   end
 
+  @staying_sets [
+    # festival,
+    1809,
+    # titans
+    1858,
+    # badlands
+    1892
+  ]
+  @rotating_sets [
+    # voyage
+    1658,
+    # murder
+    1691,
+    # motlk
+    1776,
+    # arthas
+    1869
+  ]
+  def rotation_class(true, %{card_set_id: id}) when id in @staying_sets, do: ""
+
+  def rotation_class(true, %{card_set_id: id}) when id in @rotating_sets,
+    do: "not-in-list"
+
+  # core cards are left, and unknown
+  def rotation_class(true, _),
+    do: "card-comparison-count-1"
+
   def rotation_class(_highlight, _card), do: ""
 
   defp comparison_class(%{rarity_id: 5}, _), do: "card-comparison-legendary"
