@@ -209,13 +209,21 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       hero_power_druid?(card_info) -> :"Hero Power Druid"
       choose_one?(card_info) -> :"Choose Druid"
       afk_druid?(card_info) -> :"AFK Druid"
+      mill_druid?(card_info) -> :"Mill Druid"
+      ramp_druid?(card_info) && "Death Beetle" in card_info.card_names -> :"Beetle Druid"
       "Topior the Shrubbagazzor" in card_info.card_names -> :"Topior Druid"
       treant_druid?(card_info) -> :"Treant Druid"
       aggro_druid?(card_info) -> :"Aggro Druid"
+      "Therazane" in card_info.card_names and deathrattle_druid?(card_info) -> :"Therazane Druid"
+      deathrattle_druid?(card_info) -> :"Deathrattle Druid"
       "Drum Circle" in card_info.card_names -> :"Drum Druid"
       ramp_druid?(card_info) -> :"Ramp Druid"
       true -> fallbacks(card_info, "Druid")
     end
+  end
+
+  defp mill_druid?(ci) do
+    min_count?(ci, 2, ["Dew Process", "Prince Renathal", "Selfish Shellfish"])
   end
 
   defp ignis_druid?(ci) do
@@ -777,6 +785,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       elemental_shaman?(card_info) -> :"Elemental Shaman"
       nature_shaman?(card_info) -> :"Nature Shaman"
       overload_shaman?(card_info) -> :"Overload Shaman"
+      excavate_shaman?(card_info) -> :"Excavate Shaman"
       evolve_shaman?(card_info) -> :"Evolve Shaman"
       burn_shaman?(card_info) -> :"Burn Shaman"
       moist_shaman?(card_info) -> :"Moist Shaman"
@@ -963,6 +972,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       excavate_warrior?(card_info) -> :"Excavate Warrior"
       riff_warrior?(card_info) -> :"Riff Warrior"
       weapon_warrior?(card_info) -> :"Weapon Warrior"
+      "Deepminer Brann" in card_info.card_names -> :"Brann Warrior"
       murloc?(card_info) -> :"Murloc Warrior"
       boar?(card_info) -> :"Boar Warrior"
       true -> fallbacks(card_info, "Warrior")
