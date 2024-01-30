@@ -1,7 +1,9 @@
 defmodule Components.Filter.FormatDropdown do
+  @moduledoc false
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
+
   prop(title, :string, default: "Format")
   prop(param, :string, default: "format")
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
@@ -32,7 +34,7 @@ defmodule Components.Filter.FormatDropdown do
     for %{value: value, display: d} <- DeckTracker.formats_for_filters(context),
         !only_aggregated or value in aggregated do
       display =
-        if value in aggregated,
+        if value in aggregated or context == :personal,
           do: d,
           else: Components.Helper.warning_triangle(%{before: d})
 
