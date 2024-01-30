@@ -32,7 +32,7 @@ defmodule Components.Filter.PeriodDropdown do
     for %{slug: slug, display: d} <- DeckTracker.periods_for_filters(context),
         !aggregated_only or slug in aggregated do
       display =
-        if slug in aggregated,
+        if slug in aggregated or context == :personal,
           do: d,
           else: Components.Helper.warning_triangle(%{before: d})
 
