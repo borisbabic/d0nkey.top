@@ -196,6 +196,7 @@ defmodule Components.DecksExplorer do
       "player_class",
       "opponent_class",
       "format",
+      "deck_format",
       "offset",
       "region",
       "min_games",
@@ -211,6 +212,7 @@ defmodule Components.DecksExplorer do
       "limit",
       "min_games",
       "format",
+      "deck_format",
       "offset",
       "player_deck_includes",
       "player_deck_excludes"
