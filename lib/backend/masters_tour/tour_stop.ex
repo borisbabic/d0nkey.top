@@ -29,7 +29,9 @@ defmodule Backend.MastersTour.TourStop do
         :"Masters Tour Six",
         :"Masters Tour 2023_1",
         :"Masters Tour 2023_2",
-        :"Masters Tour 2023_3"
+        :"Masters Tour 2023_3",
+        :"Masters Tour 2024_1",
+        :"Masters Tour 2024_2"
       ]
     end
   end
