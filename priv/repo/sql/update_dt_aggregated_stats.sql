@@ -44,6 +44,16 @@ agg_periods(
     WHERE
         auto_aggregate
 ),
+agg_regions(
+    code
+) AS (
+    SELECT
+        code
+    FROM
+        public.dt_regions
+    WHERE
+        auto_aggregate
+),
 deck_stats AS (
     SELECT
         p.slug AS PERIOD,
@@ -57,29 +67,29 @@ deck_stats AS (
             ELSE
                 0
             END) AS wins,
-        sum(
-            CASE WHEN dg.status = 'loss' THEN
-                1
-            ELSE
-                0
-            END) AS losses,
+    sum(
+        CASE WHEN dg.status = 'loss' THEN
+            1
+        ELSE
+            0
+        END) AS losses,
     sum(
         CASE WHEN dg.status IN ('win', 'loss') THEN
             1
         ELSE
             0
         END) AS total,
-    CAST(SUM(
-            CASE WHEN dg.status = 'win' THEN
+CAST(SUM(
+        CASE WHEN dg.status = 'win' THEN
+            1
+        ELSE
+            0
+        END) AS float) / COALESCE(NULLIF(SUM(
+            CASE WHEN dg.status IN ('win', 'loss') THEN
                 1
             ELSE
                 0
-            END) AS float) / COALESCE(NULLIF(SUM(
-                CASE WHEN dg.status IN ('win', 'loss') THEN
-                    1
-                ELSE
-                    0
-                END), 0), 1) AS winrate
+            END), 0), 1) AS winrate
 FROM
     public.dt_games dg
     INNER JOIN public.deck d ON d.id = dg.player_deck_id
@@ -98,12 +108,17 @@ FROM
         AND dg.game_type = 7
         AND dg.opponent_class IS NOT NULL
         AND dg.player_deck_id IS NOT NULL
-    GROUP BY
-        1,
-        2,
-        3,
-        5,
-        GROUPING SETS (4,())
+        AND dg.region IN (
+            SELECT
+                code
+            FROM
+                agg_regions)
+        GROUP BY
+            1,
+            2,
+            3,
+            5,
+            GROUPING SETS (4,())
 ),
 card_stats AS (
     SELECT
@@ -174,13 +189,18 @@ card_stats AS (
         dcgt.inserted_at <= now()
         AND dg.opponent_class IS NOT NULL
         AND dg.game_type = 7
-    GROUP BY
-        1,
-        2,
-        3,
-        4,
-        6,
-        GROUPING SETS (5,())
+        AND dg.region IN (
+            SELECT
+                code
+            FROM
+                agg_regions)
+        GROUP BY
+            1,
+            2,
+            3,
+            4,
+            6,
+            GROUPING SETS (5,())
 ),
 merged_card_stats AS (
     SELECT

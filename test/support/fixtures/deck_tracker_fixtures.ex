@@ -67,4 +67,20 @@ defmodule Hearthstone.DeckTrackerFixtures do
 
     format
   end
+
+  @doc """
+  Generate a region.
+  """
+  def region_fixture(attrs \\ %{}) do
+    {:ok, region} =
+      attrs
+      |> Enum.into(%{
+        auto_aggregate: true,
+        code: "some code",
+        display: "some display"
+      })
+      |> Hearthstone.DeckTracker.create_region()
+
+    region
+  end
 end
