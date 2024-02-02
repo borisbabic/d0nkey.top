@@ -549,4 +549,101 @@ defmodule Hearthstone.DeckTrackerTest do
 
     format
   end
+
+  alias Hearthstone.DeckTracker.Region
+
+  @valid_attrs %{auto_aggregate: true, code: "some code", display: "some display"}
+  @update_attrs %{
+    auto_aggregate: false,
+    code: "some updated code",
+    display: "some updated display"
+  }
+  @invalid_attrs %{auto_aggregate: nil, code: nil, display: nil}
+
+  describe "#paginate_regions/1" do
+    test "returns paginated list of regions" do
+      for _ <- 1..20 do
+        region_fixture()
+      end
+
+      {:ok, %{regions: regions} = page} = DeckTracker.paginate_regions(%{})
+
+      assert length(regions) == 15
+      assert page.page_number == 1
+      assert page.page_size == 15
+      assert page.total_pages == 2
+      assert page.total_entries == 20
+      assert page.distance == 5
+      assert page.sort_field == "inserted_at"
+      assert page.sort_direction == "desc"
+    end
+  end
+
+  describe "#list_regions/0" do
+    test "returns all regions" do
+      region = region_fixture()
+      assert DeckTracker.list_regions() == [region]
+    end
+  end
+
+  describe "#get_region!/1" do
+    test "returns the region with given id" do
+      region = region_fixture()
+      assert DeckTracker.get_region!(region.id) == region
+    end
+  end
+
+  describe "#create_region/1" do
+    test "with valid data creates a region" do
+      assert {:ok, %Region{} = region} = DeckTracker.create_region(@valid_attrs)
+      assert region.auto_aggregate == true
+      assert region.code == "some code"
+      assert region.display == "some display"
+    end
+
+    test "with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = DeckTracker.create_region(@invalid_attrs)
+    end
+  end
+
+  describe "#update_region/2" do
+    test "with valid data updates the region" do
+      region = region_fixture()
+      assert {:ok, region} = DeckTracker.update_region(region, @update_attrs)
+      assert %Region{} = region
+      assert region.auto_aggregate == false
+      assert region.code == "some updated code"
+      assert region.display == "some updated display"
+    end
+
+    test "with invalid data returns error changeset" do
+      region = region_fixture()
+      assert {:error, %Ecto.Changeset{}} = DeckTracker.update_region(region, @invalid_attrs)
+      assert region == DeckTracker.get_region!(region.id)
+    end
+  end
+
+  describe "#delete_region/1" do
+    test "deletes the region" do
+      region = region_fixture()
+      assert {:ok, %Region{}} = DeckTracker.delete_region(region)
+      assert_raise Ecto.NoResultsError, fn -> DeckTracker.get_region!(region.id) end
+    end
+  end
+
+  describe "#change_region/1" do
+    test "returns a region changeset" do
+      region = region_fixture()
+      assert %Ecto.Changeset{} = DeckTracker.change_region(region)
+    end
+  end
+
+  def region_fixture(attrs \\ %{}) do
+    {:ok, region} =
+      attrs
+      |> Enum.into(@valid_attrs)
+      |> DeckTracker.create_region()
+
+    region
+  end
 end

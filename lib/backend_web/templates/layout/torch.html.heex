@@ -36,26 +36,8 @@
             <%= if can_access?(@conn, :invites) do %>
               <a href="/torch/invited_player">Invites</a>
             <% end %>
-            <%= if can_access?(@conn, :feed_items) do %>
-              <a href="/torch/feed_items">Feed Items</a>
-            <% end %>
-            <%= if can_access?(@conn, :fantasy_leagues) do %>
-              <a href="/torch/fantasy-leagues">Fantasy Leagues</a>
-            <% end %>
             <%= if can_access?(@conn, :old_battletags) do %>
               <a href="/torch/old-battletags">Old Battletags</a>
-            <% end %>
-            <%= if can_access?(@conn, :twitch_commands) do %>
-              <a href="/torch/twitch-commands">Twitch Commands</a>
-            <% end %>
-            <%= if can_access?(@conn, :groups) do %>
-              <a href="/torch/groups">Groups</a>
-            <% end %>
-            <%= if can_access?(@conn, :group_memberships) do %>
-              <a href="/torch/group-memberships">Group Memberships</a>
-            <% end %>
-            <%= if can_access?(@conn, :tournament_streams) do %>
-              <a href="/torch/tournament-streams">Tournament Streams</a>
             <% end %>
             <%= if can_access?(@conn, :periods) do %>
               <a href="/torch/periods">Periods</a>
@@ -65,6 +47,27 @@
             <% end %>
             <%= if can_access?(@conn, :formats) do %>
               <a href="/torch/formats">Formats</a>
+            <% end %>
+            <%= if can_access?(@conn, :regions) do %>
+              <a href="/torch/regions">Regions</a>
+            <% end %>
+            <%= if can_access?(@conn, :feed_items) do %>
+              <a href="/torch/feed_items">Feed Items</a>
+            <% end %>
+            <%= if can_access?(@conn, :fantasy_leagues) do %>
+              <a href="/torch/fantasy-leagues">Fantasy Leagues</a>
+            <% end %>
+            <%= if can_access?(@conn, :tournament_streams) do %>
+              <a href="/torch/tournament-streams">Tournament Streams</a>
+            <% end %>
+            <%= if can_access?(@conn, :groups) do %>
+              <a href="/torch/groups">Groups</a>
+            <% end %>
+            <%= if can_access?(@conn, :group_memberships) do %>
+              <a href="/torch/group-memberships">Group Memberships</a>
+            <% end %>
+            <%= if can_access?(@conn, :twitch_commands) do %>
+              <a href="/torch/twitch-commands">Twitch Commands</a>
             <% end %>
           </nav>
         </div>
