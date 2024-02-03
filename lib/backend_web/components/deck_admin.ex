@@ -13,8 +13,8 @@ defmodule Components.DeckAdmin do
   def render(assigns) do
     ~F"""
       <div>
-        <button class="button" :if={{num, name} = format_to_swap(@deck)} :on-click="change_format" phx-value-format={num}>
-          To {name}
+        <button class="button" :if={target = format_to_swap(@deck)} :on-click="change_format" phx-value-format={target}>
+          To {Format.name(target)}
         </button>
         <button class="button" :if={1 < (Hearthstone.get_same(@deck) |> Enum.count())} :on-click="enqueue_duplicates">Deduplicate</button>
       </div>

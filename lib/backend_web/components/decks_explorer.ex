@@ -8,6 +8,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
+  alias Components.Filter.RegionDropdown
   alias Components.Filter.FormatDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
@@ -104,8 +105,8 @@ defmodule Components.DecksExplorer do
         <ArchetypeSelect id={"player_deck_archetype"} update_fun={ArchetypeSelect.update_archetypes_fun(@params, "player_deck_archetype")} selected={params["player_deck_archetype"] || []} title="Archetypes" />
         <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
-        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
-        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
+        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
+        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
         <br>
         <br>
 
@@ -131,8 +132,16 @@ defmodule Components.DecksExplorer do
   end
 
   defp parse_params(raw_params, assigns) do
+    regions =
+      with %{filter_context: :public} <- assigns do
+        Hearthstone.DeckTracker.get_auto_aggregate_regions()
+      else
+        _ -> []
+      end
+
     defaults = [
       {"limit", assigns.default_limit},
+      {"region", regions},
       {"min_games", assigns.default_min_games},
       {"format", assigns.default_format || FormatDropdown.default(assigns.filter_context)},
       {"order_by", assigns.default_order_by},
