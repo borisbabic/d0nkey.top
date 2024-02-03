@@ -5,7 +5,6 @@ defmodule Backend.HearthstoneJson do
   @name :hearthstone_json
   alias Backend.Infrastructure.HearthstoneJsonCommunicator, as: Api
   alias Backend.HearthstoneJson.Card
-  alias Backend.Hearthstone.Deck
   alias Backend.CardMatcher
 
   def start_link(default) do

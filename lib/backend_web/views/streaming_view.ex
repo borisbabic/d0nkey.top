@@ -85,10 +85,9 @@ defmodule BackendWeb.StreamingView do
         archetypes: archetypes_raw,
         include_cards: include,
         exclude_cards: exclude,
-        criteria: %{"offset" => offset, "limit" => limit}
+        criteria: %{"offset" => _offset, "limit" => _limit}
       }) do
     title = "Streamer Decks"
-    {prev_offset, next_offset} = get_surrounding(offset, limit)
     archetypes = archetypes_raw || []
 
     rows =

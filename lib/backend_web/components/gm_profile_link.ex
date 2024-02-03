@@ -14,11 +14,11 @@ defmodule Components.GMProfileLink do
 
   def render(assigns) do
     ~F"""
-    <span>
-      <a :if={name = name(@gm)}  :if={@link_text} class={"link is-text #{@link_class}"} href={"#{link(name, @week)}"}>
+    <span :if={name = @link_text and name(@gm)}>
+      <a class={"link is-text #{@link_class}"} href={"#{link(name, @week)}"}>
         {@link_text}
       </a>
-      <PlayerName :if={name = name(@gm)} :if={! @link_text} player={name} text_link={link(name, @week)} link_class={@link_class}/>
+      <PlayerName player={name} text_link={link(name, @week)} link_class={@link_class}/>
     </span>
     """
   end

@@ -1,5 +1,5 @@
 defmodule Components.FantasyLeaguesTable do
-  use Surface.Component
+  use BackendWeb, :surface_component
   alias Backend.Fantasy.League
   alias Backend.UserManager.User
   import BackendWeb.FantasyHelper
@@ -41,9 +41,5 @@ defmodule Components.FantasyLeaguesTable do
         </tbody>
       </table>
     """
-  end
-
-  def update_leagues(id, leagues) do
-    Phoenix.Component.send_update(__MODULE__, id: id, leagues: leagues)
   end
 end

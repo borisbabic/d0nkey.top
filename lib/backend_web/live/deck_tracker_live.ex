@@ -81,7 +81,7 @@ defmodule BackendWeb.DeckTrackerLive do
     {:error, :no_user_battletag}
   end
 
-  defp additional_values({:ok, replay = %{player_rank: rank}}) do
+  defp additional_values({:ok, %{player_rank: rank}}) do
     %{"player_rank" => rank}
     # |> Map.put("region", Map.get(replay, "region"))
   end
@@ -173,6 +173,14 @@ defmodule BackendWeb.DeckTrackerLive do
     """
   end
 
+  def render(assigns) do
+    ~F"""
+      <div>
+        <div class="title is-3">Please login to Track your decks</div>
+      </div>
+    """
+  end
+
   def get_stats(%{user: %{battletag: battletag}, deck: %{id: id}}) when is_integer(id) do
     criteria = [{"player_btag", battletag}, {"player_deck_id", id}]
 
@@ -186,14 +194,6 @@ defmodule BackendWeb.DeckTrackerLive do
   end
 
   def get_stats(_), do: [wins: 0, losses: 0, winrate: 0.0]
-
-  def render(assigns) do
-    ~F"""
-      <div>
-        <div class="title is-3">Please login to Track your decks</div>
-      </div>
-    """
-  end
 
   defp game_type_options() do
     [

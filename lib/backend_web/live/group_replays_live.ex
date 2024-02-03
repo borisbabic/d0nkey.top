@@ -1,8 +1,6 @@
 defmodule BackendWeb.GroupReplaysLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
-  alias Backend.UserManager.User
-  alias Backend.UserManager
   alias Components.ReplayExplorer
   use Components.ExpandableDecklist
 

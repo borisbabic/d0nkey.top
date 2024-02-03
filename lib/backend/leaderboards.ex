@@ -100,10 +100,6 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  defp season_for_fetch(season = %{season_id: season_id}) when not is_nil(season_id) do
-    season
-  end
-
   def get_leaderboard(region, leaderboard, season) when is_atom(leaderboard),
     do: get_leaderboard(region, to_string(leaderboard), season)
 
@@ -1273,13 +1269,15 @@ defmodule Backend.Leaderboards do
   @doc """
   Copy entries from bgs to bg lobby legends
   """
+  def copy_to_bg_lobby_legends(date, bg_season_id \\ nil)
+
   def copy_to_bg_lobby_legends(year, month) when is_integer(year) and is_integer(month) do
     with {:ok, date} <- Date.new(year, month, 1) do
       copy_to_bg_lobby_legends(date)
     end
   end
 
-  def copy_to_bg_lobby_legends(date = %Date{}, bg_season_id \\ nil) do
+  def copy_to_bg_lobby_legends(date = %Date{}, bg_season_id) do
     for {r, timezone} <- regions_with_timezone() do
       up_to =
         DateTime.new!(date, ~T[00:00:00], timezone)

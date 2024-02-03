@@ -5,9 +5,8 @@ defmodule Backend.Hearthstone do
   alias Backend.Repo
   alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.Deck
-  alias Backend.Hearthstone.Deck.Sideboard
-  alias Backend.Hearthstone.DeckBag
   alias Backend.Hearthstone.DeckArchetyper
+  alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.Hearthstone.Lineup
   alias Backend.Hearthstone.LineupDeck
   alias Backend.Hearthstone.CardBackCategory
@@ -1160,7 +1159,7 @@ defmodule Backend.Hearthstone do
   ]
   def hack_canonical_id(id) do
     case List.keyfind(@hacks, id, 0) do
-      {bad_id, good_id} -> good_id
+      {_bad_id, good_id} -> good_id
       _ -> id
     end
   end

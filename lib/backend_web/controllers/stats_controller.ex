@@ -3,7 +3,7 @@ defmodule BackendWeb.StatsController do
 
   plug(:put_layout, false)
 
-  def explanation(conn, params) do
+  def explanation(conn, _params) do
     render(conn, :explanation)
   end
 end

@@ -55,7 +55,7 @@ defmodule Components.Modal do
 
   @message_reset_assigns [show_error: false, show_success: false]
 
-  def handle_result(result, socket, modal_id) do
+  def handle_result(result, _socket, modal_id) do
     additional_assigns =
       case result do
         {:ok, _} -> [show_success: true, show_error: false, show_modal: false]

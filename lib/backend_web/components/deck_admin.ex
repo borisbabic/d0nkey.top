@@ -7,16 +7,17 @@ defmodule Components.DeckAdmin do
   alias Hearthstone.Enums.Format
   alias Backend.Hearthstone
   alias Backend.Hearthstone.DeckDeduplicator
-  alias Components.Dropdown
   prop(deck, :any, required: true)
   prop(user, :any, required: true)
 
   def render(assigns) do
     ~F"""
-      <button class="button" :if={{num, name} = format_to_swap(@deck)}class="dropdown-item"  :on-click="change_format" phx-value-format={num}>
-        To {name}
-      </button>
-      <button class="button" :if={1 < (Hearthstone.get_same(@deck) |> Enum.count())} :on-click="enqueue_duplicates">Deduplicate</button>
+      <div>
+        <button class="button" :if={{num, name} = format_to_swap(@deck)} :on-click="change_format" phx-value-format={num}>
+          To {name}
+        </button>
+        <button class="button" :if={1 < (Hearthstone.get_same(@deck) |> Enum.count())} :on-click="enqueue_duplicates">Deduplicate</button>
+      </div>
     """
   end
 

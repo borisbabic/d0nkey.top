@@ -1,7 +1,6 @@
 defmodule BackendWeb.TournamentLineups do
   use BackendWeb, :surface_live_view
   alias Components.TournamentLineupExplorer
-  alias Backend.Hearthstone.Lineup
   alias Backend.DeckInteractionTracker, as: Tracker
   data(user, :any)
   data(tournament_id, :string)
@@ -17,7 +16,7 @@ defmodule BackendWeb.TournamentLineups do
   def render(assigns) do
     ~F"""
       <div>
-        <div :if={lineups = Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
+        <div :if={Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
           <div>
             <div class="title is-2">Lineups</div>
             <FunctionComponents.Ads.below_title/>

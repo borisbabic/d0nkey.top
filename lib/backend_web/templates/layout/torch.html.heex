@@ -6,7 +6,7 @@
     <link rel="stylesheet" href={"#{ Routes.static_path(@conn, "/torch/theme.css") }"}>
   </head>
 
-  <body class={"#{ Torch.PageView.body_classes(@conn) }"}>
+  <body class={"#{ Torch.Helpers.body_classes(@conn) }"}>
     <header>
       <section id="torch-account-info">
         <div class="torch-container">

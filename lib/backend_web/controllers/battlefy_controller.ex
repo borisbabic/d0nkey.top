@@ -201,7 +201,9 @@ defmodule BackendWeb.BattlefyController do
 
   # somebody is spamming this, :shrug:
   def tournament_player(conn, %{"team_name" => "&"}) do
-    render(conn, BackendWeb.SharedView, "empty.html", %{})
+    conn
+    |> put_view(BackendWeb.SharedView)
+    |> render("empty.html", %{})
   end
 
   def tournament_player(

@@ -18,7 +18,7 @@ defmodule TwitchBot.MessageCreator do
     }
   end
 
-  def create_message(config, %{chat: chat}, base_values) do
+  def create_message(config, %{chat: _chat}, base_values) do
     extra_values = Map.get(config, :extra_values, %{})
     values = Map.merge(base_values, extra_values) |> add_leaderboard_status()
 

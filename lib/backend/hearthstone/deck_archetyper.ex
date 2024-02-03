@@ -507,20 +507,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     )
   end
 
-  defp excavate_paladin?(ci) do
-    min_count?(ci, 3, [
-      "Antique Flinger",
-      "Drilly the Kid",
-      "Bloodrock Co Shovel",
-      "Scourge Illusionist",
-      "Bloodrock Co. Shovel" | @neutral_excavate
-    ])
-  end
-
-  defp oathbreaker_paladin?(card_info) do
-    min_count?(card_info, 1, ["Tour Guide", "Hawkstrider Rancher", "Magatha, Bane of Music"])
-  end
-
   defp aggro_paladin?(card_info) do
     min_count?(card_info, 5, [
       "For Quel'Thalas!",
@@ -626,10 +612,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp tentacle(ci), do: "Chaotic Tendril" in ci.card_names
 
   defp miracle_chad?(ci), do: min_count?(ci, 2, ["Thaddius, Monstrosity", "Cover Artist"])
-
-  defp yogg_priest?(ci) do
-    "Yogg Saron, Unleashed" in ci.card_names and min_count?(ci, 2, "Yogg Saron, Unleashed")
-  end
 
   defp automaton_priest?(ci),
     do:
@@ -1522,7 +1504,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp naga_mage?(%{card_names: card_names}), do: "Spitelash Siren" in card_names
   defp mech_mage?(%{card_names: card_names}), do: "Mecha-Shark" in card_names
-  defp ping_mage?(%{card_names: card_names}), do: "Wildfire" in card_names
 
   defp big_spell_mage?(ci = %{card_names: card_names}),
     do:
@@ -1588,7 +1569,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp shellfish_priest?(%{card_names: card_names}),
     do: "Selfish Shellfish" in card_names && "Xyrella, the Devout" in card_names
 
-  defp boon_priest?(ci = %{card_names: card_names}) do
+  defp boon_priest?(ci) do
     min_count?(ci, 5, [
       "Radiant Elemental",
       "Switcheroo",
@@ -1838,7 +1819,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp minion_type_fallback(
          ci,
          class_part,
-         opts \\ [fallback: nil, min_count: 6, ignore_types: []]
+         opts
        ) do
     fallback = Keyword.get(opts, :fallback, nil)
     min_count = Keyword.get(opts, :min_count, 6)
@@ -1846,7 +1827,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
     with counts = [_ | _] <- minion_type_counts(ci),
          filtered <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
-         {type, count} when count >= min_count <- Enum.max_by(counts, &elem(&1, 1)) do
+         {type, count} when count >= min_count <- Enum.max_by(filtered, &elem(&1, 1)) do
       "#{type} #{class_part}"
     else
       _ -> fallback

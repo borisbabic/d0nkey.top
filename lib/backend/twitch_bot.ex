@@ -172,7 +172,7 @@ defmodule Backend.TwitchBot do
     Repo.all(query)
   end
 
-  @spec user_commands(user :: User.t() | user_id :: integer()) :: [TwitchCommand.t()]
+  @spec user_commands(user_or_id :: User.t() | integer()) :: [TwitchCommand.t()]
   def user_commands(%{id: id}), do: user_commands(id)
 
   def user_commands(id) do

@@ -566,6 +566,19 @@ defmodule Backend.Battlefy do
     {future_opponents, player_matches}
   end
 
+  @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]
+  def get_future_and_player_matches(tournament_id, team_name) when is_binary(tournament_id) do
+    tournament_id
+    |> get_tournament()
+    |> Map.get(:stages)
+    |> case do
+      [first | _] -> get_future_and_player_matches(first, team_name)
+      _ -> {[], []}
+    end
+  end
+
+  def get_future_and_player_matches(_, _), do: {[], []}
+
   def future_opponents(matches, %{
         id: id,
         next: %{winner: winner, loser: loser},
@@ -616,19 +629,6 @@ defmodule Backend.Battlefy do
         [match | possible_future_opponents(matches, match.id)]
     end)
   end
-
-  @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]
-  def get_future_and_player_matches(tournament_id, team_name) when is_binary(tournament_id) do
-    tournament_id
-    |> get_tournament()
-    |> Map.get(:stages)
-    |> case do
-      [first | _] -> get_future_and_player_matches(first, team_name)
-      _ -> {[], []}
-    end
-  end
-
-  def get_future_and_player_matches(_, _), do: {[], []}
 
   @spec get_future_opponents(tournament_id, String.t()) :: [Match.t()]
   def get_future_opponents(tournament_id, team_name) do

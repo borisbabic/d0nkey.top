@@ -2,7 +2,6 @@ defmodule Backend.PonyDojo do
   @moduledoc false
   use GenServer
 
-  alias Backend.Grandmasters.PromotionCalculator
   alias Backend.MastersTour
   alias Backend.TournamentStats.TeamStats
   alias Backend.TournamentStats.TournamentTeamStats
@@ -86,7 +85,6 @@ defmodule Backend.PonyDojo do
 
   def calculate_points(players) do
     mts = latest_six_mts()
-    promotion_points = promotion_points(mts)
 
     mt_stats =
       mts
@@ -130,12 +128,6 @@ defmodule Backend.PonyDojo do
       |> Enum.uniq()
     end)
     |> Enum.frequencies()
-  end
-
-  defp promotion_points(mts) do
-    mts
-    |> Enum.flat_map(&PromotionCalculator.ts_points(&1.id, :points_2021))
-    |> PromotionCalculator.group_ts_rankings()
   end
 
   def latest_six_mts() do

@@ -1,7 +1,6 @@
 defmodule BackendWeb.BattlefyView do
   require Logger
   use BackendWeb, :view
-  alias Backend.Hearthstone.Lineup
   alias Backend.MastersTour
   alias Backend.Battlefy
   alias Backend.Battlefy.Organization
@@ -326,10 +325,9 @@ defmodule BackendWeb.BattlefyView do
   def render("tournaments_stats.html", p = %{conn: conn, tournaments: tournaments}) do
     tournaments_string =
       tournaments
-      |> Enum.map(fn %{name: name, id: id} ->
+      |> Enum.map_join("\n", fn %{name: name, id: id} ->
         "#{id} # #{name}"
       end)
-      |> Enum.join("\n")
 
     edit_tournaments_link =
       Routes.battlefy_path(conn, :tournaments_stats, %{edit: tournaments_string})
@@ -568,7 +566,7 @@ defmodule BackendWeb.BattlefyView do
           player_matches: player_matches,
           team_name: team_name,
           tournament: tournament,
-          conn: conn
+          conn: _conn
         } = params
       ) do
     player_matches
@@ -732,9 +730,7 @@ defmodule BackendWeb.BattlefyView do
     {total, not_nil_nil}
   end
 
-  def tournament_subtitle(
-        params = %{tournament: tournament, standings: standings, ongoing: ongoing}
-      ) do
+  def tournament_subtitle(%{tournament: tournament, standings: standings, ongoing: ongoing}) do
     []
     |> add_duration_subtitle(tournament)
     |> add_player_count_subtitle(standings)
@@ -746,11 +742,15 @@ defmodule BackendWeb.BattlefyView do
     with %{battletag: battletag} <- BackendWeb.AuthUtils.user(conn),
          [_ | _] <- standings,
          true <- Enum.any?(standings, &(&1.name == battletag)) do
-      assigns = %{}
+      assigns = %{
+        battletag: battletag,
+        link:
+          Routes.battlefy_path(conn, :tournament_player, id, battletag, stage_query_param(params))
+      }
 
       ~H"""
-      <a href={Routes.battlefy_path(conn, :tournament_player, id, battletag, stage_query_param(params))}>
-        <%= battletag %>
+      <a href={@link}>
+        <%= @battletag %>
       </a>
       """
     else
@@ -816,7 +816,6 @@ defmodule BackendWeb.BattlefyView do
            lineups: lineups,
            show_lineups: show_lineups,
            invited_mapset: invited_mapset,
-           stage_id: stage_id,
            tournament: tournament,
            ongoing: ongoing,
            use_countries: use_countries,

@@ -2,7 +2,6 @@ defmodule BackendWeb.PlayerDecksLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.DecksExplorer
-  alias Backend.UserManager.User
 
   data(user, :any)
   data(player_btag, :any)

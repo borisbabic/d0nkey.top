@@ -1,5 +1,4 @@
 defmodule BackendWeb.Router do
-  alias BackendWeb.DeckSheetsIndex
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
   import Plug.BasicAuth
@@ -42,7 +41,7 @@ defmodule BackendWeb.Router do
   # end
 
   pipeline :admins_only do
-    plug(:basic_auth, username: "admin", password: Application.fetch_env!(:backend, :admin_pass))
+    plug(:basic_auth, username: "admin", password: Application.compile_env!(:backend, :admin_pass))
   end
 
   scope "/api/public", BackendWeb do

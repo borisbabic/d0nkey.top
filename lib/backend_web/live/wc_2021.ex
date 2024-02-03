@@ -3,9 +3,6 @@ defmodule BackendWeb.WC2021Live do
   use BackendWeb, :surface_live_view
 
   alias Components.TournamentLineupExplorer
-  alias Backend.Hearthstone.Lineup
-  alias Backend.Blizzard
-  alias Components.Dropdown
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :any)
@@ -13,12 +10,12 @@ defmodule BackendWeb.WC2021Live do
   def mount(_params, session, socket) do
     {:ok,
      socket
-     |> assign_defaults(session)}
+     |> assign_defaults(session)
+     |> put_user_in_context}
   end
 
   def render(assigns) do
     ~F"""
-    <Context  put={user: @user}>
       <div>
         <div>
           <div>
@@ -39,7 +36,6 @@ defmodule BackendWeb.WC2021Live do
           </div>
         </div>
       </div>
-    </Context>
     """
   end
 

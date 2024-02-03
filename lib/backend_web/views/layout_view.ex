@@ -37,7 +37,7 @@ defmodule BackendWeb.LayoutView do
         assigns = %{conn: conn, name: name, id: id}
 
         ~H"""
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, id)}><%= name %> </a>
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, @id)}><%= @name %> </a>
         """
     end
   end
@@ -45,8 +45,10 @@ defmodule BackendWeb.LayoutView do
   def grandmasters(conn) do
     link = Routes.grandmasters_path(conn, :grandmasters_season, "2020_2")
 
-    ~E"""
-      <a class="navbar-item" href='<%= link %>'>Grandmasters</a>
+    assigns = %{link: link}
+
+    ~H"""
+      <a class="navbar-item" href={@link}>Grandmasters</a>
     """
   end
 
@@ -62,26 +64,32 @@ defmodule BackendWeb.LayoutView do
     render("navbar.html", %{user: user, conn: conn})
   end
 
-  def current_dreamhack(conn) do
+  def current_dreamhack(%Plug.Conn{} = _conn) do
     case Dreamhack.current() do
       current = [_ | _] ->
-        ~E"""
-         <div class="navbar-item has-dropdown is-hoverable">
-           <div class="navbar-link">
-             DreamHack
-           </div>
-
-           <div class="navbar-dropdown">
-            <%= for {tour, id} <- current do %>
-              <a class="navbar-item" href='<%=Routes.battlefy_path(conn, :tournament, id)%>'><%= tour %></a>
-            <% end %>
-           </div>
-         </div>
-        """
+        current_dreamhack(%{current: current})
 
       _ ->
         ""
     end
+  end
+
+  def current_dreamhack(assigns) do
+    ~H"""
+      <div class="navbar-item has-dropdown is-hoverable">
+        <div class="navbar-link">
+          DreamHack
+        </div>
+
+        <div class="navbar-dropdown">
+          <%= for {tour, id} <- @current do %>
+            <a class="navbar-item" href={~p"/battlefy/tournament/#{id}"}>
+              <%= tour %>
+            </a>
+          <% end %>
+        </div>
+      </div>
+    """
   end
 
   def show_lobby_legends?() do

@@ -2,7 +2,6 @@ defmodule BackendWeb.GroupDecksLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.DecksExplorer
-  alias Backend.UserManager.User
 
   data(user, :any)
   data(group_id, :any)

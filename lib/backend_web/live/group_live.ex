@@ -207,7 +207,7 @@ defmodule BackendWeb.GroupLive do
     |> handle_error(socket, rerender_fun())
   end
 
-  defp handle_error({:error, error}, socket, _on_success \\ & &1),
+  defp handle_error({:error, error}, socket, _on_success),
     do: {:noreply, assign(socket, :error_message, error)}
 
   defp handle_error(_, socket, on_success), do: {:noreply, on_success.(socket)}

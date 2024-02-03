@@ -11,7 +11,6 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.FormatDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
-  alias Hearthstone.DeckTracker.ArchetypeBag
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.ClassStatsModal
 
@@ -180,11 +179,6 @@ defmodule Components.DecksExplorer do
 
   def min_games_options(options, min), do: options |> Enum.sort() |> Enum.drop_while(&(&1 < min))
   def order_by_options(), do: [{"winrate", "Winrate %"}, {"total", "Total Games"}]
-
-  defp archetype_options(filters) do
-    archetypes = ArchetypeBag.archetypes(filters)
-    [{"any", "Any Archetype"} | Enum.zip(archetypes, archetypes)]
-  end
 
   def filter_relevant(params) do
     params

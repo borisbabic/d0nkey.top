@@ -33,15 +33,14 @@ defmodule Components.RosterModal do
                 <a target="_blank" :if={standings_link = standings_link(@league_team)} class="button is-link " href={"#{standings_link}"}>View in standings</a>
               </div>
             </section>
-            <div class="modal-card-foot" :if={show_round_footer(@league_team)} :if={round = round(@league_team, @round)}>
-
+            <div class="modal-card-foot" :if={show_round_footer?(@league_team)}>
               <button type="button" class="button" :on-click="dec_round" >
                 <i class="fas fa-caret-left"></i>
               </button>
               <button type="button" class="button" :on-click="inc_round">
                 <i class="fas fa-caret-right"></i>
               </button>
-              <p>Round {round}</p>
+              <p>Round {round(@league_team, @round)}</p>
             </div>
           </div>
         </div>
@@ -51,10 +50,10 @@ defmodule Components.RosterModal do
 
   def round(lt, round), do: League.round(lt.league, round)
 
-  def show_round_footer(%{league: %{current_round: current_round}}) when current_round > 1,
+  defp show_round_footer?(%{league: %{current_round: current_round}}) when current_round > 1,
     do: true
 
-  def show_round_footer(_), do: true
+  defp show_round_footer?(_), do: true
 
   def standings_link(%{
         picks: picks = [_ | _],

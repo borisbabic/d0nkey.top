@@ -2,7 +2,6 @@ defmodule Components.DeckStatsTable do
   @moduledoc false
   use Surface.LiveComponent
   alias Components.ClassStatsTable
-  alias Components.DecksExplorer
   alias Hearthstone.DeckTracker
   alias Components.LivePatchDropdown
   alias Components.Filter.RankDropdown
@@ -13,6 +12,7 @@ defmodule Components.DeckStatsTable do
   prop(path_params, :list, default: [])
   prop(deck_id, :integer, required: true)
   prop(user, :map, from_context: :user)
+  data(selected_params, :list, default: [])
 
   def update(assigns, socket) do
     selected_params =

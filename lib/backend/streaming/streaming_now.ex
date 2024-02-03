@@ -115,6 +115,9 @@ defmodule Backend.Streaming.StreamingNow do
       down |> String.contains?(@mercenaries_patterns) ->
         BnetGameType.mercenaries_pvp()
 
+      down |> String.contains?(@twist_patterns) ->
+        BnetGameType.ranked_twist()
+
       true ->
         nil
     end

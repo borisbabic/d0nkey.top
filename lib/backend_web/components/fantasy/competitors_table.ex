@@ -6,7 +6,6 @@ defmodule Components.CompetitorsTable do
   alias Backend.MastersTour
   alias Backend.Fantasy.League
   alias Backend.Hearthstone.Card
-  alias Backend.Fantasy.Competition.Participant
   alias Backend.Fantasy.LeagueTeam
   alias Surface.Components.Form
   alias Components.PlayerName
