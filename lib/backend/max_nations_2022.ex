@@ -5,6 +5,7 @@ defmodule Backend.MaxNations2022 do
   alias Backend.Repo
   alias Backend.Hearthstone.Lineup
   alias Backend.Battlenet.Battletag
+  alias Backend.Hearthstone
 
   def rosters() do
     %{

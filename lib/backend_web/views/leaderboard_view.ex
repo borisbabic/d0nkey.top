@@ -136,7 +136,6 @@ defmodule BackendWeb.LeaderboardView do
   defp ignore_rank_changes_val(val) when is_integer(val), do: "less_than_equal_#{val}"
   defp ignore_rank_changes_val(_), do: "none"
 
-  defp history_updater(conn, key, history \\ :player)
   defp history_updater(conn, key, :player), do: &update_player_history_link(conn, key, &1)
   defp history_updater(conn, key, :rank), do: &update_rank_history_link(conn, key, &1)
 
@@ -187,13 +186,13 @@ defmodule BackendWeb.LeaderboardView do
 
   def history_dropdowns(false, _, _), do: []
 
-  defp actual_end(assigns = %{deadline: deadline, other: other}) do
-    season_display = Map.get(assigns, :season_display, "The season")
-
+  defp actual_end(assigns = %{season_display: _}) do
     ~H"""
-      <span><%= season_display %> ends at <%= render_datetime(deadline) %> not <%= render_datetime(other) %></span>
+      <span><%= @season_display %> ends at <%= render_datetime(@deadline) %> not <%= render_datetime(@other) %></span>
     """
   end
+
+  defp actual_end(assigns), do: Map.put(assigns, :season_display, "The season")
 
   defp other_warning(%{leaderboard_id: "BG", season_id: s, region: "EU"})
        when s in [5, "5", "lobby_legends_2"] do
@@ -443,7 +442,6 @@ defmodule BackendWeb.LeaderboardView do
           conn: conn,
           ladder_invite_num: ladder_invite_num,
           highlight: highlight,
-          other_ladders: other_ladders,
           leaderboard: leaderboard,
           show_flags: show_flags,
           show_ratings: show_ratings
@@ -545,7 +543,7 @@ defmodule BackendWeb.LeaderboardView do
       stats
       |> Enum.filter(fn ps -> ps.ranks |> Enum.count() >= min_to_show end)
       |> filter_countries(countries)
-      |> create_player_rows(conn, show_flags == "yes")
+      |> create_player_rows(show_flags == "yes")
       |> Enum.sort_by(fn row -> row["Average Finish"] end, :asc)
       |> Enum.sort_by(fn row -> row[sort_key] end, direction || :desc)
       |> Enum.drop(offset)
@@ -1275,10 +1273,7 @@ defmodule BackendWeb.LeaderboardView do
   def filter_region(players, nil), do: players
 
   def filter_region(players, region) do
-    region_string = to_string(region)
-
-    players
-    |> Enum.filter(fn %{region: r} -> to_string(region) == to_string(r) end)
+    Enum.filter(players, fn %{region: r} -> to_string(region) == to_string(r) end)
   end
 
   def filter_countries(target, []), do: target
@@ -1290,7 +1285,7 @@ defmodule BackendWeb.LeaderboardView do
     end)
   end
 
-  def create_player_rows(player_stats, conn, show_flags) do
+  def create_player_rows(player_stats, show_flags) do
     player_stats
     |> Enum.map(fn ps ->
       total = ps.ranks |> Enum.count()

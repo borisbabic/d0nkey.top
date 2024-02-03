@@ -2,7 +2,6 @@ defmodule BackendWeb.PlayerView do
   use BackendWeb, :view
 
   alias Backend.Blizzard
-  alias Backend.Battlenet.Battletag
   alias Backend.MastersTour.PlayerStats
   alias Backend.MastersTour.TourStop
   alias Backend.TournamentStats.TeamStats
@@ -20,7 +19,6 @@ defmodule BackendWeb.PlayerView do
         %{
           battletags: battletags,
           qualifier_stats: qs,
-          player_info: pi,
           tournaments: t,
           battletag_full: battletag_full,
           finishes: finishes,
@@ -29,8 +27,6 @@ defmodule BackendWeb.PlayerView do
           conn: conn
         }
       ) do
-    short_btags = Enum.map(battletags, &Battletag.shorten/1)
-
     update_link = fn new_params ->
       merged_params = conn.query_params |> Map.merge(new_params)
 
@@ -93,7 +89,7 @@ defmodule BackendWeb.PlayerView do
 
     qualifier_rows = qualifier_rows(t, battletags, conn)
 
-    leaderboard_rows = leaderboard_rows(finishes, short_btags, conn)
+    leaderboard_rows = leaderboard_rows(finishes, conn)
 
     table_rows =
       pick_competitions(competitions, %{
@@ -193,7 +189,7 @@ defmodule BackendWeb.PlayerView do
 
       score =
         case swiss do
-          %{wins: wins, losses: losses} -> "#{swiss.wins} - #{swiss.losses}"
+          %{wins: wins, losses: losses} -> "#{wins} - #{losses}"
           _ -> ""
         end
 
@@ -238,7 +234,7 @@ defmodule BackendWeb.PlayerView do
     end)
   end
 
-  def leaderboard_rows(finishes, leaderboard_names, conn) do
+  def leaderboard_rows(finishes, conn) do
     finishes
     |> Enum.map(fn e ->
       leaderboard_link =

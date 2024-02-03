@@ -47,9 +47,6 @@ defmodule BackendWeb.CardStatsLive do
     end
   end
 
-  defp deck_id(%{"player_deck_id" => deck_id}), do: deck_id
-  defp deck_id(_), do: nil
-
   def handle_params(params, _uri, socket) do
     default = CardStatsTable.default_criteria(:public)
     decks_criteria = DecksExplorer.filter_relevant(params)

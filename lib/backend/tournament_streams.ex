@@ -187,9 +187,8 @@ defmodule Backend.TournamentStreams do
   end
 
   defp get_for_tournament_query({source, id}) do
-    query =
-      from ts in TournamentStream,
-        where: ts.tournament_source == ^source and ts.tournament_id == ^id
+    from ts in TournamentStream,
+      where: ts.tournament_source == ^source and ts.tournament_id == ^id
   end
 
   def get_for_tournament_user(tournament_tuple, user) do

@@ -19,6 +19,7 @@ defmodule Components.CardStatsTable do
   prop(path_params, :any, default: nil)
   prop(params, :map)
   prop(user, :map, from_context: :user)
+  data(highlight_cards, :list, default: [])
 
   def update(assigns, socket) do
     {

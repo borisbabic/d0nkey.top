@@ -7,7 +7,6 @@ defmodule Components.ReplaysTable do
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.Enums.GameType
   alias Hearthstone.Enums.Format
-  alias BackendWeb.Router.Helpers, as: Routes
 
   prop(replays, :list, required: true)
   prop(show_player_btag, :boolean, default: false)
@@ -35,8 +34,8 @@ defmodule Components.ReplaysTable do
         <tbody>
           <tr :for={game <- @replays} >
             <td :if={@show_player_btag}><PlayerName flag={true} player={game.player_btag}/></td>
-            <td :if={game.player_deck} :if={@show_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
-            <td :if={!game.player_deck} :if={@show_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
+            <td :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
+            <td :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
             <td :if={@show_opponent}>
               <span>
                 <span class="icon">

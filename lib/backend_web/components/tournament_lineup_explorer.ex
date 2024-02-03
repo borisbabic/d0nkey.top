@@ -13,7 +13,7 @@ defmodule Components.TournamentLineupExplorer do
   prop(gm_week, :string, default: nil)
   prop(standings_url, :string, default: nil)
   slot(default)
-  slot(lineup_name, args: [:lineup_name])
+  slot(lineup_name, arg: %{lineup_name: :string})
 
   alias Components.GMProfileLink
   alias Components.ExpandableLineup

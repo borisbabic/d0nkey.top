@@ -12,7 +12,9 @@ defmodule BackendWeb.HearthstoneController do
   end
 
   def article(conn, %{"blog_id" => "23790401"}) do
-    render(conn, BackendWeb.PageView, "rick_roll.html", %{})
+    conn
+    |> put_view(BackendWeb.PageView)
+    |> render("rick_roll.html", %{})
   end
 
   def article(conn, %{"blog_id" => blog_id}) do

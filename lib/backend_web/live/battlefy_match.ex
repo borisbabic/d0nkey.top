@@ -105,8 +105,10 @@ defmodule BackendWeb.BattlefyMatchLive do
   def player(name, tournament) do
     link = Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, tournament.id, name)
 
-    ~E"""
-    <a href=<%= link %> ><%= name %></a>
+    assigns = %{link: link, name: name}
+
+    ~H"""
+    <a href={@link}><%= @name %></a>
     """
   end
 

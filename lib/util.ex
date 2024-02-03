@@ -588,11 +588,6 @@ defmodule Util do
     end
   end
 
-  defp prepend_non_nil(list, nil), do: list
-  defp prepend_non_nil(list, val) when is_list(list), do: [val | list]
-  defp prepend_non_nil(list, nil, to_prepend), do: list
-  defp prepend_non_nil(list, _to_check, to_prepend) when is_list(list), do: [to_prepend | list]
-
   @doc """
   Unpacks something that might be in a list of might already be out of it
   iex > 

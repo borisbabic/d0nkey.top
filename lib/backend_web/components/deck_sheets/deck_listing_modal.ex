@@ -132,9 +132,7 @@ defmodule Components.DeckListingModal do
     {:noreply, socket}
   end
 
-  @doc """
-  Ignores decks that error
-  """
+  # Ignores decks that error
   defp create_decks(deckcodes) do
     decks = for code <- deckcodes, {:ok, deck} <- [Hearthstone.create_or_get_deck(code)], do: deck
 

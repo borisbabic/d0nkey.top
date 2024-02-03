@@ -37,7 +37,9 @@ defmodule BackendWeb.StreamingController do
   defp direction(_), do: nil
 
   def streamer_decks(conn, %{"twitch_id" => "141981764"}) do
-    render(conn, BackendWeb.PageView, "rick_roll.html", %{})
+    conn
+    |> put_view(BackendWeb.PageView)
+    |> render("rick_roll.html", %{})
   end
 
   def streamer_decks(conn, params) do

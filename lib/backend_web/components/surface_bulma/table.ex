@@ -93,8 +93,8 @@ defmodule Components.SurfaceBulma.Table do
           <tr
             :for={{item, index} <- Enum.with_index(@sorted_data)}
             class={row_class_fun(@row_class).(item, index)}>
-            <td :for.index={index <- @cols}>
-              <span><#slot name="cols" index={index} generator_value={item}/></span>
+            <td :for={col<- @cols}>
+              <span><#slot {col} generator_value={item}/></span>
             </td>
           </tr>
         </tbody>

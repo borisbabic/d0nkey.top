@@ -159,8 +159,8 @@ defmodule Command.DeduplicateDecks do
       "AAECAfHhBATE9gSpgAXLpQXMpQUN7bEElrcE7eME9eME/uMEguQEk+QEueYEh/YEtIAFtYAFk4EFopkFAA=="
       |> Deck.decode!()
 
-    {:ok, first} = Backend.Hearthstone.create_deck(d.cards, d.hero, d.format)
-    {:ok, second} = Backend.Hearthstone.create_deck(d.cards, d.hero, d.format)
+    {:ok, first} = Backend.Hearthstone.create_deck(d.cards, d.hero, d.format, d.sidebaords)
+    {:ok, second} = Backend.Hearthstone.create_deck(d.cards, d.hero, d.format, d.sideboards)
     add_interactions(first)
     add_streamer_deck(first, 50)
     add_interactions(second)

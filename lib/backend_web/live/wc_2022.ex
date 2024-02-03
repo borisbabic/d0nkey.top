@@ -3,9 +3,6 @@ defmodule BackendWeb.WC2022Live do
   use BackendWeb, :surface_live_view
 
   alias Components.TournamentLineupExplorer
-  alias Backend.Hearthstone.Lineup
-  alias Backend.Blizzard
-  alias Components.Dropdown
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :any)

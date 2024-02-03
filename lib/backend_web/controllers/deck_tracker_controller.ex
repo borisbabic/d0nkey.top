@@ -27,7 +27,7 @@ defmodule BackendWeb.DeckTrackerController do
           "player_deck" => Backend.Hearthstone.deck_info(pd)
         })
 
-      {:ok, other} ->
+      {:ok, _other} ->
         conn
         |> put_status(200)
         |> text("Success")

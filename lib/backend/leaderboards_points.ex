@@ -121,7 +121,7 @@ defmodule Backend.LeaderboardsPoints do
     Timex.now("US/Pacific")
   end
 
-  defp remove_too_soon(seasons, use_current \\ false) do
+  defp remove_too_soon(seasons, use_current) do
     comparator = if use_current, do: &Kernel.<=/2, else: &Kernel.</2
     current = current_season_id()
     Enum.filter(seasons, &comparator.(&1, current))

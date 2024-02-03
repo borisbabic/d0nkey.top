@@ -58,7 +58,7 @@ defmodule BackendWeb.PageController do
     render(conn, "bla_bla.html", params)
   end
 
-  def always_error(conn, params) do
+  def always_error(_conn, params) do
     error =
       case params do
         %{"error" => error} -> error

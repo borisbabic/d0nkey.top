@@ -1,6 +1,5 @@
 defmodule BackendWeb.HSReplayView do
   use BackendWeb, :view
-  alias Backend.HSReplay
 
   def player_rank(51, legend), do: "L#{legend}"
 

@@ -7,25 +7,27 @@ defmodule Bot.MTMessageHandler do
 
   def handle_mt_standings(msg = %{content: content}) do
     content
-      |> get_options(:string)
-      |> TourStop.get()
-      |> or_current_mt()
-      |> mt_message(msg)
-      |> send_or_travolta(msg.channel_id)
+    |> get_options(:string)
+    |> TourStop.get()
+    |> or_current_mt()
+    |> mt_message(msg)
+    |> send_or_travolta(msg.channel_id)
   end
 
   def mt_message(ts = %{battlefy_id: battlefy_id}, message) when is_binary(battlefy_id) do
     Logger.debug("Getting mt message for #{ts.id} #{battlefy_id} ")
-    with %{stages: [s | _ ] } <- MastersTour.get_mt_tournament(ts),
-        standings <- MastersTour.get_mt_stage_standings(s, ts),
-        battletags = [_|_] <- get_guild_battletags!(message.guild_id) do
-          Bot.BattlefyMessageHandler.create_message(battletags, standings, &MastersTour.fix_name/1)
+
+    with %{stages: [s | _]} <- MastersTour.get_mt_tournament(ts),
+         standings <- MastersTour.get_mt_stage_standings(s, ts),
+         battletags = [_ | _] <- get_guild_battletags!(message.guild_id) do
+      Bot.BattlefyMessageHandler.create_message(battletags, standings, &MastersTour.fix_name/1)
     else
       other ->
         Logger.debug("Unable to create standings message: #{inspect(other)}")
         ""
     end
   end
+
   def mt_message(_, _), do: ""
 
   defp or_current_mt(mt = %{id: _}), do: mt
@@ -43,29 +45,33 @@ defmodule Bot.MTMessageHandler do
 
   def standings_message(guild_id, num) when is_integer(num) do
     with %{id: id} <- MastersTour.get_qualifier(num),
-        {:ok, msg} <- Bot.BattlefyMessageHandler.create_standings_message(id, %{guild_id: guild_id}) do
-        msg
+         {:ok, msg} <-
+           Bot.BattlefyMessageHandler.create_standings_message(id, %{guild_id: guild_id}) do
+      msg
     else
       _ -> standings_message(guild_id)
     end
   end
-  def standings_message(guild_id, _), do: standings_message(guild_id)
-  def standings_message(guild_id) do
-    battletags = get_guild_battletags!(guild_id)
-    base_message = MastersTour.get_recent_qualifiers()
-    |> Enum.map(fn q ->
-      num = Backend.MastersTour.Qualifier.num(q)
-      title = "MTQ #{num}"
 
-      standings = Backend.Battlefy.get_standings(q.id) |> Backend.Battlefy.sort_standings()
-      rows = Bot.BattlefyMessageHandler.create_message_cells(battletags, standings)
-      case rows do
-        [] -> nil
-        _ -> TableRex.quick_render!(rows, [], title)
-      end
-    end)
-    |> Enum.filter(& &1)
-    |> Enum.join("\n")
+  def standings_message(guild_id, _), do: standings_message(guild_id)
+
+  def standings_message(_guild_id) do
+    base_message =
+      MastersTour.get_recent_qualifiers()
+      |> Enum.map(fn q ->
+        num = Backend.MastersTour.Qualifier.num(q)
+        title = "MTQ #{num}"
+
+        standings = Backend.Battlefy.get_standings(q.id) |> Backend.Battlefy.sort_standings()
+        rows = Bot.BattlefyMessageHandler.create_message_cells(standings)
+
+        case rows do
+          [] -> nil
+          _ -> TableRex.quick_render!(rows, [], title)
+        end
+      end)
+      |> Enum.filter(& &1)
+      |> Enum.join("\n")
 
     """
     ```

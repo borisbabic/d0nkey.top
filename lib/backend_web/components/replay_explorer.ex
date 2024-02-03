@@ -133,8 +133,6 @@ defmodule Components.ReplayExplorer do
     {params, search_filters}
   end
 
-  def format_options(), do: [{"all", "All Formats"} | DecksExplorer.format_options()]
-
   def filter_relevant(params) do
     params
     |> Map.take([

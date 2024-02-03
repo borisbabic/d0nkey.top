@@ -28,7 +28,6 @@ config :backend, QuantumScheduler,
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
     {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     {"* */2 * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end},
-    # {"3 * * * *", fn -> Hearthstone.DeckTracker.DeckStatsAggregator.enqueue_last_hour() end},
     {"* * * * *", fn -> Hearthstone.DeckTracker.refresh_agg_stats() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]

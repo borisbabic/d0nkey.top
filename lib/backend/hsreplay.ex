@@ -4,7 +4,6 @@ defmodule Backend.HSReplay do
   alias Backend.Infrastructure.ApiCache
   alias Backend.HSReplay.Archetype
   alias Backend.HSReplay.Streaming
-  alias Backend.HSReplay.Deck
   alias Backend.HSReplay.DeckMap
   alias Backend.HSReplay.DeckMapper
   alias Backend.HSReplay.StreamerDeckInserter
@@ -69,7 +68,7 @@ defmodule Backend.HSReplay do
   end
 
   def get_latest() do
-    Cache.list()
+    []
   end
 
   def get_latest(filters) do

@@ -169,6 +169,14 @@ defmodule Backend.Battlenet do
     end
   end
 
+  defp filter_config(:old_battletags) do
+    defconfig do
+      text(:new_battletag)
+      text(:old_battletag)
+      text(:source)
+    end
+  end
+
   @spec by_battletag_full(String.t()) :: Battletag.t() | nil
   def by_battletag_full(battletag_full),
     do: from(b in Battletag, where: b.battletag_full == ^battletag_full) |> by_battletag()
@@ -427,13 +435,5 @@ defmodule Backend.Battlenet do
   """
   def change_old_battletag(%OldBattletag{} = old_battletag, attrs \\ %{}) do
     OldBattletag.changeset(old_battletag, attrs)
-  end
-
-  defp filter_config(:old_battletags) do
-    defconfig do
-      text(:new_battletag)
-      text(:old_battletag)
-      text(:source)
-    end
   end
 end

@@ -21,7 +21,8 @@ defmodule Components.DeleteModal do
           button_title={@button_title}
           title={@title}
           show_body={false}>
-
+          <span>
+          </span>
           <:footer>
             <button :on-click="delete" class="button">{@delete_button_text}</button>
           </:footer>

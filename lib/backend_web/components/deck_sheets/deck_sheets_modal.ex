@@ -77,8 +77,6 @@ defmodule Components.DeckSheetsModal do
 
   defp id(%{id: id}), do: "edit_deck_sheet_inner_#{id}"
   defp id(_), do: "new_deck_sheet_inner"
-  defp can_access_sheet?(nil, _), do: true
-  defp can_access_sheet?(sheet, user), do: Sheets.can_admin?(sheet, user)
 
   defp button_title(%{id: id}) when is_integer(id), do: "Edit"
   defp button_title(_), do: "New"

@@ -474,13 +474,6 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  defp ensure_opponent_class(criteria) do
-    case List.keyfind(criteria, "opponent_class", 0) do
-      {"opponent_class", c} when is_binary(c) -> criteria
-      _ -> [{"opponent_class", "ALL"} | criteria]
-    end
-  end
-
   defp base_deck_stats_query() do
     base_stats_query()
     |> group_by([game: g], g.player_deck_id)
@@ -901,14 +894,14 @@ defmodule Hearthstone.DeckTracker do
       query |> where([deck_stats: ds], ds.hour_start >= ^start_time)
     end
 
-    defp compose_games_query({"period", unquote(param)}, query) do
-      {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
-      query |> where([game: g], g.inserted_at >= ^start_time)
-    end
-
     defp compose_games_query({"period", unquote(param)}, query = @card_query) do
       {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
       query |> where([card_tally: c], c.inserted_at >= ^start_time)
+    end
+
+    defp compose_games_query({"period", unquote(param)}, query) do
+      {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
+      query |> where([game: g], g.inserted_at >= ^start_time)
     end
   end
 
@@ -934,19 +927,6 @@ defmodule Hearthstone.DeckTracker do
 
     query
     |> where([game: g], g.inserted_at >= ^period_start)
-  end
-
-  def period_start_query(slug) do
-    from p in Period,
-      where: p.slug == ^slug,
-      select:
-        max(
-          fragment(
-            "COALESCE (?, now() - CONCAT(?, ' hours')::interval)",
-            p.period_start,
-            p.hours_ago
-          )
-        )
   end
 
   defp compose_games_query({:in_range, start, finish}, query) do
@@ -977,42 +957,6 @@ defmodule Hearthstone.DeckTracker do
 
     query
     |> filter_rank(rank, :game, :player_rank, :player_legend_rank)
-  end
-
-  defp filter_rank(
-         query,
-         %{
-           min_rank: min_rank,
-           max_rank: max_rank,
-           min_legend_rank: min_legend_rank,
-           max_legend_rank: max_legend_rank
-         },
-         target,
-         rank_field,
-         legend_field
-       ) do
-    [
-      {
-        min_rank > 0,
-        &where(&1, [{^target, t}], field(t, ^rank_field) >= ^min_rank)
-      },
-      {
-        is_integer(max_rank) and max_rank > 0,
-        &where(&1, [{^target, t}], field(t, ^rank_field) <= ^max_rank)
-      },
-      {
-        min_legend_rank > 0,
-        &where(&1, [{^target, t}], field(t, ^legend_field) >= ^min_legend_rank)
-      },
-      {
-        is_integer(max_legend_rank) and max_legend_rank > 0,
-        &where(&1, [{^target, t}], field(t, ^legend_field) <= ^max_legend_rank)
-      }
-    ]
-    |> Enum.reduce(query, fn
-      {true, apply}, acc_query -> apply.(acc_query)
-      {false, _apply}, acc_query -> acc_query
-    end)
   end
 
   defp compose_games_query({"order_by", "latest"}, query = %{group_bys: []}),
@@ -1090,9 +1034,6 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"archetype", "other"}, query),
     do: query |> where([player_deck: pd], is_nil(pd.archetype))
 
-  defp compose_games_query({"archetype", "other"}, query),
-    do: query |> where([player_deck: pd], is_nil(pd.archetype))
-
   defp compose_games_query({"archetype", archetype}, query),
     do: query |> where([player_deck: pd], pd.archetype == ^archetype)
 
@@ -1150,6 +1091,9 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"duration", duration}, query),
     do: query |> where([game: g], g.duration == ^duration)
+
+  defp compose_games_query({"region", regions}, query) when is_list(regions),
+    do: query |> where([game: g], g.region in ^regions)
 
   defp compose_games_query({"region", region}, query),
     do: query |> where([game: g], g.region == ^region)
@@ -1229,6 +1173,55 @@ defmodule Hearthstone.DeckTracker do
     do: query |> limit(^limit)
 
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
+
+  def period_start_query(slug) do
+    from p in Period,
+      where: p.slug == ^slug,
+      select:
+        max(
+          fragment(
+            "COALESCE (?, now() - CONCAT(?, ' hours')::interval)",
+            p.period_start,
+            p.hours_ago
+          )
+        )
+  end
+
+  defp filter_rank(
+         query,
+         %{
+           min_rank: min_rank,
+           max_rank: max_rank,
+           min_legend_rank: min_legend_rank,
+           max_legend_rank: max_legend_rank
+         },
+         target,
+         rank_field,
+         legend_field
+       ) do
+    [
+      {
+        min_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^rank_field) >= ^min_rank)
+      },
+      {
+        is_integer(max_rank) and max_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^rank_field) <= ^max_rank)
+      },
+      {
+        min_legend_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^legend_field) >= ^min_legend_rank)
+      },
+      {
+        is_integer(max_legend_rank) and max_legend_rank > 0,
+        &where(&1, [{^target, t}], field(t, ^legend_field) <= ^max_legend_rank)
+      }
+    ]
+    |> Enum.reduce(query, fn
+      {true, apply}, acc_query -> apply.(acc_query)
+      {false, _apply}, acc_query -> acc_query
+    end)
+  end
 
   @spec replay_link(%{:game_id => any, optional(any) => any}) :: String.t() | nil
   def replay_link(%{replay_url: url}) when is_binary(url), do: url
@@ -1324,7 +1317,7 @@ defmodule Hearthstone.DeckTracker do
     new_times = if is_integer(times), do: times - 1, else: times
 
     raw_stats(limit, new_min_id)
-    |> do_convert_raw_stats_to_card_tallies(limit, timeout, times, new_min_id)
+    |> do_convert_raw_stats_to_card_tallies(limit, timeout, new_times, new_min_id)
   end
 
   def raw_stats(limit, min_id \\ 0) do
@@ -1431,60 +1424,6 @@ defmodule Hearthstone.DeckTracker do
   def change_period(%Period{} = period, attrs \\ %{}) do
     Period.changeset(period, attrs)
   end
-
-  @one_hour %Timex.Duration{microseconds: 0, seconds: 3_600, megaseconds: 0}
-
-  # def aggregate_deck_stats(class, rank)
-  #     when (is_binary(class) or is_nil(class)) and is_binary(rank) do
-  #   NaiveDateTime.utc_now()
-  #   |> Timex.subtract(@one_hour)
-  #   |> Util.hour_start()
-  #   |> aggregate_deck_stats(class, rank)
-  # end
-  #
-  # def aggregate_deck_stats(%NaiveDateTime{} = start, class, rank)
-  #     when (is_binary(class) or is_nil(class)) and is_binary(rank) do
-  #   finish = Timex.add(start, @one_hour)
-  #
-  #   if :gt == NaiveDateTime.compare(finish, NaiveDateTime.utc_now()) do
-  #     raise "Can't aggregate an unfinished period"
-  #   end
-  #
-  #   base_criteria = [
-  #     {:in_range, start, finish},
-  #     {"rank", rank}
-  #   ]
-  #
-  #   criteria =
-  #     base_criteria
-  #     |> add_opponent_class_criteria(class)
-  #
-  #   query =
-  #     base_deck_stats_query()
-  #     |> build_games_query(criteria)
-  #
-  #   constants = %{hour_start: start, opponent_class: class, rank: rank}
-  #
-  #   Repo.all(query, timeout: 666_000)
-  #   |> Enum.reduce(Multi.new(), fn ds, multi ->
-  #     attrs = Map.merge(ds, constants)
-  #
-  #     cs = DeckStats.changeset(%DeckStats{}, attrs)
-  #     name = to_string(attrs.deck_id)
-  #     Multi.insert(multi, name, cs)
-  #   end)
-  #   |> Repo.transaction(timeout: 666_000)
-  # end
-  #
-  # def aggregate_deck_stats(%Date{} = date, hour, class) when is_integer(hour) do
-  #   with {:ok, time} <- Time.new(hour, 0, 0),
-  #        {:ok, start} <- NaiveDateTime.new(date, time) do
-  #     aggregate_deck_stats(start, class)
-  #   end
-  # end
-
-  defp add_opponent_class_criteria(criteria, all) when all in [nil, "ALL", "all"], do: criteria
-  defp add_opponent_class_criteria(criteria, class), do: [{"opponent_class", class} | criteria]
 
   @spec format_filters(:public | :personal) :: [{value :: String.t(), display :: String.t()}]
   def format_filters(context) do

@@ -65,6 +65,15 @@ defmodule BackendWeb.LeaderboardController do
     })
   end
 
+  def index(conn, params) do
+    new_params =
+      params
+      |> Map.put_new("region", "EU")
+      |> Map.put_new("leaderboardId", "STD")
+
+    index(conn, new_params)
+  end
+
   defp create_criteria(params) do
     [:latest_in_season, {"order_by", "rank"}]
     |> parse_up_to(params)
@@ -139,15 +148,6 @@ defmodule BackendWeb.LeaderboardController do
     do: skip
 
   def parse_skip_cn(_, _), do: "all"
-
-  def index(conn, params) do
-    new_params =
-      params
-      |> Map.put_new("region", "EU")
-      |> Map.put_new("leaderboardId", "STD")
-
-    index(conn, new_params)
-  end
 
   def parse_show_flags(%{"show_flags" => sf}, _) when sf in ["no", "yes"], do: sf
 
@@ -288,7 +288,6 @@ defmodule BackendWeb.LeaderboardController do
 
     criteria =
       [:latest_in_season]
-      # |> add_not_current_season_criteria(leaderboards)
       |> add_region_criteria(regions)
       |> add_leaderboard_criteria(leaderboards)
       |> add_min_rating_criteria()
@@ -365,7 +364,7 @@ defmodule BackendWeb.LeaderboardController do
 
   def rank_history(
         conn,
-        params = %{
+        %{
           "leaderboard_id" => ldb,
           "region" => region,
           "period" => period,
@@ -390,11 +389,6 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  defp add_not_current_season_criteria(criteria, []),
-    do: add_not_current_season_criteria(criteria, ["STD"])
-
-  defp add_not_current_season_criteria(criteria, ids), do: [{:not_current_season, ids} | criteria]
-
   defp add_leaderboard_criteria(criteria, []), do: add_leaderboard_criteria(criteria, nil)
   defp add_leaderboard_criteria(criteria, nil), do: [{"leaderboard_id", ["STD"]} | criteria]
   defp add_leaderboard_criteria(criteria, ids), do: [{"leaderboard_id", ids} | criteria]
@@ -402,7 +396,6 @@ defmodule BackendWeb.LeaderboardController do
   defp add_min_rating_criteria(criteria) do
     with {"leaderboard_id", ids} <- List.keyfind(criteria, "leaderboard_id", 0),
          true <- "BG" in ids or "BG_LL" in ids do
-      criteria
       [{"conditional_min_rating", 8000} | criteria]
     else
       _ -> criteria
