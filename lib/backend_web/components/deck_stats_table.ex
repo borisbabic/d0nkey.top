@@ -6,6 +6,7 @@ defmodule Components.DeckStatsTable do
   alias Components.LivePatchDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.PeriodDropdown
+  alias Components.Filter.RegionDropdown
 
   prop(live_view, :module, required: true)
   prop(params, :map, required: true)
@@ -21,6 +22,7 @@ defmodule Components.DeckStatsTable do
       |> Map.put_new("rank", RankDropdown.default())
       |> Map.put_new("period", PeriodDropdown.default())
       |> Map.put_new("players", "all_players")
+      |> add_region()
 
     {
       :ok,
@@ -34,6 +36,11 @@ defmodule Components.DeckStatsTable do
         selected_params
       )
     }
+  end
+
+  defp add_region(params = %{"players" => players}) do
+    context = if players == "all_players", do: :public, else: :private
+    Map.put_new(params, "region", RegionDropdown.default())
   end
 
   def render(assigns) do

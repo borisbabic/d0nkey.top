@@ -1092,11 +1092,26 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"duration", duration}, query),
     do: query |> where([game: g], g.duration == ^duration)
 
+  defp compose_games_query({"region", string_or_atom}, query)
+       when is_binary(string_or_atom) or is_atom(string_or_atom) do
+    new_region_filter = [to_string(string_or_atom)]
+    compose_games_query({"region", new_region_filter}, query)
+  end
+
+  defp compose_games_query({"region", empty}, query) when empty in [nil, []], do: query
+
+  defp compose_games_query({"region", regions}, query = @agg_deck_query) when is_list(regions) do
+    target_regions = get_auto_aggregate_regions()
+
+    if Enum.sort(target_regions) == Enum.sort(regions) do
+      query
+    else
+      raise "Unsupported regions"
+    end
+  end
+
   defp compose_games_query({"region", regions}, query) when is_list(regions),
     do: query |> where([game: g], g.region in ^regions)
-
-  defp compose_games_query({"region", region}, query),
-    do: query |> where([game: g], g.region == ^region)
 
   defp compose_games_query(:ranked, @agg_deck_query = query), do: query
   defp compose_games_query(:ranked, @old_aggregated_query = query), do: query
@@ -1435,6 +1450,12 @@ defmodule Hearthstone.DeckTracker do
   def formats_for_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]
     |> formats()
+  end
+
+  @spec regions_for_filters() :: [{code :: String.t(), display :: String.t()}]
+  def regions_for_filters() do
+    Repo.all(Region)
+    |> Enum.map(&{&1.code, &1.display})
   end
 
   def get_format_by_value(value) do
@@ -1941,5 +1962,12 @@ defmodule Hearthstone.DeckTracker do
   """
   def change_region(%Region{} = region, attrs \\ %{}) do
     Region.changeset(region, attrs)
+  end
+
+  @spec get_auto_aggregate_regions() :: [code :: String.t()]
+  def get_auto_aggregate_regions() do
+    query = from q in Region, where: q.auto_aggregate, select: q.code
+
+    Repo.all(query)
   end
 end
