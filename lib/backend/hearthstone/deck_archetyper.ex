@@ -19,7 +19,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   @neutral_excavate ["Kobold Miner", "Burrow Buster"]
-  def archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"}) do
+  def archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"} = deck) do
     card_info = full_cards(c)
 
     cond do
@@ -31,6 +31,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
+
+      rainbow_dk?(card_info) && plague_dk?(card_info) ->
+        :"Rainbow Plague DK"
+
+      rainbow_dk?(card_info) && excavate_dk?(card_info) ->
+        :"Rainbow Excavate DK"
+
+      rainbow_dk?(card_info) ->
+        :"Rainbow DK"
 
       plague_dk?(card_info) ->
         :"Plague DK"
@@ -55,6 +64,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
+    end
+  end
+
+  def rainbow_dk?(ci) do
+    case Deck.rune_cost(ci.cards) do
+      %{blood: b, frost: f, unholy: u} when b > 0 and f > 0 and u > 0 -> true
+      _ -> false
     end
   end
 
@@ -1854,7 +1870,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       |> Enum.filter(& &1)
       |> Enum.unzip()
 
-    %{full_cards: full_cards, card_names: card_names}
+    %{full_cards: full_cards, card_names: card_names, cards: cards}
   end
 
   @spec minion_type_counts(card_info()) :: [{String.t(), integer()}]
