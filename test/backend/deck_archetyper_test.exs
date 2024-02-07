@@ -1,8 +1,8 @@
 defmodule Backend.DeckArchetyperTest do
-  # use Backend.DataCase, async: true
+  use Backend.DataCase, async: true
 
-  # alias Backend.Hearthstone.Deck
-  # alias Backend.Hearthstone.DeckArchetyper
+  alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.DeckArchetyper
   # @test_cases [
   # {:"Big Beast Hunter", "AAECAR8I5e8DxfsDlPwD25EE4Z8EwLkE57kEm8kEC+rpA8OABKmfBNejBOWkBMCsBO2xBIiyBJa3BOC5BIPIBAA="},
   # {:"Quest Hunter", "AAECAR8G/fgDu4oE25EE458EhskEj6QFDNzqA9vtA/f4A9D5A6mfBKqfBLugBL+sBMGsBJ2wBIe3BIzUBAA="},
@@ -27,4 +27,20 @@ defmodule Backend.DeckArchetyperTest do
   # assert archetype == DeckArchetyper.archetype(deck)
   # end
   # end
+
+  test "No cards in deck no error" do
+    deck = Deck.deckcode([], Deck.get_basic_hero("HUNTER"), 2) |> Deck.decode!()
+    assert to_string(DeckArchetyper.archetype(deck)) =~ "Hunter"
+  end
+
+  # errored out streamer decks
+  test "deck_archetyper doesnt' error" do
+    deck =
+      Deck.decode!(
+        "AAECAfHhBAqoigSk7wTipAXLpQWeqgXzyAX8+QXt/wWLkgb/lwYK0e0Eh/YEsvcEtPcEkpMFoJkF8OgFg5IGkZcGgJgGAAA="
+      )
+
+    DeckArchetyper.archetype(deck)
+    assert true
+  end
 end
