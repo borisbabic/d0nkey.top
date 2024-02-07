@@ -617,8 +617,10 @@ defmodule Backend.Hearthstone.Deck do
     ]
   end
 
-  @spec rune_cost(t()) :: RuneCost.t()
-  def rune_cost(%{cards: cards}) do
+  @spec rune_cost(t() | [integer()]) :: RuneCost.t()
+  def rune_cost(%{cards: cards}), do: rune_cost(cards)
+
+  def rune_cost(cards) do
     cards
     |> Enum.map(&(&1 |> Hearthstone.get_card()))
     |> Enum.filter(& &1)
