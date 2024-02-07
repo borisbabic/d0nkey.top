@@ -56,6 +56,12 @@ defmodule Bot.MessageHandlerUtil do
     end
   end
 
+  @spec reply_or_ignore({:ok, String.t() | list()} | any(), Message.t()) ::
+          {:ok, Message.t()} | :ignore
+  def reply_or_ignore({:ok, reply}, msg) do
+    reply(msg, reply)
+  end
+
   @spec reply(Message.t(), String.t() | list()) :: {:ok, Message.t()}
   def reply(%{channel_id: channel_id, id: id}, options) when is_list(options) do
     with_reference = [{:message_reference, %{message_id: id}} | options]
