@@ -1842,7 +1842,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ignore_types = Keyword.get(opts, :ignore_types, [])
 
     with counts = [_ | _] <- minion_type_counts(ci),
-         filtered <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
+         filtered = [_ | _] <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
          {type, count} when count >= min_count <- Enum.max_by(filtered, &elem(&1, 1)) do
       "#{type} #{class_part}"
     else

@@ -30,4 +30,4 @@ config :backend, BackendWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
-config :backend, Oban, queues: false, plugins: false
+config :backend, Oban, queues: false, plugins: false, repo: Backend.Repo
