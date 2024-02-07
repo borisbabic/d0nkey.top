@@ -225,7 +225,8 @@ defmodule Bot.MessageHandler do
       _ ->
         [
           handle_deck(msg),
-          handle_card(msg)
+          handle_card(msg),
+          handle_wiki(msg)
         ]
         |> Enum.find(:ignore, &(&1 != :ignore))
     end
@@ -321,6 +322,44 @@ defmodule Bot.MessageHandler do
       _ ->
         embed
     end
+  end
+
+  def handle_wiki(msg) do
+    msg.content
+    |> extract_fandom_uris()
+    |> use_new_wiki()
+    |> create_wiki_reply(msg)
+  end
+
+  @spec extract_fandom_uris(String.t()) :: [Uri.t()]
+  def extract_fandom_uris(content) do
+    Regex.scan(~r/[^\s]+hearthstone.fandom.com[^\s]+/, content)
+    |> Enum.map(fn [uri] -> URI.parse(uri) end)
+    |> Enum.filter(fn
+      %{host: "hearthstone.fandom.com"} -> true
+      _ -> false
+    end)
+  end
+
+  @spec use_new_wiki([Uri.t()]) :: Uri.t()
+  defp use_new_wiki(fandom_uris) do
+    Enum.map(fandom_uris, fn fandom ->
+      Map.put(fandom, :host, "hearthstone.wiki.gg")
+    end)
+  end
+
+  @spec create_wiki_reply([Uri.t()], Message.t()) :: {:ok, Message.t()}
+  defp create_wiki_reply([], _msg), do: :ignore
+
+  defp create_wiki_reply(uris, msg) do
+    url_part = uris |> Enum.uniq() |> Enum.map_join("\n", &to_string/1)
+
+    message = """
+    The wiki has moved to hearthstone.wiki.gg:
+    #{url_part}
+    """
+
+    reply(msg, message)
   end
 
   def handle_deck(msg) do
