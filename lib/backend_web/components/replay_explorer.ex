@@ -7,6 +7,7 @@ defmodule Components.ReplayExplorer do
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
+  alias Components.Filter.RegionDropdown
   alias Components.Filter.FormatDropdown
   alias Components.DecksExplorer
   alias Components.ReplaysTable
@@ -34,6 +35,7 @@ defmodule Components.ReplayExplorer do
   prop(format_filter, :boolean, default: true)
   prop(rank_filter, :boolean, default: true)
   prop(period_filter, :boolean, default: true)
+  prop(region_filter, :boolean, default: true)
   prop(filter_context, :atom, default: :public)
   prop(player_class_filter, :boolean, default: true)
   prop(opponent_class_filter, :boolean, default: true)
@@ -64,6 +66,7 @@ defmodule Components.ReplayExplorer do
           <FormatDropdown id="format_dropdown" :if={@format_filter} filter_context={@filter_context} />
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
+          <RegionDropdown id="region_dropdown" :if={@region_filter} filter_context={@filter_context} />
 
           <LivePatchDropdown :if={@player_class_filter}
             options={DecksExplorer.class_options("Any Class")}
