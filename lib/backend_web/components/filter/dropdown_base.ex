@@ -4,16 +4,17 @@ defmodule Components.Filter.DropdownBase do
 
     quote do
       alias BackendWeb.Router.Helpers, as: Routes
+      @context_base Components.LivePatchDropdown
       # either a list of {value, display} tuples, or a list of one value when value == display
       prop(options, :list, required: true)
       prop(param, :string, required: true)
-      prop(live_view, :any, required: true, from_context: {__MODULE__, :live_view})
-      prop(path_params, :struct, from_context: {__MODULE__, :path_params})
-      prop(url_params, :map, required: true, from_context: {__MODULE__, :url_params})
+      prop(live_view, :any, required: true, from_context: {@context_base, :live_view})
+      prop(path_params, :struct, from_context: {@context_base, :path_params})
+      prop(url_params, :map, required: true, from_context: {@context_base, :url_params})
       prop(title, :string, required: false)
 
       # If the params we want to use to decide whether it's selected differ from the url params
-      prop(selected_params, :any, from_context: {__MODULE__, :selected_params})
+      prop(selected_params, :any, from_context: {@context_base, :selected_params})
       prop(selected_as_title, :boolean, default: true)
 
       prop(current_val, :any, required: false)
@@ -21,6 +22,12 @@ defmodule Components.Filter.DropdownBase do
 
       data(current, :any)
       data(actual_title, :any)
+
+      def add_to_empty(assigns) do
+        add_title_current(assigns)
+      end
+
+      defoverridable add_to_empty: 1
 
       def add_title_current(assigns) do
         current = current(assigns)
@@ -44,7 +51,7 @@ defmodule Components.Filter.DropdownBase do
           Enum.map(current, fn v -> normalizer.(v) end)
         end
 
-        def is_current(value, current, normalizer) do
+        def current?(value, current, normalizer) do
           normalized_value = normalizer.(value)
           normalized_current = apply_normalizer_to_current(current, normalizer)
           normalized_value in normalized_current
@@ -54,8 +61,8 @@ defmodule Components.Filter.DropdownBase do
           normalizer.(current)
         end
 
-        def is_current(value, current, normalizer) do
-          apply_normalizer_to_current(current, normalizer) == normalizer.(current)
+        def current?(value, current, normalizer) do
+          apply_normalizer_to_current(current, normalizer) == normalizer.(value)
         end
       end
 
@@ -64,13 +71,15 @@ defmodule Components.Filter.DropdownBase do
       def title(
             %{selected_as_title: true, title: title, options: options, normalizer: normalizer},
             current
-          ),
-          do:
-            Enum.find_value(
-              options,
-              title,
-              &(is_current(value(&1), current, normalizer) && display(&1))
-            )
+          ) do
+        Enum.find_value(options, title, fn opt ->
+          val = value(opt)
+
+          if current?(val, current, normalizer) do
+            display(opt)
+          end
+        end)
+      end
 
       def value({value, _display}), do: value
       def value(value), do: value
@@ -125,7 +134,7 @@ defmodule Components.Filter.DropdownBase do
         ]
 
         socket
-        |> Surface.Components.Context.put(__MODULE__, context)
+        |> Surface.Components.Context.put(@context_base, context)
       end
     end
   end

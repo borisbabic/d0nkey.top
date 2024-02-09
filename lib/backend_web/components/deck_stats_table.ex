@@ -40,7 +40,7 @@ defmodule Components.DeckStatsTable do
 
   defp add_region(params = %{"players" => players}) do
     context = if players == "all_players", do: :public, else: :private
-    Map.put_new(params, "region", RegionDropdown.default())
+    Map.put_new(params, "region", RegionDropdown.default(context))
   end
 
   def render(assigns) do
@@ -48,6 +48,7 @@ defmodule Components.DeckStatsTable do
     <div>
         <RankDropdown id="rank_dropdown"/>
         <PeriodDropdown id="period_dropdown" />
+        <RegionDropdown id="region_dropdown" />
 
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
@@ -75,5 +76,5 @@ defmodule Components.DeckStatsTable do
     do: params |> Map.put_new("player_btag", battletag)
 
   defp set_user_param({_, params}, _), do: params
-  def param_keys(), do: ["rank", "period", "players"]
+  def param_keys(), do: ["rank", "period", "players", "region"]
 end
