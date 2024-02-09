@@ -188,11 +188,13 @@ defmodule Hearthstone.DeckTracker do
       |> remove_game_type()
 
     %{ranks: ranks, periods: periods, formats: formats} = get_latest_agg_log_entry()
+    agg_regions = get_auto_aggregate_regions()
 
     deck_id = Util.keyfind_value(criteria, "player_deck_id", 0)
     period = Util.keyfind_value(criteria, "period", 0)
     rank = Util.keyfind_value(criteria, "rank", 0)
     format = Util.keyfind_value(criteria, "format", 0)
+    regions = Util.keyfind_value(criteria, "region", 0)
 
     opponent_class? = List.keymember?(criteria, "opponent_class", 0)
     player_btag? = List.keymember?(criteria, "player_btag", 0)
@@ -218,6 +220,9 @@ defmodule Hearthstone.DeckTracker do
 
       period not in periods ->
         {:error, "period #{period} not aggregaed"}
+
+      regions && Enum.sort(regions) != Enum.sort(agg_regions) ->
+        {:error, "unsupported regions for agg"}
 
       format && (!deck_id or deck_id < 1) ->
         {:ok, List.keystore(criteria, "player_deck_id", 0, {"player_deck_id", :not_null})}

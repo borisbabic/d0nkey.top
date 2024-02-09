@@ -18,7 +18,7 @@ defmodule BackendWeb.DecksLive do
       <a href={~p"/stats/explanation"}>Stats Explanation</a>| To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
       </div>
       <FunctionComponents.Ads.below_title mobile_video={true} />
-      <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters}/>
+      <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters} filter_context={:public} />
     </div>
     """
   end

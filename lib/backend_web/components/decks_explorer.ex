@@ -70,7 +70,8 @@ defmodule Components.DecksExplorer do
 
         <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
         <RankDropdown id="rank_dropdown" filter_context={@filter_context} />
-        <PeriodDropdown id="peroid_dropdown" filter_context={@filter_context} />
+        <PeriodDropdown id="period_dropdown" filter_context={@filter_context} />
+        <RegionDropdown id={"deck_region"} filter_context={@filter_context} />
 
         <LivePatchDropdown
           options={limit_options()}
