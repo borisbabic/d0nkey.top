@@ -80,7 +80,7 @@ defmodule Components.DecklistCard do
             <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{Card.cost(card)}</span>
             <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped">
               <span style="font-size: 0;"># {@count}x ({Card.cost(@card)}) </span>
-              <span :if={@sideboarded_in}><i class="fas fa-sign-in-alt"></i></span>
+              <span :if={@sideboarded_in}><HeroIcons.chevron_right size="small"/></span>
               {card.name}
             </div>
             <div style={"background-image: url('#{tile_url}');"} class="decklist-card-tile">

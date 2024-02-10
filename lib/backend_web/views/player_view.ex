@@ -308,9 +308,7 @@ defmodule BackendWeb.PlayerView do
   def history_link(assigns) do
     ~H"""
       <a href={@link}>
-        <span class="icon">
-          <i class="fas fa-history"></i>
-        </span>
+        <MaterialIcons.history />
       </a>
     """
   end

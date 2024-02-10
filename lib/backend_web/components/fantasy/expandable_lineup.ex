@@ -14,10 +14,8 @@ defmodule Components.ExpandableLineup do
     ~F"""
     <div>
         <span :on-click="show_cards" class="is-clickable is-pulled-left" style="margin-top: 0.75em;">
-          <span class="icon">
-            <i :if={!@show_cards} class="fas fa-eye"></i>
-            <i :if={@show_cards} class="fas fa-eye-slash"></i>
-          </span>
+          <HeroIcons.eye size="small" :if={!@show_cards}/>
+          <HeroIcons.eye_slash size="small" :if={@show_cards}/>
         </span>
       <div class="columns">
         <div class=" column is-narrow" :for={deck <- @lineup.decks |> sort(@stats)}  >

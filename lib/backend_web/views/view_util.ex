@@ -31,29 +31,31 @@ defmodule BackendWeb.ViewUtil do
   }
 
   def prev_button(_, prev_offset, offset) when prev_offset == offset do
-    ~E"""
+    assigns = %{}
+
+    ~H"""
     <span class="button is-link">
-        <i class="fas fa-caret-left"></i>
+        <HeroIcons.chevron_left />
     </span>
     """
   end
 
   def prev_button(update_link, prev_offset, _) do
-    link = update_link.(%{"offset" => prev_offset})
+    assigns = %{link: update_link.(%{"offset" => prev_offset})}
 
-    ~E"""
-    <a class="button is-link" href="<%= link %>">
-      <i class="fas fa-caret-left"></i>
+    ~H"""
+    <a class="button is-link" href={@link}>
+      <HeroIcons.chevron_left />
     </a>
     """
   end
 
   def next_button(update_link, next_offset) do
-    link = update_link.(%{"offset" => next_offset})
+    assigns = %{link: update_link.(%{"offset" => next_offset})}
 
-    ~E"""
-    <a class="button is-link" href="<%= link %>">
-      <i class="fas fa-caret-right"></i>
+    ~H"""
+    <a class="button is-link" href={@link}>
+      <HeroIcons.chevron_right />
     </a>
     """
   end

@@ -4,9 +4,7 @@ defmodule Components.Helper do
   def warning_triangle(assigns \\ %{before: nil}) do
     ~H"""
     <span :if={@before}><%= @before %></span>
-    <span class="icon is-small">
-        <i class="fas fa-exclamation-triangle"></i>
-      </span>
+    <HeroIcons.warning_triangle size="small" />
     """
   end
 end

@@ -132,7 +132,6 @@ defmodule BackendWeb.StreamingView do
       # create_legend_dropdown(conn, "worst_legend_rank", "Worst"),
       create_format_dropdown(conn),
       create_class_dropdown(conn),
-      # create_min_minutes_played_dropdown(conn),
       create_expansion_dropdown(conn, "badlands", "Badlands Cards", "Includes Badlands Cards"),
       create_last_played_dropdown(conn)
       # keep below last :shrug:
@@ -211,40 +210,6 @@ defmodule BackendWeb.StreamingView do
       end)
 
     {options, default_title}
-  end
-
-  def create_min_minutes_played_dropdown(conn) do
-    options =
-      [0, 30, 60, 90, 120, 180, 240, 300, 360, 480, 600]
-      |> Enum.map(fn mmp ->
-        %{
-          link: update_link(conn, "min_minutes_played", mmp),
-          selected: to_string(mmp) == conn.query_params["min_minutes_played"],
-          display: ">= #{mmp} min"
-        }
-      end)
-
-    title = ~E"""
-    <span class="icon">
-      <i class="fas fa-hourglass"></i>
-    </span>
-    """
-
-    {options, title}
-  end
-
-  def create_show_archetypes_dropdown(conn) do
-    options =
-      ["yes", "no"]
-      |> Enum.map(fn sa ->
-        %{
-          link: update_link(conn, "show_archetypes", sa),
-          selected: to_string(sa) == conn.query_params["show_archetypes"],
-          display: sa |> Recase.to_title()
-        }
-      end)
-
-    {options, "Show Archetypes"}
   end
 
   def create_last_played_dropdown(conn) do

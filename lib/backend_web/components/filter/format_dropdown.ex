@@ -29,7 +29,7 @@ defmodule Components.Filter.FormatDropdown do
   def options(context, only_aggregated \\ false) do
     aggregated =
       DeckTracker.get_latest_agg_log_entry()
-      |> Map.get(:formats, [])
+      |> Map.get(:formats, []) || []
 
     for %{value: value, display: d} <- DeckTracker.formats_for_filters(context),
         !only_aggregated or value in aggregated do

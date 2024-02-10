@@ -23,10 +23,8 @@ defmodule BackendWeb.ExpandableDeckLive do
       <Decklist deck={deck} show_cards={@show_cards} name={@name}>
         <:right_button>
           <span phx-click="show_cards" class="is-clickable" >
-            <span class="icon">
-              <i :if={!@show_cards} class="fas fa-eye"></i>
-              <i :if={@show_cards} class="fas fa-eye-slash"></i>
-            </span>
+            <HeroIcons.eye size="small" :if={!@show_cards}/>
+            <HeroIcons.eye_slash size="small" :if={@show_cards}/>
           </span>
         </:right_button>
       </Decklist>

@@ -50,7 +50,7 @@ defmodule Components.LiveStreamer do
               <div style="margin-bottom: 3.75px;">
                 <div class="tags" style="margin-bottom: 0px;">
                   <strong class="tag is-twitch"> {s.user_name} </strong>
-                  <div class="tag is-info"> <i class="fas fa-users"></i><p> {s.viewer_count}</p></div>
+                  <div class="tag is-info"><HeroIcons.users /><p> {s.viewer_count}</p></div>
                   {game_type}
                   <div class="tag is-info"> {duration} </div>
                   <div :if={legend_rank}> {legend_rank} </div>
