@@ -1,0 +1,25 @@
+{
+    "healthchecks": {
+        "web": [
+            {
+                "type": "startup",
+                "name": "Up 20s",
+                "uptime": 20
+            },
+            {
+                "type": "startup",
+                "name": "frontpage check",
+                "attempts": 10,
+                "content": "Leaderboards",
+                "path": "/"
+            },
+            {
+                "type": "liveness",
+                "name": "frontpage check",
+                "attempts": 3,
+                "content": "Well met!",
+                "path": "/about"
+            }
+        ]
+    }
+}
