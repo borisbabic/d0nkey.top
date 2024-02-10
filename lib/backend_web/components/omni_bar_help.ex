@@ -8,7 +8,7 @@ defmodule Components.OmniBarHelp do
   def render(assigns) do
     ~F"""
     <div>
-      <button class="button icon" type="button" :on-click="show_modal"><i class="fas fa-info-circle"></i></button>
+      <button class="button icon" type="button" :on-click="show_modal"><HeroIcons.info_circle /></button>
       <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">

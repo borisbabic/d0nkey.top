@@ -1069,30 +1069,33 @@ defmodule BackendWeb.BattlefyView do
   @spec next_button(Plug.Conn.t(), integer(), String.t()) :: Phoenix.HTML.Safe.t()
   def next_button(conn, next_page, slug) do
     new_params = conn.query_params |> Map.put("page", next_page)
-    link = Routes.battlefy_path(conn, :user_tournaments, slug, new_params)
+    assigns = %{link: Routes.battlefy_path(conn, :user_tournaments, slug, new_params)}
 
-    ~E"""
-    <a class="icon button is-link" href="<%= link %>">
-      <i class="fas fa-caret-right"></i>
+    ~H"""
+    <a class="icon button is-link" href={@link}>
+      <HeroIcons.chevron_right />
     </a>
     """
   end
 
   @spec prev_button(Plug.Conn.t(), integer(), String.t()) :: Phoenix.HTML.Safe.t()
-  def prev_button(_, 0, _),
-    do: ~E"""
+  def prev_button(_, 0, _) do
+    assigns = %{}
+
+    ~H"""
       <span class="icon button is-link">
-          <i class="fas fa-caret-left"></i>
+          <HeroIcons.chevron_left />
       </span>
     """
+  end
 
   def prev_button(conn, prev_page, slug) do
     new_params = conn.query_params |> Map.put("page", prev_page)
-    link = Routes.battlefy_path(conn, :user_tournaments, slug, new_params)
+    assigns = %{link: Routes.battlefy_path(conn, :user_tournaments, slug, new_params)}
 
-    ~E"""
-    <a class="icon button is-link" href="<%= link %>">
-      <i class="fas fa-caret-left"></i>
+    ~H"""
+    <a class="icon button is-link" href={@link}>
+      <HeroIcons.chevron_left />
     </a>
     """
   end

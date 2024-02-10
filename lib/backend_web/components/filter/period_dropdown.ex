@@ -27,7 +27,7 @@ defmodule Components.Filter.PeriodDropdown do
   def options(context, aggregated_only \\ false) do
     aggregated =
       DeckTracker.get_latest_agg_log_entry()
-      |> Map.get(:periods, [])
+      |> Map.get(:periods, []) || []
 
     for %{slug: slug, display: d} <- DeckTracker.periods_for_filters(context),
         !aggregated_only or slug in aggregated do

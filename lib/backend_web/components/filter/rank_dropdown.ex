@@ -27,7 +27,7 @@ defmodule Components.Filter.RankDropdown do
   def options(context, aggregated_only \\ false) do
     aggregated =
       DeckTracker.get_latest_agg_log_entry()
-      |> Map.get(:ranks, [])
+      |> Map.get(:ranks, []) || []
 
     for %{slug: slug, display: d} <- DeckTracker.ranks_for_filters(context),
         !aggregated_only or slug in aggregated do

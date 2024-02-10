@@ -35,10 +35,10 @@ defmodule Components.RosterModal do
             </section>
             <div class="modal-card-foot" :if={show_round_footer?(@league_team)}>
               <button type="button" class="button" :on-click="dec_round" >
-                <i class="fas fa-caret-left"></i>
+                <HeroIcons.chevron_left />
               </button>
               <button type="button" class="button" :on-click="inc_round">
-                <i class="fas fa-caret-right"></i>
+                <HeroIcons.chevron_round />
               </button>
               <p>Round {round(@league_team, @round)}</p>
             </div>

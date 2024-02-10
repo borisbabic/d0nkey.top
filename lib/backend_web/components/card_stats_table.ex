@@ -123,13 +123,13 @@ defmodule Components.CardStatsTable do
               </td>
             <td>
               <WinrateTag class={""} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/>
-              <span :if={!cs.sufficient_mull and !show_counts(@filters)}>⚠️</span>
+              <span :if={!cs.sufficient_mull and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
             <td>
               <WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :drawn_impact)}/>
-              <span :if={!cs.sufficient_drawn and !show_counts(@filters)}>⚠️</span>
+              <span :if={!cs.sufficient_drawn and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
             <td :if={show_counts(@filters)}>
               {Util.get(cs, :drawn_total)}</td>

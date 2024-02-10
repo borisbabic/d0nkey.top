@@ -834,11 +834,7 @@ defmodule BackendWeb.LeaderboardView do
         }
       end)
 
-    title = ~E"""
-    <span class="icon">
-      <i class="far fa-flag"></i>
-    </span>
-    """
+    title = HeroIcons.flag(%{})
 
     {options, title}
   end

@@ -798,11 +798,7 @@ defmodule BackendWeb.MastersTourView do
         }
       end)
 
-    flag_title = ~E"""
-    <span class="icon">
-      <i class="far fa-flag"></i>
-    </span>
-    """
+    flag_title = HeroIcons.flag(%{})
 
     dropdowns =
       [
