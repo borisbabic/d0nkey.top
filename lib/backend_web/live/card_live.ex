@@ -36,8 +36,8 @@ defmodule BackendWeb.CardLive do
         <div class="title is-2">{@card.name}</div>
         <div class="subtitle is-5">
           <a href={"https://hearthstone.wiki.gg/wiki/#{@card.name}"}>Wiki</a>
-          <a href={~p"/decks?player_deck_includes[]=#{Hearthstone.canonical_id(@card.id)}"}>Find Decks</a>
-          <a href={~p"/streamer-decks?#{%{include_cards: %{Hearthstone.canonical_id(@card.id) => true}}}"}>Find Streamer Decks</a>
+          | <a href={~p"/decks?player_deck_includes[]=#{Hearthstone.canonical_id(@card.id)}"}>Find Decks</a>
+          | <a href={~p"/streamer-decks?#{%{include_cards: %{Hearthstone.canonical_id(@card.id) => true}}}"}>Find Streamer Decks</a>
         </div>
         <Card id={"card_#{@card.id}"} card={@card} />
         <FunctionComponents.Ads.below_title/>
