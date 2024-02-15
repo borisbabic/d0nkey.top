@@ -21,10 +21,13 @@ defmodule Components.CardsExplorer do
   end
 
   defp add_default_filters(old_filters) do
+    {key, value} = Hearthstone.not_classic_card_criteria()
+
     old_filters
     |> Map.put_new("order_by", "latest")
     |> Map.put_new("limit", @default_limit)
     |> Map.put_new("collectible", "yes")
+    |> Map.put_new(key, value)
   end
 
   defp stream_cards(socket) do

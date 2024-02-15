@@ -351,7 +351,7 @@ defmodule Backend.Hearthstone do
     |> Command.DeduplicateDecks.deduplicate_group(&deduplication_sorter/1, :desc)
   end
 
-  # want the one with the correct code first, then secondary ordered by latest 
+  # want the one with the correct code first, then secondary ordered by latest
   defp deduplication_sorter(deck) do
     prepend =
       if deck.deckcode == Deck.deckcode(deck) do
@@ -692,7 +692,7 @@ defmodule Backend.Hearthstone do
   defp cost_for_sort(_), do: nil
 
   @doc """
-  Gets a card with the dbfId `dbf_id` from the official api cache. 
+  Gets a card with the dbfId `dbf_id` from the official api cache.
   Fallbacks to HSJson card
   """
   @spec get_card(integer) :: card() | nil
@@ -835,6 +835,8 @@ defmodule Backend.Hearthstone do
     |> post_processer.()
   end
 
+  def not_classic_card_criteria(), do: {"card_set_id_not_in", [1646]}
+
   defp use_fake_limit(old_filters) do
     old_filters
     |> Enum.to_list()
@@ -887,6 +889,11 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({"mana_cost", mana_cost}, query),
     do: query |> where([card: c], c.mana_cost == ^mana_cost)
+
+  defp compose_cards_query({"card_set_id_not_in", ids}, query) do
+    query
+    |> where([card: c], c.card_set_id not in ^ids)
+  end
 
   @ilike_name_or_slug_fields [
     {["set", "sets", "card_set", "card_sets"], :card_set},

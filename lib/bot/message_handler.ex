@@ -313,6 +313,7 @@ defmodule Bot.MessageHandler do
 
     case Backend.Hearthstone.cards([
            {"order_by", "name_similarity_#{match}"},
+           Backend.Hearthstone.not_classic_card_criteria(),
            {"limit", 1},
            {"collectible", "yes"}
          ]) do
