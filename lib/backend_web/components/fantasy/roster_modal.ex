@@ -38,7 +38,7 @@ defmodule Components.RosterModal do
                 <HeroIcons.chevron_left />
               </button>
               <button type="button" class="button" :on-click="inc_round">
-                <HeroIcons.chevron_round />
+                <HeroIcons.chevron_right />
               </button>
               <p>Round {round(@league_team, @round)}</p>
             </div>
