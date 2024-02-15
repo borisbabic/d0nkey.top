@@ -4,12 +4,13 @@
             {
                 "type": "startup",
                 "name": "Up 20s",
-                "uptime": 20
+                "uptime": 60
             },
             {
                 "type": "startup",
                 "name": "frontpage check",
                 "attempts": 10,
+                "delay": 20,
                 "content": "Leaderboards",
                 "path": "/"
             },
