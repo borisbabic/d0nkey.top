@@ -184,7 +184,7 @@ card_stats AS (
             AND (r.min_legend_rank = 0
                 OR dg.player_legend_rank >= min_legend_rank)
             AND (r.max_legend_rank IS NULL
-                OR dg.player_legend_rank >= r.max_legend_rank)
+                OR dg.player_legend_rank <= r.max_legend_rank)
     WHERE
         dcgt.inserted_at <= now()
         AND dg.opponent_class IS NOT NULL
