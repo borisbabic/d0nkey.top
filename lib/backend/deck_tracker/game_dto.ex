@@ -197,6 +197,10 @@ defmodule Hearthstone.DeckTracker.GameDto do
     end
   end
 
+  # FIRESTONE STARTED SENDING INTEGERS
+  def region(1), do: :AM
+  def region(2), do: :EU
+  def region(3), do: :AP
   def region("REGION_" <> region), do: region(region)
   def region("EU"), do: :EU
   def region("CN"), do: :CN
