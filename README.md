@@ -5,7 +5,7 @@ A site for my hearthstone related endeavours
 # Tech stack
 - elixir, phoenix framework
 - postgres
-- heroku, cloudfare
+- cloudflare, hosted on hetzner using dokku
 
 # Contributing
 ## Legal and licensing
@@ -15,9 +15,6 @@ Contributions should be provided under the Apache License. If I haven't yet adde
 There are pre-commit hooks available, see https://pre-commit.com/ for usage
 
 Otherwise run check the format (`mix format`) and the static analysis (`mix credo`)
-
-## Tests 
-Test what makes sense to be tested :) (if I haven't yet added tests you can skip this :sweat_smile:)
 
 ## Commits
 https://chris.beams.io/posts/git-commit/#seven-rules
@@ -29,17 +26,19 @@ Please be guided by the seven rules when writing commit messages
 If you use direnv you can just add the following
 ```
 export BNET_CLIENT_SECRET='' 
-export SIGNUP_TOKEN='' # battlefy token, for autosignup, not necessary
 export DISCORD_TOKEN=''
+export TWITCH_CLIENT_ID=''
+export TWITCH_CLIENT_SECRET=''
 
 ```
+The above are required for running the site in development. Some features (like patreon integration) will require additional info if you want to use them.
 ## Dependencies
 
 See elixir_buildpack.config for elixir and erlang versions
 docker, docker-compose (or an appropriate postgres running)
 npm 
 
-You can use the shell.nix provided, possibly in combination with direnv and 
+You can use the shell.nix provided, possibly in combination with direnv
 
 ## API
 ### Resources
