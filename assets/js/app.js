@@ -20,6 +20,61 @@ Alpine.start()
 // import socket from "./socket"
 import '@fortawesome/fontawesome-free/js/all'
 
+// <NITROPAY_ADBLOCK_DETECTION>
+var dispatchNpBlocking = function (blocking) {
+    if (document.dispatchEvent && window.CustomEvent) {
+        document.dispatchEvent(
+            new CustomEvent('np.blocking', {
+                detail: {
+                    blocking: blocking,
+                },
+            })
+        );
+    }
+
+}
+var npDetect = new (function () {
+    this.blocking = false;
+    var errcnt = 0;
+    function testImg() {
+        var i = new Image();
+        i.onerror = () => {
+            errcnt++;
+            if (errcnt < 3) {
+                setTimeout(testImg, 250);
+            } else {
+                npDetect.blocking = true;
+                dispatchNpBlocking(npDetect.blocking);
+
+            }
+        };
+        i.onload = () => {
+            npDetect.blocking = false;
+        };
+
+        i.src = 'https://s.nitropay.com/1.gif?' + Math.random() + '&adslot=';
+    }
+    testImg();
+})();
+// </NITROPAY_ADBLOCK_DETECTION>
+document.addEventListener('DOMContentLoaded', () => {
+    if (!window['nads']) {
+        dispatchNpBlocking(true);
+    }
+});
+document.addEventListener('np.blocking', (e) => {
+    if (e.detail.blocking) {
+        console.log("Ad blocking detected. Would you mind turning it off? If not, I understand");
+        var to_show = document.getElementsByClassName("is-shown-ad-blocking")
+        for (var e of to_show) {
+            console.log("changing display");
+            console.log("changing display", e);
+            e.style.display = "flex";
+        }
+    } else {
+        console.log("No ad blocking detected");
+    }
+});
 
 var clipboard = new ClipboardJS(".clip-btn-value");
 clipboard.on('success', function(e) {

@@ -1,7 +1,9 @@
 defmodule Components.Socials do
   use Phoenix.Component
 
-  def paypal(assigns = %{link: _link}) do
+  attr :link, :string, required: true
+
+  def paypal(assigns) do
     ~H"""
       <a href={@link}>
         <img height="50px" class="image" alt="Paypal" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"/>
@@ -9,7 +11,9 @@ defmodule Components.Socials do
     """
   end
 
-  def discord(assigns = %{link: _link}) do
+  attr :link, :string, required: true
+
+  def discord(assigns) do
     ~H"""
       <a href={@link}>
         <img style="height: 30px;" class="image" alt="Discord" src="/images/brands/discord.svg"/>
@@ -17,8 +21,12 @@ defmodule Components.Socials do
     """
   end
 
-  def twitch(channel) when is_binary(channel), do: %{link: "https://www.twitch.tv/#{channel}"} |> twitch()
-  def twitch(assigns = %{link: _link}) do
+  attr :link, :string, required: true
+
+  def twitch(channel) when is_binary(channel),
+    do: %{link: "https://www.twitch.tv/#{channel}"} |> twitch()
+
+  def twitch(assigns) do
     ~H"""
       <a href={@link}>
         <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
@@ -26,13 +34,17 @@ defmodule Components.Socials do
     """
   end
 
-  def patreon(assigns = %{link: _link}) do
+  attr :link, :string, required: true
+
+  def patreon(assigns) do
     ~H"""
       <a href={@link}>
         <img style="height: 30px;" class="image" alt="Patreon" src="/images/brands/patreon_wordmark_fierycoral.png"/>
       </a>
     """
   end
+
+  attr :tag, :string, required: true
 
   def twitter_follow(assigns) do
     ~H"""
@@ -43,5 +55,4 @@ defmodule Components.Socials do
       Follow</a>
     """
   end
-
 end

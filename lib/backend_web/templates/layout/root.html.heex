@@ -44,8 +44,10 @@
   <body>
     <main role="main" class={"#{ container_classes(@conn) }"}>
       <%= if enable_nitropay?(@conn) && show_ads?(@conn) do %>
-        <div phx-update="ignore" id="nitropay-video-all"></div>
+        <div phx-update="ignore" id="nitropay-video-all">
+        </div>
         <div class="is-hidden-mobile sticky-stack column" phx-update="ignore" id="nitropay-sticky-stack">
+          <FunctionComponents.Ads.ad_blocking_hint/>
         </div>
       <% end %>
       <%= @inner_content %>

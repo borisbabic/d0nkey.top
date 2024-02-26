@@ -60,6 +60,9 @@
             <%= if can_access?(@conn, :tournament_streams) do %>
               <a href="/torch/tournament-streams">Tournament Streams</a>
             <% end %>
+            <%= if can_access?(@conn, :patreon) do %>
+              <a href="/torch/patreon-tiers">Patreon Tiers</a>
+            <% end %>
             <%= if can_access?(@conn, :groups) do %>
               <a href="/torch/groups">Groups</a>
             <% end %>

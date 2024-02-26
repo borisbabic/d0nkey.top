@@ -3,6 +3,7 @@ defmodule Backend.UserManager.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.UserManager.User.DecklistOptions
+  alias Backend.Patreon.PatreonTier
 
   schema "users" do
     field :battletag, :string
@@ -22,6 +23,7 @@ defmodule Backend.UserManager.User do
       default: :streamed
 
     embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
+    belongs_to :patreon_tier, PatreonTier, type: :string
 
     timestamps()
   end
@@ -43,6 +45,7 @@ defmodule Backend.UserManager.User do
       :hide_ads,
       :twitch_id,
       :patreon_id,
+      :patreon_tier_id,
       :cross_out_country,
       :show_region,
       :replay_preference,
@@ -111,6 +114,7 @@ defmodule Backend.UserManager.User do
   def is_role?(atom_or_string), do: (atom_or_string |> to_string()) in string_admin_roles()
 
   def hide_ads?(%{hide_ads: true}), do: true
+  def hide_ads?(%{patreon_tier: %{ad_free: true}}), do: true
   def hide_ads?(%{admin_roles: ar}) when is_list(ar), do: !(ar |> Enum.empty?())
   def hide_ads?(_), do: false
 

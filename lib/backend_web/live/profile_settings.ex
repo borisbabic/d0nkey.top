@@ -87,12 +87,30 @@ defmodule BackendWeb.ProfileSettingsLive do
             <div :if={!@user.twitch_id} >
               <a class="button" href="/auth/twitch">Connect Twitch</a>
             </div>
+            <div :if={@user.patreon_id} class="level level-left">
+              <button class="button " type="button" :on-click="disconnect_patreon">Disconnect Patreon </button>
+              <div :if={tier_info = patreon_tier_info(@user)}>
+                Tier: {tier_info.title} | Ad Free: {if tier_info.ad_free, do: "Yes", else: "No"}
+              </div>
+              <div :if={!@user.patreon_tier_id}>
+                Tier: ? | Ad Free: ? || If you're already supporting this should get updated soon. If not you can support the site at <Components.Socials.patreon link={~p"/patreon"} />
+              </div>
+            </div>
+            <div :if={!@user.patreon_id} class="level level-left">
+              <a class="button" href="/auth/patreon">Connect Patreon</a>
+              <div> Tier: ? | Ad Free: ?</div>
+            </div>
           </Form>
         </div>
         <div :if={!@user}>Not Logged In</div>
       </div>
     """
   end
+
+  def patreon_tier_info(%{patreon_tier: %{title: title, ad_free: ad_free}}),
+    do: %{title: title, ad_free: ad_free}
+
+  def patreon_tier_info(_), do: nil
 
   def country_options() do
     Enum.map(Countriex.all(), fn %{name: name, alpha2: code} ->
@@ -117,6 +135,11 @@ defmodule BackendWeb.ProfileSettingsLive do
 
   def handle_event("disconnect_twitch", _, socket = %{assigns: %{user: user}}) do
     {:ok, updated} = UserManager.remove_twitch(user)
+    {:noreply, socket |> assign(:user, updated)}
+  end
+
+  def handle_event("disconnect_patreon", _, socket = %{assigns: %{user: user}}) do
+    {:ok, updated} = UserManager.remove_patreon(user)
     {:noreply, socket |> assign(:user, updated)}
   end
 
