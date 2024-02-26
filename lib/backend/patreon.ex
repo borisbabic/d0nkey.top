@@ -112,8 +112,6 @@ defmodule Backend.Patreon do
     campaign = Patreon.Api.data_with_included(response.body)
     current_tier_ids = list_patreon_tiers() |> MapSet.new(& &1.id)
     new = Enum.reject(campaign.tiers, &MapSet.member?(current_tier_ids, &1.id))
-    IO.inspect(campaign.tiers, label: :tiers)
-    IO.inspect(new, label: :new)
 
     for %{id: id, title: title} <- new do
       create_patreon_tier(%{id: id, title: title})
