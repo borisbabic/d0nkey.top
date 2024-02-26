@@ -356,6 +356,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   def archetype(%{format: 2, cards: c, class: "MAGE"}) do
     card_info = full_cards(c)
 
+    rommath? = "Grand Magister Rommath" in card_info.card_names
+    lightshow? = "Lightshow" in card_info.card_names
+    energy_shaper? = "Energy Shaper" in card_info.card_names
+
     cond do
       highlander?(card_info, c) ->
         :"Highlander Mage"
@@ -372,7 +376,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Mage"
 
-      "Grand Magister Rommath" in card_info.card_names ->
+      lightshow? and !energy_shaper? ->
+        :"Lightshow Mage"
+
+      rommath? ->
         :"Rommath Mage"
 
       naga_mage?(card_info) && rainbow_mage?(card_info) ->
@@ -380,6 +387,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       rainbow_mage?(card_info) ->
         :"Rainbow Mage"
+
+      lightshow? ->
+        :"Lightshow Mage"
 
       arcane_mage?(card_info) ->
         :"Arcane Mage"
@@ -621,6 +631,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       tentacle(ci) -> "Tentacle #{class_name}"
       "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
       ogre?(ci) -> "Ogre #{class_name}"
+      "Colifero the Artist" in ci.card_names -> "Colifero #{class_name}"
       true -> minion_type_fallback(ci, class_name, opts)
     end
   end
@@ -966,7 +977,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       enrage?(card_info) -> :"Enrage Warrior"
       n_roll?(card_info) -> :"Rock 'n' Roll Warrior"
       warrior_aoe?(card_info) -> :"Control Warrior"
-      "Odyn, Prime Designate" in card_info.card_names -> :"Odyn Warrior"
+      excavate_warrior?(card_info) && odyn?(card_info) -> :"Excavate Odyn Warrior"
+      cycle_odyn?(card_info) -> :"Cycle Odyn Warrior"
+      odyn?(card_info) -> :"Odyn Warrior"
       excavate_warrior?(card_info) -> :"Excavate Warrior"
       riff_warrior?(card_info) -> :"Riff Warrior"
       weapon_warrior?(card_info) -> :"Weapon Warrior"
@@ -975,6 +988,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       boar?(card_info) -> :"Boar Warrior"
       true -> fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp odyn?(card_info) do
+    "Odyn, Prime Designate" in card_info.card_names
+  end
+
+  defp cycle_odyn?(ci) do
+    odyn?(ci) and
+      min_count?(ci, 3, [
+        "Acolyte of Pain",
+        "Needlerock Totem",
+        "Stoneskin Armorer",
+        "Gold Panner"
+      ])
   end
 
   defp excavate_warrior?(ci),
@@ -1085,16 +1112,18 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp weapon_rogue?(card_info) do
-    "Swinetusk Shank" in card_info.card_names &&
-      min_count?(card_info, 3, [
-        "Deadly Poison",
-        "Paralytic Poison",
-        "Silverleaf Poison",
-        "Harmonic Hip Hop",
-        "Mic Drop",
-        "Cutting Class",
-        "Nitroboost Poison"
-      ])
+    min_count?(card_info, 4, [
+      "Air Guitarist",
+      "Shadestone Skulker",
+      "Valeera's Gift",
+      "Deadly Poison",
+      "Paralytic Poison",
+      "Silverleaf Poison",
+      "Harmonic Hip Hop",
+      "Mic Drop",
+      "Cutting Class",
+      "Nitroboost Poison"
+    ])
   end
 
   defp haleh_mage?(card_info) do
@@ -1618,6 +1647,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           "Soothsayer's Caravan",
           "Copycat",
           "Identity Theft",
+          "Incriminating Psychic",
+          "Plagiarizarrr",
+          "Mind Eater",
+          "Theft Accusation",
           "Murloc Holmes",
           "The Harvester of Envy"
         ]
