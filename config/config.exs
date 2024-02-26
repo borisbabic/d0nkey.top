@@ -86,6 +86,8 @@ config :backend,
   bnet_client_secret: bnet_client_secret,
   # actually d0nkey discord
   thl_discord_id: 666_596_230_100_549_652,
+  patreon_campaign_id: 5_162_559,
+  patreon_access_token: System.get_env("PATREON_ACCESS_TOKEN"),
   admin_pass: "admin",
   enable_nitropay: true,
   twitch_bot_chats: ["d0nkeyhs", "d0nkeytop"],

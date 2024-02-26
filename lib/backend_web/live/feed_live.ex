@@ -24,7 +24,7 @@ defmodule BackendWeb.FeedLive do
             <OmniBar id="omni_bar_id"/>
           </div>
           <div class="level-item">
-            <FunctionComponents.Ads.below_title mobile_video={true} />
+            <FunctionComponents.Ads.below_title mobile_video_floating={true} />
           </div>
           <div :if={false} class="level-item title is-2">Well Met!</div>
         </div>

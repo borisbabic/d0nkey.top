@@ -308,6 +308,7 @@ defmodule BackendWeb.Router do
     resources("/ranks", RankController)
     resources("/regions", RegionController)
     resources("/formats", FormatController)
+    resources("/patreon-tiers", PatreonTierController)
   end
 
   scope "/admin", BackendWeb do

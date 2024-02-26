@@ -16,6 +16,9 @@
 .table.is-gapless td, .table.is-gapless th {
   padding: 0;
 }
+.is-shown-ad-blocking {
+  display: none;
+}
 
 :root {
   /*--color-common: rgb(255, 255, 255);*/

@@ -44,7 +44,7 @@ defmodule Backend.UserManager do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id), do: Repo.get!(User, id) |> Repo.preload(:patreon_tier)
 
   @doc """
   Gets a single user.
@@ -60,7 +60,7 @@ defmodule Backend.UserManager do
       nil
 
   """
-  def get_user(id), do: Repo.get(User, id)
+  def get_user(id), do: Repo.get(User, id) |> Repo.preload(:patreon_tier)
 
   @doc """
   Creates a user.
@@ -261,15 +261,42 @@ defmodule Backend.UserManager do
   end
 
   def set_patreon(user, patreon_id) do
-    user
-    |> User.changeset(%{patreon_id: patreon_id})
-    |> Repo.update()
+    ret =
+      user
+      |> User.changeset(%{patreon_id: patreon_id})
+      |> Repo.update()
+
+    Task.async(fn -> update_patreon_tiers() end)
+    ret
   end
 
   def remove_patreon(user) do
     user
-    |> User.changeset(%{patreon_id: nil})
+    |> User.changeset(%{patreon_id: nil, patreon_tier_id: nil})
     |> Repo.update()
+  end
+
+  def update_patreon_tiers() do
+    campaign_user_tiers = Backend.Patreon.campaign_user_tiers()
+
+    set_current_patreon_tiers(campaign_user_tiers)
+    remove_old_patreon_tiers(campaign_user_tiers)
+  end
+
+  defp remove_old_patreon_tiers(campaign_user_tiers) do
+    has_tier = campaign_user_tiers |> Enum.map(& &1.user_id)
+
+    from(u in User, where: not is_nil(u.patreon_tier_id) and u.patreon_id not in ^has_tier)
+    |> Repo.update_all(set: [patreon_tier_id: nil])
+  end
+
+  defp set_current_patreon_tiers(campaign_user_tiers) do
+    campaign_user_tiers
+    |> Enum.group_by(& &1.tier_id, & &1.user_id)
+    |> Enum.map(fn {patreon_tier_id, patreon_ids} ->
+      from(u in User, where: u.patreon_id in ^patreon_ids)
+      |> Repo.update_all(set: [patreon_tier_id: patreon_tier_id])
+    end)
   end
 
   @doc """

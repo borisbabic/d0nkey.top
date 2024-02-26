@@ -35,7 +35,7 @@
             <% end %>
             <.navbar_item_link link={~p"/logout"} display={"Logout"} />
           </.navbar_dropdown>
-        <%= else %>
+        <% else %>
           <.navbar_dropdown display={"👤"}>
             <.navbar_item_link link={~p"/auth/bnet"} display="Sign in (Battlenet)"/>
           </.navbar_dropdown>
