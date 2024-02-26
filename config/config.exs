@@ -90,6 +90,7 @@ config :backend,
   patreon_access_token: System.get_env("PATREON_ACCESS_TOKEN"),
   admin_pass: "admin",
   enable_nitropay: true,
+  favicon: "/favicon.ico",
   twitch_bot_chats: ["d0nkeyhs", "d0nkeytop"],
   gm_stream_send_tweet: false,
   twitch_bot_config: [

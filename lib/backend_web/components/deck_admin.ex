@@ -33,7 +33,7 @@ defmodule Components.DeckAdmin do
 
   def format_to_swap(%{format: 1}), do: {2, Format.name(2)}
   def format_to_swap(%{format: 2}), do: {1, Format.name(1)}
-  def format_to_swap(_), do: nil
+  def format_to_swap(_), do: {nil, nil}
 
   def can_admin?(user), do: User.can_access?(user, "deck")
 end

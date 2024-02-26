@@ -22,7 +22,7 @@ defmodule BackendWeb.Endpoint do
     at: "/",
     from: :backend,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: ~w(css fonts images js favicon.ico favicon_dev.ico robots.txt)
 
   plug(
     Plug.Static,
