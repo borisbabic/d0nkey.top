@@ -25,11 +25,11 @@ defmodule BackendWeb.PlayerController do
     end
   end
 
-  def qualifier_stats(battletags) do
-    %{year: year} = Date.utc_today()
-
-    2020..year
-    |> Enum.to_list()
+  def qualifier_stats(battletags, periods \\ nil) do
+    with nil <- periods do
+      %{year: year} = Date.utc_today()
+      Enum.to_list(2020..year)
+    end
     |> add_current_qualifiers()
     |> Enum.flat_map(fn period ->
       period
@@ -59,7 +59,7 @@ defmodule BackendWeb.PlayerController do
 
     qualifier_stats =
       if Battletag.long?(bt) do
-        qualifier_stats(battletags)
+        qualifier_stats(battletags, [:all])
       else
         []
       end
