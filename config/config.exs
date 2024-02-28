@@ -116,8 +116,13 @@ config :backend,
   nostrum_slash_command_target: 666_596_230_100_549_652,
   hdt_plugin_latest_version: hdt_plugin_latest_version,
   hdt_plugin_latest_file: "hdt_plugin/#{hdt_plugin_latest_version}.dll",
-  nitropay_ads_txt_url: "https://api.nitropay.com/v1/ads-909.txt",
-  enable_adsense: true,
+  default_nitropay_ads_txt_url: "https://api.nitropay.com/v1/ads-909.txt",
+  ads_config: [
+    {"d0nkey.top",
+     %{enable_adsense: false, nitropay_url: "https://api.nitropay.com/v1/ads-909.txt"}},
+    {"hsguru.com",
+     %{enable_adsense: false, nitropay_url: "https://api.nitropay.com/v1/ads-1847.txt"}}
+  ],
   ecto_repos: [Backend.Repo],
   admin_config_vars_cutoff_date: "3000-12-31"
 

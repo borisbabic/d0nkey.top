@@ -1,5 +1,6 @@
 defmodule BackendWeb.PageController do
   use BackendWeb, :controller
+  alias Backend.AdsTxtCache
   require Logger
 
   def index(conn, _params) do
@@ -43,14 +44,29 @@ defmodule BackendWeb.PageController do
     text(conn, ret)
   end
 
+  @spec ads_txt(Plug.Conn.t(), Map.t()) :: Plug.Conn.t()
   def ads_txt(conn, _params) do
-    if Application.get_env(:backend, :enable_adsense, true) do
-      ads_txt = Backend.AdsTxtCache.get()
+    config = AdsTxtCache.config()
+
+    default_config = %{
+      enable_adsense: false,
+      nitropay_url: "https://api.nitropay.com/v1/ads-1847.txt"
+    }
+
+    %{nitropay_url: url, enable_adsense: adsense} =
+      Enum.find_value(config, default_config, fn {host, config} ->
+        if conn.host =~ host do
+          config
+        end
+      end)
+
+    if adsense do
+      ads_txt = AdsTxtCache.get(url)
       text(conn, ads_txt)
     else
       conn
       |> put_status(302)
-      |> redirect(external: Backend.AdsTxtCache.nitropay_url())
+      |> redirect(external: url)
     end
   end
 
