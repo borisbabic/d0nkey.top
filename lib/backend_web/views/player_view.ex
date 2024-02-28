@@ -53,10 +53,18 @@ defmodule BackendWeb.PlayerView do
     stats_rows =
       qs
       |> Enum.flat_map(fn {period, ps} ->
+        period_part =
+          if period && period != :all do
+            "#{period} "
+          else
+            ""
+          end
+
         if ps |> PlayerStats.with_result() > 0 do
           [
-            {"#{period} MTQ played", ps |> PlayerStats.with_result()},
-            {"#{period} MTQ winrate", ps |> PlayerStats.matches_won_percent() |> Float.round(2)}
+            {"#{period_part}MTQ played", ps |> PlayerStats.with_result()},
+            {"#{period_part}MTQ winrate",
+             ps |> PlayerStats.matches_won_percent() |> Float.round(2)}
           ]
         else
           []
