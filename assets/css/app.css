@@ -318,7 +318,7 @@
   /*padding-bottom: 13%;*/
 }
 .deck-text {
-  z-index: 1;
+  z-index: 3;
   text-shadow: 1px 1px #000000;
   font-size: small;
   display: flex;
@@ -431,6 +431,7 @@
 
 .container {
   min-height: calc(100vh - 14.5rem);
+  z-index: 1;
 }
 .footer {
   height: 2.5rem;
@@ -460,7 +461,7 @@
 /*}*/
 
 .cross-image {
-  z-index: 1;
+  z-index: 3;
   position: absolute;
   top: 3px;
 

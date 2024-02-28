@@ -69,7 +69,7 @@ document.addEventListener('np.blocking', (e) => {
         for (var e of to_show) {
             console.log("changing display");
             console.log("changing display", e);
-            e.style.display = "flex";
+            e.style.display = "block";
         }
     } else {
         console.log("No ad blocking detected");
