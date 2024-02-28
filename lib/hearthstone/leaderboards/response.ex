@@ -14,6 +14,9 @@ defmodule Hearthstone.Leaderboards.Response do
   @spec rows(Response.t()) :: [Hearthstone.Leaderboards.Response.Row.t()]
   def rows(%{leaderboard: %{rows: rows}}), do: rows
   def rows(_), do: []
+  @spec total_pages(Response.t()) :: {:ok, integer()} | :error
+  def total_pages(%{leaderboard: %{pagination: %{total_pages: total}}}), do: {:ok, total}
+  def total_pages(_), do: :error
 
   @spec from_raw_map(Map.t(), integer() | Season.t() | nil) ::
           {:ok, Response.t()} | {:error, any()}

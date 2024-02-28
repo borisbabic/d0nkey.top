@@ -14,10 +14,38 @@ config :backend, QuantumScheduler,
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
     # {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
     {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
+
     # {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
     {"*/3 * * * *", fn -> Backend.Leaderboards.save_current(200) end},
-    {"2 * * * *", fn -> Backend.Leaderboards.save_current(3000) end},
+    {"2 * * * *", fn -> Backend.Leaderboards.save_current_with_delay(200, 5000) end},
+    {"11 23 * * *",
+     fn ->
+       Backend.Leaderboards.save_current_for_region_with_delay(
+         "AP",
+         ["STD", "WLD", "twist", "BG", "arena"],
+         500,
+         120_000
+       )
+     end},
+    {"23 23 * * *",
+     fn ->
+       Backend.Leaderboards.save_current_for_region_with_delay(
+         "EU",
+         ["STD", "WLD", "twist", "BG", "arena"],
+         500,
+         120_000
+       )
+     end},
+    {"08 23 * * *",
+     fn ->
+       Backend.Leaderboards.save_current_for_region_with_delay(
+         "US",
+         ["STD", "WLD", "twist", "BG", "arena"],
+         500,
+         120_000
+       )
+     end},
     {"43 18 * * *", fn -> Backend.Leaderboards.save_current(nil) end},
     {"31 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
     {"13 * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
