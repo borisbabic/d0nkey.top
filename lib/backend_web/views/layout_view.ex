@@ -126,7 +126,12 @@ defmodule BackendWeb.LayoutView do
   def enable_nitropay?(_), do: Application.get_env(:backend, :enable_nitropay, false)
 
   @spec enable_adsense?(Plug.Conn.t()) :: boolean
-  def enable_adsense?(_), do: Application.get_env(:backend, :enable_adsense, false)
+  def enable_adsense?(conn) do
+    Backend.AdsTxtCache.config()
+    |> Enum.find_value(false, fn {host, %{enable_adsense: enable}} ->
+      conn.host =~ host && enable
+    end)
+  end
 
   @spec hide_ads?(Plug.Conn.t()) :: boolean
   def hide_ads?(conn) do
