@@ -19,6 +19,7 @@ defmodule Backend.Leaderboards do
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
   alias Hearthstone.Leaderboards.Api
   alias Hearthstone.Leaderboards.Response
+  alias Hearthstone.Leaderboards.Response.Row
 
   @type history_entry :: %{
           rank: integer(),
@@ -156,17 +157,44 @@ defmodule Backend.Leaderboards do
     # refresh_latest()
   end
 
-  defp tasks_per_current_api_season(func) do
+  defp do_per_current_api_season(func) do
     for region <- Blizzard.qualifier_regions(),
         ldb <- Blizzard.leaderboards() do
-      Task.async(fn ->
-        %ApiSeason{
-          region: to_string(region),
-          leaderboard_id: to_string(ldb)
-        }
-        |> func.()
-      end)
+      season = %ApiSeason{
+        region: region,
+        leaderboard_id: to_string(ldb)
+      }
+
+      func.(season)
     end
+  end
+
+  defp tasks_per_current_api_season(func) do
+    do_per_current_api_season(fn season ->
+      Task.async(fn ->
+        func.(season)
+      end)
+    end)
+  end
+
+  def save_current_for_region_with_delay(
+        region,
+        leaderboards,
+        between_pages_delay_ms,
+        between_leaderboards_delay_ms \\ 300_000
+      ) do
+    for l <- leaderboards do
+      save_all_with_delay(
+        %ApiSeason{region: region, leaderboard_id: to_string(l)},
+        between_pages_delay_ms
+      )
+
+      Process.sleep(between_leaderboards_delay_ms)
+    end
+  end
+
+  def save_current_with_delay(delay_ms, max_num) do
+    do_per_current_api_season(&save_all_with_delay(&1, delay_ms, max_num))
   end
 
   def save_current_with_retry(max_num \\ nil, min_num \\ 1) do
@@ -190,6 +218,88 @@ defmodule Backend.Leaderboards do
   def save_all(s, num \\ nil) do
     with {:ok, rows, season} <- fetch_pages(s, num) do
       handle_rows(rows, season)
+    end
+  end
+
+  @spec save_all_with_delay(
+          partial_or_full_season :: ApiSeason.t(),
+          delay_milliseconds :: integer(),
+          integer() | nil
+        ) ::
+          {:ok, {[Row.t()], season_from_response :: ApiSeason.t()}}
+          | {:error, error :: any(),
+             rows_prior_to_error :: {Row.t(), season_from_response :: ApiSeason.t()}}
+  def save_all_with_delay(season, delay_ms, num \\ nil) do
+    with {:ok, response} <- Api.get_page(season),
+         {:ok, total_pages} <- Response.total_pages(response) do
+      rows = Response.rows(response)
+      Task.start(fn -> handle_rows(rows, season) end)
+
+      opts = %{
+        season: season,
+        num_entries: num,
+        delay_ms: delay_ms,
+        total_pages: total_pages,
+        page_to_fetch: 2,
+        previous: rows
+      }
+
+      do_save_rows(opts)
+    else
+      _ ->
+        Logger.warn("Couldn't get first page for #{inspect(season)}")
+        {:error, "Could not fetch initial page", {[], season}}
+    end
+  end
+
+  # just in case something is messed up in the api, don't wanna infinite this if they stop returning total pages correctly
+  defp do_save_rows(%{page_to_fetch: page_to_fetch, previous: previous, season: season})
+       when page_to_fetch >= 1_000_000 / @page_size,
+       do:
+         {:error,
+          "Trying to fetch an insane number of pages on the leaderboards, up to #{page_to_fetch}",
+          {previous, season}}
+
+  defp do_save_rows(%{
+         page_to_fetch: page_to_fetch,
+         total_pages: total_pages,
+         previous: previous,
+         season: season
+       })
+       when page_to_fetch > total_pages do
+    {:ok, {previous, season}}
+  end
+
+  defp do_save_rows(%{previous: previous, num_entries: num_entries, season: season})
+       when is_integer(num_entries) and length(previous) >= num_entries do
+    {:ok, {previous, season}}
+  end
+
+  defp do_save_rows(
+         %{season: season, delay_ms: delay_ms, previous: previous, page_to_fetch: page} = opts
+       ) do
+    Process.sleep(delay_ms)
+
+    with {:ok, response} <- Api.get_page(season, page),
+         {:ok, total_pages} <- Response.total_pages(response) do
+      rows = Response.rows(response)
+
+      new_opts =
+        Map.merge(opts, %{
+          previous: rows ++ previous,
+          total_pages: total_pages,
+          page_to_fetch: 1 + page
+        })
+
+      Task.start(fn ->
+        handle_rows(rows, season)
+      end)
+
+      do_save_rows(new_opts)
+    else
+      _ ->
+        Logger.warn("Couldn't get #{page} page for #{inspect(season)}")
+        {:error, "Could not fetch page #{page}", {previous, season}}
     end
   end
 
