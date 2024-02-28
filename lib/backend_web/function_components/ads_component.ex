@@ -1,4 +1,6 @@
 defmodule FunctionComponents.Ads do
+  @moduledoc "Components for ad placements"
+
   use Phoenix.Component
 
   attr :leaderboard, :boolean, default: true
@@ -31,8 +33,15 @@ defmodule FunctionComponents.Ads do
   def ad_blocking_hint(assigns) do
     ~H"""
       <div class="is-hidden-mobile">
-        <div class="is-shown-ad-blocking">
-          <FunctionComponents.Hints.random_text_hint :if={:text_only == @hint_type} options={[:patreon]} />
+        <div class="is-shown-ad-blocking" style="height: 100vh">
+          <div style="z-index: 0; position: sticky; top: 20px;">
+            <div :if={:text_only == @hint_type}>
+              <FunctionComponents.Hints.patreon />
+              <br>
+              <br>
+              <FunctionComponents.Hints.discord />
+            </div>
+          </div>
         </div>
       </div>
     """

@@ -35,7 +35,7 @@ defmodule FunctionComponents.Hints do
   def discord(assigns) do
     ~H"""
     <div class="is-info">
-      Found a bug or have a suggestion? Let me know in my <Components.Socials.discord link="/discord" />
+      Found a bug or have a suggestion? Let me know in my <Components.Socials.discord link={~p"/discord"} />
     </div>
     """
   end
@@ -43,7 +43,7 @@ defmodule FunctionComponents.Hints do
   def patreon(assigns) do
     ~H"""
     <div class="is-info">
-      Don't like ads but appreciate the site? Consider becoming a <Components.Socials.patreon link="/patreon" /> and reclaiming space reserved for ads
+      Don't like ads but appreciate the site? Consider becoming a <Components.Socials.patreon link={~p"/patreon"} /> and reclaiming space reserved for ads
     </div>
     """
   end

@@ -136,7 +136,7 @@ defmodule BackendWeb.DeckTrackerLive do
               <div :if={@message} class=" is-narrow tag is-info">{@message}</div>
               <div :if={@error_message} class=" is-narrow tag is-error">{@message}</div>
           </div>
-          <div class="columns is-mobile is-vcentered is-centered" style="z-index: 1;">
+          <div class="columns is-mobile is-vcentered is-centered" style="z-index: 3;">
             <Submit label="Save" class=" is-narrow button is-success" opts={disabled: !@valid}/>
             <ExpandableDecklist deck={@deck} id={"deck_tracker_expanded_deck"}/>
           </div>

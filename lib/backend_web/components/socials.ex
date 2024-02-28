@@ -29,7 +29,7 @@ defmodule Components.Socials do
   def twitch(assigns) do
     ~H"""
       <a href={@link}>
-        <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
+        <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg" />
       </a>
     """
   end
@@ -39,8 +39,14 @@ defmodule Components.Socials do
   def patreon(assigns) do
     ~H"""
       <a href={@link}>
-        <img style="height: 30px;" class="image" alt="Patreon" src="/images/brands/patreon_wordmark_fierycoral.png"/>
+        <.patreon_image />
       </a>
+    """
+  end
+
+  def patreon_image(assigns) do
+    ~H"""
+      <img style="height: 30px;" class="image" alt="Patreon" src="/images/brands/patreon_wordmark_fierycoral.png" />
     """
   end
 
