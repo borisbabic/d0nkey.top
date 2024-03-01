@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgres:
-    image: postgres:12
+    image: postgres:15
     container_name: DtopDB
     ports: 
       - "2470:5432"
