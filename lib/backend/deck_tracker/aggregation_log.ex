@@ -7,6 +7,7 @@ defmodule Hearthstone.DeckTracker.AggregationLog do
     field :formats, {:array, :integer}, default: []
     field :ranks, {:array, :string}, default: []
     field :periods, {:array, :string}, default: []
+    field :regions, {:array, :string}, default: []
     timestamps(updated_at: false)
   end
 end
