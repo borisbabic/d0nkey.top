@@ -25,11 +25,6 @@ defmodule BackendWeb.ProfileSettingsLive do
         <FunctionComponents.Ads.below_title/>
         <div :if={@user}>
           <Form for={%{}} as={:user} submit="submit">
-            <Field name="battlefy_slug">
-              <Label class="label" >Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</Label>
-              <TextInput class="input is-small" value={@user.battlefy_slug}/>
-            </Field>
-            <br>
             <Field name="country_code">
               <Label class="label" >Country Flag</Label>
               <Select class="select" options={[{"Select Country", nil} | country_options()]} selected={@user.country_code} />
@@ -78,6 +73,11 @@ defmodule BackendWeb.ProfileSettingsLive do
             <Field name="replay_preference">
               <Select selected={@user.replay_preference} class="select" options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
               <Label>Which replays do you want to be considered public? (only affects new replays)</Label>
+            </Field>
+            <br>
+            <Field name="battlefy_slug">
+              <Label class="label" >Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</Label>
+              <TextInput class="input is-small" value={@user.battlefy_slug}/>
             </Field>
 
             <Submit label="Save" class="button"/>
