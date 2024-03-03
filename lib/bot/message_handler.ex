@@ -219,12 +219,10 @@ defmodule Bot.MessageHandler do
       <<"!dhelp", _::binary>> ->
         handle_help(msg)
 
-      <<"[[", _::binary>> ->
-        handle_card(msg)
-
       _ ->
         [
           handle_deck(msg),
+          handle_timestamp(msg),
           handle_card(msg),
           handle_wiki(msg)
         ]
@@ -323,6 +321,43 @@ defmodule Bot.MessageHandler do
 
       _ ->
         embed
+    end
+  end
+
+  def handle_timestamp(msg) do
+    msg.content
+    |> extract_timestamps()
+    |> Enum.uniq_by(&"#{&1.timestamp}#{&1.format}")
+    |> create_timestamp_reply(msg)
+  end
+
+  defp create_timestamp_reply([_ | _] = timestamps, msg) do
+    message = Enum.map_join(timestamps, "\n\n", &timestamp_message_part/1)
+    reply(msg, message)
+  end
+
+  defp create_timestamp_reply(_, _msg), do: :ignore
+
+  defp timestamp_message_part(%{format: format, timestamp: timestamp, datetime_raw: datetime_raw}) do
+    "> #{datetime_raw}\n<t:#{timestamp}#{format}>"
+  end
+
+  def extract_timestamps(content) do
+    scanned =
+      Regex.scan(
+        ~r/<t:((?<datetime>\d{4}-\d{2}-\d{2}( |T)\d{2}(:\d{1,2})?(:\d{2})?)(?<format>:\w)?)>/,
+        content,
+        capture: :all_names
+      )
+
+    for [datetime_raw, format] <- scanned,
+        {:ok, datetime} <- [Timex.parse(datetime_raw, "{ISO:Extended:Z}")],
+        timestamp when is_integer(timestamp) <- [Timex.to_unix(datetime)] do
+      %{
+        format: format,
+        timestamp: timestamp,
+        datetime_raw: datetime_raw
+      }
     end
   end
 
