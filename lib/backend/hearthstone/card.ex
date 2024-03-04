@@ -14,7 +14,21 @@ defmodule Backend.Hearthstone.Card do
     Type
   }
 
-  @type card() :: %__MODULE__{} | Backend.HearthstoneJson.Card.t()
+  @type card() :: %__MODULE__{} | Backend.HearthstoneJson.Card.t() | Hearthstone.Card.t()
+
+  defmacro is_zilliax_art(dbf_id) do
+    quote do
+      unquote(dbf_id) in [110_440, 110_441, 110_442, 110_443, 110_444, 110_445, 110_446, 112_530]
+    end
+  end
+
+  defmacro is_card(card) do
+    quote do
+      is_struct(unquote(card), Backend.Hearthstone.Card) or
+        is_struct(unquote(card), Backend.Hearthstone.Json.Card) or
+        is_struct(unquote(card), Hearthstone.Card)
+    end
+  end
 
   @primary_key {:id, :integer, []}
   schema "hs_cards" do
@@ -96,6 +110,13 @@ defmodule Backend.Hearthstone.Card do
   end
 
   defp update_duels(map), do: map
+
+  @zilliax_3000 102_983
+  def zilliax_3000, do: @zilliax_3000
+  @spec zilliax_3000?(card() | integer() | nil) :: boolean
+  def zilliax_3000?(nil), do: false
+  def zilliax_3000?(id) when is_integer(id), do: id == @zilliax_3000
+  def zilliax_3000?(card), do: dbf_id(card) == @zilliax_3000
 
   def use_english_fields(map) do
     [:flavor_text, :image, :image_gold, :name, :text]

@@ -56,7 +56,7 @@ defmodule Components.Decklist do
           </div>
           <div :if={@show_cards}>
             <DustBar :if={show_above(@user)} deck={@deck} class={class_class}/>
-            <CardsList comparison={@comparison} sideboard={@deck.sideboards} deck={@deck} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
+            <CardsList comparison={@comparison} deck={@deck} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
             <DustBar :if={show_below(@user)} deck={@deck} class={class_class} />
 
           </div>

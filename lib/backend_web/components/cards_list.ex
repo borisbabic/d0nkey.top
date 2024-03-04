@@ -6,6 +6,7 @@ defmodule Components.CardsList do
   alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.UserManager.User
   alias Backend.Hearthstone.Card
+  alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.CardBag
   prop(deck, :map, required: true)
   prop(comparison, :any, required: false, default: nil)
@@ -23,7 +24,7 @@ defmodule Components.CardsList do
 
   def render(assigns) do
     ~F"""
-      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboarded_in: s_in} <- cards_to_display(@deck.cards, @comparison, @sideboard, @highlight_rotation)} style="margin: 0; padding: 0;">
+      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboarded_in: s_in} <- cards_to_display(@deck, @comparison, @highlight_rotation)} style="margin: 0; padding: 0;">
           <div class={class}>
             <DecklistCard
               show_mana_cost={true}
@@ -39,17 +40,24 @@ defmodule Components.CardsList do
     """
   end
 
-  @spec cards_to_display([integer], [integer] | nil, [Sideboard.t()], boolean) :: [display_info]
-  defp cards_to_display(cards, comparison, sideboard, highlight_rotation) do
-    cards_map = card_map(cards)
+  @spec cards_to_display(Deck.t(), [integer] | nil, boolean) :: [display_info]
+  defp cards_to_display(
+         %{cards: cards, sideboards: sideboard} = deck,
+         comparison,
+         highlight_rotation
+       ) do
+    cards_map = card_map(cards, deck)
 
     comparison_map =
       (comparison || [])
+      |> Enum.filter(& &1)
       |> Enum.map(&{Hearthstone.CardBag.deckcode_copy_id(&1.id), &1})
       |> Map.new()
 
     to_check =
-      comparison || Enum.map(cards_map, fn {_, {c, _}} -> c end) |> Hearthstone.sort_cards()
+      comparison ||
+        Enum.map(cards_map, fn {_, {c, _}} -> c end)
+        |> Hearthstone.sort_cards(cost: &Deck.card_mana_cost(deck, &1))
 
     to_check
     |> Enum.flat_map(fn c ->
@@ -66,7 +74,7 @@ defmodule Components.CardsList do
         sideboard
         |> Enum.filter(&(&1.sideboard == c.id))
         |> Enum.flat_map(&sideboard_display(&1, highlight_rotation))
-        |> Hearthstone.sort_cards(& &1.card)
+        |> Hearthstone.sort_cards(cost: &Deck.card_mana_cost(deck, &1))
 
       [actual | sideboards_after]
     end)
@@ -90,12 +98,12 @@ defmodule Components.CardsList do
     end
   end
 
-  defp card_map(cards) do
+  defp card_map(cards, deck) do
     cards
     # using the canoncial id fixes an issues with some cards not being shown
     # might be hacky might be useful overall
     |> Enum.map(&CardBag.deckcode_copy_id/1)
-    |> Hearthstone.ordered_frequencies()
+    |> Hearthstone.ordered_frequencies(cost: &Deck.card_mana_cost(deck, &1))
     |> Enum.map(fn {card, count} ->
       {card.id, {card, count}}
     end)

@@ -54,6 +54,25 @@ defmodule Backend.Hearthstone.Deck do
     |> cast(%{format: format}, [:format])
   end
 
+  @spec card_mana_cost(t(), Card.card()) :: integer()
+  def card_mana_cost(_, nil), do: nil
+  def card_mana_cost(%{sideboards: [_ | _] = sideboards}, card) do
+    if Card.zilliax_3000?(card) do
+      Enum.filter(sideboards, &(&1.sideboard == Card.zilliax_3000()))
+      |> Enum.map(fn %{card: card_id, count: count} ->
+        case Hearthstone.get_card(card_id) do
+          nil -> 0
+          card -> Card.cost(card) * count
+        end
+      end)
+      |> Enum.sum()
+    else
+      Card.cost(card)
+    end
+  end
+
+  def card_mana_cost(_, card), do: Card.cost(card)
+
   @spec deckcode(t()) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f, sideboards: s}), do: deckcode(c, h, f, s)
 
@@ -62,12 +81,14 @@ defmodule Backend.Hearthstone.Deck do
   Doesn't support decks with more than 2 copies of a card
   """
   @spec deckcode([integer], integer, integer, [Sideboard.t()]) :: String.t()
-  def deckcode(c, hero, format, sideboards \\ []) do
+  def deckcode(c, hero, format, sideboards_unmapped \\ []) do
     cards =
       c
       |> Enum.map(&CardBag.deckcode_copy_id/1)
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
+
+    sideboards = canonicalize_sideboards(sideboards_unmapped, &CardBag.deckcode_copy_id/1)
 
     ([0, 1, format, 1, get_canonical_hero(hero, c)] ++
        deckcode_part(cards[1]) ++
@@ -123,6 +144,28 @@ defmodule Backend.Hearthstone.Deck do
       end)
 
     [Enum.count(multi_part) | multi_part]
+  end
+
+  @spec canonicalize_sideboards([Sideboard.t()]) :: [Sideboard.t()]
+  def canonicalize_sideboards(sideboards, card_mapper \\ &Hearthstone.canonical_id/1) do
+    sideboards
+    |> map_sideboard_cards(card_mapper)
+    |> deduplicate_sideboards()
+  end
+
+  defp map_sideboard_cards(sideboards, card_mapper) do
+    Enum.map(sideboards, fn %{card: card} = s ->
+      %{s | card: card_mapper.(card)}
+    end)
+  end
+
+  @spec deduplicate_sideboards([Sideboard.t()]) :: [Sideboard.t()]
+  defp deduplicate_sideboards(sideboards) do
+    Enum.group_by(sideboards, &{&1.card, &1.sideboard})
+    |> Enum.map(fn {{card, sideboard}, [ first | _ ] = sideboards} ->
+      count = sideboards |> Enum.map(& &1.count) |> Enum.sum()
+      Map.put(first, :count, count)
+    end)
   end
 
   @spec canonicalize_cards([integer]) :: [integer]
@@ -258,7 +301,8 @@ defmodule Backend.Hearthstone.Deck do
          {singles, rest} <- take_singles(card_parts),
          {doubles, rest} <- take_doubles(rest),
          {multi, rest} <- take_multi(rest),
-         {_success, sideboards, _rest} <- parse_sideboard(rest),
+         {_success, uncanonical_sideboards, _rest} <- parse_sideboard(rest),
+         sideboards <- canonicalize_sideboards(uncanonical_sideboards),
          uncanonical_cards <- singles ++ doubles ++ multi,
          cards <- canonicalize_cards(uncanonical_cards) do
       {class, hero} = deckcode_class_hero(hero, cards)
@@ -671,7 +715,7 @@ defmodule Backend.Hearthstone.Deck.Sideboard do
 
   def changeset(sideboard, attrs) do
     sideboard
-    |> cast(attrs, @all_attrs)
+    |> cast(Map.new(attrs), @all_attrs)
     |> validate_required(@all_attrs)
   end
 
