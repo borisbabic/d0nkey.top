@@ -12,7 +12,7 @@ defmodule Backend.Hearthstone do
   alias Backend.Hearthstone.CardBackCategory
   alias Backend.Hearthstone.Class
   alias Backend.Hearthstone.GameMode
-  alias Backend.Hearthstone.Keyword
+  alias Backend.Hearthstone.Keyword, as: HSKeyword
   alias Backend.Hearthstone.MercenaryRole
   alias Backend.Hearthstone.MinionType
   alias Backend.Hearthstone.Rarity
@@ -25,6 +25,7 @@ defmodule Backend.Hearthstone do
   alias Hearthstone.Api
   alias Hearthstone.Card, as: ApiCard
   require Logger
+  require Card
 
   @type insertable_card :: ApiCard
   @type card :: Card.t() | Backend.HearthstoneJson.Card.t()
@@ -67,7 +68,7 @@ defmodule Backend.Hearthstone do
         {CardBackCategory, card_back_categories},
         {Class, classes},
         {GameMode, game_modes},
-        {Keyword, keywords},
+        {HSKeyword, keywords},
         {MercenaryRole, mercenary_roles},
         {MinionType, minion_types},
         {Rarity, rarities},
@@ -229,7 +230,7 @@ defmodule Backend.Hearthstone do
   defp add_card_assocs(changeset, %ApiCard{} = api_card) do
     keyword_ids = api_card.keyword_ids
     class_ids = ApiCard.class_ids(api_card)
-    keyword_query = from(k in Keyword, where: k.id in ^keyword_ids)
+    keyword_query = from(k in HSKeyword, where: k.id in ^keyword_ids)
     class_query = from(c in Class, where: c.id in ^class_ids)
     keywords = Repo.all(keyword_query)
     classes = Repo.all(class_query)
@@ -660,36 +661,62 @@ defmodule Backend.Hearthstone do
     NaiveDateTime.compare(now, release) == :gt
   end
 
-  def ordered_frequencies(cards = [a | _]) when is_integer(a) do
+  # @type extract_card_fun :: (any() -> Card.card())
+  # @type card_cost_fun :: (Card.card() -> integer())
+  # @type card_name_fun :: Card.card() -> String.t()
+  # @type card_sort_opt :: {:extract_card, extract_card_fun()} | {:cost, card_cost_fun()} | {:direction, :asc | :desc } | {:name, card_name_fun}
+  @type card_sort_opt ::
+          {:extract_card, (any() -> Card.card())}
+          | {:cost, (Card.card() -> integer())}
+          | {:direction, :asc | :desc}
+          | {:name, (Card.card() -> String.t())}
+  @type card_sort_opts :: [card_sort_opt]
+  @spec ordered_frequencies(integer(), card_sort_opts()) :: {Card.card(), integer()}
+  def ordered_frequencies(cards, card_sort_opts \\ [])
+
+  def ordered_frequencies(cards = [a | _], card_sort_opts) when is_integer(a) do
     cards
     |> Enum.frequencies()
     |> Enum.map(fn {c, freq} ->
       {get_card(c), freq}
     end)
     |> Enum.filter(&(&1 |> elem(0)))
-    |> sort_cards()
+    |> sort_cards(card_sort_opts)
   end
 
-  def ordered_frequencies(_), do: []
-
-  def sort_cards(cards, extract_card \\ & &1, direction \\ :asc) do
-    cards
-    |> Enum.sort_by(&(extract_card.(&1) |> name_for_sort()), direction)
-    |> Enum.sort_by(&(extract_card.(&1) |> cost_for_sort()), direction)
-  end
+  def ordered_frequencies(_, _), do: []
 
   defp name_for_sort({%{name: name}, _}), do: name
   defp name_for_sort({_, %{name: name}}), do: name
   defp name_for_sort(%{name: name}), do: name
   defp name_for_sort(_), do: nil
 
-  defp cost_for_sort({%{mana_cost: cost}, _}), do: cost
-  defp cost_for_sort({_, %{mana_cost: cost}}), do: cost
-  defp cost_for_sort(%{mana_cost: cost}), do: cost
-  defp cost_for_sort({%{cost: cost}, _}), do: cost
-  defp cost_for_sort({_, %{cost: cost}}), do: cost
-  defp cost_for_sort(%{cost: cost}), do: cost
-  defp cost_for_sort(_), do: nil
+  def cost_for_sort({%{mana_cost: cost}, _}), do: cost
+  def cost_for_sort({_, %{mana_cost: cost}}), do: cost
+  def cost_for_sort(%{mana_cost: cost}), do: cost
+  def cost_for_sort({%{cost: cost}, _}), do: cost
+  def cost_for_sort({_, %{cost: cost}}), do: cost
+  def cost_for_sort(%{cost: cost}), do: cost
+  def cost_for_sort(_), do: nil
+
+  def sort_cards(cards, opts \\ []) do
+    extract_card = Keyword.get(opts, :extract_card, &extract_card/1)
+    direction = Keyword.get(opts, :direction, :asc)
+    name = Keyword.get(opts, :name, &name_for_sort/1)
+    cost = Keyword.get(opts, :cost, &cost_for_sort/1)
+
+    cards
+    |> Enum.sort_by(&(extract_card.(&1) |> name.()), direction)
+    |> Enum.sort_by(&(extract_card.(&1) |> cost.()), direction)
+  end
+
+  defp extract_card(card_id) when is_integer(card_id), do: get_card(card_id)
+  defp extract_card(%{card_id: card_id}) when is_integer(card_id), do: get_card(card_id)
+  defp extract_card(%{card: card}) when Card.is_card(card), do: card
+  defp extract_card({card, _}) when Card.is_card(card), do: card
+  defp extract_card({_, card}) when Card.is_card(card), do: card
+  defp extract_card(card) when Card.is_card(card), do: card
+  defp extract_card(_), do: nil
 
   @doc """
   Gets a card with the dbfId `dbf_id` from the official api cache.
@@ -1116,7 +1143,14 @@ defmodule Backend.Hearthstone do
     }
   end
 
-  def canonical_id(id, prev \\ []) do
+  def canonical_id(id, prev \\ [])
+
+  def canonical_id(id, _) when Card.is_zilliax_art(id) do
+    # pink
+    110_446
+  end
+
+  def canonical_id(id, prev) do
     copy_of_card_id =
       with %{copy_of_card_id: copy_id} <- get_card(id),
            %{id: _} <- get_card(copy_id) do

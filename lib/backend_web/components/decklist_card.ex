@@ -9,6 +9,8 @@ defmodule Components.DecklistCard do
   prop(count, :integer, required: true)
   prop(card, :map, required: true)
   prop(deck, :map, default: %{})
+  # currently just for zilliax delux 3000
+  prop(use_deck_card_cost, :boolean, default: true)
   prop(deck_class, :string, default: "NEUTRAL")
   prop(sideboarded_in, :boolean, default: false)
   prop(show_mana_cost, :boolean, default: true)
@@ -77,7 +79,7 @@ defmodule Components.DecklistCard do
         <div onmouseover={"set_display('#{id}', 'flex')"} onmouseout={"set_display('#{id}', 'none')"}>
           <div style={"--color-border: #{border}; --color-gradient: #{gradient};"} class={"decklist-card-container decklist-card #{html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
-            <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{Card.cost(card)}</span>
+            <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{cost(card, @use_deck_card_cost, @deck)}</span>
             <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped">
               <span style="font-size: 0;"># {@count}x ({Card.cost(@card)}) </span>
               <span :if={@sideboarded_in}><HeroIcons.chevron_right size="small"/></span>
@@ -92,6 +94,15 @@ defmodule Components.DecklistCard do
         <div></div>
       </a>
     """
+  end
+
+  @spec cost(Card.t(), use_deck_card_cost :: boolean(), Deck.t()) :: integer()
+  defp cost(card, true, deck) do
+    Deck.card_mana_cost(deck, card)
+  end
+
+  defp cost(card, false, _deck) do
+    Card.cost(card)
   end
 
   defp count(1, "LEGENDARY", decklist_options) do

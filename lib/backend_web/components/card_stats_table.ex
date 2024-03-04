@@ -269,7 +269,7 @@ defmodule Components.CardStatsTable do
 
   def sort(stats, %{"sort_by" => "card"} = filters) do
     direction = get_direction(filters)
-    Backend.Hearthstone.sort_cards(stats, &extract_card/1, direction)
+    Backend.Hearthstone.sort_cards(stats, direction: direction)
   end
 
   def sort(stats, filters) do
@@ -297,8 +297,6 @@ defmodule Components.CardStatsTable do
       _ -> &Util.get(&1, :mull_impact)
     end
   end
-
-  defp extract_card(%{card: card}), do: card
 
   def filter_relevant(filters) do
     filters
