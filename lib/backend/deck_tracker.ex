@@ -1866,7 +1866,6 @@ defmodule Hearthstone.DeckTracker do
         SELECT count(1) INTO cnt FROM pg_stat_activity WHERE query LIKE '%update_dt_aggregated_stats%' and pid != pg_backend_pid();
         IF cnt < 1 then
           PERFORM update_dt_aggregated_stats();
-          INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public. dt_aggregated_stats;
         END IF;
       END $$;
       """,
