@@ -329,11 +329,77 @@ FROM
         AND COALESCE(cs.deck_id, -1) = COALESCE(ds.deck_id, -1)
     AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class, 'any')
     AND COALESCE(cs.archetype, 'any') = COALESCE(ds.archetype, 'any');
-    ALTER INDEX agg_stats_uniq_index RENAME TO old_agg_stats_uniq_index;
-    CREATE UNIQUE INDEX agg_stats_uniq_index ON temp_dt_aggregated_stats(rank, period, format, COALESCE(deck_id, -1), COALESCE(opponent_class, 'any'), COALESCE(archetype, 'any'));
-    ALTER MATERIALIZED VIEW dt_aggregated_stats RENAME TO old_dt_aggregated_stats;
-    ALTER MATERIALIZED VIEW temp_dt_aggregated_stats RENAME TO dt_aggregated_stats;
-    DROP MATERIALIZED VIEW IF EXISTS old_dt_aggregated_stats;
+
+ALTER INDEX agg_stats_uniq_index RENAME TO old_agg_stats_uniq_index;
+CREATE UNIQUE INDEX agg_stats_uniq_index ON temp_dt_aggregated_stats(rank, period, format, COALESCE(deck_id, -1), COALESCE(opponent_class, 'any'), COALESCE(archetype, 'any'));
+ALTER MATERIALIZED VIEW dt_aggregated_stats RENAME TO old_dt_aggregated_stats;
+ALTER MATERIALIZED VIEW temp_dt_aggregated_stats RENAME TO dt_aggregated_stats;
+DROP MATERIALIZED VIEW IF EXISTS old_dt_aggregated_stats;
+-- UPDATE AGG LOG
+INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
+-- UPDATE AGGREGATION COUNT
+CREATE TABLE public.dt_aggregation_counts_new AS
+SELECT
+    FORMAT,
+    PERIOD,
+    RANK,
+    COUNT(*)::bigint AS COUNT,
+    SUM(TOTAL)::bigint AS TOTAL_SUM,
+    SUM(
+    CASE
+        WHEN TOTAL >= 400 THEN 1
+        ELSE 0
+    END
+    )::bigint AS COUNT_200,
+    SUM(
+    CASE
+        WHEN TOTAL >= 400 THEN 1
+        ELSE 0
+    END
+    )::bigint AS COUNT_400,
+    SUM(
+    CASE
+        WHEN TOTAL >= 800 THEN 1
+        ELSE 0
+    END
+    )::bigint AS COUNT_800,
+    SUM(
+    CASE
+        WHEN TOTAL >= 1600 THEN 1
+        ELSE 0
+    END
+    )::bigint AS COUNT_1600,
+    SUM(
+    CASE
+        WHEN TOTAL >= 3200 THEN 1
+        ELSE 0
+    END
+    )::bigint AS COUNT_3200,
+    SUM(
+    CASE
+        WHEN TOTAL >= 6400 THEN 1
+        ELSE 0
+    END
+    )::bigint AS COUNT_6400,
+    SUM(
+    CASE
+        WHEN TOTAL >= 6400 THEN 1
+        ELSE 0
+    END
+    )::bigint AS COUNT_12800,
+    now() as inserted_at
+FROM
+    PUBLIC.DT_AGGREGATED_STATS
+WHERE
+    DECK_ID IS NOT NULL
+    AND ARCHETYPE IS NULL
+GROUP BY
+    1,
+    2,
+    3;
+ALTER TABLE IF EXISTS dt_aggregation_counts RENAME TO dt_aggregation_counts_old;
+ALTER TABLE IF EXISTS dt_aggregation_counts_new RENAME TO dt_aggregation_counts;
+DROP TABLE IF EXISTS dt_aggregation_counts_old;
 END;
 $$;
 
