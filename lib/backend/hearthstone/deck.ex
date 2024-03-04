@@ -611,6 +611,7 @@ defmodule Backend.Hearthstone.Deck do
   def create_comparison_map(decks = [%__MODULE__{} | _]) do
     decks
     |> Enum.flat_map(& &1.cards)
+    |> Enum.map(&CardBag.deckcode_copy_id/1)
     |> Enum.uniq()
     |> Enum.map(&Hearthstone.get_card/1)
     |> Hearthstone.sort_cards()
