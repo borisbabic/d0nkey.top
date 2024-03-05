@@ -8,6 +8,7 @@ defmodule Bot.MessageHandler do
   alias Backend.Blizzard
   alias Backend.Leaderboards
   alias Nostrum.Struct.Embed
+  alias Hearthstone.DeckcodeExtractor
   import Bot.MessageHandlerUtil
   require Logger
 
@@ -425,19 +426,8 @@ defmodule Bot.MessageHandler do
     end
   end
 
-  def extract_decks_from_content(content) when is_binary(content) do
-    for part <- String.split(content),
-        String.length(part) > 15,
-        Regex.match?(Backend.Hearthstone.Deck.deckcode_regex(), part),
-        codes = BackendWeb.DeckviewerLive.extract_decks(part),
-        Enum.any?(codes),
-        reduce: [] do
-      acc -> acc ++ codes
-    end
-  end
-
   def extract_decks_from_msg(msg) do
-    case {extract_decks_from_content(msg.content), mentioned?(msg)} do
+    case {DeckcodeExtractor.performant_extract_from_text(msg.content), mentioned?(msg)} do
       {[], _} -> {:error, :no_decks}
       {[deck], _} -> {:ok, [deck]}
       {decks, false} -> {:error, {:too_many_decks, Enum.count(decks)}}

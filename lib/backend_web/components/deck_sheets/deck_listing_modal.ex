@@ -112,7 +112,7 @@ defmodule Components.DeckListingModal do
       Sheets.edit_deck_sheet_listing(existing, attrs, user)
     else
       with {deckcode_or_link, rest} <- Map.pop(attrs, "deckcode"),
-           deckcodes <- BackendWeb.DeckviewerLive.extract_decks(deckcode_or_link),
+           deckcodes <- Hearthstone.DeckcodeExtractor.extract_decks(deckcode_or_link),
            {sheet_id, rest} <- Map.pop(rest, "sheet_id"),
            sheet = %{id: _} <- Sheets.get_sheet(sheet_id),
            {:ok, decks} <- create_decks(deckcodes) do
