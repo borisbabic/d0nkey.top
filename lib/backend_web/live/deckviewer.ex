@@ -2,11 +2,11 @@ defmodule BackendWeb.DeckviewerLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.Decklist
+  alias Hearthstone.DeckcodeExtractor
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
   alias Backend.HearthstoneJson
   alias Backend.HSDeckViewer
-  alias Backend.HSReplay
   alias Backend.Yaytears
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
@@ -139,75 +139,12 @@ defmodule BackendWeb.DeckviewerLive do
     }
   end
 
-  def our_link?(new_code) when is_binary(new_code),
-    do: new_code =~ "d0nkey.top" or new_code =~ "hsguru.com"
-
-  def our_link?(_), do: false
-
-  def extract_codes(link, opts \\ []) do
-    query_params = Keyword.get(opts, :query_params, ["deckcode", "code", "deckcodes", "codes"])
-    separators = Keyword.get(opts, :separators, [",", ".", "|"])
-    parsed = URI.parse(link)
-
-    from_query_potential =
-      with %{query: query_raw, host: h} when is_binary(query_raw) and is_binary(h) <- parsed,
-           query <- URI.decode_query(query_raw) do
-        Map.take(query, query_params)
-        |> Map.values()
-      else
-        _ -> []
-      end
-
-    # extract from path
-    potential =
-      for %{host: h, path: path} when is_binary(h) and is_binary(path) <- [parsed],
-          part <- String.split(parsed.path, "/"),
-          decoded = URI.decode(part),
-          # add link to potential incase the whole thing is valid
-          into: [link | from_query_potential],
-          do: decoded
-
-    for val <- potential,
-        code <- String.split(val, separators),
-        Deck.valid?(code),
-        do: code
-  end
-
-  # def extract_decks(decks) when is_list(decks), do: Enum.map(decks, &extract_decks/1)
-  def extract_decks(new_code) do
-    extracted = extract_codes(new_code)
-
-    cond do
-      extracted != [] ->
-        extracted
-
-      HSDeckViewer.hdv_link?(new_code) ->
-        HSDeckViewer.extract_codes(new_code)
-
-      Yaytears.yt_link?(new_code) ->
-        Yaytears.extract_codes(new_code)
-
-      HSReplay.hsreplay_link?(new_code) ->
-        case HSReplay.extract_deck(new_code) do
-          {:ok, deck} -> [Deck.deckcode(deck)]
-          _ -> []
-        end
-
-      our_link?(new_code) ->
-        extract_codes(new_code)
-
-      true ->
-        [new_code]
-    end
-    |> Deck.shorten_codes()
-  end
-
   def handle_event(
         "submit",
         %{"new_deck" => %{"new_code" => new_code}},
         socket = %{assigns: %{deckcodes: dc}}
       ) do
-    new_codes = extract_decks(new_code)
+    new_codes = DeckcodeExtractor.extract_decks(new_code)
 
     {
       :noreply,

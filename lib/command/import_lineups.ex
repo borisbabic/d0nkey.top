@@ -1,8 +1,8 @@
 defmodule Command.ImportLineups do
   import Ecto.Query, warn: false
-  alias BackendWeb.DeckviewerLive
   alias Ecto.Multi
   alias Backend.Repo
+  alias Hearthstone.DeckcodeExtractor
   alias Backend.Hearthstone
 
   def import_from_csv_url(
@@ -62,7 +62,7 @@ defmodule Command.ImportLineups do
   end
 
   def parse_line([name | deck_columns]),
-    do: {name, Enum.flat_map(deck_columns, &DeckviewerLive.extract_decks/1)}
+    do: {name, Enum.flat_map(deck_columns, &DeckcodeExtractor.extract_decks/1)}
 
   def import_max_2022_nations(csv_url, round) do
     import_from_csv_url(
