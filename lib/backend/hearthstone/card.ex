@@ -25,7 +25,7 @@ defmodule Backend.Hearthstone.Card do
   defmacro is_card(card) do
     quote do
       is_struct(unquote(card), Backend.Hearthstone.Card) or
-        is_struct(unquote(card), Backend.Hearthstone.Json.Card) or
+        is_struct(unquote(card), Backend.HearthstoneJson.Card) or
         is_struct(unquote(card), Hearthstone.Card)
     end
   end
