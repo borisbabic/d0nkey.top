@@ -2,6 +2,7 @@ defmodule Components.DeckListingModal do
   @moduledoc false
   use BackendWeb, :surface_live_component
   alias Components.Modal
+  alias Hearthstone.DeckcodeExtractor
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.Sheets
@@ -112,7 +113,7 @@ defmodule Components.DeckListingModal do
       Sheets.edit_deck_sheet_listing(existing, attrs, user)
     else
       with {deckcode_or_link, rest} <- Map.pop(attrs, "deckcode"),
-           deckcodes <- Hearthstone.DeckcodeExtractor.extract_decks(deckcode_or_link),
+           deckcodes <- DeckcodeExtractor.extract_decks(deckcode_or_link),
            {sheet_id, rest} <- Map.pop(rest, "sheet_id"),
            sheet = %{id: _} <- Sheets.get_sheet(sheet_id),
            {:ok, decks} <- create_decks(deckcodes) do
