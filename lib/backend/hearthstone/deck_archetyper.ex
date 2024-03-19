@@ -19,6 +19,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   @neutral_excavate ["Kobold Miner", "Burrow Buster"]
+  @neutral_spell_damage [
+    "Bloodmage Thalnos",
+    "Kobold Geomancer",
+    "Rainbow Glowscale",
+    "Silvermoon Arcanist",
+    "Azure Drake"
+  ]
   def archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"} = deck) do
     card_info = full_cards(c)
 
@@ -110,6 +117,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   def handbuff_dk?(c),
     do:
       min_count?(c, 3, [
+        "Lessr Spinel Spellstone",
+        "Amatuer Puppeteer",
         "Blood Tap",
         "Darkfallen Neophyte",
         "Vicious Bloodworm",
@@ -164,6 +173,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       menagerie?(card_info) ->
         :"Menagerie DH"
 
+      cycle_dh?(card_info) ->
+        :"Cycle DH"
+
+      weapon_dh?(card_info) ->
+        :"Weapon DH"
+
       aggro_dh?(card_info) && outcast_dh?(card_info) ->
         :"Aggro Outcast DH"
 
@@ -185,6 +200,21 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  def cycle_dh?(ci) do
+    "Playhouse Giant" in ci.card_names or
+      min_count?(ci, 2, ["Momentum", "Mindbender", "Eredar Deceptor", "Argunite Golem"])
+  end
+
+  def weapon_dh?(ci) do
+    min_count?(ci, 2, ["Quick Pick", "Umberwing", "Umpire's Grasp"]) and
+      min_count?(ci, 1, [
+        "Abyssal Bassist",
+        "Shadestone Skulker",
+        "Instrument Tech",
+        "Air Guitarist"
+      ])
   end
 
   def naga_dh?(ci) do
@@ -226,6 +256,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       choose_one?(card_info) -> :"Choose Druid"
       afk_druid?(card_info) -> :"AFK Druid"
       mill_druid?(card_info) -> :"Mill Druid"
+      owlonius_druid?(card_info) -> :"Owlonius Druid"
+      spell_damage_druid?(card_info) -> :"Spell Damage Druid"
       ramp_druid?(card_info) && "Death Beetle" in card_info.card_names -> :"Beetle Druid"
       "Topior the Shrubbagazzor" in card_info.card_names -> :"Topior Druid"
       treant_druid?(card_info) -> :"Treant Druid"
@@ -236,6 +268,21 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       ramp_druid?(card_info) -> :"Ramp Druid"
       true -> fallbacks(card_info, "Druid")
     end
+  end
+
+  @non_owlonius_druid_sd_cards [
+    "Magical Dollhouse",
+    "Bottomless Toy Chest",
+    "Woodland Wonders",
+    "Chia Drake",
+    "Sparkling Phial" | @neutral_spell_damage
+  ]
+  defp owlonius_druid?(ci) do
+    "Owlonius" in ci.card_names and min_count?(ci, 2, @non_owlonius_druid_sd_cards)
+  end
+
+  defp spell_damage_druid?(ci) do
+    min_count?(ci, 4, @non_owlonius_druid_sd_cards)
   end
 
   defp mill_druid?(ci) do
@@ -325,12 +372,27 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       egg_hunter?(card_info) ->
         :"Egg Hunter"
 
+      mystery_egg_hunter?(card_info) ->
+        :"Mystery Egg Hunter"
+
       wildseed_hunter?(card_info) ->
         :"Wildseed Hunter"
 
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp beast_hunter?(ci) do
+    min_count?(ci, 4, [
+      "Fetch!",
+      "Bunny Stomper",
+      "Jungle Gym",
+      "Painted Canvasaur",
+      "Master's Call",
+      "Ball of Spiders",
+      "Kill Command"
+    ])
   end
 
   defp zoo_hunter?(ci) do
@@ -343,6 +405,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp secret_hunter?(ci),
     do:
       min_count?(ci, 3, [
+        "Lesser Emerald Spellstone",
         "Costumed Singer",
         "Anonymous Informant",
         "Titanforged Traps",
@@ -448,6 +511,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       big_spell_mage?(card_info) ->
         :"Big Spell Mage"
 
+      spell_mage?(card_info) ->
+        :"Spell Mage"
+
       murloc?(card_info) ->
         :"Murloc Mage"
 
@@ -534,7 +600,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp aggro_paladin?(card_info) do
-    min_count?(card_info, 5, [
+    min_count?(card_info, 6, [
+      "Vicous Slitherspear",
+      "Worgen Inflitrator",
+      "Flash Sale",
       "For Quel'Thalas!",
       "Seal of Blood",
       "Blessing of Kings",
@@ -547,6 +616,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Sinstone Totem",
       "Crooked Cook",
       "Sea Giant",
+      "Leeroy Jenkins",
+      "Boogie Down",
+      "Mining Casualties",
       "Buffet Biggun",
       "Nerubian Egg",
       "Righteous Protector"
@@ -607,6 +679,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       shadow_priest?(card_info) ->
         :"Shadow Priest"
+
+      "Timewinder Zarimi" in card_info.card_names ->
+        :"Zarimi Priest"
 
       "Photographer Fizzle" in card_info.card_names ->
         :"Fizzle Priest"
@@ -729,6 +804,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       pirate_rogue?(card_info) ->
         :"Pirate Rogue"
+
+      cycle_rogue?(card_info) ->
+        :"Cycle Rogue"
+
+      cutlass_rogue?(card_info) ->
+        :"Cutlass Rogue"
 
       vanndar?(card_info) ->
         :"Vanndar Rogue"
@@ -884,8 +965,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       implock?(card_info) && handlock?(card_info) ->
         :"Hand Implock"
 
-      handlock?(card_info) ->
-        :Handlock
+      big_demon_warlock?(card_info) ->
+        :"Big Demon Warlock"
 
       implock?(card_info) && agony_warlock?(card_info) ->
         :"Agony Implock"
@@ -914,6 +995,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       snek?(card_info) ->
         :"Snek Warlock"
 
+      handlock?(card_info) ->
+        :Handlock
+
       control_warlock?(card_info) ->
         :"Control Warlock"
 
@@ -930,6 +1014,18 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp neutral_bouncers?(ci, min_count \\ 2) do
     min_count?(ci, min_count, ["Youthful Brewmaster", "Saloon Brewmaster", "Zola the Gorgon"])
+  end
+
+  defp big_demon_warlock?(ci) do
+    min_count?(ci, 4, [
+      "Endgame",
+      "Cursed Champion",
+      "Doomguard",
+      "Dirge of Despair",
+      "Game Master Nemsy",
+      "Enhanced Dreadloard",
+      "Wretched Queeen"
+    ])
   end
 
   defp sludgelock?(ci) do
@@ -986,8 +1082,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Deepminer Brann" in card_info.card_names -> :"Brann Warrior"
       murloc?(card_info) -> :"Murloc Warrior"
       boar?(card_info) -> :"Boar Warrior"
+      mech_warrior?(card_info) -> :"Mech Warrior"
       true -> fallbacks(card_info, "Warrior")
     end
+  end
+
+  def mech_warrior?(card_info) do
+    min_count?(card_info, 2, ["Boom Wrench", "Testing Dummy"])
   end
 
   defp odyn?(card_info) do
@@ -1132,9 +1233,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp spell_mage?(card_info) do
     min_count?(card_info, 3, [
-      "Deck of Lunacy",
-      "Incanter's Flow",
-      "Refreshing Spring Water"
+      "Spot the Difference",
+      "Yogg in the Box",
+      "Manufacturing Error"
     ])
   end
 
@@ -1385,6 +1486,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Elder Nadox"
       ])
 
+  defp mystery_egg_hunter?(card_info) do
+    min_count?(card_info, 1, ["Mystery Egg"])
+  end
+
   defp cleave_hunter?(card_info) do
     min_count?(card_info, 3, ["Hollow Hound", "Stonebound Gargon", "Always a Bigger Jormungar"]) &&
       min_count?(card_info, 2, [
@@ -1440,8 +1545,23 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   def wildseed_hunter?(ci),
     do: min_count?(ci, 3, ["Spirit Poacher", "Stag Charge", "Wild Spirits", "Ara'lon"])
 
+  defp cutlass_rogue?(ci),
+    do:
+      "Spectral Cutlass" in ci.card_names and
+        min_count?(ci, 3, ["Deadly Poison", "Valeera's Gift", "Harmonic Hip Hop", "Mic Drop"])
+
+  defp cycle_rogue?(ci),
+    do:
+      min_count?(ci, 3, [
+        "Fal'dorei Strider",
+        "Triple Sevens",
+        "Everything Must Go!",
+        "Playhouse Giant"
+      ])
+
   defp pirate_rogue?(ci),
-    do: min_count?(ci, 1, ["Swordfish", "Pirate Admiral Hooktusk"])
+    do:
+      min_count?(ci, 2, ["Toy Boat", "Raiding Party", "Treasure Distributor", "Dig for Treasure"])
 
   defp edwin_rogue?(ci),
     do:
@@ -1575,6 +1695,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     do:
       min_count?(ci, 1, ["Front Lines", "Kangor, Dancing King", "Lead Dancer"]) &&
         min_count?(ci, 2, [
+          "Pipsi Painthoof",
           "Ragnaros the Firelord",
           "Annoy-o-Troupe",
           "Tirion Fordring",
@@ -1743,7 +1864,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp agony_warlock?(%{card_names: card_names}), do: "Curse of Agony" in card_names
 
   defp handlock?(ci),
-    do: min_count?(ci, 2, ["Anetheron", "Dark Alley Pact", "Entitled Customer", "Twilight Drake"])
+    do: min_count?(ci, 2, ["Mountain Giant", "Table Flip"])
 
   defp enrage?(ci) do
     min_count?(ci, 5, [
