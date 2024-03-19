@@ -132,7 +132,8 @@ defmodule BackendWeb.StreamingView do
       # create_legend_dropdown(conn, "worst_legend_rank", "Worst"),
       create_format_dropdown(conn),
       create_class_dropdown(conn),
-      create_expansion_dropdown(conn, "badlands", "Badlands Cards", "Includes Badlands Cards"),
+      # create_expansion_dropdown(conn, "badlands", "Badlands Cards", "Includes Badlands Cards"),
+      create_expansion_dropdown(conn, "whizbang", "Whizbang Cards", "Includes Whizbang Cards"),
       create_last_played_dropdown(conn)
       # keep below last :shrug:
       # create_show_archetypes_dropdown(conn)
