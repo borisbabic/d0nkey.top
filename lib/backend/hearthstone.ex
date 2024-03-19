@@ -914,6 +914,9 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"health", health}, query),
     do: query |> where([card: c], c.health == ^health)
 
+  defp compose_cards_query({"name", name}, query),
+    do: query |> where([card: c], ilike(c.name, ^name))
+
   defp compose_cards_query({"mana_cost", mana_cost}, query),
     do: query |> where([card: c], c.mana_cost == ^mana_cost)
 

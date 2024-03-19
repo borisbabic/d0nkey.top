@@ -310,18 +310,25 @@ defmodule Bot.MessageHandler do
         nil
       )
 
-    case Backend.Hearthstone.cards([
-           {"order_by", "name_similarity_#{match}"},
-           {"order_by", "latest"},
-           Backend.Hearthstone.not_classic_card_criteria(),
-           {"limit", 1},
-           {"collectible", "yes"}
-         ]) do
+    common_criteria = [
+      {"order_by", "latest"},
+      Backend.Hearthstone.not_classic_card_criteria(),
+      {"limit", 1}
+    ]
+
+    exact_criteria = [{"name", match} | common_criteria]
+
+    fuzzy_criteria = [
+      {"order_by", "name_similarity_#{match}"},
+      {"collectible", "yes"} | common_criteria
+    ]
+
+    with [] <- Backend.Hearthstone.cards(exact_criteria),
+         [] <- Backend.Hearthstone.card(fuzzy_criteria) do
+      embed
+    else
       [card | _] ->
         Bot.CardMessageHandler.create_card_embed(card, embed: embed)
-
-      _ ->
-        embed
     end
   end
 
