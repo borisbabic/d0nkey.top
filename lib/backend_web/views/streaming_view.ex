@@ -96,6 +96,7 @@ defmodule BackendWeb.StreamingView do
         %{
           streamer: streamer_link(sd.streamer, conn),
           class: sd.deck.class |> Deck.class_name(),
+          deck: sd.deck,
           code: deckcode(sd.deck),
           deck_link: deck_toggle_link(conn, sd),
           last_played: sd.last_played,

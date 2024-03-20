@@ -8,19 +8,53 @@ defmodule BackendWeb.ExpandableDeckLive do
   data(name, :string)
   data(show_cards, :boolean)
 
-  def mount(_params, p = %{"code" => code}, socket) do
+  def mount(_params, p, socket) do
+    deck = extract_deck(p)
+
     {:ok,
      socket
-     |> assign(deckcode: code, show_cards: !!p["show_cards"], name: p["name"])
+     |> assign(
+       deck: deck,
+       deckcode: Deck.deckcode(deck),
+       show_cards: !!p["show_cards"],
+       name: p["name"]
+     )
      |> assign_defaults(p)
      |> put_user_in_context()}
   end
 
-  def render(assigns) do
-    deck = Deck.decode!(assigns[:deckcode])
+  def extract_deck(session = %{"deck" => %Deck{id: id} = deck}) when is_integer(id), do: deck
 
+  def extract_deck(session = %{"deck" => %Deck{}}) do
+    do_extract_deck(session, "deck")
+  end
+
+  def extract_deck(session = %{"deck_id" => id}) when is_integer(id) do
+    do_extract_deck(session, "deck_id")
+  end
+
+  def extract_deck(session = %{"code" => c}) when is_binary(c) do
+    do_extract_deck(session, "code")
+  end
+
+  def extract_deck(session = %{"deckcode" => c}) when is_binary(c) do
+    do_extract_deck(session, "deckcode")
+  end
+
+  def extract_deck(_) do
+    nil
+  end
+
+  def do_extract_deck(session, key) do
+    case Backend.Hearthstone.deck(Map.get(session, key)) do
+      %Deck{} = deck -> deck
+      _ -> session |> Map.drop(key) |> extract_deck()
+    end
+  end
+
+  def render(assigns) do
     ~F"""
-      <Decklist deck={deck} show_cards={@show_cards} name={@name}>
+      <Decklist deck={@deck} show_cards={@show_cards} name={@name}>
         <:right_button>
           <span phx-click="show_cards" class="is-clickable" >
             <HeroIcons.eye size="small" :if={!@show_cards}/>
