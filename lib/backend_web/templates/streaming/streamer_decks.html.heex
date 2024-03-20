@@ -62,7 +62,7 @@ f-> %>
         <%= for r <- @rows do %>
         <tr>
             <td>
-                <%= live_render(@conn, BackendWeb.ExpandableDeckLive, session: %{"code" => r.code, "show_cards" => false }) %>
+                <%= live_render(@conn, BackendWeb.ExpandableDeckLive, session: %{"deck" => r.deck, "show_cards" => false }) %>
             </td>
             <td>
                 <span><%= r.streamer %></span>
