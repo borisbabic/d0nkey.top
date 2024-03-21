@@ -23,6 +23,8 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.UserManager
   alias Backend.UserManager.User
   alias Backend.UserManager.GroupMembership
+  alias Backend.Hearthstone.Card
+  require Card
 
   use Torch.Pagination,
     repo: Backend.Repo,
@@ -1974,4 +1976,14 @@ defmodule Hearthstone.DeckTracker do
 
     Repo.all(query)
   end
+
+  @doc """
+  We get the art for Zilliax Deluxe 3000 from Deck Trackers
+  """
+  @spec tally_card_id(integer()) :: integer()
+  def tally_card_id(id) when Card.is_zilliax_art(id) do
+    102_983
+  end
+
+  def tally_card_id(id), do: Hearthstone.canonical_id(id)
 end

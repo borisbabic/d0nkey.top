@@ -3,6 +3,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
   use TypedStruct
   alias __MODULE__
   alias Hearthstone.DeckTracker.PlayerDto
+  alias Hearthstone.DeckTracker
   alias Backend.Hearthstone.Deck
   require Logger
 
@@ -156,11 +157,11 @@ defmodule Hearthstone.DeckTracker.GameDto do
     }
   end
 
-  defp dbf_id(%{card_dbf_id: id}) when is_integer(id), do: {:ok, id}
+  defp dbf_id(%{card_dbf_id: id}) when is_integer(id), do: {:ok, DeckTracker.tally_card_id(id)}
 
   defp dbf_id(%{card_id: card_id}) do
     case Backend.HearthstoneJson.get_dbf_by_card_id(card_id) do
-      id when is_integer(id) -> {:ok, id}
+      id when is_integer(id) -> {:ok, DeckTracker.tally_card_id(id)}
       _ -> {:error, :could_not_get_dbf_id}
     end
   end
