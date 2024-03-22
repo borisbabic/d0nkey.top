@@ -372,10 +372,12 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"twitch_id", <<twitch_id::binary>>}, query),
     do: compose_streamer_deck_query({"twitch_id", String.split(twitch_id, ",")}, query)
 
-  defp compose_streamer_deck_query({"twitch_id", twitch_id}, query) when is_list(twitch_id) do
+  defp compose_streamer_deck_query({"twitch_id", twitch_ids}, query) when is_list(twitch_ids) do
+    int_ids = Enum.map(twitch_ids, &Util.to_int_or_orig/1)
+
     query
     |> join(:inner, [sd], s in assoc(sd, :streamer))
-    |> where([_sd, s, _d], s.twitch_id in ^twitch_id)
+    |> where([_sd, s, _d], s.twitch_id in ^int_ids)
   end
 
   defp compose_streamer_deck_query({"order_by", {direction, field}}, query) do
