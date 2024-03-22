@@ -17,8 +17,14 @@ defmodule Components.DeckAdmin do
           To {Format.name(target)}
         </button>
         <button class="button" :if={1 < (Hearthstone.get_same(@deck) |> Enum.count())} :on-click="enqueue_duplicates">Deduplicate</button>
+        <button class="button" :on-click="recalculate_archetype">Rearchetype</button>
       </div>
     """
+  end
+
+  def handle_event("recalculate_archetype", _, %{assigns: %{deck: deck}} = socket) do
+    deck = Hearthstone.check_archetype(deck)
+    {:noreply, socket |> assign(deck: deck)}
   end
 
   def handle_event("change_format", %{"format" => format}, %{assigns: %{deck: deck}} = socket) do
