@@ -174,7 +174,7 @@ defmodule Util do
 
     case {atom_val, from} do
       {_, %{^key => value}} -> value
-      {k, _} when is_atom(k) -> get(from, key, opts)
+      {k, _} when is_atom(k) -> get(from, k, opts)
       _ -> opts[:default]
     end
   end
@@ -590,7 +590,7 @@ defmodule Util do
 
   @doc """
   Unpacks something that might be in a list of might already be out of it
-  iex > 
+  iex >
   """
   @spec unpack(any() | [any()]) :: any()
   def unpack([thing]), do: thing
