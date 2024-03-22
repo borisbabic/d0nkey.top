@@ -39,7 +39,7 @@ defmodule Components.DeckStatsTable do
   end
 
   defp add_region(params = %{"players" => players}) do
-    context = if players == "all_players", do: :public, else: :private
+    context = if players == "all_players", do: :public, else: :personal
     Map.put_new(params, "region", RegionDropdown.default(context))
   end
 
