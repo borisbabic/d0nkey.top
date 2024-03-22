@@ -1986,4 +1986,71 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def tally_card_id(id), do: Backend.Hearthstone.CardBag.deckcode_copy_id(id)
+
+  @spec merge_card_stats([card_stats()]) :: [card_stats()]
+  def merge_card_stats(stats) do
+    Enum.group_by(stats, fn cs ->
+      card_id = Map.get(cs, :card_id) || Map.get(cs, "card_id")
+      tally_card_id(card_id)
+    end)
+    |> Enum.map(fn
+      {_, [stats]} -> stats
+      {_, grouped} -> Enum.reduce(grouped, &do_merge_card_stats/2)
+    end)
+  end
+
+  # def do_merge_card_stats(%{card_id: stats_id} = stats, acc) do
+  #   card_id = tally_card_id(stats_id)
+  #   drawn_total = stats.drawn_total + acc.drawn_total
+  #   mull_total = stats.mull_total + acc.mull_total
+  #   kept_total = stats.kept_total + acc.kept_total
+
+
+  #   %{
+  #     card_id: card_id,
+  #     drawn_impact:
+  #       (stats.drawn_total * stats.drawn_impact + acc.drawn_total * acc.drawn_impact) /
+  #         drawn_total,
+  #     drawn_total: drawn_total,
+  #     mull_impact:
+  #       (stats.mull_total * stats.mull_impact + acc.mull_total * acc.mull_impact) / mull_total,
+  #     mull_total: mull_total,
+  #     kept_impact:
+  #       (stats.kept_total * stats.kept_impact + acc.kept_total * acc.kept_impact) / kept_total,
+  #     kept_total: kept_total
+  #   }
+  # end
+
+  def do_merge_card_stats(%{"card_id" => stats_id} = stats, acc) do
+    card_id = tally_card_id(stats_id)
+    drawn_total = stats["drawn_total"] + acc["drawn_total"]
+    mull_total = stats["mull_total"] + acc["mull_total"]
+    kept_total = stats["kept_total"] + acc["kept_total"]
+
+    drawn_impact = if drawn_total > 0 do
+        (stats["drawn_total"] * stats["drawn_impact"] + acc["drawn_total"] * acc["drawn_impact"]) / drawn_total
+    else
+      0
+    end
+    mull_impact = if mull_total > 0 do
+        (stats["mull_total"] * stats["mull_impact"] + acc["mull_total"] * acc["mull_impact"]) / mull_total
+    else
+      0
+    end
+    kept_impact = if kept_total > 0 do
+        (stats["kept_total"] * stats["kept_impact"] + acc["kept_total"] * acc["kept_impact"]) / kept_total
+    else
+      0
+    end
+
+    %{
+      "card_id" => card_id,
+      "drawn_impact" => drawn_impact,
+      "drawn_total" => drawn_total,
+      "mull_impact" => mull_impact,
+      "mull_total" => mull_total,
+      "kept_impact" => kept_impact,
+      "kept_total" => kept_total
+    }
+  end
 end

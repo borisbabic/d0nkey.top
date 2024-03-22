@@ -8,6 +8,7 @@ defmodule Components.CardStatsTable do
   alias Components.Filter.FormatDropdown
   alias Components.DecksExplorer
   alias Components.WinrateTag
+  alias Hearthstone.DeckTracker
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone
 
@@ -113,7 +114,7 @@ defmodule Components.CardStatsTable do
 
         </thead>
         <tbody>
-          <tr :for={cs <- @card_stats |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
+          <tr :for={cs <- @card_stats |> DeckTracker.merge_card_stats() |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
             <td>
 
             <div class="decklist_card_container">

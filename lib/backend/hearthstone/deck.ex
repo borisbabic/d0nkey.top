@@ -57,6 +57,8 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @spec sort_card_ids([integer()]) :: [integer()]
+  def sort_card_ids([]), do: []
+
   def sort_card_ids([a | _] = ids) when is_integer(a) do
     Enum.sort(ids, :asc)
   end
@@ -604,7 +606,8 @@ defmodule Backend.Hearthstone.Deck do
       down =~ "demonhunter" -> "DEMONHUNTER"
       down =~ "druid" -> "DRUID"
       down =~ "hunter" -> "HUNTER"
-      down =~ "mage" -> "MAGE"
+      # Spell damage can falsely trigger
+      String.ends_with?(down, "mage") -> "MAGE"
       down =~ "paladin" -> "PALADIN"
       down =~ "priest" -> "PRIEST"
       down =~ "rogue" -> "ROGUE"
