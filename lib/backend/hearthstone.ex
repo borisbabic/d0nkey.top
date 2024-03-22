@@ -585,7 +585,7 @@ defmodule Backend.Hearthstone do
     do: query |> where([deck: d], d.format == ^format)
 
   defp compose_decks_query({"cards", cards}, query),
-    do: query |> where([deck: d], d.cards == ^cards)
+    do: query |> where([deck: d], fragment("sort_asc(?)", d.cards) == ^Deck.sort_card_ids(cards))
 
   defp compose_decks_query({"sideboards", empty}, query) when empty in [nil, []],
     do: query |> where([deck: d], is_nil(d.sideboards) or d.sideboards == fragment("'{}'"))

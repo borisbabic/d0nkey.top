@@ -37,7 +37,9 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @doc false
-  def changeset(c, attrs = %{deckcode: _}) do
+  def changeset(c, attrs_raw = %{deckcode: _}) do
+    attrs = sort_cards(attrs_raw)
+
     c
     |> cast(attrs, @required ++ @optional)
     |> cast_embed(:sideboards)
@@ -54,8 +56,21 @@ defmodule Backend.Hearthstone.Deck do
     |> cast(%{format: format}, [:format])
   end
 
+  @spec sort_card_ids([integer()]) :: [integer()]
+  def sort_card_ids([a | _] = ids) when is_integer(a) do
+    Enum.sort(ids, :asc)
+  end
+
+  defp sort_cards(%{cards: cards = [a | _]} = attrs) when is_integer(a) do
+    new_cards = sort_card_ids(cards)
+    Map.put(attrs, :cards, new_cards)
+  end
+
+  defp sort_cards(attrs), do: attrs
+
   @spec card_mana_cost(t(), Card.card()) :: integer()
   def card_mana_cost(_, nil), do: nil
+
   def card_mana_cost(%{sideboards: [_ | _] = sideboards}, card) do
     if Card.zilliax_3000?(card) do
       Enum.filter(sideboards, &(&1.sideboard == Card.zilliax_3000()))
@@ -162,7 +177,7 @@ defmodule Backend.Hearthstone.Deck do
   @spec deduplicate_sideboards([Sideboard.t()]) :: [Sideboard.t()]
   defp deduplicate_sideboards(sideboards) do
     Enum.group_by(sideboards, &{&1.card, &1.sideboard})
-    |> Enum.map(fn {{card, sideboard}, [ first | _ ] = sideboards} ->
+    |> Enum.map(fn {{card, sideboard}, [first | _] = sideboards} ->
       count = sideboards |> Enum.map(& &1.count) |> Enum.sum()
       Map.put(first, :count, count)
     end)
