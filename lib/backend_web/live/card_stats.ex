@@ -22,6 +22,7 @@ defmodule BackendWeb.CardStatsLive do
         <div class="title is-2">{@title || "Card Stats"}</div>
         <div class="subtitle is-6">
           <span :if={@deck}><a href={~p"/deck/#{@deck.id}"}> Deck Stats</a> | </span>
+          <span :if={deck_id = highlight_deck_id(@params)}><a href={~p"/card-stats?#{create_deck_filters(@params, deck_id)}"}>Deck Card Stats</a> | </span>
           <span :if={archetype = Deck.archetype(@deck)}><a href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"}>Archetype Card Stats</a> | </span>
            <a href={~p"/stats/explanation"}>Stats Explanation</a> | To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>
         </div>
@@ -29,6 +30,16 @@ defmodule BackendWeb.CardStatsLive do
         <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria) || []} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
+  end
+
+  defp highlight_deck_id(params) do
+    Map.get(params, "highlight_deck", nil)
+  end
+
+  defp create_deck_filters(params, deck_id) do
+    params
+    |> Map.drop(["archetype", "highlight_deck"])
+    |> Map.put("deck_id", deck_id)
   end
 
   defp create_archetype_filters(params, archetype) do
@@ -71,7 +82,7 @@ defmodule BackendWeb.CardStatsLive do
 
   def highlight_cards(params) do
     cards_from_deck =
-      with id when not is_nil(id) <- Map.get(params, "highlight_deck"),
+      with id when not is_nil(id) <- highlight_deck_id(params),
            %{cards: cards} <- Backend.Hearthstone.get_deck(id) do
         cards
       else
