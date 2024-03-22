@@ -1985,5 +1985,5 @@ defmodule Hearthstone.DeckTracker do
     102_983
   end
 
-  def tally_card_id(id), do: Hearthstone.canonical_id(id)
+  def tally_card_id(id), do: Backend.Hearthstone.CardBag.deckcode_copy_id(id)
 end
