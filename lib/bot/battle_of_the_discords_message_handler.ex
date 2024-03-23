@@ -1,5 +1,5 @@
 defmodule Bot.BattleOfTheDiscordsMessageHandler do
-  @doc "Handles !botd messages for battle of the discords"
+  @moduledoc "Handles !botd messages for battle of the discords"
   import Bot.MessageHandlerUtil
   alias Backend.Battlefy
 
@@ -7,10 +7,11 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
     %{id: 405_445_346_236_563_476, slug: "tdf"},
     %{id: 158_099_275_136_499_713, slug: "cc"},
     %{id: 147_167_584_666_517_505, slug: "vs"},
+    %{id: 734_477_782_456_991_934, slug: "mbuu"},
     %{id: 534_455_756_129_435_649, slug: "thl"}
   ]
 
-  @battlefy_id "653e9d91e73f05464d894a51"
+  @battlefy_id "65e37d5f1f2be50c38d43332"
   @custom_field "653e9d91e73f05464d894a50"
 
   # Some random mt
@@ -30,7 +31,7 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
 
     Will return standings for the botd tournament depending on the argument
     - `!#{command} total` -> overall record per discord
-    - `!#{command} $discord_abbreviation`, ex `!#{command} cc` will show standings for people who registered as that discord on battlefy 
+    - `!#{command} $discord_abbreviation`, ex `!#{command} cc` will show standings for people who registered as that discord on battlefy
     - `!#{command}` is a shorthand, for the above in participating discords, or for `!battlefy #{@battlefy_id}` in others
 
     """
@@ -61,7 +62,7 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
     |> send_message(msg)
   end
 
-  def handle([slug], msg) when slug in ["tdf", "cc", "vs", "thl"] do
+  def handle([slug], msg) when slug in ["tdf", "cc", "vs", "thl", "mbuu"] do
     sorted_standings()
     |> Enum.filter(fn s ->
       slug ==
