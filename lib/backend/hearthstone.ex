@@ -900,6 +900,11 @@ defmodule Backend.Hearthstone do
     |> order_by([card: c], desc: fragment("similarity(?, ?)", c.name, ^search_target))
   end
 
+  defp compose_cards_query({"order_by", {direction, field}}, query) do
+    query
+    |> order_by([card: c], [{^direction, field(c, ^field)}])
+  end
+
   defp compose_cards_query({"fake_limit", limit}, query), do: limit(query, ^limit)
 
   defp compose_cards_query({"collectible", collectible}, query) when is_boolean(collectible),

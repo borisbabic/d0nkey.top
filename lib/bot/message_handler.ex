@@ -316,7 +316,7 @@ defmodule Bot.MessageHandler do
       {"limit", 1}
     ]
 
-    exact_criteria = [{"name", match} | common_criteria]
+    exact_criteria = [{"name", match}, {"order_by", {:desc, :collectible}} | common_criteria]
 
     fuzzy_criteria = [
       {"order_by", "name_similarity_#{match}"},
