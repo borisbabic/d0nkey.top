@@ -56,10 +56,7 @@ defmodule Backend.MixProject do
       {:httpoison, "~> 1.6"},
       {:poison, "~> 3.1"},
       {:recase, "~> 0.5"},
-      {:nostrum,
-       runtime: Mix.env() in [:dev, :bot],
-       github: "Kraigie/nostrum",
-       ref: "1ec397fda41d4dd345aaeba471b88c8ccded920f"},
+      {:nostrum, "~> 0.8", runtime: Mix.env() in [:dev, :bot]},
       # nostrum wants 2.0, tesla wants less, but it's optional there
       {:gun, "~> 2.0", override: true},
       {:typed_struct, "~> 0.1.4"},
