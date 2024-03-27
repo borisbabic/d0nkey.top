@@ -642,6 +642,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Boogie Down",
       "Mining Casualties",
       "Buffet Biggun",
+      "Muster for Battle",
+      "Miracle Salesman",
+      "Flash Sale",
+      "Disco Maul",
       "Nerubian Egg",
       "Righteous Protector"
     ])
@@ -752,12 +756,17 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         ])
 
   defp overheal_priest?(ci) do
-    min_count?(ci, 3, [
+    min_count?(ci, 5, [
       "Crimson Clergy",
       "Funnel Cake",
       "Dreamboat",
       "Holy Champion",
+      "Flash Heal",
+      "Idol's Adoration",
+      "Grace of the Highfather",
+      "Hidden Gem",
       "Mana Geode",
+      "Injured Hauler",
       "Heartthrob",
       "Ambient Lightspawn",
       "Heartbreaker Hedanis"
@@ -1773,13 +1782,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         min_count?(ci, 1, ["Righteous Defense", "Battle Vicar", "Knight of Anointment"])
 
   defp handbuff_paladin?(ci) do
-    min_count?(ci, 3, [
-      "Grimestreet Outfitter",
-      "Muscle-o Tron",
-      "Outfit Tailor",
-      "Painter's Virtue",
-      "Overlord Runthak"
-    ])
+    min_count?(ci, 2, ["Painter's Virtue", "Instrument Tech"]) or
+      min_count?(ci, 3, [
+        "Grimestreet Outfitter",
+        "Muscle-o Tron",
+        "Outfit Tailor",
+        "Painter's Virtue",
+        "Overlord Runthak"
+      ])
   end
 
   defp earthen_paladin?(ci),
