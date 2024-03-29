@@ -18,8 +18,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
-  def archetype(deck) do
-    card_info = full_cards(deck.cards)
+  def archetype(%{cards: cards} = deck) do
+    card_info = full_cards(cards)
 
     if splendiferous_whizbang?(card_info) do
       :"Splendiferous Whizbang"
@@ -27,6 +27,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       do_archetype(deck, card_info)
     end
   end
+
+  def archetype(_), do: nil
 
   @neutral_excavate ["Kobold Miner", "Burrow Buster"]
   @neutral_spell_damage [
