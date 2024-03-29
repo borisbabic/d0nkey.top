@@ -62,16 +62,28 @@ config :backend, QuantumScheduler,
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
+max_queue_size =
+  with raw when is_binary(raw) <- System.get_env("POOL_SIZE"),
+       {int, _} when is_integer(int) <- Integer.parse(raw) do
+    int
+  else
+    _ -> 10
+  end
+
+queues =
+  [
+    default: Enum.max([2, div(max_queue_size, 2)]),
+    battlefy_lineups: Enum.max([4, max_queue_size - 1]),
+    grandmasters_lineups: 1,
+    gm_stream_live: 1,
+    hsreplay_deck_mapper: 1,
+    leaderboards_pages_fetching: 5,
+    deck_deduplicator: Enum.max([1, max_queue_size - 2]),
+    hsreplay_streamer_deck_inserter: 1
+  ]
+  |> Enum.map(fn {queue, size} -> {queue, Enum.min([size, max_queue_size])} end)
+
 config :backend, Oban,
   repo: Backend.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [
-    default: 10,
-    battlefy_lineups: 20,
-    grandmasters_lineups: 1,
-    gm_stream_live: 4,
-    hsreplay_deck_mapper: 1,
-    leaderboards_pages_fetching: 20,
-    deck_deduplicator: 10,
-    hsreplay_streamer_deck_inserter: 1
-  ]
+  queues: queues
