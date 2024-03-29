@@ -297,4 +297,45 @@ defmodule ScratchPad do
     |> Enum.map(fn {_, g} -> Enum.map(g, &elem(&1, 1)) end)
     |> Enum.each(&Backend.Hearthstone.deduplicate_ids/1)
   end
+
+  def whizbang_codes_code() do
+    whizbang_decks()
+    |> Enum.map(&Backend.Hearthstone.Deck.decode!/1)
+    |> Enum.map(& &1.cards)
+    |> Enum.map(fn cards ->
+      uniq = cards |> Enum.map(&Backend.Hearthstone.get_card(&1).name) |> Enum.uniq()
+      list_inner = uniq |> Enum.map_join(" , ", &"\"#{&1}\"")
+      {Enum.count(uniq), list_inner}
+    end)
+    |> Enum.map_join(" or ", fn {count, parts} ->
+      "min_count?(ci, #{count}, [#{parts}])"
+    end)
+  end
+
+  def whizbang_decks() do
+    [
+      "AAEBAfHhBAKXoATrmAYOqIEErYoEiZ8Ej58EnJ8Etp8EjboEkNQEiPYE1c4FyvYFpP8F2aIG1agGAAA=",
+      "AAEBAea5AwOBpga/sAbJsAYMgIUEgZ8Eg58Etp8E1J8E7KAE4fgF7Z8Gu7AGvrAGw7AGzLEGAb31BgMA",
+      "AAEBAZICAAVf5AjougOgoAaJoQYBhLUGFAA=",
+      "AAEBAR8AD9YRyRTKFIO5A7a7A+GfBMeyBNShBe+iBeKkBerKBdj2BdP4BeSYBv6lBgAA",
+      "AAEBAf0EAAAB9r8GHgA=",
+      "AAEBAZ8FHuIRwxaFF4cX1K4C5q4C48sC7dIC/fsC7IYDg6ED9KIDkqQDpqUD/acD9awD/a0DkK4D/q8DkbEDjLYDysEDnJ8EnZ8E658E7Z8E7p8EtaIE96QE5bAEAAAA",
+      "AAEBAa0GBb6fBMGfBJbUBM/GBaSdBgnXCq2KBISfBIWfBIakBbu4Bfv4BeOABpegBgGm8QUHAA==",
+      "AAEBAaIHA6aKBK+nBoqoBguSnwT2nwTuoASMpAXXwwXfwwXo+gXungatpwazqQbLqQYAAA==",
+      "AAEBAaoIBNoPhBecmwPW0gYN2A/SE+e7ArbNAoyUA8aZA6+nA7PoA5XwA9WyBMXOBMbOBIf7BQAA",
+      "AAEBAf0GBtKZA4adA/DtA/PtA9/CBazpBQfx7QOWlwaEngbBnwbLnwaroAb3owYAAA==",
+      "AAEBAQcMlBeS+AKrkQOskQOtkQOvkQOwkQOSlwOXlwO5mQPrmwPIngYJtJEDjZcDj5cD2psD+qQD+aUD9agD2a0D6pYEAAA=",
+      "AAEBAea5Away9wSWtwWYxAXn9QXr9QX8+QUMgJ8E1p8Es6AEqeYE0e0Eh/YEtPcE3YIFk6QF8MMF9MMF16IGAAA=",
+      "AAEBAZICBIDUBPfBBargBaqeBg2JoASO1ATwzQXq0AXr0AXs0AX83wWC4AWK4AWR4AWp4AXHngbXogYAAA=",
+      "AAEBAZ8FAqqKBLTmBA7JoATWoASS5ASH9gSX9gSY9gS5/wSZgQXAxAXKxAW6xwWUygXizQW0ngYAAA==",
+      "AAEBAaIHArugBO7DBQ6RnwSSnwSpnwT2nwT3nwSgoATarAXBwwXfwwXnygXoygXk9QXS+AW9ngYAAA==",
+      "AAEBAaoIBIvnA5egBMPQBbGeBg3q5wP5nwT9nwTCoATgrAWmwwXgwwXoxQXE0AXQ+AW/ngbAngbmngYAAA==",
+      "AAEBAf0GCsGfBIKgBIOgBIWgBOegBN/CBc/GBfnGBazRBbieBgqSD62KBISfBIWfBLGfBJ3UBIGtBbnEBb/EBcjrBQAA",
+      "AAEBAea5AwKxnwa7nwYOi7oDyboDvbsD5rsDusYD1cgD18gD+cgD/8gDsp8Gs58Gv58GhqYGh6YGAAA=",
+      "AAEBAaoIBO/3Ar2ZA+O0A9PAAw2BBLIG7/ECtJcDxpkD+aUDt60Dua0D/q4Dqq8D0K8DgrEDguIDAAA=",
+      "AAEBAQcEkvgCoIAD9YADm5QDDUuiBJ3wApvzAtH1AvT1AoP7Ap77ArP8ApeUA5qUA5KfA/+WBAAA",
+      "AAEBAf0GBMnCApfTAtvpApz4Ag2KAfcEtgfECJvCAufLAvLQAvjQAojSAovhAujnArfxAtOuAwAA",
+      "AAEBAaIHBLICnbQCzq4D1q4DDbQBnALtAp8DiAXUBYgHhQiGCZK2Avi9AvzBAtyWBAAA"
+    ]
+  end
 end
