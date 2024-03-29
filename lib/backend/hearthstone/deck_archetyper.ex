@@ -18,6 +18,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
+  def archetype(deck) do
+    card_info = full_cards(deck.cards)
+
+    if splendiferous_whizbang?(card_info) do
+      :"Splendiferous Whizbang"
+    else
+      do_archetype(deck, card_info)
+    end
+  end
+
   @neutral_excavate ["Kobold Miner", "Burrow Buster"]
   @neutral_spell_damage [
     "Bloodmage Thalnos",
@@ -26,9 +36,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     "Silvermoon Arcanist",
     "Azure Drake"
   ]
-  def archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"} = deck) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"}, card_info) do
     cond do
       highlander?(card_info, c) ->
         :"Highlander DK"
@@ -134,9 +142,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Encumbered Pack Mule"
       ])
 
-  def archetype(%{format: 2, cards: c, class: "DEMONHUNTER"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "DEMONHUNTER"}, card_info) do
     cond do
       highlander?(card_info, c) ->
         :"Highlander DH"
@@ -246,9 +252,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   def outcast_dh?(c), do: min_keyword_count?(c, 4, "outcast")
 
-  def archetype(%{format: 2, cards: c, class: "DRUID"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "DRUID"}, card_info) do
     cond do
       highlander?(card_info, c) -> :"Highlander Druid"
       quest?(card_info) || questline?(card_info) -> :"Quest Druid"
@@ -328,9 +332,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp zok_druid?(ci),
     do: min_count?(ci, 2, ["Zok Fogsnout", "Anub'Rekhan"])
 
-  def archetype(%{format: 2, cards: c, class: "HUNTER"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "HUNTER"}, card_info) do
     cond do
       highlander?(card_info, c) ->
         :"Highlander Hunter"
@@ -438,9 +440,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     "Shockspitter" in ci.card_names
   end
 
-  def archetype(%{format: 2, cards: c, class: "MAGE"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "MAGE"}, card_info) do
     rommath? = "Grand Magister Rommath" in card_info.card_names
     lightshow? = "Lightshow" in card_info.card_names
     energy_shaper? = "Energy Shaper" in card_info.card_names
@@ -585,9 +585,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Prismatic Elemental"
       ])
 
-  def archetype(%{format: 2, cards: c, class: "PALADIN"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "PALADIN"}, card_info) do
     cond do
       highlander?(card_info, c) && pure_paladin?(card_info) -> :"Highlander Pure Paladin"
       pure_paladin?(card_info) && dude_paladin?(card_info) -> :Chadadin
@@ -651,9 +649,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
-  def archetype(%{format: 2, cards: c, class: "PRIEST"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "PRIEST"}, card_info) do
     cond do
       highlander?(card_info, c) ->
         :"Highlander Priest"
@@ -781,9 +777,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Scourge Rager" in card_info.card_names and
         min_count?(card_info, 2, ["Animate Dead", "Grave Digging", "High Cultist Basaleph"])
 
-  def archetype(%{format: 2, cards: c, class: "ROGUE"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "ROGUE"}, card_info) do
     cond do
       highlander?(card_info, c) ->
         :"Highlander Rogue"
@@ -893,9 +887,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp mech_rogue?(ci), do: type_count(ci, "Mech") > 5
 
-  def archetype(%{format: 2, cards: c, class: "SHAMAN"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "SHAMAN"}, card_info) do
     cond do
       highlander?(card_info, c) -> :"Highlander Shaman"
       quest?(card_info) || questline?(card_info) -> :"Quest Shaman"
@@ -961,9 +953,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Incorporeal Corporal"
       ])
 
-  def archetype(%{format: 2, cards: c, class: "WARLOCK"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "WARLOCK"}, card_info) do
     cond do
       highlander?(card_info, c) ->
         :"Highlander Warlock"
@@ -1117,9 +1107,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     min_count?(ci, 2, ["Amorphous Slime", "Thaddius, Monstrosity"])
   end
 
-  def archetype(%{format: 2, cards: c, class: "WARRIOR"}) do
-    card_info = full_cards(c)
-
+  defp do_archetype(%{format: 2, cards: c, class: "WARRIOR"}, card_info) do
     cond do
       highlander?(card_info, c) -> :"Highlander Warrior"
       questline?(card_info) && warrior_aoe?(card_info) -> :"Quest Control Warrior"
@@ -1196,9 +1184,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
-  def archetype(%{class: class, cards: c, format: 4}) do
+  defp do_archetype(%{class: class, cards: c, format: 4}, card_info) do
     class_name = Deck.class_name(class)
-    card_info = full_cards(c)
 
     cond do
       highlander?(card_info, c) ->
@@ -1354,9 +1341,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
-  def archetype(%{class: class, cards: c, format: 1}) do
+  defp do_archetype(%{class: class, cards: c, format: 1}, card_info) do
     class_name = Deck.class_name(class)
-    card_info = full_cards(c)
 
     cond do
       highlander?(card_info, c) ->
@@ -1413,7 +1399,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
-  def archetype(_), do: nil
+  defp do_archetype(_, _), do: nil
 
   defp wild_miracle_rogue?(card_info) do
     min_count?(card_info, 2, ["Mailbox Dancer", "Arcane Giant", "Edwin VanCleef"])
@@ -2127,5 +2113,403 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     |> minion_type_counts()
     |> List.keyfind(type, 0, {type, 0})
     |> elem(1)
+  end
+
+  defp splendiferous_whizbang?(ci) do
+    # second part generated by Scratchpad.whizbang_codes_code
+    "Splendiferous Whizbang" in ci.card_names or
+      min_count?(ci, 16, [
+        "Bloodmage Thalnos",
+        "Dryscale Deputy",
+        "Multicaster",
+        "Thrive in the Shadows",
+        "Wild Growth",
+        "Hellfire",
+        "Consecration",
+        "Chaos Strike",
+        "Coral Keeper",
+        "Bash",
+        "Remorseless Winter",
+        "Hipster",
+        "Celestial Shot",
+        "Elemental Inspiration",
+        "Fan of Knives",
+        "Clearance Promoter"
+      ]) or
+      min_count?(ci, 16, [
+        "Ci'Cigi",
+        "Ball Hog",
+        "Magtheridon, Unreleased",
+        "Illidari Inquisitor",
+        "Chaos Nova",
+        "Aldrachi Warblades",
+        "Chaos Strike",
+        "Raging Felscreamer",
+        "Eye Beam",
+        "Illidari Studies",
+        "Spirit of the Team",
+        "Workshop Mishap",
+        "Umpire's Grasp",
+        "Red Card",
+        "Window Shopper",
+        "Wish"
+      ]) or
+      min_count?(ci, 6, [
+        "Nourish",
+        "Wild Growth",
+        "Overgrowth",
+        "Crystal Cluster",
+        "Invigorate",
+        "Moment of Discovery"
+      ]) or
+      min_count?(ci, 15, [
+        "Emperor Thaurissan",
+        "Acidmaw",
+        "Dreadscale",
+        "Zixor, Apex Predator",
+        "Beastmaster Leoroxx",
+        "King Krush",
+        "Blademaster Okani",
+        "The Sunwell",
+        "Lor'themar Theron",
+        "Astalor Bloodsworn",
+        "Mister Mukla",
+        "Zilliax",
+        "Stranglethorn Heart",
+        "Flint Firearm",
+        "King Plush"
+      ]) or min_count?(ci, 1, ["Morphing Card"]) or
+      min_count?(ci, 30, [
+        "Solemn Vigil",
+        "Reno Jackson",
+        "Brann Bronzebeard",
+        "Elise Starseeker",
+        "Selfless Hero",
+        "Ragnaros, Lightlord",
+        "Righteous Protector",
+        "Potion of Heroism",
+        "Crystalsmith Kangor",
+        "Flash of Light",
+        "Sir Finley of the Sands",
+        "Elise the Enlightened",
+        "Reno the Relicologist",
+        "Dinotamer Brann",
+        "Beaming Sidekick",
+        "Azure Explorer",
+        "Emerald Explorer",
+        "Bronze Explorer",
+        "Primordial Explorer",
+        "Dragonqueen Alexstrasza",
+        "The Amazing Reno",
+        "Hand of A'dal",
+        "Consecration",
+        "Truesilver Champion",
+        "Argent Protector",
+        "Tirion Fordring",
+        "Equality",
+        "Aldor Peacekeeper",
+        "Protect the Innocent",
+        "Sir Finley, Sea Guide"
+      ]) or
+      min_count?(ci, 15, [
+        "Psychic Conjurer",
+        "Shadow Word: Death",
+        "Zola the Gorgon",
+        "Love Everlasting",
+        "Pip the Potent",
+        "Shadow Word: Pain",
+        "Thrive in the Shadows",
+        "Holy Nova",
+        "Holy Smite",
+        "Lightbomb",
+        "Crimson Clergy",
+        "Fan Club",
+        "Celestial Projectionist",
+        "Shattered Reflections",
+        "Astral Automaton"
+      ]) or
+      min_count?(ci, 14, [
+        "Fogsail Freebooter",
+        "Shoplifter Goldbeard",
+        "Sonya Waterdancer",
+        "Deadly Poison",
+        "Shadowstep",
+        "Swashburglar",
+        "Hench-Clan Burglar",
+        "Mixtape",
+        "Breakdance",
+        "Kaja'mite Creation",
+        "Quick Pick",
+        "Dig for Treasure",
+        "Sandbox Scoundrel",
+        "Watercannon"
+      ]) or
+      min_count?(ci, 17, [
+        "Neptulon",
+        "Sir Finley Mrrgglton",
+        "Scargil",
+        "Quest Accepted!",
+        "Siltfin Spiritwalker",
+        "Ancestral Knowledge",
+        "Finders Keepers",
+        "Brrrloc",
+        "Underbelly Angler",
+        "Sludge Slurper",
+        "Fishflinger",
+        "South Coast Chieftain",
+        "Spawnpool Forager",
+        "Gorloc Ravager",
+        "Clownfish",
+        "Command of Neptulon",
+        "Turn the Tides"
+      ]) or
+      min_count?(ci, 13, [
+        "Chef Nomi",
+        "Archivist Elysiana",
+        "Blood Shard Bristleback",
+        "Neeru Fireblade",
+        "Rin, Orchestrator of Doom",
+        "Fanottem, Lord of the Opera",
+        "Barrens Scavenger",
+        "Waste Remover",
+        "Fracking",
+        "Tar Slime",
+        "Scarab Keychain",
+        "Chaos Creation",
+        "Furnace Fuel"
+      ]) or
+      min_count?(ci, 21, [
+        "Arch-Thief Rafaam",
+        "Dr. Boom, Mad Genius",
+        "Rafaam's Scheme",
+        "Dr. Boom's Scheme",
+        "Hagatha's Scheme",
+        "Togwaggle's Scheme",
+        "Lazul's Scheme",
+        "Heistbaron Togwaggle",
+        "Arch-Villain Rafaam",
+        "Swampqueen Hagatha",
+        "Madame Lazul",
+        "Dr. Boom",
+        "EVIL Cable Rat",
+        "EVIL Conscripter",
+        "EVIL Miscreant",
+        "Plot Twist",
+        "Sinister Deal",
+        "EVIL Totem",
+        "Livewire Lance",
+        "EVIL Quartermaster",
+        "Shiv"
+      ]) or
+      min_count?(ci, 18, [
+        "Body Bagger",
+        "Rolling Stone",
+        "Mosh Pit",
+        "Halveria Darkraven",
+        "Rush the Stage",
+        "Climactic Necrotic Explosion",
+        "Coordinated Strike",
+        "Feast of Souls",
+        "Crimson Sigil Runner",
+        "Possessifier",
+        "Defrost",
+        "Chillfallen Baron",
+        "Corpse Bride",
+        "Bonedigger Geist",
+        "Wrathscale Naga",
+        "Snakebite",
+        "SECURITY!!",
+        "Tour Guide"
+      ]) or
+      min_count?(ci, 17, [
+        "Wrath",
+        "Kodohide Drumkit",
+        "Zok Fogsnout",
+        "Kiri, Chosen of Elune",
+        "Shield Slam",
+        "Shield Block",
+        "Razorfen Rockstar",
+        "Verse Riff",
+        "Chorus Riff",
+        "Bridge Riff",
+        "Peaceful Piper",
+        "Harmonic Mood",
+        "Free Spirit",
+        "Spread the Word",
+        "Groovy Cat",
+        "Woodcutter's Axe",
+        "Tour Guide"
+      ]) or
+      min_count?(ci, 16, [
+        "Overlord Runthak",
+        "Deathbringer Saurfang",
+        "Righteous Protector",
+        "Annoy-o-Tron",
+        "Nerubian Swarmguard",
+        "Chillfallen Baron",
+        "Vicious Bloodworm",
+        "Blood Tap",
+        "Darkfallen Neophyte",
+        "Malignant Horror",
+        "Disco Maul",
+        "Jitterbug",
+        "Funkfin",
+        "Harmonic Metal",
+        "Party Animal",
+        "Grimestreet Outfitter"
+      ]) or
+      min_count?(ci, 16, [
+        "Quick Shot",
+        "Bounce Around (ft. Garona)",
+        "Backstab",
+        "Deadly Poison",
+        "Tracking",
+        "Shadowstep",
+        "Preparation",
+        "Gadgetzan Auctioneer",
+        "Harmonica Soloist",
+        "Beatboxer",
+        "Breakdance",
+        "Jungle Jammer",
+        "Arrow Smith",
+        "Bunch of Bananas",
+        "Barrel of Monkeys",
+        "Eviscerate"
+      ]) or
+      min_count?(ci, 17, [
+        "Aegwynn, the Guardian",
+        "Bloodmage Thalnos",
+        "Saxophone Soloist",
+        "Fire Sale",
+        "Novice Zapper",
+        "Lightning Bolt",
+        "Lightning Storm",
+        "Shooting Star",
+        "Keyboard Soloist",
+        "Lightshow",
+        "Rewind",
+        "Audio Splitter",
+        "Flowrider",
+        "Volume Up",
+        "Overdraft",
+        "Zap!",
+        "Ancestral Knowledge"
+      ]) or
+      min_count?(ci, 20, [
+        "Shadow Word: Death",
+        "Siphon Soul",
+        "Twisting Nether",
+        "Lord Jaraxxus",
+        "Drain Soul",
+        "Rin, Orchestrator of Doom",
+        "Love Everlasting",
+        "Symphony of Sins",
+        "Photographer Fizzle",
+        "Shard of the Naaru",
+        "Lightbomb",
+        "Thrive in the Shadows",
+        "Holy Nova",
+        "Holy Smite",
+        "Mortal Coil",
+        "Doomsayer",
+        "Opera Soloist",
+        "Idol's Adoration",
+        "Fight Over Me",
+        "Defile"
+      ]) or
+      min_count?(ci, 16, [
+        "Altruis the Outcast",
+        "Metamorphosis",
+        "Umberwing",
+        "Imprisoned Antaen",
+        "Raging Felscreamer",
+        "Shadowhoof Slayer",
+        "Crimson Sigil Runner",
+        "Spectral Sight",
+        "Priestess of Fury",
+        "Satyr Overseer",
+        "Furious Felfin",
+        "Skull of Gul'dan",
+        "Twin Slice",
+        "Eye Beam",
+        "Aldrachi Warblades",
+        "Battlefiend"
+      ]) or
+      min_count?(ci, 17, [
+        "Shudderwock",
+        "Barista Lynchen",
+        "Kronx Dragonhoof",
+        "Galakrond, the Tempest",
+        "Mana Tide Totem",
+        "Far Sight",
+        "Lifedrinker",
+        "Mutate",
+        "Sludge Slurper",
+        "EVIL Totem",
+        "Dragon's Pack",
+        "Corrupt Elementalist",
+        "Shield of Galakrond",
+        "Devoted Maniac",
+        "Invocation of Frost",
+        "Faceless Corruptor",
+        "Mogu Fleshshaper"
+      ]) or
+      min_count?(ci, 17, [
+        "Dr. Boom, Mad Genius",
+        "Zilliax",
+        "Augmented Elekk",
+        "Blastmaster Boom",
+        "Brawl",
+        "Shield Slam",
+        "Town Crier",
+        "Warpath",
+        "Militia Commander",
+        "Weapons Project",
+        "Omega Assembly",
+        "Dyn-o-matic",
+        "Eternium Rover",
+        "Clockwork Goblin",
+        "Wrenchcalibur",
+        "Omega Devastator",
+        "Shield Block"
+      ]) or
+      min_count?(ci, 17, [
+        "Spiritsinger Umbra",
+        "Bloodreaver Gul'dan",
+        "Skull of the Man'ari",
+        "Lord Godfrey",
+        "Doomsayer",
+        "Doomguard",
+        "Hellfire",
+        "Mortal Coil",
+        "Stonehill Defender",
+        "Defile",
+        "Kobold Librarian",
+        "Dark Pact",
+        "Lesser Amethyst Spellstone",
+        "Carnivorous Cube",
+        "Voidlord",
+        "Voodoo Doll",
+        "Possessed Lackey"
+      ]) or
+      min_count?(ci, 17, [
+        "Edwin VanCleef",
+        "Moroes",
+        "Patches the Pirate",
+        "The Caverns Below",
+        "Backstab",
+        "Novice Engineer",
+        "Shadowstep",
+        "Youthful Brewmaster",
+        "Stonetusk Boar",
+        "Southsea Deckhand",
+        "Eviscerate",
+        "Violet Teacher",
+        "Preparation",
+        "Swashburglar",
+        "Gadgetzan Ferryman",
+        "Mimic Pod",
+        "Fan of Knives"
+      ])
   end
 end
