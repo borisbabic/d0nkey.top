@@ -9,6 +9,8 @@ defmodule BackendWeb.CardStatsLive do
   data(criteria, :map)
   data(filters, :map)
   data(deck, :map)
+  data(card_stats, :list)
+  data(games, :number)
   data(params, :map)
   data(highlight_cards, :list)
   data(title, :string)
@@ -24,10 +26,11 @@ defmodule BackendWeb.CardStatsLive do
           <span :if={@deck}><a href={~p"/deck/#{@deck.id}"}> Deck Stats</a> | </span>
           <span :if={deck_id = highlight_deck_id(@params)}><a href={~p"/card-stats?#{create_deck_filters(@params, deck_id)}"}>Deck Card Stats</a> | </span>
           <span :if={archetype = Deck.archetype(@deck)}><a href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"}>Archetype Card Stats</a> | </span>
-           <a href={~p"/stats/explanation"}>Stats Explanation</a> | To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>
+          <a href={~p"/stats/explanation"}>Stats Explanation</a> | To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>
+          <span :if={@games}> | Games: {@games}</span>
         </div>
       <FunctionComponents.Ads.below_title/>
-        <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={stats(@criteria) || []} criteria={@criteria} live_view={__MODULE__}/>
+        <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={@card_stats} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
   end
@@ -53,8 +56,12 @@ defmodule BackendWeb.CardStatsLive do
   end
 
   defp stats(filters) do
-    with [%{card_stats: card_stats}] <- Hearthstone.DeckTracker.agg_deck_card_stats(filters) do
-      card_stats
+    case Hearthstone.DeckTracker.agg_deck_card_stats(filters) do
+      [%{card_stats: card_stats} = stats] ->
+        {card_stats, Map.get(stats, :total, nil)}
+
+      _ ->
+        {[], 0}
     end
   end
 
@@ -68,11 +75,14 @@ defmodule BackendWeb.CardStatsLive do
       |> add_deck_id(params)
 
     filters = CardStatsTable.filter_relevant(params) |> CardStatsTable.with_default_filters()
+    {card_stats, total} = stats(criteria)
 
     {:noreply,
      assign(socket,
        filters: filters,
        criteria: criteria,
+       card_stats: card_stats,
+       games: total,
        params: params,
        highlight_cards: highlight_cards
      )
