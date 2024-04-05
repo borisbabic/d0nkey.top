@@ -347,7 +347,7 @@ SELECT
     SUM(TOTAL)::bigint AS TOTAL_SUM,
     SUM(
     CASE
-        WHEN TOTAL >= 400 THEN 1
+        WHEN TOTAL >= 200 THEN 1
         ELSE 0
     END
     )::bigint AS COUNT_200,
@@ -383,7 +383,7 @@ SELECT
     )::bigint AS COUNT_6400,
     SUM(
     CASE
-        WHEN TOTAL >= 6400 THEN 1
+        WHEN TOTAL >= 12800 THEN 1
         ELSE 0
     END
     )::bigint AS COUNT_12800,
