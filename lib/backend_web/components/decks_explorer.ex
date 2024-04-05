@@ -12,13 +12,14 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.FormatDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
+  alias Hearthstone.DeckTracker.AggregationCount
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.ClassStatsModal
 
   # @default_limit 15
   # @max_limit 30
   # @min_min_games 50
-  # @default_min_games 100
+  @default_min_games 200
   # # standard
   # @default_format 2
   # @default_order_by "winrate"
@@ -29,8 +30,12 @@ defmodule Components.DecksExplorer do
   prop(default_rank, :string, default: nil)
   prop(default_period, :string, default: nil)
   prop(filter_context, :atom, default: :public)
-  prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200])
-  prop(default_min_games, :integer, default: 200)
+
+  prop(min_games_options, :list,
+    default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12_800]
+  )
+
+  prop(default_min_games, :integer, default: nil)
   prop(min_games_floor, :integer, default: 50)
   prop(limit_cap, :integer, default: 200)
   prop(default_limit, :integer, default: 15)
@@ -95,7 +100,7 @@ defmodule Components.DecksExplorer do
           options={min_games_options(@min_games_options, @min_games_floor)}
           title={"Min Games"}
           param={"min_games"}
-          selected_as_title={false}
+          selected_as_title={true}
           normalizer={&to_string/1} />
 
         <LivePatchDropdown
@@ -134,10 +139,12 @@ defmodule Components.DecksExplorer do
 
   defp parse_params(raw_params, assigns) do
     regions =
-      with %{filter_context: :public} <- assigns do
-        Hearthstone.DeckTracker.get_auto_aggregate_regions()
-      else
-        _ -> []
+      case assigns do
+        %{filter_context: :public} ->
+          Hearthstone.DeckTracker.get_auto_aggregate_regions()
+
+        _ ->
+          []
       end
 
     defaults = [
@@ -158,10 +165,27 @@ defmodule Components.DecksExplorer do
       |> filter_relevant()
       |> apply_defaults(defaults)
       |> cap_param("limit", assigns.limit_cap)
+      |> ensure_min_games()
       |> floor_param("min_games", assigns.min_games_floor)
 
     search_filters = Map.merge(assigns.additional_params, params)
     {params, search_filters}
+  end
+
+  defp ensure_min_games(%{"min_games" => min} = params) when is_integer(min), do: params
+
+  defp ensure_min_games(%{"opponent_class" => oc} = params) when oc != "any" do
+    Map.put(params, "min_games", @default_min_games)
+  end
+
+  defp ensure_min_games(params) do
+    min =
+      case DeckTracker.current_aggregation_count(params) do
+        {:ok, count} -> AggregationCount.choose_count(count, 50, @default_min_games)
+        _ -> @default_min_games
+      end
+
+    Map.put(params, "min_games", min)
   end
 
   defp class_stats_filters(filters),
@@ -187,7 +211,13 @@ defmodule Components.DecksExplorer do
       | Enum.map(Blizzard.regions(), &{to_string(&1), Blizzard.get_region_name(&1, :long)})
     ]
 
-  def min_games_options(options, min), do: options |> Enum.sort() |> Enum.drop_while(&(&1 < min))
+  def min_games_options(options, min) do
+    options
+    |> Enum.sort()
+    |> Enum.drop_while(&(&1 < min))
+    |> Enum.map(&{&1, "Min #{&1}"})
+  end
+
   def order_by_options(), do: [{"winrate", "Winrate %"}, {"total", "Total Games"}]
 
   def filter_relevant(params) do

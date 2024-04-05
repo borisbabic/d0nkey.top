@@ -18,4 +18,21 @@ defmodule Hearthstone.DeckTracker.AggregationCount do
     field :count_12800, :integer
     timestamps(updated_at: false)
   end
+
+  @supported_options [12_800, 6400, 3200, 1600, 800, 400, 200]
+
+  def choose_count(%__MODULE__{} = ac, min_count, fallback \\ 200, options \\ @supported_options) do
+    Enum.find(@supported_options, fallback, fn c ->
+      c in options
+      count(ac, c) >= min_count
+    end)
+  end
+
+  @doc "Returns 0 if sample is not supported"
+  def count(%__MODULE__{} = ac, sample) when sample in @supported_options do
+    key = String.to_atom("count_#{sample}")
+    Map.get(ac, key, 0)
+  end
+
+  def count(_, _), do: 0
 end
