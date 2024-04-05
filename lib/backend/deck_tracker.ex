@@ -6,6 +6,7 @@ defmodule Hearthstone.DeckTracker do
 
   alias Backend.Repo
   alias Hearthstone.DeckTracker.AggregatedStats
+  alias Hearthstone.DeckTracker.AggregationCount
   alias Hearthstone.DeckTracker.AggregationLog
   alias Hearthstone.DeckTracker.CardGameTally
   # alias Hearthstone.DeckTracker.DeckStats
@@ -177,7 +178,10 @@ defmodule Hearthstone.DeckTracker do
 
   def get_latest_agg_log_entry() do
     query = from al in AggregationLog, order_by: [desc: :inserted_at], limit: 1
-    Repo.one(query)
+
+    with nil <- Repo.one(query) do
+      AggregationLog.empty()
+    end
   end
 
   @nil_agg_deck_id -1
@@ -218,10 +222,10 @@ defmodule Hearthstone.DeckTracker do
         {:error, "format #{format} not aggregated"}
 
       rank not in ranks ->
-        {:error, "rank #{rank} not aggregaed"}
+        {:error, "rank #{rank} not aggregated"}
 
       period not in periods ->
-        {:error, "period #{period} not aggregaed"}
+        {:error, "period #{period} not aggregated"}
 
       regions && Enum.sort(regions) != Enum.sort(agg_regions) ->
         {:error, "unsupported regions for agg"}
@@ -2005,7 +2009,6 @@ defmodule Hearthstone.DeckTracker do
   #   mull_total = stats.mull_total + acc.mull_total
   #   kept_total = stats.kept_total + acc.kept_total
 
-
   #   %{
   #     card_id: card_id,
   #     drawn_impact:
@@ -2027,21 +2030,29 @@ defmodule Hearthstone.DeckTracker do
     mull_total = stats["mull_total"] + acc["mull_total"]
     kept_total = stats["kept_total"] + acc["kept_total"]
 
-    drawn_impact = if drawn_total > 0 do
-        (stats["drawn_total"] * stats["drawn_impact"] + acc["drawn_total"] * acc["drawn_impact"]) / drawn_total
-    else
-      0
-    end
-    mull_impact = if mull_total > 0 do
-        (stats["mull_total"] * stats["mull_impact"] + acc["mull_total"] * acc["mull_impact"]) / mull_total
-    else
-      0
-    end
-    kept_impact = if kept_total > 0 do
-        (stats["kept_total"] * stats["kept_impact"] + acc["kept_total"] * acc["kept_impact"]) / kept_total
-    else
-      0
-    end
+    drawn_impact =
+      if drawn_total > 0 do
+        (stats["drawn_total"] * stats["drawn_impact"] + acc["drawn_total"] * acc["drawn_impact"]) /
+          drawn_total
+      else
+        0
+      end
+
+    mull_impact =
+      if mull_total > 0 do
+        (stats["mull_total"] * stats["mull_impact"] + acc["mull_total"] * acc["mull_impact"]) /
+          mull_total
+      else
+        0
+      end
+
+    kept_impact =
+      if kept_total > 0 do
+        (stats["kept_total"] * stats["kept_impact"] + acc["kept_total"] * acc["kept_impact"]) /
+          kept_total
+      else
+        0
+      end
 
     %{
       "card_id" => card_id,
@@ -2053,4 +2064,51 @@ defmodule Hearthstone.DeckTracker do
       "kept_total" => kept_total
     }
   end
+
+  @spec current_aggregation_count(Enum.t()) ::
+          {:ok, AggregationCount.t()} | {:error, reason :: atom()}
+  def current_aggregation_count(base_criteria) do
+    criteria = [{:limit, 1} | Enum.to_list(base_criteria)]
+
+    case aggregation_count(criteria) do
+      [count] -> {:ok, count}
+      [] -> {:error, :no_aggregation_count_found}
+      _ -> {:error, :unknown_error_for_agg_count}
+    end
+  end
+
+  @spec current_aggregation_count(Enum.t()) :: [AggregationCount.t()]
+  def aggregation_count(criteria) do
+    try do
+      base_agg_count_query()
+      |> build_agg_count_query(criteria)
+      |> Repo.all()
+    catch
+      :error, %Postgrex.Error{postgres: %{code: :undefined_table}} -> []
+    end
+  end
+
+  defp base_agg_count_query(), do: from(ac in AggregationCount, as: :agg_count)
+
+  defp build_agg_count_query(query, criteria) do
+    Enum.reduce(criteria, query, &compose_agg_count_query/2)
+  end
+
+  defp compose_agg_count_query({"period", period}, query) do
+    query |> where([agg_count: ac], ac.period == ^period)
+  end
+
+  defp compose_agg_count_query({"rank", rank}, query) do
+    query |> where([agg_count: ac], ac.rank == ^rank)
+  end
+
+  defp compose_agg_count_query({"format", format}, query) do
+    query |> where([agg_count: ac], ac.format == ^format)
+  end
+
+  defp compose_agg_count_query({lim, limit}, query) when lim in ["limit", :limit] do
+    query |> limit(^limit)
+  end
+
+  defp compose_agg_count_query(_, query), do: query
 end

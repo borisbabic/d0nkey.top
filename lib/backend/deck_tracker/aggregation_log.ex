@@ -10,4 +10,13 @@ defmodule Hearthstone.DeckTracker.AggregationLog do
     field :regions, {:array, :string}, default: []
     timestamps(updated_at: false)
   end
+
+  def empty() do
+    %__MODULE__{
+      formats: [],
+      ranks: [],
+      periods: [],
+      regions: []
+    }
+  end
 end
