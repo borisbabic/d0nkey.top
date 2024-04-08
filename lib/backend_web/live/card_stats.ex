@@ -30,7 +30,7 @@ defmodule BackendWeb.CardStatsLive do
           <span :if={@games}> | Games: {@games}</span>
         </div>
       <FunctionComponents.Ads.below_title/>
-        <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={@card_stats} criteria={@criteria} live_view={__MODULE__}/>
+        <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={@card_stats || []} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
   end
@@ -57,7 +57,7 @@ defmodule BackendWeb.CardStatsLive do
 
   defp stats(filters) do
     case Hearthstone.DeckTracker.agg_deck_card_stats(filters) do
-      [%{card_stats: card_stats} = stats] ->
+      [%{card_stats: card_stats} = stats] when is_list(card_stats) ->
         {card_stats, Map.get(stats, :total, nil)}
 
       _ ->
