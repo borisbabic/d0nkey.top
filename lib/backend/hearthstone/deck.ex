@@ -75,7 +75,8 @@ defmodule Backend.Hearthstone.Deck do
 
   def card_mana_cost(%{sideboards: [_ | _] = sideboards}, card) do
     if Card.zilliax_3000?(card) do
-      Enum.filter(sideboards, &(&1.sideboard == Card.zilliax_3000()))
+      sideboards
+      |> zilliax_modules_sideboards()
       |> Enum.map(fn %{card: card_id, count: count} ->
         case Hearthstone.get_card(card_id) do
           nil -> 0
@@ -89,6 +90,22 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   def card_mana_cost(_, card), do: Card.cost(card)
+
+  @spec zilliax_modules_sideboards(t() | [Sideboard.t()]) :: [integer()]
+  def zilliax_modules_sideboards(%{sideboards: sideboards}),
+    do: zilliax_modules_sideboards(sideboards)
+
+  def zilliax_modules_sideboards(sideboards) do
+    Enum.filter(sideboards, &(&1.sideboard == Card.zilliax_3000()))
+  end
+
+  @spec zilliax_modules_cards(t() | [Sideboard.t()]) :: [Card.t()]
+  def zilliax_modules_cards(sideboards_or_deck) do
+    for %{card: card_id} <- zilliax_modules_sideboards(sideboards_or_deck),
+        card = Hearthstone.get_card(card_id) do
+      card
+    end
+  end
 
   @spec deckcode(t()) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f, sideboards: s}), do: deckcode(c, h, f, s)

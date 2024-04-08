@@ -18,8 +18,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
-  def archetype(%{cards: cards} = deck) do
-    card_info = full_cards(cards)
+  def archetype(%{cards: _cards} = deck) do
+    card_info = full_cards(deck)
 
     if splendiferous_whizbang?(card_info) do
       :"Splendiferous Whizbang"
@@ -181,6 +181,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       spell_dh?(card_info) ->
         :"Spell Demon Hunter"
+
+      naga_dh?(card_info) and shopper_dh?(card_info) ->
+        :"Naga Shopper DH"
 
       naga_dh?(card_info) ->
         :"Naga Demon Hunter"
@@ -544,6 +547,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       boar?(card_info) ->
         :"Boar Mage"
 
+      "The Galactic Projection Orb" in card_info.card_names ->
+        :"Orb Mage"
+
       true ->
         fallbacks(card_info, "Mage")
     end
@@ -862,9 +868,17 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       coc_rogue?(card_info) ->
         :"Coc Rogue"
 
+      virus_rogue?(card_info) ->
+        :"Virus Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp virus_rogue?(ci) do
+    min_count?(ci.zilliax_modules_names, 2, ["Power Module", "Virus Module"]) and
+      min_count?(ci, 3, ["Pit Stop", "Frequency Oscillator", "SP-3Y3-D3R", "From the Scrapheap"])
   end
 
   defp excavate_rogue?(ci) do
@@ -984,7 +998,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       phylactery_warlock?(card_info) ->
         :"Phylactery Warlock"
 
-      snek?(card_info) && neutral_bouncers?(card_info) ->
+      snek?(card_info) ->
         :"Snek Warlock"
 
       implock?(card_info) && abyssal_warlock?(card_info) && chad?(card_info) ->
@@ -1032,7 +1046,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       painlock?(card_info) ->
         :Painlock
 
-      insanity_warlock?(card_info) ->
+      fatigue_warlock?(card_info) ->
         :"Insanity Warlock"
 
       "Wheel of DEATH!!!" in card_info.card_names ->
@@ -1087,8 +1101,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
-  defp insanity_warlock?(ci) do
-    min_count?(ci, 2, ["Lady Darkvein", "Encroaching Insanity"])
+  @self_fatigue_package ["Crescendo", "Baritone Imp", "Crazed Conductor"]
+  defp fatigue_warlock?(ci) do
+    min_count?(ci, 2, ["Pop'gar the Putrid", "Encroaching Insanity"]) and
+      min_count?(ci, 3, @self_fatigue_package)
   end
 
   defp control_warlock?(ci) do
@@ -1263,11 +1279,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp snek?(ci) do
-    min_count?(ci, 4, [
+    excavates = [
       "Smokestack",
       "Mo'arg Drillfist",
       "Tram Conductor Gerry" | @neutral_excavate
-    ])
+    ]
+
+    min_count?(ci, 4, excavates) or
+      (min_count?(ci, 2, excavates) and neutral_bouncers?(ci))
   end
 
   defp weapon_rogue?(card_info) do
@@ -1982,8 +2001,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Gorloc Ravager"
       ])
 
-  defp min_count?(%{card_names: cn}, min, cards) do
-    min <= cards |> Enum.filter(&(&1 in cn)) |> Enum.count()
+  defp min_count?(%{card_names: card_names}, min, cards) do
+    min_count?(card_names, min, cards)
+  end
+
+  defp min_count?(card_names, min, cards) do
+    min <= cards |> Enum.filter(&(&1 in card_names)) |> Enum.count()
   end
 
   defp min_keyword_count?(%{full_cards: full_cards}, min, keyword_slug) do
@@ -2078,8 +2101,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     min <= secret_count
   end
 
-  @spec full_cards([integer()]) :: card_info()
-  defp full_cards(cards) do
+  @spec full_cards(Deck.t()) :: card_info()
+  defp full_cards(%{cards: cards} = deck) do
     {full_cards, card_names} =
       Enum.map(cards, fn c ->
         with card = %{name: name} <- Backend.Hearthstone.get_card(c) do
@@ -2089,7 +2112,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       |> Enum.filter(& &1)
       |> Enum.unzip()
 
-    %{full_cards: full_cards, card_names: card_names, cards: cards}
+    zilliax_modules_names =
+      Map.get(deck, :sideboards, []) |> Deck.zilliax_modules_cards() |> Enum.map(& &1.name)
+
+    %{
+      full_cards: full_cards,
+      card_names: card_names,
+      cards: cards,
+      zilliax_modules_names: zilliax_modules_names
+    }
   end
 
   @spec minion_type_counts(card_info()) :: [{String.t(), integer()}]
