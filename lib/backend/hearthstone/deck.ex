@@ -677,8 +677,16 @@ defmodule Backend.Hearthstone.Deck do
 
   def equal(_), do: false
 
-  def deckcode_regex() do
+  @spec deckcode_regex() :: Regex.t()
+  def deckcode_regex(modifies \\ nil)
+
+  def deckcode_regex(nil) do
     ~r/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{15,})(?:[=]){0,5}?$/
+  end
+
+  def deckcode_regex(modifiers) do
+    deckcode_regex(nil).source
+    |> Regex.compile!(modifiers)
   end
 
   def classes() do
