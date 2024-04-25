@@ -1360,7 +1360,7 @@ defmodule Backend.Leaderboards do
     do $$
       declare arrow record;
       begin
-        for arrow in (SELECT id FROM public.leaderboards_seasons WHERE (leaderboard_id = 'arena' AND season_id < #{curr_arena}) OR (leaderboard_id = 'MRC' AND season_id < #{curr_mercs}) OR (leaderboard_id in ('CLS', 'WLD', 'STD') AND season_id < #{curr_constructed}) OR (leaderboard_id = 'BG' AND season_id < #{curr_bgs})) loop
+        for arrow in (SELECT id FROM public.leaderboards_seasons WHERE (leaderboard_id = 'arena' AND season_id < #{curr_arena}) OR (leaderboard_id = 'MRC' AND season_id < #{curr_mercs}) OR (leaderboard_id in ('CLS', 'WLD', 'STD') AND season_id < #{curr_constructed}) OR (leaderboard_id = 'BG' AND season_id < #{curr_bgs}) OR (leaderboard_id = 'DUO' and seson_id < #{curr_bgs})) loop
           DELETE FROM public.leaderboards_entry WHERE season_id = arrow.id AND id NOT IN (SELECT le.id FROM public.leaderboards_entry le INNER JOIN (SELECT i.rank as r, MAX(i.inserted_at) as ia FROM public.leaderboards_entry i WHERE i.season_id = arrow.id GROUP BY i.rank) AS inn ON inn.r = rank AND inn.ia = inserted_at WHERE season_id = arrow.id);
         end loop;
       end; $$

@@ -12,6 +12,7 @@ defmodule Hearthstone.Leaderboards.Api do
     "WLD" => "wild",
     "CLS" => "classic",
     "MRC" => "mercenaries",
+    "DUO" => "battlegroundsduo",
     "BG" => "battlegrounds"
   }
 
