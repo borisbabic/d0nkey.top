@@ -948,11 +948,20 @@ defmodule BackendWeb.LeaderboardView do
     [{:April, 6}, {:March, 5}, {:February, 4}, {:January, 3}, {:December, 2}, {:November, 1}]
   """
   @spec create_selectable_seasons(Calendar.date(), String.t() | atom()) :: [selectable_season]
-  def create_selectable_seasons(_today, ldb) when ldb in [:BG, "BG"] do
+  def create_selectable_seasons(_today, ldb) when ldb in [:arena, "arena"] do
+    Blizzard.get_current_ladder_season(:arena)..0
+    |> Enum.take(7)
+    |> Enum.map(fn s ->
+      name = Blizzard.get_season_name(s, :arena)
+      {name, s}
+    end)
+  end
+
+  def create_selectable_seasons(_today, ldb) when ldb in [:BG, "BG", :DUO, "DUO"] do
     Blizzard.get_current_ladder_season(:BG)..0
     |> Enum.take(7)
     |> Enum.map(fn s ->
-      name = Blizzard.get_season_name(s, :BG)
+      name = Blizzard.get_season_name(s, ldb)
       {name, s}
     end)
   end

@@ -49,8 +49,8 @@ defmodule Backend.Blizzard do
   @type region :: :EU | :US | :AP | :CN
   @regions [:EU, :US, :AP, :CN]
   @qualifier_regions [:EU, :US, :AP]
-  @type leaderboard :: :BG | :STD | :WLD | :CLS | :MRC | :arena | :twist
-  @leaderboards [:BG, :STD, :WLD, :CLS, :MRC, :arena, :twist]
+  @type leaderboard :: :BG | :STD | :WLD | :CLS | :MRC | :arena | :twist | :DUO
+  @leaderboards [:BG, :DUO, :STD, :WLD, :CLS, :MRC, :arena, :twist]
   # @type battletag :: <<_::binary, "#", _::binary>>
   @type battletag :: String.t()
   @type deckstring :: String.t()
@@ -529,6 +529,7 @@ defmodule Backend.Blizzard do
       :MRC -> "Mercenaries"
       :twist -> "Twist"
       :arena -> "Arena"
+      :DUO -> "Battlegrounds Duos"
     end
   end
 
@@ -542,6 +543,7 @@ defmodule Backend.Blizzard do
       :MRC -> "MRC"
       :arena -> "arena"
       :twist -> "twist"
+      :DUO -> "Duos"
     end
   end
 
@@ -559,13 +561,13 @@ defmodule Backend.Blizzard do
   @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: String.t()
   def get_leaderboard_name(region, leaderboard, season_id, length \\ :long)
 
-  def get_leaderboard_name(region, ldb, season_id, length) when ldb in [:arena, :BG] do
+  def get_leaderboard_name(region, ldb, season_id, length) when ldb in [:arena, :BG, :DUO] do
     r = get_region_name(region, length)
     leaderboard = get_leaderboard_name(ldb, length)
     "#{leaderboard} #{r} #{get_season_name(season_id, ldb)}"
   end
 
-  for ldb <- [:BG, :MRC, :arena] do
+  for ldb <- [:BG, :MRC, :arena, :DUO] do
     def get_leaderboard_name(region, unquote(to_string(ldb)), season_id, length),
       do: get_leaderboard_name(region, unquote(ldb), season_id, length)
   end
@@ -591,8 +593,9 @@ defmodule Backend.Blizzard do
     |> Enum.map(& &1.id)
   end
 
+  def get_season_name(season, "DUO"), do: get_season_name(season, :DUO)
   def get_season_name(season, "BG"), do: get_season_name(season, :BG)
-  def get_season_name(season, :BG), do: "Season #{season + 1}"
+  def get_season_name(season, ldb) when ldb in [:BG, :DUO], do: "Season #{season + 1}"
   def get_season_name(season, ldb) when ldb in [:arena, "arena"], do: "Season #{season}"
 
   def get_ineligible_players() do
@@ -749,6 +752,9 @@ defmodule Backend.Blizzard do
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
 
   def get_current_ladder_season(ldb) when ldb in [:arena, "arena"], do: @current_arena_season_id
-  def get_current_ladder_season(ldb) when ldb in [:BG, "BG"], do: @current_bg_season_id
+
+  def get_current_ladder_season(ldb) when ldb in [:BG, "BG", :DUO, "DUO"],
+    do: @current_bg_season_id
+
   def get_current_ladder_season(ldb), do: get_season_id(Date.utc_today(), ldb)
 end

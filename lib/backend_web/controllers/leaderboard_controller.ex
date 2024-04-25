@@ -395,7 +395,7 @@ defmodule BackendWeb.LeaderboardController do
 
   defp add_min_rating_criteria(criteria) do
     with {"leaderboard_id", ids} <- List.keyfind(criteria, "leaderboard_id", 0),
-         true <- "BG" in ids or "BG_LL" in ids do
+         true <- "BG" in ids or "BG_LL" in ids or "DUO" in ids do
       [{"conditional_min_rating", 8000} | criteria]
     else
       _ -> criteria
