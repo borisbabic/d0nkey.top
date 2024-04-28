@@ -2543,6 +2543,154 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Gadgetzan Ferryman",
         "Mimic Pod",
         "Fan of Knives"
+      ]) or
+      min_count?(ci, 15, [
+        "Ci'Cigi",
+        "Ball Hog",
+        "Magtheridon, Unreleased",
+        "Illidari Inquisitor",
+        "Chaos Nova",
+        "Aldrachi Warblades",
+        "Chaos Strike",
+        "Raging Felscreamer",
+        "Eye Beam",
+        "Illidari Studies",
+        "Spirit of the Team",
+        "Workshop Mishap",
+        "Umpire's Grasp",
+        "Red Card",
+        "Window Shopper"
+      ]) or
+      min_count?(ci, 10, [
+        "Kun the Forgotten King",
+        "Yogg-Saron, Master of Fate",
+        "Convoke the Spirits",
+        "Ultimate Infestation",
+        "Eonar, the Life-Binder",
+        "Overgrowth",
+        "Wild Growth",
+        "Nourish",
+        "Crystal Cluster",
+        "Invigorate"
+      ]) or
+      min_count?(ci, 14, [
+        "Psychic Conjurer",
+        "Shadow Word: Death",
+        "Zola the Gorgon",
+        "Love Everlasting",
+        "Pip the Potent",
+        "Crimson Clergy",
+        "Thrive in the Shadows",
+        "Holy Nova",
+        "Holy Smite",
+        "Lightbomb",
+        "Astral Automaton",
+        "Fan Club",
+        "Celestial Projectionist",
+        "Shadow Word: Pain"
+      ]) or
+      min_count?(ci, 14, [
+        "Patches the Pirate",
+        "Pirate Admiral Hooktusk",
+        "Sonya Waterdancer",
+        "Deadly Poison",
+        "Shadowstep",
+        "Swashburglar",
+        "Filletfighter",
+        "Hench-Clan Burglar",
+        "Breakdance",
+        "Kaja'mite Creation",
+        "Quick Pick",
+        "Dig for Treasure",
+        "Sandbox Scoundrel",
+        "Watercannon"
+      ]) or
+      min_count?(ci, 15, [
+        "Scargil",
+        "Finders Keepers",
+        "Primalfin Lookout",
+        "Underbelly Angler",
+        "Sludge Slurper",
+        "Fishflinger",
+        "Serpentshrine Portal",
+        "South Coast Chieftain",
+        "Spawnpool Forager",
+        "Gorloc Ravager",
+        "Clownfish",
+        "Command of Neptulon",
+        "Brrrloc",
+        "Turn the Tides",
+        "Ancestral Knowledge"
+      ]) or
+      min_count?(ci, 13, [
+        "Chef Nomi",
+        "Archivist Elysiana",
+        "Blood Shard Bristleback",
+        "Neeru Fireblade",
+        "Rin, Orchestrator of Doom",
+        "Fanottem, Lord of the Opera",
+        "Barrens Scavenger",
+        "Waste Remover",
+        "Fracking",
+        "Tar Slime",
+        "Scarab Keychain",
+        "Chaos Creation",
+        "Furnace Fuel"
+      ]) or
+      min_count?(ci, 15, [
+        "Emperor Thaurissan",
+        "Zixor, Apex Predator",
+        "Astromancer Solarian",
+        "Beastmaster Leoroxx",
+        "Reliquary of Souls",
+        "Serena Bloodfeather",
+        "King Krush",
+        "Blademaster Okani",
+        "Lor'themar Theron",
+        "Mister Mukla",
+        "Zilliax",
+        "Infinitize the Maxitude",
+        "Velarok Windblade",
+        "Flint Firearm",
+        "King Plush"
+      ]) or
+      min_count?(ci, 19, [
+        "Dr. Boom, Mad Genius",
+        "Togwaggle's Scheme",
+        "Heistbaron Togwaggle",
+        "Swampqueen Hagatha",
+        "Dark Pharaoh Tekahn",
+        "Grand Lackey Erkh",
+        "Madame Lazul",
+        "Arch-Villain Rafaam",
+        "Hagatha's Scheme",
+        "EVIL Cable Rat",
+        "EVIL Conscripter",
+        "EVIL Miscreant",
+        "Sinister Deal",
+        "EVIL Recruiter",
+        "Weaponized Wasp",
+        "EVIL Totem",
+        "Livewire Lance",
+        "Whispers of EVIL",
+        "EVIL Quartermaster"
+      ]) or
+      min_count?(ci, 15, [
+        "Hallucination",
+        "Multicaster",
+        "Thrive in the Shadows",
+        "Wild Growth",
+        "Consecration",
+        "Chaos Strike",
+        "Coral Keeper",
+        "Hellfire",
+        "Bash",
+        "Remorseless Winter",
+        "Hipster",
+        "Elemental Inspiration",
+        "Patchwork Pals",
+        "Clearance Promoter",
+        "Primordial Glyph"
       ])
   end
 end
