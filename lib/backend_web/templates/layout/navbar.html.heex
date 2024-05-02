@@ -82,6 +82,7 @@
           <.navbar_item_link link={~p"/meta"} display={"Meta Tier List (WIP)"} />
           <.navbar_item_link link={~p"/fantasy"} display={"Fantasy"} />
           <.navbar_item_link link={~p"/discord-bot"} display={"Discord Bot"} />
+          <.navbar_item_link link={~p"/hdt-plugin"} display={"HDT Plugin"} />
           <.navbar_item_link link={~p"/about"} display={"About"} />
         </.navbar_dropdown>
         <.live_battlefy 
@@ -106,7 +107,12 @@
      </div>
 
      <div class="navbar-end">
-        <a class="navbar-item" aria-lebal="menu-item" href="/hdt-plugin">HDT Plugin </a>
+      <div :if={show_ads?(@conn)} class="navbar-item" aria-label="menu-item">
+        <span class="is-hidden-mobile">
+          Remove ads by supporting
+        </span>
+        <Components.Socials.patreon link={~p"/patreon"} />
+      </div>
      </div>
    </div>
  </nav>
