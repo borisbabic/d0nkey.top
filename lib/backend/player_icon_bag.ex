@@ -5,7 +5,7 @@ defmodule Backend.PlayerIconBag do
   use GenServer
   @name :player_icon_cache
   @picture_icons [
-    {"D0nkey#2470", {:image, "/favicon.ico"}},
+    {"D0nkey#2470", {:image, "/favicon.ico", "https://www.twitch.tv/d0nkeyhs"}},
     # {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}},
     # donation, remove in summer 2022? maybe?
     {"Faeli#2572", {:image, "/images/icons/faeli.png"}},

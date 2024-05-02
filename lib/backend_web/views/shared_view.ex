@@ -44,9 +44,31 @@ defmodule BackendWeb.SharedView do
           <span class="icon small"><%= icon %></span>
         """
 
+      {:unicode, icon, link} ->
+        ~E"""
+          <span class="icon small">
+            <object>
+              <a href="<%= link %>" target="_blank">
+                <%= icon %>
+              </a>
+            </object>
+          </span>
+        """
+
       {:image, path} ->
         ~E"""
           <span class="icon small"><img src="<%= path %>" alt="<%= name %>"></span>
+        """
+
+      {:image, path, link} ->
+        ~E"""
+          <span class="icon small">
+            <object>
+              <a href="<%= link %>" target="_blank">
+                <img src="<%= path %>" alt="<%= name %>">
+              </a>
+            </object>
+          </span>
         """
 
       _ ->
