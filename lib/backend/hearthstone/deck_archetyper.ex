@@ -2211,37 +2211,18 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Stranglethorn Heart",
         "Flint Firearm",
         "King Plush"
-      ]) or min_count?(ci, 1, ["Morphing Card"]) or
-      min_count?(ci, 30, [
-        "Solemn Vigil",
+      ]) or
+      min_count?(ci, 1, ["Morphing Card"]) or
+      min_count?(ci, 10, [
         "Reno Jackson",
         "Brann Bronzebeard",
         "Elise Starseeker",
-        "Selfless Hero",
-        "Ragnaros, Lightlord",
-        "Righteous Protector",
-        "Potion of Heroism",
-        "Crystalsmith Kangor",
-        "Flash of Light",
         "Sir Finley of the Sands",
         "Elise the Enlightened",
         "Reno the Relicologist",
         "Dinotamer Brann",
-        "Beaming Sidekick",
-        "Azure Explorer",
-        "Emerald Explorer",
-        "Bronze Explorer",
-        "Primordial Explorer",
         "Dragonqueen Alexstrasza",
         "The Amazing Reno",
-        "Hand of A'dal",
-        "Consecration",
-        "Truesilver Champion",
-        "Argent Protector",
-        "Tirion Fordring",
-        "Equality",
-        "Aldor Peacekeeper",
-        "Protect the Innocent",
         "Sir Finley, Sea Guide"
       ]) or
       min_count?(ci, 15, [
