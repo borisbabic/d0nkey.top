@@ -271,6 +271,8 @@ defmodule Util do
   iex> Util.to_int("-1.45", 45)
   -1
   """
+  def to_int(%Decimal{} = dec, _), do: Decimal.to_integer(dec)
+
   def to_int(<<int_or_not::binary>>, fallback) do
     case Integer.parse(int_or_not) do
       {int, _rem} -> int
@@ -329,6 +331,9 @@ defmodule Util do
   iex> Util.percent(20,50)
   40.0
   """
+  @spec percent(number() | Decimal.t(), number() | Decimal.t()) :: float()
+  def percent(%Decimal{} = num, total), do: Decimal.to_float(num) |> percent(total)
+  def percent(num, %Decimal{} = total), do: percent(num, Decimal.to_float(total))
   def percent(_, 0), do: 0.0
   def percent(num, total), do: 100 * num / total
 

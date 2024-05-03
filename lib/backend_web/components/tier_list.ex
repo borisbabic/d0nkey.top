@@ -55,8 +55,8 @@ defmodule Components.TierList do
             <th>Winrate</th>
             <th>Games</th>
           </thead>
-          <tbody>
-            <tr :for={as <- stats(@data, @criteria)}>
+          <tbody :if={{stats, total} = stats(@data, @criteria)}>
+            <tr :for={as <- stats}>
               <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
                 <a class="basic-black-text deck-title" href={~p"/card-stats?#{card_stats_params(@params, as.archetype)}"}>
                   {as.archetype}
@@ -65,19 +65,46 @@ defmodule Components.TierList do
               <td>
                 <WinrateTag winrate={as.winrate}/>
               </td>
-              <td>{as.total}</td>
+              <td>{as.total} ({percentage(as.total, total)}%)</td>
             </tr>
           </tbody>
         </table>
-        
+
       </div>
     """
+  end
+
+  @default_min_games 1000
+
+  def percentage(num, total) do
+    Util.percent(num, total)
+    |> Float.round(1)
   end
 
   def stats([_ | _] = stats, _criteria), do: stats
   def stats(_, criteria), do: stats(criteria)
 
-  def stats(criteria), do: criteria |> with_defaults() |> DeckTracker.archetype_agg_stats()
+  def stats(criteria) do
+    {min_games, crit} = criteria |> with_defaults() |> Map.pop("min_games")
+    stats_all = crit |> DeckTracker.archetype_agg_stats()
+
+    total =
+      Enum.reduce(stats_all, 0, fn %{total: t}, sum ->
+        sum + Util.to_int_or_orig(t)
+      end)
+
+    stats =
+      Enum.filter(stats_all, fn %{total: t} ->
+        Util.to_int_or_orig(t) >= min_games
+      end)
+
+    {stats, total}
+  end
+
+  def apply_min(stats, criteria) do
+    min_games = Map.get(criteria, "min_games", @default_min_games)
+    Enum.filter(stats, &(&1.total >= min_games))
+  end
 
   def with_defaults(criteria), do: Map.put_new(criteria, "order_by", "winrate")
 
@@ -91,7 +118,7 @@ defmodule Components.TierList do
       "period" => PeriodDropdown.default(:public),
       "rank" => RankDropdown.default(:public),
       "opponent_class" => "any",
-      "min_games" => 1000,
+      "min_games" => @default_min_games,
       "format" => FormatDropdown.default(:public)
     }
   end
