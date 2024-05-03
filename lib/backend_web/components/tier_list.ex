@@ -9,7 +9,9 @@ defmodule Components.TierList do
   alias Components.Filter.FormatDropdown
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
+  alias Surface.Components.LivePatch
   import Components.DecksExplorer, only: [parse_int: 2, class_options: 2]
+  import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
 
   prop(data, :list, default: [])
   prop(params, :map)
@@ -52,8 +54,12 @@ defmodule Components.TierList do
         <table class="table is-fullwidth is-striped is-narrow">
           <thead>
             <th>Archetype</th>
-            <th>Winrate</th>
-            <th>Games</th>
+            <th><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "winrate"))}>
+            {add_arrow("Winrate", "winrate", @params, true)}
+            </LivePatch></th>
+            <th><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
+            {add_arrow("Games", "total", @params)}
+            </LivePatch></th>
           </thead>
           <tbody :if={{stats, total} = stats(@data, @criteria)}>
             <tr :for={as <- stats}>
@@ -106,7 +112,7 @@ defmodule Components.TierList do
     Enum.filter(stats, &(&1.total >= min_games))
   end
 
-  def with_defaults(criteria), do: Map.put_new(criteria, "order_by", "winrate")
+  def with_defaults(criteria), do: Map.put_new(criteria, "sort_by", "winrate")
 
   def filter_parse_params(filters) do
     filters

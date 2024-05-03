@@ -970,6 +970,9 @@ defmodule Hearthstone.DeckTracker do
     |> filter_rank(rank, :game, :player_rank, :player_legend_rank)
   end
 
+  defp compose_games_query({"sort_by", by}, query),
+    do: compose_games_query({"order_by", by}, query)
+
   defp compose_games_query({"order_by", "latest"}, query = %{group_bys: []}),
     do: query |> order_by([game: g], desc: g.inserted_at)
 
