@@ -44,6 +44,7 @@ defmodule BackendWeb.Live.DeckViewerTest do
     urls = [
       "https://www.yaytears.com/conquest/AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA.AAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D",
       "https://www.d0nkey.top/deckviewer?code=AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA%2CAAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D&compare_decks=false&rotation=false",
+      "https://www.hsguru.com/deckviewer?code=AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA%2CAAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D&compare_decks=false&rotation=false",
       "https://hsdeckviewer.github.io/?deckstring=AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA&deckstring=AAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D",
       "https://hsdeckviewer.com/?deckstring=AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA&deckstring=AAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D"
     ]

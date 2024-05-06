@@ -111,7 +111,7 @@ defmodule BackendWeb.DeckviewerLive do
       |> Enum.filter(fn code -> :ok == code |> Deck.decode() |> elem(0) end)
 
     current_link =
-      "https://www.d0nkey.top" <>
+      "https://www.hsguru.com" <>
         Routes.live_path(socket, __MODULE__, %{"code" => codes |> Enum.join(",")})
 
     compare_decks = params["compare_decks"] == "true"

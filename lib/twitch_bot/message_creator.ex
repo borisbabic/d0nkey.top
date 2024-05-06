@@ -37,7 +37,7 @@ defmodule TwitchBot.MessageCreator do
       user ->
         %{
           "streamer_decks_url" =>
-            "https://www.d0nkey.top/streamer-decks?twitch_id=#{user.twitch_id}"
+            "https://www.hsguru.com/streamer-decks?twitch_id=#{user.twitch_id}"
         }
         |> add_latest_replay(user)
     end
