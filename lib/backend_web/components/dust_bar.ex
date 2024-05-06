@@ -12,7 +12,7 @@ defmodule Components.DustBar do
     ~F"""
       <div class={@class, "basic-black-text", "decklist-info", "dust-bar"}>
         <div class="dust-bar-inner">
-          <DeckListingModal source="d0nkey.top" button_class="icon button" :if={@user} id={Ecto.UUID.generate() <> Deck.deckcode(@deck)} deck={@deck} button_title={"+"} user={@user}/>
+          <DeckListingModal source="hsguru" button_class="icon button" :if={@user} id={Ecto.UUID.generate() <> Deck.deckcode(@deck)} deck={@deck} button_title={"+"} user={@user}/>
           {Deck.cost(@deck)}
           <span class="icon">
             <img class="image" src="/images/dust_icon.webp" />

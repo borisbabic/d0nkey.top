@@ -13,7 +13,7 @@ defmodule TwitchBot.MessageMatcher do
     with {:ok, deck} <- Deck.decode(message),
          {:ok, %{id: id}} <- Backend.Hearthstone.create_or_get_deck(deck) do
       %{
-        "deck_url" => "https://www.d0nkey.top/deck/#{id}",
+        "deck_url" => "https://www.hsguru.com/deck/#{id}",
         "deck_class" => deck.class,
         "deckcode" => Deck.deckcode(deck)
       }

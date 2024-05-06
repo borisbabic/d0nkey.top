@@ -151,9 +151,9 @@ config :torch,
   template_format: "eex"
 
 config :phoenix_meta_tags,
-  title: "d0nkey",
-  description: "Hearthstone Streamer Decks and Esports Info",
-  url: "d0nkey.top"
+  title: "HSGuru",
+  description: "Hearthstone Decks, Stats, Streamer Decks, and Esports Info",
+  url: "www.hsguru.com"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -20,7 +20,7 @@ defmodule BackendWeb.FantasyIndexLive do
             <FantasyModal id="create_modal" title="Create Fantasy League"/>
             <a class="is-link button" href="/fantasy/leagues/join/a528b2fb-80e2-4324-b3cb-ce2501868167">GM Last Call</a>
             <a class="is-link button" href="/fantasy/leagues/join/3439acb1-d08a-495a-9bc0-89a536aea121">Murder Nerfs</a>
-            <a :if={show_mt?(:"Masters Tour Four")} class="is-link button" href="https://www.d0nkey.top/fantasy/leagues/join/8917eab8-c91b-4fdd-85a6-940e66a4a10f">Vashj'ir (MT#4)</a>
+            <a :if={show_mt?(:"Masters Tour Four")} class="is-link button" href="https://www.hsguru.com/fantasy/leagues/join/8917eab8-c91b-4fdd-85a6-940e66a4a10f">Vashj'ir (MT#4)</a>
             <a :for={{tour, link} <- Dreamhack.current_fantasy()} class="is-link button" href={"#{link}"}>Join DH {tour}</a>
           </div>
         </div>
