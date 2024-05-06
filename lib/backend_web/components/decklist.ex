@@ -16,6 +16,7 @@ defmodule Components.Decklist do
   prop(highlight_rotation, :boolean, default: false)
   prop(show_hero, :any, default: true)
   prop(user, :map, from_context: :user)
+  prop(link_to_archetype, :boolean, default: false)
   slot(right_button)
 
   @spec deck_name(Deck.t(), String.t() | nil, boolean) :: String.t()
@@ -25,6 +26,8 @@ defmodule Components.Decklist do
   def deck_name(deck, _name, true), do: Deck.name(deck)
   def deck_name(deck, _name, _archetype_as_name), do: Deck.class_name(deck)
 
+  defp link(deck, false), do: "/deck/#{link_part(deck)}"
+  defp link(deck, true), do: "/archetype/#{Deck.archetype(deck)}"
   defp link_part(%{id: id}) when not is_nil(id), do: id
   defp link_part(%{deckcode: deckcode}), do: deckcode
 
@@ -44,7 +47,7 @@ defmodule Components.Decklist do
                   </div>
                   <div class="level-left deck-text">
                     <h2 class="deck-title">
-                      <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={"/deck/#{link_part(@deck)}"}>{deck_name(@deck, @name, @archetype_as_name)}</a>
+                      <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={link(@deck, @link_to_archetype)}>{deck_name(@deck, @name, @archetype_as_name)}</a>
                       <span style="font-size: 0; line-size:0; display:block">
                       {Deck.deckcode(@deck)}</span></span>
                     </h2>

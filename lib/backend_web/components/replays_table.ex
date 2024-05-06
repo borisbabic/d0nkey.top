@@ -11,8 +11,11 @@ defmodule Components.ReplaysTable do
   prop(replays, :list, required: true)
   prop(show_player_btag, :boolean, default: false)
   prop(show_deck, :boolean, default: true)
+  prop(hide_deck_mobile, :boolean, default: false)
   prop(show_opponent, :boolean, default: true)
+  prop(show_opponent_name, :boolean, default: false)
   prop(show_mode, :boolean, default: true)
+  prop(show_result_as, :list, default: [:mode])
   prop(show_rank, :boolean, default: true)
   prop(show_replay_link, :boolean, default: true)
   prop(show_played, :boolean, default: true)
@@ -23,7 +26,7 @@ defmodule Components.ReplaysTable do
         <thead>
           <tr>
             <th :if={@show_player_btag}>Player</th>
-            <th :if={@show_deck}>Deck</th>
+            <th :if={@show_deck} class={"is-hidden-mobile": @hide_deck_mobile}>Deck</th>
             <th :if={@show_opponent}>Opponent</th>
             <th :if={@show_mode}>Game Mode</th>
             <th :if={@show_rank}>Rank</th>
@@ -34,18 +37,18 @@ defmodule Components.ReplaysTable do
         <tbody>
           <tr :for={game <- @replays} >
             <td :if={@show_player_btag}><PlayerName flag={true} player={game.player_btag}/></td>
-            <td :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
-            <td :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
+            <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
+            <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
             <td :if={@show_opponent}>
               <span>
                 <span class="icon">
                   <img src={"#{BackendWeb.BattlefyView.class_url(game.opponent_class)}"} >
                 </span>
-                <PlayerName player={game.opponent_btag}/>
+                <PlayerName :if={@show_opponent_name} player={game.opponent_btag}/>
               </span>
             </td>
-            <td :if={@show_mode}><p class={"tag", class(game)}>{game_mode(game)}</p></td>
-            <td :if={@show_rank}>{Game.player_rank_text(game)}</td>
+            <td :if={@show_mode}> <p class={"tag", {class(game), :mode in @show_result_as}}>{game_mode(game)}</p></td>
+            <td :if={@show_rank}><p class={"tag", {class(game), :rank in @show_result_as}}>{Game.player_rank_text(game)}</p></td>
             <td :if={@show_replay_link}><a :if={link = replay_link(game)} href={"#{link}"} target="_blank">View Replay</a></td>
             <td :if={@show_played}>{Timex.format!(game.inserted_at, "{relative}", :relative)}</td>
           </tr>

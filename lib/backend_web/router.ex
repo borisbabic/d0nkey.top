@@ -201,6 +201,8 @@ defmodule BackendWeb.Router do
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)
 
+    live("/archetype/:archetype", ArchetypeLive)
+
     live("/hcm-2022", HCM2022Live)
     live("/lineup-history/:source/:name", LineupHistoryLive)
 
