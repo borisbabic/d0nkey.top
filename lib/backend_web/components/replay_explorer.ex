@@ -26,11 +26,14 @@ defmodule Components.ReplayExplorer do
 
   prop(show_player_btag, :boolean, default: false)
   prop(show_deck, :boolean, default: true)
+  prop(hide_deck_mobile, :boolean, default: false)
   prop(show_opponent, :boolean, default: true)
+  prop(show_opponent_name, :boolean, default: true)
   prop(show_mode, :boolean, default: true)
   prop(show_rank, :boolean, default: true)
   prop(show_replay_link, :boolean, default: true)
   prop(show_played, :boolean, default: true)
+  prop(show_result_as, :list, default: [:mode])
 
   prop(format_filter, :boolean, default: true)
   prop(rank_filter, :boolean, default: true)
@@ -62,7 +65,7 @@ defmodule Components.ReplayExplorer do
     ~F"""
       <div>
         <div :if={{params, search_filters} = parse_params(@params, assigns)}>
-          <div class="level is-mobile level-left">
+          <div class="">
           <FormatDropdown id="format_dropdown" :if={@format_filter} filter_context={@filter_context} />
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
@@ -90,10 +93,13 @@ defmodule Components.ReplayExplorer do
           <ReplaysTable
           show_player_btag={@show_player_btag}
           show_deck={@show_deck}
+          hide_deck_mobile={@hide_deck_mobile}
           show_opponent={@show_opponent}
+          show_opponent_name={@show_opponent_name}
           show_mode={@show_mode}
           show_rank={@show_rank}
           show_replay_link={@show_replay_link}
+          show_result_as={@show_result_as}
           show_played={@show_played}
           replays={replays}/>
           <div :if={!(Enum.any?(replays))} >

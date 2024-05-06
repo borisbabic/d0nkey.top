@@ -6,7 +6,7 @@ defmodule BackendWeb.DeckLive do
   alias Components.DeckStreamingInfo
   alias Components.Decklist
   alias Components.DeckCard
-  alias Components.DeckStatsTable
+  alias Components.OpponentStatsTable
   alias Components.ReplayExplorer
   alias Components.DeckAdmin
   alias Backend.DeckInteractionTracker, as: Tracker
@@ -40,7 +40,7 @@ defmodule BackendWeb.DeckLive do
         _ -> []
       end
 
-    deck_stats_params = params |> Map.take(DeckStatsTable.param_keys())
+    deck_stats_params = params |> Map.take(OpponentStatsTable.param_keys())
 
     {
       :noreply,
@@ -70,7 +70,7 @@ defmodule BackendWeb.DeckLive do
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
           <div class="column is-narrow-mobile">
             <DeckCard>
-              <Decklist deck={@deck} archetype_as_name={true} />
+              <Decklist deck={@deck} archetype_as_name={true} link_to_archetype={true} />
               <:after_deck>
                 <DeckStreamingInfo deck_id={@deck.id}/>
                 <a :if={@user} class="tag column is-link" href={BackendWeb.DeckTrackerLive.url(@deck)}>Track Games</a>
@@ -80,7 +80,7 @@ defmodule BackendWeb.DeckLive do
             </DeckCard>
           </div>
           <div :if={nil != @deck.id} class="column is-narrow-mobile">
-            <DeckStatsTable id="deck_stats" deck_id={@deck.id} live_view={__MODULE__} path_params={[to_string(@deck.id)]} params={@deck_stats_params} />
+            <OpponentStatsTable id="deck_stats" target={@deck.id} live_view={__MODULE__} path_params={[to_string(@deck.id)]} params={@deck_stats_params} />
           </div>
           <div :if={false and nil != @deck.id} class="column is-narrow-mobile">
             <ReplayExplorer
@@ -114,7 +114,7 @@ defmodule BackendWeb.DeckLive do
   end
 
   defp replay_params(deck) do
-    %{"public" => true, "player_deck_id" => deck.id, "has_replay_url" => "true"}
+    %{"public" => true, "player_deck_id" => deck.id, "has_replay_url" => true}
   end
 
   defp valid?(%{id: _id}), do: true

@@ -58,20 +58,20 @@ defmodule Components.TierList do
             {add_arrow("Winrate", "winrate", @params, true)}
             </LivePatch></th>
             <th><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
-            {add_arrow("Games", "total", @params)}
+            {add_arrow("Popularity", "total", @params)}
             </LivePatch></th>
           </thead>
           <tbody :if={{stats, total} = stats(@data, @criteria)}>
             <tr :for={as <- stats}>
               <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
-                <a class="basic-black-text deck-title" href={~p"/card-stats?#{card_stats_params(@params, as.archetype)}"}>
+                <a class="basic-black-text deck-title" href={~p"/archetype/#{as.archetype}"}>
                   {as.archetype}
                 </a>
               </td>
               <td>
                 <WinrateTag winrate={as.winrate}/>
               </td>
-              <td>{as.total} ({percentage(as.total, total)}%)</td>
+              <td>{percentage(as.total, total)}% ({as.total})</td>
             </tr>
           </tbody>
         </table>

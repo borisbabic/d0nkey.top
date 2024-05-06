@@ -268,9 +268,15 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
-  @spec detailed_stats(integer(), list()) :: [deck_stats()]
-  def detailed_stats(deck_id, additional_criteria \\ []) when is_integer(deck_id) do
-    opponent_class_stats([{"player_deck_id", deck_id} | additional_criteria])
+  @spec detailed_stats(
+          deck_id_or_archetype :: integer() | String.t() | atom(),
+          additional_criteria :: list()
+        ) :: [deck_stats()]
+  def detailed_stats(deck_id_or_archetype, additional_criteria \\ [])
+      when is_integer(deck_id_or_archetype) or is_binary(deck_id_or_archetype) or
+             is_atom(deck_id_or_archetype) do
+    criteria = [deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria]
+    opponent_class_stats(criteria)
   end
 
   def total_stats(criteria) do
@@ -2114,4 +2120,16 @@ defmodule Hearthstone.DeckTracker do
   end
 
   defp compose_agg_count_query(_, query), do: query
+
+  def deck_or_archetype_criteria(deck_id) when is_integer(deck_id),
+    do: {"player_deck_id", deck_id}
+
+  def deck_or_archetype_criteria(archetype) when is_atom(archetype), do: {"archetype", archetype}
+
+  def deck_or_archetype_criteria(deck_id_or_archetype) when is_binary(deck_id_or_archetype) do
+    case Integer.parse(deck_id_or_archetype) do
+      {deck_id, _} when is_integer(deck_id) -> {"player_deck_id", deck_id}
+      _ -> {"archetype", deck_id_or_archetype}
+    end
+  end
 end

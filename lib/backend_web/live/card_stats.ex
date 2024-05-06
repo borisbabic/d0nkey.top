@@ -25,6 +25,7 @@ defmodule BackendWeb.CardStatsLive do
         <div class="subtitle is-6">
           <span :if={@deck}><a href={~p"/deck/#{@deck.id}"}> Deck Stats</a> | </span>
           <span :if={deck_id = highlight_deck_id(@params)}><a href={~p"/card-stats?#{create_deck_filters(@params, deck_id)}"}>Deck Card Stats</a> | </span>
+          <span :if={archetype = Map.get(@params, "archetype")}><a href={~p"/archetype/#{archetype}?#{create_archetype_stats_filters(@params)}"}>Archetype Stats</a> | </span>
           <span :if={archetype = Deck.archetype(@deck)}><a href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"}>Archetype Card Stats</a> | </span>
           <a href={~p"/stats/explanation"}>Stats Explanation</a> | To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>
           <span :if={@games}> | Games: {@games}</span>
@@ -33,6 +34,11 @@ defmodule BackendWeb.CardStatsLive do
         <CardStatsTable highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={@card_stats || []} criteria={@criteria} live_view={__MODULE__}/>
       </div>
     """
+  end
+
+  defp create_archetype_stats_filters(params) do
+    params
+    |> Map.take(["period", "rank", "format"])
   end
 
   defp highlight_deck_id(params) do

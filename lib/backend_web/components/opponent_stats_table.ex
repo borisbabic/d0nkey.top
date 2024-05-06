@@ -1,4 +1,4 @@
-defmodule Components.DeckStatsTable do
+defmodule Components.OpponentStatsTable do
   @moduledoc false
   use Surface.LiveComponent
   alias Components.ClassStatsTable
@@ -10,8 +10,8 @@ defmodule Components.DeckStatsTable do
 
   prop(live_view, :module, required: true)
   prop(params, :map, required: true)
-  prop(path_params, :list, default: [])
-  prop(deck_id, :integer, required: true)
+  prop(path_params, :any, default: [])
+  prop(target, :any, required: true)
   prop(user, :map, from_context: :user)
   data(selected_params, :list, default: [])
 
@@ -46,23 +46,23 @@ defmodule Components.DeckStatsTable do
   def render(assigns) do
     ~F"""
     <div>
-        <RankDropdown id="rank_dropdown"/>
-        <PeriodDropdown id="period_dropdown" />
-        <RegionDropdown id="region_dropdown" />
+        <RankDropdown id="opp_stats_table_rank_dropdown"/>
+        <PeriodDropdown id="opp_stats_table_period_dropdown" />
+        <RegionDropdown id="opp_stats_table_region_dropdown" />
 
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
             title={"Players"}
             param={"players"} />
-        <ClassStatsTable :if={stats = stats(@deck_id, params(@selected_params, @user))} stats={stats} />
+        <ClassStatsTable :if={stats = stats(@target, params(@selected_params, @user))} stats={stats} />
     </div>
     """
   end
 
   def stats(nil, _), do: []
 
-  def stats(deck_id, params) do
-    DeckTracker.detailed_stats(deck_id, params)
+  def stats(target, params) do
+    DeckTracker.detailed_stats(target, params)
   end
 
   defp params(selected, user) do
