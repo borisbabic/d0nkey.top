@@ -71,9 +71,9 @@ defmodule Components.ReplayExplorer do
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
           <RegionDropdown id="region_dropdown" :if={@region_filter} filter_context={@filter_context} />
-          <ClassDropdown :if={@player_class_filter}
+          <ClassDropdown :if={@player_class_filter} id="player_class_dropdown"
             param={"player_class"} />
-          <ClassDropdown :if={@opponent_class_filter}
+          <ClassDropdown :if={@opponent_class_filter} id="opponent_class_dropdown"
             any_name={"Any Opponent"}
             name_prefix={"VS "}
             param={"opponent_class"} />

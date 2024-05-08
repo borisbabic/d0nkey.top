@@ -67,6 +67,7 @@ defmodule BackendWeb.Router do
   scope "/", BackendWeb do
     pipe_through([:browser, :auth])
 
+    get("/arcticles/reveal/booms-incredible-inventions-mage", RevealController, :boom)
     get("/hs/article/:blog_id", HearthstoneController, :article)
     get("/battlefy/tournament/020fface81eb7119705c0df5*bla", PageController, :rick_astley)
 
