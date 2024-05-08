@@ -43,26 +43,26 @@ defmodule Components.CardStatsTable do
       <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={true}/>
       <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={true}/>
       <RankDropdown id="rank_dropdown" fitler_context={@filter_context} aggregated_only={true}/>
-      <LivePatchDropdown
+      <LivePatchDropdown id="min_mull_count"
         options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
         title={"Min Mull Count"}
         param={"min_mull_count"}
         normalizer={&Util.to_int_or_orig/1}
         selected_as_title={false}/>
-      <LivePatchDropdown
+      <LivePatchDropdown id="min_drawn_count"
         options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
         title={"Min Drawn Count"}
         param={"min_drawn_count"}
         normalizer={&Util.to_int_or_orig/1}
         selected_as_title={false} />
-      <LivePatchDropdown
+      <LivePatchDropdown id="show_counts"
         options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
         title={"Show Counts"}
         param={"show_counts"}
         selected_as_title={true} />
 
 
-      <ClassDropdown :if={@opponent_class_filter}
+      <ClassDropdown id={"opponent_class_filter"}
         name_prefix={"VS "}
         param={"opponent_class"} />
       <table class="table is-fullwidth is-striped is-gapless">

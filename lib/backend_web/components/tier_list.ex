@@ -41,11 +41,13 @@ defmodule Components.TierList do
         <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={true}/>
         <RankDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={true}/>
         <ClassDropdown
+          id="tier_list_opponents_class_dropdown"
           name_prefix={"VS "}
           title={"Opponent's Class"}
           param={"opponent_class"} />
 
         <LivePatchDropdown
+          id="tier_list_min_games_dropdown"
           options={@min_games_options}
           title={"Min Games"}
           param={"min_games"}
