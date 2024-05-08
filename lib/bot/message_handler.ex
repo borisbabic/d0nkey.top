@@ -156,6 +156,9 @@ defmodule Bot.MessageHandler do
       <<"!ldb", _::binary>> ->
         Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
 
+      <<"!reveals-all", _::binary>> ->
+        Bot.RevealMessageHandler.handle_all_reveals(msg)
+
       <<"!reveals", _::binary>> ->
         Bot.RevealMessageHandler.handle_reveals(msg)
 

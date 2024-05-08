@@ -13,6 +13,7 @@ defmodule BackendWeb.DeckSheetViewLive do
   alias Components.SurfaceBulma.Table.Column
   alias Components.LivePatchDropdown
   alias Components.Filter.PlayableCardSelect
+  alias Components.Filter.ClassDropdown
   alias Components.DecksExplorer
   alias Components.DeleteModal
 
@@ -43,18 +44,8 @@ defmodule BackendWeb.DeckSheetViewLive do
             options={[{"sheet", "Sheet"}, {"decks", "Decks"}]}
             title={"View Mode"}
             param={"view_mode"}
-            url_params={url_params(assigns)}
-            path_params={path_params(assigns)}
-            selected_params={url_params(assigns)}
             live_view={__MODULE__} />
-          <LivePatchDropdown
-            options={DecksExplorer.class_options("Any Class")}
-            title={"Class"}
-            param={"deck_class"}
-            url_params={url_params(assigns)}
-            path_params={path_params(assigns)}
-            selected_params={url_params(assigns)}
-            live_view={__MODULE__} />
+          <ClassDropdown id="deck_class_dropdown" param="deck_class" />
             <PlayableCardSelect id={"deck_include_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_include_cards")} selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
             <PlayableCardSelect id={"deck_exclude_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_exclude_cards")} selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
           </div>
@@ -118,7 +109,19 @@ defmodule BackendWeb.DeckSheetViewLive do
 
     view_mode = Map.get(params, "view_mode", "sheet")
 
-    {:noreply, assign(socket, :deck_filters, filters) |> assign(:view_mode, view_mode)}
+    socket =
+      assign(socket, :deck_filters, filters) |> assign(:view_mode, view_mode) |> update_context()
+
+    {:noreply}
+  end
+
+  defp update_context(%{assigns: assigns} = socket) do
+    LivePatchDropdown.update_context(
+      socket,
+      __MODULE__,
+      url_params(assigns),
+      path_params(assigns)
+    )
   end
 
   def handle_info({:update_params, params}, socket = %{assigns: assigns}) do

@@ -7,10 +7,11 @@ defmodule Components.TierList do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
+  alias Components.Filter.ClassDropdown
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
   alias Surface.Components.LivePatch
-  import Components.DecksExplorer, only: [parse_int: 2, class_options: 2]
+  import Components.DecksExplorer, only: [parse_int: 2]
   import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
 
   prop(data, :list, default: [])
@@ -39,8 +40,8 @@ defmodule Components.TierList do
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={true} />
         <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={true}/>
         <RankDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={true}/>
-        <LivePatchDropdown
-          options={class_options("Any Class", "VS ")}
+        <ClassDropdown
+          name_prefix={"VS "}
           title={"Opponent's Class"}
           param={"opponent_class"} />
 

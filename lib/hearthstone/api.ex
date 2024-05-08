@@ -72,8 +72,10 @@ defmodule Hearthstone.Api do
   defp do_get_all_cards(_, %{page: last_page, page_count: last_page}, carry), do: {:ok, carry}
 
   defp do_get_all_cards(opts, prev_response, carry) do
-    with {:ok, response = %{cards: cards}} <- next_page(prev_response, opts) do
-      Process.sleep(1000)
+    {delay, request_opts} = Map.pop(opts, :delay, 5000)
+
+    with {:ok, response = %{cards: cards}} <- next_page(prev_response, request_opts) do
+      Process.sleep(delay)
       do_get_all_cards(opts, response, cards ++ carry)
     end
   end

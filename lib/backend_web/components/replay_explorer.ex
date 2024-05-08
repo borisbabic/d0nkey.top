@@ -9,6 +9,7 @@ defmodule Components.ReplayExplorer do
   alias Components.Filter.RankDropdown
   alias Components.Filter.RegionDropdown
   alias Components.Filter.FormatDropdown
+  alias Components.Filter.ClassDropdown
   alias Components.DecksExplorer
   alias Components.ReplaysTable
   alias Surface.Components.Form
@@ -70,15 +71,11 @@ defmodule Components.ReplayExplorer do
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
           <RegionDropdown id="region_dropdown" :if={@region_filter} filter_context={@filter_context} />
-
-          <LivePatchDropdown :if={@player_class_filter}
-            options={DecksExplorer.class_options("Any Class")}
-            title={"Class"}
+          <ClassDropdown :if={@player_class_filter}
             param={"player_class"} />
-
-          <LivePatchDropdown :if={@opponent_class_filter}
-            options={DecksExplorer.class_options("Any Opponent")}
-            title={"Opponent Class"}
+          <ClassDropdown :if={@opponent_class_filter}
+            any_name={"Any Opponent"}
+            name_prefix={"VS "}
             param={"opponent_class"} />
 
           <PlayableCardSelect :if={@includes_filter} id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>

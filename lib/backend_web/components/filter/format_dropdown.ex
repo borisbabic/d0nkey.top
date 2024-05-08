@@ -6,6 +6,7 @@ defmodule Components.Filter.FormatDropdown do
 
   prop(title, :string, default: "Format")
   prop(param, :string, default: "format")
+  prop(options, :list, default: nil)
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
@@ -16,7 +17,7 @@ defmodule Components.Filter.FormatDropdown do
   def render(assigns) do
     ~F"""
       <LivePatchDropdown
-        options={options(@filter_context, @aggregated_only)}
+        options={options(@options, @filter_context, @aggregated_only)}
         title={@title}
         param={@param}
         url_params={@url_params}
@@ -26,7 +27,13 @@ defmodule Components.Filter.FormatDropdown do
     """
   end
 
-  def options(context, only_aggregated \\ false) do
+  def options(options, context, only_aggregated \\ false)
+
+  def options(options, _, _) when is_list(options) do
+    options
+  end
+
+  def options(nil, context, only_aggregated) do
     aggregated =
       DeckTracker.get_latest_agg_log_entry()
       |> Map.get(:formats, []) || []

@@ -10,6 +10,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.RankDropdown
   alias Components.Filter.RegionDropdown
   alias Components.Filter.FormatDropdown
+  alias Components.Filter.ClassDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.AggregationCount
@@ -85,16 +86,8 @@ defmodule Components.DecksExplorer do
           selected_as_title={false}
           normalizer={&to_string/1} />
 
-        <LivePatchDropdown
-          options={class_options("Any Class")}
-          title={"Class"}
-          param={"player_class"} />
-
-        <LivePatchDropdown
-          options={class_options("Any Opponent")}
-          title={"Opponent Class"}
-          param={"opponent_class"} />
-
+        <ClassDropdown id="player_class_dropdown" title="Player Class" param="player_class" />
+        <ClassDropdown id="opponent_class_dropdown" title="Opponent Class" param="opponent_class" any_param="Any Opponent" />
 
         <LivePatchDropdown
           options={min_games_options(@min_games_options, @min_games_floor)}
@@ -199,11 +192,6 @@ defmodule Components.DecksExplorer do
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 
   def limit_options(), do: [10, 15, 20, 25, 30]
-
-  def class_options(any_name \\ "Any", name_prefix \\ ""),
-    do: [
-      {nil, any_name} | Enum.map(Deck.classes(), &{&1, "#{name_prefix}#{Deck.class_name(&1)}"})
-    ]
 
   def region_options(),
     do: [
