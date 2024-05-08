@@ -4,7 +4,7 @@ defmodule BackendWeb.CardsLive do
   alias Components.CardsExplorer
 
   data(user, :any)
-  data(filters, :map)
+  data(params, :map)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
@@ -14,7 +14,7 @@ defmodule BackendWeb.CardsLive do
       <div>
         <div class="title is-2">Hearthstone Cards</div>
         <FunctionComponents.Ads.below_title/>
-        <CardsExplorer id="cards_explorer" filters={@filters} />
+        <CardsExplorer live_view={__MODULE__} id="cards_explorer" params={@params} />
       </div>
     """
   end
@@ -24,7 +24,7 @@ defmodule BackendWeb.CardsLive do
   end
 
   def handle_params(params, _uri, socket) do
-    filters = CardsExplorer.filter_relevant(params)
-    {:noreply, assign(socket, :filters, filters)}
+    params = CardsExplorer.filter_relevant(params)
+    {:noreply, assign(socket, :params, params)}
   end
 end

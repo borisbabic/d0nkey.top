@@ -1,4 +1,9 @@
 defmodule Components.Filter.DropdownBase do
+  @moduledoc """
+  ```
+  use Components.Filter.DropdownBase
+  ```
+  """
   defmacro __using__(opts) do
     current_is_list = Keyword.get(opts, :current_is_list, false)
 
@@ -16,6 +21,7 @@ defmodule Components.Filter.DropdownBase do
       # If the params we want to use to decide whether it's selected differ from the url params
       prop(selected_params, :any, from_context: {@context_base, :selected_params})
       prop(selected_as_title, :boolean, default: true)
+      prop(selected_as_title_prefix, :string, default: "")
 
       prop(current_val, :any, required: false)
       prop(normalizer, :fun, required: false, default: &Util.id/1)
@@ -75,14 +81,21 @@ defmodule Components.Filter.DropdownBase do
       def title(%{selected_as_title: false, title: title}, _), do: title
 
       def title(
-            %{selected_as_title: true, title: title, options: options, normalizer: normalizer},
+            %{
+              selected_as_title: true,
+              title: title,
+              options: options,
+              normalizer: normalizer,
+              selected_as_title_prefix: title_prefix
+            },
             current
           ) do
         Enum.find_value(options, title, fn opt ->
           val = value(opt)
 
           if current?(val, current, normalizer) do
-            display(opt)
+            prefix = if val, do: title_prefix
+            "#{prefix}#{display(opt)}"
           end
         end)
       end

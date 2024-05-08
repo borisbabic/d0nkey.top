@@ -890,6 +890,16 @@ defmodule Backend.Hearthstone do
     |> order_by([card: c], desc: c.inserted_at)
   end
 
+  defp compose_cards_query({"order_by", "mana_in_class"}, query) do
+    query
+    |> order_by([classes: cl, card: c], desc: cl.slug, asc: c.mana_cost)
+  end
+
+  defp compose_cards_query({"order_by", "mana"}, query) do
+    query
+    |> order_by([classes: cl, card: c], asc: c.mana_cost)
+  end
+
   defp compose_cards_query({"id_not_in", ids}, query) when is_list(ids) do
     query
     |> where([card: c], c.id not in ^ids)
@@ -916,14 +926,35 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"collectible", _}, query),
     do: compose_cards_query({"collectible", true}, query)
 
-  defp compose_cards_query({"health", health}, query),
-    do: query |> where([card: c], c.health == ^health)
-
   defp compose_cards_query({"name", name}, query),
     do: query |> where([card: c], ilike(c.name, ^name))
 
+  defp compose_cards_query({"mana_cost", "<" <> mana_cost}, query),
+    do: query |> where([card: c], c.mana_cost < ^mana_cost)
+
+  defp compose_cards_query({"mana_cost", ">" <> mana_cost}, query),
+    do: query |> where([card: c], c.mana_cost > ^mana_cost)
+
   defp compose_cards_query({"mana_cost", mana_cost}, query),
     do: query |> where([card: c], c.mana_cost == ^mana_cost)
+
+  defp compose_cards_query({"health", "<" <> health}, query),
+    do: query |> where([card: c], c.health < ^health)
+
+  defp compose_cards_query({"health", ">" <> health}, query),
+    do: query |> where([card: c], c.health > ^health)
+
+  defp compose_cards_query({"health", health}, query),
+    do: query |> where([card: c], c.health == ^health)
+
+  defp compose_cards_query({"attack", "<" <> attack}, query),
+    do: query |> where([card: c], c.attack < ^attack)
+
+  defp compose_cards_query({"attack", ">" <> attack}, query),
+    do: query |> where([card: c], c.attack > ^attack)
+
+  defp compose_cards_query({"attack", attack}, query),
+    do: query |> where([card: c], c.attack == ^attack)
 
   defp compose_cards_query({"card_set_id_not_in", ids}, query) do
     query
@@ -947,8 +978,17 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"minion_type", value}, query),
     do: ilike_name_or_slug(value <> @default_splitter, query, :minion_type)
 
+  defp compose_cards_query({"format", format}, query) when format in [1, "1"],
+    do: compose_cards_query({"format", "wild"}, query)
+
+  defp compose_cards_query({"format", format}, query) when format in [2, "2"],
+    do: compose_cards_query({"format", "standard"}, query)
+
+  defp compose_cards_query({"format", format}, query) when format in [4, "4"],
+    do: compose_cards_query({"format", "twist"}, query)
+
   defp compose_cards_query({"format", format}, query)
-       when format in ["standard", "wild"] do
+       when format in ["standard", "wild", "twist"] do
     subquery = set_group_sets_query(format)
 
     query

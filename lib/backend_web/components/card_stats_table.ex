@@ -6,6 +6,7 @@ defmodule Components.CardStatsTable do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
+  alias Components.Filter.ClassDropdown
   alias Components.DecksExplorer
   alias Components.WinrateTag
   alias Hearthstone.DeckTracker
@@ -60,9 +61,9 @@ defmodule Components.CardStatsTable do
         param={"show_counts"}
         selected_as_title={true} />
 
-      <LivePatchDropdown
-        options={DecksExplorer.class_options("Any Class", "VS ")}
-        title={"Opponent's Class"}
+
+      <ClassDropdown :if={@opponent_class_filter}
+        name_prefix={"VS "}
         param={"opponent_class"} />
       <table class="table is-fullwidth is-striped is-gapless">
         <thead>
