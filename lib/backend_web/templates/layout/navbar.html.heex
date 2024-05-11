@@ -107,11 +107,20 @@
      </div>
 
      <div class="navbar-end">
-      <div :if={show_ads?(@conn)} class="navbar-item" aria-label="menu-item">
+      <div :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2024-05-14T00:00:00]) == :gt and show_ads?(@conn)} class="navbar-item" aria-label="menu-item">
         <span class="is-hidden-mobile">
           Remove ads by supporting
         </span>
         <Components.Socials.patreon link={~p"/patreon"} />
+      </div>
+      <div :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2024-05-14T00:00:00]) == :lt} class="navbar-item" aria-label="menu-item">
+        <a :if={Backend.Reveals.show?(:boom, @user)} class="column is-narrow" href={~p"/arcticles/reveal/booms-incredible-inventions-mage"}>
+          <article class="media">
+            <div class="media-content">
+              <span class="title is-5">Miniset Mage Reveals!</span>
+            </div>
+          </article>
+        </a>
       </div>
      </div>
    </div>
