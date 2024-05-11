@@ -42,7 +42,7 @@ defmodule BackendWeb.LeaderboardController do
     compare_to = params["compare_to"]
     comparison = get_comparison(criteria, compare_to)
     ladder_mode = parse_ladder_mode(params)
-    show_flags = parse_show_flags(params, leaderboard)
+    show_flags = parse_show_flags(params)
     skip_cn = parse_skip_cn(params, leaderboard)
     {invited, ladder_invite_num, ladder_points} = leaderboard |> get_season_info()
 
@@ -149,14 +149,8 @@ defmodule BackendWeb.LeaderboardController do
 
   def parse_skip_cn(_, _), do: "all"
 
-  def parse_show_flags(%{"show_flags" => sf}, _) when sf in ["no", "yes"], do: sf
-
-  def parse_show_flags(_, %{leaderboard_id: "BG", season_id: s})
-      when Backend.LobbyLegends.is_lobby_legends(s),
-      do: "yes"
-
-  def parse_show_flags(_, %{leaderboard_id: "STD"}), do: "yes"
-  def parse_show_flags(_, _), do: "no"
+  def parse_show_flags(%{"show_flags" => "no"}), do: "no"
+  def parse_show_flags(_), do: "yes"
 
   def parse_ladder_mode(%{"ladder_mode" => "no"}), do: "no"
   def parse_ladder_mode(_), do: "yes"
