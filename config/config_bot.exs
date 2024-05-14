@@ -17,8 +17,8 @@ config :backend, QuantumScheduler,
 
     # {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
-    {"* * * * *", fn -> Backend.Leaderboards.save_current(200) end},
-    {"2 * * * *", fn -> Backend.Leaderboards.save_current_with_delay(200, 5000) end},
+    {"*/2 * * * *", fn -> Backend.Leaderboards.save_current(1000) end},
+    {"2 * * * *", fn -> Backend.Leaderboards.save_current_with_delay(1000, 10_000) end},
     {"11 23 * * *",
      fn ->
        Backend.Leaderboards.save_current_for_region_with_delay(
