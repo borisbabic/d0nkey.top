@@ -4,6 +4,7 @@ defmodule BackendWeb.ArchetypeLive do
   alias Components.OpponentStatsTable
   alias Components.ReplayExplorer
   alias Backend.DeckInteractionTracker, as: Tracker
+  use Components.ExpandableDecklist
   import Backend.Hearthstone.Deck, only: [format_name: 1]
 
   data(archetype, :any)
