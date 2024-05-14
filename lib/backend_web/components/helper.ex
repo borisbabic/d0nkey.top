@@ -7,8 +7,23 @@ defmodule Components.Helper do
 
   def warning_triangle(assigns) do
     ~H"""
-    <span :if={@before}><%= @before %></span>
-    <HeroIcons.warning_triangle size="small" />
+    <span>
+      <span :if={@before}><%= @before %></span>
+      <HeroIcons.warning_triangle size="small" />
+    </span>
+    """
+  end
+
+  def concat(first, second) do
+    concat(%{first: first, second: second})
+  end
+
+  attr :first, :any, required: true
+  attr :second, :any, required: true
+
+  def concat(assigns) do
+    ~H"""
+    <%= @first %><%=@second%>
     """
   end
 end
