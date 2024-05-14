@@ -11,12 +11,12 @@ defmodule Components.Filter.ClassDropdown do
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
   prop(live_view, :module, required: true)
-  prop(options, :list, default: nil)
+  prop(include_neutral, :boolean, default: false)
 
   def render(assigns) do
     ~F"""
       <LivePatchDropdown
-        options={options(@any_name, @name_prefix)}
+        options={options(@any_name, @name_prefix, @include_neutral)}
         title={@title}
         param={@param}
         url_params={@url_params}
@@ -26,8 +26,14 @@ defmodule Components.Filter.ClassDropdown do
     """
   end
 
-  def options(any_name, name_prefix),
-    do: [
-      {nil, any_name} | Enum.map(Deck.classes(), &{&1, "#{name_prefix}#{Deck.class_name(&1)}"})
-    ]
+  def options(any_name, name_prefix, include_neutral?) do
+    any = {nil, any_name}
+    class_options = Enum.map(Deck.classes(), &{&1, "#{name_prefix}#{Deck.class_name(&1)}"})
+
+    if include_neutral? do
+      [any, {"neutral", "Neutral"} | class_options]
+    else
+      [any | class_options]
+    end
+  end
 end
