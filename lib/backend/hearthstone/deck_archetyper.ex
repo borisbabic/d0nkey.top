@@ -137,6 +137,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Lesser Spinel Spellstone",
         "Amateur Puppeteer",
         "Blood Tap",
+        "Toysnatching Geist",
         "Darkfallen Neophyte",
         "Vicious Bloodworm",
         "Overlord Runthak",
@@ -326,7 +327,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp treant_druid?(ci),
-    do: min_count?(ci, 2, ["Witchwood Apple", "Conservator Nymph", "Blood Treant", "Cultivation"])
+    do:
+      min_count?(ci, 2, [
+        "Witchwood Apple",
+        "Conservator Nymph",
+        "Blood Treant",
+        "Cultivation",
+        "Overgrown Beanstalk"
+      ])
 
   defp afk_druid?(ci),
     do: min_count?(ci, 2, ["Rhythm and Roots", "Timber Tambourine"])
@@ -438,6 +446,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Costumed Singer",
         "Anonymous Informant",
         "Titanforged Traps",
+        "Product 9",
         "Starstrung Bow"
       ])
 
@@ -871,9 +880,23 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       virus_rogue?(card_info) ->
         :"Virus Rogue"
 
+      goldbeard?(card_info) ->
+        :"Goldbeard Rogue"
+
+      sonya?(card_info) ->
+        :"Sonya Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp goldbeard?(ci) do
+    min_count?(ci, 2, ["Shoplifter Goldbeard", "The Replicator-inator"])
+  end
+
+  defp sonya?(ci) do
+    min_count?(ci, 3, ["Cover Artist", "Sonya Waterdancer", "Sandbox Scoundrel"])
   end
 
   defp virus_rogue?(ci) do
@@ -1072,6 +1095,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Molten Giant",
       "Imprisoned Horror",
       "Trogg Exile",
+      "INFERNAL!",
+      "Mass Production",
       "Elementium Geode"
     ])
   end
@@ -1148,6 +1173,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       murloc?(card_info) -> :"Murloc Warrior"
       boar?(card_info) -> :"Boar Warrior"
       mech_warrior?(card_info) -> :"Mech Warrior"
+      bomb_warrior?(card_info) -> :"Bomb Warrior"
       true -> fallbacks(card_info, "Warrior")
     end
   end
@@ -1160,6 +1186,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Stonehill Defender",
       "Detonation Juggernaut"
     ])
+  end
+
+  def bomb_warrior?(card_info) do
+    min_count?(card_info, 2, ["Explodineer", "Safety Expert"])
   end
 
   def mech_warrior?(card_info) do
@@ -1310,6 +1340,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp spell_mage?(card_info) do
     min_count?(card_info, 3, [
+      "Malfunction",
       "Spot the Difference",
       "Yogg in the Box",
       "Manufacturing Error"
@@ -1665,8 +1696,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp thief_rogue?(ci = %{card_names: card_names}),
     do:
       "Maestra of the Masquerade" in card_names ||
-        min_count?(ci, 3, [
+        min_count?(ci, 4, [
           "Tess Greymane",
+          "Twisted Pack",
           "Mixtape",
           "Hipster",
           "Plagiarizarrr",
@@ -1783,10 +1815,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           "Thaddius, Monstrosity"
         ])
 
-  defp holy_paladin?(ci = %{card_names: card_names}),
-    do:
-      "The Garden's Grace" in card_names &&
-        min_count?(ci, 1, ["Righteous Defense", "Battle Vicar", "Knight of Anointment"])
+  defp holy_paladin?(ci = %{card_names: card_names}) do
+    min_count?(ci, 3, [
+      "Hi Ho Silverwing",
+      "Flickering Lightbot",
+      "Holy Cowboy",
+      "Starlight Groove",
+      "Holy Glowsticks"
+    ])
+  end
 
   defp handbuff_paladin?(ci) do
     min_count?(ci, 2, ["Painter's Virtue", "Instrument Tech"]) or
@@ -1871,7 +1908,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       ])
 
   defp overload_shaman?(ci),
-    do: min_count?(ci, 2, ["Flowrider", "Overdraft", "Inzah"])
+    do: min_count?(ci, 2, ["Flowrider", "Overdraft", "Inzah", "Thorim, Stormlord"])
 
   defp evolve_shaman?(ci),
     do:
