@@ -95,7 +95,7 @@ defmodule Components.Filter.DropdownBase do
 
           if current?(val, current, normalizer) do
             prefix = if val, do: title_prefix
-            "#{prefix}#{display(opt)}"
+            Components.Helper.concat(prefix, display(opt))
           end
         end)
       end
