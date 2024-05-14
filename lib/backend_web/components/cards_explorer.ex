@@ -59,7 +59,7 @@ defmodule Components.CardsExplorer do
     ~F"""
       <div>
         <FormatDropdown id="cards_format_dropdown", options={[{2, "Standard"}, {1, "Wild"}]} />
-        <ClassDropdown id="class_dropdown"/>
+        <ClassDropdown id="class_dropdown" include_neutral={true}/>
         <CardTypeDropdown id="cards_card_type_dropdown" param="card_type" title="Card Type" />
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
         <AttackDropdown id="cards_attack_dropdown" />
