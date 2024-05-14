@@ -29,7 +29,7 @@ defmodule Components.Filter.PeriodDropdown do
       DeckTracker.get_latest_agg_log_entry()
       |> Map.get(:periods, []) || []
 
-    for %{slug: slug, display: d} <- DeckTracker.periods_for_filters(context),
+    for %{slug: slug, display: d} <- periods(context),
         !aggregated_only or slug in aggregated do
       display =
         if slug in aggregated or context == :personal,
@@ -39,6 +39,17 @@ defmodule Components.Filter.PeriodDropdown do
       {slug, display}
     end
   end
+
+  defp periods(context) do
+    DeckTracker.periods_for_filters(context)
+    |> Enum.reject(&future?/1)
+  end
+
+  defp future?(%{period_start: %NaiveDateTime{} = period_start}) do
+    NaiveDateTime.compare(period_start, NaiveDateTime.utc_now()) == :gt
+  end
+
+  defp future?(_), do: false
 
   def default(_context \\ :public) do
     DeckTracker.default_period()
