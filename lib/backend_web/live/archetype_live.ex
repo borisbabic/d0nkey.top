@@ -45,7 +45,7 @@ defmodule BackendWeb.ArchetypeLive do
     </div>
     <div class="columns is-multiline is-mobile is-narrow is-centered">
       <div class="column is-narrow-mobile">
-        <OpponentStatsTable id="archetype_stats" target={@archetype} live_view={__MODULE__} path_params={to_string(@archetype)} params={@stats_params} />
+        <OpponentStatsTable id="archetype_stats" include_format={true} target={@archetype} live_view={__MODULE__} path_params={to_string(@archetype)} params={@stats_params} />
       </div>
       <div class="column is-narrow-mobile">
             <ReplayExplorer

@@ -6,6 +6,7 @@ defmodule Components.OpponentStatsTable do
   alias Components.LivePatchDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.PeriodDropdown
+  alias Components.Filter.FormatDropdown
   alias Components.Filter.RegionDropdown
 
   prop(live_view, :module, required: true)
@@ -13,6 +14,7 @@ defmodule Components.OpponentStatsTable do
   prop(path_params, :any, default: [])
   prop(target, :any, required: true)
   prop(user, :map, from_context: :user)
+  prop(include_format, :boolean, default: false)
   data(selected_params, :list, default: [])
 
   def update(assigns, socket) do
@@ -22,6 +24,7 @@ defmodule Components.OpponentStatsTable do
       |> Map.put_new("rank", RankDropdown.default())
       |> Map.put_new("period", PeriodDropdown.default())
       |> Map.put_new("players", "all_players")
+      |> add_format(assigns.include_format)
       |> add_region()
 
     {
@@ -38,6 +41,9 @@ defmodule Components.OpponentStatsTable do
     }
   end
 
+  defp add_format(params, true), do: Map.put_new(params, "format", 2)
+  defp add_format(params, _false), do: params
+
   defp add_region(params = %{"players" => players}) do
     context = if players == "all_players", do: :public, else: :personal
     Map.put_new(params, "region", RegionDropdown.default(context))
@@ -49,6 +55,7 @@ defmodule Components.OpponentStatsTable do
         <RankDropdown id="opp_stats_table_rank_dropdown"/>
         <PeriodDropdown id="opp_stats_table_period_dropdown" />
         <RegionDropdown id="opp_stats_table_region_dropdown" />
+        <FormatDropdown :if={@include_format} id="opp_stats_format_dropdown" />
 
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
@@ -76,5 +83,5 @@ defmodule Components.OpponentStatsTable do
     do: params |> Map.put_new("player_btag", battletag)
 
   defp set_user_param({_, params}, _), do: params
-  def param_keys(), do: ["rank", "period", "players", "region"]
+  def param_keys(), do: ["rank", "period", "players", "region", "format"]
 end
