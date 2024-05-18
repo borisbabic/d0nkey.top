@@ -457,7 +457,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp do_archetype(%{format: 2, cards: c, class: "MAGE"}, card_info) do
     rommath? = "Grand Magister Rommath" in card_info.card_names
     lightshow? = "Lightshow" in card_info.card_names
-    energy_shaper? = "Energy Shaper" in card_info.card_names
 
     cond do
       highlander?(card_info, c) ->
@@ -475,9 +474,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Mage"
 
-      lightshow? and !energy_shaper? ->
-        :"Lightshow Mage"
-
       rommath? ->
         :"Rommath Mage"
 
@@ -486,9 +482,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       rainbow_mage?(card_info) ->
         :"Rainbow Mage"
-
-      lightshow? ->
-        :"Lightshow Mage"
 
       arcane_mage?(card_info) ->
         :"Arcane Mage"
@@ -547,6 +540,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       big_spell_mage?(card_info) ->
         :"Big Spell Mage"
 
+      burn_spell_mage?(card_info) ->
+        :"Burn Spell Mage"
+
       spell_mage?(card_info) ->
         :"Spell Mage"
 
@@ -555,6 +551,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       boar?(card_info) ->
         :"Boar Mage"
+
+      lightshow? ->
+        :"Lightshow Mage"
 
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
@@ -662,6 +661,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Flash Sale",
       "Disco Maul",
       "Nerubian Egg",
+      "Sea Giant",
       "Righteous Protector"
     ])
   end
@@ -746,6 +746,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
       ogre?(ci) -> "Ogre #{class_name}"
       "Colifero the Artist" in ci.card_names -> "Colifero #{class_name}"
+      quest?(ci) or questline?(ci) -> "Quest #{class_name}"
       true -> minion_type_fallback(ci, class_name, opts)
     end
   end
@@ -948,7 +949,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       control_shaman?(card_info) -> :"Control Shaman"
       murloc?(card_info) -> :"Murloc Shaman"
       bloodlust_shaman?(card_info) -> :"Bloodlust Shaman"
-      "From De Other Side" in card_info.card_names -> "FDOS Shaman"
+      "Wave of Nostalgia" in card_info.card_names -> :"Nostalgia Shaman"
+      "From De Other Side" in card_info.card_names -> :"FDOS Shaman"
       true -> fallbacks(card_info, "Shaman")
     end
   end
@@ -1347,6 +1349,17 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
+  defp burn_spell_mage?(card_info) do
+    spell_mage?(card_info) and
+      min_count?(card_info, 4, [
+        "Flame Geyser",
+        "Frostbolt",
+        "Lightshow",
+        "Molten Rune",
+        "Fireball"
+      ])
+  end
+
   defp fatigue_warlock?(card_info) do
     min_count?(
       card_info,
@@ -1433,8 +1446,32 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       class_name == "Rogue" && wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
 
+      class_name == "Rogue" && wild_gnoll_miracle_rogue?(card_info) ->
+        :"Gnoll Miracle Rogue"
+
       class_name == "Rogue" && wild_miracle_rogue?(card_info) ->
         :"Miracle Rogue"
+
+      "Garrote" in card_info.card_names && class_name == "Rogue" ->
+        :"Garrote Rogue"
+
+      "Pirate Admiral Hooktusk" in card_info.card_names && class_name == "Rogue" ->
+        :"Hooktusk Rogue"
+
+      "Spirit of the Shark" in card_info.card_names && class_name == "Rogue" ->
+        :"Shark Rogue"
+
+      lion_hunter?(card_info) ->
+        :"Lion Hunter"
+
+      wild_big_shaman?(card_info) ->
+        :"Big Shaman"
+
+      wild_combo_priest?(card_info) ->
+        :"Combo Priest"
+
+      ping_mage?(card_info) ->
+        :"Ping Mage"
 
       class_name == "Demon Hunter" && "Jace Darkweaver" in card_info.card_names &&
           min_spell_school_count?(card_info, 5, "Fel") ->
@@ -1453,8 +1490,35 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp do_archetype(_, _), do: nil
 
+  defp lion_hunter?(card_info) do
+    min_count?(card_info, 2, ["Mok'Nathal Lion", "Mystery Egg"])
+  end
+
+  defp wild_combo_priest?(card_info) do
+    min_count?(card_info, 3, [
+      "Inner Fire",
+      "Divine Spirit",
+      "Radiant Elemental",
+      "Power Word: Fortitude"
+    ])
+  end
+
+  defp wild_big_shaman?(card_info) do
+    min_count?(card_info, 2, ["Muckmorpher", "Eureka!"])
+  end
+
+  defp wild_gnoll_miracle_rogue?(card_info) do
+    min_count?(card_info, 2, ["Wildpaw Gnoll", "Arcane Giant"])
+  end
+
   defp wild_miracle_rogue?(card_info) do
-    min_count?(card_info, 2, ["Mailbox Dancer", "Arcane Giant", "Edwin VanCleef"])
+    min_count?(card_info, 3, [
+      "Mailbox Dancer",
+      "Arcane Giant",
+      "Edwin VanCleef",
+      "Scribbling Stenographer",
+      "Zephrys the Great"
+    ])
   end
 
   defp wild_thief_rogue?(card_info) do
