@@ -4,16 +4,15 @@ defmodule FunctionComponents.Ads do
   use Phoenix.Component
 
   attr :leaderboard, :boolean, default: true
-  attr :mobile_video, :boolean, default: false
-  attr :mobile_video_floating, :boolean, default: false
+  attr :mobile_video_mode, :atom, default: :enabled
   attr :ad_blocking_hint, :boolean, default: false
   attr :br, :boolean, default: true
 
   def below_title(assigns) do
     ~H"""
       <.below_title_leaderboard :if={@leaderboard} ad_blocking_hint={@ad_blocking_hint} />
-      <.mobile_video :if={@mobile_video} />
-      <.mobile_video_floating :if={@mobile_video_floating} />
+      <.mobile_video :if={:enabled == @mobile_video_mode} />
+      <.mobile_video_floating :if={:floating == @mobile_video_mode} />
       <br :if={@br}/>
     """
   end

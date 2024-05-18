@@ -24,11 +24,15 @@ defmodule BackendWeb.FeedLive do
             <OmniBar id="omni_bar_id"/>
           </div>
           <div class="level-item">
-            <FunctionComponents.Ads.below_title mobile_video_floating={true} />
+            <FunctionComponents.Ads.below_title mobile_video_mode={:floating} />
           </div>
           <div :if={false} class="level-item title is-2">Well Met!</div>
         </div>
         <div class="columns is-multiline is-mobile is-narrow is-centered">
+          <a :if={Backend.Reveals.show?(:boom, @user)} class="column is-narrow" href={~p"/arcticles/reveal/booms-incredible-inventions-mage"}>
+            <div class="card">
+            </div>
+          </a>
           <div :for={item <- items} class="column is-narrow">
             <div :if={item.type == "deck"}>
               <DeckFeedItem item={item}/>
