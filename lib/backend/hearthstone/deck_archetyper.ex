@@ -1341,9 +1341,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp spell_mage?(card_info) do
-    min_count?(card_info, 3, [
+    min_count?(card_info, 2, [
       "Malfunction",
       "Spot the Difference",
+      # what hdt uses for unknown cards
+      "NOOOOOOOOOOOO",
       "Yogg in the Box",
       "Manufacturing Error"
     ])
