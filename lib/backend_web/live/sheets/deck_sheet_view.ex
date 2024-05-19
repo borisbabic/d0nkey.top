@@ -112,7 +112,7 @@ defmodule BackendWeb.DeckSheetViewLive do
     socket =
       assign(socket, :deck_filters, filters) |> assign(:view_mode, view_mode) |> update_context()
 
-    {:noreply}
+    {:noreply, socket}
   end
 
   defp update_context(%{assigns: assigns} = socket) do
