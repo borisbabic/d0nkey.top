@@ -11,12 +11,14 @@ defmodule Components.Filter.RegionDropdown do
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
+  prop(class, :css_class, default: nil)
 
   def render(assigns) do
     ~F"""
       <span>
         <MultiSelectDropdown
           id={"#{@id}_ms_id"}
+          class={@class}
           show_search={false}
           options={DeckTracker.regions_for_filters()}
           title={@title}

@@ -213,6 +213,17 @@ defmodule BackendWeb do
       alias BackendWeb.Router.Helpers, as: Routes
       use BackendWeb.ViewHelpers
       unquote(verified_routes())
+
+      # TODO: find a better home for this
+      def add_format(other \\ %{}, params)
+
+      def add_format(other, %{format: f}) when f not in [2, "2"],
+        do: Map.put_new(other, :format, f)
+
+      def add_format(other, %{"format" => f}) when f not in [2, "2"],
+        do: Map.put_new(other, "format", f)
+
+      def add_format(other, _), do: other
     end
   end
 

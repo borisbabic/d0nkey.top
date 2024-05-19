@@ -13,12 +13,14 @@ defmodule Components.Filter.FormatDropdown do
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
   prop(aggregated_only, :boolean, default: false)
+  prop(class, :css_class, default: nil)
 
   def render(assigns) do
     ~F"""
       <LivePatchDropdown
         options={options(@options, @filter_context, @aggregated_only)}
         title={@title}
+        class={@class}
         param={@param}
         url_params={@url_params}
         path_params={@path_params}

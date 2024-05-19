@@ -85,14 +85,6 @@ defmodule Components.TierList do
 
   @default_min_games 1000
 
-  def add_format(other \\ %{}, params)
-  def add_format(other, %{format: f}) when f not in [2, "2"], do: Map.put_new(other, :format, f)
-
-  def add_format(other, %{"format" => f}) when f not in [2, "2"],
-    do: Map.put_new(other, "format", f)
-
-  def add_format(_, _), do: %{}
-
   def percentage(num, total) do
     Util.percent(num, total)
     |> Float.round(1)
