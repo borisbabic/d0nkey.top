@@ -67,7 +67,7 @@ defmodule Components.TierList do
           <tbody :if={{stats, total} = stats(@data, @criteria)}>
             <tr :for={as <- stats}>
               <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
-                <a class="basic-black-text deck-title" href={~p"/archetype/#{as.archetype}"}>
+                <a class="basic-black-text deck-title" href={~p"/archetype/#{as.archetype}?#{add_format(@params)}"}>
                   {as.archetype}
                 </a>
               </td>
@@ -84,6 +84,14 @@ defmodule Components.TierList do
   end
 
   @default_min_games 1000
+
+  def add_format(other \\ %{}, params)
+  def add_format(other, %{format: f}) when f not in [2, "2"], do: Map.put_new(other, :format, f)
+
+  def add_format(other, %{"format" => f}) when f not in [2, "2"],
+    do: Map.put_new(other, "format", f)
+
+  def add_format(_, _), do: %{}
 
   def percentage(num, total) do
     Util.percent(num, total)

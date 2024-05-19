@@ -1,12 +1,12 @@
 defmodule Components.Decklist do
   @moduledoc false
-  use Surface.Component
+  use BackendWeb, :surface_component
   alias Components.CardsList
   alias Components.DustBar
   alias Backend.Hearthstone.Deck
   alias Backend.UserManager.User
   alias Backend.UserManager.User.DecklistOptions
-  use BackendWeb.ViewHelpers
+  import Components.TierList, only: [add_format: 1]
 
   prop(deck, :map, required: true)
   prop(name, :string, required: false)
@@ -26,8 +26,8 @@ defmodule Components.Decklist do
   def deck_name(deck, _name, true), do: Deck.name(deck)
   def deck_name(deck, _name, _archetype_as_name), do: Deck.class_name(deck)
 
-  defp link(deck, false), do: "/deck/#{link_part(deck)}"
-  defp link(deck, true), do: "/archetype/#{Deck.archetype(deck)}"
+  defp deck_link(deck, false), do: ~p"/deck/#{link_part(deck)}"
+  defp deck_link(deck, true), do: ~p"/archetype/#{Deck.archetype(deck)}?#{add_format(deck)}"
   defp link_part(%{id: id}) when not is_nil(id), do: id
   defp link_part(%{deckcode: deckcode}), do: deckcode
 
@@ -47,7 +47,7 @@ defmodule Components.Decklist do
                   </div>
                   <div class="level-left deck-text">
                     <h2 class="deck-title">
-                      <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={link(@deck, @link_to_archetype)}>{deck_name(@deck, @name, @archetype_as_name)}</a>
+                      <span><span style="font-size:0;">### </span> <a class={"basic-black-text"} href={deck_link(@deck, @link_to_archetype)}>{deck_name(@deck, @name, @archetype_as_name)}</a>
                       <span style="font-size: 0; line-size:0; display:block">
                       {Deck.deckcode(@deck)}</span></span>
                     </h2>

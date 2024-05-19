@@ -6,6 +6,7 @@ defmodule BackendWeb.ArchetypeLive do
   alias Backend.DeckInteractionTracker, as: Tracker
   use Components.ExpandableDecklist
   import Backend.Hearthstone.Deck, only: [format_name: 1]
+  import Components.TierList, only: [add_format: 2]
 
   data(archetype, :any)
   data(user, :any)
@@ -40,7 +41,7 @@ defmodule BackendWeb.ArchetypeLive do
     <div class="title is-2">{@title || @archetype}</div>
     <div class="subtitle is-6">
       <span><a href={~p"/card-stats?#{card_stats_params(@archetype, @stats_params)}"}>Card Stats</a> | </span>
-      <span><a href={~p"/decks?#{decks_params(@archetype, @stats_params)}"}>Decks</a> </span>
+      <span><a href={~p"/decks?#{decks_params(@archetype, @stats_params) |> add_format(@stats_params)}"}>Decks</a> </span>
       <FunctionComponents.Ads.below_title/>
     </div>
     <div class="columns is-multiline is-mobile is-narrow is-centered">
