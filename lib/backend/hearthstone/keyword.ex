@@ -1,4 +1,5 @@
 defmodule Backend.Hearthstone.Keyword do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -23,19 +24,17 @@ defmodule Backend.Hearthstone.Keyword do
   end
 
   @spec secret?(%__MODULE__{}) :: boolean
-  def secret?(%{slug: "secret"}), do: true
-  def secret?(_), do: false
+  def secret?(keyword), do: matches?(keyword, "secret")
 
   @spec questline?(%__MODULE__{}) :: boolean
-  def questline?(%{slug: "questline"}), do: true
-  def questline?(_), do: false
+  def questline?(keyword), do: matches?(keyword, "questline")
 
   @spec quest?(%__MODULE__{}) :: boolean
-  def quest?(%{slug: "quest"}), do: true
-  def quest?(_), do: false
+  def quest?(keyword), do: matches?(keyword, "quest")
 
   @spec matches?(%__MODULE__{}, String.t()) :: boolean
   def matches?(%{slug: matching}, matching), do: true
   def matches?(%{name: matching}, matching), do: true
-  def matches?(_, _), do: false
+  # bug with the official api
+  def matches?(%{slug: slug}, search), do: slug == search <> "\n"
 end
