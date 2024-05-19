@@ -5,6 +5,8 @@ defmodule Components.LivePatchDropdown do
   alias Components.Dropdown
   alias Surface.Components.LivePatch
 
+  prop(class, :css_class, default: nil)
+
   @spec render(%{
           :normalizer => any,
           :selected_as_title => boolean,
@@ -13,10 +15,10 @@ defmodule Components.LivePatchDropdown do
         }) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{actual_title: _}) do
     ~F"""
-      <Dropdown title={@actual_title}>
+      <Dropdown title={@actual_title} class={@class}>
         <div :for={opt <- @options}>
           <LivePatch
-            class={"dropdown-item", "is-active": @current == @normalizer.(value(opt))}
+            class={"dropdown-item", @class, "is-active": @current == @normalizer.(value(opt))}
             to={link(BackendWeb.Endpoint, @live_view, @path_params, update_params(@url_params, @param, value(opt)))}>
             {display(opt)}
           </LivePatch>

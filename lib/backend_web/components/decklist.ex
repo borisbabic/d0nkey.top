@@ -6,7 +6,6 @@ defmodule Components.Decklist do
   alias Backend.Hearthstone.Deck
   alias Backend.UserManager.User
   alias Backend.UserManager.User.DecklistOptions
-  import Components.TierList, only: [add_format: 1]
 
   prop(deck, :map, required: true)
   prop(name, :string, required: false)

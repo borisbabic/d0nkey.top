@@ -9,6 +9,7 @@ defmodule Components.MultiSelectDropdown do
   prop(show_search, :boolean, default: true)
   prop(selected_to_top, :boolean, default: true)
   prop(matches_search, :fun, required: true)
+  prop(class, :css_class, default: nil)
 
   data(search, :string, default: "")
   prop(default_selector, :fun, required: false, default: &__MODULE__.default_selected/1)
@@ -16,7 +17,7 @@ defmodule Components.MultiSelectDropdown do
 
   def render(assigns = %{actual_title: _}) do
     ~F"""
-        <span>
+        <span class={@class}>
           <Dropdown title={@actual_title}>
             <Form :if={@show_search} for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
               <div class="columns is-mobile is-multiline">

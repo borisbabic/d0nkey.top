@@ -52,15 +52,15 @@ defmodule Components.OpponentStatsTable do
   def render(assigns) do
     ~F"""
     <div>
-        <RankDropdown id="opp_stats_table_rank_dropdown"/>
-        <PeriodDropdown id="opp_stats_table_period_dropdown" />
-        <RegionDropdown id="opp_stats_table_region_dropdown" />
-        <FormatDropdown :if={@include_format} id="opp_stats_format_dropdown" />
+          <RankDropdown id="opp_stats_table_rank_dropdown"/>
+          <PeriodDropdown id="opp_stats_table_period_dropdown" />
+          <RegionDropdown id="opp_stats_table_region_dropdown" />
+          <FormatDropdown class={"is-hidden-mobile"} :if={@include_format} id="opp_stats_format_dropdown" />
 
-          <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
-            options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
-            title={"Players"}
-            param={"players"} />
+            <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
+              options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
+              title={"Players"}
+              param={"players"} />
         <ClassStatsTable :if={stats = stats(@target, params(@selected_params, @user))} stats={stats} />
     </div>
     """

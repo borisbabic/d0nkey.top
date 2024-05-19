@@ -6,7 +6,6 @@ defmodule BackendWeb.ArchetypeLive do
   alias Backend.DeckInteractionTracker, as: Tracker
   use Components.ExpandableDecklist
   import Backend.Hearthstone.Deck, only: [format_name: 1]
-  import Components.TierList, only: [add_format: 2]
 
   data(archetype, :any)
   data(user, :any)
@@ -45,10 +44,10 @@ defmodule BackendWeb.ArchetypeLive do
       <FunctionComponents.Ads.below_title/>
     </div>
     <div class="columns is-multiline is-mobile is-narrow is-centered">
-      <div class="column is-narrow-mobile">
+      <div class="column">
         <OpponentStatsTable id="archetype_stats" include_format={true} target={@archetype} live_view={__MODULE__} path_params={to_string(@archetype)} params={@stats_params} />
       </div>
-      <div class="column is-narrow-mobile">
+      <div class="column">
             <ReplayExplorer
               id="archetype_replays"
               additional_params={replay_params(@archetype)}
