@@ -29,10 +29,6 @@ defmodule BackendWeb.FeedLive do
           <div :if={false} class="level-item title is-2">Well Met!</div>
         </div>
         <div class="columns is-multiline is-mobile is-narrow is-centered">
-          <a :if={Backend.Reveals.show?(:boom, @user)} class="column is-narrow" href={~p"/arcticles/reveal/booms-incredible-inventions-mage"}>
-            <div class="card">
-            </div>
-          </a>
           <div :for={item <- items} class="column is-narrow">
             <div :if={item.type == "deck"}>
               <DeckFeedItem item={item}/>
