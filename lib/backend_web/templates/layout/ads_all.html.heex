@@ -31,7 +31,7 @@
 window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
   "refreshLimit": 0,
   "refreshTime": 30,
-  "renderVisibleOnly": true,
+  "renderVisibleOnly": false,
   "refreshVisibleOnly": true,
   demo: <%= nitropay_demo?() %>,
   "sizes": [
@@ -42,7 +42,11 @@ window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
     [
       "970",
       "90"
-    ]
+    ],
+     [
+      "970",
+      "250"
+    ],
   ],
   "report": {
     "enabled": true,
@@ -107,4 +111,19 @@ window['nitroAds'].createAd('nitropay-interstitial', {
     },
     mediaQuery: "(max-width: 768px)"
   });
+</script>
+<script>
+window['nitroAds'].createAd('nitropay-desktop-anchor', {
+  "refreshTime": 30,
+  "format": "anchor",
+  "anchor": "bottom",
+  "anchorPersistClose": false,
+  "report": {
+    "enabled": true,
+    "icon": true,
+    "wording": "Report Ad",
+    "position": "top-right"
+  },
+  "mediaQuery": "(min-width: 1024px)"
+});
 </script>
