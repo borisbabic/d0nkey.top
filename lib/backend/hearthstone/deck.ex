@@ -92,16 +92,28 @@ defmodule Backend.Hearthstone.Deck do
   def card_mana_cost(_, card), do: Card.cost(card)
 
   @spec zilliax_modules_sideboards(t() | [Sideboard.t()]) :: [integer()]
-  def zilliax_modules_sideboards(%{sideboards: sideboards}),
-    do: zilliax_modules_sideboards(sideboards)
+  def zilliax_modules_sideboards(sideboards_or_deck),
+    do: filter_sideboards(sideboards_or_deck, Card.zilliax_3000())
 
-  def zilliax_modules_sideboards(sideboards) do
-    Enum.filter(sideboards, &(&1.sideboard == Card.zilliax_3000()))
+  @spec filter_sideboards(t() | [Sideboard.t()], integer()) :: [integer()]
+  def filter_sideboards(%{sideboards: sideboards}, sideboard_id),
+    do: filter_sideboards(sideboards, sideboard_id)
+
+  def filter_sideboards(sideboards, sideboard_id) do
+    Enum.filter(sideboards, &(&1.sideboard == sideboard_id))
   end
 
   @spec zilliax_modules_cards(t() | [Sideboard.t()]) :: [Card.t()]
-  def zilliax_modules_cards(sideboards_or_deck) do
-    for %{card: card_id} <- zilliax_modules_sideboards(sideboards_or_deck),
+  def zilliax_modules_cards(sideboards_or_deck),
+    do: sideboard_cards(sideboards_or_deck, Card.zilliax_3000())
+
+  @spec etc_sideboard_cards(t() | [Sideboard.t()]) :: [Card.t()]
+  def etc_sideboard_cards(sideboards_or_deck),
+    do: sideboard_cards(sideboards_or_deck, Card.etc_band_manager())
+
+  @spec sideboard_cards(t() | [Sideboard.t()], integer()) :: [Card.t()]
+  def sideboard_cards(sideboards_or_deck, sideboard_id) do
+    for %{card: card_id} <- filter_sideboards(sideboards_or_deck, sideboard_id),
         card = Hearthstone.get_card(card_id) do
       card
     end

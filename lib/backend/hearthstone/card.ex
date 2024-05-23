@@ -111,6 +111,8 @@ defmodule Backend.Hearthstone.Card do
 
   defp update_duels(map), do: map
 
+  @etc_band_manager 90_749
+  def etc_band_manager, do: @etc_band_manager
   @zilliax_3000 102_983
   def zilliax_3000, do: @zilliax_3000
   @spec zilliax_3000?(card() | integer() | nil) :: boolean

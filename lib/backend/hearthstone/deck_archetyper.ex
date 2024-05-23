@@ -1460,8 +1460,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Pirate Admiral Hooktusk" in card_info.card_names && class_name == "Rogue" ->
         :"Hooktusk Rogue"
 
-      "Spirit of the Shark" in card_info.card_names && class_name == "Rogue" ->
-        :"Shark Rogue"
+      wild_alex_rogue?(card_info) ->
+        :"Alex Rogue"
 
       lion_hunter?(card_info) ->
         :"Lion Hunter"
@@ -1484,6 +1484,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       outcast_dh?(card_info) ->
         :"Outcast DH"
+
+      "Spirit of the Shark" in card_info.card_names && class_name == "Rogue" ->
+        :"Shark Rogue"
 
       true ->
         fallbacks(card_info, class_name)
@@ -1511,6 +1514,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp wild_gnoll_miracle_rogue?(card_info) do
     min_count?(card_info, 2, ["Wildpaw Gnoll", "Arcane Giant"])
+  end
+
+  defp wild_alex_rogue?(card_info) do
+    "Spirit of the Shark" in card_info.card_names and
+      "Alexstrasza the Life-Binder" in card_info.etc_sideboard_names
   end
 
   defp wild_miracle_rogue?(card_info) do
@@ -2218,11 +2226,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     zilliax_modules_names =
       Map.get(deck, :sideboards, []) |> Deck.zilliax_modules_cards() |> Enum.map(& &1.name)
 
+    etc_sideboard_names =
+      Map.get(deck, :sideboards, []) |> Deck.etc_sideboard_cards() |> Enum.map(& &1.name)
+
     %{
       full_cards: full_cards,
       card_names: card_names,
       cards: cards,
-      zilliax_modules_names: zilliax_modules_names
+      zilliax_modules_names: zilliax_modules_names,
+      etc_sideboard_names: etc_sideboard_names
     }
   end
 
