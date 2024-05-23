@@ -4,7 +4,7 @@ defmodule FunctionComponents.Ads do
   use Phoenix.Component
 
   attr :leaderboard, :boolean, default: true
-  attr :mobile_video_mode, :atom, default: :enabled
+  attr :mobile_video_mode, :atom, default: :floating
   attr :ad_blocking_hint, :boolean, default: false
   attr :br, :boolean, default: true
 
