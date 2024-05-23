@@ -79,7 +79,7 @@ defmodule BackendWeb.DeckLive do
               </:after_deck>
             </DeckCard>
           </div>
-          <div :if={nil != @deck.id} class="column is-narrow-mobile">
+          <div :if={nil != @deck.id} class="column">
             <OpponentStatsTable id="deck_stats" target={@deck.id} live_view={__MODULE__} path_params={[to_string(@deck.id)]} params={@deck_stats_params} />
           </div>
           <div :if={false and nil != @deck.id} class="column is-narrow-mobile">
