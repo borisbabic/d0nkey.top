@@ -278,6 +278,8 @@ defmodule BackendWeb.Router do
 
     live("/twitch/bot", TwitchBotLive)
     live("/twitch/bot/new-command", TwitchNewCommandLive)
+
+    live("/scratchpad", ScratchPadLive)
   end
 
   scope "/", BackendWeb do
