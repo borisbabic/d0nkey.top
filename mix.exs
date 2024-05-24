@@ -95,6 +95,7 @@ defmodule Backend.MixProject do
       {:ecto_psql_extras, "~> 0.6"},
       {:csv, "~> 2.5"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:akin, "~> 0.1.8"},
       {:quantum, "~> 2.3"}
     ]
@@ -111,7 +112,9 @@ defmodule Backend.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind default", "esbuild default"],
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end

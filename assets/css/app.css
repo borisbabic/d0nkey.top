@@ -1,3 +1,7 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 /* This file is for your main application css. */
 .multi-select-text {
   white-space: nowrap;
@@ -497,11 +501,12 @@
 
 
 .half-scale {
-  transform: scale(0.5);
+  transform: scale(0.1);
 }
 .clipped-card {
   /* background-size: none; */
   object-fit: none;
+  display: hidden;
   object-position: 50% 23%;
   /* clip-path: circle(16.1% at 47% 30%); */
 }
