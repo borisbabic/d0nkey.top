@@ -79,6 +79,7 @@ defmodule Backend.MixProject do
       {:absinthe_phoenix, "~> 2.0.0"},
       {:absinthe_relay, "~> 1.5.0"},
       {:surface, "~> 0.9"},
+      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:wait_for_it, "~>1.1"},
       {:oban, "~> 2.5"},
       {:postgrex_pubsub, "~> 0.2.0"},
@@ -109,7 +110,8 @@ defmodule Backend.MixProject do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end

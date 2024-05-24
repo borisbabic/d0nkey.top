@@ -155,6 +155,14 @@ config :phoenix_meta_tags,
   description: "Hearthstone Decks, Stats, Streamer Decks, and Esports Info",
   url: "www.hsguru.com"
 
+config :esbuild,
+  version: "0.20.2",
+  default: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__)
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
