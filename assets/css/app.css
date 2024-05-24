@@ -173,7 +173,6 @@
   background-repeat: no-repeat;
 }
 
-
 .decklist-card-background {
   background: var(--color-gradient);
 }
@@ -493,4 +492,16 @@
   position: -webkit-sticky;
   position: sticky;
   top: 0;
+}
+
+
+
+.half-scale {
+  transform: scale(0.5);
+}
+.clipped-card {
+  /* background-size: none; */
+  object-fit: none;
+  object-position: 50% 23%;
+  /* clip-path: circle(16.1% at 47% 30%); */
 }
