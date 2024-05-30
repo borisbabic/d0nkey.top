@@ -1165,7 +1165,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       n_roll?(card_info) -> :"Rock 'n' Roll Warrior"
       warrior_aoe?(card_info) -> :"Control Warrior"
       excavate_warrior?(card_info) && odyn?(card_info) -> :"Excavate Odyn Warrior"
-      cycle_odyn?(card_info) -> :"Cycle Odyn Warrior"
+      # cycle_odyn?(card_info) -> :"Cycle Odyn Warrior"
       odyn?(card_info) -> :"Odyn Warrior"
       excavate_warrior?(card_info) -> :"Excavate Warrior"
       riff_warrior?(card_info) -> :"Riff Warrior"
