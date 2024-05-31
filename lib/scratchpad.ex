@@ -1092,6 +1092,26 @@ defmodule ScratchPad do
     end)
   end
 
+  def twist_deck_archetyping(unprocessed_data \\ @twist_data) do
+    Enum.map_join(unprocessed_data, "\n\n", fn {name, _, card_name_tuples} ->
+      min_count_part =
+        card_name_tuples
+        |> Enum.map(&elem(&1, 1))
+        |> card_names_to_min_count(4)
+
+      "#{min_count_part} -> :\"#{name}\""
+    end)
+  end
+
+  def card_names_to_min_count(names, leeway \\ 0) do
+    uniq_names = Enum.uniq(names)
+    card_names_part = Enum.map_join(uniq_names, ", ", &"\"#{&1}\"")
+
+    """
+    min_count?(card_info, #{Enum.count(uniq_names) - leeway}, [#{card_names_part}])
+    """
+  end
+
   def process_twist_cards(cards) do
     Enum.reduce(cards, {[], []}, fn {count, name}, {errors, carry} ->
       case get_card_by_name(name) do
