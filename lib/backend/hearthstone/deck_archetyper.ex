@@ -213,15 +213,36 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       relic_dh?(card_info) ->
         :"Relic Demon Hunter"
 
-      outcast_dh?(card_info) ->
-        :"Outcast DH"
-
       shopper_dh?(card_info) ->
         :"Shopper DH"
+
+      attack_dh?(card_info) ->
+        :"Attack DH"
+
+      outcast_dh?(card_info) ->
+        :"Outcast DH"
 
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  defp attack_dh?(ci) do
+    min_count?(ci, 5, [
+      "Illidari Inquisitor",
+      "Sock Puppet Slitherspear",
+      "Burning Heart",
+      "Battlefiend",
+      "Parched Desperado",
+      "Spirit of the Team",
+      "Going Down Swinging",
+      "Chaos Strike",
+      "Lesser Opal Spellstone",
+      "Saronite Shambler",
+      "Gan'arg Glaivesmith",
+      "Gibbering Reject",
+      "Rhythmdancer Risa"
+    ])
   end
 
   def shopper_dh?(ci) do
