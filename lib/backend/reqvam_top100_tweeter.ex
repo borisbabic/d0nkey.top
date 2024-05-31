@@ -17,7 +17,7 @@ defmodule Backend.ReqvamTop100Tweeter do
     with {:ok, config} <- Application.fetch_env(:backend, :req_t100_twitter_info),
          :ok <- ExTwitter.configure(:process, config),
          {:ok, season} <-
-           Backend.Leaderboards.SeasonBag.get(%Hearthstone.Leaderboards.Season{
+           Leaderboards.get_season(%Hearthstone.Leaderboards.Season{
              region: "US",
              leaderboard_id: "STD",
              season_id: nil

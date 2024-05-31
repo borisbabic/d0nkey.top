@@ -137,11 +137,6 @@ defmodule Backend.Application do
           start: {Backend.PlayerCountryPreferenceBag, :start_link, [[]]}
         },
         %{
-          # TODO: CANNOT MULTISERVEr
-          id: Backend.Leaderboards.SeasonBag,
-          start: {Backend.Leaderboards.SeasonBag, :start_link, [[]]}
-        },
-        %{
           # can multiserver, prolly?
           id: Hearthstone.DeckTracker.ArchetypeBag,
           start: {Hearthstone.DeckTracker.ArchetypeBag, :start_link, [[]]}

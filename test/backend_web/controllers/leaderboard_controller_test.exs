@@ -13,7 +13,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
         region: "EU"
       }
 
-      {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+      {:ok, season} = Leaderboards.get_season(s)
 
       now = NaiveDateTime.utc_now()
 
@@ -46,7 +46,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
         region: "EU"
       }
 
-      {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+      {:ok, season} = Leaderboards.get_season(s)
 
       now = NaiveDateTime.utc_now()
 
@@ -93,7 +93,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
         region: "EU"
       }
 
-      {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+      {:ok, season} = Leaderboards.get_season(s)
 
       now = NaiveDateTime.utc_now()
 
@@ -128,7 +128,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
         region: "EU"
       }
 
-      {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+      {:ok, season} = Leaderboards.get_season(s)
 
       now = NaiveDateTime.utc_now()
 
@@ -175,7 +175,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
         region: "EU"
       }
 
-      {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+      {:ok, season} = Leaderboards.get_season(s)
 
       now = NaiveDateTime.utc_now()
 
@@ -223,7 +223,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
         region: "EU"
       }
 
-      {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
+      {:ok, season} = Leaderboards.get_season(s)
 
       now = NaiveDateTime.utc_now()
 
@@ -276,8 +276,8 @@ defmodule BackendWeb.LeaderboardControllerTest do
         region: "EU"
       }
 
-      {:ok, season} = Backend.Leaderboards.SeasonBag.get(s)
-      {:ok, other_season} = s |> Map.put(:region, "AP") |> Backend.Leaderboards.SeasonBag.get()
+      {:ok, season} = Leaderboards.get_season(s)
+      {:ok, other_season} = s |> Map.put(:region, "AP") |> Leaderboards.get_season()
 
       now = NaiveDateTime.utc_now()
 

@@ -2,7 +2,6 @@ defmodule Backend.Leaderboards.PageFetcher do
   @moduledoc "Fetches leaderboard pages and retries failures"
   use Oban.Worker, queue: :leaderboards_pages_fetching, unique: [period: 300]
   alias Backend.Leaderboards
-  alias Backend.Leaderboards.SeasonBag
   alias Hearthstone.Leaderboards.Api
   alias Hearthstone.Leaderboards.Response
 
@@ -29,7 +28,7 @@ defmodule Backend.Leaderboards.PageFetcher do
         max_page_num \\ nil,
         first_page \\ 1
       ) do
-    with {:ok, season = %{id: id}} when is_integer(id) <- SeasonBag.get(season) do
+    with {:ok, season = %{id: id}} when is_integer(id) <- Leaderboards.get_season(season) do
       for page_num <- first_page..last_page(tot, max_page_num) do
         create_args(season, page_num)
         |> new()
