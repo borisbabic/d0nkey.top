@@ -2,7 +2,6 @@ defmodule BackendWeb.LeaderboardController do
   use BackendWeb, :controller
   alias Backend.Blizzard
   alias Backend.Leaderboards
-  alias Backend.Leaderboards.SeasonBag
   alias Backend.MastersTour
   alias Backend.LeaderboardsPoints
   require Backend.LobbyLegends
@@ -127,7 +126,7 @@ defmodule BackendWeb.LeaderboardController do
   defp parse_season(criteria, params) do
     from_params = create_season(params)
 
-    case SeasonBag.get(from_params) do
+    case Leaderboards.get_season(from_params) do
       {:ok, s} -> [{"season", s} | criteria]
       _ -> [{"season", from_params} | criteria]
     end

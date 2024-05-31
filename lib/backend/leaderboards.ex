@@ -74,7 +74,7 @@ defmodule Backend.Leaderboards do
   end
 
   def get_leaderboard_shim(s) do
-    with {:ok, season} <- SeasonBag.get(s) do
+    with {:ok, season} <- get_season(s) do
       criteria = [:latest_in_season, {"season", season}, {"limit", 200}, {"order_by", "rank"}]
       entries = entries(criteria)
 
@@ -861,7 +861,7 @@ defmodule Backend.Leaderboards do
   end
 
   defp compose_entries_query({"season", s = %{season_id: nil}}, query) do
-    case SeasonBag.get(s) do
+    case get_season(s) do
       {:ok, season = %{id: id}} when is_integer(id) ->
         compose_entries_query({"season", season}, query)
 
@@ -875,8 +875,8 @@ defmodule Backend.Leaderboards do
   defp compose_entries_query({"seasons", seasons = [%{} | _]}, query) do
     ids =
       Enum.flat_map(seasons, fn s ->
-        case SeasonBag.get_database_id(s) do
-          {:ok, id} -> [id]
+        case get_season(s) do
+          {:ok, %{id: id}} when is_integer(id) -> [id]
           _ -> []
         end
       end)
@@ -1243,7 +1243,7 @@ defmodule Backend.Leaderboards do
   end
 
   def create_entries(rows, s) do
-    with {:ok, season = %{id: _id}} <- SeasonBag.get(s) do
+    with {:ok, season = %{id: _id}} <- get_season(s) do
       create_entries(rows, season)
     end
   end
@@ -1280,6 +1280,41 @@ defmodule Backend.Leaderboards do
     Repo.all(Season)
   end
 
+  defp ensure_season_full(season),
+    do:
+      season
+      |> ApiSeason.ensure_region()
+      |> ApiSeason.ensure_leaderboard_id()
+      |> Map.put_new(:season_id, nil)
+
+  def get_season(%Season{id: id} = season) when is_integer(id), do: {:ok, season}
+
+  def get_season(%{season_id: nil} = base) do
+    %{leaderboard_id: leaderboard_id, region: region} = ensure_season_full(base)
+
+    query =
+      from s in Season,
+        where: s.leaderboard_id == ^to_string(leaderboard_id),
+        where: s.region == ^to_string(region),
+        order_by: [desc: s.season_id],
+        limit: 1
+
+    {:ok, Repo.one(query)}
+  end
+
+  def get_season(%{season_id: season_id, leaderboard_id: leaderboard_id, region: region})
+      when is_integer(season_id) do
+    query =
+      from s in Season,
+        where: s.season_id == ^season_id,
+        where: s.leaderboard_id == ^to_string(leaderboard_id),
+        where: s.region == ^to_string(region)
+
+    {:ok, Repo.one(query)}
+  end
+
+  def get_season(season), do: {:ok, ensure_season_full(season)}
+
   def create_season(season = %Season{id: _}), do: season
 
   def create_season(season) do
@@ -1295,7 +1330,7 @@ defmodule Backend.Leaderboards do
 
   def snapshot_conversion(snapshot, multi) do
     with {:ok, season = %{id: id}} <-
-           SeasonBag.get(%{
+           get_season(%{
              season_id: snapshot.season_id,
              leaderboard_id: snapshot.leaderboard_id,
              region: snapshot.region
@@ -1428,8 +1463,6 @@ defmodule Backend.Leaderboards do
       [],
       timeout: 69_666_000
     )
-
-    SeasonBag.update()
   end
 
   def copy_last_month_to_lobby_legends() do
