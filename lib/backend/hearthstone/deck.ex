@@ -253,11 +253,42 @@ defmodule Backend.Hearthstone.Deck do
   def archetype(deck), do: DeckArchetyper.archetype(deck)
 
   def name(deck) do
-    deck
-    |> base_name()
-    |> add_runes(deck)
-    |> add_xl(deck)
+    base_name = base_name(deck)
+
+    if add_name_modifiers?(deck, base_name) do
+      base_name
+      |> add_runes(deck)
+      |> add_xl(deck)
+    else
+      base_name
+    end
   end
+
+  @whizbang_heros_archetypes [
+    :"Illidan Stormrage",
+    :"Al'Akir the Windlord",
+    :"Leeroy Jenkins",
+    :"Kael'Thas Sunstrider",
+    :"C'Thun",
+    :Nozdormu,
+    :"The Lich King",
+    :Xyrella,
+    :"Patches the Pirate",
+    :"Brann Bronzebeard",
+    :"Sir Finley Mrrgglton",
+    :"Guff Runetotem",
+    :"King Krush",
+    :"Forest Warden Omu",
+    :"Dr. Boom",
+    :"Zul'jin",
+    :"N'Zoth, the Corruptor",
+    :"Arch-Villain Rafaam",
+    :Arfus
+  ]
+  defp add_name_modifiers?(%{format: 4}, base_name) when base_name in @whizbang_heros_archetypes,
+    do: false
+
+  defp add_name_modifiers?(_, _), do: true
 
   defp add_xl(name, %{cards: cards}) when is_list(cards) do
     if Enum.count(cards) == 40 do
