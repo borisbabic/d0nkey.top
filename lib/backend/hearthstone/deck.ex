@@ -655,7 +655,10 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  @spec extract_class(String.t()) :: String.t()
+  @spec extract_class(String.t() | atom()) :: String.t()
+  def extract_class(name_or_archetype) when is_atom(name_or_archetype),
+    do: name_or_archetype |> to_string() |> extract_class()
+
   def extract_class(name_or_archetype) when is_binary(name_or_archetype) do
     down = String.downcase(name_or_archetype)
 
@@ -678,6 +681,25 @@ defmodule Backend.Hearthstone.Deck do
       name_or_archetype =~ "DH" -> "DEMONHUNTER"
       String.ends_with?(down, "lock") -> "WARLOCK"
       String.ends_with?(down, "adin") -> "PALADIN"
+      name_or_archetype =~ "Illidan Stormrage" -> "DEMONHUNTER"
+      name_or_archetype =~ "Al'Akir the Windlord" -> "SHAMAN"
+      name_or_archetype =~ "Leeroy Jenkins" -> "PALADIN"
+      name_or_archetype =~ "Kael'Thas Sunstrider" -> "MAGE"
+      name_or_archetype =~ "C'Thun" -> "DRUID"
+      name_or_archetype =~ "The Lich King" -> "DEATHKNIGHT"
+      name_or_archetype =~ "Xyrella" -> "PRIEST"
+      name_or_archetype =~ "Patches the Pirate" -> "ROGUE"
+      name_or_archetype =~ "King Krush" -> "HUNTER"
+      name_or_archetype =~ "Forest Warden Omu" -> "DRUID"
+      name_or_archetype =~ "Dr. Boom" -> "WARRIOR"
+      name_or_archetype =~ "Zul'jin" -> "HUNTER"
+      name_or_archetype =~ "N'Zoth" -> "WARLOCK"
+      name_or_archetype =~ "Brann Bronzebeard" -> "HUNTER"
+      name_or_archetype =~ "Guff Runetotem" -> "DRUID"
+      name_or_archetype =~ "Arch-Villain Rafaam" -> "WARLOCK"
+      name_or_archetype =~ "Arfus" -> "DEATHKNIGHT"
+      name_or_archetype =~ "Sir Finley Mrrgglton" -> "PALADIN"
+      name_or_archetype =~ "Nozdormu" -> "PALADIN"
       true -> "UNKNOWN"
     end
   end
