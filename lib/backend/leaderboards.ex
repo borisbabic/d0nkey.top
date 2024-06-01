@@ -1302,13 +1302,19 @@ defmodule Backend.Leaderboards do
     {:ok, Repo.one(query)}
   end
 
-  def get_season(%{season_id: season_id, leaderboard_id: leaderboard_id, region: region})
+  def get_season(%{season_id: season_id, leaderboard_id: leaderboard_id, region: region} = season)
       when is_integer(season_id) do
     query =
       from s in Season,
         where: s.season_id == ^season_id,
         where: s.leaderboard_id == ^to_string(leaderboard_id),
         where: s.region == ^to_string(region)
+
+    case Repo.one(query) do
+      nil when not is_nil(leaderboard_id) and not is_nil(region) -> create_season(season)
+      nil -> {:error, :no_season}
+      result -> {:ok, result}
+    end
 
     {:ok, Repo.one(query)}
   end
