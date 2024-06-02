@@ -142,7 +142,7 @@ defmodule BackendWeb.DeckTrackerLive do
           </div>
         </div>
         <br>
-        <div class="columns is-mobile is-multiline is-vcentered is-centered">
+        <div class="columns is-mobile is-multiline is-vcentered is-centered has-text-black">
           <div class=" is-narrow">
             <Select class="select" prompt="Result" selected={Map.get(@form_values, "result")} field={:result} options={"Win": "WIN", "Loss": "LOSS", "Tie": "DRAW"} />
           </div>
@@ -159,7 +159,7 @@ defmodule BackendWeb.DeckTrackerLive do
         <div class="columns is-mobile is-vcentered is-centered">
           <Label class="label">Optional:</Label>
         </div>
-        <div class="columns is-mobile is-multiline is-vcentered is-centered">
+        <div class="columns is-mobile is-multiline is-vcentered is-centered has-text-black">
           <Select class="select" prompt="On Coin?" selected={Map.get(@form_values, "coin")} field={:coin} options={Coin: true, "No Coin": false} />
           <Select field={:turns} class="select" prompt="Turns" options={1..45} selected={Map.get(@form_values, "selected")} />
           <TextInput field={:opponent_battletag} value={Map.get(@form_values, "opponent_battletag")} class="input is-small" opts={placeholder: "Opponent Battletag", style: "width: 200px;"} />
