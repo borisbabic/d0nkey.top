@@ -1426,6 +1426,8 @@ defmodule Hearthstone.DeckTracker do
 
   """
   def update_period(%Period{} = period, attrs) do
+    IO.inspect(attrs, label: "updating period")
+
     period
     |> Period.changeset(attrs)
     |> Repo.update()

@@ -16,6 +16,7 @@
     <.torch_input label="Include in personal filters" field={f[:include_in_personal_filters]} type="checkbox" />
     <.torch_input label="Include in deck filters" field={f[:include_in_deck_filters]} type="checkbox" />
     <.torch_input label="Auto aggregate" field={f[:auto_aggregate]} type="checkbox" />
+    <.torch_input label="Formats" field={f[:formats]} type="select" options={Hearthstone.Enums.Format.all_values()} multiple={true} />
     <div class="torch-submit-form">
       <button type="submit" class="torch-submit-button"><%= Torch.I18n.message("Submit") %></button>
     </div>

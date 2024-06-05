@@ -13,6 +13,7 @@ defmodule Hearthstone.DeckTracker.Period do
     field(:order_priority, :integer)
     field(:slug, :string)
     field(:type, :string)
+    field(:formats, {:array, :integer}, default: Hearthstone.Enums.Format.all_values())
 
     timestamps()
   end
@@ -30,6 +31,7 @@ defmodule Hearthstone.DeckTracker.Period do
       :order_priority,
       :include_in_personal_filters,
       :include_in_deck_filters,
+      :formats,
       :auto_aggregate
     ])
     |> validate_required([
@@ -37,6 +39,7 @@ defmodule Hearthstone.DeckTracker.Period do
       :display,
       :type,
       :include_in_personal_filters,
+      :formats,
       :include_in_deck_filters,
       :auto_aggregate
     ])
