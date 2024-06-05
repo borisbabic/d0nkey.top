@@ -168,8 +168,8 @@ card_stats AS (
             END) AS mulligan_losses
     FROM
         public.dt_card_game_tally dcgt
-        INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND p.format = dg.format
         INNER JOIN public.dt_games dg ON dg.id = dcgt.game_id
+        INNER JOIN agg_periods p ON dcgt.inserted_at >= p.START AND p.format = dg.format
         INNER JOIN agg_ranks r ON (r.min_rank = 0
                 OR dg.player_rank >= min_rank)
             AND (r.max_rank IS NULL
