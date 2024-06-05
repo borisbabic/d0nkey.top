@@ -63,6 +63,7 @@ defmodule Components.CardStatsTable do
 
 
       <ClassDropdown id={"opponent_class_filter"}
+        title={"Opponent"}
         name_prefix={"VS "}
         param={"opponent_class"} />
       <table class="table is-fullwidth is-striped is-gapless">
