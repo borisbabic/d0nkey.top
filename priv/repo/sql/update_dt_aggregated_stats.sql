@@ -23,26 +23,21 @@ BEGIN
         WHERE
             auto_aggregate = TRUE
 ),
-agg_formats(
-    value
-) AS (
-    SELECT
-        value
-    FROM
-        public.formats
-    WHERE
-        auto_aggregate = TRUE
-),
 agg_periods(
-    START, slug
+    format,
+    START, 
+    slug
 ) AS (
-    SELECT
-        COALESCE(period_start, now() - concat(hours_ago::text, ' hours')::interval) AS PERIOD,
+    SELECT p.format, p.START, p.slug FROM (SELECT
+        UNNEST(formats) as format,
+        COALESCE(period_start, now() - concat(hours_ago::text, ' hours')::interval) AS START,
         slug
     FROM
         public.dt_periods
     WHERE
-        auto_aggregate
+        auto_aggregate) p
+	INNER JOIN public.formats f ON value = p.format
+	WHERE f.auto_aggregate 
 ),
 agg_regions(
     code
@@ -93,8 +88,7 @@ CAST(SUM(
 FROM
     public.dt_games dg
     INNER JOIN public.deck d ON d.id = dg.player_deck_id
-    INNER JOIN agg_periods p ON dg.inserted_at >= p.START
-    INNER JOIN agg_formats f ON dg.format = f.value
+    INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND p.format = dg.format
     INNER JOIN agg_ranks r ON (r.min_rank = 0
             OR dg.player_rank >= min_rank)
         AND (r.max_rank IS NULL
@@ -174,9 +168,8 @@ card_stats AS (
             END) AS mulligan_losses
     FROM
         public.dt_card_game_tally dcgt
-        INNER JOIN agg_periods p ON dcgt.inserted_at >= p.START
+        INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND p.format = dg.format
         INNER JOIN public.dt_games dg ON dg.id = dcgt.game_id
-        INNER JOIN agg_formats f ON dg.format = f.value
         INNER JOIN agg_ranks r ON (r.min_rank = 0
                 OR dg.player_rank >= min_rank)
             AND (r.max_rank IS NULL

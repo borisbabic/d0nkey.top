@@ -48,6 +48,7 @@
             <label>Auto aggregate</label>
             <%= filter_boolean_input(:period, :auto_aggregate, @conn.params) %>
           </div>
+
         
         
           <div class="field">
@@ -98,6 +99,8 @@
               <th><%= table_link(@conn, "Include in deck filters", :include_in_deck_filters) %></th>
             
               <th><%= table_link(@conn, "Auto aggregate", :auto_aggregate) %></th>
+
+              <th><%= table_link(@conn, "Formats", :formats) %></th>
             
             <th><span>Actions</span></th>
           </tr>
@@ -125,6 +128,8 @@
                 <td><%= period.include_in_deck_filters %></td>
               
                 <td><%= period.auto_aggregate %></td>
+
+                <td><%= period.formats %></td>
               
               <td class="torch-actions">
                 <span><.link href={~p"/torch/periods/#{period}"}><%= Torch.I18n.message("Show") %></.link></span>
