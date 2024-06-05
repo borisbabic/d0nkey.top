@@ -20,7 +20,7 @@ defmodule Components.Feed.TierList do
             <td><WinrateTag winrate={stat.winrate} /></td>
           </tr>
         </tbody>
-        
+
       </table>
     </div>
 
@@ -29,7 +29,7 @@ defmodule Components.Feed.TierList do
 
   defp get_tier_list() do
     Hearthstone.DeckTracker.archetype_stats([
-      {"period", Components.Filter.PeriodDropdown.default(:public)},
+      {"period", Components.Filter.PeriodDropdown.default(:public, 2)},
       :diamond_to_legend,
       {"format", 2}
     ])

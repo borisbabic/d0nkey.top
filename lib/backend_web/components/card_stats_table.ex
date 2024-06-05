@@ -316,12 +316,14 @@ defmodule Components.CardStatsTable do
     |> DecksExplorer.parse_int(["min_mull_count", "min_drawn_count", "min_count"])
   end
 
-  def default_criteria(context) do
+  def default_criteria(context, criteria \\ nil) do
+    default_format = FormatDropdown.default(context)
+
     %{
-      "period" => PeriodDropdown.default(context),
+      "period" => PeriodDropdown.default(context, criteria, default_format),
       "rank" => RankDropdown.default(context),
       "opponent_class" => "any",
-      "format" => FormatDropdown.default(context)
+      "format" => default_format
     }
   end
 

@@ -29,7 +29,7 @@ defmodule Components.TierList do
         assigns.live_view,
         assigns.params,
         nil,
-        Map.merge(default_criteria(), assigns.criteria)
+        Map.merge(default_criteria(assigns.criteria), assigns.criteria)
       )
     }
   end
@@ -122,13 +122,15 @@ defmodule Components.TierList do
     |> parse_int(["min_games"])
   end
 
-  def default_criteria() do
+  def default_criteria(criteria) do
+    default_format = FormatDropdown.default(:public)
+
     %{
-      "period" => PeriodDropdown.default(:public),
+      "period" => PeriodDropdown.default(:public, criteria, default_format),
       "rank" => RankDropdown.default(:public),
       "opponent_class" => "any",
       "min_games" => @default_min_games,
-      "format" => FormatDropdown.default(:public)
+      "format" => default_format
     }
   end
 

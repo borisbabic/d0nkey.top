@@ -122,11 +122,15 @@ defmodule Components.ReplayExplorer do
   end
 
   defp parse_params(raw_params, assigns) do
+    default_format = assigns.default_format || FormatDropdown.default(assigns.filter_context)
+
     defaults = [
       {"limit", assigns.default_limit},
-      {"format", assigns.default_format || FormatDropdown.default(assigns.filter_context)},
+      {"format", default_format},
       {"rank", assigns.default_rank || RankDropdown.default(assigns.filter_context)},
-      {"period", assigns.default_period || PeriodDropdown.default(assigns.filter_context)},
+      {"period",
+       assigns.default_period ||
+         PeriodDropdown.default(assigns.filter_context, raw_params, default_format)},
       {"order_by", assigns.default_order_by}
     ]
 

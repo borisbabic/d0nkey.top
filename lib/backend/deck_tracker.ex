@@ -1626,6 +1626,10 @@ defmodule Hearthstone.DeckTracker do
     Enum.reduce(criteria, query, &compose_periods_query/2)
   end
 
+  defp compose_periods_query({:format, format}, query) do
+    query |> where([period: p], ^format in p.formats)
+  end
+
   defp compose_periods_query({:context, :public}, query) do
     query |> where([period: p], p.include_in_deck_filters == true)
   end
@@ -1650,16 +1654,23 @@ defmodule Hearthstone.DeckTracker do
     query |> where([period: p], p.type == ^type)
   end
 
-  @spec default_period() :: String.t()
-  def default_period() do
+  @spec default_period(integer() | nil) :: String.t()
+  def default_period(format \\ nil) do
     now = NaiveDateTime.utc_now()
     start = now |> Timex.shift(days: -10)
     finish_patch = now |> Timex.shift(hours: -5)
     finish_release = now
 
-    criteria = [
+    base_criteria = [
       {:order_by, {:period_start, :desc}}
     ]
+
+    criteria =
+      if format do
+        [{:format, format} | base_criteria]
+      else
+        base_criteria
+      end
 
     periods(criteria)
     |> Enum.find_value("past_week", fn
