@@ -22,7 +22,7 @@ defmodule Components.OpponentStatsTable do
       assigns.params
       |> Map.take(param_keys())
       |> Map.put_new("rank", RankDropdown.default())
-      |> Map.put_new("period", PeriodDropdown.default())
+      |> Map.put_new("period", PeriodDropdown.default(:public, assigns.params))
       |> Map.put_new("players", "all_players")
       |> add_format(assigns.include_format)
       |> add_region()

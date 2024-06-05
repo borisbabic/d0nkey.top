@@ -272,6 +272,7 @@ defmodule Util do
   -1
   """
   def to_int(%Decimal{} = dec, _), do: Decimal.to_integer(dec)
+  def to_int(integer, _fallback) when is_integer(integer), do: integer
 
   def to_int(<<int_or_not::binary>>, fallback) do
     case Integer.parse(int_or_not) do

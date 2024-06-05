@@ -140,13 +140,17 @@ defmodule Components.DecksExplorer do
           []
       end
 
+    default_format = assigns.default_format || FormatDropdown.default(assigns.filter_context)
+
     defaults = [
       {"limit", assigns.default_limit},
       {"region", regions},
       {"min_games", assigns.default_min_games},
-      {"format", assigns.default_format || FormatDropdown.default(assigns.filter_context)},
+      {"format", default_format},
       {"order_by", assigns.default_order_by},
-      {"period", assigns.default_period || PeriodDropdown.default(assigns.filter_context)},
+      {"period",
+       assigns.default_period ||
+         PeriodDropdown.default(assigns.filter_context, raw_params, default_format)},
       {"game_type", [7]},
       {"opponent_class", "any"},
       {"archetype", "any"},

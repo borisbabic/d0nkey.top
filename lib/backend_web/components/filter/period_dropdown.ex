@@ -51,7 +51,33 @@ defmodule Components.Filter.PeriodDropdown do
 
   defp future?(_), do: false
 
-  def default(_context \\ :public) do
-    DeckTracker.default_period()
+  @default_format 2
+  def default(
+        context \\ :public,
+        format_or_criteria \\ @default_format,
+        fallback_format \\ @default_format
+      )
+
+  def default(context, format_or_criteria, fallback_format) do
+    format = extract_format(format_or_criteria, fallback_format || @default_format)
+    DeckTracker.default_period(format)
   end
+
+  def extract_format(format, fallback \\ @default_format)
+  def extract_format(format, _fallback) when is_integer(format), do: format
+  def extract_format(%{"format" => format}, fallback), do: Util.to_int(format, fallback)
+  def extract_format(%{format: format}, fallback), do: Util.to_int(format, fallback)
+
+  def extract_format(list, fallback) when is_list(list) do
+    with nil <- List.keyfind(list, "format", 0),
+         nil <- List.keyfind(list, :format, 0) do
+      nil
+    else
+      {_, value} -> Util.to_int(value, fallback)
+      _ -> nil
+    end
+  end
+
+  def extract_format(format, fallback) when is_binary(format), do: Util.to_int(format, fallback)
+  def extract_format(_, fallback), do: fallback
 end

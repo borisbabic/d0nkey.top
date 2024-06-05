@@ -21,7 +21,7 @@ defmodule BackendWeb.MetaLive do
   end
 
   def handle_params(params, _uri, socket) do
-    default = TierList.default_criteria()
+    default = TierList.default_criteria(params)
     criteria = Map.merge(default, params) |> TierList.filter_parse_params()
 
     {:noreply,
