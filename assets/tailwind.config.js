@@ -10,6 +10,7 @@ module.exports = {
     '../lib/*_web.ex',
     '../lib/*_web/**/*.*ex'
   ],
+  prefix: 'tw-',
   theme: {
     extend: {},
   },

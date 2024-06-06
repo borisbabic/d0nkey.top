@@ -10,6 +10,7 @@ defmodule Components.Filter.RankDropdown do
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
   prop(aggregated_only, :boolean, default: false)
+  prop(warning, :boolean, default: false)
 
   def render(assigns) do
     ~F"""
@@ -17,6 +18,7 @@ defmodule Components.Filter.RankDropdown do
         options={options(@filter_context, @aggregated_only)}
         title={@title}
         param={@param}
+        warning={@warning}
         url_params={@url_params}
         path_params={@path_params}
         selected_params={@selected_params}

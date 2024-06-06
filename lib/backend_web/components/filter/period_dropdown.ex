@@ -10,6 +10,7 @@ defmodule Components.Filter.PeriodDropdown do
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
   prop(aggregated_only, :boolean, default: false)
+  prop(warning, :boolean, default: false)
 
   def render(assigns) do
     ~F"""
@@ -19,6 +20,7 @@ defmodule Components.Filter.PeriodDropdown do
         param={@param}
         url_params={@url_params}
         path_params={@path_params}
+        warning={@warning}
         selected_params={@selected_params}
         live_view={@live_view} />
     """
@@ -58,7 +60,7 @@ defmodule Components.Filter.PeriodDropdown do
         fallback_format \\ @default_format
       )
 
-  def default(context, format_or_criteria, fallback_format) do
+  def default(_context, format_or_criteria, fallback_format) do
     format = extract_format(format_or_criteria, fallback_format || @default_format)
     DeckTracker.default_period(format)
   end
