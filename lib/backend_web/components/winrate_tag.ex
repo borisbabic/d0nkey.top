@@ -3,17 +3,18 @@ defmodule Components.WinrateTag do
   use Surface.Component
 
   prop(winrate, :number, required: true)
-  prop(shift_for_color, :number, default: 0)
   prop(round_digits, :number, default: 1)
   prop(positive_hue, :number, default: 120)
   prop(negative_hue, :number, default: 0)
   prop(class, :css_class)
   prop(lightness, :number, default: 50)
   prop(base_saturation, :number, default: 5)
+  prop(sample, :number, default: nil)
+  prop(impact, :boolean, default: false)
 
   def render(assigns) do
     ~F"""
-    <span class={"tag", @class} style={winrate_style(@winrate + @shift_for_color, @positive_hue, @negative_hue, @lightness, @base_saturation)}>
+    <span class={"tag", @class} style={winrate_style(@winrate + shift_for_color(@impact), @positive_hue, @negative_hue, @lightness, @base_saturation)}>
       <span class={"basic-black-text"}>
         {round(@winrate, @round_digits)}
       </span>
@@ -35,4 +36,7 @@ defmodule Components.WinrateTag do
 
   def round(int, _) when is_integer(int), do: int / 1
   def round(float, digits), do: Float.round(float * 100, digits)
+
+  def shift_for_color(true), do: 0.5
+  def shift_for_color(_), do: 0
 end

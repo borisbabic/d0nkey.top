@@ -14,6 +14,7 @@ defmodule Components.CardStatsTable do
   alias Backend.Hearthstone
 
   prop(card_stats, :list)
+  prop(highlight_dropdowns, :boolean, default: false)
   prop(filters, :map, default: %{})
   prop(criteria, :any, default: %{})
   prop(filter_context, :atom, default: :public)
@@ -40,9 +41,9 @@ defmodule Components.CardStatsTable do
   def render(assigns) do
     ~F"""
     <div>
-      <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={true}/>
+      <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={true} warning={@highlight_dropdowns}/>
       <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={true}/>
-      <RankDropdown id="rank_dropdown" fitler_context={@filter_context} aggregated_only={true}/>
+      <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={true} warning={@highlight_dropdowns}/>
       <LivePatchDropdown id="min_mull_count"
         options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
         title={"Min Mull Count"}
@@ -125,19 +126,19 @@ defmodule Components.CardStatsTable do
 
               </td>
             <td>
-              <WinrateTag class={""} shift_for_color={0.5} winrate={Util.get(cs, :mull_impact)} round/>
+              <WinrateTag class={""} impact={true} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
               <span :if={!cs.sufficient_mull and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
             <td>
-              <WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :drawn_impact)}/>
+              <WinrateTag impact={true} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
               <span :if={!cs.sufficient_drawn and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
             <td :if={show_counts(@filters)}>
               {Util.get(cs, :drawn_total)}</td>
 
-            <td class="is-hidden-mobile"><WinrateTag shift_for_color={0.5} winrate={Util.get(cs, :kept_impact)}/></td>
+            <td class="is-hidden-mobile"><WinrateTag impact={true} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/></td>
             <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
           </tr>
         </tbody>

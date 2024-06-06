@@ -75,8 +75,8 @@ defmodule Components.DecksExplorer do
       <div :if={{params, search_filters} = {@actual_params, @search_filters}}>
 
         <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
-        <RankDropdown id="rank_dropdown" filter_context={@filter_context} />
-        <PeriodDropdown id="period_dropdown" filter_context={@filter_context} />
+        <RankDropdown id="rank_dropdown" filter_context={@filter_context} warning={warning?(@streams)} />
+        <PeriodDropdown id="period_dropdown" filter_context={@filter_context} warning={warning?(@streams)} />
         <RegionDropdown id={"deck_region"} filter_context={@filter_context} />
 
         <LivePatchDropdown
@@ -93,6 +93,7 @@ defmodule Components.DecksExplorer do
           options={min_games_options(@min_games_options, @min_games_floor)}
           title={"Min Games"}
           param={"min_games"}
+          warning={warning?(@streams)}
           selected_as_title={true}
           normalizer={&to_string/1} />
 
@@ -113,18 +114,23 @@ defmodule Components.DecksExplorer do
           <div :for={{_dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} />
           </div>
-          <div :if={false} >
+          <div :if={warning?(@streams)} >
             <br>
             <br>
             <br>
             <br>
-            No decks available for these filters
+            <div class="notification is-warning">
+              No decks available for these filters. Maybe try changing one of the highlighted ones?
+            </div>
           </div>
         </div>
       </div>
     </div>
     """
   end
+
+  defp warning?(%{deck_stats: %{inserts: []}}), do: true
+  defp warning?(_), do: false
 
   defp parse_params(assigns = %{params: params}) do
     parse_params(params, assigns)
