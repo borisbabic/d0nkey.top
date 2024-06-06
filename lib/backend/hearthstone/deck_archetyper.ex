@@ -969,11 +969,24 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       moist_shaman?(card_info) -> :"Moist Shaman"
       control_shaman?(card_info) -> :"Control Shaman"
       murloc?(card_info) -> :"Murloc Shaman"
+      wish_shaman?(card_info) -> :"Wish Shaman"
       bloodlust_shaman?(card_info) -> :"Bloodlust Shaman"
       "Wave of Nostalgia" in card_info.card_names -> :"Nostalgia Shaman"
       "From De Other Side" in card_info.card_names -> :"FDOS Shaman"
       true -> fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp wish_shaman?(card_info) do
+    "Wish Upon a Star" in card_info.card_names and
+      min_count?(card_info, 3, [
+        "Leeroy Jenkins",
+        "Outfit Tailor",
+        "Al'Akir the Windlord",
+        "Backstage Bouncer",
+        "Southsea Deckhand",
+        "Murloc Growfin"
+      ])
   end
 
   defp excavate_shaman?(card_info) do
