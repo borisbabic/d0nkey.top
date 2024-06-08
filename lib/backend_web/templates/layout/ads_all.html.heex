@@ -28,6 +28,26 @@
   });
 </script>
 <script>
+
+window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
+  "refreshLimit": 0,
+  "refreshTime": 30,
+  "renderVisibleOnly": false,
+  "refreshVisibleOnly": true,
+  demo: <%= nitropay_demo?() %>,
+  "sizes": [
+    [
+      "728",
+      "90"
+    ],
+  ],
+  "report": {
+    "enabled": true,
+    "wording": "Report Ad",
+    "position": "top-right"
+  },
+  "mediaQuery": "(min-width: 768px) and (max-width: 1024px)"
+});
 window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
   "refreshLimit": 0,
   "refreshTime": 30,
