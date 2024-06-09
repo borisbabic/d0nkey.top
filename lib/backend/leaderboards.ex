@@ -159,7 +159,7 @@ defmodule Backend.Leaderboards do
 
   defp do_per_current_api_season(func) do
     for region <- Blizzard.qualifier_regions(),
-        ldb <- Blizzard.leaderboards() do
+        ldb <- Blizzard.active_leaderboards() do
       season = %ApiSeason{
         region: region,
         leaderboard_id: to_string(ldb)
