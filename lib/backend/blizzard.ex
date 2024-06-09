@@ -51,6 +51,7 @@ defmodule Backend.Blizzard do
   @qualifier_regions [:EU, :US, :AP]
   @type leaderboard :: :BG | :STD | :WLD | :CLS | :MRC | :arena | :twist | :DUO
   @leaderboards [:BG, :DUO, :STD, :WLD, :CLS, :MRC, :arena, :twist]
+  @defunct_leaderboards [:CLS]
   # @type battletag :: <<_::binary, "#", _::binary>>
   @type battletag :: String.t()
   @type deckstring :: String.t()
@@ -297,6 +298,16 @@ defmodule Backend.Blizzard do
   @spec leaderboards() :: [leaderboard]
   def leaderboards() do
     @leaderboards
+  end
+
+  @doc """
+  Returns a list of all active leaderboards
+  Doesn't include modes that are now dead
+  """
+  @spec active_leaderboards() :: [leaderboard]
+  def active_leaderboards() do
+    leaderboards()
+    |> Enum.reject(&(&1 in @defunct_leaderboards))
   end
 
   @doc """
