@@ -24,7 +24,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_for_region_with_delay(
          "AP",
          ["STD", "WLD", "twist", "BG", "arena"],
-         500,
+         5000,
          120_000
        )
      end},
@@ -33,7 +33,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_for_region_with_delay(
          "EU",
          ["STD", "WLD", "twist", "BG", "arena"],
-         500,
+         5000,
          120_000
        )
      end},
