@@ -141,10 +141,10 @@ defmodule Backend.Application do
           id: Hearthstone.DeckTracker.ArchetypeBag,
           start: {Hearthstone.DeckTracker.ArchetypeBag, :start_link, [[]]}
         },
-        # {TMI.Supervisor, twitch_bot_config()},
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
+      |> add_twitch_bot()
       |> add_dt_insert_listener()
       |> check_bot()
 
@@ -156,6 +156,19 @@ defmodule Backend.Application do
     # Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
     #    Backend.Hearthstone.add_class_and_regenerate_deckcode()
     start_result
+  end
+
+  def add_twitch_bot(prev) do
+    case Application.fetch_env(:backend, :enable_twitch_bot) do
+      {:ok, true} ->
+        config = twitch_bot_config()
+        Logger.debug("Twitch bot enabled")
+        prev ++ [{TMI.Supervisor, config}]
+
+      _ ->
+        Logger.debug("Twitch bot disabled")
+        prev
+    end
   end
 
   def twitch_bot_config() do

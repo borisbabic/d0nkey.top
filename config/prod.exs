@@ -18,16 +18,16 @@ config :backend,
   nostrum_slash_command_target: :global,
   thl_discord_id: 534_455_756_129_435_649,
   twitch_bot_chats: [
-    "sgt_tbag",
+    # "sgt_tbag",
     "d0nkeyhs",
-    "d0nkeytop",
-    "branka279",
-    "dettomon",
-    "norwis_",
-    "otters_tv",
-    "goofyronak",
-    "reqvam",
-    "emerald_boa"
+    "d0nkeytop"
+    # "branka279",
+    # "dettomon",
+    # "norwis_",
+    # "otters_tv",
+    # "goofyronak",
+    # "reqvam",
+    # "emerald_boa"
   ],
   enable_bot: false
 

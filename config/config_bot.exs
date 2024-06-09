@@ -87,3 +87,6 @@ config :backend, Oban,
   repo: Backend.Repo,
   plugins: [Oban.Plugins.Pruner],
   queues: queues
+
+config :backend,
+  enable_twitch_bot: true
