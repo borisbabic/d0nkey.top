@@ -63,7 +63,7 @@ config :backend, Backend.UserManager.Guardian,
   issuer: "d0nkey.top",
   secret_key: "CyjJAVTbtJgJwS+NbkbTpVTPDJeMKqcn+GakxrO4E5j/kB3SgcgF3CqfsxpxzQKM"
 
-hdt_plugin_latest_version = "0.3.1"
+hdt_plugin_latest_version = "0.4.0"
 # auto sign me up
 config :backend,
   su_token: System.get_env("SIGNUP_TOKEN") || nil,
