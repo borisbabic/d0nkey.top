@@ -781,32 +781,45 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.reduce(RuneCost.empty(), &RuneCost.maximum/2)
   end
 
-  def cost(d = %{cards: cards}) do
+  def cost(%{cards: cards} = deck) do
     cards_cost =
       cards
-      |> Enum.map(&card_cost/1)
+      |> remove_non_standard(deck)
+      |> Enum.map(&Card.dust_cost/1)
       |> Enum.sum()
 
     sideboards_cost =
-      Map.get(d, :sideboards, [])
-      |> Enum.map(&(card_cost(&1.card) * &1.count))
+      Map.get(deck, :sideboards, [])
+      |> Enum.filter(&count_sideboard_cost/1)
+      |> remove_non_standard(deck)
+      |> Enum.map(&(Card.dust_cost(&1.card) * &1.count))
       |> Enum.sum()
 
     cards_cost + sideboards_cost
   end
 
-  defp card_cost(card) when is_integer(card), do: Hearthstone.get_card(card) |> card_cost()
-  # core_set
-  defp card_cost(%{card_set_id: 1637}), do: 0
-  defp card_cost(%{rarity: %{normal_crafting_cost: nil}}), do: 0
-  defp card_cost(%{rarity: %{normal_crafting_cost: cost}}), do: cost
-  defp card_cost(%{set: "CORE"}), do: 0
-  defp card_cost(%{rarity: "FREE"}), do: 0
-  defp card_cost(%{rarity: "COMMON"}), do: 40
-  defp card_cost(%{rarity: "RARE"}), do: 100
-  defp card_cost(%{rarity: "EPIC"}), do: 400
-  defp card_cost(%{rarity: "LEGENDARY"}), do: 1600
-  defp card_cost(_), do: 0
+  # hack for core cards with canonical cards in wild
+  @spec remove_non_standard([Card.t() | Sideboard.t()], t()) :: [Card.t() | Sideboard.t()]
+  defp remove_non_standard(cards_or_sideboards, %{format: 2}) do
+    standard_slugs = Backend.Hearthstone.standard_card_sets()
+
+    Enum.filter(cards_or_sideboards, fn c ->
+      case get_card(c) do
+        %{card_set: %{slug: slug}} -> slug in standard_slugs
+        _ -> true
+      end
+    end)
+  end
+
+  defp remove_non_standard(cards_or_sideboards, _deck), do: cards_or_sideboards
+  defp get_card(id) when is_integer(id), do: Hearthstone.get_card(id)
+  defp get_card(%{card: id}) when is_integer(id), do: Hearthstone.get_card(id)
+  defp get_card(%{card_id: id}) when is_integer(id), do: Hearthstone.get_card(id)
+  defp get_card(_), do: nil
+
+  defp count_sideboard_cost(%{sideboard: id}) do
+    !Card.zilliax_3000?(id)
+  end
 end
 
 defmodule Backend.Hearthstone.Deck.Sideboard do
