@@ -68,11 +68,6 @@ defmodule BackendWeb.StreamingView do
   defp legend_rank(0), do: nil
   defp legend_rank(lr), do: lr
 
-  defp get_archetype(%{hsreplay_archetype: archetype_id}) when not is_nil(archetype_id),
-    do: Backend.HSReplay.get_archetype(archetype_id)
-
-  defp get_archetype(deck), do: Backend.HSReplay.guess_archetype(deck)
-
   defp amount_played(%{wins: wins, losses: losses}) when wins + losses > 0,
     do: "#{wins + losses} game(s)"
 
@@ -106,7 +101,7 @@ defmodule BackendWeb.StreamingView do
           latest_legend_rank: legend_rank(sd.latest_legend_rank),
           win_loss: win_loss(sd),
           amount_played: amount_played(sd),
-          archetype: get_archetype(sd.deck),
+          archetype: Deck.archetype(sd.deck),
           links: links(sd)
         }
       end)
@@ -189,11 +184,9 @@ defmodule BackendWeb.StreamingView do
   end
 
   def links(sd) do
-    deck = deckcode_links(deckcode(sd.deck))
     twitch = twitch_link(sd.streamer |> Streamer.twitch_login(), "twitch", ["tag", "is-link"])
 
     ~E"""
-    <%= deck %>
     <%= twitch %>
     """
   end
@@ -313,14 +306,6 @@ defmodule BackendWeb.StreamingView do
 
   def remove_from_link(conn, params) do
     Routes.streaming_path(conn, :streamer_decks, Map.drop(conn.query_params, params))
-  end
-
-  def deckcode_links(<<deckcode::binary>>) do
-    hsreplay = Backend.HSReplay.create_deck_link(deckcode)
-
-    ~E"""
-    <a class="is-link tag" href="<%= hsreplay %>">HSReplay</a>
-    """
   end
 
   def deckcode(deck), do: Backend.Hearthstone.Deck.deckcode(deck.cards, deck.hero, deck.format)
