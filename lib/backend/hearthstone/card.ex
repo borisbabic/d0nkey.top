@@ -188,6 +188,20 @@ defmodule Backend.Hearthstone.Card do
   def cost(%{cost: cost}), do: cost
   def cost(%{mana_cost: cost}), do: cost
 
+  @spec dust_cost(card() | integer()) :: integer()
+  def dust_cost(card) when is_integer(card), do: Backend.Hearthstone.get_card(card) |> dust_cost()
+  # core_set
+  def dust_cost(%{card_set_id: 1637}), do: 0
+  def dust_cost(%{rarity: %{normal_crafting_cost: nil}}), do: 0
+  def dust_cost(%{rarity: %{normal_crafting_cost: cost}}), do: cost
+  def dust_cost(%{set: "CORE"}), do: 0
+  def dust_cost(%{rarity: "FREE"}), do: 0
+  def dust_cost(%{rarity: "COMMON"}), do: 40
+  def dust_cost(%{rarity: "RARE"}), do: 100
+  def dust_cost(%{rarity: "EPIC"}), do: 400
+  def dust_cost(%{rarity: "LEGENDARY"}), do: 1600
+  def dust_cost(_), do: 0
+
   @spec set_name(card()) :: String.t() | nil
   def set_name(%{card_set: %{name: name}}), do: name
   def set_name(_), do: nil

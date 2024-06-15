@@ -58,10 +58,6 @@ defmodule Backend.Hearthstone.CardBag do
 
   def refresh_table(), do: GenServer.cast(@name, :refresh_table)
 
-  def update(after_ms \\ 0) do
-    GenServer.cast(@name, {:send_loop, after_ms})
-  end
-
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: @name)
   end
