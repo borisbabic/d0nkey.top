@@ -57,6 +57,7 @@ defmodule Backend.Hearthstone.Card do
     belongs_to(:spell_school, SpellSchool)
     # field :mercenary_hero, MercenaryHero.t()
     field(:text, :string)
+    field(:dust_free, :boolean, default: false)
 
     embeds_one(:rune_cost, RuneCost, on_replace: :delete)
 
@@ -95,6 +96,7 @@ defmodule Backend.Hearthstone.Card do
       :rarity_id,
       :slug,
       :spell_school_id,
+      :dust_free,
       :text
     ])
     |> cast_embed(:rune_cost)
@@ -191,6 +193,7 @@ defmodule Backend.Hearthstone.Card do
   @spec dust_cost(card() | integer()) :: integer()
   def dust_cost(card) when is_integer(card), do: Backend.Hearthstone.get_card(card) |> dust_cost()
   # core_set
+  def dust_cost(%{dust_free: true}), do: 0
   def dust_cost(%{card_set_id: 1637}), do: 0
   def dust_cost(%{rarity: %{normal_crafting_cost: nil}}), do: 0
   def dust_cost(%{rarity: %{normal_crafting_cost: cost}}), do: cost
