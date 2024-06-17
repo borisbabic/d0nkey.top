@@ -761,18 +761,31 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   @spec fallbacks(card_info(), String.t(), fallbacks_opt()) :: String.t()
   defp fallbacks(ci, class_name, opts \\ []) do
     cond do
+      "Mecha'thun" in ci.card_names -> "Mecha'thun #{class_name}"
       miracle_chad?(ci) -> "Miracle Chad #{class_name}"
       "Rivendare, Warrider" in ci.card_names -> "Rivendare #{class_name}"
-      tentacle(ci) -> "Tentacle #{class_name}"
-      "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
+      tentacle?(ci) -> "Tentacle #{class_name}"
       ogre?(ci) -> "Ogre #{class_name}"
       "Colifero the Artist" in ci.card_names -> "Colifero #{class_name}"
       quest?(ci) or questline?(ci) -> "Quest #{class_name}"
+      "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
+      even?(ci) -> "Even #{class_name}"
+      odd?(ci) -> "Odd #{class_name}"
+      giants?(ci) -> "Giants #{class_name}"
       true -> minion_type_fallback(ci, class_name, opts)
     end
   end
 
-  defp tentacle(ci), do: "Chaotic Tendril" in ci.card_names
+  defp giants?(ci, min_count \\ 3) do
+    count =
+      ci.card_names
+      |> Enum.filter(&(String.reverse(&1) |> String.starts_with?("tnaiG")))
+      |> Enum.count()
+
+    count >= min_count
+  end
+
+  defp tentacle?(ci), do: "Chaotic Tendril" in ci.card_names
 
   defp miracle_chad?(ci), do: min_count?(ci, 2, ["Thaddius, Monstrosity", "Cover Artist"])
 
@@ -2187,6 +2200,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     min_count?(card_info, 4, [
       "Wildfire",
       "Reckless Apprentice",
+      "Sing-Along Buddy",
       "Magister Dawngrasp",
       "Mordresh Fire Eye"
     ])
@@ -2283,6 +2297,48 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Spirit of the Shark" in card_info.card_names && class_name == "Rogue" ->
         :"Shark Rogue"
 
+      "Odyn, Prime Designate" in card_info.card_names && class_name == "Warrior" ->
+        :"Odyn Warrior"
+
+      wild_treant_druid?(card_info) ->
+        :"Treant Druid"
+
+      wild_exodia_paladin?(card_info) ->
+        :"Exodia Paladin"
+
+      "Warsong Commander" in card_info.card_names ->
+        :"Warsong Warrior"
+
+      aviana_druid?(card_info) ->
+        :"Aviana Druid"
+
+      wild_mill_druid?(card_info) ->
+        :"Mill Druid"
+
+      earthen_paladin?(card_info) ->
+        :"Gaia Paladin"
+
+      fel_dh?(card_info) ->
+        :"Fel DH"
+
+      "Sif" in card_info.card_names && class_name == "Mage" ->
+        :"Sif Mage"
+
+      excavate_rogue?(card_info) ->
+        :"Drilling Rogue"
+
+      overheal_priest?(card_info) ->
+        :"Overheal Priest"
+
+      sludgelock?(card_info) ->
+        :"Sludge Warlock"
+
+      fatigue_warlock?(card_info) ->
+        :"Insanity Warlock"
+
+      wild_rez_priest?(card_info) ->
+        :"Rez Priest"
+
       true ->
         fallbacks(card_info, class_name)
     end
@@ -2290,21 +2346,75 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp do_archetype(_, _), do: nil
 
+  defp wild_rez_priest?(card_info) do
+    min_count?(card_info, 3, [
+      "Eternal Servitude",
+      "Lesser Diamond Spellstone",
+      "Mass Resurrection"
+    ])
+  end
+
   defp lion_hunter?(card_info) do
     min_count?(card_info, 2, ["Mok'Nathal Lion", "Mystery Egg"])
+  end
+
+  defp aviana_druid?(card_info) do
+    "Aviana" in card_info.card_names
+  end
+
+  defp wild_thief_rogue?(card_info) do
+    min_count?(card_info, 3, [
+      "Wildpaw Gnoll",
+      "Obsidian Shard",
+      "Twisted Pack",
+      "Tess Greymane",
+      "Maestra of the Masquerade",
+      "Velarok"
+    ])
+  end
+
+  defp wild_mill_druid?(card_info) do
+    min_count?(card_info, 3, ["Dew Process", "Coldlight Oracle", "Naturalize"])
+  end
+
+  defp wild_treant_druid?(card_info) do
+    min_count?(card_info, 5, [
+      "Cultivation",
+      "Blood Treant",
+      "Aeuroponics",
+      "Overgrown Beanstalk",
+      "Aerosoilizer",
+      "Witchwood Apple",
+      "Forest Seedlings",
+      "Treenforcements",
+      "Sow the Soil",
+      "Soul of the Forest",
+      "Plot of Sin"
+    ])
+  end
+
+  defp wild_exodia_paladin?(card_info) do
+    "Uther of the Ebon Blade" in card_info.card_names and
+      min_count?(card_info, 2, [
+        "Nozdormu the Timeless",
+        "Sing-Along Buddy",
+        "Garrison Commander"
+      ])
   end
 
   defp wild_combo_priest?(card_info) do
     min_count?(card_info, 3, [
       "Inner Fire",
       "Divine Spirit",
+      "Bless",
       "Radiant Elemental",
-      "Power Word: Fortitude"
+      "Power Word: Fortitude",
+      "Grave Horror"
     ])
   end
 
   defp wild_big_shaman?(card_info) do
-    min_count?(card_info, 2, ["Muckmorpher", "Eureka!"])
+    min_count?(card_info, 2, ["Muckmorpher", "Eureka!", "Ancestor's Call"])
   end
 
   defp wild_gnoll_miracle_rogue?(card_info) do
@@ -2318,6 +2428,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp wild_miracle_rogue?(card_info) do
     min_count?(card_info, 3, [
+      "Prize Plunderer",
       "Mailbox Dancer",
       "Arcane Giant",
       "Edwin VanCleef",
@@ -2371,13 +2482,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp fel_dh?(ci) do
-    min_count?(ci, 4, [
-      "Fury (Rank 1)",
-      "Chaos Strike",
-      "Fel Barrage",
-      "Predation",
-      "Multi Strike"
-    ]) &&
+    min_spell_school_count?(ci, 5, "fel") and
       min_count?(ci, 1, [
         "Fossil Fanatic",
         "Jace Darkweaver",
