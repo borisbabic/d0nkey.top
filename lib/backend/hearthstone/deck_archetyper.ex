@@ -921,9 +921,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       sonya?(card_info) ->
         :"Sonya Rogue"
 
+      dorian_rogue?(card_info) ->
+        :"Dorian Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp dorian_rogue?(card_info) do
+    "Puppetmaster Dorian" in card_info.card_names
   end
 
   defp goldbeard?(ci) do
@@ -1124,6 +1131,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Wheel of DEATH!!!" in card_info.card_names ->
         :"Wheel Warlock"
 
+      leeroy_warlock?(card_info) ->
+        :"Leeroooooy Warlock"
+
       control_warlock?(card_info) ->
         :"Control Warlock"
 
@@ -1133,6 +1143,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp leeroy_warlock?(card_info) do
+    min_count?(card_info, 3, ["Leeroy Jenkins", "Monstrous Form", "Reverberations"])
   end
 
   defp painlock?(ci) do
@@ -1185,6 +1199,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     min_count?(ci, 5, [
       "Sargeras, the Destroyer",
       "Symphony of Sins",
+      "Domino Effect",
       "Defile",
       "Drain Soul",
       "Mortal Eradication",
@@ -1223,6 +1238,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       boar?(card_info) -> :"Boar Warrior"
       mech_warrior?(card_info) -> :"Mech Warrior"
       bomb_warrior?(card_info) -> :"Bomb Warrior"
+      "Justicar Trueheart" in card_info.card_names -> :"Justicar Warrior"
+      "Safery Expert" in card_info.card_names -> :"Safety Warrior"
       true -> fallbacks(card_info, "Warrior")
     end
   end
@@ -2553,7 +2570,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         min_count?(ci, 2, ["Wild Growth", "Widowbloom Seedsman"])
 
   defp hero_power_druid?(ci),
-    do: min_count?(ci, 2, ["Free Spirit", "Groovy Cat"])
+    do: min_count?(ci, 2, ["Free Spirit", "Groovy Cat", "Sing-Along Buddy"])
 
   defp aggro_druid?(ci),
     do:
@@ -2629,7 +2646,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp cutlass_rogue?(ci),
     do:
       "Spectral Cutlass" in ci.card_names and
-        min_count?(ci, 3, ["Deadly Poison", "Valeera's Gift", "Harmonic Hip Hop", "Mic Drop"])
+        min_count?(ci, 3, [
+          "Deadly Poison",
+          "Valeera's Gift",
+          "Harmonic Hip Hop",
+          "Mic Drop",
+          "Shadestone Skulker",
+          "Instrument Tech"
+        ])
 
   defp cycle_rogue?(ci),
     do:
