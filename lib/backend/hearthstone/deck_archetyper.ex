@@ -2271,9 +2271,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Darkbishop Benedictus" in card_info.card_names && class_name == "Priest" ->
         :"Shadow Priest"
 
-      class_name == "Rogue" && wild_thief_rogue?(card_info) ->
-        :"Thief Rogue"
-
       class_name == "Rogue" && wild_gnoll_miracle_rogue?(card_info) ->
         :"Gnoll Miracle Rogue"
 
@@ -2288,6 +2285,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
+
+      class_name == "Rogue" && wild_thief_rogue?(card_info) ->
+        :"Thief Rogue"
 
       lion_hunter?(card_info) ->
         :"Lion Hunter"
