@@ -21,9 +21,13 @@ https://chris.beams.io/posts/git-commit/#seven-rules
 Please be guided by the seven rules when writing commit messages
 
 # Running
+## WSL setup
+See [WSL Setup](WSL_SETUP.md) for instructions
 ## Environment variables
+See the `.envrc.skel` for required and optional environment variables
+For third parties (like discord/twitch) see their developer portals for how to get the tokens/secrets/ids
 
-If you use direnv you can just add the following
+<!-- If you use direnv you can just add the following
 ```
 export BNET_CLIENT_SECRET='' 
 export DISCORD_TOKEN=''
@@ -31,14 +35,35 @@ export TWITCH_CLIENT_ID=''
 export TWITCH_CLIENT_SECRET=''
 
 ```
-The above are required for running the site in development. Some features (like patreon integration) will require additional info if you want to use them.
+The above are required for running the site in development. Some features (like patreon integration) will require additional info if you want to use them. -->
 ## Dependencies
+### Flake
+There is a flake.nix provided for dependencies, if using direnv ensure you have `use_flake` in your `.envrc`
+Ensure you have nix installed and that you have the experimental features enabled by adding `experimental-features = nix-command flakes` to `~/.config/nix/nix.conf`
+### Other
+Ensure you have docker, docker-compose, relevant elixir/erlang versions (see the flake.nix for `erlangVersion` and `elixirVersion`)
 
+If you are not using the flake.nix 
 See elixir_buildpack.config for elixir and erlang versions
 docker, docker-compose (or an appropriate postgres running)
 npm 
 
 You can use the shell.nix provided, possibly in combination with direnv
+
+## First run
+```shell
+mix deps.get # install dependencies
+docker-compose up -d # get postgres running
+mix ecto.setup # setup the db
+# mix run -e Backend.MastersTour.fetch # optional, fetches the currently invited players
+cd assets && npm install && cd ..
+mix assets.setup
+iex -S mix phx.server # start the server at port 8994. Open http://localhost:8994/leaderboard
+```
+### Troubleshooting
+#### :eacces
+If you get an :eacces error that mentions `$PROJECT_DIR/_build/tailwind-linux-x64` run `chmod +x _build/tailwind-linux-x64` in the project dir
+
 
 ## API
 ### Resources
@@ -130,15 +155,3 @@ GraphiQL playground should be available at /graphiql
 
 Currently covered:
 - streamer decks - (partial arguments/filters)
-
-
-## First run
-```shell
-mix deps.get # install dependencies
-docker-compose up -d # get postgres running
-mix setup # setup the db
-mix run -e Backend.MastersTour.fetch # optional, fetches the currently invited players
-cd assets && npm install && cd ..
-mix phx.server # start the server at port 8994. Open http://localhost:8994/leaderboard
-```
-
