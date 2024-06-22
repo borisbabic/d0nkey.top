@@ -59,7 +59,7 @@ defmodule Bot.RevealMessageHandler do
   def to_text(%{url: url, reveal_time: reveal_time}) do
     {:ok, datetime} = DateTime.from_naive(reveal_time, "UTC")
     timestamp = DateTime.to_unix(datetime)
-    "* <t:#{timestamp}> #{url}"
+    "* <t:#{timestamp}> <#{url}>"
   end
 
   def to_embed(%{url: url, image_url: image_url, reveal_time: reveal_time}) do
