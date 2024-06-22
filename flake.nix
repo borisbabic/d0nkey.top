@@ -57,7 +57,6 @@
             [
               erlang
               elixir
-              elixir-ls
             ]
             ++ (with pkgs; [
               nodejs

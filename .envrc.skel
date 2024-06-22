@@ -1,0 +1,18 @@
+# use_flake
+export DISCORD_TOKEN='';
+export BNET_CLIENT_ID='';
+export BNET_CLIENT_SECRET='';
+export TWITCH_CLIENT_ID='';
+export TWITCH_CLIENT_SECRET='';
+export TWITCH_BOT_OAUTH='';
+# export SIGNUP_TOKEN=''
+# export ESPORTS_EARNINGS_API_KEY=''
+# export REQT100_ACCESS_TOKEN='';
+# export REQT100_ACCESS_TOKEN_SECRET='';
+# export REQT100_CONSUMER_KEY='';
+# export REQT100_CONSUMER_SECRET='';
+# export PATREON_CLIENT_ID='';
+# export PATREON_CLIENT_SECRET='';
+# export PATREON_REDIRECT_URI='';
+# export PATREON_ACCESS_TOKEN='';
+# export PATREON_REFRESH_TOKEN='';
