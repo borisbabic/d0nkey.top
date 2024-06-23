@@ -311,6 +311,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       afk_druid?(card_info) -> :"AFK Druid"
       mill_druid?(card_info) -> :"Mill Druid"
       owlonius_druid?(card_info) -> :"Owlonius Druid"
+      tempo_druid?(card_info) and not ramp_druid?(card_info) -> :"Tempo Druid"
       spell_damage_druid?(card_info) -> :"Spell Damage Druid"
       ramp_druid?(card_info) && "Death Beetle" in card_info.card_names -> :"Beetle Druid"
       "Topior the Shrubbagazzor" in card_info.card_names -> :"Topior Druid"
@@ -333,6 +334,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   ]
   defp owlonius_druid?(ci) do
     "Owlonius" in ci.card_names and min_count?(ci, 2, @non_owlonius_druid_sd_cards)
+  end
+
+  defp tempo_druid?(ci) do
+    min_count?(ci, 4, [
+      "Trogg Gemtosser",
+      "Marin The Manager",
+      "Swipe",
+      "Splish-Splash Whelp",
+      "Magical Dollhouse",
+      "Giftwrapped Whelp",
+      "Desert Nestmatron",
+      "Doomkin"
+    ])
   end
 
   defp spell_damage_druid?(ci) do
