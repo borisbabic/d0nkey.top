@@ -508,6 +508,19 @@ defmodule Backend.Hearthstone do
     end)
   end
 
+  def recalculate_decks_archetypes_for_period(period, additional_criteria \\ []) do
+    criteria = [{"period", period} | additional_criteria]
+    deck_stats = Hearthstone.DeckTracker.deck_stats(criteria)
+    decks = Enum.map(deck_stats, &get_deck(&1.deck_id))
+
+    needs_archetypeing =
+      Enum.filter(decks, fn d ->
+        to_string(d.archetype) == to_string(DeckArchetyper.archetype(d))
+      end)
+
+    recalculate_decks_archetypes(needs_archetypeing)
+  end
+
   @spec recalculate_hsreplay_archetypes(Integer.t() | String.t()) ::
           {:ok, any()} | {:error, any()}
   def recalculate_hsreplay_archetypes(<<"min_ago_"::binary, min_ago::bitstring>>),
