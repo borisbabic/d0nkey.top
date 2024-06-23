@@ -23,13 +23,17 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     class_name = Deck.class_name(deck)
 
     cond do
-      splendiferous_whizbang?(card_info)
-        -> :"Splendiferous Whizbang"
+      splendiferous_whizbang?(card_info) ->
+        :"Splendiferous Whizbang"
+
       all_odd?(card_info) and baku?(card_info) ->
         String.to_atom("Odd #{class_name}")
+
       all_even?(card_info) and genn?(card_info) ->
         String.to_atom("Even #{class_name}")
-      true -> do_archetype(deck, card_info)
+
+      true ->
+        do_archetype(deck, card_info)
     end
   end
 
@@ -2291,6 +2295,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
 
+      wild_pirate_rogue?(card_info) ->
+        :"Pirate Rogue"
+
       class_name == "Rogue" && wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
 
@@ -2361,12 +2368,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       wild_rez_priest?(card_info) ->
         :"Rez Priest"
 
+      holy_wrath_paladin?(card_info) ->
+        :"Holy Wrath Paladin"
+
       true ->
         fallbacks(card_info, class_name)
     end
   end
 
   defp do_archetype(_, _), do: nil
+
+  defp holy_wrath_paladin?(card_info) do
+    min_count?(card_info, 2, ["Holy Wrath", "Shirvallah, the Tiger"])
+  end
 
   defp wild_rez_priest?(card_info) do
     min_count?(card_info, 3, [
@@ -2384,14 +2398,35 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     "Aviana" in card_info.card_names
   end
 
-  defp wild_thief_rogue?(card_info) do
+  defp wild_pirate_rogue?(card_info) do
     min_count?(card_info, 3, [
+      "Parachute Brigand",
+      "Toy Boat",
+      "Ship's Cannon",
+      "Patches the Pirate",
+      "Treasure Distributor",
+      "Swordfish",
+      "Raiding Party",
+      "Southsea Captain"
+    ])
+  end
+
+  defp wild_thief_rogue?(card_info) do
+    min_count?(card_info, 4, [
       "Wildpaw Gnoll",
       "Obsidian Shard",
       "Twisted Pack",
       "Tess Greymane",
       "Maestra of the Masquerade",
-      "Velarok"
+      "Velarok",
+      "Kaj'mite Creation",
+      "Shell Game",
+      "Obsidian Shard",
+      "Velarok Windblade",
+      "Vendetta",
+      "Wildpaw Gnoll",
+      "Stick Up",
+      "Flint Firearm"
     ])
   end
 
@@ -2457,23 +2492,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Scribbling Stenographer",
       "Zephrys the Great"
     ])
-  end
-
-  defp wild_thief_rogue?(card_info) do
-    min_count?(
-      card_info,
-      4,
-      [
-        "Kaj'mite Creation",
-        "Shell Game",
-        "Obsidian Shard",
-        "Velarok Windblade",
-        "Vendetta",
-        "Wildpaw Gnoll",
-        "Stick Up",
-        "Flint Firearm"
-      ]
-    )
   end
 
   defp deathrattle_dh?(%{card_names: card_names}),
@@ -2818,7 +2836,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           "Thaddius, Monstrosity"
         ])
 
-  defp holy_paladin?(ci = %{card_names: card_names}) do
+  defp holy_paladin?(ci) do
     min_count?(ci, 3, [
       "Hi Ho Silverwing",
       "Flickering Lightbot",
