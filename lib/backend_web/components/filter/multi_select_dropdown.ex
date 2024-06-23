@@ -116,7 +116,7 @@ defmodule Components.MultiSelectDropdown do
   def handle_event("search", %{"search" => [search]}, socket),
     do: {:noreply, assign(socket, :search, search)}
 
-  def handle_event(event, other, socket) do
+  def handle_event(_event, _other, socket) do
     {:noreply, socket}
   end
 

@@ -1,7 +1,6 @@
 defmodule Components.Filter.ManaCostDropdown do
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
-  alias Backend.Hearthstone.Deck
 
   prop(title, :string, default: "Mana Cost")
   prop(param, :string, default: "mana_cost")

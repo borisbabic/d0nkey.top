@@ -23,7 +23,7 @@ defmodule BackendWeb.ExpandableDeckLive do
      |> put_user_in_context()}
   end
 
-  def extract_deck(session = %{"deck" => %Deck{id: id} = deck}) when is_integer(id), do: deck
+  def extract_deck(_session = %{"deck" => %Deck{id: id} = deck}) when is_integer(id), do: deck
 
   def extract_deck(session = %{"deck" => %Deck{}}) do
     do_extract_deck(session, "deck")

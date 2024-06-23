@@ -137,9 +137,9 @@ defmodule Components.TierList do
   def to_percent(int) when is_integer(int), do: int / 1
   def to_percent(num), do: "#{Float.round(num * 100, 2)}%"
 
-  defp card_stats_params(params, archetype) do
-    params
-    |> Map.take(["format", "opponent_class", "period", "rank"])
-    |> Map.put("archetype", archetype)
-  end
+  # defp card_stats_params(params, archetype) do
+  #   params
+  #   |> Map.take(["format", "opponent_class", "period", "rank"])
+  #   |> Map.put("archetype", archetype)
+  # end
 end
