@@ -15,7 +15,6 @@ defmodule Backend.Leaderboards do
   alias Backend.Leaderboards.PlayerStats
   alias Backend.Leaderboards.Entry
   alias Backend.Leaderboards.Season
-  alias Backend.Leaderboards.SeasonBag
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
   alias Hearthstone.Leaderboards.Api
   alias Hearthstone.Leaderboards.Response

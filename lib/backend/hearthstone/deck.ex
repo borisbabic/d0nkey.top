@@ -208,7 +208,7 @@ defmodule Backend.Hearthstone.Deck do
   @spec deduplicate_sideboards([Sideboard.t()]) :: [Sideboard.t()]
   defp deduplicate_sideboards(sideboards) do
     Enum.group_by(sideboards, &{&1.card, &1.sideboard})
-    |> Enum.map(fn {{card, sideboard}, [first | _] = sideboards} ->
+    |> Enum.map(fn {{_card, _sideboard}, [first | _] = sideboards} ->
       count = sideboards |> Enum.map(& &1.count) |> Enum.sum()
       Map.put(first, :count, count)
     end)

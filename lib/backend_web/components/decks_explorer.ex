@@ -2,7 +2,6 @@ defmodule Components.DecksExplorer do
   @moduledoc false
   use BackendWeb, :surface_live_component
   alias Backend.Blizzard
-  alias Backend.Hearthstone.Deck
   alias Components.DeckWithStats
   alias Components.Filter.ArchetypeSelect
   alias Components.Filter.PlayableCardSelect
