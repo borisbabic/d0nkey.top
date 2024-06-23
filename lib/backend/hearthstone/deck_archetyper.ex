@@ -20,11 +20,16 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   def archetype(%{cards: _cards} = deck) do
     card_info = full_cards(deck)
+    class_name = Deck.class_name(deck)
 
-    if splendiferous_whizbang?(card_info) do
-      :"Splendiferous Whizbang"
-    else
-      do_archetype(deck, card_info)
+    cond do
+      splendiferous_whizbang?(card_info)
+        -> :"Splendiferous Whizbang"
+      all_odd?(card_info) and baku?(card_info) ->
+        String.to_atom("Odd #{class_name}")
+      all_even?(card_info) and genn?(card_info) ->
+        String.to_atom("Even #{class_name}")
+      true -> do_archetype(deck, card_info)
     end
   end
 
@@ -769,8 +774,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Colifero the Artist" in ci.card_names -> "Colifero #{class_name}"
       quest?(ci) or questline?(ci) -> "Quest #{class_name}"
       "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
-      even?(ci) -> "Even #{class_name}"
-      odd?(ci) -> "Odd #{class_name}"
+      genn?(ci) -> "Even #{class_name}"
+      baku?(ci) -> "Odd #{class_name}"
       giants?(ci) -> "Giants #{class_name}"
       true -> minion_type_fallback(ci, class_name, opts)
     end
@@ -2247,10 +2252,10 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
 
-      odd?(card_info) ->
+      baku?(card_info) ->
         String.to_atom("Odd #{class_name}")
 
-      even?(card_info) ->
+      genn?(card_info) ->
         String.to_atom("Even #{class_name}")
 
       pure_paladin?(card_info) ->
@@ -3103,8 +3108,20 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp highlander_payoff?(%{full_cards: full_cards}),
     do: Enum.any?(full_cards, &Card.highlander?/1)
 
-  defp odd?(%{card_names: card_names}), do: "Baku the Mooneater" in card_names
-  defp even?(%{card_names: card_names}), do: "Genn Greymane" in card_names
+  defp baku?(%{card_names: card_names}), do: "Baku the Mooneater" in card_names
+  defp genn?(%{card_names: card_names}), do: "Genn Greymane" in card_names
+
+  defp all_odd?(%{deck: deck, full_cards: full_cards}), do: all_cost_rem?(deck, full_cards, 1)
+  defp all_even?(%{deck: deck, full_cards: full_cards}), do: all_cost_rem?(deck, full_cards, 0)
+
+  defp all_cost_rem?(deck, cards, remainder \\ 0, divisor \\ 2) do
+    Enum.reject(cards, fn card ->
+      cost = Deck.card_mana_cost(deck, card)
+      card_rem = rem(cost, divisor)
+      card_rem == remainder
+    end)
+    |> Enum.empty?()
+  end
 
   @type minion_type_fallback_opt ::
           {:fallback, String.t() | nil} | {:min_count, number()} | {:ignore_types, [String.t()]}
@@ -3157,6 +3174,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       full_cards: full_cards,
       card_names: card_names,
       cards: cards,
+      deck: deck,
       zilliax_modules_names: zilliax_modules_names,
       etc_sideboard_names: etc_sideboard_names
     }
