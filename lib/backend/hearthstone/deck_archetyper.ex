@@ -3147,10 +3147,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp all_even?(%{deck: deck, full_cards: full_cards}), do: all_cost_rem?(deck, full_cards, 0)
 
   defp all_cost_rem?(deck, cards, remainder \\ 0, divisor \\ 2) do
-    Enum.reject(cards, fn card ->
+    cards
+    |> Enum.filter(& &1)
+    |> Enum.reject(fn card ->
       cost = Deck.card_mana_cost(deck, card)
-      card_rem = rem(cost, divisor)
-      card_rem == remainder
+      cost && remainder == rem(cost, divisor)
     end)
     |> Enum.empty?()
   end
