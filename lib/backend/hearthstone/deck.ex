@@ -222,10 +222,10 @@ defmodule Backend.Hearthstone.Deck do
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 
   @spec class_name(String.t() | Deck.t()) :: String.t()
-  def class_name(%__MODULE__{class: class}) when is_binary(class),
+  def class_name(%{class: class}) when is_binary(class),
     do: class |> String.upcase() |> class_name()
 
-  def class_name(%__MODULE__{hero: h}) do
+  def class_name(%{hero: h}) do
     case Hearthstone.class(h) do
       nil -> ""
       class -> class |> String.upcase() |> class_name()
