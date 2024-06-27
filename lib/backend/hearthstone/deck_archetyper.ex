@@ -2309,8 +2309,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
 
-      wild_pirate_rogue?(card_info) ->
+      wild_pirate_rogue?(card_info) && class_name == "Rogue" ->
         :"Pirate Rogue"
+
+      wild_handbuff_warrior?(card_info) && class_name == "Warrior" ->
+        :"Handbuff Warrior"
 
       class_name == "Rogue" && wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
@@ -2385,12 +2388,19 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       holy_wrath_paladin?(card_info) ->
         :"Holy Wrath Paladin"
 
+      "Heartbreaker Hedanis" in card_info.card_names ->
+        :"Hedanis Priest"
+
       true ->
         fallbacks(card_info, class_name)
     end
   end
 
   defp do_archetype(_, _), do: nil
+
+  defp wild_handbuff_warrior?(card_info) do
+    min_count?(card_info, 1, ["Anima Extractor"])
+  end
 
   defp holy_wrath_paladin?(card_info) do
     min_count?(card_info, 2, ["Holy Wrath", "Shirvallah, the Tiger"])
@@ -2445,7 +2455,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp wild_mill_druid?(card_info) do
-    min_count?(card_info, 3, ["Dew Process", "Coldlight Oracle", "Naturalize"])
+    min_count?(card_info, 2, ["Dew Process", "Coldlight Oracle", "Naturalize"])
   end
 
   defp wild_treant_druid?(card_info) do
