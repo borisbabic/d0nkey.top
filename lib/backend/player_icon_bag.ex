@@ -112,4 +112,32 @@ defmodule Backend.PlayerIconBag do
       Util.ets_lookup(table, Battletag.shorten(player))
     end
   end
+
+  @type icon_type :: :unicode | :image
+  @type icon_map :: %{
+          player: String.t(),
+          type: icon_type(),
+          icon: String.t() | nil,
+          path: String.t() | nil,
+          link: String.t() | nil
+        }
+  @spec get_map(String.t()) :: icon_map() | nil
+  def get_map(player) do
+    case get(player) do
+      {:unicode, icon} ->
+        %{player: player, type: :unicode, icon: icon, path: nil, link: nil}
+
+      {:unicode, icon, link} ->
+        %{player: player, type: :unicode, icon: icon, path: nil, link: link}
+
+      {:image, path} ->
+        %{player: player, type: :image, icon: nil, path: path, link: nil}
+
+      {:image, path, link} ->
+        %{player: player, type: :image, icon: nil, path: path, link: link}
+
+      _ ->
+        nil
+    end
+  end
 end
