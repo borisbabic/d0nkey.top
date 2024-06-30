@@ -544,7 +544,8 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.chunk_while([], chunk_fun, after_fun)
   end
 
-  @spec format_name(integer) :: String.t()
+  @spec format_name(integer | t()) :: String.t()
+  def format_name(%{format: format}), do: format_name(format)
   def format_name(1), do: "Wild"
   def format_name(2), do: "Standard"
   def format_name(3), do: "Classic"

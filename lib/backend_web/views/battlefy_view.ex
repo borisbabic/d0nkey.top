@@ -55,8 +55,8 @@ defmodule BackendWeb.BattlefyView do
       name: name,
       yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
       decks: decks,
-      hsdeckviewer: Routes.battlefy_path(conn, :tournament_decks, tournament_id, name),
-      link: Routes.battlefy_path(conn, :tournament_player, tournament_id, name, conn.query_params)
+      hsdeckviewer: ~p"/battlefy/tournament/#{tournament_id}/decks/#{name}",
+      link: ~p"/battlefy/tournament/#{tournament_id}/future/#{name}"
     }
   end
 
@@ -129,11 +129,13 @@ defmodule BackendWeb.BattlefyView do
           "Choose organization"
 
         o ->
-          link = Organization.create_link(o)
-          name = o.name
+          assigns = %{
+            link: Organization.create_link(o),
+            name: o.name
+          }
 
-          ~E"""
-          <a class="is-link" href="<%= link %>"> <%= name %> </a>
+          ~H"""
+          <a class="is-link" href={@link}> <%= @name %> </a>
           """
       end
 
@@ -155,9 +157,9 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
-  def render("class_match_stats.html", %{class: class, bans: 1}) do
-    ~E"""
-    <img class="image is-32x32" style="opacity:0.2;" src="<%= class_url(class) %>" >
+  def render("class_match_stats.html", %{class: _class, bans: 1} = assigns) do
+    ~H"""
+    <img class="image is-32x32" style="opacity:0.2;" src={class_url(@class)}>
     """
   end
 
@@ -182,25 +184,6 @@ defmodule BackendWeb.BattlefyView do
     waiting_opponent =
       prepare_future_opponents(opponent_matches.waiting, params, tournament)
       |> render_future_opponents("Next Opponents")
-
-    # opponent =
-    #   opponent_matches
-    #   |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
-    #     %{
-    #       top: handle_opponent_team(top, params),
-    #       bottom: handle_opponent_team(bottom, params),
-    #       match_url:
-    #         Routes.live_path(
-    #           BackendWeb.Endpoint,
-    #           BackendWeb.BattlefyMatchLive,
-    #           tournament.id,
-    #           match.id
-    #         ),
-    #       current_round: current_round,
-    #       score: "#{top.score} - #{bottom.score}"
-    #     }
-    #   end)
-    #   |> Enum.sort_by(fn o -> o.current_round end, :desc)
 
     {player, class_stats_raw} = handle_player_matches(params)
     hsdeckviewer = Routes.battlefy_path(conn, :tournament_decks, tournament.id, team_name)
@@ -243,81 +226,18 @@ defmodule BackendWeb.BattlefyView do
     )
   end
 
-  def prepare_future_opponents([_ | _] = matches, params, tournament) do
-    matches
-    |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
-      %{
-        top: handle_opponent_team(top, params),
-        bottom: handle_opponent_team(bottom, params),
-        match_url:
-          Routes.live_path(
-            BackendWeb.Endpoint,
-            BackendWeb.BattlefyMatchLive,
-            tournament.id,
-            match.id
-          ),
-        current_round: current_round,
-        score: "#{top.score} - #{bottom.score}"
-      }
-    end)
-    |> Enum.sort_by(fn o -> o.current_round end, :desc)
-  end
-
-  def prepare_future_opponents(_, _params, _tournament), do: []
-
-  def render_future_opponents(future_matches, title \\ "Future Opponents")
-  def render_future_opponents([], _), do: false
-
-  def render_future_opponents(future_matches, title) do
-    assigns = %{future_matches: future_matches, title: title}
-
-    ~H"""
-    <div class="title is-5"><%= @title %> </div>
-    <table class="table is-striped is-fullwidth is-narrow">
-        <thead>
-            <tr>
-                <th>Round</th>
-                <th>Top</th>
-                <th class="is-hidden-mobile">Top Decks</th>
-                <th>Score</th>
-                <th>Bottom</th>
-                <th class="is-hidden-mobile">Bottom Decks</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @future_matches do %>
-                <tr>
-                    <td><%= current_round %></td>
-                    <%= if top == nil do %>
-                        <td></td><td></td>
-                    <% else %>
-                        <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><%= top.decks %></td>
-                    <% end %>
-                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
-                    <%= if bottom == nil do %>
-                        <td></td><td></td>
-                    <% else %>
-                        <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><%= bottom.decks %></td>
-                    <% end %>
-                </tr>
-            <% end %>
-        </tbody>
-    </table>
-    """
-  end
-
   def render("class_match_stats.html", %{class: class, bans: 0, wins: wins, losses: losses}) do
-    image_url = class_url(class)
-
     {offset, border_css} = build_box_shadow(wins, losses)
     size = 32 - offset
-    style = border_css <> "height: #{size}px; width: #{size}px; margin: 3px #{offset}px;"
 
-    ~E"""
+    assigns = %{
+      image_url: class_url(class),
+      style: border_css <> "height: #{size}px; width: #{size}px; margin: 3px #{offset}px;"
+    }
+
+    ~H"""
     <figure class="image is-rounded">
-      <img class="image is-rounded" style="<%= style %>" src="<%= image_url %>"/>
+      <img class="image is-rounded" style={@style} src={@image_url} />
     </figure>
     """
   end
@@ -329,8 +249,10 @@ defmodule BackendWeb.BattlefyView do
         "#{id} # #{name}"
       end)
 
-    edit_tournaments_link =
-      Routes.battlefy_path(conn, :tournaments_stats, %{edit: tournaments_string})
+    assigns = %{
+      edit_tournaments_link:
+        Routes.battlefy_path(conn, :tournaments_stats, %{edit: tournaments_string})
+    }
 
     table_params =
       p
@@ -342,8 +264,8 @@ defmodule BackendWeb.BattlefyView do
       )
       |> Map.put(
         :dropdown_row,
-        ~E"""
-        <a href="<%= edit_tournaments_link %>" class="is-link button"><- Edit tournaments</a>
+        ~H"""
+        <a href={@edit_tournaments_link} class="is-link button">← Edit tournaments</a>
         """
       )
 
@@ -360,22 +282,6 @@ defmodule BackendWeb.BattlefyView do
       title: "Tournament Stats",
       edit: edit
     })
-  end
-
-  defp put_param(params, key, func) do
-    Map.put(params, key, func.(params))
-  end
-
-  defp add_tournament_stage_attrs(params) do
-    add_stage_attrs(
-      params,
-      &Routes.battlefy_path(
-        params.conn,
-        :tournament,
-        params.tournament.id,
-        %{stage_id: &1}
-      )
-    )
   end
 
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
@@ -413,6 +319,42 @@ defmodule BackendWeb.BattlefyView do
     render(
       "tournament.html",
       new_params
+    )
+  end
+
+  def render("user_tournaments.html", %{
+        slug: slug,
+        page: page,
+        tournaments: tournaments,
+        conn: conn
+      }) do
+    render(
+      "user_tournaments.html",
+      %{
+        title: "#{slug}'s Battlefy Tournaments",
+        subtitle: "Public tournaments only",
+        tournaments: tournaments,
+        conn: conn,
+        slug: slug,
+        prev_button: prev_button(conn, page - 1, slug),
+        next_button: next_button(conn, page + 1, slug)
+      }
+    )
+  end
+
+  defp put_param(params, key, func) do
+    Map.put(params, key, func.(params))
+  end
+
+  defp add_tournament_stage_attrs(params) do
+    add_stage_attrs(
+      params,
+      &Routes.battlefy_path(
+        params.conn,
+        :tournament,
+        params.tournament.id,
+        %{stage_id: &1}
+      )
     )
   end
 
@@ -516,26 +458,6 @@ defmodule BackendWeb.BattlefyView do
       stage_selection_text:
         if(selected_stage == nil, do: "Select Stage", else: selected_stage.name)
     })
-  end
-
-  def render("user_tournaments.html", %{
-        slug: slug,
-        page: page,
-        tournaments: tournaments,
-        conn: conn
-      }) do
-    render(
-      "user_tournaments.html",
-      %{
-        title: "#{slug}'s Battlefy Tournaments",
-        subtitle: "Public tournaments only",
-        tournaments: tournaments,
-        conn: conn,
-        slug: slug,
-        prev_button: prev_button(conn, page - 1, slug),
-        next_button: next_button(conn, page + 1, slug)
-      }
-    )
   end
 
   def add_stats_dropdown(dropdowns, _, nil), do: dropdowns
@@ -848,7 +770,11 @@ defmodule BackendWeb.BattlefyView do
 
       invited =
         if MapSet.member?(invited_mapset, s.team.name) do
-          ~E" <span class=\"tag is-success\">✓</span>"
+          assigns = %{}
+
+          ~H"""
+            <span class="tag is-success">✓</span>
+          """
         else
           ""
         end
@@ -973,7 +899,7 @@ defmodule BackendWeb.BattlefyView do
       [
         {[
            %{
-             display: ~E"<span><%= warning_triangle() %> Yes</span>",
+             display: Components.Helper.warning_triangle(%{after_warning: "Yes"}),
              selected: show_lineups == true,
              link:
                Routes.battlefy_path(
@@ -1101,6 +1027,71 @@ defmodule BackendWeb.BattlefyView do
     <a class="icon button is-link" href={@link}>
       <HeroIcons.chevron_left />
     </a>
+    """
+  end
+
+  def prepare_future_opponents([_ | _] = matches, params, tournament) do
+    matches
+    |> Enum.map(fn match = %{top: top, bottom: bottom, round_number: current_round} ->
+      %{
+        top: handle_opponent_team(top, params),
+        bottom: handle_opponent_team(bottom, params),
+        match_url:
+          Routes.live_path(
+            BackendWeb.Endpoint,
+            BackendWeb.BattlefyMatchLive,
+            tournament.id,
+            match.id
+          ),
+        current_round: current_round,
+        score: "#{top.score} - #{bottom.score}"
+      }
+    end)
+    |> Enum.sort_by(fn o -> o.current_round end, :desc)
+  end
+
+  def prepare_future_opponents(_, _params, _tournament), do: []
+
+  def render_future_opponents(future_matches, title \\ "Future Opponents")
+  def render_future_opponents([], _), do: false
+
+  def render_future_opponents(future_matches, title) do
+    assigns = %{future_matches: future_matches, title: title}
+
+    ~H"""
+    <div class="title is-5"><%= @title %> </div>
+    <table class="table is-striped is-fullwidth is-narrow">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th>Top</th>
+                <th class="is-hidden-mobile">Top Decks</th>
+                <th>Score</th>
+                <th>Bottom</th>
+                <th class="is-hidden-mobile">Bottom Decks</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @future_matches do %>
+                <tr>
+                    <td><%= current_round %></td>
+                    <%= if top == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
+                        <td class="is-hidden-mobile"><%= top.decks %></td>
+                    <% end %>
+                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
+                    <%= if bottom == nil do %>
+                        <td></td><td></td>
+                    <% else %>
+                        <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
+                        <td class="is-hidden-mobile"><%= bottom.decks %></td>
+                    <% end %>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
     """
   end
 end

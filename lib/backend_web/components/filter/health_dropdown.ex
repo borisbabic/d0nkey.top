@@ -1,7 +1,6 @@
 defmodule Components.Filter.HealthDropdown do
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
-  alias Backend.Hearthstone.Deck
 
   prop(title, :string, default: "Health")
   prop(param, :string, default: "health")

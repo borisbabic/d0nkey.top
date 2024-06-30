@@ -514,6 +514,15 @@ defmodule Backend.Blizzard do
     get_region_name(String.to_existing_atom(region), length)
   end
 
+  @spec get_region_identifier(atom() | String.t() | %{region: String.t() | atom()}) :: {:ok, atom()} | {:error, any()}
+  def get_region_identifier(%{region: r}), do: get_region_identifier(r)
+  def get_region_identifier(r) when r in [:EU, :US, :AP, :CN], do: {:ok, r}
+  def get_region_identifier(r) when r in ["EU", "Europe"], do: {:ok, :EU}
+  def get_region_identifier(r) when r in ["AM", "NA", "Americas", :NA], do: {:ok, :AM}
+  def get_region_identifier(r) when r in ["AP", "APAC", "Asia-Pacific", :APAC, "Asia"], do: {:ok, :AP}
+  def get_region_identifier(r) when r in ["CN", "China"], do: {:ok, :CN}
+  def get_region_identifier(r), do: {:error, "unknown_region #{r}"}
+
   @spec leaderboards_with_name() :: [{leaderboard(), String.t()}]
   def leaderboards_with_name() do
     leaderboards_with_name(:long)
