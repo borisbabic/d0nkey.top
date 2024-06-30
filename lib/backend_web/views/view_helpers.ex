@@ -7,17 +7,19 @@ defmodule BackendWeb.ViewHelpers do
   defmacro __using__(_opts) do
     quote do
       import BackendWeb.AuthUtils
+      import Components.Helper, only: [country_flag: 2]
+      alias Components.Helper
 
       def render_datetime(datetime) do
-        render(BackendWeb.SharedView, "datetime.html", %{datetime: datetime})
+        Helper.datetime(%{datetime: datetime})
       end
 
       def render_dropdown(options, title) do
-        render(BackendWeb.SharedView, "dropdown_links.html", %{options: options, title: title})
+        Helper.dropdown(%{options: options, title: title})
       end
 
       def render_dropdowns(dropdowns) do
-        render(BackendWeb.SharedView, "multiple_dropdown_links.html", %{dropdowns: dropdowns})
+        Helper.dropdowns(%{dropdowns: dropdowns})
       end
 
       defp sort_by_selected(options, false), do: options
@@ -42,25 +44,18 @@ defmodule BackendWeb.ViewHelpers do
         search_class = "#{attr}_#{search_id}"
         checkbox_class = "#{attr}_#{search_id}_checkbox"
 
-        render(
-          BackendWeb.SharedView,
-          "multiselect_dropdown.html",
+        assigns =
           with_defaults
           |> Map.put(:show_search, !!search_id)
           |> Map.put(:search_class, search_class)
           |> Map.put(:checkbox_class, checkbox_class)
           |> Map.put(:options, sorted)
-        )
+
+        Helper.multiselect_dropdown(assigns)
       end
 
       def render_deckcode(<<deckcode::binary>>, hide_no_js \\ true) do
-        style = if(hide_no_js, do: "display: none;", else: "")
-
-        render(BackendWeb.SharedView, "deckcode.html", %{
-          deckcode: deckcode,
-          style: style,
-          id: Util.gen_html_id()
-        })
+        Helper.deckcode(%{deckcode: deckcode, hide_no_js: hide_no_js})
       end
 
       def render_comparison(current, prev, flip, diff_format_fun \\ & &1)
@@ -75,7 +70,7 @@ defmodule BackendWeb.ViewHelpers do
 
         diff = abs((current || 0) - prev)
 
-        render(BackendWeb.SharedView, "comparison.html", %{
+        Helper.comparison(%{
           class: class,
           diff: dff.(diff),
           arrow: arrow,
@@ -89,30 +84,6 @@ defmodule BackendWeb.ViewHelpers do
           |> Enum.find_value(fn o -> o.selected && o.display end)
 
         selected_title || default
-      end
-
-      def country_flag(country, player) when is_binary(player) do
-        pref = Backend.PlayerCountryPreferenceBag.get(player, country)
-        country_flag(country, pref)
-      end
-
-      def country_flag(country, %{show_region: true}) do
-        %{world_region: region} = Countriex.get_by(:alpha2, country)
-        image = "/images/region_#{String.downcase(region)}.png"
-
-        render(BackendWeb.SharedView, "region_flag.html", %{image: image, region: region})
-      end
-
-      def country_flag(country, user_preferences) do
-        name = Util.get_country_name(country)
-
-        assigns =
-          user_preferences
-          |> Map.put_new(:cross_out_country, false)
-          |> Map.put(:country, String.downcase(country))
-          |> Map.put(:country_name, name)
-
-        render(BackendWeb.SharedView, "country_flag.html", assigns)
       end
 
       def countries_options(selected_countries) do
@@ -144,56 +115,28 @@ defmodule BackendWeb.ViewHelpers do
 
       def render_legend_rank(rank)
           when (is_integer(rank) and rank > 0) or (is_binary(rank) and bit_size(rank) > 0) do
-        render(BackendWeb.SharedView, "legend_rank.html", %{rank: rank})
+        Helper.legend_rank(%{rank: rank})
       end
 
       def render_legend_rank(rank), do: ""
 
       def render_game_type(type) do
-        render(
-          BackendWeb.SharedView,
-          "game_type.html",
-          %{type: type}
-        )
+        Helper.game_type(type: type)
       end
 
       def render_player_icon(name) do
-        render(
-          BackendWeb.SharedView,
-          "player_icon.html",
-          %{name: name}
-        )
+        Helper.render_player_icon(name)
       end
 
-      def render_player_name(name) do
-        render(
-          BackendWeb.SharedView,
-          "player_name.html",
-          %{name: name}
-        )
+      def render_player_name(name, with_country \\ false) do
+        Helper.player_name(name, with_country)
       end
 
-      def render_player_name(name, _with_country = false), do: render_player_name(name)
-
-      def render_player_name(name, _with_country = true) do
-        render(
-          BackendWeb.SharedView,
-          "player_name.html",
-          %{name: name, country: Backend.PlayerInfo.get_country(name)}
-        )
+      def render_player_link(name, link \\ nil, with_country \\ false) do
+        Helper.player_link(%{name: name, link: link, with_country: with_country})
       end
 
-      def render_player_link(name, link \\ nil, with_country \\ true)
-
-      def render_player_link(name, link, with_country) do
-        render(
-          BackendWeb.SharedView,
-          "player_link.html",
-          %{name: name, with_country: with_country, link: link || "/player-profile/#{name}"}
-        )
-      end
-
-      def warning_triangle(), do: Components.Helper.warning_triangle()
+      def warning_triangle(), do: Helper.warning_triangle()
     end
   end
 end
