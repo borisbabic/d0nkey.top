@@ -654,18 +654,18 @@ defmodule Backend.MastersTour do
         "무에서유창조" -> "Crefno"
         "mueseoyuchangjo" -> "Crefno"
         "현명한로나" -> "LoNa"
-        "잔악무도유관우" -> "kwanwoo"
+        # "잔악무도유관우" -> "kwanwoo"
         "신명수" -> "soo"
         "독도는한국" -> "DokdonuenKR"
-        "달라라면" -> "Dallara"
-        "호랑이들어와요" -> "Hodeulyo"
+        # "달라라면" -> "Dallara"
+        # "호랑이들어와요" -> "Hodeulyo"
         "ilikeryan" -> "Hodeulyo"
         "현명한라이언" -> "Hodeulyo"
         "지기" -> "keeper"
         "막강한올빼미" -> "Makganghanol"
         "이스티" -> "LuiSti"
         "ESti" -> "LuiSti"
-        "최석중" -> "ChoiSeokJoon"
+        # "최석중" -> "ChoiSeokJoon"
         # </zflow>
         #
         # Battlefy
@@ -795,7 +795,7 @@ defmodule Backend.MastersTour do
         "sakura" -> "Sakura"
         "聖水洋洋" -> "holywater"
         "lucasdmnasc" -> "Lucasdmnasc"
-        "살아있는양심" -> "sheepheart"
+        # "살아있는양심" -> "sheepheart"
         # "MAWANG" -> "LGDMurphy"
 
         "WedgmMurphy" -> "LGDMurphy"
@@ -810,7 +810,7 @@ defmodule Backend.MastersTour do
         "cagnetta99" -> "lattosio"
         # "cdkFoot" -> "FiveKSJioJio"
 
-        "조치" -> "Zochi"
+        # "조치" -> "Zochi"
         "Dragonmaster" -> "PrestX"
         "虎牙深海羽翼" -> "KZGYuYi"
         "WEYuyi" -> "KZGYuYi"
@@ -835,7 +835,7 @@ defmodule Backend.MastersTour do
         "자네누군가" -> "whoyou99"
         "와와" -> "Wawa"
         "에렛지디" -> "EretdGD"
-        "가끔들어옴" -> "rkRma"
+        # "가끔들어옴" -> "rkRma"
         "거인의어깨위에서" -> "Tori"
         "동기링" -> "donggiring"
         "투블럭컷밥말리" -> "twobob"
@@ -956,7 +956,7 @@ defmodule Backend.MastersTour do
         # KR:w
         "Miracle7" -> "CHEOL"
         "ADU" -> "CJkaka"
-        "iGShuiMoo" -> "ShuiMo"
+        # "iGShuiMoo" -> "ShuiMo"
         n -> n
       end
 

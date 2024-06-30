@@ -7,10 +7,14 @@ defmodule BackendWeb.PlayerView do
   alias Backend.TournamentStats.TeamStats
   alias Backend.TournamentStats.TournamentTeamStats
   alias BackendWeb.ViewUtil
+  alias Components.ViewHelpers.PlayerHelper
+  alias Components.Helper
 
   defp simple_link(href, text) do
-    ~E"""
-    <a class="is-link" href="<%= href %>"><%= text %></a>
+    assigns = %{href: href, text: text}
+
+    ~H"""
+    <a class="is-link" href={@href}><%= @text %></a>
     """
   end
 
@@ -85,14 +89,7 @@ defmodule BackendWeb.PlayerView do
       (stats_rows ++ mt_total_row)
       |> Enum.map(fn {title, val} -> "#{title}: #{val}" end)
 
-    table_headers =
-      [
-        "Competition",
-        "Place",
-        "Score"
-      ]
-      |> Enum.map(fn h -> ~E"<th><%= h %></th>" end)
-
+    table_headers = PlayerHelper.table_headers(%{})
     mt_rows = mt_rows(tts, conn)
 
     qualifier_rows = qualifier_rows(t, battletags, conn)
@@ -109,15 +106,7 @@ defmodule BackendWeb.PlayerView do
       |> Enum.sort_by(fn r -> r.time end, fn a, b -> NaiveDateTime.compare(a, b) == :gt end)
       |> Enum.drop(offset)
       |> Enum.take(limit)
-      |> Enum.map(fn r ->
-        ~E"""
-        <tr>
-          <td> <%= r.competition %> </td>
-          <td> <%= r.position %> </td>
-          <td> <%= r.score %> </td>
-        <tr>
-        """
-      end)
+      |> Enum.map(&PlayerHelper.table_row/1)
 
     dropdowns = [
       limit_dropdown,
@@ -294,9 +283,7 @@ defmodule BackendWeb.PlayerView do
   end
 
   def concat(first, second) do
-    ~E"""
-    <%= first %> <%= second %>
-    """
+    Helper.concat(first, second)
   end
 
   def history_link(conn, ss, player, attr \\ "rank", period_param \\ nil)

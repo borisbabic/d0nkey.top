@@ -33,11 +33,30 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         String.to_atom("Even #{class_name}")
 
       true ->
-        do_archetype(deck, card_info)
+        archetype(deck, card_info)
     end
   end
 
   def archetype(_), do: nil
+
+  defp archetype(deck, card_info) do
+    case {deck, Deck.class(deck)} do
+      {%{format: 2}, "DEATHKNIGHT"} -> standard_death_knight(card_info)
+      {%{format: 2}, "DEMONHUNTER"} -> standard_demon_hunter(card_info)
+      {%{format: 2}, "DRUID"} -> standard_druid(card_info)
+      {%{format: 2}, "HUNTER"} -> standard_hunter(card_info)
+      {%{format: 2}, "MAGE"} -> standard_mage(card_info)
+      {%{format: 2}, "PALADIN"} -> standard_paladin(card_info)
+      {%{format: 2}, "PRIEST"} -> standard_priest(card_info)
+      {%{format: 2}, "ROGUE"} -> standard_rogue(card_info)
+      {%{format: 2}, "SHAMAN"} -> standard_shaman(card_info)
+      {%{format: 2}, "WARLOCK"} -> standard_warlock(card_info)
+      {%{format: 2}, "WARRIOR"} -> standard_warrior(card_info)
+      {%{format: 1}, _} -> wild(card_info)
+      {%{format: 4}, _} -> twist(card_info)
+      _ -> nil
+    end
+  end
 
   @neutral_excavate ["Kobold Miner", "Burrow Buster"]
   @neutral_spell_damage [
@@ -47,9 +66,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     "Silvermoon Arcanist",
     "Azure Drake"
   ]
-  defp do_archetype(%{format: 2, cards: c, class: "DEATHKNIGHT"}, card_info) do
+  defp standard_death_knight(card_info) do
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         :"Highlander DK"
 
       burn_dk?(card_info) ->
@@ -154,9 +173,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Encumbered Pack Mule"
       ])
 
-  defp do_archetype(%{format: 2, cards: c, class: "DEMONHUNTER"}, card_info) do
+  defp standard_demon_hunter(card_info) do
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         :"Highlander DH"
 
       boar?(card_info) ->
@@ -288,9 +307,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   def outcast_dh?(c), do: min_keyword_count?(c, 4, "outcast")
 
-  defp do_archetype(%{format: 2, cards: c, class: "DRUID"}, card_info) do
+  defp standard_druid(card_info) do
     cond do
-      highlander?(card_info, c) -> :"Highlander Druid"
+      highlander?(card_info) -> :"Highlander Druid"
       quest?(card_info) || questline?(card_info) -> :"Quest Druid"
       boar?(card_info) -> :"Boar Druid"
       vanndar?(card_info) -> :"Vanndar Druid"
@@ -389,9 +408,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp zok_druid?(ci),
     do: min_count?(ci, 2, ["Zok Fogsnout", "Anub'Rekhan"])
 
-  defp do_archetype(%{format: 2, cards: c, class: "HUNTER"}, card_info) do
+  defp standard_hunter(card_info) do
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         :"Highlander Hunter"
 
       quest?(card_info) || questline?(card_info) ->
@@ -498,12 +517,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     "Shockspitter" in ci.card_names
   end
 
-  defp do_archetype(%{format: 2, cards: c, class: "MAGE"}, card_info) do
+  defp standard_mage(card_info) do
     rommath? = "Grand Magister Rommath" in card_info.card_names
     lightshow? = "Lightshow" in card_info.card_names
 
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         :"Highlander Mage"
 
       arcane_mage?(card_info) && (quest?(card_info) || questline?(card_info)) ->
@@ -645,13 +664,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Prismatic Elemental"
       ])
 
-  defp do_archetype(%{format: 2, cards: c, class: "PALADIN"}, card_info) do
+  defp standard_paladin(card_info) do
     cond do
-      highlander?(card_info, c) && pure_paladin?(card_info) -> :"Highlander Pure Paladin"
+      highlander?(card_info) && pure_paladin?(card_info) -> :"Highlander Pure Paladin"
       pure_paladin?(card_info) && dude_paladin?(card_info) -> :Chadadin
       earthen_paladin?(card_info) && pure_paladin?(card_info) -> :"Gaia Pure Paladin"
       pure_paladin?(card_info) -> :"Pure Paladin"
-      highlander?(card_info, c) -> :"Highlander Paladin"
+      highlander?(card_info) -> :"Highlander Paladin"
       excavate_paladin?(card_info) -> :"Excavate Paladin"
       handbuff_paladin?(card_info) -> :"Handbuff Paladin"
       aggro_paladin?(card_info) -> :"Aggro Paladin"
@@ -710,9 +729,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
-  defp do_archetype(%{format: 2, cards: c, class: "PRIEST"}, card_info) do
+  defp standard_priest(card_info) do
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         :"Highlander Priest"
 
       quest?(card_info) || questline?(card_info) ->
@@ -852,9 +871,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Scourge Rager" in card_info.card_names and
         min_count?(card_info, 2, ["Animate Dead", "Grave Digging", "High Cultist Basaleph"])
 
-  defp do_archetype(%{format: 2, cards: c, class: "ROGUE"}, card_info) do
+  defp standard_rogue(card_info) do
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         :"Highlander Rogue"
 
       coc_rogue?(card_info) && (quest?(card_info) || questline?(card_info)) ->
@@ -991,9 +1010,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
   defp mech_rogue?(ci), do: type_count(ci, "Mech") > 5
 
-  defp do_archetype(%{format: 2, cards: c, class: "SHAMAN"}, card_info) do
+  defp standard_shaman(card_info) do
     cond do
-      highlander?(card_info, c) -> :"Highlander Shaman"
+      highlander?(card_info) -> :"Highlander Shaman"
       quest?(card_info) || questline?(card_info) -> :"Quest Shaman"
       boar?(card_info) -> :"Boar Shaman"
       vanndar?(card_info) -> :"Vanndar Shaman"
@@ -1071,9 +1090,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         "Incorporeal Corporal"
       ])
 
-  defp do_archetype(%{format: 2, cards: c, class: "WARLOCK"}, card_info) do
+  defp standard_warlock(card_info) do
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         :"Highlander Warlock"
 
       implock?(card_info) && (quest?(card_info) || questline?(card_info)) ->
@@ -1237,9 +1256,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     min_count?(ci, 2, ["Amorphous Slime", "Thaddius, Monstrosity"])
   end
 
-  defp do_archetype(%{format: 2, cards: c, class: "WARRIOR"}, card_info) do
+  defp standard_warrior(card_info) do
     cond do
-      highlander?(card_info, c) -> :"Highlander Warrior"
+      highlander?(card_info) -> :"Highlander Warrior"
       questline?(card_info) && warrior_aoe?(card_info) -> :"Quest Control Warrior"
       quest?(card_info) || questline?(card_info) -> :"Quest Warrior"
       galvangar_combo?(card_info) -> :"Charge Warrior"
@@ -1289,15 +1308,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     "Odyn, Prime Designate" in card_info.card_names
   end
 
-  defp cycle_odyn?(ci) do
-    odyn?(ci) and
-      min_count?(ci, 3, [
-        "Acolyte of Pain",
-        "Needlerock Totem",
-        "Stoneskin Armorer",
-        "Gold Panner"
-      ])
-  end
+  # defp cycle_odyn?(ci) do
+  #   odyn?(ci) and
+  #     min_count?(ci, 3, [
+  #       "Acolyte of Pain",
+  #       "Needlerock Totem",
+  #       "Stoneskin Armorer",
+  #       "Gold Panner"
+  #     ])
+  # end
 
   defp excavate_warrior?(ci),
     do:
@@ -2079,14 +2098,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     end
   end
 
-  defp do_archetype(%{class: class, cards: c, format: 4}, card_info) do
-    class_name = Deck.class_name(class)
+  defp twist(card_info) do
+    class_name = Deck.class_name(card_info.deck)
 
     cond do
       result = twist_whizbangs_heros(card_info) ->
         result
 
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
       quest?(card_info) || questline?(card_info) ->
@@ -2154,7 +2173,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
         String.to_atom("Vanndar #{class_name}")
 
       true ->
-        archetype(%{class: class, cards: c, format: 2})
+        class_name
     end
   end
 
@@ -2210,7 +2229,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       ])
   end
 
-  defp fatigue_warlock?(card_info) do
+  defp wild_fatigue_warlock?(card_info) do
     min_count?(
       card_info,
       5,
@@ -2257,11 +2276,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
     ])
   end
 
-  defp do_archetype(%{class: class, cards: c, format: 1}, card_info) do
-    class_name = Deck.class_name(class)
+  defp wild(card_info) do
+    class_name = Deck.class_name(card_info.deck)
 
     cond do
-      highlander?(card_info, c) ->
+      highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
       quest?(card_info) || questline?(card_info) ->
@@ -2391,12 +2410,13 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       "Heartbreaker Hedanis" in card_info.card_names ->
         :"Hedanis Priest"
 
+      wild_fatigue_warlock?(card_info) ->
+        :"Fatigue Warlock"
+
       true ->
         fallbacks(card_info, class_name)
     end
   end
-
-  defp do_archetype(_, _), do: nil
 
   defp wild_handbuff_warrior?(card_info) do
     min_count?(card_info, 1, ["Anima Extractor"])
@@ -2664,17 +2684,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp big_beast_hunter?(ci),
     do:
       min_count?(ci, 2, ["King Krush", "Stranglehorn Heart", "Faithful Companions", "Banjosaur"])
-
-  defp beast_hunter?(ci),
-    do:
-      min_count?(ci, 2, [
-        "Harpoon Gun",
-        "Selective Breeder",
-        "Stormpike Battle Ram",
-        "Azsharan Saber",
-        "Revive Pet",
-        "Pet Collector"
-      ])
 
   defp aggro_hunter?(ci),
     do:
@@ -3131,8 +3140,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names
   defp kazakusan?(%{card_names: card_names}), do: "Kazakusan" in card_names
 
-  defp highlander?(card_info, cards) do
-    num_dupl = num_duplicates(cards)
+  defp highlander?(card_info) do
+    num_dupl = num_duplicates(card_info.cards)
     num_dupl == 0 or (num_dupl < 4 and highlander_payoff?(card_info))
   end
 
@@ -3156,7 +3165,7 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   defp all_odd?(%{deck: deck, full_cards: full_cards}), do: all_cost_rem?(deck, full_cards, 1)
   defp all_even?(%{deck: deck, full_cards: full_cards}), do: all_cost_rem?(deck, full_cards, 0)
 
-  defp all_cost_rem?(deck, cards, remainder \\ 0, divisor \\ 2) do
+  defp all_cost_rem?(deck, cards, remainder, divisor \\ 2) do
     cards
     |> Enum.filter(& &1)
     |> Enum.reject(fn card ->

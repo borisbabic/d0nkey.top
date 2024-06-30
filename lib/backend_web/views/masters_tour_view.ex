@@ -8,91 +8,34 @@ defmodule BackendWeb.MastersTourView do
   alias Backend.MastersTour.PlayerStats
   alias BackendWeb.MastersTour.MastersToursStats
   alias BackendWeb.ViewUtil
+  alias Components.ViewHelpers.MastersTourHelper, as: MTHelper
 
   @type qualifiers_dropdown_link :: %{display: Blizzard.tour_stop(), link: String.t()}
   @min_cups_options [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200, 300]
 
-  defp create_region_tag(%{region: nil}), do: ""
-
-  defp create_region_tag(%{region: region}) do
-    tag =
-      case region do
-        :US -> "is-info"
-        :EU -> "is-primary"
-        :CN -> "is-warning"
-        _ -> "is-success"
-      end
-
-    region_name = Blizzard.get_region_name(region, :short)
-
-    ~E"""
-    <span class="tag <%= tag %> is-family-code"><%= region_name %></span>
-    """
-  end
-
-  def create_country_tag(%{country: nil}), do: ""
-  def create_country_tag(%{country: cc, name: name}), do: country_flag(cc, name)
-
-  def create_name_cell(pr = %{name: name}, conn) do
-    region = create_region_tag(pr)
-    country = create_country_tag(pr)
-
-    profile_link = Routes.player_path(conn, :player_profile, MastersTour.mt_profile_name(name))
-
-    ~E"""
-    <%= region %><%= country %><span> <a class="is-link" href="<%= profile_link %>"> <%= render_player_name(name) %> </a></span>
-    """
-  end
-
   def create_headers(tour_stops, show_current_score) do
-    ~E"""
-    <tr>
-      <th>#</th>
-      <th>Name</th>
-      <%= for ts <- tour_stops do %>
-        <th class="is-hidden-mobile"><%=TourStop.display_name(ts)%></th>
-      <% end %>
-      <%= if show_current_score do %>
-        <th>Current Score</th>
-      <% end %>
-      <th>Total</th>
-    </tr>
-    """
+    MTHelper.points_headers(%{tour_stops: tour_stops, show_current_score: show_current_score})
   end
-
-  def warning(warning) when is_binary(warning),
-    do: ~E"""
-    <span data-balloon-pos="up" aria-label="<%= warning %>" class="icon is-small">
-      <i class="fas fa-exclamation"></i>
-    </span>
-    """
-
-  def warning(_), do: ""
 
   def create_row_html(
         {pr = %{name: _name, total: total, per_ts: per_ts, region: _region, country: _country},
          place},
         tour_stops,
-        show_current_score,
-        conn
+        show_current_score
       ) do
-    name_cell = create_name_cell(pr, conn)
-    warning = warning(pr.warning)
+    name_cell = MTHelper.create_name_cell(pr)
     tour_stop_cells = tour_stops |> Enum.map(fn ts -> per_ts[ts] || 0 end)
 
-    ~E"""
-      <tr>
-        <td> <%=place%> </td>
-        <td> <%=name_cell%><%= warning %> </td>
-        <%= for tsc <- tour_stop_cells do %>
-          <td class="is-hidden-mobile"><%=tsc%></td>
-        <% end %>
-        <%= if show_current_score do %>
-          <td><%= pr.current_score %></td>
-        <% end %>
-        <td><%=total%></td>
-      </tr>
-    """
+    assigns = %{
+      warning: pr.warning,
+      name_cell: name_cell,
+      place: place,
+      total: total,
+      current_score: show_current_score && pr.current_score,
+      tour_stop_cells: tour_stop_cells
+    }
+
+    MTHelper.points_row(assigns)
   end
 
   def opposite(:desc), do: :asc
@@ -114,9 +57,7 @@ defmodule BackendWeb.MastersTourView do
 
     cell = "#{header}#{symbol(direction)}"
 
-    ~E"""
-      <a class="is-text" href="<%= url %>"><%= cell %></a>
-    """
+    MTHelper.text_link(%{link: url, body: cell})
   end
 
   def create_stats_header(header, _, _, conn, period) do
@@ -130,9 +71,7 @@ defmodule BackendWeb.MastersTourView do
         Map.merge(conn.query_params, click_params)
       )
 
-    ~E"""
-      <a class="is-text" href="<%= url %>"><%= header %></a>
-    """
+    MTHelper.text_link(%{link: url, body: header})
   end
 
   def get_sort_index(headers, sort_by, default \\ "Winrate %") do
@@ -186,11 +125,9 @@ defmodule BackendWeb.MastersTourView do
     tour_stops
     |> Enum.map(fn tour_stop ->
       cell =
-        if MapSet.member?(invited_set, player_stats.battletag_full <> to_string(tour_stop)) do
-          ~E" <span class=\"tag is-success\">✓</span>"
-        else
-          ""
-        end
+        MTHelper.checkmark(%{
+          show: MapSet.member?(invited_set, player_stats.battletag_full <> to_string(tour_stop))
+        })
 
       {TourStop.display_name(tour_stop), cell}
     end)
@@ -202,7 +139,7 @@ defmodule BackendWeb.MastersTourView do
         player_stats,
         eligible_tour_stops,
         invited_set,
-        conn,
+        _conn,
         period,
         show_flags
       ) do
@@ -211,15 +148,9 @@ defmodule BackendWeb.MastersTourView do
       total = ps |> PlayerStats.with_result()
 
       ts_cells = create_tour_stop_cells(ps, eligible_tour_stops, invited_set)
-      country = Backend.PlayerInfo.get_country(ps.battletag_full)
-      flag_part = if show_flags && country, do: country_flag(country, ps.battletag_full), else: ""
-
-      player_cell = ~E"""
-      <%= flag_part %>
-      <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, ps.battletag_full)%>">
-        <%= ps.battletag_full |> InvitedPlayer.shorten_battletag() |> render_player_name() %>
-      </a>
-      """
+      shortened = ps.battletag_full |> InvitedPlayer.shorten_battletag()
+      link = ~p"/player-profile/#{ps.battletag_full}"
+      player_cell = Helper.player_link(%{link: link, name: shortened, with_country: show_flags})
 
       projection_min =
         case TourStop.get(period) do
@@ -229,7 +160,7 @@ defmodule BackendWeb.MastersTourView do
 
       %{
         "Player" => player_cell,
-        "_country" => country,
+        "_country" => Backend.PlayerInfo.get_country(ps.battletag_full),
         "Cups" => total,
         "Top 8 %" => if(total > 0, do: (100 * ps.top8 / total) |> Float.round(2), else: 0),
         "Top 8" => ps.top8,
@@ -299,10 +230,6 @@ defmodule BackendWeb.MastersTourView do
       _ -> {"Winrate %", :desc}
     end
   end
-
-  def warning(min, 2020) when min < 15, do: warning_triangle()
-  # def warning(min, _) when min < 5, do: warning_triangle()
-  def warning(_, _), do: ""
 
   def sort_for_qualifier_winrate(rows, %{min_qualifiers_for_winrate: min}) when is_integer(min) do
     rows
@@ -459,12 +386,8 @@ defmodule BackendWeb.MastersTourView do
       PlayerInfo.get_eligible_countries()
       |> Enum.sort_by(&Util.get_country_name/1)
       |> Enum.map(fn cc ->
-        country_name = cc |> Util.get_country_name()
-
         %{
-          display: ~E"""
-          <%= country_flag(cc, %{}) %> <span> <%= country_name %> </span>
-          """,
+          display: Components.Helper.country(%{country_code: cc}),
           link:
             Routes.masters_tour_path(
               conn,
@@ -552,18 +475,8 @@ defmodule BackendWeb.MastersTourView do
         full |> InvitedPlayer.shorten_battletag() |> MastersTour.fix_name()
     end)
     |> case do
-      %{wins: wins, losses: losses, disqualified: disqualified} ->
-        class =
-          cond do
-            disqualified -> "has-text-danger"
-            losses == 2 -> "has-text-warning"
-            losses < 2 -> "has-text-success"
-            true -> "has-text-danger"
-          end
-
-        ~E"""
-        <div class="<%= class %>"> <%= wins %> - <%= losses %> </div>
-        """
+      %{wins: _wins, losses: _losses, disqualified: _disqualified} = assigns ->
+        MTHelper.player_score(assigns)
 
       _ ->
         ""
@@ -598,9 +511,8 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.find(&(&1.tournament_id == id))
       |> case do
         %{winner: winner, tournament_id: tournament_id} ->
-          ~E"""
-          <a href="<%= Routes.battlefy_path(conn, :tournament_player, tournament_id, winner)%>"><%= render_player_name(winner, true) %></a>
-          """
+          link = Routes.battlefy_path(conn, :tournament_player, tournament_id, winner)
+          Helper.player_link(%{name: winner, link: link, with_country: true})
 
         _ ->
           nil
@@ -763,14 +675,8 @@ defmodule BackendWeb.MastersTourView do
     min_list =
       @min_cups_options
       |> Enum.map(fn min ->
-        warning = warning(min, period)
-
-        display = ~E"""
-        <span><%= warning %>Min <%= min %></span>
-        """
-
         %{
-          display: display,
+          display: "Min #{min}",
           selected: min == min_to_show,
           link:
             Routes.masters_tour_path(
@@ -873,7 +779,7 @@ defmodule BackendWeb.MastersTourView do
       |> filter_region(region)
       |> filter_country(country)
       |> Enum.with_index(1)
-      |> Enum.map(fn r -> create_row_html(r, tour_stops_started, show_current_score, conn) end)
+      |> Enum.map(fn r -> create_row_html(r, tour_stops_started, show_current_score) end)
 
     title = "Points for #{season_display({year, season})}"
 

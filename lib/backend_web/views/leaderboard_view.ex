@@ -305,7 +305,7 @@ defmodule BackendWeb.LeaderboardView do
       |> Enum.map(fn {row, pos} ->
         cell_map =
           Map.merge(row.per_season, %{
-            "Player" => BackendWeb.MastersTourView.create_name_cell(row, conn),
+            "Player" => Components.ViewHelpers.MastersTourHelper.create_name_cell(row),
             "Total" => row.total
           })
 
@@ -325,35 +325,6 @@ defmodule BackendWeb.LeaderboardView do
       dropdowns: [limit_dropdown | create_points_dropdowns(params)]
     })
   end
-
-  def announcement_link_subtitle(assigns) do
-    ~H"""
-      <div class="subtitle is-5">
-          <a href={@link} target="_blank"><%= @display %></a>
-      </div>
-    """
-  end
-
-  @default_subtitle_year "2024"
-  def points_subtitle(ps) when is_atom(ps), do: ps |> to_string() |> points_subtitle()
-
-  def points_subtitle("2023" <> _) do
-    announcement_link_subtitle(%{
-      link: "https://hearthstone.blizzard.com/news/23904520",
-      display: "2023 Announcement"
-    })
-  end
-
-  def points_subtitle("2024" <> _) do
-    announcement_link_subtitle(%{
-      link: "https://hearthstone.blizzard.com/news/24056180",
-      display: "2024 Announcement"
-    })
-  end
-
-  # guard to prevent accidental infinite loop
-  def points_subtitle(ps) when ps != @default_subtitle_year,
-    do: points_subtitle(@default_subtitle_year)
 
   def render(
         "rank_history.html",
@@ -743,14 +714,6 @@ defmodule BackendWeb.LeaderboardView do
       end)
 
     {[all_option | region_options], title}
-  end
-
-  def new(text) do
-    ~E"""
-      <span>
-        <p><%= text %><sup class="is-hidden-mobile is-size-7 has-text-danger"> New!</sup></p>
-      </span>
-    """
   end
 
   def create_points_season_dropdown(points_season, update_link) do
@@ -1255,8 +1218,13 @@ defmodule BackendWeb.LeaderboardView do
 
     cell = "#{header}#{symbol(direction)}"
 
-    ~E"""
-      <a class="is-text" href="<%= url %>"><%= cell %></a>
+    assigns = %{
+      url: url,
+      cell: cell
+    }
+
+    ~H"""
+      <a class="is-text" href={@url}>{@cell}</a>
     """
   end
 
@@ -1270,8 +1238,10 @@ defmodule BackendWeb.LeaderboardView do
         Map.merge(conn.query_params, click_params)
       )
 
-    ~E"""
-      <a class="is-text" href="<%= url %>"><%= header %></a>
+    assigns = %{url: url, header: header}
+
+    ~H"""
+      <a class="is-text" href={@url}><%= @header %></a>
     """
   end
 
@@ -1369,4 +1339,33 @@ defmodule BackendWeb.LeaderboardView do
       <% end %>
     """
   end
+
+  def announcement_link_subtitle(assigns) do
+    ~H"""
+      <div class="subtitle is-5">
+          <a href={@link} target="_blank"><%= @display %></a>
+      </div>
+    """
+  end
+
+  @default_subtitle_year "2024"
+  def points_subtitle(ps) when is_atom(ps), do: ps |> to_string() |> points_subtitle()
+
+  def points_subtitle("2023" <> _) do
+    announcement_link_subtitle(%{
+      link: "https://hearthstone.blizzard.com/news/23904520",
+      display: "2023 Announcement"
+    })
+  end
+
+  def points_subtitle("2024" <> _) do
+    announcement_link_subtitle(%{
+      link: "https://hearthstone.blizzard.com/news/24056180",
+      display: "2024 Announcement"
+    })
+  end
+
+  # guard to prevent accidental infinite loop
+  def points_subtitle(ps) when ps != @default_subtitle_year,
+    do: points_subtitle(@default_subtitle_year)
 end

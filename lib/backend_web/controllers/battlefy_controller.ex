@@ -200,10 +200,8 @@ defmodule BackendWeb.BattlefyController do
   end
 
   # somebody is spamming this, :shrug:
-  def tournament_player(conn, %{"team_name" => "&"}) do
-    conn
-    |> put_view(BackendWeb.SharedView)
-    |> render("empty.html", %{})
+  def tournament_player(_conn, %{"team_name" => "&"}) do
+    Components.Helper.empty()
   end
 
   def tournament_player(

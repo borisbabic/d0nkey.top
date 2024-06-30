@@ -1,11 +1,11 @@
 defmodule BackendWeb.StreamingView do
   use BackendWeb, :view
+
   alias Backend.Hearthstone.Deck
   alias Backend.Streaming.Streamer
   alias Backend.Streaming.StreamerDeck
   alias Hearthstone.Enums.Format
   alias BackendWeb.ViewUtil
-  import Phoenix.Component, only: [live_render: 3]
 
   def twitch_link(streamer) do
     twitch_link(Streamer.twitch_login(streamer), Streamer.twitch_display(streamer))
@@ -15,9 +15,7 @@ defmodule BackendWeb.StreamingView do
     twitch_link = Backend.Twitch.create_channel_link(login)
     class = Enum.join(classes, " ")
 
-    ~E"""
-      <a class="<%= class %>" href="<%= twitch_link %>"><%= display %></a>
-    """
+    Components.Helper.simple_link(%{class: class, link: twitch_link, body: display})
   end
 
   def get_surrounding(%{"offset" => offset, "limit" => limit}), do: get_surrounding(offset, limit)
@@ -31,10 +29,12 @@ defmodule BackendWeb.StreamingView do
   def create_streamer_list(_conn, []), do: false
 
   def create_streamer_list(conn, streamers) do
-    ~E"""
-          <option data-link="<%= remove_from_link(conn, ["twitch_id", "twitch_login"]) %>" value="All Streamers">
-          <%= for s <- streamers do %>
-            <option data-link="<%= update_link(conn, "twitch_id", s.twitch_id) %>" value="<%= Streamer.twitch_display(s) %>">
+    assigns = %{streamers: streamers, conn: conn}
+
+    ~H"""
+          <option data-link={remove_from_link(@conn, ["twitch_id", "twitch_login"])} value="All Streamers"/>
+          <%= for s <- @streamers do %>
+            <option data-link={ update_link(@conn, "twitch_id", s.twitch_id) } value={Streamer.twitch_display(s)}>
               <%= Streamer.twitch_login(s) %>
             </option>
           <% end %>
@@ -175,8 +175,14 @@ defmodule BackendWeb.StreamingView do
       end
 
     if winrate do
-      ~E"""
-      <div class="tag" style="<%= style %>"><%="#{w} - #{l}"%></div>
+      assigns = %{
+        wins: w,
+        losses: l,
+        style: style
+      }
+
+      ~H"""
+      <div class="tag" style={@style}><%="#{@wins} - #{@losses}"%></div>
       """
     else
       ""
@@ -184,11 +190,7 @@ defmodule BackendWeb.StreamingView do
   end
 
   def links(sd) do
-    twitch = twitch_link(sd.streamer |> Streamer.twitch_login(), "twitch", ["tag", "is-link"])
-
-    ~E"""
-    <%= twitch %>
-    """
+    twitch_link(sd.streamer |> Streamer.twitch_login(), "twitch", ["tag", "is-link"])
   end
 
   def create_expansion_dropdown(conn, query_param, default_title, yes_option_display) do
@@ -332,8 +334,6 @@ defmodule BackendWeb.StreamingView do
           Routes.streaming_path(conn, :streamer_decks, new_params)
       end
 
-    ~E"""
-      <a class="is-link" href="<%= link %>"><%= td %></a>
-    """
+    Helper.simple_link(%{link: link, body: td})
   end
 end

@@ -121,7 +121,7 @@ defmodule BackendWeb.ViewHelpers do
       def render_legend_rank(rank), do: ""
 
       def render_game_type(type) do
-        Helper.game_type(type: type)
+        Helper.game_type(%{type: type})
       end
 
       def render_player_icon(name) do

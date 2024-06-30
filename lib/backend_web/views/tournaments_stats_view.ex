@@ -131,17 +131,16 @@ defmodule BackendWeb.TournamentStatsView do
     click_params = %{"sort_by" => name, "direction" => new_direction}
     url = create_link.(click_params)
 
-    ~E"""
-      <a class="is-text" href="<%= url %>"><%= cell %></a>
-    """
+    Components.Helper.simple_link(%{link: url, cell: cell, class: "is-text"})
   end
 
-  defp add_cell("Player", {c = %{conn: conn, name: player_name}, row}) do
-    player_cell = ~E"""
+  defp add_cell("Player", {c = %{name: player_name}, row}) do
+    assigns = %{link: ~p"/player-profile/#{player_name}", player_name: player_name}
 
-    <a class="is-link" href="<%=Routes.player_path(conn, :player_profile, player_name)%>">
-    <%= render_player_name(player_name, true) %>
-    </a>
+    player_cell = ~H"""
+    <.link navigate={@link} class="is-link">
+      <%= render_player_name(@player_name, true) %>
+    </.link>
     """
 
     {c, [player_cell | row]}

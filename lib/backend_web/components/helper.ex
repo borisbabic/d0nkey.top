@@ -63,7 +63,7 @@ defmodule Components.Helper do
   def game_type(assigns) do
     ~H"""
     <span class="tag" style={"background-color: #{game_type_color(@type)};"}>
-      <%= game_type_name(@name) %>
+      <%= game_type_name(@type) %>
     </span>
     """
   end
@@ -120,6 +120,8 @@ defmodule Components.Helper do
   defp optional_href(link) when is_binary(link), do: %{href: link}
   defp optional_href(_), do: %{}
 
+  def player_name(nil, _with_country), do: ""
+
   def player_name(name, with_country) when is_binary(name) and is_boolean(with_country) do
     country =
       if with_country do
@@ -135,9 +137,18 @@ defmodule Components.Helper do
   def player_name(assigns) do
     ~H"""
     <%= if @country do %>
-      <%= country_flag(@country, @player) %>
+      <%= country_flag(@country, @name) %>
     <% end %>
     <span><%= render_player_icon(@name) %><%= @name %></span>
+    """
+  end
+
+  attr :country_code, :string, required: true
+  attr :show_flag, :boolean, default: true
+
+  def country(assigns) do
+    ~H"""
+    <.country_flag :if={@show_flag} country={@country_code}/><span><%=Util.get_country_name(@country_code)%></span>
     """
   end
 
@@ -165,6 +176,25 @@ defmodule Components.Helper do
     country_flag(assigns)
   end
 
+  attr :country, :string, required: true
+  attr :cross_out_country, :boolean, default: false
+
+  def country_flag(assigns) do
+    ~H"""
+      <span data-balloon-pos="up" aria-label={Util.get_country_name(@country) || @country} class="icon">
+      <img
+        src={"https://flagcdn.com/64x48/#{ String.downcase(@country) }.png"}
+        srcset={"https://flagcdn.com/128x96/#{ String.downcase(@country) }.png 2x,\n  https://flagcdn.com/192x144/#{ String.downcase(@country) }.png 3x"}
+        width="64"
+        height="48"
+        >
+        <%= if @cross_out_country do %>
+          <img src="/images/cross.png" width="64" height="48" class="cross-image">
+        <% end %>
+      </span>
+    """
+  end
+
   attr :image, :string, required: true
   attr :region, :string, required: true
 
@@ -177,25 +207,6 @@ defmodule Components.Helper do
               width="64"
               height="48"
               >
-      </span>
-    """
-  end
-
-  attr :country, :string, required: true
-  attr :cross_out_country, :boolean, default: false
-
-  def country_flag(assigns) do
-    ~H"""
-      <span data-balloon-pos="up" aria-label={Util.get_country_name(@country)}class="icon">
-      <img
-        src={"https://flagcdn.com/64x48/#{ String.downcase(@country) }.png"}
-        srcset={"https://flagcdn.com/128x96/#{ String.downcase(@country) }.png 2x,\n  https://flagcdn.com/192x144/#{ String.downcase(@country) }.png 3x"}
-        width="64"
-        height="48"
-        >
-        <%= if @cross_out_country do %>
-          <img src="/images/cross.png" width="64" height="48" class="cross-image">
-        <% end %>
       </span>
     """
   end
@@ -239,6 +250,16 @@ defmodule Components.Helper do
             </textarea>
         </noscript>
     </div>
+    """
+  end
+
+  attr :warning, :string, required: true
+
+  def warning_exclamation(assigns) do
+    ~H"""
+    <span data-balloon-pos="up" aria-label={@warning} class="icon is-small">
+      <i class="fas fa-exclamation"></i>
+    </span>
     """
   end
 
@@ -337,6 +358,18 @@ defmodule Components.Helper do
             </div>
         </div>
     </div>
+    """
+  end
+
+  attr :link, :string, required: true
+  attr :body, :string, required: true
+  attr :class, :string, default: "is-link"
+
+  def simple_link(assigns) do
+    ~H"""
+    <.link navigate={@link} class={@class}>
+      <%= @body %>
+    </.link>
     """
   end
 end

@@ -1,7 +1,6 @@
 defmodule Components.Filter.AttackDropdown do
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
-  alias Backend.Hearthstone.Deck
 
   prop(title, :string, default: "Attack")
   prop(param, :string, default: "attack")

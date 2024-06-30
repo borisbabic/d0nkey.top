@@ -9,6 +9,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   alias Backend.PlayerInfo
   alias BackendWeb.ViewUtil
   import BackendWeb.SortHelper
+  alias Components.ViewHelpers.MastersTourHelper, as: MTHelper
 
   defp create_stats_header("#", _, _, _), do: "#"
 
@@ -24,9 +25,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
     cell = "#{header}#{symbol(direction)}"
 
-    ~E"""
-      <a class="is-text" href="<%= url %>"><%= cell %></a>
-    """
+    MTHelper.text_link(%{link: url, body: cell})
   end
 
   defp create_stats_header(header, _, _, conn) do
@@ -39,9 +38,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         Map.merge(conn.query_params, click_params)
       )
 
-    ~E"""
-      <a class="is-text" href="<%= url %>"><%= header %></a>
-    """
+    MTHelper.text_link(%{link: url, body: header})
   end
 
   defp filter_columns(column_map, columns_to_show) do
@@ -52,9 +49,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
   defp tournament_score_cell(score, name, tournament_id, conn) do
     link = Routes.battlefy_path(conn, :tournament_player, tournament_id, name)
 
-    ~E"""
-    <a class="is-link" href="<%= link %>"><%= score %></a>
-    """
+    Helper.simple_link(%{link: link, body: score})
   end
 
   defp create_player_rows(player_stats, conn) do
@@ -62,23 +57,19 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
     |> Enum.map(fn {player_name, tts} ->
       total = tts |> Enum.count()
 
-      {flag, country} =
+      country =
         with nil <- PlayerInfo.get_country(player_name),
              nil <- Util.get_country_code(player_name) do
-          {"", nil}
+          nil
         else
-          cc -> {country_flag(cc, player_name), cc}
+          cc -> cc
         end
 
       profile_name = MastersTour.mt_profile_name(player_name)
       profile_link = Routes.player_path(conn, :player_profile, profile_name)
 
-      player_cell = ~E"""
-
-      <span><%= flag %></span> <a class="is-link" href="<%= profile_link %>">
-        <%= player_name %>
-      </a>
-      """
+      player_cell =
+        Helper.player_link(%{name: player_name, link: profile_link, with_country: true})
 
       {swiss_stats_list, ts_rows} =
         tts
