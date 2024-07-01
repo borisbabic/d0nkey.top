@@ -49,6 +49,15 @@ defmodule Backend.Hearthstone do
     Repo.all(Set)
   end
 
+  def latest_set() do
+    query =
+      from s in Set,
+        order_by: [desc: :inserted_at],
+        limit: 1
+
+    Repo.one(query)
+  end
+
   def update_metadata() do
     with {:ok,
           %{
