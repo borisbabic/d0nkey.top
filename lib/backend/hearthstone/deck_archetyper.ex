@@ -804,18 +804,44 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   @spec fallbacks(card_info(), String.t(), fallbacks_opt()) :: String.t()
   defp fallbacks(ci, class_name, opts \\ []) do
     cond do
-      "Mecha'thun" in ci.card_names -> "Mecha'thun #{class_name}"
-      miracle_chad?(ci) -> "Miracle Chad #{class_name}"
-      "Rivendare, Warrider" in ci.card_names -> "Rivendare #{class_name}"
-      tentacle?(ci) -> "Tentacle #{class_name}"
-      ogre?(ci) -> "Ogre #{class_name}"
-      "Colifero the Artist" in ci.card_names -> "Colifero #{class_name}"
-      quest?(ci) or questline?(ci) -> "Quest #{class_name}"
-      "Gadgetzan Auctioneer" in ci.card_names -> "Miracle #{class_name}"
-      genn?(ci) -> "Even #{class_name}"
-      baku?(ci) -> "Odd #{class_name}"
-      giants?(ci) -> "Giants #{class_name}"
-      true -> minion_type_fallback(ci, class_name, opts)
+      "Mecha'thun" in ci.card_names ->
+        "Mecha'thun #{class_name}"
+
+      miracle_chad?(ci) ->
+        "Miracle Chad #{class_name}"
+
+      "Rivendare, Warrider" in ci.card_names ->
+        "Rivendare #{class_name}"
+
+      tentacle?(ci) ->
+        "Tentacle #{class_name}"
+
+      ogre?(ci) ->
+        "Ogre #{class_name}"
+
+      "Colifero the Artist" in ci.card_names ->
+        "Colifero #{class_name}"
+
+      quest?(ci) or questline?(ci) ->
+        "Quest #{class_name}"
+
+      "Gadgetzan Auctioneer" in ci.card_names ->
+        "Miracle #{class_name}"
+
+      genn?(ci) ->
+        "Even #{class_name}"
+
+      baku?(ci) ->
+        "Odd #{class_name}"
+
+      giants?(ci) ->
+        "Giants #{class_name}"
+
+      min_secret_count?(ci, 4) ->
+        String.to_atom("Secret #{class_name}")
+
+      true ->
+        minion_type_fallback(ci, class_name, opts)
     end
   end
 
@@ -1596,9 +1622,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
           min_spell_school_count?(card_info, 5, "Fel") ->
         :"Jace Demon Hunter"
 
-      min_secret_count?(card_info, 4) ->
-        String.to_atom("Secret #{class_name}")
-
       outcast_dh?(card_info) ->
         :"Outcast DH"
 
@@ -1616,9 +1639,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       "Warsong Commander" in card_info.card_names ->
         :"Warsong Warrior"
-
-      aviana_druid?(card_info) ->
-        :"Aviana Druid"
 
       wild_mill_druid?(card_info) ->
         :"Mill Druid"
@@ -1655,6 +1675,12 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       wild_fatigue_warlock?(card_info) ->
         :"Fatigue Warlock"
+
+      "Mecha'thun" in card_info.card_names ->
+        "Mecha'thun #{class_name}"
+
+      aviana_druid?(card_info) ->
+        :"Aviana Druid"
 
       true ->
         fallbacks(card_info, class_name)
