@@ -41,4 +41,11 @@ defmodule Backend.Hearthstone.Set do
       :non_collectible_count
     ])
   end
+
+  # TODO add this to the DB
+  def abbreviation(%{slug: "united-in-stormwind"}), do: "UiS"
+  def abbreviation(%{slug: "journey-to-ungoro"}), do: "JTU"
+  def abbreviation(%{slug: "galakronds-awakening"}), do: "GA"
+  def abbreviation(%{slug: "saviors-of-uldum"}), do: "SoU"
+  def abbreviation(_), do: nil
 end

@@ -1377,8 +1377,11 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
-      quest?(card_info) || questline?(card_info) ->
-        String.to_atom("Quest #{class_name}")
+      questline?(card_info) ->
+        String.to_atom("Questline #{class_name}")
+
+      quest?(card_info) ->
+        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
 
       boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
@@ -1552,8 +1555,14 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
-      quest?(card_info) || questline?(card_info) ->
-        String.to_atom("Quest #{class_name}")
+      "The Demon Seed" in card_info.card_names ->
+        :"Seedlock"
+
+      questline?(card_info) ->
+        String.to_atom("Questline #{class_name}")
+
+      quest?(card_info) ->
+        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
 
       boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
@@ -2422,7 +2431,15 @@ defmodule Backend.Hearthstone.DeckArchetyper do
   end
 
   defp vanndar?(%{card_names: card_names}), do: "Vanndar Stormpike" in card_names
-  defp quest?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.quest?/1)
+
+  defp quest_abbreviation(card_info) do
+    case Enum.filter(card_info.full_cards, &Card.quest?/1) do
+      [%{card_set: card_set}] -> Backend.Hearthstone.Set.abbreviation(card_set)
+      _ -> nil
+    end
+  end
+
+  defp quest?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.quest?(&1))
   defp questline?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.questline?/1)
 
   defp highlander_payoff?(%{full_cards: full_cards}),
