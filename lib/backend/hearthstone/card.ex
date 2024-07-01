@@ -238,7 +238,9 @@ defmodule Backend.Hearthstone.Card do
   def secret?(_), do: false
 
   @spec questline?(%__MODULE__{}) :: boolean()
-  def questline?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.questline?/1)
+  def questline?(%{keywords: kw, text: t}) when is_list(kw),
+    do: Enum.any?(kw, &Keyword.questline?/1) and t =~ "Questline:"
+
   def questline?(_), do: false
 
   @spec highlander?(%__MODULE__{}) :: boolean()
@@ -248,7 +250,9 @@ defmodule Backend.Hearthstone.Card do
   def highlander?(_), do: false
 
   @spec quest?(%__MODULE__{}) :: boolean()
-  def quest?(%{keywords: kw}) when is_list(kw), do: Enum.any?(kw, &Keyword.quest?/1)
+  def quest?(%{keywords: kw, text: t}) when is_list(kw),
+    do: Enum.any?(kw, &Keyword.quest?/1) and t =~ "Quest:"
+
   def quest?(_), do: false
 
   @spec has_keyword?(%__MODULE__{}, String.t()) :: boolean()
