@@ -1612,6 +1612,9 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       wild_handbuff_warrior?(card_info) && class_name == "Warrior" ->
         :"Handbuff Warrior"
 
+      n_roll?(card_info) && class_name == "Warrior" ->
+        :"Rock 'n' Roll Warrior"
+
       class_name == "Rogue" && wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
 
