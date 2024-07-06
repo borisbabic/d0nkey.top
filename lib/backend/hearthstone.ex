@@ -875,34 +875,39 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
-  def cards(criteria_raw) do
-    {post_processer, criteria} = use_fake_limit(criteria_raw)
+  def cards(criteria) do
+    # {post_processer, criteria} = use_fake_limit(criteria_raw)
 
     base_cards_query()
     |> build_cards_query(criteria)
+    # |> tap(fn q ->
+    #   sql = Repo.to_sql(:all, q)
+    #   elem(sql, 0) |> IO.puts
+    # end)
     |> Repo.all()
-    |> post_processer.()
+
+    # |> post_processer.()
   end
 
   def not_classic_card_criteria(), do: {"card_set_id_not_in", [1646]}
 
-  defp use_fake_limit(old_filters) do
-    old_filters
-    |> Enum.to_list()
-    |> List.keytake("limit", 0)
-    |> case do
-      nil ->
-        {& &1, old_filters}
+  # defp use_fake_limit(old_filters) do
+  #   old_filters
+  #   |> Enum.to_list()
+  #   |> List.keytake("limit", 0)
+  #   |> case do
+  #     nil ->
+  #       {& &1, old_filters}
 
-      {{"limit", old_limit}, temp_filters} ->
-        limit = Util.to_int!(old_limit, 10)
+  #     {{"limit", old_limit}, temp_filters} ->
+  #       limit = Util.to_int!(old_limit, 10)
 
-        {
-          &Enum.take(&1, limit),
-          [{"fake_limit", Util.to_int_or_orig(limit) * 5} | temp_filters]
-        }
-    end
-  end
+  #       {
+  #         &Enum.take(&1, limit),
+  #         [{"fake_limit", Util.to_int_or_orig(limit) * 5} | temp_filters]
+  #       }
+  #   end
+  # end
 
   defp build_cards_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_cards_query/2)
@@ -937,7 +942,8 @@ defmodule Backend.Hearthstone do
     |> order_by([card: c], [{^direction, field(c, ^field)}])
   end
 
-  defp compose_cards_query({"fake_limit", limit}, query), do: limit(query, ^limit)
+  defp compose_cards_query({"offset", offset}, query), do: offset(query, ^offset)
+  defp compose_cards_query({"limit", limit}, query), do: limit(query, ^limit)
 
   defp compose_cards_query({"collectible", collectible}, query) when is_boolean(collectible),
     do: query |> where([card: c], c.collectible == ^collectible)
