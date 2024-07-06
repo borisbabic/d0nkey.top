@@ -1149,8 +1149,10 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"game_type", game_type}, query),
     do: query |> where([game: g], g.game_type == ^game_type)
 
-  defp compose_games_query({"no_archetype", _}, query),
+  defp compose_games_query({"no_archetype", "yes"}, query),
     do: query |> where([player_deck: pd], is_nil(pd.archetype))
+
+  defp compose_games_query({"no_archetype", _}, query), do: query
 
   for {id, atom} <- FormatEnum.all(:atoms) do
     defp compose_games_query(unquote(atom), query),
@@ -1426,8 +1428,6 @@ defmodule Hearthstone.DeckTracker do
 
   """
   def update_period(%Period{} = period, attrs) do
-    IO.inspect(attrs, label: "updating period")
-
     period
     |> Period.changeset(attrs)
     |> Repo.update()

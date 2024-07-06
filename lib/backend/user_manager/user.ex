@@ -93,6 +93,7 @@ defmodule Backend.UserManager.User do
       :period,
       :format,
       :rank,
+      :archetyping,
       :tournament_streams,
       :twitch_commands
     ]
@@ -198,15 +199,16 @@ defmodule Backend.UserManager.User.DecklistOptions do
   def show_one_default(), do: @default_show_one
 
   def validate_colors(changeset, fields) do
-    fields
-    |> Enum.reduce(changeset, fn f, cs ->
-      validate_change(cs, f, fn f, value ->
-        if valid_color?(value) do
-          []
-        else
-          [{f, "Invalid color for decklist options"}]
-        end
-      end)
+    Enum.reduce(fields, changeset, fn f, cs ->
+      validate_change(cs, f, &color_validator/2)
     end)
+  end
+
+  defp color_validator(field, value) do
+    if valid_color?(value) do
+      []
+    else
+      [{field, "Invalid color for decklist options"}]
+    end
   end
 end
