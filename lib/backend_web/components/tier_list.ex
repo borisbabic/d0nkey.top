@@ -119,7 +119,7 @@ defmodule Components.TierList do
 
   def filter_parse_params(filters) do
     filters
-    |> parse_int(["min_games"])
+    |> parse_int(["min_games", "format"])
   end
 
   def default_criteria(criteria) do
