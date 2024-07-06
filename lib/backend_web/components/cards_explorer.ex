@@ -17,11 +17,14 @@ defmodule Components.CardsExplorer do
   import Components.DecksExplorer, only: [parse_int: 2]
 
   data(streams, :list)
+  data(end_of_timeline?, :boolean, default: false)
+  data(offset, :integer, default: 0)
   prop(params, :map, required: true)
   prop(live_view, :module, required: true)
 
   @default_limit 30
-  @fake_limit_factor 4
+  ### how many times the limit do we keep in the viewport
+  @viewport_size_factor 7
 
   def update(assigns_old, socket) do
     assigns = Map.update!(assigns_old, :params, &add_default_params/1)
@@ -30,13 +33,14 @@ defmodule Components.CardsExplorer do
       :ok,
       socket
       |> assign(assigns)
+      |> assign(offset: 0, end_of_timeline?: false)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
         assigns_old.params,
         nil,
         assigns.params
       )
-      |> stream_cards()
+      |> stream_cards(0, true)
     }
   end
 
@@ -50,9 +54,28 @@ defmodule Components.CardsExplorer do
     |> Map.put_new(key, value)
   end
 
-  defp stream_cards(socket) do
-    cards = cards(socket)
-    stream(socket, :cards, cards)
+  defp stream_cards(socket, new_offset, reset \\ false) when new_offset >= 0 do
+    %{params: params, offset: curr_offset} = socket.assigns
+    %{"limit" => limit} = params
+    fetched_cards = params |> Map.put("offset", new_offset) |> Hearthstone.cards()
+
+    {cards, at, stream_limit} =
+      if new_offset >= curr_offset do
+        {fetched_cards, -1, limit * @viewport_size_factor * -1}
+      else
+        {Enum.reverse(fetched_cards), 0, limit * @viewport_size_factor}
+      end
+
+    case cards do
+      [] ->
+        assign(socket, end_of_timeline?: true)
+
+      [_ | _] = cards ->
+        socket
+        |> assign(end_of_timeline?: false)
+        |> assign(:offset, new_offset)
+        |> stream(:cards, cards, at: at, limit: stream_limit, reset: reset)
+    end
   end
 
   def render(assigns) do
@@ -66,13 +89,35 @@ defmodule Components.CardsExplorer do
         <HealthDropdown id="cards_attack_dropdown" />
         <!-- <LivePatchDropdown id="cards_collectible" param="collectible" title="Collectible" options={[{"no", "Uncollectible"}, {"yes", "Collectible"}]} /> -->
         <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
-        <div class="columns is-multiline is-mobile">
-          <div :for={{id, c} <- @streams.cards} class="column is-narrow">
-            <Card id={id} card={c} />
+        <div
+          id="cards_viewport"
+          phx-update="stream"
+          class="columns is-multiline is-mobile"
+          phx-target={@myself}
+          phx-viewport-bottom={!@end_of_timeline? && "next-cards-page"}
+          phx-viewport-top={"previous-cards-page"}>
+          <div id={id} :for={{id, c} <- @streams.cards} class="column is-narrow">
+            <Card card={c} />
           </div>
         </div>
       </div>
     """
+  end
+
+  def handle_event("previous-cards-page", %{"_overran" => true}, socket) do
+    {:noreply, stream_cards(socket, 0)}
+  end
+
+  def handle_event("previous-cards-page", _, socket) do
+    %{offset: offset, params: %{"limit" => limit}} = socket.assigns
+    new_offset = Enum.max([offset - limit, 0])
+    {:noreply, stream_cards(socket, new_offset)}
+  end
+
+  def handle_event("next-cards-page", _middle, socket) do
+    %{offset: offset, params: %{"limit" => limit}} = socket.assigns
+    new_offset = offset + limit
+    {:noreply, stream_cards(socket, new_offset)}
   end
 
   def filter_relevant(params) do
@@ -91,20 +136,10 @@ defmodule Components.CardsExplorer do
     |> parse_int(["limit", "format"])
   end
 
-  defp cards(%{assigns: %{params: params}}), do: cards(params)
-
-  defp cards(raw_params) do
-    {limit, new_params} = use_fake_limit(raw_params)
-
-    new_params
-    |> Hearthstone.cards()
-    |> Enum.take(limit)
-  end
-
-  defp use_fake_limit(old_params) do
-    {limit, temp_params} = Map.pop(old_params, "limit")
-    fake_limit = Util.to_int_or_orig(limit) * @fake_limit_factor
-    new_params = Map.put_new(temp_params, "fake_limit", fake_limit)
-    {limit, new_params}
-  end
+  # defp use_fake_limit(old_params) do
+  #   {limit, temp_params} = Map.pop(old_params, "limit")
+  #   fake_limit = Util.to_int_or_orig(limit) * @fake_limit_factor
+  #   new_params = Map.put_new(temp_params, "fake_limit", fake_limit)
+  #   {limit, new_params}
+  # end
 end

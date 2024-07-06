@@ -510,3 +510,10 @@
   object-position: 50% 23%;
   /* clip-path: circle(16.1% at 47% 30%); */
 }
+
+@media screen and (max-width: 768px) {
+  .columns.is-mobile[phx-update="stream"] {
+    /* there is an issue with infinite scroll on mobile. I think it's if the element margin goes off screen */
+    margin-left: 0.75rem;
+  }
+}
