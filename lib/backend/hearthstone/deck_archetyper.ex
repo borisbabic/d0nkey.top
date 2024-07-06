@@ -1501,22 +1501,6 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       ])
   end
 
-  defp wild_fatigue_warlock?(card_info) do
-    min_count?(
-      card_info,
-      5,
-      [
-        "Altar of Fire",
-        "Blood Shard Bristleback",
-        "Soul Rend",
-        "Neeru Fireblade",
-        "Barrens Scavenger",
-        "Tickatus",
-        "Fanottem, Lord of the Opera"
-      ]
-    )
-  end
-
   defp miracle_priest?(card_info) do
     min_count?(card_info, 5, [
       "Gift of Luminance",
@@ -1608,7 +1592,8 @@ defmodule Backend.Hearthstone.DeckArchetyper do
 
       wild_pirate_rogue?(card_info) && class_name == "Rogue" ->
         :"Pirate Rogue"
-
+      mine_rogue?(card_info) && class_name == "Rogue" ->
+        :"Mine Rogue"
       wild_handbuff_warrior?(card_info) && class_name == "Warrior" ->
         :"Handbuff Warrior"
 
@@ -1694,9 +1679,28 @@ defmodule Backend.Hearthstone.DeckArchetyper do
       aviana_druid?(card_info) ->
         :"Aviana Druid"
 
+      "Astral Automaton" in card_info.card_names ->
+        "Automaton Priest"
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp wild_fatigue_warlock?(card_info) do
+    min_count?(
+      card_info,
+      5,
+      [
+        "Altar of Fire",
+        "Blood Shard Bristleback",
+        "Soul Rend",
+        "Neeru Fireblade",
+        "Barrens Scavenger",
+        "Tickatus",
+        "Fanottem, Lord of the Opera"
+      ]
+    )
   end
 
   defp wild_handbuff_warrior?(card_info) do
