@@ -16,7 +16,7 @@ defmodule Components.LivePatchDropdown do
         }) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{actual_title: _}) do
     ~F"""
-      <Dropdown title={@actual_title} class={@class, "tw-border-2 tw-rounded tw-border-orange-500": @warning}>
+      <Dropdown title={@actual_title} class={@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning}>
         <div :for={opt <- @options}>
           <LivePatch
             class={"dropdown-item", @class, "is-active": @current == @normalizer.(value(opt))}
