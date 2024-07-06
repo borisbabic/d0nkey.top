@@ -1,6 +1,6 @@
-defmodule Backend.Hearthstone.WhizbangHeroesArchetyper do
+defmodule Backend.DeckArchetyper.Twist.WhizbangHeroesArchetyper do
   @moduledoc "Archetyping for the whizbang heroes twist mode"
-  import Backend.Hearthstone.DeckArchetyper, only: [min_count?: 3]
+  import Backend.DeckArchetyper.ArchetyperHelpers
   alias Backend.Hearthtstone.DeckArchetyper
 
   @spec archetype(DeckArchetyper.card_info()) :: atom() | nil

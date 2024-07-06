@@ -7,7 +7,7 @@ defmodule Backend.Hearthstone.Deck do
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardBag
-  alias Backend.Hearthstone.DeckArchetyper
+  alias Backend.DeckArchetyper
   alias Backend.HearthstoneJson.Card, as: JsonCard
   alias Backend.Hearthstone.Deck.Sideboard
 

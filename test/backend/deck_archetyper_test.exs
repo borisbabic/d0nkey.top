@@ -2,7 +2,7 @@ defmodule Backend.DeckArchetyperTest do
   use Backend.DataCase, async: true
 
   alias Backend.Hearthstone.Deck
-  alias Backend.Hearthstone.DeckArchetyper
+  alias Backend.DeckArchetyper
   # @test_cases [
   # {:"Big Beast Hunter", "AAECAR8I5e8DxfsDlPwD25EE4Z8EwLkE57kEm8kEC+rpA8OABKmfBNejBOWkBMCsBO2xBIiyBJa3BOC5BIPIBAA="},
   # {:"Quest Hunter", "AAECAR8G/fgDu4oE25EE458EhskEj6QFDNzqA9vtA/f4A9D5A6mfBKqfBLugBL+sBMGsBJ2wBIe3BIzUBAA="},

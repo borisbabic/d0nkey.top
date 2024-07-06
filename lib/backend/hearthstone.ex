@@ -5,7 +5,7 @@ defmodule Backend.Hearthstone do
   alias Backend.Repo
   alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.Deck
-  alias Backend.Hearthstone.DeckArchetyper
+  alias Backend.DeckArchetyper
   alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.Hearthstone.Lineup
   alias Backend.Hearthstone.LineupDeck
@@ -509,7 +509,7 @@ defmodule Backend.Hearthstone do
 
       chunk
       |> Enum.reduce(Multi.new(), fn d, multi ->
-        new_archetype = Backend.Hearthstone.DeckArchetyper.archetype(d)
+        new_archetype = Backend.DeckArchetyper.archetype(d)
         updated = d |> Deck.changeset(%{archetype: new_archetype, deckcode: d.deckcode})
         Multi.update(multi, to_string(d.id), updated)
       end)
