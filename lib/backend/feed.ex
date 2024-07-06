@@ -73,11 +73,12 @@ defmodule Backend.Feed do
     |> Util.bangify()
   end
 
-  def get_current_items(limit \\ 40) do
+  def get_current_items(limit \\ 40, offset \\ 0) do
     query =
       from fi in FeedItem,
         order_by: [desc: fi.decayed_points],
         limit: ^limit,
+        offset: ^offset,
         select: fi
 
     Repo.all(query)
@@ -239,8 +240,6 @@ defmodule Backend.Feed do
         ]
 
     Repo.update_all(query, [])
-
-    Backend.Feed.FeedBag.update()
   end
 
   defp ensure_articles_item(nil) do
