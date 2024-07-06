@@ -46,6 +46,7 @@ defmodule Components.DecksExplorer do
   data(streams, :any)
   data(search_filters, :any)
   data(actual_params, :any)
+  data(user, :map, from_context: :user)
 
   def update(assigns, socket) do
     {actual_params, search_filters} = parse_params(assigns)
@@ -106,6 +107,13 @@ defmodule Components.DecksExplorer do
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
         <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
+        <LivePatchDropdown
+          :if={Backend.UserManager.User.can_access?(@user, :archetyping)}
+          options={[{nil, "No"}, {"yes", "Yes"}]}
+          title={"No archetype"}
+          params={"no_archetype"}
+          selected_as_title={false}
+        />
         <br>
         <br>
 
