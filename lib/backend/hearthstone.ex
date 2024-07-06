@@ -524,7 +524,7 @@ defmodule Backend.Hearthstone do
 
     needs_archetypeing =
       Enum.filter(decks, fn d ->
-        to_string(d.archetype) == to_string(DeckArchetyper.archetype(d))
+        to_string(d.archetype) != to_string(DeckArchetyper.archetype(d))
       end)
 
     recalculate_decks_archetypes(needs_archetypeing)
