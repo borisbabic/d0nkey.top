@@ -51,6 +51,12 @@ config :backend, BackendWeb.Endpoint,
     protocol_options: [max_request_line_length: 32_768, max_header_value_length: 32_768],
     port: String.to_integer(System.get_env("PORT") || "4000")
   ],
+  check_origin: [
+    "//d0nkey.top",
+    "//hsguru.com",
+    "https://www.d0nkey.top",
+    "https://www.hsguru.com"
+  ],
   secret_key_base: secret_key_base,
   live_view: [signing_salt: signing_salt]
 
