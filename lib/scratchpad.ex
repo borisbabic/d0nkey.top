@@ -1215,4 +1215,52 @@ defmodule ScratchPad do
       _ -> {:error, name}
     end
   end
+
+  def generate_games_for_decks(decks, user \\ nil, generate_card_stats? \\ true) do
+    if Mix.env() == :dev do
+      user = with nil <- user, do: Backend.UserManager.get_user(1)
+
+      for d <- decks,
+          class = Deck.class(d),
+          deckcode = Deck.deckcode(d),
+          format = d.format || 2,
+          c <- Deck.classes(),
+          _num <- 1..Enum.random(1..200) do
+        dto =
+          Hearthstone.DeckTracker.GameDto.from_raw_map(
+            %{
+              "player" => %{
+                "battletag" => user.battletag,
+                "class" => class,
+                "deckcode" => deckcode
+              },
+              "opponent" => %{
+                "battletag" => Ecto.UUID.generate(),
+                "class" => c
+              },
+              "game_type" => 7,
+              "format" => format,
+              "player_rank" => 51,
+              "player_legend_rank" => 69,
+              "source" => "Self Report",
+              "source_version" => "0",
+              "game_id" => Ecto.UUID.generate(),
+              "coin" => Enum.random([true, false]),
+              "result" => Enum.random(["WIN", "LOSS"])
+            },
+            nil
+          )
+
+        {:ok, game} = DeckTracker.handle_game(dto)
+
+        if generate_card_stats? do
+          generate_false_card_stats(game)
+        else
+          game
+        end
+      end
+    else
+      IO.puts("NO GENERATING GAMES IN PROD")
+    end
+  end
 end
