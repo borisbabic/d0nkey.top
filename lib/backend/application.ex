@@ -116,12 +116,6 @@ defmodule Backend.Application do
         #   start: {Backend.PonyDojo, :start_link, [[]]}
         # },
         %{
-          # TODO: CANNOT MULTISERVER
-          # HUH? Can multisever just needs updating on each
-          id: Backend.Feed.FeedBag,
-          start: {Backend.Feed.FeedBag, :start_link, [[]]}
-        },
-        %{
           # can multiserver
           id: Backend.Streaming.DeckStreamingInfoBag,
           start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
