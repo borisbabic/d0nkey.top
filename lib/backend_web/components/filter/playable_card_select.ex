@@ -9,6 +9,7 @@ defmodule Components.Filter.PlayableCardSelect do
   prop(selected, :list, default: [])
   prop(title, :string, default: "Select cards")
   prop(search, :string, default: "")
+  prop(canonicalize, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -23,7 +24,7 @@ defmodule Components.Filter.PlayableCardSelect do
         <a class="dropdown-item is-active" :on-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
           {name(selected)}
         </a>
-        <a class="dropdown-item" :for={card <- cards(@search, @selected)} :on-click="add_card" phx-value-card={card.id}>
+        <a class="dropdown-item" :for={card <- cards(@search, @selected, @canonicalize)} :on-click="add_card" phx-value-card={card.id}>
           {card.name}
         </a>
       </Dropdown>
@@ -54,7 +55,7 @@ defmodule Components.Filter.PlayableCardSelect do
     {:noreply, socket}
   end
 
-  def cards(search, selected) do
+  def cards(search, selected, canonicalize?) do
     num_to_show = (7 - Enum.count(selected)) |> max(3)
 
     criteria = [
@@ -65,7 +66,16 @@ defmodule Components.Filter.PlayableCardSelect do
     ]
 
     Backend.Hearthstone.cards(criteria)
+    |> filter_canonical(canonicalize?)
   end
+
+  defp filter_canonical(cards, true) do
+    Enum.filter(cards, fn %{id: id} ->
+      Backend.Hearthstone.canonical_id(id) == id
+    end)
+  end
+
+  defp filter_canonical(cards, false), do: cards
 
   def name(selected) do
     case Backend.HearthstoneJson.get_card(selected) do
