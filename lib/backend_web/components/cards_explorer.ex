@@ -105,13 +105,24 @@ defmodule Components.CardsExplorer do
   end
 
   def handle_event("previous-cards-page", %{"_overran" => true}, socket) do
-    {:noreply, stream_cards(socket, 0)}
+    %{offset: offset, params: %{"limit" => limit}} = socket.assigns
+
+    if offset <= (@viewport_size_factor - 1) * limit do
+      {:noreply, socket}
+    else
+      {:noreply, stream_cards(socket, 0)}
+    end
   end
 
   def handle_event("previous-cards-page", _, socket) do
     %{offset: offset, params: %{"limit" => limit}} = socket.assigns
     new_offset = Enum.max([offset - limit, 0])
-    {:noreply, stream_cards(socket, new_offset)}
+
+    if new_offset == offset do
+      {:noreply, socket}
+    else
+      {:noreply, stream_cards(socket, new_offset)}
+    end
   end
 
   def handle_event("next-cards-page", _middle, socket) do

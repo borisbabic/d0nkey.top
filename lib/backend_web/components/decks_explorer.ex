@@ -160,7 +160,7 @@ defmodule Components.DecksExplorer do
         phx-update="stream"
         class="columns is-multiline is-mobile is-narrow is-centered"
         phx-target={@myself}
-        phx-viewport-top="previous-decks-page"
+        phx-viewport-top={@offset != 0 && "previous-decks-page"}
         phx-viewport-bottom={!@end_of_stream? && "next-decks-page"}>
           <div id={dom_id} :for={{dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} />
@@ -181,14 +181,26 @@ defmodule Components.DecksExplorer do
   end
 
   def handle_event("previous-decks-page", %{"_overran" => true}, socket) do
-    {:noreply, stream_deck_stats(socket, 0)}
+    %{offset: offset} = socket.assigns
+    {_, %{"limit" => limit}} = parse_params(socket.assigns)
+
+    if offset <= (@viewport_size_factor - 1) * limit do
+      {:noreply, socket}
+    else
+      {:noreply, stream_deck_stats(socket, 0)}
+    end
   end
 
   def handle_event("previous-decks-page", _, socket) do
     %{offset: offset} = socket.assigns
     {_, %{"limit" => limit}} = parse_params(socket.assigns)
     new_offset = Enum.max([offset - limit, 0])
-    {:noreply, stream_deck_stats(socket, new_offset)}
+
+    if new_offset == offset do
+      {:noreply, socket}
+    else
+      {:noreply, stream_deck_stats(socket, new_offset)}
+    end
   end
 
   def handle_event("next-decks-page", _middle, socket) do
