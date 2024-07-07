@@ -56,14 +56,26 @@ defmodule BackendWeb.FeedLive do
     """
   end
 
-  def handle_event("previous-page", "_overran", socket) do
-    {:noreply, stream_items(socket, 0)}
+  def handle_event("previous-page", %{"_overran" => true}, socket) do
+    %{offset: offset} = socket.assigns
+    IO.inspect({offset, @viewport_size_factor, @limit})
+
+    if offset <= (@viewport_size_factor - 1) * @limit do
+      {:noreply, socket}
+    else
+      {:noreply, stream_items(socket, 0)}
+    end
   end
 
   def handle_event("previous-page", _, socket) do
     %{offset: old_offset} = socket.assigns
     new_offset = Enum.max([old_offset - @limit, 0])
-    {:noreply, stream_items(socket, new_offset)}
+
+    if new_offset == old_offset do
+      {:noreply, socket}
+    else
+      {:noreply, stream_items(socket, new_offset)}
+    end
   end
 
   def handle_event("next-page", _, socket) do
