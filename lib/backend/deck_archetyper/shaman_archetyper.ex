@@ -1,6 +1,7 @@
 defmodule Backend.DeckArchetyper.ShamanArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
@@ -130,13 +131,13 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       ])
 
   defp burn_shaman?(ci),
-  do:
-    min_count?(ci, 3, [
-      "Frostbite",
-      "Lightning Bolt",
-      "Scalding Geyser",
-      "Bioluminescence"
-    ])
+    do:
+      min_count?(ci, 3, [
+        "Frostbite",
+        "Lightning Bolt",
+        "Scalding Geyser",
+        "Bioluminescence"
+      ])
 
   defp overload_shaman?(ci),
     do: min_count?(ci, 2, ["Flowrider", "Overdraft", "Inzah", "Thorim, Stormlord"])

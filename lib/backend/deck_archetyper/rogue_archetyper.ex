@@ -1,6 +1,7 @@
 defmodule Backend.DeckArchetyper.RogueArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do

@@ -1,6 +1,7 @@
 defmodule Backend.DeckArchetyper.WarlockArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
@@ -176,19 +177,19 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp implock?(ci),
-  do:
-    min_count?(ci, 6, [
-      "Flame Imp",
-      "Flustered Librarian",
-      "Bloodbound Imp",
-      "Imp Swarm (Rank 1)",
-      "Impending Catastrophe",
-      "Fiendish Circle",
-      "Imp Gang Boss",
-      "Piggyback Imp",
-      "Mischievous Imp",
-      "Imp King Rafaam"
-    ])
+    do:
+      min_count?(ci, 6, [
+        "Flame Imp",
+        "Flustered Librarian",
+        "Bloodbound Imp",
+        "Imp Swarm (Rank 1)",
+        "Impending Catastrophe",
+        "Fiendish Circle",
+        "Imp Gang Boss",
+        "Piggyback Imp",
+        "Mischievous Imp",
+        "Imp King Rafaam"
+      ])
 
   defp phylactery_warlock?(%{card_names: card_names}),
     do: "Tamsin's Phylactery" in card_names && "Tamsin Roame" in card_names

@@ -1,6 +1,7 @@
 defmodule Backend.DeckArchetyper.DruidArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
@@ -45,6 +46,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       ignis_druid?(card_info) ->
         :"Ignis Druid"
+
       "Tony, King of Piracy" in card_info.card_names ->
         :"Tony Druid"
 
@@ -210,9 +212,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         "Elder Nadox"
       ])
 
-    defp aviana_druid?(card_info) do
-      "Aviana" in card_info.card_names
-    end
+  defp aviana_druid?(card_info) do
+    "Aviana" in card_info.card_names
+  end
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
