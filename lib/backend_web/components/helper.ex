@@ -217,7 +217,7 @@ defmodule Components.Helper do
 
   def player_link(assigns) do
     ~H"""
-    <a href={@link || "/player_profile/#{@name}"}>
+    <a href={@link || "/player-profile/#{@name}"}>
       <%= player_name(@name, @with_country) %>
     </a>
     """
