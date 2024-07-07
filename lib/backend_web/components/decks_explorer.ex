@@ -47,26 +47,63 @@ defmodule Components.DecksExplorer do
   data(search_filters, :any)
   data(actual_params, :any)
   data(user, :map, from_context: :user)
+  data(offset, :integer, default: 0)
+  data(end_of_stream?, :boolean, default: false)
 
   def update(assigns, socket) do
     {actual_params, search_filters} = parse_params(assigns)
-
-    deck_stats =
-      DeckTracker.deck_stats(search_filters) |> Enum.map(&Map.put_new(&1, :id, &1.deck_id))
 
     {
       :ok,
       socket
       |> assign(assigns)
-      |> assign(actual_params: actual_params, search_filters: search_filters)
+      |> assign(
+        actual_params: actual_params,
+        search_filters: search_filters,
+        offset: 0,
+        end_of_stream?: false
+      )
       |> LivePatchDropdown.update_context(
         assigns.live_view,
         assigns.params,
         assigns.path_params,
         actual_params
       )
-      |> stream(:deck_stats, deck_stats, reset: true)
+      |> stream_deck_stats(0, true)
+      # |> stream(:deck_stats, deck_stats, reset: true)
     }
+  end
+
+  @viewport_size_factor 4
+
+  def stream_deck_stats(socket, new_offset, reset \\ false) when new_offset >= 0 do
+    %{offset: curr_offset} = socket.assigns
+    {_, search_filters} = parse_params(socket.assigns)
+    %{"limit" => limit} = search_filters
+
+    fetched_deck_stats =
+      search_filters
+      |> Map.put("offset", new_offset)
+      |> DeckTracker.deck_stats()
+      |> Enum.map(&Map.put_new(&1, :id, &1.deck_id))
+
+    {deck_stats, at, stream_limit} =
+      if new_offset >= curr_offset do
+        {fetched_deck_stats, -1, limit * @viewport_size_factor * -1}
+      else
+        {Enum.reverse(fetched_deck_stats), 0, limit * @viewport_size_factor}
+      end
+
+    case deck_stats do
+      [] ->
+        assign(socket, end_of_stream?: true)
+
+      [_ | _] = deck_stats ->
+        socket
+        |> assign(end_of_stream?: false)
+        |> assign(:offset, new_offset)
+        |> stream(:deck_stats, deck_stats, at: at, limit: stream_limit, reset: reset)
+    end
   end
 
   def render(assigns) do
@@ -79,12 +116,13 @@ defmodule Components.DecksExplorer do
         <PeriodDropdown id="period_dropdown" filter_context={@filter_context} warning={warning?(@streams)} />
         <RegionDropdown id={"deck_region"} filter_context={@filter_context} />
 
-        <LivePatchDropdown
-          options={limit_options()}
-          title={"# Decks"}
-          param={"limit"}
-          selected_as_title={false}
-          normalizer={&to_string/1} />
+         { #<LivePatchDropdown
+        #   options={limit_options()}
+        #   title={"# Decks"}
+        #   param={"limit"}
+        #   selected_as_title={false}
+        #   normalizer={&to_string/1} />
+        }
 
         <ClassDropdown id="player_class_dropdown" title="Player Class" param="player_class" />
         <ClassDropdown id="opponent_class_dropdown" title="Opponent Class" param="opponent_class" any_param="Any Opponent" />
@@ -117,8 +155,14 @@ defmodule Components.DecksExplorer do
         <br>
         <br>
 
-        <div class="columns is-multiline is-mobile is-narrow is-centered">
-          <div :for={{_dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
+        <div
+        id="deck_stats_viewport"
+        phx-update="stream"
+        class="columns is-multiline is-mobile is-narrow is-centered"
+        phx-target={@myself}
+        phx-viewport-top="previous-decks-page"
+        phx-viewport-bottom={!@end_of_stream? && "next-decks-page"}>
+          <div id={dom_id} :for={{dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} />
           </div>
           <div :if={warning?(@streams)} >
@@ -134,6 +178,24 @@ defmodule Components.DecksExplorer do
       </div>
     </div>
     """
+  end
+
+  def handle_event("previous-decks-page", %{"_overran" => true}, socket) do
+    {:noreply, stream_deck_stats(socket, 0)}
+  end
+
+  def handle_event("previous-decks-page", _, socket) do
+    %{offset: offset} = socket.assigns
+    {_, %{"limit" => limit}} = parse_params(socket.assigns)
+    new_offset = Enum.max([offset - limit, 0])
+    {:noreply, stream_deck_stats(socket, new_offset)}
+  end
+
+  def handle_event("next-decks-page", _middle, socket) do
+    %{offset: offset} = socket.assigns
+    {_, %{"limit" => limit}} = parse_params(socket.assigns)
+    new_offset = offset + limit
+    {:noreply, stream_deck_stats(socket, new_offset)}
   end
 
   defp warning?(%{deck_stats: %{inserts: []}}), do: true

@@ -10,7 +10,7 @@ defmodule BackendWeb.FeedLive do
   data(user, :any)
   data(streams, :any)
   data(offset, :integer, default: 0)
-  data(end_of_timeline?, :boolean, default: false)
+  data(end_of_stream?, :boolean, default: false)
   @limit 20
   @viewport_size_factor 4
 
@@ -36,7 +36,7 @@ defmodule BackendWeb.FeedLive do
           phx-update="stream"
           class="columns is-multiline is-mobile is-narrow is-centered"
           phx-viewport-top="previous-page"
-          phx-viewport-bottom={!@end_of_timeline? && "next-page"}>
+          phx-viewport-bottom={!@end_of_stream? && "next-page"}>
           <div id={dom_id} :for={{dom_id, item} <- @streams.items} class="column is-narrow">
             <div :if={item.type == "deck"}>
               <DeckFeedItem item={item}/>
@@ -86,11 +86,11 @@ defmodule BackendWeb.FeedLive do
 
     case items do
       [] ->
-        assign(socket, end_of_timeline?: true)
+        assign(socket, end_of_stream?: true)
 
       [_ | _] = items ->
         socket
-        |> assign(end_of_timeline?: false)
+        |> assign(end_of_stream?: false)
         |> assign(:offset, new_offset)
         |> stream(:items, items, at: at, limit: stream_limit)
     end
