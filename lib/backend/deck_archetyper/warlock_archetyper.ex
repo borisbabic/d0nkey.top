@@ -1,0 +1,268 @@
+defmodule Backend.DeckArchetyper.WarlockArchetyper do
+  @moduledoc false
+  import Backend.DeckArchetyper.ArchetyperHelpers
+
+  def standard(card_info) do
+    cond do
+      highlander?(card_info) ->
+        :"Highlander Warlock"
+
+      implock?(card_info) && (quest?(card_info) || questline?(card_info)) ->
+        :"Quest Implock"
+
+      quest?(card_info) || questline?(card_info) ->
+        :"Quest Warlock"
+
+      menagerie?(card_info) ->
+        :"Menagerie Warlock"
+
+      murloc?(card_info) ->
+        :"Murloc Warlock"
+
+      implock?(card_info) && boar?(card_info) ->
+        :"Boar Implock"
+
+      boar?(card_info) ->
+        :"Boar Warlock"
+
+      implock?(card_info) && phylactery_warlock?(card_info) ->
+        :"Phylactery Implock"
+
+      phylactery_warlock?(card_info) ->
+        :"Phylactery Warlock"
+
+      snek?(card_info) ->
+        :"Snek Warlock"
+
+      implock?(card_info) && abyssal_warlock?(card_info) && chad?(card_info) ->
+        :"Abyssal Chimplock"
+
+      implock?(card_info) && chad?(card_info) ->
+        :Chimplock
+
+      implock?(card_info) && handlock?(card_info) ->
+        :"Hand Implock"
+
+      big_demon_warlock?(card_info) ->
+        :"Big Demon Warlock"
+
+      implock?(card_info) && agony_warlock?(card_info) ->
+        :"Agony Implock"
+
+      agony_warlock?(card_info) ->
+        :"Agony Warlock"
+
+      abyssal_warlock?(card_info) && chad?(card_info) ->
+        :"Abyssal Chadlock"
+
+      implock?(card_info) && abyssal_warlock?(card_info) ->
+        :"Abyssal Implock"
+
+      chad?(card_info) ->
+        :Chadlock
+
+      abyssal_warlock?(card_info) ->
+        :"Abyssal Warlock"
+
+      implock?(card_info) ->
+        :Implock
+
+      sludgelock?(card_info) ->
+        :"Sludge Warlock"
+
+      snek?(card_info) ->
+        :"Snek Warlock"
+
+      handlock?(card_info) ->
+        :Handlock
+
+      painlock?(card_info) ->
+        :Painlock
+
+      fatigue_warlock?(card_info) ->
+        :"Insanity Warlock"
+
+      "Wheel of DEATH!!!" in card_info.card_names ->
+        :"Wheel Warlock"
+
+      leeroy_warlock?(card_info) ->
+        :"Leeroooooy Warlock"
+
+      control_warlock?(card_info) ->
+        :"Control Warlock"
+
+      "Lord Jaraxxus" in card_info.card_names ->
+        :"J-Lock"
+
+      true ->
+        fallbacks(card_info, "Warlock")
+    end
+  end
+
+  defp leeroy_warlock?(card_info) do
+    min_count?(card_info, 3, ["Leeroy Jenkins", "Monstrous Form", "Reverberations"])
+  end
+
+  defp snek?(ci) do
+    excavates = [
+      "Smokestack",
+      "Mo'arg Drillfist",
+      "Tram Conductor Gerry" | neutral_excavate()
+    ]
+
+    min_count?(ci, 4, excavates) or
+      (min_count?(ci, 2, excavates) and neutral_bouncers?(ci))
+  end
+
+  defp neutral_bouncers?(ci, min_count \\ 2) do
+    min_count?(ci, min_count, ["Youthful Brewmaster", "Saloon Brewmaster", "Zola the Gorgon"])
+  end
+
+  defp painlock?(ci) do
+    min_count?(ci, 4, [
+      "Flame Imp",
+      "Spirit Bomb",
+      "Malefic Rook",
+      "Lesser Amethyst Spellstone",
+      "Molten Giant",
+      "Imprisoned Horror",
+      "Trogg Exile",
+      "INFERNAL!",
+      "Mass Production",
+      "Elementium Geode"
+    ])
+  end
+
+  defp big_demon_warlock?(ci) do
+    min_count?(ci, 4, [
+      "Endgame",
+      "Cursed Champion",
+      "Doomguard",
+      "Dirge of Despair",
+      "Game Master Nemsy",
+      "Enhanced Dreadloard",
+      "Wretched Queeen"
+    ])
+  end
+
+  defp sludgelock?(ci) do
+    min_count?(ci, 3, [
+      "Tram Mechanic",
+      "Disposal Assistant",
+      "Sludge on Wheels",
+      "Pop'gar the Putrid"
+    ])
+  end
+
+  @self_fatigue_package ["Crescendo", "Baritone Imp", "Crazed Conductor"]
+  defp fatigue_warlock?(ci) do
+    min_count?(ci, 2, ["Pop'gar the Putrid", "Encroaching Insanity"]) and
+      min_count?(ci, 3, @self_fatigue_package)
+  end
+
+  defp control_warlock?(ci) do
+    min_count?(ci, 5, [
+      "Sargeras, the Destroyer",
+      "Symphony of Sins",
+      "Domino Effect",
+      "Defile",
+      "Drain Soul",
+      "Mortal Eradication",
+      "Thornveil Tentacle",
+      "Armor Vendor",
+      "Prison of Yogg-Saron",
+      "Gigafin"
+    ])
+  end
+
+  defp implock?(ci),
+  do:
+    min_count?(ci, 6, [
+      "Flame Imp",
+      "Flustered Librarian",
+      "Bloodbound Imp",
+      "Imp Swarm (Rank 1)",
+      "Impending Catastrophe",
+      "Fiendish Circle",
+      "Imp Gang Boss",
+      "Piggyback Imp",
+      "Mischievous Imp",
+      "Imp King Rafaam"
+    ])
+
+  defp phylactery_warlock?(%{card_names: card_names}),
+    do: "Tamsin's Phylactery" in card_names && "Tamsin Roame" in card_names
+
+  defp abyssal_warlock?(ci),
+    do: min_count?(ci, 3, ["Dragged Below", "Sira'kess Cultist", "Za'qul", "Abyssal Wave"])
+
+  defp agony_warlock?(%{card_names: card_names}), do: "Curse of Agony" in card_names
+
+  defp handlock?(ci),
+    do: min_count?(ci, 2, ["Mountain Giant", "Table Flip"])
+
+  defp chad?(ci) do
+    min_count?(ci, 2, ["Amorphous Slime", "Thaddius, Monstrosity"])
+  end
+
+  def wild(card_info) do
+    class_name = Deck.class_name(card_info.deck)
+
+    cond do
+      highlander?(card_info) ->
+        String.to_atom("Highlander #{class_name}")
+
+      "The Demon Seed" in card_info.card_names ->
+        :Seedlock
+
+      questline?(card_info) ->
+        String.to_atom("Questline #{class_name}")
+
+      quest?(card_info) ->
+        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+
+      boar?(card_info) ->
+        String.to_atom("Boar #{class_name}")
+
+      baku?(card_info) ->
+        String.to_atom("Odd #{class_name}")
+
+      genn?(card_info) ->
+        String.to_atom("Even #{class_name}")
+
+      "King Togwaggle" in card_info.card_names ->
+        String.to_atom("Tog #{class_name}")
+
+      sludgelock?(card_info) ->
+        :"Sludge Warlock"
+
+      fatigue_warlock?(card_info) ->
+        :"Insanity Warlock"
+
+      wild_fatigue_warlock?(card_info) ->
+        :"Fatigue Warlock"
+
+      "Mecha'thun" in card_info.card_names ->
+        "Mecha'thun #{class_name}"
+
+      true ->
+        fallbacks(card_info, class_name)
+    end
+  end
+
+  defp wild_fatigue_warlock?(card_info) do
+    min_count?(
+      card_info,
+      5,
+      [
+        "Altar of Fire",
+        "Blood Shard Bristleback",
+        "Soul Rend",
+        "Neeru Fireblade",
+        "Barrens Scavenger",
+        "Tickatus",
+        "Fanottem, Lord of the Opera"
+      ]
+    )
+  end
+end
