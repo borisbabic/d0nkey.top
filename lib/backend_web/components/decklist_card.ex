@@ -88,7 +88,7 @@ defmodule Components.DecklistCard do
             <div style={"background-image: url('#{tile_url}');"} class="decklist-card-tile">
             </div>
             <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable">{count(@count, Card.rarity(@card), @decklist_options)}</span>
-            <div id={"#{id}"} class="decklist-card-image" style={"background-image: url('#{card_url}'); background-size: 256px; background-repeat: no-repeat;"}></div>
+            <div id={"#{id}"} class="decklist-card-image" style={"background-image: url('#{card_url}'); background-size: 256px; background-repeat: no-repeat; pointer-events: none;"}></div>
           </div>
         </div>
         <div></div>
