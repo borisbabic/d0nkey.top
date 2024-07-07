@@ -212,6 +212,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
+      "The Demon Seed" in card_info.card_names ->
+        :Seedlock
+
       questline?(card_info) ->
         String.to_atom("Questline #{class_name}")
 
