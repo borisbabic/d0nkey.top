@@ -63,7 +63,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   @spec all_even?(card_info()) :: boolean()
   def all_even?(%{deck: deck, full_cards: full_cards}), do: all_cost_rem?(deck, full_cards, 0)
 
-  defp all_cost_rem?(deck, cards, remainder, divisor \\ 2) do
+  def all_cost_rem?(deck, cards, remainder, divisor \\ 2) do
     cards
     |> Enum.filter(& &1)
     |> Enum.reject(fn card ->
@@ -84,4 +84,198 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
 
   def neutral_excavate(), do: @neutral_excavate
   def neutral_spell_damage(), do: @standard_neutral_spell_damage
+
+  @type fallbacks_opt :: minion_type_fallback_opt()
+  @spec fallbacks(card_info(), String.t(), fallbacks_opt()) :: String.t()
+  def fallbacks(ci, class_name, opts \\ []) do
+    cond do
+      "Mecha'thun" in ci.card_names ->
+        "Mecha'thun #{class_name}"
+
+      miracle_chad?(ci) ->
+        "Miracle Chad #{class_name}"
+
+      "Rivendare, Warrider" in ci.card_names ->
+        "Rivendare #{class_name}"
+
+      tentacle?(ci) ->
+        "Tentacle #{class_name}"
+
+      ogre?(ci) ->
+        "Ogre #{class_name}"
+
+      "Colifero the Artist" in ci.card_names ->
+        "Colifero #{class_name}"
+
+      quest?(ci) or questline?(ci) ->
+        "Quest #{class_name}"
+
+      "Gadgetzan Auctioneer" in ci.card_names ->
+        "Miracle #{class_name}"
+
+      genn?(ci) ->
+        "Even #{class_name}"
+
+      baku?(ci) ->
+        "Odd #{class_name}"
+
+      giants?(ci) ->
+        "Giants #{class_name}"
+
+      min_secret_count?(ci, 4) ->
+        String.to_atom("Secret #{class_name}")
+
+      true ->
+        minion_type_fallback(ci, class_name, opts)
+    end
+  end
+
+  def giants?(ci, min_count \\ 3) do
+    count =
+      ci.card_names
+      |> Enum.filter(&(String.reverse(&1) |> String.starts_with?("tnaiG")))
+      |> Enum.count()
+
+    count >= min_count
+  end
+
+  def tentacle?(ci), do: "Chaotic Tendril" in ci.card_names
+
+  def miracle_chad?(ci), do: min_count?(ci, 2, ["Thaddius, Monstrosity", "Cover Artist"])
+
+  def murloc?(ci),
+  do:
+    min_count?(ci, 4, [
+      "Murloc Tinyfin",
+      "Murloc Tidecaller",
+      "Lushwater Scout",
+      "Lushwater Mercenary",
+      "Murloc Tidehunter",
+      "Coldlight Seer",
+      "Murloc Warleader",
+      "Twin-fin Fin Twin",
+      "Gorloc Ravager"
+    ])
+
+  def min_keyword_count?(%{full_cards: full_cards}, min, keyword_slug) do
+    num =
+      full_cards
+      |> Enum.filter(&Card.has_keyword?(&1, keyword_slug))
+      |> Enum.count()
+
+    num >= min
+  end
+
+  def min_spell_school_count?(ci, min, spell_school) do
+    num =
+      ci
+      |> spell_school_map()
+      |> Map.get(spell_school, 0)
+
+    num >= min
+  end
+
+  def spell_school_map(%{full_cards: full_cards}) do
+    full_cards
+    |> Enum.flat_map(&Card.spell_schools/1)
+    |> Enum.frequencies()
+  end
+
+  def ogre?(ci) do
+    # Stupid API has one in the picture and one in the api
+    min_count?(ci, 2, [
+      "Ogre Gang Outlaw",
+      "Ogre-Gang Outlaw",
+      "Ogre Gang Rider",
+      "Ogre-Gang Rider",
+      "Ogre-Gang Ace",
+      "Ogre Gang Ace"
+    ]) and "Kingpin Pud" in ci.card_names
+  end
+
+  def menagerie?(%{card_names: card_names}), do: "The One-Amalgam Band" in card_names
+  def boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names
+  def kazakusan?(%{card_names: card_names}), do: "Kazakusan" in card_names
+
+  def highlander?(card_info) do
+    num_dupl = num_duplicates(card_info.cards)
+    num_dupl == 0 or (num_dupl < 4 and highlander_payoff?(card_info))
+  end
+
+  def num_duplicates(cards) do
+    cards
+    |> Enum.frequencies()
+    |> Enum.filter(fn {_, count} -> count > 1 end)
+    |> Enum.count()
+  end
+
+  def vanndar?(%{card_names: card_names}), do: "Vanndar Stormpike" in card_names
+
+  def quest_abbreviation(card_info) do
+    case Enum.filter(card_info.full_cards, &Card.quest?/1) do
+      [%{card_set: card_set}] -> Backend.Hearthstone.Set.abbreviation(card_set)
+      _ -> nil
+    end
+  end
+
+  def quest?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.quest?(&1))
+  def questline?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.questline?/1)
+
+  def highlander_payoff?(%{full_cards: full_cards}),
+    do: Enum.any?(full_cards, &Card.highlander?/1)
+
+  @type minion_type_fallback_opt ::
+          {:fallback, String.t() | nil} | {:min_count, number()} | {:ignore_types, [String.t()]}
+  @spec minion_type_fallback(card_info(), String.t(), [minion_type_fallback_opt()]) :: String.t()
+  def minion_type_fallback(
+        ci,
+        class_part,
+        opts
+      ) do
+    fallback = Keyword.get(opts, :fallback, nil)
+    min_count = Keyword.get(opts, :min_count, 6)
+    ignore_types = Keyword.get(opts, :ignore_types, [])
+
+    with counts = [_ | _] <- minion_type_counts(ci),
+        filtered = [_ | _] <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
+        {type, count} when count >= min_count <- Enum.max_by(filtered, &elem(&1, 1)) do
+      "#{type} #{class_part}"
+    else
+      _ -> fallback
+    end
+  end
+
+  def min_secret_count?(%{full_cards: fc}, min) do
+    secret_count =
+      fc
+      |> Enum.uniq_by(&Card.dbf_id/1)
+      |> Enum.count(&Card.secret?/1)
+
+    min <= secret_count
+  end
+
+  @spec minion_type_counts(card_info()) :: [{String.t(), integer()}]
+  def minion_type_counts(%{full_cards: fc}) do
+    base_counts =
+      fc
+      |> Enum.uniq_by(&Card.dbf_id/1)
+      |> Enum.flat_map(fn
+        %{minion_type: %{name: name}} -> [name]
+        _ -> []
+      end)
+      |> Enum.frequencies()
+
+    {all_count, without_all} = Map.pop(base_counts, "All", 0)
+
+    without_all
+    |> Enum.map(fn {key, val} -> {key, val + all_count} end)
+  end
+
+  @spec type_count(card_info(), String.t()) :: integer()
+  def type_count(card_info, type) do
+    card_info
+    |> minion_type_counts()
+    |> List.keyfind(type, 0, {type, 0})
+    |> elem(1)
+  end
 end
