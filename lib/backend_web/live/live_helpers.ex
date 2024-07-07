@@ -1,6 +1,8 @@
 defmodule BackendWeb.LiveHelpers do
-  import Phoenix.Component, only: [assign: 3]
+  import Phoenix.Component, only: [assign: 3, assign: 2]
+  alias Phoenix.LiveView.Socket
 
+  @spec assign_defaults(Socket.t(), any()) :: Socket.t()
   def assign_defaults(socket, session) do
     user = load_user(session)
 
@@ -23,8 +25,60 @@ defmodule BackendWeb.LiveHelpers do
 
   def load_user(_), do: nil
 
+  @spec assign_meta_tags(Socket.t(), Map.t()) :: Socket.t()
   def assign_meta_tags(socket, new_tags = %{}) do
     meta = (get_in(socket.assigns, [:meta_tags]) || %{}) |> Map.merge(new_tags)
     socket |> assign(:meta_tags, meta)
+  end
+
+  @doc """
+  Ensures that the socket has a stream.
+  Returns the socket unchanged if present
+  IF not initializes the stream with `init`
+  """
+  @spec ensure_stream(Socket.t(), atom(), boolean(), list() | any()) :: Socket.t()
+  def ensure_stream(socket, stream_name, reset \\ false, init \\ []) do
+    if Map.has_key?(socket.assigns, stream_name) do
+      socket
+    else
+      Phoenix.LiveView.stream(socket, stream_name, init, reset: reset)
+    end
+  end
+
+  @spec handle_offset_stream_scroll(
+          Socket.t(),
+          atom(),
+          list(),
+          integer(),
+          integer(),
+          integer(),
+          boolean()
+        ) :: Socket.t()
+  def handle_offset_stream_scroll(
+        socket,
+        stream_name,
+        stream_items,
+        new_offset,
+        old_offset,
+        viewport_size,
+        reset \\ false
+      ) do
+    {items, at, limit} =
+      if new_offset >= old_offset do
+        {stream_items, -1, viewport_size * -1}
+      else
+        {Enum.reverse(stream_items), 0, viewport_size}
+      end
+
+    case items do
+      [] ->
+        assign(socket, end_of_stream?: true) |> ensure_stream(stream_name, reset)
+
+      [_ | _] = items ->
+        socket
+        |> assign(end_of_stream?: false)
+        |> assign(:offset, new_offset)
+        |> Phoenix.LiveView.stream(stream_name, items, at: at, limit: limit, reset: reset)
+    end
   end
 end

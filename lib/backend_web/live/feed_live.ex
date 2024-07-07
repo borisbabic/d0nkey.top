@@ -58,7 +58,6 @@ defmodule BackendWeb.FeedLive do
 
   def handle_event("previous-page", %{"_overran" => true}, socket) do
     %{offset: offset} = socket.assigns
-    IO.inspect({offset, @viewport_size_factor, @limit})
 
     if offset <= (@viewport_size_factor - 1) * @limit do
       {:noreply, socket}
@@ -89,23 +88,14 @@ defmodule BackendWeb.FeedLive do
     %{offset: curr_offset} = socket.assigns
     fetched_items = Backend.Feed.get_current_items(@limit, new_offset)
 
-    {items, at, stream_limit} =
-      if new_offset >= curr_offset do
-        {fetched_items, -1, @limit * @viewport_size_factor * -1}
-      else
-        {Enum.reverse(fetched_items), 0, @limit * @viewport_size_factor}
-      end
-
-    case items do
-      [] ->
-        assign(socket, end_of_stream?: true)
-
-      [_ | _] = items ->
-        socket
-        |> assign(end_of_stream?: false)
-        |> assign(:offset, new_offset)
-        |> stream(:items, items, at: at, limit: stream_limit)
-    end
+    handle_offset_stream_scroll(
+      socket,
+      :items,
+      fetched_items,
+      new_offset,
+      curr_offset,
+      @limit * @viewport_size_factor
+    )
   end
 
   def handle_info({:incoming_result, result}, socket) do

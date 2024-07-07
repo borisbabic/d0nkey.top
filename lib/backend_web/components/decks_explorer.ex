@@ -87,23 +87,15 @@ defmodule Components.DecksExplorer do
       |> DeckTracker.deck_stats()
       |> Enum.map(&Map.put_new(&1, :id, &1.deck_id))
 
-    {deck_stats, at, stream_limit} =
-      if new_offset >= curr_offset do
-        {fetched_deck_stats, -1, limit * @viewport_size_factor * -1}
-      else
-        {Enum.reverse(fetched_deck_stats), 0, limit * @viewport_size_factor}
-      end
-
-    case deck_stats do
-      [] ->
-        assign(socket, end_of_stream?: true)
-
-      [_ | _] = deck_stats ->
-        socket
-        |> assign(end_of_stream?: false)
-        |> assign(:offset, new_offset)
-        |> stream(:deck_stats, deck_stats, at: at, limit: stream_limit, reset: reset)
-    end
+    handle_offset_stream_scroll(
+      socket,
+      :deck_stats,
+      fetched_deck_stats,
+      new_offset,
+      curr_offset,
+      limit * @viewport_size_factor,
+      reset
+    )
   end
 
   def render(assigns) do
