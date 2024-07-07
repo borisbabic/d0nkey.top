@@ -157,14 +157,14 @@ defmodule Components.DecksExplorer do
           <div id={dom_id} :for={{dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} />
           </div>
-          <div :if={warning?(@streams)} >
-            <br>
-            <br>
-            <br>
-            <br>
-            <div class="notification is-warning">
-              No decks available for these filters. Maybe try changing one of the highlighted ones?
-            </div>
+        </div>
+        <div :if={warning?(@streams)} >
+          <br>
+          <br>
+          <br>
+          <br>
+          <div class="notification is-warning">
+            No decks available for these filters. Maybe try changing one of the highlighted ones?
           </div>
         </div>
       </div>
