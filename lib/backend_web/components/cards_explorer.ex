@@ -17,7 +17,7 @@ defmodule Components.CardsExplorer do
   import Components.DecksExplorer, only: [parse_int: 2]
 
   data(streams, :list)
-  data(end_of_timeline?, :boolean, default: false)
+  data(end_of_stream?, :boolean, default: false)
   data(offset, :integer, default: 0)
   prop(params, :map, required: true)
   prop(live_view, :module, required: true)
@@ -33,7 +33,7 @@ defmodule Components.CardsExplorer do
       :ok,
       socket
       |> assign(assigns)
-      |> assign(offset: 0, end_of_timeline?: false)
+      |> assign(offset: 0, end_of_stream?: false)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
         assigns_old.params,
@@ -68,11 +68,11 @@ defmodule Components.CardsExplorer do
 
     case cards do
       [] ->
-        assign(socket, end_of_timeline?: true)
+        assign(socket, end_of_stream?: true)
 
       [_ | _] = cards ->
         socket
-        |> assign(end_of_timeline?: false)
+        |> assign(end_of_stream?: false)
         |> assign(:offset, new_offset)
         |> stream(:cards, cards, at: at, limit: stream_limit, reset: reset)
     end
@@ -94,7 +94,7 @@ defmodule Components.CardsExplorer do
           phx-update="stream"
           class="columns is-multiline is-mobile"
           phx-target={@myself}
-          phx-viewport-bottom={!@end_of_timeline? && "next-cards-page"}
+          phx-viewport-bottom={!@end_of_stream? && "next-cards-page"}
           phx-viewport-top={"previous-cards-page"}>
           <div id={id} :for={{id, c} <- @streams.cards} class="column is-narrow">
             <Card card={c} />
