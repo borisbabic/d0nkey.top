@@ -59,23 +59,15 @@ defmodule Components.CardsExplorer do
     %{"limit" => limit} = params
     fetched_cards = params |> Map.put("offset", new_offset) |> Hearthstone.cards()
 
-    {cards, at, stream_limit} =
-      if new_offset >= curr_offset do
-        {fetched_cards, -1, limit * @viewport_size_factor * -1}
-      else
-        {Enum.reverse(fetched_cards), 0, limit * @viewport_size_factor}
-      end
-
-    case cards do
-      [] ->
-        assign(socket, end_of_stream?: true)
-
-      [_ | _] = cards ->
-        socket
-        |> assign(end_of_stream?: false)
-        |> assign(:offset, new_offset)
-        |> stream(:cards, cards, at: at, limit: stream_limit, reset: reset)
-    end
+    handle_offset_stream_scroll(
+      socket,
+      :cards,
+      fetched_cards,
+      new_offset,
+      curr_offset,
+      limit * @viewport_size_factor,
+      reset
+    )
   end
 
   def render(assigns) do
