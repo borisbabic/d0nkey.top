@@ -1,6 +1,7 @@
 defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
@@ -239,7 +240,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         "Mecha'thun #{class_name}"
 
       "Jace Darkweaver" in card_info.card_names && min_spell_school_count?(card_info, 5, "Fel") ->
-          :"Jace Demon Hunter"
+        :"Jace Demon Hunter"
 
       true ->
         fallbacks(card_info, class_name)

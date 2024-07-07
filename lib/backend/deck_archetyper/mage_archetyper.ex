@@ -1,6 +1,7 @@
 defmodule Backend.DeckArchetyper.MageArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     rommath? = "Grand Magister Rommath" in card_info.card_names

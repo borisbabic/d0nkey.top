@@ -1,6 +1,7 @@
 defmodule Backend.DeckArchetyper.PriestArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
@@ -115,47 +116,47 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   defp shellfish_priest?(%{card_names: card_names}),
     do: "Selfish Shellfish" in card_names && "Xyrella, the Devout" in card_names
 
-      defp boon_priest?(ci) do
-        min_count?(ci, 5, [
-          "Radiant Elemental",
-          "Switcheroo",
-          "Boon of the Ascended",
-          "Bless",
-          "Power Word: Fortitude",
-          "Focused Will",
-          "Illuminate"
-        ]) && type_count(ci, "Naga") < 5
-      end
+  defp boon_priest?(ci) do
+    min_count?(ci, 5, [
+      "Radiant Elemental",
+      "Switcheroo",
+      "Boon of the Ascended",
+      "Bless",
+      "Power Word: Fortitude",
+      "Focused Will",
+      "Illuminate"
+    ]) && type_count(ci, "Naga") < 5
+  end
 
-      defp naga_priest?(ci = %{card_names: card_names}) do
-        "Serpent Wig" in card_names && type_count(ci, "Naga") >= 5
-      end
+  defp naga_priest?(ci = %{card_names: card_names}) do
+    "Serpent Wig" in card_names && type_count(ci, "Naga") >= 5
+  end
 
-      defp shadow_priest?(%{card_names: card_names}), do: "Darkbishop Benedictus" in card_names
+  defp shadow_priest?(%{card_names: card_names}), do: "Darkbishop Benedictus" in card_names
 
-      defp control_priest?(ci) do
-        min_count?(ci, 2, ["Harmonic Pop", "Clean the Scene", "Whirlpool"])
-      end
+  defp control_priest?(ci) do
+    min_count?(ci, 2, ["Harmonic Pop", "Clean the Scene", "Whirlpool"])
+  end
 
-      defp thief_priest?(ci),
-        do:
-          min_count?(
-            ci,
-            5,
-            [
-              "Psychic Conjurer",
-              "Mysterious Visitor",
-              "Soothsayer's Caravan",
-              "Copycat",
-              "Identity Theft",
-              "Incriminating Psychic",
-              "Plagiarizarrr",
-              "Mind Eater",
-              "Theft Accusation",
-              "Murloc Holmes",
-              "The Harvester of Envy"
-            ]
-          )
+  defp thief_priest?(ci),
+    do:
+      min_count?(
+        ci,
+        5,
+        [
+          "Psychic Conjurer",
+          "Mysterious Visitor",
+          "Soothsayer's Caravan",
+          "Copycat",
+          "Identity Theft",
+          "Incriminating Psychic",
+          "Plagiarizarrr",
+          "Mind Eater",
+          "Theft Accusation",
+          "Murloc Holmes",
+          "The Harvester of Envy"
+        ]
+      )
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)

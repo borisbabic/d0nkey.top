@@ -1,6 +1,8 @@
 defmodule Backend.DeckArchetyper.PaladinArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.Card
 
   def standard(card_info) do
     cond do
