@@ -149,7 +149,7 @@ defmodule Components.DecksExplorer do
           :if={Backend.UserManager.User.can_access?(@user, :archetyping)}
           options={[{nil, "No"}, {"yes", "Yes"}]}
           title={"No archetype"}
-          params={"no_archetype"}
+          param={"no_archetype"}
           selected_as_title={false}
         />
         <br>
