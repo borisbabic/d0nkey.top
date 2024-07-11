@@ -51,7 +51,7 @@ defmodule BackendWeb.LiveHelpers do
           list(),
           integer(),
           integer(),
-          integer(),
+          integer() | nil,
           boolean()
         ) :: Socket.t()
   def handle_offset_stream_scroll(
@@ -65,9 +65,9 @@ defmodule BackendWeb.LiveHelpers do
       ) do
     {items, at, limit} =
       if new_offset >= old_offset do
-        {stream_items, -1, viewport_size * -1}
+        {stream_items, -1, viewport_size && viewport_size * -1}
       else
-        {Enum.reverse(stream_items), 0, viewport_size}
+        {Enum.reverse(stream_items), 0, viewport_size && viewport_size}
       end
 
     case items do
@@ -75,10 +75,19 @@ defmodule BackendWeb.LiveHelpers do
         assign(socket, end_of_stream?: true) |> ensure_stream(stream_name, reset)
 
       [_ | _] = items ->
+        base_stream_opts = [at: at, reset: reset]
+
+        stream_opts =
+          if limit do
+            [{:limit, limit} | base_stream_opts]
+          else
+            base_stream_opts
+          end
+
         socket
         |> assign(end_of_stream?: false)
         |> assign(:offset, new_offset)
-        |> Phoenix.LiveView.stream(stream_name, items, at: at, limit: limit, reset: reset)
+        |> Phoenix.LiveView.stream(stream_name, items, stream_opts)
     end
   end
 end
