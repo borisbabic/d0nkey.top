@@ -55,6 +55,7 @@ config :backend, BackendWeb.Endpoint,
     "//d0nkey.top",
     "//hsguru.com",
     "https://www.d0nkey.top",
+    "https://staging.hsguru.com",
     "https://www.hsguru.com"
   ],
   secret_key_base: secret_key_base,
