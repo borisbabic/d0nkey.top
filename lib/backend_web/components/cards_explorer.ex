@@ -24,7 +24,7 @@ defmodule Components.CardsExplorer do
 
   @default_limit 30
   ### how many times the limit do we keep in the viewport
-  @viewport_size_factor 7
+  # @viewport_size_factor 7
 
   def update(assigns_old, socket) do
     assigns = Map.update!(assigns_old, :params, &add_default_params/1)
@@ -56,7 +56,6 @@ defmodule Components.CardsExplorer do
 
   defp stream_cards(socket, new_offset, reset \\ false) when new_offset >= 0 do
     %{params: params, offset: curr_offset} = socket.assigns
-    %{"limit" => limit} = params
     fetched_cards = params |> Map.put("offset", new_offset) |> Hearthstone.cards()
 
     handle_offset_stream_scroll(
@@ -65,7 +64,7 @@ defmodule Components.CardsExplorer do
       fetched_cards,
       new_offset,
       curr_offset,
-      limit * @viewport_size_factor,
+      nil,
       reset
     )
   end
@@ -86,8 +85,7 @@ defmodule Components.CardsExplorer do
           phx-update="stream"
           class="columns is-multiline is-mobile"
           phx-target={@myself}
-          phx-viewport-bottom={!@end_of_stream? && "next-cards-page"}
-          phx-viewport-top={"previous-cards-page"}>
+          phx-viewport-bottom={!@end_of_stream? && "next-cards-page"}>
           <div id={id} :for={{id, c} <- @streams.cards} class="column is-narrow">
             <Card card={c} />
           </div>
@@ -96,26 +94,26 @@ defmodule Components.CardsExplorer do
     """
   end
 
-  def handle_event("previous-cards-page", %{"_overran" => true}, socket) do
-    %{offset: offset, params: %{"limit" => limit}} = socket.assigns
+  # def handle_event("previous-cards-page", %{"_overran" => true}, socket) do
+  #   %{offset: offset, params: %{"limit" => limit}} = socket.assigns
 
-    if offset <= (@viewport_size_factor - 1) * limit do
-      {:noreply, socket}
-    else
-      {:noreply, stream_cards(socket, 0)}
-    end
-  end
+  #   if offset <= (@viewport_size_factor - 1) * limit do
+  #     {:noreply, socket}
+  #   else
+  #     {:noreply, stream_cards(socket, 0)}
+  #   end
+  # end
 
-  def handle_event("previous-cards-page", _, socket) do
-    %{offset: offset, params: %{"limit" => limit}} = socket.assigns
-    new_offset = Enum.max([offset - limit, 0])
+  # def handle_event("previous-cards-page", _, socket) do
+  #   %{offset: offset, params: %{"limit" => limit}} = socket.assigns
+  #   new_offset = Enum.max([offset - limit, 0])
 
-    if new_offset == offset do
-      {:noreply, socket}
-    else
-      {:noreply, stream_cards(socket, new_offset)}
-    end
-  end
+  #   if new_offset == offset do
+  #     {:noreply, socket}
+  #   else
+  #     {:noreply, stream_cards(socket, new_offset)}
+  #   end
+  # end
 
   def handle_event("next-cards-page", _middle, socket) do
     %{offset: offset, params: %{"limit" => limit}} = socket.assigns

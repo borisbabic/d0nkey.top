@@ -12,7 +12,6 @@ defmodule BackendWeb.FeedLive do
   data(offset, :integer, default: 0)
   data(end_of_stream?, :boolean, default: false)
   @limit 20
-  @viewport_size_factor 4
 
   def mount(_params, session, socket) do
     {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> stream_items(0)}
@@ -35,7 +34,6 @@ defmodule BackendWeb.FeedLive do
           id="items_viewport"
           phx-update="stream"
           class="columns is-multiline is-mobile is-narrow is-centered"
-          phx-viewport-top="previous-page"
           phx-viewport-bottom={!@end_of_stream? && "next-page"}>
           <div id={dom_id} :for={{dom_id, item} <- @streams.items} class="column is-narrow">
             <div :if={item.type == "deck"}>
@@ -56,26 +54,26 @@ defmodule BackendWeb.FeedLive do
     """
   end
 
-  def handle_event("previous-page", %{"_overran" => true}, socket) do
-    %{offset: offset} = socket.assigns
+  # def handle_event("previous-page", %{"_overran" => true}, socket) do
+  #   %{offset: offset} = socket.assigns
 
-    if offset <= (@viewport_size_factor - 1) * @limit do
-      {:noreply, socket}
-    else
-      {:noreply, stream_items(socket, 0)}
-    end
-  end
+  #   if offset <= (@viewport_size_factor - 1) * @limit do
+  #     {:noreply, socket}
+  #   else
+  #     {:noreply, stream_items(socket, 0)}
+  #   end
+  # end
 
-  def handle_event("previous-page", _, socket) do
-    %{offset: old_offset} = socket.assigns
-    new_offset = Enum.max([old_offset - @limit, 0])
+  # def handle_event("previous-page", _, socket) do
+  #   %{offset: old_offset} = socket.assigns
+  #   new_offset = Enum.max([old_offset - @limit, 0])
 
-    if new_offset == old_offset do
-      {:noreply, socket}
-    else
-      {:noreply, stream_items(socket, new_offset)}
-    end
-  end
+  #   if new_offset == old_offset do
+  #     {:noreply, socket}
+  #   else
+  #     {:noreply, stream_items(socket, new_offset)}
+  #   end
+  # end
 
   def handle_event("next-page", _, socket) do
     %{offset: old_offset} = socket.assigns
@@ -94,7 +92,7 @@ defmodule BackendWeb.FeedLive do
       fetched_items,
       new_offset,
       curr_offset,
-      @limit * @viewport_size_factor
+      nil
     )
   end
 
