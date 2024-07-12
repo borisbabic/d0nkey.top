@@ -186,6 +186,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Darkbishop Benedictus" in card_info.card_names ->
         :"Shadow Priest"
 
+      wild_switcheroo_priest?(card_info) ->
+        :"Switcheroo Priest"
+
       wild_combo_priest?(card_info) ->
         :"Combo Priest"
 
@@ -225,6 +228,19 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Radiant Elemental",
       "Power Word: Fortitude",
       "Grave Horror"
+    ])
+  end
+
+  defp wild_switcheroo_priest?(card_info) do
+    min_count?(card_info, 3, [
+      "Switcheroo",
+      "The Darkness",
+      "Stonetusk Boar"
+    ]) and
+      min_count?(card_info, 1, [
+      "Topsy Turvy",
+      "Inner Fire",
+      "Bless"
     ])
   end
 end
