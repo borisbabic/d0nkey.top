@@ -107,7 +107,8 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
         "Vicious Bloodworm",
         "Overlord Runthak",
         "Ram Commander",
-        "Encumbered Pack Mule"
+        "Encumbered Pack Mule",
+        "Saloon Brewmaster"
       ])
 
   def wild(card_info) do
