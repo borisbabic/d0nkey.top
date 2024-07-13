@@ -89,7 +89,9 @@ defmodule BackendWeb.DeckSheetViewLive do
   def assign_sheet(socket, %{"sheet_id" => id}) do
     sheet = Sheets.get_sheet(id)
 
-    assign(socket, :sheet, sheet)
+    socket
+    |> assign(:sheet, sheet)
+    |> assign(:sheet_id, id)
   end
 
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
@@ -130,6 +132,7 @@ defmodule BackendWeb.DeckSheetViewLive do
   end
 
   defp path_params(%{sheet: %{id: id}}), do: id
+  defp path_params(%{sheet_id: id}), do: id
 
   defp url_params(%{deck_filters: df, view_mode: vm}), do: Map.put(df, "view_mode", vm)
 end
