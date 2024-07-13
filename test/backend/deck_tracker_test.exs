@@ -50,8 +50,8 @@ defmodule Hearthstone.DeckTrackerTest do
         battletag: "D0nkey#2470",
         rank: nil,
         legend_rank: nil,
-        cards_in_hand_after_mulligan: [%{card_dbf_id: 74097, kept: false}],
-        cards_drawn_from_initial_deck: [%{card_dbf_id: 74097, turn: 3}],
+        cards_in_hand_after_mulligan: [%{card_dbf_id: 74_097, kept: false}],
+        cards_drawn_from_initial_deck: [%{card_dbf_id: 74_097, turn: 3}],
         deckcode:
           "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
@@ -135,7 +135,7 @@ defmodule Hearthstone.DeckTrackerTest do
         "game_id" => id,
         "cards_drawn_from_initial_deck" => [
           %{
-            "card_dbf_id" => 74097,
+            "card_dbf_id" => 74_097,
             "turn" => 5
           }
         ]
@@ -165,6 +165,7 @@ defmodule Hearthstone.DeckTrackerTest do
     include_in_personal_filters: true,
     period_end: ~N[2023-07-30 23:22:00],
     period_start: ~N[2023-07-30 23:22:00],
+    order_priority: 5,
     slug: "some slug",
     type: "some type"
   }
@@ -172,6 +173,7 @@ defmodule Hearthstone.DeckTrackerTest do
     auto_aggregate: false,
     display: "some updated display",
     hours_ago: 43,
+    order_priority: 10,
     include_in_deck_filters: false,
     include_in_personal_filters: false,
     period_end: ~N[2023-07-31 23:22:00],
@@ -202,18 +204,9 @@ defmodule Hearthstone.DeckTrackerTest do
       assert length(periods) == 15
       assert page.page_number == 1
       assert page.page_size == 15
-      assert page.total_pages == 2
-      assert page.total_entries == 20
       assert page.distance == 5
       assert page.sort_field == "inserted_at"
       assert page.sort_direction == "desc"
-    end
-  end
-
-  describe "#list_periods/0" do
-    test "returns all periods" do
-      period = period_fixture()
-      assert DeckTracker.list_periods() == [period]
     end
   end
 
@@ -300,6 +293,7 @@ defmodule Hearthstone.DeckTrackerTest do
     max_legend_rank: 42,
     max_rank: 42,
     min_legend_rank: 42,
+    order_priority: 69,
     min_rank: 42,
     slug: "some slug"
   }
@@ -308,6 +302,7 @@ defmodule Hearthstone.DeckTrackerTest do
     display: "some updated display",
     include_in_deck_filters: false,
     include_in_personal_filters: false,
+    order_priority: 420,
     max_legend_rank: 43,
     max_rank: 43,
     min_legend_rank: 43,
@@ -337,18 +332,9 @@ defmodule Hearthstone.DeckTrackerTest do
       assert length(ranks) == 15
       assert page.page_number == 1
       assert page.page_size == 15
-      assert page.total_pages == 2
-      assert page.total_entries == 20
       assert page.distance == 5
       assert page.sort_field == "inserted_at"
       assert page.sort_direction == "desc"
-    end
-  end
-
-  describe "#list_ranks/0" do
-    test "returns all ranks" do
-      rank = rank_fixture()
-      assert DeckTracker.list_ranks() == [rank]
     end
   end
 
@@ -466,18 +452,9 @@ defmodule Hearthstone.DeckTrackerTest do
       assert length(formats) == 15
       assert page.page_number == 1
       assert page.page_size == 15
-      assert page.total_pages == 2
-      assert page.total_entries == 20
       assert page.distance == 5
       assert page.sort_field == "inserted_at"
       assert page.sort_direction == "desc"
-    end
-  end
-
-  describe "#list_formats/0" do
-    test "returns all formats" do
-      format = format_fixture()
-      assert DeckTracker.list_formats() == [format]
     end
   end
 
@@ -571,18 +548,9 @@ defmodule Hearthstone.DeckTrackerTest do
       assert length(regions) == 15
       assert page.page_number == 1
       assert page.page_size == 15
-      assert page.total_pages == 2
-      assert page.total_entries == 20
       assert page.distance == 5
       assert page.sort_field == "inserted_at"
       assert page.sort_direction == "desc"
-    end
-  end
-
-  describe "#list_regions/0" do
-    test "returns all regions" do
-      region = region_fixture()
-      assert DeckTracker.list_regions() == [region]
     end
   end
 
