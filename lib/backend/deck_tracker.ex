@@ -1526,7 +1526,7 @@ defmodule Hearthstone.DeckTracker do
     |> formats()
     |> case do
       [%{value: value} | _] -> value
-      _ -> "diamond_to_legend"
+      _ -> 2
     end
   end
 
