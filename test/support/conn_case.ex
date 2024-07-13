@@ -48,9 +48,11 @@ defmodule BackendWeb.ConnCase do
   ]
   @signing_opts Plug.Session.init(Keyword.put(@default_opts, :encrypt, false))
 
+  # setup_all tags do
+  # end
   setup tags do
-    Backend.DataCase.setup_db(tags)
 
+    Backend.DataCase.setup_db(tags)
     opts =
       [conn: Phoenix.ConnTest.build_conn()]
       |> setup_user(tags)

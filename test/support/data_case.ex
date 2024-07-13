@@ -38,6 +38,7 @@ defmodule Backend.DataCase do
   end
 
   setup [:setup_db]
+  # setup [:setup_db]
   # setup do
   #   raise "ttttttttttttttttttttttttt"
   # end
@@ -66,12 +67,25 @@ defmodule Backend.DataCase do
   def setup_db(tags) do
     # pid = Ecto.Adapters.SQL.Sandbox.start_owner!(MyApp.Repo, shared: not tags[:async])
     # on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
+    # :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
 
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, {:shared, self()})
+    # IO.inspect(tags, label: :setup_db)
+    # checkout_set_repo_mode(tags)
+    # :
+    if tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, :manual)
+    else
+      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
+      pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Backend.Repo, shared: !tags[:async])
+
+      on_exit(fn ->
+        Ecto.Adapters.SQL.Sandbox.stop_owner(pid)
+        # checkout_set_repo_mode(tags)
+        :ok
+      end)
     end
 
     :ok
   end
+
 end
