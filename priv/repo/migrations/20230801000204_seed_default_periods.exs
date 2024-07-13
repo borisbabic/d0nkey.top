@@ -18,6 +18,7 @@ defmodule Backend.Repo.Migrations.SeedDefaultPeriods do
           ('past_2_weeks', 'Past 2 Weeks', 'rolling', null, null, #{24 * 14}, true, true, true, '#{inserted_at}', '#{inserted_at}'),
           ('past_week', 'Past Week', 'rolling', null, null, #{24 * 7}, true, true, true, '#{inserted_at}', '#{inserted_at}'),
           ('past_3_days', 'Past 3 Days', 'rolling', null, null, #{24 * 3}, true, true, true, '#{inserted_at}', '#{inserted_at}'),
+          ('all', 'All', 'patch', '1970-01-01 00:00:00', null, null, true, true, true, '#{inserted_at}', '#{inserted_at}'),
           ('past_day', 'Past 3 Days', 'rolling', null, null, #{24}, true, true, true, '#{inserted_at}', '#{inserted_at}');
     """
 
