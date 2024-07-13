@@ -406,7 +406,7 @@ defmodule Bot.MessageHandler do
   defp create_wiki_reply([], _msg), do: :ignore
 
   defp create_wiki_reply(uris, msg) do
-    url_part = uris |> Enum.uniq() |> Enum.map_join("\n", &to_string/1)
+    url_part = uris |> Enum.uniq() |> Enum.map_join("\n", &"<#{to_string(&1)}>")
 
     message = """
     The wiki has moved to hearthstone.wiki.gg:
