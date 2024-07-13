@@ -1,41 +1,31 @@
 defmodule BackendWeb.NavTest do
   use BackendWeb.ConnCase
 
-  describe "no user tournaments link" do
-    test "no link when not signed in", %{conn: conn} do
-      conn = get(conn, Routes.empty_path(conn, :with_nav))
-      refute html_response(conn, 200) =~ "/battlefy/user-tournaments"
-    end
+  @logged_in_links [
+    "/deck-sheets",
+    "/my-replays",
+    "/my-decks",
+    "/my-groups",
+    "/profile/settings",
+    "/logout"
+  ]
+  test "no link when not signed in", %{conn: conn} do
+    conn = get(conn, Routes.empty_path(conn, :with_nav))
+    response = html_response(conn, 200)
 
-    @tag :authenticated
-    @tag :users
-    test "no link when signed in without battlefy_slug set", %{conn: conn} do
-      conn = get(conn, Routes.empty_path(conn, :with_nav))
-      refute html_response(conn, 200) =~ "/battlefy/user-tournaments"
-    end
-  end
-
-  describe "has user tournaments link" do
-    setup :add_user_with_battlefy_slug
-
-    test "has_link_when_signed_in", %{conn: conn} do
-      conn = get(conn, Routes.empty_path(conn, :with_nav))
-      assert html_response(conn, 200) =~ "/battlefy/user-tournaments/"
+    for link <- @logged_in_links do
+      refute response =~ link
     end
   end
 
-  def add_user_with_battlefy_slug(_) do
-    {:ok, user} =
-      BackendWeb.ConnCase.ensure_auth_user(%{
-        battlefy_slug: "d0nkey",
-        battletag: "hide_ads#2345",
-        hide_ads: true
-      })
+  @tag :authenticated
+  @tag :users
+  test "sheet link present when logged in", %{conn: conn} do
+    conn = get(conn, Routes.empty_path(conn, :with_nav))
+    response = html_response(conn, 200)
 
-    conn =
-      user
-      |> BackendWeb.ConnCase.build_conn_with_user()
-
-    {:ok, conn: conn, user: user}
+    for link <- @logged_in_links do
+      assert response =~ link
+    end
   end
 end
