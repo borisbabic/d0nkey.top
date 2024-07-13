@@ -1,11 +1,10 @@
 defmodule BackendWeb.Live.DeckViewerTest do
   use BackendWeb.ConnCase
-  import Plug.Conn
   import Phoenix.LiveViewTest
   alias Backend.Hearthstone.Deck
 
   test "renders", %{conn: conn} do
-    {:ok, view, html} = live(conn, "/deckviewer")
+    {:ok, _view, html} = live(conn, "/deckviewer")
     assert html =~ "Paste deckcode"
   end
 
@@ -21,7 +20,7 @@ defmodule BackendWeb.Live.DeckViewerTest do
     {:ok, _view, html} = live(conn, "/deckviewer?#{query}")
 
     for d <- decks do
-      assert html =~ d
+      assert html =~ canonical_code(d)
     end
   end
 
@@ -30,16 +29,16 @@ defmodule BackendWeb.Live.DeckViewerTest do
       "AAECAea5Awb39gOL9wOw+QPQ+QOHiwSEsAQM1tEDzNIDzdID3dMD+dUD8+MDlegD/e0DivcDyIAEs6AEtKAEAA=="
 
     {:ok, view, html} = live(conn, "/deckviewer")
-    refute html =~ deckcode
+    refute html =~ canonical_code(deckcode)
 
     assert view
            |> form("#add_deck_form", %{new_deck: %{new_code: deckcode}})
-           |> render_submit() =~ deckcode
+           |> render_submit() =~ canonical_code(deckcode)
   end
 
   test "Add urls through form", %{conn: conn} do
     deckcode =
-      "AECAea5Awb39gOL9wOw+QOHiwSEsATNngYM1tEDzNIDzdID+dUDlegD/e0DivcDyIAEs6AEtKAE4fgF4/gFAA=="
+      "AAECAea5Awb39gOL9wOw+QOHiwSEsATNngYM1tEDzNIDzdID+dUDlegD/e0DivcDyIAEs6AEtKAE4fgF4/gFAA=="
 
     urls = [
       "https://www.yaytears.com/conquest/AAECAaIHBti2BNu5BMygBeigBeKkBdCeBgz2nwT3nwS3swT03QT13QT87QTBgwXdoAXfoAXgoAXBoQXZogYA.AAECAea5Awb39gOL9wOw%2BQOHiwSEsATNngYM1tEDzNIDzdID%2BdUDlegD%2Fe0DivcDyIAEs6AEtKAE4fgF4%2FgFAA%3D%3D",
@@ -51,12 +50,12 @@ defmodule BackendWeb.Live.DeckViewerTest do
 
     {:ok, view, html} = live(conn, "/deckviewer")
 
-    refute html =~ deckcode
+    refute html =~ canonical_code(deckcode)
 
     for url <- urls do
       assert view
              |> form("#add_deck_form", %{new_deck: %{new_code: url}})
-             |> render_submit() =~ deckcode
+             |> render_submit() =~ canonical_code(deckcode)
     end
   end
 
@@ -65,6 +64,12 @@ defmodule BackendWeb.Live.DeckViewerTest do
     deckcode = Deck.deckcode(cards, 2, 274)
     query = URI.encode_query(%{code: deckcode})
     {:ok, _view, html} = live(conn, "/deckviewer?#{query}")
-    assert html =~ deckcode
+    assert html =~ canonical_code(deckcode)
+  end
+
+  defp canonical_code(code) do
+    code
+    |> Backend.Hearthstone.Deck.decode!()
+    |> Backend.Hearthstone.Deck.deckcode()
   end
 end
