@@ -9,6 +9,7 @@ defmodule BackendWeb.ErrorViewTest do
   end
 
   test "renders 500.html" do
-    assert render_to_string(BackendWeb.ErrorView, "500.html", []) == "Internal Server Error"
+    assert render_to_string(BackendWeb.ErrorView, "500.html", []) =~
+             "Oops, looks like something went wrong"
   end
 end
