@@ -313,6 +313,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       mine_rogue?(card_info) ->
         :"Mine Rogue"
 
+      wild_mill_rogue?(card_info) ->
+        :"Mill Rogue"
+
       wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
 
@@ -359,6 +362,13 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Wildpaw Gnoll",
       "Stick Up",
       "Flint Firearm"
+    ])
+  end
+
+  defp wild_mill_rogue?(card_info) do
+    min_count?(card_info, 2, [
+      "Snowfall Graveyard",
+      "Selfish Shellfish"
     ])
   end
 end
