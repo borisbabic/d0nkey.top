@@ -210,10 +210,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander DH"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline DH"
 
       quest?(card_info) ->
         String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
