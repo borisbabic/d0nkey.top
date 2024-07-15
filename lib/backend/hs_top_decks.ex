@@ -11,13 +11,6 @@ defmodule Backend.HSTopDecks do
       Regex.match?(@class_regex, link)
   end
 
-  @doc """
-  Extracts a deckcode from a full hstopdecks link
-
-  ## Example
-  iex> Backend.HSTopDecks.extract_deckbuilder_code("https://www.hearthstonetopdecks.com/deck-builder/#?class=demon-hunter&format=2&deck=293287:1,312347:1,204648:1,312345:1,305451:1,238044:1,304357:1")
-  "AAECAea5Awfovgzcww6n8xHlyRKr0hKZiBObiBMAAAA="
-  """
   def extract_deckbuilder_code(link) do
     [_, cards_part] = Regex.run(@cards_regex, link)
     [_, format] = Regex.run(@format_regex, link)

@@ -4,7 +4,8 @@ defmodule Hearthstone.DeckcodeExtractor do
   alias Backend.HSDeckViewer
   alias Backend.HSReplay
   alias Backend.Yaytears
-  alias Backend.HSTopDecks
+  # The extraction implementation doesn't work since the ids in the URL aren't hearthstone IDs
+  # alias Backend.HSTopDecks
   alias Backend.Hearthstone.Deck
 
   @doc """
@@ -22,10 +23,10 @@ defmodule Hearthstone.DeckcodeExtractor do
   end
 
   defp parseable_link?(possible_link) do
+    # HSTopDecks.deckbuilder_link?(possible_link) or
     HSDeckViewer.hdv_link?(possible_link) or
       Yaytears.yt_link?(possible_link) or
       HSReplay.hsreplay_link?(possible_link) or
-      HSTopDecks.deckbuilder_link?(possible_link) or
       our_link?(possible_link) or
       link_with_query?(possible_link)
   end
@@ -56,7 +57,7 @@ defmodule Hearthstone.DeckcodeExtractor do
           _ -> []
         end
 
-      HSTopDecks.deckbuilder_link?(new_code) ->
+        # HSTopDecks.deckbuilder_link?(new_code) ->
         [HSTopDecks.extract_deckbuilder_code(new_code)]
 
       our_link?(new_code) ->
