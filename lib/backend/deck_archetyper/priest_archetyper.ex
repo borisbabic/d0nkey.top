@@ -204,6 +204,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Astral Automaton" in card_info.card_names ->
         "Automaton Priest"
 
+      "Timewinder Zarimi" in card_info.card_names ->
+        :"Zarimi Priest"
+
       true ->
         fallbacks(card_info, class_name)
     end
