@@ -20,6 +20,7 @@ defmodule Components.DeckListingModal do
   prop(sheet, :map, default: nil)
   prop(button_title, :any, default: nil)
   prop(button_class, :css_class, default: "button")
+  prop(min_role, :atom, default: :submitter)
 
   data(modal_part_id, :string)
 
@@ -32,7 +33,7 @@ defmodule Components.DeckListingModal do
       <div>
       <Modal
         id={id(@existing, @deck) <> @modal_part_id}
-        :if={can_contribute?(@sheet, @user)}
+        :if={has_min_role?(@sheet, @user, @min_role)}
         button_title={button_title(@button_title, @existing)}
         button_class={@button_class}
         title={title(@existing)}>
@@ -155,6 +156,6 @@ defmodule Components.DeckListingModal do
   defp button_title(nil, _), do: "New"
   defp button_title(title, _existing), do: title
 
-  defp can_contribute?(nil, _), do: true
-  defp can_contribute?(sheet, user), do: Sheets.can_contribute?(sheet, user)
+  defp has_min_role?(nil, _, _), do: true
+  defp has_min_role?(sheet, user, role), do: Sheets.has_min_role?(sheet, user, role)
 end

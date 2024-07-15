@@ -36,7 +36,7 @@ defmodule BackendWeb.DeckSheetViewLive do
             {#if Sheets.can_admin?(@sheet, @user)}
               <DeckSheetsModal button_title="Edit Sheet" id={"edit_modal_#{@sheet.id}"} existing={@sheet} user={@user}/>
             {/if}
-            {#if Sheets.can_contribute?(@sheet, @user)}
+            {#if Sheets.can_submit?(@sheet, @user)}
               <DeckListingModal button_title="Add Deck(s)" id={"create_new_listing"} sheet={@sheet} user={@user}/>
             {/if}
 

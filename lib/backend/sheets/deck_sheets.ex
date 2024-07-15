@@ -5,7 +5,9 @@ defmodule Backend.Sheets.DeckSheet do
   alias Backend.UserManager.Group
   alias Backend.UserManager.User
   @type t :: %__MODULE__{}
-  @roles [:admin, :contributor, :viewer, :nothing]
+  # order is important, as long as it's possible that each one to the right is a subset of it's preceeding role
+  @roles [:admin, :contributor, :submitter, :viewer, :nothing]
+  @type role :: :admin | :contributor | :submitter | :viewer | :nothing
   schema "deck_sheets" do
     field :name, :string
     belongs_to :owner, User
@@ -67,4 +69,31 @@ defmodule Backend.Sheets.DeckSheet do
   def available_roles(), do: @roles
 
   def role_display(role), do: role |> to_string() |> Recase.to_title()
+
+  @doc """
+  Compares the two roles, returning whether the first one is :gt (superset of), :lt (subset of) or :wq to the second one
+  Unknown roles are considered less than known roles
+
+  ## Example
+  iex> Backend.Sheets.DeckSheet.compare_roles(:admin, :nothing)
+  :gt
+  iex> Backend.Sheets.DeckSheet.compare_roles(:submitter, :contributor)
+  :lt
+  iex> Backend.Sheets.DeckSheet.compare_roles(:viewer, :viewer)
+  :eq
+  """
+  @spec compare_roles(role(), role()) :: :gt | :lt | :eq
+  def compare_roles(role_one, role_two) do
+    first_index = Enum.find_index(@roles, &(&1 == role_one))
+    second_index = Enum.find_index(@roles, &(&1 == role_two))
+
+    cond do
+      first_index == second_index -> :eq
+      first_index == nil -> :lt
+      second_index == nil -> :gt
+      # swapped because coming sooner, ie smaller index, means it's greater
+      first_index > second_index -> :lt
+      first_index < second_index -> :gt
+    end
+  end
 end

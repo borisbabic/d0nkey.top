@@ -364,7 +364,7 @@ defmodule Backend.Hearthstone.Deck do
   iex> Backend.Hearthstone.Deck.decode("blablabla")
   {:error, "Couldn't decode deckstring"}
   iex> {:ok, deck} = Backend.Hearthstone.Deck.decode("AAECAR8BugMAAA=="); deck.deckcode
-  "AAECAR8BugMAAA=="
+  "AAECAR8BugMAAAA="
   """
   @spec decode(String.t()) :: {:ok, t()} | {:error, String.t() | any}
   def decode(""), do: {:error, "Couldn't decode deckstring"}

@@ -22,7 +22,7 @@ defmodule Components.DeckSheetsModal do
       <Modal
         id={id(@existing)}
         button_title={@button_title || button_title(@existing)}
-        :if={Sheets.can_admin?(@existing, @user)}
+        :if={!@existing || Sheets.can_admin?(@existing, @user)}
         title={title(@existing)}>
         <Form for={%{}} as={:deck_sheet} submit="submit" opts={id: "sheet_form_#{id(@existing)}"}>
           <Field name={:name}>
