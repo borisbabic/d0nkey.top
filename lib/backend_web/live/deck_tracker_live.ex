@@ -1,7 +1,7 @@
 defmodule BackendWeb.DeckTrackerLive do
   @moduledoc "For self reporting deck stuff"
   use BackendWeb, :surface_live_view
-  use Components.ExpandableDecklist
+  alias Components.ExpandableDecklist
   alias Components.Form.RankSelect
   alias Components.WinrateTag
   alias Hearthstone.Enums.GameType

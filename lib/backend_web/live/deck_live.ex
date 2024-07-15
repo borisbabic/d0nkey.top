@@ -10,7 +10,7 @@ defmodule BackendWeb.DeckLive do
   alias Components.ReplayExplorer
   alias Components.DeckAdmin
   alias Backend.DeckInteractionTracker, as: Tracker
-  use Components.ExpandableDecklist
+  alias Components.ExpandableDecklist
 
   data(deck, :any)
   data(streamer_decks, :any)
