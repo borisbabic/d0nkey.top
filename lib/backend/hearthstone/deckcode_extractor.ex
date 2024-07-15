@@ -4,6 +4,7 @@ defmodule Hearthstone.DeckcodeExtractor do
   alias Backend.HSDeckViewer
   alias Backend.HSReplay
   alias Backend.Yaytears
+  alias Backend.HSTopDecks
   alias Backend.Hearthstone.Deck
 
   @doc """
@@ -24,6 +25,7 @@ defmodule Hearthstone.DeckcodeExtractor do
     HSDeckViewer.hdv_link?(possible_link) or
       Yaytears.yt_link?(possible_link) or
       HSReplay.hsreplay_link?(possible_link) or
+      HSTopDecks.deckbuilder_link?(possible_link) or
       our_link?(possible_link) or
       link_with_query?(possible_link)
   end
@@ -53,6 +55,9 @@ defmodule Hearthstone.DeckcodeExtractor do
           {:ok, deck} -> [Deck.deckcode(deck)]
           _ -> []
         end
+
+      HSTopDecks.deckbuilder_link?(new_code) ->
+        [HSTopDecks.extract_deckbuilder_code(new_code)]
 
       our_link?(new_code) ->
         extract_codes(new_code)
