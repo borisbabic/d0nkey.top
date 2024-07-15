@@ -27,19 +27,19 @@ defmodule Components.DeckSheetsModal do
         <Form for={%{}} as={:deck_sheet} submit="submit" opts={id: "sheet_form_#{id(@existing)}"}>
           <Field name={:name}>
             <Label class="label">Name</Label>
-            <TextInput class="input is-small" value={name(@existing)}/>
+            <TextInput class="input has-text-black  is-small" value={name(@existing)}/>
           </Field>
           <Field name={:public_role}>
             <Label class="label">Public Role</Label>
-            <Select class="select" selected={public_role(@existing) || :nothing} options={roles()}/>
+            <Select class="select has-text-black " selected={public_role(@existing) || :nothing} options={roles()}/>
           </Field>
           <Field  name={:group_id}>
             <Label class="label">Group</Label>
-            <Select class="select" selected={group_id(@existing)}  options={group_options(@user)} />
+            <Select class="select has-text-black " selected={group_id(@existing)}  options={group_options(@user)} />
           </Field>
           <Field name={:group_role}>
             <Label class="label">Group Role</Label>
-            <Select class="select" selected={group_role(@existing) || :contributor} options={roles()}/>
+            <Select class="select has-text-black " selected={group_role(@existing) || :contributor} options={roles()}/>
           </Field>
         </Form>
         <:footer>

@@ -18,7 +18,7 @@ defmodule Components.Filter.ArchetypeSelect do
         <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
           <div class="columns is-mobile is-multiline">
             <div class="column is-narrow">
-              <TextInput class="input" opts={placeholder: "Search"}/>
+              <TextInput class="input has-text-black " opts={placeholder: "Search"}/>
             </div>
           </div>
         </Form>

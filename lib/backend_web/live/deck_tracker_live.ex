@@ -144,25 +144,25 @@ defmodule BackendWeb.DeckTrackerLive do
         <br>
         <div class="columns is-mobile is-multiline is-vcentered is-centered has-text-black">
           <div class=" is-narrow">
-            <Select class="select" prompt="Result" selected={Map.get(@form_values, "result")} field={:result} options={"Win": "WIN", "Loss": "LOSS", "Tie": "DRAW"} />
+            <Select class="select has-text-black " prompt="Result" selected={Map.get(@form_values, "result")} field={:result} options={"Win": "WIN", "Loss": "LOSS", "Tie": "DRAW"} />
           </div>
           <div class=" is-narrow">
-            <Select class="select" prompt="Opponent's class" selected={Map.get(@form_values, "opponent_class")} field={:opponent_class} options={class_options()} />
+            <Select class="select has-text-black " prompt="Opponent's class" selected={Map.get(@form_values, "opponent_class")} field={:opponent_class} options={class_options()} />
           </div>
           <div class=" is-narrow">
-            <Select class="select" field={:game_type} selected={Map.get(@form_values, "game_type", GameType.ranked())} options={game_type_options()} />
+            <Select class="select has-text-black " field={:game_type} selected={Map.get(@form_values, "game_type", GameType.ranked())} options={game_type_options()} />
           </div>
           <div class=" is-narrow">
-            <Select class="select" field={:format} selected={Map.get(@form_values, "format", @deck.format)} options={format_options()} />
+            <Select class="select has-text-black " field={:format} selected={Map.get(@form_values, "format", @deck.format)} options={format_options()} />
           </div>
         </div>
         <div class="columns is-mobile is-vcentered is-centered">
           <Label class="label">Optional:</Label>
         </div>
         <div class="columns is-mobile is-multiline is-vcentered is-centered has-text-black">
-          <Select class="select" prompt="On Coin?" selected={Map.get(@form_values, "coin")} field={:coin} options={Coin: true, "No Coin": false} />
-          <Select field={:turns} class="select" prompt="Turns" options={1..45} selected={Map.get(@form_values, "selected")} />
-          <TextInput field={:opponent_battletag} value={Map.get(@form_values, "opponent_battletag")} class="input is-small" opts={placeholder: "Opponent Battletag", style: "width: 200px;"} />
+          <Select class="select has-text-black " prompt="On Coin?" selected={Map.get(@form_values, "coin")} field={:coin} options={Coin: true, "No Coin": false} />
+          <Select field={:turns} class="select has-text-black " prompt="Turns" options={1..45} selected={Map.get(@form_values, "selected")} />
+          <TextInput field={:opponent_battletag} value={Map.get(@form_values, "opponent_battletag")} class="input has-text-black  is-small" opts={placeholder: "Opponent Battletag", style: "width: 200px;"} />
           <RankSelect rank_title={"Player Rank"} id="player_rank" rank_field={:player_rank} rank={@form_values["player_rank"]} legend_rank_field={:player_legend_rank} legend_rank={@form_values["player_legend_rank"]} />
           <RankSelect rank_title={"Opponent Rank"} id="opponent_rank" rank_field={:opponent_rank} rank={@form_values["opponent_rank"]} legend_rank_field={:opponent_legend_rank} legend_rank={@form_values["opponent_legend_rank"]} />
         </div>

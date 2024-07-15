@@ -39,23 +39,23 @@ defmodule Components.DeckListingModal do
         <Form for={%{}} as={:listing} submit="submit" opts={id: form_id(@existing, @deck)}>
           <Field name={:deckcode}>
             <Label class="label">Deckcode or link</Label>
-            <TextInput class="input is-small" value={deckcode(@existing, @deck)} opts={disabled: !!@existing}/>
+            <TextInput class="input has-text-black  is-small" value={deckcode(@existing, @deck)} opts={disabled: !!@existing}/>
           </Field>
           <Field name={:sheet_id}>
             <Label class="label">Sheet</Label>
-            <Select class="select" selected={sheet_id(@existing, @sheet)} options={sheet_options(@user)} opts={disabled: !!@existing}/>
+            <Select class="select has-text-black " selected={sheet_id(@existing, @sheet)} options={sheet_options(@user)} opts={disabled: !!@existing}/>
           </Field>
           <Field name={:name}>
             <Label class="label">Name</Label>
-            <TextInput class="input is-small" value={name(@existing)}/>
+            <TextInput class="input has-text-black  is-small" value={name(@existing)}/>
           </Field>
           <Field name={:source}>
             <Label class="label">Source</Label>
-            <TextInput class="input is-small" value={source(@existing) || @source}/>
+            <TextInput class="input has-text-black  is-small" value={source(@existing) || @source}/>
           </Field>
           <Field name={:comment}>
             <Label class="label">Comment</Label>
-            <TextInput class="input is-small" value={comment(@existing)}/>
+            <TextInput class="input has-text-black  is-small" value={comment(@existing)}/>
           </Field>
         </Form>
         <:footer>
