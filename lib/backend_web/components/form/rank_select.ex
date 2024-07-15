@@ -45,7 +45,7 @@ defmodule Components.Form.RankSelect do
           {rank}
           </a>
         </Dropdown>
-        <NumberInput :if={@rank_parts == :Legend} class="input" field={@legend_rank_field} value={@legend_rank || 0} opts={style: "width: 100px;"}/>
+        <NumberInput :if={@rank_parts == :Legend} class="input has-text-black " field={@legend_rank_field} value={@legend_rank || 0} opts={style: "width: 100px;"}/>
         <HiddenInput :if={@rank_parts != :Legend} field={@legend_rank_field} value={@legend_rank || 0} />
 
         <HiddenInput field={@rank_field} value={@rank} />

@@ -318,7 +318,7 @@ defmodule Components.Helper do
 
                 <%= if @show_search do %>
                     <input
-                        class="input"
+                        class="input has-text-black "
                         autocomplete="off"
                         placeholder={"#{ @placeholder }"}
                         id={"#{ @search_id }"}

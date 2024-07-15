@@ -50,38 +50,38 @@ defmodule Components.FantasyModal do
 
               <Field name="name">
                 <Label class="label">Name</Label>
-                <TextInput class="input is-small" value={@current_params["name"] || @league.name}/>
+                <TextInput class="input has-text-black  is-small" value={@current_params["name"] || @league.name}/>
               </Field>
 
               <Field name="max_teams">
                 <Label class="label">Max Teams</Label>
-                <NumberInput class="input is-small" value={@current_params["max_teams"] || @league.max_teams}/>
+                <NumberInput class="input has-text-black  is-small" value={@current_params["max_teams"] || @league.max_teams}/>
               </Field>
 
               <Field name="roster_size">
                 <Label class="label">Roster Size</Label>
-                <NumberInput class="input is-small" value= {@current_params["roster_size"] || @league.roster_size}/>
+                <NumberInput class="input has-text-black  is-small" value= {@current_params["roster_size"] || @league.roster_size}/>
               </Field>
 
               <Field name="competition_type">
                 <Label class="label">Competition Type</Label>
-                <Select selected={competition_type} class="select" options={competition_type_options()}/>
+                <Select selected={competition_type} class="select has-text-black " options={competition_type_options()}/>
               </Field>
 
               <Field name="competition" :if={competition_type != "battlefy"}>
                 <Label class="label">Competition</Label>
-                <Select selected={@current_params["competition"] || @league.competition} class="select" options={competition_type |> competition_options()} />
+                <Select selected={@current_params["competition"] || @league.competition} class="select has-text-black " options={competition_type |> competition_options()} />
               </Field>
 
               <Field name="competition" :if={competition_type == "battlefy"}>
                 <Label class="label">Battlefy tournament id</Label>
-                <TextInput class="input is-small" value={(@current_params["competition"] || @league.competition) |> battlefy_tournament_id()} />
+                <TextInput class="input has-text-black  is-small" value={(@current_params["competition"] || @league.competition) |> battlefy_tournament_id()} />
               </Field>
 
 
               <Field name="changes_between_rounds" :if={competition_type == "grandmasters"}>
                 <Label class="label">Changes Between Rounds</Label>
-                <NumberInput class="input is-small" value= {@current_params["changes_between_rounds"] || @league.changes_between_rounds}/>
+                <NumberInput class="input has-text-black  is-small" value= {@current_params["changes_between_rounds"] || @league.changes_between_rounds}/>
               </Field>
 
               <Field name="real_time_draft">
@@ -96,7 +96,7 @@ defmodule Components.FantasyModal do
 
               <Field name="point_system">
                 <Label class="label">Point System</Label>
-                <Select selected={@current_params["point_system"] || @league.point_system} class="select" options={competition_type |> point_system_options()} />
+                <Select selected={@current_params["point_system"] || @league.point_system} class="select has-text-black " options={competition_type |> point_system_options()} />
               </Field>
 
               <Field :if={@league.join_code} name="join_code">

@@ -25,19 +25,19 @@ defmodule BackendWeb.LineupSubmitterLive do
               </Field>
               <Field name="tournament_id">
                 <Label class="label" >Match/Round Name</Label>
-                <TextInput class="input is-small"/>
+                <TextInput class="input has-text-black  is-small"/>
               </Field>
               <Field name="gid">
                 <Label class="label" >gid taken from the url with the specific sheet open (EMPTY => LEFTMOST sheet)</Label>
-                <TextInput class="input small" />
+                <TextInput class="input has-text-black  small" />
               </Field>
               <Field name="sheet_id">
                   <Label class="label" >Sheet it from the google sheets url</Label>
-                  <TextInput class="input small"/>
+                  <TextInput class="input has-text-black  small"/>
               </Field>
               <Field name="ignore_columns">
                   <Label class="label" >Ignore Columns (first non ignored column should be the name then the rest should be decks)</Label>
-                  <NumberInput class="input" value={"1"}/>
+                  <NumberInput class="input has-text-black " value={"1"}/>
               </Field>
               <Submit label="Save Lineups" class="button is-success"/>
           </Form>

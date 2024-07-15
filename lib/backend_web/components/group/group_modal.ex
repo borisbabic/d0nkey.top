@@ -39,11 +39,11 @@ defmodule Components.GroupModal do
               <section class="modal-card-body">
                 <Field name="name">
                   <Label class="label">Name</Label>
-                  <TextInput class="input is-small" value={@current_params["name"]}/>
+                  <TextInput class="input has-text-black  is-small" value={@current_params["name"]}/>
                 </Field>
                 <Field name="discord">
                   <Label class="label">Discord link (optional)</Label>
-                  <TextInput class="input is-small" value={@current_params["discord"] || @group.discord}/>
+                  <TextInput class="input has-text-black  is-small" value={@current_params["discord"] || @group.discord}/>
                 </Field>
                 <Field :if={@group.join_code} name="join_code">
                   <Label class="label">Join Code</Label>

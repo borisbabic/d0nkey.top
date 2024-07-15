@@ -27,7 +27,7 @@ defmodule BackendWeb.ProfileSettingsLive do
           <Form for={%{}} as={:user} submit="submit">
             <Field name="country_code">
               <Label class="label" >Country Flag</Label>
-              <Select class="select" options={[{"Select Country", nil} | country_options()]} selected={@user.country_code} />
+              <Select class="select has-text-black " options={[{"Select Country", nil} | country_options()]} selected={@user.country_code} />
             </Field>
             <Field name="cross_out_country">
               <Label class="label" >Cross Out Country</Label>
@@ -40,17 +40,17 @@ defmodule BackendWeb.ProfileSettingsLive do
             <br>
             <Field name="unicode_icon">
               <Label class="label">Player Icon</Label>
-              <Select selected={@user.unicode_icon} class="select" options={[{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}]}/>
+              <Select selected={@user.unicode_icon} class="select has-text-black " options={[{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}]}/>
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
             <Label class="label">Decklist Options</Label>
             <Field name="border">
-              <Select selected={DecklistOptions.border(@user.decklist_options)} class="select" options={"Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
+              <Select selected={DecklistOptions.border(@user.decklist_options)} class="select has-text-black " options={"Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
               <Label>Border Color</Label>
             </Field>
             <Field name="gradient">
-              <Select selected={DecklistOptions.gradient(@user.decklist_options)} class="select" options={ "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
+              <Select selected={DecklistOptions.gradient(@user.decklist_options)} class="select has-text-black " options={ "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
               <Label>Gradient Color</Label>
             </Field>
             <Field name="show_one">
@@ -71,13 +71,13 @@ defmodule BackendWeb.ProfileSettingsLive do
             </Field>
             <br>
             <Field name="replay_preference">
-              <Select selected={@user.replay_preference} class="select" options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
+              <Select selected={@user.replay_preference} class="select has-text-black " options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
               <Label>Which replays do you want to be considered public? (only affects new replays)</Label>
             </Field>
             <br>
             <Field name="battlefy_slug">
               <Label class="label" >Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</Label>
-              <TextInput class="input is-small" value={@user.battlefy_slug}/>
+              <TextInput class="input has-text-black  is-small" value={@user.battlefy_slug}/>
             </Field>
 
             <Submit label="Save" class="button"/>
