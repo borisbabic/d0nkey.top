@@ -12,4 +12,6 @@ defmodule Backend.Doctest do
   doctest Backend.HSDeckViewer
   doctest Backend.Yaytears
   doctest Backend.Streaming
+  doctest Backend.Sheets
+  doctest Backend.Sheets.DeckSheet
 end

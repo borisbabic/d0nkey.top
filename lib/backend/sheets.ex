@@ -55,6 +55,9 @@ defmodule Backend.Sheets do
   def contributeable_sheets(user),
     do: owned_deck_sheets(user) |> add_group_sheets(user, :contributor)
 
+  def submittable_sheets(user),
+    do: owned_deck_sheets(user) |> add_group_sheets(user, :submitter)
+
   defp add_group_sheets(previous, user, min_role) do
     (previous ++ group_sheets(user, min_role))
     |> Enum.uniq_by(& &1.id)
@@ -90,7 +93,7 @@ defmodule Backend.Sheets do
   @spec create_deck_sheet_listing(DeckSheet.t(), Deck.t(), User.t() | nil, Map.t()) ::
           {:ok, DeckSheetListing.t()} | {:error, any()}
   def create_deck_sheet_listing(deck_sheet, deck, creator, attrs \\ %{}) do
-    if can_contribute?(deck_sheet, creator) do
+    if can_submit?(deck_sheet, creator) do
       do_create_deck_sheet_listing(deck_sheet, deck, attrs)
     else
       {:error, :insufficient_permissions}
@@ -151,38 +154,51 @@ defmodule Backend.Sheets do
     |> preload_listing()
   end
 
-  @spec can_admin?(DeckSheet.t(), User.t()) :: boolean()
-  def can_admin?(nil, _user), do: true
-  def can_admin?(%{public_role: :admin}, _user), do: true
-  def can_admin?(%{owner_id: owner_id}, %{id: user_id}) when owner_id == user_id, do: true
+  @doc """
+  Checks if the user has the minimum role for the sheet for
 
-  def can_admin?(%{group_role: :admin, group: g}, user) when not is_nil(g) do
-    UserManager.group_membership(g, user) != nil
+  ## Example
+  iex> Backend.Sheets.has_min_role?(%{owner_id: 1, public_role: :nothing}, %{id: 1}, :contributor)
+  true
+  iex> Backend.Sheets.has_min_role?(%{owner_id: 1, public_role: :nothing}, %{id: 2}, :contributor)
+  false
+  iex> Backend.Sheets.has_min_role?(%{public_role: :contributor}, nil, :contributor)
+  true
+  iex> Backend.Sheets.has_min_role?(%{public_role: :contributor}, nil, :submitter)
+  true
+  iex> Backend.Sheets.has_min_role?(%{public_role: :submitter}, nil, :submitter)
+  true
+  iex> Backend.Sheets.has_min_role?(%{public_role: :submitter}, nil, :contributor)
+  false
+  """
+  @spec has_min_role?(DeckSheet.t(), User.t(), DeckSheet.role()) :: boolean()
+  def has_min_role?(%{owner_id: owner_id}, %{id: user_id}, _) when owner_id == user_id, do: true
+
+  def has_min_role?(%{group_role: gr, group: g} = sheet, user, min_role) when not is_nil(g) do
+    has_min_public_role?(sheet, min_role) or has_min_group_role?(g, gr, user, min_role)
   end
 
-  def can_admin?(_, _), do: false
+  def has_min_role?(sheet, _user, min_role), do: has_min_public_role?(sheet, min_role)
+
+  def has_min_group_role?(group, group_role, user, min_role) do
+    DeckSheet.compare_roles(group_role, min_role) != :lt and
+      UserManager.group_membership(group, user) != nil
+  end
+
+  def has_min_public_role?(%{public_role: pr}, min_role),
+    do: DeckSheet.compare_roles(pr, min_role) != :lt
+
+  @spec can_admin?(DeckSheet.t(), User.t()) :: boolean()
+  def can_admin?(sheet, user), do: has_min_role?(sheet, user, :admin)
 
   @spec can_contribute?(DeckSheet.t(), User.t()) :: boolean()
-  def can_contribute?(%{public_role: pr}, _user) when pr in [:admin, :contributor], do: true
-  def can_contribute?(%{owner_id: owner_id}, %{id: user_id}) when owner_id == user_id, do: true
+  def can_contribute?(sheet, user), do: has_min_role?(sheet, user, :contributor)
 
-  def can_contribute?(%{group_role: gr, group: g}, user)
-      when gr in [:admin, :contributor] and not is_nil(g) do
-    UserManager.group_membership(g, user) != nil
-  end
-
-  def can_contribute?(_, _), do: false
+  @spec can_submit?(DeckSheet.t(), User.t()) :: boolean()
+  def can_submit?(sheet, user), do: has_min_role?(sheet, user, :submitter)
 
   @spec can_view?(DeckSheet.t(), User.t()) :: boolean()
-  def can_view?(%{public_role: pr}, _user) when pr in [:admin, :contributor, :viewer], do: true
-  def can_view?(%{owner_id: owner_id}, %{id: user_id}) when owner_id == user_id, do: true
-
-  def can_view?(%{group_role: gr, group: g}, user)
-      when gr in [:admin, :contributor, :viewer] and not is_nil(g) do
-    UserManager.group_membership(g, user) != nil
-  end
-
-  def can_view?(_, _), do: false
+  def can_view?(sheet, user), do: has_min_role?(sheet, user, :viewer)
 
   @spec preload_sheet({:ok, DeckSheet.t()} | DeckSheet.t() | {:error, any()}) ::
           {:ok, DeckSheet.t()} | {:error, any()}
