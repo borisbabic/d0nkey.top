@@ -115,6 +115,7 @@ defmodule Backend.Sheets do
     |> DeckSheet.changeset(attrs)
     |> Repo.update()
     |> preload_sheet()
+    |> broadcast_sheet_change(:updated_sheet)
   end
 
   @spec do_get_listings(DeckSheet.t(), Map.t() | list()) :: [DeckSheetListing.t()]
@@ -143,6 +144,7 @@ defmodule Backend.Sheets do
     DeckSheetListing.create(sheet, deck, attrs)
     |> Repo.insert()
     |> preload_listing()
+    |> broadcast_listing_change(:inserted_listing)
   end
 
   @spec do_edit_deck_sheet_listing(DeckSheetListing.t(), Map.t()) ::
@@ -152,6 +154,7 @@ defmodule Backend.Sheets do
     |> DeckSheetListing.changeset(attrs)
     |> Repo.update()
     |> preload_listing()
+    |> broadcast_listing_change(:updated_listing)
   end
 
   @doc """
@@ -225,6 +228,7 @@ defmodule Backend.Sheets do
 
   defp do_delete_listing(listing) do
     Repo.delete(listing)
+    |> broadcast_listing_change(:deleted_listing)
   end
 
   def delete_sheet(sheet, user) do
@@ -237,5 +241,54 @@ defmodule Backend.Sheets do
 
   defp do_delete_sheet(sheet) do
     Repo.delete(sheet)
+    |> broadcast_sheet_change(:deleted_sheet)
+  end
+
+  @spec subscribe_to_listings(DeckSheet.t() | integer) :: any()
+  def subscribe_to_listings(sheet_or_id) do
+    sheet_or_id
+    |> sheets_listings_topic()
+    |> BackendWeb.Endpoint.subscribe()
+  end
+
+  @spec subscribe_to_sheet(DeckSheet.t() | integer) :: any()
+  def subscribe_to_sheet(sheet_or_id) do
+    sheet_or_id
+    |> sheet_topic()
+    |> BackendWeb.Endpoint.subscribe()
+  end
+
+  defp broadcast_listing_change({:ok, listing}, event) do
+    listing.sheet.id
+    |> sheets_listings_topic()
+    |> BackendWeb.Endpoint.broadcast(to_string(event), listing)
+
+    {:ok, listing}
+  end
+
+  defp broadcast_listing_change(result, _event), do: result
+
+  defp broadcast_sheet_change({:ok, sheet}, event) do
+    sheet
+    |> sheet_topic()
+    |> BackendWeb.Endpoint.broadcast(to_string(event), sheet)
+
+    {:ok, sheet}
+  end
+
+  defp broadcast_sheet_change(result, _event), do: result
+
+  @spec id(%{id: integer()} | integer()) :: integer()
+  defp id(id) when is_integer(id), do: id
+  defp id(%{id: id}) when is_integer(id), do: id
+
+  def sheet_topic(sheet_or_id) do
+    id = id(sheet_or_id)
+    "deck-sheets:sheet:#{id}"
+  end
+
+  def sheets_listings_topic(sheet_or_id) do
+    id = id(sheet_or_id)
+    "deck-sheets:sheet:#{id}:listings"
   end
 end
