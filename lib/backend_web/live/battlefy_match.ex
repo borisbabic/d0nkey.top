@@ -13,7 +13,7 @@ defmodule BackendWeb.BattlefyMatchLive do
   alias Backend.Battlefy.MatchTeam
   alias Backend.Hearthstone.Deck
   alias Components.CompactLineup
-  use Components.ExpandableDecklist
+  alias Components.ExpandableDecklist
 
   def mount(_params, session, socket) do
     {:ok, socket |> assign_defaults(session) |> put_user_in_context()}

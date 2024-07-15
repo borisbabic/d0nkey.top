@@ -3,7 +3,6 @@ defmodule BackendWeb.MyReplaysLive do
   use BackendWeb, :surface_live_view
   alias Backend.UserManager.User
   alias Components.ReplayExplorer
-  use Components.ExpandableDecklist
 
   data(user, :any)
   data(filters, :map)

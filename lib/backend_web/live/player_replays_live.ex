@@ -2,7 +2,6 @@ defmodule BackendWeb.PlayerReplaysLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.ReplayExplorer
-  use Components.ExpandableDecklist
 
   data(user, :any)
   data(player_btag, :any)
@@ -26,7 +25,7 @@ defmodule BackendWeb.PlayerReplaysLive do
         <FunctionComponents.Ads.below_title />
         <ReplayExplorer
           show_player_btag={true}
-          path_params={@player_btag}}
+          path_params={@player_btag}
           id="my-replays"
           additional_params={additional_params(@player_btag)}
           params={@filters}

@@ -4,7 +4,6 @@ defmodule BackendWeb.StreamingNowLive do
   alias Components.LiveStreamer
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Surface.Components.LivePatch
-  use Components.ExpandableDecklist
 
   @subscriptions ["streaming:hs:streaming_now"]
   data(streaming_now, :map)
