@@ -20,11 +20,23 @@ defmodule BackendWeb.DeckSheetViewLive do
   data(sheet, :integer)
   data(sheet_id, :integer)
   data(user, :any)
+  data(offset, :integer)
+  data(streams, :any)
+  data(end_of_stream?, :boolean, default: false)
   data(deck_filters, :any)
   data(view_mode, :string, default: "sheet")
 
+  @limit 30
+
   def mount(params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> assign_sheet(params) |> put_user_in_context()}
+    do:
+      {:ok,
+       socket
+       |> assign_defaults(session)
+       |> assign_sheet(params)
+       |> put_user_in_context()
+       |> assign(offset: 0)
+       |> subscribe()}
 
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{sheet: %{}}) do
@@ -49,19 +61,33 @@ defmodule BackendWeb.DeckSheetViewLive do
             <PlayableCardSelect id={"deck_include_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_include_cards")} selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
             <PlayableCardSelect id={"deck_exclude_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_exclude_cards")} selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
           </div>
-          <Table :if={@view_mode == "sheet"} id="deck_sheet_listing_table" data={listing <- Sheets.get_listings!(@sheet, @user, @deck_filters)} striped>
-            <Column label="Deck"><ExpandableDecklist deck={listing.deck} name={listing.name} id={"expandable_deck_for_listing_#{listing.id}"}/> </Column>
-            <Column label="Source">{listing.source}</Column>
-            <Column label="Comment">{listing.comment}</Column>
-            <Column label="Actions">
-              <div class="level level-left">
-                <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
-                <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
-              </div>
-            </Column>
-          </Table>
-          <div :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
-            <div :for={listing <- Sheets.get_listings!(@sheet, @user, @deck_filters)} class="column is-narrow">
+          <table :if={@view_mode == "sheet"} id="deck_sheet_listing_table" class="table is-fullwidth is-striped">
+            <thead>
+              <tr>
+                <th>Deck</th>
+                <th>Source</th>
+                <th>Comment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody phx-update="stream">
+              <tr id={dom_id} :for={{dom_id, listing} <- @streams.listings}>
+                <td>
+                  <ExpandableDecklist deck={listing.deck} name={listing.name} id={"expandable_deck_for_listing_#{listing.id}"}/>
+                </td>
+                <td>{listing.source}</td>
+                <td>{listing.comment}</td>
+                <td>
+                  <div class="level level-left">
+                    <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
+                    <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div phx-update="stream" :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
+            <div id={dom_id} :for={{dom_id, listing} <- @streams.listings} class="column is-narrow">
               <DeckCard after_deck_class={"columns is-multiline is-mobile"}>
                 <Decklist deck={listing.deck} name={listing.name} id={"deck_for_#{listing.id}"} />
                 <:after_deck>
@@ -78,6 +104,21 @@ defmodule BackendWeb.DeckSheetViewLive do
           <span>Can't view sheet, insufficient permissions</span>
         {/if}
     """
+  end
+
+  defp stream_listings(socket, reset \\ false) do
+    %{user: user, sheet: sheet, deck_filters: deck_filters} = socket.assigns
+    fetched_listings = Sheets.get_listings!(sheet, user, deck_filters)
+
+    handle_offset_stream_scroll(
+      socket,
+      :listings,
+      fetched_listings,
+      0,
+      0,
+      nil,
+      reset
+    )
   end
 
   def render(assigns) do
@@ -112,7 +153,10 @@ defmodule BackendWeb.DeckSheetViewLive do
     view_mode = Map.get(params, "view_mode", "sheet")
 
     socket =
-      assign(socket, :deck_filters, filters) |> assign(:view_mode, view_mode) |> update_context()
+      assign(socket, :deck_filters, filters)
+      |> stream_listings(true)
+      |> assign(:view_mode, view_mode)
+      |> update_context()
 
     {:noreply, socket}
   end
@@ -131,8 +175,36 @@ defmodule BackendWeb.DeckSheetViewLive do
      push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params(assigns), params))}
   end
 
+  def handle_info(
+        %{payload: %Backend.Sheets.DeckSheetListing{} = listing, event: event},
+        socket
+      ) do
+    new_socket =
+      case event do
+        "updated_listing" ->
+          stream_insert(socket, :listings, listing)
+
+        "inserted_listing" ->
+          stream_insert(socket, :listings, listing)
+
+        "deleted_listing" ->
+          stream_delete(socket, :listings, listing)
+
+        _unknown_or_unsupported_event ->
+          socket
+      end
+
+    {:noreply, new_socket}
+  end
+
   defp path_params(%{sheet: %{id: id}}), do: id
   defp path_params(%{sheet_id: id}), do: id
 
   defp url_params(%{deck_filters: df, view_mode: vm}), do: Map.put(df, "view_mode", vm)
+
+  defp subscribe(socket) do
+    %{sheet: sheet} = socket.assigns
+    Sheets.subscribe_to_listings(sheet)
+    socket
+  end
 end
