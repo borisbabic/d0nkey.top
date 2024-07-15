@@ -43,7 +43,7 @@ defmodule Components.DeckListingModal do
           </Field>
           <Field name={:sheet_id}>
             <Label class="label">Sheet</Label>
-            <Select class="select has-text-black " selected={sheet_id(@existing, @sheet)} options={sheet_options(@user)} opts={disabled: !!@existing}/>
+            <Select class="select has-text-black " selected={sheet_id(@existing, @sheet)} options={sheet_options(@user, @sheet)} opts={disabled: !!@existing}/>
           </Field>
           <Field name={:name}>
             <Label class="label">Name</Label>
@@ -86,16 +86,23 @@ defmodule Components.DeckListingModal do
   defp sheet_id(_, %{id: sheet_id}), do: sheet_id
   defp sheet_id(_, _), do: nil
 
-  defp sheet_options(user) do
-    case Sheets.contributeable_sheets(user) do
-      [] ->
-        {:ok, sheet} = Sheets.create_deck_sheet(user, "First Sheet")
-        [sheet]
+  defp sheet_options(user, sheet) do
+    sheets =
+      case {sheet, Sheets.contributeable_sheets(user)} do
+        {nil, []} ->
+          {:ok, new_sheet} = Sheets.create_deck_sheet(user, "First Sheet")
+          [new_sheet]
 
-      sheets ->
-        sheets
-    end
-    |> Enum.map(&{&1.name, &1.id})
+        {nil, user_sheets} ->
+          user_sheets
+
+        {s, user_sheets} ->
+          [s | user_sheets]
+      end
+
+    Enum.map(sheets, fn %{name: name, id: id} ->
+      {name, id}
+    end)
   end
 
   def form_id(existing, deck), do: "listing_form_#{id(existing, deck)}"
