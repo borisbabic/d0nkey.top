@@ -224,13 +224,13 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp holy_wrath_paladin?(card_info) do
-    min_count?(card_info, 2, ["Holy Wrath", "Shirvallah, the Tiger"])
+    min_count?(card_info, 2, ["Holy Wrath", "Shirvallah, the Tiger"]) and
+      min_count?(card_info, 1, ["Lorekeeper Polkelt", "Order in the Court"])
   end
 
   defp wild_exodia_paladin?(card_info) do
-    "Uther of the Ebon Blade" in card_info.card_names and
-      min_count?(card_info, 2, [
-        "Nozdormu the Timeless",
+      min_count?(card_info, 3, [
+        "Uther of the Ebon Blade",
         "Sing-Along Buddy",
         "Garrison Commander"
       ])
