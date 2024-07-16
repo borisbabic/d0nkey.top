@@ -631,4 +631,6 @@ defmodule Util do
       _ -> default
     end
   end
+
+  def always_nil(_), do: nil
 end

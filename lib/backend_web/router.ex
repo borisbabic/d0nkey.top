@@ -193,6 +193,7 @@ defmodule BackendWeb.Router do
     live("/cards", CardsLive)
     live("/card/:card_id", CardLive)
 
+    live("/deckbuilder", DeckBuilderLive)
     live("/deckviewer", DeckviewerLive)
 
     get("/stats/explanation", StatsController, :explanation)

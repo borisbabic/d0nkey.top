@@ -919,7 +919,11 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({"order_by", "mana_in_class"}, query) do
     query
-    |> order_by([classes: cl, card: c], desc: cl.slug, asc: c.mana_cost)
+    |> order_by([classes: cl, card: c],
+      asc: like(cl.slug, "neutral"),
+      asc: cl.slug,
+      asc: c.mana_cost
+    )
   end
 
   defp compose_cards_query({"order_by", "mana"}, query) do
@@ -954,6 +958,11 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"collectible", _}, query),
     do: compose_cards_query({"collectible", true}, query)
 
+  defp compose_cards_query({"search", search_term}, query) do
+    search = "%#{search_term}%"
+    query |> where([card: c], ilike(c.name, ^search) or ilike(c.text, ^search))
+  end
+
   defp compose_cards_query({"name", name}, query),
     do: query |> where([card: c], ilike(c.name, ^name))
 
@@ -983,6 +992,9 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({"attack", attack}, query),
     do: query |> where([card: c], c.attack == ^attack)
+
+  defp compose_cards_query({"card_set_id", id}, query),
+    do: query |> where([card: c], c.card_set_id == ^id)
 
   defp compose_cards_query({"card_set_id_not_in", ids}, query) do
     query
@@ -1024,6 +1036,26 @@ defmodule Backend.Hearthstone do
   end
 
   defp compose_cards_query({"format", _}, query), do: query
+
+  defp compose_cards_query({:card_pool, true}, query), do: query
+
+  defp compose_cards_query({:card_pool, pool_filters}, query) do
+    dynamic =
+      Enum.reduce(pool_filters, dynamic(false), fn
+        %{card_set_id: id, class: class, not_tourist: true}, dynamic ->
+          dynamic(
+            [classes: cl, card: c],
+            ^dynamic or
+              (ilike(cl.slug, ^class) and c.card_set_id == ^id and
+                 not ilike(c.text, "% Tourist</b>%"))
+          )
+
+        %{class: class}, dynamic ->
+          dynamic([classes: cl], ^dynamic or ilike(cl.slug, ^class))
+      end)
+
+    query |> where(^dynamic)
+  end
 
   defp ilike_name_or_slug(searches, query, on_thing) when is_list(searches) do
     conditions =

@@ -14,7 +14,7 @@ defmodule Components.DecklistCard do
   prop(deck_class, :string, default: "NEUTRAL")
   prop(sideboarded_in, :boolean, default: false)
   prop(show_mana_cost, :boolean, default: true)
-  prop(decklist_options, :map, default: %{})
+  prop(disable_link, :boolean, default: false)
 
   defp rarity(nil), do: rarity("COMMON")
   defp rarity("FREE"), do: rarity("COMMON")
@@ -75,7 +75,7 @@ defmodule Components.DecklistCard do
     # deck_class_color = "--color-#{class(card.card_class)}"
 
     ~F"""
-      <a href={~p"/card/#{@card}"}>
+      <a href={~p"/card/#{@card}"} class={"has-no-pointer-events": @disable_link}>
         <div onmouseover={"set_display('#{id}', 'flex')"} onmouseout={"set_display('#{id}', 'none')"}>
           <div style={"--color-border: #{border}; --color-gradient: #{gradient};"} class={"decklist-card-container decklist-card #{html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
