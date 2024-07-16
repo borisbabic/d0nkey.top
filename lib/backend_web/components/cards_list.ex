@@ -13,6 +13,7 @@ defmodule Components.CardsList do
   prop(highlight_rotation, :boolean, required: false)
   prop(deck_class, :string, required: false, default: "NEUTRAL")
   prop(sideboard, :list, default: [])
+  prop(on_card_click, :event, default: nil)
   prop(user, :map, from_context: :user)
 
   @type display_info :: %{
@@ -24,8 +25,8 @@ defmodule Components.CardsList do
 
   def render(assigns) do
     ~F"""
-      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboarded_in: s_in} <- cards_to_display(@deck, @comparison, @highlight_rotation)} style="margin: 0; padding: 0;">
-          <div class={class}>
+      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboard: sideboard} <- cards_to_display(@deck, @comparison, @highlight_rotation)} style="margin: 0; padding: 0;">
+          <div class={class, "is-clickable": !!@on_card_click} phx-value-sideboard={sideboard} phx-value-card_id={card.id} :on-click={@on_card_click} >
             <DecklistCard
               show_mana_cost={true}
               deck_class={@deck_class}
@@ -33,7 +34,8 @@ defmodule Components.CardsList do
               count={count}
               deck={@deck}
               decklist_options={User.decklist_options(@user)}
-              sideboarded_in={s_in}
+              disable_link={!!@on_card_click}
+              sideboarded_in={!!sideboard}
             />
           </div>
       </div>
@@ -68,7 +70,7 @@ defmodule Components.CardsList do
           {_, nil} -> {"not-in-list", nil}
         end
 
-      actual = %{card: c, count: count, class: class, sideboarded_in: false}
+      actual = %{card: c, count: count, class: class, sideboard: false}
 
       sideboards_after =
         sideboard
@@ -81,7 +83,7 @@ defmodule Components.CardsList do
   end
 
   @spec sideboard_display(Sideboard.t(), boolean) :: [display_info]
-  defp sideboard_display(%{card: c, count: count}, highlight_rotation) do
+  defp sideboard_display(%{card: c, count: count, sideboard: sideboard}, highlight_rotation) do
     case Hearthstone.get_card(c) do
       nil ->
         []
@@ -92,7 +94,7 @@ defmodule Components.CardsList do
             card: card,
             count: count,
             class: rotation_class(highlight_rotation, card),
-            sideboarded_in: true
+            sideboard: sideboard
           }
         ]
     end

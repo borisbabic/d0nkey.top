@@ -91,6 +91,19 @@ defmodule Backend.Hearthstone.Deck do
 
   def card_mana_cost(_, card), do: Card.cost(card)
 
+  @spec sideboards_count(t() | Sideboard.t(), integer()) :: integer()
+  def sideboards_count(sideboards_or_deck, sideboard_id) do
+    case filter_sideboards(sideboards_or_deck, sideboard_id) do
+      [] ->
+        0
+
+      sideboards ->
+        sideboards
+        |> Enum.map(& &1.count)
+        |> Enum.count()
+    end
+  end
+
   @spec zilliax_modules_sideboards(t() | [Sideboard.t()]) :: [integer()]
   def zilliax_modules_sideboards(sideboards_or_deck),
     do: filter_sideboards(sideboards_or_deck, Card.zilliax_3000())
@@ -820,6 +833,37 @@ defmodule Backend.Hearthstone.Deck do
 
   defp count_sideboard_cost(%{sideboard: id}) do
     !Card.zilliax_3000?(id)
+  end
+
+  def addable?(deck, card_id) when is_integer(card_id) do
+    addable?(deck, Hearthstone.get_card(card_id))
+  end
+
+  def addable?(%{cards: cards, sideboards: sideboards}, card) do
+    card_id = CardBag.deckcode_copy_id(card.id)
+    in_deck = Enum.filter(cards, &(card_id == CardBag.deckcode_copy_id(&1))) |> Enum.count()
+
+    in_sideboards =
+      Enum.filter(sideboards, &(card_id == CardBag.deckcode_copy_id(&1.card)))
+      |> Enum.map(& &1.count)
+      |> Enum.sum()
+
+    total = in_deck + in_sideboards
+    max_allowed = Card.max_copies_in_deck(card)
+    total < max_allowed
+  end
+
+  def tourists(deck) do
+    deck.cards
+    |> Enum.map(&Backend.Hearthstone.get_card/1)
+    |> Enum.filter(&Card.tourist?/1)
+  end
+
+  def tourist_class_set_tuples(deck) do
+    for %{card_set_id: card_set_id} = t <- tourists(deck),
+        {:ok, class} <- [Card.tourist_class(t)] do
+      {class, card_set_id}
+    end
   end
 end
 

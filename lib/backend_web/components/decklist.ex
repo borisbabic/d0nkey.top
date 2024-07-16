@@ -16,6 +16,7 @@ defmodule Components.Decklist do
   prop(show_hero, :any, default: true)
   prop(user, :map, from_context: :user)
   prop(link_to_archetype, :boolean, default: false)
+  prop(on_card_click, :event, default: nil)
   slot(right_button)
 
   @spec deck_name(Deck.t(), String.t() | nil, boolean) :: String.t()
@@ -65,7 +66,7 @@ defmodule Components.Decklist do
           </div>
           <div :if={@show_cards}>
             <DustBar :if={show_above(@user)} deck={@deck} class={class_class}/>
-            <CardsList comparison={@comparison} deck={@deck} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
+            <CardsList on_card_click={@on_card_click} comparison={@comparison} deck={@deck} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
             <DustBar :if={show_below(@user)} deck={@deck} class={class_class} />
 
           </div>

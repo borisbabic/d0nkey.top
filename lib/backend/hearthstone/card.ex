@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone.Card do
   import Ecto.Changeset
 
   alias Backend.Hearthstone.{
+    Deck,
     Set,
     Class,
     Keyword,
@@ -115,6 +116,11 @@ defmodule Backend.Hearthstone.Card do
 
   @etc_band_manager 90_749
   def etc_band_manager, do: @etc_band_manager
+  @spec etc_band_manager?(card() | integer() | nil) :: boolean
+  def etc_band_manager?(nil), do: false
+  def etc_band_manager?(id) when is_integer(id), do: id == @etc_band_manager
+  def etc_band_manager?(card), do: dbf_id(card) == @etc_band_manager
+
   @zilliax_3000 102_983
   def zilliax_3000, do: @zilliax_3000
   @spec zilliax_3000?(card() | integer() | nil) :: boolean
@@ -152,6 +158,15 @@ defmodule Backend.Hearthstone.Card do
     @doc "Check if the card is of the right rarity"
     @spec unquote(method)(card()) :: boolean
     def unquote(method)(card), do: unquote(rarity) == card
+  end
+
+  @spec max_copies_in_deck(card()) :: integer()
+  def max_copies_in_deck(card) do
+    if legendary?(card) do
+      1
+    else
+      2
+    end
   end
 
   @spec type(card()) :: String.t()
@@ -254,6 +269,22 @@ defmodule Backend.Hearthstone.Card do
     do: Enum.any?(kw, &Keyword.quest?/1) and t =~ "Quest:"
 
   def quest?(_), do: false
+
+  @spec tourist?(card()) :: boolean()
+  def tourist?(%{text: t}), do: t =~ "Tourist</b>"
+  def tourist?(_), do: false
+  @tourist_regex ~r/<b>([a-zA-Z ]+) Tourist<\/b>/
+  @spec tourist_class(card()) :: {:ok, String.t()} | {:error, atom()}
+  def tourist_class(%{text: t}) do
+    with [_, class] <- Regex.run(@tourist_regex, t),
+         normalized <- Deck.normalize_class_name(class),
+         true <- normalized in Deck.classes() do
+      {:ok, normalized}
+    else
+      [] -> {:error, :not_a_tourist}
+      _ -> {:error, :could_not_extract_class}
+    end
+  end
 
   @spec has_keyword?(%__MODULE__{}, String.t()) :: boolean()
   def has_keyword?(%{keywords: kw}, keyword_slug),

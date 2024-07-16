@@ -495,11 +495,15 @@
 .sticky-top {
   position: -webkit-sticky;
   position: sticky;
+  z-index: 69;
   top: 0;
 }
 
 
 
+.darker-grey-background {
+  background-color: var(--color-darker-grey);
+}
 .half-scale {
   transform: scale(0.1);
 }
