@@ -361,7 +361,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Vendetta",
       "Wildpaw Gnoll",
       "Stick Up",
-      "Flint Firearm"
+      "Flint Firearm",
+      "Thistle Tea Set"
     ])
   end
 
