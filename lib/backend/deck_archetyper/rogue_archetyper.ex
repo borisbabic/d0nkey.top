@@ -307,6 +307,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
 
+      "Mecha'thun" in card_info.card_names ->
+        "Mecha'thun #{class_name}"
+
       wild_pirate_rogue?(card_info) ->
         :"Pirate Rogue"
 
@@ -324,9 +327,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       excavate_rogue?(card_info) ->
         :"Drilling Rogue"
-
-      "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
 
       true ->
         fallbacks(card_info, class_name)
