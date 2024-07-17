@@ -216,7 +216,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       ping_mage?(card_info) ->
         :"Ping Mage"
 
-      "Sif" in card_info.card_names && class_name == "Mage" ->
+      "Sif" in card_info.card_names ->
         :"Sif Mage"
 
       "Mecha'thun" in card_info.card_names ->
