@@ -222,6 +222,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      wild_orb_mage?(card_info) ->
+        :"Orb Mage"
+
       true ->
         fallbacks(card_info, class_name)
     end
@@ -260,6 +263,14 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Sing-Along Buddy",
       "Magister Dawngrasp",
       "Mordresh Fire Eye"
+    ])
+  end
+
+  defp wild_orb_mage?(card_info) do
+    min_count?(card_info, 3, [
+      "The Galactic Projection Orb",
+      "Potion of Illusion"
+      "Grey Sage Parrot",
     ])
   end
 end
