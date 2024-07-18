@@ -212,6 +212,15 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       highlander?(card_info) ->
         :"Highlander DH"
 
+      "Il'gynoth" in card_info.card_names ->
+        :"Il'gynoth DH"
+
+      fel_dh?(card_info) && relic_dh?(card_info) ->
+        :"Fel Relic DH"
+
+      fel_dh?(card_info) ->
+        :"Fel DH"
+
       questline?(card_info) ->
         :"Questline DH"
 
@@ -230,17 +239,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       outcast_dh?(card_info) ->
         :"Outcast DH"
 
-      fel_dh?(card_info) ->
-        :"Fel DH"
+      relic_dh?(card_info) ->
+        :"Relic Demon Hunter"
 
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
 
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
-
-      "Jace Darkweaver" in card_info.card_names && min_spell_school_count?(card_info, 5, "Fel") ->
-        :"Jace Demon Hunter"
 
       true ->
         fallbacks(card_info, class_name)
