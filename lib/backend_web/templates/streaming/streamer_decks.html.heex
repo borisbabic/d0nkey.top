@@ -9,7 +9,9 @@
 <%= @prev_button %>
 <%= @next_button %>
 <%= render_dropdowns @dropdowns %>
-<%= form_for @conn, @base_url,
+<%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "prefix" => "include_cards", "title" => "Include Cards", "selected" => @include}) %>
+<%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "prefix" => "exclude_cards", "title" => "Exclude Cards", "selected" => @exclude}) %>
+<%!-- <%= form_for @conn, @base_url,
 [method: :get], fn
 f-> %>
     <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
@@ -29,7 +31,7 @@ f-> %>
         attr: "exclude_cards",
         placeholder: "Card Name",
         search_id: "sd-exclude-card-select"} %>
-<% end %>
+<% end %> --%>
     <%= live_render(@conn, BackendWeb.StreamerPickerLive, session: %{"base_url" => @base_url}) %>
 </div>
 <table class="table is-striped is-fullwidth is-narrow">
