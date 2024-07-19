@@ -1,6 +1,7 @@
 defmodule BackendWeb.DeckBuilderLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
+  alias Backend.DeckInteractionTracker, as: Tracker
   alias Components.CardsExplorer
   alias Components.ExpandableDecklist
   alias Hearthstone.DeckcodeExtractor
