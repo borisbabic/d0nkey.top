@@ -57,9 +57,6 @@ defmodule Hearthstone.DeckcodeExtractor do
           _ -> []
         end
 
-        # HSTopDecks.deckbuilder_link?(new_code) ->
-        [HSTopDecks.extract_deckbuilder_code(new_code)]
-
       our_link?(new_code) ->
         extract_codes(new_code)
 
