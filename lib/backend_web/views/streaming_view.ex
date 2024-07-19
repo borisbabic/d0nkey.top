@@ -148,6 +148,7 @@ defmodule BackendWeb.StreamingView do
       conn: conn,
       include_options: include_options,
       exclude_options: exclude_options,
+      base_url: Routes.streaming_path(conn, :streamer_decks, conn.query_params),
       next_button: next_button
     })
   end
