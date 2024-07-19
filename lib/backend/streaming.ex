@@ -309,11 +309,36 @@ defmodule Backend.Streaming do
   end
 
   def base_streamers_query() do
-    from(s in Streamer)
+    from(s in Streamer, as: :streamer)
   end
 
   defp build_streamers_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_streamers_query/2)
+
+  defp compose_streamers_query({"search", search_term}, query) do
+    search = "%#{search_term}%"
+
+    query
+    |> where([streamer: s], ilike(s.twitch_login, ^search) or ilike(s.twitch_display, ^search))
+  end
+
+  defp compose_streamers_query({"limit", limit}, query) do
+    limit(query, ^limit)
+  end
+
+  defp compose_streamers_query({"order_by", "search_similarity_" <> search_target}, query) do
+    query
+    |> order_by([streamer: s],
+      desc:
+        fragment(
+          "GREATEST(similarity(?, ?), similarity(?, ?))",
+          s.twitch_login,
+          ^search_target,
+          s.twitch_display,
+          ^search_target
+        )
+    )
+  end
 
   defp compose_streamers_query({"order_by", {direction, field}}, query) do
     query

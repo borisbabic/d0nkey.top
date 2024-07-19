@@ -1263,4 +1263,18 @@ defmodule ScratchPad do
       IO.puts("NO GENERATING GAMES IN PROD")
     end
   end
+
+  def generate_streamer_decks(num \\ 200, games \\ nil, streamers \\ nil) do
+    if Mix.env() == :dev do
+      games = with nil <- games, do: Hearthstone.DeckTracker.games([{"limit", num}])
+      streamers = with nil <- streamers, do: Backend.Streaming.streamers([{"limit", 10}])
+
+      for game <- games do
+        streamer = Enum.random(streamers)
+        Backend.Streaming.log_streamer_game(streamer.twitch_id, game)
+      end
+    else
+      IO.puts("NO GENERATING STREAMER DECKS IN PROD")
+    end
+  end
 end

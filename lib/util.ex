@@ -633,4 +633,18 @@ defmodule Util do
   end
 
   def always_nil(_), do: nil
+
+  @spec add_query_param(String.t() | URI.t(), String.t(), any()) :: String.t() | URI.t()
+  def add_query_param(uri, param, value) when is_binary(uri) do
+    uri
+    |> URI.parse()
+    |> add_query_param(param, value)
+    |> to_string()
+  end
+
+  def add_query_param(%URI{} = uri, param, value) do
+    old_query_map = (uri.query || "") |> URI.decode_query()
+    new_query = Map.put(old_query_map, param, value) |> URI.encode_query()
+    Map.put(uri, :query, new_query)
+  end
 end

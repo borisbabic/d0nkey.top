@@ -9,7 +9,7 @@
 <%= @prev_button %>
 <%= @next_button %>
 <%= render_dropdowns @dropdowns %>
-<%= form_for @conn, Routes.streaming_path(@conn, :streamer_decks, @conn.query_params),
+<%= form_for @conn, @base_url,
 [method: :get], fn
 f-> %>
     <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
@@ -30,18 +30,7 @@ f-> %>
         placeholder: "Card Name",
         search_id: "sd-exclude-card-select"} %>
 <% end %>
-    <div :if={@streamer_list} class="field is-pulled-right is-shown-js" style="display: none">
-        <input
-        list="streamers"
-        name="streamers"
-        id="streamer_select"
-        class="input has-text-black "
-        placeholder="Select Streamer"
-        onchange="location_href_by_datalist('streamer_select', 'streamers')">
-        <datalist id="streamers">
-            <%= @streamer_list %>
-        </datalist>
-    </div>
+    <%= live_render(@conn, BackendWeb.StreamerPickerLive, session: %{"base_url" => @base_url}) %>
 </div>
 <table class="table is-striped is-fullwidth is-narrow">
     <thead>
