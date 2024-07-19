@@ -451,6 +451,12 @@ defmodule Backend.Streaming do
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
   end
 
+  defp compose_streamer_deck_query({"perils", "yes"}, query) do
+    card_ids = perils_ids()
+
+    query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+  end
+
   defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"exclude_cards", cards}, query),
@@ -510,6 +516,7 @@ defmodule Backend.Streaming do
 
   def badlands_ids(filter_out \\ [102_902]), do: filter_card_set(1892, filter_out)
   def whizbang_ids(filter_out \\ [105_522]), do: filter_card_set(1897, filter_out)
+  def perils_ids(filter_out \\ [106_682]), do: filter_card_set(1905, filter_out)
 
   defp filter_card_set(card_set_id, filter_out_ids) do
     for c <- CardBag.all_cards(),
