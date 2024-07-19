@@ -41,8 +41,11 @@ defmodule Components.Filter.PlayableCardSelect do
         socket = %{assigns: %{update_fun: update_fun, selected: selected}}
       ) do
     {id, _} = Integer.parse(card)
-    update_fun.(selected -- [id])
-    {:noreply, socket}
+
+    case update_fun.(selected -- [id]) do
+      {:redirect, opts} -> {:noreply, redirect(socket, opts)}
+      _ -> {:noreply, socket}
+    end
   end
 
   def handle_event(
@@ -51,8 +54,11 @@ defmodule Components.Filter.PlayableCardSelect do
         socket = %{assigns: %{update_fun: update_fun, selected: selected}}
       ) do
     {id, _} = Integer.parse(card)
-    update_fun.([id | selected])
-    {:noreply, socket}
+
+    case update_fun.([id | selected]) do
+      {:redirect, opts} -> {:noreply, redirect(socket, opts)}
+      _ -> {:noreply, socket}
+    end
   end
 
   def cards(search, selected, canonicalize?) do

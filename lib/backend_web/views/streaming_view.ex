@@ -135,9 +135,6 @@ defmodule BackendWeb.StreamingView do
       # create_show_archetypes_dropdown(conn)
     ]
 
-    include_options = card_options(include)
-    exclude_options = card_options(exclude)
-
     render("streamer_decks.html", %{
       rows: rows,
       title: title,
@@ -146,24 +143,24 @@ defmodule BackendWeb.StreamingView do
       prev_button: prev_button,
       show_archetype: true,
       conn: conn,
-      include_options: include_options,
-      exclude_options: exclude_options,
+      include: include,
+      exclude: exclude,
       base_url: Routes.streaming_path(conn, :streamer_decks, conn.query_params),
       next_button: next_button
     })
   end
 
-  def card_options(selected) do
-    Backend.Hearthstone.CardBag.standard_first()
-    |> Enum.map(fn c ->
-      %{
-        selected: c.id in selected,
-        value: c.id,
-        name: c.name,
-        display: c.name
-      }
-    end)
-  end
+  # def card_options(selected) do
+  #   Backend.Hearthstone.CardBag.standard_first()
+  #   |> Enum.map(fn c ->
+  #     %{
+  #       selected: c.id in selected,
+  #       value: c.id,
+  #       name: c.name,
+  #       display: c.name
+  #     }
+  #   end)
+  # end
 
   def win_loss(sd = %{wins: w, losses: l}) do
     winrate = StreamerDeck.winrate(sd)
