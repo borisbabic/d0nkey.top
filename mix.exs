@@ -39,7 +39,7 @@ defmodule Backend.MixProject do
       {:cowlib, "~> 2.8.0", override: true},
       {:phoenix, "~> 1.7.0"},
       {:phoenix_html, "~> 3.0"},
-      {:phoenix_live_view, "~> 0.18"},
+      {:phoenix_live_view, "~> 0.19.0"},
       {:phoenix_live_dashboard, "~> 0.7"},
       {:phoenix_view, "~> 2.0"},
       {:telemetry_poller, "~> 0.5"},
@@ -109,7 +109,8 @@ defmodule Backend.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "ecto.setup": ["ecto.create", "ecto.migrate"], # "run priv/repo/seeds.exs"],
+      # "run priv/repo/seeds.exs"],
+      "ecto.setup": ["ecto.create", "ecto.migrate"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
