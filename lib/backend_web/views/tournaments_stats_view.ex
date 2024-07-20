@@ -131,7 +131,7 @@ defmodule BackendWeb.TournamentStatsView do
     click_params = %{"sort_by" => name, "direction" => new_direction}
     url = create_link.(click_params)
 
-    Components.Helper.simple_link(%{link: url, cell: cell, class: "is-text"})
+    Components.Helper.simple_link(%{link: url, body: cell, class: "is-text"})
   end
 
   defp add_cell("Player", {c = %{name: player_name}, row}) do
