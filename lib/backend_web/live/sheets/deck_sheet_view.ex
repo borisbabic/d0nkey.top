@@ -3,14 +3,13 @@ defmodule BackendWeb.DeckSheetViewLive do
   use BackendWeb, :surface_live_view
   alias Components.ExpandableDecklist
   alias Backend.Sheets
+  alias Backend.Sheets.DeckSheet
   alias Backend.UserManager.User
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Components.DeckSheetsModal
   alias Components.DeckListingModal
   alias Components.DeckCard
   alias Components.Decklist
-  alias Components.SurfaceBulma.Table
-  alias Components.SurfaceBulma.Table.Column
   alias Components.LivePatchDropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.ClassDropdown
@@ -24,9 +23,8 @@ defmodule BackendWeb.DeckSheetViewLive do
   data(streams, :any)
   data(end_of_stream?, :boolean, default: false)
   data(deck_filters, :any)
+  data(sort, :string)
   data(view_mode, :string, default: "sheet")
-
-  @limit 30
 
   def mount(params, session, socket),
     do:
@@ -34,6 +32,7 @@ defmodule BackendWeb.DeckSheetViewLive do
        socket
        |> assign_defaults(session)
        |> assign_sheet(params)
+       |> assign_sort(params)
        |> put_user_in_context()
        |> assign(offset: 0)
        |> subscribe()}
@@ -53,6 +52,7 @@ defmodule BackendWeb.DeckSheetViewLive do
             {/if}
 
           <LivePatchDropdown
+            id="view_mode_dropdown"
             options={[{"sheet", "Sheet"}, {"decks", "Decks"}]}
             title={"View Mode"}
             param={"view_mode"}
@@ -60,6 +60,12 @@ defmodule BackendWeb.DeckSheetViewLive do
           <ClassDropdown id="deck_class_dropdown" param="deck_class" />
             <PlayableCardSelect id={"deck_include_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_include_cards")} selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
             <PlayableCardSelect id={"deck_exclude_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_exclude_cards")} selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
+          <LivePatchDropdown
+            id="sort_dropdown"
+            options={DeckSheet.listing_sort_options(@sheet) |> Util.flip_tuples()}
+            title="Sort"
+            param="sort"
+            liveview={__MODULE__} />
           </div>
           <table :if={@view_mode == "sheet"} id="deck_sheet_listing_table" class="table is-fullwidth is-striped">
             <thead>
@@ -73,7 +79,7 @@ defmodule BackendWeb.DeckSheetViewLive do
             <tbody phx-update="stream">
               <tr id={dom_id} :for={{dom_id, listing} <- @streams.listings}>
                 <td>
-                  <ExpandableDecklist deck={listing.deck} name={listing.name} id={"expandable_deck_for_listing_#{listing.id}"}/>
+                  <ExpandableDecklist id={"expandable_deck_for_" <> dom_id} deck={listing.deck} name={listing.name} />
                 </td>
                 <td>{listing.source}</td>
                 <td>{listing.comment}</td>
@@ -106,9 +112,18 @@ defmodule BackendWeb.DeckSheetViewLive do
     """
   end
 
-  defp stream_listings(socket, reset \\ false) do
+  def render(assigns) do
+    ~F"""
+      <div>Deck Sheet not found</div>
+    """
+  end
+
+  defp stream_listings(socket, reset) do
+    sort = sort(socket)
     %{user: user, sheet: sheet, deck_filters: deck_filters} = socket.assigns
-    fetched_listings = Sheets.get_listings!(sheet, user, deck_filters)
+
+    fetched_listings =
+      Sheets.get_listings!(sheet, user, deck_filters) |> DeckSheet.sort_listings(sort)
 
     handle_offset_stream_scroll(
       socket,
@@ -121,11 +136,22 @@ defmodule BackendWeb.DeckSheetViewLive do
     )
   end
 
-  def render(assigns) do
-    ~F"""
-      <div>Deck Sheet not found</div>
-    """
+  def assign_sort(socket, params) do
+    %{sheet: sheet} = socket.assigns
+    sort_from_params = Map.get(params, "sort")
+    sort_options = DeckSheet.listing_sort_options(sheet) |> Enum.map(&elem(&1, 1))
+
+    sort_slug =
+      if sort_from_params in sort_options do
+        sort_from_params
+      end
+
+    assign(socket, sort: sort_slug)
   end
+
+  defp sort(%{assigns: assigns}), do: sort(assigns)
+  defp sort(%{sort: sort}) when is_binary(sort), do: sort
+  defp sort(%{sheet: %{default_sort: sort}}) when is_binary(sort), do: sort
 
   def assign_sheet(socket, %{"sheet_id" => id}) do
     sheet = Sheets.get_sheet(id)
@@ -154,6 +180,7 @@ defmodule BackendWeb.DeckSheetViewLive do
 
     socket =
       assign(socket, :deck_filters, filters)
+      |> assign_sort(params)
       |> stream_listings(true)
       |> assign(:view_mode, view_mode)
       |> update_context()
@@ -176,6 +203,30 @@ defmodule BackendWeb.DeckSheetViewLive do
   end
 
   def handle_info(
+        %{payload: %DeckSheet{} = new_sheet, event: event},
+        socket
+      ) do
+    new_socket =
+      case event do
+        "updated_sheet" ->
+          %{sort: sort, sheet: old_sheet} = socket.assigns
+          new_socket = assign(socket, sheet: new_sheet, sheet_id: new_sheet.id)
+          needs_sort? = sort == nil and old_sheet.default_sort != new_sheet.default_sort
+
+          if needs_sort? do
+            stream_listings(new_socket, true)
+          else
+            new_socket
+          end
+
+        _unknown_or_unsupported_event ->
+          socket
+      end
+
+    {:noreply, new_socket}
+  end
+
+  def handle_info(
         %{payload: %Backend.Sheets.DeckSheetListing{} = listing, event: event},
         socket
       ) do
@@ -185,7 +236,11 @@ defmodule BackendWeb.DeckSheetViewLive do
           stream_insert(socket, :listings, listing)
 
         "inserted_listing" ->
-          stream_insert(socket, :listings, listing)
+          sort = sort(socket)
+          %{streams: %{listings: stream_listings}} = socket.assigns
+          sorted = DeckSheet.sort_listings([listing | stream_listings], sort)
+          index = Enum.find_index(sorted, &(&1.id == listing.id)) || 0
+          stream_insert(socket, :listings, listing, at: index)
 
         "deleted_listing" ->
           stream_delete(socket, :listings, listing)
@@ -200,11 +255,13 @@ defmodule BackendWeb.DeckSheetViewLive do
   defp path_params(%{sheet: %{id: id}}), do: id
   defp path_params(%{sheet_id: id}), do: id
 
-  defp url_params(%{deck_filters: df, view_mode: vm}), do: Map.put(df, "view_mode", vm)
+  defp url_params(%{deck_filters: df, view_mode: vm} = assigns),
+    do: Map.put(df, "view_mode", vm) |> Map.put("sort", sort(assigns))
 
   defp subscribe(socket) do
     %{sheet: sheet} = socket.assigns
     Sheets.subscribe_to_listings(sheet)
+    Sheets.subscribe_to_sheet(sheet)
     socket
   end
 end

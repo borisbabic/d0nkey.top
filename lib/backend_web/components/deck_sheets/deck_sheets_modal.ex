@@ -41,6 +41,10 @@ defmodule Components.DeckSheetsModal do
             <Label class="label">Group Role</Label>
             <Select class="select has-text-black " selected={group_role(@existing) || :contributor} options={roles()}/>
           </Field>
+          <Field name={:default_sort}>
+            <Label class="label">Default Sort</Label>
+            <Select class="select has-text-black" selected={default_sort(@existing) || "asc_inserted_at"} options={sort_options(@existing)}/>
+          </Field>
         </Form>
         <:footer>
           <Submit label="Save" class="button is-success" opts={form: "sheet_form_#{id(@existing)}"}/>
@@ -49,6 +53,13 @@ defmodule Components.DeckSheetsModal do
     </div>
     """
   end
+
+  defp sort_options(sheet) do
+    DeckSheet.listing_sort_options(sheet)
+  end
+
+  defp default_sort(%{default_sort: default_sort}), do: default_sort
+  defp default_sort(_), do: nil
 
   defp group_options(user) do
     group_options =

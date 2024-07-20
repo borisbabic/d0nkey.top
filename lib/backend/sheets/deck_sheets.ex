@@ -8,6 +8,7 @@ defmodule Backend.Sheets.DeckSheet do
   # order is important, as long as it's possible that each one to the right is a subset of it's preceeding role
   @roles [:admin, :contributor, :submitter, :viewer, :nothing]
   @type role :: :admin | :contributor | :submitter | :viewer | :nothing
+  @default_sort "asc_inserted_at"
   schema "deck_sheets" do
     field :name, :string
     belongs_to :owner, User
@@ -15,7 +16,7 @@ defmodule Backend.Sheets.DeckSheet do
     field :group_role, Ecto.Enum, values: @roles, default: :contributor
     field :public_role, Ecto.Enum, values: @roles, default: :nothing
     field :extra_columns, {:array, :string}, default: []
-
+    field :default_sort, :string, default: @default_sort
     timestamps()
   end
 
@@ -24,7 +25,7 @@ defmodule Backend.Sheets.DeckSheet do
 
   def changeset(deck_sheet, attrs) do
     deck_sheet
-    |> cast(attrs, [:name, :group_role, :public_role, :extra_columns])
+    |> cast(attrs, [:name, :group_role, :public_role, :extra_columns, :default_sort])
     |> set_owner(attrs)
     |> set_group(attrs)
     |> validate_required([:owner, :name])
@@ -96,4 +97,45 @@ defmodule Backend.Sheets.DeckSheet do
       first_index < second_index -> :gt
     end
   end
+
+  @spec sort_listings([Backend.Sheets.DeckSheetListing.t()], String.t() | t()) :: [
+          Backend.Sheets.DeckSheetListing.t()
+        ]
+  def sort_listings(listings, %{default_sort: sort}), do: sort_listings(listings, sort)
+
+  def sort_listings(listings, sort_slug) do
+    {direction, field_slug} = BackendWeb.SortHelper.split_sort_slug(sort_slug)
+    listing_sorter = create_listing_sorter(field_slug)
+    Enum.sort_by(listings, listing_sorter, direction)
+  end
+
+  defp create_listing_sorter("deck_class") do
+    fn %{deck: deck} -> Backend.Hearthstone.Deck.class(deck) end
+  end
+
+  defp create_listing_sorter(field_slug) do
+    fn l -> Util.get(l, field_slug) end
+  end
+
+  @spec listing_sort_options(t()) :: {name :: String.t(), slug :: String.t()}
+  def listing_sort_options(sheet) do
+    fields = ["inserted_at", "deck_class", "comment", "source" | extra_column_fields(sheet)]
+
+    for field <- fields, direction <- ["asc", "desc"] do
+      slug = "#{direction}_#{field}"
+      {listing_sort_name(slug), slug}
+    end
+  end
+
+  def listing_sort_name(sort_option) do
+    BackendWeb.SortHelper.sort_name(sort_option, &sort_field_name/1)
+  end
+
+  def sort_field_name("comment"), do: "Comment"
+  def sort_field_name("source"), do: "Source"
+  def sort_field_name("deck_class"), do: "Deck Class"
+  def sort_field_name(other), do: other
+
+  def extra_column_fields(%{extra_columns: %{} = extra_columns}), do: Map.keys(extra_columns)
+  def extra_column_fields(_), do: []
 end

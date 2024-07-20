@@ -21,6 +21,7 @@ defmodule Components.ExpandableDecklist do
       end
 
     ~F"""
+      <div>
       <Decklist deck={@deck} show_cards={@show_cards} name={name} on_card_click={@on_card_click}>
         <:right_button>
           <span :on-click={@toggle_cards} class="is-clickable" >
@@ -29,6 +30,7 @@ defmodule Components.ExpandableDecklist do
           </span>
         </:right_button>
       </Decklist>
+      </div>
     """
   end
 
