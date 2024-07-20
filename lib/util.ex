@@ -647,4 +647,7 @@ defmodule Util do
     new_query = Map.put(old_query_map, param, value) |> URI.encode_query()
     Map.put(uri, :query, new_query)
   end
+
+  def flip_tuple({a, b}), do: {b, a}
+  def flip_tuples([{_a, _b} | _] = tuples), do: Enum.map(tuples, &flip_tuple/1)
 end
