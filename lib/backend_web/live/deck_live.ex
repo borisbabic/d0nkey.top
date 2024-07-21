@@ -66,6 +66,7 @@ defmodule BackendWeb.DeckLive do
   def render(assigns = %{deck: _}) do
     ~F"""
       <div>
+        <FunctionComponents.Ads.below_title leaderboards={false} />
         <br>
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
           <div class="column is-narrow-mobile">
