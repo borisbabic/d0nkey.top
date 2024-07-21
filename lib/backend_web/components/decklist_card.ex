@@ -15,6 +15,7 @@ defmodule Components.DecklistCard do
   prop(sideboarded_in, :boolean, default: false)
   prop(show_mana_cost, :boolean, default: true)
   prop(disable_link, :boolean, default: false)
+  prop(decklist_options, :map, default: %{})
 
   defp rarity(nil), do: rarity("COMMON")
   defp rarity("FREE"), do: rarity("COMMON")

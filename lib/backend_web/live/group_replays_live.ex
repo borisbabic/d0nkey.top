@@ -2,7 +2,6 @@ defmodule BackendWeb.GroupReplaysLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.ReplayExplorer
-  alias Components.ExpandableDecklist
 
   data(user, :any)
   data(group_id, :any)

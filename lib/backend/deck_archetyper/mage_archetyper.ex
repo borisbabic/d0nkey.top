@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.MageArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -228,10 +229,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
-  end
-
-  defp haleh_mage?(card_info) do
-    min_count?(card_info, 2, ["Hot Streak", "Haleh, Matron Protectorate", "Drakefire Amulet"])
   end
 
   defp spell_mage?(card_info) do
