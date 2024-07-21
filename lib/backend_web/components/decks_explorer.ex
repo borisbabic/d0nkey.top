@@ -199,6 +199,8 @@ defmodule Components.DecksExplorer do
     {:noreply, stream_deck_stats(socket, new_offset)}
   end
 
+  def handle_event("deck_copied", _, socket), do: {:noreply, socket}
+
   defp warning?(%{deck_stats: %{inserts: []}}), do: true
   defp warning?(_), do: false
 
@@ -268,8 +270,6 @@ defmodule Components.DecksExplorer do
       when not is_nil(path_params) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params, params))}
   end
-
-  def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 
   def limit_options(), do: [10, 15, 20, 25, 30]
 

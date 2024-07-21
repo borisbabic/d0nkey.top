@@ -77,7 +77,7 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp deck_name(deck) do
     max =
-      if 79767 in deck.cards do
+      if Card.renathal() in deck.cards do
         40
       else
         30
@@ -195,6 +195,11 @@ defmodule BackendWeb.DeckBuilderLive do
     end
   end
 
+  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
+    Tracker.inc_copied(code)
+    {:noreply, socket}
+  end
+
   defp remove_from_sideboard(deck, card, sideboard) do
     index = Enum.find_index(deck.sideboards, &(&1.card == card && &1.sideboard == sideboard))
     current = Enum.at(deck.sideboards, index)
@@ -273,10 +278,5 @@ defmodule BackendWeb.DeckBuilderLive do
   def missing_zilliax_parts?(deck) do
     Enum.any?(deck.cards, &Card.zilliax_3000?/1) and
       Deck.sideboards_count(deck, Card.zilliax_3000()) < 3
-  end
-
-  def handle_event("deck_copied", %{"deckcode" => code}, socket) do
-    Tracker.inc_copied(code)
-    {:noreply, socket}
   end
 end

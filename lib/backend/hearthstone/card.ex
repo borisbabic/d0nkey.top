@@ -128,6 +128,13 @@ defmodule Backend.Hearthstone.Card do
   def zilliax_3000?(id) when is_integer(id), do: id == @zilliax_3000
   def zilliax_3000?(card), do: dbf_id(card) == @zilliax_3000
 
+  @renathal 79_767
+  def renathal, do: @renathal
+  @spec zilliax_3000?(card() | integer() | nil) :: boolean
+  def renathal?(nil), do: false
+  def renathal?(id) when is_integer(id), do: id == @renathal
+  def renathal?(card), do: dbf_id(card) == @renathal
+
   def use_english_fields(map) do
     [:flavor_text, :image, :image_gold, :name, :text]
     |> Enum.reduce(map, &use_english_field/2)
