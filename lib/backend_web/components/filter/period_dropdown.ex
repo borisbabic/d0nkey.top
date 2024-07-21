@@ -14,6 +14,7 @@ defmodule Components.Filter.PeriodDropdown do
 
   def render(assigns) do
     ~F"""
+    <span>
       <LivePatchDropdown
         options={options(@filter_context, @aggregated_only)}
         title={@title}
@@ -23,6 +24,7 @@ defmodule Components.Filter.PeriodDropdown do
         warning={@warning}
         selected_params={@selected_params}
         live_view={@live_view} />
+    </span>
     """
   end
 

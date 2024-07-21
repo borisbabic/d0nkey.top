@@ -14,6 +14,7 @@ defmodule Components.Filter.RankDropdown do
 
   def render(assigns) do
     ~F"""
+    <span>
       <LivePatchDropdown
         options={options(@filter_context, @aggregated_only)}
         title={@title}
@@ -23,6 +24,7 @@ defmodule Components.Filter.RankDropdown do
         path_params={@path_params}
         selected_params={@selected_params}
         live_view={@live_view} />
+    </span>
     """
   end
 

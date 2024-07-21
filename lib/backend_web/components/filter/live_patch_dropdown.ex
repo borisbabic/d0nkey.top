@@ -16,6 +16,7 @@ defmodule Components.LivePatchDropdown do
         }) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{actual_title: _}) do
     ~F"""
+    <span>
       <Dropdown title={@actual_title} class={@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning}>
         <div :for={opt <- @options}>
           <LivePatch
@@ -25,6 +26,7 @@ defmodule Components.LivePatchDropdown do
           </LivePatch>
         </div>
       </Dropdown>
+    </span>
     """
   end
 

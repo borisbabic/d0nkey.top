@@ -16,14 +16,16 @@ defmodule Components.Filter.ClassDropdown do
 
   def render(assigns) do
     ~F"""
-      <LivePatchDropdown
-        options={options(@any_name, @name_prefix, @include_neutral, @options)}
-        title={@title}
-        param={@param}
-        url_params={@url_params}
-        path_params={@path_params}
-        selected_params={@selected_params}
-        live_view={@live_view} />
+      <span>
+        <LivePatchDropdown
+          options={options(@any_name, @name_prefix, @include_neutral, @options)}
+          title={@title}
+          param={@param}
+          url_params={@url_params}
+          path_params={@path_params}
+          selected_params={@selected_params}
+          live_view={@live_view} />
+      </span>
     """
   end
 

@@ -14,6 +14,7 @@ defmodule Components.Filter.StreamerPicker do
 
   def render(assigns) do
     ~F"""
+    <span>
       <Dropdown title={@title}>
         <Form for={%{}} as={:streamer} change="search" submit="search">
           <TextInput class="input has-text-black" opts={placeholder: "Search"}/>
@@ -22,6 +23,7 @@ defmodule Components.Filter.StreamerPicker do
           {Streamer.twitch_display(streamer)}<span class="has-text-weight-light"> {Streamer.twitch_login(streamer)}</span>
         </a>
       </Dropdown>
+    </span>
     """
   end
 
