@@ -1224,7 +1224,7 @@ defmodule BackendWeb.LeaderboardView do
     }
 
     ~H"""
-      <a class="is-text" href={@url}>{@cell}</a>
+      <a class="is-text" href={@url}><%= @cell %></a>
     """
   end
 
