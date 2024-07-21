@@ -16,6 +16,7 @@ defmodule Components.Filter.AttackDropdown do
 
   def render(assigns) do
     ~F"""
+      <span>
       <LivePatchDropdown
         options={options(@min_specified, @max_specified, @specified_prefix, @any_name)}
         title={@title}
@@ -25,6 +26,7 @@ defmodule Components.Filter.AttackDropdown do
         selected_params={@selected_params}
         selected_as_title_prefix={@title_prefix}
         live_view={@live_view} />
+      </span>
     """
   end
 

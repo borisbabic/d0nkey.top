@@ -14,6 +14,7 @@ defmodule Components.Filter.ArchetypeSelect do
 
   def render(assigns) do
     ~F"""
+      <span>
       <Dropdown title={"#{@title}"}>
         <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
           <div class="columns is-mobile is-multiline">
@@ -29,7 +30,7 @@ defmodule Components.Filter.ArchetypeSelect do
           {archetype}
         </a>
       </Dropdown>
-
+      </span>
     """
   end
 

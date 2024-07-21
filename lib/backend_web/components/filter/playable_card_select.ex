@@ -13,6 +13,7 @@ defmodule Components.Filter.PlayableCardSelect do
 
   def render(assigns) do
     ~F"""
+    <span>
       <Dropdown title={"#{@title}"}>
         <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
           <div class="columns is-mobile is-multiline">
@@ -28,7 +29,7 @@ defmodule Components.Filter.PlayableCardSelect do
           {card.name}
         </a>
       </Dropdown>
-
+    </span>
     """
   end
 

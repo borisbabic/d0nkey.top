@@ -13,6 +13,7 @@ defmodule Components.Filter.CardTypeDropdown do
 
   def render(assigns) do
     ~F"""
+    <span>
       <LivePatchDropdown
         options={options(@include_any?)}
         title={@title}
@@ -21,6 +22,7 @@ defmodule Components.Filter.CardTypeDropdown do
         path_params={@path_params}
         selected_params={@selected_params}
         live_view={@live_view} />
+    </span>
     """
   end
 
