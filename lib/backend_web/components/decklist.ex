@@ -26,9 +26,9 @@ defmodule Components.Decklist do
   def deck_name(deck, _name, true), do: Deck.name(deck)
   def deck_name(deck, _name, _archetype_as_name), do: Deck.class_name(deck)
 
-  defp deck_link(deck, false), do: ~p"/deck/#{link_part(deck)}"
+  def deck_link(deck, false), do: ~p"/deck/#{link_part(deck)}"
 
-  defp deck_link(deck, true) do
+  def deck_link(deck, true) do
     case Deck.archetype(deck) do
       nil -> deck_link(deck, false)
       archetype -> ~p"/archetype/#{archetype}?#{add_format(deck)}"

@@ -66,8 +66,12 @@ defmodule BackendWeb.DeckLive do
   def render(assigns = %{deck: _}) do
     ~F"""
       <div>
-        <FunctionComponents.Ads.below_title leaderboards={false} />
-        <br>
+        <div class="title is-2">{Deck.name(@deck)} {Deck.format_name(@deck.format)}</div>
+        <div class="subtitle is-6">
+          <span><a :if={ nil != @deck.id} href={card_stats_url(@deck)}>Card Stats (Mulligan)</a> | </span>
+          <span><a :if={ nil != @deck.id} href={Decklist.deck_link(@deck, true)}>Archetype Stats</a></span>
+        </div>
+        <FunctionComponents.Ads.below_title />
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
           <div class="column is-narrow-mobile">
             <DeckCard>
@@ -75,7 +79,7 @@ defmodule BackendWeb.DeckLive do
               <:after_deck>
                 <DeckStreamingInfo deck_id={@deck.id}/>
                 <a :if={@user} class="tag column is-link" href={BackendWeb.DeckTrackerLive.url(@deck)}>Track Games</a>
-                <a :if={nil != @deck.id} class="tag column is-link" href={~p"/card-stats?deck_id=#{@deck.id}&format=#{@deck.format}"}>Card Stats</a>
+                <a :if={nil != @deck.id} class="tag column is-link" href={card_stats_url(@deck)}>Card Stats</a>
                 <DeckAdmin id={"deck_admin_#{@deck.id}"}:if={DeckAdmin.can_admin?(@user)} user={@user} deck={@deck}/>
               </:after_deck>
             </DeckCard>
@@ -112,6 +116,10 @@ defmodule BackendWeb.DeckLive do
     <h2>Whooops</h2>
     Invalid deck, please go back, queue wild, or try again
     """
+  end
+
+  defp card_stats_url(deck) do
+    ~p"/card-stats?deck_id=#{deck.id}&format=#{deck.format}"
   end
 
   defp replay_params(deck) do
