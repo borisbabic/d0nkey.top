@@ -185,11 +185,6 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
   end
 
   #### HELPERS
-  defp create_listing_and_sheet(user, extra_sheet_attrs \\ %{}, extra_listing_attrs \\ %{}) do
-    sheet_ret = %{sheet: sheet} = create_sheet(user, extra_sheet_attrs)
-    create_listing(user, sheet, extra_listing_attrs)
-  end
-
   defp create_listing(user, sheet \\ nil, extra_attrs \\ %{}) do
     sheet = sheet || Map.fetch!(create_sheet(user), :sheet)
     {deck, base_attrs} = extract_deck(extra_attrs)

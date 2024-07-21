@@ -27,7 +27,7 @@ defmodule Backend.TournamentStreamsTest do
   describe "#paginate_tournament_streams/1" do
     test "returns paginated list of tournament_streams" do
       for _ <- 1..20 do
-        tournament_stream_fixture()
+        tournament_stream_fixture(tournament_id: Ecto.UUID.generate())
       end
 
       {:ok, %{tournament_streams: tournament_streams} = page} =
@@ -100,15 +100,43 @@ defmodule Backend.TournamentStreamsTest do
   end
 
   describe "#delete_tournament_stream/1" do
-    test "deletes the tournament_stream" do
-      tournament_stream = tournament_stream_fixture()
+    test "same user deletes the tournament_stream" do
+      user = create_temp_user()
+      tournament_stream = tournament_stream_fixture(user_id: user.id)
 
       assert {:ok, %TournamentStream{}} =
-               TournamentStreams.delete_tournament_stream(tournament_stream)
+               TournamentStreams.delete_tournament_stream(tournament_stream, user)
 
       assert_raise Ecto.NoResultsError, fn ->
         TournamentStreams.get_tournament_stream!(tournament_stream.id)
       end
+    end
+
+    test "admin deletes the tournament_stream" do
+      user = create_temp_user()
+      tournament_stream = tournament_stream_fixture(user_id: user.id)
+      admin = create_temp_user(admin_roles: [:tournament_streams])
+
+      assert {:ok, %TournamentStream{}} =
+               TournamentStreams.delete_tournament_stream(tournament_stream, admin)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        TournamentStreams.get_tournament_stream!(tournament_stream.id)
+      end
+    end
+
+    test "other user can't delete the tournament_stream" do
+      user = create_temp_user()
+      tournament_stream = tournament_stream_fixture(user_id: user.id)
+      other = create_temp_user()
+
+      assert {:error, :insufficient_permissions} =
+               TournamentStreams.delete_tournament_stream(tournament_stream, other)
+
+      tournament_stream_id = tournament_stream.id
+
+      assert %{id: ^tournament_stream_id} =
+               TournamentStreams.get_tournament_stream!(tournament_stream.id)
     end
   end
 

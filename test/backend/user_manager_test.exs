@@ -2,12 +2,11 @@ defmodule Backend.UserManagerTest do
   use Backend.DataCase
 
   alias Backend.UserManager
+  alias Backend.UserManager.User
   alias Backend.UserManager.Group
   alias Backend.UserManager.GroupMembership
 
   describe "users" do
-    alias Backend.UserManager.User
-
     @valid_attrs %{
       "battletag" => "some battletag",
       "bnet_id" => 42,
@@ -40,7 +39,7 @@ defmodule Backend.UserManagerTest do
 
     test "get_user!/1 returns the user with given id" do
       user = user_fixture()
-      assert UserManager.get_user!(user.id) == user
+      assert normalize_user(UserManager.get_user!(user.id)) == normalize_user(user)
     end
 
     test "create_user/1 with valid data creates a user" do
@@ -63,7 +62,7 @@ defmodule Backend.UserManagerTest do
     test "update_user/2 with invalid data returns error changeset" do
       user = user_fixture()
       assert {:error, %Ecto.Changeset{}} = UserManager.update_user(user, @invalid_attrs)
-      assert user == UserManager.get_user!(user.id)
+      assert normalize_user(user) == normalize_user(UserManager.get_user!(user.id))
     end
 
     test "delete_user/1 deletes the user" do
@@ -108,12 +107,12 @@ defmodule Backend.UserManagerTest do
     end
   end
 
-  defp delete_owners(groups), do: Enum.map(groups, & Map.delete(&1, :owner))
+  defp delete_owners(groups), do: Enum.map(groups, &Map.delete(&1, :owner))
 
   describe "#get_group!/1" do
     test "returns the group with given id" do
       group = group_fixture()
-      assert UserManager.get_group!(group.id) == group
+      assert normalize_group(UserManager.get_group!(group.id)) == normalize_group(group)
     end
   end
 
@@ -124,7 +123,8 @@ defmodule Backend.UserManagerTest do
     end
 
     test "with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = UserManager.create_group(@invalid_group_attrs, owner_id())
+      assert {:error, %Ecto.Changeset{}} =
+               UserManager.create_group(@invalid_group_attrs, owner_id())
     end
   end
 
@@ -139,7 +139,7 @@ defmodule Backend.UserManagerTest do
     test "with invalid data returns error changeset" do
       group = group_fixture()
       assert {:error, %Ecto.Changeset{}} = UserManager.update_group(group, @invalid_group_attrs)
-      assert group == UserManager.get_group!(group.id)
+      assert normalize_group(group) == normalize_group(UserManager.get_group!(group.id))
     end
   end
 
@@ -165,4 +165,12 @@ defmodule Backend.UserManagerTest do
     user.id
   end
 
+  defp normalize_group(group) do
+    Map.update(group, :owner, nil, &normalize_user/1)
+  end
+
+  defp normalize_user(%User{patreon_tier: %Ecto.Association.NotLoaded{}} = user),
+    do: Map.put(user, :patreon_tier, nil)
+
+  defp normalize_user(user), do: user
 end
