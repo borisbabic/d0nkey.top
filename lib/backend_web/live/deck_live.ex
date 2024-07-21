@@ -84,9 +84,11 @@ defmodule BackendWeb.DeckLive do
             </DeckCard>
           </div>
           <div :if={nil != @deck.id} class="column">
+            <div class="subtitle is-4 has-text-centered-mobile">Stats</div>
             <OpponentStatsTable id="deck_stats" target={@deck.id} live_view={__MODULE__} path_params={[to_string(@deck.id)]} params={@deck_stats_params} />
           </div>
           <div :if={false and nil != @deck.id} class="column is-narrow-mobile">
+            <div class="subtitle is-4 has-text-centered-mobile">Replays</div>
             <ReplayExplorer
               id="deck_replays"
               additional_params={replay_params(@deck)}

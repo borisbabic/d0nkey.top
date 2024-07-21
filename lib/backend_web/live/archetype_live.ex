@@ -46,28 +46,30 @@ defmodule BackendWeb.ArchetypeLive do
     </div>
     <div class="columns is-multiline is-mobile is-narrow is-centered">
       <div class="column">
+        <div class="subtitle is-4 has-text-centered-mobile">Stats</div>
         <OpponentStatsTable id="archetype_stats" include_format={true} target={@archetype} live_view={__MODULE__} path_params={to_string(@archetype)} params={@stats_params} />
       </div>
       <div class="column">
-            <ReplayExplorer
-              id="archetype_replays"
-              additional_params={replay_params(@archetype)}
-              path_params={@archetype}
-              params={@replay_params}
-              show_deck={true}
-              show_mode={false}
-              hide_deck_mobile={true}
-              show_opponent={true}
-              show_played={false}
-              show_opponent_name={false}
-              show_result_as={[:rank]}
-              format_filter={false}
-              player_class_filter={false}
-              includes_filter={false}
-              excludes_filter={false}
-              class_stats_modal={false}
-              search_filter={false}
-              live_view={__MODULE__} />
+        <div class="subtitle is-4 has-text-centered-mobile">Replays</div>
+        <ReplayExplorer
+          id="archetype_replays"
+          additional_params={replay_params(@archetype)}
+          path_params={@archetype}
+          params={@replay_params}
+          show_deck={true}
+          show_mode={false}
+          hide_deck_mobile={true}
+          show_opponent={true}
+          show_played={false}
+          show_opponent_name={false}
+          show_result_as={[:rank]}
+          format_filter={false}
+          player_class_filter={false}
+          includes_filter={false}
+          excludes_filter={false}
+          class_stats_modal={false}
+          search_filter={false}
+          live_view={__MODULE__} />
       </div>
     </div>
     """
