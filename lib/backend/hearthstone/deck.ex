@@ -202,7 +202,9 @@ defmodule Backend.Hearthstone.Deck do
         |> Enum.flat_map(&[&1, count])
       end)
 
-    [Enum.count(multi_part) | multi_part]
+    num_multi = div(Enum.count(multi_part), 2)
+
+    [num_multi | multi_part]
   end
 
   @spec canonicalize_sideboards([Sideboard.t()]) :: [Sideboard.t()]
@@ -394,7 +396,8 @@ defmodule Backend.Hearthstone.Deck do
          {_success, uncanonical_sideboards, _rest} <- parse_sideboard(rest),
          sideboards <- canonicalize_sideboards(uncanonical_sideboards),
          uncanonical_cards <- singles ++ doubles ++ multi,
-         cards <- canonicalize_cards(uncanonical_cards) do
+         unsorted_cards <- canonicalize_cards(uncanonical_cards),
+         cards <- Enum.sort(unsorted_cards) do
       {class, hero} = deckcode_class_hero(hero, cards)
 
       {:ok,
