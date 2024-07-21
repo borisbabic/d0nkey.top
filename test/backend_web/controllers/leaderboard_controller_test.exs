@@ -84,6 +84,12 @@ defmodule BackendWeb.LeaderboardControllerTest do
       conn = get(conn, url)
       refute html_response(conn, 200) =~ "D0nkeyHot"
     end
+
+    test "GET /leaderboard/player-stats doesn't include {@cell}", %{conn: conn} do
+      url = Routes.leaderboard_path(conn, :player_stats)
+      conn = get(conn, url)
+      refute html_response(conn, 200) =~ "{@cell}"
+    end
   end
 
   ##### LEADERBOARD #####
