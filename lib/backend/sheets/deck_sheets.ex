@@ -138,4 +138,6 @@ defmodule Backend.Sheets.DeckSheet do
 
   def extra_column_fields(%{extra_columns: %{} = extra_columns}), do: Map.keys(extra_columns)
   def extra_column_fields(_), do: []
+
+  def default_sort(), do: @default_sort
 end

@@ -75,7 +75,12 @@ defmodule Backend.DataCase do
     if tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Backend.Repo, :manual)
     else
-      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
+      if tags[:isolation] do
+        :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo, isolation: tags[:isolation])
+      else
+        :ok = Ecto.Adapters.SQL.Sandbox.checkout(Backend.Repo)
+      end
+
       pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Backend.Repo, shared: !tags[:async])
 
       on_exit(fn ->
@@ -87,5 +92,4 @@ defmodule Backend.DataCase do
 
     :ok
   end
-
 end

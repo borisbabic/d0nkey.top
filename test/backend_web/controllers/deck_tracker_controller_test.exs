@@ -168,10 +168,10 @@ defmodule BackendWeb.DeckTrackerControllerTest do
     request =
       request_raw
       |> put_in(["player", "cardsInHandAfterMulligan"], [
-        %{"cardDbfId" => 79407, "kept" => false}
+        %{"cardDbfId" => 32, "kept" => false}
       ])
       |> put_in(["player", "cardsDrawnFromInitialDeck"], [
-        %{"cardId" => 79407, "turn" => 1}
+        %{"cardDbfId" => 32, "turn" => 1}
       ])
 
     conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)

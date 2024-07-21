@@ -191,6 +191,8 @@ defmodule Backend.Sheets do
   def has_min_public_role?(%{public_role: pr}, min_role),
     do: DeckSheet.compare_roles(pr, min_role) != :lt
 
+  def has_min_public_role?(_, _), do: false
+
   @spec can_admin?(DeckSheet.t(), User.t()) :: boolean()
   def can_admin?(sheet, user), do: has_min_role?(sheet, user, :admin)
 
@@ -245,6 +247,8 @@ defmodule Backend.Sheets do
   end
 
   @spec subscribe_to_listings(DeckSheet.t() | integer) :: any()
+  def subscribe_to_listings(nil), do: {:error, :cant_subscribe_to_nothing}
+
   def subscribe_to_listings(sheet_or_id) do
     sheet_or_id
     |> sheets_listings_topic()
@@ -252,6 +256,8 @@ defmodule Backend.Sheets do
   end
 
   @spec subscribe_to_sheet(DeckSheet.t() | integer) :: any()
+  def subscribe_to_sheet(nil), do: {:error, :cant_subscribe_to_nothing}
+
   def subscribe_to_sheet(sheet_or_id) do
     sheet_or_id
     |> sheet_topic()

@@ -76,7 +76,7 @@ defmodule BackendWeb.DeckSheetViewLive do
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody phx-update="stream">
+            <tbody id="table_body" phx-update="stream">
               <tr id={dom_id} :for={{dom_id, listing} <- @streams.listings}>
                 <td>
                   <ExpandableDecklist id={"expandable_deck_for_" <> dom_id} deck={listing.deck} name={listing.name} />
@@ -92,7 +92,7 @@ defmodule BackendWeb.DeckSheetViewLive do
               </tr>
             </tbody>
           </table>
-          <div phx-update="stream" :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
+          <div id="decklist_viewport" phx-update="stream" :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
             <div id={dom_id} :for={{dom_id, listing} <- @streams.listings} class="column is-narrow">
               <DeckCard after_deck_class={"columns is-multiline is-mobile"}>
                 <Decklist deck={listing.deck} name={listing.name} id={"deck_for_#{listing.id}"} />
@@ -122,18 +122,26 @@ defmodule BackendWeb.DeckSheetViewLive do
     sort = sort(socket)
     %{user: user, sheet: sheet, deck_filters: deck_filters} = socket.assigns
 
-    fetched_listings =
-      Sheets.get_listings!(sheet, user, deck_filters) |> DeckSheet.sort_listings(sort)
+    case Sheets.get_listings(sheet, user, deck_filters) do
+      {:ok, listings} ->
+        sorted_listings = DeckSheet.sort_listings(listings, sort)
 
-    handle_offset_stream_scroll(
-      socket,
-      :listings,
-      fetched_listings,
-      0,
-      0,
-      nil,
-      reset
-    )
+        handle_offset_stream_scroll(
+          socket,
+          :listings,
+          sorted_listings,
+          0,
+          0,
+          nil,
+          reset
+        )
+
+      {:error, error} ->
+        assign(socket, :error, error)
+
+      _ ->
+        socket
+    end
   end
 
   def assign_sort(socket, params) do
@@ -152,6 +160,7 @@ defmodule BackendWeb.DeckSheetViewLive do
   defp sort(%{assigns: assigns}), do: sort(assigns)
   defp sort(%{sort: sort}) when is_binary(sort), do: sort
   defp sort(%{sheet: %{default_sort: sort}}) when is_binary(sort), do: sort
+  defp sort(%{sheet: nil}), do: DeckSheet.default_sort()
 
   def assign_sheet(socket, %{"sheet_id" => id}) do
     sheet = Sheets.get_sheet(id)

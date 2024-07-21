@@ -75,7 +75,7 @@ defmodule BackendWeb.Live.DecksTest do
     result: "WON"
   }
 
-  setup_all do
+  setup do
     deck_fixtures(@highlander_priest)
     deck_fixtures(@highlander_warlock)
   end

@@ -1,16 +1,17 @@
 defmodule BackendWeb.AdsTest do
   use BackendWeb.ConnCase
 
+  @ads_indicator "s.nitropay.com"
   describe "has ads" do
     test "includes ads when not logged in", %{conn: conn} do
       conn = get(conn, Routes.empty_path(conn, :with_nav))
-      assert html_response(conn, 200) =~ "adsbygoogle"
+      assert html_response(conn, 200) =~ @ads_indicator
     end
 
     @tag :authenticated
     test "includes ads when logged in", %{conn: conn, user: _} do
       conn = get(conn, Routes.empty_path(conn, :with_nav))
-      assert html_response(conn, 200) =~ "adsbygoogle"
+      assert html_response(conn, 200) =~ @ads_indicator
     end
   end
 
@@ -19,7 +20,7 @@ defmodule BackendWeb.AdsTest do
     @describetag :users
     test "hides ads for admin", %{conn: conn, user: _} do
       conn = get(conn, Routes.empty_path(conn, :with_nav))
-      refute html_response(conn, 200) =~ "adsbygoogle"
+      refute html_response(conn, 200) =~ @ads_indicator
     end
   end
 
@@ -28,7 +29,7 @@ defmodule BackendWeb.AdsTest do
 
     test "hides ads for hidden user", %{conn: conn, user: _} do
       conn = get(conn, Routes.empty_path(conn, :with_nav))
-      refute html_response(conn, 200) =~ "adsbygoogle"
+      refute html_response(conn, 200) =~ @ads_indicator
     end
   end
 

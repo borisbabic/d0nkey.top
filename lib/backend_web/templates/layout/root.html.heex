@@ -33,7 +33,7 @@
             </script>
           <script data-cfasync="false" async src="https://s.nitropay.com/ads-909.js"></script>
         <% end %>
-        <%= if @conn.host =~ "hsguru.com" do %>
+        <%= if @conn.host =~ "hsguru.com" or Mix.env() == :test do %>
           <script data-cfasync="false">window.nitroAds=window.nitroAds||{createAd:function(){return new Promise(e=>{window.nitroAds.queue.push(["createAd",arguments,e])})},addUserToken:function(){window.nitroAds.queue.push(["addUserToken",arguments])},queue:[]};</script>
           <script data-cfasync="false" async src="https://s.nitropay.com/ads-1847.js"></script>
         <% end %>
