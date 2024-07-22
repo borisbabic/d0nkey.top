@@ -1,6 +1,8 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.DeckArchetyper.PriestArchetyper
   alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
@@ -62,8 +64,17 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       aggro_dh?(card_info) && relic_dh?(card_info) ->
         :"Aggro Relic DH"
 
+      pirate?(card_info) ->
+        :"Pirate Demon Hunter"
+
+      PriestArchetyper.pain?(card_info) ->
+        :"Pain Demon Hunter"
+
       aggro_dh?(card_info) ->
         :"Aggro Demon Hunter"
+
+      fatigue?(card_info) ->
+        :"Fatigue Demon Hunter"
 
       fel_dh?(card_info) ->
         :"Fel Demon Hunter"
@@ -101,6 +112,17 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Gibbering Reject",
       "Rhythmdancer Risa"
     ])
+  end
+
+  def fatigue?(ci) do
+    "Aranna, Thrill Seeker" in ci.card_names and
+      min_count?(ci, 3, [
+        "Quick Pick",
+        "Paraglide",
+        "Sigil of Time",
+        "Weight of the World",
+        "Rest in Peace"
+      ])
   end
 
   def shopper_dh?(ci) do
@@ -251,5 +273,16 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  def pirate?(card_info) do
+    min_count?(card_info, 4, [
+      "Patches the Pilot",
+      "Treasure Distributor",
+      "Adrenaline Fiend",
+      "Sigil of Skydiving",
+      "Hozen Roughhouser",
+      "Dangerous Cliffside"
+    ])
   end
 end

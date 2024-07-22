@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.DruidArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -195,7 +196,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   defp ramp_druid?(ci),
     do:
       min_count?(ci, 1, ["Nourish", "Crystal Cluster"]) or
-        min_count?(ci, 2, ["Wild Growth", "Widowbloom Seedsman"])
+        min_count?(ci, 2, ["New Heights", "Malfurion's Gift"])
 
   defp hero_power_druid?(ci),
     do: min_count?(ci, 2, ["Free Spirit", "Groovy Cat", "Sing-Along Buddy"])
