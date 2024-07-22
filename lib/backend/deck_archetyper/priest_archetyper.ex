@@ -91,7 +91,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     min_count?(ci, 3, ["Overplanner", "Narain Soothfancy", "Twilight Medium"])
   end
 
-  defp pain?(ci) do
+  def pain?(ci) do
     min_count?(ci, 3, [
       "Acupuncture",
       "Brain Masseuse",

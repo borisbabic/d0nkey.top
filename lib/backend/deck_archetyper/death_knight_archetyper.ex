@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers

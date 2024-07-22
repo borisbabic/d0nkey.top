@@ -2,6 +2,7 @@
 defmodule Backend.DeckArchetyper.ShamanArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.DeckArchetyper.DemonHunterArchetyper
   alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
@@ -33,7 +34,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       totem_shaman?(card_info) ->
         :"Totem Shaman"
 
-      pirate?(card_info) ->
+      DemonHunterArchetyper.pirate?(card_info) ->
         :"Pirate Shaman"
 
       jive?(card_info) ->
@@ -90,17 +91,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
-  end
-
-  defp pirate?(card_info) do
-    min_count?(card_info, 4, [
-      "Patches the Pilot",
-      "Treasure Distributor",
-      "Adrenaline Fiend",
-      "Sigil of Skydiving",
-      "Hozen Roughhouser",
-      "Dangerous Cliffside"
-    ])
   end
 
   defp rainbow?(card_info) do
