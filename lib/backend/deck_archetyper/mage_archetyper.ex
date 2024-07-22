@@ -2,6 +2,7 @@
 defmodule Backend.DeckArchetyper.MageArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.DeckArchetyper.PaladinArchetyper
   alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
@@ -72,6 +73,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       mech_mage?(card_info) ->
         :"Mech Mage"
 
+      PaladinArchetyper.drunk?(card_info) ->
+        :"Drunk Mage"
+
       excavate_mage?(card_info) ->
         :"Excavate Mage"
 
@@ -126,6 +130,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       min_count?(ci, 3, [
         "Discovery of Magic",
         "Inquisitive Creation",
+        "Wisdom of Norgannon",
         "Sif",
         "Elemental Inspiration"
       ])
@@ -184,10 +189,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   defp naga_mage?(%{card_names: card_names}), do: "Spitelash Siren" in card_names
   defp mech_mage?(%{card_names: card_names}), do: "Mecha-Shark" in card_names
 
-  defp big_spell_mage?(ci = %{card_names: card_names}),
-    do:
-      !mech_mage?(ci) && "Grey Sage Parrot" in card_names &&
-        min_count?(ci, 1, ["Rune of the Archmage", "Drakefire Amulet"])
+  defp big_spell_mage?(ci) do
+    min_count?(ci, 2, ["Surfalopod", "King Tide"])
+  end
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
