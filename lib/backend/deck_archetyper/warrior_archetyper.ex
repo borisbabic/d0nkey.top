@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.WarriorArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -16,6 +17,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       galvangar_combo?(card_info) ->
         :"Charge Warrior"
+
+      taunt_warrior?(card_info) ->
+        :"Taunt Warrior"
 
       n_roll?(card_info) && menagerie_warrior?(card_info) ->
         :"Menagerie 'n' Roll"
@@ -46,11 +50,17 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       excavate_warrior?(card_info) ->
         :"Excavate Warrior"
 
+      mech_warrior?(card_info) ->
+        :"Mech Warrior"
+
+      bomb_warrior?(card_info) ->
+        :"Bomb Warrior"
+
+      "The Ryecleaver" in card_info.card_names ->
+        :"Sandwich Warrior"
+
       riff_warrior?(card_info) ->
         :"Riff Warrior"
-
-      taunt_warrior?(card_info) ->
-        :"Taunt Warrior"
 
       weapon_warrior?(card_info) ->
         :"Weapon Warrior"
@@ -64,12 +74,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       boar?(card_info) ->
         :"Boar Warrior"
 
-      mech_warrior?(card_info) ->
-        :"Mech Warrior"
-
-      bomb_warrior?(card_info) ->
-        :"Bomb Warrior"
-
       "Justicar Trueheart" in card_info.card_names ->
         :"Justicar Warrior"
 
@@ -82,13 +86,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
   end
 
   def taunt_warrior?(ci) do
-    min_count?(ci, 4, [
-      "Quality Assurance",
-      "Unlucky Powderman",
-      "Battlepickaxe",
-      "Stonehill Defender",
-      "Detonation Juggernaut"
-    ])
+    min_count?(ci, 3, ["Battlepickaxe", "Detonation Juggernaut", "Unlucky Powderman"])
   end
 
   def bomb_warrior?(card_info) do
@@ -131,6 +129,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Roaring Applause",
       "Party Animal",
       "The One-Amalgam Band",
+      "All You Can Eat",
       "Rock Master Voone",
       "Power Slider"
     ])
