@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   @moduledoc false
   alias Backend.Hearthstone.Deck
@@ -90,37 +91,40 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def fallbacks(ci, class_name, opts \\ []) do
     cond do
       "Mecha'thun" in ci.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun #{class_name}"
 
       miracle_chad?(ci) ->
-        "Miracle Chad #{class_name}"
+        :"Miracle Chad #{class_name}"
 
       "Rivendare, Warrider" in ci.card_names ->
-        "Rivendare #{class_name}"
+        :"Rivendare #{class_name}"
 
       tentacle?(ci) ->
-        "Tentacle #{class_name}"
+        :"Tentacle #{class_name}"
 
       ogre?(ci) ->
-        "Ogre #{class_name}"
+        :"Ogre #{class_name}"
 
       "Colifero the Artist" in ci.card_names ->
-        "Colifero #{class_name}"
+        :"Colifero #{class_name}"
 
       quest?(ci) or questline?(ci) ->
-        "Quest #{class_name}"
+        :"Quest #{class_name}"
 
       "Gadgetzan Auctioneer" in ci.card_names ->
-        "Miracle #{class_name}"
+        :"Miracle #{class_name}"
 
       genn?(ci) ->
-        "Even #{class_name}"
+        :"Even #{class_name}"
 
       baku?(ci) ->
-        "Odd #{class_name}"
+        :"Odd #{class_name}"
+
+      "Seaside Giant" in ci.card_names ->
+        :"Location #{class_name}"
 
       giants?(ci) ->
-        "Giants #{class_name}"
+        :"Giants #{class_name}"
 
       min_secret_count?(ci, 4) ->
         String.to_atom("Secret #{class_name}")
@@ -144,18 +148,18 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def miracle_chad?(ci), do: min_count?(ci, 2, ["Thaddius, Monstrosity", "Cover Artist"])
 
   def murloc?(ci),
-  do:
-    min_count?(ci, 4, [
-      "Murloc Tinyfin",
-      "Murloc Tidecaller",
-      "Lushwater Scout",
-      "Lushwater Mercenary",
-      "Murloc Tidehunter",
-      "Coldlight Seer",
-      "Murloc Warleader",
-      "Twin-fin Fin Twin",
-      "Gorloc Ravager"
-    ])
+    do:
+      min_count?(ci, 4, [
+        "Murloc Tinyfin",
+        "Murloc Tidecaller",
+        "Lushwater Scout",
+        "Lushwater Mercenary",
+        "Murloc Tidehunter",
+        "Coldlight Seer",
+        "Murloc Warleader",
+        "Twin-fin Fin Twin",
+        "Gorloc Ravager"
+      ])
 
   def min_keyword_count?(%{full_cards: full_cards}, min, keyword_slug) do
     num =
@@ -237,8 +241,8 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     ignore_types = Keyword.get(opts, :ignore_types, [])
 
     with counts = [_ | _] <- minion_type_counts(ci),
-        filtered = [_ | _] <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
-        {type, count} when count >= min_count <- Enum.max_by(filtered, &elem(&1, 1)) do
+         filtered = [_ | _] <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
+         {type, count} when count >= min_count <- Enum.max_by(filtered, &elem(&1, 1)) do
       "#{type} #{class_part}"
     else
       _ -> fallback
@@ -277,5 +281,10 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     |> minion_type_counts()
     |> List.keyfind(type, 0, {type, 0})
     |> elem(1)
+  end
+
+  @spec neutral_bouncers?(card_info(), integer()) :: boolean()
+  def neutral_bouncers?(ci, min_count \\ 2) do
+    min_count?(ci, min_count, ["Youthful Brewmaster", "Saloon Brewmaster", "Zola the Gorgon"])
   end
 end

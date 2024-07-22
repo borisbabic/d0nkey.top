@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.WarlockArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -34,6 +35,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       snek?(card_info) ->
         :"Snek Warlock"
+
+      deathrattle?(card_info) ->
+        :"Deathrattle Warlock"
 
       implock?(card_info) && abyssal_warlock?(card_info) && chad?(card_info) ->
         :"Abyssal Chimplock"
@@ -100,6 +104,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     end
   end
 
+  defp deathrattle?(card_info) do
+    min_count?(card_info, 2, ["Felfire Bonfire", "Summoner Darkmarrow", "Brittlebone Buccaneer"])
+  end
+
   defp leeroy_warlock?(card_info) do
     min_count?(card_info, 3, ["Leeroy Jenkins", "Monstrous Form", "Reverberations"])
   end
@@ -113,10 +121,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
     min_count?(ci, 4, excavates) or
       (min_count?(ci, 2, excavates) and neutral_bouncers?(ci))
-  end
-
-  defp neutral_bouncers?(ci, min_count \\ 2) do
-    min_count?(ci, min_count, ["Youthful Brewmaster", "Saloon Brewmaster", "Zola the Gorgon"])
   end
 
   defp painlock?(ci) do
