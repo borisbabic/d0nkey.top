@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.PriestArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -56,8 +57,17 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       shadow_priest?(card_info) ->
         :"Shadow Priest"
 
-      "Timewinder Zarimi" in card_info.card_names ->
+      zarimi?(card_info) and pain?(card_info) ->
+        :"Pain Zarimi Priest"
+
+      zarimi?(card_info) ->
         :"Zarimi Priest"
+
+      pain?(card_info) ->
+        :"Pain Priest"
+
+      topdeck?(card_info) ->
+        :"Topdeck Priest"
 
       "Photographer Fizzle" in card_info.card_names ->
         :"Fizzle Priest"
@@ -73,6 +83,25 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     end
   end
 
+  defp zarimi?(ci) do
+    "Timewinder Zarimi" in ci.card_names
+  end
+
+  defp topdeck?(ci) do
+    min_count?(ci, 3, ["Overplanner", "Narain Soothfancy", "Twilight Medium"])
+  end
+
+  defp pain?(ci) do
+    min_count?(ci, 3, [
+      "Acupuncture",
+      "Brain Masseuse",
+      "Nightshade Tea",
+      "Hot Coals",
+      "Trogg Exile",
+      "Sauna Regular"
+    ])
+  end
+
   defp automaton_priest?(ci),
     do:
       "Astral Automaton" in ci.card_names and
@@ -83,6 +112,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
           "Power Chord: Synchronize",
           "Zola the Gordon",
           "Creepy Painting",
+          "Pet Parrot",
           "Ravenous Kraken",
           "Cover Artist"
         ])
@@ -241,9 +271,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Stonetusk Boar"
     ]) and
       min_count?(card_info, 1, [
-      "Topsy Turvy",
-      "Inner Fire",
-      "Bless"
-    ])
+        "Topsy Turvy",
+        "Inner Fire",
+        "Bless"
+      ])
   end
 end
