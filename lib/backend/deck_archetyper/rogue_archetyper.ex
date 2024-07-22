@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.RogueArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -34,6 +35,15 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       excavate_rogue?(card_info) ->
         :"Drilling Rogue"
+
+      pain?(card_info) and amalgam?(card_info) ->
+        :"Amalgam Pain Rogue"
+
+      amalgam?(card_info) ->
+        :"Amalgam Rogue"
+
+      pain?(card_info) ->
+        :"Pain Rogue"
 
       mine_rogue?(card_info) ->
         :"Mine Rogue"
@@ -92,6 +102,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       goldbeard?(card_info) ->
         :"Goldbeard Rogue"
 
+      "Lamplighter" in card_info.card_names ->
+        :"Lamplighter Rogue"
+
       sonya?(card_info) ->
         :"Sonya Rogue"
 
@@ -101,6 +114,25 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp pain?(card_info) do
+    min_count?(card_info, 3, [
+      "Party Fiend",
+      "Cursed Souvenir",
+      "Tropg Exile",
+      "Party Planner Vona"
+    ])
+  end
+
+  defp amalgam?(card_info) do
+    "Adaptive Amalgam" in card_info.card_names and
+      min_count?(card_info, 2, [
+        "Pit Stop",
+        "SP-3Y3-D3R",
+        "Sailboat Captain",
+        "From the Scrapheap"
+      ])
   end
 
   defp dorian_rogue?(card_info) do
@@ -132,7 +164,13 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp coin_rogue?(ci) do
     "Wishing Well" in ci.card_names and
-      min_count?(ci, 2, ["Dart Throw", "Greedy Partner", "Bounty Wrangler"])
+      min_count?(ci, 3, [
+        "Dart Throw",
+        "Greedy Partner",
+        "Bounty Wrangler",
+        "Oh, Manager!",
+        "Metal Detector"
+      ])
   end
 
   defp miracle_rogue?(ci),
@@ -210,25 +248,28 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
           "Swiftscale Trickster"
         ])
 
-  defp thief_rogue?(ci = %{card_names: card_names}),
+  defp thief_rogue?(ci),
     do:
-      "Maestra of the Masquerade" in card_names ||
-        min_count?(ci, 4, [
-          "Tess Greymane",
-          "Twisted Pack",
-          "Mixtape",
-          "Hipster",
-          "Plagiarizarrr",
-          "Jackpot!",
-          "Kaja'mite Creation",
-          "Hench-Clan Burglar",
-          "Sketchy Stranger",
-          "Invitation Courier",
-          "Swashburglar",
-          "Ransack",
-          "Murloc Holmes",
-          "Plagiarize"
-        ])
+      min_count?(ci, 6, [
+        "Snatch and Grab",
+        "Treasure Hunter Eudora",
+        "Petty Theft",
+        "Concierge",
+        "Tess Greymane",
+        "Twisted Pack",
+        "Mixtape",
+        "Hipster",
+        "Plagiarizarrr",
+        "Jackpot!",
+        "Kaja'mite Creation",
+        "Hench-Clan Burglar",
+        "Sketchy Stranger",
+        "Invitation Courier",
+        "Swashburglar",
+        "Ransack",
+        "Murloc Holmes",
+        "Plagiarize"
+      ])
 
   defp miracle_wincon?(ci), do: min_count?(ci, 1, ["Sinstone Graveyard", "Necrolord Draka"])
 
