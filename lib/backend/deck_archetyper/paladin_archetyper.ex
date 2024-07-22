@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.PaladinArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -42,6 +43,12 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       mech_paladin?(card_info) ->
         :"Mech Paladin"
 
+      drunk?(card_info) ->
+        :"Drunk Paladin"
+
+      lynessa_otk?(card_info) ->
+        "Lynessa Paladin"
+
       earthen_paladin?(card_info) ->
         :"Gaia Paladin"
 
@@ -69,6 +76,16 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp drunk?(card_info) do
+    min_count?(card_info, 2, ["Divine Brew", "Sea Shanty"])
+  end
+
+  defp lynessa_otk?(card_info) do
+    match?({_, ["Sunsapper Lynessa"]}, lowest_highest_cost_cards(card_info)) and
+      "Grillmaster" in card_info.card_names and
+      min_count?(card_info, 1, ["Griftah, Trusted Vendor", "Holy Glowsticks", "Mixologist"])
   end
 
   defp excavate_paladin?(card_info) do
@@ -229,10 +246,10 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp wild_exodia_paladin?(card_info) do
-      min_count?(card_info, 3, [
-        "Uther of the Ebon Blade",
-        "Sing-Along Buddy",
-        "Garrison Commander"
-      ])
+    min_count?(card_info, 3, [
+      "Uther of the Ebon Blade",
+      "Sing-Along Buddy",
+      "Garrison Commander"
+    ])
   end
 end

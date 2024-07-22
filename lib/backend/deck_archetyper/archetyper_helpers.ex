@@ -287,4 +287,25 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def neutral_bouncers?(ci, min_count \\ 2) do
     min_count?(ci, min_count, ["Youthful Brewmaster", "Saloon Brewmaster", "Zola the Gorgon"])
   end
+
+  @spec lowest_highest_cost_cards(card_info(), :name | :full_card) ::
+          {lowest :: [String.t()], highest :: [String.t()]}
+          | {lowest :: [Card.t()], highest :: [Card.t()]}
+  def lowest_highest_cost_cards(card_info, return \\ :name)
+
+  def lowest_highest_cost_cards(%{full_cards: [_ | _] = full_cards}, return) do
+    {lowest_card, highest_card} = Enum.min_max_by(full_cards, &Card.cost/1)
+    lowest_cost = Card.cost(lowest_card)
+    highest_cost = Card.cost(highest_card)
+    lowest = Enum.filter(full_cards, &(Card.cost(&1) == lowest_cost))
+    highest = Enum.filter(full_cards, &(Card.cost(&1) == highest_cost))
+    {do_return(lowest, return), do_return(highest, return)}
+  end
+
+  def lowest_highest_cost_cards(%{full_cards: [_ | _] = full_cards}, return) do
+  end
+
+  @spec do_return([Card.t()], :full_cards | :name) :: [Card.t()] | [String.t()]
+  defp do_return(cards, :full_cards), do: cards
+  defp do_return(cards, :name), do: Enum.map(cards, & &1.name)
 end
