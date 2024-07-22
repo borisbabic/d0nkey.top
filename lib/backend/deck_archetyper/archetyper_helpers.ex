@@ -123,6 +123,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Seaside Giant" in ci.card_names ->
         :"Location #{class_name}"
 
+      "Concierge" in ci.card_names and class_name != "Rogue" ->
+        :"Concierge #{class_name}"
+
       giants?(ci) ->
         :"Giants #{class_name}"
 
