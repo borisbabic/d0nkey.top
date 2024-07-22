@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.ShamanArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -31,6 +32,18 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       totem_shaman?(card_info) ->
         :"Totem Shaman"
+
+      pirate?(card_info) ->
+        :"Pirate Shaman"
+
+      jive?(card_info) ->
+        :"Jive Shaman"
+
+      incindius?(card_info) ->
+        :"Incindius Shaman"
+
+      rainbow?(card_info) ->
+        :"Rainbow Shaman"
 
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
@@ -77,6 +90,34 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp pirate?(card_info) do
+    min_count?(card_info, 4, [
+      "Patches the Pilot",
+      "Treasure Distributor",
+      "Adrenaline Fiend",
+      "Sigil of Skydiving",
+      "Hozen Roughhouser",
+      "Dangerous Cliffside"
+    ])
+  end
+
+  defp rainbow?(card_info) do
+    min_count?(card_info, 3, [
+      "Siren Song",
+      "Cabaret Headliner",
+      "Carress, Cabaret Star",
+      "Razzle-Dazzler"
+    ])
+  end
+
+  defp jive?(card_info) do
+    min_count?(card_info, 3, ["Conductivity", "Sigil of Skydiving", "JIVE, INSECT!"])
+  end
+
+  defp incindius?(card_info) do
+    min_count?(card_info, 3, ["Incindius", "Shudderblock", "Gaslight Gatekeeper"])
   end
 
   defp wish_shaman?(card_info) do
@@ -147,7 +188,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       min_count?(ci, 3, [
         "Convincing Disguise",
         "Muck Pools",
+        "Matching Outfits",
         "Primordial Wave",
+        "Carefree Cookie",
         "Baroness Vashj",
         "Tiny Toys"
       ])
@@ -177,18 +220,18 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
   defp elemental_shaman?(ci),
     do:
-      min_count?(ci, 4, [
-        "Kindling Elemental",
-        "Wailing Vapor",
-        "Menacing Nimbus",
-        "Arid Stormer",
-        "Canal Slogger",
-        "Earth Revenant",
-        "Granite Forgeborn",
-        "Lilypad Lurker",
-        "Fire Elemental",
-        "Al'Akir the Windlord",
-        "Tar Creeper"
+      min_count?(ci, 5, [
+        "Flame Revenant",
+        "Shale Spider",
+        "Lamplighter",
+        "Minecart Cruiser",
+        "Living Prairie",
+        "Eroded Sediment",
+        "Therazane",
+        "Dang-Blasted Elemental",
+        "Skarr, the Catastrophe",
+        "Azerite Giant",
+        "Kalimos, Primal Lord"
       ])
 
   defp bloodlust_shaman?(%{card_names: card_names}), do: "Bloodlust" in card_names
