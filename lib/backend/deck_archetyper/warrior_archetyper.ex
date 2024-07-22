@@ -213,6 +213,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      wild_dmh_warrior?(card_info) ->
+        :"DMH Warrior"
+
       true ->
         fallbacks(card_info, class_name)
     end
@@ -220,5 +223,13 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
   defp wild_handbuff_warrior?(card_info) do
     min_count?(card_info, 1, ["Anima Extractor"])
+  end
+
+  defp wild_dmh_warrior?(card_info),
+    do:
+      min_count?(card_info, 2, [
+        "Dead Man's Hand",
+        "Marin the Manager"
+      ])
   end
 end
