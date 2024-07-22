@@ -78,7 +78,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
     end
   end
 
-  defp drunk?(card_info) do
+  def drunk?(card_info) do
     min_count?(card_info, 2, ["Divine Brew", "Sea Shanty"])
   end
 
