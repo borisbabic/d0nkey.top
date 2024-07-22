@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.DeckArchetyper.HunterArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
@@ -35,6 +36,12 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       cleave_hunter?(card_info) ->
         :"Cleave Hunter"
 
+      handbuff_hunter?(card_info) ->
+        :"Handbuff Hunter"
+
+      amalgam?(card_info) ->
+        :"Amalgam Hunter"
+
       zoo_hunter?(card_info) ->
         :"Zoo Hunter"
 
@@ -68,6 +75,30 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp amalgam?(ci) do
+    "Adaptive Amalgam" in ci.card_names and
+      min_count?(ci, 3, [
+        "Cup o' Muscle",
+        "Bronze Gatekeeper",
+        "Sailboat Captain",
+        "Trusty Fishing Rod",
+        "Absorbent Parasite",
+        "Always a Bigger Jormungar",
+        "Birdwatching"
+      ])
+  end
+
+  defp handbuff_hunter?(ci) do
+    min_count?(ci, 3, [
+      "Bestial Madness",
+      "Messenger Buzzard",
+      "Char",
+      "Cup o'Muscle",
+      "Ranger Gilly",
+      "Overlord Runthak"
+    ])
   end
 
   defp beast_hunter?(ci) do
@@ -187,7 +218,15 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
 
   defp big_beast_hunter?(ci),
     do:
-      min_count?(ci, 2, ["King Krush", "Stranglehorn Heart", "Faithful Companions", "Banjosaur"])
+      min_count?(ci, 3, [
+        "King Krush",
+        "Stranglethorn Heart",
+        "Faithful Companions",
+        "Banjosaur",
+        "Beached Whale",
+        "Thunderbringer",
+        "Mister Mukla"
+      ])
 
   defp aggro_hunter?(ci),
     do:
