@@ -2011,7 +2011,7 @@ defmodule Hearthstone.DeckTracker do
     102_983
   end
 
-  def tally_card_id(id), do: Backend.Hearthstone.CardBag.deckcode_copy_id(id)
+  def tally_card_id(id), do: Backend.Hearthstone.canonical_id(id)
 
   @spec merge_card_stats([card_stats()]) :: [card_stats()]
   def merge_card_stats(stats) do
