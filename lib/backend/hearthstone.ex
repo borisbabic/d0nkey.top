@@ -563,6 +563,34 @@ defmodule Backend.Hearthstone do
     {:ok, "Done"}
   end
 
+  def init_deck_costs() do
+    case init_deck_costs(1000) do
+      :done -> :ok
+      _ -> init_deck_costs()
+    end
+  end
+
+  def init_deck_costs(num) do
+    query = from d in Deck, where: is_nil(d.cost), order_by: [desc: :inserted_at], limit: ^num
+    decks = Repo.all(query)
+
+    case decks do
+      [_ | _] ->
+        recalculate_decks_cost(decks)
+
+      [] ->
+        :done
+    end
+  end
+
+  def recalculate_decks_cost(decks) do
+    Enum.reduce(decks, Multi.new(), fn deck, multi ->
+      cs = Deck.set_cost_changeset(deck)
+      Multi.update(multi, to_string(deck.id), cs)
+    end)
+    |> Repo.transaction(timeout: 240_000)
+  end
+
   @spec decks(list()) :: [Deck.t()]
   def decks(criteria) do
     base_decks_query()

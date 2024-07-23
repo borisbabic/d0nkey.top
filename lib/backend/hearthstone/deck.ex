@@ -12,7 +12,7 @@ defmodule Backend.Hearthstone.Deck do
   alias Backend.Hearthstone.Deck.Sideboard
 
   @required [:cards, :hero, :format, :deckcode]
-  @optional [:hsreplay_archetype, :class, :archetype]
+  @optional [:hsreplay_archetype, :class, :archetype, :cost]
   @type t :: %__MODULE__{}
   schema "deck" do
     field(:cards, {:array, :integer})
@@ -22,6 +22,7 @@ defmodule Backend.Hearthstone.Deck do
     field(:class, :string)
     field(:archetype, Ecto.Atom, default: nil)
     field(:hsreplay_archetype, :integer, default: nil)
+    field(:cost, :integer, default: nil)
     embeds_many(:sideboards, Sideboard)
     timestamps()
   end
@@ -37,7 +38,7 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @doc false
-  def changeset(c, attrs_raw = %{deckcode: _}) do
+  def changeset(c, attrs_raw = %{deckcode: _, cost: _}) do
     attrs = sort_cards(attrs_raw)
 
     c
@@ -46,9 +47,18 @@ defmodule Backend.Hearthstone.Deck do
     |> validate_required(@required)
   end
 
-  def changeset(c, a) do
-    attrs = Map.put(a, :deckcode, deckcode(a))
+  def changeset(c, %{cards: _, format: _, hero: _} = a) do
+    attrs =
+      a
+      |> Map.put(:deckcode, deckcode(a))
+      |> Map.put(:cost, cost(a))
+
     changeset(c, attrs)
+  end
+
+  def set_cost_changeset(deck) do
+    cost = cost(deck)
+    cast(deck, %{cost: cost}, [:cost])
   end
 
   def change_format(deck, format) do
