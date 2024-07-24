@@ -69,7 +69,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       owlonius_druid?(card_info) ->
         :"Owlonius Druid"
 
-      tempo_druid?(card_info) and not ramp_druid?(card_info) ->
+      tempo_druid?(card_info) ->
         :"Tempo Druid"
 
       spell_damage_druid?(card_info) ->
@@ -99,9 +99,17 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       ramp_druid?(card_info) ->
         :"Ramp Druid"
 
+      greybough?(card_info) ->
+        :"Greybough Druid"
+
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp greybough?(card_info) do
+    "Greybough" in card_info.card_names and
+      match?({_, ["Hydration Station"]}, lowest_highest_cost_cards(card_info))
   end
 
   @non_owlonius_druid_sd_cards [
@@ -251,6 +259,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       wild_mill_druid?(card_info) ->
         :"Mill Druid"
 
+      old_aggro?(card_info) ->
+        :"Old Aggro Druid"
+
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
@@ -264,6 +275,17 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
   defp wild_mill_druid?(card_info) do
     min_count?(card_info, 2, ["Dew Process", "Coldlight Oracle", "Naturalize"])
+  end
+
+  defp old_aggro?(card_info) do
+    min_count?(card_info, 5, [
+      "Herald of Nature",
+      "Pride's Fury",
+      "Irondeep Trogg",
+      "Druid of the Reef",
+      "Thorngrowth Sentries",
+      "Peasant"
+    ])
   end
 
   defp wild_treant_druid?(card_info) do
