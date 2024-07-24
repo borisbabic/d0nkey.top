@@ -230,9 +230,16 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       wild_orb_mage?(card_info) ->
         :"Orb Mage"
 
+      wild_flow?(card_info) ->
+        :"Flow Mage"
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp wild_flow?(card_info) do
+    min_count?(card_info, 2, ["Go with the Flow", "Sorcerer's Apprentice"])
   end
 
   defp spell_mage?(card_info) do
