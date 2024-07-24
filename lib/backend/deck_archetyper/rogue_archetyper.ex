@@ -42,6 +42,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       amalgam?(card_info) ->
         :"Amalgam Rogue"
 
+      pain?(card_info) and pirate_rogue?(card_info) ->
+        :"Scurvy Rogue"
+
       pain?(card_info) ->
         :"Pain Rogue"
 
@@ -105,6 +108,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Lamplighter" in card_info.card_names ->
         :"Lamplighter Rogue"
 
+      incindius?(card_info) ->
+        :"Incindius Rogue"
+
       sonya?(card_info) ->
         :"Sonya Rogue"
 
@@ -114,6 +120,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp incindius?(card_info) do
+    min_count?(card_info, 2, ["Incindius", "Sonya Waterdancer"])
   end
 
   defp pain?(card_info) do
@@ -208,6 +218,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
           "Valeera's Gift",
           "Harmonic Hip Hop",
           "Mic Drop",
+          "Sonya Waterdancer",
           "Shadestone Skulker",
           "Instrument Tech"
         ])
