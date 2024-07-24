@@ -56,6 +56,10 @@ defmodule Backend.Hearthstone.Deck do
     changeset(c, attrs)
   end
 
+  def update_archetype_changeset(deck, archetype) do
+    cast(deck, %{archetype: archetype}, [:archetype])
+  end
+
   def set_cost_changeset(deck) do
     cost = cost(deck)
     cast(deck, %{cost: cost}, [:cost])
