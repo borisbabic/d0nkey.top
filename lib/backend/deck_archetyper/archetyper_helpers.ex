@@ -305,8 +305,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     {do_return(lowest, return), do_return(highest, return)}
   end
 
-  def lowest_highest_cost_cards(%{full_cards: [_ | _] = full_cards}, return) do
-  end
+  def lowest_highest_cost_cards(_, _), do: {[], []}
 
   @spec do_return([Card.t()], :full_cards | :name) :: [Card.t()] | [String.t()]
   defp do_return(cards, :full_cards), do: cards
