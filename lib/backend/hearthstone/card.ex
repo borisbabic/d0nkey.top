@@ -114,6 +114,12 @@ defmodule Backend.Hearthstone.Card do
 
   defp update_duels(map), do: map
 
+  @doc """
+  Cards whose cost in game don't match their data
+  Right now it's just zilliax 3000
+  """
+  @spec special_cost?(card()) :: boolean
+  def special_cost?(card), do: zilliax_3000?(card)
   @etc_band_manager 90_749
   def etc_band_manager, do: @etc_band_manager
   @spec etc_band_manager?(card() | integer() | nil) :: boolean

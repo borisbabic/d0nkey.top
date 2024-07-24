@@ -129,6 +129,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       giants?(ci) ->
         :"Giants #{class_name}"
 
+      cute?(ci) ->
+        :"Cute #{class_name}"
+
       min_secret_count?(ci, 4) ->
         String.to_atom("Secret #{class_name}")
 
@@ -306,6 +309,19 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   end
 
   def lowest_highest_cost_cards(_, _), do: {[], []}
+
+  @spec cute?(card_info | Card.t(), integer) :: boolean
+  def cute?(cards_or_card_info, min_count \\ 2)
+  def cute?(%{full_cards: full_cards}, min_count), do: cute?(full_cards, min_count)
+
+  def cute?(cards, min_count) do
+    cute_minions =
+      Enum.filter(cards, fn card ->
+        Card.cost(card) == 0 and Card.type(card) == "MINION" and !Card.special_cost?(card)
+      end)
+
+    Enum.count(cute_minions) >= min_count
+  end
 
   @spec do_return([Card.t()], :full_cards | :name) :: [Card.t()] | [String.t()]
   defp do_return(cards, :full_cards), do: cards
