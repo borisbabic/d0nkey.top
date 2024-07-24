@@ -139,15 +139,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp big_demon_warlock?(ci) do
-    min_count?(ci, 4, [
-      "Endgame",
-      "Cursed Champion",
-      "Doomguard",
-      "Dirge of Despair",
-      "Game Master Nemsy",
-      "Enhanced Dreadloard",
-      "Wretched Queeen"
-    ])
+    min_count?(ci, 1, ["Felfire Bonfire", "Game Master Nemsy", "Crane Game", "Dirge of Despair"]) and
+      min_count?(ci, 1, ["Enhanced Dreadlord", "Wretched Queen"])
   end
 
   defp sludgelock?(ci) do
@@ -248,7 +241,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Fatigue Warlock"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun #{class_name}"
 
       true ->
         fallbacks(card_info, class_name)
