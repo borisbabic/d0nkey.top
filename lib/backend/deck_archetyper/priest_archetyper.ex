@@ -33,9 +33,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       vanndar?(card_info) ->
         :"Vanndar Priest"
 
-      control_priest?(card_info) ->
-        :"Control Priest"
-
       thief_priest?(card_info) ->
         :"Thief Priest"
 
@@ -68,6 +65,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       topdeck?(card_info) ->
         :"Topdeck Priest"
+
+      control_priest?(card_info) ->
+        :"Control Priest"
 
       "Photographer Fizzle" in card_info.card_names ->
         :"Fizzle Priest"
@@ -165,7 +165,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   defp shadow_priest?(%{card_names: card_names}), do: "Darkbishop Benedictus" in card_names
 
   defp control_priest?(ci) do
-    min_count?(ci, 2, ["Harmonic Pop", "Clean the Scene", "Whirlpool"])
+    min_count?(ci, 2, ["Harmonic Pop", "Repackage", "Lightbomb", "Shadow Word: Ruin"])
   end
 
   defp thief_priest?(ci),
