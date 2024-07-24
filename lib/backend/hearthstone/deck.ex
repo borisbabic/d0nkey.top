@@ -310,6 +310,8 @@ defmodule Backend.Hearthstone.Deck do
     :"Arch-Villain Rafaam",
     :Arfus
   ]
+  defp add_name_modifiers?(_, "Splendiferous Whizbang"), do: false
+
   defp add_name_modifiers?(%{format: 4}, base_name) when base_name in @whizbang_heros_archetypes,
     do: false
 
@@ -326,14 +328,42 @@ defmodule Backend.Hearthstone.Deck do
   defp add_xl(name, _), do: name
 
   defp add_runes(name, %{cards: cards} = deck) when is_list(cards) do
-    deck
-    |> rune_cost()
-    |> RuneCost.shorthand()
-    # next two lines append " " if it's not empty
-    |> Kernel.<>(" ")
-    |> String.trim_leading()
-    |> Kernel.<>(to_string(name))
+    if add_rune_modifiers?(deck, name) do
+      deck
+      |> rune_cost()
+      |> RuneCost.shorthand()
+      # next two lines append " " if it's not empty
+      |> Kernel.<>(" ")
+      |> String.trim_leading()
+      |> Kernel.<>(to_string(name))
+    else
+      name
+    end
   end
+
+  defp add_rune_modifiers?(%{class: "DEATHKNIGHT"} = deck, base_name) do
+    name = to_string(base_name)
+    rune_shorthand = deck |> rune_cost() |> RuneCost.shorthand()
+
+    cond do
+      String.contains?(name, "Rainbow") and "BFU" == rune_shorthand ->
+        false
+
+      String.contains?(name, "Frost") and "FFF" == rune_shorthand ->
+        false
+
+      String.contains?(name, "Blood") and "BBB" == rune_shorthand ->
+        false
+
+      String.contains?(name, "Unholy") and "UUU" == rune_shorthand ->
+        false
+
+      true ->
+        true
+    end
+  end
+
+  defp add_rune_modifiers?(_, _), do: true
 
   defp add_runes(name, _), do: name
 
