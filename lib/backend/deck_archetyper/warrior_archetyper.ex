@@ -77,7 +77,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Justicar Trueheart" in card_info.card_names ->
         :"Justicar Warrior"
 
-      "Safery Expert" in card_info.card_names ->
+      "Safety Expert" in card_info.card_names ->
         :"Safety Warrior"
 
       zilliax_warrior?(card_info) ->
