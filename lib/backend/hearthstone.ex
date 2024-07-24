@@ -510,7 +510,7 @@ defmodule Backend.Hearthstone do
       chunk
       |> Enum.reduce(Multi.new(), fn d, multi ->
         new_archetype = Backend.DeckArchetyper.archetype(d)
-        updated = d |> Deck.changeset(%{archetype: new_archetype, deckcode: d.deckcode})
+        updated = Deck.update_archetype_changeset(d, new_archetype)
         Multi.update(multi, to_string(d.id), updated)
       end)
       |> Repo.transaction(timeout: 60_000)
