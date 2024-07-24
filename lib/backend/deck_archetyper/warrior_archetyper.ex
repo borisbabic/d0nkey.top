@@ -80,6 +80,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Safery Expert" in card_info.card_names ->
         :"Safety Warrior"
 
+      zilliax_warrior?(card_info) ->
+        :"Zilliax Warrior"
+
       true ->
         fallbacks(card_info, "Warrior")
     end
@@ -171,6 +174,14 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         "Blacksmithing Hammer",
         "Lady Ashvane"
       ])
+
+  defp zilliax_warrior?(card_info) do
+    min_count?(card_info, 3, [
+      "Zilliax Deluxe 3000",
+      "Inventor Boom",
+      "Hydration Station"
+    ])
+  end
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
