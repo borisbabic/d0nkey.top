@@ -300,11 +300,12 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def lowest_highest_cost_cards(card_info, return \\ :name)
 
   def lowest_highest_cost_cards(%{full_cards: [_ | _] = full_cards}, return) do
-    {lowest_card, highest_card} = Enum.min_max_by(full_cards, &Card.cost/1)
+    uniq_cards = Enum.uniq_by(full_cards, &Card.name/1)
+    {lowest_card, highest_card} = uniq_cards |> Enum.min_max_by(&Card.cost/1)
     lowest_cost = Card.cost(lowest_card)
     highest_cost = Card.cost(highest_card)
-    lowest = Enum.filter(full_cards, &(Card.cost(&1) == lowest_cost))
-    highest = Enum.filter(full_cards, &(Card.cost(&1) == highest_cost))
+    lowest = Enum.filter(uniq_cards, &(Card.cost(&1) == lowest_cost))
+    highest = Enum.filter(uniq_cards, &(Card.cost(&1) == highest_cost))
     {do_return(lowest, return), do_return(highest, return)}
   end
 
@@ -316,9 +317,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
 
   def cute?(cards, min_count) do
     cute_minions =
-      Enum.filter(cards, fn card ->
-        Card.cost(card) == 0 and Card.type(card) == "MINION" and !Card.special_cost?(card)
-      end)
+      cards
+      |> Enum.uniq_by(&Card.name/1)
+      |> Enum.filter(&Card.cute?/1)
 
     Enum.count(cute_minions) >= min_count
   end
