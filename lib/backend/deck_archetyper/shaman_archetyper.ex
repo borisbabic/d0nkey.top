@@ -22,15 +22,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Shaman"
 
-      "Barbaric Sorceress" in card_info.card_names ->
-        :"Big Spell Shaman"
-
-      aggro_shaman?(card_info) ->
-        :"Aggro Shaman"
-
-      big_bone_shaman?(card_info) ->
-        :"Big Bone Shaman"
-
       totem_shaman?(card_info) ->
         :"Totem Shaman"
 
@@ -64,17 +55,14 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       evolve_shaman?(card_info) ->
         :"Evolve Shaman"
 
-      burn_shaman?(card_info) ->
-        :"Burn Shaman"
-
-      moist_shaman?(card_info) ->
-        :"Moist Shaman"
-
-      control_shaman?(card_info) ->
-        :"Control Shaman"
-
       murloc?(card_info) ->
         :"Murloc Shaman"
+
+      big?(card_info) ->
+        :"Big Shaman"
+
+      bonk?(card_info) ->
+        :"Bonk Shaman"
 
       wish_shaman?(card_info) ->
         :"Wish Shaman"
@@ -91,6 +79,10 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp bonk?(card_info) do
+    min_count?(card_info, 3, ["Horn of the Windlord", "Skirting Death", "Turn the Tides"])
   end
 
   defp rainbow?(card_info) do
@@ -146,29 +138,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
         "Champion of Storms"
       ])
 
-  defp big_bone_shaman?(ci),
-    do:
-      "Bonelord Frostwhisper" in ci.card_names and
-        min_count?(ci, 2, ["Al'Akir the Windlord", "Prescience", "Criminal Lineup"])
-
-  defp aggro_shaman?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Hawkstrider Rancher",
-        "Irondeep Trogg",
-        "Rotgill",
-        "Sourge Troll",
-        "Incorporeal Corporal"
-      ])
-
-  defp burn_shaman?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Frostbite",
-        "Lightning Bolt",
-        "Scalding Geyser",
-        "Bioluminescence"
-      ])
+  defp big?(ci) do
+    "Cliff Dive" in ci.card_names
+  end
 
   defp overload_shaman?(ci),
     do: min_count?(ci, 2, ["Flowrider", "Overdraft", "Inzah", "Thorim, Stormlord"])
@@ -184,29 +156,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
         "Baroness Vashj",
         "Tiny Toys"
       ])
-
-  defp moist_shaman?(ci = %{card_names: card_names}),
-    do:
-      "Schooling" in card_names &&
-        min_count?(ci, 4, [
-          "Amalgam of the Deep",
-          "Clownfish",
-          "Cookie the Cook",
-          "Gorloc Ravager",
-          "Mutanus the Devourer"
-        ])
-
-  defp control_shaman?(ci),
-    do:
-      !burn_shaman?(ci) &&
-        min_count?(ci, 4, [
-          "Bolner Hammerbeak",
-          "Brann Bronzebeard",
-          "Bru'kan of the Elements",
-          "Mutanus the Devourer",
-          "Chain Lightning (Rank 1)",
-          "Maelstrom Portal"
-        ])
 
   defp elemental_shaman?(ci),
     do:
