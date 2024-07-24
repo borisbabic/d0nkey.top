@@ -182,6 +182,16 @@ defmodule Backend.Hearthstone.Card do
     end
   end
 
+  @spec name(card() | nil) :: String.t() | nil
+  def name(%{name: name}), do: name
+  def name(_), do: nil
+
+  @doc "Cute = 0 cost minion"
+  @spec cute?(card()) :: boolean
+  def cute?(card) do
+    cost(card) == 0 and type(card) == "MINION" and !special_cost?(card)
+  end
+
   @spec type(card()) :: String.t()
   def type(%{card_type: type}), do: Type.upcase(type)
   def type(%{type: type}), do: Type.upcase(type)
