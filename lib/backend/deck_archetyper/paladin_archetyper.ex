@@ -73,6 +73,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       boar?(card_info) ->
         :"Boar Paladin"
 
+      "Cardboard Golem" in card_info.card_names ->
+        :"Aura Paladin"
+
       true ->
         fallbacks(card_info, "Paladin")
     end
