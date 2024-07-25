@@ -69,11 +69,15 @@ defmodule Components.Filter.PlayableCardSelect do
       {"collectible", true},
       {"order_by", "name_similarity_#{search}"},
       {"id_not_in", selected},
-      {"limit", num_to_show}
+      # hack because "zill" didn't show zilliax deluxe 3000 on prod when limiting to num_to_show
+      # I'm kinda fine-ish with it because filter_canonical could reduce below the number anyways
+      # 100 is probably overkill but I don't think it's that expensive
+      {"limit", 100}
     ]
 
     Backend.Hearthstone.cards(criteria)
     |> filter_canonical(canonicalize?)
+    |> Enum.take(num_to_show)
   end
 
   defp filter_canonical(cards, true) do
