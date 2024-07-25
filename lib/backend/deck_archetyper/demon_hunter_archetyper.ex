@@ -270,6 +270,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      pirate?(card_info) ->
+        :"Pirate Demon Hunter"
+
       true ->
         fallbacks(card_info, class_name)
     end
