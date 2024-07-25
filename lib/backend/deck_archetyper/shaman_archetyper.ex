@@ -25,17 +25,20 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       totem_shaman?(card_info) ->
         :"Totem Shaman"
 
-      DemonHunterArchetyper.pirate?(card_info) ->
-        :"Pirate Shaman"
-
       jive?(card_info) ->
         :"Jive Shaman"
 
-      incindius?(card_info) ->
-        :"Incindius Shaman"
-
       rainbow?(card_info) ->
         :"Rainbow Shaman"
+
+      bonk?(card_info) ->
+        :"Bonk Shaman"
+
+      DemonHunterArchetyper.pirate?(card_info) ->
+        :"Pirate Shaman"
+
+      incindius?(card_info) ->
+        :"Incindius Shaman"
 
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
@@ -60,9 +63,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       big?(card_info) ->
         :"Big Shaman"
-
-      bonk?(card_info) ->
-        :"Bonk Shaman"
 
       wish_shaman?(card_info) ->
         :"Wish Shaman"
