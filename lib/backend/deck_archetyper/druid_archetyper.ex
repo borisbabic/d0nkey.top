@@ -69,6 +69,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       owlonius_druid?(card_info) ->
         :"Owlonius Druid"
 
+      concierge?(card_info) ->
+        :"Concierge Druid"
+
       tempo_druid?(card_info) ->
         :"Tempo Druid"
 
@@ -105,6 +108,10 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp concierge?(card_info) do
+    min_count?(card_info, 3, ["Go with the Flow", "Seabreeze Chalice", "Concierge"])
   end
 
   defp greybough?(card_info) do
