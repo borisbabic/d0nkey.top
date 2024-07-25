@@ -345,6 +345,8 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
+  defp add_runes(name, _), do: name
+
   defp add_rune_modifiers?(%{class: "DEATHKNIGHT"} = deck, base_name) do
     name = to_string(base_name)
     rune_shorthand = deck |> rune_cost() |> RuneCost.shorthand()
@@ -368,8 +370,6 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   defp add_rune_modifiers?(_, _), do: true
-
-  defp add_runes(name, _), do: name
 
   def base_name(%{archetype: a}) when not is_nil(a), do: a
 
