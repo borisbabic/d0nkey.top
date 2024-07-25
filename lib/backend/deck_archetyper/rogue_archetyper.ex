@@ -422,6 +422,13 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     min_count?(card_info, 2, [
       "Snowfall Graveyard",
       "Selfish Shellfish"
+    ]) or
+    min_count?(card_info, 4, [
+      "Coldlight Oracle",
+      "Prize Vendor",
+      "Togwaggle's Scheme",
+      "Gang Up",
+      "Lab Recruiter"
     ])
   end
 end
