@@ -344,6 +344,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
 
+      wild_draka_rogue?(card_info) ->
+        :"Draka Rogue"
+
       wild_gnoll_miracle_rogue?(card_info) ->
         :"Gnoll Miracle Rogue"
 
@@ -429,6 +432,16 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Togwaggle's Scheme",
       "Gang Up",
       "Lab Recruiter"
+    ])
+  end
+
+  defp wild_draka_rogue?(card_info) do
+    min_count?(card_info, 5, [
+      "Necrolord Draka",
+      "Brann Bronzebeard",
+      "Mailbox Dancer",
+      "Tidepool Pupil",
+      "Shadowstep"
     ])
   end
 end
