@@ -338,6 +338,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       genn?(card_info) ->
         String.to_atom("Even #{class_name}")
 
+      "Mecha'thun" in card_info.card_names ->
+        "Mecha'thun #{class_name}"
+
       "Kingsbane" in card_info.card_names ->
         :"Kingsbane Rogue"
 
@@ -358,9 +361,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
-
-      "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
 
       wild_pirate_rogue?(card_info) ->
         :"Pirate Rogue"
