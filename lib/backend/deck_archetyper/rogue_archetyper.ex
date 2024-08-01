@@ -117,6 +117,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       dorian_rogue?(card_info) ->
         :"Dorian Rogue"
 
+      maestra_rogue?(card_info) ->
+        :"Maestra Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end
@@ -316,6 +319,13 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp deathrattle_rogue?(%{card_names: card_names}), do: "Snowfall Graveyard" in card_names
 
+  defp maestra_rogue?(card_info) do
+    min_count?(card_info, 2, [
+      "Maestra, Mask Merchant",
+      "Tess Greymane"
+    ])
+  end
+
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
 
@@ -379,6 +389,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       excavate_rogue?(card_info) ->
         :"Drilling Rogue"
+
+      maestra_rogue?(card_info) ->
+        :"Maestra Rogue"
 
       true ->
         fallbacks(card_info, class_name)
