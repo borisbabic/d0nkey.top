@@ -243,6 +243,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       fel_dh?(card_info) ->
         :"Fel DH"
 
+      wild_fatigue?(card_info) && questline?(card_info) ->
+        :"Fatigue Demon Hunter"
+
       questline?(card_info) ->
         :"Questline DH"
 
@@ -288,4 +291,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Dangerous Cliffside"
     ])
   end
+
+  wild_fatigue?(card_info) do
+    min_count?(card_info, 2, [
+      "Aranna, Thrill Seeker",
+      "Glaivetar"
+    ])
 end
