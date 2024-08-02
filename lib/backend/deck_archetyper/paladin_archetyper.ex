@@ -238,6 +238,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      wild_shanty_paladin?(card_info) ->
+        :"Sea Shanty Paladin"
+
       true ->
         fallbacks(card_info, class_name)
     end
@@ -253,6 +256,13 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Uther of the Ebon Blade",
       "Sing-Along Buddy",
       "Garrison Commander"
+    ])
+  end
+
+  defp wild_shanty_paladin?(card_info) do
+    min_count?(card_info, 2, [
+      "Sea Shanty",
+      "Mr. Smite"
     ])
   end
 end
