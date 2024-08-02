@@ -2,6 +2,9 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
   import Plug.BasicAuth
+  alias BackendWeb.LivePlug.AssignDefaults
+  alias BackendWeb.LivePlug.AdminAuth
+  use ErrorTracker.Web, :router
 
   pipeline :auth do
     plug(Backend.UserManager.Pipeline)
@@ -330,8 +333,12 @@ defmodule BackendWeb.Router do
     get("/recalculate_archetypes/:minutes_ago", AdminController, :recalculate_archetypes)
   end
 
-  scope "/" do
-    pipe_through([:browser, :admins_only])
+  scope "/", BackendWeb do
+    pipe_through([:browser, :auth])
+    error_tracker_dashboard("/errors", on_mount: [AssignDefaults, {AdminAuth, :dashboard}])
+  end
+
+  scope "/", BackendWeb do
     live_dashboard("/dashboard", metrics: Backend.Telemetry, ecto_repos: [Backend.Repo])
   end
 
