@@ -182,17 +182,17 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         "Stand Against Darkness"
       ])
 
-  defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &not_paladin?/1)
+  defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &neutral?/1)
 
   defp order_luladin?(ci = %{card_names: card_names}),
     do:
       "Order in the Court" in card_names &&
         min_count?(ci, 2, ["The Jailer", "Reno Jackson", "The Countess"])
 
-  defp not_paladin?(card) do
-    case Card.class(card, "PALADIN") do
-      {:ok, "PALADIN"} -> false
-      _ -> true
+  defp neutral?(card) do
+    case Card.class(card) do
+      {:ok, "NEUTRAL"} -> true
+      _ -> false
     end
   end
 
