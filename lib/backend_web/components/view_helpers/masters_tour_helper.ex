@@ -5,11 +5,11 @@ defmodule Components.ViewHelpers.MastersTourHelper do
   alias Backend.MastersTour.TourStop
   alias Backend.Blizzard
 
-  @valid_regions [:AM, :EU, :CN, :AP]
+  @valid_regions [:US, :EU, :CN, :AP, :AM]
   def create_region_tag(region) when region in @valid_regions do
     tag =
       case region do
-        :AM -> "is-info"
+        r when r in [:US, :AM] -> "is-info"
         :EU -> "is-primary"
         :CN -> "is-warning"
         :AP -> "is-success"
@@ -19,9 +19,9 @@ defmodule Components.ViewHelpers.MastersTourHelper do
     region_tag(%{tag: tag, region_name: region_name})
   end
 
-  def create_region_tag(r) do
-    case Blizzard.get_region_identifier(r) do
-      {:ok, r} when r in @valid_regions -> create_region_tag(r)
+  def create_region_tag(row) do
+    case Blizzard.get_region_identifier(row) do
+      {:ok, region} when region in @valid_regions -> create_region_tag(region)
       _ -> ""
     end
   end
