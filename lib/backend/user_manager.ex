@@ -105,6 +105,7 @@ defmodule Backend.UserManager do
     Backend.Battlenet.update_user_country(user)
     Backend.PlayerIconBag.set_user_icons(user)
     Backend.PlayerCountryPreferenceBag.update_user(user)
+    Backend.PrioritizedBattletagCache.update_cache()
     ret
   end
 
