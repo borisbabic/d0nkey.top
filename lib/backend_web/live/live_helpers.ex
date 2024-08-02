@@ -1,13 +1,13 @@
 defmodule BackendWeb.LiveHelpers do
-  import Phoenix.Component, only: [assign: 3, assign: 2]
+  import Phoenix.Component, only: [assign: 3, assign: 2, assign_new: 3]
   alias Phoenix.LiveView.Socket
 
   @spec assign_defaults(Socket.t(), any()) :: Socket.t()
   def assign_defaults(socket, session) do
-    user = load_user(session)
-
     socket
-    |> assign(:user, user)
+    |> assign_new(:user, fn ->
+      load_user(session)
+    end)
   end
 
   alias Backend.UserManager.User

@@ -140,19 +140,12 @@ defmodule BackendWeb do
     quote do
       alias BackendWeb.Router.Helpers, as: Routes
       import BackendWeb.LiveHelpers
+      import BackendWeb.LivePlug.AssignDefaults, only: [put_user_in_context: 1]
 
       unquote(view_helpers())
 
       def user_from_context(assigns) do
         Surface.Components.Context.get(assigns, :user)
-      end
-
-      defp put_user_in_context(%{assigns: %{user: user}} = socket) do
-        Surface.Components.Context.put(socket, user: user)
-      end
-
-      defp put_user_in_context(socket) do
-        Surface.Components.Context.put(socket, user: nil)
       end
     end
   end

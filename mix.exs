@@ -83,7 +83,7 @@ defmodule Backend.MixProject do
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:wait_for_it, "~>1.1"},
       {:oban, "~> 2.5"},
-      {:postgrex_pubsub, "~> 0.2.0"},
+      {:postgrex_pubsub, github: "borisbabic/postgrex_pubsub"},
       {:phoenix_meta_tags, ">= 0.1.8"},
       {:oauther, "~> 1.1"},
       {:extwitter, "~> 0.12"},
@@ -98,6 +98,7 @@ defmodule Backend.MixProject do
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:akin, "~> 0.1.8"},
+      {:error_tracker, "~> 0.1"},
       {:quantum, "~> 2.3"}
     ]
   end
