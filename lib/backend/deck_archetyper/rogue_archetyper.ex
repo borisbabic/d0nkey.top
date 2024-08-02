@@ -366,7 +366,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_miracle_rogue?(card_info) ->
         :"Miracle Rogue"
 
-      "Garrote" in card_info.card_names ->
+      garrote?(card_info) ->
         :"Garrote Rogue"
 
       "Pirate Admiral Hooktusk" in card_info.card_names ->
@@ -399,6 +399,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp garrote?(card_info) do
+    "Garrote" in card_info.card_names and min_keyword_count?(card_info, 1, "spell-damage")
   end
 
   defp wild_pirate_rogue?(card_info) do
@@ -439,23 +443,23 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Snowfall Graveyard",
       "Selfish Shellfish"
     ]) or
-    min_count?(card_info, 4, [
-      "Coldlight Oracle",
-      "Prize Vendor",
-      "Togwaggle's Scheme",
-      "Gang Up",
-      "Lab Recruiter"
-    ])
+      min_count?(card_info, 4, [
+        "Coldlight Oracle",
+        "Prize Vendor",
+        "Togwaggle's Scheme",
+        "Gang Up",
+        "Lab Recruiter"
+      ])
   end
 
   defp wild_draka_rogue?(card_info) do
     ("Necrolord Draka" in card_info.card_names or
-      "Necrolord Draka" in card_info.etc_sideboard_names) and
-        min_count?(card_info, 4, [
-          "Brann Bronzebeard",
-          "Mailbox Dancer",
-          "Tidepool Pupil",
-          "Shadowstep"
-        ])
+       "Necrolord Draka" in card_info.etc_sideboard_names) and
+      min_count?(card_info, 4, [
+        "Brann Bronzebeard",
+        "Mailbox Dancer",
+        "Tidepool Pupil",
+        "Shadowstep"
+      ])
   end
 end
