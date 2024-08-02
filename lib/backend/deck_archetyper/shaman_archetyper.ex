@@ -151,6 +151,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
         "Convincing Disguise",
         "Muck Pools",
         "Matching Outfits",
+        "Wave of Nostalgia",
         "Primordial Wave",
         "Carefree Cookie",
         "Baroness Vashj",
