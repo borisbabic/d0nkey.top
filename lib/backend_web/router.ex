@@ -336,10 +336,12 @@ defmodule BackendWeb.Router do
   scope "/", BackendWeb do
     pipe_through([:browser, :auth])
     error_tracker_dashboard("/errors", on_mount: [AssignDefaults, {AdminAuth, :dashboard}])
-  end
 
-  scope "/", BackendWeb do
-    live_dashboard("/dashboard", metrics: Backend.Telemetry, ecto_repos: [Backend.Repo])
+    live_dashboard("/dashboard",
+      metrics: Backend.Telemetry,
+      ecto_repos: [Backend.Repo],
+      on_mount: [AssignDefaults, {AdminAuth, :dashboard}]
+    )
   end
 
   scope "/auth", BackendWeb do
