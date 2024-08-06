@@ -216,6 +216,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Darkbishop Benedictus" in card_info.card_names ->
         :"Shadow Priest"
 
+      "Timewinder Zarimi" in card_info.card_names ->
+        :"Zarimi Priest"
+
       wild_switcheroo_priest?(card_info) ->
         :"Switcheroo Priest"
 
@@ -237,9 +240,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Astral Automaton" in card_info.card_names ->
         "Automaton Priest"
 
-      "Timewinder Zarimi" in card_info.card_names ->
-        :"Zarimi Priest"
-
       true ->
         fallbacks(card_info, class_name)
     end
@@ -255,12 +255,15 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   defp wild_combo_priest?(card_info) do
     min_count?(card_info, 3, [
-      "Inner Fire",
       "Divine Spirit",
-      "Bless",
       "Radiant Elemental",
-      "Power Word: Fortitude",
-      "Grave Horror"
+      "Power Word: Shield",
+      "Potion of Madness"
+    ]) and
+      min_count?(card_info, 1, [
+        "Topsy Turvy",
+        "Inner Fire",
+        "Bless"
     ])
   end
 
