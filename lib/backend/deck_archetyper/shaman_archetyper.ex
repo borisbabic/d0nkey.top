@@ -31,11 +31,11 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       rainbow?(card_info) ->
         :"Rainbow Shaman"
 
-      bonk?(card_info) ->
-        :"Bonk Shaman"
-
       DemonHunterArchetyper.pirate?(card_info) ->
         :"Pirate Shaman"
+
+      bonk?(card_info) ->
+        :"Bonk Shaman"
 
       incindius?(card_info) ->
         :"Incindius Shaman"
