@@ -21,9 +21,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       mech_rogue?(card_info) ->
         :"Mech Rogue"
 
-      miracle_rogue?(card_info) ->
-        :"Miracle Rogue"
-
       coin_rogue?(card_info) and secret_rogue?(card_info) ->
         :"Secret Coin Rogue"
 
@@ -84,9 +81,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       secret_rogue?(card_info) ->
         :"Secret Rogue"
 
-      shark_rogue?(card_info) ->
-        :"Shark Rogue"
-
       deathrattle_rogue?(card_info) ->
         :"Deathrattle Rogue"
 
@@ -119,6 +113,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
+
+      miracle_rogue?(card_info) ->
+        :"Miracle Rogue"
 
       true ->
         fallbacks(card_info, "Rogue")
@@ -186,10 +183,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       ])
   end
 
-  defp miracle_rogue?(ci),
-    do:
-      miracle_wincon?(ci) &&
-        min_count?(ci, 2, ["Queen Azshara", "Preparation", "Serrated Bone Spike"])
+  defp miracle_rogue?(ci) do
+    min_count?(ci, 4, ["Breakdance", "Tidepool Pupil", "Sonya Waterdancer", "Sandbox Scoundrel"])
+  end
 
   defp mech_rogue?(ci), do: type_count(ci, "Mech") > 5
 
@@ -285,8 +281,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Plagiarize"
       ])
 
-  defp miracle_wincon?(ci), do: min_count?(ci, 1, ["Sinstone Graveyard", "Necrolord Draka"])
-
   defp coc_rogue?(ci),
     do:
       min_count?(ci, 3, [
@@ -313,9 +307,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
           "Crossroads Gossiper",
           "Scuttlebutt Ghoul"
         ])
-
-  defp shark_rogue?(ci),
-    do: "Loan Shark" in ci.card_names && miracle_wincon?(ci)
 
   defp deathrattle_rogue?(%{card_names: card_names}), do: "Snowfall Graveyard" in card_names
 
