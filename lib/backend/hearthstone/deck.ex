@@ -314,7 +314,7 @@ defmodule Backend.Hearthstone.Deck do
     :"Arch-Villain Rafaam",
     :Arfus
   ]
-  defp add_name_modifiers?(_, "Splendiferous Whizbang"), do: false
+  defp add_name_modifiers?(_, :"Splendiferous Whizbang"), do: false
 
   defp add_name_modifiers?(%{format: 4}, base_name) when base_name in @whizbang_heros_archetypes,
     do: false
