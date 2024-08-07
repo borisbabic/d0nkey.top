@@ -28,11 +28,14 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       jive?(card_info) ->
         :"Jive Shaman"
 
-      rainbow?(card_info) ->
+      rainbow?(card_info, 3) ->
         :"Rainbow Shaman"
 
       DemonHunterArchetyper.pirate?(card_info) ->
         :"Pirate Shaman"
+
+      rainbow?(card_info, 2) ->
+        :"Rainbow Shaman"
 
       bonk?(card_info) ->
         :"Bonk Shaman"
@@ -85,8 +88,8 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     min_count?(card_info, 3, ["Horn of the Windlord", "Skirting Death", "Turn the Tides"])
   end
 
-  defp rainbow?(card_info) do
-    min_count?(card_info, 3, [
+  defp rainbow?(card_info, min_count) do
+    min_count?(card_info, min_count, [
       "Siren Song",
       "Cabaret Headliner",
       "Carress, Cabaret Star",
