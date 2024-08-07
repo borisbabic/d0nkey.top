@@ -30,7 +30,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       excavate_dk?(card_info) ->
         :"Excavate DK"
 
-      aggro_dk?(card_info) ->
+      "Grave Strength" in card_info.card_names ->
         :"Aggro DK"
 
       menagerie?(card_info) ->
@@ -82,16 +82,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
   def burn_dk?(c),
     do: min_count?(c, 2, ["Bloodmage Thalnos", "Talented Arcanist", "Guild Trader"])
-
-  def aggro_dk?(c),
-    do:
-      min_count?(c, 4, [
-        "Body Bagger",
-        "Hawkstrider Rancher",
-        "Irondeep Trogg",
-        "Incorporeal Corporal",
-        "Peasant"
-      ])
 
   def control_dk?(c) do
     min_count?(c, 2, ["Corpse Explosion", "Soulstealer"])
