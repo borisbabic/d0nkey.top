@@ -217,6 +217,9 @@ defmodule Bot.MessageHandler do
       <<"!fenoeu", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("660d18c567e8040d50a099bd", msg)
 
+      <<"!solary", _::binary>> ->
+        Bot.BattlefyMessageHandler.handle_tournament_standings("66b63b2faedcd30040d11241", msg)
+
       <<"!bod", _::binary>> ->
         Bot.BattleOfTheDiscordsMessageHandler.handle(msg)
 
