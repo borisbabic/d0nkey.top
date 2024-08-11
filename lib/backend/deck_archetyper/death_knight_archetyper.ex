@@ -108,6 +108,7 @@ def frost_dk?(ci) do
       "Yelling Yodeler",
       "Northern Navigation",
       "Glacial Shard"
+    ])
   end
 
   def control_dk?(c) do
