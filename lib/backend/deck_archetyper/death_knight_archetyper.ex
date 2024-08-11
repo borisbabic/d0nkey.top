@@ -9,9 +9,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       highlander?(card_info) ->
         :"Highlander DK"
 
-      burn_dk?(card_info) ->
-        :"Burn DK"
-
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
@@ -32,6 +29,15 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       "Grave Strength" in card_info.card_names ->
         :"Aggro DK"
+
+      "Razzle-Dazzler" in card_info.card_names ->
+        :"Buttons DK"
+
+      frost_dk?(card_info) ->
+        :"Frost DK"
+
+      burn_dk?(card_info) ->
+        :"Burn DK"
 
       menagerie?(card_info) ->
         :"Menagerie DK"
@@ -80,8 +86,29 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
         "Chained Guardian"
       ])
 
-  def burn_dk?(c),
-    do: min_count?(c, 2, ["Bloodmage Thalnos", "Talented Arcanist", "Guild Trader"])
+  def burn_dk?(ci) do
+    min_count?(ci, 4, [
+      "Frostwyrm's Fury",
+      "Thassarian",
+      "Corpsicle",
+      "Horizon's Edge",
+      "Hardcore Cultist",
+      "Marrow Manipulator",
+      "Harbinger of Winter"
+    ])
+  end
+
+def frost_dk?(ci) do
+    min_count?(ci, 4, [
+      "Frostwyrm's Fury",
+      "Snow Shredder",
+      "Might of Menethil",
+      "Slippery Slope",
+      "Frostbitten Freebooter",
+      "Yelling Yodeler",
+      "Northern Navigation",
+      "Glacial Shard"
+  end
 
   def control_dk?(c) do
     min_count?(c, 2, ["Corpse Explosion", "Soulstealer"])
