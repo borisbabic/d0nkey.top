@@ -6,90 +6,23 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
-    rommath? = "Grand Magister Rommath" in card_info.card_names
     lightshow? = "Lightshow" in card_info.card_names
 
     cond do
       highlander?(card_info) ->
         :"Highlander Mage"
 
-      arcane_mage?(card_info) && (quest?(card_info) || questline?(card_info)) ->
-        :"Arcane Quest Mage"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Mage"
-
-      vanndar?(card_info) ->
-        :"Vanndar Mage"
-
       menagerie?(card_info) ->
         :"Menagerie Mage"
 
-      rommath? ->
-        :"Rommath Mage"
-
-      naga_mage?(card_info) && rainbow_mage?(card_info) ->
-        :"Rainbow Naga Mage"
-
       rainbow_mage?(card_info) ->
         :"Rainbow Mage"
-
-      arcane_mage?(card_info) ->
-        :"Arcane Mage"
-
-      naga_mage?(card_info) && arcane_mage?(card_info) ->
-        :"Arcane Naga Mage"
-
-      secret_mage?(card_info) ->
-        :"Secret Mage"
-
-      naga_mage?(card_info) && secret_mage?(card_info) ->
-        :"Secret Naga Mage"
-
-      burn_mage?(card_info) && secret_mage?(card_info) ->
-        :"Burn Secret Mage"
-
-      naga_mage?(card_info) && burn_mage?(card_info) && secret_mage?(card_info) ->
-        :"Secret Burn Naga Mage"
-
-      naga_mage?(card_info) && casino_mage?(card_info) ->
-        :"Casino Naga Mage"
-
-      casino_mage?(card_info) ->
-        :"Casino Mage"
-
-      frost_mage?(card_info) ->
-        :"Frost Mage"
-
-      burn_mage?(card_info) && naga_mage?(card_info) ->
-        :"Burn Naga Mage"
-
-      naga_mage?(card_info) && skeleton_mage?(card_info) ->
-        :"Spooky Naga Mage"
-
-      naga_mage?(card_info) ->
-        :"Naga Mage"
-
-      mech_mage?(card_info) ->
-        :"Mech Mage"
 
       PaladinArchetyper.drunk?(card_info) ->
         :"Drunk Mage"
 
       excavate_mage?(card_info) ->
         :"Excavate Mage"
-
-      burn_mage?(card_info) && skeleton_mage?(card_info) ->
-        :"Burn Spooky Mage"
-
-      burn_mage?(card_info) ->
-        :"Burn Mage"
-
-      skeleton_mage?(card_info) ->
-        :"Spooky Mage"
-
-      ping_mage?(card_info) ->
-        :"Ping Mage"
 
       big_spell_mage?(card_info) ->
         :"Big Spell Mage"
@@ -102,9 +35,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       murloc?(card_info) ->
         :"Murloc Mage"
-
-      boar?(card_info) ->
-        :"Boar Mage"
 
       lightshow? ->
         :"Lightshow Mage"
@@ -134,60 +64,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
         "Sif",
         "Elemental Inspiration"
       ])
-
-  def burn_mage?(ci), do: min_count?(ci, 2, ["Vexallus", "Aegwynn, the Guardian"])
-
-  def arcane_mage?(card_info),
-    do:
-      min_count?(card_info, 3, [
-        "Vexalllus",
-        "Arcsplitter",
-        "Arcane Wyrm",
-        "Magister's Apprentice"
-      ]) && min_spell_school_count?(card_info, 4, "arcane")
-
-  def casino_mage?(card_info),
-    do:
-      min_count?(card_info, 3, [
-        "Energy Shaper",
-        "Grand Magister Rommath",
-        "The Sunwell",
-        "Vast Wisdowm",
-        "Prismatic Elemental"
-      ])
-
-  defp frost_mage?(ci) do
-    case spell_school_map(ci) |> Map.to_list() do
-      # only frost
-      [{"frost", _}] -> true
-      _ -> false
-    end
-  end
-
-  defp skeleton_mage?(ci),
-    do:
-      min_count?(ci, 4, [
-        "Volatile Skeleton",
-        "Nightcloak Sanctum",
-        "Cold Case",
-        "Deathborne",
-        "Kel'Thuzad, the Inevitable"
-      ])
-
-  defp secret_mage?(ci),
-    do:
-      min_count?(ci, 2, [
-        "Anonymous Informant",
-        "Chatty Bartender",
-        "Orion, Mansion Manager",
-        "Sunreaver Spy",
-        "Crossroads Gossiper",
-        "Scuttlebutt Ghoul"
-      ]) ||
-        min_secret_count?(ci, 3)
-
-  defp naga_mage?(%{card_names: card_names}), do: "Spitelash Siren" in card_names
-  defp mech_mage?(%{card_names: card_names}), do: "Mecha-Shark" in card_names
 
   defp big_spell_mage?(ci) do
     min_count?(ci, 2, ["Surfalopod", "King Tide"])
@@ -246,8 +122,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
     min_count?(card_info, 2, [
       "Malfunction",
       "Spot the Difference",
-      # what hdt uses for unknown cards
-      "NOOOOOOOOOOOO",
       "Yogg in the Box",
       "Manufacturing Error"
     ])
