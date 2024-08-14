@@ -27,9 +27,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       big_spell_mage?(card_info) ->
         :"Big Spell Mage"
 
-      burn_spell_mage?(card_info) ->
-        :"Burn Spell Mage"
-
       spell_mage?(card_info) ->
         :"Spell Mage"
 
@@ -125,17 +122,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Yogg in the Box",
       "Manufacturing Error"
     ])
-  end
-
-  defp burn_spell_mage?(card_info) do
-    spell_mage?(card_info) and
-      min_count?(card_info, 4, [
-        "Flame Geyser",
-        "Frostbolt",
-        "Lightshow",
-        "Molten Rune",
-        "Fireball"
-      ])
   end
 
   defp ping_mage?(card_info) do
