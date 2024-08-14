@@ -87,7 +87,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       min_secret_count?(card_info, 3) ->
         :"Secret Rogue"
 
-      miracle_rogue?(card_info) ->
+      miracle_rogue?(card_info) and miracle_wincon?(card_info) ->
         :"Miracle Rogue"
 
       coc_rogue?(card_info) ->
@@ -185,6 +185,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp miracle_rogue?(ci) do
     min_count?(ci, 4, ["Breakdance", "Tidepool Pupil", "Sonya Waterdancer", "Sandbox Scoundrel"])
+  end
+
+  defp miracle_wincon?(ci) do
+    min_count?(ci, 1, ["Mixologist", "Griftah, Trusted Vendor"])
   end
 
   defp mech_rogue?(ci), do: type_count(ci, "Mech") > 5
