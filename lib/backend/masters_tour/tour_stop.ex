@@ -494,8 +494,8 @@ defmodule Backend.MastersTour.TourStop do
         year: 2024
       },
       %__MODULE__{
-        id: :"Masters Tour 2023_2",
-        battlefy_id: nil,
+        id: :"Masters Tour 2024_2",
+        battlefy_id: "66b25ac6aedcd30040d10543",
         ladder_priority: nil,
         ladder_seasons: [128, 129],
         ladder_invites: nil,
@@ -510,7 +510,7 @@ defmodule Backend.MastersTour.TourStop do
           {{51, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2023-08-19 16:00:00],
+        start_time: ~N[2024-08-15 16:00:00],
         qualifiers_period: {~D[2023-06-01], ~D[2022-06-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
