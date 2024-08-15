@@ -84,6 +84,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       miracle_rogue?(card_info) ->
         :"Miracle Rogue"
 
+      weapon?(card_info) ->
+        :"Weapon Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end
@@ -122,11 +125,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp sonya?(ci) do
     min_count?(ci, 3, ["Cover Artist", "Sonya Waterdancer", "Sandbox Scoundrel"])
-  end
-
-  defp virus_rogue?(ci) do
-    min_count?(ci.zilliax_modules_names, 2, ["Power Module", "Virus Module"]) and
-      min_count?(ci, 3, ["Pit Stop", "Frequency Oscillator", "SP-3Y3-D3R", "From the Scrapheap"])
   end
 
   defp excavate_rogue?(ci) do
@@ -177,6 +175,16 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Edwin VanCleef",
       "Scribbling Stenographer",
       "Zephrys the Great"
+    ])
+  end
+
+  defp weapon?(ci) do
+    min_count?(ci, 3, [
+      "Deadly Poison",
+      "Air Guitarist",
+      "Harmonic Hip Hop",
+      "Mic Drop",
+      "Swarthy Swordshiner"
     ])
   end
 
