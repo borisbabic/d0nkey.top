@@ -9,20 +9,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       highlander?(card_info) ->
         :"Highlander Rogue"
 
-      coc_rogue?(card_info) && (quest?(card_info) || questline?(card_info)) ->
-        :"Quest Coc Rogue"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Rogue"
-
       menagerie?(card_info) ->
         :"Menagerie Rogue"
 
       mech_rogue?(card_info) ->
         :"Mech Rogue"
-
-      coin_rogue?(card_info) and secret_rogue?(card_info) ->
-        :"Secret Coin Rogue"
 
       coin_rogue?(card_info) ->
         :"Coin Rogue"
@@ -51,12 +42,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       pirate_rogue?(card_info) && thief_rogue?(card_info) ->
         :"Pirate Thief Rogue:"
 
-      jackpot_rogue?(card_info) ->
-        :"Jackpot Rogue"
-
-      edwin_rogue?(card_info) ->
-        :"Edwin Rogue"
-
       thief_rogue?(card_info) ->
         :"Thief Rogue"
 
@@ -75,26 +60,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       cutlass_rogue?(card_info) ->
         :"Cutlass Rogue"
 
-      vanndar?(card_info) ->
-        :"Vanndar Rogue"
-
-      secret_rogue?(card_info) ->
-        :"Secret Rogue"
-
-      deathrattle_rogue?(card_info) ->
-        :"Deathrattle Rogue"
-
-      min_secret_count?(card_info, 3) ->
-        :"Secret Rogue"
-
       miracle_rogue?(card_info) and miracle_wincon?(card_info) ->
         :"Miracle Rogue"
-
-      coc_rogue?(card_info) ->
-        :"Coc Rogue"
-
-      virus_rogue?(card_info) ->
-        :"Virus Rogue"
 
       goldbeard?(card_info) ->
         :"Goldbeard Rogue"
@@ -241,27 +208,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     do:
       min_count?(ci, 2, ["Toy Boat", "Raiding Party", "Treasure Distributor", "Dig for Treasure"])
 
-  defp edwin_rogue?(ci),
-    do:
-      min_count?(ci, 7, [
-        "Preparation",
-        "Shadowstep",
-        "Door of Shadows",
-        "Maestra of the Masquerade",
-        "Serrated Bone Spike",
-        "Sinstone Graveyard",
-        "Shroud of Concealment",
-        "Necrolord Draka"
-      ])
-
-  defp jackpot_rogue?(ci),
-    do:
-      thief_rogue?(ci) &&
-        min_count?(ci, 2, [
-          "Jackpot!",
-          "Swiftscale Trickster"
-        ])
-
   defp thief_rogue?(ci),
     do:
       min_count?(ci, 6, [
@@ -277,42 +223,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Jackpot!",
         "Kaja'mite Creation",
         "Hench-Clan Burglar",
-        "Sketchy Stranger",
-        "Invitation Courier",
-        "Swashburglar",
-        "Ransack",
-        "Murloc Holmes",
-        "Plagiarize"
+        "Swashburglar"
       ])
-
-  defp coc_rogue?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Concoctor",
-        "Ghoulish Alchemist",
-        "Potion Belt",
-        "Potionmaster Putricide",
-        "Vile Apothecary"
-      ])
-
-  defp mine_rogue?(ci),
-    do: min_count?(ci, 2, ["Naval Mine", "Snowfall Graveyard"])
-
-  defp secret_rogue?(ci),
-    do:
-      min_secret_count?(ci, 3) &&
-        min_count?(ci, 2, [
-          "Ghastly Gravedigger",
-          "Halkias",
-          "Private Eye",
-          "Anonymous Informant",
-          "Sketchy Stranger",
-          "Sunreaver Spy",
-          "Crossroads Gossiper",
-          "Scuttlebutt Ghoul"
-        ])
-
-  defp deathrattle_rogue?(%{card_names: card_names}), do: "Snowfall Graveyard" in card_names
 
   defp maestra_rogue?(card_info) do
     min_count?(card_info, 2, [
@@ -395,6 +307,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         fallbacks(card_info, class_name)
     end
   end
+
+  defp mine_rogue?(ci),
+    do: min_count?(ci, 2, ["Naval Mine", "Snowfall Graveyard"])
 
   defp garrote?(card_info) do
     "Garrote" in card_info.card_names and min_keyword_count?(card_info, 1, "spell-damage")
