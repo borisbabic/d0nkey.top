@@ -9,50 +9,14 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       highlander?(card_info) ->
         :"Highlander Priest"
 
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Priest"
-
-      boar?(card_info) ->
-        :"Boar Priest"
-
       menagerie?(card_info) ->
         :"Menagerie Priest"
-
-      naga_priest?(card_info) ->
-        :"Naga Priest"
-
-      boon_priest?(card_info) ->
-        :"Boon Priest"
-
-      shellfish_priest?(card_info) ->
-        :"Shellfish Priest"
-
-      vanndar?(card_info) && shadow_priest?(card_info) ->
-        :"Vanndar Shadow Priest"
-
-      vanndar?(card_info) ->
-        :"Vanndar Priest"
-
-      thief_priest?(card_info) ->
-        :"Thief Priest"
 
       automaton_priest?(card_info) ->
         :"Automaton Priest"
 
-      shadow_priest?(card_info) ->
-        :"Shaggro Priest"
-
-      rager_priest?(card_info) ->
-        :"Rager Priest"
-
       overheal_priest?(card_info) ->
         :"Overheal Priest"
-
-      svalna_priest?(card_info) ->
-        :"Svalna Priest"
-
-      shadow_priest?(card_info) ->
-        :"Shadow Priest"
 
       zarimi?(card_info) and pain?(card_info) ->
         :"Pain Zarimi Priest"
@@ -71,9 +35,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       "Photographer Fizzle" in card_info.card_names ->
         :"Fizzle Priest"
-
-      "Pip the Potent" in card_info.card_names ->
-        :"Pip Priest"
 
       murloc?(card_info) ->
         :"Murloc Priest"
@@ -135,58 +96,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     ])
   end
 
-  defp svalna_priest?(card_info),
-    do: min_count?(card_info, 3, ["Radiant Elemental", "Animate Dead", "Sister Svalna"])
-
-  defp rager_priest?(card_info),
-    do:
-      "Scourge Rager" in card_info.card_names and
-        min_count?(card_info, 2, ["Animate Dead", "Grave Digging", "High Cultist Basaleph"])
-
-  defp shellfish_priest?(%{card_names: card_names}),
-    do: "Selfish Shellfish" in card_names && "Xyrella, the Devout" in card_names
-
-  defp boon_priest?(ci) do
-    min_count?(ci, 5, [
-      "Radiant Elemental",
-      "Switcheroo",
-      "Boon of the Ascended",
-      "Bless",
-      "Power Word: Fortitude",
-      "Focused Will",
-      "Illuminate"
-    ]) && type_count(ci, "Naga") < 5
-  end
-
-  defp naga_priest?(ci = %{card_names: card_names}) do
-    "Serpent Wig" in card_names && type_count(ci, "Naga") >= 5
-  end
-
-  defp shadow_priest?(%{card_names: card_names}), do: "Darkbishop Benedictus" in card_names
-
   defp control_priest?(ci) do
     min_count?(ci, 2, ["Harmonic Pop", "Repackage", "Lightbomb", "Shadow Word: Ruin"])
   end
-
-  defp thief_priest?(ci),
-    do:
-      min_count?(
-        ci,
-        5,
-        [
-          "Psychic Conjurer",
-          "Mysterious Visitor",
-          "Soothsayer's Caravan",
-          "Copycat",
-          "Identity Theft",
-          "Incriminating Psychic",
-          "Plagiarizarrr",
-          "Mind Eater",
-          "Theft Accusation",
-          "Murloc Holmes",
-          "The Harvester of Envy"
-        ]
-      )
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
@@ -264,7 +176,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         "Topsy Turvy",
         "Inner Fire",
         "Bless"
-    ])
+      ])
   end
 
   defp wild_switcheroo_priest?(card_info) do
