@@ -95,7 +95,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Bestial Madness",
       "Messenger Buzzard",
       "Char",
-      "Cup o'Muscle",
+      "Cup o' Muscle",
       "Ranger Gilly",
       "Overlord Runthak"
     ])
