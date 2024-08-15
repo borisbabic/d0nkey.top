@@ -54,7 +54,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       buttons?(card_info) ->
         :"Buttons DK"
 
-      "Frostbitten Freebooter" in card_info.card_names and deathrattle?(card_info) ->
+      "Frostbitten Freebooter" in card_info.card_names and deathrattle?(card_info, 2) ->
         :"Frostbitten DK"
 
       deathrattle?(card_info) ->
