@@ -204,8 +204,12 @@ defmodule Hearthstone.DeckTracker do
 
     opponent_class? = List.keymember?(criteria, "opponent_class", 0)
     player_btag? = List.keymember?(criteria, "player_btag", 0)
+    group? = List.keymember?(criteria, "in_group", 0)
 
     cond do
+      group? ->
+        {:error, :per_group_aggregation_not_supported}
+
       player_btag? ->
         {:error, :per_player_aggregation_not_supported}
 
@@ -1201,9 +1205,12 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"in_group", %GroupMembership{group_id: group_id}}, query) do
     query
-    |> join(:inner, [game: g], u in User, on: u.battletag == g.player_btag)
-    |> join(:inner, [_g, d, u], gm in GroupMembership, on: gm.user_id == u.id)
-    |> where([_g, _d, _u, gm], gm.group_id == ^group_id and gm.include_data == true)
+    |> join(:inner, [game: g], u in User, on: u.battletag == g.player_btag, as: :user)
+    |> join(:inner, [user: u], gm in GroupMembership,
+      on: gm.user_id == u.id,
+      as: :group_membership
+    )
+    |> where([group_membership: gm], gm.group_id == ^group_id and gm.include_data == true)
   end
 
   defp compose_games_query({"limit", limit}, query) when is_integer(limit) or is_binary(limit),
