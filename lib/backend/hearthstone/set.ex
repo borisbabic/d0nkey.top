@@ -13,6 +13,7 @@ defmodule Backend.Hearthstone.Set do
     field :non_collectible_revelead_count, :integer
     field :slug, :string
     field :type, :string
+    field :release_date, :date
 
     timestamps()
   end
@@ -30,6 +31,7 @@ defmodule Backend.Hearthstone.Set do
       :collectible_revealed_count,
       :non_collectible_count,
       :non_collectible_revelead_count,
+      :release_date,
       :type
     ])
     |> validate_required([
@@ -40,6 +42,12 @@ defmodule Backend.Hearthstone.Set do
       :collectible_revealed_count,
       :non_collectible_count
     ])
+  end
+
+  def set_release_date(set, release_date) do
+    set
+    |> cast(%{release_date: release_date}, [:release_date])
+    |> validate_required([:release_date])
   end
 
   # TODO add this to the DB

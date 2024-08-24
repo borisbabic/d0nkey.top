@@ -1340,4 +1340,61 @@ defmodule Backend.Hearthstone do
       _ -> id
     end
   end
+
+  @initial_release_date_info [
+    {"Perils in Paradise", "July 23, 2024", ~N[2024-07-23 00:00:00]},
+    {"Whizbang's Workshop", "March 19, 2024", ~N[2024-03-19 00:00:00]},
+    {"Event", "February 13, 2024", ~N[2024-02-13 00:00:00]},
+    {"Showdown in the Badlands", "November 14, 2023", ~N[2023-11-14 00:00:00]},
+    {"TITANS", "August 1, 2023", ~N[2023-08-01 00:00:00]},
+    {"Festival of Legends", "April 11, 2023", ~N[2023-04-11 00:00:00]},
+    {"Core", "March 30, 2021", ~N[2021-03-30 00:00:00]},
+    {"Caverns of Time", "August 31, 2023", ~N[2023-08-31 00:00:00]},
+    {"March of the Lich King", "December 6, 2022", ~N[2022-12-06 00:00:00]},
+    {"Path of Arthas", "December 6, 2022", ~N[2022-12-06 00:00:00]},
+    {"Murder at Castle Nathria", "August 2, 2022", ~N[2022-08-02 00:00:00]},
+    {"Voyage to the Sunken City", "April 12, 2022", ~N[2022-04-12 00:00:00]},
+    {"Fractured in Alterac Valley", "December 7, 2021", ~N[2021-12-07 00:00:00]},
+    {"United in Stormwind", "August 3, 2021", ~N[2021-08-03 00:00:00]},
+    {"Legacy", "March 30, 2021", ~N[2021-03-30 00:00:00]},
+    {"Forged in the Barrens", "March 30, 2021", ~N[2021-03-30 00:00:00]},
+    {"Madness at the Darkmoon Faire", "November 17, 2020", ~N[2020-11-17 00:00:00]},
+    {"Scholomance Academy", "August 6, 2020", ~N[2020-08-06 00:00:00]},
+    {"Demon Hunter Initiate", "April 7, 2020", ~N[2020-04-07 00:00:00]},
+    {"Ashes of Outland", "April 7, 2020", ~N[2020-04-07 00:00:00]},
+    {"Galakrond’s Awakening", "January 21, 2020", ~N[2020-01-21 00:00:00]},
+    {"Descent of Dragons", "December 10, 2019", ~N[2019-12-10 00:00:00]},
+    {"Saviors of Uldum", "August 6, 2019", ~N[2019-08-06 00:00:00]},
+    {"Rise of Shadows", "April 9, 2019", ~N[2019-04-09 00:00:00]},
+    {"Rastakhan’s Rumble", "December 4, 2018", ~N[2018-12-04 00:00:00]},
+    {"The Boomsday Project", "August 7, 2018", ~N[2018-08-07 00:00:00]},
+    {"The Witchwood", "April 12, 2018", ~N[2018-04-12 00:00:00]},
+    {"Kobolds and Catacombs", "December 7, 2017", ~N[2017-12-07 00:00:00]},
+    {"Knights of the Frozen Throne", "August 10, 2017", ~N[2017-08-10 00:00:00]},
+    {"Journey to Un’Goro", "April 6, 2017", ~N[2017-04-06 00:00:00]},
+    {"Mean Streets of Gadgetzan", "December 1, 2016", ~N[2016-12-01 00:00:00]},
+    {"One Night in Karazhan", "August 11, 2016", ~N[2016-08-11 00:00:00]},
+    {"Whispers of the Old Gods", "April 26, 2016", ~N[2016-04-26 00:00:00]},
+    {"League of Explorers", "November 12, 2015", ~N[2015-11-12 00:00:00]},
+    {"The Grand Tournament", "August 24, 2015", ~N[2015-08-24 00:00:00]},
+    {"Blackrock Mountain", "April 2, 2015", ~N[2015-04-02 00:00:00]},
+    {"Goblins vs Gnomes", "December 8, 2014", ~N[2014-12-08 00:00:00]},
+    {"Curse of Naxxramas", "July 22, 2014", ~N[2014-07-22 00:00:00]},
+    {"Legacy", "March 14, 2014", ~N[2014-03-14 00:00:00]}
+  ]
+  def init_card_set_release_date(release_date_info \\ @initial_release_date_info) do
+    sets = card_sets()
+
+    Enum.reduce(sets, Multi.new(), fn set, multi ->
+      case List.keyfind(release_date_info, set.name, 0) do
+        {_set_name, _, release_date} ->
+          changeset = Set.set_release_date(set, release_date)
+          Multi.update(multi, "card_set_#{set.id}_#{set.name}", changeset)
+
+        _ ->
+          multi
+      end
+    end)
+    |> Repo.transaction()
+  end
 end
