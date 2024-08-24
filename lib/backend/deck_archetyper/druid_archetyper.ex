@@ -275,6 +275,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       aviana_druid?(card_info) ->
         :"Aviana Druid"
 
+      wild_miracle_druid?(card_info) ->
+        :"Miracle Druid"
+
       true ->
         fallbacks(card_info, class_name)
     end
@@ -308,6 +311,13 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Sow the Soil",
       "Soul of the Forest",
       "Plot of Sin"
+    ])
+  end
+
+  defp wild_miracle_druid?(card_info) do
+    min_count?(card_info, 1, [
+      "Gadgetzan Auctioneer",
+      "Ysiel Windsinger"
     ])
   end
 end
