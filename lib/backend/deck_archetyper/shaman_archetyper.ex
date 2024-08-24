@@ -25,17 +25,14 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       totem_shaman?(card_info) ->
         :"Totem Shaman"
 
+      rainbow?(card_info, 2) ->
+        :"Rainbow Shaman"
+
       jive?(card_info) ->
         :"Jive Shaman"
 
-      rainbow?(card_info, 3) ->
-        :"Rainbow Shaman"
-
       DemonHunterArchetyper.pirate?(card_info) ->
         :"Pirate Shaman"
-
-      rainbow?(card_info, 2) ->
-        :"Rainbow Shaman"
 
       bonk?(card_info) ->
         :"Bonk Shaman"
