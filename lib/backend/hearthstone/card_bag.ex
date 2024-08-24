@@ -89,21 +89,8 @@ defmodule Backend.Hearthstone.CardBag do
   end
 
   defp set_deckcode_copy_id(table, cards) do
-    set_groups = Hearthstone.standard_card_sets()
-
-    grouped =
-      cards
-      |> Enum.group_by(&Hearthstone.canonical_id(&1.id))
-      |> Enum.filter(fn
-        # min two
-        {_, g = [_ | [_ | _]]} -> Enum.any?(g, &(&1.card_set.slug in set_groups))
-        _ -> false
-      end)
-
-    for {_, group} <- grouped,
-        %{id: target_id} = Enum.find(group, &(&1.card_set.slug in set_groups)),
-        %{id: id} when id != target_id <- group do
-      :ets.insert(table, {key_for_deckcode_copy_id(id), target_id})
+    for c <- cards do
+      :ets.insert(table, {key_for_deckcode_copy_id(c.id), c.deckcode_copy_id || c.id})
     end
   end
 
