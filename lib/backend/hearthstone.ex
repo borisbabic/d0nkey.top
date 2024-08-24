@@ -1279,67 +1279,77 @@ defmodule Backend.Hearthstone do
     }
   end
 
-  def canonical_id(id, prev \\ [])
+  # def canonical_id(id, prev \\ [])
 
-  def canonical_id(id, _) when Card.is_zilliax_art(id) do
+  def canonical_id(id) when Card.is_zilliax_art(id) do
     # pink
     110_446
   end
 
-  def canonical_id(id, prev) do
-    copy_of_card_id =
-      with %{copy_of_card_id: copy_id} <- get_card(id),
-           %{id: _} <- get_card(copy_id) do
-        copy_id
-      else
-        _ -> nil
-      end
-
-    cond do
-      # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
-      id in prev -> Enum.min(prev)
-      copy_of_card_id -> canonical_id(copy_of_card_id, [id | prev])
-      true -> id
-    end
-    |> hack_canonical_id()
-  end
-
-  def detect_circular(id, prev \\ []) do
-    copy_of_card_id =
-      with %{copy_of_card_id: copy_id} <- get_card(id),
-           %{id: _} <- get_card(copy_id) do
-        copy_id
-      else
-        _ -> nil
-      end
-
-    cond do
-      # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
-      id in prev -> get_card(id).name
-      copy_of_card_id -> detect_circular(copy_of_card_id, [id | prev])
-      true -> nil
-    end
-  end
-
-  # {copy_of_card_id, id}
-  # these copy_of_card_id cards ddon't exist
-  @hacks [
-    {62349, 89144},
-    {67855, 1186},
-    {62463, 89145},
-    {643, 69939},
-    {66862, 89149},
-    {62490, 89146},
-    {66863, 89150},
-    {66259, 89148},
-    {67975, 493}
-  ]
-  def hack_canonical_id(id) do
-    case List.keyfind(@hacks, id, 0) do
-      {_bad_id, good_id} -> good_id
+  def canonical_id(id) do
+    with nil <- CardBag.card(id),
+         nil <- get_card(id) do
+      id
+    else
+      %{canonical_id: canonical_id} when is_integer(canonical_id) -> canonical_id
       _ -> id
     end
   end
+
+  # def canonical_id(id, prev) do
+  #   copy_of_card_id =
+  #     with %{copy_of_card_id: copy_id} <- get_card(id),
+  #          %{id: _} <- get_card(copy_id) do
+  #       copy_id
+  #     else
+  #       _ -> nil
+  #     end
+
+  #   cond do
+  #     # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
+  #     id in prev -> Enum.min(prev)
+  #     copy_of_card_id -> canonical_id(copy_of_card_id, [id | prev])
+  #     true -> id
+  #   end
+  #   |> hack_canonical_id()
+  # end
+
+  # def detect_circular(id, prev \\ []) do
+  #   copy_of_card_id =
+  #     with %{copy_of_card_id: copy_id} <- get_card(id),
+  #          %{id: _} <- get_card(copy_id) do
+  #       copy_id
+  #     else
+  #       _ -> nil
+  #     end
+
+  #   cond do
+  #     # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
+  #     id in prev -> get_card(id).name
+  #     copy_of_card_id -> detect_circular(copy_of_card_id, [id | prev])
+  #     true -> nil
+  #   end
+  # end
+
+  # {copy_of_card_id, id}
+  # these copy_of_card_id cards ddon't exist
+  # @hacks [
+  #   {62349, 89144},
+  #   {67855, 1186},
+  #   {62463, 89145},
+  #   {643, 69939},
+  #   {66862, 89149},
+  #   {62490, 89146},
+  #   {66863, 89150},
+  #   {66259, 89148},
+  #   {67975, 493}
+  # ]
+  # def hack_canonical_id(id) do
+  #   case List.keyfind(@hacks, id, 0) do
+  #     {_bad_id, good_id} -> good_id
+  #     _ -> id
+  #   end
+  # end
 
   @initial_release_date_info [
     {"Perils in Paradise", "July 23, 2024", ~N[2024-07-23 00:00:00]},
@@ -1396,5 +1406,59 @@ defmodule Backend.Hearthstone do
       end
     end)
     |> Repo.transaction()
+
+    CardBag.refresh_table()
+  end
+
+  def set_referent_card_ids() do
+    collectible = cards([{"collectible", true}])
+    grouped = Enum.group_by(collectible, &Card.same_card_grouper/1)
+
+    Enum.reduce(grouped, Multi.new(), &do_handle_card_ids_group/2)
+    |> Repo.transaction()
+
+    CardBag.refresh_table()
+  end
+
+  # single card with ids already set to itself
+  defp do_handle_card_ids_group(
+         {_, [%{id: same_id, canonical_id: same_id, deckcode_copy_id: same_id}]},
+         multi
+       )
+       when is_integer(same_id),
+       do: multi
+
+  # single card without ids set to itself
+  defp do_handle_card_ids_group({group, [card]}, multi) do
+    changeset = Card.set_referent_card_ids(card, card.id, card.id)
+    Multi.update(multi, "#{group}_#{card.id}", changeset)
+  end
+
+  defp do_handle_card_ids_group({group, cards}, multi) do
+    {oldest, newest} =
+      cards
+      |> Enum.filter(& &1.card_set.release_date)
+      |> Enum.min_max_by(&(&1.card_set.release_date |> to_string))
+
+    deckcode_copy_id = oldest.id
+
+    canonical_id =
+      Enum.map(cards, & &1.canonical_id)
+      |> Enum.uniq()
+      |> Enum.filter(& &1)
+      |> case do
+        [existing_canonical_id] -> existing_canonical_id
+        [] -> newest.id
+        _ -> raise "Multiple canonical ids found"
+      end
+
+    Enum.reduce(cards, multi, fn card, multi ->
+      if card.deckcode_copy_id != deckcode_copy_id or card.canonical_id != canonical_id do
+        changeset = Card.set_referent_card_ids(card, canonical_id, deckcode_copy_id)
+        Multi.update(multi, "#{group}_#{card.id}", changeset)
+      else
+        multi
+      end
+    end)
   end
 end

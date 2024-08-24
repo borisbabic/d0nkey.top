@@ -62,6 +62,9 @@ defmodule Backend.Hearthstone.Card do
 
     embeds_one(:rune_cost, RuneCost, on_replace: :delete)
 
+    belongs_to(:canonical, Backend.Hearthstone.Card)
+    belongs_to(:deckcode_copy, Backend.Hearthstone.Card)
+
     timestamps()
   end
 
@@ -103,6 +106,15 @@ defmodule Backend.Hearthstone.Card do
     |> cast_embed(:rune_cost)
     |> validate_required([:id, :name])
     |> foreign_key_constraint(:card_set_id, name: :hs_cards_card_set_id_fkey)
+  end
+
+  def set_referent_card_ids(card, canonical_id, deckcode_copy_id) do
+    card
+    |> cast(%{canonical_id: canonical_id, deckcode_copy_id: deckcode_copy_id}, [
+      :canonical_id,
+      :deckcode_copy_id
+    ])
+    |> validate_required([:canonical_id, :deckcode_copy_id])
   end
 
   defp update_duels(%{duels: %{constructed: cons, relevant: rel}} = map) do
@@ -324,6 +336,11 @@ defmodule Backend.Hearthstone.Card do
   def spell_schools(_), do: []
 
   def our_url(%{id: id}), do: "https://www.hsguru.com/card/#{id}"
+
+  @spec same_card_grouper(card()) :: String.t()
+  def same_card_grouper(card) do
+    "name:#{name(card)}_cost:#{cost(card)}_health:#{card.health}_attack:#{card.attack}_text:#{card.text}_type:#{type(card)}"
+  end
 end
 
 defmodule Backend.Hearthstone.RuneCost do

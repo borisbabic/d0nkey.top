@@ -12,6 +12,7 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
     {"* */2 * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end},
     {"11 */2 * * *", fn -> Backend.Hearthstone.update_collectible_cards() end},
+    {"12 */2 * * *", fn -> Backend.Hearthstone.set_referent_card_ids() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
