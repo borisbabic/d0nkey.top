@@ -31,7 +31,6 @@ defmodule Backend.Hearthstone.Set do
       :collectible_revealed_count,
       :non_collectible_count,
       :non_collectible_revelead_count,
-      :release_date,
       :type
     ])
     |> validate_required([

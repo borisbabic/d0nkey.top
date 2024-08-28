@@ -105,7 +105,7 @@ defmodule Backend.Hearthstone do
         end
 
       Multi.insert(m, "#{struct_module}__insert__#{uniq_val}", cs,
-        on_conflict: {:replace_all_except, [:inserted_at]},
+        on_conflict: {:replace_all_except, [:inserted_at, :release_date]},
         conflict_target: conflict_target
       )
     end)
