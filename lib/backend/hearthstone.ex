@@ -363,11 +363,15 @@ defmodule Backend.Hearthstone do
 
   # want the one with the correct code first, then secondary ordered by latest
   defp deduplication_sorter(deck) do
+    same_code? = deck.deckcode == Deck.deckcode(deck)
+    canonical_cards? = Enum.map(deck.cards, &canonical_id/1) == deck.cards
+
     prepend =
-      if deck.deckcode == Deck.deckcode(deck) do
-        "PUTTHISAHEAD"
-      else
-        ""
+      cond do
+        same_code? and canonical_cards? -> "ZZZ"
+        canonical_cards? -> "TTT"
+        same_code? -> "HHH"
+        true -> "AAA"
       end
 
     date_part = NaiveDateTime.to_iso8601(deck.inserted_at)
