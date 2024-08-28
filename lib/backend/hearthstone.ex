@@ -1440,7 +1440,7 @@ defmodule Backend.Hearthstone do
       |> Enum.filter(& &1.card_set.release_date)
       |> Enum.min_max_by(&(&1.card_set.release_date |> to_string))
 
-    deckcode_copy_id = oldest.id
+    deckcode_copy_id = newest.id
 
     canonical_id =
       Enum.map(cards, & &1.canonical_id)
@@ -1448,7 +1448,7 @@ defmodule Backend.Hearthstone do
       |> Enum.filter(& &1)
       |> case do
         [existing_canonical_id] -> existing_canonical_id
-        [] -> newest.id
+        [] -> oldest.id
         _ -> raise "Multiple canonical ids found"
       end
 
