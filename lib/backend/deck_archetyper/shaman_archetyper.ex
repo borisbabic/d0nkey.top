@@ -10,22 +10,16 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       highlander?(card_info) ->
         :"Highlander Shaman"
 
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Shaman"
-
-      boar?(card_info) ->
-        :"Boar Shaman"
-
-      vanndar?(card_info) ->
-        :"Vanndar Shaman"
-
       menagerie?(card_info) ->
         :"Menagerie Shaman"
 
       totem_shaman?(card_info) ->
         :"Totem Shaman"
 
-      rainbow?(card_info, 2) ->
+      big?(card_info) ->
+        :"Big Shaman"
+
+      rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
         :"Rainbow Shaman"
 
       jive?(card_info) ->
@@ -61,20 +55,11 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       murloc?(card_info) ->
         :"Murloc Shaman"
 
-      big?(card_info) ->
-        :"Big Shaman"
-
       wish_shaman?(card_info) ->
         :"Wish Shaman"
 
-      bloodlust_shaman?(card_info) ->
-        :"Bloodlust Shaman"
-
       "Wave of Nostalgia" in card_info.card_names ->
         :"Nostalgia Shaman"
-
-      "From De Other Side" in card_info.card_names ->
-        :"FDOS Shaman"
 
       true ->
         fallbacks(card_info, "Shaman")
@@ -85,7 +70,12 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     min_count?(card_info, 3, ["Horn of the Windlord", "Skirting Death", "Turn the Tides"])
   end
 
-  defp rainbow?(card_info, min_count) do
+  defp rainbow?(card_info) do
+    rainbow_cards?(card_info, 1) and
+      spell_school_count(card_info) >= 4
+  end
+
+  defp rainbow_cards?(card_info, min_count) do
     min_count?(card_info, min_count, [
       "Siren Song",
       "Cabaret Headliner",
@@ -173,8 +163,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
         "Azerite Giant",
         "Kalimos, Primal Lord"
       ])
-
-  defp bloodlust_shaman?(%{card_names: card_names}), do: "Bloodlust" in card_names
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
