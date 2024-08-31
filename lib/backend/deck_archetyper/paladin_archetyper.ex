@@ -40,9 +40,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       dude_paladin?(card_info) ->
         :"Dude Paladin"
 
-      mech_paladin?(card_info) ->
-        :"Mech Paladin"
-
       drunk?(card_info) ->
         :"Drunk Paladin"
 
@@ -55,26 +52,17 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       holy_paladin?(card_info) ->
         :"Holy Paladin"
 
-      kazakusan?(card_info) ->
-        :"Kazakusan Paladin"
-
       big_paladin?(card_info) ->
         :"Big Paladin"
-
-      order_luladin?(card_info) ->
-        :"Order LULadin"
-
-      vanndar?(card_info) ->
-        :"Vanndar Paladin"
 
       murloc?(card_info) ->
         :"Murloc Paladin"
 
-      boar?(card_info) ->
-        :"Boar Paladin"
-
       "Cardboard Golem" in card_info.card_names ->
         :"Aura Paladin"
+
+      "Pipsi Painthoof" in card_info.card_names ->
+        :"Pipsi Paladin"
 
       true ->
         fallbacks(card_info, "Paladin")
@@ -182,21 +170,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         "Stand Against Darkness"
       ])
 
-  defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &neutral?/1)
-
-  defp order_luladin?(ci = %{card_names: card_names}),
-    do:
-      "Order in the Court" in card_names &&
-        min_count?(ci, 2, ["The Jailer", "Reno Jackson", "The Countess"])
-
-  defp neutral?(card) do
-    case Card.class(card) do
-      {:ok, "NEUTRAL"} -> true
-      _ -> false
-    end
-  end
-
-  defp mech_paladin?(%{card_names: card_names}), do: "Radar Detector" in card_names
+  defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &Card.neutral?/1)
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
