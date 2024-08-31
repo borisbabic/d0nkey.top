@@ -1133,6 +1133,7 @@ defmodule Backend.Hearthstone do
         card_set: cs,
         card_type: ct,
         keywords: k,
+        rarity: r,
         classes: cl,
         minion_type: mt,
         spell_school: ss

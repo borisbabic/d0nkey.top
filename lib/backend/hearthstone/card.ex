@@ -182,7 +182,7 @@ defmodule Backend.Hearthstone.Card do
       ] do
     @doc "Check if the card is of the right rarity"
     @spec unquote(method)(card()) :: boolean
-    def unquote(method)(card), do: unquote(rarity) == card
+    def unquote(method)(card), do: unquote(rarity) == rarity(card)
   end
 
   @spec max_copies_in_deck(card()) :: integer()
