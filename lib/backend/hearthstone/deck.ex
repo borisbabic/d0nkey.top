@@ -23,7 +23,7 @@ defmodule Backend.Hearthstone.Deck do
     field(:archetype, Ecto.Atom, default: nil)
     field(:hsreplay_archetype, :integer, default: nil)
     field(:cost, :integer, default: nil)
-    embeds_many(:sideboards, Sideboard)
+    embeds_many(:sideboards, Sideboard, on_replace: :delete)
     timestamps()
   end
 
@@ -54,6 +54,18 @@ defmodule Backend.Hearthstone.Deck do
       |> Map.put(:cost, cost(a))
 
     changeset(c, attrs)
+  end
+
+  def cards_and_deckcode_changeset(deck) do
+    attrs = %{
+      cards: canonicalize_cards(deck.cards),
+      sideboards: canonicalize_sideboards(deck.sideboards) |> Enum.map(&Map.from_struct/1),
+      deckcode: deckcode(deck)
+    }
+
+    deck
+    |> cast(attrs, [:cards, :deckcode])
+    |> cast_embed(:sideboards)
   end
 
   def update_archetype_changeset(deck, archetype) do
