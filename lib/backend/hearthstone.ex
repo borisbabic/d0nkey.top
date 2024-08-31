@@ -1465,4 +1465,48 @@ defmodule Backend.Hearthstone do
       end
     end)
   end
+
+  @spec fix_cards_and_deckcode(NaiveDateTime.t() | DateTime.t() | String.t()) :: any()
+  def fix_cards_and_deckcode(cutoff_date) do
+    needs_fixing = needs_cards_and_deckcode_fixing(cutoff_date)
+    IO.puts("Number needs fixing #{Enum.count(needs_fixing)}")
+
+    Enum.reduce(needs_fixing, Multi.new(), fn val, m ->
+      changeset = Deck.cards_and_deckcode_changeset(val)
+      Multi.update(m, "deck_#{val.id}_#{val.deckcode}", changeset, on_conflict: :nothing)
+    end)
+    |> Repo.transaction(timeout: :infinity)
+  end
+
+  @spec needs_cards_and_deckcode_fixing(NaiveDateTime.t() | DateTime.t() | String.t()) :: [
+          Deck.t()
+        ]
+  def needs_cards_and_deckcode_fixing(cutoff_date) do
+    query = from d in Deck, where: d.inserted_at >= ^cutoff_date
+    decks = Repo.all(query, timeout: :infinity)
+
+    Enum.filter(decks, fn %{cards: cards, deckcode: deckcode, sideboards: sideboards} = deck ->
+      cards != Deck.canonicalize_cards(cards) or
+        deckcode != Deck.deckcode(deck) or
+        sideboards != Deck.canonicalize_sideboards(sideboards)
+    end)
+  end
+
+  def deduplicate_decks_after_date(cutoff_date) do
+    query = from d in Deck, where: d.inserted_at >= ^cutoff_date
+    decks = Repo.all(query, timeout: :infinity)
+    grouped = Enum.group_by(decks, &Backend.Hearthstone.Deck.deckcode/1)
+    dupl = Enum.filter(grouped, fn {_, d} -> Enum.count(d) > 1 end)
+    IO.puts("Number of duplicated #{Enum.count(dupl)}")
+
+    for {_, decks} <- dupl do
+      ids = Enum.map(decks, & &1.id)
+
+      try do
+        deduplicate_ids(ids)
+      rescue
+        _ -> IO.puts("Error fixing #{inspect(ids)}")
+      end
+    end
+  end
 end
