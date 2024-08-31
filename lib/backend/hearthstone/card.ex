@@ -236,6 +236,13 @@ defmodule Backend.Hearthstone.Card do
     end
   end
 
+  def neutral?(card) do
+    case class(card) do
+      {:ok, "NEUTRAL"} -> true
+      _ -> false
+    end
+  end
+
   @spec cost(card()) :: integer()
   def cost(%{cost: cost}), do: cost
   def cost(%{mana_cost: cost}), do: cost
