@@ -176,6 +176,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     num >= min
   end
 
+  @spec min_spell_school_count?(card_info(), integer(), atom()) :: boolean()
   def min_spell_school_count?(ci, min, spell_school) do
     num =
       ci
@@ -189,6 +190,13 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     full_cards
     |> Enum.flat_map(&Card.spell_schools/1)
     |> Enum.frequencies()
+  end
+
+  @spec spell_school_count(card_info()) :: integer()
+  def spell_school_count(card_info) do
+    card_info
+    |> spell_school_map()
+    |> Enum.count()
   end
 
   def ogre?(ci) do
