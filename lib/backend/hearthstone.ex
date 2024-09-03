@@ -1050,6 +1050,12 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"minion_type", value}, query),
     do: ilike_name_or_slug(value <> @default_splitter, query, :minion_type)
 
+  defp compose_cards_query({"spell_school", value}, query),
+    do: ilike_name_or_slug(value <> @default_splitter, query, :spell_school)
+
+  defp compose_cards_query({"rarity", value}, query),
+    do: ilike_name_or_slug(value <> @default_splitter, query, :rarity)
+
   defp compose_cards_query({"format", format}, query) when format in [1, "1"],
     do: compose_cards_query({"format", "wild"}, query)
 
@@ -1509,5 +1515,29 @@ defmodule Backend.Hearthstone do
         _ -> IO.puts("Error fixing #{inspect(ids)}")
       end
     end
+  end
+
+  @spec minion_type_options(mode :: integer()) :: [{slug :: String.t(), name :: String.t()}]
+  def minion_type_options(mode) do
+    Repo.all(from mt in MinionType, where: ^mode in mt.game_modes)
+    |> to_slug_name_options()
+  end
+
+  @spec spell_school_options() :: [{slug :: String.t(), name :: String.t()}]
+  def spell_school_options() do
+    Repo.all(SpellSchool)
+    |> to_slug_name_options()
+  end
+
+  @spec rarity_options() :: [{slug :: String.t(), name :: String.t()}]
+  def rarity_options() do
+    Repo.all(from(r in Rarity))
+    |> to_slug_name_options()
+  end
+
+  defp to_slug_name_options(thing) do
+    Enum.map(thing, fn
+      %{slug: slug, name: name} -> {slug, name}
+    end)
   end
 end

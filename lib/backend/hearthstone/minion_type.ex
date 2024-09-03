@@ -1,4 +1,5 @@
 defmodule Backend.Hearthstone.MinionType do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
