@@ -312,13 +312,13 @@ defmodule Backend.Hearthstone.Card do
 
   def quest?(_), do: false
 
+  @tourist_regex ~r/<b>([a-zA-Z ]+) Tourist(.)?<\/b>/
   @spec tourist?(card()) :: boolean()
-  def tourist?(%{text: t}) when is_binary(t), do: t =~ "Tourist</b>"
+  def tourist?(%{text: t}) when is_binary(t), do: Regex.match?(@tourist_regex, t)
   def tourist?(_), do: false
-  @tourist_regex ~r/<b>([a-zA-Z ]+) Tourist<\/b>/
   @spec tourist_class(card()) :: {:ok, String.t()} | {:error, atom()}
   def tourist_class(%{text: t}) do
-    with [_, class] <- Regex.run(@tourist_regex, t),
+    with [_, class | _] <- Regex.run(@tourist_regex, t),
          normalized <- Deck.normalize_class_name(class),
          true <- normalized in Deck.classes() do
       {:ok, normalized}
