@@ -133,7 +133,7 @@ defmodule Components.CardsExplorer do
           phx-target={@myself}
           phx-viewport-bottom={!@end_of_stream? && "next-cards-page"}>
           <div id={id} :for={{id, c} <- @streams.cards} class={"column", "is-narrow", "is-clickable": !!@on_card_click, "not-in-list": @card_disabled.(c)} phx-value-card_id={c.id} :on-click={unless @card_disabled.(c), do: @on_card_click}>
-            <Card card={c} disable_link={!!@on_card_click}/>
+            <Card shrink_mobile={true} card={c} disable_link={!!@on_card_click}/>
           </div>
         </div>
       </div>
