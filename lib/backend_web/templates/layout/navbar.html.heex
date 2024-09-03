@@ -55,6 +55,11 @@
         </.navbar_dropdown>
         <.navbar_item_link link={~p"/meta"} display={"Meta"} />
         <.navbar_item_link link={~p"/streamer-decks"} display={"Streamer Decks"}/>
+        <.navbar_dropdown display="Utilities">
+          <.navbar_item_link link={~p"/deckviewer"} display={"Deckviewer"} />
+          <.navbar_item_link link={~p"/deckbuilder"} display={"Deckbuilder"} />
+          <.navbar_item_link link={~p"/cards"} display={"Cards"} />
+        </.navbar_dropdown>
         <.navbar_dropdown display="Misc">
             <div class="nested dropdown navbar-item">
               <div class="dropdown-trigger is-flex">
@@ -75,9 +80,6 @@
                 </div>
               </div>
             </div>
-          <.navbar_item_link link={~p"/deckviewer"} display={"Deckviewer"} />
-          <.navbar_item_link link={~p"/deckbuilder"} display={"Deckbuilder (WIP!)"} />
-          <.navbar_item_link link={~p"/cards"} display={"Cards"} />
           <.navbar_item_link link={~p"/battlefy/third-party-tournaments"} display={"3rd Party Tournaments"} />
           <.navbar_item_link link={~p"/battlefy/tournaments-stats"} display={"Battlefy Tournament Stats"} />
           <.navbar_item_link link={~p"/streaming-now"} display={"Streaming Now"} />
