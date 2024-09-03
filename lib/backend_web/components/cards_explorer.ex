@@ -12,6 +12,9 @@ defmodule Components.CardsExplorer do
     AttackDropdown,
     HealthDropdown,
     ManaCostDropdown,
+    MinionTypeDropdown,
+    SpellSchoolDropdown,
+    RarityDropdown,
     CardTypeDropdown,
     ClassDropdown
   }
@@ -110,11 +113,14 @@ defmodule Components.CardsExplorer do
     ~F"""
       <div>
         <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={[{2, "Standard"}, {1, "Wild"}]} />
-        <ClassDropdown options={@class_options} id="class_dropdown" include_neutral={true}/>
-        <CardTypeDropdown id="cards_card_type_dropdown" param="card_type" title="Card Type" />
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
         <AttackDropdown id="cards_attack_dropdown" />
         <HealthDropdown id="cards_attack_dropdown" />
+        <ClassDropdown options={@class_options} id="class_dropdown" include_neutral={true}/>
+        <CardTypeDropdown id="cards_card_type_dropdown" />
+        <MinionTypeDropdown id="cards_minion_type_dropdown"/>
+        <SpellSchoolDropdown id="cards_spell_school_dropdown" />
+        <RarityDropdown id="cards_rarity_dropdown" />
         <!-- <LivePatchDropdown id="cards_collectible" param="collectible" title="Collectible" options={[{"no", "Uncollectible"}, {"yes", "Collectible"}]} /> -->
         <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
         <Form for={%{}} as={:search} change="change" submit="change">
@@ -186,6 +192,9 @@ defmodule Components.CardsExplorer do
       "health",
       "mana_cost",
       "collectible",
+      "minion_type",
+      "rarity",
+      "spell_school",
       "order_by",
       "search",
       "format",
