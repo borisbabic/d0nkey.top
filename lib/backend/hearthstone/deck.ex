@@ -894,11 +894,22 @@ defmodule Backend.Hearthstone.Deck do
     !Card.zilliax_3000?(id)
   end
 
+  def addable?(_deck, nil), do: false
+
   def addable?(deck, card_id) when is_integer(card_id) do
     addable?(deck, Hearthstone.get_card(card_id))
   end
 
-  def addable?(%{cards: cards, sideboards: sideboards}, card) do
+  def addable?(deck, card) do
+    total = total_copies(deck, card)
+    max_allowed = Card.max_copies_in_deck(card)
+    # max one tourist per deck
+    total < max_allowed and
+      (!Card.tourist?(card) or
+         Enum.count(tourists(deck)) < 1)
+  end
+
+  def total_copies(%{cards: cards, sideboards: sideboards}, card) do
     card_id = CardBag.deckcode_copy_id(card.id)
     in_deck = Enum.filter(cards, &(card_id == CardBag.deckcode_copy_id(&1))) |> Enum.count()
 
@@ -907,15 +918,13 @@ defmodule Backend.Hearthstone.Deck do
       |> Enum.map(& &1.count)
       |> Enum.sum()
 
-    total = in_deck + in_sideboards
-    max_allowed = Card.max_copies_in_deck(card)
-    total < max_allowed
+    in_deck + in_sideboards
   end
 
   def tourists(deck) do
     deck.cards
     |> Enum.map(&Backend.Hearthstone.get_card/1)
-    |> Enum.filter(&Card.tourist?/1)
+    |> Enum.filter(&(&1 && Card.tourist?(&1)))
   end
 
   def tourist_class_set_tuples(deck) do
