@@ -97,10 +97,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   end
 
   defp pain?(card_info) do
-    min_count?(card_info, 3, [
+    min_count?(card_info.card_names ++ card_info.zilliax_modules_names, 3, [
       "Party Fiend",
       "Cursed Souvenir",
-      "Tropg Exile",
+      "Trogg Exile",
+      "Sheriff Barrelbrim",
+      "Haywire Module",
       "Party Planner Vona"
     ])
   end
