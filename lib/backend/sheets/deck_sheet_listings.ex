@@ -14,6 +14,7 @@ defmodule Backend.Sheets.DeckSheetListing do
     field :comment, :string, default: nil
     field :source, :string, default: nil
     field :extra_columns, :map, default: %{}
+    timestamps()
   end
 
   @spec create(DeckSheet.t(), Deck.t(), Map.t()) :: Changeset.t()
