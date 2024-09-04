@@ -27,7 +27,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       big_spell_mage?(card_info) ->
         :"Big Spell Mage"
 
-      spell_mage?(card_info) ->
+      no_minion?(card_info, 2) ->
         :"Spell Mage"
 
       murloc?(card_info) ->
@@ -91,8 +91,14 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
 
+      hostage_mage?(card_info) ->
+        :"Hostage Mage"
+
       ping_mage?(card_info) ->
         :"Ping Mage"
+
+      no_minion?(card_info, 2) ->
+        :"Spell Mage"
 
       "Sif" in card_info.card_names ->
         :"Sif Mage"
@@ -115,13 +121,27 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
     min_count?(card_info, 2, ["Go with the Flow", "Sorcerer's Apprentice"])
   end
 
-  defp spell_mage?(card_info) do
-    min_count?(card_info, 2, [
+  defp no_minion?(card_info, min_count) do
+    min_count?(card_info, min_count, [
+      # wild
+      "Font of Power",
+      "Apexis Blast",
+      # standard
       "Malfunction",
       "Spot the Difference",
       "Yogg in the Box",
       "Manufacturing Error"
     ])
+  end
+
+  defp hostage_mage?(card_info) do
+    min_count?(card_info, 2, ["Solid Alibi", "Ice Block"]) and
+      min_count?(card_info, 2, [
+        "Rewind",
+        "Tidepool Pupil",
+        "Commander Sivara",
+        "Grand Magister Rommath"
+      ])
   end
 
   defp ping_mage?(card_info) do

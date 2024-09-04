@@ -210,10 +210,16 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         :"Holy Wrath Paladin"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        String.to_atom("Mecha'thun #{class_name}")
 
       wild_shanty_paladin?(card_info) ->
         :"Sea Shanty Paladin"
+
+      "Painter's Virtue" in card_info.card_names ->
+        :"Handbuff Paladin"
+
+      "Call to Arms" in card_info.card_names ->
+        :"CtA Paladin"
 
       true ->
         fallbacks(card_info, class_name)
