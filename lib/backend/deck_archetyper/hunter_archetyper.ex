@@ -138,6 +138,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Floppy Hydra" in card_info.card_names ->
         :"Floppy Hydra Hunter"
 
+      "Adaptive Amalgam" in card_info.card_names ->
+        :"Amalgam Hunter"
+
       true ->
         fallbacks(card_info, class_name)
     end

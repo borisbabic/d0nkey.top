@@ -232,6 +232,10 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     "Aviana" in card_info.card_names
   end
 
+  defp charge?(card_info) do
+    min_keyword_count?(card_info, 2, "charge")
+  end
+
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
 
@@ -272,15 +276,34 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      charge?(card_info) ->
+        :"Charge Druid"
+
       aviana_druid?(card_info) ->
         :"Aviana Druid"
 
       wild_miracle_druid?(card_info) ->
         :"Miracle Druid"
 
+      min_keyword_count?(card_info, 4, "spell-damage") ->
+        :"Spell Damage Druid"
+
+      jade_golem?(card_info) ->
+        :"Jade Druid"
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp jade_golem?(card_info) do
+    min_count?(card_info, 3, [
+      "Jade Idol",
+      "Jade Blossom",
+      "Jade Spirit",
+      "Jade Behemoth",
+      "Aya Blackpaw"
+    ])
   end
 
   defp wild_mill_druid?(card_info) do

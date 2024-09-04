@@ -195,12 +195,19 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       wild_big_shaman?(card_info) ->
         :"Big Shaman"
 
+      wild_pirate?(card_info) ->
+        :"Pirate Shaman"
+
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        String.to_atom("Mecha'thun #{class_name}")
 
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp wild_pirate?(card_info) do
+    min_count?(card_info, 2, ["Patches the Pilot", "Patches the Pirate"])
   end
 
   defp wild_big_shaman?(card_info) do

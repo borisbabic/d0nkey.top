@@ -96,6 +96,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       control_warlock?(card_info) ->
         :"Control Warlock"
 
+      discard?(card_info, 5) ->
+        :"Discard Warlock"
+
       "Lord Jaraxxus" in card_info.card_names ->
         :"J-Lock"
 
@@ -219,17 +222,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       quest?(card_info) ->
         String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
 
-      boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
-
       baku?(card_info) ->
         String.to_atom("Odd #{class_name}")
 
       genn?(card_info) ->
         String.to_atom("Even #{class_name}")
 
-      "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+      discard?(card_info, 10) ->
+        :"Discard Warlock"
 
       sludgelock?(card_info) ->
         :"Sludge Warlock"
@@ -243,9 +243,69 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun #{class_name}"
 
+      discard?(card_info, 6) ->
+        :"Discard Warlock"
+
+      boar?(card_info) ->
+        String.to_atom("Boar #{class_name}")
+
+      "King Togwaggle" in card_info.card_names ->
+        String.to_atom("Tog #{class_name}")
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp discard?(card_info, min_count) do
+    min_count?(card_info, min_count, [
+      "Shriek",
+      "Darkshire Librarian",
+      "Clutchmother Zavas",
+      "Felstaker",
+      "Reckless Diretroll",
+      "Howlfiend",
+      "Plague Eruption",
+      "Trolley Problem",
+      "Suffocating Shadows",
+      "High Priestess Jeklik",
+      "Wing Welding",
+      "Nightshade Matron",
+      "Lakkari Felhound",
+      "Disciple of Sargeras",
+      "Gloomstone Guardian",
+      "Doomguard",
+      "Cruel Dinomancer",
+      "Spawn of Deathwing",
+      "Savage Ymirjar",
+      "Amorphous Slime",
+      "Rin, Orchestrator of Doom",
+      "Malchezaar's Imp",
+      "Blood-Queen Lana'thel",
+      "Felsoul Jailer",
+      "Cataclysm",
+      "Tome Tampering",
+      "Soulwarden",
+      "Hand of Gul'dan",
+      "Cho'gall",
+      "Grimtotem Buzzkill",
+      "Furnacefire Colossus",
+      "Deathwing the Destroyer",
+      "Deathwing",
+      "Soulfire",
+      "The Soularium",
+      "Wicked Whispers",
+      "Boneweb Egg",
+      "Expired Merchant",
+      "Tiny Knight of Evil",
+      "Chamber of Viscidus",
+      "Scourge Supplies",
+      "Silverware Golem",
+      "Walking Dead",
+      "Dark Bargain",
+      "Fist of Jaraxxus",
+      "Soul Barrage"
+    ])
   end
 
   defp wild_fatigue_warlock?(card_info) do

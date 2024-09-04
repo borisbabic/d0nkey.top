@@ -30,6 +30,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       topdeck?(card_info) ->
         :"Topdeck Priest"
 
+      thief?(card_info, 5) ->
+        :"Thief Priest"
+
       control_priest?(card_info) ->
         :"Control Priest"
 
@@ -147,14 +150,56 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         :"Hedanis Priest"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun #{class_name}"
 
       "Astral Automaton" in card_info.card_names ->
-        "Automaton Priest"
+        :"Automaton Priest"
+
+      thief?(card_info, 5) ->
+        :"Thief Priest"
+
+      "Radiant Elemental" in card_info.card_names ->
+        :"Radiant Priest"
 
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp thief?(card_info, min_count) do
+    min_count?(card_info, min_count, [
+      "Crystalline Oracle",
+      "Psychic Conjurer",
+      "Psionic Probe",
+      "Theft Accusation",
+      "Chameleos",
+      "Mindeater",
+      "Soothsayer's Caravan",
+      "Envoy of Lazul",
+      "Madame Lazul",
+      "Curious Glimmerroot",
+      "Copycat",
+      "Mindrender Illucia",
+      "Shifting Shade",
+      "Incriminating PSychic",
+      "Drakonid Operative",
+      "Tram Heist",
+      "Devour Mind",
+      "Archbishop Benedictus",
+      "Drakkari Trickster",
+      "Mischief Maker",
+      "Fate Splitter",
+      "Murloc Holmes",
+      "Southsea Scoundrel",
+      "Tony, King of Piracy",
+      "King Togwaggle",
+      "The Harvester of Envy",
+      "Mystery Visitor",
+      "Identity Theft",
+      "Tram Heist",
+      "Mind Vision",
+      "Cloning Device"
+    ])
   end
 
   defp wild_rez_priest?(card_info) do
@@ -180,9 +225,8 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   end
 
   defp wild_switcheroo_priest?(card_info) do
-    min_count?(card_info, 3, [
+    min_count?(card_info, 2, [
       "Switcheroo",
-      "The Darkness",
       "Stonetusk Boar"
     ]) and
       min_count?(card_info, 1, [

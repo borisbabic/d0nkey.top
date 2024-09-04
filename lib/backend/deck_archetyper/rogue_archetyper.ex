@@ -146,6 +146,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Greedy Partner",
         "Bounty Wrangler",
         "Oh, Manager!",
+        "Counterfeit Coin",
         "Metal Detector"
       ])
   end
@@ -312,6 +313,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
+
+      coin_rogue?(card_info) ->
+        :"Coin Rogue"
 
       true ->
         fallbacks(card_info, class_name)
