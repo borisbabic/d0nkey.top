@@ -22,6 +22,7 @@ defmodule Components.CardsExplorer do
   import Components.DecksExplorer, only: [parse_int: 2]
 
   data(streams, :list)
+  slot(above_card, required: false)
   data(end_of_stream?, :boolean, default: false)
   data(offset, :integer, default: 0)
   prop(format_filter, :boolean, default: true)
@@ -133,7 +134,11 @@ defmodule Components.CardsExplorer do
           phx-target={@myself}
           phx-viewport-bottom={!@end_of_stream? && "next-cards-page"}>
           <div id={id} :for={{id, c} <- @streams.cards} class={"column", "is-narrow", "is-clickable": !!@on_card_click, "not-in-list": @card_disabled.(c)} phx-value-card_id={c.id} :on-click={unless @card_disabled.(c), do: @on_card_click}>
-            <Card shrink_mobile={true} card={c} disable_link={!!@on_card_click}/>
+            <Card shrink_mobile={true} card={c} disable_link={!!@on_card_click}>
+              <:above_image :let={card: card}>
+                <#slot {@above_card, card: card} />
+              </:above_image>
+            </Card>
           </div>
         </div>
       </div>
