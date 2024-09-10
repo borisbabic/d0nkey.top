@@ -98,6 +98,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp pain?(card_info) do
     min_count?(card_info.card_names ++ card_info.zilliax_modules_names, 3, [
+      "Fine Print",
       "Party Fiend",
       "Cursed Souvenir",
       "Trogg Exile",
@@ -187,6 +188,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Air Guitarist",
       "Harmonic Hip Hop",
       "Mic Drop",
+      "Sharp Shipment",
       "Swarthy Swordshiner"
     ])
   end

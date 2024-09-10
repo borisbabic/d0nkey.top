@@ -93,7 +93,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   end
 
   def weapon_dh?(ci) do
-    min_count?(ci, 2, ["Quick Pick", "Umberwing", "Umpire's Grasp"]) and
+    min_count?(ci, 2, ["Quick Pick", "Umberwing", "Umpire's Grasp", "Infernal Stapler"]) and
       min_count?(ci, 1, [
         "Abyssal Bassist",
         "Shadestone Skulker",

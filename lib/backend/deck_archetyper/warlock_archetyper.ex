@@ -304,6 +304,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Walking Dead",
       "Dark Bargain",
       "Fist of Jaraxxus",
+      "Deadline",
       "Soul Barrage"
     ])
   end

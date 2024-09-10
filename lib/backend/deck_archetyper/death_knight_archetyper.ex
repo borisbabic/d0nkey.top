@@ -94,6 +94,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Death Growl",
       "Brittlebone Buccaneer",
       "Dead Air",
+      "Eternal Layover",
       "Yelling Yodeler"
     ])
   end
