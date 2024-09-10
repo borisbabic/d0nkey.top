@@ -159,6 +159,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   defp dude_paladin?(ci),
     do:
       min_count?(ci, 3, [
+        "Vacation Planner",
         "Jury Duty",
         "Promotion",
         "Soldier's Caravan",

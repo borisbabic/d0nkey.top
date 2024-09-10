@@ -63,7 +63,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       ])
 
   defp big_spell_mage?(ci) do
-    min_count?(ci, 2, ["Surfalopod", "King Tide"])
+    min_count?(ci, 2, ["Surfalopod", "King Tide", "Portalmancer Skyla"])
   end
 
   def wild(card_info) do
