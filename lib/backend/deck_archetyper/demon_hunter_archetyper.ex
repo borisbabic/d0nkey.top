@@ -10,38 +10,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       highlander?(card_info) ->
         :"Highlander DH"
 
-      boar?(card_info) ->
-        :"Boar Demon Hunter"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Demon Hunter"
-
-      deathrattle_dh?(card_info) ->
-        :"Deathrattle DH"
-
-      clean_slate_dh?(card_info) ->
-        :"Clean Slate DH"
-
-      big_dh?(card_info) ->
-        :"Big Demon Hunter"
-
       murloc?(card_info) ->
         :"Murloc Demon Hunter"
-
-      fel_dh?(card_info) && spell_dh?(card_info) && relic_dh?(card_info) ->
-        :"Spffellic Demon Hunter"
-
-      spell_dh?(card_info) && fel_dh?(card_info) ->
-        :"Spffell Demon Hunter"
-
-      spell_dh?(card_info) && relic_dh?(card_info) ->
-        :"Spellic Demon Hunter"
-
-      fel_dh?(card_info) && relic_dh?(card_info) ->
-        :"Felic Demon Hunter"
-
-      spell_dh?(card_info) ->
-        :"Spell Demon Hunter"
 
       naga_dh?(card_info) and shopper_dh?(card_info) ->
         :"Naga Shopper DH"
@@ -58,26 +28,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       weapon_dh?(card_info) ->
         :"Weapon DH"
 
-      aggro_dh?(card_info) && outcast_dh?(card_info) ->
-        :"Aggro Outcast DH"
-
-      aggro_dh?(card_info) && relic_dh?(card_info) ->
-        :"Aggro Relic DH"
-
       pirate?(card_info) ->
         :"Pirate Demon Hunter"
 
       PriestArchetyper.pain?(card_info) ->
         :"Pain Demon Hunter"
 
-      aggro_dh?(card_info) ->
-        :"Aggro Demon Hunter"
-
       fatigue?(card_info) ->
         :"Fatigue Demon Hunter"
-
-      fel_dh?(card_info) ->
-        :"Fel Demon Hunter"
 
       relic_dh?(card_info) ->
         :"Relic Demon Hunter"
@@ -148,33 +106,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     "Blindeye Sharpshooter" in ci.card_names and type_count(ci, "Naga") >= 4
   end
 
-  def spell_dh?(c),
-    do:
-      min_count?(c, 3, [
-        "Souleater's Scythe",
-        "Mark of Scorn",
-        "Fel'dorei Warband",
-        "Deal with a Devil"
-      ])
-
   def outcast_dh?(c), do: min_keyword_count?(c, 4, "outcast")
-
-  defp deathrattle_dh?(%{card_names: card_names}),
-    do:
-      "Death Speaker Blackthorn" in card_names ||
-        ("Tuskpiercier" in card_names && "Razorboar" in card_names)
-
-  defp aggro_dh?(ci) do
-    min_count?(ci, 4, [
-      "Irondeep Trogg",
-      "Bibliomite",
-      "Mankrik",
-      "Sightless Magistrate",
-      "Battlefiend",
-      "Metamorfin",
-      "Magnifying Glaive"
-    ])
-  end
 
   defp relic_dh?(ci) do
     min_count?(ci, 4, [
@@ -194,20 +126,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         "Felgorger"
       ])
   end
-
-  defp big_dh?(ci = %{card_names: card_names}),
-    do:
-      "Sigil of Reckoning" in card_names || vanndar?(ci) ||
-        min_count?(ci, 2, ["Felscale Evoker", "Illidari Inquisitor", "Brutal Annihilan"])
-
-  defp clean_slate_dh?(ci),
-    do:
-      min_count?(ci, 4, [
-        "Dispose of Evidence",
-        "Magnifying Glaive",
-        "Kryxis the Voracious",
-        "Bibliomite"
-      ])
 
   defp relic?(ci),
     do:
