@@ -33,8 +33,9 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   def from_raw_map(map = %{}, created_by) do
     %GameDto{
-      player: map["player"] |> PlayerDto.from_raw_map(),
-      opponent: (map["opponent"] || map["opposing_player"]) |> PlayerDto.from_raw_map(),
+      player: map["player"] |> PlayerDto.from_raw_map(map["format"]),
+      opponent:
+        (map["opponent"] || map["opposing_player"]) |> PlayerDto.from_raw_map(map["format"]),
       game_id: map["game_id"],
       game_type: map["game_type"],
       format: map["format"],
@@ -166,6 +167,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
     end
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def status(dto) do
     case dto.result do
       "WIN" ->
@@ -217,6 +219,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
   use TypedStruct
   alias Hearthstone.DeckTracker.CardDrawnDto
   alias Hearthstone.DeckTracker.CardMulliganDto
+  alias Backend.Hearthstone.Deck
 
   typedstruct do
     field :battletag, String.t()
@@ -228,7 +231,22 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
     field :class, String.t()
   end
 
-  @spec from_raw_map(Map.t()) :: PlayerDto.t()
+  @spec from_raw_map(Map.t(), String.t() | integer()) :: PlayerDto.t()
+  def from_raw_map(map, deck_format_override) do
+    new_map =
+      with new_format when is_integer(new_format) <- Util.to_int_or_orig(deck_format_override),
+           code when is_binary(code) <- map["deckcode"],
+           {:ok, %{format: old_format, cards: cards, hero: hero, sideboards: sideboards}}
+           when old_format != new_format <- Deck.decode(code) do
+        new_deckcode = Deck.deckcode(cards, hero, new_format, sideboards)
+        Map.put(map, "deckcode", new_deckcode)
+      else
+        _ -> map
+      end
+
+    from_raw_map(new_map)
+  end
+
   def from_raw_map(map) when is_map(map) do
     mull_raw = map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"]
 
