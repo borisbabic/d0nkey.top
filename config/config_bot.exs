@@ -15,36 +15,64 @@ config :backend, QuantumScheduler,
 
     # {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
-    {"* * * * *", fn -> Backend.Leaderboards.save_current(200) end},
-    {"2 * * * *", fn -> Backend.Leaderboards.save_current_with_delay(5000, 5000) end},
-    {"11 23 * * *",
+    {"*/2 * * * *",
      fn ->
-       Backend.Leaderboards.save_current_for_region_with_delay(
-         "AP",
-         ["STD", "WLD", "twist", "BG", "arena"],
-         5000,
-         120_000
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:STD, :WLD, :twist],
+         50,
+         10_000,
+         1000
        )
      end},
-    {"23 23 * * *",
+    {"*/10 * * * *",
      fn ->
-       Backend.Leaderboards.save_current_for_region_with_delay(
-         "EU",
-         ["STD", "WLD", "twist", "BG", "arena"],
-         5000,
-         120_000
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:BG, :DUO],
+         100,
+         10_000,
+         1000
        )
      end},
-    {"08 23 * * *",
+    {"*/30 * * * *",
      fn ->
-       Backend.Leaderboards.save_current_for_region_with_delay(
-         "US",
-         ["STD", "WLD", "twist", "BG", "arena"],
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:arena],
          500,
+         5000,
+         1000
+       )
+     end},
+    {"3 * * * *",
+     fn ->
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:STD, :WLD, :twist],
+         200,
+         5000,
+         10_000
+       )
+     end},
+    {"11 */2 * * *",
+     fn ->
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:BG, :DUO],
+         200,
+         10_000,
+         10_000
+       )
+     end},
+    {"47 * * * *",
+     fn ->
+       Backend.Leaderboards.all_right_after_midnight(
+         [:STD, :BG, :WLD, :twist, :DUO, :arena],
+         5000,
          120_000
        )
      end},
-    {"43 18 * * *", fn -> Backend.Leaderboards.save_current(nil) end},
     {"31 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
     {"* * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
     {"*/15 * * * *", fn -> Backend.Hearthstone.CardUpdater.enqueue_latest_set() end},

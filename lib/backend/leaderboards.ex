@@ -177,19 +177,42 @@ defmodule Backend.Leaderboards do
     end)
   end
 
-  def save_current_for_region_with_delay(
-        region,
+  def save_all_right_after_midnight(leaderboards, between_pages_delay_ms, between_full_delay_ms) do
+    Enum.filter(Blizzard.regions_with_timezone(), fn {_region, timezone} ->
+      now = Timex.now(timezone)
+      one_hour_ago = Timex.shift(now, hours: -1)
+      now_date = Timex.to_date(now)
+      one_hour_ago_date = Timex.to_date(one_hour_ago)
+      :eq != Date.compare(now_date, one_hour_ago_date)
+    end)
+    |> Enum.map(&elem(&1, 0))
+    |> save_current_with_delay(leaderboards, between_pages_delay_ms, between_full_delay_ms)
+  end
+
+  def save_current_with_delay(
+        regions,
         leaderboards,
         between_pages_delay_ms,
-        between_leaderboards_delay_ms \\ 300_000
+        between_full_delay_ms,
+        num \\ nil
       ) do
-    for l <- leaderboards do
+    seasons =
+      for r <- regions, l <- leaderboards do
+        %ApiSeason{
+          region: r,
+          leaderboard_id: to_string(l),
+          season_id: Blizzard.get_current_ladder_season(l, r)
+        }
+      end
+
+    for season <- seasons do
       save_all_with_delay(
-        %ApiSeason{region: region, leaderboard_id: to_string(l)},
-        between_pages_delay_ms
+        season,
+        between_pages_delay_ms,
+        num
       )
 
-      Process.sleep(between_leaderboards_delay_ms)
+      Process.sleep(between_full_delay_ms)
     end
   end
 
