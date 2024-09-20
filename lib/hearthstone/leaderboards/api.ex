@@ -23,6 +23,7 @@ defmodule Hearthstone.Leaderboards.Api do
       |> Season.ensure_region()
       |> Season.ensure_leaderboard_id()
 
+    # |> IO.inspect(label: :leaderboards_url)
     url = create_link(season, page)
 
     with {:ok, %{body: body}} <- get(url),

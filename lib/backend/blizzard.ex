@@ -32,7 +32,9 @@ defmodule Backend.Blizzard do
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @current_bg_season_id 13
+  @current_bg_season_end_date ~N[9999-01-01 00:00:00]
   @current_arena_season_id 48
+  @current_arena_season_end_date ~N[9999-01-01 00:00:00]
 
   defmacro is_old_bg_season(season_id) do
     quote do
@@ -775,10 +777,42 @@ defmodule Backend.Blizzard do
   def gm_season_definition({2021, 1}), do: %{week_one: 14, playoffs_week: 22, break_weeks: [17]}
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
 
-  def get_current_ladder_season(ldb) when ldb in [:arena, "arena"], do: @current_arena_season_id
+  def get_current_ladder_season(ldb) when ldb in [:arena, "arena"] do
+    now = NaiveDateTime.utc_now()
 
-  def get_current_ladder_season(ldb) when ldb in [:BG, "BG", :DUO, "DUO"],
-    do: @current_bg_season_id
+    if :lt == NaiveDateTime.compare(now, @current_arena_season_end_date) do
+      @current_arena_season_id
+    else
+      @current_arena_season_id + 1
+    end
+  end
+
+  def get_current_ladder_season(ldb) when ldb in [:BG, "BG", :DUO, "DUO"] do
+    now = NaiveDateTime.utc_now()
+
+    if :lt == NaiveDateTime.compare(now, @current_bg_season_end_date) do
+      @current_bg_season_id
+    else
+      @current_bg_season_id + 1
+    end
+  end
 
   def get_current_ladder_season(ldb), do: get_season_id(Date.utc_today(), ldb)
+
+  @spec get_current_ladder_season(leaderboard_id :: leaderboard(), region :: region()) ::
+          integer()
+  def get_current_ladder_season(ldb, _region) when ldb in [:arena, :BG, :DUO] do
+    get_current_ladder_season(ldb)
+  end
+
+  def get_current_ladder_season(ldb, region) do
+    timezone = regions_with_timezone() |> Keyword.get(region)
+    one_hour_ago = Timex.now(timezone) |> Timex.shift(hour: -1)
+    date = Timex.to_date(one_hour_ago)
+    get_season_id(Date.utc_today(), ldb)
+  end
+
+  @spec regions_with_timezone :: [{leaderboard(), String.t()}]
+  def regions_with_timezone(),
+    do: [{:US, "US/Pacific"}, {:AP, "Asia/Seoul"}, {:EU, "CET"}, {:CN, "Asia/Shanghai"}]
 end
