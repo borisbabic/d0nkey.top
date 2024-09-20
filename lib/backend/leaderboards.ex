@@ -161,7 +161,8 @@ defmodule Backend.Leaderboards do
         ldb <- Blizzard.active_leaderboards() do
       season = %ApiSeason{
         region: region,
-        leaderboard_id: to_string(ldb)
+        leaderboard_id: to_string(ldb),
+        season_id: Blizzard.get_current_ladder_season(ldb, region)
       }
 
       func.(season)
@@ -302,7 +303,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  def fetch_pages(season, num_entries \\ nil) do
+  defp fetch_pages(season, num_entries) do
     case Api.get_page(season) do
       {:ok, response = %{leaderboard: %{pagination: %{total_pages: total_pages}}}} ->
         pages = ceil(min(total_pages * @page_size, num_entries) / @page_size)
@@ -1428,7 +1429,7 @@ defmodule Backend.Leaderboards do
   end
 
   def copy_to_bg_lobby_legends(date = %Date{}, bg_season_id) do
-    for {r, timezone} <- regions_with_timezone() do
+    for {r, timezone} <- Blizzard.regions_with_timezone() do
       up_to =
         DateTime.new!(date, ~T[00:00:00], timezone)
         |> Timex.beginning_of_month()
@@ -1473,7 +1474,4 @@ defmodule Backend.Leaderboards do
   def copy_last_month_to_lobby_legends() do
     Date.utc_today() |> Timex.shift(months: -1) |> copy_to_bg_lobby_legends()
   end
-
-  @spec regions_with_timezone :: [{:AP, <<_::80>>} | {:EU, <<_::24>>} | {:US, <<_::80>>}, ...]
-  def regions_with_timezone(), do: [{:US, "US/Pacific"}, {:AP, "Asia/Seoul"}, {:EU, "CET"}]
 end
