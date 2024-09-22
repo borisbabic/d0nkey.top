@@ -4,6 +4,7 @@ defmodule BackendWeb.StreamingNowLive do
   alias Components.LiveStreamer
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Surface.Components.LivePatch
+  alias FunctionComponents.Dropdown
 
   @subscriptions ["streaming:hs:streaming_now"]
   data(streaming_now, :map)
@@ -39,83 +40,54 @@ defmodule BackendWeb.StreamingNowLive do
         <div class="subtitle is-6"><a href={"#{instructions_link}"}>Instructions for streamers</a></div>
         <FunctionComponents.Ads.below_title/>
 
-        <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Sort</button></div>
-            <div class="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <div :for={{display, val} <- [{"Newest", "newest"}, {"Oldest", "oldest"}, {"Most Viewers", "most_viewers"}, {"Fewest Viewers", "fewest_viewers"}]}>
-                      <LivePatch
-                        class={"#{"dropdown-item " <> if @filter_sort["sort"] == val, do: "is-active", else: "" }"}
-                        to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val))}"}
-                        >
-                      {display}
-                      </LivePatch>
-                  </div>
-                </div>
-            </div>
-        </div>
+        <Dropdown.menu title={"Sort"}>
+          <Dropdown.item
+            selected={@filter_sort["sort"] == val}
+            patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put(:sort,val))}
+            :for={{display, val} <- [{"Newest", "newest"}, {"Oldest", "oldest"}, {"Most Viewers", "most_viewers"}, {"Fewest Viewers", "fewest_viewers"}]} >
+            {display}
+          </Dropdown.item>
+        </Dropdown.menu>
+        <Dropdown.menu title={"Mode"}>
+          <Dropdown.item
+            selected={is_nil(@filter_sort["filter_mode"])}
+            patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode"))} class="dropdown-item" >
+            Any
+          </Dropdown.item>
+          <Dropdown.item
+            selected={@filter_sort["filter_mode"] == mode}
+            patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", mode))}
+            :for={mode <- ["Standard", "Battlegrounds", "Mercenaries", "Wild", "Duels",  "Arena", "Tavern Brawl", "Fireside Gathering", "Twist", "Twist", "Unknown"]}>
+            {mode}
+          </Dropdown.item>
+        </Dropdown.menu>
+        <Dropdown.menu title={"Language"}>
+          <Dropdown.item
+            selected={is_nil(@filter_sort["filter_language"])}
+            patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_language"))} class="dropdown-item" >
+            Any
+          </Dropdown.item>
+          <Dropdown.item
+            selected={@filter_sort["filter_language"] == language}
+            patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_language", language))}
+            :for={language <- @streaming_now |> Enum.map(fn s -> s.language end) |> Enum.uniq() |> Enum.sort()}>
+            {language}
+          </Dropdown.item>
+        </Dropdown.menu>
 
-        <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Mode</button></div>
-            <div class="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                    <LivePatch to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_mode"))}"} class="dropdown-item" >
-                      Any
-                    </LivePatch>
-                    <div :for={m <- ["Standard", "Battlegrounds", "Mercenaries", "Wild", "Duels",  "Arena", "Tavern Brawl", "Fireside Gathering", "Twist", "Twist", "Unknown"]}>
-                      <LivePatch
-                        class={"#{"dropdown-item " <> if @filter_sort["filter_mode"] == m, do: "is-active", else: "" }"}
-                        to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_mode", m))}"}
-                        >
-                      {m}
-                      </LivePatch>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Language</button></div>
-            <div class="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <div class="dropdown-content">
-                      <LivePatch to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_language"))}"} class="dropdown-item" >
-                        Any
-                      </LivePatch>
-                      <div :for={l <- @streaming_now |> Enum.map(fn s -> s.language end) |> Enum.uniq() |> Enum.sort()}>
-                        <LivePatch
-                          class={"#{ "dropdown-item " <> if @filter_sort["filter_language"] == l, do: "is-active", else: "" }"}
-                          to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_language", l))}"}
-                          >
-                        {l}
-                        </LivePatch>
-                      </div>
-                  </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Legend Rank</button></div>
-            <div class="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                      <LivePatch to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend"))}"} class="dropdown-item" >
-                        Any
-                      </LivePatch>
-                      <div :for={l <- [100, 200, 500, 1000, 5000]}>
-                        <LivePatch
-                        class={"#{"dropdown-item " <> if @filter_sort["filter_legend"] == to_string(l), do: "is-active", else: "" }"}
-                          to={"#{Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_legend", l))}"}
-                          >
-                        {l}
-                        </LivePatch>
-                      </div>
-                </div>
-            </div>
-        </div>
-
-
-
+        <Dropdown.menu :if={Enum.any?(@streaming_now, & &1.legend_rank)} title={"Legend Rank"}>
+          <Dropdown.item
+            selected={is_nil(@filter_sort["filter_legend"])}
+            patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.delete("filter_legend"))} class="dropdown-item" >
+            Any
+          </Dropdown.item>
+          <Dropdown.item
+            selected={@filter_sort["filter_legend"] == legend}
+            patch={Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, @filter_sort |> Map.put("filter_legend", legend))}
+            :for={legend <- [100, 200, 500, 1000, 5000]}>
+            {legend}
+          </Dropdown.item>
+        </Dropdown.menu>
 
         <div class="columns is-multiline">
           <div class="column is-narrow" :for={ls <- @streaming_now |> filter_sort_streaming(@filter_sort)} >

@@ -130,7 +130,7 @@ defmodule Components.DecksExplorer do
           title={"Order By"}
           param={"order_by"} />
 
-        <ArchetypeSelect id={"player_deck_archetype"} update_fun={ArchetypeSelect.update_archetypes_fun(@params, "player_deck_archetype")} selected={params["player_deck_archetype"] || []} title="Archetypes" />
+        <ArchetypeSelect id={"player_deck_archetype"} param={"player_deck_archetype"} selected={params["player_deck_archetype"] || []} title="Archetypes" />
         <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />

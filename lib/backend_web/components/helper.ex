@@ -2,6 +2,7 @@ defmodule Components.Helper do
   @moduledoc false
   use Phoenix.Component
   import Phoenix.HTML.Form
+  alias FunctionComponents.Dropdown
 
   def warning_triangle(), do: warning_triangle(%{})
 
@@ -268,16 +269,11 @@ defmodule Components.Helper do
 
   def dropdown(assigns) do
     ~H"""
-      <div class="dropdown is-hoverable">
-          <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@title%></button></div>
-          <div class="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                  <%= for %{link: link, selected: selected, display: display} <- @options do %>
-                      <a class={"dropdown-item #{ selected && 'is-active' || '' }"} href={"#{ link }"}><%= display %></a>
-                  <% end %>
-              </div>
-          </div>
-      </div>
+      <Dropdown.menu title={@title}>
+        <Dropdown.item :for={%{link: link, selected: selected, display: display} <- @options} selected={selected} href={link}>
+          <%= display %>
+        </Dropdown.item>
+      </Dropdown.menu>
     """
   end
 
@@ -295,7 +291,7 @@ defmodule Components.Helper do
   attr :show_search, :boolean, required: true
   attr :search_class, :string, required: true
   attr :checkbox_class, :string, required: true
-  attr :top_buttons, :boolean, default: true
+  attr :top_buttons, :boolean, default: false
   attr :bottom_buttons, :boolean, default: true
   attr :selected_first, :boolean, default: true
   attr :placeholder, :any, required: true
@@ -303,8 +299,8 @@ defmodule Components.Helper do
 
   def multiselect_dropdown(assigns) do
     ~H"""
-    <div class="dropdown is-hoverable">
-        <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%= @title %></button></div>
+    <div class={["has-dropdown", "dropdown", "is-hoverable"]} @mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data="{open: false}" x-bind:class="{'is-active': open}" x-bind:aria-expanded="open" @keydown.esc={"open=false"}>
+        <Dropdown.title title={@title}/>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">
                 <%= if @top_buttons do %>
@@ -329,24 +325,24 @@ defmodule Components.Helper do
                         onchange={"hide_based_on_search('#{ @search_id }', '#{ @search_class }')"}
                         type="text">
                 <% end %>
-                <div style="max-height: 23em; overflow: auto;">
-                    <%= for %{value: value, display: display, selected: selected, name: name} <- @options do %>
-                        <label for={"#{ @attr }[#{ value }]"} data-target-value={"#{ name }"} class={"dropdown-item #{ @search_class }"}>
-                            <div class="is-flex">
-                                <span class="multi-select-text"><%= display %></span>
-                                <input
-                                    class={"#{ @checkbox_class }"}
-                                    id={"#{ "#{@attr}[#{value}]" }"}
-                                    name={"#{ "#{@attr}[#{value}]" }"}
-                                    style="margin-left: auto"
-                                    type="checkbox"
-                                    value="true"
-                                    checked={selected}
-                                >
-                            </div>
-                        </label>
-                    <% end %>
-                </div>
+                <%= for %{value: value, display: display, selected: selected, name: name} <- sort_by_selected(@options, @selected_first) do %>
+                    <Dropdown.item>
+                      <label for={"#{ @attr }[#{ value }]"} data-target-value={"#{ name }"} class={"#{ @search_class }"}>
+                          <div class="is-flex">
+                              <span class="multi-select-text"><%= display %></span>
+                              <input
+                                  class={"#{ @checkbox_class }"}
+                                  id={"#{ "#{@attr}[#{value}]" }"}
+                                  name={"#{ "#{@attr}[#{value}]" }"}
+                                  style="margin-left: auto"
+                                  type="checkbox"
+                                  value="true"
+                                  checked={selected}
+                              >
+                          </div>
+                      </label>
+                    </Dropdown.item>
+                <% end %>
                 <%= if @bottom_buttons do %>
                     <div class="dropdown-item is-flex">
                         <%= submit "Submit", class: "button" %>
@@ -360,6 +356,11 @@ defmodule Components.Helper do
     </div>
     """
   end
+
+  defp sort_by_selected(options, false), do: options
+
+  defp sort_by_selected(options, true),
+    do: options |> Enum.sort_by(fn o -> o.selected end, :desc)
 
   attr :link, :string, required: true
   attr :body, :string, required: true

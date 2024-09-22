@@ -15,27 +15,6 @@
 <div class="dropdown is-hoverable">
     <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "prefix" => "exclude_cards", "title" => "Exclude Cards", "selected" => @exclude}) %>
 </div>
-<%!-- <%= form_for @conn, @base_url,
-[method: :get], fn
-f-> %>
-    <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
-        <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
-    <% end %>
-    <%= render_multiselect_dropdown %{
-        form: f,
-        title: "Include Cards",
-        options: @include_options,
-        attr: "include_cards",
-        placeholder: "Card Name",
-        search_id: "sd-include-card-select"} %>
-    <%= render_multiselect_dropdown %{
-        form: f,
-        title: "Exclude Cards",
-        options: @exclude_options,
-        attr: "exclude_cards",
-        placeholder: "Card Name",
-        search_id: "sd-exclude-card-select"} %>
-<% end %> --%>
 <div class="dropdown is-hoverable">
     <%= live_render(@conn, BackendWeb.StreamerPickerLive, session: %{"base_url" => @base_url}) %>
 </div>

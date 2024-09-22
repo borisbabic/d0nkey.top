@@ -10,7 +10,7 @@ defmodule BackendWeb.PlayableCardSelectLive do
 
   def mount(
         _params,
-        %{"base_url" => base_url, "prefix" => prefix, "selected" => selected} = sesssion,
+        %{"base_url" => base_url, "prefix" => prefix, "selected" => selected} = session,
         socket
       ) do
     update_fun = create_update_fun(base_url, prefix)
@@ -21,13 +21,13 @@ defmodule BackendWeb.PlayableCardSelectLive do
        prefix: prefix,
        update_fun: update_fun,
        base_url: base_url,
-       title: Map.get(sesssion, "title")
+       title: Map.get(session, "title")
      )}
   end
 
   def render(assigns) do
     ~F"""
-    <PlayableCardSelect update_fun={@update_fun} id="playable_card_select" selected={@selected} title={@title}/>
+    <PlayableCardSelect update_fun={@update_fun} id={"playable_card_select_#{@prefix}"} selected={@selected} title={@title}/>
     """
   end
 

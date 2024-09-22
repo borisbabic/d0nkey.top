@@ -5,7 +5,7 @@ defmodule BackendWeb.GrandmastersLive do
   alias Components.GMResultsTable
   alias Components.GMStandingsTable
   alias Components.GMStandingsModal
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
 
   alias Backend.Blizzard
 
@@ -37,11 +37,11 @@ defmodule BackendWeb.GrandmastersLive do
         <div class="level is-mobile">
           <div class="level-left">
             <div class="level-item">
-              <Dropdown title={@week} >
-                <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>
+              <Dropdown.menu title={@week} >
+                <Dropdown.item selected={@week == week} :for={week <- weeks()} phx-target={@myself} phx-click="change-week" phx-value-week={week}>
                   {week}
-                </a>
-              </Dropdown>
+                </Dropdown.item>
+              </Dropdown.menu>
             </div>
             <div class="level-item">
               <GMStandingsModal id="gm_standings_modal_week" button_title="Week Standings" week={@week} region={@region} title={"#{gm_region_display(@region)} Standings"} />

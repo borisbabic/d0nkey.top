@@ -9,6 +9,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.MastersTour
   alias Backend.Battlenet.Battletag
   alias Backend.UserManager.User
+  import FunctionComponents.Battlefy
 
   @type future_opponent_team :: %{
           name: String.t(),

@@ -3,7 +3,7 @@ defmodule BackendWeb.MaxNations2022Live do
   use BackendWeb, :surface_live_view
   import BackendWeb.LiveHelpers
   alias Backend.DeckInteractionTracker, as: Tracker
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Backend.MaxNations2022
   alias Components.TournamentLineupExplorer
   alias Components.MaxNations2022LineupName, as: LineupName
@@ -25,11 +25,11 @@ defmodule BackendWeb.MaxNations2022Live do
         </div>
         <FunctionComponents.Ads.below_title/>
           <TournamentLineupExplorer id={"max_lineups_explorer"} tournament_id={@week} tournament_source={MaxNations2022.lineup_tournament_source()} show_page_dropdown={false} filters={%{"order_by" => {:asc, :name}}} page_size={150}>
-              <Dropdown title={@week} >
-                <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>
+              <Dropdown.menu title={@week} >
+                <Dropdown.item selected={@week == week} :for={week <- weeks()} phx-target={@myself} phx-click="change-week" phx-value-week={week}>
                   {week}
-                </a>
-              </Dropdown>
+                </Dropdown.item>
+              </Dropdown.menu>
               <:lineup_name :let={lineup_name: lineup_name}>
                 <LineupName lineup_name={lineup_name} />
               </:lineup_name>

@@ -8,6 +8,7 @@ defmodule Components.FantasyLeague do
   alias Backend.Fantasy.LeagueTeam
   alias Backend.Fantasy
   alias Backend.FantasyCompetitionFetcher, as: ResultsFetcher
+  alias FunctionComponents.Dropdown
   use BackendWeb.ViewHelpers
   prop(league, :any)
   prop(round, :any, default: nil)
@@ -28,14 +29,17 @@ defmodule Components.FantasyLeague do
                   <LeagueInfoModal id={"league_info_modal_#{@league.id}"} league={@league}/>
               </div>
 
-              <div class="level-item dropdown is-hoverable">
-                <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">{round_title(@league, @round)}</button></div>
-                <div class="dropdown-menu" role="menu">
-                    <div class="dropdown-content">
-                        <a  :for={r <- round_options(@league)} :on-click="set_round" phx-value-round={r} class={"dropdown-item is-link #{current_round_option(@league, @round) == r && 'is-active' || ''}"}>{round_title(r)}</a>
-                    </div>
-                </div>
-              </div>
+
+              <Dropdown.menu title={round_title(@league, @round)} class="level-item">
+                <Dropdown.item
+                  :for={r <- round_options(@league)}
+                  phx-click="set_round"
+                  phx-target={@myself}
+                  phx-value-round={r}
+                  class={"is-link #{current_round_option(@league, @round) == r && 'is-active' || ''}"}>
+                    {round_title(r)}
+                </Dropdown.item>
+              </Dropdown.menu>
 
               <div class="level-item">
                 <a class="is-link button"  href={"/fantasy/leagues/#{@league.id}/draft"}>{draft_title(@league)}</a>

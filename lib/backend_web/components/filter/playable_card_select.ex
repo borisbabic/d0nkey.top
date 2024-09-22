@@ -1,7 +1,7 @@
 defmodule Components.Filter.PlayableCardSelect do
   @moduledoc false
   use Surface.LiveComponent
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Surface.Components.Form
   alias Surface.Components.Form.TextInput
 
@@ -14,21 +14,17 @@ defmodule Components.Filter.PlayableCardSelect do
   def render(assigns) do
     ~F"""
     <span>
-      <Dropdown title={"#{@title}"}>
+      <Dropdown.menu title={"#{@title}"}>
         <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
-          <div class="columns is-mobile is-multiline">
-            <div class="column is-narrow">
-              <TextInput id={"#{@id}_search"} class="input has-text-black " opts={placeholder: "Search"}/>
-            </div>
-          </div>
+          <TextInput id={"#{@id}_search"} class="input has-text-black " opts={placeholder: "Search"}/>
         </Form>
-        <a class="dropdown-item is-active" :on-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
+        <a selected={true} phx-target={@myself} phx-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
           {name(selected)}
         </a>
-        <a class="dropdown-item" :for={card <- cards(@search, @selected, @canonicalize)} :on-click="add_card" phx-value-card={card.id}>
+        <Dropdown.item selected={false} class="dropdown-item" :for={card <- cards(@search, @selected, @canonicalize)} phx-target={@myself} phx-click="add_card" phx-value-card={card.id}>
           {card.name}
-        </a>
-      </Dropdown>
+        </Dropdown.item>
+      </Dropdown.menu>
     </span>
     """
   end

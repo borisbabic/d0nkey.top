@@ -317,7 +317,9 @@ defmodule BackendWeb.PlayerView do
 
   def get_competition_options(competitions) do
     [{"qualifiers", "Qualifiers"}, {"leaderboard", "Leaderboards"}, {"mt", "MTs"}]
-    |> Enum.map(fn {v, n} -> {v, n, selected?(v, competitions)} end)
+    |> Enum.map(fn {value, name} ->
+      %{value: value, name: name, display: name, selected: selected?(value, competitions)}
+    end)
   end
 
   def pick_competitions([], rows), do: pick_competitions(@default_competitions, rows)

@@ -5,7 +5,7 @@ defmodule Components.Filter.StreamerPicker do
   alias Backend.Streaming.Streamer
   alias Surface.Components.Form
   alias Surface.Components.Form.TextInput
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
 
   prop(title, :string, default: "Search Streamer")
   prop(href_creator, :fun, required: false)
@@ -15,14 +15,14 @@ defmodule Components.Filter.StreamerPicker do
   def render(assigns) do
     ~F"""
     <span>
-      <Dropdown title={@title}>
+      <Dropdown.menu title={@title}>
         <Form for={%{}} as={:streamer} change="search" submit="search">
           <TextInput class="input has-text-black" opts={placeholder: "Search"}/>
         </Form>
-        <a class="dropdown-item" href={@href_creator.(streamer)} :for={streamer <- streamers(@search, @limit)}>
+        <Dropdown.item href={@href_creator.(streamer)} :for={streamer <- streamers(@search, @limit)}>
           {Streamer.twitch_display(streamer)}<span class="has-text-weight-light"> {Streamer.twitch_login(streamer)}</span>
-        </a>
-      </Dropdown>
+        </Dropdown.item>
+      </Dropdown.menu>
     </span>
     """
   end

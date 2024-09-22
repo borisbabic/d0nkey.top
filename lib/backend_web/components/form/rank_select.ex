@@ -3,7 +3,7 @@ defmodule Components.Form.RankSelect do
   use BackendWeb, :surface_live_component
   alias Surface.Components.Form.HiddenInput
   alias Surface.Components.Form.NumberInput
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Hearthstone.DeckTracker
   prop(form, :form, default: nil)
   # prop form, :form, from_context: {Surface.Components.Form, :form}
@@ -34,17 +34,17 @@ defmodule Components.Form.RankSelect do
   def render(assigns) do
     ~F"""
       <div>
-        <Dropdown title={rank_title(@use_ranks_as_title, @rank_title, @rank_parts)}>
-          <a :for={level <-levels()} class={"dropdown-item", "is-active": matches_level?(@rank_parts, level)} :on-click="change_level" phx-value-level={level}>
+        <Dropdown.menu title={rank_title(@use_ranks_as_title, @rank_title, @rank_parts)}>
+          <Dropdown.item :for={level <-levels()} selected={matches_level?(@rank_parts, level)} phx-target={@myself} phx-click="change_level" phx-value-level={level}>
           {level}
-          </a>
-        </Dropdown>
+          </Dropdown.item>
+        </Dropdown.menu>
 
-        <Dropdown :if={num = num_sub_ranks(@rank_parts)} title={sub_rank_title(@use_ranks_as_title, @sub_rank_title, @rank_parts)}>
-          <a :for={rank <- 1..num} class={"dropdown-item", "is-active": matches_rank?(@rank_parts, rank)} :on-click="change_rank" phx-value-rank={rank}>
+        <Dropdown.menu :if={num = num_sub_ranks(@rank_parts)} title={sub_rank_title(@use_ranks_as_title, @sub_rank_title, @rank_parts)}>
+          <Dropdown.item :for={rank <- 1..num} selected={matches_rank?(@rank_parts, rank)} phx-target={@myself} phx-click="change_rank" phx-value-rank={rank}>
           {rank}
-          </a>
-        </Dropdown>
+          </Dropdown.item>
+        </Dropdown.menu>
         <NumberInput :if={@rank_parts == :Legend} class="input has-text-black " field={@legend_rank_field} value={@legend_rank || 0} opts={style: "width: 100px;"}/>
         <HiddenInput :if={@rank_parts != :Legend} field={@legend_rank_field} value={@legend_rank || 0} />
 
