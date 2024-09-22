@@ -18,9 +18,9 @@ defmodule Components.Filter.PlayableCardSelect do
         <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
           <TextInput id={"#{@id}_search"} class="input has-text-black " opts={placeholder: "Search"}/>
         </Form>
-        <a selected={true} phx-target={@myself} phx-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
+        <Dropdown.item selected={true} phx-target={@myself} phx-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
           {name(selected)}
-        </a>
+        </Dropdown.item>
         <Dropdown.item selected={false} class="dropdown-item" :for={card <- cards(@search, @selected, @canonicalize)} phx-target={@myself} phx-click="add_card" phx-value-card={card.id}>
           {card.name}
         </Dropdown.item>
