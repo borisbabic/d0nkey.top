@@ -19,18 +19,8 @@
 <div>
 <%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @tournament.id), [method: :get], fn
 f-> %>
-    <%= if @show_stage_selection do %>
-        <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button"><%=@stage_selection_text%></button></div>
-            <div class="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-                <%= for %{name: name, selected: selected, link: link} <- @stages do %>
-                    <a class={"dropdown-item #{ selected && 'is-active' || '' }"} href={"#{ link }"}><%=name%></a>
-                <% end %>
-            </div>
-            </div>
-        </div>
-    <% end %>
+
+    <.stage_selection_dropdown :if={@show_stage_selection} stages={@stages} title={@stage_selection_text} />
     <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
         <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
     <% end %>

@@ -22,34 +22,17 @@ defmodule BackendWeb.ViewHelpers do
         Helper.dropdowns(%{dropdowns: dropdowns})
       end
 
-      defp sort_by_selected(options, false), do: options
-
-      defp sort_by_selected(options, true),
-        do: options |> Enum.sort_by(fn o -> o.selected end, :desc)
-
       def render_multiselect_dropdown(o = %{form: _, title: _, options: options, attr: attr}) do
         search_id = o |> Map.get(:search_id)
 
-        defaults = %{
-          top_buttons: true,
-          bottom_buttons: true,
-          selected_first: true
-        }
-
-        with_defaults =
-          defaults
-          |> Map.merge(o)
-
-        sorted = sort_by_selected(options, with_defaults.selected_first)
         search_class = "#{attr}_#{search_id}"
         checkbox_class = "#{attr}_#{search_id}_checkbox"
 
         assigns =
-          with_defaults
+          o
           |> Map.put(:show_search, !!search_id)
           |> Map.put(:search_class, search_class)
           |> Map.put(:checkbox_class, checkbox_class)
-          |> Map.put(:options, sorted)
 
         Helper.multiselect_dropdown(assigns)
       end

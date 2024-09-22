@@ -5,7 +5,7 @@ defmodule BackendWeb.GrandmastersLineup do
   alias Components.TournamentLineupExplorer
   alias Backend.Hearthstone.Lineup
   alias Backend.Blizzard
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :any)
@@ -25,11 +25,11 @@ defmodule BackendWeb.GrandmastersLineup do
             <FunctionComponents.Ads.below_title/>
 
             <TournamentLineupExplorer id={"grandmasters_tournament_lineup_#{@week}"} tournament_id={"#{tournament_id(@week)}"} tournament_source="grandmasters" show_page_dropdown={false} gm_week={@week} filters={%{"order_by" => {:asc, :name}}} page_size={100}>
-              <Dropdown title={@week} >
-                <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- weeks()} :on-click="change-week" phx-value-week={week}>
+              <Dropdown.menu title={@week} >
+                <Dropdown.item selected={@week == week} :for={week <- weeks()} phx-target={@myself} phx-click="change-week" phx-value-week={week}>
                   {week}
-                </a>
-              </Dropdown>
+                </Dropdown.item>
+              </Dropdown.menu>
             </TournamentLineupExplorer>
           </div>
         </div>

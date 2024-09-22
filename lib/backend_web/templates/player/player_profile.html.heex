@@ -4,29 +4,13 @@
 <%= @prev_button %>
 <%= @next_button %>
 <%= render_dropdowns @dropdowns %>
-<div class="dropdown is-hoverable">
-    <div class="dropdown-trigger"><button aria-haspopup="true" aria-controls="dropdown-menu" class="button" type="button">Competitions</button></div>
-    <div class="dropdown-menu" role="menu">
-        <div class="dropdown-content">
-
-            <%= form_for @conn, Routes.player_path(@conn, :player_profile, @bt), [as: :competition, method: :get], fn
-            f-> %>
-                <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
-                    <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
-                <% end %>
-                <%= for {val, name, selected} <- @competition_options do %>
-                        <label for={"competition_#{ val}"} class="dropdown-item">
-                            <span > <%= name %></span>
-                            <%= checkbox f, val, hidden_input: false, class: "is-pulled-right", value: selected %>
-                        </label>
-                <% end %>
-                <div class="dropdown-item">
-                    <%= submit "Submit", class: "button" %>
-                </div>
-            <% end %>
-        </div>
-    </div>
-</div>
+<%= form_for @conn, Routes.player_path(@conn, :player_profile, @bt), [as: :competition, method: :get, class: "tw-inline"], fn
+f-> %>
+    <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+        <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
+    <% end %>
+    <%= render_multiselect_dropdown(%{form: f, title: "Competitions", options: @competition_options, selected_first: false, attr: "competition"}) %>
+<% end %>
 <%= for row <- @rows do %>
     <div class="tag is-info">
         <%= row %>

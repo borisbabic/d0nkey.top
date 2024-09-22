@@ -2,6 +2,7 @@ defmodule FunctionComponents.LayoutComponent do
   @moduledoc "Function components for the layout, primarily the navbar"
   use BackendWeb, :component
 
+  alias FunctionComponents.Dropdown
   attr :display, :string, required: true
   attr :battlefy_id, :string, required: true
   attr :start, NaiveDateTime, required: true
@@ -29,12 +30,12 @@ defmodule FunctionComponents.LayoutComponent do
 
   def navbar_dropdown(assigns) do
     ~H"""
-      <div class="navbar-item has-dropdown" @mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data={"{#{init_to_false(["open" | @sub_menus])}}"} x-bind:class="{'is-active': open}">
-        <a @keydown.down="open=true" @keydown.enter.prevent="open=true" @mouseover="open=true" class="navbar-item navbar-link" {%{href: @main_link}}>
-          <%= @display %>
-        </a>
+      <div class="navbar-item has-dropdown" @mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data={"{#{init_to_false(["open" | @sub_menus])}}"} x-bind:class="{'is-active': open}" x-bind:aria-expanded="open" @keydown.esc={"open=false"}>
+        <Dropdown.title aria_controls={"navbar-dropdown"} title={@display} {%{href: @main_link}} class="navbar-item navbar-link" />
           <div class="navbar-dropdown">
-            <%= render_slot(@inner_block) %>
+            <div>
+              <%= render_slot(@inner_block) %>
+            </div>
           </div>
       </div>
     """
@@ -45,7 +46,9 @@ defmodule FunctionComponents.LayoutComponent do
 
   def navbar_item_link(assigns) do
     ~H"""
-    <a class="navbar-item" tabindex="0" href={@link}><%= @display %></a>
+    <Dropdown.item base_class="navbar-item" href={@link}>
+      <%= @display %>
+      </Dropdown.item>
     """
   end
 

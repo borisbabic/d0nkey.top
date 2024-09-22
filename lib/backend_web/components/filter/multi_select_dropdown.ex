@@ -2,7 +2,7 @@ defmodule Components.MultiSelectDropdown do
   @moduledoc false
   use BackendWeb, :surface_live_component
   use Components.Filter.DropdownBase, current_is_list: true
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Surface.Components.Form
   alias Surface.Components.Form.TextInput
 
@@ -11,36 +11,36 @@ defmodule Components.MultiSelectDropdown do
   prop(matches_search, :fun, required: true)
   prop(class, :css_class, default: nil)
 
+  prop(search_event, :event, default: "search")
   data(search, :string, default: "")
   prop(default_selector, :fun, required: false, default: &__MODULE__.default_selected/1)
+  prop(updater, :fun, required: false, default: &__MODULE__.update_selected/2)
   data(selected, :list, default: [])
 
   def render(assigns = %{actual_title: _}) do
     ~F"""
         <span class={@class}>
-          <Dropdown title={@actual_title}>
-            <Form :if={@show_search} for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
-              <div class="columns is-mobile is-multiline">
-                <div class="column is-narrow">
-                  <TextInput class="input has-text-black " opts={placeholder: "Search"}/>
-                </div>
-              </div>
+          <Dropdown.menu title={@actual_title} aria-multiselectable="true">
+            <Form :if={@show_search} for={%{}} as={:search} change={@search_event} submit={@search_event} opts={autocomplete: "off"}>
+              <TextInput class="input has-text-black " opts={placeholder: "Search"}/>
             </Form>
-            <a :if={@selected_to_top} class="dropdown-item is-active" :on-click="remove_selected" :for={selected <- @selected} phx-value-value={value(selected)}>
+            <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top} phx-target={@myself} phx-click="remove_selected" phx-value-value={value(selected)}>
               {display(selected)}
-            </a>
-            <a :if={@selected_to_top} class="dropdown-item" :for={unselected <- unselected(@search, @options, @selected)} :on-click="add_selected" phx-value-value={value(unselected)}>
+            </Dropdown.item>
+            <Dropdown.item selected={false} :for={unselected <- unselected(@search, @options, @selected)} :if={@selected_to_top} phx-target={@myself} phx-click="add_selected" phx-value-value={value(unselected)}>
               {display(unselected)}
-            </a>
-            <a
+            </Dropdown.item>
+            <Dropdown.item
               :if={!@selected_to_top}
               :for={opt <- unselected(@search, @options)}
-              class={"dropdown-item", "is-active": selected?(value(opt), @current, @normalizer)}
-              :on-click={merged_on_click(value(opt), @current, @normalizer)}
+              selected={selected?(value(opt), @current, @normalizer)}
+              phx-target={@myself}
+              aria-selected={selected?(value(opt), @current, @normalizer)}
+              phx-click={merged_on_click(value(opt), @current, @normalizer)}
               phx-value-value={value(opt)}>
-                {display(opt)}
-            </a>
-          </Dropdown>
+                  {display(opt)}
+            </Dropdown.item>
+          </Dropdown.menu>
         </span>
     """
   end
@@ -88,6 +88,7 @@ defmodule Components.MultiSelectDropdown do
         %{
           assigns: %{
             options: options,
+            updater: updater,
             normalizer: normalizer,
             current: current
           }
@@ -97,7 +98,7 @@ defmodule Components.MultiSelectDropdown do
     opt = Enum.find(options, matcher)
 
     if opt do
-      {:noreply, update_selected(socket, [value(opt) | current])}
+      {:noreply, updater.(socket, [value(opt) | current])}
     else
       {:noreply, socket}
     end
@@ -106,11 +107,11 @@ defmodule Components.MultiSelectDropdown do
   def handle_event(
         "remove_selected",
         %{"value" => value},
-        %{assigns: %{normalizer: normalizer, current: current}} = socket
+        %{assigns: %{normalizer: normalizer, current: current, updater: updater}} = socket
       ) do
     value_matcher = value_matcher(value, normalizer)
     new_selected = Enum.reject(current, value_matcher)
-    {:noreply, update_selected(socket, new_selected)}
+    {:noreply, updater.(socket, new_selected)}
   end
 
   def handle_event("search", %{"search" => [search]}, socket),
@@ -167,7 +168,7 @@ defmodule Components.MultiSelectDropdown do
     num_to_show = (7 - Enum.count(selected)) |> max(3)
 
     options
-    |> Enum.reject(&(value(&1) == selected))
+    |> Enum.reject(&(value(&1) in selected))
     |> Enum.filter(fn opt ->
       display(opt) =~ search
     end)

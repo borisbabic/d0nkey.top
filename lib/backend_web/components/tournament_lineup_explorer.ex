@@ -17,7 +17,7 @@ defmodule Components.TournamentLineupExplorer do
 
   alias Components.GMProfileLink
   alias Components.ExpandableLineup
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Components.Filter.PlayableCardSelect
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
@@ -29,11 +29,11 @@ defmodule Components.TournamentLineupExplorer do
       <div :if={lineups = lineups(@tournament_id, @tournament_source, @filters)}>
         <#slot />
         <a :if={@standings_url} class="button is-link" href={@standings_url}>Standings</a>
-        <Dropdown title="Page" :if={@show_page_dropdown}>
-          <a :for={page <- page_range(lineups, @page_size)}class={"dropdown-item #{page == @page && 'is-active' || ''}"} :on-click="set-page" phx-value-page={page} >
+        <Dropdown.menu title="Page" :if={@show_page_dropdown}>
+          <Dropdown.item :for={page <- page_range(lineups, @page_size)} selected={page == @page} phx-target={@myself} phx-click="set-page" phx-value-page={page} >
             {page}
-          </a>
-        </Dropdown>
+          </Dropdown.item>
+        </Dropdown.menu>
         <button class="button" type="button" :on-click="show_modal">Filter</button>
         <div>Total: {lineups |> Enum.count()}</div>
         <div class="modal is-active" :if={@show_modal}>
@@ -47,11 +47,11 @@ defmodule Components.TournamentLineupExplorer do
               <div :for.with_index={{deck, index} <- decks(@temp_filters)} class="level">
                 <div class="level-left">
                   <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={index}>Remove deck</button>
-                  <Dropdown title={"#{deck["class"] && deck["class"] |> Deck.class_name() || "Class"}"}>
-                    <a class={"dropdown-item #{deck["class"] == class && 'is-active' || ''}"} :for={class <- Deck.classes()} :on-click="filter-class" phx-value-index={index} phx-value-class={class}>
+                  <Dropdown.menu title={"#{deck["class"] && deck["class"] |> Deck.class_name() || "Class"}"}>
+                    <Dropdown.item selected={deck["class" == class]} :for={class <- Deck.classes()} phx-target={@myself} phx-click="filter-class" phx-value-index={index} phx-value-class={class}>
                       {class |> Deck.class_name()}
-                    </a>
-                  </Dropdown>
+                    </Dropdown.item>
+                  </Dropdown.menu>
                   <PlayableCardSelect id={"include_cards_deck_#{index}"} update_fun={update_cards(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
                   <PlayableCardSelect id={"exclude_cards_deck_#{index}"} update_fun={update_cards(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
 

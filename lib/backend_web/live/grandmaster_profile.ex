@@ -6,7 +6,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
 
   alias Components.ExpandableLineup
   alias Components.GMProfileLink
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Components.PlayerName
   alias Components.GMStandingsModal
   alias BackendWeb.GrandmastersLive
@@ -39,11 +39,11 @@ defmodule BackendWeb.GrandmasterProfileLive do
           <div class="level-left">
             <a class="is-link button level-item" href={"#{grandmasters_link(@socket, @week, @gm)}"}> Grandmasters Overview</a>
             <div class="level-item">
-              <Dropdown title={@week} >
-                <a class={"dropdown-item #{@week == week && 'is-active' || ''}"} :for={week <- GrandmastersLive.weeks()} :on-click="change-week" phx-value-week={week}>
+              <Dropdown.menu title={@week} >
+                <Dropdown.item selected={@week == week} :for={week <- GrandmastersLive.weeks()} phx-target={@myself} phx-click="change-week" phx-value-week={week}>
                   {week}
-                </a>
-              </Dropdown>
+                </Dropdown.item>
+              </Dropdown.menu>
             </div>
             <div class="level-item" :if={region = region(@gm)}>
               <GMStandingsModal region={region} id="gm_standings_modal_total" button_title="Total Standings" title={"#{GrandmastersLive.gm_region_display(region)} Standings"} />

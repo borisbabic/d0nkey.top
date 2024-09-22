@@ -2,8 +2,7 @@ defmodule Components.LivePatchDropdown do
   @moduledoc false
   use BackendWeb, :surface_component
   use Components.Filter.DropdownBase
-  alias Components.Dropdown
-  alias Surface.Components.LivePatch
+  alias FunctionComponents.Dropdown
 
   prop(class, :css_class, default: nil)
   prop(warning, :boolean, default: false)
@@ -17,15 +16,15 @@ defmodule Components.LivePatchDropdown do
   def render(assigns = %{actual_title: _}) do
     ~F"""
     <span>
-      <Dropdown title={@actual_title} class={@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning}>
-        <div :for={opt <- @options}>
-          <LivePatch
-            class={"dropdown-item", @class, "is-active": @current == @normalizer.(value(opt))}
-            to={link(BackendWeb.Endpoint, @live_view, @path_params, update_params(@url_params, @param, value(opt)))}>
-            {display(opt)}
-          </LivePatch>
-        </div>
-      </Dropdown>
+      <Dropdown.menu title={@actual_title} class={[@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning]}>
+        <Dropdown.item
+          :for={opt <- @options}
+          selected={@current == @normalizer.(value(opt))}
+          class={@class}
+          patch={link(BackendWeb.Endpoint, @live_view, @path_params, update_params(@url_params, @param, value(opt)))}>
+          {display(opt)}
+        </Dropdown.item>
+      </Dropdown.menu>
     </span>
     """
   end

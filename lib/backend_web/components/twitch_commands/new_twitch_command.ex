@@ -1,7 +1,7 @@
 defmodule Components.NewTwitchCommand do
   use BackendWeb, :surface_live_component
 
-  alias Components.Dropdown
+  alias FunctionComponents.Dropdown
   alias Surface.Components.Form
   alias Surface.Components.Form.Checkbox
   alias Surface.Components.Form.Label
@@ -60,11 +60,11 @@ defmodule Components.NewTwitchCommand do
           </Field>
         </Form>
         {#else}
-        <Dropdown title="Pick Template">
-          <a class="dropdown-item" :for={{template, name} <- templates()} :on-click={"template"} phx-value-template={template}>
+        <Dropdown.menu title="Pick Template">
+          <Dropdown.item :for={{template, name} <- templates()} phx-target={@myself} phx-click={"template"} phx-value-template={template}>
             {name}
-          </a>
-        </Dropdown>
+          </Dropdown.item>
+        </Dropdown.menu>
         {/if}
       </div>
     """
