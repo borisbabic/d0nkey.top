@@ -106,6 +106,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      wild_bsm_mage?(card_info) ->
+        :"Big Spell Mage"
+
       wild_orb_mage?(card_info) ->
         :"Orb Mage"
 
@@ -159,6 +162,19 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "The Galactic Projection Orb",
       "Potion of Illusion",
       "Grey Sage Parrot"
+    ])
+  end
+
+  defp wild_bsm_mage?(card_info) do
+    min_count?(card_info, 3, [
+      "King Tide",
+      "Portalmancer Skyla",
+      "Naga Sand Witch",
+      "Balinda Stonehearth",
+      "Barbaric Sorceress",
+      "Grey Sage Parrot",
+      "The Galactic Projection Orb",
+      "Iceblood Tower"
     ])
   end
 end
