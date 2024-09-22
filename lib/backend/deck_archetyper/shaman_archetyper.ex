@@ -58,6 +58,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       wish_shaman?(card_info) ->
         :"Wish Shaman"
 
+      "Travelmaster Dungar" in card_info.card_names ->
+        :"Dungar Shaman"
+
       "Wave of Nostalgia" in card_info.card_names ->
         :"Nostalgia Shaman"
 
