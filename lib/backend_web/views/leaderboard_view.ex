@@ -446,7 +446,7 @@ defmodule BackendWeb.LeaderboardView do
       leaderboard_id: leaderboard.leaderboard_id,
       updated_at: leaderboard.upstream_updated_at,
       dropdowns: [limit_dropdown | create_dropdowns(params)],
-      old: old?(leaderboard),
+      old: old?(leaderboard, conn.query_params["offset"]),
       season_id: leaderboard && leaderboard.season_id,
       show_ratings: show_ratings,
       conn: conn,
@@ -848,20 +848,37 @@ defmodule BackendWeb.LeaderboardView do
 
   def show_mt_column?(_), do: nil
 
-  def old?(%{season_id: s, leaderboard_id: "BG"}) when Backend.LobbyLegends.is_lobby_legends(s),
-    do: false
+  def old?(%{season_id: s, leaderboard_id: "BG"})
+      when Backend.LobbyLegends.is_lobby_legends(s),
+      do: false
 
   def old?(%{upstream_updated_at: updated_at, season_id: 94, leaderboard_id: "STD", region: "US"}) do
     updated_at && DateTime.diff(DateTime.utc_now(), updated_at) &&
       DateTime.diff(DateTime.utc_now(), ~U[2021-09-01T07:00:00Z]) < 0
   end
 
-  def old?(%{upstream_updated_at: updated_at, season_id: season_id, leaderboard_id: ldb}) do
-    updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > 3600 &&
+  def old?(%{
+        upstream_updated_at: updated_at,
+        season_id: season_id,
+        leaderboard_id: ldb,
+        entries: entries
+      }) do
+    max_diff = max_diff(ldb, entries)
+
+    updated_at && DateTime.diff(DateTime.utc_now(), updated_at) > max_diff &&
       season_id >= get_season_id(Date.utc_today(), ldb)
   end
 
-  def old?(_), do: false
+  def old?(_, _), do: false
+
+  defp max_diff(_ldb, [%{rank: r} | _]) when r > 10_000, do: 60 * 60 * 30
+
+  defp max_diff(ldb, [%{rank: r} | _]) when r > 1000 and ldb in ["STD", "WLD", "twist"],
+    do: 60 * 60 * 2
+
+  defp max_diff(ldb, [%{rank: r} | _]) when r > 1000 and ldb in ["BG", "DUO"], do: 60 * 60 * 3
+  defp max_diff("arena", [%{rank: r} | _]) when r > 1000, do: 60 * 60 * 5
+  defp max_diff(_, _), do: 60 * 60
 
   def add_other_ladders(invited, params = %{other_ladders: other}),
     do: add_other_ladders(invited, other, params)
