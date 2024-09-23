@@ -17,7 +17,7 @@ defmodule Components.DeckWinrate do
   end
 
   def winrate(deck_id, period, ranks, min_sample_size) do
-    DeckTracker.deck_stats(deck_id, [period, ranks])
+    DeckTracker.deck_id_stats(deck_id, [period, ranks])
     |> case do
       [stats = %{wins: w, losses: l}] when w + l >= min_sample_size -> stats
       _ -> nil

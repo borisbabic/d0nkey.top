@@ -255,21 +255,17 @@ defmodule Hearthstone.DeckTracker do
     |> Enum.reject(&(&1 == :ranked))
   end
 
-  @spec deck_stats(integer(), list()) :: [deck_stats()]
-  def deck_stats(deck_id, additional_criteria) do
+  @spec deck_id_stats(integer(), list()) :: [deck_stats()]
+  def deck_id_stats(deck_id, additional_criteria \\ []) do
     deck_stats([{"player_deck_id", deck_id} | additional_criteria])
   end
 
-  @spec deck_stats(integer() | list() | Map.t()) :: [deck_stats()]
-  def deck_stats(deck_id) when is_integer(deck_id) do
-    deck_stats(deck_id, [])
-  end
-
-  def deck_stats(criteria) do
+  @spec deck_stats(list(), list()) :: [deck_stats()]
+  def deck_stats(criteria, repo_opts \\ []) do
     {base_query, new_criteria} = base_deck_stats_query(criteria)
 
     build_games_query(base_query, new_criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   @spec detailed_stats(
@@ -311,13 +307,24 @@ defmodule Hearthstone.DeckTracker do
           kept_impact: float()
         }
 
-  @spec merge_card_deck_stats(list()) :: [card_stats]
-  def merge_card_deck_stats(criteria) do
-    {_, query_timeout} =
-      criteria
-      |> Enum.to_list()
-      |> List.keyfind("timeout", 0, {"timeout", 15_000})
+  @spec extract_timeout_from_criteria(Map.t() | list(), integer()) ::
+          {timeout :: integer(), new_criteria :: list()}
+  defp extract_timeout_from_criteria(criteria, default_timeout) do
+    criteria
+    |> Enum.to_list()
+    |> List.keytake("timeout", 0)
+    |> case do
+      {{"timeout", query_timeout}, new_criteria} ->
+        {query_timeout, new_criteria}
 
+      _ ->
+        {default_timeout, criteria}
+    end
+  end
+
+  @spec merge_card_deck_stats(list()) :: [card_stats]
+  def merge_card_deck_stats(raw_criteria) do
+    {query_timeout, criteria} = extract_timeout_from_criteria(raw_criteria, 15_000)
     await_timeout = 1000 + Util.to_int!(query_timeout, 15_000)
 
     [
@@ -325,7 +332,7 @@ defmodule Hearthstone.DeckTracker do
       deck_stats
     ] =
       [
-        Task.async(fn -> deck_card_stats(criteria) end),
+        Task.async(fn -> deck_card_stats(criteria, timeout: query_timeout) end),
         Task.async(fn -> deck_stats(criteria) end)
       ]
       |> Task.await_many(await_timeout)
@@ -386,10 +393,10 @@ defmodule Hearthstone.DeckTracker do
   defp safe_div(_dividend, 0), do: 0 / 1
   defp safe_div(dividend, divisor), do: dividend / divisor
 
-  def deck_card_stats(criteria) do
+  def deck_card_stats(criteria, repo_opts \\ []) do
     base_deck_card_stats_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   @doc """
