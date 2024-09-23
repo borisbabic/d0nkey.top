@@ -24,11 +24,14 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       excavate_mage?(card_info) ->
         :"Excavate Mage"
 
-      big_spell_mage?(card_info) ->
-        :"Big Spell Mage"
-
       no_minion?(card_info, 2) ->
         :"Spell Mage"
+
+      "The Galactic Projection Orb" in card_info.card_names and big_spell_mage?(card_info) ->
+        :"Orb Big Spell Mage"
+
+      big_spell_mage?(card_info) ->
+        :"Big Spell Mage"
 
       murloc?(card_info) ->
         :"Murloc Mage"
