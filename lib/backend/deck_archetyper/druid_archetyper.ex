@@ -99,6 +99,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Drum Circle" in card_info.card_names ->
         :"Drum Druid"
 
+      "Travelmaster Dungar" in card_info.card_names ->
+        :"Dungar Druid"
+
       ramp_druid?(card_info) ->
         :"Ramp Druid"
 
