@@ -15,6 +15,7 @@ defmodule Hearthstone.Leaderboards.Api do
     "DUO" => "battlegroundsduo",
     "BG" => "battlegrounds"
   }
+  @page_size 25
 
   @spec get_page(Season.t(), integer() | nil) :: {:ok, Response.t()} | {:error, any()}
   def get_page(raw_season, page \\ @default_page) do
@@ -53,5 +54,9 @@ defmodule Hearthstone.Leaderboards.Api do
 
   def ldb_id(ldb_id) do
     Map.get(@ldb_id_map, ldb_id, ldb_id)
+  end
+
+  def offset_to_page(offset) do
+    ceil(offset / @page_size)
   end
 end

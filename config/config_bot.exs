@@ -52,7 +52,8 @@ config :backend, QuantumScheduler,
          [:STD, :WLD, :twist],
          200,
          5000,
-         10_000
+         9000,
+         1000
        )
      end},
     {"11 */2 * * *",
@@ -62,15 +63,28 @@ config :backend, QuantumScheduler,
          [:BG, :DUO],
          200,
          10_000,
-         10_000
+         9000,
+         1000
+       )
+     end},
+    {"11 */5 * * *",
+     fn ->
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:arena],
+         1000,
+         20_000,
+         9000,
+         1000
        )
      end},
     {"47 * * * *",
      fn ->
-       Backend.Leaderboards.all_right_after_midnight(
+       Backend.Leaderboards.save_all_right_after_midnight(
          [:STD, :BG, :WLD, :twist, :DUO, :arena],
          5000,
-         120_000
+         120_000,
+         10_001
        )
      end},
     {"31 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},

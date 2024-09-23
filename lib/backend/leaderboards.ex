@@ -177,7 +177,12 @@ defmodule Backend.Leaderboards do
     end)
   end
 
-  def save_all_right_after_midnight(leaderboards, between_pages_delay_ms, between_full_delay_ms) do
+  def save_all_right_after_midnight(
+        leaderboards,
+        between_pages_delay_ms,
+        between_full_delay_ms,
+        offset
+      ) do
     Enum.filter(Blizzard.regions_with_timezone(), fn {_region, timezone} ->
       now = Timex.now(timezone)
       one_hour_ago = Timex.shift(now, hours: -1)
@@ -186,7 +191,13 @@ defmodule Backend.Leaderboards do
       :eq != Date.compare(now_date, one_hour_ago_date)
     end)
     |> Enum.map(&elem(&1, 0))
-    |> save_current_with_delay(leaderboards, between_pages_delay_ms, between_full_delay_ms)
+    |> save_current_with_delay(
+      leaderboards,
+      between_pages_delay_ms,
+      between_full_delay_ms,
+      nil,
+      offset
+    )
   end
 
   def save_current_with_delay(
@@ -194,7 +205,8 @@ defmodule Backend.Leaderboards do
         leaderboards,
         between_pages_delay_ms,
         between_full_delay_ms,
-        num \\ nil
+        num \\ nil,
+        start \\ 1
       ) do
     seasons =
       for r <- regions, l <- leaderboards do
@@ -209,7 +221,8 @@ defmodule Backend.Leaderboards do
       save_all_with_delay(
         season,
         between_pages_delay_ms,
-        num
+        num,
+        start
       )
 
       Process.sleep(between_full_delay_ms)
@@ -252,8 +265,9 @@ defmodule Backend.Leaderboards do
           {:ok, {[Row.t()], season_from_response :: ApiSeason.t()}}
           | {:error, error :: any(),
              rows_prior_to_error :: {Row.t(), season_from_response :: ApiSeason.t()}}
-  def save_all_with_delay(season, delay_ms, num \\ nil) do
-    with {:ok, response} <- Api.get_page(season),
+  def save_all_with_delay(season, delay_ms, num \\ nil, start \\ 1) do
+    with first_page <- Api.offset_to_page(start),
+         {:ok, response} <- Api.get_page(season, first_page),
          {:ok, total_pages} <- Response.total_pages(response) do
       rows = Response.rows(response)
       Task.start(fn -> handle_rows(rows, season) end)
@@ -263,7 +277,7 @@ defmodule Backend.Leaderboards do
         num_entries: num,
         delay_ms: delay_ms,
         total_pages: total_pages,
-        page_to_fetch: 2,
+        page_to_fetch: first_page + 1,
         previous: rows
       }
 
