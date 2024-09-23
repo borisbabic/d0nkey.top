@@ -38,11 +38,14 @@ defmodule BackendWeb.BattlefyView do
   end
 
   @spec handle_opponent_team(Battlefy.MatchTeam.t(), Map.t()) :: future_opponent_team
-  def handle_opponent_team(%{team: %{name: name}}, %{
-        tournament: %{id: tournament_id},
-        conn: conn,
-        all_deckcodes: all_deckcodes
-      }) do
+  def handle_opponent_team(
+        %{team: %{name: name}},
+        %{
+          tournament: %{id: tournament_id},
+          conn: conn,
+          all_deckcodes: all_deckcodes
+        } = params
+      ) do
     decks =
       case Map.get(all_deckcodes, name) do
         nil ->
@@ -52,12 +55,18 @@ defmodule BackendWeb.BattlefyView do
           live_render(conn, BackendWeb.CompactLineupOnly, session: %{"extra_decks" => codes})
       end
 
+    query_params =
+      case Map.get(params, :stage_id) do
+        stage_id when is_binary(stage_id) -> %{stage_id: stage_id}
+        _ -> %{}
+      end
+
     %{
       name: name,
       yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
       decks: decks,
       hsdeckviewer: ~p"/battlefy/tournament/#{tournament_id}/decks/#{name}",
-      link: ~p"/battlefy/tournament/#{tournament_id}/future/#{name}"
+      link: ~p"/battlefy/tournament/#{tournament_id}/future/#{name}?#{query_params}"
     }
   end
 
