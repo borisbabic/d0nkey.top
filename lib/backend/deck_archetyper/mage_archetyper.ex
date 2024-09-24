@@ -27,7 +27,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       no_minion?(card_info, 2) ->
         :"Spell Mage"
 
-      "The Galactic Projection Orb" in card_info.card_names and big_spell_mage?(card_info) ->
+      orb_bsm?(card_info) ->
         :"Orb Big Spell Mage"
 
       big_spell_mage?(card_info) ->
@@ -45,6 +45,13 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp orb_bsm?(card_info) do
+    orb = "The Galactic Projection Orb"
+
+    (orb in card_info.card_names or orb in card_info.etc_sideboard_names) and
+      big_spell_mage?(card_info)
   end
 
   defp excavate_mage?(ci) do
