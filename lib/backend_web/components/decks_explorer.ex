@@ -307,6 +307,12 @@ defmodule Components.DecksExplorer do
       "no_archetype",
       "player_deck_excludes",
       "use_aggregated",
+      "player_mulligan",
+      "player_not_mulligan",
+      "player_drawn",
+      "player_not_drawn",
+      "player_kept",
+      "player_not_kept",
       "force_fresh",
       "player_deck_archetype"
     ])
@@ -316,6 +322,12 @@ defmodule Components.DecksExplorer do
       "format",
       "deck_format",
       "offset",
+      "player_mulligan",
+      "player_not_mulligan",
+      "player_drawn",
+      "player_not_drawn",
+      "player_kept",
+      "player_not_kept",
       "player_deck_includes",
       "player_deck_excludes"
     ])

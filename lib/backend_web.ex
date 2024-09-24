@@ -147,6 +147,16 @@ defmodule BackendWeb do
       def user_from_context(assigns) do
         Surface.Components.Context.get(assigns, :user)
       end
+
+      def user_has_premium?(assigns) do
+        case user_from_context(assigns) do
+          %Backend.UserManager.User{} = user ->
+            Backend.UserManager.User.premium?(user)
+
+          _ ->
+            false
+        end
+      end
     end
   end
 

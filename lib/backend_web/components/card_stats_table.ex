@@ -7,6 +7,7 @@ defmodule Components.CardStatsTable do
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
   alias Components.Filter.ClassDropdown
+  alias Components.Filter.PlayableCardSelect
   alias Components.DecksExplorer
   alias Components.WinrateTag
   alias Hearthstone.DeckTracker
@@ -22,18 +23,23 @@ defmodule Components.CardStatsTable do
   prop(path_params, :any, default: nil)
   prop(params, :map)
   prop(user, :map, from_context: :user)
+  prop(premium_filters, :boolean, default: nil)
+  data(test_params, :map)
   data(highlight_cards, :list, default: [])
 
   def update(assigns, socket) do
+    test_params = Map.merge(assigns.criteria, assigns.filters)
+
     {
       :ok,
       socket
       |> assign(assigns)
+      |> assign(test_params: test_params)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
         assigns.params,
         assigns.path_params,
-        Map.merge(assigns.criteria, assigns.filters)
+        test_params
       )
     }
   end
@@ -61,12 +67,27 @@ defmodule Components.CardStatsTable do
         title={"Show Counts"}
         param={"show_counts"}
         selected_as_title={true} />
-
-
       <ClassDropdown id={"opponent_class_filter"}
         title={"Opponent"}
         name_prefix={"VS "}
         param={"opponent_class"} />
+      {#if premium_filters?(@premium_filters, @user)}
+        <PlayableCardSelect id={"player_mulligan"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_mulligan")} selected={@test_params["player_mulligan"] || []} title="In Mulligan"/>
+        <PlayableCardSelect id={"player_not_mulligan"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_mulligan")} selected={@test_params["player_not_mulligan"] || []} title="Not In Mulligan"/>
+        <PlayableCardSelect id={"player_drawn"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_drawn")} selected={@test_params["player_drawn"] || []} title="Drawn"/>
+        <PlayableCardSelect id={"player_not_drawn"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_drawn")} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
+        <PlayableCardSelect id={"player_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_kept")} selected={@test_params["player_kept"] || []} title="Kept"/>
+        <PlayableCardSelect id={"player_not_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_kept")} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
+        <LivePatchDropdown
+          :if={Backend.UserManager.User.can_access?(@user, :fresh_stats)}
+          options={[{nil, "No"}, {"yes", "Yes"}]}
+          title={"Force Fresh"}
+          param={"force_fresh"}
+          selected_as_title={false}
+        />
+      {/if}
+
+
       <table class="table is-fullwidth is-striped is-gapless">
         <thead>
           <th>
@@ -146,6 +167,9 @@ defmodule Components.CardStatsTable do
     </div>
     """
   end
+
+  def premium_filters?(show_premium?, _) when is_boolean(show_premium?), do: show_premium?
+  def premium_filters?(_, user), do: Backend.UserManager.User.premium?(user)
 
   def is_selected(%{card: %{id: id}}, [_ | _] = to_highlight),
     do: Hearthstone.canonical_id(id) in to_highlight
@@ -311,10 +335,26 @@ defmodule Components.CardStatsTable do
       "show_counts",
       "player_deck_id",
       "deck_id",
+      "player_mulligan",
+      "player_not_mulligan",
+      "player_drawn",
+      "player_not_drawn",
+      "player_kept",
+      "player_not_kept",
       "sort_by",
       "sort_direction"
     ])
-    |> DecksExplorer.parse_int(["min_mull_count", "min_drawn_count", "min_count"])
+    |> DecksExplorer.parse_int([
+      "player_mulligan",
+      "player_not_mulligan",
+      "player_drawn",
+      "player_not_drawn",
+      "player_kept",
+      "player_not_kept",
+      "min_mull_count",
+      "min_drawn_count",
+      "min_count"
+    ])
   end
 
   def default_criteria(context, criteria \\ nil) do
