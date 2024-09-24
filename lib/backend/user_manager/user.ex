@@ -114,6 +114,10 @@ defmodule Backend.UserManager.User do
   @spec is_role?(atom() | String.t()) :: boolean()
   def is_role?(atom_or_string), do: (atom_or_string |> to_string()) in string_admin_roles()
 
+  def premium?(%{premium: true}), do: true
+  def premium?(%{patreon_tier: %{ad_free: true}}), do: true
+  def premium?(user), do: can_access?(user, :premium)
+
   def hide_ads?(%{hide_ads: true}), do: true
   def hide_ads?(%{patreon_tier: %{ad_free: true}}), do: true
   def hide_ads?(%{admin_roles: ar}) when is_list(ar), do: !(ar |> Enum.empty?())

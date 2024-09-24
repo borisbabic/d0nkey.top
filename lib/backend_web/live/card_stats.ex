@@ -14,9 +14,17 @@ defmodule BackendWeb.CardStatsLive do
   data(params, :map)
   data(highlight_cards, :list)
   data(title, :string)
+  data(can_view, :boolean, default: false)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_meta()}
+
+  def render(%{missing_premium: true} = assigns) do
+    ~F"""
+        <div class="title is-2">{@title || "Card Stats"}</div>
+        <div class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
+    """
+  end
 
   def render(assigns) do
     ~F"""
@@ -67,12 +75,9 @@ defmodule BackendWeb.CardStatsLive do
   end
 
   defp stats(filters) do
-    case Hearthstone.DeckTracker.agg_deck_card_stats(filters) do
-      [%{card_stats: card_stats} = stats] when is_list(card_stats) ->
-        {card_stats, Map.get(stats, :total, nil)}
-
-      _ ->
-        {[], 0}
+    case Hearthstone.DeckTracker.card_stats(filters) do
+      %{card_stats: card_stats} = stats -> {card_stats, Map.get(stats, :total, nil)}
+      _ -> {[], 0}
     end
   end
 
@@ -86,19 +91,28 @@ defmodule BackendWeb.CardStatsLive do
       |> add_deck_id(params)
 
     filters = CardStatsTable.filter_relevant(params) |> CardStatsTable.with_default_filters()
-    {card_stats, total} = stats(criteria)
 
-    {:noreply,
-     assign(socket,
-       filters: filters,
-       criteria: criteria,
-       card_stats: card_stats,
-       games: total,
-       params: params,
-       highlight_cards: highlight_cards
-     )
-     |> assign_deck()
-     |> assign_meta()}
+    if needs_premium?(criteria) and !user_has_premium?(socket.assigns) do
+      {:noreply, assign(socket, missing_premium: true)}
+    else
+      {card_stats, total} = stats(criteria)
+
+      {:noreply,
+       assign(socket,
+         filters: filters,
+         criteria: criteria,
+         card_stats: card_stats,
+         games: total,
+         params: params,
+         highlight_cards: highlight_cards
+       )
+       |> assign_deck()
+       |> assign_meta()}
+    end
+  end
+
+  def needs_premium?(criteria) do
+    :fresh == Hearthstone.DeckTracker.fresh_or_agg_card_stats(criteria)
   end
 
   def highlight_cards(params) do
@@ -180,5 +194,9 @@ defmodule BackendWeb.CardStatsLive do
       title: title
     })
     |> assign(title: title)
+  end
+
+  def handle_info({:update_params, params}, socket) do
+    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
 end

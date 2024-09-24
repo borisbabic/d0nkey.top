@@ -310,88 +310,144 @@ defmodule Hearthstone.DeckTracker do
   @spec extract_timeout_from_criteria(Map.t() | list(), integer()) ::
           {timeout :: integer(), new_criteria :: list()}
   defp extract_timeout_from_criteria(criteria, default_timeout) do
-    criteria
-    |> Enum.to_list()
-    |> List.keytake("timeout", 0)
-    |> case do
+    list_criteria = Enum.to_list(criteria)
+
+    case List.keytake(list_criteria, "timeout", 0) do
       {{"timeout", query_timeout}, new_criteria} ->
         {query_timeout, new_criteria}
 
       _ ->
-        {default_timeout, criteria}
+        {default_timeout, list_criteria}
     end
   end
 
-  @spec merge_card_deck_stats(list()) :: [card_stats]
-  def merge_card_deck_stats(raw_criteria) do
-    {query_timeout, criteria} = extract_timeout_from_criteria(raw_criteria, 15_000)
-    await_timeout = 1000 + Util.to_int!(query_timeout, 15_000)
+  @type with_card_stats :: %{
+          wins: integer(),
+          losses: integer(),
+          total: integer(),
+          winrate: integer(),
+          card_stats: [card_stats]
+        }
+  @spec fresh_card_deck_stats(list()) :: with_card_stats
+  def fresh_card_deck_stats(raw_criteria) do
+    {query_timeout, list_criteria} = extract_timeout_from_criteria(raw_criteria, 30_000)
+    not_fresh = List.keydelete(list_criteria, "force_fresh", 0)
+    fresh_criteria = [{"force_fresh", true} | not_fresh]
+    await_timeout = 1000 + Util.to_int!(query_timeout, 30_000)
 
     [
       deck_card_stats,
       deck_stats
     ] =
       [
-        Task.async(fn -> deck_card_stats(criteria, timeout: query_timeout) end),
-        Task.async(fn -> deck_stats(criteria) end)
+        Task.async(fn -> deck_card_stats(not_fresh, timeout: query_timeout) end),
+        Task.async(fn -> deck_stats(fresh_criteria) end)
       ]
       |> Task.await_many(await_timeout)
 
     merge_card_deck_stats(deck_card_stats, deck_stats)
   end
 
-  @spec merge_card_deck_stats(list(), list()) :: [card_stats]
+  @spec merge_card_deck_stats(list(), list()) :: with_card_stats()
   def merge_card_deck_stats(deck_card_stats, deck_stats) do
-    deck_winrate_map =
-      for %{deck_id: id, winrate: winrate} <- deck_stats, into: %{}, do: {id, winrate}
+    {deck_winrate_map, wins, losses} =
+      Enum.reduce(deck_stats, {%{}, 0, 0}, fn %{
+                                                deck_id: id,
+                                                winrate: winrate,
+                                                wins: deck_wins,
+                                                losses: deck_losses
+                                              },
+                                              {winrate_map, agg_wins, agg_losses} ->
+        {
+          Map.put(winrate_map, id, winrate),
+          agg_wins + Util.to_int!(deck_wins),
+          agg_losses + Util.to_int!(deck_losses)
+        }
+      end)
 
-    deck_card_stats
-    |> Enum.reduce(%{}, fn ct, acc ->
-      deck_winrate = deck_winrate_map[ct.deck_id] || 0
+    total = wins + losses
+    winrate = safe_div(wins, total)
 
-      drawn_total = ct.drawn_wins + ct.drawn_losses
-      drawn_winrate = safe_div(ct.drawn_wins, drawn_total)
-      drawn_diff = drawn_winrate - deck_winrate
+    card_stats =
+      deck_card_stats
+      |> Enum.reduce(%{}, fn ct, acc ->
+        deck_winrate = deck_winrate_map[ct.deck_id] || 0
 
-      mull_total = ct.mulligan_wins + ct.mulligan_losses
-      mull_winrate = safe_div(ct.mulligan_wins, mull_total)
-      mull_diff = mull_winrate - deck_winrate
+        drawn_total = ct.drawn_wins + ct.drawn_losses
+        drawn_winrate = safe_div(ct.drawn_wins, drawn_total)
+        drawn_diff = drawn_winrate - deck_winrate
 
-      kept_total = ct.kept_wins + ct.kept_losses
-      kept_winrate = safe_div(ct.kept_wins, kept_total)
-      kept_diff = kept_winrate - deck_winrate
+        mull_total = ct.mulligan_wins + ct.mulligan_losses
+        mull_winrate = safe_div(ct.mulligan_wins, mull_total)
+        mull_diff = mull_winrate - deck_winrate
 
-      Map.put_new(acc, ct.card_id, %{
-        cum_drawn_diff: 0,
-        drawn_total: 0,
-        cum_mull_diff: 0,
-        mull_total: 0,
-        cum_kept_diff: 0,
-        kept_total: 0
-      })
-      |> update_in([ct.card_id, :cum_drawn_diff], &(&1 + drawn_diff * drawn_total))
-      |> update_in([ct.card_id, :drawn_total], &(&1 + drawn_total))
-      |> update_in([ct.card_id, :cum_mull_diff], &(&1 + mull_diff * mull_total))
-      |> update_in([ct.card_id, :mull_total], &(&1 + mull_total))
-      |> update_in([ct.card_id, :cum_kept_diff], &(&1 + kept_diff * kept_total))
-      |> update_in([ct.card_id, :kept_total], &(&1 + kept_total))
-    end)
-    |> Enum.map(fn {card_id, cum} ->
-      %{
-        card_id: card_id,
-        drawn_count: cum.drawn_total,
-        drawn_impact: safe_div(cum.cum_drawn_diff, cum.drawn_total),
-        mull_count: cum.mull_total,
-        mull_impact: safe_div(cum.cum_mull_diff, cum.mull_total),
-        kept_count: cum.kept_total,
-        kept_impact: safe_div(cum.cum_kept_diff, cum.kept_total)
-      }
-    end)
+        kept_total = ct.kept_wins + ct.kept_losses
+        kept_winrate = safe_div(ct.kept_wins, kept_total)
+        kept_diff = kept_winrate - deck_winrate
+
+        Map.put_new(acc, ct.card_id, %{
+          cum_drawn_diff: 0,
+          drawn_total: 0,
+          cum_mull_diff: 0,
+          mull_total: 0,
+          cum_kept_diff: 0,
+          kept_total: 0
+        })
+        |> update_in([ct.card_id, :cum_drawn_diff], &(&1 + drawn_diff * drawn_total))
+        |> update_in([ct.card_id, :drawn_total], &(&1 + drawn_total))
+        |> update_in([ct.card_id, :cum_mull_diff], &(&1 + mull_diff * mull_total))
+        |> update_in([ct.card_id, :mull_total], &(&1 + mull_total))
+        |> update_in([ct.card_id, :cum_kept_diff], &(&1 + kept_diff * kept_total))
+        |> update_in([ct.card_id, :kept_total], &(&1 + kept_total))
+      end)
+      |> Enum.map(fn {card_id, cum} ->
+        %{
+          "card_id" => card_id,
+          "drawn_total" => cum.drawn_total,
+          "drawn_impact" => safe_div(cum.cum_drawn_diff, cum.drawn_total),
+          "mull_total" => cum.mull_total,
+          "mull_impact" => safe_div(cum.cum_mull_diff, cum.mull_total),
+          "kept_total" => cum.kept_total,
+          "kept_impact" => safe_div(cum.cum_kept_diff, cum.kept_total)
+        }
+      end)
+
+    %{wins: wins, losses: losses, total: total, winrate: winrate, card_stats: card_stats}
   end
 
   defp safe_div(0, _divisor), do: 0 / 1
   defp safe_div(_dividend, 0), do: 0 / 1
   defp safe_div(dividend, divisor), do: dividend / divisor
+
+  @fresh_card_stats_filters [
+    "player_mulligan",
+    "player_not_mulligan",
+    "player_drawn",
+    "player_not_drawn",
+    "player_kept",
+    "player_not_kept"
+  ]
+  def fresh_card_stats_filter?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
+    do: true
+
+  def fresh_card_stats_filter?({slug, _}) when is_binary(slug), do: fresh_card_stats_filter?(slug)
+  def fresh_card_stats_filter?(slug) when is_binary(slug), do: slug in @fresh_card_stats_filters
+  def fresh_card_stats_filter?(_), do: false
+
+  def fresh_or_agg_card_stats(criteria) do
+    if Enum.any?(criteria, &fresh_card_stats_filter?/1) do
+      :fresh
+    else
+      :agg
+    end
+  end
+
+  def card_stats(criteria) do
+    case fresh_or_agg_card_stats(criteria) do
+      :fresh -> fresh_card_deck_stats(criteria)
+      :agg -> agg_deck_card_stats(criteria) |> Enum.at(0)
+    end
+  end
 
   def deck_card_stats(criteria, repo_opts \\ []) do
     base_deck_card_stats_query()
@@ -1049,6 +1105,99 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"player_rank", rank}, query),
     do: query |> where([game: g], g.player_rank == ^rank)
+
+  for {id, atom} <- FormatEnum.all(:atoms) do
+    defp compose_games_query(unquote(atom), query),
+      do: compose_games_query({"format", unquote(id)}, query)
+  end
+
+  # unpack lists
+  for param <- [
+        "player_mulligan",
+        "player_not_mulligan",
+        "player_drawn",
+        "player_not_drawn",
+        "player_kept",
+        "player_not_kept"
+      ] do
+    defp compose_games_query({unquote(param), list}, query) when is_list(list) do
+      Enum.reduce(list, query, fn card_id, query ->
+        compose_games_query({unquote(param), Util.to_int_or_orig(card_id)}, query)
+      end)
+    end
+  end
+
+  defp compose_games_query({"player_mulligan", card_id}, query),
+    do:
+      query
+      |> where(
+        [game: g],
+        fragment(
+          "EXISTS(SELECT * FROM public.dt_card_game_tally cgt WHERE cgt.game_id = ? AND cgt.mulligan = true AND cgt.card_id = ? )",
+          g.id,
+          ^card_id
+        )
+      )
+
+  defp compose_games_query({"player_not_mulligan", card_id}, query),
+    do:
+      query
+      |> where(
+        [game: g],
+        fragment(
+          "NOT EXISTS(SELECT * FROM public.dt_card_game_tally cgt WHERE cgt.game_id = ? AND cgt.mulligan = true AND cgt.card_id = ? )",
+          g.id,
+          ^card_id
+        )
+      )
+
+  defp compose_games_query({"player_drawn", card_id}, query),
+    do:
+      query
+      |> where(
+        [game: g],
+        fragment(
+          "EXISTS(SELECT * FROM public.dt_card_game_tally cgt WHERE cgt.game_id = ? AND cgt.drawn = true AND cgt.card_id = ? )",
+          g.id,
+          ^card_id
+        )
+      )
+
+  defp compose_games_query({"player_not_drawn", card_id}, query),
+    do:
+      query
+      |> where(
+        [game: g],
+        fragment(
+          "NOT EXISTS(SELECT * FROM public.dt_card_game_tally cgt WHERE cgt.game_id = ? AND cgt.drawn = true AND cgt.card_id = ? )",
+          g.id,
+          ^card_id
+        )
+      )
+
+  defp compose_games_query({"player_kept", card_id}, query),
+    do:
+      query
+      |> where(
+        [game: g],
+        fragment(
+          "EXISTS(SELECT * FROM public.dt_card_game_tally cgt WHERE cgt.game_id = ? AND cgt.kept = true AND cgt.card_id = ? )",
+          g.id,
+          ^card_id
+        )
+      )
+
+  defp compose_games_query({"player_not_kept", card_id}, query),
+    do:
+      query
+      |> where(
+        [game: g],
+        fragment(
+          "NOT EXISTS(SELECT * FROM public.dt_card_game_tally cgt WHERE cgt.game_id = ? AND cgt.kept = true AND cgt.card_id = ? )",
+          g.id,
+          ^card_id
+        )
+      )
 
   defp compose_games_query({"archetype", archetype}, query = @agg_deck_query) do
     arch = archetype || @nil_agg_archetype
