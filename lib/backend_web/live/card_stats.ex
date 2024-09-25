@@ -74,8 +74,14 @@ defmodule BackendWeb.CardStatsLive do
     Map.put(base_filters, "archetype", archetype)
   end
 
-  defp stats(filters) do
-    case Hearthstone.DeckTracker.card_stats(filters) do
+  # Same criteria so we don't need to check the db again
+  defp stats(criteria, %{criteria: old_criteria, card_stats: old_card_stats, games: total})
+       when criteria == old_criteria and not is_nil(old_card_stats) do
+    {old_card_stats, total}
+  end
+
+  defp stats(criteria, _assigns) do
+    case Hearthstone.DeckTracker.card_stats(criteria) do
       %{card_stats: card_stats} = stats -> {card_stats, Map.get(stats, :total, nil)}
       _ -> {[], 0}
     end
@@ -95,7 +101,7 @@ defmodule BackendWeb.CardStatsLive do
     if needs_premium?(criteria) and !user_has_premium?(socket.assigns) do
       {:noreply, assign(socket, missing_premium: true)}
     else
-      {card_stats, total} = stats(criteria)
+      {card_stats, total} = stats(criteria, socket.assigns)
 
       {:noreply,
        assign(socket,
