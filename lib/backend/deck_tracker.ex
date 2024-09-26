@@ -951,8 +951,13 @@ defmodule Hearthstone.DeckTracker do
         {"past_60_days", 60, "day"}
       ] do
     defp compose_games_query({"period", unquote(param)}, query = @card_query) do
+      whose_inserted_at = if has_named_binding?(query, :game), do: :game, else: :card_tally
+
       query
-      |> where([card_tally: ct], ct.inserted_at >= ago(unquote(ago_num), unquote(ago_period)))
+      |> where(
+        [{^whose_inserted_at, ct}],
+        ct.inserted_at >= ago(unquote(ago_num), unquote(ago_period))
+      )
     end
 
     defp compose_games_query({"period", unquote(param)}, query = @old_aggregated_query) do
@@ -980,7 +985,8 @@ defmodule Hearthstone.DeckTracker do
 
     defp compose_games_query({"period", unquote(param)}, query = @card_query) do
       {:ok, start_time} = NaiveDateTime.from_iso8601(unquote(start))
-      query |> where([card_tally: c], c.inserted_at >= ^start_time)
+      whose_inserted_at = if has_named_binding?(query, :game), do: :game, else: :card_tally
+      query |> where([{^whose_inserted_at, c}], c.inserted_at >= ^start_time)
     end
 
     defp compose_games_query({"period", unquote(param)}, query) do
@@ -1001,8 +1007,10 @@ defmodule Hearthstone.DeckTracker do
     subquery = period_start_query(slug)
     period_start = %{} = Repo.one(subquery)
 
+    whose_inserted_at = if has_named_binding?(query, :game), do: :game, else: :card_tally
+
     query
-    |> where([card_tally: ct], ct.inserted_at >= ^period_start)
+    |> where([{^whose_inserted_at, ct}], ct.inserted_at >= ^period_start)
   end
 
   defp compose_games_query({"period", slug}, query) do
