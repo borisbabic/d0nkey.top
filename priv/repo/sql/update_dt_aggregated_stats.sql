@@ -331,7 +331,7 @@ DROP MATERIALIZED VIEW IF EXISTS old_dt_aggregated_stats;
 -- UPDATE AGG LOG
 INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
 -- UPDATE AGGREGATION COUNT
-CREATE TABLE public.dt_aggregation_counts_new AS
+CREATE TABLE public.dt_aggregation_meta_new AS
 SELECT
     FORMAT,
     PERIOD,
@@ -380,6 +380,7 @@ SELECT
         ELSE 0
     END
     )::bigint AS COUNT_12800,
+    (SUM(total * winrate) / SUM(total)) AS overall_winrate,
     now() as inserted_at
 FROM
     PUBLIC.DT_AGGREGATED_STATS
@@ -390,9 +391,9 @@ GROUP BY
     1,
     2,
     3;
-ALTER TABLE IF EXISTS dt_aggregation_counts RENAME TO dt_aggregation_counts_old;
-ALTER TABLE IF EXISTS dt_aggregation_counts_new RENAME TO dt_aggregation_counts;
-DROP TABLE IF EXISTS dt_aggregation_counts_old;
+ALTER TABLE IF EXISTS dt_aggregation_meta RENAME TO dt_aggregation_meta_old;
+ALTER TABLE IF EXISTS dt_aggregation_meta_new RENAME TO dt_aggregation_meta;
+DROP TABLE IF EXISTS dt_aggregation_meta_old;
 END;
 $$;
 

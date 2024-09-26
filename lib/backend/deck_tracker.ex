@@ -6,7 +6,7 @@ defmodule Hearthstone.DeckTracker do
 
   alias Backend.Repo
   alias Hearthstone.DeckTracker.AggregatedStats
-  alias Hearthstone.DeckTracker.AggregationCount
+  alias Hearthstone.DeckTracker.AggregationMeta
   alias Hearthstone.DeckTracker.AggregationLog
   alias Hearthstone.DeckTracker.CardGameTally
   # alias Hearthstone.DeckTracker.DeckStats
@@ -2250,20 +2250,20 @@ defmodule Hearthstone.DeckTracker do
     }
   end
 
-  @spec current_aggregation_count(Enum.t()) ::
-          {:ok, AggregationCount.t()} | {:error, reason :: atom()}
-  def current_aggregation_count(base_criteria) do
+  @spec current_aggregation_meta(Enum.t()) ::
+          {:ok, AggregationMeta.t()} | {:error, reason :: atom()}
+  def current_aggregation_meta(base_criteria) do
     criteria = [{:limit, 1} | Enum.to_list(base_criteria)]
 
-    case aggregation_count(criteria) do
+    case aggregation_meta(criteria) do
       [count] -> {:ok, count}
       [] -> {:error, :no_aggregation_count_found}
       _ -> {:error, :unknown_error_for_agg_count}
     end
   end
 
-  @spec current_aggregation_count(Enum.t()) :: [AggregationCount.t()]
-  def aggregation_count(criteria) do
+  @spec aggregation_meta(Enum.t()) :: [AggregationMeta.t()]
+  def aggregation_meta(criteria) do
     try do
       base_agg_count_query()
       |> build_agg_count_query(criteria)
@@ -2273,7 +2273,7 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  defp base_agg_count_query(), do: from(ac in AggregationCount, as: :agg_count)
+  defp base_agg_count_query(), do: from(ac in AggregationMeta, as: :agg_count)
 
   defp build_agg_count_query(query, criteria) do
     Enum.reduce(criteria, query, &compose_agg_count_query/2)
