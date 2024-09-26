@@ -613,9 +613,9 @@ defmodule Hearthstone.DeckTracker do
       as: :card_tally,
       join: g in assoc(ct, :game),
       as: :game,
-      join: pd in assoc(ct, :deck),
+      join: pd in assoc(g, :player_deck),
       as: :player_deck,
-      group_by: [ct.card_id, ct.deck_id],
+      group_by: [ct.card_id, pd.id],
       select: %{
         kept_wins:
           sum(
@@ -644,7 +644,7 @@ defmodule Hearthstone.DeckTracker do
         mulligan_losses:
           sum(fragment("CASE WHEN ? = 'loss' AND ? THEN 1 ELSE 0 END", g.status, ct.mulligan)),
         card_id: ct.card_id,
-        deck_id: ct.deck_id
+        deck_id: pd.id
       }
     )
   end
