@@ -12,7 +12,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.ClassDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
-  alias Hearthstone.DeckTracker.AggregationCount
+  alias Hearthstone.DeckTracker.AggregationMeta
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.ClassStatsModal
 
@@ -255,8 +255,8 @@ defmodule Components.DecksExplorer do
 
   defp ensure_min_games(params) do
     min =
-      case DeckTracker.current_aggregation_count(params) do
-        {:ok, count} -> AggregationCount.choose_count(count, 50, @default_min_games)
+      case DeckTracker.current_aggregation_meta(params) do
+        {:ok, count} -> AggregationMeta.choose_count(count, 50, @default_min_games)
         _ -> @default_min_games
       end
 

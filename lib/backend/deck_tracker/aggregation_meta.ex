@@ -1,9 +1,9 @@
-defmodule Hearthstone.DeckTracker.AggregationCount do
+defmodule Hearthstone.DeckTracker.AggregationMeta do
   @moduledoc "Hold the counts from the last aggregation to be smart about min count for decks"
   use Ecto.Schema
 
   @primary_key false
-  schema "dt_aggregation_counts" do
+  schema "dt_aggregation_meta" do
     field :format, :integer
     field :rank, :string
     field :period, :string
@@ -16,6 +16,7 @@ defmodule Hearthstone.DeckTracker.AggregationCount do
     field :count_3200, :integer
     field :count_6400, :integer
     field :count_12800, :integer
+    field :overall_winrate, :float
     timestamps(updated_at: false)
   end
 
