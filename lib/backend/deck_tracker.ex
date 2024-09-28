@@ -1848,8 +1848,14 @@ defmodule Hearthstone.DeckTracker do
         base_criteria
       end
 
-    periods(criteria)
-    |> Enum.find_value("past_week", fn
+    aggregated = aggregated_periods()
+
+    periods = periods(criteria) |> Enum.filter(& &1.slug in aggregated)
+    default = with false <- ("past_week" in aggregated) and "past_week",
+                    nil <- Enum.find_value(periods, & &1.slug) do
+                      "past_week"
+                    end
+    Enum.find_value(periods, default, fn
       %{type: "patch", period_start: ps, slug: slug} ->
         NaiveDateTime.compare(ps, start) == :gt and NaiveDateTime.compare(ps, finish_patch) == :lt &&
           slug
