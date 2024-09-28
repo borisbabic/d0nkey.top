@@ -6,9 +6,17 @@ defmodule BackendWeb.MetaLive do
   data(user, :any)
   data(criteria, :map)
   data(params, :map)
+  data(missing_premium, :boolean, default: false)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+
+  def render(%{missing_premium: true} = assigns) do
+    ~F"""
+        <div class="title is-2">Meta</div>
+        <div class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
+    """
+  end
 
   def render(assigns) do
     ~F"""
@@ -24,9 +32,17 @@ defmodule BackendWeb.MetaLive do
     default = TierList.default_criteria(params)
     criteria = Map.merge(default, params) |> TierList.filter_parse_params()
 
-    {:noreply,
-     assign(socket, criteria: criteria, params: params)
-     |> assign_meta()}
+    if needs_premium?(criteria) and !user_has_premium?(socket.assigns) do
+      {:noreply, assign(socket, missing_premium: true)}
+    else
+      {:noreply,
+       assign(socket, criteria: criteria, params: params)
+       |> assign_meta()}
+    end
+  end
+
+  def needs_premium?(criteria) do
+    :fresh == Hearthstone.DeckTracker.fresh_or_agg(criteria)
   end
 
   def assign_meta(socket) do

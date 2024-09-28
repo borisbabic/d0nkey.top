@@ -11,6 +11,7 @@ defmodule Components.TierList do
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
   alias Surface.Components.LivePatch
+  alias Components.Filter.ForceFreshDropdown
   import Components.DecksExplorer, only: [parse_int: 2]
   import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
 
@@ -19,6 +20,8 @@ defmodule Components.TierList do
   prop(criteria, :map, default: %{})
   prop(live_view, :module, required: true)
   prop(min_games_options, :list, default: [100, 250, 500, 1000, 2500, 5000, 7500, 10_000])
+  prop(premium_filters, :boolean, default: nil)
+  prop(user, :map, from_context: :user)
 
   def update(assigns, socket) do
     {
@@ -37,9 +40,9 @@ defmodule Components.TierList do
   def render(assigns) do
     ~F"""
       <div>
-        <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={true} />
-        <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={true}/>
-        <RankDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={true}/>
+        <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
+        <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
+        <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <ClassDropdown
           id="tier_list_opponents_class_dropdown"
           name_prefix={"VS "}
@@ -53,6 +56,9 @@ defmodule Components.TierList do
           param={"min_games"}
           selected_as_title={false}
           normalizer={&to_string/1} />
+        {#if premium_filters?(@premium_filters, @user)}
+          <ForceFreshDropdown id={"force_fresh"} />
+        {/if}
 
         <table class="table is-fullwidth is-striped is-narrow">
           <thead>
@@ -83,6 +89,9 @@ defmodule Components.TierList do
     """
   end
 
+  def premium_filters?(show_premium?, _) when is_boolean(show_premium?), do: show_premium?
+  def premium_filters?(_, user), do: Backend.UserManager.User.premium?(user)
+
   @default_min_games 1000
 
   def percentage(num, total) do
@@ -95,7 +104,7 @@ defmodule Components.TierList do
 
   def stats(criteria) do
     {min_games, crit} = criteria |> with_defaults() |> Map.pop("min_games")
-    stats_all = crit |> DeckTracker.archetype_agg_stats()
+    stats_all = DeckTracker.archetype_stats(crit)
 
     total =
       Enum.reduce(stats_all, 0, fn %{total: t}, sum ->

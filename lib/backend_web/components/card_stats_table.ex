@@ -6,6 +6,7 @@ defmodule Components.CardStatsTable do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
+  alias Components.Filter.ForceFreshDropdown
   alias Components.Filter.ClassDropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.DecksExplorer
@@ -78,12 +79,7 @@ defmodule Components.CardStatsTable do
         <PlayableCardSelect id={"player_not_drawn"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_drawn")} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
         <PlayableCardSelect id={"player_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_kept")} selected={@test_params["player_kept"] || []} title="Kept"/>
         <PlayableCardSelect id={"player_not_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_kept")} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
-        <LivePatchDropdown
-          options={[{nil, "No"}, {"yes", Components.Helper.warning_triangle(%{before: "Yes"})}]}
-          title={"Force Fresh"}
-          param={"force_fresh"}
-          selected_as_title={false}
-        />
+        <ForceFreshDropdown id={"force_fresh"} />
       {/if}
 
 
