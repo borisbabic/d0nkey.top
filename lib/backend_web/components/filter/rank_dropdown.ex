@@ -1,4 +1,5 @@
 defmodule Components.Filter.RankDropdown do
+  @moduledoc false
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
@@ -29,9 +30,7 @@ defmodule Components.Filter.RankDropdown do
   end
 
   def options(context, aggregated_only \\ false) do
-    aggregated =
-      DeckTracker.get_latest_agg_log_entry()
-      |> Map.get(:ranks, []) || []
+    aggregated = DeckTracker.aggregated_ranks()
 
     for %{slug: slug, display: d} <- DeckTracker.ranks_for_filters(context),
         !aggregated_only or slug in aggregated do
