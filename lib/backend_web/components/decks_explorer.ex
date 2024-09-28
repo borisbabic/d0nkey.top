@@ -137,7 +137,7 @@ defmodule Components.DecksExplorer do
         <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
         <LivePatchDropdown
           :if={Backend.UserManager.User.can_access?(@user, :archetyping)}
-          options={[{nil, "No"}, {"yes", "Yes"}]}
+          options={[{nil, "No"}, {"yes", Components.Helper.warning_triangle(%{before: "Yes"})}]}
           title={"No archetype"}
           param={"no_archetype"}
           selected_as_title={false}

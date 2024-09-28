@@ -47,9 +47,9 @@ defmodule Components.CardStatsTable do
   def render(assigns) do
     ~F"""
     <div>
-      <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={true} warning={@highlight_dropdowns}/>
-      <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={true}/>
-      <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={true} warning={@highlight_dropdowns}/>
+      <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)} warning={@highlight_dropdowns}/>
+      <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
+      <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)} warning={@highlight_dropdowns}/>
       <LivePatchDropdown id="min_mull_count"
         options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
         title={"Min Mull Count"}
@@ -79,8 +79,7 @@ defmodule Components.CardStatsTable do
         <PlayableCardSelect id={"player_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_kept")} selected={@test_params["player_kept"] || []} title="Kept"/>
         <PlayableCardSelect id={"player_not_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_kept")} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
         <LivePatchDropdown
-          :if={Backend.UserManager.User.can_access?(@user, :fresh_stats)}
-          options={[{nil, "No"}, {"yes", "Yes"}]}
+          options={[{nil, "No"}, {"yes", Components.Helper.warning_triangle(%{before: "Yes"})}]}
           title={"Force Fresh"}
           param={"force_fresh"}
           selected_as_title={false}

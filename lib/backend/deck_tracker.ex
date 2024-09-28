@@ -430,6 +430,11 @@ defmodule Hearthstone.DeckTracker do
   def fresh_card_stats_filter?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
     do: true
 
+  def fresh_card_stats_filter?({filter, value})
+      when filter in ["rank", "region", "format", "period"] do
+    !(value in get_aggregated_metadata(filter <> "s"))
+  end
+
   def fresh_card_stats_filter?({slug, _}) when is_binary(slug), do: fresh_card_stats_filter?(slug)
   def fresh_card_stats_filter?(slug) when is_binary(slug), do: slug in @fresh_card_stats_filters
   def fresh_card_stats_filter?(_), do: false
@@ -2315,5 +2320,24 @@ defmodule Hearthstone.DeckTracker do
       {deck_id, _} when is_integer(deck_id) -> {"player_deck_id", deck_id}
       _ -> {"archetype", deck_id_or_archetype}
     end
+  end
+
+  def aggregated_periods(), do: get_aggregated_metadata(:periods)
+
+  def aggregated_formats(), do: get_aggregated_metadata(:formats)
+
+  def aggregated_regions(), do: get_aggregated_metadata(:regions)
+
+  def aggregated_ranks(), do: get_aggregated_metadata(:ranks)
+
+  def get_aggregated_metadata(metadata) when is_binary(metadata) do
+    metadata
+    |> String.to_existing_atom()
+    |> get_aggregated_metadata()
+  end
+
+  def get_aggregated_metadata(metadata) when is_atom(metadata) do
+    get_latest_agg_log_entry()
+    |> Map.get(metadata, []) || []
   end
 end
