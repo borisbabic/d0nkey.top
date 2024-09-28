@@ -8,6 +8,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.RegionDropdown
+  alias Components.Filter.ForceFreshDropdown
   alias Components.Filter.FormatDropdown
   alias Components.Filter.ClassDropdown
   alias Components.LivePatchDropdown
@@ -135,6 +136,9 @@ defmodule Components.DecksExplorer do
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
         <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
+        <ForceFreshDropdown
+          id="decks_explorer_force_fresh"
+          :if={@filter_context == :public and Backend.UserManager.User.premium?(@user)} />
         <LivePatchDropdown
           :if={Backend.UserManager.User.can_access?(@user, :archetyping)}
           options={[{nil, "No"}, {"yes", Components.Helper.warning_triangle(%{before: "Yes"})}]}
