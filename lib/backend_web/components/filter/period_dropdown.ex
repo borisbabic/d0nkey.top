@@ -65,12 +65,11 @@ defmodule Components.Filter.PeriodDropdown do
     DeckTracker.default_period(format)
   end
 
-  def extract_format(format, fallback \\ @default_format)
-  def extract_format(format, _fallback) when is_integer(format), do: format
-  def extract_format(%{"format" => format}, fallback), do: Util.to_int(format, fallback)
-  def extract_format(%{format: format}, fallback), do: Util.to_int(format, fallback)
+  defp extract_format(format, _fallback) when is_integer(format), do: format
+  defp extract_format(%{"format" => format}, fallback), do: Util.to_int(format, fallback)
+  defp extract_format(%{format: format}, fallback), do: Util.to_int(format, fallback)
 
-  def extract_format(list, fallback) when is_list(list) do
+  defp extract_format(list, fallback) when is_list(list) do
     with nil <- List.keyfind(list, "format", 0),
          nil <- List.keyfind(list, :format, 0) do
       nil
@@ -80,6 +79,6 @@ defmodule Components.Filter.PeriodDropdown do
     end
   end
 
-  def extract_format(format, fallback) when is_binary(format), do: Util.to_int(format, fallback)
-  def extract_format(_, fallback), do: fallback
+  defp extract_format(format, fallback) when is_binary(format), do: Util.to_int(format, fallback)
+  defp extract_format(_, fallback), do: fallback
 end

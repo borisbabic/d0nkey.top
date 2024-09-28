@@ -650,4 +650,17 @@ defmodule Util do
 
   def flip_tuple({a, b}), do: {b, a}
   def flip_tuples([{_a, _b} | _] = tuples), do: Enum.map(tuples, &flip_tuple/1)
+
+  @spec drop(map_or_keyword_list :: Map.t() | list(), keys :: list(), options :: list()) ::
+          Map.t() | list()
+  def drop(map_or_keyword_list, keys, opts \\ [])
+  def drop(map, keys, _opts) when is_map(map), do: Map.drop(map, keys)
+
+  def drop(list, keys, opts) when is_list(list) do
+    position = Keyword.get(opts, :position, 0)
+
+    Enum.reduce(keys, list, fn key, carry ->
+      List.keydelete(carry, key, position)
+    end)
+  end
 end

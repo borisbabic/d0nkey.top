@@ -291,7 +291,16 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
-  def archetype_stats(criteria) do
+  def archetype_stats(raw_criteria) do
+    without_force_fresh = Util.drop(raw_criteria, ["force_fresh"])
+
+    case fresh_or_agg(raw_criteria) do
+      :fresh -> fresh_archetype_stats(without_force_fresh)
+      :agg -> archetype_agg_stats(without_force_fresh)
+    end
+  end
+
+  def fresh_archetype_stats(criteria) do
     base_archetype_stats_query()
     |> build_games_query(criteria)
     |> Repo.all()
@@ -427,20 +436,20 @@ defmodule Hearthstone.DeckTracker do
     "player_kept",
     "player_not_kept"
   ]
-  def fresh_card_stats_filter?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
+  def filter_needs_fresh?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
     do: true
 
-  def fresh_card_stats_filter?({filter, value})
+  def filter_needs_fresh?({filter, value})
       when filter in ["rank", "region", "format", "period"] do
     !(value in get_aggregated_metadata(filter <> "s"))
   end
 
-  def fresh_card_stats_filter?({slug, _}) when is_binary(slug), do: fresh_card_stats_filter?(slug)
-  def fresh_card_stats_filter?(slug) when is_binary(slug), do: slug in @fresh_card_stats_filters
-  def fresh_card_stats_filter?(_), do: false
+  def filter_needs_fresh?({slug, _}) when is_binary(slug), do: filter_needs_fresh?(slug)
+  def filter_needs_fresh?(slug) when is_binary(slug), do: slug in @fresh_card_stats_filters
+  def filter_needs_fresh?(_), do: false
 
-  def fresh_or_agg_card_stats(criteria) do
-    if Enum.any?(criteria, &fresh_card_stats_filter?/1) do
+  def fresh_or_agg(criteria) do
+    if Enum.any?(criteria, &filter_needs_fresh?/1) do
       :fresh
     else
       :agg
@@ -448,7 +457,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def card_stats(criteria) do
-    case fresh_or_agg_card_stats(criteria) do
+    case fresh_or_agg(criteria) do
       :fresh -> fresh_card_deck_stats(criteria)
       :agg -> agg_deck_card_stats(criteria) |> Enum.at(0)
     end
@@ -1850,11 +1859,14 @@ defmodule Hearthstone.DeckTracker do
 
     aggregated = aggregated_periods()
 
-    periods = periods(criteria) |> Enum.filter(& &1.slug in aggregated)
-    default = with false <- ("past_week" in aggregated) and "past_week",
-                    nil <- Enum.find_value(periods, & &1.slug) do
-                      "past_week"
-                    end
+    periods = periods(criteria) |> Enum.filter(&(&1.slug in aggregated))
+
+    default =
+      with false <- "past_week" in aggregated and "past_week",
+           nil <- Enum.find_value(periods, & &1.slug) do
+        "past_week"
+      end
+
     Enum.find_value(periods, default, fn
       %{type: "patch", period_start: ps, slug: slug} ->
         NaiveDateTime.compare(ps, start) == :gt and NaiveDateTime.compare(ps, finish_patch) == :lt &&

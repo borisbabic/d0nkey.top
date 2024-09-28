@@ -118,7 +118,7 @@ defmodule BackendWeb.CardStatsLive do
   end
 
   def needs_premium?(criteria) do
-    :fresh == Hearthstone.DeckTracker.fresh_or_agg_card_stats(criteria)
+    :fresh == Hearthstone.DeckTracker.fresh_or_agg(criteria)
   end
 
   def highlight_cards(params) do
