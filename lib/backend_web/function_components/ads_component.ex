@@ -54,7 +54,7 @@ defmodule FunctionComponents.Ads do
 
   def mobile_video_floating(assigns) do
     ~H"""
-      <div phx-update="ignore" id="nitropay-video-mobile-floating"></div>
+      <div phx-update="ignore" id="nitropay-floating-video-mobile"></div>
     """
   end
 end
