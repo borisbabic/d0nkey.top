@@ -28,7 +28,53 @@
   });
 </script>
 <script>
+  console.log("wazzzzzzzzzzzzzzzzzzzzzzzzzzzzzzup");
+  window['nitroAds'].createAd('nitropay-sticky-side-rail', {
+    "refreshTime": 30,
+    "format": "rail",
+    "rail": "right",
+    "railOffsetTop": 0,
+    "railOffsetBottom": 0,
+    "railCollisionWhitelist": [
+      "*"
+    ],
+    "sizes": [
+      [
+        "160",
+        "600"
+      ],
+      [
+        "300",
+        "600"
+      ],
+      [
+        "300",
+        "250"
+      ],
+      [
+        "320",
+        "50"
+      ],
+      [
+        "320",
+        "100"
+      ],
+      [
+        "320",
+        "480"
+      ]
+    ],
+    demo: <%= nitropay_demo?() %>,
+    "report": {
+      "enabled": true,
+      "icon": true,
+      "wording": "Report Ad",
+      "position": "bottom-right"
+    }
+  });
+</script>
 
+<script>
 window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
   "refreshLimit": 0,
   "refreshTime": 30,
