@@ -807,9 +807,9 @@ defmodule Backend.Blizzard do
 
   def get_current_ladder_season(ldb, region) do
     timezone = regions_with_timezone() |> Keyword.get(region)
-    one_hour_ago = Timex.now(timezone) |> Timex.shift(hour: -1)
+    one_hour_ago = Timex.now(timezone) |> Timex.shift(hours: -1)
     date = Timex.to_date(one_hour_ago)
-    get_season_id(Date.utc_today(), ldb)
+    get_season_id(date, ldb)
   end
 
   @spec regions_with_timezone :: [{leaderboard(), String.t()}]
