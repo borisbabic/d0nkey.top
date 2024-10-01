@@ -126,6 +126,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Concierge" in ci.card_names and class_name != "Rogue" ->
         :"Concierge #{class_name}"
 
+      "Stormwind Champion" in ci.card_names ->
+        :"Old Aggro #{class_name}"
+
       giants?(ci) ->
         :"Giants #{class_name}"
 
