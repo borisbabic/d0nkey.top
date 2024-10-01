@@ -16,6 +16,9 @@ defmodule Backend.PlayerIconBag do
     # {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}},
     {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
     # patreon
+    {"MakiahTime#1552", {:image, "/images/icons/makiah.png", "https://www.twitch.tv/makiahtime"}},
+
+    # patreon
     # {"otters#11111", {:image, "/images/icons/otters.png"}},
     # patreon
     # {"Montu#11356", {:image, "/images/icons/montu.png"}},
