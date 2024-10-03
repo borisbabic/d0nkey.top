@@ -25,6 +25,9 @@ Disallow: *?*offset*
 Disallow: *?*rank
 Disallow: *?*period
 Disallow: *?*page
+Disallow: /decks?*
+Disallow: /decks?
+Disallow: /decks*
 Disallow: /deck/*?*
 Disallow: /card-stats
 Disallow: /card-stats*?*
