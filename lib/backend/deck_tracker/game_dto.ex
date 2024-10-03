@@ -204,7 +204,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
   def region(1), do: :AM
   def region(2), do: :EU
   def region(3), do: :AP
-  def region(4), do: :CN
+  def region(5), do: :CN
   def region("REGION_" <> region), do: region(region)
   def region("EU"), do: :EU
   def region("CN"), do: :CN
