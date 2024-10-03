@@ -560,15 +560,28 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
+  @spec fresh_or_agg_deck_stats(Map.t() | list()) :: :fresh | :agg
+  def fresh_or_agg_deck_stats(criteria) do
+    {_query, _new_criteria, freshness} = do_base_deck_stats_query(criteria)
+    freshness
+  end
+
+  @spec fresh_or_agg_deck_stats(Map.t() | list()) :: {Ecto.Query.t(), list()}
   defp base_deck_stats_query(criteria) do
+    {query, new_criteria, _freshness} = do_base_deck_stats_query(criteria)
+    {query, new_criteria}
+  end
+
+  @spec do_base_deck_stats_query(Map.t() | list()) :: {Ecto.Query.t(), list(), :fresh | :agg}
+  defp do_base_deck_stats_query(criteria) do
     list_criteria = Enum.to_list(criteria)
 
     with :nomatch <- List.keyfind(list_criteria, "force_fresh", 0, :nomatch),
          {:ok, new_criteria} <- convert_deck_criteria_to_aggregate(list_criteria) do
-      {base_agg_deck_stats_query(), new_criteria}
+      {base_agg_deck_stats_query(), new_criteria, :agg}
     else
       _ ->
-        {base_deck_stats_query(), List.keydelete(list_criteria, "force_fresh", 0)}
+        {base_deck_stats_query(), List.keydelete(list_criteria, "force_fresh", 0), :fresh}
     end
   end
 
