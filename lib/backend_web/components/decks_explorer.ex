@@ -83,7 +83,7 @@ defmodule Components.DecksExplorer do
 
     criteria = Map.put(search_filters, "offset", new_offset)
 
-    if :agg == IO.inspect(DeckTracker.fresh_or_agg_deck_stats(criteria), label: :fresh_or_agg) or
+    if :agg == DeckTracker.fresh_or_agg_deck_stats(criteria) or
          can_access_unaggregated?(
            Map.get(socket.assigns, :user),
            Map.get(socket.assigns, :filter_context)
