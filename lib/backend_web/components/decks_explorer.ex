@@ -49,6 +49,7 @@ defmodule Components.DecksExplorer do
   data(actual_params, :any)
   data(user, :map, from_context: :user)
   data(offset, :integer, default: 0)
+  data(needs_login?, :boolean, default: nil)
   data(end_of_stream?, :boolean, default: false)
 
   def update(assigns, socket) do
@@ -80,21 +81,39 @@ defmodule Components.DecksExplorer do
     {_, search_filters} = parse_params(socket.assigns)
     # %{"limit" => limit} = search_filters
 
-    fetched_deck_stats =
-      search_filters
-      |> Map.put("offset", new_offset)
-      |> DeckTracker.deck_stats()
-      |> Enum.map(&Map.put_new(&1, :id, &1.deck_id))
+    criteria = Map.put(search_filters, "offset", new_offset)
 
-    handle_offset_stream_scroll(
-      socket,
-      :deck_stats,
-      fetched_deck_stats,
-      new_offset,
-      curr_offset,
-      nil,
-      reset
-    )
+    if :agg == IO.inspect(DeckTracker.fresh_or_agg_deck_stats(criteria), label: :fresh_or_agg) or
+         can_access_unaggregated?(
+           Map.get(socket.assigns, :user),
+           Map.get(socket.assigns, :filter_context)
+         ) do
+      fetched_deck_stats =
+        criteria
+        |> DeckTracker.deck_stats()
+        |> Enum.map(&Map.put_new(&1, :id, &1.deck_id))
+
+      handle_offset_stream_scroll(
+        socket,
+        :deck_stats,
+        fetched_deck_stats,
+        new_offset,
+        curr_offset,
+        nil,
+        reset
+      )
+    else
+      handle_offset_stream_scroll(
+        socket,
+        :deck_stats,
+        [],
+        curr_offset,
+        curr_offset,
+        nil,
+        reset
+      )
+      |> assign(:needs_login?, true)
+    end
   end
 
   def render(assigns) do
@@ -102,10 +121,10 @@ defmodule Components.DecksExplorer do
     <div>
       <div :if={{params, search_filters} = {@actual_params, @search_filters}}>
 
-        <FormatDropdown id="format_dropdown" filter_context={@filter_context} />
-        <RankDropdown id="rank_dropdown" filter_context={@filter_context} warning={warning?(@streams)} />
-        <PeriodDropdown id="period_dropdown" filter_context={@filter_context} warning={warning?(@streams)} />
-        <RegionDropdown id={"deck_region"} filter_context={@filter_context} />
+        <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)}/>
+        <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
+        <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
+        <RegionDropdown :if={can_access_unaggregated?(@user, @filter_context)} id={"deck_region"} filter_context={@filter_context} />
 
          { #<LivePatchDropdown
         #   options={limit_options()}
@@ -134,8 +153,8 @@ defmodule Components.DecksExplorer do
         <ArchetypeSelect id={"player_deck_archetype"} param={"player_deck_archetype"} selected={params["player_deck_archetype"] || []} title="Archetypes" />
         <PlayableCardSelect id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
-        <ClassStatsModal class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
-        <ClassStatsModal class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
+        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
+        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
         <ForceFreshDropdown
           id="decks_explorer_force_fresh"
           :if={@filter_context == :public and Backend.UserManager.User.premium?(@user)} />
@@ -150,6 +169,7 @@ defmodule Components.DecksExplorer do
         <br>
 
         <div
+        :if={!@needs_login?}
         id="deck_stats_viewport"
         phx-update="stream"
         class="columns is-multiline is-mobile is-narrow is-centered"
@@ -157,6 +177,15 @@ defmodule Components.DecksExplorer do
         phx-viewport-bottom={!@end_of_stream? && "next-decks-page"}>
           <div id={dom_id} :for={{dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} />
+          </div>
+        </div>
+        <div :if={@needs_login?}>
+          <br>
+          <br>
+          <br>
+          <br>
+          <div class="notification is-warning">
+            You need to login to use these filters
           </div>
         </div>
         <div :if={warning?(@streams)} >
@@ -195,6 +224,10 @@ defmodule Components.DecksExplorer do
   #     {:noreply, stream_deck_stats(socket, new_offset)}
   #   end
   # end
+
+  def can_access_unaggregated?(_, :private), do: true
+  def can_access_unaggregated?(%{id: _id, battletag: _btag}, :public), do: true
+  def can_access_unaggregated?(_, _), do: false
 
   def handle_event("next-decks-page", _middle, socket) do
     %{offset: offset} = socket.assigns
