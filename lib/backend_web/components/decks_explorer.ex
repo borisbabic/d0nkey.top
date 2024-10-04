@@ -225,7 +225,7 @@ defmodule Components.DecksExplorer do
   #   end
   # end
 
-  def can_access_unaggregated?(_, :private), do: true
+  def can_access_unaggregated?(_, :personal), do: true
   def can_access_unaggregated?(%{id: _id, battletag: _btag}, :public), do: true
   def can_access_unaggregated?(_, _), do: false
 
