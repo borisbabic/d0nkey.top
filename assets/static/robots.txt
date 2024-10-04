@@ -19,6 +19,9 @@ Disallow: /leaderboard/player-history/
 Disallow: /leaderboard?*
 Disallow: /leaderboard?
 Disallow: /leaderboard?
+Disallow: /leaderboard/player-stats
+Disallow: /leaderboard/player-stats*
+Disallow: /leaderboard/player-stats?*
 Disallow: /admin*
 Disallow: *?*limit*
 Disallow: *?*offset*
