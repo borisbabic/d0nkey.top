@@ -138,7 +138,7 @@ defmodule Backend.Application do
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
-      |> add_twitch_bot()
+      # |> add_twitch_bot()
       |> add_dt_insert_listener()
       |> check_bot()
 

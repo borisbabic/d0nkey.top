@@ -97,7 +97,7 @@ config :backend,
   twitch_bot_config: [
     user: "d0nkeytop",
     pass: System.get_env("TWITCH_BOT_OAUTH"),
-    handler: TwitchBot.Handler
+    bot: TwitchBot.Handler
   ],
   gm_stream_twitter_info: [
     consumer_key: System.get_env("GMS_CONSUMER_KEY"),
