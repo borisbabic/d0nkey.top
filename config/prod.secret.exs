@@ -29,7 +29,6 @@ config :backend,
   admin_config_vars_cutoff_date: admin_config_vars_cutoff_date
 
 config :backend, Backend.Repo,
-  ssl: true,
   timeout: 25_000,
   url: database_url,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")

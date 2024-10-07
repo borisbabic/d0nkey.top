@@ -61,7 +61,7 @@ defmodule Backend.MixProject do
       # nostrum wants 2.0, tesla wants less, but it's optional there
       {:gun, "~> 2.0", override: true},
       {:typed_struct, "~> 0.1.4"},
-      {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:varint, "~> 1.0.0"},
       {:timex, "~> 3.5"},
       {:floki, ">= 0.27.0"},
