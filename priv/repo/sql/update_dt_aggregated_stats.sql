@@ -169,7 +169,7 @@ card_stats AS (
     FROM
         public.dt_card_game_tally dcgt
         INNER JOIN public.dt_games dg ON dg.id = dcgt.game_id
-        INNER JOIN agg_periods p ON dcgt.inserted_at >= p.START AND p.format = dg.format
+        INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND p.format = dg.format
         INNER JOIN agg_ranks r ON (r.min_rank = 0
                 OR dg.player_rank >= min_rank)
             AND (r.max_rank IS NULL
@@ -179,7 +179,7 @@ card_stats AS (
             AND (r.max_legend_rank IS NULL
                 OR dg.player_legend_rank <= r.max_legend_rank)
     WHERE
-        dcgt.inserted_at <= now()
+        dg.inserted_at <= now()
         AND dg.opponent_class IS NOT NULL
         AND dg.game_type = 7
         AND dg.region IN (
