@@ -85,7 +85,7 @@ defmodule Bot.MessageHandlerUtil do
   end
 
   def send_message({:error, reason}, channel_id) when is_atom(reason) or is_binary(reason) do
-    Logger.warn("Couldn't send discord message to #{channel_id}, reason: #{reason}")
+    Logger.warning("Couldn't send discord message to #{channel_id}, reason: #{reason}")
   end
 
   def send_message(message, channel_id) when is_binary(message) do

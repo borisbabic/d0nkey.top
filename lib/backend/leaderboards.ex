@@ -284,7 +284,7 @@ defmodule Backend.Leaderboards do
       do_save_rows(opts)
     else
       _ ->
-        Logger.warn("Couldn't get first page for #{inspect(season)}")
+        Logger.warning("Couldn't get first page for #{inspect(season)}")
         {:error, "Could not fetch initial page", {[], season}}
     end
   end
@@ -335,7 +335,7 @@ defmodule Backend.Leaderboards do
       do_save_rows(new_opts)
     else
       _ ->
-        Logger.warn("Couldn't get #{page} page for #{inspect(season)}")
+        Logger.warning("Couldn't get #{page} page for #{inspect(season)}")
         {:error, "Could not fetch page #{page}", {previous, season}}
     end
   end
@@ -354,7 +354,7 @@ defmodule Backend.Leaderboards do
         {:ok, all, response.season}
 
       _ ->
-        Logger.warn("Couldn't get first page for #{inspect(season)}")
+        Logger.warning("Couldn't get first page for #{inspect(season)}")
         :error
     end
   end
@@ -457,7 +457,7 @@ defmodule Backend.Leaderboards do
         inserted
 
       {:error, _reason} ->
-        Logger.warn(
+        Logger.warning(
           "Error saving #{attrs.season_id} #{attrs.leaderboard_id} #{attrs.region} #{attrs.upstream_updated_at}"
         )
 

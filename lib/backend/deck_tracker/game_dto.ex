@@ -199,7 +199,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
         :in_progress
 
       other ->
-        Logger.warn("Unknown status: #{other} for game #{dto.game_id}")
+        Logger.warning("Unknown status: #{other} for game #{dto.game_id}")
         :unknown
     end
   end

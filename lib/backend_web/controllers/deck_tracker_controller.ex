@@ -85,7 +85,7 @@ defmodule BackendWeb.DeckTrackerController do
   #       |> text("Missing game_id")
 
   #     {:error, reason} ->
-  #       Logger.warn(
+  #       Logger.warning(
   #         "Unknown error submitting games reason: #{inspect(reason)} params: #{inspect(params)}"
   #       )
 

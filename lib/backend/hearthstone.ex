@@ -705,7 +705,7 @@ defmodule Backend.Hearthstone do
   defp compose_decks_query({"exclude_cards", []}, query), do: query
 
   defp compose_decks_query(unrecognized, query) do
-    Logger.warn("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
+    Logger.warning("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
     query
   end
 

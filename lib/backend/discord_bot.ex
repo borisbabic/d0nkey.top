@@ -126,10 +126,10 @@ defmodule Backend.DiscordBot do
         {:ok, []}
 
       error = {:error, _} ->
-        Logger.warn("Error fetching initial: #{inspect(error)}")
+        Logger.warning("Error fetching initial: #{inspect(error)}")
 
       other ->
-        Logger.warn("Unknown error fetching initial: #{inspect(other)}")
+        Logger.warning("Unknown error fetching initial: #{inspect(other)}")
         {:error, :could_not_fetch_initial_messages}
     end
   end

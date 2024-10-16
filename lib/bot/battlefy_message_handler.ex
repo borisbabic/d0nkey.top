@@ -52,7 +52,7 @@ defmodule Bot.BattlefyMessageHandler do
   end
 
   defp log_unable_to_create(other) do
-    Logger.warn("Unable to create standings message: #{inspect(other)}")
+    Logger.warning("Unable to create standings message: #{inspect(other)}")
     {:error, :could_not_create_message}
   end
 

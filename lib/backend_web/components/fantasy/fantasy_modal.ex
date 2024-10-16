@@ -271,7 +271,7 @@ defmodule Components.FantasyModal do
         attrs |> Map.put("draft_deadline", t)
 
       {:error, _} ->
-        Logger.warn("Could not parse draft_deadline: #{dd}")
+        Logger.warning("Could not parse draft_deadline: #{dd}")
         attrs
     end
   end
@@ -350,7 +350,7 @@ defmodule Components.FantasyModal do
           [show_success: true, show_modal: false]
 
         {:error, error} ->
-          Logger.warn("Error saving league #{error |> inspect()}", show_error: true)
+          Logger.warning("Error saving league #{error |> inspect()}", show_error: true)
       end
 
     {
