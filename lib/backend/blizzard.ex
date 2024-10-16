@@ -33,7 +33,7 @@ defmodule Backend.Blizzard do
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @current_bg_season_id 13
   @current_bg_season_end_date ~N[9999-01-01 00:00:00]
-  @current_arena_season_id 48
+  @current_arena_season_id 50
   @current_arena_season_end_date ~N[9999-01-01 00:00:00]
 
   defmacro is_old_bg_season(season_id) do
