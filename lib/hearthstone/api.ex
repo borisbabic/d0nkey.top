@@ -123,7 +123,7 @@ defmodule Hearthstone.Api do
 
       {:ok, r = %{"error" => "unauthorized"}} ->
         with {:ok, encoded} <- Poison.encode(r) do
-          Logger.warn("Unauthorized blizzard response: #{encoded}")
+          Logger.warning("Unauthorized blizzard response: #{encoded}")
         end
 
         {:error, :unauthorized}

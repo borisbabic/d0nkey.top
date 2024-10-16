@@ -126,7 +126,7 @@ defmodule Components.GroupModal do
           [show_success: true, show_modal: false]
 
         {:error, error} ->
-          Logger.warn("Error saving group #{error |> inspect()}", show_error: true)
+          Logger.warning("Error saving group #{error |> inspect()}", show_error: true)
       end
 
     {

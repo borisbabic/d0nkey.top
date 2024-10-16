@@ -506,7 +506,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         {:ok, response}
 
       {:ok, %{body: resp_body, status_code: status_code}} ->
-        Logger.warn("Error #{status_code} when sending #{body} in form fields: #{resp_body}")
+        Logger.warning("Error #{status_code} when sending #{body} in form fields: #{resp_body}")
         {:error, body}
 
       {_, other} ->
@@ -568,7 +568,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         {:ok, response}
 
       {:ok, %{body: resp_body, status_code: status_code}} ->
-        Logger.warn("Error #{status_code} when sending #{body} to #{url}: #{resp_body}")
+        Logger.warning("Error #{status_code} when sending #{body} to #{url}: #{resp_body}")
         {:error, body}
 
       {_, other} ->

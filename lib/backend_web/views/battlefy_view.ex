@@ -516,7 +516,7 @@ defmodule BackendWeb.BattlefyView do
             {bottom, top || Battlefy.MatchTeam.empty(), :bottom, :top}
 
           _ ->
-            Logger.warn("No team is the players team, wtf #{top.team} #{bottom.team}")
+            Logger.warning("No team is the players team, wtf #{top.team} #{bottom.team}")
             {Battlefy.MatchTeam.empty(), Battlefy.MatchTeam.empty(), nil, nil}
         end
 
