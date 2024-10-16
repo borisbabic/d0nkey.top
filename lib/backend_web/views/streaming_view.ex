@@ -26,21 +26,6 @@ defmodule BackendWeb.StreamingView do
   def get_surrounding(offset, limit),
     do: get_surrounding(Util.to_int_or_orig(offset), Util.to_int_or_orig(limit))
 
-  def create_streamer_list(_conn, []), do: false
-
-  def create_streamer_list(conn, streamers) do
-    assigns = %{streamers: streamers, conn: conn}
-
-    ~H"""
-          <option data-link={remove_from_link(@conn, ["twitch_id", "twitch_login"])} value="All Streamers"/>
-          <%= for s <- @streamers do %>
-            <option data-link={ update_link(@conn, "twitch_id", s.twitch_id) } value={Streamer.twitch_display(s)}>
-              <%= Streamer.twitch_login(s) %>
-            </option>
-          <% end %>
-    """
-  end
-
   def filter_archetypes(sd, []), do: sd
 
   def filter_archetypes(sd, archetypes) do
@@ -76,7 +61,6 @@ defmodule BackendWeb.StreamingView do
   def render("streamer_decks.html", %{
         streamer_decks: streamer_decks,
         conn: conn,
-        streamers: streamers,
         archetypes: archetypes_raw,
         include_cards: include,
         exclude_cards: exclude,
@@ -139,7 +123,6 @@ defmodule BackendWeb.StreamingView do
       rows: rows,
       title: title,
       dropdowns: dropdowns,
-      streamer_list: create_streamer_list(conn, streamers),
       prev_button: prev_button,
       show_archetype: true,
       conn: conn,
