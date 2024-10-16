@@ -723,7 +723,7 @@ defmodule Backend.Hearthstone.Deck do
   @spec class(t()) :: String.t()
   def class(deck) do
     with nil <- deck.class,
-         nil <- Hearthstone.class(deck.hero) do
+         nil <- Hearthstone.class(deck) do
       "NEUTRAL"
     end
   end
