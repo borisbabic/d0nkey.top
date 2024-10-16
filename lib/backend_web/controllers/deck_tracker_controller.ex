@@ -6,8 +6,9 @@ defmodule BackendWeb.DeckTrackerController do
   """
 
   require Logger
+  alias Backend.Hearthstone.Deck
   alias Hearthstone.DeckTracker.GameDto
-  alias Hearthstone.DeckTracker
+  alias Hearthstone.DeckTracker.GameInserter
 
   defp api_user(%{assigns: %{api_user: api_user}}), do: api_user
   defp api_user(_), do: nil
@@ -15,22 +16,13 @@ defmodule BackendWeb.DeckTrackerController do
   def put_game(conn, params) do
     api_user = api_user(conn)
 
-    params
-    |> GameDto.from_raw_map(api_user)
-    |> log_game(params)
-    |> DeckTracker.handle_game()
-    |> case do
-      {:ok, %{player_deck: pd = %{id: _}}} ->
+    case enqueue_game(params, api_user) do
+      {:ok, %Deck{id: _} = deck} ->
         conn
         |> put_status(200)
         |> json(%{
-          "player_deck" => Backend.Hearthstone.deck_info(pd)
+          "player_deck" => Backend.Hearthstone.deck_info(deck)
         })
-
-      {:ok, _other} ->
-        conn
-        |> put_status(200)
-        |> text("Success")
 
       {:error, :missing_game_id} ->
         conn
@@ -38,7 +30,7 @@ defmodule BackendWeb.DeckTrackerController do
         |> text("Missing game_id")
 
       {:error, reason} ->
-        Logger.warn(
+        Logger.warning(
           "Unknown error submitting games reason: #{inspect(reason)} params: #{inspect(params)}"
         )
 
@@ -47,6 +39,61 @@ defmodule BackendWeb.DeckTrackerController do
         |> text("Unknown error")
     end
   end
+
+  @spec enqueue_game(Map.t(), Backend.Api.ApiUser.t()) ::
+          {:ok, player_deck :: Deck.t()} | {:error, any()}
+  defp enqueue_game(params, api_user) do
+    dto = params |> GameDto.from_raw_map(api_user)
+
+    with :ok <- GameDto.validate_game_id(dto),
+         {:ok, deck} <- extract_player_deck(dto),
+         {:ok, _} <- GameInserter.enqueue(params, api_user) do
+      {:ok, deck}
+    end
+  end
+
+  @spec extract_player_deck(GameDto.t()) :: {:ok, Deck.t()} | {:ok, nil} | {:error, any()}
+  defp extract_player_deck(%{player: %{deckcode: code}}) when is_binary(code) do
+    Backend.Hearthstone.create_or_get_deck(code)
+  end
+
+  defp extract_player_deck(_), do: {:ok, nil}
+
+  # def put_game(conn, params) do
+  #   api_user = api_user(conn)
+
+  #   params
+  #   |> GameDto.from_raw_map(api_user)
+  #   |> log_game(params)
+  #   |> DeckTracker.handle_game()
+  #   |> case do
+  #     {:ok, %{player_deck: pd = %{id: _}}} ->
+  #       conn
+  #       |> put_status(200)
+  #       |> json(%{
+  #         "player_deck" => Backend.Hearthstone.deck_info(pd)
+  #       })
+
+  #     {:ok, _other} ->
+  #       conn
+  #       |> put_status(200)
+  #       |> text("Success")
+
+  #     {:error, :missing_game_id} ->
+  #       conn
+  #       |> put_status(400)
+  #       |> text("Missing game_id")
+
+  #     {:error, reason} ->
+  #       Logger.warn(
+  #         "Unknown error submitting games reason: #{inspect(reason)} params: #{inspect(params)}"
+  #       )
+
+  #       conn
+  #       |> put_status(500)
+  #       |> text("Unknown error")
+  #   end
+  # end
 
   defp log_game(dto = %{player: %{battletag: "D0nkey#2470"}}, params),
     do: log_game(:error, dto, params)

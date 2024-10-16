@@ -20,6 +20,7 @@ defmodule BackendWeb.ConnCase do
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
+      use Oban.Testing, repo: Backend.Repo
       alias BackendWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
@@ -28,10 +29,9 @@ defmodule BackendWeb.ConnCase do
       def create_temp_user(attrs \\ %{}) do
         {:ok, user} =
           attrs
-          |> Enum.into(
-          %{
+          |> Enum.into(%{
             battletag: Ecto.UUID.generate(),
-            bnet_id: :rand.uniform(2147483646)
+            bnet_id: :rand.uniform(2_147_483_646)
           })
           |> Backend.UserManager.create_user()
 
@@ -51,8 +51,8 @@ defmodule BackendWeb.ConnCase do
   # setup_all tags do
   # end
   setup tags do
-
     Backend.DataCase.setup_db(tags)
+
     opts =
       [conn: Phoenix.ConnTest.build_conn()]
       |> setup_user(tags)
