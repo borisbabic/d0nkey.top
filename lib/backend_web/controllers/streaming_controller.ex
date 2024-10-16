@@ -43,13 +43,6 @@ defmodule BackendWeb.StreamingController do
   end
 
   def streamer_decks(conn, params) do
-    streamers =
-      if Map.has_key?(params, "twitch_login") or Map.has_key?(params, "twitch_id") do
-        []
-      else
-        Backend.Streaming.streamers(%{"order_by" => {:asc, :hsreplay_twitch_display}})
-      end
-
     page_title =
       case params["twitch_login"] do
         nil -> "Streamer decks"
@@ -60,7 +53,6 @@ defmodule BackendWeb.StreamingController do
       base_streamer_deck_attrs(params)
       |> Map.merge(%{
         page_title: page_title,
-        streamers: streamers,
         conn: conn
       })
 
