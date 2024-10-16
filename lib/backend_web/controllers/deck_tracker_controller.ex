@@ -8,7 +8,7 @@ defmodule BackendWeb.DeckTrackerController do
   require Logger
   alias Backend.Hearthstone.Deck
   alias Hearthstone.DeckTracker.GameDto
-  alias Hearthstone.DeckTracker.GameInserter
+  alias Hearthstone.DeckTracker.GameInsertBatcher
 
   defp api_user(%{assigns: %{api_user: api_user}}), do: api_user
   defp api_user(_), do: nil
@@ -53,13 +53,14 @@ defmodule BackendWeb.DeckTrackerController do
   @spec enqueue_game(Map.t(), Backend.Api.ApiUser.t()) ::
           {:ok, player_deck :: Deck.t()} | {:error, any()}
   defp enqueue_game(params, api_user) do
-    dto = params |> GameDto.from_raw_map(api_user)
+    dto =
+      params
+      |> GameDto.from_raw_map(api_user)
+      |> log_game(params)
 
     with :ok <- GameDto.validate_game_id(dto),
          {:ok, deck} <- extract_player_deck(dto) do
-      Task.start(fn ->
-        GameInserter.enqueue(params, api_user)
-      end)
+      GameInsertBatcher.enqueue(params, api_user)
 
       {:ok, deck}
     end

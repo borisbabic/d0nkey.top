@@ -78,8 +78,10 @@ defmodule BackendWeb.DeckTrackerControllerTest do
 
     test "create new game", %{conn: conn} do
       {game_id, request} = valid_fs_request()
+
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
       assert json_response(conn, 200)
+      Process.sleep(2500)
 
       assert_enqueued(
         worker: GameInserter,
@@ -103,6 +105,8 @@ defmodule BackendWeb.DeckTrackerControllerTest do
                  "name" => "Highlander Priest"
                }
              } = json_response(conn, 200)
+
+      Process.sleep(2500)
 
       assert_enqueued(
         worker: GameInserter,
