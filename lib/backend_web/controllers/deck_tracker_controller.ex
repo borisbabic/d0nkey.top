@@ -17,7 +17,7 @@ defmodule BackendWeb.DeckTrackerController do
     api_user = api_user(conn)
 
     case enqueue_game(params, api_user) do
-      {:ok, %Deck{id: _} = deck} ->
+      {:ok, %Deck{} = deck} ->
         conn
         |> put_status(200)
         |> json(%{
@@ -64,7 +64,7 @@ defmodule BackendWeb.DeckTrackerController do
 
   @spec extract_player_deck(GameDto.t()) :: {:ok, Deck.t()} | {:ok, nil} | {:error, any()}
   defp extract_player_deck(%{player: %{deckcode: code}}) when is_binary(code) do
-    Backend.Hearthstone.create_or_get_deck(code)
+    Deck.decode(code)
   end
 
   defp extract_player_deck(_), do: {:ok, nil}
