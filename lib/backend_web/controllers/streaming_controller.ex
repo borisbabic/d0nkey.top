@@ -68,8 +68,14 @@ defmodule BackendWeb.StreamingController do
   end
 
   defp base_streamer_deck_attrs(params) do
-    case StreamerDeckBag.get(params) do
-      {:ok, streamer_decks} ->
+    criteria =
+      params
+      |> Map.put_new("limit", 20)
+      |> Map.put_new("order_by", {:desc, :last_played})
+      |> Map.to_list()
+
+    case Streaming.streamer_decks(criteria) do
+      streamer_decks when is_list(streamer_decks) ->
         %{
           streamer_decks: Enum.take(streamer_decks, 20),
           archetypes: [],
