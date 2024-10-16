@@ -56,8 +56,11 @@ defmodule BackendWeb.DeckTrackerController do
     dto = params |> GameDto.from_raw_map(api_user)
 
     with :ok <- GameDto.validate_game_id(dto),
-         {:ok, deck} <- extract_player_deck(dto),
-         {:ok, _} <- GameInserter.enqueue(params, api_user) do
+         {:ok, deck} <- extract_player_deck(dto) do
+      Task.start(fn ->
+        GameInserter.enqueue(params, api_user)
+      end)
+
       {:ok, deck}
     end
   end

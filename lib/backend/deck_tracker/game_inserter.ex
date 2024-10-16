@@ -4,6 +4,9 @@ defmodule Hearthstone.DeckTracker.GameInserter do
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker
 
+  @spec enqueue(Map.t(), Backend.Api.ApiUser.t() | integer()) :: any()
+  def enqueue(params, %{id: id}), do: enqueue(params, id)
+
   def enqueue(params, api_user_id),
     do: %{"raw_params" => params, "api_user_id" => api_user_id} |> new() |> Oban.insert()
 
