@@ -8,7 +8,7 @@ config :backend,
   auto_migrate: false,
   thl_discord_id: 534_455_756_129_435_649,
   nostrum_slash_command_target: :global,
-  dt_insert_listener: false
+  dt_insert_listener: true
 
 config :nostrum,
   # The token of your bot as a string
