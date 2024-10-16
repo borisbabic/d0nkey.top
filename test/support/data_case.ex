@@ -16,6 +16,7 @@ defmodule Backend.DataCase do
 
   using do
     quote do
+      use Oban.Testing, repo: Backend.Repo
       alias Backend.Repo
 
       import Ecto

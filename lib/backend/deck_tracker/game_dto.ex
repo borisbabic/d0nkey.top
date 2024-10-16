@@ -59,6 +59,10 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   defp to_snake(map), do: Recase.Enumerable.convert_keys(map, &Recase.to_snake/1)
 
+  def player_deck(dto, deckcode_handler) do
+    deckcode_handler.(dto.player.deckcode)
+  end
+
   def to_ecto_attrs(dto = %GameDto{}, deckcode_handler, source_handler) do
     %{
       "player_btag" => dto.player.battletag,
@@ -213,6 +217,10 @@ defmodule Hearthstone.DeckTracker.GameDto do
   def region("US"), do: :AM
   def region("NA"), do: :AM
   def region(_), do: :unknown
+
+  @spec validate_game_id(GameDto.t()) :: :ok | {:error, :missing_game_id}
+  def validate_game_id(%{game_id: game_id}) when is_binary(game_id), do: :ok
+  def validate_game_id(_), do: {:error, :missing_game_id}
 end
 
 defmodule Hearthstone.DeckTracker.PlayerDto do
