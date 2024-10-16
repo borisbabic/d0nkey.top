@@ -24,6 +24,16 @@ defmodule BackendWeb.DeckTrackerController do
           "player_deck" => Backend.Hearthstone.deck_info(deck)
         })
 
+      {:ok, nil} ->
+        conn
+        |> put_status(200)
+        |> text("Deck missing or not parsable")
+
+      {:ok, _other} ->
+        conn
+        |> put_status(200)
+        |> text("Success")
+
       {:error, :missing_game_id} ->
         conn
         |> put_status(400)
