@@ -22,6 +22,11 @@ defmodule Backend.Application do
         {Oban, oban_config()},
         Backend.PostgrexPubsubListener,
         %{
+          # can  multiserver
+          id: Hearthstone.DeckTracker.GameInsertBatcher,
+          start: {Hearthstone.DeckTracker.GameInsertBatcher, :start_link, [[]]}
+        },
+        %{
           # can  multiserver, prolly
           id: Backend.Infrastructure.ApiCache,
           start: {Backend.Infrastructure.ApiCache, :start_link, [[]]}
