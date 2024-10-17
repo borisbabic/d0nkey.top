@@ -31,7 +31,7 @@ defmodule Components.Decklist do
   def deck_link(deck, true) do
     case Deck.archetype(deck) do
       nil -> deck_link(deck, false)
-      archetype -> ~p"/archetype/#{archetype}?#{add_format(deck)}"
+      archetype -> ~p"/archetype/#{archetype}?#{add_games_filters(deck)}"
     end
   end
 

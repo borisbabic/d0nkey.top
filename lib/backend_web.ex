@@ -217,6 +217,37 @@ defmodule BackendWeb do
       use BackendWeb.ViewHelpers
       unquote(verified_routes())
 
+      def add_games_filters(base \\ %{}, params) do
+        base
+        |> add_rank(params)
+        |> add_period(params)
+        |> add_format(params)
+      end
+
+      def add_rank(other \\ %{}, params)
+
+      def add_rank(other, %{rank: r}) do
+        Map.put_new(other, :rank, r)
+      end
+
+      def add_rank(other, %{"rank" => r}) do
+        Map.put_new(other, "rank", r)
+      end
+
+      def add_rank(other, _), do: other
+
+      def add_period(other \\ %{}, params)
+
+      def add_period(other, %{period: r}) do
+        Map.put_new(other, :period, r)
+      end
+
+      def add_period(other, %{"period" => r}) do
+        Map.put_new(other, "period", r)
+      end
+
+      def add_period(other, _), do: other
+
       # TODO: find a better home for this
       def add_format(other \\ %{}, params)
 
