@@ -277,8 +277,16 @@ defmodule Hearthstone.DeckTracker do
   def detailed_stats(deck_id_or_archetype, additional_criteria \\ [])
       when is_integer(deck_id_or_archetype) or is_binary(deck_id_or_archetype) or
              is_atom(deck_id_or_archetype) do
-    criteria = [deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria]
-    opponent_class_stats(criteria)
+    if :fresh == fresh_or_agg(additional_criteria) do
+      criteria = [deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria]
+      opponent_class_stats(criteria)
+    else
+      criteria = [
+        deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria
+      ]
+
+      agg_opponent_class_stats(criteria)
+    end
   end
 
   def total_stats(criteria) do
@@ -471,6 +479,28 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all(repo_opts)
   end
 
+  def agg_opponent_class_stats(criteria) do
+    base_agg_opponent_class_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
+  defp base_agg_opponent_class_stats_query() do
+    from(ag in AggregatedStats,
+      as: :agg_deck_stats,
+      left_join: pd in assoc(ag, :deck),
+      as: :player_deck,
+      select: %{
+        wins: type(ag.wins, :integer),
+        losses: type(ag.losses, :integer),
+        total: type(ag.total, :integer),
+        winrate: type(ag.winrate, :float),
+        opponent_class: ag.opponent_class
+      },
+      where: fragment("COALESCE(?, 'any')", ag.opponent_class) != "any"
+    )
+  end
+
   @doc """
   Stats grouped by opponent's class
   """
@@ -568,7 +598,7 @@ defmodule Hearthstone.DeckTracker do
     freshness
   end
 
-  @spec fresh_or_agg_deck_stats(Map.t() | list()) :: {Ecto.Query.t(), list()}
+  @spec base_deck_stats_query(Map.t() | list()) :: {Ecto.Query.t(), list()}
   defp base_deck_stats_query(criteria) do
     {query, new_criteria, _freshness} = do_base_deck_stats_query(criteria)
     {query, new_criteria}
@@ -2343,14 +2373,18 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_agg_count_query(_, query), do: query
 
-  def deck_or_archetype_criteria(deck_id) when is_integer(deck_id),
-    do: {"player_deck_id", deck_id}
+  def deck_or_archetype_criteria(deck_id, deck_param \\ "player_deck_id")
 
-  def deck_or_archetype_criteria(archetype) when is_atom(archetype), do: {"archetype", archetype}
+  def deck_or_archetype_criteria(deck_id, deck_param) when is_integer(deck_id),
+    do: {deck_param, deck_id}
 
-  def deck_or_archetype_criteria(deck_id_or_archetype) when is_binary(deck_id_or_archetype) do
+  def deck_or_archetype_criteria(archetype, _) when is_atom(archetype),
+    do: {"archetype", archetype}
+
+  def deck_or_archetype_criteria(deck_id_or_archetype, deck_param)
+      when is_binary(deck_id_or_archetype) do
     case Integer.parse(deck_id_or_archetype) do
-      {deck_id, _} when is_integer(deck_id) -> {"player_deck_id", deck_id}
+      {deck_id, _} when is_integer(deck_id) -> {deck_param, deck_id}
       _ -> {"archetype", deck_id_or_archetype}
     end
   end
