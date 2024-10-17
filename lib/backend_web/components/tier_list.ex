@@ -73,7 +73,7 @@ defmodule Components.TierList do
           <tbody :if={{stats, total} = stats(@data, @criteria)}>
             <tr :for={as <- stats}>
               <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
-                <a class="basic-black-text deck-title" href={~p"/archetype/#{as.archetype}?#{add_format(@params)}"}>
+                <a class="basic-black-text deck-title" href={~p"/archetype/#{as.archetype}?#{add_games_filters(@params)}"}>
                   {as.archetype}
                 </a>
               </td>
