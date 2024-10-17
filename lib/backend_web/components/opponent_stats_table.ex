@@ -8,6 +8,7 @@ defmodule Components.OpponentStatsTable do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.FormatDropdown
   alias Components.Filter.RegionDropdown
+  alias Components.Filter.ForceFreshDropdown
 
   prop(live_view, :module, required: true)
   prop(params, :map, required: true)
@@ -15,23 +16,35 @@ defmodule Components.OpponentStatsTable do
   prop(target, :any, required: true)
   prop(user, :map, from_context: :user)
   prop(include_format, :boolean, default: false)
+  data(needs_login?, :boolean, default: false)
   data(selected_params, :list, default: [])
+  data(stats, :list, default: [])
 
   def update(assigns, socket) do
-    selected_params =
+    criteria =
       assigns.params
       |> Map.take(param_keys())
       |> Map.put_new("rank", RankDropdown.default())
       |> Map.put_new("period", PeriodDropdown.default(:public, assigns.params))
       |> Map.put_new("players", "all_players")
       |> add_format(assigns.include_format)
-      |> add_region()
+
+    user = Map.get(socket.assigns, :user)
+
+    {stats, needs_login?} =
+      if :agg == DeckTracker.fresh_or_agg(criteria) or can_access_unaggregated?(user) do
+        {stats(assigns.target, params(criteria, user)), false}
+      else
+        {[], true}
+      end
+
+    selected_params = add_region(criteria)
 
     {
       :ok,
       socket
       |> assign(assigns)
-      |> assign(selected_params: selected_params)
+      |> assign(selected_params: selected_params, stats: stats, needs_login?: needs_login?)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
         assigns.params,
@@ -41,6 +54,8 @@ defmodule Components.OpponentStatsTable do
     }
   end
 
+  defp can_access_unaggregated?(%{id: _id, battletag: _btag}), do: true
+  defp can_access_unaggregated?(_), do: false
   defp add_format(params, true), do: Map.put_new(params, "format", 2)
   defp add_format(params, _false), do: params
 
@@ -52,16 +67,25 @@ defmodule Components.OpponentStatsTable do
   def render(assigns) do
     ~F"""
     <div>
-          <RankDropdown id="opp_stats_table_rank_dropdown"/>
-          <PeriodDropdown id="opp_stats_table_period_dropdown" />
-          <RegionDropdown id="opp_stats_table_region_dropdown" />
-          <FormatDropdown class={"is-hidden-mobile"} :if={@include_format} id="opp_stats_format_dropdown" />
-
-            <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
-              options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
-              title={"Players"}
-              param={"players"} />
-        <ClassStatsTable :if={stats = stats(@target, params(@selected_params, @user))} stats={stats} />
+          <RankDropdown id="opp_stats_table_rank_dropdown" aggregated_only={!@needs_login?}/>
+          <PeriodDropdown id="opp_stats_table_period_dropdown" aggregated_only={!@needs_login?}/>
+          <RegionDropdown id="opp_stats_table_region_dropdown" :if={can_access_unaggregated?(@user)} />
+          <FormatDropdown class={"is-hidden-mobile"} :if={@include_format} id="opp_stats_format_dropdown" aggregated_only={!@needs_login?}/>
+          <ForceFreshDropdown id="opp_stats_table_force_fresh_dropdown" :if={Backend.UserManager.User.premium?(@user)} />
+          <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
+            options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
+            title={"Players"}
+            param={"players"} />
+        <ClassStatsTable :if={@stats && !@needs_login?} stats={@stats} />
+        <div :if={@needs_login?}>
+          <br>
+          <br>
+          <br>
+          <br>
+          <div class="notification is-warning">
+            You need to login to use these filters
+          </div>
+        </div>
     </div>
     """
   end
