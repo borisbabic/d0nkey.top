@@ -51,7 +51,7 @@ defmodule BackendWeb.ArchetypeLive do
       </div>
       <div class="column">
         <div class="subtitle is-4 has-text-centered-mobile">Replays</div>
-        <ReplayExplorer
+        <ReplayExplorer :if={false}
           id="archetype_replays"
           additional_params={replay_params(@archetype)}
           path_params={@archetype}
