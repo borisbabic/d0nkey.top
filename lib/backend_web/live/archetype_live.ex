@@ -49,7 +49,7 @@ defmodule BackendWeb.ArchetypeLive do
         <div class="subtitle is-4 has-text-centered-mobile">Stats</div>
         <OpponentStatsTable id="archetype_stats" include_format={true} target={@archetype} live_view={__MODULE__} path_params={to_string(@archetype)} params={@stats_params} />
       </div>
-      <div class="column">
+      <div class="column" :if={false}>
         <div class="subtitle is-4 has-text-centered-mobile">Replays</div>
         <ReplayExplorer :if={false}
           id="archetype_replays"
