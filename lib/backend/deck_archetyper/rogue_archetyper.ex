@@ -217,9 +217,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Celestial Projectionist"
       ])
 
-  defp pirate_rogue?(ci),
-    do:
-      min_count?(ci, 2, ["Toy Boat", "Raiding Party", "Treasure Distributor", "Dig for Treasure"])
+  defp pirate_rogue?(ci) do
+    min_count?(ci, 2, ["Toy Boat", "Raiding Party", "Treasure Distributor", "Dig for Treasure"]) and
+      type_count(ci, "Pirate") > 5
+  end
 
   defp thief_rogue?(ci),
     do:
