@@ -87,9 +87,21 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
+      shaffar?(card_info) ->
+        :"Shaffar Rogue"
+
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp shaffar?(card_info) do
+    # stupid official api has without - in the name field and with - in the image
+    min_count?(card_info, 2, [
+      "Nexus Prince Shaffar",
+      "Nexus-Prince Shaffar",
+      "Bargain Bin Buccaneer"
+    ])
   end
 
   defp incindius?(card_info) do
