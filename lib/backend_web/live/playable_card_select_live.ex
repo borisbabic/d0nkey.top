@@ -3,37 +3,34 @@ defmodule BackendWeb.PlayableCardSelectLive do
   use BackendWeb, :surface_live_view_no_layout
   alias Components.Filter.PlayableCardSelect
   data(base_url, :string)
-  data(update_fun, :fun)
-  data(prefix, :string)
+  data(param, :string)
   data(title, :string)
   data(selected, :list)
 
   def mount(
         _params,
-        %{"base_url" => base_url, "prefix" => prefix, "selected" => selected} = session,
+        %{"param" => param, "selected" => selected, "base_url" => base_url} = session,
         socket
       ) do
-    update_fun = create_update_fun(base_url, prefix)
-
     {:ok,
      assign(socket,
        selected: selected,
-       prefix: prefix,
-       update_fun: update_fun,
+       param: param,
        base_url: base_url,
+       updater: create_update_fun(base_url, param),
        title: Map.get(session, "title")
      )}
   end
 
   def render(assigns) do
     ~F"""
-    <PlayableCardSelect update_fun={@update_fun} id={"playable_card_select_#{@prefix}"} selected={@selected} title={@title}/>
+    <PlayableCardSelect updater={@updater} param={@param} id={"playable_card_select_#{@param}"} selected={@selected || %{}} title={@title}/>
     """
   end
 
   def create_update_fun(base_url, prefix) do
     fn
-      selected ->
+      socket, selected ->
         uri = URI.parse(base_url)
         old_query_map = (uri.query || "") |> URI.decode_query()
 
@@ -50,7 +47,7 @@ defmodule BackendWeb.PlayableCardSelectLive do
 
         new_query = URI.encode_query(new_query_map)
         new_url = Map.put(uri, :query, new_query) |> to_string()
-        {:redirect, to: new_url}
+        redirect(socket, to: new_url)
     end
   end
 end

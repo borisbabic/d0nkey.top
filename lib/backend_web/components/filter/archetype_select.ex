@@ -20,7 +20,6 @@ defmodule Components.Filter.ArchetypeSelect do
         param={@param}
         options={archetypes(@search, @selected, @selectable_archetypes, @criteria)}
         title={@title}
-        selected_to_to={false}
         search_event={"search"}
         selected_as_title={false}
         />

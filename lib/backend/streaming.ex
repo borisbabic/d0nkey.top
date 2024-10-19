@@ -416,6 +416,11 @@ defmodule Backend.Streaming do
   defp compose_streamer_deck_query({"class", class}, query),
     do: query |> where([_sd, _s, d], d.class == ^class)
 
+  defp compose_streamer_deck_query({"include_cards", %{} = cards}, query) do
+    ids = for {a, "true"} <- cards, id when is_integer(id) <- [Util.to_int_or_orig(a)], do: id
+    compose_streamer_deck_query({"include_cards", ids}, query)
+  end
+
   defp compose_streamer_deck_query({"include_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"include_cards", cards}, query),
@@ -455,6 +460,11 @@ defmodule Backend.Streaming do
     card_ids = perils_ids()
 
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+  end
+
+  defp compose_streamer_deck_query({"exclude_cards", %{} = cards}, query) do
+    ids = for {a, "true"} <- cards, id when is_integer(id) <- [Util.to_int_or_orig(a)], do: id
+    compose_streamer_deck_query({"exclude_cards", ids}, query)
   end
 
   defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query

@@ -73,12 +73,12 @@ defmodule Components.CardStatsTable do
         name_prefix={"VS "}
         param={"opponent_class"} />
       {#if premium_filters?(@premium_filters, @user)}
-        <PlayableCardSelect id={"player_mulligan"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_mulligan")} selected={@test_params["player_mulligan"] || []} title="In Mulligan"/>
-        <PlayableCardSelect id={"player_not_mulligan"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_mulligan")} selected={@test_params["player_not_mulligan"] || []} title="Not In Mulligan"/>
-        <PlayableCardSelect id={"player_drawn"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_drawn")} selected={@test_params["player_drawn"] || []} title="Drawn"/>
-        <PlayableCardSelect id={"player_not_drawn"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_drawn")} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
-        <PlayableCardSelect id={"player_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_kept")} selected={@test_params["player_kept"] || []} title="Kept"/>
-        <PlayableCardSelect id={"player_not_kept"} update_fun={PlayableCardSelect.update_cards_fun(@test_params, "player_not_kept")} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
+        <PlayableCardSelect id={"player_mulligan"} param={"player_mulligan"} selected={@test_params["player_mulligan"] || []} title="In Mulligan"/>
+        <PlayableCardSelect id={"player_not_mulligan"} param={"player_not_mulligan"} selected={@test_params["player_not_mulligan"] || []} title="Not In Mulligan"/>
+        <PlayableCardSelect id={"player_drawn"} param={"player_drawn"} selected={@test_params["player_drawn"] || []} title="Drawn"/>
+        <PlayableCardSelect id={"player_not_drawn"} param={"player_not_drawn"} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
+        <PlayableCardSelect id={"player_kept"} param={"player_kept"} selected={@test_params["player_kept"] || []} title="Kept"/>
+        <PlayableCardSelect id={"player_not_kept"} param={"player_not_kept"} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
         <ForceFreshDropdown id={"force_fresh"} />
       {/if}
 
