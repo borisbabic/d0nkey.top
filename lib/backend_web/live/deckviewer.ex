@@ -78,7 +78,7 @@ defmodule BackendWeb.DeckviewerLive do
             </Form>
           </div>
           <div class="level-item">
-            <FunctionComponents.Ads.below_title mobile_video_mode={:floating} />
+            <FunctionComponents.Ads.below_title mobile_video_mode={:off} />
           </div>
         </div>
         <div class="columns is-mobile is-multiline">
