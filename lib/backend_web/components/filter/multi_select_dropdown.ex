@@ -69,9 +69,9 @@ defmodule Components.MultiSelectDropdown do
     normalized_current = apply_normalizer_to_current(current, normalizer)
 
     selected =
-      Enum.filter(normalized_current, fn opt ->
+      Enum.filter(options, fn opt ->
         val = opt |> value() |> normalizer.()
-        val in options
+        val in normalized_current
       end)
 
     Map.put(assigns, :selected, selected || [])

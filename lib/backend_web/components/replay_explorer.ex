@@ -78,8 +78,8 @@ defmodule Components.ReplayExplorer do
             name_prefix={"VS "}
             param={"opponent_class"} />
 
-          <PlayableCardSelect :if={@includes_filter} id={"player_deck_includes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_includes")} selected={params["player_deck_includes"] || []} title="Include cards"/>
-          <PlayableCardSelect :if={@excludes_filter} id={"player_deck_excludes"} update_fun={PlayableCardSelect.update_cards_fun(@params, "player_deck_excludes")} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+          <PlayableCardSelect :if={@includes_filter} id={"player_deck_includes"} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
+          <PlayableCardSelect :if={@excludes_filter} id={"player_deck_excludes"} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
           <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
           <Form :if={@search_filter} for={%{}} as={:search} change="change" submit="change">
             <TextInput class={"input"} opts={placeholder: "Search opponent"}/>

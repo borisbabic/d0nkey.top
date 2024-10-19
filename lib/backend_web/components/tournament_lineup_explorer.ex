@@ -52,8 +52,8 @@ defmodule Components.TournamentLineupExplorer do
                       {class |> Deck.class_name()}
                     </Dropdown.item>
                   </Dropdown.menu>
-                  <PlayableCardSelect id={"include_cards_deck_#{index}"} update_fun={update_cards(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
-                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} update_fun={update_cards(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
+                  <PlayableCardSelect id={"include_cards_deck_#{index}"} param={"include_cards"} selected={deck["include_cards"]} title="Include cards"/>
+                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} param={"exclude_cards"} selected={deck["exclude_cards"]} title="Exclude cards"/>
 
                 </div>
               </div>

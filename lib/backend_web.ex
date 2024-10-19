@@ -59,13 +59,18 @@ defmodule BackendWeb do
       alias BackendWeb.Router.Helpers, as: Routes
       unquote(verified_routes())
 
-      def multi_select_to_array(multi = %{}) do
-        multi
-        |> Enum.filter(fn {_, selected} -> selected == "true" end)
-        |> Enum.map(fn {column, _} -> column end)
+      def multi_select_to_list(multi = %{}) do
+        for {column, "true"} <- multi, do: column
       end
 
-      def multi_select_to_array(multi), do: []
+      def multi_select_to_list(list) when is_list(list), do: list
+      def multi_select_to_list(_), do: []
+
+      def multi_select_to_array(multi = %{}) do
+        for {column, "true"} <- multi, do: column
+      end
+
+      def multi_select_to_array(_multi), do: []
       def parse_yes_no(yes_or_no, default \\ "no")
       def parse_yes_no("yes", _), do: "yes"
       def parse_yes_no("no", _), do: "no"

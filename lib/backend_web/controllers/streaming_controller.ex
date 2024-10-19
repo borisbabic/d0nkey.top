@@ -2,7 +2,6 @@ defmodule BackendWeb.StreamingController do
   use BackendWeb, :controller
   @moduledoc false
 
-  alias Backend.Streaming.StreamerDeckBag
   alias Backend.Streaming
 
   def streamer_instructions(conn, params) do
@@ -60,39 +59,17 @@ defmodule BackendWeb.StreamingController do
   end
 
   defp base_streamer_deck_attrs(params) do
-    criteria =
-      params
-      |> Map.put_new("limit", 20)
-      |> Map.put_new("order_by", {:desc, :last_played})
-      |> Map.to_list()
-
-    case Streaming.streamer_decks(criteria) do
-      streamer_decks when is_list(streamer_decks) ->
-        %{
-          streamer_decks: Enum.take(streamer_decks, 20),
-          archetypes: [],
-          include_cards: [],
-          exclude_cards: [],
-          criteria: params |> Map.merge(%{"offset" => 0, "limit" => 20})
-        }
-
-      _ ->
-        base_attrs_from_params(params)
-    end
-  end
-
-  def base_attrs_from_params(params) do
     # used to only be include cards, but then I added exclude_cards so cards is there for backwards compatibility
     include_cards =
       ["cards", "include_cards"]
       |> Enum.flat_map(fn p ->
         params[p]
-        |> multi_select_to_array()
+        |> multi_select_to_list()
         |> Enum.map(&Util.to_int_or_orig/1)
       end)
 
     exclude_cards =
-      multi_select_to_array(params["exclude_cards"])
+      multi_select_to_list(params["exclude_cards"])
       |> Enum.map(&Util.to_int_or_orig/1)
 
     archetypes =

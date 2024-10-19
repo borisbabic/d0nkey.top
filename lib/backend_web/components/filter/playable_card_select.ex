@@ -1,30 +1,31 @@
 defmodule Components.Filter.PlayableCardSelect do
   @moduledoc false
   use Surface.LiveComponent
-  alias FunctionComponents.Dropdown
-  alias Surface.Components.Form
-  alias Surface.Components.Form.TextInput
+  alias Components.MultiSelectDropdown
+  alias Backend.Hearthstone.Card
 
-  prop(update_fun, :fun)
   prop(selected, :list, default: [])
   prop(title, :string, default: "Select cards")
   prop(search, :string, default: "")
   prop(canonicalize, :boolean, default: true)
+  prop(updater, :fun, default: &MultiSelectDropdown.update_selected/2)
 
   def render(assigns) do
     ~F"""
     <span>
-      <Dropdown.menu title={"#{@title}"}>
-        <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
-          <TextInput id={"#{@id}_search"} class="input has-text-black " opts={placeholder: "Search"}/>
-        </Form>
-        <Dropdown.item selected={true} phx-target={@myself} phx-click="remove_card" :for={selected <- @selected} phx-value-card={selected}>
-          {name(selected)}
-        </Dropdown.item>
-        <Dropdown.item selected={false} class="dropdown-item" :for={card <- cards(@search, @selected, @canonicalize)} phx-target={@myself} phx-click="add_card" phx-value-card={card.id}>
-          {card.name}
-        </Dropdown.item>
-      </Dropdown.menu>
+      <MultiSelectDropdown
+      id={"#{@id}_pcs_ms_id"}
+      show_search={true}
+      param={@param}
+      options={cards(@search, @selected, @canonicalize)}
+      title={@title}
+      search_event={"search"}
+      selected_to_top={true}
+      updater={@updater}
+      current_val={@selected}
+      normalizer={&Util.to_int_or_orig/1}
+      selected_as_title={false}
+      />
     </span>
     """
   end
@@ -32,30 +33,12 @@ defmodule Components.Filter.PlayableCardSelect do
   def handle_event("search", %{"search" => [search]}, socket),
     do: {:noreply, assign(socket, :search, search)}
 
-  def handle_event(
-        "remove_card",
-        %{"card" => card},
-        socket = %{assigns: %{update_fun: update_fun, selected: selected}}
-      ) do
-    {id, _} = Integer.parse(card)
-
-    case update_fun.(selected -- [id]) do
-      {:redirect, opts} -> {:noreply, redirect(socket, opts)}
-      _ -> {:noreply, socket}
-    end
-  end
-
-  def handle_event(
-        "add_card",
-        %{"card" => card},
-        socket = %{assigns: %{update_fun: update_fun, selected: selected}}
-      ) do
-    {id, _} = Integer.parse(card)
-
-    case update_fun.([id | selected]) do
-      {:redirect, opts} -> {:noreply, redirect(socket, opts)}
-      _ -> {:noreply, socket}
-    end
+  defp to_options(selected) do
+    Enum.map(selected, fn id_raw ->
+      id = Util.to_int_or_orig(id_raw)
+      name = name(id)
+      {id, name}
+    end)
   end
 
   def cards(search, selected, canonicalize?) do
@@ -71,9 +54,15 @@ defmodule Components.Filter.PlayableCardSelect do
       {"limit", 100}
     ]
 
+    selected_options = to_options(selected)
+
     Backend.Hearthstone.cards(criteria)
     |> filter_canonical(canonicalize?)
     |> Enum.take(num_to_show)
+    |> Enum.map(fn c ->
+      {Card.dbf_id(c), Card.name(c)}
+    end)
+    |> Kernel.++(selected_options)
   end
 
   defp filter_canonical(cards, true) do
@@ -88,13 +77,6 @@ defmodule Components.Filter.PlayableCardSelect do
     case Backend.HearthstoneJson.get_card(selected) do
       %{name: name} -> name
       _ -> nil
-    end
-  end
-
-  def update_cards_fun(params, param, name \\ :update_params) do
-    fn val ->
-      new_params = Map.put(params, param, val)
-      Process.send_after(self(), {name, new_params}, 0)
     end
   end
 end
