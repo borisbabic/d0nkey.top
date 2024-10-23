@@ -1517,10 +1517,22 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  @spec minion_type_options(mode :: integer()) :: [{slug :: String.t(), name :: String.t()}]
-  def minion_type_options(mode) do
+  @spec minion_type_options(mode :: integer() | String.t() | atom()) :: [
+          {slug :: String.t(), name :: String.t()}
+        ]
+  def minion_type_options(mode) when is_integer(mode) do
     Repo.all(from mt in MinionType, where: ^mode in mt.game_modes)
     |> to_slug_name_options()
+  end
+
+  def minion_type_options(mode) when is_atom(mode),
+    do: mode |> to_string() |> minion_type_options()
+
+  def minion_type_options(mode) when is_binary(mode) do
+    %{id: id} =
+      Repo.one(from gm in GameMode, where: ilike(gm.slug, ^mode) or ilike(gm.name, ^mode))
+
+    minion_type_options(id)
   end
 
   @spec spell_school_options() :: [{slug :: String.t(), name :: String.t()}]

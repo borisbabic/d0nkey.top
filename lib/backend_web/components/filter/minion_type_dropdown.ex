@@ -5,7 +5,8 @@ defmodule Components.Filter.MinionTypeDropdown do
 
   prop(title, :string, default: "Minion Type")
   prop(param, :string, default: "minion_type")
-  prop(game_mode, :integer, default: 2)
+  # constructed
+  prop(game_mode, :integer, default: 1)
   prop(include_any?, :boolean, default: true)
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
