@@ -58,8 +58,8 @@ defmodule BackendWeb.DeckSheetViewLive do
             param={"view_mode"}
             live_view={__MODULE__} />
           <ClassDropdown id="deck_class_dropdown" param="deck_class" />
-            <PlayableCardSelect id={"deck_include_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_include_cards")} selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
-            <PlayableCardSelect id={"deck_exclude_cards"} update_fun={PlayableCardSelect.update_cards_fun(@deck_filters, "deck_exclude_cards")} selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
+            <PlayableCardSelect id={"deck_include_cards"} param="deck_include_cards" selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
+            <PlayableCardSelect id={"deck_exclude_cards"} param="deck_exclude_cards" selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
           <LivePatchDropdown
             id="sort_dropdown"
             options={DeckSheet.listing_sort_options(@sheet) |> Util.flip_tuples()}
