@@ -60,7 +60,10 @@ defmodule BackendWeb.DeckTrackerController do
 
     with :ok <- GameDto.validate_game_id(dto),
          {:ok, deck} <- extract_player_deck(dto) do
-      GameInsertBatcher.enqueue(params, api_user)
+      with_inserted_at =
+        Map.put(params, "inserted_at", NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601())
+
+      GameInsertBatcher.enqueue(with_inserted_at, api_user)
 
       {:ok, deck}
     end
