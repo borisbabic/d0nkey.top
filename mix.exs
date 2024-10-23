@@ -97,7 +97,7 @@ defmodule Backend.MixProject do
       {:csv, "~> 2.5"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
-      {:akin, "~> 0.1.8"},
+      {:akin, "~> 0.1"},
       {:error_tracker, "~> 0.1"},
       {:quantum, "~> 2.3"}
     ]
