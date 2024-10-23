@@ -22,6 +22,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
     field :source_version, String.t()
     field :player_has_coin, boolean()
     field :created_by, Backend.Api.ApiUser.t()
+    field :inserted_at, NaiveDateTime.utc_now()
   end
 
   @spec from_raw_map(Map.t(), ApiUser.t()) :: GameDto.t()
@@ -47,12 +48,21 @@ defmodule Hearthstone.DeckTracker.GameDto do
       turns: map["turns"],
       source: map["source"],
       source_version: map["source_version"],
+      inserted_at: inserted_at(map["inserted_at"]),
       created_by: created_by
     }
   end
 
   def from_raw_map(_, created_by), do: %{} |> from_raw_map(created_by)
 
+  @spec inserted_at(NaiveDateTime.t() | String.t() | any()) :: NaiveDateTime.t() | nil
+  defp inserted_at(%NaiveDateTime{} = inserted_at), do: inserted_at
+
+  defp inserted_at(date_string) when is_binary(date_string) do
+    NaiveDateTime.from_iso8601(date_string) |> Util.or_nil()
+  end
+
+  defp inserted_at(_), do: nil
   defp player_has_coin(%{"coin" => coin}), do: coin
   defp player_has_coin(%{"player_has_coin" => coin}), do: coin
   defp player_has_coin(_), do: nil

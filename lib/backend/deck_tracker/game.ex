@@ -104,6 +104,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :game_id
     ])
     |> unique_constraint(:game_id)
+    |> cast(attrs, [:inserted_at])
   end
 
   defp build_raw_player_card_stats(cs, %{"raw_player_card_stats" => _raw}) do
