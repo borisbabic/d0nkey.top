@@ -28,14 +28,24 @@ defmodule Hearthstone.DeckTracker.GameInserter do
     |> Repo.transaction(timeout: 666_000)
   end
 
-  def perform(%Oban.Job{args: %{"raw_params" => raw_params} = args}) do
+  def perform(%Oban.Job{args: %{"raw_params" => raw_params} = args} = job) do
     api_user =
       with id when not is_nil(id) <- Map.get(args, "api_user_id") do
         Backend.Api.get_api_user!(id)
       end
 
     raw_params
+    |> add_inserted_at(job)
     |> GameDto.from_raw_map(api_user)
     |> DeckTracker.handle_game()
   end
+
+  defp add_inserted_at(%{"inserted_at" => inserted_at} = params, _) when not is_nil(inserted_at),
+    do: params
+
+  defp add_inserted_at(params, %{inserted_at: %DateTime{} = inserted_at}) do
+    Map.put(params, "inserted_at", DateTime.to_iso8601(inserted_at))
+  end
+
+  defp add_inserted_at(params, _), do: params
 end
