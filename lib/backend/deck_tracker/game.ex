@@ -37,7 +37,7 @@ defmodule Hearthstone.DeckTracker.Game do
 
     field :public, :boolean, default: false
     belongs_to :source, Source
-    has_many :card_tallies, CardGameTally
+    has_many :card_tallies, CardGameTally, on_replace: :delete_if_exists
 
     belongs_to :created_by, ApiUser
     timestamps()
