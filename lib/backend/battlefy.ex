@@ -265,17 +265,20 @@ defmodule Backend.Battlefy do
   def find_auto_wins_losses(matches) do
     auto_wins =
       matches
-      |> Enum.flat_map(fn %{top: top, bottom: bottom, is_bye: is_bye} ->
-        cond do
-          is_bye && top.winner -> [top.team.name]
-          is_bye && bottom.winner -> [bottom.team.name]
-          # not counting these because of new masters tour qualifier rules
-          # top.winner && (top.score == nil || top.score == 0) -> [top.team.name]
-          # bottom.winner && (bottom.score == nil || bottom.score == 0) -> [bottom.team.name]
-          # top.winner && top.ready_at != nil && bottom.ready_at == nil -> [top.team.name]
-          # bottom.winner && top.ready_at == nil && bottom.ready_at != nil -> [bottom.team.name]
-          true -> []
-        end
+      |> Enum.flat_map(fn
+        %{top: %{winner: true, team: %{name: name}}, is_bye: true} ->
+          [name]
+
+        %{bottom: %{winner: true, team: %{name: name}}, is_bye: true} ->
+          [name]
+
+        # not counting these because of new masters tour qualifier rules
+        # top.winner && (top.score == nil || top.score == 0) -> [top.team.name]
+        # bottom.winner && (bottom.score == nil || bottom.score == 0) -> [bottom.team.name]
+        # top.winner && top.ready_at != nil && bottom.ready_at == nil -> [top.team.name]
+        # bottom.winner && top.ready_at == nil && bottom.ready_at != nil -> [bottom.team.name]
+        _ ->
+          []
       end)
       |> Enum.frequencies()
 
