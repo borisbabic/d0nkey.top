@@ -1395,6 +1395,22 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"format", format}, query = @old_aggregated_query),
     do: query |> where([player_deck: pd], pd.format == ^format)
 
+  defp compose_games_query({"format", "-" <> raw_format}, query) do
+    case Integer.parse(raw_format) do
+      {positive, _} -> compose_games_query({"format", -1 * positive}, query)
+      _ -> compose_games_query({"format", raw_format}, query)
+    end
+  end
+
+  defp compose_games_query({"format", format}, query) when is_integer(format) do
+    format_query = from f in Format, where: f.value == ^format, limit: 1
+    %{game_type: game_type} = Repo.one(format_query)
+    # abs is hack for tavern brawl
+    query
+    |> where([game: g], g.format == ^abs(format))
+    |> where([game: g], g.game_type == ^game_type)
+  end
+
   defp compose_games_query({"format", format}, query),
     do: query |> where([game: g], g.format == ^format)
 
