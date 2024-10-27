@@ -26,9 +26,10 @@ BEGIN
 agg_periods(
     format,
     START, 
-    slug
+    slug,
+    game_type
 ) AS (
-    SELECT p.format, p.START, p.slug FROM (SELECT
+    SELECT p.format, p.START, p.slug, f.game_type FROM (SELECT
         UNNEST(formats) as format,
         COALESCE(period_start, now() - concat(hours_ago::text, ' hours')::interval) AS START,
         slug
@@ -99,7 +100,7 @@ FROM
             OR dg.player_legend_rank <= r.max_legend_rank)
     WHERE
         dg.inserted_at <= now()
-        AND dg.game_type = 7
+        AND dg.game_type = p.game_type
         AND dg.opponent_class IS NOT NULL
         AND dg.player_deck_id IS NOT NULL
         AND dg.region IN (
@@ -181,7 +182,7 @@ card_stats AS (
     WHERE
         dg.inserted_at <= now()
         AND dg.opponent_class IS NOT NULL
-        AND dg.game_type = 7
+        AND dg.game_type = p.game_type
         AND dg.region IN (
             SELECT
                 code
