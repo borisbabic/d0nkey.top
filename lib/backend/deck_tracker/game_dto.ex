@@ -43,9 +43,9 @@ defmodule Hearthstone.DeckTracker.GameDto do
       result: map["result"],
       replay_url: map["replay_url"],
       region: map["region"],
-      duration: map["duration"],
+      duration: duration(map),
       player_has_coin: player_has_coin(map),
-      turns: map["turns"],
+      turns: map["turns"] || map["duration_in_turns"],
       source: map["source"],
       source_version: map["source_version"],
       inserted_at: inserted_at(map["inserted_at"]),
@@ -54,6 +54,16 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   def from_raw_map(_, created_by), do: %{} |> from_raw_map(created_by)
+
+  defp duration(%{"duration" => duration}) when is_integer(duration) do
+    60 * duration
+  end
+
+  defp duration(%{"duration_in_seconds" => duration}) when is_integer(duration) do
+    duration
+  end
+
+  defp duration(_), do: nil
 
   @spec inserted_at(NaiveDateTime.t() | String.t() | any()) :: NaiveDateTime.t() | nil
   defp inserted_at(%NaiveDateTime{} = inserted_at), do: inserted_at
@@ -65,6 +75,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
   defp inserted_at(_), do: nil
   defp player_has_coin(%{"coin" => coin}), do: coin
   defp player_has_coin(%{"player_has_coin" => coin}), do: coin
+  defp player_has_coin(%{"player" => %{"hasCoin" => coin}}), do: coin
   defp player_has_coin(_), do: nil
 
   defp to_snake(map), do: Recase.Enumerable.convert_keys(map, &Recase.to_snake/1)
