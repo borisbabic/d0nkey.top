@@ -1,4 +1,5 @@
 defmodule Hearthstone.DeckTracker.Format do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -9,6 +10,7 @@ defmodule Hearthstone.DeckTracker.Format do
     field :include_in_deck_filters, :boolean, default: false
     field :include_in_personal_filters, :boolean, default: false
     field :order_priority, :integer, default: 0
+    field :game_type, :integer, default: 7
     field :value, :integer
 
     timestamps()
@@ -23,6 +25,7 @@ defmodule Hearthstone.DeckTracker.Format do
       :order_priority,
       :default,
       :include_in_personal_filters,
+      :game_type,
       :include_in_deck_filters,
       :auto_aggregate
     ])
