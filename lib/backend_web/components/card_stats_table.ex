@@ -9,6 +9,7 @@ defmodule Components.CardStatsTable do
   alias Components.Filter.ForceFreshDropdown
   alias Components.Filter.ClassDropdown
   alias Components.Filter.PlayableCardSelect
+  alias Components.Filter.PlayerHasCoinDropdown
   alias Components.DecksExplorer
   alias Components.WinrateTag
   alias Hearthstone.DeckTracker
@@ -79,6 +80,7 @@ defmodule Components.CardStatsTable do
         <PlayableCardSelect id={"player_not_drawn"} param={"player_not_drawn"} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
         <PlayableCardSelect id={"player_kept"} param={"player_kept"} selected={@test_params["player_kept"] || []} title="Kept"/>
         <PlayableCardSelect id={"player_not_kept"} param={"player_not_kept"} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
+        <PlayerHasCoinDropdown id={"player_has_coin_dropdown"} />
         <ForceFreshDropdown id={"force_fresh"} />
       {/if}
 
@@ -133,7 +135,7 @@ defmodule Components.CardStatsTable do
 
         </thead>
         <tbody>
-          <tr :for={cs <- @card_stats |> DeckTracker.merge_card_stats() |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": is_selected(cs, @highlight_cards)}>
+          <tr :for={cs <- @card_stats |> DeckTracker.merge_card_stats() |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": selected?(cs, @highlight_cards)}>
             <td>
 
             <div class="decklist_card_container">
@@ -166,10 +168,10 @@ defmodule Components.CardStatsTable do
   def premium_filters?(show_premium?, _) when is_boolean(show_premium?), do: show_premium?
   def premium_filters?(_, user), do: Backend.UserManager.User.premium?(user)
 
-  def is_selected(%{card: %{id: id}}, [_ | _] = to_highlight),
+  def selected?(%{card: %{id: id}}, [_ | _] = to_highlight),
     do: Hearthstone.canonical_id(id) in to_highlight
 
-  def is_selected(_, _), do: false
+  def selected?(_, _), do: false
 
   def add_arrow(base, column_sort_key, filters, is_default \\ false) do
     arrow =
