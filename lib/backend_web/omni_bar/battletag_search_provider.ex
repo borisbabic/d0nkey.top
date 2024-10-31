@@ -8,7 +8,7 @@ defmodule BackendWeb.BattletagSearchProvider do
   def search(term, callback) do
     trimmed = String.trim(term)
 
-    if Blizzard.battletag?(trimmed) do
+    if Blizzard.battletag?(trimmed) or Blizzard.short_battletag?(trimmed) do
       %Result{
         search_term: term,
         display_value: "View #{trimmed} player profile",

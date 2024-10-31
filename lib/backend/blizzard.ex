@@ -31,6 +31,7 @@ defmodule Backend.Blizzard do
           | :"Masters Tour Six"
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
+  @short_battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
   @current_bg_season_id 13
   # guess, change if not correct
   @current_bg_season_end_date ~N[2024-12-03 18:00:00]
@@ -380,6 +381,11 @@ defmodule Backend.Blizzard do
     String.match?(string, @battletag_regex)
   end
 
+  @spec short_battletag?(String.t()) :: boolean
+  def short_battletag?(string) do
+    String.match?(string, @short_battletag_regex)
+  end
+
   #  def get_money_distribution(tour_stop) do
   #    distribution_unknown = {:error, "Unknown distribution for tour stop"}
   #    case tour_stop do
@@ -547,6 +553,7 @@ defmodule Backend.Blizzard do
   end
 
   @spec get_leaderboard_name(String.t() | leaderboard(), :short | :long) :: String.t()
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_leaderboard_name(leaderboard, :long) when is_atom(leaderboard) do
     case leaderboard do
       :BG_LL -> "BGs LL/Monthly"
@@ -561,6 +568,7 @@ defmodule Backend.Blizzard do
     end
   end
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_leaderboard_name(leaderboard, :short) when is_atom(leaderboard) do
     case leaderboard do
       :BG_LL -> "BG_LL"
@@ -747,7 +755,7 @@ defmodule Backend.Blizzard do
   end
 
   defp break_weeks_so_far(week, break_weeks),
-    do: break_weeks |> Enum.filter(&(&1 <= week)) |> Enum.count()
+    do: break_weeks |> Enum.count(&(&1 <= week))
 
   def weeks_so_far(season_def = %{break_weeks: break_weeks, playoffs_week: playoffs}) do
     week_range(season_def)
