@@ -166,7 +166,21 @@ card_stats AS (
                 1
             ELSE
                 0
-            END) AS mulligan_losses
+            END) AS mulligan_losses,
+        sum(
+            CASE WHEN dg.status = 'win'
+                AND dcgt.mulligan = False and dcgt.drawn = False THEN
+                1
+            ELSE
+                0
+            END) AS tossed_wins,
+        sum(
+            CASE WHEN dg.status = 'loss'
+                AND dcgt.mulligan = False and dcgt.drawn = False THEN
+                1
+            ELSE
+                0
+            END) AS tossed_losses
     FROM
         public.dt_card_game_tally dcgt
         INNER JOIN public.dt_games dg ON dg.id = dcgt.game_id
@@ -211,20 +225,28 @@ merged_card_stats AS (
             ELSE
                 0
             END) kept_impact_factor,
-(cs.drawn_wins + cs.drawn_losses) drawn_total,
-(
+            (cs.drawn_wins + cs.drawn_losses) drawn_total,
+            (
             CASE WHEN (cs.drawn_wins + cs.drawn_losses) > 0 THEN
                 (cs.drawn_wins + cs.drawn_losses) *(cs.drawn_wins::float /(cs.drawn_wins + cs.drawn_losses) - ds.winrate)
             ELSE
                 0
             END) drawn_impact_factor,
-(cs.mulligan_wins + cs.mulligan_losses) mull_total,
-(
+            (cs.mulligan_wins + cs.mulligan_losses) mull_total,
+            (
             CASE WHEN (cs.mulligan_wins + cs.mulligan_losses) > 0 THEN
                 (cs.mulligan_wins + cs.mulligan_losses) *(cs.mulligan_wins::float /(cs.mulligan_wins + cs.mulligan_losses) - ds.winrate)
             ELSE
                 0
-            END) mull_impact_factor
+            END) mull_impact_factor,
+
+            (cs.tossed_wins + cs.tossed_losses) tossed_total,
+            (
+            CASE WHEN (cs.tossed_wins + cs.tossed_losses) > 0 THEN
+                (cs.tossed_wins + cs.tossed_losses) *(cs.tossed_wins::float /(cs.tossed_wins + cs.tossed_losses) - ds.winrate)
+            ELSE
+                0
+            END) tossed_impact_factor
     FROM
         card_stats cs
         INNER JOIN deck_stats ds ON ds.period = cs.period
@@ -268,15 +290,33 @@ prepared_card_stats AS (
         cs.opponent_class,
         COALESCE(d.archetype, initcap(d.class)) AS archetype,
         cs.format,
-        jsonb_build_object('card_id', cs.card_id, 'kept_total', sum(cs.kept_total), 'kept_impact', CASE WHEN sum(cs.kept_total) > 0 THEN
+        jsonb_build_object(
+            'card_id', cs.card_id, 
+            'kept_total', sum(cs.kept_total), 
+            'kept_impact', CASE WHEN sum(cs.kept_total) > 0 THEN
                 sum(cs.kept_impact_factor) / sum(cs.kept_total)
             ELSE
                 0
-            END, 'mull_total', sum(cs.mull_total), 'mull_impact', CASE WHEN sum(cs.mull_total) > 0 THEN
+            END, 
+            'mull_total', sum(cs.mull_total), 
+            'mull_impact', CASE WHEN sum(cs.mull_total) > 0 THEN
                 sum(cs.mull_impact_factor) / sum(cs.mull_total)
             ELSE
                 0
-            END, 'drawn_total', sum(cs.drawn_total), 'drawn_impact', CASE WHEN sum(cs.drawn_total) > 0 THEN
+            END, 
+            'tossed_total', sum(cs.tossed_total), 
+            'tossed_impact', CASE WHEN sum(cs.tossed_total) > 0 THEN
+                sum(cs.tossed_impact_factor) / sum(cs.tossed_total)
+            ELSE
+                0
+            END, 
+            'kept_percent', CASE WHEN sum(cs.tossed_total + cs.mull_total) > 0 THEN
+                sum(cs.mull_total) / sum(cs.tossed_total + cs.mull_total)
+            ELSE
+                0
+            END, 
+            'drawn_total', sum(cs.drawn_total), 
+            'drawn_impact', CASE WHEN sum(cs.drawn_total) > 0 THEN
                 sum(cs.drawn_impact_factor) / sum(cs.drawn_total)
             ELSE
                 0
