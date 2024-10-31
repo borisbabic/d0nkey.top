@@ -32,9 +32,11 @@ defmodule Backend.Blizzard do
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @current_bg_season_id 13
-  @current_bg_season_end_date ~N[9999-01-01 00:00:00]
-  @current_arena_season_id 50
-  @current_arena_season_end_date ~N[9999-01-01 00:00:00]
+  # guess, change if not correct
+  @current_bg_season_end_date ~N[2024-12-03 18:00:00]
+  @current_arena_season_id 51
+  # guess, change if not correct
+  @current_arena_season_end_date ~N[2024-12-03 18:00:00]
 
   defmacro is_old_bg_season(season_id) do
     quote do
@@ -373,8 +375,8 @@ defmodule Backend.Blizzard do
     end
   end
 
-  @spec is_battletag?(String.t()) :: boolean
-  def is_battletag?(string) do
+  @spec battletag?(String.t()) :: boolean
+  def battletag?(string) do
     String.match?(string, @battletag_regex)
   end
 
