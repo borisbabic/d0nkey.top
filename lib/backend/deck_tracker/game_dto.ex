@@ -45,7 +45,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
       region: map["region"],
       duration: duration(map),
       player_has_coin: player_has_coin(map),
-      turns: map["turns"] || map["duration_in_turns"],
+      turns: map["turns"] || map["duration_turns"],
       source: map["source"],
       source_version: map["source_version"],
       inserted_at: inserted_at(map["inserted_at"]),
@@ -59,7 +59,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
     60 * duration
   end
 
-  defp duration(%{"duration_in_seconds" => duration}) when is_integer(duration) do
+  defp duration(%{"duration_seconds" => duration}) when is_integer(duration) do
     duration
   end
 
