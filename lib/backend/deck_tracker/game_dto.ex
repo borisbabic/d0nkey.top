@@ -166,11 +166,11 @@ defmodule Hearthstone.DeckTracker.GameDto do
     }
   end
 
-  defp to_tally_attrs(id, %{kept: kept}) do
+  defp to_tally_attrs(id, %{kept: kept} = dto) do
     %{
       card_id: id,
       drawn: true,
-      mulligan: true,
+      mulligan: Map.get(dto, :mull, true),
       turn: 0,
       kept: kept
     }
@@ -278,6 +278,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
   end
 
   def from_raw_map(map) when is_map(map) do
+    before_raw = map["cards_before_mulligan"] || map["cardsBeforeMulligan"]
     mull_raw = map["cards_in_hand_after_mulligan"] || map["cardsInHandAfterMulligan"]
 
     drawn_raw = map["cards_drawn_from_initial_deck"] || map["cardsDrawnFromInitialDeck"]
@@ -286,7 +287,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
       battletag: map["battletag"] || map["battleTag"],
       rank: map["rank"],
       legend_rank: map["legend_rank"] || map["legendRank"],
-      cards_in_hand_after_mulligan: CardMulliganDto.from_raw_list(mull_raw),
+      cards_in_hand_after_mulligan: CardMulliganDto.from_raw_list(mull_raw, before_raw),
       cards_drawn_from_initial_deck: CardDrawnDto.from_raw_list(drawn_raw),
       class: map["class"],
       deckcode: map["deckcode"]
@@ -306,6 +307,21 @@ defmodule Hearthstone.DeckTracker.CardMulliganDto do
     field :card_id, integer()
     field :card_dbf_id, integer() | nil
     field :kept, boolean()
+    field :mull, boolean(), default: true
+  end
+
+  defp extract_card_ids(raw_list) do
+    Enum.map(raw_list, &extract_card_id/1)
+  end
+
+  defp extract_card_id(%{"cardId" => id}) when is_binary(id), do: id
+  defp extract_card_id(%{"card_id" => id}) when is_binary(id), do: id
+  defp extract_card_id(id), do: id
+
+  def from_raw_list(after_mulligan_raw, before_mulligan_raw) do
+    after_ids = extract_card_ids(after_mulligan_raw)
+    not_kept = Enum.reject(before_mulligan_raw, &(extract_card_id(&1) in after_ids))
+    Enum.map(not_kept, &from_raw_not_kept/1)
   end
 
   def from_raw_list(list) when is_list(list), do: Enum.map(list, &from_raw_map/1)
@@ -316,7 +332,22 @@ defmodule Hearthstone.DeckTracker.CardMulliganDto do
     %__MODULE__{
       card_id: map["card_id"] || map["cardId"],
       card_dbf_id: map["card_dbf_id"] || map["cardDbfId"],
-      kept: map["kept"]
+      kept: map["kept"],
+      mull: true
+    }
+  end
+
+  def from_raw_not_kept(card_id) when is_binary(card_id) do
+    %{"card_id" => card_id}
+    |> from_raw_not_kept()
+  end
+
+  def from_raw_not_kept(%{} = map) do
+    %__MODULE__{
+      card_id: extract_card_id(map),
+      card_dbf_id: map["card_dbf_id"] || map["cardDbfId"],
+      kept: false,
+      mull: false
     }
   end
 end
