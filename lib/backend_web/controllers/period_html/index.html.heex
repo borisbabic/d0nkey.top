@@ -129,7 +129,7 @@
               
                 <td><%= period.auto_aggregate %></td>
 
-                <td><%= period.formats %></td>
+                <td><%= Enum.join(period.formats, ", ") %></td>
               
               <td class="torch-actions">
                 <span><.link href={~p"/torch/periods/#{period}"}><%= Torch.I18n.message("Show") %></.link></span>

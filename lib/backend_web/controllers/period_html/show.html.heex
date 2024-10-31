@@ -64,7 +64,7 @@
 
         <div class="torch-show-attribute">
           <div class="torch-show-label">Formats:</div>
-          <div class="torch-show-data"><%= @period.formats %></div>
+          <div class="torch-show-data"><%= Enum.join(@period.formats, ", ") %></div>
         </div>
       
     </section>
