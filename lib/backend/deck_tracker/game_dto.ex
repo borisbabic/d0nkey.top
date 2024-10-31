@@ -318,6 +318,8 @@ defmodule Hearthstone.DeckTracker.CardMulliganDto do
   defp extract_card_id(%{"card_id" => id}) when is_binary(id), do: id
   defp extract_card_id(id), do: id
 
+  def from_raw_list(list, nil), do: from_raw_list(list)
+
   def from_raw_list(after_mulligan_raw, before_mulligan_raw) do
     after_ids = extract_card_ids(after_mulligan_raw)
     not_kept = Enum.reject(before_mulligan_raw, &(extract_card_id(&1) in after_ids))
