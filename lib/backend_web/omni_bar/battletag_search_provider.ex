@@ -1,4 +1,5 @@
 defmodule BackendWeb.BattletagSearchProvider do
+  @moduledoc false
   @behaviour OmniBar.SearchProvider
   alias OmniBar.Result
   alias BackendWeb.Router.Helpers, as: Routes
@@ -7,7 +8,7 @@ defmodule BackendWeb.BattletagSearchProvider do
   def search(term, callback) do
     trimmed = String.trim(term)
 
-    if Blizzard.is_battletag?(trimmed) do
+    if Blizzard.battletag?(trimmed) do
       %Result{
         search_term: term,
         display_value: "View #{trimmed} player profile",
