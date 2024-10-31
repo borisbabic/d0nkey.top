@@ -7,10 +7,10 @@ defmodule Components.Filter.ForceFreshDropdown do
     ~F"""
       <span>
         <LivePatchDropdown
-          options={[{nil, "No"}, {"yes", Components.Helper.warning_triangle(%{before: "Yes"})}]}
-          title={"Force Fresh"}
+          options={[{nil, "Aggregated Data"}, {"yes", Components.Helper.warning_triangle(%{before: "Fresh Data"})}]}
+          title={"Force Fresh?"}
           param={"force_fresh"}
-          selected_as_title={false}
+          selected_as_title={true}
         />
       </span>
     """

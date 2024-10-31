@@ -351,6 +351,7 @@ defmodule Components.DecksExplorer do
       "player_kept",
       "player_not_kept",
       "force_fresh",
+      "player_has_coin",
       "player_deck_archetype"
     ])
     |> parse_int([

@@ -444,6 +444,7 @@ defmodule Hearthstone.DeckTracker do
     "player_drawn",
     "player_not_drawn",
     "player_kept",
+    "player_has_coin",
     "player_not_kept"
   ]
   def filter_needs_fresh?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
@@ -1431,6 +1432,19 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query(:not_self_report, query),
     do: query |> where([game: g], g.source != "SELF_REPORT")
+
+  defp compose_games_query({"player_has_coin", player_has_coin}, query)
+       when player_has_coin in ["true", "yes"],
+       do: compose_games_query({"player_has_coin", true}, query)
+
+  defp compose_games_query({"player_has_coin", player_has_coin}, query)
+       when player_has_coin in ["false", "no"],
+       do: compose_games_query({"player_has_coin", false}, query)
+
+  defp compose_games_query({"player_has_coin", player_has_coin}, query)
+       when is_boolean(player_has_coin) do
+    query |> where([game: g], g.player_has_coin == ^player_has_coin)
+  end
 
   defp compose_games_query({"public", public}, query) when public in ["true", "yes"],
     do: compose_games_query({"public", true}, query)
