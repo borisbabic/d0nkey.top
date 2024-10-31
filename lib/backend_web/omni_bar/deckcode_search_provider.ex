@@ -1,10 +1,12 @@
 defmodule BackendWeb.DeckcodeSearchProvider do
+  @moduledoc false
   @behaviour OmniBar.SearchProvider
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone
   alias OmniBar.Result
   alias BackendWeb.Router.Helpers, as: Routes
   alias BackendWeb.DeckviewerLive
+  alias BackendWeb.DeckLive
   alias Backend.Streaming.StreamingNow
 
   def search(term, callback) do
@@ -15,7 +17,8 @@ defmodule BackendWeb.DeckcodeSearchProvider do
   end
 
   defp handle_valid_deck(deck, term, callback) do
-    with false <- deckviewer_result(deck, term) |> callback.(),
+    with false <- deck_result(deck, term) |> callback.(),
+         false <- deckviewer_result(deck, term) |> callback.(),
          false <- streaming_now_result(deck, term, callback),
          d = %{id: _deck_id} <- Hearthstone.deck(deck) do
       streamer_decks_result(d, term) |> callback.()
@@ -27,8 +30,7 @@ defmodule BackendWeb.DeckcodeSearchProvider do
 
     currently_streaming =
       StreamingNow.streaming_now()
-      |> Enum.filter(&Deck.equals?(deck, &1.deckcode))
-      |> Enum.count()
+      |> Enum.count(&Deck.equals?(deck, &1.deckcode))
 
     if currently_streaming > 0 do
       %Result{
@@ -64,6 +66,22 @@ defmodule BackendWeb.DeckcodeSearchProvider do
       priority: 1,
       result_id: "deck_viewer_#{code}",
       link: Routes.live_path(BackendWeb.Endpoint, DeckviewerLive, %{"code" => code})
+    }
+  end
+
+  def deck_result(deck, term) do
+    id_or_code =
+      case deck do
+        %{id: id} when not is_nil(id) -> id
+        _ -> Deck.deckcode(deck)
+      end
+
+    %Result{
+      search_term: term,
+      display_value: "View deck and stats",
+      priority: 2,
+      result_id: "deck_id_#{id_or_code}",
+      link: Routes.live_path(BackendWeb.Endpoint, DeckLive, [id_or_code])
     }
   end
 end
