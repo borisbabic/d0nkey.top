@@ -63,6 +63,8 @@
           <tr>
             
               <th><%= table_link(@conn, "Value", :value) %></th>
+
+              <th><%= table_link(@conn, "Game Type", :game_type) %></th>
             
               <th><%= table_link(@conn, "Display", :display) %></th>
             
@@ -75,6 +77,7 @@
               <th><%= table_link(@conn, "Include in deck filters", :include_in_deck_filters) %></th>
             
               <th><%= table_link(@conn, "Auto aggregate", :auto_aggregate) %></th>
+
             
             <th><span>Actions</span></th>
           </tr>
@@ -84,6 +87,8 @@
             <tr>
               
                 <td><%= format.value %></td>
+
+                <td><%= format.game_type %></td>
               
                 <td><%= format.display %></td>
               
