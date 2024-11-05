@@ -477,6 +477,7 @@ defmodule BackendWeb.LeaderboardView do
     sortable_headers = [
       "Player",
       "Top 1",
+      "Top 5",
       "Top 10",
       "Top 25",
       "Top 50",
@@ -1289,6 +1290,7 @@ defmodule BackendWeb.LeaderboardView do
         "Player" => render_player_link(ps.account_id, nil, show_flags),
         "_country" => country,
         "Top 1" => ps |> PlayerStats.num_top(1),
+        "Top 5" => ps |> PlayerStats.num_top(5),
         "Top 10" => ps |> PlayerStats.num_top(10),
         "Top 25" => ps |> PlayerStats.num_top(25),
         "Top 50" => ps |> PlayerStats.num_top(50),
