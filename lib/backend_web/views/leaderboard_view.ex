@@ -493,7 +493,7 @@ defmodule BackendWeb.LeaderboardView do
       (["#"] ++ sortable_headers)
       |> Enum.map(fn h -> create_stats_header(h, sort_by, direction, conn) end)
 
-    sort_key = sortable_headers |> Enum.find("Total Finishes", fn h -> h == sort_by end)
+    sort_key = sortable_headers |> Enum.find("Top 200", fn h -> h == sort_by end)
 
     update_link = fn new_params ->
       Routes.leaderboard_path(conn, :player_stats, conn.query_params |> Map.merge(new_params))
@@ -1091,16 +1091,16 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   defp wrong_region(%{leaderboard_id: "BG", season_id: s}, account, "all") when s > 4 do
-    is_chinese?(account)
+    chinese?(account)
   end
 
   defp wrong_region(%{leaderboard_id: "STD", season_id: s}, account, "all") when s > 98 do
-    is_chinese?(account) || account in @confirmed_std_chinese
+    chinese?(account) || account in @confirmed_std_chinese
   end
 
   defp wrong_region(_, _, _), do: false
 
-  def is_chinese?(account) do
+  def chinese?(account) do
     case Backend.PlayerInfo.get_country(account) do
       nil -> false
       cc -> :CN == Backend.PlayerInfo.country_to_region(cc)
@@ -1211,7 +1211,7 @@ defmodule BackendWeb.LeaderboardView do
     case {sort_by_raw, direction_raw} do
       {s, d} when is_atom(d and is_binary(s)) -> {s, d}
       {s, _} when is_binary(s) -> {s, :desc}
-      _ -> {"Total Finishes", :desc}
+      _ -> {"Top 200", :desc}
     end
   end
 
