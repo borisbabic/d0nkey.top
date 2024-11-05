@@ -113,6 +113,11 @@ defmodule Backend.Sheets.DeckSheet do
     fn %{deck: deck} -> Backend.Hearthstone.Deck.class(deck) end
   end
 
+  defp create_listing_sorter(field)
+       when field in ["inserted_at", "udpated_at", :inserted_at, :updated_at] do
+    fn l -> Util.get(l, field) |> to_string() end
+  end
+
   defp create_listing_sorter(field_slug) do
     fn l -> Util.get(l, field_slug) end
   end
