@@ -39,9 +39,19 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       mystery_egg_hunter?(card_info) ->
         :"Mystery Egg Hunter"
 
+      starship?(card_info) ->
+        :"Starship Hunter"
+
+      discover?(card_info) ->
+        :"Discover Hunter"
+
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp discover?(ci) do
+    min_count?(ci, 2, ["Rangari Scout", "Parallax Cannon", "Alien Encounters"])
   end
 
   defp amalgam?(ci) do

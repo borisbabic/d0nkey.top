@@ -24,6 +24,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       zarimi?(card_info) ->
         :"Zarimi Priest"
 
+      hitchhiker?(card_info) ->
+        :"42 Priest"
+
       pain?(card_info) ->
         :"Pain Priest"
 
@@ -45,6 +48,10 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp hitchhiker?(ci) do
+    "Mystified To'cha" in ci.card_names
   end
 
   defp zarimi?(ci) do
@@ -106,7 +113,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   end
 
   defp control_priest?(ci) do
-    min_count?(ci, 2, ["Harmonic Pop", "Repackage", "Lightbomb", "Shadow Word: Ruin"])
+    min_count?(ci, 2, ["Harmonic Pop", "Repackage", "Lightbomb", "Shadow Word: Ruin", "Holy Nova"])
   end
 
   def wild(card_info) do

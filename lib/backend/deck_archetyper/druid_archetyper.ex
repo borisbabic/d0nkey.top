@@ -78,12 +78,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       spell_damage_druid?(card_info) ->
         :"Spell Damage Druid"
 
-      ramp_druid?(card_info) && "Death Beetle" in card_info.card_names ->
-        :"Beetle Druid"
-
-      "Topior the Shrubbagazzor" in card_info.card_names ->
-        :"Topior Druid"
-
       treant_druid?(card_info) ->
         :"Treant Druid"
 
@@ -101,6 +95,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
+
+      starship?(card_info) ->
+        :"Starship Druid"
 
       ramp_druid?(card_info) ->
         :"Ramp Druid"

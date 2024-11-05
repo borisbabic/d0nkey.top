@@ -39,6 +39,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       lightshow? ->
         :"Lightshow Mage"
 
+      "Arkwing Pilot" in card_info.card_names ->
+        :"Arkwing Mage"
+
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
 

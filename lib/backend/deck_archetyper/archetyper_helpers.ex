@@ -132,6 +132,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       cute?(ci) ->
         :"Cute #{class_name}"
 
+      starship?(ci) ->
+        String.to_atom("Starship #{class_name}")
+
       min_secret_count?(ci, 4) ->
         String.to_atom("Secret #{class_name}")
 
@@ -166,6 +169,10 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         "Twin-fin Fin Twin",
         "Gorloc Ravager"
       ])
+
+  def starship?(ci, min \\ 2) do
+    min_keyword_count?(ci, min, "starship")
+  end
 
   def min_keyword_count?(%{full_cards: full_cards}, min, keyword_slug) do
     num =
