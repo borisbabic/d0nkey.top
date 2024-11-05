@@ -49,6 +49,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       earthen_paladin?(card_info) ->
         :"Gaia Paladin"
 
+      libram?(card_info) ->
+        :"Libram Paladin"
+
       holy_paladin?(card_info) ->
         :"Holy Paladin"
 
@@ -77,6 +80,18 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
     match?({_, ["Sunsapper Lynessa"]}, lowest_highest_cost_cards(card_info)) and
       "Grillmaster" in card_info.card_names and
       min_count?(card_info, 1, ["Griftah, Trusted Vendor", "Holy Glowsticks", "Mixologist"])
+  end
+
+  defp libram?(card_info, min_count \\ 3) do
+    min_count?(card_info, min_count, [
+      "Libram of Faith",
+      "Libram of Clarity",
+      "Libram of Divinity",
+      "Libram of Wisdom",
+      "Libram of Justice",
+      "Libram of Hope",
+      "Libram of Judgement"
+    ])
   end
 
   defp excavate_paladin?(card_info) do
@@ -212,6 +227,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
       "Mecha'thun" in card_info.card_names ->
         String.to_atom("Mecha'thun #{class_name}")
+
+      libram?(card_info) ->
+        :"Libram Paladin"
 
       wild_shanty_paladin?(card_info) ->
         :"Sea Shanty Paladin"

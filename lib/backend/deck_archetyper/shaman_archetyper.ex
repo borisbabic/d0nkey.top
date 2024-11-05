@@ -31,11 +31,14 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       bonk?(card_info) ->
         :"Bonk Shaman"
 
-      incindius?(card_info) ->
-        :"Incindius Shaman"
-
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
+
+      asteroid?(card_info) ->
+        :"Asteroid Shaman"
+
+      incindius?(card_info) ->
+        :"Incindius Shaman"
 
       spell_damage_shaman?(card_info) ->
         :"Spell Damage Shaman"
@@ -58,6 +61,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       wish_shaman?(card_info) ->
         :"Wish Shaman"
 
+      "Nebula" in card_info.card_names ->
+        :"Nebula Shaman"
+
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Shaman"
 
@@ -67,6 +73,15 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp asteroid?(card_info, min_count \\ 3) do
+    min_count?(card_info, min_count, [
+      "Ultraviolet Breaker",
+      "Meteor Storm",
+      "Bolide Behemoth",
+      "Moonstone Mauler"
+    ])
   end
 
   defp bonk?(card_info) do

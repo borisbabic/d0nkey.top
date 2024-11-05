@@ -46,6 +46,12 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       attack_dh?(card_info) ->
         :"Attack DH"
 
+      crewmate?(card_info) ->
+        :"Among Us DH"
+
+      kj?(card_info) ->
+        :"Kil'jaeden DH"
+
       outcast_dh?(card_info) ->
         :"Outcast DH"
 
@@ -69,6 +75,19 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Gan'arg Glaivesmith",
       "Gibbering Reject",
       "Rhythmdancer Risa"
+    ])
+  end
+
+  def kj?(ci) do
+    "Kil'jaedan" in ci.card_names
+  end
+
+  def crewmate?(ci, min_count \\ 3) do
+    min_count?(ci, min_count, [
+      "Voronei Recruiter",
+      "Emergency Meeting",
+      "Headhunt",
+      "Dridra, Rebel Captain"
     ])
   end
 
