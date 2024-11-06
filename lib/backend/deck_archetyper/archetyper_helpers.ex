@@ -56,7 +56,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   end
 
   def min_count?(card_names, min, cards) do
-    min <= cards |> Enum.filter(&(&1 in card_names)) |> Enum.count()
+    min <= cards |> Enum.count(&(&1 in card_names))
   end
 
   @spec all_odd?(card_info()) :: boolean()
@@ -80,6 +80,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     "Kobold Geomancer",
     "Rainbow Glowscale",
     "Silvermoon Arcanist",
+    "Ethereal Oracle",
     "Azure Drake"
   ]
 
@@ -146,8 +147,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def giants?(ci, min_count \\ 3) do
     count =
       ci.card_names
-      |> Enum.filter(&(String.reverse(&1) |> String.starts_with?("tnaiG")))
-      |> Enum.count()
+      |> Enum.count(&(String.reverse(&1) |> String.starts_with?("tnaiG")))
 
     count >= min_count
   end
@@ -177,8 +177,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def min_keyword_count?(%{full_cards: full_cards}, min, keyword_slug) do
     num =
       full_cards
-      |> Enum.filter(&Card.has_keyword?(&1, keyword_slug))
-      |> Enum.count()
+      |> Enum.count(&Card.has_keyword?(&1, keyword_slug))
 
     num >= min
   end
@@ -230,8 +229,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def num_duplicates(cards) do
     cards
     |> Enum.frequencies()
-    |> Enum.filter(fn {_, count} -> count > 1 end)
-    |> Enum.count()
+    |> Enum.count(fn {_, count} -> count > 1 end)
   end
 
   def vanndar?(%{card_names: card_names}), do: "Vanndar Stormpike" in card_names

@@ -51,7 +51,6 @@
         <.navbar_dropdown display="Decks" main_link={~p"/decks"}>
           <.navbar_item_link link={~p"/decks/?format=2"} display={"Standard"} />
           <.navbar_item_link link={~p"/decks/?format=1"} display={"Wild"} />
-          <.navbar_item_link :if={@user} link={~p"/decks/?format=-1&period=brawl&rank=all"} display={"Brawl"} />
         </.navbar_dropdown>
         <.navbar_item_link link={~p"/meta"} display={"Meta"} />
         <.navbar_item_link link={~p"/streamer-decks"} display={"Streamer Decks"}/>

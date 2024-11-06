@@ -15,6 +15,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       automaton_priest?(card_info) ->
         :"Automaton Priest"
 
+      anchorite(card_info) ->
+        :"Anchorite Priest"
+
       overheal_priest?(card_info) ->
         :"Overheal Priest"
 
@@ -93,6 +96,10 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
           "Ravenous Kraken",
           "Cover Artist"
         ])
+
+  defp anchorite(ci) do
+    min_count?(ci, 2, ["Crazed Alchemist", "Anchorite"])
+  end
 
   defp overheal_priest?(ci) do
     min_count?(ci, 5, [

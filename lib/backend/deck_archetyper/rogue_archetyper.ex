@@ -75,6 +75,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       sonya?(card_info) ->
         :"Sonya Rogue"
 
+      quasar?(card_info) ->
+        :"Quasar Rogue"
+
       combo?(card_info) ->
         :"Combo Rogue"
 
@@ -90,11 +93,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
-      quasar?(card_info) ->
-        :"Quasar Rogue"
-
       shaffar?(card_info) ->
         :"Shaffar Rogue"
+
+        "Quasar" in card_info.card_names
+        :"Quasar Rogue"
 
       true ->
         fallbacks(card_info, "Rogue")
@@ -106,7 +109,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   end
 
   defp quasar?(card_info) do
-    "Quasar" in card_info.card_names
+    min_count?(card_info, 2, ["Quasar" | neutral_spell_damage()])
   end
 
   defp shaffar?(card_info) do
