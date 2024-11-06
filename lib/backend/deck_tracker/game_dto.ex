@@ -323,7 +323,11 @@ defmodule Hearthstone.DeckTracker.CardMulliganDto do
   def from_raw_list(after_mulligan_raw, before_mulligan_raw) do
     after_ids = extract_card_ids(after_mulligan_raw)
     not_kept = Enum.reject(before_mulligan_raw, &(extract_card_id(&1) in after_ids))
-    Enum.map(not_kept, &from_raw_not_kept/1)
+    not_kept_ids = extract_card_ids(not_kept)
+    after_mull = Enum.reject(after_mulligan_raw, &(extract_card_id(&1) in not_kept_ids))
+
+    Enum.map(not_kept, &from_raw_not_kept/1) ++
+      Enum.map(after_mull, &from_raw_map/1)
   end
 
   def from_raw_list(list) when is_list(list), do: Enum.map(list, &from_raw_map/1)
