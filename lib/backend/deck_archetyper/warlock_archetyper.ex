@@ -87,7 +87,16 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       fatigue_warlock?(card_info) ->
         :"Insanity Warlock"
 
+      "Kil'jaeden" in card_info.card_names ->
+        :"Kil'jaeden Warlock"
+
       "Wheel of DEATH!!!" in card_info.card_names ->
+        :"Wheel Warlock"
+
+      "Kil'jaeden" in card_info.etc_sideboard_names ->
+        :"Kil'jaeden Warlock"
+
+      "Wheel of DEATH!!!" in card_info.etc_sideboard_names ->
         :"Wheel Warlock"
 
       leeroy_warlock?(card_info) ->

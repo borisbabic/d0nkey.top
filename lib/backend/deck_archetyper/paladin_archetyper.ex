@@ -246,7 +246,8 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp holy_wrath_paladin?(card_info) do
-    min_count?(card_info, 2, ["Holy Wrath", "Shirvallah, the Tiger"]) and
+    "Holy Wrath" in card_info.card_names and
+      min_count?(card_info, 1, ["Shirvallah, the Tiger", "The Ceaseless Expanse"]) and
       min_count?(card_info, 1, ["Lorekeeper Polkelt", "Order in the Court"])
   end
 

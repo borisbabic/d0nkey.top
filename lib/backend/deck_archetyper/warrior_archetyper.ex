@@ -9,15 +9,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       highlander?(card_info) ->
         :"Highlander Warrior"
 
-      questline?(card_info) && warrior_aoe?(card_info) ->
-        :"Quest Control Warrior"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Warrior"
-
-      galvangar_combo?(card_info) ->
-        :"Charge Warrior"
-
       taunt_warrior?(card_info) ->
         :"Taunt Warrior"
 
@@ -36,9 +27,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       n_roll?(card_info) ->
         :"Rock 'n' Roll Warrior"
 
-      warrior_aoe?(card_info) ->
-        :"Control Warrior"
-
       excavate_warrior?(card_info) && odyn?(card_info) ->
         :"Excavate Odyn Warrior"
 
@@ -49,6 +37,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       excavate_warrior?(card_info) ->
         :"Excavate Warrior"
+
+      draenei?(card_info) ->
+        :"Draenei Warrior"
 
       mech_warrior?(card_info) ->
         :"Mech Warrior"
@@ -80,8 +71,11 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Safety Expert" in card_info.card_names ->
         :"Safety Warrior"
 
-      zilliax_warrior?(card_info) ->
-        :"Zilliax Warrior"
+      "Hydration Station" in card_info.card_names ->
+        :"Hydration Warrior"
+
+      warrior_aoe?(card_info) ->
+        :"Control Warrior"
 
       true ->
         fallbacks(card_info, "Warrior")
@@ -98,6 +92,10 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
   def mech_warrior?(card_info) do
     min_count?(card_info, 2, ["Boom Wrench", "Testing Dummy"])
+  end
+
+  def draenei?(card_info) do
+    type_count(card_info, "Draenei") > 5
   end
 
   defp odyn?(card_info) do
@@ -163,8 +161,16 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         "To the Front!"
       ])
 
-  defp warrior_aoe?(ci, min_count \\ 2),
-    do: min_count?(ci, min_count, ["Shield Shatter", "Brawl", "Rancor", "Man the Cannons"])
+  defp warrior_aoe?(ci, min_count \\ 4),
+    do:
+      min_count?(ci, min_count, [
+        "Brawl",
+        "Aftershocks",
+        "Sanitize",
+        "Garrosh's Gift",
+        "Bladestorm",
+        "Hostile Invader"
+      ])
 
   defp weapon_warrior?(ci),
     do:
@@ -174,14 +180,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         "Blacksmithing Hammer",
         "Lady Ashvane"
       ])
-
-  defp zilliax_warrior?(card_info) do
-    min_count?(card_info, 3, [
-      "Zilliax Deluxe 3000",
-      "Inventor Boom",
-      "Hydration Station"
-    ])
-  end
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)

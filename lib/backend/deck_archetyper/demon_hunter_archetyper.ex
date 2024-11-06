@@ -79,7 +79,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   end
 
   def kj?(ci) do
-    "Kil'jaedan" in ci.card_names
+    "Kil'jaeden" in ci.card_names
   end
 
   def crewmate?(ci, min_count \\ 3) do
