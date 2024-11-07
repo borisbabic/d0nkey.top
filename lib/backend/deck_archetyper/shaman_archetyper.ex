@@ -70,6 +70,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Wave of Nostalgia" in card_info.card_names ->
         :"Nostalgia Shaman"
 
+      "Murmur" in card_info.card_names ->
+        :"Murmur Shaman"
+
       true ->
         fallbacks(card_info, "Shaman")
     end

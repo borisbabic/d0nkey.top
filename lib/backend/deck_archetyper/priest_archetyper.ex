@@ -3,6 +3,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.Card
 
   def standard(card_info) do
     cond do
@@ -181,6 +182,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Radiant Elemental" in card_info.card_names ->
         :"Radiant Priest"
 
+      techw?(card_info) ->
+        :"TechW Priest"
+
       true ->
         fallbacks(card_info, class_name)
     end
@@ -254,5 +258,11 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         "Inner Fire",
         "Bless"
       ])
+  end
+
+  @techw_cards ["Spellward Jeweler", "Kobold Monk"]
+  defp techw?(card_info) do
+    names = for card <- card_info.full_cards, Card.minion?(card), uniq: true, do: Card.name(card)
+    !Enum.empty?(names) and !Enum.any?(names, &(!(&1 in @techw_cards)))
   end
 end

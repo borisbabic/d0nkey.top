@@ -82,7 +82,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       min_count?(card_info, 1, ["Griftah, Trusted Vendor", "Holy Glowsticks", "Mixologist"])
   end
 
-  defp libram?(card_info, min_count \\ 3) do
+  defp libram?(card_info, min_count \\ 2) do
     min_count?(card_info, min_count, [
       "Libram of Faith",
       "Libram of Clarity",
