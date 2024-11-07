@@ -204,6 +204,21 @@ defmodule Backend.Hearthstone.Card do
     cost(card) == 0 and type(card) == "MINION" and !special_cost?(card)
   end
 
+  @spec minion?(card()) :: boolean
+  def minion?(card), do: type(card) == "MINION"
+
+  @spec spell?(card()) :: boolean
+  def spell?(card), do: type(card) == "SPELL"
+
+  @spec weapon?(card()) :: boolean
+  def weapon?(card), do: type(card) == "WEAPON"
+
+  @spec location?(card()) :: boolean
+  def location?(card), do: type(card) == "LOCATION"
+
+  @spec hero?(card()) :: boolean
+  def hero?(card), do: type(card) == "HERO"
+
   @spec type(card()) :: String.t()
   def type(%{card_type: type}), do: Type.upcase(type)
   def type(%{type: type}), do: Type.upcase(type)

@@ -109,7 +109,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   end
 
   defp quasar?(card_info) do
-    min_count?(card_info, 2, ["Quasar" | neutral_spell_damage()])
+    "Quasar" in card_info.card_names and min_keyword_count?(card_info, 1, "spell-damage")
   end
 
   defp shaffar?(card_info) do
@@ -206,6 +206,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Mailbox Dancer",
       "Arcane Giant",
       "Edwin VanCleef",
+      "Frostwolf Warmaster",
       "Scribbling Stenographer",
       "Zephrys the Great"
     ])
@@ -315,6 +316,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       wild_miracle_rogue?(card_info) ->
         :"Miracle Rogue"
+
+      quasar?(card_info) ->
+        :Quasar
 
       garrote?(card_info) ->
         :"Garrote Rogue"
