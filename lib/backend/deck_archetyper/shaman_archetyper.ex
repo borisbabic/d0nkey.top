@@ -40,11 +40,11 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       incindius?(card_info) ->
         :"Incindius Shaman"
 
-      spell_damage_shaman?(card_info) ->
-        :"Spell Damage Shaman"
-
       nature_shaman?(card_info) ->
         :"Nature Shaman"
+
+      spell_damage_shaman?(card_info) ->
+        :"Spell Damage Shaman"
 
       overload_shaman?(card_info) ->
         :"Overload Shaman"
@@ -141,7 +141,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   defp nature_shaman?(ci),
     do:
       min_count?(ci, 2, [
+        "Flash Of Lightning",
         "Flash of Lightning",
+        "Crash Of Thunder",
         "Crash of Thunder",
         "Champion of Storms"
       ])
