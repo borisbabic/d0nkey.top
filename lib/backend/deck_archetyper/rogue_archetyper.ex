@@ -318,7 +318,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         :"Miracle Rogue"
 
       quasar?(card_info) ->
-        :Quasar
+        :"Quasar Rogue"
 
       garrote?(card_info) ->
         :"Garrote Rogue"
