@@ -85,7 +85,11 @@ CAST(SUM(
                 1
             ELSE
                 0
-            END), 0), 1) AS winrate
+            END), 0), 1) AS winrate,
+    SUM(case WHEN turns IS NOT NULL then turns else 0 end) as turns,
+    SUM(case WHEN turns IS NOT NULL then 1 else 0 end) as turns_game_count,
+    SUM(case WHEN duration IS NOT NULL then duration else 0 end) as duration,
+    SUM(case WHEN duration IS NOT NULL then 1 else 0 end) as duration_game_count
 FROM
     public.dt_games dg
     INNER JOIN public.deck d ON d.id = dg.player_deck_id
@@ -270,7 +274,26 @@ grouped_deck_stats AS (
             SUM(ds.winrate * ds.total) / sum(ds.total)
         ELSE
             0
-        END AS winrate
+        END AS winrate,
+        CASE WHEN sum(turns_game_count) > 0 THEN
+            SUM(turns)::float / SUM(turns_game_count)
+        ELSE 
+            0
+        END as turns,
+        SUM(turns) AS total_turns,
+        SUM(turns_game_count) AS turns_game_count,
+        CASE WHEN SUM(duration_game_count) > 0 THEN 
+            SUM(duration)::float / SUM(duration_game_count)
+        ELSE
+            0
+        END as duration,
+        SUM(duration) AS total_duration,
+        SUM(duration_game_count) as duration_game_count,
+        CASE WHEN SUM(ds.total) > 0 AND SUM(duration) > 0 THEN
+            ( SUM(duration_game_count) * 3600::float / SUM(duration)) * (2 * (SUM(ds.winrate * ds.total) / SUM(ds.total))  - 1)
+        ELSE
+            0
+        END as climbing_speed
     FROM
         deck_stats ds
     INNER JOIN deck d ON d.id = ds.deck_id
@@ -370,6 +393,7 @@ ALTER MATERIALIZED VIEW IF EXISTS dt_aggregated_stats RENAME TO old_dt_aggregate
 ALTER MATERIALIZED VIEW temp_dt_aggregated_stats RENAME TO dt_aggregated_stats;
 DROP MATERIALIZED VIEW IF EXISTS old_dt_aggregated_stats;
 -- UPDATE AGG LOG
+-- DO NOT COMMIT THE BELOW COMMENTED OUT
 INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
 -- UPDATE AGGREGATION COUNT
 CREATE TABLE public.dt_aggregation_meta_new AS
