@@ -523,13 +523,57 @@ defmodule Hearthstone.DeckTracker do
     |> where([game: g], not is_nil(g.opponent_class))
   end
 
+  @winrate_fragment "cast(SUM(CASE WHEN ? = 'win' THEN 1 ELSE 0 END) as float) / COALESCE(NULLIF(SUM(CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END), 0), 1)"
+  @duration_fragment """
+  CASE WHEN SUM(case WHEN ? IS NOT NULL THEN 1 ELSE 0 END) > 0 THEN
+    SUM(case WHEN ? IS NOT NULL then ? else 0 end)::float /
+    SUM(case WHEN ? IS NOT NULL then 1 else 0 end)
+  ELSE
+    0::float
+  END
+  """
+  @climbing_speed_fragment """
+    CASE WHEN SUM(CASE WHEN ? IS NOT NULL THEN ? else 0 end) > 0 THEN
+      (3600 / (#{@duration_fragment})) * (2 * (#{@winrate_fragment}) - 1)
+    ELSE
+      0::float
+    END
+  """
   defp base_archetype_stats_query() do
     base_stats_query()
     |> group_by([player_deck: pd], pd.archetype)
     |> select_merge(
-      [player_deck: pd],
+      [player_deck: pd, game: g],
       %{
-        archetype: pd.archetype
+        archetype: pd.archetype,
+        turns:
+          fragment(
+            """
+            CASE WHEN SUM(case WHEN ? IS NOT NULL THEN 1 ELSE 0 END) > 0 THEN
+              SUM(case WHEN ? IS NOT NULL then ? else 0 end)::float /
+              SUM(case WHEN ? IS NOT NULL then 1 else 0 end)
+            ELSE
+              0::float
+            END
+            """,
+            g.turns,
+            g.turns,
+            g.turns,
+            g.turns
+          ),
+        duration: fragment(@duration_fragment, g.duration, g.duration, g.duration, g.duration),
+        climbing_speed:
+          fragment(
+            @climbing_speed_fragment,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.duration,
+            g.status,
+            g.status
+          )
       }
     )
     |> where([player_deck: pd], not is_nil(pd.archetype))
@@ -552,6 +596,9 @@ defmodule Hearthstone.DeckTracker do
         total: ag.total,
         winrate: ag.winrate,
         deck_id: ag.deck_id,
+        turns: ag.turns,
+        duration: ag.duration,
+        climbing_speed: ag.climbing_speed,
         card_stats: ag.card_stats
       }
     )
@@ -571,7 +618,11 @@ defmodule Hearthstone.DeckTracker do
         losses: ag.losses,
         total: ag.total,
         winrate: ag.winrate,
-        archetype: ag.archetype
+        archetype: ag.archetype,
+        turns: ag.turns,
+        duration: ag.duration,
+        climbing_speed: ag.climbing_speed,
+        card_stats: ag.card_stats
       },
       where: fragment("COALESCE(?, 'any')", ag.archetype) != "any",
       where: fragment("COALESCE(?, -1)", ag.deck_id) == -1
@@ -588,7 +639,10 @@ defmodule Hearthstone.DeckTracker do
         losses: ag.losses,
         total: ag.total,
         winrate: ag.winrate,
-        deck_id: ag.deck_id
+        deck_id: ag.deck_id,
+        turns: ag.turns,
+        duration: ag.duration,
+        climbing_speed: ag.climbing_speed
       }
     )
   end
@@ -648,6 +702,9 @@ defmodule Hearthstone.DeckTracker do
 
   @total_select_pos 3
   @winrate_select_pos 4
+  @turns_select_pos 6
+  @duration_select_pos 7
+  @climbing_speed_select_pos 8
   @total_fragment "CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END"
   defp base_stats_query() do
     from(g in Game,
@@ -660,7 +717,7 @@ defmodule Hearthstone.DeckTracker do
         total: sum(fragment(@total_fragment, g.status)),
         winrate:
           fragment(
-            "cast(SUM(CASE WHEN ? = 'win' THEN 1 ELSE 0 END) as float) / COALESCE(NULLIF(SUM(CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END), 0), 1)",
+            @winrate_fragment,
             g.status,
             g.status
           )
@@ -1125,6 +1182,15 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"order_by", "winrate"}, query),
     do: query |> order_by([], desc: @winrate_select_pos)
+
+  defp compose_games_query({"order_by", "turns"}, query),
+    do: query |> order_by([], desc: @turns_select_pos)
+
+  defp compose_games_query({"order_by", "duration"}, query),
+    do: query |> order_by([], desc: @duration_select_pos)
+
+  defp compose_games_query({"order_by", "climbing_speed"}, query),
+    do: query |> order_by([], desc: @climbing_speed_select_pos)
 
   defp compose_games_query(order_by, query) when order_by in [:latest, :winrate, :total],
     do: compose_games_query({"order_by", to_string(order_by)}, query)

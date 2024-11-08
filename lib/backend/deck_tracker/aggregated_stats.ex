@@ -16,6 +16,9 @@ defmodule Hearthstone.DeckTracker.AggregatedStats do
     field :wins, :decimal
     field :losses, :decimal
     field :total, :decimal
+    field :turns, :float
+    field :duration, :float
+    field :climbing_speed, :float
     field :card_stats, {:array, :map}
   end
 end

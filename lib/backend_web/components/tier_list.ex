@@ -13,7 +13,7 @@ defmodule Components.TierList do
   alias Surface.Components.LivePatch
   alias Components.Filter.ForceFreshDropdown
   import Components.DecksExplorer, only: [parse_int: 2]
-  import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
+  import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4, flip_direction: 2]
 
   prop(data, :list, default: [])
   prop(params, :map)
@@ -69,6 +69,15 @@ defmodule Components.TierList do
             <th><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
             {add_arrow("Popularity", "total", @params)}
             </LivePatch></th>
+            <th class="is-hidden-mobile"><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "turns"))}>
+            {add_arrow("Turns", "turns", @params)}
+            </LivePatch></th>
+            <th class="is-hidden-mobile"><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "duration"))}>
+            {add_arrow("Duration", "duration", @params)}
+            </LivePatch></th>
+            <th class="is-hidden-mobile"><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
+            {add_arrow("Climbing Speed", "climbing_speed", @params)}
+            </LivePatch></th>
           </thead>
           <tbody :if={{stats, total} = stats(@data, @criteria)}>
             <tr :for={as <- stats}>
@@ -81,6 +90,9 @@ defmodule Components.TierList do
                 <WinrateTag winrate={as.winrate}/>
               </td>
               <td>{percentage(as.total, total)}% ({as.total})</td>
+              <td class="is-hidden-mobile">{Float.round(as.turns, 1)}</td>
+              <td class="is-hidden-mobile">{Float.round(as.duration/60, 1)}</td>
+              <td class="is-hidden-mobile">{Float.round(as.climbing_speed, 2)}⭐/h</td>
             </tr>
           </tbody>
         </table>
