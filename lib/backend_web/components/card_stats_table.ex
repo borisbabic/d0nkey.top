@@ -196,6 +196,17 @@ defmodule Components.CardStatsTable do
   defp flip_direction(dir) when dir in [:desc, "desc"], do: "asc"
   defp flip_direction(_), do: "desc"
 
+  def flip_direction(
+        new_params = %{"sort_by" => new_sort_by},
+        old_params = %{"sort_by" => old_sort_by}
+      )
+      when new_sort_by == old_sort_by do
+    new_direction = get_direction(old_params) |> flip_direction()
+    Map.put(new_params, "sort_direction", new_direction)
+  end
+
+  def flip_direction(new_params, _old_params), do: new_params
+
   def count(cs, filters) do
     mi = Util.get(cs, :mull_impact)
     di = Util.get(cs, :drawn_impact)
