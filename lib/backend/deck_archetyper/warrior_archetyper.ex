@@ -152,15 +152,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     ])
   end
 
-  defp galvangar_combo?(ci, min_count \\ 4),
-    do:
-      min_count?(ci, min_count, [
-        "Captain Galvangar",
-        "Faceless Manipulator",
-        "Battleground Battlemaster",
-        "To the Front!"
-      ])
-
   defp warrior_aoe?(ci, min_count \\ 4),
     do:
       min_count?(ci, min_count, [

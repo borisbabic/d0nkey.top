@@ -20,7 +20,9 @@ defmodule Components.OpponentStatsTable do
   data(selected_params, :list, default: [])
   data(stats, :list, default: [])
 
-  def update(assigns, socket) do
+  def update(assigns, socket_without_assigns) do
+    socket = assign(socket_without_assigns, assigns)
+
     criteria =
       assigns.params
       |> Map.take(param_keys())
@@ -43,7 +45,6 @@ defmodule Components.OpponentStatsTable do
     {
       :ok,
       socket
-      |> assign(assigns)
       |> assign(selected_params: selected_params, stats: stats, needs_login?: needs_login?)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
