@@ -103,6 +103,7 @@
           twitch={"playhearthstone"}
         />
 
+      <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2024-11-18 12:12:00]) == :lt} href={~p"/wc/2024/china-qualifiers"}>CN Worlds Qual</a>
        <%= current_mt @conn %>
 
        <%= current_dreamhack @conn %>
