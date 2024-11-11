@@ -445,10 +445,15 @@ defmodule Hearthstone.DeckTracker do
     "player_not_drawn",
     "player_kept",
     "player_has_coin",
-    "player_not_kept"
+    "player_not_kept",
+    "player_btag"
   ]
   def filter_needs_fresh?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
     do: true
+
+  def filter_needs_fresh?({"players", players_val}) do
+    players_val != "all_players"
+  end
 
   def filter_needs_fresh?({filter, value})
       when filter in ["rank", "region", "format", "period"] do
