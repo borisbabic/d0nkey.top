@@ -66,6 +66,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       mill_druid?(card_info) ->
         :"Mill Druid"
 
+      spell_damage_druid?(card_info) ->
+        :"Spell Damage Druid"
+
       owlonius_druid?(card_info) ->
         :"Owlonius Druid"
 
@@ -74,9 +77,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       tempo_druid?(card_info) ->
         :"Tempo Druid"
-
-      spell_damage_druid?(card_info) ->
-        :"Spell Damage Druid"
 
       treant_druid?(card_info) ->
         :"Treant Druid"
