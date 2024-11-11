@@ -44,7 +44,10 @@ defmodule BackendWeb.Router do
   # end
 
   pipeline :admins_only do
-    plug(:basic_auth, username: "admin", password: Application.compile_env!(:backend, :admin_pass))
+    plug(:basic_auth,
+      username: "admin",
+      password: Application.compile_env!(:backend, :admin_pass)
+    )
   end
 
   scope "/api/public", BackendWeb do
@@ -249,6 +252,7 @@ defmodule BackendWeb.Router do
 
     live("/wc/2021", WC2021Live)
     live("/wc/2022", WC2022Live)
+    live("/wc/2024/china-qualifiers", WC2024ChinaQualifiers)
     live("/seasonal/2022/summer", SummerChamps2022Live)
 
     live("/max/nations-2022", MaxNations2022Live)
@@ -327,7 +331,6 @@ defmodule BackendWeb.Router do
     get("/test", AdminController, :test)
     get("/config-vars", AdminController, :config_vars)
     get("/config-vars/backend", AdminController, :config_vars)
-    get("/config-vars/ueberauth", AdminController, :ueberauth_config_vars)
     get("/mt-player-nationality/:tour_stop", AdminController, :mt_player_nationality)
     get("/fix-fantasy-mt-btag/:tour_stop", AdminController, :fantasy_fix_btag)
     get("/recalculate_archetypes/:minutes_ago", AdminController, :recalculate_archetypes)
