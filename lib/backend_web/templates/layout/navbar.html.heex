@@ -43,7 +43,7 @@
         <.navbar_dropdown display="Leaderboards" main_link={~p"/leaderboard"}>
           <.navbar_item_link link={~p"/leaderboard/player-stats"} display={"Player Stats"} />
           <.navbar_item_link link={~p"/leaderboard/points"} display={"HSEsports Points"} />
-          <%= for {region, region_name} <- Backend.Blizzard.qualifier_regions_with_name() do %>
+          <%= for {region, region_name} <- Backend.Blizzard.regions_with_name() do %>
             <.navbar_item_link link={~p"/leaderboard?#{%{region: region}}"} display={region_name} />
           <% end %>
         </.navbar_dropdown>

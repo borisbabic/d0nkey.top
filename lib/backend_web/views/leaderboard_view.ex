@@ -526,7 +526,7 @@ defmodule BackendWeb.LeaderboardView do
       end)
 
     region_options =
-      Blizzard.qualifier_regions()
+      Blizzard.regions()
       |> Enum.map(fn r ->
         %{
           value: r,
@@ -740,7 +740,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def create_region_dropdown(region, update_link) do
     options =
-      Backend.Blizzard.qualifier_regions_with_name()
+      Backend.Blizzard.regions_with_name()
       |> Enum.map(fn {r, name} ->
         %{
           display: name,

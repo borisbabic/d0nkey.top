@@ -495,6 +495,21 @@ defmodule Backend.Blizzard do
     qualifier_regions() |> Enum.map(fn r -> {r, get_region_name(r, :short)} end)
   end
 
+  @spec regions_with_name() :: [{region(), String.t()}]
+  def regions_with_name() do
+    regions_with_name(:long)
+  end
+
+  @spec regions_with_name(:long | :short) :: [{region(), String.t()}]
+  def regions_with_name(:long) do
+    regions() |> Enum.map(fn r -> {r, get_region_name(r, :long)} end)
+  end
+
+  @spec regions_with_name(:long | :short) :: [{region(), String.t()}]
+  def regions_with_name(:short) do
+    regions() |> Enum.map(fn r -> {r, get_region_name(r, :short)} end)
+  end
+
   @spec get_region_name(String.t() | region()) :: String.t()
   def get_region_name(region) do
     get_region_name(region, :long)
