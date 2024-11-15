@@ -155,7 +155,7 @@ defmodule BackendWeb.PlayerView do
     current = Map.get(conn.query_params, @ldb_region_key)
 
     options =
-      Backend.Blizzard.qualifier_regions_with_name()
+      Backend.Blizzard.regions_with_name()
       |> Enum.map(fn {r, name} ->
         %{
           display: name,

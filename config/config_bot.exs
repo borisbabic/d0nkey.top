@@ -18,6 +18,26 @@ config :backend, QuantumScheduler,
     {"*/2 * * * *",
      fn ->
        Backend.Leaderboards.save_current_with_delay(
+         [:CN],
+         [:STD, :WLD, :twist],
+         100,
+         10_000,
+         100
+       )
+     end},
+    {"*/10 * * * *",
+     fn ->
+       Backend.Leaderboards.save_current_with_delay(
+         [:CN],
+         [:arena, :BG, :DUO],
+         500,
+         10_000,
+         100
+       )
+     end},
+    {"*/2 * * * *",
+     fn ->
+       Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:STD, :WLD, :twist],
          50,

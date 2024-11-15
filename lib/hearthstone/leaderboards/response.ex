@@ -2,6 +2,8 @@ defmodule Hearthstone.Leaderboards.Response do
   use TypedStruct
   alias Hearthstone.Leaderboards.Response.Leaderboard
   alias Hearthstone.Leaderboards.Response.SeasonMetadata
+  alias Hearthstone.Leaderboards.Response.Row
+  alias Hearthstone.Leaderboards.Response.Pagination
   alias Hearthstone.Leaderboards.Season
 
   typedstruct do
@@ -21,6 +23,11 @@ defmodule Hearthstone.Leaderboards.Response do
   @spec from_raw_map(Map.t(), integer() | Season.t() | nil) ::
           {:ok, Response.t()} | {:error, any()}
   def from_raw_map(raw, leaderboard_id \\ nil)
+
+  def from_raw_map(raw, %{region: r} = season) when r in ["CN", :CN] do
+    from_china_map(raw, season)
+  end
+
   def from_raw_map(raw, %{leaderboard_id: leaderboard_id}), do: from_raw_map(raw, leaderboard_id)
 
   def from_raw_map(raw, leaderboard_id) do
@@ -36,6 +43,29 @@ defmodule Hearthstone.Leaderboards.Response do
         raw_response: raw,
         season_metadata:
           SeasonMetadata.from_raw_map(raw["seasonMetaData"] || raw["seasonMetadata"])
+      }
+    }
+  end
+
+  @spec from_china_map(Map.t(), Season.t()) :: {:ok, Response.t()}
+  def from_china_map(raw, season) do
+    total = get_in(raw, ["data", "total"]) || 100
+    pages = (total / 25) |> Float.ceil() |> trunc()
+    rows = get_in(raw, ["data", "list"]) || []
+    pagination_shim = %{"totalPages" => pages, "totalSize" => total}
+
+    leaderboard_shim = %{
+      "columns" => [],
+      "pagination" => pagination_shim,
+      "rows" => rows
+    }
+
+    {
+      :ok,
+      %__MODULE__{
+        leaderboard: Leaderboard.from_raw_map(leaderboard_shim),
+        season: season,
+        raw_response: raw
       }
     }
   end
@@ -77,9 +107,9 @@ defmodule Hearthstone.Leaderboards.Response.Row do
   @spec from_raw_map(Map.t()) :: Row.t()
   def from_raw_map(raw) do
     %__MODULE__{
-      account_id: raw["accountid"] || raw["account_id"] || raw["battletag"],
-      rank: raw["rank"],
-      rating: raw["rating"]
+      account_id: raw["accountid"] || raw["account_id"] || raw["battletag"] || raw["battle_tag"],
+      rank: raw["rank"] || raw["position"],
+      rating: raw["rating"] || raw["score"]
     }
   end
 end

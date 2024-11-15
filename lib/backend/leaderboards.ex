@@ -157,7 +157,7 @@ defmodule Backend.Leaderboards do
   end
 
   defp do_per_current_api_season(func) do
-    for region <- Blizzard.qualifier_regions(),
+    for region <- Blizzard.regions(),
         ldb <- Blizzard.active_leaderboards() do
       season = %ApiSeason{
         region: region,
@@ -393,10 +393,10 @@ defmodule Backend.Leaderboards do
 
   def handle_rows(rows, season), do: create_entries(rows, season)
 
-  defp handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
+  def handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
     do: handle_rows(rows, season)
 
-  defp handle_response(_) do
+  def handle_response(_) do
     nil
   end
 
@@ -439,7 +439,9 @@ defmodule Backend.Leaderboards do
     }
   end
 
-  def to_attrs(%{season_id: s, leaderboard_id: l, region: r}), do: %{season_id: s, leaderboard_id: to_string(l), region: to_string(r)}
+  def to_attrs(%{season_id: s, leaderboard_id: l, region: r}),
+    do: %{season_id: s, leaderboard_id: to_string(l), region: to_string(r)}
+
   def to_attrs(struct) when is_struct(struct), do: Map.from_struct(struct) |> to_attrs()
   def to_attrs(a), do: a
 
@@ -513,7 +515,7 @@ defmodule Backend.Leaderboards do
   end
 
   def current_ladder_seasons() do
-    for region <- Backend.Blizzard.qualifier_regions(),
+    for region <- Backend.Blizzard.regions(),
         ldb <- Backend.Blizzard.leaderboards(),
         into: [] do
       season_id = Blizzard.get_current_ladder_season(ldb)
@@ -525,7 +527,7 @@ defmodule Backend.Leaderboards do
   def get_player_entries(battletags_short) do
     short_set = MapSet.new(battletags_short)
 
-    for region <- Backend.Blizzard.qualifier_regions(),
+    for region <- Backend.Blizzard.regions(),
         ldb <- Backend.Blizzard.leaderboards(),
         into: [],
         do: {get_player_entries(short_set, region, ldb), region, ldb}
@@ -1353,8 +1355,6 @@ defmodule Backend.Leaderboards do
       nil -> {:error, :no_season}
       result -> {:ok, result}
     end
-
-    {:ok, Repo.one(query)}
   end
 
   def get_season(season), do: {:ok, ensure_season_full(season)}
