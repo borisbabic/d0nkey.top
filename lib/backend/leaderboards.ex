@@ -439,7 +439,8 @@ defmodule Backend.Leaderboards do
     }
   end
 
-  def to_attrs(struct) when is_struct(struct), do: Map.from_struct(struct)
+  def to_attrs(%{season_id: s, leaderboard_id: l, region: r}), do: %{season_id: s, leaderboard_id: to_string(l), region: to_string(r)}
+  def to_attrs(struct) when is_struct(struct), do: Map.from_struct(struct) |> to_attrs()
   def to_attrs(a), do: a
 
   # TEMPORARY FIX, october 2021 entries are being added to September 2021
