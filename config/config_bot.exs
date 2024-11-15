@@ -138,10 +138,10 @@ queues =
     grandmasters_lineups: 1,
     gm_stream_live: 1,
     hsreplay_deck_mapper: 1,
-    leaderboards_pages_fetching: 5,
-    hs_game_inserter: 1,
+    leaderboards_pages_fetching: 1,
+    hs_game_inserter: 2,
     official_api_card_updater: 1,
-    deck_deduplicator: Enum.max([1, max_queue_size - 2]),
+    deck_deduplicator: 1,
     hsreplay_streamer_deck_inserter: 1
   ]
   |> Enum.map(fn {queue, size} -> {queue, Enum.min([size, max_queue_size])} end)
