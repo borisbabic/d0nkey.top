@@ -65,7 +65,7 @@ defmodule BackendWeb.DeckLive do
   def render(assigns = %{deck: _}) do
     ~F"""
       <div>
-        <div class="title is-2">{Deck.name(@deck)} {Deck.format_name(@deck.format)}</div>
+        <div class="title is-2">{Deck.name(@deck)} {Deck.format_name(@deck)}</div>
         <div class="subtitle is-6">
           <span><a :if={ nil != @deck.id} href={card_stats_url(@deck)}>Card Stats (Mulligan)</a> | </span>
           <span><a :if={ nil != @deck.id} href={Decklist.deck_link(@deck, true)}>Archetype Stats</a></span>
