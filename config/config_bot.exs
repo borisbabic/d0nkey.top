@@ -139,7 +139,7 @@ queues =
     gm_stream_live: 1,
     hsreplay_deck_mapper: 1,
     leaderboards_pages_fetching: 1,
-    hs_game_inserter: 2,
+    hs_game_inserter: 3,
     official_api_card_updater: 1,
     deck_deduplicator: 1,
     hsreplay_streamer_deck_inserter: 1
