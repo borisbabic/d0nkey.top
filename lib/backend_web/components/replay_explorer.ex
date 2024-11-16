@@ -4,6 +4,7 @@ defmodule Components.ReplayExplorer do
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Components.ClassStatsModal
+  alias Components.Filter.PlayerHasCoinDropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
@@ -14,6 +15,7 @@ defmodule Components.ReplayExplorer do
   alias Components.ReplaysTable
   alias Surface.Components.Form
   alias Surface.Components.Form.TextInput
+  alias Components.Filter.ArchetypeSelect
 
   prop(default_order_by, :string, default: "latest")
   prop(default_format, :number, default: nil)
@@ -41,12 +43,16 @@ defmodule Components.ReplayExplorer do
   prop(period_filter, :boolean, default: true)
   prop(region_filter, :boolean, default: true)
   prop(filter_context, :atom, default: :public)
+  prop(archetype_filter, :boolean, default: true)
   prop(player_class_filter, :boolean, default: true)
   prop(opponent_class_filter, :boolean, default: true)
   prop(includes_filter, :boolean, default: true)
   prop(excludes_filter, :boolean, default: true)
   prop(class_stats_modal, :boolean, default: true)
+  prop(public_only, :boolean, default: true)
   prop(search_filter, :boolean, default: true)
+  prop(player_coin_filter, :boolean, default: true)
+  prop(card_specific_filters, :boolean, default: true)
 
   def update(assigns, socket) do
     {
@@ -71,6 +77,14 @@ defmodule Components.ReplayExplorer do
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
           <RegionDropdown id="region_dropdown" :if={@region_filter} filter_context={@filter_context} />
+          <LivePatchDropdown
+            options={[{nil, "Any"}, {"win", "Win"}, {"loss", "Loss"}, {"draw", "Draw"}]}
+            title={"Result"}
+            param={"status"}
+            selected_as_title={true}
+            use_nil_val_as_title={false}
+          />
+          <ArchetypeSelect :if={@archetype_filter} id={"player_deck_archetype"} param={"player_deck_archetype"} selected={params["player_deck_archetype"] || []} title="Archetypes" />
           <ClassDropdown :if={@player_class_filter} id="player_class_dropdown"
             param={"player_class"} />
           <ClassDropdown :if={@opponent_class_filter} id="opponent_class_dropdown"
@@ -80,6 +94,16 @@ defmodule Components.ReplayExplorer do
 
           <PlayableCardSelect :if={@includes_filter} id={"player_deck_includes"} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
           <PlayableCardSelect :if={@excludes_filter} id={"player_deck_excludes"} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+          <PlayerHasCoinDropdown :if={@player_coin_filter} id={"player_has_coin_dropdown"} warning_triangle={false} />
+
+          {#if @card_specific_filters }
+            <PlayableCardSelect id={"player_mulligan"} param={"player_mulligan"} selected={params["player_mulligan"] || []} title="In Mulligan"/>
+            <PlayableCardSelect id={"player_not_mulligan"} param={"player_not_mulligan"} selected={params["player_not_mulligan"] || []} title="Not In Mulligan"/>
+            <PlayableCardSelect id={"player_drawn"} param={"player_drawn"} selected={params["player_drawn"] || []} title="Drawn"/>
+            <PlayableCardSelect id={"player_not_drawn"} param={"player_not_drawn"} selected={params["player_not_drawn"] || []} title="Not Drawn"/>
+            <PlayableCardSelect id={"player_kept"} param={"player_kept"} selected={params["player_kept"] || []} title="Kept"/>
+            <PlayableCardSelect id={"player_not_kept"} param={"player_not_kept"} selected={params["player_not_kept"] || []} title="Not Kept"/>
+          {/if}
           <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
           <Form :if={@search_filter} for={%{}} as={:search} change="change" submit="change">
             <TextInput class={"input"} opts={placeholder: "Search opponent"}/>
@@ -154,9 +178,19 @@ defmodule Components.ReplayExplorer do
       "opponent_class",
       "format",
       "offset",
+      "status",
       "region",
       "player_deck_includes",
       "player_deck_excludes",
+      "player_deck_archetype",
+      "player_mulligan",
+      "player_not_mulligan",
+      "player_drawn",
+      "player_deck_id",
+      "player_not_drawn",
+      "player_kept",
+      "player_not_kept",
+      "player_has_coin",
       "opponent_btag_like"
     ])
     |> DecksExplorer.parse_int([

@@ -22,6 +22,7 @@ defmodule Components.Filter.DropdownBase do
       prop(selected_params, :any, from_context: {@context_base, :selected_params})
       prop(selected_as_title, :boolean, default: true)
       prop(selected_as_title_prefix, :string, default: "")
+      prop(use_nil_val_as_title, :boolean, default: true)
 
       prop(current_val, :any, required: false)
       prop(normalizer, :fun, required: false, default: &Util.id/1)
@@ -86,6 +87,7 @@ defmodule Components.Filter.DropdownBase do
               title: title,
               options: options,
               normalizer: normalizer,
+              use_nil_val_as_title: use_nil,
               selected_as_title_prefix: title_prefix
             },
             current
@@ -93,7 +95,7 @@ defmodule Components.Filter.DropdownBase do
         Enum.find_value(options, title, fn opt ->
           val = value(opt)
 
-          if current?(val, current, normalizer) do
+          if (use_nil or val != nil) and current?(val, current, normalizer) do
             prefix = if val, do: title_prefix
             Components.Helper.concat(prefix, display(opt))
           end

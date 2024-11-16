@@ -208,6 +208,7 @@ defmodule BackendWeb.Router do
     live("/decks", DecksLive)
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)
+    live("/replays", ReplaysLive)
 
     live("/archetype/:archetype", ArchetypeLive)
 
