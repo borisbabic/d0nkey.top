@@ -46,4 +46,13 @@ defmodule Hearthstone.DeckTracker.Period do
   end
 
   def to_option(%{slug: slug, display: display}), do: {slug, display}
+
+  def use_period_start?(%{type: t, period_start: %NaiveDateTime{}})
+      when t in ["patch", "release", "all"],
+      do: true
+
+  def use_period_start?(_), do: false
+
+  def use_hours_ago?(%{type: t, hours_ago: ha}) when t in ["rolling"] and is_integer(ha), do: true
+  def use_hours_ago?(_), do: false
 end

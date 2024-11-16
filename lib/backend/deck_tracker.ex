@@ -2009,6 +2009,8 @@ defmodule Hearthstone.DeckTracker do
 
     default =
       with false <- "past_week" in aggregated and "past_week",
+           nil <- latest_with_start(periods),
+           nil <- longest_rolling(periods),
            nil <- Enum.find_value(periods, & &1.slug) do
         "past_week"
       end
@@ -2026,6 +2028,25 @@ defmodule Hearthstone.DeckTracker do
         false
     end)
   end
+
+  @spec latest_with_start([Period.t()]) :: (slug :: String.t()) | nil
+  defp latest_with_start(periods) do
+    periods
+    |> Enum.filter(&Period.use_period_start?/1)
+    |> Enum.sort_by(& &1.period_start, {:desc, NaiveDateTime})
+    |> slug_of_first()
+  end
+
+  @spec longest_rolling([Period.t()]) :: (slug :: String.t()) | nil
+  defp longest_rolling(periods) do
+    periods
+    |> Enum.filter(&Period.use_hours_ago?/1)
+    |> Enum.sort_by(& &1.hours_ago, :desc)
+    |> slug_of_first()
+  end
+
+  defp slug_of_first([%{slug: slug} | _]), do: slug
+  defp slug_of_first(_), do: nil
 
   use Torch.Pagination,
     repo: Backend.Repo,
