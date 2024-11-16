@@ -113,7 +113,8 @@ defmodule BackendWeb.StreamingView do
       create_format_dropdown(conn),
       create_class_dropdown(conn),
       # create_expansion_dropdown(conn, "badlands", "Badlands Cards", "Includes Badlands Cards"),
-      create_expansion_dropdown(conn, "perils", "PiP Cards", "Includes PiP Cards"),
+      # create_expansion_dropdown(conn, "perils", "PiP Cards", "Includes PiP Cards"),
+      create_expansion_dropdown(conn, "gdb", "GDB Cards", "Includes GDB Cards"),
       create_last_played_dropdown(conn)
       # keep below last :shrug:
       # create_show_archetypes_dropdown(conn)
