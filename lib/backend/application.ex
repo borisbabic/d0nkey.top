@@ -20,7 +20,7 @@ defmodule Backend.Application do
         # Starts a worker by calling: Backend.Worker.start_link(arg)
         # {Backend.Worker, arg},
         {Oban, oban_config()},
-        Backend.PostgrexPubsubListener,
+        # Backend.PostgrexPubsubListener,
         %{
           # can  multiserver
           id: Hearthstone.DeckTracker.GameInsertBatcher,
