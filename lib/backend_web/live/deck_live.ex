@@ -66,9 +66,11 @@ defmodule BackendWeb.DeckLive do
     ~F"""
       <div>
         <div class="title is-2">{Deck.name(@deck)} {Deck.format_name(@deck)}</div>
-        <div class="subtitle is-6">
-          <span><a :if={ nil != @deck.id} href={card_stats_url(@deck)}>Card Stats (Mulligan)</a> | </span>
-          <span><a :if={ nil != @deck.id} href={Decklist.deck_link(@deck, true)}>Archetype Stats</a></span>
+        <div class="subtitle is-6" :if={match?(%{id: id} when is_integer(id), @deck)}>
+          <span><a href={card_stats_url(@deck)}>Card Stats (Mulligan)</a> | </span>
+          <span><a href={Decklist.deck_link(@deck, true)}>Archetype Stats</a> | </span>
+          <span><a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "player_deck_id" => @deck.id}, @deck_stats_params)}"}>Replays</a> </span>
+          <span :if={Deck.archetype(@deck)}> | <a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "archetype" => Deck.archetype(@deck)}, @deck_stats_params)}"}>Archetype Replays</a> </span>
         </div>
         <FunctionComponents.Ads.below_title />
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">

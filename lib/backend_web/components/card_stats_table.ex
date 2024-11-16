@@ -349,6 +349,7 @@ defmodule Components.CardStatsTable do
       "player_not_drawn",
       "player_kept",
       "player_not_kept",
+      "archetype",
       "sort_by",
       "sort_direction"
     ])
