@@ -105,9 +105,23 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       greybough?(card_info) ->
         :"Greybough Druid"
 
+      bad?(card_info) ->
+        :"Bad Druid"
+
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp bad?(card_info) do
+    min_count?(card_info, 4, [
+      "Ysera",
+      "Cenarius",
+      "Ancient of Lore",
+      "Druid of the Claw",
+      "Thickhide Kodo",
+      "Feral Rage"
+    ])
   end
 
   defp concierge?(card_info) do
@@ -290,6 +304,12 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       jade_golem?(card_info) ->
         :"Jade Druid"
+
+      "Star Grazer" in card_info.card_names ->
+        :"Star Grazer Druid"
+
+      bad?(card_info) ->
+        :"Bad Druid"
 
       true ->
         fallbacks(card_info, class_name)

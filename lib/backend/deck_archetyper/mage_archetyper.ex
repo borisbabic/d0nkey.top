@@ -45,9 +45,22 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
 
+      bad?(card_info) ->
+        :"Bad Mage"
+
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp bad?(card_info) do
+    min_count?(card_info, 4, [
+      "Firelands Portal",
+      "Fireball",
+      "Kobold Geomancer",
+      "Malygos the Spellweaver",
+      "Arcanologist"
+    ])
   end
 
   defp orb_bsm?(card_info) do

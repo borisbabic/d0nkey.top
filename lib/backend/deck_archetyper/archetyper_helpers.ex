@@ -136,6 +136,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       starship?(ci) ->
         String.to_atom("Starship #{class_name}")
 
+      "Hydration Station" in ci.card_names ->
+        :"Hydration Druid"
+
       min_secret_count?(ci, 4) ->
         String.to_atom("Secret #{class_name}")
 
@@ -170,7 +173,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         "Gorloc Ravager"
       ])
 
-  def starship?(ci, min \\ 2) do
+  def starship?(ci, min \\ 4) do
     min_keyword_count?(ci, min, "starship")
   end
 
