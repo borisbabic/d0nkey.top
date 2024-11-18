@@ -79,7 +79,8 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Nightshade Tea",
       "Hot Coals",
       "Trogg Exile",
-      "Sauna Regular"
+      "Sauna Regular",
+      "Trusty Fishing Rod"
     ])
   end
 
@@ -184,6 +185,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       techw?(card_info) ->
         :"TechW Priest"
+
+      "Nazmani Bloodweaver" in card_info.card_names ->
+        :"Nazmani Priest"
 
       true ->
         fallbacks(card_info, class_name)

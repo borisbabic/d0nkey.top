@@ -93,7 +93,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
   defp rainbow?(card_info) do
     rainbow_cards?(card_info, 1) and
-      spell_school_count(card_info) >= 4
+      spell_school_count(card_info) >= 3
   end
 
   defp rainbow_cards?(card_info, min_count) do
@@ -110,7 +110,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   end
 
   defp incindius?(card_info) do
-    min_count?(card_info, 3, ["Incindius", "Shudderblock", "Gaslight Gatekeeper"])
+    min_count?(card_info, 3, ["Incindius", "Shudderblock", "Gaslight Gatekeeper", "Triangulate"])
   end
 
   defp wish_shaman?(card_info) do
@@ -138,7 +138,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   end
 
   defp spell_damage_shaman?(ci) do
-    min_count?(ci, 3, ["Novice Zapper", "Spirit Claws" | neutral_spell_damage()])
+    min_count?(ci, 3, ["Novice Zapper", "Spirit Claws", "Lightning Bolt" | neutral_spell_damage()])
   end
 
   defp nature_shaman?(ci),

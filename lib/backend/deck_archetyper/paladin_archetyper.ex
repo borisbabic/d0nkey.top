@@ -67,6 +67,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Pipsi Painthoof" in card_info.card_names ->
         :"Pipsi Paladin"
 
+      "Sunsapper Lynessa" in card_info.card_names ->
+        :"Lynessa Paladin"
+
       true ->
         fallbacks(card_info, "Paladin")
     end
@@ -228,11 +231,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Mecha'thun" in card_info.card_names ->
         String.to_atom("Mecha'thun #{class_name}")
 
-      libram?(card_info) ->
-        :"Libram Paladin"
-
       wild_shanty_paladin?(card_info) ->
         :"Sea Shanty Paladin"
+
+      libram?(card_info) ->
+        :"Libram Paladin"
 
       "Painter's Virtue" in card_info.card_names ->
         :"Handbuff Paladin"

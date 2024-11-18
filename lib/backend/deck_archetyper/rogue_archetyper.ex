@@ -96,8 +96,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       shaffar?(card_info) ->
         :"Shaffar Rogue"
 
-        "Quasar" in card_info.card_names
+      "Quasar" in card_info.card_names ->
         :"Quasar Rogue"
+
+      "Photographer Fizzle" in card_info.card_names ->
+        :"Fizzle Rogue"
 
       true ->
         fallbacks(card_info, "Rogue")

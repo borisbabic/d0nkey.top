@@ -72,8 +72,18 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Stitched Giant" in card_info.card_names ->
         :"Corpse DK"
 
+      fake_frost?(card_info) ->
+        :"\"Frost\" DK"
+
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
+    end
+  end
+
+  defp fake_frost?(ci) do
+    case Deck.rune_cost(ci.cards) do
+      %{frost: 2} -> true
+      _ -> false
     end
   end
 

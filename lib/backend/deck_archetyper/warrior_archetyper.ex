@@ -77,6 +77,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       warrior_aoe?(card_info) ->
         :"Control Warrior"
 
+      type_count(card_info, "Pirate") >= 5 ->
+        :"Pirate Warrior"
+
       true ->
         fallbacks(card_info, "Warrior")
     end

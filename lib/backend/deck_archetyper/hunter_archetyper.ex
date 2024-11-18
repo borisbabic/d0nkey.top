@@ -45,9 +45,23 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       discover?(card_info) ->
         :"Discover Hunter"
 
+      bad?(card_info) ->
+        :"Bad Hunter"
+
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp bad?(ci) do
+    min_count?(ci, 5, [
+      "Dire Wolf Alpha",
+      "Lifedrinker",
+      "Siamat",
+      "Savannah Highmane",
+      "Ball of Spiders",
+      "Dragonbane"
+    ])
   end
 
   defp discover?(ci) do
