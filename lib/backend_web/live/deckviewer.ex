@@ -5,7 +5,6 @@ defmodule BackendWeb.DeckviewerLive do
   alias Hearthstone.DeckcodeExtractor
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
-  alias Backend.HearthstoneJson
   alias Backend.HSDeckViewer
   alias Backend.Yaytears
   alias Surface.Components.Form
@@ -18,12 +17,9 @@ defmodule BackendWeb.DeckviewerLive do
   data(rotation, :boolean)
   data(user, :any)
   data(title, :string)
-  require WaitForIt
 
   def mount(_params, session, socket) do
-    case WaitForIt.wait(HearthstoneJson.up?(), frequency: 500, timeout: 20_000) do
-      _ -> {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
-    end
+    {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
   end
 
   def render(assigns = %{deckcodes: codes, compare_decks: cd}) do
