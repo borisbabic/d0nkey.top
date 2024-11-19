@@ -62,7 +62,8 @@ defmodule Backend.MixProject do
       {:gun, "~> 2.0", override: true},
       {:typed_struct, "~> 0.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:varint, "~> 1.0"},
+      # decoding decks stops working with larger (or at least with 1.4)
+      {:varint, "~> 1.0.1"},
       {:timex, "~> 3.5"},
       {:floki, ">= 0.27.0"},
       {:tesla, "~> 1.4"},
