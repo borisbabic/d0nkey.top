@@ -81,7 +81,6 @@ defmodule Backend.MixProject do
       {:absinthe_relay, "~> 1.5"},
       {:surface, "~> 0.9"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:wait_for_it, "~>1.1"},
       {:oban, "~> 2.5"},
       {:postgrex_pubsub, github: "borisbabic/postgrex_pubsub"},
       {:phoenix_meta_tags, ">= 0.1.8"},
