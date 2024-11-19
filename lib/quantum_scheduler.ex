@@ -1,5 +1,5 @@
 defmodule QuantumScheduler do
   @moduledoc false
-  use Quantum.Scheduler,
+  use Quantum,
     otp_app: :backend
 end
