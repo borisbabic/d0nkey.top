@@ -78,6 +78,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       quasar?(card_info) ->
         :"Quasar Rogue"
 
+      weapon?(card_info) ->
+        :"Weapon Rogue"
+
       combo?(card_info) ->
         :"Combo Rogue"
 
@@ -89,9 +92,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       miracle_rogue?(card_info) ->
         :"Miracle Rogue"
-
-      weapon?(card_info) ->
-        :"Weapon Rogue"
 
       shaffar?(card_info) ->
         :"Shaffar Rogue"

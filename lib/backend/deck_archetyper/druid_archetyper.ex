@@ -99,6 +99,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       starship?(card_info) ->
         :"Starship Druid"
 
+      "Hydration Station" in ci.card_names ->
+        :"Hydration Druid"
+
       ramp_druid?(card_info) ->
         :"Ramp Druid"
 
