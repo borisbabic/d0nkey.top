@@ -71,7 +71,7 @@ defmodule Backend.MixProject do
       {:guardian, "~> 2.0"},
       {:ueberauth_bnet, github: "borisbabic/ueberauth_bnet", branch: "region_fallbacks"},
       # {:ueberauth_bnet, path: "/home/boris/projects/ueberauth_bnet"},
-      {:ueberauth_twitch, "~> 0.1.0"},
+      {:ueberauth_twitch, "~> 0.2.0"},
       # {:ueberauth_patreon, "~> 1.0"},
       {:ueberauth_patreon, github: "borisbabic/ueberauth_patreon"},
       # {:ueberauth_patreon, path: "/home/boris/projects/ueberauth_patreon"}3
@@ -90,7 +90,7 @@ defmodule Backend.MixProject do
       {:bcrypt_elixir, "~> 3.2.0"},
       {:table_rex, "~> 4.0"},
       {:contex, "~> 0.4"},
-      {:tmi, "~> 0.3.0"},
+      {:tmi, "~> 0.7"},
       {:etop, "~> 0.7"},
       {:solid, "~> 0.10"},
       {:ecto_psql_extras, "~> 0.6"},
