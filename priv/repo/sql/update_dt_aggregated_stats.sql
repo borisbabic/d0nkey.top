@@ -388,7 +388,7 @@ FROM
     AND COALESCE(cs.archetype, 'any') = COALESCE(ds.archetype, 'any');
 
 ALTER INDEX IF EXISTS agg_stats_uniq_index RENAME TO old_agg_stats_uniq_index;
-CREATE UNIQUE INDEX agg_stats_uniq_index ON temp_dt_aggregated_stats(rank, period, format, COALESCE(deck_id, -1), COALESCE(opponent_class, 'any'), COALESCE(archetype, 'any'));
+CREATE UNIQUE INDEX agg_stats_uniq_index ON temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format);
 ALTER MATERIALIZED VIEW IF EXISTS dt_aggregated_stats RENAME TO old_dt_aggregated_stats;
 ALTER MATERIALIZED VIEW temp_dt_aggregated_stats RENAME TO dt_aggregated_stats;
 DROP MATERIALIZED VIEW IF EXISTS old_dt_aggregated_stats;
