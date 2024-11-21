@@ -90,6 +90,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       dorian_rogue?(card_info) ->
         :"Dorian Rogue"
 
+      starship?(card_info) ->
+        :"Starship Rogue"
+
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
 
