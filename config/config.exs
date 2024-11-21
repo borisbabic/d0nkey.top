@@ -97,6 +97,8 @@ config :backend,
   twitch_bot_config: [
     user: "d0nkeytop",
     pass: System.get_env("TWITCH_BOT_OAUTH"),
+    mod_channels: [],
+    debug: false,
     bot: TwitchBot.Handler
   ],
   gm_stream_twitter_info: [

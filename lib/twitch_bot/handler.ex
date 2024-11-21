@@ -1,6 +1,6 @@
 defmodule TwitchBot.Handler do
-  import TwitchBot.Util
   use TMI
+  import TwitchBot.Util
 
   @type message_info :: %{
           message: String.t(),
@@ -8,7 +8,7 @@ defmodule TwitchBot.Handler do
           chat: String.t()
         }
   @impl TMI.Handler
-  def handle_message(message, sender, chat) do
+  def handle_message(message, sender, chat, tags \\ :no_tags) do
     config = chat |> parse_chat() |> Backend.TwitchBot.commands()
 
     message_info = %{
@@ -19,6 +19,6 @@ defmodule TwitchBot.Handler do
 
     matching = TwitchBot.MessageMatcher.match(config, message_info)
     responses = TwitchBot.MessageCreator.create_messages(matching, message_info)
-    Enum.each(responses, &TMI.message(chat, &1))
+    for {:ok, message} <- responses, do: say(chat, message)
   end
 end
