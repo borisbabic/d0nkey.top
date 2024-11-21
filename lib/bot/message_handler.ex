@@ -19,6 +19,11 @@ defmodule Bot.MessageHandler do
     `!dhelp` - prints help for all commands (avoid using this),
     `!dhelp $command` ex `!dhelp !ldb` or `!dhelp ldb` - prints help for the specific command
     """,
+    "blizz" => """
+    ## `blizz` (Blizz o'clock)
+    `!blizz`
+    Returns when the next blizz o clock is occuring, using discord timestamps
+    """,
     "ldb" => """
     ## `ldb` (Leaderboards command)
     `!ldb [$battletags] [$filters]`
@@ -193,6 +198,9 @@ defmodule Bot.MessageHandler do
       <<"!matchup", _::binary>> ->
         Bot.MatchupMessageHandler.handle_matchup(msg)
 
+      <<"!blizz", _::binary>> ->
+        handle_blizz_o_clock(msg)
+
       <<"!battlefy", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings(msg)
 
@@ -263,6 +271,12 @@ defmodule Bot.MessageHandler do
         ]
         |> Enum.find(:ignore, &(&1 != :ignore))
     end
+  end
+
+  def handle_blizz_o_clock(msg) do
+    timestamp = Blizzard.next_blizz_o_clock() |> Timex.to_unix()
+
+    reply(msg, "The next blizz o clock is <t:#{timestamp}:R>, ie <t:#{timestamp}:F>")
   end
 
   @spec log_message(Nostrum.Struct.Message.t()) :: any()
