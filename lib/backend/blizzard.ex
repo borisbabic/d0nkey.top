@@ -840,4 +840,28 @@ defmodule Backend.Blizzard do
   @spec regions_with_timezone :: [{leaderboard(), String.t()}]
   def regions_with_timezone(),
     do: [{:US, "US/Pacific"}, {:AP, "Asia/Seoul"}, {:EU, "CET"}, {:CN, "Asia/Shanghai"}]
+
+  def next_blizz_o_clock() do
+    timezone = regions_with_timezone() |> Keyword.get(:US)
+    now = DateTime.now!(timezone)
+    blizz_o_clock_today = blizz_o_clock(now)
+
+    if DateTime.compare(blizz_o_clock_today, now) == :lt do
+      now |> Timex.shift(days: 1) |> blizz_o_clock()
+    else
+      blizz_o_clock_today
+    end
+  end
+
+  @doc """
+  Returns blizz o clock for the date
+  Timezones in DateTimes will be ignored and all dates will be assumed in pacific
+  """
+  @spec blizz_o_clock(Date.t() | DateTime.t() | NaiveDateTime.t()) :: DateTime.t()
+  def blizz_o_clock(%{day: day, year: year, month: month}) do
+    timezone = regions_with_timezone() |> Keyword.get(:US)
+    date = Date.new!(year, month, day)
+    time = ~T[10:00:00]
+    DateTime.new!(date, time, timezone)
+  end
 end
