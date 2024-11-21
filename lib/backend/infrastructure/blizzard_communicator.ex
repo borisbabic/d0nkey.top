@@ -33,15 +33,27 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
           image_url: String.t(),
           reveal_time: NaiveDateTime.t()
         }
-  def reveal_schedule() do
-    with {:ok, %{body: body}} <- HTTPoison.get("https://hearthstone.blizzard.com/en-us/cards") do
-      parse_reveal_schedule(body)
+  def reveal_schedule(mode \\ :constructed)
+
+  def reveal_schedule(mode) do
+    with {:ok, url} <- reveal_url(mode),
+         {:ok, %{body: body}} <- HTTPoison.get(url) do
+      parse_reveal_schedule(body, mode)
     end
   end
 
-  def parse_reveal_schedule(body) do
+  def reveal_url(:constructed), do: {:ok, "https://hearthstone.blizzard.com/en-us/cards"}
+  def reveal_url(:bgs), do: {:ok, "https://hearthstone.blizzard.com/en-us/battlegrounds"}
+  def reveal_url(_), do: {:error, :unsupported_mode_for_reveal_url}
+
+  defp mount_id(:constructed), do: {:ok, "#cardGalleryMount"}
+  defp mount_id(:bgs), do: {:ok, "#battlegroundsMount"}
+  defp mount_id(_), do: {:error, :unsupported_mode_for_mount_id}
+
+  def parse_reveal_schedule(body, mode \\ :constructed) do
     with {:ok, html} <- Floki.parse_document(body),
-         [hype] <- Floki.find(html, "#cardGalleryMount") |> Floki.attribute("hypemachine"),
+         {:ok, mount_id} <- mount_id(mode),
+         [hype] <- Floki.find(html, mount_id) |> Floki.attribute("hypemachine"),
          {:ok, %{"cards" => cards}} <- Jason.decode(hype) do
       for %{"hype_url" => url, "image_url" => image_url, "reveal_time" => time_raw, "id" => id} <-
             cards,

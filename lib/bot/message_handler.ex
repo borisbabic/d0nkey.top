@@ -60,6 +60,19 @@ defmodule Bot.MessageHandler do
     `!all-reveals `
     Like !reveals, but shows all the reveals, discord limits embeds so format:embed won't work.
     """,
+    "bgreveals" => """
+    ## `bgreveals` (Battlegrounds Reveals)
+    `!bgreveals [$options]`
+    `!bgreveals format:embed`
+    Get the next BG reveals, it has two formats `embed` and `text` (default).
+    Checks the period from 1h ago to 24h ahead.
+    Will look further in the future in order to show the minimum (3)
+    """,
+    "all-bgreveals" => """
+    ## `all-bgreveals` (All BG Reveals)
+    `!all-bgreveals `
+    Like !bgreveals, but shows all the BG reveals, discord limits embeds so format:embed won't work.
+    """,
     "cards" => """
     ## `cards` (Latest HS Cards)
     `!cards [$filters]`
@@ -155,6 +168,15 @@ defmodule Bot.MessageHandler do
 
       <<"!ldb", _::binary>> ->
         Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
+
+      <<"!bgreveals-all", _::binary>> ->
+        Bot.RevealMessageHandler.handle_all_reveals(msg, :bgs)
+
+      <<"!bgreveals", _::binary>> ->
+        Bot.RevealMessageHandler.handle_reveals(msg, :bgs)
+
+      <<"!all-bgreveals", _::binary>> ->
+        Bot.RevealMessageHandler.handle_all_reveals(msg, :bgs)
 
       <<"!reveals-all", _::binary>> ->
         Bot.RevealMessageHandler.handle_all_reveals(msg)
