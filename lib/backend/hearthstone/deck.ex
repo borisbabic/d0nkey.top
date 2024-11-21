@@ -333,6 +333,8 @@ defmodule Backend.Hearthstone.Deck do
 
   defp add_name_modifiers?(_, _), do: true
 
+  defp add_xl("XL " <> _ = name, _), do: name
+
   defp add_xl(name, %{cards: cards}) when is_list(cards) do
     if Enum.count(cards) == 40 do
       "XL #{name}"
