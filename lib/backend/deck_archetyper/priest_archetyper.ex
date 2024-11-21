@@ -150,7 +150,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
 
-      min_count?(card_info, 2, ["Darkbishop Benedictus", "E.T.C., Band Manager"]) ->
+      min_count?(card_info, 2, ["Darkbishop Benedictus", "Prince Renathal"]) ->
         :"XL Shadow Priest"
 
       "Darkbishop Benedictus" in card_info.card_names ->
