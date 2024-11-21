@@ -160,6 +160,7 @@ defmodule Backend.Application do
   def add_twitch_bot(prev) do
     case Application.fetch_env(:backend, :enable_twitch_bot) do
       {:ok, true} ->
+        IO.inspect("TWITCH BOT ENABLED!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         config = twitch_bot_config()
         Logger.debug("Twitch bot enabled")
         prev ++ [{TMI.Supervisor, config}]
@@ -173,7 +174,9 @@ defmodule Backend.Application do
   def twitch_bot_config() do
     with {:ok, config} <- Application.fetch_env(:backend, :twitch_bot_config),
          {{:ok, chats}, _} <- {Application.fetch_env(:backend, :twitch_bot_chats), config} do
-      Keyword.put(config, :chats, chats)
+      config
+      |> Keyword.put(:channels, chats)
+      |> Keyword.put(:mod_channels, chats)
     else
       {:error, config} when is_list(config) -> config
       _ -> []
