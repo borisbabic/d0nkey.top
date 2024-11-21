@@ -5,18 +5,18 @@ defmodule Bot.RevealMessageHandler do
   alias Nostrum.Struct.Embed
   alias Nostrum.Api
 
-  def handle_reveals(msg) do
+  def handle_reveals(msg, mode \\ :constructed) do
     response =
-      reveals()
+      reveals(mode)
       |> filter_current(3)
       |> create_response(msg)
 
     Api.create_message(msg.channel_id, response)
   end
 
-  def handle_all_reveals(msg) do
+  def handle_all_reveals(msg, mode \\ :constructed) do
     response =
-      reveals()
+      reveals(mode)
       |> create_response(msg)
 
     Api.create_message(msg, response)
@@ -73,5 +73,5 @@ defmodule Bot.RevealMessageHandler do
     |> Embed.put_image(image_url)
   end
 
-  def reveals(), do: BlizzApi.reveal_schedule()
+  def reveals(mode), do: BlizzApi.reveal_schedule(mode)
 end
