@@ -77,11 +77,50 @@
   });
 </script>
 <script>
-  window['nitroAds'].createAd('nitropay-sticky-side-rail-mobile', {
+  window['nitroAds'].createAd('nitropay-sticky-side-rail-mobile-short', {
     "refreshTime": 30,
     "format": "rail",
     "rail": "left",
-    "railOffsetTop": 0,
+    "railOffsetTop": 40,
+    "railOffsetBottom": 0,
+    "railCollisionWhitelist": [
+      "*"
+    ],
+    "sizes": [
+      [
+        "300",
+        "250"
+      ],
+      [
+        "320",
+        "50"
+      ],
+      [
+        "320",
+        "100"
+      ],
+      [
+        "320",
+        "480"
+      ]
+    ],
+    "mediaQuery": "(max-width: 767px) and (max-height: 648px)",
+    "demo": <%= nitropay_demo?() %>,
+    "report": {
+      "enabled": true,
+      "icon": true,
+      "wording": "Report Ad",
+      "position": "bottom-right"
+    }
+  });
+</script>
+
+<script>
+  window['nitroAds'].createAd('nitropay-sticky-side-rail-mobile-tall', {
+    "refreshTime": 30,
+    "format": "rail",
+    "rail": "left",
+    "railOffsetTop": 40,
     "railOffsetBottom": 0,
     "railCollisionWhitelist": [
       "*"
@@ -112,7 +151,7 @@
         "480"
       ]
     ],
-    "mediaQuery": "(max-width: 767px)",
+    "mediaQuery": "(max-width: 767px) and (min-height: 649px)",
     "demo": <%= nitropay_demo?() %>,
     "report": {
       "enabled": true,
