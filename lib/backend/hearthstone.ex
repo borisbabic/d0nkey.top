@@ -783,6 +783,11 @@ defmodule Backend.Hearthstone do
     end
   end
 
+  @spec get_card(integer) :: card() | nil
+  def get_deckcode_card(dbf_id) do
+    CardBag.deckcode_copy_id(dbf_id) |> get_card()
+  end
+
   @spec get_or_create_lineup(String.t() | integer(), String.t(), String.t(), [String.t()]) ::
           {:ok, Lineup.t()} | {:error, any()}
   def get_or_create_lineup(id, s, n, d) when is_integer(id),

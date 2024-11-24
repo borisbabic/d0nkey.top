@@ -78,15 +78,16 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
     ])
   end
 
-  def rainbow_mage?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Discovery of Magic",
-        "Inquisitive Creation",
-        "Wisdom of Norgannon",
-        "Sif",
-        "Elemental Inspiration"
-      ])
+  @non_sif_rainbow [
+    "Discovery of Magic",
+    "Inquisitive Creation",
+    "Wisdom of Norgannon",
+    "Elemental Inspiration"
+  ]
+  def rainbow_mage?(ci) do
+    min_count?(ci, 3, @non_sif_rainbow) or
+      ("Sif" in ci.card_names and min_count?(ci, 1, @non_sif_rainbow))
+  end
 
   defp big_spell_mage?(ci) do
     min_count?(ci, 2, ["Surfalopod", "King Tide", "Portalmancer Skyla"])

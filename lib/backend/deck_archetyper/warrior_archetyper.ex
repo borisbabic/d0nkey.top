@@ -80,6 +80,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       type_count(card_info, "Pirate") >= 5 ->
         :"Pirate Warrior"
 
+      "Photographer Fizzle" in card_info.card_names ->
+        :"Fizzle Warrior"
+
       true ->
         fallbacks(card_info, "Warrior")
     end
@@ -218,9 +221,16 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       wild_dmh_warrior?(card_info) ->
         :"DMH Warrior"
 
+      raider?(card_info) ->
+        :"Raider Warrior"
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp raider?(card_info) do
+    min_count?(card_info, 2, ["Bladed Gauntlet", "Bloodsail Raider"])
   end
 
   defp wild_handbuff_warrior?(card_info) do

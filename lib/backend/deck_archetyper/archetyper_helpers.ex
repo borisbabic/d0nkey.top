@@ -22,7 +22,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def full_cards(%{cards: cards} = deck) do
     {full_cards, card_names} =
       Enum.map(cards, fn c ->
-        with card = %{name: name} <- Backend.Hearthstone.get_card(c) do
+        with card = %{name: name} <- Backend.Hearthstone.get_deckcode_card(c) do
           {card, name}
         end
       end)
@@ -139,9 +139,22 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       min_secret_count?(ci, 4) ->
         String.to_atom("Secret #{class_name}")
 
+      wild_pirate_fallback?(ci) ->
+        String.to_atom("Pirate #{class_name}")
+
       true ->
         minion_type_fallback(ci, class_name, opts)
     end
+  end
+
+  def wild_pirate_fallback?(ci, min_count \\ 4) do
+    min_count?(ci, min_count, [
+      "Patches the Pirate",
+      "Treasure Distributor",
+      "Parachute Brigand",
+      "Ship's Cannon",
+      "Mistake"
+    ])
   end
 
   def giants?(ci, min_count \\ 3) do

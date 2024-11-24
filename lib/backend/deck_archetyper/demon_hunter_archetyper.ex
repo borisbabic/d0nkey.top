@@ -87,7 +87,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Voronei Recruiter",
       "Emergency Meeting",
       "Headhunt",
-      "Dridra, Rebel Captain"
+      "Dirdra, Rebel Captain"
     ])
   end
 

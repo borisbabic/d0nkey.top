@@ -87,17 +87,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       fatigue_warlock?(card_info) ->
         :"Insanity Warlock"
 
-      "Kil'jaeden" in card_info.card_names ->
-        :"Kil'jaeden Warlock"
+      starship?(card_info) ->
+        :"Starship Warlock"
 
-      "Wheel of DEATH!!!" in card_info.card_names ->
-        :"Wheel Warlock"
+      demon?(card_info) ->
+        :"Demon Warlock"
 
-      "Kil'jaeden" in card_info.etc_sideboard_names ->
-        :"Kil'jaeden Warlock"
-
-      "Wheel of DEATH!!!" in card_info.etc_sideboard_names ->
-        :"Wheel Warlock"
+      deckless?(card_info) ->
+        :"Deckless Warlock"
 
       leeroy_warlock?(card_info) ->
         :"Leeroooooy Warlock"
@@ -114,6 +111,20 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp demon?(ci) do
+    min_count?(ci, 3, [
+      "Kil'jaeden",
+      "Demonic Dynamics",
+      "Abduction Ray",
+      "Archimonde",
+      "Foreboding Flame"
+    ])
+  end
+
+  defp deckless?(ci) do
+    min_count?(ci, 1, ["Kil'jaeden", "Wheel of DEATH!!!"])
   end
 
   defp deathrattle?(card_info) do
