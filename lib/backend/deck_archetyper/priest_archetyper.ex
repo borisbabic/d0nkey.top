@@ -49,9 +49,17 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       murloc?(card_info) ->
         :"Murloc Priest"
 
+      armor?(card_info) ->
+        :"Armor Priest"
+
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp armor?(ci) do
+    "Arkonite Defense Crystal" in ci.card_names and
+      min_count?(ci, 2, ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"])
   end
 
   defp hitchhiker?(ci) do
@@ -122,7 +130,15 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   end
 
   defp control_priest?(ci) do
-    min_count?(ci, 2, ["Harmonic Pop", "Repackage", "Lightbomb", "Shadow Word: Ruin", "Holy Nova"])
+    min_count?(ci, 2, [
+      "Harmonic Pop",
+      "Repackage",
+      "Lightbomb",
+      "Shadow Word: Ruin",
+      "Holy Nova",
+      "Shadow Word: Steal",
+      "Fight Over Me"
+    ])
   end
 
   def wild(card_info) do

@@ -33,17 +33,20 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Hunter"
 
-      egg_hunter?(card_info) ->
-        :"Egg Hunter"
-
       mystery_egg_hunter?(card_info) ->
         :"Mystery Egg Hunter"
 
       starship?(card_info) ->
         :"Starship Hunter"
 
+      egg_hunter?(card_info) ->
+        :"Egg Hunter"
+
       discover?(card_info) ->
         :"Discover Hunter"
+
+      "Floppy Hydra" in card_info.card_names ->
+        :"Floppy Hunter"
 
       bad?(card_info) ->
         :"Bad Hunter"
@@ -88,6 +91,8 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Char",
       "Cup o' Muscle",
       "Ranger Gilly",
+      "Reserved Spot",
+      "Warsong Grunt",
       "Overlord Runthak"
     ])
   end
@@ -110,12 +115,22 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Saddle Up!",
       "R.C. Rampage",
       "Remote Control",
+      "Gorgonzormu",
       "Jungle Gym"
     ])
   end
 
   defp egg_hunter?(ci),
-    do: min_count?(ci, 3, ["Foul Egg", "Nerubian Egg", "Ravenous Kraken", "Yelling Yodeler"])
+    do:
+      min_count?(ci, 3, [
+        "Foul Egg",
+        "Nerubian Egg",
+        "Ravenous Kraken",
+        "Yelling Yodeler",
+        "Extraterrestrial Egg",
+        "Terrible Chef",
+        "Cubicle"
+      ])
 
   defp secret_hunter?(ci),
     do:
@@ -160,7 +175,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
         "Mecha'thun #{class_name}"
 
       "Floppy Hydra" in card_info.card_names ->
-        :"Floppy Hydra Hunter"
+        :"Floppy Hunter"
 
       "Adaptive Amalgam" in card_info.card_names ->
         :"Amalgam Hunter"

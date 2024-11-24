@@ -67,8 +67,8 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Shaman"
 
-      "Wave of Nostalgia" in card_info.card_names ->
-        :"Nostalgia Shaman"
+      swarm?(card_info) ->
+        :"Swarm Shaman"
 
       "Murmur" in card_info.card_names ->
         :"Murmur Shaman"
@@ -76,6 +76,19 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp swarm?(card_info) do
+    min_count?(card_info, 4, [
+      "Wave of Nostalgia",
+      "Backstage Bouncer",
+      "Gorgonzormu",
+      "Carefree Cookie",
+      "Sigil of Skydiving",
+      "Patches the Pilot",
+      "Murloc Growfin",
+      "Pop-Up Book"
+    ])
   end
 
   defp asteroid?(card_info, min_count \\ 3) do
