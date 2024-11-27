@@ -24,14 +24,23 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       buttons?(card_info) && rainbow_runes?(card_info) ->
         :"Buttons Rainbow DK"
 
+      starship?(card_info) and rainbow_runes?(card_info) ->
+        :"Rainbow Starship DK"
+
       rainbow_runes?(card_info) ->
         :"Rainbow DK"
+
+      starship?(card_info) and plague_dk?(card_info) ->
+        :"Starship Plague DK"
 
       plague_dk?(card_info) ->
         :"Plague DK"
 
       excavate_dk?(card_info) ->
         :"Excavate DK"
+
+      starship?(card_info) ->
+        :"Starship DK"
 
       "Grave Strength" in card_info.card_names ->
         :"Aggro DK"
