@@ -46,7 +46,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       attack_dh?(card_info) ->
         :"Attack DH"
 
-      crewmate?(card_info) ->
+      crewmate?(card_info, 2) ->
         :"Among Us DH"
 
       kj?(card_info) ->
