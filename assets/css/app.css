@@ -526,10 +526,10 @@
 #nitropay-sticky-side-rail-mobile-tall-close {
   /* filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%); */
   /* filter: invert(18%) sepia(88%) saturate(6760%) hue-rotate(3deg) brightness(97%) contrast(122%); */
-  transform: scale(1.5);
+  transform: scale(2);
 }
 #nitropay-sticky-side-rail-mobile-short-close {
   /* filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(87deg) brightness(119%) contrast(119%); */
   /* filter: invert(18%) sepia(88%) saturate(6760%) hue-rotate(3deg) brightness(97%) contrast(122%); */
-  transform: scale(1.5);
+  transform: scale(2);
 }
