@@ -242,16 +242,24 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
           "Instrument Tech"
         ])
 
-  defp cycle_rogue?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Fal'dorei Strider",
-        "Triple Sevens",
-        "Everything Must Go!",
-        "Playhouse Giant",
-        "Gear Shift",
-        "Celestial Projectionist"
-      ])
+  @cycle_payoff [
+    "Fal'dorei Strider",
+    "Everything Must Go!",
+    "Playhouse Giant"
+  ]
+  @multi_draw [
+    "Triple Sevens",
+    "Gear Shift",
+    "Gaslight Gatekeeper",
+    "Robocaller",
+    "Ethereal Oracle",
+    "Quick Pick",
+    "Dubious Purchase"
+  ]
+  defp cycle_rogue?(ci) do
+    min_count?(ci, 1, @cycle_payoff) and
+    min_count?(ci, 3, @multi_draw)
+  end
 
   defp pirate_rogue?(ci) do
     min_count?(ci, 2, ["Toy Boat", "Raiding Party", "Treasure Distributor", "Dig for Treasure"]) and
