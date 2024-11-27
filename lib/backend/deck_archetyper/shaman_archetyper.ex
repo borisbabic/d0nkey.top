@@ -19,6 +19,18 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       big?(card_info) ->
         :"Big Shaman"
 
+      incindius?(card_info) ->
+        :"Incindius Shaman"
+
+      elemental_shaman?(card_info) ->
+        :"Elemental Shaman"
+
+      asteroid?(card_info) ->
+        :"Asteroid Shaman"
+
+      swarm?(card_info) ->
+        :"Swarm Shaman"
+
       rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
         :"Rainbow Shaman"
 
@@ -30,15 +42,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       bonk?(card_info) ->
         :"Bonk Shaman"
-
-      elemental_shaman?(card_info) ->
-        :"Elemental Shaman"
-
-      asteroid?(card_info) ->
-        :"Asteroid Shaman"
-
-      incindius?(card_info) ->
-        :"Incindius Shaman"
 
       nature_shaman?(card_info) ->
         :"Nature Shaman"
@@ -67,9 +70,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Shaman"
 
-      swarm?(card_info) ->
-        :"Swarm Shaman"
-
       "Murmur" in card_info.card_names ->
         :"Murmur Shaman"
 
@@ -79,11 +79,12 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   end
 
   defp swarm?(card_info) do
-    min_count?(card_info, 4, [
+    min_count?(card_info, 5, [
       "Wave of Nostalgia",
       "Backstage Bouncer",
       "Gorgonzormu",
       "Carefree Cookie",
+      "Thrall's Gift",
       "Sigil of Skydiving",
       "Patches the Pilot",
       "Murloc Growfin",
