@@ -289,11 +289,23 @@ defmodule Components.DecksExplorer do
     Map.put(params, "min_games", @default_min_games)
   end
 
+  defp ensure_min_games(%{"player_deck_archetype" => _}, params) do
+    agg_min_games(params, 400)
+  end
+
+  defp ensure_min_games(%{"player_class" => pc}, params) when pc != "any" do
+    agg_min_games(params, 200)
+  end
+
   defp ensure_min_games(params) do
+    agg_min_games(params, 100)
+  end
+
+  defp agg_min_games(params, min_deck_count, default_min_games \\ @default_min_games) do
     min =
       case DeckTracker.current_aggregation_meta(params) do
-        {:ok, count} -> AggregationMeta.choose_count(count, 50, @default_min_games)
-        _ -> @default_min_games
+        {:ok, count} -> AggregationMeta.choose_count(count, min_deck_count, default_min_games)
+        _ -> default_min_games
       end
 
     Map.put(params, "min_games", min)
