@@ -61,18 +61,24 @@ defmodule BackendWeb.LeaderboardView do
       create_period_dropdown(
         conn.params["period"],
         conn.params["leaderboard_id"],
+        conn.params["region"],
         history_updater(conn, "period", history)
       )
     ]
   end
 
-  def create_period_dropdown(period, ldb, update_link) do
+  def create_period_dropdown(period, ldb, region, update_link) do
     seasons =
-      create_selectable_seasons(Date.utc_today(), ldb)
-      |> Enum.take(3)
-      |> Enum.map(fn {name, val} ->
-        {name, "season_#{val}"}
-      end)
+      case create_selectable_seasons(ldb, region) do
+        {:ok, selectable_seasons} ->
+          selectable_seasons
+          |> Enum.map(fn {name, val} ->
+            {name, "season_#{val}"}
+          end)
+
+        _ ->
+          []
+      end
 
     options =
       ([
@@ -637,7 +643,7 @@ defmodule BackendWeb.LeaderboardView do
     [
       create_region_dropdown(conn, region),
       create_leaderboard_dropdown(conn, leaderboard_id),
-      create_season_dropdown(conn, season_id, leaderboard_id),
+      create_season_dropdown(conn, season_id, leaderboard_id, region),
       create_show_flags_dropdown(conn, show_flags),
       create_compare_to_dropdown(conn, compare_to)
     ]
@@ -773,16 +779,22 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Leaderboard")}
   end
 
-  def create_season_dropdown(conn, season, ldb) do
+  def create_season_dropdown(conn, season, ldb, region) do
     options =
-      create_selectable_seasons(Date.utc_today(), ldb)
-      |> Enum.map(fn {name, s} ->
-        %{
-          display: name,
-          selected: to_string(s) == to_string(season),
-          link: update_index_link(conn, "seasonId", s, ["offset", "limit"])
-        }
-      end)
+      case create_selectable_seasons(ldb, region) do
+        {:ok, selectable_seasons} ->
+          selectable_seasons
+          |> Enum.map(fn {name, s} ->
+            %{
+              display: name,
+              selected: to_string(s) == to_string(season),
+              link: update_index_link(conn, "seasonId", s, ["offset", "limit"])
+            }
+          end)
+
+        _ ->
+          []
+      end
 
     {options, dropdown_title(options, "Season")}
   end
@@ -915,47 +927,24 @@ defmodule BackendWeb.LeaderboardView do
 
   @doc """
     Creates the list of months that will be shown in the dropdown
-
-    Unless it's the first or last of a month then it shows the current month, then the two previous
-    If it's the first of a month it put's the previous month in first place
-    If it's the last of the month it put's the next month in second place
-    (see examples)
-    ## Example
-    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2020-01-01], "STD")
-    [{:January, 75}, {:December, 74}, {:November, 73}, {:October, 72}, {:September, 71}, {:August, 70}]
-    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2019-12-31], :WLD)
-    [{:January, 75}, {:December, 74}, {:November, 73}, {:October, 72}, {:September, 71}, {:August, 70}]
-    iex> BackendWeb.LeaderboardView.create_selectable_seasons(~D[2022-04-11], :MRC)
-    [{:April, 6}, {:March, 5}, {:February, 4}, {:January, 3}, {:December, 2}, {:November, 1}]
+    nil ldb -> :STD
+    nil region -> :EU
   """
-  @spec create_selectable_seasons(Calendar.date(), String.t() | atom()) :: [selectable_season]
-  def create_selectable_seasons(_today, ldb) when ldb in [:arena, "arena"] do
-    Blizzard.get_current_ladder_season(:arena)..0
-    |> Enum.take(7)
-    |> Enum.map(fn s ->
-      name = Blizzard.get_season_name(s, :arena)
-      {name, s}
-    end)
-  end
+  @spec create_selectable_seasons(String.t() | atom(), String.t(), atom()) ::
+          {:ok, [selectable_season]} | {:error, atom()}
+  def create_selectable_seasons(ldb, region, num \\ 7) do
+    with {:ok, ldb} <- Blizzard.to_leaderboard_id(ldb || :STD),
+         {:ok, region} <- Blizzard.to_region(region || :EU) do
+      selectable_seasons =
+        Blizzard.get_current_ladder_season(ldb, region)..0
+        |> Enum.take(7)
+        |> Enum.map(fn s ->
+          name = Blizzard.get_season_name(s, ldb)
+          {name, s}
+        end)
 
-  def create_selectable_seasons(_today, ldb) when ldb in [:BG, "BG", :DUO, "DUO"] do
-    Blizzard.get_current_ladder_season(:BG)..0
-    |> Enum.take(7)
-    |> Enum.map(fn s ->
-      name = Blizzard.get_season_name(s, ldb)
-      {name, s}
-    end)
-  end
-
-  def create_selectable_seasons(today, ldb) do
-    tomorrow = Date.add(today, 1)
-    tomorrow_id = get_season_id(tomorrow, ldb)
-    # if it's the first day of jan or last day of dec we want to show [dec, jan, nov]
-    [0, -1, -2, -3, -4, -5]
-    |> Enum.map(fn month_diff ->
-      month_num = Util.normalize_month(month_diff + tomorrow.month)
-      {Util.get_month_name(month_num), tomorrow_id + month_diff}
-    end)
+      {:ok, selectable_seasons}
+    end
   end
 
   def process_invited(%{leaderboard: nil, invited: invited_raw}),

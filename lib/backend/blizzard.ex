@@ -53,9 +53,11 @@ defmodule Backend.Blizzard do
 
   @type region :: :EU | :US | :AP | :CN
   @regions [:EU, :US, :AP, :CN]
+  @binary_regions Enum.map(@regions, &to_string/1)
   @qualifier_regions [:EU, :US, :AP]
   @type leaderboard :: :BG | :STD | :WLD | :CLS | :MRC | :arena | :twist | :DUO
   @leaderboards [:BG, :DUO, :STD, :WLD, :CLS, :MRC, :arena, :twist]
+  @binary_leaderboards Enum.map(@leaderboards, &to_string/1)
   @defunct_leaderboards [:CLS]
   # @type battletag :: <<_::binary, "#", _::binary>>
   @type battletag :: String.t()
@@ -76,6 +78,19 @@ defmodule Backend.Blizzard do
 
   @spec get_month_start(integer) :: Date.t()
   def get_month_start(season_id), do: get_month_start(season_id, :STD)
+
+  @spec to_leaderboard_id(String.t() | atom()) :: {:ok, atom()} | {:error, atom()}
+  def to_leaderboard_id(string) when is_binary(string) and string in @binary_leaderboards,
+    do: {:ok, String.to_existing_atom(string)}
+
+  def to_leaderboard_id(ldb) when ldb in @leaderboards, do: {:ok, ldb}
+  def to_leaderboard_id(_), do: {:error, :unknown_leaderboard}
+  @spec to_region(String.t() | atom()) :: {:ok, atom()} | {:error, atom()}
+  def to_region(string) when is_binary(string) and string in @binary_regions,
+    do: {:ok, String.to_existing_atom(string)}
+
+  def to_region(region) when region in @regions, do: {:ok, region}
+  def to_region(_), do: {:error, :unknown_region}
 
   @doc """
   Gets the year and month from a season_id
@@ -648,6 +663,11 @@ defmodule Backend.Blizzard do
   def get_season_name(season, "BG"), do: get_season_name(season, :BG)
   def get_season_name(season, ldb) when ldb in [:BG, :DUO], do: "Season #{season + 1}"
   def get_season_name(season, ldb) when ldb in [:arena, "arena"], do: "Season #{season}"
+
+  def get_season_name(season, ldb) do
+    %{month: month} = get_month_start(season, ldb)
+    Util.get_month_name(month)
+  end
 
   def get_ineligible_players() do
     [
