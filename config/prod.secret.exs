@@ -30,6 +30,8 @@ config :backend,
 
 config :backend, Backend.Repo,
   timeout: 25_000,
+  # for pgbouncer. It needs it for non session mode
+  prepare: :unnamed,
   url: database_url,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
