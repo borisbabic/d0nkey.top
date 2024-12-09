@@ -172,18 +172,18 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   defp overload_shaman?(ci),
     do: min_count?(ci, 2, ["Flowrider", "Overdraft", "Inzah", "Thorim, Stormlord"])
 
+  @standard_evolve [
+    "Convincing Disguise",
+    "Muck Pools",
+    "Matching Outfits",
+    "Wave of Nostalgia",
+    "Primordial Wave",
+    "Carefree Cookie",
+    "Baroness Vashj",
+    "Tiny Toys"
+  ]
   defp evolve_shaman?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Convincing Disguise",
-        "Muck Pools",
-        "Matching Outfits",
-        "Wave of Nostalgia",
-        "Primordial Wave",
-        "Carefree Cookie",
-        "Baroness Vashj",
-        "Tiny Toys"
-      ])
+    do: min_count?(ci, 3, @standard_evolve)
 
   defp elemental_shaman?(ci),
     do:
@@ -249,5 +249,16 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
   defp wild_big_shaman?(card_info) do
     min_count?(card_info, 2, ["Muckmorpher", "Eureka!", "Ancestor's Call"])
+  end
+
+  def wild_evolve?(card_info) do
+    min_count?(card_info, 4, [
+      "Boggspine Knuckles",
+      "Doppelgangster",
+      "Unstable Evolution",
+      "Evolve",
+      "Revolve",
+      "Desert Hare" | @standard_evolve
+    ])
   end
 end

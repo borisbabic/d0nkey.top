@@ -70,10 +70,12 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Spirit of the Team",
       "Going Down Swinging",
       "Chaos Strike",
+      "Sing-Along Buddy",
       "Lesser Opal Spellstone",
       "Saronite Shambler",
       "Gan'arg Glaivesmith",
       "Gibbering Reject",
+      "Pocket Sand",
       "Rhythmdancer Risa"
     ])
   end
