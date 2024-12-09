@@ -158,7 +158,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  @type deckcode_opt :: {:deckcode, boolean()}
+  @type deckcode_opt :: {:deckcode, boolean()} | {:hack_twist_format, boolean()}
   @spec deckcode(t(), [deckcode_opt]) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f, sideboards: s}, opts \\ []),
     do: deckcode(c, h, f, s, opts)
@@ -170,6 +170,7 @@ defmodule Backend.Hearthstone.Deck do
   @spec deckcode([integer], integer, integer, [Sideboard.t()], [deckcode_opt]) :: String.t()
   def deckcode(c, hero, format, sideboards_unmapped \\ [], opts \\ []) do
     use_deckcode_copy = Keyword.get(opts, :deckcode_copy, true)
+    hack_twist_format = Keyword.get(opts, :hack_twist_format, false)
 
     card_ids =
       if use_deckcode_copy do
@@ -197,7 +198,7 @@ defmodule Backend.Hearthstone.Deck do
   @bad_sets_for_twist ["caverns-of-time", "legacy"]
   def bad_sets_for_twist(), do: @bad_sets_for_twist
 
-  defp hack_twist_format(4, card_ids) do
+  defp hack_twist_format(4, card_ids, true) do
     use_wild? =
       card_ids
       |> Enum.map(&Hearthstone.get_card/1)
@@ -208,7 +209,8 @@ defmodule Backend.Hearthstone.Deck do
 
     if use_wild?, do: 1, else: 4
   end
-  defp hack_twist_format(format, _card_ids), do: format
+
+  defp hack_twist_format(format, _card_ids, _should_hack?), do: format
 
   defp sideboards_deckcode_part([]), do: [0]
 
