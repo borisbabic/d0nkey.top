@@ -4,6 +4,7 @@ defmodule Backend.DeckArchetyper do
   import Backend.DeckArchetyper.ArchetyperHelpers
 
   alias Backend.DeckArchetyper.Twist.WhizbangHeroesArchetyper
+  alias Backend.DeckArchetyper.Twist.WondersArchetyper
   alias Backend.DeckArchetyper.DeathKnightArchetyper
   alias Backend.DeckArchetyper.DemonHunterArchetyper
   alias Backend.DeckArchetyper.DruidArchetyper
@@ -81,7 +82,8 @@ defmodule Backend.DeckArchetyper do
       {%{format: 1}, "SHAMAN"} -> ShamanArchetyper.wild(card_info)
       {%{format: 1}, "WARLOCK"} -> WarlockArchetyper.wild(card_info)
       {%{format: 1}, "WARRIOR"} -> WarriorArchetyper.wild(card_info)
-      {%{format: 4}, _} -> WhizbangHeroesArchetyper.archetype(card_info)
+      {%{format: 4}, _} -> WondersArchetyper.archetype(card_info)
+      # {%{format: 4}, _} -> WhizbangHeroesArchetyper.archetype(card_info)
       _ -> nil
     end
   end
