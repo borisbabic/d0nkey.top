@@ -194,7 +194,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     min_keyword_count?(ci, min, "starship")
   end
 
-  def min_keyword_count?(%{full_cards: full_cards}, min, keyword_slug) do
+  @spec min_keyword_count?(card_info :: card_info(), min :: integer, keyword_slug :: String.t()) ::
+          boolean
+  def min_keyword_count?(%{full_cards: full_cards} = _card_info, min, keyword_slug) do
     num =
       full_cards
       |> Enum.count(&Card.has_keyword?(&1, keyword_slug))

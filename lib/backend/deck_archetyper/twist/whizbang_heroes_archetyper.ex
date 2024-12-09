@@ -1,9 +1,10 @@
 defmodule Backend.DeckArchetyper.Twist.WhizbangHeroesArchetyper do
   @moduledoc "Archetyping for the whizbang heroes twist mode"
   import Backend.DeckArchetyper.ArchetyperHelpers
-  alias Backend.Hearthtstone.DeckArchetyper
+  alias Backend.DeckArchetyper
 
   @spec archetype(DeckArchetyper.card_info()) :: atom() | nil
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def archetype(card_info) do
     # generated in Scratchpad
     cond do
