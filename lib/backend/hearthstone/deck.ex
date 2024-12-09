@@ -158,18 +158,28 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  @spec deckcode(t()) :: String.t()
-  def deckcode(%{cards: c, hero: h, format: f, sideboards: s}), do: deckcode(c, h, f, s)
+  @type deckcode_opt :: {:deckcode, boolean()}
+  @spec deckcode(t(), [deckcode_opt]) :: String.t()
+  def deckcode(%{cards: c, hero: h, format: f, sideboards: s}, opts \\ []),
+    do: deckcode(c, h, f, s, opts)
 
   @doc """
   Calculate the deckcode from deck parts.
   Doesn't support decks with more than 2 copies of a card
   """
-  @spec deckcode([integer], integer, integer, [Sideboard.t()]) :: String.t()
-  def deckcode(c, hero, format, sideboards_unmapped \\ []) do
+  @spec deckcode([integer], integer, integer, [Sideboard.t()], [deckcode_opt]) :: String.t()
+  def deckcode(c, hero, format, sideboards_unmapped \\ [], opts \\ []) do
+    use_deckcode_copy = Keyword.get(opts, :deckcode_copy, true)
+
+    card_ids =
+      if use_deckcode_copy do
+        c |> Enum.map(&CardBag.deckcode_copy_id/1)
+      else
+        c
+      end
+
     cards =
-      c
-      |> Enum.map(&CardBag.deckcode_copy_id/1)
+      card_ids
       |> Enum.frequencies()
       |> Enum.group_by(fn {_card, freq} -> freq end, fn {card, _freq} -> card end)
 
@@ -427,8 +437,9 @@ defmodule Backend.Hearthstone.Deck do
   def valid?(code) when is_binary(code), do: :ok == code |> decode() |> elem(0)
   def valid?(_), do: false
 
-  @spec decode!(String.t()) :: t()
-  def decode!(deckcode), do: deckcode |> decode() |> Util.bangify()
+  @type decode_opt :: {:canonicalize, boolean()}
+  @spec decode!(String.t(), [decode_opt]) :: t()
+  def decode!(deckcode, opts \\ []), do: deckcode |> decode(opts) |> Util.bangify()
 
   # todo make 任务贼：AAECAaIHBsPhA6b5A8f5A72ABL+ABO2ABAyqywPf3QPn3QPz3QOq6wOf9AOh9AOi9AOj9QOm9QP1nwT2nwQA decodeable
   @doc """
@@ -439,10 +450,13 @@ defmodule Backend.Hearthstone.Deck do
   iex> {:ok, deck} = Backend.Hearthstone.Deck.decode("AAECAR8BugMAAA=="); deck.deckcode
   "AAECAR8BugMAAAA="
   """
-  @spec decode(String.t()) :: {:ok, t()} | {:error, String.t() | any}
-  def decode(""), do: {:error, "Couldn't decode deckstring"}
+  @spec decode(String.t(), [decode_opt]) :: {:ok, t()} | {:error, String.t() | any}
+  def decode(deckcode, opts \\ [])
+  def decode("", _opts), do: {:error, "Couldn't decode deckstring"}
 
-  def decode(deckcode) do
+  def decode(deckcode, opts) do
+    canonicalize = Keyword.get(opts, :canonicalize, true)
+
     with no_comments <- deckcode |> remove_comments() |> String.trim(),
          {:ok, decoded} <- base64_decode(no_comments),
          list <- :binary.bin_to_list(decoded),
@@ -452,10 +466,21 @@ defmodule Backend.Hearthstone.Deck do
          {doubles, rest} <- take_doubles(rest),
          {multi, rest} <- take_multi(rest),
          {_success, uncanonical_sideboards, _rest} <- parse_sideboard(rest),
-         sideboards <- canonicalize_sideboards(uncanonical_sideboards),
-         uncanonical_cards <- singles ++ doubles ++ multi,
-         unsorted_cards <- canonicalize_cards(uncanonical_cards),
-         cards <- Enum.sort(unsorted_cards) do
+         uncanonical_cards <- singles ++ doubles ++ multi do
+      {sideboards, unsorted_cards} =
+        if canonicalize do
+          {
+            canonicalize_sideboards(uncanonical_sideboards),
+            canonicalize_cards(uncanonical_cards)
+          }
+        else
+          {
+            uncanonical_sideboards,
+            uncanonical_cards
+          }
+        end
+
+      cards = Enum.sort(unsorted_cards)
       {class, hero} = deckcode_class_hero(hero, cards)
 
       {:ok,
