@@ -213,6 +213,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       genn?(card_info) ->
         String.to_atom("Even #{class_name}")
 
+      libram?(card_info) ->
+        :"Libram Paladin"
+
       pure_paladin?(card_info) ->
         :"Pure Paladin"
 
@@ -234,18 +237,22 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       wild_shanty_paladin?(card_info) ->
         :"Sea Shanty Paladin"
 
-      libram?(card_info) ->
-        :"Libram Paladin"
-
       "Painter's Virtue" in card_info.card_names ->
         :"Handbuff Paladin"
 
       "Call to Arms" in card_info.card_names ->
         :"CtA Paladin"
 
+      thekal?(card_info) ->
+        :"Thekal Paladin"
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp thekal?(card_info) do
+    min_count?(card_info, 2, ["High Priest Thekal", "Molten Giant"])
   end
 
   defp holy_wrath_paladin?(card_info) do

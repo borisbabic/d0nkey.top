@@ -90,9 +90,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       deathrattle_druid?(card_info) ->
         :"Deathrattle Druid"
 
-      "Drum Circle" in card_info.card_names ->
-        :"Drum Druid"
-
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
 
@@ -107,6 +104,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       greybough?(card_info) ->
         :"Greybough Druid"
+
+      "Drum Circle" in card_info.card_names ->
+        :"Drum Druid"
 
       bad?(card_info) ->
         :"Bad Druid"

@@ -80,12 +80,19 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       type_count(card_info, "Pirate") >= 5 ->
         :"Pirate Warrior"
 
+      sulthraze?(card_info) ->
+        :"Sul'thraze Warrior"
+
       "Photographer Fizzle" in card_info.card_names ->
         :"Fizzle Warrior"
 
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  def sulthraze?(ci) do
+    min_count?(ci, 2, ["Sul'thraze", "Punch Card"])
   end
 
   def taunt_warrior?(ci) do

@@ -2,6 +2,7 @@
 defmodule Backend.DeckArchetyper.WarlockArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.DeckArchetyper.ArchetyperHelpers
   alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
@@ -113,6 +114,20 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     end
   end
 
+  defp implock?(card_info) do
+    min_count?(card_info, 5, [
+      "Desk Imp",
+      "Flame Imp",
+      "Flustered Librarian",
+      "Malchezaar's Imp",
+      "Wicked Shipment",
+      "Impending Catastrophe",
+      "Nofin's Imp-ossible",
+      "Vile Library",
+      "Fiendish Circle"
+    ])
+  end
+
   defp demon?(ci) do
     min_count?(ci, 3, [
       "Kil'jaeden",
@@ -123,8 +138,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     ])
   end
 
+  @spec deckless?(ArchetyperHelpers.card_info()) :: boolean()
   defp deckless?(ci) do
-    min_count?(ci, 1, ["Kil'jaeden", "Wheel of DEATH!!!"])
+    min_count?(ci.card_names ++ ci.etc_sideboard_names, 1, ["Kil'jaeden", "Wheel of DEATH!!!"])
   end
 
   defp deathrattle?(card_info) do
@@ -271,6 +287,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
+
+      implock?(card_info) ->
+        :Implock
+
+      deckless?(card_info) ->
+        :"Deckless Warlock"
 
       true ->
         fallbacks(card_info, class_name)

@@ -28,9 +28,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       zarimi?(card_info) ->
         :"Zarimi Priest"
 
-      hitchhiker?(card_info) ->
-        :"42 Priest"
-
       pain?(card_info) ->
         :"Pain Priest"
 
@@ -42,6 +39,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       control_priest?(card_info) ->
         :"Control Priest"
+
+      hitchhiker?(card_info) ->
+        :"42 Priest"
 
       "Photographer Fizzle" in card_info.card_names ->
         :"Fizzle Priest"
@@ -57,9 +57,12 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     end
   end
 
+  @standard_resummon ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"]
+  @wild_resummon ["Grave Rune", "Twilight's Call", "Amulet of Undying", "Embalming Ritual"]
+  @all_resummon @standard_resummon ++ @wild_resummon
   defp armor?(ci) do
     "Arkonite Defense Crystal" in ci.card_names and
-      min_count?(ci, 2, ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"])
+      min_count?(ci, 2, @all_resummon)
   end
 
   defp hitchhiker?(ci) do
@@ -131,6 +134,10 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   defp control_priest?(ci) do
     min_count?(ci, 2, [
+      "Sleepy Resident",
+      "Dirty Rat",
+      "Ignis, the Eternal Flame",
+      "Serenity",
       "Harmonic Pop",
       "Repackage",
       "Lightbomb",
@@ -207,6 +214,15 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       "Nazmani Bloodweaver" in card_info.card_names ->
         :"Nazmani Priest"
+
+      armor?(card_info) ->
+        :"Armor Priest"
+
+      "Divine Spirit" in card_info.card_names ->
+        :"Divine Spirit Priest"
+
+      type_count(card_info, "Pirate") > 4 ->
+        :"Pirate Priest"
 
       true ->
         fallbacks(card_info, class_name)
