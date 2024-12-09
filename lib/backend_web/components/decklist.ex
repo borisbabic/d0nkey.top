@@ -49,7 +49,7 @@ defmodule Components.Decklist do
 
           <div :if={@show_hero} class={"decklist-info",  class_class} style="margin-bottom: 0px;">
               <div class="level is-mobile">
-                  <div :if={deckcode = Deck.deckcode(@deck)} phx-click="deck_copied" phx-value-deckcode={deckcode} class="level-left">
+                  <div :if={deckcode = Deck.deckcode(@deck, hack_twist_format: true)} phx-click="deck_copied" phx-value-deckcode={deckcode} class="level-left">
                       {render_deckcode(deckcode, false)}
                   </div>
                   <div class="level-left deck-text">
