@@ -186,7 +186,7 @@ defmodule Backend.Hearthstone.Deck do
 
     sideboards = canonicalize_sideboards(sideboards_unmapped, &CardBag.deckcode_copy_id/1)
 
-    ([0, 1, hack_twist_format(format, card_ids), 1, get_canonical_hero(hero, c)] ++
+    ([0, 1, hack_twist_format(format, card_ids, hack_twist_format), 1, get_canonical_hero(hero, c)] ++
        deckcode_part(cards[1]) ++
        deckcode_part(cards[2]) ++
        multi_deckcode_part(cards) ++
