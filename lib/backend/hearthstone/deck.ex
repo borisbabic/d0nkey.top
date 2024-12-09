@@ -185,7 +185,7 @@ defmodule Backend.Hearthstone.Deck do
 
     sideboards = canonicalize_sideboards(sideboards_unmapped, &CardBag.deckcode_copy_id/1)
 
-    ([0, 1, format, 1, get_canonical_hero(hero, c)] ++
+    ([0, 1, hack_twist_format(format, card_ids), 1, get_canonical_hero(hero, c)] ++
        deckcode_part(cards[1]) ++
        deckcode_part(cards[2]) ++
        multi_deckcode_part(cards) ++
@@ -193,6 +193,22 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.into(<<>>, fn i -> Varint.LEB128.encode(i) end)
     |> Base.encode64()
   end
+
+  @bad_sets_for_twist ["caverns-of-time", "legacy"]
+  def bad_sets_for_twist(), do: @bad_sets_for_twist
+
+  defp hack_twist_format(4, card_ids) do
+    use_wild? =
+      card_ids
+      |> Enum.map(&Hearthstone.get_card/1)
+      |> Enum.any?(fn
+        %{card_set: %{slug: slug}} when slug in @bad_sets_for_twist -> true
+        _ -> false
+      end)
+
+    if use_wild?, do: 1, else: 4
+  end
+  defp hack_twist_format(format, _card_ids), do: format
 
   defp sideboards_deckcode_part([]), do: [0]
 
