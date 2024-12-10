@@ -1456,12 +1456,7 @@ defmodule Backend.Hearthstone do
       |> with_usable_sets()
       |> Enum.min_max_by(&(&1.card_set.release_date |> to_string))
 
-    # prefer caverns of time because of twist
     deckcode_copy_id = newest.id
-    # deckcode_copy_id = Enum.find_value(cards, newest.id, fn
-    #   %{card_set: %{slug: "caverns-of-time"}, id: id} -> id
-    #   _ -> nil
-    # end)
 
     canonical_id =
       Enum.map(cards, & &1.canonical_id)
@@ -1484,14 +1479,7 @@ defmodule Backend.Hearthstone do
   end
 
   defp with_usable_sets(cards) do
-    with_release_date = Enum.filter(cards, & &1.card_set.release_date)
-
-    without_bad_sets =
-      Enum.reject(with_release_date, &(&1.card_set.slug in ["caverns-of-time", "legacy"]))
-
-    with [] <- without_bad_sets do
-      with_release_date
-    end
+    Enum.filter(cards, & &1.card_set.release_date)
   end
 
   @spec fix_cards_and_deckcode(NaiveDateTime.t() | DateTime.t() | String.t()) :: any()

@@ -158,7 +158,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  @type deckcode_opt :: {:deckcode, boolean()} | {:hack_twist_format, boolean()}
+  @type deckcode_opt :: {:deckcode, boolean()}
   @spec deckcode(t(), [deckcode_opt]) :: String.t()
   def deckcode(%{cards: c, hero: h, format: f, sideboards: s}, opts \\ []),
     do: deckcode(c, h, f, s, opts)
@@ -170,7 +170,6 @@ defmodule Backend.Hearthstone.Deck do
   @spec deckcode([integer], integer, integer, [Sideboard.t()], [deckcode_opt]) :: String.t()
   def deckcode(c, hero, format, sideboards_unmapped \\ [], opts \\ []) do
     use_deckcode_copy = Keyword.get(opts, :deckcode_copy, true)
-    hack_twist_format = Keyword.get(opts, :hack_twist_format, false)
 
     card_ids =
       if use_deckcode_copy do
@@ -186,7 +185,7 @@ defmodule Backend.Hearthstone.Deck do
 
     sideboards = canonicalize_sideboards(sideboards_unmapped, &CardBag.deckcode_copy_id/1)
 
-    ([0, 1, hack_twist_format(format, card_ids, hack_twist_format), 1, get_canonical_hero(hero, c)] ++
+    ([0, 1, format, 1, get_canonical_hero(hero, c)] ++
        deckcode_part(cards[1]) ++
        deckcode_part(cards[2]) ++
        multi_deckcode_part(cards) ++
@@ -194,23 +193,6 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.into(<<>>, fn i -> Varint.LEB128.encode(i) end)
     |> Base.encode64()
   end
-
-  @bad_sets_for_twist ["caverns-of-time", "legacy"]
-  def bad_sets_for_twist(), do: @bad_sets_for_twist
-
-  defp hack_twist_format(4, card_ids, true) do
-    use_wild? =
-      card_ids
-      |> Enum.map(&Hearthstone.get_card/1)
-      |> Enum.any?(fn
-        %{card_set: %{slug: slug}} when slug in @bad_sets_for_twist -> true
-        _ -> false
-      end)
-
-    if use_wild?, do: 1, else: 4
-  end
-
-  defp hack_twist_format(format, _card_ids, _should_hack?), do: format
 
   defp sideboards_deckcode_part([]), do: [0]
 
@@ -956,7 +938,7 @@ defmodule Backend.Hearthstone.Deck do
 
   def total_copies(%{cards: cards, sideboards: sideboards}, card) do
     card_id = CardBag.deckcode_copy_id(card.id)
-    in_deck = Enum.filter(cards, &(card_id == CardBag.deckcode_copy_id(&1))) |> Enum.count()
+    in_deck = Enum.count(cards, &(card_id == CardBag.deckcode_copy_id(&1)))
 
     in_sideboards =
       Enum.filter(sideboards, &(card_id == CardBag.deckcode_copy_id(&1.card)))
