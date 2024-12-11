@@ -105,6 +105,14 @@
           twitch={"playhearthstone"}
         />
 
+        <.live_battlefy 
+          display={"Worlds"} 
+          start={~N[2024-12-12 20:00:00]} 
+          finish={~N[2024-12-20 05:30:00]} 
+          battlefy_id={"674fa20b0d896f0018364671"}
+          twitch={"playhearthstone"}
+        />
+
       <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2024-11-18 12:12:00]) == :lt} href={~p"/wc/2024/china-qualifiers"}>CN Worlds Qual</a>
        <%= current_mt @conn %>
 
