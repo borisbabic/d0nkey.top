@@ -285,7 +285,7 @@ defmodule BackendWeb.LeaderboardController do
       |> add_leaderboard_criteria(leaderboards)
       |> add_min_rating_criteria()
 
-    stats = Leaderboards.stats(criteria, 30_000)
+    stats = Leaderboards.stats(criteria, 60_000)
 
     render(conn, "stats.html", %{
       conn: conn,
