@@ -7,7 +7,6 @@ defmodule BackendWeb.LeaderboardView do
   alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Backend.Leaderboards
   alias Backend.Leaderboards.Snapshot
-  alias Backend.Leaderboards.PlayerStats
   alias Backend.LeaderboardsPoints
   alias BackendWeb.ViewUtil
   require Backend.LobbyLegends
@@ -1278,19 +1277,24 @@ defmodule BackendWeb.LeaderboardView do
       %{
         "Player" => render_player_link(ps.account_id, nil, show_flags),
         "_country" => country,
-        "Top 1" => ps |> PlayerStats.num_top(1),
-        "Top 5" => ps |> PlayerStats.num_top(5),
-        "Top 10" => ps |> PlayerStats.num_top(10),
-        "Top 25" => ps |> PlayerStats.num_top(25),
-        "Top 50" => ps |> PlayerStats.num_top(50),
-        "Top 100" => ps |> PlayerStats.num_top(100),
-        "Top 200" => ps |> PlayerStats.num_top(200),
+        "Top 1" => ps |> num_top(1),
+        "Top 5" => ps |> num_top(5),
+        "Top 10" => ps |> num_top(10),
+        "Top 25" => ps |> num_top(25),
+        "Top 50" => ps |> num_top(50),
+        "Top 100" => ps |> num_top(100),
+        "Top 200" => ps |> num_top(200),
         "Best" => ps.ranks |> Enum.min(),
         "Worst" => ps.ranks |> Enum.max(),
         "Average Finish" => avg,
         "Total Finishes" => total
       }
     end)
+  end
+
+  def num_top(%{ranks: ranks}, inclusive_cutoff) do
+    ranks
+    |> Enum.count(fn f -> f <= inclusive_cutoff end)
   end
 
   def rating_display_func(ldb) do

@@ -12,7 +12,6 @@ defmodule Backend.Leaderboards do
   alias Backend.LobbyLegends.LobbyLegendsSeason
   alias Backend.Leaderboards.PageFetcher
   alias Backend.Leaderboards.Snapshot
-  alias Backend.Leaderboards.PlayerStats
   alias Backend.Leaderboards.Entry
   alias Backend.Leaderboards.Season
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
@@ -550,8 +549,24 @@ defmodule Backend.Leaderboards do
     table |> Enum.filter(fn e -> MapSet.member?(short_set, e.account_id) end)
   end
 
-  def stats(criteria, timeout \\ nil),
-    do: entries(criteria, timeout) |> PlayerStats.create_collection()
+  def stats(criteria, timeout \\ nil) do
+    query =
+      base_stats_query()
+      |> build_entries_query(criteria)
+
+    if timeout do
+      Repo.all(query, timeout: timeout)
+    else
+      Repo.all(query)
+    end
+  end
+
+  defp base_stats_query() do
+    from e in {"leaderboards_current_entries", Entry},
+      as: :entry,
+      group_by: e.account_id,
+      select: %{account_id: e.account_id, ranks: fragment("ARRAY_AGG(?)", e.rank)}
+  end
 
   def latest_up_to(region, leaderboard, date) do
     ([
