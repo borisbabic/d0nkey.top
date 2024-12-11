@@ -295,7 +295,7 @@ defmodule BackendWeb.LeaderboardController do
       min: min,
       sort_by: params["sort_by"],
       countries: multi_select_to_array(params["country"]),
-      show_flags: parse_yes_no(params["show_flags"]),
+      show_flags: parse_yes_no(params["show_flags"], "yes"),
       page_title: "Leaderboard Stats",
       stats: stats
     })
