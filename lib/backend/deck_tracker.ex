@@ -186,6 +186,13 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
+  def get_latest_agg_log_entries(limit, order_by) do
+    query = from al in AggregationLog, order_by: ^order_by, limit: ^limit
+    Repo.all(query)
+  end
+
+  def agg_log_count(), do: Repo.aggregate(AggregationLog, :count)
+
   @nil_agg_deck_id -1
   @nil_agg_archetype "any"
   @nil_agg_opponent_class "any"

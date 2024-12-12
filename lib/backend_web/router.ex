@@ -346,7 +346,10 @@ defmodule BackendWeb.Router do
       ecto_repos: [Backend.Repo],
       on_mount: [AssignDefaults, {AdminAuth, :dashboard}],
       additional_pages: [
-        oban: Oban.LiveDashboard
+        oban: Oban.LiveDashboard,
+        agg_log: BackendWeb.LiveDashboard.AggregationLogPage,
+        oban_count: BackendWeb.LiveDashboard.ObanCountPage,
+        game_per_min: BackendWeb.LiveDashboard.GamePerMinPage
       ]
     )
   end
