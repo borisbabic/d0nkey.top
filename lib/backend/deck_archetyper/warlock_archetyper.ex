@@ -37,6 +37,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       snek?(card_info) ->
         :"Snek Warlock"
 
+      armor?(card_info) ->
+        :"Armor Warlock"
+
       deathrattle?(card_info) ->
         :"Deathrattle Warlock"
 
@@ -141,6 +144,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   @spec deckless?(ArchetyperHelpers.card_info()) :: boolean()
   defp deckless?(ci) do
     min_count?(ci.card_names ++ ci.etc_sideboard_names, 1, ["Kil'jaeden", "Wheel of DEATH!!!"])
+  end
+
+  defp armor?(card_info) do
+    "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info)
   end
 
   defp deathrattle?(card_info) do
