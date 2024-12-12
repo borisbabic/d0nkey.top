@@ -19,14 +19,14 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       big?(card_info) ->
         :"Big Shaman"
 
+      asteroid?(card_info) ->
+        :"Asteroid Shaman"
+
       incindius?(card_info) ->
         :"Incindius Shaman"
 
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
-
-      asteroid?(card_info) ->
-        :"Asteroid Shaman"
 
       swarm?(card_info) ->
         :"Swarm Shaman"
@@ -124,7 +124,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   end
 
   defp incindius?(card_info) do
-    min_count?(card_info, 3, ["Incindius", "Shudderblock", "Gaslight Gatekeeper", "Triangulate"])
+    min_count?(card_info, 3, ["Incindius", "Shudderblock", "Gaslight Gatekeeper"])
   end
 
   defp wish_shaman?(card_info) do
