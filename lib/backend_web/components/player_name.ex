@@ -5,6 +5,7 @@ defmodule Components.PlayerName do
   use BackendWeb, :surface_component
 
   prop(player, :string)
+  prop(display, :string, default: nil)
   prop(text_link, :string, default: nil)
   prop(flag, :boolean, default: true)
   prop(icon, :boolean, default: true)
@@ -18,7 +19,7 @@ defmodule Components.PlayerName do
     <span>
       <span :if={(country = country(@player)) && @flag}>{country_flag(country, @player)}</span>
       <span :if={@icon}>{render_player_icon(@player)}</span>
-      <a class={@link_class} href={text_link(@text_link, @player)}>{text(@player, @shorten)}</a>
+      <a class={@link_class} href={text_link(@text_link, @player)}>{@display || text(@player, @shorten)}</a>
     </span>
     """
   end
