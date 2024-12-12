@@ -344,7 +344,10 @@ defmodule BackendWeb.Router do
     live_dashboard("/dashboard",
       metrics: Backend.Telemetry,
       ecto_repos: [Backend.Repo],
-      on_mount: [AssignDefaults, {AdminAuth, :dashboard}]
+      on_mount: [AssignDefaults, {AdminAuth, :dashboard}],
+      additional_pages: [
+        oban: Oban.LiveDashboard
+      ]
     )
   end
 

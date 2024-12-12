@@ -99,6 +99,7 @@ defmodule Backend.MixProject do
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:akin, "~> 0.1"},
       {:error_tracker, "~> 0.1"},
+      {:oban_live_dashboard, "~> 0.1.0"},
       {:quantum, "~> 3.5"}
     ]
   end
