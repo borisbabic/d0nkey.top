@@ -21,6 +21,7 @@ defmodule Components.TournamentLineupExplorer do
   alias Components.Filter.PlayableCardSelect
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
+  alias Backend.Hearthstone.Lineup
   alias Components.PlayerName
 
   def render(assigns) do
@@ -80,10 +81,10 @@ defmodule Components.TournamentLineupExplorer do
                   <#slot {@lineup_name, lineup_name: lineup.name} />
                 {#elseif "battlefy" == @tournament_source}
                   <a href={Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, @tournament_id, lineup.name)}>
-                    <PlayerName player={lineup.name}/>
+                    <PlayerName player={lineup.name} display={lineup.display_name}/>
                   </a>
                 {#else}
-                  {lineup.name}
+                  {Lineup.display_name(lineup)}
                 {/if}
               </td>
               <td>
@@ -110,7 +111,11 @@ defmodule Components.TournamentLineupExplorer do
 
   def lineups(tournament_id, tournament_source, filters) do
     filters
-    |> Map.merge(%{"tournament_id" => tournament_id, "tournament_source" => tournament_source})
+    |> Map.merge(%{
+      "tournament_id" => tournament_id,
+      "tournament_source" => tournament_source,
+      "order_by" => {:asc, "display_or_name"}
+    })
     |> Backend.Hearthstone.lineups()
   end
 

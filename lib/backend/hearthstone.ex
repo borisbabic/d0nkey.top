@@ -1195,6 +1195,11 @@ defmodule Backend.Hearthstone do
     |> where([lineup: l], l.name == ^name)
   end
 
+  defp compose_lineups_query({"order_by", {direction, "display_or_name"}}, query) do
+    partial_criteria = for field <- [:display_name, :name], do: {"order_by", {direction, field}}
+    build_lineups_query(query, partial_criteria)
+  end
+
   defp compose_lineups_query({"order_by", {direction, field}}, query) do
     query
     |> order_by([{^direction, ^field}])

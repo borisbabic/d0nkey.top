@@ -6,6 +6,7 @@ defmodule Backend.Hearthstone.Lineup do
 
   schema "lineups" do
     field :name, :string
+    field :display_name, :string
     field :tournament_id, :string
     field :tournament_source, :string
     many_to_many :decks, Deck, join_through: "lineup_decks", on_replace: :delete
@@ -16,10 +17,18 @@ defmodule Backend.Hearthstone.Lineup do
   @doc false
   def changeset(lineup, attrs, decks) do
     lineup
-    |> cast(attrs, [:tournament_id, :tournament_source, :name])
+    |> cast(attrs, [:tournament_id, :tournament_source, :name, :display_name])
     |> put_assoc(:decks, decks)
     |> validate_required([:tournament_id, :tournament_source, :name])
   end
+
+  def set_display_name(lineup, display_name) do
+    lineup
+    |> cast(%{display_name: display_name}, [:display_name])
+  end
+
+  def display_name(%{display_name: name}) when is_binary(name), do: name
+  def display_name(%{name: name}) when is_binary(name), do: name
 
   def stats(lineups) do
     lineups
