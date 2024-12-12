@@ -19,7 +19,7 @@ defmodule Backend.Application do
         BackendWeb.Endpoint,
         # Starts a worker by calling: Backend.Worker.start_link(arg)
         # {Backend.Worker, arg},
-        # {Oban, oban_config()},
+        {Oban, oban_config()},
         # Backend.PostgrexPubsubListener,
         %{
           # can  multiserver
