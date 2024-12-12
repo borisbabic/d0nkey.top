@@ -81,10 +81,10 @@ defmodule Components.TournamentLineupExplorer do
                   <#slot {@lineup_name, lineup_name: lineup.name} />
                 {#elseif "battlefy" == @tournament_source}
                   <a href={Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, @tournament_id, lineup.name)}>
-                    <PlayerName player={lineup.name} display={lineup.display_name}/>
+                    <PlayerName player={lineup.name} display={lineup.display_name} link={false}/>
                   </a>
                 {#else}
-                  {Lineup.display_name(lineup)}
+                  <PlayerName player={lineup.name} display={lineup.display_name}/>
                 {/if}
               </td>
               <td>
