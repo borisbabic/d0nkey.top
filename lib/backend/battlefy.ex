@@ -1018,4 +1018,40 @@ defmodule Backend.Battlefy do
       }
     }
   end
+
+  def set_lineup_display_name_with_stages(
+        tournament_id,
+        stage_name_regex \\ ".",
+        regex_flags \\ "i"
+      ) do
+    regex = Regex.compile!(stage_name_regex, regex_flags)
+    tournament = get_tournament(tournament_id)
+    stages = Enum.filter(tournament.stages, &Regex.match?(regex, &1.name))
+    lineups = lineups(tournament_id)
+    lineup_player_map = Map.new(lineups, &{&1.name, &1})
+
+    player_stage_tuples =
+      for stage <- tournament.stages,
+          Regex.match?(regex, stage.name),
+          %{team: %{name: name}} <- get_stage_standings(stage.id),
+          Map.has_key?(lineup_player_map, name) do
+        {name, stage.name}
+      end
+
+    Enum.group_by(player_stage_tuples, &elem(&1, 0), &elem(&1, 1))
+    |> Enum.reduce(Ecto.Multi.new(), fn {name, stage_names}, multi ->
+      stage_prefix = Enum.sort(stage_names) |> Enum.join(" | ")
+      display_name = "#{stage_prefix} - #{name}"
+
+      case Map.get(lineup_player_map, name) do
+        %{id: id} = lineup ->
+          cs = Lineup.set_display_name(lineup, display_name)
+          Ecto.Multi.update(multi, "set_lineup_display_name_#{id}", cs)
+
+        _ ->
+          multi
+      end
+    end)
+    |> Backend.Repo.transaction()
+  end
 end
