@@ -111,7 +111,7 @@ config :backend, QuantumScheduler,
     # {"*/9 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
     {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     {"* */2 * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end},
-    {"* * * * *", fn -> Hearthstone.DeckTracker.refresh_agg_stats() end},
+    # {"* * * * *", fn -> Hearthstone.DeckTracker.refresh_agg_stats() end},
     {"* * * * *", fn -> Backend.Patreon.add_new_tiers() end},
     {"13 * * * *", fn -> Backend.UserManager.update_patreon_tiers() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
