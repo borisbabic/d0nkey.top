@@ -111,7 +111,16 @@ defmodule BackendWeb.ViewHelpers do
         Helper.render_player_icon(name)
       end
 
-      def render_player_name(name, with_country \\ false) do
+      # worlds 2024 hack
+      def render_player_name(name, with_country \\ false)
+
+      def render_player_name("SnarkyPatron#1821", with_country),
+        do: render_player_name("mlyanming", with_country)
+
+      def render_player_name("HozenPatron#1418", with_country),
+        do: render_player_name("Mesmile", with_country)
+
+      def render_player_name(name, with_country) do
         Helper.player_name(name, with_country)
       end
 
