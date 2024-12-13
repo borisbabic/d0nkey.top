@@ -8,6 +8,7 @@ defmodule Components.TierList do
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
   alias Components.Filter.ClassDropdown
+  alias Components.Filter.RegionDropdown
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
   alias Surface.Components.LivePatch
@@ -57,6 +58,7 @@ defmodule Components.TierList do
           selected_as_title={false}
           normalizer={&to_string/1} />
         {#if premium_filters?(@premium_filters, @user)}
+          <RegionDropdown title={Components.Helper.warning_triangle(%{before: "Region"})} id={"deck_region"} filter_context={:public} />
           <ForceFreshDropdown id={"force_fresh"} />
         {/if}
 
