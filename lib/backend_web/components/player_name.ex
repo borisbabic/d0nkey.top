@@ -26,6 +26,9 @@ defmodule Components.PlayerName do
     """
   end
 
+  # hack for worlds 2024
+  def text("SnarkyPatron#1821", _), do: "mlyanming"
+  def text("HozenPatron#1418", _), do: "Mesmile"
   def text(player, false), do: player
   def text(player, true), do: Backend.Battlenet.Battletag.shorten(player)
   def text_link(nil, player), do: Routes.player_path(BackendWeb.Endpoint, :player_profile, player)
