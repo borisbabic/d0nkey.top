@@ -113,22 +113,20 @@ defmodule Components.CardsList do
   end
 
   @staying_sets [
+    # dgb
+    1935,
+    # perils
+    1905,
+    # whizbang,
+    1897
+  ]
+  @rotating_sets [
     # festival,
     1809,
     # titans
     1858,
     # badlands
     1892
-  ]
-  @rotating_sets [
-    # voyage
-    1658,
-    # murder
-    1691,
-    # motlk
-    1776,
-    # arthas
-    1869
   ]
   def rotation_class(true, %{card_set_id: id}) when id in @staying_sets, do: ""
 
