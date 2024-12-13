@@ -12,10 +12,10 @@ defmodule BackendWeb.BattlefyController do
   defp direction("asc"), do: :asc
   defp direction(_), do: nil
 
-  defp is_ongoing(%{"show_ongoing" => ongoing}) when is_binary(ongoing),
+  defp ongoing?(%{"show_ongoing" => ongoing}) when is_binary(ongoing),
     do: String.starts_with?(ongoing, "yes")
 
-  defp is_ongoing(_), do: false
+  defp ongoing?(_), do: false
 
   defp show_earnings?(%{"show_earnings" => earnings}) when is_binary(earnings),
     do: String.starts_with?(earnings, "yes")
@@ -142,7 +142,7 @@ defmodule BackendWeb.BattlefyController do
     standings = Battlefy.get_stage_standings(stage_id)
 
     {matches, show_ongoing} =
-      if is_ongoing(params) do
+      if ongoing?(params) do
         {Battlefy.get_matches(stage_id), true}
       else
         {[], false}
@@ -161,7 +161,7 @@ defmodule BackendWeb.BattlefyController do
     case Battlefy.get_tournament_standings_and_stage_id(tournament) do
       {:ok, {stage_id, standings}} ->
         {matches, show_ongoing} =
-          if is_ongoing(params) do
+          if ongoing?(params) do
             {Battlefy.get_tournament_matches(tournament), true}
           else
             {[], false}
@@ -181,7 +181,7 @@ defmodule BackendWeb.BattlefyController do
           standings_raw: [],
           matches: [],
           standings_stage_id: nil,
-          show_ongoing: is_ongoing(params)
+          show_ongoing: ongoing?(params)
         })
     end
   end
@@ -212,14 +212,12 @@ defmodule BackendWeb.BattlefyController do
         }
       ) do
     team_name = URI.decode_www_form(team_name_raw)
-    {opponent_matches, player_matches} = future_and_player(params)
+    {opponent_matches, player_matches, stage_id} = future_and_player(params)
 
     needed_deckcodes = [
       team_name
       | get_battletags(opponent_matches.winner ++ opponent_matches.loser ++ player_matches)
     ]
-
-    stage_id = params["stage_id"]
 
     all_deckcodes =
       Battlefy.get_deckstrings(
@@ -253,8 +251,11 @@ defmodule BackendWeb.BattlefyController do
     |> MapSet.to_list()
   end
 
-  defp future_and_player(%{"stage_id" => stage_id, "team_name" => team_name}),
-    do: Battlefy.get_future_and_player_stage_matches(stage_id, team_name)
+  defp future_and_player(%{"stage_id" => stage_id, "team_name" => team_name}) do
+    with {[], [], nil} <- Battlefy.get_future_and_player_stage_matches(stage_id, team_name) do
+      {[], [], stage_id}
+    end
+  end
 
   defp future_and_player(%{"tournament_id" => tournament_id, "team_name" => team_name}),
     do: Battlefy.get_future_and_player_matches(tournament_id, team_name)

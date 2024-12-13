@@ -553,20 +553,8 @@ defmodule Backend.Battlefy do
     do: stage_id |> get_stage() |> get_future_and_player_matches(team_name)
 
   @spec get_future_and_player_matches(Stage.t(), String.t()) :: [Match.t()]
-  def get_future_and_player_matches(%Stage{id: id}, team_name) do
-    matches = get_matches(id)
-    # total_rounds = stage.bracket && stage.bracket.rounds_count
-
-    [latest | _] =
-      player_matches =
-      matches
-      |> Match.filter_team(team_name)
-      |> Match.sort_by_round(:desc)
-
-    future_opponents = future_opponents(matches, latest)
-    # future_opponents = get_future_opponents(matches, total_rounds, team_name)
-
-    {future_opponents, player_matches}
+  def get_future_and_player_matches(%Stage{id: _id} = stage, team_name) do
+    do_get_future_and_player_matches([stage], team_name)
   end
 
   @spec get_future_and_player_matches(tournament_id, String.t()) :: [Match.t()]
@@ -574,13 +562,33 @@ defmodule Backend.Battlefy do
     tournament_id
     |> get_tournament()
     |> Map.get(:stages)
-    |> case do
-      [first | _] -> get_future_and_player_matches(first, team_name)
-      _ -> {[], []}
-    end
+    |> do_get_future_and_player_matches(team_name)
   end
 
-  def get_future_and_player_matches(_, _), do: {[], []}
+  def get_future_and_player_matches(_, _), do: {[], [], nil}
+
+  defp do_get_future_and_player_matches([], _), do: {[], [], nil}
+
+  defp do_get_future_and_player_matches([%Stage{id: id} | rest], team_name) do
+    matches = get_matches(id)
+    # total_rounds = stage.bracket && stage.bracket.rounds_count
+
+    player_matches =
+      matches
+      |> Match.filter_team(team_name)
+      |> Match.sort_by_round(:desc)
+
+    case player_matches do
+      [latest | _] ->
+        future_opponents = future_opponents(matches, latest)
+        # future_opponents = get_future_opponents(matches, total_rounds, team_name)
+
+        {future_opponents, player_matches, id}
+
+      [] ->
+        do_get_future_and_player_matches(rest, team_name)
+    end
+  end
 
   def future_opponents(matches, %{
         id: id,
