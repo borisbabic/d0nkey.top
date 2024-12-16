@@ -42,6 +42,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       egg_hunter?(card_info) ->
         :"Egg Hunter"
 
+      "Mantle Shaper" in card_info.card_names and discover?(card_info) ->
+        :"Shaper Discover Hunter"
+
       discover?(card_info) ->
         :"Discover Hunter"
 
