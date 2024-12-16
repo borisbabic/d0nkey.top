@@ -285,15 +285,15 @@ defmodule Components.DecksExplorer do
 
   defp ensure_min_games(%{"min_games" => min} = params) when is_integer(min), do: params
 
-  defp ensure_min_games(%{"opponent_class" => oc} = params) when oc != "any" do
+  defp ensure_min_games(%{"opponent_class" => oc} = params) when oc not in ["any", nil] do
     Map.put(params, "min_games", @default_min_games)
   end
 
-  defp ensure_min_games(%{"player_deck_archetype" => _}, params) do
+  defp ensure_min_games(%{"player_deck_archetype" => _} = params) do
     agg_min_games(params, 400)
   end
 
-  defp ensure_min_games(%{"player_class" => pc}, params) when pc != "any" do
+  defp ensure_min_games(%{"player_class" => pc} = params) when pc not in ["any", nil] do
     agg_min_games(params, 200)
   end
 
