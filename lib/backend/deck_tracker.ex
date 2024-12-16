@@ -285,7 +285,10 @@ defmodule Hearthstone.DeckTracker do
       when is_integer(deck_id_or_archetype) or is_binary(deck_id_or_archetype) or
              is_atom(deck_id_or_archetype) do
     if :fresh == fresh_or_agg(additional_criteria) do
-      criteria = [deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria]
+      criteria =
+        [deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria]
+        |> remove_force_fresh()
+
       opponent_class_stats(criteria)
     else
       criteria = [
@@ -309,13 +312,15 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def archetype_stats(raw_criteria) do
-    without_force_fresh = Util.drop(raw_criteria, ["force_fresh"])
+    without_force_fresh = remove_force_fresh(raw_criteria)
 
     case fresh_or_agg(raw_criteria) do
       :fresh -> fresh_archetype_stats(without_force_fresh)
       :agg -> archetype_agg_stats(without_force_fresh)
     end
   end
+
+  defp remove_force_fresh(raw_criteria), do: Util.drop(raw_criteria, ["force_fresh"])
 
   def fresh_archetype_stats(criteria) do
     base_archetype_stats_query()

@@ -108,5 +108,5 @@ defmodule Components.OpponentStatsTable do
     do: params |> Map.put_new("player_btag", battletag)
 
   defp set_user_param({_, params}, _), do: params
-  def param_keys(), do: ["rank", "period", "players", "region", "format"]
+  def param_keys(), do: ["rank", "period", "players", "region", "format", "force_fresh"]
 end
