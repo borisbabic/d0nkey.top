@@ -44,7 +44,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         :"Drunk Paladin"
 
       lynessa_otk?(card_info) ->
-        "Lynessa Paladin"
+        "Lynessa OTK Paladin"
 
       earthen_paladin?(card_info) ->
         :"Gaia Paladin"
@@ -64,11 +64,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Cardboard Golem" in card_info.card_names ->
         :"Aura Paladin"
 
-      "Pipsi Painthoof" in card_info.card_names ->
-        :"Pipsi Paladin"
-
       "Sunsapper Lynessa" in card_info.card_names ->
         :"Lynessa Paladin"
+
+      "Pipsi Painthoof" in card_info.card_names ->
+        :"Pipsi Paladin"
 
       true ->
         fallbacks(card_info, "Paladin")
