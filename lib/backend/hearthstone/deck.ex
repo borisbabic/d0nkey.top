@@ -283,10 +283,34 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def class_name("DEATHKNIGHT"), do: "Death Knight"
-  def class_name("DEMONHUNTER"), do: "Demon Hunter"
-  def class_name(c) when is_binary(c), do: c |> Recase.to_title()
-  def class_name(other), do: other
+  @class_name_map %{
+    "DEATHKNIGHT" => "Death Knight",
+    "DEMONHUNTER" => "Demon Hunter",
+    "DRUID" => "Druid",
+    "HUNTER" => "Hunter",
+    "MAGE" => "Mage",
+    "PALADIN" => "Paladin",
+    "PRIEST" => "Priest",
+    "ROGUE" => "Rogue",
+    "SHAMAN" => "Shaman",
+    "WARLOCK" => "Warlock",
+    "WARRIOR" => "Warrior"
+  }
+  @spec class_from_class_name(class_name :: String.t()) ::
+          {:ok, class :: String.t()} | {:error, class_name :: String.t()}
+  def class_from_class_name("Deathknight"), do: {:ok, "DEATHKNIGHT"}
+  def class_from_class_name("Demonhunter"), do: {:ok, "DEMONHUNTER"}
+
+  def class_from_class_name(class_name) do
+    case Enum.find_value(@class_name_map, fn {class, name} -> if name == class_name, do: class end) do
+      class when is_binary(class) -> {:ok, class}
+      _ -> {:error, class_name}
+    end
+  end
+
+  def class_name(class) do
+    Map.get(@class_name_map, class, class)
+  end
 
   def short_class_name(class) do
     case class_name(class) do
