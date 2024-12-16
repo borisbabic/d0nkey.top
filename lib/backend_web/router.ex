@@ -349,7 +349,8 @@ defmodule BackendWeb.Router do
         oban: Oban.LiveDashboard,
         agg_log: BackendWeb.LiveDashboard.AggregationLogPage,
         oban_count: BackendWeb.LiveDashboard.ObanCountPage,
-        game_per_min: BackendWeb.LiveDashboard.GamePerMinPage
+        game_per_min: BackendWeb.LiveDashboard.GamePerMinPage,
+        client_addr_conn: BackendWeb.LiveDashboard.ClientAddrConnPage
       ]
     )
   end
