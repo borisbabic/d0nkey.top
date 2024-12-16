@@ -334,7 +334,15 @@ defmodule Components.DecksExplorer do
     |> Enum.map(&{&1, "Min #{&1}"})
   end
 
-  def order_by_options(), do: [{"winrate", "Winrate %"}, {"total", "Total Games"}]
+  def order_by_options(),
+    do: [
+      {"winrate", "Winrate %"},
+      {"total", "Total Games"},
+      {"cheapest_deck", "Cheapest Deck"},
+      {"most_expensive_deck", "Most Expensive Deck"},
+      {"newest_deck", "Newest Deck"},
+      {"oldest_deck", "Oldest Deck"}
+    ]
 
   def filter_relevant(params) do
     params

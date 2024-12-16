@@ -1189,6 +1189,21 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"order_by", "latest"}, query),
     do: query |> order_by([game: g], desc: max(g.inserted_at))
 
+  defp compose_games_query({"order_by", ob}, query) when ob == "newest_deck",
+    do: query |> order_by([player_deck: d], desc: d.inserted_at)
+
+  defp compose_games_query({"order_by", ob}, query) when ob == "oldest_deck",
+    do: query |> order_by([player_deck: d], asc: d.inserted_at)
+
+  defp compose_games_query({"order_by", "cheapest_deck"}, query),
+    do: query |> order_by([player_deck: d], asc: d.cost)
+
+  defp compose_games_query({"order_by", "most_expensive_deck"}, query),
+    do: query |> order_by([player_deck: d], desc: d.cost)
+
+  defp compose_games_query({"order_by", "winrate"}, query),
+    do: query |> order_by([], desc: @winrate_select_pos)
+
   defp compose_games_query({"order_by", "total"}, query),
     do: query |> order_by([], desc: @total_select_pos)
 
