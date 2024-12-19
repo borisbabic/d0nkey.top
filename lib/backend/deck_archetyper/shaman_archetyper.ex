@@ -73,6 +73,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Murmur" in card_info.card_names ->
         :"Murmur Shaman"
 
+      "Turbulus" in card_info.card_names ->
+        :"Turbulus Shaman"
+
       true ->
         fallbacks(card_info, "Shaman")
     end

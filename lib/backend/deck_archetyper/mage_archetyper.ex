@@ -39,8 +39,14 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       lightshow? ->
         :"Lightshow Mage"
 
+      type_count(card_info, "Elemental") > 6 ->
+        :"Elemental Mage"
+
       "Arkwing Pilot" in card_info.card_names ->
         :"Arkwing Mage"
+
+      "Supernova" in card_info.card_names ->
+        :"Supernova Mage"
 
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
