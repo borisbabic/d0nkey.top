@@ -29,7 +29,8 @@ defmodule BackendWeb.FantasyDraftLive do
     end
 
     BackendWeb.Endpoint.subscribe(topic)
-    BackendWeb.Endpoint.subscribe("entity_leagues_#{socket.assigns.league_id}")
+    # TODO REPLACE THIS
+    # BackendWeb.Endpoint.subscribe("entity_leagues_#{socket.assigns.league_id}")
     {:ok, socket |> assign_present() |> assign(show_draft_picks_table: false)}
   end
 

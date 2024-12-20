@@ -83,7 +83,6 @@ defmodule Backend.MixProject do
       {:surface, "~> 0.9"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:oban, "~> 2.5"},
-      {:postgrex_pubsub, github: "borisbabic/postgrex_pubsub"},
       {:phoenix_meta_tags, ">= 0.1.8"},
       {:oauther, "~> 1.1"},
       {:extwitter, "~> 0.12"},
