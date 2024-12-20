@@ -36,7 +36,7 @@ defmodule Components.FantasyLeague do
                   phx-click="set_round"
                   phx-target={@myself}
                   phx-value-round={r}
-                  class={"is-link #{current_round_option(@league, @round) == r && 'is-active' || ''}"}>
+                  class={"is-link #{current_round_option(@league, @round) == r && "is-active" || ""}"}>
                     {round_title(r)}
                 </Dropdown.item>
               </Dropdown.menu>

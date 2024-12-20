@@ -12,6 +12,7 @@ defmodule Components.FantasyModal do
   prop(error_message, :string, default: "Error Saving League!")
   prop(show_deadline, :boolean, default: false)
   prop(current_params, :map, default: %{})
+  data(competition_type, :string)
   prop(user, :map, from_context: :user)
 
   alias Backend.LobbyLegends.LobbyLegendsSeason
@@ -34,6 +35,7 @@ defmodule Components.FantasyModal do
   def render(assigns) do
     competition_type = selected_competition_type(assigns.current_params, assigns.league)
 
+    assigns = assigns |> assign(competition_type: competition_type)
     ~F"""
     <div>
       <button class="button" type="button" :on-click="show_modal">{@title}</button>
@@ -65,21 +67,21 @@ defmodule Components.FantasyModal do
 
               <Field name="competition_type">
                 <Label class="label">Competition Type</Label>
-                <Select selected={competition_type} class="select has-text-black " options={competition_type_options()}/>
+                <Select selected={@competition_type} class="select has-text-black " options={competition_type_options()}/>
               </Field>
 
-              <Field name="competition" :if={competition_type != "battlefy"}>
+              <Field name="competition" :if={@competition_type != "battlefy"}>
                 <Label class="label">Competition</Label>
-                <Select selected={@current_params["competition"] || @league.competition} class="select has-text-black " options={competition_type |> competition_options()} />
+                <Select selected={@current_params["competition"] || @league.competition} class="select has-text-black " options={@competition_type |> competition_options()} />
               </Field>
 
-              <Field name="competition" :if={competition_type == "battlefy"}>
+              <Field name="competition" :if={@competition_type == "battlefy"}>
                 <Label class="label">Battlefy tournament id</Label>
                 <TextInput class="input has-text-black  is-small" value={(@current_params["competition"] || @league.competition) |> battlefy_tournament_id()} />
               </Field>
 
 
-              <Field name="changes_between_rounds" :if={competition_type == "grandmasters"}>
+              <Field name="changes_between_rounds" :if={@competition_type == "grandmasters"}>
                 <Label class="label">Changes Between Rounds</Label>
                 <NumberInput class="input has-text-black  is-small" value= {@current_params["changes_between_rounds"] || @league.changes_between_rounds}/>
               </Field>
@@ -91,12 +93,12 @@ defmodule Components.FantasyModal do
 
               <Field :if={@league.draft_deadline || !@league.real_time_draft || @show_deadline} name="deadline" >
                 <Label class="label">Draft Deadline (UTC!)</Label>
-                <DateTimeLocalInput value={@current_params["deadline"] || draft_deadline_value(@league, competition_type)} />
+                <DateTimeLocalInput value={@current_params["deadline"] || draft_deadline_value(@league, @competition_type)} />
               </Field>
 
               <Field name="point_system">
                 <Label class="label">Point System</Label>
-                <Select selected={@current_params["point_system"] || @league.point_system} class="select has-text-black " options={competition_type |> point_system_options()} />
+                <Select selected={@current_params["point_system"] || @league.point_system} class="select has-text-black " options={@competition_type |> point_system_options()} />
               </Field>
 
               <Field :if={@league.join_code} name="join_code">

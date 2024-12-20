@@ -1055,12 +1055,6 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"minion_type", value}, query),
     do: ilike_name_or_slug(value <> @default_splitter, query, :minion_type)
 
-  defp compose_cards_query({"spell_school", value}, query),
-    do: ilike_name_or_slug(value <> @default_splitter, query, :spell_school)
-
-  defp compose_cards_query({"rarity", value}, query),
-    do: ilike_name_or_slug(value <> @default_splitter, query, :rarity)
-
   defp compose_cards_query({"format", format}, query) when format in [1, "1"],
     do: compose_cards_query({"format", "wild"}, query)
 

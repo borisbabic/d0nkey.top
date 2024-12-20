@@ -7,18 +7,26 @@ defmodule Components.DeckWithStats do
   alias Components.StreamingDeckNow
   prop(deck_with_stats, :map, required: true)
   prop(show_streaming_now, :boolean, default: true)
-  def render(assigns = %{deck_with_stats: deck_with_stats}) do
-    deck = deck(deck_with_stats)
-    {total, winrate} = stats(deck_with_stats)
+  data(deck, :boolean, default: true)
+  data(total, :boolean, default: true)
+  data(winrate, :boolean, default: true)
+  def render(%{deck: _, total: _total, winrate: _winrate} = assigns) do
     ~F"""
       <DeckCard>
-        <Decklist deck={deck} archetype_as_name={true} />
+        <Decklist deck={@deck} archetype_as_name={true} />
         <:after_deck>
-          <DeckStats total={total} winrate={winrate} />
-          <StreamingDeckNow :if={@show_streaming_now && deck && deck.id} deck={deck} />
+          <DeckStats total={@total} winrate={@winrate} />
+          <StreamingDeckNow :if={@show_streaming_now && @deck && @deck.id} deck={@deck} />
         </:after_deck>
       </DeckCard>
     """
+  end
+  def render(assigns = %{deck_with_stats: deck_with_stats}) do
+    deck = deck(deck_with_stats)
+    {total, winrate} = stats(deck_with_stats)
+    assigns
+    |> assign(deck: deck, total: total, winrate: winrate)
+    |> render()
   end
 
   defp stats(%{total: total, winrate: winrate}), do: {total, winrate}

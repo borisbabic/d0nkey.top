@@ -75,7 +75,7 @@ defmodule BackendWeb.Router do
 
     get("/arcticles/reveal/booms-incredible-inventions-mage", RevealController, :boom)
     get("/hs/article/:blog_id", HearthstoneController, :article)
-    get("/battlefy/tournament/020fface81eb7119705c0df5*bla", PageController, :rick_astley)
+    get("/battlefy/tournament/020fface81eb7119705c0df5:bla", PageController, :rick_astley)
 
     get("/leaderboard", LeaderboardController, :index)
     get("/leaderboard/player-stats", LeaderboardController, :player_stats)
@@ -296,7 +296,7 @@ defmodule BackendWeb.Router do
     live("/profile/settings", ProfileSettingsLive)
 
     live(
-      "tournament-streams/:tournament_source/:tournament_id/manager",
+      "/tournament-streams/:tournament_source/:tournament_id/manager",
       TournamentStreamManagerLive
     )
   end

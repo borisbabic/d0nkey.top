@@ -1212,9 +1212,6 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"order_by", "total"}, query),
     do: query |> order_by([], desc: @total_select_pos)
 
-  defp compose_games_query({"order_by", "winrate"}, query),
-    do: query |> order_by([], desc: @winrate_select_pos)
-
   defp compose_games_query({"order_by", "turns"}, query),
     do: query |> order_by([], desc: @turns_select_pos)
 
@@ -1492,11 +1489,6 @@ defmodule Hearthstone.DeckTracker do
     do: query |> where([player_deck: pd], is_nil(pd.archetype))
 
   defp compose_games_query({"no_archetype", _}, query), do: query
-
-  for {id, atom} <- FormatEnum.all(:atoms) do
-    defp compose_games_query(unquote(atom), query),
-      do: compose_games_query({"format", unquote(id)}, query)
-  end
 
   defp compose_games_query({"format", all}, query) when all in [nil, "", "all"],
     do: query

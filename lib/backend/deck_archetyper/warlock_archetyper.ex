@@ -117,20 +117,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     end
   end
 
-  defp implock?(card_info) do
-    min_count?(card_info, 5, [
-      "Desk Imp",
-      "Flame Imp",
-      "Flustered Librarian",
-      "Malchezaar's Imp",
-      "Wicked Shipment",
-      "Impending Catastrophe",
-      "Nofin's Imp-ossible",
-      "Vile Library",
-      "Fiendish Circle"
-    ])
-  end
-
   defp demon?(ci) do
     min_count?(ci, 3, [
       "Kil'jaeden",
@@ -222,16 +208,21 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   defp implock?(ci),
     do:
       min_count?(ci, 6, [
+        "Bloodbound Imp",
+        "Desk Imp",
+        "Fiendish Circle",
         "Flame Imp",
         "Flustered Librarian",
-        "Bloodbound Imp",
+        "Imp Gang Boss",
+        "Imp King Rafaam",
         "Imp Swarm (Rank 1)",
         "Impending Catastrophe",
-        "Fiendish Circle",
-        "Imp Gang Boss",
-        "Piggyback Imp",
+        "Malchezaar's Imp",
         "Mischievous Imp",
-        "Imp King Rafaam"
+        "Nofin's Imp-ossible",
+        "Piggyback Imp",
+        "Vile Library",
+        "Wicked Shipment"
       ])
 
   defp phylactery_warlock?(%{card_names: card_names}),

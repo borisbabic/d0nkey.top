@@ -299,7 +299,7 @@ defmodule Components.Helper do
 
   def multiselect_dropdown(assigns) do
     ~H"""
-    <div class={["has-dropdown", "dropdown", "is-hoverable"]} @mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data="{open: false}" x-bind:class="{'is-active': open}" x-bind:aria-expanded="open" @keydown.esc={"open=false"}>
+    <div class={["has-dropdown", "dropdown", "is-hoverable"]} x-on:mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data="{open: false}" x-bind:class="{'is-active': open}" x-bind:aria-expanded="open" x-on:keydown.esc={"open=false"}>
         <Dropdown.title title={@title}/>
         <div class="dropdown-menu" role="menu">
             <div class="dropdown-content">

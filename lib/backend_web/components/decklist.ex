@@ -17,6 +17,8 @@ defmodule Components.Decklist do
   prop(user, :map, from_context: :user)
   prop(link_to_archetype, :boolean, default: false)
   prop(on_card_click, :event, default: nil)
+  data(deck_class, :string)
+  data(class_class, :string)
   slot(right_button)
 
   @spec deck_name(Deck.t(), String.t() | nil, boolean) :: String.t()
@@ -43,11 +45,14 @@ defmodule Components.Decklist do
 
     deck_class = Deck.class(deck)
     class_class = deck_class |> String.downcase()
+    assigns = assigns
+    |> assign(deck_class: deck_class, class_class: class_class)
+
 
     ~F"""
       <div>
 
-          <div :if={@show_hero} class={"decklist-info",  class_class} style="margin-bottom: 0px;">
+          <div :if={@show_hero} class={"decklist-info",  @class_class} style="margin-bottom: 0px;">
               <div class="level is-mobile">
                   <div :if={deckcode = Deck.deckcode(@deck)} phx-click="deck_copied" phx-value-deckcode={deckcode} class="level-left">
                       {render_deckcode(deckcode, false)}
@@ -65,9 +70,9 @@ defmodule Components.Decklist do
               </div>
           </div>
           <div :if={@show_cards}>
-            <DustBar :if={show_above(@user)} deck={@deck} class={class_class}/>
-            <CardsList on_card_click={@on_card_click} comparison={@comparison} deck={@deck} deck_class={deck_class} highlight_rotation={@highlight_rotation}/>
-            <DustBar :if={show_below(@user)} deck={@deck} class={class_class} />
+            <DustBar :if={show_above(@user)} deck={@deck} class={@class_class}/>
+            <CardsList on_card_click={@on_card_click} comparison={@comparison} deck={@deck} deck_class={@deck_class} highlight_rotation={@highlight_rotation}/>
+            <DustBar :if={show_below(@user)} deck={@deck} class={@class_class} />
 
           </div>
           <span style="font-size: 0; line-size:0; display:block">

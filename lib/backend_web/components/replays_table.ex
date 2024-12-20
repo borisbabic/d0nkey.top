@@ -37,7 +37,7 @@ defmodule Components.ReplaysTable do
         <tbody>
           <tr :for={game <- @replays} >
             <td :if={@show_player_btag}><PlayerName flag={true} player={game.player_btag}/></td>
-            <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} guess_archetype={true}/></td>
+            <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} /></td>
             <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
             <td :if={@show_opponent}>
               <span>

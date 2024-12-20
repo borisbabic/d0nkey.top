@@ -21,7 +21,6 @@ defmodule Components.TournamentLineupExplorer do
   alias Components.Filter.PlayableCardSelect
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
-  alias Backend.Hearthstone.Lineup
   alias Components.PlayerName
 
   def render(assigns) do

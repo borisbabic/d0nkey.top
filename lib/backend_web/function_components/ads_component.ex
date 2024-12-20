@@ -1,7 +1,7 @@
 defmodule FunctionComponents.Ads do
   @moduledoc "Components for ad placements"
 
-  use Phoenix.Component
+  use BackendWeb, :component
 
   attr :leaderboard, :boolean, default: true
   attr :mobile_video_mode, :atom, default: :off

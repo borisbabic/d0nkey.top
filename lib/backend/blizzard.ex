@@ -380,17 +380,6 @@ defmodule Backend.Blizzard do
     end
   end
 
-  @spec to_region(String.t() | nil) :: {:ok, region} | {:error, String.t()}
-  def to_region(nil), do: {:error, "not a string"}
-
-  def to_region(string) do
-    if Enum.member?(regions(:string), string) do
-      {:ok, String.to_existing_atom(string)}
-    else
-      {:error, "not valid"}
-    end
-  end
-
   @spec battletag?(String.t()) :: boolean
   def battletag?(string) do
     String.match?(string, @battletag_regex)

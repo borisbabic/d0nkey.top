@@ -9,6 +9,7 @@ defmodule Components.Filter.PlayableCardSelect do
   prop(search, :string, default: "")
   prop(canonicalize, :boolean, default: true)
   prop(updater, :fun, default: &MultiSelectDropdown.update_selected/2)
+  prop(param, :string, required: true)
 
   def render(assigns) do
     ~F"""

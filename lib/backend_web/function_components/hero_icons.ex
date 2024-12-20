@@ -1,6 +1,6 @@
 defmodule HeroIcons do
   @moduledoc "Function component SVG icons from https://heroicons.com/"
-  use Phoenix.Component
+  use BackendWeb, :component
 
   attr :size, :string, default: nil
 

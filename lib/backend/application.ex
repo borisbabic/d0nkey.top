@@ -160,7 +160,6 @@ defmodule Backend.Application do
   def add_twitch_bot(prev) do
     case Application.fetch_env(:backend, :enable_twitch_bot) do
       {:ok, true} ->
-        IO.inspect("TWITCH BOT ENABLED!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         config = twitch_bot_config()
         Logger.debug("Twitch bot enabled")
         prev ++ [{TMI.Supervisor, config}]

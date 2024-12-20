@@ -1,6 +1,6 @@
 defmodule MaterialIcons do
   @moduledoc "Helpers for material icons svgs"
-  use Phoenix.Component
+  use BackendWeb, :component
   import HeroIcons, only: [wrapper: 1]
 
   # actually material design because heroicons doesn't have history

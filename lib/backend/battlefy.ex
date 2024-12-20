@@ -46,15 +46,13 @@ defmodule Backend.Battlefy do
     "osc-esports",
     "classic-hearthstone"
   ]
-  @organization_stats_configs for num <- [6, 5, 4, 3, 2],
-                                  do: %{
+  @organization_stats_configs (for num <- [6, 5, 4, 3, 2], do: %{
                                     from: ~D[2020-05-01],
                                     organization_slug: "juega-duro-hearthstone",
                                     title: "GRITO DE GUERRA #{num}",
                                     stats_slug: "grito-de-guerra-#{num}",
                                     pattern: ~r/GRITO DE GUERRA #{num}/i
-                                  },
-                                  into: [
+                                  }) ++ [
                                     %{
                                       from: ~D[2021-10-20],
                                       organization_slug: "black-claws",
@@ -1034,7 +1032,6 @@ defmodule Backend.Battlefy do
       ) do
     regex = Regex.compile!(stage_name_regex, regex_flags)
     tournament = get_tournament(tournament_id)
-    stages = Enum.filter(tournament.stages, &Regex.match?(regex, &1.name))
     lineups = lineups(tournament_id)
     lineup_player_map = Map.new(lineups, &{&1.name, &1})
 
