@@ -9,18 +9,17 @@ defmodule Components.ClassStatsModal do
   prop(modal_title, :string, required: false)
   prop(get_stats, :fun, required: true)
   prop(class, :css_class)
-  @default_title "Class Stats"
+  data(default_title, :string, default: "Class Stats")
+
   def render(assigns) do
-    button_title = assigns.button_title || assigns.title || @default_title
-    modal_title = assigns.modal_title || assigns.title || @default_title
     ~F"""
     <div class={@class}>
-      <button class="button" type="button" :on-click="show_modal">{button_title}</button>
+      <button class="button" type="button" :on-click="show_modal">{@button_title || @title || @default_title}</button>
       <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
-              <p class="modal-card-title">{modal_title}</p>
+              <p class="modal-card-title">{@modal_title || @title || @default_title}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section :if={stats = @get_stats.()} class="modal-card-body content">

@@ -23,7 +23,7 @@ defmodule Backend.Api.ApiUser do
 
   defp put_pass_hash(cs = %Ecto.Changeset{valid?: true, changes: %{password: password}})
        when not is_nil(password) do
-    change(cs, Bcrypt.add_hash(password, hash_key: :password))
+    change(cs, Bcrypt.hash_pwd_salt(password, hash_key: :password))
   end
 
   defp put_pass_hash(cs), do: cs

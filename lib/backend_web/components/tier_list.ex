@@ -14,7 +14,7 @@ defmodule Components.TierList do
   alias Surface.Components.LivePatch
   alias Components.Filter.ForceFreshDropdown
   import Components.DecksExplorer, only: [parse_int: 2]
-  import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4, flip_direction: 2]
+  import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
 
   prop(data, :list, default: [])
   prop(params, :map)

@@ -30,7 +30,7 @@ defmodule FunctionComponents.LayoutComponent do
 
   def navbar_dropdown(assigns) do
     ~H"""
-      <div class="navbar-item has-dropdown" @mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data={"{#{init_to_false(["open" | @sub_menus])}}"} x-bind:class="{'is-active': open}" x-bind:aria-expanded="open" @keydown.esc={"open=false"}>
+      <div class="navbar-item has-dropdown" x-on:mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data={"{#{init_to_false(["open" | @sub_menus])}}"} x-bind:class="{'is-active': open}" x-bind:aria-expanded="open" x-on:keydown.esc={"open=false"}>
         <Dropdown.title aria_controls={"navbar-dropdown"} title={@display} {%{href: @main_link}} class="navbar-item navbar-link" />
           <div class="navbar-dropdown">
             <div>

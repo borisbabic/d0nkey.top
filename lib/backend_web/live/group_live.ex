@@ -176,7 +176,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event("leave_group", _, socket = %{assigns: %{user: user, group_id: group_id}}) do
     UserManager.leave_group(user, group_id)
     |> handle_error(socket, fn s ->
-      push_redirect(s, to: Routes.live_path(socket, BackendWeb.MyGroupsLive))
+      push_navigate(s, to: Routes.live_path(socket, BackendWeb.MyGroupsLive))
     end)
   end
 

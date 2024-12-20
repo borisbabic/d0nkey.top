@@ -8,7 +8,7 @@ defmodule Backend.MixProject do
       sourcerorversion: "~> 1.0.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix] ++ Mix.compilers(),
+      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       preferred_cli_env: [

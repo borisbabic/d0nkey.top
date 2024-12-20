@@ -929,9 +929,9 @@ defmodule BackendWeb.LeaderboardView do
     nil ldb -> :STD
     nil region -> :EU
   """
-  @spec create_selectable_seasons(String.t() | atom(), String.t(), atom()) ::
+  @spec create_selectable_seasons(String.t() | atom(), String.t()) ::
           {:ok, [selectable_season]} | {:error, atom()}
-  def create_selectable_seasons(ldb, region, num \\ 7) do
+  def create_selectable_seasons(ldb, region) do
     with {:ok, ldb} <- Blizzard.to_leaderboard_id(ldb || :STD),
          {:ok, region} <- Blizzard.to_region(region || :EU) do
       selectable_seasons =

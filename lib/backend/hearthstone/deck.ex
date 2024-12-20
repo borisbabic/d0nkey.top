@@ -272,17 +272,6 @@ defmodule Backend.Hearthstone.Deck do
   defp deckcode_part(nil), do: [0]
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 
-  @spec class_name(String.t() | Deck.t()) :: String.t()
-  def class_name(%{class: class}) when is_binary(class),
-    do: class |> String.upcase() |> class_name()
-
-  def class_name(%{hero: h}) do
-    case Hearthstone.class(h) do
-      nil -> ""
-      class -> class |> String.upcase() |> class_name()
-    end
-  end
-
   @class_name_map %{
     "DEATHKNIGHT" => "Death Knight",
     "DEMONHUNTER" => "Demon Hunter",
@@ -296,6 +285,22 @@ defmodule Backend.Hearthstone.Deck do
     "WARLOCK" => "Warlock",
     "WARRIOR" => "Warrior"
   }
+
+  @spec class_name(String.t() | Deck.t()) :: String.t()
+  def class_name(%{class: class}) when is_binary(class),
+    do: class |> String.upcase() |> class_name()
+
+  def class_name(%{hero: h}) do
+    case Hearthstone.class(h) do
+      nil -> ""
+      class -> class |> String.upcase() |> class_name()
+    end
+  end
+
+  def class_name(class) do
+    Map.get(@class_name_map, class, class)
+  end
+
   @spec class_from_class_name(class_name :: String.t()) ::
           {:ok, class :: String.t()} | {:error, class_name :: String.t()}
   def class_from_class_name("Deathknight"), do: {:ok, "DEATHKNIGHT"}
@@ -306,10 +311,6 @@ defmodule Backend.Hearthstone.Deck do
       class when is_binary(class) -> {:ok, class}
       _ -> {:error, class_name}
     end
-  end
-
-  def class_name(class) do
-    Map.get(@class_name_map, class, class)
   end
 
   def short_class_name(class) do

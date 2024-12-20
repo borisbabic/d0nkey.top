@@ -1,5 +1,5 @@
 defmodule Components.Socials do
-  use Phoenix.Component
+  use BackendWeb, :component
 
   attr :link, :string, required: true
 

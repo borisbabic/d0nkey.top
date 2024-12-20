@@ -6,18 +6,20 @@ defmodule BackendWeb.DeckOnlyLive do
   alias Backend.Hearthstone.Deck
   alias Backend.DeckInteractionTracker, as: Tracker
 
-  data(deckcode, :string)
+  data(deck, :any)
   data(user, :any)
 
   def mount(_params, session = %{"code" => code}, socket) do
-    {:ok, socket |> assign(deckcode: code) |> assign_defaults(session) |> put_user_in_context()}
+    {:ok,
+     socket
+     |> assign(deck: Deck.decode!(code))
+     |> assign_defaults(session)
+     |> put_user_in_context()}
   end
 
   def render(assigns) do
-    deck = Deck.decode!(assigns[:deckcode])
-
     ~F"""
-      <Decklist deck={deck} />
+      <Decklist deck={@deck} />
     """
   end
 

@@ -3,7 +3,6 @@ defmodule BackendWeb.StreamingNowLive do
   use BackendWeb, :surface_live_view
   alias Components.LiveStreamer
   alias Backend.DeckInteractionTracker, as: Tracker
-  alias Surface.Components.LivePatch
   alias FunctionComponents.Dropdown
 
   @subscriptions ["streaming:hs:streaming_now"]
@@ -32,12 +31,10 @@ defmodule BackendWeb.StreamingNowLive do
   end
 
   def render(assigns) do
-    instructions_link = Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)
-
     ~F"""
       <div>
         <div class="title is-2">Streaming Now</div>
-        <div class="subtitle is-6"><a href={"#{instructions_link}"}>Instructions for streamers</a></div>
+        <div class="subtitle is-6"><a href={"#{Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)}"}>Instructions for streamers</a></div>
         <FunctionComponents.Ads.below_title/>
 
         <Dropdown.menu title={"Sort"}>
@@ -93,7 +90,7 @@ defmodule BackendWeb.StreamingNowLive do
           <div class="column is-narrow" :for={ls <- @streaming_now |> filter_sort_streaming(@filter_sort)} >
             <div>
               <LiveStreamer live_streamer={ls}>
-                <Components.ExpandableDecklist :if={ls.deckcode} id={"deck_#{ls.stream_id}_#{ls.deckcode}"} show_cards={false} deck={ls.deckcode |> Backend.Hearthstone.Deck.decode!()} guess_archetype={true}/>
+                <Components.ExpandableDecklist :if={ls.deckcode} id={"deck_#{ls.stream_id}_#{ls.deckcode}"} show_cards={false} deck={ls.deckcode |> Backend.Hearthstone.Deck.decode!()} />
               </LiveStreamer>
             </div>
           </div>

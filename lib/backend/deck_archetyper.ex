@@ -3,7 +3,7 @@ defmodule Backend.DeckArchetyper do
   @moduledoc "Determines the archetype of a deck"
   import Backend.DeckArchetyper.ArchetyperHelpers
 
-  alias Backend.DeckArchetyper.Twist.WhizbangHeroesArchetyper
+  # alias Backend.DeckArchetyper.Twist.WhizbangHeroesArchetyper
   alias Backend.DeckArchetyper.Twist.WondersArchetyper
   alias Backend.DeckArchetyper.DeathKnightArchetyper
   alias Backend.DeckArchetyper.DemonHunterArchetyper

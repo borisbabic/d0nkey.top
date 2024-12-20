@@ -142,6 +142,7 @@ config :logger, level: :warning
 config :phoenix, :json_library, Jason
 
 config :nostrum,
+  ffmpeg: false,
   gateway_intents: [
     :guild_messages,
     :direct_messages,

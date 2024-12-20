@@ -6,42 +6,42 @@ defmodule Components.DeckStreamingInfo do
   alias BackendWeb.Router.Helpers, as: Routes
   alias Backend.Streaming.DeckStreamingInfoBag
   prop(deck_id, :integer, required: true)
+  data(info, :any)
+  data(deck, :any)
+  data(streamer_deck_path, :any)
+  data(legend_rank, :any)
 
   def render(
         assigns = %{
-          info: %{
-            peak: peak,
-            peaked_by: pb,
-            streamers: s,
-            first_streamed_by: fsb
-          },
-          deck: deck,
-          streamer_deck_path: sdp
+          info: _info,
+          deck: _deck,
+          legend_rank: _,
+          streamer_deck_path: _sdp
         }
       ) do
-    legend_rank = render_legend_rank(peak)
-
     ~F"""
-      <div class="tag column" :if={is_integer(peak)}>
-        Peaked By: {pb}
+      <div class="tag column" :if={is_integer(@info.peak)}>
+        Peaked By: {@info.peaked_by}
       </div>
-      <div :if={legend_rank}> {legend_rank} </div>
-      <div class="tag column" :if={is_binary(fsb)}>
-        First Streamed: {fsb}
+      <div :if={@legend_rank}> {@legend_rank} </div>
+      <div class="tag column" :if={is_binary(@info.first_streamed_by)}>
+        First Streamed: {@info.first_streamed_by}
       </div>
-      <a href={"#{sdp}"} class="tag column is-link" :if= {s && Enum.any?(s)}>
-        # Streamed: {s |> Enum.count()}
+      <a href={@streamer_deck_path} class="tag column is-link" :if={@info.streamers && Enum.any?(@info.streamers)}>
+        # Streamed: {@info.streamers |> Enum.count()}
       </a>
-      <StreamingDeckNow deck={deck}/>
+      <StreamingDeckNow deck={@deck}/>
     """
   end
 
   def render(%{deck_id: deck_id} = assigns) when is_integer(deck_id) do
+    info = DeckStreamingInfoBag.get(deck_id)
     %{
       streamer_deck_path:
         Routes.streaming_path(BackendWeb.Endpoint, :streamer_decks, %{"deck_id" => deck_id}),
       deck: Backend.Hearthstone.deck(deck_id),
-      info: DeckStreamingInfoBag.get(deck_id)
+      info: info,
+      legend_rank: info |> Map.get(:peak) |> render_legend_rank()
     }
     |> Map.merge(assigns)
     |> render()

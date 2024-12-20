@@ -79,7 +79,7 @@ defmodule Components.NewTwitchCommand do
       ) do
     attrs = Map.put(raw_attrs, "user_id", id)
     TwitchBot.create_twitch_command(attrs)
-    {:noreply, socket |> push_redirect(to: "/twitch/bot")}
+    {:noreply, socket |> push_navigate(to: "/twitch/bot")}
   end
 
   def handle_event("template", %{"template" => template_name}, socket) do

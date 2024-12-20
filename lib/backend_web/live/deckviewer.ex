@@ -15,6 +15,8 @@ defmodule BackendWeb.DeckviewerLive do
   data(current_link, :string)
   data(compare_decks, :boolean)
   data(rotation, :boolean)
+  data(show_copy_button, :boolean)
+  data(comparison, :list)
   data(user, :any)
   data(title, :string)
 
@@ -22,17 +24,7 @@ defmodule BackendWeb.DeckviewerLive do
     {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
   end
 
-  def render(assigns = %{deckcodes: codes, compare_decks: cd}) do
-    show_copy_button = codes |> Enum.any?()
-
-    comparison =
-      if cd do
-        codes
-        |> Deck.create_comparison_map()
-      else
-        nil
-      end
-
+  def render(assigns) do
     ~F"""
 
       <div>
@@ -50,10 +42,10 @@ defmodule BackendWeb.DeckviewerLive do
                   <div class="column is-narrow">
                     <Submit label="Add" class="button"/>
                   </div>
-                  <div :if={show_copy_button} class="column is-narrow">
+                  <div :if={@show_copy_button} class="column is-narrow">
                     <button class="clip-btn-value button is-shown-js" type="button" data-balloon-pos="down" data-aria-on-copy="Copied!" data-clipboard-text={"#{@current_link}"} >Copy Link</button>
                   </div>
-                  <div :if={cd || @deckcodes |> Enum.count() > 1} class="column is-narrow">
+                  <div :if={@compare_decks || @deckcodes |> Enum.count() > 1} class="column is-narrow">
                     <button phx-click="toggle_compare" class="button" type="button">{compare_button_text(@compare_decks)}</button>
                     <button phx-click="class_sort_decks" class="button" type="button">Class Sort</button>
                   </div>
@@ -79,7 +71,7 @@ defmodule BackendWeb.DeckviewerLive do
         </div>
         <div class="columns is-mobile is-multiline">
           <div class="column is-narrow" :for.with_index = {{deck, index} <- @deckcodes} :if={@compare_decks == @compare_decks}>
-            <Decklist deck={deck |> Deck.decode!()} name={"#{deck |> Deck.extract_name()}"} comparison={comparison} highlight_rotation={@rotation}>
+            <Decklist deck={deck |> Deck.decode!()} name={"#{deck |> Deck.extract_name()}"} comparison={@comparison} highlight_rotation={@rotation}>
               <:right_button>
                 <a class="delete" phx-click="delete" phx-value-index={index}/>
               </:right_button>
@@ -122,12 +114,25 @@ defmodule BackendWeb.DeckviewerLive do
         []
       end
 
+    show_copy_button = codes |> Enum.any?()
+
+    comparison =
+      if compare_decks do
+        codes
+        |> Deck.create_comparison_map()
+      else
+        nil
+      end
+
+
     {
       :noreply,
       socket
       |> assign(:deckcodes, codes)
       |> assign(:current_link, current_link)
       |> assign(:compare_decks, compare_decks)
+      |> assign(:comparison, comparison)
+      |> assign(:show_copy_button, show_copy_button)
       |> assign(:rotation, rotation)
       |> assign(:title, params["title"])
       |> assign(:new_deck, "")

@@ -27,7 +27,6 @@ defmodule BackendWeb.LiveDashboard.GamePerMinPage do
 
   def fetch_rows(params, _node) do
     %{limit: limit, sort_by: sort_by, sort_dir: direction} = params
-    minutes_ago_fragment = "DATE_TRUNC('minute', now() - '#{limit - 1} minutes'::interval)"
     minutes_ago = -1 * (limit - 1)
     b = NaiveDateTime.utc_now() |> Timex.shift(minutes: minutes_ago)
     cutoff = NaiveDateTime.new!(b.year, b.month, b.day, b.hour, b.minute, 0)

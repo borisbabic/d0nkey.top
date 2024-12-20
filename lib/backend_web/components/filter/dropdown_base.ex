@@ -41,9 +41,12 @@ defmodule Components.Filter.DropdownBase do
         title = title(assigns, current)
         # fallback to [] only if it should be a list
         current =
-          with nil when unquote(current_is_list) == true <- current do
+          current || if unquote(current_is_list) == true do
             []
           end
+          # with nil when unquote(current_is_list) == true <- current do
+          #   []
+          # end
 
         Map.merge(assigns, %{current: current, actual_title: title})
       end

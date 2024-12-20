@@ -8,7 +8,7 @@ defmodule TwitchBot.Handler do
           chat: String.t()
         }
   @impl TMI.Handler
-  def handle_message(message, sender, chat, tags \\ :no_tags) do
+  def handle_message(message, sender, chat, _tags \\ :no_tags) do
     config = chat |> parse_chat() |> Backend.TwitchBot.commands()
 
     message_info = %{

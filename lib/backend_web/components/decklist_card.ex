@@ -16,6 +16,12 @@ defmodule Components.DecklistCard do
   prop(show_mana_cost, :boolean, default: true)
   prop(disable_link, :boolean, default: false)
   prop(decklist_options, :map, default: %{})
+  data(border, :string)
+  data(gradient, :string)
+  data(tile_url, :string)
+  data(card_url, :string)
+  data(html_id, :string)
+  data(image_id, :string)
 
   defp rarity(nil), do: rarity("COMMON")
   defp rarity("FREE"), do: rarity("COMMON")
@@ -67,7 +73,7 @@ defmodule Components.DecklistCard do
     html_id = "card-#{card.id}"
 
     {tile_url, card_url} = tile_card_url(card)
-    id = Ecto.UUID.generate()
+    image_id = Ecto.UUID.generate()
 
     %{border: border, gradient: gradient} =
       colors(card, assigns[:deck_class], assigns[:decklist_options], assigns[:deck])
@@ -75,21 +81,32 @@ defmodule Components.DecklistCard do
     # rarity_color = "--color-dark-#{rarity(card.rarity)}"
     # deck_class_color = "--color-#{class(card.card_class)}"
 
+    assigns =
+      assigns
+      |> assign(
+        border: border,
+        gradient: gradient,
+        tile_url: tile_url,
+        card_url: card_url,
+        html_id: html_id,
+        image_id: image_id
+      )
+
     ~F"""
       <a href={~p"/card/#{@card}"} class={"has-no-pointer-events": @disable_link}>
-        <div onmouseover={"set_display('#{id}', 'flex')"} onmouseout={"set_display('#{id}', 'none')"}>
-          <div style={"--color-border: #{border}; --color-gradient: #{gradient};"} class={"decklist-card-container decklist-card #{html_id} is-flex is-align-items-center"}>
+        <div onmouseover={"set_display('#{@image_id}', 'flex')"} onmouseout={"set_display('#{@image_id}', 'none')"}>
+          <div style={"--color-border: #{@border}; --color-gradient: #{@gradient};"} class={"decklist-card-container decklist-card #{@html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
-            <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{cost(card, @use_deck_card_cost, @deck)}</span>
+            <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{cost(@card, @use_deck_card_cost, @deck)}</span>
             <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped">
               <span style="font-size: 0;"># {@count}x ({Card.cost(@card)}) </span>
               <span :if={@sideboarded_in}><HeroIcons.chevron_right size="small"/></span>
-              {card.name}
+              {@card.name}
             </div>
-            <div style={"background-image: url('#{tile_url}');"} class="decklist-card-tile">
+            <div style={"background-image: url('#{@tile_url}');"} class="decklist-card-tile">
             </div>
             <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable">{count(@count, Card.rarity(@card), @decklist_options)}</span>
-            <div id={"#{id}"} class="decklist-card-image" style={"background-image: url('#{card_url}'); background-size: 256px; background-repeat: no-repeat; pointer-events: none;"}></div>
+            <div id={@image_id} class="decklist-card-image" style={"background-image: url('#{@card_url}'); background-size: 256px; background-repeat: no-repeat; pointer-events: none;"}></div>
           </div>
         </div>
         <div></div>
