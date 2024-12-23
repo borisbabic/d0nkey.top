@@ -70,7 +70,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   end
 
   defp zarimi?(ci) do
-    "Timewinder Zarimi" in ci.card_names
+    "Timewinder Zarimi" in ci.card_names and type_count(ci, "Dragon") > 3
   end
 
   defp topdeck?(ci) do
