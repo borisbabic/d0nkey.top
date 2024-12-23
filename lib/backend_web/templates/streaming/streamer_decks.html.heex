@@ -10,10 +10,10 @@
 <%= @next_button %>
 <%= render_dropdowns @dropdowns %>
 <div class="dropdown is-hoverable">
-    <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "include_cards", "title" => "Include Cards", "selected" => @include}) %>
+    <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "include_cards", "title" => "Include Cards", "selected" => @include, "format" => @conn.query_params["format"]}) %>
 </div>
 <div class="dropdown is-hoverable">
-    <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "exclude_cards", "title" => "Exclude Cards", "selected" => @exclude}) %>
+    <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "exclude_cards", "title" => "Exclude Cards", "selected" => @exclude, "format" => @conn.query_params["format"]}) %>
 </div>
 <div class="dropdown is-hoverable">
     <%= live_render(@conn, BackendWeb.StreamerPickerLive, session: %{"base_url" => @base_url}) %>
