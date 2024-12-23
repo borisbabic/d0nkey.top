@@ -24,16 +24,14 @@ defmodule Components.ClassStatsTable do
           <tr :for={stat <- @filtered_stats}>
             <td><span class={"tag","player-name", extract_class(stat) |> String.downcase()}><span class={"basic-black-text"}>{class_name(stat)}</span></span></td>
             <td>
-              <WinrateTag winrate={stat.winrate}/>
-              <span :if={@show_win_loss?}>({stat.wins} - {stat.losses})</span>
+              <WinrateTag winrate={stat.winrate} win_loss={win_loss(stat, @show_win_loss?)}/>
             </td>
             <td>{total(stat, @total_stats, @show_class_percent?)}</td>
           </tr>
           <tr :if={@total_stats}>
             <td>Total</td>
             <td>
-              <WinrateTag winrate={@total_stats.winrate} />
-              <span :if={@show_win_loss?}>({@total_stats.wins} - {@total_stats.losses})</span>
+              <WinrateTag winrate={@total_stats.winrate} win_loss={win_loss(@total_stats, @show_win_loss?) } />
             </td>
             <td>{@total_stats.total}</td>
           </tr>
@@ -50,6 +48,9 @@ defmodule Components.ClassStatsTable do
     |> assign(filtered_stats: filtered_stats, total_stats: total_stats)
     |> render()
   end
+
+  defp win_loss(%{wins: wins, losses: losses}, true), do: %{wins: wins, losses: losses}
+  defp win_loss(_stats, _show_win_losss?), do: nil
 
   defp total(%{total: class_total}, %{total: overall_total}, true) do
     percent = Util.percent(class_total, overall_total) |> Float.round(1)

@@ -176,7 +176,7 @@ defmodule Components.DecksExplorer do
         phx-target={@myself}
         phx-viewport-bottom={!@end_of_stream? && "next-decks-page"}>
           <div id={dom_id} :for={{dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
-            <DeckWithStats deck_with_stats={deck_with_stats} />
+            <DeckWithStats deck_with_stats={deck_with_stats} show_win_loss?={@filter_context == :personal}/>
           </div>
         </div>
         <div :if={@needs_login?}>
