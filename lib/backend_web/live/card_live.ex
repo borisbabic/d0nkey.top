@@ -19,6 +19,7 @@ defmodule BackendWeb.CardLive do
       :noreply,
       socket
       |> assign(card: card, card_id: card_id)
+      |> assign_meta()
     }
   end
 
