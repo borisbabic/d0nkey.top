@@ -77,7 +77,7 @@ defmodule Components.OpponentStatsTable do
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
             title={"Players"}
             param={"players"} />
-        <ClassStatsTable :if={@stats && !@needs_login?} stats={@stats} />
+        <ClassStatsTable :if={@stats && !@needs_login?} stats={@stats} show_win_loss?={"my_games" == @selected_params["players"]} />
         <div :if={@needs_login?}>
           <br>
           <br>
