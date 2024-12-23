@@ -145,9 +145,21 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       wild_velen?(ci) ->
         String.to_atom("Velen #{class_name}")
 
+      amalgam?(ci) ->
+        String.to_atom("Amalgam #{class_name}")
+
       true ->
         minion_type_fallback(ci, class_name, opts)
     end
+  end
+
+  defp amalgam?(card_info) do
+    one_drop_names =
+      for card <- card_info.full_cards, 1 == Card.cost(card), Card.minion?(card) do
+        card.name
+      end
+
+    ["Adaptive Amalgam"] == Enum.uniq(one_drop_names)
   end
 
   def wild_velen?(ci) do
