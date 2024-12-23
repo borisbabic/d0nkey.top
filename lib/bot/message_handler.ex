@@ -9,6 +9,7 @@ defmodule Bot.MessageHandler do
   alias Backend.Leaderboards
   alias Nostrum.Struct.Embed
   alias Hearthstone.DeckcodeExtractor
+  alias Backend.Hearthstone.Deck
   import Bot.MessageHandlerUtil
   require Logger
 
@@ -476,8 +477,23 @@ defmodule Bot.MessageHandler do
   end
 
   defp send_deck_messages(decks, msg) do
-    for {:ok, message} <- Enum.map(decks, &create_deck_message/1) do
-      reply(msg, content: message)
+    for deckcode <- decks, {:ok, deck} <- [Deck.decode(deckcode)] do
+      {missing_zilly?, new_deck} =
+        if Deck.missing_zilliax_sideboard?(deck) do
+          {true, Deck.brodeify(deck)}
+        else
+          {false, deck}
+        end
+
+      with {:ok, from_db} <- Backend.Hearthstone.create_or_get_deck(new_deck) do
+        with {:ok, new_msg} <- reply(msg, content: create_deck_message(from_db)),
+             true <- missing_zilly? do
+          reply(new_msg,
+            content:
+              "I put Ben Brode in your deck instead of Zilliax 3000! HA HA HA!\n\nThe client won't accept the original deck because Zilliax is missing pieces, this way you can copy the code and import it into the client, replace Ben Brode and convert to standard!!!"
+          )
+        end
+      end
     end
   end
 
@@ -490,12 +506,9 @@ defmodule Bot.MessageHandler do
     end
   end
 
-  @spec create_deck_message(String.t()) :: {:ok, String.t()} | {:error, any()}
+  @spec create_deck_message(String.t()) :: String.t()
   def create_deck_message(deck) do
-    with {:ok, from_db} <- Backend.Hearthstone.create_or_get_deck(deck) do
-      {:ok,
-       "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(from_db)}\n```\nhttps://www.hsguru.com/deck/#{from_db.id}"}
-    end
+    "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck)}\n```\nhttps://www.hsguru.com/deck/#{deck.id || Deck.deckcode(deck)}"
   end
 
   def handle_highlight(%{content: content, channel_id: channel_id}) do

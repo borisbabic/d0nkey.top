@@ -992,6 +992,12 @@ defmodule Backend.Hearthstone.Deck do
     in_deck + in_sideboards
   end
 
+  @spec missing_zilliax_sideboard?(t()) :: boolean()
+  def missing_zilliax_sideboard?(%{cards: cards, sideboards: sideboards}) do
+    Enum.any?(cards, &Card.zilliax_3000?/1) and
+      !Enum.any?(sideboards, &(&1.sideboard == Card.zilliax_3000()))
+  end
+
   def tourists(deck) do
     deck.cards
     |> Enum.map(&Backend.Hearthstone.get_card/1)
@@ -1003,6 +1009,22 @@ defmodule Backend.Hearthstone.Deck do
         {:ok, class} <- [Card.tourist_class(t)] do
       {class, card_set_id}
     end
+  end
+
+  @spec replace_cards(t(), Map.t()) :: String.t()
+  def replace_cards(deck, new_cards_map) do
+    new_cards = Enum.map(deck.cards, &Map.get(new_cards_map, &1, &1))
+
+    deck
+    |> Map.put(:cards, new_cards)
+    |> deckcode()
+    |> decode!()
+  end
+
+  @spec replace_cards(t(), integer()) :: String.t()
+  def brodeify(deck, to_replace \\ Card.zilliax_3000()) do
+    card_map = %{to_replace => Card.ben_brode()}
+    replace_cards(deck, card_map)
   end
 end
 
