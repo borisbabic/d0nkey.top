@@ -1297,8 +1297,7 @@ defmodule Backend.Hearthstone do
   # def canonical_id(id, prev \\ [])
 
   def canonical_id(id) when Card.is_zilliax_art(id) do
-    # pink
-    110_446
+    Card.pink_zilly()
   end
 
   def canonical_id(id) do

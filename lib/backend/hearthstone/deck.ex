@@ -248,6 +248,7 @@ defmodule Backend.Hearthstone.Deck do
     sideboards
     |> map_sideboard_cards(card_mapper)
     |> deduplicate_sideboards()
+    |> ensure_zilly_art()
   end
 
   defp map_sideboard_cards(sideboards, card_mapper) do
@@ -263,6 +264,23 @@ defmodule Backend.Hearthstone.Deck do
       count = sideboards |> Enum.map(& &1.count) |> Enum.sum()
       Map.put(first, :count, count)
     end)
+  end
+
+  defp ensure_zilly_art(sideboards) do
+    zilly_sideboards =
+      Enum.group_by(sideboards, & &1.sideboard)
+      |> Enum.find_value(fn {sideboard_id, sideboards} ->
+        Card.zilliax_3000?(sideboard_id) and sideboards
+      end)
+
+    if !zilly_sideboards or Enum.any?(zilly_sideboards, &Card.zilliax_art?(&1.card)) do
+      sideboards
+    else
+      art = %{count: 1, card: Card.pink_zilly(), sideboard: Card.zilliax_3000()}
+
+      [art | sideboards]
+      |> Enum.sort_by(& &1.card)
+    end
   end
 
   @spec canonicalize_cards([integer]) :: [integer]
@@ -915,7 +933,7 @@ defmodule Backend.Hearthstone.Deck do
 
     sideboards_cost =
       Map.get(deck, :sideboards, [])
-      |> Enum.filter(&count_sideboard_cost/1)
+      |> Enum.filter(&use_sideboard_for_dust_cost?/1)
       |> remove_non_standard(deck)
       |> Enum.map(&(Card.dust_cost(&1.card) * &1.count))
       |> Enum.sum()
@@ -942,7 +960,8 @@ defmodule Backend.Hearthstone.Deck do
   defp get_card(%{card_id: id}) when is_integer(id), do: Hearthstone.get_card(id)
   defp get_card(_), do: nil
 
-  defp count_sideboard_cost(%{sideboard: id}) do
+  @spec use_sideboard_for_dust_cost?(sideboard :: Sideboard.t()) :: boolean()
+  defp use_sideboard_for_dust_cost?(%{sideboard: id}) do
     !Card.zilliax_3000?(id)
   end
 

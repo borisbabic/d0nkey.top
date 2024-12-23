@@ -23,6 +23,10 @@ defmodule Backend.Hearthstone.Card do
     end
   end
 
+  def zilliax_art?(dbf_id) do
+    dbf_id in [110_440, 110_441, 110_442, 110_443, 110_444, 110_445, 110_446, 112_530]
+  end
+
   defmacro is_card(card) do
     quote do
       is_struct(unquote(card), Backend.Hearthstone.Card) or
@@ -145,6 +149,9 @@ defmodule Backend.Hearthstone.Card do
   def zilliax_3000?(nil), do: false
   def zilliax_3000?(id) when is_integer(id), do: id == @zilliax_3000
   def zilliax_3000?(card), do: dbf_id(card) == @zilliax_3000
+
+  @pink_zilly 110_446
+  def pink_zilly, do: @pink_zilly
 
   @renathal 79_767
   def renathal, do: @renathal
