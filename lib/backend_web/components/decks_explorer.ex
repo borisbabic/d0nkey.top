@@ -151,8 +151,8 @@ defmodule Components.DecksExplorer do
           param={"order_by"} />
 
         <ArchetypeSelect id={"player_deck_archetype"} param={"player_deck_archetype"} selected={params["player_deck_archetype"] || []} title="Archetypes" />
-        <PlayableCardSelect id={"player_deck_includes"} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
-        <PlayableCardSelect id={"player_deck_excludes"} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+        <PlayableCardSelect id={"player_deck_includes"} format={params["format"]} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
+        <PlayableCardSelect id={"player_deck_excludes"} format={params["format"]} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
         <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
         <ForceFreshDropdown

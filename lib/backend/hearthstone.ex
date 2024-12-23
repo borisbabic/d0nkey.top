@@ -949,6 +949,11 @@ defmodule Backend.Hearthstone do
   defp build_cards_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_cards_query/2)
 
+  defp compose_cards_query(:canonical, query) do
+    query
+    |> where([card: c], c.id == c.canonical_id)
+  end
+
   defp compose_cards_query({"order_by", "latest"}, query) do
     query
     |> order_by([card: c], desc: c.inserted_at)
@@ -1036,6 +1041,18 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"card_set_id_not_in", ids}, query) do
     query
     |> where([card: c], c.card_set_id not in ^ids)
+  end
+
+  defp compose_cards_query({"card_set_group_slug", card_set_group}, query) do
+    group_subquery =
+      from csg in SetGroup,
+        select: fragment("UNNEST(?)", csg.card_sets),
+        where: csg.slug == ^card_set_group
+
+    card_set_subquery = from cs in Set, select: cs.id, where: cs.slug in subquery(group_subquery)
+
+    query
+    |> where([card: c], c.card_set_id in subquery(card_set_subquery))
   end
 
   @ilike_name_or_slug_fields [

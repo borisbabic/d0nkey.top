@@ -92,17 +92,17 @@ defmodule Components.ReplayExplorer do
             name_prefix={"VS "}
             param={"opponent_class"} />
 
-          <PlayableCardSelect :if={@includes_filter} id={"player_deck_includes"} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
-          <PlayableCardSelect :if={@excludes_filter} id={"player_deck_excludes"} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+          <PlayableCardSelect format={params["format"]} :if={@includes_filter} id={"player_deck_includes"} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
+          <PlayableCardSelect format={params["format"]} :if={@excludes_filter} id={"player_deck_excludes"} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
           <PlayerHasCoinDropdown :if={@player_coin_filter} id={"player_has_coin_dropdown"} warning_triangle={false} />
 
           {#if @card_specific_filters }
-            <PlayableCardSelect id={"player_mulligan"} param={"player_mulligan"} selected={params["player_mulligan"] || []} title="In Mulligan"/>
-            <PlayableCardSelect id={"player_not_mulligan"} param={"player_not_mulligan"} selected={params["player_not_mulligan"] || []} title="Not In Mulligan"/>
-            <PlayableCardSelect id={"player_drawn"} param={"player_drawn"} selected={params["player_drawn"] || []} title="Drawn"/>
-            <PlayableCardSelect id={"player_not_drawn"} param={"player_not_drawn"} selected={params["player_not_drawn"] || []} title="Not Drawn"/>
-            <PlayableCardSelect id={"player_kept"} param={"player_kept"} selected={params["player_kept"] || []} title="Kept"/>
-            <PlayableCardSelect id={"player_not_kept"} param={"player_not_kept"} selected={params["player_not_kept"] || []} title="Not Kept"/>
+            <PlayableCardSelect format={params["format"]} id={"player_mulligan"} param={"player_mulligan"} selected={params["player_mulligan"] || []} title="In Mulligan"/>
+            <PlayableCardSelect format={params["format"]} id={"player_not_mulligan"} param={"player_not_mulligan"} selected={params["player_not_mulligan"] || []} title="Not In Mulligan"/>
+            <PlayableCardSelect format={params["format"]} id={"player_drawn"} param={"player_drawn"} selected={params["player_drawn"] || []} title="Drawn"/>
+            <PlayableCardSelect format={params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={params["player_not_drawn"] || []} title="Not Drawn"/>
+            <PlayableCardSelect format={params["format"]} id={"player_kept"} param={"player_kept"} selected={params["player_kept"] || []} title="Kept"/>
+            <PlayableCardSelect format={params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={params["player_not_kept"] || []} title="Not Kept"/>
           {/if}
           <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
           <Form :if={@search_filter} for={%{}} as={:search} change="change" submit="change">

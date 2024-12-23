@@ -6,6 +6,7 @@ defmodule BackendWeb.PlayableCardSelectLive do
   data(param, :string)
   data(title, :string)
   data(selected, :list)
+  data(format, :any)
 
   def mount(
         _params,
@@ -18,13 +19,14 @@ defmodule BackendWeb.PlayableCardSelectLive do
        param: param,
        base_url: base_url,
        updater: create_update_fun(base_url, param),
+       format: Map.get(session, "format"),
        title: Map.get(session, "title")
      )}
   end
 
   def render(assigns) do
     ~F"""
-    <PlayableCardSelect updater={@updater} param={@param} id={"playable_card_select_#{@param}"} selected={@selected || %{}} title={@title}/>
+    <PlayableCardSelect format={@format} updater={@updater} param={@param} id={"playable_card_select_#{@param}"} selected={@selected || %{}} title={@title}/>
     """
   end
 
