@@ -11,12 +11,14 @@ defmodule Components.WinrateTag do
   prop(base_saturation, :number, default: 5)
   prop(sample, :number, default: nil)
   prop(impact, :boolean, default: false)
+  prop(win_loss, :any, default: nil)
 
   def render(assigns) do
     ~F"""
     <span class={"tag", @class} style={winrate_style(@winrate + shift_for_color(@impact), @positive_hue, @negative_hue, @lightness, @base_saturation)}>
       <span class={"basic-black-text"}>
         {round(@winrate, @round_digits)}
+        <span :if={@win_loss}>({@win_loss.wins} - {@win_loss.losses})</span>
       </span>
     </span>
     """
