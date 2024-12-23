@@ -153,6 +153,9 @@ defmodule Backend.Hearthstone.Card do
   @pink_zilly 110_446
   def pink_zilly, do: @pink_zilly
 
+  @ben_brode 1768
+  def ben_brode, do: @ben_brode
+
   @renathal 79_767
   def renathal, do: @renathal
   @spec zilliax_3000?(card() | integer() | nil) :: boolean
