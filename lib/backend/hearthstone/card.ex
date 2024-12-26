@@ -371,8 +371,24 @@ defmodule Backend.Hearthstone.Card do
 
   @spec same_card_grouper(card()) :: String.t()
   def same_card_grouper(card) do
-    "name:#{name(card)}_cost:#{cost(card)}_health:#{card.health}_attack:#{card.attack}_text:#{card.text}_type:#{type(card)}"
+    text = hack_grouper_text(card)
+
+    "name:#{name(card)}_cost:#{cost(card)}_health:#{card.health}_attack:#{card.attack}_text:#{text}_type:#{type(card)}"
   end
+
+  ## the official api was/is bugged, duplicating some card text
+  defp hack_grouper_text(%{text: text}) when is_binary(text) do
+    split_position = div(String.length(text), 2)
+    {one, two} = String.split_at(text, split_position)
+
+    if String.trim(one) == String.trim(two) do
+      String.trim(one)
+    else
+      String.trim(text)
+    end
+  end
+  defp hack_grouper_text(%{text: text}), do: text
+  defp hack_grouper_text(_), do: nil
 end
 
 defmodule Backend.Hearthstone.RuneCost do

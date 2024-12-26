@@ -1523,7 +1523,7 @@ defmodule Backend.Hearthstone do
       |> case do
         [existing_canonical_id] -> existing_canonical_id
         [] -> oldest.id
-        _ -> raise "Multiple canonical ids found"
+        _ -> raise "Multiple canonical ids found for group [#{Enum.map_join(cards, ", ", & &1.id)}]"
       end
 
     Enum.reduce(cards, multi, fn card, multi ->
