@@ -1227,11 +1227,15 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"deck_format", deck_format}, query),
     do: query |> where([player_deck: pd], pd.format == ^deck_format)
 
-  defp compose_games_query({"player_deck_includes", cards}, query),
-    do: query |> where([player_deck: pd], fragment("? @> ?", pd.cards, ^cards))
+  defp compose_games_query({"player_deck_includes", cards}, query) do
+    query
+    |> Hearthstone.include_cards(cards, :player_deck)
+  end
 
-  defp compose_games_query({"player_deck_excludes", cards}, query),
-    do: query |> where([player_deck: pd], not fragment("? && ?", pd.cards, ^cards))
+  defp compose_games_query({"player_deck_excludes", cards}, query) do
+    query
+    |> Hearthstone.exclude_cards(cards, :player_deck)
+  end
 
   defp compose_games_query({"player_deck_id", :not_null}, query = @agg_deck_query) do
     query

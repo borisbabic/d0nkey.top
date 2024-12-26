@@ -694,19 +694,62 @@ defmodule Backend.Hearthstone do
       )
       |> where([game: g], g.inserted_at >= ago(^min_ago, "minute"))
 
-  defp compose_decks_query({"include_cards", cards = [_ | _]}, query),
-    do: query |> where([deck: d], fragment("? @> ?", d.cards, ^cards))
+  defp compose_decks_query({"include_cards", cards = [_ | _]}, query) do
+    query
+    |> include_cards(cards, :deck)
+  end
 
   defp compose_decks_query({"include_cards", []}, query), do: query
 
-  defp compose_decks_query({"exclude_cards", cards = [_ | _]}, query),
-    do: query |> where([deck: d], fragment("NOT(? && ?)", d.cards, ^cards))
+  defp compose_decks_query({"exclude_cards", cards = [_ | _]}, query) do
+    query
+    |> exclude_cards(cards, :deck)
+  end
 
   defp compose_decks_query({"exclude_cards", []}, query), do: query
 
   defp compose_decks_query(unrecognized, query) do
     Logger.warning("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
     query
+  end
+
+  def include_cards(query, cards, binding) do
+    dynamic =
+      cards
+      |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
+        same_cards_subquery = same_card_ids_query(card_id)
+
+        dynamic(
+          [{^binding, d}],
+          ^dynamic and fragment("? && ?", d.cards, subquery(same_cards_subquery))
+        )
+      end)
+
+    query |> where(^dynamic)
+  end
+
+  def exclude_cards(query, cards, binding) do
+    dynamic =
+      cards
+      |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
+        same_cards_subquery = same_card_ids_query(card_id)
+
+        dynamic(
+          [{^binding, d}],
+          ^dynamic and not fragment("? && ?", d.cards, subquery(same_cards_subquery))
+        )
+      end)
+
+    query |> where(^dynamic)
+  end
+
+  def same_card_ids_query(card_id) do
+    canonical = canonical_id(card_id)
+    list = [card_id, canonical]
+
+    from c in Card,
+      select: fragment("array_agg(?::integer)", c.id),
+      where: c.id in ^list or c.canonical_id in ^list
   end
 
   def darkmoon_faire_out?() do
