@@ -367,8 +367,11 @@ defmodule Backend.Streaming do
 
   defp base_streamer_decks_query() do
     from sd in StreamerDeck,
+      as: :streamer_deck,
       join: s in assoc(sd, :streamer),
+      as: :streamer,
       join: d in assoc(sd, :deck),
+      as: :deck,
       preload: [streamer: s, deck: d]
   end
 
@@ -421,14 +424,27 @@ defmodule Backend.Streaming do
     compose_streamer_deck_query({"include_cards", ids}, query)
   end
 
+  defp compose_streamer_deck_query({"include_cards", cards = [_ | _]}, query) do
+    query
+    |> Hearthstone.include_cards(cards, :deck)
+  end
+
   defp compose_streamer_deck_query({"include_cards", []}, query), do: query
 
-  defp compose_streamer_deck_query({"include_cards", cards}, query),
-    do: query |> where([_sd, _s, d], fragment("? @> ?", d.cards, ^cards))
+  defp compose_streamer_deck_query({"exclude_cards", cards = [_ | _]}, query) do
+    query
+    |> Hearthstone.exclude_cards(cards, :deck)
+  end
+
+  defp compose_streamer_deck_query({"exclude_cards", %{} = cards}, query) do
+    ids = for {a, "true"} <- cards, id when is_integer(id) <- [Util.to_int_or_orig(a)], do: id
+    compose_streamer_deck_query({"exclude_cards", ids}, query)
+  end
+
+  defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"alterac_valley", "yes"}, query) do
     card_ids = alterac_valley_card_ids()
-
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
   end
 
@@ -467,16 +483,6 @@ defmodule Backend.Streaming do
 
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
   end
-
-  defp compose_streamer_deck_query({"exclude_cards", %{} = cards}, query) do
-    ids = for {a, "true"} <- cards, id when is_integer(id) <- [Util.to_int_or_orig(a)], do: id
-    compose_streamer_deck_query({"exclude_cards", ids}, query)
-  end
-
-  defp compose_streamer_deck_query({"exclude_cards", []}, query), do: query
-
-  defp compose_streamer_deck_query({"exclude_cards", cards}, query),
-    do: query |> where([_sd, _s, d], fragment("NOT(? && ?)", d.cards, ^cards))
 
   defp compose_streamer_deck_query({"hsreplay_archetype", []}, query), do: query
 
