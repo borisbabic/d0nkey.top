@@ -152,6 +152,8 @@ defmodule Bot.MessageHandler do
     Only new messages in that channel are evaluated, ie message edits or deletions are ignored
     """
   }
+  def handle(%{author: %{bot: true}}), do: nil
+
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle(msg) do
     log_message(msg)
