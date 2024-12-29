@@ -258,7 +258,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   ]
   defp cycle_rogue?(ci) do
     min_count?(ci, 1, @cycle_payoff) and
-    min_count?(ci, 3, @multi_draw)
+      min_count?(ci, 3, @multi_draw)
   end
 
   defp pirate_rogue?(ci) do
@@ -355,6 +355,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
 
+      bounty_draka?(card_info) ->
+        :"APM Draka Rogue"
+
       "Spirit of the Shark" in card_info.card_names ->
         :"Shark Rogue"
 
@@ -370,6 +373,22 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp bounty_draka?(ci) do
+    min_count?(ci, 3, [
+      "Tenwu Of The Red Smoke",
+      "Tenwu of the Red Smoke",
+      "Bounty Board",
+      "Scabbs Cutterbutter"
+    ]) and
+      min_count?(ci.etc_sideboard_names, 3, [
+        "Bounce Around (ft Garona)",
+        "Bounce Around (ft. Garona)",
+        "Potion Of Illusion",
+        "Potion of Illusion",
+        "Necrolord Draka"
+      ])
   end
 
   defp mine_rogue?(ci),
