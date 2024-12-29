@@ -332,11 +332,6 @@ defmodule Backend.Hearthstone do
   def class(78_065), do: "DEATHKNIGHT"
   def class(dbf_id), do: HearthstoneJson.get_class(dbf_id)
 
-  def add_class_and_regenerate_deckcode() do
-    decks([{"class", nil}])
-    |> regenerate_class_and_deckcode()
-  end
-
   def deduplicate_decks(limit \\ 100) do
     get_duplicated_deck_ids(limit)
     |> Enum.map(&deduplicate_ids/1)
@@ -376,91 +371,6 @@ defmodule Backend.Hearthstone do
 
     date_part = NaiveDateTime.to_iso8601(deck.inserted_at)
     "#{prepend}#{date_part}"
-  end
-
-  def regenerate_class_and_deckcode(decks) do
-    decks
-    |> Enum.reduce(Multi.new(), fn d, multi ->
-      deckcode = Deck.deckcode(d)
-
-      class =
-        case Deck.decode(deckcode) do
-          {:ok, deck} -> class(deck)
-          _ -> class(d)
-        end
-
-      updated =
-        d |> Deck.changeset(%{deckcode: deckcode, class: class, hero: Deck.get_basic_hero(class)})
-
-      Multi.update(multi, to_string(d.id) <> deckcode, updated)
-    end)
-    |> Repo.transaction(timeout: 360_000)
-  end
-
-  defp add_limit(query, limit) when is_integer(limit), do: query |> limit(^limit)
-  defp add_limit(query, _), do: query
-
-  def regenerate_classes(containing_card_ids, min_ago \\ 60 * 24, min_id \\ 0, limit \\ nil) do
-    cutoff = NaiveDateTime.utc_now() |> NaiveDateTime.add(-1 * 60 * min_ago)
-
-    query =
-      from(d in Deck,
-        where: fragment("? && ?", d.cards, ^containing_card_ids),
-        where: d.id > ^min_id and d.inserted_at >= ^cutoff
-      )
-
-    query
-    |> add_limit(limit)
-    |> Repo.all(timeout: 360_000)
-    |> regenerate_classes_for_decks()
-  end
-
-  def regenerate_classes_for_decks(decks) do
-    {multi, conflicts} =
-      for d <- decks,
-          class_by_cards = Deck.most_frequent_class(d.cards),
-          class_by_cards != Deck.class(d),
-          reduce: {Multi.new(), []} do
-        {multi, conflicted} ->
-          hero = Deck.get_basic_hero(class_by_cards)
-          deckcode = Deck.deckcode(d.cards, hero, d.format, d.sideboards)
-
-          case deck(deckcode) do
-            nil ->
-              cs = Deck.changeset(d, %{class: class_by_cards, hero: hero, deckcode: deckcode})
-              new_multi = Multi.update(multi, "deck_id_#{d.id}_class_#{class_by_cards}", cs)
-              {new_multi, conflicted}
-
-            existing ->
-              {multi, [{deckcode, d}, {deckcode, existing} | conflicted]}
-          end
-      end
-
-    transaction_result = Repo.transaction(multi, timeout: 360_000)
-
-    conflict_result =
-      conflicts
-      |> Enum.group_by(fn {deckcode, _deck} -> deckcode end)
-      |> Enum.map(fn {deckcode, decks} ->
-        decks
-        |> Enum.map(fn {_deckcode, deck} -> deck end)
-        |> Command.DeduplicateDecks.deduplicate_group(&(&1.deckcode == deckcode), :desc)
-      end)
-
-    {transaction_result, conflict_result}
-  end
-
-  def regenerate_false_neutral_deckcodes(limit \\ 1000) do
-    false_neutral_deckcodes()
-    |> limit(^limit)
-    |> Repo.all()
-    |> regenerate_class_and_deckcode()
-  end
-
-  def false_neutral_deckcodes() do
-    from(d in Deck,
-      where: like(d.deckcode, "AAECAdrLAg%") or d.class == "NEUTRAL"
-    )
   end
 
   @spec recalculate_archetypes(Integer.t() | String.t()) :: {:ok, any()} | {:error, any()}
@@ -1521,9 +1431,14 @@ defmodule Backend.Hearthstone do
       |> Enum.uniq()
       |> Enum.filter(& &1)
       |> case do
-        [existing_canonical_id] -> existing_canonical_id
-        [] -> oldest.id
-        _ -> raise "Multiple canonical ids found for group [#{Enum.map_join(cards, ", ", & &1.id)}]"
+        [existing_canonical_id] ->
+          existing_canonical_id
+
+        [] ->
+          oldest.id
+
+        _ ->
+          raise "Multiple canonical ids found for group [#{Enum.map_join(cards, ", ", & &1.id)}]"
       end
 
     Enum.reduce(cards, multi, fn card, multi ->
