@@ -64,13 +64,16 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       wish_shaman?(card_info) ->
         :"Wish Shaman"
 
-      "Nebula" in card_info.card_names ->
-        :"Nebula Shaman"
+      murmur_otk?(card_info) ->
+        :"Murmur OTK Shaman"
 
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Shaman"
 
-      "Murmur" in card_info.card_names ->
+      "Nebula" in card_info.card_names ->
+        :"Nebula Shaman"
+
+      murmur?(card_info) ->
         :"Murmur Shaman"
 
       "Turbulus" in card_info.card_names ->
@@ -79,6 +82,32 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp murmur_otk?(card_info) do
+    murmur?(card_info) and murmur_otk_etc?(card_info) and
+      "Shudderblock" in card_info.card_names and
+      min_count?(card_info, 3, [
+        "Aftershocks",
+        "Frosty Décor",
+        "Far Sight",
+        "Chill Vibes",
+        "Baking Soda Volcano",
+        "Icecrown Brochure",
+        "Ancestral Knowledge"
+      ])
+  end
+
+  defp murmur_otk_etc?(card_info) do
+    min_count?(card_info.etc_sideboard_names, 3, [
+      "Bob the Bartender",
+      "Kalimos, Primal Lord",
+      "Alexstrasza"
+    ])
+  end
+
+  defp murmur?(card_info) do
+    "Murmur" in card_info.card_names
   end
 
   defp swarm?(card_info) do
