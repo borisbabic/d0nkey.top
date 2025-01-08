@@ -46,3 +46,5 @@ Disallow: /mt/points?*
 Disallow: /mt/stats
 Disallow: /mt/stats*
 Disallow: /mt/stats?*
+Disallow: /api/*
+Disallow: /api*
