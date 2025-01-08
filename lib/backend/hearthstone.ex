@@ -969,8 +969,21 @@ defmodule Backend.Hearthstone do
   end
 
   defp compose_cards_query({"order_by", "name_similarity_" <> search_target}, query) do
+    inner_query =
+      from c in Card,
+        select: %{name: fragment("UNNEST(array_prepend(?, ?))", c.name, c.nicknames), id: c.id}
+
+    subquery =
+      from c in subquery(inner_query),
+        select: %{
+          id: c.id,
+          similarity: fragment("MAX(SIMILARITY(?, ?))", c.name, ^search_target)
+        },
+        group_by: c.id
+
     query
-    |> order_by([card: c], desc: fragment("similarity(?, ?)", c.name, ^search_target))
+    |> join(:left, [card: c], simil in subquery(subquery), as: :similarity, on: simil.id == c.id)
+    |> order_by([similarity: s], desc: s.similarity)
   end
 
   defp compose_cards_query({"order_by", {direction, field}}, query) do
@@ -992,7 +1005,13 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({"search", search_term}, query) do
     search = "%#{search_term}%"
-    query |> where([card: c], ilike(c.name, ^search) or ilike(c.text, ^search))
+
+    query
+    |> where(
+      [card: c],
+      ilike(c.name, ^search) or ilike(c.text, ^search) or
+        ilike(fragment("array_to_string(?,'|||||')", c.nicknames), ^search)
+    )
   end
 
   defp compose_cards_query({"name", name}, query),

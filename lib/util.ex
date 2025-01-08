@@ -663,4 +663,8 @@ defmodule Util do
       List.keydelete(carry, key, position)
     end)
   end
+
+  def keys_to_string(map) do
+    for {key, value} <- map, do: {to_string(key), value}, into: %{}
+  end
 end
