@@ -1,8 +1,10 @@
 defmodule Backend.Hearthstone.Rarity do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_rarities" do
     field :crafting_cost, {:array, :integer}
     field :dust_value, {:array, :integer}

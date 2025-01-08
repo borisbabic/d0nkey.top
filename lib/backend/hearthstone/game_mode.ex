@@ -1,8 +1,10 @@
 defmodule Backend.Hearthstone.GameMode do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_game_modes" do
     field :name, :string
     field :slug, :string

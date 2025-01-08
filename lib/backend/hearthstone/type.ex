@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone.Type do
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_type" do
     field :game_modes, {:array, :integer}
     field :name, :string

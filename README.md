@@ -82,6 +82,17 @@ Example:
 ```
 
 ### Rest
+#### GET "/api/cards/dust-free"
+Responds with a list of ids of cards I have manually marked as dust free. I do this for cards that are dust free but not from sets that can be wholely marked as dust free. So basically free legendaries.
+
+#### GET "/api/cards/collectible"
+This is intended for when you want to have all information in your software and consult your stored info when you need it. If you intend to make requests on a per need basis (like every time somebody looks up a card) then use the official api instead
+
+Responds with data primarily from the official hearthstone api but in one big json. I don't consider filtering these fully supported, but the same ones in /cards should work here.
+
+WARNING: It's unlikely, but I may decide to not return fully filled out metadata in this and only return ids (like no spell_school just spell_school_id). Check the official api for obtaining metadata info in that case
+#### GET "/api/cards/metadata"
+Returns all metadata, based on the official api
 #### GET "/api/deck-info/$DECKCODE"
 Responds with 200 and a Deck Info resource for decodable deckcodes
 Responds with 400 for undecodable deckcodes

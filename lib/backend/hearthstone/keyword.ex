@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone.Keyword do
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_keywords" do
     field :game_modes, {:array, :integer}
     field :name, :string
