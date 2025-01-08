@@ -1,12 +1,14 @@
 defmodule Components.CardInfo do
   @moduledoc false
   use BackendWeb, :surface_live_component
+  alias Backend.Hearthstone.Card
 
   prop(card, :map, required: true)
 
   prop(attrs, :list,
     default: [
       :name,
+      :nicknames,
       :card_set,
       :id,
       :mana_cost,
@@ -16,13 +18,17 @@ defmodule Components.CardInfo do
       :classes,
       :durability,
       :minion_type,
+      :dust_cost,
+      :dust_free,
       :spell_school,
       :flavor_text,
       :text,
       :keywords,
       :collectible,
-      :duels_constructed,
-      :duels_relevant
+      :artist_name,
+      :crop_image,
+      :image,
+      :image_gold
     ]
   )
 
@@ -46,18 +52,37 @@ defmodule Components.CardInfo do
       name = prepare(a)
 
       val =
-        card
-        |> Map.get(a)
-        |> prepare()
+        value(card, a)
+        |> prepare(a)
 
       {name, val}
     end)
   end
 
-  defp prepare(%{name: name}), do: name
-  defp prepare(nil), do: ""
-  defp prepare(data) when is_list(data), do: Enum.map_join(data, ", ", &prepare/1)
-  defp prepare(data) when is_atom(data), do: data |> to_string() |> prepare()
-  defp prepare(data) when is_binary(data), do: Recase.to_title(data)
-  defp prepare(data), do: data
+  defp value(card, attr) do
+    if function_exported?(Card, attr, 1) do
+      apply(Card, attr, [card])
+    else
+      Map.get(card, attr)
+    end
+  end
+
+  @ignore_prepare [:name, :flavor_text, :text, :artist_name]
+  defp prepare(val, attr \\ nil)
+  defp prepare(val, attr) when attr in @ignore_prepare, do: val
+  defp prepare(%{name: name}, _), do: name
+  defp prepare(nil, _), do: ""
+
+  defp prepare("https" <> _ = url, _) do
+    assigns = %{url: url}
+
+    ~F"""
+      <a href={@url} target="_blank">Image Link</a>
+    """
+  end
+
+  defp prepare(data, _) when is_list(data), do: Enum.map_join(data, ", ", &prepare/1)
+  defp prepare(data, _) when is_atom(data), do: data |> to_string() |> prepare()
+  defp prepare(data, _) when is_binary(data), do: Recase.to_title(data)
+  defp prepare(data, _), do: data
 end

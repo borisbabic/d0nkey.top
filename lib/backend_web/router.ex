@@ -5,14 +5,14 @@ defmodule BackendWeb.Router do
   alias BackendWeb.LivePlug.AssignDefaults
   alias BackendWeb.LivePlug.AdminAuth
   use ErrorTracker.Web, :router
-  use Kaffy.Routes, scope: "/admin/kaffy", pipe_through: [:auth, :super_admin]
+  use Kaffy.Routes, scope: "/admin/kaffy", pipe_through: [:auth, :kaffy_admin]
 
   pipeline :auth do
     plug(Backend.UserManager.Pipeline)
   end
 
-  pipeline :super_admin do
-    plug(Backend.Plug.AdminAuth, role: :super)
+  pipeline :kaffy_admin do
+    plug(Backend.Plug.AdminAuth, role: :kaffy)
   end
 
   pipeline :ensure_auth do
