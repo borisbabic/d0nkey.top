@@ -2,10 +2,12 @@ defmodule BackendWeb.DecksLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.DecksExplorer
+  alias Components.AggLogSubtitle
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :any)
   data(filters, :map)
+  data(latest_agg, :any)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
@@ -15,7 +17,7 @@ defmodule BackendWeb.DecksLive do
     <div>
       <div class="title is-2">Decks</div>
       <div class="subtitle is-6">
-      <a href={~p"/stats/explanation"}>Stats Explanation</a>| To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
+      <a href={~p"/stats/explanation"}>Stats Explanation</a><AggLogSubtitle />| To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
       </div>
       <FunctionComponents.Ads.below_title />
       <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters} filter_context={:public} />

@@ -9,6 +9,7 @@ defmodule BackendWeb.DeckLive do
   alias Components.OpponentStatsTable
   alias Components.ReplayExplorer
   alias Components.DeckAdmin
+  alias Components.AggLogSubtitle
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(deck, :any)
@@ -71,6 +72,7 @@ defmodule BackendWeb.DeckLive do
           <span><a href={Decklist.deck_link(@deck, true)}>Archetype Stats</a> | </span>
           <span><a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "player_deck_id" => @deck.id}, @deck_stats_params)}"}>Replays</a> </span>
           <span :if={Deck.archetype(@deck)}> | <a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "archetype" => Deck.archetype(@deck)}, @deck_stats_params)}"}>Archetype Replays</a> </span>
+          <AggLogSubtitle />
         </div>
         <FunctionComponents.Ads.below_title />
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
