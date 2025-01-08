@@ -2,6 +2,7 @@ defmodule BackendWeb.MetaLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.TierList
+  alias Components.AggLogSubtitle
 
   data(user, :any)
   data(criteria, :map)
@@ -22,6 +23,9 @@ defmodule BackendWeb.MetaLive do
     ~F"""
       <div>
         <div class="title is-2">Meta</div>
+        <div class="subtitle is-6">
+        To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
+        <AggLogSubtitle /></div>
         <FunctionComponents.Ads.below_title/>
         <TierList id="tier_list" criteria={@criteria} params={@params} live_view={__MODULE__}/>
       </div>
