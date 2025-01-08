@@ -32,6 +32,7 @@
             <% end %>
             <%= if can_access?(@conn, :super) do %>
               <.navbar_item_link link={~p"/dashboard"} display={"Dashboard"} />
+              <.navbar_item_link link={~p"/admin/kaffy"} display={"Kaffy"} />
             <% end %>
             <.navbar_item_link link={~p"/logout"} display={"Logout"} />
           </.navbar_dropdown>

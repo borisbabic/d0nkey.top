@@ -63,6 +63,13 @@ config :backend, Backend.UserManager.Guardian,
   issuer: "d0nkey.top",
   secret_key: "CyjJAVTbtJgJwS+NbkbTpVTPDJeMKqcn+GakxrO4E5j/kB3SgcgF3CqfsxpxzQKM"
 
+config :kaffy,
+  otp_app: :backend,
+  ecto_repo: Backend.Repo,
+  router: BackendWeb.Router,
+  home_page: [kaffy: :dashboard],
+  enable_context_dashboards: true
+
 hdt_plugin_latest_version = "0.4.1"
 # auto sign me up
 config :backend,
