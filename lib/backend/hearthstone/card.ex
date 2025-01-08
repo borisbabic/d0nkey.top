@@ -36,6 +36,8 @@ defmodule Backend.Hearthstone.Card do
   end
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder,
+           except: [:__meta__, :__struct__, :canonical, :deckcode_copy, :copy_of_card]}
   schema "hs_cards" do
     field(:artist_name, :string)
     field(:attack, :integer)
@@ -387,6 +389,7 @@ defmodule Backend.Hearthstone.Card do
       String.trim(text)
     end
   end
+
   defp hack_grouper_text(%{text: text}), do: text
   defp hack_grouper_text(_), do: nil
 end
@@ -396,6 +399,7 @@ defmodule Backend.Hearthstone.RuneCost do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive Jason.Encoder
   embedded_schema do
     field(:blood, :integer, default: 0)
     field(:frost, :integer, default: 0)

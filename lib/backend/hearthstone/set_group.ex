@@ -1,7 +1,9 @@
 defmodule Backend.Hearthstone.SetGroup do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_set_groups" do
     field :icon, :string
     field :name, :string

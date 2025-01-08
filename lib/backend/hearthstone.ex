@@ -58,6 +58,38 @@ defmodule Backend.Hearthstone do
     Repo.one(query)
   end
 
+  def card_back_categories() do
+    Repo.all(CardBackCategory)
+  end
+
+  def classes() do
+    Repo.all(Class)
+  end
+
+  def game_modes() do
+    Repo.all(GameMode)
+  end
+
+  def keywords() do
+    Repo.all(HSKeyword)
+  end
+
+  def mercenary_roles() do
+    Repo.all(MercenaryRole)
+  end
+
+  def minion_types() do
+    Repo.all(MinionType)
+  end
+
+  def spell_schools() do
+    Repo.all(SpellSchool)
+  end
+
+  def card_types() do
+    Repo.all(Type)
+  end
+
   def update_metadata() do
     with {:ok,
           %{
@@ -901,6 +933,11 @@ defmodule Backend.Hearthstone do
 
   defp build_cards_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_cards_query/2)
+
+  defp compose_cards_query(:dust_free, query) do
+    query
+    |> where([card: c], c.dust_free)
+  end
 
   defp compose_cards_query(:canonical, query) do
     query

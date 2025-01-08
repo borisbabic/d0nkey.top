@@ -1,8 +1,10 @@
 defmodule Backend.Hearthstone.SpellSchool do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_spell_schools" do
     field :name, :string
     field :slug, :string

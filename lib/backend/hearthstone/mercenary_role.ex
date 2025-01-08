@@ -1,8 +1,10 @@
 defmodule Backend.Hearthstone.MercenaryRole do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_mercenary_roles" do
     field :name, :string
     field :slug, :string

@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone.MinionType do
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_minion_types" do
     field :game_modes, {:array, :integer}
     field :name, :string

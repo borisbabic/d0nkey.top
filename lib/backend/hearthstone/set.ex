@@ -5,6 +5,7 @@ defmodule Backend.Hearthstone.Set do
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_sets" do
     field :collectible_count, :integer
     field :collectible_revealed_count, :integer

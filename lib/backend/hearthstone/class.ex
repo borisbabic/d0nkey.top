@@ -4,6 +4,7 @@ defmodule Backend.Hearthstone.Class do
   import Ecto.Changeset
 
   @primary_key {:id, :integer, []}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__]}
   schema "hs_classes" do
     field :alternate_hero_card_ids, {:array, :integer}
     field :card_id, :integer
