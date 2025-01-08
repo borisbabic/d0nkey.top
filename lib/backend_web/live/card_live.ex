@@ -40,6 +40,9 @@ defmodule BackendWeb.CardLive do
           | <a href={"https://hearthstone.blizzard.com/cards/#{@card.id}"}>Official Site</a>
           | <a href={~p"/decks?player_deck_includes[]=#{Hearthstone.canonical_id(@card.id)}"}>Find Decks</a>
           | <a href={~p"/streamer-decks?#{%{include_cards: %{Hearthstone.canonical_id(@card.id) => true}}}"}>Find Streamer Decks</a>
+          <span :if={Backend.UserManager.User.can_access?(@user, :kaffy)}>
+          | <a href={~p"/admin/kaffy/hearthstone/card/#{@card.id}"}>Kaffy</a>
+          </span>
         </div>
         <Card id={"card_#{@card.id}"} card={@card} />
         <FunctionComponents.Ads.below_title/>
