@@ -65,6 +65,7 @@ defmodule Backend.Hearthstone.Card do
     # field :mercenary_hero, MercenaryHero.t()
     field(:text, :string)
     field(:dust_free, :boolean, default: false)
+    field(:nicknames, {:array, :string}, default: [])
 
     embeds_one(:rune_cost, RuneCost, on_replace: :delete)
 
@@ -75,12 +76,16 @@ defmodule Backend.Hearthstone.Card do
   end
 
   def changeset(card, %Hearthstone.Card{} = struct) do
+    changeset(card, Map.from_struct(struct))
+  end
+
+  def changeset(card, %{} = base_attrs) do
     attrs =
-      struct
-      |> Map.from_struct()
+      base_attrs
       |> update_duels()
       |> Map.drop([:mercenary_hero])
       |> use_english_fields()
+      |> Util.keys_to_string()
 
     card
     |> cast(attrs, [
@@ -103,6 +108,7 @@ defmodule Backend.Hearthstone.Card do
       :mana_cost,
       :minion_type_id,
       :name,
+      :nicknames,
       :rarity_id,
       :slug,
       :spell_school_id,
@@ -406,8 +412,10 @@ defmodule Backend.Hearthstone.RuneCost do
     field(:unholy, :integer, default: 0)
   end
 
-  def changeset(entry, attrs) do
+  def changeset(entry, attrs) when is_struct(attrs), do: changeset(entry, Map.from_struct(attrs))
+
+  def changeset(entry, %{} = attrs) do
     entry
-    |> cast(Map.from_struct(attrs), [:blood, :frost, :unholy])
+    |> cast(attrs, [:blood, :frost, :unholy])
   end
 end
