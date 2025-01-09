@@ -2053,12 +2053,13 @@ defmodule Hearthstone.DeckTracker do
 
     Enum.find_value(periods, default, fn
       %{type: "patch", period_start: ps, slug: slug} ->
-        NaiveDateTime.compare(ps, start) == :gt and NaiveDateTime.compare(ps, finish_patch) == :lt &&
+        (NaiveDateTime.compare(ps, start) == :gt and
+           NaiveDateTime.compare(ps, finish_patch) == :lt) &&
           slug
 
       %{type: "release", period_start: ps, slug: slug} ->
-        NaiveDateTime.compare(ps, start) == :gt and
-          NaiveDateTime.compare(ps, finish_release) == :lt && slug
+        (NaiveDateTime.compare(ps, start) == :gt and
+           NaiveDateTime.compare(ps, finish_release) == :lt) && slug
 
       _ ->
         false
@@ -2294,6 +2295,22 @@ defmodule Hearthstone.DeckTracker do
         END IF;
       END $$;
       """,
+      [],
+      timeout: :infinity
+    )
+  end
+
+  def aggregate_next_hour() do
+    Repo.query!(
+      "SELECT update_dt_hourly_aggregated_stats((SELECT MAX(hour_start) FROM public.logs_dt_hourly_aggregation) + '1 hour'::interval)",
+      [],
+      timeout: :infinity
+    )
+  end
+
+  def aggregate_previous_hour() do
+    Repo.query!(
+      "SELECT update_dt_hourly_aggregated_stats((SELECT min(hour_start) FROM public.logs_dt_hourly_aggregation) - '1 hour'::interval)",
       [],
       timeout: :infinity
     )
