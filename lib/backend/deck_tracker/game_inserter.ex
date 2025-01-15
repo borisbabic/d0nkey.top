@@ -1,5 +1,8 @@
 defmodule Hearthstone.DeckTracker.GameInserter do
-  @moduledoc "Background worker for inserting games"
+  # @moduledoc """
+  # Background worker for inserting games
+  # """
+  @moduledoc "test"
   use Oban.Worker, queue: :hs_game_inserter, unique: [period: 60]
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker
