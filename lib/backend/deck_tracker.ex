@@ -1194,17 +1194,29 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"order_by", "latest"}, query),
     do: query |> order_by([game: g], desc: max(g.inserted_at))
 
-  defp compose_games_query({"order_by", ob}, query) when ob == "newest_deck",
+  defp compose_games_query({"order_by", "newest_deck"}, query = %{group_bys: []}),
     do: query |> order_by([player_deck: d], desc: d.inserted_at)
 
-  defp compose_games_query({"order_by", ob}, query) when ob == "oldest_deck",
+  defp compose_games_query({"order_by", "newest_deck"}, query),
+    do: query |> order_by([player_deck: d], desc: max(d.inserted_at))
+
+  defp compose_games_query({"order_by", "oldest_deck"}, query = %{group_bys: []}),
     do: query |> order_by([player_deck: d], asc: d.inserted_at)
 
-  defp compose_games_query({"order_by", "cheapest_deck"}, query),
+  defp compose_games_query({"order_by", "oldest_deck"}, query),
+    do: query |> order_by([player_deck: d], asc: min(d.inserted_at))
+
+  defp compose_games_query({"order_by", "cheapest_deck"}, query = %{group_bys: []}),
     do: query |> order_by([player_deck: d], asc: d.cost)
 
-  defp compose_games_query({"order_by", "most_expensive_deck"}, query),
+  defp compose_games_query({"order_by", "cheapest_deck"}, query),
+    do: query |> order_by([player_deck: d], asc: max(d.cost))
+
+  defp compose_games_query({"order_by", "most_expensive_deck"}, query = %{group_bys: []}),
     do: query |> order_by([player_deck: d], desc: d.cost)
+
+  defp compose_games_query({"order_by", "most_expensive_deck"}, query),
+    do: query |> order_by([player_deck: d], desc: max(d.cost))
 
   defp compose_games_query({"order_by", "winrate"}, query),
     do: query |> order_by([], desc: @winrate_select_pos)

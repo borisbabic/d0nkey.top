@@ -614,4 +614,17 @@ defmodule Hearthstone.DeckTrackerTest do
 
     region
   end
+
+  describe "deck_stats" do
+    for sort <- ["most_expensive_deck", "cheapest_deck", "latest", "winrate", "newest_deck", "oldest_deck", "total"] do
+      test "player deck stats works when sorting by #{sort} " do
+        criteria = [{"player_btag", "ThisDoesNotExist#8888"}, {"order_by", unquote(sort)}]
+        assert [] = DeckTracker.deck_stats(criteria)
+      end
+      test "past_hour deck stats works when sorting by #{sort} " do
+        criteria = [{"period", "past_day"}, {"order_by", unquote(sort)}]
+        assert [] = DeckTracker.deck_stats(criteria)
+      end
+    end
+  end
 end
