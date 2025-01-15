@@ -5,6 +5,7 @@ defmodule Hearthstone.Response.Metadata do
     CardBackCategory,
     Class,
     GameMode,
+    Faction,
     Keyword,
     MercenaryRole,
     MinionType,
@@ -31,6 +32,7 @@ defmodule Hearthstone.Response.Metadata do
     field :set_groups, [SetGroup.t()]
     field :sets, [Set.t()]
     field :spell_schools, [SpellSchool.t()]
+    field :factions, [Faction.t()]
     field :types, [Type.t()]
   end
 
@@ -39,6 +41,7 @@ defmodule Hearthstone.Response.Metadata do
         "arenaIds" => arena_ids,
         "cardBackCategories" => card_back_categories,
         "classes" => classes,
+        "factions" => factions,
         "filterableFields" => filterable_fields,
         "gameModes" => game_modes,
         "keywords" => keywords,
@@ -57,6 +60,7 @@ defmodule Hearthstone.Response.Metadata do
         arena_ids: arena_ids,
         card_back_categories: card_back_categories |> Enum.map(&CardBackCategory.from_raw_map/1),
         classes: classes |> Enum.map(&Class.from_raw_map/1),
+        factions: factions |> Enum.map(&Faction.from_raw_map/1),
         filterable_fields: filterable_fields,
         game_modes: game_modes |> Enum.map(&GameMode.from_raw_map/1),
         keywords: keywords |> Enum.map(&Keyword.from_raw_map/1),

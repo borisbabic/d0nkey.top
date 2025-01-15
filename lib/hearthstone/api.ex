@@ -18,11 +18,15 @@ defmodule Hearthstone.Api do
 
   @spec get_metadata(String.t()) :: {:ok, Metadata.t()} | {:error, any()}
   def get_metadata(locale \\ @default_locale) do
-    url = "#{@base_url}/metadata?locale=#{locale}"
-
-    with {:ok, body} <- get_body(url) do
+    with {:ok, body} <- raw_metadata_body(locale) do
       Metadata.from_raw_map(body)
     end
+  end
+
+  @spec get_metadata(String.t()) :: {:ok, Map.t()} | {:error, any()}
+  def raw_metadata_body(locale \\ @default_locale) do
+    url = "#{@base_url}/metadata?locale=#{locale}"
+    get_body(url)
   end
 
   @spec get_mercenaries(Map.t()) :: {:ok, Cards.t()} | {:error, any()}

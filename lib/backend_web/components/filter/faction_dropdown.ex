@@ -1,10 +1,9 @@
-defmodule Components.Filter.RarityDropdown do
+defmodule Components.Filter.FactionDropdown do
   @moduledoc false
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
-
-  prop(title, :string, default: "Rarity")
-  prop(param, :string, default: "rarity")
+  prop(title, :string, default: "Faction")
+  prop(param, :string, default: "faction")
   prop(include_any?, :boolean, default: true)
   prop(options, :list, default: nil)
 
@@ -20,14 +19,14 @@ defmodule Components.Filter.RarityDropdown do
   end
 
   def options(nil, include_any?) do
-    Backend.Hearthstone.rarity_options()
+    Backend.Hearthstone.faction_options()
     |> Enum.sort_by(&elem(&1, 1), :asc)
     |> options(include_any?)
   end
 
   def options(options, include_any?) when is_list(options) do
     if include_any? do
-      [{nil, "Any Rarity"} | options]
+      [{nil, "Any Faction"} | options]
     else
       options
     end

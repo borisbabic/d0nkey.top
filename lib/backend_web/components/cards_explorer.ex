@@ -16,6 +16,7 @@ defmodule Components.CardsExplorer do
     SpellSchoolDropdown,
     RarityDropdown,
     CardTypeDropdown,
+    FactionDropdown,
     ClassDropdown
   }
 
@@ -122,6 +123,7 @@ defmodule Components.CardsExplorer do
         <MinionTypeDropdown id="cards_minion_type_dropdown"/>
         <SpellSchoolDropdown id="cards_spell_school_dropdown" />
         <RarityDropdown id="cards_rarity_dropdown" />
+        <FactionDropdown id="cards_faction_dropdown" />
         <!-- <LivePatchDropdown id="cards_collectible" param="collectible" title="Collectible" options={[{"no", "Uncollectible"}, {"yes", "Collectible"}]} /> -->
         <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
         <Form for={%{}} as={:search} change="change" submit="change">
@@ -199,6 +201,7 @@ defmodule Components.CardsExplorer do
       "collectible",
       "minion_type",
       "rarity",
+      "faction",
       "spell_school",
       "order_by",
       "search",
