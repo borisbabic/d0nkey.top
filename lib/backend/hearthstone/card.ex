@@ -7,6 +7,7 @@ defmodule Backend.Hearthstone.Card do
     Deck,
     Set,
     Class,
+    Faction,
     Keyword,
     MinionType,
     Rarity,
@@ -50,6 +51,7 @@ defmodule Backend.Hearthstone.Card do
     field(:durability, :integer)
     field(:duels_constructed, :boolean, default: false)
     field(:duels_relevant, :boolean, default: false)
+    many_to_many(:factions, Faction, join_through: "hs_cards_factions", on_replace: :delete)
     field(:flavor_text, :string)
     field(:health, :integer)
     field(:image, :string)
@@ -187,6 +189,7 @@ defmodule Backend.Hearthstone.Card do
 
   def put_keywords(changeset, keywords), do: changeset |> put_assoc(:keywords, keywords)
   def put_classes(changeset, classes), do: changeset |> put_assoc(:classes, classes)
+  def put_factions(changeset, factions), do: changeset |> put_assoc(:factions, factions)
 
   @spec rarity(card()) :: String.t()
   def rarity(%{rarity: rarity}), do: Rarity.upcase(rarity)

@@ -11,6 +11,7 @@ defmodule Backend.Hearthstone do
   alias Backend.Hearthstone.LineupDeck
   alias Backend.Hearthstone.CardBackCategory
   alias Backend.Hearthstone.Class
+  alias Backend.Hearthstone.Faction
   alias Backend.Hearthstone.GameMode
   alias Backend.Hearthstone.Keyword, as: HSKeyword
   alias Backend.Hearthstone.MercenaryRole
@@ -70,6 +71,10 @@ defmodule Backend.Hearthstone do
     Repo.all(GameMode)
   end
 
+  def factions() do
+    Repo.all(Faction)
+  end
+
   def keywords() do
     Repo.all(HSKeyword)
   end
@@ -86,6 +91,10 @@ defmodule Backend.Hearthstone do
     Repo.all(SpellSchool)
   end
 
+  def rarities() do
+    Repo.all(Rarity)
+  end
+
   def card_types() do
     Repo.all(Type)
   end
@@ -95,6 +104,7 @@ defmodule Backend.Hearthstone do
           %{
             card_back_categories: card_back_categories,
             classes: classes,
+            factions: factions,
             game_modes: game_modes,
             keywords: keywords,
             mercenary_roles: mercenary_roles,
@@ -108,6 +118,7 @@ defmodule Backend.Hearthstone do
       [
         {CardBackCategory, card_back_categories},
         {Class, classes},
+        {Faction, factions},
         {GameMode, game_modes},
         {HSKeyword, keywords},
         {MercenaryRole, mercenary_roles},
@@ -213,6 +224,7 @@ defmodule Backend.Hearthstone do
         :card_type,
         :copy_of_card,
         :keywords,
+        :factions,
         :classes,
         :minion_type,
         :rarity,
@@ -233,7 +245,10 @@ defmodule Backend.Hearthstone do
     # they want to get inserted again
     # so we fetch first instead
     ids = Enum.map(cards, & &1.id)
-    existing_query = from(c in Card, preload: [:classes, :keywords], where: c.id in ^ids)
+
+    existing_query =
+      from(c in Card, preload: [:classes, :keywords, :factions], where: c.id in ^ids)
+
     existing = Repo.all(existing_query)
     existing_ids = MapSet.new(existing, & &1.id)
     new = Enum.reject(cards, &MapSet.member?(existing_ids, &1.id))
@@ -271,14 +286,18 @@ defmodule Backend.Hearthstone do
   defp add_card_assocs(changeset, %ApiCard{} = api_card) do
     keyword_ids = api_card.keyword_ids
     class_ids = ApiCard.class_ids(api_card)
+    faction_ids = api_card.faction_ids
     keyword_query = from(k in HSKeyword, where: k.id in ^keyword_ids)
     class_query = from(c in Class, where: c.id in ^class_ids)
+    faction_query = from(f in Faction, where: f.id in ^faction_ids)
     keywords = Repo.all(keyword_query)
     classes = Repo.all(class_query)
+    factions = Repo.all(faction_query)
 
     changeset
     |> Card.put_keywords(keywords)
     |> Card.put_classes(classes)
+    |> Card.put_factions(factions)
   end
 
   def get_deck(id) do
@@ -1069,6 +1088,7 @@ defmodule Backend.Hearthstone do
     {["type", "types", "card_type", "card_types"], :card_type},
     {["class", "classes"], :classes},
     {["keywords", "keyword"], :keywords},
+    {["factions", "faction"], :factions},
     {["rarity", "rarities"], :rarity},
     {["school", "schools", "spell_school", "spell_schools"], :spell_school}
   ]
@@ -1151,6 +1171,8 @@ defmodule Backend.Hearthstone do
       as: :card_type,
       left_join: k in assoc(c, :keywords),
       as: :keywords,
+      left_join: f in assoc(c, :factions),
+      as: :factions,
       left_join: cl in assoc(c, :classes),
       as: :classes,
       left_join: mt in assoc(c, :minion_type),
@@ -1164,6 +1186,7 @@ defmodule Backend.Hearthstone do
         card_set: cs,
         card_type: ct,
         keywords: k,
+        factions: f,
         rarity: r,
         classes: cl,
         minion_type: mt,
@@ -1575,13 +1598,19 @@ defmodule Backend.Hearthstone do
 
   @spec spell_school_options() :: [{slug :: String.t(), name :: String.t()}]
   def spell_school_options() do
-    Repo.all(SpellSchool)
+    spell_schools()
     |> to_slug_name_options()
   end
 
   @spec rarity_options() :: [{slug :: String.t(), name :: String.t()}]
   def rarity_options() do
-    Repo.all(from(r in Rarity))
+    rarities()
+    |> to_slug_name_options()
+  end
+
+  @spec faction_options() :: [{slug :: String.t(), name :: String.t()}]
+  def faction_options() do
+    factions()
     |> to_slug_name_options()
   end
 

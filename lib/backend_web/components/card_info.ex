@@ -24,6 +24,7 @@ defmodule Components.CardInfo do
       :flavor_text,
       :text,
       :keywords,
+      :factions,
       :collectible,
       :artist_name,
       :crop_image,

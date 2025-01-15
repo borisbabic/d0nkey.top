@@ -18,6 +18,7 @@ defmodule Hearthstone.Card do
     field(:crop_image, String.t())
     field(:durability, integer())
     field(:duels, Duels.t())
+    field(:faction_ids, [integer()])
     field(:flavor_text, String.t())
     field(:health, integer())
     field(:id, integer())
@@ -55,6 +56,7 @@ defmodule Hearthstone.Card do
         crop_image: map["crop_image"],
         durability: map["durability"],
         duels: map["duels"] |> Duels.from_raw_map(),
+        faction_ids: faction_ids(map),
         flavor_text: map["flavor_text"],
         health: map["health"],
         image: map["image"],
@@ -86,6 +88,14 @@ defmodule Hearthstone.Card do
   # some heros? Pushing it into legacy too, sigh
   def map_set_id(17), do: 1635
   def map_set_id(id), do: id
+
+  # the api at first was returning factionId: [id]
+  # dunno if it was a mistake or an indication that a card might end up in multiple factions
+  def faction_ids(%{"faction_id" => ids}) when is_list(ids), do: ids
+  def faction_ids(%{"faction_id" => id}) when is_integer(id), do: [id]
+  def faction_ids(%{"faction_ids" => ids}) when is_list(ids), do: ids
+  def faction_ids(%{"faction_ids" => id}) when is_integer(id), do: [id]
+  def faction_ids(_), do: []
 
   defp list_or_default(list, _) when is_list(list), do: list
   defp list_or_default(_, default), do: default
