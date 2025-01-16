@@ -56,11 +56,37 @@ defmodule Bot.RevealMessageHandler do
     end)
   end
 
-  def to_text(%{url: url, reveal_time: reveal_time}) do
+  def to_text(%{url: url, reveal_time: reveal_time} = reveal) do
     {:ok, datetime} = DateTime.from_naive(reveal_time, "UTC")
     timestamp = DateTime.to_unix(datetime)
-    "* <t:#{timestamp}:F> <#{url}>"
+
+    prepend_part =
+      with prepend when is_binary(prepend) <- extract_prepend(reveal) do
+        "[#{prepend}] "
+      end
+
+    "* #{prepend_part}<t:#{timestamp}:F> <#{url}>"
   end
+
+  defp extract_prepend(%{class: class}) when is_binary(class), do: class
+
+  defp extract_prepend(%{image_url: image_url}) when is_binary(image_url) do
+    # https://.../31p4_Icon_Zerg.png into ["Icon", "Zerg"]
+    parts =
+      String.split(image_url, "/")
+      |> Enum.at(-1)
+      |> String.replace(".png", "")
+      |> String.split("_")
+      |> Enum.drop(1)
+
+    case parts do
+      [] -> nil
+      ["Icon" | rest] -> Enum.join(rest, " ")
+      rest -> Enum.join(rest, " ")
+    end
+  end
+
+  defp extract_prepend(_), do: nil
 
   def to_embed(%{url: url, image_url: image_url, reveal_time: reveal_time}) do
     title = if url == "", do: nil, else: "Reveal Link"
@@ -72,6 +98,8 @@ defmodule Bot.RevealMessageHandler do
     }
     |> Embed.put_image(image_url)
   end
+
+  ""
 
   def reveals(mode), do: BlizzApi.reveal_schedule(mode)
 end

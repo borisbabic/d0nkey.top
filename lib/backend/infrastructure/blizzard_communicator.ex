@@ -2,6 +2,7 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
   @moduledoc false
   require Logger
   alias Backend.Blizzard.Leaderboard
+  alias Backend.Hearthstone.Deck
 
   @spec get_leaderboard(String.t(), String.t(), String.t()) ::
           {:ok, Leaderboard.t()} | {:error, any()}
@@ -62,12 +63,23 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
         %{
           url: url,
           id: id,
+          class: extract_class(image_url),
           image_url: image_url,
           reveal_time: time
         }
       end
     else
       _ -> {:error, "Could not parse reveal schedule"}
+    end
+  end
+
+  def extract_class(image_url) do
+    class = Deck.extract_class(image_url)
+
+    if class == "UNKNOWN" do
+      nil
+    else
+      Deck.class_name(class)
     end
   end
 end
