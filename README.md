@@ -24,7 +24,7 @@ Please be guided by the seven rules when writing commit messages
 ## WSL setup
 See [WSL Setup](WSL_SETUP.md) for instructions
 ## Environment variables
-See the `.envrc.skel` for required and optional environment variables
+See the `devenv.local.skel.nix` for required and optional environment variables
 For third parties (like discord/twitch) see their developer portals for how to get the tokens/secrets/ids
 
 <!-- If you use direnv you can just add the following
@@ -37,18 +37,22 @@ export TWITCH_CLIENT_SECRET=''
 ```
 The above are required for running the site in development. Some features (like patreon integration) will require additional info if you want to use them. -->
 ## Dependencies
+### Devenv
+The project uses devenv for dependencies. Check for how to use it https://devenv.sh/getting-started/
 ### Flake
-There is a flake.nix provided for dependencies, if using direnv ensure you have `use_flake` in your `.envrc`
+There is a flake.nix provided for dependencies, but it's deperecated and not maintained. Prefer using devenv.
+
+Old:
+
+If using direnv ensure you have `use_flake` in your `.envrc`
 Ensure you have nix installed and that you have the experimental features enabled by adding `experimental-features = nix-command flakes` to `~/.config/nix/nix.conf`
 ### Other
 Ensure you have docker, docker-compose, relevant elixir/erlang versions (see the flake.nix for `erlangVersion` and `elixirVersion`)
 
-If you are not using the flake.nix 
+If you are not using the flake.nix or devenv
 See elixir_buildpack.config for elixir and erlang versions
 docker, docker-compose (or an appropriate postgres running)
 npm 
-
-You can use the shell.nix provided, possibly in combination with direnv
 
 ## First run
 ```shell
