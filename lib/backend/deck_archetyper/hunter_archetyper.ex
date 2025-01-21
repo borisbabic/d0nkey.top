@@ -48,6 +48,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       discover?(card_info) ->
         :"Discover Hunter"
 
+      shaffar?(card_info) ->
+        :"Shaffar Hunter"
+
       "Floppy Hydra" in card_info.card_names ->
         :"Floppy Hunter"
 
@@ -57,6 +60,15 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp shaffar?(ci) do
+    min_count?(ci, 2, [
+      "Nexus Prince Shaffar",
+      "Nexus-Prince Shaffar",
+      "Zergling",
+      "Spawning Pool"
+    ])
   end
 
   defp bad?(ci) do

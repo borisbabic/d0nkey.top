@@ -87,7 +87,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def neutral_excavate(), do: @neutral_excavate
   def neutral_spell_damage(), do: @standard_neutral_spell_damage
 
-  @type fallbacks_opt :: minion_type_fallback_opt()
+  @type fallbacks_opt :: minion_type_fallback_opt() | faction_fallback_opt()
   @spec fallbacks(card_info(), String.t(), fallbacks_opt()) :: String.t()
   def fallbacks(ci, class_name, opts \\ []) do
     cond do
@@ -149,7 +149,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         String.to_atom("Amalgam #{class_name}")
 
       true ->
-        minion_type_fallback(ci, class_name, opts)
+        faction_fallback(ci, class_name, opts) || minion_type_fallback(ci, class_name, opts)
     end
   end
 
@@ -281,6 +281,20 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def highlander_payoff?(%{full_cards: full_cards}),
     do: Enum.any?(full_cards, &Card.highlander?/1)
 
+  @type faction_fallback_opt :: {:min_faction_count, number()}
+  @spec faction_fallback(card_info(), String.t(), [faction_fallback_opt()]) :: String.t() | nil
+  def faction_fallback(ci, class_part, opts) do
+    min_count = Keyword.get(opts, :min_faction_count, 2)
+
+    with counts_raw when is_map(counts_raw) or is_list(counts_raw) <- faction_counts(ci),
+         counts = [_ | _] <- Enum.to_list(counts_raw),
+         {faction, count} when count >= min_count <- Enum.max_by(counts, &elem(&1, 1)) do
+      "#{faction} #{class_part}"
+    else
+      _ -> nil
+    end
+  end
+
   @type minion_type_fallback_opt ::
           {:fallback, String.t() | nil} | {:min_count, number()} | {:ignore_types, [String.t()]}
   @spec minion_type_fallback(card_info(), String.t(), [minion_type_fallback_opt()]) :: String.t()
@@ -309,6 +323,30 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       |> Enum.count(&Card.secret?/1)
 
     min <= secret_count
+  end
+
+  @spec zerg?(card_info(), integer()) :: boolean()
+  def zerg?(card_info, min_count), do: faction_count(card_info, "Zerg") >= min_count
+  @spec protoss?(card_info(), integer()) :: boolean()
+  def protoss?(card_info, min_count), do: faction_count(card_info, "Protoss") >= min_count
+  @spec terran?(card_info(), integer()) :: boolean()
+  def terran?(card_info, min_count), do: faction_count(card_info, "Terran") >= min_count
+
+  @spec faction_count(card_info(), faction_name :: String.t()) :: integer()
+  def faction_count(ci, faction_name) when is_binary(faction_name) do
+    faction_counts(ci)
+    |> Map.get(faction_name, 0)
+  end
+
+  @spec faction_counts(card_info()) :: [{String.t(), integer()}]
+  def faction_counts(%{full_cards: fc}) do
+    fc
+    |> Enum.uniq_by(&Card.dbf_id/1)
+    |> Enum.flat_map(fn
+      %{factions: [_ | _] = factions} -> Enum.map(factions, & &1.name)
+      _ -> []
+    end)
+    |> Enum.frequencies()
   end
 
   @spec minion_type_counts(card_info()) :: [{String.t(), integer()}]
