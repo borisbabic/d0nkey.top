@@ -27,6 +27,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       starship?(card_info) and rainbow_runes?(card_info) ->
         :"Rainbow Starship DK"
 
+      rainbow_runes?(card_info) && zerg?(card_info, 5) ->
+        :"Zerg Rainbow DK"
+
       rainbow_runes?(card_info) ->
         :"Rainbow DK"
 
