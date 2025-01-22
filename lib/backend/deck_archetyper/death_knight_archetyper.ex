@@ -45,9 +45,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       starship?(card_info) ->
         :"Starship DK"
 
-      "Grave Strength" in card_info.card_names ->
-        :"Aggro DK"
-
       menagerie?(card_info) ->
         :"Menagerie DK"
 
@@ -72,17 +69,35 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       deathrattle?(card_info) ->
         :"Deathrattle DK"
 
+      zerg?(card_info, 6) and only_runes?(card_info, :blood) ->
+        :"Zerg Blood DK"
+
       only_runes?(card_info, :blood) ->
         :"Blood DK"
+
+      zerg?(card_info, 6) and only_runes?(card_info, :frost) ->
+        :"Zerg Frost DK"
+
+      zerg?(card_info, 6) and only_runes?(card_info, :frost) ->
+        :"Zerg Frost DK"
 
       only_runes?(card_info, :frost) ->
         :"Frost DK"
 
+      zerg?(card_info, 6) and only_runes?(card_info, :unholy) ->
+        :"Zerg Unholy DK"
+
       only_runes?(card_info, :unholy) ->
         :"Unholy DK"
 
+      zerg?(card_info, 6) and "Stitched Giant" in card_info.card_names ->
+        :"Zerg Corpse DK"
+
       "Stitched Giant" in card_info.card_names ->
         :"Corpse DK"
+
+      zerg?(card_info, 6) and fake_frost?(card_info) ->
+        :"Zerg \"Frost\" DK"
 
       fake_frost?(card_info) ->
         :"\"Frost\" DK"
