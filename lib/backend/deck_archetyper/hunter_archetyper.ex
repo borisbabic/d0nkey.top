@@ -63,9 +63,12 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
   end
 
   defp shaffar?(ci) do
-    min_count?(ci, 2, [
+    min_count?(ci, 1, [
       "Nexus Prince Shaffar",
       "Nexus-Prince Shaffar",
+    ])
+    and
+    min_count?(ci, 1, [
       "Zergling",
       "Spawning Pool"
     ])
