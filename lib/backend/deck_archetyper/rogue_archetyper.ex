@@ -54,6 +54,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       pirate_rogue?(card_info) ->
         :"Pirate Rogue"
 
+      cycle_rogue?(card_info) and archon?(card_info) ->
+        :"Archon Cycle Rogue"
+
+      archon?(card_info) ->
+        :"Archon Rogue"
+
       cycle_rogue?(card_info) ->
         :"Cycle Rogue"
 
@@ -159,6 +165,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp goldbeard?(ci) do
     min_count?(ci, 2, ["Shoplifter Goldbeard", "The Replicator-inator"])
+  end
+
+  defp archon?(ci) do
+    sonya?(ci) and min_count?(ci, 1, ["Dark Templar", "High Templar"])
   end
 
   defp sonya?(ci) do
