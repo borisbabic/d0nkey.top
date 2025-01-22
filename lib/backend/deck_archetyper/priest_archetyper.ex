@@ -37,6 +37,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       thief?(card_info, 5) ->
         :"Thief Priest"
 
+      zealot_otk?(card_info) ->
+        :"Zealot OTK Priest"
+
       control_priest?(card_info) ->
         :"Control Priest"
 
@@ -55,6 +58,16 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  @spec zealot_otk?(ArchetyperHelpers.card_info()) :: boolean()
+  defp zealot_otk?(card_info) do
+    min_count?(card_info, 4, [
+      "Hallucination",
+      "Chrono Boost",
+      "Chillin' Vol'jin",
+      "The Ceaseless Expanse"
+    ])
   end
 
   @standard_resummon ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"]
