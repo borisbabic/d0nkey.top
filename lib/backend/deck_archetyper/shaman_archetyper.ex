@@ -28,6 +28,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
 
+      terran?(card_info, 6) ->
+        :"Battlecruiser Shaman "
+
       swarm?(card_info) ->
         :"Swarm Shaman"
 
