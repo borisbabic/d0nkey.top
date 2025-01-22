@@ -43,6 +43,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       shopper_dh?(card_info) ->
         :"Shopper DH"
 
+      zerg?(card_info, 5) and attack_dh?(card_info) ->
+        :"Zerg Attack DH"
+
       attack_dh?(card_info) ->
         :"Attack DH"
 
