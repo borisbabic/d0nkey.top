@@ -21,6 +21,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       amalgam?(card_info) ->
         :"Amalgam Hunter"
 
+      zerg?(card_info, 5) and zoo_hunter?(card_info) ->
+        :"Zerg Zoo Hunter"
+
       zoo_hunter?(card_info) ->
         :"Zoo Hunter"
 
@@ -39,8 +42,14 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       starship?(card_info) ->
         :"Starship Hunter"
 
+      zerg?(card_info, 5) and egg_hunter?(card_info) ->
+        :"Zerg Egg Hunter"
+
       egg_hunter?(card_info) ->
         :"Egg Hunter"
+
+      zerg?(card_info, 5) and discover?(card_info) ->
+        :"Zerg Discover Hunter"
 
       "Mantle Shaper" in card_info.card_names and discover?(card_info) ->
         :"Shaper Discover Hunter"
@@ -65,13 +74,12 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
   defp shaffar?(ci) do
     min_count?(ci, 1, [
       "Nexus Prince Shaffar",
-      "Nexus-Prince Shaffar",
-    ])
-    and
-    min_count?(ci, 1, [
-      "Zergling",
-      "Spawning Pool"
-    ])
+      "Nexus-Prince Shaffar"
+    ]) and
+      min_count?(ci, 1, [
+        "Zergling",
+        "Spawning Pool"
+      ])
   end
 
   defp bad?(ci) do
