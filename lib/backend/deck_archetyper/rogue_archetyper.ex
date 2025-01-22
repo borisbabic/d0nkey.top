@@ -316,6 +316,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      "Majordomo Executus" in card_info.card_names ->
+        :"Majordomo Rogue"
+
       "Kingsbane" in card_info.card_names ->
         :"Kingsbane Rogue"
 
