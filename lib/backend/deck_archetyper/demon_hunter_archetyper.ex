@@ -43,8 +43,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       shopper_dh?(card_info) ->
         :"Shopper DH"
 
-      zerg?(card_info, 5) and attack_dh?(card_info) ->
+      zerg?(card_info, 4) and attack_dh?(card_info) ->
         :"Zerg Attack DH"
+
+      zerg?(card_info, 4) ->
+        :"Zerg DH"
 
       attack_dh?(card_info) ->
         :"Attack DH"
@@ -217,6 +220,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
       pirate?(card_info) ->
         :"Pirate Demon Hunter"
+
+      attack_dh?(card_info) ->
+        :"Attack DH"
 
       true ->
         fallbacks(card_info, class_name)

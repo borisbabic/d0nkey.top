@@ -46,6 +46,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       lynessa_otk?(card_info) ->
         "Lynessa OTK Paladin"
 
+      terran?(card_info, 4) ->
+        :"Terran Paladin"
+
       earthen_paladin?(card_info) ->
         :"Gaia Paladin"
 

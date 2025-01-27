@@ -97,8 +97,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       demon?(card_info) ->
         :"Demon Warlock"
 
+      location?(card_info) ->
+        :"Location Warlock"
+
       deckless?(card_info) ->
         :"Deckless Warlock"
+
+      zerg?(card_info, 4) ->
+        :"Zerg Warlock"
 
       leeroy_warlock?(card_info) ->
         :"Leeroooooy Warlock"
@@ -115,6 +121,17 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp location?(card_info) do
+    "Seaside Giant" in card_info.card_names and
+      min_count?(card_info, 2, [
+        "Spawning Pool",
+        "Ultralisk Cavern",
+        "Forge of Wills",
+        "Horizon's Edge",
+        "Prison of Yogg-Saron"
+      ])
   end
 
   defp demon?(ci) do

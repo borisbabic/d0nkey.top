@@ -21,6 +21,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       PaladinArchetyper.drunk?(card_info) ->
         :"Drunk Mage"
 
+      protoss?(card_info, 4) ->
+        :"Protoss Mage"
+
       excavate_mage?(card_info) ->
         :"Excavate Mage"
 
@@ -124,6 +127,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
 
+      protoss?(card_info, 4) ->
+        :"Protoss Mage"
+
       hostage_mage?(card_info) ->
         :"Hostage Mage"
 
@@ -206,6 +212,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Balinda Stonehearth",
       "Barbaric Sorceress",
       "Grey Sage Parrot",
+      "Kalecgos",
+      "Deepwater Evoker",
+      "Arcane Brilliance",
       "The Galactic Projection Orb",
       "Iceblood Tower"
     ])
