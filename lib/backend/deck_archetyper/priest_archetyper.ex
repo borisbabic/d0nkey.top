@@ -31,6 +31,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       pain?(card_info) ->
         :"Pain Priest"
 
+      protoss?(card_info, 4) ->
+        :"Protoss Priest"
+
       topdeck?(card_info) ->
         :"Topdeck Priest"
 
@@ -236,6 +239,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       type_count(card_info, "Pirate") > 4 ->
         :"Pirate Priest"
+
+      "Crabrider" in card_info.card_names ->
+        :"Crabrider Priest"
 
       true ->
         fallbacks(card_info, class_name)

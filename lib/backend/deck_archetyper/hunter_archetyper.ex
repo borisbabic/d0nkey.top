@@ -21,7 +21,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       amalgam?(card_info) ->
         :"Amalgam Hunter"
 
-      zerg?(card_info, 5) and zoo_hunter?(card_info) ->
+      zerg?(card_info, 4) and zoo_hunter?(card_info) ->
         :"Zerg Zoo Hunter"
 
       zoo_hunter?(card_info) ->
@@ -42,14 +42,14 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       starship?(card_info) ->
         :"Starship Hunter"
 
-      zerg?(card_info, 5) and egg_hunter?(card_info) ->
+      zerg?(card_info, 4) and egg_hunter?(card_info) ->
         :"Zerg Egg Hunter"
 
       egg_hunter?(card_info) ->
         :"Egg Hunter"
 
-      zerg?(card_info, 5) and discover?(card_info) ->
-        :"Zerg Discover Hunter"
+      zerg?(card_info, 4) ->
+        :"Zerg Hunter"
 
       "Mantle Shaper" in card_info.card_names and discover?(card_info) ->
         :"Shaper Discover Hunter"
@@ -200,6 +200,12 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      "Trial of the Jormungars" in card_info.card_names ->
+        :"Jormungars Hunter"
+
+      porcupine?(card_info) ->
+        :"Porcupine Hunter"
+
       "Floppy Hydra" in card_info.card_names ->
         :"Floppy Hunter"
 
@@ -209,6 +215,10 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp porcupine?(card_info) do
+    min_count?(card_info.card_names, 2, ["Augmented Porcupine", "Mystery Egg"])
   end
 
   defp lion_hunter?(card_info) do

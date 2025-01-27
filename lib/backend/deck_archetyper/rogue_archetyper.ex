@@ -60,6 +60,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       archon?(card_info) ->
         :"Archon Rogue"
 
+      protoss?(card_info, 4) ->
+        :"Protoss Rogue"
+
       cycle_rogue?(card_info) ->
         :"Cycle Rogue"
 
@@ -222,6 +225,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Mailbox Dancer",
       "Arcane Giant",
       "Edwin VanCleef",
+      "Lucky Comet",
       "Frostwolf Warmaster",
       "Scribbling Stenographer",
       "Zephrys the Great"
@@ -233,6 +237,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Deadly Poison",
       "Air Guitarist",
       "Harmonic Hip Hop",
+      "Harmonic Hip-Hop",
       "Mic Drop",
       "Sharp Shipment",
       "Swarthy Swordshiner"
@@ -382,6 +387,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       coin_rogue?(card_info) ->
         :"Coin Rogue"
+
+      weapon?(card_info) ->
+        :"Weapon Rogue"
+
+      "Smokescreen" in card_info.card_names ->
+        :"Smokescreen Rogue"
 
       true ->
         fallbacks(card_info, class_name)

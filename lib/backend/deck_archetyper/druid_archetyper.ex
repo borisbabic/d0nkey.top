@@ -90,6 +90,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       deathrattle_druid?(card_info) ->
         :"Deathrattle Druid"
 
+      protoss?(card_info, 4) ->
+        :"Protoss Druid"
+
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
 

@@ -28,8 +28,11 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
 
-      terran?(card_info, 6) ->
-        :"Battlecruiser Shaman "
+      infinite?(card_info) and terran?(card_info, 4) ->
+        :"Infinite Terran Shaman"
+
+      terran?(card_info, 4) ->
+        :"Terran Shaman "
 
       swarm?(card_info) ->
         :"Swarm Shaman"
@@ -82,9 +85,20 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Turbulus" in card_info.card_names ->
         :"Turbulus Shaman"
 
+      concede?(card_info) ->
+        :"Concede Shaman"
+
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp concede?(card_info) do
+    min_count?(card_info, 2, ["Hex", "Conductivity"])
+  end
+
+  defp infinite?(card_info) do
+    min_count?(card_info, 2, ["Triangulate", "Photographer Fizzle"])
   end
 
   defp murmur_otk?(card_info) do

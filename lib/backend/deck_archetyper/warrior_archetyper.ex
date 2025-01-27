@@ -32,6 +32,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       # cycle_odyn?(card_info) -> :"Cycle Odyn Warrior"
 
+      terran?(card_info, 4) ->
+        :"Terran Warrior"
+
       odyn?(card_info) ->
         :"Odyn Warrior"
 
