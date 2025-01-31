@@ -66,9 +66,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Frostbitten Freebooter" in card_info.card_names and deathrattle?(card_info, 2) ->
         :"Frostbitten DK"
 
-      deathrattle?(card_info) ->
-        :"Deathrattle DK"
-
       zerg?(card_info, 6) and only_runes?(card_info, :blood) ->
         :"Zerg Blood DK"
 
@@ -98,6 +95,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       zerg?(card_info, 6) and fake_frost?(card_info) ->
         :"Zerg \"Frost\" DK"
+
+      deathrattle?(card_info) ->
+        :"Deathrattle DK"
 
       fake_frost?(card_info) ->
         :"\"Frost\" DK"
