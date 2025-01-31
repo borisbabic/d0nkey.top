@@ -154,9 +154,22 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       wild_flow?(card_info) ->
         :"Flow Mage"
 
+      wild_small_spell_mage?(card_info) ->
+        :"Small Spell Mage"
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp wild_small_spell_mage?(card_info) do
+    min_count?(card_info, 3, [
+      "Mana Wyrm",
+      "Flamewaker",
+      "Raylla, Sand Sculptor",
+      "Vicious Slitherspear",
+      "Mantle Shaper"
+    ])
   end
 
   defp wild_flow?(card_info) do
