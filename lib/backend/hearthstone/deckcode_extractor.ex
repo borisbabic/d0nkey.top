@@ -81,18 +81,19 @@ defmodule Hearthstone.DeckcodeExtractor do
       end
 
     # extract from path
-    potential =
-      [link_or_code | from_query_potential] ++
-        for %{host: h, path: path} when is_binary(h) and is_binary(path) <- [parsed],
-            part <- String.split(parsed.path, "/"),
-            decoded = URI.decode(part),
-            # add link to potential incase the whole thing is valid
-            do: decoded
+    from_path_potential =
+      for %{host: h, path: path} when is_binary(h) and is_binary(path) <- [parsed],
+          part <- String.split(parsed.path, "/"),
+          decoded = URI.decode(part),
+          do: decoded
 
-    for val <- potential,
-        code <- String.split(val, separators),
-        Deck.valid?(code),
-        do: code
+    from_link_potential =
+      for val <- from_query_potential ++ from_path_potential,
+          part <- String.split(val, separators),
+          do: part
+
+    # add link_or_code to potential incase the whole thing is valid
+    Enum.filter([link_or_code | from_link_potential], &Deck.valid?/1)
   end
 
   def our_link?(new_code) when is_binary(new_code),
