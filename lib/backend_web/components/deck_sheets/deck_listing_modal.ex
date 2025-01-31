@@ -11,6 +11,7 @@ defmodule Components.DeckListingModal do
   alias Surface.Components.Form.Field
   alias Surface.Components.Form.Submit
   alias Surface.Components.Form.TextInput
+  alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.Select
 
   prop(user, :any, required: true)
@@ -40,7 +41,7 @@ defmodule Components.DeckListingModal do
         <Form for={%{}} as={:listing} submit="submit" opts={id: form_id(@existing, @deck)}>
           <Field name={:deckcode}>
             <Label class="label">Deckcode or link</Label>
-            <TextInput class="input has-text-black  is-small" value={deckcode(@existing, @deck)} opts={disabled: !!@existing}/>
+            <TextArea class="textarea has-text-black has-fixed-size small" value={deckcode(@existing, @deck)} opts={disabled: !!@existing, placeholder: "Paste deckcode or link", size: "30", rows: "1"}/>
           </Field>
           <Field name={:sheet_id}>
             <Label class="label">Sheet</Label>
