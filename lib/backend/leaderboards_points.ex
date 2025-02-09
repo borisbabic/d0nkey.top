@@ -2,16 +2,15 @@ defmodule Backend.LeaderboardsPoints do
   @moduledoc false
   alias Backend.Leaderboards
   alias Backend.LeaderboardsPoints.HsEsports2023
+  alias Backend.LeaderboardsPoints.Bonobo2025
   @type season_points :: {season_id :: integer(), best_rank :: integer(), points :: integer()}
   @type player_row ::
           {account_id :: String.t(), season_points :: [season_points], total_points :: integer()}
 
   def calculate(ps, leaderboard_id, use_current \\ false) do
     system = system(ps)
-    seasons = system.get_relevant_ldb_seasons(ps, leaderboard_id, use_current)
-    regions = system.get_relevant_ldb_regions(ps, leaderboard_id)
 
-    create_criteria(seasons, regions, leaderboard_id)
+    create_criteria(ps, leaderboard_id, use_current)
     |> Leaderboards.entries()
     |> group_by_player()
     |> Enum.map(&calculate_player_row(&1, system))
@@ -65,10 +64,14 @@ defmodule Backend.LeaderboardsPoints do
 
   defp season_id_grouping(%{season: %{season_id: season_id}}), do: season_id
 
-  defp create_criteria(leaderboard_seasons, leaderboard_regions, leaderboard_id) do
+  defp create_criteria(ps, leaderboard_id, use_current) do
+    system = system(ps)
+    seasons = system.get_relevant_ldb_seasons(ps, leaderboard_id, use_current)
+    regions = system.get_relevant_ldb_regions(ps, leaderboard_id)
+
     seasons =
-      for r <- leaderboard_regions,
-          s <- leaderboard_seasons,
+      for r <- regions,
+          s <- seasons,
           do: %Hearthstone.Leaderboards.Season{
             season_id: s,
             region: r,
@@ -77,7 +80,7 @@ defmodule Backend.LeaderboardsPoints do
 
     [
       {"seasons", seasons},
-      {"max_rank", 100},
+      {"max_rank", system.max_rank(ps, leaderboard_id)},
       :latest_in_season,
       :preload_season
     ]
@@ -96,8 +99,9 @@ defmodule Backend.LeaderboardsPoints do
     |> Enum.map_join(" ", &Recase.to_title/1)
   end
 
-  def system("2023_"), do: HsEsports2023
-  def system("2024_"), do: HsEsports2023
+  def system("2023_" <> _), do: HsEsports2023
+  def system("2024_" <> _), do: HsEsports2023
+  def system("bonobo_2025" <> _), do: Bonobo2025
   def system(_), do: HsEsports2023
 
   def points_seasons() do
@@ -105,5 +109,5 @@ defmodule Backend.LeaderboardsPoints do
     |> Enum.flat_map(& &1.points_seasons())
   end
 
-  defp systems(), do: [HsEsports2023]
+  defp systems(), do: [HsEsports2023, Bonobo2025]
 end

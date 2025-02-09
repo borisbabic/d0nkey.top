@@ -22,6 +22,11 @@ defmodule Backend.Battlefy.Team do
     def unquote(attr)(_), do: nil
   end)
 
+  @spec player_or_team_name(team :: __MODULE__.t()) :: name :: String.t() | nil
+  def player_or_team_name(%{players: [%{name: name}]}) when is_binary(name), do: name
+  def player_or_team_name(%{name: name}) when is_binary(name), do: name
+  def player_or_team_name(_), do: nil
+
   def from_raw_map(map = %{"name" => name}) do
     %__MODULE__{
       name: name,

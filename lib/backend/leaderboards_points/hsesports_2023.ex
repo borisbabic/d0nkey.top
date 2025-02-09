@@ -55,6 +55,9 @@ defmodule Backend.LeaderboardsPoints.HsEsports2023 do
     [:EU, :US, :AP]
   end
 
+  @impl true
+  def max_rank(_, _), do: 100
+
   @doc """
   Gets the leaderboard seasons used for calculating points for the points season `ps`
   """
