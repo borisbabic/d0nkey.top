@@ -186,8 +186,11 @@ defmodule Backend.Hearthstone do
   end
 
   @spec create_or_get_deck(String.t() | Deck.t()) :: {:ok, Deck.t()} | {:error, any()}
-  def create_or_get_deck(deckcode) when is_binary(deckcode),
-    do: deckcode |> Deck.decode!() |> create_or_get_deck()
+  def create_or_get_deck(deckcode) when is_binary(deckcode) do
+    with {:ok, deck} <- Deck.decode(deckcode) do
+      create_or_get_deck(deck)
+    end
+  end
 
   def create_or_get_deck(%Deck{cards: cards, hero: hero, format: format, sideboards: sideboards}),
     do: create_or_get_deck(cards, hero, format, sideboards)

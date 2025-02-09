@@ -32,11 +32,8 @@ defmodule BackendWeb.DeckLive do
 
   def handle_params(params = %{"deck" => deck_raw}, _session, socket) do
     deck =
-      with :error <- Integer.parse(deck_raw),
-           {:ok, deck_actual} <- Deck.decode(deck_raw) do
-        Hearthstone.deck(deck_actual) || deck_actual
-      else
-        {deck_id, _} when is_integer(deck_id) -> Hearthstone.deck(deck_id)
+      case extract_deck(deck_raw) do
+        {:ok, deck} -> deck
         _ -> []
       end
 
@@ -50,6 +47,25 @@ defmodule BackendWeb.DeckLive do
       |> assign(:deck_stats_params, deck_stats_params)
       |> assign_filters(params)
     }
+  end
+
+  def extract_deck(deck_id) when is_integer(deck_id) do
+    case Hearthstone.deck(deck_id) do
+      %{id: _id} = deck -> {:ok, deck}
+      _ -> :error
+    end
+  end
+
+  def extract_deck(deckcode_or_id) when is_binary(deckcode_or_id) do
+    case Integer.parse(deckcode_or_id) do
+      {deck_id, _} when is_integer(deck_id) ->
+        extract_deck(deck_id)
+
+      _ ->
+        with {:error, _} <- Hearthstone.create_or_get_deck(deckcode_or_id) do
+          Deck.decode(deckcode_or_id)
+        end
+    end
   end
 
   def handle_info({:update_params, params}, socket) do
