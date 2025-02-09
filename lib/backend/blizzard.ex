@@ -873,4 +873,14 @@ defmodule Backend.Blizzard do
     time = ~T[10:00:00]
     DateTime.new!(date, time, timezone)
   end
+
+  @spec current_constructed_season_id(region :: atom) :: integer()
+  def current_constructed_season_id(region \\ :US) do
+    timezone = regions_with_timezone() |> Keyword.get(region)
+    Timex.now(timezone) |> Timex.to_date() |> get_season_id()
+  end
+
+  def now() do
+    Timex.now("US/Pacific")
+  end
 end
