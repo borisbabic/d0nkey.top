@@ -199,6 +199,20 @@ defmodule Backend.Leaderboards do
     )
   end
 
+  def save_last_month_constructed(
+        leaderboards,
+        between_pages_delay_ms,
+        between_full_delay_ms
+      ) do
+    season_id = Blizzard.current_constructed_season_id() - 1
+
+    for r <- Blizzard.regions(), l <- leaderboards do
+      season = %ApiSeason{region: r, leaderboard_id: to_string(l), season_id: season_id}
+      save_all_with_delay(season, between_pages_delay_ms)
+      Process.sleep(between_full_delay_ms)
+    end
+  end
+
   def save_current_with_delay(
         regions,
         leaderboards,

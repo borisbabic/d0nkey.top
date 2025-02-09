@@ -105,6 +105,14 @@ config :backend, QuantumScheduler,
          10_001
        )
      end},
+    {"13 09 1 * *",
+     fn ->
+       Backend.Leaderboards.save_last_month_constructed(
+         [:STD, :WLD, :twist],
+         5000,
+         60_000
+       )
+     end},
     {"7 * * * *", fn -> Backend.Leaderboards.prune_empty_seasons() end},
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
     {"31 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
