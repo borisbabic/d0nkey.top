@@ -88,6 +88,29 @@ defmodule Backend.LeaderboardsPoints.HsEsports2023 do
     |> Enum.uniq()
   end
 
+  @impl true
+  def info_link("2023" <> _) do
+    %{
+      link: "https://hearthstone.blizzard.com/news/23904520",
+      display: "2023 Announcement"
+    }
+  end
+
+  @impl true
+  def info_link("2024_" <> _) do
+    %{
+      link: "https://hearthstone.blizzard.com/news/24056180",
+      display: "2024 Announcement"
+    }
+  end
+
+  def info_link(_) do
+    %{
+      link: "https://hearthstone.blizzard.com/news/esports",
+      display: "Hearthstone Esports News"
+    }
+  end
+
   ######
 
   def current_points_season() do

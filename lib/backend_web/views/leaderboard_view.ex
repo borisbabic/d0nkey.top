@@ -1360,24 +1360,11 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  @default_subtitle_year "2024"
   def points_subtitle(ps) when is_atom(ps), do: ps |> to_string() |> points_subtitle()
 
-  def points_subtitle("2023" <> _) do
-    announcement_link_subtitle(%{
-      link: "https://hearthstone.blizzard.com/news/23904520",
-      display: "2023 Announcement"
-    })
+  def points_subtitle(points_season) when is_binary(points_season) do
+    points_season
+    |> LeaderboardsPoints.info_link()
+    |> announcement_link_subtitle()
   end
-
-  def points_subtitle("2024" <> _) do
-    announcement_link_subtitle(%{
-      link: "https://hearthstone.blizzard.com/news/24056180",
-      display: "2024 Announcement"
-    })
-  end
-
-  # guard to prevent accidental infinite loop
-  def points_subtitle(ps) when ps != @default_subtitle_year,
-    do: points_subtitle(@default_subtitle_year)
 end

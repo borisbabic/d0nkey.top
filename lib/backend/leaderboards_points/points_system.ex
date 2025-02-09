@@ -20,4 +20,6 @@ defmodule Backend.LeaderboardsPoints.PointsSystem do
 
   @callback max_rank(season_slug :: String.t(), leaderboard_id :: String.t()) ::
               max_rank :: integer()
+
+  @callback info_link(season_slug :: String.t()) :: %{display: String.t(), link: String.t()}
 end

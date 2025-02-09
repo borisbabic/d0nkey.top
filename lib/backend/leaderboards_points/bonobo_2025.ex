@@ -41,6 +41,9 @@ defmodule Backend.LeaderboardsPoints.Bonobo2025 do
   def max_rank(_, _), do: 5000
 
   @impl true
+  def info_link(_), do: %{display: "Bonobo Discord", link: "https://discord.gg/vz8DcuN45m"}
+
+  @impl true
   def filter_player_rows(rows, _, _) do
     participants = Backend.Battlefy.get_participants(@ladder_battlefy_id)
 

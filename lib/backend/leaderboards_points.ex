@@ -99,6 +99,10 @@ defmodule Backend.LeaderboardsPoints do
     |> Enum.map_join(" ", &Recase.to_title/1)
   end
 
+  def info_link(season_slug) do
+    system(season_slug).info_link(season_slug)
+  end
+
   def system("2023_" <> _), do: HsEsports2023
   def system("2024_" <> _), do: HsEsports2023
   def system("bonobo_2025" <> _), do: Bonobo2025
