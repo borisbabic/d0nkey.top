@@ -359,9 +359,11 @@ defmodule Components.DecksExplorer do
       "region",
       "min_games",
       "player_deck_includes",
+      "player_deck_excludes",
+      "fresh_player_deck_includes",
+      "fresh_player_deck_excludes",
       "archetype",
       "no_archetype",
-      "player_deck_excludes",
       "use_aggregated",
       "player_mulligan",
       "player_not_mulligan",
@@ -385,6 +387,8 @@ defmodule Components.DecksExplorer do
       "player_not_drawn",
       "player_kept",
       "player_not_kept",
+      "fresh_player_deck_includes",
+      "fresh_player_deck_excludes",
       "player_deck_includes",
       "player_deck_excludes"
     ])

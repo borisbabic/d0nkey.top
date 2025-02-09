@@ -460,6 +460,8 @@ defmodule Hearthstone.DeckTracker do
     "player_not_kept",
     "player_btag"
   ]
+  def filter_needs_fresh?({"fresh_", _}), do: true
+
   def filter_needs_fresh?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
     do: true
 
@@ -473,6 +475,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def filter_needs_fresh?({slug, _}) when is_binary(slug), do: filter_needs_fresh?(slug)
+  def filter_needs_fresh?("fresh_" <> _), do: true
   def filter_needs_fresh?(slug) when is_binary(slug), do: slug in @fresh_card_stats_filters
   def filter_needs_fresh?(_), do: false
 
@@ -1245,6 +1248,16 @@ defmodule Hearthstone.DeckTracker do
   end
 
   defp compose_games_query({"player_deck_excludes", cards}, query) do
+    query
+    |> Hearthstone.exclude_cards(cards, :player_deck)
+  end
+
+  defp compose_games_query({"fresh_player_deck_includes", cards}, query) do
+    query
+    |> Hearthstone.include_cards(cards, :player_deck)
+  end
+
+  defp compose_games_query({"fresh_player_deck_excludes", cards}, query) do
     query
     |> Hearthstone.exclude_cards(cards, :player_deck)
   end

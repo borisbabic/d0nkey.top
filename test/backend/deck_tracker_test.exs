@@ -155,6 +155,18 @@ defmodule Hearthstone.DeckTrackerTest do
     end
   end
 
+  describe "fresh_or_agg" do
+    test "fresh_or_agg marks fresh_player_deck_includes as fresh" do
+      criteria = %{"fresh_player_deck_includes" => [135]}
+      assert :fresh = DeckTracker.fresh_or_agg(criteria)
+    end
+
+    test "fresh_or_agg marks fresh_player_deck_excludes as fresh" do
+      criteria = %{"fresh_player_deck_excludes" => [1425]}
+      assert :fresh = DeckTracker.fresh_or_agg(criteria)
+    end
+  end
+
   alias Hearthstone.DeckTracker.Period
 
   @valid_attrs %{
@@ -616,11 +628,20 @@ defmodule Hearthstone.DeckTrackerTest do
   end
 
   describe "deck_stats" do
-    for sort <- ["most_expensive_deck", "cheapest_deck", "latest", "winrate", "newest_deck", "oldest_deck", "total"] do
+    for sort <- [
+          "most_expensive_deck",
+          "cheapest_deck",
+          "latest",
+          "winrate",
+          "newest_deck",
+          "oldest_deck",
+          "total"
+        ] do
       test "player deck stats works when sorting by #{sort} " do
         criteria = [{"player_btag", "ThisDoesNotExist#8888"}, {"order_by", unquote(sort)}]
         assert [] = DeckTracker.deck_stats(criteria)
       end
+
       test "past_hour deck stats works when sorting by #{sort} " do
         criteria = [{"period", "past_day"}, {"order_by", unquote(sort)}]
         assert [] = DeckTracker.deck_stats(criteria)

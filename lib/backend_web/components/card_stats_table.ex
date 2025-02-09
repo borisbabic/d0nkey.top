@@ -74,6 +74,8 @@ defmodule Components.CardStatsTable do
         name_prefix={"VS "}
         param={"opponent_class"} />
       {#if premium_filters?(@premium_filters, @user)}
+        <PlayableCardSelect id={"fresh_player_deck_includes"} format={@test_params["format"]} param={"fresh_player_deck_includes"} selected={@test_params["fresh_player_deck_includes"] || []} title="Decks Include cards"/>
+        <PlayableCardSelect id={"fresh_player_deck_excludes"} format={@test_params["format"]} param={"fresh_player_deck_excludes"} selected={@test_params["fresh_player_deck_excludes"] || []} title="Decks Exclude cards"/>
         <PlayableCardSelect format={@test_params["format"]} id={"player_mulligan"} param={"player_mulligan"} selected={@test_params["player_mulligan"] || []} title="In Mulligan"/>
         <PlayableCardSelect format={@test_params["format"]} id={"player_not_mulligan"} param={"player_not_mulligan"} selected={@test_params["player_not_mulligan"] || []} title="Not In Mulligan"/>
         <PlayableCardSelect format={@test_params["format"]} id={"player_drawn"} param={"player_drawn"} selected={@test_params["player_drawn"] || []} title="Drawn"/>
@@ -350,10 +352,14 @@ defmodule Components.CardStatsTable do
       "player_kept",
       "player_not_kept",
       "archetype",
+      "fresh_player_deck_includes",
+      "fresh_player_deck_excludes",
       "sort_by",
       "sort_direction"
     ])
     |> DecksExplorer.parse_int([
+      "fresh_player_deck_includes",
+      "fresh_player_deck_excludes",
       "player_mulligan",
       "player_not_mulligan",
       "player_drawn",
