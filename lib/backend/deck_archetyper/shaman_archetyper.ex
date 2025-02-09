@@ -32,7 +32,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
         :"Infinite Terran Shaman"
 
       terran?(card_info, 4) ->
-        :"Terran Shaman "
+        :"Terran Shaman"
 
       swarm?(card_info) ->
         :"Swarm Shaman"
