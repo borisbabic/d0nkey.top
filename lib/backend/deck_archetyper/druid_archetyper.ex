@@ -311,6 +311,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       jade_golem?(card_info) ->
         :"Jade Druid"
 
+      wild_taunt_druid?(card_info) ->
+        :"Taunt Druid"
+
       "Star Grazer" in card_info.card_names ->
         :"Star Grazer Druid"
 
@@ -368,5 +371,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Gadgetzan Auctioneer",
       "Ysiel Windsinger"
     ])
+  end
+
+  defp wild_taunt_druid?(card_info) do
+    min_count?(card_info, 2, ["Hadronox", "Hydration Station"])
   end
 end

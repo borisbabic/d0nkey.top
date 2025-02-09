@@ -28,6 +28,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       zarimi?(card_info) ->
         :"Zarimi Priest"
 
+      aggro_zealot?(card_info) ->
+        :"Aggro Zealot Priest"
+
       pain?(card_info) ->
         :"Pain Priest"
 
@@ -99,7 +102,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   end
 
   def pain?(ci) do
-    min_count?(ci, 3, [
+    min_count?(ci, 4, [
       "Job Shadower",
       "Acupuncture",
       "Brain Masseuse",
@@ -109,6 +112,19 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Sauna Regular",
       "Trusty Fishing Rod"
     ])
+  end
+
+  defp aggro_zealot?(card_info) do
+    min_count?(card_info, 2, [
+      "Brain Masseuse",
+      "Overzealous Healer",
+      "Catch of the Day",
+      "Miracle Salesman"
+    ]) and chrono?(card_info)
+  end
+
+  defp chrono?(card_info) do
+    min_count?(card_info, 2, ["Hallucination", "Chrono Boost"])
   end
 
   defp automaton_priest?(ci),

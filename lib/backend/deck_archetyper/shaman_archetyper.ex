@@ -28,8 +28,11 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
 
-      infinite?(card_info) and terran?(card_info, 4) ->
-        :"Infinite Terran Shaman"
+      # infinite?(card_info) and terran?(card_info, 4) ->
+      #   :"Infinite Terran Shaman"
+
+      "Arkonite Defense Crystal" in card_info.card_names and terran?(card_info, 4) ->
+        :"Defense Terran Shaman"
 
       terran?(card_info, 4) ->
         :"Terran Shaman"
