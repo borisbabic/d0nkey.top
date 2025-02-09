@@ -15,7 +15,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       big_beast_hunter?(card_info) ->
         :"Big Beast Hunter"
 
-      handbuff_hunter?(card_info) and "Warsung Grunt" in card_info.card_names ->
+      handbuff_hunter?(card_info) and "Warsong Grunt" in card_info.card_names ->
         :"Grunter Hunter"
 
       handbuff_hunter?(card_info) ->

@@ -100,10 +100,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     min_count?(card_info, 2, ["Hex", "Conductivity"])
   end
 
-  defp infinite?(card_info) do
-    min_count?(card_info, 2, ["Triangulate", "Photographer Fizzle"])
-  end
-
   defp murmur_otk?(card_info) do
     murmur?(card_info) and murmur_otk_etc?(card_info) and
       "Shudderblock" in card_info.card_names and
