@@ -50,11 +50,15 @@
         </.navbar_dropdown>
 
         <.navbar_dropdown display="Decks" main_link={~p"/decks"}>
-          <.navbar_item_link link={~p"/decks/?format=2"} display={"Standard"} />
-          <.navbar_item_link link={~p"/decks/?format=1"} display={"Wild"} />
-          <.navbar_item_link link={~p"/decks/?format=4"} display={"Twist"} />
+          <.navbar_item_link link={~p"/decks?format=2"} display={"Standard"} />
+          <.navbar_item_link link={~p"/decks?format=1"} display={"Wild"} />
+          <.navbar_item_link link={~p"/decks?format=4"} display={"Twist"} />
         </.navbar_dropdown>
-        <.navbar_item_link link={~p"/meta"} display={"Meta"} />
+        <.navbar_dropdown display="Meta" main_link={~p"/meta"}>
+          <.navbar_item_link link={~p"/meta?format=2"} display={"Standard"} />
+          <.navbar_item_link link={~p"/meta?format=1"} display={"Wild"} />
+          <.navbar_item_link link={~p"/meta?format=4"} display={"Twist"} />
+        </.navbar_dropdown>
         <.navbar_item_link link={~p"/streamer-decks"} display={"Streamer Decks"}/>
         <.navbar_dropdown display="Utilities">
           <.navbar_item_link link={~p"/deckviewer"} display={"Deckviewer"} />
