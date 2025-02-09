@@ -35,9 +35,9 @@ defmodule Backend.Blizzard do
   @current_bg_season_id 13
   # guess, change if not correct
   @current_bg_season_end_date ~N[2024-12-03 18:00:00]
-  @current_arena_season_id 51
+  @current_arena_season_id 53
   # guess, change if not correct
-  @current_arena_season_end_date ~N[2024-12-03 18:00:00]
+  @current_arena_season_end_date ~N[2025-02-25 18:00:00]
 
   defmacro is_old_bg_season(season_id) do
     quote do
