@@ -39,7 +39,11 @@ defmodule Command.Add2025CoreCards do
     files
     |> Enum.map(&prepare_file/1)
     |> Enum.reduce(Multi.new(), fn {id, changeset}, multi ->
-      Multi.insert(multi, "#{id}", changeset)
+      if changeset do
+        Multi.insert(multi, "#{id}", changeset)
+      else
+        multi
+      end
     end)
     |> Backend.Repo.transaction()
   end
@@ -69,14 +73,16 @@ defmodule Command.Add2025CoreCards do
           existing_card = find_existing_card(name)
           card_id = "CORE_#{exp}_#{num}"
 
-          attrs =
+          {attrs, classes} =
             if existing_card do
-              attrs_from_existing(existing_card, id, file_name, card_id)
+              {attrs_from_existing(existing_card, id, file_name, card_id), existing_card.classes}
             else
-              new_attrs(class_raw, name, id, rune_cost, file_name, card_id)
+              class = class_raw |> fix_class() |> Backend.Hearthstone.class_by_slug()
+              {new_attrs(name, id, rune_cost, file_name, card_id), [class]}
             end
 
           Card.changeset(%Card{}, attrs)
+          |> Card.put_classes(classes)
       end
 
     {id, changeset}
@@ -96,9 +102,7 @@ defmodule Command.Add2025CoreCards do
     |> Map.put(card_id, :card_id)
   end
 
-  def new_attrs(class_raw, name, id, rune_cost, file_name, card_id) do
-    class = class_raw |> fix_class() |> Backend.Hearthstone.class_by_slug()
-
+  def new_attrs(name, id, rune_cost, file_name, card_id) do
     %{
       id: id,
       # artist_name: nil,
@@ -107,7 +111,6 @@ defmodule Command.Add2025CoreCards do
       card_set_id: -69,
       # card_type_id: nil,
       # child_ids: [],
-      class_id: class.id,
       collectible: true,
       # copy_of_card_id: nil,
       # crop_image: nil,
