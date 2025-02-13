@@ -27,6 +27,7 @@ defmodule Components.CardsExplorer do
   slot(below_card, required: false)
   data(end_of_stream?, :boolean, default: false)
   data(offset, :integer, default: 0)
+  prop(scroll_size, :integer, default: 1)
   prop(format_filter, :boolean, default: true)
   prop(params, :map, required: true)
   prop(live_view, :module, required: true)
@@ -64,8 +65,8 @@ defmodule Components.CardsExplorer do
   end
 
   defp init_stream(socket) do
-    %{offset: offset} = socket.assigns
-    stream_cards(socket, offset, true)
+    %{offset: offset, scroll_size: scroll_size} = socket.assigns
+    stream_cards(socket, offset, true, scroll_size)
     # case socket.assigns do
     # %{streams: %{cards: _}} -> socket
     # %{offset: offset} -> stream_cards(socket, offset, true)
@@ -92,11 +93,12 @@ defmodule Components.CardsExplorer do
     |> Map.put_new(key, value)
   end
 
-  defp stream_cards(socket, new_offset, reset \\ false) when new_offset >= 0 do
+  defp stream_cards(socket, new_offset, reset \\ false, scroll_size \\ 1) when new_offset >= 0 do
     %{params: params, offset: curr_offset, card_pool: card_pool} = socket.assigns
 
     fetched_cards =
       params
+      |> Map.update("limit", 30 * scroll_size, &(&1 * scroll_size))
       |> Map.put("offset", new_offset)
       |> Map.put(:card_pool, card_pool)
       |> Hearthstone.cards()
@@ -175,7 +177,7 @@ defmodule Components.CardsExplorer do
   def handle_event("next-cards-page", _middle, socket) do
     %{offset: offset, params: %{"limit" => limit}} = socket.assigns
     new_offset = offset + limit
-    {:noreply, stream_cards(socket, new_offset)}
+    {:noreply, socket |> incr_scroll_size() |> stream_cards(new_offset)}
   end
 
   def handle_event("change", %{"search" => [search_input]}, socket) do
@@ -192,6 +194,12 @@ defmodule Components.CardsExplorer do
 
     send(self(), {:update_filters, new_params})
     {:noreply, socket}
+  end
+
+  defp incr_scroll_size(%{assigns: %{scroll_size: scroll_size}} = socket) do
+    push_patch(socket,
+      to: LivePatchDropdown.link_with_new_url_param(socket, "scroll_size", scroll_size + 1)
+    )
   end
 
   def filter_relevant(params) do

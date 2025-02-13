@@ -41,14 +41,23 @@ defmodule Components.Filter.DropdownBase do
         title = title(assigns, current)
         # fallback to [] only if it should be a list
         current =
-          current || if unquote(current_is_list) == true do
-            []
-          end
-          # with nil when unquote(current_is_list) == true <- current do
-          #   []
-          # end
+          current ||
+            if unquote(current_is_list) == true do
+              []
+            end
+
+        # with nil when unquote(current_is_list) == true <- current do
+        #   []
+        # end
 
         Map.merge(assigns, %{current: current, actual_title: title})
+      end
+
+      def link_with_new_url_param(socket, param, val) do
+        live_view = live_view(socket)
+        url_params = url_params(socket) |> update_params(param, val)
+        path_params = path_params(socket)
+        link(socket, live_view, path_params, url_params)
       end
 
       def link(socket, live_view, nil, params) do
@@ -127,6 +136,26 @@ defmodule Components.Filter.DropdownBase do
         with curr when not is_nil(curr) <- Map.get(params, param) do
           normalizer.(curr)
         end
+      end
+
+      def url_params(socket) do
+        socket
+        |> Surface.Components.Context.get(@context_base, :url_params)
+      end
+
+      def path_params(socket) do
+        socket
+        |> Surface.Components.Context.get(@context_base, :path_params)
+      end
+
+      def selected_params(socket) do
+        socket
+        |> Surface.Components.Context.get(@context_base, :selected_params)
+      end
+
+      def live_view(socket) do
+        socket
+        |> Surface.Components.Context.get(@context_base, :live_view)
       end
 
       @doc """

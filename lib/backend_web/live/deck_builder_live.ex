@@ -27,7 +27,7 @@ defmodule BackendWeb.DeckBuilderLive do
        socket
        |> assign_defaults(session)
        |> put_user_in_context()
-       |> assign(deck: nil, raw_params: %{}, show_cards: false)}
+       |> assign(deck: nil, raw_params: %{}, show_cards: false, scroll_size: 1)}
 
   def render(assigns) do
     ~F"""
@@ -38,7 +38,7 @@ defmodule BackendWeb.DeckBuilderLive do
         <div class="sticky-top decklist_card_container darker-grey-background">
           <ExpandableDecklist deck={@deck} name={deck_name(@deck)} id="in_progress_deck" on_card_click={"remove-card"} toggle_cards={"toggle_cards"} show_cards={@show_cards}/>
         </div>
-        <CardsExplorer card_pool={card_pool(@deck)} default_order_by={"mana_in_class"} class_options={class_options(@deck)} format_filter={false} live_view={__MODULE__} id="cards_explorer" params={card_params(@params, missing_zilliax_parts?(@deck))} on_card_click={"add-card"} card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
+        <CardsExplorer scroll_size={@scroll_size} card_pool={card_pool(@deck)} default_order_by={"mana_in_class"} class_options={class_options(@deck)} format_filter={false} live_view={__MODULE__} id="cards_explorer" params={card_params(@params, missing_zilliax_parts?(@deck))} on_card_click={"add-card"} card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
           <:below_card :let={card: card}>
             <div class="tw-flex tw-justify-center">
               <div class="tag" :if={Card.max_copies_in_deck(card) > 1}>
@@ -264,9 +264,12 @@ defmodule BackendWeb.DeckBuilderLive do
 
   def handle_params(raw_params, _uri, socket) do
     params = CardsExplorer.filter_relevant(raw_params)
+    scroll_size = Map.get(raw_params, "scroll_size", socket.assigns.scroll_size) |> Util.to_int(1)
 
     {:noreply,
-     assign(socket, :params, params) |> assign(:raw_params, raw_params) |> assign_deck(raw_params)}
+     socket
+     |> assign(params: params, raw_params: raw_params, scroll_size: scroll_size)
+     |> assign_deck(raw_params)}
   end
 
   defp assign_deck(socket, params) do
