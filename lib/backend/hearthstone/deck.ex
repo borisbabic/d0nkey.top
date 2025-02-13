@@ -126,7 +126,7 @@ defmodule Backend.Hearthstone.Deck do
       sideboards ->
         sideboards
         |> Enum.map(& &1.count)
-        |> Enum.count()
+        |> Enum.sum()
     end
   end
 
