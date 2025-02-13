@@ -14,7 +14,7 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.Submit
 
-  @supported_formats [1, 2]
+  @supported_formats [1, 2, "standard_2025"]
   data(deck_class, :string)
   data(format, :integer)
   data(raw_params, :map)
@@ -74,12 +74,15 @@ defmodule BackendWeb.DeckBuilderLive do
           </div>
         </Form>
         <button class={"button", "decklist-info", String.downcase(class)} :for={class <- Deck.classes(), format <- supported_formats()} :on-click={"pick-class-format"} phx-value-format={format} phx-value-deck_class={class}>
-        {Deck.class_name(class)} - {Deck.format_name(format)}
+        {Deck.class_name(class)} - {format_name(format)}
         </button>
       </div>
     </div>
     """
   end
+
+  defp format_name("standard_2025"), do: "2025 Standard"
+  defp format_name(format), do: Deck.format_name(format)
 
   defp card_pool(deck) do
     tourist_pool =
@@ -123,7 +126,7 @@ defmodule BackendWeb.DeckBuilderLive do
   def handle_event("pick-class-format", %{"format" => format, "deck_class" => class}, socket) do
     %{raw_params: raw_params} = socket.assigns
     hero = Deck.get_basic_hero(class)
-    deckcode = Deck.deckcode([], hero, Util.to_int_or_orig(format))
+    deckcode = Deck.deckcode([], hero, Util.to_int(format, 2))
 
     new_params =
       Map.merge(raw_params, %{"format" => format, "deck_class" => class, "code" => deckcode})

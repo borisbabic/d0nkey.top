@@ -126,7 +126,7 @@ defmodule Components.CardsExplorer do
   def render(assigns) do
     ~F"""
       <div>
-        <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={[{"standard_2025", "2025 Standard"}, {2, "Standard"}, {1, "Wild"}]} />
+        <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={[{"standard_2025", "2025 Standard"}, {"2", "Standard"}, {"1", "Wild"}]} />
         <CardSetDropdown id="card_set_dropdown" />
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
         <AttackDropdown id="cards_attack_dropdown" />
