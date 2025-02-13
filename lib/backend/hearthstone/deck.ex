@@ -398,7 +398,7 @@ defmodule Backend.Hearthstone.Deck do
 
   defp add_xl(name, _), do: name
 
-  defp add_runes(name, %{cards: cards} = deck) when is_list(cards) do
+  def add_runes(name, %{cards: cards} = deck) when is_list(cards) do
     if add_rune_modifiers?(deck, name) do
       deck
       |> rune_cost()
@@ -412,7 +412,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  defp add_runes(name, _), do: name
+  def add_runes(name, _), do: name
 
   defp add_rune_modifiers?(%{class: "DEATHKNIGHT"} = deck, base_name) do
     name = to_string(base_name)

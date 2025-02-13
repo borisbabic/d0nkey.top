@@ -97,7 +97,7 @@ defmodule BackendWeb.DeckBuilderLive do
       Deck.name(deck)
     else
       class = Deck.class(deck) |> Deck.class_name()
-      "#{class} #{curr}/#{max}"
+      "#{class} #{curr}/#{max}" |> Deck.add_runes(deck)
     end
   end
 
