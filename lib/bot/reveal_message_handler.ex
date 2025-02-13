@@ -99,7 +99,5 @@ defmodule Bot.RevealMessageHandler do
     |> Embed.put_image(image_url)
   end
 
-  ""
-
   def reveals(mode), do: BlizzApi.reveal_schedule(mode)
 end
