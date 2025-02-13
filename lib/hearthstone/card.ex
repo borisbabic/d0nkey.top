@@ -201,6 +201,17 @@ defmodule Hearthstone.Card.RuneCost do
       String.duplicate("U", unholy)
   end
 
+  @spec from_shorthand(String.t()) :: t()
+  def from_shorthand(shorthand) do
+    freq = shorthand |> String.to_charlist() |> Enum.frequencies()
+
+    %__MODULE__{
+      blood: Map.get(freq, "B", 0),
+      frost: Map.get(freq, "F", 0),
+      unholy: Map.get(freq, "U", 0)
+    }
+  end
+
   def count(%{blood: b, frost: f, unholy: h}), do: b + f + h
 end
 

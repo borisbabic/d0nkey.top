@@ -67,6 +67,11 @@ defmodule Backend.Hearthstone do
     Repo.all(Class)
   end
 
+  def class_by_slug(slug) do
+    query = from c in Class, where: ilike(c.slug, ^slug)
+    Repo.one(query)
+  end
+
   def game_modes() do
     Repo.all(GameMode)
   end
@@ -956,6 +961,11 @@ defmodule Backend.Hearthstone do
   defp build_cards_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_cards_query/2)
 
+  defp compose_cards_query(:actual_card_set, query) do
+    query
+    |> where([card: c], c.card_set_id > 0)
+  end
+
   defp compose_cards_query(:dust_free, query) do
     query
     |> where([card: c], c.dust_free)
@@ -1119,6 +1129,19 @@ defmodule Backend.Hearthstone do
 
     query
     |> where([card_set: s], s.slug in subquery(subquery))
+  end
+
+  defp compose_cards_query({"format", "standard_2025"}, query) do
+    query
+    |> where(
+      [card_set: s, card: c],
+      # (s.id == 1941 and not(card_id in [103661, 103665, 103656, 103657, 103663, 103658, 103659, 103655, 103654, 103662, 103660, 103664 ]))
+      s.id in [1935, 1905, 1897, -69] or
+        fragment(
+          "EXISTS(SELECT card_id FROM public.hs_extra_card_set WHERE card_set_id = -69 AND card_id = ?)",
+          c.id
+        )
+    )
   end
 
   defp compose_cards_query({"format", _}, query), do: query
@@ -1477,7 +1500,7 @@ defmodule Backend.Hearthstone do
   end
 
   def set_referent_card_ids() do
-    collectible = cards([{"collectible", true}])
+    collectible = cards([{"collectible", true}, :actual_card_set, not_classic_card_criteria()])
     grouped = Enum.group_by(collectible, &Card.same_card_grouper/1)
 
     Enum.reduce(grouped, Multi.new(), &do_handle_card_ids_group/2)
