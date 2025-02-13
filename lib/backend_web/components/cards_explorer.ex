@@ -34,20 +34,28 @@ defmodule Components.CardsExplorer do
   prop(on_card_click, :event, default: nil)
   prop(default_order_by, :string, default: "latest")
   prop(default_limit, :string, default: 30)
+  prop(additional_url_params, :map, default: %{})
   prop(card_disabled, :fun, default: &Util.always_nil/1)
   prop(card_pool, :any, default: true)
+  prop(card_phx_hook, :string, default: nil)
   prop(class_options, :list, default: nil)
 
   ### how many times the limit do we keep in the viewport
   # @viewport_size_factor 7
 
   def update(assigns_old, socket) do
-    %{default_order_by: default_order_by, default_limit: default_limit} = assigns_old
+    %{
+      default_order_by: default_order_by,
+      default_limit: default_limit,
+      additional_url_params: additional_url_params
+    } = assigns_old
 
     assigns =
       Map.update!(assigns_old, :params, fn p ->
         add_default_params(p, default_order_by, default_limit)
       end)
+
+    url_params = Map.merge(assigns_old.params, additional_url_params)
 
     {
       :ok,
@@ -56,7 +64,7 @@ defmodule Components.CardsExplorer do
       |> assign_stream_info(assigns)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
-        assigns_old.params,
+        url_params,
         nil,
         assigns.params
       )
@@ -138,7 +146,7 @@ defmodule Components.CardsExplorer do
           class="columns is-multiline is-mobile"
           phx-target={@myself}
           phx-viewport-bottom={!@end_of_stream? && "next-cards-page"}>
-          <div id={id} :for={{id, c} <- @streams.cards} class={"column", "is-narrow", "is-clickable": !!@on_card_click, "not-in-list": @card_disabled.(c)} phx-value-card_id={c.id} :on-click={unless @card_disabled.(c), do: @on_card_click}>
+          <div card_id={c.id} id={id} :for={{id, c} <- @streams.cards} class={"column", "is-narrow", "is-clickable": !!@on_card_click, "not-in-list": @card_disabled.(c)} phx-value-card_id={c.id} :on-click={unless @card_disabled.(c), do: @on_card_click} phx-hook={@card_phx_hook}>
             <Card shrink_mobile={true} card={c} disable_link={!!@on_card_click}>
               <:above_image :let={card: card}>
                 <#slot {@above_card, card: card} />

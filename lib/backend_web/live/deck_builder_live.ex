@@ -38,7 +38,19 @@ defmodule BackendWeb.DeckBuilderLive do
         <div class="sticky-top decklist_card_container darker-grey-background">
           <ExpandableDecklist deck={@deck} name={deck_name(@deck)} id="in_progress_deck" on_card_click={"remove-card"} toggle_cards={"toggle_cards"} show_cards={@show_cards}/>
         </div>
-        <CardsExplorer scroll_size={@scroll_size} card_pool={card_pool(@deck)} default_order_by={"mana_in_class"} class_options={class_options(@deck)} format_filter={false} live_view={__MODULE__} id="cards_explorer" params={card_params(@params, missing_zilliax_parts?(@deck))} on_card_click={"add-card"} card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
+        <CardsExplorer
+          scroll_size={@scroll_size}
+          card_pool={card_pool(@deck)}
+          default_order_by={"mana_in_class"}
+          class_options={class_options(@deck)}
+          format_filter={false}
+          live_view={__MODULE__}
+          id="cards_explorer"
+          additional_url_params={%{"code" => Deck.deckcode(@deck)}}
+          params={card_params(@params, missing_zilliax_parts?(@deck))}
+          on_card_click={"add-card"}
+          card_phx_hook={"CardRightClick"}
+          card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
           <:below_card :let={card: card}>
             <div class="tw-flex tw-justify-center">
               <div class="tag" :if={Card.max_copies_in_deck(card) > 1}>
@@ -119,27 +131,8 @@ defmodule BackendWeb.DeckBuilderLive do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, new_params))}
   end
 
-  def handle_event("remove-card", %{"card_id" => card_raw} = params, socket) do
-    sideboard =
-      with sideboard_raw when not is_nil(sideboard_raw) <- Map.get(params, "sideboard"),
-           sideboard_int <- Util.to_int(sideboard_raw, nil) do
-        Backend.Hearthstone.canonical_id(sideboard_int)
-      end
-
-    card = Util.to_int!(card_raw)
-    %{deck: deck, raw_params: raw_params} = socket.assigns
-
-    new_code =
-      if sideboard do
-        remove_from_sideboard(deck, card, sideboard)
-      else
-        remove_card(deck, card)
-      end
-
-    {:noreply,
-     push_patch(socket,
-       to: Routes.live_path(socket, __MODULE__, Map.put(raw_params, "code", new_code))
-     )}
+  def handle_event("remove-card", %{"card_id" => _card_raw} = params, socket) do
+    do_remove_card(socket, params)
   end
 
   def handle_event("submit", %{"new_deck" => %{"new_code" => new_code}}, socket) do
@@ -160,6 +153,10 @@ defmodule BackendWeb.DeckBuilderLive do
       _ ->
         socket
     end
+  end
+
+  def handle_event("card-right-click", %{"card_id" => _card_id} = params, socket) do
+    do_remove_card(socket, params)
   end
 
   def handle_event("toggle_cards", _, socket) do
@@ -206,6 +203,29 @@ defmodule BackendWeb.DeckBuilderLive do
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
     {:noreply, socket}
+  end
+
+  defp do_remove_card(socket, %{"card_id" => card_raw} = params) do
+    sideboard =
+      with sideboard_raw when not is_nil(sideboard_raw) <- Map.get(params, "sideboard"),
+           sideboard_int <- Util.to_int(sideboard_raw, nil) do
+        Backend.Hearthstone.canonical_id(sideboard_int)
+      end
+
+    card = Util.to_int!(card_raw)
+    %{deck: deck, raw_params: raw_params} = socket.assigns
+
+    new_code =
+      if sideboard do
+        remove_from_sideboard(deck, card, sideboard)
+      else
+        remove_card(deck, card)
+      end
+
+    {:noreply,
+     push_patch(socket,
+       to: Routes.live_path(socket, __MODULE__, Map.put(raw_params, "code", new_code))
+     )}
   end
 
   defp remove_from_sideboard(deck, card, sideboard) do

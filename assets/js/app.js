@@ -177,8 +177,28 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+let Hooks = {};
+Hooks.CardRightClick = {
+    mounted() {
+        this.el.addEventListener("auxclick", e => {
+            let card_id = this.el.getAttribute("card_id")
+            console.log("auxclick on card_id", card_id);
+            if(card_id) {
+                e.preventDefault()
+                this.pushEvent("card-right-click", {card_id: card_id});
+            }
+        })
+        this.el.addEventListener("contextmenu", e => {
+            if(this.el.getAttribute("card_id")) {
+                e.preventDefault();
+            }
+        })
+    }
+
+}
 let liveSocket = new LiveSocket("/live", Socket, {
     params: {_csrf_token: csrfToken},
+    hooks: Hooks,
     dom: {
         onBeforeElUpdated(from, to){
           if(from._x_dataStack){
