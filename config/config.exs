@@ -170,7 +170,7 @@ config :esbuild,
   version: "0.20.2",
   default: [
     args:
-      ~w(--loader:.png=copy --loader:.gif=copy --loader:.jpg=copy --loader:.ico=copy --loader:.Identifier=copy --loader:.webp=copy --loader:.svg=copy --bundle --target=es2017 static/** js/app=js/app.js --outdir=../priv/static),
+      ~w(js/app.js --loader:.png=copy --loader:.gif=copy --loader:.jpg=copy --loader:.ico=copy --loader:.Identifier=copy --loader:.webp=copy --loader:.svg=copy --bundle --target=es2017 static/** --outdir=../priv/),
     cd: Path.expand("../assets", __DIR__)
   ]
 
