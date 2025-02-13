@@ -42,6 +42,7 @@ defmodule Backend.Hearthstone.Card do
   schema "hs_cards" do
     field(:artist_name, :string)
     field(:attack, :integer)
+    field(:card_id, :string)
     belongs_to(:card_set, Set)
     belongs_to(:card_type, Type)
     field(:child_ids, {:array, :integer})
@@ -95,6 +96,7 @@ defmodule Backend.Hearthstone.Card do
       :artist_name,
       :attack,
       :card_set_id,
+      :card_id,
       :card_type_id,
       :child_ids,
       :collectible,
