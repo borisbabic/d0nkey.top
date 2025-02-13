@@ -208,7 +208,7 @@ defmodule BackendWeb.DeckBuilderLive do
   defp do_remove_card(socket, %{"card_id" => card_raw} = params) do
     sideboard =
       with sideboard_raw when not is_nil(sideboard_raw) <- Map.get(params, "sideboard"),
-           sideboard_int <- Util.to_int(sideboard_raw, nil) do
+           sideboard_int when not is_nil(sideboard_int) <- Util.to_int(sideboard_raw, nil) do
         Backend.Hearthstone.canonical_id(sideboard_int)
       end
 
@@ -243,7 +243,7 @@ defmodule BackendWeb.DeckBuilderLive do
   end
 
   defp remove_card(deck, card) do
-    new_sideboards = Enum.reject(deck.sideboards, &(&1.sideboard == card))
+    in_sideboard = Enum.find(deck.sideboards, nil, &(&1.card == card))
 
     index =
       Enum.find_index(
@@ -251,8 +251,18 @@ defmodule BackendWeb.DeckBuilderLive do
         &(CardBag.deckcode_copy_id(&1) == CardBag.deckcode_copy_id(card))
       )
 
-    new_cards = List.delete_at(deck.cards, index)
-    Deck.deckcode(new_cards, deck.hero, deck.format, new_sideboards)
+    cond do
+      index ->
+        new_sideboards = Enum.reject(deck.sideboards, &(&1.sideboard == card))
+        new_cards = List.delete_at(deck.cards, index)
+        Deck.deckcode(new_cards, deck.hero, deck.format, new_sideboards)
+
+      in_sideboard != nil ->
+        remove_from_sideboard(deck, card, in_sideboard.sideboard)
+
+      true ->
+        Deck.deckcode(deck)
+    end
   end
 
   defp add_card(deck, card) do
