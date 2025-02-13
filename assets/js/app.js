@@ -190,6 +190,7 @@ Hooks.CardRightClick = {
         })
         this.el.addEventListener("contextmenu", e => {
             if(this.el.getAttribute("card_id")) {
+                console.log("Preventing default for context menu");
                 e.preventDefault();
             }
         })
