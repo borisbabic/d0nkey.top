@@ -39,11 +39,13 @@ defmodule BackendWeb.DeckBuilderLive do
           <ExpandableDecklist deck={@deck} name={deck_name(@deck)} id="in_progress_deck" on_card_click={"remove-card"} toggle_cards={"toggle_cards"} show_cards={@show_cards}/>
         </div>
         <CardsExplorer card_pool={card_pool(@deck)} default_order_by={"mana_in_class"} class_options={class_options(@deck)} format_filter={false} live_view={__MODULE__} id="cards_explorer" params={card_params(@params, missing_zilliax_parts?(@deck))} on_card_click={"add-card"} card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
-          <:above_card :let={card: card}>
-           <span class="tw-inline-block tw-text-center" :if={Card.max_copies_in_deck(card) > 1}>
-            {Deck.total_copies(@deck, card)} / {Card.max_copies_in_deck(card)}
-           </span>
-          </:above_card>
+          <:below_card :let={card: card}>
+            <div class="tw-flex tw-justify-center">
+              <div class="tag" :if={Card.max_copies_in_deck(card) > 1}>
+                {Deck.total_copies(@deck, card)} / {Card.max_copies_in_deck(card)}
+              </div>
+            </div>
+          </:below_card>
         </CardsExplorer>
       </div>
       <div :if={!@deck}>

@@ -24,6 +24,7 @@ defmodule Components.CardsExplorer do
 
   data(streams, :list)
   slot(above_card, required: false)
+  slot(below_card, required: false)
   data(end_of_stream?, :boolean, default: false)
   data(offset, :integer, default: 0)
   prop(format_filter, :boolean, default: true)
@@ -140,6 +141,9 @@ defmodule Components.CardsExplorer do
               <:above_image :let={card: card}>
                 <#slot {@above_card, card: card} />
               </:above_image>
+              <:below_image :let={card: card}>
+                <#slot {@below_card, card: card} />
+              </:below_image>
             </Card>
           </div>
         </div>
