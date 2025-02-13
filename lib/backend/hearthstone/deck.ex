@@ -974,10 +974,21 @@ defmodule Backend.Hearthstone.Deck do
   def addable?(deck, card) do
     total = total_copies(deck, card)
     max_allowed = Card.max_copies_in_deck(card)
+    runes_allowed? = runes_allowed?(deck, card)
     # max one tourist per deck
-    total < max_allowed and
+    runes_allowed? and total < max_allowed and
       (!Card.tourist?(card) or
          Enum.count(tourists(deck)) < 1)
+  end
+
+  @max_runes_in_deck 3
+  defp runes_allowed?(deck, card) do
+    total_runes =
+      rune_cost(deck)
+      |> RuneCost.maximum(card.rune_cost)
+      |> RuneCost.count()
+
+    total_runes <= @max_runes_in_deck
   end
 
   def total_copies(%{cards: cards, sideboards: sideboards}, card) do

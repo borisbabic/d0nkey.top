@@ -200,6 +200,8 @@ defmodule Hearthstone.Card.RuneCost do
       String.duplicate("F", frost) <>
       String.duplicate("U", unholy)
   end
+
+  def count(%{blood: b, frost: f, unholy: h}), do: b + f + h
 end
 
 defmodule Hearthstone.Card.MercenaryHero do
