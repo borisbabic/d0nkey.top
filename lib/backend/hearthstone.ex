@@ -50,6 +50,15 @@ defmodule Backend.Hearthstone do
     Repo.all(Set)
   end
 
+  def latest_sets_with_release_dates() do
+    query =
+      from s in Set,
+        where: not is_nil(s.release_date),
+        order_by: [desc: :release_date]
+
+    Repo.all(query)
+  end
+
   def latest_set() do
     query =
       from s in Set,
@@ -1075,6 +1084,18 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({"attack", attack}, query),
     do: query |> where([card: c], c.attack == ^attack)
+
+  defp compose_cards_query({"card_set_id", id}, query) when id in [-69, "-69"] do
+    query
+    |> where(
+      [card_set: s, card: c],
+      s.id == -69 or
+        fragment(
+          "EXISTS(SELECT card_id FROM public.hs_extra_card_set WHERE card_set_id = -69 AND card_id = ?)",
+          c.id
+        )
+    )
+  end
 
   defp compose_cards_query({"card_set_id", id}, query),
     do: query |> where([card: c], c.card_set_id == ^id)

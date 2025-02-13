@@ -10,6 +10,7 @@ defmodule Components.CardsExplorer do
   alias Components.Filter.{
     FormatDropdown,
     AttackDropdown,
+    CardSetDropdown,
     HealthDropdown,
     ManaCostDropdown,
     MinionTypeDropdown,
@@ -125,7 +126,8 @@ defmodule Components.CardsExplorer do
   def render(assigns) do
     ~F"""
       <div>
-        <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={[{2, "Standard"}, {1, "Wild"}]} />
+        <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={[{"standard_2025", "2025 Standard"}, {2, "Standard"}, {1, "Wild"}]} />
+        <CardSetDropdown id="card_set_dropdown" />
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
         <AttackDropdown id="cards_attack_dropdown" />
         <HealthDropdown id="cards_attack_dropdown" />
@@ -223,12 +225,14 @@ defmodule Components.CardsExplorer do
       "rarity",
       "faction",
       "spell_school",
+      "card_set_id",
+      "card_set_group_slug",
       "order_by",
       "search",
       "format",
       "rarity"
     ])
-    |> parse_int(["limit", "format"])
+    |> parse_int(["limit"])
   end
 
   # defp use_fake_limit(old_params) do
