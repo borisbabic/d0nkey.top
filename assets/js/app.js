@@ -209,6 +209,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
     }
 })
 
+console.log("hee-haw");
+
 // Connect if there are any LiveViews on the page
 liveSocket.connect()
 
