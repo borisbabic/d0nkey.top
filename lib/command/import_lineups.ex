@@ -9,6 +9,22 @@ defmodule Command.ImportLineups do
   use Tesla
   plug Tesla.Middleware.FollowRedirects, max_redirects: 3
 
+  def import_from_battlefy_csv_url(csv_url, tournament_id, class_num) do
+    %{body: body} = HTTPoison.get!(csv_url, [], follow_redirect: true)
+
+    body
+    |> parse_body()
+    |> import_battlefy(tournament_id, class_num)
+  end
+
+  def import_battlefy(data, tournament_id, class_num) do
+    Enum.map(data, fn [battletag | rest] ->
+      decks = Enum.drop(rest, class_num + 1)
+      [battletag | decks]
+    end)
+    |> import(tournament_id, "battlefy")
+  end
+
   def import_from_csv_url(
         csv_url,
         tournament_id,
