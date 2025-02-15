@@ -33,52 +33,106 @@ defmodule Command.Add2025CoreCards do
     end
   end
 
-  def add_cards(directory \\ "assets/static/images/core_2025") do
-    {:ok, files} = File.ls(directory)
-
-    files
+  @image_directory "assets/static/images/core_2025"
+  def add_cards(parsed_filter \\ & &1, directory \\ @image_directory) do
+    parsed_files(directory)
+    |> Enum.filter(parsed_filter)
     |> Enum.map(&prepare_file/1)
+    |> Enum.filter(fn {_id, changeset} ->
+      changeset
+    end)
     |> Enum.reduce(Multi.new(), fn {id, changeset}, multi ->
-      if changeset do
-        Multi.insert(multi, "#{id}", changeset)
-      else
-        multi
+      Multi.insert(multi, "#{id}", changeset)
+    end)
+    |> Backend.Repo.transaction()
+  end
+
+  def make_short_images(
+        source_directory \\ @image_directory,
+        destination_directory \\ @image_directory <> "/../raptor_core"
+      ) do
+    {:ok, files} = File.ls(source_directory)
+
+    for f <- files, %{file_name: file_name, card_id: card_id} <- [parse_file_name(f)] do
+      File.copy("#{source_directory}/#{file_name}", "#{destination_directory}/#{card_id}.png")
+    end
+  end
+
+  def add_card_id(directory \\ @image_directory) do
+    directory
+    |> parsed_files()
+    |> Enum.reduce(Multi.new(), fn %{dbf_id: dbf_id, card_id: card_id}, multi ->
+      case Backend.Hearthstone.get_card(dbf_id) do
+        %{inserted_at: _} = card ->
+          cs = Card.set_card_id(card, card_id)
+          Multi.update(multi, "#{dbf_id}_#{card_id}", cs)
+
+        _ ->
+          multi
       end
     end)
     |> Backend.Repo.transaction()
   end
 
-  def prepare_file(file_name) do
+  def parsed_files(directory) do
+    {:ok, files} = File.ls(directory)
+    Enum.map(files, &parse_file_name/1)
+  end
+
+  def parse_file_name(file_name) do
     pieces = String.split(file_name, "_")
 
-    {class_and_runes, ["CORE", exp, num, "enUS", name_and_id | _]} =
-      Enum.split_while(pieces, &(&1 != "CORE"))
+    {class_runes_card_id, [_, name_and_id | _]} = Enum.split_while(pieces, &(&1 != "enUS"))
+
+    {card_id, class_and_runes} =
+      case Enum.reverse(class_runes_card_id) do
+        [num, exp, core | class_and_runes] when core in ["CORE", "Core"] ->
+          {"#{core}_#{exp}_#{num}", Enum.reverse(class_and_runes)}
+
+        [num, exp | class_and_runes] ->
+          {"#{exp}_#{num}", Enum.reverse(class_and_runes)}
+      end
 
     {name_parts, [id]} = String.split(name_and_id, "-") |> Enum.split(-1)
+    name = Enum.join(name_parts, " ")
 
+    {class, rune_cost} =
+      case class_and_runes do
+        [class] -> {fix_class(class), nil}
+        [class, shorthand] -> {fix_class(class), RuneCost.from_shorthand(shorthand)}
+      end
+
+    %{
+      file_name: file_name,
+      class_slug: class,
+      rune_cost: rune_cost,
+      card_id: card_id,
+      dbf_id: id,
+      name: name
+    }
+  end
+
+  def prepare_file(%{
+        class_slug: class_slug,
+        rune_cost: rune_cost,
+        card_id: card_id,
+        dbf_id: id,
+        name: name
+      }) do
     changeset =
       case Backend.Hearthstone.get_card(id) do
         %{inserted_at: _} ->
           create_mapping(id)
 
         _ ->
-          name = Enum.join(name_parts, "-")
-
-          [class_raw, rune_cost] =
-            case class_and_runes do
-              [class] -> [class, nil]
-              [class, shorthand] -> [class, RuneCost.from_shorthand(shorthand)]
-            end
-
           existing_card = find_existing_card(name)
-          card_id = "CORE_#{exp}_#{num}"
 
           {attrs, classes} =
             if existing_card do
-              {attrs_from_existing(existing_card, id, file_name, card_id), existing_card.classes}
+              {attrs_from_existing(existing_card, id, card_id), existing_card.classes}
             else
-              class = class_raw |> fix_class() |> Backend.Hearthstone.class_by_slug()
-              {new_attrs(name, id, rune_cost, file_name, card_id), [class]}
+              class = class_slug |> Backend.Hearthstone.class_by_slug()
+              {new_attrs(name, id, rune_cost, card_id), [class]}
             end
 
           Card.changeset(%Card{}, attrs)
@@ -92,17 +146,17 @@ defmodule Command.Add2025CoreCards do
     %ExtraCardSet{} |> ExtraCardSet.changeset(%{card_id: id, card_set_id: -69})
   end
 
-  def attrs_from_existing(existing_card, id, file_name, card_id) do
+  def attrs_from_existing(existing_card, id, card_id) do
     existing_card
     |> Map.from_struct()
     |> Map.put(:id, id)
-    |> Map.put(:image, image_url(file_name))
+    |> Map.put(:image, image_url(card_id))
     |> Map.put(:card_set_id, -69)
     |> Map.drop([:image_gold])
     |> Map.put(card_id, :card_id)
   end
 
-  def new_attrs(name, id, rune_cost, file_name, card_id) do
+  def new_attrs(name, id, rune_cost, card_id) do
     %{
       id: id,
       # artist_name: nil,
@@ -119,7 +173,7 @@ defmodule Command.Add2025CoreCards do
       # faction_ids: nil,
       # flavor_text: nil,
       # health: nil,
-      image: image_url(file_name),
+      image: image_url(card_id),
       # image_gold: nil,
       keyword_ids: [],
       # mana_cost: nil,
@@ -135,8 +189,8 @@ defmodule Command.Add2025CoreCards do
     }
   end
 
-  def image_url(file_name) do
-    "/images/core_2025/#{file_name}"
+  def image_url(card_id) do
+    "/images/raptor_core/#{card_id}.png"
   end
 
   def fix_class("zz" <> class), do: class

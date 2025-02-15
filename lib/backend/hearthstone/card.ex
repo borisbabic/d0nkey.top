@@ -124,6 +124,12 @@ defmodule Backend.Hearthstone.Card do
     |> foreign_key_constraint(:card_set_id, name: :hs_cards_card_set_id_fkey)
   end
 
+  def set_card_id(card, card_id) do
+    card
+    |> cast(%{card_id: card_id}, [:card_id])
+    |> validate_required(:card_id)
+  end
+
   def set_referent_card_ids(card, canonical_id, deckcode_copy_id) do
     card
     |> cast(%{canonical_id: canonical_id, deckcode_copy_id: deckcode_copy_id}, [
@@ -309,6 +315,15 @@ defmodule Backend.Hearthstone.Card do
   def dbf_id(%{id: id}), do: id
 
   @spec card_url(card()) :: String.t() | nil
+  # hack for 2025 core
+  def card_url(%{card_id: card_id} = card) when is_binary(card_id) do
+    if File.exists?("assets/static/images/raptor_core/#{card_id}.png") do
+      "/images/raptor_core/#{card_id}.png"
+    else
+      card |> Map.put(:card_id, nil) |> card_url()
+    end
+  end
+
   def card_url(%{image: image}) when is_binary(image), do: image
   def card_url(%Backend.HearthstoneJson.Card{} = c), do: Backend.HearthstoneJson.card_url(c)
 
