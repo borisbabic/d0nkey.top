@@ -1,5 +1,7 @@
 {...}:
 {
+# enables history in the iex shell
+env.ERL_AFLAGS="-kernel shell_history enabled";
 env.DISCORD_TOKEN="";
 env.BNET_CLIENT_ID="";
 env.BNET_CLIENT_SECRET="";
