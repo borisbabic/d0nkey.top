@@ -33,12 +33,12 @@ config :backend, QuantumScheduler,
          100
        )
      end},
-    {"*/2 * * * *",
+    {"*/3 * * * *",
      fn ->
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:STD, :WLD, :twist],
-         50,
+         200,
          10_000,
          1000
        )
@@ -48,8 +48,8 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:BG, :DUO],
-         100,
-         10_000,
+         1000,
+         30_000,
          1000
        )
      end},
@@ -58,8 +58,8 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:arena],
-         500,
-         5000,
+         1000,
+         30_000,
          1000
        )
      end},
@@ -68,8 +68,8 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:STD, :WLD, :twist],
-         200,
-         5000,
+         500,
+         50_000,
          9000,
          1000
        )
@@ -79,8 +79,8 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:BG, :DUO],
-         200,
-         10_000,
+         2000,
+         50_000,
          9000,
          1000
        )
@@ -90,8 +90,8 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:arena],
-         1000,
-         20_000,
+         5000,
+         60_000,
          9000,
          1000
        )
@@ -100,17 +100,17 @@ config :backend, QuantumScheduler,
      fn ->
        Backend.Leaderboards.save_all_right_after_midnight(
          [:STD, :BG, :WLD, :twist, :DUO, :arena],
-         5000,
+         10_000,
          120_000,
          10_001
        )
      end},
-    {"13 09 1 * *",
+    {"37 09 1 * *",
      fn ->
        Backend.Leaderboards.save_last_month_constructed(
          [:STD, :WLD, :twist],
-         5000,
-         60_000
+         60_000,
+         360_000
        )
      end},
     {"7 * * * *", fn -> Backend.Leaderboards.prune_empty_seasons() end},
