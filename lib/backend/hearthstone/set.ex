@@ -22,7 +22,10 @@ defmodule Backend.Hearthstone.Set do
   @doc false
   def changeset(set, %Hearthstone.Metadata.Set{} = struct) do
     attrs = Map.from_struct(struct)
+    changeset(set, attrs)
+  end
 
+  def changeset(set, attrs) do
     set
     |> cast(attrs, [
       :id,

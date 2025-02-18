@@ -1085,13 +1085,14 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"attack", attack}, query),
     do: query |> where([card: c], c.attack == ^attack)
 
+  @raptor_core_fragment "EXISTS(SELECT card_id FROM public.hs_extra_card_set WHERE card_set_id = -69 AND card_id = ?)"
   defp compose_cards_query({"card_set_id", id}, query) when id in [-69, "-69"] do
     query
     |> where(
       [card_set: s, card: c],
       s.id == -69 or
         fragment(
-          "EXISTS(SELECT card_id FROM public.hs_extra_card_set WHERE card_set_id = -69 AND card_id = ?)",
+          @raptor_core_fragment,
           c.id
         )
     )
@@ -1153,13 +1154,14 @@ defmodule Backend.Hearthstone do
   end
 
   defp compose_cards_query({"format", "standard_2025"}, query) do
+    subquery = set_group_sets_query("standard_2025")
+
     query
     |> where(
       [card_set: s, card: c],
-      # (s.id == 1941 and not(card_id in [103661, 103665, 103656, 103657, 103663, 103658, 103659, 103655, 103654, 103662, 103660, 103664 ]))
-      s.id in [1935, 1905, 1897, -69] or
+      s.slug in subquery(subquery) or
         fragment(
-          "EXISTS(SELECT card_id FROM public.hs_extra_card_set WHERE card_set_id = -69 AND card_id = ?)",
+          @raptor_core_fragment,
           c.id
         )
     )

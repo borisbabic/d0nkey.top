@@ -17,11 +17,15 @@ defmodule Backend.Hearthstone.SetGroup do
     timestamps()
   end
 
-  @spec changeset(%__MODULE__{}, Hearthstone.Metadata.SetGroup.t()) :: Ecto.Changeset.t()
+  @spec changeset(%__MODULE__{}, Hearthstone.Metadata.SetGroup.t() | Map.t()) ::
+          Ecto.Changeset.t()
   @doc false
   def changeset(set_group, %Hearthstone.Metadata.SetGroup{} = struct) do
     attrs = Map.from_struct(struct)
+    changeset(set_group, attrs)
+  end
 
+  def changeset(set_group, attrs) do
     set_group
     |> cast(attrs, [:name, :slug, :icon, :standard, :svg, :year, :year_range, :card_sets])
     |> validate_required([:name, :slug])
