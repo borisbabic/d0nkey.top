@@ -28,6 +28,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       zarimi?(card_info) ->
         :"Zarimi Priest"
 
+      aggro_protoss?(card_info) ->
+        :"Aggro Protoss Priest"
+
       aggro_zealot?(card_info) ->
         :"Aggro Zealot Priest"
 
@@ -112,6 +115,15 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Sauna Regular",
       "Trusty Fishing Rod"
     ])
+  end
+
+  defp aggro_protoss?(card_info) do
+    min_count?(card_info, 2, [
+      "Brain Masseuse",
+      "Overzealous Healer",
+      "Catch of the Day",
+      "Miracle Salesman"
+    ]) and protoss?(card_info, 6)
   end
 
   defp aggro_zealot?(card_info) do
