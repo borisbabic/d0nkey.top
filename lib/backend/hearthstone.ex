@@ -50,11 +50,23 @@ defmodule Backend.Hearthstone do
     Repo.all(Set)
   end
 
-  def latest_sets_with_release_dates() do
-    query =
+  def latest_sets_with_release_dates(group_slug \\ nil) do
+    base_query =
       from s in Set,
+        as: :card_set,
         where: not is_nil(s.release_date),
         order_by: [desc: :release_date]
+
+    # filter by group_slug if present
+    query =
+      if is_binary(group_slug) do
+        subquery = set_group_sets_query(group_slug)
+
+        base_query
+        |> where([s], s.slug in subquery(subquery))
+      else
+        base_query
+      end
 
     Repo.all(query)
   end
@@ -1085,37 +1097,30 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"attack", attack}, query),
     do: query |> where([card: c], c.attack == ^attack)
 
-  @raptor_core_fragment "EXISTS(SELECT card_id FROM public.hs_extra_card_set WHERE card_set_id = -69 AND card_id = ?)"
-  defp compose_cards_query({"card_set_id", id}, query) when id in [-69, "-69"] do
-    query
-    |> where(
-      [card_set: s, card: c],
-      s.id == -69 or
-        fragment(
-          @raptor_core_fragment,
-          c.id
-        )
-    )
+  defp compose_cards_query({"card_set_id", card_sets}, query) when is_list(card_sets) do
+    dynamic =
+      Enum.reduce(card_sets, dynamic(false), fn id_raw, dynamic ->
+        id = Util.to_int_or_orig(id_raw)
+        dynamic(^dynamic or ^card_set_id_dynamic(id))
+      end)
+
+    query |> where(^dynamic)
   end
 
-  defp compose_cards_query({"card_set_id", id}, query),
-    do: query |> where([card: c], c.card_set_id == ^id)
+  defp compose_cards_query({"card_set_id", nil}, query), do: query
 
-  defp compose_cards_query({"card_set_id_not_in", ids}, query) do
+  defp compose_cards_query({"card_set_id", id}, query) do
+    compose_cards_query({"card_set_id", [id]}, query)
+  end
+
+  defp compose_cards_query({"card_set_id_not_in", ids}, query) when is_list(ids) do
     query
     |> where([card: c], c.card_set_id not in ^ids)
   end
 
-  defp compose_cards_query({"card_set_group_slug", card_set_group}, query) do
-    group_subquery =
-      from csg in SetGroup,
-        select: fragment("UNNEST(?)", csg.card_sets),
-        where: csg.slug == ^card_set_group
-
-    card_set_subquery = from cs in Set, select: cs.id, where: cs.slug in subquery(group_subquery)
-
-    query
-    |> where([card: c], c.card_set_id in subquery(card_set_subquery))
+  defp compose_cards_query({"card_set_group_slug", group_slug}, query) do
+    set_ids = sets_in_group(group_slug) |> Enum.map(& &1.id)
+    compose_cards_query({"card_set_id", set_ids}, query)
   end
 
   @ilike_name_or_slug_fields [
@@ -1146,25 +1151,8 @@ defmodule Backend.Hearthstone do
     do: compose_cards_query({"format", "twist"}, query)
 
   defp compose_cards_query({"format", format}, query)
-       when format in ["standard", "wild", "twist"] do
-    subquery = set_group_sets_query(format)
-
-    query
-    |> where([card_set: s], s.slug in subquery(subquery))
-  end
-
-  defp compose_cards_query({"format", "standard_2025"}, query) do
-    subquery = set_group_sets_query("standard_2025")
-
-    query
-    |> where(
-      [card_set: s, card: c],
-      s.slug in subquery(subquery) or
-        fragment(
-          @raptor_core_fragment,
-          c.id
-        )
-    )
+       when format in ["standard", "wild", "twist", "arena", "standard_2025"] do
+    compose_cards_query({"card_set_group_slug", format}, query)
   end
 
   defp compose_cards_query({"format", _}, query), do: query
@@ -1189,6 +1177,18 @@ defmodule Backend.Hearthstone do
     query |> where(^dynamic)
   end
 
+  defp card_set_id_dynamic(id) do
+    dynamic(
+      [card_set: s, card: c],
+      s.id == ^id or
+        fragment(
+          "EXISTS(SELECT card_id FROM public.hs_extra_card_set WHERE card_set_id = ? AND card_id = ?)",
+          ^id,
+          c.id
+        )
+    )
+  end
+
   defp ilike_name_or_slug(searches, query, on_thing) when is_list(searches) do
     conditions =
       Enum.reduce(searches, false, fn s, prev ->
@@ -1204,11 +1204,18 @@ defmodule Backend.Hearthstone do
     |> ilike_name_or_slug(query, on_thing)
   end
 
-  def set_group_sets_query(slug) do
+  defp set_group_sets_query(slug) do
     from(sg in SetGroup,
       where: sg.slug == ^slug,
       select: fragment("UNNEST(?)", sg.card_sets)
     )
+  end
+
+  @spec sets_in_group(group_slug :: Binary.t()) :: [Set.t()]
+  def sets_in_group(group_slug) do
+    subquery = set_group_sets_query(group_slug)
+    query = from s in Set, where: s.slug in subquery(subquery)
+    Repo.all(query)
   end
 
   defp base_cards_query() do
