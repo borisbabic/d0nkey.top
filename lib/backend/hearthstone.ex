@@ -1007,13 +1007,14 @@ defmodule Backend.Hearthstone do
     |> order_by([classes: cl, card: c],
       asc: like(cl.slug, "neutral"),
       asc: cl.slug,
-      asc: c.mana_cost
+      asc: c.mana_cost,
+      asc: c.name
     )
   end
 
   defp compose_cards_query({"order_by", "mana"}, query) do
     query
-    |> order_by([classes: cl, card: c], asc: c.mana_cost)
+    |> order_by([classes: cl, card: c], asc: c.mana_cost, asc: c.name)
   end
 
   defp compose_cards_query({"id_not_in", ids}, query) when is_list(ids) do
