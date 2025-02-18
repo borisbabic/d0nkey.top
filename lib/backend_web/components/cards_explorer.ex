@@ -127,7 +127,7 @@ defmodule Components.CardsExplorer do
     ~F"""
       <div>
         <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={[{"standard_2025", "2025 Standard"}, {"2", "Standard"}, {"1", "Wild"}]} />
-        <CardSetDropdown id="card_set_dropdown" />
+        <CardSetDropdown id="card_set_dropdown" group_slug={group_slug(@params["format"])}/>
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
         <AttackDropdown id="cards_attack_dropdown" />
         <HealthDropdown id="cards_attack_dropdown" />
@@ -233,6 +233,17 @@ defmodule Components.CardsExplorer do
       "rarity"
     ])
     |> parse_int(["limit"])
+  end
+
+  defp group_slug(slug) do
+    case to_string(slug) do
+      "1" -> "wild"
+      "2" -> "standard"
+      "3" -> "classic"
+      "4" -> "twist"
+      "" -> nil
+      s -> s
+    end
   end
 
   # defp use_fake_limit(old_params) do

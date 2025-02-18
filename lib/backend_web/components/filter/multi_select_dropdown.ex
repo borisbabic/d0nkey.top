@@ -15,9 +15,10 @@ defmodule Components.MultiSelectDropdown do
   data(search, :string, default: "")
   prop(default_selector, :fun, required: false, default: &__MODULE__.default_selected/1)
   prop(updater, :fun, required: false, default: &__MODULE__.update_selected/2)
+  prop(num_to_show, :number, required: false, default: 7)
   data(selected, :list, default: [])
 
-  def render(assigns = %{actual_title: _}) do
+  def render(%{actual_title: _} = assigns) do
     ~F"""
         <span class={@class}>
           <Dropdown.menu title={@actual_title} aria-multiselectable="true">
@@ -27,12 +28,12 @@ defmodule Components.MultiSelectDropdown do
             <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top} phx-target={@myself} phx-click="remove_selected" phx-value-value={value(selected)}>
               {display(selected)}
             </Dropdown.item>
-            <Dropdown.item selected={false} :for={unselected <- unselected(@search, @options, @selected)} :if={@selected_to_top} phx-target={@myself} phx-click="add_selected" phx-value-value={value(unselected)}>
+            <Dropdown.item selected={false} :for={unselected <- unselected(@search, @options, @num_to_show, @selected, @normalizer)} :if={@selected_to_top} phx-target={@myself} phx-click="add_selected" phx-value-value={value(unselected)}>
               {display(unselected)}
             </Dropdown.item>
             <Dropdown.item
               :if={!@selected_to_top}
-              :for={opt <- unselected(@search, @options)}
+              :for={opt <- unselected(@search, @options, @num_to_show)}
               selected={selected?(value(opt), @current, @normalizer)}
               phx-target={@myself}
               aria-selected={selected?(value(opt), @current, @normalizer)}
@@ -164,11 +165,18 @@ defmodule Components.MultiSelectDropdown do
     end
   end
 
-  def unselected(search, options, selected \\ []) do
-    num_to_show = (7 - Enum.count(selected)) |> max(3)
+  defp unselected(search, options, base_num_to_show, selected \\ [], normalizer \\ & &1) do
+    num_to_show = (base_num_to_show - Enum.count(selected)) |> max(3)
+
+    normalized_selected =
+      Enum.map(selected, fn s ->
+        s
+        |> value()
+        |> normalizer.()
+      end)
 
     options
-    |> Enum.reject(&(value(&1) in selected))
+    |> Enum.reject(&(normalizer.(value(&1)) in normalized_selected))
     |> Enum.filter(fn opt ->
       display(opt) =~ search
     end)
