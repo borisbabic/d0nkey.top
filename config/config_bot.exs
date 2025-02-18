@@ -38,7 +38,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:STD, :WLD, :twist],
-         200,
+         400,
          10_000,
          1000
        )
@@ -70,8 +70,19 @@ config :backend, QuantumScheduler,
          [:STD, :WLD, :twist],
          500,
          50_000,
-         9000,
+         4000,
          1000
+       )
+     end},
+    {"31 */3 * * *",
+     fn ->
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:STD, :WLD, :twist],
+         500,
+         50_000,
+         5000,
+         5000
        )
      end},
     {"11 */2 * * *",
@@ -81,8 +92,19 @@ config :backend, QuantumScheduler,
          [:BG, :DUO],
          2000,
          50_000,
-         9000,
+         4000,
          1000
+       )
+     end},
+    {"23 */5 * * *",
+     fn ->
+       Backend.Leaderboards.save_current_with_delay(
+         [:EU, :US, :AP],
+         [:BG, :DUO],
+         2000,
+         50_000,
+         5000,
+         5000
        )
      end},
     {"11 */5 * * *",
