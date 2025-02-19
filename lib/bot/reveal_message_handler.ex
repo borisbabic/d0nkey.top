@@ -15,11 +15,14 @@ defmodule Bot.RevealMessageHandler do
   end
 
   def handle_all_reveals(msg, mode \\ :constructed) do
-    response =
+    responses =
       reveals(mode)
-      |> create_response(msg)
+      |> Enum.chunk_every(20)
+      |> Enum.map(&create_response(&1, msg))
 
-    Api.create_message(msg, response)
+    for r <- responses do
+      Api.create_message(msg, r)
+    end
   end
 
   def filter_current(reveals, minimum \\ 3) do
