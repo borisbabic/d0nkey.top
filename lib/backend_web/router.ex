@@ -15,6 +15,10 @@ defmodule BackendWeb.Router do
     plug(Backend.Plug.AdminAuth, role: :kaffy)
   end
 
+  pipeline :super_admin do
+    plug(Backend.Plug.AdminAuth, role: :super)
+  end
+
   pipeline :ensure_auth do
     plug(Guardian.Plug.EnsureAuthenticated)
   end
@@ -77,6 +81,11 @@ defmodule BackendWeb.Router do
     get("/cards/all", CardsController, :all)
     get("/cards/collectible", CardsController, :collectible)
     get("/cards/metadata", CardsController, :metadata)
+  end
+
+  scope "/admin/super", BackendWeb do
+    pipe_through([:browser, :auth])
+    live("/playground", PlaygroundLive)
   end
 
   scope "/", BackendWeb do
