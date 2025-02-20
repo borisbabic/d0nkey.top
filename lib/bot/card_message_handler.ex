@@ -54,7 +54,7 @@ defmodule Bot.CardMessageHandler do
   def create_card_embeds(cards), do: Enum.map(cards, &create_card_embed/1)
 
   def create_card_embed(card, opts \\ []) do
-    card_url = Keyword.get(opts, :card_url, Card.card_url(card))
+    card_url = Keyword.get(opts, :card_url, Card.card_url(card)) |> add_hsguru()
     embed = Keyword.get(opts, :embed, %Embed{})
 
     embed
@@ -77,4 +77,7 @@ defmodule Bot.CardMessageHandler do
     |> Enum.map(&Tuple.to_list/1)
     |> TableRex.quick_render!([])
   end
+
+  defp add_hsguru("/" <> _ = card_url), do: "https://www.hsguru.com/#{card_url}"
+  defp add_hsguru(card_url), do: card_url
 end
