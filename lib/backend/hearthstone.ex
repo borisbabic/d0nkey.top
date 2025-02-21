@@ -1140,7 +1140,7 @@ defmodule Backend.Hearthstone do
 
   @default_splitter "|"
   defp compose_cards_query({"minion_type", value}, query),
-    do: ilike_name_or_slug(value <> @default_splitter, query, :minion_type)
+    do: ilike_name_or_slug([value, "all"], query, :minion_type)
 
   defp compose_cards_query({"format", format}, query) when format in [1, "1"],
     do: compose_cards_query({"format", "wild"}, query)
