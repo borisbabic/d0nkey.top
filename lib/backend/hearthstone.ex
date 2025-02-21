@@ -1062,8 +1062,9 @@ defmodule Backend.Hearthstone do
 
     query
     |> where(
-      [card: c],
-      ilike(c.name, ^search) or ilike(c.text, ^search) or
+      [card: c, minion_type: mt, factions: f, spell_school: ss, rarity: r],
+      ilike(c.name, ^search) or ilike(c.text, ^search) or ilike(mt.name, ^search) or
+        ilike(f.name, ^search) or ilike(ss.name, ^search) or ilike(r.name, ^search) or
         ilike(fragment("array_to_string(?,'|||||')", c.nicknames), ^search)
     )
   end
