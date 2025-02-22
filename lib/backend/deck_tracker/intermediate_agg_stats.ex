@@ -1,11 +1,11 @@
-defmodule Hearthstone.DeckTracker.HourlyAggregatedStats do
+defmodule Hearthstone.DeckTracker.IntermediateAggStats do
   @moduledoc """
   Holds hourly aggregated deck and card stats
   """
   use Ecto.Schema
   alias Backend.Hearthstone.Deck
 
-  schema "dt_hourly_aggregated_stats" do
+  schema "dt_intermediate_agg_stats" do
     belongs_to :deck, Deck, primary_key: true
     field :hour_start, :utc_datetime, primary_key: true
     field :rank, :string, primary_key: true

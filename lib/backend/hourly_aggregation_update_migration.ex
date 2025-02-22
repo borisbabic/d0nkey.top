@@ -5,7 +5,7 @@ defmodule Backend.Repo.Migrations.HourlyAggregationUpdateMigration do
       use Ecto.Migration
 
       def up do
-        "priv/repo/sql/update_dt_hourly_aggregated_stats.sql"
+        "priv/repo/sql/update_dt_intermediate_agg_stats.sql"
         |> File.read!()
         |> execute()
       end

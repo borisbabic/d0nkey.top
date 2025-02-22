@@ -358,7 +358,7 @@ grouped_card_stats AS (
         4,
         5
 )
-INSERT INTO dt_hourly_aggregated_stats (
+INSERT INTO dt_intermediate_agg_stats (
     hour_start,
     rank,
     deck_id,
