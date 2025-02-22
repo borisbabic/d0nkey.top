@@ -84,9 +84,10 @@ defmodule BackendWeb.DeckLive do
       <div>
         <div class="title is-2">{Deck.name(@deck)} {Deck.format_name(@deck)}</div>
         <div class="subtitle is-6" :if={match?(%{id: id} when is_integer(id), @deck)}>
-          <span><a href={card_stats_url(@deck)}>Card Stats (Mulligan)</a> | </span>
-          <span><a href={Decklist.deck_link(@deck, true)}>Archetype Stats</a> | </span>
-          <span><a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "player_deck_id" => @deck.id}, @deck_stats_params)}"}>Replays</a> </span>
+          <span><a href={~p"/deckbuilder?#{deck_builder_query_params(@deck)}"}>Edit</a></span>
+          <span> | <a href={card_stats_url(@deck)}>Card Stats (Mulligan)</a></span>
+          <span> | <a href={Decklist.deck_link(@deck, true)}>Archetype Stats</a></span>
+          <span> | <a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "player_deck_id" => @deck.id}, @deck_stats_params)}"}>Replays</a> </span>
           <span :if={Deck.archetype(@deck)}> | <a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "archetype" => Deck.archetype(@deck)}, @deck_stats_params)}"}>Archetype Replays</a> </span>
           <AggLogSubtitle />
         </div>
@@ -149,6 +150,14 @@ defmodule BackendWeb.DeckLive do
 
   defp valid?(%{id: _id}), do: true
   defp valid?(_), do: false
+
+  defp deck_builder_query_params(deck) do
+    %{
+      "code" => Deck.deckcode(deck),
+      "format" => deck.format,
+      "deck_class" => Deck.class(deck)
+    }
+  end
 
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
