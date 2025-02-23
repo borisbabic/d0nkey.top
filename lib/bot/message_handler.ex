@@ -6,7 +6,6 @@ defmodule Bot.MessageHandler do
   alias BackendWeb.Router.Helpers, as: Routes
   alias Nostrum.Api
   alias Backend.Blizzard
-  alias Backend.Leaderboards
   alias Nostrum.Struct.Embed
   alias Hearthstone.DeckcodeExtractor
   alias Backend.Hearthstone.Deck
@@ -24,6 +23,16 @@ defmodule Bot.MessageHandler do
     ## `blizz` (Blizz o'clock)
     `!blizz`
     Returns when the next blizz o clock is occuring, using discord timestamps
+    """,
+    "ldb-top" => """
+    ## `ldb-top` (Top players on leaderboards)
+    `!ldb-top [$filters]
+
+    Display the top 10 players on a leaderboard. See `!dhelp ldb` for filters
+
+    examples:
+    `!ldb-top l:BG 14`
+    `!ldb-top l:BG r:US s:13`
     """,
     "ldb" => """
     ## `ldb` (Leaderboards command)
@@ -172,7 +181,13 @@ defmodule Bot.MessageHandler do
         handle_highlight(msg)
 
       <<"!leaderboard", _::binary>> ->
-        handle_leaderboard(msg)
+        Bot.LdbMessageHandler.handle_top_leaderbaord(msg)
+
+      <<"!ldb-top", _::binary>> ->
+        Bot.LdbMessageHandler.handle_top_leaderbaord(msg)
+
+      <<"!ldb_top", _::binary>> ->
+        Bot.LdbMessageHandler.handle_top_leaderbaord(msg)
 
       <<"!ldb", _::binary>> ->
         Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
@@ -517,81 +532,6 @@ defmodule Bot.MessageHandler do
     rest = get_options(content)
     url = Routes.leaderboard_url(BackendWeb.Endpoint, :index, %{highlight: rest})
     Api.create_message(channel_id, url)
-  end
-
-  def handle_leaderboard(%{content: content, channel_id: channel_id}) do
-    rest = get_options(content)
-
-    ldb_params =
-      %{season_id: season_id, leaderboard_id: leaderboard_id, region: region} =
-      parse_leaderboard_options(rest)
-
-    {leaderboard_entries, _} = Leaderboards.get_leaderboard(region, leaderboard_id, season_id)
-
-    query_params =
-      ldb_params
-      |> Enum.map(fn {k, v} -> {Recase.to_camel(to_string(k)), v} end)
-
-    url = Routes.leaderboard_url(BackendWeb.Endpoint, :index, query_params)
-
-    table =
-      leaderboard_entries
-      |> Enum.take(10)
-      |> Enum.map_join(
-        "\n",
-        fn le ->
-          "#{String.pad_trailing(to_string(le.position), 3, [" "])} #{le.battletag}"
-        end
-      )
-
-    message = "#{url}\n```#{table}\n```"
-    Api.create_message(channel_id, message)
-  end
-
-  @doc """
-  Extracts the season_id, leaderboard_id and region from the options passed to !leaderboard
-
-  ## Example
-  iex> Bot.MessageHandler.parse_leaderboard_options([" 100", "AP", "BG"])
-  %{season_id: 100, leaderboard_id: :BG, region: AP}
-  iex> Bot.MessageHandler.parse_leaderboard_options(" 69 adfsf ql5q THIS IS AWESOME BG"])
-  %{season_id: 69, leaderboard_id: :BG, region: EU}
-  """
-  @spec parse_leaderboard_options([String.t()] | String.t()) :: %{
-          leaderboard_id: Blizzard.leaderboard(),
-          region: Blizzard.leaderboard(),
-          season_id: integer()
-        }
-  def parse_leaderboard_options(options) do
-    normalized =
-      if is_binary(options) do
-        String.splitter(options, " ")
-      else
-        options
-      end
-
-    parsed =
-      normalized
-      |> Stream.map(&String.upcase/1)
-      |> Enum.reduce(
-        %{},
-        fn opt, acc ->
-          case {Blizzard.to_region(opt), Blizzard.to_leaderboard(opt), Integer.parse(opt)} do
-            {{:ok, region}, _, _} -> Map.put_new(acc, :region, region)
-            {_, {:ok, leaderboard_id}, _} -> Map.put_new(acc, :leaderboard_id, leaderboard_id)
-            {_, _, {season_id, _}} -> Map.put_new(acc, :season_id, season_id)
-            _ -> acc
-          end
-        end
-      )
-
-    default = %{
-      season_id: Blizzard.get_season_id(Date.utc_today(), :STD),
-      leaderboard_id: :STD,
-      region: :EU
-    }
-
-    Map.merge(default, parsed)
   end
 
   # guild: D0nkey, channel: #botspam_private

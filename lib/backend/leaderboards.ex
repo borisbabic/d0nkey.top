@@ -912,6 +912,63 @@ defmodule Backend.Leaderboards do
   defp build_entries_query(query, criteria),
     do: Enum.reduce(criteria, query, &compose_entries_query/2)
 
+  def extract_region(criteria) do
+    with r when is_binary(r) or is_atom(r) <- find_criteria_value(criteria, [:r, :rgn, :region]),
+         {:ok, region} <- Blizzard.parse_region(r) do
+      region
+    else
+      _ -> nil
+    end
+  end
+
+  def extract_season_id(criteria),
+    do: find_criteria_value(criteria, [:s, :ssn, :season_id, :season])
+
+  def extract_leaderboard_id(criteria) do
+    with l when is_binary(l) or is_atom(l) <-
+           find_criteria_value(criteria, [:l, :ldb, :leaderboard_id, :ldb_id]),
+         {:ok, leaderboard_id} <- Blizzard.parse_leaderboard_id(l) do
+      leaderboard_id
+    else
+      _ -> nil
+    end
+  end
+
+  def extract_season_info(criteria) do
+    season_part =
+      case extract_season_id(criteria) do
+        nil -> %{}
+        season -> %{season_id: season}
+      end
+
+    leaderboard_part =
+      case extract_leaderboard_id(criteria) do
+        nil -> %{}
+        leaderboard -> %{leaderboard_id: leaderboard}
+      end
+
+    region_part =
+      case extract_region(criteria) do
+        nil -> %{}
+        region -> %{region: region}
+      end
+
+    %{}
+    |> Map.merge(season_part)
+    |> Map.merge(leaderboard_part)
+    |> Map.merge(region_part)
+  end
+
+  def find_criteria_value(criteria, possible_keys) do
+    string_potential = Enum.map(possible_keys, &to_string/1)
+
+    Enum.find_value(criteria, fn
+      {key, val} -> to_string(key) in string_potential and val
+      val when is_atom(val) or is_binary(val) -> to_string(val) in string_potential and val
+      _ -> false
+    end)
+  end
+
   defp compose_entries_query({season_shorthand, season_id}, query)
        when season_shorthand in ["s", "ssn"],
        do: compose_entries_query({"season_id", season_id}, query)

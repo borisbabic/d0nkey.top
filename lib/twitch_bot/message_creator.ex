@@ -57,7 +57,8 @@ defmodule TwitchBot.MessageCreator do
     status =
       Backend.Leaderboards.get_current_player_entries([player])
       |> Enum.filter(&(&1 |> elem(0) |> Enum.any?()))
-      |> Enum.map_join(" | ", fn {[%{rank: rank, rating: rating} | _], region, leaderboard} ->
+      |> Enum.map_join(" | ", fn {[%{rank: rank, rating: rating} | _],
+                                  %{region: region, leaderboard_id: leaderboard}} ->
         [
           Backend.Blizzard.get_region_name(region, :short),
           Backend.Blizzard.get_leaderboard_name(leaderboard, :short),

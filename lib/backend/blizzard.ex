@@ -883,4 +883,37 @@ defmodule Backend.Blizzard do
   def now() do
     Timex.now("US/Pacific")
   end
+
+  @spec parse_region!(String.t() | atom()) :: :atom
+  def parse_region!(region), do: parse_region(region) |> Util.bangify()
+
+  @spec parse_region(String.t() | atom()) :: {:ok, atom()} | {:error, any()}
+  def parse_region(atom) when is_atom(atom), do: parse_region(to_string(atom))
+  def parse_region("AM"), do: parse_region("US")
+
+  def parse_region(string) when is_binary(string) do
+    if string in regions(:string) do
+      {:ok, String.to_existing_atom(string)}
+    else
+      {:error, "unknown region #{string}"}
+    end
+  end
+
+  @spec parse_leaderboard_id!(String.t() | atom()) :: atom()
+  def parse_leaderboard_id!(ldb), do: parse_leaderboard_id(ldb) |> Util.bangify()
+
+  @spec parse_leaderboard_id(String.t() | atom()) :: {:ok, atom()} | {:error, any()}
+  def parse_leaderboard_id(atom) when is_atom(atom), do: parse_leaderboard_id(to_string(atom))
+  def parse_leaderboard_id(atom) when is_atom(atom), do: parse_leaderboard_id(to_string(atom))
+
+  def parse_leaderboard_id(bgs) when bgs in ["BGS", "battlegrounds", "battleground"],
+    do: parse_leaderboard_id("BG")
+
+  def parse_leaderboard_id(string) when is_binary(string) do
+    if string in leaderboards(:string) do
+      {:ok, String.to_existing_atom(string)}
+    else
+      {:error, "unknown leaderboard id #{string}"}
+    end
+  end
 end
