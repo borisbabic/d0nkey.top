@@ -252,7 +252,8 @@ merged_card_stats AS (
         card_stats cs
         INNER JOIN deck_stats ds ON cs.rank = ds.rank
             AND ds.deck_id = cs.deck_id
-            AND COALESCE(cs.opponent_class, 'any') = COALESCE(ds.opponent_class, 'any')
+            AND cs.opponent_class IS NOT DISTINCT FROM ds.opponent_class
+            AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin
             AND cs.format = ds.format
 ),
 grouped_deck_stats AS (
@@ -392,9 +393,9 @@ FROM
     grouped_deck_stats ds
     LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
         AND cs.format = ds.format
-        AND ((cs.deck_id IS NULL and ds.deck_id IS NULL) or cs.deck_id = ds.deck_id)
-        AND ((cs.opponent_class IS NULL and ds.opponent_class IS NULL) or cs.opponent_class = ds.opponent_class)
-        AND ((cs.player_has_coin IS NULL and ds.player_has_coin IS NULL) or cs.player_has_coin = ds.player_has_coin);
+        AND cs.deck_id = ds.deck_id
+        AND cs.opponent_class IS NOT DISTINCT FROM ds.opponent_class
+        AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
 
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT

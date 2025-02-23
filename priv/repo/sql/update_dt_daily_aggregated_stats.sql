@@ -17,16 +17,16 @@ WITH
 			PLAYER_HAS_COIN,
 			OPPONENT_CLASS,
 			FORMAT,
-			WINRATE,
-			WINS,
-			LOSSES,
-			TOTAL,
-			TURNS,
-			TOTAL_TURNS,
-			TURNS_GAME_COUNT,
-			DURATION,
-			TOTAL_DURATION,
-			DURATION_GAME_COUNT,
+			-- WINRATE,
+			-- WINS,
+			-- LOSSES,
+			-- TOTAL,
+			-- TURNS,
+			-- TOTAL_TURNS,
+			-- TURNS_GAME_COUNT,
+			-- DURATION,
+			-- TOTAL_DURATION,
+			-- DURATION_GAME_COUNT,
 			(CARD_STATS -> 'card_id')::INT AS CARD_ID,
 			(CARD_STATS -> 'kept_total')::INT AS KEPT_TOTAL,
 			(CARD_STATS -> 'mull_total')::INT AS MULL_TOTAL,
@@ -45,22 +45,22 @@ WITH
 					PLAYER_HAS_COIN,
 					OPPONENT_CLASS,
 					HS.FORMAT,
-					WINRATE,
-					WINS,
-					LOSSES,
-					TOTAL,
-					TURNS,
-					TOTAL_TURNS,
-					TURNS_GAME_COUNT,
-					DURATION,
-					TOTAL_DURATION,
-					DURATION_GAME_COUNT,
-					CLIMBING_SPEED,
+					-- WINRATE,
+					-- WINS,
+					-- LOSSES,
+					-- TOTAL,
+					-- TURNS,
+					-- TOTAL_TURNS,
+					-- TURNS_GAME_COUNT,
+					-- DURATION,
+					-- TOTAL_DURATION,
+					-- DURATION_GAME_COUNT,
+					-- CLIMBING_SPEED,
 					JSONB_ARRAY_ELEMENTS(COALESCE(CARD_STATS, '[{}]')) AS CARD_STATS
 				FROM
 					PUBLIC.dt_intermediate_agg_stats HS
 				WHERE
-					HOUR_START::date = day_arg
+					CAST(HOUR_START as date) = day_arg
 			) ds
 	),
 	PREPARED_DECK_STATS AS (
@@ -92,7 +92,9 @@ WITH
 				0
 			END as climbing_speed
 		FROM
-			DAILY_CARD_STATS
+			PUBLIC.dt_intermediate_agg_stats HS
+		WHERE
+			CAST(HOUR_START as date) = day_arg
 		GROUP BY
 			1,
 			2,
@@ -209,9 +211,9 @@ FROM
     prepared_deck_stats ds
     LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
         AND cs.format = ds.format
-        AND ((cs.deck_id IS NULL and ds.deck_id IS NULL) or cs.deck_id = ds.deck_id)
-        AND ((cs.opponent_class IS NULL and ds.opponent_class IS NULL) or cs.opponent_class = ds.opponent_class)
-        AND ((cs.player_has_coin IS NULL and ds.player_has_coin IS NULL) or cs.player_has_coin = ds.player_has_coin);
+        AND cs.deck_id = ds.deck_id
+        AND cs.opponent_class IS NOT DISTINCT FROM ds.opponent_class
+        AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
 
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT
