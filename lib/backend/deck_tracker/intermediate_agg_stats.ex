@@ -11,7 +11,7 @@ defmodule Hearthstone.DeckTracker.IntermediateAggStats do
     field :day, :date
     field :rank, :string
     field :opponent_class, :string
-    field :archetype, :string
+    field :player_has_coin, :boolean
     field :format, :integer
     field :winrate, :float
     field :wins, :decimal

@@ -50,6 +50,7 @@ deck_stats AS (
         r.slug AS RANK,
         dg.player_deck_id AS deck_id,
         dg.opponent_class,
+        dg.player_has_coin,
         dg.format,
         sum(
             CASE WHEN dg.status = 'win' THEN
@@ -110,8 +111,9 @@ FROM
         GROUP BY
             1,
             2,
-            4,
-            GROUPING SETS (3,())
+            5,
+            GROUPING SETS(3, ()),
+            GROUPING SETS(4, ())
 ),
 card_stats AS (
     SELECT
@@ -120,6 +122,7 @@ card_stats AS (
         dcgt.card_id,
         dg.opponent_class,
         dg.format,
+        dg.player_has_coin,
         sum(
             CASE WHEN dg.status = 'win'
                 AND dcgt.kept
@@ -205,7 +208,8 @@ card_stats AS (
             2,
             3,
             5,
-            GROUPING SETS (4,())
+            GROUPING SETS(4, ()),
+            GROUPING SETS(6, ())
 ),
 merged_card_stats AS (
     SELECT
@@ -213,6 +217,7 @@ merged_card_stats AS (
         cs.deck_id,
         cs.card_id,
         cs.opponent_class,
+        cs.player_has_coin,
         cs.format,
         cs.kept_wins + cs.kept_losses AS kept_total,
 (
@@ -255,7 +260,7 @@ grouped_deck_stats AS (
         ds.rank,
         ds.deck_id,
         ds.opponent_class,
-        COALESCE(d.archetype, initcap(d.class)) AS archetype,
+        player_has_coin,
         ds.format,
         SUM(ds.total) AS total,
         SUM(ds.wins) AS wins,
@@ -286,19 +291,19 @@ grouped_deck_stats AS (
         END as climbing_speed
     FROM
         deck_stats ds
-    INNER JOIN deck d ON d.id = ds.deck_id
 GROUP BY
     1,
+    2,
     3,
-    5,
-    GROUPING SETS ((2), (4))
+    4,
+    5
 ),
 prepared_card_stats AS (
     SELECT
         cs.rank,
         cs.deck_id,
         cs.opponent_class,
-        COALESCE(d.archetype, initcap(d.class)) AS archetype,
+        player_has_coin,
         cs.format,
         jsonb_build_object(
             'card_id', cs.card_id, 
@@ -336,17 +341,18 @@ prepared_card_stats AS (
         INNER JOIN deck d ON d.id = cs.deck_id
     GROUP BY
         1,
+        2,
         3,
+        4,
         5,
-        cs.card_id,
-        GROUPING SETS ((2), (4))
+        cs.card_id
 ),
 grouped_card_stats AS (
     SELECT
         cs.rank,
         cs.deck_id,
         cs.opponent_class,
-        cs.archetype,
+        cs.player_has_coin,
         cs.format,
         jsonb_agg(cs.card_stats) AS card_stats
     FROM
@@ -363,7 +369,7 @@ INSERT INTO dt_intermediate_agg_stats (
     rank,
     deck_id,
     opponent_class,
-    archetype,
+    player_has_coin,
     format,
     total,
     wins,
@@ -386,9 +392,9 @@ FROM
     grouped_deck_stats ds
     LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
         AND cs.format = ds.format
-        AND COALESCE(cs.deck_id, -1) = COALESCE(ds.deck_id, -1)
-    AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class, 'any')
-    AND COALESCE(cs.archetype, 'any') = COALESCE(ds.archetype, 'any');
+        AND ((cs.deck_id IS NULL and ds.deck_id IS NULL) or cs.deck_id = ds.deck_id)
+        AND ((cs.opponent_class IS NULL and ds.opponent_class IS NULL) or cs.opponent_class = ds.opponent_class)
+        AND ((cs.player_has_coin IS NULL and ds.player_has_coin IS NULL) or cs.player_has_coin = ds.player_has_coin);
 
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT

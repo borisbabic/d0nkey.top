@@ -14,7 +14,7 @@ WITH
 		SELECT
 			RANK,
 			DECK_ID,
-			ARCHETYPE,
+			PLAYER_HAS_COIN,
 			OPPONENT_CLASS,
 			FORMAT,
 			WINRATE,
@@ -42,7 +42,7 @@ WITH
 				SELECT
 					RANK,
 					DECK_ID,
-					DECK.ARCHETYPE AS ARCHETYPE,
+					PLAYER_HAS_COIN,
 					OPPONENT_CLASS,
 					HS.FORMAT,
 					WINRATE,
@@ -59,7 +59,6 @@ WITH
 					JSONB_ARRAY_ELEMENTS(COALESCE(CARD_STATS, '[{}]')) AS CARD_STATS
 				FROM
 					PUBLIC.dt_intermediate_agg_stats HS
-					INNER JOIN PUBLIC.DECK ON DECK.ID = HS.DECK_ID
 				WHERE
 					HOUR_START::date = day_arg
 			) ds
@@ -69,7 +68,7 @@ WITH
 			RANK,
 			DECK_ID,
 			OPPONENT_CLASS,
-			ARCHETYPE,
+			PLAYER_HAS_COIN,
 			FORMAT,
 			SUM(TOTAL) AS TOTAL,
 			SUM(WINS) AS WINS,
@@ -96,16 +95,17 @@ WITH
 			DAILY_CARD_STATS
 		GROUP BY
 			1,
+			2,
+			3,
 			4,
-			5,
-			GROUPING SETS ((2), (3))
+			5
 	),
 	PREPARED_DAILY_CARD_STATS AS (
 		SELECT
 			RANK,
 			DECK_ID,
-			ARCHETYPE,
 			OPPONENT_CLASS,
+			PLAYER_HAS_COIN,
 			FORMAT,
 			JSON_BUILD_OBJECT(
 				'card_id',
@@ -148,16 +148,17 @@ WITH
 			DAILY_CARD_STATS CS
 		GROUP BY
 			1,
+			2,
+			3,
 			4,
 			5,
-			CS.CARD_ID,
-			GROUPING SETS ((2), (3))
+			CS.CARD_ID
 	),
 	GROUPED_CARD_STATS AS (
 		SELECT
 			RANK,
 			DECK_ID,
-			ARCHETYPE,
+			PLAYER_HAS_COIN,
 			OPPONENT_CLASS,
 			FORMAT,
 			JSONB_AGG(CARD_STATS) AS CARD_STATS
@@ -185,7 +186,7 @@ INSERT INTO dt_intermediate_agg_stats (
     rank,
     deck_id,
     opponent_class,
-    archetype,
+    player_has_coin,
     format,
     total,
     wins,
@@ -208,9 +209,9 @@ FROM
     prepared_deck_stats ds
     LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
         AND cs.format = ds.format
-        AND COALESCE(cs.deck_id, -1) = COALESCE(ds.deck_id, -1)
-    AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class, 'any')
-    AND COALESCE(cs.archetype, 'any') = COALESCE(ds.archetype, 'any');
+        AND ((cs.deck_id IS NULL and ds.deck_id IS NULL) or cs.deck_id = ds.deck_id)
+        AND ((cs.opponent_class IS NULL and ds.opponent_class IS NULL) or cs.opponent_class = ds.opponent_class)
+        AND ((cs.player_has_coin IS NULL and ds.player_has_coin IS NULL) or cs.player_has_coin = ds.player_has_coin);
 
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT
