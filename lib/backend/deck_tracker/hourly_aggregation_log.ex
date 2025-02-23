@@ -7,6 +7,7 @@ defmodule Hearthstone.DeckTracker.HourlyAggregationLog do
 
   schema "logs_dt_hourly_aggregation" do
     field :hour_start, :utc_datetime
+    field :day, :date
     field :formats, {:array, :integer}
     field :ranks, {:array, :string}
     field :regions, {:array, :string}
@@ -15,9 +16,9 @@ defmodule Hearthstone.DeckTracker.HourlyAggregationLog do
   end
 
   @doc false
-  def changeset(hourly_aggregation_log, attrs) do
-    hourly_aggregation_log
-    |> cast(attrs, [:hour_star, :formats, :ranks, :regions])
-    |> validate_required([:hour_star, :formats, :ranks, :regions])
+  def changeset(agg_log, attrs) do
+    agg_log
+    |> cast(attrs, [:hour_star, :formats, :ranks, :regions, :day])
+    |> validate_required([:formats, :ranks, :regions])
   end
 end

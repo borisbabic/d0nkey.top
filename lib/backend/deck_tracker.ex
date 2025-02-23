@@ -2327,7 +2327,7 @@ defmodule Hearthstone.DeckTracker do
 
   def aggregate_next_hour() do
     Repo.query!(
-      "SELECT update_dt_hourly_aggregated_stats((SELECT MAX(hour_start) FROM public.logs_dt_hourly_aggregation) + '1 hour'::interval)",
+      "SELECT update_dt_hourly_aggregated_stats((SELECT MAX(hour_start) FROM public.logs_dt_intermediate_agg) + '1 hour'::interval)",
       [],
       timeout: :infinity
     )
@@ -2335,7 +2335,25 @@ defmodule Hearthstone.DeckTracker do
 
   def aggregate_previous_hour() do
     Repo.query!(
-      "SELECT update_dt_hourly_aggregated_stats((SELECT min(hour_start) FROM public.logs_dt_hourly_aggregation) - '1 hour'::interval)",
+      "SELECT update_dt_hourly_aggregated_stats((SELECT min(hour_start) FROM public.logs_dt_intermediate_agg) - '1 hour'::interval)",
+      [],
+      timeout: :infinity
+    )
+  end
+
+  def aggregate_next_day() do
+    # COALESCE for the first run
+    Repo.query!(
+      "SELECT update_dt_daily_aggregated_stats(
+      COALESCE((SELECT MAX(day) FROM public.logs_dt_intermediate_agg) + '1 day'::interval, (SELECT hour_start::date FROM (SELECT DISTINCT(hour_start) FROM public.dt_intermediate_agg_stats) t GROUP BY hour_start::DATE HAVING count(*) = 24 ORDER BY 1 ASC LIMIT 1))::date) ",
+      [],
+      timeout: :infinity
+    )
+  end
+
+  def aggregate_previous_day() do
+    Repo.query!(
+      "SELECT update_dt_daily_aggregated_stats(((SELECT min(day) FROM public.logs_dt_intermediate_agg) - '1 day'::interval)::date)",
       [],
       timeout: :infinity
     )

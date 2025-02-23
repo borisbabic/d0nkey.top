@@ -392,7 +392,7 @@ FROM
 
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT
-INSERT INTO logs_dt_hourly_aggregation (hour_start, formats, ranks, regions, inserted_at) SELECT _hour_start, array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_hourly_aggregated_stats;
+INSERT INTO logs_dt_intermediate_agg (hour_start, formats, ranks, regions, inserted_at, day) SELECT _hour_start, array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now(), null FROM public.dt_intermediate_agg_stats WHERE hour_start = _hour_start;
 END;
 $$;
 

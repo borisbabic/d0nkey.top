@@ -6,12 +6,13 @@ defmodule Hearthstone.DeckTracker.IntermediateAggStats do
   alias Backend.Hearthstone.Deck
 
   schema "dt_intermediate_agg_stats" do
-    belongs_to :deck, Deck, primary_key: true
-    field :hour_start, :utc_datetime, primary_key: true
-    field :rank, :string, primary_key: true
-    field :opponent_class, :string, primary_key: true
-    field :archetype, :string, primary_key: true
-    field :format, :integer, primary_key: true
+    belongs_to :deck, Deck
+    field :hour_start, :utc_datetime
+    field :day, :date
+    field :rank, :string
+    field :opponent_class, :string
+    field :archetype, :string
+    field :format, :integer
     field :winrate, :float
     field :wins, :decimal
     field :losses, :decimal

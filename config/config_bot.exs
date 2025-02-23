@@ -12,6 +12,11 @@ config :backend, QuantumScheduler,
     {"3 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
     # Again if something happened with the first, it'll just fail if it already successfully aggregated
     {"33 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
+    {"21 1 * * *", &Hearthstone.DeckTracker.aggregate_next_day/0},
+    # Again if something happened with the first, it'll just fail if it already successfully aggregated
+    {"21 9 * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
+    # Again if something happened with the first, it'll just fail if it already successfully aggregated
+    {"21 17 * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
     # {"* * * * *", fn -> Backend.Grandmasters.update() end},
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
     # {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
