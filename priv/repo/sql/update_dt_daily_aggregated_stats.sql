@@ -27,16 +27,16 @@ WITH
 			-- DURATION,
 			-- TOTAL_DURATION,
 			-- DURATION_GAME_COUNT,
-			(CARD_STATS -> 'card_id')::INT AS CARD_ID,
-			(CARD_STATS -> 'kept_total')::INT AS KEPT_TOTAL,
-			(CARD_STATS -> 'mull_total')::INT AS MULL_TOTAL,
-			(CARD_STATS -> 'drawn_total')::INT AS DRAWN_TOTAL,
-			(CARD_STATS -> 'kept_impact')::FLOAT AS KEPT_IMPACT,
-			(CARD_STATS -> 'mull_impact')::FLOAT AS MULL_IMPACT,
-			(CARD_STATS -> 'drawn_impact')::FLOAT AS DRAWN_IMPACT,
-			(CARD_STATS -> 'kept_percent')::FLOAT AS KEPT_PERCENT,
-			(CARD_STATS -> 'tossed_total')::INT AS TOSSED_TOTAL,
-			(CARD_STATS -> 'tossed_impact')::FLOAT AS TOSSED_IMPACT
+			COALESCE(CARD_STATS -> 'card_id', '0'::jsonb)::BIGINT AS CARD_ID,
+			COALESCE(CARD_STATS -> 'kept_total', '0'::jsonb)::BIGINT AS KEPT_TOTAL,
+			COALESCE(CARD_STATS -> 'mull_total', '0'::jsonb)::BIGINT AS MULL_TOTAL,
+			COALESCE(CARD_STATS -> 'drawn_total', '0'::jsonb)::BIGINT AS DRAWN_TOTAL,
+			COALESCE(CARD_STATS -> 'kept_impact', '0'::jsonb)::FLOAT AS KEPT_IMPACT,
+			COALESCE(CARD_STATS -> 'mull_impact', '0'::jsonb)::FLOAT AS MULL_IMPACT,
+			COALESCE(CARD_STATS -> 'drawn_impact', '0'::jsonb)::FLOAT AS DRAWN_IMPACT,
+			COALESCE(CARD_STATS -> 'kept_percent', '0'::jsonb)::FLOAT AS KEPT_PERCENT,
+			COALESCE(CARD_STATS -> 'tossed_total', '0'::jsonb)::BIGINT AS TOSSED_TOTAL,
+			COALESCE(CARD_STATS -> 'tossed_impact', '0'::jsonb)::FLOAT AS TOSSED_IMPACT
 		FROM
 			(
 				SELECT
