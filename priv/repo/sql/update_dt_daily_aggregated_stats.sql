@@ -60,6 +60,7 @@ WITH
 				FROM
 					PUBLIC.dt_intermediate_agg_stats HS
 				WHERE
+					card_stats IS NOT NULL AND
 					CAST(HOUR_START as date) = day_arg
 			) ds
 	),

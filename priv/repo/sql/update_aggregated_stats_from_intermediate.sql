@@ -92,6 +92,7 @@ with agg_periods(
 					PUBLIC.dt_intermediate_agg_stats HS
                 INNER JOIN agg_periods p ON p.format = hs.format AND ((hs.day = ANY(p.days)) OR (hs.hour_start = ANY(p.hour_starts)))
                 INNER JOIN public.deck d ON hs.DECK_ID = d.id
+				WHERE card_stats IS NOT NULL
 			) ds
 	),
 	PREPARED_DECK_STATS AS (
