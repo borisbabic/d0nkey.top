@@ -9,6 +9,7 @@ defmodule Components.TierList do
   alias Components.Filter.FormatDropdown
   alias Components.Filter.ClassDropdown
   alias Components.Filter.RegionDropdown
+  alias Components.Filter.PlayerHasCoinDropdown
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
   alias Surface.Components.LivePatch
@@ -57,6 +58,7 @@ defmodule Components.TierList do
           param={"min_games"}
           selected_as_title={false}
           normalizer={&to_string/1} />
+        <PlayerHasCoinDropdown id="tier_list_player_has_coin_dropdown" />
         {#if premium_filters?(@premium_filters, @user)}
           <RegionDropdown title={Components.Helper.warning_triangle(%{before: "Region"})} id={"deck_region"} filter_context={:public} />
           <ForceFreshDropdown id={"force_fresh"} />
@@ -152,6 +154,7 @@ defmodule Components.TierList do
       "period" => PeriodDropdown.default(:public, criteria, default_format),
       "rank" => RankDropdown.default(:public),
       "opponent_class" => "any",
+      "player_has_coin" => "any",
       "min_games" => @default_min_games,
       "format" => default_format
     }

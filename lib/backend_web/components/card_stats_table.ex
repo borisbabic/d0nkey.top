@@ -73,6 +73,8 @@ defmodule Components.CardStatsTable do
         title={"Opponent"}
         name_prefix={"VS "}
         param={"opponent_class"} />
+
+      <PlayerHasCoinDropdown id={"player_has_coin_dropdown"} />
       {#if premium_filters?(@premium_filters, @user)}
         <PlayableCardSelect id={"fresh_player_deck_includes"} format={@test_params["format"]} param={"fresh_player_deck_includes"} selected={@test_params["fresh_player_deck_includes"] || []} title="Decks Include cards"/>
         <PlayableCardSelect id={"fresh_player_deck_excludes"} format={@test_params["format"]} param={"fresh_player_deck_excludes"} selected={@test_params["fresh_player_deck_excludes"] || []} title="Decks Exclude cards"/>
@@ -82,7 +84,6 @@ defmodule Components.CardStatsTable do
         <PlayableCardSelect format={@test_params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
         <PlayableCardSelect format={@test_params["format"]} id={"player_kept"} param={"player_kept"} selected={@test_params["player_kept"] || []} title="Kept"/>
         <PlayableCardSelect format={@test_params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
-        <PlayerHasCoinDropdown id={"player_has_coin_dropdown"} />
         <ForceFreshDropdown id={"force_fresh"} />
       {/if}
 
@@ -351,6 +352,7 @@ defmodule Components.CardStatsTable do
       "player_not_drawn",
       "player_kept",
       "player_not_kept",
+      "player_has_coin",
       "archetype",
       "fresh_player_deck_includes",
       "fresh_player_deck_excludes",
@@ -379,6 +381,7 @@ defmodule Components.CardStatsTable do
       "period" => PeriodDropdown.default(context, criteria, default_format),
       "rank" => RankDropdown.default(context),
       "opponent_class" => "any",
+      "player_has_coin" => "any",
       "format" => default_format
     }
   end

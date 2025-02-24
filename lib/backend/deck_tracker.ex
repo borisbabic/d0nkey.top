@@ -456,7 +456,6 @@ defmodule Hearthstone.DeckTracker do
     "player_drawn",
     "player_not_drawn",
     "player_kept",
-    "player_has_coin",
     "player_not_kept",
     "player_btag"
   ]
@@ -1565,6 +1564,9 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query(:not_self_report, query),
     do: query |> where([game: g], g.source != "SELF_REPORT")
 
+  defp compose_games_query({"player_has_coin", "any"}, query),
+    do: compose_games_query({"player_has_coin", nil}, query)
+
   defp compose_games_query({"player_has_coin", player_has_coin}, query)
        when player_has_coin in ["true", "yes"],
        do: compose_games_query({"player_has_coin", true}, query)
@@ -1572,6 +1574,16 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_has_coin", player_has_coin}, query)
        when player_has_coin in ["false", "no"],
        do: compose_games_query({"player_has_coin", false}, query)
+
+  defp compose_games_query({"player_has_coin", player_has_coin}, query = @agg_deck_query) do
+    query
+    |> where(
+      [agg_deck_stats: ag],
+      fragment("? IS NOT DISTINCT FROM ?", ag.player_has_coin, ^player_has_coin)
+    )
+  end
+
+  defp compose_games_query({"player_has_coin", nil}, query), do: query
 
   defp compose_games_query({"player_has_coin", player_has_coin}, query)
        when is_boolean(player_has_coin) do

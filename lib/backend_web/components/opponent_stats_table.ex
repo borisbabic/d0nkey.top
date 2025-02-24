@@ -9,6 +9,7 @@ defmodule Components.OpponentStatsTable do
   alias Components.Filter.FormatDropdown
   alias Components.Filter.RegionDropdown
   alias Components.Filter.ForceFreshDropdown
+  alias Components.Filter.PlayerHasCoinDropdown
 
   prop(live_view, :module, required: true)
   prop(params, :map, required: true)
@@ -29,6 +30,7 @@ defmodule Components.OpponentStatsTable do
       |> Map.put_new("rank", RankDropdown.default())
       |> Map.put_new("period", PeriodDropdown.default(:public, assigns.params))
       |> Map.put_new("players", "all_players")
+      |> Map.put_new("player_has_coin", "any")
       |> Components.DecksExplorer.parse_int(["format"])
       |> add_format(assigns.include_format)
 
@@ -73,6 +75,7 @@ defmodule Components.OpponentStatsTable do
           <PeriodDropdown id="opp_stats_table_period_dropdown" aggregated_only={!@needs_login?}/>
           <RegionDropdown id="opp_stats_table_region_dropdown" :if={can_access_unaggregated?(@user)} />
           <FormatDropdown class={"is-hidden-mobile"} :if={@include_format} id="opp_stats_format_dropdown" aggregated_only={!@needs_login?}/>
+          <PlayerHasCoinDropdown id={"opp_stats_table_player_has_coin_dropdown"} />
           <ForceFreshDropdown id="opp_stats_table_force_fresh_dropdown" :if={Backend.UserManager.User.premium?(@user)} />
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
@@ -109,5 +112,7 @@ defmodule Components.OpponentStatsTable do
     do: params |> Map.put_new("player_btag", battletag)
 
   defp set_user_param({_, params}, _), do: params
-  def param_keys(), do: ["rank", "period", "players", "region", "format", "force_fresh"]
+
+  def param_keys(),
+    do: ["rank", "period", "players", "region", "format", "force_fresh", "player_has_coin"]
 end

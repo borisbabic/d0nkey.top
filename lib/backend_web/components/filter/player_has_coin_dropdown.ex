@@ -9,7 +9,7 @@ defmodule Components.Filter.PlayerHasCoinDropdown do
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
   prop(live_view, :map, from_context: {Components.LivePatchDropdown, :live_view})
-  prop(warning_triangle, :boolean, default: true)
+  prop(warning_triangle, :boolean, default: false)
 
   def render(assigns) do
     ~F"""

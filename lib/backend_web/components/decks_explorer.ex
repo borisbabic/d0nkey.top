@@ -268,6 +268,7 @@ defmodule Components.DecksExplorer do
          PeriodDropdown.default(assigns.filter_context, raw_params, default_format)},
       {"opponent_class", "any"},
       {"archetype", "any"},
+      {"player_has_coin", "any"},
       {"rank", assigns.default_rank || RankDropdown.default(assigns.filter_context)}
     ]
 
