@@ -233,6 +233,7 @@ FROM
     prepared_deck_stats ds
     LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
         AND cs.format = ds.format
+		AND cs.period = ds.period
         AND cs.archetype IS NOT DISTINCT FROM ds.archetype
         AND cs.deck_id IS NOT DISTINCT FROM ds.deck_id
         AND cs.opponent_class IS NOT DISTINCT FROM ds.opponent_class
