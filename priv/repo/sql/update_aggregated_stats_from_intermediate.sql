@@ -56,16 +56,16 @@ with agg_periods(
 			-- DURATION,
 			-- TOTAL_DURATION,
 			-- DURATION_GAME_COUNT,
-			COALESCE(CARD_STATS -> 'card_id', '0'::jsonb)::BIGINT AS CARD_ID,
-			COALESCE(CARD_STATS -> 'kept_total', '0'::jsonb)::BIGINT AS KEPT_TOTAL,
-			COALESCE(CARD_STATS -> 'mull_total', '0'::jsonb)::BIGINT AS MULL_TOTAL,
-			COALESCE(CARD_STATS -> 'drawn_total', '0'::jsonb)::BIGINT AS DRAWN_TOTAL,
-			COALESCE(CARD_STATS -> 'kept_impact', '0'::jsonb)::FLOAT AS KEPT_IMPACT,
-			COALESCE(CARD_STATS -> 'mull_impact', '0'::jsonb)::FLOAT AS MULL_IMPACT,
-			COALESCE(CARD_STATS -> 'drawn_impact', '0'::jsonb)::FLOAT AS DRAWN_IMPACT,
-			COALESCE(CARD_STATS -> 'kept_percent', '0'::jsonb)::FLOAT AS KEPT_PERCENT,
-			COALESCE(CARD_STATS -> 'tossed_total', '0'::jsonb)::BIGINT AS TOSSED_TOTAL,
-			COALESCE(CARD_STATS -> 'tossed_impact', '0'::jsonb)::FLOAT AS TOSSED_IMPACT
+			COALESCE(CARD_STATS->>'card_id', '0')::BIGINT AS CARD_ID,
+			COALESCE(CARD_STATS->>'kept_total', '0')::BIGINT AS KEPT_TOTAL,
+			COALESCE(CARD_STATS->>'mull_total', '0')::BIGINT AS MULL_TOTAL,
+			COALESCE(CARD_STATS->>'drawn_total', '0')::BIGINT AS DRAWN_TOTAL,
+			COALESCE(CARD_STATS->>'kept_impact', '0')::FLOAT AS KEPT_IMPACT,
+			COALESCE(CARD_STATS->>'mull_impact', '0')::FLOAT AS MULL_IMPACT,
+			COALESCE(CARD_STATS->>'drawn_impact', '0')::FLOAT AS DRAWN_IMPACT,
+			COALESCE(CARD_STATS->>'kept_percent', '0')::FLOAT AS KEPT_PERCENT,
+			COALESCE(CARD_STATS->>'tossed_total', '0')::BIGINT AS TOSSED_TOTAL,
+			COALESCE(CARD_STATS->>'tossed_impact', '0')::FLOAT AS TOSSED_IMPACT
 		FROM
 			(
 				SELECT
@@ -103,23 +103,23 @@ with agg_periods(
 			PLAYER_HAS_COIN,
 			hs.FORMAT,
             COALESCE(d.archetype, initcap(d.class)) as archetype,
-            p.slug as PERIOD,
-			SUM(TOTAL)::int AS TOTAL,
-			SUM(WINS)::int AS WINS,
-			SUM(LOSSES)::int AS LOSSES,
+			p.slug as period,
+			SUM(TOTAL)::bigint AS TOTAL,
+			SUM(WINS)::bigint AS WINS,
+			SUM(LOSSES)::bigint AS LOSSES,
 			(CASE WHEN SUM(total) > 0 THEN SUM(WINS) / SUM(TOTAL) ELSE 0 END)::float AS WINRATE,
 			(CASE
 				WHEN SUM(TURNS_GAME_COUNT) > 0 THEN SUM(TOTAL_TURNS) / SUM(TURNS_GAME_COUNT)
 				ELSE 0
 			END)::float AS TURNS,
-			SUM(TOTAL_TURNS)::int AS TOTAL_TURNS,
-			SUM(TURNS_GAME_COUNT)::int AS TURNS_GAME_COUNT,
+			SUM(TOTAL_TURNS)::bigint AS TOTAL_TURNS,
+			SUM(TURNS_GAME_COUNT)::bigint AS TURNS_GAME_COUNT,
 			(CASE
 				WHEN SUM(DURATION_GAME_COUNT) > 0 THEN SUM(TOTAL_DURATION) / SUM(DURATION_GAME_COUNT)
 				ELSE 0
 			END)::float AS DURATION,
-			SUM(TOTAL_DURATION)::int AS TOTAL_DURATION,
-			SUM(DURATION_GAME_COUNT)::int AS DURATION_GAME_COUNT,
+			SUM(TOTAL_DURATION)::bigint AS TOTAL_DURATION,
+			SUM(DURATION_GAME_COUNT)::bigint AS DURATION_GAME_COUNT,
 			(CASE WHEN SUM(TOTAL) > 0 AND SUM(DURATION) > 0 THEN
 				( SUM(DURATION_GAME_COUNT) * 3600::float / SUM(DURATION)) * (2 * (SUM(WINRATE * TOTAL) / SUM(TOTAL))  - 1)
 			ELSE
