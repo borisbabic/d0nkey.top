@@ -300,10 +300,12 @@ SELECT
     (SUM(total * winrate) / SUM(total)) AS overall_winrate,
     now() as inserted_at
 FROM
-    PUBLIC.DT_AGGREGATED_STATS
+    PUBLIC.dt_new_agg_stats
 WHERE
     DECK_ID IS NOT NULL
     AND ARCHETYPE IS NULL
+	AND OPPONENT_CLASS IS NULL
+	AND PLAYER_HAS_COIN IS NULL
 GROUP BY
     1,
     2,
