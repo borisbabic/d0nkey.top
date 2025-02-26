@@ -125,7 +125,7 @@ defmodule BackendWeb.DeckBuilderLive do
   defp card_params(params, false), do: params
 
   defp card_params(_, true) do
-    %{"collectible" => false, "card_set_id" => 1897, "search" => " Module"}
+    %{"collectible" => false, "card_set_id" => [1897], "search" => " Module"}
   end
 
   def handle_event("pick-class-format", %{"format" => format, "deck_class" => class}, socket) do
