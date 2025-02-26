@@ -975,10 +975,17 @@ defmodule Backend.Hearthstone.Deck do
     total = total_copies(deck, card)
     max_allowed = Card.max_copies_in_deck(card)
     runes_allowed? = runes_allowed?(deck, card)
+
+    not_tourist_or_can_add_tourist? =
+      !Card.tourist?(card) or
+        Enum.count(tourists(deck)) < 1
+
+    not_zilly_module_or_zilly_not_full? =
+      !Card.zilliax_module?(Card.dbf_id(card)) or missing_zilliax_parts?(deck)
+
     # max one tourist per deck
     runes_allowed? and total < max_allowed and
-      (!Card.tourist?(card) or
-         Enum.count(tourists(deck)) < 1)
+      not_tourist_or_can_add_tourist? and not_zilly_module_or_zilly_not_full?
   end
 
   @max_runes_in_deck 3
@@ -1007,6 +1014,12 @@ defmodule Backend.Hearthstone.Deck do
   def missing_zilliax_sideboard?(%{cards: cards, sideboards: sideboards}) do
     Enum.any?(cards, &Card.zilliax_3000?/1) and
       !Enum.any?(sideboards, &(&1.sideboard == Card.zilliax_3000()))
+  end
+
+  @spec missing_zilliax_parts?(t()) :: boolean()
+  def missing_zilliax_parts?(deck) do
+    Enum.any?(deck.cards, &Card.zilliax_3000?/1) and
+      sideboards_count(deck, Card.zilliax_3000()) < 3
   end
 
   def tourists(deck) do

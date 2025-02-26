@@ -18,6 +18,16 @@ defmodule Backend.Hearthstone.Card do
 
   @type card() :: %__MODULE__{} | Backend.HearthstoneJson.Card.t() | Hearthstone.Card.t()
 
+  defmacro is_zilliax_module(dbf_id) do
+    quote do
+      unquote(dbf_id) in [104_951, 104_944, 104_949, 104_948, 104_947, 104_950, 104_946, 104_945]
+    end
+  end
+
+  def zilliax_module?(dbf_id) do
+    dbf_id in [104_951, 104_944, 104_949, 104_948, 104_947, 104_950, 104_946, 104_945]
+  end
+
   defmacro is_zilliax_art(dbf_id) do
     quote do
       unquote(dbf_id) in [110_440, 110_441, 110_442, 110_443, 110_444, 110_445, 110_446, 112_530]
@@ -215,6 +225,8 @@ defmodule Backend.Hearthstone.Card do
   end
 
   @spec max_copies_in_deck(card()) :: integer()
+  def max_copies_in_deck(%{id: id}) when is_zilliax_module(id), do: 1
+
   def max_copies_in_deck(card) do
     if legendary?(card) do
       1

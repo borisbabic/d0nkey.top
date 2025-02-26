@@ -48,7 +48,7 @@ defmodule BackendWeb.DeckBuilderLive do
           live_view={__MODULE__}
           id="cards_explorer"
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
-          params={card_params(@params, missing_zilliax_parts?(@deck))}
+          params={card_params(@params, Deck.missing_zilliax_parts?(@deck))}
           on_card_click={"add-card"}
           card_phx_hook={"CardRightClick"}
           card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
@@ -182,7 +182,7 @@ defmodule BackendWeb.DeckBuilderLive do
           card == 110_446 ->
             Deck.deckcode(deck)
 
-          missing_zilliax_parts?(deck) ->
+          Deck.missing_zilliax_parts?(deck) ->
             add_to_sideboard(deck, card, Card.zilliax_3000())
 
           missing_etc_band_member?(deck) ->
@@ -322,10 +322,5 @@ defmodule BackendWeb.DeckBuilderLive do
   def missing_etc_band_member?(deck) do
     Enum.any?(deck.cards, &Card.etc_band_manager?/1) and
       Deck.sideboards_count(deck, Card.etc_band_manager()) < 3
-  end
-
-  def missing_zilliax_parts?(deck) do
-    Enum.any?(deck.cards, &Card.zilliax_3000?/1) and
-      Deck.sideboards_count(deck, Card.zilliax_3000()) < 3
   end
 end
