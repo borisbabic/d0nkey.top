@@ -14,7 +14,7 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.Submit
 
-  @supported_formats [1, 2, "standard_2025"]
+  @supported_formats [1, 2, "standard_2024", "standard_2025"]
   data(deck_class, :string)
   data(format, :integer)
   data(raw_params, :map)
@@ -43,7 +43,8 @@ defmodule BackendWeb.DeckBuilderLive do
           card_pool={card_pool(@deck)}
           default_order_by={"mana_in_class"}
           class_options={class_options(@deck)}
-          format_filter={false}
+          format_filter={standard?(@deck)}
+          format_options={standard?(@deck) and [{"standard_2025", "2025 Standard"}, {"standard_2024", "2024 Standard"}, {"2", "Standard"}]}
           live_view={__MODULE__}
           id="cards_explorer"
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
@@ -81,8 +82,12 @@ defmodule BackendWeb.DeckBuilderLive do
     """
   end
 
+  defp format_name("standard_2024"), do: "2024 Standard"
   defp format_name("standard_2025"), do: "2025 Standard"
   defp format_name(format), do: Deck.format_name(format)
+
+  defp standard?(%{format: 2}), do: true
+  defp standard?(_), do: false
 
   defp card_pool(deck) do
     tourist_pool =

@@ -30,6 +30,16 @@ defmodule Components.CardsExplorer do
   data(offset, :integer, default: 0)
   prop(scroll_size, :integer, default: 1)
   prop(format_filter, :boolean, default: true)
+
+  prop(format_options, :list,
+    default: [
+      {"standard_2025", "2025 Standard"},
+      {"standard_2024", "2024 Standard"},
+      {"2", "Standard"},
+      {"1", "Wild"}
+    ]
+  )
+
   prop(params, :map, required: true)
   prop(live_view, :module, required: true)
   prop(on_card_click, :event, default: nil)
@@ -126,7 +136,7 @@ defmodule Components.CardsExplorer do
   def render(assigns) do
     ~F"""
       <div>
-        <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={[{"standard_2025", "2025 Standard"}, {"2", "Standard"}, {"1", "Wild"}]} />
+        <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={@format_options || []} />
         <CardSetDropdown id="card_set_dropdown" group_slug={group_slug(@params["format"])}/>
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
         <AttackDropdown id="cards_attack_dropdown" />
