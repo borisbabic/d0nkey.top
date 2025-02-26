@@ -49,6 +49,7 @@ defmodule BackendWeb.DeckBuilderLive do
           id="cards_explorer"
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
           params={card_params(@params, Deck.missing_zilliax_parts?(@deck))}
+          url_params={@params}
           on_card_click={"add-card"}
           card_phx_hook={"CardRightClick"}
           card_disabled={fn card -> !Deck.addable?(@deck, card) end}>

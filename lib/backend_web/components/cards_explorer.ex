@@ -41,6 +41,7 @@ defmodule Components.CardsExplorer do
   )
 
   prop(params, :map, required: true)
+  prop(url_params, :map, required: false, default: nil)
   prop(live_view, :module, required: true)
   prop(on_card_click, :event, default: nil)
   prop(default_order_by, :string, default: "latest")
@@ -66,7 +67,8 @@ defmodule Components.CardsExplorer do
         add_default_params(p, default_order_by, default_limit)
       end)
 
-    url_params = Map.merge(assigns_old.params, additional_url_params)
+    base_url_params = assigns_old.url_params || assigns_old.params
+    url_params = Map.merge(base_url_params, additional_url_params)
 
     {
       :ok,
