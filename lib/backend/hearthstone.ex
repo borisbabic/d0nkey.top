@@ -1048,6 +1048,11 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"offset", offset}, query), do: offset(query, ^offset)
   defp compose_cards_query({"limit", limit}, query), do: limit(query, ^limit)
 
+  # Emerald dream malorne and naralex were marked as not collectible prior to 32.0
+  defp compose_cards_query({"collectible", collectible}, query)
+       when collectible in [true, "yes", "true"],
+       do: query |> where([card: c], c.collectible or c.id in [114_849, 115_186])
+
   defp compose_cards_query({"collectible", collectible}, query) when is_boolean(collectible),
     do: query |> where([card: c], c.collectible == ^collectible)
 
