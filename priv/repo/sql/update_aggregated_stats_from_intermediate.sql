@@ -30,7 +30,7 @@ FOR agg_period IN
     SELECT 
     temp.format,
     temp.days,
-    array(SELECT DISTINCT(i.hour_start) FROM public.dt_intermediate_agg_stats i WHERE i.hour_start::date != ANY(temp.days) AND i.format = temp.format AND i.hour_start >= temp.start and i.hour_start < DATE_TRUNC('hour', temp.end_time)) as hour_starts,
+    array(SELECT DISTINCT(i.hour_start) FROM public.dt_intermediate_agg_stats i WHERE NOT (i.hour_start::date = ANY(temp.days)) AND i.format = temp.format AND i.hour_start >= temp.start and i.hour_start < DATE_TRUNC('hour', temp.end_time)) as hour_starts,
     temp.slug
     FROM
     (
