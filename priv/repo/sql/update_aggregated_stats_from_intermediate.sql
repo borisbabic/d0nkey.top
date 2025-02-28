@@ -5,8 +5,10 @@ CREATE OR REPLACE FUNCTION update_dt_agg_stats_from_intermediate()
 DECLARE 
 _num_hours int;
 agg_period record;
+grouping record;
 BEGIN
-SET temp_file_limit to '600GB';
+SET work_mem = '4GB';
+SET pg_stat_statements.track = 'all';
 CREATE TABLE dt_temp_new_agg_stats (
 	-- DON'T REFERENCE deck. It seems to block insertions into the deck table while this executes if you reference
 	deck_id integer,
@@ -25,7 +27,7 @@ CREATE TABLE dt_temp_new_agg_stats (
 	player_has_coin boolean,
 	card_stats jsonb
 );
-CREATE UNIQUE INDEX new_agg_stats_uniq_index ON dt_temp_new_agg_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
+CREATE INDEX new_agg_stats_uniq_index ON dt_temp_new_agg_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
 FOR agg_period IN 
     SELECT 
     temp.format,
@@ -50,45 +52,17 @@ FOR agg_period IN
         WHERE
             auto_aggregate) p
         INNER JOIN public.formats f ON value = p.format
-        WHERE f.auto_aggregate 
+        WHERE f.auto_aggregate
     ) temp
 LOOP
-RAISE notice 'Doing stats for % % % % %', now(), agg_period.slug, agg_period.format, agg_period.days, agg_period.hour_starts;
-WITH BASE_CARD_STATS AS (
-		SELECT
-			RANK,
-			DECK_ID,
-			PLAYER_HAS_COIN,
-			OPPONENT_CLASS,
-            ARCHETYPE,
-			-- WINRATE,
-			-- WINS,
-			-- LOSSES,
-			-- TOTAL,
-			-- TURNS,
-			-- TOTAL_TURNS,
-			-- TURNS_GAME_COUNT,
-			-- DURATION,
-			-- TOTAL_DURATION,
-			-- DURATION_GAME_COUNT,
-			COALESCE(CARD_STATS->>'card_id', '0')::BIGINT AS CARD_ID,
-			COALESCE(CARD_STATS->>'kept_total', '0')::BIGINT AS KEPT_TOTAL,
-			COALESCE(CARD_STATS->>'mull_total', '0')::BIGINT AS MULL_TOTAL,
-			COALESCE(CARD_STATS->>'drawn_total', '0')::BIGINT AS DRAWN_TOTAL,
-			COALESCE(CARD_STATS->>'kept_impact', '0')::FLOAT AS KEPT_IMPACT,
-			COALESCE(CARD_STATS->>'mull_impact', '0')::FLOAT AS MULL_IMPACT,
-			COALESCE(CARD_STATS->>'drawn_impact', '0')::FLOAT AS DRAWN_IMPACT,
-			COALESCE(CARD_STATS->>'kept_percent', '0')::FLOAT AS KEPT_PERCENT,
-			COALESCE(CARD_STATS->>'tossed_total', '0')::BIGINT AS TOSSED_TOTAL,
-			COALESCE(CARD_STATS->>'tossed_impact', '0')::FLOAT AS TOSSED_IMPACT
-		FROM
-			(
+	FOR grouping in 
+	SELECT  opponent_class, rank, format, player_has_coin FROM public.dt_intermediate_agg_stats hs WHERE agg_period.format = hs.format AND ((hs.day = ANY(agg_period.days)) OR (hs.hour_start = ANY(agg_period.hour_starts)))
+	loop
+		RAISE notice 'Doing stats for % % % % %', clock_timestamp(), agg_period.slug, agg_period.format, agg_period.days, agg_period.hour_starts;
+		WITH BASE_CARD_STATS AS (
 				SELECT
-					RANK,
 					DECK_ID,
-					PLAYER_HAS_COIN,
-					OPPONENT_CLASS,
-                    COALESCE(d.archetype, initcap(d.class)) as ARCHETYPE,
+					ARCHETYPE,
 					-- WINRATE,
 					-- WINS,
 					-- LOSSES,
@@ -99,181 +73,192 @@ WITH BASE_CARD_STATS AS (
 					-- DURATION,
 					-- TOTAL_DURATION,
 					-- DURATION_GAME_COUNT,
-					-- CLIMBING_SPEED,
-					JSONB_ARRAY_ELEMENTS(COALESCE(CARD_STATS, '[{}]')) AS CARD_STATS
+					COALESCE(CARD_STATS->>'card_id', '0')::BIGINT AS CARD_ID,
+					COALESCE(CARD_STATS->>'kept_total', '0')::BIGINT AS KEPT_TOTAL,
+					COALESCE(CARD_STATS->>'mull_total', '0')::BIGINT AS MULL_TOTAL,
+					COALESCE(CARD_STATS->>'drawn_total', '0')::BIGINT AS DRAWN_TOTAL,
+					COALESCE(CARD_STATS->>'kept_impact', '0')::FLOAT AS KEPT_IMPACT,
+					COALESCE(CARD_STATS->>'mull_impact', '0')::FLOAT AS MULL_IMPACT,
+					COALESCE(CARD_STATS->>'drawn_impact', '0')::FLOAT AS DRAWN_IMPACT,
+					COALESCE(CARD_STATS->>'kept_percent', '0')::FLOAT AS KEPT_PERCENT,
+					COALESCE(CARD_STATS->>'tossed_total', '0')::BIGINT AS TOSSED_TOTAL,
+					COALESCE(CARD_STATS->>'tossed_impact', '0')::FLOAT AS TOSSED_IMPACT
+				FROM
+					(
+						SELECT
+							DECK_ID,
+							hs.archetype,
+							-- COALESCE(d.archetype, initcap(d.class)) as ARCHETYPE,
+							-- WINRATE,
+							-- WINS,
+							-- LOSSES,
+							-- TOTAL,
+							-- TURNS,
+							-- TOTAL_TURNS,
+							-- TURNS_GAME_COUNT,
+							-- DURATION,
+							-- TOTAL_DURATION,
+							-- DURATION_GAME_COUNT,
+							-- CLIMBING_SPEED,
+							JSONB_ARRAY_ELEMENTS(COALESCE(CARD_STATS, '[{}]')) AS CARD_STATS
+						FROM
+							PUBLIC.dt_intermediate_agg_stats HS
+						-- INNER JOIN public.deck d ON hs.DECK_ID = d.id
+						WHERE card_stats IS NOT NULL
+						AND agg_period.format = hs.format AND ((hs.day = ANY(agg_period.days)) OR (hs.hour_start = ANY(agg_period.hour_starts)))
+						AND opponent_class IS NOT DISTINCT FROM grouping.opponent_class AND rank = grouping.rank AND format = grouping.format AND player_has_coin IS NOT DISTINCT FROM  grouping.player_has_coin
+					) ds
+			),
+			PREPARED_DECK_STATS AS (
+				SELECT
+					DECK_ID,
+					hs.archetype,
+					-- COALESCE(HS.archetype, initcap(d.class)) as archetype,
+					SUM(TOTAL)::bigint AS TOTAL,
+					SUM(WINS)::bigint AS WINS,
+					SUM(LOSSES)::bigint AS LOSSES,
+					(CASE WHEN SUM(total) > 0 THEN SUM(WINS) / SUM(TOTAL) ELSE 0 END)::float AS WINRATE,
+					(CASE
+						WHEN SUM(TURNS_GAME_COUNT) > 0 THEN SUM(TOTAL_TURNS) / SUM(TURNS_GAME_COUNT)
+						ELSE 0
+					END)::float AS TURNS,
+					SUM(TOTAL_TURNS)::bigint AS TOTAL_TURNS,
+					SUM(TURNS_GAME_COUNT)::bigint AS TURNS_GAME_COUNT,
+					(CASE
+						WHEN SUM(DURATION_GAME_COUNT) > 0 THEN SUM(TOTAL_DURATION) / SUM(DURATION_GAME_COUNT)
+						ELSE 0
+					END)::float AS DURATION,
+					SUM(TOTAL_DURATION)::bigint AS TOTAL_DURATION,
+					SUM(DURATION_GAME_COUNT)::bigint AS DURATION_GAME_COUNT,
+					(CASE WHEN SUM(TOTAL) > 0 AND SUM(DURATION) > 0 THEN
+						( SUM(DURATION_GAME_COUNT) * 3600::float / SUM(DURATION)) * (2 * (SUM(WINRATE * TOTAL) / SUM(TOTAL))  - 1)
+					ELSE
+						0
+					END)::float as climbing_speed
 				FROM
 					PUBLIC.dt_intermediate_agg_stats HS
-                INNER JOIN public.deck d ON hs.DECK_ID = d.id
-				WHERE card_stats IS NOT NULL
-                AND agg_period.format = hs.format AND ((hs.day = ANY(agg_period.days)) OR (hs.hour_start = ANY(agg_period.hour_starts)))
-			) ds
-	),
-	PREPARED_DECK_STATS AS (
-		SELECT
-			RANK,
-			DECK_ID,
-			OPPONENT_CLASS,
-			PLAYER_HAS_COIN,
-            COALESCE(d.archetype, initcap(d.class)) as archetype,
-			SUM(TOTAL)::bigint AS TOTAL,
-			SUM(WINS)::bigint AS WINS,
-			SUM(LOSSES)::bigint AS LOSSES,
-			(CASE WHEN SUM(total) > 0 THEN SUM(WINS) / SUM(TOTAL) ELSE 0 END)::float AS WINRATE,
-			(CASE
-				WHEN SUM(TURNS_GAME_COUNT) > 0 THEN SUM(TOTAL_TURNS) / SUM(TURNS_GAME_COUNT)
-				ELSE 0
-			END)::float AS TURNS,
-			SUM(TOTAL_TURNS)::bigint AS TOTAL_TURNS,
-			SUM(TURNS_GAME_COUNT)::bigint AS TURNS_GAME_COUNT,
-			(CASE
-				WHEN SUM(DURATION_GAME_COUNT) > 0 THEN SUM(TOTAL_DURATION) / SUM(DURATION_GAME_COUNT)
-				ELSE 0
-			END)::float AS DURATION,
-			SUM(TOTAL_DURATION)::bigint AS TOTAL_DURATION,
-			SUM(DURATION_GAME_COUNT)::bigint AS DURATION_GAME_COUNT,
-			(CASE WHEN SUM(TOTAL) > 0 AND SUM(DURATION) > 0 THEN
-				( SUM(DURATION_GAME_COUNT) * 3600::float / SUM(DURATION)) * (2 * (SUM(WINRATE * TOTAL) / SUM(TOTAL))  - 1)
-			ELSE
-				0
-			END)::float as climbing_speed
-		FROM
-			PUBLIC.dt_intermediate_agg_stats HS
-            INNER JOIN public.deck d ON hs.DECK_ID = d.id
-			WHERE agg_period.format = hs.format AND ((hs.day = ANY(agg_period.days)) OR (hs.hour_start = ANY(agg_period.hour_starts)))
-		GROUP BY
-			1,
-            GROUPING SETS((2), (5)),
-			3,
-			4
-	),
-	PREPARED_CARD_STATS AS (
-		SELECT
-			RANK,
-			DECK_ID,
-			OPPONENT_CLASS,
-			PLAYER_HAS_COIN,
-            archetype,
-			JSON_BUILD_OBJECT(
-				'card_id',
-				CARD_ID,
-				'kept_total',
-				SUM(KEPT_TOTAL),
-				'mull_total',
-				SUM(MULL_TOTAL),
-				'drawn_total',
-				SUM(DRAWN_TOTAL),
-				'tossed_total',
-				SUM(TOSSED_TOTAL),
-				'kept_impact',
-				CASE
-					WHEN SUM(CS.KEPT_TOTAL) > 0 THEN SUM(CS.KEPT_IMPACT * CS.KEPT_TOTAL) / SUM(CS.KEPT_TOTAL)
-					ELSE 0
-				END,
-				'mull_impact',
-				CASE
-					WHEN SUM(CS.MULL_TOTAL) > 0 THEN SUM(CS.MULL_IMPACT * CS.MULL_TOTAL) / SUM(CS.MULL_TOTAL)
-					ELSE 0
-				END,
-				'drawn_impact',
-				CASE
-					WHEN SUM(CS.DRAWN_TOTAL) > 0 THEN SUM(CS.DRAWN_IMPACT * CS.DRAWN_TOTAL) / SUM(CS.DRAWN_TOTAL)
-					ELSE 0
-				END,
-				'tossed_impact',
-				CASE
-					WHEN SUM(CS.TOSSED_TOTAL) > 0 THEN SUM(CS.TOSSED_IMPACT * CS.TOSSED_TOTAL) / SUM(CS.TOSSED_TOTAL)
-					ELSE 0
-				END,
-				'kept_percent',
-				CASE
-					WHEN (SUM(CS.KEPT_TOTAL) + SUM(CS.TOSSED_TOTAL)) > 0 THEN SUM(CS.KEPT_TOTAL) / (SUM(CS.KEPT_TOTAL) + SUM(CS.TOSSED_TOTAL))
-					ELSE 0
-				END
-			) AS CARD_STATS
-		FROM
-			BASE_CARD_STATS CS
-		GROUP BY
-			1,
-            GROUPING SETS((2), (5)),
-			3,
-			4,
-			CS.CARD_ID
-	),
-	GROUPED_CARD_STATS AS (
-		SELECT
-			RANK,
-			DECK_ID,
-			PLAYER_HAS_COIN,
-			OPPONENT_CLASS,
-            archetype,
-			JSONB_AGG(CARD_STATS) AS CARD_STATS
-		FROM
-			PREPARED_CARD_STATS CS
-		GROUP BY
-			1,
-			2,
-			3,
-			4,
-            5
-	)
--- SELECT
--- 	DS.*,
--- 	CS.CARD_STATS
--- FROM
--- 	PREPARED_DECK_STATS DS
--- 	LEFT JOIN GROUPED_CARD_STATS CS ON CS.RANK = DS.RANK
--- 	AND CS.FORMAT = DS.FORMAT
--- 	AND COALESCE(CS.OPPONENT_CLASS, 'any') = COALESCE(DS.OPPONENT_CLASS, 'any')
--- 	AND COALESCE(CS.ARCHETYPE, 'any') = COALESCE(DS.ARCHETYPE, 'any')
--- 	AND COALESCE(CS.DECK_ID, -1) = COALESCE(DS.DECK_ID, -1)
-INSERT INTO  dt_temp_new_agg_stats (
-	deck_id,
-	period,
-	rank,
-	opponent_class,
-	archetype,
-	format,
-	total,
-	winrate,
-	wins,
-	losses,
-	turns,
-	duration,
-	climbing_speed,
-	player_has_coin,
-	card_stats
-)
-SELECT 
-	ds.deck_id,
-	agg_period.slug,
-	ds.rank,
-	ds.opponent_class,
-	ds.archetype,
-	agg_period.format,
-	ds.total,
-	ds.winrate,
-	ds.wins,
-	ds.losses,
-	ds.turns,
-	ds.duration,
-	ds.climbing_speed,
-	ds.player_has_coin,
-	cs.card_stats
-    -- ds.*, 
-    -- cs.card_stats
--- INTO public."dt_temp_new_agg_stats"
-FROM
-    prepared_deck_stats ds
-    LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
-        AND cs.archetype IS NOT DISTINCT FROM ds.archetype
-        AND cs.deck_id IS NOT DISTINCT FROM ds.deck_id
-        AND cs.opponent_class IS NOT DISTINCT FROM ds.opponent_class
-        AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
+					-- INNER JOIN public.deck d ON hs.DECK_ID = d.id
+					WHERE agg_period.format = hs.format AND ((hs.day = ANY(agg_period.days)) OR (hs.hour_start = ANY(agg_period.hour_starts)))
+					AND opponent_class IS NOT DISTINCT FROM grouping.opponent_class AND rank = grouping.rank AND format = grouping.format AND player_has_coin IS NOT DISTINCT FROM  grouping.player_has_coin
+				GROUP BY
+					GROUPING SETS((1), (2))
+			),
+			PREPARED_CARD_STATS AS (
+				SELECT
+					DECK_ID,
+					archetype,
+					JSON_BUILD_OBJECT(
+						'card_id',
+						CARD_ID,
+						'kept_total',
+						SUM(KEPT_TOTAL),
+						'mull_total',
+						SUM(MULL_TOTAL),
+						'drawn_total',
+						SUM(DRAWN_TOTAL),
+						'tossed_total',
+						SUM(TOSSED_TOTAL),
+						'kept_impact',
+						CASE
+							WHEN SUM(CS.KEPT_TOTAL) > 0 THEN SUM(CS.KEPT_IMPACT * CS.KEPT_TOTAL) / SUM(CS.KEPT_TOTAL)
+							ELSE 0
+						END,
+						'mull_impact',
+						CASE
+							WHEN SUM(CS.MULL_TOTAL) > 0 THEN SUM(CS.MULL_IMPACT * CS.MULL_TOTAL) / SUM(CS.MULL_TOTAL)
+							ELSE 0
+						END,
+						'drawn_impact',
+						CASE
+							WHEN SUM(CS.DRAWN_TOTAL) > 0 THEN SUM(CS.DRAWN_IMPACT * CS.DRAWN_TOTAL) / SUM(CS.DRAWN_TOTAL)
+							ELSE 0
+						END,
+						'tossed_impact',
+						CASE
+							WHEN SUM(CS.TOSSED_TOTAL) > 0 THEN SUM(CS.TOSSED_IMPACT * CS.TOSSED_TOTAL) / SUM(CS.TOSSED_TOTAL)
+							ELSE 0
+						END,
+						'kept_percent',
+						CASE
+							WHEN (SUM(CS.KEPT_TOTAL) + SUM(CS.TOSSED_TOTAL)) > 0 THEN SUM(CS.KEPT_TOTAL) / (SUM(CS.KEPT_TOTAL) + SUM(CS.TOSSED_TOTAL))
+							ELSE 0
+						END
+					) AS CARD_STATS
+				FROM
+					BASE_CARD_STATS CS
+				GROUP BY
+					GROUPING SETS((1), (2)),
+					CS.CARD_ID
+			),
+			GROUPED_CARD_STATS AS (
+				SELECT
+					DECK_ID,
+					archetype,
+					JSONB_AGG(CARD_STATS) AS CARD_STATS
+				FROM
+					PREPARED_CARD_STATS CS
+				GROUP BY
+					1,
+					2
+			)
+		-- SELECT
+		-- 	DS.*,
+		-- 	CS.CARD_STATS
+		-- FROM
+		-- 	PREPARED_DECK_STATS DS
+		-- 	LEFT JOIN GROUPED_CARD_STATS CS ON CS.RANK = DS.RANK
+		-- 	AND CS.FORMAT = DS.FORMAT
+		-- 	AND COALESCE(CS.OPPONENT_CLASS, 'any') = COALESCE(DS.OPPONENT_CLASS, 'any')
+		-- 	AND COALESCE(CS.ARCHETYPE, 'any') = COALESCE(DS.ARCHETYPE, 'any')
+		-- 	AND COALESCE(CS.DECK_ID, -1) = COALESCE(DS.DECK_ID, -1)
+		INSERT INTO  dt_temp_new_agg_stats (
+			deck_id,
+			period,
+			rank,
+			opponent_class,
+			archetype,
+			format,
+			total,
+			winrate,
+			wins,
+			losses,
+			turns,
+			duration,
+			climbing_speed,
+			player_has_coin,
+			card_stats
+		)
+		SELECT 
+			ds.deck_id,
+		agg_period.slug,
+		grouping.rank,
+		grouping.opponent_class,
+		ds.archetype,
+		agg_period.format,
+		ds.total,
+		ds.winrate,
+		ds.wins,
+		ds.losses,
+		ds.turns,
+		ds.duration,
+		ds.climbing_speed,
+		grouping.player_has_coin,
+		cs.card_stats
+		-- ds.*, 
+		-- cs.card_stats
+	-- INTO public."dt_temp_new_agg_stats"
+	FROM
+		prepared_deck_stats ds
+		LEFT JOIN grouped_card_stats cs ON 
+			cs.archetype IS NOT DISTINCT FROM ds.archetype
+			AND cs.deck_id IS NOT DISTINCT FROM ds.deck_id
+	END LOOP;
 END LOOP;
 
 ALTER INDEX IF EXISTS new_agg_stats_uniq_index RENAME TO old_new_agg_stats_uniq_index;
 ALTER TABLE IF EXISTS dt_new_agg_stats RENAME to old_dt_new_agg_stats;
 ALTER TABLE IF EXISTS dt_temp_new_agg_stats RENAME to dt_new_agg_stats;
+DROP INDEX IF EXISTS old_new_agg_stats_uniq_index;
 DROP TABLE IF EXISTS old_dt_new_agg_stats;
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT
