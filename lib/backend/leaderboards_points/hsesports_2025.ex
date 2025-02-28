@@ -77,7 +77,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
   end
 
   @impl true
-  def info_link("2025_" <> _) do
+  def info_link("2025" <> _) do
     %{
       link: "https://hearthstone.blizzard.com/en-us/news/24180851",
       display: "2025 Announcement"
