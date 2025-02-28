@@ -4,7 +4,7 @@ defmodule BackendWeb.LeaderboardController do
   alias Backend.Leaderboards
   alias Backend.MastersTour
   alias Backend.LeaderboardsPoints
-  alias Backend.LeaderboardsPoints.HsEsports2023
+  alias Backend.LeaderboardsPoints.HsEsports2025
   require Backend.LobbyLegends
   require Logger
 
@@ -30,7 +30,7 @@ defmodule BackendWeb.LeaderboardController do
   def points(conn, params_raw) do
     params =
       params_raw
-      |> Map.put_new("points_season", HsEsports2023.current_points_season())
+      |> Map.put_new("points_season", HsEsports2025.current_points_season())
       |> Map.put_new("leaderboard_id", "STD")
 
     points(conn, params)

@@ -516,7 +516,79 @@ defmodule Backend.MastersTour.TourStop do
         aliases: [],
         display_name: "MT Summer Championship",
         swiss_rounds: 0,
+        year: 2025
+      },
+      %__MODULE__{
+        id: :"Masters Tour 2025_1",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [137, 138],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 7},
+          {{2, 5}, 6},
+          {{6, 10}, 5},
+          {{11, 25}, 4},
+          {{26, 50}, 5},
+          {{51, 75}, 2},
+          {{76, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2025-04-12 16:00:00],
+        qualifiers_period: {~D[2025-03-01], ~D[2025-03-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "MT Spring Championship",
+        swiss_rounds: 0,
         year: 2024
+      },
+      %__MODULE__{
+        id: :"Masters Tour 2025_2",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [140, 141],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 7},
+          {{2, 5}, 6},
+          {{6, 10}, 5},
+          {{11, 25}, 4},
+          {{26, 50}, 5},
+          {{51, 75}, 2},
+          {{76, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2025-08-15 16:00:00],
+        qualifiers_period: {~D[2025-06-01], ~D[2025-06-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "MT Summer Championship",
+        swiss_rounds: 0,
+        year: 2025
+      },
+      %__MODULE__{
+        id: :"Worlds 2025",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [143, 144],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 7},
+          {{2, 5}, 6},
+          {{6, 10}, 5},
+          {{11, 25}, 4},
+          {{26, 50}, 5},
+          {{51, 75}, 2},
+          {{76, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2025-08-15 16:00:00],
+        qualifiers_period: {~D[2025-06-01], ~D[2025-06-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "Worlds 2025",
+        swiss_rounds: 0,
+        year: 2025
       }
     ]
   end
@@ -606,7 +678,9 @@ defmodule Backend.MastersTour.TourStop do
 
   def get_current(hours_before_start \\ 21, hours_after_start \\ 96) do
     all()
-    |> Enum.find_value(fn ts -> ts |> current?(hours_before_start, hours_after_start) && ts.id end)
+    |> Enum.find_value(fn ts ->
+      ts |> current?(hours_before_start, hours_after_start) && ts.id
+    end)
   end
 
   @spec current?(t(), hours_before_start :: integer(), hours_after_start :: integer()) :: boolean
