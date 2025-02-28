@@ -13,33 +13,42 @@ defmodule Components.Card do
 
   def render(assigns) do
     ~F"""
-      <a href={~p"/card/#{@card}"} class={"tw-relative", "card-image-container", "has-no-pointer-events": @disable_link}>
+      <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{@card}"} class={"tw-relative", "card-image-container", "has-no-pointer-events": @disable_link}>
         <#slot {@above_image, card: @card} />
         <img src={Card.card_url(@card)} alt={@card.name} class={"md:tw-w-64", "tw-w-64": !@shrink_mobile, "tw-w-48": @shrink_mobile}/>
         <#slot {@below_image, card: @card} />
 
-        <div :if={@hide_name} class={
-          "hide-card-image", "tw-absolute", "tw-block", "tw-z-[4]", "tw-bg-black",
-          # mid+ devices
-          "md:tw-top-[150px]", "md:tw-left-[28px]", "md:tw-h-[50px]", "md:tw-w-[190px]",
-          # same when as above when not shrinking mobile
-          "tw-top-[150px]": !@shrink_mobile, "tw-left-[28px]": !@shrink_mobile, "tw-h-[50px]": !@shrink_mobile, "tw-w-[190px]": !@shrink_mobile,
-          # smaller for shrinked
-          "tw-top-[115px]": @shrink_mobile, "tw-left-[24px]": @shrink_mobile, "tw-h-[40px]": @shrink_mobile, "tw-w-[135px]": @shrink_mobile
-        }/>
-        <div :if={@hide_text_and_stats} class={
-          "hide-card-text", "tw-absolute", "tw-block", "tw-z-[4]", "tw-bg-black",
-          # mid+ devices
-          "md:tw-top-[200px]", "md:tw-left-[28px]", "md:tw-h-[110px]", "md:tw-w-[190px]",
-          # same when as above when not shrinking mobile
-          "tw-top-[200px]": !@shrink_mobile, "tw-left-[28px]": !@shrink_mobile, "tw-h-[110px]": !@shrink_mobile, "tw-w-[190px]": !@shrink_mobile,
-          # smaller for shrinked
-          "tw-top-[155px]": @shrink_mobile, "tw-left-[24px]": @shrink_mobile, "tw-h-[85px]": @shrink_mobile, "tw-w-[135px]": @shrink_mobile
-        }/>
+        <div :if={@hide_name} class={hide_name_classes(@shrink_mobile)}/>
+        <div :if={@hide_text_and_stats} class={hide_text_and_stats_classes(@shrink_mobile)}/>
       </a>
     """
   end
 
-  # <div clas="tw-relative">
-  # </div>
+  defp hide_name_classes(shrink_mobile) do
+    base =
+      "hide-card-image tw-absolute tw-block tw-z-[4] tw-bg-black md:tw-top-[150px] md:tw-left-[28px] md:tw-h-[50px] md:tw-w-[190px] "
+
+    variable_part =
+      if shrink_mobile do
+        " tw-top-[115px] tw-left-[24px] tw-h-[40px] tw-w-[135px]"
+      else
+        " tw-top-[150px] tw-left-[28px] tw-h-[50px] tw-w-[190px]"
+      end
+
+    base <> variable_part
+  end
+
+  def hide_text_and_stats_classes(shrink_mobile) do
+    base =
+      "hide-card-text tw-absolute tw-block tw-z-[4] tw-bg-black md:tw-top-[200px] md:tw-left-[28px] md:tw-h-[110px] md:tw-w-[190px] "
+
+    variable_part =
+      if shrink_mobile do
+        " tw-top-[155px] tw-left-[24px] tw-h-[85px] tw-w-[135px]"
+      else
+        " tw-top-[200px] tw-left-[28px] tw-h-[110px] tw-w-[190px]"
+      end
+
+    base <> variable_part
+  end
 end
