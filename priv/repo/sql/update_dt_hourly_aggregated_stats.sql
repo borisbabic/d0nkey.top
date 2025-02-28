@@ -383,14 +383,17 @@ INSERT INTO dt_intermediate_agg_stats (
     total_duration,
     duration_game_count,
     climbing_speed,
+    archetype,
     card_stats  
     ) 
 SELECT 
     _hour_start, 
     ds.*, 
+    d.archetype,
     cs.card_stats
 FROM
     grouped_deck_stats ds
+    INNER JOIN deck d on d.id = ds.deck_id
     LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
         AND cs.format = ds.format
         AND cs.deck_id = ds.deck_id
