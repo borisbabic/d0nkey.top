@@ -19,6 +19,11 @@ defmodule Backend.Application do
         BackendWeb.Endpoint,
         # Starts a worker by calling: Backend.Worker.start_link(arg)
         # {Backend.Worker, arg},
+        %{
+          # can multiserver
+          id: Backend.Streaming.DeckStreamingInfoBag,
+          start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
+        },
         {Oban, oban_config()},
         # Backend.PostgrexPubsubListener,
         %{
@@ -120,11 +125,6 @@ defmodule Backend.Application do
         #   id: Backend.PonyDojo,
         #   start: {Backend.PonyDojo, :start_link, [[]]}
         # },
-        %{
-          # can multiserver
-          id: Backend.Streaming.DeckStreamingInfoBag,
-          start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
-        },
         %{
           # TODO: CANNOT MULTISERVEr
           id: Backend.Streaming.StreamerDeckBag,
