@@ -280,6 +280,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       wild_big_shaman?(card_info) ->
         :"Big Shaman"
 
+      wild_murmur?(card_info) ->
+        :"Murmur Shaman"
+
       wild_pirate?(card_info) ->
         :"Pirate Shaman"
 
@@ -289,6 +292,10 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp wild_murmur?(card_info) do
+    min_count?(card_info, 2, ["Murmur", "Shudderblock"])
   end
 
   defp wild_pirate?(card_info) do
