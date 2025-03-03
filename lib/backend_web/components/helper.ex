@@ -165,6 +165,12 @@ defmodule Components.Helper do
     region_flag(%{image: image, region: region})
   end
 
+  def country_flag(region, _) when region in ["AP", "APAC", "AM", "AMER", "EU", "EMEA"] do
+    image = "/images/region_#{String.downcase(region)}.png"
+
+    region_flag(%{image: image, region: region})
+  end
+
   def country_flag(country, user_preferences) do
     name = Util.get_country_name(country)
 
