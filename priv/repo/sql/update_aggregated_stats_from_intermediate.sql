@@ -25,8 +25,7 @@ CREATE TABLE dt_temp_new_agg_stats (
 	player_has_coin boolean,
 	card_stats jsonb
 );
-CREATE UNIQUE INDEX new_agg_stats_uniq_index ON dt_temp_new_agg_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
-FOR agg_period IN 
+WITH agg_periods(format, days, hour_starts, slug) as (
     SELECT 
     temp.format,
     temp.days,
@@ -52,15 +51,15 @@ FOR agg_period IN
         INNER JOIN public.formats f ON value = p.format
         WHERE f.auto_aggregate 
     ) temp
-LOOP
-RAISE notice 'Doing stats for % % % % %', now(), agg_period.slug, agg_period.format, agg_period.days, agg_period.hour_starts;
-WITH BASE_CARD_STATS AS (
+), BASE_CARD_STATS AS (
 		SELECT
 			RANK,
 			DECK_ID,
 			PLAYER_HAS_COIN,
 			OPPONENT_CLASS,
             ARCHETYPE,
+			period,
+			format,
 			-- WINRATE,
 			-- WINS,
 			-- LOSSES,
@@ -89,6 +88,8 @@ WITH BASE_CARD_STATS AS (
 					PLAYER_HAS_COIN,
 					OPPONENT_CLASS,
                     COALESCE(d.archetype, initcap(d.class)) as ARCHETYPE,
+					p.slug as period,
+					p.format as format,
 					-- WINRATE,
 					-- WINS,
 					-- LOSSES,
@@ -104,8 +105,8 @@ WITH BASE_CARD_STATS AS (
 				FROM
 					PUBLIC.dt_intermediate_agg_stats HS
                 INNER JOIN public.deck d ON hs.DECK_ID = d.id
+				INNER JOIN agg_periods p ON p.format = hs.format AND ((hs.day = ANY(p.days)) OR (hs.hour_start = ANY(p.hour_starts)))
 				WHERE card_stats IS NOT NULL
-                AND agg_period.format = hs.format AND ((hs.day = ANY(agg_period.days)) OR (hs.hour_start = ANY(agg_period.hour_starts)))
 			) ds
 	),
 	PREPARED_DECK_STATS AS (
@@ -115,6 +116,8 @@ WITH BASE_CARD_STATS AS (
 			OPPONENT_CLASS,
 			PLAYER_HAS_COIN,
             COALESCE(d.archetype, initcap(d.class)) as archetype,
+			p.slug as period,
+			p.format as format,
 			SUM(TOTAL)::bigint AS TOTAL,
 			SUM(WINS)::bigint AS WINS,
 			SUM(LOSSES)::bigint AS LOSSES,
@@ -139,12 +142,14 @@ WITH BASE_CARD_STATS AS (
 		FROM
 			PUBLIC.dt_intermediate_agg_stats HS
             INNER JOIN public.deck d ON hs.DECK_ID = d.id
-			WHERE agg_period.format = hs.format AND ((hs.day = ANY(agg_period.days)) OR (hs.hour_start = ANY(agg_period.hour_starts)))
+			INNER JOIN agg_periods p ON p.format = hs.format AND ((hs.day = ANY(p.days)) OR (hs.hour_start = ANY(p.hour_starts)))
 		GROUP BY
 			1,
             GROUPING SETS((2), (5)),
 			3,
-			4
+			4,
+			6,
+			7
 	),
 	PREPARED_CARD_STATS AS (
 		SELECT
@@ -153,6 +158,8 @@ WITH BASE_CARD_STATS AS (
 			OPPONENT_CLASS,
 			PLAYER_HAS_COIN,
             archetype,
+			period,
+			format,
 			JSON_BUILD_OBJECT(
 				'card_id',
 				CARD_ID,
@@ -197,6 +204,8 @@ WITH BASE_CARD_STATS AS (
             GROUPING SETS((2), (5)),
 			3,
 			4,
+			6,
+			7,
 			CS.CARD_ID
 	),
 	GROUPED_CARD_STATS AS (
@@ -206,6 +215,8 @@ WITH BASE_CARD_STATS AS (
 			PLAYER_HAS_COIN,
 			OPPONENT_CLASS,
             archetype,
+			period,
+			format,
 			JSONB_AGG(CARD_STATS) AS CARD_STATS
 		FROM
 			PREPARED_CARD_STATS CS
@@ -214,7 +225,9 @@ WITH BASE_CARD_STATS AS (
 			2,
 			3,
 			4,
-            5
+            5,
+			6,
+			7
 	)
 -- SELECT
 -- 	DS.*,
@@ -245,11 +258,11 @@ INSERT INTO  dt_temp_new_agg_stats (
 )
 SELECT 
 	ds.deck_id,
-	agg_period.slug,
+	ds.period,
 	ds.rank,
 	ds.opponent_class,
 	ds.archetype,
-	agg_period.format,
+	ds.format,
 	ds.total,
 	ds.winrate,
 	ds.wins,
@@ -268,8 +281,9 @@ FROM
         AND cs.archetype IS NOT DISTINCT FROM ds.archetype
         AND cs.deck_id IS NOT DISTINCT FROM ds.deck_id
         AND cs.opponent_class IS NOT DISTINCT FROM ds.opponent_class
+		AND cs.period = ds.period
+		AND cs.format = ds.format
         AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
-END LOOP;
 
 ALTER INDEX IF EXISTS new_agg_stats_uniq_index RENAME TO old_new_agg_stats_uniq_index;
 ALTER TABLE IF EXISTS dt_new_agg_stats RENAME to old_dt_new_agg_stats;
