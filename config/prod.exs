@@ -20,6 +20,7 @@ config :backend,
   twitch_bot_chats: [
     # "sgt_tbag",
     "d0nkeyhs",
+    "titosantanahs",
     "d0nkeytop"
     # "branka279",
     # "dettomon",

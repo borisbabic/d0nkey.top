@@ -29,6 +29,7 @@ defmodule Components.OpponentStatsTable do
       |> Map.put_new("rank", RankDropdown.default())
       |> Map.put_new("period", PeriodDropdown.default(:public, assigns.params))
       |> Map.put_new("players", "all_players")
+      |> Components.DecksExplorer.parse_int(["format"])
       |> add_format(assigns.include_format)
 
     user = Map.get(socket.assigns, :user)

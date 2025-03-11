@@ -185,4 +185,5 @@ config :backend, Oban,
   queues: queues
 
 config :backend,
+  twitch_bot_chats: ["d0nkeyhs", "d0nkeytop", "titosantanahs"],
   enable_twitch_bot: true
