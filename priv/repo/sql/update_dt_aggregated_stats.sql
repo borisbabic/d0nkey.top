@@ -1,16 +1,35 @@
-CREATE OR REPLACE FUNCTION update_dt_aggregated_stats()
+CREATE OR REPLACE FUNCTION test_update_dt_aggregated_stats_test()
     RETURNS VOID
     LANGUAGE plpgsql
     AS $$
 DECLARE
 BEGIN
-    CREATE MATERIALIZED VIEW temp_dt_aggregated_stats AS
-    WITH agg_ranks(
-        min_rank,
-        max_rank,
-        min_legend_rank,
-        max_legend_rank,
-        slug
+CREATE TABLE test_temp_dt_aggregated_stats (
+	-- DON'T REFERENCE deck. It seems to block insertions into the deck table while this executes if you reference
+	deck_id integer,
+	period varchar,
+	rank varchar,
+	opponent_class varchar,
+	archetype varchar,
+	format integer,
+	winrate double precision,
+	wins integer,
+	losses integer,
+	total integer,
+	turns double precision,
+	duration double precision,
+	climbing_speed double precision,
+	player_has_coin boolean,
+	card_stats jsonb
+);
+
+CREATE INDEX test_temp_agg_stats_uniq_index ON test_temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
+WITH agg_ranks(
+    min_rank,
+    max_rank,
+    min_legend_rank,
+    max_legend_rank,
+    slug
 ) AS (
         SELECT
             min_rank,
@@ -38,7 +57,7 @@ agg_periods(
     WHERE
         auto_aggregate) p
 	INNER JOIN public.formats f ON value = p.format
-	WHERE f.auto_aggregate 
+	WHERE f.auto_aggregate
 ),
 agg_regions(
     code
@@ -57,6 +76,7 @@ deck_stats AS (
         dg.player_deck_id AS deck_id,
         dg.opponent_class,
         dg.format,
+        dg.player_has_coin,
         sum(
             CASE WHEN dg.status = 'win' THEN
                 1
@@ -117,7 +137,8 @@ FROM
             2,
             3,
             5,
-            GROUPING SETS (4,())
+            GROUPING SETS (4,()),
+            GROUPING SETS (6,())
 ),
 card_stats AS (
     SELECT
@@ -127,6 +148,7 @@ card_stats AS (
         dcgt.card_id,
         dg.opponent_class,
         dg.format,
+        dg.player_has_coin,
         sum(
             CASE WHEN dg.status = 'win'
                 AND dcgt.kept
@@ -212,7 +234,9 @@ card_stats AS (
             3,
             4,
             6,
-            GROUPING SETS (5,())
+            GROUPING SETS (5,()),
+            GROUPING SETS (7,())
+
 ),
 merged_card_stats AS (
     SELECT
@@ -222,6 +246,7 @@ merged_card_stats AS (
         cs.card_id,
         cs.opponent_class,
         cs.format,
+        cs.player_has_coin,
         cs.kept_wins + cs.kept_losses AS kept_total,
 (
             CASE WHEN (cs.kept_wins + cs.kept_losses) > 0 THEN
@@ -256,7 +281,8 @@ merged_card_stats AS (
         INNER JOIN deck_stats ds ON ds.period = cs.period
             AND cs.rank = ds.rank
             AND ds.deck_id = cs.deck_id
-            AND COALESCE(cs.opponent_class, 'any') = COALESCE(ds.opponent_class, 'any')
+            AND ds.player_has_coin IS NOT DISTINCT FROM cs.player_has_coin
+            AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class)
             AND cs.format = ds.format
 ),
 grouped_deck_stats AS (
@@ -267,6 +293,7 @@ grouped_deck_stats AS (
         ds.opponent_class,
         COALESCE(d.archetype, initcap(d.class)) AS archetype,
         ds.format,
+        ds.player_has_coin,
         SUM(ds.total) AS total,
         SUM(ds.wins) AS wins,
         SUM(ds.losses) AS losses,
@@ -303,7 +330,8 @@ GROUP BY
     4,
     6,
     GROUPING SETS ((3),
-(5))
+(5)),
+    7
 ),
 prepared_card_stats AS (
     SELECT
@@ -313,6 +341,7 @@ prepared_card_stats AS (
         cs.opponent_class,
         COALESCE(d.archetype, initcap(d.class)) AS archetype,
         cs.format,
+        cs.player_has_coin,
         jsonb_build_object(
             'card_id', cs.card_id, 
             'kept_total', sum(cs.kept_total), 
@@ -354,7 +383,8 @@ prepared_card_stats AS (
         6,
         cs.card_id,
         GROUPING SETS ((3),
-(5))
+(5)),
+player_has_coin
 ),
 grouped_card_stats AS (
     SELECT
@@ -364,6 +394,7 @@ grouped_card_stats AS (
         cs.opponent_class,
         cs.archetype,
         cs.format,
+        cs.player_has_coin,
         jsonb_agg(cs.card_stats) AS card_stats
     FROM
         prepared_card_stats cs
@@ -373,30 +404,62 @@ grouped_card_stats AS (
         3,
         4,
         5,
-        6
+        6,
+        7
 )
-SELECT
-    ds.*,
-    cs.card_stats
+INSERT INTO  test_temp_dt_aggregated_stats (
+	deck_id,
+	period,
+	rank,
+	opponent_class,
+	archetype,
+	format,
+	total,
+	winrate,
+	wins,
+	losses,
+	turns,
+	duration,
+	climbing_speed,
+	player_has_coin,
+	card_stats
+)
+SELECT 
+	ds.deck_id,
+	ds.period,
+	ds.rank,
+	ds.opponent_class,
+	ds.archetype,
+	ds.format,
+	ds.total,
+	ds.winrate,
+	ds.wins,
+	ds.losses,
+	ds.turns,
+	ds.duration,
+	ds.climbing_speed,
+	ds.player_has_coin,
+	cs.card_stats
 FROM
     grouped_deck_stats ds
     LEFT JOIN grouped_card_stats cs ON cs.rank = ds.rank
         AND cs.period = ds.PERIOD
         AND cs.format = ds.format
-        AND COALESCE(cs.deck_id, -1) = COALESCE(ds.deck_id, -1)
-    AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class, 'any')
-    AND COALESCE(cs.archetype, 'any') = COALESCE(ds.archetype, 'any');
+        AND COALESCE(ds.deck_id, -1) = COALESCE(cs.deck_id, -1)
+        AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class)
+        AND COALESCE(ds.archetype, 'any') = COALESCE(cs.archetype)
+        AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
 
-ALTER INDEX IF EXISTS agg_stats_uniq_index RENAME TO old_agg_stats_uniq_index;
-CREATE UNIQUE INDEX agg_stats_uniq_index ON temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format);
-ALTER MATERIALIZED VIEW IF EXISTS dt_aggregated_stats RENAME TO old_dt_aggregated_stats;
-ALTER MATERIALIZED VIEW temp_dt_aggregated_stats RENAME TO dt_aggregated_stats;
-DROP MATERIALIZED VIEW IF EXISTS old_dt_aggregated_stats;
+ALTER INDEX IF EXISTS test_agg_stats_uniq_index RENAME TO test_old_agg_stats_uniq_index;
+ALTER INDEX IF EXISTS test_temp_agg_stats_uniq_index RENAME TO test_agg_stats_uniq_index;
+ALTER TABLE IF EXISTS test_dt_aggregated_stats RENAME TO test_old_dt_aggregated_stats;
+ALTER TABLE test_temp_dt_aggregated_stats RENAME TO test_dt_aggregated_stats;
+DROP TABLE IF EXISTS test_old_dt_aggregated_stats;
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT
-INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
+-- INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
 -- UPDATE AGGREGATION COUNT
-CREATE TABLE public.dt_aggregation_meta_new AS
+CREATE TABLE public.test_dt_aggregation_meta_new AS
 SELECT
     FORMAT,
     PERIOD,
@@ -456,9 +519,9 @@ GROUP BY
     1,
     2,
     3;
-ALTER TABLE IF EXISTS dt_aggregation_meta RENAME TO dt_aggregation_meta_old;
-ALTER TABLE IF EXISTS dt_aggregation_meta_new RENAME TO dt_aggregation_meta;
-DROP TABLE IF EXISTS dt_aggregation_meta_old;
+ALTER TABLE IF EXISTS test_dt_aggregation_meta RENAME TO test_dt_aggregation_meta_old;
+ALTER TABLE IF EXISTS test_dt_aggregation_meta_new RENAME TO test_dt_aggregation_meta;
+DROP TABLE IF EXISTS test_dt_aggregation_meta_old;
 END;
 $$;
 
