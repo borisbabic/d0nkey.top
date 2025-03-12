@@ -282,7 +282,7 @@ merged_card_stats AS (
             AND cs.rank = ds.rank
             AND ds.deck_id = cs.deck_id
             AND ds.player_has_coin IS NOT DISTINCT FROM cs.player_has_coin
-            AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class)
+            AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class, 'any')
             AND cs.format = ds.format
 ),
 grouped_deck_stats AS (
@@ -446,8 +446,8 @@ FROM
         AND cs.period = ds.PERIOD
         AND cs.format = ds.format
         AND COALESCE(ds.deck_id, -1) = COALESCE(cs.deck_id, -1)
-        AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class)
-        AND COALESCE(ds.archetype, 'any') = COALESCE(cs.archetype)
+        AND COALESCE(ds.opponent_class, 'any') = COALESCE(cs.opponent_class, 'any')
+        AND COALESCE(ds.archetype, 'any') = COALESCE(cs.archetype, 'any')
         AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
 
 ALTER INDEX IF EXISTS test_agg_stats_uniq_index RENAME TO test_old_agg_stats_uniq_index;
