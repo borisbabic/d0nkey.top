@@ -305,9 +305,11 @@ defmodule Backend.Hearthstone.Card do
 
   @spec dust_cost(card() | integer()) :: integer()
   def dust_cost(card) when is_integer(card), do: Backend.Hearthstone.get_card(card) |> dust_cost()
-  # core_set
   def dust_cost(%{dust_free: true}), do: 0
+  # core_set
   def dust_cost(%{card_set_id: 1637}), do: 0
+  # core_set 2025
+  def dust_cost(%{card_set_id: -69}), do: 0
   def dust_cost(%{rarity: %{normal_crafting_cost: nil}}), do: 0
   def dust_cost(%{rarity: %{normal_crafting_cost: cost}}), do: cost
   def dust_cost(%{set: "CORE"}), do: 0
