@@ -1,10 +1,10 @@
-CREATE OR REPLACE FUNCTION test_update_dt_aggregated_stats_test()
+CREATE OR REPLACE FUNCTION update_dt_aggregated_stats_test()
     RETURNS VOID
     LANGUAGE plpgsql
     AS $$
 DECLARE
 BEGIN
-CREATE TABLE test_temp_dt_aggregated_stats (
+CREATE TABLE dt_aggregated_stats (
 	-- DON'T REFERENCE deck. It seems to block insertions into the deck table while this executes if you reference
 	deck_id integer,
 	period varchar,
@@ -23,7 +23,7 @@ CREATE TABLE test_temp_dt_aggregated_stats (
 	card_stats jsonb
 );
 
-CREATE INDEX test_temp_agg_stats_uniq_index ON test_temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
+CREATE INDEX agg_stats_uniq_index ON temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
 WITH agg_ranks(
     min_rank,
     max_rank,
@@ -407,7 +407,7 @@ grouped_card_stats AS (
         6,
         7
 )
-INSERT INTO  test_temp_dt_aggregated_stats (
+INSERT INTO  dt_aggregated_stats (
 	deck_id,
 	period,
 	rank,
@@ -450,16 +450,16 @@ FROM
         AND COALESCE(ds.archetype, 'any') = COALESCE(cs.archetype, 'any')
         AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
 
-ALTER INDEX IF EXISTS test_agg_stats_uniq_index RENAME TO test_old_agg_stats_uniq_index;
-ALTER INDEX IF EXISTS test_temp_agg_stats_uniq_index RENAME TO test_agg_stats_uniq_index;
-ALTER TABLE IF EXISTS test_dt_aggregated_stats RENAME TO test_old_dt_aggregated_stats;
-ALTER TABLE test_temp_dt_aggregated_stats RENAME TO test_dt_aggregated_stats;
-DROP TABLE IF EXISTS test_old_dt_aggregated_stats;
+ALTER INDEX IF EXISTS agg_stats_uniq_index RENAME TO old_agg_stats_uniq_index;
+ALTER INDEX IF EXISTS agg_stats_uniq_index RENAME TO agg_stats_uniq_index;
+ALTER TABLE IF EXISTS dt_aggregated_stats RENAME TO old_dt_aggregated_stats;
+ALTER TABLE dt_aggregated_stats RENAME TO dt_aggregated_stats;
+DROP TABLE IF EXISTS old_dt_aggregated_stats;
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT
--- INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
+INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
 -- UPDATE AGGREGATION COUNT
-CREATE TABLE public.test_dt_aggregation_meta_new AS
+CREATE TABLE public.dt_aggregation_meta_new AS
 SELECT
     FORMAT,
     PERIOD,
@@ -519,9 +519,9 @@ GROUP BY
     1,
     2,
     3;
-ALTER TABLE IF EXISTS test_dt_aggregation_meta RENAME TO test_dt_aggregation_meta_old;
-ALTER TABLE IF EXISTS test_dt_aggregation_meta_new RENAME TO test_dt_aggregation_meta;
-DROP TABLE IF EXISTS test_dt_aggregation_meta_old;
+ALTER TABLE IF EXISTS dt_aggregation_meta RENAME TO dt_aggregation_meta_old;
+ALTER TABLE IF EXISTS dt_aggregation_meta_new RENAME TO dt_aggregation_meta;
+DROP TABLE IF EXISTS dt_aggregation_meta_old;
 END;
 $$;
 

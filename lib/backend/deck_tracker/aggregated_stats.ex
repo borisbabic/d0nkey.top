@@ -5,7 +5,7 @@ defmodule Hearthstone.DeckTracker.AggregatedStats do
   use Ecto.Schema
   alias Backend.Hearthstone.Deck
 
-  schema "test_dt_aggregated_stats" do
+  schema "dt_aggregated_stats" do
     belongs_to :deck, Deck
     field :period, :string, primary_key: true
     field :rank, :string, primary_key: true
