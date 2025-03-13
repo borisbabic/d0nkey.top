@@ -44,7 +44,6 @@ defmodule BackendWeb.DeckBuilderLive do
           default_order_by={"mana_in_class"}
           class_options={class_options(@deck)}
           format_filter={standard?(@deck)}
-          format_options={standard?(@deck) and [{"standard_2025", "2025 Standard"}, {"standard_2024", "2024 Standard"}, {"2", "Standard"}]}
           live_view={__MODULE__}
           id="cards_explorer"
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
