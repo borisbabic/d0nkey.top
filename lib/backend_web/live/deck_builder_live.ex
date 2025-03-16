@@ -14,7 +14,7 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.Submit
 
-  @supported_formats [1, 2, "standard_2024", "standard_2025"]
+  @supported_formats [1, 2, "standard_2024", "standard_2025", "ed_prerelease_brawl"]
   data(deck_class, :string)
   data(format, :integer)
   data(raw_params, :map)
@@ -84,6 +84,7 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp format_name("standard_2024"), do: "2024 Standard"
   defp format_name("standard_2025"), do: "2025 Standard"
+  defp format_name("ed_prerelease_brawl"), do: "Prerelease Brawl"
   defp format_name(format), do: Deck.format_name(format)
 
   defp standard?(%{format: 2}), do: true
