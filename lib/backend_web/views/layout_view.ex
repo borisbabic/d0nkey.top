@@ -104,6 +104,10 @@ defmodule BackendWeb.LayoutView do
          highlight_fantasy_for_gm?())
   end
 
+  @spec battlefy?(Backend.UserManager.User.t() | nil) :: boolean()
+  def battlefy?(%{battlefy_slug: slug}) when is_binary(slug), do: true
+  def battlefy?(_), do: false
+
   def twitchbot?(user) do
     with %{twitch_id: twitch_id} when not is_nil(twitch_id) <- user,
          %{twitch_login: twitch_login} <- Backend.Streaming.streamer_by_twitch_id(twitch_id),

@@ -20,10 +20,13 @@
             <.navbar_item_link link={~p"/my-decks"} display={"My Decks"} />
             <.navbar_item_link link={~p"/my-replays"} display={"My Replays"} />
             <.navbar_item_link link={~p"/my-groups"} display={"My Groups"} />
+            <%= if @conn |> user() |> battlefy?() do %>
+              <.navbar_item_link link={~p"/battlefy/user-tournaments/#{user(@conn).battlefy_slug}"} display="My Battlefy Tournaments" />
+            <% end %>
             <%= if @conn |> user() |> twitchbot?() do %>
               <.navbar_item_link link={~p"/twitch/bot"} display={"My Twitch Bot"} />
             <% end %>
-            <.navbar_item_link link={~p"/profile/settings"} display={"Setting"} />
+            <.navbar_item_link link={~p"/profile/settings"} display={"Settings"} />
             <%= if can_access?(@conn, :battletag_info) do %>
               <.navbar_item_link link={~p"/torch/battletag_info"} display={"Admin - Battletag Info"} />
             <% end %>
