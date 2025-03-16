@@ -1,10 +1,10 @@
-CREATE OR REPLACE FUNCTION update_dt_aggregated_stats_test()
+CREATE OR REPLACE FUNCTION update_dt_aggregated_stats()
     RETURNS VOID
     LANGUAGE plpgsql
     AS $$
 DECLARE
 BEGIN
-CREATE TABLE dt_aggregated_stats (
+CREATE TABLE temp_dt_aggregated_stats (
 	-- DON'T REFERENCE deck. It seems to block insertions into the deck table while this executes if you reference
 	deck_id integer,
 	period varchar,
@@ -23,7 +23,7 @@ CREATE TABLE dt_aggregated_stats (
 	card_stats jsonb
 );
 
-CREATE INDEX agg_stats_uniq_index ON temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
+CREATE INDEX temp_agg_stats_uniq_index ON temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
 WITH agg_ranks(
     min_rank,
     max_rank,
@@ -407,7 +407,7 @@ grouped_card_stats AS (
         6,
         7
 )
-INSERT INTO  dt_aggregated_stats (
+INSERT INTO  temp_dt_aggregated_stats (
 	deck_id,
 	period,
 	rank,
@@ -451,10 +451,11 @@ FROM
         AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
 
 ALTER INDEX IF EXISTS agg_stats_uniq_index RENAME TO old_agg_stats_uniq_index;
-ALTER INDEX IF EXISTS agg_stats_uniq_index RENAME TO agg_stats_uniq_index;
+ALTER INDEX IF EXISTS temp_agg_stats_uniq_index RENAME TO agg_stats_uniq_index;
 ALTER TABLE IF EXISTS dt_aggregated_stats RENAME TO old_dt_aggregated_stats;
-ALTER TABLE dt_aggregated_stats RENAME TO dt_aggregated_stats;
+ALTER TABLE temp_dt_aggregated_stats RENAME TO dt_aggregated_stats;
 DROP TABLE IF EXISTS old_dt_aggregated_stats;
+DROP INDEX IF EXISTS old_agg_stats_uniq_index;
 -- UPDATE AGG LOG
 -- DO NOT COMMIT THE BELOW COMMENTED OUT
 INSERT INTO logs_dt_aggregation (formats, ranks, periods, regions, inserted_at) SELECT array_agg(DISTINCT(format)), array_agg(DISTINCT(rank)), array_agg(DISTINCT(period)), (SELECT array_agg(code) FROM public.dt_regions WHERE auto_aggregate), now() FROM public.dt_aggregated_stats;
