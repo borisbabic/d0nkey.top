@@ -547,11 +547,14 @@ defmodule Backend.Blizzard do
           {:ok, atom()} | {:error, any()}
   def get_region_identifier(%{region: r}), do: get_region_identifier(r)
   def get_region_identifier(r) when r in [:EU, :US, :AP, :CN], do: {:ok, r}
-  def get_region_identifier(r) when r in ["EU", "Europe"], do: {:ok, :EU}
-  def get_region_identifier(r) when r in ["AM", "NA", "Americas", :NA], do: {:ok, :US}
+  def get_region_identifier(r) when r in ["EU", "Europe", :Europe], do: {:ok, :EU}
 
-  def get_region_identifier(r) when r in ["AP", "APAC", "Asia-Pacific", :APAC, "Asia"],
-    do: {:ok, :AP}
+  def get_region_identifier(r) when r in ["AM", "NA", "Americas", :NA, :AM, :Americas],
+    do: {:ok, :US}
+
+  def get_region_identifier(r)
+      when r in ["AP", "APAC", "Asia-Pacific", :APAC, "Asia", :Asia, :"Asia-Pacific"],
+      do: {:ok, :AP}
 
   def get_region_identifier(r) when r in ["CN", "China"], do: {:ok, :CN}
   def get_region_identifier(r), do: {:error, "unknown_region #{r}"}

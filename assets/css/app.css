@@ -25,6 +25,14 @@
 }
 
 :root {
+  --color-bulma-info: #3298dc;
+  --color-bulma-primary: #375a7f;
+  --color-bulma-success: #2ecc71;
+  --color-bulma-warning: #f1b70e;
+  --color-americas: var(--color-bulma-info);
+  --color-europe: var(--color-bulma-primary);
+  --color-asia: var(--color-bulma-success);
+  --color-china: var(--color-bulma-warning);
   /*--color-common: rgb(255, 255, 255);*/
   /*--color-common-dark: rgb(191, 191, 191);*/
   /*--color-rare: rgb(0, 112, 221);*/

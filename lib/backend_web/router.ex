@@ -221,6 +221,7 @@ defmodule BackendWeb.Router do
     live("/deckviewer", DeckviewerLive)
 
     get("/stats/explanation", StatsController, :explanation)
+    live("/esports", EsportsLive)
     live("/card-stats", CardStatsLive)
     live("/meta", MetaLive)
     live("/decks", DecksLive)
