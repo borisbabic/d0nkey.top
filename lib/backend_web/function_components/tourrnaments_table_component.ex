@@ -1,0 +1,40 @@
+defmodule FunctionComponents.TournamentsTable do
+  use Phoenix.Component
+  alias Backend.Tournaments.Tournament
+  alias Components.Helper
+  alias FunctionComponents.EsportsBadges
+
+  attr :tournaments, :list, required: true
+
+  def table(assigns) do
+    ~H"""
+    <table class="table is-striped is-fullwidth is-narrow">
+      <thead>
+      <tr>
+          <th>Name</th>
+          <th>Start Time</th>
+          <th>Tags</th>
+      </tr>
+      </thead>
+      <tbody>
+        <%= for tournament <- @tournaments do %>
+          <tr>
+            <td>
+              <a class="is-link" href={Tournament.standings_link(tournament)}>
+                <%= Tournament.name(tournament) %>
+              </a>
+            </td>
+            <td>
+              <Helper.datetime datetime={Tournament.start_time(tournament)} />
+            </td>
+            <td>
+              <EsportsBadges.badges badges={Tournament.tags(tournament)} />
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+
+    </table>
+    """
+  end
+end

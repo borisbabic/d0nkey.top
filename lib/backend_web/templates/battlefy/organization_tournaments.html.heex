@@ -9,4 +9,5 @@
     </a>
 <% end %>
 
-<%= render("tournament_table.html", conn: @conn, raw: @tournaments, slug: @slug) %>
+<FunctionComponents.TournamentsTable.table tournaments={@tournaments} />
+<%!-- <%= render("tournament_table.html", conn: @conn, raw: @tournaments, slug: @slug) %> --%>

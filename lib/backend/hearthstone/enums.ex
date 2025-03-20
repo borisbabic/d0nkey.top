@@ -271,7 +271,14 @@ defmodule Hearthstone.Enums.Format do
 
   defp down_parse(_), do: nil
 
-  def parse(name) do
+  @spec parse(String.t() | integer()) :: integer()
+  def parse(format) when is_integer(format) do
+    # ensure it exists
+    {_, ^format, _} = Enum.find(@all, fn {_, f, _} -> f == format end)
+    format
+  end
+
+  def parse(name) when is_binary(name) do
     name
     |> String.downcase()
     |> down_parse()
