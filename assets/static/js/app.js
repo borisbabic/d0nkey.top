@@ -185,7 +185,6 @@ let Hooks = {};
 Hooks.LocalDateTime = {
     mounted() {
         var timestamp = this.el.getAttribute("aria-label");
-        console.log(timestamp);
         var date= new Date(parseInt(timestamp));
         if (Number.isInteger(date.getMonth())) {
             this.el.innerHTML =
