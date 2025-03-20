@@ -63,6 +63,7 @@
           <.navbar_item_link link={~p"/meta?format=4"} display={"Twist"} />
         </.navbar_dropdown>
         <.navbar_item_link link={~p"/streamer-decks"} display={"Streamer Decks"}/>
+        <.navbar_item_link link={~p"/esports"}>Esports<sup class="tw-text-red-500">New!</sup></.navbar_item_link>
         <.navbar_dropdown display="Utilities">
           <.navbar_item_link link={~p"/deckviewer"} display={"Deckviewer"} />
           <.navbar_item_link link={~p"/deckbuilder"} display={"Deckbuilder"} />
@@ -168,13 +169,16 @@ document.addEventListener('DOMContentLoaded', () => {
       <a href="/">🏠</a>
       <a href={"#{Routes.leaderboard_path(@conn, :index)}"}>Leaderboard</a>
       |
-      <a href={"#{Routes.leaderboard_path(@conn, :points) }"}>HSEsports Points</a>
+      <a href={~p"/esports"}>Esports</a>
       |
       <a href={"#{Routes.live_path(@conn, BackendWeb.DecksLive) }"}>Decks</a>
       |
       <a href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
       |
       <a href={"#{Routes.page_path(@conn, :donate_follow)}"}>Donate/Follow</a>
+      | 
+      <a href={~p"/meta"}>Meta</a>
+      |
     </nav>
   </header>
 </noscript>
