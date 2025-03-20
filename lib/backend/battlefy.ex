@@ -46,91 +46,95 @@ defmodule Backend.Battlefy do
     "osc-esports",
     "classic-hearthstone"
   ]
-  @organization_stats_configs (for num <- [6, 5, 4, 3, 2], do: %{
-                                    from: ~D[2020-05-01],
+  @organization_stats_configs for(
+                                num <- [6, 5, 4, 3, 2],
+                                do: %{
+                                  from: ~D[2020-05-01],
+                                  organization_slug: "juega-duro-hearthstone",
+                                  title: "GRITO DE GUERRA #{num}",
+                                  stats_slug: "grito-de-guerra-#{num}",
+                                  pattern: ~r/GRITO DE GUERRA #{num}/i
+                                }
+                              ) ++
+                                [
+                                  %{
+                                    from: ~D[2021-10-20],
+                                    organization_slug: "black-claws",
+                                    title: "Black Claws x America's Navy",
+                                    stats_slug: "black-claws-x-americas-navy",
+                                    pattern: ~r/750 - Black Claws x America's Navy/i
+                                  },
+                                  %{
+                                    from: ~D[2021-11-11],
+                                    organization_slug: "black-claws",
+                                    title: "Black Claws x Bang & Olufsen",
+                                    stats_slug: "black-claws-x-bang-olufsen",
+                                    pattern: ~r/Black Claws x Bang & Olufsen/i
+                                  },
+                                  %{
+                                    from: ~D[2020-06-01],
                                     organization_slug: "juega-duro-hearthstone",
-                                    title: "GRITO DE GUERRA #{num}",
-                                    stats_slug: "grito-de-guerra-#{num}",
-                                    pattern: ~r/GRITO DE GUERRA #{num}/i
-                                  }) ++ [
-                                    %{
-                                      from: ~D[2021-10-20],
-                                      organization_slug: "black-claws",
-                                      title: "Black Claws x America's Navy",
-                                      stats_slug: "black-claws-x-americas-navy",
-                                      pattern: ~r/750 - Black Claws x America's Navy/i
-                                    },
-                                    %{
-                                      from: ~D[2021-11-11],
-                                      organization_slug: "black-claws",
-                                      title: "Black Claws x Bang & Olufsen",
-                                      stats_slug: "black-claws-x-bang-olufsen",
-                                      pattern: ~r/Black Claws x Bang & Olufsen/i
-                                    },
-                                    %{
-                                      from: ~D[2020-06-01],
-                                      organization_slug: "juega-duro-hearthstone",
-                                      title: "GRITO DE GUERRA",
-                                      stats_slug: "grito-de-guerra",
-                                      pattern: ~r/GRITO DE GUERRA/i
-                                    },
-                                    %{
-                                      from: ~D[2020-06-01],
-                                      organization_slug: "btw-esports",
-                                      title: "Copa DoomHammer",
-                                      stats_slug: "btw-copa-doomhammer",
-                                      pattern: ~r/Copa DoomHammer/i
-                                    },
-                                    %{
-                                      from: ~D[2020-06-01],
-                                      organization_slug: "ilh-events",
-                                      title: "ILH Events EU Open",
-                                      stats_slug: "ilh-events-eu-open",
-                                      pattern: ~r/ILH Events EU Open/i
-                                    },
-                                    %{
-                                      from: ~D[2020-06-01],
-                                      organization_slug: "osc-esports",
-                                      title: "HearthStone Americas Open",
-                                      stats_slug: "osc-hearthstone-americas-open",
-                                      pattern: ~r/HearthStone Americas Open/i
-                                    },
-                                    %{
-                                      from: ~D[2020-06-01],
-                                      organization_slug: "osc-esports",
-                                      title: "Leeroy Jenkins Cup",
-                                      stats_slug: "osc-leeroy-jenkins-cup",
-                                      pattern: ~r/Leeroy Jenkins Cup/i
-                                    },
-                                    %{
-                                      from: ~D[2020-06-01],
-                                      organization_slug: "osc-esports",
-                                      title: "Zephrys the Great Tournament",
-                                      stats_slug: "osc-zephrys-the-great-tournament",
-                                      pattern: ~r/Zephrys the Great Tournament/i
-                                    },
-                                    %{
-                                      from: ~D[2022-06-01],
-                                      organization_slug: "classic-hearthstone",
-                                      title: "Classic Hearthstone",
-                                      stats_slug: "classic-hearthstone",
-                                      pattern: ~r/Classic Hearthstone /i
-                                    },
-                                    %{
-                                      from: ~D[2022-06-01],
-                                      organization_slug: "classic-hearthstone",
-                                      title: "Classic Hearthstone EU",
-                                      stats_slug: "classic-hearthstone-eu",
-                                      pattern: ~r/Classic Hearthstone EU/i
-                                    },
-                                    %{
-                                      from: ~D[2022-06-01],
-                                      organization_slug: "classic-hearthstone",
-                                      title: "Classic Hearthstone NA",
-                                      stats_slug: "classic-hearthstone-na",
-                                      pattern: ~r/Classic Hearthstone NA/i
-                                    }
-                                  ]
+                                    title: "GRITO DE GUERRA",
+                                    stats_slug: "grito-de-guerra",
+                                    pattern: ~r/GRITO DE GUERRA/i
+                                  },
+                                  %{
+                                    from: ~D[2020-06-01],
+                                    organization_slug: "btw-esports",
+                                    title: "Copa DoomHammer",
+                                    stats_slug: "btw-copa-doomhammer",
+                                    pattern: ~r/Copa DoomHammer/i
+                                  },
+                                  %{
+                                    from: ~D[2020-06-01],
+                                    organization_slug: "ilh-events",
+                                    title: "ILH Events EU Open",
+                                    stats_slug: "ilh-events-eu-open",
+                                    pattern: ~r/ILH Events EU Open/i
+                                  },
+                                  %{
+                                    from: ~D[2020-06-01],
+                                    organization_slug: "osc-esports",
+                                    title: "HearthStone Americas Open",
+                                    stats_slug: "osc-hearthstone-americas-open",
+                                    pattern: ~r/HearthStone Americas Open/i
+                                  },
+                                  %{
+                                    from: ~D[2020-06-01],
+                                    organization_slug: "osc-esports",
+                                    title: "Leeroy Jenkins Cup",
+                                    stats_slug: "osc-leeroy-jenkins-cup",
+                                    pattern: ~r/Leeroy Jenkins Cup/i
+                                  },
+                                  %{
+                                    from: ~D[2020-06-01],
+                                    organization_slug: "osc-esports",
+                                    title: "Zephrys the Great Tournament",
+                                    stats_slug: "osc-zephrys-the-great-tournament",
+                                    pattern: ~r/Zephrys the Great Tournament/i
+                                  },
+                                  %{
+                                    from: ~D[2022-06-01],
+                                    organization_slug: "classic-hearthstone",
+                                    title: "Classic Hearthstone",
+                                    stats_slug: "classic-hearthstone",
+                                    pattern: ~r/Classic Hearthstone /i
+                                  },
+                                  %{
+                                    from: ~D[2022-06-01],
+                                    organization_slug: "classic-hearthstone",
+                                    title: "Classic Hearthstone EU",
+                                    stats_slug: "classic-hearthstone-eu",
+                                    pattern: ~r/Classic Hearthstone EU/i
+                                  },
+                                  %{
+                                    from: ~D[2022-06-01],
+                                    organization_slug: "classic-hearthstone",
+                                    title: "Classic Hearthstone NA",
+                                    stats_slug: "classic-hearthstone-na",
+                                    pattern: ~r/Classic Hearthstone NA/i
+                                  }
+                                ]
 
   @spec get_stage_standings(Stage.t() | String.t()) :: [Standings.t()]
   def get_stage_standings(stage_id) when is_binary(stage_id) do
@@ -837,6 +841,10 @@ defmodule Backend.Battlefy do
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def get_tour_stop_id(tour_stop) do
     Backend.MastersTour.TourStop.get_battlefy_id(tour_stop)
+  end
+
+  def upcoming_hearthstone_tournaments() do
+    Api.get_hearthstone_tournaments(0)
   end
 
   def create_tournament_link(tournament_id) when is_binary(tournament_id),

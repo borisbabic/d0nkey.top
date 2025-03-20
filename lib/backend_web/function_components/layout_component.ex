@@ -42,12 +42,18 @@ defmodule FunctionComponents.LayoutComponent do
   end
 
   attr :link, :string, required: true
-  attr :display, :string, required: true
+  attr :display, :string, required: false
+  attr :new, :boolean, default: false
+  slot :inner_block, required: false
 
   def navbar_item_link(assigns) do
     ~H"""
     <Dropdown.item base_class="navbar-item" href={@link}>
-      <%= @display %>
+      <%= if Enum.any?(@inner_block) do %>
+        <%= render_slot(@inner_block) %>
+      <% else %>
+        <%= @display %>
+      <% end %>
       </Dropdown.item>
     """
   end

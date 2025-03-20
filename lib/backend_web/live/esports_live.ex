@@ -2,6 +2,7 @@ defmodule BackendWeb.EsportsLive do
   @moduledoc "/esports"
   use BackendWeb, :surface_live_view
   alias FunctionComponents.EsportsBadges
+  alias Components.UpcomingTournaments
   data(user, :any)
 
   def mount(_params, session, socket) do
@@ -12,7 +13,6 @@ defmodule BackendWeb.EsportsLive do
     ~F"""
     <div>
       <div class="title is-2">Esports</div>
-          <li></li>
       <div class="subtitle is-6">
         <a href={~p"/mt/tour-stops"}>Tour Stops</a>
         | <a href={~p"/legacy-hsesports"}>Legacy HSEsports</a>
@@ -29,6 +29,7 @@ defmodule BackendWeb.EsportsLive do
           <.jungle_card />
         </div>
       </div>
+      <UpcomingTournaments id="upcoming_tournaments" />
     </div>
     """
   end
@@ -46,7 +47,7 @@ defmodule BackendWeb.EsportsLive do
          </div>
          <div class="content">
            <EsportsBadges.badges badges={[:AM, :EU, :AP, :standard, :bo3, :open, :free]} />
-           Official HSEsports! Qualify through open qualifiers or <a href="/leaderboard/points">Ladder Points</a>
+           Official HSEsports! Qualify through <a href={~p"/battlefy/third-party-tournaments?slug=esportsadmin-esa-events"}>open qualifiers</a> or <a href="/leaderboard/points">Ladder Points</a>
          </div>
        </div>
      </div>

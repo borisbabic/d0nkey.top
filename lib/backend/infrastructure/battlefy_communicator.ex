@@ -358,6 +358,22 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     |> Enum.map(&Tournament.from_raw_map/1)
   end
 
+  @spec get_hearthstone_tournaments(cutoff_hours_ago :: integer() | nil) :: [Tournament.t()]
+  def get_hearthstone_tournaments(cutoff_hours_ago \\ nil),
+    do: get_game_tournaments("hearthstone", cutoff_hours_ago)
+
+  @spec get_game_tournaments(game_slug :: String.t(), cutoff_hours_ago :: integer() | nil) :: [
+          Tournament.t()
+        ]
+  def get_game_tournaments(game_slug, cutoff_hours_ago \\ nil) do
+    url = "https://search.battlefy.com/tournament/#{game_slug}"
+    raw = get_body(url) |> Jason.decode!()
+
+    (raw || [])
+    |> Enum.map(&Tournament.from_raw_map/1)
+    |> Backend.Tournaments.filter_newest(cutoff_hours_ago)
+  end
+
   @spec get_user_tournaments_from(String.t(), NaiveDateTime.t()) :: [Tournament.t()]
   def get_user_tournaments_from(slug, from_time = %NaiveDateTime{}, page \\ 1, carry \\ [])
       when is_integer(page) do

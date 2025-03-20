@@ -16,4 +16,15 @@ defmodule Backend.Tournaments do
     do: Battlefy.create_tournament_link(tournament)
 
   def get_source_link({"battlefy", id}), do: Battlefy.create_tournament_link(id)
+
+  def filter_newest(tournaments, hours_ago_cutoff) when is_integer(hours_ago_cutoff) do
+    cutoff = NaiveDateTime.utc_now() |> Timex.shift(hours: -1 * hours_ago_cutoff)
+
+    Enum.filter(tournaments, fn t ->
+      start_time = Tournament.start_time(t)
+      start_time && :gt == NaiveDateTime.compare(start_time, cutoff)
+    end)
+  end
+
+  def filter_newest(tournaments, _), do: tournaments
 end
