@@ -12,7 +12,12 @@ defmodule BackendWeb.EsportsLive do
     ~F"""
     <div>
       <div class="title is-2">Esports</div>
-      <div class="subtitle is-6">WIP</div>
+          <li></li>
+      <div class="subtitle is-6">
+        <a href={~p"/mt/tour-stops"}>Tour Stops</a>
+        | <a href={~p"/legacy-hsesports"}>Legacy HSEsports</a>
+        <span>| This page is WIP, if you have ideas <a href={~p"/discord"}>let me know</a> </span>
+      </div>
       <div class="columns is-narrow is-multiline is-mobile">
         <div class="column">
           <.hsesports_card />

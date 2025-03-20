@@ -135,15 +135,22 @@ defmodule BackendWeb.Router do
     get("/hs/patch-notes", HearthstoneController, :patch_notes)
     get("/hs/patchnotes", HearthstoneController, :patch_notes)
 
-    get("/invited/:tour_stop", MastersTourController, :invited_players)
-    get("/invited/", MastersTourController, :invited_players)
-    get("/qualifiers", MastersTourController, :qualifiers)
-    get("/mt/points", MastersTourController, :points)
-    get("/mt/earnings", MastersTourController, :earnings)
-    get("/mt/qualifier-stats/", MastersTourController, :qualifier_stats)
-    get("/mt/qualifier-stats/:tour_stop", MastersTourController, :qualifier_stats)
+    live("/legacy-hsesports", LegacyHSEsportsLive)
+    get("/legacy-hsesports/invited/:tour_stop", MastersTourController, :invited_players)
+    get("/legacy-hseports/invited/", MastersTourController, :invited_players)
+    get("/legacy-hsesports/qualifiers", MastersTourController, :qualifiers)
+    get("/legacy-hsesports/mt/points", MastersTourController, :points)
+    get("/legacy-hsesports/mt/earnings", MastersTourController, :earnings)
+    get("/legacy-hsesports/mt/qualifier-stats/", MastersTourController, :qualifier_stats)
+
+    get(
+      "/legacy-hsesports/mt/qualifier-stats/:tour_stop",
+      MastersTourController,
+      :qualifier_stats
+    )
+
     get("/mt/tour-stops", MastersTourController, :tour_stops)
-    get("/mt/stats", MastersTourController, :masters_tours_stats)
+    get("/legacy-hsesports/mt/stats", MastersTourController, :masters_tours_stats)
     get("/mtq/:mtq_num", MastersTourController, :qualifier_redirect)
     get("/mtq/:mtq_num/*rest", MastersTourController, :qualifier_redirect)
 

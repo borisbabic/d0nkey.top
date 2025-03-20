@@ -69,25 +69,7 @@
           <.navbar_item_link link={~p"/cards"} display={"Cards"} />
         </.navbar_dropdown>
         <.navbar_dropdown display="Misc">
-            <div class="nested dropdown navbar-item">
-              <div class="dropdown-trigger is-flex">
-                <div aria-haspopup="true" aria-controls="masters-tour-menu">
-                  <span>Masters Tours</span>
-                  <span class="has-text-right">></span>
-                </div>
-              </div>
-
-              <div class="dropdown-menu" id="masters-tour-menu" role="menu">
-                <div class="dropdown-content">
-                  <FunctionComponents.Dropdown.item href={"#{Routes.masters_tour_path(@conn, :invited_players) }"}>Invited</FunctionComponents.Dropdown.item>
-                  <FunctionComponents.Dropdown.item href={"#{Routes.masters_tour_path(@conn, :qualifiers)}"}>Qualifiers</FunctionComponents.Dropdown.item>
-                  <FunctionComponents.Dropdown.item href={"#{Routes.masters_tour_path(@conn, :qualifier_stats)}"}>Qualifier Stats</FunctionComponents.Dropdown.item>
-                  <FunctionComponents.Dropdown.item href={"#{Routes.masters_tour_path(@conn, :points)}"}>Points</FunctionComponents.Dropdown.item>
-                  <FunctionComponents.Dropdown.item href={"#{Routes.masters_tour_path(@conn, :tour_stops)}"}>Tour Stops</FunctionComponents.Dropdown.item>
-                  <FunctionComponents.Dropdown.item href={"#{Routes.masters_tour_path(@conn, :masters_tours_stats)}"}>Stats</FunctionComponents.Dropdown.item>
-                </div>
-              </div>
-            </div>
+          <.navbar_item_link link={~p"/legacy-hsesports"} display={"Legacy HSEsports"} />
           <.navbar_item_link link={~p"/replays"} display={"Replays"} />
           <.navbar_item_link link={~p"/battlefy/third-party-tournaments"} display={"3rd Party Tournaments"} />
           <.navbar_item_link link={~p"/battlefy/tournaments-stats"} display={"Battlefy Tournament Stats"} />
