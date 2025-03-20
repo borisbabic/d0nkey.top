@@ -36,7 +36,7 @@ defmodule Components.Helper do
 
   def datetime(assigns) do
     ~H"""
-      <span class="datetime-human" id={random_id()} aria-label={timestamp(@datetime)}><%= human_readable(@datetime)%> UTC</span>
+      <time class="datetime-human" phx-hook="LocalDateTime" datetime={NaiveDateTime.to_iso8601(@datetime)} id={random_id()} aria-label={timestamp(@datetime)}><%= human_readable(@datetime)%> UTC</time>
     """
   end
 

@@ -90,26 +90,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 })
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Converting datetimes")
-    var pad = function(te) {
-        return ('0' + te).slice(-2)
-    }
-    var toConvert = document.getElementsByClassName("datetime-human")
-    for (var i = 0; i < toConvert.length; i++) {
-        try {
-            var timestamp = toConvert[i].getAttribute("aria-label");
-            var date = new Date(parseInt(timestamp));
-            if (Number.isInteger(date.getMonth())) {
-                toConvert[i].innerHTML =
-                    [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
-                    + ' '
-                    + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
-            }
-        }
-        catch(e){ }
-    }
-})
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     console.log("Converting datetimes")
+//     var pad = function(te) {
+//         return ('0' + te).slice(-2)
+//     }
+//     var toConvert = document.getElementsByClassName("datetime-human")
+//     for (var i = 0; i < toConvert.length; i++) {
+//         try {
+//             var timestamp = toConvert[i].getAttribute("aria-label");
+//             var date = new Date(parseInt(timestamp));
+//             if (Number.isInteger(date.getMonth())) {
+//                 toConvert[i].innerHTML =
+//                     [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
+//                     + ' '
+//                     + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
+//             }
+//         }
+//         catch(e){ }
+//     }
+// })
 
 window.location_href_by_datalist = function(input_id, datalist_id) {
     var input = document.getElementById(input_id)
@@ -177,7 +178,23 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+var pad = function(te) {
+    return ('0' + te).slice(-2)
+}
 let Hooks = {};
+Hooks.LocalDateTime = {
+    mounted() {
+        var timestamp = this.el.getAttribute("aria-label");
+        console.log(timestamp);
+        var date= new Date(parseInt(timestamp));
+        if (Number.isInteger(date.getMonth())) {
+            this.el.innerHTML =
+                [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
+                + ' '
+                + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
+        }
+    },
+}
 Hooks.CardRightClick = {
     mounted() {
         this.el.addEventListener("auxclick", e => {
