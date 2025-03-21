@@ -28,6 +28,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       handbuff_paladin?(card_info) ->
         :"Handbuff Paladin"
 
+      showdown_libram?(card_info) ->
+        :"Showdown Libram Paladin"
+
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
 
@@ -86,6 +89,12 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
     match?({_, ["Sunsapper Lynessa"]}, lowest_highest_cost_cards(card_info)) and
       "Grillmaster" in card_info.card_names and
       min_count?(card_info, 1, ["Griftah, Trusted Vendor", "Holy Glowsticks", "Mixologist"])
+  end
+
+  defp showdown_libram?(card_info) do
+    libram?(card_info) and
+      "Showdown!" in card_info.card_names and
+      min_count?(card_info, 1, ["Sea Giant", "Prismatic Beam"])
   end
 
   defp libram?(card_info, min_count \\ 2) do

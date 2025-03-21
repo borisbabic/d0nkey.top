@@ -76,6 +76,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       implock?(card_info) ->
         :Implock
 
+      location?(card_info) and sludgelock?(card_info) ->
+        :"Location Sludge Warlock"
+
+      fatigue_sludge_warlock?(card_info) ->
+        :"Fatigue Sludge Warlock"
+
       sludgelock?(card_info) ->
         :"Sludge Warlock"
 
@@ -121,6 +127,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  @self_fatigue_package ["Crescendo", "Baritone Imp", "Crazed Conductor"]
+  defp fatigue_sludge_warlock?(card_info) do
+    sludgelock?(card_info) and
+      min_count?(card_info, 2, @self_fatigue_package)
   end
 
   defp location?(card_info) do
@@ -201,7 +213,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     ])
   end
 
-  @self_fatigue_package ["Crescendo", "Baritone Imp", "Crazed Conductor"]
   defp fatigue_warlock?(ci) do
     min_count?(ci, 2, ["Pop'gar the Putrid", "Encroaching Insanity"]) and
       min_count?(ci, 3, @self_fatigue_package)

@@ -75,6 +75,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       concierge?(card_info) ->
         :"Concierge Druid"
 
+      dragon_druid?(card_info) ->
+        :"Dragon Druid"
+
       tempo_druid?(card_info) ->
         :"Tempo Druid"
 
@@ -117,6 +120,16 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp dragon_druid?(card_info) do
+    min_count?(card_info, 2, ["Splish-Splash Whelp", "Fye, the Setting Sun"]) and
+      min_count?(card_info, 2, [
+        "Take to the Skies",
+        "Desert Nestmatron",
+        "Giftwrapped Whelp",
+        "Spinetail Drake"
+      ])
   end
 
   defp bad?(card_info) do
