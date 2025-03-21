@@ -843,8 +843,9 @@ defmodule Backend.Battlefy do
     Backend.MastersTour.TourStop.get_battlefy_id(tour_stop)
   end
 
-  def upcoming_hearthstone_tournaments() do
-    Api.get_hearthstone_tournaments(0)
+  @spec upcoming_hearthstone_tournaments(integer()) :: [Tournament.t()]
+  def upcoming_hearthstone_tournaments(hours_ago \\ 0) do
+    Api.get_hearthstone_tournaments(hours_ago)
   end
 
   def create_tournament_link(tournament_id) when is_binary(tournament_id),

@@ -29,7 +29,7 @@ defmodule BackendWeb.EsportsLive do
           <.jungle_card />
         </div>
       </div>
-      <UpcomingTournaments id="upcoming_tournaments" />
+      <UpcomingTournaments hours_ago={72} id="upcoming_tournaments" />
     </div>
     """
   end
@@ -69,7 +69,7 @@ defmodule BackendWeb.EsportsLive do
            </div>
          </div>
          <div class="content">
-           <EsportsBadges.badges badges={[:AM, :standard, :wild, :battlegrounds, :bo5, :open, :closed, :team, :free]} />
+           <EsportsBadges.badges badges={[:AM, :standard, :wild, :bo5, :open, :closed, :team, :free]} />
            One match per week, scheduled with your opponent. Season starts soon so sign up! (no prizes)
          </div>
        </div>

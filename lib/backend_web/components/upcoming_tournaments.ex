@@ -6,6 +6,7 @@ defmodule Components.UpcomingTournaments do
   alias FunctionComponents.TournamentsTable
 
   prop(title, :string, default: nil)
+  prop(hours_ago, :integer, default: 0)
   data(tournaments, :any)
   data(full_tournaments, :any)
 
@@ -21,12 +22,14 @@ defmodule Components.UpcomingTournaments do
   end
 
   def update(assigns, socket) do
+    hours_ago = assigns.hours_ago
+
     {
       :ok,
       socket
       |> assign(assigns)
-      |> assign_async(:tournaments, fn -> fetch_tournaments() end)
-      |> assign_async(:full_tournaments, fn -> fetch_full_tournaments() end)
+      |> assign_async(:tournaments, fn -> fetch_tournaments(hours_ago) end)
+      |> assign_async(:full_tournaments, fn -> fetch_full_tournaments(hours_ago) end)
     }
   end
 
@@ -36,15 +39,18 @@ defmodule Components.UpcomingTournaments do
 
   def tournaments(_), do: []
 
-  def fetch_tournaments() do
-    battlefy = Battlefy.upcoming_hearthstone_tournaments()
+  @spec fetch_tournaments(integer()) :: {:ok, [Backend.Battlefy.Tournament.t()]}
+  def fetch_tournaments(hours_ago) do
+    battlefy = Battlefy.upcoming_hearthstone_tournaments(hours_ago)
     tournaments = Enum.sort_by(battlefy, &Tournament.start_time/1, {:asc, NaiveDateTime})
     {:ok, %{tournaments: tournaments}}
   end
 
-  def fetch_full_tournaments() do
+  @spec fetch_full_tournaments(integer()) :: {:ok, [Backend.Battlefy.Tournament.t()]}
+  def fetch_full_tournaments(hours_ago) do
     battlefy =
-      Battlefy.upcoming_hearthstone_tournaments() |> Enum.map(&Battlefy.get_tournament(&1.id))
+      Battlefy.upcoming_hearthstone_tournaments(hours_ago)
+      |> Enum.map(&Battlefy.get_tournament(&1.id))
 
     tournaments = Enum.sort_by(battlefy, &Tournament.start_time/1, {:asc, NaiveDateTime})
     {:ok, %{full_tournaments: tournaments}}
