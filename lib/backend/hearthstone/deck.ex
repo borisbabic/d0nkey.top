@@ -623,8 +623,13 @@ defmodule Backend.Hearthstone.Deck do
 
   @spec deckcode_class_hero(integer, [integer]) :: {String.t(), String.t()}
   def deckcode_class_hero(hero, cards) do
-    with {c, _h} when c in [nil, "NEUTRAL"] <- {Hearthstone.class(hero), hero} do
-      class = most_frequent_class(cards) || "NEUTRAL"
+    hero_class = Hearthstone.class(hero)
+
+    if hero_class not in [nil, "NEUTRAL"] and
+         Enum.any?(cards, & hero_class == (Hearthstone.class(&1))) do
+      {hero_class, hero}
+    else
+      class = most_frequent_class(cards) || hero_class || "NEUTRAL"
       hero = get_basic_hero(class)
       {class, hero}
     end
