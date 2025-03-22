@@ -1277,4 +1277,40 @@ defmodule ScratchPad do
       IO.puts("NO GENERATING STREAMER DECKS IN PROD")
     end
   end
+
+  def fix_classes(
+        criteria \\ [{"period", "patch_32.0.0"}, {"player_class", "WARRIOR"}],
+        do_fix \\ true
+      ) do
+    ds = DeckTracker.deck_stats(criteria)
+
+    bad_id_good_id =
+      for %{deck_id: deck_id} <- ds,
+          old_deck = Backend.Hearthstone.get_deck(deck_id),
+          new_deck = Backend.Hearthstone.Deck.decode!(old_deck.deckcode),
+          new_deck.class != old_deck.class do
+        {:ok, %{id: good_id}} = Backend.Hearthstone.create_or_get_deck(new_deck)
+        {deck_id, good_id}
+      end
+
+    IO.puts("Fixing #{Enum.count(bad_id_good_id)} out of #{Enum.count(ds)}")
+
+    multi =
+      Enum.reduce(bad_id_good_id, Ecto.Multi.new(), fn {bad_id, good_id}, multi ->
+        query =
+          from(g in Game,
+            where: g.player_deck_id == ^bad_id,
+            update: [set: [player_deck_id: ^good_id]]
+          )
+
+        Ecto.Multi.update_all(multi, "#{bad_id}_#{good_id}", query, [])
+      end)
+
+    if do_fix do
+      Backend.Repo.transaction(multi, timeout: :infinity)
+    else
+      IO.puts("Didn't actually do fix")
+      %{bad_id_good_id: bad_id_good_id, multi: multi}
+    end
+  end
 end
