@@ -128,7 +128,7 @@ defmodule BackendWeb.ConnCase do
   end
 
   defp create_auth_user_from_tags(tags, alt_battletag) do
-    roles = tags |> Map.keys() |> Enum.filter(&Backend.UserManager.User.is_role?/1)
+    roles = tags |> Map.keys() |> Enum.filter(&Backend.UserManager.User.role?/1)
     more_attrs = if alt_battletag, do: %{battletag: "alt_battletag#4321"}, else: %{}
     attrs = %{admin_roles: roles} |> Map.merge(more_attrs)
     ensure_auth_user(attrs)

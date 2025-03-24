@@ -95,6 +95,9 @@ defmodule Backend.UserManager.User do
       :rank,
       :archetyping,
       :tournament_streams,
+      :card,
+      :kaffy,
+      :developer,
       :twitch_commands
     ]
 
@@ -111,8 +114,8 @@ defmodule Backend.UserManager.User do
     is_list(ar) && ("super" in ar || :super in ar)
   end
 
-  @spec is_role?(atom() | String.t()) :: boolean()
-  def is_role?(atom_or_string), do: (atom_or_string |> to_string()) in string_admin_roles()
+  @spec role?(atom() | String.t()) :: boolean()
+  def role?(atom_or_string), do: (atom_or_string |> to_string()) in string_admin_roles()
 
   def premium?(%{premium: true}), do: true
   def premium?(%{patreon_tier: %{ad_free: true}}), do: true
