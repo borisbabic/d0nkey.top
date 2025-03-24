@@ -38,6 +38,13 @@
               <.navbar_item_link link={~p"/admin/kaffy"} display={"Kaffy"} />
             <% end %>
             <.navbar_item_link link={~p"/logout"} display={"Logout"} />
+            <%= if can_access?(@conn, :developer) do %>
+              <% query_part = if @conn.query_string != "", do: "?#{@conn.query_string}", else: "" %>
+              <.navbar_item_link link={"http://localhost:8994" <> @conn.request_path <> query_part} display={"Localhost"} />
+              <.navbar_item_link link={"https://localdev.hsguru.com" <> @conn.request_path <> query_part} display={"Localdev"} />
+              <.navbar_item_link link={"https://staging.hsguru.com" <> @conn.request_path  <> query_part} display={"Staging"} />
+              <.navbar_item_link link={"https://www.hsguru.com" <> @conn.request_path  <> query_part} display={"Production"} />
+            <% end %>
           </.navbar_dropdown>
         <% else %>
           <.navbar_dropdown display={"👤"}>
