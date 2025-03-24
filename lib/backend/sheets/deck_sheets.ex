@@ -104,7 +104,7 @@ defmodule Backend.Sheets.DeckSheet do
   def sort_listings(listings, %{default_sort: sort}), do: sort_listings(listings, sort)
 
   def sort_listings(listings, sort_slug) do
-    {direction, field_slug} = BackendWeb.SortHelper.split_sort_slug(sort_slug)
+    {direction, field_slug} = BackendWeb.SortHelper.split_sort_slug(sort_slug || @default_sort)
     listing_sorter = create_listing_sorter(field_slug)
     Enum.sort_by(listings, listing_sorter, direction)
   end

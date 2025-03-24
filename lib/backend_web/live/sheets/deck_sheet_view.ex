@@ -42,7 +42,10 @@ defmodule BackendWeb.DeckSheetViewLive do
     ~F"""
         {#if Sheets.can_view?(@sheet, @user)}
           <div class="title is-1">{@sheet.name}</div>
-          <div class="subtitle is-5">Owner: {User.display_name(@sheet.owner)}</div>
+          <div class="subtitle is-5">
+            <span>Owner: {User.display_name(@sheet.owner)}</span>
+            <span>| <a href={deckviewer_link(@sheet, @user, @deck_filters, @sort)}>View in deckviewer</a></span>
+          </div>
           <div class="level level-left">
             {#if Sheets.can_admin?(@sheet, @user)}
               <DeckSheetsModal button_title="Edit Sheet" id={"edit_modal_#{@sheet.id}"} existing={@sheet} user={@user}/>
@@ -116,6 +119,21 @@ defmodule BackendWeb.DeckSheetViewLive do
     ~F"""
       <div>Deck Sheet not found</div>
     """
+  end
+
+  defp deckviewer_link(sheet, user, deck_filters, sort) do
+    case Sheets.get_listings(sheet, user, deck_filters) do
+      {:ok, listings} ->
+        codes =
+          listings
+          |> DeckSheet.sort_listings(sort)
+          |> Enum.map_join(",", &Backend.Hearthstone.Deck.deckcode(&1.deck))
+        query = %{code: codes}
+        ~p"/deckviewer?#{query}"
+
+      _ ->
+        nil
+    end
   end
 
   defp stream_listings(socket, reset) do
