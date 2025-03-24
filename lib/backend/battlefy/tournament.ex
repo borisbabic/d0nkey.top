@@ -85,8 +85,15 @@ defmodule Backend.Battlefy.Tournament do
   def tags(%__MODULE__{} = tournament) do
     []
     |> add_region(tournament)
+    |> add_organizer_specific_tags(tournament)
     |> GameAttributes.tags(tournament)
   end
+
+  defp add_organizer_specific_tags(previous, %{organization: %{id: "67ba48aa980e5d02ecae2be0"}}) do
+    [:toxic_community | previous]
+  end
+
+  defp add_organizer_specific_tags(previous, _), do: previous
 
   defp add_region(previous, %{region: region}) when is_atom(region) do
     [region | previous]
