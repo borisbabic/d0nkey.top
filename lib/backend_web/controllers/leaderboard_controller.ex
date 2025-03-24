@@ -246,6 +246,29 @@ defmodule BackendWeb.LeaderboardController do
     |> Hearthstone.Leaderboards.Season.ensure_leaderboard_id()
   end
 
+  defp get_comparison(criteria, "season_" <> season_id) do
+    {{"season", season}, no_season} = List.keytake(criteria, "season", 0)
+
+    base_season = %{
+      leaderboard_id: season.leaderboard_id,
+      region: season.region,
+      season_id: Util.to_int_or_orig(season_id)
+    }
+
+    new_season =
+      case Leaderboards.get_season(base_season) do
+        {:ok, s} -> s
+        _ -> base_season
+      end
+
+    new_criteria =
+      [{"season", new_season} | no_season]
+      |> List.keydelete("limit", 0)
+      |> List.keydelete("offset", 0)
+
+    Leaderboards.get_shim(new_criteria)
+  end
+
   defp get_comparison(criteria, "min_ago_" <> min_ago) do
     case Integer.parse(min_ago) do
       {min, _} ->

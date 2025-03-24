@@ -644,7 +644,7 @@ defmodule BackendWeb.LeaderboardView do
       create_leaderboard_dropdown(conn, leaderboard_id),
       create_season_dropdown(conn, season_id, leaderboard_id, region),
       create_show_flags_dropdown(conn, show_flags),
-      create_compare_to_dropdown(conn, compare_to)
+      create_compare_to_dropdown(conn, compare_to, leaderboard_id, region)
     ]
     |> Enum.filter(& &1)
   end
@@ -814,7 +814,18 @@ defmodule BackendWeb.LeaderboardView do
     {options, title}
   end
 
-  def create_compare_to_dropdown(conn, compare_to) do
+  def create_compare_to_dropdown(conn, compare_to, ldb, region) do
+    season_opts =
+      case create_selectable_seasons(ldb, region) do
+        {:ok, selectable_seasons} ->
+          selectable_seasons
+          |> Enum.take(4)
+          |> Enum.map(fn {name, val} -> {name, "season_#{val}"} end)
+
+        _ ->
+          []
+      end
+
     options =
       [
         {"10 minutes ago", "min_ago_10"},
@@ -825,6 +836,7 @@ defmodule BackendWeb.LeaderboardView do
         {"6 hours ago", "min_ago_360"},
         {"1 day ago", "min_ago_1440"},
         {"1 week ago", "min_ago_10080"}
+        | season_opts
       ]
       |> Enum.map(fn {display, id} ->
         %{
