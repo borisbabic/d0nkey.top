@@ -89,9 +89,9 @@ defmodule Backend.Battlefy.Tournament do
     |> GameAttributes.tags(tournament)
   end
 
-  defp add_organizer_specific_tags(previous, %{organization: %{id: "67ba48aa980e5d02ecae2be0"}}) do
-    [:toxic_community | previous]
-  end
+  # defp add_organizer_specific_tags(previous, %{organization: %{id: "67ba48aa980e5d02ecae2be0"}}) do
+  #   [:toxic_community | previous]
+  # end
 
   defp add_organizer_specific_tags(previous, _), do: previous
 
