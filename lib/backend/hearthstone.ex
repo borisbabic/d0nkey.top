@@ -1158,7 +1158,15 @@ defmodule Backend.Hearthstone do
     do: compose_cards_query({"format", "twist"}, query)
 
   defp compose_cards_query({"format", format}, query)
-       when format in ["standard", "wild", "twist", "arena", "standard_2025", "standard_2024", "ed_prerelease_brawl"] do
+       when format in [
+              "standard",
+              "wild",
+              "twist",
+              "arena",
+              "standard_2025",
+              "standard_2024",
+              "ed_prerelease_brawl"
+            ] do
     compose_cards_query({"card_set_group_slug", format}, query)
   end
 
@@ -1362,6 +1370,11 @@ defmodule Backend.Hearthstone do
       |> Deck.get_basic_hero()
       |> get_card()
     end
+  end
+
+  @spec update_card(card()) :: any()
+  def update_card(card) do
+    do_update_cards(%{"card" => Card.dbf_id(card)})
   end
 
   @spec update_collectible_cards(Map.t()) :: any()

@@ -43,6 +43,7 @@ defmodule BackendWeb.CardLive do
           <span :if={Backend.UserManager.User.can_access?(@user, :kaffy)}>
           | <a href={~p"/admin/kaffy/hearthstone/card/#{@card.id}"}>Kaffy</a>
           </span>
+          | <a :if={Backend.UserManager.User.can_access?(@user, :card)} :on-click="update_card">Update</a>
         </div>
         <Card id={"card_#{@card.id}"} card={@card} />
         <FunctionComponents.Ads.below_title/>
@@ -61,6 +62,14 @@ defmodule BackendWeb.CardLive do
   end
 
   def assign_meta(socket), do: socket
+
+  def handle_event("update_card", _, socket) do
+    card = socket.assigns.card
+    Backend.Hearthstone.update_card(card)
+    new_card = Backend.Hearthstone.get_card(card.id)
+
+    {:noreply, socket |> assign(:card, new_card)}
+  end
 
   defp add_card_set(base, %{card_set: %{name: name}}), do: "#{base} #{name}"
   defp add_card_set(base, _), do: base
