@@ -33,8 +33,6 @@ defmodule Components.CardsExplorer do
 
   prop(format_options, :list,
     default: [
-      {"standard_2025", "2025 Standard"},
-      {"standard_2024", "2024 Standard"},
       {"2", "Standard"},
       {"1", "Wild"}
     ]

@@ -14,7 +14,7 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.Submit
 
-  @supported_formats [1, 2, "standard_2024", "standard_2025", "ed_prerelease_brawl"]
+  @supported_formats [1, 2]
   data(deck_class, :string)
   data(format, :integer)
   data(raw_params, :map)

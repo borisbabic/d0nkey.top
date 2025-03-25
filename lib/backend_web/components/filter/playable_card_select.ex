@@ -74,17 +74,7 @@ defmodule Components.Filter.PlayableCardSelect do
     do: [{"card_set_group_slug", "wild"} | criteria]
 
   defp add_format(criteria, format) when format in [2, "2", "standard", "Standard"] do
-    # the official site switched over the definition of standard to post rotation
-    # yet rotation will only happen at the below time
-    rotation = ~N[2025-03-25 18:00:00]
-    now = NaiveDateTime.utc_now()
-
-    slug =
-      if :lt == NaiveDateTime.compare(now, rotation) do
-        "standard_2024"
-      else
-        "standard"
-      end
+    slug = "standard"
 
     [{"card_set_group_slug", slug} | criteria]
   end
