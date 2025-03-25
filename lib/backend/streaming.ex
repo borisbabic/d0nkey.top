@@ -484,6 +484,12 @@ defmodule Backend.Streaming do
     query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
   end
 
+  defp compose_streamer_deck_query({"ed", "yes"}, query) do
+    card_ids = ed_ids()
+
+    query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+  end
+
   defp compose_streamer_deck_query({"hsreplay_archetype", []}, query), do: query
 
   defp compose_streamer_deck_query({"hsreplay_archetype", archetypes}, query),
@@ -540,6 +546,7 @@ defmodule Backend.Streaming do
   def whizbang_ids(filter_out \\ [105_522]), do: filter_card_set(1897, filter_out)
   def perils_ids(filter_out \\ [106_682]), do: filter_card_set(1905, filter_out)
   def gdb_ids(filter_out \\ [111_915]), do: filter_card_set(1935, filter_out)
+  def ed_ids(filter_out \\ [113_321, 113_973]), do: filter_card_set(1946, filter_out)
 
   defp filter_card_set(card_set_id, filter_out_ids) do
     for c <- CardBag.all_cards(),
