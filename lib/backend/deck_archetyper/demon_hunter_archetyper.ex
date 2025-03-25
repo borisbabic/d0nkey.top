@@ -20,7 +20,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"Naga Demon Hunter"
 
       "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info) ->
-        :"Armor DK"
+        :"Armor DH"
 
       deathrattle?(card_info) ->
         :"Deathrattle DK"
