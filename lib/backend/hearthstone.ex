@@ -1435,61 +1435,6 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  # def canonical_id(id, prev) do
-  #   copy_of_card_id =
-  #     with %{copy_of_card_id: copy_id} <- get_card(id),
-  #          %{id: _} <- get_card(copy_id) do
-  #       copy_id
-  #     else
-  #       _ -> nil
-  #     end
-
-  #   cond do
-  #     # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
-  #     id in prev -> Enum.min(prev)
-  #     copy_of_card_id -> canonical_id(copy_of_card_id, [id | prev])
-  #     true -> id
-  #   end
-  #   |> hack_canonical_id()
-  # end
-
-  # def detect_circular(id, prev \\ []) do
-  #   copy_of_card_id =
-  #     with %{copy_of_card_id: copy_id} <- get_card(id),
-  #          %{id: _} <- get_card(copy_id) do
-  #       copy_id
-  #     else
-  #       _ -> nil
-  #     end
-
-  #   cond do
-  #     # guarding against a circular reference, I'm not aware of it but still, it might happen :shrug:
-  #     id in prev -> get_card(id).name
-  #     copy_of_card_id -> detect_circular(copy_of_card_id, [id | prev])
-  #     true -> nil
-  #   end
-  # end
-
-  # {copy_of_card_id, id}
-  # these copy_of_card_id cards ddon't exist
-  # @hacks [
-  #   {62349, 89144},
-  #   {67855, 1186},
-  #   {62463, 89145},
-  #   {643, 69939},
-  #   {66862, 89149},
-  #   {62490, 89146},
-  #   {66863, 89150},
-  #   {66259, 89148},
-  #   {67975, 493}
-  # ]
-  # def hack_canonical_id(id) do
-  #   case List.keyfind(@hacks, id, 0) do
-  #     {_bad_id, good_id} -> good_id
-  #     _ -> id
-  #   end
-  # end
-
   @initial_release_date_info [
     {"Perils in Paradise", "July 23, 2024", ~N[2024-07-23 00:00:00]},
     {"Whizbang's Workshop", "March 19, 2024", ~N[2024-03-19 00:00:00]},

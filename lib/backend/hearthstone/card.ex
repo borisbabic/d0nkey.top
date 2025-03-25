@@ -110,7 +110,7 @@ defmodule Backend.Hearthstone.Card do
       :card_type_id,
       :child_ids,
       :collectible,
-      :copy_of_card_id,
+      # :copy_of_card_id,
       :crop_image,
       :durability,
       :duels_constructed,

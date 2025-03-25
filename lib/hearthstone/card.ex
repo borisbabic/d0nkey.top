@@ -101,11 +101,16 @@ defmodule Hearthstone.Card do
   defp list_or_default(_, default), do: default
 
   # it's the same card in these cases
-  def same_effect?(%__MODULE__{copy_of_card_id: same_id}, %__MODULE__{copy_of_card_id: same_id}),
-    do: true
+  def same_effect?(%__MODULE__{copy_of_card_id: same_id}, %__MODULE__{copy_of_card_id: same_id})
+      when not is_nil(same_id),
+      do: true
 
-  def same_effect?(%__MODULE__{copy_of_card_id: same_id}, %__MODULE__{id: same_id}), do: true
-  def same_effect?(%__MODULE__{id: same_id}, %__MODULE__{id: same_id}), do: true
+  def same_effect?(%__MODULE__{copy_of_card_id: same_id}, %__MODULE__{id: same_id})
+      when not is_nil(same_id),
+      do: true
+
+  def same_effect?(%__MODULE__{id: same_id}, %__MODULE__{id: same_id}) when not is_nil(same_id),
+    do: true
 
   # it's the same card in these cases
   def same_effect?(first = %__MODULE__{}, second = %__MODULE__{}) do
