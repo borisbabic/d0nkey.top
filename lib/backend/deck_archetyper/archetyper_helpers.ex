@@ -148,6 +148,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       amalgam?(ci) ->
         String.to_atom("Amalgam #{class_name}")
 
+      "Menagerie Jug" in ci.card_names ->
+        String.to_atom("Menagerie #{class_name}")
+
       true ->
         faction_fallback(ci, class_name, opts) || minion_type_fallback(ci, class_name, opts)
     end
@@ -202,6 +205,10 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         "Gorloc Ravager"
       ])
 
+  def imbue?(card_info, min \\ 4) do
+    min_keyword_count?(card_info, min, "imbue")
+  end
+
   def starship?(ci, min \\ 4) do
     min_keyword_count?(ci, min, "starship")
   end
@@ -251,7 +258,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     ]) and "Kingpin Pud" in ci.card_names
   end
 
-  def menagerie?(%{card_names: card_names}), do: "The One-Amalgam Band" in card_names
+  def menagerie?(ci), do: min_count?(ci, 1, ["Menagerie Jug", "The One-Amalgam Band"])
   def boar?(%{card_names: card_names}), do: "Elwynn Boar" in card_names
   def kazakusan?(%{card_names: card_names}), do: "Kazakusan" in card_names
 

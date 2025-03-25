@@ -19,6 +19,15 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       anchorite(card_info) ->
         :"Anchorite Priest"
 
+      imbue?(card_info, 4) ->
+        :"Imbue Priest"
+
+      "Aviana, Elune's Chosen" in card_info.card_names ->
+        :"Aviana Priest"
+
+      "Tyrande" in card_info.card_names ->
+        :"Tyrande Priest"
+
       overheal_priest?(card_info) ->
         :"Overheal Priest"
 

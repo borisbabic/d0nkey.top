@@ -19,6 +19,15 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       big?(card_info) ->
         :"Big Shaman"
 
+      asteroid?(card_info) and imbue?(card_info, 4) ->
+        :"Asteroid Imbue Shaman"
+
+      imbue?(card_info, 4) ->
+        :"Imbue Shaman"
+
+      menagerie?(card_info) ->
+        :"Menagerie Shaman"
+
       asteroid?(card_info) ->
         :"Asteroid Shaman"
 

@@ -30,6 +30,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       zoo_hunter?(card_info) ->
         :"Zoo Hunter"
 
+      imbue?(card_info) ->
+        :"Imbue Hunter"
+
       beast_hunter?(card_info) ->
         :"Beast Hunter"
 
@@ -50,6 +53,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
 
       egg_hunter?(card_info) ->
         :"Egg Hunter"
+
+      zerg?(card_info, 4) and discover?(card_info) ->
+        :"Zerg Discover Hunter"
 
       zerg?(card_info, 4) ->
         :"Zerg Hunter"

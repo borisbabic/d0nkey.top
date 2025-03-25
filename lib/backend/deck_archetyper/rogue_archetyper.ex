@@ -93,14 +93,20 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       shaffar?(card_info) ->
         :"Shaffar Rogue"
 
-      combo?(card_info) ->
-        :"Combo Rogue"
-
       dorian_rogue?(card_info) ->
         :"Dorian Rogue"
 
       starship?(card_info) ->
         :"Starship Rogue"
+
+      bounce?(card_info) ->
+        :"Bounce Rogue"
+
+      "Ashamane" in card_info.card_names ->
+        :"Ashamane Rogue"
+
+      combo?(card_info) ->
+        :"Combo Rogue"
 
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
@@ -119,8 +125,18 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     end
   end
 
+  defp bounce?(card_info) do
+    min_count?(card_info, 4, [
+      "Shadowstep",
+      "Twisted Webweaver",
+      "Harbringer of the Blighted",
+      "Web of Deception",
+      "Waggle Pick"
+    ])
+  end
+
   defp combo?(card_info) do
-    min_keyword_count?(card_info, 6, "combo")
+    min_keyword_count?(card_info, 8, "combo")
   end
 
   defp quasar?(card_info) do

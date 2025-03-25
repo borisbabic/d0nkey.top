@@ -22,6 +22,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       highlander?(card_info) ->
         :"Highlander Paladin"
 
+      imbue?(card_info) ->
+        :"Imbue Paladin"
+
       excavate_paladin?(card_info) ->
         :"Excavate Paladin"
 
@@ -174,7 +177,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   defp handbuff_paladin?(ci) do
     min_count?(ci, 2, ["Painter's Virtue", "Instrument Tech"]) or
-      min_count?(ci, 3, [
+      min_count?(ci, 2, [
         "Grimestreet Outfitter",
         "Muscle-o Tron",
         "Outfit Tailor",

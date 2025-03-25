@@ -74,8 +74,14 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Safety Expert" in card_info.card_names ->
         :"Safety Warrior"
 
+      type_count(card_info, "dragon") > 5 ->
+        :"Dragon Warrior"
+
       "Hydration Station" in card_info.card_names ->
         :"Hydration Warrior"
+
+      "Ysondre" in card_info.card_names ->
+        :"Ysondre Warrior"
 
       warrior_aoe?(card_info) ->
         :"Control Warrior"

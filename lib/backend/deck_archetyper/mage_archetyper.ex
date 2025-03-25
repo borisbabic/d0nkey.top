@@ -21,6 +21,18 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       PaladinArchetyper.drunk?(card_info) ->
         :"Drunk Mage"
 
+      protoss?(card_info, 4) and imbue?(card_info, 4) ->
+        :"Protoss Imbue Mage"
+
+      imbue?(card_info, 4) and "Portalmancer Skyla" in card_info.card_names ->
+        :"Skyla Imbue Mage"
+
+      imbue?(card_info, 4) and "Raylla, Sand Sculptor" in card_info.card_names ->
+        :"Raylla Imbue Mage"
+
+      imbue?(card_info, 4) ->
+        :"Imbue Mage"
+
       protoss?(card_info, 4) ->
         :"Protoss Mage"
 

@@ -76,6 +76,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       implock?(card_info) ->
         :Implock
 
+      location?(card_info) and wallow?(card_info) ->
+        :"Location Wallow Warlock"
+
+      wallow?(card_info) ->
+        :"Wallow Warlock"
+
       location?(card_info) and sludgelock?(card_info) ->
         :"Location Sludge Warlock"
 
@@ -133,6 +139,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   defp fatigue_sludge_warlock?(card_info) do
     sludgelock?(card_info) and
       min_count?(card_info, 2, @self_fatigue_package)
+  end
+
+  defp wallow?(card_info) do
+    "Wallow, the Wretched" in card_info.card_names
   end
 
   defp location?(card_info) do

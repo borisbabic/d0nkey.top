@@ -15,6 +15,18 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
+      menagerie?(card_info) and leech?(card_info) ->
+        :"Menagerie Succ DK"
+
+      eight_hands?(card_info) ->
+        :"8 Hands DK"
+
+      menagerie?(card_info) and leech?(card_info) ->
+        :"Menagerie Succ DK"
+
+      leech?(card_info) ->
+        :"Succ DK"
+
       rainbow_runes?(card_info) && plague_dk?(card_info) ->
         :"Rainbow Plague DK"
 
@@ -105,6 +117,14 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp eight_hands?(card_info) do
+    "The 8 Hands From Beyond" in card_info.card_names
+  end
+
+  defp leech?(ci) do
+    min_count?(ci, 3, ["Infested Breath", "Sanguine Infestation", "Hideous Husk"])
   end
 
   defp fake_frost?(ci) do

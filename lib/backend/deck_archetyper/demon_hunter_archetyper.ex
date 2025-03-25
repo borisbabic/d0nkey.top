@@ -19,6 +19,12 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       naga_dh?(card_info) ->
         :"Naga Demon Hunter"
 
+      "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info) ->
+        :"Armor DK"
+
+      deathrattle?(card_info) ->
+        :"Deathrattle DK"
+
       menagerie?(card_info) ->
         :"Menagerie DH"
 
@@ -52,8 +58,17 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       attack_dh?(card_info) ->
         :"Attack DH"
 
+      menagerie?(card_info) ->
+        :"Menagerie DH"
+
       crewmate?(card_info, 2) ->
         :"Among Us DH"
+
+      "Cliff Dive" in card_info.card_names ->
+        :"Cliff Dive DH"
+
+      dreadseed?(card_info) ->
+        :"Dreadseed DH"
 
       kj?(card_info) ->
         :"Kil'jaeden DH"
@@ -61,9 +76,21 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       outcast_dh?(card_info) ->
         :"Outcast DH"
 
+      "Alara'shi" in card_info.card_names ->
+        :"Alara'shi DH"
+
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  def deathrattle?(card_info) do
+    min_count?(card_info, 2, ["Ravenous Felhunter", "Ferocious Felbat"])
+  end
+
+  @dreadseeds ["Grim Harvest", "Wyvern's Slumber", "Dreadsoul Corrupter"]
+  def dreadseed?(card_info, count \\ 3) do
+    min_count?(card_info, count, @dreadseeds)
   end
 
   def attack_dh?(ci) do

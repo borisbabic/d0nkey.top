@@ -18,6 +18,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       vanndar?(card_info) ->
         :"Vanndar Druid"
 
+      imbue_druid?(card_info) ->
+        :"Imbue Druid"
+
       fire_druid?(card_info) ->
         :"Fire Druid"
 
@@ -217,6 +220,10 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     do: min_count?(ci, 2, ["Zok Fogsnout", "Anub'Rekhan"])
 
   defp celestial_druid?(%{card_names: card_names}), do: "Celestial Alignment" in card_names
+
+  defp imbue_druid?(card_info) do
+    "Hamuul Runetotem" in card_info.card_names
+  end
 
   defp fire_druid?(ci) do
     min_count?(ci, 2, [
