@@ -27,7 +27,12 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
   def points_for_rank(_), do: {:ok, 0}
 
   @impl true
-  def filter_player_rows(rows, _, _), do: rows
+  def filter_player_rows(rows, _, _) do
+    # TODO: Make it aware of past stuff
+    Enum.filter(rows, fn {account_id, _, _} ->
+      !Blizzard.ineligible?(account_id, NaiveDateTime.utc_now())
+    end)
+  end
 
   @spec points_for_rank!(rank :: integer()) :: points :: integer()
   @impl true
