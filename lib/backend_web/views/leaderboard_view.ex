@@ -301,7 +301,7 @@ defmodule BackendWeb.LeaderboardView do
           country: PlayerInfo.get_country(player)
         }
       end)
-      |> filter_region(region)
+      |> filter_region(region, conn.query_params["include_unknown"] == "yes")
       |> filter_countries(countries)
       |> Enum.sort_by(& &1.total, :desc)
       |> Enum.with_index(1)
@@ -650,7 +650,7 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   def create_points_dropdowns(%{conn: conn}) do
-    [
+    base = [
       create_points_leaderboard_dropdown(conn),
       create_points_season_dropdown(
         conn.params["points_season"],
@@ -659,6 +659,31 @@ defmodule BackendWeb.LeaderboardView do
       create_points_region_dropdown(conn),
       create_use_current_dropdown(conn)
     ]
+
+    if conn.params["region"] do
+      List.insert_at(base, 3, create_unknown_dropdown(conn))
+    else
+      base
+    end
+  end
+
+  def create_unknown_dropdown(conn) do
+    current = Map.get(conn.query_params, "include_unknown", "no")
+
+    options =
+      [
+        {"yes", "Include Unknown"},
+        {"no", "Don't Include Unknown"}
+      ]
+      |> Enum.map(fn {v, display} ->
+        %{
+          display: display,
+          selected: current == v,
+          link: update_points_link(conn, "include_unknown", v)
+        }
+      end)
+
+    {options, dropdown_title(options, "Include Unknown")}
   end
 
   def create_points_leaderboard_dropdown(conn) do
@@ -1263,10 +1288,12 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  def filter_region(players, nil), do: players
+  def filter_region(players, nil, _include_unknown), do: players
 
-  def filter_region(players, region) do
-    Enum.filter(players, fn %{region: r} -> to_string(region) == to_string(r) end)
+  def filter_region(players, region, include_unknown) do
+    Enum.filter(players, fn %{region: r} ->
+      (include_unknown and is_nil(r)) or to_string(region) == to_string(r)
+    end)
   end
 
   def filter_countries(target, []), do: target
