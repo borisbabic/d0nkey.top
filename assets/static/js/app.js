@@ -140,16 +140,22 @@ window.uncheck = function(target_class) {
     });
     return false;
 }
-window.hide_based_on_search = function(search_id, target_class)  {
+window.hide_based_on_search = function(search_id, target_class, value_class = null)  {
     var input = document.getElementById(search_id);
     if (input) {
         console.log("Searching for " + input.value);
         var elements = document.getElementsByClassName(target_class);
         Array.prototype.forEach.call(elements, function (thing) {
-            if (input.value === null || thing.dataset && thing.dataset.targetValue && thing.dataset.targetValue.toLowerCase().search(input.value.toLowerCase()) > -1) {
-                thing.style.display = "";
+            var value_elements = [thing];
+            if (value_class) {
+                value_elements = thing.getElementsByClassName(value_class)
             }
-            else {
+            var has_value = input.value === null || input.value === '' || Array.prototype.some.call(value_elements, function (value_element) {
+                return value_element.dataset && value_element.dataset.targetValue && value_element.dataset.targetValue.toLowerCase().search(input.value.toLowerCase()) > -1
+            });
+            if (has_value) {
+                thing.style.display="";
+            } else {
                 thing.style.display="none";
             }
         })

@@ -324,16 +324,16 @@ defmodule Components.Helper do
                         autocomplete="off"
                         placeholder={"#{ @placeholder }"}
                         id={"#{ @search_id }"}
-                        onpaste={"hide_based_on_search('#{ @search_id }', '#{ @search_class }')"}
-                        oninput={"hide_based_on_search('#{ @search_id }', '#{ @search_class }')"}
-                        onkeyup={"hide_based_on_search('#{ @search_id }', '#{ @search_class }')"}
-                        oncut={"hide_based_on_search('#{ @search_id }', '#{ @search_class }')"}
-                        onchange={"hide_based_on_search('#{ @search_id }', '#{ @search_class }')"}
+                        onpaste={"hide_based_on_search('#{ @search_id }', '#{ @search_class }', '#{"value_" <> @search_class}')"}
+                        oninput={"hide_based_on_search('#{ @search_id }', '#{ @search_class }', '#{"value_" <> @search_class}')"}
+                        onkeyup={"hide_based_on_search('#{ @search_id }', '#{ @search_class }', '#{"value_" <> @search_class}')"}
+                        oncut={"hide_based_on_search('#{ @search_id }', '#{ @search_class }', '#{"value_" <> @search_class}')"}
+                        onchange={"hide_based_on_search('#{ @search_id }', '#{ @search_class }', '#{"value_" <> @search_class}')"}
                         type="text">
                 <% end %>
                 <%= for %{value: value, display: display, selected: selected, name: name} <- sort_by_selected(@options, @selected_first) do %>
-                    <Dropdown.item>
-                      <label for={"#{ @attr }[#{ value }]"} data-target-value={"#{ name }"} class={"#{ @search_class }"}>
+                    <Dropdown.item class={@search_class}>
+                      <label for={"#{ @attr }[#{ value }]"} data-target-value={"#{ name }"} class={"value_#{ @search_class }"}>
                           <div class="is-flex">
                               <span class="multi-select-text"><%= display %></span>
                               <input
