@@ -8,8 +8,8 @@ defmodule BackendWeb.LeaderboardController do
   require Backend.LobbyLegends
   require Logger
 
-  defp parse_use_current(%{"use_current_season" => "yes"}), do: true
-  defp parse_use_current(_), do: false
+  defp parse_use_current(%{"use_current_season" => "no"}), do: false
+  defp parse_use_current(_), do: true
 
   def points(conn, params = %{"points_season" => ps, "leaderboard_id" => ldb}) do
     use_current = parse_use_current(params)
