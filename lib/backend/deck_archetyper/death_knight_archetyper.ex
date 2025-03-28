@@ -15,16 +15,16 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
-      menagerie?(card_info) and leech?(card_info) ->
+      menagerie?(card_info) and leech?(card_info, 3) ->
         :"Menagerie Succ DK"
 
       eight_hands?(card_info) ->
         :"8 Hands DK"
 
-      menagerie?(card_info) and leech?(card_info) ->
-        :"Menagerie Succ DK"
+      starship?(card_info) and leech?(card_info, 3) ->
+        :"Starship Succ DK"
 
-      leech?(card_info) ->
+      leech?(card_info, 3) ->
         :"Succ DK"
 
       rainbow_runes?(card_info) && plague_dk?(card_info) ->
@@ -56,6 +56,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       starship?(card_info) ->
         :"Starship DK"
+
+      leech?(card_info, 2) ->
+        :"Succ DK"
 
       menagerie?(card_info) ->
         :"Menagerie DK"
@@ -123,8 +126,8 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     "The 8 Hands From Beyond" in card_info.card_names
   end
 
-  defp leech?(ci) do
-    min_count?(ci, 3, ["Infested Breath", "Sanguine Infestation", "Hideous Husk"])
+  defp leech?(ci, min_count) do
+    min_count?(ci, min_count, ["Infested Breath", "Sanguine Infestation", "Hideous Husk"])
   end
 
   defp fake_frost?(ci) do

@@ -37,8 +37,11 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       zarimi?(card_info) ->
         :"Zarimi Priest"
 
-      aggro_protoss?(card_info) ->
-        :"Aggro Protoss Priest"
+      protoss?(card_info, 6) ->
+        :"Protoss Priest"
+
+      # aggro_protoss?(card_info) ->
+      #   :"Aggro Protoss Priest"
 
       aggro_zealot?(card_info) ->
         :"Aggro Zealot Priest"

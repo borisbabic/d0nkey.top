@@ -24,6 +24,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       enrage?(card_info) ->
         :"Enrage Warrior"
 
+      food_fight?(card_info) ->
+        :"Food Fight Warrior"
+
       n_roll?(card_info) ->
         :"Rock 'n' Roll Warrior"
 
@@ -98,6 +101,11 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  def food_fight?(card_info) do
+    num_minions = Enum.count(card_info.full_cards, &Backend.Hearthstone.Card.minion?/1)
+    "Food Fight" in card_info.card_names and num_minions <= 5
   end
 
   def sulthraze?(ci) do
@@ -239,6 +247,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       raider?(card_info) ->
         :"Raider Warrior"
+
+      "Thaddius, Monstrosity" in card_info.card_names ->
+        :"Chad Warrior"
 
       true ->
         fallbacks(card_info, class_name)

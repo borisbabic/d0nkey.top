@@ -102,6 +102,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       bounce?(card_info) ->
         :"Bounce Rogue"
 
+      ysera_rogue?(card_info) ->
+        :"Ysera Rogue"
+
       "Ashamane" in card_info.card_names ->
         :"Ashamane Rogue"
 
@@ -123,6 +126,18 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp ysera_rogue?(card_info) do
+    dragons =
+      card_info.full_cards
+      |> Enum.filter(fn
+        %{minion_type: %{slug: "dragon"}} -> true
+        _ -> false
+      end)
+
+    only_ysera? = match?([%{name: "Ysera, Emerald Aspect"}], dragons)
+    "Naralex, Herald of the Flights" in card_info.card_names and only_ysera?
   end
 
   defp bounce?(card_info) do

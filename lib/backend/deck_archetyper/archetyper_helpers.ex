@@ -419,4 +419,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   @spec do_return([Card.t()], :full_cards | :name) :: [Card.t()] | [String.t()]
   defp do_return(cards, :full_cards), do: cards
   defp do_return(cards, :name), do: Enum.map(cards, & &1.name)
+
+  @spec xl?(card_info) :: boolean
+  def xl?(card_info), do: "Prince Renathal" in card_info.card_names
 end
