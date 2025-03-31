@@ -145,14 +145,14 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       hostage_mage?(card_info) ->
         :"Hostage Mage"
 
-      ping_mage?(card_info) ->
-        :"Ping Mage"
-
       xl?(card_info) and imbue?(card_info, 4) ->
         :"XL Imbue Mage"
 
       imbue?(card_info, 4) ->
         :"Imbue Mage"
+
+      ping_mage?(card_info) ->
+        :"Ping Mage"
 
       no_minion?(card_info, 2) ->
         :"Spell Mage"
