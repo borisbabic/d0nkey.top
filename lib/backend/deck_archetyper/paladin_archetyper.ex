@@ -49,8 +49,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       drunk?(card_info) ->
         :"Drunk Paladin"
 
+      tree?(card_info) ->
+        :"Tree Paladin"
+
       lynessa_otk?(card_info) ->
-        "Lynessa OTK Paladin"
+        :"Lynessa OTK Paladin"
 
       terran?(card_info, 4) ->
         :"Terran Paladin"
@@ -86,6 +89,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   def drunk?(card_info) do
     min_count?(card_info, 2, ["Divine Brew", "Sea Shanty"])
+  end
+
+  defp tree?(card_info) do
+    min_count?(card_info, 3, ["Ursine Maul", "Ursol", "Shaladrassil"]) and
+      2 == Enum.count(card_info.full_cards, &(Card.cost(&1) > 6))
   end
 
   defp lynessa_otk?(card_info) do
