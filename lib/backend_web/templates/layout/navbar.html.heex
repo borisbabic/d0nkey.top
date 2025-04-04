@@ -35,6 +35,7 @@
             <% end %>
             <%= if can_access?(@conn, :kaffy) do %>
               <.navbar_item_link link={~p"/dashboard"} display={"Dashboard"} />
+              <.navbar_item_link link={~p"/admin/panel"} display={"Admin Panel"} />
               <.navbar_item_link link={~p"/admin/kaffy"} display={"Kaffy"} />
             <% end %>
             <.navbar_item_link link={~p"/logout"} display={"Logout"} />

@@ -83,9 +83,10 @@ defmodule BackendWeb.Router do
     get("/cards/metadata", CardsController, :metadata)
   end
 
-  scope "/admin/super", BackendWeb do
-    pipe_through([:browser, :auth])
-    live("/playground", PlaygroundLive)
+  scope "/admin", BackendWeb do
+    pipe_through([:browser, :auth, :super_admin])
+    live("/panel", AdminPanelLive)
+    live("/super/playground", PlaygroundLive)
   end
 
   scope "/", BackendWeb do

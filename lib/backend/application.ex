@@ -140,6 +140,7 @@ defmodule Backend.Application do
           id: Hearthstone.DeckTracker.ArchetypeBag,
           start: {Hearthstone.DeckTracker.ArchetypeBag, :start_link, [[]]}
         },
+        {Task.Supervisor, name: Backend.TaskSupervisor},
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
@@ -149,12 +150,11 @@ defmodule Backend.Application do
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Backend.Supervisor]
-    start_result = Supervisor.start_link(children, opts)
+    opts = [strategy: :one_for_one, name: :backend_supervisor]
+    Supervisor.start_link(children, opts)
     # migrate()
     # Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
     #    Backend.Hearthstone.add_class_and_regenerate_deckcode()
-    start_result
   end
 
   def add_twitch_bot(prev) do
