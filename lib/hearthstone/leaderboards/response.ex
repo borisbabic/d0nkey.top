@@ -47,6 +47,12 @@ defmodule Hearthstone.Leaderboards.Response do
     }
   end
 
+  @spec get_leaderboard_metadata(t(), leaderboard_id :: String.t(), region :: String.t()) ::
+          {:ok, Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata.t()}
+          | {:error, atom()}
+  def get_leaderboard_metadata(%{season_metadata: sm}, leaderboard_id, region),
+    do: SeasonMetadata.get_leaderboard_metadata(sm, leaderboard_id, region)
+
   @spec from_china_map(Map.t(), Season.t()) :: {:ok, Response.t()}
   def from_china_map(raw, season) do
     total = get_in(raw, ["data", "total"]) || 100
@@ -151,6 +157,18 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata do
       us: RegionMetadata.from_raw_map(us)
     }
   end
+
+  @spec get_leaderboard_metadata(t(), leaderboard_id :: String.t(), region :: String.t()) ::
+          {:ok, Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata.t()}
+          | {:error, atom()}
+  def get_leaderboard_metadata(season_metadata, leaderboard_id, region) do
+    case Backend.Blizzard.get_region_identifier(region) do
+      {:ok, :EU} -> RegionMetadata.get_leaderboard_metadata(season_metadata.eu, leaderboard_id)
+      {:ok, :AP} -> RegionMetadata.get_leaderboard_metadata(season_metadata.ap, leaderboard_id)
+      {:ok, :US} -> RegionMetadata.get_leaderboard_metadata(season_metadata.us, leaderboard_id)
+      _ -> {:error, :unsupported_region}
+    end
+  end
 end
 
 defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
@@ -187,6 +205,17 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
       wild: LeaderboardMetadata.from_raw_map(wild)
     }
   end
+
+  @spec get_leaderboard_metadata(t(), leaderboard_id :: String.t()) ::
+          {:ok, LeaderboardMetadata.t()} | {:error, atom()}
+  def get_leaderboard_metadata(season_metadata, leaderboard_id) do
+    with {:ok, identifier} <-
+           Hearthstone.Leaderboards.Api.get_leaderboard_identifier(leaderboard_id),
+         %{name: _} = metadata <-
+           Map.get(season_metadata, identifier, {:error, :unsupported_leaderbaord}) do
+      {:ok, metadata}
+    end
+  end
 end
 
 defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata do
@@ -197,6 +226,22 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
     field(:rating_id, integer() | nil)
     field(:seasons, [integer()])
   end
+
+  def get_max_season_id(%{seasons: seasons}) do
+    max =
+      Enum.map(seasons, fn
+        s when is_integer(s) -> s
+        %{"season_id" => s} -> s
+        %{season_id: s} -> s
+        _ -> nil
+      end)
+      |> Enum.filter(& &1)
+      |> Enum.max()
+
+    {:ok, max}
+  end
+
+  def get_max_season_id(_), do: {:error, :invalid_leaderboard_metadata}
 
   @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
   def from_raw_map(m = %{"name" => name, "seasons" => seasons}) do

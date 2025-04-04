@@ -7,14 +7,14 @@ defmodule Hearthstone.Leaderboards.Api do
   use Tesla
   # plug(Tesla.Middleware.BaseUrl,)
   @default_page 1
-  @ldb_id_map %{
-    "STD" => "standard",
-    "WLD" => "wild",
-    "CLS" => "classic",
-    "MRC" => "mercenaries",
-    "DUO" => "battlegroundsduo",
-    "BG" => "battlegrounds"
-  }
+  # @ldb_id_map %{
+  #   "STD" => "standard",
+  #   "WLD" => "wild",
+  #   "CLS" => "classic",
+  #   "MRC" => "mercenaries",
+  #   "DUO" => "battlegroundsduo",
+  #   "BG" => "battlegrounds"
+  # }
   @page_size 25
 
   @spec get_page(Season.t(), integer() | nil) :: {:ok, Response.t()} | {:error, any()}
@@ -58,11 +58,83 @@ defmodule Hearthstone.Leaderboards.Api do
     "https://hearthstone.blizzard.com/en-us/api/community/leaderboardsData?region=#{region}&leaderboardId=#{ldb_id(leaderboard_id)}&page=#{page}"
   end
 
+  @spec ldb_id(String.t() | atom()) :: atom()
   def ldb_id(ldb_id) do
-    Map.get(@ldb_id_map, to_string(ldb_id), to_string(ldb_id))
+    case get_leaderboard_identifier(ldb_id) do
+      {:ok, identifier} -> identifier
+      _ -> to_string(ldb_id)
+    end
   end
 
   def offset_to_page(offset) do
     ceil(offset / @page_size)
   end
+
+  @spec get_leaderboard_identifier(atom() | String.t()) :: {:ok, atom()} | {:error, atom()}
+  def get_leaderboard_identifier(l)
+      when l in [:Standard, "Standard", :standard, "standard", "STD", :STD, :std, "std"],
+      do: {:ok, :standard}
+
+  def get_leaderboard_identifier(l)
+      when l in [:Wild, "Wild", :wild, "wild", "WLD", :WLD, :std, "std"],
+      do: {:ok, :wild}
+
+  def get_leaderboard_identifier(l)
+      when l in [:Classic, "Classic", :classic, "classic", :CLS, "CLS", :cls, "cls"],
+      do: {:ok, :classic}
+
+  def get_leaderboard_identifier(l)
+      when l in [
+             :Mercenaries,
+             "Mercenaries",
+             :mercenaries,
+             "mercenaries",
+             :MRC,
+             "MRC",
+             :mrc,
+             "mrc"
+           ],
+      do: {:ok, :mercenaries}
+
+  def get_leaderboard_identifier(l)
+      when l in [
+             :Battlegrounds,
+             "Battlegrounds",
+             :battlegrounds,
+             "battlegrounds",
+             :BG,
+             "BG",
+             :bg,
+             "bg",
+             :BGS,
+             "BGS",
+             :bgs,
+             "bgs"
+           ],
+      do: {:ok, :battlegrounds}
+
+  def get_leaderboard_identifier(l)
+      when l in [
+             :Battlegroundsduos,
+             "Battlegroundsduos",
+             :BattlegroundsDuos,
+             "BattlegroundsDuos",
+             :battlegroundsduos,
+             "battlegroundsduos",
+             :DUO,
+             "DUO",
+             :duo,
+             "duo",
+             :DUOS,
+             :duos
+           ],
+      do: {:ok, :battlegroundsduo}
+
+  def get_leaderboard_identifier(l) when l in [:Arena, "Arena", :arena, "arena"],
+    do: {:ok, :arena}
+
+  def get_leaderboard_identifier(l) when l in [:Twist, "Twist", :twist, "twist"],
+    do: {:ok, :twist}
+
+  def get_leaderboard_identifier(_), do: {:error, :unknown_leaderboard}
 end

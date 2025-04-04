@@ -18,6 +18,7 @@ defmodule Backend.Leaderboards do
   alias Hearthstone.Leaderboards.Api
   alias Hearthstone.Leaderboards.Response
   alias Hearthstone.Leaderboards.Response.Row
+  alias Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata
 
   @type history_entry :: %{
           rank: integer(),
@@ -223,11 +224,7 @@ defmodule Backend.Leaderboards do
       ) do
     seasons =
       for r <- regions, l <- leaderboards do
-        %ApiSeason{
-          region: r,
-          leaderboard_id: to_string(l),
-          season_id: Blizzard.get_current_ladder_season(l, r)
-        }
+        fetch_current_season(l, r)
       end
 
     for season <- seasons do
@@ -244,6 +241,22 @@ defmodule Backend.Leaderboards do
 
   def save_current_with_delay(delay_ms, max_num) do
     do_per_current_api_season(&save_all_with_delay(&1, delay_ms, max_num))
+  end
+
+  def fetch_current_season(leaderboard_id, region) do
+    s = %ApiSeason{region: region, leaderboard_id: leaderboard_id}
+
+    season_id =
+      with {:ok, response} <- Api.get_page(s),
+           {:ok, leaderboards_metadata} <-
+             Response.get_leaderboard_metadata(response, leaderboard_id, region),
+           {:ok, max_season} <- LeaderboardMetadata.get_max_season_id(leaderboards_metadata) do
+        max_season
+      else
+        _ -> Blizzard.get_current_ladder_season(leaderboard_id, region)
+      end
+
+    Map.put(s, :season_id, season_id)
   end
 
   def save_current_with_retry(max_num \\ nil, min_num \\ 1) do

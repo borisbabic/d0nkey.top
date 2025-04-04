@@ -543,6 +543,10 @@ defmodule Backend.Blizzard do
     get_region_name(String.to_existing_atom(region), length)
   end
 
+  # todo api will use longer
+  # @spec get_leaderboard_identifier(atom() | String.t() | %{leaderboard_id: String.t() | atom()}) :: {:ok, atom()} | {:error, atom()}
+  # def get_leaderboard_identifier(%{leaderboard_id: ldb_id}) when is_atom(ldb_id) or is_binary(ldb_id), do: get_leaderboard_identifier(ldb_id)
+  # def get_leaderboard_identifier(ldb_id) when is_atom(ldb_id) or is_binary(ldb_id), do: Api.get_leaderboard_identifier(ldb_id)
   @spec get_region_identifier(atom() | String.t() | %{region: String.t() | atom()}) ::
           {:ok, atom()} | {:error, any()}
   def get_region_identifier(%{region: r}), do: get_region_identifier(r)
