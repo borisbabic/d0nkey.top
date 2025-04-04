@@ -233,6 +233,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       genn?(card_info) ->
         String.to_atom("Even #{class_name}")
 
+      pirate?(card_info) ->
+        :"Pirate Demon Hunter"
+
       outcast_dh?(card_info) ->
         :"Outcast DH"
 
@@ -245,9 +248,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
-      pirate?(card_info) ->
-        :"Pirate Demon Hunter"
-
       attack_dh?(card_info) ->
         :"Attack DH"
 
@@ -259,9 +259,13 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   def pirate?(card_info) do
     min_count?(card_info, 4, [
       "Patches the Pilot",
+      "Patches the Pirate",
+      "Space Pirate",
       "Treasure Distributor",
       "Adrenaline Fiend",
       "Sigil of Skydiving",
+      "Ship's Cannon",
+      "Parachute Brigand",
       "Hozen Roughhouser",
       "Dangerous Cliffside"
     ])
