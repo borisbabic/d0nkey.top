@@ -29,6 +29,7 @@ defmodule BackendWeb.AdminPanelLive do
         <Form for={%{}} submit="update_archetypes">
           <Label class="label">Period</Label>
           <TextInput field={"period"} class="input has-text-black" opts={placeholder: "Period"}/>
+          <Submit label="Update" class="button" />
         </Form>
       </div>
       <br>
