@@ -43,7 +43,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:STD, :WLD, :twist],
-         400,
+         500,
          10_000,
          1000
        )
@@ -73,7 +73,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:STD, :WLD, :twist],
-         500,
+         2000,
          50_000,
          4000,
          1000
@@ -84,7 +84,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:STD, :WLD, :twist],
-         500,
+         2500,
          50_000,
          5000,
          5000
@@ -95,7 +95,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:BG, :DUO],
-         2000,
+         5000,
          50_000,
          4000,
          1000
@@ -106,7 +106,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:BG, :DUO],
-         2000,
+         5000,
          50_000,
          5000,
          5000
@@ -117,7 +117,7 @@ config :backend, QuantumScheduler,
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
          [:arena],
-         5000,
+         10_000,
          60_000,
          9000,
          1000
@@ -126,8 +126,8 @@ config :backend, QuantumScheduler,
     {"47 * * * *",
      fn ->
        Backend.Leaderboards.save_all_right_after_midnight(
-         [:STD, :BG, :WLD, :twist, :DUO, :arena],
-         10_000,
+         [:STD, :BG, :WLD, :DUO, :arena, :twist],
+         20_000,
          120_000,
          10_001
        )
