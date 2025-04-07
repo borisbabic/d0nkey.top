@@ -75,6 +75,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
 
+      "Incindius" in card_info.card_names ->
+        :"Incindius Rogue"
+
       "Quasar" in card_info.card_names ->
         :"Quasar Rogue"
 

@@ -141,11 +141,15 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Thaddius, Monstrosity" in card_info.card_names ->
         :"Chad Warrior"
 
+      sulthraze?(card_info) ->
+        :"Sul'thraze Warrior"
+
       true ->
         fallbacks(card_info, class_name)
     end
   end
 
+  defp sulthraze?(card_info), do: min_count?(card_info, 1, ["Sul'thraze"])
   defp n_roll?(card_info), do: "Blackrock 'n' Roll" in card_info.card_names
 
   defp raider?(card_info) do

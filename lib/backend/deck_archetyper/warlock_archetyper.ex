@@ -16,6 +16,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       armor?(card_info) ->
         :"Armor Warlock"
 
+      mill?(card_info) ->
+        :"Mill Warlock"
+
       deathrattle?(card_info) ->
         :"Deathrattle Warlock"
 
@@ -58,6 +61,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp mill?(card_info) do
+    min_count?(card_info, 3, ["Adaptive Amalgam", "Archdruid of Thorns", "Prize Vendor"])
   end
 
   defp wallow?(card_info) do
