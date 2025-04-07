@@ -29,6 +29,7 @@ defmodule BackendWeb.MyReplaysLive do
           id="my-replays"
           additional_params={additional_params(@user)}
           params={@filters}
+          default_period={"all"}
           live_view={__MODULE__}
           filter_context={:personal}
         />

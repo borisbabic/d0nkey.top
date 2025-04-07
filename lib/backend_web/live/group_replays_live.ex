@@ -25,9 +25,10 @@ defmodule BackendWeb.GroupReplaysLive do
         <FunctionComponents.Ads.below_title/>
         <ReplayExplorer
           show_player_btag={true}
-          path_params={@group_id}}
+          path_params={@group_id}
           id="my-replays"
           additional_params={additional_params(membership)}
+          default_period={"all"}
           params={@filters}
           live_view={__MODULE__}
           filter_context={:personal}
