@@ -6,17 +6,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
-    lightshow? = "Lightshow" in card_info.card_names
-
     cond do
-      highlander?(card_info) ->
-        :"Highlander Mage"
-
       menagerie?(card_info) ->
         :"Menagerie Mage"
-
-      rainbow_mage?(card_info) ->
-        :"Rainbow Mage"
 
       PaladinArchetyper.drunk?(card_info) ->
         :"Drunk Mage"
@@ -36,9 +28,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       protoss?(card_info, 4) ->
         :"Protoss Mage"
 
-      excavate_mage?(card_info) ->
-        :"Excavate Mage"
-
       no_minion?(card_info, 2) ->
         :"Spell Mage"
 
@@ -50,9 +39,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       murloc?(card_info) ->
         :"Murloc Mage"
-
-      lightshow? ->
-        :"Lightshow Mage"
 
       type_count(card_info, "Elemental") > 6 ->
         :"Elemental Mage"
@@ -89,14 +75,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
     (orb in card_info.card_names or orb in card_info.etc_sideboard_names) and
       big_spell_mage?(card_info)
-  end
-
-  defp excavate_mage?(ci) do
-    min_count?(ci, 3, [
-      "Cryopreservation",
-      "Reliquary Researcher",
-      "Blastmage Miner" | neutral_excavate()
-    ])
   end
 
   @non_sif_rainbow [

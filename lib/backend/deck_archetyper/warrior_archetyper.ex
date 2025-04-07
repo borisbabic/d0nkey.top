@@ -6,43 +6,14 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander Warrior"
-
-      taunt_warrior?(card_info) ->
-        :"Taunt Warrior"
-
-      n_roll?(card_info) && menagerie_warrior?(card_info) ->
-        :"Menagerie 'n' Roll"
-
-      n_roll?(card_info) && enrage?(card_info) ->
-        :"Enrage 'n' Roll"
-
       menagerie_warrior?(card_info) ->
         :"Menagerie Warrior"
-
-      enrage?(card_info) ->
-        :"Enrage Warrior"
 
       food_fight?(card_info) ->
         :"Food Fight Warrior"
 
-      n_roll?(card_info) ->
-        :"Rock 'n' Roll Warrior"
-
-      excavate_warrior?(card_info) && odyn?(card_info) ->
-        :"Excavate Odyn Warrior"
-
-      # cycle_odyn?(card_info) -> :"Cycle Odyn Warrior"
-
       terran?(card_info, 4) ->
         :"Terran Warrior"
-
-      odyn?(card_info) ->
-        :"Odyn Warrior"
-
-      excavate_warrior?(card_info) ->
-        :"Excavate Warrior"
 
       draenei?(card_info) ->
         :"Draenei Warrior"
@@ -56,23 +27,8 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "The Ryecleaver" in card_info.card_names ->
         :"Sandwich Warrior"
 
-      riff_warrior?(card_info) ->
-        :"Riff Warrior"
-
-      weapon_warrior?(card_info) ->
-        :"Weapon Warrior"
-
-      "Deepminer Brann" in card_info.card_names ->
-        :"Brann Warrior"
-
       murloc?(card_info) ->
         :"Murloc Warrior"
-
-      boar?(card_info) ->
-        :"Boar Warrior"
-
-      "Justicar Trueheart" in card_info.card_names ->
-        :"Justicar Warrior"
 
       "Safety Expert" in card_info.card_names ->
         :"Safety Warrior"
@@ -92,68 +48,27 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       type_count(card_info, "Pirate") >= 5 ->
         :"Pirate Warrior"
 
-      sulthraze?(card_info) ->
-        :"Sul'thraze Warrior"
-
-      "Photographer Fizzle" in card_info.card_names ->
-        :"Fizzle Warrior"
-
       true ->
         fallbacks(card_info, "Warrior")
     end
   end
 
-  def food_fight?(card_info) do
+  defp food_fight?(card_info) do
     num_minions = Enum.count(card_info.full_cards, &Backend.Hearthstone.Card.minion?/1)
     "Food Fight" in card_info.card_names and num_minions <= 5
   end
 
-  def sulthraze?(ci) do
-    min_count?(ci, 2, ["Sul'thraze", "Punch Card"])
-  end
-
-  def taunt_warrior?(ci) do
-    min_count?(ci, 3, ["Battlepickaxe", "Detonation Juggernaut", "Unlucky Powderman"])
-  end
-
-  def bomb_warrior?(card_info) do
+  defp bomb_warrior?(card_info) do
     min_count?(card_info, 2, ["Explodineer", "Safety Expert"])
   end
 
-  def mech_warrior?(card_info) do
+  defp mech_warrior?(card_info) do
     min_count?(card_info, 2, ["Boom Wrench", "Testing Dummy"])
   end
 
-  def draenei?(card_info) do
+  defp draenei?(card_info) do
     type_count(card_info, "Draenei") > 5
   end
-
-  defp odyn?(card_info) do
-    "Odyn, Prime Designate" in card_info.card_names
-  end
-
-  # defp cycle_odyn?(ci) do
-  #   odyn?(ci) and
-  #     min_count?(ci, 3, [
-  #       "Acolyte of Pain",
-  #       "Needlerock Totem",
-  #       "Stoneskin Armorer",
-  #       "Gold Panner"
-  #     ])
-  # end
-
-  defp excavate_warrior?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Blast Charge",
-        "Reinforced Plating",
-        "Slagmaw the Slumbering",
-        "Badlands Brawler" | neutral_excavate()
-      ])
-
-  defp riff_warrior?(ci), do: min_count?(ci, 3, ["Verse Riff", "Chorus Riff", "Bridge Riff"])
-
-  defp n_roll?(card_info), do: "Blackrock 'n' Roll" in card_info.card_names
 
   defp menagerie_warrior?(card_info) do
     min_count?(card_info, 3, [
@@ -166,22 +81,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     ])
   end
 
-  defp enrage?(ci) do
-    min_count?(ci, 5, [
-      "Sanguine Depths",
-      "Warsong Envoy",
-      "Whirlwind",
-      "Anima Extractor",
-      "Crazed Wretch",
-      "Cruel Taskmaster",
-      "Frothing Berserker",
-      "Sunfury Champion",
-      "Jam Session",
-      "Imbued Axe",
-      "Grommash Hellscream"
-    ])
-  end
-
   defp warrior_aoe?(ci, min_count \\ 4),
     do:
       min_count?(ci, min_count, [
@@ -191,15 +90,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         "Garrosh's Gift",
         "Bladestorm",
         "Hostile Invader"
-      ])
-
-  defp weapon_warrior?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Azsharan Trident",
-        "Outrider's Axe",
-        "Blacksmithing Hammer",
-        "Lady Ashvane"
       ])
 
   def wild(card_info) do
@@ -255,6 +145,8 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         fallbacks(card_info, class_name)
     end
   end
+
+  defp n_roll?(card_info), do: "Blackrock 'n' Roll" in card_info.card_names
 
   defp raider?(card_info) do
     min_count?(card_info, 2, ["Bladed Gauntlet", "Bloodsail Raider"])

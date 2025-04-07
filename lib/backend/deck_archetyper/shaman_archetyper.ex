@@ -7,14 +7,8 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander Shaman"
-
       menagerie?(card_info) ->
         :"Menagerie Shaman"
-
-      totem_shaman?(card_info) ->
-        :"Totem Shaman"
 
       big?(card_info) ->
         :"Big Shaman"
@@ -24,9 +18,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       imbue?(card_info, 4) ->
         :"Imbue Shaman"
-
-      menagerie?(card_info) ->
-        :"Menagerie Shaman"
 
       asteroid?(card_info) ->
         :"Asteroid Shaman"
@@ -46,32 +37,14 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       terran?(card_info, 4) ->
         :"Terran Shaman"
 
-      swarm?(card_info) ->
-        :"Swarm Shaman"
-
       rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
         :"Rainbow Shaman"
-
-      jive?(card_info) ->
-        :"Jive Shaman"
 
       DemonHunterArchetyper.pirate?(card_info) ->
         :"Pirate Shaman"
 
-      bonk?(card_info) ->
-        :"Bonk Shaman"
-
-      nature_shaman?(card_info) ->
-        :"Nature Shaman"
-
       spell_damage_shaman?(card_info) ->
         :"Spell Damage Shaman"
-
-      overload_shaman?(card_info) ->
-        :"Overload Shaman"
-
-      excavate_shaman?(card_info) ->
-        :"Excavate Shaman"
 
       evolve_shaman?(card_info) ->
         :"Evolve Shaman"
@@ -81,9 +54,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       wish_shaman?(card_info) ->
         :"Wish Shaman"
-
-      murmur_otk?(card_info) ->
-        :"Murmur OTK Shaman"
 
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Shaman"
@@ -109,44 +79,8 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     min_count?(card_info, 2, ["Hex", "Conductivity"])
   end
 
-  defp murmur_otk?(card_info) do
-    murmur?(card_info) and murmur_otk_etc?(card_info) and
-      "Shudderblock" in card_info.card_names and
-      min_count?(card_info, 3, [
-        "Aftershocks",
-        "Frosty Décor",
-        "Far Sight",
-        "Chill Vibes",
-        "Baking Soda Volcano",
-        "Icecrown Brochure",
-        "Ancestral Knowledge"
-      ])
-  end
-
-  defp murmur_otk_etc?(card_info) do
-    min_count?(card_info.etc_sideboard_names, 3, [
-      "Bob the Bartender",
-      "Kalimos, Primal Lord",
-      "Alexstrasza"
-    ])
-  end
-
   defp murmur?(card_info) do
     "Murmur" in card_info.card_names
-  end
-
-  defp swarm?(card_info) do
-    min_count?(card_info, 5, [
-      "Wave of Nostalgia",
-      "Backstage Bouncer",
-      "Gorgonzormu",
-      "Carefree Cookie",
-      "Thrall's Gift",
-      "Sigil of Skydiving",
-      "Patches the Pilot",
-      "Murloc Growfin",
-      "Pop-Up Book"
-    ])
   end
 
   defp asteroid?(card_info, min_count \\ 3) do
@@ -156,10 +90,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Bolide Behemoth",
       "Moonstone Mauler"
     ])
-  end
-
-  defp bonk?(card_info) do
-    min_count?(card_info, 3, ["Horn of the Windlord", "Skirting Death", "Turn the Tides"])
   end
 
   defp rainbow?(card_info) do
@@ -174,10 +104,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Carress, Cabaret Star",
       "Razzle-Dazzler"
     ])
-  end
-
-  defp jive?(card_info) do
-    min_count?(card_info, 3, ["Conductivity", "Sigil of Skydiving", "JIVE, INSECT!"])
   end
 
   defp incindius?(card_info) do
@@ -196,38 +122,13 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       ])
   end
 
-  defp excavate_shaman?(card_info) do
-    min_count?(
-      card_info,
-      3,
-      ["Shroomscavate", "Sir Finley, the Intrepid", "Digging Straight Down" | neutral_excavate()]
-    )
-  end
-
-  defp totem_shaman?(ci) do
-    min_count?(ci, 2, ["Gigantotem", "Grand Totem Eys'or", "The Stonewright"])
-  end
-
   defp spell_damage_shaman?(ci) do
     min_count?(ci, 3, ["Novice Zapper", "Spirit Claws", "Lightning Bolt" | neutral_spell_damage()])
   end
 
-  defp nature_shaman?(ci),
-    do:
-      min_count?(ci, 2, [
-        "Flash Of Lightning",
-        "Flash of Lightning",
-        "Crash Of Thunder",
-        "Crash of Thunder",
-        "Champion of Storms"
-      ])
-
   defp big?(ci) do
     "Cliff Dive" in ci.card_names
   end
-
-  defp overload_shaman?(ci),
-    do: min_count?(ci, 2, ["Flowrider", "Overdraft", "Inzah", "Thorim, Stormlord"])
 
   @standard_evolve [
     "Convincing Disguise",
@@ -236,6 +137,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     "Wave of Nostalgia",
     "Primordial Wave",
     "Carefree Cookie",
+    "Plucky Podling",
     "Baroness Vashj",
     "Tiny Toys"
   ]
@@ -245,6 +147,8 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   defp elemental_shaman?(ci),
     do:
       min_count?(ci, 5, [
+        "Wailing Vapor",
+        "Menacing Nimbus",
         "Flame Revenant",
         "Shale Spider",
         "Lamplighter",

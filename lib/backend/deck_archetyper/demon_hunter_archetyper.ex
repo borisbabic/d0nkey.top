@@ -7,17 +7,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander DH"
-
       murloc?(card_info) ->
         :"Murloc Demon Hunter"
-
-      naga_dh?(card_info) and shopper_dh?(card_info) ->
-        :"Naga Shopper DH"
-
-      naga_dh?(card_info) ->
-        :"Naga Demon Hunter"
 
       "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info) ->
         :"Armor DH"
@@ -28,12 +19,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       menagerie?(card_info) ->
         :"Menagerie DH"
 
-      cycle_dh?(card_info) ->
-        :"Cycle DH"
-
-      weapon_dh?(card_info) ->
-        :"Weapon DH"
-
       pirate?(card_info) ->
         :"Pirate Demon Hunter"
 
@@ -42,9 +27,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
       fatigue?(card_info) ->
         :"Fatigue Demon Hunter"
-
-      relic_dh?(card_info) ->
-        :"Relic Demon Hunter"
 
       shopper_dh?(card_info) ->
         :"Shopper DH"
@@ -84,16 +66,16 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     end
   end
 
-  def deathrattle?(card_info) do
+  defp deathrattle?(card_info) do
     min_count?(card_info, 2, ["Ravenous Felhunter", "Ferocious Felbat"])
   end
 
   @dreadseeds ["Grim Harvest", "Wyvern's Slumber", "Dreadsoul Corrupter"]
-  def dreadseed?(card_info, count \\ 3) do
+  defp dreadseed?(card_info, count \\ 3) do
     min_count?(card_info, count, @dreadseeds)
   end
 
-  def attack_dh?(ci) do
+  defp attack_dh?(ci) do
     min_count?(ci, 5, [
       "Illidari Inquisitor",
       "Sock Puppet Slitherspear",
@@ -113,11 +95,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     ])
   end
 
-  def kj?(ci) do
+  defp kj?(ci) do
     "Kil'jaeden" in ci.card_names
   end
 
-  def crewmate?(ci, min_count \\ 3) do
+  defp crewmate?(ci, min_count) do
     min_count?(ci, min_count, [
       "Voronei Recruiter",
       "Emergency Meeting",
@@ -126,7 +108,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     ])
   end
 
-  def fatigue?(ci) do
+  defp fatigue?(ci) do
     "Aranna, Thrill Seeker" in ci.card_names and
       min_count?(ci, 3, [
         "Quick Pick",
@@ -137,30 +119,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       ])
   end
 
-  def shopper_dh?(ci) do
+  defp shopper_dh?(ci) do
     min_count?(ci, 2, ["Window Shopper", "Umpire's Grasp"])
   end
 
-  def cycle_dh?(ci) do
-    "Playhouse Giant" in ci.card_names or
-      min_count?(ci, 2, ["Momentum", "Mindbender", "Eredar Deceptor", "Argunite Golem"])
-  end
-
-  def weapon_dh?(ci) do
-    min_count?(ci, 2, ["Quick Pick", "Umberwing", "Umpire's Grasp", "Infernal Stapler"]) and
-      min_count?(ci, 1, [
-        "Abyssal Bassist",
-        "Shadestone Skulker",
-        "Instrument Tech",
-        "Air Guitarist"
-      ])
-  end
-
-  def naga_dh?(ci) do
-    "Blindeye Sharpshooter" in ci.card_names and type_count(ci, "Naga") >= 4
-  end
-
-  def outcast_dh?(c), do: min_keyword_count?(c, 4, "outcast")
+  defp outcast_dh?(c), do: min_keyword_count?(c, 4, "outcast")
 
   defp relic_dh?(ci) do
     min_count?(ci, 4, [
@@ -179,24 +142,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         "Jace Darkweaver",
         "Felgorger"
       ])
-  end
-
-  defp relic?(ci),
-    do:
-      min_count?(ci, 4, [
-        "Relic of Extinction",
-        "Relic of Phantasms",
-        "Relic Vault",
-        "Relic Of Dimensions",
-        "Artificer Xy'mox"
-      ])
-
-  def prepend_relic(name, ci) do
-    if relic?(ci) do
-      "Relic " <> to_string(name)
-    else
-      name
-    end
   end
 
   def wild(card_info) do

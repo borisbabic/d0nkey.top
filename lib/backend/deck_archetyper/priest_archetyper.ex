@@ -7,14 +7,8 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander Priest"
-
       menagerie?(card_info) ->
         :"Menagerie Priest"
-
-      automaton_priest?(card_info) ->
-        :"Automaton Priest"
 
       anchorite(card_info) ->
         :"Anchorite Priest"
@@ -27,9 +21,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       "Tyrande" in card_info.card_names ->
         :"Tyrande Priest"
-
-      overheal_priest?(card_info) ->
-        :"Overheal Priest"
 
       zarimi?(card_info) and pain?(card_info) ->
         :"Pain Zarimi Priest"
@@ -66,9 +57,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       hitchhiker?(card_info) ->
         :"42 Priest"
-
-      "Photographer Fizzle" in card_info.card_names ->
-        :"Fizzle Priest"
 
       murloc?(card_info) ->
         :"Murloc Priest"
@@ -129,15 +117,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     ])
   end
 
-  defp aggro_protoss?(card_info) do
-    min_count?(card_info, 2, [
-      "Brain Masseuse",
-      "Overzealous Healer",
-      "Catch of the Day",
-      "Miracle Salesman"
-    ]) and protoss?(card_info, 6)
-  end
-
   defp aggro_zealot?(card_info) do
     min_count?(card_info, 2, [
       "Brain Masseuse",
@@ -150,21 +129,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   defp chrono?(card_info) do
     min_count?(card_info, 2, ["Hallucination", "Chrono Boost"])
   end
-
-  defp automaton_priest?(ci),
-    do:
-      "Astral Automaton" in ci.card_names and
-        min_count?(ci, 3, [
-          "Celestial Projectionist",
-          "Creation Protocol",
-          "Ra-den",
-          "Power Chord: Synchronize",
-          "Zola the Gordon",
-          "Creepy Painting",
-          "Pet Parrot",
-          "Ravenous Kraken",
-          "Cover Artist"
-        ])
 
   defp anchorite(ci) do
     min_count?(ci, 2, ["Crazed Alchemist", "Anchorite"])

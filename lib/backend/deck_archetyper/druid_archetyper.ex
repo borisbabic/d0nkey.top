@@ -6,68 +6,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander Druid"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Druid"
-
-      boar?(card_info) ->
-        :"Boar Druid"
-
-      vanndar?(card_info) ->
-        :"Vanndar Druid"
-
       imbue_druid?(card_info) ->
         :"Imbue Druid"
-
-      fire_druid?(card_info) ->
-        :"Fire Druid"
-
-      chad_druid?(card_info) ->
-        :"Chad Druid"
-
-      big_druid?(card_info) ->
-        :"Big Druid"
-
-      celestial_druid?(card_info) ->
-        :"Celestial Druid"
 
       menagerie?(card_info) ->
         :"Menagerie Druid"
 
-      moonbeam_druid?(card_info) ->
-        :"Moonbeam Druid"
-
       murloc?(card_info) ->
         :"Murloc Druid"
-
-      "Lady Prestor" in card_info.card_names ->
-        :"Prestor Druid"
-
-      "Gadgetzan Auctioneer" in card_info.card_names ->
-        :"Miracle Druid"
-
-      ignis_druid?(card_info) ->
-        :"Ignis Druid"
-
-      "Tony, King of Piracy" in card_info.card_names ->
-        :"Tony Druid"
-
-      zok_druid?(card_info) ->
-        :"Zok Druid"
-
-      hero_power_druid?(card_info) ->
-        :"Hero Power Druid"
-
-      choose_one?(card_info) ->
-        :"Choose Druid"
-
-      afk_druid?(card_info) ->
-        :"AFK Druid"
-
-      mill_druid?(card_info) ->
-        :"Mill Druid"
 
       spell_damage_druid?(card_info) ->
         :"Spell Damage Druid"
@@ -75,26 +21,8 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       owlonius_druid?(card_info) ->
         :"Owlonius Druid"
 
-      concierge?(card_info) ->
-        :"Concierge Druid"
-
-      dragon_druid?(card_info) ->
-        :"Dragon Druid"
-
-      tempo_druid?(card_info) ->
-        :"Tempo Druid"
-
       treant_druid?(card_info) ->
         :"Treant Druid"
-
-      aggro_druid?(card_info) ->
-        :"Aggro Druid"
-
-      "Therazane" in card_info.card_names and deathrattle_druid?(card_info) ->
-        :"Therazane Druid"
-
-      deathrattle_druid?(card_info) ->
-        :"Deathrattle Druid"
 
       protoss?(card_info, 4) ->
         :"Protoss Druid"
@@ -108,14 +36,8 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Hydration Station" in card_info.card_names ->
         :"Hydration Druid"
 
-      ramp_druid?(card_info) ->
-        :"Ramp Druid"
-
       greybough?(card_info) ->
         :"Greybough Druid"
-
-      "Drum Circle" in card_info.card_names ->
-        :"Drum Druid"
 
       bad?(card_info) ->
         :"Bad Druid"
@@ -123,16 +45,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
-  end
-
-  defp dragon_druid?(card_info) do
-    min_count?(card_info, 2, ["Splish-Splash Whelp", "Fye, the Setting Sun"]) and
-      min_count?(card_info, 2, [
-        "Take to the Skies",
-        "Desert Nestmatron",
-        "Giftwrapped Whelp",
-        "Spinetail Drake"
-      ])
   end
 
   defp bad?(card_info) do
@@ -144,10 +56,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Thickhide Kodo",
       "Feral Rage"
     ])
-  end
-
-  defp concierge?(card_info) do
-    min_count?(card_info, 3, ["Go with the Flow", "Seabreeze Chalice", "Concierge"])
   end
 
   defp greybough?(card_info) do
@@ -166,38 +74,8 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     "Owlonius" in ci.card_names and min_count?(ci, 2, @non_owlonius_druid_sd_cards)
   end
 
-  defp tempo_druid?(ci) do
-    min_count?(ci, 4, [
-      "Trogg Gemtosser",
-      "Marin The Manager",
-      "Swipe",
-      "Splish-Splash Whelp",
-      "Magical Dollhouse",
-      "Giftwrapped Whelp",
-      "Desert Nestmatron",
-      "Doomkin"
-    ])
-  end
-
   defp spell_damage_druid?(ci) do
     min_count?(ci, 4, @non_owlonius_druid_sd_cards)
-  end
-
-  defp mill_druid?(ci) do
-    min_count?(ci, 2, ["Dew Process", "Prince Renathal", "Selfish Shellfish"])
-  end
-
-  defp ignis_druid?(ci) do
-    min_count?(ci, 2, ["Forbidden Fruit", "Ignis, the Eternal Flame"])
-  end
-
-  defp deathrattle_druid?(ci) do
-    min_count?(ci, 2, ["Hedge Maze", "Death Blossom Whomper"])
-  end
-
-  defp moonbeam_druid?(ci) do
-    "Moonbeam" in ci.card_names &&
-      min_count?(ci, 2, ["Bloodmage Thalnos", "Kobold Geomancer", "Rainbow Glowscale"])
   end
 
   defp treant_druid?(ci),
@@ -206,67 +84,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         "Witchwood Apple",
         "Conservator Nymph",
         "Blood Treant",
+        "Grove Shaper",
         "Cultivation",
         "Overgrown Beanstalk"
       ])
 
-  defp afk_druid?(ci),
-    do: min_count?(ci, 2, ["Rhythm and Roots", "Timber Tambourine"])
-
-  defp choose_one?(ci),
-    do: min_count?(ci, 3, ["Embrace Nature", "Disciple of Eonar"])
-
-  defp zok_druid?(ci),
-    do: min_count?(ci, 2, ["Zok Fogsnout", "Anub'Rekhan"])
-
-  defp celestial_druid?(%{card_names: card_names}), do: "Celestial Alignment" in card_names
-
   defp imbue_druid?(card_info) do
     "Hamuul Runetotem" in card_info.card_names
   end
-
-  defp fire_druid?(ci) do
-    min_count?(ci, 2, [
-      "Pyrotechnician",
-      "Thaddius, Monstrosity"
-    ])
-  end
-
-  defp chad_druid?(ci) do
-    min_count?(ci, 2, [
-      "Flesh Behemoth",
-      "Thaddius, Monstrosity"
-    ])
-  end
-
-  defp big_druid?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Sessellie of the Fae Court",
-        "Neptulon the Tidehunter",
-        "Masked Reveler",
-        "Stoneborn General"
-      ])
-
-  defp ramp_druid?(ci),
-    do:
-      min_count?(ci, 1, ["Nourish", "Crystal Cluster"]) or
-        min_count?(ci, 2, ["New Heights", "Malfurion's Gift"])
-
-  defp hero_power_druid?(ci),
-    do: min_count?(ci, 2, ["Free Spirit", "Groovy Cat", "Sing-Along Buddy"])
-
-  defp aggro_druid?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Herald of Nature",
-        "Lingering Zombie",
-        "Vicious Slitherspear",
-        "Mark of the Wild",
-        "Soul of the Forest",
-        "Blood Treant",
-        "Elder Nadox"
-      ])
 
   defp aviana_druid?(card_info) do
     "Aviana" in card_info.card_names

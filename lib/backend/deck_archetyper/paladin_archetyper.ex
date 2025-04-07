@@ -7,44 +7,17 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) && pure_paladin?(card_info) ->
-        :"Highlander Pure Paladin"
-
-      pure_paladin?(card_info) && dude_paladin?(card_info) ->
-        :Chadadin
-
-      earthen_paladin?(card_info) && pure_paladin?(card_info) ->
-        :"Gaia Pure Paladin"
-
       pure_paladin?(card_info) ->
         :"Pure Paladin"
 
-      highlander?(card_info) ->
-        :"Highlander Paladin"
-
       imbue?(card_info) ->
         :"Imbue Paladin"
-
-      excavate_paladin?(card_info) ->
-        :"Excavate Paladin"
-
-      handbuff_paladin?(card_info) ->
-        :"Handbuff Paladin"
-
-      showdown_libram?(card_info) ->
-        :"Showdown Libram Paladin"
 
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
 
       menagerie?(card_info) ->
         :"Menagerie Paladin"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Paladin"
-
-      dude_paladin?(card_info) ->
-        :"Dude Paladin"
 
       drunk?(card_info) ->
         :"Drunk Paladin"
@@ -58,17 +31,8 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       terran?(card_info, 4) ->
         :"Terran Paladin"
 
-      earthen_paladin?(card_info) ->
-        :"Gaia Paladin"
-
       libram?(card_info) ->
         :"Libram Paladin"
-
-      holy_paladin?(card_info) ->
-        :"Holy Paladin"
-
-      big_paladin?(card_info) ->
-        :"Big Paladin"
 
       murloc?(card_info) ->
         :"Murloc Paladin"
@@ -102,12 +66,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       min_count?(card_info, 1, ["Griftah, Trusted Vendor", "Holy Glowsticks", "Mixologist"])
   end
 
-  defp showdown_libram?(card_info) do
-    libram?(card_info) and
-      "Showdown!" in card_info.card_names and
-      min_count?(card_info, 1, ["Sea Giant", "Prismatic Beam"])
-  end
-
   defp libram?(card_info, min_count \\ 2) do
     min_count?(card_info, min_count, [
       "Libram of Faith",
@@ -118,14 +76,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Libram of Hope",
       "Libram of Judgement"
     ])
-  end
-
-  defp excavate_paladin?(card_info) do
-    min_count?(
-      card_info,
-      3,
-      ["Shroomscavate", "Sir Finley, the Intrepid", "Fossilized Kaleidosaur" | neutral_excavate()]
-    )
   end
 
   defp aggro_paladin?(card_info) do
@@ -142,6 +92,8 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Blood Matriarch Liadrin",
       "Gold Panner",
       "Crusader Aura",
+      "Busy-Bot",
+      "Hand of A'dal",
       "Sinstone Totem",
       "Crooked Cook",
       "Sea Giant",
@@ -158,59 +110,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Righteous Protector"
     ])
   end
-
-  defp big_paladin?(ci),
-    do:
-      min_count?(ci, 1, ["Front Lines", "Kangor, Dancing King", "Lead Dancer"]) &&
-        min_count?(ci, 2, [
-          "Pipsi Painthoof",
-          "Ragnaros the Firelord",
-          "Annoy-o-Troupe",
-          "Tirion Fordring",
-          "Stoneborn General",
-          "Neptulon the Tidehunter",
-          "Flesh Behemoth",
-          "Thaddius, Monstrosity"
-        ])
-
-  defp holy_paladin?(ci) do
-    min_count?(ci, 3, [
-      "Hi Ho Silverwing",
-      "Flickering Lightbot",
-      "Holy Cowboy",
-      "Starlight Groove",
-      "Holy Glowsticks"
-    ])
-  end
-
-  defp handbuff_paladin?(ci) do
-    min_count?(ci, 2, ["Painter's Virtue", "Instrument Tech"]) or
-      min_count?(ci, 2, [
-        "Grimestreet Outfitter",
-        "Muscle-o Tron",
-        "Outfit Tailor",
-        "Painter's Virtue",
-        "Overlord Runthak"
-      ])
-  end
-
-  defp earthen_paladin?(ci),
-    do: min_count?(ci, 2, ["Stoneheart King", "Disciple of Amitus"])
-
-  defp dude_paladin?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Vacation Planner",
-        "Jury Duty",
-        "Promotion",
-        "Soldier's Caravan",
-        "Stewart the Steward",
-        "Muster for Battle",
-        "Lothraxion the Redeemed",
-        "Jukebox Totem",
-        "Warhorse Trainer",
-        "Stand Against Darkness"
-      ])
 
   defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &Card.neutral?/1)
 
@@ -277,6 +176,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   defp thekal?(card_info) do
     min_count?(card_info, 2, ["High Priest Thekal", "Molten Giant"])
   end
+
+  defp earthen_paladin?(ci),
+    do: min_count?(ci, 2, ["Stoneheart King", "Disciple of Amitus"])
 
   defp holy_wrath_paladin?(card_info) do
     "Holy Wrath" in card_info.card_names and

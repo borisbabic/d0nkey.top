@@ -6,29 +6,11 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander Hunter"
-
-      secret_hunter?(card_info) ->
-        :"Secret Hunter"
-
-      big_beast_hunter?(card_info) ->
-        :"Big Beast Hunter"
-
-      handbuff_hunter?(card_info) and "Warsong Grunt" in card_info.card_names ->
-        :"Grunter Hunter"
-
       handbuff_hunter?(card_info) ->
         :"Handbuff Hunter"
 
       amalgam?(card_info) ->
         :"Amalgam Hunter"
-
-      zerg?(card_info, 4) and zoo_hunter?(card_info) ->
-        :"Zerg Zoo Hunter"
-
-      zoo_hunter?(card_info) ->
-        :"Zoo Hunter"
 
       imbue?(card_info) ->
         :"Imbue Hunter"
@@ -60,14 +42,8 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       zerg?(card_info, 4) ->
         :"Zerg Hunter"
 
-      "Mantle Shaper" in card_info.card_names and discover?(card_info) ->
-        :"Shaper Discover Hunter"
-
       discover?(card_info) ->
         :"Discover Hunter"
-
-      shaffar?(card_info) ->
-        :"Shaffar Hunter"
 
       "Floppy Hydra" in card_info.card_names ->
         :"Floppy Hunter"
@@ -78,17 +54,6 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
-  end
-
-  defp shaffar?(ci) do
-    min_count?(ci, 1, [
-      "Nexus Prince Shaffar",
-      "Nexus-Prince Shaffar"
-    ]) and
-      min_count?(ci, 1, [
-        "Zergling",
-        "Spawning Pool"
-      ])
   end
 
   defp bad?(ci) do
@@ -144,17 +109,6 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
     ])
   end
 
-  defp zoo_hunter?(ci) do
-    min_count?(ci, 4, [
-      "Observer of Myths",
-      "Saddle Up!",
-      "R.C. Rampage",
-      "Remote Control",
-      "Gorgonzormu",
-      "Jungle Gym"
-    ])
-  end
-
   defp egg_hunter?(ci),
     do:
       min_count?(ci, 3, [
@@ -163,19 +117,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
         "Ravenous Kraken",
         "Yelling Yodeler",
         "Extraterrestrial Egg",
+        "Terrorscale Stalker",
         "Terrible Chef",
         "Cubicle"
-      ])
-
-  defp secret_hunter?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Lesser Emerald Spellstone",
-        "Costumed Singer",
-        "Anonymous Informant",
-        "Titanforged Traps",
-        "Product 9",
-        "Starstrung Bow"
       ])
 
   def wild(card_info) do
@@ -237,16 +181,4 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
   defp mystery_egg_hunter?(card_info) do
     min_count?(card_info, 1, ["Mystery Egg"])
   end
-
-  defp big_beast_hunter?(ci),
-    do:
-      min_count?(ci, 3, [
-        "King Krush",
-        "Stranglethorn Heart",
-        "Faithful Companions",
-        "Banjosaur",
-        "Beached Whale",
-        "Thunderbringer",
-        "Mister Mukla"
-      ])
 end

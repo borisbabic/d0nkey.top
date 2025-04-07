@@ -6,32 +6,17 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander DK"
-
-      burn_dk?(card_info) ->
-        :"Burn DK"
-
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
       menagerie?(card_info) and leech?(card_info, 3) ->
         :"Menagerie Succ DK"
 
-      eight_hands?(card_info) ->
-        :"8 Hands DK"
-
       starship?(card_info) and leech?(card_info, 3) ->
         :"Starship Succ DK"
 
       leech?(card_info, 3) ->
         :"Succ DK"
-
-      rainbow_runes?(card_info) && plague_dk?(card_info) ->
-        :"Rainbow Plague DK"
-
-      rainbow_runes?(card_info) && excavate_dk?(card_info) ->
-        :"Rainbow Excavate DK"
 
       buttons?(card_info) && rainbow_runes?(card_info) ->
         :"Buttons Rainbow DK"
@@ -45,15 +30,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       rainbow_runes?(card_info) ->
         :"Rainbow DK"
 
-      starship?(card_info) and plague_dk?(card_info) ->
-        :"Starship Plague DK"
-
-      plague_dk?(card_info) ->
-        :"Plague DK"
-
-      excavate_dk?(card_info) ->
-        :"Excavate DK"
-
       starship?(card_info) ->
         :"Starship DK"
 
@@ -63,17 +39,8 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       menagerie?(card_info) ->
         :"Menagerie DK"
 
-      boar?(card_info) ->
-        :"Boar DK"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest DK"
-
       murloc?(card_info) ->
         :"Murloc DK"
-
-      control_dk?(card_info) ->
-        :"Control DK"
 
       buttons?(card_info) ->
         :"Buttons DK"
@@ -86,9 +53,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       only_runes?(card_info, :blood) ->
         :"Blood DK"
-
-      zerg?(card_info, 6) and only_runes?(card_info, :frost) ->
-        :"Zerg Frost DK"
 
       zerg?(card_info, 6) and only_runes?(card_info, :frost) ->
         :"Zerg Frost DK"
@@ -108,33 +72,16 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Stitched Giant" in card_info.card_names ->
         :"Corpse DK"
 
-      zerg?(card_info, 6) and fake_frost?(card_info) ->
-        :"Zerg \"Frost\" DK"
-
       deathrattle?(card_info) ->
         :"Deathrattle DK"
-
-      fake_frost?(card_info) ->
-        :"\"Frost\" DK"
 
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
   end
 
-  defp eight_hands?(card_info) do
-    "The 8 Hands From Beyond" in card_info.card_names
-  end
-
   defp leech?(ci, min_count) do
     min_count?(ci, min_count, ["Infested Breath", "Sanguine Infestation", "Hideous Husk"])
-  end
-
-  defp fake_frost?(ci) do
-    case Deck.rune_cost(ci.cards) do
-      %{frost: 2} -> true
-      _ -> false
-    end
   end
 
   defp buttons?(ci) do
@@ -159,48 +106,21 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     ])
   end
 
-  def only_runes?(ci, rune, min \\ 1) do
+  defp only_runes?(ci, rune, min \\ 1) do
     rune_cost = Deck.rune_cost(ci.cards) |> Map.from_struct()
     {rune_count, others} = Map.pop(rune_cost, rune, 0)
     others_zero? = Enum.all?(others, fn {_key, val} -> val == 0 end)
     rune_count >= min and others_zero?
   end
 
-  def rainbow_runes?(ci) do
+  defp rainbow_runes?(ci) do
     case Deck.rune_cost(ci.cards) do
       %{blood: b, frost: f, unholy: u} when b > 0 and f > 0 and u > 0 -> true
       _ -> false
     end
   end
 
-  def excavate_dk?(ci) do
-    min_count?(ci, 4, [
-      "Pile of Bones",
-      "Reap What You Sow",
-      "Skeleton Crew",
-      "Harrowing Ox" | neutral_excavate()
-    ])
-  end
-
-  def plague_dk?(ci),
-    do:
-      min_count?(ci, 3, [
-        "Staff of the Primus",
-        "Distressed Kvaldir",
-        "Down with the Ship",
-        "Helya",
-        "Tomb Traitor",
-        "Chained Guardian"
-      ])
-
-  def burn_dk?(c),
-    do: min_count?(c, 2, ["Bloodmage Thalnos", "Talented Arcanist", "Guild Trader"])
-
-  def control_dk?(c) do
-    min_count?(c, 2, ["Corpse Explosion", "Soulstealer"])
-  end
-
-  def handbuff_dk?(c),
+  defp handbuff_dk?(c),
     do:
       min_count?(c, 3, [
         "Lesser Spinel Spellstone",
@@ -208,6 +128,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
         "Blood Tap",
         "Toysnatching Geist",
         "Darkfallen Neophyte",
+        "Helm of Humiliation",
         "Vicious Bloodworm",
         "Overlord Runthak",
         "Ram Commander",

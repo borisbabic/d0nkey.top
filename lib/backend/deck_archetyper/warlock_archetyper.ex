@@ -7,35 +7,11 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander Warlock"
-
-      implock?(card_info) && (quest?(card_info) || questline?(card_info)) ->
-        :"Quest Implock"
-
-      quest?(card_info) || questline?(card_info) ->
-        :"Quest Warlock"
-
       menagerie?(card_info) ->
         :"Menagerie Warlock"
 
       murloc?(card_info) ->
         :"Murloc Warlock"
-
-      implock?(card_info) && boar?(card_info) ->
-        :"Boar Implock"
-
-      boar?(card_info) ->
-        :"Boar Warlock"
-
-      implock?(card_info) && phylactery_warlock?(card_info) ->
-        :"Phylactery Implock"
-
-      phylactery_warlock?(card_info) ->
-        :"Phylactery Warlock"
-
-      snek?(card_info) ->
-        :"Snek Warlock"
 
       armor?(card_info) ->
         :"Armor Warlock"
@@ -43,38 +19,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       deathrattle?(card_info) ->
         :"Deathrattle Warlock"
 
-      implock?(card_info) && abyssal_warlock?(card_info) && chad?(card_info) ->
-        :"Abyssal Chimplock"
-
-      implock?(card_info) && chad?(card_info) ->
-        :Chimplock
-
-      implock?(card_info) && handlock?(card_info) ->
-        :"Hand Implock"
-
       big_demon_warlock?(card_info) ->
         :"Big Demon Warlock"
-
-      implock?(card_info) && agony_warlock?(card_info) ->
-        :"Agony Implock"
-
-      agony_warlock?(card_info) ->
-        :"Agony Warlock"
-
-      abyssal_warlock?(card_info) && chad?(card_info) ->
-        :"Abyssal Chadlock"
-
-      implock?(card_info) && abyssal_warlock?(card_info) ->
-        :"Abyssal Implock"
-
-      chad?(card_info) ->
-        :Chadlock
-
-      abyssal_warlock?(card_info) ->
-        :"Abyssal Warlock"
-
-      implock?(card_info) ->
-        :Implock
 
       location?(card_info) and wallow?(card_info) ->
         :"Location Wallow Warlock"
@@ -82,26 +28,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       wallow?(card_info) ->
         :"Wallow Warlock"
 
-      location?(card_info) and sludgelock?(card_info) ->
-        :"Location Sludge Warlock"
-
-      fatigue_sludge_warlock?(card_info) ->
-        :"Fatigue Sludge Warlock"
-
-      sludgelock?(card_info) ->
-        :"Sludge Warlock"
-
-      snek?(card_info) ->
-        :"Snek Warlock"
-
-      handlock?(card_info) ->
-        :Handlock
-
       painlock?(card_info) ->
         :Painlock
-
-      fatigue_warlock?(card_info) ->
-        :"Insanity Warlock"
 
       starship?(card_info) ->
         :"Starship Warlock"
@@ -118,9 +46,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       zerg?(card_info, 4) ->
         :"Zerg Warlock"
 
-      leeroy_warlock?(card_info) ->
-        :"Leeroooooy Warlock"
-
       control_warlock?(card_info) ->
         :"Control Warlock"
 
@@ -133,12 +58,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
-  end
-
-  @self_fatigue_package ["Crescendo", "Baritone Imp", "Crazed Conductor"]
-  defp fatigue_sludge_warlock?(card_info) do
-    sludgelock?(card_info) and
-      min_count?(card_info, 2, @self_fatigue_package)
   end
 
   defp wallow?(card_info) do
@@ -179,21 +98,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     min_count?(card_info, 2, ["Felfire Bonfire", "Summoner Darkmarrow", "Brittlebone Buccaneer"])
   end
 
-  defp leeroy_warlock?(card_info) do
-    min_count?(card_info, 3, ["Leeroy Jenkins", "Monstrous Form", "Reverberations"])
-  end
-
-  defp snek?(ci) do
-    excavates = [
-      "Smokestack",
-      "Mo'arg Drillfist",
-      "Tram Conductor Gerry" | neutral_excavate()
-    ]
-
-    min_count?(ci, 4, excavates) or
-      (min_count?(ci, 2, excavates) and neutral_bouncers?(ci))
-  end
-
   defp painlock?(ci) do
     min_count?(ci, 4, [
       "Flame Imp",
@@ -223,6 +127,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     ])
   end
 
+  @self_fatigue_package ["Crescendo", "Baritone Imp", "Crazed Conductor"]
   defp fatigue_warlock?(ci) do
     min_count?(ci, 2, ["Pop'gar the Putrid", "Encroaching Insanity"]) and
       min_count?(ci, 3, @self_fatigue_package)
@@ -262,21 +167,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         "Vile Library",
         "Wicked Shipment"
       ])
-
-  defp phylactery_warlock?(%{card_names: card_names}),
-    do: "Tamsin's Phylactery" in card_names && "Tamsin Roame" in card_names
-
-  defp abyssal_warlock?(ci),
-    do: min_count?(ci, 3, ["Dragged Below", "Sira'kess Cultist", "Za'qul", "Abyssal Wave"])
-
-  defp agony_warlock?(%{card_names: card_names}), do: "Curse of Agony" in card_names
-
-  defp handlock?(ci),
-    do: min_count?(ci, 2, ["Mountain Giant", "Table Flip"])
-
-  defp chad?(ci) do
-    min_count?(ci, 2, ["Amorphous Slime", "Thaddius, Monstrosity"])
-  end
 
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)

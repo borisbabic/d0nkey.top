@@ -6,23 +6,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   def standard(card_info) do
     cond do
-      highlander?(card_info) ->
-        :"Highlander Rogue"
-
       menagerie?(card_info) ->
         :"Menagerie Rogue"
 
       mech_rogue?(card_info) ->
         :"Mech Rogue"
-
-      coin_rogue?(card_info) ->
-        :"Coin Rogue"
-
-      ogre?(card_info) ->
-        :"Ogre Rogue"
-
-      excavate_rogue?(card_info) ->
-        :"Drilling Rogue"
 
       pain?(card_info) and amalgam?(card_info) ->
         :"Amalgam Pain Rogue"
@@ -36,17 +24,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       pain?(card_info) ->
         :"Pain Rogue"
 
-      mine_rogue?(card_info) ->
-        :"Mine Rogue"
-
       pirate_rogue?(card_info) && thief_rogue?(card_info) ->
         :"Pirate Thief Rogue:"
 
       thief_rogue?(card_info) ->
         :"Thief Rogue"
-
-      boar?(card_info) ->
-        :"Boar Rogue"
 
       pirate_rogue?(card_info) and cycle_rogue?(card_info) ->
         :"Pirate Cycle Rogue"
@@ -54,44 +36,23 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       pirate_rogue?(card_info) ->
         :"Pirate Rogue"
 
-      cycle_rogue?(card_info) and archon?(card_info) ->
-        :"Archon Cycle Rogue"
-
-      archon?(card_info) ->
-        :"Archon Rogue"
-
       protoss?(card_info, 4) ->
         :"Protoss Rogue"
 
       cycle_rogue?(card_info) ->
         :"Cycle Rogue"
 
-      cutlass_rogue?(card_info) ->
-        :"Cutlass Rogue"
-
-      miracle_rogue?(card_info) and miracle_wincon?(card_info) ->
-        :"Miracle Rogue"
-
       goldbeard?(card_info) ->
         :"Goldbeard Rogue"
 
-      "Lamplighter" in card_info.card_names ->
-        :"Lamplighter Rogue"
-
       incindius?(card_info) ->
         :"Incindius Rogue"
-
-      sonya?(card_info) ->
-        :"Sonya Rogue"
 
       quasar?(card_info) ->
         :"Quasar Rogue"
 
       weapon?(card_info) ->
         :"Weapon Rogue"
-
-      shaffar?(card_info) ->
-        :"Shaffar Rogue"
 
       dorian_rogue?(card_info) ->
         :"Dorian Rogue"
@@ -114,9 +75,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
 
-      miracle_rogue?(card_info) ->
-        :"Miracle Rogue"
-
       "Quasar" in card_info.card_names ->
         :"Quasar Rogue"
 
@@ -136,8 +94,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         _ -> false
       end)
 
-    only_ysera? = match?([%{name: "Ysera, Emerald Aspect"}], dragons)
-    "Naralex, Herald of the Flights" in card_info.card_names and only_ysera?
+    min_count?(card_info, 2, ["Naralex, Herald of the Flights", "Ysera, Emerald Aspect"]) and
+      Enum.count(dragons) < 4
   end
 
   defp bounce?(card_info) do
@@ -156,15 +114,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp quasar?(card_info) do
     "Quasar" in card_info.card_names and min_keyword_count?(card_info, 1, "spell-damage")
-  end
-
-  defp shaffar?(card_info) do
-    # stupid official api has without - in the name field and with - in the image
-    min_count?(card_info, 2, [
-      "Nexus Prince Shaffar",
-      "Nexus-Prince Shaffar",
-      "Bargain Bin Buccaneer"
-    ])
   end
 
   defp incindius?(card_info) do
@@ -201,14 +150,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     min_count?(ci, 2, ["Shoplifter Goldbeard", "The Replicator-inator"])
   end
 
-  defp archon?(ci) do
-    sonya?(ci) and min_count?(ci, 1, ["Dark Templar", "High Templar"])
-  end
-
-  defp sonya?(ci) do
-    min_count?(ci, 3, ["Cover Artist", "Sonya Waterdancer", "Sandbox Scoundrel"])
-  end
-
   defp excavate_rogue?(ci) do
     min_count?(ci, 3, [
       "Antique Flinger",
@@ -217,26 +158,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Scourge Illusionist",
       "Bloodrock Co. Shovel" | neutral_excavate()
     ])
-  end
-
-  defp coin_rogue?(ci) do
-    "Wishing Well" in ci.card_names and
-      min_count?(ci, 3, [
-        "Dart Throw",
-        "Greedy Partner",
-        "Bounty Wrangler",
-        "Oh, Manager!",
-        "Counterfeit Coin",
-        "Metal Detector"
-      ])
-  end
-
-  defp miracle_rogue?(ci) do
-    min_count?(ci, 4, ["Breakdance", "Tidepool Pupil", "Sonya Waterdancer", "Sandbox Scoundrel"])
-  end
-
-  defp miracle_wincon?(ci) do
-    min_count?(ci, 1, ["Mixologist", "Griftah, Trusted Vendor"])
   end
 
   defp mech_rogue?(ci), do: type_count(ci, "Mech") > 5
@@ -270,23 +191,13 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Harmonic Hip Hop",
       "Harmonic Hip-Hop",
       "Mic Drop",
+      "Bloodail Raider",
+      "Fogsail Freebooter",
+      "Dread Corsair",
       "Sharp Shipment",
       "Swarthy Swordshiner"
     ])
   end
-
-  defp cutlass_rogue?(ci),
-    do:
-      "Spectral Cutlass" in ci.card_names and
-        min_count?(ci, 3, [
-          "Deadly Poison",
-          "Valeera's Gift",
-          "Harmonic Hip Hop",
-          "Mic Drop",
-          "Sonya Waterdancer",
-          "Shadestone Skulker",
-          "Instrument Tech"
-        ])
 
   @cycle_payoff [
     "Fal'dorei Strider",
@@ -297,6 +208,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     "Triple Sevens",
     "Gear Shift",
     "Gaslight Gatekeeper",
+    "Knickknack Shack",
+    "Raiding Party",
     "Robocaller",
     "Ethereal Oracle",
     "Quick Pick",
@@ -308,13 +221,29 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   end
 
   defp pirate_rogue?(ci) do
-    min_count?(ci, 2, ["Toy Boat", "Raiding Party", "Treasure Distributor", "Dig for Treasure"]) and
-      type_count(ci, "Pirate") > 5
+    min_count?(ci, 3, [
+      "Toy Boat",
+      "Raiding Party",
+      "Treasure Distributor",
+      "Dig for Treasure",
+      "Sailboat Captain",
+      "Hozen Roughhouser",
+      "Southsea Captain",
+      "Shoplifter Goldbeard"
+    ])
   end
 
   defp thief_rogue?(ci),
     do:
       min_count?(ci, 6, [
+        "Shaku, the Collector",
+        "Agency Espionage",
+        "Nightmare Fuel",
+        "Undercity Huckster",
+        "Tricky Satyr",
+        "Ashamane",
+        "Mimicry",
+        "Thistle Tea",
         "Snatch and Grab",
         "Treasure Hunter Eudora",
         "Petty Theft",
@@ -416,14 +345,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
 
-      coin_rogue?(card_info) ->
-        :"Coin Rogue"
-
       weapon?(card_info) ->
         :"Weapon Rogue"
-
-      "Smokescreen" in card_info.card_names ->
-        :"Smokescreen Rogue"
 
       true ->
         fallbacks(card_info, class_name)
