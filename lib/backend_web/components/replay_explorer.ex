@@ -11,6 +11,8 @@ defmodule Components.ReplayExplorer do
   alias Components.Filter.RegionDropdown
   alias Components.Filter.FormatDropdown
   alias Components.Filter.ClassDropdown
+  alias Components.Filter.PrevButton
+  alias Components.Filter.NextButton
   alias Components.DecksExplorer
   alias Components.ReplaysTable
   alias Surface.Components.Form
@@ -81,6 +83,8 @@ defmodule Components.ReplayExplorer do
       <div>
         <div>
           <div class="">
+          <PrevButton default_limit={@default_limit} />
+          <NextButton default_limit={@default_limit} />
           <FormatDropdown id="format_dropdown" :if={@format_filter} filter_context={@filter_context} />
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
