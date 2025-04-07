@@ -9,7 +9,12 @@ defmodule Backend.LatestHSArticles do
   end
 
   def handle_continue(:update_articles, _) do
-    {:ok, articles} = fetch()
+    articles =
+      case fetch() do
+        {:ok, articles} -> articles
+        _ -> []
+      end
+
     {:noreply, articles}
   end
 
