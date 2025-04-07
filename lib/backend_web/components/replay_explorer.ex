@@ -53,17 +53,25 @@ defmodule Components.ReplayExplorer do
   prop(search_filter, :boolean, default: true)
   prop(player_coin_filter, :boolean, default: true)
   prop(card_specific_filters, :boolean, default: true)
+  data(search_filters, :any)
+  data(selected_params, :map)
+  data(replays, :any)
 
   def update(assigns, socket) do
+    {selected_params, search_filters} = parse_params(assigns.params, assigns)
+
     {
       :ok,
       socket
       |> assign(assigns)
+      |> assign(selected_params: selected_params, search_filters: search_filters)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
         assigns.params,
-        assigns.path_params
+        assigns.path_params,
+        selected_params
       )
+      |> assign_async(:replays, fn -> {:ok, %{replays: DeckTracker.games(search_filters)}} end)
     }
   end
 
@@ -71,7 +79,7 @@ defmodule Components.ReplayExplorer do
   def render(assigns) do
     ~F"""
       <div>
-        <div :if={{params, search_filters} = parse_params(@params, assigns)}>
+        <div>
           <div class="">
           <FormatDropdown id="format_dropdown" :if={@format_filter} filter_context={@filter_context} />
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
@@ -84,7 +92,7 @@ defmodule Components.ReplayExplorer do
             selected_as_title={true}
             use_nil_val_as_title={false}
           />
-          <ArchetypeSelect :if={@archetype_filter} id={"player_deck_archetype"} param={"player_deck_archetype"} selected={params["player_deck_archetype"] || []} title="Archetypes" />
+          <ArchetypeSelect :if={@archetype_filter} id={"player_deck_archetype"} param={"player_deck_archetype"} selected={@params["player_deck_archetype"] || []} title="Archetypes" />
           <ClassDropdown :if={@player_class_filter} id="player_class_dropdown"
             param={"player_class"} />
           <ClassDropdown :if={@opponent_class_filter} id="opponent_class_dropdown"
@@ -92,25 +100,28 @@ defmodule Components.ReplayExplorer do
             name_prefix={"VS "}
             param={"opponent_class"} />
 
-          <PlayableCardSelect format={params["format"]} :if={@includes_filter} id={"player_deck_includes"} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
-          <PlayableCardSelect format={params["format"]} :if={@excludes_filter} id={"player_deck_excludes"} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
+          <PlayableCardSelect format={@params["format"]} :if={@includes_filter} id={"player_deck_includes"} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
+          <PlayableCardSelect format={@params["format"]} :if={@excludes_filter} id={"player_deck_excludes"} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
           <PlayerHasCoinDropdown :if={@player_coin_filter} id={"player_has_coin_dropdown"} warning_triangle={false} />
 
           {#if @card_specific_filters }
-            <PlayableCardSelect format={params["format"]} id={"player_mulligan"} param={"player_mulligan"} selected={params["player_mulligan"] || []} title="In Mulligan"/>
-            <PlayableCardSelect format={params["format"]} id={"player_not_mulligan"} param={"player_not_mulligan"} selected={params["player_not_mulligan"] || []} title="Not In Mulligan"/>
-            <PlayableCardSelect format={params["format"]} id={"player_drawn"} param={"player_drawn"} selected={params["player_drawn"] || []} title="Drawn"/>
-            <PlayableCardSelect format={params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={params["player_not_drawn"] || []} title="Not Drawn"/>
-            <PlayableCardSelect format={params["format"]} id={"player_kept"} param={"player_kept"} selected={params["player_kept"] || []} title="Kept"/>
-            <PlayableCardSelect format={params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={params["player_not_kept"] || []} title="Not Kept"/>
+            <PlayableCardSelect format={@params["format"]} id={"player_mulligan"} param={"player_mulligan"} selected={@params["player_mulligan"] || []} title="In Mulligan"/>
+            <PlayableCardSelect format={@params["format"]} id={"player_not_mulligan"} param={"player_not_mulligan"} selected={@params["player_not_mulligan"] || []} title="Not In Mulligan"/>
+            <PlayableCardSelect format={@params["format"]} id={"player_drawn"} param={"player_drawn"} selected={@params["player_drawn"] || []} title="Drawn"/>
+            <PlayableCardSelect format={@params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={@params["player_not_drawn"] || []} title="Not Drawn"/>
+            <PlayableCardSelect format={@params["format"]} id={"player_kept"} param={"player_kept"} selected={@params["player_kept"] || []} title="Kept"/>
+            <PlayableCardSelect format={@params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={@params["player_not_kept"] || []} title="Not Kept"/>
           {/if}
-          <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
+          <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> @search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
           <Form :if={@search_filter} for={%{}} as={:search} change="change" submit="change">
             <TextInput class={"input"} opts={placeholder: "Search opponent"}/>
           </Form>
         </div>
 
-        <div :if={replays = DeckTracker.games(search_filters)}>
+        <div :if={@replays.loading}>
+          Loading replays...
+        </div>
+        <div :if={@replays.ok? && @replays.result}>
           <ReplaysTable
           show_player_btag={@show_player_btag}
           show_deck={@show_deck}
@@ -122,8 +133,8 @@ defmodule Components.ReplayExplorer do
           show_replay_link={@show_replay_link}
           show_result_as={@show_result_as}
           show_played={@show_played}
-          replays={replays}/>
-          <div :if={!(Enum.any?(replays))} >
+          replays={@replays.result}/>
+          <div :if={!(Enum.any?(@replays.result))} >
             <br>
             <br>
             <br>
