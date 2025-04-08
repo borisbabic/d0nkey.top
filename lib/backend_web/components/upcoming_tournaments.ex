@@ -2,6 +2,7 @@ defmodule Components.UpcomingTournaments do
   @moduledoc false
   use BackendWeb, :surface_live_component
   alias Backend.Battlefy
+  alias BobsLeague.Api, as: BobsLeague
   alias Backend.Tournaments.Tournament
   alias FunctionComponents.TournamentsTable
 
@@ -42,7 +43,14 @@ defmodule Components.UpcomingTournaments do
   @spec fetch_tournaments(integer()) :: {:ok, [Backend.Battlefy.Tournament.t()]}
   def fetch_tournaments(hours_ago) do
     battlefy = Battlefy.upcoming_hearthstone_tournaments(hours_ago)
-    tournaments = Enum.sort_by(battlefy, &Tournament.start_time/1, {:asc, NaiveDateTime})
+
+    tournaments =
+      Enum.sort_by(
+        bobsleague(hours_ago) ++ battlefy,
+        &Tournament.start_time/1,
+        {:asc, NaiveDateTime}
+      )
+
     {:ok, %{tournaments: tournaments}}
   end
 
@@ -52,7 +60,23 @@ defmodule Components.UpcomingTournaments do
       Battlefy.upcoming_hearthstone_tournaments(hours_ago)
       |> Enum.map(&Battlefy.get_tournament(&1.id))
 
-    tournaments = Enum.sort_by(battlefy, &Tournament.start_time/1, {:asc, NaiveDateTime})
+    tournaments =
+      Enum.sort_by(
+        bobsleague(hours_ago) ++ battlefy,
+        &Tournament.start_time/1,
+        {:asc, NaiveDateTime}
+      )
+
     {:ok, %{full_tournaments: tournaments}}
+  end
+
+  defp bobsleague(hours_ago) do
+    case BobsLeague.tournaments() do
+      {:ok, b} ->
+        Backend.Tournaments.filter_newest(b, hours_ago)
+
+      _ ->
+        []
+    end
   end
 end

@@ -32,3 +32,13 @@ defimpl Backend.Tournaments.Tournament, for: Backend.Battlefy.Tournament do
     Backend.Battlefy.create_tournament_link(tournament)
   end
 end
+
+defimpl Backend.Tournaments.Tournament, for: BobsLeague.Api.Tournament do
+  alias BobsLeague.Api.Tournament, as: T
+  def id(%{id: id}), do: id
+  def name(%{name: name}), do: name
+  def start_time(%{date: date}), do: date
+  def standings_link(tour), do: T.link(tour)
+  def link(tour), do: T.link(tour)
+  def tags(tour), do: T.tags(tour)
+end
