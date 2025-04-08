@@ -84,6 +84,14 @@ defmodule Components.Helper do
     "var(--color-#{normalized})"
   end
 
+  attr :show, :boolean, default: true
+
+  def checkmark(assigns) do
+    ~H"""
+      <span :if={@show} class="tag is-success">✓</span>
+    """
+  end
+
   def empty() do
     assigns = %{}
 

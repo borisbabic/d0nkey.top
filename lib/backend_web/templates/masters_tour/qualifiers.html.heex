@@ -58,9 +58,7 @@
             <td><%= region %></td>
             <%= if @show_signed_up do %>
                 <td>
-                    <%= if signed_up do %>
-                        <span class="tag is-success">✓</span>
-                    <% end %>
+                    <Components.Helper.checkmark show={signed_up} />
                 </td>
             <% end %>
             <td>

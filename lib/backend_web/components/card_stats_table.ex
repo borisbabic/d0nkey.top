@@ -196,8 +196,8 @@ defmodule Components.CardStatsTable do
     do: flip_direction(s)
 
   defp sort_direction(_, _), do: "desc"
-  defp flip_direction(dir) when dir in [:desc, "desc"], do: "asc"
-  defp flip_direction(_), do: "desc"
+  def flip_direction(dir) when dir in [:desc, "desc"], do: "asc"
+  def flip_direction(_), do: "desc"
 
   def flip_direction(
         new_params = %{"sort_by" => new_sort_by},

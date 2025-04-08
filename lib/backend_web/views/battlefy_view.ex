@@ -778,16 +778,7 @@ defmodule BackendWeb.BattlefyView do
       lineup =
         should_render_lineup(index, show_lineups) && render_lineup(lineup_map[s.team.name], conn)
 
-      invited =
-        if MapSet.member?(invited_mapset, s.team.name) do
-          assigns = %{}
-
-          ~H"""
-            <span class="tag is-success">✓</span>
-          """
-        else
-          ""
-        end
+      invited? = MapSet.member?(invited_mapset, s.team.name)
 
       %{
         place: place,
@@ -809,7 +800,7 @@ defmodule BackendWeb.BattlefyView do
         wins: s.wins,
         losses: s.losses,
         ongoing: ongoing |> Map.get(s.team.name),
-        invited: invited,
+        invited: Helper.checkmark(%{show: invited?}),
         lineup: lineup
       }
     end)

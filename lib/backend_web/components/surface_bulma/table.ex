@@ -160,7 +160,17 @@ defmodule Components.SurfaceBulma.Table do
             {sorter, comparer} when is_function(sorter) and is_function(comparer) ->
               Enum.sort_by(data, sorter, comparer)
 
+            {sorter, comparer} when is_function(sorter) and is_atom(comparer) ->
+              true = Code.loaded?(comparer)
+              true = Kernel.function_exported?(comparer, :compare, 2)
+              Enum.sort_by(data, sorter, comparer)
+
             {sorter, comparer} when is_list(sorter) and is_function(comparer) ->
+              Enum.sort_by(data, &get_nested_data(&1, sorter), comparer)
+
+            {sorter, comparer} when is_list(sorter) and is_atom(comparer) ->
+              true = Code.loaded?(comparer)
+              true = Kernel.function_exported?(comparer, :compare, 2)
               Enum.sort_by(data, &get_nested_data(&1, sorter), comparer)
 
             nil ->

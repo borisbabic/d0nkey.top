@@ -125,7 +125,7 @@ defmodule BackendWeb.MastersTourView do
     tour_stops
     |> Enum.map(fn tour_stop ->
       cell =
-        MTHelper.checkmark(%{
+        Helper.checkmark(%{
           show: MapSet.member?(invited_set, player_stats.battletag_full <> to_string(tour_stop))
         })
 
