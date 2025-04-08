@@ -14,7 +14,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"Armor DH"
 
       deathrattle?(card_info) ->
-        :"Deathrattle DK"
+        :"Deathrattle DH"
 
       menagerie?(card_info) ->
         :"Menagerie DH"
