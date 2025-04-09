@@ -13,11 +13,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       imbue?(card_info) ->
         :"Imbue Paladin"
 
-      aggro_paladin?(card_info) ->
-        :"Aggro Paladin"
-
       menagerie?(card_info) ->
         :"Menagerie Paladin"
+
+      aggro_paladin?(card_info) ->
+        :"Aggro Paladin"
 
       drunk?(card_info) ->
         :"Drunk Paladin"
@@ -57,7 +57,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   defp tree?(card_info) do
     min_count?(card_info, 3, ["Ursine Maul", "Ursol", "Shaladrassil"]) and
-      1 == Enum.count(card_info.full_cards, & Card.cost(&1) > 6 and Card.spell?(&1))
+      1 == Enum.count(card_info.full_cards, &(Card.cost(&1) > 6 and Card.spell?(&1)))
   end
 
   defp lynessa_otk?(card_info) do
