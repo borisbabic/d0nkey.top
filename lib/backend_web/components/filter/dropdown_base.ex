@@ -61,6 +61,10 @@ defmodule Components.Filter.DropdownBase do
         Routes.live_path(socket, live_view, params)
       end
 
+      def link(socket, live_view, [first_param, second_param], params)do
+        Routes.live_path(socket, live_view, first_param, second_param, params)
+      end
+
       def link(socket, live_view, path_params, params) do
         Routes.live_path(socket, live_view, path_params, params)
       end

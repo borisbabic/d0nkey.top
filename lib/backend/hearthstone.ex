@@ -1266,6 +1266,14 @@ defmodule Backend.Hearthstone do
     )
   end
 
+  # @spec lineup_stats([Lineup.t()]) :: %{lineup_count: integer(), frequencies: frequencies}
+  # def lineups_stats(lineups) do
+  #   # IO.inspect(Enum.count(lineups))
+  #   lineup_count = Enum.count(lineups)
+  #   archetypes = Enum.flat_map(lineups, & Deck.archetype(&1.decks))
+  #   Enum.frequencies(archetypes)
+  #   |> Enum.group_by(& elem(&1, 0) |> Deck.extract_class())
+  # end
   def lineups(criteria) do
     base_lineups_query()
     |> build_lineups_query(criteria)
@@ -1331,6 +1339,9 @@ defmodule Backend.Hearthstone do
     sub_query = criteria |> Enum.reduce(base_query, &compose_decks_query/2)
     query |> where([lineup: l], l.id in subquery(sub_query))
   end
+
+  def tournament_standings_url("battlefy", id), do: "/battlefy/tournament/#{id}"
+  def tournament_standings_url(_, _), do: nil
 
   def get_tournament_ids_for_source(source) do
     query =

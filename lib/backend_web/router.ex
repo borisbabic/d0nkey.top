@@ -277,6 +277,12 @@ defmodule BackendWeb.Router do
     live("/gm/lineups", GrandmastersLineup)
     live("/gm", GrandmastersLive)
     live("/gm/profile/:gm", GrandmasterProfileLive)
+
+    live(
+      "/tournament-lineups/:tournament_source/:tournament_id/stats",
+      TournamentLineupStatsTableLive
+    )
+
     live("/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups)
 
     live("/wc/2021", WC2021Live)

@@ -371,11 +371,12 @@ defmodule BackendWeb.BattlefyView do
   defp create_explore_decks(assigns) do
     ~H"""
     <%= if @has_lineups do %>
-      <a class="link" href={"/battlefy/tournament/#{@tournament.id}/lineups"}>Lineups</a>
+      <a class="link" href={~p"/battlefy/tournament/#{@tournament.id}/lineups"}>Lineups</a>
+      | <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/stats"}>Lineup Stats</a>
       |
     <% end %>
     <%= if !@has_lineups and @tournament.id == "66104524c69b9f10c243d1fa" do %>
-      <a class="link" href={"/tournament-lineups/masters_tour/Spring2024"}>Lineups (Draft)</a>
+      <a class="link" href={~p"/tournament-lineups/masters_tour/Spring2024"}>Lineups (Draft)</a>
       |
     <% end %>
     """
