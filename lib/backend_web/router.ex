@@ -279,8 +279,8 @@ defmodule BackendWeb.Router do
     live("/gm/profile/:gm", GrandmasterProfileLive)
 
     live(
-      "/tournament-lineups/:tournament_source/:tournament_id/stats",
-      TournamentLineupStatsTableLive
+      "/tournament-lineups/:tournament_source/:tournament_id/popularity",
+      TournamentLineupPopularityTableLive
     )
 
     live("/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups)

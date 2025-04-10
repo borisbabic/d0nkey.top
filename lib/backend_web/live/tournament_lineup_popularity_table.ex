@@ -1,4 +1,4 @@
-defmodule BackendWeb.TournamentLineupStatsTableLive do
+defmodule BackendWeb.TournamentLineupPopularityTableLive do
   use BackendWeb, :surface_live_view
   alias Components.Lineups.PopularityTable
   data(user, :any)
