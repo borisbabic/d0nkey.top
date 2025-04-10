@@ -12,7 +12,11 @@ defmodule Backend.Battlefy do
   alias Backend.Battlefy.Stage
   alias Backend.BattlefyUtil
   alias Backend.Hearthstone
+  alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.Lineup
+  alias Backend.Tournaments
+  alias Backend.Tournaments.MatchStats
+  alias Backend.Tournaments.MatchStats.Result
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
   @type region :: :Asia | :Europe | :Americas
@@ -523,6 +527,104 @@ defmodule Backend.Battlefy do
     Api.get_tournament(tournament_id)
   end
 
+  @spec fetch_all_tournament_matches(tournament_id | Tournament.t()) ::
+          {:ok, [Match.t()]} | {:error, :atom}
+  def fetch_all_tournament_matches(%{stage_ids: stage_ids}) do
+    matches = Enum.flat_map(stage_ids, &get_matches/1)
+    {:ok, matches}
+  end
+
+  def fetch_all_tournament_matches(tournament_id) when is_binary(tournament_id) do
+    case get_tournament(tournament_id) do
+      %Tournament{} = t -> fetch_all_tournament_matches(t)
+      _ -> {:error, :tournament_not_found}
+    end
+  end
+
+  @spec archetype_stats(tournament_id | Tournament.t()) ::
+          {:ok, Tournaments.archetype_stats_bag()} | {:error, any()}
+  def archetype_stats(tournament_or_id) do
+    id =
+      case tournament_or_id do
+        %Tournament{id: id} -> id
+        id -> id
+      end
+
+    with {:ok, lineups} <- fetch_lineups(id),
+         {:ok, matches} <- fetch_all_tournament_matches(tournament_or_id) do
+      {:ok, create_match_stats(matches, lineups) |> Tournaments.calculate_archetype_stats()}
+    end
+  end
+
+  @spec create_match_stats([Match.t()], [Lineup.t()]) :: [MatchStats.t()]
+  def create_match_stats(matches, lineups) do
+    full_lineups =
+      Map.new(lineups, fn %{name: name, decks: decks} ->
+        archetypes =
+          Enum.map(decks, fn d ->
+            Deck.archetype(d) || Deck.class_name(d)
+          end)
+
+        {name, archetypes}
+      end)
+
+    lineup_decks =
+      Enum.flat_map(lineups, fn %{name: name, decks: decks} ->
+        Enum.map(decks, fn d ->
+          {archetype_key(name, d), Deck.archetype(d) || Deck.class_name(d)}
+        end)
+      end)
+      |> Map.new()
+
+    for %{completed_at: %NaiveDateTime{}, top: top, bottom: bottom, stats: stats} <- matches do
+      top_banned = Map.get(lineup_decks, archetype_key(top, top.banned_class))
+      top_lineup = Map.get(full_lineups, MatchTeam.get_name(top))
+      top_not_banned = Enum.reject(top_lineup, &(&1 == top_banned))
+      bottom_banned = Map.get(lineup_decks, archetype_key(bottom, bottom.banned_class))
+      bottom_lineup = Map.get(full_lineups, MatchTeam.get_name(bottom))
+      bottom_not_banned = Enum.reject(bottom_lineup, &(&1 == bottom_banned))
+
+      results =
+        for %{
+              stats: %{
+                is_complete: true,
+                top: %{class: top_class, winner: top_winner},
+                bottom: %{class: bottom_class, winner: bottom_winner}
+              }
+            } <- stats do
+          top_archetype = Map.get(lineup_decks, archetype_key(top, top_class))
+          bottom_archetype = Map.get(lineup_decks, archetype_key(bottom, bottom_class))
+          win_archetype_tuples = [{top_winner, top_archetype}, {bottom_winner, bottom_archetype}]
+          winners = for {true, archetype} <- win_archetype_tuples, do: archetype
+          losers = for {false, archetype} <- win_archetype_tuples, do: archetype
+          pairs = for w <- winners, l <- losers, do: {w, l}
+
+          %Result{
+            winner_loser_pairs: pairs
+          }
+        end
+
+      %MatchStats{
+        banned: [top_banned, bottom_banned],
+        not_banned: top_not_banned ++ bottom_not_banned,
+        results: results
+      }
+    end
+  end
+
+  @spec archetype_key(String.t() | MatchTeam.t(), Deck.t() | String.t()) :: String.t() | nil
+  defp archetype_key(_team_name, nil), do: nil
+
+  defp archetype_key(%MatchTeam{} = team, deck_or_class),
+    do: archetype_key(MatchTeam.get_name(team), deck_or_class)
+
+  defp archetype_key(team_name, %Deck{} = deck), do: archetype_key(team_name, Deck.class(deck))
+
+  defp archetype_key(team_name, class) do
+    # battlefy uses lower case classes
+    team_name <> "|" <> String.downcase(class)
+  end
+
   @spec get_tournament_matches(
           Tournament.t() | %{stage_ids: [stage_id]},
           get_tournament_matches_options
@@ -933,6 +1035,14 @@ defmodule Backend.Battlefy do
       _ ->
         Backend.Battlefy.LineupFetcher.fetch_async(tournament_id)
         []
+    end
+  end
+
+  @spec fetch_lineups(tournament_id) :: [Lineup]
+  def fetch_lineups(tournament_id) do
+    case lineups(tournament_id) do
+      [_ | _] = lineups -> {:ok, lineups}
+      _ -> {:error, :no_lineups}
     end
   end
 

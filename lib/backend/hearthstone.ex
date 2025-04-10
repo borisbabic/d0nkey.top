@@ -891,14 +891,7 @@ defmodule Backend.Hearthstone do
   end
 
   def get_lineups(tournament_id, tournament_source) do
-    query =
-      from(l in Lineup,
-        where: l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source,
-        select: l
-      )
-
-    query
-    |> Repo.all()
+    lineups([{"tournament_id", tournament_id}, {"tournament_source", tournament_source}])
   end
 
   def parse_gm_season("2020_2"), do: {:ok, {2020, 2}}
