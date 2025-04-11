@@ -97,10 +97,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     "Aviana" in card_info.card_names
   end
 
-  defp charge?(card_info) do
-    min_keyword_count?(card_info, 2, "charge")
-  end
-
   def wild(card_info) do
     class_name = Deck.class_name(card_info.deck)
 
@@ -138,11 +134,11 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       old_aggro?(card_info) ->
         :"Old Aggro Druid"
 
-      "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+      "Astral Communion" in card_info.card_names ->
+        :"Astral Communion Druid"
 
-      charge?(card_info) ->
-        :"Charge Druid"
+      "Mecha'thun" in card_info.card_names ->
+        :"Mecha'thun Druid"
 
       aviana_druid?(card_info) ->
         :"Aviana Druid"
