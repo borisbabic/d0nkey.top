@@ -11,9 +11,10 @@ defmodule BobsLeague.Api.Tournament do
     field(:state, String.t() | nil)
   end
 
-  def link(%{id: id}) do
-    "https://www.bobsleague.com/events/#{id}/tournament"
-  end
+  def link(%{id: id}), do: link(id)
+
+  def link(id) when is_binary(id) or is_integer(id),
+    do: "https://www.bobsleague.com/events/#{id}/tournament"
 
   @spec server(t()) :: atom()
   def server(%{server: server}) do

@@ -1,4 +1,5 @@
 defmodule BackendWeb.TournamentLineups do
+  @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.TournamentLineupExplorer
   alias Backend.DeckInteractionTracker, as: Tracker
@@ -19,6 +20,13 @@ defmodule BackendWeb.TournamentLineups do
         <div :if={Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
           <div>
             <div class="title is-2">Lineups</div>
+            <div class="subtitle is-5">
+              <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/popularity"}>Popularity</a>
+              | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Stats</a>
+              <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
+              | <a href={link}>Tournament</a>
+              </span>
+            </div>
             <FunctionComponents.Ads.below_title/>
             <TournamentLineupExplorer id={"tournament_lineup_explorer_#{@tournament_source}_#{@tournament_id}"} tournament_id={"#{@tournament_id}"} tournament_source={"#{@tournament_source}"} />
           </div>

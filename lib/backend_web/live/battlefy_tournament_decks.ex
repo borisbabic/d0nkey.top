@@ -18,8 +18,15 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
     ~F"""
       <div>
         <div class="title is-2">Explore Decks</div>
+        <div class="subtitle is-6">
+          <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/popularity"}>Popularity</a>
+          | <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/stats"}>Stats</a>
+          <span :if={link = Backend.Tournaments.get_any_link({"battlefy", @tournament_id})}>
+          | <a href={link}>Tournament</a>
+          </span>
+        </div>
         <FunctionComponents.Ads.below_title/>
-        <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"} standings_url={~p"/battlefy/tournament/#{@tournament_id}"}/>
+        <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"} />
       </div>
     """
   end

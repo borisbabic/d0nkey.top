@@ -283,6 +283,11 @@ defmodule BackendWeb.Router do
       TournamentLineupPopularityTableLive
     )
 
+    live(
+      "/tournament-lineups/:tournament_source/:tournament_id/stats",
+      TournamentLineupArchetypeStatsTable
+    )
+
     live("/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups)
 
     live("/wc/2021", WC2021Live)

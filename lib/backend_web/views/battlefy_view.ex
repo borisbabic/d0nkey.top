@@ -372,7 +372,8 @@ defmodule BackendWeb.BattlefyView do
     ~H"""
     <%= if @has_lineups do %>
       <a class="link" href={~p"/battlefy/tournament/#{@tournament.id}/lineups"}>Lineups</a>
-      | <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/popularity"}>Lineup Popularity</a>
+      | <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/popularity"}>Popularity</a>
+      | <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/stats"}>Winrate</a>
       |
     <% end %>
     <%= if !@has_lineups and @tournament.id == "66104524c69b9f10c243d1fa" do %>

@@ -11,7 +11,6 @@ defmodule Components.TournamentLineupExplorer do
   prop(page_size, :integer, default: 50)
   prop(show_page_dropdown, :boolean, default: true)
   prop(gm_week, :string, default: nil)
-  prop(standings_url, :string, default: nil)
   slot(default)
   slot(lineup_name, arg: %{lineup_name: :string})
 
@@ -28,7 +27,6 @@ defmodule Components.TournamentLineupExplorer do
     <div>
       <div :if={lineups = lineups(@tournament_id, @tournament_source, @filters)}>
         <#slot />
-        <a :if={@standings_url} class="button is-link" href={@standings_url}>Standings</a>
         <Dropdown.menu title="Page" :if={@show_page_dropdown}>
           <Dropdown.item :for={page <- page_range(lineups, @page_size)} selected={page == @page} phx-target={@myself} phx-click="set-page" phx-value-page={page} >
             {page}

@@ -56,6 +56,30 @@ defmodule Backend.Tournaments.ArchetypeStats do
   def increment_in_bag(bag, archetype, fields) do
     Map.update(bag, archetype, init(archetype, fields), fn as -> increment(as, fields) end)
   end
+
+  def winrate(%{wins: wins, total: total}) when total > 0 do
+    wins / total
+  end
+
+  def winrate(_) do
+    0
+  end
+
+  # from onkrad
+  def adjusted_winrate(%{wins: wins, banned: banned, not_banned: not_banned, total: total}, :bo3)
+      when total + banned + not_banned > 0 do
+    (wins + banned * 29 / 33) / (total + banned + not_banned / 3.5)
+  end
+
+  # from onkrad
+  def adjusted_winrate(%{wins: wins, banned: banned, not_banned: not_banned, total: total}, :bo5)
+      when total + banned + not_banned > 0 do
+    (wins + banned * 10 / 11) / (total + banned + not_banned / 5)
+  end
+
+  def adjusted_winrate(stats, _), do: winrate(stats)
+
+  def supports_adjusted_winrate?(atom), do: atom in [:bo3, :bo5]
 end
 
 defmodule Backend.Tournaments.ArchetypeStats.HeadsUp do

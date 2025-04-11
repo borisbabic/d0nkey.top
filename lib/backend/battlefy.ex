@@ -1038,6 +1038,14 @@ defmodule Backend.Battlefy do
     end
   end
 
+  @spec fetch_tournament(tournament_id) :: {:ok, Tournament.t()} | {:error, atom()}
+  def fetch_tournament(id) do
+    case get_tournament(id) do
+      %Tournament{} = t -> {:ok, t}
+      _ -> {:error, :could_not_fetch_tournament}
+    end
+  end
+
   @spec fetch_lineups(tournament_id) :: [Lineup]
   def fetch_lineups(tournament_id) do
     case lineups(tournament_id) do

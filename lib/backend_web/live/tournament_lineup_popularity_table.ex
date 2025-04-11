@@ -17,13 +17,14 @@ defmodule BackendWeb.TournamentLineupPopularityTableLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div :if={Backend.Hearthstone.get_lineups(@tournament_id, @tournament_source)} >
+        <div>
           <div>
-            <div class="title is-2">Lineup Stats</div>
+            <div class="title is-2">Tournament Archetype Popularity</div>
             <div class="subtitle is-6">
               <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
-              <span :if={ url = Backend.Hearthstone.tournament_standings_url(@tournament_source, @tournament_id)}>
-               | <a href={url}>Tournament</a>
+              | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
+              <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
+               | <a href={link}>Tournament</a>
               </span>
               <span :if={@lineups.ok?}>| Total Lineups: {Enum.count(@lineups.result)}</span>
             </div>
