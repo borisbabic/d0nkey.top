@@ -17,13 +17,13 @@ defmodule Components.Lineups.ArchetypeStatsTable do
       <Table id={"lineups_stats_#{@id}"} data={stats <- stats(@stats)} striped>
         <Column label="Archetype" sort_by={fn %{archetype: a} -> {Deck.extract_class(a), a} end}> <DeckComponents.archetype archetype={stats.archetype} /> </Column>
         <Column label="Total Games" sort_by={fn %{total: total} -> total end}>{stats.total}</Column>
-        <Column label="Wins" sort_by={fn %{wins: wins} -> wins end}>{stats.wins}</Column>
-        <Column label="Losses" sort_by={fn %{losses: losses} -> losses end}>{stats.losses}</Column>
+        <Column label="Wins" column_class="is-hidden-mobile" sort_by={fn %{wins: wins} -> wins end}>{stats.wins}</Column>
+        <Column label="Losses" column_class="is-hidden-mobile" sort_by={fn %{losses: losses} -> losses end}>{stats.losses}</Column>
         <Column label="Winrate" sort_by={fn stats -> ArchetypeStats.winrate(stats) end}><WinrateTag winrate={ArchetypeStats.winrate(stats)}/></Column>
         <Column label="Adjusted Winrate" sort_by={fn stats -> ArchetypeStats.adjusted_winrate(stats, @adjusted_winrate_type) end}><WinrateTag winrate={ArchetypeStats.adjusted_winrate(stats, @adjusted_winrate_type)}/></Column>
-        <Column label="Banned" sort_by={fn %{banned: banned} -> banned end}>{stats.banned}</Column>
-        <Column label="Not Banned" sort_by={fn %{not_banned: not_banned} -> not_banned end}>{stats.not_banned}</Column>
-        <Column label="Banned %" sort_by={fn %{banned: banned, not_banned: not_banned} -> Util.percent(banned, banned + not_banned) end}>{Util.percent(stats.banned, stats.banned + stats.not_banned) |> Float.round(1)}%</Column>
+        <Column label="Banned" column_class="is-hidden-mobile" sort_by={fn %{banned: banned} -> banned end}>{stats.banned}</Column>
+        <Column label="Not Banned" column_class="is-hidden-mobile" sort_by={fn %{not_banned: not_banned} -> not_banned end}>{stats.not_banned}</Column>
+        <Column label="Banned %" column_class="is-hidden-mobile" sort_by={fn %{banned: banned, not_banned: not_banned} -> Util.percent(banned, banned + not_banned) end}>{Util.percent(stats.banned, stats.banned + stats.not_banned) |> Float.round(1)}%</Column>
       </Table>
       </div>
     """

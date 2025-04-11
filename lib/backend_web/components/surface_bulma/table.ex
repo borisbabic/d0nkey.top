@@ -66,7 +66,7 @@ defmodule Components.SurfaceBulma.Table do
         <thead>
           <tr>
             {#for col <- @cols}
-              <th>
+              <th class={col.column_class}>
               {#if !is_nil(col.sort_by) && assigns.sorted_by == col.label}
               <a :on-click="sorted_click" phx-value-value={col.label} href="#">
                 <span>
@@ -93,7 +93,7 @@ defmodule Components.SurfaceBulma.Table do
           <tr
             :for={{item, index} <- Enum.with_index(@sorted_data)}
             class={row_class_fun(@row_class).(item, index)}>
-            <td :for={col<- @cols}>
+            <td :for={col<- @cols} class={col.column_class}>
               <span><#slot {col} generator_value={item}/></span>
             </td>
           </tr>

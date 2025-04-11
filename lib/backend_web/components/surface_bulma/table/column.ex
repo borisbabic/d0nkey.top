@@ -41,4 +41,6 @@ defmodule Components.SurfaceBulma.Table.Column do
 
   # Todo, requires patching of bulma css
   # prop width, :string, default: nil
+
+  prop(column_class, :css_class, default: "")
 end
