@@ -54,5 +54,12 @@ defmodule Backend.Battlefy.LineupFetcher do
     }
   end
 
+  def fetch_async_if_missing(id_or_tournament) do
+    Task.start(fn ->
+      if !Battlefy.has_lineups?(id_or_tournament) do
+        enqueue_jobs(id_or_tournament)
+      end
+    end)
+  end
   def fetch_async(id_or_tournament), do: Task.start(fn -> enqueue_jobs(id_or_tournament) end)
 end

@@ -136,7 +136,10 @@ defmodule BackendWeb.BattlefyController do
   def lineups(show_lineups, tournament_id) when is_integer(show_lineups) or show_lineups == true,
     do: Battlefy.lineups(tournament_id)
 
-  def lineups(_, _), do: []
+  def lineups(_, tournament_id) do
+    Backend.Battlefy.LineupFetcher.fetch_async_if_missing(tournament_id)
+    []
+  end
 
   defp add_matches_standings(existing, params = %{"stage_id" => stage_id}) do
     standings = Battlefy.get_stage_standings(stage_id)

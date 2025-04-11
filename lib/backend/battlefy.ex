@@ -1038,6 +1038,10 @@ defmodule Backend.Battlefy do
     end
   end
 
+  @spec has_lineups?(tournament_id | Tournament.t()) :: boolean
+  def has_lineups?(%{id: id}), do: has_lineups?(id)
+  def has_lineups?(id), do: Hearthstone.has_lineups?(id, "battlefy")
+
   @spec fetch_tournament(tournament_id) :: {:ok, Tournament.t()} | {:error, atom()}
   def fetch_tournament(id) do
     case get_tournament(id) do
