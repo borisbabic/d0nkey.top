@@ -13,9 +13,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info) ->
         :"Armor DH"
 
-      deathrattle?(card_info) ->
-        :"Deathrattle DH"
-
       menagerie?(card_info) ->
         :"Menagerie DH"
 
@@ -46,8 +43,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       crewmate?(card_info, 2) ->
         :"Among Us DH"
 
-      "Cliff Dive" in card_info.card_names ->
+      hog_cliff_dive?(card_info) ->
+        :"Hog Cliff Dive DH"
+
+      cliff_dive?(card_info) ->
         :"Cliff Dive DH"
+
+      deathrattle?(card_info) ->
+        :"Deathrattle DH"
 
       dreadseed?(card_info) ->
         :"Dreadseed DH"
@@ -64,6 +67,15 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  defp hog_cliff_dive?(card_info) do
+    cliff_dive?(card_info) and
+      min_count?(card_info, 2, ["Ball Hog", "Ravenous Felhunter"])
+  end
+
+  defp cliff_dive?(card_info) do
+    "Cliff Dive" in card_info.card_names
   end
 
   defp deathrattle?(card_info) do
