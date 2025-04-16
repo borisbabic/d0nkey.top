@@ -89,26 +89,35 @@ defmodule Backend.LeaderboardsPoints.HsEsports2023 do
   end
 
   @impl true
-  def info_link("2023" <> _) do
-    %{
-      link: "https://hearthstone.blizzard.com/news/23904520",
-      display: "2023 Announcement"
-    }
+  def replace_entries(entries, _ps, _leaderboard_id), do: entries
+
+  @impl true
+  def info_links("2023" <> _) do
+    [
+      %{
+        link: "https://hearthstone.blizzard.com/news/23904520",
+        display: "2023 Announcement"
+      }
+    ]
   end
 
   @impl true
-  def info_link("2024_" <> _) do
-    %{
-      link: "https://hearthstone.blizzard.com/news/24056180",
-      display: "2024 Announcement"
-    }
+  def info_links("2024_" <> _) do
+    [
+      %{
+        link: "https://hearthstone.blizzard.com/news/24056180",
+        display: "2024 Announcement"
+      }
+    ]
   end
 
-  def info_link(_) do
-    %{
-      link: "https://hearthstone.blizzard.com/news/esports",
-      display: "Hearthstone Esports News"
-    }
+  def info_links(_) do
+    [
+      %{
+        link: "https://hearthstone.blizzard.com/news/esports",
+        display: "Hearthstone Esports News"
+      }
+    ]
   end
 
   ######

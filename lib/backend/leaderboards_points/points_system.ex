@@ -1,4 +1,5 @@
 defmodule Backend.LeaderboardsPoints.PointsSystem do
+  alias Backend.Leaderboards.Entry
   @moduledoc false
   @callback points_for_rank(rank :: integer()) :: {:ok, integer()} | {:error, :reason}
   @callback points_for_rank!(rank :: integer()) :: integer()
@@ -21,5 +22,8 @@ defmodule Backend.LeaderboardsPoints.PointsSystem do
   @callback max_rank(season_slug :: String.t(), leaderboard_id :: String.t()) ::
               max_rank :: integer()
 
-  @callback info_link(season_slug :: String.t()) :: %{display: String.t(), link: String.t()}
+  @callback info_links(season_slug :: String.t()) :: [%{display: String.t(), link: String.t()}]
+
+  @callback replace_entries([Entry.t()], season_slug :: String.t(), leaderboard_id :: String.t()) ::
+              [Entry.t()]
 end

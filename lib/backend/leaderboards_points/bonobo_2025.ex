@@ -39,9 +39,10 @@ defmodule Backend.LeaderboardsPoints.Bonobo2025 do
 
   @impl true
   def max_rank(_, _), do: 5000
-
   @impl true
-  def info_link(_), do: %{display: "Bonobo Discord", link: "https://discord.gg/vz8DcuN45m"}
+  def replace_entries(entries, _ps, _leaderboard_id), do: entries
+  @impl true
+  def info_links(_), do: [%{display: "Bonobo Discord", link: "https://discord.gg/vz8DcuN45m"}]
 
   @impl true
   def filter_player_rows(rows, _, _) do

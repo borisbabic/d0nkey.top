@@ -1391,10 +1391,14 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  def announcement_link_subtitle(assigns) do
+  defp announcement_link_subtitle(assigns) do
     ~H"""
-      <div class="subtitle is-5">
-          <a href={@link} target="_blank"><%= @display %></a>
+      <div :if={[%{link: link, display: display} | rest ] = @links} class="subtitle is-5">
+          <a href={link} target="_blank"><%= display %></a>
+          <%= for %{link: l, display: d} <- rest do %>
+            | <a href={l} target="_blank"><%= d %></a>
+          <% end %>
+
       </div>
     """
   end
@@ -1402,8 +1406,10 @@ defmodule BackendWeb.LeaderboardView do
   def points_subtitle(ps) when is_atom(ps), do: ps |> to_string() |> points_subtitle()
 
   def points_subtitle(points_season) when is_binary(points_season) do
-    points_season
-    |> LeaderboardsPoints.info_link()
-    |> announcement_link_subtitle()
+    links =
+      points_season
+      |> LeaderboardsPoints.info_links()
+
+    announcement_link_subtitle(%{links: links})
   end
 end

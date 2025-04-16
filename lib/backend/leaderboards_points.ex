@@ -13,6 +13,7 @@ defmodule Backend.LeaderboardsPoints do
 
     create_criteria(ps, leaderboard_id, use_current)
     |> Leaderboards.entries()
+    |> system.replace_entries(ps, leaderboard_id)
     |> group_by_player()
     |> Enum.map(&calculate_player_row(&1, system))
     |> system.filter_player_rows(ps, leaderboard_id)
@@ -100,8 +101,8 @@ defmodule Backend.LeaderboardsPoints do
     |> Enum.map_join(" ", &Recase.to_title/1)
   end
 
-  def info_link(season_slug) do
-    system(season_slug).info_link(season_slug)
+  def info_links(season_slug) do
+    system(season_slug).info_links(season_slug)
   end
 
   def system("2023" <> _), do: HsEsports2023
@@ -116,4 +117,15 @@ defmodule Backend.LeaderboardsPoints do
   end
 
   defp systems(), do: [HsEsports2023, Bonobo2025, HsEsports2025]
+
+  def create_fake_entry(account_id, rank, season_id, rating \\ nil) do
+    %Backend.Leaderboards.Entry{
+      account_id: account_id,
+      rank: rank,
+      rating: rating,
+      season: %Backend.Leaderboards.Season{
+        season_id: season_id
+      }
+    }
+  end
 end
