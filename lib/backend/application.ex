@@ -24,6 +24,11 @@ defmodule Backend.Application do
           id: Backend.Streaming.DeckStreamingInfoBag,
           start: {Backend.Streaming.DeckStreamingInfoBag, :start_link, [[]]}
         },
+        %{
+          # can multiserver with acceptable issues
+          id: Backend.LatestHSArticles,
+          start: {Backend.LatestHSArticles, :start_link, [[]]}
+        },
         {Oban, oban_config()},
         # Backend.PostgrexPubsubListener,
         %{
@@ -110,11 +115,6 @@ defmodule Backend.Application do
         #   id: Backend.Grandmasters,
         #   start: {Backend.Grandmasters, :start_link, [[]]}
         # },
-        %{
-          # can multiserver with acceptable issues
-          id: Backend.LatestHSArticles,
-          start: {Backend.LatestHSArticles, :start_link, [[]]}
-        },
         %{
           # can multiserver, prolly
           id: Backend.AdsTxtCache,
