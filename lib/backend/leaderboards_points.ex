@@ -104,9 +104,9 @@ defmodule Backend.LeaderboardsPoints do
     system(season_slug).info_link(season_slug)
   end
 
-  def system("2023_" <> _), do: HsEsports2023
-  def system("2024_" <> _), do: HsEsports2023
-  def system("2025_" <> _), do: HsEsports2025
+  def system("2023" <> _), do: HsEsports2023
+  def system("2024" <> _), do: HsEsports2023
+  def system("2025" <> _), do: HsEsports2025
   def system("bonobo_2025" <> _), do: Bonobo2025
   def system(_), do: HsEsports2025
 
