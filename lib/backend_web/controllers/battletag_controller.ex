@@ -8,8 +8,6 @@ defmodule BackendWeb.BattletagController do
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
   plug(Backend.Plug.AdminAuth, role: :battletag_info)
 
-  action_fallback BackendWeb.FallbackController
-
   def index(conn, params) do
     case Battlenet.paginate_battletag_info(params) do
       {:ok, assigns} ->

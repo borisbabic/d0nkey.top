@@ -22,6 +22,10 @@ defmodule BackendWeb.ErrorView do
     """
   end
 
+  def render("needs_login.html", assigns) do
+    Components.Helper.needs_login(assigns)
+  end
+
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.html" becomes
   # "Not Found".

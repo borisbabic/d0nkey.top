@@ -4,17 +4,15 @@ defmodule BackendWeb.OldBattletagController do
   alias Backend.Battlenet
   alias Backend.Battlenet.OldBattletag
 
-
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
   plug(Backend.Plug.AdminAuth, role: :old_battletags)
-  action_fallback BackendWeb.FallbackController
   plug(:put_layout, false)
-
 
   def index(conn, params) do
     case Battlenet.paginate_old_battletags(params) do
       {:ok, assigns} ->
         render(conn, "index.html", assigns)
+
       error ->
         conn
         |> put_flash(:error, "There was an error rendering Old battletags. #{inspect(error)}")
@@ -33,6 +31,7 @@ defmodule BackendWeb.OldBattletagController do
         conn
         |> put_flash(:info, "Old battletag created successfully.")
         |> redirect(to: Routes.old_battletag_path(conn, :show, old_battletag))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -57,6 +56,7 @@ defmodule BackendWeb.OldBattletagController do
         conn
         |> put_flash(:info, "Old battletag updated successfully.")
         |> redirect(to: Routes.old_battletag_path(conn, :show, old_battletag))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", old_battletag: old_battletag, changeset: changeset)
     end

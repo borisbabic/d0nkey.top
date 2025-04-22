@@ -6,7 +6,6 @@ defmodule BackendWeb.LeagueController do
 
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
   plug(Backend.Plug.AdminAuth, role: :fantasy_leagues)
-  action_fallback BackendWeb.FallbackController
 
   def index(conn, params) do
     case Fantasy.paginate_leagues(params) do

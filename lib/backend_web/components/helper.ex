@@ -387,4 +387,14 @@ defmodule Components.Helper do
     </.link>
     """
   end
+
+  attr :viewable_url, :string, default: nil
+
+  def needs_login(assigns) do
+    ~H"""
+      <div class="title is-3">You need to log in to view this page</div>
+      <span :if={@viewable_url}><a class="link" href={@viewable_url}>View the page without features that require login</a> | </span>
+      <a class="link" href={"/auth/bnet"}>Log in</a>
+    """
+  end
 end

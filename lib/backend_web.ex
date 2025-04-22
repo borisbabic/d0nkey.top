@@ -55,6 +55,9 @@ defmodule BackendWeb do
       import BackendWeb.Gettext
       import Phoenix.LiveView.Controller
       alias BackendWeb.Router.Helpers, as: Routes
+
+      action_fallback BackendWeb.FallbackController
+
       unquote(verified_routes())
 
       def multi_select_to_list(multi = %{}) do

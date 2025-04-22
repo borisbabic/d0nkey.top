@@ -36,33 +36,43 @@ defmodule BackendWeb.LeaderboardController do
     points(conn, params)
   end
 
-  def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
-    criteria = create_criteria(params)
-    leaderboard = get_shim(criteria, params)
-    compare_to = params["compare_to"]
-    comparison = get_comparison(criteria, compare_to)
-    ladder_mode = parse_ladder_mode(params)
-    show_flags = parse_show_flags(params)
-    skip_cn = parse_skip_cn(params, leaderboard)
-    {invited, ladder_invite_num, ladder_points} = leaderboard |> get_season_info()
+  @needs_login ["compare_to", "up_to"]
+  defp needs_login?(params) do
+    Enum.any?(["compare_to", "up_to"], &Map.has_key?(params, &1))
+  end
 
-    render(conn, "index.html", %{
-      conn: conn,
-      invited: invited,
-      ladder_invite_num: ladder_invite_num,
-      highlight: parse_highlight(params),
-      other_ladders: get_other_ladders(leaderboard, ladder_mode, criteria),
-      leaderboard: leaderboard,
-      compare_to: params["compare_to"],
-      show_flags: show_flags,
-      page_title: "Ladder Leaderboard",
-      search: params["search"],
-      skip_cn: skip_cn,
-      comparison: comparison,
-      ladder_points: ladder_points,
-      show_ratings: show_ratings(params, leaderboard),
-      ladder_mode: ladder_mode
-    })
+  def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
+    if needs_login?(params) && !BackendWeb.AuthUtils.user(conn) do
+      viewable_url = Routes.leaderboard_path(conn, :index, Map.drop(params, @needs_login))
+      {:error, :needs_login, viewable_url}
+    else
+      criteria = create_criteria(params)
+      leaderboard = get_shim(criteria, params)
+      compare_to = params["compare_to"]
+      comparison = get_comparison(criteria, compare_to)
+      ladder_mode = parse_ladder_mode(params)
+      show_flags = parse_show_flags(params)
+      skip_cn = parse_skip_cn(params, leaderboard)
+      {invited, ladder_invite_num, ladder_points} = leaderboard |> get_season_info()
+
+      render(conn, "index.html", %{
+        conn: conn,
+        invited: invited,
+        ladder_invite_num: ladder_invite_num,
+        highlight: parse_highlight(params),
+        other_ladders: get_other_ladders(leaderboard, ladder_mode, criteria),
+        leaderboard: leaderboard,
+        compare_to: params["compare_to"],
+        show_flags: show_flags,
+        page_title: "Ladder Leaderboard",
+        search: params["search"],
+        skip_cn: skip_cn,
+        comparison: comparison,
+        ladder_points: ladder_points,
+        show_ratings: show_ratings(params, leaderboard),
+        ladder_mode: ladder_mode
+      })
+    end
   end
 
   def index(conn, params) do
