@@ -301,38 +301,44 @@ defmodule BackendWeb.LeaderboardController do
   defp get_comparison(_, _), do: nil
 
   def player_stats(conn, params) do
-    direction =
-      case params["direction"] do
-        "desc" -> :desc
-        "asc" -> :asc
-        _ -> nil
-      end
+    # easier to see both cases at once, so I want the error first
+    # credo:disable-for-next-line
+    if !BackendWeb.AuthUtils.user(conn) do
+      {:error, :needs_login}
+    else
+      direction =
+        case params["direction"] do
+          "desc" -> :desc
+          "asc" -> :asc
+          _ -> nil
+        end
 
-    regions = multi_select_to_array(params["regions"])
-    leaderboards = multi_select_to_array(params["leaderboards"])
+      regions = multi_select_to_array(params["regions"])
+      leaderboards = multi_select_to_array(params["leaderboards"])
 
-    min = with raw when is_binary(raw) <- params["min"], {val, _} <- Integer.parse(raw), do: val
+      min = with raw when is_binary(raw) <- params["min"], {val, _} <- Integer.parse(raw), do: val
 
-    criteria =
-      [:latest_in_season]
-      |> add_region_criteria(regions)
-      |> add_leaderboard_criteria(leaderboards)
-      |> add_min_rating_criteria()
+      criteria =
+        [:latest_in_season]
+        |> add_region_criteria(regions)
+        |> add_leaderboard_criteria(leaderboards)
+        |> add_min_rating_criteria()
 
-    stats = Leaderboards.stats(criteria, 60_000)
+      stats = Leaderboards.stats(criteria, 60_000)
 
-    render(conn, "stats.html", %{
-      conn: conn,
-      leaderboards: leaderboards,
-      regions: regions,
-      direction: direction,
-      min: min,
-      sort_by: params["sort_by"],
-      countries: multi_select_to_array(params["country"]),
-      show_flags: parse_yes_no(params["show_flags"], "yes"),
-      page_title: "Leaderboard Stats",
-      stats: stats
-    })
+      render(conn, "stats.html", %{
+        conn: conn,
+        leaderboards: leaderboards,
+        regions: regions,
+        direction: direction,
+        min: min,
+        sort_by: params["sort_by"],
+        countries: multi_select_to_array(params["country"]),
+        show_flags: parse_yes_no(params["show_flags"], "yes"),
+        page_title: "Leaderboard Stats",
+        stats: stats
+      })
+    end
   end
 
   def history_attr(%{"attr" => "rating"}), do: :rating
