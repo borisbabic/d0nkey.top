@@ -718,7 +718,7 @@ defmodule Backend.Blizzard do
         lineups
 
       _ ->
-        Backend.Grandmasters.LineupFetcher.enqueue_job(stage_title)
+        # Backend.Grandmasters.LineupFetcher.enqueue_job(stage_title)
         []
     end
   end
