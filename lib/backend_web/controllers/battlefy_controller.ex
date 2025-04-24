@@ -256,7 +256,7 @@ defmodule BackendWeb.BattlefyController do
 
   defp future_and_player(%{"stage_id" => stage_id, "team_name" => team_name}) do
     with {[], [], nil} <- Battlefy.get_future_and_player_stage_matches(stage_id, team_name) do
-      {empty_opponent_matches(), [], stage_id}
+      {Battlefy.empty_opponent_matches(), [], stage_id}
     end
   end
 
@@ -264,11 +264,7 @@ defmodule BackendWeb.BattlefyController do
     do: Battlefy.get_future_and_player_matches(tournament_id, team_name)
 
   defp future_and_player(_),
-    do: {empty_opponent_matches(), [], nil}
-
-  defp empty_opponent_matches() do
-    %{winner: [], loser: [], waiting: []}
-  end
+    do: {Battlefy.empty_opponent_matches(), [], nil}
 
   def organization_tournament_stats(conn, %{"stats_slug" => stats_slug}) do
     with %{organization_slug: org_slug, from: from, pattern: pattern, title: title} <-

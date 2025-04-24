@@ -669,9 +669,9 @@ defmodule Backend.Battlefy do
     |> do_get_future_and_player_matches(team_name)
   end
 
-  def get_future_and_player_matches(_, _), do: {[], [], nil}
+  def get_future_and_player_matches(_, _), do: {empty_opponent_matches(), [], nil}
 
-  defp do_get_future_and_player_matches([], _), do: {[], [], nil}
+  defp do_get_future_and_player_matches([], _), do: {empty_opponent_matches(), [], nil}
 
   defp do_get_future_and_player_matches([%Stage{id: id} | rest], team_name) do
     matches = get_matches(id)
@@ -693,6 +693,8 @@ defmodule Backend.Battlefy do
         do_get_future_and_player_matches(rest, team_name)
     end
   end
+
+  def empty_opponent_matches(), do: %{winner: [], loser: [], waiting: []}
 
   def future_opponents(matches, %{
         id: id,

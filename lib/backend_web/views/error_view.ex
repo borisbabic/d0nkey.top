@@ -7,6 +7,10 @@ defmodule BackendWeb.ErrorView do
     internal_server(%{})
   end
 
+  def render("needs_login.html", assigns) do
+    Components.Helper.needs_login(assigns)
+  end
+
   def internal_server(assigns) do
     ~H"""
     <h2>
@@ -20,10 +24,6 @@ defmodule BackendWeb.ErrorView do
       </ul>
     </div>
     """
-  end
-
-  def render("needs_login.html", assigns) do
-    Components.Helper.needs_login(assigns)
   end
 
   # By default, Phoenix returns the status message from
