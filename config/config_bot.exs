@@ -3,7 +3,7 @@ import Config
 config :backend, QuantumScheduler,
   jobs: [
     {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
-    {"37 13 * * *", fn -> Backend.ReqvamTop100Tweeter.check_and_tweet() end},
+    # {"37 13 * * *", fn -> Backend.ReqvamTop100Tweeter.check_and_tweet() end},
     {"37 5 * * *", fn -> Backend.PrioritizedBattletagCache.update_cache() end},
     # {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},
     {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
@@ -20,7 +20,7 @@ config :backend, QuantumScheduler,
     # {"* * * * *", fn -> Backend.Grandmasters.update() end},
     {"53 * * * *", fn -> Backend.PlayerIconBag.update() end},
     # {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
-    {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
+    # {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
 
     # {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
