@@ -118,7 +118,7 @@ defmodule Components.ReplayExplorer do
           {/if}
           <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> @search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
           <Form :if={@search_filter} for={%{}} as={:search} change="change" submit="change">
-            <TextInput class={"input"} opts={placeholder: "Search opponent"}/>
+            <TextInput class={"input"} opts={placeholder: "Search opponent"} value={@params["opponent_btag_like"]}/>
           </Form>
         </div>
 
@@ -155,9 +155,9 @@ defmodule Components.ReplayExplorer do
     {:noreply, update_search(socket, search)}
   end
 
-  def update_search(socket = %{assigns: %{params: p}}, search) do
-    p = Map.put(p, "opponent_btag_like", search)
-    assign(socket, params: p)
+  def update_search(socket, search) do
+    url = LivePatchDropdown.link_with_new_url_param(socket, "opponent_btag_like", search)
+    push_patch(socket, to: url)
   end
 
   defp parse_params(raw_params, assigns) do
