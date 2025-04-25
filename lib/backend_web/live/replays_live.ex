@@ -24,6 +24,7 @@ defmodule BackendWeb.ReplaysLive do
       id="replays_explorer"
       params={@filters}
       filter_context={:public}
+      search_filter={false}
       class_stats_modal={false}
       show_opponent_name={false}
       additional_params={%{"public" => true}}
