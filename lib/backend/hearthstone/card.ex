@@ -134,6 +134,13 @@ defmodule Backend.Hearthstone.Card do
     |> foreign_key_constraint(:card_set_id, name: :hs_cards_card_set_id_fkey)
   end
 
+  def description(card) do
+    classes = Enum.map_join(classes(card), " ", &Deck.class_name/1)
+    stats = if is_integer(card.attack) do
+      "#{card.attack}/#{card.durability || card.health}"
+    end
+    "#{name(card)} #{cost(card)} mana #{stats} #{classes} #{type_name(card)} #{Map.get(card, :text)}"
+  end
   def set_card_id(card, card_id) do
     card
     |> cast(%{card_id: card_id}, [:card_id])
@@ -263,6 +270,10 @@ defmodule Backend.Hearthstone.Card do
   @spec type(card()) :: String.t()
   def type(%{card_type: type}), do: Type.upcase(type)
   def type(%{type: type}), do: Type.upcase(type)
+
+  @spec type_name(card()) :: String.t()
+  def type_name(%{card_type: %{name: name}}), do: name
+  def type_name(%{type: type}) when is_binary(type), do: type
 
   @spec classes(card()) :: [String.t()]
   def classes(%{card_class: card_class}), do: [card_class]

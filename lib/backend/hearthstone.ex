@@ -816,9 +816,34 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  @spec get_card(integer) :: card() | nil
+  @spec get_deckcode_card(integer) :: card() | nil
   def get_deckcode_card(dbf_id) do
     CardBag.deckcode_copy_id(dbf_id) |> get_card()
+  end
+
+
+  @spec get_fuzzy_card(String.t()) :: card() | nil
+  def get_fuzzy_card(fuzzy) do
+    common_criteria = [
+      {"order_by", "latest"},
+      Backend.Hearthstone.not_classic_card_criteria(),
+      {"limit", 1}
+    ]
+
+    exact_criteria = [{"name", fuzzy}, {"order_by", {:desc, :collectible}} | common_criteria]
+
+    fuzzy_criteria = [
+      {"order_by", "name_similarity_#{fuzzy}"},
+      {"collectible", "yes"} | common_criteria
+    ]
+
+    with [] <- Backend.Hearthstone.cards(exact_criteria),
+         [] <- Backend.Hearthstone.cards(fuzzy_criteria) do
+          nil
+    else
+      [card | _] ->
+        card
+    end
   end
 
   @spec get_or_create_lineup(String.t() | integer(), String.t(), String.t(), [String.t()]) ::

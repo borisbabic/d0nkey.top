@@ -11,7 +11,7 @@ defmodule Bot.RevealMessageHandler do
       |> filter_current(3)
       |> create_response(msg)
 
-    Api.create_message(msg.channel_id, response)
+    Api.Message.create(msg.channel_id, response)
   end
 
   def handle_all_reveals(msg, mode \\ :constructed) do
@@ -21,7 +21,7 @@ defmodule Bot.RevealMessageHandler do
       |> Enum.map(&create_response(&1, msg))
 
     for r <- responses do
-      Api.create_message(msg, r)
+      Api.Message.create(msg, r)
     end
   end
 

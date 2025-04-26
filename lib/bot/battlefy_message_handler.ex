@@ -24,7 +24,7 @@ defmodule Bot.BattlefyMessageHandler do
       |> get_guild_battletags!()
       |> create_message(standings)
 
-    Api.create_message(channel_id, message)
+    Api.Message.create(channel_id, message)
   end
 
   def create_standings_message(battlefy_id, message, battletags \\ [])

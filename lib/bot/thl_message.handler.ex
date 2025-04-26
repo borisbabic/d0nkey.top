@@ -17,7 +17,7 @@ defmodule Bot.ThlMessageHandler do
         |> Enum.map(&check_in_discord/1)
         |> create_embed()
 
-      Api.create_message(msg.channel_id, embed: embed)
+      Api.Message.create(msg.channel_id, embed: embed)
     end
   end
 

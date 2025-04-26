@@ -4,7 +4,6 @@ defmodule Bot.CardMessageHandler do
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardAggregate
-  alias Nostrum.Struct.Embed
   import Bot.MessageHandlerUtil
 
   @default_cards_criteria [
@@ -39,9 +38,9 @@ defmodule Bot.CardMessageHandler do
       |> ensure_sane_limit()
       |> Hearthstone.cards()
 
-    embeds = create_card_embeds(cards)
+    components = Enum.map(cards, &create_component/1)
 
-    Api.create_message(msg.channel_id, embeds: embeds)
+    create_components_message(msg.channel_id, components)
   end
 
   def ensure_sane_limit(criteria) do
@@ -51,16 +50,38 @@ defmodule Bot.CardMessageHandler do
     [{"limit", sane_limit} | rest]
   end
 
-  def create_card_embeds(cards), do: Enum.map(cards, &create_card_embed/1)
-
-  def create_card_embed(card, opts \\ []) do
+  def create_component(card, opts \\ []) do
     card_url = Keyword.get(opts, :card_url, Card.card_url(card)) |> add_hsguru()
-    embed = Keyword.get(opts, :embed, %Embed{})
+    title_prepend = Keyword.get(opts, :title_prepend, nil)
 
-    embed
-    |> Embed.put_title("#{card.name} (View card and tokens)")
-    |> Embed.put_image(card_url)
-    |> Embed.put_url("https://www.hsguru.com/card/#{Card.dbf_id(card)}")
+    accent_color =
+      case Backend.Hearthstone.Card.class(card) do
+        {:ok, class} -> Backend.Hearthstone.Deck.class_color(class) |> to_discord_color()
+        _ -> nil
+      end
+
+    title =
+      "### [#{card.name} (View card and tokens)](https://www.hsguru.com/card/#{Backend.Hearthstone.Card.dbf_id(card)})"
+
+    %{
+      type: 17,
+      accent_color: accent_color,
+      components: [
+        %{
+          type: 10,
+          content: "#{title_prepend}#{if title_prepend, do: "\n"}#{title}"
+        },
+        %{
+          type: 12,
+          items: [
+            %{
+              media: %{url: card_url},
+              description: Card.description(card)
+            }
+          ]
+        }
+      ]
+    }
   end
 
   def create_card_stats_message(%{content: content}) do

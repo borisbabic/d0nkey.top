@@ -66,7 +66,7 @@ defmodule Bot.MessageHandlerUtil do
   def reply(%{channel_id: channel_id, id: id}, options) when is_list(options) do
     with_reference = [{:message_reference, %{message_id: id}} | options]
 
-    Api.create_message(channel_id, with_reference)
+    Api.Message.create(channel_id, with_reference)
   end
 
   def reply(msg, content) when is_binary(content) do
@@ -81,7 +81,7 @@ defmodule Bot.MessageHandlerUtil do
     do: send_message(message_tuple, channel_id)
 
   def send_message({:ok, message}, channel_id) do
-    Api.create_message(channel_id, message)
+    Api.Message.create(channel_id, message)
   end
 
   def send_message({:error, reason}, channel_id) when is_atom(reason) or is_binary(reason) do
@@ -89,7 +89,7 @@ defmodule Bot.MessageHandlerUtil do
   end
 
   def send_message(message, channel_id) when is_binary(message) do
-    Api.create_message(channel_id, message)
+    Api.Message.create(channel_id, message)
   end
 
   def send_message(_, channel_id) do
@@ -97,7 +97,7 @@ defmodule Bot.MessageHandlerUtil do
   end
 
   def send_travolta(channel_id),
-    do: Api.create_message(channel_id, file: "assets/static/images/travolta.gif")
+    do: Api.Message.create(channel_id, file: "assets/static/images/travolta.gif")
 
   def send_or_travolta(message, channel_id) do
     if String.replace(message, "`", "") |> String.trim() |> String.first() do
@@ -135,4 +135,23 @@ defmodule Bot.MessageHandlerUtil do
   end
 
   def mentioned?(_, _), do: false
+
+  def to_discord_color(hex) when is_binary(hex) do
+    hex
+    |> String.replace("#", "")
+    |> String.replace("0x", "")
+    |> Integer.parse(16)
+    |> case do
+      {num, _} when is_integer(num) -> num
+      _ -> nil
+    end
+  end
+
+  def create_components_message(channel_id, components) when is_list(components) do
+    Nostrum.Api.Message.create(channel_id, %{flags: 32_768, components: components})
+  end
+
+  def create_components_message(channel_id, %{} = component) do
+    create_components_message(channel_id, [component])
+  end
 end

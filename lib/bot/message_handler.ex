@@ -4,7 +4,7 @@ defmodule Bot.MessageHandler do
   """
 
   alias BackendWeb.Router.Helpers, as: Routes
-  alias Nostrum.Api
+  alias Nostrum.Api.Message
   alias Backend.Blizzard
   alias Nostrum.Struct.Embed
   alias Hearthstone.DeckcodeExtractor
@@ -169,7 +169,7 @@ defmodule Bot.MessageHandler do
 
     case msg.content do
       "!ping" ->
-        Api.create_message(msg.channel_id, "pong")
+        Message.create(msg.channel_id, "pong")
 
       <<"!create_highlight", _::binary>> ->
         handle_highlight(msg)
@@ -236,7 +236,7 @@ defmodule Bot.MessageHandler do
 
       <<"!patchnotes", _::binary>> ->
         content = Backend.LatestHSArticles.patch_notes_url()
-        Api.create_message(msg.channel_id, content)
+        Message.create(msg.channel_id, content)
 
       <<"!orangeopen", _::binary>> ->
         Bot.BattlefyMessageHandler.handle_tournament_standings("625e7176b31e652df4f63a63", msg)
@@ -343,7 +343,7 @@ defmodule Bot.MessageHandler do
       |> String.trim("!")
       |> get_help()
 
-    Api.create_message(msg, content: reply_content)
+    Message.create(msg, content: reply_content)
   end
 
   def handle_card(msg) do
@@ -353,48 +353,37 @@ defmodule Bot.MessageHandler do
           write_log("card match #{Enum.join(matches, "|")}", msg.guild_id)
         end)
 
-        embeds =
+        galleries =
           matches
-          |> Enum.map(&create_card_embed/1)
-          |> Enum.filter(& &1)
+          |> Enum.map(&create_card_component/1)
 
-        Api.create_message(msg.channel_id, embeds: embeds)
+        create_components_message(msg.channel_id, galleries)
 
       _ ->
         :ignore
     end
   end
 
-  defp create_card_embed([match]), do: create_card_embed(match)
+  defp create_card_component([match]), do: create_card_component(match)
 
-  defp create_card_embed(match) do
-    embed =
-      %Embed{}
-      |> Embed.put_author(
-        "#{match} (Other potential matches)",
-        "https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)}",
-        nil
-      )
+  defp create_card_component(match) do
+    title =
+      "### [#{match} (Other potential matches)](https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)})"
 
-    common_criteria = [
-      {"order_by", "latest"},
-      Backend.Hearthstone.not_classic_card_criteria(),
-      {"limit", 1}
-    ]
+    card = Backend.Hearthstone.get_fuzzy_card(match)
 
-    exact_criteria = [{"name", match}, {"order_by", {:desc, :collectible}} | common_criteria]
-
-    fuzzy_criteria = [
-      {"order_by", "name_similarity_#{match}"},
-      {"collectible", "yes"} | common_criteria
-    ]
-
-    with [] <- Backend.Hearthstone.cards(exact_criteria),
-         [] <- Backend.Hearthstone.cards(fuzzy_criteria) do
-      embed
+    if card do
+      Bot.CardMessageHandler.create_component(card, title_prepend: title)
     else
-      [card | _] ->
-        Bot.CardMessageHandler.create_card_embed(card, embed: embed)
+      %{
+        type: 17,
+        components: [
+          %{
+            type: 10,
+            content: title
+          }
+        ]
+      }
     end
   end
 
@@ -531,7 +520,7 @@ defmodule Bot.MessageHandler do
   def handle_highlight(%{content: content, channel_id: channel_id}) do
     rest = get_options(content)
     url = Routes.leaderboard_url(BackendWeb.Endpoint, :index, %{highlight: rest})
-    Api.create_message(channel_id, url)
+    Message.create(channel_id, url)
   end
 
   # guild: D0nkey, channel: #botspam_private

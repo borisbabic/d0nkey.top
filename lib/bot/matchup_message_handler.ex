@@ -11,13 +11,13 @@ defmodule Bot.MatchupMessageHandler do
 
     case get_vs_archetypes(rest) do
       {:error, reason} ->
-        Api.create_message(channel_id, reason)
+        Api.Message.create(channel_id, reason)
 
       {:ok, {[as | _], [vs | _]}} ->
         matchups = HSReplay.get_archetype_matchups()
         matchup = ArchetypeMatchups.get_matchup(matchups, as, vs)
         message = "#{as.name} has a #{matchup.win_rate}% winrate vs #{vs.name}"
-        Api.create_message(channel_id, message)
+        Api.Message.create(channel_id, message)
     end
   end
 
@@ -26,7 +26,7 @@ defmodule Bot.MatchupMessageHandler do
 
     case get_vs_archetypes(rest) do
       {:error, reason} ->
-        Api.create_message(channel_id, reason)
+        Api.Message.create(channel_id, reason)
 
       {:ok, {as, vs}} ->
         as_ids = as |> Enum.map(fn a -> a.id end)
@@ -35,7 +35,7 @@ defmodule Bot.MatchupMessageHandler do
         vs_names = vs |> Enum.map(fn a -> a.name end)
         url = Routes.hs_replay_url(BackendWeb.Endpoint, :matchups, %{as: as_ids, vs: vs_ids})
 
-        Api.create_message(
+        Api.Message.create(
           channel_id,
           "#{as_names |> Enum.join(", ")} vs #{vs_names |> Enum.join(", ")}: #{url}"
         )

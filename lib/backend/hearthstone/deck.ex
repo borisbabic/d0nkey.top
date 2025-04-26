@@ -917,6 +917,35 @@ defmodule Backend.Hearthstone.Deck do
       "WARRIOR"
     ]
   end
+  @class_rgb %{
+  "DEATHKNIGHT" => {108,105,154},
+  "DEMONHUNTER" => {37, 111, 61},
+  "DRUID" => {255, 127, 14},
+  "HUNTER" => {44, 160, 44},
+  "MAGE" => {23, 190, 207},
+  "PALADIN" => {240, 189, 39},
+  "PRIEST" => {199, 199, 199},
+  "ROGUE" => {127, 127, 127},
+  "SHAMAN" => {43, 125, 180},
+  "WARLOCK" => {162, 112, 153},
+  "WARRIOR" => {200, 21, 24},
+  "NEUTRAL" => {43, 45, 47}
+  }
+  def class_color(class, type \\ :hex)
+  def class_color(class, :hex) do
+    class_color(class, :rgb)
+    |> hex()
+  end
+  def class_color(class, :rgb) do
+    Map.get(@class_rgb, class, {43, 45, 47})
+  end
+
+  defp hex({r, g, b}) do
+    r_hex = Integer.to_string(r, 16) |> String.pad_leading(2, "0")
+    g_hex = Integer.to_string(g, 16) |> String.pad_leading(2, "0")
+    b_hex = Integer.to_string(b, 16) |> String.pad_leading(2, "0")
+    "##{r_hex}#{g_hex}#{b_hex}"
+  end
 
   @spec rune_cost(t() | [integer()]) :: RuneCost.t()
   def rune_cost(%{cards: cards}), do: rune_cost(cards)
