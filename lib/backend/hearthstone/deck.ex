@@ -626,7 +626,7 @@ defmodule Backend.Hearthstone.Deck do
     hero_class = Hearthstone.class(hero)
 
     if hero_class not in [nil, "NEUTRAL"] and
-         Enum.any?(cards, & hero_class == (Hearthstone.class(&1))) do
+         Enum.any?(cards, &(hero_class == Hearthstone.class(&1))) do
       {hero_class, hero}
     else
       class = most_frequent_class(cards) || hero_class || "NEUTRAL"
@@ -917,25 +917,28 @@ defmodule Backend.Hearthstone.Deck do
       "WARRIOR"
     ]
   end
+
   @class_rgb %{
-  "DEATHKNIGHT" => {108,105,154},
-  "DEMONHUNTER" => {37, 111, 61},
-  "DRUID" => {255, 127, 14},
-  "HUNTER" => {44, 160, 44},
-  "MAGE" => {23, 190, 207},
-  "PALADIN" => {240, 189, 39},
-  "PRIEST" => {199, 199, 199},
-  "ROGUE" => {127, 127, 127},
-  "SHAMAN" => {43, 125, 180},
-  "WARLOCK" => {162, 112, 153},
-  "WARRIOR" => {200, 21, 24},
-  "NEUTRAL" => {43, 45, 47}
+    "DEATHKNIGHT" => {108, 105, 154},
+    "DEMONHUNTER" => {37, 111, 61},
+    "DRUID" => {255, 127, 14},
+    "HUNTER" => {44, 160, 44},
+    "MAGE" => {23, 190, 207},
+    "PALADIN" => {240, 189, 39},
+    "PRIEST" => {199, 199, 199},
+    "ROGUE" => {127, 127, 127},
+    "SHAMAN" => {43, 125, 180},
+    "WARLOCK" => {162, 112, 153},
+    "WARRIOR" => {200, 21, 24},
+    "NEUTRAL" => {43, 45, 47}
   }
   def class_color(class, type \\ :hex)
+
   def class_color(class, :hex) do
     class_color(class, :rgb)
     |> hex()
   end
+
   def class_color(class, :rgb) do
     Map.get(@class_rgb, class, {43, 45, 47})
   end

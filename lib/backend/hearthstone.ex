@@ -821,7 +821,6 @@ defmodule Backend.Hearthstone do
     CardBag.deckcode_copy_id(dbf_id) |> get_card()
   end
 
-
   @spec get_fuzzy_card(String.t()) :: card() | nil
   def get_fuzzy_card(fuzzy) do
     common_criteria = [
@@ -839,7 +838,7 @@ defmodule Backend.Hearthstone do
 
     with [] <- Backend.Hearthstone.cards(exact_criteria),
          [] <- Backend.Hearthstone.cards(fuzzy_criteria) do
-          nil
+      nil
     else
       [card | _] ->
         card

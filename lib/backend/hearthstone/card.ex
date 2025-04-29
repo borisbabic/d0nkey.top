@@ -136,11 +136,15 @@ defmodule Backend.Hearthstone.Card do
 
   def description(card) do
     classes = Enum.map_join(classes(card), " ", &Deck.class_name/1)
-    stats = if is_integer(card.attack) do
-      "#{card.attack}/#{card.durability || card.health}"
-    end
+
+    stats =
+      if is_integer(card.attack) do
+        "#{card.attack}/#{card.durability || card.health}"
+      end
+
     "#{name(card)} #{cost(card)} mana #{stats} #{classes} #{type_name(card)} #{Map.get(card, :text)}"
   end
+
   def set_card_id(card, card_id) do
     card
     |> cast(%{card_id: card_id}, [:card_id])
