@@ -119,6 +119,16 @@ defmodule Bot.MessageHandler do
     Shares the same possible filters with `!cards`, see `!dhelp cards` for a list of possible Filters
     default filters: `collectible:yes format:standard`
     """,
+    "reset" => """
+    ## `reset`
+    `!reset`
+    Constructed season resets per server
+    """,
+    "midnight" => """
+    ## `midnight`
+    `!midnight`
+    Midnight per server, for quests, resets and stuff
+    """,
     "patchnotes" => """
     ## `patchnotes` (Hearthstone Patchnotes)
     `!patchnotes`
@@ -277,6 +287,12 @@ defmodule Bot.MessageHandler do
       <<"!thl", _::binary>> ->
         Bot.ThlMessageHandler.handle_thl(msg)
 
+      <<"!midnight", _::binary>> ->
+        midnight(msg)
+
+      <<"!reset", _::binary>> ->
+        reset(msg)
+
       <<"!dhelp", _::binary>> ->
         handle_help(msg)
 
@@ -289,6 +305,40 @@ defmodule Bot.MessageHandler do
         ]
         |> Enum.find(:ignore, &(&1 != :ignore))
     end
+  end
+
+  def midnight(msg) do
+    region_part =
+      Blizzard.regions_with_timezone()
+      |> Enum.map_join("\n", fn {region, timezone} ->
+        timestamp =
+          Timex.now(timezone)
+          |> Timex.beginning_of_day()
+          |> Timex.shift(days: 1)
+          |> Timex.to_unix()
+
+        name = Blizzard.get_region_name(region)
+        "#{name}: <t:#{timestamp}:F>"
+      end)
+
+    reply(msg, "Next midnight per server:\n#{region_part}")
+  end
+
+  def reset(msg) do
+    region_part =
+      Blizzard.regions_with_timezone()
+      |> Enum.map_join("\n", fn {region, timezone} ->
+        timestamp =
+          Timex.now(timezone)
+          |> Timex.beginning_of_month()
+          |> Timex.shift(months: 1)
+          |> Timex.to_unix()
+
+        name = Blizzard.get_region_name(region)
+        "#{name}: <t:#{timestamp}:F>"
+      end)
+
+    reply(msg, "Next season reset per server:\n#{region_part}")
   end
 
   def handle_blizz_o_clock(msg) do
