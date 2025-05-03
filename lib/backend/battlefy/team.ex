@@ -44,6 +44,8 @@ defmodule Backend.Battlefy.Team do
         )
     }
   end
+
+  def from_raw_map(_), do: %__MODULE__{}
 end
 
 defmodule Backend.Battlefy.Team.Player do

@@ -36,7 +36,7 @@ defmodule Bot.BattlefyMessageHandler do
       ) do
     case Battlefy.get_standings(battlefy_id) do
       unsorted when is_list(unsorted) ->
-        standings = Battlefy.sort_standings(unsorted)
+        standings = Battlefy.filter_and_sort_standings(unsorted)
         {:ok, create_message(battletags, standings)}
 
       other ->

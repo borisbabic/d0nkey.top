@@ -57,7 +57,7 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
   def handle([t], msg) when t in ["total", "totals"] do
     sorted_standings()
     |> Battlefy.merge_standings_by_custom_field(@custom_field, value_mapper: &String.upcase/1)
-    |> Battlefy.sort_standings()
+    |> Battlefy.filter_and_sort_standings()
     |> Bot.BattlefyMessageHandler.create_message()
     |> send_message(msg)
   end
@@ -79,7 +79,8 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
 
   defp slugs(), do: for(%{slug: slug} <- @participating_discords, do: slug)
 
-  def sorted_standings(), do: Battlefy.get_standings(@battlefy_id) |> Battlefy.sort_standings()
+  def sorted_standings(),
+    do: Battlefy.get_standings(@battlefy_id) |> Battlefy.filter_and_sort_standings()
 
   @spec participating_guild?(Nostrum.Struct.Message.t() | integer()) :: boolean
   def participating_guild?(%{guild_id: guild_id}), do: participating_guild?(guild_id)
