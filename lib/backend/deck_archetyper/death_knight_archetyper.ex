@@ -72,6 +72,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       zerg?(card_info, 6) and "Stitched Giant" in card_info.card_names ->
         :"Zerg Corpse DK"
 
+      frost?(card_info) ->
+        :"\"Frost\" DK"
+
       "Stitched Giant" in card_info.card_names ->
         :"Corpse DK"
 
@@ -81,6 +84,10 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp frost?(ci) do
+    min_count?(ci, 2, ["Horn of Winter", "Marrow Manipulator"])
   end
 
   defp leech?(ci, min_count) do
