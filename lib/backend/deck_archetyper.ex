@@ -86,6 +86,17 @@ defmodule Backend.DeckArchetyper do
       # {%{format: 4}, _} -> WhizbangHeroesArchetyper.archetype(card_info)
       _ -> nil
     end
+    |> add_xl?(card_info)
+  end
+
+  defp add_xl?(archetype, card_info) do
+    already_xl? = archetype |> to_string() |> String.starts_with?("XL")
+
+    if !already_xl? and xl?(card_info) do
+      String.to_atom("XL #{archetype}")
+    else
+      archetype
+    end
   end
 
   defp standard_in_wild?(%{deck: %{format: 1}, full_cards: full_cards}) do
