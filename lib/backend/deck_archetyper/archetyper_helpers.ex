@@ -151,6 +151,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Menagerie Jug" in ci.card_names ->
         String.to_atom("Menagerie #{class_name}")
 
+      "Soulbound Ashtongue" in ci.card_names ->
+        String.to_atom("Ashtoungue #{class_name}")
+
       true ->
         faction_fallback(ci, class_name, opts) || minion_type_fallback(ci, class_name, opts)
     end
