@@ -42,6 +42,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       bad?(card_info) ->
         :"Bad Druid"
 
+      "Sky Mother Aviana" in card_info.card_names ->
+        :"Aviana Druid"
+
       true ->
         fallbacks(card_info, "Druid")
     end
