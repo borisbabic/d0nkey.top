@@ -390,14 +390,7 @@ defmodule Backend.Hearthstone do
       sideboards: sideboards
     }
 
-    hsreplay_archetype =
-      Backend.HSReplay.guess_archetype(temp_attrs)
-      |> case do
-        %{id: id} -> id
-        _ -> nil
-      end
-
-    attrs = Map.put(temp_attrs, :hsreplay_archetype, hsreplay_archetype)
+    attrs = Map.put(temp_attrs, :hsreplay_archetype, nil)
 
     %Deck{}
     |> Deck.changeset(attrs)
