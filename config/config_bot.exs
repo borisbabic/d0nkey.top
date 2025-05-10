@@ -26,7 +26,7 @@ config :backend, QuantumScheduler,
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
     {"*/2 * * * *",
      fn ->
-       Backend.Leaderboards.save_current_with_delay([:CN], [:STD, :WLD, :twist], 100, 10_000, 100)
+       Backend.Leaderboards.save_current_with_delay([:CN], [:STD, :WLD, :twist], 100, 10_000, 500)
      end},
     {"*/10 * * * *",
      fn ->
@@ -35,7 +35,7 @@ config :backend, QuantumScheduler,
          [:arena, :BG, :DUO],
          500,
          10_000,
-         100
+         500
        )
      end},
     {"*/3 * * * *",
@@ -148,7 +148,7 @@ config :backend, QuantumScheduler,
     {"11 */2 * * *", fn -> Backend.Hearthstone.CardUpdater.enqueue_collectible(100) end},
     {"17 07 * * *", fn -> Backend.Hearthstone.CardUpdater.enqueue_all(1000) end},
     # {"*/9 * * * *", fn -> Backend.Leaderboards.refresh_latest() end},
-    {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
+    # {"*/53 * * * *", fn -> Backend.Hearthstone.regenerate_false_neutral_deckcodes() end},
     {"* */2 * * *", fn -> Hearthstone.DeckTracker.ArchetypeBag.update() end},
     # {"* * * * *", fn -> Hearthstone.DeckTracker.refresh_agg_stats() end},
     {"* * * * *", fn -> Backend.Patreon.add_new_tiers() end},
