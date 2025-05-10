@@ -338,7 +338,7 @@ defmodule Bot.MessageHandler do
         "#{name}: <t:#{timestamp}:F>"
       end)
 
-    reply(msg, "Next season reset per server:\n#{region_part}")
+    reply(msg, "Next constructed season reset per server:\n#{region_part}")
   end
 
   def handle_blizz_o_clock(msg) do
@@ -418,7 +418,7 @@ defmodule Bot.MessageHandler do
 
   defp create_card_component(match) do
     title =
-      "### [#{match} (Other potential matches)](https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)})"
+      "[#{match} (Other potential matches)](https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)})"
 
     card = Backend.Hearthstone.get_fuzzy_card(match)
 
