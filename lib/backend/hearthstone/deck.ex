@@ -356,6 +356,7 @@ defmodule Backend.Hearthstone.Deck do
     else
       base_name
     end
+    |> shorten_death_knight()
   end
 
   @whizbang_heros_archetypes [
@@ -385,6 +386,12 @@ defmodule Backend.Hearthstone.Deck do
     do: false
 
   defp add_name_modifiers?(_, _), do: true
+
+  defp shorten_death_knight(name) do
+    name
+    |> to_string()
+    |> String.replace("Death Knight", "DK")
+  end
 
   defp add_xl("XL " <> _ = name, _), do: name
 
