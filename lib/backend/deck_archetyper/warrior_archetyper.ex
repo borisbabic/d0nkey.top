@@ -221,6 +221,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       "Odyn, Prime Designate" in card_info.card_names ->
         :"Odyn Warrior"
+      
+      raider?(card_info) ->
+        :"Raider Warrior"
 
       "Warsong Commander" in card_info.card_names ->
         :"Warsong Warrior"
@@ -230,9 +233,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       wild_dmh_warrior?(card_info) ->
         :"DMH Warrior"
-
-      raider?(card_info) ->
-        :"Raider Warrior"
 
       true ->
         fallbacks(card_info, class_name)
