@@ -228,6 +228,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      "Hydration Station" in card_info.card_names ->
+        :"Hydration Warrior"
+
       wild_dmh_warrior?(card_info) ->
         :"DMH Warrior"
 
