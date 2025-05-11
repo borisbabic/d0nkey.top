@@ -388,22 +388,29 @@ defmodule Backend.Hearthstone.Deck do
   defp add_name_modifiers?(_, _), do: true
 
   defp shorten_death_knight(name) do
-    name
-    |> to_string()
-    |> String.replace("Death Knight", "DK")
+    String.replace(name, "Death Knight", "DK")
   end
 
   defp add_xl("XL " <> _ = name, _), do: name
 
   defp add_xl(name, %{cards: cards}) when is_list(cards) do
     if Enum.count(cards) == 40 do
-      "XL #{name}"
+      add_xl(name)
     else
       name
     end
   end
 
   defp add_xl(name, _), do: name
+
+  defp add_xl(name) do
+    base_name = String.replace(name, "XL ", "")
+    "XL " <> base_name
+  end
+
+  def add_runes("STD " <> name, deck) do
+    "STD " <> add_runes(name, deck)
+  end
 
   def add_runes(name, %{cards: cards} = deck) when is_list(cards) do
     if add_rune_modifiers?(deck, name) do
@@ -413,7 +420,7 @@ defmodule Backend.Hearthstone.Deck do
       # next two lines append " " if it's not empty
       |> Kernel.<>(" ")
       |> String.trim_leading()
-      |> Kernel.<>(to_string(name))
+      |> Kernel.<>(name)
     else
       name
     end
@@ -421,8 +428,7 @@ defmodule Backend.Hearthstone.Deck do
 
   def add_runes(name, _), do: name
 
-  defp add_rune_modifiers?(%{class: "DEATHKNIGHT"} = deck, base_name) do
-    name = to_string(base_name)
+  defp add_rune_modifiers?(%{class: "DEATHKNIGHT"} = deck, name) do
     rune_shorthand = deck |> rune_cost() |> RuneCost.shorthand()
 
     cond do
@@ -445,7 +451,7 @@ defmodule Backend.Hearthstone.Deck do
 
   defp add_rune_modifiers?(_, _), do: true
 
-  def base_name(%{archetype: a}) when not is_nil(a), do: a
+  def base_name(%{archetype: a}) when not is_nil(a), do: to_string(a)
 
   def base_name(deck) do
     with nil <- DeckArchetyper.archetype(deck) do
