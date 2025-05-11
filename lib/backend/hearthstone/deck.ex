@@ -347,7 +347,7 @@ defmodule Backend.Hearthstone.Deck do
   def archetype(deck), do: DeckArchetyper.archetype(deck)
 
   def name(deck) do
-    base_name = base_name(deck)
+    base_name = base_name(deck) |> to_string()
 
     if add_name_modifiers?(deck, base_name) do
       base_name
@@ -403,7 +403,7 @@ defmodule Backend.Hearthstone.Deck do
 
   defp add_xl(name, _), do: name
 
-  defp add_xl(name) do
+  def add_xl(name) do
     base_name = String.replace(name, "XL ", "")
     "XL " <> base_name
   end
@@ -451,7 +451,7 @@ defmodule Backend.Hearthstone.Deck do
 
   defp add_rune_modifiers?(_, _), do: true
 
-  def base_name(%{archetype: a}) when not is_nil(a), do: to_string(a)
+  def base_name(%{archetype: a}) when not is_nil(a), do: a
 
   def base_name(deck) do
     with nil <- DeckArchetyper.archetype(deck) do

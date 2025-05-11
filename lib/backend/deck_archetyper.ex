@@ -49,7 +49,8 @@ defmodule Backend.DeckArchetyper do
       standard_in_wild?(card_info) ->
         deck = Map.put(deck, :format, 2)
         card_info = Map.put(card_info, :deck, deck)
-        String.to_atom("STD #{archetype(deck, card_info)}")
+
+        String.to_atom("STD #{archetype(deck, card_info) || Deck.class_name(deck)}")
 
       true ->
         archetype(deck, card_info)
@@ -90,10 +91,11 @@ defmodule Backend.DeckArchetyper do
   end
 
   defp add_xl?(archetype, card_info) do
-    already_xl? = archetype |> to_string() |> String.starts_with?("XL")
-
-    if !already_xl? and xl?(card_info) do
-      String.to_atom("XL #{archetype}")
+    if xl?(card_info) do
+      (archetype || Deck.class_name(card_info.deck))
+      |> to_string()
+      |> Deck.add_xl()
+      |> String.to_atom()
     else
       archetype
     end
