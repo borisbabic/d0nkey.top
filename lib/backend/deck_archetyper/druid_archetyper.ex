@@ -137,7 +137,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       old_aggro?(card_info) ->
         :"Old Aggro Druid"
 
-      imbue?(card_info) ->
+      imbue_druid?(card_info) ->
         :"Imbue Druid"
 
       "Astral Communion" in card_info.card_names ->
