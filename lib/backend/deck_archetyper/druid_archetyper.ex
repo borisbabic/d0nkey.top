@@ -146,6 +146,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Druid"
 
+      "Travelmaster Dungar" in card_info.card_names ->
+        :"Dungar Druid"
+
       aviana_druid?(card_info) ->
         :"Aviana Druid"
 
