@@ -183,7 +183,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Lucky Comet",
       "Frostwolf Warmaster",
       "Scribbling Stenographer",
-      "Zephrys the Great"
+      "Zephrys the Great",
+      "Shaladrassil"
     ])
   end
 
