@@ -43,8 +43,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       crewmate?(card_info, 2) ->
         :"Among Us DH"
 
-      hog_cliff_dive?(card_info) ->
-        :"Hog Cliff Dive DH"
+      ravenous_cliff_dive?(card_info) ->
+        :"Ravenous Cliff Dive DH"
 
       cliff_dive?(card_info) ->
         :"Cliff Dive DH"
@@ -69,9 +69,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     end
   end
 
-  defp hog_cliff_dive?(card_info) do
+  defp ravenous_cliff_dive?(card_info) do
     cliff_dive?(card_info) and
-      min_count?(card_info, 2, ["Ball Hog", "Ravenous Felhunter"])
+      min_count?(card_info, 1, ["Ravenous Felhunter"])
   end
 
   defp cliff_dive?(card_info) do

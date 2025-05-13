@@ -24,6 +24,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       bomb_warrior?(card_info) ->
         :"Bomb Warrior"
 
+      handbuff?(card_info) ->
+        :"Handbuff Warrior"
+
       "The Ryecleaver" in card_info.card_names ->
         :"Sandwich Warrior"
 
@@ -51,6 +54,10 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp handbuff?(card_info) do
+    "Keeper of Flame" in card_info.card_names
   end
 
   defp food_fight?(card_info) do
