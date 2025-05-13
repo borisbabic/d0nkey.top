@@ -193,6 +193,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       wild_big_shaman?(card_info) ->
         :"Big Shaman"
 
+      asteroid?(card_info) ->
+        :"Asteroid Shaman"
+
       wild_murmur?(card_info) ->
         :"Murmur Shaman"
 
