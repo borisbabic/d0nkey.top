@@ -81,9 +81,16 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       deathrattle?(card_info) ->
         :"Deathrattle DK"
 
+      dark_gift?(card_info) ->
+        :"Dark Gift DK"
+
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp dark_gift?(ci) do
+    "Frostburn Matriarch" in ci.card_names
   end
 
   defp frost?(ci) do

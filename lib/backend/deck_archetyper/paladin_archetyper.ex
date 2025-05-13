@@ -105,6 +105,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Miracle Salesman",
       "Flash Sale",
       "Disco Maul",
+      "Smoldering Strength",
       "Nerubian Egg",
       "Sea Giant",
       "Maze Guide",

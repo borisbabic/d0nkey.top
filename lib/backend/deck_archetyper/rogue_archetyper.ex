@@ -69,6 +69,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Ashamane" in card_info.card_names ->
         :"Ashamane Rogue"
 
+      "Fyrakk the Blazing" in card_info.card_names ->
+        :"Fyrakk Rogue"
+
+      dark_gift?(card_info) ->
+        :"Dark Gift Rogue"
+
       combo?(card_info) ->
         :"Combo Rogue"
 
@@ -87,6 +93,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp dark_gift?(card_info) do
+    "Cindersword" in card_info.card_names
   end
 
   defp ysera_rogue?(card_info) do

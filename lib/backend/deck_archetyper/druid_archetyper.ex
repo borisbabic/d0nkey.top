@@ -30,6 +30,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
 
+      token?(card_info) ->
+        :"Token Druid"
+
       starship?(card_info) ->
         :"Starship Druid"
 
@@ -48,6 +51,11 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  @wide_buff ["Power of the Wild", "Overheat", "Cosmic Phenomenon", "A. F. Kay"]
+  defp token?(card_info) do
+    min_count?(card_info, 2, @wide_buff)
   end
 
   defp bad?(card_info) do
