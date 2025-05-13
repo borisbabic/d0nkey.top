@@ -80,7 +80,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   defp aggro_paladin?(card_info) do
     min_count?(card_info, 6, [
-      "Vicous Slitherspear",
+      "Vicious Slitherspear",
       "Worgen Inflitrator",
       "Flash Sale",
       "For Quel'Thalas!",
@@ -107,8 +107,10 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Disco Maul",
       "Nerubian Egg",
       "Sea Giant",
+      "Maze Guide",
       "Righteous Protector"
-    ])
+    ]) or
+      min_count?(card_info, 2, ["Crusader Aura", "Flash Sale"])
   end
 
   defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &Card.neutral?/1)
