@@ -733,7 +733,7 @@ defmodule BackendWeb.BattlefyView do
 
         _ ->
           %{
-            standings: params.standings_raw,
+            standings: [],
             show_participants: true,
             participants_row: prepare_participants(params)
           }
