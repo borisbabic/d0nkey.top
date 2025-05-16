@@ -317,6 +317,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_draka_rogue?(card_info) ->
         :"Draka Rogue"
 
+      wild_phoenix_rogue?(card_info) ->
+        :"Phoenix Rogue"
+
       wild_gnoll_miracle_rogue?(card_info) ->
         :"Gnoll Miracle Rogue"
 
@@ -447,4 +450,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Shadowstep"
       ])
   end
+end
+
+defp wild_phoenix_rogue?(card_info) do
+    min_count?(card_info, 3, [
+      "Everburning Phoenix",
+      "Spiritsinger Umbra",
+      "Knife Juggler"
+    ])
 end
