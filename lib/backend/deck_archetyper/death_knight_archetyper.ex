@@ -158,28 +158,28 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander DK"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline DK"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest DK")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar DK"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd DK"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even DK"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog DK"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun DK"
 
       buttons?(card_info) ->
         :"Buttons DK"
