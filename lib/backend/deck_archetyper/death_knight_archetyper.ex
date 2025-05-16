@@ -191,7 +191,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
         :"Aggro DK"
 
       true ->
-        fallbacks(card_info, class_name)
+        fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
   end
 
