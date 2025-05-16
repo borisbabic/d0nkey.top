@@ -137,7 +137,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   @self_fatigue_package ["Crescendo", "Baritone Imp", "Crazed Conductor"]
   defp fatigue_warlock?(ci) do
     min_count?(ci, 2, ["Pop'gar the Putrid", "Encroaching Insanity"]) and
-      min_count?(ci, 3, @self_fatigue_package)
+      min_count?(ci, 2, @self_fatigue_package)
   end
 
   defp control_warlock?(ci) do
