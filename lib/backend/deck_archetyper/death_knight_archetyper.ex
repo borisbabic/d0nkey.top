@@ -195,7 +195,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     end
   end
 
-  defp plague(card_info) do
+  defp plague?(card_info) do
     "Helya" in card_info.card_names and
       min_count?(card_info, 2, [
         "Staff of the Primus",
@@ -206,7 +206,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       ])
   end
 
-  defp wild_aggro_dk(card_info) do
+  defp wild_aggro_dk?(card_info) do
     min_count?(card_info, 2, [
       "Grave Strength",
       "Anti-Magic Shell",
