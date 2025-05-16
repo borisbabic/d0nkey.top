@@ -174,8 +174,36 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      buttons?(card_info) ->
+        :"Buttons DK"
+
+      plague?(card_info) ->
+        :"Plague DK"
+
+      wild_aggro_dk?(card_info) ->
+        :"Aggro DK"
+
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp plague(card_info) do
+    "Helya" in card_info.card_names and
+      min_count?(card_info, 2, [
+        "Staff of the Primus",
+        "Down with the Ship",
+        "Distressed Kvaldir",
+        "Tomb Traitor",
+        "Chained Guardian"
+      ])
+  end
+
+  defp wild_aggro_dk(card_info) do
+    min_count?(card_info, 2, [
+      "Grave Strength",
+      "Anti-Magic Shell",
+      "Monstrous Mosquito"
+    ])
   end
 end
