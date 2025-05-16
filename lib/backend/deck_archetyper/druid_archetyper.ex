@@ -142,6 +142,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       wild_mill_druid?(card_info) ->
         :"Mill Druid"
 
+      wild_mill_OTK?(card_info) ->
+        :"Mill OTK Druid"
+
       old_aggro?(card_info) ->
         :"Old Aggro Druid"
 
@@ -195,6 +198,10 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
   defp wild_mill_druid?(card_info) do
     min_count?(card_info, 2, ["Dew Process", "Coldlight Oracle", "Naturalize"])
+  end
+
+  defp wild_mill_OTK?(card_info) do
+    min_count?(card_info, 2, ["Grove Shaper", "Naturalize"])
   end
 
   defp old_aggro?(card_info) do
