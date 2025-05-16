@@ -124,14 +124,19 @@ defmodule Bot.MessageHandlerUtil do
   def mentioned?(msg, user \\ nil)
 
   def mentioned?(msg, nil) do
-    case Api.get_current_user() do
-      {:ok, user} -> mentioned?(msg, user)
+    case Nostrum.Api.Self.application_information() do
+      {:ok, %{bot: %{id: id}}} -> mentioned?(msg, id)
       _ -> false
     end
   end
 
-  def mentioned?(%{mentions: mentions}, %{id: id}) when is_list(mentions) do
-    Enum.any?(mentions, &(&1.id == id))
+  def mentioned?(msg, %{id: id}) do
+    mentioned?(msg, id)
+  end
+
+  def mentioned?(%{mentions: mentions}, id) when is_binary(id) or is_integer(id) do
+    string_id = to_string(id)
+    Enum.any?(mentions, &(to_string(&1.id) == string_id))
   end
 
   def mentioned?(_, _), do: false
