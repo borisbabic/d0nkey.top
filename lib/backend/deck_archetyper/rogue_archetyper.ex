@@ -450,12 +450,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Shadowstep"
       ])
   end
-end
 
-defp wild_phoenix_rogue?(card_info) do
+  defp wild_phoenix_rogue?(card_info) do
     min_count?(card_info, 3, [
       "Everburning Phoenix",
       "Spiritsinger Umbra",
       "Knife Juggler"
     ])
+  end
 end
