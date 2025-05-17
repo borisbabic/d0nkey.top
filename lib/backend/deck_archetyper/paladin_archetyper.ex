@@ -7,9 +7,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   def standard(card_info) do
     cond do
-      pure_paladin?(card_info) ->
-        :"Pure Paladin"
-
       imbue?(card_info) ->
         :"Imbue Paladin"
 
