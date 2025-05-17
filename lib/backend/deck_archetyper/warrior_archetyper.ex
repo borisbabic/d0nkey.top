@@ -154,6 +154,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Hydration Station" in card_info.card_names ->
         :"Hydration Warrior"
 
+      "Unlucky Powderman" in card_info.card_names ->
+        :"Taunt Warrior"
+
       true ->
         fallbacks(card_info, class_name)
     end
