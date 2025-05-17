@@ -223,6 +223,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     "Gear Shift",
     "Gaslight Gatekeeper",
     "Knickknack Shack",
+    "Eat! The! Imp!",
+    "Twisted Webweaver",
     "Raiding Party",
     "Robocaller",
     "Ethereal Oracle",
