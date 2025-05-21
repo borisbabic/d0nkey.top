@@ -219,8 +219,12 @@ defmodule Backend.Application do
 
   def check_bot(prev) do
     case Application.fetch_env(:backend, :enable_bot) do
-      {:ok, true} -> prev ++ [Bot.Consumer]
-      _ -> prev
+      {:ok, true} ->
+        user_id = Application.get_env(:backend, :discord_user_id)
+        prev ++ [Bot.Consumer, {Bot.UserIdAgent, user_id}]
+
+      _ ->
+        prev
     end
   end
 
