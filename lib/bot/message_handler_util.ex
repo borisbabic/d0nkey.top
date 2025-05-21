@@ -123,6 +123,8 @@ defmodule Bot.MessageHandlerUtil do
   @spec mentioned?(Message.t(), User.t() | nil) :: boolean
   def mentioned?(msg, user \\ nil)
 
+  def mentioned?(%{mentioned: []}, _), do: false
+
   def mentioned?(msg, nil) do
     id = Bot.UserIdAgent.get()
     mentioned?(msg, id)
