@@ -190,6 +190,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       wild_aggro_dk?(card_info) ->
         :"Aggro DK"
 
+      wild_corpse_dk?(card_info) ->
+        :"Corpse DK"
+
       true ->
         fallbacks(card_info, class_name)
     end
@@ -211,6 +214,20 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Grave Strength",
       "Anti-Magic Shell",
       "Monstrous Mosquito"
+    ])
+  end
+
+  defp wild_corpse_dk?(card_info) do
+    min_count?(card_info, 3, [
+      "Body Bagger",
+      "Airlock Breach",
+      "Stitched Giant",
+      "Volcoross",
+      "Maw and Paw",
+      "Corpsicle",
+      "Malignant Horror",
+      "Climactic Necrotic Explosion",
+      "Falric"
     ])
   end
 end
