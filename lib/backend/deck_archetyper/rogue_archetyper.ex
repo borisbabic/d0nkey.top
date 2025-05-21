@@ -433,7 +433,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Snowfall Graveyard",
       "Selfish Shellfish"
     ]) or
-      min_count?(card_info, 4, [
+      min_count?(card_info, 3, [
         "Coldlight Oracle",
         "Prize Vendor",
         "Togwaggle's Scheme",
