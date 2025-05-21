@@ -124,10 +124,8 @@ defmodule Bot.MessageHandlerUtil do
   def mentioned?(msg, user \\ nil)
 
   def mentioned?(msg, nil) do
-    case Nostrum.Api.Self.application_information() do
-      {:ok, %{bot: %{id: id}}} -> mentioned?(msg, id)
-      _ -> false
-    end
+    id = Bot.UserIdAgent.get()
+    mentioned?(msg, id)
   end
 
   def mentioned?(msg, %{id: id}) do
