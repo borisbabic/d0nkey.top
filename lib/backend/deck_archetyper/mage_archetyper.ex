@@ -153,6 +153,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       wild_small_spell_mage?(card_info) ->
         :"Small Spell Mage"
 
+      "Blazing Accretion" in card_info.card_names ->
+        :"Fire Elemental Mage"
+
       true ->
         fallbacks(card_info, class_name)
     end
