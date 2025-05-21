@@ -298,10 +298,10 @@ defmodule Bot.MessageHandler do
 
       _ ->
         [
-          handle_deck(msg),
           handle_timestamp(msg),
           handle_card(msg),
-          handle_wiki(msg)
+          handle_wiki(msg),
+          handle_deck(msg)
         ]
         |> Enum.find(:ignore, &(&1 != :ignore))
     end
