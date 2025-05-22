@@ -142,9 +142,6 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       wild_pirate_fallback?(ci) ->
         String.to_atom("Pirate #{class_name}")
 
-      wild_velen?(ci) ->
-        String.to_atom("Velen #{class_name}")
-
       amalgam?(ci) ->
         String.to_atom("Amalgam #{class_name}")
 
@@ -166,10 +163,6 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       end
 
     ["Adaptive Amalgam"] == Enum.uniq(one_drop_names)
-  end
-
-  def wild_velen?(ci) do
-    min_count?(ci, 2, ["Saronite Chain Gang", "Velen, Leader of the Exiled"])
   end
 
   def wild_pirate_fallback?(ci, min_count \\ 4) do
