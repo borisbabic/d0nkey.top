@@ -185,17 +185,19 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   end
 
   defp wild_miracle_rogue?(card_info) do
-    min_count?(card_info, 3, [
-      "Prize Plunderer",
-      "Mailbox Dancer",
+    min_count?(card_info, 2, [
       "Arcane Giant",
-      "Edwin VanCleef",
-      "Lucky Comet",
-      "Frostwolf Warmaster",
-      "Scribbling Stenographer",
-      "Zephrys the Great",
-      "Shaladrassil"
-    ])
+      "Breakdance"
+    ]) and
+      min_count?(card_info, 3, [
+        "Gear Shift",
+        "Secret Passage",
+        "Dig for Treasure",
+        "Swindle",
+        "Blackwater Cutlass",
+        "Ghostly Strike",
+        "Twisted Webweaver"
+      ])
   end
 
   defp weapon?(ci) do
