@@ -150,6 +150,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       wild_flow?(card_info) ->
         :"Flow Mage"
 
+      wild_fire_mage?(card_info) ->
+        :"Fire Mage"
+
       wild_small_spell_mage?(card_info) ->
         :"Small Spell Mage"
 
@@ -226,6 +229,17 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Arcane Brilliance",
       "The Galactic Projection Orb",
       "Iceblood Tower"
+    ])
+  end
+
+  defp wild_fire_mage?(card_info) do
+    min_count?(card_info, 3, [
+      "Blazing Accretion",
+      "Hot Streak",
+      "Blasteroid",
+      "Supernova",
+      "Scorching Winds",
+      "Sanctum Chandler"
     ])
   end
 end
