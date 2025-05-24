@@ -6,9 +6,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   def standard(card_info) do
     cond do
-      menagerie?(card_info) ->
-        :"Menagerie Rogue"
-
       mech_rogue?(card_info) ->
         :"Mech Rogue"
 
@@ -47,6 +44,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       incindius?(card_info) ->
         :"Incindius Rogue"
+
+      menagerie?(card_info) ->
+        :"Menagerie Rogue"
 
       quasar?(card_info) ->
         :"Quasar Rogue"
