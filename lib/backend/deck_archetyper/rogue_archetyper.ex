@@ -180,7 +180,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   end
 
   defp wild_alex_rogue?(card_info) do
-    "Spirit of the Shark" in card_info.card_names and
+    min_count?(card_info, 1, ["Spirit of the Shark", "Brann Bronzebeard"]) and
       "Alexstrasza the Life-Binder" in card_info.etc_sideboard_names
   end
 
@@ -318,9 +318,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
 
-      wild_draka_rogue?(card_info) ->
-        :"Draka Rogue"
-
       wild_phoenix_rogue?(card_info) ->
         :"Phoenix Rogue"
 
@@ -354,8 +351,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
 
-      bounty_draka?(card_info) ->
-        :"APM Draka Rogue"
+      wild_draka_rogue?(card_info) ->
+        :"Draka Rogue"
 
       "Spirit of the Shark" in card_info.card_names ->
         :"Shark Rogue"
@@ -372,22 +369,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
-  end
-
-  defp bounty_draka?(ci) do
-    min_count?(ci, 3, [
-      "Tenwu Of The Red Smoke",
-      "Tenwu of the Red Smoke",
-      "Bounty Board",
-      "Scabbs Cutterbutter"
-    ]) and
-      min_count?(ci.etc_sideboard_names, 3, [
-        "Bounce Around (ft Garona)",
-        "Bounce Around (ft. Garona)",
-        "Potion Of Illusion",
-        "Potion of Illusion",
-        "Necrolord Draka"
-      ])
   end
 
   defp mine_rogue?(ci),
@@ -445,14 +426,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   end
 
   defp wild_draka_rogue?(card_info) do
-    ("Necrolord Draka" in card_info.card_names or
-       "Necrolord Draka" in card_info.etc_sideboard_names) and
-      min_count?(card_info, 4, [
-        "Brann Bronzebeard",
-        "Mailbox Dancer",
-        "Tidepool Pupil",
-        "Shadowstep"
-      ])
+    "Necrolord Draka" in card_info.card_names or
+       "Necrolord Draka" in card_info.etc_sideboard_names
   end
 
   defp wild_phoenix_rogue?(card_info) do
