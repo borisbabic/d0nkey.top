@@ -23,7 +23,6 @@ CREATE TABLE temp_dt_aggregated_stats (
 	card_stats jsonb
 );
 
-CREATE INDEX temp_agg_stats_uniq_index ON temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
 WITH agg_ranks(
     min_rank,
     max_rank,
@@ -450,6 +449,7 @@ FROM
         AND COALESCE(ds.archetype, 'any') = COALESCE(cs.archetype, 'any')
         AND cs.player_has_coin IS NOT DISTINCT FROM ds.player_has_coin;
 
+CREATE INDEX temp_agg_stats_uniq_index ON temp_dt_aggregated_stats(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, period, format, player_has_coin);
 ALTER INDEX IF EXISTS agg_stats_uniq_index RENAME TO old_agg_stats_uniq_index;
 ALTER INDEX IF EXISTS temp_agg_stats_uniq_index RENAME TO agg_stats_uniq_index;
 ALTER TABLE IF EXISTS dt_aggregated_stats RENAME TO old_dt_aggregated_stats;
