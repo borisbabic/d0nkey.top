@@ -71,17 +71,17 @@ defmodule Components.OpponentStatsTable do
   def render(assigns) do
     ~F"""
     <div>
-          <RankDropdown id="opp_stats_table_rank_dropdown" aggregated_only={!@needs_login?}/>
-          <PeriodDropdown id="opp_stats_table_period_dropdown" aggregated_only={!@needs_login?}/>
+          <RankDropdown id="opp_stats_table_rank_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
+          <PeriodDropdown id="opp_stats_table_period_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <RegionDropdown id="opp_stats_table_region_dropdown" :if={can_access_unaggregated?(@user)} />
-          <FormatDropdown class={"is-hidden-mobile"} :if={@include_format} id="opp_stats_format_dropdown" aggregated_only={!@needs_login?}/>
+          <FormatDropdown class={"is-hidden-mobile"} :if={@include_format} id="opp_stats_format_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <PlayerHasCoinDropdown id={"opp_stats_table_player_has_coin_dropdown"} />
           <ForceFreshDropdown id="opp_stats_table_force_fresh_dropdown" :if={Backend.UserManager.User.premium?(@user)} />
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
             title={"Players"}
             param={"players"} />
-        <ClassStatsTable :if={@stats && !@needs_login?} stats={@stats} show_win_loss?={"my_games" == @selected_params["players"]} />
+        <ClassStatsTable :if={@stats && !@needs_login?} stats={@stats} show_win_loss?={personal_context?(@selected_params)} />
         <div :if={@needs_login?}>
           <br>
           <br>
@@ -95,6 +95,13 @@ defmodule Components.OpponentStatsTable do
     """
   end
 
+  defp aggregated_only?(needs_login, selected_params) do
+    !needs_login and !personal_context?(selected_params)
+  end
+
+  defp personal_context?(selected_params), do: :personal == filter_context(selected_params)
+  defp filter_context(%{"players" => "my_games"}), do: :personal
+  defp filter_context(_), do: :public
   def stats(nil, _), do: []
 
   def stats(target, params) do
