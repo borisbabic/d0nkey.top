@@ -157,6 +157,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Druid"
 
+      "Celestial Alignment" in card_info.card_names ->
+        :"Alignment Druid"
+
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
 
