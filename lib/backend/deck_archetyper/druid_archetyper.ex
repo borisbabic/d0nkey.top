@@ -136,6 +136,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Linecracker" in card_info.card_names ->
         :"Linecracker Druid"
 
+      imbue_druid?(card_info) ->
+        :"Imbue Druid"
+
       wild_treant_druid?(card_info) ->
         :"Treant Druid"
 
@@ -147,9 +150,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       old_aggro?(card_info) ->
         :"Old Aggro Druid"
-
-      imbue_druid?(card_info) ->
-        :"Imbue Druid"
 
       "Astral Communion" in card_info.card_names ->
         :"Astral Communion Druid"
