@@ -153,8 +153,8 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
-      "Trial of the Jormungars" in card_info.card_names ->
-        :"Jormungars Hunter"
+      midrange?(card_info) ->
+        :"Midrange Hunter"
 
       porcupine?(card_info) ->
         :"Porcupine Hunter"
@@ -168,6 +168,18 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp midrange?(card_info) do
+    min_count?(card_info.card_names, 4, [
+      "Exarch Naielle",
+      "Acidmaw",
+      "Dreadscale",
+      "Razorscale",
+      "Loatheb",
+      "Blademaster Okani",
+      "Dirty Rat"
+    ])
   end
 
   defp porcupine?(card_info) do
