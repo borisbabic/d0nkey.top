@@ -15,6 +15,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       murloc?(card_info) ->
         :"Murloc Druid"
 
+      starship?(card_info) and spell_damage_druid?(card_info) ->
+        :"SD Starship Druid"
+
       spell_damage_druid?(card_info) ->
         :"Spell Damage Druid"
 
@@ -145,7 +148,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       wild_mill_druid?(card_info) ->
         :"Mill Druid"
 
-      wild_mill_OTK?(card_info) ->
+      wild_mill_otk?(card_info) ->
         :"Mill OTK Druid"
 
       old_aggro?(card_info) ->
@@ -206,7 +209,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     min_count?(card_info, 2, ["Dew Process", "Coldlight Oracle", "Naturalize"])
   end
 
-  defp wild_mill_OTK?(card_info) do
+  defp wild_mill_otk?(card_info) do
     min_count?(card_info, 2, ["Grove Shaper", "Naturalize"])
   end
 
