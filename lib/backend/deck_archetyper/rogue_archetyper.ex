@@ -184,6 +184,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Alexstrasza the Life-Binder" in card_info.etc_sideboard_names
   end
 
+  defp wild_astalor_rogue?(card_info) do
+    min_count?(card_info, 1, ["Spirit of the Shark", "Brann Bronzebeard"]) and
+      "Astalor Bloodsworn" in card_info.etc_sideboard_names
+  end
+
   defp wild_miracle_rogue?(card_info) do
     min_count?(card_info, 2, [
       "Arcane Giant",
@@ -338,6 +343,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
+
+      wild_astalor_rogue?(card_info) ->
+        :"Astalor Rogue"
 
       wild_pirate_rogue?(card_info) ->
         :"Pirate Rogue"
