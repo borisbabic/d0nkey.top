@@ -16,6 +16,7 @@ defmodule Components.MultiSelectDropdown do
   prop(default_selector, :fun, required: false, default: &__MODULE__.default_selected/1)
   prop(updater, :fun, required: false, default: &__MODULE__.update_selected/2)
   prop(num_to_show, :number, required: false, default: 7)
+  prop(any_as_empty, :boolean, default: true)
   data(selected, :list, default: [])
 
   def render(%{actual_title: _} = assigns) do
@@ -55,18 +56,33 @@ defmodule Components.MultiSelectDropdown do
   def add_to_empty(assigns) do
     assigns
     |> add_title_current()
+    |> fix_current()
     |> add_selected()
   end
 
+  # handle both lists and single values, including any as empty
+  def fix_current(%{current: "any", any_as_empty: true} = assigns),
+    do: Map.put(assigns, :current, [])
+
+  def fix_current(%{current: current} = assigns) do
+    if Enumerable.impl_for(current) do
+      assigns
+    else
+      Map.put(assigns, :current, [current])
+    end
+  end
+
+  def fix_current(assigns), do: assigns
+
   defoverridable add_to_empty: 1
 
-  def add_selected(%{current: empty, default_selector: default_selector} = assigns)
-      when empty in [nil, []] do
+  defp add_selected(%{current: empty, default_selector: default_selector} = assigns)
+       when empty in [nil, []] do
     selected = default_selector.(assigns)
     Map.put(assigns, :selected, selected || [])
   end
 
-  def add_selected(%{current: current, normalizer: normalizer, options: options} = assigns) do
+  defp add_selected(%{current: current, normalizer: normalizer, options: options} = assigns) do
     normalized_current = apply_normalizer_to_current(current, normalizer)
 
     selected =
@@ -79,7 +95,7 @@ defmodule Components.MultiSelectDropdown do
   end
 
   def update(assigns, socket) do
-    new_assigns = add_to_empty(assigns)
+    new_assigns = assigns |> add_to_empty()
     {:ok, assign(socket, new_assigns)}
   end
 
