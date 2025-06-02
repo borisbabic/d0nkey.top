@@ -221,6 +221,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
 
+      mill?(card_info) ->
+        :"Mill Warlock"
+
       implock?(card_info) ->
         :Implock
 
