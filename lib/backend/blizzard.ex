@@ -32,14 +32,14 @@ defmodule Backend.Blizzard do
 
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @short_battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
-  @current_bg_season_id 16
+  @current_bg_season_id 15
   # guess, change if not correct
   # 5 weeks aftger july 8th, july 7th being the end of the standard battlepass
   @current_bg_season_end_date ~N[2025-08-12 17:00:00]
-  @current_arena_season_id 57
+  @current_arena_season_id 56
   # guess, change if not correct
   # 5 weeks before july 8th, july 7th being the end of the battlepass
-  @current_arena_season_end_date ~N[2025-06-03 17:00:00]
+  @current_arena_season_end_date ~N[2025-06-02 17:00:00]
 
   defmacro is_old_bg_season(season_id) do
     quote do
