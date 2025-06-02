@@ -146,6 +146,15 @@ defmodule Components.DecksExplorer do
           normalizer={&to_string/1} />
 
         <LivePatchDropdown
+          :if={show_winrate_dropdown?(@params)}
+          options={[0, 20, 30, 40, 45, 50, 55, 60, 70, 80] |> Enum.map(& {&1, "Min #{&1}%"})}
+          title={"Min Winrate"}
+          param={"min_winrate"}
+          warning={warning?(@streams)}
+          selected_as_title={true}
+          normalizer={&to_string/1} />
+
+        <LivePatchDropdown
           options={order_by_options()}
           title={"Order By"}
           param={"order_by"} />
@@ -335,6 +344,10 @@ defmodule Components.DecksExplorer do
     |> Enum.map(&{&1, "Min #{&1}"})
   end
 
+  def show_winrate_dropdown?(params) do
+    "winrate" != Map.get(params, "order_by", "winrate")
+  end
+
   def order_by_options(),
     do: [
       {"winrate", "Winrate %"},
@@ -359,6 +372,7 @@ defmodule Components.DecksExplorer do
       "offset",
       "region",
       "min_games",
+      "min_winrate",
       "player_deck_includes",
       "player_deck_excludes",
       "fresh_player_deck_includes",
