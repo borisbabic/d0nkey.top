@@ -1533,6 +1533,50 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"min_games", min_games}, query),
     do: query |> having([game: g], sum(fragment(@total_fragment, g.status)) >= ^min_games)
 
+  defp compose_games_query({"min_winrate", min_games_string}, query)
+       when is_binary(min_games_string) do
+    case Float.parse(min_games_string) do
+      {min, _} ->
+        min =
+          if min > 1 do
+            min / 100
+          else
+            min
+          end
+
+        compose_games_query({"min_winrate", min}, query)
+
+      _ ->
+        query
+    end
+  end
+
+  defp compose_games_query(
+         {"min_winrate", min_winrate},
+         %{group_bys: [_ | _]} = query = @agg_deck_query
+       ),
+       do:
+         query
+         |> having(
+           [agg_deck_stats: ag],
+           fragment("?::float", sum(ag.wins) / sum(ag.total)) >= ^min_winrate
+         )
+
+  defp compose_games_query({"min_winrate", min_winrate}, query = @agg_deck_query),
+    do: query |> where([agg_deck_stats: ag], ag.winrate >= ^min_winrate)
+
+  defp compose_games_query({"min_winrate", min_winrate}, query = @old_aggregated_query),
+    do:
+      query
+      |> having(
+        [deck_stats: ds],
+        fragment("?::float", sum(ds.wins) / sum(ds.total)) >= ^min_winrate
+      )
+
+  defp compose_games_query({"min_winrate", min_winrate}, query),
+    do:
+      query |> having([game: g], fragment(@winrate_fragment, g.status, g.status) >= ^min_winrate)
+
   defp compose_games_query({"player_legend_rank", legend_rank}, query),
     do: query |> where([game: g], g.player_legend_rank == ^legend_rank)
 
