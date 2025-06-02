@@ -186,9 +186,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   defp wild_astalor_rogue?(card_info) do
     min_count?(card_info, 1, ["Spirit of the Shark", "Brann Bronzebeard"]) and
-      min_count?(card_info.etc_sideboard_names, 3, [
+      min_count?(card_info.etc_sideboard_names, 2, [
         "Astalor Bloodsworn",
-        "Shadow of Demise",
         "Bounce Around (ft. Garona)"
       ])
   end
