@@ -10,7 +10,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.RegionDropdown
   alias Components.Filter.ForceFreshDropdown
   alias Components.Filter.FormatDropdown
-  alias Components.Filter.ClassDropdown
+  alias Components.Filter.ClassMultiDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.AggregationMeta
@@ -134,8 +134,8 @@ defmodule Components.DecksExplorer do
         #   normalizer={&to_string/1} />
         }
 
-        <ClassDropdown id="player_class_dropdown" title="Player Class" param="player_class" />
-        <ClassDropdown id="opponent_class_dropdown" title="Opponent Class" param="opponent_class" any_param="Any Opponent" />
+        <ClassMultiDropdown id="player_class_dropdown" title="Player Class" param="player_class" />
+        <ClassMultiDropdown id="opponent_class_dropdown" title="Opponent Class" param="opponent_class" any_param="Any Opponent" />
 
         <LivePatchDropdown
           options={min_games_options(@min_games_options, @min_games_floor)}
