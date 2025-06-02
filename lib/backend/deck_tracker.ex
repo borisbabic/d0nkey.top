@@ -511,10 +511,10 @@ defmodule Hearthstone.DeckTracker do
       left_join: pd in assoc(ag, :deck),
       as: :player_deck,
       select: %{
-        wins: type(ag.wins, :integer),
-        losses: type(ag.losses, :integer),
-        total: type(ag.total, :integer),
-        winrate: type(ag.winrate, :float),
+        wins: type(ag.wins, :integer) |> selected_as(:wins),
+        losses: type(ag.losses, :integer) |> selected_as(:losses),
+        total: type(ag.total, :integer) |> selected_as(:total),
+        winrate: type(ag.winrate, :float) |> selected_as(:winrate),
         opponent_class: ag.opponent_class
       },
       where: fragment("COALESCE(?, 'any')", ag.opponent_class) != "any"
@@ -579,8 +579,11 @@ defmodule Hearthstone.DeckTracker do
             g.turns,
             g.turns,
             g.turns
-          ),
-        duration: fragment(@duration_fragment, g.duration, g.duration, g.duration, g.duration),
+          )
+          |> selected_as(:turns),
+        duration:
+          fragment(@duration_fragment, g.duration, g.duration, g.duration, g.duration)
+          |> selected_as(:duration),
         climbing_speed:
           fragment(
             @climbing_speed_fragment,
@@ -593,6 +596,7 @@ defmodule Hearthstone.DeckTracker do
             g.status,
             g.status
           )
+          |> selected_as(:climbing_speed)
       }
     )
     |> where([player_deck: pd], not is_nil(pd.archetype))
@@ -610,37 +614,54 @@ defmodule Hearthstone.DeckTracker do
       left_join: pd in assoc(ag, :deck),
       as: :player_deck,
       select: %{
-        wins: ag.wins,
-        losses: ag.losses,
-        total: ag.total,
-        winrate: ag.winrate,
+        wins: ag.wins |> selected_as(:wins),
+        losses: ag.losses |> selected_as(:losses),
+        total: ag.total |> selected_as(:total),
+        winrate: ag.winrate |> selected_as(:winrate),
         deck_id: ag.deck_id,
-        turns: ag.turns,
-        duration: ag.duration,
-        climbing_speed: ag.climbing_speed,
+        turns: ag.turns |> selected_as(:turns),
+        duration: ag.duration |> selected_as(:duration),
+        climbing_speed: ag.climbing_speed |> selected_as(:climbing_speed),
         card_stats: ag.card_stats
       }
     )
   end
 
   def archetype_agg_stats(criteria) do
-    base_agg_archetype_stats()
+    base_agg_archetype_stats(criteria)
     |> build_games_query(criteria)
     |> Repo.all()
   end
 
-  defp base_agg_archetype_stats() do
+  defp needs_grouping?(criteria) do
+    Enum.any?(criteria, &needs_group_by?/1)
+  end
+
+  defp needs_group_by?({"opponent_class", classes}) when is_list(classes) and length(classes) > 1,
+    do: true
+
+  defp needs_group_by?(_), do: false
+
+  defp base_agg_archetype_stats(criteria) do
+    if needs_grouping?(criteria) do
+      base_grouped_agg_archetype_stats()
+    else
+      base_ungrouped_agg_archetype_stats()
+    end
+  end
+
+  defp base_ungrouped_agg_archetype_stats() do
     from(ag in AggregatedStats,
       as: :agg_deck_stats,
       select: %{
-        wins: ag.wins,
-        losses: ag.losses,
-        total: ag.total,
-        winrate: ag.winrate,
+        wins: ag.wins |> selected_as(:wins),
+        losses: ag.losses |> selected_as(:losses),
+        total: ag.total |> selected_as(:total),
+        winrate: ag.winrate |> selected_as(:winrate),
         archetype: ag.archetype,
-        turns: ag.turns,
-        duration: ag.duration,
-        climbing_speed: ag.climbing_speed,
+        turns: ag.turns |> selected_as(:turns),
+        duration: ag.duration |> selected_as(:duration),
+        climbing_speed: ag.climbing_speed |> selected_as(:climbing_speed),
         card_stats: ag.card_stats
       },
       where: fragment("COALESCE(?, 'any')", ag.archetype) != "any",
@@ -648,20 +669,70 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  defp base_agg_deck_stats_query() do
+  defp base_grouped_agg_archetype_stats() do
+    from(ag in AggregatedStats,
+      as: :agg_deck_stats,
+      select: %{
+        wins: sum(ag.wins) |> selected_as(:wins),
+        losses: sum(ag.losses) |> selected_as(:losses),
+        total: sum(ag.total) |> selected_as(:total),
+        winrate: (fragment("?::float", sum(ag.wins)) / sum(ag.total)) |> selected_as(:winrate),
+        archetype: ag.archetype,
+        turns: (sum(ag.turns * ag.total) / sum(ag.total)) |> selected_as(:turns),
+        duration: (sum(ag.duration * ag.total) / sum(ag.total)) |> selected_as(:duration),
+        climbing_speed:
+          (sum(ag.climbing_speed * ag.total) / sum(ag.total)) |> selected_as(:climbing_speed),
+        # TODO: group card stats
+        card_stats: nil
+      },
+      where: fragment("COALESCE(?, 'any')", ag.archetype) != "any",
+      where: fragment("COALESCE(?, -1)", ag.deck_id) == -1,
+      group_by: [ag.archetype]
+    )
+  end
+
+  defp base_agg_deck_stats_query(criteria) do
+    if needs_grouping?(criteria) do
+      base_grouped_agg_deck_stats_query()
+    else
+      base_ungrouped_agg_deck_stats_query()
+    end
+  end
+
+  defp base_grouped_agg_deck_stats_query() do
     from(ag in AggregatedStats,
       as: :agg_deck_stats,
       join: pd in assoc(ag, :deck),
       as: :player_deck,
       select: %{
-        wins: ag.wins,
-        losses: ag.losses,
-        total: ag.total,
-        winrate: ag.winrate,
+        wins: sum(ag.wins) |> selected_as(:wins),
+        losses: sum(ag.losses) |> selected_as(:losses),
+        total: sum(ag.total) |> selected_as(:total),
+        winrate: (fragment("?::float", sum(ag.wins)) / sum(ag.total)) |> selected_as(:winrate),
         deck_id: ag.deck_id,
-        turns: ag.turns,
-        duration: ag.duration,
-        climbing_speed: ag.climbing_speed
+        turns: (sum(ag.turns * ag.total) / sum(ag.total)) |> selected_as(:turns),
+        duration: (sum(ag.duration * ag.total) / sum(ag.total)) |> selected_as(:duration),
+        climbing_speed:
+          (sum(ag.climbing_speed * ag.total) / sum(ag.total)) |> selected_as(:climbing_speed)
+      },
+      group_by: [ag.deck_id]
+    )
+  end
+
+  defp base_ungrouped_agg_deck_stats_query() do
+    from(ag in AggregatedStats,
+      as: :agg_deck_stats,
+      join: pd in assoc(ag, :deck),
+      as: :player_deck,
+      select: %{
+        wins: ag.wins |> selected_as(:wins),
+        losses: ag.losses |> selected_as(:losses),
+        total: ag.total |> selected_as(:total),
+        winrate: ag.winrate |> selected_as(:winrate),
+        deck_id: ag.deck_id,
+        turns: ag.turns |> selected_as(:turns),
+        duration: ag.duration |> selected_as(:duration),
+        climbing_speed: ag.climbing_speed |> selected_as(:climbing_speed)
       }
     )
   end
@@ -684,7 +755,7 @@ defmodule Hearthstone.DeckTracker do
 
     with :nomatch <- List.keyfind(list_criteria, "force_fresh", 0, :nomatch),
          {:ok, new_criteria} <- convert_deck_criteria_to_aggregate(list_criteria) do
-      {base_agg_deck_stats_query(), new_criteria, :agg}
+      {base_agg_deck_stats_query(new_criteria), new_criteria, :agg}
     else
       _ ->
         {base_deck_stats_query(), List.keydelete(list_criteria, "force_fresh", 0), :fresh}
@@ -719,11 +790,11 @@ defmodule Hearthstone.DeckTracker do
     base_stats_query()
   end
 
-  @total_select_pos 3
-  @winrate_select_pos 4
-  @turns_select_pos 6
-  @duration_select_pos 7
-  @climbing_speed_select_pos 8
+  # @total_select_pos 3
+  # @winrate_select_pos 4
+  # @turns_select_pos 6
+  # @duration_select_pos 7
+  # @climbing_speed_select_pos 8
   @total_fragment "CASE WHEN ? IN ('win', 'loss') THEN 1 ELSE 0 END"
   defp base_stats_query() do
     from(g in Game,
@@ -731,15 +802,19 @@ defmodule Hearthstone.DeckTracker do
       join: pd in assoc(g, :player_deck),
       as: :player_deck,
       select: %{
-        wins: sum(fragment("CASE WHEN ? = 'win' THEN 1 ELSE 0 END", g.status)),
-        losses: sum(fragment("CASE WHEN ? = 'loss' THEN 1 ELSE 0 END", g.status)),
-        total: sum(fragment(@total_fragment, g.status)),
+        wins:
+          sum(fragment("CASE WHEN ? = 'win' THEN 1 ELSE 0 END", g.status)) |> selected_as(:wins),
+        losses:
+          sum(fragment("CASE WHEN ? = 'loss' THEN 1 ELSE 0 END", g.status))
+          |> selected_as(:losses),
+        total: sum(fragment(@total_fragment, g.status)) |> selected_as(:total),
         winrate:
           fragment(
             @winrate_fragment,
             g.status,
             g.status
           )
+          |> selected_as(:winrate)
       }
     )
   end
@@ -1221,19 +1296,19 @@ defmodule Hearthstone.DeckTracker do
     do: query |> order_by([player_deck: d], desc: max(d.cost))
 
   defp compose_games_query({"order_by", "winrate"}, query),
-    do: query |> order_by([], desc: @winrate_select_pos)
+    do: query |> order_by([], desc: selected_as(:winrate))
 
   defp compose_games_query({"order_by", "total"}, query),
-    do: query |> order_by([], desc: @total_select_pos)
+    do: query |> order_by([], desc: selected_as(:total))
 
   defp compose_games_query({"order_by", "turns"}, query),
-    do: query |> order_by([], desc: @turns_select_pos)
+    do: query |> order_by([], desc: selected_as(:turns))
 
   defp compose_games_query({"order_by", "duration"}, query),
-    do: query |> order_by([], desc: @duration_select_pos)
+    do: query |> order_by([], desc: selected_as(:duration))
 
   defp compose_games_query({"order_by", "climbing_speed"}, query),
-    do: query |> order_by([], desc: @climbing_speed_select_pos)
+    do: query |> order_by([], desc: selected_as(:climbing_speed))
 
   defp compose_games_query(order_by, query) when order_by in [:latest, :winrate, :total],
     do: compose_games_query({"order_by", to_string(order_by)}, query)
@@ -1288,8 +1363,19 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_btag", btag}, query),
     do: query |> where([game: g], g.player_btag == ^btag)
 
+  defp compose_games_query({"player_class", raw_classes}, query = @agg_deck_query)
+       when is_list(raw_classes) do
+    upcase_classes = Enum.map(raw_classes, &String.upcase/1)
+    query |> where([player_deck: d], d.class in ^upcase_classes)
+  end
+
   defp compose_games_query({"player_class", class}, query = @agg_deck_query),
     do: query |> where([player_deck: d], d.class == ^String.upcase(class))
+
+  defp compose_games_query({"player_class", raw_classes}, query) when is_list(raw_classes) do
+    upcase_classes = Enum.map(raw_classes, &String.upcase/1)
+    query |> where([game: g], g.player_class in ^upcase_classes)
+  end
 
   defp compose_games_query({"player_class", class}, query),
     do: query |> where([game: g], g.player_class == ^String.upcase(class))
@@ -1432,6 +1518,12 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
+  defp compose_games_query(
+         {"min_games", min_games},
+         %{group_bys: [_ | _]} = query = @agg_deck_query
+       ),
+       do: query |> having([agg_deck_stats: ag], sum(ag.total) >= ^min_games)
+
   defp compose_games_query({"min_games", min_games}, query = @agg_deck_query),
     do: query |> where([agg_deck_stats: ag], ag.total >= ^min_games)
 
@@ -1444,6 +1536,24 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_legend_rank", legend_rank}, query),
     do: query |> where([game: g], g.player_legend_rank == ^legend_rank)
 
+  defp compose_games_query({"opponent_class", [class]}, query),
+    do: compose_games_query({"opponent_class", class}, query)
+
+  defp compose_games_query({"opponent_class", classes}, query = @agg_deck_query)
+       when is_list(classes) do
+    dynamic =
+      Enum.reduce(classes, dynamic(false), fn class, dynamic ->
+        dynamic(
+          [agg_deck_stats: ag],
+          ^dynamic or
+            fragment("COALESCE (?, ?)", ag.opponent_class, ^@nil_agg_opponent_class) ==
+              fragment("COALESCE (?, ?)", ^class, ^@nil_agg_opponent_class)
+        )
+      end)
+
+    query |> where(^dynamic)
+  end
+
   defp compose_games_query({"opponent_class", class}, query = @agg_deck_query) do
     query
     |> where(
@@ -1455,6 +1565,11 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"opponent_class", class}, query = @old_aggregated_query),
     do: query |> where([deck_stats: ds], ds.opponent_class == ^String.upcase(class))
+
+  defp compose_games_query({"opponent_class", raw_classes}, query) when is_list(raw_classes) do
+    upcase_classes = Enum.map(raw_classes, &String.upcase/1)
+    query |> where([game: g], g.opponent_class in ^upcase_classes)
+  end
 
   defp compose_games_query({"opponent_class", "any"}, query), do: query
 

@@ -7,7 +7,7 @@ defmodule Components.TierList do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
-  alias Components.Filter.ClassDropdown
+  alias Components.Filter.ClassMultiDropdown
   alias Components.Filter.RegionDropdown
   alias Components.Filter.PlayerHasCoinDropdown
   alias Components.WinrateTag
@@ -45,7 +45,7 @@ defmodule Components.TierList do
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
         <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
-        <ClassDropdown
+        <ClassMultiDropdown
           id="tier_list_opponents_class_dropdown"
           name_prefix={"VS "}
           title={"Opponent's Class"}
