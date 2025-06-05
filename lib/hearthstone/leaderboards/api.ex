@@ -133,6 +133,10 @@ defmodule Hearthstone.Leaderboards.Api do
   def get_leaderboard_identifier(l) when l in [:Arena, "Arena", :arena, "arena"],
     do: {:ok, :arena}
 
+  def get_leaderboard_identifier(l)
+      when l in [:"Underground Arena", "Undergound Arena", :undergroundarena, "undergroundarena"],
+      do: {:ok, :undergroundarena}
+
   def get_leaderboard_identifier(l) when l in [:Twist, "Twist", :twist, "twist"],
     do: {:ok, :twist}
 

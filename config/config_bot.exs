@@ -32,7 +32,7 @@ config :backend, QuantumScheduler,
      fn ->
        Backend.Leaderboards.save_current_with_delay(
          [:CN],
-         [:arena, :BG, :DUO],
+         [:undergroundarena, :BG, :DUO],
          500,
          10_000,
          500
@@ -62,7 +62,7 @@ config :backend, QuantumScheduler,
      fn ->
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
-         [:arena],
+         [:undergroundarena],
          1000,
          30_000,
          1000
@@ -116,7 +116,7 @@ config :backend, QuantumScheduler,
      fn ->
        Backend.Leaderboards.save_current_with_delay(
          [:EU, :US, :AP],
-         [:arena],
+         [:undergroundarena],
          10_000,
          60_000,
          9000,
@@ -126,7 +126,7 @@ config :backend, QuantumScheduler,
     {"47 * * * *",
      fn ->
        Backend.Leaderboards.save_all_right_after_midnight(
-         [:STD, :BG, :WLD, :DUO, :arena, :twist],
+         [:STD, :BG, :WLD, :DUO, :undergroundarena, :twist],
          20_000,
          120_000,
          10_001

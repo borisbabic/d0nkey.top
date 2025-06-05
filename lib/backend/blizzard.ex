@@ -36,10 +36,12 @@ defmodule Backend.Blizzard do
   # guess, change if not correct
   # 5 weeks aftger july 8th, july 7th being the end of the standard battlepass
   @current_bg_season_end_date ~N[2025-08-12 17:00:00]
-  @current_arena_season_id 56
+  # no more legacy after this
+  @max_legacy_arena_season_id 56
+  @current_undergroundarena_season_id 1
   # guess, change if not correct
-  # 5 weeks before july 8th, july 7th being the end of the battlepass
-  @current_arena_season_end_date ~N[2025-06-02 17:00:00]
+  # one week before the expansion
+  @current_undergroundarena_season_end_date ~N[2025-07-01 17:00:00]
 
   defmacro is_old_bg_season(season_id) do
     quote do
@@ -57,8 +59,9 @@ defmodule Backend.Blizzard do
   @regions [:EU, :US, :AP, :CN]
   @binary_regions Enum.map(@regions, &to_string/1)
   @qualifier_regions [:EU, :US, :AP]
-  @type leaderboard :: :BG | :STD | :WLD | :CLS | :MRC | :arena | :twist | :DUO
-  @leaderboards [:BG, :DUO, :STD, :WLD, :CLS, :MRC, :arena, :twist]
+  @type leaderboard ::
+          :BG | :STD | :WLD | :CLS | :MRC | :arena | :twist | :DUO | :undergroundarena
+  @leaderboards [:BG, :DUO, :STD, :WLD, :CLS, :MRC, :arena, :twist, :undergroundarena]
   @binary_leaderboards Enum.map(@leaderboards, &to_string/1)
   @defunct_leaderboards [:CLS]
   # @type battletag :: <<_::binary, "#", _::binary>>
@@ -591,7 +594,8 @@ defmodule Backend.Blizzard do
       :CLS -> "Classic"
       :MRC -> "Mercenaries"
       :twist -> "Twist"
-      :arena -> "Arena"
+      :arena -> "Legacy Arena"
+      :undergroundarena -> "Underground Arena"
       :DUO -> "Battlegrounds Duos"
     end
   end
@@ -606,6 +610,7 @@ defmodule Backend.Blizzard do
       :CLS -> "CLS"
       :MRC -> "MRC"
       :arena -> "arena"
+      :undergroundarena -> "undergroundarena"
       :twist -> "twist"
       :DUO -> "Duos"
     end
@@ -625,13 +630,14 @@ defmodule Backend.Blizzard do
   @spec get_leaderboard_name(region(), leaderboard(), integer, :short | :long) :: String.t()
   def get_leaderboard_name(region, leaderboard, season_id, length \\ :long)
 
-  def get_leaderboard_name(region, ldb, season_id, length) when ldb in [:arena, :BG, :DUO] do
+  def get_leaderboard_name(region, ldb, season_id, length)
+      when ldb in [:arena, :BG, :DUO, :undergroundarena] do
     r = get_region_name(region, length)
     leaderboard = get_leaderboard_name(ldb, length)
     "#{leaderboard} #{r} #{get_season_name(season_id, ldb)}"
   end
 
-  for ldb <- [:BG, :MRC, :arena, :DUO] do
+  for ldb <- [:BG, :MRC, :arena, :DUO, :undergroundarena] do
     def get_leaderboard_name(region, unquote(to_string(ldb)), season_id, length),
       do: get_leaderboard_name(region, unquote(ldb), season_id, length)
   end
@@ -660,7 +666,10 @@ defmodule Backend.Blizzard do
   def get_season_name(season, "DUO"), do: get_season_name(season, :DUO)
   def get_season_name(season, "BG"), do: get_season_name(season, :BG)
   def get_season_name(season, ldb) when ldb in [:BG, :DUO], do: "Season #{season + 1}"
-  def get_season_name(season, ldb) when ldb in [:arena, "arena"], do: "Season #{season}"
+
+  def get_season_name(season, ldb)
+      when ldb in [:arena, "arena", :undergroundarena, "undergroundarena"],
+      do: "Season #{season}"
 
   def get_season_name(season, ldb) do
     %{month: month} = get_month_start(season, ldb)
@@ -822,12 +831,16 @@ defmodule Backend.Blizzard do
   def gm_season_definition({2021, 2}), do: %{week_one: 32, playoffs_week: 40, break_weeks: [35]}
 
   def get_current_ladder_season(ldb) when ldb in [:arena, "arena"] do
+    @max_legacy_arena_season_id
+  end
+
+  def get_current_ladder_season(ldb) when ldb in [:undergroundarena, "undergroundarena"] do
     now = NaiveDateTime.utc_now()
 
-    if :lt == NaiveDateTime.compare(now, @current_arena_season_end_date) do
-      @current_arena_season_id
+    if :lt == NaiveDateTime.compare(now, @current_undergroundarena_season_end_date) do
+      @current_undergroundarena_season_id
     else
-      @current_arena_season_id + 1
+      @current_undergroundarena_season_id + 1
     end
   end
 
@@ -845,7 +858,8 @@ defmodule Backend.Blizzard do
 
   @spec get_current_ladder_season(leaderboard_id :: leaderboard(), region :: region()) ::
           integer()
-  def get_current_ladder_season(ldb, _region) when ldb in [:arena, :BG, :DUO] do
+  def get_current_ladder_season(ldb, _region)
+      when ldb in [:arena, :BG, :DUO, :undergroundarena] do
     get_current_ladder_season(ldb)
   end
 
