@@ -14,12 +14,13 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
     {:ok,
      socket
      |> assign_defaults(session)
-     |> put_user_in_context()}
+     |> put_user_in_context()
+     |> assign(:page_title, "Tournament Archetype Stats")}
   end
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">Tournament Archetype Stats</div>
+      <div class="title is-2">{@page_title}</div>
       <div class="subtitle is-6">
         <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
         | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/popularity"}>Archetype Popularity</a>

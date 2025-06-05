@@ -11,7 +11,8 @@ defmodule BackendWeb.TournamentLineupPopularityTableLive do
     {:ok,
      socket
      |> assign_defaults(session)
-     |> put_user_in_context()}
+     |> put_user_in_context()
+     |> assign(:page_title, "Tournament Archetype Popularity")}
   end
 
   def render(assigns) do
@@ -19,7 +20,7 @@ defmodule BackendWeb.TournamentLineupPopularityTableLive do
       <div>
         <div>
           <div>
-            <div class="title is-2">Tournament Archetype Popularity</div>
+            <div class="title is-2">{@page_title}</div>
             <div class="subtitle is-6">
               <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
               | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
