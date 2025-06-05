@@ -59,11 +59,13 @@ defmodule BackendWeb.BattlefyView do
         _ -> %{}
       end
 
+    safe_name = name || ""
+
     %{
       name: name,
       decks: decks,
-      hsdeckviewer: ~p"/battlefy/tournament/#{tournament_id}/decks/#{name}",
-      link: ~p"/battlefy/tournament/#{tournament_id}/future/#{name}?#{query_params}"
+      hsdeckviewer: ~p"/battlefy/tournament/#{tournament_id}/decks/#{safe_name}",
+      link: ~p"/battlefy/tournament/#{tournament_id}/future/#{safe_name}?#{query_params}"
     }
   end
 
