@@ -8,7 +8,12 @@ defmodule BackendWeb.MyReplaysLive do
   data(filters, :map)
 
   def mount(_params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    do:
+      {:ok,
+       socket
+       |> assign_defaults(session)
+       |> put_user_in_context()
+       |> assign(page_title: "My Replays")}
 
   def render(assigns) do
     # filters

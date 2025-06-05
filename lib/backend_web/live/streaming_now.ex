@@ -15,7 +15,7 @@ defmodule BackendWeb.StreamingNowLive do
     subscribe_to_messages()
 
     {:ok,
-     assign(socket, streaming_now: streaming_now)
+     assign(socket, streaming_now: streaming_now, page_title: "Streaming Now")
      |> assign_defaults(session)
      |> put_user_in_context()}
   end

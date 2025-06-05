@@ -21,7 +21,8 @@ defmodule BackendWeb.DeckviewerLive do
   data(title, :string)
 
   def mount(_params, session, socket) do
-    {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    {:ok,
+     socket |> assign_defaults(session) |> put_user_in_context() |> assign(page_title: title([]))}
   end
 
   def render(assigns) do
@@ -105,13 +106,10 @@ defmodule BackendWeb.DeckviewerLive do
     compare_decks = params["compare_decks"] == "true"
 
     rotation = params["rotation"] == "true"
-    title = params["title"]
 
-    optional_assigns =
-      if title do
-        [page_title: title]
-      else
-        []
+    title =
+      with nil <- params["title"] do
+        title(codes)
       end
 
     show_copy_button = codes |> Enum.any?()
@@ -124,7 +122,6 @@ defmodule BackendWeb.DeckviewerLive do
         nil
       end
 
-
     {
       :noreply,
       socket
@@ -136,7 +133,7 @@ defmodule BackendWeb.DeckviewerLive do
       |> assign(:rotation, rotation)
       |> assign(:title, params["title"])
       |> assign(:new_deck, "")
-      |> assign(optional_assigns)
+      |> assign(:page_title, title)
     }
   end
 
@@ -244,4 +241,12 @@ defmodule BackendWeb.DeckviewerLive do
   defp add_compare_param(map, cd), do: map |> Map.put("compare_decks", cd)
   defp add_code_param(map, deckcodes), do: map |> Map.put("code", deckcodes |> codes_to_param())
   defp codes_to_param(codes), do: codes |> Enum.join(",")
+
+  defp title(codes) when is_list(codes) and length(codes) > 0 do
+    "Deckviewer (#{Enum.count(codes)})"
+  end
+
+  defp title(_) do
+    "Deckviewer"
+  end
 end

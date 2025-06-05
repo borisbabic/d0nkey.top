@@ -10,6 +10,7 @@ defmodule BackendWeb.TwitchBotLive do
      socket
      |> assign_defaults(session)
      |> put_user_in_context()}
+    |> assign(page_title: "Twitch Commands")
   end
 
   def render(assigns) do
