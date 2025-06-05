@@ -16,7 +16,10 @@ defmodule Backend.Battlefy.Match do
     field :double_loss, boolean
     field :stage_id, Backend.Battlefy.stage_id()
     field :is_bye, boolean
+    # todo remove this?
     field :completed_at, NaiveDateTime.t()
+    field :is_complete, boolean()
+    field :updated_at, NaiveDateTime.t()
     field :stats, [MatchStats.t()] | nil
     field :next, Next.t() | nil
     # field :is_complete, boolean
@@ -68,6 +71,8 @@ defmodule Backend.Battlefy.Match do
       double_loss: map["doubleLoss"] || false,
       is_bye: is_bye,
       completed_at: map["completedAt"] |> Util.naive_date_time_or_nil(),
+      is_complete: !!(map["isComplete"] || Map["is_complete"] || map["completedAt"]),
+      updated_at: (map["updatedAt"] || map["updated_at"]) |> Util.naive_date_time_or_nil(),
       next: Next.from_raw_map(map["next"]),
       stats: MatchStats.from_raw_map(map["stats"]) || [],
       stage_id: stage_id

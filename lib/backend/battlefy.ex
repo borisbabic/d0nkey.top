@@ -17,6 +17,7 @@ defmodule Backend.Battlefy do
   alias Backend.Tournaments
   alias Backend.Tournaments.MatchStats
   alias Backend.Tournaments.MatchStats.Result
+  alias Backend.Battlefy.GameStats
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
   @type region :: :Asia | :Europe | :Americas
@@ -28,7 +29,7 @@ defmodule Backend.Battlefy do
   @type stage_id :: battlefy_id
   @type match_id :: battlefy_id
   @type organization_id :: battlefy_id
-  @type get_matches_opt :: {:round, integer()}
+  @type get_matches_opt :: {:round, integer()} | {:fill_match_stats, boolean()}
   @type get_matches_options :: [get_matches_opt]
   @type get_tournament_matches_opt :: {:stage, integer()} | get_matches_opt
   @type get_tournament_matches_options :: [get_tournament_matches_opt]
@@ -530,7 +531,7 @@ defmodule Backend.Battlefy do
   @spec fetch_all_tournament_matches(tournament_id | Tournament.t()) ::
           {:ok, [Match.t()]} | {:error, :atom}
   def fetch_all_tournament_matches(%{stage_ids: stage_ids}) do
-    matches = Enum.flat_map(stage_ids, &get_matches/1)
+    matches = Enum.flat_map(stage_ids, fn id -> get_matches(id, fill_match_stats: true) end)
     {:ok, matches}
   end
 
@@ -576,12 +577,12 @@ defmodule Backend.Battlefy do
       end)
       |> Map.new()
 
-    for %{completed_at: %NaiveDateTime{}, top: top, bottom: bottom, stats: stats} <- matches do
+    for %{is_complete: true, top: top, bottom: bottom, stats: stats} <- matches do
       top_banned = Map.get(lineup_decks, archetype_key(top, top.banned_class))
-      top_lineup = Map.get(full_lineups, MatchTeam.get_name(top))
+      top_lineup = Map.get(full_lineups, MatchTeam.get_name(top)) || []
       top_not_banned = Enum.reject(top_lineup, &(&1 == top_banned))
       bottom_banned = Map.get(lineup_decks, archetype_key(bottom, bottom.banned_class))
-      bottom_lineup = Map.get(full_lineups, MatchTeam.get_name(bottom))
+      bottom_lineup = Map.get(full_lineups, MatchTeam.get_name(bottom)) || []
       bottom_not_banned = Enum.reject(bottom_lineup, &(&1 == bottom_banned))
 
       results =
@@ -1192,5 +1193,20 @@ defmodule Backend.Battlefy do
       end
     end)
     |> Backend.Repo.transaction()
+  end
+
+  @spec fill_match_stats([Match.t()], [GameStats.t()]) :: [Match.t()]
+  def fill_match_stats(matches, game_stats) do
+    per_match = Enum.group_by(game_stats, & &1.match_id, &GameStats.to_match_stats/1)
+
+    Util.async_map(matches, fn m ->
+      case Map.get(per_match, m.id) do
+        ms when is_list(ms) ->
+          Map.put(m, :stats, ms)
+
+        _ ->
+          m
+      end
+    end)
   end
 end

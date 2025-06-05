@@ -6,6 +6,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchDeckstrings
   alias Backend.Battlefy.Profile
+  alias Backend.Battlefy.GameStats
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Organization
@@ -173,30 +174,35 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     url =
       case opts[:round] do
         nil ->
-          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches"
+          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches?"
 
         round ->
           "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches?roundNumber=#{round}"
       end
+
+    base_matches =
+      get_body(url)
+      |> Jason.decode!()
+      |> Util.async_map(&Match.from_raw_map/1)
+
+    case opts[:fill_match_stats] do
+      true ->
+        game_stats = get_stage_game_stats(stage_id)
+        Battlefy.fill_match_stats(base_matches, game_stats)
+
+      _ ->
+        base_matches
+    end
+  end
+
+  @spec get_stage_game_stats(Battlefy.stage_id()) :: [GameStats.t()]
+  def get_stage_game_stats(stage_id) do
+    url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/stats-page"
 
     get_body(url)
     |> Jason.decode!()
-    |> Util.async_map(&Match.from_raw_map/1)
-  end
-
-  @spec get_matches(Battlefy.stage_id(), Battlefy.get_matches_options()) :: [Match.t()]
-  def get_matches_raw(stage_id, opts \\ []) do
-    url =
-      case opts[:round] do
-        nil ->
-          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches"
-
-        round ->
-          "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/matches?roundNumber=#{round}"
-      end
-
-    response = get_response(url)
-    response.body
+    |> Map.get("stats")
+    |> Util.async_map(&GameStats.from_raw_map/1)
   end
 
   @spec get_match!(Battlefy.match_id()) :: Battlefy.Match.t()
