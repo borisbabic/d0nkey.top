@@ -176,8 +176,10 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
   alias Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata
 
   typedstruct enforce: false do
+    field(:undergroundarena, LeaderboardMetadata.t(), enforce: true)
     field(:arena, LeaderboardMetadata.t(), enforce: true)
     field(:battlegrounds, LeaderboardMetadata.t(), enforce: true)
+    field(:battlegroundsduo, LeaderboardMetadata.t(), enforce: true)
     field(:classic, LeaderboardMetadata.t())
     field(:mercenaries, LeaderboardMetadata.t(), enforce: true)
     field(:standard, LeaderboardMetadata.t(), enforce: true)
@@ -188,18 +190,18 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
   @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
   def from_raw_map(
         %{
-          "arena" => arena,
           "battlegrounds" => battlegrounds,
-          "mercenaries" => mercenaries,
           "standard" => standard,
           "wild" => wild
         } = map
       ) do
     %__MODULE__{
-      arena: LeaderboardMetadata.from_raw_map(arena),
+      arena: LeaderboardMetadata.from_raw_map(map["arena"]),
+      undergroundarena: LeaderboardMetadata.from_raw_map(map["undergroundarena"]),
       battlegrounds: LeaderboardMetadata.from_raw_map(battlegrounds),
+      battlegroundsduo: LeaderboardMetadata.from_raw_map(map["battlegroundsduo"]),
       classic: LeaderboardMetadata.from_raw_map(map["classic"]),
-      mercenaries: LeaderboardMetadata.from_raw_map(mercenaries),
+      mercenaries: LeaderboardMetadata.from_raw_map(map["mercenaries"]),
       standard: LeaderboardMetadata.from_raw_map(standard),
       twist: LeaderboardMetadata.from_raw_map(map["twist"]),
       wild: LeaderboardMetadata.from_raw_map(wild)
@@ -251,4 +253,6 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
       seasons: seasons
     }
   end
+
+  def from_raw_map(_), do: nil
 end

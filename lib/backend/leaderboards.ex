@@ -1492,7 +1492,7 @@ defmodule Backend.Leaderboards do
   end
 
   @alter_ratings_ldbs ["STD", :STD, "CLS", :CLS, "WLD", :WLD]
-  @preserve_ratings [:arena, "arena"]
+  @preserve_ratings [:arena, "arena", :undergroundarena, "undergroundarena"]
 
   @spec rating_display(nil | number, any) :: nil | integer
   def rating_display(nil, _ldb), do: nil
