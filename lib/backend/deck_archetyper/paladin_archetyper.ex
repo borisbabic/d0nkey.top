@@ -117,6 +117,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
     class_name = Deck.class_name(card_info.deck)
 
     cond do
+      wild_exodia_paladin?(card_info) and highlander?(card_info) ->
+        :"HL Exodia Paladin"
+
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
