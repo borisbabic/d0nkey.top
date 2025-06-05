@@ -6,7 +6,6 @@ defmodule BackendWeb.DeckviewerLive do
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
   alias Backend.HSDeckViewer
-  alias Backend.Yaytears
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
   alias Surface.Components.Form.TextArea
@@ -56,9 +55,6 @@ defmodule BackendWeb.DeckviewerLive do
                   </div>
 
                   <div class= "column is-narrow" :if={@deckcodes |> Enum.any?()}>
-                    <a class="is-link tag" href={"#{Yaytears.create_deckstrings_link(@deckcodes) }"}>
-                      yaytears
-                  </a>
                     <a class="is-link tag" href={"#{HSDeckViewer.create_link(@deckcodes)}"}>
                       HSDeckViewer
                   </a>
