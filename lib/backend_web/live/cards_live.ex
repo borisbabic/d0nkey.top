@@ -7,7 +7,12 @@ defmodule BackendWeb.CardsLive do
   data(params, :map)
 
   def mount(_params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    do:
+      {:ok,
+       socket
+       |> assign_defaults(session)
+       |> put_user_in_context()
+       |> assign(:page_title, "Hearthstone Cards")}
 
   def render(assigns) do
     ~F"""

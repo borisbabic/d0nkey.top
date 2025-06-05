@@ -10,6 +10,7 @@ defmodule BackendWeb.TournamentLineups do
   def mount(_params, session, socket) do
     {:ok,
      socket
+     |> assign(page_title: "Lineups")
      |> assign_defaults(session)
      |> put_user_in_context()}
   end

@@ -32,6 +32,7 @@ defmodule BackendWeb.DeckSheetViewLive do
        socket
        |> assign_defaults(session)
        |> assign_sheet(params)
+       |> assign_title()
        |> assign_sort(params)
        |> put_user_in_context()
        |> assign(offset: 0)
@@ -128,6 +129,7 @@ defmodule BackendWeb.DeckSheetViewLive do
           listings
           |> DeckSheet.sort_listings(sort)
           |> Enum.map_join(",", &Backend.Hearthstone.Deck.deckcode(&1.deck))
+
         query = %{code: codes}
         ~p"/deckviewer?#{query}"
 
@@ -186,6 +188,14 @@ defmodule BackendWeb.DeckSheetViewLive do
     socket
     |> assign(:sheet, sheet)
     |> assign(:sheet_id, id)
+  end
+
+  defp assign_title(%{assigns: %{sheet: %{name: name}}} = socket) when is_binary(name) do
+    assign(socket, :page_title, "#{name} - Deck Sheet")
+  end
+
+  defp assign_title(socket) do
+    assign(socket, :page_title, "Deck Sheet")
   end
 
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do

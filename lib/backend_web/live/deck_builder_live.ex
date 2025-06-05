@@ -153,11 +153,14 @@ defmodule BackendWeb.DeckBuilderLive do
         new_params =
           Map.merge(raw_params, %{
             "format" => deck.format,
-            "deck_class" => Deck.class(deck),
+            "deck_class" => D,
             "code" => Deck.deckcode(deck)
           })
 
-        {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, new_params))}
+        {:noreply,
+         socket
+         |> assign(page_title: "DeckBuilder - #{deck_name(deck)}")
+         |> push_patch(to: Routes.live_path(socket, __MODULE__, new_params))}
 
       _ ->
         socket
@@ -305,10 +308,13 @@ defmodule BackendWeb.DeckBuilderLive do
     params = CardsExplorer.filter_relevant(raw_params)
     scroll_size = Map.get(raw_params, "scroll_size", socket.assigns.scroll_size) |> Util.to_int(1)
 
-    {:noreply,
-     socket
-     |> assign(params: params, raw_params: raw_params, scroll_size: scroll_size)
-     |> assign_deck(raw_params)}
+    {
+      :noreply,
+      socket
+      |> assign(params: params, raw_params: raw_params, scroll_size: scroll_size)
+      |> assign_deck(raw_params)
+      |> assign_title()
+    }
   end
 
   defp assign_deck(socket, params) do
@@ -318,6 +324,18 @@ defmodule BackendWeb.DeckBuilderLive do
     else
       _ -> socket
     end
+  end
+
+  defp assign_title(%{assigns: %{deck: %Deck{} = deck}} = socket) do
+    assign(socket, :page_title, "#{deck_name(deck)} - DeckBuilder")
+  end
+
+  defp assign_title(%{assigns: %{deck_class: deck_class}} = socket) when is_binary(deck_class) do
+    assign(socket, :page_title, "#{deck_class} - DeckBuidler")
+  end
+
+  defp assign_title(socket) do
+    assign(socket, :page_title, "DeckBuilder")
   end
 
   def missing_etc_band_member?(deck) do

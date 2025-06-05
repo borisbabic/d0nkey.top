@@ -6,7 +6,8 @@ defmodule BackendWeb.EsportsLive do
   data(user, :any)
 
   def mount(_params, session, socket) do
-    {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    {:ok,
+     socket |> assign_defaults(session) |> put_user_in_context() |> assign(page_title: "Esports")}
   end
 
   def render(assigns) do
