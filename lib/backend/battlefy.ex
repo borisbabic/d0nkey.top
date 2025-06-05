@@ -675,7 +675,7 @@ defmodule Backend.Battlefy do
   defp do_get_future_and_player_matches([], _), do: {empty_opponent_matches(), [], nil}
 
   defp do_get_future_and_player_matches([%Stage{id: id} | rest], team_name) do
-    matches = get_matches(id)
+    matches = get_matches(id, fill_match_stats: true)
     # total_rounds = stage.bracket && stage.bracket.rounds_count
 
     player_matches =
