@@ -13,7 +13,6 @@ defmodule BackendWeb.BattlefyView do
 
   @type future_opponent_team :: %{
           name: String.t(),
-          yaytears: String.t(),
           hsdeckviewer: String.t(),
           decks: any(),
           link: String.t()
@@ -27,8 +26,7 @@ defmodule BackendWeb.BattlefyView do
           score: String.t(),
           wins: integer,
           losses: integer,
-          hsdeckviewer: String.t(),
-          yaytears: String.t()
+          hsdeckviewer: String.t()
         }
 
   @spec handle_opponent_team(Battlefy.MatchTeam.t(), Map.t()) ::
@@ -63,7 +61,6 @@ defmodule BackendWeb.BattlefyView do
 
     %{
       name: name,
-      yaytears: Backend.Yaytears.create_deckstrings_link(tournament_id, name),
       decks: decks,
       hsdeckviewer: ~p"/battlefy/tournament/#{tournament_id}/decks/#{name}",
       link: ~p"/battlefy/tournament/#{tournament_id}/future/#{name}?#{query_params}"
@@ -115,7 +112,6 @@ defmodule BackendWeb.BattlefyView do
         t
         |> Map.put_new(:link, Battlefy.create_tournament_link(t.slug, t.id, t |> slug.()))
         |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, t.id))
-        |> Map.put_new(:yaytears, Backend.Yaytears.create_tournament_link(t.id))
       end)
 
     render("tournament_table.html", %{tournaments: tournaments})
@@ -197,7 +193,6 @@ defmodule BackendWeb.BattlefyView do
 
     {player, class_stats_raw} = handle_player_matches(params)
     hsdeckviewer = Routes.battlefy_path(conn, :tournament_decks, tournament.id, team_name)
-    yaytears = Backend.Yaytears.create_deckstrings_link(tournament.id, team_name)
     class_stats = class_stats_raw |> Enum.map(fn {_k, v} -> v end)
 
     deckcodes = Enum.filter(deckcodes_raw, &Backend.Hearthstone.Deck.valid?/1)
@@ -225,8 +220,7 @@ defmodule BackendWeb.BattlefyView do
         class_stats: class_stats,
         show_class_stats: class_stats |> Enum.count() > 0,
         standings_link:
-          Routes.battlefy_path(conn, :tournament, tournament.id, standings_link_params),
-        yaytears: yaytears
+          Routes.battlefy_path(conn, :tournament, tournament.id, standings_link_params)
       }
       |> add_stage_attrs(
         tournament,

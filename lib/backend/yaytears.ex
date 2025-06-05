@@ -2,17 +2,6 @@ defmodule Backend.Yaytears do
   @moduledoc false
   alias Backend.Hearthstone.Deck
 
-  @spec create_deckstrings_link(Backend.Battlefy.tournament_id(), Backend.Battlefy.battletag()) ::
-          String.t()
-  def create_deckstrings_link(tournament_id, battletag_full) do
-    "https://www.yaytears.com/battlefy/#{tournament_id}/#{battletag_full |> URI.encode_www_form()}"
-  end
-
-  @spec create_tournament_link(Backend.Battlefy.tournament_id()) :: String.t()
-  def create_tournament_link(tournament_id) do
-    "https://www.yaytears.com/battlefy/#{tournament_id}"
-  end
-
   def yt_link?(link) when is_binary(link), do: link =~ "yaytears.com"
   def yt_link?(_), do: false
 
@@ -37,16 +26,5 @@ defmodule Backend.Yaytears do
     else
       _ -> []
     end
-  end
-
-  @spec create_deckstrings_link(String.t()) :: String.t()
-  def create_deckstrings_link(deckstrings) do
-    codes_part =
-      deckstrings
-      |> Deck.shorten()
-      |> Enum.join(".")
-      |> URI.encode_www_form()
-
-    "https://yaytears.com/conquest/#{codes_part}"
   end
 end
