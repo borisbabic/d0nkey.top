@@ -519,11 +519,11 @@ defmodule Backend.MastersTour.TourStop do
         aliases: [],
         display_name: "MT Summer Championship",
         swiss_rounds: 0,
-        year: 2025
+        year: 2024
       },
       %__MODULE__{
         id: :"Masters Tour 2025_1",
-        battlefy_id: nil,
+        battlefy_id: "6840e6e5158cc10018215c79",
         ladder_priority: nil,
         ladder_seasons: [137, 138],
         ladder_invites: nil,
@@ -537,13 +537,13 @@ defmodule Backend.MastersTour.TourStop do
           {{76, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2025-04-12 16:00:00],
+        start_time: ~N[2025-06-06 16:00:00],
         qualifiers_period: {~D[2025-03-01], ~D[2025-03-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
         display_name: "MT Spring Championship",
         swiss_rounds: 0,
-        year: 2024
+        year: 2025
       },
       %__MODULE__{
         id: :"Masters Tour 2025_2",
@@ -561,7 +561,7 @@ defmodule Backend.MastersTour.TourStop do
           {{76, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2025-08-15 16:00:00],
+        start_time: ~N[2025-09-15 16:00:00],
         qualifiers_period: {~D[2025-06-01], ~D[2025-06-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
@@ -679,7 +679,7 @@ defmodule Backend.MastersTour.TourStop do
 
   def display_name(_), do: nil
 
-  def get_current(hours_before_start \\ 21, hours_after_start \\ 96) do
+  def get_current(hours_before_start \\ 24, hours_after_start \\ 96) do
     all()
     |> Enum.find_value(fn ts ->
       ts |> current?(hours_before_start, hours_after_start) && ts.id
