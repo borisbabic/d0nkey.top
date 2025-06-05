@@ -13,7 +13,7 @@ defmodule BackendWeb.PlayerDecksLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">{@player_btag}'s Decks</div>
+        <div class="title is-2">{@page_title}</div>
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
@@ -47,6 +47,18 @@ defmodule BackendWeb.PlayerDecksLive do
 
   def handle_params(params, _uri, socket) do
     filters = DecksExplorer.filter_relevant(params)
-    {:noreply, assign(socket, :filters, filters) |> assign(:player_btag, params["player_btag"])}
+
+    {
+      :noreply,
+      assign(socket, :filters, filters)
+      |> assign(:player_btag, params["player_btag"])
+      |> assign(:page_title, title(params["player_btag"]))
+    }
   end
+
+  defp title(battletag) when is_binary(battletag) do
+    "#{battletag}'s Decks"
+  end
+
+  defp title(battletag), do: title("Unknown Player")
 end
