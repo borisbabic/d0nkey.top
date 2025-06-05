@@ -71,7 +71,7 @@ defmodule Backend.Battlefy.Match do
       double_loss: map["doubleLoss"] || false,
       is_bye: is_bye,
       completed_at: map["completedAt"] |> Util.naive_date_time_or_nil(),
-      is_complete: !!(map["isComplete"] || Map["is_complete"] || map["completedAt"]),
+      is_complete: !!(map["isComplete"] || map["is_complete"] || map["completedAt"]),
       updated_at: (map["updatedAt"] || map["updated_at"]) |> Util.naive_date_time_or_nil(),
       next: Next.from_raw_map(map["next"]),
       stats: MatchStats.from_raw_map(map["stats"]) || [],
