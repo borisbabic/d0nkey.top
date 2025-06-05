@@ -98,7 +98,8 @@ defmodule Backend.UserManager.User do
       :card,
       :kaffy,
       :developer,
-      :twitch_commands
+      :twitch_commands,
+      :premium
     ]
 
   @spec string_admin_roles() :: [String.t()]
