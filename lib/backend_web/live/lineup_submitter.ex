@@ -61,7 +61,13 @@ defmodule BackendWeb.LineupSubmitterLive do
         %{"lineups" => %{"csv" => csv, "tournament_id" => tournament_id}},
         %{assigns: %{user: %{battletag: battletag}}} = socket
       ) do
-    data = csv |> String.split(["\n", "\r\n"]) |> Command.ImportLineups.parse_csv()
+    # this is so stupid, why do I need to give it a streeam AND have it end with new line
+    data =
+      csv
+      |> String.split(["\n", "\r\n"])
+      |> Enum.map(&(&1 <> "\n"))
+      |> Command.ImportLineups.parse_csv()
+
     Command.ImportLineups.import(data, tournament_id, battletag)
     {:noreply, socket |> assign(:view_url, ~p"/tournament-lineups/#{battletag}/#{tournament_id}")}
   end
