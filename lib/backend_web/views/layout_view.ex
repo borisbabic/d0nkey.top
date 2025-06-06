@@ -37,10 +37,12 @@ defmodule BackendWeb.LayoutView do
         assigns = %{conn: conn, name: name, id: id}
 
         ~H"""
-          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, @id)}><%= @name %> </a>
-          <%= if Twitch.HearthstoneLive.twitch_display_live?("playhearthstone") do %>
-            <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-          <% end %>
+          <a class="navbar-item" href={Routes.battlefy_path(@conn, :tournament, @id)}>
+            🏆 <%= @name %>
+            <%= if Twitch.HearthstoneLive.twitch_display_live?("playhearthstone") do %>
+              <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
+            <% end %>
+          </a>
         """
     end
   end
