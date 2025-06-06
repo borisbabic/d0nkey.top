@@ -44,6 +44,11 @@ defmodule Command.ImportLineups do
 
     io
     |> IO.binstream(:line)
+    |> parse_csv()
+  end
+
+  def parse_csv(csv) do
+    csv
     |> CSV.decode()
     |> Enum.flat_map(fn
       {:ok, val} -> [val]
