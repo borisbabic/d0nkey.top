@@ -6,7 +6,10 @@ defmodule BackendWeb.LineupSubmitterLive do
   alias Surface.Components.Form.Label
   alias Surface.Components.Form.Submit
   alias Surface.Components.Form.TextInput
+  alias Surface.Components.Form.TextArea
   alias Surface.Components.Form.NumberInput
+
+  data(view_url, :string, default: nil)
 
   def mount(_params, session, socket) do
     {:ok,
@@ -19,35 +22,49 @@ defmodule BackendWeb.LineupSubmitterLive do
     ~F"""
       <div>
         <div :if={allowed(@user)}>
-          <Form for={%{}} as={:new_round} submit="submit">
-              <Field name="tournament_source">
-                <HiddenInput value={"hcm_2022"}/>
-              </Field>
+          <Form for={%{}} as={:lineups} submit="submit">
               <Field name="tournament_id">
-                <Label class="label" >Match/Round Name</Label>
+                <Label class="label" >Tournament ID/name</Label>
                 <TextInput class="input has-text-black  is-small"/>
               </Field>
-              <Field name="gid">
+              <Field name="csv">
+                <Label class="label">CSV of lineups: name,link or name,deck1,deck2,deck...</Label>
+                <TextArea class="has-text-black"/>
+              </Field>
+              <Field :if={false} name="gid">
                 <Label class="label" >gid taken from the url with the specific sheet open (EMPTY => LEFTMOST sheet)</Label>
                 <TextInput class="input has-text-black  small" />
               </Field>
-              <Field name="sheet_id">
+              <Field :if={false} name="sheet_id">
                   <Label class="label" >Sheet it from the google sheets url</Label>
                   <TextInput class="input has-text-black  small"/>
               </Field>
-              <Field name="ignore_columns">
+              <Field :if={false} name="ignore_columns">
                   <Label class="label" >Ignore Columns (first non ignored column should be the name then the rest should be decks)</Label>
                   <NumberInput class="input has-text-black " value={"1"}/>
               </Field>
               <Submit label="Save Lineups" class="button is-success"/>
+              <div :if={@view_url}>
+                View lineups <a href={@view_url}>Here</a>
+              </div>
           </Form>
         </div>
       </div>
     """
   end
 
-  def allowed(%{battletag: bt}) when bt in ["NiceJwishOwl#1993", "D0nkey#2470"], do: true
+  def allowed(%{battletag: bt}) when is_binary(bt), do: true
   def allowed(_), do: false
+
+  def handle_event(
+        "submit",
+        %{"lineups" => %{"csv" => csv, "tournament_id" => tournament_id}},
+        %{assigns: %{user: %{battletag: battletag}}} = socket
+      ) do
+    data = csv |> String.split(["\n", "\r\n"]) |> Command.ImportLineups.parse_csv()
+    Command.ImportLineups.import(data, tournament_id, battletag)
+    {:noreply, socket |> assign(:view_url, ~p"/tournament-lineups/#{battletag}/#{tournament_id}")}
+  end
 
   def handle_event("submit", %{"new_round" => attrs_raw}, socket) do
     csv_url = csv_url(attrs_raw)

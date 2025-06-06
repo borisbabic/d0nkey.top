@@ -322,7 +322,7 @@ defmodule BackendWeb.Router do
     get("/always-error", PageController, :always_error)
 
     live("/lobby-legends", LobbyLegendsLive)
-    live("/lineup-submitter/hcm_2022", LineupSubmitterLive)
+    live("/lineup-importer", LineupSubmitterLive)
 
     live("/twitch/bot", TwitchBotLive)
     live("/twitch/bot/new-command", TwitchNewCommandLive)
