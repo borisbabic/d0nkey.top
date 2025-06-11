@@ -1175,6 +1175,7 @@ defmodule Backend.Hearthstone do
               "arena",
               "standard_2025",
               "standard_2024",
+              "unguro_prerelease_brawl",
               "ed_prerelease_brawl"
             ] do
     compose_cards_query({"card_set_group_slug", format}, query)
