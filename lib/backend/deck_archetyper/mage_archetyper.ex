@@ -96,6 +96,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
     class_name = Deck.class_name(card_info.deck)
 
     cond do
+      "Open the Waygate" in card_info.card_names and highlander?(card_info) ->
+        :"HL JtU Quest Mage"
+
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
