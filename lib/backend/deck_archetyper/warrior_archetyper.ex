@@ -127,6 +127,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       wild_handbuff_warrior?(card_info) ->
         :"Handbuff Warrior"
 
+      min_count?(card_info, 2, ["Blackrock 'n' Roll", "Unlucky Powderman"]) ->
+        :"Taunt 'n' Roll Warrior"
+
       n_roll?(card_info) ->
         :"Rock 'n' Roll Warrior"
 
