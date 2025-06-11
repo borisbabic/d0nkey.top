@@ -172,6 +172,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     class_name = Deck.class_name(card_info.deck)
 
     cond do
+      "Seek Guidance" in card_info.card_names and highlander?(card_info) ->
+        :"HL Questline Priest"
+
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
