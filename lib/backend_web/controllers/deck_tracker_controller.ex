@@ -13,6 +13,14 @@ defmodule BackendWeb.DeckTrackerController do
   defp api_user(%{assigns: %{api_user: api_user}}), do: api_user
   defp api_user(_), do: nil
 
+  def post_collection(conn, params) do
+    Backend.Collection.CollectionUpdater.enqueue(params)
+
+    conn
+    |> put_status(200)
+    |> text("Success")
+  end
+
   def put_game(conn, params) do
     api_user = api_user(conn)
 
