@@ -135,6 +135,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       genn?(card_info) ->
         String.to_atom("Even #{class_name}")
 
+      "Sunsapper Lynessa" in card_info.card_names and libram?(card_info) ->
+        :"Lynessa Libram Paladin"
+
       libram?(card_info) ->
         :"Libram Paladin"
 
