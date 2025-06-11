@@ -77,6 +77,8 @@ defmodule BackendWeb.Router do
     get("/who-am-i", ApiController, :who_am_i)
     post("/dt/game", DeckTrackerController, :put_game)
     put("/dt/game", DeckTrackerController, :put_game)
+    post("/dt/collection", DeckTrackerController, :post_collection)
+    put("/dt/collection", DeckTrackerController, :post_collection)
     get("/cards/dust-free", CardsController, :dust_free)
     get("/cards/all", CardsController, :all)
     get("/cards/collectible", CardsController, :collectible)
