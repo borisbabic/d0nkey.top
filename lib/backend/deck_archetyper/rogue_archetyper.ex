@@ -344,6 +344,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Pirate Admiral Hooktusk" in card_info.card_names ->
         :"Hooktusk Rogue"
 
+      wild_mill_rogue?(card_info) ->
+        :"Mill Rogue"
+
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
 
@@ -355,9 +358,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       mine_rogue?(card_info) ->
         :"Mine Rogue"
-
-      wild_mill_rogue?(card_info) ->
-        :"Mill Rogue"
 
       wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
@@ -427,13 +427,14 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Snowfall Graveyard",
       "Selfish Shellfish"
     ]) or
-      min_count?(card_info, 3, [
-        "Coldlight Oracle",
-        "Prize Vendor",
-        "Togwaggle's Scheme",
-        "Gang Up",
-        "Lab Recruiter"
-      ])
+      ("Coldlight Oracle" in card_info.card_names and
+        min_count?(card_info, 1, ["Spirit of the Shark", "Brann Bronzebeard"]) and
+          min_count?(card_info, 2, [
+            "Potion of Illusion",
+            "Togwaggle's Scheme",
+            "Gang Up",
+            "Lab Recruiter"
+          ]))
   end
 
   defp wild_draka_rogue?(card_info) do
