@@ -184,6 +184,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       buttons?(card_info) ->
         :"Buttons DK"
 
+      wild_aggro_dk?(card_info) and plague?(card_info) ->
+        :"Aggro Plague DK"
+
       plague?(card_info) ->
         :"Plague DK"
 
@@ -207,7 +210,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
   end
 
   defp wild_aggro_dk?(card_info) do
-    min_count?(card_info, 2, [
+    min_count?(card_info, 1, [
       "Grave Strength",
       "Anti-Magic Shell",
       "Monstrous Mosquito"
