@@ -118,22 +118,22 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander Paladin"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Paladin"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Paladin")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Paladin"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Paladin"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Paladin"
 
       "Sunsapper Lynessa" in card_info.card_names and libram?(card_info) ->
         :"Lynessa Libram Paladin"
@@ -145,7 +145,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         :"Pure Paladin"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Paladin"
 
       wild_exodia_paladin?(card_info) ->
         :"Exodia Paladin"
@@ -157,7 +157,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         :"Holy Wrath Paladin"
 
       "Mecha'thun" in card_info.card_names ->
-        String.to_atom("Mecha'thun #{class_name}")
+        :"Mecha'thun Paladin"
 
       wild_shanty_paladin?(card_info) ->
         :"Sea Shanty Paladin"
