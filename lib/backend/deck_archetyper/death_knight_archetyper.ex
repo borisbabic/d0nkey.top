@@ -184,6 +184,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun DK"
 
+      starship?(ci) ->
+        :"Starship DK"
+
       buttons?(card_info) ->
         :"Buttons DK"
 
@@ -195,6 +198,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       wild_aggro_dk?(card_info) ->
         :"Aggro DK"
+
+      leech?(card_info, 3) ->
+        :"Succ DK"
 
       true ->
         fallbacks(card_info, class_name)
