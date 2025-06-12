@@ -180,25 +180,25 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Renolock"
 
       "The Demon Seed" in card_info.card_names ->
-        :Seedlock
+        :"Seedlock"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Warlock"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Warlock")
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Warlock"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Evenlock"
 
       discard?(card_info, 10) ->
-        :"Discard Warlock"
+        :"Discolock"
 
       sludgelock?(card_info) ->
         :"Sludge Warlock"
@@ -210,22 +210,22 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Fatigue Warlock"
 
       "Mecha'thun" in card_info.card_names ->
-        :"Mecha'thun #{class_name}"
+        :"Mecha'thun Warlock"
 
       discard?(card_info, 6) ->
-        :"Discard Warlock"
+        :"Discolock"
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Warlock"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Warlock"
 
       mill?(card_info) ->
         :"Mill Warlock"
 
       implock?(card_info) ->
-        :Implock
+        :"Implock"
 
       deckless?(card_info) ->
         :"Deckless Warlock"
