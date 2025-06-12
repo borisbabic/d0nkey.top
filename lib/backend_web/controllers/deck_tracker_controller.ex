@@ -18,7 +18,7 @@ defmodule BackendWeb.DeckTrackerController do
 
     conn
     |> put_status(200)
-    |> text("Success")
+    |> json(%{"result" => "success"})
   end
 
   def put_game(conn, params) do
