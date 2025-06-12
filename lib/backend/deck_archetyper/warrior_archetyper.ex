@@ -104,25 +104,25 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Reno Warrior"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Warrior"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Warrior")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Warrior"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Warrior"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Warrior"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Warrior"
 
       wild_handbuff_warrior?(card_info) ->
         :"Handbuff Warrior"
@@ -143,7 +143,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         :"Warsong Warrior"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        "Mecha'thun Warrior"
 
       wild_dmh_warrior?(card_info) ->
         :"DMH Warrior"
