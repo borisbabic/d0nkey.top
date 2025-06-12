@@ -297,25 +297,25 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander Rogue"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Rogue"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Rogue")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Rogue"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Rogue"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Rogue"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun Rogue"
 
       "Majordomo Executus" in card_info.card_names ->
         :"Majordomo Rogue"
@@ -324,7 +324,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         :"Kingsbane Rogue"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Rogue"
 
       wild_phoenix_rogue?(card_info) ->
         :"Phoenix Rogue"
