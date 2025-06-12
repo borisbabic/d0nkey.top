@@ -157,6 +157,12 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     class_name = Deck.class_name(card_info.deck)
 
     cond do
+      highlander?(card_info) && only_runes?(card_info, :blood) ->
+        :"Reno Blood DK"
+
+      highlander?(card_info) && rainbow_runes?(card_info) ->
+        :"Reno Rainbow DK"
+
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
