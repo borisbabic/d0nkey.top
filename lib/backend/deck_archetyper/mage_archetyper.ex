@@ -97,28 +97,28 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
     cond do
       "Open the Waygate" in card_info.card_names and highlander?(card_info) ->
-        :"HL JtU Quest Mage"
+        :"Reno JtU Quest Mage"
 
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Reno Mage"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Mage"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Mage")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Mage"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Mage"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Mage"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Mage"
 
       protoss?(card_info, 4) ->
         :"Protoss Mage"
