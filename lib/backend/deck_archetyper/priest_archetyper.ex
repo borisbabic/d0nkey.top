@@ -104,7 +104,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     ])
   end
 
-  def pain?(ci) do
+  def pain?(ci, additional_cards \\ []) do
     min_count?(ci, 4, [
       "Job Shadower",
       "Acupuncture",
@@ -114,6 +114,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Trogg Exile",
       "Sauna Regular",
       "Trusty Fishing Rod"
+      | additional_cards
     ])
   end
 
