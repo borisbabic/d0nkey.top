@@ -19,7 +19,13 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       pirate?(card_info) ->
         :"Pirate Demon Hunter"
 
-      PriestArchetyper.pain?(card_info) ->
+      ravenous_cliff_dive?(card_info) ->
+        :"Ravenous Cliff Dive DH"
+
+      deathrattle?(card_info) ->
+        :"Deathrattle DH"
+
+      pain?(card_info) ->
         :"Pain Demon Hunter"
 
       fatigue?(card_info) ->
@@ -43,14 +49,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       crewmate?(card_info, 2) ->
         :"Among Us DH"
 
-      ravenous_cliff_dive?(card_info) ->
-        :"Ravenous Cliff Dive DH"
-
       cliff_dive?(card_info) ->
         :"Cliff Dive DH"
-
-      deathrattle?(card_info) ->
-        :"Deathrattle DH"
 
       dreadseed?(card_info) ->
         :"Dreadseed DH"
@@ -69,6 +69,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     end
   end
 
+  @dh_pain_cards ["Infernal Stapler"]
+  defp pain?(card_info) do
+    PriestArchetyper.pain?(card_info, @dh_pain_cards)
+  end
+
   defp ravenous_cliff_dive?(card_info) do
     cliff_dive?(card_info) and
       min_count?(card_info, 1, ["Ravenous Felhunter"])
@@ -79,7 +84,13 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   end
 
   defp deathrattle?(card_info) do
-    min_count?(card_info, 2, ["Ravenous Felhunter", "Ferocious Felbat"])
+    min_count?(card_info, 3, [
+      "Ravenous Felhunter",
+      "Ferocious Felbat",
+      "Endbringer Umbra",
+      "Tuskpiercer",
+      "Return Policy"
+    ])
   end
 
   @dreadseeds ["Grim Harvest", "Wyvern's Slumber", "Dreadsoul Corrupter"]
