@@ -169,6 +169,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Malygos" in card_info.card_names ->
         :"Malygos Druid"
 
+      wild_dragon_druid?(card_info) ->
+        :"Dragon Druid"
+
       aviana_druid?(card_info) ->
         :"Aviana Druid"
 
@@ -193,6 +196,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
+  end
+
+  defp wild_dragon_druid?(card_info) do
+    min_count?(card_info, 2, [
+      "Breath of Dreams",
+      "Splish-Splash Whelp",
+      "Desert Nestmatron"
+    ])
   end
 
   defp jade_golem?(card_info) do
