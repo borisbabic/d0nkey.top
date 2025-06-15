@@ -147,7 +147,15 @@ defmodule BackendWeb.LeaderboardController do
   defp show_ratings(%{"show_ratings" => sr}, _leaderboard) when sr in ["no", "false"], do: false
 
   defp show_ratings(_params, leaderboard),
-    do: to_string(leaderboard.leaderboard_id) in ["MRC", "BG", "BG_LL", "arena", "DUO"]
+    do:
+      to_string(leaderboard.leaderboard_id) in [
+        "MRC",
+        "BG",
+        "BG_LL",
+        "arena",
+        "DUO",
+        "undergroundarena"
+      ]
 
   defp hack_lobby_legends_season(ldb = %{}, %{"seasonId" => new_season = "lobby_legends" <> _}),
     do: Map.put(ldb, :season_id, new_season)
