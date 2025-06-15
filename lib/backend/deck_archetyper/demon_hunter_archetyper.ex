@@ -161,7 +161,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
     cond do
       highlander?(card_info) ->
-        :"Highlander DH"
+        :"Reno DH"
 
       "Il'gynoth" in card_info.card_names ->
         :"Il'gynoth DH"
@@ -173,37 +173,37 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"Fel DH"
 
       wild_fatigue?(card_info) && questline?(card_info) ->
-        :"Fatigue Demon Hunter"
+        :"Fatigue DH"
 
       questline?(card_info) ->
         :"Questline DH"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest DH")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar DH"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd DH"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even DH"
 
       pirate?(card_info) ->
-        :"Pirate Demon Hunter"
+        :"Pirate DH"
 
       outcast_dh?(card_info) ->
         :"Outcast DH"
 
       relic_dh?(card_info) ->
-        :"Relic Demon Hunter"
+        :"Relic DH"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog DH"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        "Mecha'thun DH"
 
       attack_dh?(card_info) ->
         :"Attack DH"
