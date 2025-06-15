@@ -157,29 +157,35 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     class_name = Deck.class_name(card_info.deck)
 
     cond do
-      highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+      highlander?(card_info) && only_runes?(card_info, :blood) ->
+        :"Reno Blood DK"
 
-      questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+      highlander?(card_info) && rainbow_runes?(card_info) ->
+        :"Reno Rainbow DK"
+
+      highlander?(card_info) ->
+        :"Reno DK"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest DK")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar DK"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd DK"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even DK"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog DK"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun DK"
+
+      starship?(ci) ->
+        :"Starship DK"
 
       buttons?(card_info) ->
         :"Buttons DK"
@@ -192,6 +198,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       wild_aggro_dk?(card_info) ->
         :"Aggro DK"
+
+      leech?(card_info, 3) ->
+        :"Succ DK"
 
       true ->
         fallbacks(card_info, class_name)
