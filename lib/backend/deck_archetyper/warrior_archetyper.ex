@@ -145,7 +145,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
-      wild_dmh_warrior?(card_info) ->
+      "Dead Man's Hand" in card_info.card_names ->
         :"DMH Warrior"
 
       "Thaddius, Monstrosity" in card_info.card_names ->
@@ -174,12 +174,5 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
   defp wild_handbuff_warrior?(card_info) do
     min_count?(card_info, 1, ["Anima Extractor"])
-  end
-
-  defp wild_dmh_warrior?(card_info) do
-    min_count?(card_info, 2, [
-      "Dead Man's Hand",
-      "Marin the Manager"
-    ])
   end
 end
