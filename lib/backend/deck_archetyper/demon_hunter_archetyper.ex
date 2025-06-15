@@ -22,6 +22,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       ravenous_cliff_dive?(card_info) ->
         :"Ravenous Cliff Dive DH"
 
+      "Ball Hog" in card_info.card_names and deathrattle?(card_info) ->
+        :"Hog Demon Hunter"
+
       deathrattle?(card_info) ->
         :"Deathrattle DH"
 
