@@ -926,7 +926,10 @@ defmodule BackendWeb.LeaderboardView do
     do: 60 * 60 * 2
 
   defp max_diff(ldb, [%{rank: r} | _]) when r > 1000 and ldb in ["BG", "DUO"], do: 60 * 60 * 3
-  defp max_diff("arena", [%{rank: r} | _]) when r > 1000, do: 60 * 60 * 5
+
+  defp max_diff(ldb, [%{rank: r} | _]) when r > 1000 and ldb in ["arena", "undergroundarena"],
+    do: 60 * 60 * 5
+
   defp max_diff(_, _), do: 60 * 60
 
   def add_other_ladders(invited, params = %{other_ladders: other}),
