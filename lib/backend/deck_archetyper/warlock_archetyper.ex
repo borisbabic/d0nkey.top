@@ -180,7 +180,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Renolock"
 
       "The Demon Seed" in card_info.card_names ->
         :Seedlock
@@ -195,10 +195,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         String.to_atom("Odd #{class_name}")
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Evenlock"
 
       discard?(card_info, 10) ->
-        :"Discard Warlock"
+        :"Discolock"
 
       sludgelock?(card_info) ->
         :"Sludge Warlock"
@@ -213,7 +213,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Mecha'thun #{class_name}"
 
       discard?(card_info, 6) ->
-        :"Discard Warlock"
+        :"Discolock"
 
       boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
