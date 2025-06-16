@@ -157,11 +157,14 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     class_name = Deck.class_name(card_info.deck)
 
     cond do
+      highlander?(card_info) && only_runes?(card_info, :blood) ->
+        :"HL Blood DK"
+
+      highlander?(card_info) && rainbow_runes?(card_info) ->
+        :"HL Rainbow DK"
+
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
-
-      questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
 
       quest?(card_info) ->
         String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
@@ -181,6 +184,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Mecha'thun" in card_info.card_names ->
         "Mecha'thun #{class_name}"
 
+      starship?(card_info) ->
+        :"Starship DK"
+
       buttons?(card_info) ->
         :"Buttons DK"
 
@@ -192,6 +198,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       wild_aggro_dk?(card_info) ->
         :"Aggro DK"
+
+      leech?(card_info, 3) ->
+        :"Succ DK"
 
       true ->
         fallbacks(card_info, class_name)
