@@ -100,29 +100,27 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       ])
 
   def wild(card_info) do
-    class_name = Deck.class_name(card_info.deck)
-
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander Warrior"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Warrior"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Warrior")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Warrior"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Warrior"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Warrior"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Warrior"
 
       wild_handbuff_warrior?(card_info) ->
         :"Handbuff Warrior"
@@ -143,7 +141,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         :"Warsong Warrior"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun Warrior"
 
       "Dead Man's Hand" in card_info.card_names ->
         :"DMH Warrior"
@@ -161,7 +159,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         :"Taunt Warrior"
 
       true ->
-        fallbacks(card_info, class_name)
+        fallbacks(card_info, "Warrior")
     end
   end
 

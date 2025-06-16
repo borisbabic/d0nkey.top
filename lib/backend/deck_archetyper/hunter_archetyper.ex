@@ -123,35 +123,33 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       ])
 
   def wild(card_info) do
-    class_name = Deck.class_name(card_info.deck)
-
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander Hunter"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Hunter"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Hunter")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Hunter"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Hunter"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Hunter"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Hunter"
 
       lion_hunter?(card_info) ->
         :"Lion Hunter"
 
       "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
+        :"Mecha'thun Hunter"
 
       midrange?(card_info) ->
         :"Midrange Hunter"
@@ -166,7 +164,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
         :"Amalgam Hunter"
 
       true ->
-        fallbacks(card_info, class_name)
+        fallbacks(card_info, "Hunter")
     end
   end
 
