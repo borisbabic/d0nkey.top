@@ -176,26 +176,24 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       ])
 
   def wild(card_info) do
-    class_name = Deck.class_name(card_info.deck)
-
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander Warlock"
 
       "The Demon Seed" in card_info.card_names ->
-        :Seedlock
+        :"Seedlock"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Warlock"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Warlock")
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Warlock"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Warlock"
 
       discard?(card_info, 10) ->
         :"Discard Warlock"
@@ -210,16 +208,16 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Fatigue Warlock"
 
       "Mecha'thun" in card_info.card_names ->
-        :"Mecha'thun #{class_name}"
+        :"Mecha'thun Warlock"
 
       discard?(card_info, 6) ->
         :"Discard Warlock"
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Warlock"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Warlock"
 
       mill?(card_info) ->
         :"Mill Warlock"
@@ -231,7 +229,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Deckless Warlock"
 
       true ->
-        fallbacks(card_info, class_name)
+        fallbacks(card_info, "Warlock")
     end
   end
 

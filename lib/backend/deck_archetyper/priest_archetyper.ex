@@ -169,32 +169,30 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   end
 
   def wild(card_info) do
-    class_name = Deck.class_name(card_info.deck)
-
     cond do
       "Seek Guidance" in card_info.card_names and highlander?(card_info) ->
         :"HL Questline Priest"
 
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander Priest"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Priest"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Priest")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Priest"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Priest"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Priest"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Priest"
 
       min_count?(card_info, 2, ["Darkbishop Benedictus", "Prince Renathal"]) ->
         :"XL Shadow Priest"
@@ -221,7 +219,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         :"Hedanis Priest"
 
       "Mecha'thun" in card_info.card_names ->
-        :"Mecha'thun #{class_name}"
+        :"Mecha'thun Priest"
 
       "Astral Automaton" in card_info.card_names ->
         :"Automaton Priest"
@@ -251,7 +249,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         :"Crabrider Priest"
 
       true ->
-        fallbacks(card_info, class_name)
+        fallbacks(card_info, "Priest")
     end
   end
 
