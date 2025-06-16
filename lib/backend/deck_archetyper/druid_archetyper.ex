@@ -112,29 +112,27 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   end
 
   def wild(card_info) do
-    class_name = Deck.class_name(card_info.deck)
-
     cond do
       highlander?(card_info) ->
-        String.to_atom("Highlander #{class_name}")
+        :"Highlander Druid"
 
       questline?(card_info) ->
-        String.to_atom("Questline #{class_name}")
+        :"Questline Druid"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest Druid")
 
       boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
+        :"Boar Druid"
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd Druid"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even Druid"
 
       "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
+        :"Tog Druid"
 
       "Linecracker" in card_info.card_names ->
         :"Linecracker Druid"
@@ -194,7 +192,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         :"Bad Druid"
 
       true ->
-        fallbacks(card_info, class_name)
+        fallbacks(card_info, "Druid")
     end
   end
 
