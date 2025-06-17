@@ -124,7 +124,7 @@ defmodule Components.DecksExplorer do
         <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)}/>
         <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
         <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
-        <RegionDropdown :if={can_access_unaggregated?(@user, @filter_context)} id={"deck_region"} filter_context={@filter_context} />
+        <RegionDropdown :if={can_access_unaggregated?(@user, @filter_context)} title={warning_if_public(@filter_context, "Region")} id={"deck_region"} filter_context={@filter_context} />
 
          { #<LivePatchDropdown
         #   options={limit_options()}
@@ -162,8 +162,8 @@ defmodule Components.DecksExplorer do
         <ArchetypeSelect id={"player_deck_archetype"} param={"player_deck_archetype"} selected={params["player_deck_archetype"] || []} title="Archetypes" />
         <PlayableCardSelect id={"player_deck_includes"} format={params["format"]} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} format={params["format"]} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
-        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title="As Class" />
-        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={"Vs Class"}/>
+        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title={warning_if_public(@filter_context, "As Class")} />
+        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={warning_if_public(@filter_context, "Vs Class")}/>
         <ForceFreshDropdown
           id="decks_explorer_force_fresh"
           :if={@filter_context == :public and Backend.UserManager.User.premium?(@user)} />
@@ -234,6 +234,8 @@ defmodule Components.DecksExplorer do
   #   end
   # end
 
+  defp warning_if_public(:public, text), do: Components.Helper.warning_triangle(%{before: text})
+  defp warning_if_public(_, text), do: text
   def can_access_unaggregated?(_, :personal), do: true
   def can_access_unaggregated?(%{id: _id, battletag: _btag}, :public), do: true
   def can_access_unaggregated?(_, _), do: false
