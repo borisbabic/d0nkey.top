@@ -135,15 +135,11 @@ defmodule Backend.Application do
           id: Backend.PlayerCountryPreferenceBag,
           start: {Backend.PlayerCountryPreferenceBag, :start_link, [[]]}
         },
-        %{
-          # can multiserver, prolly?
-          id: Hearthstone.DeckTracker.ArchetypeBag,
-          start: {Hearthstone.DeckTracker.ArchetypeBag, :start_link, [[]]}
-        },
         {Task.Supervisor, name: Backend.TaskSupervisor},
         {Task, &warmup_cache/0},
         QuantumScheduler
       ]
+      |> add_archetype_bag()
       |> add_twitch_bot()
       |> add_dt_insert_listener()
       |> check_bot()
@@ -155,6 +151,22 @@ defmodule Backend.Application do
     # migrate()
     # Backend.MastersTour.rename_tour_stop("Montreal", "Montréal")
     #    Backend.Hearthstone.add_class_and_regenerate_deckcode()
+  end
+
+  # TODO: Figure out why this breaks the repo in tests
+  def add_archetype_bag(prev) do
+    if Mix.env() == :test do
+      prev
+    else
+      bag =
+        %{
+          # can multiserver, prolly?
+          id: Hearthstone.DeckTracker.ArchetypeBag,
+          start: {Hearthstone.DeckTracker.ArchetypeBag, :start_link, [[]]}
+        }
+
+      prev ++ [bag]
+    end
   end
 
   def add_twitch_bot(prev) do
