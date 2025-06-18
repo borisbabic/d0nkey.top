@@ -6,7 +6,6 @@ defmodule Bot.MessageHandler do
   alias BackendWeb.Router.Helpers, as: Routes
   alias Nostrum.Api.Message
   alias Backend.Blizzard
-  alias Nostrum.Struct.Embed
   alias Hearthstone.DeckcodeExtractor
   alias Backend.Hearthstone.Deck
   import Bot.MessageHandlerUtil

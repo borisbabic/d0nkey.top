@@ -1,6 +1,5 @@
 defmodule Backend.Yaytears do
   @moduledoc false
-  alias Backend.Hearthstone.Deck
 
   def yt_link?(link) when is_binary(link), do: link =~ "yaytears.com"
   def yt_link?(_), do: false

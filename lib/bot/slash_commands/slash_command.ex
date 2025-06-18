@@ -35,7 +35,7 @@ defmodule Bot.SlashCommands.SlashCommand do
       defp response(rsp), do: rsp
 
       def follow_up(interaction, message) when is_binary(message) do
-        Nostrum.Api.create_followup_message(interaction.token, %{content: message})
+        Nostrum.Api.Interaction.create_followup_message(interaction.token, %{content: message})
       end
 
       def ack(interaction), do: respond(interaction, %{type: 1})

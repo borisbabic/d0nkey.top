@@ -66,7 +66,7 @@ defmodule BackendWeb.PlayerReplaysLive do
     "#{battletag}'s Replays"
   end
 
-  defp title(battletag), do: title("Unknown Player")
+  defp title(_battletag), do: title("Unknown Player")
 
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 end

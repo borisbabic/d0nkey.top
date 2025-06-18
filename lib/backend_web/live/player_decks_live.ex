@@ -60,5 +60,5 @@ defmodule BackendWeb.PlayerDecksLive do
     "#{battletag}'s Decks"
   end
 
-  defp title(battletag), do: title("Unknown Player")
+  defp title(_battletag), do: title("Unknown Player")
 end
