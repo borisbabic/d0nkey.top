@@ -21,7 +21,7 @@ defmodule Backend.DiscordBot do
   end
 
   def update_all_guilds(sleep \\ 0) do
-    with {:ok, guilds} <- Nostrum.Api.get_current_user_guilds() do
+    with {:ok, guilds} <- Nostrum.Api.Self.guilds() do
       Enum.each(guilds, fn %{id: id} ->
         get_battletags(id)
         Process.sleep(sleep)
@@ -67,7 +67,7 @@ defmodule Backend.DiscordBot do
 
   @spec get_battletags_channel(integer()) :: {:ok, Nostrum.Struct.Channel.t()} | {:error, any()}
   def get_battletags_channel(guild_id) do
-    with {:ok, channels} <- Api.get_guild_channels(guild_id),
+    with {:ok, channels} <- Api.Guild.channels(guild_id),
          [channel | _] <- Enum.filter(channels, &String.starts_with?(&1.name, "battletags")) do
       {:ok, channel}
     else
@@ -100,7 +100,7 @@ defmodule Backend.DiscordBot do
 
   @spec fetch_messages(GuildBattletags.t()) :: [Nostrum.Struct.Message.t()]
   defp fetch_messages(%GuildBattletags{channel_id: channel_id, last_message_id: nil}) do
-    with {:ok, messages = [_ | _]} <- Api.get_channel_messages(channel_id, @amount_to_fetch),
+    with {:ok, messages = [_ | _]} <- Api.Channel.messages(channel_id, @amount_to_fetch),
          {:ok, more_messages} <- do_fetch_initial(channel_id, before_id(messages)) do
       messages ++ more_messages
     else
@@ -117,7 +117,7 @@ defmodule Backend.DiscordBot do
     Process.sleep(1005)
 
     with {:ok, messages = [_ | _]} <-
-           Api.get_channel_messages(channel_id, @amount_to_fetch, {:before, before_id}),
+           Api.Channel.messages(channel_id, @amount_to_fetch, {:before, before_id}),
          before_id <- before_id(messages),
          {:ok, newer_messages} <- do_fetch_initial(channel_id, before_id) do
       {:ok, messages ++ newer_messages}
@@ -137,7 +137,7 @@ defmodule Backend.DiscordBot do
   defp before_id(messages), do: messages |> Enum.at(-1) |> Map.get(:id)
 
   defp do_fetch_messages(channel_id, last_message_id) do
-    case Api.get_channel_messages(channel_id, @amount_to_fetch, {:after, last_message_id}) do
+    case Api.Channel.messages(channel_id, @amount_to_fetch, {:after, last_message_id}) do
       {:ok, messages = [%{id: new_last_id} | _]} ->
         do_fetch_messages(channel_id, new_last_id) ++ messages
 

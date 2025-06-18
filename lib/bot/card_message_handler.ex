@@ -1,6 +1,5 @@
 defmodule Bot.CardMessageHandler do
   @moduledoc false
-  alias Nostrum.Api
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardAggregate

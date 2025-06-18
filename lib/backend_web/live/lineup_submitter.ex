@@ -2,7 +2,6 @@ defmodule BackendWeb.LineupSubmitterLive do
   use BackendWeb, :surface_live_view
   alias Surface.Components.Form
   alias Surface.Components.Form.Field
-  alias Surface.Components.Form.HiddenInput
   alias Surface.Components.Form.Label
   alias Surface.Components.Form.Submit
   alias Surface.Components.Form.TextInput
