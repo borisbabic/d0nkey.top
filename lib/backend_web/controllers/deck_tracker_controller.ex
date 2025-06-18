@@ -14,7 +14,7 @@ defmodule BackendWeb.DeckTrackerController do
   defp api_user(_), do: nil
 
   def post_collection(conn, params) do
-    Backend.Collection.CollectionUpdater.enqueue(params)
+    Backend.CollectionManager.CollectionUpdater.enqueue(params)
 
     conn
     |> put_status(200)
