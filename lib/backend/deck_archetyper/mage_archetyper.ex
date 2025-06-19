@@ -97,6 +97,12 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Open the Waygate" in card_info.card_names and highlander?(card_info) ->
         :"HL JtU Quest Mage"
 
+      hostage_mage?(card_info) and highlander?(card_info) ->
+        :"HL Hostage Mage"
+
+      big_spell_mage?(card_info) and highlander?(card_info) ->
+        :"HL Big Spell Mage"
+
       highlander?(card_info) ->
         :"Highlander Mage"
 
