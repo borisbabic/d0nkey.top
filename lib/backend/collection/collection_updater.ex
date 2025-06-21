@@ -15,7 +15,13 @@ defmodule Backend.CollectionManager.CollectionUpdater do
 
   def perform(%Oban.Job{args: %{"raw_params" => raw_params, "inserted_at" => received}}) do
     with {:ok, dto} <- CollectionDto.from_raw_map(raw_params, received) do
-      CollectionManager.upsert_collection(dto)
+      result = CollectionManager.upsert_collection(dto)
+
+      with {:ok, collection} <- result do
+        Backend.UserManager.init_current_collection(collection)
+      end
+
+      result
     end
   end
 end

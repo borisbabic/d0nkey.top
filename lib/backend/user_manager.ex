@@ -13,6 +13,7 @@ defmodule Backend.UserManager do
   @pagination [page_size: 15]
   @pagination_distance 5
 
+  alias Backend.CollectionManager.Collection
   alias Backend.UserManager.User
   alias Backend.UserManager.Group
   alias Backend.UserManager.GroupMembership
@@ -44,7 +45,7 @@ defmodule Backend.UserManager do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id) |> Repo.preload(:patreon_tier)
+  def get_user!(id), do: Repo.get!(User, id) |> preload_user()
 
   @doc """
   Gets a single user.
@@ -60,7 +61,14 @@ defmodule Backend.UserManager do
       nil
 
   """
-  def get_user(id), do: Repo.get(User, id) |> Repo.preload(:patreon_tier)
+  def get_user(id), do: Repo.get(User, id) |> preload_user()
+
+  defp preload_user({:ok, %User{} = user}), do: {:ok, preload_user(user)}
+
+  defp preload_user(%User{} = user),
+    do: user |> Repo.preload([:patreon_tier, :current_collection])
+
+  defp preload_user({:error, _} = ret), do: ret
 
   @doc """
   Creates a user.
@@ -96,6 +104,7 @@ defmodule Backend.UserManager do
     user
     |> User.changeset(attrs)
     |> Repo.update()
+    |> preload_user()
     |> update_user_info()
   end
 
@@ -735,5 +744,13 @@ defmodule Backend.UserManager do
       false -> {:error, :not_an_admin}
       _ -> {:error, :could_not_change_user}
     end
+  end
+
+  def init_current_collection(%Collection{battletag: battletag, id: id}) do
+    query =
+      from u in User,
+        where: u.battletag == ^battletag and is_nil(u.current_collection_id)
+
+    Repo.update_all(query, set: [current_collection_id: id])
   end
 end

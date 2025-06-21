@@ -3,6 +3,7 @@ defmodule BackendWeb.ProfileSettingsLive do
   use BackendWeb, :surface_live_view
   alias Backend.Streaming
   alias Backend.UserManager
+  alias Backend.CollectionManager.Collection
   alias Backend.UserManager.User.DecklistOptions
   alias Surface.Components.Form
   alias Surface.Components.Form.Checkbox
@@ -44,6 +45,11 @@ defmodule BackendWeb.ProfileSettingsLive do
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
+            <Label class="label">Collection</Label>
+            <Field name="current_collection_id">
+              <Select selected={@user.current_collection_id} class="select has-text-black " options={collection_options(@user)}/>
+              <Label>Current Collection</Label>
+            </Field>
             <Label class="label">Decklist Options</Label>
             <Field name="border">
               <Select selected={DecklistOptions.border(@user.decklist_options)} class="select has-text-black " options={"Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
@@ -68,6 +74,10 @@ defmodule BackendWeb.ProfileSettingsLive do
             <Field name="show_dust_below">
               <Checkbox value={DecklistOptions.show_dust_below(@user.decklist_options)} />
               <Label>Show dust below cards</Label>
+            </Field>
+            <Field name="use_missing_dust">
+              <Checkbox value={DecklistOptions.use_missing_dust(@user.decklist_options)} />
+              <Label>Use missing dust instead of total</Label>
             </Field>
             <br>
             <Field name="replay_preference">
@@ -111,6 +121,24 @@ defmodule BackendWeb.ProfileSettingsLive do
     do: %{title: title, ad_free: ad_free}
 
   def patreon_tier_info(_), do: nil
+
+  defp collection_options(user) do
+    listed = Backend.CollectionManager.list_for_user(user)
+
+    current =
+      if user.current_collection do
+        [user.current_collection]
+      else
+        []
+      end
+
+    collection_options =
+      (current ++ listed)
+      |> Enum.uniq_by(& &1.id)
+      |> Enum.map(&{Collection.display(&1), &1.id})
+
+    [{"None", nil} | collection_options]
+  end
 
   def country_options() do
     Enum.map(Countriex.all(), fn %{name: name, alpha2: code} ->
@@ -175,6 +203,11 @@ defmodule BackendWeb.ProfileSettingsLive do
       |> parse_decklist_option(attrs, "show_one", DecklistOptions.show_one_default())
       |> parse_decklist_option(
         attrs,
+        "use_missing_dust",
+        DecklistOptions.default_use_missing_dust()
+      )
+      |> parse_decklist_option(
+        attrs,
         "show_dust_above",
         DecklistOptions.default_show_dust_above()
       )
@@ -193,9 +226,13 @@ defmodule BackendWeb.ProfileSettingsLive do
   end
 
   def parse_decklist_option(attrs, params, key, default) do
-    val = Map.get(params, key, default)
+    val = Map.get(params, key, default) |> to_bool()
     Map.put(attrs, key, val)
   end
+
+  defp to_bool("true"), do: true
+  defp to_bool("false"), do: false
+  defp to_bool(val), do: val
 
   def parse_decklist_color_option(attrs, params, key) do
     if params[key] && DecklistOptions.valid_color?(params[key]) do
