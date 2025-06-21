@@ -4,6 +4,7 @@ defmodule Backend.UserManager.User do
   import Ecto.Changeset
   alias Backend.UserManager.User.DecklistOptions
   alias Backend.Patreon.PatreonTier
+  alias Backend.CollectionManager.Collection
 
   schema "users" do
     field :battletag, :string
@@ -16,6 +17,7 @@ defmodule Backend.UserManager.User do
     field :twitch_id, :string
     field :patreon_id, :string
     field :cross_out_country, :boolean, default: false
+    belongs_to :current_collection, Collection, type: Ecto.UUID
     field :show_region, :boolean, default: false
 
     field :replay_preference, Ecto.Enum,
@@ -24,6 +26,7 @@ defmodule Backend.UserManager.User do
 
     embeds_one(:decklist_options, DecklistOptions, on_replace: :delete)
     belongs_to :patreon_tier, PatreonTier, type: :string
+    field :collection, :any, virtual: true
 
     timestamps()
   end
@@ -46,6 +49,7 @@ defmodule Backend.UserManager.User do
       :twitch_id,
       :patreon_id,
       :patreon_tier_id,
+      :current_collection_id,
       :cross_out_country,
       :show_region,
       :replay_preference,
@@ -156,6 +160,8 @@ defmodule Backend.UserManager.User.DecklistOptions do
   @default_show_one_for_legendaries false
   @default_show_dust_above false
   @default_show_dust_below true
+  @default_use_missing_dust true
+  @default_fade_missing_cards true
   @primary_key false
   embedded_schema do
     field :border, :string
@@ -164,6 +170,8 @@ defmodule Backend.UserManager.User.DecklistOptions do
     field :gradient, :string
     field :show_dust_above, :boolean, default: @default_show_dust_above
     field :show_dust_below, :boolean, default: @default_show_dust_below
+    field :use_missing_dust, :boolean, default: @default_use_missing_dust
+    field :fade_missing_cards, :boolean, default: @default_fade_missing_cards
   end
 
   @doc false
@@ -175,7 +183,9 @@ defmodule Backend.UserManager.User.DecklistOptions do
       :show_one,
       :show_one_for_legendaries,
       :show_dust_above,
-      :show_dust_below
+      :show_dust_below,
+      :use_missing_dust,
+      :fade_missing_cards
     ])
     |> validate_colors([:border, :gradient])
   end
@@ -183,15 +193,30 @@ defmodule Backend.UserManager.User.DecklistOptions do
   def show_one(%{show_one: show_one}), do: show_one
   def show_one(_), do: @default_show_one
 
-  def show_one_for_legendaries(%{show_one_for_legendaries: show_one}), do: show_one
+  def fade_missing_cards(%{fade_missing_cards: fade_missing_cards})
+      when is_boolean(fade_missing_cards),
+      do: fade_missing_cards
+
+  def fade_missing_cards(_), do: @default_fade_missing_cards
+  def default_fade_missing_cards(), do: @default_fade_missing_cards
+
+  def use_missing_dust(%{use_missing_dust: use_missing}) when is_boolean(use_missing),
+    do: use_missing
+
+  def use_missing_dust(_), do: @default_use_missing_dust
+  def default_use_missing_dust(), do: @default_use_missing_dust
+
+  def show_one_for_legendaries(%{show_one_for_legendaries: show_one}) when is_boolean(show_one),
+    do: show_one
+
   def show_one_for_legendaries(_), do: @default_show_one_for_legendaries
 
   def default_show_dust_above(), do: @default_show_dust_above
-  def show_dust_above(%{show_dust_above: show}), do: show
+  def show_dust_above(%{show_dust_above: show}) when is_boolean(show), do: show
   def show_dust_above(_), do: @default_show_dust_above
 
   def default_show_dust_below(), do: @default_show_dust_below
-  def show_dust_below(%{show_dust_below: show}), do: show
+  def show_dust_below(%{show_dust_below: show}) when is_boolean(show), do: show
   def show_dust_below(_), do: @default_show_dust_below
 
   def border(%{border: b}), do: b
