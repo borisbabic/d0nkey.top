@@ -1522,9 +1522,22 @@ defmodule Backend.Hearthstone do
 
     Enum.reduce(grouped, Multi.new(), &do_handle_card_ids_group/2)
     |> Repo.transaction()
-
-    CardBag.refresh_table()
+    |> handle_referent_card_ids_result()
   end
+
+  defp handle_referent_card_ids_result({:ok, map}) when is_map(map) do
+    if Enum.any?(map) do
+      CardBag.refresh_table()
+      Backend.CollectionManager.CollectionMapRecalculator.enqueue_all()
+      {:ok, map}
+    else
+      :no_changes
+    end
+  end
+
+  defp handle_referent_card_ids_result(:error), do: :error
+  defp handle_referent_card_ids_result({:error, _} = result), do: result
+  defp handle_referent_card_ids_result(_), do: :unknown_referent_card_ids_result
 
   # single card with ids already set to itself
   defp do_handle_card_ids_group(
