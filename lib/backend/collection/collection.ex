@@ -10,33 +10,27 @@ defmodule Backend.CollectionManager.Collection do
     field :public, :boolean, default: false
     field :update_received, :naive_datetime
     embeds_many(:cards, Card, on_replace: :delete)
+    field :card_map, :map
+    field :card_map_updated_at, :naive_datetime
   end
 
   def changeset(collection, attrs) do
     collection
-    |> cast(attrs, [:region, :battletag, :public, :update_received])
+    |> cast(attrs, [
+      :region,
+      :battletag,
+      :public,
+      :update_received,
+      :card_map,
+      :card_map_updated_at
+    ])
     |> cast_embed(:cards)
     |> validate_required(:battletag)
   end
 
-  # def changeset(collection, %{single: single, multi: multi}) when is_list(single) and is_list(multi) do
-  #   changeset(collection, attrs)
-  # end
-
-  # def changeset(collection, %{cards: cards} = attrs) do
-  #   {multi, single, all} = Enum.reduce(cards, {[], [], []}, fn %{dbf_id: dbf_id, total_count: total_count}, {multi, single, all} ->
-  #     if total_count > 1 do
-  #       {[dbf_id | multi], single, [dbf_id | all]}
-  #     else
-  #       {multi, [dbf_id | single], [dbf_id | all]}
-  #     end
-  #   end)
-  #   new_attrs = attrs
-  #   |> Map.put(:single, single)
-  #   |> Map.put(:multi, multi)
-  #   |> Map.put(:all, all)
-  #   changeset(collection, attrs)
-  # end
+  def display(%{battletag: battletag, region: region}) do
+    "#{battletag} - #{Backend.Blizzard.get_region_name(region)}"
+  end
 end
 
 defmodule Backend.CollectionManager.Collection.Card do

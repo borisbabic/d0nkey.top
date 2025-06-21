@@ -168,7 +168,8 @@ queues =
   [
     default: Enum.max([2, div(max_queue_size, 2)]),
     battlefy_lineups: Enum.max([4, max_queue_size - 1]),
-    hs_collection_updater: 1,
+    hs_collection_updater: 3,
+    hs_collection_map_recalculator: 5,
     grandmasters_lineups: 1,
     gm_stream_live: 1,
     hsreplay_deck_mapper: 1,
