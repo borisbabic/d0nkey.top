@@ -149,6 +149,8 @@ defmodule Backend.UserManager.User do
   end
 
   def stream_tuples(_), do: []
+  def current_collection(%{current_collection: %Collection{} = c}), do: c
+  def current_collection(_), do: nil
 end
 
 defmodule Backend.UserManager.User.DecklistOptions do

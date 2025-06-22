@@ -54,6 +54,9 @@ defmodule FunctionComponents.LayoutComponent do
       <% else %>
         <%= @display %>
       <% end %>
+      <%= if @new do %>
+        <p><sup class="is-size-7 has-text-info"> New!</sup></p>
+      <% end %>
       </Dropdown.item>
     """
   end

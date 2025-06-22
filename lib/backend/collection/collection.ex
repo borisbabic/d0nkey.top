@@ -3,6 +3,7 @@ defmodule Backend.CollectionManager.Collection do
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.CollectionManager.Collection.Card
+  alias Backend.USerManager.User
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   schema "hs_collections" do
     field :battletag, :string
@@ -31,6 +32,19 @@ defmodule Backend.CollectionManager.Collection do
   def display(%{battletag: battletag, region: region}) do
     "#{battletag} - #{Backend.Blizzard.get_region_name(region)}"
   end
+
+  @spec can_view?(__MODULE__, User.t() | nil) :: boolean
+  def can_view?(%{public: true}, _), do: true
+
+  def can_view?(%{battletag: coll_battletag}, %{battletag: user_battletag}),
+    do: coll_battletag == user_battletag
+
+  def can_view?(_, _), do: false
+  @spec can_admin?(__MODULE__, User.t() | nil) :: boolean
+  def can_admin?(%{battletag: coll_battletag}, %{battletag: user_battletag}),
+    do: coll_battletag == user_battletag
+
+  def can_admin?(_, _), do: false
 end
 
 defmodule Backend.CollectionManager.Collection.Card do
