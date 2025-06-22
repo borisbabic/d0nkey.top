@@ -123,18 +123,8 @@ defmodule BackendWeb.ProfileSettingsLive do
   def patreon_tier_info(_), do: nil
 
   defp collection_options(user) do
-    listed = Backend.CollectionManager.list_for_user(user)
-
-    current =
-      if user.current_collection do
-        [user.current_collection]
-      else
-        []
-      end
-
     collection_options =
-      (current ++ listed)
-      |> Enum.uniq_by(& &1.id)
+      Backend.CollectionManager.choosable_by_user(user)
       |> Enum.map(&{Collection.display(&1), &1.id})
 
     [{"None", nil} | collection_options]

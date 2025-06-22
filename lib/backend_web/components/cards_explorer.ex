@@ -26,6 +26,7 @@ defmodule Components.CardsExplorer do
   data(streams, :list)
   slot(above_card, required: false)
   slot(below_card, required: false)
+  slot(dropdowns_before, required: false)
   data(end_of_stream?, :boolean, default: false)
   data(offset, :integer, default: 0)
   prop(scroll_size, :integer, default: 1)
@@ -136,6 +137,7 @@ defmodule Components.CardsExplorer do
   def render(assigns) do
     ~F"""
       <div>
+        <#slot {@dropdowns_before} />
         <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={@format_options || []} />
         <CardSetDropdown id="card_set_dropdown" group_slug={group_slug(@params["format"])}/>
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
@@ -222,7 +224,7 @@ defmodule Components.CardsExplorer do
     )
   end
 
-  def filter_relevant(params) do
+  def filter_relevant(params, additional \\ [], additional_parse_int \\ []) do
     Map.take(params, [
       "limit",
       "class",
@@ -241,8 +243,9 @@ defmodule Components.CardsExplorer do
       "search",
       "format",
       "rarity"
+      | additional
     ])
-    |> parse_int(["limit"])
+    |> parse_int(["limit" | additional_parse_int])
   end
 
   defp group_slug(slug) do

@@ -405,6 +405,17 @@ defmodule Backend.Hearthstone do
   def class(78_065), do: "DEATHKNIGHT"
   def class(dbf_id), do: HearthstoneJson.get_class(dbf_id)
 
+  def dbf_id(dbf_id) when is_integer(dbf_id), do: dbf_id
+
+  def dbf_id(card_id) when is_binary(card_id) do
+    case Integer.parse(card_id) do
+      {dbf_id, ""} -> dbf_id
+      _ -> HearthstoneJson.get_dbf_by_card_id(card_id)
+    end
+  end
+
+  def dbf_id(card) when is_struct(card), do: Card.dbf_id(card)
+
   def deduplicate_decks(limit \\ 100) do
     get_duplicated_deck_ids(limit)
     |> Enum.map(&deduplicate_ids/1)

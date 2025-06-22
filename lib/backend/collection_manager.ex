@@ -56,6 +56,45 @@ defmodule Backend.CollectionManager do
     }
   end
 
+  @spec card_count(Collection.t() | Map.t(), Hearthstone.card() | integer() | String.t()) ::
+          integer()
+  def card_count(%Collection{} = coll, card_or_id), do: card_map(coll) |> card_count(card_or_id)
+
+  def card_count(card_map, card_or_id) do
+    dbf_id = Backend.Hearthstone.dbf_id(card_or_id)
+    canon = Backend.Hearthstone.canonical_id(dbf_id) || dbf_id
+    canon_string = to_string(canon)
+
+    with nil <- Map.get(card_map, canon_string) do
+      Map.get(card_map, canon, 0)
+    end
+  end
+
+  def card_map(%Collection{card_map: %{} = card_map}), do: card_map
+  def card_map(%Collection{} = coll), do: card_count_map(coll)
+  def card_map(_), do: %{}
+
+  @spec toggle_public(String.t() | Collection.t(), User.t() | nil) ::
+          {:ok, Collection.t()} | {:error, any()}
+  def toggle_public(_, nil), do: {:error, :no_user_cant_toggle_public}
+
+  def toggle_public(collection_id, user) when is_binary(collection_id) do
+    with {:ok, coll} <- fetch_collection_for_user(user, collection_id) do
+      toggle_public(coll, user)
+    end
+  end
+
+  def toggle_public(%Collection{} = coll, user) do
+    if Collection.can_admin?(coll, user) do
+      attrs = %{public: !coll.public}
+
+      Collection.changeset(coll, attrs)
+      |> Repo.update()
+    else
+      {:error, :user_not_authorized_to_change_collection}
+    end
+  end
+
   defp card_count_map(%{cards: cards}), do: card_count_map(cards)
 
   defp card_count_map(cards) do
@@ -82,6 +121,16 @@ defmodule Backend.CollectionManager do
         where: c.battletag == ^battletag
 
     Repo.all(query)
+  end
+
+  @spec choosable_by_user(User.t()) :: [Collection.t()]
+  def choosable_by_user(%User{} = user) do
+    user_coll = list_for_user(user)
+
+    case User.current_collection(user) do
+      %Collection{} = c -> [c | user_coll] |> Enum.uniq_by(& &1.id)
+      _ -> user_coll
+    end
   end
 
   def recalculate_map(collection, update_received, before) do
@@ -118,5 +167,24 @@ defmodule Backend.CollectionManager do
         order_by: [desc: :update_received]
 
     Repo.all(query)
+  end
+
+  @spec fetch_collection_for_user(User.t() | nil, collection_id :: String.t()) ::
+          {:ok, Collection.t()} | {:error, atom()}
+  def fetch_collection_for_user(user, collection_id) do
+    with {:ok, collection} <- fetch_collection(collection_id) do
+      if Collection.can_view?(collection, user) do
+        {:ok, collection}
+      else
+        {:error, :not_authorized_to_view_collection}
+      end
+    end
+  end
+
+  defp fetch_collection(collection_id) do
+    case Repo.get(Collection, collection_id) do
+      %Collection{} = c -> {:ok, c}
+      _ -> {:error, :collection_not_found}
+    end
   end
 end

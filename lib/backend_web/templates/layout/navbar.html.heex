@@ -20,6 +20,7 @@
             <.navbar_item_link link={~p"/my-decks"} display={"My Decks"} />
             <.navbar_item_link link={~p"/my-replays"} display={"My Replays"} />
             <.navbar_item_link link={~p"/my-groups"} display={"My Groups"} />
+            <.navbar_item_link link={~p"/collection"} display={"Collection"} new={:lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-07-21 12:00:00])} /> 
             <%= if @conn |> user() |> battlefy?() do %>
               <.navbar_item_link link={~p"/battlefy/user-tournaments/#{user(@conn).battlefy_slug}"} display="My Battlefy Tournaments" />
             <% end %>
