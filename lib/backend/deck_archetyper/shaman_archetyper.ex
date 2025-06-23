@@ -188,6 +188,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Shaman"
 
+      "Ohn'ahra" in card_info.card_names ->
+        :"Ohn'ahra Shaman"
+
       wild_big_shaman?(card_info) ->
         :"Big Shaman"
 
