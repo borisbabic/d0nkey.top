@@ -50,10 +50,10 @@ defmodule BackendWeb.CollectionLive do
           <div>
             <div class="title is-2">{@page_title}</div>
             <div class="subtitle is-6">
-              <div :if={@can_admin}>
-                <button :on-click="toggle_public" class="button">{public_display(@public)}: Make {public_display(!@public)}</button>
-                <a :if={@public && @share_link} target="_blank" href={@share_link}>Share</a>
-              </div>
+              <span :if={current?(@user, @collection_id)}>This is your current collection</span>
+              <button :if={@user && !current?(@user, @collection_id)} :on-click="make_current" class="button">Use as current</button>
+              <button :if={@can_admin} :on-click="toggle_public" class="button">{public_display(@public)}: Make {public_display(!@public)}</button>
+              <a :if={@can_admin && @public && @share_link} target="_blank" href={@share_link}>Share</a>
             </div>
             <FunctionComponents.Ads.below_title/>
             <CardsExplorer
@@ -100,6 +100,25 @@ defmodule BackendWeb.CollectionLive do
     }
   end
 
+  def handle_event(
+        "make_current",
+        _,
+        %{assigns: %{user: user, collection_id: collection_id}} = socket
+      ) do
+    attrs = %{current_collection_id: collection_id}
+
+    user =
+      case Backend.UserManager.update_user(user, attrs) do
+        {:ok, u} -> u
+        _ -> user
+      end
+
+    {
+      :noreply,
+      socket |> assign(user: user)
+    }
+  end
+
   def handle_info({:update_filters, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
   end
@@ -143,6 +162,11 @@ defmodule BackendWeb.CollectionLive do
 
   def public_display(true), do: "Public"
   def public_display(false), do: "Private"
+
+  defp current?(%{current_collection_id: current}, collection_id) when current == collection_id,
+    do: true
+
+  defp current?(_, _), do: false
 
   defp assign_share_link(%{assigns: %{collection_id: id}} = socket) when is_binary(id) do
     link = LivePatchDropdown.link_with_new_url_param(socket, "collection_id", id)
