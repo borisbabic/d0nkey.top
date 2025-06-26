@@ -15,6 +15,7 @@ defmodule BackendWeb.CollectionLive do
   data(collection_id, :any)
   data(share_link, :string)
   data(card_map, :any)
+  data(multiple_collection_options, :list, default: nil)
   data(error, :any)
 
   @non_cards_explorer_params ["collection_id"]
@@ -41,10 +42,24 @@ defmodule BackendWeb.CollectionLive do
             <div class="title is-2">Unauthorized</div>
             <div class="title is-3">You do not have permission to view this collection.</div>
           </div>
+        {#elseif @error == :not_logged_in}
+          <div>
+            <div class="title is-2">No Collection</div>
+            <div class="title is-3">You're not logged in</div>
+          </div>
         {#elseif @error == :no_collection_for_user}
           <div>
             <div class="title is-2">No Collection</div>
-            <div class="title is-3">You don't have a synced collection and/or you're not logged in</div>
+            <div class="title is-3">You dont have a current collection</div>
+            <div class="title is-4" :if={!@multiple_collection_options}>Use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> to sync your collections (you need to enable it in settings under third party)</div>
+            <LivePatchDropdown
+              :if={@multiple_collection_options}
+              id="collection_collection_id"
+              param="collection_id"
+              title="Select Collection"
+              selected_as_title={false}
+              selected_to_top={false}
+              options={@multiple_collection_options} />
           </div>
         {#elseif @card_map}
           <div>
@@ -72,13 +87,13 @@ defmodule BackendWeb.CollectionLive do
               </:below_card>
               <:dropdowns_before>
                 <LivePatchDropdown
-                  :if={options = multiple_collection_options(@user, @collection_id, @collection_display)}
+                  :if={@multiple_collection_options}
                   id="collection_collection_id"
                   param="collection_id"
                   title="Select Collection"
                   selected_as_title={false}
                   selected_to_top={false}
-                  options={options} />
+                  options={@multiple_collection_options} />
               </:dropdowns_before>
             </CardsExplorer>
           </div>
@@ -130,6 +145,8 @@ defmodule BackendWeb.CollectionLive do
     additional_assigns =
       case result do
         {:ok, coll} ->
+          display = Collection.display(coll)
+
           [
             collection_id: coll.id,
             collection_display: Collection.display(coll),
@@ -137,11 +154,20 @@ defmodule BackendWeb.CollectionLive do
             can_admin: Collection.can_admin?(coll, socket.assigns.user),
             public: coll.public,
             error: nil,
+            multiple_collection_options:
+              multiple_collection_options(socket.assigns.user, coll.id, display),
             page_title: "#{Collection.display(coll)}"
           ]
 
         {:error, error} ->
-          [collection_id: nil, collection_display: nil, error: error, card_map: nil]
+          [
+            collection_id: nil,
+            collection_display: nil,
+            error: error,
+            card_map: nil,
+            multiple_collection_options:
+              multiple_collection_options(socket.assigns.user, nil, nil)
+          ]
       end
 
     assigns = [{:params, params} | additional_assigns]
@@ -182,10 +208,19 @@ defmodule BackendWeb.CollectionLive do
     CollectionManager.fetch_collection_for_user(user, collection_id)
   end
 
+  def collection(_, %{assigns: %{user: nil}}), do: {:error, :not_logged_in}
+
   def collection(_, %{assigns: %{user: user}}) do
     case User.current_collection(user) do
       %Collection{} = c -> {:ok, c}
       _ -> {:error, :no_collection_for_user}
+    end
+  end
+
+  defp multiple_collection_options(%User{} = user, nil, _) do
+    case user_collection_options(user) do
+      [] -> nil
+      options -> options
     end
   end
 
@@ -200,8 +235,7 @@ defmodule BackendWeb.CollectionLive do
   defp multiple_collection_options(_, _, _), do: nil
 
   defp collection_options(%User{} = user, collection_id, collection_display) do
-    choosable = CollectionManager.choosable_by_user(user)
-    options = Enum.map(choosable, &{&1.id, Collection.display(&1)})
+    options = user_collection_options(user)
 
     if collection_id && collection_display do
       [{collection_id, collection_display} | options]
@@ -210,4 +244,11 @@ defmodule BackendWeb.CollectionLive do
       options
     end
   end
+
+  defp user_collection_options(%User{} = user) do
+    choosable = CollectionManager.choosable_by_user(user)
+    Enum.map(choosable, &{&1.id, Collection.display(&1)})
+  end
+
+  defp user_collection_options(_), do: []
 end
