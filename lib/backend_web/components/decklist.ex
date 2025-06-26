@@ -45,9 +45,10 @@ defmodule Components.Decklist do
 
     deck_class = Deck.class(deck)
     class_class = deck_class |> String.downcase()
-    assigns = assigns
-    |> assign(deck_class: deck_class, class_class: class_class)
 
+    assigns =
+      assigns
+      |> assign(deck_class: deck_class, class_class: class_class)
 
     ~F"""
       <div>
@@ -70,9 +71,9 @@ defmodule Components.Decklist do
               </div>
           </div>
           <div :if={@show_cards}>
-            <DustBar :if={show_above(@user)} deck={@deck} class={@class_class}/>
-            <CardsList on_card_click={@on_card_click} comparison={@comparison} deck={@deck} deck_class={@deck_class} highlight_rotation={@highlight_rotation}/>
-            <DustBar :if={show_below(@user)} deck={@deck} class={@class_class} />
+            <DustBar :if={show_above(@user)} card_map={card_map(@user)} deck={@deck} class={@class_class}/>
+            <CardsList on_card_click={@on_card_click} comparison={@comparison} deck={@deck} deck_class={@deck_class} highlight_rotation={@highlight_rotation} card_map={card_map(@user)}/>
+            <DustBar :if={show_below(@user)} card_map={card_map(@user)} deck={@deck} class={@class_class} />
 
           </div>
           <span style="font-size: 0; line-size:0; display:block">
@@ -84,4 +85,14 @@ defmodule Components.Decklist do
 
   def show_above(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_above()
   def show_below(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_below()
+
+  def card_map(%{current_collection: %{card_map: card_map}} = user) do
+    if user |> User.decklist_options() |> DecklistOptions.use_missing_dust() do
+      card_map
+    else
+      %{}
+    end
+  end
+
+  def card_map(_), do: nil
 end

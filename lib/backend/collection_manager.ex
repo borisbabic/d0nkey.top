@@ -70,6 +70,18 @@ defmodule Backend.CollectionManager do
     end
   end
 
+  def remove_owned(cards, collection_or_card_map) do
+    freq = cards |> Enum.map(&Backend.Hearthstone.canonical_id/1) |> Enum.frequencies()
+
+    freq
+    |> Enum.flat_map(fn {card, count} ->
+      owned = card_count(collection_or_card_map, card)
+      new_count = count - owned
+
+      for _ <- 1..new_count//1, do: card
+    end)
+  end
+
   def card_map(%Collection{card_map: %{} = card_map}), do: card_map
   def card_map(%Collection{} = coll), do: card_count_map(coll)
   def card_map(_), do: %{}
