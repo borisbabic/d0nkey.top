@@ -974,16 +974,19 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.reduce(RuneCost.empty(), &RuneCost.maximum/2)
   end
 
-  def cost(%{cards: cards} = deck) do
-    cards_cost =
-      Enum.sum_by(cards, &deckcode_copy_dust_cost/1)
-
-    sideboards_cost =
+  def cost(%{cards: cards} = deck, owned_card_map \\ %{}) do
+    sideboards_cards =
       Map.get(deck, :sideboards, [])
       |> Enum.filter(&use_sideboard_for_dust_cost?/1)
-      |> Enum.sum_by(&(&1.count * deckcode_copy_dust_cost(&1)))
+      |> Enum.flat_map(fn %{count: count, card: card} ->
+        for _ <- 1..count, do: card
+      end)
 
-    cards_cost + sideboards_cost
+    all_cards = sideboards_cards ++ cards
+
+    all_cards
+    |> Backend.CollectionManager.remove_owned(owned_card_map)
+    |> Enum.sum_by(&deckcode_copy_dust_cost/1)
   end
 
   defp deckcode_copy_dust_cost(card_or_sideboard) do
