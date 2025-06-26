@@ -25,7 +25,7 @@ defmodule Components.CardsList do
 
   def render(assigns) do
     ~F"""
-      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboard: sideboard} <- cards_to_display(@deck, @comparison, @highlight_rotation)} style="margin: 0; padding: 0;">
+      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboard: sideboard} <- cards_to_display(@deck, @comparison, @highlight_rotation, @user)} style="margin: 0; padding: 0;">
           <div class={class, "is-clickable": !!@on_card_click} phx-value-sideboard={sideboard} phx-value-card_id={card.id} :on-click={@on_card_click} >
             <DecklistCard
               show_mana_cost={true}
@@ -42,13 +42,16 @@ defmodule Components.CardsList do
     """
   end
 
-  @spec cards_to_display(Deck.t(), [integer] | nil, boolean) :: [display_info]
+  @spec cards_to_display(Deck.t(), [integer] | nil, boolean, Map.t() | nil) :: [display_info]
   defp cards_to_display(
          %{cards: cards, sideboards: sideboard} = deck,
          comparison,
-         highlight_rotation
+         highlight_rotation,
+         user
        ) do
     cards_map = card_map(cards, deck)
+
+    {fade_unowned, owned_card_map} = owned_card_map(user)
 
     comparison_map =
       (comparison || [])
@@ -64,10 +67,13 @@ defmodule Components.CardsList do
     to_check
     |> Enum.flat_map(fn c ->
       {class, count} =
-        case {Map.get(comparison_map, CardBag.deckcode_copy_id(c.id)), Map.get(cards_map, c.id)} do
-          {cc, {_, count}} when not is_nil(cc) -> {comparison_class(cc, count), count}
-          {nil, {card, count}} -> {rotation_class(highlight_rotation, card), count}
-          {_, nil} -> {"not-in-list", nil}
+        case {Map.get(comparison_map, CardBag.deckcode_copy_id(c.id)), Map.get(cards_map, c.id),
+              highlight_rotation, fade_unowned} do
+          {cc, {_, count}, _, _} when not is_nil(cc) -> {comparison_class(cc, count), count}
+          {nil, {card, count}, true, _} -> {rotation_class(highlight_rotation, card), count}
+          {nil, {card, count}, _, true} -> {unowned_class(card, count, owned_card_map), count}
+          {_, {_card, count}, _, _} -> {nil, count}
+          {_, nil, _, _} -> {"not-in-list", nil}
         end
 
       actual = %{card: c, count: count, class: class, sideboard: false}
@@ -75,25 +81,60 @@ defmodule Components.CardsList do
       sideboards_after =
         sideboard
         |> Enum.filter(&(&1.sideboard == c.id))
-        |> Enum.flat_map(&sideboard_display(&1, highlight_rotation))
+        |> Enum.flat_map(&sideboard_display(&1, highlight_rotation, fade_unowned, owned_card_map))
         |> Hearthstone.sort_cards(cost: &Deck.card_mana_cost(deck, &1))
 
       [actual | sideboards_after]
     end)
   end
 
-  @spec sideboard_display(Sideboard.t(), boolean) :: [display_info]
-  defp sideboard_display(%{card: c, count: count, sideboard: sideboard}, highlight_rotation) do
+  defp unowned_class(card, count, owned_card_map) do
+    owned_count = Backend.CollectionManager.card_count(owned_card_map, card)
+
+    cond do
+      owned_count >= count -> nil
+      owned_count > 0 -> "card-comparison-count-1"
+      owned_count <= 0 -> "not-in-list"
+    end
+  end
+
+  defp owned_card_map(%{current_collection: %{card_map: card_map}} = user)
+       when is_map(card_map) do
+    if user
+       |> User.decklist_options()
+       |> Backend.UserManager.User.DecklistOptions.fade_missing_cards() do
+      {true, card_map}
+    else
+      {false, card_map}
+    end
+  end
+
+  defp owned_card_map(_), do: {false, nil}
+
+  @spec sideboard_display(Sideboard.t(), boolean, boolean, Map.t()) :: [display_info]
+  defp sideboard_display(
+         %{card: c, count: count, sideboard: sideboard},
+         highlight_rotation,
+         fade_unowned,
+         owned_card_map
+       ) do
     case Hearthstone.get_card(c) do
       nil ->
         []
 
       card ->
+        class =
+          case {highlight_rotation, fade_unowned} do
+            {true, _} -> rotation_class(card)
+            {_, true} -> unowned_class(card, count, owned_card_map)
+            _ -> nil
+          end
+
         [
           %{
             card: card,
             count: count,
-            class: rotation_class(highlight_rotation, card),
+            class: class,
             sideboard: sideboard
           }
         ]
@@ -128,16 +169,13 @@ defmodule Components.CardsList do
     # badlands
     1892
   ]
-  def rotation_class(true, %{card_set_id: id}) when id in @staying_sets, do: ""
-
-  def rotation_class(true, %{card_set_id: id}) when id in @rotating_sets,
-    do: "not-in-list"
-
-  # core cards are left, and unknown
-  def rotation_class(true, _),
-    do: "card-comparison-count-1"
-
+  def rotation_class(true, card), do: rotation_class(card)
   def rotation_class(_highlight, _card), do: ""
+
+  def rotation_class(%{card_set_id: id}) when id in @staying_sets, do: ""
+  def rotation_class(%{card_set_id: id}) when id in @rotating_sets, do: "not-in-list"
+  # core cards are left, and unknown
+  def rotation_class(_), do: "card-comparison-count-1"
 
   defp comparison_class(%{rarity_id: 5}, _), do: "card-comparison-legendary"
   defp comparison_class(%{rarity: "LEGENDARY"}, _), do: "card-comparison-legendary"

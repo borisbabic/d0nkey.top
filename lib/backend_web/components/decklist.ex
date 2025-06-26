@@ -72,7 +72,7 @@ defmodule Components.Decklist do
           </div>
           <div :if={@show_cards}>
             <DustBar :if={show_above(@user)} card_map={card_map(@user)} deck={@deck} class={@class_class}/>
-            <CardsList on_card_click={@on_card_click} comparison={@comparison} deck={@deck} deck_class={@deck_class} highlight_rotation={@highlight_rotation} card_map={card_map(@user)}/>
+            <CardsList on_card_click={@on_card_click} comparison={@comparison} deck={@deck} deck_class={@deck_class} highlight_rotation={@highlight_rotation} />
             <DustBar :if={show_below(@user)} card_map={card_map(@user)} deck={@deck} class={@class_class} />
 
           </div>
@@ -94,5 +94,5 @@ defmodule Components.Decklist do
     end
   end
 
-  def card_map(_), do: nil
+  def card_map(_), do: %{}
 end

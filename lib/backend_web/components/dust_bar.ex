@@ -7,7 +7,7 @@ defmodule Components.DustBar do
   prop(deck, :map, required: true)
   prop(class, :css_class, required: true)
   prop(user, :map, from_context: :user)
-  prop(card_map, :map, default: nil)
+  prop(card_map, :map, default: %{})
 
   def render(assigns) do
     ~F"""
