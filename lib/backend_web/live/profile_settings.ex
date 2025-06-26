@@ -79,6 +79,10 @@ defmodule BackendWeb.ProfileSettingsLive do
               <Checkbox value={DecklistOptions.use_missing_dust(@user.decklist_options)} />
               <Label>Use missing dust instead of total</Label>
             </Field>
+            <Field name="fade_missing_cards">
+              <Checkbox value={DecklistOptions.fade_missing_cards(@user.decklist_options)} />
+              <Label>Fade missing cards in decks</Label>
+            </Field>
             <br>
             <Field name="replay_preference">
               <Select selected={@user.replay_preference} class="select has-text-black " options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
@@ -191,6 +195,11 @@ defmodule BackendWeb.ProfileSettingsLive do
       |> parse_decklist_color_option(attrs, "gradient")
       |> parse_decklist_color_option(attrs, "border")
       |> parse_decklist_option(attrs, "show_one", DecklistOptions.show_one_default())
+      |> parse_decklist_option(
+        attrs,
+        "fade_missing_cards",
+        DecklistOptions.default_fade_missing_cards()
+      )
       |> parse_decklist_option(
         attrs,
         "use_missing_dust",
