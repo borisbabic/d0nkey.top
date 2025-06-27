@@ -86,7 +86,7 @@ defmodule Components.Decklist do
   def show_above(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_above()
   def show_below(user), do: user |> User.decklist_options() |> DecklistOptions.show_dust_below()
 
-  def card_map(%{current_collection: %{card_map: card_map}} = user) do
+  def card_map(%{current_collection: %{card_map: card_map}} = user) when is_map(card_map) do
     if user |> User.decklist_options() |> DecklistOptions.use_missing_dust() do
       card_map
     else
