@@ -36,7 +36,13 @@ f-> %>
         <%= for row <- @rows do %>
             <tr>
                 <%= for cell <- row do %>
-                    <td> <%= cell %> </td>
+                    <td>
+                        <%= if is_list(cell) do %> 
+                            <%= Enum.join(cell, ",")%>
+                        <% else %>
+                            <%= cell %>
+                        <% end %>
+                    </td>
                 <% end %>
             </tr>
         <% end %>

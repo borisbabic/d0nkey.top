@@ -134,7 +134,7 @@ defmodule BackendWeb.TournamentStatsView do
     Components.Helper.simple_link(%{link: url, body: cell, class: "is-text"})
   end
 
-  defp add_cell("Player", {c = %{name: player_name}, row}) do
+  defp add_cell("Player", {c = %{name: player_name}, row}) when is_binary(player_name) do
     assigns = %{link: ~p"/player-profile/#{player_name}", player_name: player_name}
 
     player_cell = ~H"""
@@ -145,6 +145,8 @@ defmodule BackendWeb.TournamentStatsView do
 
     {c, [player_cell | row]}
   end
+
+  defp add_cell("Player", {c, row}), do: {c, [nil, row]}
 
   defp add_cell("Num Played", {c = %{total: total}, row}), do: {c, [total | row]}
 
