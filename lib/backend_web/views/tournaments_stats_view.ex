@@ -73,7 +73,8 @@ defmodule BackendWeb.TournamentStatsView do
         stats =
           tts |> Enum.map(&TournamentTeamStats.total_stats/1) |> TeamStats.calculate_team_stats()
 
-        if total >= min_tournaments && stats |> TeamStats.matches(stats_type) >= min_matches do
+        if name && total >= min_tournaments &&
+             stats |> TeamStats.matches(stats_type) >= min_matches do
           context =
             %{
               total: total,
