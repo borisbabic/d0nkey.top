@@ -528,7 +528,7 @@ defmodule Backend.Blizzard do
   def get_region_name(region, :long) when is_atom(region) do
     case region do
       :EU -> "Europe"
-      :US -> "Americas"
+      r when r in [:US, :AM] -> "Americas"
       :AP -> "Asia-Pacific"
       :CN -> "China"
     end
@@ -538,7 +538,7 @@ defmodule Backend.Blizzard do
   def get_region_name(region, :short) when is_atom(region) do
     case region do
       :EU -> "EU"
-      :US -> "AM"
+      r when r in [:US, :AM] -> "AM"
       :AP -> "AP"
       :CN -> "CN"
     end
