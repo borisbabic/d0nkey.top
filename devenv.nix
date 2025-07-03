@@ -11,6 +11,7 @@ in {
   packages = [ 
     pkgs.git
     pkgs.nodejs
+    pkgs.pre-commit
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     pkgs.inotify-tools
   ];
