@@ -47,7 +47,7 @@ agg_periods(
     slug,
     game_type
 ) AS (
-    SELECT p.format, p.START, p.slug, f.game_type FROM (SELECT
+    SELECT abs(p.format), p.START, p.slug, f.game_type FROM (SELECT
         UNNEST(formats) as format,
         COALESCE(period_start, now() - concat(hours_ago::text, ' hours')::interval) AS START,
         slug
