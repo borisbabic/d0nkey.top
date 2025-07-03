@@ -7,6 +7,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
   def standard(card_info) do
     cond do
+      quest?(card_info) ->
+        :"Quest DH"
+
       murloc?(card_info) ->
         :"Murloc Demon Hunter"
 

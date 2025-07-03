@@ -3,10 +3,12 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
   alias Backend.DeckArchetyper.DemonHunterArchetyper
-  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
+      quest?(card_info) ->
+        :"Quest Shaman"
+
       menagerie?(card_info) ->
         :"Menagerie Shaman"
 

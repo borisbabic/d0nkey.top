@@ -2,10 +2,12 @@
 defmodule Backend.DeckArchetyper.HunterArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
-  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
+      quest?(card_info) ->
+        :"Quest Hunter"
+
       handbuff_hunter?(card_info) ->
         :"Handbuff Hunter"
 

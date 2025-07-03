@@ -2,10 +2,12 @@
 defmodule Backend.DeckArchetyper.RogueArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
-  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
+      quest?(card_info) ->
+        :"Quest Rogue"
+
       mech_rogue?(card_info) ->
         :"Mech Rogue"
 
@@ -367,7 +369,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       garrote?(card_info) ->
         :"Garrote Rogue"
-      
+
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
 
@@ -455,18 +457,18 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Selfish Shellfish"
     ]) or
       ("Coldlight Oracle" in card_info.card_names and
-        min_count?(card_info, 1, ["Spirit of the Shark", "Brann Bronzebeard"]) and
-          min_count?(card_info, 2, [
-            "Potion of Illusion",
-            "Togwaggle's Scheme",
-            "Gang Up",
-            "Lab Recruiter"
-          ]))
+         min_count?(card_info, 1, ["Spirit of the Shark", "Brann Bronzebeard"]) and
+         min_count?(card_info, 2, [
+           "Potion of Illusion",
+           "Togwaggle's Scheme",
+           "Gang Up",
+           "Lab Recruiter"
+         ]))
   end
 
   defp wild_draka_rogue?(card_info) do
     "Necrolord Draka" in card_info.card_names or
-       "Necrolord Draka" in card_info.etc_sideboard_names
+      "Necrolord Draka" in card_info.etc_sideboard_names
   end
 
   defp wild_phoenix_rogue?(card_info) do

@@ -3,10 +3,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
   alias Backend.DeckArchetyper.ArchetyperHelpers
-  alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
     cond do
+      quest?(card_info) ->
+        :"Quest Warlock"
+
       menagerie?(card_info) ->
         :"Menagerie Warlock"
 
@@ -187,7 +189,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Highlander Warlock"
 
       "The Demon Seed" in card_info.card_names ->
-        :"Seedlock"
+        :Seedlock
 
       questline?(card_info) ->
         :"Questline Warlock"
