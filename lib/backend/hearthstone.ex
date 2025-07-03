@@ -1198,7 +1198,7 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"banned_cards_for_format", "unguro_prerelease_brawl"}, query) do
     query
     # hamuul and creature of madness
-    |> where([card: c], c.id not in [114_858, 113_973])
+    |> where([card: c], c.id not in [114_858, 113_973, 116_675, 114_081, 114_868])
   end
 
   defp compose_cards_query({"banned_cards_for_format", _}, query), do: query
