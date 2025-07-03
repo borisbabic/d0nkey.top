@@ -712,6 +712,7 @@ defmodule Backend.Hearthstone.Deck do
   def format_name(4), do: "Twist"
   def format_name(9001), do: "Duels"
   def format_name(666), do: "Mercenaries"
+  def format_name(-1), do: "Brawl"
   def format_name(_), do: "UnknownFormat"
 
   def get_canonical_hero(hero, cards) when is_integer(hero) do
