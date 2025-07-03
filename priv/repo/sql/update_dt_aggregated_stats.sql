@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION update_dt_aggregated_stats()
     AS $$
 DECLARE
 BEGIN
-CREATE TABLE temp_dt_aggregated_stats (
+CREATE TABLE IF NOT EXISTS temp_dt_aggregated_stats (
 	-- DON'T REFERENCE deck. It seems to block insertions into the deck table while this executes if you reference
 	deck_id integer,
 	period varchar,
@@ -47,7 +47,7 @@ agg_periods(
     slug,
     game_type
 ) AS (
-    SELECT abs(p.format), p.START, p.slug, f.game_type FROM (SELECT
+    SELECT p.format, p.START, p.slug, f.game_type FROM (SELECT
         UNNEST(formats) as format,
         COALESCE(period_start, now() - concat(hours_ago::text, ' hours')::interval) AS START,
         slug
@@ -74,7 +74,7 @@ deck_stats AS (
         r.slug AS RANK,
         dg.player_deck_id AS deck_id,
         dg.opponent_class,
-        dg.format,
+        p.format,
         dg.player_has_coin,
         sum(
             CASE WHEN dg.status = 'win' THEN
@@ -112,7 +112,7 @@ CAST(SUM(
 FROM
     public.dt_games dg
     INNER JOIN public.deck d ON d.id = dg.player_deck_id
-    INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND p.format = dg.format
+    INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND abs(p.format) = dg.format
     INNER JOIN agg_ranks r ON (r.min_rank = 0
             OR dg.player_rank >= min_rank)
         AND (r.max_rank IS NULL
@@ -146,7 +146,7 @@ card_stats AS (
         dcgt.deck_id AS deck_id,
         dcgt.card_id,
         dg.opponent_class,
-        dg.format,
+        p.format,
         dg.player_has_coin,
         sum(
             CASE WHEN dg.status = 'win'
@@ -209,7 +209,7 @@ card_stats AS (
     FROM
         public.dt_card_game_tally dcgt
         INNER JOIN public.dt_games dg ON dg.id = dcgt.game_id
-        INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND p.format = dg.format
+        INNER JOIN agg_periods p ON dg.inserted_at >= p.START AND abs(p.format) = dg.format
         INNER JOIN agg_ranks r ON (r.min_rank = 0
                 OR dg.player_rank >= min_rank)
             AND (r.max_rank IS NULL
@@ -406,7 +406,7 @@ grouped_card_stats AS (
         6,
         7
 )
-INSERT INTO  temp_dt_aggregated_stats (
+INSERT INTO temp_dt_aggregated_stats(
 	deck_id,
 	period,
 	rank,
