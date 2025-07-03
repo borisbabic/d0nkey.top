@@ -6,6 +6,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
   def standard(card_info) do
     cond do
+      quest?(card_info) ->
+        :"Quest DK"
+
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
