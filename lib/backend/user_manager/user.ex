@@ -102,6 +102,7 @@ defmodule Backend.UserManager.User do
       :card,
       :kaffy,
       :developer,
+      :tournament_source,
       :twitch_commands,
       :premium
     ]

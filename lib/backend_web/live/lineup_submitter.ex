@@ -26,6 +26,10 @@ defmodule BackendWeb.LineupSubmitterLive do
                 <Label class="label" >Tournament ID/name</Label>
                 <TextInput class="input has-text-black  is-small"/>
               </Field>
+              <Field name="tournament_source" :if={custom_tournament_source?(@user)}>
+                <Label class="label" >Tournament Source (like organization or website)</Label>
+                <TextInput class="input has-text-black  is-small" value={@user.battletag}/>
+              </Field>
               <Field name="csv">
                 <Label class="label">CSV of lineups: name,link or name,deck1,deck2,deck...</Label>
                 <TextArea class="has-text-black"/>
@@ -57,7 +61,7 @@ defmodule BackendWeb.LineupSubmitterLive do
 
   def handle_event(
         "submit",
-        %{"lineups" => %{"csv" => csv, "tournament_id" => tournament_id}},
+        %{"lineups" => %{"csv" => csv, "tournament_id" => tournament_id} = params},
         %{assigns: %{user: %{battletag: battletag}}} = socket
       ) do
     # this is so stupid, why do I need to give it a streeam AND have it end with new line
@@ -67,26 +71,36 @@ defmodule BackendWeb.LineupSubmitterLive do
       |> Enum.map(&(&1 <> "\n"))
       |> Command.ImportLineups.parse_csv()
 
-    Command.ImportLineups.import(data, tournament_id, battletag)
-    {:noreply, socket |> assign(:view_url, ~p"/tournament-lineups/#{battletag}/#{tournament_id}")}
+    source =
+      if custom_tournament_source?(socket.assigns.user) do
+        Map.get(params, "tournament_source", battletag)
+      else
+        battletag
+      end
+
+    Command.ImportLineups.import(data, tournament_id, source)
+    {:noreply, socket |> assign(:view_url, ~p"/tournament-lineups/#{source}/#{tournament_id}")}
   end
 
-  def handle_event("submit", %{"new_round" => attrs_raw}, socket) do
-    csv_url = csv_url(attrs_raw)
-    ignore_columns = Util.to_int(attrs_raw["ignore_columns"], 1)
+  defp custom_tournament_source?(user),
+    do: Backend.UserManager.User.can_access?(user, :tournament_source)
 
-    Command.ImportLineups.import_from_csv_url(
-      csv_url,
-      attrs_raw["tournament_id"],
-      attrs_raw["tournament_source"],
-      & &1,
-      ignore_columns
-    )
+  # def handle_event("submit", %{"new_round" => attrs_raw}, socket) do
+  #   csv_url = csv_url(attrs_raw)
+  #   ignore_columns = Util.to_int(attrs_raw["ignore_columns"], 1)
 
-    {:noreply, socket}
-  end
+  #   Command.ImportLineups.import_from_csv_url(
+  #     csv_url,
+  #     attrs_raw["tournament_id"],
+  #     attrs_raw["tournament_source"],
+  #     & &1,
+  #     ignore_columns
+  #   )
 
-  def csv_url(attrs = %{"sheet_id" => sheet_id}) do
+  #   {:noreply, socket}
+  # end
+
+  def csv_url(%{"sheet_id" => sheet_id} = attrs) do
     "https://docs.google.com/spreadsheets/d/#{sheet_id}/export?format=csv"
     |> append_gid(attrs)
   end
