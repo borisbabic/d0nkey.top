@@ -338,15 +338,15 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       garrote?(card_info) ->
         :"Garrote Rogue"
+      
+      wild_alex_rogue?(card_info) ->
+        :"Alex Rogue"
 
       "Pirate Admiral Hooktusk" in card_info.card_names ->
         :"Hooktusk Rogue"
 
       wild_mill_rogue?(card_info) ->
         :"Mill Rogue"
-
-      wild_alex_rogue?(card_info) ->
-        :"Alex Rogue"
 
       wild_astalor_rogue?(card_info) ->
         :"Astalor Rogue"
