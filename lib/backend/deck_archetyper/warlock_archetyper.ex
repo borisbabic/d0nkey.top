@@ -178,7 +178,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   def wild(card_info) do
     cond do
       highlander?(card_info) ->
-        :"Renolock"
+        :"Highlander Warlock"
 
       "The Demon Seed" in card_info.card_names ->
         :"Seedlock"
