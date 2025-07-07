@@ -30,6 +30,7 @@ defmodule Backend.Blizzard do
           | :"Masters Tour Five"
           | :"Masters Tour Six"
 
+  @blizz_o_clock_time ~T[10:00:00]
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @short_battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
   @current_bg_season_id 15
@@ -875,8 +876,7 @@ defmodule Backend.Blizzard do
     do: [{:US, "US/Pacific"}, {:AP, "Asia/Seoul"}, {:EU, "CET"}, {:CN, "Asia/Shanghai"}]
 
   def next_blizz_o_clock() do
-    timezone = regions_with_timezone() |> Keyword.get(:US)
-    now = DateTime.now!(timezone)
+    now = DateTime.now!(timezone())
     blizz_o_clock_today = blizz_o_clock(now)
 
     if DateTime.compare(blizz_o_clock_today, now) == :lt do
@@ -892,11 +892,12 @@ defmodule Backend.Blizzard do
   """
   @spec blizz_o_clock(Date.t() | DateTime.t() | NaiveDateTime.t()) :: DateTime.t()
   def blizz_o_clock(%{day: day, year: year, month: month}) do
-    timezone = regions_with_timezone() |> Keyword.get(:US)
     date = Date.new!(year, month, day)
-    time = ~T[10:00:00]
-    DateTime.new!(date, time, timezone)
+    time = @blizz_o_clock_time
+    DateTime.new!(date, time, timezone())
   end
+
+  def blizz_o_clock_time(), do: @blizz_o_clock_time
 
   @spec current_constructed_season_id(region :: atom) :: integer()
   def current_constructed_season_id(region \\ :US) do
@@ -904,8 +905,12 @@ defmodule Backend.Blizzard do
     Timex.now(timezone) |> Timex.to_date() |> get_season_id()
   end
 
+  def timezone() do
+    regions_with_timezone() |> Keyword.get(:US, "US/Pacific")
+  end
+
   def now() do
-    Timex.now("US/Pacific")
+    Timex.now(timezone())
   end
 
   @spec parse_region!(String.t() | atom()) :: :atom

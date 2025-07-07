@@ -2796,4 +2796,18 @@ defmodule Hearthstone.DeckTracker do
     get_latest_agg_log_entry()
     |> Map.get(metadata, []) || []
   end
+
+  def update_brawl_period_start() do
+    period = get_period_by_slug("brawl")
+
+    now = Backend.Blizzard.now()
+    start_time = Backend.Blizzard.blizz_o_clock_time()
+    wednesday? = Date.day_of_week(now) == 3
+    already_started? = :gt == Time.compare(DateTime.to_time(now), start_time)
+
+    if wednesday? and already_started? do
+      period_start = DateTime.new!(DateTime.to_date(now), start_time, now.time_zone)
+      update_period(period, %{period_start: period_start})
+    end
+  end
 end
