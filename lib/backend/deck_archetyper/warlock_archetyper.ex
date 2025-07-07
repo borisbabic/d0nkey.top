@@ -193,10 +193,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Odd Warlock"
 
       genn?(card_info) ->
-        :"Even Warlock"
+        :"Evenlock"
 
       discard?(card_info, 10) ->
-        :"Discard Warlock"
+        :"Discolock"
 
       sludgelock?(card_info) ->
         :"Sludge Warlock"
@@ -211,7 +211,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Mecha'thun Warlock"
 
       discard?(card_info, 6) ->
-        :"Discard Warlock"
+        :"Discolock"
 
       boar?(card_info) ->
         :"Boar Warlock"
