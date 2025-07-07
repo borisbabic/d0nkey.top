@@ -24,6 +24,10 @@ config :backend, QuantumScheduler,
 
     # {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
+    {"1 17 * * Wed", fn -> Hearthstone.DeckTracker.update_brawl_period_start() end},
+    {"31 17 * * Wed", fn -> Hearthstone.DeckTracker.update_brawl_period_start() end},
+    {"1 18 * * Wed", fn -> Hearthstone.DeckTracker.update_brawl_period_start() end},
+    {"31 18 * * Wed", fn -> Hearthstone.DeckTracker.update_brawl_period_start() end},
     {"*/2 * * * *",
      fn ->
        Backend.Leaderboards.save_current_with_delay([:CN], [:STD, :WLD, :twist], 100, 10_000, 500)
