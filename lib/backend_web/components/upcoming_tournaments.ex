@@ -8,6 +8,8 @@ defmodule Components.UpcomingTournaments do
 
   prop(title, :string, default: nil)
   prop(hours_ago, :integer, default: 0)
+  prop(user, :any)
+  data(user_tournaments, :any)
   data(tournaments, :any)
   data(full_tournaments, :any)
 
@@ -15,8 +17,8 @@ defmodule Components.UpcomingTournaments do
     ~F"""
       <div>
         <div :if={@title} class="title is-4">{@title}</div>
-        <TournamentsTable.table :if={tournaments = !@full_tournaments.ok? && @tournaments.ok? && @tournaments.result} tournaments={tournaments} />
-        <TournamentsTable.table :if={tournaments = @full_tournaments.ok? && @full_tournaments.result} tournaments={tournaments} />
+        <TournamentsTable.table :if={tournaments = !@full_tournaments.ok? && @tournaments.ok? && @tournaments.result} tournaments={tournaments} user_tournaments={if @user_tournaments.ok?, do: @user_tournaments.result, else: []}/>
+        <TournamentsTable.table :if={tournaments = @full_tournaments.ok? && @full_tournaments.result} tournaments={tournaments} user_tournaments={if @user_tournaments.ok?, do: @user_tournaments.result, else: []} />
         <div :if={@tournaments.loading && @full_tournaments.loading}>Loading tournaments...</div>
       </div>
     """
@@ -24,6 +26,7 @@ defmodule Components.UpcomingTournaments do
 
   def update(assigns, socket) do
     hours_ago = assigns.hours_ago
+    user = assigns.user
 
     {
       :ok,
@@ -31,6 +34,17 @@ defmodule Components.UpcomingTournaments do
       |> assign(assigns)
       |> assign_async(:tournaments, fn -> fetch_tournaments(hours_ago) end)
       |> assign_async(:full_tournaments, fn -> fetch_full_tournaments(hours_ago) end)
+      |> assign_async(:user_tournaments, fn ->
+        case user do
+          %{battlefy_slug: slug} when is_binary(slug) ->
+            t = Backend.Infrastructure.BattlefyCommunicator.get_user_tournaments(slug, 1)
+
+            {:ok, %{user_tournaments: t}}
+
+          _ ->
+            {:ok, %{user_tournaments: []}}
+        end
+      end)
     }
   end
 
