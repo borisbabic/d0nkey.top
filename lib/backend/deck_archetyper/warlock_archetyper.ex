@@ -6,6 +6,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
   def standard(card_info) do
     cond do
+      "Playhouse Giant" in card_info.card_names and quest?(card_info) ->
+        :"Cycle Quest Warlock"
+
       quest?(card_info) ->
         :"Quest Warlock"
 
@@ -201,10 +204,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Odd Warlock"
 
       genn?(card_info) ->
-        :"Evenlock"
+        :Evenlock
 
       discard?(card_info, 10) ->
-        :"Discolock"
+        :Discolock
 
       sludgelock?(card_info) ->
         :"Sludge Warlock"
@@ -219,7 +222,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :"Mecha'thun Warlock"
 
       discard?(card_info, 6) ->
-        :"Discolock"
+        :Discolock
 
       boar?(card_info) ->
         :"Boar Warlock"

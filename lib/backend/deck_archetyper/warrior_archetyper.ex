@@ -47,6 +47,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Ysondre" in card_info.card_names ->
         :"Ysondre Warrior"
 
+      "Briarspawn Drake" in card_info.card_names ->
+        :"Briarspawn Warrior"
+
       warrior_aoe?(card_info) ->
         :"Control Warrior"
 
@@ -97,6 +100,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         "Aftershocks",
         "Sanitize",
         "Garrosh's Gift",
+        "Shellnado",
         "Bladestorm",
         "Hostile Invader"
       ])
@@ -157,7 +161,8 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Rivendare, Warrider" in card_info.card_names ->
         :"Rivendare Warrior"
 
-      "Mecha'thun" in card_info.etc_sideboard_names and "Thaddius, Monstrosity" in card_info.card_names ->
+      "Mecha'thun" in card_info.etc_sideboard_names and
+          "Thaddius, Monstrosity" in card_info.card_names ->
         :"Mecha'Chad Warrior"
 
       "Thaddius, Monstrosity" in card_info.card_names ->

@@ -54,6 +54,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       zealot_otk?(card_info) ->
         :"Zealot OTK Priest"
 
+      "Wilted Shadow" in card_info.card_names ->
+        :"Wilted Priest"
+
       control_priest?(card_info) ->
         :"Control Priest"
 

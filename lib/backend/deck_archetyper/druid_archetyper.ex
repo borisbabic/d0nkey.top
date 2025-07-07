@@ -58,7 +58,13 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     end
   end
 
-  @wide_buff ["Power of the Wild", "Overheat", "Cosmic Phenomenon", "A. F. Kay"]
+  @wide_buff [
+    "Power of the Wild",
+    "Overheat",
+    "Cosmic Phenomenon",
+    "A. F. Kay",
+    "Hatchery Helper"
+  ]
   defp token?(card_info) do
     min_count?(card_info, 2, @wide_buff)
   end

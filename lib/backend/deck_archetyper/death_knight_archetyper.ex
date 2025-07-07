@@ -12,14 +12,8 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
-      menagerie?(card_info) and leech?(card_info, 3) ->
-        :"Menagerie Succ DK"
-
-      starship?(card_info) and leech?(card_info, 3) ->
-        :"Starship Succ DK"
-
-      leech?(card_info, 3) ->
-        :"Succ DK"
+      "High Cultist Herenn" in card_info.card_names ->
+        :"Herenn DK"
 
       buttons?(card_info) && rainbow_runes?(card_info) ->
         :"Buttons Rainbow DK"
@@ -39,11 +33,14 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       starship?(card_info) ->
         :"Starship DK"
 
-      leech?(card_info, 2) ->
-        :"Succ DK"
-
       menagerie?(card_info) ->
         :"Menagerie DK"
+
+      control?(card_info) ->
+        :"Control DK"
+
+      leech?(card_info, 3) ->
+        :"Succ DK"
 
       murloc?(card_info) ->
         :"Murloc DK"
@@ -90,6 +87,20 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp control?(card_info) do
+    min_count?(card_info, 3, [
+      "Corpse Explosion",
+      "The Ceaseless Expanse",
+      "Kil'kaeden",
+      "The 8 Hands from Below",
+      "Ancient of Yore",
+      "Wild Pyromancer",
+      "Threads of Despair",
+      "Elise the Navigator",
+      "The Headless Horseman"
+    ])
   end
 
   defp dark_gift?(ci) do
