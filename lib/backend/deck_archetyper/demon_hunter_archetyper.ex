@@ -28,6 +28,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Ball Hog" in card_info.card_names and deathrattle?(card_info) ->
         :"Hog Demon Hunter"
 
+      "Entomologist Toru" in card_info.card_names ->
+        :"Toru DH"
+
       deathrattle?(card_info) ->
         :"Deathrattle DH"
 

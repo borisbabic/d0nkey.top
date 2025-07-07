@@ -6,6 +6,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
   def standard(card_info) do
     cond do
+      no_minion?(card_info, 2) and quest?(card_info) ->
+        :"Quest Spell Mage"
+
       quest?(card_info) ->
         :"Quest Mage"
 

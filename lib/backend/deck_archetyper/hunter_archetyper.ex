@@ -100,11 +100,14 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
   end
 
   defp beast_hunter?(ci) do
-    min_count?(ci, 4, [
+    min_count?(ci, 5, [
       "Fetch!",
       "Bunny Stomper",
       "Jungle Gym",
       "Painted Canvasaur",
+      "Dinositter",
+      "Supreme Dinomancy",
+      "Cower in Fear",
       "Master's Call",
       "Ball of Spiders",
       "Kill Command"
