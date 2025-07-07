@@ -103,6 +103,7 @@ defmodule Components.DeckListingModal do
 
     sheets
     |> default_first(user)
+    |> Enum.uniq_by(& &1.id)
     |> Enum.map(fn %{name: name, id: id} ->
       {name, id}
     end)
