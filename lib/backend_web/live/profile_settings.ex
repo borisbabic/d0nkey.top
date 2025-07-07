@@ -45,9 +45,18 @@ defmodule BackendWeb.ProfileSettingsLive do
               For custom icons see <a href="/patreon">patreon</a>
             </Field>
             <br>
+            <Label class="label">Deck Sheets</Label>
+            <Field name="default_sheet_id">
+              <Select selected={@user.default_sheet_id} class="select has-text-black " options={Components.DeckListingModal.sheet_options(@user)}/>
+              <Label>Default Sheet</Label>
+            </Field>
+            <Field name="default_sheet_source">
+              <TextInput type="search" class="has-text-black" value={@user.default_sheet_source}/>
+              <Label>Default Source</Label>
+            </Field>
             <Label class="label">Collection</Label>
             <Field name="current_collection_id">
-              <Select selected={@user.current_collection_id} class="select has-text-black " options={collection_options(@user)}/>
+              <Select selected={@user.current_collection_id} class="select has-text-black" options={collection_options(@user)}/>
               <Label>Current Collection</Label>
             </Field>
             <Label class="label">Decklist Options</Label>
@@ -91,7 +100,7 @@ defmodule BackendWeb.ProfileSettingsLive do
             <br>
             <Field name="battlefy_slug">
               <Label class="label" >Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</Label>
-              <TextInput class="input has-text-black  is-small" value={@user.battlefy_slug}/>
+              <TextInput class="has-text-black  is-small" value={@user.battlefy_slug}/>
             </Field>
 
             <Submit label="Save" class="button"/>

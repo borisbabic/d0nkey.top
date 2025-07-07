@@ -17,7 +17,6 @@ defmodule Components.DeckListingModal do
   prop(user, :any, required: true)
   prop(existing, :any, default: nil)
   prop(deck, :any, default: nil)
-  prop(source, :string, default: nil)
   prop(sheet, :map, default: nil)
   prop(button_title, :any, default: nil)
   prop(button_class, :css_class, default: "button")
@@ -53,7 +52,7 @@ defmodule Components.DeckListingModal do
           </Field>
           <Field name={:source}>
             <Label class="label">Source</Label>
-            <TextInput class="input has-text-black  is-small" value={source(@existing) || @source}/>
+            <TextInput class="input has-text-black  is-small" value={source(@existing) || Backend.UserManager.User.default_sheet_source(@user)}/>
           </Field>
           <Field name={:comment}>
             <Label class="label">Comment</Label>
@@ -88,7 +87,7 @@ defmodule Components.DeckListingModal do
   defp sheet_id(_, %{id: sheet_id}), do: sheet_id
   defp sheet_id(_, _), do: nil
 
-  defp sheet_options(user, sheet) do
+  def sheet_options(user, sheet \\ nil) do
     sheets =
       case {sheet, Sheets.contributeable_sheets(user)} do
         {nil, []} ->
@@ -102,10 +101,19 @@ defmodule Components.DeckListingModal do
           [s | user_sheets]
       end
 
-    Enum.map(sheets, fn %{name: name, id: id} ->
+    sheets
+    |> default_first(user)
+    |> Enum.map(fn %{name: name, id: id} ->
       {name, id}
     end)
   end
+
+  defp default_first([_ | _] = sheets, %{default_sheet_id: id}) when is_integer(id) do
+    # we want &1.id == id first
+    Enum.sort_by(sheets, &(&1.id != id))
+  end
+
+  defp default_first(sheets, _), do: sheets
 
   def form_id(existing, deck), do: "listing_form_#{id(existing, deck)}"
   defp id(%{id: id}, _), do: "editing_#{id}"

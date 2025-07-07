@@ -5,6 +5,7 @@ defmodule Backend.UserManager.User do
   alias Backend.UserManager.User.DecklistOptions
   alias Backend.Patreon.PatreonTier
   alias Backend.CollectionManager.Collection
+  alias Backend.Sheets.DeckSheet
 
   schema "users" do
     field :battletag, :string
@@ -17,6 +18,8 @@ defmodule Backend.UserManager.User do
     field :twitch_id, :string
     field :patreon_id, :string
     field :cross_out_country, :boolean, default: false
+    field :default_sheet_source, :string
+    belongs_to :default_sheet, DeckSheet
     belongs_to :current_collection, Collection, type: Ecto.UUID
     field :show_region, :boolean, default: false
 
@@ -50,6 +53,8 @@ defmodule Backend.UserManager.User do
       :patreon_id,
       :patreon_tier_id,
       :current_collection_id,
+      :default_sheet_source,
+      :default_sheet_id,
       :cross_out_country,
       :show_region,
       :replay_preference,
@@ -152,6 +157,15 @@ defmodule Backend.UserManager.User do
   def stream_tuples(_), do: []
   def current_collection(%{current_collection: %Collection{} = c}), do: c
   def current_collection(_), do: nil
+
+  def default_sheet_source(%{default_sheet_source: source}) when is_binary(source), do: source
+  def default_sheet_source(_), do: nil
+
+  def default_sheet(%{default_sheet: %DeckSheet{} = sheet}), do: sheet
+  def default_sheet(_), do: nil
+
+  def default_sheet_id(%{default_sheet_id: id}) when is_integer(id), do: id
+  def default_sheet_id(_), do: nil
 end
 
 defmodule Backend.UserManager.User.DecklistOptions do
