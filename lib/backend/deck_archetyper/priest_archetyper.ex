@@ -173,6 +173,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Seek Guidance" in card_info.card_names and highlander?(card_info) ->
         :"HL Questline Priest"
 
+      "Darkbishop Benedictus" in card_info.card_names and highlander?(card_info) ->
+        :"HL Shadow Priest"
+
       highlander?(card_info) ->
         :"Highlander Priest"
 
