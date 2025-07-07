@@ -146,6 +146,12 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Dead Man's Hand" in card_info.card_names ->
         :"DMH Warrior"
 
+      "Rivendare, Warrider" in card_info.card_names ->
+        :"Rivendare Warrior"
+
+      "Mecha'thun" in card_info.etc_sideboard_names and "Thaddius, Monstrosity" in card_info.card_names ->
+        :"Mecha'Chad Warrior"
+
       "Thaddius, Monstrosity" in card_info.card_names ->
         :"Chad Warrior"
 
