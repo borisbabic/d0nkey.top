@@ -6,6 +6,7 @@ defmodule FunctionComponents.TournamentsTable do
   alias FunctionComponents.EsportsBadges
 
   attr :tournaments, :list, required: true
+  attr :user_tournaments, :list, default: []
 
   def table(assigns) do
     ~H"""
@@ -30,7 +31,7 @@ defmodule FunctionComponents.TournamentsTable do
             </td>
             <td :if={!Tournament.start_time(tournament)}> </td>
             <td>
-              <EsportsBadges.badges badges={Tournament.tags(tournament)} />
+              <EsportsBadges.badges badges={tags(tournament, @user_tournaments)} />
             </td>
           </tr>
         <% end %>
@@ -38,6 +39,16 @@ defmodule FunctionComponents.TournamentsTable do
 
     </table>
     """
+  end
+
+  defp tags(tournament, user_tournaments) do
+    base_tags = Tournament.tags(tournament)
+
+    if Enum.any?(user_tournaments, &(&1.id == tournament.id)) do
+      [:joined | base_tags]
+    else
+      base_tags
+    end
   end
 
   @spec start_time_class(NaiveDateTime.t()) :: boolean

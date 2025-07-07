@@ -30,7 +30,7 @@ defmodule BackendWeb.EsportsLive do
           <.jungle_card />
         </div>
       </div>
-      <UpcomingTournaments hours_ago={72} id="upcoming_tournaments" />
+      <UpcomingTournaments user={@user} hours_ago={72} id="upcoming_tournaments" />
     </div>
     """
   end

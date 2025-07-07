@@ -50,6 +50,12 @@ defmodule FunctionComponents.EsportsBadges do
     apply(__MODULE__, badge, [%{}])
   end
 
+  def joined(assigns) do
+    ~H"""
+    <.base_badge text="Joined"️ class="tw-bg-green-500 tw-text-black"/>
+    """
+  end
+
   def us(assigns) do
     ~H"""
       <.am />
