@@ -23,6 +23,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       spell_damage_druid?(card_info) ->
         :"Spell Damage Druid"
 
+      "Loh, the Living Legend" in card_info.card_names ->
+        :"Loh-cky Druid"
+
       owlonius_druid?(card_info) ->
         :"Owlonius Druid"
 
