@@ -20,6 +20,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   use Tesla
   plug Tesla.Middleware.Cache, ttl: :timer.seconds(30)
   plug Tesla.Middleware.Headers, [{"content-type", "application/json"}]
+  plug Tesla.Middleware.Headers, [{"Origin", "https://battlefy.com"}]
+  plug Tesla.Middleware.Headers, [{"Referer", "https://battlefy.com/"}]
 
   def get_body(url) do
     response = get_response(url)
