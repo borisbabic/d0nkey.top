@@ -573,7 +573,7 @@ defmodule Backend.MastersTour.TourStop do
         id: :"Worlds 2025",
         battlefy_id: nil,
         ladder_priority: nil,
-        ladder_seasons: [143, 144],
+        ladder_seasons: [137, 138, 140, 141, 143, 144],
         ladder_invites: nil,
         ladder_points: [
           {{1, 1}, 7},

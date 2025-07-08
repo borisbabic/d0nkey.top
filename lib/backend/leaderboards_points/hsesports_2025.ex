@@ -9,6 +9,10 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
     {"2025", "spring", 138, ["STD"]},
     {"2025", "summer", 140, ["STD"]},
     {"2025", "summer", 141, ["STD"]},
+    {"2025", "last-chance", 137, ["STD"]},
+    {"2025", "last-chance", 138, ["STD"]},
+    {"2025", "last-chance", 140, ["STD"]},
+    {"2025", "last-chance", 141, ["STD"]},
     {"2025", "last-chance", 143, ["STD"]},
     {"2025", "last-chance", 144, ["STD"]}
   ]
