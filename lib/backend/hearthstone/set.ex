@@ -58,5 +58,6 @@ defmodule Backend.Hearthstone.Set do
   def abbreviation(%{slug: "journey-to-ungoro"}), do: "JtU"
   def abbreviation(%{slug: "galakronds-awakening"}), do: "GA"
   def abbreviation(%{slug: "saviors-of-uldum"}), do: "SoU"
+  def abbreviation(%{slug: "the-lost-city-of-ungoro"}), do: "LC"
   def abbreviation(_), do: nil
 end
