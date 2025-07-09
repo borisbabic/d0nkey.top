@@ -37,6 +37,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       pain?(card_info) ->
         :"Pain Demon Hunter"
 
+      aggro?(card_info) ->
+        :"Aggro Demon Hunter"
+
       fatigue?(card_info) ->
         :"Fatigue Demon Hunter"
 
@@ -76,6 +79,16 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  defp aggro?(card_info) do
+    min_count?(card_info, 3, [
+      "Battlefiend",
+      "Sock Puppet Slitherspear",
+      "Kayn Sunfury",
+      "Spirity of the Team",
+      "Acupuncture"
+    ])
   end
 
   @dh_pain_cards ["Infernal Stapler"]
