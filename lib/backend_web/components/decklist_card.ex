@@ -16,6 +16,7 @@ defmodule Components.DecklistCard do
   prop(show_mana_cost, :boolean, default: true)
   prop(disable_link, :boolean, default: false)
   prop(decklist_options, :map, default: %{})
+  prop(non_hover_class, :string, default: "")
   data(border, :string)
   data(gradient, :string)
   data(tile_url, :string)
@@ -94,8 +95,8 @@ defmodule Components.DecklistCard do
 
     ~F"""
       <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{@card}"} class={"has-no-pointer-events": @disable_link}>
-        <div onmouseover={"set_display('#{@image_id}', 'flex')"} onmouseout={"set_display('#{@image_id}', 'none')"}>
-          <div style={"--color-border: #{@border}; --color-gradient: #{@gradient};"} class={"decklist-card-container decklist-card #{@html_id} is-flex is-align-items-center"}>
+        <div class="tw-relative" onmouseover={"set_display('#{@image_id}', 'flex')"} onmouseout={"set_display('#{@image_id}', 'none')"}>
+          <div style={"--color-border: #{@border}; --color-gradient: #{@gradient};"} class={"#{@non_hover_class} decklist-card-container decklist-card #{@html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
             <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{cost(@card, @use_deck_card_cost, @deck)}</span>
             <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped">
@@ -106,8 +107,8 @@ defmodule Components.DecklistCard do
             <div style={"background-image: url('#{@tile_url}');"} class="decklist-card-tile">
             </div>
             <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable">{count(@count, Card.rarity(@card), @decklist_options)}</span>
-            <div id={@image_id} class="decklist-card-image" style={"background-image: url('#{@card_url}'); background-size: 256px; background-repeat: no-repeat; pointer-events: none;"}></div>
           </div>
+          <div id={@image_id} class="decklist-card-image" style={"background-image: url('#{@card_url}'); background-size: 256px; background-repeat: no-repeat; pointer-events: none;"}></div>
         </div>
         <div></div>
       </a>
