@@ -26,10 +26,11 @@ defmodule Components.CardsList do
   def render(assigns) do
     ~F"""
       <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboard: sideboard} <- cards_to_display(@deck, @comparison, @highlight_rotation, @user)} style="margin: 0; padding: 0;">
-          <div class={class, "is-clickable": !!@on_card_click} phx-value-sideboard={sideboard} phx-value-card_id={card.id} :on-click={@on_card_click} >
+          <div class={"is-clickable": !!@on_card_click} phx-value-sideboard={sideboard} phx-value-card_id={card.id} :on-click={@on_card_click} >
             <DecklistCard
               show_mana_cost={true}
               deck_class={@deck_class}
+              non_hover_class={class}
               card={card}
               count={count}
               deck={@deck}
