@@ -1,6 +1,6 @@
 import Config
 
-import_config "config_bot.exs"
+import_config "config_api.exs"
 
 config :backend,
   warmup_cache: true,
