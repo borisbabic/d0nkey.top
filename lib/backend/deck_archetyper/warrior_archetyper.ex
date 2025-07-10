@@ -101,6 +101,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
   def wild(card_info) do
     cond do
+      "Enter the Lost City" in card_info.card_names and highlander?(card_info) ->
+        :"HL LC Quest Warrior"
+
       highlander?(card_info) ->
         :"Highlander Warrior"
 
