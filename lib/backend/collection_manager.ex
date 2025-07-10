@@ -162,6 +162,28 @@ defmodule Backend.CollectionManager do
     )
   end
 
+  def recalculate_stale_map(id) do
+    with %Collection{} = collection <- get_stale(id) do
+      map = card_count_map(collection)
+
+      query =
+        from(c in Collection, where: c.id == ^collection.id) |> where_stale()
+
+      Repo.update_all(query,
+        set: [
+          card_map_updated_at: NaiveDateTime.utc_now(),
+          card_map: map
+        ]
+      )
+    end
+  end
+
+  def stale_or_missing_card_maps() do
+    query = from(c in Collection) |> where_stale()
+
+    Repo.all(query)
+  end
+
   def get_for_recalculating(id, received, before) do
     query =
       from c in Collection,
@@ -170,6 +192,17 @@ defmodule Backend.CollectionManager do
             c.update_received == ^received
 
     Repo.one(query)
+  end
+
+  def get_stale(id) do
+    query = from(c in Collection, where: c.id == ^id) |> where_stale()
+
+    Repo.one(query)
+  end
+
+  defp where_stale(query) do
+    query
+    |> where([c], c.update_received >= c.card_map_updated_at or is_nil(c.card_map))
   end
 
   def needs_recalculating(before) do
