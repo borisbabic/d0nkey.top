@@ -324,6 +324,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Rogue"
 
+      "Triple Sevens" in card_info.card_names ->
+        :"777 Rogue"
+
       wild_phoenix_rogue?(card_info) ->
         :"Phoenix Rogue"
 
