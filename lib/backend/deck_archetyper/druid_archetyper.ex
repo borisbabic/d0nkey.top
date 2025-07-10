@@ -113,6 +113,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
   def wild(card_info) do
     cond do
+      wild_dragon_druid?(card_info) and highlander?(card_info) ->
+        :"HL Dragon Druid"
+
       highlander?(card_info) ->
         :"Highlander Druid"
 
@@ -200,7 +203,8 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     min_count?(card_info, 2, [
       "Breath of Dreams",
       "Splish-Splash Whelp",
-      "Desert Nestmatron"
+      "Desert Nestmatron",
+      "Fye, the Setting Sun"
     ])
   end
 
