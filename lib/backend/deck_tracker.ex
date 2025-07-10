@@ -2806,7 +2806,10 @@ defmodule Hearthstone.DeckTracker do
     already_started? = :gt == Time.compare(DateTime.to_time(now), start_time)
 
     if wednesday? and already_started? do
-      period_start = DateTime.new!(DateTime.to_date(now), start_time, now.time_zone)
+      period_start =
+        DateTime.new!(DateTime.to_date(now), start_time, now.time_zone)
+        |> DateTime.shift_zone("Etc/UTC")
+
       update_period(period, %{period_start: period_start})
     end
   end
