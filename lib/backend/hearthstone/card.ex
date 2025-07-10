@@ -433,6 +433,13 @@ defmodule Backend.Hearthstone.Card do
     "name:#{name(card)}_cost:#{cost(card)}_health:#{card.health}_attack:#{card.attack}_text:#{text}_type:#{type(card)}"
   end
 
+  @spec dbf_id_for_collection_checks(card() | integer()) :: integer()
+  def dbf_id_for_collection_checks(card) do
+    with dbf_id when is_zilliax_art(dbf_id) or is_zilliax_module(dbf_id) <- dbf_id(card) do
+      zilliax_3000()
+    end
+  end
+
   ## the official api was/is bugged, duplicating some card text
   defp hack_grouper_text(%{text: text}) when is_binary(text) do
     split_position = div(String.length(text), 2)

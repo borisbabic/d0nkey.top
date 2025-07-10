@@ -89,7 +89,8 @@ defmodule Components.CardsList do
     end)
   end
 
-  defp unowned_class(card, count, owned_card_map) do
+  defp unowned_class(card_raw, count, owned_card_map) do
+    card = Card.dbf_id_for_collection_checks(card_raw)
     owned_count = Backend.CollectionManager.card_count(owned_card_map, card)
 
     cond do
