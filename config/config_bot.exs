@@ -28,6 +28,8 @@ config :backend, QuantumScheduler,
     {"31 17 * * Wed", fn -> Hearthstone.DeckTracker.update_brawl_period_start() end},
     {"1 18 * * Wed", fn -> Hearthstone.DeckTracker.update_brawl_period_start() end},
     {"31 18 * * Wed", fn -> Hearthstone.DeckTracker.update_brawl_period_start() end},
+    {"* * * * *",
+     fn -> Backend.CollectionManager.CollectionMapRecalculator.enqueue_all_stale() end},
     {"*/2 * * * *",
      fn ->
        Backend.Leaderboards.save_current_with_delay([:CN], [:STD, :WLD, :twist], 100, 10_000, 500)
