@@ -34,11 +34,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       deathrattle?(card_info) ->
         :"Deathrattle DH"
 
-      pain?(card_info) ->
-        :"Pain Demon Hunter"
-
       aggro?(card_info) ->
         :"Aggro Demon Hunter"
+
+      pain?(card_info) ->
+        :"Pain Demon Hunter"
 
       fatigue?(card_info) ->
         :"Fatigue Demon Hunter"
@@ -82,9 +82,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   end
 
   defp aggro?(card_info) do
-    min_count?(card_info, 3, [
+    min_count?(card_info, 4, [
       "Battlefiend",
+      "Slumbering Sprite",
       "Sock Puppet Slitherspear",
+      "Brain Masseuse",
       "Kayn Sunfury",
       "Spirity of the Team",
       "Acupuncture"
