@@ -52,7 +52,7 @@ defmodule FunctionComponents.EsportsBadges do
 
   def joined(assigns) do
     ~H"""
-    <.base_badge text="Joined"️ class="tw-bg-green-500 tw-text-black"/>
+    <.base_badge text="Joined" class="tw-bg-green-500 tw-text-black"/>
     """
   end
 
