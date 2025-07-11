@@ -204,8 +204,28 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Swindle",
         "Blackwater Cutlass",
         "Ghostly Strike",
-        "Twisted Webweaver"
+        "Twisted Webweaver",
+        "Cultist Map"
       ])
+  end
+
+  defp wild_sevens_miracle_rogue?(card_info) do
+    "Triple Sevens" in card_info.card_names and
+      min_count?(card_info, 2, [
+        "Arcane Giant",
+        "Playhouse Giant",
+        "Breakdance"
+      ]) and
+        min_count?(card_info, 3, [
+          "Gear Shift",
+          "Secret Passage",
+          "Dig for Treasure",
+          "Swindle",
+          "Blackwater Cutlass",
+          "Ghostly Strike",
+          "Twisted Webweaver",
+          "Cultist Map"
+        ])
   end
 
   defp weapon?(ci) do
@@ -323,6 +343,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       "King Togwaggle" in card_info.card_names ->
         :"Tog Rogue"
+
+      wild_sevens_miracle_rogue?(card_info) ->
+        :"777 Miracle Rogue"
 
       wild_phoenix_rogue?(card_info) ->
         :"Phoenix Rogue"
