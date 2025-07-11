@@ -51,6 +51,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       deckless?(card_info) ->
         :"Deckless Warlock"
 
+      dorian?(card_info) ->
+        :"Dorian Warlock"
+
       zerg?(card_info, 4) ->
         :"Zerg Warlock"
 
@@ -66,6 +69,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp dorian?(card_info) do
+    min_count?(card_info, 3, ["Puppetmaster Dorian", "Agamaggan", "Cursed Catacombs"])
   end
 
   defp mill?(card_info) do
