@@ -164,6 +164,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
   def wild(card_info) do
     cond do
+      "Corrupt the Waters" in card_info.card_names and highlander?(card_info) ->
+        :"HL SoU Quest Shaman"
+
       highlander?(card_info) ->
         :"Highlander Shaman"
 
