@@ -64,6 +64,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       cliff_dive?(card_info) ->
         :"Cliff Dive DH"
 
+      "Octosari" in card_info.card_names ->
+        :"Octosari DH"
+
       dreadseed?(card_info) ->
         :"Dreadseed DH"
 
