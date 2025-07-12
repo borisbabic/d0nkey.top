@@ -48,11 +48,11 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       location?(card_info) ->
         :"Location Warlock"
 
-      deckless?(card_info) ->
-        :"Deckless Warlock"
-
       dorian?(card_info) ->
         :"Dorian Warlock"
+
+      deckless?(card_info) ->
+        :"Deckless Warlock"
 
       zerg?(card_info, 4) ->
         :"Zerg Warlock"
