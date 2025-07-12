@@ -101,8 +101,11 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
   def wild(card_info) do
     cond do
-      "Enter the Lost City" in card_info.card_names and highlander?(card_info) ->
-        :"HL LC Quest Warrior"
+      questline?(card_info) and highlander?(card_info) ->
+        :"HL Questline Warrior"
+
+      quest?(card_info) and highlander?(card_info) ->
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Warrior")
 
       highlander?(card_info) ->
         :"Highlander Warrior"
