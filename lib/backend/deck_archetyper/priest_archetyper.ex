@@ -21,9 +21,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Aviana, Elune's Chosen" in card_info.card_names ->
         :"Aviana Priest"
 
-      "Tyrande" in card_info.card_names ->
-        :"Tyrande Priest"
-
       zarimi?(card_info) and pain?(card_info) ->
         :"Pain Zarimi Priest"
 
@@ -59,6 +56,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       control_priest?(card_info) ->
         :"Control Priest"
+
+      "Tyrande" in card_info.card_names ->
+        :"Tyrande Priest"
 
       hitchhiker?(card_info) ->
         :"42 Priest"
