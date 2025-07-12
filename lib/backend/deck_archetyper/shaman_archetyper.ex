@@ -146,23 +146,25 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   defp evolve_shaman?(ci),
     do: min_count?(ci, 3, @standard_evolve)
 
-  defp elemental_shaman?(ci),
-    do:
-      min_count?(ci, 5, [
-        "Wailing Vapor",
-        "Menacing Nimbus",
-        "Flame Revenant",
-        "Shale Spider",
-        "Lamplighter",
-        "Minecart Cruiser",
-        "Living Prairie",
-        "Eroded Sediment",
-        "Therazane",
-        "Dang-Blasted Elemental",
-        "Skarr, the Catastrophe",
-        "Azerite Giant",
-        "Kalimos, Primal Lord"
-      ])
+  defp elemental_shaman?(ci) do
+    min_count?(ci, 5, [
+      "Wailing Vapor",
+      "Menacing Nimbus",
+      "Flame Revenant",
+      "Shale Spider",
+      "Lamplighter",
+      "Minecart Cruiser",
+      "Living Prairie",
+      "Eroded Sediment",
+      "Therazane",
+      "Dang-Blasted Elemental",
+      "Bralma Searstone",
+      "Skarr, the Catastrophe",
+      "Azerite Giant",
+      "Kalimos, Primal Lord"
+    ]) or
+      ("City Chief Esho" in ci.card_names and type_count(ci, "Elemental") > 3)
+  end
 
   def wild(card_info) do
     cond do
