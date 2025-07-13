@@ -160,6 +160,12 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     class_name = Deck.class_name(card_info.deck)
 
     cond do
+      questline?(card_info) and highlander?(card_info) ->
+        :"HL Questline DH"
+
+      quest?(card_info) and highlander?(card_info) ->
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest #{class_name}")
+
       highlander?(card_info) ->
         :"Highlander DH"
 
