@@ -170,7 +170,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   def wild(card_info) do
     cond do
-      "Seek Guidance" in card_info.card_names and highlander?(card_info) ->
+      questline?(card_info) and highlander?(card_info) ->
         :"HL Questline Priest"
 
       quest?(card_info) and highlander?(card_info) ->
