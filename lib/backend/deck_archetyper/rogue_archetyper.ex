@@ -314,6 +314,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
   def wild(card_info) do
     cond do
+      questline?(card_info) and highlander?(card_info) ->
+        :"HL Questline Rogue"
+
+      quest?(card_info) and highlander?(card_info) ->
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Rogue")
+
       highlander?(card_info) ->
         :"Highlander Rogue"
 
