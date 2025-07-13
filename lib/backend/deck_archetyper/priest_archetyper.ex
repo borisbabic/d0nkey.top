@@ -173,6 +173,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Seek Guidance" in card_info.card_names and highlander?(card_info) ->
         :"HL Questline Priest"
 
+      quest?(card_info) and highlander?(card_info) ->
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Priest")
+
       "Darkbishop Benedictus" in card_info.card_names and highlander?(card_info) ->
         :"HL Shadow Priest"
 
