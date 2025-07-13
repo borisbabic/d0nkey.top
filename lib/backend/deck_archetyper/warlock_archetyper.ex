@@ -177,6 +177,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
   def wild(card_info) do
     cond do
+      questline?(card_info) and highlander?(card_info) ->
+        :"HL Questline Warlock"
+
+      quest?(card_info) and highlander?(card_info) ->
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Warlock")
+
       highlander?(card_info) ->
         :"Highlander Warlock"
 
