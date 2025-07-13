@@ -113,6 +113,12 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
   def wild(card_info) do
     cond do
+      questline?(card_info) and highlander?(card_info) ->
+        :"HL Questline Druid"
+
+      quest?(card_info) and highlander?(card_info) ->
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Druid")
+
       wild_dragon_druid?(card_info) and highlander?(card_info) ->
         :"HL Dragon Druid"
 
