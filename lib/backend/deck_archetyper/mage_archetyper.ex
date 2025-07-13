@@ -94,8 +94,11 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
   def wild(card_info) do
     cond do
-      "Open the Waygate" in card_info.card_names and highlander?(card_info) ->
-        :"HL JtU Quest Mage"
+      questline?(card_info) and highlander?(card_info) ->
+        :"HL Questline Mage"
+
+      quest?(card_info) and highlander?(card_info) ->
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Mage")
 
       hostage_mage?(card_info) and highlander?(card_info) ->
         :"HL Hostage Mage"
