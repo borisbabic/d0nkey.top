@@ -6,6 +6,7 @@ defmodule Bot.MessageHandlerUtil do
   alias Nostrum.Struct.User
 
   @reporting_channel_id 1_394_280_602_773_225_614
+  @muted_reporting_channel_id 1_394_288_883_499_405_394
   @spec get_options(Nostrum.Message.t() | String.t()) :: [String.t()]
   def get_options(%{content: content}), do: get_options(content)
 
@@ -165,5 +166,10 @@ defmodule Bot.MessageHandlerUtil do
     Api.Message.create(@reporting_channel_id, message)
   end
 
+  def send_muted_reporting_message(message) do
+    Api.Message.create(@muted_reporting_channel_id, message)
+  end
+
   def reporting_channel_id(), do: @reporting_channel_id
+  def muted_reporting_channel_id(), do: @muted_reporting_channel_id
 end
