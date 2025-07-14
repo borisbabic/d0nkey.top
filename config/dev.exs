@@ -8,6 +8,7 @@ config :backend,
   auto_migrate: false,
   dt_insert_listener: true,
   enable_twitch_bot: true,
+  five_min_game_threshold: 0,
   enable_bot: !is_nil(System.get_env("DISCORD_TOKEN")) || !is_nil(System.get_env("ENABLE_BOT"))
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
