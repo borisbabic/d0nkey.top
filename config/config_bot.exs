@@ -7,7 +7,7 @@ config :backend, QuantumScheduler,
     {"37 5 * * *", fn -> Backend.PrioritizedBattletagCache.update_cache() end},
     # {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},
     {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
-    {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
+    {"*/5 * * * *", fn -> Backend.Reporting.check_game_count() end},
     {"47 * * * *", fn -> Backend.Feed.decay_feed_items() end},
     # {"3 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
     # Again if something happened with the first, it'll just fail if it already successfully aggregated
@@ -193,5 +193,6 @@ config :backend, Oban,
   queues: queues
 
 config :backend,
+  five_min_game_threshold: 100,
   twitch_bot_chats: ["d0nkeyhs", "d0nkeytop", "titosantanahs"],
   enable_twitch_bot: true
