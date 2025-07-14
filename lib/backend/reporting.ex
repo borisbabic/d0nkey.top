@@ -14,6 +14,10 @@ defmodule Backend.Reporting do
       Bot.MessageHandlerUtil.send_reporting_message(
         "Too few games received in the last 5 minutes! Received: #{count} | Threshold: #{threshold}"
       )
+    else
+      Bot.MessageHandlerUtil.send_muted_reporting_message(
+        "Sufficient games received in the last 5 minutes! Received: #{count} | Threshold: #{threshold}"
+      )
     end
   end
 end
