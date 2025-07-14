@@ -12,9 +12,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
-      "High Cultist Herenn" in card_info.card_names ->
-        :"Herenn DK"
-
       buttons?(card_info) && rainbow_runes?(card_info) ->
         :"Buttons Rainbow DK"
 
@@ -27,14 +24,17 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       rainbow_runes?(card_info) and menagerie?(card_info) ->
         :"Rainbow Menagerie DK"
 
-      rainbow_runes?(card_info) ->
-        :"Rainbow DK"
-
       starship?(card_info) ->
         :"Starship DK"
 
       menagerie?(card_info) ->
         :"Menagerie DK"
+
+      "High Cultist Herenn" in card_info.card_names ->
+        :"Herenn DK"
+
+      rainbow_runes?(card_info) ->
+        :"Rainbow DK"
 
       control?(card_info) ->
         :"Control DK"
