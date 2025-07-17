@@ -198,6 +198,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       highlander?(card_info) ->
         :"Highlander Warlock"
 
+      wild_chad_seedlock?(card_info) ->
+        :"Chad Seedlock"
+
       "The Demon Seed" in card_info.card_names ->
         :Seedlock
 
@@ -249,6 +252,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp wild_chad_seedlock?(card_info) do
+    min_count?(card_info, 2, ["Thaddius, Monstrosity", "The Demon Seed"])
   end
 
   defp discard?(card_info, min_count) do
