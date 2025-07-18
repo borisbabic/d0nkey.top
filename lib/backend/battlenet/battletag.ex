@@ -18,9 +18,9 @@ defmodule Backend.Battlenet.Battletag do
   # @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   # @short_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
   # @battletag_capture_regex ~r/(([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})/
-  @battletag_regex ~r/^(\p{L}[\p{L}0-9]{2,11})(#[0-9]{4,})$/u
-  @battletag_capture_regex ~r/((\p{L}[\p{L}0-9]{2,11}))(#[0-9]{4,})/u
-  @short_regex ~r/^(\p{L}[\p{L}0-9]{2,11})(#[0-9]{4,})$/u
+  @battletag_regex ~r/^(\p{L}[0-9\p{L}\p{M}・～]{1,11})(#[0-9]{4,})$/u
+  @battletag_capture_regex ~r/((\p{L}[0-9\p{L}\p{M}・～]{1,11}))(#[0-9]{4,})/u
+  @short_regex ~r/^(\p{L}[0-9\p{L}\p{M}・～]{1,11})$/u
 
   @spec extract_battletag(String.t()) :: {:ok, battletag :: String.t()} | :error
   def extract_battletag(some_string) when is_binary(some_string) do
