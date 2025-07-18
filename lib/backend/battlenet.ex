@@ -9,10 +9,14 @@ defmodule Backend.Battlenet do
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
 
+  alias Backend.Battlefy
+  alias Backend.Battlefy.Team
   alias Backend.Battlenet.Battletag
   alias Backend.PrioritizedBattletagCache
+  alias Backend.UserManager.User
 
   @self_reported_priority 9001
+  @battlefy_import_priority 4000
 
   @pagination [page_size: 15]
   @pagination_distance 5
@@ -435,5 +439,35 @@ defmodule Backend.Battlenet do
   """
   def change_old_battletag(%OldBattletag{} = old_battletag, attrs \\ %{}) do
     OldBattletag.changeset(old_battletag, attrs)
+  end
+
+  def import_from_battlefy(tournament_id, user) do
+    if User.can_access?(user, :battletag_info) do
+      participants = Battlefy.get_participants(tournament_id)
+
+      Enum.reduce(participants, Multi.new(), fn team, multi ->
+        name = Team.player_or_team_name(team)
+        country_code = Team.country_code(team)
+
+        if name && Battletag.long?(name) && country_code do
+          attrs = %{
+            battletag_full: name,
+            country: country_code,
+            priority: @battlefy_import_priority,
+            reported_by: "battlefy_importer",
+            comment:
+              "Imported by #{user.battletag} from: https://www.hsguru.com/battletfy/tournament/#{tournament_id}"
+          }
+
+          cs = Battletag.changeset(%Battletag{}, attrs)
+          Multi.insert(multi, "inserting_#{name}_#{tournament_id}", cs)
+        else
+          multi
+        end
+      end)
+      |> Repo.transaction()
+
+      PrioritizedBattletagCache.update_cache()
+    end
   end
 end
