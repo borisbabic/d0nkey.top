@@ -9,6 +9,9 @@
             <%= if @manage_stream_button do %>
                 <%= @manage_stream_button %> |
             <% end %>
+            <%= if @import_countries_button do %>
+                <%= @import_countries_button %> |
+            <% end %>
             <%= @explore_decks %>
             <a href={~p"/battlefy/tournament/#{@tournament.id}/participants"}>Registered</a> |
             <%= @subtitle %>

@@ -313,6 +313,7 @@ defmodule BackendWeb.BattlefyView do
         Map.merge(p, %{
           link: Battlefy.create_tournament_link(p.tournament),
           manage_stream_button: manage_stream_button(params),
+          import_countries_button: import_countries_button(params),
           name: p.tournament.name,
           show_invited: MapSet.size(p.invited_mapset) > 0,
           show_decks: Enum.any?(p.lineups),
@@ -401,6 +402,19 @@ defmodule BackendWeb.BattlefyView do
   end
 
   defp manage_stream_button(_), do: nil
+
+  defp import_countries_button(%{conn: conn, tournament: %{id: id}}) do
+    with user = %User{} <- BackendWeb.AuthUtils.user(conn),
+         true <- User.can_access?(user, :battletag_info) do
+      assigns = %{user: user, conn: conn, id: id}
+
+      ~H"""
+        <%= live_render(@conn, BackendWeb.ImportCountriesFromBattlefyLive, session: %{"tournament_id" => @id}) %>
+      """
+    end
+  end
+
+  defp import_countries_button(_), do: nil
 
   defp streams_subtitle(%{streams: streams}) when is_list(streams) do
     twitch_streams =

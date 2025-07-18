@@ -2,7 +2,7 @@ defmodule Backend.Battlefy.Team do
   @moduledoc false
   use TypedStruct
   alias Backend.Battlefy.Team.Player
-  alias Backend.Battlefy.Util
+  import Backend.Battlefy.Util, only: [parse_date: 1]
 
   typedstruct do
     field :name, String.t()
@@ -12,11 +12,28 @@ defmodule Backend.Battlefy.Team do
     field :user_id, String.t()
     field :owner_id, String.t()
     field :captain_id, String.t()
+    field :country_flag, String.t()
     field :custom_fields, [any()]
     field :players, [Player.t()]
   end
 
-  [:twitch, :slug, :country_code, :battletag]
+  @spec country_code(__MODULE__) :: String.t() | nil
+  def country_code(team) do
+    from_team = team |> Map.get(:country_flag) |> Util.get_country_code()
+
+    from_players =
+      Map.get(team, :players, [])
+      |> Enum.map(&Map.get(&1, :country_code))
+      |> Enum.uniq()
+      |> case do
+        [code] when is_binary(code) -> code
+        _ -> nil
+      end
+
+    from_team || from_players
+  end
+
+  [:twitch, :slug, :battletag]
   |> Enum.each(fn attr ->
     def unquote(attr)(%{player: [p]}), do: p[unquote(attr)]
     def unquote(attr)(_), do: nil
@@ -33,9 +50,10 @@ defmodule Backend.Battlefy.Team do
       user_id: map["userID"],
       owner_id: map["ownerID"],
       captain_id: map["captainID"],
-      created_at: Util.parse_date(map["createdAt"]),
-      updated_at: Util.parse_date(map["updatedAt"]),
-      checked_in_at: Util.parse_date(map["checkedInAt"]),
+      created_at: parse_date(map["createdAt"]),
+      updated_at: parse_date(map["updatedAt"]),
+      checked_in_at: parse_date(map["checkedInAt"]),
+      country_flag: map["countryFlag"],
       custom_fields: map["customFields"],
       players:
         if(map["players"] |> is_list(),
