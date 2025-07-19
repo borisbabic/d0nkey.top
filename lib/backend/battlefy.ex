@@ -650,7 +650,10 @@ defmodule Backend.Battlefy do
   def get_matches(%Stage{id: id}, opts), do: get_matches(id, opts)
 
   def get_matches(stage_id, opts) do
-    Api.get_matches(stage_id, opts)
+    case opts[:round] do
+      r when is_integer(r) -> Api.get_matches(stage_id, opts)
+      _ -> Api.get_stage_with_matches(stage_id) |> Map.get(:matches)
+    end
   end
 
   @spec get_future_and_player_stage_matches(stage_id, String.t()) :: [Match.t()]
