@@ -206,9 +206,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Priest"
 
-      min_count?(card_info, 2, ["Darkbishop Benedictus", "Prince Renathal"]) ->
-        :"XL Shadow Priest"
-
       "Darkbishop Benedictus" in card_info.card_names ->
         :"Shadow Priest"
 
@@ -217,9 +214,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       wild_switcheroo_priest?(card_info) ->
         :"Switcheroo Priest"
-
-      wild_combo_priest?(card_info) ->
-        :"Combo Priest"
 
       overheal_priest?(card_info) ->
         :"Overheal Priest"
@@ -238,12 +232,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       thief?(card_info, 5) ->
         :"Thief Priest"
-
-      "Radiant Elemental" in card_info.card_names ->
-        :"Radiant Priest"
-
-      techw?(card_info) ->
-        :"TechW Priest"
 
       "Nazmani Bloodweaver" in card_info.card_names ->
         :"Nazmani Priest"
@@ -309,20 +297,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     ])
   end
 
-  defp wild_combo_priest?(card_info) do
-    min_count?(card_info, 3, [
-      "Divine Spirit",
-      "Radiant Elemental",
-      "Power Word: Shield",
-      "Potion of Madness"
-    ]) and
-      min_count?(card_info, 1, [
-        "Topsy Turvy",
-        "Inner Fire",
-        "Bless"
-      ])
-  end
-
   defp wild_switcheroo_priest?(card_info) do
     min_count?(card_info, 2, [
       "Switcheroo",
@@ -333,11 +307,5 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         "Inner Fire",
         "Bless"
       ])
-  end
-
-  @techw_cards ["Spellward Jeweler", "Kobold Monk"]
-  defp techw?(card_info) do
-    names = for card <- card_info.full_cards, Card.minion?(card), uniq: true, do: Card.name(card)
-    !Enum.empty?(names) and !Enum.any?(names, &(!(&1 in @techw_cards)))
   end
 end
