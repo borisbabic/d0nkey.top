@@ -156,17 +156,11 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Hunter"
 
-      lion_hunter?(card_info) ->
-        :"Lion Hunter"
-
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Hunter"
 
       midrange?(card_info) ->
         :"Midrange Hunter"
-
-      porcupine?(card_info) ->
-        :"Porcupine Hunter"
 
       "Floppy Hydra" in card_info.card_names ->
         :"Floppy Hunter"
@@ -189,14 +183,6 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Blademaster Okani",
       "Dirty Rat"
     ])
-  end
-
-  defp porcupine?(card_info) do
-    min_count?(card_info.card_names, 2, ["Augmented Porcupine", "Mystery Egg"])
-  end
-
-  defp lion_hunter?(card_info) do
-    min_count?(card_info, 2, ["Mok'Nathal Lion", "Mystery Egg"])
   end
 
   defp mystery_egg_hunter?(card_info) do
