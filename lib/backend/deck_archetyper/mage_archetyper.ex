@@ -144,9 +144,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       imbue?(card_info, 4) ->
         :"Imbue Mage"
 
-      ping_mage?(card_info) ->
-        :"Ping Mage"
-
       no_minion?(card_info, 2) ->
         :"Spell Mage"
 
@@ -211,16 +208,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
         "Commander Sivara",
         "Grand Magister Rommath"
       ])
-  end
-
-  defp ping_mage?(card_info) do
-    min_count?(card_info, 4, [
-      "Wildfire",
-      "Reckless Apprentice",
-      "Sing-Along Buddy",
-      "Magister Dawngrasp",
-      "Mordresh Fire Eye"
-    ])
   end
 
   defp wild_orb_mage?(card_info) do
