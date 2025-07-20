@@ -355,9 +355,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_sevens_miracle_rogue?(card_info) ->
         :"777 Miracle Rogue"
 
-      wild_phoenix_rogue?(card_info) ->
-        :"Phoenix Rogue"
-
       wild_gnoll_miracle_rogue?(card_info) ->
         :"Gnoll Miracle Rogue"
 
@@ -390,9 +387,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
-
-      wild_draka_rogue?(card_info) ->
-        :"Draka Rogue"
 
       "Spirit of the Shark" in card_info.card_names ->
         :"Shark Rogue"
@@ -464,18 +458,5 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
            "Gang Up",
            "Lab Recruiter"
          ]))
-  end
-
-  defp wild_draka_rogue?(card_info) do
-    "Necrolord Draka" in card_info.card_names or
-      "Necrolord Draka" in card_info.etc_sideboard_names
-  end
-
-  defp wild_phoenix_rogue?(card_info) do
-    min_count?(card_info, 3, [
-      "Everburning Phoenix",
-      "Spiritsinger Umbra",
-      "Knife Juggler"
-    ])
   end
 end
