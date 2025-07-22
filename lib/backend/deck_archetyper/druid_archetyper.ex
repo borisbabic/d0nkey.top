@@ -20,14 +20,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       starship?(card_info) and spell_damage_druid?(card_info) ->
         :"SD Starship Druid"
 
+      owlonius_druid?(card_info) ->
+        :"Owlonius Druid"
+
       spell_damage_druid?(card_info) ->
         :"Spell Damage Druid"
 
       "Loh, the Living Legend" in card_info.card_names ->
         :"Loh-cky Druid"
-
-      owlonius_druid?(card_info) ->
-        :"Owlonius Druid"
 
       treant_druid?(card_info) ->
         :"Treant Druid"
