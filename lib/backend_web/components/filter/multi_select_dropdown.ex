@@ -61,6 +61,13 @@ defmodule Components.MultiSelectDropdown do
   end
 
   # handle both lists and single values, including any as empty
+  # why tf do I have selected and current?
+
+  def fix_current(%{current: empty, selected: selected} = assigns)
+      when empty in [nil, []] and selected not in [nil, []] do
+    Map.put(assigns, :current, selected)
+  end
+
   def fix_current(%{current: "any", any_as_empty: true} = assigns),
     do: Map.put(assigns, :current, [])
 
