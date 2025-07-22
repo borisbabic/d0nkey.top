@@ -61,7 +61,7 @@ defmodule Components.Filter.DropdownBase do
         Routes.live_path(socket, live_view, params)
       end
 
-      def link(socket, live_view, [first_param, second_param], params)do
+      def link(socket, live_view, [first_param, second_param], params) do
         Routes.live_path(socket, live_view, first_param, second_param, params)
       end
 
@@ -134,7 +134,7 @@ defmodule Components.Filter.DropdownBase do
       def current(_, _), do: nil
 
       defp do_current(params, param, normalizer) do
-        with curr when not is_nil(curr) <- Map.get(params, param) do
+        with curr when not is_nil(curr) <- Map.get(params || %{}, param) do
           normalizer.(curr)
         end
       end

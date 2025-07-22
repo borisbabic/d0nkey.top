@@ -18,6 +18,7 @@ defmodule Components.TournamentLineupExplorer do
   alias Components.ExpandableLineup
   alias FunctionComponents.Dropdown
   alias Components.Filter.PlayableCardSelect
+  alias Components.Filter.ArchetypeSelect
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
   alias Components.PlayerName
@@ -50,8 +51,9 @@ defmodule Components.TournamentLineupExplorer do
                       {class |> Deck.class_name()}
                     </Dropdown.item>
                   </Dropdown.menu>
-                  <PlayableCardSelect id={"include_cards_deck_#{index}"} updater={update_cards(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
-                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} updater={update_cards(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
+                  <ArchetypeSelect id={"archetype_select_#{index}"} updater={update_value(@id, @temp_filters, index, "archetype")} param={"archetype"} params={%{"archetype" => deck["archetype"]}} selected={deck["archetype"]} title="Archetype"/>
+                  <PlayableCardSelect id={"include_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
+                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
                 </div>
               </div>
             </section>
@@ -115,7 +117,7 @@ defmodule Components.TournamentLineupExplorer do
     |> Backend.Hearthstone.lineups()
   end
 
-  def update_cards(id, temp_filters, index, param) do
+  def update_value(id, temp_filters, index, param) do
     fn socket, value ->
       new_temp_filters = update_temp_filters(temp_filters, index, param, value)
       send_update(__MODULE__, id: id, temp_filters: new_temp_filters)
@@ -196,7 +198,7 @@ defmodule Components.TournamentLineupExplorer do
     {:noreply, socket |> assign(temp_filters: new_temp_filters)}
   end
 
-  def empty_deck_filter(), do: %{"include_cards" => [], "exclude_cards" => []}
+  def empty_deck_filter(), do: %{"include_cards" => [], "exclude_cards" => [], "archetype" => []}
   def decks(%{"decks" => d}) when is_list(d), do: d
   def decks(_), do: []
 end
