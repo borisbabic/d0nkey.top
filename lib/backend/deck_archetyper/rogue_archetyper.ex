@@ -68,11 +68,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       ysera_rogue?(card_info) ->
         :"Ysera Rogue"
 
-      "Ashamane" in card_info.card_names ->
-        :"Ashamane Rogue"
-
       "Fyrakk the Blazing" in card_info.card_names ->
         :"Fyrakk Rogue"
+
+      "Ashamane" in card_info.card_names ->
+        :"Ashamane Rogue"
 
       dark_gift?(card_info) ->
         :"Dark Gift Rogue"
@@ -218,16 +218,16 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Playhouse Giant",
         "Breakdance"
       ]) and
-        min_count?(card_info, 3, [
-          "Gear Shift",
-          "Secret Passage",
-          "Dig for Treasure",
-          "Swindle",
-          "Blackwater Cutlass",
-          "Ghostly Strike",
-          "Twisted Webweaver",
-          "Cultist Map"
-        ])
+      min_count?(card_info, 3, [
+        "Gear Shift",
+        "Secret Passage",
+        "Dig for Treasure",
+        "Swindle",
+        "Blackwater Cutlass",
+        "Ghostly Strike",
+        "Twisted Webweaver",
+        "Cultist Map"
+      ])
   end
 
   defp weapon?(ci) do
