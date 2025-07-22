@@ -644,6 +644,16 @@ defmodule Backend.Hearthstone do
   defp compose_decks_query({"limit", limit}, query),
     do: query |> limit(^limit)
 
+  defp compose_decks_query({"archetype", nil}, query),
+    do: query |> where([deck: d], is_nil(d.archetype))
+
+  defp compose_decks_query({"archetype", archetype}, query) when is_binary(archetype),
+    do: compose_decks_query({"archetype", [archetype]}, query)
+
+  defp compose_decks_query({"archetype", archetypes}, query) when is_list(archetypes) do
+    query |> where([deck: d], d.archetype in ^archetypes)
+  end
+
   defp compose_decks_query({"class", nil}, query), do: query |> where([deck: d], is_nil(d.class))
 
   defp compose_decks_query({"class", class}, query),

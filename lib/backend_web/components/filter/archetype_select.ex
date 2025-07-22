@@ -3,12 +3,12 @@ defmodule Components.Filter.ArchetypeSelect do
   use Surface.LiveComponent
   alias Components.MultiSelectDropdown
   alias Hearthstone.DeckTracker.ArchetypeBag
-  prop(update_fun, :fun)
   prop(selected, :list, default: [])
   prop(title, :string, default: "Select Archetype")
   prop(search, :string, default: "")
   prop(param, :string, required: true)
   prop(selectable_archetypes, :list, default: [])
+  prop(updater, :fun, default: &MultiSelectDropdown.update_selected/2)
   prop(criteria, :list, default: [{"latest", 60 * 12}])
 
   def render(assigns) do
@@ -18,6 +18,8 @@ defmodule Components.Filter.ArchetypeSelect do
         id={"#{@id}_as_ms_id"}
         show_search={true}
         param={@param}
+        selected={@selected}
+        updater={@updater}
         options={archetypes(@search, @selected, @selectable_archetypes, @criteria)}
         title={@title}
         search_event={"search"}
