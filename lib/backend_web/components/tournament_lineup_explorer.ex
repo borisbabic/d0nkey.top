@@ -50,8 +50,8 @@ defmodule Components.TournamentLineupExplorer do
                       {class |> Deck.class_name()}
                     </Dropdown.item>
                   </Dropdown.menu>
-                  <PlayableCardSelect id={"include_cards_deck_#{index}"} param={"include_cards"} selected={deck["include_cards"]} title="Include cards"/>
-                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} param={"exclude_cards"} selected={deck["exclude_cards"]} title="Exclude cards"/>
+                  <PlayableCardSelect id={"include_cards_deck_#{index}"} updater={update_cards(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
+                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} updater={update_cards(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
                 </div>
               </div>
             </section>
@@ -116,9 +116,10 @@ defmodule Components.TournamentLineupExplorer do
   end
 
   def update_cards(id, temp_filters, index, param) do
-    fn value ->
+    fn socket, value ->
       new_temp_filters = update_temp_filters(temp_filters, index, param, value)
       send_update(__MODULE__, id: id, temp_filters: new_temp_filters)
+      socket
     end
   end
 
