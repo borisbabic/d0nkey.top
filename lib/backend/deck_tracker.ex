@@ -1694,8 +1694,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   defp compose_games_query({"format", format}, query) when is_integer(format) do
-    format_query = from f in Format, where: f.value == ^format, limit: 1
-    %{game_type: game_type} = Repo.one(format_query)
+    game_type = format_game_type(format)
     # abs is hack for tavern brawl
     query
     |> where([game: g], g.format == ^abs(format))
@@ -1773,6 +1772,16 @@ defmodule Hearthstone.DeckTracker do
     do: query |> limit(^limit)
 
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
+
+  defp format_game_type(format) do
+    format_query = from f in Format, where: f.value == ^format, limit: 1
+
+    case Repo.one(format_query) do
+      %{game_type: game_type} when is_integer(game_type) -> game_type
+      # default to ranked
+      _ -> 7
+    end
+  end
 
   def period_start_query(slug) do
     from p in Period,

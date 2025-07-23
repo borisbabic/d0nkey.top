@@ -4,7 +4,8 @@ defmodule BackendWeb.Live.DecksTest do
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.PlayerDto
 
-  @priest_code "AAEBAa0GKB74B/oO1hGDuwKwvALRwQLZwQLfxAKQ0wLy7AKXhwPmiAO9mQPrmwP8owPIvgPDzAPXzgP70QPi3gP44wOb6wOf6wOm7wO79wO+nwSEowSLowTlsASJsgTHsgSktgSWtwTbuQTsyQSW1ASY1ASa1ASX7wQAAA=="
+  # @priest_code "AAEBAa0GKB74B/oO1hGDuwKwvALRwQLZwQLfxAKQ0wLy7AKXhwPmiAO9mQPrmwP8owPIvgPDzAPXzgP70QPi3gP44wOb6wOf6wOm7wO79wO+nwSEowSLowTlsASJsgTHsgSktgSWtwTbuQTsyQSW1ASY1ASa1ASX7wQAAA=="
+  @priest_code "AAEBAa0GKMMWg7sCtbsCkNMC/+cC8uwC/KMD184D+9ED+OMDn+sD9PEDu/cDvp8E8J8EhKMEi6ME5bAEx7IE7MkEuNkEuNwExeQEl+8EhoMF/cQFz/YFyPgFw5wG0Z4GmKAGwrYGmcAGj88GheIGjuYGqfUGw4MH25cH9KoHAAABA6G2BP3EBdGeBv3EBcK2Bv3EBQAA"
   @warlock_code "AAEBAf0GKPoO2LsC870C38QCkMcC58sCrs0C8tACnPgC1IYDgIoD2psD/KMDnakD66wDvb4D184D9tYDxt4DzuED+OMDkuQDk+QDpu8D0PkDgfsDg/sDsJEEg6AEhaAE56AE26ME5bAEx7IE1bIE9ccE9c4EmNQEmtQEl+8EAAA="
   # @paladin_code "AAECAZ8FHvvoA8zrA5HsA6bvA/D2A4v4A8D5A9D5A7eABOCLBIuNBJyfBO6fBNCsBKWtBISwBLCyBJa3BNC9BNe9BLLBBLvOBJLUBJrUBKHUBPDxBLKeBZCkBZGkBZKkBQAA"
   @highlander_priest %GameDto{
@@ -102,29 +103,38 @@ defmodule BackendWeb.Live.DecksTest do
     assert html =~ "Decks"
   end
 
+  test "fresh requires authentication", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/decks?format=1&force_fresh=yes")
+    assert html =~ "You need to login"
+  end
+
+  @tag :authenticated
   test "includes wild highlander priest and warlock", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/decks?format=1&force_fresh=yes")
     assert html =~ canonical_code(@warlock_code)
     assert html =~ canonical_code(@priest_code)
   end
 
+  @tag :authenticated
   test "Legend excludes priest includes warlock decks", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/decks?format=1&rank=legend&force_fresh=yes")
     refute html =~ canonical_code(@priest_code)
     assert html =~ canonical_code(@warlock_code)
   end
 
-  test "Archetype exludes warlcok and includes priest", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/decks?format=1&archetype=Highlander Priest&force_fresh=yes")
+  @tag :authenticated
+  test "Archetype excludes warlock and includes priest", %{conn: conn} do
+    {:ok, _view, html} = live(conn, "/decks?force_fresh=yes&format=1&archetype=STD+XL+Priest")
     refute html =~ canonical_code(@warlock_code)
     assert html =~ canonical_code(@priest_code)
   end
 
-  test "player_deck_arthcetype exludes warlcok and includes priest", %{conn: conn} do
+  @tag :authenticated
+  test "player_deck_archetype excludes warlock and includes priest", %{conn: conn} do
     {:ok, _view, html} =
       live(
         conn,
-        "/decks?format=1&player_deck_archetype[]=Highlander Priest&player_deck_archetype[]=Bla Bla&force_fresh=yes"
+        "/decks?format=1&player_deck_archetype[]=STD+XL+Priest&player_deck_archetype[]=Bla Bla&force_fresh=yes"
       )
 
     refute html =~ canonical_code(@warlock_code)

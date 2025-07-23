@@ -4,8 +4,8 @@ defmodule BackendWeb.GroupControllerTest do
   alias Backend.UserManager
 
   @create_attrs %{"name" => "some name"}
-  @update_attrs %{"name" => "some updated name"}
-  @invalid_attrs %{"name" => nil}
+  # @update_attrs %{"name" => "some updated name"}
+  # @invalid_attrs %{"name" => nil}
 
   def fixture(:group) do
     {:ok, group} = UserManager.create_group(add_owner(@create_attrs))
@@ -16,7 +16,7 @@ defmodule BackendWeb.GroupControllerTest do
     @describetag :authenticated
     @describetag :groups
     test "lists all groups", %{conn: conn} do
-      conn = get conn, Routes.group_path(conn, :index)
+      conn = get(conn, Routes.group_path(conn, :index))
       assert html_response(conn, 200) =~ "Groups"
     end
   end
@@ -25,7 +25,7 @@ defmodule BackendWeb.GroupControllerTest do
     @describetag :authenticated
     @describetag :twitch_commands
     test "unathenticated without right role", %{conn: conn} do
-      conn = get conn, Routes.group_path(conn, :index)
+      conn = get(conn, Routes.group_path(conn, :index))
       assert html_response(conn, 403)
     end
   end

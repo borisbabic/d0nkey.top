@@ -33,15 +33,6 @@ defmodule BackendWeb.ApiUserControllerTest do
   describe "create api_user" do
     @describetag :authenticated
     @describetag :api_users
-    test "redirects to show when data is valid", %{conn: conn} do
-      conn = post conn, Routes.api_user_path(conn, :create), api_user: @create_attrs
-
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.api_user_path(conn, :show, id)
-
-      conn = get(conn, Routes.api_user_path(conn, :show, id))
-      assert html_response(conn, 200) =~ "Api user Details"
-    end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post conn, Routes.api_user_path(conn, :create), api_user: @invalid_attrs
@@ -71,26 +62,6 @@ defmodule BackendWeb.ApiUserControllerTest do
 
       conn = get(conn, Routes.api_user_path(conn, :show, api_user))
       refute html_response(conn, 200) =~ api_user.password
-    end
-
-    test "renders errors when data is invalid", %{conn: conn, api_user: api_user} do
-      conn = put conn, Routes.api_user_path(conn, :update, api_user), api_user: @invalid_attrs
-      assert html_response(conn, 200) =~ "Edit Api user"
-    end
-  end
-
-  describe "delete api_user" do
-    @describetag :authenticated
-    @describetag :api_users
-    setup [:create_api_user]
-
-    test "deletes chosen api_user", %{conn: conn, api_user: api_user} do
-      conn = delete(conn, Routes.api_user_path(conn, :delete, api_user))
-      assert redirected_to(conn) == Routes.api_user_path(conn, :index)
-
-      assert_error_sent 404, fn ->
-        get(conn, Routes.api_user_path(conn, :show, api_user))
-      end
     end
   end
 

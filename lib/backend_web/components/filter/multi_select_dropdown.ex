@@ -201,7 +201,7 @@ defmodule Components.MultiSelectDropdown do
     options
     |> Enum.reject(&(normalizer.(value(&1)) in normalized_selected))
     |> Enum.filter(fn opt ->
-      display(opt) =~ search
+      opt && display(opt) && display(opt) =~ search
     end)
     |> Enum.take(num_to_show)
   end

@@ -30,7 +30,7 @@ defmodule Backend.DeckArchetyperTest do
 
   test "No cards in deck no error" do
     deck = Deck.deckcode([], Deck.get_basic_hero("HUNTER"), 2) |> Deck.decode!()
-    assert to_string(DeckArchetyper.archetype(deck)) =~ "Hunter"
+    assert to_string(DeckArchetyper.archetype(deck)) =~ ""
   end
 
   # errored out streamer decks

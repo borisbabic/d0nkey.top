@@ -18,7 +18,7 @@ defmodule Backend.UserManager.User do
     field :twitch_id, :string
     field :patreon_id, :string
     field :cross_out_country, :boolean, default: false
-    field :default_sheet_source, :string
+    field :default_sheet_source, :string, default: "hsguru"
     belongs_to :default_sheet, DeckSheet
     belongs_to :current_collection, Collection, type: Ecto.UUID
     field :show_region, :boolean, default: false
