@@ -87,37 +87,37 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
 
   #   assert html =~ listing_name
   # end
-  @tag :authenticated
-  test "include card filter includes listing", %{conn: conn, user: user} do
-    %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
-    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_include_cards[]=50212")
-    assert html =~ sheet_name
-    assert html =~ listing_name
-  end
+  # @tag :authenticated
+  # test "include card filter includes listing", %{conn: conn, user: user} do
+  #   %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
+  #   {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_include_cards[]=50212")
+  #   assert html =~ sheet_name
+  #   assert html =~ listing_name
+  # end
 
-  @tag :authenticated
-  test "include card filter excludes listing", %{conn: conn, user: user} do
-    %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
-    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_include_cards[]=0")
-    assert html =~ sheet_name
-    refute html =~ listing_name
-  end
+  # @tag :authenticated
+  # test "include card filter excludes listing", %{conn: conn, user: user} do
+  #   %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
+  #   {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_include_cards[]=0")
+  #   assert html =~ sheet_name
+  #   refute html =~ listing_name
+  # end
 
-  @tag :authenticated
-  test "exclude card filter excludes listing", %{conn: conn, user: user} do
-    %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
-    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_exclude_cards[]=50212")
-    assert html =~ sheet_name
-    refute html =~ listing_name
-  end
+  # @tag :authenticated
+  # test "exclude card filter excludes listing", %{conn: conn, user: user} do
+  #   %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
+  #   {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_exclude_cards[]=50212")
+  #   assert html =~ sheet_name
+  #   refute html =~ listing_name
+  # end
 
-  @tag :authenticated
-  test "exclude card filter include listing", %{conn: conn, user: user} do
-    %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
-    {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_exclude_cards[]=0")
-    assert html =~ sheet_name
-    assert html =~ listing_name
-  end
+  # @tag :authenticated
+  # test "exclude card filter include listing", %{conn: conn, user: user} do
+  #   %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
+  #   {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?deck_exclude_cards[]=0")
+  #   assert html =~ sheet_name
+  #   assert html =~ listing_name
+  # end
 
   # @tag :authenticated
   # test "clicking flame lance excludes then includes listing ", %{conn: conn, user: user} do

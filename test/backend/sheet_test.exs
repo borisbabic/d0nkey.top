@@ -40,7 +40,7 @@ defmodule Backend.SheetsTest do
     end
 
     test "error creating new listing with no perm" do
-      %{sheet: sheet, owner: owner} = create_sheet()
+      %{sheet: sheet, owner: _owner} = create_sheet()
 
       {:ok, deck} =
         Hearthstone.create_or_get_deck(
@@ -58,7 +58,7 @@ defmodule Backend.SheetsTest do
           "AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA="
         )
 
-      assert {:ok, listing} = Sheets.create_deck_sheet_listing(sheet, deck, owner)
+      assert {:ok, _listing} = Sheets.create_deck_sheet_listing(sheet, deck, owner)
     end
 
     test "create new listing with comment" do

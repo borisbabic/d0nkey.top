@@ -4,7 +4,6 @@ defmodule Backend.UserManagerTest do
   alias Backend.UserManager
   alias Backend.UserManager.User
   alias Backend.UserManager.Group
-  alias Backend.UserManager.GroupMembership
 
   describe "users" do
     @valid_attrs %{
@@ -169,8 +168,11 @@ defmodule Backend.UserManagerTest do
     Map.update(group, :owner, nil, &normalize_user/1)
   end
 
+  defp normalize_user(%User{current_collection: %Ecto.Association.NotLoaded{}} = user),
+    do: Map.put(user, :current_collection, nil) |> normalize_user()
+
   defp normalize_user(%User{patreon_tier: %Ecto.Association.NotLoaded{}} = user),
-    do: Map.put(user, :patreon_tier, nil)
+    do: Map.put(user, :patreon_tier, nil) |> normalize_user()
 
   defp normalize_user(user), do: user
 end

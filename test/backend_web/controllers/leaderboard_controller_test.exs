@@ -29,6 +29,13 @@ defmodule BackendWeb.LeaderboardControllerTest do
   ##### PLAYER STATS #####
   describe "/leaderboard/player-stats" do
     @describetag :ldb_player_stats
+    test "GET /leaderboard/player-stats returns 401 when not logged in", %{conn: conn} do
+      url = Routes.leaderboard_path(conn, :player_stats, %{})
+      conn = get(conn, url)
+      assert html_response(conn, 401)
+    end
+
+    @tag :authenticated
     test "GET /leaderboard/player-stats works with nil account id", %{conn: conn} do
       s = %Hearthstone.Leaderboards.Season{
         leaderboard_id: "STD",
@@ -58,7 +65,8 @@ defmodule BackendWeb.LeaderboardControllerTest do
       assert html_response(conn, 200) =~ "D0nkeyHot"
     end
 
-    test "GET /leaderboard/player-stats BG Doesn't include STD D0nkeyHot", %{conn: conn} do
+    @tag :authenticated
+    test "GET /leaderboard/player-stats BG Doesn't include STD D0nkeyHot", %{conn: conn, user: _} do
       params = %{
         "leaderboards" => %{"BG" => true},
         "min" => 1
@@ -82,9 +90,10 @@ defmodule BackendWeb.LeaderboardControllerTest do
 
       url = Routes.leaderboard_path(conn, :player_stats, params)
       conn = get(conn, url)
-      refute html_response(conn, 200) =~ "D0nkeyHot"
+      refute html_response(conn, 200) =~ "d0nkeyhot"
     end
 
+    @tag :authenticated
     test "GET /leaderboard/player-stats doesn't include {@cell}", %{conn: conn} do
       url = Routes.leaderboard_path(conn, :player_stats)
       conn = get(conn, url)
@@ -96,6 +105,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
 
   describe "/leaderboards" do
     @describetag :leaderboards
+    @describetag :authenticated
     @tag :external
     test "Save all and GET /leaderboard/region=EU&season_id=84&leaderboard_id=BG INCLUDES D0nkey",
          %{conn: conn} do

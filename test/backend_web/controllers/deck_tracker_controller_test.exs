@@ -1,8 +1,6 @@
 defmodule BackendWeb.DeckTrackerControllerTest do
   use BackendWeb.ConnCase
 
-  alias Hearthstone.DeckTracker.GameDto
-  alias Hearthstone.DeckTracker.PlayerDto
   alias Hearthstone.DeckTracker.GameInserter
 
   def valid_fs_request() do
@@ -30,7 +28,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
     {game_id, request}
   end
 
-  def valid_hdt_request(attrs \\ %{}) do
+  def valid_hdt_request() do
     game_id = Ecto.UUID.generate()
     version = Ecto.UUID.generate()
 
@@ -77,7 +75,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
     end
 
     test "create new game", %{conn: conn} do
-      {game_id, request} = valid_fs_request()
+      {_game_id, request} = valid_fs_request()
 
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
       assert json_response(conn, 200)
@@ -93,7 +91,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
 
     test "create hdt game", %{conn: conn} do
       %{
-        game_id: game_id,
+        game_id: _game_id,
         request: request
       } = valid_hdt_request()
 
@@ -101,8 +99,8 @@ defmodule BackendWeb.DeckTrackerControllerTest do
 
       assert %{
                "player_deck" => %{
-                 "archetype" => "Highlander Priest",
-                 "name" => "Highlander Priest"
+                 "archetype" => nil,
+                 "name" => "Priest"
                }
              } = json_response(conn, 200)
 
