@@ -1,7 +1,8 @@
 defmodule BackendWeb.PeriodHTML do
   use BackendWeb, :html
 
-  use Phoenix.HTML
+  import Phoenix.HTML.Form
+  use PhoenixHTMLHelpers
 
   import Torch.TableView
   import Torch.FilterView
