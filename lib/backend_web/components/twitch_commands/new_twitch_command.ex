@@ -1,16 +1,11 @@
 defmodule Components.NewTwitchCommand do
   use BackendWeb, :surface_live_component
+  @moduledoc false
 
   alias FunctionComponents.Dropdown
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Checkbox
-  alias Surface.Components.Form.Label
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.TextInput
-  alias Surface.Components.Form.NumberInput
-  alias Surface.Components.Form.Submit
   alias Backend.TwitchBot.TwitchCommand
   alias Backend.TwitchBot
+
   prop(user, :map, required: true)
   prop(changeset, :map, default: nil)
   prop(test_message, :string, default: nil)
@@ -20,45 +15,45 @@ defmodule Components.NewTwitchCommand do
     ~F"""
       <div>
         {#if @changeset}
-        <Form for={@changeset} submit="submit">
-          <Submit label="Save" class="button is-success" />
-          <Field name={:type}>
-            <Label class="label">Type</Label>
-            <TextInput class="input has-text-black " disabled/>
-          </Field>
-          <Field name={:message}>
-            <Label class="label">Message</Label>
-            <TextInput class="input has-text-black "/>
-          </Field>
-          <Field name={:sender}>
-            <Label class="label">Sender</Label>
-            <TextInput class="input has-text-black "/>
-          </Field>
-          <Field name={:response}>
-            <Label class="label">Response</Label>
-            <TextInput class="input has-text-black "/>
-          </Field>
-          <Field name={:random_chance}>
-            <Label class="label">Random Chance (% chance it triggers)</Label>
-            <NumberInput class="input has-text-black "/>
-          </Field>
-          <Field name={:message_regex}>
-            <Label class="label">Message Regex</Label>
-            <Checkbox />
-          </Field>
-          <Field name={:message_regex_flags}>
-            <Label class="label">Message Regex Flags</Label>
-            <TextInput class="input has-text-black "/>
-          </Field>
-          <Field name={:sender_regex}>
-            <Label class="label">Sender Regex</Label>
-            <Checkbox />
-          </Field>
-          <Field name={:sender_regex_flags}>
-            <Label class="label">Sender Regex Flags</Label>
-            <TextInput class="input has-text-black "/>
-          </Field>
-        </Form>
+        <.form for={@changeset} id="twitch_command_form" phx-submit="submit">
+          <div class="field">
+            <label class="label" for="type">Type</label>
+            <input class="input has-text-black" type="text" name="twitch_command[type]" id="type" value={Phoenix.HTML.Form.input_value(@changeset, :type)} disabled />
+          </div>
+          <div class="field">
+            <label class="label" for="message">Message</label>
+            <input class="input has-text-black" type="text" name="twitch_command[message]" id="message" value={Phoenix.HTML.Form.input_value(@changeset, :message)} />
+          </div>
+          <div class="field">
+            <label class="label" for="sender">Sender</label>
+            <input class="input has-text-black" type="text" name="twitch_command[sender]" id="sender" value={Phoenix.HTML.Form.input_value(@changeset, :sender)} />
+          </div>
+          <div class="field">
+            <label class="label" for="response">Response</label>
+            <input class="input has-text-black" type="text" name="twitch_command[response]" id="response" value={Phoenix.HTML.Form.input_value(@changeset, :response)} />
+          </div>
+          <div class="field">
+            <label class="label" for="random_chance">Random Chance (% chance it triggers)</label>
+            <input class="input has-text-black" type="number" name="twitch_command[random_chance]" id="random_chance" value={Phoenix.HTML.Form.input_value(@changeset, :random_chance)} />
+          </div>
+          <div class="field">
+            <label class="label" for="message_regex">Message Regex</label>
+            <input type="checkbox" name="twitch_command[message_regex]" id="message_regex" value="true" checked={Phoenix.HTML.Form.input_value(@changeset, :message_regex)} />
+          </div>
+          <div class="field">
+            <label class="label" for="message_regex_flags">Message Regex Flags</label>
+            <input class="input has-text-black" type="text" name="twitch_command[message_regex_flags]" id="message_regex_flags" value={Phoenix.HTML.Form.input_value(@changeset, :message_regex_flags)} />
+          </div>
+          <div class="field">
+            <label class="label" for="sender_regex">Sender Regex</label>
+            <input type="checkbox" name="twitch_command[sender_regex]" id="sender_regex" value="true" checked={Phoenix.HTML.Form.input_value(@changeset, :sender_regex)} />
+          </div>
+          <div class="field">
+            <label class="label" for="sender_regex_flags">Sender Regex Flags</label>
+            <input class="input has-text-black" type="text" name="twitch_command[sender_regex_flags]" id="sender_regex_flags" value={Phoenix.HTML.Form.input_value(@changeset, :sender_regex_flags)} />
+          </div>
+          <button type="submit" class="button is-success">Save</button>
+        </.form>
         {#else}
         <Dropdown.menu title="Pick Template">
           <Dropdown.item :for={{template, name} <- templates()} phx-target={@myself} phx-click={"template"} phx-value-template={template}>

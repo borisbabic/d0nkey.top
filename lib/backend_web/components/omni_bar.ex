@@ -3,8 +3,6 @@ defmodule Components.OmniBar do
 
   use Surface.LiveComponent
 
-  alias Surface.Components.Form
-  alias Surface.Components.Form.TextInput
   alias OmniBar.Result
   alias Components.OmniBarResult
   alias Components.OmniBarHelp
@@ -17,9 +15,9 @@ defmodule Components.OmniBar do
       <div>
         <div class="level is-mobile" style="margin-bottom: 0;">
           <div class="level-item">
-            <Form for={%{}} as={:search} change="change" submit="change">
-              <TextInput value={@search} class="input has-text-black " opts={placeholder: "Type or paste"}/>
-            </Form>
+            <.form for={%{}} as={:search} phx-change="change" phx-submit="submit">
+              <input class="input has-text-black" type="text" value={@search} placeholder="Type or paste"/>
+            </.form>
           </div>
 
           <div class="level-item">

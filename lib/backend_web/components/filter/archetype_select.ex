@@ -29,7 +29,7 @@ defmodule Components.Filter.ArchetypeSelect do
     """
   end
 
-  def handle_event("search", %{"search" => [search]}, socket),
+  def handle_event("search", %{"search" => search}, socket) when is_binary(search),
     do: {:noreply, assign(socket, :search, search)}
 
   def archetypes(search, selected, selectable_archetypes, criteria) do

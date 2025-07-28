@@ -10,12 +10,6 @@ defmodule BackendWeb.DeckTrackerLive do
   alias Hearthstone.DeckTracker.GameDto
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Submit
-  alias Surface.Components.Form.TextInput
-  alias Surface.Components.Form.Label
-  alias Surface.Components.Form.Select
-  alias Surface.Components.Form.HiddenInput
 
   data(user, :any)
   data(deck, :any)
@@ -127,49 +121,66 @@ defmodule BackendWeb.DeckTrackerLive do
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
-      <Form for={%{}} as={:game} submit="submit" change="validate">
-
+      <.form for={%{}} as={:game} id="deck_tracker_form" phx-submit="submit" phx-change="validate">
         <br>
         <div class="">
           <div class="columns is-mobile is-multiline is-vcentered is-centered">
               <span class=" is-narrow">{@wins}-{@losses}<WinrateTag winrate={@winrate}/></span>
               <div :if={@message} class=" is-narrow tag is-info">{@message}</div>
-              <div :if={@error_message} class=" is-narrow tag is-error">{@message}</div>
+              <div :if={@error_message} class=" is-narrow tag is-error">{@error_message}</div>
           </div>
           <div class="columns is-mobile is-vcentered is-centered" style="z-index: 3;">
-            <Submit label="Save" class=" is-narrow button is-success" opts={disabled: !@valid}/>
+            <button type="submit" class=" is-narrow button is-success" disabled={!@valid}>Save</button>
             <ExpandableDecklist deck={@deck} id={"deck_tracker_expanded_deck"}/>
           </div>
         </div>
         <br>
         <div class="columns is-mobile is-multiline is-vcentered is-centered has-text-black">
           <div class=" is-narrow">
-            <Select class="select has-text-black " prompt="Result" selected={Map.get(@form_values, "result")} field={:result} options={"Win": "WIN", "Loss": "LOSS", "Tie": "DRAW"} />
+            <select class="select has-text-black " name="game[result]" id="result">
+              <option value="">Result</option>
+              <option value="WIN" selected={Map.get(@form_values, "result") == "WIN"}>Win</option>
+              <option value="LOSS" selected={Map.get(@form_values, "result") == "LOSS"}>Loss</option>
+              <option value="DRAW" selected={Map.get(@form_values, "result") == "DRAW"}>Tie</option>
+            </select>
           </div>
           <div class=" is-narrow">
-            <Select class="select has-text-black " prompt="Opponent's class" selected={Map.get(@form_values, "opponent_class")} field={:opponent_class} options={class_options()} />
+            <select class="select has-text-black " name="game[opponent_class]" id="opponent_class">
+              <option :for={{label, value} <- class_options()} value={value} selected={Map.get(@form_values, "opponent_class") == value}>{label}</option>
+          </select>
           </div>
           <div class=" is-narrow">
-            <Select class="select has-text-black " field={:game_type} selected={Map.get(@form_values, "game_type", GameType.ranked())} options={game_type_options()} />
+            <select class="select has-text-black " name="game[game_type]" id="game_type">
+              <option :for={{label, value} <- game_type_options()} value={value} selected={Map.get(@form_values, "game_type", GameType.ranked()) == value}>{label}</option>
+            </select>
           </div>
           <div class=" is-narrow">
-            <Select class="select has-text-black " field={:format} selected={Map.get(@form_values, "format", @deck.format)} options={format_options()} />
+            <select class="select has-text-black " name="game[format]" id="format">
+              <option :for={{label, value} <- format_options()} value={value} selected={Map.get(@form_values, "format", @deck.format) == value}>{label}</option>
+            </select>
           </div>
         </div>
         <div class="columns is-mobile is-vcentered is-centered">
-          <Label class="label">Optional:</Label>
+          <label class="label">Optional:</label>
         </div>
         <div class="columns is-mobile is-multiline is-vcentered is-centered has-text-black">
-          <Select class="select has-text-black " prompt="On Coin?" selected={Map.get(@form_values, "coin")} field={:coin} options={Coin: true, "No Coin": false} />
-          <Select field={:turns} class="select has-text-black " prompt="Turns" options={1..45} selected={Map.get(@form_values, "selected")} />
-          <TextInput field={:opponent_battletag} value={Map.get(@form_values, "opponent_battletag")} class="input has-text-black  is-small" opts={placeholder: "Opponent Battletag", style: "width: 200px;"} />
+          <select class="select has-text-black " name="game[coin]" id="coin">
+            <option value="">On Coin?</option>
+            <option value="true" selected={Map.get(@form_values, "coin") == "true"}>Coin</option>
+            <option value="false" selected={Map.get(@form_values, "coin") == "false"}>No Coin</option>
+          </select>
+          <select name="game[turns]" class="select has-text-black " id="turns">
+            <option value="">Turns</option>
+            <option :for={t <- 1..45} value={t} selected={Map.get(@form_values, "turns") == t}>{t}</option>
+          </select>
+          <input name="game[opponent_battletag]" value={Map.get(@form_values, "opponent_battletag")} class="input has-text-black  is-small" placeholder="Opponent Battletag" style="width: 200px;" />
           <RankSelect rank_title={"Player Rank"} id="player_rank" rank_field={:player_rank} rank={@form_values["player_rank"]} legend_rank_field={:player_legend_rank} legend_rank={@form_values["player_legend_rank"]} />
           <RankSelect rank_title={"Opponent Rank"} id="opponent_rank" rank_field={:opponent_rank} rank={@form_values["opponent_rank"]} legend_rank_field={:opponent_legend_rank} legend_rank={@form_values["opponent_legend_rank"]} />
         </div>
-        <HiddenInput field={:game_id} value={Map.get(@form_values, "game_id")} />
-        <HiddenInput field={:source} value="Self Report" />
-        <HiddenInput field={:source_version} value="0" />
-      </Form>
+        <input type="hidden" name="game[game_id]" value={Map.get(@form_values, "game_id")} />
+        <input type="hidden" name="game[source]" value="Self Report" />
+        <input type="hidden" name="game[source_version]" value="0" />
+      </.form>
     """
   end
 

@@ -9,10 +9,6 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardBag
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.TextArea
-  alias Surface.Components.Form.Submit
 
   @supported_formats [1, 2, "unguro_prerelease_brawl"]
   data(deck_class, :string)
@@ -33,7 +29,7 @@ defmodule BackendWeb.DeckBuilderLive do
     ~F"""
     <div>
       <div class="title is-2">Hearthstone DeckBuilder</div>
-        <FunctionComponents.Ads.below_title/>
+      <FunctionComponents.Ads.below_title/>
       <div :if={@deck}>
         <div class="sticky-top decklist_card_container darker-grey-background">
           <ExpandableDecklist deck={@deck} name={deck_name(@deck)} id="in_progress_deck" on_card_click={"remove-card"} toggle_cards={"toggle_cards"} show_cards={@show_cards}/>
@@ -62,20 +58,18 @@ defmodule BackendWeb.DeckBuilderLive do
         </CardsExplorer>
       </div>
       <div :if={!@deck}>
-        <Form submit="submit" for={%{}} as={:new_deck} opts={autocomplete: "off", id: "add_deck_form"}>
+        <.form id="add_deck_form" for={%{}} as={:new_deck} phx-submit="submit" autocomplete="off">
           <div class="columns is-mobile is-multitline">
             <div class="column is-narrow">
-              <Field name="new_code">
-                  <TextArea class="textarea has-fixed-size small" opts={placeholder: "Paste deckcode or link", size: "30", rows: "1"}/>
-              </Field>
+              <textarea class="textarea has-fixed-size small" name="new_deck[new_code]" placeholder="Paste deckcode or link" size="30" rows="1"></textarea>
             </div>
             <div class="column is-narrow">
-              <Submit label="Edit" class="button"/>
+              <button type="submit" class="button">Edit</button>
             </div>
           </div>
-        </Form>
+        </.form>
         <button class={"button", "decklist-info", String.downcase(class)} :for={class <- Deck.classes(), format <- supported_formats()} :on-click={"pick-class-format"} phx-value-format={format} phx-value-deck_class={class}>
-        {Deck.class_name(class)} - {format_name(format)}
+          {Deck.class_name(class)} - {format_name(format)}
         </button>
       </div>
     </div>

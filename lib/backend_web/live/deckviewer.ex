@@ -6,10 +6,7 @@ defmodule BackendWeb.DeckviewerLive do
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
   alias Backend.HSDeckViewer
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.TextArea
-  alias Surface.Components.Form.Submit
+
   data(deckcodes, :any)
   data(current_link, :string)
   data(compare_decks, :boolean)
@@ -26,21 +23,18 @@ defmodule BackendWeb.DeckviewerLive do
 
   def render(assigns) do
     ~F"""
-
       <div>
         <div class="title is-1" :if={@title}> {@title}</div>
         <br>
         <div class="level">
           <div class="level-item">
-            <Form submit="submit" for={%{}} as={:new_deck} opts={autocomplete: "off", id: "add_deck_form"}>
+            <.form for={%{}} as={:new_deck} id="add_deck_form" phx-submit="submit" autocomplete="off">
               <div class="columns is-mobile is-multiline">
                   <div class="column is-narrow">
-                    <Field name="new_code">
-                        <TextArea class="textarea has-fixed-size small" opts={placeholder: "Paste deckcode or link", size: "30", rows: "1"}/>
-                    </Field>
+                    <textarea class="textarea has-fixed-size small" name="new_deck[new_code]" placeholder="Paste deckcode or link" size="30" rows="1"/>
                   </div>
                   <div class="column is-narrow">
-                    <Submit label="Add" class="button"/>
+                    <button type="submit" class="button">Add</button>
                   </div>
                   <div :if={@show_copy_button} class="column is-narrow">
                     <button class="clip-btn-value button is-shown-js" type="button" data-balloon-pos="down" data-aria-on-copy="Copied!" data-clipboard-text={"#{@current_link}"} >Copy Link</button>
@@ -49,18 +43,16 @@ defmodule BackendWeb.DeckviewerLive do
                     <button phx-click="toggle_compare" class="button" type="button">{compare_button_text(@compare_decks)}</button>
                     <button phx-click="class_sort_decks" class="button" type="button">Class Sort</button>
                   </div>
-
                   <div :if={@deckcodes |> Enum.count() > 0} class="column is-narrow">
                     <button :on-click="toggle_rotation" class="button" type="button">{rotation_text(@rotation)}</button>
                   </div>
-
                   <div class= "column is-narrow" :if={@deckcodes |> Enum.any?()}>
                     <a class="is-link tag" href={"#{HSDeckViewer.create_link(@deckcodes)}"}>
                       HSDeckViewer
-                  </a>
+                    </a>
+                  </div>
               </div>
-              </div>
-            </Form>
+            </.form>
           </div>
           <div class="level-item">
             <FunctionComponents.Ads.below_title mobile_video_mode={:off} />

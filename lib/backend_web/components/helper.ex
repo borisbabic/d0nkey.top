@@ -400,4 +400,17 @@ defmodule Components.Helper do
       <a class="link" href={"/auth/bnet"}>Log in</a>
     """
   end
+
+  attr :name, :string
+  attr :class, :string
+  attr :options, :list
+  attr :value, :any
+
+  def select(assigns) do
+    ~H"""
+    <select name={@name} class={@class}>
+      {Phoenix.HTML.Form.options_for_select(@options, @value)}
+    </select>
+    """
+  end
 end
