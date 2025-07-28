@@ -16,32 +16,20 @@ defmodule Components.FantasyModal do
   prop(user, :map, from_context: :user)
 
   alias Backend.LobbyLegends.LobbyLegendsSeason
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.TextInput
-  alias Surface.Components.Form.NumberInput
-  alias Surface.Components.Form.HiddenInput
-  alias Surface.Components.Form.Select
-  alias Surface.Components.Form.Submit
-  alias Surface.Components.Form.Label
-  alias Surface.Components.Form.Checkbox
-  alias Surface.Components.Form.DateTimeLocalInput
-
   import BackendWeb.FantasyHelper
-
   alias Backend.Fantasy
   alias Backend.MastersTour.TourStop
 
   def render(assigns) do
     competition_type = selected_competition_type(assigns.current_params, assigns.league)
-
     assigns = assigns |> assign(competition_type: competition_type)
+
     ~F"""
     <div>
       <button class="button" type="button" :on-click="show_modal">{@title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
-      <div class="modal is-active" :if={@show_modal} >
-        <Form for={%{}} as={:league} change="change" submit="submit">
+      <div class="modal is-active" :if={@show_modal}>
+        <.form for={%{}} as={:league} id="fantasy_league_form" phx-change="change" phx-submit="submit">
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
@@ -49,77 +37,123 @@ defmodule Components.FantasyModal do
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
             </header>
             <section class="modal-card-body">
-
-              <Field name="name">
-                <Label class="label">Name</Label>
-                <TextInput class="input has-text-black  is-small" value={@current_params["name"] || @league.name}/>
-              </Field>
-
-              <Field name="max_teams">
-                <Label class="label">Max Teams</Label>
-                <NumberInput class="input has-text-black  is-small" value={@current_params["max_teams"] || @league.max_teams}/>
-              </Field>
-
-              <Field name="roster_size">
-                <Label class="label">Roster Size</Label>
-                <NumberInput class="input has-text-black  is-small" value= {@current_params["roster_size"] || @league.roster_size}/>
-              </Field>
-
-              <Field name="competition_type">
-                <Label class="label">Competition Type</Label>
-                <Select selected={@competition_type} class="select has-text-black " options={competition_type_options()}/>
-              </Field>
-
-              <Field name="competition" :if={@competition_type != "battlefy"}>
-                <Label class="label">Competition</Label>
-                <Select selected={@current_params["competition"] || @league.competition} class="select has-text-black " options={@competition_type |> competition_options()} />
-              </Field>
-
-              <Field name="competition" :if={@competition_type == "battlefy"}>
-                <Label class="label">Battlefy tournament id</Label>
-                <TextInput class="input has-text-black  is-small" value={(@current_params["competition"] || @league.competition) |> battlefy_tournament_id()} />
-              </Field>
-
-
-              <Field name="changes_between_rounds" :if={@competition_type == "grandmasters"}>
-                <Label class="label">Changes Between Rounds</Label>
-                <NumberInput class="input has-text-black  is-small" value= {@current_params["changes_between_rounds"] || @league.changes_between_rounds}/>
-              </Field>
-
-              <Field name="real_time_draft">
-                <Label class="label">Real Time Draft</Label>
-                <Checkbox value={@current_params["real_time_draft"] || @league.real_time_draft} />
-              </Field>
-
-              <Field :if={@league.draft_deadline || !@league.real_time_draft || @show_deadline} name="deadline" >
-                <Label class="label">Draft Deadline (UTC!)</Label>
-                <DateTimeLocalInput value={@current_params["deadline"] || draft_deadline_value(@league, @competition_type)} />
-              </Field>
-
-              <Field name="point_system">
-                <Label class="label">Point System</Label>
-                <Select selected={@current_params["point_system"] || @league.point_system} class="select has-text-black " options={@competition_type |> point_system_options()} />
-              </Field>
-
-              <Field :if={@league.join_code} name="join_code">
-                <Label class="label">Join Code</Label>
+              <div class="field">
+                <label class="label" for="name">Name</label>
+                <input
+                  class="input has-text-black is-small"
+                  type="text"
+                  name="league[name]"
+                  id="name"
+                  value={@current_params["name"] || @league.name}
+                />
+              </div>
+              <div class="field">
+                <label class="label" for="max_teams">Max Teams</label>
+                <input
+                  class="input has-text-black is-small"
+                  type="number"
+                  name="league[max_teams]"
+                  id="max_teams"
+                  value={@current_params["max_teams"] || @league.max_teams}
+                />
+              </div>
+              <div class="field">
+                <label class="label" for="roster_size">Roster Size</label>
+                <input
+                  class="input has-text-black is-small"
+                  type="number"
+                  name="league[roster_size]"
+                  id="roster_size"
+                  value={@current_params["roster_size"] || @league.roster_size}
+                />
+              </div>
+              <div class="field">
+                <label class="label" for="competition_type">Competition Type</label>
+                <select
+                  class="select has-text-black"
+                  name="league[competition_type]"
+                  id="competition_type"
+                  value={@competition_type}
+                >
+                  <option :for={{label, value} <- competition_type_options()} value={value} selected={value == @competition_type}>{label}</option>
+                </select>
+              </div>
+              <div class="field" :if={@competition_type != "battlefy"}>
+                <label class="label" for="competition">Competition</label>
+                <select
+                  class="select has-text-black"
+                  name="league[competition]"
+                  id="competition"
+                  value={@current_params["competition"] || @league.competition}
+                >
+                  <option :for={{label, value} <- competition_options(@competition_type)} value={value} selected={value == (@current_params["competition"] || @league.competition)}>{label}</option>
+                </select>
+              </div>
+              <div class="field" :if={@competition_type == "battlefy"}>
+                <label class="label" for="battlefy_tournament_id">Battlefy tournament id</label>
+                <input
+                  class="input has-text-black is-small"
+                  type="text"
+                  name="league[competition]"
+                  id="battlefy_tournament_id"
+                  value={(@current_params["competition"] || @league.competition) |> battlefy_tournament_id()}
+                />
+              </div>
+              <div class="field" :if={@competition_type == "grandmasters"}>
+                <label class="label" for="changes_between_rounds">Changes Between Rounds</label>
+                <input
+                  class="input has-text-black is-small"
+                  type="number"
+                  name="league[changes_between_rounds]"
+                  id="changes_between_rounds"
+                  value={@current_params["changes_between_rounds"] || @league.changes_between_rounds}
+                />
+              </div>
+              <div class="field">
+                <label class="label" for="real_time_draft">Real Time Draft</label>
+                <input
+                  type="checkbox"
+                  name="league[real_time_draft]"
+                  id="real_time_draft"
+                  value="true"
+                  checked={@current_params["real_time_draft"] || @league.real_time_draft}
+                />
+              </div>
+              <div class="field" :if={@league.draft_deadline || !@league.real_time_draft || @show_deadline}>
+                <label class="label" for="deadline">Draft Deadline (UTC!)</label>
+                <input
+                  type="datetime-local"
+                  name="league[deadline]"
+                  id="deadline"
+                  value={@current_params["deadline"] || draft_deadline_value(@league, @competition_type)}
+                />
+              </div>
+              <div class="field">
+                <label class="label" for="point_system">Point System</label>
+                <select
+                  class="select has-text-black"
+                  name="league[point_system]"
+                  id="point_system"
+                  value={@current_params["point_system"] || @league.point_system}
+                >
+                  <option :for={{label, value} <- point_system_options(@competition_type)} value={value} selected={value == (@current_params["point_system"] || @league.point_system)}>{label}</option>
+                </select>
+              </div>
+              <div class="field" :if={@league.join_code}>
+                <label class="label" for="join_code">Join Code</label>
                 {@league.join_code}
                 <button class="button" type="button" :on-click="regenerate_join_code">Regenerate</button>
-              </Field>
-
-              <Field name="owner_id">
-                <HiddenInput value={@user.id}/>
-              </Field>
-
-
+                <input type="hidden" name="league[join_code]" value={@league.join_code} />
+              </div>
+              <input type="hidden" name="league[owner_id]" value={@user.id} />
             </section>
             <footer class="modal-card-foot">
-              <Submit label="Save" class="button is-success" />
+              <button type="submit" class="button is-success">Save</button>
               <button class="button" type="button" :on-click="hide_modal">Cancel</button>
               <div :if={@show_error} class="notification is-warning tag">{@error_message}</div>
             </footer>
           </div>
-        </Form>
+        </.form>
       </div>
     </div>
     """
@@ -352,7 +386,7 @@ defmodule Components.FantasyModal do
           [show_success: true, show_modal: false]
 
         {:error, error} ->
-          Logger.warning("Error saving league #{error |> inspect()}", show_error: true)
+          Logger.warning("Error saving league #{error |> inspect()}")
       end
 
     {

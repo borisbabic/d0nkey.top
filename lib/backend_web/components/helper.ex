@@ -1,7 +1,6 @@
 defmodule Components.Helper do
   @moduledoc false
   use Phoenix.Component
-  import Phoenix.HTML.Form
   alias FunctionComponents.Dropdown
 
   def warning_triangle(), do: warning_triangle(%{})
@@ -319,7 +318,9 @@ defmodule Components.Helper do
             <div class="dropdown-content">
                 <%= if @top_buttons do %>
                     <div class="dropdown-item is-flex">
-                        <%= submit "Submit", class: "button" %>
+                        <button class="button" type="submit">
+                            Submit
+                        </button>
                         <button class="button" type="button" onclick={"uncheck('#{ @checkbox_class }')"}>
                             Clear
                         </button>
@@ -359,7 +360,9 @@ defmodule Components.Helper do
                 <% end %>
                 <%= if @bottom_buttons do %>
                     <div class="dropdown-item is-flex">
-                        <%= submit "Submit", class: "button" %>
+                        <button class="button" type="submit">
+                            Submit
+                        </button>
                         <button class="button" type="button" onclick={"uncheck('#{ @checkbox_class }')"}>
                             Clear
                         </button>
@@ -395,6 +398,19 @@ defmodule Components.Helper do
       <div class="title is-3">You need to log in to view this page</div>
       <span :if={@viewable_url}><a class="link" href={@viewable_url}>View the page without features that require login</a> | </span>
       <a class="link" href={"/auth/bnet"}>Log in</a>
+    """
+  end
+
+  attr :name, :string
+  attr :class, :string
+  attr :options, :list
+  attr :value, :any
+
+  def select(assigns) do
+    ~H"""
+    <select name={@name} class={@class}>
+      {Phoenix.HTML.Form.options_for_select(@options, @value)}
+    </select>
     """
   end
 end

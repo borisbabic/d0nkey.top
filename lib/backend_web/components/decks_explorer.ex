@@ -183,7 +183,7 @@ defmodule Components.DecksExplorer do
         phx-update="stream"
         class="columns is-multiline is-mobile is-narrow is-centered"
         phx-target={@myself}
-        phx-viewport-bottom={!@end_of_stream? && "next-decks-page"}>
+        phx-viewport-bottom={if @end_of_stream?, do: "", else: "next-cards-page"}>
           <div id={dom_id} :for={{dom_id, deck_with_stats} <- @streams.deck_stats} class="column is-narrow">
             <DeckWithStats deck_with_stats={deck_with_stats} show_win_loss?={@filter_context == :personal}/>
           </div>

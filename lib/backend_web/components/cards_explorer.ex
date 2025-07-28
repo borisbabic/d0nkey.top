@@ -4,8 +4,6 @@ defmodule Components.CardsExplorer do
   alias Backend.Hearthstone
   alias Components.Card
   alias Components.LivePatchDropdown
-  alias Surface.Components.Form
-  alias Surface.Components.Form.TextInput
 
   alias Components.Filter.{
     FormatDropdown,
@@ -151,15 +149,15 @@ defmodule Components.CardsExplorer do
         <FactionDropdown id="cards_faction_dropdown" />
         <!-- <LivePatchDropdown id="cards_collectible" param="collectible" title="Collectible" options={[{"no", "Uncollectible"}, {"yes", "Collectible"}]} /> -->
         <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
-        <Form for={%{}} as={:search} change="change" submit="change">
-          <TextInput value={Map.get(@params, "search", "")} class="input has-text-black" opts={placeholder: "Search name/text"}/>
-        </Form>
+        <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
+          <input name="search" type="text" class="input has-text-black" placeholder="Search name/text" value={Map.get(@params, "search", "")} />
+        </.form>
         <div
           id="cards_viewport"
           phx-update="stream"
           class="columns is-multiline is-mobile"
           phx-target={@myself}
-          phx-viewport-bottom={!@end_of_stream? && "next-cards-page"}>
+          phx-viewport-bottom={if @end_of_stream?, do: "", else: "next-cards-page"}>
           <div card_id={c.id} id={id} :for={{id, c} <- @streams.cards} class={"column", "is-narrow", "is-clickable": !!@on_card_click, "not-in-list": @card_disabled.(c)} phx-value-card_id={c.id} :on-click={unless @card_disabled.(c), do: @on_card_click} phx-hook={@card_phx_hook}>
             <Card shrink_mobile={true} card={c} disable_link={!!@on_card_click}>
               <:above_image :let={card: card}>
@@ -202,7 +200,7 @@ defmodule Components.CardsExplorer do
     {:noreply, socket |> incr_scroll_size() |> stream_cards(new_offset)}
   end
 
-  def handle_event("change", %{"search" => [search_input]}, socket) do
+  def handle_event("change", %{"search" => search_input}, socket) do
     %{params: params} = socket.assigns
     long_enough = String.length(search_input) >= 3
 
