@@ -7,9 +7,7 @@ defmodule Components.CompetitorsTable do
   alias Backend.Fantasy.League
   alias Backend.Hearthstone.Card
   alias Backend.Fantasy.LeagueTeam
-  alias Surface.Components.Form
   alias Components.PlayerName
-  alias Surface.Components.Form.TextInput
   alias Components.SurfaceBulma.Table
   alias Components.SurfaceBulma.Table.Column
 
@@ -29,14 +27,13 @@ defmodule Components.CompetitorsTable do
   def render(assigns) do
     ~F"""
     <div>
-
-      <Form for={%{}} as={:search} change="search" submit="search" opts={autocomplete: "off"}>
+     <.form for={%{}} as={:search} phx-change="search" phx-submit="search" autocomplete="off">
         <div class="columns is-mobile is-multiline">
           <div class="column is-narrow">
-            <TextInput class="input has-text-black " opts={placeholder: "Search"}/>
+            <input class="input has-text-black" type="text" name="search[]" placeholder="Search" value={@search || ""} />
           </div>
         </div>
-      </Form>
+      </.form>
       <div :if={prepared = prepare_data(@participants, @league, @search) |> sort(@mt_stats)}>
         <Table id="competitiors_table" data={participant <- prepared} striped>
           <Column label="Competitor">
@@ -52,7 +49,9 @@ defmodule Components.CompetitorsTable do
           </Column>
           <Column label="Status">
             <div :if={picked_by = picked_by(@league, participant, @user)}>
-              <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)}class="tag is-info"> {picked_by |> LeagueTeam.display_name()}</div>
+              <div :if={!League.unpickable?(@league, picked_by, @user, participant.name)} class="tag is-info">
+                {picked_by |> LeagueTeam.display_name()}
+              </div>
               <button :if={League.unpickable?(@league, picked_by, @user, participant.name)} class="button" type="button" :on-click="unpick" phx-value-league_team={"#{picked_by.id}"} phx-value-pick={"#{participant.name}"}>
                 Unpick
               </button>

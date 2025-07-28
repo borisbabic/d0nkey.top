@@ -5,13 +5,6 @@ defmodule BackendWeb.ProfileSettingsLive do
   alias Backend.UserManager
   alias Backend.CollectionManager.Collection
   alias Backend.UserManager.User.DecklistOptions
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Checkbox
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.TextInput
-  alias Surface.Components.Form.Submit
-  alias Surface.Components.Form.Select
-  alias Surface.Components.Form.Label
 
   data(user, :map)
 
@@ -25,93 +18,106 @@ defmodule BackendWeb.ProfileSettingsLive do
         <div class="title is-2">Profile Settings</div>
         <FunctionComponents.Ads.below_title/>
         <div :if={@user}>
-          <Form for={%{}} as={:user} submit="submit">
-            <Field name="country_code">
-              <Label class="label" >Country Flag</Label>
-              <Select class="select has-text-black " options={[{"Select Country", nil} | country_options()]} selected={@user.country_code} />
-            </Field>
-            <Field name="cross_out_country">
-              <Label class="label" >Cross Out Country</Label>
-              <Checkbox value={@user.cross_out_country} />
-            </Field>
-            <Field name="show_region">
-              <Label class="label" >Show Region Instead of Country</Label>
-              <Checkbox value={@user.show_region} />
-            </Field>
-            <br>
-            <Field name="unicode_icon">
-              <Label class="label">Player Icon</Label>
-              <Select selected={@user.unicode_icon} class="select has-text-black " options={[{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}]}/>
-              For custom icons see <a href="/patreon">patreon</a>
-            </Field>
-            <br>
-            <Label class="label">Deck Sheets</Label>
-            <Field name="default_sheet_id">
-              <Select selected={@user.default_sheet_id} class="select has-text-black " options={Components.DeckListingModal.sheet_options(@user)}/>
-              <Label>Default Sheet</Label>
-            </Field>
-            <Field name="default_sheet_source">
-              <TextInput type="search" class="has-text-black" value={@user.default_sheet_source}/>
-              <Label>Default Source</Label>
-            </Field>
-            <Label class="label">Collection</Label>
-            <Field name="current_collection_id">
-              <Select selected={@user.current_collection_id} class="select has-text-black" options={collection_options(@user)}/>
-              <Label>Current Collection</Label>
-            </Field>
-            <Label class="label">Decklist Options</Label>
-            <Field name="border">
-              <Select selected={DecklistOptions.border(@user.decklist_options)} class="select has-text-black " options={"Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
-              <Label>Border Color</Label>
-            </Field>
-            <Field name="gradient">
-              <Select selected={DecklistOptions.gradient(@user.decklist_options)} class="select has-text-black " options={ "Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"}/>
-              <Label>Gradient Color</Label>
-            </Field>
-            <Field name="show_one">
-              <Checkbox value={DecklistOptions.show_one(@user.decklist_options)} />
-              <Label>Show 1 for singleton cards</Label>
-            </Field>
-            <Field name="show_one_for_legendaries">
-              <Checkbox value={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} />
-              <Label>Show 1 for singleton legendaries</Label>
-            </Field>
-            <Field name="show_dust_above">
-              <Checkbox value={DecklistOptions.show_dust_above(@user.decklist_options)} />
-              <Label>Show dust above cards</Label>
-            </Field>
-            <Field name="show_dust_below">
-              <Checkbox value={DecklistOptions.show_dust_below(@user.decklist_options)} />
-              <Label>Show dust below cards</Label>
-            </Field>
-            <Field name="use_missing_dust">
-              <Checkbox value={DecklistOptions.use_missing_dust(@user.decklist_options)} />
-              <Label>Use missing dust instead of total</Label>
-            </Field>
-            <Field name="fade_missing_cards">
-              <Checkbox value={DecklistOptions.fade_missing_cards(@user.decklist_options)} />
-              <Label>Fade missing cards in decks</Label>
-            </Field>
-            <br>
-            <Field name="replay_preference">
-              <Select selected={@user.replay_preference} class="select has-text-black " options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]}/>
-              <Label>Which replays do you want to be considered public? (only affects new replays)</Label>
-            </Field>
-            <br>
-            <Field name="battlefy_slug">
-              <Label class="label" >Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</Label>
-              <TextInput class="has-text-black  is-small" value={@user.battlefy_slug}/>
-            </Field>
-
-            <Submit label="Save" class="button"/>
-            <div :if={@user.twitch_id} >
-              <button class="button" type="button" :on-click="disconnect_twitch">Disconnect Twitch {twitch_username(@user)}        </button>
+          <.form for={%{}} as={:user} id="profile_settings_form" phx-submit="submit">
+            <div>
+              <label for="country_code" class="label">Country Flag</label>
+              <select name="country_code" class="select has-text-black">
+              {options_for_select([{"Select Country", nil} | country_options()], @user.country_code)}
+              </select>
             </div>
-            <div :if={!@user.twitch_id} >
+            <div>
+              <label for="cross_out_country" class="label">Cross Out Country</label>
+              <input type="checked" name="cross_out_country" checked={@user.cross_out_country} />
+            </div>
+            <div>
+              <label for="show_region" class="label">Show Region Instead of Country</label>
+              <input type="checked" name="show_region" checked={@user.show_region} />
+            </div>
+            <br>
+            <div>
+              <label for="unicode_icon" class="label">Player Icon</label>
+              <select name="unicode_icon" class="select has-text-black">
+                {options_for_select([{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}], @user.unicode_icon)}
+              </select>
+              For custom icons see <a href="/patreon">patreon</a>
+            </div>
+            <br>
+            <label class="label">Deck Sheets</label>
+            <div>
+              <select name="default_sheet_id" class="select has-text-black" value={@user.default_sheet_id}>
+                {options_for_select(Components.DeckListingModal.sheet_options(@user), @user.default_sheet_id)}
+              </select>
+              <label for="default_sheet_id">Default Sheet</label>
+            </div>
+            <div>
+              <input type="search" name="default_sheet_source" class="has-text-black" value={@user.default_sheet_source}/>
+              <label for="default_sheet_source">Default Source</label>
+            </div>
+            <label class="label">Collection</label>
+            <div>
+              <select name="current_collection_id" class="select has-text-black" value={@user.current_collection_id}>
+                {options_for_select(collection_options(@user), @user.current_collection_id)}
+              </select>
+              <label for="current_collection_id">Current Collection</label>
+            </div>
+            <label class="label">Decklist Options</label>
+            <div>
+              <select name="border" class="select has-text-black">
+                {options_for_select(["Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"], DecklistOptions.border(@user.decklist_options))}
+              </select>>
+              <label for="border">Border Color</label>
+            </div>
+            <div>
+              <select name="gradient" class="select has-text-black">
+               {options_for_select(["Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"], DecklistOptions.gradient(@user.decklist_options))}
+              </select>>
+              <label for="gradient">Gradient Color</label>
+            </div>
+            <div>
+              <input type="checked" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} />
+              <label for="show_one">Show 1 for singleton cards</label>
+            </div>
+            <div>
+              <input type="checked" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} />
+              <label for="show_one_for_legendaries">Show 1 for singleton legendaries</label>
+            </div>
+            <div>
+              <input type="checked" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} />
+              <label for="show_dust_above">Show dust above cards</label>
+            </div>
+            <div>
+              <input type="checked" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} />
+              <label for="show_dust_below">Show dust below cards</label>
+            </div>
+            <div>
+              <input type="checked" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} />
+              <label for="use_missing_dust">Use missing dust instead of total</label>
+            </div>
+            <div>
+              <input type="checked" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} />
+              <label for="fade_missing_cards">Fade missing cards in decks</label>
+            </div>
+            <br>
+            <div>
+              <select name="replay_preference" class="select has-text-black" value={@user.replay_preference}>
+                {options_for_select([{"All", :all}, {"Streamed", :streamed}, {"None", :none}], @user.replay_preference)}
+              </select>
+              <label for="replay_preference">Which replays do you want to be considered public? (only affects new replays)</label>
+            </div>
+            <br>
+            <div>
+              <label for="battlefy_slug" class="label">Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</label>
+              <input name="battlefy_slug" class="has-text-black is-small" value={@user.battlefy_slug}/>
+            </div>
+            <button type="submit" class="button">Save</button>
+            <div :if={@user.twitch_id}>
+              <button type="button" :on-click="disconnect_twitch" class="button">Disconnect Twitch {twitch_username(@user)}</button>
+            </div>
+            <div :if={!@user.twitch_id}>
               <a class="button" href="/auth/twitch">Connect Twitch</a>
             </div>
             <div :if={@user.patreon_id} class="level level-left">
-              <button class="button " type="button" :on-click="disconnect_patreon">Disconnect Patreon </button>
+              <button type="button" :on-click="disconnect_patreon" class="button">Disconnect Patreon</button>
               <div :if={tier_info = patreon_tier_info(@user)}>
                 Tier: {tier_info.title} | Ad Free: {if tier_info.ad_free, do: "Yes", else: "No"}
               </div>
@@ -123,7 +129,7 @@ defmodule BackendWeb.ProfileSettingsLive do
               <a class="button" href="/auth/patreon">Connect Patreon</a>
               <div> Tier: ? | Ad Free: ?</div>
             </div>
-          </Form>
+          </.form>
         </div>
         <div :if={!@user}>Not Logged In</div>
       </div>

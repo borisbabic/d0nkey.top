@@ -3,15 +3,13 @@ defmodule Components.MultiSelectDropdown do
   use BackendWeb, :surface_live_component
   use Components.Filter.DropdownBase, current_is_list: true
   alias FunctionComponents.Dropdown
-  alias Surface.Components.Form
-  alias Surface.Components.Form.TextInput
 
   prop(show_search, :boolean, default: true)
   prop(selected_to_top, :boolean, default: true)
   prop(matches_search, :fun, required: true)
   prop(class, :css_class, default: nil)
 
-  prop(search_event, :event, default: "search")
+  prop(search_event, :event, default: %{name: "search"})
   data(search, :string, default: "")
   prop(default_selector, :fun, required: false, default: &__MODULE__.default_selected/1)
   prop(updater, :fun, required: false, default: &__MODULE__.update_selected/2)
@@ -23,9 +21,9 @@ defmodule Components.MultiSelectDropdown do
     ~F"""
         <span class={@class}>
           <Dropdown.menu title={@actual_title} aria-multiselectable="true">
-            <Form :if={@show_search} for={%{}} as={:search} change={@search_event} submit={@search_event} opts={autocomplete: "off"}>
-              <TextInput class="input has-text-black " opts={placeholder: "Search"}/>
-            </Form>
+            <.form :if={@show_search} phx-target={target(@search_event, @myself)} phx-change={name(@search_event)} phx-submit={name(@search_event)} >
+              <input name="search" type="text" class="input has-text-black" placeholder="Search" autocomplete="off" />
+            </.form>
             <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top} phx-target={@myself} phx-click="remove_selected" phx-value-value={value(selected)}>
               {display(selected)}
             </Dropdown.item>
@@ -48,6 +46,13 @@ defmodule Components.MultiSelectDropdown do
   end
 
   def render(assigns), do: assigns |> add_to_empty() |> render()
+
+  defp target(%{target: target}, _), do: target
+  defp target(_, fallback), do: fallback
+
+  defp name(%{name: name}) when is_binary(name), do: name
+  defp name(name) when is_binary(name), do: name
+  defp name(_), do: nil
 
   def default_selected(_) do
     []
@@ -138,7 +143,10 @@ defmodule Components.MultiSelectDropdown do
     {:noreply, updater.(socket, new_selected)}
   end
 
-  def handle_event("search", %{"search" => [search]}, socket),
+  def handle_event("search", %{"search" => search}, socket) when is_binary(search),
+    do: {:noreply, assign(socket, :search, search)}
+
+  def handle_event("search", %{"search" => [search]}, socket) when is_binary(search),
     do: {:noreply, assign(socket, :search, search)}
 
   def handle_event(_event, _other, socket) do
@@ -190,6 +198,7 @@ defmodule Components.MultiSelectDropdown do
 
   defp unselected(search, options, base_num_to_show, selected \\ [], normalizer \\ & &1) do
     num_to_show = (base_num_to_show - Enum.count(selected)) |> max(3)
+    normalized_search = normalize_search(search)
 
     normalized_selected =
       Enum.map(selected, fn s ->
@@ -201,8 +210,14 @@ defmodule Components.MultiSelectDropdown do
     options
     |> Enum.reject(&(normalizer.(value(&1)) in normalized_selected))
     |> Enum.filter(fn opt ->
-      opt && display(opt) && display(opt) =~ search
+      normalize_search(opt && display(opt) && display(opt)) =~ normalized_search
     end)
     |> Enum.take(num_to_show)
+  end
+
+  defp normalize_search(search) do
+    search
+    |> to_string()
+    |> String.downcase()
   end
 end

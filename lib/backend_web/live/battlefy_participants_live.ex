@@ -2,8 +2,6 @@ defmodule BackendWeb.BattlefyParticipantsLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.Battlefy.ParticipantsTable
-  alias Surface.Components.Form
-  alias Surface.Components.Form.TextInput
 
   data(tournament_id, :string)
   data(user, :any)
@@ -27,9 +25,9 @@ defmodule BackendWeb.BattlefyParticipantsLive do
           <span :if={@participants.ok?}>| Checked In: #{Enum.count(@participants.result, & &1.checked_in_at)}</span>
         </div>
         <FunctionComponents.Ads.below_title/>
-        <Form as={:search} change="change" submit="change">
-          <TextInput id="participants_text_input" class={"input"} opts={placeholder: "Search participants"}/>
-        </Form>
+        <.form for={%{}} as={:search} phx-change="change" phx-submit="change" >
+          <input type="text" class="input has-text-black" placeholder="Search participants"/>
+        </.form>
         <span :if={@participants.loading}>
           Loading participants...
         </span>

@@ -1,12 +1,5 @@
 defmodule BackendWeb.LineupSubmitterLive do
   use BackendWeb, :surface_live_view
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.Label
-  alias Surface.Components.Form.Submit
-  alias Surface.Components.Form.TextInput
-  alias Surface.Components.Form.TextArea
-  alias Surface.Components.Form.NumberInput
 
   data(view_url, :string, default: nil)
 
@@ -21,36 +14,36 @@ defmodule BackendWeb.LineupSubmitterLive do
     ~F"""
       <div>
         <div :if={allowed(@user)}>
-          <Form for={%{}} as={:lineups} submit="submit">
-              <Field name="tournament_id">
-                <Label class="label" >Tournament ID/name</Label>
-                <TextInput class="input has-text-black  is-small"/>
-              </Field>
-              <Field name="tournament_source" :if={custom_tournament_source?(@user)}>
-                <Label class="label" >Tournament Source (like organization or website)</Label>
-                <TextInput class="input has-text-black  is-small" value={@user.battletag}/>
-              </Field>
-              <Field name="csv">
-                <Label class="label">CSV of lineups: name,link or name,deck1,deck2,deck...</Label>
-                <TextArea class="has-text-black"/>
-              </Field>
-              <Field :if={false} name="gid">
-                <Label class="label" >gid taken from the url with the specific sheet open (EMPTY => LEFTMOST sheet)</Label>
-                <TextInput class="input has-text-black  small" />
-              </Field>
-              <Field :if={false} name="sheet_id">
-                  <Label class="label" >Sheet it from the google sheets url</Label>
-                  <TextInput class="input has-text-black  small"/>
-              </Field>
-              <Field :if={false} name="ignore_columns">
-                  <Label class="label" >Ignore Columns (first non ignored column should be the name then the rest should be decks)</Label>
-                  <NumberInput class="input has-text-black " value={"1"}/>
-              </Field>
-              <Submit label="Save Lineups" class="button is-success"/>
-              <div :if={@view_url}>
-                View lineups <a href={@view_url}>Here</a>
-              </div>
-          </Form>
+          <.form for={%{}} as={:lineups} id="lineup_submit_form" phx-submit="submit">
+            <div class="field">
+              <label class="label" for="tournament_id">Tournament ID/name</label>
+              <input class="input has-text-black is-small" type="text" name="lineups[tournament_id]" id="tournament_id" />
+            </div>
+            <div class="field" :if={custom_tournament_source?(@user)}>
+              <label class="label" for="tournament_source">Tournament Source (like organization or website)</label>
+              <input class="input has-text-black is-small" type="text" name="lineups[tournament_source]" id="tournament_source" value={@user.battletag} />
+            </div>
+            <div class="field">
+              <label class="label" for="csv">CSV of lineups: name,link or name,deck1,deck2,deck...</label>
+              <textarea class="has-text-black" name="lineups[csv]" id="csv"></textarea>
+            </div>
+            <div class="field" :if={false}>
+              <label class="label" for="gid">gid taken from the url with the specific sheet open (EMPTY => LEFTMOST sheet)</label>
+              <input class="input has-text-black small" type="text" name="lineups[gid]" id="gid" />
+            </div>
+            <div class="field" :if={false}>
+              <label class="label" for="sheet_id">Sheet id from the google sheets url</label>
+              <input class="input has-text-black small" type="text" name="lineups[sheet_id]" id="sheet_id" />
+            </div>
+            <div class="field" :if={false}>
+              <label class="label" for="ignore_columns">Ignore Columns (first non ignored column should be the name then the rest should be decks)</label>
+              <input class="input has-text-black" type="number" name="lineups[ignore_columns]" id="ignore_columns" value="1" />
+            </div>
+            <button type="submit" class="button is-success">Save Lineups</button>
+            <div :if={@view_url}>
+              View lineups <a href={@view_url}>Here</a>
+            </div>
+          </.form>
         </div>
       </div>
     """
@@ -84,21 +77,6 @@ defmodule BackendWeb.LineupSubmitterLive do
 
   defp custom_tournament_source?(user),
     do: Backend.UserManager.User.can_access?(user, :tournament_source)
-
-  # def handle_event("submit", %{"new_round" => attrs_raw}, socket) do
-  #   csv_url = csv_url(attrs_raw)
-  #   ignore_columns = Util.to_int(attrs_raw["ignore_columns"], 1)
-
-  #   Command.ImportLineups.import_from_csv_url(
-  #     csv_url,
-  #     attrs_raw["tournament_id"],
-  #     attrs_raw["tournament_source"],
-  #     & &1,
-  #     ignore_columns
-  #   )
-
-  #   {:noreply, socket}
-  # end
 
   def csv_url(%{"sheet_id" => sheet_id} = attrs) do
     "https://docs.google.com/spreadsheets/d/#{sheet_id}/export?format=csv"

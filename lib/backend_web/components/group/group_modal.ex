@@ -1,4 +1,5 @@
 defmodule Components.GroupModal do
+  @moduledoc false
   use BackendWeb, :surface_live_component
 
   require Logger
@@ -13,53 +14,56 @@ defmodule Components.GroupModal do
   prop(current_params, :map, default: %{})
   prop(user, :map, from_context: :user)
 
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.HiddenInput
-  alias Surface.Components.Form.Label
-  alias Surface.Components.Form.Submit
-  alias Surface.Components.Form.TextInput
-
   @message_reset_assigns [show_error: false, show_success: false]
   def render(assigns) do
     ~F"""
     <div>
-
       <div>
-        <button class="button" type="button" :on-click="show_modal">{button_title(@group)} </button>
+        <button class="button" type="button" :on-click="show_modal">{button_title(@group)}</button>
         <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
         <div :if={@show_modal} class="modal is-active">
           <div class="modal-background"></div>
           <div class="modal-card">
-            <Form for={%{}} as={:group} change="change" submit="submit">
+            <.form for={%{}} as={:group} id="group_form" phx-change="change" phx-submit="submit">
               <header class="modal-card-head">
-                  <p class="modal-card-title">{title(@group)}</p>
-                  <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
+                <p class="modal-card-title">{title(@group)}</p>
+                <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
               </header>
               <section class="modal-card-body">
-                <Field name="name">
-                  <Label class="label">Name</Label>
-                  <TextInput class="input has-text-black  is-small" value={@current_params["name"]}/>
-                </Field>
-                <Field name="discord">
-                  <Label class="label">Discord link (optional)</Label>
-                  <TextInput class="input has-text-black  is-small" value={@current_params["discord"] || @group.discord}/>
-                </Field>
-                <Field :if={@group.join_code} name="join_code">
-                  <Label class="label">Join Code</Label>
-                  {@group.join_code}
+                <div class="field">
+                  <label class="label" for="name">Name</label>
+                  <input
+                    class="input has-text-black is-small"
+                    type="text"
+                    name="group[name]"
+                    id="name"
+                    value={@current_params["name"]}
+                  />
+                </div>
+                <div class="field">
+                  <label class="label" for="discord">Discord link (optional)</label>
+                  <input
+                    class="input has-text-black is-small"
+                    type="text"
+                    name="group[discord]"
+                    id="discord"
+                    value={@current_params["discord"] || @group.discord}
+                  />
+                </div>
+                <div :if={@group.join_code} class="field">
+                  <label class="label" for="join_code">Join Code</label>
+                  <span>{@group.join_code}</span>
                   <button class="button" type="button" :on-click="regenerate_join_code">Regenerate</button>
-                </Field>
-                <Field name="owner_id">
-                  <HiddenInput value={@user.id}/>
-                </Field>
+                  <input type="hidden" name="group[join_code]" value={@group.join_code} />
+                </div>
+                <input type="hidden" name="group[owner_id]" value={@user.id} />
               </section>
               <footer class="modal-card-foot">
-                <Submit label="Save" class="button is-success"/>
+                <button type="submit" class="button is-success">Save</button>
                 <button class="button" type="button" :on-click="hide_modal">{@cancel_button_message}</button>
                 <div :if={@show_error} class="notification is-warning tag">{@error_message}</div>
               </footer>
-            </Form>
+            </.form>
           </div>
         </div>
       </div>
@@ -126,7 +130,7 @@ defmodule Components.GroupModal do
           [show_success: true, show_modal: false]
 
         {:error, error} ->
-          Logger.warning("Error saving group #{error |> inspect()}", show_error: true)
+          Logger.warning("Error saving group #{error |> inspect()}")
       end
 
     {
