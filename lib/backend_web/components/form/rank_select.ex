@@ -1,12 +1,9 @@
 defmodule Components.Form.RankSelect do
   @moduledoc "Hearthstone Rank Select. Expects Surface.Components.Form in context"
   use BackendWeb, :surface_live_component
-  alias Surface.Components.Form.HiddenInput
-  alias Surface.Components.Form.NumberInput
   alias FunctionComponents.Dropdown
   alias Hearthstone.DeckTracker
   prop(form, :form, default: nil)
-  # prop form, :form, from_context: {Surface.Components.Form, :form}
   prop(rank, :integer, default: nil)
   prop(legend_rank, :integer, default: 0)
   prop(rank_field, :atom, default: :rank)
@@ -45,10 +42,9 @@ defmodule Components.Form.RankSelect do
           {rank}
           </Dropdown.item>
         </Dropdown.menu>
-        <NumberInput :if={@rank_parts == :Legend} class="input has-text-black " field={@legend_rank_field} value={@legend_rank || 0} opts={style: "width: 100px;"}/>
-        <HiddenInput :if={@rank_parts != :Legend} field={@legend_rank_field} value={@legend_rank || 0} />
-
-        <HiddenInput field={@rank_field} value={@rank} />
+        <input :if={@rank_parts == :Legend} type="number" name={@legend_rank_field} value={@legend_rank || 0} class="input has-text-black tw-w-full"/>
+        <input :if={@rank_parts != :Legend} type="hidden" name={@legend_rank_field} value={@legend_rank || 0} />
+        <input type="hidden" name={@legend_rank_field} value={@rank} />
       </div>
     """
   end

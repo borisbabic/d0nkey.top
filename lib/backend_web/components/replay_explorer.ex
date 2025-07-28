@@ -15,8 +15,6 @@ defmodule Components.ReplayExplorer do
   alias Components.Filter.NextButton
   alias Components.DecksExplorer
   alias Components.ReplaysTable
-  alias Surface.Components.Form
-  alias Surface.Components.Form.TextInput
   alias Components.Filter.ArchetypeSelect
 
   prop(default_order_by, :string, default: "latest")
@@ -117,9 +115,10 @@ defmodule Components.ReplayExplorer do
             <PlayableCardSelect format={@params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={@params["player_not_kept"] || []} title="Not Kept"/>
           {/if}
           <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> @search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
-          <Form :if={@search_filter} for={%{}} as={:search} change="change" submit="change">
-            <TextInput class={"input"} opts={placeholder: "Search opponent"} value={@params["opponent_btag_like"]}/>
-          </Form>
+
+          <.form for={%{}} as={:search} phx-change="change" phx-submit="change">
+            <input type="text" class="input has-text-black" placeholder="Search opponent" value={Map.get(@params, "opponent_btag_like")} />
+          </.form>
         </div>
 
         <div :if={@replays.loading}>

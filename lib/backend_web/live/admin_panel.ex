@@ -1,11 +1,6 @@
 defmodule BackendWeb.AdminPanelLive do
   use BackendWeb, :surface_live_view
   alias Backend.UserManager.User
-  alias Surface.Components.Form
-  alias Surface.Components.Form.TextInput
-  alias Surface.Components.Form.NumberInput
-  alias Surface.Components.Form.Label
-  alias Surface.Components.Form.Submit
 
   data(user, :any)
 
@@ -22,15 +17,14 @@ defmodule BackendWeb.AdminPanelLive do
       <div class="title is-2">Welcome Handsome💖</div>
       <br>
       <div :if={User.can_access?(@user, :deck)}>
-
         <div class="subtitle is-4">
           Update decks for archetypes period
         </div>
-        <Form for={%{}} submit="update_archetypes">
-          <Label class="label">Period</Label>
-          <TextInput field={"period"} class="input has-text-black" opts={placeholder: "Period"}/>
-          <Submit label="Update" class="button" />
-        </Form>
+        <.form for={%{}} id="update_archetypes_form" phx-submit="update_archetypes">
+          <label class="label" for="period">Period</label>
+          <input class="input has-text-black" type="text" name="period" id="period" placeholder="Period"/>
+          <button type="submit" class="button">Update</button>
+        </.form>
       </div>
       <br>
       <div :if={User.can_access?(@user, :leaderboards)}>
@@ -38,17 +32,17 @@ defmodule BackendWeb.AdminPanelLive do
           Save all leaderboards with delay
         </div>
         Comma separate for multiple values
-        <Form for={%{}} submit="save_all_with_delay">
-          <Label class="label">LDB id</Label>
-          <TextInput field={"leaderboard_id"} class="input has-text-black" opts={placeholder: "Leaderboard"}/>
-          <Label class="label">Region</Label>
-          <TextInput field={"region"} class="input has-text-black" opts={placeholder: "Region"}/>
-          <Label class="label">Season</Label>
-          <TextInput field={"season_id"} class="input has-text-black" opts={placeholder: "Season ID"}/>
-          <Label class="label">Delay MS</Label>
-          <NumberInput label={"delay ms"} field={"delay"} value={1000} class="input has-text-black" opts={placeholder: "Delay ms"}/>
-          <Submit label="Save" class="button" />
-        </Form>
+        <.form for={%{}} id="save_all_with_delay_form" phx-submit="save_all_with_delay">
+          <label class="label" for="leaderboard_id">LDB id</label>
+          <input class="input has-text-black" type="text" name="leaderboard_id" id="leaderboard_id" placeholder="Leaderboard"/>
+          <label class="label" for="region">Region</label>
+          <input class="input has-text-black" type="text" name="region" id="region" placeholder="Region"/>
+          <label class="label" for="season_id">Season</label>
+          <input class="input has-text-black" type="text" name="season_id" id="season_id" placeholder="Season ID"/>
+          <label class="label" for="delay">Delay MS</label>
+          <input class="input has-text-black" type="number" name="delay" id="delay" value="1000" placeholder="Delay ms"/>
+          <button type="submit" class="button">Save</button>
+        </.form>
       </div>
       <br>
     </div>

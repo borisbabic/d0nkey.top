@@ -6,13 +6,6 @@ defmodule Components.DeckListingModal do
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.Sheets
-  alias Surface.Components.Form
-  alias Surface.Components.Form.Label
-  alias Surface.Components.Form.Field
-  alias Surface.Components.Form.Submit
-  alias Surface.Components.Form.TextInput
-  alias Surface.Components.Form.TextArea
-  alias Surface.Components.Form.Select
 
   prop(user, :any, required: true)
   prop(existing, :any, default: nil)
@@ -37,33 +30,67 @@ defmodule Components.DeckListingModal do
         button_title={button_title(@button_title, @existing)}
         button_class={@button_class}
         title={title(@existing)}>
-        <Form for={%{}} as={:listing} submit="submit" opts={id: form_id(@existing, @deck)}>
-          <Field name={:deckcode}>
-            <Label class="label">Deckcode or link</Label>
-            <TextArea class="textarea has-text-black has-fixed-size small" value={deckcode(@existing, @deck)} opts={disabled: !!@existing, placeholder: "Paste deckcode or link", size: "30", rows: "1"}/>
-          </Field>
-          <Field name={:sheet_id}>
-            <Label class="label">Sheet</Label>
-            <Select class="select has-text-black " selected={sheet_id(@existing, @sheet)} options={sheet_options(@user, @sheet)} opts={disabled: !!@existing}/>
-          </Field>
-          <Field name={:name}>
-            <Label class="label">Name</Label>
-            <TextInput class="input has-text-black  is-small" value={name(@existing)}/>
-          </Field>
-          <Field name={:source}>
-            <Label class="label">Source</Label>
-            <TextInput class="input has-text-black  is-small" value={source(@existing) || Backend.UserManager.User.default_sheet_source(@user)}/>
-          </Field>
-          <Field name={:comment}>
-            <Label class="label">Comment</Label>
-            <TextInput class="input has-text-black  is-small" value={comment(@existing)}/>
-          </Field>
-        </Form>
+        <.form id={form_id(@existing, @deck)} for={%{}} as={:listing} phx-submit="submit" phx-target={@myself}>
+          <div class="field">
+            <label class="label" for="deckcode">Deckcode or link</label>
+            <textarea
+              class="textarea has-text-black has-fixed-size small"
+              name="listing[deckcode]"
+              id="deckcode"
+              disabled={!!@existing}
+              placeholder="Paste deckcode or link"
+              rows="1"
+              style="resize: none;"
+            >{deckcode(@existing, @deck)}</textarea>
+          </div>
+          <div class="field">
+            <label class="label" for="sheet_id">Sheet</label>
+            <select
+              class="select has-text-black"
+              name="listing[sheet_id]"
+              id="sheet_id"
+              value={sheet_id(@existing, @sheet)}
+              disabled={!!@existing}
+            >
+              {options_for_select(sheet_options(@user, @sheet), Map.get(@sheet || %{}, :id, nil))}
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="name">Name</label>
+            <input
+              class="input has-text-black is-small"
+              type="text"
+              name="listing[name]"
+              id="name"
+              value={name(@existing)}
+            />
+          </div>
+          <div class="field">
+            <label class="label" for="source">Source</label>
+            <input
+              class="input has-text-black is-small"
+              type="text"
+              name="listing[source]"
+              id="source"
+              value={source(@existing) || Backend.UserManager.User.default_sheet_source(@user)}
+            />
+          </div>
+          <div class="field">
+            <label class="label" for="comment">Comment</label>
+            <input
+              class="input has-text-black is-small"
+              type="text"
+              name="listing[comment]"
+              id="comment"
+              value={comment(@existing)}
+            />
+          </div>
+        </.form>
         <:footer>
-          <Submit label="Save" class="button is-success" opts={form: form_id(@existing, @deck)}/>
+          <button type="submit" class="button is-success" form={form_id(@existing, @deck)}>Save</button>
         </:footer>
       </Modal>
-      </div>
+    </div>
     """
   end
 

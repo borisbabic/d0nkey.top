@@ -12,7 +12,7 @@ defmodule BackendWeb.AuthView do
 
   def login_success(assigns) do
     ~H"""
-    Login success! Welcome {User.display_name(@user)}
+    Login success! Welcome {Backend.UserManager.User.display_name(@user)}
     """
   end
 
