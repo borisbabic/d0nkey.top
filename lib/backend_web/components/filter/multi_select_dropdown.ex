@@ -190,6 +190,7 @@ defmodule Components.MultiSelectDropdown do
 
   defp unselected(search, options, base_num_to_show, selected \\ [], normalizer \\ & &1) do
     num_to_show = (base_num_to_show - Enum.count(selected)) |> max(3)
+    normalized_search = normalize_search(search)
 
     normalized_selected =
       Enum.map(selected, fn s ->
@@ -201,8 +202,13 @@ defmodule Components.MultiSelectDropdown do
     options
     |> Enum.reject(&(normalizer.(value(&1)) in normalized_selected))
     |> Enum.filter(fn opt ->
-      opt && display(opt) && display(opt) =~ search
+      normalize_search(opt && display(opt) && display(opt)) =~ normalized_search
     end)
     |> Enum.take(num_to_show)
+  end
+  defp normalize_search(search) do
+    search
+    |> to_string()
+    |> String.downcase()
   end
 end
