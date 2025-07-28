@@ -99,6 +99,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
   def wild(card_info) do
     cond do
+      wild_exodia_mage?(card_info) and highlander?(card_info) ->
+        :"HL Exodia Mage"
+
       questline?(card_info) and highlander?(card_info) ->
         :"HL Questline Mage"
 
@@ -113,6 +116,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       highlander?(card_info) ->
         :"Highlander Mage"
+
+      wild_exodia_mage?(card_info) ->
+        :"Exodia Mage"
 
       questline?(card_info) ->
         :"Questline Mage"
@@ -171,6 +177,11 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp wild_exodia_mage?(card_info) do
+    "The Forbidden Sequence" in card_info.card_names and
+      "Archmage Antonidas" in card_info.etc_sideboard_names
   end
 
   defp wild_small_spell_mage?(card_info) do
