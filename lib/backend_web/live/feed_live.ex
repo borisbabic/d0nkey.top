@@ -34,7 +34,7 @@ defmodule BackendWeb.FeedLive do
           id="items_viewport"
           phx-update="stream"
           class="columns is-multiline is-mobile is-narrow is-centered"
-          phx-viewport-bottom={if @end_of_stream?, do: "", else: "next-cards-page"}>
+          phx-viewport-bottom={if @end_of_stream?, do: "", else: "next-page"}>
           <div id={dom_id} :for={{dom_id, item} <- @streams.items} class="column is-narrow">
             <div :if={item.type == "deck"}>
               <DeckFeedItem item={item}/>
