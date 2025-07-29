@@ -14,7 +14,7 @@ defmodule Components.Filter.StreamerPicker do
     ~F"""
     <span>
       <Dropdown.menu title={@title}>
-        <.form for={%{}} as={:streamer} phx-change="search" phx-submit="search" >
+        <.form for={%{}} as={:streamer} phx-change="search" phx-submit="search" phx-target="self" >
           <input type="text" class="input has-text-black" placeholder="Search"/>
         </.form>
         <Dropdown.item href={@href_creator.(streamer)} :for={streamer <- streamers(@search, @limit)}>
