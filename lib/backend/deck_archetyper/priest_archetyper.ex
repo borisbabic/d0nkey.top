@@ -181,6 +181,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation(card_info)} Quest Priest")
 
+      "The Harvester of Envy" in card_info.card_names and highlander?(card_info) ->
+        :"HL Thief Priest"
+
       "Darkbishop Benedictus" in card_info.card_names and highlander?(card_info) ->
         :"HL Shadow Priest"
 
