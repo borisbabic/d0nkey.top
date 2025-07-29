@@ -88,7 +88,7 @@ defmodule Backend.MixProject do
       {:phoenix_meta_tags, github: "javiercr/phoenix_meta_tags"},
       {:oauther, "~> 1.1"},
       {:extwitter, "~> 0.12"},
-      {:bcrypt_elixir, "~> 3.2.0"},
+      {:bcrypt_elixir, "~> 3.3"},
       {:table_rex, "~> 4.0"},
       {:contex, "~> 0.4"},
       {:tmi, "~> 0.7"},
