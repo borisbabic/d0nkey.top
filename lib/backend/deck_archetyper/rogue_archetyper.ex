@@ -382,6 +382,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_pirate_rogue?(card_info) ->
         :"Pirate Rogue"
 
+      "Smokescreen" in card_info.card_names ->
+        :"Deathrattle Rogue"
+
       mine_rogue?(card_info) ->
         :"Mine Rogue"
 
