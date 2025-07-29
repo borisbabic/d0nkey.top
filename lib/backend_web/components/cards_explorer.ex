@@ -200,7 +200,13 @@ defmodule Components.CardsExplorer do
     {:noreply, socket |> incr_scroll_size() |> stream_cards(new_offset)}
   end
 
-  def handle_event("change", %{"search" => search_input}, socket) do
+  def handle_event("change", %{"search" => search_input}, socket) when is_binary(search_input),
+    do: handle_search(socket, search_input)
+
+  def handle_event("change", %{"search" => [search_input]}, socket) when is_binary(search_input),
+    do: handle_search(socket, search_input)
+
+  defp handle_search(socket, search_input) do
     %{params: params} = socket.assigns
     long_enough = String.length(search_input) >= 3
 

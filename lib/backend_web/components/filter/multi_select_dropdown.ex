@@ -21,7 +21,7 @@ defmodule Components.MultiSelectDropdown do
     ~F"""
         <span class={@class}>
           <Dropdown.menu title={@actual_title} aria-multiselectable="true">
-            <.form :if={@show_search} phx-target={target(@search_event, @myself)} phx-change={name(@search_event)} phx-submit={name(@search_event)} >
+            <.form :if={@show_search} phx-change={name(@search_event)} phx-submit={name(@search_event)} phx-target={target(@search_event, @myself)} >
               <input name="search" type="text" class="input has-text-black" placeholder="Search" autocomplete="off" />
             </.form>
             <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top} phx-target={@myself} phx-click="remove_selected" phx-value-value={value(selected)}>

@@ -15,7 +15,7 @@ defmodule Components.NewTwitchCommand do
     ~F"""
       <div>
         {#if @changeset}
-        <.form for={@changeset} id="twitch_command_form" phx-submit="submit">
+        <.form for={@changeset} id="twitch_command_form" phx-submit="submit" phx-target={@myself}>
           <div class="field">
             <label class="label" for="type">Type</label>
             <input class="input has-text-black" type="text" name="twitch_command[type]" id="type" value={Phoenix.HTML.Form.input_value(@changeset, :type)} disabled />

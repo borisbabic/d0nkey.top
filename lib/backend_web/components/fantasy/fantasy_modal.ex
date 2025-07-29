@@ -29,7 +29,7 @@ defmodule Components.FantasyModal do
       <button class="button" type="button" :on-click="show_modal">{@title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div class="modal is-active" :if={@show_modal}>
-        <.form for={%{}} as={:league} id="fantasy_league_form" phx-change="change" phx-submit="submit">
+        <.form for={%{}} as={:league} id="fantasy_league_form" phx-change="change" phx-submit="submit" phx-target={@myself}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">

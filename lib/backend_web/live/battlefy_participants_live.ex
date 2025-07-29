@@ -25,7 +25,7 @@ defmodule BackendWeb.BattlefyParticipantsLive do
           <span :if={@participants.ok?}>| Checked In: #{Enum.count(@participants.result, & &1.checked_in_at)}</span>
         </div>
         <FunctionComponents.Ads.below_title/>
-        <.form for={%{}} as={:search} phx-change="change" phx-submit="change" >
+        <.form for={%{}} as={:search} phx-change="change" phx-submit="change">
           <input type="text" class="input has-text-black" placeholder="Search participants"/>
         </.form>
         <span :if={@participants.loading}>
@@ -34,6 +34,10 @@ defmodule BackendWeb.BattlefyParticipantsLive do
         <ParticipantsTable :if={@participants.ok? && @participants.result} filters={@filters} id={"participants_for_#{@tournament_id}"} participants={@participants.result} highlight={Backend.UserManager.User.battletag(@user)} tournament_id={@tournament_id} />
       </div>
     """
+  end
+
+  def handle_event("change", %{"search" => search}, socket) when is_binary(search) do
+    {:noreply, update(socket, :filters, &Map.put(&1, "search", search))}
   end
 
   def handle_event("change", %{"search" => [search]}, socket) do
