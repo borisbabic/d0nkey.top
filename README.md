@@ -40,7 +40,7 @@ The above are required for running the site in development. Some features (like 
 ### Devenv
 The project uses devenv for dependencies. Check for how to use it https://devenv.sh/getting-started/
 ### Flake
-There is a flake.nix provided for dependencies, but it's deperecated and not maintained. Prefer using devenv.
+There is a flake.nix provided for dependencies, but it's deprecated and not maintained. Prefer using devenv.
 
 Old:
 
@@ -112,7 +112,7 @@ response
 ```
 
 #### POST "/api/deck-info"
-WARNING: This may currently not work and is considered low priority, if you would like this to be prioritized contact D0nkey, preferrable in their discord https://www.d0nkey.top/discord
+WARNING: This may currently not work and is considered low priority, if you would like this to be prioritized contact D0nkey, preferably in their discord https://www.d0nkey.top/discord
 
 
 Batch get deck info
