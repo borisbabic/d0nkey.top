@@ -489,7 +489,8 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  @needs_one_for_agg ["player_deck_id", "archetype"]
+  # min_games is hack for meta page. should be a better way to do this
+  @needs_one_for_agg ["player_deck_id", "archetype", "min_games"]
   @needed_for_agg ["format", "opponent_class", "period", "player_has_coin", "rank"]
   defp has_needed_for_agg?(criteria) do
     keys = for {key, _val} <- criteria, do: key
