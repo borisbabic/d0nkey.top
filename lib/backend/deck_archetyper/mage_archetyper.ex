@@ -99,6 +99,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
   def wild(card_info) do
     cond do
+      "Luna's Pocket Galaxy" in card_info.card_names and highlander?(card_info) ->
+        :"HL LPG Mage"
+
       wild_exodia_mage?(card_info) and highlander?(card_info) ->
         :"HL Exodia Mage"
 
@@ -116,6 +119,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       highlander?(card_info) ->
         :"Highlander Mage"
+
+      "Luna's Pocket Galaxy" in card_info.card_names ->
+        :"LPG Mage"
 
       wild_exodia_mage?(card_info) ->
         :"Exodia Mage"
