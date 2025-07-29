@@ -15,7 +15,7 @@ defmodule Components.OmniBar do
       <div>
         <div class="level is-mobile" style="margin-bottom: 0;">
           <div class="level-item">
-            <.form for={%{}} as={:search} phx-change="change" phx-submit="submit">
+            <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
               <input class="input has-text-black" type="text" value={@search} placeholder="Type or paste"/>
             </.form>
           </div>
@@ -65,7 +65,13 @@ defmodule Components.OmniBar do
     {:ok, assign(socket, assigns)}
   end
 
-  def handle_event("change", %{"search" => [search]}, socket) do
+  def handle_event("change", %{"search" => search}, socket) when is_binary(search),
+    do: handle_search(socket, search)
+
+  def handle_event("change", %{"search" => [search]}, socket) when is_binary(search),
+    do: handle_search(socket, search)
+
+  defp handle_search(socket, search) do
     OmniBar.search(search, create_handle_result(self()))
     {:noreply, update_search(socket, search)}
   end

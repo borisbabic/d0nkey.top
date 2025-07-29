@@ -27,7 +27,7 @@ defmodule Components.CompetitorsTable do
   def render(assigns) do
     ~F"""
     <div>
-     <.form for={%{}} as={:search} phx-change="search" phx-submit="search" autocomplete="off">
+     <.form for={%{}} as={:search} phx-change="search" phx-submit="search" phx-target={@myself} autocomplete="off">
         <div class="columns is-mobile is-multiline">
           <div class="column is-narrow">
             <input class="input has-text-black" type="text" name="search[]" placeholder="Search" value={@search || ""} />
@@ -141,6 +141,9 @@ defmodule Components.CompetitorsTable do
 
     {:noreply, new_socket}
   end
+
+  def handle_event("search", %{"search" => search}, socket) when is_binary(search),
+    do: {:noreply, assign(socket, :search, search)}
 
   def handle_event("search", %{"search" => [search]}, socket),
     do: {:noreply, assign(socket, :search, search)}

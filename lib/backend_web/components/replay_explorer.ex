@@ -116,7 +116,7 @@ defmodule Components.ReplayExplorer do
           {/if}
           <ClassStatsModal :if={@class_stats_modal} class="dropdown" id="class_stats_modal" get_stats={fn -> @search_filters |> DeckTracker.class_stats() end} title="Class Stats" />
 
-          <.form for={%{}} as={:search} phx-change="change" phx-submit="change">
+          <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
             <input type="text" class="input has-text-black" placeholder="Search opponent" value={Map.get(@params, "opponent_btag_like")} />
           </.form>
         </div>
@@ -148,6 +148,10 @@ defmodule Components.ReplayExplorer do
       </div>
     </div>
     """
+  end
+
+  def handle_event("change", %{"search" => search}, socket) when is_binary(search) do
+    {:noreply, update_search(socket, search)}
   end
 
   def handle_event("change", %{"search" => [search]}, socket) do

@@ -24,7 +24,7 @@ defmodule Components.GroupModal do
         <div :if={@show_modal} class="modal is-active">
           <div class="modal-background"></div>
           <div class="modal-card">
-            <.form for={%{}} as={:group} id="group_form" phx-change="change" phx-submit="submit">
+            <.form for={%{}} as={:group} id="group_form" phx-change="change" phx-submit="submit" phx-target={@myself}>
               <header class="modal-card-head">
                 <p class="modal-card-title">{title(@group)}</p>
                 <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>

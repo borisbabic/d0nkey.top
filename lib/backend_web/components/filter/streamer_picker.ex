@@ -14,7 +14,7 @@ defmodule Components.Filter.StreamerPicker do
     ~F"""
     <span>
       <Dropdown.menu title={@title}>
-        <.form for={%{}} as={:streamer} phx-change="search" phx-submit="search" phx-target="self" >
+        <.form for={%{}} as={:streamer} phx-change="search" phx-submit="search" phx-target={@myself}>
           <input type="text" class="input has-text-black" placeholder="Search"/>
         </.form>
         <Dropdown.item href={@href_creator.(streamer)} :for={streamer <- streamers(@search, @limit)}>
@@ -25,7 +25,10 @@ defmodule Components.Filter.StreamerPicker do
     """
   end
 
-  def handle_event("search", %{"streamer" => [search]}, socket),
+  def handle_event("search", %{"search" => search}, socket) when is_binary(search),
+    do: {:noreply, assign(socket, :search, search)}
+
+  def handle_event("search", %{"search" => [search]}, socket),
     do: {:noreply, assign(socket, :search, search)}
 
   def streamers(search, limit) do
