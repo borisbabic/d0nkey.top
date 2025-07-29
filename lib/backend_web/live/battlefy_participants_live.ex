@@ -26,7 +26,7 @@ defmodule BackendWeb.BattlefyParticipantsLive do
         </div>
         <FunctionComponents.Ads.below_title/>
         <.form for={%{}} as={:search} phx-change="change" phx-submit="change">
-          <input type="text" class="input has-text-black" placeholder="Search participants"/>
+          <input type="text" name="search" class="input has-text-black" placeholder="Search participants"/>
         </.form>
         <span :if={@participants.loading}>
           Loading participants...
