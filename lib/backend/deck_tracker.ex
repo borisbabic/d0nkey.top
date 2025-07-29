@@ -479,11 +479,23 @@ defmodule Hearthstone.DeckTracker do
   def filter_needs_fresh?(_), do: false
 
   def fresh_or_agg(criteria) do
-    if Enum.any?(criteria, &filter_needs_fresh?/1) do
+    needs_fresh? = Enum.any?(criteria, &filter_needs_fresh?/1)
+    needed_for_agg? = has_needed_for_agg?(criteria)
+
+    if needs_fresh? or !needed_for_agg? do
       :fresh
     else
       :agg
     end
+  end
+
+  @needs_one_for_agg ["player_deck_id", "archetype"]
+  @needed_for_agg ["format", "opponent_class", "period", "player_has_coin", "rank"]
+  defp has_needed_for_agg?(criteria) do
+    keys = for {key, _val} <- criteria, do: key
+    has_needed? = Enum.all?(@needed_for_agg, &(&1 in keys))
+    has_one? = Enum.any?(@needs_one_for_agg, &(&1 in keys))
+    has_one? and has_needed?
   end
 
   def card_stats(criteria) do
