@@ -57,7 +57,7 @@ defmodule BackendWeb.LineupSubmitterLive do
         %{"lineups" => %{"csv" => csv, "tournament_id" => tournament_id} = params},
         %{assigns: %{user: %{battletag: battletag}}} = socket
       ) do
-    # this is so stupid, why do I need to give it a streeam AND have it end with new line
+    # this is so stupid, why do I need to give it a stream AND have it end with new line
     data =
       csv
       |> String.split(["\n", "\r\n"])

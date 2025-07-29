@@ -333,7 +333,7 @@ defmodule BackendWeb.DeckBuilderLive do
   end
 
   defp assign_title(%{assigns: %{deck_class: deck_class}} = socket) when is_binary(deck_class) do
-    assign(socket, :page_title, "#{deck_class} - DeckBuidler")
+    assign(socket, :page_title, "#{deck_class} - DeckBuilder")
   end
 
   defp assign_title(socket) do

@@ -377,7 +377,7 @@ defmodule Components.FantasyModal do
     |> assign(:current_params, league_params)
   end
 
-  def reset_messages(socket), do: socket |> assign(show_error: false, show_succes: false)
+  def reset_messages(socket), do: socket |> assign(show_error: false, show_success: false)
 
   defp handle_result(result, socket) do
     assigns =
