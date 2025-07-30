@@ -125,11 +125,12 @@ config :backend,
   nostrum_slash_commands: [
     Bot.SlashCommands.MTQCommand,
     Bot.SlashCommands.CardCommand,
-    Bot.SlashCommands.DeckCommand
+    Bot.SlashCommands.DeckCommand,
+    Bot.SlashCommands.LeaderboardCommand
   ],
   # d0nkey guild id
-  nostrum_slash_command_target: 666_596_230_100_549_652,
-  # nostrum_slash_command_target: :global,
+  # nostrum_slash_command_target: 666_596_230_100_549_652,
+  nostrum_slash_command_target: :global,
   hdt_plugin_latest_version: hdt_plugin_latest_version,
   hdt_plugin_latest_file: "hdt_plugin/#{hdt_plugin_latest_version}.dll",
   default_nitropay_ads_txt_url: "https://api.nitropay.com/v1/ads-909.txt",

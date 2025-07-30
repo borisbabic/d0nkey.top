@@ -214,7 +214,7 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
     with {:ok, identifier} <-
            Hearthstone.Leaderboards.Api.get_leaderboard_identifier(leaderboard_id),
          %{name: _} = metadata <-
-           Map.get(season_metadata, identifier, {:error, :unsupported_leaderbaord}) do
+           Map.get(season_metadata, identifier, {:error, :unsupported_leaderboard}) do
       {:ok, metadata}
     end
   end

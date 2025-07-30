@@ -40,7 +40,7 @@ defmodule Bot.MessageHandlerUtil do
     |> Enum.join(" ")
   end
 
-  @spec get_criteria(String.t()) :: {[{String.t() | String.t()}], list()}
+  @spec get_criteria(String.t()) :: {criteria :: [{String.t(), String.t()}], rest :: list()}
   def get_criteria(content) do
     content
     |> get_options()
@@ -98,8 +98,10 @@ defmodule Bot.MessageHandlerUtil do
     Logger.error("Couldn't send discord message to #{channel_id}")
   end
 
+  def travolta_response(), do: %{file: "assets/static/images/travolta.gif"}
+
   def send_travolta(channel_id),
-    do: Api.Message.create(channel_id, file: "assets/static/images/travolta.gif")
+    do: Api.Message.create(channel_id, travolta_response())
 
   def send_or_travolta(message, channel_id) do
     if String.replace(message, "`", "") |> String.trim() |> String.first() do

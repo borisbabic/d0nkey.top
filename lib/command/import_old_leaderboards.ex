@@ -1,5 +1,5 @@
 defmodule Command.ImportOldLeaderboards do
-  @moduledoc "Import old leaderbaords from a csv"
+  @moduledoc "Import old leaderboards from a csv"
 
   alias Ecto.Multi
   alias Backend.Repo
