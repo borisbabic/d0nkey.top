@@ -34,8 +34,18 @@ defmodule Bot.SlashCommands.SlashCommand do
       defp response(msg) when is_binary(msg), do: create_response(msg)
       defp response(rsp), do: rsp
 
+      @spec follow_up(Nostrum.Api.Interaction.t(), String.t() | Map.t()) :: any()
+      def follow_up(interaction, %{} = response) do
+        Nostrum.Api.Interaction.create_followup_message(interaction.token, response)
+      end
+
       def follow_up(interaction, message) when is_binary(message) do
-        Nostrum.Api.Interaction.create_followup_message(interaction.token, %{content: message})
+        follow_up(interaction, %{content: message})
+      end
+
+      def components_follow_up(interaction, components) do
+        response = Bot.MessageHandlerUtil.components_response(components)
+        follow_up(interaction, response)
       end
 
       def ack(interaction), do: respond(interaction, %{type: 1})

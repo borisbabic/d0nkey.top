@@ -155,12 +155,15 @@ defmodule Bot.MessageHandlerUtil do
   end
 
   def create_components_message(channel_id, components) when is_list(components) do
-    Nostrum.Api.Message.create(channel_id, %{flags: 32_768, components: components})
+    response = components_response(components)
+    Nostrum.Api.Message.create(channel_id, response)
   end
 
-  def create_components_message(channel_id, %{} = component) do
-    create_components_message(channel_id, [component])
+  def components_response(components) when is_list(components) do
+    %{flags: 32_768, components: components}
   end
+
+  def components_response(%{} = component), do: components_response([component])
 
   def send_reporting_message(message) do
     Api.Message.create(@reporting_channel_id, message)

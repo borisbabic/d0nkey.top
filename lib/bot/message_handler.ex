@@ -419,9 +419,9 @@ defmodule Bot.MessageHandler do
     end
   end
 
-  defp create_card_component([match]), do: create_card_component(match)
+  def create_card_component([match]), do: create_card_component(match)
 
-  defp create_card_component(match) do
+  def create_card_component(match) do
     title =
       "[#{match} (Other potential matches)](https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)})"
 

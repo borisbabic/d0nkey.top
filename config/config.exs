@@ -122,7 +122,7 @@ config :backend,
     access_token_secret: System.get_env("REQT100_ACCESS_TOKEN_SECRET")
   ],
   nitropay_demo: true,
-  nostrum_slash_commands: [Bot.SlashCommands.MTQCommand],
+  nostrum_slash_commands: [Bot.SlashCommands.MTQCommand, Bot.SlashCommands.CardCommand],
   # d0nkey guild id
   nostrum_slash_command_target: 666_596_230_100_549_652,
   hdt_plugin_latest_version: hdt_plugin_latest_version,
