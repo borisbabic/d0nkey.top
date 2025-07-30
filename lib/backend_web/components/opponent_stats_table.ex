@@ -16,7 +16,8 @@ defmodule Components.OpponentStatsTable do
   prop(path_params, :any, default: [])
   prop(target, :any, required: true)
   prop(user, :map, from_context: :user)
-  prop(include_format, :boolean, default: false)
+  prop(format_dropdown?, :boolean, default: false)
+  prop(default_format, :integer, default: 2)
   data(needs_login?, :boolean, default: false)
   data(selected_params, :list, default: [])
   data(stats, :list, default: [])
@@ -31,13 +32,14 @@ defmodule Components.OpponentStatsTable do
       |> Map.put_new("period", PeriodDropdown.default(:public, assigns.params))
       |> Map.put_new("players", "all_players")
       |> Map.put_new("player_has_coin", "any")
+      |> Map.put_new("format", assigns.default_format)
       |> Components.DecksExplorer.parse_int(["format"])
-      |> add_format(assigns.include_format)
 
     user = Map.get(socket.assigns, :user)
 
     {stats, needs_login?} =
-      if :agg == DeckTracker.fresh_or_agg(criteria) or can_access_unaggregated?(user) do
+      if :agg == DeckTracker.detailed_stats_fresh_or_agg(assigns.target, params(criteria, user)) or
+           can_access_unaggregated?(user) do
         {stats(assigns.target, params(criteria, user)), false}
       else
         {[], true}
@@ -74,7 +76,7 @@ defmodule Components.OpponentStatsTable do
           <RankDropdown id="opp_stats_table_rank_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <PeriodDropdown id="opp_stats_table_period_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <RegionDropdown id="opp_stats_table_region_dropdown" :if={can_access_unaggregated?(@user)} />
-          <FormatDropdown class={"is-hidden-mobile"} :if={@include_format} id="opp_stats_format_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
+          <FormatDropdown class={"is-hidden-mobile"} :if={@format_dropdown?} id="opp_stats_format_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <PlayerHasCoinDropdown id={"opp_stats_table_player_has_coin_dropdown"} />
           <ForceFreshDropdown id="opp_stats_table_force_fresh_dropdown" :if={Backend.UserManager.User.premium?(@user)} />
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}

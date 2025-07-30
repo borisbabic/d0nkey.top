@@ -284,7 +284,7 @@ defmodule Hearthstone.DeckTracker do
   def detailed_stats(deck_id_or_archetype, additional_criteria \\ [])
       when is_integer(deck_id_or_archetype) or is_binary(deck_id_or_archetype) or
              is_atom(deck_id_or_archetype) do
-    if :fresh == fresh_or_agg(additional_criteria) do
+    if :fresh == detailed_stats_fresh_or_agg(deck_id_or_archetype, additional_criteria) do
       criteria =
         [deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria]
         |> remove_force_fresh()
@@ -297,6 +297,18 @@ defmodule Hearthstone.DeckTracker do
 
       agg_opponent_class_stats(criteria)
     end
+  end
+
+  @spec detailed_stats_fresh_or_agg(
+          deck_id_or_archetype :: integer() | String.t() | atom(),
+          additional_criteria :: list()
+        ) :: :fresh | :agg
+  def detailed_stats_fresh_or_agg(deck_id_or_archetype, additional_criteria) do
+    [
+      deck_or_archetype_criteria(deck_id_or_archetype),
+      {"opponent_class", "any"} | additional_criteria
+    ]
+    |> fresh_or_agg()
   end
 
   def total_stats(criteria) do
@@ -478,6 +490,7 @@ defmodule Hearthstone.DeckTracker do
   def filter_needs_fresh?(slug) when is_binary(slug), do: slug in @fresh_card_stats_filters
   def filter_needs_fresh?(_), do: false
 
+  @spec fresh_or_agg(Enum.t()) :: :fresh | :agg
   def fresh_or_agg(criteria) do
     needs_fresh? = Enum.any?(criteria, &filter_needs_fresh?/1)
     needed_for_agg? = has_needed_for_agg?(criteria)
