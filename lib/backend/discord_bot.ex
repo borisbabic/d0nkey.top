@@ -1,7 +1,7 @@
 defmodule Backend.DiscordBot do
   @moduledoc false
   alias Backend.Repo
-  alias Backend.DiscordBot.GuildBattletags
+  alias Backend.DiscordBot.GuildConfig
   import Ecto.Query, warn: false
   require Logger
 
@@ -11,7 +11,7 @@ defmodule Backend.DiscordBot do
 
   @spec get_battletags(integer()) :: [String.t()]
   def get_battletags(guild_id) do
-    with {:ok, gb} <- ensure_guild_battletags(guild_id),
+    with {:ok, gb} <- ensure_guild_config(guild_id),
          {_, {:ok, %{battletags: battletags}}} <- {gb, update_battletags(gb)} do
       battletags
     else
@@ -29,39 +29,39 @@ defmodule Backend.DiscordBot do
     end
   end
 
-  defp ensure_guild_battletags(guild_id) do
-    with {:error, _} <- get_guild_battletags(guild_id) do
-      init_guild_battletags(guild_id)
+  defp ensure_guild_config(guild_id) do
+    with {:error, _} <- get_guild_config(guild_id) do
+      init_guild_config(guild_id)
     end
   end
 
-  defp init_guild_battletags(guild_id) do
+  defp init_guild_config(guild_id) do
     with {:ok, %{id: channel_id}} when not is_nil(channel_id) <- get_battletags_channel(guild_id) do
-      create_guild_battletags(guild_id, channel_id)
+      create_guild_config(guild_id, channel_id)
     end
   end
 
-  def get_guild_battletags(guild_id) do
-    case Repo.get(GuildBattletags, guild_id) do
+  def get_guild_config(guild_id) do
+    case Repo.get(GuildConfig, guild_id) do
       nil -> {:error, :could_not_get_guild_battletats}
       gb -> {:ok, gb}
     end
   end
 
-  @spec update_guild_battletags(GuildBattletags.t(), [String.t()], integer()) ::
-          {:ok, GuildBattletags.t()} | {:error, any()}
-  def update_guild_battletags(old = %{last_message_id: old_last}, _, new_last)
+  @spec update_guild_config(GuildConfig.t(), [String.t()], integer()) ::
+          {:ok, GuildConfig.t()} | {:error, any()}
+  def update_guild_config(old = %{last_message_id: old_last}, _, new_last)
       when old_last == new_last,
       do: {:ok, old}
 
-  def update_guild_battletags(old, new_battletags, last_message_id) do
+  def update_guild_config(old, new_battletags, last_message_id) do
     attrs = %{
       battletags: Enum.uniq(old.battletags ++ new_battletags),
       last_message_id: last_message_id
     }
 
     old
-    |> GuildBattletags.changeset(attrs)
+    |> GuildConfig.changeset(attrs)
     |> Repo.update()
   end
 
@@ -76,30 +76,32 @@ defmodule Backend.DiscordBot do
     end
   end
 
-  @spec create_guild_battletags(integer(), integer() | nil) ::
-          {:ok, GuildBattletags.t()} | {:error, any()}
-  def create_guild_battletags(guild_id, channel_id) do
+  @spec create_guild_config(integer(), integer() | nil) ::
+          {:ok, GuildConfig.t()} | {:error, any()}
+  def create_guild_config(guild_id, channel_id) do
     attrs = %{
       guild_id: guild_id,
       channel_id: channel_id
     }
 
-    %GuildBattletags{}
-    |> GuildBattletags.changeset(attrs)
+    %GuildConfig{}
+    |> GuildConfig.changeset(attrs)
     |> Repo.insert()
   end
 
-  defp update_battletags(%GuildBattletags{last_message_id: last_message_id} = gb) do
-    with messages = [%{id: new_last} | _] when new_last != last_message_id <- fetch_messages(gb),
-         new_battletags = process_battletags(messages) do
-      update_guild_battletags(gb, new_battletags, new_last)
-    else
-      _ -> {:error, :couldnt_update_battletags}
+  defp update_battletags(%GuildConfig{last_message_id: last_message_id} = gb) do
+    case fetch_messages(gb) do
+      [%{id: new_last} | _] = messages when new_last != last_message_id ->
+        new_battletags = process_battletags(messages)
+        update_guild_config(gb, new_battletags, new_last)
+
+      _ ->
+        {:error, :couldnt_update_battletags}
     end
   end
 
-  @spec fetch_messages(GuildBattletags.t()) :: [Nostrum.Struct.Message.t()]
-  defp fetch_messages(%GuildBattletags{channel_id: channel_id, last_message_id: nil}) do
+  @spec fetch_messages(GuildConfig.t()) :: [Nostrum.Struct.Message.t()]
+  defp fetch_messages(%GuildConfig{channel_id: channel_id, last_message_id: nil}) do
     with {:ok, messages = [_ | _]} <- Api.Channel.messages(channel_id, @amount_to_fetch),
          {:ok, more_messages} <- do_fetch_initial(channel_id, before_id(messages)) do
       messages ++ more_messages
@@ -108,7 +110,7 @@ defmodule Backend.DiscordBot do
     end
   end
 
-  defp fetch_messages(%GuildBattletags{channel_id: channel_id, last_message_id: last_message_id})
+  defp fetch_messages(%GuildConfig{channel_id: channel_id, last_message_id: last_message_id})
        when not is_nil(last_message_id) do
     do_fetch_messages(channel_id, last_message_id)
   end
