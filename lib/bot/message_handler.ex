@@ -6,6 +6,7 @@ defmodule Bot.MessageHandler do
   alias BackendWeb.Router.Helpers, as: Routes
   alias Nostrum.Api.Message
   alias Backend.Blizzard
+  alias Backend.DiscordBot
   alias Hearthstone.DeckcodeExtractor
   alias Backend.Hearthstone.Deck
   import Bot.MessageHandlerUtil
@@ -532,30 +533,54 @@ defmodule Bot.MessageHandler do
 
         reply(msg, message)
 
+      true ->
+        handle_possible_long_deck(msg)
+
       _ ->
         :ignore
     end
   end
 
+  defp handle_possible_long_deck(msg) do
+    with {:ok, deck} <- Deck.decode(msg.content),
+         {:ok, %{replace_long_deckcodes: true}} <- DiscordBot.get_guild_config(msg.guild_id),
+         {:ok} <- Nostrum.Api.Message.delete(msg) do
+      send_deck_message(deck, msg, false)
+    else
+      _ -> :ignore
+    end
+  end
+
   defp send_deck_messages(decks, msg) do
     for deckcode <- decks, {:ok, deck} <- [Deck.decode(deckcode)] do
-      {missing_zilly?, new_deck} =
-        if Deck.missing_zilliax_sideboard?(deck) do
-          {true, Deck.brodeify(deck)}
-        else
-          {false, deck}
-        end
-
-      with {:ok, from_db} <- Backend.Hearthstone.create_or_get_deck(new_deck) do
-        with {:ok, new_msg} <- reply(msg, content: create_deck_message(from_db)),
-             true <- missing_zilly? do
-          reply(new_msg,
-            content:
-              "I put Ben Brode in your deck instead of Zilliax 3000! HA HA HA!\n\nThe client won't accept the original deck because Zilliax is missing pieces, this way you can copy the code and import it into the client, replace Ben Brode and convert to standard!!!"
-          )
-        end
-      end
+      send_deck_message(deck, msg)
     end
+  end
+
+  defp send_deck_message(deck, msg, reply \\ true) do
+    {missing_zilly?, new_deck} =
+      if Deck.missing_zilliax_sideboard?(deck) do
+        {true, Deck.brodeify(deck)}
+      else
+        {false, deck}
+      end
+
+    with {:ok, from_db} <- Backend.Hearthstone.create_or_get_deck(new_deck),
+         {:ok, new_msg} <- do_send_deck_message(msg, create_deck_message(from_db), reply),
+         true <- missing_zilly? do
+      reply(new_msg,
+        content:
+          "I put Ben Brode in your deck instead of Zilliax 3000! HA HA HA!\n\nThe client won't accept the original deck because Zilliax is missing pieces, this way you can copy the code and import it into the client, replace Ben Brode and convert to standard!!!"
+      )
+    end
+  end
+
+  defp do_send_deck_message(msg, message, true) do
+    reply(msg, content: message)
+  end
+
+  defp do_send_deck_message(msg, message, false) do
+    send_message(message, msg.channel_id)
   end
 
   def extract_decks_from_msg(msg) do

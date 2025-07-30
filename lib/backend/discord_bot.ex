@@ -20,6 +20,16 @@ defmodule Backend.DiscordBot do
     end
   end
 
+  def enable_replace_long(guild_id) when is_integer(guild_id) do
+    ensure_guild_config(guild_id)
+    |> update_guild_config(%{replace_long_deckcodes: true})
+  end
+
+  def disable_replace_long(guild_id) do
+    ensure_guild_config(guild_id)
+    |> update_guild_config(%{replace_long_deckcodes: false})
+  end
+
   def update_all_guilds(sleep \\ 0) do
     with {:ok, guilds} <- Nostrum.Api.Self.guilds() do
       Enum.each(guilds, fn %{id: id} ->
@@ -36,9 +46,13 @@ defmodule Backend.DiscordBot do
   end
 
   defp init_guild_config(guild_id) do
-    with {:ok, %{id: channel_id}} when not is_nil(channel_id) <- get_battletags_channel(guild_id) do
-      create_guild_config(guild_id, channel_id)
-    end
+    channel_id =
+      case get_battletags_channel(guild_id) do
+        {:ok, %{id: channel_id}} -> channel_id
+        _ -> nil
+      end
+
+    create_guild_config(guild_id, channel_id)
   end
 
   def get_guild_config(guild_id) do
@@ -60,7 +74,16 @@ defmodule Backend.DiscordBot do
       last_message_id: last_message_id
     }
 
-    old
+    update_guild_config(old, attrs)
+  end
+
+  @spec update_guild_config(GuildConfig.t() | {:ok, GuildConfig.t()}, attrs :: Map.t()) ::
+          {:ok, GuildConfig.t()} | {:error, any()}
+  def update_guild_config({:ok, guild_config}, attrs),
+    do: update_guild_config(guild_config, attrs)
+
+  def update_guild_config(guild_config, attrs) do
+    guild_config
     |> GuildConfig.changeset(attrs)
     |> Repo.update()
   end
