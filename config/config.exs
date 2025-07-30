@@ -127,6 +127,7 @@ config :backend,
     Bot.SlashCommands.CardCommand,
     Bot.SlashCommands.DeckCommand,
     Bot.SlashCommands.ReplaceLongConfigCommand,
+    Bot.SlashCommands.GuildBattletagManagementCommand,
     Bot.SlashCommands.LeaderboardCommand
   ],
   # d0nkey guild id

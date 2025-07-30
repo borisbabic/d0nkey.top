@@ -39,6 +39,30 @@ defmodule Backend.DiscordBot do
     end
   end
 
+  def reset_battletags(guild_id) do
+    ensure_guild_config(guild_id)
+    |> update_guild_config(%{battletags: []})
+  end
+
+  def change_channel(guild_id, channel_id) do
+    ensure_guild_config(guild_id)
+    |> update_guild_config(%{channel_id: channel_id, last_message_id: nil})
+  end
+
+  def add_battletags(guild_id, battletags) do
+    with {:ok, %{battletags: guild_battletags} = guild} <- ensure_guild_config(guild_id) do
+      new_battletags = Enum.uniq(guild_battletags ++ battletags)
+      update_guild_config(guild, %{battletags: new_battletags})
+    end
+  end
+
+  def remove_battletags(guild_id, battletags) do
+    with {:ok, %{battletags: guild_battletags} = guild} <- ensure_guild_config(guild_id) do
+      new_battletags = Enum.uniq(guild_battletags) -- battletags
+      update_guild_config(guild, %{battletags: new_battletags})
+    end
+  end
+
   defp ensure_guild_config(guild_id) do
     with {:error, _} <- get_guild_config(guild_id) do
       init_guild_config(guild_id)
