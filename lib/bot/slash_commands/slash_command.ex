@@ -9,7 +9,9 @@ defmodule Bot.SlashCommands.SlashCommand do
     quote do
       @behaviour unquote(__MODULE__)
       alias Nostrum.Struct.Interaction
-      import Bot.MessageHandlerUtil, only: [text_response: 1, components_response: 1]
+
+      import Bot.MessageHandlerUtil,
+        only: [text_response: 1, components_response: 1, travolta_response: 0]
 
       @spec create_response(String.t(), integer()) :: %{
               type: integer(),

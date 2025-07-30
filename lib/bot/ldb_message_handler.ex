@@ -14,7 +14,7 @@ defmodule Bot.LdbMessageHandler do
     |> send_tables(msg.channel_id)
   end
 
-  def handle_top_leaderbaord(msg) do
+  def handle_top_leaderboard(msg) do
     {raw_criteria, rest} = get_criteria(msg.content)
     leaderboard_options = parse_leaderboard_options(rest)
 

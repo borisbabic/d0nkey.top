@@ -190,13 +190,13 @@ defmodule Bot.MessageHandler do
         handle_highlight(msg)
 
       <<"!leaderboard", _::binary>> ->
-        Bot.LdbMessageHandler.handle_top_leaderbaord(msg)
+        Bot.LdbMessageHandler.handle_top_leaderboard(msg)
 
       <<"!ldb-top", _::binary>> ->
-        Bot.LdbMessageHandler.handle_top_leaderbaord(msg)
+        Bot.LdbMessageHandler.handle_top_leaderboard(msg)
 
       <<"!ldb_top", _::binary>> ->
-        Bot.LdbMessageHandler.handle_top_leaderbaord(msg)
+        Bot.LdbMessageHandler.handle_top_leaderboard(msg)
 
       <<"!ldb", _::binary>> ->
         Bot.LdbMessageHandler.handle_battletags_leaderboard(msg)
