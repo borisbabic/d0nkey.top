@@ -11,7 +11,7 @@ defmodule Bot.SlashCommands.SlashCommand do
       alias Nostrum.Struct.Interaction
 
       import Bot.MessageHandlerUtil,
-        only: [text_response: 1, components_response: 1, travolta_response: 0]
+        only: [text_response: 1, components_response: 1, travolta_response: 0, add_flags: 2]
 
       @spec create_response(String.t(), integer()) :: %{
               type: integer(),
@@ -28,8 +28,8 @@ defmodule Bot.SlashCommands.SlashCommand do
 
       @spec respond(Interaction.t(), String.t() | Map.t() | {String.t(), integer()}) ::
               {:ok} | Nostrum.Api.error()
-      def respond(interaction, response_or_message) do
-        response = response(response_or_message)
+      def respond(interaction, response_or_message, flags \\ []) do
+        response = response(response_or_message) |> add_flags(flags)
         Nostrum.Api.create_interaction_response(interaction, response)
       end
 
@@ -39,7 +39,10 @@ defmodule Bot.SlashCommands.SlashCommand do
 
       @spec follow_up(Nostrum.Api.Interaction.t(), String.t() | Map.t()) :: any()
       def follow_up(interaction, %{} = response) do
-        Nostrum.Api.Interaction.create_followup_message(interaction.token, response)
+        Nostrum.Api.Interaction.create_followup_message(
+          interaction.token,
+          response |> add_flags([:ephemeral])
+        )
       end
 
       def follow_up(interaction, message) when is_binary(message) do
@@ -53,7 +56,10 @@ defmodule Bot.SlashCommands.SlashCommand do
       end
 
       def ack(interaction), do: respond(interaction, %{type: 1})
-      def defer(interaction), do: respond(interaction, %{type: 5})
+
+      def defer(interaction, flags \\ []) do
+        respond(interaction, %{type: 5}, flags)
+      end
 
       @spec option_value(Interaction.t(), String.t(), any()) :: any()
       def option_value(interaction, name, default \\ nil)

@@ -4,7 +4,23 @@ defmodule Bot.MessageHandlerUtil do
   alias Nostrum.Api
   alias Nostrum.Struct.Message
   alias Nostrum.Struct.User
+  import Bitwise
 
+  @flags_to_bit_map %{
+    crossposted: 1 <<< 0,
+    is_crosspost: 1 <<< 1,
+    suppress_embeds: 1 <<< 2,
+    source_message_deleted: 1 <<< 3,
+    urgent: 1 <<< 4,
+    has_thread: 1 <<< 5,
+    ephemeral: 1 <<< 6,
+    loading: 1 <<< 7,
+    failed_to_mention_some_roles_in_thread: 1 <<< 8,
+    suppress_notifications: 1 <<< 12,
+    is_voice_message: 1 <<< 13,
+    has_snapshot: 1 <<< 14,
+    is_components_v2: 1 <<< 15
+  }
   @reporting_channel_id 1_394_280_602_773_225_614
   @muted_reporting_channel_id 1_394_288_883_499_405_394
   @spec get_options(Nostrum.Message.t() | String.t()) :: [String.t()]
@@ -12,6 +28,32 @@ defmodule Bot.MessageHandlerUtil do
 
   def get_options(content) do
     get_options(content, :list)
+  end
+
+  def message_flag_to_bit(flag) do
+    @flags_to_bit_map[flag]
+  end
+
+  def message_flags_to_bitset(flags) do
+    flags
+    |> Enum.map(&message_flag_to_bit/1)
+    |> Enum.reduce(fn bit, acc -> acc ||| bit end)
+  end
+
+  @spec add_flags(Map.t(), [atom()]) :: Map.t()
+  def add_flags(response, flags \\ [])
+  def add_flags(response, empty) when empty in [nil, []], do: response
+
+  def add_flags(%{data: data} = response, atom_flags) when is_map(data) do
+    new_data = add_flags(data, atom_flags)
+    %{response | data: new_data}
+  end
+
+  def add_flags(response, atom_flags) when is_map(response) do
+    flags_bitset = message_flags_to_bitset(atom_flags)
+
+    response
+    |> Map.put(:flags, flags_bitset)
   end
 
   def options_or_guild_battletags(%{content: content, guild_id: guild_id}) do

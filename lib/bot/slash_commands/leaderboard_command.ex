@@ -25,6 +25,8 @@ defmodule Bot.SlashCommands.LeaderboardCommand do
 
   @impl true
   def handle_interaction(%Interaction{data: %{name: name}} = interaction) when name in @names do
+    {:ok, guild} = Nostrum.Api.Guild.get(interaction.guild_id)
+    Nostrum.Struct.Guild.Member.guild_permissions(interaction.member, guild)
     command = "!ldb #{option_value(interaction, "battletags")}"
     defer(interaction)
     {base_criteria, battletags} = Bot.MessageHandlerUtil.get_criteria(command)
@@ -36,7 +38,7 @@ defmodule Bot.SlashCommands.LeaderboardCommand do
         [_ | _] ->
           tables = LdbMessageHandler.create_tables(entries)
           joined_tables = Enum.join(tables, "\n")
-          response = "```\n#{joined_tables}\n```" |> text_response()
+          "```\n#{joined_tables}\n```" |> text_response()
 
         _ ->
           travolta_response()
