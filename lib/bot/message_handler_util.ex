@@ -159,6 +159,8 @@ defmodule Bot.MessageHandlerUtil do
     Nostrum.Api.Message.create(channel_id, response)
   end
 
+  def text_response(text) when is_binary(text), do: %{content: text}
+
   def components_response(components) when is_list(components) do
     %{flags: 32_768, components: components}
   end
