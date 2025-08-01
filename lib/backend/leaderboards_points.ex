@@ -36,8 +36,14 @@ defmodule Backend.LeaderboardsPoints do
   end
 
   defp group_by_player(entries) do
-    mapping = Backend.Battlenet.create_mapping()
+    mapping = Backend.Battlenet.create_mapping() |> hack_mapping()
     Enum.group_by(entries, fn %{account_id: a} -> Map.get(mapping, a, a) end)
+  end
+
+  defp hack_mapping(mapping) do
+    Map.put(mapping, "Hypnos", "Hypnos")
+    # Competitive Hypnos is still Hypnos
+    # Other Hypnos changed their battletag to SrHypnos
   end
 
   @spec calculate_player_row(
