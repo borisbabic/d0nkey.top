@@ -180,7 +180,7 @@ defmodule BackendWeb.ProfileSettingsLive do
     {:noreply, socket |> assign(:user, updated)}
   end
 
-  def handle_event("submit", %{"user" => attrs_raw}, socket = %{assigns: %{user: user}}) do
+  def handle_event("submit", attrs_raw, socket = %{assigns: %{user: user}}) do
     attrs =
       attrs_raw
       |> parse_battlefy_slug()
