@@ -308,8 +308,14 @@ defmodule Bot.MessageHandler do
   end
 
   def midnight(msg) do
+    reply(msg, midnight_message())
+  end
+
+  def midnight_message(region \\ nil) do
+    regions_with_timezone = extract_regions_with_timezone(region)
+
     region_part =
-      Blizzard.regions_with_timezone()
+      regions_with_timezone
       |> Enum.map_join("\n", fn {region, timezone} ->
         timestamp =
           Timex.now(timezone)
@@ -321,12 +327,25 @@ defmodule Bot.MessageHandler do
         "#{name}: <t:#{timestamp}:F>"
       end)
 
-    reply(msg, "Next midnight per server (shown in your timezone):\n#{region_part}")
+    prepend =
+      if Enum.count(regions_with_timezone) > 1 do
+        "Next midnight per server (shown in your timezone):\n"
+      else
+        "Midnight in your timezone: "
+      end
+
+    "#{prepend}#{region_part}"
   end
 
   def reset(msg) do
+    reply(msg, reset_message())
+  end
+
+  def reset_message(region \\ nil) do
+    regions_with_timezone = extract_regions_with_timezone(region)
+
     region_part =
-      Blizzard.regions_with_timezone()
+      regions_with_timezone
       |> Enum.map_join("\n", fn {region, timezone} ->
         timestamp =
           Timex.now(timezone)
@@ -338,10 +357,24 @@ defmodule Bot.MessageHandler do
         "#{name}: <t:#{timestamp}:F>"
       end)
 
-    reply(
-      msg,
-      "Next constructed season reset per server (shown in your timezone):\n#{region_part}"
-    )
+    prepend =
+      if Enum.count(regions_with_timezone) > 1 do
+        "Next constructed season reset per server (shown in your timezone):\n"
+      else
+        "Next constructed season reset (shown in your timezone): "
+      end
+
+    "#{prepend}#{region_part}"
+  end
+
+  @spec extract_regions_with_timezone(String.t() | atom()) :: [{atom(), String.t()}]
+  def extract_regions_with_timezone(region) do
+    with {:ok, identifier} <- Blizzard.get_region_identifier(region),
+         {:ok, timezone} <- Blizzard.regions_with_timezone() |> Keyword.fetch(identifier) do
+      [{identifier, timezone}]
+    else
+      _ -> Blizzard.regions_with_timezone()
+    end
   end
 
   def handle_blizz_o_clock(msg) do
@@ -349,8 +382,13 @@ defmodule Bot.MessageHandler do
 
     reply(
       msg,
-      "The next blizz o clock is <t:#{timestamp}:R>, ie <t:#{timestamp}:F> (shown in your timezone)"
+      blizz_message()
     )
+  end
+
+  def blizz_message() do
+    timestamp = Blizzard.next_blizz_o_clock() |> Timex.to_unix()
+    "The next blizz o clock is <t:#{timestamp}:R>, ie <t:#{timestamp}:F> (shown in your timezone)"
   end
 
   @spec log_message(Nostrum.Struct.Message.t()) :: any()

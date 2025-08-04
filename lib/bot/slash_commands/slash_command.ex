@@ -65,7 +65,7 @@ defmodule Bot.SlashCommands.SlashCommand do
       def option_value(interaction, name, default \\ nil)
 
       def option_value(%{data: %{options: options}}, name, default),
-        do: Enum.find_value(options, default, &(&1.name == name && &1.value))
+        do: Enum.find_value(options || [], default, &(&1.name == name && &1.value))
 
       def option_value(_, _, default), do: default
     end
