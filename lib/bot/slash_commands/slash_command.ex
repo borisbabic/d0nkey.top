@@ -41,7 +41,7 @@ defmodule Bot.SlashCommands.SlashCommand do
       def follow_up(interaction, %{} = response) do
         Nostrum.Api.Interaction.create_followup_message(
           interaction.token,
-          response |> add_flags([:ephemeral])
+          response
         )
       end
 
