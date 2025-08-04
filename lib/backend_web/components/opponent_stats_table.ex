@@ -62,10 +62,8 @@ defmodule Components.OpponentStatsTable do
 
   defp can_access_unaggregated?(%{id: _id, battletag: _btag}), do: true
   defp can_access_unaggregated?(_), do: false
-  defp add_format(params, true), do: Map.put_new(params, "format", 2)
-  defp add_format(params, _false), do: params
 
-  defp add_region(params = %{"players" => players}) do
+  defp add_region(%{"players" => players} = params) do
     context = if players == "all_players", do: :public, else: :personal
     Map.put_new(params, "region", RegionDropdown.default(context))
   end
