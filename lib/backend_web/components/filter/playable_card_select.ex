@@ -32,11 +32,6 @@ defmodule Components.Filter.PlayableCardSelect do
     """
   end
 
-  # def handle_event("search", ble, socket) do
-  #   dbg(ble)
-  #   dbg(socket)
-  #   {:noreply, socket}
-  # end
   def handle_event("search", %{"search" => search}, socket) when is_binary(search),
     do: {:noreply, assign(socket, :search, search)}
 

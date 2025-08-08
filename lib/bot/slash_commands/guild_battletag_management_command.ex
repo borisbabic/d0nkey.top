@@ -144,15 +144,15 @@ defmodule Bot.SlashCommands.GuildBattletagManagementCommand do
     :ok
   end
 
-  defp reset_battletag(guild_id, reset_battletags \\ true)
+  def handle_interaction(_), do: :skip
 
-  defp reset_battletag(guild_id, false) do
+  defp reset_battletag(guild_id, reset_battletags)
+
+  defp reset_battletag(_guild_id, false) do
     {:ok, :resetting_not_requested}
   end
 
   defp reset_battletag(guild_id, true) do
     DiscordBot.reset_battletags(guild_id)
   end
-
-  def handle_interaction(_), do: :skip
 end

@@ -25,6 +25,7 @@ defmodule Components.CardsExplorer do
   slot(above_card, required: false)
   slot(below_card, required: false)
   slot(dropdowns_before, required: false)
+  slot(additional_filters, required: false)
   data(end_of_stream?, :boolean, default: false)
   data(offset, :integer, default: 0)
   prop(scroll_size, :integer, default: 1)
@@ -149,6 +150,7 @@ defmodule Components.CardsExplorer do
         <FactionDropdown id="cards_faction_dropdown" />
         <!-- <LivePatchDropdown id="cards_collectible" param="collectible" title="Collectible" options={[{"no", "Uncollectible"}, {"yes", "Collectible"}]} /> -->
         <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
+        <#slot {@additional_filters} />
         <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
           <input name="search" type="text" class="input has-text-black" placeholder="Search name/text" value={Map.get(@params, "search", "")} />
         </.form>
