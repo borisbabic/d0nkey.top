@@ -18,7 +18,7 @@ defmodule Components.DeckSheetsModal do
         button_title={@button_title || button_title(@existing)}
         :if={!@existing || Sheets.can_admin?(@existing, @user)}
         title={title(@existing)}>
-        <.form for={:deck_sheet} id={"sheet_form_#{id(@existing)}"} phx-submit="submit" phx-target={@myself}>
+        <.form for={%{}} as={:deck_sheet} id={"sheet_form_#{id(@existing)}"} phx-submit="submit" phx-target={@myself}>
           <div class="field">
             <label class="label" for="name">Name</label>
             <input
@@ -37,7 +37,7 @@ defmodule Components.DeckSheetsModal do
               id="public_role"
               value={public_role(@existing) || :nothing}
             >
-              <option :for={{label, value} <- roles()} value={value} selected={value == (public_role(@existing) || :nothing)}>{label}</option>
+            {options_for_select(roles(), public_role(@existing) || :nothing)}
             </select>
           </div>
           <div class="field">
@@ -48,7 +48,7 @@ defmodule Components.DeckSheetsModal do
               id="group_id"
               value={group_id(@existing)}
             >
-              <option :for={{label, value} <- group_options(@user)} value={value} selected={value == group_id(@existing)}>{label}</option>
+              {options_for_select(group_options(@user), group_id(@existing))}
             </select>
           </div>
           <div class="field">
@@ -59,7 +59,7 @@ defmodule Components.DeckSheetsModal do
               id="group_role"
               value={group_role(@existing) || :contributor}
             >
-              <option :for={{label, value} <- roles()} value={value} selected={value == (group_role(@existing) || :contributor)}>{label}</option>
+            {options_for_select(roles(), group_role(@existing) || :contributor)}
             </select>
           </div>
           <div class="field">
@@ -70,7 +70,7 @@ defmodule Components.DeckSheetsModal do
               id="default_sort"
               value={default_sort(@existing) || "asc_inserted_at"}
             >
-              <option :for={{label, value} <- sort_options(@existing)} value={value} selected={value == (default_sort(@existing) || "asc_inserted_at")}>{label}</option>
+            {options_for_select(sort_options(@existing), default_sort(@existing) || "asc_inserted_at")}
             </select>
           </div>
         </.form>
