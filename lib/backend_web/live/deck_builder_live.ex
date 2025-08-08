@@ -4,6 +4,7 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Components.CardsExplorer
   alias Components.ExpandableDecklist
+  alias Components.Filter.ClassMultiDropdown
   alias Hearthstone.DeckcodeExtractor
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.Deck.Sideboard
@@ -36,18 +37,27 @@ defmodule BackendWeb.DeckBuilderLive do
         </div>
         <CardsExplorer
           scroll_size={@scroll_size}
-          card_pool={card_pool(@deck)}
+          card_pool={card_pool(@deck, Map.get(@raw_params, "additional_classes", []))}
           default_order_by={"mana_in_class"}
           class_options={class_options(@deck)}
           format_filter={standard?(@deck)}
           live_view={__MODULE__}
           id="cards_explorer"
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
-          params={card_params(@params, Deck.missing_zilliax_parts?(@deck))}
+          params={card_params(@params |> dbg(), Deck.missing_zilliax_parts?(@deck))}
           url_params={@params}
           on_card_click={"add-card"}
           card_phx_hook={"CardRightClick"}
           card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
+          <:additional_filters>
+            <ClassMultiDropdown
+              id="additional_classes_dropdown"
+              title="Additional Classes"
+              url_params={url_params(@params, @raw_params)}
+              live_view={__MODULE__}
+              param="additional_classes"
+              />
+          </:additional_filters>
           <:below_card :let={card: card}>
             <div class="tw-flex tw-justify-center">
               <div class="tag" :if={Card.max_copies_in_deck(card) > 1}>
@@ -92,13 +102,17 @@ defmodule BackendWeb.DeckBuilderLive do
   defp standard?(%{format: 2}), do: true
   defp standard?(_), do: false
 
-  defp card_pool(deck) do
+  defp card_pool(deck, additional_classes) do
     tourist_pool =
       for {class, set} <- Deck.tourist_class_set_tuples(deck) do
         %{class: class, card_set_id: set, not_tourist: true}
       end
 
-    [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
+    pool = [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
+
+    Enum.reduce(additional_classes || [], pool, fn class, carried_pool ->
+      [%{class: class} | carried_pool]
+    end)
   end
 
   defp class_options(deck) do
@@ -296,13 +310,14 @@ defmodule BackendWeb.DeckBuilderLive do
     Deck.deckcode(deck.cards, deck.hero, deck.format, new_sideboards)
   end
 
+  @non_cards_params ["deck_class", "code", "format", "additional_classes"]
   def handle_info({:update_filters, params}, socket) do
     %{raw_params: raw_params} = socket.assigns
-    non_cards_params = Map.take(raw_params, ["deck_class", "code", "format"])
+    url_params = url_params(params, raw_params)
 
     {:noreply,
      push_patch(socket,
-       to: Routes.live_path(socket, __MODULE__, Map.merge(params, non_cards_params))
+      to: Routes.live_path(socket, __MODULE__, url_params)
      )}
   end
 
@@ -317,6 +332,11 @@ defmodule BackendWeb.DeckBuilderLive do
       |> assign_deck(raw_params)
       |> assign_title()
     }
+  end
+
+  defp url_params(params, raw_params) do
+    non_card = Map.take(raw_params, @non_cards_params)
+    Map.merge(params, non_card)
   end
 
   defp assign_deck(socket, params) do
