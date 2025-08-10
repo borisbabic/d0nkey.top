@@ -378,8 +378,6 @@ defmodule Bot.MessageHandler do
   end
 
   def handle_blizz_o_clock(msg) do
-    timestamp = Blizzard.next_blizz_o_clock() |> Timex.to_unix()
-
     reply(
       msg,
       blizz_message()
