@@ -65,14 +65,14 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       bounce?(card_info) ->
         :"Bounce Rogue"
 
-      ysera_rogue?(card_info) ->
-        :"Ysera Rogue"
-
       "Fyrakk the Blazing" in card_info.card_names ->
         :"Fyrakk Rogue"
 
       "Ashamane" in card_info.card_names ->
         :"Ashamane Rogue"
+
+      ysera_rogue?(card_info) ->
+        :"Ysera Rogue"
 
       dark_gift?(card_info) ->
         :"Dark Gift Rogue"
