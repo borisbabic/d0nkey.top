@@ -459,7 +459,7 @@ defmodule Backend.PlayerInfo do
   @spec country_to_region(String.t()) :: Blizzard.region() | nil
   def country_to_region(region_code) when region_code in ["AP", "APAC"], do: :AP
   def country_to_region(region_code) when region_code in ["EU", "EMEA"], do: :EU
-  def country_to_region(region_code) when region_code in ["AM", "AMER"], do: :AM
+  def country_to_region(region_code) when region_code in ["AM", "AMER"], do: :US
   def country_to_region(cc), do: Map.get(@alpha2_to_region, cc)
 
   @spec get_country(Blizzard.battletag()) :: country_code
