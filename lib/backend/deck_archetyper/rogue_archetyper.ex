@@ -248,7 +248,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   @cycle_payoff [
     "Fal'dorei Strider",
     "Everything Must Go!",
-    "Playhouse Giant"
+    "Playhouse Giant",
+    "Incindius"
   ]
   @multi_draw [
     "Triple Sevens",
