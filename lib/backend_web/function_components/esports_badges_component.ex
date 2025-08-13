@@ -46,6 +46,13 @@ defmodule FunctionComponents.EsportsBadges do
     badge(%{badge: new_badge})
   end
 
+  def badge(%{badge: nil}) do
+    assigns = %{}
+
+    ~H"""
+    """
+  end
+
   def badge(%{badge: badge}) do
     apply(__MODULE__, badge, [%{}])
   end
