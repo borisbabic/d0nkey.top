@@ -3,6 +3,7 @@ defmodule BackendWeb.MultiTournamentLineupPopularityTableLive do
   alias Components.Lineups.PopularityTable
   data(user, :any)
   data(tournament_tuples, :list)
+  data(raw_tournaments, :list)
   data(lineups, :any)
   data(deck_group_size, :integer)
 
@@ -21,7 +22,8 @@ defmodule BackendWeb.MultiTournamentLineupPopularityTableLive do
           <div>
             <div class="title is-2">{@page_title}</div>
             <div class="subtitle is-6">
-              <span :if={@lineups.ok?}>Total Lineups: {Enum.count(@lineups.result)}</span>
+              <a href={~p"/tournament-lineups/stats?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Stats</a>
+              <span :if={@lineups.ok?}> | Total Lineups: {Enum.count(@lineups.result)}</span>
               <span :for={{link, display} <- links(@tournament_tuples)}>
                 | <a href={link}>{display}</a>
               </span>
@@ -36,11 +38,12 @@ defmodule BackendWeb.MultiTournamentLineupPopularityTableLive do
 
   def handle_params(params, _uri, socket) do
     raw_tournaments = params["tournaments"]
-    tournament_tuples = parse_tournaments(params)
+    tournament_tuples = Backend.Hearthstone.parse_tournaments(raw_tournaments)
     deck_group_size = params["deck_group_size"] |> Util.to_int_or_orig()
 
     assigns = [
       tournament_tuples: tournament_tuples,
+      raw_tournaments: raw_tournaments,
       deck_group_size: deck_group_size
     ]
 
@@ -58,23 +61,10 @@ defmodule BackendWeb.MultiTournamentLineupPopularityTableLive do
      end)}
   end
 
-  defp links(tournament_tuples) do
+  def links(tournament_tuples) do
     for {source, id} <- tournament_tuples,
         link = Backend.Tournaments.get_any_link({source, id}) do
       {link, id}
     end
   end
-
-  defp parse_tournaments(%{"tournaments" => tournaments}) when is_list(tournaments) do
-    tournaments
-    |> Enum.filter(&is_binary/1)
-    |> Enum.flat_map(fn tuple_string ->
-      case String.split(tuple_string, "|") do
-        [source, id] -> [{source, id}]
-        _ -> []
-      end
-    end)
-  end
-
-  defp parse_tournaments(_), do: []
 end
