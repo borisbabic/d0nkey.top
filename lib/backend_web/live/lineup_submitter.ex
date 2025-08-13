@@ -2,6 +2,7 @@ defmodule BackendWeb.LineupSubmitterLive do
   use BackendWeb, :surface_live_view
 
   data(view_url, :string, default: nil)
+  data(tournament_id, :string, default: nil)
 
   def mount(_params, session, socket) do
     {:ok,
@@ -17,7 +18,7 @@ defmodule BackendWeb.LineupSubmitterLive do
           <.form for={%{}} as={:lineups} id="lineup_submit_form" phx-submit="submit">
             <div class="field">
               <label class="label" for="tournament_id">Tournament ID/name</label>
-              <input class="input has-text-black is-small" type="text" name="lineups[tournament_id]" id="tournament_id" />
+              <input class="input has-text-black is-small" value={@tournament_id} type="text" name="lineups[tournament_id]" id="tournament_id" />
             </div>
             <div class="field" :if={custom_tournament_source?(@user)}>
               <label class="label" for="tournament_source">Tournament Source (like organization or website)</label>
@@ -43,6 +44,22 @@ defmodule BackendWeb.LineupSubmitterLive do
             <div :if={@view_url}>
               View lineups <a href={@view_url}>Here</a>
             </div>
+            <div :if={tournament_ids = (@view_url || true) && user_tournament_ids(@user)}>
+              <table class="table is-narrow">
+                <thead>
+                  <tr>
+                    <th>Previous Tournaments for {@user.battletag}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :for={tournament_id <- tournament_ids}>
+                    <td class="level">
+                      <a href={~p"/tournament-lineups/#{@user.battletag}/#{tournament_id}"}">{tournament_id}</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </.form>
         </div>
       </div>
@@ -51,6 +68,12 @@ defmodule BackendWeb.LineupSubmitterLive do
 
   def allowed(%{battletag: bt}) when is_binary(bt), do: true
   def allowed(_), do: false
+
+  def user_tournament_ids(%{battletag: bt}) when is_binary(bt) do
+    Backend.Hearthstone.get_tournament_ids_for_source(bt)
+  end
+
+  def user_tournament_ids(_), do: []
 
   def handle_event(
         "submit",
