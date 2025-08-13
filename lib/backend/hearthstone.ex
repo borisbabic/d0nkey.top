@@ -1717,4 +1717,17 @@ defmodule Backend.Hearthstone do
       %{slug: slug, name: name} -> {slug, name}
     end)
   end
+
+  def parse_tournaments(tournaments) when is_list(tournaments) do
+    tournaments
+    |> Enum.filter(&is_binary/1)
+    |> Enum.flat_map(fn tuple_string ->
+      case String.split(tuple_string, "|") do
+        [source, id] -> [{source, id}]
+        _ -> []
+      end
+    end)
+  end
+
+  def parse_tournaments(_), do: []
 end

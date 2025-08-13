@@ -286,13 +286,18 @@ defmodule BackendWeb.Router do
     )
 
     live(
+      "/tournament-lineups/:tournament_source/:tournament_id/stats",
+      TournamentLineupArchetypeStatsTable
+    )
+
+    live(
       "/tournament-lineups/popularity",
       MultiTournamentLineupPopularityTableLive
     )
 
     live(
-      "/tournament-lineups/:tournament_source/:tournament_id/stats",
-      TournamentLineupArchetypeStatsTable
+      "/tournament-lineups/stats",
+      MultiTournamentLineupArchetypeStatsTable
     )
 
     live("/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups)

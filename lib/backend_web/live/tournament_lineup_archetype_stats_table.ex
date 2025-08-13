@@ -2,7 +2,6 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.Lineups.ArchetypeStatsTable
-  alias Backend.Tournaments.Tournament
   alias Backend.Tournaments.ArchetypeStats
   data(user, :any)
   data(tournament_id, :string)
@@ -49,15 +48,7 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
      socket
      |> assign(assigns)
      |> assign_async([:archetype_stats, :adjusted_winrate_type], fn ->
-       archetype_stats(tournament_source, tournament_id)
+       Backend.Tournaments.archetype_stats(tournament_source, tournament_id)
      end)}
-  end
-
-  def archetype_stats("battlefy", tournament_id) do
-    with {:ok, t} <- Backend.Battlefy.fetch_tournament(tournament_id),
-         {:ok, as} <- Backend.Battlefy.archetype_stats(t) do
-      awt = Tournament.tags(t) |> Enum.find(&ArchetypeStats.supports_adjusted_winrate?/1)
-      {:ok, %{archetype_stats: as, adjusted_winrate_type: awt}}
-    end
   end
 end

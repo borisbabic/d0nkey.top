@@ -9,6 +9,7 @@ defmodule Backend.Tournaments do
 
   @type tournament_tuple :: {tournament_source :: String.t(), tournament_id :: String.t()}
   @type archetype_stats_bag :: %{String.t() => ArchetypeStats.t()}
+  @type archetype_stats :: %{archetype_stats: [ArchetypeStats.t()], adjusted_winrate_type: atom()}
 
   @spec get_tournament(tournament_tuple) :: Tournament.t()
   def get_tournament({"battlefy", id}), do: Battlefy.get_tournament(id)
@@ -54,6 +55,55 @@ defmodule Backend.Tournaments do
       end)
       |> ArchetypeStats.increment_in_bag(match_stats.banned, [:banned])
       |> ArchetypeStats.increment_in_bag(match_stats.not_banned, [:not_banned])
+    end)
+  end
+
+  @spec archetype_stats({source :: String.t(), id :: String.t()}) ::
+          {:ok, archetype_stats()} | {:error, :atom | String.t()}
+  def archetype_stats({source, id}), do: archetype_stats(source, id)
+
+  @spec archetype_stats(source :: String.t(), id :: String.t()) ::
+          {:ok, archetype_stats()} | {:error, :atom | String.t()}
+  def archetype_stats("battlefy", id) do
+    with {:ok, t} <- Backend.Battlefy.fetch_tournament(id),
+         {:ok, as} <- Backend.Battlefy.archetype_stats(t) do
+      awt = Tournament.tags(t) |> Enum.find(&ArchetypeStats.supports_adjusted_winrate?/1)
+      {:ok, %{archetype_stats: as, adjusted_winrate_type: awt}}
+    end
+  end
+
+  def archetype_stats(_, _), do: {:error, :source_not_supported}
+
+  @spec multi_tournament_archetype_stats([tournament_tuple()]) ::
+          {:ok, archetype_stats()} | {:error, :atom | String.t()}
+  def multi_tournament_archetype_stats(tournament_tuples) do
+    as =
+      for {:ok, archetype_stats} <- Enum.map(tournament_tuples, &archetype_stats/1) do
+        archetype_stats
+      end
+
+    case as do
+      [] ->
+        {:error, :no_archetype_stats}
+
+      _ ->
+        merged = merge_archetype_stats(as)
+
+        {:ok, merged}
+    end
+  end
+
+  def merge_archetype_stats(archetype_stats) do
+    Enum.reduce(archetype_stats, fn
+      %{archetype_stats: as, adjusted_winrate_type: awt},
+      %{archetype_stats: carry_as, adjusted_winrate_type: carry_awt} ->
+        archetype_stats = as ++ carry_as
+        # if they are not all the same then we don't want to do adjusted winrate
+        adjusted_winrate_type = if awt == carry_awt, do: awt
+        %{archetype_stats: archetype_stats, adjusted_winrate_type: adjusted_winrate_type}
+
+      _, carry ->
+        carry
     end)
   end
 end
