@@ -1348,6 +1348,18 @@ defmodule Backend.Hearthstone do
     |> where([lineup: l], l.tournament_source == ^tournament_source)
   end
 
+  defp compose_lineups_query({"tournaments", tournament_tuples}, query) do
+    dynamic =
+      Enum.reduce(tournament_tuples, dynamic(false), fn {source, id}, dynamic ->
+        dynamic(
+          [lineup: l],
+          ^dynamic or (l.tournament_source == ^source and l.tournament_id == ^id)
+        )
+      end)
+
+    query |> where(^dynamic)
+  end
+
   defp compose_lineups_query({"decks", decks}, query) do
     decks
     |> Enum.reduce(query, &lineup_deck_subquery/2)
