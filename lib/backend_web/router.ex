@@ -173,6 +173,8 @@ defmodule BackendWeb.Router do
     live("/battlefy/tournament/:tournament_id/lineups", BattlefyTournamentDecksLive)
     live("/battlefy/tournament/:tournament_id/participants", BattlefyParticipantsLive)
 
+    live("/battlefy/multi-tournament-stats", BattlefyTournamentStatsLive)
+
     get("/profile/battlefy/tournament/:tournament_id", BattlefyController, :profile_tournament)
     get("/battlefy/tournament/:tournament_id", BattlefyController, :tournament)
 

@@ -52,7 +52,7 @@ defmodule BackendWeb.MultiTournamentLineupPopularityTableLive do
      |> assign(assigns)
      |> Components.LivePatchDropdown.update_context(
        __MODULE__,
-       %{"deck_group_size" => deck_group_size, "tournaments" => [raw_tournaments]}
+       %{"deck_group_size" => deck_group_size, "tournaments" => raw_tournaments}
      )
      |> assign_async(:lineups, fn ->
        lineups = Backend.Hearthstone.lineups([{"tournaments", tournament_tuples}])

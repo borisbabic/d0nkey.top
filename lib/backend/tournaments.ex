@@ -9,10 +9,15 @@ defmodule Backend.Tournaments do
 
   @type tournament_tuple :: {tournament_source :: String.t(), tournament_id :: String.t()}
   @type archetype_stats_bag :: %{String.t() => ArchetypeStats.t()}
-  @type archetype_stats :: %{archetype_stats: [ArchetypeStats.t()], adjusted_winrate_type: atom()}
+  @type archetype_stats :: %{
+          archetype_stats: archetype_stats_bag(),
+          adjusted_winrate_type: atom()
+        }
 
-  @spec get_tournament(tournament_tuple) :: Tournament.t()
+  @spec get_tournament(tournament_tuple) :: Tournament.t() | nil
   def get_tournament({"battlefy", id}), do: Battlefy.get_tournament(id)
+  def get_tournament(_), do: nil
+
   @spec get_our_link(tournament_tuple | Tournament.t()) :: String.t() | nil
   def get_our_link(%BattlefyTournament{id: id}), do: get_our_link({"battlefy", id})
   def get_our_link({"battlefy", id}), do: "/battlefy/tournament/#{id}"
@@ -74,36 +79,49 @@ defmodule Backend.Tournaments do
 
   def archetype_stats(_, _), do: {:error, :source_not_supported}
 
-  @spec multi_tournament_archetype_stats([tournament_tuple()]) ::
-          {:ok, archetype_stats()} | {:error, :atom | String.t()}
-  def multi_tournament_archetype_stats(tournament_tuples) do
-    as =
-      for {:ok, archetype_stats} <- Enum.map(tournament_tuples, &archetype_stats/1) do
-        archetype_stats
-      end
+  @spec match_stats_and_awt({source :: String.t(), id :: String.t()}) ::
+          {[MatchStats.t()], atom()}
+  def match_stats_and_awt({source, id}), do: match_stats_and_awt(source, id)
 
-    case as do
-      [] ->
-        {:error, :no_archetype_stats}
-
-      _ ->
-        merged = merge_archetype_stats(as)
-
-        {:ok, merged}
+  @spec match_stats_and_awt(source :: String.t(), id :: String.t()) :: {[MatchStats.t()], atom()}
+  def match_stats_and_awt("battlefy", id) do
+    with {:ok, t} <- Backend.Battlefy.fetch_tournament(id),
+         {:ok, ms} <- Backend.Battlefy.match_stats(t) do
+      awt = Tournament.tags(t) |> Enum.find(&ArchetypeStats.supports_adjusted_winrate?/1)
+      {ms, awt}
+    else
+      _ -> {[], nil}
     end
   end
 
-  def merge_archetype_stats(archetype_stats) do
-    Enum.reduce(archetype_stats, fn
-      %{archetype_stats: as, adjusted_winrate_type: awt},
-      %{archetype_stats: carry_as, adjusted_winrate_type: carry_awt} ->
-        archetype_stats = as ++ carry_as
-        # if they are not all the same then we don't want to do adjusted winrate
-        adjusted_winrate_type = if awt == carry_awt, do: awt
-        %{archetype_stats: archetype_stats, adjusted_winrate_type: adjusted_winrate_type}
+  def match_stats_and_awt(_, _), do: {[], nil}
 
-      _, carry ->
-        carry
-    end)
+  @spec multi_tournament_archetype_stats([tournament_tuple()]) ::
+          {:ok, archetype_stats()} | {:error, :atom | String.t()}
+  def multi_tournament_archetype_stats(tournament_tuples) do
+    {match_stats, awt} =
+      Enum.map(tournament_tuples, &match_stats_and_awt/1)
+      |> Enum.reduce(fn {new_ms, new_awt}, {carry_ms, carry_awt} ->
+        awt = if new_awt == carry_awt, do: new_awt
+        ms = new_ms ++ carry_ms
+        {ms, awt}
+      end)
+
+    as = calculate_archetype_stats(match_stats)
+    {:ok, %{archetype_stats: as, adjusted_winrate_type: awt}}
   end
+
+  # def merge_archetype_stats(archetype_stats) do
+  #   Enum.reduce(archetype_stats, fn
+  #     %{archetype_stats: as, adjusted_winrate_type: awt},
+  #     %{archetype_stats: carry_as, adjusted_winrate_type: carry_awt} ->
+  #       archetype_stats = ArchetypeStats.as ++ carry_as
+  #       # if they are not all the same then we don't want to do adjusted winrate
+  #       adjusted_winrate_type = if awt == carry_awt, do: awt
+  #       %{archetype_stats: archetype_stats, adjusted_winrate_type: adjusted_winrate_type}
+
+  #     _, carry ->
+  #       carry
+  #   end)
+  # end
 end

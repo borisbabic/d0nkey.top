@@ -50,7 +50,7 @@ defmodule Components.Lineups.PopularityTable do
   defp lineups_freq(lineups, deck_group_size) do
     lineups
     |> Enum.flat_map(fn %{decks: decks} ->
-      archetypes = Enum.map(decks, & Deck.archetype(&1) || Deck.class_name(&1))
+      archetypes = Enum.map(decks, &(Deck.archetype(&1) || Deck.class_name(&1)))
       combinations(deck_group_size, archetypes)
     end)
     # keep class sort
@@ -66,8 +66,10 @@ defmodule Components.Lineups.PopularityTable do
 
   defp group_decks_options(lineups) do
     max_size =
-      case Enum.max_by(lineups, &Enum.count(&1.decks)) do
-        %{decks: decks} when is_list(decks) -> Enum.count(decks)
+      with true <- Enum.any?(lineups, & &1),
+           %{decks: decks} when is_list(decks) <- Enum.max_by(lineups, &Enum.count(&1.decks)) do
+        Enum.count(decks)
+      else
         _ -> 1
       end
 
