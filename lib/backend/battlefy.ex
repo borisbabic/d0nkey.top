@@ -545,6 +545,14 @@ defmodule Backend.Battlefy do
   @spec archetype_stats(tournament_id | Tournament.t()) ::
           {:ok, Tournaments.archetype_stats_bag()} | {:error, any()}
   def archetype_stats(tournament_or_id) do
+    with {:ok, match_stats} <- match_stats(tournament_or_id) do
+      {:ok, Tournaments.calculate_archetype_stats(match_stats)}
+    end
+  end
+
+  @spec match_stats(tournament_id | Tournament.t()) ::
+          {:ok, [MatchStats.t()]} | {:error, any()}
+  def match_stats(tournament_or_id) do
     id =
       case tournament_or_id do
         %Tournament{id: id} -> id
@@ -553,7 +561,7 @@ defmodule Backend.Battlefy do
 
     with {:ok, lineups} <- fetch_lineups(id),
          {:ok, matches} <- fetch_all_tournament_matches(tournament_or_id) do
-      {:ok, create_match_stats(matches, lineups) |> Tournaments.calculate_archetype_stats()}
+      {:ok, create_match_stats(matches, lineups)}
     end
   end
 
@@ -1014,6 +1022,7 @@ defmodule Backend.Battlefy do
     "5f5bc93e0c405a2571493bf4"
   """
   @spec tournament_link_to_id(String.t() | tournament_id()) :: tournament_id()
+  def tournament_link_to_id(empty) when empty in ["", nil], do: nil
   def tournament_link_to_id(id = <<_::192>>), do: id
 
   def tournament_link_to_id(link) do
@@ -1026,7 +1035,8 @@ defmodule Backend.Battlefy do
       no_comments
     else
       no_comments
-      |> String.replace(~r/http.*battlefy.com/, "")
+      |> URI.parse()
+      |> Map.get(:path, "")
       |> String.split("/")
       |> Enum.at(3)
     end

@@ -397,10 +397,10 @@ defmodule BackendWeb.BattlefyController do
   end
 
   def tournaments_stats(conn, params = %{"tournaments" => tournaments}) do
+    tournaments = if is_binary(tournaments), do: String.split("\n"), else: tournaments
+
     tournament_ids =
-      tournaments
-      |> String.split("\n")
-      |> Enum.map(&Battlefy.tournament_link_to_id/1)
+      Enum.map(tournaments, &Battlefy.tournament_link_to_id/1) |> Enum.filter(& &1)
 
     new_params =
       params
