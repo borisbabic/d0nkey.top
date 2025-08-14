@@ -9,7 +9,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.MastersTour
   alias Backend.Battlenet.Battletag
   alias Backend.UserManager.User
-  import FunctionComponents.Battlefy
+  import FunctionComponents.Battlefy, only: [stage_selection_dropdown: 1]
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -671,8 +671,7 @@ defmodule BackendWeb.BattlefyView do
 
     not_nil_nil =
       ongoing
-      |> Enum.filter(fn {_, %{score: score}} -> score != "0 - 0" end)
-      |> Enum.count()
+      |> Enum.count(fn {_, %{score: score}} -> score != "0 - 0" end)
       |> div(2)
 
     {total, not_nil_nil}
