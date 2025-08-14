@@ -153,6 +153,7 @@ defmodule BackendWeb.Router do
     )
 
     get("/mt/tour-stops", MastersTourController, :tour_stops)
+    live("/mt/playoffs/summer_2025", PlayoffsShowcaseLive)
     get("/legacy-hsesports/mt/stats", MastersTourController, :masters_tours_stats)
     get("/mtq/:mtq_num", MastersTourController, :qualifier_redirect)
     get("/mtq/:mtq_num/*rest", MastersTourController, :qualifier_redirect)
