@@ -129,7 +129,10 @@ defmodule BackendWeb.StreamingNowLive do
         "sort",
         "filter_legend",
         "deckcode",
-        "for_tournament"
+        "for_tournament",
+        "tournament",
+        "for_tournaments",
+        "tournaments"
       ])
 
   def filter_sort_streaming(streaming, filter_params),
@@ -142,13 +145,24 @@ defmodule BackendWeb.StreamingNowLive do
         Hearthstone.Enums.BnetGameType.game_type_name(s.game_type) == mode
       end)
 
-  def filter_sort({"for_tournament", tournament_string}, streaming_now) do
-    [source, id] = String.split(tournament_string, "|")
+  def filter_sort({"tournaments", tournaments}, streaming_now),
+    do: filter_sort({"for_tournaments", tournaments}, streaming_now)
 
+  def filter_sort({"for_tournaments", tournaments}, streaming_now) when is_list(tournaments) do
     tournament_streams =
-      Backend.TournamentStreams.get_for_tournament({source, id})
-      |> Enum.map(& &1.stream_id)
-      |> MapSet.new()
+      Enum.flat_map(tournaments, &streams_for_tournament_string/1) |> MapSet.new()
+
+    streaming_now
+    |> Enum.filter(fn s ->
+      MapSet.member?(tournament_streams, to_string(s.user_id))
+    end)
+  end
+
+  def filter_sort({"tournament", tournament_string}, streaming_now),
+    do: filter_sort({"for_tournament", tournament_string}, streaming_now)
+
+  def filter_sort({"for_tournament", tournament_string}, streaming_now) do
+    tournament_streams = streams_for_tournament_string(tournament_string) |> MapSet.new()
 
     streaming_now
     |> Enum.filter(fn s ->
@@ -182,4 +196,11 @@ defmodule BackendWeb.StreamingNowLive do
     do: streaming_now |> Enum.sort_by(fn s -> s.viewer_count end, &<=/2)
 
   def filter_sort(_other, carry), do: carry
+
+  defp streams_for_tournament_string(tournament_string) do
+    [source, id] = String.split(tournament_string, "|")
+
+    Backend.TournamentStreams.get_for_tournament({source, id})
+    |> Enum.map(& &1.stream_id)
+  end
 end
