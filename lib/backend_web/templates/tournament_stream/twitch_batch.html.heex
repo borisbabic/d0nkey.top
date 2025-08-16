@@ -1,0 +1,47 @@
+<section id="torch-toolbar">
+  <div class="torch-container">
+    <%= link "Cancel", to: Routes.tournament_stream_path(@conn, :index), class: "torch-button" %>
+  </div>
+</section>
+
+<section id="torch-header-and-content">
+  <div class="torch-container">
+    <div class="header">
+      <h3>Batch Insert</h3>
+    </div>
+
+    <%= form_for :batch, Routes.tournament_stream_path(@conn, :twitch_batch_insert), [multipart: true, id: "torch-form"], fn f -> %>
+      <fieldset class="torch-panel">
+        <legend>
+          <span>Details</span>
+        </legend>
+      
+        <div class="torch-form-group">
+          <%= label f, "twitch links or names"%>
+          <%= textarea f, :twitch_links %>
+          <%= error_tag f, :twitch_links %>
+        </div>
+      
+        <div class="torch-form-group">
+        <%= label f, :tournament_source %>
+        <div class="torch-form-group-input">
+            <%= text_input f, :tournament_source, value: "battlefy" %>
+            <%= error_tag f, :tournament_source %>
+        </div>
+        </div>
+        
+        <div class="torch-form-group">
+        <%= label f, :tournament_id %>
+        <div class="torch-form-group-input">
+            <%= text_input f, :tournament_id %>
+            <%= error_tag f, :tournament_id %>
+        </div>
+        </div>
+
+        <div class="torch-submit-form">
+          <%= submit "Submit", class: "torch-submit-button" %>
+        </div>
+      </fieldset>
+    <% end %>
+  </div>
+</section>

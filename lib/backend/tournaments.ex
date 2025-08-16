@@ -13,6 +13,7 @@ defmodule Backend.Tournaments do
           archetype_stats: archetype_stats_bag(),
           adjusted_winrate_type: atom()
         }
+  @supported_sources ["battlefy", "bobsleague"]
 
   @spec get_tournament(tournament_tuple) :: Tournament.t() | nil
   def get_tournament({"battlefy", id}), do: Battlefy.get_tournament(id)
@@ -111,17 +112,10 @@ defmodule Backend.Tournaments do
     {:ok, %{archetype_stats: as, adjusted_winrate_type: awt}}
   end
 
-  # def merge_archetype_stats(archetype_stats) do
-  #   Enum.reduce(archetype_stats, fn
-  #     %{archetype_stats: as, adjusted_winrate_type: awt},
-  #     %{archetype_stats: carry_as, adjusted_winrate_type: carry_awt} ->
-  #       archetype_stats = ArchetypeStats.as ++ carry_as
-  #       # if they are not all the same then we don't want to do adjusted winrate
-  #       adjusted_winrate_type = if awt == carry_awt, do: awt
-  #       %{archetype_stats: archetype_stats, adjusted_winrate_type: adjusted_winrate_type}
+  def parse_source(source) when source in @supported_sources, do: source
+  def parse_source(_), do: nil
 
-  #     _, carry ->
-  #       carry
-  #   end)
-  # end
+  def parse_id(id, source \\ nil)
+  def parse_id(id, "battlefy"), do: Backend.Battlefy.tournament_link_to_id(id)
+  def parse_id(id, _), do: id
 end

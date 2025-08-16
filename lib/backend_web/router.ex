@@ -362,6 +362,8 @@ defmodule BackendWeb.Router do
     post("/battletag_info/batch-insert", BattletagController, :batch_insert)
     resources("/battletag_info", BattletagController)
     resources("/users", UserController)
+    get("/tournament-streams/batch", TournamentStreamController, :twitch_batch)
+    post("/tournament-streams/batch-insert", TournamentStreamController, :twitch_batch_insert)
     resources("/tournament-streams", TournamentStreamController)
     get("/invited_player/batch", InvitedPlayerController, :batch)
     post("/invited_player/batch-insert", InvitedPlayerController, :batch_insert)
