@@ -102,6 +102,10 @@ defmodule Backend.Tournaments do
   def multi_tournament_archetype_stats(tournament_tuples) do
     {match_stats, awt} =
       Enum.map(tournament_tuples, &match_stats_and_awt/1)
+      |> Enum.filter(fn
+        {[_ | _], _awt} -> true
+        _ -> false
+      end)
       |> Enum.reduce(fn {new_ms, new_awt}, {carry_ms, carry_awt} ->
         awt = if new_awt == carry_awt, do: new_awt
         ms = new_ms ++ carry_ms
