@@ -27,11 +27,11 @@ defmodule BackendWeb.ProfileSettingsLive do
             </div>
             <div>
               <label for="cross_out_country" class="label">Cross Out Country</label>
-              <input type="checked" name="cross_out_country" checked={@user.cross_out_country} />
+              <input type="checkbox" name="cross_out_country" checked={@user.cross_out_country} />
             </div>
             <div>
               <label for="show_region" class="label">Show Region Instead of Country</label>
-              <input type="checked" name="show_region" checked={@user.show_region} />
+              <input type="checkbox" name="show_region" checked={@user.show_region} />
             </div>
             <br>
             <div>
@@ -74,27 +74,27 @@ defmodule BackendWeb.ProfileSettingsLive do
               <label for="gradient">Gradient Color</label>
             </div>
             <div>
-              <input type="checked" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} />
+              <input type="checkbox" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} />
               <label for="show_one">Show 1 for singleton cards</label>
             </div>
             <div>
-              <input type="checked" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} />
+              <input type="checkbox" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} />
               <label for="show_one_for_legendaries">Show 1 for singleton legendaries</label>
             </div>
             <div>
-              <input type="checked" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} />
+              <input type="checkbox" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} />
               <label for="show_dust_above">Show dust above cards</label>
             </div>
             <div>
-              <input type="checked" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} />
+              <input type="checkbox" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} />
               <label for="show_dust_below">Show dust below cards</label>
             </div>
             <div>
-              <input type="checked" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} />
+              <input type="checkbox" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} />
               <label for="use_missing_dust">Use missing dust instead of total</label>
             </div>
             <div>
-              <input type="checked" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} />
+              <input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} />
               <label for="fade_missing_cards">Fade missing cards in decks</label>
             </div>
             <br>
