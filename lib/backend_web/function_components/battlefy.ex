@@ -42,8 +42,8 @@ defmodule FunctionComponents.Battlefy do
         <footer class="card-footer">
           <a href={~p"/battlefy/tournament/#{@tournament.id}/participants"} class="card-footer-item">Participants</a>
           <a :if={Tournament.has_bracket(@tournament)} href={~p"/battlefy/tournament/#{@tournament.id}/lineups"} class="card-footer-item">Lineups</a>
-          <a :if={Tournament.has_bracket(@tournament)} href={~p"/battlefy/tournament/#{@tournament.id}/stats"} class="card-footer-item">Winrate</a>
-          <a :if={Tournament.has_bracket(@tournament)} href={~p"/battlefy/tournament/#{@tournament.id}/popularity"} class="card-footer-item">Popularity</a>
+          <a :if={Tournament.has_bracket(@tournament)} href={~p"/tournament-lineups/battlefy/#{@tournament.id}/stats"} class="card-footer-item">Winrate</a>
+          <a :if={Tournament.has_bracket(@tournament)} href={~p"/tournament-lineups/battlefy/#{@tournament.id}/popularity"} class="card-footer-item">Popularity</a>
           <a :if={Tournament.has_bracket(@tournament)} href={~p"/streaming-now?for_tournament=battlefy|#{@tournament.id}"} class="card-footer-item">Other Streams</a>
         </footer>
       </div>
