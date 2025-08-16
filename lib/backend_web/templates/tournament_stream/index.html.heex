@@ -1,6 +1,7 @@
 <section id="torch-toolbar">
   <div class="torch-container">
     <%= link "New Tournament stream", to: Routes.tournament_stream_path(@conn, :new) %>
+    <%= link "Batch Insert Twitch Streams", to: Routes.tournament_stream_path(@conn, :twitch_batch) %>
   </div>
 </section>
 <section id="torch-index-content">

@@ -345,6 +345,16 @@ defmodule Backend.Streaming do
     |> order_by([{^direction, ^field}])
   end
 
+  defp compose_streamers_query({"twitch_login", logins}, query) when is_list(logins) do
+    query
+    |> where([streamer: s], s.twitch_login in ^logins)
+  end
+
+  defp compose_streamers_query({"twitch_login", login}, query) when is_binary(login) do
+    query
+    |> where([streamer: s], s.twitch_login == ^login)
+  end
+
   defp compose_streamers_query(_unrecognized, query), do: query
 
   def streamer_by_twitch_id(twitch_id) do
@@ -570,5 +580,18 @@ defmodule Backend.Streaming do
       c.set in ["PATH_OF_ARTHAS", "RETURN_OF_THE_LICH_KING"] && Card.dbf_id(c) not in [86_228]
     end)
     |> Enum.map(& &1.dbf_id)
+  end
+
+  def extract_twitch_login(""), do: nil
+
+  def extract_twitch_login(link_or_login) when is_binary(link_or_login) do
+    URI.parse(link_or_login)
+    |> Map.get(:path)
+    |> String.split("/")
+    |> case do
+      [login] -> login
+      ["", login | _] -> login
+      _ -> nil
+    end
   end
 end
