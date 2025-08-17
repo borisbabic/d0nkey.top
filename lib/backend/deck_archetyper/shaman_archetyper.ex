@@ -39,7 +39,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       terran?(card_info, 4) ->
         :"Terran Shaman"
 
-      rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
+      rainbow?(card_info, 2, 4) ->
         :"Rainbow Shaman"
 
       DemonHunterArchetyper.pirate?(card_info) ->
@@ -65,6 +65,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       murmur?(card_info) ->
         :"Murmur Shaman"
+
+      rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
+        :"Rainbow Shaman"
 
       "Turbulus" in card_info.card_names ->
         :"Turbulus Shaman"
@@ -94,9 +97,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     ])
   end
 
-  defp rainbow?(card_info) do
-    rainbow_cards?(card_info, 1) and
-      spell_school_count(card_info) >= 3
+  defp rainbow?(card_info, rainbow_count \\ 1, spell_school_count \\ 3) do
+    rainbow_cards?(card_info, rainbow_count) and
+      spell_school_count(card_info) >= spell_school_count
   end
 
   defp rainbow_cards?(card_info, min_count) do
