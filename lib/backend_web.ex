@@ -222,6 +222,7 @@ defmodule BackendWeb do
       import BackendWeb.Gettext
       alias BackendWeb.Router.Helpers, as: Routes
       use BackendWeb.ViewHelpers
+      import FunctionComponents.CoreComponents
       unquote(verified_routes())
 
       def add_games_filters(base \\ %{}, params) do

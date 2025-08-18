@@ -74,28 +74,22 @@ defmodule BackendWeb.ProfileSettingsLive do
               <label for="gradient">Gradient Color</label>
             </div>
             <div>
-              <input type="checkbox" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} />
-              <label for="show_one">Show 1 for singleton cards</label>
+              <.input type="checkbox" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} label="Show 1 for singleton cards"/>
             </div>
             <div>
-              <input type="checkbox" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} />
-              <label for="show_one_for_legendaries">Show 1 for singleton legendaries</label>
+              <.input type="checkbox" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} label="Show 1 for singleton legendaries"/>
             </div>
             <div>
-              <input type="checkbox" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} />
-              <label for="show_dust_above">Show dust above cards</label>
+              <.input type="checkbox" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} label="Show dust above cards"/>
             </div>
             <div>
-              <input type="checkbox" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} />
-              <label for="show_dust_below">Show dust below cards</label>
+              <.input type="checkbox" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} label="Show dust below cards"/>
             </div>
             <div>
-              <input type="checkbox" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} />
-              <label for="use_missing_dust">Use missing dust instead of total</label>
+              <.input type="checkbox" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Use missing dust instead of total"/>
             </div>
             <div>
-              <input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} />
-              <label for="fade_missing_cards">Fade missing cards in decks</label>
+              <.input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Fade missing cards in decks"/>
             </div>
             <br>
             <div>
@@ -244,8 +238,10 @@ defmodule BackendWeb.ProfileSettingsLive do
     Map.put(attrs, key, val)
   end
 
+  defp to_bool("on"), do: true
   defp to_bool("true"), do: true
   defp to_bool("false"), do: false
+  defp to_bool(""), do: false
   defp to_bool(val), do: val
 
   def parse_decklist_color_option(attrs, params, key) do
