@@ -44,7 +44,7 @@ defmodule BackendWeb.DeckBuilderLive do
           live_view={__MODULE__}
           id="cards_explorer"
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
-          params={card_params(@params |> dbg(), Deck.missing_zilliax_parts?(@deck))}
+          params={card_params(@params, Deck.missing_zilliax_parts?(@deck))}
           url_params={@params}
           on_card_click={"add-card"}
           card_phx_hook={"CardRightClick"}
@@ -317,7 +317,7 @@ defmodule BackendWeb.DeckBuilderLive do
 
     {:noreply,
      push_patch(socket,
-      to: Routes.live_path(socket, __MODULE__, url_params)
+       to: Routes.live_path(socket, __MODULE__, url_params)
      )}
   end
 
