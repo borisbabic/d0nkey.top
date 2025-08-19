@@ -3,7 +3,7 @@ defmodule BackendWeb.MultiTournamentLineupArchetypeStatsTable do
   use BackendWeb, :surface_live_view
   import BackendWeb.MultiTournamentLineupPopularityTableLive, only: [links: 1]
   alias Components.Lineups.ArchetypeStatsTable
-  alias Backend.Tournaments.ArchetypeStats
+
   data(user, :any)
   data(tournament_tuples, :list)
   data(raw_tournaments, :list)

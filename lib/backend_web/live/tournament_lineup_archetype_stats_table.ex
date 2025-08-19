@@ -2,7 +2,6 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.Lineups.ArchetypeStatsTable
-  alias Backend.Tournaments.ArchetypeStats
   data(user, :any)
   data(tournament_id, :string)
   data(tournament_source, :string)
