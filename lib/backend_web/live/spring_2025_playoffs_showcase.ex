@@ -1,12 +1,12 @@
-defmodule BackendWeb.PlayoffsShowcaseLive do
+defmodule BackendWeb.Spring2025PlayoffsShowcaseLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias FunctionComponents.Battlefy
 
   @tournament_ids [
-    "6894fe4027e0c8001817fb64",
-    "68952016453af600175f8c7c",
-    "68951f3027e0c8001817fcd6"
+    "68222e81ffecdf001835336f",
+    "68222fbdffecdf0018353387",
+    "682230f5ffecdf0018353398"
   ]
   data(tournaments, :list)
   data(multi_query, :map)
@@ -25,23 +25,17 @@ defmodule BackendWeb.PlayoffsShowcaseLive do
      |> put_user_in_context()
      |> assign(:tournaments, tournaments)
      |> assign(:multi_query, multi_query)
-     |> assign(:page_title, "Summer Playoffs")}
+     |> assign(:page_title, "Spring 2025 Playoffs")}
   end
 
   def render(assigns) do
     ~F"""
     <div>
-      <div class="title is-2">Summer Playoffs</div>
+      <div class="title is-2">Spring 2025 Playoffs</div>
       <div class="subtitle is-5">
         <a href={~p"/tournament-lineups/popularity?#{@multi_query}"}><span class="is-hidden-mobile">Archetype/Lineup </span>Popularity</a> |
         <a href={~p"/tournament-lineups/stats?#{@multi_query}"}><span class="is-hidden-mobile">Archetype</span> Winrates</a> |
         <a href={~p"/streaming-now?#{@multi_query}"}>Other Streams</a>
-      </div>
-      <div class="notification is-primary">
-        Day 1 (Saturday): Swiss - no official stream<span class="is-hidden-mobile">, players may stream their POV</span>
-      </div>
-      <div class="notification is-primary">
-        Day 2 (Sunday): Top 8 - <a href="https://www.twitch.tv/playhearthstone">Official Stream</a><span class="is-hidden-mobile"> and costreams</span>
       </div>
       <div :for={tournament <- @tournaments}>
         <Battlefy.tournament_card tournament={tournament} />

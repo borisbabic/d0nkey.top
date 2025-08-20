@@ -48,7 +48,8 @@ defmodule BackendWeb.EsportsLive do
          </div>
          <div class="content">
            <EsportsBadges.badges badges={[:AM, :EU, :AP, :standard, :bo3, :open, :free]} />
-           Official HSEsports! Qualify through <a href={~p"/battlefy/third-party-tournaments?slug=esportsadmin-esa-events"}>open qualifiers</a> or <a href="/leaderboard/points">Ladder Points</a>
+           Official HSEsports! Qualify through <a href={~p"/battlefy/third-party-tournaments?slug=esportsadmin-esa-events"}>open qualifiers</a> or <a href="/leaderboard/points">Ladder Points</a>.
+           <a href={~p"/mt/playoffs/summer_2025"}>Summer Playoffs</a> and <a href={~p"/mt/playoffs/spring_2025"}>Spring Playoffs</a>
          </div>
        </div>
      </div>
