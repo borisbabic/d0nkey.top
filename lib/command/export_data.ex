@@ -7,6 +7,11 @@ defmodule Command.ExportData do
           optional(:directory) => String.t(),
           optional(:delimiter) => String.t()
         }
+  @type import_params :: %{
+          optional(:file_part) => String.t(),
+          optional(:directory) => String.t(),
+          optional(:delimiter) => String.t()
+        }
   @spec export_games_data(export_games_params()) :: any()
   def export_games_data(params \\ %{}) do
     params = fill_export_games_params(params)
@@ -26,6 +31,16 @@ defmodule Command.ExportData do
       file_part: Map.get(params, :file_part) || start_time |> Timex.to_date() |> to_string(),
       directory:
         Map.get(params, :directory, "/mnt/storage_box/dbdumps") |> String.trim_trailing("/"),
+      delimiter: Map.get(params, :delimiter, "|")
+    }
+  end
+
+  def fill_import_params(params \\ %{}) do
+    file_part = Map.get(params, :file_part) || yesterday_start() |> Timex.to_date() |> to_string()
+
+    %{
+      file_part: file_part,
+      directory: Map.get(params, :directory, "/tmp"),
       delimiter: Map.get(params, :delimiter, "|")
     }
   end
@@ -170,5 +185,48 @@ defmodule Command.ExportData do
 
   defp plus_one_day(start) do
     Timex.add(start, Timex.Duration.from_days(1))
+  end
+
+  def import(params \\ %{}) do
+    params = fill_import_params(params)
+    import_csv(params, "sources", "public.dt_sources")
+    import_csv(params, "decks", "public.deck")
+    import_csv(params, "games", "public.dt_games")
+    import_csv(params, "tallies", "public.dt_card_game_tally")
+  end
+
+  def import_csv(params, table, target_table) do
+    file = "#{params.directory}/#{table}_#{params.file_part}.csv"
+    stream = File.stream!(file)
+    temporary_table_name = "temporary_#{table}_#{params.file_part}"
+
+    create_temporary = """
+    CREATE TEMPORARY TABLE "#{temporary_table_name}" (LIKE #{target_table} INCLUDING ALL) ON COMMIT DROP;
+    """
+
+    copy_statement = """
+      COPY "#{temporary_table_name}" FROM stdin WITH (FORMAT csv, DELIMITER '#{params.delimiter}', HEADER true)
+    """
+
+    insert_into_statement = """
+      INSERT INTO #{target_table}
+      SELECT * FROM "#{temporary_table_name}"
+      ON CONFLICT DO NOTHING;
+    """
+
+    Backend.Repo.transact(
+      fn repo ->
+        repo.query!(create_temporary)
+
+        stream
+        |> Stream.chunk_every(2000, 2000, [])
+        |> Stream.into(Ecto.Adapters.SQL.stream(repo, copy_statement))
+        |> Stream.run()
+
+        repo.query!(insert_into_statement)
+        {:ok, :ok}
+      end,
+      timeout: :infinity
+    )
   end
 end
