@@ -158,6 +158,12 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Dead Man's Hand" in card_info.card_names ->
         :"DMH Warrior"
 
+      "Hydration Station" in card_info.card_names ->
+        :"Hydration Warrior"
+
+      "Unlucky Powderman" in card_info.card_names ->
+        :"Taunt Warrior"
+
       "Rivendare, Warrider" in card_info.card_names ->
         :"Rivendare Warrior"
 
@@ -170,12 +176,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       sulthraze?(card_info) ->
         :"Sul'thraze Warrior"
-
-      "Hydration Station" in card_info.card_names ->
-        :"Hydration Warrior"
-
-      "Unlucky Powderman" in card_info.card_names ->
-        :"Taunt Warrior"
 
       true ->
         fallbacks(card_info, "Warrior")
