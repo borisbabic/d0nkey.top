@@ -588,10 +588,23 @@ defmodule Backend.Battlefy do
     for %{is_complete: true, top: top, bottom: bottom, stats: stats} <- matches do
       top_banned = Map.get(lineup_decks, archetype_key(top, top.banned_class))
       top_lineup = Map.get(full_lineups, MatchTeam.get_name(top)) || []
-      top_not_banned = Enum.reject(top_lineup, &(&1 == top_banned))
+
+      top_not_banned =
+        if top_banned do
+          Enum.reject(top_lineup, &(&1 == top_banned))
+        else
+          []
+        end
+
       bottom_banned = Map.get(lineup_decks, archetype_key(bottom, bottom.banned_class))
       bottom_lineup = Map.get(full_lineups, MatchTeam.get_name(bottom)) || []
-      bottom_not_banned = Enum.reject(bottom_lineup, &(&1 == bottom_banned))
+
+      bottom_not_banned =
+        if bottom_banned do
+          Enum.reject(bottom_lineup, &(&1 == bottom_banned))
+        else
+          []
+        end
 
       results =
         for %{
@@ -614,7 +627,7 @@ defmodule Backend.Battlefy do
         end
 
       %MatchStats{
-        banned: [top_banned, bottom_banned],
+        banned: [top_banned, bottom_banned] |> Enum.filter(& &1),
         not_banned: top_not_banned ++ bottom_not_banned,
         results: results
       }
