@@ -9,6 +9,7 @@ defmodule Hearthstone.DeckTracker.Game do
   alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
   alias Hearthstone.DeckTracker.CardGameTally
+  alias Hearthstone.DeckTracker.GamePlayedCards
   alias Backend.Api.ApiUser
 
   schema "dt_games" do
@@ -33,6 +34,7 @@ defmodule Hearthstone.DeckTracker.Game do
     field :turns, :integer
     field :player_has_coin, :boolean, default: nil
     has_one(:raw_player_card_stats, RawPlayerCardStats)
+    has_one(:played_cards, GamePlayedCards)
     field :replay_url, :string, default: nil
 
     field :public, :boolean, default: false
@@ -60,6 +62,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :opponent_legend_rank,
       :public
     ])
+    |> build_played_cards(attrs)
     |> build_raw_player_card_stats(attrs)
     |> build_card_tallies(attrs)
     |> unique_constraint(:game_id)
@@ -89,6 +92,7 @@ defmodule Hearthstone.DeckTracker.Game do
       :duration,
       :turns
     ])
+    |> build_played_cards(attrs)
     |> build_raw_player_card_stats(attrs)
     |> build_card_tallies(attrs)
     |> fix_rank(:player_rank, :player_legend_rank)
@@ -122,6 +126,15 @@ defmodule Hearthstone.DeckTracker.Game do
   end
 
   defp build_card_tallies(cs, _attrs) do
+    cs
+  end
+
+  defp build_played_cards(cs, %{"played_cards" => _}) do
+    cs
+    |> cast_assoc(:played_cards)
+  end
+
+  defp build_played_cards(cs, _attrs) do
     cs
   end
 

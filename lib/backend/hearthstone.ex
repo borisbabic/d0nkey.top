@@ -31,6 +31,13 @@ defmodule Backend.Hearthstone do
   @type insertable_card :: ApiCard
   @type card :: Card.t() | Backend.HearthstoneJson.Card.t()
 
+  defmacro is_card(arg) do
+    quote do
+      is_struct(unquote(arg), Backend.Hearthstone.Card) or
+        is_struct(unquote(arg), Backend.HearthstoneJson.Card)
+    end
+  end
+
   def set_groups() do
     Repo.all(SetGroup)
   end
@@ -405,6 +412,7 @@ defmodule Backend.Hearthstone do
   def class(78_065), do: "DEATHKNIGHT"
   def class(dbf_id), do: HearthstoneJson.get_class(dbf_id)
 
+  @spec fetch_dbf_id(String.t() | integer() | Map.t()) :: integer() | nil
   def dbf_id(dbf_id) when is_integer(dbf_id), do: dbf_id
 
   def dbf_id(card_id) when is_binary(card_id) do
@@ -414,7 +422,42 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  def dbf_id(card) when is_struct(card), do: Card.dbf_id(card)
+  def dbf_id(card) when is_card(card), do: Card.dbf_id(card)
+
+  def dbf_id(card) when is_map(card) do
+    [:dbf_id, :card_id, :card_dbf_id]
+    |> Enum.find_value(fn key ->
+      card_value = Map.get(card, key) || Map.get(card, to_string(key))
+      dbf_id(card_value)
+    end)
+  end
+
+  def dbf_id(_), do: nil
+
+  @spec fetch_dbf_id(String.t() | integer() | Map.t()) ::
+          {:ok, integer()} | {:error, reason :: atom()}
+  def fetch_dbf_id(id_or_map) do
+    case dbf_id(id_or_map) do
+      dbf_id when is_integer(dbf_id) -> {:ok, dbf_id}
+      _ -> {:error, :could_not_get_dbf_id}
+    end
+  end
+
+  def to_dbf_id_reducer(_, {:error, error}), do: {:error, error}
+
+  def to_dbf_id_reducer(id_or_card, {:ok, acc}) when is_list(acc) do
+    with {:ok, dbf_id} <- fetch_dbf_id(id_or_card) do
+      {:ok, [dbf_id | acc]}
+    end
+  end
+
+  def to_dbf_id_reducer(_, _), do: {:error, :could_not_get_dbf_id}
+  # def fetch_dbf_id(dbf_id) when is_integer(dbf_id), do: {:ok, dbf_id}
+  # def fetch_dbf_id(card_id) when is_binary(card_id) do
+  #   case Backend.HearthstoneJson.get_dbf_by_card_id(card_id) do
+  #   end
+  # end
+  # def fetch_dbf_id()
 
   def deduplicate_decks(limit \\ 100) do
     get_duplicated_deck_ids(limit)

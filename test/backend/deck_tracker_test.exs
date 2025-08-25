@@ -85,6 +85,27 @@ defmodule Hearthstone.DeckTrackerTest do
       game_type: 7,
       format: 2
     }
+    @with_known_played_cards %GameDto{
+      player: %PlayerDto{
+        battletag: "D0nkey#2470",
+        rank: nil,
+        legend_rank: nil,
+        cards_played: [%{card_id: 74_097, turn: 3, created?: false}],
+        deckcode:
+          "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+      },
+      opponent: %PlayerDto{
+        battletag: nil,
+        rank: nil,
+        cards_played: [%{card_id: 74_097, turn: 2, created?: true}],
+        legend_rank: nil
+      },
+      result: "WON",
+      game_id: "bla bla car",
+      game_type: 7,
+      format: 2
+    }
+
 
     test "handle_game/1 returns new game and updates it" do
       assert {:ok, %Game{status: :in_progress, turns: nil, duration: nil}} =
@@ -113,6 +134,14 @@ defmodule Hearthstone.DeckTrackerTest do
 
       preloaded = Backend.Repo.preload(game, :card_tallies)
       assert %{card_tallies: [_ | _]} = preloaded
+    end
+
+    test "handle_game/1 saves played_cards when cards are known" do
+      assert {:ok, %Game{status: :win, turns: nil, duration: nil, game_id: "bla bla car"} = game} =
+               DeckTracker.handle_game(@with_known_played_cards)
+
+      preloaded = Backend.Repo.preload(game, :played_cards)
+      assert %{played_cards: %{player_cards: [_ | _], opponent_cards: []}} = preloaded
     end
 
     test "doesn't convert freshly inserted raw_stats" do

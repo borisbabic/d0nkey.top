@@ -109,7 +109,29 @@ defmodule Hearthstone.DeckTracker.GameDto do
       "created_by" => dto.created_by
     }
     |> add_card_info(dto)
+    |> add_played_cards(dto)
   end
+
+  def add_played_cards(attrs, %{
+        player: %{cards_played: player_played},
+        opponent: %{cards_played: opponent_played}
+      })
+      when is_list(player_played) and is_list(opponent_played) do
+    case create_played_cards_ecto_attrs(
+           player_played,
+           opponent_played,
+           attrs["player_class"],
+           attrs["opponent_class"]
+         ) do
+      {:ok, played_attrs} ->
+        Map.put(attrs, "played_cards", played_attrs)
+
+      _ ->
+        attrs
+    end
+  end
+
+  def add_played_cards(attrs, _), do: attrs
 
   def add_card_info(
         attrs,
@@ -136,6 +158,30 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   defp add_deck_id(tallies, _deck), do: tallies
+
+  def create_played_cards_ecto_attrs(player_played, opponent_played, player_class, opponent_class) do
+    with {:ok, player_dbf_ids} <- played_from_deck_dbf_ids(player_played),
+         {:ok, opponent_dbf_ids} <- played_from_deck_dbf_ids(opponent_played) do
+      {
+        :ok,
+        %{
+          "player_cards" => player_dbf_ids,
+          "opponent_cards" => opponent_dbf_ids,
+          "player_archetype" =>
+            Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_class),
+          "opponent_archetype" =>
+            Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_class),
+          "archetyping_updated_at" => NaiveDateTime.utc_now()
+        }
+      }
+    end
+  end
+
+  defp played_from_deck_dbf_ids(played_dtos) do
+    played_dtos
+    |> Enum.filter(&(!&1.created?))
+    |> Enum.reduce({:ok, []}, &Backend.Hearthstone.to_dbf_id_reducer/2)
+  end
 
   def create_card_tally_ecto_attrs(mull, drawn, game_id) do
     with {:ok, attrs} <- create_card_tally_ecto_attrs(mull, drawn) do
@@ -249,6 +295,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
   use TypedStruct
   alias Hearthstone.DeckTracker.CardDrawnDto
   alias Hearthstone.DeckTracker.CardMulliganDto
+  alias Hearthstone.DeckTracker.CardPlayedDto
   alias Backend.Hearthstone.Deck
 
   typedstruct do
@@ -258,6 +305,7 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
     field :deckcode, String.t()
     field :cards_in_hand_after_mulligan, Map.t() | nil
     field :cards_drawn_from_initial_deck, Map.t() | nil
+    field :cards_played, Map.t() | nil
     field :class, String.t()
   end
 
@@ -283,18 +331,46 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
 
     drawn_raw = map["cards_drawn_from_initial_deck"] || map["cardsDrawnFromInitialDeck"]
 
+    cards_played_raw = map["cards_with_created_by"] || map["cardsWithCreatedBy"]
+
     %__MODULE__{
       battletag: map["battletag"] || map["battleTag"],
       rank: map["rank"],
       legend_rank: map["legend_rank"] || map["legendRank"],
       cards_in_hand_after_mulligan: CardMulliganDto.from_raw_list(mull_raw, before_raw),
       cards_drawn_from_initial_deck: CardDrawnDto.from_raw_list(drawn_raw),
+      cards_played: CardPlayedDto.from_raw_list(cards_played_raw),
       class: map["class"],
       deckcode: map["deckcode"]
     }
   end
 
   def from_raw_map(_), do: %{} |> from_raw_map()
+end
+
+defmodule Hearthstone.DeckTracker.CardPlayedDto do
+  @moduledoc "handles card played info"
+  use TypedStruct
+  @derive Jason.Encoder
+
+  typedstruct do
+    field :card_id, String.t()
+    field :created?, boolean()
+    field :turn, integer()
+  end
+
+  def from_raw_list(list) when is_list(list), do: Enum.map(list, &from_raw_map/1)
+  def from_raw_list(_), do: nil
+
+  def from_raw_map(map) when is_map(map) do
+    %__MODULE__{
+      card_id: map["card_id"] || map["cardId"],
+      turn: map["turn"],
+      created?: !!map["createdBy"]
+    }
+  end
+
+  def from_raw_map(_), do: nil
 end
 
 defmodule Hearthstone.DeckTracker.CardMulliganDto do
