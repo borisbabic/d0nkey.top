@@ -207,6 +207,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       highlander?(card_info) ->
         :"Highlander DH"
 
+      quest?(card_info) ->
+        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+
       "Il'gynoth" in card_info.card_names ->
         :"Il'gynoth DH"
 
@@ -221,9 +224,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
       questline?(card_info) ->
         :"Questline DH"
-
-      quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
 
       boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
