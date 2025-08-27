@@ -23,6 +23,7 @@ defmodule BackendWeb.MultiTournamentLineupPopularityTableLive do
             <div class="title is-2">{@page_title}</div>
             <div class="subtitle is-6">
               <a href={~p"/tournament-lineups/stats?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Stats</a>
+              | <a href={~p"/tournament-lineups/matchups?#{%{"tournaments" => @raw_tournaments}}"}>Matchups</a>
               <span :if={@lineups.ok?}> | Total Lineups: {Enum.count(@lineups.result)}</span>
               <span :for={{link, display} <- links(@tournament_tuples)}>
                 | <a href={link}>{display}</a>
