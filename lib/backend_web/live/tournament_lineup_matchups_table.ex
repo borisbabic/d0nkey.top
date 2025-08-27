@@ -1,7 +1,7 @@
-defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
+defmodule BackendWeb.TournamentLineupMatchupsTableLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
-  alias Components.Lineups.ArchetypeStatsTable
+  alias Components.MatchupsTable
   data(user, :any)
   data(tournament_id, :string)
   data(tournament_source, :string)
@@ -13,7 +13,7 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
      socket
      |> assign_defaults(session)
      |> put_user_in_context()
-     |> assign(:page_title, "Tournament Archetype Stats")}
+     |> assign(:page_title, "Tournament Matchups")}
   end
 
   def render(assigns) do
@@ -22,7 +22,7 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
       <div class="subtitle is-6">
         <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
         | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/popularity"}>Archetype Popularity</a>
-        | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/matchups"}>Matchups</a>
+        | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
         <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
           | <a href={link}>Tournament</a>
         </span>
@@ -31,7 +31,7 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
       <div :if={@archetype_stats.loading}>
         Preparing stats...
       </div>
-      <ArchetypeStatsTable adjusted_winrate_type={@adjusted_winrate_type.result || nil} :if={@archetype_stats.ok?}  id={"lineup_archetype_stats_table_#{@tournament_source}_#{@tournament_id}"} stats={@archetype_stats.result}/>
+      <MatchupsTable :if={@archetype_stats.ok?}  id={"lineup_matchups_table_#{@tournament_source}_#{@tournament_id}"} matchups={@archetype_stats.result}/>
     """
   end
 
