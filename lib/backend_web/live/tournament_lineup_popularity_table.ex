@@ -24,6 +24,7 @@ defmodule BackendWeb.TournamentLineupPopularityTableLive do
             <div class="subtitle is-6">
               <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
               | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
+              | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/matchups"}>Matchups</a>
               <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
                | <a href={link}>Tournament</a>
               </span>

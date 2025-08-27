@@ -80,6 +80,41 @@ defmodule Backend.Tournaments do
 
   def archetype_stats(_, _), do: {:error, :source_not_supported}
 
+  # @spec matchup_stats({source :: String.t(), id :: String.t()} | archetype_stats()) ::
+  #         {:ok, matchup_stats()} | {:error, :atom | String.t()}
+  # def matchup_stats({source, id}), do: matchup_stats(source, id)
+  # def matchup_stats(archetype_stats) do
+  #   for %{archetype: archetype, wins: wins, losses: losses, heads_up: heads_up} <- archetype_stats do
+  #     %Matchups{
+  #       archetype: archetype,
+  #       total_games: wins + losses,
+  #       total_winrate: wins / (losses + wins),
+  #       matchups: heads_up_to_matchups(heads_up)
+  #     }
+  #   end
+  # end
+
+  # @spec heads_up_to_matchups([HeadsUp.t()]) :: [Matchup.t()]
+  # def heads_up_to_matchups(heads_up) do
+  #   heads_ups
+  #   |> Enum.map(fn {archetype, %{wins: wins, losses: losses}} ->
+  #     matchup = %Matchup{
+  #       winrate: wins / (losses + wins),
+  #       games: wins + losses
+  #     }
+  #     {archetype, matchup}
+  #   end)
+  #   |> Map.new()
+  # end
+
+  # @spec matchup_stats(source :: String.t(), id :: String.t()) ::
+  #         {:ok, [Matchups.t()]} | {:error, :atom | String.t()}
+  # def matchup_stats(source, id) do
+  #   with {:ok, archetype_stats}  <- archetype_stats(source, id) do
+  #     matchup_stats(archetype_stats)
+  #   end
+  # end
+
   @spec match_stats_and_awt({source :: String.t(), id :: String.t()}) ::
           {[MatchStats.t()], atom()}
   def match_stats_and_awt({source, id}), do: match_stats_and_awt(source, id)
