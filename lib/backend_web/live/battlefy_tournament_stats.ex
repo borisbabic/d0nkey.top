@@ -31,6 +31,8 @@ defmodule BackendWeb.BattlefyTournamentStatsLive do
           <br>
           <a :if={with_source_query} target="_blank" href={~p"/tournament-lineups/popularity?#{with_source_query}"}>Popularity</a>
           <br>
+          <a :if={with_source_query} target="_blank" href={~p"/tournament-lineups/matchups?#{with_source_query}"}>Matchups</a>
+          <br>
           <a :if={ids_query} target="_blank" href={~p"/battlefy/tournaments-stats?#{ids_query}"}>Player Stats</a>
         </div>
       </div>

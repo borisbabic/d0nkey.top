@@ -1,8 +1,8 @@
-defmodule BackendWeb.MultiTournamentLineupArchetypeStatsTable do
+defmodule BackendWeb.MultiTournamentMatchupsTableLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   import BackendWeb.MultiTournamentLineupPopularityTableLive, only: [links: 1]
-  alias Components.Lineups.ArchetypeStatsTable
+  alias Components.MatchupsTable
 
   data(user, :any)
   data(tournament_tuples, :list)
@@ -15,7 +15,7 @@ defmodule BackendWeb.MultiTournamentLineupArchetypeStatsTable do
      socket
      |> assign_defaults(session)
      |> put_user_in_context()
-     |> assign(:page_title, "Tournament Archetype Stats")}
+     |> assign(:page_title, "Tournament Matchups")}
   end
 
   def render(assigns) do
@@ -23,7 +23,7 @@ defmodule BackendWeb.MultiTournamentLineupArchetypeStatsTable do
       <div class="title is-2">{@page_title}</div>
       <div class="subtitle is-6">
         <a href={~p"/tournament-lineups/popularity?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Popularity</a>
-        | <a href={~p"/tournament-lineups/matchups?#{%{"tournaments" => @raw_tournaments}}"}>Matchups</a>
+        | <a href={~p"/tournament-lineups/stats?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Stats</a>
         <span :for={{link, display} <- links(@tournament_tuples)}>
           | <a href={link}>{display}</a>
         </span>
@@ -32,7 +32,7 @@ defmodule BackendWeb.MultiTournamentLineupArchetypeStatsTable do
       <div :if={@archetype_stats.loading}>
         Preparing stats...
       </div>
-      <ArchetypeStatsTable adjusted_winrate_type={@adjusted_winrate_type.result || nil} :if={@archetype_stats.ok?}  id={"lineup_archetype_stats_table_#{Enum.count(@tournament_tuples)}"} stats={@archetype_stats.result}/>
+      <MatchupsTable :if={@archetype_stats.ok?}  id={"lineup_matchups_table_#{Enum.count(@tournament_tuples)}"} matchups={@archetype_stats.result}/>
     """
   end
 

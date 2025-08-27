@@ -309,6 +309,11 @@ defmodule BackendWeb.Router do
       MultiTournamentLineupArchetypeStatsTable
     )
 
+    live(
+      "/tournament-lineups/matchups",
+      MultiTournamentMatchupsTableLive
+    )
+
     live("/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups)
 
     live("/wc/2021", WC2021Live)
