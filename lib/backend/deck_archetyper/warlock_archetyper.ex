@@ -18,14 +18,11 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       murloc?(card_info) ->
         :"Murloc Warlock"
 
-      armor?(card_info) ->
-        :"Armor Warlock"
+      starship?(card_info) ->
+        :"Starship Warlock"
 
       mill?(card_info) ->
         :"Mill Warlock"
-
-      deathrattle?(card_info) ->
-        :"Deathrattle Warlock"
 
       big_demon_warlock?(card_info) ->
         :"Big Demon Warlock"
@@ -39,8 +36,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       painlock?(card_info) ->
         :Painlock
 
-      starship?(card_info) ->
-        :"Starship Warlock"
+      deathrattle?(card_info) ->
+        :"Deathrattle Warlock"
 
       demon?(card_info) ->
         :"Demon Warlock"
@@ -107,10 +104,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   @spec deckless?(ArchetyperHelpers.card_info()) :: boolean()
   defp deckless?(ci) do
     min_count?(ci.card_names ++ ci.etc_sideboard_names, 1, ["Kil'jaeden", "Wheel of DEATH!!!"])
-  end
-
-  defp armor?(card_info) do
-    "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info)
   end
 
   defp deathrattle?(card_info) do
