@@ -956,6 +956,12 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
+  def games_with_played_cards(criteria) do
+    base_games_with_played_cards_query()
+    |> build_games_query(criteria)
+    |> Repo.all()
+  end
+
   @spec archetypes(list()) :: [atom()]
   def archetypes(raw_criteria) do
     criteria =
@@ -1010,6 +1016,17 @@ defmodule Hearthstone.DeckTracker do
       left_join: source in assoc(g, :source),
       as: :source,
       preload: [player_deck: pd, source: source]
+    )
+  end
+
+  defp base_games_with_played_cards_query() do
+    from(g in Game,
+      as: :game,
+      inner_join: pd in assoc(g, :player_deck),
+      as: :player_deck,
+      inner_join: played_cards in assoc(g, :played_cards),
+      as: :played_cards,
+      preload: [player_deck: pd, played_cards: played_cards]
     )
   end
 

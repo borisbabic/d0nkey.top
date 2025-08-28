@@ -316,6 +316,8 @@ defmodule BackendWeb.Router do
 
     live("/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups)
 
+    live("/played-cards-archetype-popularity", PlayedCardsArchetypePopularity)
+
     live("/wc/2021", WC2021Live)
     live("/wc/2022", WC2022Live)
     live("/wc/2024/china-qualifiers", WC2024ChinaQualifiers)
@@ -326,7 +328,7 @@ defmodule BackendWeb.Router do
     live("/max/nations-2022/player/:player", MaxNations2022PlayerLive)
 
     live("/my-replays", MyReplaysLive)
-    live("/my-decks", MyDecksLive)
+    # live("/my-decks", MyDecksLive)
     live("/collection", CollectionLive)
 
     live("/groups/:group_id/decks", GroupDecksLive)
