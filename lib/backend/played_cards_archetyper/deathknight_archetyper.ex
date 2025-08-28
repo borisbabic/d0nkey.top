@@ -144,7 +144,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     end
   end
 
-  def wild(card_info) do
+  def wild(_card_info) do
     nil
   end
 end
