@@ -19,6 +19,7 @@ defmodule Command.ExportData do
     export_decks(params)
     export_games(params)
     export_tallies(params)
+    export_played_cards(params)
   end
 
   @spec fill_export_games_params(export_games_params()) :: export_games_params()
@@ -69,6 +70,13 @@ defmodule Command.ExportData do
   def export_tallies(params) do
     sql = export_tallies_sql(params)
     IO.puts("Exporting Tallies...")
+    IO.puts(sql)
+    Backend.Repo.query!(sql, [], timeout: :infinity)
+  end
+
+  def export_played_cards(params) do
+    sql = export_played_cards_sql(params)
+    IO.puts("Exporting Played Games...")
     IO.puts(sql)
     Backend.Repo.query!(sql, [], timeout: :infinity)
   end
@@ -179,6 +187,37 @@ defmodule Command.ExportData do
     """
   end
 
+  def export_played_cards_sql(%{
+        start_time: start_time,
+        end_time: end_time,
+        directory: directory,
+        delimiter: delimiter,
+        file_part: file_part
+      }) do
+    """
+    COPY (
+      SELECT
+        *
+      FROM
+        PUBLIC.dt_game_played_cards PLAYED_CARDS
+      WHERE
+        PLAYED_CARDS.GAME_ID IN (
+          SELECT DISTINCT
+            DTG.ID
+          FROM
+            PUBLIC.DT_GAMES DTG
+            INNER JOIN PUBLIC.DECK D ON D.ID = DTG.PLAYER_DECK_ID
+          WHERE
+            DTG.INSERTED_AT >= '#{start_time}'
+            AND DTG.INSERTED_AT < '#{end_time}'
+            AND DTG.GAME_TYPE = 7
+            AND DTG.FORMAT = 2
+            AND D.SIDEBOARDS IS NULL
+        )
+    ) TO '#{directory}/played_cards_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
+    """
+  end
+
   defp yesterday_start() do
     Timex.today() |> Timex.add(Timex.Duration.from_days(-1)) |> Timex.to_datetime()
   end
@@ -193,6 +232,7 @@ defmodule Command.ExportData do
     import_csv(params, "decks", "public.deck")
     import_csv(params, "games", "public.dt_games")
     import_csv(params, "tallies", "public.dt_card_game_tally")
+    import_csv(params, "played_cards", "public.dt_game_played_cards")
   end
 
   def import_csv(params, table, target_table) do
