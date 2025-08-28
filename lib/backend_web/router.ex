@@ -328,7 +328,7 @@ defmodule BackendWeb.Router do
     live("/max/nations-2022/player/:player", MaxNations2022PlayerLive)
 
     live("/my-replays", MyReplaysLive)
-    # live("/my-decks", MyDecksLive)
+    live("/my-decks", MyDecksLive)
     live("/collection", CollectionLive)
 
     live("/groups/:group_id/decks", GroupDecksLive)
