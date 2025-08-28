@@ -89,8 +89,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Battlefiend",
       "Slumbering Sprite",
       "Sock Puppet Slitherspear",
+      "Patches the Pilot",
+      "King Mukla",
       "Brain Masseuse",
       "Kayn Sunfury",
+      "Observer of Mysteries",
       "Spirity of the Team",
       "Acupuncture"
     ])
