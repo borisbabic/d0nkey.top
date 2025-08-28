@@ -179,19 +179,24 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   defp sort_and_filter(card_played_popularity, min_played_count, sort_by) do
+    sorter = sorter(sort_by)
+
     card_played_popularity
     |> Enum.filter(fn
       {_, %{"total" => total}} -> total >= min_played_count
       _ -> false
     end)
-    |> Enum.sort_by(
-      fn {_card, popularity} ->
-        count = Map.get(popularity, sort_by, 0)
-        total = Map.get(popularity, "total", 0)
-        count / total
-      end,
-      :desc
-    )
+    |> Enum.sort_by(sorter, :desc)
+  end
+
+  defp sorter("total"), do: fn {_card, popularity} -> Map.get(popularity, "total", 0) end
+
+  defp sorter(sort_by) do
+    fn {_card, popularity} ->
+      count = Map.get(popularity, sort_by, 0)
+      total = Map.get(popularity, "total", 0)
+      count / total
+    end
   end
 
   defp sorted_archetypes(archetypes_map) do
