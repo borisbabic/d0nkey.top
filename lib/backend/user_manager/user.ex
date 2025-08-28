@@ -115,9 +115,11 @@ defmodule Backend.UserManager.User do
   @spec string_admin_roles() :: [String.t()]
   def string_admin_roles(), do: all_admin_roles() |> Enum.map(&to_string/1)
 
-  @spec can_access?(User.t(), String.t()) :: boolean
-  def can_access?(%{admin_roles: ar}, r) when is_list(ar),
-    do: ar |> Enum.map(&to_string/1) |> Enum.any?(&(&1 in [r |> to_string(), "super"]))
+  @spec can_access?(User.t(), String.t() | atom()) :: boolean
+  def can_access?(%{admin_roles: admin_roles}, role) when is_list(admin_roles) do
+    to_check = [to_string(role), "super"]
+    Enum.any?(admin_roles, &(to_string(&1) in to_check))
+  end
 
   def can_access?(_, _), do: false
 
