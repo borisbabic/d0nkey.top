@@ -28,6 +28,9 @@
               <.navbar_item_link link={~p"/twitch/bot"} display={"My Twitch Bot"} />
             <% end %>
             <.navbar_item_link link={~p"/profile/settings"} display={"Settings"} />
+            <%= if can_access?(@conn, :archetyping) do %>
+              <.navbar_item_link link={~p"/played-cards-archetype-popularity"} display={"Archetyping - Played Cards Popularity"} />
+            <% end %>
             <%= if can_access?(@conn, :battletag_info) do %>
               <.navbar_item_link link={~p"/torch/battletag_info"} display={"Admin - Battletag Info"} />
             <% end %>
