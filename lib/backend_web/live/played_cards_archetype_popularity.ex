@@ -70,7 +70,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               </th>
             </thead>
             <tbody>
-              <tr :for={{card, %{"total" => total} = popularity_map} <- @card_popularity.result}>
+              <tr :for={{card, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by)}>
                 <td>
                   <div class="decklist_card_container">
                     <DecklistCard deck_class="NEUTRAL" card={Backend.Hearthstone.get_card(card)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
@@ -115,13 +115,28 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         |> assign(needs_class?: false)
         |> assign(same_assigns)
         |> update_context()
-        |> assign_async([:card_popularity, :archetypes], fn ->
-          fetch_card_popularity(criteria, min_played_count, sort_by)
-        end)
+        |> fetch_popularity(socket)
       }
     else
       {:noreply, socket |> assign(needs_class?: true) |> assign(same_assigns) |> update_context()}
     end
+  end
+
+  # no need to fetch because the criteria hasn't changed
+  defp fetch_popularity(%{assigns: %{criteria: new_criteria}} = new_socket, %{
+         assigns: %{criteria: old_criteria}
+       })
+       when new_criteria == old_criteria do
+    new_socket
+  end
+
+  defp fetch_popularity(socket, _old_socket) do
+    criteria = socket.assigns.criteria
+
+    socket
+    |> assign_async([:card_popularity, :archetypes], fn ->
+      fetch_card_popularity(criteria)
+    end)
   end
 
   defp assign_can_access(%{assigns: %{user: user}} = socket) do
@@ -137,10 +152,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     )
   end
 
-  def fetch_card_popularity(criteria, min_played_count, sort_by) do
+  def fetch_card_popularity(criteria) do
     games = Hearthstone.DeckTracker.games_with_played_cards(criteria)
-    {base_popularity, archetypes_popularity} = process_games(games)
-    popularity = sort_and_filter(base_popularity, min_played_count, sort_by)
+    {popularity, archetypes_popularity} = process_games(games)
 
     {:ok, %{card_popularity: popularity, archetypes: sorted_archetypes(archetypes_popularity)}}
   end
