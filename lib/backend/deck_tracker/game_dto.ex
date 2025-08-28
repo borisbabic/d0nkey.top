@@ -121,7 +121,8 @@ defmodule Hearthstone.DeckTracker.GameDto do
            player_played,
            opponent_played,
            attrs["player_class"],
-           attrs["opponent_class"]
+           attrs["opponent_class"],
+           attrs["format"]
          ) do
       {:ok, played_attrs} ->
         Map.put(attrs, "played_cards", played_attrs)
@@ -159,7 +160,13 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   defp add_deck_id(tallies, _deck), do: tallies
 
-  def create_played_cards_ecto_attrs(player_played, opponent_played, player_class, opponent_class) do
+  def create_played_cards_ecto_attrs(
+        player_played,
+        opponent_played,
+        player_class,
+        opponent_class,
+        format
+      ) do
     with {:ok, player_dbf_ids} <- played_from_deck_dbf_ids(player_played),
          {:ok, opponent_dbf_ids} <- played_from_deck_dbf_ids(opponent_played) do
       {
@@ -168,9 +175,9 @@ defmodule Hearthstone.DeckTracker.GameDto do
           "player_cards" => player_dbf_ids,
           "opponent_cards" => opponent_dbf_ids,
           "player_archetype" =>
-            Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_class),
+            Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_class, format),
           "opponent_archetype" =>
-            Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_class),
+            Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_class, format),
           "archetyping_updated_at" => NaiveDateTime.utc_now()
         }
       }
