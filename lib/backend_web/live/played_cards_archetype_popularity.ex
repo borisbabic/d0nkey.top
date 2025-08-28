@@ -38,14 +38,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">Hello good looking!</div>
+      <div class="title is-2">Played Cards Archetype Popularity</div>
       <PeriodDropdown id="period_dropdown" filter_context={:personal} aggregated_only={false} />
       <FormatDropdown id="format_dropdown" filter_context={:personal} aggregated_only={false} />
       <RankDropdown id="rank_dropdown" filter_context={:personal} aggregated_only={false} />
       <ClassDropdown id="class_dropdown" param="player_class"/>
       <LivePatchDropdown
         id="min_played_count"
-        options={[1, 69, 100, 420, 666, 9001]}
+        options={[1, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
         title={"Min Played Count"}
         param={"min_played_count"}
         selected_as_title={false}
@@ -59,31 +59,39 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           Loading tournaments...
         </div>
         <div :if={@card_popularity.ok? && @archetypes.ok?} class="tw-overflow-scroll">
-          <table class="table is-fullwidth is-striped" >
+          <table class="table is-fullwidth is-striped tw-table">
             <thead>
-              <th>Card</th>
-              <th :on-click="change_sort" phx-value-sort_by={"total"}>
+              <th class="tw-bg-gray-700">Card</th>
+              <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</th>
+              <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={"total"}>
                 {add_arrow("Times Played", "total", @params, true)}
               </th>
-              <th :on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @archetypes.result}>
+              <th class="tw-bg-gray-700 ":on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @archetypes.result}>
                 {add_arrow(archetype, to_string(archetype), @params)}
               </th>
             </thead>
             <tbody>
-              <tr :for={{card, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by)}>
+              <tr :for={{card, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by)} :if={{card_archetype} = {Backend.PlayedCardsArchetyper.archetype([card], @criteria["player_class"], @criteria["format"])}}>
                 <td>
                   <div class="decklist_card_container">
-                    <DecklistCard deck_class="NEUTRAL" card={Backend.Hearthstone.get_card(card)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
+                    <DecklistCard :if={card = Backend.Hearthstone.get_card(card)} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
                 </td>
+                <td :if={User.can_access?(@user, :archetyping)} class={if card_archetype |> to_string() |> String.starts_with?("Other "), do: "tw-text-red-500"}>{card_archetype}</td>
                 <td>{total}</td>
-                <td :for={archetype <- @archetypes.result}>{Map.get(popularity_map, archetype, 0) |> Util.percent(total) |> Float.round(1)}</td>
+                <td :for={archetype <- @archetypes.result} class={class(archetype, card_archetype)}>{Map.get(popularity_map, archetype, 0) |> Util.percent(total) |> Float.round(1)}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     """
+  end
+
+  defp class(archetype, card_archetype) do
+    if to_string(archetype) == to_string(card_archetype) do
+      "tw-font-bold tw-text-gray-500"
+    end
   end
 
   def handle_params(params, _uri, socket) do
