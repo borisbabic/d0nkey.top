@@ -147,7 +147,7 @@ defmodule Components.CardStatsTable do
 
               </td>
             <td>
-              <WinrateTag class={""} impact={true} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
+              <WinrateTag impact={true} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
               <span :if={!cs.sufficient_mull and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
