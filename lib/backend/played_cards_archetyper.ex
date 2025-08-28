@@ -1,19 +1,51 @@
+# credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
 defmodule Backend.PlayedCardsArchetyper do
   @moduledoc false
 
   alias Backend.PlayedCardsArchetyper.DeathKnightArchetyper
+  alias Backend.PlayedCardsArchetyper.DemonHunterArchetyper
+  alias Backend.PlayedCardsArchetyper.DruidArchetyper
+  alias Backend.PlayedCardsArchetyper.HunterArchetyper
+  alias Backend.PlayedCardsArchetyper.MageArchetyper
+  alias Backend.PlayedCardsArchetyper.PaladinArchetyper
+  alias Backend.PlayedCardsArchetyper.PriestArchetyper
+  alias Backend.PlayedCardsArchetyper.RogueArchetyper
+  alias Backend.PlayedCardsArchetyper.ShamanArchetyper
+  alias Backend.PlayedCardsArchetyper.WarlockArchetyper
+  alias Backend.PlayedCardsArchetyper.WarriorArchetyper
 
   @type card_info :: %{
           card_names: [String.t()],
           full_cards: [Card.t()],
           cards: [integer()]
         }
-  def archetype(cards, class, format \\ 2) when is_binary(class) and is_list(cards) do
+  def archetype(cards, class, format \\ 2)
+  def archetype(cards, class, format) when is_binary(class) and is_list(cards) do
     card_info = card_info(cards)
 
     case {Util.to_int_or_orig(format), class} do
       {2, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard(card_info)
-      {1, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard(card_info)
+      {1, "DEATHKNIGHT"} -> DeathKnightArchetyper.wild(card_info)
+      {2, "DEMONHUNTER"} -> DemonHunterArchetyper.standard(card_info)
+      {1, "DEMONHUNTER"} -> DemonHunterArchetyper.wild(card_info)
+      {2, "DRUID"} -> DruidArchetyper.standard(card_info)
+      {1, "DRUID"} -> DruidArchetyper.wild(card_info)
+      {2, "HUNTER"} -> HunterArchetyper.standard(card_info)
+      {1, "HUNTER"} -> HunterArchetyper.wild(card_info)
+      {2, "MAGE"} -> MageArchetyper.standard(card_info)
+      {1, "MAGE"} -> MageArchetyper.wild(card_info)
+      {2, "PALADIN"} -> PaladinArchetyper.standard(card_info)
+      {1, "PALADIN"} -> PaladinArchetyper.wild(card_info)
+      {2, "PRIEST"} -> PriestArchetyper.standard(card_info)
+      {1, "PRIEST"} -> PriestArchetyper.wild(card_info)
+      {2, "ROGUE"} -> RogueArchetyper.standard(card_info)
+      {1, "ROGUE"} -> RogueArchetyper.wild(card_info)
+      {2, "SHAMAN"} -> ShamanArchetyper.standard(card_info)
+      {1, "SHAMAN"} -> ShamanArchetyper.wild(card_info)
+      {2, "WARLOCK"} -> WarlockArchetyper.standard(card_info)
+      {1, "WARLOCK"} -> WarlockArchetyper.wild(card_info)
+      {2, "WARRIOR"} -> WarriorArchetyper.standard(card_info)
+      {1, "WARRIOR"} -> WarriorArchetyper.wild(card_info)
       _ -> nil
     end
   end
