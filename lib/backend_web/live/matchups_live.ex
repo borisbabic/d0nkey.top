@@ -13,7 +13,7 @@ defmodule BackendWeb.MatchupsLive do
   data(criteria, :map)
   data(params, :map)
   data(archetype_stats, :map)
-  data(premium_filters, :boolean, default: false)
+  data(premium_filters, :boolean, default: true)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}

@@ -12,6 +12,7 @@ defmodule FunctionComponents.Stats do
   attr :lightness, :integer, default: 50
   attr :base_saturation, :integer, default: 5
   attr :sample, :integer, default: nil
+  attr :show_sample, :boolean, default: nil
   attr :impact, :boolean, default: false
   attr :win_loss, :any, default: nil
 
@@ -20,6 +21,7 @@ defmodule FunctionComponents.Stats do
     <.dynamic_tag tag_name={@tag_name} class={@class} style={winrate_style(@winrate + shift_for_color(@impact), @positive_hue, @negative_hue, @lightness, @base_saturation, @sample)}>
       <span class="basic-black-text tw-text-center">
         {round(@winrate, @round_digits)}
+        <sup :if={@show_sample}>{@sample}</sup>
         <span :if={@win_loss}>({@win_loss.wins} - {@win_loss.losses})</span>
       </span>
     </.dynamic_tag>
