@@ -12,7 +12,7 @@ defmodule Components.MatchupsTable do
   def render(assigns) do
     ~F"""
       <div class="tw-overflow-scroll">
-        <div class="notification is-warning">This is WIP (work in progress)</div>
+        <div class="notification is-warning">This UI is WIP (work in progress).</div>
         <table class="tw-text-black tw-border-collapse tw-table tw-text-center " :if={sorted_matchups = sort_matchups(@matchups)}>
           <thead class="tw-sticky tw-top-0 tw-text-black">
             <th class="tw-w-[10px]">Total Winrate</th>

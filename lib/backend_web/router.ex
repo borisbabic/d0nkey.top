@@ -239,6 +239,7 @@ defmodule BackendWeb.Router do
     live("/esports", EsportsLive)
     live("/card-stats", CardStatsLive)
     live("/meta", MetaLive)
+    live("/matchups", MatchupsLive)
     live("/decks", DecksLive)
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)
