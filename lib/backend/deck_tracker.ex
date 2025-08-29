@@ -968,6 +968,20 @@ defmodule Hearthstone.DeckTracker do
     |> build_games_query(criteria)
   end
 
+  def decisive_archetype_results_query(criteria) do
+    from(g in Game,
+      as: :game,
+      inner_join: pc in assoc(g, :played_cards),
+      as: :played_cards,
+      select: %{
+        player_archetype: pc.player_archetype,
+        opponent_archetype: pc.opponent_archetype,
+        status: g.status
+      }
+    )
+    |> build_games_query([:has_archetypes, :has_decisive_result | Enum.to_list(criteria)])
+  end
+
   @spec archetypes(list()) :: [atom()]
   def archetypes(raw_criteria) do
     criteria =
@@ -1771,8 +1785,14 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"has_replay_url", _}, query), do: query
 
-  defp compose_games_query("has_result", query) do
+  defp compose_games_query(has_result, query) when has_result in ["has_result", :has_result] do
     results = ["win", "loss", "draw"]
+    query |> where([game: g], g.status in ^results)
+  end
+
+  defp compose_games_query(has_result, query)
+       when has_result in ["has_decisive_result", :has_decisive_result] do
+    results = ["win", "loss"]
     query |> where([game: g], g.status in ^results)
   end
 
@@ -1842,6 +1862,14 @@ defmodule Hearthstone.DeckTracker do
       [played_cards: pc, game: g],
       not is_nil(g.player_class) and not is_nil(g.opponent_class) and not is_nil(g.format) and
         not is_nil(pc.player_cards) and not is_nil(pc.opponent_cards)
+    )
+  end
+
+  defp compose_games_query(:has_archetypes, query) do
+    query
+    |> where(
+      [played_cards: pc],
+      not is_nil(pc.player_archetype) and not is_nil(pc.opponent_archetype)
     )
   end
 
@@ -2971,5 +2999,48 @@ defmodule Hearthstone.DeckTracker do
       end)
 
     repo.transaction(query)
+  end
+
+  alias Backend.Tournaments.ArchetypeStats
+  @spec matchups(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
+  def matchups(criteria \\ []) do
+    Repo.transact(
+      fn repo ->
+        query = decisive_archetype_results_query(criteria)
+
+        stats =
+          repo.stream(query)
+          |> Enum.reduce(%{}, &matchup_stats_reducer/2)
+
+        {:ok, stats}
+      end,
+      timeout: :infinity
+    )
+  end
+
+  @spec matchups_alt(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
+  def matchups_alt(criteria \\ []) do
+    decisive_archetype_results_query(criteria)
+    |> Repo.all(timeout: :infinity)
+    |> Enum.reduce(%{}, &matchup_stats_reducer/2)
+  end
+
+  defp matchup_stats_reducer(
+         %{
+           player_archetype: player_archetype,
+           opponent_archetype: opponent_archetype,
+           status: status
+         },
+         carry
+       ) do
+    {player_field, opponent_field} =
+      case status do
+        :win -> {:wins, :losses}
+        :loss -> {:losses, :wins}
+      end
+
+    carry
+    |> ArchetypeStats.add_result_to_bag(player_archetype, opponent_archetype, player_field)
+    |> ArchetypeStats.add_result_to_bag(opponent_archetype, player_archetype, opponent_field)
   end
 end
