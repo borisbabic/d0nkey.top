@@ -29,7 +29,7 @@ defmodule Components.MatchupsTable do
               <td class={"tw-w-[50px]", "tw-border", "tw-border-gray-600", "tw-sticky", "tw-left-0", "decklist-info", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 {Matchups.archetype(matchup)}
               </td>
-              <WinrateTag class="tw-text-center tw-border tw-bg-gray-700 tw-border-gray-600" tag_name="td" :for={%{winrate: winrate, games: games} <- Enum.map(sorted_matchups, fn opp -> Matchups.opponent_stats(matchup, opp) end)} winrate={winrate} sample={games} />
+              <WinrateTag show_sample={true} class="tw-text-center tw-border tw-bg-gray-700 tw-border-gray-600" tag_name="td" :for={%{winrate: winrate, games: games} <- Enum.map(sorted_matchups, fn opp -> Matchups.opponent_stats(matchup, opp) end)} winrate={winrate} sample={games} />
             </tr>
           </tbody>
         </table>
