@@ -25,11 +25,13 @@ defmodule BackendWeb.DeckTrackerController do
     api_user = api_user(conn)
 
     case enqueue_game(params, api_user) do
-      {:ok, %Deck{} = deck} ->
+      {:ok, %{deck: %Deck{} = deck} = ret} ->
         conn
         |> put_status(200)
         |> json(%{
-          "player_deck" => Backend.Hearthstone.deck_info(deck)
+          "player_deck" => Backend.Hearthstone.deck_info(deck),
+          "player_archetype" => Map.get(ret, :player_archetype),
+          "opponent_archetype" => Map.get(ret, :opponent_archetype)
         })
 
       {:ok, nil} ->
@@ -72,11 +74,33 @@ defmodule BackendWeb.DeckTrackerController do
         Map.put(params, "inserted_at", NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601())
 
       GameInsertBatcher.enqueue(with_inserted_at, api_user)
+      {player_archetype, opponent_archetype} = extract_played_archetypes(dto)
 
-      {:ok, deck}
+      {:ok,
+       %{deck: deck, player_archetype: player_archetype, opponent_archetype: opponent_archetype}}
     end
   end
 
+  defp extract_played_archetypes(%{format: format} = game_dto) when is_integer(format) do
+    player_played =
+      get_in(game_dto, [Access.key(:player, %{}), Access.key(:cards_played, [])]) || []
+
+    opponent_played =
+      get_in(game_dto, [Access.key(:opponent, %{}), Access.key(:cards_played, [])]) || []
+
+    player_class = Map.get(game_dto, :player_class, nil)
+    opponent_class = Map.get(game_dto, :opponent_class, nil)
+
+    player_archetype =
+      Backend.PlayedCardsArchetyper.archetype(player_played, player_class, format)
+
+    opponent_archetype =
+      Backend.PlayedCardsArchetyper.archetype(opponent_played, opponent_class, format)
+
+    {player_archetype, opponent_archetype}
+  end
+
+  defp extract_played_archetypes(_), do: {nil, nil}
   @spec extract_player_deck(GameDto.t()) :: {:ok, Deck.t()} | {:ok, nil} | {:error, any()}
   defp extract_player_deck(%{player: %{deckcode: code}}) when is_binary(code) do
     Deck.decode(code)
