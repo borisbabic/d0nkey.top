@@ -5,11 +5,11 @@ defmodule Hearthstone.DeckTracker do
   alias Ecto.Multi
 
   alias Backend.Repo
+  alias Hearthstone.DeckTracker.GamePlayedCards
   alias Hearthstone.DeckTracker.AggregatedStats
   alias Hearthstone.DeckTracker.AggregationMeta
   alias Hearthstone.DeckTracker.AggregationLog
   alias Hearthstone.DeckTracker.CardGameTally
-  # alias Hearthstone.DeckTracker.DeckStats
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.DeckTracker.Period
@@ -25,6 +25,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.UserManager.User
   alias Backend.UserManager.GroupMembership
   alias Backend.Hearthstone.Card
+  alias Backend.PlayedCardsArchetyper
   require Card
 
   use Torch.Pagination,
@@ -962,6 +963,11 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all()
   end
 
+  def stream_games_query(criteria) do
+    base_stream_games_query()
+    |> build_games_query(criteria)
+  end
+
   @spec archetypes(list()) :: [atom()]
   def archetypes(raw_criteria) do
     criteria =
@@ -1019,10 +1025,20 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
+  defp base_stream_games_query() do
+    from(g in Game,
+      as: :game,
+      left_join: pd in assoc(g, :player_deck),
+      as: :player_deck,
+      left_join: played_cards in assoc(g, :played_cards),
+      as: :played_cards
+    )
+  end
+
   defp base_games_with_played_cards_query() do
     from(g in Game,
       as: :game,
-      inner_join: pd in assoc(g, :player_deck),
+      left_join: pd in assoc(g, :player_deck),
       as: :player_deck,
       inner_join: played_cards in assoc(g, :played_cards),
       as: :played_cards,
@@ -1815,6 +1831,24 @@ defmodule Hearthstone.DeckTracker do
     do: query |> limit(^limit)
 
   defp compose_games_query({"offset", offset}, query), do: query |> offset(^offset)
+
+  defp compose_games_query({"played_cards_archetyped_before", cutoff}, query) do
+    query |> where([played_cards: pc], pc.archetyping_updated_at < ^cutoff)
+  end
+
+  defp compose_games_query(:archetypeable, query) do
+    query
+    |> where(
+      [played_cards: pc, game: g],
+      not is_nil(g.player_class) and not is_nil(g.opponent_class) and not is_nil(g.format) and
+        not is_nil(pc.player_cards) and not is_nil(pc.opponent_cards)
+    )
+  end
+
+  defp compose_games_query(:missing_archetype, query) do
+    query
+    |> where([played_cards: pc], is_nil(pc.player_archetype) or is_nil(pc.opponent_archetype))
+  end
 
   defp format_game_type(format) do
     format_query = from f in Format, where: f.value == ^format, limit: 1
@@ -2864,5 +2898,78 @@ defmodule Hearthstone.DeckTracker do
 
       update_period(period, %{period_start: period_start})
     end
+  end
+
+  @spec recalculate_archetypes_for_period(String.t(), NaiveDateTime.t(), list()) :: any()
+  def recalculate_archetypes_for_period(
+        period,
+        archetyping_updated_before,
+        additional_criteria \\ []
+      ) do
+    criteria = [
+      {"period", period},
+      {"played_cards_archetyped_before", archetyping_updated_before},
+      :archetypeable | additional_criteria
+    ]
+
+    Repo.transact(
+      fn repo ->
+        query = stream_games_query(criteria)
+
+        repo.stream(query)
+        |> Stream.chunk_every(100)
+        |> Stream.each(fn chunk ->
+          chunk
+          |> repo.preload(:played_cards)
+          |> recalculate_archetypes_for_games(repo)
+        end)
+        |> Stream.run()
+
+        {:ok, :ok}
+      end,
+      timeout: :infinity
+    )
+
+    # base_query = base_pl
+    # Backend.Repo.transact()
+  end
+
+  def recalculate_archetypes_for_games(games, repo \\ Backend.Repo) do
+    Multi.new()
+    now = NaiveDateTime.utc_now()
+
+    query =
+      games
+      |> Enum.reduce(Multi.new(), fn
+        %{
+          game_id: game_id,
+          player_class: player_class,
+          opponent_class: opponent_class,
+          format: format,
+          played_cards:
+            %{player_cards: [_ | _] = player_cards, opponent_cards: [_ | _] = opponent_cards} =
+                played_cards
+        },
+        multi
+        when is_binary(player_class) and is_binary(opponent_class) and is_integer(format) ->
+          player_archetype = PlayedCardsArchetyper.archetype(player_cards, player_class, format)
+
+          opponent_archetype =
+            PlayedCardsArchetyper.archetype(opponent_cards, opponent_class, format)
+
+          changeset =
+            GamePlayedCards.changeset(played_cards, %{
+              player_archetype: player_archetype,
+              opponent_archetype: opponent_archetype,
+              archetyping_updated_at: now
+            })
+
+          Multi.update(multi, "#{game_id}_update_played_cards_archetypes", changeset)
+
+        _, multi ->
+          multi
+      end)
+
+    repo.transaction(query)
   end
 end
