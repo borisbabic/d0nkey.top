@@ -1453,6 +1453,11 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_class", class}, query),
     do: query |> where([game: g], g.player_class == ^String.upcase(class))
 
+  defp compose_games_query({"player_or_opponent_class", class_or_classes}, query) do
+    classes = Util.to_list(class_or_classes) |> Enum.map(&String.upcase/1)
+    query |> where([game: g], g.player_class in ^classes or g.opponent_class in ^classes)
+  end
+
   defp compose_games_query({"player_rank", rank}, query),
     do: query |> where([game: g], g.player_rank == ^rank)
 
