@@ -58,9 +58,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         <div :if={@card_popularity.loading}>
           Loading tournaments...
         </div>
-        <div :if={@card_popularity.ok? && @archetypes.ok?} class="tw-overflow-scroll">
+        <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading}>
           <table class="table is-fullwidth is-striped tw-table">
-            <thead>
+            <thead class="tw-sticky tw-top-0">
               <th class="tw-bg-gray-700">Card</th>
               <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</th>
               <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={"total"}>
@@ -168,21 +168,25 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   def process_games(games) do
-    Enum.reduce(games, {%{}, %{}}, fn %{player_deck: player_deck, played_cards: played_cards},
-                                      {popularity, archetype_popularity} ->
-      archetype = player_deck.archetype |> to_string()
+    Enum.reduce(games, {%{}, %{}}, fn
+      %{player_deck: %{archetype: archetype}, played_cards: played_cards},
+      {popularity, archetype_popularity} ->
+        archetype = archetype |> to_string()
 
-      pop =
-        Enum.reduce(played_cards.player_cards, popularity, fn id, carry ->
-          normalized_id = Hearthstone.DeckTracker.tally_card_id(id)
+        pop =
+          Enum.reduce(played_cards.player_cards, popularity, fn id, carry ->
+            normalized_id = Hearthstone.DeckTracker.tally_card_id(id)
 
-          carry
-          |> update_in([Access.key(normalized_id, %{}), Access.key(archetype, 0)], &(&1 + 1))
-          |> update_in([Access.key(normalized_id, %{}), Access.key("total", 0)], &(&1 + 1))
-        end)
+            carry
+            |> update_in([Access.key(normalized_id, %{}), Access.key(archetype, 0)], &(&1 + 1))
+            |> update_in([Access.key(normalized_id, %{}), Access.key("total", 0)], &(&1 + 1))
+          end)
 
-      arch_pop = update_in(archetype_popularity, [Access.key(archetype, 0)], &(&1 + 1))
-      {pop, arch_pop}
+        arch_pop = update_in(archetype_popularity, [Access.key(archetype, 0)], &(&1 + 1))
+        {pop, arch_pop}
+
+      _, carry ->
+        carry
     end)
   end
 
