@@ -18,6 +18,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
         "Mass Production",
         "The Solarium",
         "Clumsy Steward",
+        "Bloodpetal Biome",
         "Sketch Artist",
         "Tunnel Terror"
       ]) ->
@@ -33,6 +34,14 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
         "Shadowflame Stalker"
       ]) ->
         :"Wallow Warlock"
+
+      any?(card_info, [
+        "Heart of the Legion",
+        "Felfire Thrusters",
+        "The Exodar",
+        "Arkonite Defense Crystal"
+      ]) ->
+        :"Starship Warlock"
 
       any?(card_info, [
         "Gnomelia, S.A.F.E. Pilot",
@@ -52,20 +61,36 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
         "Healthstone",
         "Elven Archer",
         "Platysaur",
-        "Helfire"
+        "Helfire",
+        "Glacial Shard",
+        "Cursed Catacombs",
+        "The Solarium",
+        "Conflagrate",
+        "Hellfire"
       ]) ->
         :"Quest Warlock"
 
+      any?(card_info, ["Ysera, Emerald Aspect", "Plated Beetle", "Drain Soul", "Sleepy Resident"]) ->
+        :"Mill Warlock"
+
       any?(card_info, [
-        "Heart of the Legion",
-        "Felfire Thrusters",
-        "The Exodar",
-        "Arkonite Defense Crystal"
+        "Ultralisk Cavern",
+        "Consume",
+        "Table Flip",
+        "Ancient of Yore",
+        "Eternal Layover",
+        "Cursed Campaign",
+        "Elise the Navigator",
+        "Bob the Bartender",
+        "Slithery Slope",
+        "Kil'jaeden",
+        "The Ceaseless Expanse",
+        "Wheel of DEATH!!!"
       ]) ->
         :"Starship Warlock"
 
-      any?(card_info, ["Ysera, Emerald Aspect", "Plated Beetle", "Drain Soul", "Sleepy Resident"]) ->
-        :"Mill Warlock"
+      any?(card_info, ["Kerrigan, Queen of Blades"]) ->
+        :"Quest Warlock"
 
       true ->
         :"Other Warlock"
