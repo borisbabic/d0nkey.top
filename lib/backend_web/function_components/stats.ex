@@ -41,10 +41,13 @@ defmodule FunctionComponents.Stats do
         positive_hue,
         negative_hue,
         lightness,
-        base_saturation
+        base_saturation,
+        sample \\ nil
       )
 
-  def winrate_style(winrate, positive_hue, negative_hue, lightness, base_saturation) do
+  def winrate_style(_, _, _, _, _, 0), do: ""
+
+  def winrate_style(winrate, positive_hue, negative_hue, lightness, base_saturation, _sample) do
     hue =
       if winrate >= 0.5 do
         positive_hue
