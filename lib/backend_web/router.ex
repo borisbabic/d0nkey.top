@@ -240,6 +240,7 @@ defmodule BackendWeb.Router do
     live("/card-stats", CardStatsLive)
     live("/meta", MetaLive)
     live("/matchups", MatchupsLive)
+    live("/archetype-mapping", ArchetypeMappingTable)
     live("/decks", DecksLive)
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)
