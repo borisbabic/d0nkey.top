@@ -85,7 +85,7 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
         "Resistance Aura",
         "Metal Detector"
       ]) ->
-        :"Drunk PAladin"
+        :"Drunk Paladin"
 
       any?(card_info, [
         "Equality",

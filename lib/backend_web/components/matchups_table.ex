@@ -6,18 +6,27 @@ defmodule Components.MatchupsTable do
   alias Backend.Hearthstone.Matchups
   alias Components.WinrateTag
   alias Matchup
+  import Components.CardStatsTable, only: [sort_direction: 2, sort_direction: 3]
 
   prop(matchups, :any, required: true)
   prop(min_sample, :integer, default: 1)
   data(favorited, :list, default: [])
+  data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
+  @local_storage_sort_key "matchups_table_sort"
   @restore_favorites_event "restore_favorites"
 
   def mount(socket) do
     {:ok,
-     push_event(socket, "restore", %{
+     socket
+     |> push_event("restore", %{
        key: @local_storage_key,
        event: @restore_favorites_event,
+       target: "#matchups_table_wrapper"
+     })
+     |> push_event("restore", %{
+       key: @local_storage_sort_by_key,
+       event: "set_sort",
        target: "#matchups_table_wrapper"
      })}
   end
@@ -25,11 +34,15 @@ defmodule Components.MatchupsTable do
   def render(assigns) do
     ~F"""
       <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
-        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={sorted_matchups = favorited_and_sorted_matchups(@matchups, @favorited)}>
+        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={sorted_matchups = favorited_and_sorted_matchups(@matchups, @favorited, @sort)}>
           <thead class="tw-text-black decklist-headers">
             <tr>
-            <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">Winrate</th>
-            <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">Archetype<span class="tw-float-right">Popularity:</span></th>
+            <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
+              <button :on-click="change_sort" phx-value-sort_by="winrate" phx-value-sort_direction={sort_direction(@sort, "winrate")}>Winrate</button></th>
+            <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
+              <button :on-click="change_sort" phx-value-sort_by="archetype" phx-value-sort_direction={sort_direction(@sort, "archetype", "asc")}>Archetype</button>
+              <button :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>Popularity:</button>
+            </th>
             <th :for={matchup <- sorted_matchups} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
               {Matchups.archetype(matchup)}
             </th>
@@ -40,7 +53,9 @@ defmodule Components.MatchupsTable do
           </thead>
           <tbody>
             <tr class="tw-h-[1px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
-              <WinrateTag tag_name="td" class={"tw-text-center tw-border tw-border-gray-600"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} />
+              <td class=" tw-border tw-border-gray-600 tw-h-full" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} >
+                <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
+              </td>
               <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
                   <HeroIcons.star filled={to_string(Matchups.archetype(matchup)) in @favorited}/>
@@ -85,7 +100,23 @@ defmodule Components.MatchupsTable do
      |> push_event("store", %{key: @local_storage_key, data: Enum.join(new, ",")})}
   end
 
-  defp favorited_and_sorted_matchups(matchups, favorited_raw) do
+  def handle_event("set_sort", sort_and_direction, socket) do
+    [sort, direction | _] = String.split(sort_and_direction <> ",desc", ",")
+    {:noreply, socket |> assign(sort: %{"sort_by" => sort, "sort_direction" => direction})}
+  end
+
+  def handle_event("change_sort", %{"sort_by" => sort, "sort_direction" => direction}, socket) do
+    {:noreply,
+     socket
+     |> assign(sort: %{"sort_by" => sort, "sort_direction" => direction})
+     |> push_event("store", %{key: @local_storage_sort_by_key, data: "#{sort},#{direction}"})}
+  end
+
+  defp favorited_and_sorted_matchups(matchups, favorited_raw, sort) do
+    sort_by = Map.get(sort, "sort_by", "games")
+    direction_raw = Map.get(sort, "sort_direction", "desc")
+    mapper = sort_mapper(sort_by)
+    direction = direction(direction_raw)
     favorited_norm = Enum.map(favorited_raw, &normalize_archetype/1)
 
     favorited =
@@ -102,18 +133,38 @@ defmodule Components.MatchupsTable do
         norm not in favorited_norm
       end)
 
-    sorted =
-      Enum.sort_by(
-        rest,
-        fn m ->
-          Matchups.total_stats(m)
-          |> Map.get(:games, 0)
-        end,
-        :desc
-      )
+    sorted = Enum.sort_by(rest, mapper, direction)
 
     favorited ++ sorted
   end
 
+  defp sort_mapper("games") do
+    fn m ->
+      Matchups.total_stats(m)
+      |> Map.get(:games, 0)
+    end
+  end
+
+  defp sort_mapper("winrate") do
+    fn m ->
+      Matchups.total_stats(m)
+      |> Map.get(:winrate, 0)
+    end
+  end
+
+  defp sort_mapper("archetype") do
+    fn m ->
+      archetype = Matchups.archetype(m)
+      class = Backend.Hearthstone.Deck.extract_class(archetype)
+      "#{class}#{archetype}"
+    end
+  end
+
   defp normalize_archetype(archetype), do: to_string(archetype)
+
+  defp direction(:desc), do: :desc
+  defp direction(:asc), do: :asc
+  defp direction("desc"), do: :desc
+  defp direction("asc"), do: :asc
+  defp direction(_), do: nil
 end
