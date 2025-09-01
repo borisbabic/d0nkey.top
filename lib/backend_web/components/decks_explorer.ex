@@ -381,6 +381,7 @@ defmodule Components.DecksExplorer do
       "fresh_player_deck_excludes",
       "archetype",
       "no_archetype",
+      "opponent_archetype",
       "use_aggregated",
       "player_mulligan",
       "player_not_mulligan",
