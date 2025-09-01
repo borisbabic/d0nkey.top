@@ -11,14 +11,14 @@ defmodule Components.MatchupsTable do
 
   def render(assigns) do
     ~F"""
-      <div class="tw-overflow-scroll">
+      <div class="table-scrolling-sticky-wrapper">
         <div class="notification is-warning">This UI is WIP (work in progress).</div>
-        <table class="tw-text-black tw-border-collapse tw-table tw-text-center " :if={sorted_matchups = sort_matchups(@matchups)}>
-          <thead class="tw-sticky tw-top-0 tw-text-black">
+        <table class="tw-text-black tw-border-collapse tw-table-fixed tw-text-center" :if={sorted_matchups = sort_matchups(@matchups)}>
+          <thead class="tw-text-black">
             <th class="tw-w-[10px]">Total Winrate</th>
             <th class="tw-w-[10px]">Popularity</th>
             <th class="tw-w-[50px]">Archetype</th>
-            <th :for={matchup <- sorted_matchups} class={"decklist-info", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
+            <th :for={matchup <- sorted_matchups} class={"tw-w-[300px]", "tw-text-black", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
               {Matchups.archetype(matchup)}
             </th>
           </thead>
@@ -26,10 +26,12 @@ defmodule Components.MatchupsTable do
             <tr class="tw-text-center tw-h-[25px] tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} :if={total_games = total_games(sorted_matchups)}>
               <WinrateTag tag_name="td" class={"tw-text-center tw-border tw-border-gray-600 tw-w-[10px]"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} />
               <td class="tw-text-center tw-border tw-border-gray-600 tw-w-[10px] tw-bg-gray-500"> {Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}</td>
-              <td class={"tw-w-[50px]", "tw-border", "tw-border-gray-600", "tw-sticky", "tw-left-0", "decklist-info", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
+              <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 {Matchups.archetype(matchup)}
               </td>
-              <WinrateTag show_sample={true} class="tw-text-center tw-border tw-bg-gray-700 tw-border-gray-600" tag_name="td" :for={%{winrate: winrate, games: games} <- Enum.map(sorted_matchups, fn opp -> Matchups.opponent_stats(matchup, opp) end)} winrate={winrate} sample={games} />
+              <td data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"}:for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
+                <WinrateTag winrate={winrate} sample={games} />
+              </td>
             </tr>
           </tbody>
         </table>

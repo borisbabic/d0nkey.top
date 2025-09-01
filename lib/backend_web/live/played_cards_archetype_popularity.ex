@@ -63,9 +63,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         <div :if={@card_popularity.loading}>
           Loading tournaments...
         </div>
-        <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading}>
+        <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading} class="table-scrolling-sticky-wrapper">
           <table class="table is-fullwidth is-striped tw-table">
-            <thead class="tw-sticky tw-top-0">
+            <thead>
               <th class="tw-bg-gray-700">Card</th>
               <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</th>
               <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={"total"}>
@@ -77,7 +77,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
             </thead>
             <tbody>
               <tr :for={{card, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by)} :if={{card_archetype} = {Backend.PlayedCardsArchetyper.archetype([card], @criteria["player_class"], @criteria["format"])}}>
-                <td>
+                <td class="sticky-column">
                   <div class="decklist_card_container">
                     <DecklistCard :if={card = Backend.Hearthstone.get_card(card)} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
