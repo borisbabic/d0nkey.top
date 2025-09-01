@@ -3048,4 +3048,25 @@ defmodule Hearthstone.DeckTracker do
     |> ArchetypeStats.add_result_to_bag(player_archetype, opponent_archetype, player_field)
     |> ArchetypeStats.add_result_to_bag(opponent_archetype, player_archetype, opponent_field)
   end
+
+  def archetype_mapping(criteria) do
+    query =
+      from(g in Game,
+        as: :game,
+        inner_join: pd in assoc(g, :player_deck),
+        as: :player_deck,
+        inner_join: pc in assoc(g, :played_cards),
+        as: :played_cards,
+        select: %{
+          player_archetype: pc.player_archetype,
+          player_deck_archetype: pd.archetype,
+          count: count(1)
+        },
+        where: not is_nil(pc.player_archetype) and not is_nil(pd.archetype),
+        group_by: [pc.player_archetype, pd.archetype]
+      )
+
+    build_games_query(query, criteria)
+    |> Repo.all()
+  end
 end
