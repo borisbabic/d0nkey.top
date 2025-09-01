@@ -36,6 +36,13 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
         :"Wallow Warlock"
 
       any?(card_info, [
+        "Adaptive Amalgam",
+        "Archdruid of Thorns",
+        "Escape Pod"
+      ]) ->
+        :"Mill Warlock"
+
+      any?(card_info, [
         "Heart of the Legion",
         "Felfire Thrusters",
         "The Exodar",
@@ -45,10 +52,9 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
 
       any?(card_info, [
         "Gnomelia, S.A.F.E. Pilot",
-        "Adaptive Amalgam",
-        "Archdruid of Thorns",
         "Prize Vendor",
-        "Frostbitten Freebooter"
+        "Frostbitten Freebooter",
+        "Plated Beetle"
       ]) ->
         :"Mill Warlock"
 
@@ -69,10 +75,6 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       #   "Hellfire"
       # ]) ->
       #   :"Quest Warlock"
-
-      any?(card_info, ["Ysera, Emerald Aspect", "Plated Beetle", "Drain Soul", "Sleepy Resident"]) ->
-        :"Mill Warlock"
-
       # any?(card_info, [
       #   "Ultralisk Cavern",
       #   "Consume",
@@ -87,7 +89,30 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       #   "The Ceaseless Expanse",
       #   "Wheel of DEATH!!!"
       # ]) ->
-      #   :"Starship Warlock"
+      #   :"Deckless Warlock"
+
+      any?(card_info, [
+        "Clearance Promoter",
+        "Youthful Brewmaster",
+        "Wheel of DEATH!!!",
+        "Kil'jaeden",
+        "Dirty Rat",
+        "Sleepy Resident",
+        "The Ceaseless Expanse",
+        "Cursed Campaign"
+      ]) ->
+        :"Deckless Warlock"
+
+      any?(card_info, [
+        "Shaladrassil",
+        "Puppetmaster Dorian",
+        "Agamaggan",
+        "Naralex, Herald of the Flight",
+        "Fyrakk the Blazing",
+        "Kerrigan, Queen of Blades",
+        "Fractured Power"
+      ]) ->
+        :"Dorian Warlock"
 
       # any?(card_info, ["Kerrigan, Queen of Blades"]) ->
       #   :"Quest Warlock"
