@@ -192,6 +192,18 @@ defmodule HeroIcons do
     """
   end
 
+  attr :size, :string, default: nil
+
+  def no(assigns) do
+    ~H"""
+    <.wrapper size={@size}>
+      <.svg>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+      </.svg>
+    </.wrapper>
+    """
+  end
+
   def size_class(size) when size in ["medium", "is-medium"], do: "is-medium"
   def size_class(size) when size in ["large", "is-large"], do: "is-large"
   def size_class(size) when size in ["small", "is-small"], do: "is-small"

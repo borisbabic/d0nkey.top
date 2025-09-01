@@ -15,11 +15,13 @@ defmodule FunctionComponents.Stats do
   attr :show_sample, :boolean, default: nil
   attr :impact, :boolean, default: false
   attr :win_loss, :any, default: nil
+  attr :min_sample, :integer, default: 1
 
   def winrate_tag(assigns) do
     ~H"""
-    <.dynamic_tag tag_name={@tag_name} class={@class} style={winrate_style(@winrate + shift_for_color(@impact), @positive_hue, @negative_hue, @lightness, @base_saturation, @sample)}>
-      <span class="basic-black-text tw-text-center">
+    <.dynamic_tag tag_name={@tag_name} class={@class} style={if sufficient_sample(@sample, @min_sample), do: winrate_style(@winrate + shift_for_color(@impact), @positive_hue, @negative_hue, @lightness, @base_saturation), else: ""}>
+      <span :if={!sufficient_sample(@sample, @min_sample)}></span>
+      <span :if={sufficient_sample(@sample, @min_sample)}class="basic-black-text tw-text-center">
         {round(@winrate, @round_digits)}
         <sup :if={@show_sample}>{@sample}</sup>
         <span :if={@win_loss}>({@win_loss.wins} - {@win_loss.losses})</span>
@@ -28,20 +30,21 @@ defmodule FunctionComponents.Stats do
     """
   end
 
+  defp sufficient_sample(sample, min_sample) when is_integer(sample) and is_integer(min_sample) do
+    sample >= min_sample
+  end
+
+  defp sufficient_sample(_, _), do: true
+
   def winrate_style(
         winrate,
         positive_hue,
         negative_hue,
         lightness,
-        base_saturation,
-        sample \\ nil
+        base_saturation
       )
 
-  def winrate_style(_, _, _, _, _, 0) do
-    ""
-  end
-
-  def winrate_style(winrate, positive_hue, negative_hue, lightness, base_saturation, _sample) do
+  def winrate_style(winrate, positive_hue, negative_hue, lightness, base_saturation) do
     hue =
       if winrate >= 0.5 do
         positive_hue
