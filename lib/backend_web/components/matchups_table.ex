@@ -8,6 +8,7 @@ defmodule Components.MatchupsTable do
   alias Matchup
 
   prop(matchups, :any, required: true)
+  prop(min_sample, :integer, default: 1)
   data(favorited, :list, default: [])
   @local_storage_key "matchups_table_favorite"
   @restore_favorites_event "restore_favorites"
@@ -46,7 +47,7 @@ defmodule Components.MatchupsTable do
                 </button>
                 {Matchups.archetype(matchup)}
               </td>
-              <WinrateTag tag_name="td" class="tw-border tw-border-gray-600 tw-text-center" winrate={winrate} sample={games} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"}:for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}/>
+              <WinrateTag tag_name="td" class="tw-border tw-border-gray-600 tw-text-center" winrate={winrate} min_sample={@min_sample} sample={games} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"}:for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}/>
             </tr>
           </tbody>
         </table>
