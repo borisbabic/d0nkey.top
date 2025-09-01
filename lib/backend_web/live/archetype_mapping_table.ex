@@ -74,8 +74,9 @@ defmodule BackendWeb.ArchetypeMappingTable do
         <div :if={@archetype_mapping.ok? && !@archetype_mapping.loading}>
           <table class="table is-fullwidth is-striped tw-table">
             <thead class="tw-sticky tw-top-0">
-              <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</th>
-              <th class="tw-bg-gray-700 ":on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @sorted_x_axis.result}>
+              <th class="tw-bg-gray-700" >Archetype</th>
+              <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by="total">Total</th>
+              <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @sorted_x_axis.result}>
                 {add_arrow(archetype, to_string(archetype), @params)}
               </th>
             </thead>
@@ -83,6 +84,9 @@ defmodule BackendWeb.ArchetypeMappingTable do
               <tr :for={{y_axis, popularity_map} <- sort_and_filter(@archetype_mapping.result, @min_played_count, @sort_by)}>
                 <td>
                   {y_axis}
+                </td>
+                <td>
+                  {Map.get(popularity_map, "total", 0)}
                 </td>
                 <td :for={archetype <- @sorted_x_axis.result}>{Map.get(popularity_map, archetype, 0) |> Util.percent(Map.get(popularity_map, "total", 0)) |> Float.round(1)}</td>
               </tr>
