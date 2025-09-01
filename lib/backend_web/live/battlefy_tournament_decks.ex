@@ -22,6 +22,7 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
         <div class="subtitle is-6">
           <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/popularity"}>Popularity</a>
           | <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/stats"}>Stats</a>
+          | <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/matchups"}>Matchup</a>
           <span :if={link = Backend.Tournaments.get_any_link({"battlefy", @tournament_id})}>
           | <a href={link}>Tournament</a>
           </span>
