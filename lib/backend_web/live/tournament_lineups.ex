@@ -23,7 +23,6 @@ defmodule BackendWeb.TournamentLineups do
             <div class="title is-2">Lineups</div>
             <div class="subtitle is-5">
               <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/popularity"}>Popularity</a>
-              | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Stats</a>
               <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
               | <a href={link}>Tournament</a>
               </span>
