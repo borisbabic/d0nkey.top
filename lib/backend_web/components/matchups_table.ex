@@ -39,7 +39,7 @@ defmodule Components.MatchupsTable do
             </tr>
           </thead>
           <tbody>
-            <tr class="tw-text-center tw-h-[25px] tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
+            <tr class="tw-h-[1px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
               <WinrateTag tag_name="td" class={"tw-text-center tw-border tw-border-gray-600"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} />
               <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
@@ -47,7 +47,9 @@ defmodule Components.MatchupsTable do
                 </button>
                 {Matchups.archetype(matchup)}
               </td>
-              <WinrateTag tag_name="td" class="tw-border tw-border-gray-600 tw-text-center" winrate={winrate} min_sample={@min_sample} sample={games} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"}:for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}/>
+              <td class=" tw-border tw-border-gray-600 tw-h-full" data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
+              <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_sample} sample={games} />
+              </td>
             </tr>
           </tbody>
         </table>
@@ -65,6 +67,22 @@ defmodule Components.MatchupsTable do
   def handle_event(@restore_favorites_event, archetypes_raw, socket) do
     archetypes = String.split(archetypes_raw, ",")
     {:noreply, socket |> assign(favorited: archetypes)}
+  end
+
+  def handle_event("toggle_favorite", %{"archetype" => archetype}, socket) do
+    old = Map.get(socket.assigns, :favorited, [])
+
+    new =
+      if archetype in old do
+        old -- [archetype]
+      else
+        [archetype | old]
+      end
+
+    {:noreply,
+     socket
+     |> assign(favorited: new)
+     |> push_event("store", %{key: @local_storage_key, data: Enum.join(new, ",")})}
   end
 
   defp favorited_and_sorted_matchups(matchups, favorited_raw) do
@@ -98,20 +116,4 @@ defmodule Components.MatchupsTable do
   end
 
   defp normalize_archetype(archetype), do: to_string(archetype)
-
-  def handle_event("toggle_favorite", %{"archetype" => archetype}, socket) do
-    old = Map.get(socket.assigns, :favorited, [])
-
-    new =
-      if archetype in old do
-        old -- [archetype]
-      else
-        [archetype | old]
-      end
-
-    {:noreply,
-     socket
-     |> assign(favorited: new)
-     |> push_event("store", %{key: @local_storage_key, data: Enum.join(new, ",")})}
-  end
 end
