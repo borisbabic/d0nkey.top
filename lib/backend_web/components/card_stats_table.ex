@@ -3,6 +3,7 @@ defmodule Components.CardStatsTable do
   use BackendWeb, :surface_live_component
   alias Components.DecklistCard
   alias Components.LivePatchDropdown
+  alias Components.Filter.ArchetypeSelect
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
@@ -84,6 +85,7 @@ defmodule Components.CardStatsTable do
         <PlayableCardSelect format={@test_params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
         <PlayableCardSelect format={@test_params["format"]} id={"player_kept"} param={"player_kept"} selected={@test_params["player_kept"] || []} title="Kept"/>
         <PlayableCardSelect format={@test_params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
+        <ArchetypeSelect format={@test_params["format"]} id={"opponent_archetype"} param={"opponent_archetype"} selected={@test_params["opponent_archetype"] || []} title="Opponent Archetype"/>
         <ForceFreshDropdown id={"force_fresh"} />
       {/if}
 
@@ -358,6 +360,7 @@ defmodule Components.CardStatsTable do
       "player_not_kept",
       "player_has_coin",
       "archetype",
+      "opponent_archetype",
       "fresh_player_deck_includes",
       "fresh_player_deck_excludes",
       "sort_by",

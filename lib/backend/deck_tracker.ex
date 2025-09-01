@@ -464,6 +464,7 @@ defmodule Hearthstone.DeckTracker do
   defp safe_div(dividend, divisor), do: dividend / divisor
 
   @fresh_card_stats_filters [
+    "opponent_archetype",
     "player_mulligan",
     "player_not_mulligan",
     "player_drawn",
@@ -1493,6 +1494,14 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_class", class}, query),
     do: query |> where([game: g], g.player_class == ^String.upcase(class))
 
+  defp compose_games_query({"opponent_archetype", archetype_or_archetypes}, query) do
+    archetypes = Util.to_list(archetype_or_archetypes)
+
+    query
+    |> ensure_played_cards_joined()
+    |> where([played_cards: pc], pc.opponent_archetype in ^archetypes)
+  end
+
   defp compose_games_query({"player_or_opponent_class", class_or_classes}, query) do
     classes = Util.to_list(class_or_classes) |> Enum.map(&String.upcase/1)
     query |> where([game: g], g.player_class in ^classes or g.opponent_class in ^classes)
@@ -1921,6 +1930,19 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query(:missing_archetype, query) do
     query
     |> where([played_cards: pc], is_nil(pc.player_archetype) or is_nil(pc.opponent_archetype))
+  end
+
+  defp ensure_played_cards_joined(query) do
+    already_joined? =
+      Map.get(query, :joins, [])
+      |> Enum.any?(&(&1.as == :played_cards))
+
+    if already_joined? do
+      query
+    else
+      query
+      |> join(:inner, [game: g], pc in assoc(g, :played_cards), as: :played_cards)
+    end
   end
 
   defp format_game_type(format) do
