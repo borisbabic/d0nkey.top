@@ -1409,6 +1409,46 @@ defmodule Hearthstone.DeckTracker do
     |> Hearthstone.exclude_cards(cards, :player_deck)
   end
 
+  defp compose_games_query({"player_played_cards_includes", cards}, query) do
+    query
+    |> Hearthstone.include_cards(cards, :played_cards, :player_cards)
+  end
+
+  defp compose_games_query({"player_played_cards_excludes", cards}, query) do
+    query
+    |> Hearthstone.exclude_cards(cards, :played_cards, :player_cards)
+  end
+
+  defp compose_games_query({"fresh_player_played_cards_includes", cards}, query) do
+    query
+    |> Hearthstone.include_cards(cards, :played_cards, :player_cards)
+  end
+
+  defp compose_games_query({"fresh_player_played_cards_excludes", cards}, query) do
+    query
+    |> Hearthstone.exclude_cards(cards, :played_cards, :player_cards)
+  end
+
+  defp compose_games_query({"opponent_played_cards_includes", cards}, query) do
+    query
+    |> Hearthstone.include_cards(cards, :played_cards, :opponent_cards)
+  end
+
+  defp compose_games_query({"opponent_played_cards_excludes", cards}, query) do
+    query
+    |> Hearthstone.exclude_cards(cards, :played_cards, :opponent_cards)
+  end
+
+  defp compose_games_query({"fresh_opponent_played_cards_includes", cards}, query) do
+    query
+    |> Hearthstone.include_cards(cards, :played_cards, :opponent_cards)
+  end
+
+  defp compose_games_query({"fresh_opponent_played_cards_excludes", cards}, query) do
+    query
+    |> Hearthstone.exclude_cards(cards, :played_cards, :opponent_cards)
+  end
+
   defp compose_games_query({"player_deck_id", :not_null}, query = @agg_deck_query) do
     query
     |> where(

@@ -760,7 +760,7 @@ defmodule Backend.Hearthstone do
     query
   end
 
-  def include_cards(query, cards, binding) do
+  def include_cards(query, cards, binding, field \\ :cards) do
     dynamic =
       cards
       |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
@@ -768,14 +768,14 @@ defmodule Backend.Hearthstone do
 
         dynamic(
           [{^binding, d}],
-          ^dynamic and fragment("? && ?", d.cards, subquery(same_cards_subquery))
+          ^dynamic and fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
         )
       end)
 
     query |> where(^dynamic)
   end
 
-  def exclude_cards(query, cards, binding) do
+  def exclude_cards(query, cards, binding, field \\ :cards) do
     dynamic =
       cards
       |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
@@ -783,7 +783,7 @@ defmodule Backend.Hearthstone do
 
         dynamic(
           [{^binding, d}],
-          ^dynamic and not fragment("? && ?", d.cards, subquery(same_cards_subquery))
+          ^dynamic and not fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
         )
       end)
 
