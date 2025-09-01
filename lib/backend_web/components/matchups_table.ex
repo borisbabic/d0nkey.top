@@ -9,10 +9,21 @@ defmodule Components.MatchupsTable do
 
   prop(matchups, :any, required: true)
   data(favorited, :list, default: [])
+  @local_storage_key "matchups_table_favorite"
+  @restore_favorites_event "restore_favorites"
+
+  def mount(socket) do
+    {:ok,
+     push_event(socket, "restore", %{
+       key: @local_storage_key,
+       event: @restore_favorites_event,
+       target: "#matchups_table_wrapper"
+     })}
+  end
 
   def render(assigns) do
     ~F"""
-      <div class="table-scrolling-sticky-wrapper">
+      <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
         <div class="notification is-warning">This UI is WIP (work in progress).</div>
         <table class="tw-text-black tw-border-collapse tw-table-fixed tw-text-center" :if={sorted_matchups = favorited_and_sorted_matchups(@matchups, @favorited)}>
           <thead class="tw-text-black">
@@ -51,6 +62,11 @@ defmodule Components.MatchupsTable do
       Matchups.total_stats(m)
       |> Map.get(:games, 0)
     end)
+  end
+
+  def handle_event(@restore_favorites_event, archetypes_raw, socket) do
+    archetypes = String.split(archetypes_raw, ",")
+    {:noreply, socket |> assign(favorited: archetypes)}
   end
 
   defp favorited_and_sorted_matchups(matchups, favorited_raw) do
@@ -95,6 +111,9 @@ defmodule Components.MatchupsTable do
         [archetype | old]
       end
 
-    {:noreply, socket |> assign(favorited: new)}
+    {:noreply,
+     socket
+     |> assign(favorited: new)
+     |> push_event("store", %{key: @local_storage_key, data: Enum.join(new, ",")})}
   end
 end
