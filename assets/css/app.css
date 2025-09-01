@@ -321,6 +321,42 @@
   width: var(--decklist-width);
 
 }
+
+.table-scrolling-sticky-wrapper {
+  overflow: auto;
+  height: calc(100vh - 50px);
+}
+.table-scrolling-sticky-wrapper thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+} 
+.table-scrolling-sticky-wrapper td.sticky-column {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+} 
+
+/* .table-sticky-header-overflow-scroll-x {
+  overflow-x: scroll;
+}
+
+.table-sticky-header-overflow-scroll-x th,td {
+  white-space: nowrap;
+}
+
+.table-sticky-header-overflow-scroll-x thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.table-sticky-header-overflow-scroll-x th:first-child,td:first-child {
+  position: sticky;
+  left: 0;
+  z-index:1;
+} */
+
+/* .sticky-header-overlow-scroll-x-table */
 .decklist-info {
   background-repeat: no-repeat;
   background-size: contain;

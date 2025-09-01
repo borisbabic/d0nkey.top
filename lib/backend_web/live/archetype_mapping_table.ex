@@ -71,9 +71,9 @@ defmodule BackendWeb.ArchetypeMappingTable do
         <div :if={@archetype_mapping.loading}>
           Loading tournaments...
         </div>
-        <div :if={@archetype_mapping.ok? && !@archetype_mapping.loading}>
+        <div :if={@archetype_mapping.ok? && !@archetype_mapping.loading} class="table-scrolling-sticky-wrapper">
           <table class="table is-fullwidth is-striped tw-table">
-            <thead class="tw-sticky tw-top-0">
+            <thead>
               <th class="tw-bg-gray-700" >Archetype</th>
               <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by="total">Total</th>
               <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @sorted_x_axis.result}>
@@ -82,7 +82,7 @@ defmodule BackendWeb.ArchetypeMappingTable do
             </thead>
             <tbody>
               <tr :for={{y_axis, popularity_map} <- sort_and_filter(@archetype_mapping.result, @min_played_count, @sort_by)}>
-                <td>
+                <td class="sticky-column">
                   {y_axis}
                 </td>
                 <td>
