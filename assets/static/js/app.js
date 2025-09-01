@@ -188,6 +188,28 @@ var pad = function(te) {
     return ('0' + te).slice(-2)
 }
 let Hooks = {};
+Hooks.LocalStorage = {
+    mounted () {
+        console.log("mounted abdslgfhsdlkfghslkfdghsld");
+        this.handleEvent("store", (obj) => this.store(obj));
+        this.handleEvent("clear", (obj) => this.clear(obj));
+        this.handleEvent("restore", (obj) => this.restore(obj));
+    },
+    store(obj) {
+        console.log(obj.data);
+        localStorage.setItem(obj.key, obj.data);
+    },
+    restore(obj) {
+        var data = localStorage.getItem(obj.key);
+        if (obj.target && obj.event) {
+            console.log(data)
+            this.pushEventTo(obj.target, obj.event, data);
+        }
+    },
+    clear(obj) {
+        localStorage.removeItem(obj.key);
+    }
+};
 Hooks.LocalDateTime = {
     mounted() {
         var timestamp = this.el.getAttribute("aria-label");
