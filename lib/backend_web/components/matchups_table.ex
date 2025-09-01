@@ -8,12 +8,13 @@ defmodule Components.MatchupsTable do
   alias Matchup
 
   prop(matchups, :any, required: true)
+  data(favorited, :list, default: [])
 
   def render(assigns) do
     ~F"""
       <div class="table-scrolling-sticky-wrapper">
         <div class="notification is-warning">This UI is WIP (work in progress).</div>
-        <table class="tw-text-black tw-border-collapse tw-table-fixed tw-text-center" :if={sorted_matchups = sort_matchups(@matchups)}>
+        <table class="tw-text-black tw-border-collapse tw-table-fixed tw-text-center" :if={sorted_matchups = favorited_and_sorted_matchups(@matchups, @favorited)}>
           <thead class="tw-text-black">
             <tr>
             <th rowspan="2" class="tw-w-[10px]">Total Winrate</th>
@@ -30,6 +31,9 @@ defmodule Components.MatchupsTable do
             <tr class="tw-text-center tw-h-[25px] tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
               <WinrateTag tag_name="td" class={"tw-text-center tw-border tw-border-gray-600 tw-w-[10px]"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} />
               <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
+                <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
+                  <HeroIcons.star filled={to_string(Matchups.archetype(matchup)) in @favorited}/>
+                </button>
                 {Matchups.archetype(matchup)}
               </td>
               <td data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"}:for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
@@ -49,14 +53,48 @@ defmodule Components.MatchupsTable do
     end)
   end
 
-  defp sort_matchups(matchups) do
-    Enum.sort_by(
-      matchups,
-      fn m ->
-        Matchups.total_stats(m)
-        |> Map.get(:games, 0)
-      end,
-      :desc
-    )
+  defp favorited_and_sorted_matchups(matchups, favorited_raw) do
+    favorited_norm = Enum.map(favorited_raw, &normalize_archetype/1)
+
+    favorited =
+      Enum.flat_map(favorited_norm, fn archetype ->
+        Enum.filter(matchups, fn m ->
+          norm = normalize_archetype(Matchups.archetype(m))
+          norm == archetype
+        end)
+      end)
+
+    rest =
+      Enum.filter(matchups, fn m ->
+        norm = normalize_archetype(Matchups.archetype(m))
+        norm not in favorited_norm
+      end)
+
+    sorted =
+      Enum.sort_by(
+        rest,
+        fn m ->
+          Matchups.total_stats(m)
+          |> Map.get(:games, 0)
+        end,
+        :desc
+      )
+
+    favorited ++ sorted
+  end
+
+  defp normalize_archetype(archetype), do: to_string(archetype)
+
+  def handle_event("toggle_favorite", %{"archetype" => archetype}, socket) do
+    old = Map.get(socket.assigns, :favorited, [])
+
+    new =
+      if archetype in old do
+        old -- [archetype]
+      else
+        [archetype | old]
+      end
+
+    {:noreply, socket |> assign(favorited: new)}
   end
 end
