@@ -192,10 +192,14 @@ defmodule Components.CardStatsTable do
     end
   end
 
-  defp sort_direction(%{"sort_by" => existing, "sort_direction" => s}, new) when new == existing,
-    do: flip_direction(s)
+  def sort_direction(sort_params, new_sort_by, default_direction \\ "desc")
 
-  defp sort_direction(_, _), do: "desc"
+  def sort_direction(%{"sort_by" => existing, "sort_direction" => s}, new, _default)
+      when new == existing,
+      do: flip_direction(s)
+
+  def sort_direction(_, _, default), do: default
+
   def flip_direction(dir) when dir in [:desc, "desc"], do: "asc"
   def flip_direction(_), do: "desc"
 
