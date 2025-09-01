@@ -7,6 +7,7 @@ defmodule BackendWeb.ArchetypeMappingTable do
   alias Components.Filter.FormatDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.ClassDropdown
+  alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
 
   @default_min_played_count 100
@@ -58,6 +59,10 @@ defmodule BackendWeb.ArchetypeMappingTable do
         title={"X Axis"}
         param={"x_axis"}
         normalizer={&to_string/1} />
+      <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
+      <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
+      <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
+      <PlayableCardSelect id={"player_played_cards_excludes"} format={@params["format"]} param={"player_played_cards_excludes"} selected={@params["player_played_cards_excludes"] || []} title="Not Played cards"/>
 
       <div :if={@needs_class?}>
         Select a class before proceeding. I'd suggest selecting your other filters first.
@@ -96,7 +101,17 @@ defmodule BackendWeb.ArchetypeMappingTable do
     }
 
     criteria =
-      Map.merge(default, params) |> Map.take(["period", "format", "rank", "player_class"])
+      Map.merge(default, params)
+      |> Map.take([
+        "period",
+        "format",
+        "rank",
+        "player_class",
+        "player_deck_includes",
+        "player_deck_excludes",
+        "player_played_cards_includes",
+        "player_played_cards_excludes"
+      ])
 
     min_played_count =
       Map.get(params, "min_played_count", @default_min_played_count) |> Util.to_int_or_orig()
