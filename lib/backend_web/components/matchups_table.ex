@@ -13,7 +13,7 @@ defmodule Components.MatchupsTable do
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
-  @local_storage_sort_key "matchups_table_sort"
+  @local_storage_sort_by_key "matchups_table_sort"
   @restore_favorites_event "restore_favorites"
 
   def mount(socket) do
@@ -80,7 +80,7 @@ defmodule Components.MatchupsTable do
   end
 
   def handle_event(@restore_favorites_event, archetypes_raw, socket) do
-    archetypes = String.split(archetypes_raw, ",")
+    archetypes = String.split(archetypes_raw || "", ",")
     {:noreply, socket |> assign(favorited: archetypes)}
   end
 
@@ -100,8 +100,22 @@ defmodule Components.MatchupsTable do
      |> push_event("store", %{key: @local_storage_key, data: Enum.join(new, ",")})}
   end
 
+  @valid_sorts ["games", "archetype", "winrate"]
+
   def handle_event("set_sort", sort_and_direction, socket) do
-    [sort, direction | _] = String.split(sort_and_direction <> ",desc", ",")
+    {sort, direction} =
+      case String.split(sort_and_direction || "games,desc") do
+        [sort, direction | _]
+        when sort in @valid_sorts and direction in ["asc", "desc", :asc, :desc] ->
+          {sort, direction}
+
+        [sort] when sort in @valid_sorts ->
+          {sort, "desc"}
+
+        _ ->
+          {"games", "desc"}
+      end
+
     {:noreply, socket |> assign(sort: %{"sort_by" => sort, "sort_direction" => direction})}
   end
 
