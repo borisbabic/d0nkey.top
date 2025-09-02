@@ -119,7 +119,6 @@ defmodule Command.ExportData do
               AND DTG.INSERTED_AT < '#{end_time}'
               AND DTG.GAME_TYPE = 7
               AND DTG.FORMAT = 2
-              AND D.SIDEBOARDS IS NULL
           )
       ) TO '#{directory}/decks_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
@@ -150,7 +149,6 @@ defmodule Command.ExportData do
               AND DTG.INSERTED_AT < '#{end_time}'
               AND DTG.GAME_TYPE = 7
               AND DTG.FORMAT = 2
-              AND D.SIDEBOARDS IS NULL
           )
       ) TO '#{directory}/games_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
@@ -181,7 +179,6 @@ defmodule Command.ExportData do
             AND DTG.INSERTED_AT < '#{end_time}'
             AND DTG.GAME_TYPE = 7
             AND DTG.FORMAT = 2
-            AND D.SIDEBOARDS IS NULL
         )
     ) TO '#{directory}/tallies_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
@@ -212,7 +209,6 @@ defmodule Command.ExportData do
             AND DTG.INSERTED_AT < '#{end_time}'
             AND DTG.GAME_TYPE = 7
             AND DTG.FORMAT = 2
-            AND D.SIDEBOARDS IS NULL
         )
     ) TO '#{directory}/played_cards_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
