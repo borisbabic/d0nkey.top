@@ -4,80 +4,60 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @standard_config [
+    {:"Quest Paladin", ["Dive the Golakka Depths"]},
+    {:"Armor DH",
+     [
+       "Arkonite Defense Crystal",
+       "The Exodar",
+       "Dimensional Core",
+       "Felfused Battery",
+       "Shattershard Turret"
+     ]},
+    {:"Cliff Dive DH",
+     ["Cliff Dive", "Colifero the Artist", "Illidari Inquisitor", "Magtheridon, Unreleased"]},
+    {:"Aggro Demon Hunter",
+     [
+       "Sock Puppet Slitherspear",
+       "Brain Masseuse",
+       "King Mukla",
+       "Acupuncture",
+       "Battlefiend",
+       "Spirit of the Team",
+       "Tortollan Storyteller",
+       "Customs Enforcer",
+       "sizzling Cinder",
+       "Customs Enforcer"
+     ]},
+    {:"Armor DH",
+     [
+       "Dissolving Ooze",
+       "Carnivorous Cube",
+       "Mixologist",
+       "Ferocious Felbat",
+       "Nightmare Lord Xavius",
+       "The Ceaseless Expanse",
+       "Fumigate",
+       "Return Policy",
+       "Inflitrate"
+     ]},
+    {:"Cliff Dive DH", ["Blob of Tar", "Ravenous Felhunter", "Wyvern's Slumber"]},
+    {:"Aggro Demon Hunter",
+     [
+       "Bloodmage Thalnos",
+       "Dreamplanner Zephyrus",
+       "Observer of Mysteries",
+       "Royal Librarian",
+       "Rockspitter",
+       "Chaos Strike"
+     ]},
+    {:"Cliff Dive DH", ["Illidari Studies"]},
+    {:"Armor DH", ["Tuskpiercer"]},
+    {:"Aggro Demon Hunter", ["Insect Claw", "Infestation", "Dangerous Cliffside"]}
+  ]
+
   def standard(card_info) do
-    cond do
-      quest?(card_info) ->
-        :"Quest DH"
-
-      any?(card_info, [
-        "Arkonite Defense Crystal",
-        "The Exodar",
-        "Dimensional Core",
-        "Felfused Battery",
-        "Shattershard Turret"
-      ]) ->
-        :"Armor DH"
-
-      any?(card_info, [
-        "Cliff Dive",
-        "Colifero the Artist",
-        "Illidari Inquisitor",
-        "Magtheridon, Unreleased"
-      ]) ->
-        :"Cliff Dive DH"
-
-      any?(card_info, [
-        "Sock Puppet Slitherspear",
-        "Brain Masseuse",
-        "King Mukla",
-        "Acupuncture",
-        "Battlefiend",
-        "Spirit of the Team",
-        "Tortollan Storyteller",
-        "Customs Enforcer",
-        "sizzling Cinder",
-        "Customs Enforcer"
-      ]) ->
-        :"Aggro Demon Hunter"
-
-      any?(card_info, [
-        "Dissolving Ooze",
-        "Carnivorous Cube",
-        "Mixologist",
-        "Ferocious Felbat",
-        "Nightmare Lord Xavius",
-        "The Ceaseless Expanse",
-        "Fumigate",
-        "Return Policy",
-        "Inflitrate"
-      ]) ->
-        :"Armor DH"
-
-      any?(card_info, ["Blob of Tar", "Ravenous Felhunter", "Wyvern's Slumber"]) ->
-        :"Cliff Dive DH"
-
-      any?(card_info, [
-        "Bloodmage Thalnos",
-        "Dreamplanner Zephyrus",
-        "Observer of Mysteries",
-        "Royal Librarian",
-        "Rockspitter",
-        "Chaos Strike"
-      ]) ->
-        :"Aggro Demon Hunter"
-
-      any?(card_info, ["Illidari Studies"]) ->
-        :"Cliff Dive DH"
-
-      any?(card_info, ["Tuskpiercer"]) ->
-        :"Armor DH"
-
-      any?(card_info, ["Insect Claw", "Infestation", "Dangerous Cliffside"]) ->
-        :"Aggro Demon Hunter"
-
-      true ->
-        :"Other DH"
-    end
+    process_config(@standard_config, card_info, :"Other DH")
   end
 
   def wild(_card_info) do
