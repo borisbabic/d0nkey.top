@@ -6,6 +6,20 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
 
   @standard_config [
     {:"Quest Druid", ["Restore the Wild"]},
+    {:"Whizbang Druid",
+     [
+       "Yogg-Saron, Master of Fate",
+       "Wild Growth",
+       "Convoke the Spirits",
+       "Ultimate Infestation",
+       "Overgrowth",
+       "Kun the Forgotten King",
+       "Nourish",
+       "Invigorate",
+       "Moment of Discovery",
+       "Crystal Cluster",
+       "Eonar, the Life-Binder"
+     ]},
     {:"Imbue Druid",
      [
        "Dreambound Disciple",
@@ -14,7 +28,17 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Sing-Along Buddy",
        "Charred Chameleon"
      ]},
-    {:"Ownlonius Druid", ["Ownlonius", "Sparkling Phial"]},
+    {:"Owlonius Druid", ["Owlonius", "Go with the Flow", "Ethereal Oracle"]},
+    {:"Aviana Druid",
+     [
+       "Un'Goro Brochure",
+       "Reforestation",
+       "Raven Idol",
+       "Final Frontier",
+       "Sky Mother Aviana"
+     ]},
+
+    # {:"Owlonius Druid", ["Owlonius", "Sparkling Phial"]},
     {:"Hydration Druid",
      [
        "Starlight Reactor",
@@ -22,19 +46,11 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "The Exodar",
        "Sha'tari Cloakfield",
        "Arkonite Defense Crystal",
-       "Greybough"
-     ]},
-    {:"Aviana Druid",
-     [
-       "Un'guro Brochure",
-       "Reforestation",
-       "Raven Idol",
-       "Final Frontier",
-       "Sky Mother Aviana",
-       "Hyration Station",
+       "Greybough",
+       "Hydration Station",
        "Tortollan Traveller"
      ]},
-    {:"Ownlonius Druid",
+    {:"Owlonius Druid",
      [
        "Incindius",
        "Ancient of Yore",
@@ -49,10 +65,10 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      ["Kil'jaedan", "Carnivorous Cubicle", "Endbringer Umbra", "Blob of Tar", "Marin the Manager"]},
     {:"Imbue Druid", ["Symbiosis", "Hybridization", "Dreamplanner Zephyrs", "Photosynthesis"]},
     {:"Aviana Druid", ["Wrath", "Horn of Plenty", "Astral Phaser", "Trail Mix"]},
-    {:"Ownlonius Druid", ["Zilliax Deluxe 3000", "Bottomless Toy Chest", "Swipe"]},
+    {:"Owlonius Druid", ["Zilliax Deluxe 3000", "Bottomless Toy Chest", "Swipe"]},
     {:"Hydration Druid", ["Ysera, Emerald Aspect"]},
     {:"Aviana Druid", ["Nightmare Lord Xavius"]},
-    {:"Ownlonius Druid",
+    {:"Owlonius Druid",
      ["Amirdrassil", "Sleep Under the Stars", "Story of Barnabus", "New Heights"]},
     {:"Hydration Druid", ["Shaladrassil"]},
     {:"Aviana Druid", ["Arkonite Revelations", "Living Roots"]}
