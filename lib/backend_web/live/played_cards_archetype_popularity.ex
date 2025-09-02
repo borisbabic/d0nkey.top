@@ -24,6 +24,17 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(min_played_count, :integer, default: @default_min_played_count)
   data(exclude_config_levels, :integer, default: 0)
 
+  @deck_archetype_mapping %{
+    "Rainbow Menagerie DK" => "Menagerie DK",
+    "\"Frost\" DK" => "Frost DK",
+    "Zerg Blood DK" => "Blood DK",
+    "Succ DK" => "Control DK",
+    "Blood DK" => "Control DK",
+    "Rainbow Starship DK" => "Starship DK",
+    "Buttons Rainbow DK" => "Buttons DK",
+    "Zerg Unholy DK" => "Unholy DK"
+  }
+
   def mount(_params, session, socket) do
     {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_can_access()}
   end
@@ -48,14 +59,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       <ClassDropdown id="class_dropdown" param="player_class"/>
       <LivePatchDropdown
         id="min_played_count"
-        options={[1, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+        options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
         title={"Min Played Count"}
         param={"min_played_count"}
         selected_as_title={false}
         normalizer={&to_string/1} />
       <LivePatchDropdown
         id="exclude_config_levels"
-        options={0..20}
+        options={0..30}
         title={"Exclude Config Levels"}
         param={"exclude_config_levels"}
         current_val={@exclude_config_levels}
@@ -265,7 +276,23 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       {_, %{"total" => total}} -> total >= min_played_count
       _ -> false
     end)
+    |> merge()
     |> Enum.sort_by(sorter, :desc)
+  end
+
+  def merge(card_popularity) do
+    card_popularity
+    |> Enum.map(fn {id, popularity} ->
+      {id, merge_archetypes_map(popularity)}
+    end)
+  end
+
+  def get_merged_archetype(archetype, mapping \\ @deck_archetype_mapping) do
+    case Map.get(mapping, archetype) do
+      nil -> archetype
+      a when a != archetype -> get_merged_archetype(a, mapping)
+      _ -> archetype
+    end
   end
 
   defp sorter("any_popularity") do
@@ -296,8 +323,19 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   defp sorted_archetypes(archetypes_map) do
     archetypes_map
+    |> merge_archetypes_map()
     |> Enum.sort_by(fn {_arch, count} -> count end, :desc)
     |> Enum.map(fn {archetype, _count} -> archetype end)
+  end
+
+  def merge_archetypes_map(map, mapping \\ @deck_archetype_mapping) do
+    map
+    |> Enum.group_by(fn {arch, _count} -> get_merged_archetype(arch, mapping) end, fn {_arch,
+                                                                                       count} ->
+      count
+    end)
+    |> Enum.map(fn {arch, counts} -> {arch, Enum.sum(counts)} end)
+    |> Map.new()
   end
 
   def handle_event(

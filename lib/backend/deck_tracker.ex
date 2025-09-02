@@ -2999,7 +2999,8 @@ defmodule Hearthstone.DeckTracker do
   def recalculate_archetypes_for_period(
         period,
         archetyping_updated_before,
-        additional_criteria \\ []
+        additional_criteria \\ [],
+        chunk_size \\ 100
       ) do
     criteria = [
       {"period", period},
@@ -3012,7 +3013,7 @@ defmodule Hearthstone.DeckTracker do
         query = stream_games_query(criteria)
 
         repo.stream(query)
-        |> Stream.chunk_every(100)
+        |> Stream.chunk_every(chunk_size)
         |> Stream.each(fn chunk ->
           chunk
           |> repo.preload(:played_cards)
