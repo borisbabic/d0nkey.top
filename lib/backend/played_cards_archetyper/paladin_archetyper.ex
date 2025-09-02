@@ -108,6 +108,10 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     {:"Drunk Paladin", ["Aegis of Light", "Dragonscale Armaments"]},
     {:"Imbue Paladin", ["Redscale Dragontamer"]}
   ]
+  @wild_config []
+
+  def standard_config(), do: @standard_config
+  def wild_config(), do: @wild_config
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Paladin")

@@ -1148,6 +1148,9 @@ defmodule Backend.Hearthstone do
     )
   end
 
+  defp compose_cards_query({"names", names}, query),
+    do: query |> where([card: c], c.name in ^names)
+
   defp compose_cards_query({"name", name}, query),
     do: query |> where([card: c], ilike(c.name, ^name))
 

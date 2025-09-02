@@ -10,6 +10,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
   alias Components.DecklistCard
+  alias Backend.PlayedCardsArchetyper
 
   @default_min_played_count 100
   @default_sort_by "total"
@@ -21,6 +22,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(criteria, :map, default: %{})
   data(sort_by, :string, default: @default_sort_by)
   data(min_played_count, :integer, default: @default_min_played_count)
+  data(exclude_config_levels, :integer, default: 0)
 
   def mount(_params, session, socket) do
     {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_can_access()}
@@ -51,6 +53,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         param={"min_played_count"}
         selected_as_title={false}
         normalizer={&to_string/1} />
+      <LivePatchDropdown
+        id="exclude_config_levels"
+        options={0..20}
+        title={"Exclude Config Levels"}
+        param={"exclude_config_levels"}
+        current_val={@exclude_config_levels}
+        selected_as_title={false}
+        normalizer={&Util.to_int_or_orig/1} />
       <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
       <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
       <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
@@ -93,6 +103,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     """
   end
 
+  def archetyping_config_cards(format, class, levels) do
+    format
+    |> Util.to_int_or_orig()
+    |> PlayedCardsArchetyper.config(class)
+    |> Enum.take(levels)
+    |> Enum.flat_map(fn {_archetype, cards} -> cards end)
+  end
+
   defp class(archetype, card_archetype) do
     if to_string(archetype) == to_string(card_archetype) do
       "tw-font-bold tw-text-gray-500"
@@ -106,6 +124,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       "rank" => "all"
     }
 
+    exclude_config_levels = Map.get(params, "exclude_config_levels", 0) |> Util.to_int_or_orig()
+
     criteria =
       Map.merge(default, params)
       |> Map.take([
@@ -118,6 +138,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         "player_played_cards_includes",
         "player_played_cards_excludes"
       ])
+      |> add_excluded_config(exclude_config_levels)
 
     min_played_count =
       Map.get(params, "min_played_count", @default_min_played_count) |> Util.to_int_or_orig()
@@ -131,6 +152,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       criteria: criteria,
       params: params,
       sort_by: sort_by,
+      exclude_config_levels: exclude_config_levels,
       min_played_count: min_played_count
     ]
 
@@ -168,6 +190,29 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       fetch_card_popularity(criteria)
     end)
   end
+
+  defp add_excluded_config(
+         %{"format" => format, "player_class" => player_class} = criteria,
+         levels
+       )
+       when levels > 0 do
+    card_names = archetyping_config_cards(format, player_class, levels)
+
+    cards =
+      Backend.Hearthstone.cards([
+        {"collectible", true},
+        {"format", format},
+        {"names", card_names}
+      ])
+      |> Enum.map(fn %{id: id} -> Hearthstone.DeckTracker.tally_card_id(id) end)
+      |> Enum.uniq()
+
+    Map.update(criteria, "player_played_cards_excludes", cards, fn existing ->
+      cards ++ existing
+    end)
+  end
+
+  defp add_excluded_config(criteria, _), do: criteria
 
   defp assign_can_access(%{assigns: %{user: user}} = socket) do
     can_access? = User.can_access?(user, :archetyping) or User.premium?(user)

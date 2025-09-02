@@ -79,6 +79,10 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
      ]},
     {:"Spell Mage", ["The Forbidden Sequence", "Frostbolt", "Rising Waves", "Tide Pools"]}
   ]
+  @wild_config []
+
+  def standard_config(), do: @standard_config
+  def wild_config(), do: @wild_config
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Mage")
