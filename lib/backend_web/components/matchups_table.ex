@@ -9,7 +9,8 @@ defmodule Components.MatchupsTable do
   import Components.CardStatsTable, only: [sort_direction: 2, sort_direction: 3]
 
   prop(matchups, :any, required: true)
-  prop(min_sample, :integer, default: 1)
+  prop(min_matchup_sample, :integer, default: 1)
+  prop(min_archetype_sample, :integer, default: 1)
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
@@ -34,7 +35,7 @@ defmodule Components.MatchupsTable do
   def render(assigns) do
     ~F"""
       <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
-        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={sorted_matchups = favorited_and_sorted_matchups(@matchups, @favorited, @sort)}>
+        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample)}>
           <thead class="decklist-headers">
             <tr>
             <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
@@ -47,7 +48,7 @@ defmodule Components.MatchupsTable do
               {Matchups.archetype(matchup)}
             </th>
             </tr>
-            <tr :if={total_games = total_games(sorted_matchups)}>
+            <tr >
               <th :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700"> {Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}%</th>
             </tr>
           </thead>
@@ -63,7 +64,7 @@ defmodule Components.MatchupsTable do
                 {Matchups.archetype(matchup)}
               </td>
               <td class=" tw-border tw-border-gray-600 tw-h-full" data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
-              <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_sample} sample={games} />
+              <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
               </td>
             </tr>
           </tbody>
@@ -126,7 +127,7 @@ defmodule Components.MatchupsTable do
      |> push_event("store", %{key: @local_storage_sort_by_key, data: "#{sort},#{direction}"})}
   end
 
-  defp favorited_and_sorted_matchups(matchups, favorited_raw, sort) do
+  defp favorited_and_sorted_matchups(matchups, favorited_raw, sort, min_archetype_sample) do
     sort_by = Map.get(sort, "sort_by", "games")
     direction_raw = Map.get(sort, "sort_direction", "desc")
     mapper = sort_mapper(sort_by)
@@ -141,15 +142,17 @@ defmodule Components.MatchupsTable do
         end)
       end)
 
+    total = total_games(matchups)
+
     rest =
       Enum.filter(matchups, fn m ->
         norm = normalize_archetype(Matchups.archetype(m))
-        norm not in favorited_norm
+        sample = Matchups.total_stats(m) |> Map.get(:games, 0)
+        norm not in favorited_norm and sample >= min_archetype_sample
       end)
 
     sorted = Enum.sort_by(rest, mapper, direction)
-
-    favorited ++ sorted
+    {favorited ++ sorted, total}
   end
 
   defp sort_mapper("games") do

@@ -11,12 +11,14 @@ defmodule BackendWeb.MatchupsLive do
   import Components.TierList, only: [premium_filters?: 2]
 
   @default_min_matchup_sample 50
+  @default_min_archetype_sample 250
   data(missing_premium, :boolean, default: false)
   data(criteria, :map)
   data(params, :map)
   data(archetype_stats, :map)
   data(premium_filters, :boolean, default: true)
   data(min_matchup_sample, :integer, default: @default_min_matchup_sample)
+  data(min_archetype_sample, :integer, default: @default_min_archetype_sample)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
@@ -42,9 +44,18 @@ defmodule BackendWeb.MatchupsLive do
         <LivePatchDropdown
           id="min_played_count"
           options={[1, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]}
-          title={"Min Matchup Sample"}
+          title={"Min Matchup Games"}
           param={"min_matchup_sample"}
           current_val={@min_matchup_sample}
+          selected_as_title={false}
+          normalized={&Util.to_int_or_orig/1}
+          />
+        <LivePatchDropdown
+          id="min_played_count"
+          options={[1, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000]}
+          title={"Min Archetype Games"}
+          param={"min_archetype_sample"}
+          current_val={@min_archetype_sample}
           selected_as_title={false}
           normalized={&Util.to_int_or_orig/1}
           />
@@ -52,7 +63,7 @@ defmodule BackendWeb.MatchupsLive do
         <div :if={@archetype_stats.loading}>
           Preparing stats...
         </div>
-        <MatchupsTable :if={!@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} min_sample={@min_matchup_sample}/>
+        <MatchupsTable :if={!@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample}/>
       </div>
     """
   end
@@ -63,16 +74,25 @@ defmodule BackendWeb.MatchupsLive do
     criteria =
       Map.merge(default, params)
       |> TierList.filter_parse_params()
-      |> Map.drop(["min_games", "min_matchup_sample"])
+      |> Map.drop(["min_games", "min_matchup_sample", "min_archetype_sample"])
 
     min_matchup_sample =
       Map.get(params, "min_matchup_sample", @default_min_matchup_sample) |> Util.to_int_or_orig()
+
+    min_archetype_sample =
+      Map.get(params, "min_archetype_sample", @default_min_archetype_sample)
+      |> Util.to_int_or_orig()
 
     if needs_premium?(criteria) and !user_has_premium?(socket.assigns) do
       {:noreply, assign(socket, missing_premium: true)}
     else
       {:noreply,
-       assign(socket, criteria: criteria, params: params, min_matchup_sample: min_matchup_sample)
+       assign(socket,
+         criteria: criteria,
+         params: params,
+         min_matchup_sample: min_matchup_sample,
+         min_archetype_sample: min_archetype_sample
+       )
        |> update_context()
        |> fetch_matchups(socket)
        |> assign_meta()}
