@@ -6,6 +6,32 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
 
   @standard_config [
     {:"Quest DK", ["Reanimate the Terror"]},
+    {:"Whizbang DK",
+     [
+       "Thrive in the Shadows",
+       "Wild Growth",
+       "Elemental Inspiration",
+       "Spore Hallucination",
+       "Multicaster",
+       "Bash",
+       "Hipster",
+       "Primordial Glyph",
+       "Patchwork Pals",
+       "Coral Keeper",
+       "Chaos Strike",
+       "Hellfire",
+       "Consecration"
+     ]},
+    {:"Bot? DK",
+     [
+       "Stormwind Champion",
+       "Life Drinker",
+       "Sen'jin Shieldmasta",
+       "Dire Wolf Alpha",
+       "Annoy-o-Tron",
+       "Murloc Tidehunter",
+       "Mo'arg Forgefiend"
+     ]},
     {:"Starship DK",
      [
        "Guiding Figure",
@@ -24,18 +50,47 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Amateur Puppeteer",
        "Blood Tap"
      ]},
-    {:"Menagerie DK", ["Menagerie Mug", "Fire Fly", "Menagerie Jug", "Murmy"]},
+    # 5.5
+    {:"Herenn DK", ["High Cultist Herenn", "Overplanner", "Wakener of Souls"]},
+    {:"Menagerie DK", ["Menagerie Mug", "Menagerie Jug"]},
+    {:"Control DK",
+     ["The Ceaseless Expanse", "Naralex, Herald of the Flights", "Vampiric Blood"]},
+    {:"Control DK",
+     [
+       "Dirty Rat",
+       "Plucky Paintfin",
+       "Steamcleaner",
+       "Stranded Spaceman",
+       "Headless Horseman",
+       "Corpse Explosion",
+       "Orbital Moon",
+       "Adaptive Amalgam",
+       "Threads of Despair",
+       "The Headless Horseman"
+     ]},
+    {:"Frost DK", ["Frostwyrm's Fury", "Cryosleep", "Thassarian", "Marrow Manipulator"]},
+    # 10.5
+    {:"Menagerie DK", ["Fire Fly"]},
     {:"Herren DK",
      [
-       "Bonechill Stegodon",
-       "Overplanner",
-       "Travel Security",
-       "Ancient Raptor",
-       "Endbringer Umbra",
-       "Wakener of Souls",
-       "Eternal Layover",
-       "Ancient Raptor"
+       "Slippery Slope",
+       "Bonechill Stegodon"
+       #  "Meltemental",
+       #  "Malted Magma",
+       #  "Clearance Promoter",
+       #  "Bonechill Stegodon",
+       #  "Slippery Slope",
+       #  "Travel Security",
+       #  "Ancient Raptor",
+       #  "Endbringer Umbra",
+       #  "Eternal Layover",
+       #  "Ancient Raptor"
      ]},
+    {:"Zerg DK", ["Baneling Barrage", "Hive Queen", "Infestor", "Spawning Pool"]},
+    {:"Unholy DK",
+     ["Grave Strength", "Tomb Guardians", "Battlefield Necromancer", "Skeletal Sidekick"]},
+    {:"Menagerie DK", ["Monstrous Mosquito", "Murmy", "Observer of Mysteries"]},
+    # 15.5
     {:"Control DK",
      [
        "Fyrakk the Blazing",
@@ -44,7 +99,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Threads of Despair",
        "Staff of the Endbringer",
        "Hematurge",
-       "Dirty Rat",
        "Blob of Tar",
        "Airlock Breach",
        "Bob the Bartender",
@@ -52,7 +106,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Kil'jaeden",
        "Corpse Explosion",
        "Reluctant Wrangler",
-       "Steamcleaner",
        "Staff of the Enderbringer",
        "Hideous Husk",
        "Infested Breath",
@@ -64,7 +117,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Ancient of Yore",
        "Zilliax Deluxe 3000",
        "Dirty Rat",
-       "The Headless Horseman",
        "Creature of Madness",
        "Nightmare Lord Xavius",
        "Ysera, Emerald Aspect",
@@ -78,6 +130,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Reluctant Wrangler",
        "Shaladrassil",
        "Demolition Renovator",
+       "Grotesque Runeblade",
        "Gnomelia, S.A.F.E. Pilot"
      ]},
     {:"Herren DK",
@@ -89,34 +142,25 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Rambunctious Stuffy",
        "Glacial Shard",
        "Mixologist",
-       "Auchenai Death-Speaker",
        "Troubled Mechanic",
-       "High Cultist Herenn",
        "Ghouls' Night"
      ]},
-    {:"Starship DK", ["Brittlebone Buccaneer", "Silk Stitching", "Wild Pyromancer"]},
+    {:"Starship DK", ["Brittlebone Buccaneer", "Silk Stitching"]},
     {:"Handbuff DK",
      [
        "Toysnatching Geist",
        "Rainbow Seamstress",
        "Reanimated Pterrordax",
        "Nerubian Swarmguard",
-       "Gnome Muncher",
-       "Shambling Zombietank"
+       "Gnome Muncher"
      ]},
-    {:"Menagerie DK", ["Monstrous Mosquito", "Harbringer of Winter", "Menagerie DK"]},
     {:"Control DK",
      [
-       "Buttons",
-       "Zergling",
        "Dreamplanner Zephryus",
        "Rite of Atrocity",
        "Prize Vendor",
        "Wisp",
-       "Adaptive Amalgam",
-       "Kerrigan, Queen of Blades",
        "Ursoc",
-       "Plucky Paintfin",
        "Floppy Hydra",
        "Death Strike"
      ]},

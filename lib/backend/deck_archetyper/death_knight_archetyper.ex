@@ -9,6 +9,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       quest?(card_info) ->
         :"Quest DK"
 
+      bot?(card_info) ->
+        :"Bot? DK"
+
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
@@ -87,6 +90,18 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp bot?(card_info) do
+    min_count?(card_info, 2, [
+      "Stormwind Champion",
+      "Life Drinker",
+      "Sen'jin Shieldmasta",
+      "Dire Wolf Alpha",
+      "Annoy-o-Tron",
+      "Murloc Tidehunter",
+      "Mo'arg Forgefiend"
+    ])
   end
 
   defp control?(card_info) do
