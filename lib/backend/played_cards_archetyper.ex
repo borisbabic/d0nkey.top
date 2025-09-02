@@ -20,6 +20,7 @@ defmodule Backend.PlayedCardsArchetyper do
           cards: [integer()]
         }
   def archetype(cards, class, format \\ 2)
+
   def archetype(cards, class, format) when is_binary(class) and is_list(cards) do
     card_info = card_info(cards)
 
@@ -51,6 +52,41 @@ defmodule Backend.PlayedCardsArchetyper do
   end
 
   def archetype(_cards, _, _), do: nil
+
+  def full_config(format) do
+    Backend.Hearthstone.Deck.classes()
+    |> Map.new(fn class ->
+      {class, config(format, class)}
+    end)
+  end
+
+  def config(format, class) do
+    case {format, class} do
+      {2, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard_config()
+      {1, "DEATHKNIGHT"} -> DeathKnightArchetyper.wild_config()
+      {2, "DEMONHUNTER"} -> DemonHunterArchetyper.standard_config()
+      {1, "DEMONHUNTER"} -> DemonHunterArchetyper.wild_config()
+      {2, "DRUID"} -> DruidArchetyper.standard_config()
+      {1, "DRUID"} -> DruidArchetyper.wild_config()
+      {2, "HUNTER"} -> HunterArchetyper.standard_config()
+      {1, "HUNTER"} -> HunterArchetyper.wild_config()
+      {2, "MAGE"} -> MageArchetyper.standard_config()
+      {1, "MAGE"} -> MageArchetyper.wild_config()
+      {2, "PALADIN"} -> PaladinArchetyper.standard_config()
+      {1, "PALADIN"} -> PaladinArchetyper.wild_config()
+      {2, "PRIEST"} -> PriestArchetyper.standard_config()
+      {1, "PRIEST"} -> PriestArchetyper.wild_config()
+      {2, "ROGUE"} -> RogueArchetyper.standard_config()
+      {1, "ROGUE"} -> RogueArchetyper.wild_config()
+      {2, "SHAMAN"} -> ShamanArchetyper.standard_config()
+      {1, "SHAMAN"} -> ShamanArchetyper.wild_config()
+      {2, "WARLOCK"} -> WarlockArchetyper.standard_config()
+      {1, "WARLOCK"} -> WarlockArchetyper.wild_config()
+      {2, "WARRIOR"} -> WarriorArchetyper.standard_config()
+      {1, "WARRIOR"} -> WarriorArchetyper.wild_config()
+      _ -> []
+    end
+  end
 
   def card_info(cards) when is_list(cards) do
     cards

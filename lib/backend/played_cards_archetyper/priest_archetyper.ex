@@ -42,6 +42,10 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
     {["Trusty Fishing Rod", "Nightmare Xavius"], :"Protoss Priest"},
     {["Thrive in the Shadows", "Birdwatching", "Narain Soothfancy"], :"Wilted Priest"}
   ]
+  @wild_config []
+
+  def standard_config(), do: @standard_config
+  def wild_config(), do: @wild_config
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Priest")

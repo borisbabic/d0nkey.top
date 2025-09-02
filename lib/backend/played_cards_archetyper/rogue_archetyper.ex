@@ -69,6 +69,10 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Foxy Fraud"
      ]}
   ]
+  @wild_config []
+
+  def standard_config(), do: @standard_config
+  def wild_config(), do: @wild_config
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Rogue")

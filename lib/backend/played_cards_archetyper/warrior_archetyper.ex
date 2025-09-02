@@ -77,6 +77,10 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
     {:"Dragon Warrior", ["Shadowflame Suffusion"]},
     {:"Mech Warrior", ["All You Can Eat", "Axe of the Forefathers"]}
   ]
+  @wild_config []
+
+  def standard_config(), do: @standard_config
+  def wild_config(), do: @wild_config
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Warrior")
