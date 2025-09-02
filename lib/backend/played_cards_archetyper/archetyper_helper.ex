@@ -9,4 +9,15 @@ defmodule Backend.PlayedCardsArchetyper.ArchetyperHelper do
   def any?(search_card_names, target_card_names) do
     Enum.any?(search_card_names, &(&1 in target_card_names))
   end
+
+  @spec process_config(list(), any(), atom() | nil) :: atom() | nil
+  def process_config(config, card_info, fallback \\ nil) do
+    Enum.find_value(config, fallback, fn {archetype, cards} ->
+      if any?(card_info, cards) do
+        archetype
+      else
+        nil
+      end
+    end)
+  end
 end

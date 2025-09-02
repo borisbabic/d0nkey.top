@@ -4,93 +4,56 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @standard_config [
+    {:"Quest Shaman", ["Spirit of the Mountain"]},
+    {:"Terran Shaman",
+     ["Arkonite Defense Crystal", "Lift Off", "Jim Raynor", "The Exodar", "SCV", "Ghost"]},
+    {:"Imbue Shaman",
+     ["Flutterwing Guardian", "Bitterbloom Knight", "Petal Picker", "Living Garden"]},
+    {:"Asteroid Shaman",
+     [
+       "Ethereal Oracle",
+       "Moonstone Mauler",
+       "Ultraviolet Breaker",
+       "Novice Zapper",
+       "Bloodmage Thalnost",
+       "Bolide Behemoth"
+     ]},
+    {:"Elemental Shaman",
+     ["Wailing Vapor", "Sizzling Cinder", "Slagmaw", "Fire Fly", "Menacing Nimbus", "Tar Slime"]},
+    {:"Nebula Shaman", ["Bumbling Belhop", "Al'Akir the Windlord", "Nebula", "With Upon a Star"]},
+    {:"Imbue Shaman", ["Matching Outfits"]},
+    {:"Nebula Shaman",
+     [
+       "Cabaret Headliner",
+       "Hagatha the Fabled",
+       "Parrot Sanctuary",
+       "Frosty Décor",
+       "Elise the Navigator",
+       "Fyrakk the Blazing",
+       "The Ceaseless Expanse",
+       "Farseer Nobundo",
+       "Flight of the Firehawk"
+     ]},
+    {:"Imbue Shaman", ["Aspect's Embrace"]},
+    {:"Elemental Shaman", ["Sizzling Swarm", "Volcanic Thrasher", "Lava Flow"]},
+    {:"Terran Shaman", ["Starport", "Lock On", "Marin the Manager", "Dirty Rat"]},
+    {:"Nebula Shaman",
+     [
+       "Murloc Growfin",
+       "Pop-Up Book",
+       "Hex",
+       "Baking Soda Volcano",
+       "Shudderblock",
+       "Cosmonaut",
+       "Living Flame",
+       "Birdwatching",
+       "Far Sight"
+     ]}
+  ]
+
   def standard(card_info) do
-    cond do
-      quest?(card_info) ->
-        :"Quest Shaman"
-
-      any?(card_info, [
-        "Arkonite Defense Crystal",
-        "Lift Off",
-        "Jim Raynor",
-        "The Exodar",
-        "SCV",
-        "Ghost"
-      ]) ->
-        :"Terran Shaman"
-
-      any?(card_info, [
-        "Flutterwing Guardian",
-        "Bitterbloom Knight",
-        "Petal Picker",
-        "Living Garden"
-      ]) ->
-        :"Imbue Shaman"
-
-      any?(card_info, [
-        "Ethereal Oracle",
-        "Moonstone Mauler",
-        "Ultraviolet Breaker",
-        "Novice Zapper",
-        "Bloodmage Thalnost",
-        "Bolide Behemoth"
-      ]) ->
-        :"Asteroid Shaman"
-
-      any?(card_info, [
-        "Wailing Vapor",
-        "Sizzling Cinder",
-        "Slagmaw",
-        "Fire Fly",
-        "Menacing Nimbus",
-        "Tar Slime"
-      ]) ->
-        :"Elemental Shaman"
-
-      any?(card_info, ["Bumbling Belhop", "Al'Akir the Windlord", "Nebula", "With Upon a Star"]) ->
-        :"Nebula Shaman"
-
-      any?(card_info, ["Matching Outfits"]) ->
-        :"Imbue Shaman"
-
-      any?(card_info, [
-        "Cabaret Headliner",
-        "Hagatha the Fabled",
-        "Parrot Sanctuary",
-        "Frosty Décor",
-        "Elise the Navigator",
-        "Fyrakk the Blazing",
-        "The Ceaseless Expanse",
-        "Farseer Nobundo",
-        "Flight of the Firehawk"
-      ]) ->
-        :"Nebula Shaman"
-
-      any?(card_info, ["Aspect's Embrace"]) ->
-        :"Imbue Shaman"
-
-      any?(card_info, ["Sizzling Swarm", "Volcanic Thrasher", "Lava Flow"]) ->
-        :"Elemental Shaman"
-
-      any?(card_info, ["Starport", "Lock On", "Marin the Manager", "Dirty Rat"]) ->
-        :"Terran Shaman"
-
-      any?(card_info, [
-        "Murloc Growfin",
-        "Pop-Up Book",
-        "Hex",
-        "Baking Soda Volcano",
-        "Shudderblock",
-        "Cosmonaut",
-        "Living Flame",
-        "Birdwatching",
-        "Far Sight"
-      ]) ->
-        :"Nebula Shaman"
-
-      true ->
-        :"Other Shaman"
-    end
+    process_config(@standard_config, card_info, :"Other Shaman")
   end
 
   def wild(_card_info) do

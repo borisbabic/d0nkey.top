@@ -4,79 +4,63 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @standard_config [
+    {:"Quest Hunter", ["The Food Chain"]},
+    {:"Handbuff Hunter",
+     [
+       "Bumbling Belhop",
+       "Mythical Runebear",
+       "Cop o'Muscle",
+       "Death Roll",
+       "Furious Fowls",
+       "Reserved Spot",
+       "Range Gilly"
+     ]},
+    {:"Quest Hunter", ["Pterrowing Ravager"]},
+    {:"Beast Hunter",
+     [
+       "Mother Duck",
+       "City Chief Esho",
+       "Ball of Spiders",
+       "Workhorse",
+       "Dreambound Raptor",
+       "Ancient Raptor",
+       "Trusty Fishing Rod",
+       "Painted Canvasaur",
+       "Catch of the Day"
+     ]},
+    {:"Discover Hunter",
+     [
+       "Ragnari Scout",
+       "Rockskipper",
+       "Glacial Shard",
+       "Niri of the Crater",
+       "Tidepool Pupil",
+       "Astral Vigilant",
+       "Mixologist",
+       "Elise",
+       "Griftah",
+       "Alien Encounters",
+       "Biopod"
+     ]},
+    {:"Beast Hunter",
+     [
+       "Shepherd's Crook",
+       "R.C. Rampage",
+       "Remote Control",
+       "Jungle Gym",
+       "Patchwork Pals",
+       "Painted Canvasaur",
+       "Fetch!"
+     ]},
+    {:"Beast Hunter", ["Scarab Keychain", "Cower in Fear"]},
+    {:"Discover Hunter", ["Sasquawk"]},
+    {:"Quest Hunter", ["King Mukla", "Racasaur Matriarch", "odd Map", "Platysaur"]},
+    {:"Beast Hunter", ["Pet Parrot"]}
+  ]
+
   def standard(card_info) do
-    cond do
-      quest?(card_info) ->
-        :"Quest Hunter"
-
-      any?(card_info, [
-        "Bumbling Belhop",
-        "Mythical Runebear",
-        "Cop o'Muscle",
-        "Death Roll",
-        "Furious Fowls",
-        "Reserved Spot",
-        "Range Gilly"
-      ]) ->
-        :"Handbuff Hunter"
-
-      any?(card_info, ["Pterrowing Ravager"]) ->
-        :"Quest Hunter"
-
-      any?(card_info, [
-        "Mother Duck",
-        "City Chief Esho",
-        "Ball of Spiders",
-        "Workhorse",
-        "Dreambound Raptor",
-        "Ancient Raptor",
-        "Trusty Fishing Rod",
-        "Painted Canvasaur",
-        "Catch of the Day"
-      ]) ->
-        :"Beast Hunter"
-
-      any?(card_info, [
-        "Ragnari Scout",
-        "Rockskipper",
-        "Glacial Shard",
-        "Niri of the Crater",
-        "Tidepool Pupil",
-        "Astral Vigilant",
-        "Mixologist",
-        "Elise",
-        "Griftah",
-        "Alien Encounters",
-        "Biopod"
-      ]) ->
-        :"Discover Hunter"
-
-      any?(card_info, [
-        "Shepherd's Crook",
-        "R.C. Rampage",
-        "Remote Control",
-        "Jungle Gym",
-        "Patchwork Pals",
-        "Painted Canvasaur",
-        "Fetch!"
-      ]) ->
-        :"Beast Hunter"
-
-      any?(card_info, ["Scarab Keychain", "Cower in Fear"]) ->
-        :"Beast Hunter"
-
-      any?(card_info, ["Sasquawk"]) ->
-        :"Discover Hunter"
-
-      any?(card_info, ["King Mukla", "Racasaur Matriarch", "odd Map", "Platysaur"]) ->
-        :"Quest Hunter"
-
-      any?(card_info, ["Pet Parrot"]) ->
-        :"Beast Hunter"
-
-      true ->
-        :"Other Hunter"
-    end
+    process_config(@standard_config, card_info, :"Other Hunter")
   end
 
   def wild(_card_info) do
