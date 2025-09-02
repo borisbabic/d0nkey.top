@@ -53,6 +53,17 @@ defmodule Backend.PlayedCardsArchetyper do
 
   def archetype(_cards, _, _), do: nil
 
+  def all_archetypes(format) do
+    Backend.Hearthstone.Deck.classes()
+    |> Enum.flat_map(fn class ->
+      config(format, class)
+      |> Enum.map(fn {archetype, _} ->
+        archetype
+      end)
+    end)
+    |> Enum.uniq()
+  end
+
   def full_config(format) do
     Backend.Hearthstone.Deck.classes()
     |> Map.new(fn class ->
