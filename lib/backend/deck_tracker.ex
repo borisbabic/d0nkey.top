@@ -2319,6 +2319,10 @@ defmodule Hearthstone.DeckTracker do
     Enum.reduce(criteria, query, &compose_ranks_query/2)
   end
 
+  defp compose_ranks_query({:auto_aggregate, true}, query) do
+    query |> where([rank: r], r.auto_aggregate)
+  end
+
   defp compose_ranks_query({:context, :public}, query) do
     query |> where([rank: p], p.include_in_deck_filters == true)
   end
@@ -2380,6 +2384,10 @@ defmodule Hearthstone.DeckTracker do
 
   defp build_periods_query(query, criteria) do
     Enum.reduce(criteria, query, &compose_periods_query/2)
+  end
+
+  defp compose_periods_query({:auto_aggregate, true}, query) do
+    query |> where([period: p], p.auto_aggregate)
   end
 
   defp compose_periods_query({:format, format}, query) do
@@ -3083,7 +3091,9 @@ defmodule Hearthstone.DeckTracker do
 
   alias Backend.Tournaments.ArchetypeStats
   @spec matchups(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups(criteria \\ []) do
+  def matchups(criteria \\ []), do: matchups_fetch_then_process(criteria)
+  @spec matchups_stream(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
+  def matchups_stream(criteria \\ []) do
     Repo.transact(
       fn repo ->
         query = decisive_archetype_results_query(criteria)
@@ -3098,8 +3108,29 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  @spec matchups_alt(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups_alt(criteria \\ []) do
+  @spec matchups_chunked_stream(criteria :: list()) ::
+          {:ok, Backend.Tournaments.archetype_stat_bag()}
+  def matchups_chunked_stream(criteria \\ [], chunk_size \\ 1000) do
+    Repo.transact(
+      fn repo ->
+        query = decisive_archetype_results_query(criteria)
+
+        stats =
+          repo.stream(query)
+          |> Stream.chunk_every(chunk_size, chunk_size, [])
+          |> Enum.reduce(%{}, fn chunk, carry ->
+            Enum.reduce(chunk, carry, &matchup_stats_reducer/2)
+          end)
+
+        {:ok, stats}
+      end,
+      timeout: :infinity
+    )
+  end
+
+  @spec matchups_fetch_then_process(criteria :: list()) ::
+          {:ok, Backend.Tournaments.archetype_stat_bag()}
+  def matchups_fetch_then_process(criteria \\ []) do
     decisive_archetype_results_query(criteria)
     |> Repo.all(timeout: :infinity)
     |> Enum.reduce(%{}, &matchup_stats_reducer/2)
