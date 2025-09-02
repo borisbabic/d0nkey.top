@@ -268,6 +268,22 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     |> Enum.sort_by(sorter, :desc)
   end
 
+  defp sorter("any_popularity") do
+    fn
+      {_card, popularity} ->
+        {total, rest} = Map.pop(popularity, "total", 999_999_999)
+
+        val =
+          rest
+          # ensure it's not empty
+          |> Map.put_new("not_empty", 0)
+          |> Enum.max_by(fn {_arch, val} -> val end)
+          |> elem(1)
+
+        val / total
+    end
+  end
+
   defp sorter("total"), do: fn {_card, popularity} -> Map.get(popularity, "total", 0) end
 
   defp sorter(sort_by) do
