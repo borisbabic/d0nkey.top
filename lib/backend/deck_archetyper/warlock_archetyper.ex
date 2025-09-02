@@ -240,6 +240,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Warlock"
 
+      wild_curselock?(card_info) ->
+        :Curselock
+
       mill?(card_info) ->
         :"Mill Warlock"
 
@@ -252,6 +255,15 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp wild_curselock?(card_info) do
+    min_count?(card_info, 3, [
+      "Dragged Below",
+      "Sira'kess Cultist",
+      "Za'qul",
+      "Abyssal Wave"
+    ])
   end
 
   defp wild_chad_seedlock?(card_info) do
