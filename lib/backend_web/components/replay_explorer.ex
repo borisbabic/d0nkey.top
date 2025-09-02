@@ -169,6 +169,7 @@ defmodule Components.ReplayExplorer do
     default_format = assigns.default_format || FormatDropdown.default(assigns.filter_context)
 
     defaults = [
+      {"with_played_cards", "yes"},
       {"limit", assigns.default_limit},
       {"format", default_format},
       {"rank", assigns.default_rank || RankDropdown.default(assigns.filter_context)},

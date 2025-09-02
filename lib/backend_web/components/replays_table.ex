@@ -3,6 +3,7 @@ defmodule Components.ReplaysTable do
   use Surface.Component
   alias Components.ExpandableDecklist
   alias Components.PlayerName
+  alias Backend.Hearthstone.Deck
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.Enums.GameType
@@ -41,9 +42,13 @@ defmodule Components.ReplaysTable do
             <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
             <td :if={@show_opponent}>
               <span>
+              {#if opponent_archetype = get_in(game, [Access.key(:played_cards, %{}), Access.key(:opponent_archetype, nil)])}
+                <span class={"tw-text-black", "decklist-info", Deck.extract_class(opponent_archetype) |> String.downcase()}>{opponent_archetype}</span>
+              {#else}
                 <span class="icon">
                   <img src={"#{BackendWeb.BattlefyView.class_url(game.opponent_class)}"} >
                 </span>
+              {/if}
                 <PlayerName :if={@show_opponent_name} player={game.opponent_btag}/>
               </span>
             </td>

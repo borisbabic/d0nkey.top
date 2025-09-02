@@ -215,6 +215,7 @@ defmodule Hearthstone.DeckTracker do
     opponent_class? = List.keymember?(criteria, "opponent_class", 0)
     player_btag? = List.keymember?(criteria, "player_btag", 0)
     group? = List.keymember?(criteria, "in_group", 0)
+    opponent_archetype? = List.keymember?(criteria, "opponent_archetype", 0)
 
     cond do
       group? ->
@@ -243,6 +244,9 @@ defmodule Hearthstone.DeckTracker do
 
       regions && Enum.sort(regions) != Enum.sort(agg_regions) ->
         {:error, "unsupported regions for agg"}
+
+      opponent_archetype? ->
+        {:error, "opponent archetype not aggregated"}
 
       format && (!deck_id or deck_id < 1) ->
         {:ok, List.keystore(criteria, "player_deck_id", 0, {"player_deck_id", :not_null})}
@@ -1070,6 +1074,14 @@ defmodule Hearthstone.DeckTracker do
   @old_aggregated_query %{from: %{as: :deck_stats}}
   @agg_deck_query %{from: %{as: :agg_deck_stats}}
   @card_query %{from: %{as: :card_tally}}
+
+  defp compose_games_query({"with_played_cards", yes}, query) when yes in ["yes", "true", true] do
+    query
+    |> ensure_played_cards_joined(:left)
+    |> preload([played_cards: pc], played_cards: pc)
+  end
+
+  defp compose_games_query({"with_played_cards", _}, query), do: query
 
   defp compose_games_query({"period", period}, query = @agg_deck_query) do
     query
@@ -1932,7 +1944,7 @@ defmodule Hearthstone.DeckTracker do
     |> where([played_cards: pc], is_nil(pc.player_archetype) or is_nil(pc.opponent_archetype))
   end
 
-  defp ensure_played_cards_joined(query) do
+  defp ensure_played_cards_joined(query, join \\ :inner) do
     already_joined? =
       Map.get(query, :joins, [])
       |> Enum.any?(&(&1.as == :played_cards))
@@ -1941,7 +1953,7 @@ defmodule Hearthstone.DeckTracker do
       query
     else
       query
-      |> join(:inner, [game: g], pc in assoc(g, :played_cards), as: :played_cards)
+      |> join(join, [game: g], pc in assoc(g, :played_cards), as: :played_cards)
     end
   end
 
