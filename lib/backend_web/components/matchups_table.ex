@@ -35,7 +35,7 @@ defmodule Components.MatchupsTable do
     ~F"""
       <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
         <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={sorted_matchups = favorited_and_sorted_matchups(@matchups, @favorited, @sort)}>
-          <thead class="tw-text-black decklist-headers">
+          <thead class="decklist-headers">
             <tr>
             <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
               <button :on-click="change_sort" phx-value-sort_by="winrate" phx-value-sort_direction={sort_direction(@sort, "winrate")}>Winrate</button></th>

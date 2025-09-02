@@ -134,9 +134,9 @@
 .decklist-headers th {
   min-width: 50px;
   max-width: 50px;
-  font-size: 1vw;
+  font-size: 12px;
+  font-weight: normal;
   overflow: clip;
-
 }
 
 .decklist_card_text_container {
