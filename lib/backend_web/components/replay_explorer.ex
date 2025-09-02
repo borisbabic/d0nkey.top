@@ -46,6 +46,7 @@ defmodule Components.ReplayExplorer do
   prop(archetype_filter, :boolean, default: true)
   prop(player_class_filter, :boolean, default: true)
   prop(opponent_class_filter, :boolean, default: true)
+  prop(opponent_archetype_filter, :boolean, default: true)
   prop(includes_filter, :boolean, default: true)
   prop(excludes_filter, :boolean, default: true)
   prop(class_stats_modal, :boolean, default: true)
@@ -95,6 +96,7 @@ defmodule Components.ReplayExplorer do
             use_nil_val_as_title={false}
           />
           <ArchetypeSelect :if={@archetype_filter} id={"player_deck_archetype"} param={"player_deck_archetype"} selected={@params["player_deck_archetype"] || []} title="Archetypes" />
+          <ArchetypeSelect :if={@opponent_archetype_filter} id={"opponent_archetype"} played_cards_archetypes={true} param={"opponent_archetype"} selected={@params["opponent_archetype"] || []} title="Opponent Archetypes" />
           <ClassDropdown :if={@player_class_filter} id="player_class_dropdown"
             param={"player_class"} />
           <ClassDropdown :if={@opponent_class_filter} id="opponent_class_dropdown"
@@ -209,6 +211,7 @@ defmodule Components.ReplayExplorer do
       "player_kept",
       "player_not_kept",
       "player_has_coin",
+      "opponent_archetype",
       "opponent_btag_like"
     ])
     |> DecksExplorer.parse_int([
