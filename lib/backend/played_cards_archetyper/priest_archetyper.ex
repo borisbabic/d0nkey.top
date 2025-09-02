@@ -6,7 +6,8 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
 
   @standard_config [
     {:"Quest Priest", ["Reach Equilibrium"]},
-    {[
+    {:"Protoss Priest",
+     [
        "Void Ray",
        "Mothership",
        "Photon Cannon",
@@ -14,8 +15,9 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Hallucination",
        "Chrono Boost",
        "Artanis"
-     ], :"Protoss Priest"},
-    {[
+     ]},
+    {:"Wilted Priest",
+     [
        "Nexus-Prince Shaffar",
        "Plated Bettle",
        "Tar Slime",
@@ -24,8 +26,9 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Annoy-o-Tron",
        "Critter Caretaker",
        "Rest in Peace"
-     ], :"Wilted Priest"},
-    {[
+     ]},
+    {:"Aviana Priest",
+     [
        "Mo'arg Forgefiend",
        "Overplanner",
        "Living Flame",
@@ -34,13 +37,13 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Twilight Medium",
        "Aviana, Elune's Chosen",
        "Story of Imara"
-     ], :"Aviana Priest"},
-    {["Sasquawk", "Enderbringer Umbra", "Trusty Fishy Rod", "Orbital Halo", "Catch of the Day"],
-     :"Protoss Priest"},
-    {["Lightbomb", "Sleepy Resident"], :"Wilted Priest"},
-    {["Power Word: Shield", "Resuscitate"], :"Wilted Priest"},
-    {["Trusty Fishing Rod", "Nightmare Xavius"], :"Protoss Priest"},
-    {["Thrive in the Shadows", "Birdwatching", "Narain Soothfancy"], :"Wilted Priest"}
+     ]},
+    {:"Protoss Priest",
+     ["Sasquawk", "Enderbringer Umbra", "Trusty Fishy Rod", "Orbital Halo", "Catch of the Day"]},
+    {:"Wilted Priest", ["Lightbomb", "Sleepy Resident"]},
+    {:"Wilted Priest", ["Power Word: Shield", "Resuscitate"]},
+    {:"Protoss Priest", ["Trusty Fishing Rod", "Nightmare Xavius"]},
+    {:"Wilted Priest", ["Thrive in the Shadows", "Birdwatching", "Narain Soothfancy"]}
   ]
   @wild_config []
 
