@@ -5,6 +5,7 @@ defmodule BackendWeb.MatchupsLive do
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
+  alias Components.Filter.ForceFreshDropdown
   alias Components.LivePatchDropdown
   alias Components.TierList
 
@@ -16,30 +17,25 @@ defmodule BackendWeb.MatchupsLive do
   data(criteria, :map)
   data(params, :map)
   data(archetype_stats, :map)
-  data(premium_filters, :boolean, default: true)
+  data(updated_at, :any, default: nil)
+  data(premium_filters, :boolean, default: false)
   data(min_matchup_sample, :integer, default: @default_min_matchup_sample)
   data(min_archetype_sample, :integer, default: @default_min_archetype_sample)
 
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
-  def render(%{missing_premium: true} = assigns) do
-    ~F"""
-      <div>
-        <div class="title is-2">Matchups</div>
-        <div class="title is-3">You do not have access to this page. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" />. It will be available freely after optimization.</div>
-        <FunctionComponents.Ads.below_title/>
-      </div>
-    """
-  end
-
   def render(assigns) do
     ~F"""
       <div>
         <div class="title is-2">Matchups</div>
+        <div class="subtitle is-5">
+          <span :if={@updated_at}>{Timex.from_now(@updated_at)}</span>
+        </div>
+        <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
         <div class="notification is-warning">Archetyping is WIP</div>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
-        <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
+        <FormatDropdown :if={false} id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <LivePatchDropdown
           id="min_played_count"
@@ -59,11 +55,12 @@ defmodule BackendWeb.MatchupsLive do
           selected_as_title={false}
           normalized={&Util.to_int_or_orig/1}
           />
+        <ForceFreshDropdown :if={user_has_premium?(@user)} id="force_fresh_dropdown" />
         <FunctionComponents.Ads.below_title/>
-        <div :if={@archetype_stats.loading}>
+        <div :if={!@missing_premium && @archetype_stats.loading}>
           Preparing stats...
         </div>
-        <MatchupsTable :if={!@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample}/>
+        <MatchupsTable :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample}/>
       </div>
     """
   end
@@ -83,30 +80,42 @@ defmodule BackendWeb.MatchupsLive do
       Map.get(params, "min_archetype_sample", @default_min_archetype_sample)
       |> Util.to_int_or_orig()
 
-    if needs_premium?(criteria) and !user_has_premium?(socket.assigns) do
-      {:noreply, assign(socket, missing_premium: true)}
+    {needs_premium?, updated_at, matchups} =
+      case Hearthstone.DeckTracker.aggregated_matchups(criteria) do
+        {:ok, %{matchups: matchups, updated_at: updated_at}} -> {false, updated_at, matchups}
+        _ -> {true, nil, nil}
+      end
+
+    if needs_premium? and !user_has_premium?(socket.assigns) do
+      {:noreply, assign(socket, missing_premium: true, updated_at: updated_at)}
     else
       {:noreply,
        assign(socket,
          criteria: criteria,
          params: params,
+         updated_at: updated_at,
+         missing_premium: false,
          min_matchup_sample: min_matchup_sample,
          min_archetype_sample: min_archetype_sample
        )
        |> update_context()
-       |> fetch_matchups(socket)
+       |> fetch_matchups(socket, matchups)
        |> assign_meta()}
     end
   end
 
-  defp fetch_matchups(%{assigns: %{criteria: new_criteria}} = new_socket, %{
-         assigns: %{criteria: old_criteria}
-       })
+  defp fetch_matchups(
+         %{assigns: %{criteria: new_criteria}} = new_socket,
+         %{
+           assigns: %{criteria: old_criteria}
+         },
+         _matchups
+       )
        when new_criteria == old_criteria do
     new_socket
   end
 
-  defp fetch_matchups(socket, _old_socket) do
+  defp fetch_matchups(socket, _old_socket, nil) do
     criteria = socket.assigns.criteria
 
     socket
@@ -114,6 +123,11 @@ defmodule BackendWeb.MatchupsLive do
       {:ok, matchups} = Hearthstone.DeckTracker.matchups(criteria)
       {:ok, %{archetype_stats: matchups}}
     end)
+  end
+
+  defp fetch_matchups(socket, _old_socket, matchups) do
+    socket
+    |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
   end
 
   def update_context(%{assigns: assigns} = socket) do
@@ -133,8 +147,6 @@ defmodule BackendWeb.MatchupsLive do
       title: "HS Matchups"
     })
   end
-
-  def needs_premium?(_), do: true
 
   defp default_criteria(params), do: TierList.default_criteria(params)
 end

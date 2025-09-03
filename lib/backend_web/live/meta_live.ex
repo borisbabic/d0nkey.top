@@ -24,7 +24,7 @@ defmodule BackendWeb.MetaLive do
       <div>
         <div class="title is-2">Meta</div>
         <div class="subtitle is-6">
-        <span :if={user_has_premium?(@user)}><a href={~p"/matchups"}>Matchups (WIP)</a> |</span>
+        <span :if={user_has_premium?(@user)}><a href={~p"/matchups"}>Matchups</a> |</span>
         To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         <AggLogSubtitle /></div>
         <FunctionComponents.Ads.below_title/>

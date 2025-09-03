@@ -3095,20 +3095,29 @@ defmodule Hearthstone.DeckTracker do
 
   @spec matchups(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
   def matchups(criteria \\ []) do
-    with {:error, _} <- aggregated_matchups(criteria) do
-      matchups_fresh(criteria)
+    case aggregated_matchups(criteria) do
+      {:ok, %{matchups: matchups}} -> {:ok, matchups}
+      _ -> matchups_fresh(criteria)
     end
   end
 
   @spec matchups_fresh(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups_fresh(criteria \\ []), do: matchups_fetch_then_process(criteria)
+  def matchups_fresh(criteria \\ []) do
+    criteria
+    |> Enum.to_list()
+    |> List.keydelete("force_fresh", 0)
+    |> matchups_fetch_then_process()
+  end
 
+  @spec aggregated_matchups(list() | Map.t()) ::
+          {:ok, AggregatedMatchups.t()} | {:error, atom()}
   def aggregated_matchups(criteria_raw) do
     criteria = Enum.to_list(criteria_raw)
 
     with {"period", period} <- List.keyfind(criteria, "period", 0),
          {"rank", rank} <- List.keyfind(criteria, "rank", 0),
          {"format", format} <- List.keyfind(criteria, "format", 0, {"format", 2}),
+         {"force_fresh", "no"} <- List.keyfind(criteria, "force_fresh", 0, {"force_fresh", "no"}),
          {"opponent_class", "any"} <-
            List.keyfind(criteria, "opponent_class", 0, {"opponent_class", "any"}),
          {"player_has_coin", "any"} <-
@@ -3120,7 +3129,7 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @spec aggregated_matchups(String.t(), String.t(), integer()) ::
-          {:ok, Backend.Tournaments.archetype_stat_bag()}
+          {:ok, AggregatedMatchups.t()} | {:error, atom()}
   def aggregated_matchups(period, rank, format) do
     query =
       from am in AggregatedMatchups,
@@ -3129,7 +3138,7 @@ defmodule Hearthstone.DeckTracker do
             am.matchups_version == ^@current_aggregated_matchups_version
 
     case Repo.one(query) do
-      %{matchups: matchups} -> {:ok, matchups}
+      %AggregatedMatchups{} = am -> {:ok, am}
       {:error, error} -> {:error, error}
       _ -> {:error, :could_not_get_aggregated_matchups}
     end
