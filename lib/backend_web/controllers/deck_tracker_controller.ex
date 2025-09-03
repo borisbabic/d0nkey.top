@@ -88,16 +88,29 @@ defmodule BackendWeb.DeckTrackerController do
     opponent_played =
       get_in(game_dto, [Access.key(:opponent, %{}), Access.key(:cards_played, [])]) || []
 
-    player_class = Map.get(game_dto, :player_class, nil)
-    opponent_class = Map.get(game_dto, :opponent_class, nil)
+    player_class =
+      (get_in(game_dto, [Access.key(:player, %{}), Access.key(:class, nil)]) ||
+         Map.get(game_dto, :player_class, nil))
+      |> Deck.normalize_class_name()
 
-    player_archetype =
-      Backend.PlayedCardsArchetyper.archetype(player_played, player_class, format)
+    opponent_class =
+      (get_in(game_dto, [Access.key(:opponent, %{}), Access.key(:class, nil)]) ||
+         Map.get(game_dto, :opponent_class, nil))
+      |> Deck.normalize_class_name()
 
-    opponent_archetype =
-      Backend.PlayedCardsArchetyper.archetype(opponent_played, opponent_class, format)
+    case GameDto.create_played_cards_ecto_attrs(
+           player_played,
+           opponent_played,
+           player_class,
+           opponent_class,
+           format
+         ) do
+      {:ok, %{"player_archetype" => player_archetype, "opponent_archetype" => opponent_archetype}} ->
+        {player_archetype, opponent_archetype}
 
-    {player_archetype, opponent_archetype}
+      {:error, _error} ->
+        {nil, nil}
+    end
   end
 
   defp extract_played_archetypes(_), do: {nil, nil}
