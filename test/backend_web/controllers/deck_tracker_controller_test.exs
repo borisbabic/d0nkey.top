@@ -10,13 +10,21 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       "player" => %{
         "battletag" => "D0nkey#2470",
         "rank" => 51,
+        "class" => "Hunter",
         "legend_rank" => 512,
+        "cardsWithCreatedBy" => [
+          %{"cardId" => 32, "turn" => 3, "createdBy" => nil}
+        ],
         "deckcode" =>
           "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
       "opponent" => %{
         "battletag" => Ecto.UUID.generate(),
         "rank" => 50,
+        "class" => "Hunter",
+        "cardsWithCreatedBy" => [
+          %{"cardId" => 32, "turn" => 3, "createdBy" => nil}
+        ],
         "legend_rank" => nil
       },
       "game_id" => game_id,
@@ -78,7 +86,10 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       {_game_id, request} = valid_fs_request()
 
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
-      assert json_response(conn, 200)
+
+      assert %{"player_archetype" => "Other Hunter", "opponent_archetype" => "Other Hunter"} =
+               response = json_response(conn, 200)
+
       Process.sleep(2500)
 
       assert_enqueued(
