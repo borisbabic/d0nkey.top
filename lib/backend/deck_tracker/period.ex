@@ -55,4 +55,30 @@ defmodule Hearthstone.DeckTracker.Period do
 
   def use_hours_ago?(%{type: t, hours_ago: ha}) when t in ["rolling"] and is_integer(ha), do: true
   def use_hours_ago?(_), do: false
+
+  @spec start_time(period :: __MODULE__) :: {:ok, NaiveDateTime.t()} | {:error, reason :: atom()}
+  def start_time(period) do
+    cond do
+      use_period_start?(period) ->
+        {:ok, period.period_start}
+
+      use_hours_ago?(period) ->
+        {:ok, NaiveDateTime.utc_now() |> Timex.shift(hours: -1 * period.hours_ago)}
+
+      true ->
+        {:error, :malformed_period_no_start_available}
+    end
+  end
+
+  @spec end_time(period :: __MODULE__) :: {:ok, NaiveDateTime.t()} | {:error, reason :: atom()}
+  def end_time(%{period_end: %NaiveDateTime{} = period_end}), do: {:ok, period_end}
+  def end_time(_), do: {:error, :end_not_set}
+
+  @spec end_time_or_now(period :: __MODULE__) :: NaiveDateTime.t()
+  def end_time_or_now(period) do
+    case end_time(period) do
+      {:ok, period} -> period
+      _ -> NaiveDateTime.utc_now()
+    end
+  end
 end

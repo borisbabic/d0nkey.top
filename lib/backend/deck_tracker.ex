@@ -7,6 +7,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Repo
   alias Hearthstone.DeckTracker.GamePlayedCards
   alias Hearthstone.DeckTracker.AggregatedStats
+  alias Hearthstone.DeckTracker.AggregatedMatchups
   alias Hearthstone.DeckTracker.AggregationMeta
   alias Hearthstone.DeckTracker.AggregationLog
   alias Hearthstone.DeckTracker.CardGameTally
@@ -26,6 +27,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.UserManager.GroupMembership
   alias Backend.Hearthstone.Card
   alias Backend.PlayedCardsArchetyper
+  alias Backend.Tournaments.ArchetypeStats
   require Card
 
   use Torch.Pagination,
@@ -37,6 +39,8 @@ defmodule Hearthstone.DeckTracker do
     repo: Backend.Repo,
     model: Hearthstone.DeckTracker.Region,
     name: :regions
+
+  @current_aggregated_matchups_version 1
 
   @type deck_stats :: %{deck: Deck.t(), wins: integer(), losses: integer()}
 
@@ -3089,9 +3093,48 @@ defmodule Hearthstone.DeckTracker do
     repo.transaction(query)
   end
 
-  alias Backend.Tournaments.ArchetypeStats
   @spec matchups(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups(criteria \\ []), do: matchups_fetch_then_process(criteria)
+  def matchups(criteria \\ []) do
+    with {:error, _} <- aggregated_matchups(criteria) do
+      matchups_fresh(criteria)
+    end
+  end
+
+  @spec matchups_fresh(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
+  def matchups_fresh(criteria \\ []), do: matchups_fetch_then_process(criteria)
+
+  def aggregated_matchups(criteria_raw) do
+    criteria = Enum.to_list(criteria_raw)
+
+    with {"period", period} <- List.keyfind(criteria, "period", 0),
+         {"rank", rank} <- List.keyfind(criteria, "rank", 0),
+         {"format", format} <- List.keyfind(criteria, "format", 0, {"format", 2}),
+         {"opponent_class", "any"} <-
+           List.keyfind(criteria, "opponent_class", 0, {"opponent_class", "any"}),
+         {"player_has_coin", "any"} <-
+           List.keyfind(criteria, "player_has_coin", 0, {"player_has_coin", "any"}) do
+      aggregated_matchups(period, rank, format)
+    else
+      _ -> {:error, :bad_criteria_for_aggregated_matchups}
+    end
+  end
+
+  @spec aggregated_matchups(String.t(), String.t(), integer()) ::
+          {:ok, Backend.Tournaments.archetype_stat_bag()}
+  def aggregated_matchups(period, rank, format) do
+    query =
+      from am in AggregatedMatchups,
+        where:
+          am.period == ^period and am.rank == ^rank and am.format == ^format and
+            am.matchups_version == ^@current_aggregated_matchups_version
+
+    case Repo.one(query) do
+      %{matchups: matchups} -> {:ok, matchups}
+      {:error, error} -> {:error, error}
+      _ -> {:error, :could_not_get_aggregated_matchups}
+    end
+  end
+
   @spec matchups_stream(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
   def matchups_stream(criteria \\ []) do
     Repo.transact(
@@ -3131,9 +3174,10 @@ defmodule Hearthstone.DeckTracker do
   @spec matchups_fetch_then_process(criteria :: list()) ::
           {:ok, Backend.Tournaments.archetype_stat_bag()}
   def matchups_fetch_then_process(criteria \\ []) do
-    decisive_archetype_results_query(criteria)
-    |> Repo.all(timeout: :infinity)
-    |> Enum.reduce(%{}, &matchup_stats_reducer/2)
+    {:ok,
+     decisive_archetype_results_query(criteria)
+     |> Repo.all(timeout: :infinity)
+     |> Enum.reduce(%{}, &matchup_stats_reducer/2)}
   end
 
   defp matchup_stats_reducer(
@@ -3174,5 +3218,42 @@ defmodule Hearthstone.DeckTracker do
 
     build_games_query(query, criteria)
     |> Repo.all()
+  end
+
+  def auto_aggregate_matchups(format) do
+    periods = periods([{:format, format}, {:auto_aggregate, true}])
+    ranks = ranks([{:auto_aggregate, true}])
+
+    conflict_options = [
+      on_conflict: {:replace_all_except, [:inserted_at, :id]},
+      stale_error_field: :stale,
+      conflict_target: [:matchups_version, :period, :rank, :format]
+    ]
+
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    vals =
+      for %{slug: period_slug} <- periods, %{slug: rank_slug} <- ranks, reduce: [] do
+        acc ->
+          case matchups_stream([{"period", period_slug}, {"rank", rank_slug}, {"format", format}]) do
+            {:ok, matchups} ->
+              attrs = %{
+                matchups_version: @current_aggregated_matchups_version,
+                matchups: matchups,
+                period: period_slug,
+                rank: rank_slug,
+                format: format,
+                inserted_at: now,
+                updated_at: now
+              }
+
+              [attrs | acc]
+
+            _ ->
+              acc
+          end
+      end
+
+    Repo.insert_all(AggregatedMatchups, vals, conflict_options)
   end
 end

@@ -9,6 +9,7 @@ config :backend, QuantumScheduler,
     {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
     {"*/5 * * * *", fn -> Backend.Reporting.check_game_count() end},
     {"47 * * * *", fn -> Backend.Feed.decay_feed_items() end},
+    {"51 * * * *", fn -> Backend.DeckTracker.auto_aggregate_matchups() end},
     # {"3 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
     # Again if something happened with the first, it'll just fail if it already successfully aggregated
     # {"13 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
