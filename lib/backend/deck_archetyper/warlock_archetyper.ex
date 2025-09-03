@@ -235,10 +235,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         :Discolock
 
       boar?(card_info) ->
-        :"Boar Warlock"
+        :Boarlock
 
       "King Togwaggle" in card_info.card_names ->
-        :"Tog Warlock"
+        :Toglock
 
       mill?(card_info) ->
         :"Mill Warlock"
