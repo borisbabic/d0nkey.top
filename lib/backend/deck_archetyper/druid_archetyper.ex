@@ -118,10 +118,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     "Hamuul Runetotem" in card_info.card_names
   end
 
-  defp aviana_druid?(card_info) do
-    "Aviana" in card_info.card_names
-  end
-
   def wild(card_info) do
     cond do
       questline?(card_info) and highlander?(card_info) ->
@@ -151,29 +147,23 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       genn?(card_info) ->
         :"Even Druid"
 
-      "King Togwaggle" in card_info.card_names ->
-        :"Tog Druid"
+      imbue_druid?(card_info) ->
+        :"Imbue Druid"
 
       "Linecracker" in card_info.card_names ->
         :"Linecracker Druid"
 
-      imbue_druid?(card_info) ->
-        :"Imbue Druid"
-
-      wild_treant_druid?(card_info) ->
-        :"Treant Druid"
-
-      wild_mill_druid?(card_info) ->
+      "Dew Process" in card_info.card_names ->
         :"Mill Druid"
 
       wild_mill_otk?(card_info) ->
         :"Mill OTK Druid"
 
-      old_aggro?(card_info) ->
-        :"Old Aggro Druid"
-
       "Astral Communion" in card_info.card_names ->
         :"Astral Communion Druid"
+
+      "King Togwaggle" in card_info.card_names ->
+        :"Tog Druid"
 
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Druid"
@@ -181,23 +171,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Celestial Alignment" in card_info.card_names ->
         :"Alignment Druid"
 
-      "Travelmaster Dungar" in card_info.card_names ->
-        :"Dungar Druid"
+      wild_treant_druid?(card_info) ->
+        :"Treant Druid"
 
-      "Malygos" in card_info.card_names ->
-        :"Malygos Druid"
+      old_aggro?(card_info) ->
+        :"Old Aggro Druid"
 
       wild_dragon_druid?(card_info) ->
         :"Dragon Druid"
-
-      aviana_druid?(card_info) ->
-        :"Aviana Druid"
-
-      wild_miracle_druid?(card_info) ->
-        :"Miracle Druid"
-
-      min_keyword_count?(card_info, 4, "spell-damage") ->
-        :"Spell Damage Druid"
 
       "Therazane" in card_info.card_names ->
         :"Therazane Druid"
@@ -210,6 +191,24 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       "Star Grazer" in card_info.card_names ->
         :"Star Grazer Druid"
+
+      "Travelmaster Dungar" in card_info.card_names ->
+        :"Dungar Druid"
+
+      "Malygos" in card_info.card_names ->
+        :"Malygos Druid"
+
+      "Champions of Azeroth" in card_info.card_names ->
+        :"Champions Druid"
+
+      "Barnes" in card_info.card_names ->
+        :"Barnes Druid"
+
+      min_keyword_count?(card_info, 4, "spell-damage") ->
+        :"Spell Damage Druid"
+
+      wild_miracle_druid?(card_info) ->
+        :"Miracle Druid"
 
       bad?(card_info) ->
         :"Bad Druid"
@@ -236,10 +235,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Jade Behemoth",
       "Aya Blackpaw"
     ])
-  end
-
-  defp wild_mill_druid?(card_info) do
-    min_count?(card_info, 2, ["Dew Process", "Coldlight Oracle", "Naturalize"])
   end
 
   defp wild_mill_otk?(card_info) do
