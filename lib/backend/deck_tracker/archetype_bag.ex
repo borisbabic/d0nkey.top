@@ -27,7 +27,7 @@ defmodule Hearthstone.DeckTracker.ArchetypeBag do
 
     key = format_key("all")
 
-    DeckTracker.currently_aggregated_archetypes()
+    DeckTracker.all_currently_aggregated_archetypes()
     |> insert_archetypes(table, key)
   end
 
