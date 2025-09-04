@@ -12,7 +12,6 @@ defmodule Components.TierList do
   alias Components.Filter.PlayerHasCoinDropdown
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
-  alias Surface.Components.LivePatch
   alias Components.Filter.ForceFreshDropdown
   import Components.DecksExplorer, only: [parse_int: 2]
   import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
@@ -67,21 +66,21 @@ defmodule Components.TierList do
         <table class="table is-fullwidth is-striped is-narrow">
           <thead>
             <th>Archetype</th>
-            <th><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "winrate"))}>
+            <th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "winrate"))}>
             {add_arrow("Winrate", "winrate", @params, true)}
-            </LivePatch></th>
-            <th><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
+            </.link></th>
+            <th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
             {add_arrow("Popularity", "total", @params)}
-            </LivePatch></th>
-            <th class="is-hidden-mobile"><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "turns"))}>
+            </.link></th>
+            <th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "turns"))}>
             {add_arrow("Turns", "turns", @params)}
-            </LivePatch></th>
-            <th class="is-hidden-mobile"><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "duration"))}>
+            </.link></th>
+            <th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "duration"))}>
             {add_arrow("Duration", "duration", @params)}
-            </LivePatch></th>
-            <th class="is-hidden-mobile"><LivePatch to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
+            </.link></th>
+            <th class="is-hidden-mobile"><.link to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
             {add_arrow("Climbing Speed", "climbing_speed", @params)}
-            </LivePatch></th>
+            </.link></th>
           </thead>
           <tbody :if={{stats, total} = stats(@data, @criteria)}>
             <tr :for={as <- stats}>
