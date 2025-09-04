@@ -191,9 +191,9 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  def get_latest_agg_log_entries(limit, order_by) do
+  def get_latest_agg_log_entries(limit, order_by, repo_opts \\ []) do
     query = from al in AggregationLog, order_by: ^order_by, limit: ^limit
-    Repo.all(query)
+    Repo.all(query, repo_opts)
   end
 
   def agg_log_count(), do: Repo.aggregate(AggregationLog, :count)
@@ -320,16 +320,16 @@ defmodule Hearthstone.DeckTracker do
     |> fresh_or_agg()
   end
 
-  def total_stats(criteria) do
+  def total_stats(criteria, repo_opts \\ []) do
     base_total_stats_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
-  def class_stats(criteria) do
+  def class_stats(criteria, repo_opts \\ []) do
     base_class_stats_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   def archetype_stats(raw_criteria) do
@@ -343,10 +343,10 @@ defmodule Hearthstone.DeckTracker do
 
   defp remove_force_fresh(raw_criteria), do: Util.drop(raw_criteria, ["force_fresh"])
 
-  def fresh_archetype_stats(criteria) do
+  def fresh_archetype_stats(criteria, repo_opts \\ []) do
     base_archetype_stats_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   @type card_stats :: %{
@@ -535,10 +535,10 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all(repo_opts)
   end
 
-  def agg_opponent_class_stats(criteria) do
+  def agg_opponent_class_stats(criteria, repo_opts \\ []) do
     base_agg_opponent_class_stats_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   defp base_agg_opponent_class_stats_query() do
@@ -560,10 +560,10 @@ defmodule Hearthstone.DeckTracker do
   @doc """
   Stats grouped by opponent's class
   """
-  def opponent_class_stats(criteria) do
+  def opponent_class_stats(criteria, repo_opts \\ []) do
     base_opponent_class_stats_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   defp base_opponent_class_stats_query() do
@@ -638,10 +638,10 @@ defmodule Hearthstone.DeckTracker do
     |> where([player_deck: pd], not is_nil(pd.archetype))
   end
 
-  def agg_deck_card_stats(criteria) do
+  def agg_deck_card_stats(criteria, repo_opts \\ []) do
     base_agg_deck_card_stats_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   defp base_agg_deck_card_stats_query() do
@@ -663,10 +663,10 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  def archetype_agg_stats(criteria) do
+  def archetype_agg_stats(criteria, repo_opts \\ []) do
     base_agg_archetype_stats(criteria)
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   defp needs_grouping?(criteria) do
@@ -960,21 +960,22 @@ defmodule Hearthstone.DeckTracker do
 
   defp broadcast_game(ret), do: ret
 
-  def games(criteria) do
+  def games(criteria, repo_opts \\ []) do
     base_games_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
-  def games_with_played_cards(criteria) do
+  def games_with_played_cards(criteria, repo_opts \\ []) do
     base_games_with_played_cards_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
-  def stream_games_query(criteria) do
+  def stream_games_query(criteria, repo_opts \\ []) do
     base_stream_games_query()
     |> build_games_query(criteria)
+    |> Repo.all(repo_opts)
   end
 
   def decisive_archetype_results_query(criteria) do
@@ -991,8 +992,8 @@ defmodule Hearthstone.DeckTracker do
     |> build_games_query([:has_archetypes, :has_decisive_result | Enum.to_list(criteria)])
   end
 
-  @spec archetypes(list()) :: [atom()]
-  def archetypes(raw_criteria) do
+  @spec archetypes(list() | Map.t(), list()) :: [atom()]
+  def archetypes(raw_criteria, repo_opts \\ []) do
     criteria =
       Enum.reject(raw_criteria, fn crit ->
         case crit do
@@ -1005,18 +1006,18 @@ defmodule Hearthstone.DeckTracker do
 
     base_archetypes_query()
     |> build_games_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
-  def currently_aggregated_archetypes() do
-    base_currently_aggregated_archetypes()
-    |> Repo.all()
-  end
-
-  def currently_aggregated_archetypes(format) do
+  def currently_aggregated_archetypes(format, repo_opts \\ []) do
     base_currently_aggregated_archetypes()
     |> where([ag], ag.format == ^format)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
+  end
+
+  def all_currently_aggregated_archetypes(repo_opts \\ []) do
+    base_currently_aggregated_archetypes()
+    |> Repo.all(repo_opts)
   end
 
   def base_currently_aggregated_archetypes() do
@@ -2047,13 +2048,13 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @spec card_tallies_for_game(Game.t()) :: [CardGameTall.t()]
-  def card_tallies_for_game(%{id: id}) do
+  def card_tallies_for_game(%{id: id}, repo_opts \\ []) do
     query =
       from(r in CardGameTally,
         where: r.game_id == ^id
       )
 
-    Repo.all(query)
+    Repo.all(query, repo_opts)
   end
 
   @default_convert_raw_stats_to_card_tallies_opts [
@@ -2117,7 +2118,7 @@ defmodule Hearthstone.DeckTracker do
     |> do_convert_raw_stats_to_card_tallies(limit, timeout, new_times, new_min_id)
   end
 
-  def raw_stats(limit, min_id \\ 0) do
+  def raw_stats(limit, min_id \\ 0, repo_opts \\ []) do
     query =
       from(r in RawPlayerCardStats,
         where: r.id > ^min_id,
@@ -2125,7 +2126,7 @@ defmodule Hearthstone.DeckTracker do
         limit: ^limit
       )
 
-    Repo.all(query)
+    Repo.all(query, repo_opts)
   end
 
   @doc """
@@ -2235,8 +2236,8 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @spec regions_for_filters() :: [{code :: String.t(), display :: String.t()}]
-  def regions_for_filters() do
-    Repo.all(Region)
+  def regions_for_filters(repo_opts \\ []) do
+    Repo.all(Region, repo_opts)
     |> Enum.map(&{&1.code, &1.display})
   end
 
@@ -2246,10 +2247,10 @@ defmodule Hearthstone.DeckTracker do
     Repo.one(query)
   end
 
-  def formats(criteria) do
+  def formats(criteria, repo_opts \\ []) do
     base_formats_query()
     |> build_formats_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   defp base_formats_query() do
@@ -2309,10 +2310,10 @@ defmodule Hearthstone.DeckTracker do
     Repo.one(query)
   end
 
-  def ranks(criteria) do
+  def ranks(criteria, repo_opts \\ []) do
     base_ranks_query()
     |> build_ranks_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   defp base_ranks_query() do
@@ -2376,10 +2377,10 @@ defmodule Hearthstone.DeckTracker do
     Repo.one(query)
   end
 
-  def periods(criteria) do
+  def periods(criteria, repo_opts \\ []) do
     base_periods_query()
     |> build_periods_query(criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   defp base_periods_query() do
@@ -2830,10 +2831,10 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @spec get_auto_aggregate_regions() :: [code :: String.t()]
-  def get_auto_aggregate_regions() do
+  def get_auto_aggregate_regions(repo_opts \\ []) do
     query = from q in Region, where: q.auto_aggregate, select: q.code
 
-    Repo.all(query)
+    Repo.all(query, repo_opts)
   end
 
   @doc """
@@ -2933,11 +2934,11 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @spec aggregation_meta(Enum.t()) :: [AggregationMeta.t()]
-  def aggregation_meta(criteria) do
+  def aggregation_meta(criteria, repo_opts \\ []) do
     try do
       base_agg_count_query()
       |> build_agg_count_query(criteria)
-      |> Repo.all()
+      |> Repo.all(repo_opts)
     catch
       :error, %Postgrex.Error{postgres: %{code: :undefined_table}} -> []
     end
@@ -3182,10 +3183,10 @@ defmodule Hearthstone.DeckTracker do
 
   @spec matchups_fetch_then_process(criteria :: list()) ::
           {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups_fetch_then_process(criteria \\ []) do
+  def matchups_fetch_then_process(criteria \\ [], repo_opts \\ [timeout: :infinity]) do
     {:ok,
      decisive_archetype_results_query(criteria)
-     |> Repo.all(timeout: :infinity)
+     |> Repo.all(repo_opts)
      |> Enum.reduce(%{}, &matchup_stats_reducer/2)}
   end
 
@@ -3208,7 +3209,7 @@ defmodule Hearthstone.DeckTracker do
     |> ArchetypeStats.add_result_to_bag(opponent_archetype, player_archetype, opponent_field)
   end
 
-  def archetype_mapping(criteria) do
+  def archetype_mapping(criteria, repo_opts \\ []) do
     query =
       from(g in Game,
         as: :game,
@@ -3226,7 +3227,7 @@ defmodule Hearthstone.DeckTracker do
       )
 
     build_games_query(query, criteria)
-    |> Repo.all()
+    |> Repo.all(repo_opts)
   end
 
   def auto_aggregate_matchups(format) do
