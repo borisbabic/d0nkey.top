@@ -72,6 +72,13 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         current_val={@exclude_config_levels}
         selected_as_title={false}
         normalizer={&Util.to_int_or_orig/1} />
+      <LivePatchDropdown
+        id="sort_by"
+        options={[{"any_popularity", "Any Popularity"}, {"total", "Times Played"}]}
+        title={"Sort By"}
+        param={"sort_by"}
+        selected_as_title={false}
+        normalizer={&Util.to_int_or_orig/1} />
       <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
       <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
       <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
