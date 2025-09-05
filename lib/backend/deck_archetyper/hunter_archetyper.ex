@@ -8,14 +8,14 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       quest?(card_info) ->
         :"Quest Hunter"
 
+      imbue?(card_info) ->
+        :"Imbue Hunter"
+
       handbuff_hunter?(card_info) ->
         :"Handbuff Hunter"
 
       amalgam?(card_info) ->
         :"Amalgam Hunter"
-
-      imbue?(card_info) ->
-        :"Imbue Hunter"
 
       beast_hunter?(card_info) ->
         :"Beast Hunter"
@@ -82,6 +82,8 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
         "Trusty Fishing Rod",
         "Absorbent Parasite",
         "Always a Bigger Jormungar",
+        "Devilsaur Mask",
+        "Niri of the Crater",
         "Birdwatching"
       ])
   end
@@ -119,12 +121,15 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       min_count?(ci, 3, [
         "Foul Egg",
         "Nerubian Egg",
+        "Gorm the Worldeater",
+        "The Egg of Khelos",
         "Ravenous Kraken",
         "Yelling Yodeler",
+        "Pterrordax Egg",
         "Extraterrestrial Egg",
         "Terrorscale Stalker",
         "Terrible Chef",
-        "Cubicle"
+        "Carnivorous Cubicle"
       ])
 
   def wild(card_info) do

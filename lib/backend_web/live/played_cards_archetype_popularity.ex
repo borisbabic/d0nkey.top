@@ -13,7 +13,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Backend.PlayedCardsArchetyper
 
   @default_min_played_count 100
-  @default_sort_by "total"
+  @default_sort_by "any_popularity"
   data(user, :any)
   data(needs_class?, :boolean, default: false)
   data(can_access?, :boolean, default: false)
