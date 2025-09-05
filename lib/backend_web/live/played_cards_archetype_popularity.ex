@@ -45,7 +45,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Quest Spell Mage" => "Spell Mage",
     "Raylla Imbue Mage" => "Imbue Mage",
     "Menagerie Priest" => "Aggro Priest",
-    "Pain Priest" => "Aggro Priest"
+    "Pain Priest" => "Aggro Priest",
+    "Defense Terran Shaman" => "Terran Shaman",
+    "Asteroid Imbue Shaman" => "Imbue Shaman"
   }
 
   def mount(_params, session, socket) do
