@@ -51,8 +51,9 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Blood Tap"
      ]},
     # 5.5
-    {:"Herenn DK", ["High Cultist Herenn", "Overplanner", "Wakener of Souls"]},
     {:"Menagerie DK", ["Menagerie Mug", "Menagerie Jug"]},
+    {:"Herenn DK",
+     ["High Cultist Herenn", "Overplanner", "Wakener of Souls", "Meltemental", "Travel Security"]},
     {:"Control DK",
      ["The Ceaseless Expanse", "Naralex, Herald of the Flights", "Vampiric Blood"]},
     {:"Control DK",
@@ -65,7 +66,10 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Corpse Explosion",
        "Orbital Moon",
        "Adaptive Amalgam",
+       "Floppy Hydra",
        "Threads of Despair",
+       "Braingill",
+       "The 8 Hands from Beyond",
        "The Headless Horseman"
      ]},
     {:"Frost DK", ["Frostwyrm's Fury", "Cryosleep", "Thassarian", "Marrow Manipulator"]},
@@ -93,6 +97,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     # 15.5
     {:"Control DK",
      [
+       "Stitched Giant",
        "Fyrakk the Blazing",
        "Griftah, Trusted Vendor",
        "Frosty Decor",
@@ -143,6 +148,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Glacial Shard",
        "Mixologist",
        "Troubled Mechanic",
+       "Ancient Raptor",
        "Ghouls' Night"
      ]},
     {:"Starship DK", ["Brittlebone Buccaneer", "Silk Stitching"]},
@@ -150,7 +156,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
      [
        "Toysnatching Geist",
        "Rainbow Seamstress",
-       "Reanimated Pterrordax",
        "Nerubian Swarmguard",
        "Gnome Muncher"
      ]},
