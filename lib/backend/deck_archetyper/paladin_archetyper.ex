@@ -21,9 +21,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       drunk?(card_info) ->
         :"Drunk Paladin"
 
-      tree?(card_info) ->
-        :"Tree Paladin"
-
       lynessa_otk?(card_info) ->
         :"Lynessa OTK Paladin"
 
@@ -41,6 +38,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
       "Sunsapper Lynessa" in card_info.card_names ->
         :"Lynessa Paladin"
+
+      tree?(card_info) ->
+        :"Tree Paladin"
 
       "Pipsi Painthoof" in card_info.card_names ->
         :"Pipsi Paladin"

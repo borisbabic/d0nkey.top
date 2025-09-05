@@ -6,6 +6,30 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
 
   @standard_config [
     {:"Quest Paladin", ["Dive the Golakka Depths"]},
+    {:"Whizbang Paladin",
+     [
+       "Sir Finley, Sea Guide",
+       "Solemn Vigil",
+       "Potion of Heroism",
+       "Truesilver Champion",
+       "Reno Jackson",
+       "Elise the Enlightened",
+       "Crystalsmith Kangor",
+       "Primordial Explorer",
+       "Aldor Peacekeeper",
+       "Emerald Explorer",
+       "Protect the Innocent",
+       "Brann Bronzebeard",
+       "Reno the Relicologist",
+       "Elise Starseeker",
+       "Dinotamer Brann",
+       "Azure Explorer",
+       "Ragnaros, Lightlord",
+       "The Amazing Reno",
+       "Dragonqueen Alexstrasza",
+       "Sir Finley of the Sands",
+       "Zephrys the Great"
+     ]},
     {:"Imbue Paladin",
      [
        "Malorne the Waywatcher",
@@ -13,15 +37,8 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Bitterbloom Knight",
        "Flutterwing Guardian",
        "Petal Picker",
+       "Barkshield Sentinel",
        "Goldpetal Drake"
-     ]},
-    {:"Quest Paladin",
-     [
-       "Murloc Warleader",
-       "Braingill",
-       "Drink Server",
-       "Finja, the Flying Star",
-       "Redgill Razorjaw"
      ]},
     {:"Aggro Paladin",
      [
@@ -31,38 +48,61 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Fire Fly",
        "Coconut Cannoneer",
        "Busy-Bot",
-       "Flash Sale",
-       "Trinket Artist",
        "Wisp",
        "Beaming Sidekick",
        "Mother Duck",
+       "Murmy",
+       "Crusader Aura",
        "Platysaur"
      ]},
-    {:"Drunk Paladin", ["Sea Shanty", "Lifesaving Aura", "Flickering Lightbot"]},
-    {:"Imbue Paladin",
+    {:"Terran Paladin",
      [
-       "Illusory Greenwing",
-       "Gnomelia, S.A.F.E. Pilot",
-       "Ancient of Yore",
-       "Renewing Flames",
-       "Ursol"
+       "Salvage the Bunker",
+       "Hellbat",
+       "Hellion",
+       "Dimensional Core",
+       "Lift Off",
+       "Jim Raynor",
+       "SCV",
+       "Starport"
      ]},
-    {:"Aggro Paladin", ["Vicious Siltherspear"]},
+    # 5.5
+    {:"Libram Paladin",
+     [
+       "Libram of Divinity",
+       "Interstellar Researcher",
+       "Interstellar Starslicer",
+       "Yrel, Beacon of Hope",
+       "Interstellar Wayfarer",
+       "Libram of Faith"
+     ]},
+    {:"Lynessa Paladin",
+     [
+       "Snatch and Grab",
+       "Agency Espionage",
+       "Petty Theft",
+       "Knickknack Shack",
+       "Snatch and Grab",
+       "Concierge",
+       "Conniving Conman"
+     ]},
+    {:"Drunk Paladin", ["Sea Shanty", "Flickering Lightbot"]},
     {:"Lynessa OTK Paladin",
      [
-       "Overplanner",
        "Kobold Geomancer",
-       "Sizzling Cinder",
+       "Rock Skipper",
+       "Bloodmage Thalnos",
        "Sharp-Eyed Lookout",
        "Sea Shill",
        "Bloodmage Thalnost",
-       "Tidepool Pupil",
-       "Moonstone Mauler",
-       "Space Pirate",
-       "Glacial Shard",
-       "Mixologist",
-       "Griftah, Trusted Vendor"
+       "Moonstone Mauler"
      ]},
+    {:"Lynessa Paladin",
+     [
+       "Celestial Aura",
+       "Mark of Ursol"
+     ]},
+    # 10.5
     {:"Drunk Paladin",
      [
        "Libram of Clarity",
@@ -74,6 +114,7 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Resistance Aura",
        "Metal Detector"
      ]},
+    {:"Aggro Paladin", ["Vicious Siltherspear"]},
     {:"Imbue Paladin",
      [
        "Equality",
@@ -88,6 +129,10 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      ]},
     {:"Quest Paladin",
      [
+       "Murloc Warleader",
+       "Braingill",
+       "Drink Server",
+       "Finja, the Flying Star",
        "Grunty",
        "Gnawing Greenfin",
        "Steamfin Thief",
@@ -104,9 +149,7 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Escape Pod",
        "Prize Vendor",
        "Ready the Fleet"
-     ]},
-    {:"Drunk Paladin", ["Aegis of Light", "Dragonscale Armaments"]},
-    {:"Imbue Paladin", ["Redscale Dragontamer"]}
+     ]}
   ]
   @wild_config []
 
