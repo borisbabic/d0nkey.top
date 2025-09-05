@@ -23,6 +23,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(sort_by, :string, default: @default_sort_by)
   data(min_played_count, :integer, default: @default_min_played_count)
   data(exclude_config_levels, :integer, default: 0)
+  data(filter_config_level, :integer, default: nil)
   data(config_map, :map, default: %{})
 
   @deck_archetype_mapping %{
@@ -80,6 +81,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         param={"sort_by"}
         selected_as_title={false}
         normalizer={&Util.to_int_or_orig/1} />
+      <LivePatchDropdown
+        id="filter_config_level"
+        options={[{nil, "Any"} | Enum.to_list(0..30)]}
+        title={"Filter Config Level"}
+        param={"filter_config_level"}
+        current_val={@filter_config_level}
+        selected_as_title={false}
+        normalizer={&Util.to_int_or_orig/1} />
       <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
       <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
       <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
@@ -106,8 +115,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               </th>
             </thead>
             <tbody>
-              <tr :for={{card_id, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by)} :if={{card, level, card_archetype} = card_info(card_id, @config_map)}>
-                <td class="sticky-column">
+              <tr :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, @filter_config_level, @config_map)}> <td class="sticky-column">
                   <div class="decklist_card_container">
                     <DecklistCard :if={card} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
@@ -157,6 +165,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     }
 
     exclude_config_levels = Map.get(params, "exclude_config_levels", 0) |> Util.to_int_or_orig()
+    filter_config_level = Map.get(params, "filter_config_level", nil) |> Util.to_int_or_orig()
 
     criteria =
       Map.merge(default, params)
@@ -185,6 +194,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       params: params,
       sort_by: sort_by,
       exclude_config_levels: exclude_config_levels,
+      filter_config_level: filter_config_level,
       min_played_count: min_played_count
     ]
 
@@ -308,7 +318,13 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     end)
   end
 
-  defp sort_and_filter(card_played_popularity, min_played_count, sort_by) do
+  defp sort_and_filter(
+         card_played_popularity,
+         min_played_count,
+         sort_by,
+         filter_config_level,
+         config_map
+       ) do
     sorter = sorter(sort_by)
 
     card_played_popularity
@@ -317,8 +333,18 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       _ -> false
     end)
     |> merge()
+    |> Enum.map(fn {card_id, popularity} ->
+      {card_info(card_id, config_map), popularity}
+    end)
+    |> filter_config_level(filter_config_level)
     |> Enum.sort_by(sorter, :desc)
   end
+
+  defp filter_config_level(card_popularity, filter_level) when is_integer(filter_level) do
+    Enum.filter(card_popularity, fn {{_card, level, _popularity}, _} -> level == filter_level end)
+  end
+
+  defp filter_config_level(card_popularity, _filter_level), do: card_popularity
 
   def merge(card_popularity) do
     card_popularity
