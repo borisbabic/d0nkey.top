@@ -972,10 +972,9 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all(repo_opts)
   end
 
-  def stream_games_query(criteria, repo_opts \\ []) do
+  def stream_games_query(criteria) do
     base_stream_games_query()
     |> build_games_query(criteria)
-    |> Repo.all(repo_opts)
   end
 
   def decisive_archetype_results_query(criteria) do
@@ -3020,8 +3019,45 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  @spec recalculate_archetypes_for_period(String.t(), NaiveDateTime.t(), list()) :: any()
-  def recalculate_archetypes_for_period(
+  @spec recalculate_archetypes_for_period_fetch_then_process(
+          String.t(),
+          NaiveDateTime.t(),
+          list()
+        ) :: any()
+  def recalculate_archetypes_for_period_fetch_then_process(
+        period,
+        archetyping_updated_before,
+        additional_criteria \\ []
+      ) do
+    criteria = [
+      {"period", period},
+      {"played_cards_archetyped_before", archetyping_updated_before},
+      :ranked,
+      :archetypeable | additional_criteria
+    ]
+
+    {fetch_games_time, games} =
+      :timer.tc(fn -> games_with_played_cards(criteria, timeout: :infinity) end)
+
+    IO.puts(
+      "Took #{fetch_games_time / 60_000_000} minutes to fetch games, ie #{fetch_games_time / 1_000_000} seconds"
+    )
+
+    # not using :timer.tc because of memory
+    before_processing = NaiveDateTime.utc_now()
+
+    games
+    |> Enum.chunk_every(1000)
+    |> Enum.each(&recalculate_archetypes_for_games/1)
+
+    after_processing = NaiveDateTime.utc_now()
+    diff = NaiveDateTime.diff(after_processing, before_processing, :second)
+    IO.puts("Took #{diff / 60} minutes to process games ie #{diff} seconds")
+  end
+
+  @spec recalculate_archetypes_for_period_stream(String.t(), NaiveDateTime.t(), list(), integer()) ::
+          any()
+  def recalculate_archetypes_for_period_stream(
         period,
         archetyping_updated_before,
         additional_criteria \\ [],
@@ -3030,8 +3066,11 @@ defmodule Hearthstone.DeckTracker do
     criteria = [
       {"period", period},
       {"played_cards_archetyped_before", archetyping_updated_before},
-      :archetypeable | additional_criteria
+      :archetypeable,
+      :ranked | additional_criteria
     ]
+
+    before_processing = NaiveDateTime.utc_now()
 
     Repo.transact(
       fn repo ->
@@ -3051,6 +3090,9 @@ defmodule Hearthstone.DeckTracker do
       timeout: :infinity
     )
 
+    after_processing = NaiveDateTime.utc_now()
+    diff = NaiveDateTime.diff(after_processing, before_processing, :second)
+    IO.puts("Took #{diff / 60} minutes to stream and process games ie #{diff} seconds")
     # base_query = base_pl
     # Backend.Repo.transact()
   end
