@@ -152,6 +152,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   defp elemental_shaman?(ci) do
     min_count?(ci, 5, [
       "Wailing Vapor",
+      "Volcanic Thrasher",
+      "Slagclaw",
+      "Fire Breath",
       "Menacing Nimbus",
       "Flame Revenant",
       "Shale Spider",
