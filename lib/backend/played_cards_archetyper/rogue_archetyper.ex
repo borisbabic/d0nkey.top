@@ -6,6 +6,39 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
 
   @standard_config [
     {:"Quest Rogue", ["Lie in Wait"]},
+    {:"Whizbang Rogue",
+     [
+       "Book of the Dead",
+       "Vampiric Fangs",
+       "Bubba",
+       "Wax Rager",
+       "Pirate Admiral Hooktusk",
+       "Annoy-o Horn",
+       "Pure Cold",
+       "Grimmer Patron",
+       "Necrotic Poison",
+       "Filletfighter",
+       "Patches the Pirate",
+       "Hyperblaster",
+       "Kaja'mite Creation",
+       "Breakdance",
+       "Crusty the Crustacean",
+       "Beastly Beauty",
+       "The Exorcisor",
+       "Looming Presence",
+       "Quick Pick",
+       "Mutating Injection",
+       "Hilt of Quel'Delar",
+       "Dr. Boom's Boombox",
+       "Gnomish Army Knife",
+       "Canopic Jars",
+       "Puzzle Box",
+       "Banana Split",
+       "Blade of Quel'Delar",
+       "Clockwork Assistant",
+       "Spyglass",
+       "Staff of Scales"
+     ]},
     {:"Starship Rogue",
      [
        "Scrounging Shipwright",
@@ -30,7 +63,7 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
      ]},
     {:"Fyrakk Rogue",
      [
-       "Naralex, Herald of the Flight",
+       "Naralex, Herald of the Flights",
        "Creature of Madness",
        "Shaladrassil",
        "Ashamane",
@@ -42,7 +75,13 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Oh, Manager!",
        "SPacerock Collector",
        "Metal Detector",
-       "Nightmare Lord Xavius"
+       "Nightmare Lord Xavius",
+       "Cult Neophyte",
+       "Customs Enforcer",
+       "Naralex, Herald of the Flight",
+       "Observer of Mysteries",
+       "Spacerock Collector",
+       "Zilliax Deluxe 3000"
      ]},
     {:"Cycle Rogue", ["Incindius", "Moonstone Mauler", "Fan of Knives", "Ethereal Oracle"]},
     {:"Protoss Rogue", ["Sonya Waterdancer"]},
@@ -64,7 +103,6 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Preparation",
        "Shadowstep",
        "Raiding Party",
-       "Customs Enforcer",
        "Marin the Manager",
        "Foxy Fraud"
      ]}
