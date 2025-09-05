@@ -486,6 +486,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     |> Enum.map(fn {card_id, popularity} ->
       {card_info(card_id, config_map), popularity}
     end)
+    |> Enum.filter(fn {{card, _, _}, _} ->
+      Card.name(card) != "The Coin"
+    end)
     |> filter_config_level(filter_config_level)
     |> Enum.sort_by(sorter, :desc)
   end
