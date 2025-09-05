@@ -6,6 +6,18 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
 
   @standard_config [
     {:"Quest Priest", ["Reach Equilibrium"]},
+    {:"Whizbang Priest",
+     [
+       "Shadow Word: Pain",
+       "Love Everlasting",
+       "Crimson Clergy",
+       "Celestial Projectionist",
+       "Shadow Word: Death",
+       "Pip the Potent",
+       "Fan Club",
+       "Zola the Gorgon",
+       "Astral Automaton"
+     ]},
     {:"Protoss Priest",
      [
        "Void Ray",
@@ -25,25 +37,58 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Carless Crafter",
        "Annoy-o-Tron",
        "Critter Caretaker",
+       "Careless Crafter",
+       "Plated Beetle",
        "Rest in Peace"
+     ]},
+    {:"Imbue Priest",
+     [
+       "Resplendent Dreamweaver",
+       "Sing-Along Buddy",
+       "Petal Picker",
+       "Flutterwing Guardian",
+       "Malorne the Waywatcher"
+     ]},
+    # 5.5
+    {:"Aggro Priest",
+     [
+       "Menagerie Jug",
+       "Brain Masseuse",
+       "Workhorse",
+       "Ship's Chirurgeon",
+       "Archaios",
+       "Murmy"
      ]},
     {:"Aviana Priest",
      [
-       "Mo'arg Forgefiend",
-       "Overplanner",
-       "Living Flame",
-       "Sharp-Eyed Lookout",
+       "Card Grader",
+       "Glacial Shard",
+       "Mo'arg Forgefiend"
+     ]},
+    {:"Imbue Priest", ["Bitterbloom Knight"]},
+    {:"Aviana Priest",
+     [
+       "Moonwell",
        "Mixologist",
        "Twilight Medium",
+       "Overplanner",
+       "Sharp-Eyed Lookout",
+       "Marin the Manager",
+       "Living Flame",
+       "Parrot Sanctuary",
        "Aviana, Elune's Chosen",
-       "Story of Imara"
+       "Doomsayer",
+       "Champions of Azeroth",
+       "Atlasaurus",
+       "Story of Amara"
      ]},
-    {:"Protoss Priest",
-     ["Sasquawk", "Enderbringer Umbra", "Trusty Fishy Rod", "Orbital Halo", "Catch of the Day"]},
-    {:"Wilted Priest", ["Lightbomb", "Sleepy Resident"]},
-    {:"Wilted Priest", ["Power Word: Shield", "Resuscitate"]},
-    {:"Protoss Priest", ["Trusty Fishing Rod", "Nightmare Xavius"]},
-    {:"Wilted Priest", ["Thrive in the Shadows", "Birdwatching", "Narain Soothfancy"]}
+    {:"Imbue Priest", ["Lunarwing Messenger", "Blob of Tar"]},
+    # 10.5
+    {:"Protoss Priest", ["Catch of the Day"]}
+    # {:"Wilted Priest", ["Lightbomb", "Sleepy Resident"]},
+    # {:"Wilted Priest", ["Power Word: Shield", "Resuscitate"]},
+    # {:"Protoss Priest", ["Trusty Fishing Rod", "Nightmare Xavius"]},
+    # {:"Wilted Priest", ["Thrive in the Shadows", "Birdwatching", "Narain Soothfancy"]}
   ]
   @wild_config []
 
