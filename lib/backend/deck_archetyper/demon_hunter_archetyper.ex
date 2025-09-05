@@ -25,38 +25,23 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       ravenous_cliff_dive?(card_info) ->
         :"Ravenous Cliff Dive DH"
 
-      "Ball Hog" in card_info.card_names and deathrattle?(card_info) ->
-        :"Hog Demon Hunter"
-
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
-
-      deathrattle?(card_info) ->
-        :"Deathrattle DH"
 
       aggro?(card_info) ->
         :"Aggro Demon Hunter"
 
+      deathrattle?(card_info) ->
+        :"Deathrattle DH"
+
       pain?(card_info) ->
         :"Pain Demon Hunter"
-
-      fatigue?(card_info) ->
-        :"Fatigue Demon Hunter"
 
       shopper_dh?(card_info) ->
         :"Shopper DH"
 
-      zerg?(card_info, 4) and attack_dh?(card_info) ->
-        :"Zerg Attack DH"
-
       zerg?(card_info, 4) ->
         :"Zerg DH"
-
-      attack_dh?(card_info) ->
-        :"Attack DH"
-
-      menagerie?(card_info) ->
-        :"Menagerie DH"
 
       crewmate?(card_info, 2) ->
         :"Among Us DH"
@@ -64,17 +49,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       cliff_dive?(card_info) ->
         :"Cliff Dive DH"
 
-      "Octosari" in card_info.card_names ->
-        :"Octosari DH"
-
-      dreadseed?(card_info) ->
-        :"Dreadseed DH"
-
       kj?(card_info) ->
         :"Kil'jaeden DH"
-
-      outcast_dh?(card_info) ->
-        :"Outcast DH"
 
       "Alara'shi" in card_info.card_names ->
         :"Alara'shi DH"
@@ -118,6 +94,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Ravenous Felhunter",
       "Ferocious Felbat",
       "Endbringer Umbra",
+      "Carnivorous Cubicle",
       "Tuskpiercer",
       "Return Policy"
     ])
@@ -161,15 +138,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     ])
   end
 
-  defp fatigue?(ci) do
-    "Aranna, Thrill Seeker" in ci.card_names and
-      min_count?(ci, 3, [
-        "Quick Pick",
-        "Paraglide",
-        "Sigil of Time",
-        "Weight of the World",
-        "Rest in Peace"
-      ])
+  defp octosari?(ci) do
+    min_count?(ci, 2, ["Aranna, Thrill Seeker", "Octosari"])
   end
 
   defp shopper_dh?(ci) do

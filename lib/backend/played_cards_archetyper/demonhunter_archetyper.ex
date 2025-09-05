@@ -5,55 +5,86 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest Paladin", ["Dive the Golakka Depths"]},
+    {:"Quest DH", ["Unleash the Colossus"]},
     {:"Armor DH",
      [
        "Arkonite Defense Crystal",
        "The Exodar",
        "Dimensional Core",
        "Felfused Battery",
+       "The Legion's Bane",
        "Shattershard Turret"
      ]},
     {:"Cliff Dive DH",
-     ["Cliff Dive", "Colifero the Artist", "Illidari Inquisitor", "Magtheridon, Unreleased"]},
+     [
+       "Cliff Dive",
+       "Colifero the Artist",
+       "Illidari Inquisitor",
+       "Magtheridon, Unreleased",
+       "Ragnaros the Firelord"
+     ]},
     {:"Aggro Demon Hunter",
      [
        "Sock Puppet Slitherspear",
-       "Brain Masseuse",
        "King Mukla",
        "Acupuncture",
+       "Living Flame",
+       "Hot Coals",
+       "Cult Neophyte",
+       "Sizzling Cinder",
        "Battlefiend",
-       "Spirit of the Team",
-       "Tortollan Storyteller",
-       "Customs Enforcer",
-       "sizzling Cinder",
-       "Customs Enforcer"
+       "Spirit of the Team"
      ]},
-    {:"Armor DH",
+    {:"Cliff Dive DH", ["Blob of Tar"]},
+    # 5.5
+    {:"Deathrattle DH",
      [
-       "Dissolving Ooze",
-       "Carnivorous Cube",
-       "Mixologist",
+       "Endbringer Umbra",
        "Ferocious Felbat",
-       "Nightmare Lord Xavius",
-       "The Ceaseless Expanse",
-       "Fumigate",
+       "Carnivorous Cubicle",
+       "Spirit Pedler",
        "Return Policy",
-       "Inflitrate"
+       "Sleepy Resident",
+       "Ysera, Emerald Aspect",
+       "Ancient of Yore",
+       "Elise the Navigator",
+       "Spirit Peddler",
+       "Octosari",
+       "Plucky Paintfin",
+       "Fyrakk the Blazing",
+       "Aranna, Thrill Seeker",
+       "Wisp",
+       "Raging Felscreamer",
+       "Bob the Bartender",
+       "Raging Felscreamer",
+       "Paraglide"
      ]},
-    {:"Cliff Dive DH", ["Blob of Tar", "Ravenous Felhunter", "Wyvern's Slumber"]},
-    {:"Aggro Demon Hunter",
+    {:"Cliff Dive DH",
      [
-       "Bloodmage Thalnos",
-       "Dreamplanner Zephyrus",
-       "Observer of Mysteries",
-       "Royal Librarian",
-       "Rockspitter",
-       "Chaos Strike"
+       "Wyvern's Slumber",
+       "Insect Claw",
+       "Dangerous Cliffside",
+       "Ravenous Felhunter",
+       "Infestation",
+       "Red Card",
+       "Infiltrate",
+       "Illidari Studies"
      ]},
-    {:"Cliff Dive DH", ["Illidari Studies"]},
-    {:"Armor DH", ["Tuskpiercer"]},
-    {:"Aggro Demon Hunter", ["Insect Claw", "Infestation", "Dangerous Cliffside"]}
+    {:"Armor DH", ["Tuskpiercer", "Grim Harvest"]}
+    # {:"Aggro Demon Hunter",
+    #  [
+    #    "Bloodmage Thalnos",
+    #    "Dreamplanner Zephrys",
+    #    "Observer of Mysteries",
+    #    "Royal Librarian",
+    #    "Brain Masseuse",
+    #    "Rockspitter",
+    #    "Chaos Strike"
+    #  ]},
+    # {:"Octosari DH", ["Octosari", "Aranna Thrill Seeker"]},
+    # {:"Cliff Dive DH", ["Illidari Studies"]},
+    # {:"Armor DH", ["Tuskpiercer"]},
+    # {:"Aggro Demon Hunter", ["Insect Claw", "Infestation", "Dangerous Cliffside", "Kayn Sunfury"]}
   ]
   @wild_config []
 
