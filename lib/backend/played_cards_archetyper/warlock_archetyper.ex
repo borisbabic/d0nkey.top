@@ -6,21 +6,42 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
 
   @standard_config [
     {:"Quest Warlock", ["Escape the Underfel"]},
+    {:"Whizbang Warlock",
+     [
+       "Furnace Fuel",
+       "Archivist Elysiana",
+       "Waste Remover",
+       "Rin, Orchestrator of Doom",
+       "Blood Shard Bristleback",
+       "Barrens Scavenger",
+       "Fanottem, Lord of the Opera",
+       "Chaos Creation",
+       "Neeru Fireblade",
+       "Fracking",
+       "Chef Nomi"
+     ]},
+    {:"Starship Warlock", ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core"]},
     {:"Wallow Warlock",
      [
        "Raptor Herald",
        "Overgrown Horror",
        "Treacherous Tormentor",
        "Wallow, the Wretched",
-       "Creature of Madness",
-       "Avant-Gardening",
-       "Shadowflame Stalker"
+       "Avant-Gardening"
      ]},
-    {:"Mill Warlock", ["Adaptive Amalgam", "Archdruid of Thorns", "Escape Pod"]},
-    {:"Starship Warlock",
-     ["Heart of the Legion", "Felfire Thrusters", "The Exodar", "Arkonite Defense Crystal"]},
-    {:"Mill Warlock",
-     ["Gnomelia, S.A.F.E. Pilot", "Prize Vendor", "Frostbitten Freebooter", "Plated Beetle"]},
+    {:"Mill Warlock", ["Adaptive Amalgam", "Archdruid of Thorns", "Escape Pod", "Plated Beetle"]},
+    # 5.5
+    {:"Deathrattle Warlock", ["Travel Security", "Brittlebone Buccaneer", "Felfire Bonfire"]},
+    {:"Concierge Warlock",
+     [
+       "Concierge",
+       "Champions of Azeroth",
+       "Rockskipper",
+       "Sleepy Resident",
+       "Mixologist",
+       "Griftah, Trusted Vendor"
+     ]},
+    {:"Starship Warlock", ["Arkonite Defense Crystal"]},
     {:"Deckless Warlock",
      [
        "Clearance Promoter",
@@ -37,10 +58,23 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Shaladrassil",
        "Puppetmaster Dorian",
        "Agamaggan",
-       "Naralex, Herald of the Flight",
+       "Naralex, Herald of the Flights",
        "Fyrakk the Blazing",
+       "Deadline",
+       "Ragnaros the Firelord",
+       "Mortal Coil"
+     ]},
+    # 10.5
+    {:"Mill Warlock", ["Prize Vendor", "Gnomelia, S.A.F.E. Pilot"]},
+    {:"Animancer Warlock",
+     [
+       "Asphyxiodon",
+       "Beached Whale",
+       "Possessed Animancer",
        "Kerrigan, Queen of Blades",
-       "Fractured Power"
+       "Soul Searching",
+       "Demonic Studies",
+       "Bloodpetal Biome"
      ]}
   ]
   @wild_config []

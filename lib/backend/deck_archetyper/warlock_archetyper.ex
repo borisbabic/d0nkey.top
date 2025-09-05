@@ -51,6 +51,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       deckless?(card_info) ->
         :"Deckless Warlock"
 
+      "Possessed Animancer" in card_info.card_names ->
+        :"Animancer Warlock"
+
       zerg?(card_info, 4) ->
         :"Zerg Warlock"
 
