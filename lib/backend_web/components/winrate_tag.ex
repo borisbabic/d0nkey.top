@@ -17,11 +17,12 @@ defmodule Components.WinrateTag do
   prop(min_sample, :number, default: 1)
   prop(sample, :number, default: nil)
   prop(impact, :boolean, default: false)
+  prop(offset, :number, default: 0)
   prop(win_loss, :any, default: nil)
 
   def render(assigns) do
     ~F"""
-      <Stats.winrate_tag min_sample={@min_sample} winrate={@winrate} round_digits={@round_digits} positive_hue={@positive_hue} negative_hue={@negative_hue} tag_name={@tag_name} class={@class} lightness={@lightness} base_saturation={@base_saturation} sample={@sample} impact={@impact} show_sample={@show_sample}/>
+      <Stats.winrate_tag offset={@offset} min_sample={@min_sample} winrate={@winrate} round_digits={@round_digits} positive_hue={@positive_hue} negative_hue={@negative_hue} tag_name={@tag_name} class={@class} lightness={@lightness} base_saturation={@base_saturation} sample={@sample} impact={@impact} show_sample={@show_sample}/>
     """
   end
 

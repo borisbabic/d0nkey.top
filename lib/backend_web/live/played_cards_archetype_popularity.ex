@@ -10,7 +10,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
   alias Components.DecklistCard
+  alias Components.WinrateTag
   alias Backend.PlayedCardsArchetyper
+  alias Backend.Hearthstone.Card
 
   @default_min_played_count 100
   @default_sort_by "any_popularity"
@@ -18,6 +20,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(needs_class?, :boolean, default: false)
   data(can_access?, :boolean, default: false)
   data(card_popularity, :any)
+  data(card_report, :any)
   data(params, :map, default: %{})
   data(criteria, :map, default: %{})
   data(sort_by, :string, default: @default_sort_by)
@@ -25,6 +28,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(exclude_config_levels, :integer, default: 0)
   data(filter_config_level, :integer, default: nil)
   data(config_map, :map, default: %{})
+  data(intermediate_report, :list, default: [])
+  data(mode, :string, default: "popularity")
 
   @deck_archetype_mapping %{
     "Rainbow Menagerie DK" => "Menagerie DK",
@@ -35,7 +40,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Rainbow Starship DK" => "Starship DK",
     "Buttons Rainbow DK" => "Buttons DK",
     "Zerg Unholy DK" => "Unholy DK",
-    "Quest Spall Mage" => "Spell Mage",
+    "Ravenous Cliff Dive DH" => "Cliff Dive DH",
+    "Starship Druid" => "Hydration Druid",
+    "Quest Spell Mage" => "Spell Mage",
     "Raylla Imbue Mage" => "Imbue Mage",
     "Menagerie Priest" => "Aggro Priest",
     "Pain Priest" => "Aggro Priest"
@@ -84,10 +91,18 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         title={"Sort By"}
         param={"sort_by"}
         selected_as_title={false}
-        normalizer={&Util.to_int_or_orig/1} />
+        />
+      <LivePatchDropdown
+        id="mode_dropdown"
+        options={[{"popularity", "Popularity"}, {"report", "Report"}]}
+        title={"Mode"}
+        param={"mode"}
+        current_val={@mode}
+        selected_as_title={true}
+        />
       <LivePatchDropdown
         id="filter_config_level"
-        options={[{nil, "Any"} | Enum.to_list(0..30)]}
+        options={[{nil, "Any"} | Enum.to_list(1..30)]}
         title={"Filter Config Level"}
         param={"filter_config_level"}
         current_val={@filter_config_level}
@@ -102,10 +117,36 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         Select a class before proceeding. I'd suggest selecting your other filters first.
       </div>
       <div :if={!@needs_class?}>
-        <div :if={@card_popularity.loading}>
-          Loading tournaments...
+        <div :if={@mode == "report"}>
+          <div :if={@card_report.loading}>
+            Loading Card Popularity Report
+          </div>
+          <div :if={!Enum.empty?(@intermediate_report) || (@card_report.ok? && !@card_report.loading)} class="table-scrolling-sticky-wrapper">
+            <table class="table is-fullwidth is-striped tw-table">
+              <thead>
+                <th class="tw-bg-gray-700">Card</th>
+                <th class="tw-bg-gray-700" >Archetype</th>
+                <th class="tw-bg-gray-700" >Config Level</th>
+                <th class="tw-bg-gray-700" >Popularity in Archetype</th>
+              </thead>
+              <tbody>
+                <tr :for={{_card_name, card_report} <- (if @card_report.ok?, do: @card_report.result, else: @intermediate_report)}>
+                  <td>{Card.name(card_report.card)}</td>
+                  <td>{card_report.archetype}</td>
+                  <td>{card_report.config_level}</td>
+                  <td>
+                    <WinrateTag tag_name="div" class="tw-h-full" winrate={card_report.popularity} offset={-0.25}/>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading} class="table-scrolling-sticky-wrapper">
+        <div :if={@mode == "popularity"}>
+          <div :if={@card_popularity.loading}>
+            Loading Card Popularity
+          </div>
+         <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading} class="table-scrolling-sticky-wrapper">
           <table class="table is-fullwidth is-striped tw-table">
             <thead>
               <th class="tw-bg-gray-700">Card</th>
@@ -131,6 +172,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     """
@@ -139,7 +181,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   def card_info(card_id, config_map) do
     case Backend.Hearthstone.get_card(card_id) do
       %{} = card ->
-        {level, archetype} = Map.get(config_map, Backend.Hearthstone.Card.name(card), {nil, nil})
+        {level, archetype} = Map.get(config_map, Card.name(card), {nil, nil})
         {card, level, archetype}
 
       _ ->
@@ -189,6 +231,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       Map.get(params, "min_played_count", @default_min_played_count) |> Util.to_int_or_orig()
 
     sort_by = Map.get(params, "sort_by", @default_sort_by)
+    mode = Map.get(params, "mode", "popularity")
 
     selected_params =
       default |> Map.merge(params) |> Map.merge(%{"min_played_count" => min_played_count})
@@ -199,6 +242,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       sort_by: sort_by,
       exclude_config_levels: exclude_config_levels,
       filter_config_level: filter_config_level,
+      intermediate_report: [],
+      mode: mode,
       min_played_count: min_played_count
     ]
 
@@ -210,7 +255,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         |> assign(same_assigns)
         |> assign_config_map(criteria)
         |> update_context(selected_params)
-        |> fetch_popularity(socket)
+        |> fetch_async(socket, mode)
       }
     else
       {:noreply,
@@ -222,39 +267,67 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   # no need to fetch because the criteria hasn't changed
-  defp fetch_popularity(%{assigns: %{criteria: new_criteria}} = new_socket, %{
-         assigns: %{criteria: old_criteria}
-       })
+  defp fetch_async(
+         %{assigns: %{criteria: new_criteria}} = new_socket,
+         %{
+           assigns: %{criteria: old_criteria}
+         },
+         _
+       )
        when new_criteria == old_criteria do
     new_socket
   end
 
-  defp fetch_popularity(socket, _old_socket) do
-    criteria = socket.assigns.criteria
+  defp fetch_async(new_socket, _old_socket, "popularity"), do: fetch_popularity(new_socket)
+  defp fetch_async(new_socket, _old_socket, "report"), do: fetch_report(new_socket)
+
+  defp fetch_popularity(socket) do
+    criteria =
+      socket.assigns.criteria
 
     socket
     |> assign_async([:card_popularity, :archetypes], fn ->
       fetch_card_popularity(criteria)
     end)
+
+    # |> assign(:card_report, Phoenix.LiveView.AsyncResult.loading())
+  end
+
+  defp fetch_report(socket) do
+    criteria = socket.assigns.criteria
+    pid = socket.root_pid
+
+    socket
+    |> assign_async([:card_report], fn ->
+      fetch_card_report(criteria, pid)
+    end)
   end
 
   defp assign_config_map(socket, %{"format" => format, "player_class" => player_class}) do
-    config_map =
-      format
-      |> Util.to_int_or_orig()
-      |> PlayedCardsArchetyper.config(player_class)
-      |> Enum.with_index(1)
-      |> Enum.flat_map(fn {{archetype, cards}, level} ->
-        Enum.map(cards, fn card_name ->
-          {card_name, {level, archetype}}
-        end)
-      end)
-      |> Map.new()
+    config_map = config_map(format, player_class)
 
     socket |> assign(config_map: config_map)
   end
 
   defp assign_config_map(socket, _), do: socket
+
+  defp config_map(format, player_class) do
+    format
+    |> Util.to_int_or_orig()
+    |> PlayedCardsArchetyper.config(player_class)
+    |> config_map()
+  end
+
+  defp config_map(archetyper_config) do
+    archetyper_config
+    |> Enum.with_index(1)
+    |> Enum.flat_map(fn {{archetype, cards}, level} ->
+      Enum.map(cards, fn card_name ->
+        {card_name, {level, archetype}}
+      end)
+    end)
+    |> Map.new()
+  end
 
   defp add_excluded_config(
          %{"format" => format, "player_class" => player_class} = criteria,
@@ -297,6 +370,79 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     {popularity, archetypes_popularity} = process_games(games)
 
     {:ok, %{card_popularity: popularity, archetypes: sorted_archetypes(archetypes_popularity)}}
+  end
+
+  def fetch_card_report(base_criteria, pid) do
+    format = Map.fetch!(base_criteria, "format") |> Util.to_int_or_orig()
+    class = Map.fetch!(base_criteria, "player_class")
+    archetyper_config = PlayedCardsArchetyper.config(format, class)
+    config_map = config_map(archetyper_config)
+
+    card_report =
+      archetyper_config
+      |> Enum.with_index(1)
+      |> Enum.reject(fn {{archetype, _cards}, _} ->
+        archetype
+        |> to_string()
+        |> String.starts_with?("Whizbang")
+      end)
+      |> Enum.reduce([], fn {{_archetype, cards}, level}, carry ->
+        IO.puts("Processing level #{level}. class: #{class} format: #{format}")
+
+        games =
+          base_criteria
+          |> add_excluded_config(level - 1)
+          |> Hearthstone.DeckTracker.games_with_played_cards()
+
+        {popularity, _} = process_games(games)
+
+        pop_map =
+          popularity
+          |> merge()
+          |> Enum.map(fn {card_id, pop} ->
+            {card, level, archetype} = card_info(card_id, config_map)
+            {Card.name(card), %{level: level, archetype: archetype, pop: pop, card: card}}
+          end)
+          |> Map.new()
+
+        new_level =
+          Enum.flat_map(cards, fn card_name ->
+            case Map.get(pop_map, card_name) do
+              %{level: level, archetype: archetype, pop: pop, card: card} ->
+                card_arch_popularity =
+                  with total when is_integer(total) and total > 0 <- Map.get(pop, "total"),
+                       card_arch_pop when is_integer(card_arch_pop) <-
+                         Map.get(pop, to_string(archetype)) do
+                    card_arch_pop / total
+                  else
+                    _ -> 0
+                  end
+
+                [
+                  {card_name,
+                   %{
+                     card: card,
+                     archetype: archetype,
+                     config_level: level,
+                     popularity: card_arch_popularity
+                   }}
+                ]
+
+              _ ->
+                []
+            end
+          end)
+
+        new_carry = carry ++ new_level
+        send(pid, {:update_intermediate_report, new_carry})
+        new_carry
+      end)
+
+    {:ok, %{card_report: card_report}}
+  end
+
+  def handle_info({:update_intermediate_report, intermediate_report}, socket) do
+    {:noreply, socket |> assign(intermediate_report: intermediate_report)}
   end
 
   def process_games(games) do
