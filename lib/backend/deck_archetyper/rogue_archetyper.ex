@@ -323,6 +323,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation(card_info)} Quest Rogue")
 
+      wild_thief_rogue?(card_info) and highlander?(card_info) ->
+        :"HL Thief Rogue"
+
       highlander?(card_info) ->
         :"Highlander Rogue"
 
@@ -445,7 +448,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Wildpaw Gnoll",
       "Stick Up",
       "Flint Firearm",
-      "Thistle Tea Set"
+      "Thistle Tea Set",
+      "Ashamane"
     ])
   end
 
