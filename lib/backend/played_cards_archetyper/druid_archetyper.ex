@@ -22,10 +22,12 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      ]},
     {:"Imbue Druid",
      [
+       "Hamuul Runetotem",
        "Dreambound Disciple",
        "Bitterbloom Knight",
        "Flutterwing Guardian",
        "Sing-Along Buddy",
+       "Petal Picker",
        "Charred Chameleon"
      ]},
     {:"Owlonius Druid", ["Owlonius", "Go with the Flow", "Ethereal Oracle"]},
@@ -38,7 +40,7 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Sky Mother Aviana"
      ]},
 
-    # {:"Owlonius Druid", ["Owlonius", "Sparkling Phial"]},
+    # 5.5
     {:"Hydration Druid",
      [
        "Starlight Reactor",
@@ -50,8 +52,22 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Hydration Station",
        "Tortollan Traveller"
      ]},
+    {:"Token Druid",
+     [
+       "Vicious Slitherspear",
+       "Coconut Cannoneer",
+       "Wisp",
+       "Nerubian Egg",
+       "Fire Fly",
+       "Longneck Egg",
+       "Power of the Wild",
+       "Overheat",
+       "Fire Fly",
+       "Nerubian Egg"
+     ]},
     {:"Owlonius Druid",
      [
+       "Sparkling Phial",
        "Incindius",
        "Ancient of Yore",
        "Seabreeze Chalice",
@@ -63,15 +79,10 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      ]},
     {:"Hydration Druid",
      ["Kil'jaedan", "Carnivorous Cubicle", "Endbringer Umbra", "Blob of Tar", "Marin the Manager"]},
-    {:"Imbue Druid", ["Symbiosis", "Hybridization", "Dreamplanner Zephyrs", "Photosynthesis"]},
-    {:"Aviana Druid", ["Wrath", "Horn of Plenty", "Astral Phaser", "Trail Mix"]},
-    {:"Owlonius Druid", ["Zilliax Deluxe 3000", "Bottomless Toy Chest", "Swipe"]},
-    {:"Hydration Druid", ["Ysera, Emerald Aspect"]},
-    {:"Aviana Druid", ["Nightmare Lord Xavius"]},
-    {:"Owlonius Druid",
-     ["Amirdrassil", "Sleep Under the Stars", "Story of Barnabus", "New Heights"]},
-    {:"Hydration Druid", ["Shaladrassil"]},
-    {:"Aviana Druid", ["Arkonite Revelations", "Living Roots"]}
+    {:"Imbue Druid", ["Symbiosis"]},
+    # 10.5
+    {:"Aviana Druid", ["Wrath", "Horn of Plenty"]},
+    {:"Token Druid", ["Ravenous Flock", "Hatchery Helper", "Vibrant Squirrel"]}
   ]
   @wild_config []
 
