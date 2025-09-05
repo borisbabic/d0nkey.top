@@ -23,6 +23,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(sort_by, :string, default: @default_sort_by)
   data(min_played_count, :integer, default: @default_min_played_count)
   data(exclude_config_levels, :integer, default: 0)
+  data(config_map, :map, default: %{})
 
   @deck_archetype_mapping %{
     "Rainbow Menagerie DK" => "Menagerie DK",
@@ -96,6 +97,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
             <thead>
               <th class="tw-bg-gray-700">Card</th>
               <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</th>
+              <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Config Level</th>
               <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={"total"}>
                 {add_arrow("Times Played", "total", @params, true)}
               </th>
@@ -104,13 +106,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               </th>
             </thead>
             <tbody>
-              <tr :for={{card, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by)} :if={{card_archetype} = {Backend.PlayedCardsArchetyper.archetype([card], @criteria["player_class"], @criteria["format"])}}>
+              <tr :for={{card_id, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by)} :if={{card, level, card_archetype} = card_info(card_id, @config_map)}>
                 <td class="sticky-column">
                   <div class="decklist_card_container">
-                    <DecklistCard :if={card = Backend.Hearthstone.get_card(card)} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
+                    <DecklistCard :if={card} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
                 </td>
-                <td :if={User.can_access?(@user, :archetyping)} class={if card_archetype |> to_string() |> String.starts_with?("Other "), do: "tw-text-red-500"}>{card_archetype}</td>
+                <td :if={User.can_access?(@user, :archetyping)}>{card_archetype}</td>
+                <td :if={User.can_access?(@user, :archetyping)}>{level}</td>
                 <td>{total}</td>
                 <td :for={archetype <- @archetypes.result} class={class(archetype, card_archetype)}>{Map.get(popularity_map, archetype, 0) |> Util.percent(total) |> Float.round(1)}</td>
               </tr>
@@ -119,6 +122,17 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         </div>
       </div>
     """
+  end
+
+  def card_info(card_id, config_map) do
+    case Backend.Hearthstone.get_card(card_id) do
+      %{} = card ->
+        {level, archetype} = Map.get(config_map, Backend.Hearthstone.Card.name(card), {nil, nil})
+        {card, level, archetype}
+
+      _ ->
+        {nil, nil, nil}
+    end
   end
 
   def archetyping_config_cards(format, class, levels) do
@@ -180,6 +194,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         socket
         |> assign(needs_class?: false)
         |> assign(same_assigns)
+        |> assign_config_map(criteria)
         |> update_context(selected_params)
         |> fetch_popularity(socket)
       }
@@ -208,6 +223,24 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       fetch_card_popularity(criteria)
     end)
   end
+
+  defp assign_config_map(socket, %{"format" => format, "player_class" => player_class}) do
+    config_map =
+      format
+      |> Util.to_int_or_orig()
+      |> PlayedCardsArchetyper.config(player_class)
+      |> Enum.with_index(1)
+      |> Enum.flat_map(fn {{archetype, cards}, level} ->
+        Enum.map(cards, fn card_name ->
+          {card_name, {level, archetype}}
+        end)
+      end)
+      |> Map.new()
+
+    socket |> assign(config_map: config_map)
+  end
+
+  defp assign_config_map(socket, _), do: socket
 
   defp add_excluded_config(
          %{"format" => format, "player_class" => player_class} = criteria,
