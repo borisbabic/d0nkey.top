@@ -7,6 +7,7 @@ defmodule FunctionComponents.Stats do
   attr :round_digits, :integer, default: 1
   attr :positive_hue, :integer, default: 120
   attr :negative_hue, :integer, default: 0
+  attr :offset, :integer, default: 0
   attr :tag_name, :string, default: "span"
   attr :class, :string, default: "tag"
   attr :lightness, :integer, default: 50
@@ -19,7 +20,7 @@ defmodule FunctionComponents.Stats do
 
   def winrate_tag(assigns) do
     ~H"""
-    <.dynamic_tag tag_name={@tag_name} class={@class} style={if sufficient_sample(@sample, @min_sample), do: winrate_style(@winrate + shift_for_color(@impact), @positive_hue, @negative_hue, @lightness, @base_saturation), else: ""}>
+    <.dynamic_tag tag_name={@tag_name} class={@class} style={if sufficient_sample(@sample, @min_sample), do: winrate_style(@winrate + shift_for_color(@impact) + @offset, @positive_hue, @negative_hue, @lightness, @base_saturation), else: ""}>
       <span :if={!sufficient_sample(@sample, @min_sample)}></span>
       <span :if={sufficient_sample(@sample, @min_sample)}class="basic-black-text tw-text-center">
         {round(@winrate, @round_digits)}
