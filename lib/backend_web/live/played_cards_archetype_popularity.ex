@@ -34,7 +34,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Blood DK" => "Control DK",
     "Rainbow Starship DK" => "Starship DK",
     "Buttons Rainbow DK" => "Buttons DK",
-    "Zerg Unholy DK" => "Unholy DK"
+    "Zerg Unholy DK" => "Unholy DK",
+    "Quest Spall Mage" => "Spell Mage",
+    "Raylla Imbue Mage" => "Imbue Mage"
   }
 
   def mount(_params, session, socket) do

@@ -13,24 +13,19 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Lamplighter",
        "Triplewick Trickster",
        "Blazing Accretion",
-       "Tar Slime",
        "Windswept Pageturner",
-       "Inferno Herald",
        "Solar Flare",
-       "Blasteroid",
        "Spontaneous Combustion",
        "Glacial Shard"
      ]},
     {:"Protoss Mage",
      [
        "Warp Gate",
-       "Busy Peon",
        "Colossus",
        "Resonance Coil",
        "Chrono Boost",
        "Artanis",
-       "Void Ray",
-       "Youthful Brewmaster"
+       "Void Ray"
      ]},
     {:"Quest Mage",
      [
@@ -42,8 +37,28 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Astrobiologist",
        "Creature of Madness",
        "Scrappy Scavenger",
-       "Scarab Keychain",
-       "Malorne the Waywatcher"
+       "Scarab Keychain"
+     ]},
+    {:"Orb Mage",
+     [
+       "Carry-On Grub",
+       "The Curator",
+       "Sharp-Eyed Lookout",
+       "Overplanner",
+       "Kil'jaeden",
+       "Sleepy REsident",
+       "Doomsayer"
+     ]},
+    # 5.5
+    {:"Imbue Mage",
+     [
+       "Sing-Along Buddy",
+       "Aessina",
+       "Divination",
+       "Wisprider",
+       "Flutterwing Guardian",
+       "Bitterbloom Knight",
+       "Spirit Gatherer"
      ]},
     {:"Big Spell Mage",
      [
@@ -58,26 +73,25 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Supernova",
        "Tsunami"
      ]},
-    {:"Elemental Mage",
-     [
-       "Fire Fly",
-       "Glacial Shard",
-       "Conjured Bookkeeper",
-       "Flame Geyser",
-       "Sizzling Cinder",
-       "Living Flame",
-       "Blob of Tar",
-       "Fireball"
-     ]},
     {:"Spell Mage",
      [
+       "Storage Scuffle",
+       "Story of the Waygate",
+       "Spark of Life",
        "Pocket Dimension",
        "Buy One, Get One Freeze",
        "Hidden Objects",
        "Unearthed Artifacts",
        "Relic of Kings"
      ]},
-    {:"Spell Mage", ["The Forbidden Sequence", "Frostbolt", "Rising Waves", "Tide Pools"]}
+    {:"Protoss Mage", ["Photon Cannon"]},
+    {:"Elemental Mage",
+     [
+       "Fire Fly",
+       "Conjured Bookkeeper",
+       "Sizzling Cinder"
+     ]}
+    # {:"Spell Mage", ["The Forbidden Sequence", "Frostbolt", "Rising Waves", "Tide Pools"]}
   ]
   @wild_config []
 
