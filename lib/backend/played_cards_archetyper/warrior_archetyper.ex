@@ -5,6 +5,27 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
+    {:"Whizbang Warrior",
+     [
+       "Madame Lazul",
+       "Hagatha's Scheme",
+       "Swampqueen Hagatha",
+       "Heistbaron Togwaggle",
+       "EVIL Miscreant",
+       "EVIL Recruiter",
+       "EVIL Quartermaster",
+       "Dr. Boom, Mad Genius",
+       "EVIL Cable Rat",
+       "Dark Pharaoh Tekahn",
+       "Grand Lackey Erkh",
+       "EVIL Conscripter",
+       "Sinister Deal",
+       "Whispers of EVIL",
+       "Weaponized Wasp",
+       "EVIL Totem",
+       "Livewire Lance",
+       "Togwaggle's Scheme"
+     ]},
     {:"Mech Warrior", ["Part Scrapper", "Wreck'em and Deck'em", "Boom Wrench", "Testing Dummy"]},
     {:"Control Warrior",
      [
@@ -18,6 +39,7 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Ancient of Yore",
        "Sleep Under the Stars",
        "Hostile Invader",
+       "Battlecruiser",
        "New Heights"
      ]},
     {:"Dragon Warrior",
@@ -33,7 +55,6 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
      ]},
     {:"Mech Warrior",
      [
-       "Carnivorous Cubicle",
        "Endbringer Umbra",
        "Inventor Boom",
        "Nightmare Lord Xavius",
