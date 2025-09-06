@@ -47,7 +47,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Menagerie Priest" => "Aggro Priest",
     "Pain Priest" => "Aggro Priest",
     "Defense Terran Shaman" => "Terran Shaman",
-    "Asteroid Imbue Shaman" => "Imbue Shaman"
+    "Asteroid Imbue Shaman" => "Imbue Shaman",
+    "Quest Warrior" => "Control Warrior",
+    "Ysondre Warrior" => "Dragon Warrior"
   }
 
   def mount(_params, session, socket) do
