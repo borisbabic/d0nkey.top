@@ -30,11 +30,15 @@ defmodule Backend.Leaderboards.PageFetcher do
       ) do
     with {:ok, season = %{id: id}} when is_integer(id) <- Leaderboards.get_season(season) do
       for page_num <- first_page..last_page(tot, max_page_num) do
-        create_args(season, page_num)
-        |> new()
-        |> Oban.insert()
+        enqueue_page(season, page_num)
       end
     end
+  end
+
+  def enqueue_page(season, page_num) do
+    create_args(season, page_num)
+    |> new()
+    |> Oban.insert()
   end
 
   def last_page(from_response, _from_arg = nil), do: from_response
