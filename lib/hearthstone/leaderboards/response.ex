@@ -20,6 +20,10 @@ defmodule Hearthstone.Leaderboards.Response do
   def total_pages(%{leaderboard: %{pagination: %{total_pages: total}}}), do: {:ok, total}
   def total_pages(_), do: :error
 
+  @spec total_size(Response.t()) :: {:ok, integer()} | :error
+  def total_size(%{leaderboard: %{pagination: %{total_size: total}}}), do: {:ok, total}
+  def total_size(_), do: :error
+
   @spec from_raw_map(Map.t(), integer() | Season.t() | nil) ::
           {:ok, Response.t()} | {:error, any()}
   def from_raw_map(raw, leaderboard_id \\ nil)

@@ -297,6 +297,7 @@ defmodule Backend.Leaderboards do
          {:ok, total_pages} <- Response.total_pages(response) do
       rows = Response.rows(response)
       Task.start(fn -> handle_rows(rows, season) end)
+      Task.start(fn -> update_total_size(season, response) end)
 
       opts = %{
         season: season,
@@ -312,6 +313,16 @@ defmodule Backend.Leaderboards do
       _ ->
         Logger.warning("Couldn't get first page for #{inspect(season)}")
         {:error, "Could not fetch initial page", {[], season}}
+    end
+  end
+
+  def update_total_size(season_raw, response) do
+    with {:ok, season} <- get_season(season_raw),
+         {:ok, total_size} <- Response.total_size(response),
+         true <- season.total_size == nil or season.total_size < total_size do
+      attrs = %{total_size: total_size}
+      cs = Season.changeset(season, attrs)
+      Repo.update(cs)
     end
   end
 
