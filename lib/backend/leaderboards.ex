@@ -316,6 +316,66 @@ defmodule Backend.Leaderboards do
     end
   end
 
+  def find_gaps(criteria \\ []) do
+    base_gaps_query()
+    |> build_entries_query(criteria)
+    |> Repo.all()
+  end
+
+  def fill_gaps(criteria) when is_list(criteria) do
+    for s <- find_gaps(criteria) do
+      fill_gaps(s)
+    end
+  end
+
+  def fill_gaps(season) do
+    total_size = season.total_size
+    criteria = [{"season", season}]
+
+    entries =
+      base_current_entries_query()
+      |> build_entries_query(criteria)
+      |> Repo.all()
+
+    ranks = Enum.map(entries, & &1.rank)
+    max_rank = Enum.max(ranks)
+
+    missing_pages =
+      1..total_size
+      |> Enum.chunk_every(@page_size)
+      |> Enum.with_index(1)
+      |> Enum.filter(fn {chunk, _page} ->
+        if Enum.at(chunk, 0) > max_rank do
+          true
+        else
+          Enum.any?(chunk, fn num ->
+            num not in ranks
+          end)
+        end
+      end)
+      |> Enum.map(fn {_chunk, page} -> page end)
+
+    for page <- missing_pages do
+      PageFetcher.enqueue_page(season, page)
+    end
+  end
+
+  defp base_gaps_query() do
+    base_current_entries_query()
+    |> join_season()
+    |> select([season: s, entry: e], %{
+      id: s.id,
+      season_id: s.season_id,
+      leaderboard_id: s.leaderboard_id,
+      region: s.region,
+      max_rank: max(e.rank),
+      total_size: max(s.total_size),
+      count: count(1)
+    })
+    |> group_by([season: s], [s.id, s.season_id, s.leaderboard_id, s.region])
+    |> having([entry: e, season: s], max(e.rank) != count(1) or max(e.rank) != max(s.total_size))
+  end
+
   def update_total_size(season_raw, response) do
     with {:ok, season} <- get_season(season_raw),
          {:ok, total_size} <- Response.total_size(response),
