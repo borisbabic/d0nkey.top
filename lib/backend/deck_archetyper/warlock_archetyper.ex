@@ -191,6 +191,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation(card_info)} Quest Warlock")
 
+      boar?(card_info) and highlander?(card_info) ->
+        :"HL Boarlock"
+
       highlander?(card_info) ->
         :"Highlander Warlock"
 
