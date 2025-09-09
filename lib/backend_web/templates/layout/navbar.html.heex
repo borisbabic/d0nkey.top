@@ -134,7 +134,7 @@
      <div class="navbar-end">
       <div :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2024-05-14T00:00:00]) == :gt and show_ads?(@conn)} class="navbar-item" aria-label="menu-item">
         <span class="is-hidden-mobile">
-          Remove ads by supporting
+          No ads & more 
         </span>
         <Components.Socials.patreon link={~p"/patreon"} />
       </div>
@@ -155,7 +155,7 @@
    if (navbar) {
    navbar.style.display = '';
    } else {
-       conyole.log("Couldn't get navbar!")
+       console.log("Couldn't get navbar!")
    }
 
 document.addEventListener('DOMContentLoaded', () => {
