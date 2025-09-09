@@ -169,6 +169,13 @@ defmodule Components.DecksExplorer do
           id="decks_explorer_force_fresh"
           :if={@filter_context == :public and Backend.UserManager.User.premium?(@user)} />
         <LivePatchDropdown
+          :if={@filter_context == :personal and !Enum.empty?(Hearthstone.DeckTracker.bugged_source_ids())}
+          options={[{"no", "No"}, {"yes", "Yes"}]}
+          title={"Exclude Bugged Deck Tracker Versions"}
+          param={"exclude_bugged_sources"}
+          selected_as_title={false}
+        />
+        <LivePatchDropdown
           :if={Backend.UserManager.User.can_access?(@user, :archetyping)}
           options={[{nil, "No"}, {"yes", Components.Helper.warning_triangle(%{before: "Yes"})}]}
           title={"No archetype"}
@@ -258,13 +265,14 @@ defmodule Components.DecksExplorer do
   end
 
   defp parse_params(raw_params, assigns) do
-    regions =
+    {regions, context_based_defaults} =
       case assigns do
         %{filter_context: :public} ->
-          Hearthstone.DeckTracker.get_auto_aggregate_regions()
+          {Hearthstone.DeckTracker.get_auto_aggregate_regions(),
+           [{"exclude_bugged_sources", "yes"}]}
 
         _ ->
-          []
+          {[], []}
       end
 
     default_format = assigns.default_format || FormatDropdown.default(assigns.filter_context)
@@ -282,6 +290,7 @@ defmodule Components.DecksExplorer do
       {"archetype", "any"},
       {"player_has_coin", "any"},
       {"rank", assigns.default_rank || RankDropdown.default(assigns.filter_context)}
+      | context_based_defaults
     ]
 
     params =
@@ -380,6 +389,7 @@ defmodule Components.DecksExplorer do
       "player_deck_excludes",
       "fresh_player_deck_includes",
       "fresh_player_deck_excludes",
+      "exclude_bugged_sources",
       "archetype",
       "no_archetype",
       "opponent_archetype",
