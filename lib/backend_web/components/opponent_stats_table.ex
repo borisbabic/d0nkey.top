@@ -111,14 +111,15 @@ defmodule Components.OpponentStatsTable do
   defp params(selected, user) do
     selected
     |> Map.pop("players", "all_players")
-    |> set_user_param(user)
+    |> set_user_based_params(user)
     |> Enum.to_list()
   end
 
-  defp set_user_param({"my_games", params}, %{battletag: battletag}),
+  defp set_user_based_params({"my_games", params}, %{battletag: battletag}),
     do: params |> Map.put_new("player_btag", battletag)
 
-  defp set_user_param({_, params}, _), do: params
+  defp set_user_based_params({_, params}, _),
+    do: params |> Map.put("exclude_bugged_sources", "yes")
 
   def param_keys(),
     do: ["rank", "period", "players", "region", "format", "force_fresh", "player_has_coin"]

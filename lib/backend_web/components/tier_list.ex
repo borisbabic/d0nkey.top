@@ -150,6 +150,7 @@ defmodule Components.TierList do
     default_format = FormatDropdown.default(:public)
 
     %{
+      "exclude_bugged_sources" => "true",
       "period" => PeriodDropdown.default(:public, criteria, default_format),
       "rank" => RankDropdown.default(:public),
       "opponent_class" => "any",

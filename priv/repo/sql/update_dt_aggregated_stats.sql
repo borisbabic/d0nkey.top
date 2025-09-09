@@ -68,6 +68,13 @@ agg_regions(
     WHERE
         auto_aggregate
 ),
+bugged_sources (
+    source_id
+) AS (
+    SELECT source_id 
+    FROM public.dt_bugged_sources
+    WHERE filter_out
+),
 deck_stats AS (
     SELECT
         p.slug AS PERIOD,
@@ -126,6 +133,11 @@ FROM
         AND dg.game_type = p.game_type
         AND dg.opponent_class IS NOT NULL
         AND dg.player_deck_id IS NOT NULL
+        AND dg.source_id NOT IN (
+            SELECT
+                source_id
+            FROM
+                bugged_sources)
         AND dg.region IN (
             SELECT
                 code
@@ -222,6 +234,11 @@ card_stats AS (
         dg.inserted_at <= now()
         AND dg.opponent_class IS NOT NULL
         AND dg.game_type = p.game_type
+        AND dg.source_id NOT IN (
+            SELECT
+                source_id
+            FROM
+                bugged_sources)
         AND dg.region IN (
             SELECT
                 code

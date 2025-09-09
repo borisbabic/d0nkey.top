@@ -10,6 +10,7 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.AggregatedMatchups
   alias Hearthstone.DeckTracker.AggregationMeta
   alias Hearthstone.DeckTracker.AggregationLog
+  alias Hearthstone.DeckTracker.BuggedSources
   alias Hearthstone.DeckTracker.CardGameTally
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
@@ -41,6 +42,8 @@ defmodule Hearthstone.DeckTracker do
     name: :regions
 
   @current_aggregated_matchups_version 1
+  @affirmative ["yes", "true", true]
+  @negative ["no", "false", false]
 
   @type deck_stats :: %{deck: Deck.t(), wins: integer(), losses: integer()}
 
@@ -483,7 +486,7 @@ defmodule Hearthstone.DeckTracker do
   ]
   def filter_needs_fresh?({"fresh_", _}), do: true
 
-  def filter_needs_fresh?({"force_fresh", fresh}) when fresh in [true, "true", "yes"],
+  def filter_needs_fresh?({"force_fresh", fresh}) when fresh in @affirmative,
     do: true
 
   def filter_needs_fresh?({"players", players_val}) do
@@ -1079,7 +1082,7 @@ defmodule Hearthstone.DeckTracker do
   @agg_deck_query %{from: %{as: :agg_deck_stats}}
   @card_query %{from: %{as: :card_tally}}
 
-  defp compose_games_query({"with_played_cards", yes}, query) when yes in ["yes", "true", true] do
+  defp compose_games_query({"with_played_cards", yes}, query) when yes in @affirmative do
     query
     |> ensure_played_cards_joined(:left)
     |> preload([played_cards: pc], played_cards: pc)
@@ -1875,11 +1878,11 @@ defmodule Hearthstone.DeckTracker do
     do: compose_games_query({"player_has_coin", nil}, query)
 
   defp compose_games_query({"player_has_coin", player_has_coin}, query)
-       when player_has_coin in ["true", "yes"],
+       when player_has_coin in @affirmative,
        do: compose_games_query({"player_has_coin", true}, query)
 
   defp compose_games_query({"player_has_coin", player_has_coin}, query)
-       when player_has_coin in ["false", "no"],
+       when player_has_coin in @negative,
        do: compose_games_query({"player_has_coin", false}, query)
 
   defp compose_games_query({"player_has_coin", player_has_coin}, query = @agg_deck_query) do
@@ -1897,10 +1900,10 @@ defmodule Hearthstone.DeckTracker do
     query |> where([game: g], g.player_has_coin == ^player_has_coin)
   end
 
-  defp compose_games_query({"public", public}, query) when public in ["true", "yes"],
+  defp compose_games_query({"public", public}, query) when public in @affirmative,
     do: compose_games_query({"public", true}, query)
 
-  defp compose_games_query({"public", public}, query) when public in ["false", "no"],
+  defp compose_games_query({"public", public}, query) when public in @negative,
     do: compose_games_query({"public", false}, query)
 
   defp compose_games_query({"public", public}, query) do
@@ -1946,6 +1949,28 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query(:missing_archetype, query) do
     query
     |> where([played_cards: pc], is_nil(pc.player_archetype) or is_nil(pc.opponent_archetype))
+  end
+
+  defp compose_games_query({"exclude_bugged_sources", _}, @agg_deck_query = query), do: query
+
+  defp compose_games_query({"exclude_bugged_sources", affirmative}, query)
+       when affirmative in @affirmative do
+    bugged_source_ids = bugged_source_ids()
+
+    if Enum.empty?(bugged_source_ids) do
+      # I assume that psql will optimize this, but just in case it doesn't I'm going to
+      query
+    else
+      query
+      |> where([game: g], g.source_id not in ^bugged_source_ids)
+    end
+  end
+
+  defp compose_games_query({"exclude_bugged_sources", _}, query), do: query
+
+  def bugged_source_ids() do
+    from(bs in BuggedSources, where: bs.filter_out, select: bs.source_id)
+    |> Repo.all()
   end
 
   defp ensure_played_cards_joined(query, join \\ :inner) do
@@ -3287,7 +3312,12 @@ defmodule Hearthstone.DeckTracker do
     vals =
       for %{slug: period_slug} <- periods, %{slug: rank_slug} <- ranks, reduce: [] do
         acc ->
-          case matchups_stream([{"period", period_slug}, {"rank", rank_slug}, {"format", format}]) do
+          case matchups_stream([
+                 {"period", period_slug},
+                 {"rank", rank_slug},
+                 {"format", format},
+                 {"exclude_bugged_sources", "yes"}
+               ]) do
             {:ok, matchups} ->
               attrs = %{
                 matchups_version: @current_aggregated_matchups_version,

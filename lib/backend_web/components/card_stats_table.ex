@@ -385,6 +385,7 @@ defmodule Components.CardStatsTable do
     default_format = FormatDropdown.default(context)
 
     %{
+      "exclude_bugged_sources" => true,
       "period" => PeriodDropdown.default(context, criteria, default_format),
       "rank" => RankDropdown.default(context),
       "opponent_class" => "any",
