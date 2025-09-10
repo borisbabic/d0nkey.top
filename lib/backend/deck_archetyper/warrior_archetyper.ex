@@ -146,6 +146,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Odyn, Prime Designate" in card_info.card_names ->
         :"Odyn Warrior"
 
+      "Barricade Basher" in card_info.card_names ->
+        :"Basher Warrior"
+
       raider?(card_info) ->
         :"Raider Warrior"
 
