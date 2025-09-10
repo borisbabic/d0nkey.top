@@ -125,6 +125,7 @@
           twitch={"playhearthstone"}
         />
 
+      <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-09-16 12:12:00]) == :lt} href={~p"/tournament-lineups/geeklounge/hs-masters-tour-summer-champ-2025"}>MT Lineups</a>
       <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2024-11-18 12:12:00]) == :lt} href={~p"/wc/2024/china-qualifiers"}>CN Worlds Qual</a>
        <%= current_mt @conn %>
 
