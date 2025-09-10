@@ -904,8 +904,8 @@ defmodule Backend.Hearthstone do
 
   @spec get_or_create_lineup(String.t() | integer(), String.t(), String.t(), [String.t()]) ::
           {:ok, Lineup.t()} | {:error, any()}
-  def get_or_create_lineup(id, s, n, d) when is_integer(id),
-    do: get_or_create_lineup(to_string(id), s, n, d)
+  def get_or_create_lineup(id, source, name, deckstrings) when is_integer(id),
+    do: get_or_create_lineup(to_string(id), source, name, deckstrings)
 
   def get_or_create_lineup(tournament_id, tournament_source, name, deckstrings) do
     attrs = %{tournament_id: tournament_id, tournament_source: tournament_source, name: name}
@@ -1776,4 +1776,11 @@ defmodule Backend.Hearthstone do
   end
 
   def parse_tournaments(_), do: []
+
+  def update_tournament_lineups({old_source, old_id}, updated_fields) do
+    query =
+      from l in Lineup, where: l.tournament_source == ^old_source and l.tournament_id == ^old_id
+
+    Repo.update_all(query, set: updated_fields)
+  end
 end
