@@ -49,8 +49,6 @@ Disallow: /mt/stats?*
 Disallow: /api/*
 Disallow: /api*
 Disallow: /deckbuilder?*
-Disallow: /deckbuilder*
-Disallow: /deckbuilder
 Disallow: /deck-builder*
 Disallow: /deck-builder
 Disallow: /*?*
