@@ -18,13 +18,13 @@ defmodule Backend.GeekLounge do
 
   def save_tournament_lineups(%Tournament{} = tournament) do
     tournament_id = tournament.id
-    player_ids = Enum.map(tournament.participants, & &1.player.id)
+    player_ids_and_btags = Enum.map(tournament.participants, &{&1.player.id, &1.player.battletag})
 
-    for player_id <- player_ids,
+    for {player_id, battletag} <- player_ids_and_btags,
         {:ok, participant} <- [Api.fetch_participant(tournament_id, player_id)],
         deck_strings = Enum.map(participant.decks, & &1.deck_string),
         Enum.any?(deck_strings) do
-      name = participant.player.battletag || player_id
+      name = battletag || player_id
 
       Backend.Hearthstone.get_or_create_lineup(
         tournament.id,
