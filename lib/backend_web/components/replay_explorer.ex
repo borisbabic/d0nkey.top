@@ -72,7 +72,7 @@ defmodule Components.ReplayExplorer do
         assigns.path_params,
         selected_params
       )
-      |> assign_async(:replays, fn -> {:ok, %{replays: DeckTracker.games(search_filters)}} end)
+      |> assign_async(:replays, fn -> {:ok, %{replays: []}} end)
     }
   end
 
@@ -82,6 +82,7 @@ defmodule Components.ReplayExplorer do
       <div>
         <div>
           <div class="">
+        <div class="notification is-warning">Replays are non functional while I debug a performance bug</div>
           <PrevButton default_limit={@default_limit} />
           <NextButton default_limit={@default_limit} />
           <FormatDropdown id="format_dropdown" :if={@format_filter} filter_context={@filter_context} />
