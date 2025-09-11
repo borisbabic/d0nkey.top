@@ -43,7 +43,6 @@ defmodule Hearthstone.DeckTracker do
 
   @current_aggregated_matchups_version 1
   @affirmative ["yes", "true", true]
-  @negative ["no", "false", false]
 
   @type deck_stats :: %{deck: Deck.t(), wins: integer(), losses: integer()}
 
@@ -1878,11 +1877,11 @@ defmodule Hearthstone.DeckTracker do
     do: compose_games_query({"player_has_coin", nil}, query)
 
   defp compose_games_query({"player_has_coin", player_has_coin}, query)
-       when player_has_coin in @affirmative,
+       when player_has_coin in ["yes", "true"],
        do: compose_games_query({"player_has_coin", true}, query)
 
   defp compose_games_query({"player_has_coin", player_has_coin}, query)
-       when player_has_coin in @negative,
+       when player_has_coin in ["no", "false"],
        do: compose_games_query({"player_has_coin", false}, query)
 
   defp compose_games_query({"player_has_coin", player_has_coin}, query = @agg_deck_query) do
