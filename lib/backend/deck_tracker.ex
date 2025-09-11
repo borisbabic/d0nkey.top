@@ -1900,10 +1900,10 @@ defmodule Hearthstone.DeckTracker do
     query |> where([game: g], g.player_has_coin == ^player_has_coin)
   end
 
-  defp compose_games_query({"public", public}, query) when public in @affirmative,
+  defp compose_games_query({"public", public}, query) when public in ["yes", "true"],
     do: compose_games_query({"public", true}, query)
 
-  defp compose_games_query({"public", public}, query) when public in @negative,
+  defp compose_games_query({"public", public}, query) when public in ["no", "false"],
     do: compose_games_query({"public", false}, query)
 
   defp compose_games_query({"public", public}, query) do
