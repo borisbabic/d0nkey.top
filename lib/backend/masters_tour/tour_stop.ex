@@ -547,7 +547,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour 2025_2",
-        battlefy_id: nil,
+        battlefy_id: "68c42088e7060900182e4a01",
         ladder_priority: nil,
         ladder_seasons: [140, 141],
         ladder_invites: nil,
@@ -561,11 +561,11 @@ defmodule Backend.MastersTour.TourStop do
           {{76, 100}, 1}
         ],
         region: :EU,
-        start_time: ~N[2025-09-15 16:00:00],
+        start_time: ~N[2025-09-12 16:00:00],
         qualifiers_period: {~D[2025-06-01], ~D[2025-06-01]},
         min_qualifiers_for_winrate: nil,
         aliases: [],
-        display_name: "MT Summer Championship",
+        display_name: "MT Summer",
         swiss_rounds: 0,
         year: 2025
       },
