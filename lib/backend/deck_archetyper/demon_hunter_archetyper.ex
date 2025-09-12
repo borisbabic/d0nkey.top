@@ -25,11 +25,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       ravenous_cliff_dive?(card_info) ->
         :"Ravenous Cliff Dive DH"
 
-      "Entomologist Toru" in card_info.card_names ->
-        :"Toru DH"
-
       aggro?(card_info) ->
         :"Aggro Demon Hunter"
+
+      "Spirit Peddler" in card_info.card_names ->
+        :"Peddler DH"
+
+      "Entomologist Toru" in card_info.card_names ->
+        :"Toru DH"
 
       deathrattle?(card_info) ->
         :"Deathrattle DH"
