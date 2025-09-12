@@ -8,8 +8,10 @@ defmodule Backend.Repo.Migrations.SeedDtRegions do
     VALUES
       ('AM', 'Americas', true, now(), now()),
       ('AP', 'Asia-Pacific', true, now(), now()),
-      ('unknown', 'Unknown', true, now(), now()),
-      ('EU', 'Europe', true, now(), now());
+      ('CN', 'China', true, now(), now()),
+      ('EU', 'Europe', true, now(), now()),
+      ('unknown', 'Unknown', true, now(), now())
+      ;
     """)
   end
 
