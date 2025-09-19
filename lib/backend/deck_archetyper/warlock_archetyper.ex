@@ -48,11 +48,11 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       dorian?(card_info) ->
         :"Dorian Warlock"
 
-      deckless?(card_info) ->
-        :"Deckless Warlock"
-
       "Possessed Animancer" in card_info.card_names ->
         :"Animancer Warlock"
+
+      deckless?(card_info) ->
+        :"Deckless Warlock"
 
       zerg?(card_info, 4) ->
         :"Zerg Warlock"
