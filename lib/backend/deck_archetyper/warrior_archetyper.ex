@@ -38,6 +38,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Safety Expert" in card_info.card_names ->
         :"Safety Warrior"
 
+      enrage_warrior?(card_info) ->
+        :"Enrage Warrior"
+
       type_count(card_info, "dragon") > 5 ->
         :"Dragon Warrior"
 
@@ -59,6 +62,20 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp enrage_warrior?(card_info) do
+    min_count?(card_info, 3, [
+      "Sanguine Depths",
+      "Ominous Nightmares",
+      "Stonecarver",
+      "Eggbasher",
+      "Bloodhoof Brave",
+      "City Defenses",
+      "Nablya, the Watcher",
+      "Grommash Hellscream",
+      "Undercover Cultist"
+    ])
   end
 
   defp handbuff?(card_info) do
