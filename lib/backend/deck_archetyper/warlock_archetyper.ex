@@ -36,6 +36,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       painlock?(card_info) ->
         :Painlock
 
+      egglock?(card_info, 3) ->
+        :"Egglock"
+
       deathrattle?(card_info) ->
         :"Deathrattle Warlock"
 
@@ -50,6 +53,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       "Possessed Animancer" in card_info.card_names ->
         :"Animancer Warlock"
+
+      egglock?(card_info, 1) ->
+        :"Egglock"
 
       deckless?(card_info) ->
         :"Deckless Warlock"
@@ -71,6 +77,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     end
   end
 
+  defp egglock?(card_info, min_count) do
+    "The Egg of Khelos" in card_info.card_names and
+    min_count?(card_info, min_count, ["Eat! The! Imp!", "Holy Eggbearer", "Dissolving Ooze", "Carnivorous Cubicle", "Endbringer Umbra"])
+  end
   defp dorian?(card_info) do
     min_count?(card_info, 3, ["Puppetmaster Dorian", "Agamaggan", "Cursed Catacombs"])
   end
