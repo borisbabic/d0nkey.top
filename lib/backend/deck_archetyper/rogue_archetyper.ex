@@ -439,7 +439,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Twisted Pack",
       "Tess Greymane",
       "Maestra of the Masquerade",
-      "Velarok",
       "Kaj'mite Creation",
       "Shell Game",
       "Obsidian Shard",
@@ -449,7 +448,15 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Stick Up",
       "Flint Firearm",
       "Thistle Tea Set",
-      "Ashamane"
+      "Ashamane",
+      "Mixtape",
+      "Mirrex, the Crystalline",
+      "Sketchy Stranger",
+      "Nightmare Fuel",
+      "Dragon's Hoard",
+      "Wand Thief",
+      "Agency Espionage",
+      "Tooth of Nefarian"
     ])
   end
 
