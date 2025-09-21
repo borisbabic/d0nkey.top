@@ -39,9 +39,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       terran?(card_info, 4) ->
         :"Terran Shaman"
 
-      rainbow?(card_info, 2, 4) ->
-        :"Rainbow Shaman"
-
       DemonHunterArchetyper.pirate?(card_info) ->
         :"Pirate Shaman"
 
