@@ -38,7 +38,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Annoy-o-Tron",
        "Critter Caretaker",
        "Careless Crafter",
-       "Plated Beetle",
+       "Wild Pyromancer",
        "Rest in Peace"
      ]},
     {:"Imbue Priest",
@@ -55,19 +55,19 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Menagerie Jug",
        "Brain Masseuse",
        "Workhorse",
-       "Ship's Chirurgeon",
+       "Acupuncture",
+       "Pet Parrot",
+       "Overzealous Healer",
        "Archaios",
        "Murmy"
-     ]},
-    {:"Aviana Priest",
-     [
-       "Card Grader",
-       "Glacial Shard",
-       "Mo'arg Forgefiend"
      ]},
     {:"Imbue Priest", ["Bitterbloom Knight"]},
     {:"Aviana Priest",
      [
+       "XB-931 Housekeeper",
+       "Tidepool Pupil",
+       "Astrobiologist",
+       "Sleepy Resident",
        "Moonwell",
        "Mixologist",
        "Twilight Medium",
@@ -77,14 +77,44 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Living Flame",
        "Parrot Sanctuary",
        "Aviana, Elune's Chosen",
-       "Doomsayer",
        "Champions of Azeroth",
-       "Atlasaurus",
        "Story of Amara"
      ]},
-    {:"Imbue Priest", ["Lunarwing Messenger", "Blob of Tar"]},
+    {:"Imbue Priest",
+     [
+       "Lunarwing Messenger",
+       "Dirty Rat",
+       "Funhouse Mirror",
+       "Papercraft Angel",
+       "Kaldorei Priestess"
+     ]},
+    {:"Egg Priest",
+     [
+       "Holy Eggbearer",
+       "Doomsayer",
+       "The Egg of Khelos",
+       "Behemoth Mask",
+       "Gravity Lapse",
+       "Hot Coals",
+       "Nightshade Tea"
+     ]},
     # 10.5
-    {:"Protoss Priest", ["Catch of the Day"]}
+    {:"Protoss Priest", ["Catch of the Day"]},
+    {:"Zarimi Priest",
+     [
+       "Timewinder Zarimi",
+       "Petal Peddler",
+       "Gorgonzormu",
+       "Fly Off the Shelves",
+       "Giftwrapped Whelp",
+       "Fae Trickster",
+       "Tormented Dreadwing",
+       "Naralex, Herald of the Flights",
+       "Fyrakk the Blazing",
+       "Ysera, Emerald Aspect",
+       "Illusory Greenwing",
+       "Scale Replica"
+     ]}
     # {:"Wilted Priest", ["Lightbomb", "Sleepy Resident"]},
     # {:"Wilted Priest", ["Power Word: Shield", "Resuscitate"]},
     # {:"Protoss Priest", ["Trusty Fishing Rod", "Nightmare Xavius"]},

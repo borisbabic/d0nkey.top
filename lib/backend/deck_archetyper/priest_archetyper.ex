@@ -53,6 +53,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Wilted Shadow" in card_info.card_names ->
         :"Wilted Priest"
 
+      egg_priest?(card_info) ->
+        :"Egg Priest"
+
       control_priest?(card_info) ->
         :"Control Priest"
 
@@ -71,6 +74,10 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp egg_priest?(card_info) do
+    min_count?(card_info, 2, ["The Egg of Khelos", "Holy Eggbearer"])
   end
 
   @spec zealot_otk?(ArchetyperHelpers.card_info()) :: boolean()
