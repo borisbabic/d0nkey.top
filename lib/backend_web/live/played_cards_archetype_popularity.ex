@@ -27,6 +27,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   data(min_played_count, :integer, default: @default_min_played_count)
   data(exclude_config_levels, :integer, default: 0)
   data(filter_config_level, :integer, default: nil)
+  data(filter_out_whizbang, :string, default: "yes")
   data(config_map, :map, default: %{})
   data(intermediate_report, :list, default: [])
   data(mode, :string, default: "popularity")
@@ -112,6 +113,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         current_val={@filter_config_level}
         selected_as_title={false}
         normalizer={&Util.to_int_or_orig/1} />
+      <LivePatchDropdown
+        :if={@mode == "popularity"}
+        id="filter_out_whizbang"
+        options={[{"yes", "Exclude Whizbang"}, {"no", "Include Whizbang"}]}
+        title={"Filter out whizbang"}
+        param={"filter_config_level"}
+        current_val={@filter_out_whizbang}
+        selected_as_title={true}
+        />
       <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
       <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
       <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
@@ -164,7 +174,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               </th>
             </thead>
             <tbody>
-              <tr :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, @filter_config_level, @config_map)}> <td class="sticky-column">
+              <tr :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, @filter_config_level, @config_map, @filter_out_whizbang)}> <td class="sticky-column">
                   <div class="decklist_card_container">
                     <DecklistCard :if={card} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
@@ -477,7 +487,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
          min_played_count,
          sort_by,
          filter_config_level,
-         config_map
+         config_map,
+         filter_out_whizbang
        ) do
     sorter = sorter(sort_by)
 
@@ -494,8 +505,19 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       Card.name(card) != "The Coin"
     end)
     |> filter_config_level(filter_config_level)
+    |> filter_out_whizbang(filter_out_whizbang)
     |> Enum.sort_by(sorter, :desc)
   end
+
+  defp filter_out_whizbang(card_popularity, "no"), do: card_popularity
+
+  defp filter_out_whizbang(card_popularity, "yes") do
+    Enum.filter(card_popularity, fn {{_card, _level, archetype}, _} ->
+      !(to_string(archetype) =~ "Whizbang")
+    end)
+  end
+
+  defp filter_out_whizbang(card_popularity, _), do: card_popularity
 
   defp filter_config_level(card_popularity, filter_level) when is_integer(filter_level) do
     Enum.filter(card_popularity, fn {{_card, level, _popularity}, _} -> level == filter_level end)
