@@ -21,6 +21,49 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Chef Nomi"
      ]},
     {:"Starship Warlock", ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core"]},
+    {:Egglock,
+     [
+       "Dissolving Ooze",
+       "Holy Eggbearer",
+       "Eliza Goreblade",
+       "The Egg of Khelos",
+       "Carnivorous Cubicle",
+       "Eat! The! Imp!"
+     ]},
+    {:"Bot? Warlock",
+     [
+       "Coldlight Seer",
+       "Sunfury Protector",
+       "Raid Leader",
+       "Murloc Warleader",
+       "Dire Wolf Alpha",
+       "Murloc Tidecaller",
+       "Twilight Drake",
+       "Redgill Razorjaw",
+       "Annoy-o-Tron",
+       "Lifedrinker",
+       "Murloc Tidehunter",
+       "Abusive Seargeant"
+     ]},
+    # 5.5
+    {:"Animacer Warlock",
+     [
+       "Ultragigasaur",
+       "Meadowstrider",
+       "Travel Security",
+       "Possessed Animancer",
+       "Asphyxiodon",
+       "Beached Whale"
+     ]},
+    {:"Mill Warlock",
+     [
+       "Adaptive Amalgam",
+       "Archdruid of Thorns",
+       "Escape Pod",
+       "Plated Beetle",
+       "Frostbitten Freebooter",
+       "Prize Vendor"
+     ]},
     {:"Wallow Warlock",
      [
        "Raptor Herald",
@@ -29,9 +72,6 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Wallow, the Wretched",
        "Avant-Gardening"
      ]},
-    {:"Mill Warlock", ["Adaptive Amalgam", "Archdruid of Thorns", "Escape Pod", "Plated Beetle"]},
-    # 5.5
-    {:"Deathrattle Warlock", ["Travel Security", "Brittlebone Buccaneer", "Felfire Bonfire"]},
     {:"Concierge Warlock",
      [
        "Concierge",
@@ -39,43 +79,36 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Rockskipper",
        "Sleepy Resident",
        "Mixologist",
-       "Griftah, Trusted Vendor"
+       "Griftah, Trusted Vendor",
+       "Tidepool Pupil",
+       "Corpsicle"
      ]},
-    {:"Starship Warlock", ["Arkonite Defense Crystal"]},
-    {:"Deckless Warlock",
+    {:"Deathrattle Warlock",
      [
-       "Clearance Promoter",
-       "Youthful Brewmaster",
-       "Wheel of DEATH!!!",
-       "Kil'jaeden",
-       "Dirty Rat",
-       "Sleepy Resident",
+       "Brittlebone Buccaneer",
+       "Felfire Bonfire",
+       "Bat Mask",
+       "The Exodar",
        "The Ceaseless Expanse",
-       "Cursed Campaign"
+       "Wheel of DEATH!!!",
+       "Arkonite Defense Crystal"
      ]},
+    # 10.5
     {:"Dorian Warlock",
      [
        "Shaladrassil",
        "Puppetmaster Dorian",
        "Agamaggan",
-       "Naralex, Herald of the Flights",
-       "Fyrakk the Blazing",
        "Deadline",
        "Ragnaros the Firelord",
+       "The Solarium",
+       "Overplanner",
+       "Demonic Studies",
+       "Spelunker",
+       "Kerrigan, Queen of Blades",
        "Mortal Coil"
      ]},
-    # 10.5
-    {:"Mill Warlock", ["Prize Vendor", "Gnomelia, S.A.F.E. Pilot"]},
-    {:"Animancer Warlock",
-     [
-       "Asphyxiodon",
-       "Beached Whale",
-       "Possessed Animancer",
-       "Kerrigan, Queen of Blades",
-       "Soul Searching",
-       "Demonic Studies",
-       "Bloodpetal Biome"
-     ]}
+    {:"Whizbang Warlock", ["Tar Slime", "Scarab Keychain"]}
   ]
   @wild_config []
 
