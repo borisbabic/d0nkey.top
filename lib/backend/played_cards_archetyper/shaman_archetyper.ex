@@ -55,13 +55,12 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Slagmaw",
        "Fire Fly",
        "Menacing Nimbus",
-       "Tar Slime",
        "Lamplighter",
        "Fire Breath",
        "Bralma Searstone",
        "Lava Flow",
-       "Chatty Macaw",
-       "Blob of Tar",
+       "Slagclaw",
+       "City Chief Esho",
        "Cinderfin"
      ]},
     {:"Asteroid Shaman",
@@ -73,8 +72,7 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Emerald Bounty",
        "Bloodmage Thalnos",
        "Bolide Behemoth",
-       "Meteor Storm",
-       "Paraglide"
+       "Patches the Pilot"
      ]},
     {:"Nebula Shaman",
      [
@@ -83,14 +81,21 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Hagatha the Fabled",
        "Parrot Sanctuary",
        "Frosty Décor",
+       "Birdwatching",
        "Elise the Navigator",
        "Fyrakk the Blazing",
        "Bob the Bartender",
        "Lightning Storm",
+       "Turbulus",
+       "Wish Upon a Star",
        "Fairy Tale Forest",
        "Ysera, Emerald Aspect",
-       "The Ceaseless Expanse",
-       "Farseer Nobundo"
+       "Zilliax Deluxe 3000",
+       "Pop-Up Book",
+       "Living Flame",
+       "Shudderblock",
+       "Slight of the Firehawk",
+       "Baking Soda Volcano"
      ]},
     {:"Imbue Shaman", ["Aspect's Embrace"]},
     {:"Elemental Shaman", ["Sizzling Swarm", "Volcanic Thrasher", "Lava Flow"]},
@@ -99,13 +104,9 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
     {:"Nebula Shaman",
      [
        "Murloc Growfin",
-       "Pop-Up Book",
        "Hex",
-       "Baking Soda Volcano",
-       "Shudderblock",
+       "The Ceaseless Expanse",
        "Cosmonaut",
-       "Living Flame",
-       "Birdwatching",
        "Far Sight"
      ]}
   ]
