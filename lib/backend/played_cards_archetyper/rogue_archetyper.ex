@@ -61,6 +61,7 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Bloodmage Thalnos",
        "Platysaur"
      ]},
+    # 5.5
     {:"Fyrakk Rogue",
      [
        "Naralex, Herald of the Flights",
@@ -83,8 +84,7 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Spacerock Collector",
        "Zilliax Deluxe 3000"
      ]},
-    {:"Cycle Rogue", ["Incindius", "Moonstone Mauler", "Fan of Knives", "Ethereal Oracle"]},
-    {:"Protoss Rogue", ["Sonya Waterdancer"]},
+    {:"Cycle Rogue", ["Incindius", "Moonstone Mauler"]},
     {:"Starship Rogue", ["Mixologist"]},
     {:"Fyrakk Rogue", ["Sandbox Scoundrel", "Elise the Navigator"]},
     {:"Quest Rogue",
@@ -105,6 +105,15 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Raiding Party",
        "Marin the Manager",
        "Foxy Fraud"
+     ]},
+    {:"Whizbang Rogue",
+     [
+       "Sonya Waterdancer",
+       "Waterdancer",
+       "Hench-Clan Burglar",
+       "Deadly Poison",
+       "Swashburglar",
+       "Dig for Treasure"
      ]}
   ]
   @wild_config []
