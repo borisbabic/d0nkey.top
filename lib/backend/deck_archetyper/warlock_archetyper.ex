@@ -250,6 +250,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       discard?(card_info, 6) ->
         :Discolock
 
+      demon_boar?(card_info) ->
+        :"Demon Boarlock"
+
       boar?(card_info) ->
         :Boarlock
 
@@ -271,6 +274,10 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp demon_boar?(card_info) do
+    boar?(card_info) and "Crane Game" in card_info.card_names
   end
 
   defp wild_curselock?(card_info) do
