@@ -154,6 +154,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Soulbound Ashtongue" in ci.card_names ->
         String.to_atom("Ashtoungue #{class_name}")
 
+      "The Egg of Khelos" in ci.card_names ->
+        String.to_atom("Egg #{class_name}")
+
       true ->
         faction_fallback(ci, class_name, opts) || minion_type_fallback(ci, class_name, opts)
     end
