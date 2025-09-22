@@ -31,6 +31,22 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Charred Chameleon"
      ]},
     {:"Owlonius Druid", ["Owlonius", "Go with the Flow", "Ethereal Oracle"]},
+    {:"Hydration Druid",
+     [
+       "Starlight Reactor",
+       "Exarch Othaar",
+       "The Exodar",
+       "Thickhide Kodo",
+       "Seismopod",
+       "Ensmallen",
+       "Oaken Summons",
+       "Sha'tari Cloakfield",
+       "Arkonite Defense Crystal",
+       "Greybough",
+       "Hydration Station",
+       "Tortollan Traveller"
+     ]},
+    # 5.5
     {:"Aviana Druid",
      [
        "Un'Goro Brochure",
@@ -38,19 +54,6 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Raven Idol",
        "Final Frontier",
        "Sky Mother Aviana"
-     ]},
-
-    # 5.5
-    {:"Hydration Druid",
-     [
-       "Starlight Reactor",
-       "Exarch Othaar",
-       "The Exodar",
-       "Sha'tari Cloakfield",
-       "Arkonite Defense Crystal",
-       "Greybough",
-       "Hydration Station",
-       "Tortollan Traveller"
      ]},
     {:"Token Druid",
      [
@@ -77,11 +80,10 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Bob the Bartender",
        "Mistah Vistah"
      ]},
-    {:"Hydration Druid",
-     ["Kil'jaedan", "Carnivorous Cubicle", "Endbringer Umbra", "Blob of Tar", "Marin the Manager"]},
+    {:"Hydration Druid", ["Carnivorous Cubicle", "Endbringer Umbra"]},
     {:"Imbue Druid", ["Symbiosis"]},
     # 10.5
-    {:"Aviana Druid", ["Wrath", "Horn of Plenty"]},
+    {:"Aviana Druid", ["Wrath", "Horn of Plenty", "Astral Phaser"]},
     {:"Token Druid", ["Ravenous Flock", "Hatchery Helper", "Vibrant Squirrel"]}
   ]
   @wild_config []
