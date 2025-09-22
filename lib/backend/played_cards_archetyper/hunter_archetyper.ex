@@ -52,19 +52,18 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Petal Picker",
        "Bitterbloom Knight",
        "Umbraclaw",
+       "Resplendent Dreamweaver",
        "Flutterwing Guardian"
      ]},
     {:"Amalgam Hunter",
      [
        "Adaptive Amalgam",
-       "Trusty Fishing Rod",
-       "Cloud Serpent",
        "Sailboat Captain",
        "Lunar Trailblazer",
        "Devilsaur Mask"
      ]},
     # 5.5
-    {:"Starship Hunter", ["Specimen Claw", "The Exodar", "Laser Barrage"]},
+    {:"Starship Hunter", ["Specimen Claw", "The Exodar", "Dimensional Barrage"]},
     {:"Handbuff Hunter",
      [
        "Bumbling Bellhop",
@@ -74,68 +73,35 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Reserved Spot",
        "Ranger Gilly"
      ]},
-    {:"Mystery Egg Hunter", ["Chatty Macaw", "Mystery Egg", "Death Roll", "Furious Fowls"]},
     {:"Discover Hunter",
      [
        "Parallax Cannon",
-       "Bloodmage Thalnos",
-       "Cult Neophyte",
-       "Astral Vigilant",
-       "Incindius",
-       "Youthful Brewmaster"
-     ]},
-    {:"Amalgam Hunter", ["Observer of Mysteries", "Rustrot Viper", "Troubled Mechanic"]},
-    # 10.5
-    {:"Egg Hunter",
-     [
-       "Gorm the Worldeater",
-       "Escape Pod",
-       "Stranglevine",
-       "Pterrordax Egg",
-       "Holy Eggbearer",
-       "The Egg of Khelos",
-       "Dissolving Ooze",
-       "Doomsayer",
-       "Crazed Alchemist",
-       "Amphibian's Spirit",
-       "Extraterrestrial Egg",
-       "Cubicle",
-       "Endbringer Umbra"
-     ]},
-    {:"Discover Hunter",
-     [
-       "Shaladrassil",
-       "Blob of Tar",
-       "Customs Enforcer",
-       "Zilliax Deluxe 3000",
-       "Beast Speaker Taka",
-       "Rockskipper",
-       "Elise the Navigator",
-       "The Ceaseless Expanse",
-       "Sasquawk",
-       "Bob the Bartender",
        "Glacial Shard",
        "Niri of the Crater",
-       "Creature of Madness",
-       "Tidepool Pupil",
-       "Alien Encounters",
-       "Mixologist",
-       "Ragnari Scout",
-       "Parrot Sanctuary",
-       "Nightmare Lord Xavius",
-       "Arcane Shot",
-       "Birdwatching",
-       "Exarch Naielle"
+       "Astral Vigilant",
+       "Bloodmage Thalnos",
+       "Cult Neophyte",
+       "Incindius"
      ]},
+    {:"Starship Hunter", ["Arkonite Defense Crystal", "Laser Barrage"]},
     {:"Beast Hunter",
      [
        "Shepherd's Crook",
-       "Scarab Keychain",
        "Supreme Dinomancy",
        "Jungle Gym",
-       "Fetch!",
        "R.C. Rampage",
        "Remote Control"
+     ]},
+    # 10.5
+    {:"Discover Hunter", ["Biopod"]},
+    {:"Mystery Egg Hunter",
+     [
+       "Mystery Egg",
+       "Holy Eggbearer",
+       "Patchwork Pals",
+       "Terrorscale Stalker",
+       "Ankylodon",
+       "Sasquawk"
      ]}
     # {:"Discover Hunter",
     #  [
