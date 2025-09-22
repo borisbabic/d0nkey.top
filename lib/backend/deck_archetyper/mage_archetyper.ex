@@ -51,9 +51,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Arkwing Pilot" in card_info.card_names ->
         :"Arkwing Mage"
 
-      "Supernova" in card_info.card_names ->
-        :"Supernova Mage"
-
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
 
