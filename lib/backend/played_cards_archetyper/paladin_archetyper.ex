@@ -36,8 +36,8 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Resplendent Dreamweaver",
        "Bitterbloom Knight",
        "Flutterwing Guardian",
+       "Dreamwarden",
        "Petal Picker",
-       "Barkshield Sentinel",
        "Goldpetal Drake"
      ]},
     {:"Aggro Paladin",
@@ -47,34 +47,12 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Muster for Battle",
        "Fire Fly",
        "Coconut Cannoneer",
+       "Beaming Sidekick",
        "Busy-Bot",
        "Wisp",
-       "Beaming Sidekick",
        "Mother Duck",
        "Murmy",
-       "Crusader Aura",
        "Platysaur"
-     ]},
-    {:"Terran Paladin",
-     [
-       "Salvage the Bunker",
-       "Hellbat",
-       "Hellion",
-       "Dimensional Core",
-       "Lift Off",
-       "Jim Raynor",
-       "SCV",
-       "Starport"
-     ]},
-    # 5.5
-    {:"Libram Paladin",
-     [
-       "Libram of Divinity",
-       "Interstellar Researcher",
-       "Interstellar Starslicer",
-       "Yrel, Beacon of Hope",
-       "Interstellar Wayfarer",
-       "Libram of Faith"
      ]},
     {:"Lynessa Paladin",
      [
@@ -83,10 +61,54 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Petty Theft",
        "Knickknack Shack",
        "Snatch and Grab",
+       "Sharp Shipment",
+       "Treasure Hunter Eudora",
+       "Whack-A-Gnoll",
        "Concierge",
        "Conniving Conman"
      ]},
-    {:"Drunk Paladin", ["Sea Shanty", "Flickering Lightbot"]},
+    # 5.5
+    {:"Terran Paladin",
+     [
+       "Salvage the Bunker",
+       "Hellbat",
+       "Dimensional Core",
+       "Lift Off",
+       "Jim Raynor",
+       "SCV",
+       "Arkonite Defense Crystal",
+       "Ghost",
+       "Ultra-Capacitor",
+       "Starport"
+     ]},
+    {:"Libram Paladin",
+     [
+       "Libram of Divinity",
+       "Interstellar Researcher",
+       "Interstellar Starslicer",
+       "Yrel, Beacon of Hope",
+       "Interstellar Wayfarer",
+       "Troubled Mechanic"
+     ]},
+    {:"Drunk Paladin",
+     [
+       "Sea Shanty",
+       "Flickering Lightbot",
+       "Libram of Clarity",
+       "Resistance Aura",
+       "Lifesaving Aura",
+       "Story of Galvadon"
+     ]},
+    {:"Lynessa Paladin",
+     [
+       "Robocaller",
+       "Nightmare Lord Xavius",
+       "Holy Glowsticks",
+       "Divine Brew",
+       "Naralex, Herald of the Flights",
+       "Tigress Plushy",
+       "Ysera, Emerald Aspect"
+     ]},
     {:"Lynessa OTK Paladin",
      [
        "Kobold Geomancer",
@@ -94,26 +116,27 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Bloodmage Thalnos",
        "Sharp-Eyed Lookout",
        "Sea Shill",
+       "Space Pirate",
+       "Sizzling Cinder",
+       "Tidepool Pupil",
+       "Grillmaster",
+       "Sunsapper Lynessa",
+       "Mixologist",
        "Bloodmage Thalnost",
        "Moonstone Mauler"
      ]},
-    {:"Lynessa Paladin",
-     [
-       "Celestial Aura",
-       "Mark of Ursol"
-     ]},
     # 10.5
-    {:"Drunk Paladin",
-     [
-       "Libram of Clarity",
-       "Vacation Planning",
-       "Story of Galvadon",
-       "Holy Glowsticks",
-       "Divine Brew",
-       "Flash of Light",
-       "Resistance Aura",
-       "Metal Detector"
-     ]},
+    # {:"Drunk Paladin",
+    #  [
+    #    "Libram of Clarity",
+    #    "Vacation Planning",
+    #    "Story of Galvadon",
+    #    "Holy Glowsticks",
+    #    "Divine Brew",
+    #    "Flash of Light",
+    #    "Resistance Aura",
+    #    "Metal Detector"
+    #  ]},
     {:"Aggro Paladin", ["Vicious Siltherspear"]},
     {:"Imbue Paladin",
      [
@@ -122,7 +145,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Fyrakk the Blazing",
        "Consecration",
        "Anachronos",
-       "Elise the Navigator",
        "Dreamplanner Zephyrus",
        "Demolition Renovator",
        "Bob the Bartender"
@@ -149,6 +171,14 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Escape Pod",
        "Prize Vendor",
        "Ready the Fleet"
+     ]},
+    {:"Whizbang Paladin",
+     [
+       "Hand of A'dal",
+       "Bronze Explorer",
+       "Flash of Light",
+       "Righteous Protector",
+       "Tirion Fordring"
      ]}
   ]
   @wild_config []
