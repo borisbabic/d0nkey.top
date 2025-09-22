@@ -16,7 +16,17 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Windswept Pageturner",
        "Solar Flare",
        "Spontaneous Combustion",
-       "Glacial Shard"
+       "Tar Slime"
+     ]},
+    {:"Quest Mage",
+     [
+       "Raptor Herald",
+       "Relentless Wrathguard",
+       "Treacherous Tormentor",
+       "Stonehill Defender",
+       "Travel Agent",
+       "Questing Assistant",
+       "Beast Speaker Taka"
      ]},
     {:"Protoss Mage",
      [
@@ -27,36 +37,34 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Artanis",
        "Void Ray"
      ]},
-    {:"Quest Mage",
-     [
-       "Raptor Herald",
-       "Relentless Wrathguard",
-       "Treacherous Tormentor",
-       "Stonehill Defender",
-       "Travel Agent",
-       "Astrobiologist",
-       "Creature of Madness",
-       "Scrappy Scavenger",
-       "Scarab Keychain"
-     ]},
     {:"Orb Mage",
      [
        "Carry-On Grub",
        "The Curator",
        "Sharp-Eyed Lookout",
        "Overplanner",
-       "Kil'jaeden",
-       "Sleepy REsident",
-       "Doomsayer"
+       "Knickknack Shack",
+       "Sleepy Resident",
+       "Kil'jaeden"
      ]},
     # 5.5
+    {:"Quest Mage",
+     [
+       "Astrobiologist",
+       "Treasure Hunter Eudora",
+       "Scrappy Scavenger",
+       "Techysaurus"
+     ]},
     {:"Imbue Mage",
      [
        "Sing-Along Buddy",
        "Aessina",
+       "Merry Moonkin",
+       "Resplendent Dreamweaver",
        "Divination",
        "Wisprider",
        "Flutterwing Guardian",
+       "Petal Picker",
        "Bitterbloom Knight",
        "Spirit Gatherer"
      ]},
@@ -64,15 +72,12 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
      [
        "Stellar Balance",
        "Huddle Up",
-       "Vicious Slitherspear",
-       "Oh, Manager!",
        "King Tide",
-       "Marooned Archmage",
-       "Metal Detector",
-       "Portalmancer Skyla",
-       "Supernova",
-       "Tsunami"
+       "Vicious Slitherspear"
      ]},
+    {:"Protoss Mage", ["Ancient of Yore"]},
+    {:"Quest Mage", ["Q'onzu"]},
+    # 10.5
     {:"Spell Mage",
      [
        "Storage Scuffle",
@@ -85,10 +90,36 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Relic of Kings"
      ]},
     {:"Protoss Mage", ["Photon Cannon"]},
+    {:"Big Spell Mage",
+     [
+       "Marooned Archmage",
+       "Tsunami"
+     ]},
+    {:"Orb Mage", ["Watercolor Artist"]},
+    {:"Protoss Mage", ["Shield Battery", "Tide Pools", "Seabreeze Chalice"]},
+    # 15.5
+    {:"Quest Mage", ["The Forbidden Sequence"]},
+    {:"Bot? Mage",
+     [
+       "Ice Barrier",
+       "Oasis Ally",
+       "Babbling Bookcase",
+       "Flamestrike",
+       "Kobold Geomancer",
+       "Explosive Runes",
+       "Counterspell",
+       "Firelands Portal",
+       "Bloodmage Thalnos",
+       "Frostbolt",
+       "Arcane Intellect"
+     ]},
     {:"Elemental Mage",
      [
        "Fire Fly",
        "Conjured Bookkeeper",
+       "Glacial Shard",
+       "Living Flame",
+       "Flame Geyser",
        "Sizzling Cinder"
      ]}
     # {:"Spell Mage", ["The Forbidden Sequence", "Frostbolt", "Rising Waves", "Tide Pools"]}
