@@ -105,7 +105,12 @@ defmodule Components.TierList do
   end
 
   def premium_filters?(show_premium?, _) when is_boolean(show_premium?), do: show_premium?
-  def premium_filters?(_, user), do: Backend.UserManager.User.premium?(user)
+
+  def premium_filters?(_, %Backend.UserManager.User{battletag: battletag}) do
+    !!battletag
+  end
+
+  def premium_filters?(_, _), do: false
 
   @default_min_games 1000
 
