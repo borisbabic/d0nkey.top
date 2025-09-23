@@ -33,7 +33,6 @@ defmodule BackendWeb.MatchupsLive do
           <span :if={@updated_at}>{Timex.from_now(@updated_at)}</span>
         </div>
         <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
-        <div class="notification is-warning">Archetyping is WIP</div>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
         <FormatDropdown :if={false} id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
