@@ -159,6 +159,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       wild_mill_otk?(card_info) ->
         :"Mill OTK Druid"
 
+      wild_boar_otk?(card_info) ->
+        :"Boar OTK Druid"
+
       "Astral Communion" in card_info.card_names ->
         :"Astral Communion Druid"
 
@@ -171,7 +174,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Celestial Alignment" in card_info.card_names ->
         :"Alignment Druid"
 
-      wild_treant_druid?(card_info) ->
+      "Cultivation" in card_info.card_names ->
         :"Treant Druid"
 
       old_aggro?(card_info) ->
@@ -218,6 +221,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     end
   end
 
+  defp wild_boar_otk?(card_info) do
+    min_count?(card_info, 3, [
+      "Oracle of Elune",
+      "Stormpike Quartermaster",
+      "Stonetusk Boar"
+    ])
+  end
+
   defp wild_dragon_druid?(card_info) do
     min_count?(card_info, 2, [
       "Breath of Dreams",
@@ -249,22 +260,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Druid of the Reef",
       "Thorngrowth Sentries",
       "Peasant"
-    ])
-  end
-
-  defp wild_treant_druid?(card_info) do
-    min_count?(card_info, 5, [
-      "Cultivation",
-      "Blood Treant",
-      "Aeuroponics",
-      "Overgrown Beanstalk",
-      "Aerosoilizer",
-      "Witchwood Apple",
-      "Forest Seedlings",
-      "Treenforcements",
-      "Sow the Soil",
-      "Soul of the Forest",
-      "Plot of Sin"
     ])
   end
 
