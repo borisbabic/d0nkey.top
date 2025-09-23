@@ -78,7 +78,7 @@ defmodule Components.TierList do
             <th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "duration"))}>
             {add_arrow("Duration", "duration", @params)}
             </.link></th>
-            <th class="is-hidden-mobile"><.link to={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
+            <th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
             {add_arrow("Climbing Speed", "climbing_speed", @params)}
             </.link></th>
           </thead>
