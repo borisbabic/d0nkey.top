@@ -337,7 +337,7 @@ defmodule Hearthstone.DeckTracker do
   def archetype_stats(raw_criteria) do
     without_force_fresh = remove_force_fresh(raw_criteria)
 
-    case fresh_or_agg(raw_criteria) do
+    case fresh_or_agg_archetype_stats(raw_criteria) do
       :fresh -> fresh_archetype_stats(without_force_fresh)
       :agg -> archetype_agg_stats(without_force_fresh)
     end
@@ -502,6 +502,11 @@ defmodule Hearthstone.DeckTracker do
   def filter_needs_fresh?(slug) when is_binary(slug), do: slug in @fresh_card_stats_filters
   def filter_needs_fresh?(_), do: false
 
+  def fresh_or_agg_archetype_stats(criteria) do
+    # hack because we don't need something specific
+    [{"needed_for_agg", "yes"} | Enum.to_list(criteria)] |> fresh_or_agg()
+  end
+
   @spec fresh_or_agg(Enum.t()) :: :fresh | :agg
   def fresh_or_agg(criteria) do
     needs_fresh? = Enum.any?(criteria, &filter_needs_fresh?/1)
@@ -514,8 +519,7 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  # min_games is hack for meta page. should be a better way to do this
-  @needs_one_for_agg ["player_deck_id", "archetype", "min_games"]
+  @needs_one_for_agg ["player_deck_id", "archetype", "needed_for_agg"]
   @needed_for_agg ["format", "opponent_class", "period", "player_has_coin", "rank"]
   defp has_needed_for_agg?(criteria) do
     keys = for {key, _val} <- criteria, do: key
