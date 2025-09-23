@@ -97,7 +97,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
         hardcoded_entries =
           seasons
           |> Enum.flat_map(fn season_id ->
-            Enum.map(hardcoded_tuples(137), fn
+            Enum.map(hardcoded_tuples(season_id), fn
               {account_id, _points, rank} ->
                 Backend.LeaderboardsPoints.create_fake_entry(account_id, rank, season_id)
             end)
@@ -109,6 +109,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
 
   defp hardcoded_seasons("2025", "STD"), do: [137]
   defp hardcoded_seasons("2025_spring", "STD"), do: [137]
+  defp hardcoded_seasons("2025_last-chance", "STD"), do: [137]
   defp hardcoded_seasons(_, _), do: []
 
   @impl true
