@@ -37,7 +37,7 @@ defmodule BackendWeb.MetaLive do
     default = TierList.default_criteria(params)
     criteria = Map.merge(default, params) |> TierList.filter_parse_params()
 
-    if needs_premium?(criteria) and !user_has_premium?(socket.assigns) do
+    if needs_premium?(criteria) and !has_premium?(socket.assigns) do
       {:noreply, assign(socket, missing_premium: true)}
     else
       {:noreply,
@@ -47,8 +47,13 @@ defmodule BackendWeb.MetaLive do
   end
 
   def needs_premium?(criteria) do
-    :fresh == Hearthstone.DeckTracker.fresh_or_agg(criteria)
+    :fresh == Hearthstone.DeckTracker.fresh_or_agg_archetype_stats(criteria)
   end
+
+  def has_premium?(assigns) do
+    !!user_from_context(assigns)
+  end
+
 
   def assign_meta(socket) do
     socket
