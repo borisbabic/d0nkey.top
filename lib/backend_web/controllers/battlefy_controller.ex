@@ -305,7 +305,7 @@ defmodule BackendWeb.BattlefyController do
             org,
             org.id
             |> Api.get_organization_tournaments_from_to(from, to)
-            |> Enum.filter(fn t -> t.game |> Tournament.Game.is_hearthstone() end)
+            |> Enum.filter(fn t -> t.game |> Tournament.Game.hearthstone?() end)
           }
       end
 
