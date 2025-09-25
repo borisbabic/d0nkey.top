@@ -93,6 +93,10 @@ defmodule Backend.Battlefy.Tournament do
   #   [:toxic_community | previous]
   # end
 
+  defp add_organizer_specific_tags(previous, %{organization: %{id: "67e00b635147ec002cf03307"}}) do
+    [:avoid_organizer | previous]
+  end
+
   defp add_organizer_specific_tags(previous, _), do: previous
 
   defp add_region(previous, %{region: region}) when is_atom(region) do
@@ -162,10 +166,10 @@ defmodule Backend.Battlefy.Tournament.Game do
     }
   end
 
-  def is_hearthstone(%{game: game}), do: is_hearthstone(game)
-  def is_hearthstone(%{slug: "hearthstone"} = %__MODULE__{}), do: true
-  def is_hearthstone(%{name: "Hearthstone"} = %__MODULE__{}), do: true
-  def is_hearthstone(_), do: false
+  def hearthstone?(%{game: game}), do: hearthstone?(game)
+  def hearthstone?(%{slug: "hearthstone"} = %__MODULE__{}), do: true
+  def hearthstone?(%{name: "Hearthstone"} = %__MODULE__{}), do: true
+  def hearthstone?(_), do: false
 end
 
 defmodule Backend.Battlefy.Tournament.Stream do

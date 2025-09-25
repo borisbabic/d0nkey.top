@@ -1115,7 +1115,7 @@ defmodule Backend.Battlefy do
 
   @spec filter_hearthstone([Tournament.t()]) :: [Tournament.t()]
   def filter_hearthstone(tournaments),
-    do: Enum.filter(tournaments, &Tournament.Game.is_hearthstone/1)
+    do: Enum.filter(tournaments, &Tournament.Game.hearthstone?/1)
 
   @spec filter_and_sort_standings([Standings.t()]) :: [Standings.t()]
   def filter_and_sort_standings(standings) do
