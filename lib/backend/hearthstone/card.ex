@@ -355,6 +355,7 @@ defmodule Backend.Hearthstone.Card do
 
   def card_url(%{image: image}) when is_binary(image), do: image
   def card_url(%Backend.HearthstoneJson.Card{} = c), do: Backend.HearthstoneJson.card_url(c)
+  def card_url(_), do: nil
 
   @spec matches_filter?(card(), String.t()) :: boolean
   def matches_filter?(card, search) do
