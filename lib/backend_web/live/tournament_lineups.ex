@@ -6,6 +6,7 @@ defmodule BackendWeb.TournamentLineups do
   data(user, :any)
   data(tournament_id, :string)
   data(tournament_source, :string)
+  data(twitch, :string)
 
   def mount(_params, session, socket) do
     {:ok,
@@ -26,6 +27,13 @@ defmodule BackendWeb.TournamentLineups do
               <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
               | <a href={link}>Tournament</a>
               </span>
+              <span :if={@twitch}>
+                <span :for={stream <- String.split(@twitch, "|")}>
+                  | <a href={"https://www.twitch.tv/#{stream}"} class="dropdown">
+                      <img style="height: 20px;" class="image" alt={stream} src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
+                  </a>
+                </span>
+              </span>
             </div>
             <FunctionComponents.Ads.below_title/>
             <TournamentLineupExplorer id={"tournament_lineup_explorer_#{@tournament_source}_#{@tournament_id}"} tournament_id={"#{@tournament_id}"} tournament_source={"#{@tournament_source}"} />
@@ -40,6 +48,7 @@ defmodule BackendWeb.TournamentLineups do
      socket
      |> assign(
        tournament_id: params["tournament_id"],
+       twitch: params["twitch"],
        tournament_source: params["tournament_source"]
      )}
   end
