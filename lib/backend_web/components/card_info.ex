@@ -17,7 +17,7 @@ defmodule Components.CardInfo do
       :durability,
       :classes,
       :durability,
-      :minion_type,
+      :multi_minion_types,
       :dust_cost,
       :dust_free,
       :spell_school,
@@ -70,6 +70,7 @@ defmodule Components.CardInfo do
 
   @ignore_prepare [:name, :flavor_text, :text, :artist_name]
   defp prepare(val, attr \\ nil)
+  defp prepare(:multi_minion_types, nil), do: "Minion Types"
   defp prepare(val, attr) when attr in @ignore_prepare, do: val
   defp prepare(%{name: name}, _), do: name
   defp prepare(nil, _), do: ""
