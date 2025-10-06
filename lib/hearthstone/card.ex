@@ -27,6 +27,7 @@ defmodule Hearthstone.Card do
     field(:keyword_ids, [integer()])
     field(:mana_cost, integer())
     field(:minion_type_id, integer())
+    field(:multi_minion_type_ids, [integer()])
     field(:multi_class_ids, [integer()])
     field(:name, String.t())
     field(:rarity_id, integer())
@@ -35,6 +36,9 @@ defmodule Hearthstone.Card do
     field(:mercenary_hero, MercenaryHero.t())
     field(:rune_cost, RuneCost.t())
     field(:text, String.t())
+    field(:zilliax_functional_module?, boolean())
+    field(:zilliax_cosmetic_module?, boolean())
+    field(:banned_from_sideboard?, boolean())
   end
 
   @spec from_raw_map(Map.t()) :: {:ok, __MODULE__.t()} | {:error, any()}
@@ -64,6 +68,7 @@ defmodule Hearthstone.Card do
         keyword_ids: list_or_default(map["keyword_ids"], []),
         mana_cost: map["mana_cost"],
         minion_type_id: map["minion_type_id"],
+        multi_minion_type_ids: list_or_default(map["multi_type_ids"], []),
         multi_class_ids: list_or_default(map["multi_class_ids"], []),
         name: map["name"],
         rarity_id: map["rarity_id"],
@@ -71,6 +76,9 @@ defmodule Hearthstone.Card do
         spell_school_id: map["spell_school_id"],
         mercenary_hero: MercenaryHero.from_raw_map(map["mercenary_hero"]),
         rune_cost: RuneCost.from_raw_map(map["rune_cost"]),
+        banned_from_sideboard?: map["banned_from_sideboard"] == 1,
+        zilliax_functional_module?: map["is_zilliax_functional_module"],
+        zilliax_cosmetic_module?: map["is_zilliax_cosmetic_module"],
         text: map["text"]
       }
     }
