@@ -11,7 +11,8 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardBag
 
-  @supported_formats [1, 2, "unguro_prerelease_brawl"]
+  @supported_formats [1, 2]
+  # @supported_formats [1, 2, "unguro_prerelease_brawl"]
   data(deck_class, :string)
   data(format, :integer)
   data(raw_params, :map)
