@@ -25,10 +25,10 @@ defmodule Bot.RevealMessageHandler do
     end
   end
 
-  def filter_current(reveals, minimum \\ 3) do
+  def filter_current(reveals, minimum \\ 3, start_hours_ago \\ 1, hours_future \\ 24) do
     now = NaiveDateTime.utc_now()
-    start_period = NaiveDateTime.add(now, -1 * 60 * 60)
-    end_period = NaiveDateTime.add(now, 24 * 60 * 60)
+    start_period = NaiveDateTime.add(now, -1 * start_hours_ago * 60 * 60)
+    end_period = NaiveDateTime.add(now, hours_future * 60 * 60)
 
     after_start =
       reveals |> Enum.drop_while(&(:gt == NaiveDateTime.compare(start_period, &1.reveal_time)))
@@ -71,9 +71,9 @@ defmodule Bot.RevealMessageHandler do
     "* #{prepend_part}<t:#{timestamp}:F> <#{url}>"
   end
 
-  defp extract_prepend(%{class: class}) when is_binary(class), do: class
+  def extract_prepend(%{class: class}) when is_binary(class), do: class
 
-  defp extract_prepend(%{image_url: image_url}) when is_binary(image_url) do
+  def extract_prepend(%{image_url: image_url}) when is_binary(image_url) do
     # https://.../31p4_Icon_Zerg.png into ["Icon", "Zerg"]
     parts =
       String.split(image_url, "/")
@@ -89,7 +89,7 @@ defmodule Bot.RevealMessageHandler do
     end
   end
 
-  defp extract_prepend(_), do: nil
+  def extract_prepend(_), do: nil
 
   def to_embed(%{url: url, image_url: image_url, reveal_time: reveal_time}) do
     title = if url == "", do: nil, else: "Reveal Link"

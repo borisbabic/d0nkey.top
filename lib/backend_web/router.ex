@@ -204,7 +204,13 @@ defmodule BackendWeb.Router do
       :tournaments_stats
     )
 
-    get("/chat-bot-command-hook/:channel/deckcode-url/*deckcode", ChatBotCommandHookController, :deck_url)
+    get(
+      "/chat-bot-command-hook/:channel/deckcode-url/*deckcode",
+      ChatBotCommandHookController,
+      :deck_url
+    )
+
+    get("/chat-bot-command-hook/:channel/next-reveal", ChatBotCommandHookController, :next_reveal)
 
     get("/battlefy/user-tournaments/:slug", BattlefyController, :user_tournaments)
 
