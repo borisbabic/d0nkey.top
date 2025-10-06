@@ -71,6 +71,12 @@ defmodule Backend.Hearthstone.Card do
     many_to_many(:classes, Class, join_through: "hs_cards_classes", on_replace: :delete)
     field(:mana_cost, :integer)
     belongs_to(:minion_type, MinionType)
+
+    many_to_many(:multi_minion_types, MinionType,
+      join_through: "hs_cards_multi_minion_types",
+      on_replace: :delete
+    )
+
     field(:name, :string)
     belongs_to(:rarity, Rarity)
     field(:slug, :string)
@@ -79,6 +85,7 @@ defmodule Backend.Hearthstone.Card do
     field(:text, :string)
     field(:dust_free, :boolean, default: false)
     field(:nicknames, {:array, :string}, default: [])
+    field(:banned_from_sideboard, :boolean, default: false)
 
     embeds_one(:rune_cost, RuneCost, on_replace: :delete)
 
@@ -116,6 +123,7 @@ defmodule Backend.Hearthstone.Card do
       :duels_constructed,
       :duels_relevant,
       :flavor_text,
+      :banned_from_sideboard,
       :health,
       :image,
       :image_gold,
@@ -215,6 +223,9 @@ defmodule Backend.Hearthstone.Card do
 
     Map.put(map, field, new_val)
   end
+
+  def put_multi_minion_types(changeset, minion_types),
+    do: changeset |> put_assoc(:multi_minion_types, minion_types)
 
   def put_keywords(changeset, keywords), do: changeset |> put_assoc(:keywords, keywords)
   def put_classes(changeset, classes), do: changeset |> put_assoc(:classes, classes)

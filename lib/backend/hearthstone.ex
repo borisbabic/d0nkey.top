@@ -263,6 +263,7 @@ defmodule Backend.Hearthstone do
         :factions,
         :classes,
         :minion_type,
+        :multi_minion_types,
         :rarity,
         :spell_school
       ])
@@ -283,7 +284,10 @@ defmodule Backend.Hearthstone do
     ids = Enum.map(cards, & &1.id)
 
     existing_query =
-      from(c in Card, preload: [:classes, :keywords, :factions], where: c.id in ^ids)
+      from(c in Card,
+        preload: [:classes, :keywords, :factions, :multi_minion_types],
+        where: c.id in ^ids
+      )
 
     existing = Repo.all(existing_query)
     existing_ids = MapSet.new(existing, & &1.id)
@@ -323,17 +327,24 @@ defmodule Backend.Hearthstone do
     keyword_ids = api_card.keyword_ids
     class_ids = ApiCard.class_ids(api_card)
     faction_ids = api_card.faction_ids
+
+    multi_minion_type_ids =
+      [api_card.minion_type_id | api_card.multi_minion_type_ids] |> Enum.filter(& &1)
+
     keyword_query = from(k in HSKeyword, where: k.id in ^keyword_ids)
     class_query = from(c in Class, where: c.id in ^class_ids)
     faction_query = from(f in Faction, where: f.id in ^faction_ids)
+    minion_type_query = from(mt in MinionType, where: mt.id in ^multi_minion_type_ids)
     keywords = Repo.all(keyword_query)
     classes = Repo.all(class_query)
     factions = Repo.all(faction_query)
+    minion_types = Repo.all(minion_type_query)
 
     changeset
     |> Card.put_keywords(keywords)
     |> Card.put_classes(classes)
     |> Card.put_factions(factions)
+    |> Card.put_multi_minion_types(minion_types)
   end
 
   def get_deck(id) do
