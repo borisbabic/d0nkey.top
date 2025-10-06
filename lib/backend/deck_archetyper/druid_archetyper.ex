@@ -35,6 +35,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       protoss?(card_info, 4) ->
         :"Protoss Druid"
 
+      "Huddle Up" in card_info.card_names ->
+        :"Huddle Up Druid"
+
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
 
