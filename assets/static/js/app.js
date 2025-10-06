@@ -216,9 +216,10 @@ Hooks.LocalDateTime = {
         var date= new Date(parseInt(timestamp));
         if (Number.isInteger(date.getMonth())) {
             this.el.innerHTML =
-                [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
-                + ' '
-                + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
+                date.toLocaleString(navigator.language);
+                // [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
+                // + ' '
+                // + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
         }
     },
 }
