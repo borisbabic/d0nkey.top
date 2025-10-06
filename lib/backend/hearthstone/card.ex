@@ -410,6 +410,7 @@ defmodule Backend.Hearthstone.Card do
   @spec tourist?(card()) :: boolean()
   def tourist?(%{text: t}) when is_binary(t), do: Regex.match?(@tourist_regex, t)
   def tourist?(_), do: false
+
   @spec tourist_class(card()) :: {:ok, String.t()} | {:error, atom()}
   def tourist_class(%{text: t}) do
     with [_, class | _] <- Regex.run(@tourist_regex, t),
