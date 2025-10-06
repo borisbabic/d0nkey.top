@@ -94,12 +94,27 @@ defmodule Backend.Hearthstone.CardBag do
     end
   end
 
+  defp set_fabled_groups(table, cards) do
+    cards
+    |> Enum.filter(&Card.has_keyword?(&1, "fabled"))
+    |> Enum.each(fn %{id: id, child_ids: child_ids} ->
+      group = [id | child_ids]
+
+      for dbf_id <- group do
+        :ets.insert(table, {key_for_fabled_group(dbf_id), group})
+      end
+    end)
+  end
+
+  defp key_for_fabled_group(id), do: "fabled_group_#{id}"
+
   defp key_for_deckcode_copy_id(id), do: "deckcode_copy_id_#{id}"
 
   defp set_table(table) do
     cards = Hearthstone.all_cards()
     set_deckcode_copy_id(table, cards)
     set_cards(table, cards)
+    set_fabled_groups(table, cards)
 
     standard_first =
       cards
@@ -128,5 +143,11 @@ defmodule Backend.Hearthstone.CardBag do
   def deckcode_copy_id(id) do
     key = key_for_deckcode_copy_id(id)
     Util.ets_lookup(table(), key, id)
+  end
+
+  @doc "Find the fabled group of cards for an id"
+  def fabled_group(id) do
+    key = key_for_fabled_group(id)
+    Util.ets_lookup(table(), key, [])
   end
 end

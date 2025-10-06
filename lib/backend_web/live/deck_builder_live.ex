@@ -194,6 +194,7 @@ defmodule BackendWeb.DeckBuilderLive do
 
   def handle_event("add-card", %{"card_id" => card_raw}, socket) do
     card = Util.to_int!(card_raw)
+    fabled_group = CardBag.fabled_group(card)
     %{deck: deck, raw_params: raw_params} = socket.assigns
 
     if Deck.addable?(deck, card) do
@@ -215,6 +216,9 @@ defmodule BackendWeb.DeckBuilderLive do
             |> Deck.decode!()
             # pink is perfect. perfect is pink
             |> add_to_sideboard(110_446, card)
+
+          !Enum.empty?(fabled_group) ->
+            add_cards(deck, fabled_group)
 
           true ->
             add_card(deck, card)
@@ -242,13 +246,14 @@ defmodule BackendWeb.DeckBuilderLive do
       end
 
     card = Util.to_int!(card_raw)
+    fabled_group = CardBag.fabled_group(card)
     %{deck: deck, raw_params: raw_params} = socket.assigns
 
     new_code =
-      if sideboard do
-        remove_from_sideboard(deck, card, sideboard)
-      else
-        remove_card(deck, card)
+      cond do
+        sideboard -> remove_from_sideboard(deck, card, sideboard)
+        !Enum.empty?(fabled_group) -> remove_cards(deck, fabled_group)
+        true -> remove_card(deck, card)
       end
 
     {:noreply,
@@ -269,6 +274,13 @@ defmodule BackendWeb.DeckBuilderLive do
       end
 
     Deck.deckcode(deck.cards, deck.hero, deck.format, new_sideboards)
+  end
+
+  defp remove_cards(deck, cards) do
+    Enum.reduce(cards, deck, fn card, deck ->
+      remove_card(deck, card) |> Deck.decode!()
+    end)
+    |> Deck.deckcode()
   end
 
   defp remove_card(deck, card) do
@@ -296,6 +308,10 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp add_card(deck, card) do
     Deck.deckcode([card | deck.cards], deck.hero, deck.format, deck.sideboards)
+  end
+
+  defp add_cards(deck, cards) when is_list(cards) do
+    Deck.deckcode(cards ++ deck.cards, deck.hero, deck.format, deck.sideboards)
   end
 
   defp add_to_sideboard(deck, card, sideboard) do
