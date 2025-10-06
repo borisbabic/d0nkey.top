@@ -1152,9 +1152,17 @@ defmodule Backend.Hearthstone do
 
     query
     |> where(
-      [card: c, minion_type: mt, factions: f, spell_school: ss, rarity: r],
+      [
+        card: c,
+        minion_type: mt,
+        factions: f,
+        spell_school: ss,
+        rarity: r,
+        multi_minion_types: mmt
+      ],
       ilike(c.name, ^search) or ilike(c.text, ^search) or ilike(mt.name, ^search) or
         ilike(f.name, ^search) or ilike(ss.name, ^search) or ilike(r.name, ^search) or
+        ilike(mmt.name, ^search) or
         ilike(fragment("array_to_string(?,'|||||')", c.nicknames), ^search)
     )
   end
@@ -1233,8 +1241,13 @@ defmodule Backend.Hearthstone do
   end
 
   @default_splitter "|"
-  defp compose_cards_query({"minion_type", value}, query),
-    do: ilike_name_or_slug([value, "all"], query, :minion_type)
+  defp compose_cards_query({"minion_type", value}, query) do
+    # mt = ilike_name_or_slug_conditions([value, "all"], :minion_type)
+    mt = false
+    mmt = ilike_name_or_slug_conditions([value, "all"], :multi_minion_types)
+    dynamic = dynamic([], ^mt or ^mmt)
+    query |> where(^dynamic)
+  end
 
   defp compose_cards_query({"format", format}, query) when format in [1, "1"],
     do: compose_cards_query({"format", "wild"}, query)
@@ -1302,11 +1315,14 @@ defmodule Backend.Hearthstone do
     )
   end
 
+  defp ilike_name_or_slug_conditions(searches, on_thing) do
+    Enum.reduce(searches, false, fn s, prev ->
+      dynamic([{^on_thing, t}], ilike(t.name, ^s) or ilike(t.slug, ^s) or ^prev)
+    end)
+  end
+
   defp ilike_name_or_slug(searches, query, on_thing) when is_list(searches) do
-    conditions =
-      Enum.reduce(searches, false, fn s, prev ->
-        dynamic([{^on_thing, t}], ilike(t.name, ^s) or ilike(t.slug, ^s) or ^prev)
-      end)
+    conditions = ilike_name_or_slug_conditions(searches, on_thing)
 
     query
     |> where(^conditions)
@@ -1350,6 +1366,8 @@ defmodule Backend.Hearthstone do
       as: :rarity,
       left_join: ss in assoc(c, :spell_school),
       as: :spell_school,
+      left_join: mmt in assoc(c, :multi_minion_types),
+      as: :multi_minion_types,
       # preload like this to avoid an extra query and also so that ecto deduplicates many_to_many caused duplication
       preload: [
         card_set: cs,
@@ -1359,6 +1377,7 @@ defmodule Backend.Hearthstone do
         rarity: r,
         classes: cl,
         minion_type: mt,
+        multi_minion_types: mmt,
         spell_school: ss
       ]
     )
