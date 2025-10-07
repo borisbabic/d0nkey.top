@@ -98,7 +98,15 @@ defmodule Backend.Hearthstone.CardBag do
     cards
     |> Enum.filter(&Card.has_keyword?(&1, "fabled"))
     |> Enum.each(fn %{id: id, child_ids: child_ids} ->
-      group = [id | child_ids]
+      group =
+        [id | child_ids]
+        |> Enum.filter(fn card_id ->
+          # filter out the boons. And maybe other similar stuff? :shrug:
+          case Enum.find(cards, &(&1.id == card_id)) do
+            %{mana_cost: mana_cost} when is_integer(mana_cost) -> mana_cost > 0
+            _ -> false
+          end
+        end)
 
       for dbf_id <- group do
         :ets.insert(table, {key_for_fabled_group(dbf_id), group})
