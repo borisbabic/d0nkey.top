@@ -39,6 +39,12 @@ defmodule BackendWeb.Router do
     plug(:put_root_layout, {BackendWeb.LayoutView, :root})
   end
 
+  pipeline :bot_command_hooks do
+    plug(:fetch_session)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -57,6 +63,19 @@ defmodule BackendWeb.Router do
       username: "admin",
       password: Application.compile_env!(:backend, :admin_pass)
     )
+  end
+
+  # don't want the pipeline because
+  scope "/chat-bot-command-hook", BackendWeb do
+    pipe_through([:bot_command_hooks])
+
+    get(
+      "/:channel/deckcode-url/*deckcode",
+      ChatBotCommandHookController,
+      :deck_url
+    )
+
+    get("/:channel/next-reveal", ChatBotCommandHookController, :next_reveal)
   end
 
   scope "/api/public", BackendWeb do
@@ -203,14 +222,6 @@ defmodule BackendWeb.Router do
       BattlefyController,
       :tournaments_stats
     )
-
-    get(
-      "/chat-bot-command-hook/:channel/deckcode-url/*deckcode",
-      ChatBotCommandHookController,
-      :deck_url
-    )
-
-    get("/chat-bot-command-hook/:channel/next-reveal", ChatBotCommandHookController, :next_reveal)
 
     get("/battlefy/user-tournaments/:slug", BattlefyController, :user_tournaments)
 
