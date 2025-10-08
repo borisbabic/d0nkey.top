@@ -20,6 +20,7 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Crystal Cluster",
        "Eonar, the Life-Binder"
      ]},
+    {:"Owlonius Druid", ["Owlonius", "Go with the Flow", "Ethereal Oracle", "Sparkling Phial"]},
     {:"Imbue Druid",
      [
        "Hamuul Runetotem",
@@ -28,9 +29,18 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Flutterwing Guardian",
        "Sing-Along Buddy",
        "Petal Picker",
+       "Malorne the Waywatcher",
        "Charred Chameleon"
      ]},
-    {:"Owlonius Druid", ["Owlonius", "Go with the Flow", "Ethereal Oracle"]},
+    {:"Huddle Up Druid",
+     [
+       "Huddle Up",
+       "Mister Clocksworth",
+       "Tsunami",
+       "King Tide",
+       "Forest Lord Cenarius"
+     ]},
+    # 5.5
     {:"Hydration Druid",
      [
        "Starlight Reactor",
@@ -39,14 +49,15 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Thickhide Kodo",
        "Seismopod",
        "Ensmallen",
-       "Oaken Summons",
        "Sha'tari Cloakfield",
        "Arkonite Defense Crystal",
        "Greybough",
        "Hydration Station",
-       "Tortollan Traveller"
+       "Endbringer Umbra",
+       "Carnivorous Cubicle",
+       "Blob of Tar",
+       "Tortollan Traveler"
      ]},
-    # 5.5
     {:"Aviana Druid",
      [
        "Un'Goro Brochure",
@@ -57,34 +68,44 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      ]},
     {:"Token Druid",
      [
-       "Vicious Slitherspear",
-       "Coconut Cannoneer",
-       "Wisp",
-       "Nerubian Egg",
        "Fire Fly",
        "Longneck Egg",
        "Power of the Wild",
-       "Overheat",
-       "Fire Fly",
-       "Nerubian Egg"
+       "Skyscreamer Eggs",
+       "Holy Eggbearer",
+       "Panther Mask",
+       "Mark of the Wild",
+       "Bucket of Soldiers",
+       "Life Cycle",
+       "Hatchery Helper",
+       "Ravenous Flock",
+       "Vibrant Squirrel",
+       "Overheat"
      ]},
     {:"Owlonius Druid",
      [
-       "Sparkling Phial",
        "Incindius",
        "Ancient of Yore",
        "Seabreeze Chalice",
        "Magical Dollhouse",
+       "Bottomless Toy Chest",
+       "Rising Waves",
+       "Living Roots",
+       "Amirdrassil",
+       "Story of Barnabus",
+       "New Heights",
+       "Swipe",
+       "Arkonite Revelation",
+       "Innervate",
        "Woodland Wonders",
+       "Sleep Under the Stars",
        "Elise the Navigator",
        "Bob the Bartender",
        "Mistah Vistah"
      ]},
-    {:"Hydration Druid", ["Carnivorous Cubicle", "Endbringer Umbra"]},
     {:"Imbue Druid", ["Symbiosis"]},
     # 10.5
-    {:"Aviana Druid", ["Wrath", "Horn of Plenty", "Astral Phaser"]},
-    {:"Token Druid", ["Ravenous Flock", "Hatchery Helper", "Vibrant Squirrel"]}
+    {:"Aviana Druid", ["Wrath", "Horn of Plenty", "Astral Phaser"]}
   ]
   @wild_config []
 
