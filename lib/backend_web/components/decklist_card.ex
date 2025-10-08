@@ -27,6 +27,7 @@ defmodule Components.DecklistCard do
   defp rarity(nil), do: rarity("COMMON")
   defp rarity("FREE"), do: rarity("COMMON")
   defp rarity(rarity), do: rarity |> String.downcase()
+  defp class(nil), do: ""
   defp class(class), do: class |> String.downcase()
 
   defp color_option("rarity", %{rarity: rarity}), do: "var(--color-dark-#{rarity})"
