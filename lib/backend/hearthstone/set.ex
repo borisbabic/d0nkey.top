@@ -33,6 +33,7 @@ defmodule Backend.Hearthstone.Set do
       :slug,
       :collectible_count,
       :collectible_revealed_count,
+      :release_date,
       :non_collectible_count,
       :non_collectible_revelead_count,
       :type
