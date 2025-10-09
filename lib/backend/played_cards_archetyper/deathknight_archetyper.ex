@@ -42,31 +42,30 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Suffocate",
        "Dimensional Core"
      ]},
+    {:"Herenn DK",
+     [
+       "High Cultist Herenn",
+       "Wakener of Souls",
+       "Meltemental",
+       "Endbringer Umbra",
+       "Travel Security",
+       "Mother Duck",
+       "Slippery Slope",
+       "Bonechill Stegodon"
+       # "Ancient Raptor"
+       # "Ghouls' Night"
+     ]},
+    # 5.5
     {:"Handbuff DK",
      [
        "City Chief Esho",
        "Lesser Spinel Spellstone",
        "Darkthorn Quilter",
        "Amateur Puppeteer",
-       "Shambling Zombietank",
        "Nerubian Swarmguard",
        "Blood Tap"
      ]},
-    # 5.5
     {:"Menagerie DK", ["Menagerie Mug", "Menagerie Jug", "Fire Fly", "Malignant Horror"]},
-    {:"Herenn DK",
-     [
-       "High Cultist Herenn",
-       "Overplanner",
-       "Wakener of Souls",
-       "Meltemental",
-       "Travel Security",
-       "Mother Duck",
-       "Slippery Slope",
-       "Bonechill Stegodon",
-       "Ancient Raptor",
-       "Ghouls' Night"
-     ]},
     {:"Control DK",
      [
        "The Ceaseless Expanse",
@@ -74,7 +73,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Vampiric Blood",
        "Griftah, Trusted Vendor",
        "Hideous Husk",
-       "Matching Outfits",
        "Stitched Giant",
        "Shaladrassil",
        "Reanimated Pterrodax",
@@ -87,6 +85,16 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Threads of Despair",
        "Staff of the Endbringer",
        "Blob of Tar",
+       "Customs Enforcer",
+       "Dissolving Ooze",
+       "Mister Clocksworth",
+       "Dreamplanner Zephrys",
+       "Reanimated Pterrordax",
+       "Reluctant Wrangler",
+       "Rustrot Viper",
+       "Wild Pyromancer",
+       "Royal Librarian",
+       "The Curator",
        "Airlock Breach",
        "Bob the Bartender",
        "Marin the Manager",
@@ -99,7 +107,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Dreadhound Handler",
        "Elise the Navigator",
        "Chillfallen Baron",
-       "Ancient of Yore",
        "Dirty Rat",
        "Creature of Madness",
        "Nightmare Lord Xavius",
@@ -119,9 +126,10 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "The 8 Hands from Beyond",
        "The Headless Horseman"
      ]},
+    {:"Herren DK", ["Overplanner", "Ancient Raptor", "Ghouls' Night"]},
     {:"Frost DK", ["Frostwyrm's Fury", "Cryosleep", "Thassarian", "Marrow Manipulator"]},
-    {:"Zerg DK", ["Baneling Barrage", "Hive Queen", "Infestor", "Spawning Pool"]},
     # 10.5
+    {:"Zerg DK", ["Baneling Barrage", "Hive Queen", "Infestor", "Spawning Pool"]},
     {:"Unholy DK",
      ["Grave Strength", "Tomb Guardians", "Battlefield Necromancer", "Skeletal Sidekick"]},
     {:"Menagerie DK", ["Monstrous Mosquito", "Murmy", "Observer of Mysteries"]},
@@ -136,13 +144,13 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Troubled Mechanic"
      ]},
     {:"Starship DK", ["Brittlebone Buccaneer", "Silk Stitching"]},
+    # 15.5
     {:"Handbuff DK",
      [
        "Toysnatching Geist",
        "Rainbow Seamstress",
        "Gnome Muncher"
      ]},
-    # 15.5
     {:"Control DK",
      [
        "Rite of Atrocity",
