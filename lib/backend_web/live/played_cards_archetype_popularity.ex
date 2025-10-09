@@ -385,7 +385,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   def fetch_card_popularity(criteria) do
-    games = Hearthstone.DeckTracker.games_with_played_cards(criteria)
+    games = Hearthstone.DeckTracker.games_with_played_cards(criteria, timeout: 120_000)
     {popularity, archetypes_popularity} = process_games(games)
 
     {:ok, %{card_popularity: popularity, archetypes: sorted_archetypes(archetypes_popularity)}}
