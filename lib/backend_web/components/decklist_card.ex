@@ -40,7 +40,7 @@ defmodule Components.DecklistCard do
   defp color_option(_, _), do: "var(--color-darker-grey)"
 
   defp colors(card, deck_class, opts, deck) do
-    rarity = Card.rarity(card)
+    rarity = card_rarity(card)
     filtered_opts = opts |> Map.to_list() |> Enum.filter(fn {_, v} -> v end) |> Map.new()
 
     %{border: border, gradient: gradient} =
@@ -61,6 +61,16 @@ defmodule Components.DecklistCard do
       border: color_option(border, color_opts),
       gradient: color_option(gradient, color_opts)
     }
+  end
+
+  defp card_rarity(card) do
+    # fabled companions don't show as legendary
+    with id when is_integer(id) <- Card.dbf_id(card),
+         [_ | _] <- Backend.Hearthstone.CardBag.fabled_group(id) do
+      "LEGENDARY"
+    else
+      _ -> Card.rarity(card)
+    end
   end
 
   defp card_class(card, deck_class) do
@@ -107,7 +117,7 @@ defmodule Components.DecklistCard do
             </div>
             <div style={"background-image: url('#{@tile_url}');"} class="decklist-card-tile">
             </div>
-            <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable">{count(@count, Card.rarity(@card), @decklist_options)}</span>
+            <span style="padding-left:0.5ch; padding-right: 0.5ch; width: 1ch;" class="has-text-right card-number deck-text decklist-card-background is-unselectable">{count(@count, card_rarity(@card), @decklist_options)}</span>
           </div>
           <div id={@image_id} class="decklist-card-image" style={"background-image: url('#{@card_url}'); background-size: 256px; background-repeat: no-repeat; pointer-events: none;"}></div>
         </div>

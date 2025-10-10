@@ -177,6 +177,10 @@ defmodule Backend.Hearthstone.Card do
 
   defp update_duels(map), do: map
 
+  @spec banned_from_sideboard?(card()) :: boolean()
+  def banned_from_sideboard?(%{banned_from_sideboard: banned}) when is_boolean(banned), do: banned
+  def banned_from_sideboard?(_), do: false
+
   @doc """
   Cards whose cost in game don't match their data
   Right now it's just zilliax 3000

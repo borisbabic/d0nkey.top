@@ -207,7 +207,7 @@ defmodule BackendWeb.DeckBuilderLive do
           Deck.missing_zilliax_parts?(deck) ->
             add_to_sideboard(deck, card, Card.zilliax_3000())
 
-          missing_etc_band_member?(deck) ->
+          missing_etc_band_member?(deck) and CardBag.sideboardable?(card) ->
             add_to_sideboard(deck, card, Card.etc_band_manager())
 
           # auto add art

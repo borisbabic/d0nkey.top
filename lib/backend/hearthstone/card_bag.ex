@@ -20,6 +20,10 @@ defmodule Backend.Hearthstone.CardBag do
   @spec card(String.t() | integer()) :: Card.t() | nil
   def card(card_id), do: Util.ets_lookup(table(), "card_id_#{card_id}")
 
+  @spec sideboardable?(String.t() | integer()) :: boolean
+  def sideboardable?(card_id, fallback \\ true),
+    do: Util.ets_lookup(table(), "sideboardable_#{card_id}", fallback)
+
   defp all() do
     :ets.match_object(table(), {:_, :"$1"})
   end
@@ -83,9 +87,15 @@ defmodule Backend.Hearthstone.CardBag do
     cards
     |> Enum.each(fn card ->
       :ets.insert(table, {"card_id_#{card.id}", card})
+      set_sideboardable(table, card)
     end)
 
     table
+  end
+
+  defp set_sideboardable(table, card) do
+    sideboardable? = !Card.banned_from_sideboard?(card)
+    :ets.insert(table, {"sideboardable_#{card.id}", sideboardable?})
   end
 
   defp set_deckcode_copy_id(table, cards) do
