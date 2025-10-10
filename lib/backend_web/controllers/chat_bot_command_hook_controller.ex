@@ -1,5 +1,5 @@
 defmodule BackendWeb.ChatBotCommandHookController do
-  use BackendWeb, :controller
+  use BackendWeb, :html_controller
   @moduledoc "for use with ${customapi} (streamelements)) and $(urlfetch) (nightbot)"
   alias Hearthstone.DeckcodeExtractor
   alias Backend.Infrastructure.BlizzardCommunicator, as: BlizzApi

@@ -38,7 +38,7 @@ defmodule Hearthstone.Card do
     field(:text, String.t())
     field(:zilliax_functional_module?, boolean())
     field(:zilliax_cosmetic_module?, boolean())
-    field(:banned_from_sideboard?, boolean())
+    field(:banned_from_sideboard, boolean())
   end
 
   @spec from_raw_map(Map.t()) :: {:ok, __MODULE__.t()} | {:error, any()}
@@ -76,7 +76,7 @@ defmodule Hearthstone.Card do
         spell_school_id: map["spell_school_id"],
         mercenary_hero: MercenaryHero.from_raw_map(map["mercenary_hero"]),
         rune_cost: RuneCost.from_raw_map(map["rune_cost"]),
-        banned_from_sideboard?: map["banned_from_sideboard"] == 1,
+        banned_from_sideboard: map["banned_from_sideboard"] == 1,
         zilliax_functional_module?: map["is_zilliax_functional_module"],
         zilliax_cosmetic_module?: map["is_zilliax_cosmetic_module"],
         text: map["text"]
