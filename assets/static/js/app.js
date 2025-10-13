@@ -188,21 +188,46 @@ var pad = function(te) {
     return ('0' + te).slice(-2)
 }
 let Hooks = {};
+Hooks.InfiniteScrollLoaded = {
+    mounted() {
+        console.log("mounting hook")
+        this.checkLoad();
+        window.addEventListener("resize", () => this.checkLoad());
+    },
+    updated() {
+        this.checkLoad();
+    },
+    checkLoad() {
+        const el = this.el;
+        const atBottom = el.getBoundingClientRect().bottom <= window.innerHeight;
+        if (atBottom) {
+            console.log("at bottom");
+            const child = el.querySelector("[phx-viewport-bottom]");
+            if (child && child.hasAttribute("phx-viewport-bottom") && child.getAttribute("phx-viewport-bottom") !== "") {
+                const event = child.getAttribute("phx-viewport-bottom")
+                this.pushEventTo(el, event);
+            } else {
+                console.log("No infinite scroll to send");
+            }
+        } else {
+            console.log("not at bottom")
+        }
+    }
+
+};
+console.log(Hooks);
 Hooks.LocalStorage = {
     mounted () {
-        console.log("mounted abdslgfhsdlkfghslkfdghsld");
         this.handleEvent("store", (obj) => this.store(obj));
         this.handleEvent("clear", (obj) => this.clear(obj));
         this.handleEvent("restore", (obj) => this.restore(obj));
     },
     store(obj) {
-        console.log(obj.data);
         localStorage.setItem(obj.key, obj.data);
     },
     restore(obj) {
         var data = localStorage.getItem(obj.key);
         if (obj.target && obj.event) {
-            console.log(data)
             this.pushEventTo(obj.target, obj.event, data);
         }
     },
@@ -253,8 +278,6 @@ let liveSocket = new LiveSocket("/live", Socket, {
         }
     }
 })
-
-console.log("hee-haw");
 
 // Connect if there are any LiveViews on the page
 liveSocket.connect()

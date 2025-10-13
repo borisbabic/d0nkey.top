@@ -19,7 +19,7 @@ defmodule BackendWeb.FeedLive do
 
   def render(assigns) do
     ~F"""
-      <div>
+      <div phx-hook="InfiniteScrollLoaded" id="feed_container">
         <br>
         <div class="level is-mobile">
           <div :if={true} class="level-item">

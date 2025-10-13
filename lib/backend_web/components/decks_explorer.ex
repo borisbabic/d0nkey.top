@@ -39,7 +39,7 @@ defmodule Components.DecksExplorer do
   prop(default_min_games, :integer, default: nil)
   prop(min_games_floor, :integer, default: 50)
   prop(limit_cap, :integer, default: 200)
-  prop(default_limit, :integer, default: 15)
+  prop(default_limit, :integer, default: 20)
   prop(live_view, :module, required: true)
   prop(additional_params, :map, default: %{})
   prop(params, :map, required: true)
@@ -119,7 +119,7 @@ defmodule Components.DecksExplorer do
   def render(assigns) do
     ~F"""
     <div>
-      <div :if={{params, search_filters} = {@actual_params, @search_filters}}>
+      <div phx-hook="InfiniteScrollLoaded" id="deck_stats_container" :if={{params, search_filters} = {@actual_params, @search_filters}}>
 
         <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)}/>
         <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />

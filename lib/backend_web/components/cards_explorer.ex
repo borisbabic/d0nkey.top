@@ -135,7 +135,7 @@ defmodule Components.CardsExplorer do
 
   def render(assigns) do
     ~F"""
-      <div>
+      <div phx-hook="InfiniteScrollLoaded" id="cards_container">
         <#slot {@dropdowns_before} />
         <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={@format_options || []} />
         <CardSetDropdown id="card_set_dropdown" group_slug={group_slug(@params["format"])}/>
