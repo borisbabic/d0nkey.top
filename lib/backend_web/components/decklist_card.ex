@@ -82,7 +82,7 @@ defmodule Components.DecklistCard do
 
   def render(assigns) do
     card = assigns[:card]
-    html_id = "card-#{card.id}"
+    html_id = "card-#{Card.dbf_id(card)}"
 
     {tile_url, card_url} = tile_card_url(card)
     image_id = Ecto.UUID.generate()
@@ -105,7 +105,7 @@ defmodule Components.DecklistCard do
       )
 
     ~F"""
-      <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{@card}"} class={"has-no-pointer-events": @disable_link}>
+      <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{Card.dbf_id(@card)}"} class={"has-no-pointer-events": @disable_link}>
         <div class="tw-relative" onmouseover={"set_display('#{@image_id}', 'flex')"} onmouseout={"set_display('#{@image_id}', 'none')"}>
           <div style={"--color-border: #{@border}; --color-gradient: #{@gradient};"} class={"#{@non_hover_class} decklist-card-container decklist-card #{@html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>

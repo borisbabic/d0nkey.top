@@ -355,6 +355,9 @@ defmodule Backend.Hearthstone.Card do
   def set_name(_), do: nil
 
   @spec dbf_id(card()) :: integer()
+  def id(card), do: dbf_id(card)
+
+  @spec dbf_id(card()) :: integer()
   def dbf_id(%{dbf_id: id}), do: id
   def dbf_id(%{id: id}), do: id
 
