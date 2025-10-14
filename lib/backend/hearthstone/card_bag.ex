@@ -110,12 +110,18 @@ defmodule Backend.Hearthstone.CardBag do
     |> Enum.each(fn %{id: id, child_ids: child_ids} ->
       group =
         [id | child_ids]
-        |> Enum.filter(fn card_id ->
-          # filter out the boons. And maybe other similar stuff? :shrug:
-          case Enum.find(cards, &(&1.id == card_id)) do
-            %{mana_cost: mana_cost} when is_integer(mana_cost) -> mana_cost > 0
-            _ -> false
-          end
+        |> Enum.filter(fn
+          card_id ->
+            # filter out the boons. And maybe other similar stuff? :shrug:
+            costs_mana? =
+              case Enum.find(cards, &(&1.id == card_id)) do
+                %{mana_cost: mana_cost} when is_integer(mana_cost) -> mana_cost > 0
+                _ -> false
+              end
+
+            # aszhara chose one stuff
+            bad_id? = card_id in [120_205, 120_200, 120_202, 120_204]
+            costs_mana? and !bad_id?
         end)
 
       for dbf_id <- group do
