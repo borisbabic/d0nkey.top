@@ -39,6 +39,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       rainbow_runes?(card_info) ->
         :"Rainbow DK"
 
+      amalgam?(card_info) ->
+        :"Amalgam DK"
+
       control?(card_info) ->
         :"Control DK"
 
@@ -90,6 +93,22 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp amalgam?(card_info) do
+    "Adaptive Amalgam" in card_info.card_names and
+      min_count?(card_info, 3, [
+        "Dissolving Ooze",
+        "Floppy Hydra",
+        "Braingill",
+        "Troubled Mechanic",
+        "Threads of Despair",
+        "Soulrest Ceremony",
+        "Stranded Spaceman",
+        "Poison Breath",
+        "The Curator",
+        "Helm of Humiliation"
+      ])
   end
 
   defp bot?(card_info) do
