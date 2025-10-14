@@ -1030,6 +1030,8 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
+  def child_cards(_), do: []
+
   def cards(criteria) do
     # {post_processer, criteria} = use_fake_limit(criteria_raw)
 
