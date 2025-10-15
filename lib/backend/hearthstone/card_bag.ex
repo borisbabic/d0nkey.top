@@ -112,16 +112,13 @@ defmodule Backend.Hearthstone.CardBag do
         [id | child_ids]
         |> Enum.filter(fn
           card_id ->
-            # filter out the boons. And maybe other similar stuff? :shrug:
-            costs_mana? =
-              case Enum.find(cards, &(&1.id == card_id)) do
-                %{mana_cost: mana_cost} when is_integer(mana_cost) -> mana_cost > 0
-                _ -> false
-              end
-
             # aszhara chose one stuff
-            bad_id? = card_id in [120_205, 120_200, 120_202, 120_204]
-            costs_mana? and !bad_id?
+            aszhara_choose_one = [120_205, 120_200, 120_202, 120_204]
+            boons = [120_184, 120_185, 120_186]
+            broxigar_tokens = [120_168, 120_165, 120_169, 120_142, 120_167, 120_164, 120_166]
+            bad_ids = aszhara_choose_one ++ boons ++ broxigar_tokens
+            bad_id? = card_id in bad_ids
+            !bad_id?
         end)
 
       for dbf_id <- group do
