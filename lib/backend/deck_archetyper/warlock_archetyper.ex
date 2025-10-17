@@ -253,6 +253,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       demon_boar?(card_info) ->
         :"Demon Boarlock"
 
+      boar?(card_info) and egglock?(card_info, 1) ->
+        :"Bacon and Eggs Warlock"
+
       boar?(card_info) ->
         :Boarlock
 
