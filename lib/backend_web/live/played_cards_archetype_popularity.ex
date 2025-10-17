@@ -55,7 +55,26 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Defense Terran Shaman" => "Terran Shaman",
     "Asteroid Imbue Shaman" => "Imbue Shaman",
     "Quest Warrior" => "Control Warrior",
-    "Ysondre Warrior" => "Dragon Warrior"
+    "Ysondre Warrior" => "Dragon Warrior",
+    #### WILD
+    "XL HL Rainbow DK" => "Highlander DK",
+    "XL HL Blood DK" => "Highlander DK",
+    "XL HL LC Quest Death Knight" => "Highlander DK",
+    "XL Highlander Death Knight" => "Highlander DK",
+    "HL Rainbow DK" => "Highlander DK",
+    "HL Blood DK" => "Highlander DK",
+    "HL LC Quest Death Knight" => "Highlander DK",
+    "Highlander Death Knight" => "Highlander DK",
+    "Fatigue Demon Hunter" => "Questline DH",
+    "XL Astral Communion Druid" => "Astral Communion Druid",
+    "XL Mill Druid" => "Mill Druid",
+    "XL Malygos Druid" => "OTK Druid",
+    "XL Dungar Druid" => "OTK Druid",
+    "XL Champions Druid" => "OTK Druid",
+    "XL HL Dragon Druid" => "Highlander Druid",
+    "XL Highlander Druid" => "Highlander Druid",
+    "XL HL JtU Quest Druid" => "Highlander Druid",
+    "XL Linecracker Druid" => "Linecracker Druid"
   }
 
   def mount(_params, session, socket) do

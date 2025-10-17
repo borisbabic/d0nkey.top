@@ -158,7 +158,41 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     {:"Herren DK", ["Malted Magma", "Asphyxiate"]}
   ]
 
-  @wild_config []
+  @wild_config [
+    {:"XL Highlander DK",
+     [
+       "Reno, Lone Ranger",
+       "Tuskarrrr Trawler",
+       "Zephrys the Great",
+       "Reno Jackson",
+       "Customs Enforcer",
+       "Space Pirate",
+       "Mixologist",
+       "Blademaster Okani",
+       "Cult Neophyte",
+       "Theotar, the Mad Duke",
+       "Cold Feet",
+       "Runeforging",
+       "Quartzite Crusher",
+       "Patchwerk",
+       "Climactic Necrotic Explosion",
+       "Razorscale",
+       "Malted Magma",
+       "Construct Quarter",
+       "Buttons",
+       "The Curator",
+       "Staff od the Endbringer",
+       "Dirty Rat",
+       "E.T.C., Band Manager",
+       "Frost Strike",
+       "Elise the Navigator"
+     ]}
+    # {:"STD Menagerie DK", [
+    #   "Menagerie Jug",
+    #   "Fire Fly",
+    #   "Monstrous Mosquito",
+    # ]}
+  ]
 
   def standard_config(), do: @standard_config
   def wild_config(), do: @wild_config
@@ -167,7 +201,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     process_config(@standard_config, card_info, :"Other DK")
   end
 
-  def wild(_card_info) do
-    nil
+  def wild(card_info) do
+    process_config(@wild_config, card_info, :"Other DK")
   end
 end
