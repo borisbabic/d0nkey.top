@@ -30,8 +30,8 @@ defmodule Command.ExportData do
       start_time: start_time,
       end_time: Map.get(params, :end_time) || start_time |> plus_one_day(),
       file_part: Map.get(params, :file_part) || start_time |> Timex.to_date() |> to_string(),
-      directory:
-        Map.get(params, :directory, "/mnt/storage_box/dbdumps") |> String.trim_trailing("/"),
+      format: Map.get(params, :format, 2) |> Util.to_int_or_orig(),
+      directory: Map.get(params, :directory, "/tmp") |> String.trim_trailing("/"),
       delimiter: Map.get(params, :delimiter, "|")
     }
   end
@@ -99,6 +99,7 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
+        format: format,
         file_part: file_part
       }) do
     """
@@ -118,7 +119,7 @@ defmodule Command.ExportData do
               DTG.INSERTED_AT >= '#{start_time}'
               AND DTG.INSERTED_AT < '#{end_time}'
               AND DTG.GAME_TYPE = 7
-              AND DTG.FORMAT = 2
+              AND DTG.FORMAT = #{format}
           )
       ) TO '#{directory}/decks_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
@@ -129,6 +130,7 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
+        format: format,
         file_part: file_part
       }) do
     """
@@ -148,7 +150,7 @@ defmodule Command.ExportData do
               DTG.INSERTED_AT >= '#{start_time}'
               AND DTG.INSERTED_AT < '#{end_time}'
               AND DTG.GAME_TYPE = 7
-              AND DTG.FORMAT = 2
+              AND DTG.FORMAT = #{format}
           )
       ) TO '#{directory}/games_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
@@ -159,6 +161,7 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
+        format: format,
         file_part: file_part
       }) do
     """
@@ -178,7 +181,7 @@ defmodule Command.ExportData do
             DTG.INSERTED_AT >= '#{start_time}'
             AND DTG.INSERTED_AT < '#{end_time}'
             AND DTG.GAME_TYPE = 7
-            AND DTG.FORMAT = 2
+            AND DTG.FORMAT = #{format}
         )
     ) TO '#{directory}/tallies_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
@@ -189,6 +192,7 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
+        format: format,
         file_part: file_part
       }) do
     """
@@ -208,7 +212,7 @@ defmodule Command.ExportData do
             DTG.INSERTED_AT >= '#{start_time}'
             AND DTG.INSERTED_AT < '#{end_time}'
             AND DTG.GAME_TYPE = 7
-            AND DTG.FORMAT = 2
+            AND DTG.FORMAT = #{format}
         )
     ) TO '#{directory}/played_cards_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
     """
