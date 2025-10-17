@@ -67,7 +67,47 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     # 10.5
     {:"Peddler DH", ["Blind Box", "Illidari Studies"]}
   ]
-  @wild_config []
+  @wild_config [
+    {:"Pirate Demon Hunter",
+     [
+       "Ship's Cannon",
+       "Hozen Roughhouser",
+       "Treasure Distributor",
+       "Field of Strife",
+       "Magnifying Glaive",
+       "Parachute Brigand",
+       "Southsea Captain",
+       "Patches the Pirate",
+       "Mistake",
+       "Space Pirate",
+       "Adrenaline Fiend",
+       "Dangerous Cliffside"
+     ]},
+    {:"Questline DH",
+     [
+       "Crimson Sigil Runner",
+       "Glaivetar",
+       "Fierce Outsider",
+       "Vengeful Walloper",
+       "Irebound Brute",
+       "Felosophy",
+       "Double Jump",
+       "Patches the Pilot",
+       "Aranna, Thrill Seeker",
+       "Spectral Sight",
+       "Illidari Studies",
+       "Final Showdown",
+       "Sigil of Alacrity",
+       "Mana Burn",
+       "Glide",
+       "Paraglide",
+       "Dispose of Evidence",
+       "Spectral Sight",
+       "Illidari Studies",
+       "Sigil of Time",
+       "Consume Magic"
+     ]}
+  ]
 
   def standard_config(), do: @standard_config
   def wild_config(), do: @wild_config
@@ -76,7 +116,7 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     process_config(@standard_config, card_info, :"Other DH")
   end
 
-  def wild(_card_info) do
-    nil
+  def wild(card_info) do
+    process_config(@wild_config, card_info, :"Other DH")
   end
 end
