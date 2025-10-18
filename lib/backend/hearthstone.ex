@@ -252,21 +252,26 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
-  def preload_cards(query),
-    do:
-      query
-      |> preload([
-        :card_set,
-        :card_type,
-        :copy_of_card,
-        :keywords,
-        :factions,
-        :classes,
-        :minion_type,
-        :multi_minion_types,
-        :rarity,
-        :spell_school
-      ])
+  @cards_preloads [
+    :card_set,
+    :card_type,
+    :copy_of_card,
+    :keywords,
+    :factions,
+    :classes,
+    :minion_type,
+    :multi_minion_types,
+    :rarity,
+    :spell_school
+  ]
+  def preload_cards(cards) when is_list(cards) do
+    Repo.preload(cards, @cards_preloads)
+  end
+
+  def preload_cards(query) do
+    query
+    |> preload(^@cards_preloads)
+  end
 
   @spec upsert_cards([insertable_card()]) :: {:ok, [Card.t()]} | {:error, any()}
   def upsert_cards(cards_raw) do
@@ -1037,11 +1042,11 @@ defmodule Backend.Hearthstone do
 
     base_cards_query()
     |> build_cards_query(criteria)
-    # |> tap(fn q ->
-    #   sql = Repo.to_sql(:all, q)
-    #   elem(sql, 0) |> IO.puts
+    # |> tap(fn query ->
+    #   dbg(Ecto.Adapters.SQL.to_sql(:all, Repo, query))
     # end)
     |> Repo.all()
+    |> preload_cards()
 
     # |> post_processer.()
   end
@@ -1066,8 +1071,46 @@ defmodule Backend.Hearthstone do
   #   end
   # end
 
-  defp build_cards_query(query, criteria),
-    do: Enum.reduce(criteria, query, &compose_cards_query/2)
+  defp build_cards_query(query, criteria) do
+    criteria
+    |> adjust_mana_in_class()
+    |> Enum.reduce(query, &compose_cards_query/2)
+  end
+
+  defp adjust_mana_in_class(criteria) do
+    case List.keytake(Enum.to_list(criteria), "order_by", 0) do
+      {{"order_by", "mana_in_class"}, without_mana_in_class} ->
+        card_pool_classes =
+          for %{class: class} <-
+                List.keyfind(without_mana_in_class, :card_pool, 0, {:card_pool, []}) |> elem(1) |> Util.to_list(),
+              do: class
+
+        filter_classes =
+          for {val, classes} when val in ["class", "classes"] <- without_mana_in_class,
+              class <- Util.to_list(classes),
+              do: class
+
+        classes_to_use =
+          cond do
+            Enum.empty?(card_pool_classes) and Enum.empty?(filter_classes) ->
+              ["NEUTRAL" | Deck.classes()]
+
+            Enum.empty?(card_pool_classes) ->
+              filter_classes
+
+            Enum.empty?(filter_classes) ->
+              card_pool_classes
+
+            true ->
+              Enum.filter(filter_classes, &(&1 in card_pool_classes))
+          end
+
+        [{"order_by", "mana_in_class", classes_to_use} | without_mana_in_class]
+
+      _ ->
+        criteria
+    end
+  end
 
   defp compose_cards_query(:actual_card_set, query) do
     query
@@ -1089,19 +1132,20 @@ defmodule Backend.Hearthstone do
     |> order_by([card: c], desc: c.inserted_at)
   end
 
-  defp compose_cards_query({"order_by", "mana_in_class"}, query) do
-    query
-    |> order_by([classes: cl, card: c],
-      asc: like(cl.slug, "neutral"),
-      asc: cl.slug,
-      asc: c.mana_cost,
-      asc: c.name
-    )
+  defp compose_cards_query({"order_by", "mana_in_class", classes}, query) do
+    ordered_classes =
+      ["NEUTRAL" | Deck.classes() |> Enum.reverse()] |> Enum.filter(&(&1 in classes))
+
+    Enum.reduce(ordered_classes, query, fn cl, query ->
+      query
+      |> order_by(asc: exists(exists_classes_subquery(cl)))
+    end)
+    |> order_by([card: c], asc: c.mana_cost, asc: c.name)
   end
 
   defp compose_cards_query({"order_by", "mana"}, query) do
     query
-    |> order_by([classes: cl, card: c], asc: c.mana_cost, asc: c.name)
+    |> order_by([card: c], asc: c.mana_cost, asc: c.name)
   end
 
   defp compose_cards_query({"id_not_in", ids}, query) when is_list(ids) do
@@ -1152,19 +1196,20 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"search", search_term}, query) do
     search = "%#{search_term}%"
 
+    factions_exists_subquery = exists_factions_subquery(search)
+    mmt_exists_subquery = exists_multi_minion_types_subquery(search)
+
     query
     |> where(
       [
         card: c,
         minion_type: mt,
-        factions: f,
         spell_school: ss,
-        rarity: r,
-        multi_minion_types: mmt
+        rarity: r
       ],
       ilike(c.name, ^search) or ilike(c.text, ^search) or ilike(mt.name, ^search) or
-        ilike(f.name, ^search) or ilike(ss.name, ^search) or ilike(r.name, ^search) or
-        ilike(mmt.name, ^search) or
+        ilike(ss.name, ^search) or ilike(r.name, ^search) or
+        exists(factions_exists_subquery) or exists(mmt_exists_subquery) or
         ilike(fragment("array_to_string(?,'|||||')", c.nicknames), ^search)
     )
   end
@@ -1228,11 +1273,80 @@ defmodule Backend.Hearthstone do
     compose_cards_query({"card_set_id", set_ids}, query)
   end
 
+  # @ilike_name_or_slug_exists_fields [
+  #   {["class", "classes"], :classes, "hs_Cards_factions"},
+  #   {["keywords", "keyword"], :keywords},
+  #   {["factions", "faction"], :factions},
+  # ]
+
+  defp compose_cards_query({field, value}, query) when field in ["factions", "faction"] do
+    exists_subquery = exists_factions_subquery(value)
+
+    query
+    |> where(exists(exists_subquery))
+  end
+
+  defp exists_factions_subquery(value) do
+    from join_table in "hs_cards_factions",
+      select: join_table.card_id,
+      inner_join: joined in Faction,
+      on: join_table.faction_id == joined.id,
+      where:
+        (ilike(joined.name, ^value) or ilike(joined.slug, ^value)) and
+          parent_as(:card).id == join_table.card_id
+  end
+
+  defp exists_keywords_subquery(value) do
+    from join_table in "hs_cards_keywords",
+      select: join_table.card_id,
+      inner_join: joined in Keyword,
+      on: join_table.keyword_id == joined.id,
+      where:
+        (ilike(joined.name, ^value) or ilike(joined.slug, ^value)) and
+          parent_as(:card).id == join_table.card_id
+  end
+
+  defp compose_cards_query({field, value}, query) when field in ["keywords", "keyword"] do
+    exists_subquery = exists_keywords_subquery(value)
+
+    query
+    |> where(exists(exists_subquery))
+  end
+
+  defp exists_classes_subquery(value) do
+    from join_table in "hs_cards_classes",
+      select: join_table.card_id,
+      inner_join: joined in Class,
+      on: join_table.class_id == joined.id,
+      where:
+        (ilike(joined.name, ^value) or ilike(joined.slug, ^value)) and
+          parent_as(:card).id == join_table.card_id
+  end
+
+  defp compose_cards_query({field, value}, query) when field in ["classes", "class"] do
+    exists_subquery = exists_classes_subquery(value)
+
+    query
+    |> where(exists(exists_subquery))
+  end
+
+  defp exists_multi_minion_types_subquery(value) do
+    from join_table in "hs_cards_multi_minion_types",
+      select: join_table.card_id,
+      inner_join: joined in MinionType,
+      on: join_table.minion_type_id == joined.id,
+      where:
+        (ilike(joined.name, ^value) or ilike(joined.slug, ^value)) and
+          parent_as(:card).id == join_table.card_id
+  end
+
+  # for {search_fields, join_field} <- @ilike_name_or_slug_exists_fields, search <- search_fields do
+  #   defp compose_cards_query({unquote(search), value}, query),
+  #     do: ilike_name_or_slug_exists(value, query, unquote(join_field))
+  # end
   @ilike_name_or_slug_fields [
     {["set", "sets", "card_set", "card_sets"], :card_set},
     {["type", "types", "card_type", "card_types"], :card_type},
-    {["class", "classes"], :classes},
-    {["keywords", "keyword"], :keywords},
     {["factions", "faction"], :factions},
     {["rarity", "rarities"], :rarity},
     {["school", "schools", "spell_school", "spell_schools"], :spell_school}
@@ -1246,8 +1360,8 @@ defmodule Backend.Hearthstone do
   defp compose_cards_query({"minion_type", value}, query) do
     # mt = ilike_name_or_slug_conditions([value, "all"], :minion_type)
     mt = false
-    mmt = ilike_name_or_slug_conditions([value, "all"], :multi_minion_types)
-    dynamic = dynamic([], ^mt or ^mmt)
+    mmt_exists_subquery = exists_multi_minion_types_subquery(value)
+    dynamic = dynamic([card: c], ^mt or exists(mmt_exists_subquery))
     query |> where(^dynamic)
   end
 
@@ -1292,14 +1406,14 @@ defmodule Backend.Hearthstone do
       Enum.reduce(pool_filters, dynamic(false), fn
         %{card_set_id: id, class: class, not_tourist: true}, dynamic ->
           dynamic(
-            [classes: cl, card: c],
+            [card: c],
             ^dynamic or
-              (ilike(cl.slug, ^class) and c.card_set_id == ^id and
+              (exists(exists_classes_subquery(class)) and c.card_set_id == ^id and
                  not ilike(c.text, "% Tourist</b>%"))
           )
 
         %{class: class}, dynamic ->
-          dynamic([classes: cl], ^dynamic or ilike(cl.slug, ^class))
+          dynamic([card: c], ^dynamic or exists(exists_classes_subquery(class)))
       end)
 
     query |> where(^dynamic)
@@ -1317,10 +1431,16 @@ defmodule Backend.Hearthstone do
     )
   end
 
-  defp ilike_name_or_slug_conditions(searches, on_thing) do
+  defp ilike_name_or_slug_conditions(searches, on_thing) when is_list(searches) do
     Enum.reduce(searches, false, fn s, prev ->
       dynamic([{^on_thing, t}], ilike(t.name, ^s) or ilike(t.slug, ^s) or ^prev)
     end)
+  end
+
+  defp ilike_name_or_slug_conditions(search, on_thing, splitter \\ @default_splitter)
+       when is_binary(search) do
+    String.split(search, splitter)
+    |> ilike_name_or_slug_conditions(on_thing)
   end
 
   defp ilike_name_or_slug(searches, query, on_thing) when is_list(searches) do
@@ -1356,32 +1476,32 @@ defmodule Backend.Hearthstone do
       as: :card_set,
       left_join: ct in assoc(c, :card_type),
       as: :card_type,
-      left_join: k in assoc(c, :keywords),
-      as: :keywords,
-      left_join: f in assoc(c, :factions),
-      as: :factions,
-      left_join: cl in assoc(c, :classes),
-      as: :classes,
+      # left_join: k in assoc(c, :keywords),
+      # as: :keywords,
+      # left_join: f in assoc(c, :factions),
+      # as: :factions,
+      # left_join: cl in assoc(c, :classes),
+      # as: :classes,
       left_join: mt in assoc(c, :minion_type),
       as: :minion_type,
       left_join: r in assoc(c, :rarity),
       as: :rarity,
       left_join: ss in assoc(c, :spell_school),
-      as: :spell_school,
-      left_join: mmt in assoc(c, :multi_minion_types),
-      as: :multi_minion_types,
+      as: :spell_school
+      # left_join: mmt in assoc(c, :multi_minion_types),
+      # as: :multi_minion_types
       # preload like this to avoid an extra query and also so that ecto deduplicates many_to_many caused duplication
-      preload: [
-        card_set: cs,
-        card_type: ct,
-        keywords: k,
-        factions: f,
-        rarity: r,
-        classes: cl,
-        minion_type: mt,
-        multi_minion_types: mmt,
-        spell_school: ss
-      ]
+      # preload: [
+      #   card_set: cs,
+      #   card_type: ct,
+      #   keywords: k,
+      #   factions: f,
+      #   rarity: r,
+      #   classes: cl,
+      #   minion_type: mt,
+      #   multi_minion_types: mmt,
+      #   spell_school: ss
+      # ]
     )
   end
 
