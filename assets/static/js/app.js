@@ -76,6 +76,20 @@ document.addEventListener('np.blocking', (e) => {
     }
 });
 
+document.addEventListener("nitroAds.createAd", event => {
+    console.log("nitroAds.createAd " + event.detail.id);
+    if (event.detail.id.startsWith("nitropay-sticky-side-rail-mobile")) {
+        console.log("starts-with");
+        var element = document.querySelector("#" + event.detail.id + "-close");
+        if (element) {
+            element.style.display="block";
+        } else {
+            console.log("close not found for " + event.detail.id);
+        }
+    }
+});
+
+
 var clipboard = new ClipboardJS(".clip-btn-value");
 clipboard.on('success', function(e) {
     console.log("Text we are copying is: " + e.text)
