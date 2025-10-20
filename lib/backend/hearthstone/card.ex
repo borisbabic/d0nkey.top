@@ -207,12 +207,28 @@ defmodule Backend.Hearthstone.Card do
   @ben_brode 1768
   def ben_brode, do: @ben_brode
 
+  @fabled_rafaam 119_432
+  def fabled_rafaam, do: @fabled_rafaam
   @renathal 79_767
+  @forty_card_deck_triggers [@fabled_rafaam, @renathal]
+
   def renathal, do: @renathal
   @spec zilliax_3000?(card() | integer() | nil) :: boolean
   def renathal?(nil), do: false
   def renathal?(id) when is_integer(id), do: id == @renathal
   def renathal?(card), do: dbf_id(card) == @renathal
+
+  def forty_card_deck?(card) when is_integer(card) do
+    card in @forty_card_deck_triggers
+  end
+
+  def forty_card_deck?(nil), do: false
+
+  def forty_card_deck?(card) when is_card(card) do
+    card
+    |> dbf_id()
+    |> forty_card_deck?()
+  end
 
   def use_english_fields(map) do
     [:flavor_text, :image, :image_gold, :name, :text]

@@ -34,7 +34,7 @@ defmodule BackendWeb.MatchupsLive do
         </div>
         <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
-        <FormatDropdown :if={premium_filters?(@premium_filters, @user)} id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
+        <FormatDropdown :if={user_has_premium?(@user)} id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <LivePatchDropdown
           id="min_played_count"
