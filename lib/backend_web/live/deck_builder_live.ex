@@ -123,7 +123,7 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp deck_name(deck) do
     max =
-      if Card.renathal() in deck.cards do
+      if Enum.any?(deck.cards, &Card.forty_card_deck?/1) do
         40
       else
         30
