@@ -105,12 +105,14 @@ defmodule Backend.Hearthstone.CardBag do
   end
 
   defp set_fabled_groups(table, cards) do
-    baaaafam =  Enum.find_value(cards, 0,  fn
-      %{name: "Baaaafam", id: id} -> id
-      _ -> false
-    end);
+    baaaafam =
+      Enum.find_value(cards, 0, fn
+        %{name: "Baaaafam", id: id} -> id
+        _ -> false
+      end)
+
     cards
-    |> Enum.filter(&Card.has_keyword?(&1, "fabled"))
+    |> Enum.filter(&Card.fabled?/1)
     |> Enum.each(fn %{id: id, child_ids: child_ids} ->
       group =
         [id | child_ids]
