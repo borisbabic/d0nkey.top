@@ -15,7 +15,7 @@ defmodule Components.Card do
     ~F"""
       <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{@card}"} class={"tw-relative", "card-image-container", "has-no-pointer-events": @disable_link}>
         <#slot {@above_image, card: @card} />
-        <img src={Card.card_url(@card)} alt={@card.name} class={"md:tw-w-64", "tw-w-64": !@shrink_mobile, "tw-w-48": @shrink_mobile}/>
+        <img src={Card.card_url(@card)} alt={@card.name} class={"tw-select-none","md:tw-w-64", "tw-w-64": !@shrink_mobile, "tw-w-48": @shrink_mobile}/>
         <#slot {@below_image, card: @card} />
 
         <div :if={@hide_name} class={hide_name_classes(@shrink_mobile)}/>
