@@ -452,6 +452,12 @@ defmodule Backend.Hearthstone.Card do
 
   def has_keyword?(_, _), do: false
 
+  @spec fabled?(card()) :: boolean()
+  def fabled?(card) do
+    has_keyword?(card, "fabled") or
+      dbf_id(card) == @fabled_rafaam
+  end
+
   @spec has_spell_school?(%__MODULE__{}, String.t()) :: boolean()
   def has_spell_school?(%{spell_school: ss}, slug), do: SpellSchool.matches?(ss, slug)
   def has_spell_school?(_, _), do: false
