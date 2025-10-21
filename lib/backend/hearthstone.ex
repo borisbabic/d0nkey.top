@@ -1082,7 +1082,9 @@ defmodule Backend.Hearthstone do
       {{"order_by", "mana_in_class"}, without_mana_in_class} ->
         card_pool_classes =
           for %{class: class} <-
-                List.keyfind(without_mana_in_class, :card_pool, 0, {:card_pool, []}) |> elem(1) |> Util.to_list(),
+                List.keyfind(without_mana_in_class, :card_pool, 0, {:card_pool, []})
+                |> elem(1)
+                |> Util.to_list(),
               do: class
 
         filter_classes =
@@ -1934,5 +1936,96 @@ defmodule Backend.Hearthstone do
       from l in Lineup, where: l.tournament_source == ^old_source and l.tournament_id == ^old_id
 
     Repo.update_all(query, set: updated_fields)
+  end
+
+  def add_missing_cards_from_json(
+        set_slug \\ "event",
+        json_set \\ "EVENT",
+        additional_filter \\ & &1.collectible
+      ) do
+    api_ids = CardBag.all_cards() |> Enum.map(&Card.dbf_id/1)
+
+    missing =
+      HearthstoneJson.cards()
+      |> Enum.filter(
+        &(&1.set == json_set and &1.dbf_id not in api_ids and additional_filter.(&1))
+      )
+
+    sets = card_sets()
+
+    card_set_id = find_matching_by_slug(sets, set_slug)
+    upsert_json_cards(missing, card_set_id)
+  end
+
+  def upsert_json_cards(cards, card_set_id) do
+    rarities = rarities()
+    factions = factions()
+    types = card_types()
+    classes = classes()
+
+    to_upsert =
+      for %{
+            rarity: rarity,
+            health: health,
+            faction: faction,
+            cost: cost,
+            collectible: collectible,
+            attack: attack,
+            artist: artist,
+            text: text,
+            name: name,
+            dbf_id: id,
+            type: type,
+            card_class: class,
+            flavor: flavor
+          } = card <- cards do
+        %ApiCard{
+          id: id,
+          name: name,
+          text: text,
+          flavor_text: flavor,
+          class_id: find_matching_by_slug(classes, class),
+          rarity_id: find_matching_by_slug(rarities, rarity),
+          card_type_id: find_matching_by_slug(types, type),
+          banned_from_sideboard: false,
+          artist_name: artist,
+          attack: attack,
+          card_set_id: card_set_id,
+          child_ids: [],
+          collectible: collectible,
+          health: health,
+          durability: health,
+          duels: nil,
+          faction_ids: [find_matching_by_slug(factions, faction)],
+          image: HearthstoneJson.card_url(card),
+          image_gold: nil,
+          crop_image: HearthstoneJson.tile_url(card),
+          minion_type_id: nil,
+          rune_cost: nil,
+          spell_school_id: nil,
+          mana_cost: cost,
+          multi_class_ids: [],
+          copy_of_card_id: nil,
+          keyword_ids: [],
+          slug: nil,
+          multi_minion_type_ids: [],
+          mercenary_hero: nil,
+          zilliax_cosmetic_module?: false,
+          zilliax_functional_module?: false
+        }
+      end
+
+    upsert_cards(to_upsert)
+  end
+
+  defp find_matching_by_slug(haystack, default \\ nil, needle)
+  defp find_matching_by_slug(_haystack, default, nil), do: default
+
+  defp find_matching_by_slug(haystack, default, needle) do
+    Enum.find_value(haystack, default, fn %{slug: slug, id: id} ->
+      if String.upcase(slug) == String.upcase(needle) do
+        id
+      end
+    end)
   end
 end
