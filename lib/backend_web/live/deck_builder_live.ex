@@ -11,7 +11,10 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardBag
 
-  @supported_formats [1, 2]
+  @evergreen_formats [1, 2]
+  @conditional_formats [
+    %{format: "timeways_prerelease_brawl", until: ~N[2025-11-05 17:00:00]}
+  ]
   # @supported_formats [1, 2, "unguro_prerelease_brawl"]
   data(deck_class, :string)
   data(format, :integer)
@@ -139,7 +142,15 @@ defmodule BackendWeb.DeckBuilderLive do
     end
   end
 
-  defp supported_formats(), do: @supported_formats
+  defp supported_formats() do
+    conditional =
+      for %{format: f, until: until} <- @conditional_formats,
+          :lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), until),
+          do: f
+
+    @evergreen_formats ++ conditional
+  end
+
   defp card_params(params, false), do: params
 
   defp card_params(_, true) do
