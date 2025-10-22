@@ -112,7 +112,8 @@ defmodule Components.CardsExplorer do
     |> Map.put_new(key, value)
   end
 
-  defp stream_cards(socket, new_offset, reset \\ false, scroll_size \\ 1) when new_offset >= 0 do
+  defp stream_cards(socket, new_offset, reset, scroll_size, on_new_items \\ & &1)
+       when new_offset >= 0 do
     %{params: params, offset: curr_offset, card_pool: card_pool} = socket.assigns
 
     fetched_cards =
@@ -129,7 +130,8 @@ defmodule Components.CardsExplorer do
       new_offset,
       curr_offset,
       nil,
-      reset
+      reset,
+      on_new_items
     )
   end
 
@@ -199,7 +201,7 @@ defmodule Components.CardsExplorer do
   def handle_event("next-cards-page", _middle, socket) do
     %{offset: offset, params: %{"limit" => limit}} = socket.assigns
     new_offset = offset + limit
-    {:noreply, socket |> incr_scroll_size() |> stream_cards(new_offset)}
+    {:noreply, socket |> stream_cards(new_offset, false, 1, &incr_scroll_size/1)}
   end
 
   def handle_event("change", %{"search" => search_input}, socket) when is_binary(search_input),
