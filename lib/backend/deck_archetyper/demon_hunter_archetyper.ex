@@ -28,6 +28,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       aggro?(card_info) ->
         :"Aggro Demon Hunter"
 
+      octosari?(card_info) ->
+        :"Octosari DH"
+
       "Spirit Peddler" in card_info.card_names ->
         :"Peddler DH"
 

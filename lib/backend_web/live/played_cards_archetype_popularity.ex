@@ -41,6 +41,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Rainbow Starship DK" => "Starship DK",
     "Buttons Rainbow DK" => "Buttons DK",
     "Zerg Unholy DK" => "Unholy DK",
+    "Octosari DH" => "Peddler DH",
     "Ravenous Cliff Dive DH" => "Cliff Dive DH",
     "Starship Druid" => "Hydration Druid",
     "Quest Spell Mage" => "Spell Mage",
