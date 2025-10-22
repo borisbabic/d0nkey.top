@@ -61,13 +61,14 @@ defmodule BackendWeb.LiveHelpers do
         new_offset,
         old_offset,
         viewport_size,
-        reset \\ false
+        reset \\ false,
+        on_new_items \\ & &1
       ) do
     {items, at, limit} =
       if new_offset >= old_offset do
         {stream_items, -1, viewport_size && viewport_size * -1}
       else
-        {Enum.reverse(stream_items), 0, viewport_size && viewport_size}
+        {Enum.reverse(stream_items), 0, viewport_size}
       end
 
     case items do
@@ -88,6 +89,7 @@ defmodule BackendWeb.LiveHelpers do
         |> assign(end_of_stream?: false)
         |> assign(:offset, new_offset)
         |> Phoenix.LiveView.stream(stream_name, items, stream_opts)
+        |> on_new_items.()
     end
   end
 end
