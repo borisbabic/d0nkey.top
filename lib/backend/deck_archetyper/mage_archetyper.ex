@@ -54,6 +54,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
 
+      "Treasure Hunter Eudora" in card_info.card_names ->
+        :"Eudora Mage"
+
       bad?(card_info) ->
         :"Bad Mage"
 
