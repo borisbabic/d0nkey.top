@@ -213,8 +213,11 @@ Hooks.InfiniteScrollLoaded = {
     },
     checkLoad() {
         const el = this.el;
-        const atBottom = el.getBoundingClientRect().bottom <= window.innerHeight;
-        if (atBottom) {
+        const bounding_rect  = el.getBoundingClientRect()
+        const atBottom = bounding_rect.bottom <= window.innerHeight;
+        if (bounding_rect.top < 0) {
+            console.log("scrolled some so skipping");
+        } else if (atBottom) {
             console.log("at bottom");
             const child = el.querySelector("[phx-viewport-bottom]");
             if (child && child.hasAttribute("phx-viewport-bottom") && child.getAttribute("phx-viewport-bottom") !== "") {
