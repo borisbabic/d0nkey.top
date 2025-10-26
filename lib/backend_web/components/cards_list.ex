@@ -156,20 +156,20 @@ defmodule Components.CardsList do
   end
 
   @staying_sets [
+    # ED
+    1946,
+    # unguro
+    1952,
+    # timeways
+    1957
+  ]
+  @rotating_sets [
     # dgb
     1935,
     # perils
     1905,
     # whizbang,
     1897
-  ]
-  @rotating_sets [
-    # festival,
-    1809,
-    # titans
-    1858,
-    # badlands
-    1892
   ]
   def rotation_class(true, card), do: rotation_class(card)
   def rotation_class(_highlight, _card), do: ""
