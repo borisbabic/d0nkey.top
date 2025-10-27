@@ -565,7 +565,7 @@ defmodule Backend.Streaming do
   def ed_ids(filter_out \\ [113_321, 113_973]), do: filter_card_set(1946, filter_out)
 
   def timeways_ids(filter_out \\ [120_646, 118_636, 119_314]),
-    do: filter_card_set(1946, filter_out)
+    do: filter_card_set(1957, filter_out)
 
   defp filter_card_set(card_set_id, filter_out_ids) do
     for c <- CardBag.all_cards(),
