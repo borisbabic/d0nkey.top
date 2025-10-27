@@ -36,6 +36,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       no_minion?(card_info, 2) ->
         :"Spell Mage"
 
+      arcane_mage?(card_info) ->
+        :"Arcane Mage"
+
       orb_bsm?(card_info) ->
         :"Orb Big Spell Mage"
 
@@ -183,6 +186,19 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp arcane_mage?(card_info) do
+    "Azure Queen Sindragosa" in card_info.card_name and
+      min_count?(card_info, 2, [
+        "Alter Time",
+        "Arcane Barrage",
+        "Semi-Stable Portal",
+        "Primordial Glyph",
+        "Stellar Balance",
+        "Anomalize",
+        "Arcane Intellect"
+      ])
   end
 
   defp wild_exodia_mage?(card_info) do

@@ -62,11 +62,17 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Tyrande" in card_info.card_names ->
         :"Tyrande Priest"
 
+      handbuff_priest?(card_info) ->
+        :"Handbuff Priest"
+
       hitchhiker?(card_info) ->
         :"42 Priest"
 
       murloc?(card_info) ->
         :"Murloc Priest"
+
+      "Medivh the Hallowed" in card_info.card_names ->
+        :"Medivh Priest"
 
       armor?(card_info) ->
         :"Armor Priest"
@@ -74,6 +80,24 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp handbuff_priest?(card_info) do
+    min_count?(card_info, 4, [
+      "Amber Priestess",
+      "Divine Star",
+      "Nexus-Prince Shaffar",
+      "Disciple of the Dove",
+      "Hourglass Attendant",
+      "Overlord Runthak",
+      "Power Word: Barrier",
+      "Cleanings Lightspawn",
+      "Divine Augur",
+      "Eternus",
+      "Bumbling Bellhop",
+      "Job Shadower",
+      "Crater Experiment"
+    ])
   end
 
   defp egg_priest?(card_info) do

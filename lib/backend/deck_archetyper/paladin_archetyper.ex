@@ -33,7 +33,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       murloc?(card_info) ->
         :"Murloc Paladin"
 
-      "Cardboard Golem" in card_info.card_names ->
+      aura?(card_info) ->
         :"Aura Paladin"
 
       "Sunsapper Lynessa" in card_info.card_names ->
@@ -48,6 +48,10 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp aura?(card_info) do
+    min_count?(card_info, 1, ["Cardboard Golem", "Gelbin of Tomorrow"])
   end
 
   def drunk?(card_info) do

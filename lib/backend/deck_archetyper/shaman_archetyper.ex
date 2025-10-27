@@ -39,6 +39,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       terran?(card_info, 4) ->
         :"Terran Shaman"
 
+      masochist?(card_info) ->
+        :"Masochist Shaman"
+
       DemonHunterArchetyper.pirate?(card_info) ->
         :"Pirate Shaman"
 
@@ -66,6 +69,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
         :"Rainbow Shaman"
 
+      "Farseer Wo" in card_info.card_names ->
+        :"Wo Shaman"
+
       "Turbulus" in card_info.card_names ->
         :"Turbulus Shaman"
 
@@ -75,6 +81,18 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp masochist?(card_info) do
+    min_count?(card_info, 4, [
+      "Static Shock",
+      "Lightning Rod",
+      "Flux Revenant",
+      "Thunderquake",
+      "Nascent Bolt",
+      "Stormrook",
+      "Cash Cow"
+    ])
   end
 
   defp concede?(card_info) do
