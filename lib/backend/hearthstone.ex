@@ -1080,37 +1080,40 @@ defmodule Backend.Hearthstone do
   defp adjust_mana_in_class(criteria) do
     case List.keytake(Enum.to_list(criteria), "order_by", 0) do
       {{"order_by", "mana_in_class"}, without_mana_in_class} ->
-        card_pool_classes =
-          for %{class: class} <-
-                List.keyfind(without_mana_in_class, :card_pool, 0, {:card_pool, []})
-                |> elem(1)
-                |> Util.to_list(),
-              do: class
-
-        filter_classes =
-          for {val, classes} when val in ["class", "classes"] <- without_mana_in_class,
-              class <- Util.to_list(classes),
-              do: class
-
-        classes_to_use =
-          cond do
-            Enum.empty?(card_pool_classes) and Enum.empty?(filter_classes) ->
-              ["NEUTRAL" | Deck.classes()]
-
-            Enum.empty?(card_pool_classes) ->
-              filter_classes
-
-            Enum.empty?(filter_classes) ->
-              card_pool_classes
-
-            true ->
-              Enum.filter(filter_classes, &(&1 in card_pool_classes))
-          end
+        classes_to_use = extract_classes_to_use(without_mana_in_class)
 
         [{"order_by", "mana_in_class", classes_to_use} | without_mana_in_class]
 
       _ ->
         criteria
+    end
+  end
+
+  defp extract_classes_to_use(without_mana_in_class) do
+    card_pool_classes =
+      for %{class: class} <-
+            List.keyfind(without_mana_in_class, :card_pool, 0, {:card_pool, []})
+            |> elem(1)
+            |> Util.to_list(),
+          do: class
+
+    filter_classes =
+      for {val, classes} when val in ["class", "classes"] <- without_mana_in_class,
+          class <- Util.to_list(classes),
+          do: class
+
+    cond do
+      Enum.empty?(card_pool_classes) and Enum.empty?(filter_classes) ->
+        ["NEUTRAL" | Deck.classes()]
+
+      Enum.empty?(card_pool_classes) ->
+        filter_classes
+
+      Enum.empty?(filter_classes) ->
+        card_pool_classes
+
+      true ->
+        Enum.filter(filter_classes, &(&1 in card_pool_classes))
     end
   end
 
@@ -1288,6 +1291,20 @@ defmodule Backend.Hearthstone do
     |> where(exists(exists_subquery))
   end
 
+  defp compose_cards_query({field, value}, query) when field in ["keywords", "keyword"] do
+    exists_subquery = exists_keywords_subquery(value)
+
+    query
+    |> where(exists(exists_subquery))
+  end
+
+  defp compose_cards_query({field, value}, query) when field in ["classes", "class"] do
+    exists_subquery = exists_classes_subquery(value)
+
+    query
+    |> where(exists(exists_subquery))
+  end
+
   defp exists_factions_subquery(value) do
     from join_table in "hs_cards_factions",
       select: join_table.card_id,
@@ -1308,13 +1325,6 @@ defmodule Backend.Hearthstone do
           parent_as(:card).id == join_table.card_id
   end
 
-  defp compose_cards_query({field, value}, query) when field in ["keywords", "keyword"] do
-    exists_subquery = exists_keywords_subquery(value)
-
-    query
-    |> where(exists(exists_subquery))
-  end
-
   defp exists_classes_subquery(value) do
     from join_table in "hs_cards_classes",
       select: join_table.card_id,
@@ -1323,13 +1333,6 @@ defmodule Backend.Hearthstone do
       where:
         (ilike(joined.name, ^value) or ilike(joined.slug, ^value)) and
           parent_as(:card).id == join_table.card_id
-  end
-
-  defp compose_cards_query({field, value}, query) when field in ["classes", "class"] do
-    exists_subquery = exists_classes_subquery(value)
-
-    query
-    |> where(exists(exists_subquery))
   end
 
   defp exists_multi_minion_types_subquery(value) do

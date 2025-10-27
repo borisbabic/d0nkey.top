@@ -106,10 +106,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     ])
   end
 
-  @dreadseeds ["Grim Harvest", "Wyvern's Slumber", "Dreadsoul Corrupter"]
-  defp dreadseed?(card_info, count \\ 3) do
-    min_count?(card_info, count, @dreadseeds)
-  end
+  # @dreadseeds ["Grim Harvest", "Wyvern's Slumber", "Dreadsoul Corrupter"]
+  # defp dreadseed?(card_info, count \\ 3) do
+  #   min_count?(card_info, count, @dreadseeds)
+  # end
 
   defp attack_dh?(ci) do
     min_count?(ci, 5, [
