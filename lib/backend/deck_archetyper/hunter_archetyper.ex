@@ -32,6 +32,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       starship?(card_info) ->
         :"Starship Hunter"
 
+      no_hand?(card_info) ->
+        :"No Hand Hunter"
+
       zerg?(card_info, 4) and egg_hunter?(card_info) ->
         :"Zerg Egg Hunter"
 
@@ -56,6 +59,16 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp no_hand?(card_info) do
+    min_count?(card_info, 3, [
+      "Arrow Retriever",
+      "Quel'dorei Fletcher",
+      "Quickshot",
+      "Precise Shot",
+      "King Maluk"
+    ])
   end
 
   defp bad?(ci) do

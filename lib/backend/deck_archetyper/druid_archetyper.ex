@@ -26,6 +26,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       spell_damage_druid?(card_info) ->
         :"Spell Damage Druid"
 
+      "Krona, Keeper of Eons" in card_info.card_names ->
+        :"Krona Druid"
+
       "Loh, the Living Legend" in card_info.card_names ->
         :"Loh-cky Druid"
 
@@ -58,6 +61,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       "Sky Mother Aviana" in card_info.card_names ->
         :"Aviana Druid"
+
+      "Alternate Reality" in card_info.card_names ->
+        :"Alternate Reality Druid"
 
       true ->
         fallbacks(card_info, "Druid")

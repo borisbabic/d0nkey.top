@@ -90,6 +90,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       dark_gift?(card_info) ->
         :"Dark Gift DK"
 
+      "Talanji of the Graves" in card_info.card_names ->
+        :"Talanji DK"
+
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end

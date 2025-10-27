@@ -50,7 +50,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   @spec genn?(card_info()) :: boolean()
   def genn?(%{card_names: card_names}), do: "Genn Greymane" in card_names
 
-  @spec min_count?(card_info() | [String.t()], integer(), [String.t()]) :: boolean()
+  @spec min_count?(card_info :: card_info() | [String.t()], integer(), [String.t()]) :: boolean()
   def min_count?(%{card_names: card_names}, min, cards) do
     min_count?(card_names, min, cards)
   end
@@ -156,6 +156,12 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
 
       "The Egg of Khelos" in ci.card_names ->
         String.to_atom("Egg #{class_name}")
+
+      "Chrono-Lord Deios" in ci.card_names ->
+        String.to_atom("Deious #{class_name}")
+
+      "Murozond, Unbounded" in ci.card_names ->
+        String.to_atom("Murozond #{class_name}")
 
       true ->
         faction_fallback(ci, class_name, opts) || minion_type_fallback(ci, class_name, opts)

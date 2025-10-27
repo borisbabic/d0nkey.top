@@ -13,6 +13,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       murloc?(card_info) ->
         :"Murloc Demon Hunter"
 
+      no_minion?(card_info) ->
+        :"No Minion DH"
+
       "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info) ->
         :"Armor DH"
 
@@ -58,12 +61,24 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       kj?(card_info) ->
         :"Kil'jaeden DH"
 
+      "Broxigar" in card_info.card_names ->
+        :"Broxigar DH"
+
       "Alara'shi" in card_info.card_names ->
         :"Alara'shi DH"
 
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  defp no_minion?(card_info) do
+    min_count?(card_info, 2, [
+      "Solitude",
+      "Lasting Legacy",
+      "Hounds of Fury",
+      "The Eternal Hold"
+    ])
   end
 
   defp aggro?(card_info) do

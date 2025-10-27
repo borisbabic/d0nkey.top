@@ -33,11 +33,17 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       wallow?(card_info) ->
         :"Wallow Warlock"
 
-      painlock?(card_info) ->
+      painlock?(card_info, 6) ->
         :Painlock
 
       egglock?(card_info, 3) ->
         :Egglock
+
+      shreds_of_time?(card_info) ->
+        :Shredslock
+
+      painlock?(card_info, 4) ->
+        :Painlock
 
       demon?(card_info) ->
         :"Demon Warlock"
@@ -75,6 +81,20 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  @sheds_shufflers [
+    "Entropic Continuity",
+    "Tachyon Barrage",
+    "Twilight Timehopper"
+  ]
+  defp shreds_of_time?(card_info) do
+    min_count?(card_info, 4, [
+      "Ruinous Velocidrake",
+      "Fate Breaker",
+      "Chronogor"
+      | @sheds_shufflers
+    ])
   end
 
   defp egglock?(card_info, min_count) do
@@ -130,8 +150,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     min_count?(card_info, 2, ["Felfire Bonfire", "Summoner Darkmarrow", "Brittlebone Buccaneer"])
   end
 
-  defp painlock?(ci) do
-    min_count?(ci, 4, [
+  defp painlock?(ci, min_count) do
+    min_count?(ci, min_count, [
       "Flame Imp",
       "Spirit Bomb",
       "Malefic Rook",
@@ -142,6 +162,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "INFERNAL!",
       "Mass Production",
       "Elementium Geode"
+      | @sheds_shufflers
     ])
   end
 

@@ -59,6 +59,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       type_count(card_info, "Pirate") >= 5 ->
         :"Pirate Warrior"
 
+      "Lo'Gosh, Blood Fighter" in card_info.card_names ->
+        :"Lo'Gosh Warrior"
+
       true ->
         fallbacks(card_info, "Warrior")
     end
