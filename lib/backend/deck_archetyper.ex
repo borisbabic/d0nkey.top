@@ -24,7 +24,7 @@ defmodule Backend.DeckArchetyper do
 
   @type deck :: Deck.t() | %{format: integer(), cards: [integer()], class: String.t()}
   @spec archetype(deck() | String.t()) :: atom() | nil
-  def archetype(deck = %{class: nil, hero: hero}) do
+  def archetype(%{class: nil, hero: hero} = deck) do
     case Backend.Hearthstone.class(hero) do
       nil -> nil
       class -> deck |> Map.put(:class, class) |> archetype()
@@ -49,8 +49,13 @@ defmodule Backend.DeckArchetyper do
       standard_in_wild?(card_info) ->
         deck = Map.put(deck, :format, 2)
         card_info = Map.put(card_info, :deck, deck)
+        archetype = standard(card_info) || Deck.class_name(deck)
 
-        String.to_atom("STD #{archetype(deck, card_info) || Deck.class_name(deck)}")
+        if prerelease_brawl?(card_info) do
+          archetype
+        else
+          String.to_atom("STD #{archetype}")
+        end
 
       true ->
         archetype(deck, card_info)
@@ -59,35 +64,68 @@ defmodule Backend.DeckArchetyper do
 
   def archetype(_), do: nil
 
+  defp prerelease_brawl?(card_info) do
+    set_slugs = Backend.Hearthstone.latest_prerelease_brawl_sets()
+    Enum.all?(card_info.full_cards, &(&1.card_set.slug in set_slugs))
+  end
+
   defp archetype(deck, card_info) do
-    case {deck, Deck.class(deck)} do
-      {%{format: 2}, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard(card_info)
-      {%{format: 2}, "DEMONHUNTER"} -> DemonHunterArchetyper.standard(card_info)
-      {%{format: 2}, "DRUID"} -> DruidArchetyper.standard(card_info)
-      {%{format: 2}, "HUNTER"} -> HunterArchetyper.standard(card_info)
-      {%{format: 2}, "MAGE"} -> MageArchetyper.standard(card_info)
-      {%{format: 2}, "PALADIN"} -> PaladinArchetyper.standard(card_info)
-      {%{format: 2}, "PRIEST"} -> PriestArchetyper.standard(card_info)
-      {%{format: 2}, "ROGUE"} -> RogueArchetyper.standard(card_info)
-      {%{format: 2}, "SHAMAN"} -> ShamanArchetyper.standard(card_info)
-      {%{format: 2}, "WARLOCK"} -> WarlockArchetyper.standard(card_info)
-      {%{format: 2}, "WARRIOR"} -> WarriorArchetyper.standard(card_info)
-      {%{format: 1}, "DEATHKNIGHT"} -> DeathKnightArchetyper.wild(card_info)
-      {%{format: 1}, "DEMONHUNTER"} -> DemonHunterArchetyper.wild(card_info)
-      {%{format: 1}, "DRUID"} -> DruidArchetyper.wild(card_info)
-      {%{format: 1}, "HUNTER"} -> HunterArchetyper.wild(card_info)
-      {%{format: 1}, "MAGE"} -> MageArchetyper.wild(card_info)
-      {%{format: 1}, "PALADIN"} -> PaladinArchetyper.wild(card_info)
-      {%{format: 1}, "PRIEST"} -> PriestArchetyper.wild(card_info)
-      {%{format: 1}, "ROGUE"} -> RogueArchetyper.wild(card_info)
-      {%{format: 1}, "SHAMAN"} -> ShamanArchetyper.wild(card_info)
-      {%{format: 1}, "WARLOCK"} -> WarlockArchetyper.wild(card_info)
-      {%{format: 1}, "WARRIOR"} -> WarriorArchetyper.wild(card_info)
-      {%{format: 4}, _} -> WondersArchetyper.archetype(card_info)
-      # {%{format: 4}, _} -> WhizbangHeroesArchetyper.archetype(card_info)
-      _ -> nil
+    case deck do
+      %{format: 2} ->
+        standard(card_info)
+
+      %{format: 1} ->
+        wild(card_info)
+
+      %{format: 4} ->
+        twist(card_info)
+
+      _ ->
+        nil
     end
     |> add_xl?(card_info)
+  end
+
+  def standard(card_info) do
+    case Deck.class(card_info.deck) do
+      "DEATHKNIGHT" -> DeathKnightArchetyper.standard(card_info)
+      "DEMONHUNTER" -> DemonHunterArchetyper.standard(card_info)
+      "DRUID" -> DruidArchetyper.standard(card_info)
+      "HUNTER" -> HunterArchetyper.standard(card_info)
+      "MAGE" -> MageArchetyper.standard(card_info)
+      "PALADIN" -> PaladinArchetyper.standard(card_info)
+      "PRIEST" -> PriestArchetyper.standard(card_info)
+      "ROGUE" -> RogueArchetyper.standard(card_info)
+      "SHAMAN" -> ShamanArchetyper.standard(card_info)
+      "WARLOCK" -> WarlockArchetyper.standard(card_info)
+      "WARRIOR" -> WarriorArchetyper.standard(card_info)
+      _ -> nil
+    end
+  end
+
+  def wild(card_info) do
+    case Deck.class(card_info.deck) do
+      "DEATHKNIGHT" -> DeathKnightArchetyper.wild(card_info)
+      "DEMONHUNTER" -> DemonHunterArchetyper.wild(card_info)
+      "DRUID" -> DruidArchetyper.wild(card_info)
+      "HUNTER" -> HunterArchetyper.wild(card_info)
+      "MAGE" -> MageArchetyper.wild(card_info)
+      "PALADIN" -> PaladinArchetyper.wild(card_info)
+      "PRIEST" -> PriestArchetyper.wild(card_info)
+      "ROGUE" -> RogueArchetyper.wild(card_info)
+      "SHAMAN" -> ShamanArchetyper.wild(card_info)
+      "WARLOCK" -> WarlockArchetyper.wild(card_info)
+      "WARRIOR" -> WarriorArchetyper.wild(card_info)
+      _ -> nil
+    end
+  end
+
+  def twist(card_info) do
+    wonders(card_info)
+  end
+
+  def wonders(card_info) do
+    WondersArchetyper.archetype(card_info)
   end
 
   defp add_xl?(archetype, card_info) do

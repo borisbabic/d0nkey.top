@@ -87,6 +87,18 @@ defmodule Backend.Hearthstone do
     Repo.one(query)
   end
 
+  @spec latest_prerelease_brawl_sets() :: [String.t()]
+  def latest_prerelease_brawl_sets() do
+    query =
+      from sg in SetGroup,
+        where: like(sg.slug, "%prerelease%") or like(sg.slug, "%brawl%"),
+        select: sg.card_sets,
+        order_by: [desc: :inserted_at],
+        limit: 1
+
+    Repo.one(query) || []
+  end
+
   def card_back_categories() do
     Repo.all(CardBackCategory)
   end
@@ -1389,7 +1401,7 @@ defmodule Backend.Hearthstone do
               "standard_2024",
               "unguro_prerelease_brawl",
               "ed_prerelease_brawl",
-              "timeways_prerelease_brawl"
+              "prerelease_brawl"
             ] do
     new_query = compose_cards_query({"card_set_group_slug", format}, query)
     compose_cards_query({"banned_cards_for_format", format}, new_query)
