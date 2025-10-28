@@ -386,7 +386,8 @@ defmodule Bot.MessageHandler do
 
   def blizz_message() do
     timestamp = Blizzard.next_blizz_o_clock() |> Timex.to_unix()
-    "The next blizz o clock is <t:#{timestamp}:R>, ie <t:#{timestamp}:F> (shown in your timezone)"
+
+    "The next blizz o clock (when blizzard usually releases new stuff in game) is <t:#{timestamp}:R>, ie <t:#{timestamp}:F> (shown in your timezone)"
   end
 
   @spec log_message(Nostrum.Struct.Message.t()) :: any()
