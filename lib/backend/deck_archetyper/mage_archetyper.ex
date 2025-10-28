@@ -189,7 +189,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   end
 
   defp arcane_mage?(card_info) do
-    "Azure Queen Sindragosa" in card_info.card_name and
+    "Azure Queen Sindragosa" in card_info.card_names and
       min_count?(card_info, 2, [
         "Alter Time",
         "Arcane Barrage",
