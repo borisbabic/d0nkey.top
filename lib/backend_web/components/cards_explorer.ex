@@ -21,6 +21,11 @@ defmodule Components.CardsExplorer do
 
   import Components.DecksExplorer, only: [parse_int: 2]
 
+  @default_format_options [
+    {"2", "Standard"},
+    {"1", "Wild"}
+  ]
+
   data(streams, :list)
   slot(above_card, required: false)
   slot(below_card, required: false)
@@ -31,12 +36,7 @@ defmodule Components.CardsExplorer do
   prop(scroll_size, :integer, default: 1)
   prop(format_filter, :boolean, default: true)
 
-  prop(format_options, :list,
-    default: [
-      {"2", "Standard"},
-      {"1", "Wild"}
-    ]
-  )
+  prop(format_options, :list, default: @default_format_options)
 
   prop(params, :map, required: true)
   prop(url_params, :map, required: false, default: nil)
@@ -197,6 +197,8 @@ defmodule Components.CardsExplorer do
   #     {:noreply, stream_cards(socket, new_offset)}
   #   end
   # end
+
+  def default_format_options(), do: @default_format_options
 
   def handle_event("next-cards-page", _middle, socket) do
     %{offset: offset, params: %{"limit" => limit}} = socket.assigns
