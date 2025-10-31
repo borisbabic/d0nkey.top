@@ -19,9 +19,21 @@ defmodule BackendWeb.CardsLive do
       <div>
         <div class="title is-2">Hearthstone Cards</div>
         <FunctionComponents.Ads.below_title/>
-        <CardsExplorer live_view={__MODULE__} id="cards_explorer" params={@params} />
+        <CardsExplorer live_view={__MODULE__} id="cards_explorer" params={@params} format_options={format_options()}/>
       </div>
     """
+  end
+
+  defp format_options() do
+    now = NaiveDateTime.utc_now()
+    cutoff = ~N[2025-11-05 17:00:00]
+    default_options = CardsExplorer.default_format_options()
+
+    if :lt == NaiveDateTime.compare(now, cutoff) do
+      [{"timeways_prerelease_brawl", "Brawl"} | default_options]
+    else
+      default_options
+    end
   end
 
   def handle_info({:update_filters, params}, socket) do
