@@ -53,8 +53,8 @@ defmodule Components.MatchupsTable do
             </tr>
           </thead>
           <tbody>
-            <tr class="tw-h-[1px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
-              <td class=" tw-border tw-border-gray-600 tw-h-full" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} >
+            <tr class="tw-h-[30px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
+              <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} >
                 <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
               </td>
               <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
@@ -63,7 +63,7 @@ defmodule Components.MatchupsTable do
                 </button>
                 {Matchups.archetype(matchup)}
               </td>
-              <td class=" tw-border tw-border-gray-600 tw-h-full" data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
+              <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
               <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
               </td>
             </tr>
