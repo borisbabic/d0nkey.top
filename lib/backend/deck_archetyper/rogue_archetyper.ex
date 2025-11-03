@@ -77,6 +77,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       dark_gift?(card_info) ->
         :"Dark Gift Rogue"
 
+      "Nexus-Prince Shaffar" in card_info.card_names ->
+        :"Shaffar Rogue"
+
       combo?(card_info) ->
         :"Combo Rogue"
 

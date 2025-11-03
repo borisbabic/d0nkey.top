@@ -18,8 +18,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       murloc?(card_info) ->
         :"Murloc Warlock"
 
+      starship?(card_info) and rafaam?(card_info) ->
+        :"Starship Rafaamlock"
+
       starship?(card_info) ->
         :"Starship Warlock"
+
+      rafaam?(card_info) ->
+        :Rafaamlock
 
       mill?(card_info) ->
         :"Mill Warlock"
@@ -39,6 +45,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       egglock?(card_info, 3) ->
         :Egglock
 
+      six_seven?(card_info) and shreds_of_time?(card_info) ->
+        :"6 7 Shredslock"
+
       shreds_of_time?(card_info) ->
         :Shredslock
 
@@ -50,6 +59,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       location?(card_info) ->
         :"Location Warlock"
+
+      "Divergence" in card_info.card_names ->
+        :"Divergence Warlock"
 
       dorian?(card_info) ->
         :"Dorian Warlock"
@@ -95,6 +107,20 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Chronogor"
       | @sheds_shufflers
     ])
+  end
+
+  defp rafaam?(card_info), do: "Timethief Rafaam" in card_info.card_names
+
+  defp six_seven?(card_info) do
+    card_info.full_cards
+    |> Enum.sort_by(&Backend.Hearthstone.Card.cost/1, :desc)
+    |> Enum.take(3)
+    |> Enum.reverse()
+    |> Enum.at(0)
+    |> case do
+      %{name: "Chronogor"} -> true
+      _ -> false
+    end
   end
 
   defp egglock?(card_info, min_count) do

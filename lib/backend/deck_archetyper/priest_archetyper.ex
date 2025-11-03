@@ -71,6 +71,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       murloc?(card_info) ->
         :"Murloc Priest"
 
+      location?(card_info) ->
+        :"Location Priest"
+
       "Medivh the Hallowed" in card_info.card_names ->
         :"Medivh Priest"
 
@@ -80,6 +83,16 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp location?(card_info) do
+    min_count?(card_info, 2, [
+      "Busy Peon",
+      "XB-931 Housekeeper",
+      "Scrapbooking Student",
+      "Workshop Generator",
+      "Seaside Giant"
+    ])
   end
 
   defp handbuff_priest?(card_info) do
