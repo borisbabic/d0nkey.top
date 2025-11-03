@@ -27,7 +27,7 @@ defmodule BackendWeb.CardsLive do
   defp format_options() do
     now = NaiveDateTime.utc_now()
     cutoff = ~N[2025-11-05 17:00:00]
-    default_options = CardsExplorer.default_format_options()
+    default_options = [{"the_past", "The Past"} | CardsExplorer.default_format_options()]
 
     if :lt == NaiveDateTime.compare(now, cutoff) do
       [{"timeways_prerelease_brawl", "Brawl"} | default_options]

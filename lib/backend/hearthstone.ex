@@ -1290,6 +1290,11 @@ defmodule Backend.Hearthstone do
     compose_cards_query({"card_set_id", set_ids}, query)
   end
 
+  defp compose_cards_query({"card_set_group_slug_not_in", group_slug}, query) do
+    set_ids = sets_in_group(group_slug) |> Enum.map(& &1.id)
+    compose_cards_query({"card_set_id_not_in", set_ids}, query)
+  end
+
   # @ilike_name_or_slug_exists_fields [
   #   {["class", "classes"], :classes, "hs_Cards_factions"},
   #   {["keywords", "keyword"], :keywords},
@@ -1390,6 +1395,11 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({"format", format}, query) when format in [4, "4"],
     do: compose_cards_query({"format", "twist"}, query)
+
+  defp compose_cards_query({"format", "the_past"}, query) do
+    new_query = compose_cards_query({"card_set_group_slug", "wild"}, query)
+    compose_cards_query({"card_set_group_slug_not_in", "standard"}, new_query)
+  end
 
   defp compose_cards_query({"format", format}, query)
        when format in [
