@@ -32,6 +32,9 @@ defmodule BackendWeb.MatchupsLive do
         <div class="subtitle is-5">
           <span :if={@updated_at}>{Timex.from_now(@updated_at)}</span>
         </div>
+        <div class="notification is-warning" :if={show_warning?()} >
+          This data uses old archetyping. Archetyping will be updated after there is more data about the new meta
+        </div>
         <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
         <FormatDropdown :if={user_has_premium?(@user)} id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
@@ -127,6 +130,12 @@ defmodule BackendWeb.MatchupsLive do
   defp fetch_matchups(socket, _old_socket, matchups) do
     socket
     |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
+  end
+
+  defp show_warning?() do
+    start = ~N[2025-11-04 17:00:00]
+    now = NaiveDateTime.utc_now()
+    NaiveDateTime.compare(start, now) == :lt
   end
 
   def update_context(%{assigns: assigns} = socket) do
