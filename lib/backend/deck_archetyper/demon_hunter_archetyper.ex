@@ -204,17 +204,26 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       quest?(card_info) ->
         String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
 
+      baku?(card_info) ->
+        String.to_atom("Odd #{class_name}")
+
+      genn?(card_info) ->
+        String.to_atom("Even #{class_name}")
+
       "Il'gynoth" in card_info.card_names ->
         :"Il'gynoth DH"
 
-      fel_dh?(card_info) && relic_dh?(card_info) ->
+      fel_dh?(card_info) and relic_dh?(card_info) ->
         :"Fel Relic DH"
 
       fel_dh?(card_info) ->
         :"Fel DH"
 
-      wild_fatigue?(card_info) && questline?(card_info) ->
-        :"Fatigue Demon Hunter"
+      "Broxigar" in card_info.card_names and questline?(card_info) ->
+        :"Broxigar DH"
+
+      wild_fatigue?(card_info) and questline?(card_info) ->
+        :"Fatigue DH"
 
       questline?(card_info) ->
         :"Questline DH"
@@ -222,20 +231,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
 
-      baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
-
-      genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
-
       pirate?(card_info) ->
-        :"Pirate Demon Hunter"
+        :"Pirate DH"
 
       outcast_dh?(card_info) ->
         :"Outcast DH"
 
       relic_dh?(card_info) ->
-        :"Relic Demon Hunter"
+        :"Relic DH"
 
       "King Togwaggle" in card_info.card_names ->
         String.to_atom("Tog #{class_name}")
