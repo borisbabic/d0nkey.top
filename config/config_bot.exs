@@ -181,7 +181,7 @@ queues =
     gm_stream_live: 1,
     hsreplay_deck_mapper: 1,
     leaderboards_pages_fetching: 1,
-    hs_game_inserter: 30,
+    hs_game_inserter: Enum.max([max_queue_size - 2, 5]),
     official_api_card_updater: 1,
     deck_deduplicator: 1,
     hsreplay_streamer_deck_inserter: 1
