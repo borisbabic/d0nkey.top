@@ -946,7 +946,9 @@ defmodule Hearthstone.DeckTracker do
     Repo.one(query)
   end
 
-  defp update_game(game, attrs) do
+  defp update_game(game, attrs_raw) do
+    attrs = attrs_raw |> Map.drop([:played_cards, "played_cards"])
+
     game
     |> Game.changeset(attrs)
     |> Repo.update()

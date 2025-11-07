@@ -34,7 +34,7 @@ defmodule Hearthstone.DeckTracker.Game do
     field :turns, :integer
     field :player_has_coin, :boolean, default: nil
     has_one(:raw_player_card_stats, RawPlayerCardStats)
-    has_one(:played_cards, GamePlayedCards)
+    has_one(:played_cards, GamePlayedCards, on_replace: :delete_if_exists)
     field :replay_url, :string, default: nil
 
     field :public, :boolean, default: false
