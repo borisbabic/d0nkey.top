@@ -297,6 +297,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       discard?(card_info, 6) ->
         :Discolock
 
+      wild_burnlock?(card_info) ->
+        :Burnlock
+
       demon_boar?(card_info) ->
         :"Demon Boarlock"
 
@@ -324,6 +327,19 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp wild_burnlock?(card_info) do
+    min_count?(card_info, 5, [
+      "Tachyon Barrage",
+      "Soul Barrage",
+      "Sketch Artist",
+      "Sizzling Cinder",
+      "Leper Gnome",
+      "Soulfire",
+      "Trogg Gemtosser",
+      "Expired Merchant"
+    ])
   end
 
   defp demon_boar?(card_info) do
