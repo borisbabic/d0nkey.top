@@ -32,7 +32,6 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
      [
        "Nexus-Prince Shaffar",
        "Plated Bettle",
-       "Tar Slime",
        "Wilted Shadow",
        "Carless Crafter",
        "Annoy-o-Tron",
@@ -45,11 +44,109 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
      [
        "Resplendent Dreamweaver",
        "Sing-Along Buddy",
-       "Petal Picker",
-       "Flutterwing Guardian",
-       "Malorne the Waywatcher"
+       "Petal Picker"
      ]},
     # 5.5
+    {:"Zarimi Priest",
+     [
+       "Timewinder Zarimi",
+       "Petal Peddler",
+       "Fly Off the Shelves",
+       "Giftwrapped Whelp",
+       "Tormented Dreadwing",
+       "Scale Replica"
+     ]},
+    {:"Imbue Priest",
+     [
+       "Flutterwing Guardian",
+       "Bitterbloom Knight"
+     ]},
+    {:"Aviana Priest",
+     [
+       "XB-931 Housekeeper",
+       "Tidepool Pupil",
+       "Moonwell",
+       "Twilight Medium",
+       "Overplanner",
+       "Sharp-Eyed Lookout",
+       "Living Flame",
+       "Parrot Sanctuary",
+       "Aviana, Elune's Chosen",
+       "Champions of Azeroth",
+       "Story of Amara",
+       "Mo'arg Forgefiend",
+       "Atlasaurus",
+       "Doomsayer",
+       "Incindius",
+       "Chrono-Lord Deios",
+       "Lightspeed",
+       "Sleepy Resident",
+       "The Ceaseless Expanse",
+       "Ysera, Emerald Aspect",
+       "Repackage",
+       "Glacial Shard",
+       "Narain Soothfancy",
+       "Bob the Bartender",
+       "Marin the Manager",
+       "Intertwined Fate",
+       "Ancient of Yore",
+       "Gravity Lapse",
+       "Nightshade Tea",
+       "Ritual of Life",
+       "Holy Smite",
+       "Dirty Rat",
+       "Raza the Resealed",
+       "Pupet Theatre",
+       "Lunarwing Messenger",
+       "Steamcleaner",
+       "Greater Healing Potion",
+       "Whelp of the Infinite",
+       "Atiesh the Greatstaff",
+       "Amber Priestess",
+       "Medivh the Hallowed",
+       "Karazhan the Sanctum",
+       "Behemoth Mask",
+       "Tyrande",
+       "Disciple of the Dove",
+       "Birdwatching",
+       "Scarab Keychain",
+       "Fyrakk the Blazing",
+       "Spirit of the Kaldorei",
+       "Creature of Madness",
+       "Chillin' Vol'jin",
+       "Cease to Exist",
+       "Envoy of Prosperity",
+       "Elise the Navigator",
+       "Zilliax Deluxe 3000",
+       "Puppet Theatre",
+       "Kaldorei Priestess"
+     ]},
+    {:"Wilted Priest",
+     [
+       "Hourglass Attendant",
+       "Blob of Tar",
+       "Prize Vendor",
+       "Divine Augur",
+       "Tar Slime"
+     ]},
+    {:"Imbue Priest",
+     [
+       "Funhouse Mirror",
+       "Papercraft Angel"
+     ]},
+    # 10.5
+    {:"Egg Priest",
+     [
+       "Holy Eggbearer",
+       "The Egg of Khelos",
+       "Behemoth Mask",
+       "Hot Coals"
+     ]},
+    {:"Protoss Priest", ["Catch of the Day"]},
+    {:"Imbue Priest",
+     [
+       "Malorne the Waywatcher"
+     ]},
     {:"Aggro Priest",
      [
        "Menagerie Jug",
@@ -61,60 +158,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Archaios",
        "Murmy"
      ]},
-    {:"Imbue Priest", ["Bitterbloom Knight"]},
-    {:"Aviana Priest",
-     [
-       "XB-931 Housekeeper",
-       "Tidepool Pupil",
-       "Astrobiologist",
-       "Sleepy Resident",
-       "Moonwell",
-       "Mixologist",
-       "Twilight Medium",
-       "Overplanner",
-       "Sharp-Eyed Lookout",
-       "Marin the Manager",
-       "Living Flame",
-       "Parrot Sanctuary",
-       "Aviana, Elune's Chosen",
-       "Champions of Azeroth",
-       "Story of Amara"
-     ]},
-    {:"Imbue Priest",
-     [
-       "Lunarwing Messenger",
-       "Dirty Rat",
-       "Funhouse Mirror",
-       "Papercraft Angel",
-       "Kaldorei Priestess"
-     ]},
-    {:"Egg Priest",
-     [
-       "Holy Eggbearer",
-       "Doomsayer",
-       "The Egg of Khelos",
-       "Behemoth Mask",
-       "Gravity Lapse",
-       "Hot Coals",
-       "Nightshade Tea"
-     ]},
-    # 10.5
-    {:"Protoss Priest", ["Catch of the Day"]},
-    {:"Zarimi Priest",
-     [
-       "Timewinder Zarimi",
-       "Petal Peddler",
-       "Gorgonzormu",
-       "Fly Off the Shelves",
-       "Giftwrapped Whelp",
-       "Fae Trickster",
-       "Tormented Dreadwing",
-       "Naralex, Herald of the Flights",
-       "Fyrakk the Blazing",
-       "Ysera, Emerald Aspect",
-       "Illusory Greenwing",
-       "Scale Replica"
-     ]}
+    {:"Zarimi Priest", ["Ship's Chirurgen"]}
     # {:"Wilted Priest", ["Lightbomb", "Sleepy Resident"]},
     # {:"Wilted Priest", ["Power Word: Shield", "Resuscitate"]},
     # {:"Protoss Priest", ["Trusty Fishing Rod", "Nightmare Xavius"]},
