@@ -112,7 +112,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        # "The 8 Hands from Beyond",
        # "The Headless Horseman"
      ]},
-    {:"Herren DK",
+    {:"Herenn DK",
      [
        "Ancient Raptor",
        "Troubled Mechanic",
@@ -127,7 +127,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
      ["Frostwyrm's Fury", "Cryosleep", "Thassarian", "Bloodmage Thalnos", "Snow Shredder"]},
     {:"Unholy DK", ["Grave Strength", "Battlefield Necromancer"]},
     {:"Control DK", ["The Egg of Khelos", "Frosty Décor", "Chillfallen Baron"]},
-    {:"Herren DK",
+    {:"Herenn DK",
      [
        "Living Paradox",
        "Ghouls' Night",
@@ -150,13 +150,13 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Dreamplanner Zephrys"
      ]},
     # 15.5
-    {:"Herren DK",
+    {:"Herenn DK",
      [
        "Bonechill Stegodon",
        "Scarab Keychain"
      ]},
     {:"Starship DK", ["Brittlebone Buccaneer", "Silk Stitching"]},
-    {:"Herren DK",
+    {:"Herenn DK",
      [
        "Fyrakk the Blazing",
        "Zilliax Deluxe 3000",
