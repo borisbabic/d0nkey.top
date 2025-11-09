@@ -44,6 +44,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Octosari DH" => "Peddler DH",
     "Ravenous Cliff Dive DH" => "Cliff Dive DH",
     "Starship Druid" => "Hydration Druid",
+    "Zerg Egg Hunter" => "Zerg Hunter",
     "Quest Spell Mage" => "Spell Mage",
     "Protoss Imbue Mage" => "Protoss Mage",
     "Raylla Imbue Mage" => "Imbue Mage",
