@@ -49,44 +49,60 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Arkonite Defense Crystal",
        "The Exodar"
      ]},
-    {:"Protoss Rogue",
-     ["Photon Cannon", "Blink", "Dark Templar", "Void Ray", "High Templar", "Artanis"]},
-    {:"Cycle Rogue",
-     [
-       "Everburning Phoenix",
-       "Playhouse Giant",
-       "Eat! The! Imp!",
-       "Twisted Webweaver",
-       "Wisp",
-       "Bloodmage Thalnos",
-       "Platysaur"
-     ]},
-    # 5.5
+    {:"Protoss Rogue", ["Blink", "Dark Templar", "Void Ray", "High Templar"]},
     {:"Fyrakk Rogue",
      [
-       "Naralex, Herald of the Flights",
        "Creature of Madness",
        "Shaladrassil",
        "Ashamane",
-       "Fyrakk the Blazing",
        "Ysera, Emerald Aspect",
-       "Gnomelia, S.A.F.E. Pilot",
-       "Nightmare Fuel",
        "Opu the Unseen",
-       "Oh, Manager!",
-       "SPacerock Collector",
-       "Metal Detector",
-       "Nightmare Lord Xavius",
-       "Cult Neophyte",
        "Customs Enforcer",
-       "Naralex, Herald of the Flight",
-       "Observer of Mysteries",
-       "Spacerock Collector",
-       "Zilliax Deluxe 3000"
+       "Observer of Mysteries"
      ]},
-    {:"Cycle Rogue", ["Incindius", "Moonstone Mauler"]},
+    # 5.5
+    {:"Incindius Rogue", ["Twisted Webweaver", "Everburning Phoenix", "Ethereal Oracle"]},
+    {:"Weapon Rogue",
+     ["Sharp Shipment", "The Black Knight", "Naralex, Herald of the Flights", "Eviscerate"]},
+    {:"Incindius Rogue",
+     [
+       "Eat! The! Imp!",
+       "Quasar",
+       "Incindius",
+       "Fae Trickster",
+       "Chrono-Lord Deios",
+       "Fan of Knives"
+     ]},
+    {:"Shaffar Rogue",
+     [
+       "Nexus-Prince Shaffar",
+       "Troubled Double",
+       "Lucky Comet",
+       "Bargain Bin Buccaneer"
+     ]},
+    {:"Weapon Rogue",
+     [
+       "Griftah, Trusted Vendor",
+       "Swarthy Swordshiner",
+       "Flashback",
+       "Foxy Fraud",
+       "Raiding Party"
+     ]},
+    # 10.5
+    {:"Incindius Rogue", ["Crystal Tusk"]},
+    {:"Fyrakk Rogue",
+     [
+       "Nightmare Lord Xavius",
+       "Elise the Navigator",
+       "Metal Detector"
+     ]},
+    {:"Incindius Rogue",
+     [
+       "Backstab",
+       "Cultist Map",
+       "Oh, Manager!"
+     ]},
     {:"Starship Rogue", ["Mixologist"]},
-    {:"Fyrakk Rogue", ["Sandbox Scoundrel", "Elise the Navigator"]},
     {:"Quest Rogue",
      [
        "Underbrush Tracker",
@@ -97,7 +113,7 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Interrogation",
        "Merchant of Legend"
      ]},
-    {:"Fyrakk Rogue", ["Demolition Renovator", "Dubious Purchase", "Griftah, Trusted Vendor"]},
+    {:"Fyrakk Rogue", ["Demolition Renovator", "Dubious Purchase"]},
     {:"Fyrakk Rogue",
      [
        "Preparation",
@@ -114,7 +130,8 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Deadly Poison",
        "Swashburglar",
        "Dig for Treasure"
-     ]}
+     ]},
+    {:"Protoss Rogue", ["Photon Cannon", "Artanis"]}
   ]
   @wild_config []
 
