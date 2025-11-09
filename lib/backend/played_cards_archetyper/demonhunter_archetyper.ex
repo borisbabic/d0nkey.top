@@ -14,7 +14,16 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Dimensional Core",
        "Felfused Battery",
        "The Legion's Bane",
+       "Warp Drive",
        "Shattershard Turret"
+     ]},
+    {:"Peddler DH",
+     [
+       "Spirit Peddler",
+       "Fyrakk the Blazing",
+       "Raging Felscreamer",
+       "Window Shopper",
+       "Elise the Navigator"
      ]},
     {:"Aggro Demon Hunter",
      [
@@ -27,45 +36,46 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Battlefiend",
        "Spirit of the Team"
      ]},
-    {:"Peddler DH",
-     [
-       "Plucky Paintfin",
-       "Factory Assemblybot",
-       "Spirit Peddler",
-       "Wisp",
-       "Endbringer Umbra",
-       "Overplanner",
-       "Climbing Hook",
-       "Window Shopper",
-       "Raging Felscreamer",
-       "Octosari",
-       "Elise the Navigator",
-       "Fyrakk the Blazing",
-       "The Curator",
-       "Ysera, Emerald Aspect",
-       "Ancient of Yore",
-       "Zai, the Incredible"
-     ]},
     # 5.5
-    {:"Cliff Dive DH",
+    {:"No Minion DH",
      [
-       "Cliff Dive",
-       "Colifero the Artist",
-       "Illidari Inquisitor",
-       "Magtheridon, Unreleased",
-       "Ragnaros the Firelord",
-       "Blob of Tar",
-       "Ravenous Felhunter",
-       "Return Policy",
-       "Wyvern's Slumber"
+       "Hounds of Fury",
+       "Blind Box",
+       "The Eternal Hold",
+       "Lasting Legacy",
+       "Emergency Meeting",
+       "Demonic Deal",
+       "Aeon Rend"
      ]},
-    {:"Armor DH", ["Warp Drive"]},
-    {:"Aggro DH", ["Tortollan Storyteller", "Brain Masseuse"]},
-    {:"Peddler DH",
-     ["Tuskpiercer", "Nightmare Lord Xavius", "Creature of Madness", "Grim Harvest"]},
-    {:"Aggro DH", ["Infestation", "Insect Claw", "Chaos Strike"]},
+    {:"Cliff Dive DH", ["Cliff Dive", "Colifero the Artist", "Illidari Inquisitor"]},
+    {:"Broxigar DH",
+     ["Glacial Shard", "Bloodmage Thalnos", "Broxigar", "BCrimson Sigil Runner", "Platysaur"]},
+    {:"Aggro DH", ["Slumbering Sprite", "Customs Enforcer"]},
+    {:"Cliff Dive DH", ["Blob of Tar"]},
     # 10.5
-    {:"Peddler DH", ["Blind Box", "Illidari Studies"]}
+    {:"Peddler DH",
+     [
+       "Overplanner",
+       "Tuskpiercer",
+       "Nightmare Lord Xavius",
+       "Creature of Madness",
+       "Wyvern's Slumber",
+       "Perennial Serpent",
+       "Axe of Cenarius",
+       "First Portal to Argus"
+     ]},
+    {:"Aggro DH", ["Insect Claw"]},
+    {:"No Minion DH", ["Time-Lost Glaive", "Paraglide", "Chaos Strike"]},
+    {:"Peddler DH",
+     [
+       "Illidari Studies",
+       "Grim Harvest",
+       "Infestation",
+       "Red Card",
+       "Inflitrate",
+       "Return Policy"
+     ]},
+    {:"No Minion DH", ["Solitude"]}
   ]
   @wild_config [
     {:"Pirate Demon Hunter",
