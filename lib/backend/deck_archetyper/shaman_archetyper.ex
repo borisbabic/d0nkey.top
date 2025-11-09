@@ -69,6 +69,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
         :"Rainbow Shaman"
 
+      endseer?(card_info) ->
+        :"Endseer Shaman"
+
       "Farseer Wo" in card_info.card_names ->
         :"Wo Shaman"
 
@@ -81,6 +84,10 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp endseer?(card_info) do
+    min_count?(card_info, 2, ["Farseer Nobundo", "Endbringer Umbra"])
   end
 
   defp masochist?(card_info) do
