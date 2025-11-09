@@ -44,15 +44,37 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      [
        "Tortollan Storyteller",
        "Maze Guide",
-       "Muster for Battle",
        "Fire Fly",
        "Coconut Cannoneer",
-       "Beaming Sidekick",
        "Busy-Bot",
+       "Mother Duck"
+     ]},
+    {:"Aura Paladin",
+     [
+       "Gnomelia, S.A.F.E. Pilot",
+       "Puppetmaster Dorian",
+       "Fyrakk the Blazing",
+       "Creature of Madness",
+       "Gelbin of Tomorrow",
+       "Mekkatorque's Aura",
+       "Manifested Timeways",
+       "Gnomish Aura",
+       "Chronological Aura",
+       "Tigress Plushy",
+       "Anachronos",
+       "Elise the Navigator",
+       "Crafter's Aura",
+       "Resistance Aura",
+       "Cardboard Golem",
+       "Nightmare Lord Xavius",
+       "Robocaller",
+       "Scarab Keychain",
+       "Metal Detector",
+       "Chrono-Lord Deios",
        "Wisp",
-       "Mother Duck",
-       "Murmy",
-       "Platysaur"
+       "Ursine Maul",
+       "Bob the Bartender",
+       "Oh Manager!"
      ]},
     {:"Lynessa Paladin",
      [
@@ -72,7 +94,10 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      [
        "Salvage the Bunker",
        "Hellbat",
+       "Holy Eggbearer",
        "Dimensional Core",
+       "The Egg of Khelos",
+       "Carnivorous Cubicle",
        "Lift Off",
        "Jim Raynor",
        "SCV",
@@ -95,18 +120,14 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Sea Shanty",
        "Flickering Lightbot",
        "Libram of Clarity",
-       "Resistance Aura",
        "Lifesaving Aura",
        "Story of Galvadon"
      ]},
     {:"Lynessa Paladin",
      [
-       "Robocaller",
-       "Nightmare Lord Xavius",
        "Holy Glowsticks",
        "Divine Brew",
        "Naralex, Herald of the Flights",
-       "Tigress Plushy",
        "Ysera, Emerald Aspect"
      ]},
     {:"Lynessa OTK Paladin",
@@ -142,12 +163,9 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      [
        "Equality",
        "The Ceaseless Expanse",
-       "Fyrakk the Blazing",
        "Consecration",
-       "Anachronos",
        "Dreamplanner Zephyrus",
-       "Demolition Renovator",
-       "Bob the Bartender"
+       "Demolition Renovator"
      ]},
     {:"Quest Paladin",
      [
