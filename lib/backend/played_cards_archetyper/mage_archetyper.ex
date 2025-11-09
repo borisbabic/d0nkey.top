@@ -6,17 +6,19 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
 
   @standard_config [
     # {:"Quest Mage", ["The Forbidden Sequence"]},
-    {:"Spell Mage",
-     ["Spot the Difference", "Malfunction", "Manufacturing Error", "Yogg in the Box"]},
-    {:"Elemental Mage",
+    {:"Spell Mage", ["Spot the Difference", "Manufacturing Error", "Yogg in the Box"]},
+    {:"Arcane Mage",
      [
-       "Lamplighter",
-       "Triplewick Trickster",
-       "Blazing Accretion",
-       "Windswept Pageturner",
-       "Solar Flare",
-       "Spontaneous Combustion",
-       "Tar Slime"
+       "Go with the Flow",
+       "Arcane Intellect",
+       "Azure Queen Sindragosa",
+       "Mirror Dimension",
+       "Azure King Malygos",
+       "Azure Oathstone",
+       "Arcane Barrage"
+       # "Portal Vanguard"
+       # "Buy One, Get One Freeze",
+       # "Stellar Balance"
      ]},
     {:"Quest Mage",
      [
@@ -28,8 +30,20 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Questing Assistant",
        "Beast Speaker Taka"
      ]},
+    {:"Elemental Mage",
+     [
+       "Blazing Accretion",
+       "Lamplighter",
+       "Fire Fly",
+       "Triplewick Trickster",
+       "Windswept Pageturner",
+       "Solar Flare",
+       "Blasteroid",
+       "Spontaneous Combustion"
+     ]},
     {:"Protoss Mage",
      [
+       "Busy Peon",
        "Warp Gate",
        "Colossus",
        "Resonance Coil",
@@ -37,68 +51,59 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Artanis",
        "Void Ray"
      ]},
+    # 5.5
     {:"Orb Mage",
      [
+       "Doomsayer",
        "Carry-On Grub",
        "The Curator",
        "Sharp-Eyed Lookout",
        "Overplanner",
-       "Knickknack Shack",
-       "Sleepy Resident",
-       "Kil'jaeden"
+       "Sleepy Resident"
      ]},
-    # 5.5
     {:"Quest Mage",
      [
        "Astrobiologist",
-       "Treasure Hunter Eudora",
-       "Scrappy Scavenger",
-       "Techysaurus"
+       "Treasure Hunter Eudora"
      ]},
+    {:"Spell Mage", ["Malfunction"]},
+    {:"Big Spell Mage",
+     [
+       "Huddle Up",
+       "Sizzling Cinder",
+       "King Tide",
+       "Fireball",
+       "Blob of Tar"
+     ]},
+    {:"Arcane Mage", ["Portal Vanguard"]},
+    # 10.5
     {:"Imbue Mage",
      [
        "Sing-Along Buddy",
-       "Aessina",
-       "Merry Moonkin",
-       "Resplendent Dreamweaver",
-       "Divination",
-       "Wisprider",
-       "Flutterwing Guardian",
-       "Petal Picker",
        "Bitterbloom Knight",
-       "Spirit Gatherer"
+       "Aessina",
+       "Spirit Gatherer",
+       "Flutterwing Guardian",
+       "Wisprider"
      ]},
-    {:"Big Spell Mage",
-     [
-       "Stellar Balance",
-       "Huddle Up",
-       "King Tide",
-       "Vicious Slitherspear"
-     ]},
-    {:"Protoss Mage", ["Ancient of Yore"]},
-    {:"Quest Mage", ["Q'onzu"]},
-    # 10.5
+    {:"Quest Mage", ["Malorne the Waywatcher", "Scrappy Scavenger"]},
     {:"Spell Mage",
      [
-       "Storage Scuffle",
-       "Story of the Waygate",
-       "Spark of Life",
-       "Pocket Dimension",
        "Buy One, Get One Freeze",
-       "Hidden Objects",
-       "Unearthed Artifacts",
-       "Relic of Kings"
+       "Stellar Balance",
+       "Nightmare Lord Xavius"
      ]},
+    {:"Quest Mage", ["Creature of Madness"]},
     {:"Protoss Mage", ["Photon Cannon"]},
-    {:"Big Spell Mage",
-     [
-       "Marooned Archmage",
-       "Tsunami"
-     ]},
-    {:"Orb Mage", ["Watercolor Artist"]},
-    {:"Protoss Mage", ["Shield Battery", "Tide Pools", "Seabreeze Chalice"]},
     # 15.5
-    {:"Quest Mage", ["The Forbidden Sequence"]},
+    {:"Arcane Mage", ["Watercolor Artist", "Smoldering Grove"]},
+    {:"Quest Mage", ["Tidepool Pupil"]},
+    {:"Spell Mage", ["Hidden Objects", "Pocket Dimension"]},
+    {:"Orb Mage", ["Dirty Rat"]},
+    {:"Arcane Mage", ["Primordial Glyph", "Tide Pools", "Alter Time"]},
+    # 20.5
+    {:"Elemental Mage", ["Cloud Serpent", "Violet Spellwing"]},
+    {:"Protoss Mage", ["Shield Battery", "Seabreeze Chalice"]},
     {:"Bot? Mage",
      [
        "Ice Barrier",
@@ -110,12 +115,10 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Counterspell",
        "Firelands Portal",
        "Bloodmage Thalnos",
-       "Frostbolt",
-       "Arcane Intellect"
+       "Frostbolt"
      ]},
     {:"Elemental Mage",
      [
-       "Fire Fly",
        "Conjured Bookkeeper",
        "Glacial Shard",
        "Living Flame",
