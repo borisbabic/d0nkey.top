@@ -26,9 +26,6 @@ defmodule BackendWeb.EsportsLive do
         <div class="column">
           <.thl_card />
         </div>
-        <div class="column">
-          <.jungle_card />
-        </div>
       </div>
       <UpcomingTournaments user={@user} hours_ago={72} id="upcoming_tournaments" />
     </div>
