@@ -20,16 +20,68 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Fracking",
        "Chef Nomi"
      ]},
-    {:"Starship Warlock", ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core"]},
+    {:Rafaamlock,
+     [
+       "Tiny Rafaam",
+       "Green Rafaam",
+       "Murloc Rafaam",
+       "Explorer Rafaam",
+       "Warchief Rafaam",
+       "Calamitous Rafaam",
+       "Mindflayer R'faam",
+       "Giant Rafaam",
+       "Archmage Rafaam",
+       "Timethief Rafaam"
+     ]},
+    {:Shredslock,
+     [
+       "Whelp of the Infinite",
+       "Horizon's Edge",
+       "Dreadhound Handler",
+       "Living Paradox",
+       "Ancient Raptor",
+       "Devious Coyote",
+       "Murmy",
+       "Petal Peddler",
+       "Ruinous Velocidrake",
+       "Zergling",
+       "Flame Imp",
+       "Giftwrapped Whelp",
+       "Dreambound Raptor",
+       "Fatebreaker",
+       "Fiendish Servant",
+       "King Mukla",
+       "Twilight Timehopper",
+       "Entropic Continuity",
+       "Tachyon Barrage",
+       "The Solarium",
+       "Razidir",
+       "Party Planner Vona",
+       "PArty Fiend",
+       "Sizzling Cinder"
+     ]},
     {:Egglock,
      [
        "Dissolving Ooze",
        "Holy Eggbearer",
        "Eliza Goreblade",
        "The Egg of Khelos",
-       "Carnivorous Cubicle",
        "Eat! The! Imp!"
      ]},
+    # 5.5
+    {:"Divergence Warlock",
+     [
+       "Divergence",
+       "Agamaggan",
+       "Shaladrassil",
+       "Spelunker",
+       "Kerrigan, Queen of Blades"
+     ]},
+    {:Egglock,
+     [
+       "Abusive Sergeant"
+     ]},
+    {:"Starship Warlock", ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core"]},
     {:"Bot? Warlock",
      [
        "Coldlight Seer",
@@ -45,7 +97,6 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Murloc Tidehunter",
        "Abusive Seargeant"
      ]},
-    # 5.5
     {:"Animacer Warlock",
      [
        "Ultragigasaur",
@@ -55,6 +106,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Asphyxiodon",
        "Beached Whale"
      ]},
+    # 10.5
     {:"Mill Warlock",
      [
        "Adaptive Amalgam",
@@ -94,20 +146,6 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Arkonite Defense Crystal"
      ]},
     # 10.5
-    {:"Dorian Warlock",
-     [
-       "Shaladrassil",
-       "Puppetmaster Dorian",
-       "Agamaggan",
-       "Deadline",
-       "Ragnaros the Firelord",
-       "The Solarium",
-       "Overplanner",
-       "Demonic Studies",
-       "Spelunker",
-       "Kerrigan, Queen of Blades",
-       "Mortal Coil"
-     ]},
     {:"Whizbang Warlock", ["Tar Slime", "Scarab Keychain"]}
   ]
   @wild_config []

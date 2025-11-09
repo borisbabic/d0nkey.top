@@ -57,6 +57,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Cycle Rogue" => "Incindius Rogue",
     "Defense Terran Shaman" => "Terran Shaman",
     "Asteroid Imbue Shaman" => "Imbue Shaman",
+    "Starship Rafaamlock" => "Rafaamlock",
     "Quest Warrior" => "Control Warrior",
     "Ysondre Warrior" => "Dragon Warrior",
     #### WILD
@@ -379,7 +380,6 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
     cards =
       Backend.Hearthstone.cards([
-        {"collectible", true},
         {"format", format},
         {"names", card_names}
       ])
