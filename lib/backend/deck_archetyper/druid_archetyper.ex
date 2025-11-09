@@ -53,6 +53,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Hydration Station" in card_info.card_names ->
         :"Hydration Druid"
 
+      "Lady Azshara" in card_info.card_names ->
+        :"Azshara Druid"
+
       greybough?(card_info) ->
         :"Greybough Druid"
 
@@ -101,6 +104,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     "Magical Dollhouse",
     "Bottomless Toy Chest",
     "Woodland Wonders",
+    "Go with the Flow",
     "Chia Drake",
     "Sparkling Phial" | neutral_spell_damage()
   ]

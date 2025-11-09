@@ -192,12 +192,14 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     do:
       min_count?(c, 3, [
         "Lesser Spinel Spellstone",
+        "City Chief Esho",
         "Amateur Puppeteer",
         "Blood Tap",
         "Toysnatching Geist",
         "Darkfallen Neophyte",
         "Helm of Humiliation",
         "Vicious Bloodworm",
+        "Hourglass Attendant",
         "Overlord Runthak",
         "Ram Commander",
         "Encumbered Pack Mule",

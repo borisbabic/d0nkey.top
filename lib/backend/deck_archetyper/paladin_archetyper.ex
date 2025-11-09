@@ -98,6 +98,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Busy-Bot",
       "Hand of A'dal",
       "Sinstone Totem",
+      "Murmy",
       "Crooked Cook",
       "Sea Giant",
       "Leeroy Jenkins",
@@ -107,6 +108,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Muster for Battle",
       "Miracle Salesman",
       "Flash Sale",
+      "Mother Duck",
       "Disco Maul",
       "Smoldering Strength",
       "Nerubian Egg",
@@ -114,7 +116,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Maze Guide",
       "Righteous Protector"
     ]) or
-      min_count?(card_info, 2, ["Crusader Aura", "Flash Sale"])
+      min_count?(card_info.card_names ++ card_info.zilliax_modules_names, 2, [
+        "Crusader Aura",
+        "Flash Sale",
+        "Pylon Module"
+      ])
   end
 
   defp pure_paladin?(%{full_cards: full_cards}), do: !Enum.any?(full_cards, &Card.neutral?/1)
