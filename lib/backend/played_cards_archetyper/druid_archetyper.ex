@@ -29,34 +29,36 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Flutterwing Guardian",
        "Sing-Along Buddy",
        "Petal Picker",
-       "Malorne the Waywatcher",
        "Charred Chameleon"
      ]},
-    {:"Huddle Up Druid",
+    {:"Krona Druid",
      [
-       "Huddle Up",
-       "Mister Clocksworth",
-       "Tsunami",
-       "King Tide",
-       "Forest Lord Cenarius"
+       "Factory Assemblybot",
+       "Carrier",
+       "Timeless Causality",
+       "Loh, the Living Legend",
+       "Forest Lord Cenarius",
+       "Krona, Keeper of Eons",
+       "Scorching Observer",
+       "Splitting Spacerock",
+       "Travelmaster Dungar",
+       "Avatar of Hearthstone"
      ]},
     # 5.5
+    {:"Azshara Druid",
+     [
+       "Best in Shell",
+       "Construct Pylons",
+       "Chrono Boost"
+       # "Scrapbooking Student"
+     ]},
     {:"Hydration Druid",
      [
-       "Starlight Reactor",
-       "Exarch Othaar",
-       "The Exodar",
-       "Thickhide Kodo",
-       "Seismopod",
-       "Ensmallen",
-       "Sha'tari Cloakfield",
-       "Arkonite Defense Crystal",
-       "Greybough",
        "Hydration Station",
-       "Endbringer Umbra",
-       "Carnivorous Cubicle",
-       "Blob of Tar",
-       "Tortollan Traveler"
+       "The Exodar",
+       "Arkonite Defense Crystal",
+       "Ensmallen",
+       "Thickhide Kodo"
      ]},
     {:"Aviana Druid",
      [
@@ -66,46 +68,56 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Final Frontier",
        "Sky Mother Aviana"
      ]},
-    {:"Token Druid",
-     [
-       "Fire Fly",
-       "Longneck Egg",
-       "Power of the Wild",
-       "Skyscreamer Eggs",
-       "Holy Eggbearer",
-       "Panther Mask",
-       "Mark of the Wild",
-       "Bucket of Soldiers",
-       "Life Cycle",
-       "Hatchery Helper",
-       "Ravenous Flock",
-       "Vibrant Squirrel",
-       "Overheat"
-     ]},
     {:"Owlonius Druid",
      [
-       "Incindius",
-       "Ancient of Yore",
-       "Seabreeze Chalice",
        "Magical Dollhouse",
-       "Bottomless Toy Chest",
-       "Rising Waves",
-       "Living Roots",
-       "Amirdrassil",
-       "Story of Barnabus",
-       "New Heights",
-       "Swipe",
-       "Arkonite Revelation",
-       "Innervate",
-       "Woodland Wonders",
-       "Sleep Under the Stars",
-       "Elise the Navigator",
-       "Bob the Bartender",
-       "Mistah Vistah"
+       "Ancient of Yore",
+       "Bob the Bartender"
      ]},
-    {:"Imbue Druid", ["Symbiosis"]},
+    {:"Token Druid", ["Hatchery Helper", "Longneck Egg"]},
     # 10.5
-    {:"Aviana Druid", ["Wrath", "Horn of Plenty", "Astral Phaser"]}
+    {:"Azshara Druid",
+     ["Mark of the Wild", "Scrapbooking Student", "Zin-Azshari", "Lady Azshara"]},
+    {:"Krona Druid",
+     [
+       "Fyrakk the Blazing",
+       "Naralex, Herald of the Flights",
+       "Contingency",
+       "Life Cycle",
+       "Nightmare Lord Xavius",
+       "Highborne Mentor",
+       "Ysera, Emerald Aspect",
+       "Marin the Manager"
+     ]},
+    {:"Hydration Druid",
+     [
+       "Sha'tari Cloakfield",
+       "Carnivorous Cubicle",
+       "Greybough",
+       "Seismopod",
+       "Blob of Tar",
+       "Rising Waves",
+       "Eternal Bloodpetal"
+     ]},
+    {:"Azshara Druid",
+     [
+       "The Well of Eternity",
+       "Swipe",
+       "Elise the Navigator"
+     ]},
+    {:"Krona Druid",
+     [
+       "Bottomless Toy Chest",
+       "Oaken Summons",
+       "Tortollan Traveler",
+       "Waveshaping",
+       "Trail Mix"
+     ]},
+    # 15.5
+    {:"Owlonious Druid", ["Seabreeze Chalice", "Mistah Vistah"]},
+    {:"Azshara Druid",
+     ["Amirdrassil", "Story of Barnabus", "Arkonite Revelation", "New Heights"]},
+    {:"Token Druid", ["Ravenous Flock"]}
   ]
   @wild_config [
     {:"Astral Communion Druid",
