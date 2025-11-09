@@ -14,11 +14,11 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       anchorite(card_info) ->
         :"Anchorite Priest"
 
-      imbue?(card_info, 4) ->
-        :"Imbue Priest"
-
       "Aviana, Elune's Chosen" in card_info.card_names ->
         :"Aviana Priest"
+
+      imbue?(card_info, 4) ->
+        :"Imbue Priest"
 
       zarimi?(card_info) and pain?(card_info) ->
         :"Pain Zarimi Priest"
