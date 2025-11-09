@@ -32,29 +32,49 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
       ]
     },
     {:"Quest Hunter", ["The Food Chain"]},
-    {:"Beast Hunter",
+    {:"Discover Hunter",
      [
-       "Mother Duck",
-       "City Chief Esho",
-       "Ball of Spiders",
-       "Jeweled Macaw",
-       "Workhorse",
-       "Dreambound Raptor",
-       "Ancient Raptor",
-       "Painted Canvasaur",
-       "Catch of the Day",
-       "Cower in Fear",
-       "Painted Canvasaur"
+       "Incindius",
+       "Glacial Shard",
+       "Tidepool Pupil",
+       "Youthful Brewmaster",
+       "Parrot Sanctuary",
+       "Bob the Bartender",
+       "Mixologist",
+       "Alien Encounters",
+       "Griftah, Trusted Bendor",
+       "Rangari Scout",
+       "Nightmare Lord Xavius"
      ]},
     {:"Imbue Hunter",
      [
-       "Sing-Along Buddy",
        "Petal Picker",
        "Bitterbloom Knight",
        "Umbraclaw",
        "Resplendent Dreamweaver",
        "Flutterwing Guardian"
      ]},
+    {:"Beast Hunter",
+     [
+       "City Chief Esho",
+       "Ball of Spiders",
+       "Ancient Raptor",
+       "Jeweled Macaw",
+       "Mother Duck"
+     ]},
+    # 5.5
+    {:"No Hand Hunter", ["Rockskipper", "Vicious Slitherspear", "Precise Shot", "King Maluk"]},
+    {:"Zerg Hunter",
+     [
+       "Nydus Worm",
+       "Hydralisk",
+       "Evolution Chamber",
+       "Spawning Pool",
+       "Roach",
+       "Hive Queen"
+     ]},
+    {:"Beast Hunter", ["Fetch!", "Supreme Dinomancy", "Painted Canvasaur", "Shepherd's Crook"]},
+    {:"No Hand Hunter", ["Arcane Shot", "Quick Shot", "Quel'dorei Fletcher", "Sizzling Cinder"]},
     {:"Amalgam Hunter",
      [
        "Adaptive Amalgam",
@@ -62,7 +82,19 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Lunar Trailblazer",
        "Devilsaur Mask"
      ]},
-    # 5.5
+    # 10.5
+    {:"Beast Hunter", ["Dreambound Raptor", "Cower in Fear", "Paltry Flutterwing", "Workhorse"]},
+    {:"Discover Hunter", ["Scarab Keychain", "Exarch Naielle"]},
+    {:"Beast Hunter",
+     ["Catch of the Day", "Remote Control", "Patchwork Pals", "R.C. Rampage", "Jungle Gym"]},
+    {:"Discover Hunter",
+     [
+       "Birdwatching",
+       "Tracking",
+       "Ranger Initiate Vereesa",
+       "Ranger General Sylvanas",
+       "Ranger Captain Alleria"
+     ]},
     {:"Starship Hunter", ["Specimen Claw", "The Exodar", "Dimensional Barrage"]},
     {:"Handbuff Hunter",
      [
@@ -73,6 +105,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Reserved Spot",
        "Ranger Gilly"
      ]},
+    # 15.5
     {:"Discover Hunter",
      [
        "Parallax Cannon",
@@ -82,26 +115,6 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Bloodmage Thalnos",
        "Cult Neophyte",
        "Incindius"
-     ]},
-    {:"Starship Hunter", ["Arkonite Defense Crystal", "Laser Barrage"]},
-    {:"Beast Hunter",
-     [
-       "Shepherd's Crook",
-       "Supreme Dinomancy",
-       "Jungle Gym",
-       "R.C. Rampage",
-       "Remote Control"
-     ]},
-    # 10.5
-    {:"Discover Hunter", ["Biopod"]},
-    {:"Mystery Egg Hunter",
-     [
-       "Mystery Egg",
-       "Holy Eggbearer",
-       "Patchwork Pals",
-       "Terrorscale Stalker",
-       "Ankylodon",
-       "Sasquawk"
      ]}
     # {:"Discover Hunter",
     #  [
