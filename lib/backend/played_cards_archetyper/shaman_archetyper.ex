@@ -25,87 +25,121 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Command of Neptulon",
        "Underbelly Angler"
      ]},
+    {:"Masochist Shaman",
+     [
+       "Stormrook",
+       "Nascent Bolt",
+       "Lightning Rod",
+       "Acolyte of Pain"
+     ]},
+    {:"Pirate Shaman",
+     [
+       "Treasure Distributor",
+       "Hozenm Roughhouser",
+       "Undercover Cultist",
+       "Sigil of Skydiving",
+       "Adrenaline Fiend"
+     ]},
     {:"Terran Shaman",
-     ["Arkonite Defense Crystal", "Lift Off", "Jim Raynor", "The Exodar", "SCV", "Ghost"]},
+     [
+       "SCV",
+       "Lift Off",
+       "Jim Raynor",
+       "The Exodar",
+       "Arkonite Defense Crystal"
+     ]},
+    # 5.5
     {:"Nebula Shaman",
      [
-       "Bumbling Bellhop",
-       "Al'Akir the Windlord",
-       "Nebula",
-       "With Upon a Star",
-       "Beast Speaker Taka",
-       "Naralex, Herald of the Flights"
+       "Nebula"
      ]},
     {:"Imbue Shaman",
      [
        "Flutterwing Guardian",
        "Bitterbloom Knight",
        "Petal Picker",
-       "Living Garden",
        "Resplendent Dreamweaver",
        "Glowroot Lure",
-       "Plucky Podling",
-       "Malorne the Waywatcher"
+       "Plucky Podling"
      ]},
-    # 5.5
     {:"Elemental Shaman",
      [
-       "Wailing Vapor",
-       "Sizzling Cinder",
-       "Slagmaw",
+       "Bralma Searstone",
+       "Lampligher",
+       "City Chief Esho",
        "Fire Fly",
        "Menacing Nimbus",
-       "Lamplighter",
        "Fire Breath",
-       "Bralma Searstone",
-       "Lava Flow",
-       "Slagclaw",
-       "City Chief Esho",
-       "Cinderfin"
+       "Wailing Vaipor",
+       "Slagclaw"
      ]},
     {:"Asteroid Shaman",
      [
-       "Ethereal Oracle",
        "Moonstone Mauler",
-       "Ultraviolet Breaker",
-       "Novice Zapper",
-       "Emerald Bounty",
-       "Bloodmage Thalnos",
-       "Bolide Behemoth",
-       "Patches the Pilot"
+       "Ultraviolet Breaker"
      ]},
+    {:"Endseer Shaman",
+     [
+       "Endbringer Umbra",
+       "Troubled Mechanic",
+       "Critter Caretaker",
+       "Mixologist",
+       "Prize Vendor",
+       "Meteor Storm",
+       "Wisp",
+       "Demolition Renovator",
+       "The Ceaseless Expanse",
+       "Incindius",
+       "Scarab Keychain",
+       "Farseer Nobundo"
+     ]},
+    # 10.5
     {:"Nebula Shaman",
      [
-       "Cabaret Headliner",
-       "Dissolving Ooze",
-       "Hagatha the Fabled",
-       "Parrot Sanctuary",
-       "Frosty Décor",
-       "Birdwatching",
-       "Elise the Navigator",
-       "Fyrakk the Blazing",
-       "Bob the Bartender",
-       "Lightning Storm",
-       "Turbulus",
-       "Wish Upon a Star",
-       "Fairy Tale Forest",
+       "Planetary Navigator",
+       "Marin the Manager",
+       "Matching Outfits",
        "Ysera, Emerald Aspect",
-       "Zilliax Deluxe 3000",
-       "Pop-Up Book",
-       "Living Flame",
-       "Shudderblock",
-       "Slight of the Firehawk",
-       "Baking Soda Volcano"
+       "Naralex, Herald of the Flights"
      ]},
+    {:"Pirate Shaman", ["Hozen Roughhouser"]},
+    {:"Masochist Shaman", ["Sand Art Elemental", "Skirting Death"]},
     {:"Imbue Shaman", ["Aspect's Embrace"]},
+    {:"Nebula Shaman",
+     [
+       "Parrot Sanctuary",
+       "Shudderblock",
+       "Turbulus",
+       "Baking Soda Volcano",
+       "Birdwatching",
+       "Bumbling Bellhop",
+       "Hagatha the Fabled",
+       "Elise the Navigator",
+       "Frosty Décor"
+     ]},
+    # 15.5
+    {:"Masochist Shamkan",
+     [
+       "Primordial Overseer",
+       "Flux Revenant",
+       "Paraglide",
+       "High King's Hammer",
+       "Thunderquake"
+     ]},
+    {:"Pirate Shaman",
+     [
+       "Zilliax Deluxe 3000",
+       "Patches the Pilot",
+       "Weapons Attendant",
+       "Space Pirate"
+     ]},
     {:"Elemental Shaman", ["Sizzling Swarm", "Volcanic Thrasher", "Lava Flow"]},
-    # 10.5
-    {:"Terran Shaman", ["Starport", "Lock On", "Dirty Rat"]},
+    {:"Endseer Shaman", ["Dirty Rat"]},
+    {:"Terran Shaman", ["Starport", "Lock On"]},
     {:"Nebula Shaman",
      [
        "Murloc Growfin",
        "Hex",
-       "The Ceaseless Expanse",
        "Cosmonaut",
        "Far Sight"
      ]}
