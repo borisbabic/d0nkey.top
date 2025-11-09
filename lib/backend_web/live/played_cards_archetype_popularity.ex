@@ -59,7 +59,11 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Asteroid Imbue Shaman" => "Imbue Shaman",
     "Starship Rafaamlock" => "Rafaamlock",
     "Quest Warrior" => "Control Warrior",
-    "Ysondre Warrior" => "Dragon Warrior",
+    "Terran Warrior" => "Control Warrior",
+    # "Ysondre Warrior" => "Dragon Warrior",
+    # Temporary
+    "Dragon Warrior" => "Lo'Gosh Warrior",
+    "Enrage Warrior" => "Lo'Gosh Warrior",
     #### WILD
     "XL HL Rainbow DK" => "Highlander DK",
     "XL HL Blood DK" => "Highlander DK",

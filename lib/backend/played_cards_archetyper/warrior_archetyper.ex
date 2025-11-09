@@ -30,66 +30,51 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
     {:"Control Warrior",
      [
        "Enter the Lost City",
+       "Murozond, Unbounded"
+     ]},
+    {:"Mech Warrior",
+     [
+       "Part Scrapper",
+       "Boom Wrench",
+       "Testing Dummy",
+       "Slam",
+       "Wreck'em and Deck'em",
+       "Crazed Alchemist",
+       "Mixologist"
+     ]},
+    {:"Lo'Gosh Warrior",
+     [
+       "Plucky Paintfin",
+       "The Curator",
+       "Lo'Gosh, Blood Fighter",
+       "Petal Peddler",
+       "Illusory Greenwing",
+       "Broll, Blood Fighter",
+       "Royal Librarian",
+       "Brood Keeper",
+       "Stonecarver",
+       "Windpeak Wyrm",
+       "Giftwrapped Whelp",
+       "Darkrider",
+       "Stadium Announcer",
+       "Sanguine Depths"
+     ]},
+    {:"Mech Warrior",
+     [
+       "Nightmare Lord Xavius"
+     ]},
+    {:"Control Warrior",
+     [
        "The Exodar",
        "Arkonite Defense Crystal",
        "Yamato Cannon",
        "Jim Raynor",
        "Marin the Manager",
        "The Ceaseless Expanse",
-       "Ancient of Yore",
        "Sleep Under the Stars",
        "Hostile Invader",
        "Battlecruiser",
        "New Heights"
-     ]},
-    {:"Mech Warrior",
-     [
-       "Part Scrapper",
-       "Wreck'em and Deck'em",
-       "Boom Wrench",
-       "Testing Dummy",
-       "Inventor Boom",
-       "Mixologist",
-       "Endbringer Umbra",
-       "Quality Assurance",
-       "Slam",
-       "Crazed Alchemist",
-       "Cubicle",
-       "Safety Goggles",
-       "Nightmare Lord Xavius",
-       "Chemical Spill",
-       "Elise the Navigator"
-     ]},
-    {:"Enrage Warrior",
-     [
-       "Tindral Sageswift",
-       "Ominous Nightmares",
-       "Eggbasher",
-       "Stonecarver",
-       "Sanguine Depths"
-     ]},
-    {:"Dragon Warrior",
-     [
-       "Windpeak Wyrm",
-       "Clutch of Corruption",
-       "Darkrider",
-       "Brood Keeper",
-       "Giftwrapped Whelp",
-       "Illusory Greenwing",
-       "Succumb to Madness",
-       "Petal Peddler"
-     ]},
-    {:"Draenei Warrior",
-     [
-       "Unyielding Vindicator",
-       "Stalwart Avenger",
-       "Troubled Mechanic",
-       "Crystalline Greatmace",
-       "Crimson Commander",
-       "Starlight Wanderer",
-       "Expedition Sergeant",
-       "Captain's Log",
-       "Stranded Spaceman"
      ]},
     {:"Control Warrior",
      [
@@ -98,19 +83,8 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Demolition Renovator",
        "Tortollan Traveler",
        "Brawl",
-       "Shellnado",
        "Bulwark of Azzinoth",
        "Hamm, the Hungry"
-     ]},
-    {:"Dragon Warrior",
-     [
-       "Cloud Serpent",
-       "Dragon Turtle",
-       "Creature of Madness",
-       "Fyrakk the Blazing",
-       "Ysondre",
-       "Naralex",
-       "Gorgonzormu"
      ]},
     {:"Control Warrior",
      [
@@ -125,8 +99,8 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Griftah, Trusted Vendor",
        "Ysera, Emerald Aspect"
      ]},
-    {:"Dragon Warrior", ["Shadowflame Suffusion"]},
-    {:"Mech Warrior", ["All You Can Eat", "Axe of the Forefathers"]}
+    {:"Mech Warrior",
+     ["All You Can Eat", "Quality Assurance", "Precursory Strike", "For Glory!", "Shellnado"]}
   ]
   @wild_config []
 
