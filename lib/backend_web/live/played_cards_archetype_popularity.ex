@@ -431,7 +431,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         games =
           base_criteria
           |> add_excluded_config(level - 1)
-          |> Hearthstone.DeckTracker.games_with_played_cards()
+          |> Hearthstone.DeckTracker.games_with_played_cards(timeout: :infinity)
 
         {popularity, _} = process_games(games)
 
