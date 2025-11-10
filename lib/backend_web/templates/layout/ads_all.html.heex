@@ -161,6 +161,21 @@
     }
   });
 </script>
+<script>
+window['nitroAds'].createAd('nitropay-smart-flex-mobile', {
+  "format": "smart-flex",
+  "placeholderColor": "#b5df30",
+  "smartFlexStickyTop": 0,
+  "report": {
+    "enabled": true,
+    "icon": true,
+    "wording": "Report Ad",
+    "position": "top-right"
+  },
+  "demo": <%= nitropay_demo?() %>,
+  "mediaQuery": "(min-width: 320px) and (max-width: 767px)"
+});
+</script>
 
 <script>
 window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
