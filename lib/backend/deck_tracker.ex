@@ -1414,6 +1414,11 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"deck_format", deck_format}, query),
     do: query |> where([player_deck: pd], pd.format == ^deck_format)
 
+  defp compose_games_query({"includes_latest_set", "yes"}, query) do
+    query
+    |> Hearthstone.includes_latest_set(:player_deck)
+  end
+
   defp compose_games_query({"player_deck_includes", cards}, query) do
     query
     |> Hearthstone.include_cards(cards, :player_deck)
