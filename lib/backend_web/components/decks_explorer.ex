@@ -160,6 +160,10 @@ defmodule Components.DecksExplorer do
           param={"order_by"} />
 
         <ArchetypeSelect id={"player_deck_archetype"} param={"player_deck_archetype"} selected={params["player_deck_archetype"] || []} title="Archetypes" />
+        <LivePatchDropdown
+          options={[{nil, "Any Decks"}, {"yes", "Includes Latest Set"}]}
+          title={"Latest Set"}
+          param={"includes_latest_set"} />
         <PlayableCardSelect id={"player_deck_includes"} format={params["format"]} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} format={params["format"]} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ArchetypeSelect :if={can_access_unaggregated?(@user, @filter_context)} played_cards_archetypes={true} id={"opponent_archetype"} param={"opponent_archetype"} selected={params["opponent_archetype"] || []} title="Opponent Archetype" />
@@ -398,6 +402,7 @@ defmodule Components.DecksExplorer do
       "player_not_mulligan",
       "player_drawn",
       "player_not_drawn",
+      "includes_latest_set",
       "player_kept",
       "player_not_kept",
       "force_fresh",

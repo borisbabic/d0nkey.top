@@ -1,6 +1,7 @@
 defmodule Backend.Streaming do
   @moduledoc false
   import Ecto.Query, warn: false
+  import Backend.Hearthstone, only: [filter_card_set: 2]
   alias Ecto.Multi
   alias Backend.Repo
   alias Backend.HSReplay
@@ -10,7 +11,6 @@ defmodule Backend.Streaming do
   alias Hearthstone.DeckTracker.Game
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Card
-  alias Backend.Hearthstone.CardBag
   alias Backend.Hearthstone.Deck
   alias Backend.Streaming.StreamerDeckInfoDto
 
@@ -501,9 +501,7 @@ defmodule Backend.Streaming do
   end
 
   defp compose_streamer_deck_query({"timeways", "yes"}, query) do
-    card_ids = timeways_ids()
-
-    query |> where([_sd, _s, d], fragment("? && ?", d.cards, ^card_ids))
+    Hearthstone.timeways(query)
   end
 
   defp compose_streamer_deck_query({"hsreplay_archetype", []}, query), do: query
@@ -563,15 +561,6 @@ defmodule Backend.Streaming do
   def perils_ids(filter_out \\ [106_682]), do: filter_card_set(1905, filter_out)
   def gdb_ids(filter_out \\ [111_915]), do: filter_card_set(1935, filter_out)
   def ed_ids(filter_out \\ [113_321, 113_973]), do: filter_card_set(1946, filter_out)
-
-  def timeways_ids(filter_out \\ [120_646, 118_636, 119_314]),
-    do: filter_card_set(1957, filter_out)
-
-  defp filter_card_set(card_set_id, filter_out_ids) do
-    for c <- CardBag.all_cards(),
-        c.card_set_id == card_set_id and c.id not in filter_out_ids,
-        do: c.id
-  end
 
   defp alterac_valley_card_ids() do
     Backend.HearthstoneJson.collectible_cards()
