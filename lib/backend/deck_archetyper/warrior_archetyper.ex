@@ -38,10 +38,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Safety Expert" in card_info.card_names ->
         :"Safety Warrior"
 
-      enrage_warrior?(card_info) ->
-        :"Enrage Warrior"
-
-      type_count(card_info, "dragon") > 5 ->
+      dragon?(card_info) ->
         :"Dragon Warrior"
 
       "Hydration Station" in card_info.card_names ->
@@ -49,6 +46,12 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
 
       "Ysondre" in card_info.card_names ->
         :"Ysondre Warrior"
+
+      type_count(card_info, "Dragon") > 5 ->
+        :"Dragon Warrior"
+
+      enrage_warrior?(card_info) ->
+        :"Enrage Warrior"
 
       "Briarspawn Drake" in card_info.card_names ->
         :"Briarspawn Warrior"
@@ -65,6 +68,18 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp dragon?(card_info) do
+    min_count?(card_info, 3, [
+      "Giftwrapped Whelp",
+      "Petal Peddler",
+      "Windspeak Wyrm",
+      "Brood Keeper",
+      "Darkrider",
+      "Netherspite Historian",
+      "Chronicle Keeper"
+    ])
   end
 
   defp enrage_warrior?(card_info) do
