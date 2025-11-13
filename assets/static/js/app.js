@@ -8,31 +8,30 @@
 // in "webpack.config.js".
 //
 // Import dependencies
-import "phoenix_html"
+import "phoenix_html";
 
-import Alpine from 'alpinejs'
-window.Alpine = Alpine
-Alpine.start()
+import Alpine from "alpinejs";
+window.Alpine = Alpine;
+Alpine.start();
 
 // Import local files
 //
 // Local files can be imported directly using relative paths, for example:
 // import socket from "./socket"
-import '@fortawesome/fontawesome-free/js/all'
+import "@fortawesome/fontawesome-free/js/all";
 
 // <NITROPAY_ADBLOCK_DETECTION>
 var dispatchNpBlocking = function (blocking) {
     if (document.dispatchEvent && window.CustomEvent) {
         document.dispatchEvent(
-            new CustomEvent('np.blocking', {
+            new CustomEvent("np.blocking", {
                 detail: {
                     blocking: blocking,
                 },
-            })
+            }),
         );
     }
-
-}
+};
 var npDetect = new (function () {
     this.blocking = false;
     var errcnt = 0;
@@ -45,27 +44,28 @@ var npDetect = new (function () {
             } else {
                 npDetect.blocking = true;
                 dispatchNpBlocking(npDetect.blocking);
-
             }
         };
         i.onload = () => {
             npDetect.blocking = false;
         };
 
-        i.src = 'https://s.nitropay.com/1.gif?' + Math.random() + '&adslot=';
+        i.src = "https://s.nitropay.com/1.gif?" + Math.random() + "&adslot=";
     }
     testImg();
 })();
 // </NITROPAY_ADBLOCK_DETECTION>
-document.addEventListener('DOMContentLoaded', () => {
-    if (!window['nads']) {
+document.addEventListener("DOMContentLoaded", () => {
+    if (!window["nads"]) {
         dispatchNpBlocking(true);
     }
 });
-document.addEventListener('np.blocking', (e) => {
+document.addEventListener("np.blocking", (e) => {
     if (e.detail.blocking) {
-        console.log("Ad blocking detected. Would you mind turning it off? If not, I understand");
-        var to_show = document.getElementsByClassName("is-shown-ad-blocking")
+        console.log(
+            "Ad blocking detected. Would you mind turning it off? If not, I understand",
+        );
+        var to_show = document.getElementsByClassName("is-shown-ad-blocking");
         for (var e of to_show) {
             console.log("changing display");
             console.log("changing display", e);
@@ -76,34 +76,57 @@ document.addEventListener('np.blocking', (e) => {
     }
 });
 
-document.addEventListener("nitroAds.createAd", event => {
+function fixDisplayNone(id) {
+    setTimeout(function () {
+        var element = document.querySelector(id);
+        if (element) {
+            console.log("Setting display for: " + id);
+            element.style.display = "block";
+        } else {
+            fixDisplayNone(id);
+        }
+    }, 100);
+}
+
+for (var id of [
+    "#nitropay-sticky-side-rail-mobile-short-close",
+    "#nitropay-sticky-side-rail-mobile-tall-close",
+]) {
+    fixDisplayNone(id);
+}
+document.addEventListener("nitroAds.createAd", (event) => {
     console.log("nitroAds.createAd " + event.detail.id);
     if (event.detail.id.startsWith("nitropay-sticky-side-rail-mobile")) {
         console.log("starts-with");
         var element = document.querySelector("#" + event.detail.id + "-close");
         if (element) {
-            element.style.display="block";
+            element.style.display = "block";
         } else {
             console.log("close not found for " + event.detail.id);
         }
     }
 });
 
-
 var clipboard = new ClipboardJS(".clip-btn-value");
-clipboard.on('success', function(e) {
-    console.log("Text we are copying is: " + e.text)
-    if (e.text && e.action === "copy" && e.trigger.hasAttribute("data-aria-on-copy")) {
-        e.trigger.setAttribute("aria-label", e.trigger.getAttribute( "data-aria-on-copy"))
+clipboard.on("success", function (e) {
+    console.log("Text we are copying is: " + e.text);
+    if (
+        e.text &&
+        e.action === "copy" &&
+        e.trigger.hasAttribute("data-aria-on-copy")
+    ) {
+        e.trigger.setAttribute(
+            "aria-label",
+            e.trigger.getAttribute("data-aria-on-copy"),
+        );
     }
-})
-document.addEventListener('DOMContentLoaded', () => {
-    var hideWithJs = document.getElementsByClassName("is-shown-js")
+});
+document.addEventListener("DOMContentLoaded", () => {
+    var hideWithJs = document.getElementsByClassName("is-shown-js");
     for (var i = 0; i < hideWithJs.length; i++) {
         hideWithJs[i].style.display = "";
     }
-})
-
+});
 
 // document.addEventListener('DOMContentLoaded', () => {
 //     console.log("Converting datetimes")
@@ -126,35 +149,43 @@ document.addEventListener('DOMContentLoaded', () => {
 //     }
 // })
 
-window.location_href_by_datalist = function(input_id, datalist_id) {
-    var input = document.getElementById(input_id)
-    if(input && input.value) {
-        var option = document.querySelector('option[value="' + input.value + '"]');
+window.location_href_by_datalist = function (input_id, datalist_id) {
+    var input = document.getElementById(input_id);
+    if (input && input.value) {
+        var option = document.querySelector(
+            'option[value="' + input.value + '"]',
+        );
         if (option && option.dataset && option.dataset.link) {
-            window.location.href = option.dataset.link
-
+            window.location.href = option.dataset.link;
         } else {
-            console.log("Can't location href, no option or option link")
+            console.log("Can't location href, no option or option link");
         }
     } else {
-        console.log("Can't location href, no input or input value")
+        console.log("Can't location href, no input or input value");
     }
-}
-window.canCloseDropdown = function(event) {
-    var skipElement = function(element) {
-        return element && (element.className == "report-link" || element.nodeName == "iframe")
-    }
+};
+window.canCloseDropdown = function (event) {
+    var skipElement = function (element) {
+        return (
+            element &&
+            (element.className == "report-link" || element.nodeName == "iframe")
+        );
+    };
     return !skipElement(event.target) && !skipElement(event.relatedTarget);
-}
+};
 
-window.uncheck = function(target_class) {
+window.uncheck = function (target_class) {
     var elements = document.getElementsByClassName(target_class);
     Array.prototype.forEach.call(elements, function (thing) {
         thing.checked = false;
     });
     return false;
-}
-window.hide_based_on_search = function(search_id, target_class, value_class = null)  {
+};
+window.hide_based_on_search = function (
+    search_id,
+    target_class,
+    value_class = null,
+) {
     var input = document.getElementById(search_id);
     if (input) {
         console.log("Searching for " + input.value);
@@ -162,49 +193,62 @@ window.hide_based_on_search = function(search_id, target_class, value_class = nu
         Array.prototype.forEach.call(elements, function (thing) {
             var value_elements = [thing];
             if (value_class) {
-                value_elements = thing.getElementsByClassName(value_class)
+                value_elements = thing.getElementsByClassName(value_class);
             }
-            var has_value = input.value === null || input.value === '' || Array.prototype.some.call(value_elements, function (value_element) {
-                return value_element.dataset && value_element.dataset.targetValue && value_element.dataset.targetValue.toLowerCase().search(input.value.toLowerCase()) > -1
-            });
+            var has_value =
+                input.value === null ||
+                input.value === "" ||
+                Array.prototype.some.call(
+                    value_elements,
+                    function (value_element) {
+                        return (
+                            value_element.dataset &&
+                            value_element.dataset.targetValue &&
+                            value_element.dataset.targetValue
+                                .toLowerCase()
+                                .search(input.value.toLowerCase()) > -1
+                        );
+                    },
+                );
             if (has_value) {
-                thing.style.display="";
+                thing.style.display = "";
             } else {
-                thing.style.display="none";
+                thing.style.display = "none";
             }
-        })
+        });
+    } else {
+        console.log("Could not find search");
     }
-    else {
-        console.log("Could not find search")
-    }
-}
+};
 
 window.set_display = function (id_or_elem, display_val) {
     var elem = id_or_elem;
-    if(typeof(id_or_elem) === "string" || id_or_elem instanceof String){
+    if (typeof id_or_elem === "string" || id_or_elem instanceof String) {
         elem = document.getElementById(id_or_elem);
     }
 
-    if(elem && elem.style) {
+    if (elem && elem.style) {
         elem.style.display = display_val;
     } else {
-        console.log("Can't set display on elem")
+        console.log("Can't set display on elem");
     }
-}
+};
 
 /**** <LiveViewCopyPasta> ****/
 // assets/js/app.js
-import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+import { Socket } from "phoenix";
+import { LiveSocket } from "phoenix_live_view";
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-var pad = function(te) {
-    return ('0' + te).slice(-2)
-}
+let csrfToken = document
+    .querySelector("meta[name='csrf-token']")
+    .getAttribute("content");
+var pad = function (te) {
+    return ("0" + te).slice(-2);
+};
 let Hooks = {};
 Hooks.InfiniteScrollLoaded = {
     mounted() {
-        console.log("mounting hook")
+        console.log("mounting hook");
         this.checkLoad();
         window.addEventListener("resize", () => this.checkLoad());
     },
@@ -213,28 +257,31 @@ Hooks.InfiniteScrollLoaded = {
     },
     checkLoad() {
         const el = this.el;
-        const bounding_rect  = el.getBoundingClientRect()
+        const bounding_rect = el.getBoundingClientRect();
         const atBottom = bounding_rect.bottom <= window.innerHeight;
         if (bounding_rect.top < 0) {
             console.log("scrolled some so skipping");
         } else if (atBottom) {
             console.log("at bottom");
             const child = el.querySelector("[phx-viewport-bottom]");
-            if (child && child.hasAttribute("phx-viewport-bottom") && child.getAttribute("phx-viewport-bottom") !== "") {
-                const event = child.getAttribute("phx-viewport-bottom")
+            if (
+                child &&
+                child.hasAttribute("phx-viewport-bottom") &&
+                child.getAttribute("phx-viewport-bottom") !== ""
+            ) {
+                const event = child.getAttribute("phx-viewport-bottom");
                 this.pushEventTo(el, event);
             } else {
                 console.log("No infinite scroll to send");
             }
         } else {
-            console.log("not at bottom")
+            console.log("not at bottom");
         }
-    }
-
+    },
 };
 console.log(Hooks);
 Hooks.LocalStorage = {
-    mounted () {
+    mounted() {
         this.handleEvent("store", (obj) => this.store(obj));
         this.handleEvent("clear", (obj) => this.clear(obj));
         this.handleEvent("restore", (obj) => this.restore(obj));
@@ -250,54 +297,52 @@ Hooks.LocalStorage = {
     },
     clear(obj) {
         localStorage.removeItem(obj.key);
-    }
+    },
 };
 Hooks.LocalDateTime = {
     mounted() {
         var timestamp = this.el.getAttribute("aria-label");
-        var date= new Date(parseInt(timestamp));
+        var date = new Date(parseInt(timestamp));
         if (Number.isInteger(date.getMonth())) {
-            this.el.innerHTML =
-                date.toLocaleString(navigator.language);
-                // [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
-                // + ' '
-                // + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
+            this.el.innerHTML = date.toLocaleString(navigator.language);
+            // [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join('-')
+            // + ' '
+            // + [ pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join(':')
         }
     },
-}
+};
 Hooks.CardRightClick = {
     mounted() {
-        this.el.addEventListener("auxclick", e => {
-            let card_id = this.el.getAttribute("card_id")
+        this.el.addEventListener("auxclick", (e) => {
+            let card_id = this.el.getAttribute("card_id");
             console.log("auxclick on card_id", card_id);
-            if(card_id) {
-                e.preventDefault()
-                this.pushEvent("card-right-click", {card_id: card_id});
+            if (card_id) {
+                e.preventDefault();
+                this.pushEvent("card-right-click", { card_id: card_id });
             }
-        })
-        this.el.addEventListener("contextmenu", e => {
-            if(this.el.getAttribute("card_id")) {
+        });
+        this.el.addEventListener("contextmenu", (e) => {
+            if (this.el.getAttribute("card_id")) {
                 console.log("Preventing default for context menu");
                 e.preventDefault();
             }
-        })
-    }
-
-}
+        });
+    },
+};
 let liveSocket = new LiveSocket("/live", Socket, {
-    params: {_csrf_token: csrfToken},
+    params: { _csrf_token: csrfToken },
     hooks: Hooks,
     dom: {
-        onBeforeElUpdated(from, to){
-          if(from._x_dataStack){
-            window.Alpine.clone(from, to) ;
-          }
-        }
-    }
-})
+        onBeforeElUpdated(from, to) {
+            if (from._x_dataStack) {
+                window.Alpine.clone(from, to);
+            }
+        },
+    },
+});
 
 // Connect if there are any LiveViews on the page
-liveSocket.connect()
+liveSocket.connect();
 
 // Expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
@@ -305,5 +350,5 @@ liveSocket.connect()
 // The latency simulator is enabled for the duration of the browser session.
 // Call disableLatencySim() to disable:
 // >> liveSocket.disableLatencySim()
-window.liveSocket = liveSocket
+window.liveSocket = liveSocket;
 /**** </LiveViewCopyPasta> ****/
