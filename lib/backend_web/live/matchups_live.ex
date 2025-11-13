@@ -33,7 +33,7 @@ defmodule BackendWeb.MatchupsLive do
           <span :if={@updated_at}>{Timex.from_now(@updated_at)}</span>
         </div>
         <div class="notification is-warning" :if={show_warning?()} >
-          This data uses old archetyping. Archetyping will be updated after there is more data about the new meta
+          This data uses old archetyping. Archetyping will be updated after there is more data with the latest patch
         </div>
         <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
@@ -133,8 +133,8 @@ defmodule BackendWeb.MatchupsLive do
   end
 
   defp show_warning?() do
-    start = ~N[2025-11-04 17:00:00]
-    end_time = ~N[2025-11-09 11:00:00]
+    start = ~N[2025-11-13 17:00:00]
+    end_time = ~N[9999-11-09 11:00:00]
     now = NaiveDateTime.utc_now()
 
     NaiveDateTime.compare(start, now) == :lt and
