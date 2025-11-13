@@ -61,9 +61,6 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Quest Warrior" => "Control Warrior",
     "Terran Warrior" => "Control Warrior",
     # "Ysondre Warrior" => "Dragon Warrior",
-    # Temporary
-    "Dragon Warrior" => "Lo'Gosh Warrior",
-    "Enrage Warrior" => "Lo'Gosh Warrior",
     #### WILD
     "XL HL Rainbow DK" => "Highlander DK",
     "XL HL Blood DK" => "Highlander DK",

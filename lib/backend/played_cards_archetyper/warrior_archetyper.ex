@@ -42,7 +42,7 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Crazed Alchemist",
        "Mixologist"
      ]},
-    {:"Lo'Gosh Warrior",
+    {:"Dragon Warrior",
      [
        "Plucky Paintfin",
        "The Curator",
