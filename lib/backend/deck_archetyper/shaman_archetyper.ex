@@ -60,8 +60,11 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Shaman"
 
-      "Nebula" in card_info.card_names ->
+      nebula?(card_info) ->
         :"Nebula Shaman"
+
+      "Hagatha the Fabled" in card_info.card_names ->
+        :"Hagatha Shaman"
 
       murmur?(card_info) ->
         :"Murmur Shaman"
@@ -81,9 +84,16 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       concede?(card_info) ->
         :"Concede Shaman"
 
+      "Nebula" in card_info.card_names ->
+        :"Nebula Shaman"
+
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp nebula?(card_info) do
+    min_count?(card_info, 2, ["Nebula", "Shudderblock"])
   end
 
   defp endseer?(card_info) do
