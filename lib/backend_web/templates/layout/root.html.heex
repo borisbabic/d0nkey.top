@@ -57,7 +57,6 @@
   <body>
     <main role="main" class={"#{ container_classes(@conn) }"}>
       <%= if enable_nitropay?(@conn) && show_ads?(@conn) do %>
-        <div id="nitropay-smart-flex-mobile" phx-update="ignore" class="is-hidden-tablet"></div>
         <div class="is-hidden-mobile sticky-stack column" phx-update="ignore" id="nitropay-sticky-side-rail-container">
           <%!-- <FunctionComponents.Ads.ad_blocking_hint/> --%>
         </div>
