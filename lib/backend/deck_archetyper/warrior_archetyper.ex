@@ -184,8 +184,8 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Barricade Basher" in card_info.card_names ->
         :"Basher Warrior"
 
-      raider?(card_info) ->
-        :"Raider Warrior"
+      gauntlet?(card_info) ->
+        :"Gauntlet Warrior"
 
       "Warsong Commander" in card_info.card_names ->
         :"Warsong Warrior"
@@ -223,7 +223,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
   defp sulthraze?(card_info), do: min_count?(card_info, 1, ["Sul'thraze"])
   defp n_roll?(card_info), do: "Blackrock 'n' Roll" in card_info.card_names
 
-  defp raider?(card_info) do
+  defp gauntlet?(card_info) do
     min_count?(card_info, 2, ["Bladed Gauntlet", "Bloodsail Raider"])
   end
 
