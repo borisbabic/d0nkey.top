@@ -63,6 +63,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       nebula?(card_info) ->
         :"Nebula Shaman"
 
+      endseer?(card_info) ->
+        :"Endseer Shaman"
+
       "Hagatha the Fabled" in card_info.card_names ->
         :"Hagatha Shaman"
 
@@ -71,9 +74,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
         :"Rainbow Shaman"
-
-      endseer?(card_info) ->
-        :"Endseer Shaman"
 
       "Farseer Wo" in card_info.card_names ->
         :"Wo Shaman"
