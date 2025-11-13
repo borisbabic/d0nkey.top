@@ -60,6 +60,10 @@ defmodule Backend.Hearthstone.CardBag do
     |> Stream.map(&elem(&1, 1))
   end
 
+  def fabled_companions() do
+    Util.ets_lookup(table(), :fabled_companions, [])
+  end
+
   def refresh_table(), do: GenServer.cast(@name, :refresh_table)
 
   def start_link(default) do
@@ -111,26 +115,31 @@ defmodule Backend.Hearthstone.CardBag do
         _ -> false
       end)
 
-    cards
-    |> Enum.filter(&Card.fabled?/1)
-    |> Enum.each(fn %{id: id, child_ids: child_ids} ->
-      group =
-        [id | child_ids]
-        |> Enum.filter(fn
-          card_id ->
-            # aszhara chose one stuff
-            aszhara_choose_one = [120_205, 120_200, 120_202, 120_204]
-            boons = [120_184, 120_185, 120_186]
-            broxigar_tokens = [120_168, 120_165, 120_169, 120_142, 120_167, 120_164, 120_166]
-            bad_ids = aszhara_choose_one ++ boons ++ broxigar_tokens ++ [baaaafam]
-            bad_id? = card_id in bad_ids
-            !bad_id?
-        end)
+    fabled_companions =
+      cards
+      |> Enum.filter(&Card.fabled?/1)
+      |> Enum.flat_map(fn %{id: id, child_ids: child_ids} ->
+        group =
+          [id | child_ids]
+          |> Enum.filter(fn
+            card_id ->
+              # aszhara chose one stuff
+              aszhara_choose_one = [120_205, 120_200, 120_202, 120_204]
+              boons = [120_184, 120_185, 120_186]
+              broxigar_tokens = [120_168, 120_165, 120_169, 120_142, 120_167, 120_164, 120_166]
+              bad_ids = aszhara_choose_one ++ boons ++ broxigar_tokens ++ [baaaafam]
+              bad_id? = card_id in bad_ids
+              !bad_id?
+          end)
 
-      for dbf_id <- group do
-        :ets.insert(table, {key_for_fabled_group(dbf_id), group})
-      end
-    end)
+        for dbf_id <- group do
+          :ets.insert(table, {key_for_fabled_group(dbf_id), group})
+        end
+
+        child_ids
+      end)
+
+    :ets.insert(table, {:fabled_companions, fabled_companions})
   end
 
   defp key_for_fabled_group(id), do: "fabled_group_#{id}"

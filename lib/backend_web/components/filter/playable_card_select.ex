@@ -48,7 +48,7 @@ defmodule Components.Filter.PlayableCardSelect do
 
     criteria =
       [
-        {"collectible", true},
+        :in_deckcode,
         {"order_by", "name_similarity_#{search}"},
         {"id_not_in", selected},
         # hack because "zill" didn't show zilliax deluxe 3000 on prod when limiting to num_to_show

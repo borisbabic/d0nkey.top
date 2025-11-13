@@ -1151,6 +1151,13 @@ defmodule Backend.Hearthstone do
     end
   end
 
+  defp compose_cards_query(:in_deckcode, query) do
+    fabled_companions = CardBag.fabled_companions()
+
+    query
+    |> where([card: c], c.collectible or c.id in ^fabled_companions)
+  end
+
   defp compose_cards_query(:actual_card_set, query) do
     query
     |> where([card: c], c.card_set_id > 0)
