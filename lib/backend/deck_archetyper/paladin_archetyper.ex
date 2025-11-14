@@ -166,9 +166,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       earthen_paladin?(card_info) ->
         :"Gaia Paladin"
 
-      holy_wrath_paladin?(card_info) ->
-        :"Holy Wrath Paladin"
-
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Paladin"
 
@@ -195,12 +192,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   defp earthen_paladin?(ci),
     do: min_count?(ci, 2, ["Stoneheart King", "Disciple of Amitus"])
-
-  defp holy_wrath_paladin?(card_info) do
-    "Holy Wrath" in card_info.card_names and
-      min_count?(card_info, 1, ["Shirvallah, the Tiger", "The Ceaseless Expanse"]) and
-      min_count?(card_info, 1, ["Lorekeeper Polkelt", "Order in the Court"])
-  end
 
   defp wild_exodia_paladin?(card_info) do
     min_count?(card_info, 3, [
