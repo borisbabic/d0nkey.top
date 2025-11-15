@@ -43,6 +43,8 @@ defmodule Backend.Battlefy.LineupFetcher do
 
   def enqueue_jobs(id) when is_binary(id), do: Battlefy.get_tournament(id) |> enqueue_jobs()
 
+  def enqueue_jobs(), do: nil
+
   defp enqueue_matches([], _), do: {:error, :no_matches}
 
   defp enqueue_matches(matches, id) do
@@ -61,5 +63,6 @@ defmodule Backend.Battlefy.LineupFetcher do
       end
     end)
   end
+
   def fetch_async(id_or_tournament), do: Task.start(fn -> enqueue_jobs(id_or_tournament) end)
 end

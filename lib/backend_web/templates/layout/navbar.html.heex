@@ -20,7 +20,7 @@
             <.navbar_item_link link={~p"/my-decks"} display={"My Decks"} />
             <.navbar_item_link link={~p"/my-replays"} display={"My Replays"} />
             <.navbar_item_link link={~p"/my-groups"} display={"My Groups"} />
-            <.navbar_item_link link={~p"/collection"} display={"Collection"} new={:lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-07-21 12:00:00])} /> 
+            <.navbar_item_link link={~p"/collection"} display={"Collection"} new={:lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-07-21 12:00:00])} />
             <%= if @conn |> user() |> battlefy?() do %>
               <.navbar_item_link link={~p"/battlefy/user-tournaments/#{user(@conn).battlefy_slug}"} display="My Battlefy Tournaments" />
             <% end %>
@@ -102,26 +102,33 @@
           <.navbar_item_link link={~p"/about"} display={"About"} />
         </.navbar_dropdown>
         <%!-- <.navbar_item_link link={~p"/mt/playoffs/summer_2025"}>Playoffs</.navbar_item_link> --%>
-        <.live_battlefy 
-          display={"Solary"} 
+        <.live_battlefy
+          display={"Last Chance"}
+          start={~N[2025-11-15 12:00:00]}
+          finish={~N[2025-11-19 17:30:00]}
+          battlefy_id={"690cc1bbcfc93e0013240930"}
+          twitch={"playhearthstone"}
+        />
+        <.live_battlefy
+          display={"Solary"}
           start={~N[2024-08-10 12:00:00]}
           finish={~N[2024-08-12 23:30:00]}
           battlefy_id={"66b63b2faedcd30040d11241"}
           twitch={"solaryhs"}
         />
 
-        <.live_battlefy 
-          display={"Worlds"} 
-          start={~N[2023-12-15 17:00:00]} 
-          finish={~N[2023-12-20 05:30:00]} 
+        <.live_battlefy
+          display={"Worlds"}
+          start={~N[2023-12-15 17:00:00]}
+          finish={~N[2023-12-20 05:30:00]}
           battlefy_id={"6578b996b94cda278bb85cca"}
           twitch={"playhearthstone"}
         />
 
-        <.live_battlefy 
-          display={"Worlds"} 
-          start={~N[2024-12-12 20:00:00]} 
-          finish={~N[2024-12-20 05:30:00]} 
+        <.live_battlefy
+          display={"Worlds"}
+          start={~N[2024-12-12 20:00:00]}
+          finish={~N[2024-12-20 05:30:00]}
           battlefy_id={"674fa20b0d896f0018364671"}
           twitch={"playhearthstone"}
         />
@@ -142,7 +149,7 @@
      <div class="navbar-end">
       <div :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2024-05-14T00:00:00]) == :gt and show_ads?(@conn)} class="navbar-item" aria-label="menu-item">
         <span class="is-hidden-mobile">
-          No ads & more 
+          No ads & more
         </span>
         <Components.Socials.patreon link={~p"/patreon"} />
       </div>
@@ -205,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <a href={"#{Routes.streaming_path(@conn, :streamer_decks) }"}>Streamer Decks</a>
       |
       <a href={"#{Routes.page_path(@conn, :donate_follow)}"}>Donate/Follow</a>
-      | 
+      |
       <a href={~p"/meta"}>Meta</a>
       |
     </nav>
