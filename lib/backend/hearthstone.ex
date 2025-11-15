@@ -721,6 +721,8 @@ defmodule Backend.Hearthstone do
   defp compose_decks_query({"archetype", archetype}, query) when is_binary(archetype),
     do: compose_decks_query({"archetype", [archetype]}, query)
 
+  defp compose_decks_query({"archetype", []}, query), do: query
+
   defp compose_decks_query({"archetype", archetypes}, query) when is_list(archetypes) do
     query |> where([deck: d], d.archetype in ^archetypes)
   end
