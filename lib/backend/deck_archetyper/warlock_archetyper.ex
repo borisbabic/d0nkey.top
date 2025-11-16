@@ -279,6 +279,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       genn?(card_info) ->
         :Evenlock
 
+      rafaam?(card_info) ->
+        :Rafaamlock
+
       discard?(card_info, 10) ->
         :Discolock
 
