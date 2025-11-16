@@ -566,6 +566,14 @@ defmodule Backend.Hearthstone do
     end
   end
 
+  def recalculate_lineup_archetypes(tournament_id, tournament_source) do
+    lineups = get_lineups(tournament_id, tournament_source)
+
+    Enum.flat_map(lineups, & &1.decks)
+    |> Enum.uniq_by(& &1.id)
+    |> recalculate_decks_archetypes()
+  end
+
   def recalculate_decks_archetypes(decks) do
     decks
     |> Enum.chunk_every(100)
