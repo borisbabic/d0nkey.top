@@ -148,6 +148,15 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation(card_info)} Quest Warrior")
 
+      "Unlucky Powderman" in card_info.card_names and highlander?(card_info) ->
+        :"HL Taunt Warrior"
+
+      n_roll?(card_info) and highlander?(card_info) ->
+        :"HL 'n' Roll Warrior"
+
+      igneous?(card_info) and highlander?(card_info) ->
+        :"HL Igneous Warrior"
+
       highlander?(card_info) ->
         :"Highlander Warrior"
 
@@ -178,7 +187,13 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       n_roll?(card_info) ->
         :"Rock 'n' Roll Warrior"
 
-      "Odyn, Prime Designate" in card_info.card_names ->
+      sulthraze?(card_info) and odyn?(card_info) ->
+        :"Sul'thraze Odyn Warrior"
+
+      igneous?(card_info) and odyn?(card_info) ->
+        :"Igneous Odyn Warrior"
+
+      odyn?(card_info) ->
         :"Odyn Warrior"
 
       "Barricade Basher" in card_info.card_names ->
@@ -220,7 +235,14 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     end
   end
 
-  defp sulthraze?(card_info), do: min_count?(card_info, 1, ["Sul'thraze"])
+  defp igneous?(card_info), do
+    min_count?(card_info, 2, ["Igneous Lavagorger", "The Ceaseless Expanse"])
+  end
+
+  defp odyn?(card_info), do: "Odyn, Prime Designate" in card_info.card_names
+
+  defp sulthraze?(card_info), do: "Sul'thraze" in card_info.card_names
+
   defp n_roll?(card_info), do: "Blackrock 'n' Roll" in card_info.card_names
 
   defp gauntlet?(card_info) do
