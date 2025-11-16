@@ -42,6 +42,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       amalgam?(card_info) ->
         :"Amalgam DK"
 
+      talanji?(card_info) ->
+        :"Talanji DK"
+
       control?(card_info) ->
         :"Control DK"
 
@@ -95,6 +98,15 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     end
   end
 
+  defp talanji?(card_info) do
+    "Talanji of the Graves" in card_info.card_names and
+      min_count?(card_info, 2, [
+        "Memoriam Manifest",
+        "Wakener of Souls",
+        "Endbringer Umbra"
+      ])
+  end
+
   defp amalgam?(card_info) do
     "Adaptive Amalgam" in card_info.card_names and
       min_count?(card_info, 3, [
@@ -144,10 +156,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
   defp frost?(ci) do
     min_count?(ci, 2, ["Horn of Winter", "Marrow Manipulator"])
-  end
-
-  defp leech?(ci, min_count) do
-    min_count?(ci, min_count, ["Infested Breath", "Sanguine Infestation", "Hideous Husk"])
   end
 
   defp buttons?(ci) do
