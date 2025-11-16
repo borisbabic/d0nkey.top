@@ -786,7 +786,7 @@ defmodule Backend.Hearthstone do
   defp compose_decks_query({"exclude_cards", []}, query), do: query
 
   defp compose_decks_query({"timeways", "yes"}, query) do
-    Hearthstone.timeways(query)
+    timeways(query)
   end
 
   defp compose_decks_query(unrecognized, query) do
