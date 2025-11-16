@@ -45,9 +45,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       control?(card_info) ->
         :"Control DK"
 
-      leech?(card_info, 3) ->
-        :"Succ DK"
-
       murloc?(card_info) ->
         :"Murloc DK"
 
@@ -136,6 +133,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Wild Pyromancer",
       "Threads of Despair",
       "Elise the Navigator",
+      "Sanguine Infestation",
       "The Headless Horseman"
     ])
   end
@@ -254,9 +252,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       wild_aggro_dk?(card_info) ->
         :"Aggro DK"
-
-      leech?(card_info, 3) ->
-        :"Succ DK"
 
       true ->
         fallbacks(card_info, class_name)
