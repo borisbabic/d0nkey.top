@@ -35,18 +35,10 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Wilted Shadow",
        "Carless Crafter",
        "Annoy-o-Tron",
-       "Critter Caretaker",
        "Careless Crafter",
        "Wild Pyromancer",
        "Rest in Peace"
      ]},
-    {:"Imbue Priest",
-     [
-       "Resplendent Dreamweaver",
-       "Sing-Along Buddy",
-       "Petal Picker"
-     ]},
-    # 5.5
     {:"Zarimi Priest",
      [
        "Timewinder Zarimi",
@@ -56,11 +48,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Tormented Dreadwing",
        "Scale Replica"
      ]},
-    {:"Imbue Priest",
-     [
-       "Flutterwing Guardian",
-       "Bitterbloom Knight"
-     ]},
+    # 5.5
     {:"Aviana Priest",
      [
        "XB-931 Housekeeper",
@@ -69,7 +57,6 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Twilight Medium",
        "Overplanner",
        "Sharp-Eyed Lookout",
-       "Living Flame",
        "Parrot Sanctuary",
        "Aviana, Elune's Chosen",
        "Champions of Azeroth",
@@ -124,17 +111,10 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
     {:"Wilted Priest",
      [
        "Hourglass Attendant",
-       "Blob of Tar",
        "Prize Vendor",
        "Divine Augur",
        "Tar Slime"
      ]},
-    {:"Imbue Priest",
-     [
-       "Funhouse Mirror",
-       "Papercraft Angel"
-     ]},
-    # 10.5
     {:"Egg Priest",
      [
        "Holy Eggbearer",
@@ -142,11 +122,8 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Behemoth Mask",
        "Hot Coals"
      ]},
+    # 10.5
     {:"Protoss Priest", ["Catch of the Day"]},
-    {:"Imbue Priest",
-     [
-       "Malorne the Waywatcher"
-     ]},
     {:"Aggro Priest",
      [
        "Menagerie Jug",
