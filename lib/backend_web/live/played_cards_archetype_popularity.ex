@@ -57,6 +57,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Cycle Rogue" => "Incindius Rogue",
     "Defense Terran Shaman" => "Terran Shaman",
     "Asteroid Imbue Shaman" => "Imbue Shaman",
+    "Nebula Shaman" => "Hagatha Shaman",
     "Starship Rafaamlock" => "Rafaamlock",
     "Quest Warrior" => "Control Warrior",
     "Terran Warrior" => "Control Warrior",

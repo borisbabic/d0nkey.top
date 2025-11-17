@@ -25,6 +25,17 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Command of Neptulon",
        "Underbelly Angler"
      ]},
+    {:"Hagatha Shaman",
+     [
+       "Furious Fowls",
+       "Death Roll",
+       "Living Flame",
+       "Bumbling Bellhop",
+       "Furious Fowls",
+       "Wish Upon a Star",
+       "Parrot Sanctuary",
+       "Al'Akir the Windlord"
+     ]},
     {:"Masochist Shaman",
      [
        "Stormrook",
@@ -32,14 +43,14 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Lightning Rod",
        "Acolyte of Pain"
      ]},
-    {:"Pirate Shaman",
-     [
-       "Treasure Distributor",
-       "Hozenm Roughhouser",
-       "Undercover Cultist",
-       "Sigil of Skydiving",
-       "Adrenaline Fiend"
-     ]},
+    # {:"Pirate Shaman",
+    #  [
+    #    "Treasure Distributor",
+    #    "Hozenm Roughhouser",
+    #    "Undercover Cultist",
+    #    "Sigil of Skydiving",
+    #    "Adrenaline Fiend"
+    #  ]},
     {:"Terran Shaman",
      [
        "SCV",
@@ -49,10 +60,6 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Arkonite Defense Crystal"
      ]},
     # 5.5
-    {:"Nebula Shaman",
-     [
-       "Nebula"
-     ]},
     {:"Imbue Shaman",
      [
        "Flutterwing Guardian",
@@ -94,55 +101,29 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Farseer Nobundo"
      ]},
     # 10.5
-    {:"Nebula Shaman",
+    {:"Hagatha Shaman",
      [
-       "Planetary Navigator",
-       "Marin the Manager",
-       "Matching Outfits",
-       "Ysera, Emerald Aspect",
-       "Naralex, Herald of the Flights"
+       "Hagatha the Fabled",
+       "Birdwatching",
+       "Turbulus",
+       "Shudderblock",
+       "Elise the Navigator",
+       "Frosty Décor",
+       "Murloc Growfin",
+       "Flight of the Firehawk",
+       "Zilliax Deluxe 3000",
+       "Primordial Overseer",
+       "Pop-Up Book",
+       "Muradin, High King",
+       "Avatar Form",
+       "High King's Hammer",
+       "Static Shock"
      ]},
-    {:"Pirate Shaman", ["Hozen Roughhouser"]},
     {:"Masochist Shaman", ["Sand Art Elemental", "Skirting Death"]},
     {:"Imbue Shaman", ["Aspect's Embrace"]},
-    {:"Nebula Shaman",
-     [
-       "Parrot Sanctuary",
-       "Shudderblock",
-       "Turbulus",
-       "Baking Soda Volcano",
-       "Birdwatching",
-       "Bumbling Bellhop",
-       "Hagatha the Fabled",
-       "Elise the Navigator",
-       "Frosty Décor"
-     ]},
-    # 15.5
-    {:"Masochist Shamkan",
-     [
-       "Primordial Overseer",
-       "Flux Revenant",
-       "Paraglide",
-       "High King's Hammer",
-       "Thunderquake"
-     ]},
-    {:"Pirate Shaman",
-     [
-       "Zilliax Deluxe 3000",
-       "Patches the Pilot",
-       "Weapons Attendant",
-       "Space Pirate"
-     ]},
     {:"Elemental Shaman", ["Sizzling Swarm", "Volcanic Thrasher", "Lava Flow"]},
-    {:"Endseer Shaman", ["Dirty Rat"]},
-    {:"Terran Shaman", ["Starport", "Lock On"]},
-    {:"Nebula Shaman",
-     [
-       "Murloc Growfin",
-       "Hex",
-       "Cosmonaut",
-       "Far Sight"
-     ]}
+    {:"Terran Shaman", ["Starport", "Lock On"]}
+    # 15.5
   ]
   @wild_config []
 
