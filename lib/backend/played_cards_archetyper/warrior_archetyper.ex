@@ -30,38 +30,43 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
     {:"Control Warrior",
      [
        "Enter the Lost City",
-       "Murozond, Unbounded"
-     ]},
-    {:"Mech Warrior",
-     [
-       "Part Scrapper",
-       "Boom Wrench",
-       "Testing Dummy",
-       "Slam",
-       "Wreck'em and Deck'em",
-       "Crazed Alchemist",
-       "Mixologist"
+       "Murozond, Unbounded",
+       "The Ceaseless Expanse",
+       "Dirty Rat",
+       "Marin the Manager"
      ]},
     {:"Dragon Warrior",
      [
        "Plucky Paintfin",
        "The Curator",
        "Lo'Gosh, Blood Fighter",
-       "Petal Peddler",
        "Illusory Greenwing",
        "Broll, Blood Fighter",
+       "Valeera, Blood Fighter",
+       "Whelp of the Bronze",
+       "Petal Peddler",
        "Royal Librarian",
        "Brood Keeper",
-       "Stonecarver",
-       "Windpeak Wyrm",
-       "Giftwrapped Whelp",
-       "Darkrider",
        "Stadium Announcer",
-       "Sanguine Depths"
+       "Stonecarver",
+       "Giftwrapped Whelp",
+       "Windpeak Wyrm",
+       "Darkrider",
+       "Dreamplanner Zephrys",
+       "Demolition Renovator",
+       "Sanguine Depths",
+       "Quality Assurance",
+       "Keeper of the Flame",
+       "Shadowflame Suffusion",
+       "Dragon Turtle"
      ]},
-    {:"Mech Warrior",
+    {:"Boom Wrench Warrior",
      [
-       "Nightmare Lord Xavius"
+       "Prize Vendor",
+       "Boom Wrench",
+       "Part Scrapper",
+       "Testing Dummy",
+       "Safety Expert"
      ]},
     {:"Control Warrior",
      [
@@ -69,38 +74,18 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Arkonite Defense Crystal",
        "Yamato Cannon",
        "Jim Raynor",
-       "Marin the Manager",
-       "The Ceaseless Expanse",
        "Sleep Under the Stars",
-       "Hostile Invader",
        "Battlecruiser",
-       "New Heights"
-     ]},
-    {:"Control Warrior",
-     [
-       "Guard Duty",
-       "Blob of Tar",
-       "Demolition Renovator",
        "Tortollan Traveler",
        "Brawl",
        "Bulwark of Azzinoth",
-       "Hamm, the Hungry"
-     ]},
-    {:"Control Warrior",
-     [
-       "Shield Block",
        "Starport",
-       "Concussive Shells",
-       "Dirty Rat",
        "Hydration Station",
-       "Bob the Bartender",
        "Tortolla",
-       "Dreamplanner Zephyrs",
-       "Griftah, Trusted Vendor",
-       "Ysera, Emerald Aspect"
-     ]},
-    {:"Mech Warrior",
-     ["All You Can Eat", "Quality Assurance", "Precursory Strike", "For Glory!", "Shellnado"]}
+       "Elise the Navigator",
+       "Hostile Invader",
+       "New Heights"
+     ]}
   ]
   @wild_config []
 
