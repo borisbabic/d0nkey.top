@@ -67,7 +67,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Resistance Aura",
        "Cardboard Golem",
        "Nightmare Lord Xavius",
-       "Robocaller",
        "Scarab Keychain",
        "Metal Detector",
        "Chrono-Lord Deios",
@@ -76,6 +75,7 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Bob the Bartender",
        "Oh Manager!"
      ]},
+    # 5.5
     {:"Lynessa Paladin",
      [
        "Snatch and Grab",
@@ -85,11 +85,9 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Snatch and Grab",
        "Sharp Shipment",
        "Treasure Hunter Eudora",
-       "Whack-A-Gnoll",
        "Concierge",
        "Conniving Conman"
      ]},
-    # 5.5
     {:"Terran Paladin",
      [
        "Salvage the Bunker",
