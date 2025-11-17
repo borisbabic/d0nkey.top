@@ -60,6 +60,11 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Starship Rafaamlock" => "Rafaamlock",
     "Quest Warrior" => "Control Warrior",
     "Terran Warrior" => "Control Warrior",
+    "Starship Warrior" => "Control Warrior",
+    "Hydration Warrior" => "Control Warrior",
+    "Handbuff Warrior" => "Dragon Warrior",
+    "Mech Warrior" => "Boom Wrench Warrior",
+    "Safety Warrior" => "Boom Wrench Warrior",
     # "Ysondre Warrior" => "Dragon Warrior",
     #### WILD
     "XL HL Rainbow DK" => "Highlander DK",
@@ -291,6 +296,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     ]
 
     if Map.has_key?(criteria, "player_class") do
+      title = "#{criteria["player_class"]} #{mode}"
+
       {
         :noreply,
         socket
@@ -299,6 +306,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         |> assign_config_map(criteria)
         |> update_context(selected_params)
         |> fetch_async(socket, mode)
+        |> assign_meta_tags(%{
+          title: title
+        })
       }
     else
       {:noreply,
