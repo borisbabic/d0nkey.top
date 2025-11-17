@@ -49,59 +49,103 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Arkonite Defense Crystal",
        "The Exodar"
      ]},
-    {:"Protoss Rogue", ["Blink", "Dark Templar", "Void Ray", "High Templar"]},
-    {:"Fyrakk Rogue",
+    {:"Protoss Rogue", ["Blink", "Dark Templar", "Void Ray", "High Templar", ""]},
+    {:"Cycle Rogue",
      [
-       "Creature of Madness",
-       "Shaladrassil",
-       "Ashamane",
-       "Ysera, Emerald Aspect",
-       "Opu the Unseen",
-       "Customs Enforcer",
-       "Observer of Mysteries"
+       "Everything Must Go!",
+       "Eat! The! Imp!",
+       "Playhouse Giant",
+       "Twisted Webweaver",
+       "Everburning Phoenix",
+       "Wisp",
+       "Moonstone Mauler"
      ]},
     # 5.5
-    {:"Incindius Rogue", ["Twisted Webweaver", "Everburning Phoenix", "Ethereal Oracle"]},
-    {:"Weapon Rogue",
-     ["Sharp Shipment", "The Black Knight", "Naralex, Herald of the Flights", "Eviscerate"]},
-    {:"Incindius Rogue",
+    {:"Maestra Rogue",
      [
-       "Eat! The! Imp!",
-       "Quasar",
-       "Incindius",
-       "Fae Trickster",
-       "Chrono-Lord Deios",
-       "Fan of Knives"
+       "Assassinate",
+       "Sea Shill",
+       "Tess Greymane",
+       "Snatch and Grab"
+     ]},
+    {:"Weapon Rogue",
+     [
+       "Sharp Shipment"
+     ]},
+    {:"Combo Rogue",
+     [
+       "SI:7 Agent",
+       "Web of Deception",
+       "Eredar Skulker"
      ]},
     {:"Shaffar Rogue",
      [
        "Nexus-Prince Shaffar",
        "Troubled Double",
-       "Lucky Comet",
        "Bargain Bin Buccaneer"
+     ]},
+    {:"Quasar Rogue",
+     [
+       "Fae Trickster",
+       "Quasar",
+       "Knickknack Shack",
+       "Ethereal Oracle"
+     ]},
+    # 10.5
+    {:"Maestra Rogue",
+     [
+       "Dread Corsair",
+       "Maestra, Mask Merchant",
+       "Prize Vendor",
+       "Cultist Map",
+       "Mimicry"
+     ]},
+    {:"Fyrakk Rogue",
+     [
+       "Ysera, Emerald Aspect",
+       "Customs Enforcer",
+       "Metal Detector",
+       "Shaladrassil",
+       "Observer of Mysteries",
+       "Nightmare Lord Xavius",
+       "Opu the Unseen",
+       "Creature of Madness",
+       "Elise the Navigator"
+       # "Fyrakk the Blazing",
+       # "Naralex, Herald of the Flights"
+     ]},
+    {:"Combo Rogue",
+     [
+       "Platysaur",
+       "Zilliax Deluxe 3000",
+       "Lucky Comet",
+       "Backstab",
+       "Chrono Daggers",
+       "Nightmare Fuel"
      ]},
     {:"Weapon Rogue",
      [
+       "Fyrakk the Blazing",
        "Griftah, Trusted Vendor",
        "Swarthy Swordshiner",
-       "Flashback",
+       "Raiding Party",
+       "Eviscerate",
+       "Sandbox Scoundrel",
        "Foxy Fraud",
-       "Raiding Party"
+       "Dubious Purchase",
+       "Garona Halforcen",
+       "Sparerock Collector",
+       "The Kingslayers",
+       "Flashback"
      ]},
-    # 10.5
-    {:"Incindius Rogue", ["Crystal Tusk"]},
-    {:"Fyrakk Rogue",
-     [
-       "Nightmare Lord Xavius",
-       "Elise the Navigator",
-       "Metal Detector"
-     ]},
-    {:"Incindius Rogue",
-     [
-       "Backstab",
-       "Cultist Map",
-       "Oh, Manager!"
-     ]},
+    # {:"Weapon Rogue",
+    #  [
+    #    "Griftah, Trusted Vendor",
+    #    "Swarthy Swordshiner",
+    #    "Flashback",
+    #    "Foxy Fraud",
+    #    "Raiding Party"
+    #  ]},
     {:"Starship Rogue", ["Mixologist"]},
     {:"Quest Rogue",
      [
@@ -112,15 +156,6 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Illusory Greenwing",
        "Interrogation",
        "Merchant of Legend"
-     ]},
-    {:"Fyrakk Rogue", ["Demolition Renovator", "Dubious Purchase"]},
-    {:"Fyrakk Rogue",
-     [
-       "Preparation",
-       "Shadowstep",
-       "Raiding Party",
-       "Marin the Manager",
-       "Foxy Fraud"
      ]},
     {:"Whizbang Rogue",
      [
