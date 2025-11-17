@@ -42,11 +42,11 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       amalgam?(card_info) ->
         :"Amalgam DK"
 
-      control?(card_info) ->
-        :"Control DK"
-
       leech?(card_info, 3) ->
         :"Succ DK"
+
+      control?(card_info) ->
+        :"Control DK"
 
       murloc?(card_info) ->
         :"Murloc DK"
