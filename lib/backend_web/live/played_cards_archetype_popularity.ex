@@ -54,7 +54,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Starship Paladin" => "Terran Paladin",
     "Menagerie Priest" => "Aggro Priest",
     "Pain Priest" => "Aggro Priest",
-    "Cycle Rogue" => "Incindius Rogue",
+    "Ashamane Rogue" => "Fyrakk Rogue",
     "Defense Terran Shaman" => "Terran Shaman",
     "Asteroid Imbue Shaman" => "Imbue Shaman",
     "Nebula Shaman" => "Hagatha Shaman",
