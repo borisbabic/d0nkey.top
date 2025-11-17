@@ -389,6 +389,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_astalor_rogue?(card_info) ->
         :"Astalor Rogue"
 
+      "King Llane" in card_info.card_names and wild_pirate_rogue?(card_info) ->
+        :"Kingslayer Pirate Rogue"
+
       wild_pirate_rogue?(card_info) ->
         :"Pirate Rogue"
 
