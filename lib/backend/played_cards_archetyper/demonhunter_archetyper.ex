@@ -7,22 +7,14 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   @standard_config [
     {:"Quest DH", ["Unleash the Colossus"]},
     {:"Whizbang DH", ["Wish", "Chaos Nova"]},
-    {:"Armor DH",
-     [
-       "Arkonite Defense Crystal",
-       "The Exodar",
-       "Dimensional Core",
-       "Felfused Battery",
-       "The Legion's Bane",
-       "Warp Drive",
-       "Shattershard Turret"
-     ]},
     {:"Peddler DH",
      [
        "Spirit Peddler",
        "Fyrakk the Blazing",
        "Raging Felscreamer",
        "Window Shopper",
+       "Chrono-Lord Deios",
+       "Incindius",
        "Elise the Navigator"
      ]},
     {:"Aggro Demon Hunter",
@@ -33,8 +25,19 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Living Flame",
        "Hot Coals",
        "Sizzling Cinder",
+       "Slumbering Sprite",
+       "Dreamplanner Zephyrs",
        "Battlefiend",
        "Spirit of the Team"
+     ]},
+    {:"Cliff Dive DH",
+     [
+       "Cliff Dive",
+       "Colifero the Artist",
+       "Illidari Inquisitor",
+       "Fae Trickster",
+       "Briarspawn Drake",
+       "Magtheridon, Unreleased"
      ]},
     # 5.5
     {:"No Minion DH",
@@ -44,28 +47,31 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "The Eternal Hold",
        "Lasting Legacy",
        "Emergency Meeting",
-       "Demonic Deal",
-       "Aeon Rend"
+       "Demonic Deal"
      ]},
-    {:"Cliff Dive DH", ["Cliff Dive", "Colifero the Artist", "Illidari Inquisitor"]},
-    {:"Broxigar DH",
-     ["Glacial Shard", "Bloodmage Thalnos", "Broxigar", "BCrimson Sigil Runner", "Platysaur"]},
-    {:"Aggro DH", ["Slumbering Sprite", "Customs Enforcer"]},
-    {:"Cliff Dive DH", ["Blob of Tar"]},
-    # 10.5
+    {:"Armor DH",
+     [
+       "Arkonite Defense Crystal",
+       "The Exodar",
+       "Dimensional Core",
+       "Dissolving Ooze",
+       "Shattershard Turret",
+       "Felfused Battery"
+     ]},
+    {:"Cliff Dive DH",
+     ["Blob of Tar", "Headhunt", "Aeon Rend", "Ravenous Felhunter", "Inflitrate"]},
     {:"Peddler DH",
      [
-       "Overplanner",
        "Tuskpiercer",
        "Nightmare Lord Xavius",
-       "Creature of Madness",
+       "Ancient of Yore",
        "Wyvern's Slumber",
-       "Perennial Serpent",
-       "Axe of Cenarius",
-       "First Portal to Argus"
+       "Perennial Serpent"
+       # "Axe of Cenarius",
+       # "First Portal to Argus"
      ]},
-    {:"Aggro DH", ["Insect Claw"]},
-    {:"No Minion DH", ["Time-Lost Glaive", "Paraglide", "Chaos Strike"]},
+    {:"Aggro DH", ["Time-Lost Glaive", "Zilliax Deluxe 3000"]},
+    # 10.5
     {:"Peddler DH",
      [
        "Illidari Studies",
