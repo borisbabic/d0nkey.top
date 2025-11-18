@@ -66,7 +66,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Blood Tap"
      ]},
     {:"Menagerie DK", ["Menagerie Mug", "Menagerie Jug"]},
-    {:"Amalgam DK", ["Adaptive Amalgam", "Braingill", "Stranded Spaceman"]},
+    {:"Amalgam DK", ["Adaptive Amalgam", "Braingill", "Floppy Hydra"]},
     {:"Control DK",
      [
        "The Ceaseless Expanse",
@@ -114,12 +114,18 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
      ]},
     {:"Herenn DK",
      [
+       "Giftwrapped Whelp",
+       "Petal Peddler",
+       "Ghouls' Night",
        "Ancient Raptor",
        "Troubled Mechanic",
+       "Bonechill Stegodon",
+       "Soulrest Ceremony",
+       "Eternal Layover",
        "Zergling",
-       "Bwonsamdi",
-       "Talanji of the Graves",
-       "What Befell Zandalar",
+       # "Bwonsamdi",
+       # "Talanji of the Graves",
+       # "What Befell Zandalar",
        "Overplanner"
      ]},
     # 10.5
@@ -130,7 +136,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     {:"Herenn DK",
      [
        "Living Paradox",
-       "Ghouls' Night",
        "Soul Searching",
        "Endbringer Umbra",
        "Memoriam Manifest",
@@ -152,7 +157,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     # 15.5
     {:"Herenn DK",
      [
-       "Bonechill Stegodon",
        "Scarab Keychain"
      ]},
     {:"Starship DK", ["Brittlebone Buccaneer", "Silk Stitching"]},
