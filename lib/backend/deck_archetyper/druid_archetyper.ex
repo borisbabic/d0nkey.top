@@ -211,14 +211,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
 
+      "Barnes" in card_info.card_names ->
+        :"Barnes Druid"
+
       "Malygos" in card_info.card_names ->
         :"Malygos Druid"
 
       "Champions of Azeroth" in card_info.card_names ->
         :"Champions Druid"
-
-      "Barnes" in card_info.card_names ->
-        :"Barnes Druid"
 
       min_keyword_count?(card_info, 4, "spell-damage") ->
         :"Spell Damage Druid"
