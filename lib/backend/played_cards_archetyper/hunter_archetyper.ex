@@ -40,10 +40,20 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Youthful Brewmaster",
        "Parrot Sanctuary",
        "Bob the Bartender",
+       "Parallax Cannon",
+       "Card Grader",
+       "Astral Vigilant",
        "Mixologist",
        "Alien Encounters",
        "Griftah, Trusted Bendor",
        "Rangari Scout",
+       "Griftah, Trusted Vendor",
+       "Travel Agent",
+       "Devilsaur Mask",
+       "Elise the Navigator",
+       "The Ceaseless Expanse",
+       "Zilliax Deluxe 3000",
+       "Wisp",
        "Nightmare Lord Xavius"
      ]},
     {:"Imbue Hunter",
@@ -52,6 +62,8 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Bitterbloom Knight",
        "Umbraclaw",
        "Resplendent Dreamweaver",
+       "Exotic Houndmaster",
+       "Magma Hound",
        "Flutterwing Guardian"
      ]},
     {:"Beast Hunter",
@@ -63,7 +75,17 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Mother Duck"
      ]},
     # 5.5
-    {:"No Hand Hunter", ["Rockskipper", "Vicious Slitherspear", "Precise Shot", "King Maluk"]},
+    {:"No Hand Hunter",
+     [
+       "Rockskipper",
+       "Vicious Slitherspear",
+       "Precise Shot",
+       "King Maluk",
+       "Wormhole",
+       "Arrow Retriever",
+       "Devious Coyote",
+       "Zergling"
+     ]},
     {:"Zerg Hunter",
      [
        "Nydus Worm",
@@ -79,11 +101,10 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
      [
        "Adaptive Amalgam",
        "Sailboat Captain",
-       "Lunar Trailblazer",
-       "Devilsaur Mask"
+       "Lunar Trailblazer"
      ]},
     # 10.5
-    {:"Beast Hunter", ["Dreambound Raptor", "Cower in Fear", "Paltry Flutterwing", "Workhorse"]},
+    {:"Beast Hunter", ["Paltry Flutterwing"]},
     {:"Discover Hunter", ["Scarab Keychain", "Exarch Naielle"]},
     {:"Beast Hunter",
      ["Catch of the Day", "Remote Control", "Patchwork Pals", "R.C. Rampage", "Jungle Gym"]},
@@ -104,18 +125,8 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Cup o' Muscle",
        "Reserved Spot",
        "Ranger Gilly"
-     ]},
-    # 15.5
-    {:"Discover Hunter",
-     [
-       "Parallax Cannon",
-       "Glacial Shard",
-       "Niri of the Crater",
-       "Astral Vigilant",
-       "Bloodmage Thalnos",
-       "Cult Neophyte",
-       "Incindius"
      ]}
+    # 15.5
     # {:"Discover Hunter",
     #  [
     #    "Rockskipper",
