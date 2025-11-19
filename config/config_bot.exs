@@ -8,6 +8,7 @@ config :backend, QuantumScheduler,
     # {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},
     {"17 * * * *", fn -> Backend.DeckFeedItemUpdater.update_deck_items() end},
     {"*/5 * * * *", fn -> Backend.Reporting.check_game_count() end},
+    {"*/10 * * * *", fn -> Backend.Reporting.check_oban_insert_available_count() end},
     {"47 * * * *", fn -> Backend.Feed.decay_feed_items() end},
     {"51 * * * *", fn -> Hearthstone.DeckTracker.auto_aggregate_matchups(2) end},
     # {"3 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
@@ -194,6 +195,7 @@ config :backend, Oban,
   queues: queues
 
 config :backend,
-  five_min_game_threshold: 100,
+  five_min_game_threshold: 500,
+  available_game_insert_threshold: 1000,
   twitch_bot_chats: ["d0nkeyhs", "d0nkeytop", "titosantanahs"],
   enable_twitch_bot: true

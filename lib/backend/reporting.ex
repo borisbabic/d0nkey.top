@@ -20,4 +20,23 @@ defmodule Backend.Reporting do
       )
     end
   end
+
+  def check_oban_insert_available_count() do
+    threshold = Application.get_env(:backend, :available_game_insert_threshold)
+
+    if threshold do
+      query =
+        from oj in "oban_jobs", where: oj.state == "available" and oj.queue == "hs_game_inserter"
+
+      count = Repo.aggregate(query, :count)
+
+      if count > threshold do
+        Bot.MessageHandlerUtil.send_reporting_message("Too many games in queue! #{count}")
+      else
+        Bot.MessageHandlerUtil.send_muted_reporting_message(
+          "Not too many games in queue! #{count}"
+        )
+      end
+    end
+  end
 end
