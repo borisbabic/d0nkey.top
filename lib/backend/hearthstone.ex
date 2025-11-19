@@ -1035,6 +1035,15 @@ defmodule Backend.Hearthstone do
     lineups([{"tournament_id", tournament_id}, {"tournament_source", tournament_source}])
   end
 
+  def delete_lineups(tournament_id, tournament_source) do
+    query =
+      from(l in Lineup,
+        where: l.tournament_id == ^tournament_id and l.tournament_source == ^tournament_source
+      )
+
+    Repo.delete_all(query)
+  end
+
   def parse_gm_season("2020_2"), do: {:ok, {2020, 2}}
   def parse_gm_season("2021_1"), do: {:ok, {2021, 1}}
   def parse_gm_season("2021_2"), do: {:ok, {2021, 2}}

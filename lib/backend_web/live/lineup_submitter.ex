@@ -49,12 +49,16 @@ defmodule BackendWeb.LineupSubmitterLive do
                 <thead>
                   <tr>
                     <th>Previous Tournaments for {@user.battletag}</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr :for={tournament_id <- tournament_ids}>
                     <td class="level">
                       <a href={~p"/tournament-lineups/#{@user.battletag}/#{tournament_id}"}">{tournament_id}</a>
+                    </td>
+                    <td>
+                      <botton :on-click="delete-lineups" phx-value-id={tournament_id} class="button is-danger">Delete</botton>
                     </td>
                   </tr>
                 </tbody>
@@ -96,6 +100,16 @@ defmodule BackendWeb.LineupSubmitterLive do
 
     Command.ImportLineups.import(data, tournament_id, source)
     {:noreply, socket |> assign(:view_url, ~p"/tournament-lineups/#{source}/#{tournament_id}")}
+  end
+
+  def handle_event(
+        "delete-lineups",
+        %{"id" => id},
+        %{assigns: %{user: %{battletag: battletag}}} = socket
+      ) do
+    Backend.Hearthstone.delete_lineups(id, battletag)
+    # {socket.assigns.params["tournament_id"]}")}
+    {:noreply, socket |> assign(:view_url, nil)}
   end
 
   defp custom_tournament_source?(user),
