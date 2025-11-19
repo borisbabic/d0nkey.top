@@ -208,6 +208,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Star Grazer" in card_info.card_names ->
         :"Star Grazer Druid"
 
+      "C'Thun, the Shattered" in card_info.card_names ->
+        :"C'Thun Druid"
+
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
 
