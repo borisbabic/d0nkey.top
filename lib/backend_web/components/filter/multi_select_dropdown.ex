@@ -134,6 +134,14 @@ defmodule Components.MultiSelectDropdown do
   end
 
   def handle_event(
+        "reset_selected",
+        _,
+        %{assigns: %{updater: updater}} = socket
+      ) do
+    {:noreply, updater.(socket, [])}
+  end
+
+  def handle_event(
         "remove_selected",
         %{"value" => value},
         %{assigns: %{normalizer: normalizer, current: current, updater: updater}} = socket
@@ -157,6 +165,10 @@ defmodule Components.MultiSelectDropdown do
     normalized = normalizer.(value)
 
     Enum.any?(selected, &(normalizer.(&1) == normalized))
+  end
+
+  defp merged_on_click(nil, _, _) do
+    "reset_selected"
   end
 
   defp merged_on_click(value, selected, normalizer) do
