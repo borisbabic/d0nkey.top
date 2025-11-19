@@ -208,17 +208,20 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Star Grazer" in card_info.card_names ->
         :"Star Grazer Druid"
 
+      "C'Thun, the Shattered" in card_info.card_names ->
+        :"C'Thun Druid"
+
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Druid"
+
+      "Barnes" in card_info.card_names ->
+        :"Barnes Druid"
 
       "Malygos" in card_info.card_names ->
         :"Malygos Druid"
 
       "Champions of Azeroth" in card_info.card_names ->
         :"Champions Druid"
-
-      "Barnes" in card_info.card_names ->
-        :"Barnes Druid"
 
       min_keyword_count?(card_info, 4, "spell-damage") ->
         :"Spell Damage Druid"
