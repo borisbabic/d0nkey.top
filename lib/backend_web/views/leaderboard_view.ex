@@ -450,6 +450,7 @@ defmodule BackendWeb.LeaderboardView do
       show_mt_column: show_mt_column?(leaderboard),
       leaderboard_id: leaderboard.leaderboard_id,
       updated_at: leaderboard.upstream_updated_at,
+      total: Map.get(params, :total),
       dropdowns: [limit_dropdown | create_dropdowns(params)],
       old: old?(leaderboard, conn.query_params["offset"]),
       season_id: leaderboard && leaderboard.season_id,
