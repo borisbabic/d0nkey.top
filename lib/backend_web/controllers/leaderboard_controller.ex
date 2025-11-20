@@ -48,6 +48,7 @@ defmodule BackendWeb.LeaderboardController do
     else
       criteria = create_criteria(params)
       leaderboard = get_shim(criteria, params)
+      total = total(leaderboard)
       compare_to = params["compare_to"]
       comparison = get_comparison(criteria, compare_to)
       ladder_mode = parse_ladder_mode(params)
@@ -69,6 +70,7 @@ defmodule BackendWeb.LeaderboardController do
         skip_cn: skip_cn,
         comparison: comparison,
         ladder_points: ladder_points,
+        total: total,
         show_ratings: show_ratings(params, leaderboard),
         ladder_mode: ladder_mode
       })
@@ -82,6 +84,21 @@ defmodule BackendWeb.LeaderboardController do
       |> Map.put_new("leaderboardId", "STD")
 
     index(conn, new_params)
+  end
+
+  defp total(%{entries: [%{season_id: season_id} | _]}) when is_integer(season_id) do
+    do_total(season_id)
+  end
+
+  defp total(%{season: season}) when is_integer(season) do
+    do_total(season)
+  end
+
+  defp do_total(season_or_id) do
+    case Leaderboards.get_season(season_or_id) do
+      %{total_size: total_size} when is_integer(total_size) -> total_size
+      _ -> nil
+    end
   end
 
   defp create_criteria(params) do

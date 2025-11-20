@@ -1490,12 +1490,16 @@ defmodule Backend.Leaderboards do
     Repo.all(Season)
   end
 
-  defp ensure_season_full(season),
-    do:
-      season
-      |> ApiSeason.ensure_region()
-      |> ApiSeason.ensure_leaderboard_id()
-      |> Map.put_new(:season_id, nil)
+  defp ensure_season_full(season) do
+    season
+    |> ApiSeason.ensure_region()
+    |> ApiSeason.ensure_leaderboard_id()
+    |> Map.put_new(:season_id, nil)
+  end
+
+  def get_season(id) when is_integer(id) do
+    Repo.get(Season, id)
+  end
 
   def get_season(%Season{id: id} = season) when is_integer(id), do: {:ok, season}
 

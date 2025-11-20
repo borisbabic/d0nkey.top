@@ -4,6 +4,9 @@
     <%= if @official_link do %>
     |    <a target="_blank" href={"#{ @official_link }"}>Official Site</a>
     <% end %>
+    <%= if @total do %>
+      |     Total Players: <%= @total %>
+    <% end %>
     <%= if @updated_at do %>
     |     Updated at <%= render_datetime @updated_at %>
     <% end %>
