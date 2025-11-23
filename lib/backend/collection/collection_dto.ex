@@ -61,13 +61,29 @@ defmodule Backend.CollectionManager.CollectionDto do
   defp parse_cards(%{"cards" => cards}) do
     Enum.reduce_while(cards, {:ok, []}, fn raw_card, {:ok, carry} ->
       case Card.from_raw_map(raw_card) do
-        {:ok, card} -> {:cont, {:ok, [card | carry]}}
+        {:ok, card} -> {:cont, {:ok, add_card(carry, card)}}
         {:error, reason} -> {:halt, {:error, reason}}
       end
     end)
   end
 
   defp parse_cards(_), do: {:error, :missing_cards}
+
+  @spec add_card([Card.t()], Card.t()) :: [Card.t()]
+  defp add_card(cards, card) do
+    fabled_group = Backend.Hearthstone.CardBag.fabled_group(card.dbf_id)
+
+    case fabled_group do
+      [] ->
+        [card | cards]
+
+      group ->
+        Enum.map(group, fn dbf_id ->
+          Card.new(dbf_id, card)
+        end)
+        |> Kernel.++(cards)
+    end
+  end
 end
 
 defmodule Backend.CollectionManager.CollectionDto.Card do
