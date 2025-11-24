@@ -180,6 +180,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Hunter"
 
+      "Beastmaster Leoroxx" in card_info.card_names ->
+        :"Leoroxx Hunter"
+
       midrange?(card_info) ->
         :"Midrange Hunter"
 
