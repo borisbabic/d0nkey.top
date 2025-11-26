@@ -219,6 +219,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       fel_dh?(card_info) ->
         :"Fel DH"
 
+      "Blindeye Sharpshooter" in card_info.card_names and questline?(card_info) ->
+        :"Naga DH"
+
       "Broxigar" in card_info.card_names and questline?(card_info) ->
         :"Broxigar DH"
 
