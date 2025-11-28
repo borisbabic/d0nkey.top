@@ -43,6 +43,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Zerg Unholy DK" => "Unholy DK",
     "Octosari DH" => "Peddler DH",
     "Ravenous Cliff Dive DH" => "Cliff Dive DH",
+    # Maybe not the best
+    "Azshara Druid" => "Hydration Druid",
     "Starship Druid" => "Hydration Druid",
     "Zerg Egg Hunter" => "Zerg Hunter",
     "Quest Spell Mage" => "Spell Mage",

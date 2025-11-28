@@ -20,7 +20,6 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Crystal Cluster",
        "Eonar, the Life-Binder"
      ]},
-    {:"Owlonius Druid", ["Owlonius", "Go with the Flow", "Ethereal Oracle", "Sparkling Phial"]},
     {:"Imbue Druid",
      [
        "Hamuul Runetotem",
@@ -35,89 +34,86 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      [
        "Factory Assemblybot",
        "Carrier",
-       "Timeless Causality",
-       "Loh, the Living Legend",
        "Forest Lord Cenarius",
-       "Krona, Keeper of Eons",
        "Scorching Observer",
        "Splitting Spacerock",
        "Travelmaster Dungar",
        "Avatar of Hearthstone"
      ]},
+    {:"Owlonius Druid",
+     [
+       "Go with the Flow",
+       "Ethereal Oracle",
+       "Sparkling Phial"
+     ]},
     # 5.5
-    {:"Azshara Druid",
-     [
-       "Best in Shell",
-       "Construct Pylons",
-       "Chrono Boost"
-       # "Scrapbooking Student"
-     ]},
-    {:"Hydration Druid",
-     [
-       "Hydration Station",
-       "The Exodar",
-       "Arkonite Defense Crystal",
-       "Ensmallen",
-       "Thickhide Kodo"
-     ]},
     {:"Aviana Druid",
      [
        "Un'Goro Brochure",
-       "Reforestation",
-       "Raven Idol",
-       "Final Frontier",
-       "Sky Mother Aviana"
-     ]},
-    {:"Owlonius Druid",
-     [
-       "Magical Dollhouse",
-       "Ancient of Yore",
-       "Bob the Bartender"
-     ]},
-    {:"Token Druid", ["Hatchery Helper", "Longneck Egg"]},
-    # 10.5
-    {:"Azshara Druid",
-     ["Mark of the Wild", "Scrapbooking Student", "Zin-Azshari", "Lady Azshara"]},
-    {:"Krona Druid",
-     [
-       "Fyrakk the Blazing",
-       "Naralex, Herald of the Flights",
-       "Contingency",
-       "Life Cycle",
-       "Nightmare Lord Xavius",
-       "Highborne Mentor",
-       "Ysera, Emerald Aspect",
-       "Marin the Manager"
+       "Reforestation"
      ]},
     {:"Hydration Druid",
      [
-       "Sha'tari Cloakfield",
-       "Carnivorous Cubicle",
+       "The Exodar",
+       "Whelp of the Infinite",
+       "Arkonite Defense Crystal",
+       "Hydration Station",
+       "Endbringer Umbra",
        "Greybough",
-       "Seismopod",
-       "Blob of Tar",
-       "Rising Waves",
-       "Eternal Bloodpetal"
+       "Ensmallen"
      ]},
-    {:"Azshara Druid",
+    {:"Owlonius Druid",
      [
-       "The Well of Eternity",
-       "Swipe",
-       "Elise the Navigator"
+       "Incindius"
      ]},
+    {:"Aviana Druid",
+     [
+       "Final Frontier",
+       "Astral Phaser",
+       "Sky Mother Aviana",
+       "Wrath"
+     ]},
+    {:"Owlonius Druid",
+     [
+       "Magical Dollhouse"
+     ]},
+    # 10.5
     {:"Krona Druid",
      [
-       "Bottomless Toy Chest",
-       "Oaken Summons",
-       "Tortollan Traveler",
-       "Waveshaping",
-       "Trail Mix"
+       "The Ceaseless Expanse",
+       "Eredar Brute",
+       "Shaladrassil",
+       "Ysera, Emerald Aspect",
+       "Fyrakk the Blazing",
+       "Naralex, Heraled of the Flight"
      ]},
-    # 15.5
+    {:"Hydration Druid",
+     ["Mark of the Wild", "Blob of Tar", "Seismopod", "Scrapbooking Student"]},
+    {:"Krona Druid",
+     [
+       "Contingency"
+       # "Bottomless Toy Chest",
+       # "Oaken Summons",
+       # "Tortollan Traveler",
+       # "Waveshaping",
+       # "Trail Mix"
+     ]},
+    {:"Hydration Druid",
+     [
+       "Gnomelia, S.A.F.E. Pilot",
+       "Lady Azshara",
+       "Zin-Azshari",
+       "The Well of Eternity"
+     ]},
     {:"Owlonious Druid", ["Seabreeze Chalice", "Mistah Vistah"]},
-    {:"Azshara Druid",
-     ["Amirdrassil", "Story of Barnabus", "Arkonite Revelation", "New Heights"]},
-    {:"Token Druid", ["Ravenous Flock"]}
+    # 15.5
+    {:"Krona Druid", ["Krona, Keeper of Eons"]},
+    # {:"Token Druid", ["Ravenous Flock"]}
+    {:"Aviana Druid",
+     ["Story of Barnabus", "Horn of Plenty", "Arkonite Revelation", "Trail Mix"]},
+    {:"Hydration Druid",
+     ["Oaken Summons", "Elise the Navigator", "Tortollan Traveler", "Amirdrassil"]},
+    {:"Ownlonius Druid", ["Owlonius"]}
   ]
   @wild_config [
     {:"Astral Communion Druid",
