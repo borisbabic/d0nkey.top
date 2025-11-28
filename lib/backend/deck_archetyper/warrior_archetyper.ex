@@ -235,7 +235,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     end
   end
 
-  defp igneous?(card_info), do
+  defp igneous?(card_info) do
     min_count?(card_info, 2, ["Igneous Lavagorger", "The Ceaseless Expanse"])
   end
 
