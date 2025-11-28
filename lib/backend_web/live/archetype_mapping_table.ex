@@ -9,6 +9,7 @@ defmodule BackendWeb.ArchetypeMappingTable do
   alias Components.Filter.ClassDropdown
   alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
+  alias Components.WinrateTag
 
   @default_min_played_count 100
   @default_sort_by "total"
@@ -88,7 +89,7 @@ defmodule BackendWeb.ArchetypeMappingTable do
                 <td>
                   {Map.get(popularity_map, "total", 0)}
                 </td>
-                <td :for={archetype <- @sorted_x_axis.result}>{Map.get(popularity_map, archetype, 0) |> Util.percent(Map.get(popularity_map, "total", 0)) |> Float.round(1)}</td>
+                <td :for={archetype <- @sorted_x_axis.result}><WinrateTag offset={-0.3} min_for_color={0.4} winrate={Map.get(popularity_map, archetype, 0) |> Util.percent(Map.get(popularity_map, "total", 0)) |> Kernel./(100)} /></td>
               </tr>
             </tbody>
           </table>
