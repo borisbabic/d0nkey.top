@@ -17,7 +17,7 @@ defmodule FunctionComponents.Stats do
   attr :impact, :boolean, default: false
   attr :win_loss, :any, default: nil
   attr :min_sample, :integer, default: 1
-  attr :min_for_color, :integer, default: 0
+  attr :min_for_color, :integer, default: nil
 
   def winrate_tag(assigns) do
     ~H"""

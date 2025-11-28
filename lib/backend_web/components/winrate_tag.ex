@@ -19,7 +19,7 @@ defmodule Components.WinrateTag do
   prop(impact, :boolean, default: false)
   prop(offset, :number, default: 0)
   prop(win_loss, :any, default: nil)
-  prop(min_for_color, :number, default: 0)
+  prop(min_for_color, :number, default: nil)
 
   def render(assigns) do
     ~F"""
