@@ -34,7 +34,10 @@ defmodule Bot.MessageHandler do
     `!ldb-top l:BG 14`
     `!ldb-top l:BG r:US s:13`
     """,
-    "ldb" => """
+    "ldbc" => """
+    ## `ldbc` (Leaderboard player counts)
+    `!ldbc`
+    "ldb" => \"""
     ## `ldb` (Leaderboards command)
     `!ldb [$battletags] [$filters]`
 
@@ -192,6 +195,9 @@ defmodule Bot.MessageHandler do
 
       <<"!leaderboard", _::binary>> ->
         Bot.LdbMessageHandler.handle_top_leaderboard(msg)
+
+      <<"!ldbc", _::binary>> ->
+        Bot.LdbMessageHandler.handle_count(msg)
 
       <<"!ldb-top", _::binary>> ->
         Bot.LdbMessageHandler.handle_top_leaderboard(msg)

@@ -14,6 +14,42 @@ defmodule Bot.LdbMessageHandler do
     |> send_tables(msg.channel_id)
   end
 
+  def handle_count(msg) do
+    create_current_count_table()
+    |> send_table(msg.channel_id)
+  end
+
+  @ldb_order %{"STD" => 0, "WLD" => 1, "BG" => 2, "DUO" => 3, "underground_arena" => 4}
+  def create_current_count_table() do
+    rows =
+      Leaderboards.current_ladder_seasons()
+      |> Enum.flat_map(fn s ->
+        case Leaderboards.get_season(s) do
+          {:ok, %{total_size: ts} = season} when is_integer(ts) and ts > 0 -> [season]
+          _ -> []
+        end
+      end)
+      |> Enum.reject(
+        &(&1.leaderboard_id in [:CLS, :MRC, "CLS", "MRC"] or &1.region in [:CN, "CN"])
+      )
+      |> Enum.sort_by(fn s -> Blizzard.get_region_name(s.region, :short) end)
+      |> Enum.sort_by(
+        fn s ->
+          Map.get(@ldb_order, s.leaderboard_id, 9999)
+        end,
+        :asc
+      )
+      |> Enum.map(fn season ->
+        [
+          Blizzard.get_region_name(season.region, :short),
+          Blizzard.get_leaderboard_name(season.leaderboard_id),
+          season.total_size
+        ]
+      end)
+
+    TableRex.quick_render!(rows, ["Region", "Mode", "Player Count"], nil)
+  end
+
   def handle_top_leaderboard(msg) do
     {raw_criteria, rest} = get_criteria(msg.content)
     leaderboard_options = parse_leaderboard_options(rest)
