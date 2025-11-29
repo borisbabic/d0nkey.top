@@ -4,23 +4,36 @@ defmodule Bot.SlashCommands.LeaderboardCommand do
   alias Bot.LdbMessageHandler
 
   @names ["ldb", "leaderboard"]
+  @count_names ["ldbc", "leaderboard_counts"]
   @impl true
   def get_commands() do
-    for name <- @names do
-      %{
-        name: name,
-        description: "Check leaderboards",
-        options: [
-          %{
-            # string
-            type: 3,
-            name: "battletags",
-            description: "Space separated battletag(s)",
-            required: true
-          }
-        ]
-      }
-    end
+    leaderboard_commands =
+      for name <- @names do
+        %{
+          name: name,
+          description: "Check leaderboards",
+          options: [
+            %{
+              # string
+              type: 3,
+              name: "battletags",
+              description: "Space separated battletag(s)",
+              required: true
+            }
+          ]
+        }
+      end
+
+    count_commands =
+      for name <- @count_names do
+        %{
+          name: name,
+          description: "Get Leaderboards count",
+          options: []
+        }
+      end
+
+    leaderboard_commands ++ count_commands
   end
 
   @impl true
@@ -46,6 +59,12 @@ defmodule Bot.SlashCommands.LeaderboardCommand do
 
     follow_up(interaction, response)
     :ok
+  end
+
+  def handle_interaction(%Interaction{data: %{name: name}} = interaction)
+      when name in @count_names do
+    response = LdbMessageHandler.create_current_count_table()
+    follow_up(interaction, response)
   end
 
   def handle_interaction(_), do: :skip
