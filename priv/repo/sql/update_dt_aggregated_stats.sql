@@ -43,7 +43,7 @@ WITH agg_ranks(
 ),
 agg_periods(
     format,
-    START, 
+    START,
     slug,
     game_type
 ) AS (
@@ -71,7 +71,7 @@ agg_regions(
 bugged_sources (
     source_id
 ) AS (
-    SELECT source_id 
+    SELECT source_id
     FROM public.dt_bugged_sources
     WHERE filter_out
 ),
@@ -320,12 +320,12 @@ grouped_deck_stats AS (
         END AS winrate,
         CASE WHEN sum(turns_game_count) > 0 THEN
             SUM(turns)::float / SUM(turns_game_count)
-        ELSE 
+        ELSE
             0
         END as turns,
         SUM(turns) AS total_turns,
         SUM(turns_game_count) AS turns_game_count,
-        CASE WHEN SUM(duration_game_count) > 0 THEN 
+        CASE WHEN SUM(duration_game_count) > 0 THEN
             SUM(duration)::float / SUM(duration_game_count)
         ELSE
             0
@@ -359,31 +359,31 @@ prepared_card_stats AS (
         cs.format,
         cs.player_has_coin,
         jsonb_build_object(
-            'card_id', cs.card_id, 
-            'kept_total', sum(cs.kept_total), 
+            'card_id', cs.card_id,
+            'kept_total', sum(cs.kept_total),
             'kept_impact', CASE WHEN sum(cs.kept_total) > 0 THEN
                 sum(cs.kept_impact_factor) / sum(cs.kept_total)
             ELSE
                 0
-            END, 
-            'mull_total', sum(cs.mull_total), 
+            END,
+            'mull_total', sum(cs.mull_total),
             'mull_impact', CASE WHEN sum(cs.mull_total) > 0 THEN
                 sum(cs.mull_impact_factor) / sum(cs.mull_total)
             ELSE
                 0
-            END, 
-            'tossed_total', sum(cs.tossed_total), 
+            END,
+            'tossed_total', sum(cs.tossed_total),
             'tossed_impact', CASE WHEN sum(cs.tossed_total) > 0 THEN
                 sum(cs.tossed_impact_factor) / sum(cs.tossed_total)
             ELSE
                 0
-            END, 
+            END,
             'kept_percent', CASE WHEN sum(cs.tossed_total + cs.mull_total) > 0 THEN
                 sum(cs.mull_total) / sum(cs.tossed_total + cs.mull_total)
             ELSE
                 0
-            END, 
-            'drawn_total', sum(cs.drawn_total), 
+            END,
+            'drawn_total', sum(cs.drawn_total),
             'drawn_impact', CASE WHEN sum(cs.drawn_total) > 0 THEN
                 sum(cs.drawn_impact_factor) / sum(cs.drawn_total)
             ELSE
@@ -440,7 +440,7 @@ INSERT INTO temp_dt_aggregated_stats(
 	player_has_coin,
 	card_stats
 )
-SELECT 
+SELECT
 	ds.deck_id,
 	ds.period,
 	ds.rank,
@@ -542,4 +542,3 @@ ALTER TABLE IF EXISTS dt_aggregation_meta_new RENAME TO dt_aggregation_meta;
 DROP TABLE IF EXISTS dt_aggregation_meta_old;
 END;
 $$;
-

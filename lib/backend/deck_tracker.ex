@@ -536,6 +536,8 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def deck_card_stats(criteria, repo_opts \\ []) do
+    dbg(criteria)
+
     base_deck_card_stats_query()
     |> build_games_query(criteria)
     |> Repo.all(repo_opts)

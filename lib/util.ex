@@ -52,10 +52,10 @@ defmodule Util do
     end
   end
 
-  def async_map(enum, fun) do
+  def async_map(enum, fun, timeout \\ :infinity) do
     enum
     |> Enum.map(fn e -> Task.async(fn -> fun.(e) end) end)
-    |> Task.await_many()
+    |> Task.await_many(timeout)
   end
 
   @doc """
@@ -666,5 +666,16 @@ defmodule Util do
 
   def keys_to_string(map) do
     for {key, value} <- map, do: {to_string(key), value}, into: %{}
+  end
+
+  def combinations([]) do
+    # The base case: the product of an empty list of lists is a list containing an empty list.
+    [[]]
+  end
+
+  def combinations([head | tail]) do
+    for item <- head,
+        rest <- combinations(tail),
+        do: [item | rest]
   end
 end

@@ -211,4 +211,29 @@ defmodule Hearthstone.DeckTracker.Game do
   end
 
   def convert_rank(nil), do: nil
+
+  @spec player_deck(__MODULE__) :: Deck.t() | nil
+  def player_deck(%{player_deck: %Deck{} = player_deck}), do: player_deck
+  def player_deck(_), do: nil
+
+  @spec player_deck_archetype(__MODULE__) :: String.t() | atom() | nil
+  def player_deck_archetype(game) do
+    with %Deck{} = deck <- player_deck(game) do
+      Deck.archetype(deck)
+    end
+  end
+
+  @spec player_pc_archetype(__MODULE__) :: atom() | nil
+  def player_pc_archetype(%{played_cards: %{player_archetype: archetype}}) do
+    archetype
+  end
+
+  def player_pc_archetype(_), do: nil
+
+  @spec opponent_pc_archetype(__MODULE__) :: atom() | nil
+  def opponent_pc_archetype(%{played_cards: %{opponent_archetype: archetype}}) do
+    archetype
+  end
+
+  def opponent_pc_archetype(_), do: nil
 end

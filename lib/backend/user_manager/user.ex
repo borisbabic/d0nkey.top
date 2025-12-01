@@ -1,5 +1,6 @@
 defmodule Backend.UserManager.User do
   @moduledoc false
+  @type t() :: %__MODULE__{}
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.UserManager.User.DecklistOptions

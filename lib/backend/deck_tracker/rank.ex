@@ -46,4 +46,11 @@ defmodule Hearthstone.DeckTracker.Rank do
   end
 
   def to_option(%{slug: slug, display: display}), do: {slug, display}
+
+  def game_matches?(rank, game) do
+    (rank.min_legend_rank in [0, nil] or rank.min_legend_rank <= game.player_legend_rank) and
+      (rank.max_legend_rank in [nil, :infinity] or rank.max_legend_rank >= game.player_legend_rank) and
+      (rank.min_rank in [0, nil] or rank.min_rank <= game.player_rank) and
+      (rank.max_rank in [nil, :infinity] or rank.max_rank >= game.player_rank)
+  end
 end

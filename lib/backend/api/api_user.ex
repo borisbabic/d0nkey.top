@@ -2,6 +2,7 @@ defmodule Backend.Api.ApiUser do
   @moduledoc """
   Users for api basic auth
   """
+  @type t() :: %__MODULE__{}
   use Ecto.Schema
   import Ecto.Changeset
 
