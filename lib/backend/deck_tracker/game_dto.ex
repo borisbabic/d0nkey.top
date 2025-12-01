@@ -55,12 +55,12 @@ defmodule Hearthstone.DeckTracker.GameDto do
 
   def from_raw_map(_, created_by), do: %{} |> from_raw_map(created_by)
 
-  defp duration(%{"duration" => duration}) when is_integer(duration) do
-    60 * duration
-  end
-
   defp duration(%{"duration_seconds" => duration}) when is_integer(duration) do
     duration
+  end
+
+  defp duration(%{"duration" => duration}) when is_integer(duration) do
+    60 * duration
   end
 
   defp duration(_), do: nil
