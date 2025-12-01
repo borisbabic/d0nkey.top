@@ -136,6 +136,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       wild_exodia_paladin?(card_info) and highlander?(card_info) ->
         :"HL Exodia Paladin"
 
+      "Gelbin of Tomorrow" in card_info.card_names and highlander?(card_info) ->
+        :"HL Aura Paladin"
+
       highlander?(card_info) ->
         :"Highlander Paladin"
 
