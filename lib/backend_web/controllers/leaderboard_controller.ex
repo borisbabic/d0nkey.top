@@ -94,6 +94,8 @@ defmodule BackendWeb.LeaderboardController do
     do_total(season)
   end
 
+  defp total(_), do: nil
+
   defp do_total(season_or_id) do
     case Leaderboards.get_season(season_or_id) do
       %{total_size: total_size} when is_integer(total_size) -> total_size
