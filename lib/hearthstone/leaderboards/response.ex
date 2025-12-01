@@ -234,17 +234,17 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
   end
 
   def get_max_season_id(%{seasons: seasons}) do
-    max =
-      Enum.map(seasons, fn
-        s when is_integer(s) -> s
-        %{"season_id" => s} -> s
-        %{season_id: s} -> s
-        _ -> nil
-      end)
-      |> Enum.filter(& &1)
-      |> Enum.max()
-
-    {:ok, max}
+    Enum.map(seasons, fn
+      s when is_integer(s) -> s
+      %{"season_id" => s} -> s
+      %{season_id: s} -> s
+      _ -> nil
+    end)
+    |> Enum.filter(& &1)
+    |> case do
+      [_ | _] = season_ids -> {:ok, Enum.max(season_ids)}
+      _ -> {:error, :no_seasons}
+    end
   end
 
   def get_max_season_id(_), do: {:error, :invalid_leaderboard_metadata}
