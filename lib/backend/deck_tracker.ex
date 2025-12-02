@@ -7,6 +7,7 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Repo
   alias Hearthstone.DeckTracker.GamePlayedCards
   alias Hearthstone.DeckTracker.AggregatedStats
+  alias Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate
   alias Hearthstone.DeckTracker.AggregatedMatchups
   alias Hearthstone.DeckTracker.AggregationMeta
   alias Hearthstone.DeckTracker.AggregationLog
@@ -14,6 +15,7 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.CardGameTally
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
+  alias Hearthstone.DeckTracker.PartitionedAggregatedStats
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
@@ -21,6 +23,7 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.Rank
   alias Hearthstone.DeckTracker.Format
   alias Hearthstone.DeckTracker.Region
+  alias Hearthstone.DeckTracker.StatsAggregator
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.UserManager
@@ -536,8 +539,6 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def deck_card_stats(criteria, repo_opts \\ []) do
-    dbg(criteria)
-
     base_deck_card_stats_query()
     |> build_games_query(criteria)
     |> Repo.all(repo_opts)
@@ -1089,6 +1090,13 @@ defmodule Hearthstone.DeckTracker do
   @agg_deck_query %{from: %{as: :agg_deck_stats}}
   @card_query %{from: %{as: :card_tally}}
 
+  defp compose_games_query({"with_card_tallies", yes}, query) when yes in @affirmative do
+    query
+    |> preload([:card_tallies])
+  end
+
+  defp compose_games_query({"with_card_tallies", _}, query), do: query
+
   defp compose_games_query({"with_played_cards", yes}, query) when yes in @affirmative do
     query
     |> ensure_played_cards_joined(:left)
@@ -1361,6 +1369,12 @@ defmodule Hearthstone.DeckTracker do
     query
     |> filter_rank(rank, :game, :player_rank, :player_legend_rank)
   end
+
+  defp compose_games_query({"min_player_rank", min_rank}, query),
+    do: query |> where([game: g], g.player_rank >= ^min_rank)
+
+  defp compose_games_query({"max_player_rank", max_rank}, query),
+    do: query |> where([game: g], g.player_rank <= ^max_rank)
 
   defp compose_games_query({"sort_by", by}, query),
     do: compose_games_query({"order_by", by}, query)
@@ -3349,5 +3363,106 @@ defmodule Hearthstone.DeckTracker do
       end
 
     Repo.insert_all(AggregatedMatchups, vals, conflict_options)
+  end
+
+  def auto_aggregate_period(period, format) do
+    start_time = NaiveDateTime.utc_now()
+    ranks = ranks(auto_aggregate: true)
+
+    games_criteria =
+      [
+        {"period", period},
+        {"format", format},
+        {"with_card_tallies", true}
+      ] ++ rank_criteria(ranks)
+
+    games = games(games_criteria, timeout: :infinity)
+
+    IO.puts(
+      "Fetched #{Enum.count(games)} games #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds in"
+    )
+
+    insertable =
+      StatsAggregator.aggregate_games(games, ranks)
+      |> Enum.map(fn {key, value} ->
+        Intermediate.to_insertable(value, key)
+        # case Intermediate.to_insertable(value, key) do
+        #   %{"archetype" => arch} = ins when is_atom(arch) and not is_nil(arch) -> Map.put(ins, "archetype", to_string(arch))
+        #   ins -> ins
+        # end
+        # Enum.reduce(key, Map.from_struct(value), fn
+        #   {k, v}, acc ->
+        #     Map.put(acc, k, v)
+        # end)
+        # |> Map.update(:card_stats, [], fn card_stats ->
+        #   Map.values(card_stats)
+        # end)
+      end)
+
+    IO.puts(
+      "Processed games #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds in"
+    )
+
+    table_name = "dt_#{period}_#{format}_aggregated_stats"
+    temp_table_name = "temp_#{table_name}"
+    index_name = "#{table_name}_index"
+    temp_index_name = "temp_#{index_name}"
+    now = NaiveDateTime.utc_now()
+
+    result =
+      Repo.transaction(fn repo ->
+        create_table = """
+          CREATE TABLE IF NOT EXISTS #{temp_table_name} (
+          deck_id integer,
+          rank varchar,
+          opponent_class varchar,
+          archetype varchar,
+          format integer,
+          winrate double precision,
+          wins integer,
+          losses integer,
+          total integer,
+          turns double precision,
+          duration double precision,
+          player_has_coin boolean,
+          card_stats jsonb
+        )
+        """
+
+        create_result = repo.query(create_table)
+
+        for chunk <- Enum.chunk_every(insertable, 5000) do
+          repo.insert_all(temp_table_name, chunk)
+        end
+
+        create_index_and_swap = [
+          "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
+          "ALTER INDEX IF EXISTS #{index_name} RENAME TO old_#{index_name} ;",
+          "ALTER INDEX IF EXISTS #{temp_index_name} RENAME TO #{index_name} ;",
+          "ALTER TABLE IF EXISTS #{table_name} RENAME TO old_#{table_name} ;",
+          "ALTER TABLE IF EXISTS #{temp_table_name} RENAME TO #{table_name};",
+          "DROP TABLE IF EXISTS old_#{table_name}",
+          "COMMENT ON table #{table_name} IS '#{now}';"
+        ]
+
+        after_result =
+          for sql <- create_index_and_swap do
+            repo.query(sql)
+          end
+
+        [create_result, after_result]
+      end)
+
+    IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
+    result
+  end
+
+  defp rank_criteria(ranks) do
+    if Enum.any?(ranks, &(&1.slug == "all")) do
+      []
+    else
+      %{min_rank: min_rank} = Enum.min_by(ranks, & &1.min_rank)
+      [{"min_player_rank", min_rank}]
+    end
   end
 end

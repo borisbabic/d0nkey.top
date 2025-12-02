@@ -39,9 +39,6 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
     archetype_map =
       intermediate
-      |> Kernel.tap(fn inter ->
-        Enum.at(inter, 0)
-      end)
       |> Enum.group_by(fn {key, _value} ->
         List.keydelete(key, "deck_id", 0)
       end)
@@ -49,13 +46,22 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
         key = [{"archetype", archetype} | partial_key]
 
         {key,
-         Enum.reduce(values, fn
-           {_, first}, {_, second} ->
-             Intermediate.merge(first, second)
+         case values do
+           [{_key, value}] ->
+             value
 
-           {_, first}, second ->
-             Intermediate.merge(first, second)
-         end)}
+           [] ->
+             []
+
+           _ ->
+             Enum.reduce(values, fn
+               {_, first}, {_, second} ->
+                 Intermediate.merge(first, second)
+
+               {_, first}, second ->
+                 Intermediate.merge(first, second)
+             end)
+         end}
       end)
 
     Map.merge(archetype_map, intermediate)
@@ -73,8 +79,8 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     variant_options =
       [
         {"opponent_class", game.opponent_class},
-        {"player_has_coin", game.player_has_coin},
-        {"opponent_pc_archetype", Game.opponent_pc_archetype(game)}
+        {"player_has_coin", game.player_has_coin}
+        # {"opponent_pc_archetype", Game.opponent_pc_archetype(game)}
       ]
       |> Enum.map(fn {key, value} ->
         [nil | Util.to_list(value)]
