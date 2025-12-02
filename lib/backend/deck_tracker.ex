@@ -3451,7 +3451,7 @@ defmodule Hearthstone.DeckTracker do
           end
 
         [create_result, after_result]
-      end)
+      end, timeout: :infinity)
 
     IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
     result
