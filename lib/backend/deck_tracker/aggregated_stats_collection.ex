@@ -65,7 +65,7 @@ defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate do
 
   def wins_losses(%{status: status}), do: wins_losses(status)
   def wins_losses(:win), do: {1, 0}
-  def wins_losses(:loss), do: {0, 0}
+  def wins_losses(:loss), do: {0, 1}
 
   def merge(first, second) do
     %__MODULE__{
@@ -80,6 +80,34 @@ defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate do
       card_stats: IntermediateCardStats.merge_maps(first.card_stats, second.card_stats)
     }
   end
+
+  def to_insertable(int, %{"archetype" => arch} = other_fields)
+      when is_atom(arch) and not is_nil(arch) do
+    new_other_fields = Map.put(other_fields, "archetype", to_string(arch))
+    to_insertable(int, new_other_fields)
+  end
+
+  def to_insertable(int, other_fields) when is_map(other_fields) do
+    %{
+      "wins" => int.wins,
+      "losses" => int.losses,
+      "turns" =>
+        if(int.turns_total_games == 0, do: 0, else: int.total_turns / int.turns_total_games),
+      "duration" =>
+        if(int.duration_total_games == 0,
+          do: 0,
+          else: int.total_duration / int.duration_total_games
+        ),
+      "card_stats" => [],
+      # ensure below are present
+      "deck_id" => nil,
+      "archetype" => nil,
+      "opponent_class" => nil
+    }
+    |> Map.merge(other_fields)
+  end
+
+  def to_insertable(int, other_fields), do: to_insertable(int, Map.new(other_fields))
 end
 
 defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.IntermediateCardStats do
@@ -128,7 +156,7 @@ defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.IntermediateCardStat
     end)
   end
 
-  def add_to_map(map, %{card_game_tallies: [_ | _] = tallies, player_deck: deck, status: status}) do
+  def add_to_map(map, %{card_tallies: [_ | _] = tallies, player_deck: deck, status: status}) do
     cards_set = MapSet.new(deck.cards)
 
     wins_losses = wins_losses(status)
@@ -175,7 +203,7 @@ defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.IntermediateCardStat
       end
 
     {mull_wins, mull_losses} =
-      if tally.mull do
+      if tally.mulligan do
         wins_losses
       else
         {0, 0}
