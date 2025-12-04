@@ -195,7 +195,7 @@ config :backend, Oban,
   queues: queues
 
 config :backend,
-  five_min_game_threshold: 500,
+  five_min_game_threshold: 300,
   available_game_insert_threshold: 1000,
   twitch_bot_chats: ["d0nkeyhs", "d0nkeytop", "titosantanahs"],
   enable_twitch_bot: true
