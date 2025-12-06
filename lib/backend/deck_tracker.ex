@@ -1030,6 +1030,16 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all(repo_opts)
   end
 
+  def games_for_auto_aggregate(criteria, repo_opts \\ [timeout: :infinity]) do
+    games_for_auto_aggregate_query(criteria)
+    |> Repo.all(repo_opts)
+  end
+
+  def games_for_auto_aggregate_query(criteria) do
+    base_auto_aggregate_games_query()
+    |> build_games_query(criteria)
+  end
+
   def base_currently_aggregated_archetypes() do
     from ag in AggregatedStats,
       select: ag.archetype,
@@ -1077,6 +1087,47 @@ defmodule Hearthstone.DeckTracker do
       inner_join: played_cards in assoc(g, :played_cards),
       as: :played_cards,
       preload: [player_deck: pd, played_cards: played_cards]
+    )
+  end
+
+  defp base_auto_aggregate_games_query() do
+    from(g in Game,
+      as: :game,
+      left_join: pd in assoc(g, :player_deck),
+      as: :player_deck,
+      inner_join: tally in assoc(g, :card_tallies),
+      as: :card_tallies,
+      select: %{
+        id: g.id,
+        game_info:
+          fragment(
+            "json_build_object(
+        'status', ?,
+        'archetype', ?,
+        'turns', ?,
+        'duration', ?,
+        'player_has_coin', ?,
+        'opponent_class', ?,
+        'deck_id', ?
+        )",
+            g.status,
+            pd.archetype,
+            g.turns,
+            g.duration,
+            g.player_has_coin,
+            g.opponent_class,
+            g.player_deck_id
+          ),
+        card_stats: fragment("array_agg(json_build_object(
+        'ci', ?,
+        'd', ?,
+        'k', ?,
+        'm', ?
+        ))", tally.card_id, tally.drawn, tally.kept, tally.mulligan)
+      },
+      group_by: [g.id]
+      # group_by: [g.status, pd.archetype, g.turns, g.duration, g.player_has_coin, g.opponent_class, g.player_deck_id],
+      # where: g.inserted_at >= ^~N[2025-11-05 00:00:00] and g.format == 2 and g.game_type == 7
     )
   end
 
@@ -1343,6 +1394,11 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({:in_range, start, finish}, query) do
     query
     |> where([game: g], g.inserted_at >= ^start and g.inserted_at < ^finish)
+  end
+
+  defp compose_games_query({"until", finish}, query) do
+    query
+    |> where([game: g], g.inserted_at < ^finish)
   end
 
   defp compose_games_query({"rank", r}, query = @agg_deck_query),
@@ -1672,6 +1728,9 @@ defmodule Hearthstone.DeckTracker do
       archetypes
       |> Enum.map(&Deck.class_from_class_name/1)
       |> Enum.reduce(dynamic(false), fn
+        {_, nil}, dynamic ->
+          dynamic
+
         {:ok, class}, dynamic ->
           dynamic([player_deck: pd], ^dynamic or (pd.class == ^class and is_nil(pd.archetype)))
 
@@ -3365,42 +3424,31 @@ defmodule Hearthstone.DeckTracker do
     Repo.insert_all(AggregatedMatchups, vals, conflict_options)
   end
 
+  def archetype_popularity(criteria \\ []) do
+    base_query =
+      from g in Game,
+        as: :game,
+        inner_join: pd in assoc(g, :player_deck),
+        as: :player_deck,
+        select: %{
+          archetype: pd.archetype |> coalesce(pd.class),
+          count: count(pd.id) |> selected_as(:count)
+        },
+        group_by: [pd.archetype |> coalesce(pd.class)],
+        order_by: [desc: selected_as(:count)]
+
+    build_games_query(base_query, criteria)
+    |> Repo.all(timeout: :infinity)
+  end
+
   def auto_aggregate_period(period, format) do
     start_time = NaiveDateTime.utc_now()
-    ranks = ranks(auto_aggregate: true)
-
-    games_criteria =
-      [
-        {"period", period},
-        {"format", format},
-        {"with_card_tallies", true}
-      ] ++ rank_criteria(ranks)
-
-    games = games(games_criteria, timeout: :infinity)
-
-    IO.puts(
-      "Fetched #{Enum.count(games)} games #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds in"
-    )
 
     insertable =
-      StatsAggregator.aggregate_games(games, ranks)
-      |> Enum.map(fn {key, value} ->
-        Intermediate.to_insertable(value, key)
-        # case Intermediate.to_insertable(value, key) do
-        #   %{"archetype" => arch} = ins when is_atom(arch) and not is_nil(arch) -> Map.put(ins, "archetype", to_string(arch))
-        #   ins -> ins
-        # end
-        # Enum.reduce(key, Map.from_struct(value), fn
-        #   {k, v}, acc ->
-        #     Map.put(acc, k, v)
-        # end)
-        # |> Map.update(:card_stats, [], fn card_stats ->
-        #   Map.values(card_stats)
-        # end)
-      end)
+      StatsAggregator.aggregate_for_period(period, format)
 
     IO.puts(
-      "Processed games #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds in"
+      "Fetched and Processed games #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds in"
     )
 
     table_name = "dt_#{period}_#{format}_aggregated_stats"
@@ -3410,59 +3458,53 @@ defmodule Hearthstone.DeckTracker do
     now = NaiveDateTime.utc_now()
 
     result =
-      Repo.transaction(fn repo ->
-        create_table = """
-          CREATE TABLE IF NOT EXISTS #{temp_table_name} (
-          deck_id integer,
-          rank varchar,
-          opponent_class varchar,
-          archetype varchar,
-          format integer,
-          winrate double precision,
-          wins integer,
-          losses integer,
-          total integer,
-          turns double precision,
-          duration double precision,
-          player_has_coin boolean,
-          card_stats jsonb
-        )
-        """
+      Repo.transaction(
+        fn repo ->
+          create_table = """
+            CREATE TABLE IF NOT EXISTS #{temp_table_name} (
+            deck_id integer,
+            rank varchar,
+            opponent_class varchar,
+            archetype varchar,
+            format integer,
+            winrate double precision,
+            wins integer,
+            losses integer,
+            total integer,
+            turns double precision,
+            duration double precision,
+            player_has_coin boolean,
+            card_stats jsonb
+          )
+          """
 
-        create_result = repo.query(create_table)
+          create_result = repo.query(create_table)
 
-        for chunk <- Enum.chunk_every(insertable, 5000) do
-          repo.insert_all(temp_table_name, chunk)
-        end
-
-        create_index_and_swap = [
-          "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
-          "ALTER INDEX IF EXISTS #{index_name} RENAME TO old_#{index_name} ;",
-          "ALTER INDEX IF EXISTS #{temp_index_name} RENAME TO #{index_name} ;",
-          "ALTER TABLE IF EXISTS #{table_name} RENAME TO old_#{table_name} ;",
-          "ALTER TABLE IF EXISTS #{temp_table_name} RENAME TO #{table_name};",
-          "DROP TABLE IF EXISTS old_#{table_name}",
-          "COMMENT ON table #{table_name} IS '#{now}';"
-        ]
-
-        after_result =
-          for sql <- create_index_and_swap do
-            repo.query(sql)
+          for chunk <- Enum.chunk_every(insertable, 5000) do
+            repo.insert_all(temp_table_name, chunk)
           end
 
-        [create_result, after_result]
-      end, timeout: :infinity)
+          create_index_and_swap = [
+            "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
+            "ALTER INDEX IF EXISTS #{index_name} RENAME TO old_#{index_name} ;",
+            "ALTER INDEX IF EXISTS #{temp_index_name} RENAME TO #{index_name} ;",
+            "ALTER TABLE IF EXISTS #{table_name} RENAME TO old_#{table_name} ;",
+            "ALTER TABLE IF EXISTS #{temp_table_name} RENAME TO #{table_name};",
+            "DROP TABLE IF EXISTS old_#{table_name}",
+            "COMMENT ON table #{table_name} IS '#{now}';"
+          ]
+
+          after_result =
+            for sql <- create_index_and_swap do
+              repo.query(sql)
+            end
+
+          [create_result, after_result]
+        end,
+        timeout: :infinity
+      )
 
     IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
     result
-  end
-
-  defp rank_criteria(ranks) do
-    if Enum.any?(ranks, &(&1.slug == "all")) do
-      []
-    else
-      %{min_rank: min_rank} = Enum.min_by(ranks, & &1.min_rank)
-      [{"min_player_rank", min_rank}]
-    end
   end
 end

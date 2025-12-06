@@ -678,4 +678,10 @@ defmodule Util do
         rest <- combinations(tail),
         do: [item | rest]
   end
+
+  def print_time(function, what \\ "It") do
+    {time, result} = :timer.tc(function)
+    IO.puts("#{what} took #{time / 1_000_000} seconds")
+    result
+  end
 end
