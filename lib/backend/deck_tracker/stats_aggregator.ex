@@ -31,29 +31,38 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
     archetype_popularity = DeckTracker.archetype_popularity()
 
-    chunks = Enum.chunk_while(archetype_popularity, {[], 0}, fn %{archetype: archetype, count: count}, {archetypes, total} ->
-      new_total = total + count
-      new_archetypes = [archetype | archetypes]
-      if new_total > 1_000_000 do
-        {:cont, new_archetypes, {[], 0}}
-      else
-        {:cont, {new_archetypes, new_total}}
-      end
-    end, fn
-      {[_|_] = archetypes, _} -> {:cont, archetypes, {[], 0}}
-      _ -> {:cont, {[], 0}}
-    end)
-    Enum.reduce(chunks, [], fn archetypes, acc ->
+    chunks =
+      Enum.chunk_while(
+        archetype_popularity,
+        {[], 0},
+        fn %{archetype: archetype, count: count}, {archetypes, total} ->
+          new_total = total + count
+          new_archetypes = [archetype | archetypes]
+
+          if new_total > 1_000_000 do
+            {:cont, new_archetypes, {[], 0}}
+          else
+            {:cont, {new_archetypes, new_total}}
+          end
+        end,
+        fn
+          {[_ | _] = archetypes, _} -> {:cont, archetypes, {[], 0}}
+          _ -> {:cont, {[], 0}}
+        end
+      )
+
+    IO.puts("Number of chunks: #{Enum.count(chunks)}")
+
+    Enum.reduce(chunks, %{}, fn archetypes, acc ->
       games_criteria = [
         {"with_card_tallies", true},
         {"player_deck_archetype", archetypes} | base_criteria
       ]
+
       games = DeckTracker.games(games_criteria, timeout: :infinity)
+
       aggregate_games(games, ranks)
-      |> Enum.map(fn {key, value} ->
-        Intermediate.to_insertable(value, key)
-      end)
-      |> Kernel.++(acc)
+      |> Map.merge(acc)
 
       # before = NaiveDateTime.utc_now()
       # games = DeckTracker.games(games_criteria, timeout: :infinity)
@@ -69,6 +78,9 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
       # result = group ++ acc
       # IO.puts("Concating took #{NaiveDateTime.diff(NaiveDateTime.utc_now(), after_to_insertable)}")
       # result
+    end)
+    |> Enum.map(fn {key, value} ->
+      Intermediate.to_insertable(value, key)
     end)
   end
 
