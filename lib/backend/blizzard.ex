@@ -33,16 +33,16 @@ defmodule Backend.Blizzard do
   @blizz_o_clock_time ~T[10:00:00]
   @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
   @short_battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
-  @current_bg_season_id 15
+  @current_bg_season_id 17
   # guess, change if not correct
-  # 5 weeks aftger july 8th, july 7th being the end of the standard battlepass
-  @current_bg_season_end_date ~N[2025-08-12 17:00:00]
+  # Battlepass aend date
+  @current_bg_season_end_date ~N[2026-04-14 17:00:00]
   # no more legacy after this
   @max_legacy_arena_season_id 56
-  @current_undergroundarena_season_id 1
+  @current_undergroundarena_season_id 4
   # guess, change if not correct
   # one week before the expansion
-  @current_undergroundarena_season_end_date ~N[2025-07-01 17:00:00]
+  @current_undergroundarena_season_end_date ~N[2025-01-21 17:00:00]
 
   defmacro is_old_bg_season(season_id) do
     quote do
