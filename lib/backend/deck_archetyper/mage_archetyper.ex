@@ -57,6 +57,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
 
+      "Timelooper Toki" in card_info.card_names ->
+        :"Toki Mage"
+
       "Treasure Hunter Eudora" in card_info.card_names ->
         :"Eudora Mage"
 
