@@ -6,6 +6,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   alias Hearthstone.DeckTracker.Rank
   alias Hearthstone.DeckTracker.AggregatedStatsCollection
   alias Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate
+  alias Backend.Repo
 
   @spec aggregate_games([Game.t()], [Rank.t()]) ::
           {:ok, AggregatedStatsCollection} | {:error, String.t()}
@@ -18,7 +19,10 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     |> Enum.reduce(%{}, &Map.merge/2)
   end
 
-  def aggregate_for_period(period, format) do
+  @spec auto_aggregate_period(String.t(), integer()) :: any()
+  def auto_aggregate_period(period, format) do
+    start_time = NaiveDateTime.utc_now()
+
     ranks = DeckTracker.ranks(auto_aggregate: true)
 
     base_criteria =
@@ -29,59 +33,113 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
         {"until", NaiveDateTime.utc_now()}
       ] ++ rank_criteria(ranks)
 
-    archetype_popularity = DeckTracker.archetype_popularity()
+    archetype_chunks = archetype_chunks(base_criteria)
+    archetype_chunks_count = Enum.count(archetype_chunks)
 
-    chunks =
-      Enum.chunk_while(
-        archetype_popularity,
-        {[], 0},
-        fn %{archetype: archetype, count: count}, {archetypes, total} ->
-          new_total = total + count
-          new_archetypes = [archetype | archetypes]
+    table_name = "dt_#{period}_#{format}_aggregated_stats"
+    temp_table_name = "temp_#{table_name}"
+    index_name = "#{table_name}_index"
+    temp_index_name = "temp_#{index_name}"
+    now = NaiveDateTime.utc_now()
 
-          if new_total > 1_000_000 do
-            {:cont, new_archetypes, {[], 0}}
-          else
-            {:cont, {new_archetypes, new_total}}
+    result =
+      Repo.transaction(
+        fn repo ->
+          create_table = """
+            CREATE TABLE IF NOT EXISTS #{temp_table_name} (
+            deck_id integer,
+            rank varchar,
+            opponent_class varchar,
+            archetype varchar,
+            format integer,
+            winrate double precision,
+            wins integer,
+            losses integer,
+            total integer,
+            turns double precision,
+            duration double precision,
+            player_has_coin boolean,
+            card_stats jsonb
+          )
+          """
+
+          create_result = repo.query(create_table)
+
+          for {archetypes, index} <- archetype_chunks |> Enum.with_index(1) do
+            IO.puts(
+              "Starting to process archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in"
+            )
+
+            games_criteria = [
+              {"with_card_tallies", true},
+              {"player_deck_archetype", archetypes} | base_criteria
+            ]
+
+            games = DeckTracker.games(games_criteria, timeout: :infinity)
+
+            IO.puts(
+              "Fetched #{Enum.count(games)} games for archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in"
+            )
+
+            for chunk <- aggregate_games(games, ranks) |> Enum.chunk_every(5000) do
+              insertable =
+                Enum.map(chunk, fn {key, value} ->
+                  Intermediate.to_insertable(value, key)
+                end)
+
+              repo.insert_all(temp_table_name, insertable)
+            end
+
+            IO.puts(
+              "Finished with insertes for archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in"
+            )
           end
+
+          create_index_and_swap = [
+            "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
+            "ALTER INDEX IF EXISTS #{index_name} RENAME TO old_#{index_name} ;",
+            "ALTER INDEX IF EXISTS #{temp_index_name} RENAME TO #{index_name} ;",
+            "ALTER TABLE IF EXISTS #{table_name} RENAME TO old_#{table_name} ;",
+            "ALTER TABLE IF EXISTS #{temp_table_name} RENAME TO #{table_name};",
+            "DROP TABLE IF EXISTS old_#{table_name}",
+            "COMMENT ON table #{table_name} IS '#{now}';"
+          ]
+
+          after_result =
+            for sql <- create_index_and_swap do
+              repo.query(sql)
+            end
+
+          [create_result, after_result]
         end,
-        fn
-          {[_ | _] = archetypes, _} -> {:cont, archetypes, {[], 0}}
-          _ -> {:cont, {[], 0}}
-        end
+        timeout: :infinity
       )
 
-    IO.puts("Number of chunks: #{Enum.count(chunks)}")
+    IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
+    result
+  end
 
-    Enum.reduce(chunks, %{}, fn archetypes, acc ->
-      games_criteria = [
-        {"with_card_tallies", true},
-        {"player_deck_archetype", archetypes} | base_criteria
-      ]
+  defp archetype_chunks(criteria) do
+    archetype_popularity = DeckTracker.archetype_popularity(criteria)
 
-      games = DeckTracker.games(games_criteria, timeout: :infinity)
+    Enum.chunk_while(
+      archetype_popularity,
+      {[], 0},
+      fn %{archetype: archetype, count: count}, {archetypes, total} ->
+        new_total = total + count
+        new_archetypes = [archetype | archetypes]
 
-      aggregate_games(games, ranks)
-      |> Map.merge(acc)
-
-      # before = NaiveDateTime.utc_now()
-      # games = DeckTracker.games(games_criteria, timeout: :infinity)
-      # after_fetch = NaiveDateTime.utc_now()
-      # IO.puts("Fetching #{archetype} took #{NaiveDateTime.diff(after_fetch, before)}")
-      # aggregated = aggregate_group(games, ranks, archetype)
-      # after_aggregated = NaiveDateTime.utc_now()
-      # IO.puts("Aggregating #{archetype} took #{NaiveDateTime.diff(after_aggregated, after_fetch)}")
-      # group = Enum.map(aggregated, fn {key, value} -> Intermediate.to_insertable(value, key) end)
-      # after_to_insertable = NaiveDateTime.utc_now()
-      # IO.puts("Converting #{archetype} took #{NaiveDateTime.diff(after_to_insertable, after_aggregated)}")
-
-      # result = group ++ acc
-      # IO.puts("Concating took #{NaiveDateTime.diff(NaiveDateTime.utc_now(), after_to_insertable)}")
-      # result
-    end)
-    |> Enum.map(fn {key, value} ->
-      Intermediate.to_insertable(value, key)
-    end)
+        if new_total > 1_000_000 do
+          {:cont, new_archetypes, {[], 0}}
+        else
+          {:cont, {new_archetypes, new_total}}
+        end
+      end,
+      fn
+        {[_ | _] = archetypes, _} -> {:cont, archetypes, {[], 0}}
+        _ -> {:cont, {[], 0}}
+      end
+    )
   end
 
   defp rank_criteria(ranks) do
