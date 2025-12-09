@@ -47,7 +47,8 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
       ] ++ rank_criteria(ranks)
 
     archetype_chunks = archetype_chunks(base_criteria, chunk_size)
-    archetype_chunks_count = Enum.count(archetype_chunks)
+    archetype_chunks_count = Enum.count(archetype_chunks) |> to_string()
+    pad = String.length(archetype_chunks_count)
 
     table_name = "dt_#{period}_#{format}_aggregated_stats"
     temp_table_name = "temp_#{table_name}"
@@ -80,9 +81,31 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
           inserter = chunked_inserter(table_name, repo)
 
           for {archetypes, index} <- archetype_chunks |> Enum.with_index(1) do
-            IO.puts(
-              "Starting to process archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in at #{NaiveDateTime.utc_now()}"
-            )
+            chunk_start_time = NaiveDateTime.utc_now()
+            output_message = fn message, part ->
+              prefix =
+                "#{String.pad_leading(to_string(index), pad, "0")}/#{archetype_chunks_count}"
+
+              now = NaiveDateTime.utc_now()
+
+              now_time = case Timex.format(now, "{h24}:{m}:{s}") do
+                {:ok, formatted} -> formatted
+                _ -> now |> NaiveDateTime.to_time() |> to_string()
+              end
+
+              padded_diff =
+                NaiveDateTime.diff(now, start_time) |> to_string() |> String.pad_leading(4, "0")
+
+              padded_chunk_diff =
+                NaiveDateTime.diff(now, chunk_start_time) |> to_string() |> String.pad_leading(3, "0")
+
+              padded_count =
+                archetypes |> Enum.count() |> to_string() |> String.pad_leading(3, "0")
+
+                IO.puts("#{prefix} - #{part} | #{padded_chunk_diff}s | #{padded_diff}s | #{now_time} | #{padded_count}: #{message}")
+            end
+
+            output_message.("Starting to process archetype chunk", 1)
 
             games_criteria = [
               {"with_card_tallies", true},
@@ -91,24 +114,23 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
             games = DeckTracker.games(games_criteria, timeout: :infinity)
 
-            IO.puts(
-              "Fetched #{Enum.count(games)} games for archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in at #{NaiveDateTime.utc_now()}"
-            )
+            output_message.("Fetched #{Enum.count(games)} games", 2)
 
-            case archetypes do
-              [archetype] ->
-                aggregate_games(games, ranks, archetype) |> inserter.()
+            Task.async(fn ->
+              case archetypes do
+                [archetype] ->
+                  aggregate_games(games, ranks, archetype) |> inserter.()
 
-              _ ->
-                for group <- aggregate_games(games, ranks, nil) do
-                  inserter.(group)
-                end
-            end
+                _ ->
+                  for group <- aggregate_games(games, ranks, nil) do
+                    inserter.(group)
+                  end
+              end
 
-            IO.puts(
-              "Finished with insertes for archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in at #{NaiveDateTime.utc_now()}"
-            )
+              output_message.("Finished inserting", 3)
+            end)
           end
+          |> Task.await_many(:infinity)
 
           create_index_and_swap = [
             "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
