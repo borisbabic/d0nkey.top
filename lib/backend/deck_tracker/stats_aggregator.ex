@@ -8,10 +8,17 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   alias Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate
   alias Backend.Repo
 
-  @spec aggregate_games([Game.t()], [Rank.t()]) ::
-          {:ok, AggregatedStatsCollection} | {:error, String.t()}
+  @spec aggregate_games([Game.t()], [Rank.t()], String.t() | nil) ::
+          {:ok, [Map.t()]} | {:error, String.t()}
 
-  def aggregate_games(games, ranks) when is_list(games) and is_list(ranks) do
+  def aggregate_games(games, ranks, archetype)
+      when is_list(games) and is_list(ranks) and
+             is_binary(archetype) do
+    Task.async(fn -> aggregate_group(games, ranks, archetype) end)
+    |> Task.await(:infinity)
+  end
+
+  def aggregate_games(games, ranks, nil) when is_list(games) and is_list(ranks) do
     games
     |> Enum.group_by(fn %{player_deck: deck} -> Deck.archetype(deck) end)
     |> Util.async_map(fn {archetype, games} ->
@@ -70,6 +77,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
           """
 
           create_result = repo.query(create_table)
+          inserter = chunked_inserter(table_name, repo)
 
           for {archetypes, index} <- archetype_chunks |> Enum.with_index(1) do
             IO.puts(
@@ -87,13 +95,14 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
               "Fetched #{Enum.count(games)} games for archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in at #{NaiveDateTime.utc_now()}"
             )
 
-            for group <- aggregate_games(games, ranks), chunk <- Enum.chunk_every(group, 5000) do
-              insertable =
-                Enum.map(chunk, fn {key, value} ->
-                  Intermediate.to_insertable(value, key)
-                end)
+            case archetypes do
+              [archetype] ->
+                aggregate_games(games, ranks, archetype) |> inserter.()
 
-              repo.insert_all(temp_table_name, insertable)
+              _ ->
+                for group <- aggregate_games(games, ranks, nil) do
+                  inserter.(group)
+                end
             end
 
             IO.puts(
@@ -123,6 +132,19 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
     IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
     result
+  end
+
+  defp chunked_inserter(table_name, repo) do
+    fn intermediate ->
+      for chunk <- Enum.chunk_every(intermediate, 5000) do
+        insertable =
+          Enum.map(chunk, fn {key, value} ->
+            Intermediate.to_insertable(value, key)
+          end)
+
+        repo.insert_all(table_name, insertable)
+      end
+    end
   end
 
   defp archetype_chunks(criteria, chunk_size) do
