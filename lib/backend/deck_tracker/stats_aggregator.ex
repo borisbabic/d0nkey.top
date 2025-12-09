@@ -82,27 +82,33 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
           for {archetypes, index} <- archetype_chunks |> Enum.with_index(1) do
             chunk_start_time = NaiveDateTime.utc_now()
+
             output_message = fn message, part ->
               prefix =
                 "#{String.pad_leading(to_string(index), pad, "0")}/#{archetype_chunks_count}"
 
               now = NaiveDateTime.utc_now()
 
-              now_time = case Timex.format(now, "{h24}:{m}:{s}") do
-                {:ok, formatted} -> formatted
-                _ -> now |> NaiveDateTime.to_time() |> to_string()
-              end
+              now_time =
+                case Timex.format(now, "{h24}:{m}:{s}") do
+                  {:ok, formatted} -> formatted
+                  _ -> now |> NaiveDateTime.to_time() |> to_string()
+                end
 
               padded_diff =
                 NaiveDateTime.diff(now, start_time) |> to_string() |> String.pad_leading(4, "0")
 
               padded_chunk_diff =
-                NaiveDateTime.diff(now, chunk_start_time) |> to_string() |> String.pad_leading(3, "0")
+                NaiveDateTime.diff(now, chunk_start_time)
+                |> to_string()
+                |> String.pad_leading(3, "0")
 
               padded_count =
                 archetypes |> Enum.count() |> to_string() |> String.pad_leading(3, "0")
 
-                IO.puts("#{prefix} - #{part} | #{padded_chunk_diff}s | #{padded_diff}s | #{now_time} | #{padded_count}: #{message}")
+              IO.puts(
+                "#{prefix} - #{part} | #{padded_chunk_diff}s | #{padded_diff}s | #{now_time} | #{padded_count}: #{message}"
+              )
             end
 
             output_message.("Starting to process archetype chunk", 1)
@@ -116,21 +122,18 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
             output_message.("Fetched #{Enum.count(games)} games", 2)
 
-            Task.async(fn ->
-              case archetypes do
-                [archetype] ->
-                  aggregate_games(games, ranks, archetype) |> inserter.()
+            case archetypes do
+              [archetype] ->
+                aggregate_games(games, ranks, archetype) |> inserter.()
 
-                _ ->
-                  for group <- aggregate_games(games, ranks, nil) do
-                    inserter.(group)
-                  end
-              end
+              _ ->
+                for group <- aggregate_games(games, ranks, nil) do
+                  inserter.(group)
+                end
+            end
 
-              output_message.("Finished inserting", 3)
-            end)
+            output_message.("Finished inserting", 3)
           end
-          |> Task.await_many(:infinity)
 
           create_index_and_swap = [
             "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
