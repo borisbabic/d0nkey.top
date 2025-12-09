@@ -8,25 +8,23 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   alias Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate
   alias Backend.Repo
 
-  @spec aggregate_games([Game.t()], [Rank.t()], fun()) ::
+  @spec aggregate_games([Game.t()], [Rank.t()]) ::
           {:ok, AggregatedStatsCollection} | {:error, String.t()}
 
-  def aggregate_games(games, ranks, mapper) when is_list(games) and is_list(ranks) do
+  def aggregate_games(games, ranks) when is_list(games) and is_list(ranks) do
     games
     |> Enum.group_by(fn %{player_deck: deck} -> Deck.archetype(deck) end)
-    |> mapper.(fn {archetype, games} ->
+    |> Util.async_map(fn {archetype, games} ->
       aggregate_group(games, ranks, archetype)
     end)
-    |> Enum.reduce(%{}, &Map.merge/2)
   end
 
   @spec auto_aggregate_period(String.t(), integer(), Keyword.t()) :: any()
   def auto_aggregate_period(
         period,
         format,
-        opts \\ [mapper: &Util.async_map/2, chunk_size: 1_000_000]
+        opts \\ [chunk_size: 1_000_000]
       ) do
-    mapper = Keyword.get(opts, :mapper, &Util.async_map/2)
     chunk_size = Keyword.get(opts, :chunk_size, 1_000_000)
 
     start_time = NaiveDateTime.utc_now()
@@ -89,7 +87,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
               "Fetched #{Enum.count(games)} games for archetype chunk #{index}/#{archetype_chunks_count} with count #{Enum.count(archetypes)} #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)}s in at #{NaiveDateTime.utc_now()}"
             )
 
-            for chunk <- aggregate_games(games, ranks, mapper) |> Enum.chunk_every(5000) do
+            for group <- aggregate_games(games, ranks), chunk <- Enum.chunk_every(group, 5000) do
               insertable =
                 Enum.map(chunk, fn {key, value} ->
                   Intermediate.to_insertable(value, key)
