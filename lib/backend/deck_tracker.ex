@@ -1082,7 +1082,6 @@ defmodule Hearthstone.DeckTracker do
         table = aggregated_stats_table(period, format)
 
         base_currently_aggregated_archetypes(table)
-        |> where([ag], ag.format == ^format)
         |> Repo.all(repo_opts)
     end
   end
