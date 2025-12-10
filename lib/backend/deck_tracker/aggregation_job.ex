@@ -3,6 +3,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.FastAggregationJob
   alias Hearthstone.DeckTracker.SlowAggregationJob
+  import Ecto.Query
 
   def enqueue_needed() do
     needed()
@@ -48,6 +49,20 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
       minutes_ago > size
     end)
     |> Enum.sort_by(fn {_, _, minutes_ago, size} -> minutes_ago / size end, :desc)
+  end
+
+  def revive_orphaned() do
+    Backend.Repo.update_all(orphaned_query(), set: [state: "available"])
+  end
+
+  def orphaned_query() do
+    node = Oban.config().node
+
+    from oj in "oban_jobs",
+      select: %{id: oj.id, queue: oj.queue, args: oj.args},
+      where: fragment("?[1]", oj.attempted_by) != ^node,
+      where: oj.queue in ["deck_tracker_aggregator_fast", "deck_tracker_aggregator_slow"],
+      where: oj.state == "executing"
   end
 
   defmacro __using__(opts) do
