@@ -41,7 +41,13 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
           end
 
         minutes_ago = NaiveDateTime.diff(now, inserted_at, :minute)
-        {period.slug, format_value, minutes_ago, Period.size(period)}
+        minimum = case period do
+          %{type: "rolling"} -> 25
+          %{type: "patch"} -> 15
+          %{type: "release"} -> 0
+          _ -> 30
+        end
+        {period.slug, format_value, minutes_ago, Enum.max([Period.size(period), minimum])}
       end
 
     potential_formats
