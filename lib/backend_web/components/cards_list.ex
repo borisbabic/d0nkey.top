@@ -5,6 +5,7 @@ defmodule Components.CardsList do
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.UserManager.User
+  alias Backend.UserManager.User.DecklistOptions
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.CardBag
@@ -25,7 +26,7 @@ defmodule Components.CardsList do
 
   def render(assigns) do
     ~F"""
-      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboard: sideboard} <- cards_to_display(@deck, @comparison, @highlight_rotation, @user)} style="margin: 0; padding: 0;">
+      <div class="decklist_card_container" :for={%{card: card, count: count, class: class, sideboard: sideboard} <- cards_to_display(@deck, @comparison, highlight_rotation(@highlight_rotation, @user), @user)} style="margin: 0; padding: 0;">
           <div class={"is-clickable": !!@on_card_click} phx-value-sideboard={sideboard} phx-value-card_id={card.id} :on-click={@on_card_click} >
             <DecklistCard
               show_mana_cost={true}
@@ -104,7 +105,7 @@ defmodule Components.CardsList do
        when is_map(card_map) do
     if user
        |> User.decklist_options()
-       |> Backend.UserManager.User.DecklistOptions.fade_missing_cards() do
+       |> DecklistOptions.fade_missing_cards() do
       {true, card_map}
     else
       {false, card_map}
@@ -142,6 +143,16 @@ defmodule Components.CardsList do
         ]
     end
   end
+
+  defp highlight_rotation(true, _), do: true
+
+  defp highlight_rotation(_, %User{} = user) do
+    user
+    |> User.decklist_options()
+    |> DecklistOptions.fade_rotating_cards()
+  end
+
+  defp highlight_rotation(hr, _), do: hr
 
   defp card_map(cards, deck) do
     cards
