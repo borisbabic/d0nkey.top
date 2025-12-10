@@ -4,7 +4,6 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.DeckTracker.Rank
-  alias Hearthstone.DeckTracker.AggregatedStatsCollection
   alias Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate
   alias Backend.Repo
 
@@ -50,7 +49,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     archetype_chunks_count = Enum.count(archetype_chunks) |> to_string()
     pad = String.length(archetype_chunks_count)
 
-    table_name = "dt_#{period}_#{format}_aggregated_stats"
+    table_name = DeckTracker.aggregated_stats_table(period, format)
     temp_table_name = "temp_#{table_name}"
     index_name = "#{table_name}_index"
     temp_index_name = "temp_#{index_name}"
@@ -78,7 +77,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
           """
 
           create_result = repo.query(create_table)
-          inserter = chunked_inserter(table_name, repo)
+          inserter = chunked_inserter(temp_table_name, repo)
 
           for {archetypes, index} <- archetype_chunks |> Enum.with_index(1) do
             chunk_start_time = NaiveDateTime.utc_now()
@@ -107,7 +106,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
                 archetypes |> Enum.count() |> to_string() |> String.pad_leading(3, "0")
 
               IO.puts(
-                "#{prefix} - #{part} | #{padded_chunk_diff}s | #{padded_diff}s | #{now_time} | #{padded_count}: #{message}"
+                "#{prefix} - #{part} | #{padded_chunk_diff}s | #{padded_diff}s | #{now_time} | #{period}_#{format} | #{padded_count}: #{message}"
               )
             end
 

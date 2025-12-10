@@ -7,7 +7,6 @@ defmodule Hearthstone.DeckTracker do
   alias Backend.Repo
   alias Hearthstone.DeckTracker.GamePlayedCards
   alias Hearthstone.DeckTracker.AggregatedStats
-  alias Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate
   alias Hearthstone.DeckTracker.AggregatedMatchups
   alias Hearthstone.DeckTracker.AggregationMeta
   alias Hearthstone.DeckTracker.AggregationLog
@@ -15,7 +14,6 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.CardGameTally
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
-  alias Hearthstone.DeckTracker.PartitionedAggregatedStats
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
@@ -23,7 +21,6 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.Rank
   alias Hearthstone.DeckTracker.Format
   alias Hearthstone.DeckTracker.Region
-  alias Hearthstone.DeckTracker.StatsAggregator
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.UserManager
@@ -2382,6 +2379,10 @@ defmodule Hearthstone.DeckTracker do
     query |> where([format: p], p.default == ^default)
   end
 
+  defp compose_formats_query({:auto_aggregate, true}, query) do
+    query |> where([format: f], f.auto_aggregate)
+  end
+
   defp compose_formats_query({:order_by, {field, direction}}, query) do
     query
     |> order_by(
@@ -3441,70 +3442,74 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all(timeout: :infinity)
   end
 
-  def auto_aggregate_period(period, format) do
-    start_time = NaiveDateTime.utc_now()
-
-    insertable =
-      StatsAggregator.aggregate_for_period(period, format)
-
-    IO.puts(
-      "Fetched and Processed games #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds in"
-    )
-
-    table_name = "dt_#{period}_#{format}_aggregated_stats"
-    temp_table_name = "temp_#{table_name}"
-    index_name = "#{table_name}_index"
-    temp_index_name = "temp_#{index_name}"
-    now = NaiveDateTime.utc_now()
-
-    result =
-      Repo.transaction(
-        fn repo ->
-          create_table = """
-            CREATE TABLE IF NOT EXISTS #{temp_table_name} (
-            deck_id integer,
-            rank varchar,
-            opponent_class varchar,
-            archetype varchar,
-            format integer,
-            winrate double precision,
-            wins integer,
-            losses integer,
-            total integer,
-            turns double precision,
-            duration double precision,
-            player_has_coin boolean,
-            card_stats jsonb
-          )
-          """
-
-          create_result = repo.query(create_table)
-
-          for chunk <- Enum.chunk_every(insertable, 5000) do
-            repo.insert_all(temp_table_name, chunk)
-          end
-
-          create_index_and_swap = [
-            "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
-            "ALTER INDEX IF EXISTS #{index_name} RENAME TO old_#{index_name} ;",
-            "ALTER INDEX IF EXISTS #{temp_index_name} RENAME TO #{index_name} ;",
-            "ALTER TABLE IF EXISTS #{table_name} RENAME TO old_#{table_name} ;",
-            "ALTER TABLE IF EXISTS #{temp_table_name} RENAME TO #{table_name};",
-            "DROP TABLE IF EXISTS old_#{table_name}",
-            "COMMENT ON table #{table_name} IS '#{now}';"
-          ]
-
-          after_result =
-            for sql <- create_index_and_swap do
-              repo.query(sql)
-            end
-
-          [create_result, after_result]
-        end,
-        timeout: :infinity
-      )
-
-    IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
-    result
+  def aggregated_stats_table(period, format) when is_binary(period) and is_integer(format) do
+    "dt_#{period}_#{format}_aggregated_stats"
   end
+
+  # def auto_aggregate_period(period, format) do
+  #   start_time = NaiveDateTime.utc_now()
+
+  #   insertable =
+  #     StatsAggregator.aggregate_for_period(period, format)
+
+  #   IO.puts(
+  #     "Fetched and Processed games #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds in"
+  #   )
+
+  #   table_name = "dt_#{period}_#{format}_aggregated_stats"
+  #   temp_table_name = "temp_#{table_name}"
+  #   index_name = "#{table_name}_index"
+  #   temp_index_name = "temp_#{index_name}"
+  #   now = NaiveDateTime.utc_now()
+
+  #   result =
+  #     Repo.transaction(
+  #       fn repo ->
+  #         create_table = """
+  #           CREATE TABLE IF NOT EXISTS #{temp_table_name} (
+  #           deck_id integer,
+  #           rank varchar,
+  #           opponent_class varchar,
+  #           archetype varchar,
+  #           format integer,
+  #           winrate double precision,
+  #           wins integer,
+  #           losses integer,
+  #           total integer,
+  #           turns double precision,
+  #           duration double precision,
+  #           player_has_coin boolean,
+  #           card_stats jsonb
+  #         )
+  #         """
+
+  #         create_result = repo.query(create_table)
+
+  #         for chunk <- Enum.chunk_every(insertable, 5000) do
+  #           repo.insert_all(temp_table_name, chunk)
+  #         end
+
+  #         create_index_and_swap = [
+  #           "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
+  #           "ALTER INDEX IF EXISTS #{index_name} RENAME TO old_#{index_name} ;",
+  #           "ALTER INDEX IF EXISTS #{temp_index_name} RENAME TO #{index_name} ;",
+  #           "ALTER TABLE IF EXISTS #{table_name} RENAME TO old_#{table_name} ;",
+  #           "ALTER TABLE IF EXISTS #{temp_table_name} RENAME TO #{table_name};",
+  #           "DROP TABLE IF EXISTS old_#{table_name}",
+  #           "COMMENT ON table #{table_name} IS '#{now}';"
+  #         ]
+
+  #         after_result =
+  #           for sql <- create_index_and_swap do
+  #             repo.query(sql)
+  #           end
+
+  #         [create_result, after_result]
+  #       end,
+  #       timeout: :infinity
+  #     )
+
+  #   IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
+  #   result
+  # end
 end
