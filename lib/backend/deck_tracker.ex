@@ -1078,7 +1078,11 @@ defmodule Hearthstone.DeckTracker do
         []
 
       periods ->
-        period = periods |> Enum.max_by(&Period.size/1) |> Map.get(:slug)
+        period =
+          periods
+          |> Enum.max_by(&Period.size/1)
+          |> Map.get(:slug)
+
         table = aggregated_stats_table(period, format)
 
         base_currently_aggregated_archetypes(table)
@@ -3563,7 +3567,7 @@ defmodule Hearthstone.DeckTracker do
 
     format =
       case format_raw do
-        "minus" <> f -> f
+        "minus" <> f -> "-#{f}"
         f -> f
       end
 
