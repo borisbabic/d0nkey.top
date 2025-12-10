@@ -6,7 +6,6 @@ defmodule Hearthstone.DeckTracker do
 
   alias Backend.Repo
   alias Hearthstone.DeckTracker.GamePlayedCards
-  alias Hearthstone.DeckTracker.AggregatedStats
   alias Hearthstone.DeckTracker.AggregatedMatchups
   alias Hearthstone.DeckTracker.AggregationMeta
   alias Hearthstone.DeckTracker.AggregationLog
@@ -14,6 +13,7 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.CardGameTally
   alias Hearthstone.DeckTracker.GameDto
   alias Hearthstone.DeckTracker.Game
+  alias Hearthstone.DeckTracker.PartitionedAggregatedStats
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.RawPlayerCardStats
   alias Hearthstone.DeckTracker.Source
@@ -511,11 +511,34 @@ defmodule Hearthstone.DeckTracker do
   def fresh_or_agg(criteria) do
     needs_fresh? = Enum.any?(criteria, &filter_needs_fresh?/1)
     needed_for_agg? = has_needed_for_agg?(criteria)
+    table_exists? = partitioned_agg_table_exists?(criteria)
 
-    if needs_fresh? or !needed_for_agg? do
+    if needs_fresh? or !needed_for_agg? or !table_exists? do
       :fresh
     else
       :agg
+    end
+  end
+
+  def partitioned_agg_table_exists?(criteria) do
+    with {:ok, table_name} <- partitioned_agg_table_name(criteria),
+         {:ok, _} <- Backend.Repo.table_comment(table_name) do
+      true
+    else
+      _ -> false
+    end
+  end
+
+  def partitioned_agg_table_name(criteria) do
+    list_criteria = Enum.to_list(criteria)
+
+    with {"period", period} when is_binary(period) <- List.keyfind(list_criteria, "period", 0),
+         {"format", format} when is_integer(format) or is_binary(format) <-
+           List.keyfind(list_criteria, "format", 0),
+         table_name <- aggregated_stats_table_name(period, format) do
+      {:ok, table_name}
+    else
+      _ -> {:error, :missing_info}
     end
   end
 
@@ -541,14 +564,16 @@ defmodule Hearthstone.DeckTracker do
     |> Repo.all(repo_opts)
   end
 
-  def agg_opponent_class_stats(criteria, repo_opts \\ []) do
-    base_agg_opponent_class_stats_query()
-    |> build_games_query(criteria)
-    |> Repo.all(repo_opts)
+  def agg_opponent_class_stats(criteria_raw, repo_opts \\ []) do
+    with {:ok, {criteria, table}} <- partitioned_criteria_and_table(criteria_raw) do
+      base_agg_opponent_class_stats_query(table)
+      |> build_games_query(criteria)
+      |> Repo.all(repo_opts)
+    end
   end
 
-  defp base_agg_opponent_class_stats_query() do
-    from(ag in AggregatedStats,
+  defp base_agg_opponent_class_stats_query(table) do
+    from(ag in table,
       as: :agg_deck_stats,
       left_join: pd in assoc(ag, :deck),
       as: :player_deck,
@@ -644,14 +669,16 @@ defmodule Hearthstone.DeckTracker do
     |> where([player_deck: pd], not is_nil(pd.archetype))
   end
 
-  def agg_deck_card_stats(criteria, repo_opts \\ []) do
-    base_agg_deck_card_stats_query()
-    |> build_games_query(criteria)
-    |> Repo.all(repo_opts)
+  def agg_deck_card_stats(criteria_raw, repo_opts \\ []) do
+    with {:ok, {criteria, table}} <- partitioned_criteria_and_table(criteria_raw) do
+      base_agg_deck_card_stats_query(table)
+      |> build_games_query(criteria)
+      |> Repo.all(repo_opts)
+    end
   end
 
-  defp base_agg_deck_card_stats_query() do
-    from(ag in AggregatedStats,
+  defp base_agg_deck_card_stats_query(table) do
+    from(ag in table,
       as: :agg_deck_stats,
       left_join: pd in assoc(ag, :deck),
       as: :player_deck,
@@ -669,10 +696,12 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  def archetype_agg_stats(criteria, repo_opts \\ []) do
-    base_agg_archetype_stats(criteria)
-    |> build_games_query(criteria)
-    |> Repo.all(repo_opts)
+  def archetype_agg_stats(criteria_raw, repo_opts \\ []) do
+    with {:ok, {criteria, table}} <- partitioned_criteria_and_table(criteria_raw) do
+      base_agg_archetype_stats(criteria, table)
+      |> build_games_query(criteria)
+      |> Repo.all(repo_opts)
+    end
   end
 
   defp needs_grouping?(criteria) do
@@ -684,16 +713,42 @@ defmodule Hearthstone.DeckTracker do
 
   defp needs_group_by?(_), do: false
 
-  defp base_agg_archetype_stats(criteria) do
-    if needs_grouping?(criteria) do
-      base_grouped_agg_archetype_stats()
+  # defp base_partitioned_agg_stats_query(criteria, grouped_base, ungrouped_base) do
+  #   with {:ok, %{criteria: criteria, table: table}} <- partitioned_criteria_and_table(criteria) do
+  #     query = if needs_grouping?(criteria) do
+  #       grouped_base.(table)
+  #     else
+  #       ungrouped_base.(table)
+  #     end
+  #     {query, rest}
+  #   end
+  # end
+
+  defp partitioned_criteria_and_table(criteria) do
+    with {{"format", format}, without_format} <-
+           List.keytake(Enum.to_list(criteria), "format", 0),
+         {{"period", period}, rest} <- List.keytake(without_format, "period", 0) do
+      table = aggregated_stats_table(period, format)
+      {:ok, {rest, table}}
     else
-      base_ungrouped_agg_archetype_stats()
+      _ -> {:error, :invalid_criteria}
     end
   end
 
-  defp base_ungrouped_agg_archetype_stats() do
-    from(ag in AggregatedStats,
+  # defp base_paritioned_agg_archetype_stats(criteria) do
+  #   base_paritioned_agg_stats_query(criteria, &base_grouped_agg_archetype_stats/1, &base_ungrouped_agg_archetype_stats/2)
+  # end
+
+  defp base_agg_archetype_stats(criteria, table) do
+    if needs_grouping?(criteria) do
+      base_grouped_agg_archetype_stats(table)
+    else
+      base_ungrouped_agg_archetype_stats(table)
+    end
+  end
+
+  defp base_ungrouped_agg_archetype_stats(table) do
+    from(ag in table,
       as: :agg_deck_stats,
       select: %{
         wins: ag.wins |> selected_as(:wins),
@@ -711,8 +766,8 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  defp base_grouped_agg_archetype_stats() do
-    from(ag in AggregatedStats,
+  defp base_grouped_agg_archetype_stats(table) do
+    from(ag in table,
       as: :agg_deck_stats,
       select: %{
         wins: sum(ag.wins) |> selected_as(:wins),
@@ -733,16 +788,16 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  defp base_agg_deck_stats_query(criteria) do
+  defp base_agg_deck_stats_query(criteria, table) do
     if needs_grouping?(criteria) do
-      base_grouped_agg_deck_stats_query()
+      base_grouped_agg_deck_stats_query(table)
     else
-      base_ungrouped_agg_deck_stats_query()
+      base_ungrouped_agg_deck_stats_query(table)
     end
   end
 
-  defp base_grouped_agg_deck_stats_query() do
-    from(ag in AggregatedStats,
+  defp base_grouped_agg_deck_stats_query(table) do
+    from(ag in table,
       as: :agg_deck_stats,
       join: pd in assoc(ag, :deck),
       as: :player_deck,
@@ -761,8 +816,8 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  defp base_ungrouped_agg_deck_stats_query() do
-    from(ag in AggregatedStats,
+  defp base_ungrouped_agg_deck_stats_query(table) do
+    from(ag in table,
       as: :agg_deck_stats,
       join: pd in assoc(ag, :deck),
       as: :player_deck,
@@ -796,8 +851,9 @@ defmodule Hearthstone.DeckTracker do
     list_criteria = Enum.to_list(criteria)
 
     with :nomatch <- List.keyfind(list_criteria, "force_fresh", 0, :nomatch),
-         {:ok, new_criteria} <- convert_deck_criteria_to_aggregate(list_criteria) do
-      {base_agg_deck_stats_query(new_criteria), new_criteria, :agg}
+         {:ok, converted_criteria} <- convert_deck_criteria_to_aggregate(list_criteria),
+         {:ok, {new_criteria, table}} <- partitioned_criteria_and_table(converted_criteria) do
+      {base_agg_deck_stats_query(new_criteria, table), new_criteria, :agg}
     else
       _ ->
         {base_deck_stats_query(), List.keydelete(list_criteria, "force_fresh", 0), :fresh}
@@ -1017,14 +1073,18 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def currently_aggregated_archetypes(format, repo_opts \\ []) do
-    base_currently_aggregated_archetypes()
-    |> where([ag], ag.format == ^format)
-    |> Repo.all(repo_opts)
-  end
+    case aggregated_periods_for_format(format) do
+      [] ->
+        []
 
-  def all_currently_aggregated_archetypes(repo_opts \\ []) do
-    base_currently_aggregated_archetypes()
-    |> Repo.all(repo_opts)
+      periods ->
+        period = periods |> Enum.max_by(&Period.size/1) |> Map.get(:slug)
+        table = aggregated_stats_table(period, format)
+
+        base_currently_aggregated_archetypes(table)
+        |> where([ag], ag.format == ^format)
+        |> Repo.all(repo_opts)
+    end
   end
 
   def games_for_auto_aggregate(criteria, repo_opts \\ [timeout: :infinity]) do
@@ -1037,8 +1097,8 @@ defmodule Hearthstone.DeckTracker do
     |> build_games_query(criteria)
   end
 
-  def base_currently_aggregated_archetypes() do
-    from ag in AggregatedStats,
+  def base_currently_aggregated_archetypes(table) do
+    from ag in table,
       select: ag.archetype,
       distinct: ag.archetype
   end
@@ -2383,6 +2443,10 @@ defmodule Hearthstone.DeckTracker do
     query |> where([format: f], f.auto_aggregate)
   end
 
+  defp compose_formats_query({:value, values}, query) when is_list(values) do
+    query |> where([format: f], f.value in ^values)
+  end
+
   defp compose_formats_query({:order_by, {field, direction}}, query) do
     query
     |> order_by(
@@ -2515,6 +2579,10 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_periods_query({:context, :personal}, query) do
     query |> where([period: p], p.include_in_personal_filters == true)
+  end
+
+  defp compose_periods_query({:slug, slugs}, query) when is_list(slugs) do
+    query |> where([period: p], p.slug in ^slugs)
   end
 
   defp compose_periods_query({:order_by, {field, direction}}, query) do
@@ -3425,7 +3493,7 @@ defmodule Hearthstone.DeckTracker do
     Repo.insert_all(AggregatedMatchups, vals, conflict_options)
   end
 
-  def archetype_popularity(criteria \\ []) do
+  def archetype_popularity(criteria \\ [], sort_dir \\ :desc) do
     base_query =
       from g in Game,
         as: :game,
@@ -3436,14 +3504,71 @@ defmodule Hearthstone.DeckTracker do
           count: count(pd.id) |> selected_as(:count)
         },
         group_by: [pd.archetype |> coalesce(pd.class)],
-        order_by: [desc: selected_as(:count)]
+        order_by: [{^sort_dir, selected_as(:count)}]
 
     build_games_query(base_query, criteria)
     |> Repo.all(timeout: :infinity)
   end
 
-  def aggregated_stats_table(period, format) when is_binary(period) and is_integer(format) do
+  def aggregated_stats_table_name(period, format)
+      when (is_binary(period) and is_integer(format)) or is_binary(format) do
     "dt_#{period}_#{format}_aggregated_stats"
+  end
+
+  def aggregated_stats_table(period, format)
+      when (is_binary(period) and is_integer(format)) or is_binary(format) do
+    table_name = aggregated_stats_table_name(period, format)
+    {table_name, PartitionedAggregatedStats}
+  end
+
+  @spec period_format_from_table_name(String.t()) :: {String.t(), integer}
+  def period_format_from_table_name(table_name) do
+    [format | period_reverse] =
+      String.split(table_name, "_") |> Enum.drop(1) |> Enum.reverse() |> Enum.drop(2)
+
+    period = Enum.reverse(period_reverse) |> Enum.join("_")
+    {period, Util.to_int_or_orig(format)}
+  end
+
+  def aggregated_periods_formats() do
+    sql = """
+    SELECT relname
+    FROM pg_description
+    INNER JOIN pg_class ON objoid = oid
+    WHERE relname LIKE 'dt_%_aggregated_stats'
+    AND description::timestamp > now() - interval '36 hours'
+    AND objsubid = 0;
+    """
+
+    case Repo.query(sql) do
+      {:ok, %{rows: rows}} when is_list(rows) ->
+        Enum.map(rows, fn [table_name] ->
+          period_format_from_table_name(table_name)
+        end)
+
+      _ ->
+        []
+    end
+  end
+
+  def aggregated_periods_for_format(format_raw, additional_criteria \\ []) do
+    format = Util.to_int_or_orig(format_raw)
+
+    slugs =
+      for {period, f} when f == format <- aggregated_periods_formats(), do: period, uniq: true
+
+    criteria = [{:slug, slugs} | additional_criteria]
+    periods(criteria)
+  end
+
+  def aggregated_formats_for_period(period_slug, additional_criteria \\ []) do
+    values =
+      for {period, format} when period == period_slug <- aggregated_periods_formats(),
+          do: format,
+          uniq: true
+
+    criteria = [{:value, values} | additional_criteria]
+    formats(criteria)
   end
 
   # def auto_aggregate_period(period, format) do

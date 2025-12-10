@@ -30,7 +30,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     potential_formats =
       for %{formats: period_formats} = period <- periods,
           format_value <- Enum.filter(period_formats, format_filter) do
-        table_name = DeckTracker.aggregated_stats_table(period.slug, format_value)
+        table_name = DeckTracker.aggregated_stats_table_name(period.slug, format_value)
 
         inserted_at =
           with {:ok, comment} <- Backend.Repo.table_comment(table_name),
