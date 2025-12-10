@@ -3511,7 +3511,12 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def aggregated_stats_table_name(period, format)
-      when (is_binary(period) and is_integer(format)) or is_binary(format) do
+      when is_binary(period) and is_integer(format) and format < 0 do
+    "dt_#{period}_minus#{abs(format)}_aggregated_stats"
+  end
+
+  def aggregated_stats_table_name(period, format)
+      when is_binary(period) and (is_integer(format) or is_binary(format)) do
     "dt_#{period}_#{format}_aggregated_stats"
   end
 
@@ -3523,11 +3528,17 @@ defmodule Hearthstone.DeckTracker do
 
   @spec period_format_from_table_name(String.t()) :: {String.t(), integer}
   def period_format_from_table_name(table_name) do
-    [format | period_reverse] =
+    [format_raw | period_reverse] =
       String.split(table_name, "_") |> Enum.drop(1) |> Enum.reverse() |> Enum.drop(2)
 
+    format =
+      case format_raw do
+        "minus" <> f -> f
+        f -> f
+      end
+
     period = Enum.reverse(period_reverse) |> Enum.join("_")
-    {period, Util.to_int_or_orig(format)}
+    {period, Util.to_int_or_orit(format)}
   end
 
   def aggregated_periods_formats() do
