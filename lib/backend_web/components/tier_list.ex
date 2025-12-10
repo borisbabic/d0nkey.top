@@ -128,7 +128,13 @@ defmodule Components.TierList do
 
     total =
       Enum.reduce(stats_all, 0, fn %{total: t}, sum ->
-        sum + Util.to_int_or_orig(t)
+        int_total = Util.to_int_or_orig(t)
+
+        if is_integer(int_total) do
+          sum + int_total
+        else
+          sum
+        end
       end)
 
     stats =

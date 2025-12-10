@@ -279,7 +279,7 @@ defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate do
         0
       end
 
-    curr = %{
+    %{
       "drawn_total" => drawn_total,
       "drawn_impact_factor" => drawn_impact_factor,
       "not_drawn_total" => not_drawn_total,
