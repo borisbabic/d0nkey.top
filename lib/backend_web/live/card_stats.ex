@@ -37,7 +37,7 @@ defmodule BackendWeb.CardStatsLive do
           <span :if={archetype = Map.get(@params, "archetype")}><a href={~p"/archetype/#{archetype}?#{create_archetype_stats_filters(@params)}"}>Archetype Stats</a> | </span>
           <span :if={archetype = Deck.archetype(@deck)} ><a href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"} class={"tw-border-2 tw-rounded tw-border-orange-500": low_sample?(@games)}>Archetype Card Stats</a> | </span>
           <a href={~p"/stats/explanation"}>Stats Explanation</a> | To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>
-          <AggLogSubtitle />
+          <AggLogSubtitle criteria={@criteria} />
           <span :if={@games}> | <span class={"tw-underline tw-decoration-orange-500": low_sample?(@games)}> Games: {@games}</span></span>
         </div>
       <FunctionComponents.Ads.below_title/>

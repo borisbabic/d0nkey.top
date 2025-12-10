@@ -3538,7 +3538,7 @@ defmodule Hearthstone.DeckTracker do
       end
 
     period = Enum.reverse(period_reverse) |> Enum.join("_")
-    {period, Util.to_int_or_orit(format)}
+    {period, Util.to_int_or_orig(format)}
   end
 
   def aggregated_periods_formats() do
