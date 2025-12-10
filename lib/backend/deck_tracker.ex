@@ -2532,16 +2532,14 @@ defmodule Hearthstone.DeckTracker do
   end
 
   ########################
-  @spec period_filters(:public | :personal) :: [{slug :: String.t(), display :: String.t()}]
-  def period_filters(context) do
-    periods_for_filters(context)
-    |> Enum.map(&Period.to_option/1)
-  end
+  @spec periods_for_filters(:public | :personal, integer()) :: [Period.t()]
+  def periods_for_filters(context, f) do
+    format = Util.to_int_or_orig(f)
+    agg = aggregated_periods_formats()
 
-  @spec periods_for_filters(:public | :personal) :: [Period.t()]
-  def periods_for_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]
     |> periods()
+    |> Enum.filter(fn %{slug: slug} -> {slug, format} in agg end)
   end
 
   def get_period_by_slug(slug) do
@@ -2600,37 +2598,26 @@ defmodule Hearthstone.DeckTracker do
     query |> where([period: p], p.type == ^type)
   end
 
-  @spec default_period(integer() | nil) :: String.t()
-  def default_period(format \\ nil) do
+  @spec default_period(integer()) :: String.t()
+  def default_period(format) do
     now = NaiveDateTime.utc_now()
     start = now |> Timex.shift(days: -10)
     finish_patch = now |> Timex.shift(hours: -5)
     finish_release = now
 
-    base_criteria = [
-      {:order_by, {:period_start, :desc}}
-    ]
+    periods =
+      aggregated_periods_for_format(format)
+      |> Enum.sort_by(&Period.size/1, :desc)
 
-    criteria =
-      if format do
-        [{:format, format} | base_criteria]
-      else
-        base_criteria
-      end
-
-    aggregated = aggregated_periods()
-
-    periods = periods(criteria) |> Enum.filter(&(&1.slug in aggregated))
-
-    default =
-      with false <- "past_week" in aggregated and "past_week",
+    fallback =
+      with false <- Enum.any?(periods, &(&1.slug == "past_week")) && "past_week",
            nil <- latest_with_start(periods),
            nil <- longest_rolling(periods),
            nil <- Enum.find_value(periods, & &1.slug) do
         "past_week"
       end
 
-    Enum.find_value(periods, default, fn
+    Enum.find_value(periods, fallback, fn
       %{type: "patch", period_start: ps, slug: slug} ->
         (NaiveDateTime.compare(ps, start) == :gt and
            NaiveDateTime.compare(ps, finish_patch) == :lt) &&
@@ -2644,6 +2631,50 @@ defmodule Hearthstone.DeckTracker do
         false
     end)
   end
+
+  # def default_period(format \\ nil) do
+  #   now = NaiveDateTime.utc_now()
+  #   start = now |> Timex.shift(days: -10)
+  #   finish_patch = now |> Timex.shift(hours: -5)
+  #   finish_release = now
+
+  #   base_criteria = [
+  #     {:order_by, {:period_start, :desc}}
+  #   ]
+
+  #   criteria =
+  #     if format do
+  #       [{:format, format} | base_criteria]
+  #     else
+  #       base_criteria
+  #     end
+
+  #   aggregated = aggregated_periods()
+
+  #   periods = periods(criteria) |> Enum.filter(&(&1.slug in aggregated))
+
+  #   default =
+  #     with false <- "past_week" in aggregated and "past_week",
+  #          nil <- latest_with_start(periods),
+  #          nil <- longest_rolling(periods),
+  #          nil <- Enum.find_value(periods, & &1.slug) do
+  #       "past_week"
+  #     end
+
+  #   Enum.find_value(periods, default, fn
+  #     %{type: "patch", period_start: ps, slug: slug} ->
+  #       (NaiveDateTime.compare(ps, start) == :gt and
+  #          NaiveDateTime.compare(ps, finish_patch) == :lt) &&
+  #         slug
+
+  #     %{type: "release", period_start: ps, slug: slug} ->
+  #       (NaiveDateTime.compare(ps, start) == :gt and
+  #          NaiveDateTime.compare(ps, finish_release) == :lt) && slug
+
+  #     _ ->
+  #       false
+  #   end)
+  # end
 
   @spec latest_with_start([Period.t()]) :: (slug :: String.t()) | nil
   defp latest_with_start(periods) do

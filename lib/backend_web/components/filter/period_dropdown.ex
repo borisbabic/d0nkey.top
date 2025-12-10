@@ -11,12 +11,13 @@ defmodule Components.Filter.PeriodDropdown do
   prop(live_view, :module, required: true)
   prop(aggregated_only, :boolean, default: false)
   prop(warning, :boolean, default: false)
+  prop(format, :integer, default: 2)
 
   def render(assigns) do
     ~F"""
     <span>
       <LivePatchDropdown
-        options={options(@filter_context, @aggregated_only)}
+        options={options(@filter_context, @aggregated_only, @format)}
         title={@title}
         param={@param}
         url_params={@url_params}
@@ -28,13 +29,14 @@ defmodule Components.Filter.PeriodDropdown do
     """
   end
 
-  def options(context, aggregated_only \\ false) do
-    aggregated = DeckTracker.aggregated_periods()
+  def options(context, aggregated_only, format) do
+    aggregated_periods = DeckTracker.aggregated_periods_for_format(format)
+    aggregated_slugs = Enum.map(aggregated_periods, & &1.slug)
 
-    for %{slug: slug, display: d} <- periods(context),
-        !aggregated_only or slug in aggregated do
+    for %{slug: slug, display: d} <- periods(context, format),
+        !aggregated_only or slug in aggregated_slugs do
       display =
-        if slug in aggregated or context == :personal,
+        if slug in aggregated_slugs or context == :personal,
           do: d,
           else: Components.Helper.warning_triangle(%{before: d})
 
@@ -42,8 +44,8 @@ defmodule Components.Filter.PeriodDropdown do
     end
   end
 
-  defp periods(context) do
-    DeckTracker.periods_for_filters(context)
+  defp periods(context, format) do
+    DeckTracker.periods_for_filters(context, format)
     |> Enum.reject(&future?/1)
   end
 
