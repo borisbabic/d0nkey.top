@@ -182,6 +182,7 @@ defmodule Backend.UserManager.User.DecklistOptions do
   @default_show_dust_below true
   @default_use_missing_dust true
   @default_fade_missing_cards true
+  @default_fade_rotating_cards false
   @primary_key false
   embedded_schema do
     field :border, :string
@@ -192,6 +193,7 @@ defmodule Backend.UserManager.User.DecklistOptions do
     field :show_dust_below, :boolean, default: @default_show_dust_below
     field :use_missing_dust, :boolean, default: @default_use_missing_dust
     field :fade_missing_cards, :boolean, default: @default_fade_missing_cards
+    field :fade_rotating_cards, :boolean, default: @default_fade_rotating_cards
   end
 
   @doc false
@@ -205,6 +207,7 @@ defmodule Backend.UserManager.User.DecklistOptions do
       :show_dust_above,
       :show_dust_below,
       :use_missing_dust,
+      :fade_rotating_cards,
       :fade_missing_cards
     ])
     |> validate_colors([:border, :gradient])
@@ -219,6 +222,13 @@ defmodule Backend.UserManager.User.DecklistOptions do
 
   def fade_missing_cards(_), do: @default_fade_missing_cards
   def default_fade_missing_cards(), do: @default_fade_missing_cards
+
+  def fade_rotating_cards(%{fade_rotating_cards: fade_rotating_cards})
+      when is_boolean(fade_rotating_cards),
+      do: fade_rotating_cards
+
+  def fade_rotating_cards(_), do: @default_fade_rotating_cards
+  def default_fade_rotating_cards(), do: @default_fade_rotating_cards
 
   def use_missing_dust(%{use_missing_dust: use_missing}) when is_boolean(use_missing),
     do: use_missing

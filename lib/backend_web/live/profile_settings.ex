@@ -89,7 +89,10 @@ defmodule BackendWeb.ProfileSettingsLive do
               <.input type="checkbox" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Use missing dust instead of total"/>
             </div>
             <div>
-              <.input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Fade missing cards in decks"/>
+              <.input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} label="Fade missing cards in decks"/>
+            </div>
+            <div>
+              <.input type="checkbox" name="fade_rotating_cards" checked={DecklistOptions.fade_rotating_cards(@user.decklist_options)} label="Fade rotating cards in decks"/>
             </div>
             <br>
             <div>
@@ -204,6 +207,11 @@ defmodule BackendWeb.ProfileSettingsLive do
       |> parse_decklist_color_option(attrs, "gradient")
       |> parse_decklist_color_option(attrs, "border")
       |> parse_decklist_option(attrs, "show_one", DecklistOptions.show_one_default())
+      |> parse_decklist_option(
+        attrs,
+        "fade_rotating_cards",
+        DecklistOptions.default_fade_rotating_cards()
+      )
       |> parse_decklist_option(
         attrs,
         "fade_missing_cards",
