@@ -18,18 +18,22 @@ defmodule Hearthstone.DeckTracker.ArchetypeBag do
   end
 
   defp update_table(table) do
-    all_archetypes =
-      Enum.flat_map(Hearthstone.Enums.Format.all(), fn {format, _} ->
-        key = format_key(format)
-        archetypes = DeckTracker.currently_aggregated_archetypes(format)
+    try do
+      all_archetypes =
+        Enum.flat_map(Hearthstone.Enums.Format.all(), fn {format, _} ->
+          key = format_key(format)
+          archetypes = DeckTracker.currently_aggregated_archetypes(format)
 
-        insert_archetypes(archetypes, table, key)
-        archetypes
-      end)
-      |> Enum.uniq()
+          insert_archetypes(archetypes, table, key)
+          archetypes
+        end)
+        |> Enum.uniq()
 
-    key = format_key("all")
-    insert_archetypes(all_archetypes, table, key)
+      key = format_key("all")
+      insert_archetypes(all_archetypes, table, key)
+    rescue
+      _ -> :ok
+    end
   end
 
   defp insert_archetypes(archetypes, table, key) do
