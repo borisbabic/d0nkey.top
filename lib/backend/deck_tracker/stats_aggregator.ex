@@ -53,6 +53,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     temp_table_name = "temp_#{table_name}"
     index_name = "#{table_name}_index"
     temp_index_name = "temp_#{index_name}"
+    # ensure_temp_table_ready(temp_table_name, temp_index_name)
     now = NaiveDateTime.utc_now()
 
     result =
@@ -157,6 +158,48 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
     result
   end
+
+  # TODO: If optimization is needed we can do this then paralelize the inserts and swap tables in a transaction
+  # ie
+  # ensure_temp_table_ready()
+  # for chunk <- chunks, do: fetch(chunk) |> async_process_and_insert()
+  # Repo.transactino(fn -> create index, swap temp and actual table end)
+  #
+  #
+  # # ensure we don't get passed something we don't want to truncate
+  # def ensure_temp_table_ready("temp_" <> _ = temp_table_name, temp_index_name) do
+  #   create_table = """
+  #     CREATE TABLE IF NOT EXISTS #{temp_table_name} (
+  #     deck_id integer,
+  #     rank varchar,
+  #     opponent_class varchar,
+  #     archetype varchar,
+  #     format integer,
+  #     winrate double precision,
+  #     wins integer,
+  #     losses integer,
+  #     total integer,
+  #     turns double precision,
+  #     duration double precision,
+  #     player_has_coin boolean,
+  #     card_stats jsonb
+  #   )
+  #   """
+
+  #   truncate_table = """
+  #     TRUNCATE TABLE #{temp_table_name};
+  #   """
+
+  #   drop_index = """
+  #     DROP INDEX IF EXISTS #{temp_index_name};
+  #   """
+
+  #   Repo.transaction(fn repo ->
+  #     repo.query(create_table)
+  #     repo.query(truncate_table)
+  #     repo.query(drop_index)
+  #   end)
+  # end
 
   defp chunked_inserter(table_name, repo) do
     fn intermediate ->
