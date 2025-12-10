@@ -161,6 +161,7 @@ config :backend, QuantumScheduler,
     # {"* * * * *", fn -> Hearthstone.DeckTracker.refresh_agg_stats() end},
     {"* * * * *", fn -> Backend.Patreon.add_new_tiers() end},
     {"13 * * * *", fn -> Backend.UserManager.update_patreon_tiers() end},
+    {"* * * * *", fn -> Hearthstone.DeckTracker.AggregationJob.enqueue_needed() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
@@ -179,6 +180,8 @@ queues =
     hs_collection_updater: 3,
     hs_collection_map_recalculator: 5,
     grandmasters_lineups: 1,
+    deck_tracker_aggregator_fast: 2,
+    deck_tracker_aggregator_slow: 1,
     gm_stream_live: 1,
     hsreplay_deck_mapper: 1,
     leaderboards_pages_fetching: 1,
