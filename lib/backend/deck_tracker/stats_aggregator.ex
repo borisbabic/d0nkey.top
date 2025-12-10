@@ -72,6 +72,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
             total integer,
             turns double precision,
             duration double precision,
+            climbing_speed double precision,
             player_has_coin boolean,
             card_stats jsonb
           )
