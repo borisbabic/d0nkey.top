@@ -29,9 +29,10 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   def auto_aggregate_period(
         period,
         format,
-        opts \\ [chunk_size: 1_000_000]
+        opts \\ [chunk_size: 1_000_000, sort_dir: :desc]
       ) do
     chunk_size = Keyword.get(opts, :chunk_size, 1_000_000)
+    sort_dir = Keyword.get(opts, :sort_dir, :desc)
 
     start_time = NaiveDateTime.utc_now()
 
@@ -45,11 +46,11 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
         {"until", NaiveDateTime.utc_now()}
       ] ++ rank_criteria(ranks)
 
-    archetype_chunks = archetype_chunks(base_criteria, chunk_size)
+    archetype_chunks = archetype_chunks(base_criteria, chunk_size, sort_dir)
     archetype_chunks_count = Enum.count(archetype_chunks) |> to_string()
     pad = String.length(archetype_chunks_count)
 
-    table_name = DeckTracker.aggregated_stats_table(period, format)
+    table_name = DeckTracker.aggregated_stats_table_name(period, format)
     temp_table_name = "temp_#{table_name}"
     index_name = "#{table_name}_index"
     temp_index_name = "temp_#{index_name}"
@@ -215,8 +216,8 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     end
   end
 
-  defp archetype_chunks(criteria, chunk_size) do
-    archetype_popularity = DeckTracker.archetype_popularity(criteria)
+  defp archetype_chunks(criteria, chunk_size, direction) do
+    archetype_popularity = DeckTracker.archetype_popularity(criteria, direction)
 
     Enum.chunk_while(
       archetype_popularity,
@@ -286,10 +287,10 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
            _ ->
              Enum.reduce(values, fn
                {_, first}, {_, second} ->
-                 Intermediate.merge(first, second)
+                 Intermediate.merge(first, second, :collect)
 
                {_, first}, second ->
-                 Intermediate.merge(first, second)
+                 Intermediate.merge(first, second, :collect)
              end)
          end}
       end)
