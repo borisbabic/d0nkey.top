@@ -11,13 +11,13 @@ defmodule Components.Filter.PeriodDropdown do
   prop(live_view, :module, required: true)
   prop(aggregated_only, :boolean, default: false)
   prop(warning, :boolean, default: false)
-  prop(format, :integer, default: 2)
+  prop(format, :integer, default: nil)
 
   def render(assigns) do
     ~F"""
     <span>
       <LivePatchDropdown
-        options={options(@filter_context, @aggregated_only, @format)}
+        options={options(@filter_context, @aggregated_only, format(@format, @url_params))}
         title={@title}
         param={@param}
         url_params={@url_params}
@@ -65,6 +65,12 @@ defmodule Components.Filter.PeriodDropdown do
   def default(_context, format_or_criteria, fallback_format) do
     format = extract_format(format_or_criteria, fallback_format || @default_format)
     DeckTracker.default_period(format)
+  end
+
+  defp format(format, _params) when is_integer(format) or is_binary(format), do: format
+
+  defp format(_format, params) do
+    extract_format(params, @default_format)
   end
 
   defp extract_format(format, _fallback) when is_integer(format), do: format

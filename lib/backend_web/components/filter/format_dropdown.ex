@@ -39,8 +39,7 @@ defmodule Components.Filter.FormatDropdown do
 
   def options(nil, context, only_aggregated) do
     aggregated =
-      DeckTracker.get_latest_agg_log_entry()
-      |> Map.get(:formats, []) || []
+      for {_, format} <- DeckTracker.aggregated_periods_formats(), do: format, uniq: true
 
     for %{value: value, display: d} <- DeckTracker.formats_for_filters(context),
         !only_aggregated or value in aggregated do
