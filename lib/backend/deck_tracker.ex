@@ -209,13 +209,8 @@ defmodule Hearthstone.DeckTracker do
       |> unhardcode_criteria()
       |> remove_game_type()
 
-    %{ranks: ranks, periods: periods, formats: formats} = get_latest_agg_log_entry()
-    agg_regions = get_auto_aggregate_regions()
-
-    deck_id = Util.keyfind_value(criteria, "player_deck_id", 0)
     period = Util.keyfind_value(criteria, "period", 0)
     rank = Util.keyfind_value(criteria, "rank", 0)
-    format = Util.keyfind_value(criteria, "format", 0)
     regions = Util.keyfind_value(criteria, "region", 0)
 
     opponent_class? = List.keymember?(criteria, "opponent_class", 0)
@@ -239,30 +234,53 @@ defmodule Hearthstone.DeckTracker do
       !opponent_class? ->
         {:error, :no_opponent_class_for_agg}
 
-      format && Util.to_int_or_orig(format) not in (formats || []) ->
-        {:error, "format #{format} not aggregated"}
+      # format && Util.to_int_or_orig(format) not in (formats || []) ->
+      #   {:error, "format #{format} not aggregated"}
 
-      rank not in ranks ->
+      filter_needs_fresh?({"rank", rank}) ->
         {:error, "rank #{rank} not aggregated"}
 
-      period not in periods ->
-        {:error, "period #{period} not aggregated"}
+      # period not in periods ->
+      #   {:error, "period #{period} not aggregated"}
 
-      regions && Enum.sort(regions) != Enum.sort(agg_regions) ->
+      regions && filter_needs_fresh?({"region", regions}) ->
         {:error, "unsupported regions for agg"}
 
       opponent_archetype? ->
         {:error, "opponent archetype not aggregated"}
 
-      format && (!deck_id or deck_id < 1) ->
-        {:ok, List.keystore(criteria, "player_deck_id", 0, {"player_deck_id", :not_null})}
+      true ->
+        check_format(criteria)
+    end
+  end
 
-      !format ->
-        %{format: format} = Hearthstone.get_deck(deck_id)
-        {:ok, List.keystore(criteria, "format", 0, {"format", format})}
+  defp check_format(raw_criteria) do
+    period = Util.keyfind_value(raw_criteria, "period", 0)
+    deck_id = Util.keyfind_value(raw_criteria, "deck_id", 0)
+    raw_format = Util.keyfind_value(raw_criteria, "format", 0)
+
+    {format, new_criteria} =
+      with nil <- raw_format,
+           %{format: format} <- Hearthstone.get_deck(deck_id) do
+        {format, List.keystore(raw_criteria, "format", 0, {"format", format})}
+      else
+        _ -> {Util.to_int_or_orig(raw_format), raw_criteria}
+      end
+
+    format_period_autoggregated? =
+      Enum.any?(aggregated_periods_formats(), fn {p, f} ->
+        p == period and f == format
+      end)
+
+    cond do
+      !format_period_autoggregated? ->
+        {:error, "period_format {#{period}, #{format}} not aggregated"}
+
+      format && (!deck_id or deck_id < 1) ->
+        {:ok, List.keystore(new_criteria, "player_deck_id", 0, {"player_deck_id", :not_null})}
 
       true ->
-        {:ok, criteria}
+        {:ok, new_criteria}
     end
   end
 
@@ -492,9 +510,12 @@ defmodule Hearthstone.DeckTracker do
     players_val != "all_players"
   end
 
-  def filter_needs_fresh?({filter, value})
-      when filter in ["rank", "region", "format", "period"] do
-    !(value in get_aggregated_metadata(filter <> "s"))
+  def filter_needs_fresh?({"rank", rank}) do
+    !Enum.any?(ranks(auto_aggregate: true), fn %{slug: s} -> s == rank end)
+  end
+
+  def filter_needs_fresh?({"region", regions}) do
+    Enum.sort(regions) != Enum.sort(get_auto_aggregate_regions())
   end
 
   def filter_needs_fresh?({slug, _}) when is_binary(slug), do: filter_needs_fresh?(slug)
