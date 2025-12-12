@@ -36,6 +36,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       aura?(card_info) ->
         :"Aura Paladin"
 
+      handbuff?(card_info) ->
+        :"Handbuff Paladin"
+
       "Sunsapper Lynessa" in card_info.card_names ->
         :"Lynessa Paladin"
 
@@ -48,6 +51,17 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp handbuff?(card_info) do
+    min_count?(card_info, 2, [
+      "Painter's Virtue",
+      "Runi, Temporal Guardian",
+      "Grimestreet Outfitter",
+      "Nexus-Prince Shaffar",
+      "Hourglass Attendant",
+      "Overlord Runthak"
+    ])
   end
 
   defp aura?(card_info) do
