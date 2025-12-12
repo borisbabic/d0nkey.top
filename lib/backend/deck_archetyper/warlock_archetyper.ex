@@ -36,6 +36,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       location?(card_info) and wallow?(card_info) ->
         :"Location Wallow Warlock"
 
+      wallow?(card_info) and shreds_of_time?(card_info) ->
+        :"Wallow Shredslock"
+
       wallow?(card_info) ->
         :"Wallow Warlock"
 
