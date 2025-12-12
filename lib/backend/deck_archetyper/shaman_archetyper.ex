@@ -60,14 +60,14 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Travelmaster Dungar" in card_info.card_names ->
         :"Dungar Shaman"
 
-      nebula?(card_info) ->
-        :"Nebula Shaman"
-
       endseer?(card_info) ->
         :"Endseer Shaman"
 
       "Hagatha the Fabled" in card_info.card_names ->
         :"Hagatha Shaman"
+
+      nebula?(card_info) ->
+        :"Nebula Shaman"
 
       murmur?(card_info) ->
         :"Murmur Shaman"
