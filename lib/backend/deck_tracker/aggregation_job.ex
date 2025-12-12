@@ -1,4 +1,5 @@
 defmodule Hearthstone.DeckTracker.AggregationJob do
+  @moduledoc "Oban job handling for partitioned stats aggregation"
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.FastAggregationJob
@@ -17,7 +18,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
   end
 
   def needed() do
-    periods = DeckTracker.periods(auto_aggregate: true)
+    periods = DeckTracker.periods(auto_aggregate: true) |> Enum.reject(&Period.future?/1)
     formats = DeckTracker.formats(auto_aggregate: true)
 
     format_filter = fn format ->

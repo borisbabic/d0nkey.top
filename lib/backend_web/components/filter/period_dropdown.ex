@@ -1,7 +1,10 @@
 defmodule Components.Filter.PeriodDropdown do
+  @moduledoc false
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
+  alias Hearthstone.DeckTracker.Period
+
   prop(title, :string, default: "Period")
   prop(param, :string, default: "period")
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
@@ -46,14 +49,8 @@ defmodule Components.Filter.PeriodDropdown do
 
   defp periods(context, format) do
     DeckTracker.periods_for_filters(context, format)
-    |> Enum.reject(&future?/1)
+    |> Enum.reject(&Period.future?/1)
   end
-
-  defp future?(%{period_start: %NaiveDateTime{} = period_start}) do
-    NaiveDateTime.compare(period_start, NaiveDateTime.utc_now()) == :gt
-  end
-
-  defp future?(_), do: false
 
   @default_format 2
   def default(

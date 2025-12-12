@@ -1,4 +1,5 @@
 defmodule Hearthstone.DeckTracker.Period do
+  @moduledoc "Periods for stats"
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -81,6 +82,12 @@ defmodule Hearthstone.DeckTracker.Period do
       _ -> NaiveDateTime.utc_now()
     end
   end
+
+  def future?(%{period_start: %NaiveDateTime{} = period_start}) do
+    NaiveDateTime.compare(period_start, NaiveDateTime.utc_now()) == :gt
+  end
+
+  def future?(_), do: false
 
   def size(%{hours_ago: hours_ago}) when is_integer(hours_ago) and hours_ago > 0 do
     hours_ago
