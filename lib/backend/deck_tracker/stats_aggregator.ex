@@ -61,7 +61,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
       Repo.transaction(
         fn repo ->
           create_table = """
-            CREATE TABLE IF NOT EXISTS #{temp_table_name} (
+            CREATE TABLE IF NOT EXISTS "#{temp_table_name}" (
             deck_id integer,
             rank varchar,
             opponent_class varchar,
@@ -138,13 +138,13 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
           end
 
           create_index_and_swap = [
-            "CREATE INDEX #{temp_index_name} ON #{temp_table_name}(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
-            "ALTER INDEX IF EXISTS #{index_name} RENAME TO old_#{index_name} ;",
-            "ALTER INDEX IF EXISTS #{temp_index_name} RENAME TO #{index_name} ;",
-            "ALTER TABLE IF EXISTS #{table_name} RENAME TO old_#{table_name} ;",
-            "ALTER TABLE IF EXISTS #{temp_table_name} RENAME TO #{table_name};",
-            "DROP TABLE IF EXISTS old_#{table_name}",
-            "COMMENT ON table #{table_name} IS '#{now}';"
+            "CREATE INDEX \"#{temp_index_name}\" ON \"#{temp_table_name}\"(total, COALESCE(deck_id, -1),  COALESCE(archetype, 'any'), COALESCE(opponent_class, 'any'), rank, format, player_has_coin) ;",
+            "ALTER INDEX IF EXISTS \"#{index_name}\" RENAME TO \"old_#{index_name}\" ;",
+            "ALTER INDEX IF EXISTS \"#{temp_index_name}\" RENAME TO \"#{index_name}\" ;",
+            "ALTER TABLE IF EXISTS \"#{table_name}\" RENAME TO \"old_#{table_name}\" ;",
+            "ALTER TABLE IF EXISTS \"#{temp_table_name}\" RENAME TO \"#{table_name}\";",
+            "DROP TABLE IF EXISTS \"old_#{table_name}\"",
+            "COMMENT ON table \"#{table_name}\" IS '#{now}';"
           ]
 
           after_result =
