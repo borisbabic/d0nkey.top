@@ -3232,7 +3232,7 @@ defmodule Hearthstone.DeckTracker do
     |> Map.get(metadata, []) || []
   end
 
-  def update_brawl_period_start() do
+  def update_brawl_period_start(check_wednesday? \\ true) do
     period = get_period_by_slug("brawl")
 
     now = Backend.Blizzard.now()
@@ -3240,8 +3240,8 @@ defmodule Hearthstone.DeckTracker do
     wednesday? = Date.day_of_week(now) == 3
     already_started? = :gt == Time.compare(DateTime.to_time(now), start_time)
 
-    if wednesday? and already_started? do
-      period_start =
+    if (wednesday? or !check_wednesday?) and already_started? do
+      {:ok, period_start} =
         DateTime.new!(DateTime.to_date(now), start_time, now.time_zone)
         |> DateTime.shift_zone("Etc/UTC")
 
