@@ -20,6 +20,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       starship?(card_info) and spell_damage_druid?(card_info) ->
         :"SD Starship Druid"
 
+      copy_druid?(card_info) ->
+        :"Copy Druid"
+
       owlonius_druid?(card_info) ->
         :"Owlonius Druid"
 
@@ -53,9 +56,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Hydration Station" in card_info.card_names ->
         :"Hydration Druid"
 
-      "Lady Azshara" in card_info.card_names ->
-        :"Azshara Druid"
-
       greybough?(card_info) ->
         :"Greybough Druid"
 
@@ -64,6 +64,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
 
       "Sky Mother Aviana" in card_info.card_names ->
         :"Aviana Druid"
+
+      "Lady Azshara" in card_info.card_names ->
+        :"Azshara Druid"
 
       "Alternate Reality" in card_info.card_names ->
         :"Alternate Reality Druid"
@@ -93,6 +96,17 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Thickhide Kodo",
       "Feral Rage"
     ])
+  end
+
+  defp copy_druid?(card_info) do
+    min_count?(card_info, 2, [
+      "Elise the Navigator",
+      "Zin-Azshari"
+    ]) and
+      min_count?(card_info, 1, [
+        "Welcome Home!",
+        "Scrapbooking Student"
+      ])
   end
 
   defp greybough?(card_info) do
