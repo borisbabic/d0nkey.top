@@ -36,7 +36,7 @@ defmodule Components.Filter.PeriodDropdown do
     aggregated_periods = DeckTracker.aggregated_periods_for_format(format)
     aggregated_slugs = Enum.map(aggregated_periods, & &1.slug)
 
-    for %{slug: slug, display: d} <- periods(context, format),
+    for %{slug: slug, display: d} <- periods(context),
         !aggregated_only or slug in aggregated_slugs do
       display =
         if slug in aggregated_slugs or context == :personal,
@@ -47,8 +47,8 @@ defmodule Components.Filter.PeriodDropdown do
     end
   end
 
-  defp periods(context, format) do
-    DeckTracker.periods_for_filters(context, format)
+  defp periods(context) do
+    DeckTracker.periods_for_filters(context)
     |> Enum.reject(&Period.future?/1)
   end
 
