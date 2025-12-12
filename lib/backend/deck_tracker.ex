@@ -2557,14 +2557,10 @@ defmodule Hearthstone.DeckTracker do
   end
 
   ########################
-  @spec periods_for_filters(:public | :personal, integer()) :: [Period.t()]
-  def periods_for_filters(context, f) do
-    format = Util.to_int_or_orig(f)
-    agg = aggregated_periods_formats()
-
+  @spec periods_for_filters(:public | :personal) :: [Period.t()]
+  def periods_for_filters(context) do
     [{:context, context}, {:order_by, {:order_priority, :desc}}]
     |> periods()
-    |> Enum.filter(fn %{slug: slug} -> {slug, format} in agg end)
   end
 
   def get_period_by_slug(slug) do
