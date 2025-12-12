@@ -29,8 +29,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Sen'jin Shieldmasta",
        "Dire Wolf Alpha",
        "Annoy-o-Tron",
-       "Murloc Tidehunter",
-       "Mo'arg Forgefiend"
+       "Murloc Tidehunter"
      ]},
     {:"Starship DK",
      [
@@ -39,21 +38,17 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Arkonite Defense Crystal",
        "The Spirit's Passage",
        "The Exodar",
-       "Suffocate",
        "Dimensional Core"
      ]},
     {:"Herenn DK",
      [
        "High Cultist Herenn",
        "Wakener of Souls",
-       # "Meltemental",
-       # "Endbringer Umbra",
+       "Petal Peddler",
+       "Giftwrapped Whelp",
+       "Bonechill Stegodon",
+       "Slippery Slope",
        "Travel Security"
-       # "Mother Duck",
-       # "Slippery Slope",
-       # "Bonechill Stegodon"
-       # "Ancient Raptor"
-       # "Ghouls' Night"
      ]},
     # 5.5
     {:"Handbuff DK",
@@ -65,17 +60,20 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        # "Nerubian Swarmguard",
        "Blood Tap"
      ]},
-    {:"Menagerie DK", ["Menagerie Mug", "Menagerie Jug"]},
     {:"Amalgam DK", ["Adaptive Amalgam", "Braingill", "Floppy Hydra"]},
     {:"Control DK",
      [
        "The Ceaseless Expanse",
        # "Naralex, Herald of the Flights",
        "Vampiric Blood",
+       "Marin the Manager",
+       "Bob the Bartender",
+       "Blob of Tar",
+       "Hideous Husk",
        # "Griftah, Trusted Vendor",
        # "Hideous Husk",
        # "Stitched Giant",
-       "Shaladrassil",
+       # "Shaladrassil",
        # "Reanimated Pterrodax",
        # "Fyrakk the Blazing",
        # "Dreamplanner Zephyrus",
@@ -92,12 +90,12 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        # "Airlock Breach",
        # "Bob the Bartender",
        # "Marin the Manager",
-       "Kil'jaeden",
+       "Kil'jaeden"
        # "Corpse Explosion",
        # "Infested Breath",
        # "Sanguine Infestation",
        # "Morbid Swarm",
-       "Dreadhound Handler"
+       # "Dreadhound Handler"
        # "Elise the Navigator",
        # "Chillfallen Baron",
        # "Dirty Rat",
@@ -114,77 +112,75 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
      ]},
     {:"Herenn DK",
      [
-       "Giftwrapped Whelp",
-       "Petal Peddler",
-       "Ghouls' Night",
-       "Ancient Raptor",
-       "Troubled Mechanic",
-       "Bonechill Stegodon",
-       "Soulrest Ceremony",
-       "Eternal Layover",
-       "Zergling",
-       # "Bwonsamdi",
-       # "Talanji of the Graves",
-       # "What Befell Zandalar",
-       "Overplanner"
+       "Overplanner",
+       "Astrobiologist",
+       "Mo'arg Forgefiend"
      ]},
-    # 10.5
     {:"Frost DK",
-     ["Frostwyrm's Fury", "Cryosleep", "Thassarian", "Bloodmage Thalnos", "Snow Shredder"]},
-    {:"Unholy DK", ["Grave Strength", "Battlefield Necromancer"]},
-    {:"Control DK", ["The Egg of Khelos", "Frosty Décor", "Chillfallen Baron"]},
+     ["Marrow Manipulator", "Dread Raptor", "Harbinger of Winter", "Storm the Gates"]},
+    # 10.5
+    {:"Control DK",
+     [
+       "The Egg of Khelos",
+       "Frosty Décor",
+       "Chillfallen Baron",
+       "Stitched Giant",
+       "Naralex, Herald of the Flights",
+       "Ysera, Emerald Aspect",
+       "Foamrender",
+       "Fyrakk the Blazing",
+       "Shaladrassil",
+       "Dreadhound Handler",
+       "Prize Vendor",
+       "Griftah, Trusted Vendor"
+     ]},
     {:"Herenn DK",
      [
-       "Living Paradox",
-       "Soul Searching",
-       "Endbringer Umbra",
-       "Memoriam Manifest",
+       "Portal Vanguard",
+       "Ancient Raptor",
+       "Timestop",
+       "Soulrest Ceremony",
+       "Ghouls' Night",
+       "Troubled Mechanic",
        "Whelp of the Infinite",
-       "Portal Vanguard"
+       "Bwonsamdi",
+       "Horn of Winter",
+       "Talanji of the Graves",
+       "What Befell Zandalar",
+       "Ancient of Yore",
+       "Mixologist",
+       "Frost Strike",
+       "Zergling",
+       "Crypt Map"
      ]},
     {:"Control DK",
      [
-       "Blob of Tar",
-       "Reluctant Wrangler",
-       "Wisp",
-       "Stitched Giant",
-       "Naralex, Herald of the Flights",
-       "Hideous Husk",
-       "Ysera, Emerald Aspect",
-       "Foamrender",
-       "Dreamplanner Zephrys"
+       "Morbid Swarm",
+       "Reanimated Pterrodax",
+       "Creature of Madness",
+       "Demolition Renovator",
+       "Elise the Navigator",
+       "Steamcleaner",
+       "Infested Breath",
+       "Nightmare Lord Xavius",
+       "Dirty Rat"
      ]},
-    # 15.5
     {:"Herenn DK",
      [
+       "Poison Breath",
+       "Corpse Explosion",
+       "Dreamplanner Zephyrs",
+       "Sanguine Infestation",
        "Scarab Keychain"
      ]},
-    {:"Starship DK", ["Brittlebone Buccaneer", "Silk Stitching"]},
-    {:"Herenn DK",
+    {:"Frost DK",
      [
-       "Fyrakk the Blazing",
-       "Zilliax Deluxe 3000",
-       "Demolition Renovator",
-       "Reanimated Pterrordax",
-       "Exarch Maladaar",
-       "Rustrot Viper",
-       "Creature of Madness",
-       "Nightmare Lord Xavius",
-       "Infested Breath",
-       "Corpse Explosion",
-       "Morbid Swarm",
-       "Blood Draw",
-       "Dirty Rat",
-       "Sanguine Infestation",
-       "Elise the Navigator",
-       "The Headless Horseman",
-       "Hematurge",
-       "Husk, Eternal Reaper"
+       "Murmy",
+       "Monstrous Mosquito",
+       "Brittlebone Buccaneer"
      ]},
-    {:"Frost DK", ["Marrow Manipularor"]},
-    {:"Zerg DK", ["Baneling Barrage", "Hive Queen", "Infestor", "Spawning Pool"]},
-    # 20.5
-    {:"Menagerie DK", ["Monstrous Mosquito", "Murmy", "Observer of Mysteries"]}
+    # 15.5
+    {:"Starship DK", ["Suffocate"]}
   ]
 
   @wild_config [
@@ -216,11 +212,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Frost Strike",
        "Elise the Navigator"
      ]}
-    # {:"STD Menagerie DK", [
-    #   "Menagerie Jug",
-    #   "Fire Fly",
-    #   "Monstrous Mosquito",
-    # ]}
   ]
 
   def standard_config(), do: @standard_config
