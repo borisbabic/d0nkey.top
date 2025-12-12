@@ -6,6 +6,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
   alias Hearthstone.DeckTracker.SlowAggregationJob
   import Ecto.Query
 
+  @queues [:deck_tracker_aggregator_fast, :deck_tracker_aggregator_slow]
   def enqueue_needed() do
     needed()
     |> Enum.each(fn {period, format, _, size} ->
@@ -15,6 +16,18 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
         FastAggregationJob.enqueue(period, format)
       end
     end)
+  end
+
+  def pause_queues() do
+    for q <- @queues do
+      Oban.pause_queue(queue: q)
+    end
+  end
+
+  def resume_queues() do
+    for q <- @queues do
+      Oban.resume_queue(queue: q)
+    end
   end
 
   def needed() do
@@ -71,7 +84,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     from oj in "oban_jobs",
       select: %{id: oj.id, queue: oj.queue, args: oj.args},
       where: fragment("?[1]", oj.attempted_by) != ^node,
-      where: oj.queue in ["deck_tracker_aggregator_fast", "deck_tracker_aggregator_slow"],
+      where: oj.queue in ^Enum.map(@queues, &to_string/1),
       where: oj.state == "executing"
   end
 
