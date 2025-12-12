@@ -33,7 +33,10 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       menagerie?(card_info) ->
         :"Menagerie DK"
 
-      "High Cultist Herenn" in card_info.card_names ->
+      stego_herenn?(card_info) ->
+        :"Stego Herenn DK"
+
+      herenn?(card_info) ->
         :"Herenn DK"
 
       rainbow_runes?(card_info) ->
@@ -96,6 +99,19 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp stego_herenn?(card_info) do
+    min_count?(card_info, 2, [
+      "High Cultist Herenn",
+      "Bonechill Stegodon"
+    ])
+  end
+
+  defp herenn?(card_info) do
+    min_count?(card_info, 1, [
+      "High Cultist Herenn"
+    ])
   end
 
   defp talanji?(card_info) do
