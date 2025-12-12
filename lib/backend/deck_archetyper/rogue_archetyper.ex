@@ -80,9 +80,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Nexus-Prince Shaffar" in card_info.card_names ->
         :"Shaffar Rogue"
 
-      combo?(card_info) ->
-        :"Combo Rogue"
-
       maestra_rogue?(card_info) ->
         :"Maestra Rogue"
 
@@ -129,9 +126,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     ])
   end
 
-  defp combo?(card_info) do
-    min_keyword_count?(card_info, 8, "combo")
-  end
+  # defp combo?(card_info) do
+  #   min_keyword_count?(card_info, 8, "combo")
+  # end
 
   defp quasar?(card_info) do
     "Quasar" in card_info.card_names and min_keyword_count?(card_info, 1, "spell-damage")
