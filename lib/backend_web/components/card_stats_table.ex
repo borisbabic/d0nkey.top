@@ -123,6 +123,18 @@ defmodule Components.CardStatsTable do
               {add_arrow("Drawn Count", "drawn_count", @filters)}
             </a>
           </th>
+        <th class="is-hidden-mobile">
+          <a :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact")}>
+            <span data-balloon-pos="up" aria-label={"Not Drawn winrate - deck winrate (lower is better)"}>
+              {add_arrow("Not Drawn Impact", "not_drawn_impact", @filters)}
+            </span>
+          </a>
+        </th>
+        <th :if={show_counts(@filters)} class="is-hidden-mobile">
+          <a :on-click="change_sort" phx-value-sort_by={"not_drawn_count"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_count")}>
+          {add_arrow("Not Drawn Count", "not_drawn_count", @filters)}
+          </a>
+        </th>
 
             <th class="is-hidden-mobile">
             <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
@@ -160,6 +172,11 @@ defmodule Components.CardStatsTable do
             </td>
             <td :if={show_counts(@filters)}>
               {Util.get(cs, :drawn_total)}</td>
+              <td>
+                <WinrateTag impact={true} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
+              </td>
+              <td :if={show_counts(@filters)}>
+                {Util.get(cs, :not_drawn_total)}</td>
 
             <td class="is-hidden-mobile"><WinrateTag impact={true} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/></td>
             <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
@@ -332,14 +349,35 @@ defmodule Components.CardStatsTable do
 
   defp get_sorter(by) do
     case to_string(by) do
-      "card" -> &Util.get(&1.card, :name)
-      "mull_count" -> &Util.get(&1, :mull_total)
-      "drawn_impact" -> &Util.get(&1, :drawn_impact)
-      "drawn_count" -> &Util.get(&1, :drawn_total)
-      "kept_percent" -> &Util.get(&1, :kept_percent)
-      "kept_impact" -> &Util.get(&1, :kept_impact)
-      "kept_count" -> &Util.get(&1, :kept_total)
-      _ -> &Util.get(&1, :mull_impact)
+      "card" ->
+        &Util.get(&1.card, :name)
+
+      "mull_count" ->
+        &Util.get(&1, :mull_total)
+
+      "drawn_impact" ->
+        &Util.get(&1, :drawn_impact)
+
+      "drawn_count" ->
+        &Util.get(&1, :drawn_total)
+
+      "kept_percent" ->
+        &Util.get(&1, :kept_percent)
+
+      "kept_impact" ->
+        &Util.get(&1, :kept_impact)
+
+      "kept_count" ->
+        &Util.get(&1, :kept_total)
+
+      "not_drawn_impact" ->
+        &Util.get(&1, :not_drawn_impact)
+
+      "not_drawn_count" ->
+        &Util.get(&1, :not_drawn_total)
+
+      _ ->
+        &Util.get(&1, :mull_impact)
     end
   end
 

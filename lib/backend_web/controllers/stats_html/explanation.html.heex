@@ -1,19 +1,23 @@
 <div class="title is-2"> Stats Explanation </div>
 <div class="notification is-warning">Sample sizes matter! Even though I'll let you see low sample size stats, don't put too much stock into them</div>
+
+
 <div class="subtitle is-4"> Card Stats</div>
 <div class="notification is-info">tl;dr: Use mulligan impact for what to keep in the mull, and drawn impact for what to include in your list</div>
 
 <li> <b>Impact:</b> How much this card event affects the winrate. The base calculation is card (event) winrate - deck winrate. </li>
 <li> <b>Mulligan Impact:</b> <code>Mulligan Impact = Mulligan Winrate - Deck Winrate</code>, Includes both cards kept in the mulligan and those that were gotten after the mulligan. This is the main stat for determining what to keep</li>
 <li> <b>Mulligan Count:</b> The number of times the card was in the mulligan, kept or unkept. ie sample size for Mulligan impact</li>
-<li> <b>Drawn Impact:</b> <code>Drawn Impact = Drawn Winrate - Deck Winrate</code>, useful for measuring</li>
+<li> <b>Drawn Impact:</b> <code>Drawn Impact = Drawn Winrate - Deck Winrate</code>, useful for measuring what to include in your list</li>
 <li> <b>Drawn Count:</b> The number of times the card was drawn. ie sample size for Drawn impact</li>
+<li> <b>Not Drawn Impact:</b> <code>NotDrawn Impact = Drawn Winrate - Deck Winrate</code> <b>negative is better</b>! - test metric, could help with certain cards whose drawn winrate is affected, like tradeable cards</li>
+<li> <b>Not Drawn Count:</b> The number of games the card was not drawn. ie sample size for Not Drawn impact</li>
 <li> <b>Kept Impact:</b> <code>Kept Impact = Kept Winrate - Deck Winrate</code>, Not that useful, mainly in comparison with Mulligan Impact for determining situational keeps.</li>
 <li> <b>Kept Count:</b> The number of times the card was kept in the mulligan. ie sample size for Kept impact</li>
 
 <div class="subtitle is-5"> Archetype Card Stats</div>
 Archetype card stats are not simply calculated like deck cards stats, ie drawn winrate <b>isn't</b> "drawn winrate across the archetype - archetype winrate", instead they are calculated from the deck card stats. <i>This means archetype card stats are actually useful on my site!</i>
-<li>  <HeroIcons.warning_triangle />️ - this will appear when a highlighted card doesn't fit the required minimum count, either mulligan or drawn </li> 
+<li>  <HeroIcons.warning_triangle />️ - this will appear when a highlighted card doesn't fit the required minimum count, either mulligan or drawn </li>
 <li> You can highlight a deck's cards by opening a deck's card stats then clicking Archetype Stats in the subtitle</li>
 
 <br>
@@ -23,11 +27,14 @@ Using the opponent's perspective would help with deck tracker bias, but it also 
 
 <br>
 <div class="subtitle is-4"> Deck Stats</div>
-Deck stats, as in stats for exact lists, are all based on the player perspective, ie the player using the deck tracker that sent the game to my site. This includes 
+Deck stats, as in stats for exact lists, are all based on the player perspective, ie the player using the deck tracker that sent the game to my site. This includes
+
+<br>
+<div class="subtitle is-4">Matchups</div>
+Matchups use different archetyping then other stuff on the site. Elsewhere the site looks at the full list to determine the archetype, that is not possible here because the opponent's deck is not known, only their played cards. This means archetyping here is based on played cards, which is harder and can't differentiate between archetypes as well as deck based archetyping.
 
 <br>
 <div class="subtitle is-4"> Filters & co</div>
-<li> ️<HeroIcons.warning_triangle />  - A warning triangle will will appear for options that aren't aggregated. That means the site is calculating the stats as you request them, which can be slow, or even fail because it times out. Please try to avoid spamming unaggregated requests for long time periods (4weeks+) - Personal stats are never aggregated, I'll remove the warning from there eventually, hopefully</li> 
+<li> ️<HeroIcons.warning_triangle />  - A warning triangle will will appear for options that aren't aggregated. That means the site is calculating the stats as you request them, which can be slow, or even fail because it times out. Please try to avoid spamming unaggregated requests for long time periods (4weeks+) - Personal stats are never aggregated, I'll remove the warning from there eventually, hopefully</li>
 <li> As Class - This will popup a table of class winrates as the class for the given filters. ex, if on the decks page you filter for decks that include Reno, then hit as class, you will see the winrates of classes when they include Reno in their deck. So a 40% for Rogue here would mean that Rogues with Reno have had a 40% winrate</li>
 <li> Vs Class - This will popup a table of class winrates vs the class for the given filters. ex, if on the decks page you select Priest and exclude Aman'Thul, then hit vs class, you will see the winrate priests without Aman'Thul have vs each class. So a 20% for Rogue here would mean that Priests that don't run Aman'Thul have had a 20% winrate vs Rogue</li>
-
