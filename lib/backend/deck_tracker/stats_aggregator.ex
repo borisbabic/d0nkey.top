@@ -29,9 +29,9 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   def auto_aggregate_period(
         period,
         format,
-        opts \\ [chunk_size: 1_000_000, sort_dir: :desc]
+        opts \\ [sort_dir: :desc]
       ) do
-    chunk_size = Keyword.get(opts, :chunk_size, 1_000_000)
+    chunk_size = Keyword.get(opts, :chunk_size) || default_chunk_size()
     sort_dir = Keyword.get(opts, :sort_dir, :desc)
 
     start_time = NaiveDateTime.utc_now()
@@ -159,6 +159,10 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
     IO.puts("Finished all in #{NaiveDateTime.diff(NaiveDateTime.utc_now(), start_time)} seconds ")
     result
+  end
+
+  defp default_chunk_size() do
+    Application.get_env(:backend, :default_agg_chunk_size, 1_000_000)
   end
 
   # TODO: If optimization is needed we can do this then paralelize the inserts and swap tables in a transaction

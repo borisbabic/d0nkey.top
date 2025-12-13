@@ -8,6 +8,7 @@ config :backend,
   auto_migrate: false,
   dt_insert_listener: true,
   enable_twitch_bot: true,
+  default_agg_chunk_size: 100_000,
   five_min_game_threshold: 0,
   available_game_insert_threshold: false,
   enable_bot: !is_nil(System.get_env("DISCORD_TOKEN")) || !is_nil(System.get_env("ENABLE_BOT"))
