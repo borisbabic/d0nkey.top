@@ -220,10 +220,12 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   defp to_tally_attrs(id, %{kept: kept} = dto) do
+    mull = Map.get(dto, :mull, true)
+
     %{
       card_id: id,
-      drawn: true,
-      mulligan: Map.get(dto, :mull, true),
+      drawn: mull,
+      mulligan: mull,
       turn: 0,
       kept: kept
     }
