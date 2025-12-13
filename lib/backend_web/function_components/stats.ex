@@ -18,10 +18,11 @@ defmodule FunctionComponents.Stats do
   attr :win_loss, :any, default: nil
   attr :min_sample, :integer, default: 1
   attr :min_for_color, :integer, default: nil
+  attr :flip, :boolean, default: false
 
   def winrate_tag(assigns) do
     ~H"""
-    <.dynamic_tag tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, @positive_hue, @negative_hue, @lightness, @base_saturation), else: ""}>
+    <.dynamic_tag tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, flip(@positive_hue, @negative_hue, @flip), flip(@negative_hue, @positive_hue, @flip), @lightness, @base_saturation), else: ""}>
       <span :if={!sufficient_sample(@sample, @min_sample)}></span>
       <span :if={sufficient_sample(@sample, @min_sample)} class={["tw-text-center", use_color?(@sample, @min_sample, @winrate, @min_for_color) && "basic-black-text"]}>
         {round(@winrate, @round_digits)}
@@ -31,6 +32,9 @@ defmodule FunctionComponents.Stats do
     </.dynamic_tag>
     """
   end
+
+  defp flip(_hue1, hue2, true), do: hue2
+  defp flip(hue1, _hue2, _), do: hue1
 
   defp use_color?(sample, min_sample, winrate, min_for_color) do
     sufficient_sample(sample, min_sample) and sufficient_winrate(winrate, min_for_color)
@@ -78,6 +82,7 @@ defmodule FunctionComponents.Stats do
 
   def lightness(_lightness, 0), do: 100
   def lightness(lightness, _sample), do: lightness
+  def round(zero, _) when zero in [0, 0.0, nil], do: nil
   def round(int, _) when is_integer(int), do: int / 1
   def round(float, digits), do: Float.round(float * 100, digits)
 
