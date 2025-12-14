@@ -22,9 +22,8 @@ defmodule FunctionComponents.Stats do
 
   def winrate_tag(assigns) do
     ~H"""
-    <.dynamic_tag tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, flip(@positive_hue, @negative_hue, @flip), flip(@negative_hue, @positive_hue, @flip), @lightness, @base_saturation), else: ""}>
-      <span :if={!sufficient_sample(@sample, @min_sample)}></span>
-      <span :if={sufficient_sample(@sample, @min_sample)} class={["tw-text-center", use_color?(@sample, @min_sample, @winrate, @min_for_color) && "basic-black-text"]}>
+    <.dynamic_tag :if={sufficient_sample(@sample, @min_sample)} tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, flip(@positive_hue, @negative_hue, @flip), flip(@negative_hue, @positive_hue, @flip), @lightness, @base_saturation), else: ""}>
+      <span class={["tw-text-center", use_color?(@sample, @min_sample, @winrate, @min_for_color) && "basic-black-text"]}>
         {round(@winrate, @round_digits)}
         <sup :if={@show_sample}>{@sample}</sup>
         <span :if={@win_loss}>({@win_loss.wins} - {@win_loss.losses})</span>
@@ -82,7 +81,7 @@ defmodule FunctionComponents.Stats do
 
   def lightness(_lightness, 0), do: 100
   def lightness(lightness, _sample), do: lightness
-  def round(zero, _) when zero in [0, 0.0, nil], do: nil
+  def round(zero, _) when zero in [0, 0.0, nil], do: 0
   def round(int, _) when is_integer(int), do: int / 1
   def round(float, digits), do: Float.round(float * 100, digits)
 
