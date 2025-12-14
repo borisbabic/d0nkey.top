@@ -124,7 +124,7 @@ defmodule Components.CardStatsTable do
             </a>
           </th>
         <th class="is-hidden-mobile">
-          <a :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact")}>
+          <a :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact", "asc")}>
             <span data-balloon-pos="up" aria-label={"Not Drawn winrate - deck winrate (lower is better)"}>
               {add_arrow("Not Drawn Impact", "not_drawn_impact", @filters)}
             </span>
