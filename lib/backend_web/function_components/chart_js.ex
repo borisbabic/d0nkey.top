@@ -5,6 +5,7 @@ defmodule FunctionComponents.ChartJs do
   attr :id, :string, required: true
   attr :config, :map, default: %{}
   attr :data, :map, required: true
+  attr :canvas_class, :string, default: "tw-bg-gray-300"
 
   def chart(assigns) do
     ~H"""
@@ -13,7 +14,7 @@ defmodule FunctionComponents.ChartJs do
         phx-hook="ChartJs"
         data-config={Jason.encode!(@config)}
         data-data={Jason.encode!(@data)} >
-        <canvas id={@id <> "_canvas"}></canvas>
+        <canvas class={@canvas_class} id={@id <> "_canvas"}></canvas>
       </div>
     """
   end
@@ -31,6 +32,7 @@ defmodule FunctionComponents.ChartJs do
     attr :id, :string, required: true
     attr :config, :map, default: %{}
     attr :data, :map, required: true
+    attr :canvas_class, :string, default: "tw-bg-gray-300"
 
     def unquote(fun)(assigns) do
       assigns

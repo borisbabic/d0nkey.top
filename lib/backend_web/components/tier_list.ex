@@ -13,16 +13,23 @@ defmodule Components.TierList do
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
   alias Components.Filter.ForceFreshDropdown
+  alias FunctionComponents.ChartJs
   import Components.DecksExplorer, only: [parse_int: 2]
   import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
+  import FunctionComponents.Stats, only: [round: 2]
 
   prop(data, :list, default: [])
   prop(params, :map)
   prop(criteria, :map, default: %{})
   prop(live_view, :module, required: true)
-  prop(min_games_options, :list, default: [100, 250, 500, 1000, 2500, 5000, 7500, 10_000])
+
+  prop(min_games_options, :list,
+    default: [100, 250, 500, 1000, 2500, 5000, 7500, 10_000, 25_000, 50_000, 100_000]
+  )
+
   prop(premium_filters, :boolean, default: nil)
   prop(user, :map, from_context: :user)
+  data(show_chart, :boolean, default: false)
 
   def update(assigns, socket) do
     {
@@ -41,6 +48,7 @@ defmodule Components.TierList do
   def render(assigns) do
     ~F"""
       <div>
+        <button class="button" id="toggle_chart" :on-click="toggle_chart">Chart {if @show_chart, do: "↑", else: "↓"}</button>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
         <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
         <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
@@ -63,6 +71,38 @@ defmodule Components.TierList do
           <ForceFreshDropdown id={"force_fresh"} />
         {/if}
 
+        <div :if={{stats, total} = stats(@data, @criteria)}>
+        <div class="chart-container" :if={@show_chart}>
+          <ChartJs.scatter
+            canvas_class={"tw-max-h-[400px] tw-max-w-4xl tw-bg-gray-300"}
+            id={"#{@id}_tier_list_scatter"}
+            config={
+              %{
+                options: %{
+                  plugins: %{
+                    legend: %{display: true},
+                    datalabels: %{
+                      offset: 1,
+                      anchor: "center",
+                      align: "end",
+                      display: "auto",
+                    }
+                  },
+                  scales: %{
+                    y: %{
+                      min: 0,
+                      title: %{display: true, text: "Popularity"}
+                    },
+                    x: %{
+                      title: %{display: true, text: "Winrate"}
+                    }
+                  }
+                }
+              }
+            }
+            data={chart_data(stats, total)}
+          />
+        </div>
         <table class="table is-fullwidth is-striped is-narrow">
           <thead>
             <th>Archetype</th>
@@ -82,7 +122,7 @@ defmodule Components.TierList do
             {add_arrow("Climbing Speed", "climbing_speed", @params)}
             </.link></th>
           </thead>
-          <tbody :if={{stats, total} = stats(@data, @criteria)}>
+          <tbody>
             <tr :for={as <- stats}>
               <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
                 <a class="basic-black-text deck-title" href={~p"/archetype/#{as.archetype}?#{add_games_filters(@params)}"}>
@@ -99,9 +139,55 @@ defmodule Components.TierList do
             </tr>
           </tbody>
         </table>
+        </div>
 
       </div>
     """
+  end
+
+  def chart_data(stats, total) do
+    datasets =
+      stats
+      |> Enum.group_by(&Deck.extract_class(&1.archetype))
+      |> Enum.map(fn {class, stats} ->
+        class_name = Deck.class_name(class)
+
+        data =
+          Enum.map(stats, fn stats ->
+            %{
+              y: percentage(stats.total, total),
+              x: round(stats.winrate, 1),
+              label: stats.archetype || stats.class_name
+            }
+          end)
+
+        %{
+          label: class_name,
+          data: data,
+          backgroundColor: Deck.class_color(class)
+        }
+      end)
+
+    %{
+      datasets: datasets
+    }
+
+    # {data, labels, background_colors} = Enum.reduce(stats, {[], [], []}, fn stats, {d, l, bc} ->
+    #   class = Deck.extract_class(stats.archetype)
+    #   label = stats.archetype
+    #   data =  %{y: percentage(stats.total, total), x: round(stats.winrate, 1)}
+    #   background_color = Deck.class_color(class)
+    #   {[data | d], [label | l], [background_color | bc]}
+    # end)
+    # %{
+    #   labels: labels,
+    #   datasets: [
+    #     %{
+    #       data: data,
+    #       backgroundColor: background_colors
+    #     }
+    #   ]
+    # }
   end
 
   def premium_filters?(show_premium?, _) when is_boolean(show_premium?), do: show_premium?
@@ -173,6 +259,18 @@ defmodule Components.TierList do
 
   def to_percent(int) when is_integer(int), do: int / 1
   def to_percent(num), do: "#{Float.round(num * 100, 2)}%"
+
+  def handle_event(
+        "toggle_chart",
+        _,
+        socket
+      ) do
+    {
+      :noreply,
+      socket
+      |> update(:show_chart, &(!&1))
+    }
+  end
 
   # defp card_stats_params(params, archetype) do
   #   params
