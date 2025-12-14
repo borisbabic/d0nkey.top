@@ -80,7 +80,7 @@ defmodule Components.TierList do
               %{
                 options: %{
                   plugins: %{
-                    legend: %{display: true},
+                    legend: %{display: false},
                     datalabels: %{
                       offset: 1,
                       anchor: "center",
