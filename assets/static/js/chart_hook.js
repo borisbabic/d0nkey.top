@@ -1,6 +1,19 @@
 import { Chart, registerables } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 Chart.register(...registerables);
+Chart.register(ChartDataLabels);
+Chart.defaults.plugins.datalabels.display = false;
+Chart.defaults.plugins.tooltip.callbacks.label = function (context) {
+    if (context.dataset && context.dataset.data[context.dataIndex].label) {
+        const label = context.dataset.data[context.dataIndex].label;
+        console.log(context);
+        return `${label}: ${context.formattedValue}`;
+        // return default_label_formatter(context);
+    }
+    console.log("default");
+    return undefined;
+};
 
 let ChartJsHook = {
     mounted() {
