@@ -180,9 +180,21 @@ config :phoenix_meta_tags,
 config :esbuild,
   version: "0.20.2",
   default: [
-    args:
-      ~w(--loader:.txt=copy --loader:.png=copy --loader:.gif=copy --loader:.jpg=copy --loader:.ico=copy --loader:.Identifier=copy --loader:.webp=copy --loader:.svg=copy --bundle --target=es2017 static/** --outdir=../priv/static/),
-    cd: Path.expand("../assets", __DIR__)
+    args: ~w(
+      --loader:.txt=copy
+      --loader:.png=copy
+      --loader:.gif=copy
+      --loader:.jpg=copy
+      --loader:.ico=copy
+      --loader:.Identifier=copy
+      --loader:.webp=copy
+      --loader:.svg=copy
+      --bundle
+      --target=es2017 static/**
+      --outdir=../priv/static/
+      ),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
 config :tailwind,

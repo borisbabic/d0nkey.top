@@ -14,6 +14,9 @@ import Alpine from "alpinejs";
 window.Alpine = Alpine;
 Alpine.start();
 
+console.log("what the fuck");
+
+import ChartJsHook from "./chart_hook.js";
 // Import local files
 //
 // Local files can be imported directly using relative paths, for example:
@@ -246,6 +249,7 @@ var pad = function (te) {
     return ("0" + te).slice(-2);
 };
 let Hooks = {};
+Hooks.ChartJs = ChartJsHook;
 Hooks.InfiniteScrollLoaded = {
     mounted() {
         console.log("mounting hook");
@@ -279,7 +283,6 @@ Hooks.InfiniteScrollLoaded = {
         }
     },
 };
-console.log(Hooks);
 Hooks.LocalStorage = {
     mounted() {
         this.handleEvent("store", (obj) => this.store(obj));
