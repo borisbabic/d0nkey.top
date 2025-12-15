@@ -96,17 +96,19 @@ defmodule Backend.BattlefyUtil do
     tournaments |> Enum.filter(fn %{standings: s} -> 512 == s |> Enum.count() end) |> Enum.count()
   end
 
-  @spec get_fewest_players(expanded) :: Any
+  @spec get_fewest_players(expanded) :: {{integer(), String.t()}, {integer(), String.t()}}
   def get_fewest_players(tournaments) do
-    min_max_players(tournaments) |> elem(0)
+    {min, _max} = min_max_players(tournaments)
+    min
   end
 
-  @spec get_most_players(expanded) :: Any
+  @spec get_most_players(expanded) :: {{integer(), String.t()}, {integer(), String.t()}}
   def get_most_players(tournaments) do
-    min_max_players(tournaments) |> elem(1)
+    {_min, max} = min_max_players(tournaments)
+    max
   end
 
-  @spec min_max_players(expanded) :: Any
+  @spec min_max_players(expanded) :: {{integer(), String.t()}, {integer(), String.t()}}
   def min_max_players(tournaments) do
     # tournaments |> Enum.map(fn %{standings: s} -> s |> Enum.count() end) |> Enum.min_max()
     tournaments
@@ -116,7 +118,7 @@ defmodule Backend.BattlefyUtil do
     |> Enum.min_max_by(fn {num, _} -> num end)
   end
 
-  @spec min_max_duration(expanded) :: Any
+  @spec min_max_duration(expanded) :: {{integer(), String.t()}, {integer(), String.t()}}
   def min_max_duration(tournaments) do
     tournaments
     |> Enum.map(fn %{duration: duration, tournament: t} ->
@@ -125,8 +127,8 @@ defmodule Backend.BattlefyUtil do
     |> Enum.min_max()
   end
 
-  def get_meta(unfiltered = _tournaments_with_meta) do
-    t = unfiltered |> Enum.filter(fn %{duration: duration} -> duration end)
+  def get_meta(unfiltered_tournaments_with_meta) do
+    t = unfiltered_tournaments_with_meta |> Enum.filter(fn %{duration: duration} -> duration end)
     {fewest, most} = min_max_players(t)
     {{shortest_dur, shortest_link}, {longest_dur, longest_link}} = min_max_duration(t)
 

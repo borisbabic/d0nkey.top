@@ -7,6 +7,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   alias Backend.Battlefy.MatchDeckstrings
   alias Backend.Battlefy.Profile
   alias Backend.Battlefy.GameStats
+  alias Backend.Battlefy.Stage
   alias Backend.Battlefy.Team
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Organization
@@ -111,7 +112,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     )
   end
 
-  @spec get_stage_with_matches(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stage.t()
+  @spec get_stage_with_matches(Battlefy.stage_id()) :: Battlefy.Stage.t()
   def get_stage_with_matches(stage_id) do
     url =
       "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}?extend[matches][top.team][players][user]=true&extend[matches][top.team][persistentTeam]=true&extend[matches][bottom.team][players][user]=true&extend[matches][bottom.team][persistentTeam]=true&extend[groups][teams]=true&extend[groups][matches][top.team][players][user]=true&extend[groups][matches][top.team][persistentTeam]=true&extend[groups][matches][bottom.team][players][user]=true&extend[groups][matches][bottom.team][persistentTeam]=true"
@@ -122,19 +123,19 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       [r] -> r
       r -> raise("WTF #{r |> Enum.count()}")
     end
-    |> Backend.Battlefy.Stage.from_raw_map()
+    |> Battlefy.Stage.from_raw_map()
   end
 
-  @spec get_stage(Backend.Battlefy.stage_id()) :: Backend.Battlefy.Stage.t()
+  @spec get_stage(Battlefy.stage_id()) :: Stage.t()
   def get_stage(stage_id) do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}"
 
     get_body(url)
     |> Jason.decode!()
-    |> Backend.Battlefy.Stage.from_raw_map()
+    |> Stage.from_raw_map()
   end
 
-  @spec get_standings(Backend.Battlefy.stage_id()) :: {:ok, [Standings.t()]}
+  @spec get_standings(Battlefy.stage_id()) :: {:ok, [Standings.t()]}
   def get_standings(stage_id) do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/standings"
 
@@ -144,21 +145,21 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     end
   end
 
-  @spec get_standings(Backend.Battlefy.stage_id()) :: [Standings.t()]
+  @spec get_standings(Battlefy.stage_id()) :: [Standings.t()]
   def get_standings!(stage_id), do: stage_id |> get_standings() |> Util.bangify()
 
-  @spec get_round_standings(Backend.Battlefy.stage_id(), integer | String.t()) :: [
-          Backend.Battlefy.Standings.t()
+  @spec get_round_standings(Battlefy.stage_id(), integer | String.t()) :: [
+          Standings.t()
         ]
   def get_round_standings(stage_id, round) do
     url = "https://dtmwra1jsgyb0.cloudfront.net/stages/#{stage_id}/rounds/#{round}/standings"
 
     get_body(url)
     |> Jason.decode!()
-    |> Backend.Battlefy.Standings.from_raw_map_list()
+    |> Standings.from_raw_map_list()
   end
 
-  @spec get_tournament(Backend.Battlefy.tournament_id()) :: Backend.Battlefy.Tournament.t() | nil
+  @spec get_tournament(Battlefy.tournament_id()) :: Tournament.t() | nil
   def get_tournament(tournament_id) do
     url =
       "https://dtmwra1jsgyb0.cloudfront.net/tournaments/#{tournament_id}?extend[stages]=true&extend[organization]=true&extend[streams]=true"

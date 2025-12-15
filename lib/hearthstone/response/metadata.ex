@@ -36,7 +36,7 @@ defmodule Hearthstone.Response.Metadata do
     field :types, [Type.t()]
   end
 
-  @spec from_raw_map(Map.t()) :: {:ok, __MODULE__.t()} | {:error, any()}
+  @spec from_raw_map(map()) :: {:ok, __MODULE__.t()} | {:error, any()}
   def from_raw_map(%{
         "arenaIds" => arena_ids,
         "cardBackCategories" => card_back_categories,

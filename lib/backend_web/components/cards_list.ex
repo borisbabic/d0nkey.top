@@ -44,7 +44,7 @@ defmodule Components.CardsList do
     """
   end
 
-  @spec cards_to_display(Deck.t(), [integer] | nil, boolean, Map.t() | nil) :: [display_info]
+  @spec cards_to_display(Deck.t(), [integer] | nil, boolean, map() | nil) :: [display_info]
   defp cards_to_display(
          %{cards: cards, sideboards: sideboard} = deck,
          comparison,
@@ -114,7 +114,7 @@ defmodule Components.CardsList do
 
   defp owned_card_map(_), do: {false, nil}
 
-  @spec sideboard_display(Sideboard.t(), boolean, boolean, Map.t()) :: [display_info]
+  @spec sideboard_display(Sideboard.t(), boolean, boolean, map()) :: [display_info]
   defp sideboard_display(
          %{card: c, count: count, sideboard: sideboard},
          highlight_rotation,

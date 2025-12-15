@@ -119,7 +119,7 @@ defmodule Backend.Feed do
     |> create_feed_item()
   end
 
-  @spec create_feed_item(Map.t()) :: {:ok | FeedItem.t()} | {:error, Ecto.Changset.t()}
+  @spec create_feed_item(map()) :: {:ok | FeedItem.t()} | {:error, Ecto.Changset.t()}
   def create_feed_item(attrs) do
     %FeedItem{}
     |> FeedItem.changeset(attrs)
@@ -132,14 +132,14 @@ defmodule Backend.Feed do
     fi |> update_feed_item(attrs)
   end
 
-  @spec update_feed_item(FeedItem.t(), Map.t()) :: {:ok, FeedItem.t()} | {:error, any()}
+  @spec update_feed_item(FeedItem.t(), map()) :: {:ok, FeedItem.t()} | {:error, any()}
   def update_feed_item(fi = %FeedItem{}, attrs) do
     fi
     |> FeedItem.changeset(attrs)
     |> Repo.update()
   end
 
-  @spec change_feed_item(FeedItem.t(), Map.t()) :: Ecto.Changeset
+  @spec change_feed_item(FeedItem.t(), map()) :: Ecto.Changeset
   def change_feed_item(fi = %FeedItem{}, attrs \\ %{}), do: fi |> FeedItem.changeset(attrs)
 
   def delete_feed_item(fi = %FeedItem{}), do: fi |> Repo.delete()

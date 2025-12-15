@@ -103,7 +103,7 @@ defmodule BackendWeb.MastersTourView do
     |> Enum.map(fn c -> column_map[c] || "" end)
   end
 
-  @spec create_tour_stop_cells(PlayerStats.t(), [Blizzard.tour_stop()], MapSet.t()) :: Map.t()
+  @spec create_tour_stop_cells(PlayerStats.t(), [Blizzard.tour_stop()], MapSet.t()) :: map()
   def create_tour_stop_cells(player_stats, tour_stops, invited_set) do
     qualified_per_year =
       tour_stops
@@ -504,7 +504,7 @@ defmodule BackendWeb.MastersTourView do
           Backend.Battlefy.Communicator.qualifier(),
           [Qualifier.t()],
           Plug.Conn.t()
-        ) :: Backend.Battlefy.Communicator.qualifier() | Map.t()
+        ) :: Backend.Battlefy.Communicator.qualifier() | map()
   def add_qualifier_winner(q = %{id: id}, qualifiers, conn) do
     winner =
       qualifiers

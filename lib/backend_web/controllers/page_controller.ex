@@ -44,7 +44,7 @@ defmodule BackendWeb.PageController do
     text(conn, ret)
   end
 
-  @spec ads_txt(Plug.Conn.t(), Map.t()) :: Plug.Conn.t()
+  @spec ads_txt(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def ads_txt(conn, _params) do
     config = AdsTxtCache.config()
 

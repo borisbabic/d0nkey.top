@@ -156,9 +156,9 @@ defmodule Backend.Grandmasters.Response do
     decklists(r, stage_title, matcher)
   end
 
-  @spec decklists(Response.t(), (Stage.t() -> boolean()) | String.t()) :: Map.t()
+  @spec decklists(Response.t(), (Stage.t() -> boolean()) | String.t()) :: map()
   @spec decklists(Response.t(), (Stage.t() -> boolean()) | String.t(), (Match.t() -> boolean())) ::
-          Map.t()
+          map()
   def decklists(r, stage_matcher_or_title, match_matcher \\ & &1)
 
   def decklists(r, stage_matcher, match_filter)

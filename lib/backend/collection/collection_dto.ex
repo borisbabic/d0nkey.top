@@ -10,7 +10,7 @@ defmodule Backend.CollectionManager.CollectionDto do
     field :updated, NaiveDateTime.t()
   end
 
-  @spec from_raw_map(Map.t(), NaiveDateTime.t() | String.t()) ::
+  @spec from_raw_map(map(), NaiveDateTime.t() | String.t()) ::
           {:ok, t()} | {:error, atom() | String.t()}
   def from_raw_map(map, updated_raw) do
     with {:ok, cards} <- parse_cards(map),
@@ -57,7 +57,7 @@ defmodule Backend.CollectionManager.CollectionDto do
 
   defp parse_region(_), do: {:error, :cant_extract_region}
 
-  @spec parse_cards([Map.t()]) :: {:ok, [Card.t()]} | {:error, atom() | String.t()}
+  @spec parse_cards([map()]) :: {:ok, [Card.t()]} | {:error, atom() | String.t()}
   defp parse_cards(%{"cards" => cards}) do
     Enum.reduce_while(cards, {:ok, []}, fn raw_card, {:ok, carry} ->
       case Card.from_raw_map(raw_card) do
@@ -99,7 +99,7 @@ defmodule Backend.CollectionManager.CollectionDto.Card do
     field :signature_count, integer()
   end
 
-  @spec from_raw_map(Map.t()) :: {:ok, t()} | {:error, String.t()}
+  @spec from_raw_map(map()) :: {:ok, t()} | {:error, String.t()}
   def from_raw_map(%{"id" => id} = map) do
     case Backend.HearthstoneJson.get_dbf_by_card_id(id) do
       dbf_id when is_integer(dbf_id) ->

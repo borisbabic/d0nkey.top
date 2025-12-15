@@ -11,7 +11,7 @@ defmodule Backend.Hearthstone.CardAggregate do
   typedstruct enforce: true do
     field :total_count, integer()
     field :total_mana_cost, integer()
-    field :keyword_counts, Map.t()
+    field :keyword_counts, map()
 
     field :minion_stats, MinionStats.t()
     field :weapon_stats, WeaponStats.t()

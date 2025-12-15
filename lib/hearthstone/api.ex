@@ -23,20 +23,20 @@ defmodule Hearthstone.Api do
     end
   end
 
-  @spec get_metadata(String.t()) :: {:ok, Map.t()} | {:error, any()}
+  @spec get_metadata(String.t()) :: {:ok, map()} | {:error, any()}
   def raw_metadata_body(locale \\ @default_locale) do
     url = "#{@base_url}/metadata?locale=#{locale}"
     get_body(url)
   end
 
-  @spec get_mercenaries(Map.t()) :: {:ok, Cards.t()} | {:error, any()}
+  @spec get_mercenaries(map()) :: {:ok, Cards.t()} | {:error, any()}
   def get_mercenaries(opts \\ %{}) do
     opts
     |> add_mercs()
     |> get_cards()
   end
 
-  @spec get_cards(Map.t()) :: {:ok, Cards.t()} | {:error, any()}
+  @spec get_cards(map()) :: {:ok, Cards.t()} | {:error, any()}
   def get_cards(
         opts \\ %{collectible: "0,1", locale: @default_locale, pageSize: @default_page_size}
       ) do
@@ -57,21 +57,21 @@ defmodule Hearthstone.Api do
 
   defp add_mercs(opts), do: Map.merge(%{"gameMode" => "mercenaries"}, opts)
 
-  @spec get_all_mercenaries(Map.t()) :: {:ok, [Hearthstone.Card.t()]} | {:error, any()}
+  @spec get_all_mercenaries(map()) :: {:ok, [Hearthstone.Card.t()]} | {:error, any()}
   def get_all_mercenaries(opts \\ %{}) do
     opts
     |> add_mercs()
     |> get_all_cards()
   end
 
-  @spec get_all_cards(Map.t()) :: {:ok, [Hearthstone.Card.t()]} | {:error, any()}
+  @spec get_all_cards(map()) :: {:ok, [Hearthstone.Card.t()]} | {:error, any()}
   def get_all_cards(
         opts \\ %{collectible: "1", locale: @default_locale, pageSize: @default_page_size}
       ) do
     do_get_all_cards(opts, nil, [])
   end
 
-  @spec do_get_all_cards(Map.t(), Cards.t() | nil, [Hearthstone.Card.t()]) ::
+  @spec do_get_all_cards(map(), Cards.t() | nil, [Hearthstone.Card.t()]) ::
           {:ok, [Hearthstone.Card.t()]} | {:error, any()}
   defp do_get_all_cards(_, %{page: last_page, page_count: last_page}, carry), do: {:ok, carry}
 
@@ -84,7 +84,7 @@ defmodule Hearthstone.Api do
     end
   end
 
-  @spec next_page(Cards.t() | nil, Map.t()) :: {:ok, Cards.t()} | {:error, any()}
+  @spec next_page(Cards.t() | nil, map()) :: {:ok, Cards.t()} | {:error, any()}
   def next_page(prev_response, opts \\ %{})
   def next_page(nil, opts), do: get_cards(opts)
   def next_page(%{page: page}, opts), do: opts |> Map.put("page", page + 1) |> get_cards()
@@ -92,7 +92,7 @@ defmodule Hearthstone.Api do
   def next_page(%{page: last_page, page_count: last_page}, _opts),
     do: {:error, :already_at_last_page}
 
-  @spec get_body(String.t(), list(), list()) :: {:ok, Map.t()} | {:error, any()}
+  @spec get_body(String.t(), list(), list()) :: {:ok, map()} | {:error, any()}
   def get_body(url, base_headers \\ [], opts \\ []) do
     with {:ok, token} <- access_token(),
          headers <- [{"Authorization", "Bearer #{token}"} | base_headers],

@@ -60,7 +60,7 @@ defmodule BackendWeb.DeckTrackerController do
     end
   end
 
-  @spec enqueue_game(Map.t(), Backend.Api.ApiUser.t()) ::
+  @spec enqueue_game(map(), Backend.Api.ApiUser.t()) ::
           {:ok, player_deck :: Deck.t()} | {:error, any()}
   defp enqueue_game(params, api_user) do
     dto =

@@ -41,7 +41,7 @@ defmodule Hearthstone.Card do
     field(:banned_from_sideboard, boolean())
   end
 
-  @spec from_raw_map(Map.t()) :: {:ok, __MODULE__.t()} | {:error, any()}
+  @spec from_raw_map(map()) :: {:ok, __MODULE__.t()} | {:error, any()}
   def from_raw_map(raw_map = %{"id" => id}) do
     map = Recase.Enumerable.convert_keys(raw_map, &Recase.to_snake/1)
 
@@ -279,7 +279,7 @@ defmodule Hearthstone.Card.MercenaryHero.StatsByLevel do
     field(:health, integer())
   end
 
-  @spec list_from_map(Map.t()) :: [StatsByLevel]
+  @spec list_from_map(map()) :: [StatsByLevel]
   def list_from_map(list) when is_list(list),
     do: Enum.map(list, &list_mapper/1) |> Enum.filter(& &1)
 

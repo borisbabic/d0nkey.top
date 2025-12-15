@@ -31,7 +31,7 @@ defmodule Backend.Battlefy.Tournament do
   def has_bracket(%{start_time: start_time}),
     do: NaiveDateTime.utc_now() |> NaiveDateTime.compare(start_time) == :gt
 
-  @spec from_raw_map(map) :: t()
+  @spec from_raw_map(map()) :: t()
   def from_raw_map(map = %{"startTime" => start_time, "slug" => slug, "name" => name}) do
     region =
       case map["region"] do
@@ -109,8 +109,10 @@ end
 defmodule Backend.Battlefy.Tournament.CustomField do
   use TypedStruct
 
+  alias Backend.Battlefy
+
   typedstruct enforce: false do
-    field :id, Battlefy.tournament_id()
+    field :id, String.t()
     field :name, String.t()
     field :public, boolean()
   end

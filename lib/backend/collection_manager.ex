@@ -44,7 +44,7 @@ defmodule Backend.CollectionManager do
       ]
   end
 
-  @spec dto_to_attrs(CollectionDto.t()) :: Map.t()
+  @spec dto_to_attrs(CollectionDto.t()) :: map()
   defp dto_to_attrs(dto) do
     %{
       battletag: dto.battletag,
@@ -56,7 +56,7 @@ defmodule Backend.CollectionManager do
     }
   end
 
-  @spec card_count(Collection.t() | Map.t(), Hearthstone.card() | integer() | String.t()) ::
+  @spec card_count(Collection.t() | map(), Hearthstone.card() | integer() | String.t()) ::
           integer()
   def card_count(%Collection{} = coll, card_or_id), do: card_map(coll) |> card_count(card_or_id)
 

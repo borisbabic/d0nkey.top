@@ -13,7 +13,7 @@ defmodule BackendWeb.LiveHelpers do
   alias Backend.UserManager.User
   alias Backend.UserManager.Guardian
 
-  @spec load_user(Map.t() | any) :: User | nil
+  @spec load_user(map() | any) :: User | nil
   def load_user(%{"guardian_default_token" => token}) do
     token
     |> Guardian.resource_from_token()
@@ -25,7 +25,7 @@ defmodule BackendWeb.LiveHelpers do
 
   def load_user(_), do: nil
 
-  @spec assign_meta_tags(Socket.t(), Map.t()) :: Socket.t()
+  @spec assign_meta_tags(Socket.t(), map()) :: Socket.t()
   def assign_meta_tags(socket, new_tags = %{}) do
     meta = (get_in(socket.assigns, [:meta_tags]) || %{}) |> Map.merge(new_tags)
     socket |> assign(:meta_tags, meta)

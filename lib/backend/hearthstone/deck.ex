@@ -506,7 +506,7 @@ defmodule Backend.Hearthstone.Deck do
   iex> {:ok, deck} = Backend.Hearthstone.Deck.decode("AAECAR8BugMAAA=="); deck.deckcode
   "AAECAR8BugMAAAA="
   """
-  @spec decode(String.t(), [decode_opt]) :: {:ok, t()} | {:error, String.t() | any}
+  @spec decode(String.t(), [decode_opt]) :: {:ok, t()} | {:error, String.t() | any()}
   def decode(deckcode, opts \\ [])
   def decode("", _opts), do: {:error, "Couldn't decode deckstring"}
 
@@ -1109,7 +1109,7 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  @spec replace_cards(t(), Map.t()) :: String.t()
+  @spec replace_cards(t(), map()) :: String.t()
   def replace_cards(deck, new_cards_map) do
     new_cards = Enum.map(deck.cards, &Map.get(new_cards_map, &1, &1))
 

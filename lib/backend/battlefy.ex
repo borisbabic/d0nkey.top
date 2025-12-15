@@ -25,6 +25,7 @@ defmodule Backend.Battlefy do
   @type battlefy_id :: <<_::192>>
   @type tournament_id :: battlefy_id
   @type user_id :: battlefy_id
+  @type game_id :: battlefy_id
   @type team_id :: battlefy_id
   @type stage_id :: battlefy_id
   @type match_id :: battlefy_id
@@ -198,6 +199,7 @@ defmodule Backend.Battlefy do
          s when s in [nil, []] <- get_stage_standings(stage) do
       []
     else
+      nil -> []
       standings -> standings
     end
   end
@@ -205,7 +207,7 @@ defmodule Backend.Battlefy do
   def create_standings_from_round1_matches(%{
         id: id
       }) do
-    matches = get_matches(id, round: 1) || []
+    matches = get_matches(id, round: 1)
 
     # num_losers = Enum.count(matches, fn %{top: top, bottom: bottom} -> top.winner || bottom.winnere end)
     # num_people = matches
@@ -268,7 +270,7 @@ defmodule Backend.Battlefy do
     |> Enum.sort_by(fn s -> s.place end, :asc)
   end
 
-  @spec find_auto_wins_losses([Match.t()]) :: {Map.t(), Map.t()}
+  @spec find_auto_wins_losses([Match.t()]) :: {map(), map()}
   def find_auto_wins_losses(matches) do
     auto_wins =
       matches
@@ -474,7 +476,7 @@ defmodule Backend.Battlefy do
   def get_all_tournament_standings(tournament_id),
     do: tournament_id |> get_tournament() |> get_all_tournament_standings()
 
-  @spec get_stage(stage_id) :: Stage.t()
+  @spec get_stage(stage_id) :: Stage.t() | nil
   def get_stage(stage_id) do
     Api.get_stage(stage_id)
   end
@@ -523,7 +525,7 @@ defmodule Backend.Battlefy do
     |> Enum.reverse()
   end
 
-  @spec get_tournament(tournament_id) :: Tournament.t()
+  @spec get_tournament(tournament_id) :: Tournament.t() | nil
   def get_tournament(tournament_id) do
     Api.get_tournament(tournament_id)
   end
@@ -672,8 +674,8 @@ defmodule Backend.Battlefy do
 
   def get_matches(stage_id, opts) do
     case opts[:round] do
-      r when is_integer(r) -> Api.get_matches(stage_id, opts)
-      _ -> Api.get_stage_with_matches(stage_id) |> Map.get(:matches)
+      r when is_integer(r) -> Api.get_matches(stage_id, opts) || []
+      _ -> Api.get_stage_with_matches(stage_id) |> Map.get(:matches, []) || []
     end
   end
 
@@ -879,7 +881,7 @@ defmodule Backend.Battlefy do
 
   @spec get_deckstrings(%{stage_id: stage_id, tournament_id: tournament_id}, [
           Blizzard.battletag()
-        ]) :: Map.t()
+        ]) :: map()
   def get_deckstrings(info = %{tournament_id: tournament_id}, battletags)
       when is_list(battletags) do
     matches = get_deckstrings_matches(info)

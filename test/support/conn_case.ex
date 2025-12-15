@@ -137,7 +137,7 @@ defmodule BackendWeb.ConnCase do
   defp ensure_conn(nil), do: Phoenix.ConnTest.build_conn()
   defp ensure_conn(conn), do: conn
 
-  @spec ensure_auth_user(Map.t()) :: {:ok, User.t()} | {:error, any()}
+  @spec ensure_auth_user(map()) :: {:ok, Backend.UserManager.User.t()} | {:error, any()}
   def ensure_auth_user(opts \\ %{}) when is_map(opts) do
     base_attrs = %{
       battletag: "test_user#1234",
@@ -147,12 +147,13 @@ defmodule BackendWeb.ConnCase do
       decklist_options: %{border: nil, gradient: nil}
     }
 
-    with attrs = %{battletag: btag} <- base_attrs |> Map.merge(opts),
+    with %{battletag: btag} = attrs <- base_attrs |> Map.merge(opts),
          nil <- Backend.UserManager.get_by_btag(btag) do
       Backend.UserManager.create_user(attrs)
     else
-      user = %{battletag: _} -> {:ok, user}
-      _ -> {:error, "couldn't ensure user "}
+      %{battletag: _} = user ->
+        {:ok, user}
+        # _ -> {:error, "couldn't ensure user "}
     end
   end
 end
