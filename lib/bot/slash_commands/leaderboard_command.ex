@@ -63,8 +63,12 @@ defmodule Bot.SlashCommands.LeaderboardCommand do
 
   def handle_interaction(%Interaction{data: %{name: name}} = interaction)
       when name in @count_names do
-    response = LdbMessageHandler.create_current_count_table()
+    defer(interaction)
+    table = LdbMessageHandler.create_current_count_table()
+    response = "```\n#{table}\n```" |> text_response()
+
     follow_up(interaction, response)
+    :ok
   end
 
   def handle_interaction(_), do: :skip
