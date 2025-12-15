@@ -9,7 +9,7 @@ defmodule Hearthstone.Leaderboards.Response do
   typedstruct do
     field(:leaderboard, Leaderboard.t())
     field(:season, Season.t())
-    field(:raw_response, Map.t())
+    field(:raw_response, map())
     field(:season_metadata, SeasonMetadata.t())
   end
 
@@ -24,7 +24,7 @@ defmodule Hearthstone.Leaderboards.Response do
   def total_size(%{leaderboard: %{pagination: %{total_size: total}}}), do: {:ok, total}
   def total_size(_), do: :error
 
-  @spec from_raw_map(Map.t(), integer() | Season.t() | nil) ::
+  @spec from_raw_map(map(), integer() | Season.t() | nil) ::
           {:ok, Response.t()} | {:error, any()}
   def from_raw_map(raw, leaderboard_id \\ nil)
 
@@ -57,7 +57,7 @@ defmodule Hearthstone.Leaderboards.Response do
   def get_leaderboard_metadata(%{season_metadata: sm}, leaderboard_id, region),
     do: SeasonMetadata.get_leaderboard_metadata(sm, leaderboard_id, region)
 
-  @spec from_china_map(Map.t(), Season.t()) :: {:ok, Response.t()}
+  @spec from_china_map(map(), Season.t()) :: {:ok, Response.t()}
   def from_china_map(raw, season) do
     total = get_in(raw, ["data", "total"]) || 100
     pages = (total / 25) |> Float.ceil() |> trunc()
@@ -92,7 +92,7 @@ defmodule Hearthstone.Leaderboards.Response.Leaderboard do
     field(:pagination, Pagination.t() | nil)
   end
 
-  @spec from_raw_map(Map.t()) :: Leaderboard.t()
+  @spec from_raw_map(map()) :: Leaderboard.t()
   def from_raw_map(raw) do
     %__MODULE__{
       columns: raw["columns"],
@@ -111,10 +111,10 @@ defmodule Hearthstone.Leaderboards.Response.Row do
     field(:rating, integer() | nil, enforce: false)
   end
 
-  @spec from_raw_list([Map.t()]) :: [Row.t()]
+  @spec from_raw_list([map()]) :: [Row.t()]
   def from_raw_list(raw), do: Enum.map(raw, &from_raw_map/1)
 
-  @spec from_raw_map(Map.t()) :: Row.t()
+  @spec from_raw_map(map()) :: Row.t()
   def from_raw_map(raw) do
     %__MODULE__{
       account_id: raw["accountid"] || raw["account_id"] || raw["battletag"] || raw["battle_tag"],
@@ -132,7 +132,7 @@ defmodule Hearthstone.Leaderboards.Response.Pagination do
     field(:total_size, integer())
   end
 
-  @spec from_raw_map(Map.t()) :: Pagination.t()
+  @spec from_raw_map(map()) :: Pagination.t()
   def from_raw_map(%{"totalPages" => total_pages, "totalSize" => total_size}) do
     %__MODULE__{
       total_pages: total_pages,
@@ -153,7 +153,7 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata do
     field(:us, RegionMetadata.t())
   end
 
-  @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
+  @spec from_raw_map(map()) :: SeasonMetadata.t()
   def from_raw_map(%{"AP" => ap, "EU" => eu, "US" => us}) do
     %__MODULE__{
       ap: RegionMetadata.from_raw_map(ap),
@@ -191,7 +191,7 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
     field(:wild, LeaderboardMetadata.t(), enforce: true)
   end
 
-  @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
+  @spec from_raw_map(map()) :: SeasonMetadata.t()
   def from_raw_map(
         %{
           "battlegrounds" => battlegrounds,
@@ -249,7 +249,7 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
 
   def get_max_season_id(_), do: {:error, :invalid_leaderboard_metadata}
 
-  @spec from_raw_map(Map.t()) :: SeasonMetadata.t()
+  @spec from_raw_map(map()) :: SeasonMetadata.t()
   def from_raw_map(m = %{"name" => name, "seasons" => seasons}) do
     %__MODULE__{
       name: name,

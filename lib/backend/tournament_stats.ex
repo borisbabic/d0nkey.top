@@ -257,14 +257,14 @@ end
 defmodule Backend.TournamentStats.TournamentTeamStats do
   @moduledoc false
   alias Backend.TournamentStats.TeamStats
-  @type stats_type :: :total | Backend.Tournament.bracket_type()
+  @type stats_type :: :total | Backend.Tournaments.bracket_type()
   use TypedStruct
 
   typedstruct enforce: true do
     field(:tournament_name, String.t())
     field(:tournament_id, String.t())
     field(:team_name, String.t())
-    field(:stage_stats, [{Backend.Tournament.bracket_type(), TeamStats.t()}])
+    field(:stage_stats, [{Backend.Tournaments.bracket_type(), TeamStats.t()}])
   end
 
   @doc """
@@ -291,7 +291,7 @@ defmodule Backend.TournamentStats do
   alias Backend.TournamentStats.Standings
   alias Backend.TournamentStats.TeamStats
   alias Backend.TournamentStats.TournamentTeamStats
-  @type stage_spec :: {Backend.Tournament.bracket_type(), [any]}
+  @type stage_spec :: {Backend.Tournaments.bracket_type(), [any]}
   @spec create_standings([any]) :: [Standings.t()]
   def create_standings(standings) when is_list(standings),
     do: standings |> Enum.map(&Standings.create_team_standings/1)

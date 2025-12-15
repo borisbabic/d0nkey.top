@@ -174,8 +174,7 @@ defmodule Util do
 
     case {atom_val, from} do
       {_, %{^key => value}} -> value
-      {k, _} when is_atom(k) -> get(from, k, opts)
-      _ -> opts[:default]
+      {k, _} -> get(from, k, opts)
     end
   end
 
@@ -651,8 +650,8 @@ defmodule Util do
   def flip_tuple({a, b}), do: {b, a}
   def flip_tuples([{_a, _b} | _] = tuples), do: Enum.map(tuples, &flip_tuple/1)
 
-  @spec drop(map_or_keyword_list :: Map.t() | list(), keys :: list(), options :: list()) ::
-          Map.t() | list()
+  @spec drop(map_or_keyword_list :: map() | list(), keys :: list(), options :: list()) ::
+          map() | list()
   def drop(map_or_keyword_list, keys, opts \\ [])
   def drop(map, keys, _opts) when is_map(map), do: Map.drop(map, keys)
 

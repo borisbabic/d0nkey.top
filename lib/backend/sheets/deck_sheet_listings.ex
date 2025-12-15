@@ -17,7 +17,7 @@ defmodule Backend.Sheets.DeckSheetListing do
     timestamps()
   end
 
-  @spec create(DeckSheet.t(), Deck.t(), Map.t()) :: Changeset.t()
+  @spec create(DeckSheet.t(), Deck.t(), map()) :: Changeset.t()
   def create(sheet, deck, attrs) do
     %__MODULE__{}
     |> cast(attrs, [:name, :comment, :source, :extra_columns])
@@ -27,7 +27,7 @@ defmodule Backend.Sheets.DeckSheetListing do
   end
 
   @doc false
-  @spec changeset(t(), Map.t()) :: Changeset.t()
+  @spec changeset(t(), map()) :: Changeset.t()
   def changeset(listing, attrs) do
     listing
     |> cast(attrs, [:name, :extra_columns, :comment, :source])

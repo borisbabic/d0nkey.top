@@ -2,7 +2,7 @@ defmodule Bot.SlashCommands.SlashCommand do
   @moduledoc "Helper for slash commands"
   alias Nostrum.Struct.Interaction
   @type interaction_response :: :ok | :halt | :skip | {:error, String.t() | :atom}
-  @callback get_commands() :: [Map.t()]
+  @callback get_commands() :: [map()]
   @callback handle_interaction(Interaction.t()) :: interaction_response()
 
   defmacro __using__(_opts) do
@@ -26,7 +26,7 @@ defmodule Bot.SlashCommands.SlashCommand do
         }
       end
 
-      @spec respond(Interaction.t(), String.t() | Map.t() | {String.t(), integer()}) ::
+      @spec respond(Interaction.t(), String.t() | map() | {String.t(), integer()}) ::
               {:ok} | Nostrum.Api.error()
       def respond(interaction, response_or_message, flags \\ []) do
         response = response(response_or_message) |> add_flags(flags)
@@ -37,7 +37,7 @@ defmodule Bot.SlashCommands.SlashCommand do
       defp response(msg) when is_binary(msg), do: create_response(msg)
       defp response(rsp), do: rsp
 
-      @spec follow_up(Nostrum.Api.Interaction.t(), String.t() | Map.t()) :: any()
+      @spec follow_up(Nostrum.Api.Interaction.t(), String.t() | map()) :: any()
       def follow_up(interaction, %{} = response) do
         Nostrum.Api.Interaction.create_followup_message(
           interaction.token,

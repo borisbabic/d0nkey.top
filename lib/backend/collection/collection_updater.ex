@@ -8,7 +8,7 @@ defmodule Backend.CollectionManager.CollectionUpdater do
     create_args(params) |> new() |> Oban.insert()
   end
 
-  @spec create_args(Map.t()) :: Map.t()
+  @spec create_args(map()) :: map()
   def create_args(params) do
     %{"raw_params" => params, "inserted_at" => NaiveDateTime.utc_now()}
   end

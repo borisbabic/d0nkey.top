@@ -9,20 +9,20 @@ defmodule Hearthstone.DeckTracker.GameInserter do
   alias Backend.Repo
 
   @type api_user_or_id :: Backend.Api.ApiUser.t() | integer()
-  @spec enqueue(Map.t(), api_user_or_id) :: any()
+  @spec enqueue(map(), api_user_or_id) :: any()
   def enqueue(params, api_user_or_id),
     do: create_args(params, api_user_or_id) |> new() |> Oban.insert()
 
-  @spec create_args({Map.t(), api_user_or_id()}) :: Map.t()
+  @spec create_args({map(), api_user_or_id()}) :: map()
   def create_args({params, api_user_or_id}), do: create_args(params, api_user_or_id)
-  @spec create_args(Map.t(), api_user_or_id()) :: Map.t()
+  @spec create_args(map(), api_user_or_id()) :: map()
   def create_args(params, %{id: id}), do: create_args(params, id)
 
   def create_args(params, api_user_id) do
     %{"raw_params" => params, "api_user_id" => api_user_id}
   end
 
-  @spec enqueue_all([{Map.t()}]) :: term()
+  @spec enqueue_all([{map()}]) :: term()
   def enqueue_all(tuples) do
     Enum.reduce(tuples, Ecto.Multi.new(), fn arg_raw, multi ->
       args = create_args(arg_raw)

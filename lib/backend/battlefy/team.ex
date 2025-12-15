@@ -17,7 +17,7 @@ defmodule Backend.Battlefy.Team do
     field :players, [Player.t()]
   end
 
-  @spec country_code(__MODULE__) :: String.t() | nil
+  @spec country_code(t()) :: String.t() | nil
   def country_code(team) do
     from_team = team |> Map.get(:country_flag) |> Util.get_country_code()
 

@@ -28,7 +28,7 @@ defmodule BobsLeague.Api.Tournament do
     [server(tour), :battlegrounds]
   end
 
-  @spec from_raw_map(Map.t()) :: {:ok, t()} | {:error, any()}
+  @spec from_raw_map(map()) :: {:ok, t()} | {:error, any()}
   def from_raw_map(map) do
     with id when not is_nil(id) <- Map.get(map, "_id"),
          name when not is_nil(name) <- Map.get(map, "name"),

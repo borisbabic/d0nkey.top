@@ -15,7 +15,7 @@ defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate do
     field :duration_total_games, :integer
     field :card_stats_wins, :integer
     field :card_stats_losses, :integer
-    field :card_stats, Map.t()
+    field :card_stats, map()
     field :card_stats_collection, list() | nil
   end
 

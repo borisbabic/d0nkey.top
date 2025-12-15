@@ -2,6 +2,8 @@ defmodule Backend.Battlefy.Stage do
   @moduledoc false
   use TypedStruct
   alias Backend.Battlefy
+  alias Backend.Battlefy.Bracket
+  alias Backend.Battlefy.Match
 
   typedstruct enforce: true do
     field :id, Battlefy.stage_id()
@@ -10,8 +12,8 @@ defmodule Backend.Battlefy.Stage do
     field :start_time, Calendar.datetime()
     field :standing_ids, Battlefy.battlefy_id()
     field :has_started, bool
-    field :bracket, Battlefy.Bracket.t()
-    field :matches, [Battlefy.Match.t()]
+    field :bracket, Bracket.t()
+    field :matches, [Match.t()]
   end
 
   @spec from_raw_map(map) :: __MODULE__.t()
@@ -35,12 +37,12 @@ defmodule Backend.Battlefy.Stage do
           do: map["matches"] |> Enum.map(&Battlefy.Match.from_raw_map/1),
           else: []
         ),
-      bracket: Battlefy.Bracket.from_raw_map(map["bracket"])
+      bracket: Bracket.from_raw_map(map["bracket"])
     }
   end
 
-  @spec bracket_type(__MODULE__) :: Backend.Tournament.bracket_type()
-  def bracket_type(stage), do: stage.bracket |> Battlefy.Bracket.bracket_type()
+  @spec bracket_type(__MODULE__) :: Backend.Tournaments.bracket_type()
+  def bracket_type(stage), do: stage.bracket |> Bracket.bracket_type()
 end
 
 defmodule Backend.Battlefy.Bracket do
@@ -71,7 +73,7 @@ defmodule Backend.Battlefy.Bracket do
     }
   end
 
-  @spec bracket_type(__MODULE__) :: Backend.Tournament.bracket_type()
+  @spec bracket_type(__MODULE__) :: Backend.Tournaments.bracket_type()
   def bracket_type(%{type: "elimination", style: "single"}), do: :single_elimination
   def bracket_type(%{type: "elimination", style: "double"}), do: :double_elimination
 

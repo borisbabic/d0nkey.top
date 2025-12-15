@@ -17,7 +17,7 @@ defmodule Backend.Hearthstone.SetGroup do
     timestamps()
   end
 
-  @spec changeset(%__MODULE__{}, Hearthstone.Metadata.SetGroup.t() | Map.t()) ::
+  @spec changeset(%__MODULE__{}, Hearthstone.Metadata.SetGroup.t() | map()) ::
           Ecto.Changeset.t()
   @doc false
   def changeset(set_group, %Hearthstone.Metadata.SetGroup{} = struct) do

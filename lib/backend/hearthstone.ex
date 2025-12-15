@@ -179,7 +179,7 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  @spec metadata_multi_insert({atom(), Map.t()}, Multi.t()) :: Multi.t()
+  @spec metadata_multi_insert({atom(), map()}, Multi.t()) :: Multi.t()
   defp metadata_multi_insert({struct_module, values}, multi) do
     values
     |> Enum.reduce(multi, fn val, m ->
@@ -440,7 +440,7 @@ defmodule Backend.Hearthstone do
   def class(78_065), do: "DEATHKNIGHT"
   def class(dbf_id), do: HearthstoneJson.get_class(dbf_id)
 
-  @spec fetch_dbf_id(String.t() | integer() | Map.t()) :: integer() | nil
+  @spec fetch_dbf_id(String.t() | integer() | map()) :: integer() | nil
   def dbf_id(dbf_id) when is_integer(dbf_id), do: dbf_id
 
   def dbf_id(card_id) when is_binary(card_id) do
@@ -462,7 +462,7 @@ defmodule Backend.Hearthstone do
 
   def dbf_id(_), do: nil
 
-  @spec fetch_dbf_id(String.t() | integer() | Map.t()) ::
+  @spec fetch_dbf_id(String.t() | integer() | map()) ::
           {:ok, integer()} | {:error, reason :: atom()}
   def fetch_dbf_id(id_or_map) do
     case dbf_id(id_or_map) do
@@ -1720,13 +1720,13 @@ defmodule Backend.Hearthstone do
     do_update_cards(%{"card" => Card.dbf_id(card)})
   end
 
-  @spec update_collectible_cards(Map.t()) :: any()
+  @spec update_collectible_cards(map()) :: any()
   def update_collectible_cards(additional_args \\ %{}) do
     args = Map.merge(%{collectible: "1", locale: "en_US", pageSize: 420_069}, additional_args)
     do_update_cards(args)
   end
 
-  @spec update_all_cards(Map.t()) :: any()
+  @spec update_all_cards(map()) :: any()
   def update_all_cards(additional_args \\ %{}) do
     args = Map.merge(%{collectible: "0,1", locale: "en_US", pageSize: 420_069}, additional_args)
     do_update_cards(args)

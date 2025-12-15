@@ -29,13 +29,13 @@ defmodule BackendWeb.BattlefyView do
           hsdeckviewer: String.t()
         }
 
-  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Map.t()) ::
+  @spec handle_opponent_team(Battlefy.MatchTeam.t(), map()) ::
           nil
   def handle_opponent_team(%{team: nil}, _) do
     nil
   end
 
-  @spec handle_opponent_team(Battlefy.MatchTeam.t(), Map.t()) :: future_opponent_team
+  @spec handle_opponent_team(Battlefy.MatchTeam.t(), map()) :: future_opponent_team
   def handle_opponent_team(
         %{team: %{name: name}},
         %{
@@ -562,7 +562,7 @@ defmodule BackendWeb.BattlefyView do
           show_ongoing: boolean,
           tournament: Battlefy.Tournament.t(),
           conn: Plug.Conn.t()
-        }) :: Map.t()
+        }) :: map()
   defp calculate_ongoing(
          params = %{
            matches: matches,
@@ -755,7 +755,7 @@ defmodule BackendWeb.BattlefyView do
 
   defp prepare_participants(_), do: []
 
-  @spec prepare_standings(Map.t()) :: [standings]
+  @spec prepare_standings(map()) :: [standings]
   defp prepare_standings(
          %{
            standings_raw: standings_raw = [_ | _],

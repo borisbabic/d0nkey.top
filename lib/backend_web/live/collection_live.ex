@@ -203,7 +203,7 @@ defmodule BackendWeb.CollectionLive do
     assign(socket, :share_link, nil)
   end
 
-  @spec collection(Map.t(), Map.t()) :: {:ok, Collection.t()} | {:error, atom()}
+  @spec collection(map(), map()) :: {:ok, Collection.t()} | {:error, atom()}
   def collection(%{"collection_id" => collection_id}, %{assigns: %{user: user}}) do
     CollectionManager.fetch_collection_for_user(user, collection_id)
   end

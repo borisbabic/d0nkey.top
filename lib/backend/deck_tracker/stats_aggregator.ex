@@ -8,7 +8,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   alias Backend.Repo
 
   @spec aggregate_games([Game.t()], [Rank.t()], String.t() | nil) ::
-          {:ok, [Map.t()]} | {:error, String.t()}
+          {:ok, [map()]} | {:error, String.t()}
 
   def aggregate_games(games, ranks, archetype)
       when is_list(games) and is_list(ranks) and

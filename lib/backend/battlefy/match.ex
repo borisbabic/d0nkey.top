@@ -6,6 +6,7 @@ defmodule Backend.Battlefy.Match do
   alias Backend.Battlefy.ClassMatchStats
   alias Backend.Battlefy.Match.MatchStats
   alias Backend.Battlefy.Match.Next
+  alias Backend.Battlefy.Match
 
   typedstruct enforce: true do
     field :id, Backend.Battlefy.match_id()
@@ -25,12 +26,12 @@ defmodule Backend.Battlefy.Match do
     # field :is_complete, boolean
   end
 
-  @spec find([Match.t()], integer) :: Match.t()
+  @spec find([t()], integer) :: t()
   def find(matches, match_number) do
     matches |> Enum.find(fn %{match_number: mn} -> mn == match_number end)
   end
 
-  @spec filter_team([Match], String.t()) :: [Match]
+  @spec filter_team([t()], String.t()) :: [Match]
   def filter_team(matches, team_name) do
     matches
     |> Enum.filter(fn %{top: top, bottom: bottom} ->
@@ -38,12 +39,12 @@ defmodule Backend.Battlefy.Match do
     end)
   end
 
-  @spec sort_by_round([Match]) :: [Match]
+  @spec sort_by_round([t()]) :: [t()]
   def sort_by_round(matches) do
     sort_by_round(matches, :asc)
   end
 
-  @spec sort_by_round([Match], :asc | :desc) :: [Match]
+  @spec sort_by_round([t()], :asc | :desc) :: [t()]
   def sort_by_round(matches, direction) do
     matches
     |> Enum.sort_by(fn %{round_number: rn} -> rn end, direction)

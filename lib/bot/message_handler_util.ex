@@ -40,7 +40,7 @@ defmodule Bot.MessageHandlerUtil do
     |> Enum.reduce(fn bit, acc -> acc ||| bit end)
   end
 
-  @spec add_flags(Map.t(), [atom()]) :: Map.t()
+  @spec add_flags(map(), [atom()]) :: map()
   def add_flags(response, flags \\ [])
   def add_flags(response, empty) when empty in [nil, []], do: response
 

@@ -101,7 +101,7 @@ defmodule Backend.DiscordBot do
     update_guild_config(old, attrs)
   end
 
-  @spec update_guild_config(GuildConfig.t() | {:ok, GuildConfig.t()}, attrs :: Map.t()) ::
+  @spec update_guild_config(GuildConfig.t() | {:ok, GuildConfig.t()}, attrs :: map()) ::
           {:ok, GuildConfig.t()} | {:error, any()}
   def update_guild_config({:ok, guild_config}, attrs),
     do: update_guild_config(guild_config, attrs)

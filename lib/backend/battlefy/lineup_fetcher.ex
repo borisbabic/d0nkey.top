@@ -34,16 +34,23 @@ defmodule Backend.Battlefy.LineupFetcher do
 
   def insert(_, _, _), do: nil
 
-  @spec enqueue_jobs(Tournament.t() | String.t()) :: {:ok, [Oban.Job.t()]} | {:error, any()}
+  @spec enqueue_jobs(Tournament.t() | Battlefy.tournament_id()) ::
+          {:ok, [Oban.Job.t()]} | {:ok, [any()]} | {:error, any()}
   def enqueue_jobs(%Tournament{stages: stages, id: id}) when is_list(stages) do
-    stages
-    |> Enum.flat_map(&Battlefy.get_matches(&1, round: 1))
-    |> enqueue_matches(id)
+    {:ok,
+     stages
+     |> Enum.flat_map(&Battlefy.get_matches(&1, round: 1))
+     |> enqueue_matches(id)}
   end
 
-  def enqueue_jobs(id) when is_binary(id), do: Battlefy.get_tournament(id) |> enqueue_jobs()
+  def enqueue_jobs(id) when is_binary(id) do
+    case Battlefy.get_tournament(id) do
+      %Tournament{} = tournament -> enqueue_jobs(tournament)
+      nil -> {:error, :tournament_not_found}
+    end
+  end
 
-  def enqueue_jobs(), do: nil
+  def enqueue_jobs(_), do: {:error, :tournament_not_found}
 
   defp enqueue_matches([], _), do: {:error, :no_matches}
 

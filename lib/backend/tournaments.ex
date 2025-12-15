@@ -7,6 +7,8 @@ defmodule Backend.Tournaments do
   alias Backend.Tournaments.MatchStats
   alias Backend.Tournaments.ArchetypeStats
 
+  @type bracket_type ::
+          :single_elimination | :double_elimination | :round_robin | :swiss | :unknown
   @type tournament_tuple :: {tournament_source :: String.t(), tournament_id :: String.t()}
   @type archetype_stats_bag :: %{String.t() => ArchetypeStats.t()}
   @type archetype_stats :: %{

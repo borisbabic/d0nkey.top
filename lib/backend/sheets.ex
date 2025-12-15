@@ -9,7 +9,7 @@ defmodule Backend.Sheets do
   alias Backend.Hearthstone.Deck
   alias Backend.Repo
 
-  @spec create_deck_sheet(User.t(), String.t(), Map.t()) ::
+  @spec create_deck_sheet(User.t(), String.t(), map()) ::
           {:ok, DeckSheet.t()} | {:error, any()}
   def create_deck_sheet(owner, name, other_attrs \\ %{}) do
     attrs =
@@ -22,7 +22,7 @@ defmodule Backend.Sheets do
     |> preload_sheet()
   end
 
-  @spec edit_deck_sheet(DeckSheet.t(), Map.t(), User.t() | nil) ::
+  @spec edit_deck_sheet(DeckSheet.t(), map(), User.t() | nil) ::
           {:ok, DeckSheet.t()} | {:error, any()}
   def edit_deck_sheet(sheet, attrs, user) do
     if can_admin?(sheet, user) do
@@ -37,7 +37,7 @@ defmodule Backend.Sheets do
     Repo.one(query)
   end
 
-  @spec get_listings(DeckSheet.t(), User.t() | nil, Map.t() | list()) ::
+  @spec get_listings(DeckSheet.t(), User.t() | nil, map() | list()) ::
           {:ok, [DeckSheetListing]} | {:error, any()}
   def get_listings(deck_sheet, user, additional_criteria \\ []) do
     if can_view?(deck_sheet, user) do
@@ -90,7 +90,7 @@ defmodule Backend.Sheets do
     Repo.all(query)
   end
 
-  @spec create_deck_sheet_listing(DeckSheet.t(), Deck.t(), User.t() | nil, Map.t()) ::
+  @spec create_deck_sheet_listing(DeckSheet.t(), Deck.t(), User.t() | nil, map()) ::
           {:ok, DeckSheetListing.t()} | {:error, any()}
   def create_deck_sheet_listing(deck_sheet, deck, creator, attrs \\ %{}) do
     if can_submit?(deck_sheet, creator) do
@@ -100,7 +100,7 @@ defmodule Backend.Sheets do
     end
   end
 
-  @spec edit_deck_sheet_listing(DeckSheetListing.t(), Map.t(), User.t() | nil) ::
+  @spec edit_deck_sheet_listing(DeckSheetListing.t(), map(), User.t() | nil) ::
           {:ok, DeckSheetListing.t()} | {:error, any()}
   def edit_deck_sheet_listing(listing = %{sheet: sheet}, attrs, editor) do
     if can_contribute?(sheet, editor) do
@@ -118,7 +118,7 @@ defmodule Backend.Sheets do
     |> broadcast_sheet_change(:updated_sheet)
   end
 
-  @spec do_get_listings(DeckSheet.t(), Map.t() | list()) :: [DeckSheetListing.t()]
+  @spec do_get_listings(DeckSheet.t(), map() | list()) :: [DeckSheetListing.t()]
   defp do_get_listings(%{id: id}, additional_criteria) do
     query =
       from(dsl in DeckSheetListing,
@@ -147,7 +147,7 @@ defmodule Backend.Sheets do
     |> broadcast_listing_change(:inserted_listing)
   end
 
-  @spec do_edit_deck_sheet_listing(DeckSheetListing.t(), Map.t()) ::
+  @spec do_edit_deck_sheet_listing(DeckSheetListing.t(), map()) ::
           {:ok, DeckSheetListing} | {:error, any()}
   defp do_edit_deck_sheet_listing(listing, attrs) do
     listing

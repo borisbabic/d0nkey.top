@@ -25,7 +25,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
     field :inserted_at, NaiveDateTime.utc_now()
   end
 
-  @spec from_raw_map(Map.t(), ApiUser.t()) :: GameDto.t()
+  @spec from_raw_map(map(), ApiUser.t()) :: GameDto.t()
   def from_raw_map(map = %{"GameId" => _}, created_by),
     do: map |> to_snake() |> from_raw_map(created_by)
 
@@ -312,13 +312,13 @@ defmodule Hearthstone.DeckTracker.PlayerDto do
     field :rank, String.t()
     field :legend_rank, String.t()
     field :deckcode, String.t()
-    field :cards_in_hand_after_mulligan, Map.t() | nil
-    field :cards_drawn_from_initial_deck, Map.t() | nil
-    field :cards_played, Map.t() | nil
+    field :cards_in_hand_after_mulligan, map() | nil
+    field :cards_drawn_from_initial_deck, map() | nil
+    field :cards_played, map() | nil
     field :class, String.t()
   end
 
-  @spec from_raw_map(Map.t(), String.t() | integer()) :: PlayerDto.t()
+  @spec from_raw_map(map(), String.t() | integer()) :: PlayerDto.t()
   def from_raw_map(map, deck_format_override) do
     new_map =
       with new_format when is_integer(new_format) <- Util.to_int_or_orig(deck_format_override),

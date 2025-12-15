@@ -379,7 +379,7 @@ defmodule Hearthstone.DeckTracker do
           kept_impact: float()
         }
 
-  @spec extract_timeout_from_criteria(Map.t() | list(), integer()) ::
+  @spec extract_timeout_from_criteria(map() | list(), integer()) ::
           {timeout :: integer(), new_criteria :: list()}
   defp extract_timeout_from_criteria(criteria, default_timeout) do
     list_criteria = Enum.to_list(criteria)
@@ -855,19 +855,19 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
-  @spec fresh_or_agg_deck_stats(Map.t() | list()) :: :fresh | :agg
+  @spec fresh_or_agg_deck_stats(map() | list()) :: :fresh | :agg
   def fresh_or_agg_deck_stats(criteria) do
     {_query, _new_criteria, freshness} = do_base_deck_stats_query(criteria)
     freshness
   end
 
-  @spec base_deck_stats_query(Map.t() | list()) :: {Ecto.Query.t(), list()}
+  @spec base_deck_stats_query(map() | list()) :: {Ecto.Query.t(), list()}
   defp base_deck_stats_query(criteria) do
     {query, new_criteria, _freshness} = do_base_deck_stats_query(criteria)
     {query, new_criteria}
   end
 
-  @spec do_base_deck_stats_query(Map.t() | list()) :: {Ecto.Query.t(), list(), :fresh | :agg}
+  @spec do_base_deck_stats_query(map() | list()) :: {Ecto.Query.t(), list(), :fresh | :agg}
   defp do_base_deck_stats_query(criteria) do
     list_criteria = Enum.to_list(criteria)
 
@@ -1076,7 +1076,7 @@ defmodule Hearthstone.DeckTracker do
     |> build_games_query([:has_archetypes, :has_decisive_result | Enum.to_list(criteria)])
   end
 
-  @spec archetypes(list() | Map.t(), list()) :: [atom()]
+  @spec archetypes(list() | map(), list()) :: [atom()]
   def archetypes(raw_criteria, repo_opts \\ []) do
     criteria =
       Enum.reject(raw_criteria, fn crit ->
@@ -3382,7 +3382,7 @@ defmodule Hearthstone.DeckTracker do
     |> matchups_fetch_then_process()
   end
 
-  @spec aggregated_matchups(list() | Map.t()) ::
+  @spec aggregated_matchups(list() | map()) ::
           {:ok, AggregatedMatchups.t()} | {:error, atom()}
   def aggregated_matchups(criteria_raw) do
     criteria = Enum.to_list(criteria_raw)

@@ -4,7 +4,7 @@ defmodule Backend.Fantasy.Competition.Participant do
 
   typedstruct enforce: false do
     field :name, String.t(), enfore: true
-    field :meta, Map.t(), default: nil
+    field :meta, map(), default: nil
   end
 
   def in_battlefy?(%{meta: %{in_battlefy: true}}), do: true

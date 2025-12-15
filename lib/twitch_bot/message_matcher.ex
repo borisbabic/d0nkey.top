@@ -10,7 +10,7 @@ defmodule TwitchBot.MessageMatcher do
   end
 
   def match(config = %{type: "deck"}, %{message: message}) do
-    with {:ok, deck} <- Deck.decode(message),
+    with {:ok, %Deck{} = deck} <- Deck.decode(message),
          {:ok, %{id: id}} <- Backend.Hearthstone.create_or_get_deck(deck) do
       %{
         "deck_url" => "https://www.hsguru.com/deck/#{id}",
