@@ -42,12 +42,12 @@ defmodule Bot.LdbMessageHandler do
       |> Enum.map(fn season ->
         [
           Blizzard.get_region_name(season.region, :short),
-          Blizzard.get_leaderboard_name(season.leaderboard_id),
+          Blizzard.get_leaderboard_name(season.leaderboard_id, :short),
           season.total_size
         ]
       end)
 
-    TableRex.quick_render!(rows, ["Region", "Mode", "Player Count"], nil)
+    TableRex.quick_render!(rows, ["Region", "Mode", "Players"], nil)
   end
 
   def handle_top_leaderboard(msg) do
