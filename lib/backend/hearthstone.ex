@@ -968,8 +968,11 @@ defmodule Backend.Hearthstone do
     do: get_or_create_lineup(to_string(id), source, name, deckstrings)
 
   def get_or_create_lineup(tournament_id, tournament_source, name, deckstrings) do
-    attrs = %{tournament_id: tournament_id, tournament_source: tournament_source, name: name}
+    %{tournament_id: tournament_id, tournament_source: tournament_source, name: name}
+    |> get_or_create_lineup(deckstrings)
+  end
 
+  def get_or_create_lineup(attrs, deckstrings) do
     case lineup(attrs) do
       ln = %{id: _} ->
         {:ok, ln}
