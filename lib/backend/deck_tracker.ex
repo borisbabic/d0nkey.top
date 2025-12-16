@@ -2615,8 +2615,20 @@ defmodule Hearthstone.DeckTracker do
     query |> where([period: p], field(p, ^field) >= ^start and field(p, ^field) < ^finish)
   end
 
+  defp compose_periods_query({:type, types}, query) when is_list(types) do
+    query |> where([period: p], p.type in ^types)
+  end
+
   defp compose_periods_query({:type, type}, query) do
     query |> where([period: p], p.type == ^type)
+  end
+
+  defp compose_periods_query({:limit, limit}, query) do
+    query |> limit(^limit)
+  end
+
+  defp compose_periods_query({:not_brawl, affirmative}, query) when affirmative in @affirmative do
+    query |> where([period: p], p.slug != "brawl")
   end
 
   @spec default_period(integer()) :: String.t()

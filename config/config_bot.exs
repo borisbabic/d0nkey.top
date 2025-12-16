@@ -162,6 +162,7 @@ config :backend, QuantumScheduler,
     {"* * * * *", fn -> Backend.Patreon.add_new_tiers() end},
     {"13 * * * *", fn -> Backend.UserManager.update_patreon_tiers() end},
     {"* * * * *", fn -> Hearthstone.DeckTracker.AggregationJob.enqueue_needed() end},
+    {"*/7 * * * *", fn -> Hearthstone.DeckTracker.PatchArchiver.arhive_latest() end},
     {"*/4 * * * *", fn -> Backend.LatestHSArticles.update() end}
   ]
 
