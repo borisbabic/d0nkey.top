@@ -28,7 +28,7 @@ defmodule Command.ExportData do
 
     %{
       start_time: start_time,
-      end_time: Map.get(params, :end_time) || start_time |> plus_one_day(),
+      end_time: Map.get(params, :end_time) || NaiveDateTime.utc_now(),
       file_part: Map.get(params, :file_part) || start_time |> Timex.to_date() |> to_string(),
       format: Map.get(params, :format, 2) |> Util.to_int_or_orig(),
       directory: Map.get(params, :directory, "/tmp") |> String.trim_trailing("/"),
