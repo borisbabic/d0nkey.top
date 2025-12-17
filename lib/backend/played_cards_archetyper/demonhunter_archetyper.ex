@@ -7,6 +7,42 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   @standard_config [
     {:"Quest DH", ["Unleash the Colossus"]},
     {:"Whizbang DH", ["Wish", "Chaos Nova"]},
+    {:"Cliff Dive DH",
+     [
+       "Cliff Dive",
+       "Colifero the Artist",
+       # "Illidari Inquisitor",
+       "Fae Trickster"
+       # "Briarspawn Drake",
+       # "Magtheridon, Unreleased"
+     ]},
+    {:"Aggro Demon Hunter",
+     [
+       "Sock Puppet Slitherspear",
+       "King Mukla",
+       "Acupuncture",
+       "Slumbering Sprite",
+       "Dreamplanner Zephyrs",
+       "Battlefiend",
+       "Spirit of the Team"
+     ]},
+    {:"No Minion DH",
+     [
+       "Hounds of Fury",
+       "Blind Box",
+       "The Eternal Hold",
+       "Lasting Legacy",
+       "Emergency Meeting",
+       "Mutalisk",
+       "Nydus Worm",
+       "Creep Tumor",
+       "Sigil of Cinder",
+       "Demonic Deal",
+       "Solitude",
+       "Headhunt",
+       "Aeon Rend"
+     ]},
+    # 5.5
     {:"Peddler DH",
      [
        "Spirit Peddler",
@@ -17,71 +53,21 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Incindius",
        "Elise the Navigator"
      ]},
-    {:"Aggro Demon Hunter",
-     [
-       "Sock Puppet Slitherspear",
-       "King Mukla",
-       "Acupuncture",
-       "Living Flame",
-       "Hot Coals",
-       "Sizzling Cinder",
-       "Slumbering Sprite",
-       "Dreamplanner Zephyrs",
-       "Battlefiend",
-       "Spirit of the Team"
-     ]},
     {:"Cliff Dive DH",
      [
-       "Cliff Dive",
-       "Colifero the Artist",
+       "Magtheridon, Unreleased",
        "Illidari Inquisitor",
-       "Fae Trickster",
-       "Briarspawn Drake",
-       "Magtheridon, Unreleased"
-     ]},
-    # 5.5
-    {:"No Minion DH",
-     [
-       "Hounds of Fury",
-       "Blind Box",
-       "The Eternal Hold",
-       "Lasting Legacy",
-       "Emergency Meeting",
-       "Demonic Deal"
-     ]},
-    {:"Armor DH",
-     [
-       "Arkonite Defense Crystal",
-       "The Exodar",
-       "Dimensional Core",
-       "Dissolving Ooze",
-       "Shattershard Turret",
-       "Felfused Battery"
+       "Climbing Hook"
      ]},
     {:"Cliff Dive DH",
-     ["Blob of Tar", "Headhunt", "Aeon Rend", "Ravenous Felhunter", "Inflitrate"]},
+     [
+       "Blob of Tar",
+       "Ravenous Felhunter"
+     ]},
     {:"Peddler DH",
      [
-       "Tuskpiercer",
-       "Nightmare Lord Xavius",
-       "Ancient of Yore",
-       "Wyvern's Slumber",
-       "Perennial Serpent"
-       # "Axe of Cenarius",
-       # "First Portal to Argus"
-     ]},
-    {:"Aggro DH", ["Time-Lost Glaive", "Zilliax Deluxe 3000"]},
-    # 10.5
-    {:"Peddler DH",
-     [
-       "Illidari Studies",
-       "Grim Harvest",
-       "Infestation",
-       "Red Card",
-       "Inflitrate",
-       "Return Policy"
-     ]},
-    {:"No Minion DH", ["Solitude"]}
+       "Ancient of Yore"
+     ]}
   ]
   @wild_config [
     {:"Pirate Demon Hunter",
