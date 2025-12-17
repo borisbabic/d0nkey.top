@@ -3,6 +3,7 @@ defmodule GeekLounge.Hearthstone.Api do
 
   alias GeekLounge.Hearthstone.Tournament
   alias GeekLounge.Hearthstone.Participant
+  alias GeekLounge.Hearthstone.Deck
 
   def fetch_tournament(tournament_id) do
     url = tournament_url(tournament_id)
@@ -28,6 +29,19 @@ defmodule GeekLounge.Hearthstone.Api do
 
   def participant_url(tournament_id, player) do
     "/api/v1/tournaments/#{tournament_id}/participants/#{player}"
+  end
+
+  def fetch_deck(deck_id) do
+    url = deck_url(deck_id)
+
+    with {:ok, %{body: body}} <- get(url),
+         {:ok, decoded} <- JSON.decode(body) do
+      {:ok, Deck.from_raw_map(decoded)}
+    end
+  end
+
+  def deck_url(deck_id) do
+    "/api/v1/decks/#{deck_id}"
   end
 
   def client() do
