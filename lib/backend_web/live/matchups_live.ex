@@ -134,7 +134,7 @@ defmodule BackendWeb.MatchupsLive do
 
   defp show_warning?() do
     start = ~N[2025-11-13 17:00:00]
-    end_time = ~N[9999-11-09 11:00:00]
+    end_time = ~N[2025-11-09 11:00:00]
     now = NaiveDateTime.utc_now()
 
     NaiveDateTime.compare(start, now) == :lt and
