@@ -427,10 +427,7 @@ defmodule BackendWeb.BattlefyView do
 
     ~H"""
     <%= for stream <- @twitch_streams do %>
-        <a href={stream} class="dropdown">
-            <img style="height: 20px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
-        </a>
-        |
+        <Components.Socials.twitch height={20} link={stream} /> |
     <% end %>
     """
   end
