@@ -39,6 +39,18 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Spyglass",
        "Staff of Scales"
      ]},
+    {:"Protoss Rogue",
+     [
+       "Blink",
+       "Dark Templar",
+       "Void Ray",
+       "High Templar",
+       "Artanis",
+       "Warp Gate",
+       "Photon Cannon",
+       "Blink",
+       "Chrono Boost"
+     ]},
     {:"Starship Rogue",
      [
        "Scrounging Shipwright",
@@ -49,7 +61,6 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Arkonite Defense Crystal",
        "The Exodar"
      ]},
-    {:"Protoss Rogue", ["Blink", "Dark Templar", "Void Ray", "High Templar", ""]},
     {:"Cycle Rogue",
      [
        "Everything Must Go!",
@@ -58,6 +69,7 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Twisted Webweaver",
        "Everburning Phoenix",
        "Wisp",
+       "Incindius",
        "Moonstone Mauler"
      ]},
     # 5.5
@@ -66,17 +78,21 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Assassinate",
        "Sea Shill",
        "Tess Greymane",
-       "Snatch and Grab"
+       "Snatch and Grab",
+       "Dread Corsair",
+       "Maestra, Mask Merchant",
+       "Prize Vendor",
+       "Mimicry"
      ]},
-    {:"Weapon Rogue",
+    {:"Fyrakk Rogue",
      [
-       "Sharp Shipment"
-     ]},
-    {:"Combo Rogue",
-     [
-       "SI:7 Agent",
-       "Web of Deception",
-       "Eredar Skulker"
+       "Ashamane",
+       "Time Adm'ral Hooktail",
+       "Gnomelia, S.A.F.E. Pilot",
+       "Dethrone",
+       "Naralex, Herald of the Flights",
+       "Fyrakk the Blazing",
+       "Ysera, Emerald Aspect"
      ]},
     {:"Shaffar Rogue",
      [
@@ -92,17 +108,8 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Ethereal Oracle"
      ]},
     # 10.5
-    {:"Maestra Rogue",
-     [
-       "Dread Corsair",
-       "Maestra, Mask Merchant",
-       "Prize Vendor",
-       "Cultist Map",
-       "Mimicry"
-     ]},
     {:"Fyrakk Rogue",
      [
-       "Ysera, Emerald Aspect",
        "Customs Enforcer",
        "Metal Detector",
        "Shaladrassil",
@@ -114,38 +121,6 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        # "Fyrakk the Blazing",
        # "Naralex, Herald of the Flights"
      ]},
-    {:"Combo Rogue",
-     [
-       "Platysaur",
-       "Zilliax Deluxe 3000",
-       "Lucky Comet",
-       "Backstab",
-       "Chrono Daggers",
-       "Nightmare Fuel"
-     ]},
-    {:"Weapon Rogue",
-     [
-       "Fyrakk the Blazing",
-       "Griftah, Trusted Vendor",
-       "Swarthy Swordshiner",
-       "Raiding Party",
-       "Eviscerate",
-       "Sandbox Scoundrel",
-       "Foxy Fraud",
-       "Dubious Purchase",
-       "Garona Halforcen",
-       "Sparerock Collector",
-       "The Kingslayers",
-       "Flashback"
-     ]},
-    # {:"Weapon Rogue",
-    #  [
-    #    "Griftah, Trusted Vendor",
-    #    "Swarthy Swordshiner",
-    #    "Flashback",
-    #    "Foxy Fraud",
-    #    "Raiding Party"
-    #  ]},
     {:"Starship Rogue", ["Mixologist"]},
     {:"Quest Rogue",
      [
@@ -165,8 +140,7 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Deadly Poison",
        "Swashburglar",
        "Dig for Treasure"
-     ]},
-    {:"Protoss Rogue", ["Photon Cannon", "Artanis"]}
+     ]}
   ]
   @wild_config []
 
