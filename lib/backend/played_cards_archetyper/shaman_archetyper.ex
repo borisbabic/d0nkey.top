@@ -36,13 +36,6 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Parrot Sanctuary",
        "Al'Akir the Windlord"
      ]},
-    {:"Masochist Shaman",
-     [
-       "Stormrook",
-       "Nascent Bolt",
-       "Lightning Rod",
-       "Acolyte of Pain"
-     ]},
     # {:"Pirate Shaman",
     #  [
     #    "Treasure Distributor",
@@ -51,15 +44,6 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
     #    "Sigil of Skydiving",
     #    "Adrenaline Fiend"
     #  ]},
-    {:"Terran Shaman",
-     [
-       "SCV",
-       "Lift Off",
-       "Jim Raynor",
-       "The Exodar",
-       "Arkonite Defense Crystal"
-     ]},
-    # 5.5
     {:"Imbue Shaman",
      [
        "Flutterwing Guardian",
@@ -69,36 +53,22 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Glowroot Lure",
        "Plucky Podling"
      ]},
-    {:"Elemental Shaman",
-     [
-       "Bralma Searstone",
-       "Lampligher",
-       "City Chief Esho",
-       "Fire Fly",
-       "Menacing Nimbus",
-       "Fire Breath",
-       "Wailing Vaipor",
-       "Slagclaw"
-     ]},
     {:"Asteroid Shaman",
      [
        "Moonstone Mauler",
-       "Ultraviolet Breaker"
+       "Ultraviolet Breaker",
+       "Ethereal Oracle"
      ]},
-    {:"Endseer Shaman",
+    # 5.5
+    {:"Terran Shaman",
      [
-       "Endbringer Umbra",
-       "Troubled Mechanic",
-       "Critter Caretaker",
-       "Mixologist",
-       "Prize Vendor",
-       "Meteor Storm",
-       "Wisp",
-       "Demolition Renovator",
-       "The Ceaseless Expanse",
-       "Incindius",
-       "Scarab Keychain",
-       "Farseer Nobundo"
+       "Jim Raynor",
+       "SCV",
+       "Lift Off",
+       "Ghost",
+       "Lock On",
+       "Starport",
+       "Missile Pod"
      ]},
     # 10.5
     {:"Hagatha Shaman",
@@ -121,8 +91,39 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
      ]},
     {:"Masochist Shaman", ["Sand Art Elemental", "Skirting Death"]},
     {:"Imbue Shaman", ["Aspect's Embrace"]},
-    {:"Elemental Shaman", ["Sizzling Swarm", "Volcanic Thrasher", "Lava Flow"]},
-    {:"Terran Shaman", ["Starport", "Lock On"]}
+    {:"Elemental Shaman",
+     [
+       "Bralma Searstone",
+       "Lampligher",
+       "City Chief Esho",
+       "Fire Fly",
+       "Menacing Nimbus",
+       "Fire Breath",
+       "Wailing Vaipor",
+       "Slagclaw",
+       "Sizzling Swarm",
+       "Volcanic Thrasher",
+       "Lava Flow"
+     ]},
+    {:"Asteroid Shaman",
+     [
+       "Bolide Behemoth"
+     ]},
+    {:"Endseer Shaman",
+     [
+       "Endbringer Umbra",
+       "Troubled Mechanic",
+       "Critter Caretaker",
+       "Mixologist",
+       "Prize Vendor",
+       "Meteor Storm",
+       "Wisp",
+       "Demolition Renovator",
+       "The Ceaseless Expanse",
+       "Incindius",
+       "Scarab Keychain",
+       "Farseer Nobundo"
+     ]}
     # 15.5
   ]
   @wild_config []
