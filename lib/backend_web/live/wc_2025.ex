@@ -70,7 +70,7 @@ defmodule BackendWeb.WC2025Live do
             Elimination and Decider Matches for all Groups
           </:panel>
           <:trigger>
-            <span>Day 4 (Top 8) - 6 Matches - <Helper.datetime datetime={~N[2025-12-21 15:00:00]} /></span>
+            <span>Day 4 (Top 8) - 7 Matches - <Helper.datetime datetime={~N[2025-12-21 15:00:00]} /></span>
           </:trigger>
           <:panel>
             Quarterfinals, Semifinals, and Finals
