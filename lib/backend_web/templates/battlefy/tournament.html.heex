@@ -1,22 +1,18 @@
 <div class="title is-2"><a href={"#{ @link }"}> <%= @name %></a></div>
-<div class="subtitle is-6">
-    <div class="level">
-        <div class="level-left">
-            <%= @streams_subtitle %>
-            <%= if @user_subtitle do %>
-                <%= @user_subtitle %> |
-            <% end %>
-            <%= if @manage_stream_button do %>
-                <%= @manage_stream_button %> |
-            <% end %>
-            <%= if @import_countries_button do %>
-                <%= @import_countries_button %> |
-            <% end %>
-            <%= @explore_decks %>
-            <a href={~p"/battlefy/tournament/#{@tournament.id}/participants"}>Registered</a> |
-            <%= @subtitle %>
-        </div>
-    </div>
+<div class="subtitle is-6 tw-flex">
+    <%= @streams_subtitle %>
+    <%= if @user_subtitle do %>
+        <%= @user_subtitle %> |
+    <% end %>
+    <%= if @manage_stream_button do %>
+        <%= @manage_stream_button %> |
+    <% end %>
+    <%= if @import_countries_button do %>
+        <%= @import_countries_button %> |
+    <% end %>
+    <%= @explore_decks %>
+    <a href={~p"/battlefy/tournament/#{@tournament.id}/participants"}>Registered</a> |
+    <%= @subtitle %>
 </div>
 <FunctionComponents.Ads.below_title/>
 

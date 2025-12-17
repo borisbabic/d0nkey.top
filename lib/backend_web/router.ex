@@ -342,6 +342,7 @@ defmodule BackendWeb.Router do
 
     live("/wc/2021", WC2021Live)
     live("/wc/2022", WC2022Live)
+    live("/wc/2025", WC2025Live)
     live("/wc/2024/china-qualifiers", WC2024ChinaQualifiers)
     live("/seasonal/2022/summer", SummerChamps2022Live)
 

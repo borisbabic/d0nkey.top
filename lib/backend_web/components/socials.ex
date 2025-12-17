@@ -1,4 +1,5 @@
 defmodule Components.Socials do
+  @moduledoc "Social media linking components"
   use BackendWeb, :component
 
   attr :link, :string, required: true
@@ -22,6 +23,7 @@ defmodule Components.Socials do
   end
 
   attr :link, :string, required: true
+  attr :height, :integer, default: 30
 
   def twitch(channel) when is_binary(channel),
     do: %{link: "https://www.twitch.tv/#{channel}"} |> twitch()
@@ -29,7 +31,7 @@ defmodule Components.Socials do
   def twitch(assigns) do
     ~H"""
       <a href={@link}>
-        <img style="height: 30px;" class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg" />
+        <img style={"height: #{@height}px;"} class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg" />
       </a>
     """
   end
