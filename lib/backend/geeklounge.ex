@@ -37,7 +37,7 @@ defmodule Backend.GeekLounge do
         "Furyhunter#21452" => "Group D - Furyhunter",
         "Incurro#21488" => "Group D - Incurro"
       }
-      |> Map.get(name, name)
+      |> Map.get(name)
     end
 
     tournament_source = "hsesports"
