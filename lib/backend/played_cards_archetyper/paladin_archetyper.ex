@@ -52,7 +52,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     {:"Aura Paladin",
      [
        "Gnomelia, S.A.F.E. Pilot",
-       "Puppetmaster Dorian",
        "Fyrakk the Blazing",
        "Creature of Madness",
        "Gelbin of Tomorrow",
@@ -67,8 +66,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Resistance Aura",
        "Cardboard Golem",
        "Nightmare Lord Xavius",
-       "Scarab Keychain",
-       "Metal Detector",
        "Chrono-Lord Deios",
        "Wisp",
        "Ursine Maul",
@@ -79,30 +76,12 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     {:"Lynessa Paladin",
      [
        "Snatch and Grab",
-       "Agency Espionage",
        "Petty Theft",
-       "Knickknack Shack",
        "Snatch and Grab",
        "Sharp Shipment",
        "Treasure Hunter Eudora",
        "Concierge",
        "Conniving Conman"
-     ]},
-    {:"Terran Paladin",
-     [
-       "Salvage the Bunker",
-       "Hellbat",
-       "Holy Eggbearer",
-       "Dimensional Core",
-       "The Egg of Khelos",
-       "Carnivorous Cubicle",
-       "Lift Off",
-       "Jim Raynor",
-       "SCV",
-       "Arkonite Defense Crystal",
-       "Ghost",
-       "Ultra-Capacitor",
-       "Starport"
      ]},
     {:"Libram Paladin",
      [
@@ -121,13 +100,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Lifesaving Aura",
        "Story of Galvadon"
      ]},
-    {:"Lynessa Paladin",
-     [
-       "Holy Glowsticks",
-       "Divine Brew",
-       "Naralex, Herald of the Flights",
-       "Ysera, Emerald Aspect"
-     ]},
     {:"Lynessa OTK Paladin",
      [
        "Kobold Geomancer",
@@ -136,7 +108,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Sharp-Eyed Lookout",
        "Sea Shill",
        "Space Pirate",
-       "Sizzling Cinder",
        "Tidepool Pupil",
        "Grillmaster",
        "Sunsapper Lynessa",
@@ -157,14 +128,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     #    "Metal Detector"
     #  ]},
     {:"Aggro Paladin", ["Vicious Siltherspear"]},
-    {:"Imbue Paladin",
-     [
-       "Equality",
-       "The Ceaseless Expanse",
-       "Consecration",
-       "Dreamplanner Zephyrus",
-       "Demolition Renovator"
-     ]},
     {:"Quest Paladin",
      [
        "Murloc Warleader",
@@ -187,6 +150,26 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Escape Pod",
        "Prize Vendor",
        "Ready the Fleet"
+     ]},
+    {:"Aura Paladin",
+     [
+       "Puppetmaster Dorian"
+     ]},
+    {:"Terran Paladin",
+     [
+       "Salvage the Bunker",
+       "Hellbat",
+       "Holy Eggbearer",
+       "Dimensional Core",
+       "The Egg of Khelos",
+       "Carnivorous Cubicle",
+       "Lift Off",
+       "Jim Raynor",
+       "SCV",
+       "Arkonite Defense Crystal",
+       "Ghost",
+       "Ultra-Capacitor",
+       "Starport"
      ]},
     {:"Whizbang Paladin",
      [

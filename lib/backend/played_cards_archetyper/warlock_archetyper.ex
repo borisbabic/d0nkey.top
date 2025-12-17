@@ -139,15 +139,15 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
     #    "Arkonite Defense Crystal"
     #  ]},
     # 10.5
-    {:Egglock, [
-    "Dissolving Ooze",
-    "Conflagrate",
-    "Spirit Bomb",
-    "Eat! The! Imp!",
-    "Archdruid of Thorns",
-    "Summoner Darkmarrow"
-    ]},
-    {:"Whizbang Warlock", ["Tar Slime", "Scarab Keychain"]},
+    # {:Egglock, [
+    # "Dissolving Ooze",
+    # "Conflagrate",
+    # "Spirit Bomb",
+    # "Eat! The! Imp!",
+    # "Archdruid of Thorns",
+    # "Summoner Darkmarrow"
+    # ]},
+    {:"Whizbang Warlock", ["Tar Slime", "Scarab Keychain"]}
     # {:"Animacer Warlock",
     #  [
     #    "Ultragigasaur",

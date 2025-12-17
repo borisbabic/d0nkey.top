@@ -36,7 +36,6 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Carless Crafter",
        "Annoy-o-Tron",
        "Careless Crafter",
-       "Wild Pyromancer",
        "Rest in Peace"
      ]},
     {:"Zarimi Priest",
@@ -53,7 +52,6 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
      [
        "XB-931 Housekeeper",
        "Tidepool Pupil",
-       "Moonwell",
        "Twilight Medium",
        "Overplanner",
        "Sharp-Eyed Lookout",
@@ -63,7 +61,6 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Story of Amara",
        "Mo'arg Forgefiend",
        "Atlasaurus",
-       "Doomsayer",
        "Incindius",
        "Chrono-Lord Deios",
        "Lightspeed",
@@ -71,7 +68,6 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "The Ceaseless Expanse",
        "Ysera, Emerald Aspect",
        "Repackage",
-       "Glacial Shard",
        "Narain Soothfancy",
        "Bob the Bartender",
        "Marin the Manager",
@@ -80,28 +76,19 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Gravity Lapse",
        "Nightshade Tea",
        "Ritual of Life",
-       "Holy Smite",
        "Dirty Rat",
-       "Raza the Resealed",
        "Pupet Theatre",
-       "Lunarwing Messenger",
        "Steamcleaner",
        "Greater Healing Potion",
-       "Whelp of the Infinite",
        "Atiesh the Greatstaff",
-       "Amber Priestess",
        "Medivh the Hallowed",
        "Karazhan the Sanctum",
-       "Behemoth Mask",
        "Tyrande",
-       "Disciple of the Dove",
        "Birdwatching",
        "Scarab Keychain",
        "Fyrakk the Blazing",
-       "Spirit of the Kaldorei",
        "Creature of Madness",
        "Chillin' Vol'jin",
-       "Cease to Exist",
        "Envoy of Prosperity",
        "Elise the Navigator",
        "Zilliax Deluxe 3000",
@@ -111,19 +98,8 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
     {:"Wilted Priest",
      [
        "Hourglass Attendant",
-       "Prize Vendor",
-       "Divine Augur",
        "Tar Slime"
      ]},
-    {:"Egg Priest",
-     [
-       "Holy Eggbearer",
-       "The Egg of Khelos",
-       "Behemoth Mask",
-       "Hot Coals"
-     ]},
-    # 10.5
-    {:"Protoss Priest", ["Catch of the Day"]},
     {:"Aggro Priest",
      [
        "Menagerie Jug",
@@ -135,6 +111,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Archaios",
        "Murmy"
      ]},
+    # 10.5
     {:"Zarimi Priest", ["Ship's Chirurgen"]}
     # {:"Wilted Priest", ["Lightbomb", "Sleepy Resident"]},
     # {:"Wilted Priest", ["Power Word: Shield", "Resuscitate"]},
