@@ -33,15 +33,11 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Archmage Rafaam",
        "Timethief Rafaam"
      ]},
-    {:Shredslock,
+    {:Egglock,
      [
-       "Horizon's Edge",
-       "Petal Peddler",
-       "Whelp of the Infinite",
-       "Dreadhound Handler",
-       "Ruinous Velocidrake",
-       "Giftwrapped Whelp",
-       "Party Planner Vona"
+       "Holy Eggbearer",
+       "The Egg of Khelos",
+       "Abusive Sergeant"
      ]},
     {:"Wallow Warlock",
      [
@@ -50,22 +46,32 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Treacherous Tormentor",
        "Wallow, the Wretched",
        "Avant-Gardening",
+       "Creature of Madnes",
+       "Foreboding Flame",
+       "Demonic Studies",
        "Shadowflame Stalker"
      ]},
     # 5.5
-    {:Egglock,
+    {:Rafaamlock,
      [
-       "Dissolving Ooze",
-       "Holy Eggbearer",
-       "The Egg of Khelos",
-       "Abusive Sergeant"
+       "Mixologist",
+       "Blob of Tar",
+       "Dirty Rat"
      ]},
-    {:"Divergence Warlock",
+    {:Shredslock,
      [
-       "Divergence",
-       "Agamaggan",
-       "Shaladrassil"
+       "Devious Coyote",
+       "Horizon's Edge",
+       "Flame Imp",
+       "Zergling",
+       "Entropic Continuity"
      ]},
+    # {:"Divergence Warlock",
+    #  [
+    #    "Divergence",
+    #    "Agamaggan",
+    #    "Shaladrassil"
+    #  ]},
     {:"Starship Warlock", ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core"]},
     {:"Bot? Warlock",
      [
@@ -79,11 +85,13 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Redgill Razorjaw",
        "Annoy-o-Tron",
        "Lifedrinker",
-       "Murloc Tidehunter",
-       "Abusive Seargeant"
+       "Murloc Tidehunter"
      ]},
+    # 10.5
     {:"Mill Warlock",
      [
+       "Stranglevine",
+       "Bucket of Soldiers",
        "Adaptive Amalgam",
        "Archdruid of Thorns",
        "Escape Pod",
@@ -91,54 +99,23 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Living Flame",
        "Prize Vendor"
      ]},
-    # 10.5
-    {:Shredslock,
-     [
-       "Living Paradox",
-       "Maze Guide",
-       "Corpsicle",
-       "Dreambound Raptor",
-       "Murmy"
-     ]},
-    {:Painlock,
-     [
-       "Wisp",
-       "Spelunker",
-       "Sizzling Cinder",
-       "Platysaur",
-       "Dreamplanner Zphrys",
-       "The Solariumn",
-       "Glacial Shard",
-       "Party Fiend",
-       "Cursed Souvenir",
-       "Zilliax Deluxe 3000",
-       "Devious Coyote",
-       "Cult Neophyte",
-       "Entropic Continuity",
-       "Flame Imp",
-       "Tachyon Barrage",
-       "Twilight Timehoppor"
-     ]},
-    {:"Wallow Warlock",
-     [
-       "Creature of Madness",
-       "Foreboding Flame"
-     ]},
     {:Rafaamlock,
      [
        "Rotheart Dryad",
-       "Dirty Rat"
-     ]},
-    {:"Wallow Warlock",
-     [
-       "Demonic Studies",
-       "Mixologist"
-     ]},
-    {:"Divergence Warlock",
-     [
-       "Dark Alley Pact",
+       "Petal Peddler",
+       "Possessed Animancer",
+       "Whelp of the Infinite",
+       "Giftwrapped Whelp",
+       "Nightmare Lord Xavius",
+       "Twilight Timehopper",
+       "Fatebreaker",
+       "Glacial Shard",
+       "Dreadhound Handler",
+       "Griftah, Trusted Vendor",
        "Drain Soul",
-       "Fractured Power"
+       "RAFAAM LADDER!!",
+       "Portal Vanguard",
+       "Creature of Madness"
      ]},
 
     # {:"Concierge Warlock",
@@ -162,16 +139,30 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
     #    "Arkonite Defense Crystal"
     #  ]},
     # 10.5
+    {:Egglock, [
+    "Dissolving Ooze",
+    "Conflagrate",
+    "Spirit Bomb",
+    "Eat! The! Imp!",
+    "Archdruid of Thorns",
+    "Summoner Darkmarrow"
+    ]},
     {:"Whizbang Warlock", ["Tar Slime", "Scarab Keychain"]},
-    {:"Animacer Warlock",
-     [
-       "Ultragigasaur",
-       "Meadowstrider",
-       "Travel Security",
-       "Possessed Animancer",
-       "Asphyxiodon",
-       "Beached Whale"
-     ]}
+    # {:"Animacer Warlock",
+    #  [
+    #    "Ultragigasaur",
+    #    "Meadowstrider",
+    #    "Travel Security",
+    #    "Possessed Animancer",
+    #    "Asphyxiodon",
+    #    "Beached Whale"
+    #  ]},
+    # {:"Divergence Warlock",
+    #  [
+    #    "Dark Alley Pact",
+    #    "Drain Soul",
+    #    "Fractured Power"
+    #  ]},
   ]
   @wild_config []
 
