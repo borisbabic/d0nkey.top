@@ -29,16 +29,10 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
      ]},
     {:"Control Warrior",
      [
-       "Enter the Lost City",
-       "Murozond, Unbounded",
-       "The Ceaseless Expanse",
-       "Dirty Rat",
-       "Marin the Manager"
+       "Enter the Lost City"
      ]},
     {:"Dragon Warrior",
      [
-       "Plucky Paintfin",
-       "The Curator",
        "Lo'Gosh, Blood Fighter",
        "Illusory Greenwing",
        "Broll, Blood Fighter",
@@ -47,6 +41,10 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Petal Peddler",
        "Royal Librarian",
        "Brood Keeper",
+       "Chrono-Lord Epoch",
+       "Whelp of the Infinite",
+       "Portal Vanguard",
+       "Fyrakk the Blazing",
        "Stadium Announcer",
        "Stonecarver",
        "Giftwrapped Whelp",
@@ -55,19 +53,18 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Dreamplanner Zephrys",
        "Demolition Renovator",
        "Sanguine Depths",
-       "Quality Assurance",
        "Keeper of the Flame",
        "Shadowflame Suffusion",
        "Dragon Turtle"
      ]},
-    {:"Boom Wrench Warrior",
-     [
-       "Prize Vendor",
-       "Boom Wrench",
-       "Part Scrapper",
-       "Testing Dummy",
-       "Safety Expert"
-     ]},
+    # {:"Boom Wrench Warrior",
+    #  [
+    #    "Prize Vendor",
+    #    "Boom Wrench",
+    #    "Part Scrapper",
+    #    "Testing Dummy",
+    #    "Safety Expert"
+    #  ]},
     {:"Control Warrior",
      [
        "The Exodar",
@@ -84,7 +81,31 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Tortolla",
        "Elise the Navigator",
        "Hostile Invader",
-       "New Heights"
+       "New Heights",
+       "Murozond, Unbounded",
+       "The Ceaseless Expanse",
+       "Dirty Rat",
+       "Marin the Manager",
+       "Ancient of Yore",
+       "Shield Slam",
+       "Bob the Bartender"
+     ]},
+    {:"Draenei Warrior",
+     [
+       "Stranded Spaceman",
+       "Crimson Commander",
+       "Stalwart Avenger",
+       "Expedition Sergeant",
+       "Unyielding Vindicator",
+       "Starlight Wanderer",
+       "Velen, Leader of the Exiled"
+     ]},
+    {:"Dragon Warrior",
+     [
+       "Griftah, Trusted Vendor",
+       "Grommash Hellscream",
+       "Naralex, Herald of the Flight",
+       "Tormented Dreadwing"
      ]}
   ]
   @wild_config []
