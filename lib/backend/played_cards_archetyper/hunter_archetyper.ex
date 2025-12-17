@@ -49,7 +49,6 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Rangari Scout",
        "Griftah, Trusted Vendor",
        "Travel Agent",
-       "Devilsaur Mask",
        "Elise the Navigator",
        "The Ceaseless Expanse",
        "Zilliax Deluxe 3000",
@@ -70,8 +69,6 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
      [
        "City Chief Esho",
        "Ball of Spiders",
-       "Ancient Raptor",
-       "Jeweled Macaw",
        "Mother Duck"
      ]},
     # 5.5
@@ -88,26 +85,17 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
      ]},
     {:"Zerg Hunter",
      [
-       "Nydus Worm",
        "Hydralisk",
        "Evolution Chamber",
        "Spawning Pool",
        "Roach",
        "Hive Queen"
      ]},
-    {:"Beast Hunter", ["Fetch!", "Supreme Dinomancy", "Painted Canvasaur", "Shepherd's Crook"]},
-    {:"No Hand Hunter", ["Arcane Shot", "Quick Shot", "Quel'dorei Fletcher", "Sizzling Cinder"]},
-    {:"Amalgam Hunter",
-     [
-       "Adaptive Amalgam",
-       "Sailboat Captain",
-       "Lunar Trailblazer"
-     ]},
+    {:"Beast Hunter", ["Painted Canvasaur"]},
+    {:"No Hand Hunter", ["Quick Shot", "Quel'dorei Fletcher", "Sizzling Cinder"]},
     # 10.5
     {:"Beast Hunter", ["Paltry Flutterwing"]},
     {:"Discover Hunter", ["Scarab Keychain", "Exarch Naielle"]},
-    {:"Beast Hunter",
-     ["Catch of the Day", "Remote Control", "Patchwork Pals", "R.C. Rampage", "Jungle Gym"]},
     {:"Discover Hunter",
      [
        "Birdwatching",

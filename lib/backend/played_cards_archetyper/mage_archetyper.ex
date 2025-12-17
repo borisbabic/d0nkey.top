@@ -7,6 +7,27 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
   @standard_config [
     # {:"Quest Mage", ["The Forbidden Sequence"]},
     {:"Spell Mage", ["Spot the Difference", "Manufacturing Error", "Yogg in the Box"]},
+    {:"Elemental Mage",
+     [
+       "Blazing Accretion",
+       "Lamplighter",
+       "Fire Fly",
+       "Triplewick Trickster",
+       "Windswept Pageturner",
+       "Solar Flare",
+       "Spontaneous Combustion"
+     ]},
+    {:"Protoss Mage",
+     [
+       "Busy Peon",
+       "Warp Gate",
+       "Colossus",
+       "Resonance Coil",
+       "Chrono Boost",
+       "Artanis",
+       "Void Ray",
+       "Chrono-Lord Deios"
+     ]},
     {:"Arcane Mage",
      [
        "Go with the Flow",
@@ -14,6 +35,8 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Azure Queen Sindragosa",
        "Mirror Dimension",
        "Azure King Malygos",
+       "Stellar Balance",
+       "Portal Vanguard",
        "Azure Oathstone",
        "Arcane Barrage"
        # "Portal Vanguard"
@@ -25,85 +48,75 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Raptor Herald",
        "Relentless Wrathguard",
        "Treacherous Tormentor",
+       "Astrobiologist",
        "Stonehill Defender",
-       "Travel Agent",
        "Questing Assistant",
        "Beast Speaker Taka"
      ]},
-    {:"Elemental Mage",
-     [
-       "Blazing Accretion",
-       "Lamplighter",
-       "Fire Fly",
-       "Triplewick Trickster",
-       "Windswept Pageturner",
-       "Solar Flare",
-       "Blasteroid",
-       "Spontaneous Combustion"
-     ]},
-    {:"Protoss Mage",
-     [
-       "Busy Peon",
-       "Warp Gate",
-       "Colossus",
-       "Resonance Coil",
-       "Chrono Boost",
-       "Artanis",
-       "Void Ray"
-     ]},
     # 5.5
+    {:"Imbue Mage",
+     [
+       "Sing-Along Buddy",
+       "Bitterbloom Knight",
+       "Spirit Gatherer",
+       "Resplendent Dreamweaver",
+       "Petal Picker",
+       "Flutterwing Guardian",
+       "Divination",
+       "Wisprider"
+     ]},
+    {:"Toki Mage",
+     [
+       "Wisp",
+       "The Ceaseless Expanse",
+       "Youthful Brewmaster",
+       "Demolition Renovator",
+       "Puzzlemaster Khadgar",
+       "Timelooper Toki",
+       "Kil'jaedan",
+       "Dirty Rat",
+       "Alter Time",
+       "Smoldering Grove",
+       "Rising Waves",
+       "Seabreeze Chalice",
+       "Steamcleaner",
+       "Ysera, Emerald Aspect",
+       "Arcane Artificer",
+       "Bob the Bartender",
+       "Sleet Skater",
+       "Elise the Navigator"
+     ]},
     {:"Orb Mage",
      [
-       "Doomsayer",
        "Carry-On Grub",
        "The Curator",
        "Sharp-Eyed Lookout",
        "Overplanner",
        "Sleepy Resident"
      ]},
-    {:"Quest Mage",
-     [
-       "Astrobiologist",
-       "Treasure Hunter Eudora"
-     ]},
     {:"Spell Mage", ["Malfunction"]},
-    {:"Big Spell Mage",
-     [
-       "Huddle Up",
-       "Sizzling Cinder",
-       "King Tide",
-       "Fireball",
-       "Blob of Tar"
-     ]},
-    {:"Arcane Mage", ["Portal Vanguard"]},
+    {:"Quest Mage", ["Scrappy Scavenger"]},
+    # {:"Spell Mage",
+    #  [
+    #    "Buy One, Get One Freeze",
+    #    "Stellar Balance",
+    #    "Nightmare Lord Xavius"
+    #  ]},
     # 10.5
-    {:"Imbue Mage",
-     [
-       "Sing-Along Buddy",
-       "Bitterbloom Knight",
-       "Aessina",
-       "Spirit Gatherer",
-       "Flutterwing Guardian",
-       "Wisprider"
-     ]},
-    {:"Quest Mage", ["Malorne the Waywatcher", "Scrappy Scavenger"]},
-    {:"Spell Mage",
-     [
-       "Buy One, Get One Freeze",
-       "Stellar Balance",
-       "Nightmare Lord Xavius"
-     ]},
-    {:"Quest Mage", ["Creature of Madness"]},
     {:"Protoss Mage", ["Photon Cannon"]},
     # 15.5
-    {:"Arcane Mage", ["Watercolor Artist", "Smoldering Grove"]},
+    {:"Arcane Mage", ["Watercolor Artist"]},
     {:"Quest Mage", ["Tidepool Pupil"]},
     {:"Spell Mage", ["Hidden Objects", "Pocket Dimension"]},
-    {:"Orb Mage", ["Dirty Rat"]},
-    {:"Arcane Mage", ["Primordial Glyph", "Tide Pools", "Alter Time"]},
+    {:"Arcane Mage", ["Primordial Glyph", "Tide Pools"]},
     # 20.5
-    {:"Elemental Mage", ["Cloud Serpent", "Violet Spellwing"]},
-    {:"Protoss Mage", ["Shield Battery", "Seabreeze Chalice"]},
+    {:"Elemental Mage",
+     [
+       "Cloud Serpent",
+       "Violet Spellwing",
+       "Blasteroid"
+     ]},
+    {:"Protoss Mage", ["Shield Battery"]},
     {:"Bot? Mage",
      [
        "Ice Barrier",
