@@ -901,7 +901,39 @@ defmodule Backend.Battlefy do
       end
     end)
     |> Enum.filter(& &1)
+    |> fallback_to_lineups(tournament_id)
     |> Map.new()
+  end
+
+  defp fallback_to_lineups(btag_deckstrings, tournament_id) do
+    needs_fallback? =
+      Enum.any?(btag_deckstrings, fn
+        {_, []} -> true
+        _ -> false
+      end)
+
+    with true <- needs_fallback?,
+         [_ | _] = lineups <- lineups(tournament_id) do
+      fill_empty(btag_deckstrings, lineups)
+    else
+      _ -> btag_deckstrings
+    end
+  end
+
+  defp fill_empty(btag_deckstrings, lineups) do
+    Enum.map(btag_deckstrings, fn
+      {name, []} ->
+        deckstrings =
+          case Enum.find(lineups, &(&1.name == name)) do
+            %{decks: decks} -> Enum.map(decks, &Deck.deckcode/1)
+            _ -> []
+          end
+
+        {name, deckstrings}
+
+      correct ->
+        correct
+    end)
   end
 
   def get_match_deckstrings(tournament_id, match_id),
