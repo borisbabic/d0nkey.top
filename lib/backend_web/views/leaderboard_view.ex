@@ -294,7 +294,7 @@ defmodule BackendWeb.LeaderboardView do
           |> Map.new()
 
         %{
-          name: player,
+          name: player || "",
           total: total,
           per_season: per_season,
           region: PlayerInfo.get_region(player),

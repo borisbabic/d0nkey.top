@@ -1319,6 +1319,8 @@ defmodule Backend.MastersTour do
     fix_name(one) == fix_name(two)
   end
 
+  def mt_profile_name(nil), do: nil
+
   def mt_profile_name(short_or_full) do
     with false <- String.contains?(short_or_full, "#"),
          %{actual_battletag_full: bt} when is_binary(bt) <-
