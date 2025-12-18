@@ -26,11 +26,9 @@ defmodule BackendWeb.WC2025Live do
       <div>
         <div class="title is-2"> Worlds 2025</div>
         <div class="subtitle is-6 tw-flex">
-        <a href={~p"/tournament-lineups/hsesports/worlds-2025/popularity"}>Popularity</a>
+        <a href={~p"/battlefy/tournament/6941b7af3ca24d00130d3e53"}>Bracket</a>
         | <Components.Socials.twitch height={20} link="https://www.twitch.tv/hearthstone" />
         <span class="is-hidden-mobile">|Casters:  Edelweiss, Lorinda, Raven, Sottle | Guests: Cora, Darroch, McBanterFace, Reqvam</span>
-        <span class="is-hidden-mobile">|<a href="https://hearthstone.blizzard.com/en-us/news/24244454/get-ready-for-the-2025-hearthstone-world-championship">Viewer Guide</a></span>
-        <span class={cyc_class()}>|<a href="https://hearthstone.blizzard.com/vote/choose-your-champion">Choose Your Champion</a></span>
         </div>
 
         <.accordion id="schedule_accordian">
@@ -83,16 +81,6 @@ defmodule BackendWeb.WC2025Live do
         <TournamentLineupExplorer id={"wc_2025"} tournament_id={"worlds-2025"} tournament_source={"hsesports"} />
       </div>
     """
-  end
-
-  defp cyc_class() do
-    now = NaiveDateTime.utc_now()
-
-    if NaiveDateTime.compare(now, ~N[2025-12-18 14:00:00]) == :gt do
-      "is-hidden-mobile"
-    else
-      ""
-    end
   end
 
   defp assign_lineup_map(socket) do
