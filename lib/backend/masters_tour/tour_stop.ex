@@ -34,7 +34,10 @@ defmodule Backend.MastersTour.TourStop do
         :"Masters Tour 2024_2",
         :"Masters Tour 2025_1",
         :"Masters Tour 2025_2",
-        :"Worlds 2025"
+        :"Worlds 2025",
+        :"Masters Tour 2026_1",
+        :"Masters Tour 2026_2",
+        :"Masters Tour 2026_3"
       ]
     end
   end
@@ -592,6 +595,78 @@ defmodule Backend.MastersTour.TourStop do
         display_name: "Worlds 2025",
         swiss_rounds: 0,
         year: 2025
+      },
+      %__MODULE__{
+        id: :"Masters Tour 2026_1",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [147, 148],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 7},
+          {{2, 5}, 6},
+          {{6, 10}, 5},
+          {{11, 25}, 4},
+          {{26, 50}, 3},
+          {{51, 75}, 2},
+          {{76, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2026-04-06 16:00:00],
+        qualifiers_period: {~D[2025-01-01], ~D[2025-03-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "Winter Championship",
+        swiss_rounds: 0,
+        year: 2026
+      },
+      %__MODULE__{
+        id: :"Masters Tour 2026_2",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [149, 150],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 7},
+          {{2, 5}, 6},
+          {{6, 10}, 5},
+          {{11, 25}, 4},
+          {{26, 50}, 3},
+          {{51, 75}, 2},
+          {{76, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2026-06-12 16:00:00],
+        qualifiers_period: {~D[2026-03-01], ~D[2026-05-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "Spring Championship",
+        swiss_rounds: 0,
+        year: 2026
+      },
+      %__MODULE__{
+        id: :"Masters Tour 2026_3",
+        battlefy_id: nil,
+        ladder_priority: nil,
+        ladder_seasons: [149, 150],
+        ladder_invites: nil,
+        ladder_points: [
+          {{1, 1}, 7},
+          {{2, 5}, 6},
+          {{6, 10}, 5},
+          {{11, 25}, 4},
+          {{26, 50}, 3},
+          {{51, 75}, 2},
+          {{76, 100}, 1}
+        ],
+        region: :EU,
+        start_time: ~N[2026-08-12 16:00:00],
+        qualifiers_period: {~D[2026-03-01], ~D[2026-05-01]},
+        min_qualifiers_for_winrate: nil,
+        aliases: [],
+        display_name: "Summer Championship",
+        swiss_rounds: 0,
+        year: 2026
       }
     ]
   end

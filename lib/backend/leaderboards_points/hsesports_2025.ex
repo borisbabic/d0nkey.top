@@ -14,7 +14,13 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
     {"2025", "last-chance", 140, ["STD"]},
     {"2025", "last-chance", 141, ["STD"]},
     {"2025", "last-chance", 143, ["STD"]},
-    {"2025", "last-chance", 144, ["STD"]}
+    {"2025", "last-chance", 144, ["STD"]},
+    {"2026", "winter", 147, ["STD"]},
+    {"2026", "winter", 148, ["STD"]},
+    {"2026", "spring", 149, ["STD"]},
+    {"2026", "spring", 150, ["STD"]},
+    {"2026", "summer", 151, ["STD"]},
+    {"2026", "summer", 152, ["STD"]}
   ]
 
   @spec points_for_rank(rank :: integer()) ::
@@ -113,10 +119,20 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
   defp hardcoded_seasons(_, _), do: []
 
   @impl true
+  def info_links("2026" <> _ = season) do
+    [
+      %{
+        link: "https://hearthstone.blizzard.com/news/24245108",
+        display: "2026 Announcement"
+      }
+      | season_specific_links(season)
+    ]
+  end
+
   def info_links("2025" <> _ = season) do
     [
       %{
-        link: "https://hearthstone.blizzard.com/en-us/news/24180851",
+        link: "https://hearthstone.blizzard.com/news/24180851",
         display: "2025 Announcement"
       }
       | season_specific_links(season)
