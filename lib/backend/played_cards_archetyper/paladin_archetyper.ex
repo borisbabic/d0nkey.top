@@ -155,22 +155,22 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      [
        "Puppetmaster Dorian"
      ]},
-    {:"Terran Paladin",
-     [
-       "Salvage the Bunker",
-       "Hellbat",
-       "Holy Eggbearer",
-       "Dimensional Core",
-       "The Egg of Khelos",
-       "Carnivorous Cubicle",
-       "Lift Off",
-       "Jim Raynor",
-       "SCV",
-       "Arkonite Defense Crystal",
-       "Ghost",
-       "Ultra-Capacitor",
-       "Starport"
-     ]},
+    # {:"Terran Paladin",
+    #  [
+    #    "Salvage the Bunker",
+    #    "Hellbat",
+    #    "Holy Eggbearer",
+    #    "Dimensional Core",
+    #    "The Egg of Khelos",
+    #    "Carnivorous Cubicle",
+    #    "Lift Off",
+    #    "Jim Raynor",
+    #    "SCV",
+    #    "Arkonite Defense Crystal",
+    #    "Ghost",
+    #    "Ultra-Capacitor",
+    #    "Starport"
+    #  ]},
     {:"Whizbang Paladin",
      [
        "Hand of A'dal",

@@ -100,17 +100,17 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Hourglass Attendant",
        "Tar Slime"
      ]},
-    {:"Aggro Priest",
-     [
-       "Menagerie Jug",
-       "Brain Masseuse",
-       "Workhorse",
-       "Acupuncture",
-       "Pet Parrot",
-       "Overzealous Healer",
-       "Archaios",
-       "Murmy"
-     ]},
+    # {:"Aggro Priest",
+    #  [
+    #    "Menagerie Jug",
+    #    "Brain Masseuse",
+    #    "Workhorse",
+    #    "Acupuncture",
+    #    "Pet Parrot",
+    #    "Overzealous Healer",
+    #    "Archaios",
+    #    "Murmy"
+    #  ]},
     # 10.5
     {:"Zarimi Priest", ["Ship's Chirurgen"]}
     # {:"Wilted Priest", ["Lightbomb", "Sleepy Resident"]},
