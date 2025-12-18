@@ -78,21 +78,21 @@ defmodule BackendWeb.WC2025Live do
         <br>
         <br>
 
-        <TournamentLineupExplorer id={"wc_2025"} tournament_id={"worlds-2025"} tournament_source={"hsesports"} />
+        <TournamentLineupExplorer id={"wc_2025"} tournament_id={"6941b7af3ca24d00130d3e53"} tournament_source={"battlefy"} />
       </div>
     """
   end
 
-  defp assign_lineup_map(socket) do
-    lineup_map =
-      TournamentLineupExplorer.lineups("worlds-2025", "hsesports")
-      |> Map.new(fn lineup ->
-        key = String.replace(lineup.display_name, ~r/Group . - /, "")
-        {key, lineup}
-      end)
+  # defp assign_lineup_map(socket) do
+  #   lineup_map =
+  #     TournamentLineupExplorer.lineups("worlds-2025", "hsesports")
+  #     |> Map.new(fn lineup ->
+  #       key = String.replace(lineup.display_name, ~r/Group . - /, "")
+  #       {key, lineup}
+  #     end)
 
-    assign(socket, lineup_map: lineup_map)
-  end
+  #   assign(socket, lineup_map: lineup_map)
+  # end
 
   def handle_event("deck_copied", %{"deckcode" => code}, socket) do
     Tracker.inc_copied(code)
