@@ -26,8 +26,8 @@ defmodule BackendWeb.WC2025Live do
       <div>
         <div class="title is-2"> Worlds 2025</div>
         <div class="subtitle is-6 tw-flex">
-        <a href={~p"/battlefy/tournament/6941b7af3ca24d00130d3e53"}>Bracket</a>
-        | <Components.Socials.twitch height={20} link="https://www.twitch.tv/hearthstone" />
+        <a href={~p"/battlefy/tournament/6941b7af3ca24d00130d3e53"}>Tournament</a>
+        | <Components.Socials.twitch height={20} link="https://www.twitch.tv/playhearthstone" />
         <span class="is-hidden-mobile">|Casters:  Edelweiss, Lorinda, Raven, Sottle | Guests: Cora, Darroch, McBanterFace, Reqvam</span>
         </div>
 
