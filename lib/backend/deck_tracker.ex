@@ -3606,18 +3606,24 @@ defmodule Hearthstone.DeckTracker do
 
   def aggregated_periods_formats() do
     sql = """
-    SELECT relname
+    SELECT relname, description
     FROM pg_description
     INNER JOIN pg_class ON objoid = oid
     WHERE relname LIKE 'dt_%_aggregated_stats'
-    AND description::timestamp > now() - interval '36 hours'
     AND objsubid = 0;
     """
 
+    cutoff = NaiveDateTime.utc_now() |> NaiveDateTime.add(-36 * 60 * 60)
+
     case Repo.query(sql) do
       {:ok, %{rows: rows}} when is_list(rows) ->
-        Enum.map(rows, fn [table_name] ->
-          period_format_from_table_name(table_name)
+        Enum.flat_map(rows, fn [table_name, time] ->
+          with {:ok, time} <- NaiveDateTime.from_iso8601(time),
+               :gt <- NaiveDateTime.compare(time, cutoff) do
+            [period_format_from_table_name(table_name)]
+          else
+            _ -> []
+          end
         end)
 
       _ ->
