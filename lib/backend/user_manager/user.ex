@@ -20,6 +20,8 @@ defmodule Backend.UserManager.User do
     field :patreon_id, :string
     field :cross_out_country, :boolean, default: false
     field :default_sheet_source, :string
+    field :positive_hue, :integer, default: nil
+    field :negative_hue, :integer, default: nil
     belongs_to :default_sheet, DeckSheet
     belongs_to :current_collection, Collection, type: Ecto.UUID
     field :show_region, :boolean, default: false
@@ -57,6 +59,8 @@ defmodule Backend.UserManager.User do
       :default_sheet_source,
       :default_sheet_id,
       :cross_out_country,
+      :positive_hue,
+      :negative_hue,
       :show_region,
       :replay_preference,
       :unicode_icon
@@ -79,6 +83,11 @@ defmodule Backend.UserManager.User do
       _ -> cs
     end
   end
+
+  def positive_hue(%{positive_hue: hue}, _fallback) when is_integer(hue), do: hue
+  def positive_hue(_, fallback), do: fallback
+  def negative_hue(%{negative_hue: hue}, _fallback) when is_integer(hue), do: hue
+  def negative_hue(_, fallback), do: fallback
 
   def battletag!(%{battletag: btag}), do: btag
   def battletag(%{battletag: btag}), do: btag
