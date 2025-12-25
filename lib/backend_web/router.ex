@@ -2,6 +2,7 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
   import Plug.BasicAuth
+  import Redirect
   alias BackendWeb.LivePlug.AssignDefaults
   alias BackendWeb.LivePlug.AdminAuth
   use ErrorTracker.Web, :router
@@ -22,6 +23,9 @@ defmodule BackendWeb.Router do
   pipeline :ensure_auth do
     plug(Guardian.Plug.EnsureAuthenticated)
   end
+
+  redirect("/wc/2023", "/battlefy/tournament/6578b996b94cda278bb85cca/lineups", :permanent)
+  redirect("/wc/2024", "/battlefy/tournament/674fa20b0d896f0018364671/lineups", :permanent)
 
   forward("/api/graphql", Absinthe.Plug, schema: BackendWeb.Schema)
 

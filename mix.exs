@@ -103,6 +103,7 @@ defmodule Backend.MixProject do
       {:error_tracker, "~> 0.1"},
       {:oban_live_dashboard, "~> 0.2.0"},
       {:kaffy, "~> 0.10.0"},
+      {:redirect, "~> 0.4.0"},
       {:quantum, "~> 3.5"}
     ]
   end
