@@ -65,6 +65,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       bounce?(card_info) ->
         :"Bounce Rogue"
 
+      maestra_rogue?(card_info, 2) ->
+        :"Maestra Rogue"
+
+      "Elise the Navigator" in card_info.card_names ->
+        :"Elise Rogue"
+
       "Fyrakk the Blazing" in card_info.card_names ->
         :"Fyrakk Rogue"
 
@@ -80,7 +86,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Nexus-Prince Shaffar" in card_info.card_names ->
         :"Shaffar Rogue"
 
-      maestra_rogue?(card_info) ->
+      maestra_rogue?(card_info, 1) ->
         :"Maestra Rogue"
 
       "Incindius" in card_info.card_names ->
@@ -311,11 +317,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Swashburglar"
       ])
 
-  defp maestra_rogue?(card_info) do
-    min_count?(card_info, 2, [
-      "Maestra, Mask Merchant",
-      "Tess Greymane"
-    ])
+  defp maestra_rogue?(card_info, extra_min) do
+    "Maestra, Mask Merchant" in card_info.card_names and
+      min_count?(card_info, extra_min, [
+        "Tess Greymane",
+        "Snatch and Grab"
+      ])
   end
 
   def wild(card_info) do
@@ -407,7 +414,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       excavate_rogue?(card_info) ->
         :"Drilling Rogue"
 
-      maestra_rogue?(card_info) ->
+      maestra_rogue?(card_info, 1) ->
         :"Maestra Rogue"
 
       weapon?(card_info) ->
