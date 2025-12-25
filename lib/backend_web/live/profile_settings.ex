@@ -85,6 +85,12 @@ defmodule BackendWeb.ProfileSettingsLive do
             </div>
             <label class="label">Decklist Options</label>
             <div>
+              <select name="preferred_deckcode" class="select has-text-black">
+               {options_for_select(["Short Deckcode (Valid)": "short", "Long Deckcode (Valid)": "long", "Long Deckcode (Markdown)": "long_markdown_code"], DecklistOptions.preferred_deckcode(@user.decklist_options))}
+              </select>
+              <label for="gradient">Preferred Deckcode When Copying</label>
+            </div>
+            <div>
               <select name="border" class="select has-text-black">
                 {options_for_select(["Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"], DecklistOptions.border(@user.decklist_options))}
               </select>
@@ -262,6 +268,11 @@ defmodule BackendWeb.ProfileSettingsLive do
       |> parse_decklist_color_option(attrs, "gradient")
       |> parse_decklist_color_option(attrs, "border")
       |> parse_decklist_option(attrs, "show_one", DecklistOptions.show_one_default())
+      |> parse_decklist_option(
+        attrs,
+        "preferred_deckcode",
+        DecklistOptions.default_preferred_deckcode()
+      )
       |> parse_decklist_option(
         attrs,
         "fade_rotating_cards",

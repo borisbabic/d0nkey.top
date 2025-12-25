@@ -2,6 +2,7 @@ defmodule Components.Helper do
   @moduledoc false
   use Phoenix.Component
   alias FunctionComponents.Dropdown
+  alias Backend.Hearthstone.Deck
 
   def warning_triangle(), do: warning_triangle(%{})
 
@@ -266,6 +267,39 @@ defmodule Components.Helper do
     </div>
     """
   end
+
+  attr :deck, :any, required: true
+  attr :hide_no_js, :boolean, default: false
+  attr :preferred_deckcode, :string, default: "short"
+
+  def deckcode_for_deck(%{
+        deck: %Deck{} = deck,
+        preferred_deckcode: preferred_deckcode,
+        hide_no_js: hide_no_js
+      }) do
+    deckcode =
+      case preferred_deckcode do
+        "short" ->
+          Deck.deckcode(deck)
+
+        "long" ->
+          Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck)
+
+        "long_markdown_code" ->
+          "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck)}\n```"
+      end
+
+    %{
+      deckcode: deckcode,
+      hide_no_js: hide_no_js
+    }
+    |> deckcode()
+  end
+
+  def deckcode_for_deck(assigns),
+    do: ~H"""
+    <span class="deckcode_not_found"></span>
+    """
 
   attr :warning, :string, required: true
 
