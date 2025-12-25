@@ -192,12 +192,15 @@ defmodule Backend.UserManager.User.DecklistOptions do
   @default_use_missing_dust true
   @default_fade_missing_cards true
   @default_fade_rotating_cards false
+  @default_preferred_deckcode "short"
+  @preferred_deckcode_options ["short", "long", "long_markdown_code"]
   @primary_key false
   embedded_schema do
     field :border, :string
     field :show_one, :boolean, default: @default_show_one
     field :show_one_for_legendaries, :boolean, default: @default_show_one_for_legendaries
     field :gradient, :string
+    field :preferred_deckcode, :string, default: @default_preferred_deckcode
     field :show_dust_above, :boolean, default: @default_show_dust_above
     field :show_dust_below, :boolean, default: @default_show_dust_below
     field :use_missing_dust, :boolean, default: @default_use_missing_dust
@@ -217,6 +220,7 @@ defmodule Backend.UserManager.User.DecklistOptions do
       :show_dust_below,
       :use_missing_dust,
       :fade_rotating_cards,
+      :preferred_deckcode,
       :fade_missing_cards
     ])
     |> validate_colors([:border, :gradient])
@@ -224,6 +228,15 @@ defmodule Backend.UserManager.User.DecklistOptions do
 
   def show_one(%{show_one: show_one}), do: show_one
   def show_one(_), do: @default_show_one
+
+  def preferred_deckcode_options(), do: @preferred_deckcode_options
+
+  def preferred_deckcode(%{preferred_deckcode: preferred_deckcode})
+      when preferred_deckcode in @preferred_deckcode_options,
+      do: preferred_deckcode
+
+  def preferred_deckcode(_), do: @default_preferred_deckcode
+  def default_preferred_deckcode(), do: @default_preferred_deckcode
 
   def fade_missing_cards(%{fade_missing_cards: fade_missing_cards})
       when is_boolean(fade_missing_cards),

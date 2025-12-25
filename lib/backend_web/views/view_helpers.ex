@@ -37,9 +37,9 @@ defmodule BackendWeb.ViewHelpers do
         Helper.multiselect_dropdown(assigns)
       end
 
-      def render_deckcode(<<deckcode::binary>>, hide_no_js \\ true) do
-        Helper.deckcode(%{deckcode: deckcode, hide_no_js: hide_no_js})
-      end
+      # def render_deckcode(<<deckcode::binary>>, hide_no_js \\ true) do
+      #   Helper.deckcode(%{deckcode: deckcode, hide_no_js: hide_no_js})
+      # end
 
       def render_comparison(current, prev, flip, diff_format_fun \\ & &1)
       def render_comparison(current, nil, _, _), do: current
