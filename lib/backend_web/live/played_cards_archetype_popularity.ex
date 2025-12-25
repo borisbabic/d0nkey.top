@@ -55,6 +55,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Skyla Imbue Mage" => "Imbue Mage",
     "Orb Big Spell Mage" => "Big Spell Mage",
     "Secret Mage" => "Bot? Mage",
+    "Lynessa OTK Paladin" => "Lynessa Paladin",
     "Starship Paladin" => "Terran Paladin",
     "Menagerie Priest" => "Aggro Priest",
     "Pain Priest" => "Aggro Priest",
