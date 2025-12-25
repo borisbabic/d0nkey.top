@@ -3,13 +3,15 @@ defmodule BackendWeb.ProfileSettingsLive do
   use BackendWeb, :surface_live_view
   alias Backend.Streaming
   alias Backend.UserManager
+  alias Backend.UserManager.User
   alias Backend.CollectionManager.Collection
   alias Backend.UserManager.User.DecklistOptions
 
   data(user, :map)
+  data(custom_hues, :boolean, default: false)
 
   def mount(_params, session, socket) do
-    {:ok, assign_defaults(socket, session) |> put_user_in_context()}
+    {:ok, assign_defaults(socket, session) |> put_user_in_context() |> assign_custom_hues()}
   end
 
   def render(assigns) do
@@ -34,13 +36,34 @@ defmodule BackendWeb.ProfileSettingsLive do
               <input type="checkbox" name="show_region" checked={@user.show_region} />
             </div>
             <br>
+            <div :if={@custom_hues}>
+              <label for="positive_hue" class="label">Positive Hue</label>
+              <input class="has-text-black" value={@user.positive_hue} type="number" name="positive_hue" min={0} max={360} step={1}/>
+              <label for="negative_hue" class="label">Negative Hue</label>
+              <input class="has-text-black" value={@user.negative_hue} type="number" name="negative_hue" min={0} max={360} step={1}/>
+            </div>
+            <div :if={!@custom_hues}>
+              <label for="positive_hue" class="label">Positive Color</label>
+              <select name="positive_hue" class="select has-text-black">
+                {options_for_select(hue_options(), @user.positive_hue)}
+              </select>
+              <label for="negative_hue" class="label">Negative Color</label>
+              <select name="negative_hue" class="select has-text-black">
+                {options_for_select(hue_options(), @user.negative_hue)}
+              </select>
+            </div>
+            <label>
+              <input type="checkbox" value={@custom_hues} :on-click="toggle_custom_hues" checked={@custom_hues}>
+              <span>Custom Hues</span>
+            </label>
+            <br>
             <div>
               <label for="unicode_icon" class="label">Player Icon</label>
               <select name="unicode_icon" class="select has-text-black">
                 {options_for_select([{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}], @user.unicode_icon)}
               </select>
               For custom icons see <a href="/patreon">patreon</a>
-            </div>
+            # </div>
             <br>
             <label class="label">Deck Sheets</label>
             <div>
@@ -64,13 +87,13 @@ defmodule BackendWeb.ProfileSettingsLive do
             <div>
               <select name="border" class="select has-text-black">
                 {options_for_select(["Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"], DecklistOptions.border(@user.decklist_options))}
-              </select>>
+              </select>
               <label for="border">Border Color</label>
             </div>
             <div>
               <select name="gradient" class="select has-text-black">
                {options_for_select(["Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"], DecklistOptions.gradient(@user.decklist_options))}
-              </select>>
+              </select>
               <label for="gradient">Gradient Color</label>
             </div>
             <div>
@@ -138,6 +161,15 @@ defmodule BackendWeb.ProfileSettingsLive do
 
   def patreon_tier_info(_), do: nil
 
+  defp hue_options() do
+    [
+      {"Default", nil},
+      {"Blue", 220},
+      {"Green", 120},
+      {"Red", 0}
+    ]
+  end
+
   defp collection_options(user) do
     collection_options =
       Backend.CollectionManager.choosable_by_user(user)
@@ -167,6 +199,14 @@ defmodule BackendWeb.ProfileSettingsLive do
     Streaming.twitch_id_to_display(twitch_id)
   end
 
+  def handle_event(
+        "toggle_custom_hues",
+        _,
+        socket = %{assigns: %{custom_hues: custom_hues}}
+      ) do
+    {:noreply, socket |> assign(:custom_hues, !custom_hues)}
+  end
+
   def handle_event("disconnect_twitch", _, socket = %{assigns: %{user: user}}) do
     {:ok, updated} = UserManager.remove_twitch(user)
     {:noreply, socket |> assign(:user, updated)}
@@ -182,6 +222,7 @@ defmodule BackendWeb.ProfileSettingsLive do
       attrs_raw
       |> parse_battlefy_slug()
       |> parse_decklist_options()
+      |> parse_int(["positive_hue", "negative_hue"])
 
     updated =
       user
@@ -192,6 +233,20 @@ defmodule BackendWeb.ProfileSettingsLive do
       end
 
     {:noreply, socket |> assign(:user, updated)}
+  end
+
+  def assign_custom_hues(%{assigns: %{user: user}} = socket) do
+    values = hue_options() |> Enum.map(&elem(&1, 1))
+    positive = User.positive_hue(user, nil)
+    negative = User.negative_hue(user, nil)
+    custom_hues = !(positive in values) or !(negative in values)
+    assign(socket, custom_hues: custom_hues)
+  end
+
+  defp parse_int(attrs, keys) do
+    Enum.reduce(keys, attrs, fn key, acc ->
+      Map.update(acc, key, nil, &Util.to_int_or_orig/1)
+    end)
   end
 
   def parse_battlefy_slug(
