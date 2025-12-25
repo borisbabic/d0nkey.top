@@ -69,6 +69,9 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Twisted Webweaver",
        "Everburning Phoenix",
        "Wisp",
+       "Platysaur",
+       "Crystal Tusk",
+       "Bloodmage Thalnos",
        "Incindius",
        "Moonstone Mauler"
      ]},
@@ -84,42 +87,52 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Prize Vendor",
        "Mimicry"
      ]},
-    {:"Fyrakk Rogue",
+    {:"Elise Rogue",
      [
        "Ashamane",
        "Time Adm'ral Hooktail",
        "Gnomelia, S.A.F.E. Pilot",
        "Dethrone",
+       "Shaladrassil",
+       "The Ceaseless Expanse",
        "Naralex, Herald of the Flights",
        "Fyrakk the Blazing",
        "Ysera, Emerald Aspect"
      ]},
-    {:"Shaffar Rogue",
+    {:"Protoss Rogue",
      [
-       "Nexus-Prince Shaffar",
-       "Troubled Double",
-       "Bargain Bin Buccaneer"
+       "Puppetmaster Dorian"
      ]},
-    {:"Quasar Rogue",
+    # {:"Shaffar Rogue",
+    #  [
+    #    "Nexus-Prince Shaffar",
+    #    "Troubled Double",
+    #    "Bargain Bin Buccaneer"
+    #  ]},
+    # {:"Quasar Rogue",
+    #  [
+    #    "Fae Trickster",
+    #    "Quasar",
+    #    "Knickknack Shack",
+    #    "Ethereal Oracle"
+    #  ]},
+    {:"Elise Rogue",
      [
-       "Fae Trickster",
-       "Quasar",
-       "Knickknack Shack",
-       "Ethereal Oracle"
-     ]},
-    # 10.5
-    {:"Fyrakk Rogue",
-     [
+       "Sandbox Scoundrel",
+       "Talgath",
+       "Fast Forward",
        "Customs Enforcer",
-       "Metal Detector",
-       "Shaladrassil",
        "Observer of Mysteries",
        "Nightmare Lord Xavius",
-       "Opu the Unseen",
        "Creature of Madness",
        "Elise the Navigator"
        # "Fyrakk the Blazing",
        # "Naralex, Herald of the Flights"
+     ]},
+    # 10.5
+    {:"Maestra Rogue",
+     [
+       "Dig for Treasure"
      ]},
     {:"Starship Rogue", ["Mixologist"]},
     {:"Quest Rogue",
@@ -131,16 +144,16 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Illusory Greenwing",
        "Interrogation",
        "Merchant of Legend"
-     ]},
-    {:"Whizbang Rogue",
-     [
-       "Sonya Waterdancer",
-       "Waterdancer",
-       "Hench-Clan Burglar",
-       "Deadly Poison",
-       "Swashburglar",
-       "Dig for Treasure"
      ]}
+    # {:"Whizbang Rogue",
+    #  [
+    #    "Sonya Waterdancer",
+    #    "Waterdancer",
+    #    "Hench-Clan Burglar",
+    #    "Deadly Poison",
+    #    "Swashburglar",
+    #    "Dig for Treasure"
+    #  ]}
   ]
   @wild_config []
 
