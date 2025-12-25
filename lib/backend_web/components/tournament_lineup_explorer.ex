@@ -105,9 +105,10 @@ defmodule Components.TournamentLineupExplorer do
     1..max
   end
 
+  def lineups(tournament_id, tournament_source, filters \\ %{})
   def lineups(nil, _tournament_source, _filters), do: []
 
-  def lineups(tournament_id, tournament_source, filters \\ %{}) do
+  def lineups(tournament_id, tournament_source, filters) do
     filters
     |> Map.merge(%{
       "tournament_id" => tournament_id,

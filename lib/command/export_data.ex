@@ -222,9 +222,9 @@ defmodule Command.ExportData do
     Timex.today() |> Timex.add(Timex.Duration.from_days(-1)) |> Timex.to_datetime()
   end
 
-  defp plus_one_day(start) do
-    Timex.add(start, Timex.Duration.from_days(1))
-  end
+  # defp plus_one_day(start) do
+  #   Timex.add(start, Timex.Duration.from_days(1))
+  # end
 
   def import(params \\ %{}) do
     params = fill_import_params(params)
