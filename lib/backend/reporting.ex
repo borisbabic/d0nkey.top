@@ -39,4 +39,24 @@ defmodule Backend.Reporting do
       end
     end
   end
+
+  def check_last_aggregated(force_check \\ false) do
+    if force_check || Application.get_env(:backend, :check_last_aggregated) do
+      case Hearthstone.DeckTracker.aggregated_periods_formats_time() do
+        [] ->
+          Bot.MessageHandlerUtil.send_reporting_message("NOTHING IS AGGREGATED @d0nkey!!!!!!")
+
+        pft ->
+          {period, format, time} = Enum.max_by(pft, fn {_, _, time} -> time end, NaiveDateTime)
+          diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), time, :minute)
+          message = "Last aggregation was #{period} #{format} - #{diff} minutes ago"
+
+          if diff > 120 do
+            Bot.MessageHandlerUtil.send_reporting_message(message)
+          else
+            Bot.MessageHandlerUtil.send_muted_reporting_message(message)
+          end
+      end
+    end
+  end
 end
