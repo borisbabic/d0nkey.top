@@ -11,6 +11,7 @@ config :backend,
   default_agg_chunk_size: 100_000,
   five_min_game_threshold: 0,
   available_game_insert_threshold: false,
+  check_last_aggregated: false,
   enable_bot: !is_nil(System.get_env("DISCORD_TOKEN")) || !is_nil(System.get_env("ENABLE_BOT"))
 
 config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,

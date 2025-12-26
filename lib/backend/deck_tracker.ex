@@ -3605,6 +3605,12 @@ defmodule Hearthstone.DeckTracker do
   end
 
   def aggregated_periods_formats() do
+    for {period, format, _time} <- aggregated_periods_formats_time() do
+      {period, format}
+    end
+  end
+
+  def aggregated_periods_formats_time() do
     sql = """
     SELECT relname, description
     FROM pg_description
@@ -3620,7 +3626,8 @@ defmodule Hearthstone.DeckTracker do
         Enum.flat_map(rows, fn [table_name, time] ->
           with {:ok, time} <- NaiveDateTime.from_iso8601(time),
                :gt <- NaiveDateTime.compare(time, cutoff) do
-            [period_format_from_table_name(table_name)]
+            {period, format} = period_format_from_table_name(table_name)
+            [{period, format, time}]
           else
             _ -> []
           end

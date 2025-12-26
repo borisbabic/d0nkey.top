@@ -75,6 +75,7 @@ hdt_plugin_latest_version = "0.4.1"
 config :backend,
   su_token: System.get_env("SIGNUP_TOKEN") || nil,
   su_user_id: "581f5548583dd73a0351b867",
+  check_last_aggregated: true,
   su_battletag_full: "D0nkey#2470",
   enable_twitch_bot: false,
   su_battlenet_id: "406233814",
