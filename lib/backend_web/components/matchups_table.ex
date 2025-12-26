@@ -11,6 +11,7 @@ defmodule Components.MatchupsTable do
   prop(matchups, :any, required: true)
   prop(min_matchup_sample, :integer, default: 1)
   prop(min_archetype_sample, :integer, default: 1)
+  prop(custom_matchup_weights, :map, default: %{})
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
@@ -38,15 +39,23 @@ defmodule Components.MatchupsTable do
         <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample)}>
           <thead class="decklist-headers">
             <tr>
-            <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
+            <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
               <button :on-click="change_sort" phx-value-sort_by="winrate" phx-value-sort_direction={sort_direction(@sort, "winrate")}>Winrate</button></th>
-            <th rowspan="2" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
+            <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
               <button :on-click="change_sort" phx-value-sort_by="archetype" phx-value-sort_direction={sort_direction(@sort, "archetype", "asc")}>Archetype</button>
-              <button :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>Popularity:</button>
+              <button :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>
+              Custom Popularity:</button>
             </th>
             <th :for={matchup <- sorted_matchups} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
               {Matchups.archetype(matchup)}
             </th>
+            </tr>
+            <tr >
+              <.form for={%{}} id="custom_mathchup_popularity" phx-change="update_custom_matchup_weights" phx-target={@myself}>
+                <th :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
+                  <input :if={archetype = Matchups.archetype(matchup)} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@custom_matchup_weights, to_string(archetype))} />
+                </th>
+              </.form>
             </tr>
             <tr >
               <th :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700"> {Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}%</th>
@@ -54,7 +63,7 @@ defmodule Components.MatchupsTable do
           </thead>
           <tbody>
             <tr class="tw-h-[30px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
-              <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} winrate={winrate} sample={games} >
+              <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = total_stats(matchup, @custom_matchup_weights)} >
                 <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
               </td>
               <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
@@ -63,7 +72,7 @@ defmodule Components.MatchupsTable do
                 </button>
                 {Matchups.archetype(matchup)}
               </td>
-              <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
+              <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
               <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
               </td>
             </tr>
@@ -73,11 +82,68 @@ defmodule Components.MatchupsTable do
     """
   end
 
+  defp total_stats(matchup, weights) do
+    total = Matchups.total_stats(matchup)
+
+    if weights == nil or weights == %{} do
+      total
+    else
+      {total_winrate_factor, total_weight} =
+        Enum.reduce(weights, {0, 0}, fn {archetype, weight}, {winrate_factor, acc_weight} ->
+          winrate =
+            matchup
+            |> Matchups.opponent_stats(String.to_existing_atom(archetype))
+            |> Map.get(:winrate, 0)
+
+          winrate_factor = winrate_factor + winrate * weight
+          acc_weight = acc_weight + weight
+
+          {winrate_factor, acc_weight}
+        end)
+
+      %{
+        winrate: total_winrate_factor / total_weight,
+        games: total.games
+      }
+    end
+  end
+
+  defp custom_matchup_weights_class(custom_matchup_weights, archetype) do
+    with true <- is_map(custom_matchup_weights),
+         false <- custom_matchup_weights == %{},
+         nil <- Map.get(custom_matchup_weights, to_string(archetype)) do
+      # custom matchups used and opponent not present
+      "tw-opacity-50"
+    else
+      _ -> ""
+    end
+  end
+
   defp total_games(matchups) do
     Enum.sum_by(matchups, fn m ->
       Matchups.total_stats(m)
       |> Map.get(:games, 0)
     end)
+  end
+
+  def handle_event("update_custom_matchup_weights", args, socket) do
+    custom =
+      Enum.reduce(args, %{}, fn
+        {archetype, popularity}, acc
+        when is_binary(popularity) or (is_integer(popularity) and popularity != "") ->
+          case Integer.parse(popularity) do
+            {val, _} when is_integer(val) ->
+              Map.put(acc, archetype, val)
+
+            _ ->
+              acc
+          end
+
+        _, acc ->
+          acc
+      end)
+
+    {:noreply, socket |> assign(custom_matchup_weights: custom)}
   end
 
   def handle_event(@restore_favorites_event, archetypes_raw, socket) do
