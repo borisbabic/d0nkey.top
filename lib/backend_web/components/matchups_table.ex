@@ -16,7 +16,16 @@ defmodule Components.MatchupsTable do
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
   @local_storage_sort_by_key "matchups_table_sort"
+  @local_storage_custom_weights_key "matchups_table_custom_weights"
   @restore_favorites_event "restore_favorites"
+
+  defmacro is_valid_sort(sort) do
+    quote do
+      is_binary(unquote(sort)) and
+        (binary_part(unquote(sort), 0, 9) == "opponent_" or
+           unquote(sort) in ["games", "archetype", "winrate"])
+    end
+  end
 
   def mount(socket) do
     {:ok,
@@ -30,13 +39,22 @@ defmodule Components.MatchupsTable do
        key: @local_storage_sort_by_key,
        event: "set_sort",
        target: "#matchups_table_wrapper"
+     })
+     |> push_event("restore", %{
+       key: @local_storage_custom_weights_key,
+       event: "set_custom_weights",
+       target: "#matchups_table_wrapper"
      })}
+  end
+
+  def update(assigns, socket) do
+    {:ok, socket |> assign(assigns)}
   end
 
   def render(assigns) do
     ~F"""
       <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
-        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample, @min_matchup_sample)}>
+        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample, @min_matchup_sample, @custom_matchup_weights)}>
           <thead class="decklist-headers">
             <tr>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
@@ -63,7 +81,7 @@ defmodule Components.MatchupsTable do
           </thead>
           <tbody>
             <tr class="tw-h-[30px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
-              <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = total_stats(matchup, @custom_matchup_weights)} >
+              <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} >
                 <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
               </td>
               <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
@@ -80,6 +98,17 @@ defmodule Components.MatchupsTable do
         </table>
       </div>
     """
+  end
+
+  defp set_custom_matchup_weights(matchups, custom_matchup_weights)
+       when map_size(custom_matchup_weights) > 0 do
+    Enum.map(matchups, fn m ->
+      %{total_stats: total_stats(m, custom_matchup_weights), matchups: m}
+    end)
+  end
+
+  defp set_custom_matchup_weights(matchups, _custom_matchup_weights) do
+    matchups
   end
 
   defp total_stats(matchup, weights) do
@@ -143,7 +172,19 @@ defmodule Components.MatchupsTable do
           acc
       end)
 
-    {:noreply, socket |> assign(custom_matchup_weights: custom)}
+    {:noreply,
+     socket
+     |> assign(custom_matchup_weights: custom)
+     |> push_event("store", %{key: @local_storage_custom_weights_key, data: Jason.encode!(custom)})}
+  end
+
+  def handle_event("set_custom_weights", custom_weights, socket) do
+    with true <- is_binary(custom_weights),
+         {:ok, custom} <- Jason.decode(custom_weights) do
+      {:noreply, socket |> assign(custom_matchup_weights: custom)}
+    else
+      _ -> {:noreply, socket}
+    end
   end
 
   def handle_event(@restore_favorites_event, archetypes_raw, socket) do
@@ -167,16 +208,14 @@ defmodule Components.MatchupsTable do
      |> push_event("store", %{key: @local_storage_key, data: Enum.join(new, ",")})}
   end
 
-  @valid_sorts ["games", "archetype", "winrate"]
-
   def handle_event("set_sort", sort_and_direction, socket) do
     {sort, direction} =
       case String.split(sort_and_direction || "games,desc") do
         [sort, direction | _]
-        when sort in @valid_sorts and direction in ["asc", "desc", :asc, :desc] ->
+        when is_valid_sort(sort) and direction in ["asc", "desc", :asc, :desc] ->
           {sort, direction}
 
-        [sort] when sort in @valid_sorts ->
+        [sort] when is_valid_sort(sort) ->
           {sort, "desc"}
 
         _ ->
@@ -198,7 +237,8 @@ defmodule Components.MatchupsTable do
          favorited_raw,
          sort,
          min_archetype_sample,
-         min_matchup_sample
+         min_matchup_sample,
+         custom_matchup_weights
        ) do
     sort_by = Map.get(sort, "sort_by", "games")
     direction_raw = Map.get(sort, "sort_direction", "desc")
@@ -222,6 +262,7 @@ defmodule Components.MatchupsTable do
         sample = Matchups.total_stats(m) |> Map.get(:games, 0)
         norm not in favorited_norm and sample >= min_archetype_sample
       end)
+      |> set_custom_matchup_weights(custom_matchup_weights)
 
     sorted = Enum.sort_by(rest, mapper, direction)
     {favorited ++ sorted, total}
