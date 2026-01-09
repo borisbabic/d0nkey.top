@@ -32,6 +32,7 @@ defmodule BackendWeb.MatchupsLive do
         <div class="subtitle is-5">
           <span :if={@updated_at}>{Timex.from_now(@updated_at)}</span>
         </div>
+        <FunctionComponents.Ads.below_title/>
         <div class="notification is-warning" :if={show_warning?()} >
           This data uses old archetyping. Archetyping will be updated after there is more data with the latest patch
         </div>
@@ -58,7 +59,6 @@ defmodule BackendWeb.MatchupsLive do
           normalized={&Util.to_int_or_orig/1}
           />
         <ForceFreshDropdown :if={user_has_premium?(@user)} id="force_fresh_dropdown" />
-        <FunctionComponents.Ads.below_title/>
         <div :if={!@missing_premium && @archetype_stats.loading}>
           Preparing stats...
         </div>
