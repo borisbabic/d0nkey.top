@@ -54,3 +54,24 @@ defimpl Backend.Hearthstone.Matchups, for: Tuple do
 
   def total_stats({_, matchups}), do: Matchups.total_stats(matchups)
 end
+
+defimpl Backend.Hearthstone.Matchups, for: Map do
+  alias Backend.Hearthstone.Matchups
+  def archetype(%{archetype: archetype}), do: archetype
+  def archetype(%{matchups: matchups}), do: Matchups.archetype(matchups)
+  def archetype(_), do: nil
+
+  def opponent_stats(%{opponent_stats: opponent_stats}, opponent),
+    do: Map.get(opponent_stats, opponent) || empty_stats()
+
+  def opponent_stats(%{matchups: matchups}, opponent),
+    do: Matchups.opponent_stats(matchups, opponent)
+
+  def opponent_stats(_, _opponent), do: empty_stats()
+
+  def total_stats(%{total_stats: total_stats}), do: total_stats
+  def total_stats(%{matchups: matchups}), do: Matchups.total_stats(matchups)
+  def total_stats(_), do: empty_stats()
+
+  def empty_stats, do: %{winrate: 0, games: 0}
+end
