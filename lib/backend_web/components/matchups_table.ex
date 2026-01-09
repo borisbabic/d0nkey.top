@@ -36,7 +36,7 @@ defmodule Components.MatchupsTable do
   def render(assigns) do
     ~F"""
       <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
-        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample)}>
+        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample, @min_matchup_sample)}>
           <thead class="decklist-headers">
             <tr>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
@@ -47,7 +47,7 @@ defmodule Components.MatchupsTable do
               Custom Popularity:</button>
             </th>
             <th :for={matchup <- sorted_matchups} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
-              {Matchups.archetype(matchup)}
+              <button :on-click="change_sort" phx-value-sort_by={"opponent_#{Matchups.archetype(matchup)}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{Matchups.archetype(matchup)}", "desc")}> {Matchups.archetype(matchup)}</button>
             </th>
             </tr>
             <tr >
@@ -193,10 +193,16 @@ defmodule Components.MatchupsTable do
      |> push_event("store", %{key: @local_storage_sort_by_key, data: "#{sort},#{direction}"})}
   end
 
-  defp favorited_and_sorted_matchups(matchups, favorited_raw, sort, min_archetype_sample) do
+  defp favorited_and_sorted_matchups(
+         matchups,
+         favorited_raw,
+         sort,
+         min_archetype_sample,
+         min_matchup_sample
+       ) do
     sort_by = Map.get(sort, "sort_by", "games")
     direction_raw = Map.get(sort, "sort_direction", "desc")
-    mapper = sort_mapper(sort_by)
+    mapper = sort_mapper(sort_by, min_matchup_sample)
     direction = direction(direction_raw)
     favorited_norm = Enum.map(favorited_raw, &normalize_archetype/1)
 
@@ -221,21 +227,34 @@ defmodule Components.MatchupsTable do
     {favorited ++ sorted, total}
   end
 
-  defp sort_mapper("games") do
+  defp sort_mapper("games", _) do
     fn m ->
       Matchups.total_stats(m)
       |> Map.get(:games, 0)
     end
   end
 
-  defp sort_mapper("winrate") do
+  defp sort_mapper("winrate", _) do
     fn m ->
       Matchups.total_stats(m)
       |> Map.get(:winrate, 0)
     end
   end
 
-  defp sort_mapper("archetype") do
+  defp sort_mapper("opponent_" <> opponent_archetype, min_matchup_sample) do
+    fn m ->
+      opponent = String.to_existing_atom(opponent_archetype)
+      %{winrate: winrate, games: games} = Matchups.opponent_stats(m, opponent)
+
+      if games >= min_matchup_sample do
+        winrate
+      else
+        winrate / 100
+      end
+    end
+  end
+
+  defp sort_mapper("archetype", _) do
     fn m ->
       archetype = Matchups.archetype(m)
       class = Backend.Hearthstone.Deck.extract_class(archetype)
