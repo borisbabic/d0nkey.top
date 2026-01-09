@@ -244,7 +244,7 @@ defmodule Components.MatchupsTable do
   end
 
   defp favorited_and_sorted_matchups(
-         matchups,
+         raw_matchups,
          favorited_raw,
          sort,
          min_archetype_sample,
@@ -253,6 +253,7 @@ defmodule Components.MatchupsTable do
        ) do
     sort_by = Map.get(sort, "sort_by", "games")
     direction_raw = Map.get(sort, "sort_direction", "desc")
+    matchups = raw_matchups |> set_custom_matchup_weights(custom_matchup_weights)
     mapper = sort_mapper(sort_by, min_matchup_sample)
     direction = direction(direction_raw)
     favorited_norm = Enum.map(favorited_raw, &normalize_archetype/1)
@@ -273,7 +274,6 @@ defmodule Components.MatchupsTable do
         sample = Matchups.total_stats(m) |> Map.get(:games, 0)
         norm not in favorited_norm and sample >= min_archetype_sample
       end)
-      |> set_custom_matchup_weights(custom_matchup_weights)
 
     sorted = Enum.sort_by(rest, mapper, direction)
     {favorited ++ sorted, total}
