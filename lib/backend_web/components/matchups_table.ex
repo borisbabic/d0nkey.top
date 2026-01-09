@@ -60,9 +60,13 @@ defmodule Components.MatchupsTable do
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
               <button :on-click="change_sort" phx-value-sort_by="winrate" phx-value-sort_direction={sort_direction(@sort, "winrate")}>Winrate</button></th>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
-              <button :on-click="change_sort" phx-value-sort_by="archetype" phx-value-sort_direction={sort_direction(@sort, "archetype", "asc")}>Archetype</button>
-              <button :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>
-              Custom Popularity:</button>
+              <div class"tw-float-right">
+                <button class="tw-float-right" :on-click="reset_weights">Reset Weights</button>
+                <br>
+                <button :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>
+                Popularity:</button>
+              </div>
+              <button :on-click="change_sort" phx-value-sort_by="archetype" class="" phx-value-sort_direction={sort_direction(@sort, "archetype", "asc")}>Archetype</button>
             </th>
             <th :for={matchup <- sorted_matchups} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
               <button :on-click="change_sort" phx-value-sort_by={"opponent_#{Matchups.archetype(matchup)}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{Matchups.archetype(matchup)}", "desc")}> {Matchups.archetype(matchup)}</button>
@@ -153,6 +157,13 @@ defmodule Components.MatchupsTable do
       Matchups.total_stats(m)
       |> Map.get(:games, 0)
     end)
+  end
+
+  def handle_event("reset_weights", _, socket) do
+    {:noreply,
+     socket
+     |> assign(custom_matchup_weights: %{})
+     |> push_event("clear", %{key: @local_storage_custom_weights_key})}
   end
 
   def handle_event("update_custom_matchup_weights", args, socket) do
