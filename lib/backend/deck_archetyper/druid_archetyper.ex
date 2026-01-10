@@ -154,6 +154,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation(card_info)} Quest Druid")
 
+      imbue_druid?(card_info) and highlander?(card_info) ->
+        :"HL Imbue Druid"
+
       wild_dragon_druid?(card_info) and highlander?(card_info) ->
         :"HL Dragon Druid"
 
