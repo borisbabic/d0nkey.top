@@ -58,22 +58,27 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [url])
     Logger.debug("Got masters qualifiers #{url} in #{div(u_secs, 1000)} ms")
 
-    Jason.decode!(response.body)
-    |> Enum.map(fn %{
-                     "startTime" => start_time,
-                     "name" => name,
-                     "slug" => slug,
-                     "region" => region,
-                     "_id" => id
-                   } ->
-      %{
-        start_time: elem(NaiveDateTime.from_iso8601(start_time), 1),
-        name: name,
-        region: region,
-        id: id,
-        slug: slug
-      }
-    end)
+    case Jason.decode!(response.body) do
+      %{"error" => _} ->
+        []
+
+      qualifiers ->
+        Enum.map(qualifiers, fn %{
+                                  "startTime" => start_time,
+                                  "name" => name,
+                                  "slug" => slug,
+                                  "region" => region,
+                                  "_id" => id
+                                } ->
+          %{
+            start_time: elem(NaiveDateTime.from_iso8601(start_time), 1),
+            name: name,
+            region: region,
+            id: id,
+            slug: slug
+          }
+        end)
+    end
   end
 
   @spec get_invited_players(Blizzard.tour_stop() | String.t() | nil) :: Battlefy.invited_player()
@@ -90,26 +95,32 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(u_secs, 1000)} ms"
     )
 
-    Jason.decode!(response.body)
-    |> Enum.map(
-      fn invited = %{
-           "battletag" => battletag_full,
-           "type" => type,
-           "tourStop" => tour_stop,
-           "createdAt" => upstream_time
-         } ->
-        %{
-          battletag_full: String.trim(battletag_full),
-          reason: invited["reason"] || type,
-          type: type,
-          tour_stop: tour_stop,
-          upstream_time: elem(NaiveDateTime.from_iso8601(upstream_time), 1),
-          tournament_slug: invited["tournamentSlug"],
-          official: true,
-          tournament_id: invited["tournamentID"]
-        }
-      end
-    )
+    case Jason.decode!(response.body) do
+      %{"error" => _} ->
+        []
+
+      invitations ->
+        Enum.map(
+          invitations,
+          fn invited = %{
+               "battletag" => battletag_full,
+               "type" => type,
+               "tourStop" => tour_stop,
+               "createdAt" => upstream_time
+             } ->
+            %{
+              battletag_full: String.trim(battletag_full),
+              reason: invited["reason"] || type,
+              type: type,
+              tour_stop: tour_stop,
+              upstream_time: elem(NaiveDateTime.from_iso8601(upstream_time), 1),
+              tournament_slug: invited["tournamentSlug"],
+              official: true,
+              tournament_id: invited["tournamentID"]
+            }
+          end
+        )
+    end
   end
 
   @spec get_stage_with_matches(Battlefy.stage_id()) :: Battlefy.Stage.t()

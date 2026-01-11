@@ -411,8 +411,9 @@ defmodule Hearthstone.DeckTracker.CardMulliganDto do
     not_kept_ids = extract_card_ids(not_kept)
     after_mull = Enum.reject(after_mulligan_raw, &(extract_card_id(&1) in not_kept_ids))
 
-    Enum.map(not_kept, &from_raw_not_kept/1) ++
-      Enum.map(after_mull, &from_raw_map/1)
+    (Enum.map(not_kept, &from_raw_not_kept/1) ++
+       Enum.map(after_mull, &from_raw_map/1))
+    |> Enum.filter(& &1)
   end
 
   def from_raw_list(list) when is_list(list), do: Enum.map(list, &from_raw_map/1)
@@ -428,7 +429,7 @@ defmodule Hearthstone.DeckTracker.CardMulliganDto do
     }
   end
 
-  def from_raw_not_kept(card_id) when is_binary(card_id) do
+  def from_raw_not_kept(card_id) when is_binary(card_id) or is_integer(card_id) do
     %{"card_id" => card_id}
     |> from_raw_not_kept()
   end
@@ -441,6 +442,8 @@ defmodule Hearthstone.DeckTracker.CardMulliganDto do
       mull: false
     }
   end
+
+  def from_raw_not_kept(_), do: nil
 end
 
 defmodule Hearthstone.DeckTracker.CardDrawnDto do

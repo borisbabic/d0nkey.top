@@ -25,14 +25,15 @@ defmodule Backend.Hearthstone.CardUpdater do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"api_args" => %{"page" => _} = api_args} = args}) do
-    {:ok, %{cards: cards}} = Hearthstone.Api.get_cards(api_args)
-    Backend.Hearthstone.upsert_cards(cards)
+    with {:ok, %{cards: cards}} <- Hearthstone.Api.get_cards(api_args) do
+      Backend.Hearthstone.upsert_cards(cards)
 
-    with %{"delay" => delay} when is_integer(delay) <- args do
-      Process.sleep(delay)
+      with %{"delay" => delay} when is_integer(delay) <- args do
+        Process.sleep(delay)
+      end
+
+      :ok
     end
-
-    :ok
   end
 
   def enqueue_collectible(delay \\ nil) do

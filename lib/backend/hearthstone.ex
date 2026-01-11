@@ -438,7 +438,11 @@ defmodule Backend.Hearthstone do
   def class(%{hero: hero}), do: class(hero)
   # TODO: remove, this is temp before hearthstonejson gets it.
   def class(78_065), do: "DEATHKNIGHT"
-  def class(dbf_id), do: HearthstoneJson.get_class(dbf_id)
+
+  def class(dbf_id) when is_integer(dbf_id) or is_binary(dbf_id),
+    do: HearthstoneJson.get_class(dbf_id)
+
+  def class(_), do: nil
 
   @spec fetch_dbf_id(String.t() | integer() | map()) :: integer() | nil
   def dbf_id(dbf_id) when is_integer(dbf_id), do: dbf_id
@@ -1072,13 +1076,22 @@ defmodule Backend.Hearthstone do
   Gets a the card with the dbfId `card_id` from the database (ie official api)
   """
   @spec card(integer() | String.t()) :: Card.t() | nil
-  def card(card_id) do
+  def card(card_id) when is_integer(card_id) do
     query = from(c in Card, where: c.id == ^card_id)
 
     query
     |> preload_cards()
     |> Repo.one()
   end
+
+  def card(card_id) when is_binary(card_id) do
+    case Backend.HearthstoneJson.get_dbf_by_card_id(card_id) do
+      id when is_integer(id) -> card(id)
+      nil -> nil
+    end
+  end
+
+  def card(_), do: nil
 
   @spec child_cards(Card.t()) :: [Card.t()]
   def child_cards(%{child_ids: no_children}) when no_children in [[], nil], do: []

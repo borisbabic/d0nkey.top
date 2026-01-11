@@ -13,15 +13,16 @@ defmodule BackendWeb.CardLive do
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_meta()}
 
   def handle_params(%{"card_id" => card_id}, _session, socket) do
-    card = Hearthstone.card(card_id) || Backend.HearthstoneJson.get_card(card_id)
-    card_id = Backend.Hearthstone.Card.dbf_id(card)
+    case Hearthstone.card(card_id) || Backend.HearthstoneJson.get_card(card_id) do
+      nil ->
+        {:noreply, socket |> assign(card: nil, card_id: card_id) |> assign_meta()}
 
-    {
-      :noreply,
-      socket
-      |> assign(card: card, card_id: card_id)
-      |> assign_meta()
-    }
+      card ->
+        {:noreply,
+         socket
+         |> assign(card: card, card_id: Backend.Hearthstone.Card.dbf_id(card_id))
+         |> assign_meta()}
+    end
   end
 
   def render(%{card: nil} = assigns) do

@@ -85,19 +85,19 @@ defmodule Backend.MastersTour do
 
   def has_qualifier_started?(_), do: false
 
-  @spec is_finished_qualifier?(Battlefy.Tournament.t()) :: boolean
-  def is_finished_qualifier?(%{
+  @spec finished_qualifier?(Battlefy.Tournament.t()) :: boolean
+  def finished_qualifier?(%{
         stages: [%{current_round: nil, has_started: true, standing_ids: [_ | _]}]
       }),
       do: true
 
-  def is_finished_qualifier?(_), do: false
+  def finished_qualifier?(_), do: false
 
-  @spec is_supported_qualifier?(Battlefy.Tournament.t()) :: boolean
-  def is_supported_qualifier?(%{stages: [%{bracket: %{type: "elimination", style: "single"}}]}),
+  @spec supported_qualifier?(Battlefy.Tournament.t()) :: boolean
+  def supported_qualifier?(%{stages: [%{bracket: %{type: "elimination", style: "single"}}]}),
     do: true
 
-  def is_supported_qualifier?(_), do: false
+  def supported_qualifier?(_), do: false
 
   @spec create_qualifier_standings([Battlefy.Standings.t()]) :: [Qualifier.Standings.t()]
   def create_qualifier_standings(battlefy_standings) do
@@ -291,15 +291,11 @@ defmodule Backend.MastersTour do
 
     new =
       get_qualifiers_for_tour(tour_stop)
-      |> Enum.filter(fn q -> !MapSet.member?(existing, q.id) end)
-      |> Enum.filter(&has_qualifier_started?/1)
+      |> Enum.filter(fn q -> !MapSet.member?(existing, q.id) and has_qualifier_started?(q) end)
       |> Enum.map(fn q -> Battlefy.get_tournament(q.id) end)
-      |> Enum.filter(&is_supported_qualifier?/1)
-      |> Enum.filter(&is_finished_qualifier?/1)
+      |> Enum.filter(&(supported_qualifier?(&1) and finished_qualifier?(&1)))
       |> Enum.map(fn t = %{stages: [stage]} ->
-        {t, Battlefy.create_standings_from_matches(stage)}
-      end)
-      |> Enum.map(fn {t, s} ->
+        s = Battlefy.create_standings_from_matches(stage)
         standings = create_qualifier_standings(s)
 
         winner =
@@ -585,8 +581,9 @@ defmodule Backend.MastersTour do
 
     missing_qualifier_options =
       BattlefyCommunicator.get_masters_qualifiers(now, cutoff)
-      |> Enum.filter(fn q -> Enum.member?(options.regions, q.region) end)
-      |> Enum.filter(fn q -> !MapSet.member?(user_tournament_ids, q.id) end)
+      |> Enum.filter(fn q ->
+        Enum.member?(options.regions, q.region) and !MapSet.member?(user_tournament_ids, q.id)
+      end)
       |> Enum.map(fn q -> Map.put(options, :tournament_id, q.id) end)
 
     missing_qualifier_options
@@ -1207,8 +1204,7 @@ defmodule Backend.MastersTour do
 
   def masters_tours_stats(tour_stops = [%TourStop{} | _]) do
     tour_stops
-    |> Enum.filter(fn ts -> ts.battlefy_id end)
-    |> Enum.filter(&TourStop.started?/1)
+    |> Enum.filter(fn ts -> ts.battlefy_id and TourStop.started?(ts) end)
     |> Enum.map(fn ts ->
       get_mt_tournament_stages_standings(ts)
       |> Backend.TournamentStats.create_tournament_team_stats(ts.id, ts.battlefy_id)
@@ -1319,9 +1315,7 @@ defmodule Backend.MastersTour do
     fix_name(one) == fix_name(two)
   end
 
-  def mt_profile_name(nil), do: nil
-
-  def mt_profile_name(short_or_full) do
+  def mt_profile_name(short_or_full) when is_binary(short_or_full) do
     with false <- String.contains?(short_or_full, "#"),
          %{actual_battletag_full: bt} when is_binary(bt) <-
            PlayerNationalityCache.get(short_or_full) do
@@ -1330,6 +1324,8 @@ defmodule Backend.MastersTour do
       _ -> short_or_full
     end
   end
+
+  def mt_profile_name(_), do: nil
 
   def invite_2021_01_new_gms(tour_stop) do
     reason = "2021 Hearthstone Grandmaster"
@@ -1420,8 +1416,7 @@ defmodule Backend.MastersTour do
       |> MapSet.new()
 
     qualifiers_in_range
-    |> Enum.filter(&has_qualifier_started?/1)
-    |> Enum.filter(&MapSet.member?(finished, &1.id))
+    |> Enum.filter(&(has_qualifier_started?(&1) and MapSet.member?(finished, &1.id)))
   end
 
   def list_qualifiers_by_tournament_ids(tournament_ids) do

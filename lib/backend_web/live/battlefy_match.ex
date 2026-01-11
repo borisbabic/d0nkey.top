@@ -256,6 +256,6 @@ defmodule BackendWeb.BattlefyMatchLive do
   end
 
   defp decks(strings) do
-    for s <- strings, {:ok, deck} = Deck.decode(s), do: deck
+    for s <- strings, {:ok, deck} <- [Deck.decode(s)], do: deck
   end
 end
