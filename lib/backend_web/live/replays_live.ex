@@ -16,7 +16,7 @@ defmodule BackendWeb.ReplaysLive do
     <div>
       <div class="title is-2">Replays</div>
       <div class="subtitle is-6">
-      To contribute <span class="is-hidden-mobile"> use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>  or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a> and </span>make <a href={~p"/profile/settings"}>your replays public</a>
+      To contribute <span class="is-hidden-mobile"> use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a>  or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a> and </span>make <a href={~p"/profile/settings"}>your replays public</a>
       </div>
       <FunctionComponents.Ads.below_title />
       <ReplayExplorer

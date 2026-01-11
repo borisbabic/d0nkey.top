@@ -23,11 +23,11 @@ defmodule BackendWeb.SummerChamps2022Live do
             <div class="title is-2">Summer Champs Decks</div>
             <div class="subtitle is-5">
               <a class="link" href="https://hearthstone.blizzard.com/en-us/news/23788539" target="_blank">
-                Info
+                Info<HeroIcons.external_link />
               </a>
 
               <a class="link" href="https://www.youtube.com/Hearthstone/live" target="_blank">
-                Stream
+                Stream<HeroIcons.external_link />
               </a>
             </div>
             <FunctionComponents.Ads.below_title/>

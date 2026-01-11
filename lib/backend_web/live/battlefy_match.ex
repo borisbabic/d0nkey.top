@@ -24,7 +24,7 @@ defmodule BackendWeb.BattlefyMatchLive do
       <div>
         <div class="title is-2">
           <a href={"#{Battlefy.get_match_url(@tournament, @match)}"}>
-            {title(@match)}
+            {title(@match)}<HeroIcons.external_link size={nil}/>
           </a>
         </div>
         <div class="subtitle is-5">

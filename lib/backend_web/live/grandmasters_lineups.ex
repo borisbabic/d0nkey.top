@@ -46,7 +46,7 @@ defmodule BackendWeb.GrandmastersLineup do
         assigns = %{}
 
         ~F"""
-        Format: <a href="https://hearthstone.blizzard.com/en-us/news/23761137/hearthstone-grandmasters-2022-kicks-off-this-weekend" target="_blank">Trio</a>
+        Format: <a href="https://hearthstone.blizzard.com/en-us/news/23761137/hearthstone-grandmasters-2022-kicks-off-this-weekend" target="_blank">Trio<HeroIcons.external_link /></a>
         """
 
       "Week 3" ->

@@ -51,7 +51,7 @@ defmodule BackendWeb.CollectionLive do
           <div>
             <div class="title is-2">No Collection</div>
             <div class="title is-3">You dont have a current collection</div>
-            <div class="title is-4" :if={!@multiple_collection_options}>Use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a> to sync your collections (you need to enable it in settings under third party)</div>
+            <div class="title is-4" :if={!@multiple_collection_options}>Use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> to sync your collections (you need to enable it in settings under third party)</div>
             <LivePatchDropdown
               :if={@multiple_collection_options}
               id="collection_collection_id"

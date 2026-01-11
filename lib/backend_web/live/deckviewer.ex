@@ -48,7 +48,7 @@ defmodule BackendWeb.DeckviewerLive do
                   </div>
                   <div class= "column is-narrow" :if={@deckcodes |> Enum.any?()}>
                     <a class="is-link tag" href={"#{HSDeckViewer.create_link(@deckcodes)}"}>
-                      HSDeckViewer
+                      HSDeckViewer<HeroIcons.external_link />
                     </a>
                   </div>
               </div>
