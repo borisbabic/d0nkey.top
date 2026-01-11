@@ -66,7 +66,11 @@ defmodule Backend.DeckArchetyper do
 
   defp prerelease_brawl?(card_info) do
     set_slugs = Backend.Hearthstone.latest_prerelease_brawl_sets()
-    Enum.all?(card_info.full_cards, &(&1.card_set.slug in set_slugs))
+
+    Enum.all?(card_info.full_cards, fn
+      %{card_set: %{slug: slug}} -> slug in set_slugs
+      _ -> false
+    end)
   end
 
   defp archetype(deck, card_info) do

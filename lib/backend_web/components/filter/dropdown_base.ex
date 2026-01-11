@@ -69,8 +69,13 @@ defmodule Components.Filter.DropdownBase do
         Routes.live_path(socket, live_view, path_params, params)
       end
 
-      def update_params(url_params, param, nil), do: Map.delete(url_params, param)
-      def update_params(url_params, param, val), do: Map.put(url_params, param, val)
+      def update_params(url_params, param, nil) when is_map(url_params),
+        do: Map.delete(url_params, param)
+
+      def update_params(url_params, param, val) when is_map(url_params),
+        do: Map.put(url_params, param, val)
+
+      def update_params(url_params, _, _), do: url_params
 
       if unquote(current_is_list) do
         def apply_normalizer_to_current(current, normalizer) do
