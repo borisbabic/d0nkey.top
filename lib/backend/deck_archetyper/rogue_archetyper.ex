@@ -56,6 +56,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
+      imbue?(card_info, 4) ->
+        :"Imbue Rogue"
+
       dorian_rogue?(card_info) ->
         :"Dorian Rogue"
 
@@ -83,6 +86,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       dark_gift?(card_info) ->
         :"Dark Gift Rogue"
 
+      imbue?(card_info, 2) ->
+        :"Imbue Rogue"
+
       "Nexus-Prince Shaffar" in card_info.card_names ->
         :"Shaffar Rogue"
 
@@ -97,6 +103,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       "Photographer Fizzle" in card_info.card_names ->
         :"Fizzle Rogue"
+
+      min_keyword_count?(card_info, 2, "spell-damage") ->
+        :"Burn Rogue"
 
       "Garona Halforcen" in card_info.card_names ->
         :"Garona Rogue"
@@ -250,6 +259,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Fogsail Freebooter",
       "Dread Corsair",
       "Sharp Shipment",
+      "Wicked Blightspawn",
       "Swarthy Swordshiner"
     ])
   end

@@ -6,6 +6,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
   def standard(card_info) do
     cond do
+      "Battle at the End Time" in card_info.card_names ->
+        :"Tick Tock Warlock"
+
       "Playhouse Giant" in card_info.card_names and quest?(card_info) ->
         :"Cycle Quest Warlock"
 

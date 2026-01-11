@@ -138,6 +138,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         "Blood Treant",
         "Grove Shaper",
         "Cultivation",
+        "Splintered Reality",
         "Overgrown Beanstalk"
       ])
 

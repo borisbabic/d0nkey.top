@@ -39,6 +39,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       handbuff?(card_info) ->
         :"Handbuff Paladin"
 
+      infinity?(card_info) ->
+        :"Infinity Paladin"
+
       "Sunsapper Lynessa" in card_info.card_names ->
         :"Lynessa Paladin"
 
@@ -51,6 +54,10 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp infinity?(card_info) do
+    min_count?(card_info, 3, ["Hand of Infinity", "Dissolving Ooze", "Bloodsail Raider"])
   end
 
   defp handbuff?(card_info) do

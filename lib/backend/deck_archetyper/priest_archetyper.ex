@@ -212,6 +212,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Lightbomb",
       "Shadow Word: Ruin",
       "Holy Nova",
+      "For all Time",
       "Shadow Word: Steal",
       "Fight Over Me"
     ])
