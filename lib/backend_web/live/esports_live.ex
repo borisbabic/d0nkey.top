@@ -3,6 +3,7 @@ defmodule BackendWeb.EsportsLive do
   use BackendWeb, :surface_live_view
   alias FunctionComponents.EsportsBadges
   alias Components.UpcomingTournaments
+  alias Components.Socials
   data(user, :any)
 
   def mount(_params, session, socket) do
@@ -17,7 +18,6 @@ defmodule BackendWeb.EsportsLive do
       <div class="subtitle is-6">
         <a href={~p"/mt/tour-stops"}>Tour Stops</a>
         | <a href={~p"/legacy-hsesports"}>Legacy HSEsports</a>
-        <span>| This page is WIP, if you have ideas <a href={~p"/discord"}>let me know</a> </span>
       </div>
       <div class="columns is-narrow is-multiline is-mobile">
         <div class="column">
@@ -37,16 +37,23 @@ defmodule BackendWeb.EsportsLive do
      <div class="card tw-width-200">
        <div class="card-content">
          <div class="media">
+         <div class="media-left">
+             <img class="has-ratio" height="64" width="64" src="/images/hearthstone_masters.png"/>
+         </div>
            <div class="media-content">
-             <a class="title is-4" href="https://hearthstone.blizzard.com/news/24180851/hearthstone-esports-is-back-in-2025">HSEsports!</a>
+             <a class="title is-4" href="https://hearthstone.blizzard.com/news/24245108">HSEsports<HeroIcons.external_link /></a>
              <br>
-             <a class="subtitle is-6" href="https://x.com/playhearthstone">@PlayHearthstone</a>
+            <%!-- <a class="subtitle is-6" href="https://x.com/playhearthstone">@PlayHearthstone</a> --%>
+            <div class="level level-left">
+                <Socials.x tag="playhearthstone" />
+                <Socials.discord class="tw-inline-block" link={"https://discord.com/invite/6gVXMQsPxa"} />
+            </div>
            </div>
          </div>
          <div class="content">
            <EsportsBadges.badges badges={[:AM, :EU, :AP, :standard, :bo3, :open, :free]} />
-           Official HSEsports! Qualify through <a href={~p"/battlefy/third-party-tournaments?slug=esportsadmin-esa-events"}>open qualifiers</a> or <a href="/leaderboard/points">Ladder Points</a>.
-           <a href={~p"/mt/playoffs/summer_2025"}>Summer Playoffs</a> and <a href={~p"/mt/playoffs/spring_2025"}>Spring Playoffs</a>
+           Official HSEsports! Qualify through <a href={~p"/battlefy/third-party-tournaments?slug=esportsadmin-esa-events"}>open qualifiers, blitz weekends, </a> or <a href="/leaderboard/points">Ladder Points</a>.
+           <%!-- <a href={~p"/mt/playoffs/summer_2025"}>Summer Playoffs</a> and <a href={~p"/mt/playoffs/spring_2025"}>Spring Playoffs</a> --%>
          </div>
        </div>
      </div>
@@ -62,14 +69,17 @@ defmodule BackendWeb.EsportsLive do
                <img class="has-ratio" height="48" width="36" src="https://www.teamhearthleague.com/uploads/4/2/5/5/42557845/card-large.png"/>
            </div>
            <div class="media-content">
-             <a class="title is-4" href="https://www.teamhearthleague.com/">Team Hearth League</a>
+             <a class="title is-4" href="https://www.teamhearthleague.com/">Team Hearth League<HeroIcons.external_link /></a>
              <br>
-             <a class="subtitle is-6" href="https://x.com/thl_hs">@thl_hs</a>
+             <div class="level level-left">
+                <Socials.x tag="thl_hs" />
+                <Socials.discord class="tw-inline-block" link="https://discord.com/invite/6gVXMQsPxa" />
+             </div>
            </div>
          </div>
          <div class="content">
            <EsportsBadges.badges badges={[:AM, :standard, :wild, :bo5, :open, :closed, :team, :free]} />
-           One match per week, scheduled with your opponent. Season starts soon so sign up! (no prizes)
+           One match per week, scheduled with your opponent.
          </div>
        </div>
      </div>
