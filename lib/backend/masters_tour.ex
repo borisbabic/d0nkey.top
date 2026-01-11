@@ -1204,7 +1204,7 @@ defmodule Backend.MastersTour do
 
   def masters_tours_stats(tour_stops = [%TourStop{} | _]) do
     tour_stops
-    |> Enum.filter(fn ts -> ts.battlefy_id and TourStop.started?(ts) end)
+    |> Enum.filter(fn ts -> ts.battlefy_id && TourStop.started?(ts) end)
     |> Enum.map(fn ts ->
       get_mt_tournament_stages_standings(ts)
       |> Backend.TournamentStats.create_tournament_team_stats(ts.id, ts.battlefy_id)
