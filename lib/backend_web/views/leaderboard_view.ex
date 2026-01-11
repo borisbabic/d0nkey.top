@@ -1398,9 +1398,9 @@ defmodule BackendWeb.LeaderboardView do
   defp announcement_link_subtitle(assigns) do
     ~H"""
       <div :if={[%{link: link, display: display} | rest ] = @links} class="subtitle is-5">
-          <a href={link} target="_blank"><%= display %></a>
+          <a href={link} target="_blank"><%= display %><HeroIcons.external_link link={link} /></a>
           <%= for %{link: l, display: d} <- rest do %>
-            | <a href={l} target="_blank"><%= d %></a>
+            | <a href={l} target="_blank"><%= d %><HeroIcons.external_link link={l} /></a>
           <% end %>
 
       </div>
