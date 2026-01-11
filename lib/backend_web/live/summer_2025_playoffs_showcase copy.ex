@@ -41,7 +41,7 @@ defmodule BackendWeb.Summer2025PlayoffsShowcaseLive do
         Day 1 (Saturday): Swiss - no official stream<span class="is-hidden-mobile">, players may stream their POV</span>
       </div>
       <div class="notification is-primary">
-        Day 2 (Sunday): Top 8 - <a href="https://www.twitch.tv/playhearthstone">Official Stream</a><span class="is-hidden-mobile"> and costreams</span>
+        Day 2 (Sunday): Top 8 - <a href="https://www.twitch.tv/playhearthstone">Official Stream<HeroIcons.external_link /></a><span class="is-hidden-mobile"> and costreams</span>
       </div>
       <div :for={tournament <- @tournaments}>
         <Battlefy.tournament_card tournament={tournament} />

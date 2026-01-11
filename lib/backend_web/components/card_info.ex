@@ -79,7 +79,7 @@ defmodule Components.CardInfo do
     assigns = %{url: url}
 
     ~F"""
-      <a href={@url} target="_blank">Image Link</a>
+      <a href={@url} target="_blank">Image Link<HeroIcons.external_link /></a>
     """
   end
 

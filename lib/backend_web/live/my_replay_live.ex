@@ -27,7 +27,7 @@ defmodule BackendWeb.MyReplaysLive do
         <div class="subtitle is-6">
 
           <abbr title="Share your public replays"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerReplaysLive, @user.battletag)} target="_blank">Share</a></abbr>
-          | Powered by <a href="https://www.firestoneapp.com/">Firestone</a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
+          | Powered by <a href="https://www.firestoneapp.com/">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
         <FunctionComponents.Ads.below_title/>
         <ReplayExplorer

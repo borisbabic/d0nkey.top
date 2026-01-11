@@ -19,10 +19,10 @@ defmodule BackendWeb.WC2024ChinaQualifiers do
         <div>
           <div class="title is-2">WC 2024 China Qualifiers</div>
           <div class="subtitle is-5">
-            <a href="https://docs.google.com/spreadsheets/d/1cx0D_UOucIRBs_h4BtUqcPjA5X_tGtPhKdB946GMJzs">Info</a> |
-            <a href="https://www.huya.com/blizzardgame1">Huya</a> |
-            <a href="https://www.douyu.com/1024">Douyu</a> |
-            <a href="https://live.bilibili.com/3683436">Bilibili</a>
+            <a href="https://docs.google.com/spreadsheets/d/1cx0D_UOucIRBs_h4BtUqcPjA5X_tGtPhKdB946GMJzs">Info<HeroIcons.external_link /></a> |
+            <a href="https://www.huya.com/blizzardgame1">Huya<HeroIcons.external_link /></a> |
+            <a href="https://www.douyu.com/1024">Douyu<HeroIcons.external_link /></a> |
+            <a href="https://live.bilibili.com/3683436">Bilibili<HeroIcons.external_link /></a>
           </div>
           <FunctionComponents.Ads.below_title/>
           <TournamentLineupExplorer id={"tournament_lineup_explorer_wc_2024_china_qualifiers"} tournament_id={"china-qualifiers"} tournament_source={"worlds-2024"} />

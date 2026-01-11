@@ -95,9 +95,9 @@ defmodule BackendWeb.EsportsLive do
                 <img class="has-ratio" height="48" width="36" src="https://www.teamhearthleague.com/uploads/4/2/5/5/42557845/card-large.png"/>
             </div> --%>
             <div class="media-content">
-              <a class="title is-4" href="https://discord.com/invite/vz8DcuN45m">Jungle Championship</a>
+              <a class="title is-4" href="https://discord.com/invite/vz8DcuN45m">Jungle Championship<HeroIcons.external_link /></a>
               <br>
-              <a class="subtitle is-6" href="https://x.com/LegendBonobo">@LegendBonobo</a>
+              <a class="subtitle is-6" href="https://x.com/LegendBonobo">@LegendBonobo<HeroIcons.external_link /></a>
             </div>
           </div>
           <div class="content">
