@@ -78,6 +78,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Brood Keeper",
       "Darkrider",
       "Netherspite Historian",
+      "Prescient Slitherdrake",
       "Chronicle Keeper"
     ])
   end

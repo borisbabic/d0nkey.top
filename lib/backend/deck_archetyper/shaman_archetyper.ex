@@ -75,6 +75,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
         :"Rainbow Shaman"
 
+      "Haywire Hornswog" in card_info.card_names ->
+        :"Overload Shaman"
+
       "Farseer Wo" in card_info.card_names ->
         :"Wo Shaman"
 
@@ -160,7 +163,12 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
   end
 
   defp spell_damage_shaman?(ci) do
-    min_count?(ci, 3, ["Novice Zapper", "Spirit Claws", "Lightning Bolt" | neutral_spell_damage()])
+    min_count?(ci, 3, [
+      "Novice Zapper",
+      "Spirit Claws",
+      "Lightning Bolt",
+      "Shade of the End Time" | neutral_spell_damage()
+    ])
   end
 
   defp big?(ci) do
