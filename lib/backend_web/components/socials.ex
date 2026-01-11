@@ -13,10 +13,11 @@ defmodule Components.Socials do
   end
 
   attr :link, :string, required: true
+  attr :class, :string, default: ""
 
   def discord(assigns) do
     ~H"""
-      <a href={@link}>
+      <a href={@link} class={@class}>
         <img style="height: 30px;" class="image" alt="Discord" src="/images/brands/discord.svg"/>
       </a>
     """
