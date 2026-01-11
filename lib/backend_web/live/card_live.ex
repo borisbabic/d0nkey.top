@@ -20,7 +20,7 @@ defmodule BackendWeb.CardLive do
       card ->
         {:noreply,
          socket
-         |> assign(card: card, card_id: Backend.Hearthstone.Card.dbf_id(card_id))
+         |> assign(card: card, card_id: Backend.Hearthstone.Card.dbf_id(card))
          |> assign_meta()}
     end
   end

@@ -1085,9 +1085,11 @@ defmodule Backend.Hearthstone do
   end
 
   def card(card_id) when is_binary(card_id) do
-    case Backend.HearthstoneJson.get_dbf_by_card_id(card_id) do
-      id when is_integer(id) -> card(id)
-      nil -> nil
+    with string_card_id when is_binary(string_card_id) <- Util.to_int_or_orig(card_id),
+         nil <- Backend.HearthstoneJson.get_dbf_by_card_id(card_id) do
+      nil
+    else
+      int_id when is_integer(int_id) -> card(int_id)
     end
   end
 
