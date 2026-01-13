@@ -160,6 +160,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       wild_dragon_druid?(card_info) and highlander?(card_info) ->
         :"HL Dragon Druid"
 
+      "King Togwaggle" in card_info.card_names and highlander?(card_info) ->
+        :"HL Tog Druid"
+
       highlander?(card_info) ->
         :"Highlander Druid"
 
