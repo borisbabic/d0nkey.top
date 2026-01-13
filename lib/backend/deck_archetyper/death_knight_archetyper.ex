@@ -250,6 +250,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       rainbow_runes?(card_info) and highlander?(card_info) ->
         :"HL Rainbow DK"
 
+      plague?(card_info) and highlander?(card_info) ->
+        :"HL Plague DK"
+
       highlander?(card_info) ->
         String.to_atom("Highlander #{class_name}")
 
