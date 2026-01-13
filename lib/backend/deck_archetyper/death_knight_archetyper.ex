@@ -39,7 +39,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       herenn?(card_info) ->
         :"Herenn DK"
 
-      imbue?(card_info, 4) ->
+      imbue?(card_info, 7) ->
         :"Imbue DK"
 
       rainbow_runes?(card_info) ->
@@ -63,7 +63,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Frostbitten Freebooter" in card_info.card_names and deathrattle?(card_info, 2) ->
         :"Frostbitten DK"
 
-      imbue?(card_info, 2) ->
+      imbue?(card_info, 4) ->
         :"Imbue DK"
 
       zerg?(card_info, 6) and only_runes?(card_info, :blood) ->
