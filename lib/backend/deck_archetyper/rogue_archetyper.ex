@@ -376,20 +376,32 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Rogue"
 
-      wild_sevens_miracle_rogue?(card_info) ->
-        :"777 Miracle Rogue"
-
-      wild_gnoll_miracle_rogue?(card_info) ->
-        :"Gnoll Miracle Rogue"
-
-      wild_miracle_rogue?(card_info) ->
-        :"Miracle Rogue"
+      "Smokescreen" in card_info.card_names ->
+        :"Deathrattle Rogue"
 
       quasar?(card_info) ->
         :"Quasar Rogue"
 
       garrote?(card_info) ->
         :"Garrote Rogue"
+
+      "King Llane" in card_info.card_names and wild_pirate_rogue?(card_info) ->
+        :"Kingslayer Pirate Rogue"
+
+      wild_pirate_rogue?(card_info) ->
+        :"Pirate Rogue"
+
+      wild_sevens_miracle_rogue?(card_info) ->
+        :"777 Miracle Rogue"
+
+      "Swiftscale Trickster" in card_info.card_names ->
+        :"Swiftscale Rogue"
+
+      wild_gnoll_miracle_rogue?(card_info) ->
+        :"Gnoll Miracle Rogue"
+
+      wild_miracle_rogue?(card_info) ->
+        :"Miracle Rogue"
 
       wild_alex_rogue?(card_info) ->
         :"Alex Rogue"
@@ -402,15 +414,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       wild_astalor_rogue?(card_info) ->
         :"Astalor Rogue"
-
-      "King Llane" in card_info.card_names and wild_pirate_rogue?(card_info) ->
-        :"Kingslayer Pirate Rogue"
-
-      wild_pirate_rogue?(card_info) ->
-        :"Pirate Rogue"
-
-      "Smokescreen" in card_info.card_names ->
-        :"Deathrattle Rogue"
 
       mine_rogue?(card_info) ->
         :"Mine Rogue"
