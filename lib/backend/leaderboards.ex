@@ -1510,6 +1510,7 @@ defmodule Backend.Leaderboards do
       from s in Season,
         where: s.leaderboard_id == ^to_string(leaderboard_id),
         where: s.region == ^to_string(region),
+        where: not is_nil(s.total_size),
         order_by: [desc: s.season_id],
         limit: 1
 

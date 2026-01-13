@@ -149,7 +149,7 @@ config :backend, QuantumScheduler,
          360_000
        )
      end},
-    {"7 * * * *", fn -> Backend.Leaderboards.prune_empty_seasons() end},
+    # {"7 * * * *", fn -> Backend.Leaderboards.prune_empty_seasons() end},
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
     {"31 17 * * *", fn -> Backend.Hearthstone.update_metadata() end},
     {"* * * * *", fn -> Backend.Hearthstone.CardBag.refresh_table() end},
