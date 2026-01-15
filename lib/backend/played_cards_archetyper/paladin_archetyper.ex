@@ -55,16 +55,15 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      [
        "Gnomelia, S.A.F.E. Pilot",
        "Fyrakk the Blazing",
-       "Creature of Madness",
+       "Crafter's Aura",
        "Carnivorous Cubicle",
        "Tankgineer",
        "Spikeridged Steed",
-       "Whelp of the Infinite",
-       "Ido of the Threshfleet",
        "Dreamplanner Zephrys",
        "Gelbin of Tomorrow",
        "Mekkatorque's Aura",
        "Manifested Timeways",
+       "Anachronos",
        "Gnomish Aura",
        "Chronological Aura",
        "Cardboard Golem",
@@ -80,13 +79,9 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Bloodmage Thalnos",
        "Sharp-Eyed Lookout",
        "Sea Shill",
-       "Grillmaster",
        "Bloodmage Thalnost",
-       "Doomsayer",
-       "Rockskipper",
        "Moonstone Mauler",
        "Snatch and Grab",
-       "Petty Theft",
        "Snatch and Grab",
        "Sharp Shipment",
        "Treasure Hunter Eudora",
@@ -95,7 +90,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      ]},
     {:"Libram Paladin",
      [
-       "Orbital Satellite",
        "Libram of Faith",
        "Libram of Divinity",
        "Interstellar Researcher",
@@ -103,6 +97,16 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Yrel, Beacon of Hope",
        "Interstellar Wayfarer",
        "Troubled Mechanic"
+     ]},
+    {:"Aura Paladin",
+     [
+       "Elise the Navigator",
+       "Toreth the Unbreaking",
+       "Tigress Plushy",
+       "Urisne Maul",
+       "Crusader Aura",
+       "Violet Treasuregill",
+       "Past Gnomeragan"
      ]},
     {:"Drunk Paladin",
      [
@@ -114,19 +118,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Dragonscale Armaments",
        "Aegis of Light",
        "Story of Galvadon"
-     ]},
-    {:"Aura Paladin",
-     [
-       "Resistance Aura",
-       "Hardlight Protector",
-       "Elise the Navigator",
-       "Toreth the Unbreaking",
-       "Tigress Plushy",
-       "Urisne Maul",
-       "Metal Detector",
-       "Crusader Aura",
-       "Mixologist",
-       "Past Gnomeragan"
      ]},
     # 10.5
     # {:"Drunk Paladin",
@@ -140,8 +131,7 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     #    "Resistance Aura",
     #    "Metal Detector"
     #  ]},
-    {:"Aggro Paladin",
-     ["Vicious Siltherspear", "Platysaur", "Muster for Battle", "Violet Treasuregill", "Murmy"]},
+    {:"Aggro Paladin", ["Vicious Siltherspear", "Platysaur", "Muster for Battle", "Murmy"]},
     {:"Quest Paladin",
      [
        "Murloc Warleader",
