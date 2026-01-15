@@ -61,6 +61,32 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Arkonite Defense Crystal",
        "The Exodar"
      ]},
+    {:"Elise Rogue",
+     [
+       "Resplendent Dreamweaver",
+       "Dethrone",
+       "Malorne the Waywatcher",
+       "Jagged Edge of Time",
+       "Bitterbloom Knight",
+       "Flutterwing Guardian",
+       "Gnomelia, S.A.F.E. Pilot",
+       "Treasure Hunter Eudora",
+       "Shaladrassil",
+       "Opu the Unseen",
+       "Eventuality",
+       "Ashamane",
+       "Petal Picker",
+       "Flashback",
+       "Foxy Fraud",
+       "Talgath",
+       "Nightmare Fuel",
+       "Ysera, Emerald Aspect",
+       "Sanbox Scoundrel",
+       "Creature of Madness",
+       "Deja Vu",
+       "Griftah, Trusted Vendor",
+       "Demolition Renovator"
+     ]},
     {:"Cycle Rogue",
      [
        "Everything Must Go!",
@@ -86,18 +112,6 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Maestra, Mask Merchant",
        "Prize Vendor",
        "Mimicry"
-     ]},
-    {:"Elise Rogue",
-     [
-       "Ashamane",
-       "Time Adm'ral Hooktail",
-       "Gnomelia, S.A.F.E. Pilot",
-       "Dethrone",
-       "Shaladrassil",
-       "The Ceaseless Expanse",
-       "Naralex, Herald of the Flights",
-       "Fyrakk the Blazing",
-       "Ysera, Emerald Aspect"
      ]},
     {:"Protoss Rogue",
      [
