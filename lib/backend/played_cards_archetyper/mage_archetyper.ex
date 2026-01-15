@@ -25,8 +25,7 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Resonance Coil",
        "Chrono Boost",
        "Artanis",
-       "Void Ray",
-       "Chrono-Lord Deios"
+       "Void Ray"
      ]},
     {:"Arcane Mage",
      [
@@ -63,7 +62,16 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Petal Picker",
        "Flutterwing Guardian",
        "Divination",
+       "Aessina",
        "Wisprider"
+     ]},
+    {:"Orb Mage",
+     [
+       "Carry-On Grub",
+       "The Curator",
+       "Sharp-Eyed Lookout",
+       "Overplanner",
+       "Sleepy Resident"
      ]},
     {:"Toki Mage",
      [
@@ -85,14 +93,6 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Bob the Bartender",
        "Sleet Skater",
        "Elise the Navigator"
-     ]},
-    {:"Orb Mage",
-     [
-       "Carry-On Grub",
-       "The Curator",
-       "Sharp-Eyed Lookout",
-       "Overplanner",
-       "Sleepy Resident"
      ]},
     {:"Spell Mage", ["Malfunction"]},
     {:"Quest Mage", ["Scrappy Scavenger"]},
