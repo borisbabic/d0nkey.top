@@ -5,6 +5,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
 
   def standard(card_info) do
     cond do
+      "The Food Chain" in card_info.card_names ->
+        :"Quest Hunter"
+
       "Battle at the End Time" in card_info.card_names ->
         :"Tick Tock Hunter"
 
