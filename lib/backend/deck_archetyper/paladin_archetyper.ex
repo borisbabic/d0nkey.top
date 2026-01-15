@@ -18,6 +18,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
 
+      drunk?(card_info) and aura?(card_info) ->
+        :"Drunk Aura Paladin"
+
       drunk?(card_info) ->
         :"Drunk Paladin"
 
