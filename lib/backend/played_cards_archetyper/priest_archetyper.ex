@@ -33,6 +33,19 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Chrono Boost",
        "Artanis"
      ]},
+    {:"Zarimi Priest",
+     [
+       "Timewinder Zarimi",
+       "Petal Peddler",
+       "Portal Vanguard",
+       "Fly Off the Shelves",
+       "Murozond, Unbounded",
+       "Clay Matriarch",
+       "Naralex, Herald of the Flights",
+       "Giftwrapped Whelp",
+       "Tormented Dreadwing"
+       # "Scale Replica"
+     ]},
     {:"Wilted Priest",
      [
        # "Nexus-Prince Shaffar",
@@ -41,20 +54,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Carless Crafter",
        "Annoy-o-Tron",
        "Careless Crafter",
-       "Critter Caretaker",
        "Rest in Peace"
-     ]},
-    {:"Zarimi Priest",
-     [
-       "Timewinder Zarimi",
-       "Petal Peddler",
-       "Fly Off the Shelves",
-       "Murozond, Unbounded",
-       "Clay Matriarch",
-       "Naralex, Herald of the Flights",
-       "Giftwrapped Whelp",
-       "Tormented Dreadwing"
-       # "Scale Replica"
      ]},
     # 5.5
     {:"Aviana Priest",
@@ -87,6 +87,7 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Intertwined Fate",
        "Karazhan the Sanctum",
        "Medivh the Hallowed",
+       "Psychic Conjurer",
        "Atiesh the Greatstaff",
        "Steamcleaner"
        # "XB-931 Housekeeper",
