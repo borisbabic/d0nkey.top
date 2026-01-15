@@ -7,14 +7,63 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   @standard_config [
     {:"Quest DH", ["Unleash the Colossus"]},
     {:"Whizbang DH", ["Wish", "Chaos Nova"]},
-    {:"Cliff Dive DH",
+    # {:"Cliff Dive DH",
+    #  [
+    #    "Cliff Dive",
+    #    "Colifero the Artist",
+    #    # "Illidari Inquisitor",
+    #    "Fae Trickster"
+    #    # "Briarspawn Drake",
+    #    # "Magtheridon, Unreleased"
+    #  ]},
+    {:"No Minion DH",
      [
-       "Cliff Dive",
+       "Hounds of Fury",
+       # "Blind Box",
+       "The Eternal Hold",
+       "Lasting Legacy"
+       # "Emergency Meeting",
+       # "Mutalisk",
+       # "Nydus Worm",
+       # "Creep Tumor",
+       # "Sigil of Cinder",
+       # "Demonic Deal",
+       # "Solitude",
+       # "Headhunt",
+       # "Aeon Rend"
+     ]},
+    {:"Peddler DH",
+     [
+       "Spirit Peddler",
+       # "Fyrakk the Blazing",
+       "Raging Felscreamer",
+       "Window Shopper"
+     ]},
+    {:"Ravenous Cliff Dive DH",
+     [
        "Colifero the Artist",
-       # "Illidari Inquisitor",
-       "Fae Trickster"
-       # "Briarspawn Drake",
-       # "Magtheridon, Unreleased"
+       "Magtheridon, Unreleased",
+       "Climbing Hook",
+       "Blob of Tar",
+       "Ravenous Felhunter"
+     ]},
+    # 5.5
+    {:"Broxigar DH",
+     [
+       "Youthful Brewmaster",
+       "Platysaur",
+       # "Broxigar",
+       "Remnant of Rage",
+       "Crimson Sigil Runner",
+       "Glacial Shard",
+       "Immolation Aura",
+       "The Ceaseless Expanse",
+       "Patches the Pilot",
+       "Paraglide"
+     ]},
+    {:"No Minion DH",
+     [
+       "Solitude"
      ]},
     {:"Aggro Demon Hunter",
      [
@@ -23,50 +72,28 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Acupuncture",
        "Slumbering Sprite",
        "Dreamplanner Zephyrs",
+       "Living Flame",
+       "Hot Coals",
+       "Dreamplanner Zephyrs",
+       "Kayn Sunfury",
+       "Bloodmage Thalnos",
        "Battlefiend",
        "Spirit of the Team"
      ]},
-    {:"No Minion DH",
+    {:"Cliff Dive DH",
      [
-       "Hounds of Fury",
-       "Blind Box",
-       "The Eternal Hold",
-       "Lasting Legacy",
-       "Emergency Meeting",
-       "Mutalisk",
-       "Nydus Worm",
-       "Creep Tumor",
+       "Fae Trickster",
        "Sigil of Cinder",
-       "Demonic Deal",
-       "Solitude",
-       "Headhunt",
-       "Aeon Rend"
+       "Time-Lost Glaive",
+       "Insect Claw",
+       "Illidari Studies"
+       # "Tuskpiercer"
      ]},
-    # 5.5
-    {:"Peddler DH",
+    {:"Ravenous Cliff Dive DH",
      [
-       "Spirit Peddler",
-       "Fyrakk the Blazing",
-       "Raging Felscreamer",
-       "Window Shopper",
-       "Chrono-Lord Deios",
-       "Incindius",
-       "Elise the Navigator"
-     ]},
-    {:"Cliff Dive DH",
-     [
-       "Magtheridon, Unreleased",
-       "Illidari Inquisitor",
-       "Climbing Hook"
-     ]},
-    {:"Cliff Dive DH",
-     [
-       "Blob of Tar",
-       "Ravenous Felhunter"
-     ]},
-    {:"Peddler DH",
-     [
-       "Ancient of Yore"
+       "Elise the Navigator",
+       "Tuskpiercer",
+       "Cliff Dive"
      ]}
   ]
   @wild_config [
