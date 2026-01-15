@@ -32,6 +32,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
       ]
     },
     {:"Quest Hunter", ["The Food Chain"]},
+    {:"Tick Tock Hunter", ["Battle at the End Time"]},
     {:"Discover Hunter",
      [
        "Incindius",
@@ -51,8 +52,9 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Travel Agent",
        "Elise the Navigator",
        "The Ceaseless Expanse",
-       "Zilliax Deluxe 3000",
-       "Wisp",
+       "Shaladrassil",
+       "Exarch Naielle",
+       # "Zilliax Deluxe 3000",
        "Nightmare Lord Xavius"
      ]},
     {:"Imbue Hunter",
@@ -65,55 +67,61 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Magma Hound",
        "Flutterwing Guardian"
      ]},
-    {:"Beast Hunter",
-     [
-       "City Chief Esho",
-       "Ball of Spiders",
-       "Mother Duck"
-     ]},
-    # 5.5
+    # {:"Beast Hunter",
+    #  [
+    #    "City Chief Esho",
+    #    "Ball of Spiders",
+    #    "Mother Duck"
+    #  ]},
     {:"No Hand Hunter",
      [
        "Rockskipper",
        "Vicious Slitherspear",
        "Precise Shot",
-       "King Maluk",
        "Wormhole",
        "Arrow Retriever",
        "Devious Coyote",
-       "Zergling"
+       "Quick Shot",
+       "Quel'dorei Fletcher",
+       "Sizzling Cinder"
      ]},
-    {:"Zerg Hunter",
+    {:"Beast Hunter",
      [
-       "Hydralisk",
-       "Evolution Chamber",
-       "Spawning Pool",
-       "Roach",
-       "Hive Queen"
+       "City Chief Esho",
+       "Ball of Spiders",
+       "Mother Duck",
+       "Supreme Dinomancy",
+       "Painted Canvasaur",
+       "Ancient Raptor",
+       "Shepherd's Crook",
+       "Cower in Fear",
+       "Jungle Gym",
+       "Dreambound Raptor",
+       "Remote Control",
+       "R.C. Rampage",
+       "Workhorse",
+       "Paltry Flutterwing",
+       "Trusty Fishing Rod"
      ]},
-    {:"Beast Hunter", ["Painted Canvasaur"]},
-    {:"No Hand Hunter", ["Quick Shot", "Quel'dorei Fletcher", "Sizzling Cinder"]},
-    # 10.5
-    {:"Beast Hunter", ["Paltry Flutterwing"]},
-    {:"Discover Hunter", ["Scarab Keychain", "Exarch Naielle"]},
     {:"Discover Hunter",
      [
+       "Scarab Keychain",
        "Birdwatching",
        "Tracking",
        "Ranger Initiate Vereesa",
        "Ranger General Sylvanas",
        "Ranger Captain Alleria"
-     ]},
-    {:"Starship Hunter", ["Specimen Claw", "The Exodar", "Dimensional Barrage"]},
-    {:"Handbuff Hunter",
-     [
-       "Bumbling Bellhop",
-       "Mythical Runebear",
-       "Cup o'Muscle",
-       "Cup o' Muscle",
-       "Reserved Spot",
-       "Ranger Gilly"
      ]}
+    # {:"Starship Hunter", ["Specimen Claw", "The Exodar", "Dimensional Barrage"]},
+    # {:"Handbuff Hunter",
+    #  [
+    #    "Bumbling Bellhop",
+    #    "Mythical Runebear",
+    #    "Cup o'Muscle",
+    #    "Cup o' Muscle",
+    #    "Reserved Spot",
+    #    "Ranger Gilly"
+    #  ]}
     # 15.5
     # {:"Discover Hunter",
     #  [
