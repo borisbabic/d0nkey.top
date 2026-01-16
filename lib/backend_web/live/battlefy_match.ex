@@ -51,18 +51,26 @@ defmodule BackendWeb.BattlefyMatchLive do
               <td>{times.top}</td>
               <td>{Map.get(times, :score)}</td>
               <td>{times.bottom}</td>
-              <td>{times.when || "?"} min ago</td>
+              <td>{from_now(times.when)}</td>
             </tr>
             <tr :for={game <- games(@match)} >
               <td>{decks(@top_decks, game.top_class) |> render_decks(game.game_identifier <> "_top")}</td>
               <td>{game.score}</td>
               <td>{decks(@bottom_decks, game.bottom_class) |> render_decks(game.game_identifier <> "_bottom")}</td>
-              <td>{game.finished || "?"} min ago</td>
+              <td>{from_now(game.finished)}</td>
             </tr>
           </tbody>
         </table>
       </div>
     """
+  end
+
+  defp from_now(time) do
+    case min_ago(time, NaiveDateTime.utc_now()) do
+      other when not is_integer(other) -> "?"
+      recent when recent < 180 -> "#{recent} min ago"
+      _ -> "#{Timex.from_now(time)}"
+    end
   end
 
   defp game_identifier(%{game_id: game_id, game_number: game_number}),
@@ -143,20 +151,18 @@ defmodule BackendWeb.BattlefyMatchLive do
     ]
     |> Enum.filter(& &1.when)
     |> Enum.sort_by(& &1.when, fn a, b -> :lt == NaiveDateTime.compare(a, b) end)
-    |> Enum.map(&%{&1 | when: min_ago(&1.when, now)})
   end
 
   def subtitle(%{top: top, bottom: bottom}) do
     if Enum.all?([top, bottom], & &1.banned_at) do
-      min_ago =
+      banned_at =
         if :gt == NaiveDateTime.compare(top.banned_at, bottom.banned_at) do
           top.banned_at
         else
           bottom.banned_at
         end
-        |> min_ago(NaiveDateTime.utc_now())
 
-      "Banned #{min_ago} min ago"
+      "Banned #{from_now(banned_at)}"
     else
       "Banning not done"
     end
@@ -167,8 +173,6 @@ defmodule BackendWeb.BattlefyMatchLive do
   end
 
   def games(match) do
-    now = NaiveDateTime.utc_now()
-
     match.stats
     |> Enum.sort_by(& &1.game_number, :asc)
     |> Enum.map(fn
@@ -179,7 +183,7 @@ defmodule BackendWeb.BattlefyMatchLive do
         %{
           top_class: top_class,
           bottom_class: bottom_class,
-          finished: min_ago(created_at, now),
+          finished: created_at,
           game_identifier: game_identifier(g),
           score: "#{score(tw)} - #{score(bw)}"
         }
@@ -188,7 +192,7 @@ defmodule BackendWeb.BattlefyMatchLive do
         %{
           top_class: "",
           bottom_class: "",
-          finished: min_ago(created_at, now),
+          finished: created_at,
           identifier: game_identifier(g),
           score: ""
         }
