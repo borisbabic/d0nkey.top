@@ -162,7 +162,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         id="filter_out_whizbang"
         options={[{"yes", "Exclude Whizbang"}, {"no", "Include Whizbang"}]}
         title={"Filter out whizbang"}
-        param={"filter_config_level"}
+        param={"filter_out_whizbang"}
         current_val={@filter_out_whizbang}
         selected_as_title={true}
         />
@@ -300,6 +300,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       sort_by: sort_by,
       exclude_config_levels: exclude_config_levels,
       filter_config_level: filter_config_level,
+      filter_out_whizbang: params["filter_out_whizbang"] || socket.assigns[:filter_out_whizbang],
       intermediate_report: [],
       mode: mode,
       min_played_count: min_played_count
