@@ -56,7 +56,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
-      imbue?(card_info, 7) ->
+      imbue?(card_info, 5) ->
         :"Imbue Rogue"
 
       dorian_rogue?(card_info) ->
@@ -86,7 +86,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       dark_gift?(card_info) ->
         :"Dark Gift Rogue"
 
-      imbue?(card_info, 4) ->
+      imbue?(card_info, 3) ->
         :"Imbue Rogue"
 
       "Nexus-Prince Shaffar" in card_info.card_names ->
