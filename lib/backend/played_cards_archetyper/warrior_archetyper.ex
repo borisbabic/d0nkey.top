@@ -113,6 +113,8 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "The Great Dracorex",
        "Naralex, Hearld of the Flight",
        "Time-Twisted Seer",
+       "Eternal Toil",
+       "Zilliax Deluxe 3000",
        "Tormented Dreadwing"
      ]}
   ]
