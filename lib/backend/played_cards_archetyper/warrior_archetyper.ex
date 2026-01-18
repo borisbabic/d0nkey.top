@@ -55,6 +55,7 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Sanguine Depths",
        "Keeper of the Flame",
        "Shadowflame Suffusion",
+       "Prescient Slitherdrake",
        "Dragon Turtle"
      ]},
     # {:"Boom Wrench Warrior",
@@ -105,6 +106,13 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Griftah, Trusted Vendor",
        "Grommash Hellscream",
        "Naralex, Herald of the Flight",
+       "Quality Assurance",
+       "Gnomelia, S.A.F.E. Pilot",
+       "Precursory Strike",
+       "Dimensional Weaponsmith",
+       "The Great Dracorex",
+       "Naralex, Hearld of the Flight",
+       "Time-Twisted Seer",
        "Tormented Dreadwing"
      ]}
   ]
