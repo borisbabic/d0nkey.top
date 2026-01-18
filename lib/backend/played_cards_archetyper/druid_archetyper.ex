@@ -32,126 +32,168 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Petal Picker",
        "Charred Chameleon"
      ]},
+    {:"Copy Druid",
+     [
+       "Scrapbooking Student",
+       "Star Grazer",
+       "Busy Peon",
+       "Hydration Station",
+       "Zin-Azshari",
+       "The well of Eternity",
+       "Blob of Tar",
+       "Greybough",
+       "Eredar Brute",
+       "Welcome Home!",
+       "Owlonius Druid",
+       "Lady Azshara",
+       "The Well of Eternity",
+       "Elise the Navigator",
+       "Magical Dollhouse",
+       "Seismopod",
+       "Briarspawn Drake",
+       "Gnomelia, S.A.F.E. Pilot",
+       "Tortollan Traveler"
+     ]},
     {:"Aviana Druid",
      [
        "Un'Goro Brochure",
-       "Reforestation"
-     ]},
-    {:"Krona Druid",
-     [
-       "Factory Assemblybot",
-       "Carrier",
-       "Scorching Observer",
-       "Splitting Spacerock",
-       "Avatar of Hearthstone"
-     ]},
-    # 5.5
-    {:"Copy Druid",
-     [
-       "Busy Peon",
-       "Scrapbooking Student"
-     ]},
-    {:"Starship Druid",
-     [
-       "Starlight Reactor",
-       "Hybridization",
-       "Astral Vigilant",
-       "Exarch Othaar",
-       "Sha'tari Cloakfield"
-     ]},
-    {:"Owlonius Druid",
-     [
-       "Go with the Flow",
-       "Ethereal Oracle",
-       "Sparkling Phial"
-     ]},
-    {:"Krona Druid",
-     [
-       "Kaldorei Cultivator",
-       "Highborne Mentor",
-       "Fyrakk the Blazing",
-       "Naralex, Herald of the Flights",
-       "Chrono-Lord Deios",
-       "Timeless Causality"
-     ]},
-    {:"Aviana Druid",
-     [
-       "Astral Phaser",
-       "Horn of Plenty",
-       "Mark of the Wild",
+       "Sky Mother Aviana",
+       "Reforestation",
        "Final Frontier",
-       "Wrath"
-     ]},
-    # 10.5
-    {:"Copy Druid",
-     [
-       "Welcome Home!"
-     ]},
-    {:"Owlonius Druid",
-     [
-       "Incindius",
-       "Magical Dollhouse"
-     ]},
-    {:"Copy Druid",
-     [
-       "Living Roots"
-     ]},
-    {:"Hydration Druid",
-     [
-       "Kil'jaeden",
-       "Kil'Jaeden",
-       "Hydration Station",
-       "The Ceaseless Expanse",
-       "Carnivorous Cubicle",
-       "Greybough",
-       "Marin the Manager",
-       "Endbringer Umbra"
-     ]},
-    {:"Aviana Druid",
-     [
-       "Sky Mother Aviana"
-       # "Story of Barnabus"
-     ]},
-    # 15.5
-    # {}
-    {:"Krona Druid",
-     [
-       "Shaladrassil",
-       "Ysera, Emerald Aspect",
-       "Forest Lord Cenarius",
-       "Travelmaster Dungar",
-       "Artanis"
-     ]},
-    {:"Copy Druid",
-     [
-       "Owlonius",
-       "Contigency",
-       "Krona, Keeper of Eons",
+       "Astral Phaser",
+       "Story of Barnabus",
        "Sleep Under the Stars",
+       "Ebb and Flow",
        "Swipe",
-       "Blob of Tar",
-       "Lady Azshara",
-       "Zin-Azshari",
-       "The Well of Eternity",
-       "Gnomelia, S.A.F.E. Pilot",
-       "Elise the Navigator",
-       "Amirdrassil",
-       "Tortollan Traveler",
+       "Horn of Plenty",
+       "Trail Mix",
+       "Arkonite REvelations",
        "Innervate",
-       "New Heights",
+       "Bottomless Toy Chest",
        "Waveshaping",
-       "Briarspawn Drake",
-       "Bob the Bartender",
-       "Eredar Brute",
-       "Zilliax Deluxe 3000",
-       "Bottomless Toy Chest"
-     ]},
-    # {:"Token Druid", ["Ravenous Flock"]}
-    {:"Aviana Druid", ["Story of Barnabus", "Arkonite Revelation", "Trail Mix"]},
-    {:"Copy Druid",
-     [
-       "Oaken Summons"
+       "Living Roots",
+       "Press the Advantage",
+       "Acceleration Aura"
      ]}
+    # # 5.5
+    # {:"Ownlonius Druid", ["Magical Dollhouse"]},
+    # {:"Aviana Druid",
+    #  [
+    #    "Reforestation"
+    #  ]},
+    # {:"Krona Druid",
+    #  [
+    #    "Factory Assemblybot",
+    #    "Carrier",
+    #    "Scorching Observer",
+    #    "Splitting Spacerock",
+    #    "Avatar of Hearthstone"
+    #  ]},
+    # {:"Copy Druid",
+    #  [
+    #    "Busy Peon"
+    #  ]},
+    # {:"Starship Druid",
+    #  [
+    #    "Starlight Reactor",
+    #    "Hybridization",
+    #    "Astral Vigilant",
+    #    "Exarch Othaar",
+    #    "Sha'tari Cloakfield"
+    #  ]},
+    # {:"Owlonius Druid",
+    #  [
+    #    "Go with the Flow",
+    #    "Ethereal Oracle",
+    #    "Sparkling Phial"
+    #  ]},
+    # {:"Krona Druid",
+    #  [
+    #    "Kaldorei Cultivator",
+    #    "Highborne Mentor",
+    #    "Fyrakk the Blazing",
+    #    "Naralex, Herald of the Flights",
+    #    "Chrono-Lord Deios",
+    #    "Timeless Causality"
+    #  ]},
+    # {:"Aviana Druid",
+    #  [
+    #    "Astral Phaser",
+    #    "Horn of Plenty",
+    #    "Mark of the Wild",
+    #    "Final Frontier",
+    #    "Wrath"
+    #  ]},
+    # # 10.5
+    # {:"Copy Druid",
+    #  [
+    #    "Welcome Home!"
+    #  ]},
+    # {:"Owlonius Druid",
+    #  [
+    #    "Incindius",
+    #    "Magical Dollhouse"
+    #  ]},
+    # {:"Copy Druid",
+    #  [
+    #    "Living Roots"
+    #  ]},
+    # {:"Hydration Druid",
+    #  [
+    #    "Kil'jaeden",
+    #    "Kil'Jaeden",
+    #    "Hydration Station",
+    #    "The Ceaseless Expanse",
+    #    "Carnivorous Cubicle",
+    #    "Greybough",
+    #    "Marin the Manager",
+    #    "Endbringer Umbra"
+    #  ]},
+    # {:"Aviana Druid",
+    #  [
+    #    "Sky Mother Aviana"
+    #    # "Story of Barnabus"
+    #  ]},
+    # # 15.5
+    # # {}
+    # {:"Krona Druid",
+    #  [
+    #    "Shaladrassil",
+    #    "Ysera, Emerald Aspect",
+    #    "Forest Lord Cenarius",
+    #    "Travelmaster Dungar",
+    #    "Artanis"
+    #  ]},
+    # {:"Copy Druid",
+    #  [
+    #    "Owlonius",
+    #    "Contigency",
+    #    "Krona, Keeper of Eons",
+    #    "Sleep Under the Stars",
+    #    "Swipe",
+    #    "Blob of Tar",
+    #    "Lady Azshara",
+    #    "Zin-Azshari",
+    #    "The Well of Eternity",
+    #    "Gnomelia, S.A.F.E. Pilot",
+    #    "Elise the Navigator",
+    #    "Amirdrassil",
+    #    "Tortollan Traveler",
+    #    "Innervate",
+    #    "New Heights",
+    #    "Waveshaping",
+    #    "Briarspawn Drake",
+    #    "Bob the Bartender",
+    #    "Eredar Brute",
+    #    "Zilliax Deluxe 3000",
+    #    "Bottomless Toy Chest"
+    #  ]},
+    # # {:"Token Druid", ["Ravenous Flock"]}
+    # {:"Aviana Druid", ["Story of Barnabus", "Arkonite Revelation", "Trail Mix"]},
+    # {:"Copy Druid",
+    #  [
+    #    "Oaken Summons"
+    #  ]}
     # {:"Ownlonius Druid", ["Owlonius"]}
   ]
   @wild_config [

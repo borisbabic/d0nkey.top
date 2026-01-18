@@ -48,6 +48,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     # "Ravenous Cliff Dive DH" => "Cliff Dive DH",
     # Maybe not the best
     # "Azshara Druid" => "Hydration Druid",
+    "Hydration Druid" => "Copy Druid",
+    "Owlonius Druid" => "Copy Druid",
     "Zerg Egg Hunter" => "Zerg Hunter",
     "Quest Spell Mage" => "Spell Mage",
     "Protoss Imbue Mage" => "Protoss Mage",
