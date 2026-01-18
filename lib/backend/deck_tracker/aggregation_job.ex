@@ -90,10 +90,12 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
 
   defmacro __using__(opts) do
     queue = Keyword.fetch!(opts, :queue)
+    timeout = Keyword.fetch!(opts, :timeout)
 
     quote do
       use Oban.Worker,
         queue: unquote(queue),
+        max_attempts: 4,
         unique: [
           fields: [:queue, :args],
           states: [:available, :scheduled, :executing, :retryable],
@@ -116,16 +118,23 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
       defp create_args(period, format) do
         %{"period" => period, "format" => format}
       end
+
+      @impl Oban.Worker
+      def timeout(_), do: unquote(timeout)
     end
   end
 end
 
 defmodule Hearthstone.DeckTracker.FastAggregationJob do
   @moduledoc "Processs Aggregation Job"
-  use Hearthstone.DeckTracker.AggregationJob, queue: :deck_tracker_aggregator_fast
+  use Hearthstone.DeckTracker.AggregationJob,
+    queue: :deck_tracker_aggregator_fast,
+    timeout: :timer.minutes(150)
 end
 
 defmodule Hearthstone.DeckTracker.SlowAggregationJob do
   @moduledoc "Processs Aggregation Job"
-  use Hearthstone.DeckTracker.AggregationJob, queue: :deck_tracker_aggregator_slow
+  use Hearthstone.DeckTracker.AggregationJob,
+    queue: :deck_tracker_aggregator_slow,
+    timeout: :timer.hours(7)
 end
