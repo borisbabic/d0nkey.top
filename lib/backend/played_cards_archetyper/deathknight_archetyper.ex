@@ -123,7 +123,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        # "The 8 Hands from Beyond",
        # "The Headless Horseman"
      ]},
-    {:"Herren DK", ["Overplanner", "Bonechill Stegodon", "Giftwrapped Whelp"]},
+    {:"Herenn DK", ["Overplanner", "Bonechill Stegodon", "Giftwrapped Whelp"]},
     # 10.5
     {:"Frost DK", ["Horn of Winter", "Brittlebone Buccaneer"]},
     {:"Control DK",
