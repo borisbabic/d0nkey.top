@@ -5,6 +5,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
+    {:"Tick Tock Warlock", ["Battle at the End Time"]},
     {:"Quest Warlock", ["Escape the Underfel"]},
     {:"Whizbang Warlock",
      [
@@ -37,8 +38,10 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
      [
        "Holy Eggbearer",
        "The Egg of Khelos",
+       "Dissolving Ooze",
        "Abusive Sergeant"
      ]},
+    # 5.5
     {:"Wallow Warlock",
      [
        "Raptor Herald",
@@ -51,19 +54,17 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Demonic Studies",
        "Shadowflame Stalker"
      ]},
-    # 5.5
-    {:Rafaamlock,
-     [
-       "Mixologist",
-       "Blob of Tar",
-       "Dirty Rat"
-     ]},
     {:Shredslock,
      [
        "Devious Coyote",
        "Horizon's Edge",
        "Flame Imp",
        "Zergling",
+       "Party Fiend",
+       "Cursed Souvenir",
+       "Sizzling Cinder",
+       "Prescient Slitherdrake",
+       "Ruinous Velocidrake",
        "Entropic Continuity"
      ]},
     # {:"Divergence Warlock",
@@ -72,7 +73,8 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
     #    "Agamaggan",
     #    "Shaladrassil"
     #  ]},
-    {:"Starship Warlock", ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core"]},
+    {:"Starship Warlock",
+     ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core", "The Exodar"]},
     {:"Bot? Warlock",
      [
        "Coldlight Seer",
@@ -98,71 +100,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Plated Beetle",
        "Living Flame",
        "Prize Vendor"
-     ]},
-    {:Rafaamlock,
-     [
-       "Rotheart Dryad",
-       "Petal Peddler",
-       "Possessed Animancer",
-       "Whelp of the Infinite",
-       "Giftwrapped Whelp",
-       "Nightmare Lord Xavius",
-       "Twilight Timehopper",
-       "Fatebreaker",
-       "Glacial Shard",
-       "Dreadhound Handler",
-       "Griftah, Trusted Vendor",
-       "Drain Soul",
-       "RAFAAM LADDER!!",
-       "Portal Vanguard",
-       "Creature of Madness"
-     ]},
-
-    # {:"Concierge Warlock",
-    #  [
-    #    "Concierge",
-    #    "Champions of Azeroth",
-    #    "Rockskipper",
-    #    "Sleepy Resident",
-    #    "Mixologist",
-    #    "Griftah, Trusted Vendor",
-    #    "Tidepool Pupil"
-    #  ]},
-    # {:"Deathrattle Warlock",
-    #  [
-    #    "Brittlebone Buccaneer",
-    #    "Felfire Bonfire",
-    #    "Bat Mask",
-    #    "The Exodar",
-    #    "The Ceaseless Expanse",
-    #    "Wheel of DEATH!!!",
-    #    "Arkonite Defense Crystal"
-    #  ]},
-    # 10.5
-    # {:Egglock, [
-    # "Dissolving Ooze",
-    # "Conflagrate",
-    # "Spirit Bomb",
-    # "Eat! The! Imp!",
-    # "Archdruid of Thorns",
-    # "Summoner Darkmarrow"
-    # ]},
-    {:"Whizbang Warlock", ["Tar Slime", "Scarab Keychain"]}
-    # {:"Animacer Warlock",
-    #  [
-    #    "Ultragigasaur",
-    #    "Meadowstrider",
-    #    "Travel Security",
-    #    "Possessed Animancer",
-    #    "Asphyxiodon",
-    #    "Beached Whale"
-    #  ]},
-    # {:"Divergence Warlock",
-    #  [
-    #    "Dark Alley Pact",
-    #    "Drain Soul",
-    #    "Fractured Power"
-    #  ]},
+     ]}
   ]
   @wild_config []
 

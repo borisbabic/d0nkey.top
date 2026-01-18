@@ -70,6 +70,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Wallow Shredslock" => "Wallow Warlock",
     "Starship Rafaamlock" => "Rafaamlock",
     "Painlock" => "Shredslock",
+    "6 7 Shredslock" => "Shredslock",
     "Quest Warrior" => "Control Warrior",
     "Terran Warrior" => "Control Warrior",
     "Starship Warrior" => "Control Warrior",
