@@ -40,36 +40,49 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "The Exodar",
        "Dimensional Core"
      ]},
+    {:"Frost DK", ["Marrow Manipulator"]},
+    # 5.5
     {:"Herenn DK",
      [
        "High Cultist Herenn",
        "Wakener of Souls",
-       "Petal Peddler",
-       "Giftwrapped Whelp",
-       "Bonechill Stegodon",
-       "Slippery Slope",
-       "Travel Security"
+       "Mo'arg Forgefiend"
+       # "Overplanner",
+       # "Astrobiologist",
+       # "Bonechill Stegodon"
+       # "Travel Security"
      ]},
-    # 5.5
     {:"Handbuff DK",
      [
        "City Chief Esho",
        "Lesser Spinel Spellstone",
        "Darkthorn Quilter",
+       "Nerubian Swarmguard",
        "Amateur Puppeteer",
        # "Nerubian Swarmguard",
        "Blood Tap"
      ]},
-    {:"Amalgam DK", ["Adaptive Amalgam", "Braingill", "Floppy Hydra"]},
+    # {:"Amalgam DK", ["Adaptive Amalgam", "Braingill", "Floppy Hydra"]},
+    {:"Frost DK", ["Harbinger of Winter"]},
     {:"Control DK",
      [
+       "Shaladrassil",
+       "Naralex, Herald of the Flights",
        "The Ceaseless Expanse",
-       # "Naralex, Herald of the Flights",
-       "Vampiric Blood",
-       "Marin the Manager",
-       "Bob the Bartender",
+       "Griftah, Trusted Vendor",
+       "Ysera, Emerald Aspect",
        "Blob of Tar",
-       "Hideous Husk",
+       "Exarch Maladaar",
+       "Kerrigan, Queen of Blades",
+       "Demolition Renovator",
+       "Wicked Blightspawn",
+       "Hideous Husk"
+       # "The Ceaseless Expanse",
+       # "Naralex, Herald of the Flights",
+       # "Vampiric Blood",
+       # "Marin the Manager",
+       # "Blob of Tar",
+       # "Hideous Husk",
        # "Griftah, Trusted Vendor",
        # "Hideous Husk",
        # "Stitched Giant",
@@ -90,7 +103,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        # "Airlock Breach",
        # "Bob the Bartender",
        # "Marin the Manager",
-       "Kil'jaeden"
+       # "Kil'jaeden"
        # "Corpse Explosion",
        # "Infested Breath",
        # "Sanguine Infestation",
@@ -110,47 +123,35 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        # "The 8 Hands from Beyond",
        # "The Headless Horseman"
      ]},
-    {:"Herenn DK",
-     [
-       "Overplanner",
-       "Astrobiologist",
-       "Mo'arg Forgefiend"
-     ]},
-    {:"Frost DK",
-     ["Marrow Manipulator", "Dread Raptor", "Harbinger of Winter", "Storm the Gates"]},
+    {:"Herren DK", ["Overplanner", "Bonechill Stegodon", "Giftwrapped Whelp"]},
     # 10.5
+    {:"Frost DK", ["Horn of Winter", "Brittlebone Buccaneer"]},
     {:"Control DK",
      [
-       "The Egg of Khelos",
-       "Frosty Décor",
        "Chillfallen Baron",
        "Stitched Giant",
-       "Naralex, Herald of the Flights",
-       "Ysera, Emerald Aspect",
        "Foamrender",
        "Fyrakk the Blazing",
-       "Shaladrassil",
-       "Dreadhound Handler",
-       "Prize Vendor",
-       "Griftah, Trusted Vendor"
+       "Dreadhound Handler"
      ]},
     {:"Herenn DK",
      [
+       "Astrobiologist",
+       "Bob the Bartender",
+       "Husk, Eternal Reaper",
        "Portal Vanguard",
        "Ancient Raptor",
        "Timestop",
        "Soulrest Ceremony",
        "Ghouls' Night",
        "Troubled Mechanic",
-       "Whelp of the Infinite",
        "Bwonsamdi",
-       "Horn of Winter",
        "Talanji of the Graves",
        "What Befell Zandalar",
        "Ancient of Yore",
        "Mixologist",
        "Frost Strike",
-       "Zergling",
+       "Travel Security",
        "Crypt Map"
      ]},
     {:"Control DK",
@@ -161,9 +162,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Demolition Renovator",
        "Elise the Navigator",
        "Steamcleaner",
-       "Infested Breath",
-       "Nightmare Lord Xavius",
-       "Dirty Rat"
+       "Infested Breath"
      ]},
     {:"Herenn DK",
      [
