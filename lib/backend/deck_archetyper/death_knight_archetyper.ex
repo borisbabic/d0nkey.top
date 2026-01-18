@@ -161,13 +161,16 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     min_count?(card_info, 3, [
       "Corpse Explosion",
       "The Ceaseless Expanse",
-      "Kil'kaeden",
+      "Kil'jaeden",
       "The 8 Hands from Below",
       "Ancient of Yore",
       "Wild Pyromancer",
       "Threads of Despair",
       "Elise the Navigator",
       "Sanguine Infestation",
+      "Hideous Husk",
+      "Infested Breath",
+      "Gnomelia, S.A.F.E. Pilot",
       "The Headless Horseman"
     ])
   end
