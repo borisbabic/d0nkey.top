@@ -210,7 +210,7 @@ defmodule Components.MatchupsTable do
       if archetype in old do
         old -- [archetype]
       else
-        [archetype | old]
+        old ++ [archetype]
       end
 
     {:noreply,
