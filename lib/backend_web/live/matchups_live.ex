@@ -34,7 +34,7 @@ defmodule BackendWeb.MatchupsLive do
         </div>
         <FunctionComponents.Ads.below_title/>
         <div class="notification is-warning" :if={show_warning?()} >
-          This data uses old archetyping. Archetyping will be updated after there is more data with the latest patch
+          The "Cliff Dive" versions are only split for miniset games
         </div>
         <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
@@ -134,7 +134,7 @@ defmodule BackendWeb.MatchupsLive do
 
   defp show_warning?() do
     start = ~N[2025-11-13 17:00:00]
-    end_time = ~N[9925-11-09 11:00:00]
+    end_time = ~N[2026-02-13 19:00:00]
     now = NaiveDateTime.utc_now()
 
     NaiveDateTime.compare(start, now) == :lt and
