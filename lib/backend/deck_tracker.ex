@@ -3362,14 +3362,19 @@ defmodule Hearthstone.DeckTracker do
           opponent_archetype =
             PlayedCardsArchetyper.archetype(opponent_cards, opponent_class, format)
 
-          changeset =
-            GamePlayedCards.changeset(played_cards, %{
-              player_archetype: player_archetype,
-              opponent_archetype: opponent_archetype,
-              archetyping_updated_at: now
-            })
+          if player_archetype != played_cards.player_archetype or
+               opponent_archetype != played_cards.opponent_archetype do
+            changeset =
+              GamePlayedCards.changeset(played_cards, %{
+                player_archetype: player_archetype,
+                opponent_archetype: opponent_archetype,
+                archetyping_updated_at: now
+              })
 
-          Multi.update(multi, "#{game_id}_update_played_cards_archetypes", changeset)
+            Multi.update(multi, "#{game_id}_update_played_cards_archetypes", changeset)
+          else
+            multi
+          end
 
         _, multi ->
           multi
