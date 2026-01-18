@@ -21,6 +21,7 @@ defmodule Components.DecksExplorer do
   # @max_limit 30
   # @min_min_games 50
   @default_min_games 200
+  @default_min_games_floor 50
   # # standard
   # @default_format 2
   # @default_order_by "winrate"
@@ -52,7 +53,14 @@ defmodule Components.DecksExplorer do
   data(needs_login?, :boolean, default: nil)
   data(end_of_stream?, :boolean, default: false)
 
-  def update(assigns, socket) do
+  def update(assigns_raw, socket) do
+    assigns =
+      if Map.get(assigns_raw, :min_games_floor) == nil do
+        Map.put(assigns_raw, :min_games_floor, @default_min_games_floor)
+      else
+        assigns_raw
+      end
+
     {actual_params, search_filters} = parse_params(assigns)
 
     {

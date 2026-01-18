@@ -3,14 +3,18 @@ defmodule BackendWeb.DecksLive do
   use BackendWeb, :surface_live_view
   alias Components.DecksExplorer
   alias Components.AggLogSubtitle
+  alias Backend.UserManager.User
   alias Backend.DeckInteractionTracker, as: Tracker
 
   data(user, :any)
   data(filters, :map)
   data(latest_agg, :any)
+  data(min_games_floor, :integer)
 
   def mount(_params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    do:
+      {:ok,
+       socket |> assign_defaults(session) |> put_user_in_context() |> assign_min_games_floor()}
 
   def render(assigns) do
     ~F"""
@@ -20,10 +24,23 @@ defmodule BackendWeb.DecksLive do
       <a href={~p"/stats/explanation"}>Stats Explanation</a><AggLogSubtitle criteria={@filters} />| To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
       </div>
       <FunctionComponents.Ads.below_title />
-      <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters} filter_context={:public} />
+      <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters} filter_context={:public} min_games_floor={@min_games_floor}/>
     </div>
     """
   end
+
+  def assign_min_games_floor(%{assigns: %{user: %User{} = user}} = socket) do
+    floor =
+      cond do
+        User.can_access?(user, :archetyping) -> 1
+        User.premium?(user) -> 10
+        true -> nil
+      end
+
+    socket |> assign(min_games_floor: floor)
+  end
+
+  def assign_min_games_floor(socket), do: socket |> assign(min_games_floor: nil)
 
   def handle_info({:update_params, params}, socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, params))}
