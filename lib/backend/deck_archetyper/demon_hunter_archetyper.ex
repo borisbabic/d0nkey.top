@@ -37,6 +37,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Spirit Peddler" in card_info.card_names ->
         :"Peddler DH"
 
+      blobxigar?(card_info) ->
+        :"Blobxigar DH"
+
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
 
@@ -45,6 +48,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
       pain?(card_info) ->
         :"Pain Demon Hunter"
+
+      broxigar?(card_info) ->
+        :"Broxigar DH"
 
       shopper_dh?(card_info) ->
         :"Shopper DH"
@@ -70,6 +76,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  defp broxigar?(card_info) do
+    min_count?(card_info, 2, ["Broxigar", "Youthful Brewmaster"])
+  end
+
+  defp blobxigar?(card_info) do
+    broxigar?(card_info) and min_count?(card_info, 2, ["Blob of Tar", "Ravenous Felhunter"])
   end
 
   defp no_minion?(card_info) do
