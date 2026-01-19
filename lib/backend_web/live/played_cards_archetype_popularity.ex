@@ -250,12 +250,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     end
   end
 
-  def archetyping_config_cards(format, class, levels) do
+  def archetyping_config_cards_excludes(format, class, levels) do
     format
     |> Util.to_int_or_orig()
     |> PlayedCardsArchetyper.config(class)
     |> Enum.take(levels)
-    |> Enum.flat_map(fn {_archetype, cards} -> cards end)
+    |> Enum.map(fn
+      {_archetype, {cards, exclude}} -> {cards, exclude}
+      {_archetype, cards} -> {cards, []}
+    end)
   end
 
   defp class(archetype, card_archetype) do
@@ -388,10 +391,16 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   defp config_map(archetyper_config) do
     archetyper_config
     |> Enum.with_index(1)
-    |> Enum.flat_map(fn {{archetype, cards}, level} ->
-      Enum.map(cards, fn card_name ->
-        {card_name, {level, archetype}}
-      end)
+    |> Enum.flat_map(fn
+      {{archetype, {cards, _exclude}}, level} ->
+        Enum.map(cards, fn card_name ->
+          {card_name, {level, archetype}}
+        end)
+
+      {{archetype, cards}, level} ->
+        Enum.map(cards, fn card_name ->
+          {card_name, {level, archetype}}
+        end)
     end)
     |> Map.new()
   end
@@ -401,22 +410,30 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
          levels
        )
        when levels > 0 do
-    card_names = archetyping_config_cards(format, player_class, levels)
+    names_excludes_levels = archetyping_config_cards_excludes(format, player_class, levels)
 
-    cards =
-      Backend.Hearthstone.cards([
-        {"format", format},
-        {"names", card_names}
-      ])
-      |> Enum.map(fn %{id: id} -> Hearthstone.DeckTracker.tally_card_id(id) end)
-      |> Enum.uniq()
+    excludes_includes_levels =
+      Enum.map(names_excludes_levels, fn {cards, excludes_in_level} ->
+        cards_ids = names_to_ids(cards, format)
+        excludes_in_level_ids = names_to_ids(excludes_in_level, format)
 
-    Map.update(criteria, "player_played_cards_excludes", cards, fn existing ->
-      cards ++ existing
-    end)
+        # we want to skip the ones that match, so in the db we want to exclude the cards_ids but include those that have excluded ids
+        %{"exclude" => cards_ids, "include" => excludes_in_level_ids}
+      end)
+
+    Map.put(criteria, "player_played_cards_excludes_includes_levels", excludes_includes_levels)
   end
 
   defp add_excluded_config(criteria, _), do: criteria
+
+  defp names_to_ids(card_names, format) do
+    Backend.Hearthstone.cards([
+      {"format", format},
+      {"names", card_names}
+    ])
+    |> Enum.map(fn %{id: id} -> Hearthstone.DeckTracker.tally_card_id(id) end)
+    |> Enum.uniq()
+  end
 
   defp assign_can_access(%{assigns: %{user: user}} = socket) do
     can_access? = User.can_access?(user, :archetyping) or User.premium?(user)

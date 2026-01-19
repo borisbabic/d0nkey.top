@@ -825,33 +825,39 @@ defmodule Backend.Hearthstone do
   end
 
   def include_cards(query, cards, binding, field \\ :cards) do
-    dynamic =
-      cards
-      |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
-        same_cards_subquery = same_card_ids_query(card_id)
-
-        dynamic(
-          [{^binding, d}],
-          ^dynamic and fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
-        )
-      end)
+    dynamic = include_cards_dynamic(cards, binding, field)
 
     query |> where(^dynamic)
   end
 
   def exclude_cards(query, cards, binding, field \\ :cards) do
-    dynamic =
-      cards
-      |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
-        same_cards_subquery = same_card_ids_query(card_id)
-
-        dynamic(
-          [{^binding, d}],
-          ^dynamic and not fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
-        )
-      end)
+    dynamic = exclude_cards_dynamic(cards, binding, field)
 
     query |> where(^dynamic)
+  end
+
+  def exclude_cards_dynamic(cards, binding, field \\ :cards) do
+    cards
+    |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
+      same_cards_subquery = same_card_ids_query(card_id)
+
+      dynamic(
+        [{^binding, d}],
+        ^dynamic and not fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
+      )
+    end)
+  end
+
+  def include_cards_dynamic(cards, binding, field \\ :cards) do
+    cards
+    |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
+      same_cards_subquery = same_card_ids_query(card_id)
+
+      dynamic(
+        [{^binding, d}],
+        ^dynamic and fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
+      )
+    end)
   end
 
   def same_card_ids_query(card_id) do
