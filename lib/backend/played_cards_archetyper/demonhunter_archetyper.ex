@@ -4,6 +4,59 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @standard_excludes %{
+    :"Blobxigar DH" => [
+      "Moonstone Mauler",
+      "Platysaur",
+      "Glacial Shard",
+      "Crimson Sigil Runner",
+      "Wyvern's Slumber",
+      "Colifero the Artist",
+      "Illidari Inquisitor",
+      "Magtheridon, Unreleased",
+      "Cliff Dive",
+      "Briarspawn Drake",
+      "Illidari"
+    ],
+    :"Broxigar DH" => [
+      "Return Policy",
+      "Blob of Tar",
+      "Ravenous Felhunter",
+      "Hounds of Fury",
+      "The Eternal Hold",
+      "Solitude",
+      "Lasting Legacy"
+    ],
+    :"Ravenous Cliff Dive DH" => [
+      "Platysaur",
+      "Youthful Brewmaster",
+      "Patches the Pilot",
+      "Fae Trickster",
+      "Spirit Peddler",
+      "Remnant of Rage"
+    ],
+    :"Cliff Dive DH " => [
+      "Return Policy",
+      "Blob of Tar",
+      "Ravenous Felhunter",
+      "Hounds of Fury",
+      "The Eternal Hold",
+      "Solitude",
+      "Lasting Legacy",
+      "Colifero the Artist",
+      "Climbing Hook",
+      "Magtheridon, Unreleased",
+      "Elise the Navigator"
+    ],
+    :"No Minion DH" => [
+      "Youthful Brewmaster",
+      "Fae Trickster",
+      "Remnant of Rage",
+      "Cliff Dive",
+      "Blob of Tar"
+    ],
+    :"Peddler DH" => ["Cliff Dive"]
+  }
   @standard_config [
     {:"Quest DH", ["Unleash the Colossus"]},
     {:"Whizbang DH", ["Wish", "Chaos Nova"]},
@@ -16,55 +69,34 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     #    # "Briarspawn Drake",
     #    # "Magtheridon, Unreleased"
     #  ]},
+    {:"Broxigar DH",
+     [
+       "Platysaur",
+       "Glacial Shard",
+       "Youthful Brewmaster",
+       "Moonstone Mauler",
+       "Crimson Sigil Runner",
+       "Immolation Aura"
+     ]},
     {:"No Minion DH",
      [
        "Hounds of Fury",
-       # "Blind Box",
        "The Eternal Hold",
-       "Lasting Legacy"
-       # "Emergency Meeting",
-       # "Mutalisk",
-       # "Nydus Worm",
-       # "Creep Tumor",
-       # "Sigil of Cinder",
-       # "Demonic Deal",
-       # "Solitude",
-       # "Headhunt",
-       # "Aeon Rend"
+       "Solitude",
+       "Lasting Legacy",
+       "Emergency Meeting"
      ]},
     {:"Peddler DH",
      [
        "Spirit Peddler",
        # "Fyrakk the Blazing",
        "Raging Felscreamer",
-       "Window Shopper"
-     ]},
-    {:"Ravenous Cliff Dive DH",
-     [
-       "Colifero the Artist",
-       "Magtheridon, Unreleased",
-       "Climbing Hook",
-       "Blob of Tar",
-       "Ravenous Felhunter"
+       "Window Shopper",
+       "Octosari",
+       "Chrono-Lord Deios",
+       "Plucky Paintfin"
      ]},
     # 5.5
-    {:"Broxigar DH",
-     [
-       "Youthful Brewmaster",
-       "Platysaur",
-       # "Broxigar",
-       "Remnant of Rage",
-       "Crimson Sigil Runner",
-       "Glacial Shard",
-       "Immolation Aura",
-       "The Ceaseless Expanse",
-       "Patches the Pilot",
-       "Paraglide"
-     ]},
-    {:"No Minion DH",
-     [
-       "Solitude"
-     ]},
     {:"Aggro Demon Hunter",
      [
        "Sock Puppet Slitherspear",
@@ -73,27 +105,96 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Slumbering Sprite",
        "Dreamplanner Zephyrs",
        "Living Flame",
-       "Hot Coals",
        "Dreamplanner Zephyrs",
-       "Kayn Sunfury",
-       "Bloodmage Thalnos",
        "Battlefiend",
        "Spirit of the Team"
+     ]},
+    {:"Ravenous Cliff Dive DH",
+     [
+       "Colifero the Artist",
+       "Climbing Hook",
+       "Magtheridon, Unreleased"
      ]},
     {:"Cliff Dive DH",
      [
        "Fae Trickster",
+       "Champions of Azeroth",
+       # "Cham"
        "Sigil of Cinder",
-       "Time-Lost Glaive",
-       "Insect Claw",
-       "Illidari Studies"
+       "Time-Lost Glaive"
+       # "Insect Claw",
+       # "Illidari Studies"
        # "Tuskpiercer"
      ]},
     {:"Ravenous Cliff Dive DH",
      [
-       "Elise the Navigator",
-       "Tuskpiercer",
+       "Briarspawn Drake",
+       "Illidari Inquisitor",
        "Cliff Dive"
+     ]},
+    {:"Dragon Demon Hunter",
+     [
+       "Petal Peddler",
+       "Prescient Slitherdrake",
+       "Giftwrapped Whelp",
+       "Tormented Dreadwing",
+       "Netherspite Historian"
+     ]},
+    # 10.5
+    {:"Blobxigar DH",
+     [
+       "Demolition Renovator",
+       "The Ceaseless Expanse"
+     ]},
+    {:"Ravenous Cliff Dive DH",
+     [
+       "Wyvern's Slumber",
+       "Elise the Navigator"
+     ]},
+    {:"Blobxigar DH",
+     [
+       "Remnant of Rage",
+       "Press the Advantage"
+     ]},
+    {:"Ravenous Cliff Dive DH",
+     [
+       "Blob of Tar",
+       "Ravenous Felhunter",
+       "Return Policy",
+       "Tuskpiercer"
+     ]},
+    {:"Broxigar DH",
+     [
+       "Incindius",
+       "Paraglide",
+       "Press the Advantage",
+       "Axe of Cenarius",
+       "First Portal to Argus",
+       "Dangerous Cliffside",
+       "Illidari Studies",
+       "Patches the Pilot"
+     ]},
+    {:"Blobxigar DH",
+     [
+       "Blob of Tar",
+       "Ravenous Felhunter",
+       "Return Policy",
+       "Tuskpiercer",
+       "Patches the Pilot",
+       "Paraglide",
+       "Incindius",
+       "Dangerous Cliffside",
+       "First Portal to Argus",
+       "Axe of Cenarius"
+     ]},
+    {:"Cliff Dive DH",
+     [
+       "Cliff Dive"
+     ]},
+    {:"Ravenous Cliff Dive DH",
+     [
+       "Infestation",
+       "Grim Harvest"
      ]}
   ]
   @wild_config [
@@ -138,14 +239,14 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
      ]}
   ]
 
-  def standard_config(), do: @standard_config
+  def standard_config(), do: add_excludes(@standard_config, @standard_excludes)
   def wild_config(), do: @wild_config
 
   def standard(card_info) do
-    process_config(@standard_config, card_info, :"Other DH")
+    process_config(standard_config(), card_info, :"Other DH")
   end
 
   def wild(card_info) do
-    process_config(@wild_config, card_info, :"Other DH")
+    process_config(wild_config(), card_info, :"Other DH")
   end
 end
