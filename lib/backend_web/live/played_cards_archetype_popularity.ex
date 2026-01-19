@@ -45,6 +45,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Buttons Rainbow DK" => "Buttons DK",
     "Zerg Unholy DK" => "Unholy DK",
     "Octosari DH" => "Peddler DH",
+    # "Blobxigar DH" => "Broxigar DH",
     # "Ravenous Cliff Dive DH" => "Cliff Dive DH",
     # Maybe not the best
     # "Azshara Druid" => "Hydration Druid",
