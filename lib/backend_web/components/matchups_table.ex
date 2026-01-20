@@ -11,7 +11,9 @@ defmodule Components.MatchupsTable do
   prop(matchups, :any, required: true)
   prop(min_matchup_sample, :integer, default: 1)
   prop(min_archetype_sample, :integer, default: 1)
+  prop(weight_merging_map, :map, default: %{})
   data(custom_matchup_weights, :map, default: %{})
+  data(merged_custom_matchup_weights, :map, default: %{})
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
@@ -52,9 +54,16 @@ defmodule Components.MatchupsTable do
   end
 
   def render(assigns) do
+    assigns =
+      assigns
+      |> assign(
+        merged_custom_matchup_weights:
+          merge_custom_matchup_weights(assigns.custom_matchup_weights, assigns.weight_merging_map)
+      )
+
     ~F"""
       <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
-        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample, @min_matchup_sample, @custom_matchup_weights)}>
+        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample, @min_matchup_sample, @merged_custom_matchup_weights)}>
           <thead class="decklist-headers">
             <tr>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
@@ -76,7 +85,7 @@ defmodule Components.MatchupsTable do
             <tr >
               <.form for={%{}} id="custom_mathchup_popularity" phx-change="update_custom_matchup_weights" phx-target={@myself}>
                 <th :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
-                  <input :if={archetype = Matchups.archetype(matchup)} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@custom_matchup_weights, to_string(archetype))} />
+                  <input :if={archetype = Matchups.archetype(matchup)} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
                 </th>
               </.form>
             </tr>
@@ -95,7 +104,7 @@ defmodule Components.MatchupsTable do
                 </button>
                 {Matchups.archetype(matchup)}
               </td>
-              <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
+              <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
               <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
               </td>
             </tr>
@@ -103,6 +112,20 @@ defmodule Components.MatchupsTable do
         </table>
       </div>
     """
+  end
+
+  defp merge_custom_matchup_weights(base_weights, archetype_merge_map)
+       when is_map(archetype_merge_map) and map_size(archetype_merge_map) > 0 do
+    Enum.group_by(base_weights, fn {key, _value} ->
+      Map.get(archetype_merge_map, key, key)
+    end)
+    |> Map.new(fn {key, weights} ->
+      {key, Enum.sum_by(weights, fn {_, value} -> value end)}
+    end)
+  end
+
+  defp merge_custom_matchup_weights(weights, _custom_matchup_weights) do
+    weights
   end
 
   defp set_custom_matchup_weights(matchups, custom_matchup_weights)
@@ -124,19 +147,20 @@ defmodule Components.MatchupsTable do
     else
       {total_winrate_factor, total_weight} =
         Enum.reduce(weights, {0, 0}, fn {archetype, weight}, {winrate_factor, acc_weight} ->
-          winrate =
-            matchup
-            |> Matchups.opponent_stats(String.to_existing_atom(archetype))
-            |> Map.get(:winrate, 0)
+          case Matchups.opponent_stats(matchup, String.to_existing_atom(archetype)) do
+            %{winrate: winrate, games: games} when games > 0 and is_number(winrate) ->
+              winrate_factor = winrate_factor + winrate * weight
+              acc_weight = acc_weight + weight
 
-          winrate_factor = winrate_factor + winrate * weight
-          acc_weight = acc_weight + weight
+              {winrate_factor, acc_weight}
 
-          {winrate_factor, acc_weight}
+            _ ->
+              {winrate_factor, acc_weight}
+          end
         end)
 
       %{
-        winrate: total_winrate_factor / total_weight,
+        winrate: Util.safe_div(total_winrate_factor, total_weight),
         games: total.games
       }
     end
@@ -145,7 +169,7 @@ defmodule Components.MatchupsTable do
   defp custom_matchup_weights_class(custom_matchup_weights, archetype) do
     with true <- is_map(custom_matchup_weights),
          false <- custom_matchup_weights == %{},
-         nil <- Map.get(custom_matchup_weights, to_string(archetype)) do
+         w when w in [nil, 0] <- Map.get(custom_matchup_weights, to_string(archetype)) do
       # custom matchups used and opponent not present
       "tw-opacity-50"
     else

@@ -683,4 +683,7 @@ defmodule Util do
     IO.puts("#{what} took #{time / 1_000_000} seconds")
     result
   end
+
+  def safe_div(a, b) when is_number(a) and is_number(b) and b > 0, do: a / b
+  def safe_div(_, _), do: 0
 end

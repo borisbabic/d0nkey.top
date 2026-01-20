@@ -62,7 +62,7 @@ defmodule BackendWeb.MatchupsLive do
         <div :if={!@missing_premium && @archetype_stats.loading}>
           Preparing stats...
         </div>
-        <MatchupsTable :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample}/>
+        <MatchupsTable :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample}/>
       </div>
     """
   end
