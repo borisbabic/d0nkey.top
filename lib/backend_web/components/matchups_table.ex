@@ -61,6 +61,7 @@ defmodule Components.MatchupsTable do
               <button :on-click="change_sort" phx-value-sort_by="winrate" phx-value-sort_direction={sort_direction(@sort, "winrate")}>Winrate</button></th>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
               <div class"tw-float-right">
+                <button class="tw-float-left" :on-click="seed_weights" phx-value-total_games={total_games}>Seed Weights</button>
                 <button class="tw-float-right" :on-click="reset_weights">Reset Weights</button>
                 <br>
                 <button :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>
@@ -157,6 +158,32 @@ defmodule Components.MatchupsTable do
       Matchups.total_stats(m)
       |> Map.get(:games, 0)
     end)
+  end
+
+  defp weights_from_popularity(matchups, total_games) do
+    Enum.reduce(matchups, %{}, fn m, acc ->
+      games = Matchups.total_stats(m) |> Map.get(:games, 0)
+      new_weight = Util.percent(games, total_games) |> Kernel.*(10) |> Float.round(0) |> trunc()
+      Map.put(acc, Matchups.archetype(m) |> to_string(), new_weight)
+    end)
+  end
+
+  def handle_event("seed_weights", %{"total_games" => total_games}, socket) do
+    case Integer.parse(total_games) do
+      {total_games, _} when is_integer(total_games) ->
+        custom_weights = weights_from_popularity(socket.assigns.matchups, total_games)
+
+        {:noreply,
+         socket
+         |> assign(custom_matchup_weights: custom_weights)
+         |> push_event("store", %{
+           key: @local_storage_custom_weights_key,
+           data: JSON.encode!(custom_weights)
+         })}
+
+      _ ->
+        {:noreply, socket}
+    end
   end
 
   def handle_event("reset_weights", _, socket) do
