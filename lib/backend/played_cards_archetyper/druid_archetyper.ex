@@ -44,7 +44,7 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Greybough",
        "Eredar Brute",
        "Welcome Home!",
-       "Owlonius Druid",
+       "Owlonius",
        "Lady Azshara",
        "The Well of Eternity",
        "Elise the Navigator",
