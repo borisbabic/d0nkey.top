@@ -80,7 +80,7 @@
           <.navbar_item_link link={~p"/meta?format=4"} display={"Twist"} />
           <.navbar_item_link link={~p"/meta?format=-1&period=brawl&rank=all"} display={"Brawl"} />
         </.navbar_dropdown>
-        <.navbar_item_link link={~p"/matchups"} display={"Matchups (WIP)"} new={:lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-09-13 14:00:00])}/>
+        <.navbar_item_link link={~p"/matchups"} display={"Matchups"} new={:lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-09-13 14:00:00])}/>
         <.navbar_item_link link={~p"/streamer-decks"} display={"Streamer Decks"}/>
         <.navbar_item_link link={~p"/esports"}>Esports</.navbar_item_link>
         <.navbar_dropdown display="Utilities">
