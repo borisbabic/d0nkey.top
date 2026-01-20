@@ -11,7 +11,7 @@ defmodule Components.MatchupsTable do
   prop(matchups, :any, required: true)
   prop(min_matchup_sample, :integer, default: 1)
   prop(min_archetype_sample, :integer, default: 1)
-  prop(custom_matchup_weights, :map, default: %{})
+  data(custom_matchup_weights, :map, default: %{})
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
