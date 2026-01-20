@@ -77,8 +77,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Starship Warrior" => "Control Warrior",
     "Hydration Warrior" => "Control Warrior",
     "Handbuff Warrior" => "Dragon Warrior",
-    "Mech Warrior" => "Boom Wrench Warrior",
-    "Safety Warrior" => "Boom Wrench Warrior",
+    # "Mech Warrior" => "Boom Wrench Warrior",
+    # "Safety Warrior" => "Boom Wrench Warrior",
     # "Ysondre Warrior" => "Dragon Warrior",
     #### WILD
     "XL HL Rainbow DK" => "Highlander DK",
@@ -100,6 +100,10 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "XL HL JtU Quest Druid" => "Highlander Druid",
     "XL Linecracker Druid" => "Linecracker Druid"
   }
+  # hacky, ensuring they exist
+  for {k, v} <- @deck_archetype_mapping do
+    {String.to_atom(k), String.to_atom(v)}
+  end
 
   def mount(_params, session, socket) do
     {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_can_access()}
@@ -652,6 +656,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     |> Enum.map(fn {arch, counts} -> {arch, Enum.sum(counts)} end)
     |> Map.new()
   end
+
+  def deck_archetype_mapping(), do: @deck_archetype_mapping
 
   def handle_event(
         "change_sort",
