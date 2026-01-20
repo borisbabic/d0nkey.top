@@ -34,7 +34,7 @@ defmodule BackendWeb.MatchupsLive do
         </div>
         <FunctionComponents.Ads.below_title/>
         <div class="notification is-warning" :if={show_warning?()} >
-          The "Cliff Dive" versions are only split for miniset games
+          Blobxigar and Broxigar separation is subpar. The Cliff Dive versions are only split for miniset games
         </div>
         <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
         <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
