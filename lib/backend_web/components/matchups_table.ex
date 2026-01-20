@@ -114,6 +114,11 @@ defmodule Components.MatchupsTable do
     """
   end
 
+  def store_weights(socket, weights) do
+    socket
+    |> push_event("store", %{key: @local_storage_custom_weights_key, data: Jason.encode!(weights)})
+  end
+
   defp merge_custom_matchup_weights(base_weights, archetype_merge_map)
        when is_map(archetype_merge_map) and map_size(archetype_merge_map) > 0 do
     Enum.group_by(base_weights, fn {key, _value} ->
@@ -200,10 +205,7 @@ defmodule Components.MatchupsTable do
         {:noreply,
          socket
          |> assign(custom_matchup_weights: custom_weights)
-         |> push_event("store", %{
-           key: @local_storage_custom_weights_key,
-           data: JSON.encode!(custom_weights)
-         })}
+         |> store_weights(custom_weights)}
 
       _ ->
         {:noreply, socket}
@@ -237,7 +239,7 @@ defmodule Components.MatchupsTable do
     {:noreply,
      socket
      |> assign(custom_matchup_weights: custom)
-     |> push_event("store", %{key: @local_storage_custom_weights_key, data: Jason.encode!(custom)})}
+     |> store_weights(custom)}
   end
 
   def handle_event("set_custom_weights", custom_weights, socket) do

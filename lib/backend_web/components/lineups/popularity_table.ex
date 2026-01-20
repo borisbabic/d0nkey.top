@@ -32,6 +32,7 @@ defmodule Components.Lineups.PopularityTable do
           param={"deck_group_size"}
           normalizer={&Util.to_int_or_orig/1}
           selected_as_title={false} />
+        <Components.SeedMatchupsButton id="seed_matchups_button" weights={calculate_weights(@lineups, @lineup_count)}/>
         <Table id={"lineups_table_#{@id}"} data={{archetypes, count} <- lineups_freq(@lineups, @deck_group_size)} striped>
           <Column label={if @deck_group_size > 1, do: "Decks", else: "Deck"}>
             <div class="columns">
@@ -45,6 +46,14 @@ defmodule Components.Lineups.PopularityTable do
         </Table>
       </div>
     """
+  end
+
+  def calculate_weights(lineups, lineup_count) do
+    lineups_freq(lineups, 1)
+    |> Map.new(fn {[archetype], count} ->
+      weight = Util.percent(count, lineup_count) |> Kernel.*(10) |> Float.round(0) |> trunc()
+      {to_string(archetype), weight}
+    end)
   end
 
   defp lineups_freq(lineups, deck_group_size) do
