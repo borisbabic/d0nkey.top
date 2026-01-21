@@ -24,10 +24,29 @@ defmodule Components.WinrateTag do
   prop(min_for_color, :number, default: nil)
   prop(user, :map, from_context: :user)
   prop(show_winrate, :boolean, default: true)
+  prop(gradual_increase_limit, :number, default: 10)
 
   def render(assigns) do
     ~F"""
-      <Stats.winrate_tag flip={@flip} min_for_color={@min_for_color} offset={@offset} min_sample={@min_sample} winrate={@winrate} round_digits={@round_digits} positive_hue={User.positive_hue(@user, @positive_hue)} negative_hue={User.negative_hue(@user, @negative_hue)} tag_name={@tag_name} class={@class} lightness={@lightness} base_saturation={@base_saturation} sample={@sample} impact={@impact} show_sample={@show_sample} win_loss={@win_loss} show_winrate={@show_winrate}/>
+      <Stats.winrate_tag
+      flip={@flip}
+      min_for_color={@min_for_color}
+      offset={@offset}
+      min_sample={@min_sample}
+      winrate={@winrate}
+      round_digits={@round_digits}
+      positive_hue={User.positive_hue(@user, @positive_hue)}
+      negative_hue={User.negative_hue(@user, @negative_hue)}
+      tag_name={@tag_name}
+      class={@class}
+      lightness={@lightness}
+      base_saturation={@base_saturation}
+      sample={@sample}
+      impact={@impact}
+      show_sample={@show_sample}
+      win_loss={@win_loss}
+      show_winrate={@show_winrate}
+      gradual_increase_limit={@gradual_increase_limit}/>
     """
   end
 
@@ -37,7 +56,8 @@ defmodule Components.WinrateTag do
                 negative_hue,
                 lightness,
                 base_saturation,
-                sample \\ nil
+                sample \\ nil,
+                gradual_increase_limit \\ 1
               ),
               to: Stats
 end

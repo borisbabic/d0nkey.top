@@ -20,10 +20,11 @@ defmodule FunctionComponents.Stats do
   attr :min_for_color, :integer, default: nil
   attr :flip, :boolean, default: false
   attr :show_winrate, :boolean, default: true
+  attr :gradual_increase_limit, :integer, default: 10
 
   def winrate_tag(assigns) do
     ~H"""
-    <.dynamic_tag :if={sufficient_sample(@sample, @min_sample)} tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, flip(@positive_hue, @negative_hue, @flip), flip(@negative_hue, @positive_hue, @flip), @lightness, @base_saturation), else: ""}>
+    <.dynamic_tag :if={sufficient_sample(@sample, @min_sample)} tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, flip(@positive_hue, @negative_hue, @flip), flip(@negative_hue, @positive_hue, @flip), @lightness, @base_saturation, @sample, @gradual_increase_limit), else: ""}>
       <span class={["tw-text-center", use_color?(@sample, @min_sample, @winrate, @min_for_color) && "basic-black-text"]}>
         <span :if={@show_winrate}>{round(@winrate, @round_digits)}</span>
         <sup :if={@show_sample}>{@sample}</sup>
@@ -74,12 +75,21 @@ defmodule FunctionComponents.Stats do
         negative_hue,
         lightness,
         base_saturation,
-        sample \\ nil
+        sample \\ nil,
+        gradual_increase_limit \\ 1
       )
 
-  def winrate_style(_, _, _, _, _, 0), do: ""
+  def winrate_style(_, _, _, _, _, 0, gradual_increase_limit), do: ""
 
-  def winrate_style(winrate, positive_hue, negative_hue, lightness, base_saturation, _sample) do
+  def winrate_style(
+        winrate,
+        positive_hue,
+        negative_hue,
+        lightness,
+        base_saturation,
+        sample,
+        gradual_increase_limit
+      ) do
     hue =
       if winrate >= 0.5 do
         positive_hue
@@ -87,7 +97,16 @@ defmodule FunctionComponents.Stats do
         negative_hue
       end
 
-    saturation = base_saturation + (100 - base_saturation) * (abs(winrate - 0.5) / 0.5)
+    gradual_factor =
+      if sample > gradual_increase_limit do
+        1
+      else
+        sample / gradual_increase_limit
+      end
+
+    saturation =
+      base_saturation + (100 - base_saturation) * (abs(winrate - 0.5) / 0.5) * gradual_factor
+
     "background-color:hsl(#{hue}, #{saturation}%, #{lightness}%);"
   end
 
