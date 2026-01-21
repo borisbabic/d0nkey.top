@@ -121,8 +121,6 @@ defmodule BackendWeb.BattlefyMatchLive do
   end
 
   def times(%{top: top, bottom: bottom}, top_decks, bottom_decks) do
-    now = NaiveDateTime.utc_now()
-
     [
       %{
         top: "Check In",

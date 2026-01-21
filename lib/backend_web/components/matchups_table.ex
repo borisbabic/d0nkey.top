@@ -12,6 +12,7 @@ defmodule Components.MatchupsTable do
   prop(min_matchup_sample, :integer, default: 1)
   prop(min_archetype_sample, :integer, default: 1)
   prop(weight_merging_map, :map, default: %{})
+  prop(win_loss, :boolean, default: false)
   data(custom_matchup_weights, :map, default: %{})
   data(merged_custom_matchup_weights, :map, default: %{})
   data(headers_by_opponent, :boolean, default: false)
@@ -98,7 +99,7 @@ defmodule Components.MatchupsTable do
           <tbody>
             <tr class="tw-h-[30px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
               <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} >
-                <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
+                <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
               </td>
               <td class={"tw-min-w-[180px]", "tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
@@ -107,7 +108,7 @@ defmodule Components.MatchupsTable do
                 {Matchups.archetype(matchup)}
               </td>
               <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_headers, fn opp -> {opp, Matchups.opponent_stats(matchup, opp)} end)}>
-              <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
+              <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
               </td>
             </tr>
           </tbody>
