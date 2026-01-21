@@ -102,6 +102,9 @@
           <.navbar_item_link link={~p"/about"} display={"About"} />
         </.navbar_dropdown>
         <%!-- <.navbar_item_link link={~p"/mt/playoffs/summer_2025"}>Playoffs</.navbar_item_link> --%>
+        <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2026-01-28 12:12:00]) == :lt} href={~p"/esports/2026/qualifiers/winter-week1"}>
+            <span>Qualifiers</span>
+        </a>
         <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-12-25 12:12:00]) == :lt} href={~p"/wc/2025"}>
             <span>🏆 Worlds</span>
             <%= if Twitch.HearthstoneLive.twitch_display_live?("playhearthstone") do %>
