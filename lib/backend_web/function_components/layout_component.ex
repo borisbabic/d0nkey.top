@@ -43,7 +43,8 @@ defmodule FunctionComponents.LayoutComponent do
 
   attr :link, :string, required: true
   attr :display, :string, required: false
-  attr :new, :boolean, default: false
+  attr :new, :boolean, default: nil, doc: "Defaults to false if not set and no cutoff"
+  attr :new_cutoff, :map, default: nil, doc: "NaiveDateTime cutoff until which new will be shown"
   slot :inner_block, required: false
 
   def navbar_item_link(assigns) do
@@ -54,12 +55,20 @@ defmodule FunctionComponents.LayoutComponent do
       <% else %>
         <%= @display %>
       <% end %>
-      <%= if @new do %>
+      <%= if new(@new, @new_cutoff) do %>
         <p><sup class="is-size-7 has-text-info"> New!</sup></p>
       <% end %>
       </Dropdown.item>
     """
   end
+
+  defp new(new, _cutoff) when is_boolean(new), do: new
+
+  defp new(_, %NaiveDateTime{} = cutoff) do
+    :lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), cutoff)
+  end
+
+  defp new(_new, _cutoff), do: false
 
   defp init_to_false(to_false) do
     to_false

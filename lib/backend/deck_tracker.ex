@@ -185,6 +185,15 @@ defmodule Hearthstone.DeckTracker do
     end)
   end
 
+  @ignored_criteria [:matchups_reducer_opts]
+  def remove_ignored_criteria(criteria) do
+    criteria
+    |> Enum.filter(fn
+      {k, _} when k in @ignored_criteria -> false
+      _ -> true
+    end)
+  end
+
   def get_latest_agg_log_entry() do
     query = from al in AggregationLog, order_by: [desc: :inserted_at], limit: 1
 
@@ -1215,6 +1224,7 @@ defmodule Hearthstone.DeckTracker do
   defp build_games_query(query, criteria) do
     criteria
     |> unhardcode_criteria()
+    |> remove_ignored_criteria()
     |> Enum.reduce(query, &compose_games_query/2)
   end
 
@@ -3429,6 +3439,8 @@ defmodule Hearthstone.DeckTracker do
          {"rank", rank} <- List.keyfind(criteria, "rank", 0),
          {"format", format} <- List.keyfind(criteria, "format", 0, {"format", 2}),
          {"force_fresh", "no"} <- List.keyfind(criteria, "force_fresh", 0, {"force_fresh", "no"}),
+         {"player_btag", :nope} <-
+           List.keyfind(criteria, "player_btag", 0, {"player_btag", :nope}),
          {"opponent_class", "any"} <-
            List.keyfind(criteria, "opponent_class", 0, {"opponent_class", "any"}),
          {"player_has_coin", "any"} <-
@@ -3463,7 +3475,7 @@ defmodule Hearthstone.DeckTracker do
 
         stats =
           repo.stream(query)
-          |> Enum.reduce(%{}, &matchup_stats_reducer/2)
+          |> Enum.reduce(%{}, matchup_stats_reducer(criteria))
 
         {:ok, stats}
       end,
@@ -3482,7 +3494,7 @@ defmodule Hearthstone.DeckTracker do
           repo.stream(query)
           |> Stream.chunk_every(chunk_size, chunk_size, [])
           |> Enum.reduce(%{}, fn chunk, carry ->
-            Enum.reduce(chunk, carry, &matchup_stats_reducer/2)
+            Enum.reduce(chunk, carry, matchup_stats_reducer(criteria))
           end)
 
         {:ok, stats}
@@ -3497,27 +3509,67 @@ defmodule Hearthstone.DeckTracker do
     {:ok,
      decisive_archetype_results_query(criteria)
      |> Repo.all(repo_opts)
-     |> Enum.reduce(%{}, &matchup_stats_reducer/2)}
+     |> Enum.reduce(%{}, matchup_stats_reducer(criteria))}
   end
 
-  defp matchup_stats_reducer(
-         %{
-           player_archetype: player_archetype,
-           opponent_archetype: opponent_archetype,
-           status: status
-         },
-         carry
-       ) do
-    {player_field, opponent_field} =
-      case status do
-        :win -> {:wins, :losses}
-        :loss -> {:losses, :wins}
-      end
+  defp matchup_stats_reducer(criteria) do
+    {:matchups_reducer_opts, opts} =
+      List.keyfind(
+        criteria,
+        :matchups_reducer_opts,
+        0,
+        {:matchups_reducer_opts, []}
+      )
 
-    carry
-    |> ArchetypeStats.add_result_to_bag(player_archetype, opponent_archetype, player_field)
-    |> ArchetypeStats.add_result_to_bag(opponent_archetype, player_archetype, opponent_field)
+    {:player_transformer, player_transformer} =
+      List.keyfind(opts, :player_transformer, 0, {:player_transformer, & &1})
+
+    {:opponent_transformer, opponent_transformer} =
+      List.keyfind(opts, :opponent_transformer, 0, {:opponent_transformer, & &1})
+
+    {:include_opponent_perspective, opp_perspective} =
+      List.keyfind(
+        opts,
+        :include_opponent_perspective,
+        0,
+        {:include_opponent_perspective, true}
+      )
+
+    fn
+      %{
+        player_archetype: player_archetype,
+        opponent_archetype: opponent_archetype,
+        status: status
+      },
+      carry ->
+        {player_field, opponent_field} =
+          case status do
+            :win -> {:wins, :losses}
+            :loss -> {:losses, :wins}
+          end
+
+        player = player_transformer.(player_archetype)
+        opponent = opponent_transformer.(opponent_archetype)
+
+        with_player = ArchetypeStats.add_result_to_bag(carry, player, opponent, player_field)
+
+        if opp_perspective do
+          ArchetypeStats.add_result_to_bag(with_player, opponent, player, opponent_field)
+        else
+          with_player
+        end
+    end
   end
+
+  # defp matchup_stats_reducer(
+  #        %{
+  #          player_archetype: player_archetype,
+  #          opponent_archetype: opponent_archetype,
+  #          status: status
+  #        },
+  #        carry
+  #      ) do
+  # end
 
   def archetype_mapping(criteria, repo_opts \\ []) do
     query =

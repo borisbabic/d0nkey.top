@@ -369,6 +369,7 @@ defmodule BackendWeb.Router do
 
     live("/my-replays", MyReplaysLive)
     live("/my-decks", MyDecksLive)
+    live("/my-matchups", MyMatchupsLive)
     live("/collection", CollectionLive)
 
     live("/groups/:group_id/decks", GroupDecksLive)

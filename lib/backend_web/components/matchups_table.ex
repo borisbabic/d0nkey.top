@@ -14,6 +14,8 @@ defmodule Components.MatchupsTable do
   prop(weight_merging_map, :map, default: %{})
   data(custom_matchup_weights, :map, default: %{})
   data(merged_custom_matchup_weights, :map, default: %{})
+  data(headers_by_opponent, :boolean, default: false)
+  data(show_popularity, :boolean, default: true)
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
@@ -63,34 +65,34 @@ defmodule Components.MatchupsTable do
 
     ~F"""
       <div class="table-scrolling-sticky-wrapper" id="matchups_table_wrapper" phx-hook="LocalStorage">
-        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample, @min_matchup_sample, @merged_custom_matchup_weights)}>
+        <table class="tw-text-black tw-border-collapse tw-table-auto tw-text-center" :if={{sorted_matchups, sorted_headers, total_games} = favorited_and_sorted_matchups(@matchups, @favorited, @sort, @min_archetype_sample, @min_matchup_sample, @merged_custom_matchup_weights, @headers_by_opponent)}>
           <thead class="decklist-headers">
             <tr>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
               <button :on-click="change_sort" phx-value-sort_by="winrate" phx-value-sort_direction={sort_direction(@sort, "winrate")}>Winrate</button></th>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
-              <div class"tw-float-right">
-                <button class="tw-float-left" :on-click="seed_weights" phx-value-total_games={total_games}>Seed Weights</button>
+              <div class="tw-float-right">
+                <button class="tw-float-left" :if={@show_popularity} :on-click="seed_weights" phx-value-total_games={total_games}>Seed Weights</button>
                 <button class="tw-float-right" :on-click="reset_weights">Reset Weights</button>
                 <br>
-                <button :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>
+                <button :if={@show_popularity} :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>
                 Popularity:</button>
               </div>
               <button :on-click="change_sort" phx-value-sort_by="archetype" class="" phx-value-sort_direction={sort_direction(@sort, "archetype", "asc")}>Archetype</button>
             </th>
-            <th :for={matchup <- sorted_matchups} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
-              <button :on-click="change_sort" phx-value-sort_by={"opponent_#{Matchups.archetype(matchup)}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{Matchups.archetype(matchup)}", "desc")}> {Matchups.archetype(matchup)}</button>
+            <th :for={archetype <- sorted_headers} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(archetype) |> String.downcase()}>
+              <button :on-click="change_sort" phx-value-sort_by={"opponent_#{archetype}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{archetype}", "desc")}> {archetype}</button>
             </th>
             </tr>
             <tr >
               <.form for={%{}} id="custom_mathchup_popularity" phx-change="update_custom_matchup_weights" phx-target={@myself}>
-                <th :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
-                  <input :if={archetype = Matchups.archetype(matchup)} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
+                <th :for={archetype <- sorted_headers} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
+                  <input :if={archetype = archetype} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
                 </th>
               </.form>
             </tr>
             <tr >
-              <th :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700"> {Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}%</th>
+              <th :if={@show_popularity} :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700"> {Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}%</th>
             </tr>
           </thead>
           <tbody>
@@ -98,13 +100,13 @@ defmodule Components.MatchupsTable do
               <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} >
                 <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
               </td>
-              <td class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
+              <td class={"tw-min-w-[180px]", "tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
                   <HeroIcons.star filled={to_string(Matchups.archetype(matchup)) in @favorited}/>
                 </button>
                 {Matchups.archetype(matchup)}
               </td>
-              <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_matchups, fn opp -> {Matchups.archetype(opp), Matchups.opponent_stats(matchup, opp)} end)}>
+              <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_headers, fn opp -> {opp, Matchups.opponent_stats(matchup, opp)} end)}>
               <WinrateTag tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
               </td>
             </tr>
@@ -302,7 +304,8 @@ defmodule Components.MatchupsTable do
          sort,
          min_archetype_sample,
          min_matchup_sample,
-         custom_matchup_weights
+         custom_matchup_weights,
+         headers_by_opponent
        ) do
     sort_by = Map.get(sort, "sort_by", "games")
     direction_raw = Map.get(sort, "sort_direction", "desc")
@@ -329,7 +332,17 @@ defmodule Components.MatchupsTable do
       end)
 
     sorted = Enum.sort_by(rest, mapper, direction)
-    {favorited ++ sorted, total}
+
+    sorted_headers =
+      if headers_by_opponent do
+        Enum.flat_map(matchups, &Matchups.all_opponents/1)
+        |> Enum.uniq()
+        |> Enum.sort_by(&archetype_sort_key/1)
+      else
+        sorted |> Enum.map(&Matchups.archetype/1)
+      end
+
+    {favorited ++ sorted, sorted_headers, total}
   end
 
   defp sort_mapper("games", _) do
@@ -362,9 +375,13 @@ defmodule Components.MatchupsTable do
   defp sort_mapper("archetype", _) do
     fn m ->
       archetype = Matchups.archetype(m)
-      class = Backend.Hearthstone.Deck.extract_class(archetype)
-      "#{class}#{archetype}"
+      archetype_sort_key(archetype)
     end
+  end
+
+  defp archetype_sort_key(archetype) do
+    class = Backend.Hearthstone.Deck.extract_class(archetype)
+    "#{class}#{archetype}"
   end
 
   defp normalize_archetype(archetype), do: to_string(archetype)

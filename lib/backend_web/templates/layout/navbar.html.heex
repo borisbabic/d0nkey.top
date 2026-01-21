@@ -17,10 +17,11 @@
           <.navbar_dropdown display={@user}>
             <.navbar_item_link link={~p"/player-profile/#{@user}"} display={"Player Profile"} />
             <.navbar_item_link link={~p"/deck-sheets"} display={"Deck Sheets"} />
+            <.navbar_item_link link={~p"/my-matchups"} display={"My Matchups"} new_cutoff={~N[2026-02-07 12:12:12]}/>
             <.navbar_item_link link={~p"/my-decks"} display={"My Decks"} />
             <.navbar_item_link link={~p"/my-replays"} display={"My Replays"} />
             <.navbar_item_link link={~p"/my-groups"} display={"My Groups"} />
-            <.navbar_item_link link={~p"/collection"} display={"Collection"} new={:lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-07-21 12:00:00])} />
+            <.navbar_item_link link={~p"/collection"} display={"Collection"} />
             <%= if @conn |> user() |> battlefy?() do %>
               <.navbar_item_link link={~p"/battlefy/user-tournaments/#{user(@conn).battlefy_slug}"} display="My Battlefy Tournaments" />
             <% end %>
@@ -80,7 +81,7 @@
           <.navbar_item_link link={~p"/meta?format=4"} display={"Twist"} />
           <.navbar_item_link link={~p"/meta?format=-1&period=brawl&rank=all"} display={"Brawl"} />
         </.navbar_dropdown>
-        <.navbar_item_link link={~p"/matchups"} display={"Matchups"} new={:lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-09-13 14:00:00])}/>
+        <.navbar_item_link link={~p"/matchups"} display={"Matchups"} />
         <.navbar_item_link link={~p"/streamer-decks"} display={"Streamer Decks"}/>
         <.navbar_item_link link={~p"/esports"}>Esports</.navbar_item_link>
         <.navbar_dropdown display="Utilities">

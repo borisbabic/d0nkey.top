@@ -8,6 +8,9 @@ defprotocol Backend.Hearthstone.Matchups do
 
   @spec opponent_stats(t, atom() | t) :: stats()
   def opponent_stats(matchups, opponent)
+
+  @spec all_opponents(t) :: [atom()]
+  def all_opponents(matchups)
 end
 
 defimpl Backend.Hearthstone.Matchups, for: Backend.Tournaments.ArchetypeStats do
@@ -32,6 +35,10 @@ defimpl Backend.Hearthstone.Matchups, for: Backend.Tournaments.ArchetypeStats do
     end
   end
 
+  def all_opponents(%{heads_up: heads_up}) do
+    heads_up |> Map.keys() |> Enum.uniq()
+  end
+
   defp wins_losses_to_stats(w, l) do
     wins = w || 0
     losses = l || 0
@@ -52,6 +59,10 @@ defimpl Backend.Hearthstone.Matchups, for: Tuple do
     Matchups.opponent_stats(matchups, opponent)
   end
 
+  def all_opponents({_, matchups}) do
+    Matchups.all_opponents(matchups)
+  end
+
   def total_stats({_, matchups}), do: Matchups.total_stats(matchups)
 end
 
@@ -68,6 +79,14 @@ defimpl Backend.Hearthstone.Matchups, for: Map do
     do: Matchups.opponent_stats(matchups, opponent)
 
   def opponent_stats(_, _opponent), do: empty_stats()
+
+  def all_opponents(%{all_opponents: all_opponents}), do: all_opponents
+
+  def all_opponents(%{matchups: matchups}) do
+    Matchups.all_opponents(matchups)
+  end
+
+  def all_opponents(_), do: []
 
   def total_stats(%{total_stats: total_stats}), do: total_stats
   def total_stats(%{matchups: matchups}), do: Matchups.total_stats(matchups)
