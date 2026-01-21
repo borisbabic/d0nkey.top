@@ -1,6 +1,7 @@
 defmodule BackendWeb.StreamingView do
   use BackendWeb, :view
 
+  alias Backend.UserManager.User
   alias Backend.Hearthstone.Deck
   alias Backend.Streaming.Streamer
   alias Backend.Streaming.StreamerDeck
@@ -83,7 +84,7 @@ defmodule BackendWeb.StreamingView do
           best_legend_rank: legend_rank(sd.best_legend_rank),
           worst_legend_rank: legend_rank(sd.worst_legend_rank),
           latest_legend_rank: legend_rank(sd.latest_legend_rank),
-          win_loss: win_loss(sd),
+          win_loss: win_loss(sd, conn),
           amount_played: amount_played(sd),
           archetype: Deck.archetype(sd.deck),
           links: links(sd)
@@ -148,26 +149,31 @@ defmodule BackendWeb.StreamingView do
   #   end)
   # end
 
-  def win_loss(sd = %{wins: w, losses: l}) do
+  defp win_loss(sd = %{wins: wins, losses: losses}, conn) do
     winrate = StreamerDeck.winrate(sd)
 
-    style =
-      if w + l > 5 do
-        Components.WinrateTag.winrate_style(winrate, 120, 0, 50, 5)
-      else
-        ""
-      end
-
     if winrate do
-      assigns = %{
-        wins: w,
-        losses: l,
-        style: style
+      base_assigns = %{
+        sample: wins + losses,
+        winrate: winrate,
+        show_winrate: false,
+        class: "tag",
+        tag_name: "span",
+        win_loss: true
       }
 
-      ~H"""
-      <div class="tag" style={@style}><%="#{@wins} - #{@losses}"%></div>
-      """
+      assigns =
+        case BackendWeb.AuthUtils.user(conn) do
+          %User{} = user ->
+            base_assigns
+            |> Map.put(:positive_hue, User.positive_hue(user, 120))
+            |> Map.put(:negative_hue, User.negative_hue(user, 0))
+
+          _ ->
+            base_assigns
+        end
+
+      FunctionComponents.Stats.winrate_tag(assigns)
     else
       ""
     end
