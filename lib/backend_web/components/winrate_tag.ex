@@ -23,10 +23,11 @@ defmodule Components.WinrateTag do
   prop(win_loss, :any, default: nil)
   prop(min_for_color, :number, default: nil)
   prop(user, :map, from_context: :user)
+  prop(show_winrate, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
-      <Stats.winrate_tag flip={@flip} min_for_color={@min_for_color} offset={@offset} min_sample={@min_sample} winrate={@winrate} round_digits={@round_digits} positive_hue={User.positive_hue(@user, @positive_hue)} negative_hue={User.negative_hue(@user, @negative_hue)} tag_name={@tag_name} class={@class} lightness={@lightness} base_saturation={@base_saturation} sample={@sample} impact={@impact} show_sample={@show_sample}/>
+      <Stats.winrate_tag flip={@flip} min_for_color={@min_for_color} offset={@offset} min_sample={@min_sample} winrate={@winrate} round_digits={@round_digits} positive_hue={User.positive_hue(@user, @positive_hue)} negative_hue={User.negative_hue(@user, @negative_hue)} tag_name={@tag_name} class={@class} lightness={@lightness} base_saturation={@base_saturation} sample={@sample} impact={@impact} show_sample={@show_sample} win_loss={@win_loss} show_winrate={@show_winrate}/>
     """
   end
 

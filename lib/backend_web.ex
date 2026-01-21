@@ -150,6 +150,16 @@ defmodule BackendWeb do
 
       unquote(view_helpers())
 
+      def assign_optional(socket, params, assign, key \\ nil) do
+        with nil <- Map.get(params, key),
+             nil <- Map.get(params, assign),
+             nil <- Map.get(params, to_string(assign)) do
+          socket
+        else
+          val -> assign(socket, assign, val)
+        end
+      end
+
       def user_from_context(assigns) do
         Surface.Components.Context.get(assigns, :user)
       end

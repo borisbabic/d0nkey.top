@@ -19,17 +19,29 @@ defmodule FunctionComponents.Stats do
   attr :min_sample, :integer, default: 1
   attr :min_for_color, :integer, default: nil
   attr :flip, :boolean, default: false
+  attr :show_winrate, :boolean, default: true
 
   def winrate_tag(assigns) do
     ~H"""
     <.dynamic_tag :if={sufficient_sample(@sample, @min_sample)} tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, flip(@positive_hue, @negative_hue, @flip), flip(@negative_hue, @positive_hue, @flip), @lightness, @base_saturation), else: ""}>
       <span class={["tw-text-center", use_color?(@sample, @min_sample, @winrate, @min_for_color) && "basic-black-text"]}>
-        {round(@winrate, @round_digits)}
+        <span :if={@show_winrate}>{round(@winrate, @round_digits)}</span>
         <sup :if={@show_sample}>{@sample}</sup>
-        <span :if={@win_loss}>({@win_loss.wins} - {@win_loss.losses})</span>
+        <span :if={@win_loss}>{win_loss(@win_loss, @winrate, @sample, @show_winrate)}</span>
       </span>
     </.dynamic_tag>
     """
+  end
+
+  defp win_loss(%{wins: wins, losses: losses} = win_loss, _, _, false), do: "#{wins} - #{losses}"
+  defp win_loss(%{wins: wins, losses: losses} = win_loss, _, _, true), do: "(#{wins} - #{losses})"
+
+  defp win_loss(true, winrate, sample, show_winrate) when is_integer(sample) and sample > 0 do
+    wins = Float.round(winrate * sample, 0) |> trunc()
+    losses = sample - wins
+
+    %{wins: wins, losses: losses}
+    |> win_loss(nil, nil, show_winrate)
   end
 
   defp flip(_hue1, hue2, true), do: hue2

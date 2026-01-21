@@ -21,8 +21,9 @@ defmodule Components.MatchupsExplorer do
   prop(path_params, :any, default: nil)
   prop(weight_merging_map, :map, default: %{})
   prop(live_view, :module, required: true)
-  prop(player_perspective, :string, default: "archetype")
-  prop(opponent_perspective, :string, default: "archetype")
+  data(player_perspective, :string, default: "archetype")
+  data(opponent_perspective, :string, default: "archetype")
+  data(win_loss_percentage, :string, default: "percentage")
   data(user, :map, from_context: :user)
   data(missing_premium, :boolean, default: false)
   data(criteria, :map)
@@ -57,44 +58,60 @@ defmodule Components.MatchupsExplorer do
         selected_as_title={false}
         normalized={&Util.to_int_or_orig/1}
         />
-        <button class="button" :on-click="toggle_player_perspective">Player: {String.capitalize(@player_perspective)} </button>
-        <button class="button" :on-click="toggle_opponent_perspective">Opponent: {String.capitalize(@opponent_perspective)} </button>
+        <LivePatchDropdown
+          id="player_perspective"
+          :if={@filter_context == :personal}
+          options={[{"class", "Class"}, {"archetype", "Archetype"}]}
+          title={"Player Perspective"}
+          param={"player_perspective"}
+          current_val={@player_perspective}
+          selected_as_title={true}
+          selected_as_title_prefix={"Player: "}
+          />
+        <LivePatchDropdown
+          :if={@filter_context == :personal}
+          id="opponent_perspective"
+          options={[{"class", "Class"}, {"archetype", "Archetype"}]}
+          title={"Opponent Perspective"}
+          param={"opponent_perspective"}
+          current_val={@opponent_perspective}
+          selected_as_title={true}
+          selected_as_title_prefix={"Opponent: "}
+          />
+        <LivePatchDropdown
+          :if={@filter_context == :personal}
+          id="win_loss_percentage"
+          options={[{"win_loss", "Win-Loss"}, {"percentage", "Percentage %"}]}
+          title={"Win-Loss/Percentage"}
+          param={"win_loss_percentage"}
+          current_val={@win_loss_percentage}
+          selected_as_title={true}
+          />
       <ForceFreshDropdown :if={@premium_filters && @filter_context != :personal} id="force_fresh_dropdown" />
       <div :if={@missing_premium} class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
       <div :if={!@missing_premium && @archetype_stats.loading}>
         Preparing stats...
       </div>
-      <MatchupsTable :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} weight_merging_map={@weight_merging_map} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample} headers_by_opponent={@filter_context == :personal} show_popularity={@filter_context != :personal}/>
+      <MatchupsTable win_loss={@win_loss_percentage == "win_loss"} :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} weight_merging_map={@weight_merging_map} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample} headers_by_opponent={@filter_context == :personal} show_popularity={@filter_context != :personal}/>
     </div>
     """
   end
 
-  def handle_event("toggle_opponent_perspective", _, socket) do
-    toggle_perspective_event(socket, :opponent_perspective)
-  end
-
-  def handle_event("toggle_player_perspective", _, socket) do
-    toggle_perspective_event(socket, :player_perspective)
-  end
-
-  defp toggle_perspective_event(%{assigns: assigns} = old_socket, perspective_key) do
-    new_perspective = assigns[perspective_key] |> toggle_perspective()
-
-    socket =
-      old_socket
-      |> assign(perspective_key, new_perspective)
-
-    old_criteria = old_socket.assigns.criteria
-    criteria = set_matchups_reducer_opts(old_criteria, socket.assigns)
-    {:noreply, socket |> assign(criteria: criteria) |> fetch_matchups(old_criteria, nil)}
-  end
-
-  defp toggle_perspective("archetype"), do: "class"
-  defp toggle_perspective(_), do: "archetype"
-
   def update(assigns_raw, socket_raw) do
-    socket = socket_raw |> assign(assigns_raw)
-    params = assigns_raw.params
+    socket =
+      socket_raw
+      |> assign(assigns_raw)
+      |> assign_optional(assigns_raw.params, :player_perspective)
+      |> assign_optional(assigns_raw.params, :opponent_perspective)
+      |> assign_optional(assigns_raw.params, :win_loss_percentage)
+
+    params =
+      Map.drop(assigns_raw.params, [
+        "player_perspective",
+        "opponent_perspective",
+        "win_loss_percentage"
+      ])
+
     default = default_criteria(params)
 
     criteria =
@@ -124,6 +141,8 @@ defmodule Components.MatchupsExplorer do
       else
         user_has_premium?(socket.assigns)
       end
+
+    assigns_raw.params
 
     if needs_premium? and !user_has_premium?(socket.assigns) do
       {:ok, assign(socket, missing_premium: true, updated_at: updated_at)}
