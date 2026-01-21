@@ -105,21 +105,21 @@ defmodule Components.MatchupsExplorer do
       |> set_matchups_reducer_opts(socket.assigns)
 
     min_matchup_sample =
-      Map.get(params, "min_matchup_sample", assigns_raw.default_min_matchup_sample)
+      Map.get(params, "min_matchup_sample", socket.assigns.default_min_matchup_sample)
       |> Util.to_int_or_orig()
 
     min_archetype_sample =
-      Map.get(params, "min_archetype_sample", assigns_raw.default_min_archetype_sample)
+      Map.get(params, "min_archetype_sample", socket.assigns.default_min_archetype_sample)
       |> Util.to_int_or_orig()
 
     {needs_premium?, updated_at, matchups} =
       case Hearthstone.DeckTracker.aggregated_matchups(criteria) do
         {:ok, %{matchups: matchups, updated_at: updated_at}} -> {false, updated_at, matchups}
-        _ -> {assigns_raw.filter_context == :public and true, nil, nil}
+        _ -> {socket.assigns.filter_context == :public and true, nil, nil}
       end
 
     premium_filters =
-      if assigns_raw.filter_context == :personal do
+      if socket.assigns.filter_context == :personal do
         true
       else
         user_has_premium?(socket.assigns)
@@ -221,7 +221,7 @@ defmodule Components.MatchupsExplorer do
     |> Components.LivePatchDropdown.update_context(
       assigns.live_view,
       assigns.params,
-      nil,
+      assigns.path_params,
       Map.merge(default_criteria(assigns.criteria), assigns.criteria)
     )
   end

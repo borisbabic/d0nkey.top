@@ -39,6 +39,9 @@ defmodule BackendWeb.GroupLive do
                 <div class="level-item" :if={membership}>
                   <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupDecksLive, @group_id)}>Group Decks</a>
                 </div>
+                <div class="level-item" :if={membership}>
+                  <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupMatchupsLive, @group_id)}>Group Matchups</a>
+                </div>
                 <div class="level-item" :if={membership && !GroupMembership.owner?(membership)}>
                   <button class="is-link button" :on-click="leave_group"}>Leave Group</button>
                 </div>
