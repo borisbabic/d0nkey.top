@@ -10,6 +10,7 @@ defmodule Components.Filter.RegionDropdown do
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
   prop(filter_context, :atom, default: :public)
+  prop(warning, :boolean, default: false)
   prop(live_view, :module, required: true)
   prop(class, :css_class, default: nil)
 
@@ -29,6 +30,7 @@ defmodule Components.Filter.RegionDropdown do
           selected_to_top={false}
           selected_as_title={false}
           default_selector={default_selector(@filter_context)}
+          warning={@warning}
           live_view={@live_view} />
       </span>
     """

@@ -18,5 +18,4 @@ defmodule Components.DeckStats do
 
   def round_winrate(val) when is_float(val), do: Float.round(val * 100, 1)
   def round_winrate(val), do: val
-  # def winrate_style(winrate), do: Components.WinrateTag.winrate_style(winrate)
 end

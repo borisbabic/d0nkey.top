@@ -72,7 +72,7 @@ defmodule Components.MatchupsTable do
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
               <button :on-click="change_sort" phx-value-sort_by="winrate" phx-value-sort_direction={sort_direction(@sort, "winrate")}>Winrate</button></th>
             <th rowspan="3" class="tw-text-gray-300 tw-align-bottom tw-bg-gray-700">
-              <div class="tw-float-right">
+              <div>
                 <button class="tw-float-left" :if={@show_popularity} :on-click="seed_weights" phx-value-total_games={total_games}>Seed Weights</button>
                 <button class="tw-float-right" :on-click="reset_weights">Reset Weights</button>
                 <br>

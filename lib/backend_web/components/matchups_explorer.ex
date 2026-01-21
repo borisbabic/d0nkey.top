@@ -8,6 +8,7 @@ defmodule Components.MatchupsExplorer do
   alias Components.Filter.RankDropdown
   alias Components.Filter.FormatDropdown
   alias Components.Filter.ForceFreshDropdown
+  alias Components.Filter.RegionDropdown
   alias Components.LivePatchDropdown
   alias Components.TierList
 
@@ -37,9 +38,10 @@ defmodule Components.MatchupsExplorer do
     ~F"""
     <div>
       <.warning />
-      <PeriodDropdown id="tier_list_period_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters} />
-      <FormatDropdown :if={user_has_premium?(@user)} id="tier_list_format_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
-      <RankDropdown id="tier_list_rank_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
+      <PeriodDropdown id="matchups_period_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters} />
+      <FormatDropdown :if={user_has_premium?(@user)} id="matchups_format_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
+      <RankDropdown id="matchups_rank_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
+      <RegionDropdown :if={@premium_filters} id="matchups_region_dropdown" filter_context={@filter_context} warning={@filter_context != :personal}/>
       <LivePatchDropdown
         id="min_played_count"
         options={[1, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]}
