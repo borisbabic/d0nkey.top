@@ -16,6 +16,7 @@ defmodule Components.MatchupsExplorer do
   @default_default_min_archetype_sample 1000
   prop(default_min_matchup_sample, :integer, default: @default_default_min_matchup_sample)
   prop(default_min_archetype_sample, :integer, default: @default_default_min_archetype_sample)
+  prop(default_params, :map, default: %{})
   prop(filter_context, :atom, default: :public)
   prop(additional_params, :map, default: %{})
   prop(params, :map, required: true)
@@ -107,12 +108,14 @@ defmodule Components.MatchupsExplorer do
       |> assign_optional(assigns_raw.params, :opponent_perspective)
       |> assign_optional(assigns_raw.params, :win_loss_percentage)
 
-    params =
+    filtered_params =
       Map.drop(assigns_raw.params, [
         "player_perspective",
         "opponent_perspective",
         "win_loss_percentage"
       ])
+
+    params = Map.merge(socket.assigns.default_params, filtered_params)
 
     default = default_criteria(params)
 
