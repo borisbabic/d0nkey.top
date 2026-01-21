@@ -819,6 +819,13 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
+  @spec extract_class_name(String.t() | atom()) :: String.t()
+  def extract_class_name(name_or_archetype) do
+    name_or_archetype
+    |> extract_class()
+    |> class_name()
+  end
+
   @spec extract_class(String.t() | atom()) :: String.t()
   def extract_class(name_or_archetype) when is_atom(name_or_archetype),
     do: name_or_archetype |> to_string() |> extract_class()

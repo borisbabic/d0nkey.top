@@ -67,7 +67,7 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Swipe",
        "Horn of Plenty",
        "Trail Mix",
-       "Arkonite REvelations",
+       "Arkonite Revelations",
        "Innervate",
        "Bottomless Toy Chest",
        "Waveshaping",
