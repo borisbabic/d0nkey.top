@@ -15,10 +15,10 @@ defmodule BackendWeb.MyMatchupsLive do
       <div :if={btag = User.battletag(@user)}>
         <div class="title is-2">Matchups</div>
         <div class="subtitle is-5">
-          To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
+          Powered by <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
         <FunctionComponents.Ads.below_title/>
-        <MatchupsExplorer id="matchups_explorer" additional_params={%{"player_btag" => btag}} filter_context={:personal} params={@params} live_view={__MODULE__} default_min_archetype_sample={1} default_min_matchups_sample={1} weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()}/>
+        <MatchupsExplorer id="matchups_explorer" additional_params={%{"player_btag" => btag}} filter_context={:personal} params={@params} live_view={__MODULE__} default_min_archetype_sample={1} default_min_matchup_sample={1} weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()}/>
       </div>
     """
   end

@@ -3441,6 +3441,8 @@ defmodule Hearthstone.DeckTracker do
          {"force_fresh", "no"} <- List.keyfind(criteria, "force_fresh", 0, {"force_fresh", "no"}),
          {"player_btag", :nope} <-
            List.keyfind(criteria, "player_btag", 0, {"player_btag", :nope}),
+         {"in_group", :nope} <-
+           List.keyfind(criteria, "in_group", 0, {"in_group", :nope}),
          {"opponent_class", "any"} <-
            List.keyfind(criteria, "opponent_class", 0, {"opponent_class", "any"}),
          {"player_has_coin", "any"} <-
