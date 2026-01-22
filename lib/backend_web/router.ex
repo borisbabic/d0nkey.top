@@ -462,6 +462,7 @@ defmodule BackendWeb.Router do
       additional_pages: [
         oban: Oban.LiveDashboard,
         agg_log: BackendWeb.LiveDashboard.AggregationLogPage,
+        agg_period_format_time: BackendWeb.LiveDashboard.AggregationPeriodFormatTimePage,
         oban_count: BackendWeb.LiveDashboard.ObanCountPage,
         game_per_min: BackendWeb.LiveDashboard.GamePerMinPage,
         client_addr_conn: BackendWeb.LiveDashboard.ClientAddrConnPage
