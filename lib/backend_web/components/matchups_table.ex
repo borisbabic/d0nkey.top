@@ -106,7 +106,7 @@ defmodule Components.MatchupsTable do
               <td :if={deck = deck(@player_perspective, Matchups.archetype(matchup))} class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.class(deck) |> String.downcase()}>
                 <ExpandableDecklist id={"expandable_deck_list_#{Matchups.archetype(matchup)}"} deck={deck} />
               </td>
-              <td :if={dbg(@player_perspective) in ["class", "archetype", "deck_archetype"]}class={"tw-min-w-[180px]", "tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
+              <td :if={@player_perspective in ["class", "archetype", "deck_archetype"]} class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
                   <HeroIcons.star filled={to_string(Matchups.archetype(matchup)) in @favorited}/>
                 </button>
@@ -344,6 +344,7 @@ defmodule Components.MatchupsTable do
       end)
 
     sorted = Enum.sort_by(rest, mapper, direction)
+    sorted_matchups = favorited ++ sorted
 
     sorted_headers =
       if headers_by_opponent do
@@ -351,10 +352,10 @@ defmodule Components.MatchupsTable do
         |> Enum.uniq()
         |> Enum.sort_by(&archetype_sort_key/1)
       else
-        sorted |> Enum.map(&Matchups.archetype/1)
+        sorted_matchups |> Enum.map(&Matchups.archetype/1)
       end
 
-    {favorited ++ sorted, sorted_headers, total}
+    {sorted_matchups, sorted_headers, total}
   end
 
   defp sort_mapper("games", _) do
