@@ -5,6 +5,7 @@ defmodule Components.MatchupsTable do
   alias Backend.Hearthstone.Deck
   alias Backend.Hearthstone.Matchups
   alias Components.WinrateTag
+  alias Components.ExpandableDecklist
   alias Matchup
   import Components.CardStatsTable, only: [sort_direction: 2, sort_direction: 3]
 
@@ -17,6 +18,7 @@ defmodule Components.MatchupsTable do
   data(merged_custom_matchup_weights, :map, default: %{})
   data(headers_by_opponent, :boolean, default: false)
   data(show_popularity, :boolean, default: true)
+  data(player_perspective, :string, default: "archetype")
   data(favorited, :list, default: [])
   data(sort, :map, default: %{sort_by: "games", sort_direction: "desc"})
   @local_storage_key "matchups_table_favorite"
@@ -75,14 +77,14 @@ defmodule Components.MatchupsTable do
               <div>
                 <button class="tw-float-left" :if={@show_popularity} :on-click="seed_weights" phx-value-total_games={total_games}>Seed Weights</button>
                 <button class="tw-float-right" :on-click="reset_weights">Reset Weights</button>
-                <br>
+                <br :if={@show_popularity}>
                 <button :if={@show_popularity} :on-click="change_sort" phx-value-sort_by="games" class="tw-float-right" phx-value-sort_direction={sort_direction(@sort, "games")}>
                 Popularity:</button>
               </div>
               <button :on-click="change_sort" phx-value-sort_by="archetype" class="" phx-value-sort_direction={sort_direction(@sort, "archetype", "asc")}>Archetype</button>
             </th>
             <th :for={archetype <- sorted_headers} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(archetype) |> String.downcase()}>
-              <button :on-click="change_sort" phx-value-sort_by={"opponent_#{archetype}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{archetype}", "desc")}> {archetype}</button>
+              <button :on-click="change_sort" phx-value-sort_by={"opponent_#{archetype}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{archetype}", "desc")}> {Deck.class_name(archetype)}</button>
             </th>
             </tr>
             <tr >
@@ -101,11 +103,14 @@ defmodule Components.MatchupsTable do
               <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} >
                 <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
               </td>
-              <td class={"tw-min-w-[180px]", "tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
+              <td :if={deck = deck(@player_perspective, Matchups.archetype(matchup))} class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.class(deck) |> String.downcase()}>
+                <ExpandableDecklist id={"expandable_deck_list_#{Matchups.archetype(matchup)}"} deck={deck} />
+              </td>
+              <td :if={dbg(@player_perspective) in ["class", "archetype", "deck_archetype"]}class={"tw-min-w-[180px]", "tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.extract_class(Matchups.archetype(matchup)) |> String.downcase()}>
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
                   <HeroIcons.star filled={to_string(Matchups.archetype(matchup)) in @favorited}/>
                 </button>
-                {Matchups.archetype(matchup)}
+                  {Matchups.archetype(matchup) |> Deck.class_name()}
               </td>
               <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_headers, fn opp -> {opp, Matchups.opponent_stats(matchup, opp)} end)}>
               <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
@@ -116,6 +121,12 @@ defmodule Components.MatchupsTable do
       </div>
     """
   end
+
+  defp deck("deck", id) do
+    Backend.Hearthstone.get_deck(id)
+  end
+
+  defp deck(_, _), do: nil
 
   def store_weights(socket, weights) do
     socket

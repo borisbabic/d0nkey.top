@@ -185,7 +185,7 @@ defmodule Hearthstone.DeckTracker do
     end)
   end
 
-  @ignored_criteria [:matchups_reducer_opts]
+  @ignored_criteria [:matchup_opts]
   def remove_ignored_criteria(criteria) do
     criteria
     |> Enum.filter(fn
@@ -1083,6 +1083,80 @@ defmodule Hearthstone.DeckTracker do
       }
     )
     |> build_games_query([:has_archetypes, :has_decisive_result | Enum.to_list(criteria)])
+  end
+
+  defp matchups_query(base_criteria) do
+    {base_query, criteria} = base_matchups_query(base_criteria)
+
+    query = base_query |> build_games_query([:has_decisive_result | criteria])
+    {query, criteria}
+  end
+
+  defp base_matchups_query(base_criteria) do
+    criteria =
+      base_criteria
+      |> Enum.to_list()
+      |> List.keydelete("force_fresh", 0)
+      |> ensure_matchup_opts()
+
+    {:matchup_opts, matchup_opts} = List.keyfind!(criteria, :matchup_opts, 0)
+
+    query =
+      from(g in Game, as: :game, select: %{status: g.status})
+      |> build_base_matchups_query(matchup_opts)
+
+    {query, criteria}
+  end
+
+  def build_base_matchups_query(query, matchup_opts) do
+    player_field = matchup_opts[:player_field]
+    opponent_field = matchup_opts[:opponent_field]
+
+    query =
+      if player_field == :player_archetype or opponent_field == :opponent_archetype do
+        query |> join(:inner, [game: g], pc in assoc(g, :played_cards), as: :played_cards)
+      else
+        query
+      end
+
+    query =
+      if player_field in [:player_class, :player_deck_archetype] do
+        query |> join(:inner, [game: g], pd in assoc(g, :player_deck), as: :player_deck)
+      else
+        query
+      end
+
+    query =
+      case player_field do
+        :player_class ->
+          query |> select_merge([player_deck: pd], %{player_class: pd.class})
+
+        :player_deck_archetype ->
+          query
+          |> select_merge([player_deck: pd], %{
+            player_deck_archetype: fragment("COALESCE(?, ?)", pd.archetype, pd.class)
+          })
+
+        :player_deck ->
+          query
+          |> where([game: g], not is_nil(g.player_deck_id))
+          |> select_merge([game: g], %{player_deck: g.player_deck_id})
+
+        :player_archetype ->
+          query
+          |> where([played_cards: pc], not is_nil(pc.player_archetype))
+          |> select_merge([played_cards: pc], %{player_archetype: pc.player_archetype})
+      end
+
+    case opponent_field do
+      :opponent_class ->
+        query |> select_merge([game: g], %{opponent_class: g.opponent_class})
+
+      :opponent_archetype ->
+        query
+        |> where([played_cards: pc], not is_nil(pc.opponent_archetype))
+        |> select_merge([played_cards: pc], %{opponent_archetype: pc.opponent_archetype})
+    end
   end
 
   @spec archetypes(list() | map(), list()) :: [atom()]
@@ -3472,10 +3546,10 @@ defmodule Hearthstone.DeckTracker do
   end
 
   @spec matchups_stream(criteria :: list()) :: {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups_stream(criteria \\ []) do
+  def matchups_stream(base_criteria \\ []) do
     Repo.transact(
       fn repo ->
-        query = decisive_archetype_results_query(criteria)
+        {query, criteria} = matchups_query(base_criteria)
 
         stats =
           repo.stream(query)
@@ -3489,10 +3563,10 @@ defmodule Hearthstone.DeckTracker do
 
   @spec matchups_chunked_stream(criteria :: list()) ::
           {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups_chunked_stream(criteria \\ [], chunk_size \\ 1000) do
+  def matchups_chunked_stream(base_criteria \\ [], chunk_size \\ 1000) do
     Repo.transact(
       fn repo ->
-        query = decisive_archetype_results_query(criteria)
+        {criteria, query} = matchups_query(base_criteria)
 
         stats =
           repo.stream(query)
@@ -3509,56 +3583,80 @@ defmodule Hearthstone.DeckTracker do
 
   @spec matchups_fetch_then_process(criteria :: list()) ::
           {:ok, Backend.Tournaments.archetype_stat_bag()}
-  def matchups_fetch_then_process(criteria \\ [], repo_opts \\ [timeout: :infinity]) do
-    {:ok,
-     decisive_archetype_results_query(criteria)
-     |> Repo.all(repo_opts)
-     |> Enum.reduce(%{}, matchup_stats_reducer(criteria))}
+  def matchups_fetch_then_process(base_criteria \\ [], repo_opts \\ [timeout: :infinity]) do
+    {query, criteria} = matchups_query(base_criteria)
+
+    matchups =
+      query
+      |> Repo.all(repo_opts)
+      |> Enum.reduce(%{}, matchup_stats_reducer(criteria))
+
+    {:ok, matchups}
+  end
+
+  defp ensure_matchup_opts(criteria) do
+    {:matchup_opts, opts} =
+      List.keyfind(
+        criteria,
+        :matchup_opts,
+        0,
+        {:matchup_opts, []}
+      )
+
+    {:player_field, player_field} =
+      List.keyfind(opts, :player_field, 0, {:player_field, :player_archetype})
+
+    {:opponent_field, opponent_field} =
+      List.keyfind(opts, :opponent_field, 0, {:opponent_field, :opponent_archetype})
+
+    {:include_opponent_perspective, include_opponent_perspective} =
+      List.keyfind(opts, :include_opponent_perspective, 0, {:include_opponent_perspective, true})
+
+    new_opts = [
+      player_field: player_field,
+      opponent_field: opponent_field,
+      include_opponent_perspective: include_opponent_perspective
+    ]
+
+    List.keystore(criteria, :matchup_opts, 0, {:matchup_opts, new_opts})
   end
 
   defp matchup_stats_reducer(criteria) do
-    {:matchups_reducer_opts, opts} =
+    {:matchup_opts, opts} =
       List.keyfind(
         criteria,
-        :matchups_reducer_opts,
+        :matchup_opts,
         0,
-        {:matchups_reducer_opts, []}
+        {:matchup_opts,
+         [
+           player_field: :player_archetype,
+           opponent_field: :opponent_archetype,
+           include_opponent_perspective: true
+         ]}
       )
 
-    {:player_transformer, player_transformer} =
-      List.keyfind(opts, :player_transformer, 0, {:player_transformer, & &1})
-
-    {:opponent_transformer, opponent_transformer} =
-      List.keyfind(opts, :opponent_transformer, 0, {:opponent_transformer, & &1})
-
-    {:include_opponent_perspective, opp_perspective} =
-      List.keyfind(
-        opts,
-        :include_opponent_perspective,
-        0,
-        {:include_opponent_perspective, true}
-      )
+    player_field = opts[:player_field]
+    opponent_field = opts[:opponent_field]
+    opp_perspective = opts[:include_opponent_perspective]
 
     fn
       %{
-        player_archetype: player_archetype,
-        opponent_archetype: opponent_archetype,
         status: status
-      },
+      } = result,
       carry ->
-        {player_field, opponent_field} =
+        {player_result, opponent_result} =
           case status do
             :win -> {:wins, :losses}
             :loss -> {:losses, :wins}
           end
 
-        player = player_transformer.(player_archetype)
-        opponent = opponent_transformer.(opponent_archetype)
+        player = Map.fetch!(result, player_field)
+        opponent = Map.fetch!(result, opponent_field)
 
-        with_player = ArchetypeStats.add_result_to_bag(carry, player, opponent, player_field)
+        with_player = ArchetypeStats.add_result_to_bag(carry, player, opponent, player_result)
 
         if opp_perspective do
-          ArchetypeStats.add_result_to_bag(with_player, opponent, player, opponent_field)
+          ArchetypeStats.add_result_to_bag(with_player, opponent, player, opponent_result)
         else
           with_player
         end

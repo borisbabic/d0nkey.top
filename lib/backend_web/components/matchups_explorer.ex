@@ -2,7 +2,6 @@ defmodule Components.MatchupsExplorer do
   @moduledoc false
   use BackendWeb, :surface_live_component
 
-  alias Backend.Hearthstone.Deck
   alias Components.MatchupsTable
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
@@ -64,7 +63,7 @@ defmodule Components.MatchupsExplorer do
         <LivePatchDropdown
           id="player_perspective"
           :if={@filter_context == :personal}
-          options={[{"class", "Class"}, {"archetype", "Archetype"}]}
+          options={[{"class", "Class"}, {"archetype", "Archetype"}, {"deck", "Deck"}, {"deck_archetype", "Deck Archetype"}]}
           title={"Player Perspective"}
           param={"player_perspective"}
           current_val={@player_perspective}
@@ -95,7 +94,7 @@ defmodule Components.MatchupsExplorer do
       <div :if={!@missing_premium && @archetype_stats.loading}>
         Preparing stats...
       </div>
-      <MatchupsTable win_loss={@win_loss_percentage == "win_loss"} :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} weight_merging_map={@weight_merging_map} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample} headers_by_opponent={@filter_context == :personal} show_popularity={@filter_context != :personal}/>
+      <MatchupsTable player_perspective={@player_perspective} win_loss={@win_loss_percentage == "win_loss"} :if={!@missing_premium and !@archetype_stats.loading and @archetype_stats.ok?}  id={"matchups_table"} matchups={@archetype_stats.result} weight_merging_map={@weight_merging_map} min_matchup_sample={@min_matchup_sample} min_archetype_sample={@min_archetype_sample} headers_by_opponent={@filter_context == :personal} show_popularity={@filter_context != :personal}/>
     </div>
     """
   end
@@ -124,7 +123,7 @@ defmodule Components.MatchupsExplorer do
       |> Map.merge(params)
       |> TierList.filter_parse_params()
       |> Map.drop(["min_games", "min_matchup_sample", "min_archetype_sample"])
-      |> set_matchups_reducer_opts(socket.assigns)
+      |> set_matchup_opts(socket.assigns)
 
     min_matchup_sample =
       Map.get(params, "min_matchup_sample", socket.assigns.default_min_matchup_sample)
@@ -219,26 +218,36 @@ defmodule Components.MatchupsExplorer do
       NaiveDateTime.compare(end_time, now) == :gt
   end
 
-  defp set_matchups_reducer_opts(criteria, %{
+  defp set_matchup_opts(criteria, %{
          filter_context: :personal,
          player_perspective: player_perspective,
          opponent_perspective: opponent_perspective
        }) do
+    player_field =
+      case player_perspective do
+        "class" -> :player_class
+        "archetype" -> :player_archetype
+        "deck" -> :player_deck
+        "deck_archetype" -> :player_deck_archetype
+      end
+
+    opponent_field =
+      case opponent_perspective do
+        "class" -> :opponent_class
+        "archetype" -> :opponent_archetype
+      end
+
     opts =
-      [{:include_opponent_perspective, false}]
-      |> add_transformer(:player_transformer, player_perspective)
-      |> add_transformer(:opponent_transformer, opponent_perspective)
+      [
+        {:include_opponent_perspective, false},
+        {:player_field, player_field},
+        {:opponent_field, opponent_field}
+      ]
 
-    Map.put(criteria, :matchups_reducer_opts, opts)
+    Map.put(criteria, :matchup_opts, opts)
   end
 
-  defp set_matchups_reducer_opts(criteria, _), do: Map.put(criteria, :matchups_reducer_opts, [])
-
-  defp add_transformer(opts, key, "class") do
-    [{key, &Deck.extract_class_name/1} | opts]
-  end
-
-  defp add_transformer(opts, _, _), do: opts
+  defp set_matchup_opts(criteria, _), do: criteria
 
   def update_context(%{assigns: assigns} = socket) do
     socket
