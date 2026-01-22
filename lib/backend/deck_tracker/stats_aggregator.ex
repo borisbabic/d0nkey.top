@@ -162,7 +162,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
   end
 
   defp default_chunk_size() do
-    Application.get_env(:backend, :default_agg_chunk_size, 1_000_000)
+    Application.get_env(:backend, :default_agg_chunk_size, 500_000)
   end
 
   # TODO: If optimization is needed we can do this then paralelize the inserts and swap tables in a transaction
