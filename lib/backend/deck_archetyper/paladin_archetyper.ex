@@ -208,6 +208,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Painter's Virtue" in card_info.card_names ->
         :"Handbuff Paladin"
 
+      aura_cta?(card_info) ->
+        :"Aura CtA Paladin"
+
       "Call to Arms" in card_info.card_names ->
         :"CtA Paladin"
 
@@ -217,6 +220,10 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp aura_cta?(card_info) do
+    min_count?(card_info, 2, ["Call to Arms", "Gelbin of Tomorrow"])
   end
 
   defp thekal?(card_info) do
