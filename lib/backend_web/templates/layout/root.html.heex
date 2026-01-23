@@ -54,6 +54,7 @@
     <% end %>
   </head>
   <%= render("navbar.html", %{conn: @conn, handle_user: true}) %>
+  <div id="nitropay-video-all"></div>
   <body>
     <main role="main" class={"#{ container_classes(@conn) }"}>
       <%= if enable_nitropay?(@conn) && show_ads?(@conn) do %>
