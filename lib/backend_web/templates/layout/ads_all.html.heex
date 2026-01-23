@@ -226,7 +226,7 @@ window['nitroAds'].createAd('nitropay-below-title-leaderboard', {
 });
 </script>
 
-<script>
+<%!-- <script>
 window['nitroAds'].createAd('nitropay-floating-video-all', {
   "refreshTime": 30,
   "format": "floating",
@@ -238,7 +238,7 @@ window['nitroAds'].createAd('nitropay-floating-video-all', {
   },
   "mediaQuery": "(min-width: 1025px), (min-width: 768px) and (max-width: 1024px)"
 });
-</script>
+</script> --%>
 
 <script type="text/javascript">
   window["nitroAds"].createAd("nitropay-video-mobile", {
@@ -256,7 +256,7 @@ window['nitroAds'].createAd('nitropay-floating-video-all', {
     mediaQuery: "(max-width: 768px)"
   });
 </script>
-<script>
+<%!-- <script>
 window['nitroAds'].createAd('nitropay-floating-video-mobile', {
   "refreshTime": 30,
   "format": "floating",
@@ -267,6 +267,22 @@ window['nitroAds'].createAd('nitropay-floating-video-mobile', {
     "position": "bottom-right"
   },
   "mediaQuery": "(min-width: 320px) and (max-width: 767px)"
+});
+</script> --%>
+
+<script>
+window['nitroAds'].createAd('nitropay-video-all', {
+  "format": "video-nc",
+  "report": {
+    "enabled": true,
+    "icon": true,
+    "wording": "Report Ad",
+    "position": "top-left"
+  },
+  "video": {
+    "float": "always",
+    "mobile": "compact"
+  }
 });
 </script>
 <script>
