@@ -220,7 +220,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp aura_cta?(card_info) do
-    do: min_count?(ci, 2, ["Call to Arms", "Gelbin of Tomorrow"])
+    do: min_count?(card_info, 2, ["Call to Arms", "Gelbin of Tomorrow"])
   end
 
   defp thekal?(card_info) do
