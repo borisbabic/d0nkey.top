@@ -165,7 +165,7 @@ defmodule Bot.MessageHandler do
     """,
     "mtq" => """
     ## `mtq` (Masters Tour Qualifiers)
-    RIP
+    Gets standings for qualifiers started in the past 5 days as if you did `!battlefy $TOURNAMENT` for each of them (also works for other hsesports events)
     """,
     "server battletags" => """
     ### Server Battletags
@@ -245,7 +245,7 @@ defmodule Bot.MessageHandler do
         Bot.CardMessageHandler.handle_card_stats(msg)
 
       <<"!mtq", _::binary>> ->
-        Bot.MTMessageHandler.handle_qualifier_standings(msg)
+        Bot.MTMessageHandler.handle_qualifiers_standings(msg)
 
       <<"!mt", _::binary>> ->
         Bot.MTMessageHandler.handle_mt_standings(msg)
