@@ -5,12 +5,27 @@ defmodule Bot.BattlefyMessageHandler do
   import Bot.MessageHandlerUtil
   require Logger
 
-  def handle_tournament_standings(message = %{content: content}),
-    do:
-      content
-      |> get_options(:string)
-      |> String.trim()
-      |> handle_tournament_standings(message)
+
+  def handle_tournament_standings(message = %{content: content}) do
+    content
+    |> get_options(:string)
+    |> String.trim()
+    |> handle_tournament_standings(message)
+  end
+
+  def handle_tournament_standings(tournaments, message) when is_list(tournaments) do
+    replies =
+    Enum.map(tournaments, fn
+      %{id: id, name: name}  ->
+        create_standings_message(id, message, [], name)
+      {id, name} ->
+        create_standings_message(id, message, [], name)
+      id ->
+        create_standings_message(id, message)
+    end)
+
+    Enum.map(replies, &send_message(&1, message))
+  end
 
   def handle_tournament_standings(battlefy_id, message) when is_binary(battlefy_id) do
     create_standings_message(battlefy_id, message)
@@ -27,26 +42,27 @@ defmodule Bot.BattlefyMessageHandler do
     Api.Message.create(channel_id, message)
   end
 
-  def create_standings_message(battlefy_id, message, battletags \\ [])
+  def create_standings_message(battlefy_id, message, battletags \\ [], header \\ nil)
 
   def create_standings_message(
         battlefy_id,
         _message = %{guild_id: _guild_id},
-        [_ | _] = battletags
+        [_ | _] = battletags,
+        header
       ) do
     case Battlefy.get_standings(battlefy_id) do
       unsorted when is_list(unsorted) ->
         standings = Battlefy.filter_and_sort_standings(unsorted)
-        {:ok, create_message(battletags, standings)}
+        {:ok, create_message(battletags, standings, & &1, header)}
 
       other ->
         log_unable_to_create(other)
     end
   end
 
-  def create_standings_message(battlefy_id, message = %{guild_id: guild_id}, _battletags) do
+  def create_standings_message(battlefy_id, message = %{guild_id: guild_id}, _battletags, headers) do
     case get_guild_battletags!(guild_id) do
-      [_ | _] = battletags -> create_standings_message(battlefy_id, message, battletags)
+      [_ | _] = battletags -> create_standings_message(battlefy_id, message, battletags, headers)
       other -> log_unable_to_create(other)
     end
   end
@@ -56,20 +72,25 @@ defmodule Bot.BattlefyMessageHandler do
     {:error, :could_not_create_message}
   end
 
-  @spec create_message([String.t()], [Battlefy.Standings.t()], (name :: String.t() -> String.t())) ::
+  @spec create_message([String.t()], [Battlefy.Standings.t()], (name :: String.t() -> String.t()), header:: String.t() | nil) ::
           String.t()
-  def create_message(battletags, standings, name_mapper \\ & &1) do
+  def create_message(battletags, standings, name_mapper \\ & &1, header \\ nil) do
     mapped = Enum.map(battletags, name_mapper)
 
     standings
     |> Enum.filter(&(&1.team && name_mapper.(&1.team.name) in mapped))
-    |> create_message()
+    |> do_create_message(header)
   end
 
-  @spec create_message([Battlefy.Standings.t()]) :: String.t()
-  def create_message(standings) do
-    create_message_cells(standings)
+  @spec do_create_message([Battlefy.Standings.t()], header :: String.t() | nil) :: String.t()
+  defp do_create_message(standings, header) do
+    base = create_message_cells(standings)
     |> Enum.map_join("\n", &cells_to_msg/1)
+    if header do
+      "### #{header}\n#{base}"
+    else
+      base
+    end
   end
 
   def cells_to_msg(cells), do: Enum.join(cells, " ")

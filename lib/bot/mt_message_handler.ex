@@ -3,6 +3,8 @@ defmodule Bot.MTMessageHandler do
   import Bot.MessageHandlerUtil
   alias Backend.MastersTour
   alias Backend.MastersTour.TourStop
+  alias Backend.Infrastructure.BattlefyCommunicator
+  alias Bot.BattlefyMessageHandler
   require Logger
 
   def handle_mt_standings(msg = %{content: content}) do
@@ -32,6 +34,18 @@ defmodule Bot.MTMessageHandler do
 
   defp or_current_mt(mt = %{id: _}), do: mt
   defp or_current_mt(_), do: TourStop.get_current(1, 240) |> TourStop.get()
+
+  def handle_qualifiers_standings(msg) do
+    from = NaiveDateTime.utc_now() |> Timex.shift(days: -5)
+
+    tournaments =
+      BattlefyCommunicator.get_past_organization_tournaments_from(
+        "5a8d6b62a8146d035ec62898",
+        from
+      )
+
+    BattlefyMessageHandler.handle_tournament_standings(tournaments, msg)
+  end
 
   def handle_qualifier_standings(msg = %{content: content}) do
     with {num, _} <- content |> get_options(:string) |> Integer.parse(),
