@@ -90,18 +90,20 @@ defmodule Components.MatchupsTable do
             <tr >
                 <th :for={archetype <- sorted_headers} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
                   <.form for={%{}} id={"custom_mathchup_popularity_#{archetype}"} phx-change="update_custom_matchup_weights" phx-target={@myself}>
-                    <input id={"custom_weight_input_#{archetype}"} :if={archetype = archetype} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
+                    <input id={"custom_weight_input_#{archetype}"} :if={archetype = archetype} class="tw-text-center tw-block has-text-black tw-w-full tw-h-5 tw-p-0 tw-leading-normal tw-appearance-none [appearance:textfield] [&::-webkit-outer-spin-button]:tw-appearance-none [&::-webkit-inner-spin-button]:tw-appearance-none" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
                   </.form>
                 </th>
             </tr>
             <tr >
-              <th :if={@show_popularity} :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700"> {Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}%</th>
+              <th :if={@show_popularity} :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
+              <span class="tw-flex tw-items-center tw-justify-center tw-h-full">{Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}%</span>
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr class="tw-h-[30px] tw-text-center tw-truncate tw-text-clip" :for={matchup <- sorted_matchups} >
               <td class=" tw-border tw-border-gray-600 tw-h-[30px]" data-balloon-pos="right" aria-label={"#{Matchups.archetype(matchup)} - #{games} games"} :if={%{winrate: winrate, games: games} = Matchups.total_stats(matchup)} >
-                <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full" winrate={winrate} sample={games} />
+                <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-flex tw-items-center tw-justify-center tw-h-full" winrate={winrate} sample={games} />
               </td>
               <td :if={deck = deck(@player_perspective, Matchups.archetype(matchup))} class={"tw-border", "tw-border-gray-600", "sticky-column", "class-background", Deck.class(deck) |> String.downcase()}>
                 <ExpandableDecklist id={"expandable_deck_list_#{Matchups.archetype(matchup)}"} deck={deck} />
@@ -113,7 +115,7 @@ defmodule Components.MatchupsTable do
                   {Matchups.archetype(matchup) |> Deck.class_name()}
               </td>
               <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_headers, fn opp -> {opp, Matchups.opponent_stats(matchup, opp)} end)}>
-              <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
+              <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full tw-flex tw-items-center tw-justify-center" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
               </td>
             </tr>
           </tbody>
@@ -237,9 +239,15 @@ defmodule Components.MatchupsTable do
         %{"_target" => [target]} = args,
         %{assigns: %{custom_matchup_weights: custom_weights}} = socket
       ) do
+    target_value = Map.get(args, target, "invalidnumber")
+
     new_socket =
-      case Map.get(args, target, "") |> Integer.parse() do
-        {val, _} when is_integer(val) ->
+      case {target_value, Integer.parse(target_value)} do
+        {"", _} ->
+          custom = Map.delete(custom_weights, target)
+          socket |> update_custom_weights(custom)
+
+        {_, {val, _}} when is_integer(val) ->
           custom = Map.put(custom_weights, target, val)
           socket |> update_custom_weights(custom)
 
