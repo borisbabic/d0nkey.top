@@ -306,6 +306,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       discard?(card_info, 6) ->
         :Discolock
 
+      "Patches the Pirate" in card_info.card_names and wild_burnlock?(card_info) ->
+        :"Pirate Burnlock"
+
       wild_burnlock?(card_info) ->
         :Burnlock
 
