@@ -5,7 +5,6 @@ defmodule Bot.BattlefyMessageHandler do
   import Bot.MessageHandlerUtil
   require Logger
 
-
   def handle_tournament_standings(message = %{content: content}) do
     content
     |> get_options(:string)
@@ -15,20 +14,22 @@ defmodule Bot.BattlefyMessageHandler do
 
   def handle_tournament_standings(tournaments, message) when is_list(tournaments) do
     replies =
-    Enum.map(tournaments, fn
-      %{id: id, name: name}  ->
-        create_standings_message(id, message, [], name)
-      {id, name} ->
-        create_standings_message(id, message, [], name)
-      id ->
-        create_standings_message(id, message)
-    end)
+      Enum.map(tournaments, fn
+        %{id: id, name: name} ->
+          create_standings_message(id, message, [], name)
+
+        {id, name} ->
+          create_standings_message(id, message, [], name)
+
+        id ->
+          create_standings_message(id, message, [])
+      end)
 
     Enum.map(replies, &send_message(&1, message))
   end
 
   def handle_tournament_standings(battlefy_id, message) when is_binary(battlefy_id) do
-    create_standings_message(battlefy_id, message)
+    create_standings_message(battlefy_id, message, [])
     |> send_message(message)
   end
 
@@ -72,7 +73,12 @@ defmodule Bot.BattlefyMessageHandler do
     {:error, :could_not_create_message}
   end
 
-  @spec create_message([String.t()], [Battlefy.Standings.t()], (name :: String.t() -> String.t()), header:: String.t() | nil) ::
+  @spec create_message(
+          [String.t()],
+          [Battlefy.Standings.t()],
+          (name :: String.t() -> String.t()),
+          header :: String.t() | nil
+        ) ::
           String.t()
   def create_message(battletags, standings, name_mapper \\ & &1, header \\ nil) do
     mapped = Enum.map(battletags, name_mapper)
@@ -84,9 +90,11 @@ defmodule Bot.BattlefyMessageHandler do
 
   @spec do_create_message([Battlefy.Standings.t()], header :: String.t() | nil) :: String.t()
   defp do_create_message(standings, header) do
-    base = create_message_cells(standings)
-    |> Enum.map_join("\n", &cells_to_msg/1)
-    if header do
+    base =
+      create_message_cells(standings)
+      |> Enum.map_join("\n", &cells_to_msg/1)
+
+    if header && base != "" do
       "### #{header}\n#{base}"
     else
       base
