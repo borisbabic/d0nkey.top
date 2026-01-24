@@ -88,11 +88,11 @@ defmodule Components.MatchupsTable do
             </th>
             </tr>
             <tr >
-              <.form for={%{}} id="custom_mathchup_popularity" phx-change="update_custom_matchup_weights" phx-target={@myself}>
                 <th :for={archetype <- sorted_headers} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
-                  <input :if={archetype = archetype} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
+                  <.form for={%{}} id={"custom_mathchup_popularity_#{archetype}"} phx-change="update_custom_matchup_weights" phx-target={@myself}>
+                    <input id={"custom_weight_input_#{archetype}"} :if={archetype = archetype} class="tw-h-5 has-text-black" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
+                  </.form>
                 </th>
-              </.form>
             </tr>
             <tr >
               <th :if={@show_popularity} :for={matchup <- sorted_matchups} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700"> {Util.percent(Matchups.total_stats(matchup).games, total_games) |> Float.round(1)}%</th>
@@ -218,8 +218,7 @@ defmodule Components.MatchupsTable do
 
         {:noreply,
          socket
-         |> assign(custom_matchup_weights: custom_weights)
-         |> store_weights(custom_weights)}
+         |> update_custom_weights(custom_weights)}
 
       _ ->
         {:noreply, socket}
@@ -233,27 +232,22 @@ defmodule Components.MatchupsTable do
      |> push_event("clear", %{key: @local_storage_custom_weights_key})}
   end
 
-  def handle_event("update_custom_matchup_weights", args, socket) do
-    custom =
-      Enum.reduce(args, %{}, fn
-        {archetype, popularity}, acc
-        when is_binary(popularity) or (is_integer(popularity) and popularity != "") ->
-          case Integer.parse(popularity) do
-            {val, _} when is_integer(val) ->
-              Map.put(acc, archetype, val)
+  def handle_event(
+        "update_custom_matchup_weights",
+        %{"_target" => [target]} = args,
+        %{assigns: %{custom_matchup_weights: custom_weights}} = socket
+      ) do
+    new_socket =
+      case Map.get(args, target, "") |> Integer.parse() do
+        {val, _} when is_integer(val) ->
+          custom = Map.put(custom_weights, target, val)
+          socket |> update_custom_weights(custom)
 
-            _ ->
-              acc
-          end
+        _ ->
+          socket
+      end
 
-        _, acc ->
-          acc
-      end)
-
-    {:noreply,
-     socket
-     |> assign(custom_matchup_weights: custom)
-     |> store_weights(custom)}
+    {:noreply, new_socket}
   end
 
   def handle_event("set_custom_weights", custom_weights, socket) do
@@ -308,6 +302,12 @@ defmodule Components.MatchupsTable do
      socket
      |> assign(sort: %{"sort_by" => sort, "sort_direction" => direction})
      |> push_event("store", %{key: @local_storage_sort_by_key, data: "#{sort},#{direction}"})}
+  end
+
+  defp update_custom_weights(socket, custom_weights) do
+    socket
+    |> assign(custom_matchup_weights: custom_weights)
+    |> store_weights(custom_weights)
   end
 
   defp favorited_and_sorted_matchups(
