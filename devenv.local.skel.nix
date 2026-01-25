@@ -1,5 +1,21 @@
 {...}:
 {
+
+# remove if you're going to use postgres somehow else
+services.postgres = {
+  enable = true;
+  package = pkgs.postgresql_15;
+  port = 2470;
+  # listen_addresses = ["localhost"];
+  initialScript = ''
+    CREATE ROLE "root" WITH LOGIN PASSWORD 'root' SUPERUSER;
+  '';
+  initialDatabases = [
+    {
+      name = "DtopDB";
+    }
+  ];
+};
 # enables history in the iex shell
 env.ERL_AFLAGS="-kernel shell_history enabled";
 env.DISCORD_TOKEN="";

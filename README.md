@@ -57,7 +57,10 @@ npm
 ## First run
 ```shell
 mix deps.get # install dependencies
-docker-compose up -d # get postgres running
+
+devenv up # get postgres running with devenv (see devenv.local.skel.nix)
+docker-compose up -d # get postgres running with docker-compose
+
 mix ecto.setup # setup the db
 # mix run -e Backend.MastersTour.fetch # optional, fetches the currently invited players
 cd assets && npm install && cd ..
