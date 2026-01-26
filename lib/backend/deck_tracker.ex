@@ -3790,7 +3790,7 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  def aggregated_periods_formats_time() do
+  def aggregated_periods_formats_time(include_all \\ false) do
     sql = """
     SELECT relname, description
     FROM pg_description
@@ -3805,7 +3805,7 @@ defmodule Hearthstone.DeckTracker do
       {:ok, %{rows: rows}} when is_list(rows) ->
         Enum.flat_map(rows, fn [table_name, time] ->
           with {:ok, time} <- NaiveDateTime.from_iso8601(time),
-               :gt <- NaiveDateTime.compare(time, cutoff) do
+               true <- include_all || :gt == NaiveDateTime.compare(time, cutoff) do
             {period, format} = period_format_from_table_name(table_name)
             [{period, format, time}]
           else
