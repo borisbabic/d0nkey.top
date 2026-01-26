@@ -85,11 +85,12 @@ defmodule Bot.BattlefyMessageHandler do
 
     standings
     |> Enum.filter(&(&1.team && name_mapper.(&1.team.name) in mapped))
-    |> do_create_message(header)
+    |> create_message_from_standings(header)
   end
 
-  @spec do_create_message([Battlefy.Standings.t()], header :: String.t() | nil) :: String.t()
-  defp do_create_message(standings, header) do
+  @spec create_message_from_standings([Battlefy.Standings.t()], header :: String.t() | nil) ::
+          String.t()
+  def create_message_from_standings(standings, header \\ nil) do
     base =
       create_message_cells(standings)
       |> Enum.map_join("\n", &cells_to_msg/1)
