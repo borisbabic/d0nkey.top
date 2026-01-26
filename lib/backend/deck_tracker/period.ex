@@ -75,12 +75,15 @@ defmodule Hearthstone.DeckTracker.Period do
   def end_time(%{period_end: %NaiveDateTime{} = period_end}), do: {:ok, period_end}
   def end_time(_), do: {:error, :end_not_set}
 
-  @spec end_time_or_now(period :: __MODULE__) :: NaiveDateTime.t()
+  @spec end_time_or_now(period :: __MODULE__) :: {:ok, NaiveDateTime.t()}
   def end_time_or_now(period) do
-    case end_time(period) do
-      {:ok, period} -> period
-      _ -> NaiveDateTime.utc_now()
-    end
+    end_time =
+      case end_time(period) do
+        {:ok, end_time} -> end_time
+        _ -> NaiveDateTime.utc_now()
+      end
+
+    {:ok, end_time}
   end
 
   def future?(%{period_start: %NaiveDateTime{} = period_start}) do

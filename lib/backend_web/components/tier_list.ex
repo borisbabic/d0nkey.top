@@ -231,11 +231,6 @@ defmodule Components.TierList do
     {stats, total}
   end
 
-  def apply_min(stats, criteria) do
-    min_games = Map.get(criteria, "min_games", @default_min_games)
-    Enum.filter(stats, &(&1.total >= min_games))
-  end
-
   def with_defaults(criteria), do: Map.put_new(criteria, "sort_by", "winrate")
 
   def filter_parse_params(filters) do
@@ -271,10 +266,4 @@ defmodule Components.TierList do
       |> update(:show_chart, &(!&1))
     }
   end
-
-  # defp card_stats_params(params, archetype) do
-  #   params
-  #   |> Map.take(["format", "opponent_class", "period", "rank"])
-  #   |> Map.put("archetype", archetype)
-  # end
 end
