@@ -43,6 +43,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
 
+      "Elise the Navigator" in card_info.card_names ->
+        :"Elise DH"
+
       deathrattle?(card_info) ->
         :"Deathrattle DH"
 
