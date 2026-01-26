@@ -58,7 +58,7 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
     sorted_standings()
     |> Battlefy.merge_standings_by_custom_field(@custom_field, value_mapper: &String.upcase/1)
     |> Battlefy.filter_and_sort_standings()
-    |> Bot.BattlefyMessageHandler.create_message()
+    |> Bot.BattlefyMessageHandler.create_message_from_standings()
     |> send_message(msg)
   end
 
