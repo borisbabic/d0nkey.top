@@ -150,10 +150,11 @@ defmodule BackendWeb do
 
       unquote(view_helpers())
 
-      def assign_optional(socket, params, assign, key \\ nil) do
+      def assign_optional(socket, params, assign, key \\ nil, default \\ nil) do
         with nil <- Map.get(params, key),
              nil <- Map.get(params, assign),
-             nil <- Map.get(params, to_string(assign)) do
+             nil <- Map.get(params, to_string(assign)),
+             nil <- default do
           socket
         else
           val -> assign(socket, assign, val)

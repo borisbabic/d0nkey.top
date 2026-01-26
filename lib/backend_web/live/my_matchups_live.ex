@@ -18,7 +18,17 @@ defmodule BackendWeb.MyMatchupsLive do
           Powered by <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
         <FunctionComponents.Ads.below_title/>
-        <MatchupsExplorer id="matchups_explorer" additional_params={%{"player_btag" => btag}} filter_context={:personal} params={@params} live_view={__MODULE__} default_min_archetype_sample={1} default_min_matchup_sample={1} weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()} default_params={%{"rank" => "all"}} />
+        <MatchupsExplorer
+          id="matchups_explorer"
+          additional_params={%{"player_btag" => btag}}
+          filter_context={:personal} params={@params}
+          live_view={__MODULE__}
+          default_min_archetype_sample={1}
+          default_min_matchup_sample={1}
+          weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()} default_params={%{"rank" => "all"}}
+          default_player_perspective={"deck_archetype"}
+          default_opponent_perspective={"class"}
+        />
       </div>
     """
   end

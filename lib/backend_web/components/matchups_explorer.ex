@@ -15,6 +15,8 @@ defmodule Components.MatchupsExplorer do
   @default_default_min_archetype_sample 1000
   prop(default_min_matchup_sample, :integer, default: @default_default_min_matchup_sample)
   prop(default_min_archetype_sample, :integer, default: @default_default_min_archetype_sample)
+  prop(default_player_perspective, :string, default: "archetype")
+  prop(default_opponent_perspective, :string, default: "archetype")
   prop(default_params, :map, default: %{})
   prop(filter_context, :atom, default: :public)
   prop(additional_params, :map, default: %{})
@@ -103,8 +105,18 @@ defmodule Components.MatchupsExplorer do
     socket =
       socket_raw
       |> assign(assigns_raw)
-      |> assign_optional(assigns_raw.params, :player_perspective)
-      |> assign_optional(assigns_raw.params, :opponent_perspective)
+      |> assign_optional(
+        assigns_raw.params,
+        :player_perspective,
+        "player_perspective",
+        assigns_raw[:default_player_perspective]
+      )
+      |> assign_optional(
+        assigns_raw.params,
+        :opponent_perspective,
+        "opponent_perspective",
+        assigns_raw[:default_opponent_perspective]
+      )
       |> assign_optional(assigns_raw.params, :win_loss_percentage)
 
     filtered_params =
