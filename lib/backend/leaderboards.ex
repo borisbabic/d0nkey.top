@@ -1352,6 +1352,8 @@ defmodule Backend.Leaderboards do
              "max_rank",
              "seasons",
              "season_id",
+             "players",
+             "up_to",
              "season",
              "s",
              "ssn",
@@ -1373,7 +1375,7 @@ defmodule Backend.Leaderboards do
   defp filter_not_latest_in_season(criteria) do
     Enum.filter(criteria, fn
       {"search", _} -> false
-      {"players", _} -> false
+      {"players", _} -> true
       {"battletag_full", _} -> false
       {"offset", _} -> false
       {"limit", _} -> false
