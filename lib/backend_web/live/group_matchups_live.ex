@@ -2,14 +2,18 @@ defmodule BackendWeb.GroupMatchupsLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Components.MatchupsExplorer
-  alias Backend.UserManager.User
 
   data(user, :any)
   data(group_id, :any)
   data(params, :map)
 
   def mount(_params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    do:
+      {:ok,
+       socket
+       |> assign_defaults(session)
+       |> put_user_in_context()
+       |> MatchupsExplorer.assign_meta("Group Matchups")}
 
   def render(assigns) do
     ~F"""

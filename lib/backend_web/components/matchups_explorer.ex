@@ -179,11 +179,11 @@ defmodule Components.MatchupsExplorer do
     end
   end
 
-  def assign_meta(socket) do
+  def assign_meta(socket, title \\ "HS Matchups") do
     socket
     |> assign_meta_tags(%{
       description: "Hearthstone Archetype Matchups",
-      title: "HS Matchups"
+      title: title
     })
   end
 

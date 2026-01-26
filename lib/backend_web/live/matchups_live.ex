@@ -4,7 +4,12 @@ defmodule BackendWeb.MatchupsLive do
   alias Components.MatchupsExplorer
 
   def mount(_params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    do:
+      {:ok,
+       socket
+       |> assign_defaults(session)
+       |> put_user_in_context()
+       |> MatchupsExplorer.assign_meta()}
 
   def render(assigns) do
     ~F"""

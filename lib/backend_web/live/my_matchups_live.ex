@@ -8,12 +8,17 @@ defmodule BackendWeb.MyMatchupsLive do
   data(params, :map)
 
   def mount(_params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
+    do:
+      {:ok,
+       socket
+       |> assign_defaults(session)
+       |> put_user_in_context()
+       |> MatchupsExplorer.assign_meta("My Matchups")}
 
   def render(assigns) do
     ~F"""
       <div :if={btag = User.battletag(@user)}>
-        <div class="title is-2">Matchups</div>
+        <div class="title is-2">My Matchups</div>
         <div class="subtitle is-5">
           Powered by <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
