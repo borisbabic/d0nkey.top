@@ -29,7 +29,7 @@ defmodule BackendWeb.LiveDashboard.AggregationPeriodFormatTimePage do
     %{limit: limit, sort_by: sort_by, sort_dir: direction} = params
 
     all_results =
-      Hearthstone.DeckTracker.aggregated_periods_formats_time()
+      Hearthstone.DeckTracker.aggregated_periods_formats_time(true)
       |> Enum.map(fn {period, format, time} ->
         %{
           period: period,
