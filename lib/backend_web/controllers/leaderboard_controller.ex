@@ -47,7 +47,6 @@ defmodule BackendWeb.LeaderboardController do
       {:error, :needs_login, viewable_url}
     else
       criteria = create_criteria(params)
-      dbg(criteria)
       leaderboard = get_shim(criteria, params)
       total = total(leaderboard)
       compare_to = params["compare_to"]
