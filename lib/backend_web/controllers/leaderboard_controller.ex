@@ -47,10 +47,11 @@ defmodule BackendWeb.LeaderboardController do
       {:error, :needs_login, viewable_url}
     else
       criteria = create_criteria(params)
+      dbg(criteria)
       leaderboard = get_shim(criteria, params)
       total = total(leaderboard)
       compare_to = params["compare_to"]
-      comparison = get_comparison(criteria, compare_to)
+      comparison = get_comparison(criteria, compare_to, leaderboard)
       ladder_mode = parse_ladder_mode(params)
       show_flags = parse_show_flags(params)
       skip_cn = parse_skip_cn(params, leaderboard)
@@ -76,6 +77,19 @@ defmodule BackendWeb.LeaderboardController do
       })
     end
   end
+
+  [
+    {"limit", 200},
+    {"offset", 0},
+    {"season",
+     %{
+       leaderboard_id: "STD",
+       region: "EU",
+       season_id: 147
+     }},
+    :latest_in_season,
+    {"order_by", "rank"}
+  ]
 
   def index(conn, params) do
     new_params =
@@ -283,7 +297,7 @@ defmodule BackendWeb.LeaderboardController do
     |> Hearthstone.Leaderboards.Season.ensure_leaderboard_id()
   end
 
-  defp get_comparison(criteria, "season_" <> season_id) do
+  defp get_comparison(criteria, "season_" <> season_id, _shim) do
     {{"season", season}, no_season} = List.keytake(criteria, "season", 0)
 
     base_season = %{
@@ -306,7 +320,9 @@ defmodule BackendWeb.LeaderboardController do
     Leaderboards.get_shim(new_criteria)
   end
 
-  defp get_comparison(criteria, "min_ago_" <> min_ago) do
+  defp get_comparison(criteria, "min_ago_" <> min_ago, shim) do
+    account_ids = Enum.map(shim.entries, & &1.account_id)
+
     case Integer.parse(min_ago) do
       {min, _} ->
         {base_time, partial} =
@@ -317,7 +333,7 @@ defmodule BackendWeb.LeaderboardController do
 
         comparison_time = NaiveDateTime.add(base_time, -60 * min)
 
-        [{"up_to", comparison_time} | partial]
+        [{"up_to", comparison_time}, {"players", account_ids} | partial]
         |> Leaderboards.get_shim()
 
       _ ->
@@ -325,7 +341,7 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  defp get_comparison(_, _), do: nil
+  defp get_comparison(_, _, _shim), do: nil
 
   def player_stats(conn, params) do
     # easier to see both cases at once, so I want the error first

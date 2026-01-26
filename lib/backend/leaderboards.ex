@@ -1270,6 +1270,8 @@ defmodule Backend.Leaderboards do
     compose_entries_query({"players", players}, query)
   end
 
+  defp compose_entries_query({"players", empty}, query) when empty in [[], nil], do: query
+
   defp compose_entries_query({"players", players}, query) do
     query
     |> where([entry: e], e.account_id in ^players)
