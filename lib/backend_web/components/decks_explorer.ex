@@ -13,7 +13,7 @@ defmodule Components.DecksExplorer do
   alias Components.Filter.ClassMultiDropdown
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
-  alias Hearthstone.DeckTracker.AggregationMeta
+  alias Hearthstone.DeckTracker.Period
   alias BackendWeb.Router.Helpers, as: Routes
   alias Components.ClassStatsModal
 
@@ -320,25 +320,81 @@ defmodule Components.DecksExplorer do
   defp ensure_min_games(%{"min_games" => min} = params) when is_integer(min), do: params
 
   defp ensure_min_games(%{"opponent_class" => oc} = params) when oc not in ["any", nil] do
-    Map.put(params, "min_games", @default_min_games)
+    agg_min_games(params, 0.2)
   end
 
   defp ensure_min_games(%{"player_deck_archetype" => _} = params) do
-    agg_min_games(params, 400)
+    agg_min_games(params, 0.4)
   end
 
   defp ensure_min_games(%{"player_class" => pc} = params) when pc not in ["any", nil] do
-    agg_min_games(params, 200)
+    agg_min_games(params, 0.5)
   end
 
   defp ensure_min_games(params) do
-    agg_min_games(params, 100)
+    agg_min_games(params)
   end
 
-  defp agg_min_games(params, min_deck_count, default_min_games \\ @default_min_games) do
+  @supported_min_options [12_800, 6400, 3200, 1600, 800, 400, 200, 100]
+  def agg_min_games(
+        params,
+        factor_multiplier \\ 1,
+        default_min_games \\ @default_min_games
+      ) do
+    format_factor =
+      case params["format"] do
+        wild when wild in [1, "1", "wild", :wild] -> 0.3
+        _ -> 1
+      end
+
+    rank_factor =
+      case params["rank"] do
+        "top_legend" -> 0.3
+        "top_5k" -> 0.5
+        "legend" -> 0.8
+        "all" -> 1.4
+        _ -> 1
+      end
+
     min =
-      case DeckTracker.current_aggregation_meta(params) do
-        {:ok, count} -> AggregationMeta.choose_count(count, min_deck_count, default_min_games)
+      with %Period{} = period <- DeckTracker.get_period_by_slug(params["period"]),
+           {:ok, start_time} <- Period.start_time(period),
+           {:ok, end_time} <- Period.end_time_or_now(period) do
+        diff = NaiveDateTime.diff(end_time, start_time, :hour)
+
+        period_factor =
+          cond do
+            diff < 24 ->
+              200
+
+            diff < 48 ->
+              400
+
+            diff < 72 ->
+              800
+
+            diff < 168 ->
+              1600
+
+            diff < 336 ->
+              3200
+
+            diff < 672 ->
+              6400
+
+            diff < 1344 ->
+              12_800
+
+            true ->
+              25_600
+          end
+
+        factor = period_factor * rank_factor * format_factor * factor_multiplier
+
+        Enum.find(@supported_min_options, default_min_games, fn c ->
+          factor >= c
+        end)
+      else
         _ -> default_min_games
       end
 
