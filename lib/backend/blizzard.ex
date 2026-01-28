@@ -31,8 +31,10 @@ defmodule Backend.Blizzard do
           | :"Masters Tour Six"
 
   @blizz_o_clock_time ~T[10:00:00]
-  @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
-  @short_battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
+  # @battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/
+  # @short_battletag_regex ~r/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))$/
+  @battletag_regex ~r/^[\p{L}\p{N}][\p{L}\p{N}\d]{1,11}#\d{4,}$/u
+  @short_battletag_regex ~r/^[\p{L}\p{N}][\p{L}\p{N}\d]{1,11}$/u
   @current_bg_season_id 17
   # guess, change if not correct
   # Battlepass aend date
