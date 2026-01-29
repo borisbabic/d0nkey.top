@@ -94,8 +94,8 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Mecha'thun" in ci.card_names ->
         :"Mecha'thun #{class_name}"
 
-      replicator_bug_abuse?(ci) ->
-        :"Abuse-inator #{class_name}"
+      # replicator_bug_abuse?(ci) ->
+      #   :"Abuse-inator #{class_name}"
 
       miracle_chad?(ci) ->
         :"Miracle Chad #{class_name}"
@@ -168,9 +168,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     end
   end
 
-  defp replicator_bug_abuse?(card_info) do
-    min_count?(card_info, 2, ["The Replicator-inator", "Ancient of Yore"])
-  end
+  # defp replicator_bug_abuse?(card_info) do
+  #   min_count?(card_info, 2, ["The Replicator-inator", "Ancient of Yore"])
+  # end
 
   defp amalgam?(card_info) do
     one_drop_names =
