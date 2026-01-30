@@ -72,7 +72,7 @@ defmodule Components.UpcomingTournaments do
   def fetch_full_tournaments(hours_ago) do
     battlefy =
       Battlefy.upcoming_hearthstone_tournaments(hours_ago)
-      |> Enum.map(&Battlefy.get_tournament(&1.id))
+      |> Enum.map(&Battlefy.get_tournament(&1.id, :cache))
 
     tournaments =
       Enum.sort_by(
