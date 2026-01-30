@@ -50,6 +50,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       type_count(card_info, "Dragon") > 5 ->
         :"Dragon Warrior"
 
+      burn_warrior?(card_info) ->
+        :"Burn Warrior"
+
       enrage_warrior?(card_info) ->
         :"Enrage Warrior"
 
@@ -68,6 +71,19 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp burn_warrior?(card_info) do
+    min_count?(card_info, 1, ["Time-Twisted Seer"]) and
+      (min_count?(card_info, 1, ["The Replicator-inator"]) or
+         min_count?(card_info, 3, [
+           "Rockskipper",
+           "Mixologist",
+           "Bash",
+           "Concussive Shells",
+           "Precursory Strike",
+           "Shadowflame Suffusion"
+         ]))
   end
 
   defp dragon?(card_info) do
