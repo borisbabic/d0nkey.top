@@ -51,21 +51,22 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Windpeak Wyrm",
        "Darkrider",
        "Dreamplanner Zephrys",
-       "Demolition Renovator",
        "Sanguine Depths",
        "Keeper of the Flame",
        "Shadowflame Suffusion",
        "Prescient Slitherdrake",
        "Dragon Turtle"
      ]},
-    # {:"Boom Wrench Warrior",
-    #  [
-    #    "Prize Vendor",
-    #    "Boom Wrench",
-    #    "Part Scrapper",
-    #    "Testing Dummy",
-    #    "Safety Expert"
-    #  ]},
+    {:"Burn Warrior",
+     [
+       "The Replicator-inator",
+       "Rockskipper",
+       "Mixologist",
+       "Cloud Serpent",
+       "Time-Twisted Seer",
+       "Concussive Shells",
+       "Axe of the Forefathers"
+     ]},
     {:"Control Warrior",
      [
        "The Exodar",
@@ -77,7 +78,9 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Tortollan Traveler",
        "Brawl",
        "Bulwark of Azzinoth",
+       "Bouldering Buddy",
        "Starport",
+       "Chemical Spill",
        "Hydration Station",
        "Tortolla",
        "Elise the Navigator",
@@ -112,7 +115,6 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Dimensional Weaponsmith",
        "The Great Dracorex",
        "Naralex, Hearld of the Flight",
-       "Time-Twisted Seer",
        "Eternal Toil",
        "Zilliax Deluxe 3000",
        "Tormented Dreadwing"
