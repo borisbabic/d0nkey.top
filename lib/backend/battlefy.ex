@@ -18,6 +18,7 @@ defmodule Backend.Battlefy do
   alias Backend.Tournaments.MatchStats
   alias Backend.Tournaments.MatchStats.Result
   alias Backend.Battlefy.GameStats
+  alias Backend.Infrastructure.ApiCache
 
   # 192 = 24 (length of id) * 8 (bits in a byte)
   @type region :: :Asia | :Europe | :Americas
@@ -525,9 +526,33 @@ defmodule Backend.Battlefy do
     |> Enum.reverse()
   end
 
-  @spec get_tournament(tournament_id) :: Tournament.t() | nil
-  def get_tournament(tournament_id) do
+  @spec get_tournament(tournament_id, :cache | :fresh) :: Tournament.t() | nil
+  def get_tournament(tournament_id, cache_or_fresh \\ :fresh)
+
+  def get_tournament(tournament_id, :cache) do
+    cache_key = tournament_id |> tournament_cache_key()
+
+    case ApiCache.get(cache_key) do
+      %Tournament{} = tournament ->
+        tournament
+
+      nil ->
+        tournament = tournament_id |> get_tournament(:fresh)
+
+        if tournament do
+          ApiCache.set(cache_key, tournament)
+        end
+
+        tournament
+    end
+  end
+
+  def get_tournament(tournament_id, :fresh) do
     Api.get_tournament(tournament_id)
+  end
+
+  defp tournament_cache_key(id) do
+    "battlefy_tournament_#{id}"
   end
 
   @spec fetch_all_tournament_matches(tournament_id | Tournament.t()) ::
