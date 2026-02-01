@@ -37,6 +37,7 @@ defmodule FunctionComponents.Dropdown do
         aria-haspopup="true"
         aria-controls={@aria_controls}
         tabindex="0"
+        x-on:click.prevent="open=!open"
         x-on:keydown.up.prevent="open=false"
         x-on:keydown.down.prevent="if(open){$event.target.nextElementSibling.firstElementChild.firstElementChild.focus()} else {open=true}"
         x-on:keydown.space.prevent="open=!open"
