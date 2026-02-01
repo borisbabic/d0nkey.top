@@ -22,6 +22,8 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
       "Return Policy",
       "Blob of Tar",
       "Ravenous Felhunter",
+      "Elise the Navigator",
+      "Kerrigan, Queen of Blades",
       "Hounds of Fury",
       "The Eternal Hold",
       "Solitude",
@@ -35,7 +37,7 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
       "Spirit Peddler",
       "Remnant of Rage"
     ],
-    :"Cliff Dive DH " => [
+    :"Cliff Dive DH" => [
       "Return Policy",
       "Blob of Tar",
       "Ravenous Felhunter",
