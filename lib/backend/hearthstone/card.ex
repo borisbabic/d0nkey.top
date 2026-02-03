@@ -466,7 +466,9 @@ defmodule Backend.Hearthstone.Card do
   def spell_schools(%{spell_school: %{slug: slug}}), do: [slug]
   def spell_schools(_), do: []
 
-  def our_url(%{id: id}), do: "https://www.hsguru.com/card/#{id}"
+  def our_url(card) do
+    "https://www.hsguru.com/card/#{dbf_id(card)}"
+  end
 
   @spec same_card_grouper(card()) :: String.t()
   def same_card_grouper(card) do

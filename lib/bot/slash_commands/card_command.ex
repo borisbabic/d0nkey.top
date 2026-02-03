@@ -27,9 +27,9 @@ defmodule Bot.SlashCommands.CardCommand do
   def handle_interaction(%Interaction{data: %{name: @name}} = interaction) do
     card_search = option_value(interaction, "card_search")
     defer(interaction)
-    component = Bot.MessageHandler.create_card_component(card_search)
+    embeds = Bot.CardMessageHandler.create_card_info_embed(card_search, true)
 
-    components_follow_up(interaction, component)
+    embeds_follow_up(interaction, embeds)
     :ok
   end
 
