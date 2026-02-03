@@ -950,10 +950,18 @@ defmodule Backend.Hearthstone do
 
   @spec get_fuzzy_card(String.t()) :: card() | nil
   def get_fuzzy_card(fuzzy) do
+    case get_fuzzy_cards(fuzzy, 1) do
+      [card | _] -> card
+      _ -> nil
+    end
+  end
+
+  @spec get_fuzzy_card(String.t()) :: [card()]
+  def get_fuzzy_cards(fuzzy, limit \\ 1) do
     common_criteria = [
       {"order_by", "latest"},
       Backend.Hearthstone.not_classic_card_criteria(),
-      {"limit", 1}
+      {"limit", limit}
     ]
 
     exact_criteria = [{"name", fuzzy}, {"order_by", {:desc, :collectible}} | common_criteria]
@@ -966,9 +974,6 @@ defmodule Backend.Hearthstone do
     with [] <- Backend.Hearthstone.cards(exact_criteria),
          [] <- Backend.Hearthstone.cards(fuzzy_criteria) do
       nil
-    else
-      [card | _] ->
-        card
     end
   end
 
