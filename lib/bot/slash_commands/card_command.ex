@@ -50,7 +50,8 @@ defmodule Bot.SlashCommands.CardCommand do
         Backend.Hearthstone.get_fuzzy_cards(card_search, 10)
         |> Enum.map(fn c ->
           name = Card.name(c)
-          %{name: name, value: name}
+          rarity_square = Card.rarity_square(c)
+          %{name: "#{rarity_square} #{name}", value: name}
         end)
       else
         []
