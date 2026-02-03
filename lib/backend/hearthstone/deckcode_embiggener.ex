@@ -13,7 +13,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
   def embiggen(d = %{cards: cards, deckcode: deckcode}) do
     deck_name = Deck.name(d)
-    card_sort_opts = [cost: & Deck.card_mana_cost(d, &1)]
+    card_sort_opts = [cost: &Deck.card_mana_cost(d, &1)]
 
     cards_part =
       cards
@@ -28,7 +28,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
         [{card, freq, ""} | card_sideboards]
       end)
-      |> Enum.map_join("\n", & create_card_part(&1, d))
+      |> Enum.map_join("\n", &create_card_part(&1, d))
 
     link_part =
       case Map.get(d, :id) do
@@ -52,13 +52,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
   end
 
   def create_card_part({card, freq, sideboard_prefix}, deck) do
-    rarity =
-      case Card.rarity(card) do
-        "LEGENDARY" -> "🟨"
-        "EPIC" -> "🟪"
-        "RARE" -> "🟦"
-        _ -> "⬜"
-      end
+    rarity = Card.rarity_square(card)
 
     "# #{rarity} #{sideboard_prefix}#{freq}x (#{Deck.card_mana_cost(deck, card)}) #{card.name}"
   end

@@ -251,6 +251,16 @@ defmodule Backend.Hearthstone.Card do
   def put_classes(changeset, classes), do: changeset |> put_assoc(:classes, classes)
   def put_factions(changeset, factions), do: changeset |> put_assoc(:factions, factions)
 
+  @spec rarity_square(card()) :: unicode_square :: String.t()
+  def rarity_square(card) do
+    case rarity(card) do
+      "LEGENDARY" -> "🟨"
+      "EPIC" -> "🟪"
+      "RARE" -> "🟦"
+      _ -> "⬜"
+    end
+  end
+
   @spec rarity(card()) :: String.t()
   def rarity(%{rarity: rarity}), do: Rarity.upcase(rarity)
 
