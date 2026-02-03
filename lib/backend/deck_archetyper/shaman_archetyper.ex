@@ -220,6 +220,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation(card_info)} Quest Shaman")
 
+      "Shudderwock" in card_info.card_names and highlander?(card_info) ->
+        :"HL Shudder Shaman"
+
       highlander?(card_info) ->
         :"Highlander Shaman"
 
