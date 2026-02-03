@@ -8,7 +8,7 @@ defmodule Backend.PlayerIconBag do
     {"D0nkey#2470", {:image, "/favicon.ico", "https://www.twitch.tv/d0nkeyhs"}},
     # {"Blastoise#1855", {:image, "/images/icons/blastoise.png"}},
     # donation, remove in summer 2022? maybe?
-    {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
+    # {"Faeli#2572", {:image, "/images/icons/faeli.png"}},
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
     # MTOne Fantasy
     # {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}},
@@ -17,7 +17,8 @@ defmodule Backend.PlayerIconBag do
     {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
     # patreon
     {"MakiahTime#1552", {:image, "/images/icons/makiah.png", "https://www.twitch.tv/makiahtime"}},
-
+    # connected patreon to site
+    {"Che0nsu#3213", {:image, "/images/icons/che0nsu.webp", "https://x.com/che0nsu"}},
     # patreon
     # {"otters#11111", {:image, "/images/icons/otters.png"}},
     # patreon
