@@ -1,6 +1,7 @@
 defmodule Bot.SlashCommands.CardCommand do
   @moduledoc false
   use Bot.SlashCommands.SlashCommand
+  alias Backend.Hearthstone.Card
 
   @name "card"
   @impl true
@@ -16,6 +17,7 @@ defmodule Bot.SlashCommands.CardCommand do
             name: "card_search",
             description: "Card search",
             min_value: 1,
+            autocomplete: true,
             required: true
           }
         ]
@@ -23,11 +25,32 @@ defmodule Bot.SlashCommands.CardCommand do
     ]
   end
 
+  def handle_interaction(%Interaction{type: 4, data: %{name: n}} = interaction)
+      when n in [@name] do
+    card_search = option_value(interaction, "card_search")
+
+    choices =
+      if String.length(card_search) >= 3 do
+        Backend.Hearthstone.get_fuzzy_cards(card_search, 10)
+        |> Enum.map(fn c ->
+          name = Card.name(c)
+          %{name: name, value: name}
+        end)
+      else
+        []
+      end
+
+    Nostrum.Api.create_interaction_response(interaction, %{
+      type: 8,
+      data: %{choices: choices}
+    })
+  end
+
   @impl true
-  def handle_interaction(%Interaction{data: %{name: @name}} = interaction) do
+  def handle_interaction(%Interaction{type: 2, data: %{name: @name}} = interaction) do
     card_search = option_value(interaction, "card_search")
     defer(interaction)
-    embeds = Bot.CardMessageHandler.create_card_info_embed(card_search, true)
+    embeds = Bot.CardMessageHandler.create_card_info_embed(card_search, false)
 
     embeds_follow_up(interaction, embeds)
     :ok

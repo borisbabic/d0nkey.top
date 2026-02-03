@@ -117,6 +117,8 @@ defmodule Bot.CardMessageHandler do
       if include_other_matches do
         embed
         |> Embed.put_field("Other Matches", other_matches)
+      else
+        embed
       end
     else
       %Nostrum.Struct.Embed{}
