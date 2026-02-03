@@ -4,6 +4,7 @@ defmodule Bot.SlashCommands.CardCommand do
   alias Backend.Hearthstone.Card
 
   @name "card"
+  @image_name "card_image"
   @impl true
   def get_commands() do
     [
@@ -21,12 +22,27 @@ defmodule Bot.SlashCommands.CardCommand do
             required: true
           }
         ]
+      },
+      %{
+        name: @image_name,
+        description: "Get card image",
+        options: [
+          %{
+            # string
+            type: 3,
+            name: "card_search",
+            description: "Card search",
+            min_value: 1,
+            autocomplete: true,
+            required: true
+          }
+        ]
       }
     ]
   end
 
   def handle_interaction(%Interaction{type: 4, data: %{name: n}} = interaction)
-      when n in [@name] do
+      when n in [@name, @image_name] do
     card_search = option_value(interaction, "card_search")
 
     choices =
@@ -53,6 +69,16 @@ defmodule Bot.SlashCommands.CardCommand do
     embeds = Bot.CardMessageHandler.create_card_info_embed(card_search, false)
 
     embeds_follow_up(interaction, embeds)
+    :ok
+  end
+
+  @impl true
+  def handle_interaction(%Interaction{type: 2, data: %{name: @image_name}} = interaction) do
+    card_search = option_value(interaction, "card_search")
+    defer(interaction)
+    components = Bot.CardMessageHandler.create_card_image_component(card_search)
+
+    components_follow_up(interaction, components)
     :ok
   end
 
