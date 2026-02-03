@@ -370,7 +370,7 @@ defmodule Bot.MessageHandler do
         "Next constructed season reset (shown in your timezone): "
       end
 
-    "#{prepend}#{region_part}"
+    "#{prepend}#{region_part}\nWARNING: APAC might be an hour later. :dshrug:"
   end
 
   @spec extract_regions_with_timezone(String.t() | atom()) :: [{atom(), String.t()}]
@@ -456,7 +456,10 @@ defmodule Bot.MessageHandler do
           matches
           |> Enum.map(&create_card_component/1)
 
-        create_components_message(msg.channel_id, galleries)
+        Nostrum.Api.Message.create(msg.channel_id, embeds: galleries)
+
+      # reply(msg, embeds: galleries)
+      # create_components_message(msg.channel_id, galleries)
 
       _ ->
         :ignore
@@ -466,24 +469,7 @@ defmodule Bot.MessageHandler do
   def create_card_component([match]), do: create_card_component(match)
 
   def create_card_component(match) do
-    title =
-      "[#{match} (Other potential matches)](https://www.hsguru.com/cards?collectible=yes&order_by=name_similarity_#{URI.encode(match)})"
-
-    card = Backend.Hearthstone.get_fuzzy_card(match)
-
-    if card do
-      Bot.CardMessageHandler.create_component(card, title_prepend: title)
-    else
-      %{
-        type: 17,
-        components: [
-          %{
-            type: 10,
-            content: title
-          }
-        ]
-      }
-    end
+    Bot.CardMessageHandler.create_card_info_embed(match)
   end
 
   def handle_timestamp(msg) do

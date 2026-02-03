@@ -2,6 +2,7 @@ defmodule Bot.MessageHandlerUtil do
   @moduledoc false
   require Logger
   alias Nostrum.Api
+  alias Nostrum.Struct.Embed
   alias Nostrum.Struct.Message
   alias Nostrum.Struct.User
   import Bitwise
@@ -205,6 +206,9 @@ defmodule Bot.MessageHandlerUtil do
 
   def text_response(text) when is_binary(text), do: %{content: text}
 
+  def embeds_response(embeds) when is_list(embeds), do: %{embeds: embeds}
+  def embeds_response(%Embed{} = embed), do: embeds_response([embed])
+
   def components_response(components) when is_list(components) do
     %{flags: 32_768, components: components}
   end
@@ -221,4 +225,14 @@ defmodule Bot.MessageHandlerUtil do
 
   def reporting_channel_id(), do: @reporting_channel_id
   def muted_reporting_channel_id(), do: @muted_reporting_channel_id
+
+  def format_text(text) do
+    text
+    |> String.replace("<br>", "\n")
+    # Replaces <b> and </b> with **
+    |> String.replace(~r/<\/?b>/, "**")
+    # Replaces <i> and </i> with *
+    |> String.replace(~r/<\/?i>/, "*")
+    |> String.replace(~r/<\/?u>/, "__")
+  end
 end

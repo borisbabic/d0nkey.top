@@ -11,7 +11,13 @@ defmodule Bot.SlashCommands.SlashCommand do
       alias Nostrum.Struct.Interaction
 
       import Bot.MessageHandlerUtil,
-        only: [text_response: 1, components_response: 1, travolta_response: 0, add_flags: 2]
+        only: [
+          embeds_response: 1,
+          text_response: 1,
+          components_response: 1,
+          travolta_response: 0,
+          add_flags: 2
+        ]
 
       @spec create_response(String.t(), integer()) :: %{
               type: integer(),
@@ -47,6 +53,11 @@ defmodule Bot.SlashCommands.SlashCommand do
 
       def follow_up(interaction, message) when is_binary(message) do
         response = text_response(message)
+        follow_up(interaction, response)
+      end
+
+      def embeds_follow_up(interaction, embeds) do
+        response = embeds_response(embeds)
         follow_up(interaction, response)
       end
 
