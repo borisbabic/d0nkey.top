@@ -287,13 +287,12 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   end
 
   defp old_aggro?(card_info) do
-    min_count?(card_info, 5, [
+    min_count?(card_info, 3, [
       "Herald of Nature",
       "Pride's Fury",
-      "Irondeep Trogg",
-      "Druid of the Reef",
-      "Thorngrowth Sentries",
-      "Peasant"
+      "Mark of the Lotus",
+      "Arbor Up",
+      "Sow the Soil"
     ])
   end
 
