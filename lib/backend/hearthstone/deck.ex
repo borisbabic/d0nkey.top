@@ -291,6 +291,7 @@ defmodule Backend.Hearthstone.Deck do
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 
   @class_name_map %{
+    "NEUTRAL" => "Neutral",
     "DEATHKNIGHT" => "Death Knight",
     "DEMONHUNTER" => "Demon Hunter",
     "DRUID" => "Druid",

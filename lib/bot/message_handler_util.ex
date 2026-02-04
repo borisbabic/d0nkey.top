@@ -226,7 +226,7 @@ defmodule Bot.MessageHandlerUtil do
   def reporting_channel_id(), do: @reporting_channel_id
   def muted_reporting_channel_id(), do: @muted_reporting_channel_id
 
-  def format_text(text) do
+  def format_text(text) when is_binary(text) do
     text
     |> String.replace("<br>", "\n")
     # Replaces <b> and </b> with **
@@ -235,4 +235,6 @@ defmodule Bot.MessageHandlerUtil do
     |> String.replace(~r/<\/?i>/, "*")
     |> String.replace(~r/<\/?u>/, "__")
   end
+
+  def format_text(text), do: text
 end
