@@ -232,6 +232,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Darkbishop Benedictus" in card_info.card_names and highlander?(card_info) ->
         :"HL Shadow Priest"
 
+      imbue?(card_info, 4) and highlander?(card_info) ->
+        :"HL Imbue Priest"
+
       highlander?(card_info) ->
         :"Highlander Priest"
 
