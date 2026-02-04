@@ -1,12 +1,22 @@
-defmodule Command.Add2025CoreCards do
+defmodule Command.AddCoreCards do
   @moduledoc false
   alias Backend.Hearthstone.Set
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.ExtraCardSet
   alias Hearthstone.Card.RuneCost
   alias Ecto.Multi
-  @core_slug "temp_core_2025"
-  @core_name "Core 2025"
+  #####
+  ## To truncate files
+  ## Run:
+  # cd assets/static/images/scarab_core
+  # truncate -s 0 *
+  #####
+  @year_name "scarab"
+  @year_number 2026
+  @release_date ~D[2026-03-01]
+  @core_slug "temp_core_#{@year_number}"
+  @core_name "Core #{@year_number}"
+  @fake_card_set_id -67
   def run() do
     ensure_fake_core_set()
     add_cards()
@@ -16,24 +26,26 @@ defmodule Command.Add2025CoreCards do
     cs = Backend.Hearthstone.card_sets()
 
     if !Enum.any?(cs, &(&1.slug == @core_slug)) do
-      api_set = %Hearthstone.Metadata.Set{
-        id: -69,
-        alias_set_ids: [],
-        name: @core_name,
-        slug: @core_slug,
-        non_collectible_count: 0,
-        collectible_count: 290,
-        non_collectible_revealed_count: 290,
-        collectible_revealed_count: 290,
-        type: nil
-      }
+      api_set =
+        %Hearthstone.Metadata.Set{
+          id: @fake_card_set_id,
+          alias_set_ids: [],
+          name: @core_name,
+          slug: @core_slug,
+          non_collectible_count: 0,
+          collectible_count: 290,
+          non_collectible_revealed_count: 290,
+          collectible_revealed_count: 290,
+          type: nil
+        }
+        |> Map.put(:release_date, @release_date)
 
       cs = %Set{} |> Set.changeset(api_set)
       Backend.Repo.insert(cs)
     end
   end
 
-  @image_directory "assets/static/images/core_2025"
+  @image_directory "assets/static/images/core_#{@year_number}"
   def add_cards(parsed_filter \\ & &1, directory \\ @image_directory) do
     parsed_files(directory)
     |> Enum.filter(parsed_filter)
@@ -49,12 +61,40 @@ defmodule Command.Add2025CoreCards do
 
   def make_short_images(
         source_directory \\ @image_directory,
-        destination_directory \\ @image_directory <> "/../raptor_core"
+        destination_directory \\ @image_directory <> "/../#{@year_name}_core",
+        trim_repage \\ true
       ) do
+    if trim_repage and nil == System.find_executable("magick") do
+      raise "magick not found"
+    end
+
     {:ok, files} = File.ls(source_directory)
 
+    creator =
+      if trim_repage do
+        fn source, destination ->
+          IO.puts("Trimming #{source} to #{destination}")
+
+          System.cmd("magick", [
+            source,
+            "-trim",
+            "+repage",
+            "-bordercolor",
+            "transparent",
+            "-border",
+            "100",
+            destination
+          ])
+        end
+      else
+        fn source, destination ->
+          File.copy(source, destination)
+        end
+      end
+
     for f <- files, %{file_name: file_name, card_id: card_id} <- [parse_file_name(f)] do
-      File.copy("#{source_directory}/#{file_name}", "#{destination_directory}/#{card_id}.png")
+      creator.("#{source_directory}/#{file_name}", "#{destination_directory}/#{card_id}.png")
+      # File.copy("#{source_directory}/#{file_name}", "#{destination_directory}/#{card_id}.png")
     end
   end
 
@@ -74,7 +114,7 @@ defmodule Command.Add2025CoreCards do
     |> Backend.Repo.transaction()
   end
 
-  def parsed_files(directory) do
+  def parsed_files(directory \\ @image_directory) do
     {:ok, files} = File.ls(directory)
     Enum.map(files, &parse_file_name/1)
   end
@@ -143,7 +183,7 @@ defmodule Command.Add2025CoreCards do
   end
 
   def create_mapping(id) do
-    %ExtraCardSet{} |> ExtraCardSet.changeset(%{card_id: id, card_set_id: -69})
+    %ExtraCardSet{} |> ExtraCardSet.changeset(%{card_id: id, card_set_id: @fake_card_set_id})
   end
 
   def attrs_from_existing(existing_card, id, card_id) do
@@ -151,21 +191,25 @@ defmodule Command.Add2025CoreCards do
     |> Map.from_struct()
     |> Map.put(:id, id)
     |> Map.put(:image, image_url(card_id))
-    |> Map.put(:card_set_id, -69)
+    |> Map.put(:card_set_id, @fake_card_set_id)
     |> Map.drop([:image_gold])
     |> Map.put(card_id, :card_id)
   end
 
   def new_attrs(name, id, rune_cost, card_id) do
+    [last_part_reversed | _] = String.split(card_id, "_") |> Enum.reverse()
+    # tokens have a t in the last part
+    collectible = !(last_part_reversed =~ "t")
+
     %{
       id: id,
       # artist_name: nil,
       # attack: nil,
       card_id: card_id,
-      card_set_id: -69,
+      card_set_id: @fake_card_set_id,
       # card_type_id: nil,
       # child_ids: [],
-      collectible: true,
+      collectible: collectible,
       # copy_of_card_id: nil,
       # crop_image: nil,
       # durability: nil,
@@ -190,7 +234,7 @@ defmodule Command.Add2025CoreCards do
   end
 
   def image_url(card_id) do
-    "/images/raptor_core/#{card_id}.png"
+    "/images/#{@year_name}_core/#{card_id}.png"
   end
 
   def fix_class("zz" <> class), do: class

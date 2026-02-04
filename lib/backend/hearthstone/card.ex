@@ -366,6 +366,7 @@ defmodule Backend.Hearthstone.Card do
   def dust_cost(%{card_set_id: 1637}), do: 0
   # core_set 2025
   def dust_cost(%{card_set_id: -69}), do: 0
+  def dust_cost(%{card_set_id: -67}), do: 0
   def dust_cost(%{rarity: %{normal_crafting_cost: nil}}), do: 0
   def dust_cost(%{rarity: %{normal_crafting_cost: cost}}), do: cost
   def dust_cost(%{set: "CORE"}), do: 0
@@ -390,8 +391,8 @@ defmodule Backend.Hearthstone.Card do
   @spec card_url(card()) :: String.t() | nil
   # hack for 2025 core
   def card_url(%{card_id: card_id} = card) when is_binary(card_id) do
-    if File.exists?("assets/static/images/raptor_core/#{card_id}.png") do
-      "/images/raptor_core/#{card_id}.png"
+    if File.exists?("assets/static/images/scarab_core/#{card_id}.png") do
+      "/images/scarab_core/#{card_id}.png"
     else
       card |> Map.put(:card_id, nil) |> card_url()
     end
