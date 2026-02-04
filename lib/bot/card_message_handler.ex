@@ -99,27 +99,43 @@ defmodule Bot.CardMessageHandler do
     end
   end
 
-  def create_card_info_embed(card_name, include_other_matches \\ true)
+  def create_card_info_embed(card_name)
       when is_binary(card_name) do
+    # |> String.replace(" (Other potential matches)", "")
     other_matches = potential_matches_link(card_name)
     card = Backend.Hearthstone.get_fuzzy_card(card_name)
 
     if card do
+      description = """
+      -# #{Card.description(card, false, false)}
+      ### #{format_text(card.text)}
+      """
+
+      # description = if include_other_matches do
+      #   description <> "\n-# #{other_matches}"
+      #   else
+      #   description
+      # end
+
+      title = Card.name(card)
+
       embed =
         %Embed{}
-        |> Embed.put_title(Card.name(card))
-        |> Embed.put_description(format_text(card.text))
+        |> Embed.put_title(title)
+        |> Embed.put_description(description)
         |> Embed.put_url(Card.our_url(card))
         |> Embed.put_color(discord_color(card))
         |> Embed.put_thumbnail(Card.card_url(card))
-        |> Embed.put_field("Flavor Text", Map.get(card, :flavor_text))
+        |> Embed.put_footer(Map.get(card, :flavor_text))
 
-      if include_other_matches do
-        embed
-        |> Embed.put_field("Other Matches", other_matches)
-      else
-        embed
-      end
+      # |> Embed.put_field("Flavor Text", Map.get(card, :flavor_text))
+
+      # if include_other_matches do
+      #   embed
+      #   |> Embed.put_field("Other Matches", other_matches)
+      # else
+      #   embed
+      # end
     else
       %Nostrum.Struct.Embed{}
       |> Embed.put_title(other_matches)
