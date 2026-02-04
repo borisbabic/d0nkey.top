@@ -10,11 +10,9 @@ defmodule BackendWeb.DeckBuilderLive do
   alias Backend.Hearthstone.Deck.Sideboard
   alias Backend.Hearthstone.Card
   alias Backend.Hearthstone.CardBag
+  import BackendWeb.CardsLive, only: [active_conditional_formats: 0, format_name: 1]
 
   @evergreen_formats [1, 2]
-  @conditional_formats [
-    %{format: "timeways_prerelease_brawl", until: ~N[2025-11-05 17:00:00]}
-  ]
   # @supported_formats [1, 2, "unguro_prerelease_brawl"]
   data(deck_class, :string)
   data(format, :integer)
@@ -90,19 +88,6 @@ defmodule BackendWeb.DeckBuilderLive do
     """
   end
 
-  defp format_name("standard_2024"), do: "2024 Standard"
-  defp format_name("standard_2025"), do: "2025 Standard"
-
-  defp format_name(format) when is_binary(format) do
-    if format =~ "prerelease_brawl" do
-      "Prerelease Brawl"
-    else
-      Deck.format_name(format)
-    end
-  end
-
-  defp format_name(format), do: Deck.format_name(format)
-
   defp standard?(%{format: 2}), do: true
   defp standard?(_), do: false
 
@@ -144,9 +129,7 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp supported_formats() do
     conditional =
-      for %{format: f, until: until} <- @conditional_formats,
-          :lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), until),
-          do: f
+      for %{format: f} <- active_conditional_formats(), do: f
 
     @evergreen_formats ++ conditional
   end

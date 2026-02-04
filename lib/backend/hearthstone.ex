@@ -1478,14 +1478,17 @@ defmodule Backend.Hearthstone do
     compose_cards_query({"card_set_group_slug_not_in", "standard"}, new_query)
   end
 
+  defp compose_cards_query({"format", "standard_" <> _ = format}, query) do
+    new_query = compose_cards_query({"card_set_group_slug", format}, query)
+    compose_cards_query({"banned_cards_for_format", format}, new_query)
+  end
+
   defp compose_cards_query({"format", format}, query)
        when format in [
               "standard",
               "wild",
               "twist",
               "arena",
-              "standard_2025",
-              "standard_2024",
               "unguro_prerelease_brawl",
               "ed_prerelease_brawl",
               "timeways_prerelease_brawl"
