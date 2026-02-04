@@ -343,6 +343,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       quest?(card_info) and highlander?(card_info) ->
         String.to_atom("HL #{quest_abbreviation(card_info)} Quest Rogue")
 
+      imbue?(card_info, 4) and highlander?(card_info) ->
+        :"HL Imbue Rogue"
+
       wild_thief_rogue?(card_info) and highlander?(card_info) ->
         :"HL Thief Rogue"
 
@@ -375,6 +378,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       "King Togwaggle" in card_info.card_names ->
         :"Tog Rogue"
+
+       imbue?(card_info, 4) ->
+        :"Imbue Rogue"
 
       "Smokescreen" in card_info.card_names ->
         :"Deathrattle Rogue"
