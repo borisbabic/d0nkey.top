@@ -321,7 +321,7 @@ defmodule Hearthstone.DeckTracker do
         ) :: [deck_stats()]
   def detailed_stats(deck_id_or_archetype, additional_criteria \\ [])
       when is_integer(deck_id_or_archetype) or is_binary(deck_id_or_archetype) or
-             is_atom(deck_id_or_archetype) do
+             is_atom(deck_id_or_archetype) or is_tuple(deck_id_or_archetype) do
     if :fresh == detailed_stats_fresh_or_agg(deck_id_or_archetype, additional_criteria) do
       criteria =
         [deck_or_archetype_criteria(deck_id_or_archetype) | additional_criteria]
@@ -3314,6 +3314,9 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_agg_count_query(_, query), do: query
 
+  def deck_or_archetype_criteria({key, value}, _),
+    do: {key, value}
+
   def deck_or_archetype_criteria(deck_id, deck_param \\ "player_deck_id")
 
   def deck_or_archetype_criteria(deck_id, deck_param) when is_integer(deck_id),
@@ -3324,9 +3327,15 @@ defmodule Hearthstone.DeckTracker do
 
   def deck_or_archetype_criteria(deck_id_or_archetype, deck_param)
       when is_binary(deck_id_or_archetype) do
-    case Integer.parse(deck_id_or_archetype) do
-      {deck_id, _} when is_integer(deck_id) -> {deck_param, deck_id}
-      _ -> {"archetype", deck_id_or_archetype}
+    case Util.to_existing_atom(deck_id_or_archetype) do
+      {:ok, archetype} ->
+        {"archetype", archetype}
+
+      _ ->
+        case Integer.parse(deck_id_or_archetype) do
+          {deck_id, _} when is_integer(deck_id) -> {deck_param, deck_id}
+          _ -> {"archetype", deck_id_or_archetype}
+        end
     end
   end
 
