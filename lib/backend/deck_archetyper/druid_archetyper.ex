@@ -211,8 +211,8 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Cultivation" in card_info.card_names ->
         :"Treant Druid"
 
-      wild_aggro?(card_info) ->
-        :"Aggro Druid"
+      old_aggro?(card_info) ->
+        :"Old Aggro Druid"
 
       wild_dragon_druid?(card_info) ->
         :"Dragon Druid"
@@ -286,7 +286,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
     min_count?(card_info, 2, ["Grove Shaper", "Naturalize"])
   end
 
-  defp wild_aggro?(card_info) do
+  defp old_aggro?(card_info) do
     min_count?(card_info, 3, [
       "Herald of Nature",
       "Pride's Fury",
