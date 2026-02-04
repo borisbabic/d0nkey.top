@@ -686,4 +686,14 @@ defmodule Util do
 
   def safe_div(a, b) when is_number(a) and is_number(b) and b > 0, do: a / b
   def safe_div(_, _), do: 0
+
+  @spec to_existing_atom(string :: String.t()) :: {:ok, atom()} | {:error, :not_existing}
+  def to_existing_atom(string) when is_binary(string) do
+    try do
+      atom = String.to_existing_atom(string)
+      {:ok, atom}
+    rescue
+      ArgumentError -> {:error, :not_existing}
+    end
+  end
 end
