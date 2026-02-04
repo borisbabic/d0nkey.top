@@ -214,6 +214,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Call to Arms" in card_info.card_names ->
         :"CtA Paladin"
 
+      "Galvanizer" in card_info.card_names ->
+        :"Mech Paladin"
+
       thekal?(card_info) ->
         :"Thekal Paladin"
 
