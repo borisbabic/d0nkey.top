@@ -146,7 +146,15 @@ defmodule Backend.Hearthstone.Card do
     classes = Enum.map_join(classes(card), " ", &Deck.class_name/1)
 
     stats = stats_text(card)
-    description = "#{cost(card)} mana #{stats} #{classes} #{type_name(card)}"
+
+    stats =
+      if stats do
+        stats <> " "
+      else
+        ""
+      end
+
+    description = "#{cost(card)} mana #{stats}#{classes} #{type_name(card)}"
 
     description =
       if include_text do
