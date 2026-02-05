@@ -111,6 +111,12 @@ defmodule Bot.CardMessageHandler do
       ### #{format_text(card.text)}
       """
 
+      description =
+        case Card.set_name(card) do
+          nil -> description
+          name -> "-# #{name}\n#{description}"
+        end
+
       # description = if include_other_matches do
       #   description <> "\n-# #{other_matches}"
       #   else
@@ -119,23 +125,19 @@ defmodule Bot.CardMessageHandler do
 
       title = Card.name(card)
 
-      embed =
-        %Embed{}
-        |> Embed.put_title(title)
-        |> Embed.put_description(description)
-        |> Embed.put_url(Card.our_url(card))
-        |> Embed.put_color(discord_color(card))
-        |> Embed.put_thumbnail(Card.card_url(card))
-        |> Embed.put_footer(Map.get(card, :flavor_text))
+      url =
+        case Card.our_url(card) do
+          "/" <> _ = url -> "https://www.hsguru.com#{url}"
+          url -> url
+        end
 
-      # |> Embed.put_field("Flavor Text", Map.get(card, :flavor_text))
-
-      # if include_other_matches do
-      #   embed
-      #   |> Embed.put_field("Other Matches", other_matches)
-      # else
-      #   embed
-      # end
+      %Embed{}
+      |> Embed.put_title(title)
+      |> Embed.put_description(description)
+      |> Embed.put_url(url)
+      |> Embed.put_color(discord_color(card))
+      |> Embed.put_thumbnail(Card.card_url(card))
+      |> Embed.put_footer(Map.get(card, :flavor_text))
     else
       %Nostrum.Struct.Embed{}
       |> Embed.put_title(other_matches)
