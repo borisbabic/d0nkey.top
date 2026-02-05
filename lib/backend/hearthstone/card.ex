@@ -142,7 +142,7 @@ defmodule Backend.Hearthstone.Card do
     |> foreign_key_constraint(:card_set_id, name: :hs_cards_card_set_id_fkey)
   end
 
-  def description(card, include_text \\ true, include_name \\ true) do
+  def description(card, include_text \\ true, include_name \\ true, include_expansion \\ false) do
     classes = Enum.map_join(classes(card), " ", &Deck.class_name/1)
 
     stats = stats_text(card)
@@ -163,18 +163,23 @@ defmodule Backend.Hearthstone.Card do
         description
       end
 
-    if include_name do
-      "#{name(card)} #{description}"
-    else
-      description
+    description =
+      if include_name do
+        "#{name(card)} #{description}"
+      else
+        description
+      end
+
+    case {include_expansion, set_name(card)} do
+      {true, name} when is_binary(name) -> "#{description} | #{name}"
+      _ -> description
     end
   end
 
   def stats_text(card) do
-    stats =
-      if is_integer(card.attack) do
-        "#{card.attack}/#{card.durability || card.health}"
-      end
+    if is_integer(card.attack) do
+      "#{card.attack}/#{card.durability || card.health}"
+    end
   end
 
   def set_card_id(card, card_id) do
