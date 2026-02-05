@@ -126,10 +126,7 @@ defmodule Bot.CardMessageHandler do
       title = Card.name(card)
 
       thumbnail =
-        case Card.card_url(card) do
-          "/" <> _ = url -> "https://www.hsguru.com#{url}"
-          url -> url
-        end
+        Card.card_url(card) |> add_hsguru()
 
       %Embed{}
       |> Embed.put_title(title)
