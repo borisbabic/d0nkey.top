@@ -125,8 +125,8 @@ defmodule Bot.CardMessageHandler do
 
       title = Card.name(card)
 
-      url =
-        case Card.our_url(card) do
+      thumbnail =
+        case Card.card_url(card) do
           "/" <> _ = url -> "https://www.hsguru.com#{url}"
           url -> url
         end
@@ -134,9 +134,9 @@ defmodule Bot.CardMessageHandler do
       %Embed{}
       |> Embed.put_title(title)
       |> Embed.put_description(description)
-      |> Embed.put_url(url)
+      |> Embed.put_url(Card.our_url(card))
       |> Embed.put_color(discord_color(card))
-      |> Embed.put_thumbnail(Card.card_url(card))
+      |> Embed.put_thumbnail(thumbnail)
       |> Embed.put_footer(Map.get(card, :flavor_text))
     else
       %Nostrum.Struct.Embed{}
