@@ -349,6 +349,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_thief_rogue?(card_info) and highlander?(card_info) ->
         :"HL Thief Rogue"
 
+      "Swiftscale Trickster" in card_info.card_names and highlander?(card_info) ->
+        :"HL Swiftscale Rogue"
+
       highlander?(card_info) ->
         :"Highlander Rogue"
 
