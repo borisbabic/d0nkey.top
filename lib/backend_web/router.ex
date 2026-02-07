@@ -194,6 +194,18 @@ defmodule BackendWeb.Router do
       live("/esports/2026/qualifiers/winter-week1", QualifierShowcaseLive)
     end
 
+    live_session :qualifiers_week_2,
+      session: %{
+        "title" => "2026 Winter 2nd Qualfiiers",
+        "tournament_ids" => [
+          "697912c96456f10013a65d36",
+          "697913806456f10013a65d82",
+          "6979142f6456f10013a65dd3"
+        ]
+      } do
+      live("/esports/2026/qualifiers/winter-week2", QualifierShowcaseLive)
+    end
+
     get("/legacy-hsesports/mt/stats", MastersTourController, :masters_tours_stats)
     get("/mtq/:mtq_num", MastersTourController, :qualifier_redirect)
     get("/mtq/:mtq_num/*rest", MastersTourController, :qualifier_redirect)
