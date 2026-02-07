@@ -162,6 +162,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Beastmaster Leoroxx" in card_info.card_names and highlander?(card_info) ->
         :"HL Leoroxx Hunter"
 
+      "Elise the Navigator" in card_info.card_names and highlander?(card_info) ->
+        :"HL Elise Hunter"
+
       highlander?(card_info) ->
         :"Highlander Hunter"
 
