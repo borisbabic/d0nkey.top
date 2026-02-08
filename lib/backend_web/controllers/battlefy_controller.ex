@@ -70,6 +70,7 @@ defmodule BackendWeb.BattlefyController do
     Logger.debug("fetched fantasy picks")
 
     show_lineups = show_lineups(params)
+
     Logger.debug("Preparing to render tournament from controller")
 
     render(
@@ -85,17 +86,33 @@ defmodule BackendWeb.BattlefyController do
           TournamentStreams.get_for_tournament({"battlefy", params["tournament_id"]}),
         show_lineups: show_lineups,
         highlight_fantasy: highlight_fantasy(params),
+        has_lineups: Backend.Hearthstone.has_lineups?(params["tournament_id"], "battlefy"),
         lineups: lineups(show_lineups, params["tournament_id"]),
         country_highlight: multi_select_to_array(params["country"]),
         page_title: tournament.name,
         stage_id: params["stage_id"],
-        has_lineups: Backend.Hearthstone.has_lineups?(params["tournament_id"], "battlefy"),
         participants: participants,
         highlight: get_highlight(params)
       }
       |> add_matches_standings(params)
+      |> enqueue_missing_lineups()
     )
   end
+
+  defp enqueue_missing_lineups(
+         %{
+           has_lineups: true,
+           show_lineups: true,
+           standings_raw: [_ | _] = standings,
+           lineups: [_ | _] = lineups,
+           tournament: tournament
+         } = args
+       ) do
+    Backend.Battlefy.LineupFetcher.async_enqueue_missing_lineups(tournament, standings, lineups)
+    args
+  end
+
+  defp enqueue_missing_lineups(args), do: args
 
   def participants(%{"show_actual_battletag" => "yes"}, %{id: id}),
     do: Battlefy.get_participants(id)

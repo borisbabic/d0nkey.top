@@ -1,9 +1,10 @@
 defmodule Backend.Battlefy.LineupFetcher do
   @moduledoc false
-  use Oban.Worker, queue: :battlefy_lineups, unique: [period: 360]
+  use Oban.Worker, queue: :battlefy_lineups, unique: [period: 7200]
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Match
+  alias Backend.Battlefy.Team
   alias Backend.Battlefy.MatchTeam
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
 
@@ -51,6 +52,52 @@ defmodule Backend.Battlefy.LineupFetcher do
   end
 
   def enqueue_jobs(_), do: {:error, :tournament_not_found}
+
+  def async_enqueue_missing_lineups(
+        tournament,
+        standings,
+        lineups
+      ) do
+    Task.start(fn ->
+      lineup_names = Enum.map(lineups, & &1.name)
+
+      if Enum.any?(standings, &(Team.player_or_team_name(&1.team) not in lineup_names)) do
+        do_enqueue_missing_jobs(tournament, lineup_names)
+      end
+    end)
+  end
+
+  defp do_enqueue_missing_jobs(%{stages: stages, id: id}, lineup_names)
+       when is_list(stages) do
+    names_map_set = MapSet.new([nil | lineup_names])
+
+    #### using reduces and acc so we can update the known names so we don't spam
+    {matches, _} =
+      stages
+      |> Enum.reduce({[], names_map_set}, fn stage, acc ->
+        Battlefy.get_matches(stage, round: 1)
+        |> Enum.reduce(acc, fn %{top: top, bottom: bottom} = match, {matches, handled_names} ->
+          top_name = MatchTeam.get_name(top)
+          bottom_name = MatchTeam.get_name(bottom)
+
+          missing_top? = !MapSet.member?(handled_names, top_name)
+          missing_bottom? = !MapSet.member?(handled_names, bottom_name)
+
+          if missing_top? or missing_bottom? do
+            {
+              [match | matches],
+              handled_names
+              |> MapSet.put(top_name)
+              |> MapSet.put(bottom_name)
+            }
+          else
+            {matches, handled_names}
+          end
+        end)
+      end)
+
+    {:ok, enqueue_matches(matches, id)}
+  end
 
   defp enqueue_matches([], _), do: {:error, :no_matches}
 
