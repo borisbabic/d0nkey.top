@@ -37,7 +37,7 @@ defmodule BackendWeb.PageController do
 
   def log(conn, params) do
     ret = Jason.encode!(params, pretty: true)
-    IO.inspect(conn)
+
     Logger.info(ret)
     Logger.info(ret)
 

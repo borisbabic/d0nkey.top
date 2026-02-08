@@ -18,7 +18,6 @@ defmodule BackendWeb.AdminController do
   end
 
   def test(conn, _params) do
-    IO.inspect(conn)
     text(conn, "Success")
   end
 
@@ -66,9 +65,9 @@ defmodule BackendWeb.AdminController do
 
   def recalculate_archetypes(conn, %{"minutes_ago" => min_ago}) do
     Task.start(fn ->
-        min_ago
-        |> Backend.Hearthstone.recalculate_archetypes()
-        |> inspect(pretty: true)
+      min_ago
+      |> Backend.Hearthstone.recalculate_archetypes()
+      |> inspect(pretty: true)
     end)
 
     text(conn, "Doing it")
@@ -99,5 +98,4 @@ defmodule BackendWeb.AdminController do
 
     text(conn, response)
   end
-
 end

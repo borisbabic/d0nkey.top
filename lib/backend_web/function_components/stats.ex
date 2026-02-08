@@ -34,8 +34,10 @@ defmodule FunctionComponents.Stats do
     """
   end
 
-  defp win_loss(%{wins: wins, losses: losses} = win_loss, _, _, false), do: "#{wins} - #{losses}"
-  defp win_loss(%{wins: wins, losses: losses} = win_loss, _, _, true), do: "(#{wins} - #{losses})"
+  defp win_loss(%{wins: wins, losses: losses} = _win_loss, _, _, false), do: "#{wins} - #{losses}"
+
+  defp win_loss(%{wins: wins, losses: losses} = _win_loss, _, _, true),
+    do: "(#{wins} - #{losses})"
 
   defp win_loss(true, winrate, sample, show_winrate) when is_integer(sample) and sample > 0 do
     wins = Float.round(winrate * sample, 0) |> trunc()
@@ -79,7 +81,7 @@ defmodule FunctionComponents.Stats do
         gradual_increase_limit \\ 1
       )
 
-  def winrate_style(_, _, _, _, _, 0, gradual_increase_limit), do: ""
+  def winrate_style(_, _, _, _, _, 0, _gradual_increase_limit), do: ""
 
   def winrate_style(
         winrate,

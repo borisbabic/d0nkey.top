@@ -1,4 +1,5 @@
 defmodule Command.ImportLineups do
+  @moduledoc false
   import Ecto.Query, warn: false
   alias Ecto.Multi
   alias Backend.Repo
@@ -117,7 +118,6 @@ defmodule Command.ImportLineups do
 
   def extract_lineups_from_mt_sheets(spreadsheet_id, sheet_ids) do
     Enum.flat_map(sheet_ids, fn sheet_id ->
-      IO.inspect({spreadsheet_id, sheet_id}, label: :extracting_from)
       {:ok, %{body: body}} = get_sheet_csv(spreadsheet_id, sheet_id)
       extract_from_sheet_body(body)
     end)
@@ -138,7 +138,6 @@ defmodule Command.ImportLineups do
           Enum.at(extracted, 0)
         end
 
-      mostly_decks |> Enum.drop(1) |> Enum.at(0)
       [name | decks]
     end)
   end
