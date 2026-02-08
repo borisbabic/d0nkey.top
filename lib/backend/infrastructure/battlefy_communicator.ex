@@ -31,7 +31,11 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
   def get_response(url) do
     {u_secs, response} = :timer.tc(&get!/1, [url |> encode()])
-    Logger.debug("Got #{url} in #{div(u_secs, 1000)} ms")
+
+    Logger.warning(
+      "[BattlefyCommunicator] Got #{url} [#{response.status}] in #{div(u_secs, 1000)} ms "
+    )
+
     response
   end
 
