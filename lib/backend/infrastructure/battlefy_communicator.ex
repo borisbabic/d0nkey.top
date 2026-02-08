@@ -318,9 +318,19 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         ]
   def get_past_organization_tournaments_from(
         org_id,
-        from_time = %NaiveDateTime{},
+        from_time,
         page \\ 1,
         carry \\ []
+      )
+
+  def get_past_organization_tournaments_from(_org_id, _from_time, page, carry) when page > 10,
+    do: carry
+
+  def get_past_organization_tournaments_from(
+        org_id,
+        from_time,
+        page,
+        carry
       ) do
     ret = get_organization_tournaments(org_id, :past, page) || []
 
@@ -342,9 +352,19 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
           [Tournament.t()]
   def get_upcoming_organization_tournaments_to(
         org_id,
-        to_time = %NaiveDateTime{},
+        to_time,
         page \\ 1,
         carry \\ []
+      )
+
+  def get_upcoming_organization_tournaments_to(_org_id, _to_time, page, carry) when page > 10,
+    do: carry
+
+  def get_upcoming_organization_tournaments_to(
+        org_id,
+        to_time,
+        page,
+        carry
       ) do
     ret = get_organization_tournaments(org_id, :upcoming, page)
 

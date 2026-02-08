@@ -14,7 +14,9 @@ defmodule Bot.BattlefyMessageHandler do
 
   def handle_tournament_standings(tournaments, message) when is_list(tournaments) do
     replies =
-      Enum.map(tournaments, fn
+      tournaments
+      |> Enum.take(5)
+      |> Enum.map(fn
         %{id: id, name: name} ->
           create_standings_message(id, message, [], name)
 
