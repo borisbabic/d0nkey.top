@@ -22,10 +22,9 @@ defmodule ScratchPad do
     |> Enum.sort_by(fn q -> q.start_time end, :asc)
     |> Enum.take(45)
     |> Enum.map(fn q -> q.standings |> Enum.find(fn s -> s.position == 2 end) end)
-    |> Enum.filter(fn fl ->
+    |> Enum.count(fn fl ->
       MapSet.member?(invited_short, InvitedPlayer.shorten_battletag(fl.battletag_full))
     end)
-    |> Enum.count()
   end
 
   def example_deck() do
@@ -142,9 +141,6 @@ defmodule ScratchPad do
         }
       end)
 
-    expected = (wins - losses) / count
-    expected_alt = wins / count
-    IO.inspect("Expected: #{expected} Expected_alt: #{expected_alt} fudov: #{fudov}")
     sum
   end
 
@@ -188,12 +184,11 @@ defmodule ScratchPad do
 
   def create_map([{current, _, _} | rest]) do
     rest
-    |> Enum.map(fn {name, _, _} ->
+    |> Enum.map_join("\n", fn {name, _, _} ->
       """
       "#{name}" -> "#{current}"
       """
     end)
-    |> Enum.join("\n")
   end
 
   # imported decks from prod and had duplicates
@@ -1078,7 +1073,6 @@ defmodule ScratchPad do
   def process_twist_data(data \\ @twist_data) do
     Enum.map(data, fn {name, comment, card_name_tuples} ->
       {errors, card_ids} = process_twist_cards(card_name_tuples)
-      IO.inspect(errors, label: "#{name} errors")
       card_names = Enum.map(card_name_tuples, &elem(&1, 1))
       hero_id = get_hero_id(name)
       deckcode = Backend.Hearthstone.Deck.deckcode(card_ids, hero_id, 4)
@@ -1195,7 +1189,7 @@ defmodule ScratchPad do
   end
 
   # illidan uses meta
-  def get_hero_id("Illidan Stormrage"), do: 56899
+  def get_hero_id("Illidan Stormrage"), do: 56_899
 
   def get_hero_id(name) do
     {:ok, %{id: id}} = get_card_by_name(name)

@@ -70,7 +70,7 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
         |> Battlefy.custom_field_value(@custom_field, "miss")
         |> String.downcase()
     end)
-    |> Bot.BattlefyMessageHandler.create_message()
+    |> Bot.BattlefyMessageHandler.create_message_from_standings()
     |> send_message(msg)
   end
 
