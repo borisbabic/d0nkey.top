@@ -289,6 +289,12 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       wild_aggro_dk?(card_info) ->
         :"Aggro DK"
 
+      only_runes?(card_info, :blood) ->
+        :"Blood DK"
+
+      rainbow_runes?(card_info) ->
+        :"Rainbow DK"
+
       true ->
         fallbacks(card_info, class_name)
     end
