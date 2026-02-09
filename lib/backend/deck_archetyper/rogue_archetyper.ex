@@ -433,8 +433,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       excavate_rogue?(card_info) ->
         :"Drilling Rogue"
 
-      maestra_rogue?(card_info, 1) ->
-        :"Maestra Rogue"
+      wild_hostage?(card_info) ->
+        :"Hostage Rogue"
 
       weapon?(card_info) ->
         :"Weapon Rogue"
@@ -442,6 +442,19 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp wild_hostage?(card_info) do
+    min_count?(card_info, 3, [
+      "Tess Greymane",
+      "Maestra, Mask Merchant",
+      "Cloak of Shadows"
+    ]) and
+      min_count?(card_info, 1, [
+        "Bounce Around (ft. Garona)",
+        "Vanish",
+        "Potion of Illusion"
+      ])
   end
 
   defp mine_rogue?(ci),
