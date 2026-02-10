@@ -321,6 +321,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       boar?(card_info) ->
         :Boarlock
 
+      "The Egg of Khelos" in card_info.card_names ->
+        :Egglock
+
       "King Togwaggle" in card_info.card_names ->
         :Toglock
 
