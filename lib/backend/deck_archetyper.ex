@@ -176,8 +176,15 @@ defmodule Backend.DeckArchetyper do
         "Hellfire",
         "Multicaster",
         "Remorseless Winter",
+        "Sif",
         "Coral Keeper",
-        "Elemental Inspiration"
+        "Elemental Inspiration",
+        "Snatch and Grab",
+        "Inquisitive Creation",
+        "Shadowflame Suffusion",
+        "Darkbomb",
+        "Fel Barrage",
+        "Frosty Décor"
       ]) or
       min_count?(ci, 16, [
         "Ci'Cigi",
@@ -204,6 +211,23 @@ defmodule Backend.DeckArchetyper do
         "Crystal Cluster",
         "Invigorate",
         "Moment of Discovery"
+      ]) or
+      min_count?(ci, 14, [
+        "Patches the Pilot",
+        "Reliquary of Souls",
+        "Astromancer Solarian",
+        "Infinitize the Maxitude",
+        "Ranger Captain Alleria",
+        "Ranger General Sylvanas",
+        "Ranger Initiate Vereesa",
+        "Velarok Windblade",
+        "Elise the Navigator",
+        "Emperor Thaurissan",
+        "Mister Mukla",
+        "Anachronos",
+        "Beastmaster Leoroxx",
+        "King Krush",
+        "Tortolla"
       ]) or
       min_count?(ci, 13, [
         "Reliquary of Souls",
@@ -233,7 +257,12 @@ defmodule Backend.DeckArchetyper do
         "Dinotamer Brann",
         "Dragonqueen Alexstrasza",
         "The Amazing Reno",
-        "Sir Finley, Sea Guide"
+        "Sir Finley, Sea Guide",
+        "Ragnaros, Lightlord",
+        "Deepminer Brann",
+        "Gunslinger Kutris",
+        "Elise the Enlightened",
+        "Doctor Hollid'dae"
       ]) or
       min_count?(ci, 15, [
         "Psychic Conjurer",
@@ -252,6 +281,20 @@ defmodule Backend.DeckArchetyper do
         "Shattered Reflections",
         "Astral Automaton"
       ]) or
+      min_count?(ci, 11, [
+        "Shadowstep",
+        "Breakdance",
+        "Dig for Treasure",
+        "Filletfighter",
+        "Patches the Pirate",
+        "Swashburglar",
+        "Kaja'mite Creation",
+        "Quick Pick",
+        "Hench-Clan Burglar",
+        "WaterCannon",
+        "Sandbox Scoundrel",
+        "Pirate Admiral Hooktusk"
+      ]) or
       min_count?(ci, 14, [
         "Fogsail Freebooter",
         "Shoplifter Goldbeard",
@@ -267,6 +310,30 @@ defmodule Backend.DeckArchetyper do
         "Dig for Treasure",
         "Sandbox Scoundrel",
         "Watercannon"
+      ]) or
+      min_count?(ci, 21, [
+        "Lightning Bloom",
+        "Finders Keepers",
+        "Murloc Growfin",
+        "Overdraft",
+        "Quest Accepted!",
+        "Sludge Slurper",
+        "Spawnpool Forager",
+        "Ancestral Knowledge",
+        "Primalfin Lookout",
+        "South Coast Chieftain",
+        "Call in the Finishers",
+        "Charged Call",
+        "Clownfish",
+        "Hot Spring Glider",
+        "Nofin Can Stop Us",
+        "Prince Renathal",
+        "Serpentshrine Portal",
+        "Turn the Tides",
+        "Twin-fin Fin Twin",
+        "Vessina",
+        "Command of Neptulon",
+        "Cumulo-Maximus"
       ]) or
       min_count?(ci, 17, [
         "Neptulon",
