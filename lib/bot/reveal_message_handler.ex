@@ -73,8 +73,33 @@ defmodule Bot.RevealMessageHandler do
 
   def extract_prepend(%{class: class}) when is_binary(class), do: class
 
+  def extract_prepend(%{reveal_time: ~N[2026-02-17 22:00:00.000]}) do
+    "DK + DH"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-02-19 22:00:00.000]}) do
+    "Druid + Rogue"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-02-23 22:00:00.000]}) do
+    "Mage + Hunter"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-02-25 22:00:00.000]}) do
+    "Priest + Warlock"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-02-27 22:00:00.000]}) do
+    "Warrior + Paladin + Shaman"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-03-03 19:00:00.000]}) do
+    "Final Reveal Stream"
+  end
+
   def extract_prepend(%{image_url: image_url}) when is_binary(image_url) do
     # https://.../31p4_Icon_Zerg.png into ["Icon", "Zerg"]
+
     parts =
       String.split(image_url, "/")
       |> Enum.at(-1)
