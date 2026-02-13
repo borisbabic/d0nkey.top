@@ -60,6 +60,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       painlock?(card_info, 4) ->
         :Painlock
 
+      zoolock?(card_info) ->
+        :Zoolock
+
       demon?(card_info) ->
         :"Demon Warlock"
 
@@ -112,6 +115,15 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Fate Breaker",
       "Chronogor"
       | @sheds_shufflers
+    ])
+  end
+
+  defp zoolock?(card_info) do
+    min_count?(card_info.card_names ++ card_info.zilliax_modules_names, 2, [
+      "Entropic Continuity",
+      "Tortollan Storyteller",
+      "Pylon Module",
+      "Yesterlock"
     ])
   end
 
