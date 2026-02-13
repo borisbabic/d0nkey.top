@@ -7,7 +7,7 @@ defmodule Backend.Repo.Migrations.Add2026Data do
   @event_set_release_date Date.new!(@new_year, 2, 28)
   @event_cards [123_416, 120_648, 120_658, 122_547, 121_676]
   @event_slug "event_#{@new_year}"
-  @event_set_name "Event #{new_year}"
+  @event_set_name "Event #{@new_year}"
   @new_group_name "#{@new_year} Standard"
   @new_group_slug "standard_#{@new_year}"
   @new_group_card_sets [
@@ -55,9 +55,14 @@ defmodule Backend.Repo.Migrations.Add2026Data do
   end
 
   def insert_extra_card_sets() do
+    # ensure the cards exist. They might not in fresh DBs
+    card_ids =
+      repo().all(from(c in "hs_cards", where: c.id in ^@event_cards, select: %{id: c.id}))
+      |> Enum.map(& &1.id)
+
     repo().insert_all(
       "hs_extra_card_set",
-      Enum.map(@event_cards, fn id -> %{card_id: id, card_set_id: @event_set_id} end)
+      Enum.map(card_ids, fn id -> %{card_id: id, card_set_id: @event_set_id} end)
     )
   end
 
