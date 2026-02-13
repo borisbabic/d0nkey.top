@@ -2674,10 +2674,19 @@ defmodule Hearthstone.DeckTracker do
     Repo.one(query)
   end
 
+  def update_all_periods(criteria, new_attrs, repo_opts \\ []) do
+    periods_query(criteria)
+    |> Repo.update_all(new_attrs, repo_opts)
+  end
+
   def periods(criteria, repo_opts \\ []) do
+    periods_query(criteria)
+    |> Repo.all(repo_opts)
+  end
+
+  defp periods_query(criteria) do
     base_periods_query()
     |> build_periods_query(criteria)
-    |> Repo.all(repo_opts)
   end
 
   defp base_periods_query() do
@@ -2726,6 +2735,10 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_periods_query({:type, type}, query) do
     query |> where([period: p], p.type == ^type)
+  end
+
+  defp compose_periods_query({:period_start_before, cutoff}, query) do
+    query |> where([period: p], p.period_start < ^cutoff)
   end
 
   defp compose_periods_query({:limit, limit}, query) do
@@ -3356,23 +3369,6 @@ defmodule Hearthstone.DeckTracker do
   def get_aggregated_metadata(metadata) when is_atom(metadata) do
     get_latest_agg_log_entry()
     |> Map.get(metadata, []) || []
-  end
-
-  def update_brawl_period_start(check_wednesday? \\ true) do
-    period = get_period_by_slug("brawl")
-
-    now = Backend.Blizzard.now()
-    start_time = Backend.Blizzard.blizz_o_clock_time()
-    wednesday? = Date.day_of_week(now) == 3
-    already_started? = :gt == Time.compare(DateTime.to_time(now), start_time)
-
-    if (wednesday? or !check_wednesday?) and already_started? do
-      {:ok, period_start} =
-        DateTime.new!(DateTime.to_date(now), start_time, now.time_zone)
-        |> DateTime.shift_zone("Etc/UTC")
-
-      update_period(period, %{period_start: period_start})
-    end
   end
 
   @spec recalculate_archetypes_for_period_fetch_then_process(

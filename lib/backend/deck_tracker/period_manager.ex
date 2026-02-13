@@ -1,8 +1,19 @@
-defmodule Hearthstone.DeckTracker.PatchArchiver do
-  @moduledoc "Creates archives of old periods"
+defmodule Hearthstone.DeckTracker.PeriodManager do
+  @moduledoc "Manages period \"Business\" Logic. Non CRUD, period creation and updating"
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.SlowAggregationJob
+
+  def retire_old_periods() do
+    cutoff_days = 30
+    period_types = ["patch", "release"]
+    new_attrs = [auto_aggregate: false, include_in_deck_filters: false]
+
+    cutoff = NaiveDateTime.utc_now() |> Timex.shift(days: -1 * cutoff_days)
+    old_criteria = [auto_aggregate: true, period_start_before: cutoff, type: period_types]
+
+    DeckTracker.update_all_periods(old_criteria, set: new_attrs)
+  end
 
   def archive_latest() do
     latest =
@@ -25,11 +36,28 @@ defmodule Hearthstone.DeckTracker.PatchArchiver do
     end
   end
 
+  def update_brawl_period_start(check_wednesday? \\ true) do
+    period = DeckTracker.get_period_by_slug("brawl")
+
+    now = Backend.Blizzard.now()
+    start_time = Backend.Blizzard.blizz_o_clock_time()
+    wednesday? = Date.day_of_week(now) == 3
+    already_started? = :gt == Time.compare(DateTime.to_time(now), start_time)
+
+    if (wednesday? or !check_wednesday?) and already_started? do
+      {:ok, period_start} =
+        DateTime.new!(DateTime.to_date(now), start_time, now.time_zone)
+        |> DateTime.shift_zone("Etc/UTC")
+
+      DeckTracker.update_period(period, %{period_start: period_start})
+    end
+  end
+
   defp ensure_period_exists(target, current) do
     slug = archive_slug(target)
 
     with [] <- DeckTracker.periods([{:slug, [slug]}]) do
-      create_period(target, current)
+      create_archive_period(target, current)
     end
   end
 
@@ -42,7 +70,7 @@ defmodule Hearthstone.DeckTracker.PatchArchiver do
     end)
   end
 
-  def create_period(target, current) do
+  def create_archive_period(target, current) do
     %{
       auto_aggregate: false,
       display: target.display,
