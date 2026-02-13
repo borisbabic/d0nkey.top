@@ -1,6 +1,6 @@
 defmodule Backend.Battlefy.LineupFetcher do
   @moduledoc false
-  use Oban.Worker, queue: :battlefy_lineups, unique: [period: 3600]
+  use Oban.Worker, queue: :battlefy_lineups, unique: [period: 3600], max_attempts: 3
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Match
