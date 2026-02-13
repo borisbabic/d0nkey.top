@@ -296,6 +296,7 @@ defmodule BackendWeb.Router do
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)
     live("/replays", ReplaysLive)
+    live("/archived-patches", ArchivedPatchesLive)
 
     live("/archetype/:archetype", ArchetypeLive)
 

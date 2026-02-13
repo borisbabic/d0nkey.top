@@ -49,7 +49,7 @@ defmodule Hearthstone.DeckTracker.Period do
   def to_option(%{slug: slug, display: display}), do: {slug, display}
 
   def use_period_start?(%{type: t, period_start: %NaiveDateTime{}})
-      when t in ["patch", "release", "all"],
+      when t in ["patch", "release", "all", "archive"],
       do: true
 
   def use_period_start?(_), do: false
