@@ -30,6 +30,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       terran?(card_info, 4) ->
         :"Terran Paladin"
 
+      libram?(card_info) and aura?(card_info) ->
+        :"Libram Aura Paladin"
+
       libram?(card_info) ->
         :"Libram Paladin"
 
