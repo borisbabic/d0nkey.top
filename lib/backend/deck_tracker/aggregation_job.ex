@@ -95,7 +95,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     quote do
       use Oban.Worker,
         queue: unquote(queue),
-        max_attempts: 4,
+        max_attempts: 3,
         unique: [
           fields: [:queue, :args],
           states: [:available, :scheduled, :executing, :retryable],
