@@ -37,6 +37,7 @@ defmodule BackendWeb.MastersTourControllerTest do
     assert html_response(conn, 301)
   end
 
+  @tag :external
   test "GET /mt/points returns 200", %{conn: conn} do
     url = Routes.masters_tour_path(conn, :points)
     conn = get(conn, url)
