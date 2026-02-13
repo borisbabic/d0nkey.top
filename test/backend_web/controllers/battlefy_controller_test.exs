@@ -1,6 +1,8 @@
 defmodule BackendWeb.BattlefyControllerTest do
   use BackendWeb.ConnCase
 
+  @moduletag :external
+
   test "GET /battlefy/tournaments-stats", %{conn: conn} do
     url = Routes.battlefy_path(conn, :tournaments_stats)
     conn = get(conn, url)
@@ -42,12 +44,22 @@ defmodule BackendWeb.BattlefyControllerTest do
   end
 
   test "GET Stormwind with highlight has highlighted standings", %{conn: conn} do
-    url = Routes.battlefy_path(conn, :tournament, "6188ed89a422682f8a42a6ab", %{player: %{Furyhunter: true}})
+    url =
+      Routes.battlefy_path(conn, :tournament, "6188ed89a422682f8a42a6ab", %{
+        player: %{Furyhunter: true}
+      })
+
     conn = get(conn, url)
     assert html_response(conn, 200) =~ "highlighted_standings"
   end
+
   test "GET Stormwind includes earnings and ongoing columns", %{conn: conn} do
-    url = Routes.battlefy_path(conn, :tournament, "6188ed89a422682f8a42a6ab", %{show_earnings: "yes", show_ongoing: "yes"})
+    url =
+      Routes.battlefy_path(conn, :tournament, "6188ed89a422682f8a42a6ab", %{
+        show_earnings: "yes",
+        show_ongoing: "yes"
+      })
+
     conn = get(conn, url)
     assert html_response(conn, 200) =~ "ongoing_opponent"
     assert html_response(conn, 200) =~ "ongoing_score"
