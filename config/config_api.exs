@@ -15,7 +15,7 @@ config :backend, QuantumScheduler,
 
 config :backend, Oban,
   repo: Backend.Repo,
-  plugins: [Oban.Plugins.Pruner],
+  plugins: [{Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 2}],
   queues: [
     default: 1
   ]

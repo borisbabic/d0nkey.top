@@ -197,7 +197,7 @@ queues =
 config :backend, Oban,
   repo: Backend.Repo,
   notifier: Oban.Notifiers.PG,
-  plugins: [Oban.Plugins.Pruner, Oban.Plugins.Reindexer],
+  plugins: [{Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 2}, Oban.Plugins.Reindexer],
   queues: queues
 
 config :backend,
