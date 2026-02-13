@@ -37,14 +37,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Spirit Peddler" in card_info.card_names ->
         :"Peddler DH"
 
-      blobxigar?(card_info) ->
-        :"Blobxigar DH"
-
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
 
       "Elise the Navigator" in card_info.card_names ->
         :"Elise DH"
+
+      blobxigar?(card_info) ->
+        :"Blobxigar DH"
 
       deathrattle?(card_info) ->
         :"Deathrattle DH"
