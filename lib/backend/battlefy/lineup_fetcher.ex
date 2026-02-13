@@ -1,6 +1,6 @@
 defmodule Backend.Battlefy.LineupFetcher do
   @moduledoc false
-  use Oban.Worker, queue: :battlefy_lineups, unique: [period: 7200]
+  use Oban.Worker, queue: :battlefy_lineups, unique: [period: 3600]
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Match
@@ -9,6 +9,16 @@ defmodule Backend.Battlefy.LineupFetcher do
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
 
   @impl Oban.Worker
+  def perform(%Oban.Job{
+        args: %{
+          "tournament_id" => tournament_id,
+          "stage_ids" => stage_ids
+        }
+      }) do
+    enqueue_missing_matches(tournament_id, stage_ids)
+    :ok
+  end
+
   def perform(%Oban.Job{args: %{"match_id" => match_id, "tournament_id" => tournament_id}}) do
     with {:ok, match} <- Api.get_match(match_id) do
       fetch(tournament_id, match)
@@ -62,18 +72,37 @@ defmodule Backend.Battlefy.LineupFetcher do
       lineup_names = Enum.map(lineups, & &1.name)
 
       if Enum.any?(standings, &(Team.player_or_team_name(&1.team) not in lineup_names)) do
-        do_enqueue_missing_jobs(tournament, lineup_names)
+        enqueue_missing_jobs(tournament)
       end
     end)
   end
 
-  defp do_enqueue_missing_jobs(%{stages: stages, id: id}, lineup_names)
-       when is_list(stages) do
+  defp enqueue_missing_jobs(%{stages: stages, id: id}) do
+    stage_ids = Enum.map(stages, & &1.id)
+
+    {
+      :ok,
+      %{"stage_ids" => stage_ids, "tournament_id" => id}
+      |> new()
+      |> Oban.insert()
+    }
+  end
+
+  defp enqueue_missing_jobs(_), do: :error
+
+  @spec enqueue_missing_matches(Tournament.t(), [String.t()]) :: any()
+  def enqueue_missing_matches(%{stages: stages, id: id}),
+    do: enqueue_missing_matches(id, stages)
+
+  @spec enqueue_missing_matches(String.t(), String.t()) :: any()
+  defp enqueue_missing_matches(tournament_id, stages_or_stage_ids)
+       when is_list(stages_or_stage_ids) do
+    lineup_names = lineup_names(tournament_id)
     names_map_set = MapSet.new([nil | lineup_names])
 
     #### using reduces and acc so we can update the known names so we don't spam
     {matches, _} =
-      stages
+      stages_or_stage_ids
       |> Enum.reduce({[], names_map_set}, fn stage, acc ->
         Battlefy.get_matches(stage, round: 1)
         |> Enum.reduce(acc, fn %{top: top, bottom: bottom} = match, {matches, handled_names} ->
@@ -96,7 +125,12 @@ defmodule Backend.Battlefy.LineupFetcher do
         end)
       end)
 
-    {:ok, enqueue_matches(matches, id)}
+    {:ok, enqueue_matches(matches, tournament_id)}
+  end
+
+  defp lineup_names(tournament_id) do
+    Backend.Hearthstone.get_lineups("battlefy", tournament_id)
+    |> Enum.map(& &1.name)
   end
 
   defp enqueue_matches([], _), do: {:error, :no_matches}
