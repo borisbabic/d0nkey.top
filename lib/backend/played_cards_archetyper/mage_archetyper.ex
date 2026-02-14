@@ -4,9 +4,43 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @spell_mage_first [
+    "Spot the Difference",
+    "Manufacturing Error",
+    "Yogg in the Box"
+  ]
+  @quest_mage_first [
+    "Raptor Herald",
+    "Relentless Wrathguard",
+    "Treacherous Tormentor",
+    "Stonehill Defender",
+    "Questing Assistant",
+    "Beast Speaker Taka"
+  ]
+  @arkwing_first [
+    "Grillmaster",
+    "Divine Brew",
+    "Marooned Archmage",
+    "Raylla, Sand Sculptor",
+    "Vicious Slitherspear",
+    "Metal Detector",
+    "Oh, Manager!",
+    "Stellar Balance",
+    "Flame Geyser",
+    "Ingenious Artificer",
+    "Violet Spellwing",
+    "Troubled Mechanic",
+    "Go with the Flow",
+    "Arkwing Pilot"
+  ]
+  @standard_excludes %{
+    :"Arkwing Mage" => ["The Forbidden Sequence"],
+    :"Spell Mage" => @quest_mage_first,
+    :"Quest Mage" => @spell_mage_first
+  }
   @standard_config [
     # {:"Quest Mage", ["The Forbidden Sequence"]},
-    {:"Spell Mage", ["Spot the Difference", "Manufacturing Error", "Yogg in the Box"]},
+    {:"Spell Mage", @spell_mage_first},
     {:"Elemental Mage",
      [
        "Blazing Accretion",
@@ -29,29 +63,16 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
      ]},
     {:"Arcane Mage",
      [
-       "Go with the Flow",
        "Arcane Intellect",
        "Azure Queen Sindragosa",
-       "Mirror Dimension",
        "Azure King Malygos",
-       "Stellar Balance",
-       "Portal Vanguard",
        "Azure Oathstone",
        "Arcane Barrage"
        # "Portal Vanguard"
        # "Buy One, Get One Freeze",
        # "Stellar Balance"
      ]},
-    {:"Quest Mage",
-     [
-       "Raptor Herald",
-       "Relentless Wrathguard",
-       "Treacherous Tormentor",
-       "Astrobiologist",
-       "Stonehill Defender",
-       "Questing Assistant",
-       "Beast Speaker Taka"
-     ]},
+    {:"Quest Mage", @quest_mage_first},
     # 5.5
     {:"Imbue Mage",
      [
@@ -62,9 +83,11 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Petal Picker",
        "Flutterwing Guardian",
        "Divination",
-       "Aessina",
+       # "Aessina",
        "Wisprider"
      ]},
+    {:"Arkwing Mage", @arkwing_first},
+    {:"Spell Mage", ["Malfunction"]},
     {:"Orb Mage",
      [
        "Carry-On Grub",
@@ -76,7 +99,6 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
     {:"Toki Mage",
      [
        "Wisp",
-       "The Ceaseless Expanse",
        "Youthful Brewmaster",
        "Demolition Renovator",
        "Puzzlemaster Khadgar",
@@ -87,33 +109,35 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Smoldering Grove",
        "Rising Waves",
        "Seabreeze Chalice",
+       "Joymancer Jepetto",
+       "Marin the Manager",
+       "The Ceaseless Expanse",
        "Steamcleaner",
        "Ysera, Emerald Aspect",
        "Arcane Artificer",
        "Bob the Bartender",
        "Sleet Skater",
+       "Dreamplanner Zephyrs",
+       "Rustrot Viper",
+       "Eternal Firebolt",
+       "Kil'jaeden",
+       "Zilliax Deluxe 3000",
+       "Warmaster Blackhorn",
+       "Blob of Time",
        "Elise the Navigator"
      ]},
-    {:"Spell Mage", ["Malfunction"]},
-    {:"Quest Mage", ["Scrappy Scavenger"]},
-    # {:"Spell Mage",
-    #  [
-    #    "Buy One, Get One Freeze",
-    #    "Stellar Balance",
-    #    "Nightmare Lord Xavius"
-    #  ]},
     # 10.5
+    {:"Quest Mage", ["Scrappy Scavenger", "Ingenious Artificer", "Troubled Mechanic"]},
     {:"Protoss Mage", ["Photon Cannon"]},
-    # 15.5
     {:"Arcane Mage", ["Watercolor Artist"]},
-    {:"Quest Mage", ["Tidepool Pupil"]},
-    {:"Spell Mage", ["Hidden Objects", "Pocket Dimension"]},
+    {:"Quest Mage",
+     ["Tidepool Pupil", "Creature rof Madness", "Techysaurus", "The Forbidden Sequence"]},
+    {:"Spell Mage", ["Hidden Objects", "Pocket Dimension", "The Forbidden Sequence"]},
+    # 15.5
     {:"Arcane Mage", ["Primordial Glyph", "Tide Pools"]},
-    # 20.5
     {:"Elemental Mage",
      [
        "Cloud Serpent",
-       "Violet Spellwing",
        "Blasteroid"
      ]},
     {:"Protoss Mage", ["Shield Battery"]},
@@ -135,14 +159,14 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Conjured Bookkeeper",
        "Glacial Shard",
        "Living Flame",
-       "Flame Geyser",
        "Sizzling Cinder"
      ]}
+    # 20.5
     # {:"Spell Mage", ["The Forbidden Sequence", "Frostbolt", "Rising Waves", "Tide Pools"]}
   ]
   @wild_config []
 
-  def standard_config(), do: @standard_config
+  def standard_config(), do: add_excludes(@standard_config, @standard_excludes)
   def wild_config(), do: @wild_config
 
   def standard(card_info) do
