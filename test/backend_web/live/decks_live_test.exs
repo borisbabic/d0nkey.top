@@ -76,7 +76,7 @@ defmodule BackendWeb.Live.DecksTest do
     result: "WON"
   }
 
-  setup do
+  setup_all do
     deck_fixtures(@highlander_priest)
     deck_fixtures(@highlander_warlock)
   end
@@ -104,27 +104,29 @@ defmodule BackendWeb.Live.DecksTest do
   end
 
   test "fresh requires authentication", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/decks?format=1&force_fresh=yes")
+    {:ok, _view, html} = live(conn, "/decks?format=1&force_fresh=yes&min_games=50")
     assert html =~ "You need to login"
   end
 
   @tag :authenticated
   test "includes wild highlander priest and warlock", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/decks?format=1&force_fresh=yes")
+    {:ok, _view, html} = live(conn, "/decks?format=1&force_fresh=yes&min_games=50")
     assert html =~ canonical_code(@warlock_code)
     assert html =~ canonical_code(@priest_code)
   end
 
   @tag :authenticated
   test "Legend excludes priest includes warlock decks", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/decks?format=1&rank=legend&force_fresh=yes")
+    {:ok, _view, html} = live(conn, "/decks?format=1&rank=legend&force_fresh=yes&min_games=50")
     refute html =~ canonical_code(@priest_code)
     assert html =~ canonical_code(@warlock_code)
   end
 
   @tag :authenticated
   test "Archetype excludes warlock and includes priest", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/decks?force_fresh=yes&format=1&archetype=STD+XL+Priest")
+    {:ok, _view, html} =
+      live(conn, "/decks?force_fresh=yes&format=1&archetype=STD+XL+Priest&min_games=50")
+
     refute html =~ canonical_code(@warlock_code)
     assert html =~ canonical_code(@priest_code)
   end
@@ -134,7 +136,7 @@ defmodule BackendWeb.Live.DecksTest do
     {:ok, _view, html} =
       live(
         conn,
-        "/decks?format=1&player_deck_archetype[]=STD+XL+Priest&player_deck_archetype[]=Bla Bla&force_fresh=yes"
+        "/decks?format=1&player_deck_archetype[]=STD+XL+Priest&player_deck_archetype[]=Bla Bla&force_fresh=yes&min_games=50"
       )
 
     refute html =~ canonical_code(@warlock_code)
