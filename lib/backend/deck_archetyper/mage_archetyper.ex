@@ -237,17 +237,16 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   end
 
   defp hostage_mage?(card_info) do
-    min_count?(card_info, 2, ["Solid Alibi", "Ice Block"]) and
-      min_count?(card_info, 2, [
-        "Rewind",
-        "Tidepool Pupil",
-        "Commander Sivara",
-        "Grand Magister Rommath"
-      ])
+    min_count?(card_info, 2, [
+      "Ice Block",
+      "Grand Magister Rommath"
+    ]) and
+      ("Potion of Illusion" in card_info.card_names or
+         "Potion of Illusion" in card_info.etc_sideboard_names)
   end
 
   defp wild_orb_mage?(card_info) do
-    min_count?(card_info, 3, [
+    min_count?(card_info, 2, [
       "The Galactic Projection Orb",
       "Potion of Illusion",
       "Grey Sage Parrot"
