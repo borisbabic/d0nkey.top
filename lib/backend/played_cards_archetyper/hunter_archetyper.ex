@@ -20,6 +20,9 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
         "Astalor Bloodsworn",
         "Serena Bloodfeather",
         "Kun the Forgotten King",
+        "Anachronos",
+        "Patches the Pilot",
+        "Tortolla",
         "Blademaster Okani",
         "Zilliax",
         "Nourish",
@@ -50,13 +53,18 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Rangari Scout",
        "Griftah, Trusted Vendor",
        "Travel Agent",
-       "Elise the Navigator",
+       "Naralex, Herald of the Flights",
+       "Ysera, Emerald Aspect",
+       "Demolition Renovator",
        "The Ceaseless Expanse",
        "Shaladrassil",
        "Exarch Naielle",
        # "Zilliax Deluxe 3000",
        "Nightmare Lord Xavius"
      ]},
+    # huh
+    {:"Splendiferous Whizbang", ["Elise the Navigator"]},
+    # 5.5
     {:"Imbue Hunter",
      [
        "Petal Picker",
@@ -83,7 +91,14 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Devious Coyote",
        "Quick Shot",
        "Quel'dorei Fletcher",
+       "Arcane Shot",
        "Sizzling Cinder"
+     ]},
+    {:"Splendiferous Whizbnag",
+     [
+       "Ranger Initiate Vereesa",
+       "Ranger General Sylvanas",
+       "Ranger Captain Alleria"
      ]},
     {:"Beast Hunter",
      [
@@ -107,10 +122,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
      [
        "Scarab Keychain",
        "Birdwatching",
-       "Tracking",
-       "Ranger Initiate Vereesa",
-       "Ranger General Sylvanas",
-       "Ranger Captain Alleria"
+       "Tracking"
      ]}
     # {:"Starship Hunter", ["Specimen Claw", "The Exodar", "Dimensional Barrage"]},
     # {:"Handbuff Hunter",
