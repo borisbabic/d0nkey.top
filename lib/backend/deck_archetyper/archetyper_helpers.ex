@@ -158,7 +158,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         String.to_atom("Egg #{class_name}")
 
       "Chrono-Lord Deios" in ci.card_names ->
-        String.to_atom("Deious #{class_name}")
+        String.to_atom("Deios #{class_name}")
 
       "Murozond, Unbounded" in ci.card_names ->
         String.to_atom("Murozond #{class_name}")
