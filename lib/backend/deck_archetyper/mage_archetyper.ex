@@ -39,6 +39,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       arcane_mage?(card_info) ->
         :"Arcane Mage"
 
+      "Arkwing Pilot" in card_info.card_names ->
+        :"Arkwing Mage"
+
       orb_bsm?(card_info) ->
         :"Orb Big Spell Mage"
 
@@ -50,9 +53,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       type_count(card_info, "Elemental") > 6 ->
         :"Elemental Mage"
-
-      "Arkwing Pilot" in card_info.card_names ->
-        :"Arkwing Mage"
 
       "The Galactic Projection Orb" in card_info.card_names ->
         :"Orb Mage"
