@@ -246,20 +246,4 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
         "Grand Magister Rommath"
       ])
   end
-
-  defp wild_bsm_mage?(card_info) do
-    min_count?(card_info, 3, [
-      "King Tide",
-      "Portalmancer Skyla",
-      "Naga Sand Witch",
-      "Balinda Stonehearth",
-      "Barbaric Sorceress",
-      "Grey Sage Parrot",
-      "Kalecgos",
-      "Deepwater Evoker",
-      "Arcane Brilliance",
-      "The Galactic Projection Orb",
-      "Iceblood Tower"
-    ])
-  end
 end
