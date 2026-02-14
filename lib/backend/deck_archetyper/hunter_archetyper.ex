@@ -201,6 +201,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Adaptive Amalgam" in card_info.card_names ->
         :"Amalgam Hunter"
 
+      min_keyword_count?(card_info, 8, "taunt") ->
+        :"Taunt Hunter"
+
       true ->
         fallbacks(card_info, "Hunter")
     end
