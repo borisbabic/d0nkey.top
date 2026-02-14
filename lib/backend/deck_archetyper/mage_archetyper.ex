@@ -120,7 +120,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       hostage_mage?(card_info) and highlander?(card_info) ->
         :"HL Hostage Mage"
 
-      big_spell_mage?(card_info) and highlander?(card_info) ->
+      wild_big_spell_mage?(card_info) and highlander?(card_info) ->
         :"HL Big Spell Mage"
 
       highlander?(card_info) ->
@@ -171,11 +171,8 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Mage"
 
-      wild_bsm_mage?(card_info) ->
+      wild_big_spell_mage?(card_info) ->
         :"Big Spell Mage"
-
-      wild_orb_mage?(card_info) ->
-        :"Orb Mage"
 
       wild_flow?(card_info) ->
         :"Flow Mage"
@@ -207,6 +204,10 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   defp wild_exodia_mage?(card_info) do
     "The Forbidden Sequence" in card_info.card_names and
       "Archmage Antonidas" in card_info.etc_sideboard_names
+  end
+
+  defp wild_big_spell_mage?(card_info) do
+    "Arcane Brilliance" in card_info.card_names
   end
 
   defp wild_small_spell_mage?(card_info) do
@@ -246,14 +247,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       ])
   end
 
-  defp wild_orb_mage?(card_info) do
-    min_count?(card_info, 3, [
-      "The Galactic Projection Orb",
-      "Potion of Illusion",
-      "Grey Sage Parrot"
-    ])
-  end
-
   defp wild_bsm_mage?(card_info) do
     min_count?(card_info, 3, [
       "King Tide",
@@ -267,17 +260,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Arcane Brilliance",
       "The Galactic Projection Orb",
       "Iceblood Tower"
-    ])
-  end
-
-  defp wild_fire_mage?(card_info) do
-    min_count?(card_info, 3, [
-      "Blazing Accretion",
-      "Hot Streak",
-      "Blasteroid",
-      "Supernova",
-      "Scorching Winds",
-      "Sanctum Chandler"
     ])
   end
 end
