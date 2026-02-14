@@ -143,26 +143,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   #   min_count?(card_info, count, @dreadseeds)
   # end
 
-  defp attack_dh?(ci) do
-    min_count?(ci, 5, [
-      "Illidari Inquisitor",
-      "Sock Puppet Slitherspear",
-      "Burning Heart",
-      "Battlefiend",
-      "Parched Desperado",
-      "Spirit of the Team",
-      "Going Down Swinging",
-      "Chaos Strike",
-      "Sing-Along Buddy",
-      "Lesser Opal Spellstone",
-      "Saronite Shambler",
-      "Gan'arg Glaivesmith",
-      "Gibbering Reject",
-      "Pocket Sand",
-      "Rhythmdancer Risa"
-    ])
-  end
-
   defp kj?(ci) do
     "Kil'jaeden" in ci.card_names
   end
@@ -183,8 +163,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   defp shopper_dh?(ci) do
     min_count?(ci, 2, ["Window Shopper", "Umpire's Grasp"])
   end
-
-  defp outcast_dh?(c), do: min_keyword_count?(c, 4, "outcast")
 
   defp relic_dh?(ci) do
     min_count?(ci, 4, [
@@ -213,19 +191,28 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"HL Questline DH"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("HL #{quest_abbreviation(card_info)} Quest DH")
 
       highlander?(card_info) ->
         :"Highlander DH"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation(card_info)} Quest DH")
 
       baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
+        :"Odd DH"
 
       genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
+        :"Even DH"
+
+      "King Togwaggle" in card_info.card_names ->
+        :"Tog DH"
+
+      "Mecha'thun" in card_info.card_names ->
+        :"Mecha'thun DH"
+
+      boar?(card_info) ->
+        :"Boar DH"
 
       "Il'gynoth" in card_info.card_names ->
         :"Il'gynoth DH"
@@ -235,6 +222,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
 
       fel_dh?(card_info) ->
         :"Fel DH"
+
+      relic_dh?(card_info) ->
+        :"Relic DH"
 
       "Blindeye Sharpshooter" in card_info.card_names and questline?(card_info) ->
         :"Naga DH"
@@ -248,26 +238,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       questline?(card_info) ->
         :"Questline DH"
 
-      boar?(card_info) ->
-        String.to_atom("Boar #{class_name}")
-
       pirate?(card_info) ->
         :"Pirate DH"
-
-      outcast_dh?(card_info) ->
-        :"Outcast DH"
-
-      relic_dh?(card_info) ->
-        :"Relic DH"
-
-      "King Togwaggle" in card_info.card_names ->
-        String.to_atom("Tog #{class_name}")
-
-      "Mecha'thun" in card_info.card_names ->
-        "Mecha'thun #{class_name}"
-
-      attack_dh?(card_info) ->
-        :"Attack DH"
 
       true ->
         fallbacks(card_info, class_name)
