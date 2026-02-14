@@ -4,6 +4,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @standard_excludes %{}
   @standard_config [
     {:"Tick Tock Warlock", ["Battle at the End Time"]},
     {:"Quest Warlock", ["Escape the Underfel"]},
@@ -34,14 +35,6 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Archmage Rafaam",
        "Timethief Rafaam"
      ]},
-    {:Egglock,
-     [
-       "Holy Eggbearer",
-       "The Egg of Khelos",
-       "Dissolving Ooze",
-       "Abusive Sergeant"
-     ]},
-    # 5.5
     {:"Wallow Warlock",
      [
        "Raptor Herald",
@@ -49,24 +42,25 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Treacherous Tormentor",
        "Wallow, the Wretched",
        "Avant-Gardening",
-       "Creature of Madnes",
-       "Foreboding Flame",
-       "Demonic Studies",
-       "Shadowflame Stalker"
+       "Creature of Madnes"
      ]},
-    {:Shredslock,
+    # 5.5
+    {:Egglock,
      [
-       "Devious Coyote",
-       "Horizon's Edge",
-       "Flame Imp",
-       "Zergling",
-       "Party Fiend",
-       "Cursed Souvenir",
-       "Sizzling Cinder",
-       "Prescient Slitherdrake",
-       "Ruinous Velocidrake",
-       "Entropic Continuity"
+       "Holy Eggbearer",
+       "The Egg of Khelos",
+       "Dissolving Ooze",
+       "Abusive Sergeant",
+       "Spirit Bomb"
      ]},
+    # {:Shredslock,
+    #  [
+    #    "Devious Coyote",
+    #    "Horizon's Edge",
+    #    "Cursed Souvenir",
+    #    "Sizzling Cinder",
+    #    "Ruinous Velocidrake",
+    #  ]},
     # {:"Divergence Warlock",
     #  [
     #    "Divergence",
@@ -75,6 +69,52 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
     #  ]},
     {:"Starship Warlock",
      ["Heart of the Legion", "Felfire Thrusters", "Dimensional Core", "The Exodar"]},
+    {:"Splendiferous Whizbang",
+     [
+       "Scarab Keychain"
+     ]},
+    {:"Aggro Warlock",
+     [
+       "Tortollan Storyteller",
+       "Murmy",
+       "Vicious Slitherspear",
+       "Wisp",
+       "Flame Imp",
+       "Platysaur",
+       "Entropic Continuity",
+       "Zergling"
+     ]},
+    {:"Demon Warlock",
+     [
+       "Black Hole",
+       "Dreamplanner Zephrys",
+       "Kerrigan, Queen of Blades",
+       "Warmaster Blackhorn",
+       "Rotheart Dryad",
+       "Kil'Jaeden",
+       "Endgame"
+     ]},
+    # 10.5
+    {:"Wallow Warlock", ["Creature of Madness"]},
+    {:"Whizbang Warlock",
+     [
+       "Tar Slime"
+     ]},
+    {:"Aggro Warlock",
+     [
+       "Twilight Timehopper",
+       "Tachyon Barrage"
+     ]},
+    {:"Wallow Warlock",
+     [
+       "Shadowflame Stalker"
+     ]},
+    {:"Demon Warlock",
+     [
+       "Demonic Studies",
+       "Abduction Ray",
+       "Forboding Flame"
+     ]},
     {:"Bot? Warlock",
      [
        "Coldlight Seer",
@@ -89,7 +129,6 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Lifedrinker",
        "Murloc Tidehunter"
      ]},
-    # 10.5
     {:"Mill Warlock",
      [
        "Stranglevine",
@@ -104,7 +143,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
   ]
   @wild_config []
 
-  def standard_config(), do: @standard_config
+  def standard_config(), do: add_excludes(@standard_config, @standard_excludes)
   def wild_config(), do: @wild_config
 
   def standard(card_info) do
