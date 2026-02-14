@@ -246,7 +246,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   end
 
   defp wild_orb_mage?(card_info) do
-    min_count?(card_info, 2, [
+    min_count?(card_info, 3, [
       "The Galactic Projection Orb",
       "Potion of Illusion",
       "Grey Sage Parrot"
