@@ -88,7 +88,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
       conn = put(conn, Routes.deck_tracker_path(conn, :put_game), request)
 
       assert %{"player_archetype" => "Other Hunter", "opponent_archetype" => "Other Hunter"} =
-               response = json_response(conn, 200)
+               json_response(conn, 200)
 
       Process.sleep(2500)
 
