@@ -160,6 +160,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       wild_exodia_paladin?(card_info) and highlander?(card_info) ->
         :"HL Exodia Paladin"
 
+      wild_infinity?(card_info) and highlander?(card_info) ->
+        :"HL Infinity Paladin"
+
       "Gelbin of Tomorrow" in card_info.card_names and highlander?(card_info) ->
         :"HL Aura Paladin"
 
@@ -223,6 +226,14 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp wild_infinity?(card_info) do
+    min_count?(card_info, 2, [
+      "Hand of Infinity",
+      "Soulbound Ashtongue",
+      "Bloodsail Raider"
+    ])
   end
 
   defp aura_cta?(card_info) do
