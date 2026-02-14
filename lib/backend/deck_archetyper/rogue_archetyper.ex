@@ -376,6 +376,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Majordomo Executus" in card_info.card_names ->
         :"Majordomo Rogue"
 
+      wild_hostage?(card_info) ->
+        :"Hostage Rogue"
+
       "Kingsbane" in card_info.card_names ->
         :"Kingsbane Rogue"
 
@@ -435,9 +438,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
 
       excavate_rogue?(card_info) ->
         :"Drilling Rogue"
-
-      wild_hostage?(card_info) ->
-        :"Hostage Rogue"
 
       weapon?(card_info) ->
         :"Weapon Rogue"
