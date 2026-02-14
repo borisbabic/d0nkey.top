@@ -156,9 +156,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       hostage_mage?(card_info) ->
         :"Hostage Mage"
 
-      xl?(card_info) and imbue?(card_info, 4) ->
-        :"XL Imbue Mage"
-
       imbue?(card_info, 4) ->
         :"Imbue Mage"
 
@@ -173,12 +170,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       wild_big_spell_mage?(card_info) ->
         :"Big Spell Mage"
-
-      wild_flow?(card_info) ->
-        :"Flow Mage"
-
-      wild_fire_mage?(card_info) ->
-        :"Fire Mage"
 
       wild_small_spell_mage?(card_info) ->
         :"Small Spell Mage"
@@ -218,10 +209,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Vicious Slitherspear",
       "Mantle Shaper"
     ])
-  end
-
-  defp wild_flow?(card_info) do
-    min_count?(card_info, 2, ["Go with the Flow", "Sorcerer's Apprentice"])
   end
 
   defp no_minion?(card_info, min_count) do
