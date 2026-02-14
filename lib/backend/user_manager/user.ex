@@ -19,7 +19,7 @@ defmodule Backend.UserManager.User do
     field :twitch_id, :string
     field :patreon_id, :string
     field :cross_out_country, :boolean, default: false
-    field :default_sheet_source, :string
+    field :default_sheet_source, :string, default: "hsguru"
     field :positive_hue, :integer, default: nil
     field :negative_hue, :integer, default: nil
     belongs_to :default_sheet, DeckSheet
