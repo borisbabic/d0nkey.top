@@ -4,6 +4,16 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @standard_excludes %{
+    :"Libram Paladin" => [
+      "Gnomish Aura",
+      "Gelbin of Tomorrow",
+      "Cardboard Golem",
+      "Mekkatorque's Aura",
+      "Manifested Timeways"
+    ]
+  }
+
   @standard_config [
     {:"Quest Paladin", ["Dive the Golakka Depths"]},
     {:"Whizbang Paladin",
@@ -14,6 +24,11 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Truesilver Champion",
        "Reno Jackson",
        "Elise the Enlightened",
+       "Elise, Badlands Savior",
+       "Gunslinger Kurtrus",
+       "Theldurin the Lost",
+       "Doctor Holli'dae",
+       "Deepminer Brann",
        "Crystalsmith Kangor",
        "Primordial Explorer",
        "Aldor Peacekeeper",
@@ -30,16 +45,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Sir Finley of the Sands",
        "Zephrys the Great"
      ]},
-    {:"Imbue Paladin",
-     [
-       "Malorne the Waywatcher",
-       "Resplendent Dreamweaver",
-       "Bitterbloom Knight",
-       "Flutterwing Guardian",
-       "Dreamwarden",
-       "Petal Picker",
-       "Goldpetal Drake"
-     ]},
     {:"Aggro Paladin",
      [
        "Tortollan Storyteller",
@@ -51,27 +56,55 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Busy-Bot",
        "Mother Duck"
      ]},
+    {:"Imbue Paladin",
+     [
+       "Malorne the Waywatcher",
+       "Resplendent Dreamweaver",
+       "Bitterbloom Knight",
+       "Flutterwing Guardian",
+       "Dreamwarden",
+       "Petal Picker",
+       "Warmaster Blackhorn"
+
+       # "Goldpetal Drake"
+     ]},
     {:"Aura Paladin",
      [
-       "Gnomelia, S.A.F.E. Pilot",
+       "Puppetmaster Dorian",
+       # "Gnomelia, S.A.F.E. Pilot",
        "Fyrakk the Blazing",
        "Crafter's Aura",
        "Carnivorous Cubicle",
        "Tankgineer",
-       "Spikeridged Steed",
-       "Dreamplanner Zephrys",
+       # "Dreamplanner Zephrys",
        "Gelbin of Tomorrow",
        "Mekkatorque's Aura",
        "Manifested Timeways",
-       "Anachronos",
+       # "Anachronos",
        "Gnomish Aura",
        "Chronological Aura",
-       "Cardboard Golem",
-       "Chrono-Lord Deios",
-       "Wisp",
-       "Oh Manager!"
+       "Cardboard Golem"
+       # "Chrono-Lord Deios",
+       # "Wisp",
      ]},
     # 5.5
+    {:"Libram Paladin",
+     [
+       "Starlight Wanderer",
+       "Past Gnomeregan",
+       "Orbital Satellite",
+       "Libram of Divinity",
+       "Libram of Faith",
+       "Libram of Clarity",
+       "Interestellar Wayfarer",
+       "Astral Vigilant"
+     ]},
+    {:"Splendiferous Whizbang",
+     [
+       "Equality",
+       "Consecration",
+       "Beaming Sidekick"
+     ]},
     {:"Lynessa Paladin",
      [
        "Kobold Geomancer",
@@ -154,10 +187,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Prize Vendor",
        "Ready the Fleet"
      ]},
-    {:"Aura Paladin",
-     [
-       "Puppetmaster Dorian"
-     ]},
     # {:"Terran Paladin",
     #  [
     #    "Salvage the Bunker",
@@ -185,7 +214,7 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
   ]
   @wild_config []
 
-  def standard_config(), do: @standard_config
+  def standard_config(), do: add_excludes(@standard_config, @standard_excludes)
   def wild_config(), do: @wild_config
 
   def standard(card_info) do
