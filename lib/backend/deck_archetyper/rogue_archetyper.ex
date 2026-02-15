@@ -394,6 +394,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Smokescreen" in card_info.card_names ->
         :"Deathrattle Rogue"
 
+      quasar_mill?(card_info) ->
+        :"Quasar Mill Rogue"
+
       quasar?(card_info) ->
         :"Quasar Rogue"
 
@@ -448,6 +451,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+  
+  defp quasar_mill?(card_info) do
+    min_count?(card_info, 2, ["Quasar", "Selfish Shellfish"])
   end
 
   defp wild_hostage?(card_info) do
