@@ -3244,6 +3244,8 @@ defmodule Hearthstone.DeckTracker do
     drawn_total = stats["drawn_total"] + acc["drawn_total"]
     mull_total = stats["mull_total"] + acc["mull_total"]
     kept_total = stats["kept_total"] + acc["kept_total"]
+    not_drawn_total = stats["not_drawn_total"] + acc["not_drawn_total"]
+    tossed_total = stats["tossed_total"] + acc["tossed_total"]
 
     drawn_impact =
       if drawn_total > 0 do
@@ -3269,6 +3271,24 @@ defmodule Hearthstone.DeckTracker do
         0
       end
 
+    not_drawn_impact =
+      if not_drawn_total > 0 do
+        (stats["not_drawn_total"] * stats["not_drawn_impact"] +
+           acc["not_drawn_total"] * acc["not_drawn_impact"]) /
+          not_drawn_total
+      else
+        0
+      end
+
+    tossed_impact =
+      if tossed_total > 0 do
+        (stats["tossed_total"] * stats["tossed_impact"] +
+           acc["tossed_total"] * acc["tossed_impact"]) /
+          tossed_total
+      else
+        0
+      end
+
     %{
       "card_id" => card_id,
       "drawn_impact" => drawn_impact,
@@ -3276,7 +3296,11 @@ defmodule Hearthstone.DeckTracker do
       "mull_impact" => mull_impact,
       "mull_total" => mull_total,
       "kept_impact" => kept_impact,
-      "kept_total" => kept_total
+      "kept_total" => kept_total,
+      "not_drawn_impact" => not_drawn_impact,
+      "not_drawn_total" => not_drawn_total,
+      "tossed_impact" => tossed_impact,
+      "tossed_total" => tossed_total
     }
   end
 
