@@ -96,6 +96,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Lord Jaraxxus" in card_info.card_names ->
         :"J-Lock"
 
+      min_keyword_count?(card_info, 8, "taunt") ->
+        :Tauntlock
+
       true ->
         fallbacks(card_info, "Warlock")
     end
