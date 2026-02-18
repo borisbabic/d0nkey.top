@@ -214,6 +214,9 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
   ]
   @wild_config []
 
+  def standard_excludes(), do: @standard_excludes
+  def wild_excludes(), do: %{}
+
   def standard_config(), do: add_excludes(@standard_config, @standard_excludes)
   def wild_config(), do: @wild_config
 

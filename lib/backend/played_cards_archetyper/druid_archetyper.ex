@@ -425,6 +425,9 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     {:"Highlander Druid", ["Prince Renethal"]}
   ]
 
+  def standard_excludes(), do: %{}
+  def wild_excludes(), do: %{}
+
   def standard_config(), do: @standard_config
   def wild_config(), do: @wild_config
 
