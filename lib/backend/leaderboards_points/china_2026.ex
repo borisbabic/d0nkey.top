@@ -10,22 +10,28 @@ defmodule Backend.LeaderboardsPoints.China2026 do
     {"2026", "summer", 151, ["STD"]},
     {"2026", "summer", 152, ["STD"]}
   ]
+  @points [
+    {{1, 1}, 15},
+    {{2, 2}, 14},
+    {{3, 3}, 13},
+    {{4, 5}, 12},
+    {{6, 7}, 11},
+    {{8, 10}, 10},
+    {{11, 15}, 9},
+    {{16, 20}, 8},
+    {{21, 50}, 6},
+    {{51, 100}, 5}
+  ]
   @spec points_for_rank(rank :: integer()) ::
           {:ok, points :: integer()} | {:error, error :: atom()}
   @impl true
   def points_for_rank(r) when r < 1, do: {:error, :rank_below_one}
-  def points_for_rank(1), do: {:ok, 15}
-  def points_for_rank(2), do: {:ok, 14}
-  def points_for_rank(3), do: {:ok, 13}
-  def points_for_rank(r) when r <= 5, do: {:ok, 12}
-  def points_for_rank(r) when r <= 7, do: {:ok, 11}
-  def points_for_rank(r) when r <= 10, do: {:ok, 10}
-  def points_for_rank(r) when r <= 15, do: {:ok, 9}
-  def points_for_rank(r) when r <= 20, do: {:ok, 8}
-  def points_for_rank(r) when r <= 50, do: {:ok, 6}
-  def points_for_rank(r) when r <= 100, do: {:ok, 5}
-  def points_for_rank(_), do: {:ok, 0}
 
+  def points_for_rank(rank) do
+    {:ok, HsEsports2025.find_points(rank, @points)}
+  end
+
+  def get_points_system(), do: @points
   @spec points_for_rank!(rank :: integer()) :: points :: integer()
   @impl true
   def points_for_rank!(r) do
@@ -69,4 +75,17 @@ defmodule Backend.LeaderboardsPoints.China2026 do
 
   @impl true
   def points_seasons(), do: HsEsports2025.points_seasons(@season_mapper, "china_")
+
+  @impl true
+  def points_for_ladder_season(leaderboard_id, season_id, region) do
+    HsEsports2025.find_points_for_season(
+      leaderboard_id,
+      season_id,
+      region,
+      @season_mapper,
+      @points,
+      "China Points",
+      get_relevant_ldb_regions(nil, leaderboard_id)
+    )
+  end
 end

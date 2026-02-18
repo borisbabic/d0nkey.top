@@ -447,7 +447,7 @@ defmodule BackendWeb.LeaderboardView do
     render("leaderboard.html", %{
       entries: entries,
       crystal: get_crystal("STD"),
-      show_mt_column: show_mt_column?(leaderboard),
+      mt_column: mt_column(leaderboard),
       leaderboard_id: leaderboard.leaderboard_id,
       updated_at: leaderboard.upstream_updated_at,
       total: Map.get(params, :total),
@@ -883,20 +883,31 @@ defmodule BackendWeb.LeaderboardView do
     }
   end
 
-  def show_mt_column?(%{leaderboard_id: "BG", season_id: s})
+  def mt_column(ldb) do
+    case LeaderboardsPoints.points_for_ladder_season(
+           ldb.leaderboard_id,
+           ldb.season_id,
+           ldb.region
+         ) do
+      {:ok, {title, _}} -> title
+      _ -> legacy_mt_column(ldb)
+    end
+  end
+
+  def legacy_mt_column(%{leaderboard_id: "BG", season_id: s})
       when Backend.LobbyLegends.is_lobby_legends(s) or
              Backend.LobbyLegends.is_lobby_legends_points(s) do
     "Lobby Legends"
   end
 
-  def show_mt_column?(%{leaderboard_id: "STD", season_id: season_id}) do
+  def legacy_mt_column(%{leaderboard_id: "STD", season_id: season_id, region: region}) do
     case elem(get_ladder_tour_stop(season_id), 0) do
       :ok -> "Masters Tour"
       _ -> nil
     end
   end
 
-  def show_mt_column?(_), do: nil
+  def legacy_mt_column(_), do: nil
 
   def old?(%{season_id: s, leaderboard_id: "BG"})
       when Backend.LobbyLegends.is_lobby_legends(s),

@@ -23,18 +23,33 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
     {"2026", "summer", 152, ["STD"]}
   ]
 
+  @points [
+    {{1, 1}, 7},
+    {{2, 5}, 6},
+    {{6, 10}, 5},
+    {{11, 25}, 4},
+    {{26, 50}, 3},
+    {{51, 75}, 2},
+    {{76, 100}, 1}
+  ]
+
   @spec points_for_rank(rank :: integer()) ::
           {:ok, points :: integer()} | {:error, error :: atom()}
   @impl true
   def points_for_rank(r) when r < 1, do: {:error, :rank_below_one}
   def points_for_rank(1), do: {:ok, 7}
-  def points_for_rank(r) when r <= 5, do: {:ok, 6}
-  def points_for_rank(r) when r <= 10, do: {:ok, 5}
-  def points_for_rank(r) when r <= 25, do: {:ok, 4}
-  def points_for_rank(r) when r <= 50, do: {:ok, 3}
-  def points_for_rank(r) when r <= 75, do: {:ok, 2}
-  def points_for_rank(r) when r <= 100, do: {:ok, 1}
-  def points_for_rank(_), do: {:ok, 0}
+
+  def points_for_rank(rank) do
+    {:ok, find_points(rank, @points)}
+  end
+
+  def find_points(rank, points, fallback \\ 0) do
+    Enum.find_value(points, fallback, fn {{min, max}, points} ->
+      if rank >= min and rank <= max do
+        points
+      end
+    end)
+  end
 
   @impl true
   def filter_player_rows(rows, _, _) do
@@ -470,5 +485,45 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
       {"yutan", 1, 100},
       {"xenon", 1, 100}
     ]
+  end
+
+  @impl true
+  def points_for_ladder_season(leaderboard_id, season_id, region) do
+    find_points_for_season(
+      leaderboard_id,
+      season_id,
+      region,
+      @season_mapper,
+      @points,
+      "Masters Tour",
+      get_relevant_ldb_regions(nil, leaderboard_id)
+    )
+  end
+
+  def find_points_for_season(
+        leaderboard_id,
+        season_id,
+        region,
+        season_mapper,
+        points,
+        title,
+        supported_regions
+      ) do
+    leaderboard_matches? =
+      Enum.any?(season_mapper, fn {_, _, sid, leaderboards} ->
+        leaderboard_id in leaderboards and
+          Util.to_int_or_orig(season_id) == Util.to_int_or_orig(season_id)
+      end)
+
+    region_matches? =
+      Enum.any?(supported_regions, fn r ->
+        to_string(r) == to_string(region)
+      end)
+
+    if leaderboard_matches? and region_matches? do
+      {:ok, {title, points}}
+    else
+      {:error, :unsupported_season}
+    end
   end
 end

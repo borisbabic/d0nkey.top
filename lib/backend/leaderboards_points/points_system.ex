@@ -1,6 +1,7 @@
 defmodule Backend.LeaderboardsPoints.PointsSystem do
   alias Backend.Leaderboards.Entry
   @moduledoc false
+  @type points :: [{{min :: integer(), max :: integer()}, points :: integer()}]
   @callback points_for_rank(rank :: integer()) :: {:ok, integer()} | {:error, :reason}
   @callback points_for_rank!(rank :: integer()) :: integer()
 
@@ -26,4 +27,10 @@ defmodule Backend.LeaderboardsPoints.PointsSystem do
 
   @callback replace_entries([Entry.t()], season_slug :: String.t(), leaderboard_id :: String.t()) ::
               [Entry.t()]
+
+  @callback points_for_ladder_season(
+              leaderboard_id :: String.t(),
+              season_id :: integer() | String.t(),
+              region :: atom() | String.t()
+            ) :: {:ok, {title :: String.t(), points()}} | {:error, any}
 end

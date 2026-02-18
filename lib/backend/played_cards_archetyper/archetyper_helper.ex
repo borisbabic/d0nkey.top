@@ -17,7 +17,9 @@ defmodule Backend.PlayedCardsArchetyper.ArchetyperHelper do
     |> Enum.find_value(fallback, fn
       {{archetype, {cards, exclude}}, level} when is_list(cards) and is_list(exclude) ->
         if any?(card_info, cards) and not any?(card_info, exclude) do
-          IO.puts("Matching #{archetype} at level #{level}")
+          if card_info.debug do
+            IO.puts("Matching #{archetype} at level #{level}")
+          end
           archetype
         else
           nil
@@ -25,7 +27,9 @@ defmodule Backend.PlayedCardsArchetyper.ArchetyperHelper do
 
       {{archetype, cards}, level} ->
         if any?(card_info, cards) do
-          IO.puts("Matching #{archetype} at level #{level}")
+          if card_info.debug do
+            IO.puts("Matching #{archetype} at level #{level}")
+          end
           archetype
         else
           nil
