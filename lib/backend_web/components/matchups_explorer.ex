@@ -189,8 +189,8 @@ defmodule Components.MatchupsExplorer do
 
   def warning(assigns) do
     ~H"""
-    <div class="notification is-warning" :if={show_warning?()} >
-      Blobxigar and Broxigar separation is subpar. The Cliff Dive versions are only split for miniset games
+    <div class="notification is-warning" :if={warning = warning() } >
+      {warning}
     </div>
     """
   end
@@ -221,9 +221,30 @@ defmodule Components.MatchupsExplorer do
     |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
   end
 
+  defp warning() do
+    now = NaiveDateTime.utc_now()
+
+    cond do
+      NaiveDateTime.compare(now, ~N[2026-03-10 17:00:00]) == :lt ->
+        "Demon Hunter Archetype separation is subpar"
+
+      NaiveDateTime.compare(now, ~N[2026-03-17 17:00:00]) == :lt ->
+        "Archetyping is for pre-frankenmeta. I probably won't update it til after the expansion"
+
+      NaiveDateTime.compare(now, ~N[2026-03-20 17:00:00]) == :lt ->
+        "Archetyping is pre-rotation. Waiting for data "
+
+      NaiveDateTime.compare(now, ~N[2027-03-20 17:00:00]) == :lt ->
+        "Archetyping is for pre-rotation"
+
+      true ->
+        false
+    end
+  end
+
   defp show_warning?() do
     start = ~N[2025-11-13 17:00:00]
-    end_time = ~N[2026-02-13 19:00:00]
+    end_time = ~N[2026-03-10 19:00:00]
     now = NaiveDateTime.utc_now()
 
     NaiveDateTime.compare(start, now) == :lt and
