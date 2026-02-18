@@ -848,6 +848,18 @@ defmodule Backend.Hearthstone do
     end)
   end
 
+  def include_any_cards_dynamic(cards, binding, field \\ :cards) do
+    cards
+    |> Enum.reduce(dynamic(false), fn card_id, dynamic ->
+      same_cards_subquery = same_card_ids_query(card_id)
+
+      dynamic(
+        [{^binding, d}],
+        ^dynamic or fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
+      )
+    end)
+  end
+
   def include_cards_dynamic(cards, binding, field \\ :cards) do
     cards
     |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
@@ -1124,9 +1136,6 @@ defmodule Backend.Hearthstone do
 
     base_cards_query()
     |> build_cards_query(criteria)
-    # |> tap(fn query ->
-    #   dbg(Ecto.Adapters.SQL.to_sql(:all, Repo, query))
-    # end)
     |> Repo.all()
     |> preload_cards()
 
