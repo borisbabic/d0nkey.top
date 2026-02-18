@@ -71,6 +71,34 @@ defmodule Backend.PlayedCardsArchetyper do
     end)
   end
 
+  def excludes(format, class) do
+    case {Util.to_int_or_orig(format), class} do
+      {2, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard_excludes()
+      {1, "DEATHKNIGHT"} -> DeathKnightArchetyper.wild_excludes()
+      {2, "DEMONHUNTER"} -> DemonHunterArchetyper.standard_excludes()
+      {1, "DEMONHUNTER"} -> DemonHunterArchetyper.wild_excludes()
+      {2, "DRUID"} -> DruidArchetyper.standard_excludes()
+      {1, "DRUID"} -> DruidArchetyper.wild_excludes()
+      {2, "HUNTER"} -> HunterArchetyper.standard_excludes()
+      {1, "HUNTER"} -> HunterArchetyper.wild_excludes()
+      {2, "MAGE"} -> MageArchetyper.standard_excludes()
+      {1, "MAGE"} -> MageArchetyper.wild_excludes()
+      {2, "PALADIN"} -> PaladinArchetyper.standard_excludes()
+      {1, "PALADIN"} -> PaladinArchetyper.wild_excludes()
+      {2, "PRIEST"} -> PriestArchetyper.standard_excludes()
+      {1, "PRIEST"} -> PriestArchetyper.wild_excludes()
+      {2, "ROGUE"} -> RogueArchetyper.standard_excludes()
+      {1, "ROGUE"} -> RogueArchetyper.wild_excludes()
+      {2, "SHAMAN"} -> ShamanArchetyper.standard_excludes()
+      {1, "SHAMAN"} -> ShamanArchetyper.wild_excludes()
+      {2, "WARLOCK"} -> WarlockArchetyper.standard_excludes()
+      {1, "WARLOCK"} -> WarlockArchetyper.wild_excludes()
+      {2, "WARRIOR"} -> WarriorArchetyper.standard_excludes()
+      {1, "WARRIOR"} -> WarriorArchetyper.wild_excludes()
+      _ -> %{}
+    end
+  end
+
   def config(format, class) do
     case {format, class} do
       {2, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard_config()

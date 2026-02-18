@@ -8,6 +8,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Components.Filter.RankDropdown
   alias Components.Filter.ClassDropdown
   alias Components.Filter.PlayableCardSelect
+  alias Components.MultiSelectDropdown
   alias Components.LivePatchDropdown
   alias Components.DecklistCard
   alias Components.WinrateTag
@@ -113,7 +114,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   end
 
   def render(%{can_access?: false} = assigns) do
-    ~F"""
+    ~H"""
       <div class="title is-2">UNAUTHORIZED</div>
       <div class="title is-3">Internal page. If you're really curious you can become a rare supporter since to access<Components.Socials.patreon link="/patreon" /></div>
       <br>
@@ -176,6 +177,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         param={"filter_out_whizbang"}
         current_val={@filter_out_whizbang}
         selected_as_title={true}
+        />
+      <MultiSelectDropdown
+        :if={excludes_options = excludes_options(@params["format"], @params["player_class"])}
+        id="excludes_to_user"
+        options={excludes_options}
+        title={"Excludes to use"}
+        param={"archetype_excludes"}
+        current_val={@params["archetype_excludes"] || []}
+        selected_as_title={false}
         />
       <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
       <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
@@ -247,6 +257,22 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     """
   end
 
+  @spec excludes_options(integer() | String.t(), String.t()) :: [{String.t(), String.t()}] | false
+  defp excludes_options(_format, nil), do: false
+
+  defp excludes_options(format, class) do
+    case PlayedCardsArchetyper.excludes(format, class) do
+      excludes when is_map(excludes) and map_size(excludes) > 0 ->
+        for {archetype, _cards} <- excludes do
+          arch = to_string(archetype)
+          {arch, arch}
+        end
+
+      _ ->
+        false
+    end
+  end
+
   def card_info(card_id, config_map) do
     case Backend.Hearthstone.get_card(card_id) do
       %{} = card ->
@@ -297,6 +323,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         "player_played_cards_includes",
         "player_played_cards_excludes"
       ])
+      |> add_excludes(params["archetype_excludes"])
       |> add_excluded_config(exclude_config_levels)
 
     min_played_count =
@@ -343,6 +370,26 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
        |> update_context(selected_params)}
     end
   end
+
+  defp add_excludes(criteria, [_ | _] = excludes) do
+    format = criteria["format"]
+    class = criteria["player_class"]
+
+    new_excludes =
+      PlayedCardsArchetyper.excludes(format, class)
+      |> Enum.reduce(Map.get(criteria, "player_deck_excludes", []), fn {archetype, card_names},
+                                                                       acc ->
+        if to_string(archetype) in excludes do
+          names_to_ids(card_names, format) ++ acc
+        else
+          acc
+        end
+      end)
+
+    Map.put(criteria, "player_deck_excludes", new_excludes)
+  end
+
+  defp add_excludes(criteria, _), do: criteria
 
   # no need to fetch because the criteria hasn't changed
   defp fetch_async(
