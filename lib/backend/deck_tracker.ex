@@ -1797,6 +1797,14 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_class", class}, query),
     do: query |> where([game: g], g.player_class == ^String.upcase(class))
 
+  defp compose_games_query({"player_archetype", archetype_or_archetypes}, query) do
+    archetypes = Util.to_list(archetype_or_archetypes)
+
+    query
+    |> ensure_played_cards_joined()
+    |> where([played_cards: pc], pc.player_archetype in ^archetypes)
+  end
+
   defp compose_games_query({"opponent_archetype", archetype_or_archetypes}, query) do
     archetypes = Util.to_list(archetype_or_archetypes)
 

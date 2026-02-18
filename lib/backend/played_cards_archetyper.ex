@@ -17,41 +17,50 @@ defmodule Backend.PlayedCardsArchetyper do
   @type card_info :: %{
           card_names: [String.t()],
           full_cards: [Card.t()],
+          debug: boolean,
           cards: [integer()]
         }
-  def archetype(cards, class, format \\ 2)
+  def archetype(cards, class, format \\ 2, debug \\ false)
 
-  def archetype(cards, class, format) when is_binary(class) and is_list(cards) do
-    card_info = card_info(cards)
+  def archetype(cards, class, format, debug) when is_binary(class) and is_list(cards) do
+    card_info = card_info(cards, debug)
 
-    case {Util.to_int_or_orig(format), class} do
-      {2, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard(card_info)
-      {1, "DEATHKNIGHT"} -> DeathKnightArchetyper.wild(card_info)
-      {2, "DEMONHUNTER"} -> DemonHunterArchetyper.standard(card_info)
-      {1, "DEMONHUNTER"} -> DemonHunterArchetyper.wild(card_info)
-      {2, "DRUID"} -> DruidArchetyper.standard(card_info)
-      {1, "DRUID"} -> DruidArchetyper.wild(card_info)
-      {2, "HUNTER"} -> HunterArchetyper.standard(card_info)
-      {1, "HUNTER"} -> HunterArchetyper.wild(card_info)
-      {2, "MAGE"} -> MageArchetyper.standard(card_info)
-      {1, "MAGE"} -> MageArchetyper.wild(card_info)
-      {2, "PALADIN"} -> PaladinArchetyper.standard(card_info)
-      {1, "PALADIN"} -> PaladinArchetyper.wild(card_info)
-      {2, "PRIEST"} -> PriestArchetyper.standard(card_info)
-      {1, "PRIEST"} -> PriestArchetyper.wild(card_info)
-      {2, "ROGUE"} -> RogueArchetyper.standard(card_info)
-      {1, "ROGUE"} -> RogueArchetyper.wild(card_info)
-      {2, "SHAMAN"} -> ShamanArchetyper.standard(card_info)
-      {1, "SHAMAN"} -> ShamanArchetyper.wild(card_info)
-      {2, "WARLOCK"} -> WarlockArchetyper.standard(card_info)
-      {1, "WARLOCK"} -> WarlockArchetyper.wild(card_info)
-      {2, "WARRIOR"} -> WarriorArchetyper.standard(card_info)
-      {1, "WARRIOR"} -> WarriorArchetyper.wild(card_info)
-      _ -> nil
+    archetype =
+      case {Util.to_int_or_orig(format), class} do
+        {2, "DEATHKNIGHT"} -> DeathKnightArchetyper.standard(card_info)
+        {1, "DEATHKNIGHT"} -> DeathKnightArchetyper.wild(card_info)
+        {2, "DEMONHUNTER"} -> DemonHunterArchetyper.standard(card_info)
+        {1, "DEMONHUNTER"} -> DemonHunterArchetyper.wild(card_info)
+        {2, "DRUID"} -> DruidArchetyper.standard(card_info)
+        {1, "DRUID"} -> DruidArchetyper.wild(card_info)
+        {2, "HUNTER"} -> HunterArchetyper.standard(card_info)
+        {1, "HUNTER"} -> HunterArchetyper.wild(card_info)
+        {2, "MAGE"} -> MageArchetyper.standard(card_info)
+        {1, "MAGE"} -> MageArchetyper.wild(card_info)
+        {2, "PALADIN"} -> PaladinArchetyper.standard(card_info)
+        {1, "PALADIN"} -> PaladinArchetyper.wild(card_info)
+        {2, "PRIEST"} -> PriestArchetyper.standard(card_info)
+        {1, "PRIEST"} -> PriestArchetyper.wild(card_info)
+        {2, "ROGUE"} -> RogueArchetyper.standard(card_info)
+        {1, "ROGUE"} -> RogueArchetyper.wild(card_info)
+        {2, "SHAMAN"} -> ShamanArchetyper.standard(card_info)
+        {1, "SHAMAN"} -> ShamanArchetyper.wild(card_info)
+        {2, "WARLOCK"} -> WarlockArchetyper.standard(card_info)
+        {1, "WARLOCK"} -> WarlockArchetyper.wild(card_info)
+        {2, "WARRIOR"} -> WarriorArchetyper.standard(card_info)
+        {1, "WARRIOR"} -> WarriorArchetyper.wild(card_info)
+        _ -> nil
+      end
+
+    if debug do
+      card_names_part = Enum.join(card_info.card_names, "\n")
+      IO.puts("--------------------------------\nGot #{archetype} for:\n\n#{card_names_part}\n")
     end
+
+    archetype
   end
 
-  def archetype(_cards, _, _), do: nil
+  def archetype(_cards, _, _, _), do: nil
 
   def all_archetypes(format) do
     Backend.Hearthstone.Deck.classes()
@@ -127,26 +136,31 @@ defmodule Backend.PlayedCardsArchetyper do
     end
   end
 
-  def card_info(cards) when is_list(cards) do
+  def card_info(cards, debug) when is_list(cards) do
     cards
     |> Enum.uniq()
-    |> Enum.reduce(%{card_names: [], full_cards: [], cards: []}, fn id,
-                                                                    %{
-                                                                      card_names: names,
-                                                                      full_cards: full_cards,
-                                                                      cards: ids
-                                                                    } = carry ->
-      case Backend.Hearthstone.get_deckcode_card(id) do
-        %{name: name} = full_card ->
-          %{
-            card_names: [name | names],
-            full_cards: [full_card | full_cards],
-            cards: [id | ids]
-          }
+    |> Enum.reduce(
+      %{card_names: [], full_cards: [], cards: []},
+      fn
+        id,
+        %{
+          card_names: names,
+          full_cards: full_cards,
+          cards: ids
+        } = carry ->
+          case Backend.Hearthstone.get_deckcode_card(id) do
+            %{name: name} = full_card ->
+              %{
+                card_names: [name | names],
+                full_cards: [full_card | full_cards],
+                debug: debug,
+                cards: [id | ids]
+              }
 
-        _ ->
-          carry
+            _ ->
+              carry
+          end
       end
-    end)
+    )
   end
 end
