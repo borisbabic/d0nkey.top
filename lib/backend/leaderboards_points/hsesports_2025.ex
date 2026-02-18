@@ -66,28 +66,40 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
   """
   @impl true
   def get_relevant_ldb_seasons(ps, leaderboard_id, use_current) do
-    get_leaderboard_seasons(ps, leaderboard_id) |> remove_too_soon(use_current)
+    get_leaderboard_seasons(ps, leaderboard_id, @season_mapper) |> remove_too_soon(use_current)
   end
 
-  def get_leaderboard_seasons(points_season, leaderboard_id_raw) do
+  def get_leaderboard_seasons(
+        points_season,
+        leaderboard_id_raw,
+        season_mapping \\ @season_mapper,
+        prefix \\ ""
+      ) do
     id = to_string(leaderboard_id_raw)
 
-    case String.split(points_season, "_") do
+    points_season
+    |> String.replace_leading(prefix, "")
+    |> String.split("_")
+    |> case do
       [year, season] ->
-        Enum.filter(@season_mapper, fn {y, s, _, ids} -> y == year && s == season && id in ids end)
+        Enum.filter(season_mapping, fn {y, s, _, ids} -> y == year && s == season && id in ids end)
         |> Enum.map(&extract_season/1)
 
       [year] ->
-        Enum.filter(@season_mapper, fn {y, _, _, ids} -> y == year && id in ids end)
+        Enum.filter(season_mapping, fn {y, _, _, ids} -> y == year && id in ids end)
         |> Enum.map(&extract_season/1)
     end
   end
 
   @impl true
   def points_seasons() do
-    @season_mapper
+    points_seasons(@season_mapper)
+  end
+
+  def points_seasons(season_mapping, prefix \\ "") do
+    season_mapping
     |> Enum.filter(&elem(&1, 1))
-    |> Enum.flat_map(fn {year, season, _, _} -> [year, "#{year}_#{season}"] end)
+    |> Enum.flat_map(fn {year, season, _, _} -> [year, "#{prefix}#{year}_#{season}"] end)
     |> Enum.uniq()
   end
 
