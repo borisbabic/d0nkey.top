@@ -124,6 +124,15 @@ defmodule Backend.LeaderboardsPoints do
     |> Enum.flat_map(& &1.points_seasons())
   end
 
+  def points_for_ladder_season(leaderboard_id, season_id, region) do
+    systems()
+    |> Enum.find_value(fn system ->
+      with {:error, _any} <- system.points_for_ladder_season(leaderboard_id, season_id, region) do
+        false
+      end
+    end)
+  end
+
   defp systems(), do: [HsEsports2023, Bonobo2025, HsEsports2025, China2026]
 
   def create_fake_entry(account_id, rank, season_id, rating \\ nil) do

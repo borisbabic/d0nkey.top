@@ -138,4 +138,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2023 do
   end
 
   defp extract_season({_, _, s, _}), do: s
+
+  @impl true
+  def points_for_ladder_season(_, _, _), do: {:error, :unsupported}
 end

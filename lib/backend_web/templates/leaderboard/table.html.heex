@@ -6,8 +6,8 @@
             <%= if @show_ratings do %>
                 <th>Rating</th>
             <% end %>
-            <%= if @show_mt_column do %>
-                <th><%= @show_mt_column %></th>
+            <%= if @mt_column do %>
+                <th><%= @mt_column %></th>
             <% end %>
         </tr>
     </thead>
@@ -28,7 +28,7 @@
             <%= if @show_ratings do %>
                 <td><%= render_comparison(rating, prev_rating, false) %></td>
             <% end %>
-            <%= if @show_mt_column do %>
+            <%= if @mt_column do %>
                 <td>
                 <%= case {qualified, qualifying, ineligible} do%>
                     <% {_, _, true} -> %>

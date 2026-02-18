@@ -68,4 +68,7 @@ defmodule Backend.LeaderboardsPoints.Bonobo2025 do
 
   @impl true
   def points_seasons(), do: ["bonobo_2025"]
+
+  @impl true
+  def points_for_ladder_season(_, _, _), do: {:error, :unsupported}
 end

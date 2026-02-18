@@ -205,36 +205,39 @@ defmodule BackendWeb.LeaderboardController do
   def parse_ladder_mode(%{"ladder_mode" => "no"}), do: "no"
   def parse_ladder_mode(_), do: "yes"
 
-  def get_season_info(nil), do: {[], 0, nil}
+  defp get_season_info(nil), do: {[], 0, nil}
 
-  def get_season_info(%{leaderboard_id: "BG", season_id: s})
-      when Backend.LobbyLegends.is_lobby_legends_points(s),
-      do: {
-        [],
-        0,
-        [
-          {{1, 1}, 8},
-          {{2, 5}, 7},
-          {{6, 10}, 6},
-          {{11, 20}, 5},
-          {{21, 30}, 4},
-          {{31, 40}, 3},
-          {{41, 50}, 2},
-          {{51, 100}, 1}
-        ]
-      }
+  defp get_season_info(%{leaderboard_id: "BG", season_id: s})
+       when Backend.LobbyLegends.is_lobby_legends_points(s),
+       do: {
+         [],
+         0,
+         [
+           {{1, 1}, 8},
+           {{2, 5}, 7},
+           {{6, 10}, 6},
+           {{11, 20}, 5},
+           {{21, 30}, 4},
+           {{31, 40}, 3},
+           {{41, 50}, 2},
+           {{51, 100}, 1}
+         ]
+       }
 
-  def get_season_info(%{leaderboard_id: "BG", season_id: s})
-      when Backend.LobbyLegends.is_lobby_legends(s),
-      do: {[], 16, nil}
+  defp get_season_info(%{leaderboard_id: "BG", season_id: s})
+       when Backend.LobbyLegends.is_lobby_legends(s),
+       do: {[], 16, nil}
 
-  def get_season_info(%{season_id: season_id}), do: get_season_info(season_id)
-
-  def get_season_info(season_id) do
-    with {:ok, ts} <- Blizzard.get_ladder_tour_stop(season_id),
+  defp get_season_info(%{season_id: season_id, region: region, leaderboard_id: leaderboard_id}) do
+    with {:error, _} <-
+           LeaderboardsPoints.points_for_ladder_season(leaderboard_id, season_id, region),
+         {:ok, ts} <- Blizzard.get_ladder_tour_stop(season_id),
          %{ladder_points: points} <- MastersTour.TourStop.get(ts) do
       {[], 0, points}
     else
+      {:ok, {_title, points}} ->
+        {[], 0, points}
+
       {:ok, tour_stop} ->
         {MastersTour.list_invited_players(tour_stop),
          MastersTour.TourStop.ladder_invites(tour_stop), nil}
