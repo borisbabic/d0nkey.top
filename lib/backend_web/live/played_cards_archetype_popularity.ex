@@ -473,7 +473,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         excludes_in_level_ids = names_to_ids(excludes_in_level, format)
 
         # we want to skip the ones that match, so in the db we want to exclude the cards_ids but include those that have excluded ids
-        %{"exclude" => cards_ids, "include" => excludes_in_level_ids}
+        %{"exclude" => cards_ids, "include_any" => excludes_in_level_ids}
       end)
 
     Map.put(criteria, "player_played_cards_excludes_includes_levels", excludes_includes_levels)

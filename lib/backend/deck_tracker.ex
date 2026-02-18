@@ -1690,18 +1690,34 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_played_cards_excludes_includes_levels", levels}, query) do
     dynamic =
       Enum.reduce(levels, dynamic(true), fn
-        %{"exclude" => exclude, "include" => include}, dynamic ->
-          include_dynamic =
-            if Enum.any?(include),
-              do: Hearthstone.include_cards_dynamic(include, :played_cards, :player_cards),
-              else: dynamic(false)
+        level, dynamic ->
+          dyn =
+            Enum.reduce(level, dynamic(false), fn {level_type, values}, inner_dynamic ->
+              dyn =
+                case {level_type, values} do
+                  {"exclude", []} ->
+                    dynamic(true)
 
-          exclude_dynamic =
-            if Enum.any?(exclude),
-              do: Hearthstone.exclude_cards_dynamic(exclude, :played_cards, :player_cards),
-              else: dynamic(true)
+                  {"exclude", _} ->
+                    Hearthstone.exclude_cards_dynamic(values, :played_cards, :player_cards)
 
-          dynamic(^dynamic and (^include_dynamic or ^exclude_dynamic))
+                  {"include", []} ->
+                    dynamic(false)
+
+                  {"include", _} ->
+                    Hearthstone.include_cards_dynamic(values, :played_cards, :player_cards)
+
+                  {"include_any", []} ->
+                    dynamic(false)
+
+                  {"include_any", _} ->
+                    Hearthstone.include_any_cards_dynamic(values, :played_cards, :player_cards)
+                end
+
+              dynamic(^dyn or ^inner_dynamic)
+            end)
+
+          dynamic(^dynamic and ^dyn)
       end)
 
     query |> where(^dynamic)
