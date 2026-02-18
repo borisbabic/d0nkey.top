@@ -4,6 +4,7 @@ defmodule Backend.LeaderboardsPoints do
   alias Backend.LeaderboardsPoints.HsEsports2023
   alias Backend.LeaderboardsPoints.HsEsports2025
   alias Backend.LeaderboardsPoints.Bonobo2025
+  alias Backend.LeaderboardsPoints.China2026
   @type season_points :: {season_id :: integer(), best_rank :: integer(), points :: integer()}
   @type player_row ::
           {account_id :: String.t(), season_points :: [season_points], total_points :: integer()}
@@ -115,6 +116,7 @@ defmodule Backend.LeaderboardsPoints do
   def system("2024" <> _), do: HsEsports2023
   def system("2025" <> _), do: HsEsports2025
   def system("bonobo_2025" <> _), do: Bonobo2025
+  def system("china_" <> _), do: China2026
   def system(_), do: HsEsports2025
 
   def points_seasons() do
@@ -122,7 +124,7 @@ defmodule Backend.LeaderboardsPoints do
     |> Enum.flat_map(& &1.points_seasons())
   end
 
-  defp systems(), do: [HsEsports2023, Bonobo2025, HsEsports2025]
+  defp systems(), do: [HsEsports2023, Bonobo2025, HsEsports2025, China2026]
 
   def create_fake_entry(account_id, rank, season_id, rating \\ nil) do
     %Backend.Leaderboards.Entry{
