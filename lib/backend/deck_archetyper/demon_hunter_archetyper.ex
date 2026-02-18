@@ -13,6 +13,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       murloc?(card_info) ->
         :"Murloc Demon Hunter"
 
+      no_minion?(card_info) and cliff_dive?(card_info) ->
+        :"Low Minion DH"
+
       no_minion?(card_info) ->
         :"No Minion DH"
 
@@ -61,11 +64,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       zerg?(card_info, 4) ->
         :"Zerg DH"
 
-      crewmate?(card_info, 2) ->
-        :"Among Us DH"
-
       cliff_dive?(card_info) ->
         :"Cliff Dive DH"
+
+      crewmate?(card_info, 2) ->
+        :"Among Us DH"
 
       kj?(card_info) ->
         :"Kil'jaeden DH"
@@ -109,6 +112,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Kayn Sunfury",
       "Observer of Mysteries",
       "Spirity of the Team",
+      "Living Flame",
+      "Hot Coals",
+      "Chronikar",
       "Acupuncture"
     ])
   end
