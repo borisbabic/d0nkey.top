@@ -321,14 +321,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Warlock"
 
-      discard?(card_info, 6) ->
-        :Discolock
-
       "Patches the Pirate" in card_info.card_names and wild_burnlock?(card_info) ->
         :"Pirate Burnlock"
 
       wild_burnlock?(card_info) ->
         :Burnlock
+
+      discard?(card_info, 6) ->
+        :Discolock
 
       demon_boar?(card_info) ->
         :"Demon Boarlock"
@@ -363,14 +363,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp wild_burnlock?(card_info) do
-    min_count?(card_info, 5, [
-      "Tachyon Barrage",
+    min_count?(card_info, 3, [
       "Soul Barrage",
       "Sketch Artist",
-      "Sizzling Cinder",
-      "Leper Gnome",
-      "Soulfire",
-      "Trogg Gemtosser",
       "Expired Merchant"
     ])
   end
