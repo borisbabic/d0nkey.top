@@ -46,7 +46,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Buttons Rainbow DK" => "Buttons DK",
     "Zerg Unholy DK" => "Unholy DK",
     "Octosari DH" => "Peddler DH",
-    # "Blobxigar DH" => "Broxigar DH",
+    "Blobxigar DH" => "Elise DH",
+    "Among Us DH" => "Aggro DH",
+    "Aggro Demon Hunter" => "Aggro DH",
     # "Ravenous Cliff Dive DH" => "Cliff Dive DH",
     # Maybe not the best
     # "Azshara Druid" => "Hydration Druid",
@@ -267,6 +269,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           arch = to_string(archetype)
           {arch, arch}
         end
+        |> Enum.sort_by(&elem(&1, 0), :asc)
 
       _ ->
         false
