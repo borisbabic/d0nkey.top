@@ -182,6 +182,18 @@ defmodule BackendWeb.Router do
     live("/mt/playoffs/summer_2025", Summer2025PlayoffsShowcaseLive)
     live("/mt/playoffs/spring_2025", Spring2025PlayoffsShowcaseLive)
 
+    live_session :qualifiers_winter_blitz,
+      session: %{
+        "title" => "2026 Winter Blitz",
+        "tournament_ids" => [
+          "698626cae7d46e00130bb7c8",
+          "6986285bfa004100122e9b10",
+          "698644dde7d46e00130bbf32"
+        ]
+      } do
+      live("/esports/2026/qualifiers/winter-blitz", QualifierShowcaseLive)
+    end
+
     live_session :qualifiers_week_1,
       session: %{
         "title" => "2026 Winter Week 1",
