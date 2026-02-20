@@ -23,4 +23,8 @@ defmodule Backend.LeaderboardsPointsTest do
     # February
     assert {_, _, 6} = Enum.find(season_points, &(elem(&1, 0) == 112))
   end
+
+  test "points_for_ladder_season for STD 147 CN returns error" do
+    {:error, _} = LeaderboardsPoints.points_for_ladder_season("STD", 147, "CN")
+  end
 end

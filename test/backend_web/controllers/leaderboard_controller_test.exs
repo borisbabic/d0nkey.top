@@ -26,6 +26,17 @@ defmodule BackendWeb.LeaderboardControllerTest do
     end
   end
 
+  ######## POINTS ########
+
+  describe "/leaderboard/points" do
+    @describetag :ldb_points
+    test "GET /leaderboard/points doesn't error", %{conn: conn} do
+      url = Routes.leaderboard_path(conn, :points, %{})
+      conn = get(conn, url)
+      assert html_response(conn, 200)
+    end
+  end
+
   ##### PLAYER STATS #####
   describe "/leaderboard/player-stats" do
     @describetag :ldb_player_stats
