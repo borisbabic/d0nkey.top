@@ -93,7 +93,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
     id = to_string(leaderboard_id_raw)
 
     points_season
-    |> String.replace_leading(prefix, "")
+    |> remove_prefix(prefix)
     |> String.split("_")
     |> case do
       [year, season] ->
@@ -105,6 +105,9 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
         |> Enum.map(&extract_season/1)
     end
   end
+
+  defp remove_prefix(season, ""), do: season
+  defp remove_prefix(season, prefix), do: season |> String.replace_leading(prefix, "")
 
   @impl true
   def points_seasons() do
@@ -512,7 +515,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
     leaderboard_matches? =
       Enum.any?(season_mapper, fn {_, _, sid, leaderboards} ->
         leaderboard_id in leaderboards and
-          Util.to_int_or_orig(season_id) == Util.to_int_or_orig(season_id)
+          Util.to_int_or_orig(sid) == Util.to_int_or_orig(season_id)
       end)
 
     region_matches? =

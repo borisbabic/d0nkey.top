@@ -126,7 +126,7 @@ defmodule Backend.LeaderboardsPoints do
 
   def points_for_ladder_season(leaderboard_id, season_id, region) do
     systems()
-    |> Enum.find_value(fn system ->
+    |> Enum.find_value({:error, :no_points_for_season}, fn system ->
       with {:error, _any} <- system.points_for_ladder_season(leaderboard_id, season_id, region) do
         false
       end
