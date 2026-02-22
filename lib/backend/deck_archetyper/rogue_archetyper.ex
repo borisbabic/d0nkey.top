@@ -352,8 +352,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Captain Hooktusk" in card_info.card_names and highlander?(card_info) ->
         :"HL Hooktusk Rogue"
 
-      "Swiftscale Trickster" in card_info.card_names and highlander?(card_info) ->
-        :"HL Swiftscale Rogue"
+      "Velarok Windblade" in card_info.card_names and highlander?(card_info) ->
+        :"HL Velarok Rogue"
 
       highlander?(card_info) ->
         :"Highlander Rogue"
