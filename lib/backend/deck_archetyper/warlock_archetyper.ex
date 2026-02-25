@@ -276,6 +276,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       wild_chad_seedlock?(card_info) ->
         :"Chad Seedlock"
 
+      min_count?(card_info, 2, ["The Demon Seed", "Fanottem, Lord of the Opera"]) ->
+        :"Fatigue Seedlock"
+
       "The Demon Seed" in card_info.card_names ->
         :Seedlock
 
