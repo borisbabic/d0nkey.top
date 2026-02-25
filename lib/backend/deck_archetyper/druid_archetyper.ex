@@ -238,9 +238,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Champions of Azeroth" in card_info.card_names ->
         :"Champions Druid"
 
-      "Barnes" in card_info.card_names ->
-        :"Barnes Druid"
-
       min_keyword_count?(card_info, 4, "spell-damage") ->
         :"Spell Damage Druid"
 
