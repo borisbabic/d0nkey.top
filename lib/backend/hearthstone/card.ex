@@ -223,6 +223,16 @@ defmodule Backend.Hearthstone.Card do
   def etc_band_manager?(id) when is_integer(id), do: id == @etc_band_manager
   def etc_band_manager?(card), do: dbf_id(card) == @etc_band_manager
 
+  # @vyranoth nil
+  # def vyranoth, do: @vyranoth
+  @spec vyranoth?(card() | integer() | nil) :: boolean
+  def vyranoth?(nil), do: false
+  def vyranoth?(112924), do: true
+  def vyranoth?(id) when is_integer(id), do: Backend.Hearthstone.get_card(id) |> vyranoth?()
+  def vyranoth?(card), do: name(card) in ["Vyranoth", "Boulderfist Ogre"]
+  # def vyranoth?(id) when is_integer(id), do: id == @vyranoth
+  # def vyranoth?(card), do: dbf_id(card) == @vyranoth
+
   @zilliax_3000 102_983
   def zilliax_3000, do: @zilliax_3000
   @spec zilliax_3000?(card() | integer() | nil) :: boolean
