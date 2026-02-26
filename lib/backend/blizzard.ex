@@ -875,7 +875,7 @@ defmodule Backend.Blizzard do
 
   @spec regions_with_timezone :: [{leaderboard(), String.t()}]
   def regions_with_timezone(),
-    do: [{:US, "US/Pacific"}, {:AP, "Asia/Seoul"}, {:EU, "CET"}, {:CN, "Asia/Shanghai"}]
+    do: [{:US, "US/Pacific"}, {:AP, "Asia/Taipei"}, {:EU, "CET"}, {:CN, "Asia/Shanghai"}]
 
   def next_blizz_o_clock() do
     now = DateTime.now!(timezone())
