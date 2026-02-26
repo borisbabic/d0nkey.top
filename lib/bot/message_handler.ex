@@ -370,7 +370,7 @@ defmodule Bot.MessageHandler do
         "Next constructed season reset (shown in your timezone): "
       end
 
-    "#{prepend}#{region_part}\nWARNING: APAC might be an hour later. :dshrug:"
+    "#{prepend}#{region_part}\n"
   end
 
   @spec extract_regions_with_timezone(String.t() | atom()) :: [{atom(), String.t()}]
