@@ -119,11 +119,24 @@ defmodule BackendWeb.DeckBuilderLive do
 
     curr = Enum.count(deck.cards)
 
+    vyranoth_part = vyranoth_part?(deck)
+
     if curr == max do
-      Deck.name(deck)
+      Deck.name(deck, vyranoth_part)
     else
       class = Deck.class(deck) |> Deck.class_name()
-      "#{class} #{curr}/#{max}" |> Deck.add_runes(deck)
+      "#{vyranoth_part}#{class} #{curr}/#{max}" |> Deck.add_runes(deck)
+    end
+  end
+
+  defp vyranoth_part?(deck) do
+    vyranoth? = Enum.any?(deck.cards, &Card.vyranoth?/1)
+
+    with true <- vyranoth?,
+         total when total != 100 <- Deck.total_cost(deck, &Card.minion?/1) do
+      "#{total}/100 "
+    else
+      _ -> ""
     end
   end
 

@@ -347,8 +347,8 @@ defmodule Backend.Hearthstone.Deck do
   def archetype(%{archetype: a}) when is_binary(a) or (is_atom(a) and not is_nil(a)), do: a
   def archetype(deck), do: DeckArchetyper.archetype(deck)
 
-  def name(deck) do
-    base_name = base_name(deck) |> to_string()
+  def name(deck, prefix \\ "") do
+    base_name = "#{prefix}#{base_name(deck)}"
 
     if add_name_modifiers?(deck, base_name) do
       base_name
@@ -985,6 +985,18 @@ defmodule Backend.Hearthstone.Deck do
     |> Enum.reduce(RuneCost.empty(), &RuneCost.maximum/2)
   end
 
+  def total_cost(deck, filter \\ & &1) do
+    Enum.reduce(deck.cards, 0, fn c, sum ->
+      card = Hearthstone.get_card(c)
+
+      if filter.(card) do
+        sum + card_mana_cost(deck, card)
+      else
+        sum
+      end
+    end)
+  end
+
   def cost(%{cards: cards} = deck, owned_card_map \\ %{}) do
     sideboards_cards =
       Map.get(deck, :sideboards, [])
@@ -1004,45 +1016,11 @@ defmodule Backend.Hearthstone.Deck do
     card_or_sideboard |> extract_card_id() |> CardBag.deckcode_copy_id() |> Card.dust_cost()
   end
 
-  # # hack for core cards with canonical cards in wild
-  # @spec remove_non_standard([Card.t() | Sideboard.t()], t()) :: [Card.t() | Sideboard.t()]
-  # defp remove_non_standard(cards_or_sideboards, %{format: 2}) do
-  #   standard_slugs = if :lt = NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-03-25 17:00:00])  do
-  #       [
-  #         "the-great-dark-beyond",
-  #         "perils-in-paradise",
-  #         "whizbangs-workshop",
-  #         "core",
-  #         "event",
-  #         "showdown-in-the-badlands",
-  #         "titans",
-  #         "temp_core_2025",
-  #         "event_2025",
-  #         "festival-of-legends"
-  #       ]
-  #   else
-  #     Backend.Hearthstone.standard_card_sets()
-  #   end
-
-  #   Enum.filter(cards_or_sideboards, fn c ->
-  #     case get_card(c) do
-  #       %{card_set: %{slug: slug}} -> slug in standard_slugs
-  #       _ -> true
-  #     end
-  #   end)
-  # end
-
-  # defp remove_non_standard(cards_or_sideboards, _deck), do: cards_or_sideboards
   defp extract_card_id(id) when is_integer(id), do: id
   defp extract_card_id(%{card: id}) when is_integer(id), do: id
   defp extract_card_id(%{card_id: id}) when is_integer(id), do: id
   defp extract_card_id(%Card{id: id}) when is_integer(id), do: id
   defp extract_card_id(_), do: nil
-  # defp get_card(id_or_sideboard) do
-  #   with id when is_integer(id) <- extract_card_id(id_or_sideboard) do
-  #     Hearthstone.get_card(id)
-  #   end
-  # end
 
   @spec use_sideboard_for_dust_cost?(sideboard :: Sideboard.t()) :: boolean()
   defp use_sideboard_for_dust_cost?(%{sideboard: id}) do
