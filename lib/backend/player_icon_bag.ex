@@ -12,6 +12,7 @@ defmodule Backend.PlayerIconBag do
     {"RHat#1215", {:image, "/images/icons/rhat.png"}},
     # MTOne Fantasy
     # {"Furyhunter#2166", {:image, "/images/icons/furyhunter.webp"}},
+    {"미도리군#3170", {:image, "/images/icons/미도리군.png", "https://x.com/domomidorisong"}},
     # MTOne Fantasy
     # {"Lucasdmnasc#1573", {:image, "/images/icons/lucas.jpg"}},
     {"Groinkpff#2172", {:image, "/images/icons/groinkpff.png"}},
