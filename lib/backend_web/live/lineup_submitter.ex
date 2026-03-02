@@ -14,6 +14,9 @@ defmodule BackendWeb.LineupSubmitterLive do
   def render(assigns) do
     ~F"""
       <div>
+        <div :if={!allowed(@user)}>
+          You are not permitted to use this feature. If you're not logged in try doing that.
+        </div>
         <div :if={allowed(@user)}>
           <.form for={%{}} as={:lineups} id="lineup_submit_form" phx-submit="submit">
             <div class="field">
