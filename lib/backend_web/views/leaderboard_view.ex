@@ -1134,7 +1134,8 @@ defmodule BackendWeb.LeaderboardView do
     chinese?(account)
   end
 
-  defp wrong_region(%{leaderboard_id: "STD", season_id: s}, account, "all") when s > 98 do
+  defp wrong_region(%{leaderboard_id: "STD", season_id: s, region: r}, account, "all")
+       when s > 98 and r not in ["CN", :CN, :China, "China"] do
     chinese?(account) || account in @confirmed_std_chinese
   end
 
