@@ -94,11 +94,7 @@ defmodule Backend.Blizzard do
   def to_leaderboard_id(ldb) when ldb in @leaderboards, do: {:ok, ldb}
   def to_leaderboard_id(_), do: {:error, :unknown_leaderboard}
   @spec to_region(String.t() | atom()) :: {:ok, atom()} | {:error, atom()}
-  def to_region(string) when is_binary(string) and string in @binary_regions,
-    do: {:ok, String.to_existing_atom(string)}
-
-  def to_region(region) when region in @regions, do: {:ok, region}
-  def to_region(_), do: {:error, :unknown_region}
+  def to_region(region), do: get_region_identifier(region)
 
   @doc """
   Gets the year and month from a season_id
@@ -372,11 +368,21 @@ defmodule Backend.Blizzard do
 
   @spec to_leaderboard(:string) :: {:ok, leaderboard} | {:error, String.t()}
   def to_leaderboard(string) do
-    if Enum.member?(leaderboards(:string), string) do
-      {:ok, String.to_existing_atom(string)}
-    else
-      {:error, "not valid"}
-    end
+    upcase_string = String.upcase(string)
+
+    Enum.find_value(leaderboards(), {:error, "not valid"}, fn l ->
+      options =
+        [
+          to_string(l),
+          get_leaderboard_name(l, :short),
+          get_leaderboard_name(l, :long)
+        ]
+        |> Enum.map(&String.upcase/1)
+
+      if upcase_string in options do
+        {:ok, l}
+      end
+    end)
   end
 
   @spec to_tour_stop(:string) :: {:ok, tour_stop} | {:error, String.t()}
@@ -559,13 +565,35 @@ defmodule Backend.Blizzard do
           {:ok, atom()} | {:error, any()}
   def get_region_identifier(%{region: r}), do: get_region_identifier(r)
   def get_region_identifier(r) when r in [:EU, :US, :AP, :CN], do: {:ok, r}
-  def get_region_identifier(r) when r in ["EU", "Europe", :Europe], do: {:ok, :EU}
-
-  def get_region_identifier(r) when r in ["AM", "NA", "Americas", :NA, :AM, :Americas],
-    do: {:ok, :US}
+  def get_region_identifier(r) when r in ["EU", "Europe", "EUROPE", :Europe], do: {:ok, :EU}
 
   def get_region_identifier(r)
-      when r in ["AP", "APAC", "Asia-Pacific", :APAC, "Asia", :Asia, :"Asia-Pacific"],
+      when r in [
+             "US",
+             "AM",
+             "NA",
+             "Americas",
+             "AMERICAS",
+             "America",
+             "AMERICA",
+             :NA,
+             :AM,
+             :Americas
+           ],
+      do: {:ok, :US}
+
+  def get_region_identifier(r)
+      when r in [
+             "AP",
+             "APAC",
+             "Asia-Pacific",
+             "ASIA-PACIFIC",
+             "Asia",
+             "ASIA",
+             :Asia,
+             :APAC,
+             :"Asia-Pacific"
+           ],
       do: {:ok, :AP}
 
   def get_region_identifier(r) when r in ["CN", "China"], do: {:ok, :CN}

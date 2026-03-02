@@ -51,8 +51,14 @@ defmodule Bot.LdbMessageHandler do
   end
 
   def handle_top_leaderboard(msg) do
-    {raw_criteria, rest} = get_criteria(msg.content)
-    leaderboard_options = parse_leaderboard_options(rest)
+    get_top_leaderboard_entries_season_info(msg.content)
+    |> create_season_table()
+    |> send_table(msg.channel_id)
+  end
+
+  def get_top_leaderboard_entries_season_info(options, options_fallbacks \\ %{}) do
+    {raw_criteria, rest} = get_criteria(options)
+    leaderboard_options = parse_leaderboard_options(rest, options_fallbacks)
 
     base_criteria =
       raw_criteria
@@ -60,11 +66,9 @@ defmodule Bot.LdbMessageHandler do
       |> ensure_leaderboard_id(leaderboard_options)
       |> ensure_season_id(leaderboard_options)
 
-    criteria = [:latest_in_season, {"order_by", "rank"} | base_criteria] |> add_limit(10)
+    criteria = [:latest_in_season, {"order_by", "rank"} | base_criteria] |> add_limit(25)
 
-    Leaderboards.entries(criteria)
-    |> create_season_table(Leaderboards.extract_season_info(criteria))
-    |> send_table(msg.channel_id)
+    {Leaderboards.entries(criteria), Leaderboards.extract_season_info(criteria)}
   end
 
   defp ensure_region(criteria, %{region: region}) do
@@ -218,7 +222,7 @@ defmodule Bot.LdbMessageHandler do
           region: Blizzard.leaderboard(),
           season_id: integer()
         }
-  def parse_leaderboard_options(options) do
+  def parse_leaderboard_options(options, fallbacks \\ %{}) do
     normalized =
       if is_binary(options) do
         String.splitter(options, " ")
@@ -228,7 +232,7 @@ defmodule Bot.LdbMessageHandler do
 
     parsed =
       normalized
-      |> Stream.map(&String.upcase/1)
+      |> Enum.map(&String.upcase/1)
       |> Enum.reduce(
         %{},
         fn opt, acc ->
@@ -241,11 +245,13 @@ defmodule Bot.LdbMessageHandler do
         end
       )
 
-    default = %{
-      season_id: nil,
-      leaderboard_id: :STD,
-      region: :EU
-    }
+    default =
+      %{
+        season_id: nil,
+        leaderboard_id: :STD,
+        region: :EU
+      }
+      |> Map.merge(fallbacks)
 
     Map.merge(default, parsed)
   end
