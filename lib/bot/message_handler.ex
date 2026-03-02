@@ -28,7 +28,7 @@ defmodule Bot.MessageHandler do
     ## `ldb-top` (Top players on leaderboards)
     `!ldb-top [$filters]
 
-    Display the top 10 players on a leaderboard. See `!dhelp ldb` for filters
+    Display the top 25 players on a leaderboard. See `!dhelp ldb` for filters
 
     examples:
     `!ldb-top l:BG 14`

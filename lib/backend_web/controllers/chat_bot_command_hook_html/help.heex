@@ -8,7 +8,7 @@
     <img src="/images/chat_bot_next_reveal_hook.png"/>
 </figure>
 <br/>
-<h3 class="subtitle is-5use">StreamElements</h3>
+<h3 class="subtitle is-5">StreamElements</h3>
 Add with the command below or with this link <a href="https://streamelements.com/dashboard/bot/commands/custom/share?data=JTdCJTIyY29vbGRvd24lMjIlM0ElN0IlMjJ1c2VyJTIyJTNBMTUlMkMlMjJnbG9iYWwlMjIlM0E1JTdEJTJDJTIyYWxpYXNlcyUyMiUzQSU1QiU1RCUyQyUyMmtleXdvcmRzJTIyJTNBJTVCJTVEJTJDJTIydGl0bGVLZXl3b3JkcyUyMiUzQSU1QiU1RCUyQyUyMmVuYWJsZWQlMjIlM0F0cnVlJTJDJTIyZW5hYmxlZE9ubGluZSUyMiUzQXRydWUlMkMlMjJlbmFibGVkT2ZmbGluZSUyMiUzQXRydWUlMkMlMjJoaWRkZW4lMjIlM0FmYWxzZSUyQyUyMmNvc3QlMjIlM0EwJTJDJTIydHlwZSUyMiUzQSUyMnNheSUyMiUyQyUyMmFjY2Vzc0xldmVsJTIyJTNBMTAwJTJDJTIyY29tbWFuZCUyMiUzQSUyMm5leHQtcmV2ZWFsJTIyJTJDJTIycmVwbHklMjIlM0ElMjIlMjQoY3VzdG9tYXBpJTIwaHR0cHMlM0ElMkYlMkZ3d3cuaHNndXJ1LmNvbSUyRmNoYXQtYm90LWNvbW1hbmQtaG9vayUyRiUyNChjaGFubmVsKSUyRm5leHQtcmV2ZWFsKSUyMiU3RA%3D%3D">this link<HeroIcons.external_link /></a>
 <pre>!command add !next-reveal $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/next-reveal)</pre>
 <br/>
@@ -29,3 +29,40 @@ The name is gibberish because it's not meant to be used. The advanced settings h
 <br/>
 <h3 class="subtitle is-5">NightBot</h3>
 AFAIK it's not possible to do this with NightBot
+
+<h2 class="subtitle is-4">Top 25</h2>
+Top 25 of a leaderboard
+
+<h3 class="subtitle is-5">StreamElements</h3>
+<pre>!command add !top25 $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-top25?options=$(1:)&default_region=EU&default_leaderboard_id=STD)</pre>
+<br/>
+<h3 class="subtitle is-5">NightBot</h3>
+<pre>!addcom !top25 $(urlfetch https://localdev.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-top25?options=$(args)&default_region=EU&default_leaderboard_id=STD)</pre>
+<br/>
+Uses:
+<pre>
+  !top25
+  !top25 am wLd
+  !top25 asia
+  !top25 I am accidentally selecting a region via the second word, but in general unrecognized stuff is ignored
+</pre>
+
+
+Change STD or EU if you want to change the default mode or region
+<ul>
+  <li>BG</li>
+  <li>DUO</li>
+  <li>STD</li>
+  <li>WLD</li>
+  <li>CLS</li>
+  <li>MRC</li>
+  <li>arena</li>
+  <li>twist</li>
+  <li>undergroundarena</li>
+</ul>
+<ul>
+  <li>AM</li>
+  <li>AP</li>
+  <li>CN</li>
+  <li>EU</li>
+</ul>
