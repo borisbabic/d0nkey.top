@@ -17,7 +17,7 @@ defmodule BackendWeb.ErrorView do
       Oops, looks like something went wrong...
     </h2>
     <div>
-      If you think it should have went right, and the issue persists, please report it in one of the following places:
+      If you think it should have gone right and the issue persists, please report it in one of the following places:
       <ul>
         <li><a href={Constants.discord_bugs()}>Discord</a></li>
         <li><a href={Constants.github_issues()}>Github</a></li>
