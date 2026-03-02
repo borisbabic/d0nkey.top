@@ -15,6 +15,10 @@ defmodule BackendWeb.MyDecksLive do
        |> put_user_in_context()
        |> assign(page_title: "My Decks")}
 
+  def render(%{user: nil}) do
+    Helper.needs_login(%{})
+  end
+
   def render(assigns) do
     ~F"""
       <div :if={btag = User.battletag(@user)}>

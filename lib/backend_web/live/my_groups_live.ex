@@ -13,6 +13,10 @@ defmodule BackendWeb.MyGroupsLive do
        |> put_user_in_context()
        |> assign(page_title: "My Groups")}
 
+  def render(%{user: nil}) do
+    Helper.needs_login(%{})
+  end
+
   def render(assigns = %{user: %{id: _}}) do
     ~F"""
       <div>
