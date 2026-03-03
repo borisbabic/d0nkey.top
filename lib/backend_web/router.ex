@@ -75,6 +75,12 @@ defmodule BackendWeb.Router do
     pipe_through([:bot_command_hooks])
 
     get(
+      "/:channel/hearthstone-news",
+      ChatBotCommandHookController,
+      :hearthstone_news
+    )
+
+    get(
       "/:channel/leaderboard-top25",
       ChatBotCommandHookController,
       :top_25
