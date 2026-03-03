@@ -29,6 +29,7 @@ defmodule BackendWeb.ChatBotCommandHookController do
   end
 
   def leaderboard_count(conn, %{
+        "channel" => _,
         "default_leaderboard_id" => default_leaderboard_id,
         "leaderboard_id" => leaderboard_id
       }) do
@@ -79,6 +80,44 @@ defmodule BackendWeb.ChatBotCommandHookController do
     "#{Blizzard.get_leaderboard_name(ldb_id, :long)} counts: #{seasons_part}"
   end
 
+  def leaderboard(conn, %{
+        "channel" => _,
+        "options" => options
+      }) do
+    message = leaderboard_message(options)
+
+    conn
+    |> put_status(200)
+    |> text(message)
+  end
+
+  def leaderboard_message(options) do
+    {battletags, criteria} = LdbMessageHandler.battletags_and_criteria("!ldb " <> options)
+
+    LdbMessageHandler.get_leaderboard_entries(battletags, criteria)
+    |> Enum.map_join(", ", fn {entries, r, l} ->
+      season_part =
+        "#{Blizzard.get_region_name(r, :short)} #{Blizzard.get_leaderboard_name(l, :short)}"
+
+      entries_part = entries_part(entries, l)
+      "#{season_part}: #{entries_part}"
+    end)
+  end
+
+  def entries_part(entries, leaderboard_id) do
+    Enum.map_join(entries, " ", fn %{rank: rank, account_id: account_id, rating: rating} ->
+      rating_part = rating_part(rating, leaderboard_id)
+      "#{rank}. #{account_id}#{rating_part}"
+    end)
+  end
+
+  def rating_part(rating, leaderboard_id) when is_number(rating) do
+    display = Backend.Leaderboards.rating_display(rating, leaderboard_id)
+    " (#{display})"
+  end
+
+  def rating_part(_, _), do: ""
+
   def top_25(conn, %{
         "channel" => _,
         "default_region" => default_region,
@@ -110,10 +149,7 @@ defmodule BackendWeb.ChatBotCommandHookController do
     leaderboard = season_info.leaderboard_id |> Blizzard.get_leaderboard_name(:long)
     region = season_info.region |> Blizzard.get_region_name()
 
-    entries_part =
-      Enum.map_join(entries, " ", fn %{rank: rank, account_id: account_id} ->
-        "#{rank}. #{account_id}"
-      end)
+    entries_part = entries_part(entries, season_info.leaderboard_id)
 
     "Top #{count} players #{region} - #{leaderboard}: #{entries_part}"
   end
