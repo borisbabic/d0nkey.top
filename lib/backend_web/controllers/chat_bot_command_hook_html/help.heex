@@ -50,7 +50,7 @@ Region and leaderboard/mode can be filtered with r: or l:, see below for options
 Top 25 of a leaderboard
 
 <h3 class="subtitle is-5">StreamElements</h3>
-<pre>!command add !top25 $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-top25?options=$(1:)&default_region=EU&default_leaderboard_id=STD)</pre>
+<pre>!command add !top25 $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-top25?options=$(0:)&default_region=EU&default_leaderboard_id=STD)</pre>
 <br/>
 Example uses:
 <pre>
@@ -81,7 +81,7 @@ Change STD or EU if you want to change the default mode or region
 How many people are on the leaderboards in each region for a mode
 
 <h3 class="subtitle is-5">StreamElements</h3>
-<pre>!command add !ldbc $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-count?leaderboard_id=$(1)&default_leaderboard_id=STD)</pre>
+<pre>!command add !ldbc $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-count?leaderboard_id=$(0:)&default_leaderboard_id=STD)</pre>
 <br/>
 
 Example uses:
