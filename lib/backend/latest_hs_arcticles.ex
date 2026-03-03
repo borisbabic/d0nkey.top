@@ -60,12 +60,15 @@ defmodule Backend.LatestHSArticles do
   def patch_notes_url(), do: get() |> patch_notes_url()
 
   def patch_notes_url(articles),
-    do: articles |> Enum.find_value(&(patch_notes?(&1) && pn_url(&1)))
+    do: articles |> Enum.find_value(&(patch_notes?(&1) && url(&1)))
 
   defp patch_notes?(article), do: "patch" in article["tags"] || "Patch Note" =~ article["title"]
 
-  def pn_url(%{"defaultUrl" => url}), do: url
-  def pn_url(_), do: nil
+  def url(%{"defaultUrl" => url}), do: url
+  def url(_), do: nil
+
+  def title(%{"title" => title}), do: title
+  def title(_), do: nil
 
   def handle_call(:get, _, articles), do: {:reply, articles, articles}
 
@@ -89,4 +92,13 @@ defmodule Backend.LatestHSArticles do
       [decay: 0.95, head_start: 10]
     end
   end
+
+  def filter_tags(articles, [_ | _] = tags) do
+    Enum.filter(articles, fn %{"tags" => t} ->
+      ## all tags present in t
+      tags -- t == []
+    end)
+  end
+
+  def filter_tags(articles, _), do: articles
 end

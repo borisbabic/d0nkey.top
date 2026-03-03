@@ -6,6 +6,7 @@ defmodule BackendWeb.ChatBotCommandHookController do
   alias Bot.LdbMessageHandler
   alias Backend.Blizzard
   alias Backend.Infrastructure.BlizzardCommunicator, as: BlizzApi
+  alias Backend.LatestHSArticles
 
   def deck_url(conn, %{"channel" => _, "deckcode" => deckcode_raw}) do
     deckcode =
@@ -20,6 +21,27 @@ defmodule BackendWeb.ChatBotCommandHookController do
       conn |> put_status(200) |> text("https://www.hsguru.com/deck/#{id}")
     else
       _ -> conn |> put_status(400)
+    end
+  end
+
+  def hearthstone_news(conn, %{"channel" => _, "options" => options}) do
+    tags =
+      options
+      |> String.split(" ")
+      |> Enum.drop(1)
+
+    LatestHSArticles.get()
+    |> LatestHSArticles.filter_tags(tags)
+    |> case do
+      [article | _] ->
+        message = "#{LatestHSArticles.title(article)} - #{LatestHSArticles.url(article)}"
+
+        conn
+        |> put_status(200)
+        |> text(message)
+
+      _ ->
+        conn |> put_status(400)
     end
   end
 
