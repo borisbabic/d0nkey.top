@@ -29,9 +29,7 @@ defmodule Bot.LdbMessageHandler do
           _ -> []
         end
       end)
-      |> Enum.reject(
-        &(&1.leaderboard_id in [:CLS, :MRC, "CLS", "MRC"] or &1.region in [:CN, "CN"])
-      )
+      |> reject_non_count_seasons()
       |> Enum.sort_by(fn s -> Blizzard.get_region_name(s.region, :short) end)
       |> Enum.sort_by(
         fn s ->
@@ -48,6 +46,13 @@ defmodule Bot.LdbMessageHandler do
       end)
 
     TableRex.quick_render!(rows, ["Region", "Mode", "Players"], nil)
+  end
+
+  def reject_non_count_seasons(seasons) do
+    Enum.reject(
+      seasons,
+      &(&1.leaderboard_id in [:CLS, :MRC, "CLS", "MRC"] or &1.region in [:CN, "CN"])
+    )
   end
 
   def handle_top_leaderboard(msg) do

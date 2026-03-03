@@ -81,6 +81,12 @@ defmodule BackendWeb.Router do
     )
 
     get(
+      "/:channel/leaderboard-count",
+      ChatBotCommandHookController,
+      :leaderboard_count
+    )
+
+    get(
       "/:channel/deckcode-url/*deckcode",
       ChatBotCommandHookController,
       :deck_url
