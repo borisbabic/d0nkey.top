@@ -8,6 +8,7 @@ defmodule BackendWeb.CardsLive do
 
   @conditional_formats [
     %{format: "timeways_prerelease_brawl", until: ~N[2025-11-05 17:00:00]},
+    %{format: "cataclysm_prerelease_brawl", until: ~N[2026-03-17 17:00:00]},
     # %{format: "standard_2025", until: ~N[2026-03-31 18:00:00]},
     %{format: "standard_2026", until: ~N[2026-03-31 18:00:00]}
   ]
