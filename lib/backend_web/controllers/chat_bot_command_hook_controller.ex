@@ -28,6 +28,57 @@ defmodule BackendWeb.ChatBotCommandHookController do
     |> put_status(400)
   end
 
+  def leaderboard_count(conn, %{
+        "default_leaderboard_id" => default_leaderboard_id,
+        "leaderboard_id" => leaderboard_id
+      }) do
+    ldb_id =
+      with {:error, _} <- Blizzard.to_leaderboard_id(leaderboard_id),
+           {:error, _} <- Blizzard.to_leaderboard_id(String.upcase(leaderboard_id)),
+           {:error, _} <- Blizzard.to_leaderboard_id(default_leaderboard_id),
+           {:error, _} <- Blizzard.to_leaderboard_id(String.upcase(default_leaderboard_id)) do
+        :STD
+      else
+        {:ok, ldb_id} -> ldb_id
+      end
+
+    message = create_ldbc_message(ldb_id)
+
+    conn
+    |> put_status(200)
+    |> text(message)
+  end
+
+  def create_ldbc_message(ldb_id) do
+    seasons =
+      Backend.Leaderboards.current_ladder_seasons()
+      |> Enum.flat_map(fn season ->
+        with true <- to_string(season.leaderboard_id) == to_string(ldb_id),
+             {:ok, %{total_size: ts} = s} when is_integer(ts) and ts > 0 <-
+               Backend.Leaderboards.get_season(season) do
+          [s]
+        else
+          _ -> []
+        end
+      end)
+
+    # if more seasons, like end of month, specify which it is
+    include_season_part? = 1 < Enum.uniq_by(seasons, & &1.season_id) |> Enum.count()
+
+    seasons_part =
+      Enum.map_join(seasons, ", ", fn %{region: region, total_size: total_size} = s ->
+        season_part =
+          if include_season_part? do
+            name = Blizzard.get_season_name(s.season_id, s.leaderboard_id)
+            " #{name}"
+          end
+
+        "#{Blizzard.get_region_name(region)}#{season_part} - #{total_size}"
+      end)
+
+    "#{Blizzard.get_leaderboard_name(ldb_id, :long)} counts: #{seasons_part}"
+  end
+
   def top_25(conn, %{
         "channel" => _,
         "default_region" => default_region,
