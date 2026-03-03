@@ -30,14 +30,27 @@ The name is gibberish because it's not meant to be used. The advanced settings h
 <h3 class="subtitle is-5">NightBot</h3>
 AFAIK it's not possible to do this with NightBot
 
+<h2 class="subtitle is-4">Leaderboard</h2>
+Search the ladder for specified battletags
+
+<h3 class="subtitle is-5">StreamElements</h3>
+<pre>!command add !ldb $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard?options=$(1:))</pre>
+<br/>
+
+Example uses:
+<pre>
+  !ldb D0nkey reqvam
+  !ldb D0nkey r:EU l:STD
+</pre>
+
+Region and leaderboard/mode can be filtered with r: or l:, see below for options what to put after
+
+
 <h2 class="subtitle is-4">Top 25</h2>
 Top 25 of a leaderboard
 
 <h3 class="subtitle is-5">StreamElements</h3>
 <pre>!command add !top25 $(urlfetch https://www.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-top25?options=$(1:)&default_region=EU&default_leaderboard_id=STD)</pre>
-<br/>
-<h3 class="subtitle is-5">NightBot</h3>
-<pre>!addcom !top25 $(urlfetch https://localdev.hsguru.com/chat-bot-command-hook/$(channel)/leaderboard-top25?options=$(args)&default_region=EU&default_leaderboard_id=STD)</pre>
 <br/>
 Example uses:
 <pre>

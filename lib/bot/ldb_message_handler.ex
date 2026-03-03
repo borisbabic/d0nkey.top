@@ -6,7 +6,10 @@ defmodule Bot.LdbMessageHandler do
   import Bot.MessageHandlerUtil
 
   def handle_battletags_leaderboard(msg) do
-    {battletags, additional_criteria} = battletags_and_criteria(msg)
+    guild_id = msg.guild_id
+
+    {battletags, additional_criteria} =
+      battletags_and_criteria(msg.content, fn -> get_guild_battletags!(guild_id) end)
 
     get_leaderboard_entries(battletags, additional_criteria)
     |> create_tables()
@@ -106,12 +109,12 @@ defmodule Bot.LdbMessageHandler do
     end
   end
 
-  def battletags_and_criteria(%{content: content, guild_id: guild_id}) do
-    {criteria, rest} = get_criteria(content)
+  def battletags_and_criteria(options, fallback \\ fn -> [] end) do
+    {criteria, rest} = get_criteria(options)
 
     battletags =
       case rest do
-        [] -> get_guild_battletags!(guild_id)
+        [] -> fallback.()
         b -> b
       end
 
