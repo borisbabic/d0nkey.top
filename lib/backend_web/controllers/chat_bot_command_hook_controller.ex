@@ -33,15 +33,13 @@ defmodule BackendWeb.ChatBotCommandHookController do
         "default_leaderboard_id" => default_leaderboard_id,
         "leaderboard_id" => leaderboard_id
       }) do
-    ldb_id =
-      with {:error, _} <- Blizzard.to_leaderboard_id(leaderboard_id),
-           {:error, _} <- Blizzard.to_leaderboard_id(String.upcase(leaderboard_id)),
-           {:error, _} <- Blizzard.to_leaderboard_id(default_leaderboard_id),
-           {:error, _} <- Blizzard.to_leaderboard_id(String.upcase(default_leaderboard_id)) do
-        :STD
-      else
-        {:ok, ldb_id} -> ldb_id
-      end
+    options_fallbacks = add_default_leaderboard_id(%{}, default_leaderboard_id)
+
+    %{leaderboard_id: ldb_id} =
+      LdbMessageHandler.parse_leaderboard_options(
+        leaderboard_id,
+        options_fallbacks
+      )
 
     message = create_ldbc_message(ldb_id)
 
