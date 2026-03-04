@@ -8,12 +8,13 @@ defmodule Components.Card do
   prop(disable_link, :boolean, default: false)
   prop(hide_name, :boolean, default: false)
   prop(hide_text_and_stats, :boolean, default: false)
+  prop(keep_focus, :boolean, default: false)
   slot(above_image, required: false)
   slot(below_image, required: false)
 
   def render(assigns) do
     ~F"""
-      <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{@card}"} class={"tw-relative", "card-image-container", "has-no-pointer-events": @disable_link}>
+      <a id={"card_component_#{@card.id}"} aria-label={@card.name} href={if @disable_link, do: "javascript:;", else: ~p"/card/#{@card}"} class={"tw-relative", "card-image-container", "has-no-pointer-events": @disable_link} phx-hook={@keep_focus && "KeepFocus"}>
         <#slot {@above_image, card: @card} />
         <img src={Card.card_url(@card)} alt={@card.name} class={"tw-select-none","md:tw-w-64", "tw-w-64": !@shrink_mobile, "tw-w-48": @shrink_mobile}/>
         <#slot {@below_image, card: @card} />

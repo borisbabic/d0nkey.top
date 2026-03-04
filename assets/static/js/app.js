@@ -16,8 +16,6 @@ Alpine.plugin(collapse);
 window.Alpine = Alpine;
 Alpine.start();
 
-console.log("what the fuck");
-
 import ChartJsHook from "./chart_hook.js";
 // Import local files
 //
@@ -247,6 +245,11 @@ var pad = function (te) {
 };
 let Hooks = {};
 Hooks.ChartJs = ChartJsHook;
+Hooks.KeepFocus = {
+  updated() {
+    this.el.focus();
+  },
+};
 Hooks.InfiniteScrollLoaded = {
   mounted() {
     console.log("mounting hook");
@@ -311,15 +314,43 @@ Hooks.LocalDateTime = {
     }
   },
 };
-Hooks.CardRightClick = {
-  mounted() {
-    this.el.addEventListener("auxclick", (e) => {
-      let card_id = this.el.getAttribute("card_id");
-      console.log("auxclick on card_id", card_id);
-      if (card_id) {
-        e.preventDefault();
-        this.pushEvent("card-right-click", { card_id: card_id });
+Hooks.DeckBuilderCard = {
+  add_card(element, before_adding) {
+    let card_id = element.getAttribute("card_id");
+    if (card_id) {
+      if (before_adding) {
+        console.log(before_adding);
+        before_adding();
       }
+      this.pushEvent("add-card", { card_id: card_id });
+    }
+  },
+  remove_card(element, before_removing) {
+    let card_id = element.getAttribute("card_id");
+    if (card_id) {
+      if (before_removing) {
+        console.log(before_removing);
+        before_removing();
+      }
+      this.pushEvent("remove-card", { card_id: card_id });
+    }
+  },
+  mounted() {
+    this.el.addEventListener("keydown", (e) => {
+      const key = e.key;
+      if (key === "Backspace" || key === "Delete") {
+        this.remove_card(this.el);
+      }
+      if (key === "Enter") {
+        this.add_card(this.el, () => {
+          e.preventDefault;
+        });
+      }
+    });
+    this.el.addEventListener("auxclick", (e) => {
+      this.remove_card(this.el, () => {
+        e.preventDefault();
+      });
     });
     this.el.addEventListener("contextmenu", (e) => {
       if (this.el.getAttribute("card_id")) {
