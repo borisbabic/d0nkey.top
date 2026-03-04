@@ -10,15 +10,14 @@ defmodule Components.ExpandableDecklist do
   prop(toggle_cards, :event, default: "toggle_cards")
 
   def render(assigns) do
-
     ~F"""
       <div>
       <Decklist deck={@deck} show_cards={@show_cards} name={name(@name, @deck)} on_card_click={@on_card_click}>
         <:right_button>
-          <span :on-click={@toggle_cards} class="is-clickable" >
+          <button :on-click={@toggle_cards} class="is-clickable" aria-label={if @show_cards, do: "Hide cards in deck", else: "Show cards in deck"} >
             <HeroIcons.eye size="small" :if={!@show_cards}/>
             <HeroIcons.eye_slash size="small" :if={@show_cards}/>
-          </span>
+          </button>
         </:right_button>
       </Decklist>
       </div>
@@ -30,6 +29,7 @@ defmodule Components.ExpandableDecklist do
       Backend.Hearthstone.Deck.name(deck)
     end
   end
+
   def handle_event("toggle_cards", _, socket) do
     {:noreply, socket |> assign(show_cards: !socket.assigns.show_cards)}
   end

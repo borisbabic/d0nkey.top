@@ -163,7 +163,7 @@ defmodule Components.CardsExplorer do
           phx-target={@myself}
           phx-viewport-bottom={if @end_of_stream?, do: "", else: "next-cards-page"}>
           <div card_id={c.id} id={id} :for={{id, c} <- @streams.cards} class={"column", "is-narrow", "is-clickable": !!@on_card_click, "not-in-list": @card_disabled.(c)} phx-value-card_id={c.id} :on-click={unless @card_disabled.(c), do: @on_card_click} phx-hook={@card_phx_hook}>
-            <Card shrink_mobile={true} card={c} disable_link={!!@on_card_click}>
+            <Card shrink_mobile={true} card={c} disable_link={!!@on_card_click} keep_focus={true}>
               <:above_image :let={card: card}>
                 <#slot {@above_card, card: card} />
               </:above_image>

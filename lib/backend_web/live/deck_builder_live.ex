@@ -49,7 +49,7 @@ defmodule BackendWeb.DeckBuilderLive do
           params={card_params(@params, Deck.missing_zilliax_parts?(@deck))}
           url_params={@params}
           on_card_click={"add-card"}
-          card_phx_hook={"CardRightClick"}
+          card_phx_hook={"DeckBuilderCard"}
           card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
           <:additional_filters>
             <ClassMultiDropdown
@@ -62,7 +62,7 @@ defmodule BackendWeb.DeckBuilderLive do
           </:additional_filters>
           <:below_card :let={card: card}>
             <div class="tw-flex tw-justify-center">
-              <div class="tag" :if={Card.max_copies_in_deck(card) > 1}>
+              <div class="tag" :if={Card.max_copies_in_deck(card) > 1} aria-label={"#{Deck.total_copies(@deck, card)} out of #{Card.max_copies_in_deck(card)}"}>
                 {Deck.total_copies(@deck, card)} / {Card.max_copies_in_deck(card)}
               </div>
             </div>
@@ -191,7 +191,7 @@ defmodule BackendWeb.DeckBuilderLive do
     end
   end
 
-  def handle_event("card-right-click", %{"card_id" => _card_id} = params, socket) do
+  def handle_event("remove-card", %{"card_id" => _card_id} = params, socket) do
     do_remove_card(socket, params)
   end
 
@@ -199,7 +199,7 @@ defmodule BackendWeb.DeckBuilderLive do
     {:noreply, socket |> assign(show_cards: !socket.assigns.show_cards)}
   end
 
-  def handle_event("add-card", %{"card_id" => card_raw}, socket) do
+  def handle_event("add-card", %{"card_id" => card_raw} = params, socket) do
     card = Util.to_int!(card_raw)
     fabled_group = CardBag.fabled_group(card)
     %{deck: deck, raw_params: raw_params} = socket.assigns
