@@ -197,7 +197,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         :"Boar OTK Druid"
 
       "Astral Communion" in card_info.card_names ->
-        :"Astral Communion Druid"
+        :"Astral Druid"
 
       "King Togwaggle" in card_info.card_names ->
         :"Tog Druid"
