@@ -153,6 +153,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       protoss?(card_info, 4) ->
         :"Protoss Mage"
 
+      wild_big_spell_mage?(card_info) ->
+        :"Big Spell Mage"
+
       orb_hostage_mage?(card_info) ->
         :"Orb Hostage Mage"
 
@@ -170,9 +173,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Mage"
-
-      wild_big_spell_mage?(card_info) ->
-        :"Big Spell Mage"
 
       wild_small_spell_mage?(card_info) ->
         :"Small Spell Mage"
