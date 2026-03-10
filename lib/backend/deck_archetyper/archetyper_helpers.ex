@@ -148,6 +148,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       amalgam?(ci) ->
         String.to_atom("Amalgam #{class_name}")
 
+      herald?(ci) ->
+        String.to_atom("Harold #{class_name}")
+
       "Menagerie Jug" in ci.card_names ->
         String.to_atom("Menagerie #{class_name}")
 
@@ -216,6 +219,10 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         "Twin-fin Fin Twin",
         "Gorloc Ravager"
       ])
+
+  def herald?(card_info, min \\ 3) do
+    min_keyword_count?(card_info, min, "herald")
+  end
 
   def imbue?(card_info, min \\ 4) do
     min_keyword_count?(card_info, min, "imbue")
