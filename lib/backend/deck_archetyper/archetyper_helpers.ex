@@ -83,9 +83,21 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     "Ethereal Oracle",
     "Azure Drake"
   ]
+  @neutral_dragon_synergy [
+    "Petal Peddler",
+    "Netherspite Historian",
+    "Darkscale Broodmother",
+    "Chronicle Keeper",
+    "Tormented Dreadwing",
+    "Naralex, Herald of the Flights",
+    "Prescient Slitherdrake",
+    "Disciple of Demise"
+  ]
 
   def neutral_excavate(), do: @neutral_excavate
   def neutral_spell_damage(), do: @standard_neutral_spell_damage
+
+  def neutral_dragon_synergy(), do: @neutral_dragon_synergy
 
   @type fallbacks_opt :: minion_type_fallback_opt() | faction_fallback_opt()
   @spec fallbacks(card_info(), String.t(), fallbacks_opt()) :: String.t()

@@ -77,10 +77,13 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   end
 
   @wide_buff [
+    # pseudo wide buff
+    "Forest's Gift",
     "Power of the Wild",
     "Overheat",
     "Cosmic Phenomenon",
     "A. F. Kay",
+    "Iridescent Flitterwing",
     "Hatchery Helper"
   ]
   defp token?(card_info) do
@@ -139,6 +142,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         "Grove Shaper",
         "Cultivation",
         "Splintered Reality",
+        "Wildwood Circle",
         "Overgrown Beanstalk"
       ])
 

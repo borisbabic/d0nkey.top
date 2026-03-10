@@ -36,6 +36,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       no_minion?(card_info, 2) ->
         :"Spell Mage"
 
+      burn_mage?(card_info) ->
+        :"Burn Mage"
+
       arcane_mage?(card_info) ->
         :"Arcane Mage"
 
@@ -69,6 +72,17 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp burn_mage?(card_info) do
+    min_count?(card_info, 4, [
+      "Archmage Kalec",
+      "Unstable Spellcaster",
+      "Sleet Storm",
+      "Arcane Flow",
+      "Spellweaver's Brilliance",
+      "Arcane Barrage"
+    ])
   end
 
   defp bad?(card_info) do
