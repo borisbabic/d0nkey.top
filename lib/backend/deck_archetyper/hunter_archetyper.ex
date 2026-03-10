@@ -20,6 +20,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       handbuff_hunter?(card_info) ->
         :"Handbuff Hunter"
 
+      dragon_hunter?(card_info) ->
+        :"Dragon Hunter"
+
       amalgam?(card_info) ->
         :"Amalgam Hunter"
 
@@ -56,6 +59,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       discover?(card_info) ->
         :"Discover Hunter"
 
+      "Confront the Tol'vir" in card_info.card_names ->
+        :"Ace Hunter"
+
       "Floppy Hydra" in card_info.card_names ->
         :"Floppy Hunter"
 
@@ -65,6 +71,19 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp dragon_hunter?(card_info) do
+    min_count?(
+      card_info,
+      4,
+      [
+        "Earthen Roar",
+        "Stonetalon Striker",
+        "Ebonscale Scout",
+        "Ebyssian"
+      ] ++ neutral_dragon_synergy()
+    )
   end
 
   defp no_hand?(card_info) do
@@ -113,6 +132,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Messenger Buzzard",
       "Char",
       "Cup o' Muscle",
+      "Supply Run",
       "Ranger Gilly",
       "Reserved Spot",
       "Warsong Grunt",

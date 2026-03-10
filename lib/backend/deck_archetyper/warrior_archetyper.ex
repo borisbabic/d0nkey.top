@@ -56,6 +56,12 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       enrage_warrior?(card_info) ->
         :"Enrage Warrior"
 
+      herald?(card_info) ->
+        :"Harold Warrior"
+
+      "Destructive Blaze" in card_info.card_names ->
+        :"Patron Warrior"
+
       "Briarspawn Drake" in card_info.card_names ->
         :"Briarspawn Warrior"
 
@@ -87,16 +93,16 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
   end
 
   defp dragon?(card_info) do
-    min_count?(card_info, 3, [
-      "Giftwrapped Whelp",
-      "Petal Peddler",
-      "Windspeak Wyrm",
-      "Brood Keeper",
-      "Darkrider",
-      "Netherspite Historian",
-      "Prescient Slitherdrake",
-      "Chronicle Keeper"
-    ])
+    min_count?(
+      card_info,
+      3,
+      [
+        "Giftwrapped Whelp",
+        "Windspeak Wyrm",
+        "Brood Keeper",
+        "Darkrider"
+      ] ++ neutral_dragon_synergy(card_info)
+    )
   end
 
   defp enrage_warrior?(card_info) do

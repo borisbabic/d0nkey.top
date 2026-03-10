@@ -34,6 +34,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       aggro?(card_info) ->
         :"Aggro Demon Hunter"
 
+      fel_dh?(card_info) ->
+        :"Fel DH"
+
       octosari?(card_info) ->
         :"Octosari DH"
 
@@ -82,6 +85,15 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, "Demon Hunter")
     end
+  end
+
+  defp fel_dh?(card_info) do
+    min_count?(card_info, 2, [
+      "Nespirah, Enthralled",
+      "Ravenous Felfisher",
+      "Malevolent Mutant",
+      "Scorchreaver"
+    ])
   end
 
   defp broxigar?(card_info) do
@@ -180,7 +192,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     ])
   end
 
-  defp fel_dh?(ci) do
+  defp wild_fel_dh?(ci) do
     min_spell_school_count?(ci, 5, "fel") and
       min_count?(ci, 1, [
         "Fossil Fanatic",
@@ -223,10 +235,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Il'gynoth" in card_info.card_names ->
         :"Il'gynoth DH"
 
-      fel_dh?(card_info) and relic_dh?(card_info) ->
+      wild_fel_dh?(card_info) and relic_dh?(card_info) ->
         :"Fel Relic DH"
 
-      fel_dh?(card_info) ->
+      wild_fel_dh?(card_info) ->
         :"Fel DH"
 
       relic_dh?(card_info) ->

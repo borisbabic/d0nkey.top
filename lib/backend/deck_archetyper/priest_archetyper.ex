@@ -77,6 +77,12 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Medivh the Hallowed" in card_info.card_names ->
         :"Medivh Priest"
 
+      "Ruby Sanctum" in card_info.card_names ->
+        :"Sanctum Priest"
+
+      "Alexstraza, Guardian of Life" in card_info.card_names ->
+        :"Alex Priest"
+
       armor?(card_info) ->
         :"Armor Priest"
 

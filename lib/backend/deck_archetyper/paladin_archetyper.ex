@@ -18,6 +18,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
 
+      end_of_turn?(card_info) ->
+        :"End of Turnadin"
+
       drunk?(card_info) and aura?(card_info) ->
         :"Drunk Aura Paladin"
 
@@ -60,6 +63,18 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp end_of_turn?(card_info) do
+    min_count?(card_info, 4, [
+      "Sandfury Aura",
+      "Spearheart Sentry",
+      "Bronze Reedemer",
+      "Nozdormu, Bronze Aspect",
+      "Scalebreaker Bulwark",
+      "Inspiring Maul",
+      "Chrono-Lord Deios"
+    ])
   end
 
   defp infinity?(card_info) do
