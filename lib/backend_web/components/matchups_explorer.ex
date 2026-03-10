@@ -229,12 +229,12 @@ defmodule Components.MatchupsExplorer do
         "Demon Hunter Archetype separation is subpar"
 
       NaiveDateTime.compare(now, ~N[2026-03-17 17:00:00]) == :lt ->
-        "Archetyping is for pre-frankenmeta. I probably won't update it til after the expansion"
+        "Archetyping is for before the 35.0.0 patch. I probably won't update it til after the expansion"
 
       NaiveDateTime.compare(now, ~N[2026-03-20 17:00:00]) == :lt ->
-        "Archetyping is pre-rotation. Waiting for data "
+        "Archetyping is pre-rotation. Waiting for data"
 
-      NaiveDateTime.compare(now, ~N[2027-03-20 17:00:00]) == :lt ->
+      NaiveDateTime.compare(now, ~N[2027-03-27 17:00:00]) == :lt ->
         "Archetyping is for pre-rotation"
 
       true ->
