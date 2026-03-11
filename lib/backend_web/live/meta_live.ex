@@ -15,7 +15,7 @@ defmodule BackendWeb.MetaLive do
   def render(%{missing_premium: true} = assigns) do
     ~F"""
         <div class="title is-2">Meta</div>
-        <div class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
+        <div class="title is-3">You do not have access to these filters. <a href="/auth/bnet">Login</a> to access this page</div>
     """
   end
 
@@ -24,7 +24,7 @@ defmodule BackendWeb.MetaLive do
       <div>
         <div class="title is-2">Meta</div>
         <div class="subtitle is-6">
-        <span :if={user_has_premium?(@user)}><a href={~p"/matchups"}>Matchups</a> |</span>
+        <span><a href={~p"/matchups"}>Matchups</a> |</span>
         To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         <AggLogSubtitle criteria={@params} /></div>
         <FunctionComponents.Ads.below_title/>
