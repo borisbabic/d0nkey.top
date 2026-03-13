@@ -205,6 +205,7 @@ defmodule BackendWeb.Router do
     get("/mt/tour-stops", MastersTourController, :tour_stops)
     live("/mt/playoffs/summer_2025", Summer2025PlayoffsShowcaseLive)
     live("/mt/playoffs/spring_2025", Spring2025PlayoffsShowcaseLive)
+    live("/mt/playoffs/winter_2026", Winter2026PlayoffsShowcaseLive)
 
     live_session :qualifiers_winter_blitz,
       session: %{
