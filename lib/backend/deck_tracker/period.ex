@@ -97,11 +97,7 @@ defmodule Hearthstone.DeckTracker.Period do
   end
 
   def size(%{period_start: %NaiveDateTime{} = period_start} = period) do
-    period_end =
-      case period do
-        %{period_end: %NaiveDateTime{} = period_end} -> period_end
-        _ -> NaiveDateTime.utc_now()
-      end
+    {:ok, period_end} = end_time_or_now(period)
 
     NaiveDateTime.diff(period_end, period_start, :hour)
   end
