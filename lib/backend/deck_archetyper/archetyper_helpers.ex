@@ -81,6 +81,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     "Rainbow Glowscale",
     "Silvermoon Arcanist",
     "Ethereal Oracle",
+    "Battlefield Blaster",
     "Azure Drake"
   ]
   @neutral_dragon_synergy [
