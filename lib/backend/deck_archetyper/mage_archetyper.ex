@@ -2,7 +2,6 @@
 defmodule Backend.DeckArchetyper.MageArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
-  alias Backend.DeckArchetyper.PaladinArchetyper
 
   def standard(card_info) do
     cond do
@@ -15,23 +14,11 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       menagerie?(card_info) ->
         :"Menagerie Mage"
 
-      PaladinArchetyper.drunk?(card_info) ->
-        :"Drunk Mage"
-
-      protoss?(card_info, 4) and imbue?(card_info, 4) ->
-        :"Protoss Imbue Mage"
-
-      imbue?(card_info, 4) and "Portalmancer Skyla" in card_info.card_names ->
-        :"Skyla Imbue Mage"
-
-      imbue?(card_info, 4) and "Raylla, Sand Sculptor" in card_info.card_names ->
-        :"Raylla Imbue Mage"
+      type_count(card_info, "Elemental") > 6 ->
+        :"Elemental Mage"
 
       imbue?(card_info, 4) ->
         :"Imbue Mage"
-
-      protoss?(card_info, 4) ->
-        :"Protoss Mage"
 
       no_minion?(card_info, 2) ->
         :"Spell Mage"
@@ -42,29 +29,8 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       arcane_mage?(card_info) ->
         :"Arcane Mage"
 
-      "Arkwing Pilot" in card_info.card_names ->
-        :"Arkwing Mage"
-
-      orb_bsm?(card_info) ->
-        :"Orb Big Spell Mage"
-
-      big_spell_mage?(card_info) ->
-        :"Big Spell Mage"
-
-      murloc?(card_info) ->
-        :"Murloc Mage"
-
-      type_count(card_info, "Elemental") > 6 ->
-        :"Elemental Mage"
-
-      "The Galactic Projection Orb" in card_info.card_names ->
-        :"Orb Mage"
-
       "Timelooper Toki" in card_info.card_names ->
         :"Toki Mage"
-
-      "Treasure Hunter Eudora" in card_info.card_names ->
-        :"Eudora Mage"
 
       bad?(card_info) ->
         :"Bad Mage"
@@ -95,13 +61,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
     ])
   end
 
-  defp orb_bsm?(card_info) do
-    orb = "The Galactic Projection Orb"
-
-    (orb in card_info.card_names or orb in card_info.etc_sideboard_names) and
-      big_spell_mage?(card_info)
-  end
-
   @non_sif_rainbow [
     "Discovery of Magic",
     "Inquisitive Creation",
@@ -111,10 +70,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   def rainbow_mage?(ci) do
     min_count?(ci, 3, @non_sif_rainbow) or
       ("Sif" in ci.card_names and min_count?(ci, 1, @non_sif_rainbow))
-  end
-
-  defp big_spell_mage?(ci) do
-    min_count?(ci, 2, ["Surfalopod", "King Tide", "Portalmancer Skyla"])
   end
 
   def wild(card_info) do
