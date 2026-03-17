@@ -9,35 +9,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Battle at the End Time" in card_info.card_names ->
         :"Tick Tock Warlock"
 
-      "Playhouse Giant" in card_info.card_names and quest?(card_info) ->
-        :"Cycle Quest Warlock"
-
       quest?(card_info) ->
         :"Quest Warlock"
-
-      menagerie?(card_info) ->
-        :"Menagerie Warlock"
 
       murloc?(card_info) ->
         :"Murloc Warlock"
 
-      starship?(card_info) and rafaam?(card_info) ->
-        :"Starship Rafaamlock"
-
-      starship?(card_info) ->
-        :"Starship Warlock"
-
       rafaam?(card_info) ->
         :Rafaamlock
-
-      mill?(card_info) ->
-        :"Mill Warlock"
-
-      big_demon_warlock?(card_info) ->
-        :"Big Demon Warlock"
-
-      location?(card_info) and wallow?(card_info) ->
-        :"Location Wallow Warlock"
 
       wallow?(card_info) and shreds_of_time?(card_info) ->
         :"Wallow Shredslock"
@@ -47,6 +26,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       painlock?(card_info, 6) ->
         :Painlock
+
+      herald?(card_info) and egglock?(card_info, 3) ->
+        :"Harold Egglock"
+
+      "Ultragigasaur" in card_info.card_names and egglock?(card_info, 3) ->
+        :"Dino Egglock"
 
       egglock?(card_info, 3) ->
         :Egglock
@@ -66,14 +51,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       demon?(card_info) ->
         :"Demon Warlock"
 
-      location?(card_info) ->
-        :"Location Warlock"
-
-      "Divergence" in card_info.card_names ->
+      divergence?(card_info) ->
         :"Divergence Warlock"
-
-      dorian?(card_info) ->
-        :"Dorian Warlock"
 
       "Possessed Animancer" in card_info.card_names ->
         :"Animancer Warlock"
@@ -90,9 +69,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       zerg?(card_info, 4) ->
         :"Zerg Warlock"
 
-      control_warlock?(card_info) ->
-        :"Control Warlock"
-
       discard?(card_info, 5) ->
         :"Discard Warlock"
 
@@ -107,7 +83,11 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     end
   end
 
-  @sheds_shufflers [
+  defp divergence?(card_info) do
+    "Divergence" in card_info.card_names
+  end
+
+  @shreds_shufflers [
     "Entropic Continuity",
     "Tachyon Barrage",
     "Twilight Timehopper"
@@ -117,7 +97,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Ruinous Velocidrake",
       "Fate Breaker",
       "Chronogor"
-      | @sheds_shufflers
+      | @shreds_shufflers
     ])
   end
 
@@ -150,13 +130,13 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
         "Eat! The! Imp!",
         "Holy Eggbearer",
         "Dissolving Ooze",
+        "Crazed Alchemist",
+        "Shrine of Twilight",
+        "Shadowsworn Disciple",
         "Carnivorous Cubicle",
+        "Eldritch Tentacles",
         "Endbringer Umbra"
       ])
-  end
-
-  defp dorian?(card_info) do
-    min_count?(card_info, 3, ["Puppetmaster Dorian", "Agamaggan", "Cursed Catacombs"])
   end
 
   defp mill?(card_info) do
@@ -165,17 +145,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
   defp wallow?(card_info) do
     "Wallow, the Wretched" in card_info.card_names
-  end
-
-  defp location?(card_info) do
-    "Seaside Giant" in card_info.card_names and
-      min_count?(card_info, 2, [
-        "Spawning Pool",
-        "Ultralisk Cavern",
-        "Forge of Wills",
-        "Horizon's Edge",
-        "Prison of Yogg-Saron"
-      ])
   end
 
   defp demon?(ci) do
@@ -209,13 +178,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "INFERNAL!",
       "Mass Production",
       "Elementium Geode"
-      | @sheds_shufflers
+      | @shreds_shufflers
     ])
-  end
-
-  defp big_demon_warlock?(ci) do
-    min_count?(ci, 1, ["Felfire Bonfire", "Game Master Nemsy", "Crane Game", "Dirge of Despair"]) and
-      min_count?(ci, 1, ["Enhanced Dreadlord", "Wretched Queen"])
   end
 
   defp sludgelock?(ci) do
@@ -231,21 +195,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   defp fatigue_warlock?(ci) do
     min_count?(ci, 2, ["Pop'gar the Putrid", "Encroaching Insanity"]) and
       min_count?(ci, 2, @self_fatigue_package)
-  end
-
-  defp control_warlock?(ci) do
-    min_count?(ci, 5, [
-      "Sargeras, the Destroyer",
-      "Symphony of Sins",
-      "Domino Effect",
-      "Defile",
-      "Drain Soul",
-      "Mortal Eradication",
-      "Thornveil Tentacle",
-      "Armor Vendor",
-      "Prison of Yogg-Saron",
-      "Gigafin"
-    ])
   end
 
   defp implock?(ci),
@@ -445,6 +394,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Dark Bargain",
       "Fist of Jaraxxus",
       "Deadline",
+      "Duke of Below",
+      "Maloriak",
+      "Disposable Acolytes",
       "Soul Barrage"
     ])
   end
