@@ -5,119 +5,9 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Whizbang Warrior",
-     [
-       "Madame Lazul",
-       "Hagatha's Scheme",
-       "Swampqueen Hagatha",
-       "Heistbaron Togwaggle",
-       "EVIL Miscreant",
-       "EVIL Recruiter",
-       "EVIL Quartermaster",
-       "Dr. Boom, Mad Genius",
-       "EVIL Cable Rat",
-       "Dark Pharaoh Tekahn",
-       "Grand Lackey Erkh",
-       "EVIL Conscripter",
-       "Sinister Deal",
-       "Whispers of EVIL",
-       "Arch-Villain Rafaam",
-       "Weaponized Wasp",
-       "EVIL Totem",
-       "Livewire Lance",
-       "Togwaggle's Scheme"
-     ]},
-    {:"Control Warrior",
+    {:"Quest Warrior",
      [
        "Enter the Lost City"
-     ]},
-    {:"Dragon Warrior",
-     [
-       "Lo'Gosh, Blood Fighter",
-       "Illusory Greenwing",
-       "Broll, Blood Fighter",
-       "Valeera, Blood Fighter",
-       "Whelp of the Bronze",
-       "Petal Peddler",
-       "Royal Librarian",
-       "Brood Keeper",
-       "Chrono-Lord Epoch",
-       "Whelp of the Infinite",
-       "Portal Vanguard",
-       "Fyrakk the Blazing",
-       "Stadium Announcer",
-       "Stonecarver",
-       "Giftwrapped Whelp",
-       "Windpeak Wyrm",
-       "Darkrider",
-       "Dreamplanner Zephrys",
-       "Sanguine Depths",
-       "Keeper of the Flame",
-       "Shadowflame Suffusion",
-       "Prescient Slitherdrake",
-       "Dragon Turtle"
-     ]},
-    {:"Burn Warrior",
-     [
-       "The Replicator-inator",
-       "Rockskipper",
-       "Mixologist",
-       "Cloud Serpent",
-       "Time-Twisted Seer",
-       "Concussive Shells",
-       "Axe of the Forefathers"
-     ]},
-    {:"Control Warrior",
-     [
-       "The Exodar",
-       "Arkonite Defense Crystal",
-       "Yamato Cannon",
-       "Jim Raynor",
-       "Sleep Under the Stars",
-       "Battlecruiser",
-       "Tortollan Traveler",
-       "Brawl",
-       "Bulwark of Azzinoth",
-       "Bouldering Buddy",
-       "Starport",
-       "Chemical Spill",
-       "Hydration Station",
-       "Tortolla",
-       "Elise the Navigator",
-       "Hostile Invader",
-       "New Heights",
-       "Murozond, Unbounded",
-       "The Ceaseless Expanse",
-       "Dirty Rat",
-       "Marin the Manager",
-       "Ancient of Yore",
-       "Shield Slam",
-       "Bob the Bartender"
-     ]},
-    {:"Draenei Warrior",
-     [
-       "Stranded Spaceman",
-       "Crimson Commander",
-       "Stalwart Avenger",
-       "Expedition Sergeant",
-       "Unyielding Vindicator",
-       "Starlight Wanderer",
-       "Velen, Leader of the Exiled"
-     ]},
-    {:"Dragon Warrior",
-     [
-       "Griftah, Trusted Vendor",
-       "Grommash Hellscream",
-       "Naralex, Herald of the Flight",
-       "Quality Assurance",
-       "Gnomelia, S.A.F.E. Pilot",
-       "Precursory Strike",
-       "Dimensional Weaponsmith",
-       "The Great Dracorex",
-       "Naralex, Hearld of the Flight",
-       "Eternal Toil",
-       "Zilliax Deluxe 3000",
-       "Tormented Dreadwing"
      ]}
   ]
   @wild_config []
@@ -125,8 +15,8 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
   def standard_excludes(), do: %{}
   def wild_excludes(), do: %{}
 
-  def standard_config(), do: @standard_config
-  def wild_config(), do: @wild_config
+  def standard_config(), do: add_excludes(@standard_config, standard_excludes())
+  def wild_config(), do: add_excludes(@wild_config, standard_excludes())
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Warrior")

@@ -6,133 +6,25 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
 
   @standard_config [
     {:"Quest Shaman", ["Spirit of the Mountain"]},
-    {:"Whizbang Shaman",
-     [
-       "Turn the Tides",
-       "Sludge Slurper",
-       "Serpentshrine Portal",
-       "Finders Keepers",
-       "Gorloc Ravager",
-       "Spawnpool Forager",
-       "Primalfin Lookout",
-       "Clownfish",
-       "Quest Accepted!",
-       "Fishflinger",
-       "Brrrloc",
-       "Scargil",
-       "South Coast Chieftain",
-       "Ancestral Knowledge",
-       "Command of Neptulon",
-       "Underbelly Angler"
-     ]},
-    {:"Hagatha Shaman",
-     [
-       "Furious Fowls",
-       "Death Roll",
-       "Living Flame",
-       "Bumbling Bellhop",
-       "Furious Fowls",
-       "Wish Upon a Star",
-       "Parrot Sanctuary",
-       "Al'Akir the Windlord"
-     ]},
-    # {:"Pirate Shaman",
-    #  [
-    #    "Treasure Distributor",
-    #    "Hozenm Roughhouser",
-    #    "Undercover Cultist",
-    #    "Sigil of Skydiving",
-    #    "Adrenaline Fiend"
-    #  ]},
     {:"Imbue Shaman",
      [
+       "Living Garden",
        "Flutterwing Guardian",
        "Bitterbloom Knight",
        "Petal Picker",
+       "Aspect's Embrace",
        "Resplendent Dreamweaver",
        "Glowroot Lure",
        "Plucky Podling"
-     ]},
-    {:"Asteroid Shaman",
-     [
-       "Moonstone Mauler",
-       "Ultraviolet Breaker",
-       "Ethereal Oracle"
-     ]},
-    # 5.5
-    {:"Terran Shaman",
-     [
-       "Jim Raynor",
-       "SCV",
-       "Lift Off",
-       "Ghost",
-       "Lock On",
-       "Starport",
-       "Missile Pod"
-     ]},
-    # 10.5
-    {:"Hagatha Shaman",
-     [
-       "Hagatha the Fabled",
-       "Birdwatching",
-       "Turbulus",
-       "Shudderblock",
-       "Elise the Navigator",
-       "Frosty Décor",
-       "Murloc Growfin",
-       "Flight of the Firehawk",
-       "Zilliax Deluxe 3000",
-       "Primordial Overseer",
-       "Pop-Up Book",
-       "Muradin, High King",
-       "Avatar Form",
-       "High King's Hammer",
-       "Static Shock"
-     ]},
-    {:"Masochist Shaman", ["Sand Art Elemental", "Skirting Death"]},
-    {:"Imbue Shaman", ["Aspect's Embrace"]},
-    {:"Elemental Shaman",
-     [
-       "Bralma Searstone",
-       "Lampligher",
-       "City Chief Esho",
-       "Fire Fly",
-       "Menacing Nimbus",
-       "Fire Breath",
-       "Wailing Vaipor",
-       "Slagclaw",
-       "Sizzling Swarm",
-       "Volcanic Thrasher",
-       "Lava Flow"
-     ]},
-    {:"Asteroid Shaman",
-     [
-       "Bolide Behemoth"
-     ]},
-    {:"Endseer Shaman",
-     [
-       "Endbringer Umbra",
-       "Troubled Mechanic",
-       "Critter Caretaker",
-       "Mixologist",
-       "Prize Vendor",
-       "Meteor Storm",
-       "Wisp",
-       "Demolition Renovator",
-       "The Ceaseless Expanse",
-       "Incindius",
-       "Scarab Keychain",
-       "Farseer Nobundo"
      ]}
-    # 15.5
   ]
   @wild_config []
 
   def standard_excludes(), do: %{}
   def wild_excludes(), do: %{}
 
-  def standard_config(), do: @standard_config
-  def wild_config(), do: @wild_config
+  def standard_config(), do: add_excludes(@standard_config, standard_excludes())
+  def wild_config(), do: add_excludes(@wild_config, standard_excludes())
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Shaman")
