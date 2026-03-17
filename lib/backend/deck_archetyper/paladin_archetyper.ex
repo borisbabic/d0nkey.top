@@ -12,38 +12,17 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       imbue?(card_info) ->
         :"Imbue Paladin"
 
-      menagerie?(card_info) ->
-        :"Menagerie Paladin"
-
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
+
+      aura?(card_info) ->
+        :"Aura Paladin"
 
       end_of_turn?(card_info) ->
         :"End of Turnadin"
 
-      drunk?(card_info) and aura?(card_info) ->
-        :"Drunk Aura Paladin"
-
-      drunk?(card_info) ->
-        :"Drunk Paladin"
-
-      lynessa_otk?(card_info) ->
-        :"Lynessa OTK Paladin"
-
-      terran?(card_info, 4) ->
-        :"Terran Paladin"
-
-      libram?(card_info) and aura?(card_info) ->
-        :"Libram Aura Paladin"
-
-      libram?(card_info) ->
-        :"Libram Paladin"
-
       murloc?(card_info) ->
         :"Murloc Paladin"
-
-      aura?(card_info) ->
-        :"Aura Paladin"
 
       handbuff?(card_info) ->
         :"Handbuff Paladin"
@@ -53,12 +32,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
       "Sunsapper Lynessa" in card_info.card_names ->
         :"Lynessa Paladin"
-
-      tree?(card_info) ->
-        :"Tree Paladin"
-
-      "Pipsi Painthoof" in card_info.card_names ->
-        :"Pipsi Paladin"
 
       true ->
         fallbacks(card_info, "Paladin")
@@ -88,6 +61,8 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Grimestreet Outfitter",
       "Nexus-Prince Shaffar",
       "Hourglass Attendant",
+      "Chamber of Aspects",
+      "Highlord Fordragon",
       "Overlord Runthak"
     ])
   end
@@ -98,17 +73,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   def drunk?(card_info) do
     min_count?(card_info, 2, ["Divine Brew", "Sea Shanty"])
-  end
-
-  defp tree?(card_info) do
-    min_count?(card_info, 3, ["Ursine Maul", "Ursol", "Shaladrassil"]) and
-      1 == Enum.count(card_info.full_cards, &(Card.cost(&1) > 6 and Card.spell?(&1)))
-  end
-
-  defp lynessa_otk?(card_info) do
-    match?({_, ["Sunsapper Lynessa"]}, lowest_highest_cost_cards(card_info)) and
-      "Grillmaster" in card_info.card_names and
-      min_count?(card_info, 1, ["Griftah, Trusted Vendor", "Holy Glowsticks", "Mixologist"])
   end
 
   defp libram?(card_info, min_count \\ 2) do
@@ -139,8 +103,13 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Crusader Aura",
       "Busy-Bot",
       "Hand of A'dal",
-      "Sinstone Totem",
+      "Flight Maneuvers",
+      "Tortollan Storyteller",
+      "Hand of A'dal",
       "Murmy",
+      "Fire Fly",
+      "Beaming Sidekick",
+      "Sinstone Totem",
       "Crooked Cook",
       "Sea Giant",
       "Leeroy Jenkins",
