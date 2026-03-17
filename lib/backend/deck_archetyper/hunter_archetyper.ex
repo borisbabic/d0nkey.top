@@ -17,53 +17,14 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       imbue?(card_info) ->
         :"Imbue Hunter"
 
-      handbuff_hunter?(card_info) ->
-        :"Handbuff Hunter"
-
       dragon_hunter?(card_info) ->
         :"Dragon Hunter"
-
-      amalgam?(card_info) ->
-        :"Amalgam Hunter"
-
-      beast_hunter?(card_info) ->
-        :"Beast Hunter"
-
-      murloc?(card_info) ->
-        :"Murloc Hunter"
-
-      menagerie?(card_info) ->
-        :"Menagerie Hunter"
-
-      mystery_egg_hunter?(card_info) ->
-        :"Mystery Egg Hunter"
-
-      starship?(card_info) ->
-        :"Starship Hunter"
 
       no_hand?(card_info) ->
         :"No Hand Hunter"
 
-      zerg?(card_info, 4) and egg_hunter?(card_info) ->
-        :"Zerg Egg Hunter"
-
-      egg_hunter?(card_info) ->
-        :"Egg Hunter"
-
-      zerg?(card_info, 4) and discover?(card_info) ->
-        :"Zerg Discover Hunter"
-
-      zerg?(card_info, 4) ->
-        :"Zerg Hunter"
-
-      discover?(card_info) ->
-        :"Discover Hunter"
-
       "Confront the Tol'vir" in card_info.card_names ->
         :"Ace Hunter"
-
-      "Floppy Hydra" in card_info.card_names ->
-        :"Floppy Hunter"
 
       bad?(card_info) ->
         :"Bad Hunter"
