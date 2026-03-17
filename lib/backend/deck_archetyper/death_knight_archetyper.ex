@@ -15,24 +15,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       handbuff_dk?(card_info) ->
         :"Handbuff DK"
 
-      buttons?(card_info) && rainbow_runes?(card_info) ->
-        :"Buttons Rainbow DK"
-
-      starship?(card_info) and rainbow_runes?(card_info) ->
-        :"Rainbow Starship DK"
-
-      rainbow_runes?(card_info) && zerg?(card_info, 5) ->
-        :"Zerg Rainbow DK"
-
-      rainbow_runes?(card_info) and menagerie?(card_info) ->
-        :"Rainbow Menagerie DK"
-
-      starship?(card_info) ->
-        :"Starship DK"
-
-      menagerie?(card_info) ->
-        :"Menagerie DK"
-
       stego_herenn?(card_info) ->
         :"Stego Herenn DK"
 
@@ -42,65 +24,32 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       imbue?(card_info, 7) ->
         :"Imbue DK"
 
+      herald?(card_info) ->
+        :"Harold DK"
+
       rainbow_runes?(card_info) ->
         :"Rainbow DK"
-
-      amalgam?(card_info) ->
-        :"Amalgam DK"
 
       talanji?(card_info) ->
         :"Talanji DK"
 
-      control?(card_info) ->
-        :"Control DK"
-
-      murloc?(card_info) ->
-        :"Murloc DK"
-
-      buttons?(card_info) ->
-        :"Buttons DK"
-
-      "Frostbitten Freebooter" in card_info.card_names and deathrattle?(card_info, 2) ->
-        :"Frostbitten DK"
-
       imbue?(card_info, 4) ->
         :"Imbue DK"
-
-      zerg?(card_info, 6) and only_runes?(card_info, :blood) ->
-        :"Zerg Blood DK"
 
       only_runes?(card_info, :blood) ->
         :"Blood DK"
 
-      zerg?(card_info, 6) and only_runes?(card_info, :frost) ->
-        :"Zerg Frost DK"
-
       only_runes?(card_info, :frost) ->
         :"Frost DK"
-
-      zerg?(card_info, 6) and only_runes?(card_info, :unholy) ->
-        :"Zerg Unholy DK"
 
       only_runes?(card_info, :unholy) ->
         :"Unholy DK"
 
-      zerg?(card_info, 6) and "Stitched Giant" in card_info.card_names ->
-        :"Zerg Corpse DK"
-
       frost?(card_info) ->
         :"\"Frost\" DK"
 
-      "Stitched Giant" in card_info.card_names ->
-        :"Corpse DK"
-
-      deathrattle?(card_info) ->
-        :"Deathrattle DK"
-
       dark_gift?(card_info) ->
         :"Dark Gift DK"
-
-      "Talanji of the Graves" in card_info.card_names ->
-        :"Talanji DK"
 
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
@@ -129,22 +78,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       ])
   end
 
-  defp amalgam?(card_info) do
-    "Adaptive Amalgam" in card_info.card_names and
-      min_count?(card_info, 3, [
-        "Dissolving Ooze",
-        "Floppy Hydra",
-        "Braingill",
-        "Troubled Mechanic",
-        "Threads of Despair",
-        "Soulrest Ceremony",
-        "Stranded Spaceman",
-        "Poison Breath",
-        "The Curator",
-        "Helm of Humiliation"
-      ])
-  end
-
   defp bot?(card_info) do
     min_count?(card_info, 2, [
       "Stormwind Champion",
@@ -154,24 +87,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Annoy-o-Tron",
       "Murloc Tidehunter",
       "Mo'arg Forgefiend"
-    ])
-  end
-
-  defp control?(card_info) do
-    min_count?(card_info, 3, [
-      "Corpse Explosion",
-      "The Ceaseless Expanse",
-      "Kil'jaeden",
-      "The 8 Hands from Below",
-      "Ancient of Yore",
-      "Wild Pyromancer",
-      "Threads of Despair",
-      "Elise the Navigator",
-      "Sanguine Infestation",
-      "Hideous Husk",
-      "Infested Breath",
-      "Gnomelia, S.A.F.E. Pilot",
-      "The Headless Horseman"
     ])
   end
 
@@ -193,16 +108,6 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
         "Siren Song",
         "Carress, Cabaret Star"
       ])
-  end
-
-  defp deathrattle?(ci, min_count \\ 3) do
-    min_count?(ci, min_count, [
-      "Death Growl",
-      "Brittlebone Buccaneer",
-      "Dead Air",
-      "Eternal Layover",
-      "Yelling Yodeler"
-    ])
   end
 
   defp only_runes?(ci, rune, min \\ 1) do
