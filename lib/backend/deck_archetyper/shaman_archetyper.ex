@@ -2,48 +2,20 @@
 defmodule Backend.DeckArchetyper.ShamanArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
-  alias Backend.DeckArchetyper.DemonHunterArchetyper
 
   def standard(card_info) do
     cond do
       quest?(card_info) ->
         :"Quest Shaman"
 
-      menagerie?(card_info) ->
-        :"Menagerie Shaman"
-
-      big?(card_info) ->
-        :"Big Shaman"
-
-      asteroid?(card_info) and imbue?(card_info, 4) ->
-        :"Asteroid Imbue Shaman"
-
       imbue?(card_info, 4) ->
         :"Imbue Shaman"
-
-      asteroid?(card_info) ->
-        :"Asteroid Shaman"
-
-      incindius?(card_info) ->
-        :"Incindius Shaman"
 
       elemental_shaman?(card_info) ->
         :"Elemental Shaman"
 
-      # infinite?(card_info) and terran?(card_info, 4) ->
-      #   :"Infinite Terran Shaman"
-
-      "Arkonite Defense Crystal" in card_info.card_names and terran?(card_info, 4) ->
-        :"Defense Terran Shaman"
-
-      terran?(card_info, 4) ->
-        :"Terran Shaman"
-
       masochist?(card_info) ->
         :"Masochist Shaman"
-
-      DemonHunterArchetyper.pirate?(card_info) ->
-        :"Pirate Shaman"
 
       spell_damage_shaman?(card_info) ->
         :"Spell Damage Shaman"
@@ -54,26 +26,8 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       murloc?(card_info) ->
         :"Murloc Shaman"
 
-      wish_shaman?(card_info) ->
-        :"Wish Shaman"
-
-      "Travelmaster Dungar" in card_info.card_names ->
-        :"Dungar Shaman"
-
-      endseer?(card_info) ->
-        :"Endseer Shaman"
-
-      "Hagatha the Fabled" in card_info.card_names ->
-        :"Hagatha Shaman"
-
-      nebula?(card_info) ->
-        :"Nebula Shaman"
-
-      murmur?(card_info) ->
-        :"Murmur Shaman"
-
-      rainbow?(card_info) or rainbow_cards?(card_info, 2) ->
-        :"Rainbow Shaman"
+      herald?(card_info) ->
+        :"Harold Shaman"
 
       "Haywire Hornswog" in card_info.card_names ->
         :"Overload Shaman"
@@ -81,26 +35,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Farseer Wo" in card_info.card_names ->
         :"Wo Shaman"
 
-      "Turbulus" in card_info.card_names ->
-        :"Turbulus Shaman"
-
-      concede?(card_info) ->
-        :"Concede Shaman"
-
-      "Nebula" in card_info.card_names ->
-        :"Nebula Shaman"
-
       true ->
         fallbacks(card_info, "Shaman")
     end
-  end
-
-  defp nebula?(card_info) do
-    min_count?(card_info, 2, ["Nebula", "Shudderblock"])
-  end
-
-  defp endseer?(card_info) do
-    min_count?(card_info, 2, ["Farseer Nobundo", "Endbringer Umbra"])
   end
 
   defp masochist?(card_info) do
@@ -115,14 +52,6 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     ])
   end
 
-  defp concede?(card_info) do
-    min_count?(card_info, 2, ["Hex", "Conductivity"])
-  end
-
-  defp murmur?(card_info) do
-    "Murmur" in card_info.card_names
-  end
-
   defp asteroid?(card_info, min_count \\ 3) do
     min_count?(card_info, min_count, [
       "Ultraviolet Breaker",
@@ -132,50 +61,16 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
     ])
   end
 
-  defp rainbow?(card_info, rainbow_count \\ 1, spell_school_count \\ 3) do
-    rainbow_cards?(card_info, rainbow_count) and
-      spell_school_count(card_info) >= spell_school_count
-  end
-
-  defp rainbow_cards?(card_info, min_count) do
-    min_count?(card_info, min_count, [
-      "Siren Song",
-      "Cabaret Headliner",
-      "Carress, Cabaret Star",
-      "Razzle-Dazzler"
-    ])
-  end
-
-  defp incindius?(card_info) do
-    min_count?(card_info, 3, ["Incindius", "Shudderblock", "Gaslight Gatekeeper"])
-  end
-
-  defp wish_shaman?(card_info) do
-    "Wish Upon a Star" in card_info.card_names and
-      min_count?(card_info, 3, [
-        "Leeroy Jenkins",
-        "Outfit Tailor",
-        "Al'Akir the Windlord",
-        "Backstage Bouncer",
-        "Southsea Deckhand",
-        "Murloc Growfin"
-      ])
-  end
-
   defp spell_damage_shaman?(ci) do
     min_count?(ci, 3, [
       "Novice Zapper",
-      "Spirit Claws",
       "Lightning Bolt",
       "Shade of the End Time" | neutral_spell_damage()
     ])
   end
 
-  defp big?(ci) do
-    "Cliff Dive" in ci.card_names
-  end
-
   @standard_evolve [
+    "Ascendance",
     "Convincing Disguise",
     "Muck Pools",
     "Matching Outfits",
