@@ -1,5 +1,5 @@
 { pkgs, lib, config, inputs, ... }:
-let 
+let
   erlangVersion = "erlang_27";
   elixirVersion = "elixir_1_18";
   pkgs-unstable = import inputs.nixpkgs-unstable { system = pkgs.stdenv.system; };
@@ -8,9 +8,10 @@ in {
   env.GREET = "devenv";
 
   # https://devenv.sh/packages/
-  packages = [ 
+  packages = [
     pkgs.git
     pkgs.nodejs
+    pkgs.${erlangVersion}
     pkgs.pre-commit
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     pkgs.inotify-tools
