@@ -801,19 +801,31 @@ defmodule Backend.Hearthstone do
     timeways(query)
   end
 
+  defp compose_decks_query({"cataclysm", "yes"}, query) do
+    cataclysm(query)
+  end
+
   defp compose_decks_query(unrecognized, query) do
     Logger.warning("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
     query
   end
 
   def includes_latest_set(query, binding \\ :deck) do
-    timeways(query, binding)
+    cataclysm(query, binding)
+  end
+
+  def cataclysm(query, binding \\ :deck) do
+    card_ids = cataclysm_ids()
+    query |> where([{^binding, d}], fragment("? && ?", d.cards, ^card_ids))
   end
 
   def timeways(query, binding \\ :deck) do
     card_ids = timeways_ids()
     query |> where([{^binding, d}], fragment("? && ?", d.cards, ^card_ids))
   end
+
+  def cataclysm_ids(filter_out \\ [122_635]),
+    do: filter_card_set(1980, filter_out)
 
   def timeways_ids(filter_out \\ [120_646, 118_636, 119_314]),
     do: filter_card_set(1957, filter_out)
