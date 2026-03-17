@@ -2782,7 +2782,7 @@ defmodule Hearthstone.DeckTracker do
 
     periods =
       aggregated_periods_for_format(format)
-      |> Enum.sort_by(&Period.size/1, :desc)
+      |> Enum.sort_by(&Period.size/1, :asc)
 
     fallback =
       with false <- Enum.any?(periods, &(&1.slug == "past_week")) && "past_week",
