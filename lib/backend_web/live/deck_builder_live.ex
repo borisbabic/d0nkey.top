@@ -45,6 +45,7 @@ defmodule BackendWeb.DeckBuilderLive do
           format_filter={standard?(@deck)}
           live_view={__MODULE__}
           id="cards_explorer"
+          format_options={format_options()}
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
           params={card_params(@params, Deck.missing_zilliax_parts?(@deck))}
           url_params={@params}
@@ -86,6 +87,15 @@ defmodule BackendWeb.DeckBuilderLive do
       </div>
     </div>
     """
+  end
+
+  defp format_options() do
+    conditional =
+      for %{format: f} <- active_conditional_formats() do
+        {f, format_name(f)}
+      end
+
+    CardsExplorer.default_format_options() ++ conditional
   end
 
   defp standard?(%{format: 2}), do: true
