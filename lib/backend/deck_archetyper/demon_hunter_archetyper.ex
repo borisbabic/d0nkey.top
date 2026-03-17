@@ -10,38 +10,14 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       quest?(card_info) ->
         :"Quest DH"
 
-      murloc?(card_info) ->
-        :"Murloc Demon Hunter"
-
-      no_minion?(card_info) and cliff_dive?(card_info) ->
-        :"Low Minion DH"
-
       no_minion?(card_info) ->
         :"No Minion DH"
-
-      "Arkonite Defense Crystal" in card_info.card_names and deathrattle?(card_info) ->
-        :"Armor DH"
-
-      menagerie?(card_info) ->
-        :"Menagerie DH"
-
-      pirate?(card_info) ->
-        :"Pirate Demon Hunter"
-
-      ravenous_cliff_dive?(card_info) ->
-        :"Ravenous Cliff Dive DH"
-
-      aggro?(card_info) ->
-        :"Aggro Demon Hunter"
 
       fel_dh?(card_info) ->
         :"Fel DH"
 
-      octosari?(card_info) ->
-        :"Octosari DH"
-
-      "Spirit Peddler" in card_info.card_names ->
-        :"Peddler DH"
+      herald?(card_info) ->
+        :"Harlod DH"
 
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
@@ -49,32 +25,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Elise the Navigator" in card_info.card_names ->
         :"Elise DH"
 
-      blobxigar?(card_info) ->
-        :"Blobxigar DH"
-
-      deathrattle?(card_info) ->
-        :"Deathrattle DH"
-
-      pain?(card_info) ->
-        :"Pain Demon Hunter"
-
       broxigar?(card_info) ->
         :"Broxigar DH"
 
-      shopper_dh?(card_info) ->
-        :"Shopper DH"
-
       zerg?(card_info, 4) ->
         :"Zerg DH"
-
-      cliff_dive?(card_info) ->
-        :"Cliff Dive DH"
-
-      crewmate?(card_info, 2) ->
-        :"Among Us DH"
-
-      kj?(card_info) ->
-        :"Kil'jaeden DH"
 
       "Broxigar" in card_info.card_names ->
         :"Broxigar DH"
@@ -100,10 +55,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
     min_count?(card_info, 2, ["Broxigar", "Youthful Brewmaster"])
   end
 
-  defp blobxigar?(card_info) do
-    broxigar?(card_info) and min_count?(card_info, 2, ["Blob of Tar", "Ravenous Felhunter"])
-  end
-
   defp no_minion?(card_info) do
     min_count?(card_info, 2, [
       "Solitude",
@@ -111,75 +62,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Hounds of Fury",
       "The Eternal Hold"
     ])
-  end
-
-  defp aggro?(card_info) do
-    min_count?(card_info, 4, [
-      "Battlefiend",
-      "Slumbering Sprite",
-      "Sock Puppet Slitherspear",
-      "Patches the Pilot",
-      "King Mukla",
-      "Brain Masseuse",
-      "Kayn Sunfury",
-      "Observer of Mysteries",
-      "Spirity of the Team",
-      "Living Flame",
-      "Hot Coals",
-      "Chronikar",
-      "Acupuncture"
-    ])
-  end
-
-  @dh_pain_cards ["Infernal Stapler"]
-  defp pain?(card_info) do
-    PriestArchetyper.pain?(card_info, @dh_pain_cards)
-  end
-
-  defp ravenous_cliff_dive?(card_info) do
-    cliff_dive?(card_info) and
-      min_count?(card_info, 1, ["Ravenous Felhunter"])
-  end
-
-  defp cliff_dive?(card_info) do
-    "Cliff Dive" in card_info.card_names
-  end
-
-  defp deathrattle?(card_info) do
-    min_count?(card_info, 3, [
-      "Ravenous Felhunter",
-      "Ferocious Felbat",
-      "Endbringer Umbra",
-      "Carnivorous Cubicle",
-      "Tuskpiercer",
-      "Return Policy"
-    ])
-  end
-
-  # @dreadseeds ["Grim Harvest", "Wyvern's Slumber", "Dreadsoul Corrupter"]
-  # defp dreadseed?(card_info, count \\ 3) do
-  #   min_count?(card_info, count, @dreadseeds)
-  # end
-
-  defp kj?(ci) do
-    "Kil'jaeden" in ci.card_names
-  end
-
-  defp crewmate?(ci, min_count) do
-    min_count?(ci, min_count, [
-      "Voronei Recruiter",
-      "Emergency Meeting",
-      "Headhunt",
-      "Dirdra, Rebel Captain"
-    ])
-  end
-
-  defp octosari?(ci) do
-    min_count?(ci, 2, ["Aranna, Thrill Seeker", "Octosari"])
-  end
-
-  defp shopper_dh?(ci) do
-    min_count?(ci, 2, ["Window Shopper", "Umpire's Grasp"])
   end
 
   defp relic_dh?(ci) do
