@@ -8,41 +8,17 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       quest?(card_info) ->
         :"Quest Warrior"
 
-      menagerie_warrior?(card_info) ->
-        :"Menagerie Warrior"
-
-      food_fight?(card_info) ->
-        :"Food Fight Warrior"
-
-      terran?(card_info, 4) ->
-        :"Terran Warrior"
-
-      draenei?(card_info) ->
-        :"Draenei Warrior"
-
-      mech_warrior?(card_info) ->
-        :"Mech Warrior"
-
-      bomb_warrior?(card_info) ->
-        :"Bomb Warrior"
-
       handbuff?(card_info) ->
         :"Handbuff Warrior"
-
-      "The Ryecleaver" in card_info.card_names ->
-        :"Sandwich Warrior"
 
       murloc?(card_info) ->
         :"Murloc Warrior"
 
-      "Safety Expert" in card_info.card_names ->
-        :"Safety Warrior"
-
       dragon?(card_info) ->
         :"Dragon Warrior"
 
-      "Hydration Station" in card_info.card_names ->
-        :"Hydration Warrior"
+      herald?(card_info, 5) ->
+        :"Harold Warrior"
 
       "Ysondre" in card_info.card_names ->
         :"Ysondre Warrior"
@@ -53,13 +29,16 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       burn_warrior?(card_info) ->
         :"Burn Warrior"
 
+      patron?(card_info) and enrage_warrior?(card_info) ->
+        :"Patron Warrior"
+
       enrage_warrior?(card_info) ->
         :"Enrage Warrior"
 
       herald?(card_info) ->
         :"Harold Warrior"
 
-      "Destructive Blaze" in card_info.card_names ->
+      patron?(card_info) ->
         :"Patron Warrior"
 
       "Briarspawn Drake" in card_info.card_names ->
@@ -79,17 +58,18 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     end
   end
 
+  defp patron?(card_info) do
+    "Destructive Blaze" in card_info.card_names
+  end
+
   defp burn_warrior?(card_info) do
     min_count?(card_info, 1, ["Time-Twisted Seer"]) and
-      (min_count?(card_info, 1, ["The Replicator-inator"]) or
-         min_count?(card_info, 3, [
-           "Rockskipper",
-           "Mixologist",
-           "Bash",
-           "Concussive Shells",
-           "Precursory Strike",
-           "Shadowflame Suffusion"
-         ]))
+      min_count?(card_info, 3, [
+        "Rockskipper",
+        "Bash",
+        "Precursory Strike",
+        "Shadowflame Suffusion"
+      ])
   end
 
   defp dragon?(card_info) do
@@ -115,6 +95,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "City Defenses",
       "Nablya, the Watcher",
       "Grommash Hellscream",
+      "Scaring Fissure",
       "Undercover Cultist"
     ])
   end
@@ -123,40 +104,13 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     "Keeper of Flame" in card_info.card_names
   end
 
-  defp food_fight?(card_info) do
-    num_minions = Enum.count(card_info.full_cards, &Backend.Hearthstone.Card.minion?/1)
-    "Food Fight" in card_info.card_names and num_minions <= 5
-  end
-
-  defp bomb_warrior?(card_info) do
-    min_count?(card_info, 2, ["Explodineer", "Safety Expert"])
-  end
-
-  defp mech_warrior?(card_info) do
-    min_count?(card_info, 2, ["Boom Wrench", "Testing Dummy"])
-  end
-
-  defp draenei?(card_info) do
-    type_count(card_info, "Draenei") > 5
-  end
-
-  defp menagerie_warrior?(card_info) do
-    min_count?(card_info, 3, [
-      "Roaring Applause",
-      "Party Animal",
-      "The One-Amalgam Band",
-      "All You Can Eat",
-      "Rock Master Voone",
-      "Power Slider"
-    ])
-  end
-
   defp warrior_aoe?(ci, min_count \\ 4),
     do:
       min_count?(ci, min_count, [
         "Brawl",
         "Aftershocks",
         "Sanitize",
+        "Decimation",
         "Garrosh's Gift",
         "Shellnado",
         "Bladestorm",
