@@ -5,14 +5,8 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
   def standard(card_info) do
     cond do
-      quest?(card_info) ->
-        :"Quest Priest"
-
-      menagerie?(card_info) ->
-        :"Menagerie Priest"
-
-      anchorite(card_info) ->
-        :"Anchorite Priest"
+      # quest?(card_info) ->
+      #   :"Quest Priest"
 
       "Aviana, Elune's Chosen" in card_info.card_names ->
         :"Aviana Priest"
@@ -20,41 +14,17 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       imbue?(card_info, 4) ->
         :"Imbue Priest"
 
-      zarimi?(card_info) and pain?(card_info) ->
-        :"Pain Zarimi Priest"
-
-      zarimi?(card_info) ->
-        :"Zarimi Priest"
-
-      protoss?(card_info, 5) ->
-        :"Protoss Priest"
-
-      # aggro_protoss?(card_info) ->
-      #   :"Aggro Protoss Priest"
-
-      pain?(card_info) ->
-        :"Pain Priest"
-
-      aggro_zealot?(card_info) ->
-        :"Aggro Zealot Priest"
-
-      protoss?(card_info, 4) ->
-        :"Protoss Priest"
-
-      topdeck?(card_info) ->
-        :"Topdeck Priest"
-
       thief?(card_info, 5) ->
         :"Thief Priest"
-
-      zealot_otk?(card_info) ->
-        :"Zealot OTK Priest"
 
       "Wilted Shadow" in card_info.card_names ->
         :"Wilted Priest"
 
       egg_priest?(card_info) ->
         :"Egg Priest"
+
+      quest?(card_info) ->
+        :"Quest Priest"
 
       control_priest?(card_info) ->
         :"Control Priest"
@@ -68,37 +38,18 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       hitchhiker?(card_info) ->
         :"42 Priest"
 
-      murloc?(card_info) ->
-        :"Murloc Priest"
-
-      location?(card_info) ->
-        :"Location Priest"
-
-      "Medivh the Hallowed" in card_info.card_names ->
-        :"Medivh Priest"
+      "Alexstraza, Guardian of Life" in card_info.card_names ->
+        :"Alex Priest"
 
       "Ruby Sanctum" in card_info.card_names ->
         :"Sanctum Priest"
 
-      "Alexstraza, Guardian of Life" in card_info.card_names ->
-        :"Alex Priest"
-
-      armor?(card_info) ->
-        :"Armor Priest"
+      "Medivh the Hallowed" in card_info.card_names ->
+        :"Medivh Priest"
 
       true ->
         fallbacks(card_info, "Priest")
     end
-  end
-
-  defp location?(card_info) do
-    min_count?(card_info, 2, [
-      "Busy Peon",
-      "XB-931 Housekeeper",
-      "Scrapbooking Student",
-      "Workshop Generator",
-      "Seaside Giant"
-    ])
   end
 
   defp handbuff_priest?(card_info) do
@@ -115,22 +66,13 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Eternus",
       "Bumbling Bellhop",
       "Job Shadower",
+      "Soldier of the Bronze",
       "Crater Experiment"
     ])
   end
 
   defp egg_priest?(card_info) do
     min_count?(card_info, 2, ["The Egg of Khelos", "Holy Eggbearer"])
-  end
-
-  @spec zealot_otk?(ArchetyperHelpers.card_info()) :: boolean()
-  defp zealot_otk?(card_info) do
-    min_count?(card_info, 4, [
-      "Hallucination",
-      "Chrono Boost",
-      "Chillin' Vol'jin",
-      "The Ceaseless Expanse"
-    ])
   end
 
   @standard_resummon ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"]
@@ -145,19 +87,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     "Mystified To'cha" in ci.card_names
   end
 
-  defp zarimi?(ci) do
-    "Timewinder Zarimi" in ci.card_names and type_count(ci, "Dragon") > 3
-  end
-
-  defp topdeck?(ci) do
-    min_count?(ci, 3, [
-      "Overplanner",
-      "Narain Soothfancy",
-      "Twilight Medium",
-      "Envoy of Prosperity"
-    ])
-  end
-
   def pain?(ci, additional_cards \\ []) do
     min_count?(ci, 4, [
       "Job Shadower",
@@ -170,23 +99,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Trusty Fishing Rod"
       | additional_cards
     ])
-  end
-
-  defp aggro_zealot?(card_info) do
-    min_count?(card_info, 2, [
-      "Brain Masseuse",
-      "Overzealous Healer",
-      "Catch of the Day",
-      "Miracle Salesman"
-    ]) and chrono?(card_info)
-  end
-
-  defp chrono?(card_info) do
-    min_count?(card_info, 2, ["Hallucination", "Chrono Boost"])
-  end
-
-  defp anchorite(ci) do
-    min_count?(ci, 2, ["Crazed Alchemist", "Anchorite"])
   end
 
   defp overheal_priest?(ci) do
@@ -220,7 +132,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Holy Nova",
       "For all Time",
       "Shadow Word: Steal",
-      "Fight Over Me"
+      "Fight Over Me",
+      "Medivh's Triumph",
+      "The Black Blood"
     ])
   end
 
@@ -341,6 +255,8 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Identity Theft",
       "Tram Heist",
       "Mind Vision",
+      "Intertwined Fate",
+      "Keymaster Alabaster",
       "Cloning Device"
     ])
   end
