@@ -2,7 +2,6 @@
 defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
-  alias Backend.DeckArchetyper.PriestArchetyper
   alias Backend.Hearthstone.Deck
 
   def standard(card_info) do
@@ -38,7 +37,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"Alara'shi DH"
 
       true ->
-        fallbacks(card_info, "Demon Hunter")
+        fallbacks(card_info, "DH")
     end
   end
 
