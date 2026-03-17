@@ -8,68 +8,17 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       quest?(card_info) ->
         :"Quest Rogue"
 
-      mech_rogue?(card_info) ->
-        :"Mech Rogue"
-
-      pain?(card_info) and amalgam?(card_info) ->
-        :"Amalgam Pain Rogue"
-
-      amalgam?(card_info) ->
-        :"Amalgam Rogue"
-
-      pain?(card_info) and pirate_rogue?(card_info) ->
-        :"Scurvy Rogue"
-
-      pain?(card_info) ->
-        :"Pain Rogue"
-
-      pirate_rogue?(card_info) && thief_rogue?(card_info) ->
-        :"Pirate Thief Rogue:"
-
-      thief_rogue?(card_info) ->
-        :"Thief Rogue"
-
-      pirate_rogue?(card_info) and cycle_rogue?(card_info) ->
-        :"Pirate Cycle Rogue"
-
-      pirate_rogue?(card_info) ->
-        :"Pirate Rogue"
-
-      protoss?(card_info, 4) ->
-        :"Protoss Rogue"
-
-      cycle_rogue?(card_info) ->
-        :"Cycle Rogue"
-
-      goldbeard?(card_info) ->
-        :"Goldbeard Rogue"
-
-      incindius?(card_info) ->
-        :"Incindius Rogue"
-
-      menagerie?(card_info) ->
-        :"Menagerie Rogue"
-
-      quasar?(card_info) ->
-        :"Quasar Rogue"
-
-      weapon?(card_info) ->
-        :"Weapon Rogue"
+      herald?(card_info) ->
+        :"Harold Rogue"
 
       imbue?(card_info, 5) ->
         :"Imbue Rogue"
 
-      dorian_rogue?(card_info) ->
-        :"Dorian Rogue"
+      thief_rogue?(card_info) ->
+        :"Thief Rogue"
 
-      starship?(card_info) ->
-        :"Starship Rogue"
-
-      bounce?(card_info) ->
-        :"Bounce Rogue"
-
-      maestra_rogue?(card_info, 2) ->
-        :"Maestra Rogue"
+      weapon?(card_info) ->
+        :"Weapon Rogue"
 
       "Elise the Navigator" in card_info.card_names ->
         :"Elise Rogue"
@@ -89,23 +38,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       imbue?(card_info, 3) ->
         :"Imbue Rogue"
 
-      "Nexus-Prince Shaffar" in card_info.card_names ->
-        :"Shaffar Rogue"
-
-      maestra_rogue?(card_info, 1) ->
-        :"Maestra Rogue"
-
-      "Incindius" in card_info.card_names ->
-        :"Incindius Rogue"
-
-      "Quasar" in card_info.card_names ->
-        :"Quasar Rogue"
-
-      "Photographer Fizzle" in card_info.card_names ->
-        :"Fizzle Rogue"
-
       min_keyword_count?(card_info, 2, "spell-damage") ->
         :"Burn Rogue"
+
+      cycle?(card_info) ->
+        :"Cycle Rogue"
 
       "Garona Halforcen" in card_info.card_names ->
         :"Garona Rogue"
@@ -131,56 +68,12 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       Enum.count(dragons) < 4
   end
 
-  defp bounce?(card_info) do
-    min_count?(card_info, 4, [
-      "Shadowstep",
-      "Twisted Webweaver",
-      "Harbringer of the Blighted",
-      "Web of Deception",
-      "Waggle Pick"
-    ])
-  end
-
   # defp combo?(card_info) do
   #   min_keyword_count?(card_info, 8, "combo")
   # end
 
   defp quasar?(card_info) do
     "Quasar" in card_info.card_names and min_keyword_count?(card_info, 1, "spell-damage")
-  end
-
-  defp incindius?(card_info) do
-    min_count?(card_info, 2, ["Incindius", "Sonya Waterdancer"])
-  end
-
-  defp pain?(card_info) do
-    min_count?(card_info.card_names ++ card_info.zilliax_modules_names, 3, [
-      "Fine Print",
-      "Party Fiend",
-      "Cursed Souvenir",
-      "Trogg Exile",
-      "Sheriff Barrelbrim",
-      "Haywire Module",
-      "Party Planner Vona"
-    ])
-  end
-
-  defp amalgam?(card_info) do
-    "Adaptive Amalgam" in card_info.card_names and
-      min_count?(card_info, 2, [
-        "Pit Stop",
-        "SP-3Y3-D3R",
-        "Sailboat Captain",
-        "From the Scrapheap"
-      ])
-  end
-
-  defp dorian_rogue?(card_info) do
-    "Puppetmaster Dorian" in card_info.card_names
-  end
-
-  defp goldbeard?(ci) do
-    min_count?(ci, 2, ["Shoplifter Goldbeard", "The Replicator-inator"])
   end
 
   defp excavate_rogue?(ci) do
@@ -192,8 +85,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Bloodrock Co. Shovel" | neutral_excavate()
     ])
   end
-
-  defp mech_rogue?(ci), do: type_count(ci, "Mech") > 5
 
   defp wild_gnoll_miracle_rogue?(card_info) do
     min_count?(card_info, 2, ["Wildpaw Gnoll", "Arcane Giant"])
@@ -257,19 +148,16 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "Mic Drop",
       "Bloodail Raider",
       "Fogsail Freebooter",
+      "Small Time Buccaneer",
       "Dread Corsair",
+      "Bloodsail Raider",
+      "Fogsail Freebooter",
       "Sharp Shipment",
       "Wicked Blightspawn",
       "Swarthy Swordshiner"
     ])
   end
 
-  @cycle_payoff [
-    "Fal'dorei Strider",
-    "Everything Must Go!",
-    "Playhouse Giant",
-    "Incindius"
-  ]
   @multi_draw [
     "Triple Sevens",
     "Gear Shift",
@@ -278,27 +166,16 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     "Eat! The! Imp!",
     "Twisted Webweaver",
     "Raiding Party",
+    "Crystal Tusk",
+    "Fast Forward",
     "Robocaller",
     "Ethereal Oracle",
     "Quick Pick",
     "Dubious Purchase"
   ]
-  defp cycle_rogue?(ci) do
-    min_count?(ci, 1, @cycle_payoff) and
-      min_count?(ci, 3, @multi_draw)
-  end
 
-  defp pirate_rogue?(ci) do
-    min_count?(ci, 3, [
-      "Toy Boat",
-      "Raiding Party",
-      "Treasure Distributor",
-      "Dig for Treasure",
-      "Sailboat Captain",
-      "Hozen Roughhouser",
-      "Southsea Captain",
-      "Shoplifter Goldbeard"
-    ])
+  def cycle?(card_info) do
+    min_count?(card_info, 3, @multi_draw)
   end
 
   defp thief_rogue?(ci),
@@ -323,17 +200,11 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Plagiarizarrr",
         "Jackpot!",
         "Kaja'mite Creation",
+        "Costume Merchant",
+        "Shadowed Informant",
         "Hench-Clan Burglar",
         "Swashburglar"
       ])
-
-  defp maestra_rogue?(card_info, extra_min) do
-    "Maestra, Mask Merchant" in card_info.card_names and
-      min_count?(card_info, extra_min, [
-        "Tess Greymane",
-        "Snatch and Grab"
-      ])
-  end
 
   def wild(card_info) do
     cond do
@@ -388,7 +259,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       "King Togwaggle" in card_info.card_names ->
         :"Tog Rogue"
 
-       imbue?(card_info, 4) ->
+      imbue?(card_info, 4) ->
         :"Imbue Rogue"
 
       "Smokescreen" in card_info.card_names ->
@@ -452,7 +323,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         fallbacks(card_info, "Rogue")
     end
   end
-  
+
   defp quasar_mill?(card_info) do
     min_count?(card_info, 2, ["Quasar", "Selfish Shellfish"])
   end
