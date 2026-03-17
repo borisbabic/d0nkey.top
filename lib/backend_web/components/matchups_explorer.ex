@@ -231,24 +231,12 @@ defmodule Components.MatchupsExplorer do
       NaiveDateTime.compare(now, ~N[2026-03-17 17:00:00]) == :lt ->
         "Archetyping is for before the 35.0.0 patch. I probably won't update it til after the expansion"
 
-      NaiveDateTime.compare(now, ~N[2026-03-20 17:00:00]) == :lt ->
-        "Archetyping is pre-rotation. Waiting for data"
-
       NaiveDateTime.compare(now, ~N[2027-03-27 17:00:00]) == :lt ->
-        "Archetyping is for pre-rotation"
+        "Archetyping will be updated after there is sufficient post-rotation data"
 
       true ->
         false
     end
-  end
-
-  defp show_warning?() do
-    start = ~N[2025-11-13 17:00:00]
-    end_time = ~N[2026-03-10 19:00:00]
-    now = NaiveDateTime.utc_now()
-
-    NaiveDateTime.compare(start, now) == :lt and
-      NaiveDateTime.compare(end_time, now) == :gt
   end
 
   defp set_matchup_opts(criteria, %{
