@@ -16,7 +16,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"Fel DH"
 
       herald?(card_info) ->
-        :"Harlod DH"
+        :"Harold DH"
 
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
