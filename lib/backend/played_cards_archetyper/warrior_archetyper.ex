@@ -8,6 +8,53 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
     {:"Quest Warrior",
      [
        "Enter the Lost City"
+     ]},
+    {:"Dragon Warrior",
+     [
+       "Darkscale Broodmother",
+       "Petal Peddler",
+       "Prescient Slitherdrake",
+       "Carrier Whelp",
+       "Brood Keeper"
+     ]},
+    {:"Harold Warrior",
+     [
+       "Searing Fissure",
+       "Cataclysmic War Axe",
+       "Scorching Ravager",
+       "Envoy of the End",
+       "Ragnaros, the Great Fire",
+       "Ultraxion"
+     ]},
+    {:"Egg Warrior",
+     [
+       "Holy Eggbearer",
+       "Endbringer Umbra",
+       "Siphoning Growth",
+       "Execute",
+       "Abusive Sergeant",
+       "Shellnado",
+       "Decimation",
+       "The Egg of Khelos"
+     ]},
+    {:"Dragon Warrior",
+     [
+       "Stadium Announcer",
+       "Windpeak Wyrm",
+       "Darkrider",
+       "Shadowflame Suffusion",
+       "Precursory Strike",
+       "Sanuine Depths",
+       "Portal Vanguard",
+       "Shadowed Informant",
+       "Whelp of the Infinite",
+       "Stonecarver",
+       "Dimensional Weaponsmith"
+     ]},
+    {:"Harold Warrior",
+     [
+       "Living Flame",
+       "Time-Twisted Seer"
      ]}
   ]
   @wild_config []
