@@ -27,14 +27,14 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       herald?(card_info) ->
         :"Harold DK"
 
-      rainbow_runes?(card_info) ->
-        :"Rainbow DK"
-
       talanji?(card_info) ->
-        :"Talanji DK"
+        :"Bwomsamdi DK"
 
       imbue?(card_info, 4) ->
         :"Imbue DK"
+
+      rainbow_runes?(card_info) ->
+        :"Rainbow DK"
 
       only_runes?(card_info, :blood) ->
         :"Blood DK"
@@ -50,6 +50,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
       dark_gift?(card_info) ->
         :"Dark Gift DK"
+
+      "Talanji of the Graves" in card_info.card_names ->
+        :"Bwonsamdi DK"
 
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
