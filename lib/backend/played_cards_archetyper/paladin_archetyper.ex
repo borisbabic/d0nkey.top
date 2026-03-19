@@ -15,8 +15,34 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Bitterbloom Knight",
        "Flutterwing Guardian",
        "Dreamwarden",
+       "Goldpetal Drake",
        "Petal Picker",
        "Aegis of Light"
+     ]},
+    {:"End of Turnadin",
+     [
+       "The Curator",
+       "Scalebreaker Bulwark",
+       "Hardlight Protector",
+       "Spearheart Sentry",
+       "Hourglass Attendant",
+       "Inspiring Maul",
+       "Sandfury Aura",
+       "Highlord Fordragon",
+       "Nightmare Lord Xavius",
+       "Gelbin of Tomorrow",
+       "Ancient of Yore",
+       "Ursol",
+       "Renewing Flames",
+       "Manifested Timeways",
+       "Nozdormu, Bronze Aspect",
+       "Chronological Aura",
+       "Toreth the Unbreaking",
+       "Bronze Redeemer",
+       "Violet Treasuregill",
+       "Acceleration Aura",
+       "Righteous Protector",
+       "Taelan Fordring"
      ]}
   ]
   @wild_config []
