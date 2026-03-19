@@ -11,12 +11,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       imbue_druid?(card_info) ->
         :"Imbue Druid"
 
-      "Krona, Keeper of Eons" in card_info.card_names ->
-        :"Krona Druid"
-
-      "Loh, the Living Legend" in card_info.card_names ->
-        :"Loh-cky Druid"
-
       treant_druid?(card_info) ->
         :"Treant Druid"
 
@@ -26,8 +20,14 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       bad?(card_info) ->
         :"Bad Druid"
 
-      "Merithra" in card_info.card_names ->
+      "Loh, the Living Legend" in card_info.card_names ->
+        :"Loh-cky Druid"
+
+      "Merithra of the Dream" in card_info.card_names ->
         :"Merithra Druid"
+
+      "Krona, Keeper of Eons" in card_info.card_names ->
+        :"Krona Druid"
 
       "Lady Azshara" in card_info.card_names ->
         :"Azshara Druid"
