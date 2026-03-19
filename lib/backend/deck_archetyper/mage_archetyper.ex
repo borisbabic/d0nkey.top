@@ -5,9 +5,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
   def standard(card_info) do
     cond do
-      no_minion?(card_info, 2) and quest?(card_info) ->
-        :"Quest Spell Mage"
-
       quest?(card_info) ->
         :"Quest Mage"
 
@@ -19,9 +16,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
 
       imbue?(card_info, 4) ->
         :"Imbue Mage"
-
-      no_minion?(card_info, 2) ->
-        :"Spell Mage"
 
       burn_mage?(card_info) ->
         :"Burn Mage"
