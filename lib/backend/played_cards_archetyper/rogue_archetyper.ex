@@ -5,7 +5,32 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest Rogue", ["Lie in Wait"]}
+    {:"Quest Rogue", ["Lie in Wait"]},
+    {:"Harold Rogue",
+     [
+       "Maniacal Follower",
+       "Ultraxion",
+       "Envoy of the End",
+       "Sinestra",
+       "Deathwing, Worldbreaker",
+       "Rite of Twilight"
+     ]},
+    # {:"Imbue Rogue",
+    #  [
+    #    "Flutterwing Guardian",
+    #    "Bittbloom Knight",
+    #    "Jagged Edge of Time",
+    #    "Eventuality"
+    #  ]},
+    {:"Harold Rogue",
+     [
+       "Elise the Navigator",
+       "Deja Vu",
+       "Nightmare Fuel",
+       "Foxy Fraud",
+       "Flashback",
+       "Agent of the Old Ones"
+     ]}
   ]
   @wild_config []
 
