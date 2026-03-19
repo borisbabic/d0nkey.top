@@ -13,9 +13,46 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Bitterbloom Knight",
        "Umbraclaw",
        "Resplendent Dreamweaver",
-       "Exotic Houndmaster",
        "Flutterwing Guardian"
-     ]}
+     ]},
+    {:"Dragon Hunter",
+     [
+       "Tormented Dreadwing",
+       "Netherspite Historian",
+       "Prescient Slitherdrake",
+       "Whlpe of the Infinite",
+       "Petal Peddler",
+       "Darkscale Broodmother",
+       "Portal Vanguard"
+     ]},
+    {:"No Hand Hunter",
+     [
+       "Precise Shot",
+       "Rockskipper",
+       "Confront the Tol'vir",
+       "Brutish Endmaw",
+       "Arrow Retriever",
+       "Sylvanas's Triumph",
+       "Sizzling Cinder",
+       "Niri of the Crater",
+       "Arcane Shot",
+       "Quel'dorei Fletcher",
+       "Raptor-Nest Nurse",
+       "Glacial Shard",
+       "Reinforcement Rallier",
+       "Slumbering Sprite",
+       "Wound Prey",
+       "Platysaur",
+       "Wormhole",
+       "Ranger General Sylvanas",
+       "Ranger Captain Alleria",
+       "Ranger Initiate Vereesa",
+       "Quick Shot",
+       "Tracking",
+       "Dreambound Raptor"
+     ]},
+    # 5.5
+    {:"Dragon Druid", ["Carrier Whelp", "Shadowed Informant"]}
   ]
   @wild_config []
 
