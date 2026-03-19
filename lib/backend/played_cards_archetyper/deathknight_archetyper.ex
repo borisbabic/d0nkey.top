@@ -5,7 +5,59 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest DK", ["Reanimate the Terror"]}
+    {:"Quest DK", ["Reanimate the Terror"]},
+    {:"Harold DK",
+     [
+       "Staff of the Endbringer",
+       "Deathwing Worldbreaker",
+       "Obsessive Technician",
+       "Ultraxion",
+       "Arisen Onyxia",
+       "Envoy of the End",
+       "Experimental Animation"
+     ]},
+    {:"Unholy DK",
+     [
+       "Grave Strength",
+       "Maze Guide",
+       "Living Paradox"
+     ]},
+    {:"Imbue DK",
+     [
+       "Petal Picker",
+       "Bitterbloom Knight",
+       "Jagged Edge of Time",
+       "Finality",
+       "Flutterwing Guardian"
+     ]},
+    {:"Unholy DK",
+     [
+       "Nerubian Swarmguard"
+     ]},
+    # 5.5
+    {:"Harold DK",
+     [
+       "Elise the Navigator"
+     ]},
+    {:"Unholy DK",
+     [
+       "Twilight Egg",
+       "Murmy",
+       "Monstrous Mosquito",
+       "Talanji's Last Stand",
+       "Shadow of Yesterday"
+     ]},
+    {:"Harold DK",
+     [
+       "Victor Nefarius",
+       "Whelp of the Infinite",
+       "Sanguine Infestation",
+       "Infested Breath",
+       "Creature of Madness",
+       "Morbid Swarm",
+       "Chillfallen Baron",
+       "Nightmare Lord Xavius"
+     ]}
   ]
 
   @wild_config [
