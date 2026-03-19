@@ -15,11 +15,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
 
-      aura?(card_info) ->
-        :"Aura Paladin"
-
       end_of_turn?(card_info) ->
         :"End of Turnadin"
+
+      aura?(card_info) ->
+        :"Aura Paladin"
 
       murloc?(card_info) ->
         :"Murloc Paladin"
