@@ -19,6 +19,56 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Giant Rafaam",
        "Archmage Rafaam",
        "Timethief Rafaam"
+     ]},
+    {:"Harold DK",
+     [
+       "Envoy of the End",
+       "Ultraxion",
+       "Shrine of Twilight",
+       "Shadowsworn Disciple",
+       "Deathwing, Worldbreaker"
+     ]},
+    {:"Wallow Warlock",
+     [
+       "Overgrown Horror",
+       "Avant-Gardening",
+       "Treacherous Tormentor",
+       "Creature of Madness",
+       "Shadowflame Stalker",
+       "Wallow, the Wretched"
+     ]},
+    {:"Harold DK",
+     [
+       "Spirit Bomb",
+       "The Egg of Khelos",
+       "Holy Eggbearer",
+       "Cursed Chains",
+       "Eldritch Tentacles",
+       "Archdruid of Thorns",
+       "Hellfire",
+       "Drain Soul",
+       "Conflagrate",
+       "Abusive Sergeant",
+       "Eternal Toil",
+       "Cursed Catacombs",
+       "Mortal Coil"
+     ]},
+    {:"Aggro Warlock",
+     [
+       "Flame Imp",
+       "Acolyte of Infinity",
+       "Sizzling Cinder",
+       "Entropic Continuity",
+       "Darkscale Broodmother",
+       "Ruinous Velocidrake",
+       "Prescient Slitherdrake",
+       "Ocular Occultist",
+       "Fatebreaker",
+       "Twilight Timehopper",
+       "Tachyon Barrage",
+       "Petal Peddler",
+       "Twilight Egg",
+       "Carrier Whelp"
      ]}
   ]
   @wild_config []
