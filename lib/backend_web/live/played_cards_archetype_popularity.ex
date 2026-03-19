@@ -37,6 +37,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     # "Ravenous Cliff Dive DH" => "Cliff Dive DH",
     # Maybe not the best
     # "Azshara Druid" => "Hydration Druid",
+    "Treant Druid" => "Token Druid",
+    "Ace Hunter" => "No Hand Hunter",
     "Quest Spell Mage" => "Spell Mage",
     "Wallow Shredslock" => "Wallow Warlock",
     "Starship Rafaamlock" => "Rafaamlock",

@@ -16,7 +16,48 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Malorne the Waywatcher",
        "Petal Picker",
        "Charred Chameleon"
-     ]}
+     ]},
+    {:"Token Druid",
+     [
+       "Overheat",
+       "Platysaur",
+       "Power of the Wild",
+       "Longneck Egg",
+       "Holy Eggbearer",
+       "Ravenous Flock",
+       "Vibrant Squirrel",
+       "Hatchery Helper",
+       "Ancient Raptor",
+       "Panther Mask"
+     ]},
+    {:"Imbue Druid",
+     {[
+        "Symbiosis"
+      ],
+      [
+        "Merithra",
+        "Darkscale Broodmother",
+        "Broodwatcher",
+        "Carrier Whelp",
+        "Elise the Navigator"
+      ]}},
+    {:"Merithra Druid",
+     [
+       "Elise the Navigator",
+       "Merithra of the Dream",
+       "Twilight Timereaver",
+       "Underking",
+       "Ysera, Emerald Aspect",
+       "Nightmare Lord Xavius",
+       "Tormented Dreadwing"
+     ]},
+    # 5.5
+    {:"Imbue Druid", ["Horn of Plenty"]},
+    {:"Token Druid", ["Twilight Egg"]},
+    {:"Merithra Druid", ["Azshara's Triumph", "Acceleration Aura"]},
+    {:"Imbue Druid", ["Mark of the Wild"]},
+    {:"Token Druid", ["Forest's Gift", "Mossbinding"]}
+    # 10.5
   ]
   @wild_config [
     {:"Astral Communion Druid",
