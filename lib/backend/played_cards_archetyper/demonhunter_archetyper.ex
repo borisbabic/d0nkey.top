@@ -4,8 +4,47 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @herald_package [
+    "Deathwing, Worldbreaker",
+    "Azshara, Ocean Lord",
+    "Ultraxion",
+    "Armored Bloodletter",
+    "Envoy of the End",
+    "Fel Infusion"
+  ]
+  @standard_excludes %{
+    :"No Minion DH" =>
+      @herald_package ++
+        ["Elise the Navigator", "Scorchreaver", "Felfire Blaze", "Ravenous Felfisher"]
+  }
   @standard_config [
-    {:"Quest DH", ["Unleash the Colossus"]}
+    {:"Quest DH", ["Unleash the Colossus"]},
+    {:"No Minion DH", ["Lasting Legacy", "Solitude", "Hounds of Fury", "The Eternal Hold"]},
+    {:"Harold DH", ["Defiled Spear" | @herald_package]},
+    {:"No Minion DH", ["Time-Lost Glaive"]},
+    {:"Harold DH",
+     [
+       "Scorchreaver",
+       "Felfire Blaze",
+       "Ravenous Felfisher",
+       "Chaos Strike",
+       "Nespirah, Enthralled",
+       "Elise the Navigator",
+       "Hive Map"
+     ]},
+    # 5.5
+    {:"Dragon DH",
+     [
+       "Whelp of the Infinite",
+       "Petal Peddler",
+       "Netherspite Historian",
+       "Darkscale Broodmother",
+       "Prescient Slitherdrake",
+       "Carrier Whelp",
+       "Battlefiend",
+       "Shadowed Informant",
+       "Slumbering Sprite"
+     ]}
   ]
   @wild_config [
     {:"Pirate Demon Hunter",
@@ -52,7 +91,7 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   def standard_excludes(), do: %{}
   def wild_excludes(), do: %{}
 
-  def standard_config(), do: add_excludes(@standard_config, standard_excludes())
+  def standard_config(), do: add_excludes(@standard_config, @standard_excludes)
   def wild_config(), do: add_excludes(@wild_config, standard_excludes())
 
   def standard(card_info) do

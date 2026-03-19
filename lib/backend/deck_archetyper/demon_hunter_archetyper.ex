@@ -12,11 +12,11 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       no_minion?(card_info) ->
         :"No Minion DH"
 
-      fel_dh?(card_info) ->
-        :"Fel DH"
-
       herald?(card_info) ->
         :"Harold DH"
+
+      fel_dh?(card_info) ->
+        :"Fel DH"
 
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
