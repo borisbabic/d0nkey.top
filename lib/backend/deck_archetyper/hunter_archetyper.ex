@@ -48,10 +48,10 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
   end
 
   defp no_hand?(card_info) do
-    min_count?(card_info, 3, [
+    min_count?(card_info, 2, [
       "Arrow Retriever",
       "Quel'dorei Fletcher",
-      "Quickshot",
+      "Quick Shot",
       "Precise Shot",
       "King Maluk"
     ])
