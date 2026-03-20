@@ -39,12 +39,6 @@ defmodule Backend.DeckArchetyper do
       splendiferous_whizbang?(card_info) ->
         :"Splendiferous Whizbang"
 
-      all_odd?(card_info) and baku?(card_info) ->
-        String.to_atom("Odd #{class_name}")
-
-      all_even?(card_info) and genn?(card_info) ->
-        String.to_atom("Even #{class_name}")
-
       # people queue standard decks in wild, lets not muddy up wild stats with those
       standard_in_wild?(card_info) ->
         deck = Map.put(deck, :format, 2)
