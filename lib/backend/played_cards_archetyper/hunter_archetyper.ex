@@ -22,8 +22,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Prescient Slitherdrake",
        "Whlpe of the Infinite",
        "Petal Peddler",
-       "Darkscale Broodmother",
-       "Portal Vanguard"
+       "Darkscale Broodmother"
      ]},
     {:"No Hand Hunter",
      [
@@ -52,7 +51,15 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Dreambound Raptor"
      ]},
     # 5.5
-    {:"Dragon Druid", ["Carrier Whelp", "Shadowed Informant"]}
+    {:"Dragon Druid",
+     [
+       "Carrier Whelp",
+       "Shadowed Informant",
+       "Earthen Roar",
+       "Whelp of the Infinite",
+       "Portal Vanguard",
+       "Tol'vir Carver"
+     ]}
   ]
   @wild_config []
 
