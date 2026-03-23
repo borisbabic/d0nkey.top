@@ -233,7 +233,7 @@ defmodule BackendWeb.Router do
 
     live_session :qualifiers_week_2,
       session: %{
-        "title" => "2026 Winter 2nd Qualfiiers",
+        "title" => "2026 Winter Week 2",
         "tournament_ids" => [
           "697912c96456f10013a65d36",
           "697913806456f10013a65d82",
@@ -241,6 +241,78 @@ defmodule BackendWeb.Router do
         ]
       } do
       live("/esports/2026/qualifiers/winter-week2", QualifierShowcaseLive)
+    end
+
+    live_session :qualifiers_spring_week_1,
+      session: %{
+        "title" => "2026 Spring Week 1",
+        "tournament_ids" => [
+          "699e1a2d9198e2001229a403",
+          "699e1b4f9198e2001229a444",
+          "699e1f58762b880012800f7e"
+        ]
+      } do
+      live("/esports/2026/qualifiers/spring-week1", QualifierShowcaseLive)
+    end
+
+    live_session :qualifiers_spring_week_2,
+      session: %{
+        "title" => "2026 Spring Week 2",
+        "tournament_ids" => [
+          "699e2103762b880012800fff",
+          "699e21e0762b88001280103f",
+          "699e2267762b880012801057"
+        ]
+      } do
+      live("/esports/2026/qualifiers/spring-week2", QualifierShowcaseLive)
+    end
+
+    live_session :qualifiers_spring_blitz,
+      session: %{
+        "title" => "2026 Spring Blitz",
+        "tournament_ids" => [
+          "699e24199198e2001229a64e",
+          "699e24759198e2001229a73a",
+          "699e24b6762b8800128011c7"
+        ]
+      } do
+      live("/esports/2026/qualifiers/spring-blitz", QualifierShowcaseLive)
+    end
+
+    live_session :qualifiers_summer_week_1,
+      session: %{
+        "title" => "2026 Summer Week 1",
+        "tournament_ids" => [
+          "699e22f19198e2001229a617",
+          "699e25249198e2001229a762",
+          "699e2573762b8800128011e1"
+        ]
+      } do
+      live("/esports/2026/qualifiers/summer-week1", QualifierShowcaseLive)
+    end
+
+    live_session :qualifiers_summer_week_2,
+      session: %{
+        "title" => "2026 Summer Week 2",
+        "tournament_ids" => [
+          "699e25c1762b8800128011ee",
+          "699e26259198e2001229a786",
+          "699e2663762b880012801209"
+        ]
+      } do
+      live("/esports/2026/qualifiers/summer-week2", QualifierShowcaseLive)
+    end
+
+    live_session :qualifiers_summer_blitz,
+      session: %{
+        "title" => "2026 Summer Blitz",
+        "tournament_ids" => [
+          "699e280a762b880012801269",
+          "699e28429198e2001229a80a",
+          "699e26a4762b880012801218"
+        ]
+      } do
+      live("/esports/2026/qualifiers/summer-blitz", QualifierShowcaseLive)
     end
 
     get("/legacy-hsesports/mt/stats", MastersTourController, :masters_tours_stats)

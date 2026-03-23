@@ -110,11 +110,8 @@
               <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
             <% end %>
         </a>
-        <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2026-02-25 12:12:00]) == :lt} href={~p"/esports/2026/qualifiers/winter-blitz"}>
-            <span>Blitz Qualifiers</span>
-        </a>
-        <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2026-02-10 12:12:00]) == :lt} href={~p"/esports/2026/qualifiers/winter-week2"}>
-            <span>Qualifiers</span>
+        <a class="navbar-item" :if={info = current_qualifier_info()} href={info.link}}>
+          <span>🏆 {info.title}</span>
         </a>
         <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-12-25 12:12:00]) == :lt} href={~p"/wc/2025"}>
             <span>🏆 Worlds</span>
