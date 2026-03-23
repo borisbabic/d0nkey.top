@@ -16,6 +16,36 @@ defmodule BackendWeb.LayoutView do
     #    end
   end
 
+  def current_qualifier_info() do
+    now = NaiveDateTime.utc_now()
+
+    cond do
+      Util.in_range?(now, {~N[2026-03-19 12:00:00], ~N[2026-03-24 12:00:00]}) ->
+        %{link: ~p"/esports/2026/qualifiers/spring-week2", title: "Qualifiers"}
+
+      Util.in_range?(now, {~N[2026-04-03 12:00:00], ~N[2026-04-08 12:00:00]}) ->
+        %{link: ~p"/esports/2026/qualifiers/spring-week2", title: "Qualifiers"}
+
+      Util.in_range?(now, {~N[2026-04-23 12:00:00], ~N[2026-04-28 12:00:00]}) ->
+        %{link: ~p"/esports/2026/qualifiers/spring-week2", title: "Blitz Qualifiers"}
+
+      Util.in_range?(now, {~N[2026-04-23 12:00:00], ~N[2026-04-28 12:00:00]}) ->
+        %{link: ~p"/esports/2026/qualifiers/spring-blitz", title: "Blitz Qualifiers"}
+
+      Util.in_range?(now, {~N[2026-05-22 12:00:00], ~N[2026-05-27 12:00:00]}) ->
+        %{link: ~p"/esports/2026/qualifiers/summer-week1", title: "Qualifiers"}
+
+      Util.in_range?(now, {~N[2026-06-12 12:00:00], ~N[2026-06-17 12:00:00]}) ->
+        %{link: ~p"/esports/2026/qualifiers/summer-week2", title: "Qualifiers"}
+
+      Util.in_range?(now, {~N[2026-06-18 12:00:00], ~N[2026-06-21 12:00:00]}) ->
+        %{link: ~p"/esports/2026/qualifiers/summer-blitz", title: "Blitz Qualifiers"}
+
+      true ->
+        nil
+    end
+  end
+
   def render_battlefy_link(assigns) do
     ~H"""
     """
