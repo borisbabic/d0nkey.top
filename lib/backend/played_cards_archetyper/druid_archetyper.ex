@@ -26,7 +26,6 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Holy Eggbearer",
        "Ravenous Flock",
        "Vibrant Squirrel",
-       "Hatchery Helper",
        "Ancient Raptor",
        "Panther Mask"
      ]},
@@ -43,21 +42,43 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       ]}},
     {:"Merithra Druid",
      [
-       "Elise the Navigator",
        "Merithra of the Dream",
-       "Twilight Timereaver",
-       "Underking",
-       "Ysera, Emerald Aspect",
-       "Nightmare Lord Xavius",
-       "Tormented Dreadwing"
+       "Fyrakk the Blazing",
+       "Naralex, Herald of Flights",
+       "Elise the Navigator"
      ]},
     # 5.5
-    {:"Imbue Druid", ["Horn of Plenty"]},
+    {:"Imbue Druid", ["Horn of Plenty", "Photosynthesis"]},
     {:"Token Druid", ["Twilight Egg"]},
-    {:"Merithra Druid", ["Azshara's Triumph", "Acceleration Aura"]},
-    {:"Imbue Druid", ["Mark of the Wild"]},
-    {:"Token Druid", ["Forest's Gift", "Mossbinding"]}
+    {:"Merithra Druid",
+     ["Ebb and Flow", "Whelp of the Infinite", "Azshara's Triumph", "Nightmare Lord Xavius"]},
+    {:"Imbue Druid", ["Mark of the Wild", "Forest's Gift", "Living Roots", "Crystalspine Cub"]},
+    {:"Merithra Druid", ["Darkscale Broodmother", "Broodwatcher", "Carrier Whelp"]},
     # 10.5
+    {:"Krona Druid",
+     [
+       "Chrono-Lord Deios",
+       "Endbringer Umbra",
+       "Glacial Shard",
+       "Wrath"
+     ]},
+    {:"Merithra Druid",
+     [
+       "Story of Barnabus",
+       "Krona, Keeper of Eons",
+       "Acceleration Aura",
+       "Contigency",
+       "Twilight Timereaver",
+       "Underking"
+     ]},
+    {:"Imbue Druid",
+     [
+       "Felwood Treant",
+       "Innervate",
+       "Hatchery Helper",
+       "Wickerfang",
+       "Waveshaping"
+     ]}
   ]
   @wild_config [
     {:"Astral Communion Druid",
