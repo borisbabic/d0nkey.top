@@ -42,7 +42,8 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Sizzling Cinder",
        "Time-Twisted Seer",
        "Vulcanos",
-       "Stellar Balance"
+       "Stellar Balance",
+       "Gemstone Hoarder"
      ]}
   ]
   @wild_config []
