@@ -125,7 +125,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       min_count?(card_info, 2, [
         "Arcane Giant",
         "Playhouse Giant",
-        "Breakdance"
+        "Breakdance",
+        "Everything Must Go!"
       ]) and
       min_count?(card_info, 3, [
         "Gear Shift",
@@ -135,7 +136,8 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         "Blackwater Cutlass",
         "Ghostly Strike",
         "Twisted Webweaver",
-        "Cultist Map"
+        "Cultist Map",
+        "Gone Fishin'"
       ])
   end
 
