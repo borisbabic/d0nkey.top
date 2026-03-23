@@ -8,8 +8,11 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       # quest?(card_info) ->
       #   :"Quest Priest"
 
-      "Aviana, Elune's Chosen" in card_info.card_names ->
-        :"Aviana Priest"
+      egg_priest?(card_info) ->
+        :"Egg Priest"
+
+      control_priest?(card_info) ->
+        :"Control Priest"
 
       imbue?(card_info, 4) ->
         :"Imbue Priest"
@@ -20,14 +23,8 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Wilted Shadow" in card_info.card_names ->
         :"Wilted Priest"
 
-      egg_priest?(card_info) ->
-        :"Egg Priest"
-
       quest?(card_info) ->
         :"Quest Priest"
-
-      control_priest?(card_info) ->
-        :"Control Priest"
 
       "Tyrande" in card_info.card_names ->
         :"Tyrande Priest"
@@ -120,20 +117,15 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   end
 
   defp control_priest?(ci) do
-    min_count?(ci, 2, [
+    min_count?(ci, 3, [
       "Sleepy Resident",
       "Dirty Rat",
-      "Ignis, the Eternal Flame",
-      "Serenity",
-      "Harmonic Pop",
-      "Repackage",
-      "Lightbomb",
       "Shadow Word: Ruin",
       "Holy Nova",
       "For all Time",
-      "Shadow Word: Steal",
-      "Fight Over Me",
       "Medivh's Triumph",
+      "Devouring Plague",
+      "Eternal Firebolt",
       "The Black Blood"
     ])
   end
