@@ -3234,12 +3234,19 @@ defmodule Hearthstone.DeckTracker do
   def merge_card_stats(stats) do
     Enum.group_by(stats, fn cs ->
       card_id = Map.get(cs, :card_id) || Map.get(cs, "card_id")
-      tally_card_id(card_id)
+
+      card_id
+      |> group_shattered()
+      |> tally_card_id()
     end)
     |> Enum.map(fn
       {_, [stats]} -> stats
       {_, grouped} -> Enum.reduce(grouped, &do_merge_card_stats/2)
     end)
+  end
+
+  def group_shattered(card_id) do
+    Card.shattered_merged_id(card_id) || card_id
   end
 
   # def do_merge_card_stats(%{card_id: stats_id} = stats, acc) do

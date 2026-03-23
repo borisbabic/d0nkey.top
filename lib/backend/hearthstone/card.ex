@@ -243,6 +243,25 @@ defmodule Backend.Hearthstone.Card do
   @ben_brode 1768
   def ben_brode, do: @ben_brode
 
+  @shattered_map %{
+    121_758 => 121_757,
+    121_760 => 121_757,
+    122_876 => 122_874,
+    122_877 => 122_874,
+    122_972 => 122_971,
+    122_973 => 122_971,
+    123_141 => 123_139,
+    123_142 => 123_139,
+    123_743 => 123_692,
+    123_744 => 123_692
+  }
+  @spec shattered_merged_id(integer() | card()) :: integer() | nil
+  def shattered_merged_id(card_or_dbf_id) when is_integer(card_or_dbf_id) do
+    Map.get(@shattered_map, card_or_dbf_id)
+  end
+
+  def shattered_merged_id(card), do: dbf_id(card) |> shattered_merged_id()
+
   @fabled_rafaam 119_432
   def fabled_rafaam, do: @fabled_rafaam
   @renathal 79_767
