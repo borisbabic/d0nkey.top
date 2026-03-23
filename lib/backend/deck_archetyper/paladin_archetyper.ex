@@ -15,6 +15,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       aggro_paladin?(card_info) ->
         :"Aggro Paladin"
 
+      finja?(card_info) ->
+        :"Finja Paladin"
+
       end_of_turn?(card_info) ->
         :"End of Turnadin"
 
@@ -30,12 +33,24 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       infinity?(card_info) ->
         :"Infinity Paladin"
 
+      finja_package?(card_info) ->
+        :"Finja Paladin"
+
       "Sunsapper Lynessa" in card_info.card_names ->
         :"Lynessa Paladin"
 
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp finja?(card_info) do
+    finja_package?(card_info) and
+      min_count?(card_info, 1, ["Flight Maneuvers"])
+  end
+
+  defp finja_package?(card_info) do
+    min_count?(card_info, 2, ["Finja, the Flying Star", "Tyrannogill"])
   end
 
   defp end_of_turn?(card_info) do
