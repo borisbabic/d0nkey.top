@@ -9,8 +9,7 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     "Azshara, Ocean Lord",
     "Ultraxion",
     "Armored Bloodletter",
-    "Envoy of the End",
-    "Fel Infusion"
+    "Envoy of the End"
   ]
   @standard_excludes %{
     :"No Minion DH" =>
@@ -20,13 +19,17 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   @standard_config [
     {:"Quest DH", ["Unleash the Colossus"]},
     {:"No Minion DH", ["Lasting Legacy", "Solitude", "Hounds of Fury", "The Eternal Hold"]},
-    {:"Harold DH", ["Defiled Spear" | @herald_package]},
-    {:"No Minion DH", ["Time-Lost Glaive"]},
     {:"Harold DH",
      [
-       "Scorchreaver",
-       "Felfire Blaze",
        "Ravenous Felfisher",
+       "Scorchreaver",
+       "Fel Infusion",
+       "Defiled Spear" | @herald_package
+     ]},
+    {:"No Minion DH", ["Time-Lost Glaive", "Sands of Time", "Sigil of Cinder"]},
+    {:"Harold DH",
+     [
+       "Felfire Blaze",
        "Chaos Strike",
        "Nespirah, Enthralled",
        "Elise the Navigator",
@@ -44,6 +47,18 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Battlefiend",
        "Shadowed Informant",
        "Slumbering Sprite"
+     ]},
+    {:"No Minion DH",
+     [
+       "Wyvern's Slumber",
+       "First Portal to Argus",
+       "Press the Advantage",
+       "Sigil of the Seas",
+       "Grim Harvest"
+     ]},
+    {:"Harold DH",
+     [
+       "Infestation"
      ]}
   ]
   @wild_config [
