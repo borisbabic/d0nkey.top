@@ -9,7 +9,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     {:"Harold DK",
      [
        "Staff of the Endbringer",
-       "Deathwing Worldbreaker",
+       "Dwathwing, Worldbreaker",
        "Obsessive Technician",
        "Ultraxion",
        "Arisen Onyxia",
@@ -22,41 +22,71 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Maze Guide",
        "Living Paradox"
      ]},
-    {:"Imbue DK",
-     [
-       "Petal Picker",
-       "Bitterbloom Knight",
-       "Jagged Edge of Time",
-       "Finality",
-       "Flutterwing Guardian"
-     ]},
-    {:"Unholy DK",
-     [
-       "Nerubian Swarmguard"
-     ]},
-    # 5.5
+    # {:"Imbue DK",
+    #  [
+    #    "Petal Picker",
+    #    "Bitterbloom Knight",
+    #    "Jagged Edge of Time",
+    #    "Finality",
+    #    "Flutterwing Guardian"
+    #  ]},
     {:"Harold DK",
      [
        "Elise the Navigator"
      ]},
     {:"Unholy DK",
      [
-       "Twilight Egg",
        "Murmy",
        "Monstrous Mosquito",
        "Talanji's Last Stand",
-       "Shadow of Yesterday"
+       "Shadows of Yesterday"
+     ]},
+    # 5.5
+    {:"Imbue DK",
+     [
+       "Jagged Edge of Time",
+       "Flutterwing Guardian",
+       "Petal Picker",
+       "Bitterbloom Knight"
      ]},
     {:"Harold DK",
      [
        "Victor Nefarius",
        "Whelp of the Infinite",
-       "Sanguine Infestation",
+       "Morbid Swarm"
+     ]},
+    {:"Blood DK",
+     [
+       "Ursoc",
+       "Crittter Caretaker",
+       "Fyrakk the Blazing",
+       "Ancient of Yore",
+       "Alexandros Mograine",
+       "Naralex, Herald of the Flights",
+       "Death Strike"
+     ]},
+    {:"Harold DK",
+     [
        "Infested Breath",
+       "Husk, Eternal Reaper",
+       "Royal Librarian"
+     ]},
+    {:"Unholy DK",
+     [
+       "Nerubian Swawmguard",
+       "Falric",
+       "Twilight Egg"
+     ]},
+    {:"Harold DK",
+     [
+       "Sanguine Infestation",
        "Creature of Madness",
-       "Morbid Swarm",
-       "Chillfallen Baron",
-       "Nightmare Lord Xavius"
+       "Nightmare Lord Xavius",
+       "Sands of Time",
+       "Hematurge",
+       "Poison Breath",
+       "Wild Pyromancer",
+       "Chillfallen Baron"
      ]}
   ]
 
