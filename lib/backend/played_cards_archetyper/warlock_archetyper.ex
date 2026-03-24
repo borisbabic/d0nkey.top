@@ -7,6 +7,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
   @standard_excludes %{}
   @standard_config [
     {:"Tick Tock Warlock", ["Battle at the End Time"]},
+    {:"Quest Warlock", ["Escape the Underfel"]},
     {:Rafaamlock,
      [
        "Tiny Rafaam",
@@ -20,7 +21,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Archmage Rafaam",
        "Timethief Rafaam"
      ]},
-    {:"Harold DK",
+    {:"Harold Warlock",
      [
        "Envoy of the End",
        "Ultraxion",
@@ -37,7 +38,7 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Shadowflame Stalker",
        "Wallow, the Wretched"
      ]},
-    {:"Harold DK",
+    {:"Harold Warlock",
      [
        "Spirit Bomb",
        "The Egg of Khelos",
