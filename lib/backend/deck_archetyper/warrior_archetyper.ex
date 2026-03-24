@@ -20,6 +20,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       herald?(card_info, 5) ->
         :"Harold Warrior"
 
+      "Gladiatorial Combat" in card_info.card_names ->
+        :"Gladiator Warrior"
+
       "Ysondre" in card_info.card_names ->
         :"Ysondre Warrior"
 
