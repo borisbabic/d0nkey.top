@@ -28,7 +28,6 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Avatar Form",
        "Flight of the Firehawk",
        "Skywall Sentinel",
-       "Cloud Serpent",
        "Muradin's Last Stand",
        "Primordial Overseer",
        "Ritual of Power",
@@ -40,17 +39,20 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Wailing Vapor",
        "Far Sight",
        "Voltaic Burst",
-       "Glacial Shard"
+       "Glacial Shard",
+       "Crackling Cloudstrider"
        # x (4) Ascendance
+     ]},
+    {:"Imbue Shaman",
+     [
+       "Flutterwing Guardian",
+       "Bitterbloom Knight",
+       "Petal Picker",
+       "Resplendent Dreamweaver",
+       "Glowroot Lure",
+       "Aspect's Embrace",
+       "Living Guarden"
      ]}
-    # {:"Imbue Shaman",
-    #  [
-    #    "Flutterwing Guardian",
-    #    "Bitterbloom Knight",
-    #    "Petal Picker",
-    #    "Resplendent Dreamweaver",
-    #    "Glowroot Lure"
-    #  ]}
   ]
   @wild_config []
 
