@@ -4,7 +4,51 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
-  @standard_config []
+  @standard_config [
+    {:"Egg Priest",
+     [
+       "Abusive Sergeant",
+       "Holy Eggbearer",
+       "The Egg of Khelos",
+       "Crazed Alchemist",
+       "Dissolving Ooze"
+     ]},
+    {:"Control Priest",
+     [
+       "Devouring Plague",
+       "Fae Trickster",
+       "Holy Nova",
+       "Eternal Firebolt",
+       "Cleansing Cleric",
+       "The Black Blood",
+       "Dirty Rat",
+       "Atiesh the Greatstaff",
+       "Karazhan the Sanctum",
+       "Medivh the Hallowed",
+       "Flash Heal",
+       "Shadow Word: Ruin",
+       "Ruby Sanctum",
+       "Tranquil Treant",
+       "Reach Equilibrium",
+       "Intertwined Fate",
+       "Voodoo Totem",
+       "Story of Amara",
+       "Nightmare Lord Xavius",
+       "For All Time",
+       "Medivh's Triumph",
+       "Sands of Time",
+       "Kaldorei Priestess",
+       "Ancient of Yore",
+       "Gravedawn Sunbloom",
+       "Mend",
+       "Lunarwing Messenger",
+       "Greater Healing Potion",
+       "Cease to Exist",
+       "Power Word: Shield",
+       "Ysera, Emerald Aspect",
+       "Purifying Breath"
+     ]}
+  ]
   @wild_config []
 
   def standard_excludes(), do: %{}
