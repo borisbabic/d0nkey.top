@@ -15,47 +15,72 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Petal Peddler",
        "Prescient Slitherdrake",
        "Carrier Whelp",
+       "Shadowed Informant",
+       "Stadium Announcer",
        "Brood Keeper"
      ]},
-    {:"Harold Warrior",
+    {:"Gladiator Warrior",
      [
-       "Searing Fissure",
-       "Cataclysmic War Axe",
-       "Scorching Ravager",
-       "Envoy of the End",
-       "Ragnaros, the Great Fire",
-       "Ultraxion"
+       "Gladiatorial Combat",
+       "Shaladrassil",
+       "Succumb to Madness",
+       "Clutch of Corruption",
+       "Tortolla",
+       "Ysondre"
      ]},
     {:"Egg Warrior",
      [
        "Holy Eggbearer",
        "Endbringer Umbra",
-       "Siphoning Growth",
-       "Execute",
        "Abusive Sergeant",
+       "Siphoning Growth",
+       "Heir of Hereafter",
        "Shellnado",
-       "Decimation",
        "The Egg of Khelos"
-     ]},
-    {:"Dragon Warrior",
-     [
-       "Stadium Announcer",
-       "Windpeak Wyrm",
-       "Darkrider",
-       "Shadowflame Suffusion",
-       "Precursory Strike",
-       "Sanuine Depths",
-       "Portal Vanguard",
-       "Shadowed Informant",
-       "Whelp of the Infinite",
-       "Stonecarver",
-       "Dimensional Weaponsmith"
      ]},
     {:"Harold Warrior",
      [
        "Living Flame",
-       "Time-Twisted Seer"
-     ]}
+       "Time-Twisted Seer",
+       "Elise the Navigator",
+       "Envoy of the End",
+       "Ragnaros, the Great Fire",
+       "Ultraxion",
+       "Deathwing, Worldbreaker"
+     ]},
+    # 5.5
+    {:"Dragon Warrior",
+     [
+       "Windpeak Wyrm",
+       "Darkrider"
+     ]},
+    {:"Harold Warrior",
+     [
+       "Scorching Ravager",
+       "Cataclysmic War Axe"
+     ]},
+    {:"Gladiator Warrior",
+     [
+       "Erupting Volcano",
+       "Shadowflame Suffusion",
+       "Searing Fissure"
+     ]},
+    {:"Egg Warrior",
+     [
+       "Decimation",
+       "Acolyte of Pain",
+       "Sanguine Depths"
+     ]},
+    {:"Gladiator Warrior",
+     [
+       "For Glory!",
+       "Torch",
+       "Axe of the Forefathers",
+       "Eternal Toil",
+       "Shield Block"
+     ]},
+    # 10.5
+    {:"Precursory Strike", ["Dragon Warrior"]}
   ]
   @wild_config []
 
