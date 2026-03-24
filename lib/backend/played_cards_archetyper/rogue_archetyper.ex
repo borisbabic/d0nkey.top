@@ -29,7 +29,22 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Nightmare Fuel",
        "Foxy Fraud",
        "Flashback",
-       "Agent of the Old Ones"
+       "Agent of the Old Ones",
+       "Mirrex, the Crystalline",
+       "Nightmare Lord Xavius",
+       "Naralex, Herald of the Flights",
+       "Spymistress",
+       "Twilight Mistress",
+       "Shaladrassil",
+       "Cloud Serpent",
+       "Fast Forward",
+       "Opu the Unseen",
+       "Ysera, Emerald Aspect",
+       "Preparation",
+       "The Kingslayers",
+       "Cultist Map",
+       "Garona Halforcen",
+       "Sands of Time"
      ]}
   ]
   @wild_config []
