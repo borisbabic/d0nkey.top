@@ -29,11 +29,11 @@ defmodule BackendWeb.ProfileSettingsLive do
             </div>
             <div>
               <label for="cross_out_country" class="label">Cross Out Country</label>
-              <input type="checkbox" name="cross_out_country" checked={@user.cross_out_country} />
+              <.input type="checkbox" name="cross_out_country" checked={@user.cross_out_country} />
             </div>
             <div>
               <label for="show_region" class="label">Show Region Instead of Country</label>
-              <input type="checkbox" name="show_region" checked={@user.show_region} />
+              <.input type="checkbox" name="show_region" checked={@user.show_region} />
             </div>
             <br>
             <div :if={@custom_hues}>
@@ -157,7 +157,7 @@ defmodule BackendWeb.ProfileSettingsLive do
             </div>
           </.form>
         </div>
-        <div :if={!@user}>Not Logged In</div>
+        <div :if={!@user}>Not Logged In. You need to <a href={~p"/auth/bnet"}>log in</a> to change your settings</div>
       </div>
     """
   end
