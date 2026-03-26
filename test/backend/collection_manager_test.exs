@@ -7,7 +7,18 @@ defmodule Backend.CollectionManagerTest do
   @base_dto %CollectionDto{
     battletag: "D0nkey#2470",
     region: 2,
-    cards: [Card.new(31, %{plain_count: 1})],
+    cards: [
+      Card.new(31, %{
+        plain_count: 1,
+        premium_count: 1,
+        diamond_count: 1,
+        signature_count: 1,
+        trial_plain_count: 1,
+        trial_premium_count: 1,
+        trial_diamond_count: 1,
+        trial_signature_count: 1
+      })
+    ],
     updated: NaiveDateTime.utc_now()
   }
 
@@ -15,7 +26,7 @@ defmodule Backend.CollectionManagerTest do
     battletag = Ecto.UUID.generate()
     dto = Map.put(@base_dto, :battletag, battletag)
 
-    assert {:ok, %{battletag: ^battletag, public: false}} =
+    assert {:ok, %{battletag: ^battletag, public: false, cards: [%{total_count: 8}]}} =
              CollectionManager.upsert_collection(dto)
   end
 
