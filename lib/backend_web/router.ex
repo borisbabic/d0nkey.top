@@ -522,12 +522,12 @@ defmodule BackendWeb.Router do
     live("/twitch/bot", TwitchBotLive)
     live("/twitch/bot/new-command", TwitchNewCommandLive)
 
+    live("/profile/settings", ProfileSettingsLive)
     live("/scratchpad", ScratchPadLive)
   end
 
   scope "/", BackendWeb do
     pipe_through([:browser, :auth, :ensure_auth])
-    live("/profile/settings", ProfileSettingsLive)
 
     live(
       "/tournament-streams/:tournament_source/:tournament_id/manager",
