@@ -21,7 +21,7 @@
 
 <li>
 <%= if user(@conn) && user(@conn).twitch_id do %>
-    <span>✓ You've connected your twitch so you're ready for <a href="/streamer-decks">Streamer Decks</a></span>
+    <span>✓ You've connected your twitch so after you have the plugin set up you're ready for <a href="/streamer-decks">Streamer Decks</a></span>
 <% else %>
     For Streamers:
     <%= if !user(@conn) do %>
