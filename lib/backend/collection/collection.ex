@@ -58,7 +58,11 @@ defmodule Backend.CollectionManager.Collection.Card do
     :plain_count,
     :premium_count,
     :diamond_count,
-    :signature_count
+    :signature_count,
+    :trial_plain_count,
+    :trial_premium_count,
+    :trial_diamond_count,
+    :trial_signature_count
   ]
   @primary_key false
   embedded_schema do
@@ -68,6 +72,10 @@ defmodule Backend.CollectionManager.Collection.Card do
     field :premium_count, :integer
     field :diamond_count, :integer
     field :signature_count, :integer
+    field :trial_plain_count, :integer, default: 0
+    field :trial_premium_count, :integer, default: 0
+    field :trial_diamond_count, :integer, default: 0
+    field :trial_signature_count, :integer, default: 0
   end
 
   def changeset(sideboard, attrs) do
@@ -84,7 +92,11 @@ defmodule Backend.CollectionManager.Collection.Card do
       plain_count: Enum.sum_by(cards, & &1.plain_count),
       premium_count: Enum.sum_by(cards, & &1.premium_count),
       diamond_count: Enum.sum_by(cards, & &1.diamond_count),
-      signature_count: Enum.sum_by(cards, & &1.signature_count)
+      signature_count: Enum.sum_by(cards, & &1.signature_count),
+      trial_plain_count: Enum.sum_by(cards, &Map.get(&1, :trial_plain_count, 0)),
+      trial_premium_count: Enum.sum_by(cards, &Map.get(&1, :trial_premium_count, 0)),
+      trial_diamond_count: Enum.sum_by(cards, &Map.get(&1, :trial_diamond_count, 0)),
+      trial_signature_count: Enum.sum_by(cards, &Map.get(&1, :trial_signature_count, 0))
     }
   end
 
@@ -100,21 +112,27 @@ defmodule Backend.CollectionManager.Collection.Card do
   def init(cards) when is_list(cards), do: Enum.map(cards, &init/1)
   def init(%__MODULE__{} = card), do: card
 
-  def init(%{
-        dbf_id: dbf_id,
-        total_count: total_count,
-        plain_count: plain_count,
-        premium_count: premium_count,
-        diamond_count: diamond_count,
-        signature_count: signature_count
-      }) do
+  def init(
+        %{
+          dbf_id: dbf_id,
+          total_count: total_count,
+          plain_count: plain_count,
+          premium_count: premium_count,
+          diamond_count: diamond_count,
+          signature_count: signature_count
+        } = params
+      ) do
     %__MODULE__{
       dbf_id: dbf_id,
       total_count: total_count,
       plain_count: plain_count,
       premium_count: premium_count,
       diamond_count: diamond_count,
-      signature_count: signature_count
+      signature_count: signature_count,
+      plain_count: Map.get(params, :plain_count, 0),
+      premium_count: Map.get(params, :premium_count, 0),
+      diamond_count: Map.get(params, :diamond_count, 0),
+      signature_count: Map.get(params, :signature_count, 0)
     }
   end
 end

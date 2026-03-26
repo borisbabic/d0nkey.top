@@ -107,13 +107,21 @@ defmodule Backend.CollectionManager.CollectionDto.Card do
         premium_count = map["premiumCount"] || map["premium_count"] || 0
         diamond_count = map["diamondCount"] || map["diamond_count"] || 0
         signature_count = map["signatureCount"] || map["signature_count"] || 0
+        trial_plain_count = map["trialCount"] || map["trial_count"] || 0
+        trial_premium_count = map["trialPremiumCount"] || map["trial_premium_count"] || 0
+        trial_diamond_count = map["trialDiamondCount"] || map["trial_diamond_count"] || 0
+        trial_signature_count = map["trialSignatureCount"] || map["trial_signature_count"] || 0
 
         {:ok,
          new(dbf_id, %{
            plain_count: plain_count,
            premium_count: premium_count,
            diamond_count: diamond_count,
-           signature_count: signature_count
+           signature_count: signature_count,
+           trial_plain_count: trial_plain_count,
+           trial_premium_count: trial_premium_count,
+           trial_diamond_count: trial_diamond_count,
+           trial_signature_count: trial_signature_count
          })}
 
       _ ->
@@ -121,14 +129,25 @@ defmodule Backend.CollectionManager.CollectionDto.Card do
     end
   end
 
-  @base_counts %{plain_count: 0, premium_count: 0, diamond_count: 0, signature_count: 0}
+  @base_counts %{
+    plain_count: 0,
+    premium_count: 0,
+    diamond_count: 0,
+    signature_count: 0,
+    trial_plain_count: 0,
+    trial_premium_count: 0,
+    trial_diamond_count: 0,
+    trial_signature_count: 0
+  }
   def new(dbf_id, counts_to_merge \\ %{}) do
     counts = Map.merge(@base_counts, counts_to_merge)
 
     %__MODULE__{
       dbf_id: dbf_id,
       total_count:
-        counts.plain_count + counts.premium_count + counts.diamond_count + counts.signature_count,
+        counts.plain_count + counts.premium_count + counts.diamond_count + counts.signature_count +
+          counts.trial_plain_count + counts.trial_premium_count + counts.trial_diamond_count +
+          counts.trial_signature_count,
       plain_count: counts.plain_count,
       premium_count: counts.premium_count,
       diamond_count: counts.diamond_count,
