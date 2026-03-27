@@ -28,12 +28,12 @@ defmodule BackendWeb.Router do
   redirect("/wc/2023", "/battlefy/tournament/6578b996b94cda278bb85cca/lineups", :permanent)
   redirect("/wc/2024", "/battlefy/tournament/674fa20b0d896f0018364671/lineups", :permanent)
 
-  forward("/api/graphql", Absinthe.Plug, schema: BackendWeb.Schema)
+  # forward("/api/graphql", Absinthe.Plug, schema: BackendWeb.Schema)
 
-  forward("/graphiql", Absinthe.Plug.GraphiQL,
-    schema: BackendWeb.Schema,
-    interface: :playground
-  )
+  # forward("/graphiql", Absinthe.Plug.GraphiQL,
+  #   schema: BackendWeb.Schema,
+  #   interface: :playground
+  # )
 
   pipeline :browser do
     plug(:accepts, ["html"])
