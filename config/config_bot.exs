@@ -25,7 +25,6 @@ config :backend, QuantumScheduler,
     # {"* * * * *", fn -> Backend.Streaming.update_hdt_streamer_decks() end},
     # {"57 * * * *", fn -> Backend.MastersTour.refresh_current_invited() end},
 
-    # {"41 * * * *", fn -> Backend.PonyDojo.update() end},
     {"43 * * * *", fn -> Backend.DiscordBot.update_all_guilds(5000) end},
     {"1 17 * * Wed", fn -> Hearthstone.DeckTracker.PeriodManager.update_brawl_period_start() end},
     {"31 17 * * Wed",

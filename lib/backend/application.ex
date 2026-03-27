@@ -120,11 +120,6 @@ defmodule Backend.Application do
           id: Backend.AdsTxtCache,
           start: {Backend.AdsTxtCache, :start_link, [[]]}
         },
-        # %{
-        #   # can multiserver, prolly, who cares
-        #   id: Backend.PonyDojo,
-        #   start: {Backend.PonyDojo, :start_link, [[]]}
-        # },
         %{
           # TODO: CANNOT MULTISERVEr
           id: Backend.Streaming.StreamerDeckBag,
