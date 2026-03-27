@@ -164,12 +164,3 @@ Response Body
 ```
 
 Note how the order is not preserved. Also to reiterate that the deckcode that is the root key for the shaman deck is the one that is requested, not the one returned in the deck info resource since the canonical deckcode is different
-
-
-### Graphql
-Graphql api is available at /api/graphql
-
-GraphiQL playground should be available at /graphiql
-
-Currently covered:
-- streamer decks - (partial arguments/filters)
