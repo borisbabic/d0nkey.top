@@ -63,13 +63,6 @@ defmodule BackendWeb.Router do
   #   end
   # end
 
-  pipeline :admins_only do
-    plug(:basic_auth,
-      username: "admin",
-      password: Application.compile_env!(:backend, :admin_pass)
-    )
-  end
-
   # don't want the pipeline because
   scope "/chat-bot-command-hook", BackendWeb do
     pipe_through([:bot_command_hooks])
@@ -556,18 +549,6 @@ defmodule BackendWeb.Router do
     resources("/regions", RegionController)
     resources("/formats", FormatController)
     resources("/patreon-tiers", PatreonTierController)
-  end
-
-  scope "/admin", BackendWeb do
-    pipe_through([:browser, :admins_only])
-    get("/", AdminController, :index)
-    get("/get-all-leaderboards", AdminController, :get_all_leaderboards)
-    get("/test", AdminController, :test)
-    get("/config-vars", AdminController, :config_vars)
-    get("/config-vars/backend", AdminController, :config_vars)
-    get("/mt-player-nationality/:tour_stop", AdminController, :mt_player_nationality)
-    get("/fix-fantasy-mt-btag/:tour_stop", AdminController, :fantasy_fix_btag)
-    get("/recalculate_archetypes/:minutes_ago", AdminController, :recalculate_archetypes)
   end
 
   scope "/", BackendWeb do
