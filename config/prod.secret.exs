@@ -18,14 +18,9 @@ discord_token =
     this is needed for the bot
     """
 
-admin_pass =
-  System.get_env("ADMIN_PASS") ||
-    raise "environment variable ADMIN_PASS is missing."
-
 admin_config_vars_cutoff_date = System.get_env("ADMIN_CONFIG_VARS_CUTOFF_DATE") || "2020-10-12"
 
 config :backend,
-  admin_pass: admin_pass,
   admin_config_vars_cutoff_date: admin_config_vars_cutoff_date
 
 config :backend, Backend.Repo,
