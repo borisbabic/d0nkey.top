@@ -85,6 +85,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       highlander?(card_info) ->
         :"Highlander Hunter"
 
+      baku?(card_info) and questline?(card_info) ->
+        :"Odd Questline Hunter"
+
       questline?(card_info) ->
         :"Questline Hunter"
 
