@@ -136,6 +136,7 @@ defmodule BackendWeb.Router do
   scope "/", BackendWeb do
     pipe_through([:browser, :auth])
 
+    get("/deck/39056517", PageController, :rick_astley)
     get("/chat-bot-command-hook/help", ChatBotCommandHookController, :help)
     get("/arcticles/reveal/booms-incredible-inventions-mage", RevealController, :boom)
     get("/hs/article/:blog_id", HearthstoneController, :article)
