@@ -231,8 +231,9 @@ defmodule Components.MatchupsExplorer do
       NaiveDateTime.compare(now, ~N[2026-03-17 17:00:00]) == :lt ->
         "Archetyping is for before the 35.0.0 patch. I probably won't update it til after the expansion"
 
-      # NaiveDateTime.compare(now, ~N[2027-03-27 17:00:00]) == :lt ->
-      #   "Archetyping will be updated after there is sufficient post-rotation data"
+      NaiveDateTime.compare(now, ~N[2026-04-08 17:00:00]) == :lt and
+          NaiveDateTime.compare(now, ~N[2026-04-02 17:30:00]) == :gt ->
+        "Post patch archetyping will be updated a couple days post patch"
 
       true ->
         false
