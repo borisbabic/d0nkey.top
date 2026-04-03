@@ -119,9 +119,6 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       wild_big_spell_mage?(card_info) ->
         :"Big Spell Mage"
 
-      orb_hostage_mage?(card_info) ->
-        :"Orb Hostage Mage"
-
       hostage_mage?(card_info) ->
         :"Hostage Mage"
 
@@ -190,20 +187,11 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
     ])
   end
 
-  defp orb_hostage_mage?(card_info) do
+  defp hostage_mage?(card_info) do
     min_count?(card_info, 3, [
       "Ice Block",
       "Grey Sage Parrot",
       "The Galactic Projection Orb"
-    ]) and
-      ("Potion of Illusion" in card_info.card_names or
-         "Potion of Illusion" in card_info.etc_sideboard_names)
-  end
-
-  defp hostage_mage?(card_info) do
-    min_count?(card_info, 2, [
-      "Ice Block",
-      "Grand Magister Rommath"
     ]) and
       ("Potion of Illusion" in card_info.card_names or
          "Potion of Illusion" in card_info.etc_sideboard_names)
