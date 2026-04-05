@@ -26,7 +26,8 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Fel Infusion",
        "Defiled Spear" | @herald_package
      ]},
-    {:"No Minion DH", ["Time-Lost Glaive", "Sands of Time", "Sigil of Cinder"]},
+    {:"No Minion DH",
+     ["Time-Lost Glaive", "Sands of Time", "Sigil of Cinder", "Horn of Feasting"]},
     {:"Harold DH",
      [
        "Felfire Blaze",

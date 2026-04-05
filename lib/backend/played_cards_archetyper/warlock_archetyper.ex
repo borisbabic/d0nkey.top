@@ -24,10 +24,23 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
     {:"Harold Warlock",
      [
        "Envoy of the End",
-       "Ultraxion",
-       "Shrine of Twilight",
+       "Ultraxion"
+     ]},
+    {:"Harold Warlock",
+     [
+       "Spirit Bomb",
+       "The Egg of Khelos",
        "Shadowsworn Disciple",
-       "Deathwing, Worldbreaker"
+       "Shrine of Twilight",
+       "Holy Eggbearer",
+       "Cursed Chains",
+       "Eldritch Tentacles",
+       "Archdruid of Thorns",
+       "Hellfire",
+       "Drain Soul",
+       "Conflagrate",
+       "Abusive Sergeant",
+       "Cursed Catacombs"
      ]},
     {:"Wallow Warlock",
      [
@@ -37,22 +50,6 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Creature of Madness",
        "Shadowflame Stalker",
        "Wallow, the Wretched"
-     ]},
-    {:"Harold Warlock",
-     [
-       "Spirit Bomb",
-       "The Egg of Khelos",
-       "Holy Eggbearer",
-       "Cursed Chains",
-       "Eldritch Tentacles",
-       "Archdruid of Thorns",
-       "Hellfire",
-       "Drain Soul",
-       "Conflagrate",
-       "Abusive Sergeant",
-       "Eternal Toil",
-       "Cursed Catacombs",
-       "Mortal Coil"
      ]},
     {:"Aggro Warlock",
      [

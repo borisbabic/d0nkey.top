@@ -20,63 +20,42 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     {:"Token Druid",
      [
        "Overheat",
-       "Platysaur",
        "Power of the Wild",
-       "Longneck Egg",
-       "Holy Eggbearer",
-       "Ravenous Flock",
-       "Vibrant Squirrel",
-       "Ancient Raptor",
-       "Panther Mask"
+       "Ancient Raptor"
      ]},
-    {:"Imbue Druid",
-     {[
-        "Symbiosis"
-      ],
-      [
-        "Merithra",
-        "Darkscale Broodmother",
-        "Broodwatcher",
-        "Carrier Whelp",
-        "Elise the Navigator"
-      ]}},
     {:"Merithra Druid",
      [
        "Merithra of the Dream",
+       "Darkscale Broodmother",
+       "Broodwatcher",
        "Fyrakk the Blazing",
-       "Naralex, Herald of Flights",
-       "Elise the Navigator"
+       "Carrier Whelp",
+       "Prescient Slitherdrake",
+       "Naralex, Herald of the Flights"
+     ]},
+    {:"Token Druid",
+     [
+       "Platysaur",
+       "Ravenous Flock",
+       "Twilight Egg",
+       "Longneck Egg"
      ]},
     # 5.5
-    {:"Imbue Druid", ["Horn of Plenty", "Photosynthesis"]},
-    {:"Token Druid", ["Twilight Egg"]},
-    {:"Merithra Druid",
-     ["Ebb and Flow", "Whelp of the Infinite", "Azshara's Triumph", "Nightmare Lord Xavius"]},
-    {:"Imbue Druid", ["Mark of the Wild", "Forest's Gift", "Living Roots", "Crystalspine Cub"]},
-    {:"Merithra Druid", ["Darkscale Broodmother", "Broodwatcher", "Carrier Whelp"]},
-    # 10.5
-    {:"Krona Druid",
-     [
-       "Chrono-Lord Deios",
-       "Endbringer Umbra",
-       "Glacial Shard",
-       "Wrath"
-     ]},
     {:"Merithra Druid",
      [
-       "Story of Barnabus",
-       "Krona, Keeper of Eons",
-       "Acceleration Aura",
-       "Contigency",
-       "Twilight Timereaver",
-       "Underking"
+       "Azshara's Triumph",
+       "Elise the Navigator",
+       "Horn of Plenty",
+       "Endangered Dodo"
      ]},
     {:"Imbue Druid",
      [
+       "Photosynthesis"
+     ]},
+    {:"Merithra Druid",
+     [
+       "Acceleration Aura",
        "Felwood Treant",
-       "Innervate",
-       "Hatchery Helper",
-       "Wickerfang",
        "Waveshaping"
      ]}
   ]
