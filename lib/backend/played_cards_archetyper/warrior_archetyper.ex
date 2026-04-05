@@ -36,16 +36,18 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Siphoning Growth",
        "Heir of Hereafter",
        "Shellnado",
+       "Nablya, the Watcher",
+       "Bash",
        "The Egg of Khelos"
      ]},
     {:"Harold Warrior",
      [
-       "Living Flame",
        "Time-Twisted Seer",
        "Elise the Navigator",
        "Envoy of the End",
        "Ragnaros, the Great Fire",
        "Ultraxion",
+       "Ysera, Emerald Aspect",
        "Deathwing, Worldbreaker"
      ]},
     # 5.5

@@ -48,7 +48,10 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Ranger Initiate Vereesa",
        "Quick Shot",
        "Tracking",
-       "Dreambound Raptor"
+       "Dreambound Raptor",
+       "Bloodmage Thalnos",
+       "Bursting Shot",
+       "Shepherd's Crook"
      ]},
     # 5.5
     {:"Dragon Druid",

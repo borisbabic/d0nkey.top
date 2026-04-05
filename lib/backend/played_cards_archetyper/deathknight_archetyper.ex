@@ -9,7 +9,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     {:"Harold DK",
      [
        "Staff of the Endbringer",
-       "Dwathwing, Worldbreaker",
+       "Deathwing, Worldbreaker",
        "Obsessive Technician",
        "Ultraxion",
        "Arisen Onyxia",
@@ -19,8 +19,8 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     {:"Unholy DK",
      [
        "Grave Strength",
-       "Maze Guide",
-       "Living Paradox"
+       "Maze Guide"
+       # "Living Paradox"
      ]},
     # {:"Imbue DK",
     #  [
@@ -32,11 +32,11 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     #  ]},
     {:"Harold DK",
      [
-       "Elise the Navigator"
+       "Hematurge",
+       "Whelp of the Infinite"
      ]},
     {:"Unholy DK",
      [
-       "Murmy",
        "Monstrous Mosquito",
        "Talanji's Last Stand",
        "Shadows of Yesterday"
@@ -51,8 +51,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
      ]},
     {:"Harold DK",
      [
-       "Victor Nefarius",
-       "Whelp of the Infinite",
+       "Shadowed Informant",
        "Morbid Swarm"
      ]},
     {:"Blood DK",
@@ -83,7 +82,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Creature of Madness",
        "Nightmare Lord Xavius",
        "Sands of Time",
-       "Hematurge",
        "Poison Breath",
        "Wild Pyromancer",
        "Chillfallen Baron"
