@@ -8,6 +8,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       quest?(card_info) ->
         :"Quest Druid"
 
+      hostage?(card_info) ->
+        :"Hostage Druid"
+
       imbue_druid?(card_info) ->
         :"Imbue Druid"
 
@@ -54,6 +57,18 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   ]
   defp token?(card_info) do
     min_count?(card_info, 2, @wide_buff)
+  end
+
+  defp hostage?(card_info) do
+    min_count?(card_info, 3, [
+      "Underking",
+      "Endbringer Umbra",
+      "Grove Shaper"
+    ]) and
+      min_count?(card_info, 1, [
+        "Hopeful Dryad",
+        "Shaladrassil"
+      ])
   end
 
   defp bad?(card_info) do
