@@ -74,7 +74,7 @@ defmodule Backend.GeekLounge do
       tournament_id: lineup_tournament_id
     }
 
-    display_name_fun = Keyword.get(opts, :display_name_fun, fn -> nil end)
+    display_name_fun = Keyword.get(opts, :display_name_fun, fn _, name -> name end)
 
     player_ids_and_btags =
       Enum.map(tournament.participants, &{&1.player.id, &1.player.battletag})
