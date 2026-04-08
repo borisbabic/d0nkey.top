@@ -413,6 +413,12 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     |> elem(1)
   end
 
+  @spec cost_count(card_info(), integer()) :: integer()
+  def cost_count(%{full_cards: full_cards}, cost) do
+    full_cards
+    |> Enum.count(&(Card.cost(&1) == cost))
+  end
+
   @spec neutral_bouncers?(card_info(), integer()) :: boolean()
   def neutral_bouncers?(ci, min_count \\ 2) do
     min_count?(ci, min_count, ["Youthful Brewmaster", "Saloon Brewmaster", "Zola the Gorgon"])
