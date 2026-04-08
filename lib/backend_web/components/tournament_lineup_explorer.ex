@@ -11,6 +11,7 @@ defmodule Components.TournamentLineupExplorer do
   prop(page_size, :integer, default: 50)
   prop(show_page_dropdown, :boolean, default: true)
   prop(gm_week, :string, default: nil)
+  data(lineups, :any, default: nil)
   slot(default)
   slot(lineup_name, arg: %{lineup_name: :string})
 
@@ -23,18 +24,31 @@ defmodule Components.TournamentLineupExplorer do
   alias Backend.Hearthstone.Deck
   alias Components.PlayerName
 
+  def update(assigns, socket) do
+    {
+      :ok,
+      socket
+      |> assign(assigns)
+      |> assign(
+        lineups: lineups(assigns.tournament_id, assigns.tournament_source, assigns.filters)
+      )
+    }
+  end
+
   def render(assigns) do
     ~F"""
     <div>
-      <div :if={lineups = lineups(@tournament_id, @tournament_source, @filters)}>
+      <div :if={@lineups}>
         <#slot />
         <Dropdown.menu title="Page" :if={@show_page_dropdown}>
-          <Dropdown.item :for={page <- page_range(lineups, @page_size)} selected={page == @page} phx-target={@myself} phx-click="set-page" phx-value-page={page} >
+          <Dropdown.item :for={page <- page_range(@lineups, @page_size)} selected={page == @page} phx-target={@myself} phx-click="set-page" phx-value-page={page} >
             {page}
           </Dropdown.item>
         </Dropdown.menu>
         <button class="button" type="button" :on-click="show_modal">Filter</button>
-        <div>Total: {lineups |> Enum.count()}</div>
+        <button class="button" type="button" :on-click="open-all">Open All</button>
+        <button class="button" type="button" :on-click="close-all">Close All</button>
+        <div>Total: {@lineups |> Enum.count()}</div>
         <div class="modal is-active" :if={@show_modal}>
           <div class="modal-background"></div>
           <div class="modal-card">
@@ -71,7 +85,7 @@ defmodule Components.TournamentLineupExplorer do
             </tr>
           </thead>
           <tbody>
-            <tr :for={lineup <- lineups |> paginate(@page, @page_size)}>
+            <tr :for={lineup <- @lineups |> paginate(@page, @page_size)}>
               <td>
                 {#if @gm_week}
                   <GMProfileLink week={@gm_week} gm={lineup.name}/>
@@ -86,7 +100,7 @@ defmodule Components.TournamentLineupExplorer do
                 {/if}
               </td>
               <td>
-                <ExpandableLineup lineup={lineup} id={"modal_lineup_#{lineup.id}"}/>
+                <ExpandableLineup lineup={lineup} id={expandable_lineup_id(lineup.id)}/>
               </td>
             </tr>
           </tbody>
@@ -139,6 +153,34 @@ defmodule Components.TournamentLineupExplorer do
 
     new_decks = decks |> List.replace_at(deck_index, deck)
     temp_filters |> Map.put("decks", new_decks)
+  end
+
+  defp expandable_lineup_id(id) do
+    "modal_lineup_#{id}"
+  end
+
+  def handle_event(
+        "open-all",
+        _,
+        %{assigns: %{lineups: lineups, page: page, page_size: page_size}} = socket
+      ) do
+    for %{id: id} <- paginate(lineups, page, page_size) do
+      send_update(ExpandableLineup, id: expandable_lineup_id(id), show_cards: true)
+    end
+
+    {:noreply, socket |> assign(page: page)}
+  end
+
+  def handle_event(
+        "close-all",
+        _,
+        %{assigns: %{lineups: lineups, page: page, page_size: page_size}} = socket
+      ) do
+    for %{id: id} <- paginate(lineups, page, page_size) do
+      send_update(ExpandableLineup, id: expandable_lineup_id(id), show_cards: false)
+    end
+
+    {:noreply, socket |> assign(page: page)}
   end
 
   def handle_event("set-page", %{"page" => page_raw}, socket) do
