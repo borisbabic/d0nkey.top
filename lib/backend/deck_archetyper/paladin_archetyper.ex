@@ -12,9 +12,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       imbue?(card_info) ->
         :"Imbue Paladin"
 
-      aggro_paladin?(card_info) ->
-        :"Aggro Paladin"
-
       finja?(card_info) ->
         :"Finja Paladin"
 
@@ -23,6 +20,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
       aura?(card_info) ->
         :"Aura Paladin"
+
+      aggro_paladin?(card_info) ->
+        :"Aggro Paladin"
 
       murloc?(card_info) ->
         :"Murloc Paladin"
