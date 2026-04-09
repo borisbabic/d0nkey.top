@@ -15,6 +15,7 @@ defmodule Components.DecksExplorer do
   alias Hearthstone.DeckTracker
   alias Hearthstone.DeckTracker.Period
   alias BackendWeb.Router.Helpers, as: Routes
+  alias Components.ArchetypeStatsModal
   alias Components.ClassStatsModal
 
   # @default_limit 15
@@ -175,8 +176,9 @@ defmodule Components.DecksExplorer do
         <PlayableCardSelect id={"player_deck_includes"} format={params["format"]} param={"player_deck_includes"} selected={params["player_deck_includes"] || []} title="Include cards"/>
         <PlayableCardSelect id={"player_deck_excludes"} format={params["format"]} param={"player_deck_excludes"} selected={params["player_deck_excludes"] || []} title="Exclude cards"/>
         <ArchetypeSelect :if={can_access_unaggregated?(@user, @filter_context)} played_cards_archetypes={true} id={"opponent_archetype"} param={"opponent_archetype"} selected={params["opponent_archetype"] || []} title="Opponent Archetype" />
-        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.class_stats() end} title={warning_if_public(@filter_context, "As Class")} />
-        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> class_stats_filters() |> DeckTracker.opponent_class_stats() end} title={warning_if_public(@filter_context, "Vs Class")}/>
+        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> modal_stats_filters() |> DeckTracker.class_stats() end} title={warning_if_public(@filter_context, "As Class")} />
+        <ClassStatsModal :if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="opponent_class_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> modal_stats_filters() |> DeckTracker.opponent_class_stats() end} title={warning_if_public(@filter_context, "Vs Class")}/>
+        <ArchetypeStatsModal minimum_games={if @filter_context == :personal, do: 1, else: 20}:if={can_access_unaggregated?(@user, @filter_context)} class="dropdown" id="opponent_archetype_stats_modal" get_stats={fn -> search_filters |> Map.drop(["force_fresh"]) |> modal_stats_filters() |> DeckTracker.opponent_archetype_stats() end} title={warning_if_public(@filter_context, "Vs Archetype")}/>
         <ForceFreshDropdown
           id="decks_explorer_force_fresh"
           :if={@filter_context == :public and Backend.UserManager.User.premium?(@user)} />
@@ -401,8 +403,8 @@ defmodule Components.DecksExplorer do
     Map.put(params, "min_games", min)
   end
 
-  defp class_stats_filters(filters),
-    do: Map.delete(filters, "min_games") |> Map.delete("order_by")
+  defp modal_stats_filters(filters),
+    do: Map.delete(filters, "min_games") |> Map.delete("order_by") |> Map.delete("limit")
 
   def handle_info({:update_params, params}, socket = %{assigns: %{path_params: path_params}})
       when not is_nil(path_params) do

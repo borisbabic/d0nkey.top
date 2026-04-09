@@ -618,6 +618,24 @@ defmodule Hearthstone.DeckTracker do
     )
   end
 
+  def opponent_archetype_stats(criteria, repo_opts \\ []) do
+    base_opponent_archetype_stats_query()
+    |> build_games_query(criteria)
+    |> Repo.all(repo_opts)
+  end
+
+  def base_opponent_archetype_stats_query() do
+    base_stats_query()
+    |> join(:inner, [game: g], pc in assoc(g, :played_cards), as: :played_cards)
+    |> group_by([played_cards: pc], pc.opponent_archetype)
+    |> select_merge(
+      [played_cards: pc],
+      %{
+        opponent_archetype: pc.opponent_archetype
+      }
+    )
+  end
+
   @doc """
   Stats grouped by opponent's class
   """

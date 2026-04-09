@@ -400,7 +400,7 @@ defmodule Components.MatchupsTable do
     end
   end
 
-  defp archetype_sort_key(archetype) do
+  def archetype_sort_key(archetype) do
     class = Backend.Hearthstone.Deck.extract_class(archetype)
     "#{class}#{archetype}"
   end

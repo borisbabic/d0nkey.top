@@ -17,6 +17,7 @@ defmodule Components.TierList do
   import Components.DecksExplorer, only: [parse_int: 2]
   import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
   import FunctionComponents.Stats, only: [round: 2]
+  import Components.ArchetypeStatsTable, only: [archetype_cell: 1]
 
   prop(data, :list, default: [])
   prop(params, :map)
@@ -124,11 +125,7 @@ defmodule Components.TierList do
           </thead>
           <tbody>
             <tr :for={as <- stats}>
-              <td class={"decklist-info", Deck.extract_class(as.archetype) |> String.downcase()}>
-                <a class="basic-black-text deck-title" href={~p"/archetype/#{as.archetype}?#{add_games_filters(@params)}"}>
-                  {as.archetype}
-                </a>
-              </td>
+              <.archetype_cell archetype={as.archetype} params={@params} />
               <td>
                 <WinrateTag winrate={as.winrate}/>
               </td>
