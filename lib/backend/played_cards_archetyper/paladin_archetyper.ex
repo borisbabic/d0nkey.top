@@ -19,6 +19,11 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Petal Picker",
        "Aegis of Light"
      ]},
+    {:"Aggro Paladin",
+     [
+       "Beaming Sidekick",
+       "Murloc Tidecaller"
+     ]},
     {:"End of Turnadin",
      [
        "The Curator",
@@ -28,11 +33,12 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Hourglass Attendant",
        "Inspiring Maul",
        "Sandfury Aura",
-       "Highlord Fordragon",
        "Nightmare Lord Xavius",
        "Gelbin of Tomorrow",
        "Ancient of Yore",
        "Ursol",
+       "Mekkatorque's Aura",
+       "Gnomish Aura",
        "Renewing Flames",
        "Manifested Timeways",
        "Nozdormu, Bronze Aspect",
@@ -43,6 +49,24 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Acceleration Aura",
        "Righteous Protector",
        "Taelan Fordring"
+     ]},
+    {:"Aggro Paladin",
+     [
+       "Worgen Inflitrator",
+       "Dreambound Raptor",
+       "Tortollan Storyteller",
+       "Fire Fly",
+       "Rock Skipper",
+       "Murmy",
+       "Glacial Shard",
+       "Carrier Whelp",
+       "Platysaur",
+       "Dragonscale Aramaments",
+       "Sizzling Cinder",
+       "The Fins Beyond Time",
+       "Twilight Egg",
+       "Ancient Raptor",
+       "Past Gnomeregan"
      ]}
   ]
   @wild_config []
