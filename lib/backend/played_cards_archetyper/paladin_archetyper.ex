@@ -22,7 +22,13 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     {:"Aggro Paladin",
      [
        "Beaming Sidekick",
-       "Murloc Tidecaller"
+       "Murloc Tidecaller",
+       "Worgen Infiltrator",
+       "Dreambound Raptor",
+       "Tortollan Storyteller",
+       "Abusive Sergeant",
+       "Imprisoned Vilefiend",
+       "Fire Fly"
      ]},
     {:"End of Turnadin",
      [
@@ -52,10 +58,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      ]},
     {:"Aggro Paladin",
      [
-       "Worgen Inflitrator",
-       "Dreambound Raptor",
-       "Tortollan Storyteller",
-       "Fire Fly",
        "Rock Skipper",
        "Murmy",
        "Glacial Shard",
