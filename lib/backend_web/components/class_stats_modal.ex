@@ -1,6 +1,7 @@
 defmodule Components.ClassStatsModal do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
+  alias Components.Modal
   alias Components.ClassStatsTable
 
   prop(show_modal, :boolean, default: false)
@@ -13,29 +14,15 @@ defmodule Components.ClassStatsModal do
 
   def render(assigns) do
     ~F"""
-    <div class={@class}>
-      <button class="button" type="button" :on-click="show_modal">{@button_title || @title || @default_title}</button>
-      <div class="modal is-active" :if={@show_modal}>
-          <div class="modal-background"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">{@modal_title || @title || @default_title}</p>
-              <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
-            </header>
-            <section :if={stats = @get_stats.()} class="modal-card-body content">
-              <ClassStatsTable stats={stats} />
-            </section>
-          </div>
-        </div>
-    </div>
+    <span>
+      <Modal
+      id={"modal_#{@id}"}
+      button_title={@button_title || @title || @default_title}
+      title={@modal_title || @title || @default_title}
+      >
+        <ClassStatsTable stats={@get_stats.()} />
+      </Modal>
+    </span>
     """
-  end
-
-  def handle_event("show_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: true)}
-  end
-
-  def handle_event("hide_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: false)}
   end
 end

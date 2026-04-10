@@ -1,9 +1,10 @@
 defmodule Components.RosterModal do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
   alias Backend.Fantasy.LeagueTeam
   alias Backend.Fantasy.League
   alias BackendWeb.Router.Helpers, as: Routes
+  alias Components.Modal
 
   prop(show_modal, :boolean, default: false)
   prop(league_team, :map, required: true)
@@ -16,35 +17,29 @@ defmodule Components.RosterModal do
 
   def render(assigns) do
     ~F"""
-    <div>
-      <button class="button" type="button" :on-click="show_modal">{@button_title}</button>
-      <div class="modal is-active" :if={@show_modal}>
-          <div class="modal-background"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">{@league_team |> LeagueTeam.display_name()}</p>
-              <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
-            </header>
-            <section class="modal-card-body">
-              <div class="content">
-                <ul :for={{pick_name, points} <- picks_with_points(@league_team, @include_points, round(@league_team, @round))}>
-                  <li><span :if={@include_points}>{points} - </span>{show_pick_name(@league_team, @user, pick_name, round(@league_team, @round))}</li>
-                </ul>
-                <a target="_blank" :if={standings_link = standings_link(@league_team)} class="button is-link " href={"#{standings_link}"}>View in standings</a>
-              </div>
-            </section>
-            <div class="modal-card-foot" :if={show_round_footer?(@league_team)}>
-              <button type="button" class="button" :on-click="dec_round" >
-                <HeroIcons.chevron_left />
-              </button>
-              <button type="button" class="button" :on-click="inc_round">
-                <HeroIcons.chevron_right />
-              </button>
-              <p>Round {round(@league_team, @round)}</p>
-            </div>
-          </div>
+    <span>
+      <Modal
+      id={"modal_#{@id}"}
+      button_title={@button_title}
+      show_footer={show_round_footer?(@league_tema)}
+      title={LeagueTeam.display_name(@league_team)}>
+        <div class="content">
+          <ul :for={{pick_name, points} <- picks_with_points(@league_team, @include_points, round(@league_team, @round))}>
+            <li><span :if={@include_points}>{points} - </span>{show_pick_name(@league_team, @user, pick_name, round(@league_team, @round))}</li>
+          </ul>
+          <a target="_blank" :if={standings_link = standings_link(@league_team)} class="button is-link " href={"#{standings_link}"}>View in standings</a>
         </div>
-    </div>
+        <:footer>
+          <button type="button" class="button" :on-click="dec_round" >
+            <HeroIcons.chevron_left />
+          </button>
+          <button type="button" class="button" :on-click="inc_round">
+            <HeroIcons.chevron_right />
+          </button>
+          <p>Round {round(@league_team, @round)}</p>
+        </:footer>
+      </Modal>
+    </span>
     """
   end
 
@@ -122,12 +117,4 @@ defmodule Components.RosterModal do
 
   def handle_event("dec_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
     do: {:noreply, socket |> assign(round: round(lt, r) - 1)}
-
-  def handle_event("show_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: true)}
-  end
-
-  def handle_event("hide_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: false)}
-  end
 end
