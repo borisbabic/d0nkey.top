@@ -23,6 +23,7 @@ defmodule Components.TournamentLineupExplorer do
   alias Backend.DeckInteractionTracker, as: Tracker
   alias Backend.Hearthstone.Deck
   alias Components.PlayerName
+  alias Components.Modal
 
   def update(assigns, socket) do
     {
@@ -45,38 +46,34 @@ defmodule Components.TournamentLineupExplorer do
             {page}
           </Dropdown.item>
         </Dropdown.menu>
-        <button class="button" type="button" :on-click="show_modal">Filter</button>
+        <Modal
+        id="decks_filter_modal_#{@id}"
+        button_title="Filter"
+        body_class="tw-min-h-[400px]"
+        title="Filter Decks/Lineups"
+        >
+          <div :for.with_index={{deck, index} <- decks(@temp_filters)} class="level">
+            <div class="level-left">
+              <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={index}>Remove deck</button>
+              <Dropdown.menu title={"#{deck["class"] && deck["class"] |> Deck.class_name() || "Class"}"}>
+                <Dropdown.item selected={deck["class" == class]} :for={class <- Deck.classes()} phx-target={@myself} phx-click="filter-class" phx-value-index={index} phx-value-class={class}>
+                  {class |> Deck.class_name()}
+                </Dropdown.item>
+              </Dropdown.menu>
+              <ArchetypeSelect id={"archetype_select_#{index}"} updater={update_value(@id, @temp_filters, index, "archetype")} param={"archetype"} params={%{"archetype" => deck["archetype"]}} selected={deck["archetype"]} title="Archetype"/>
+              <PlayableCardSelect id={"include_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
+              <PlayableCardSelect id={"exclude_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
+            </div>
+          </div>
+        <:footer>
+        <button class="button" type="button" :on-click="add_deck">Add deck</button>
+        <button class="button" type="button" aria-label="close" :on-click="save_filters">Save</button>
+        </:footer>
+        </Modal>
+
         <button class="button" type="button" :on-click="open-all">Open All</button>
         <button class="button" type="button" :on-click="close-all">Close All</button>
         <div>Total: {@lineups |> Enum.count()}</div>
-        <div class="modal is-active" :if={@show_modal}>
-          <div class="modal-background"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">Filter Decks</p>
-              <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
-            </header>
-            <section class="modal-card-body" style="min-height: 400px;">
-              <div :for.with_index={{deck, index} <- decks(@temp_filters)} class="level">
-                <div class="level-left">
-                  <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={index}>Remove deck</button>
-                  <Dropdown.menu title={"#{deck["class"] && deck["class"] |> Deck.class_name() || "Class"}"}>
-                    <Dropdown.item selected={deck["class" == class]} :for={class <- Deck.classes()} phx-target={@myself} phx-click="filter-class" phx-value-index={index} phx-value-class={class}>
-                      {class |> Deck.class_name()}
-                    </Dropdown.item>
-                  </Dropdown.menu>
-                  <ArchetypeSelect id={"archetype_select_#{index}"} updater={update_value(@id, @temp_filters, index, "archetype")} param={"archetype"} params={%{"archetype" => deck["archetype"]}} selected={deck["archetype"]} title="Archetype"/>
-                  <PlayableCardSelect id={"include_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
-                  <PlayableCardSelect id={"exclude_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
-                </div>
-              </div>
-            </section>
-            <footer class="modal-card-foot">
-              <button class="button" type="button" :on-click="add_deck">Add deck</button>
-              <button class="button" type="button" aria-label="close" :on-click="save_filters">Save</button>
-            </footer>
-          </div>
-        </div>
         <table class="table is-fullwidth is-striped">
           <thead>
             <tr>

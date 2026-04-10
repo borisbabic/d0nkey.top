@@ -2,6 +2,7 @@ defmodule Components.DraftOrderModal do
   use Surface.LiveComponent
   alias Backend.Fantasy.League
   alias Backend.Fantasy.LeagueTeam
+  alias Components.Modal
 
   prop(show_modal, :boolean, default: false)
   prop(league, :map, required: true)
@@ -10,25 +11,17 @@ defmodule Components.DraftOrderModal do
 
   def render(assigns) do
     ~F"""
-    <div>
-      <button class="button" type="button" :on-click="show_modal">{@button_title}</button>
-      <div class="modal is-active" :if={@show_modal}>
-          <div class="modal-background"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">{@league.name} Draft Order</p>
-              <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
-            </header>
-            <section class="modal-card-body content">
-              <div class="level" :for={row <- pick_order_chunks(@league)}> 
-                <div class={"level-item #{pick_class(@league, index)} tag"} :for={{id, index} <- row}>
-                  {League.league_team!(@league, id) |> LeagueTeam.display_name()}
-                </div>
-              </div>
-            </section>
+    <span>
+      <Modal
+      button_title={@button_title}>
+      title={"#{@league.name} Draft Order"}>
+        <div class="level" :for={row <- pick_order_chunks(@league)}>
+          <div class={"level-item #{pick_class(@league, index)} tag"} :for={{id, index} <- row}>
+            {League.league_team!(@league, id) |> LeagueTeam.display_name()}
           </div>
         </div>
-    </div>
+      </Modal>
+    </span>
     """
   end
 

@@ -3,6 +3,7 @@ defmodule Components.LeagueInfoModal do
   alias Backend.Fantasy.League
   import BackendWeb.FantasyHelper
   use BackendWeb.ViewHelpers
+  alias Components.Modal
 
   prop(show_modal, :boolean, default: false)
   prop(league, :map, required: true)
@@ -11,29 +12,21 @@ defmodule Components.LeagueInfoModal do
 
   def render(assigns) do
     ~F"""
-    <div>
-      <button class="button" type="button" :on-click="show_modal">{@button_title}</button>
-      <div class="modal is-active" :if={@show_modal}>
-          <div class="modal-background"></div>
-          <div class="modal-card">
-            <header class="modal-card-head">
-              <p class="modal-card-title">{@league.name} League Info</p>
-              <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
-            </header>
-            <section class="modal-card-body content">
-              <table class="table is-fullwidth is-striped">
-                <tbody>
-                 <tr :for={{info, value} <- info(@league)}>
-                  <td>{info}</td>
-                  <td>{value}</td>
-                </tr>
-                  
-                </tbody>
-              </table>
-            </section>
-          </div>
-        </div>
-    </div>
+    <span>
+      <Modal
+      id={"modal_#{@id}"}
+      button_title={@button_title}
+      tittle={"#{@league.name} League Info"}>
+      <table class="table is-fullwidth is-striped">
+        <tbody>
+         <tr :for={{info, value} <- info(@league)}>
+          <td>{info}</td>
+          <td>{value}</td>
+        </tr>
+        </tbody>
+      </table>
+      </Modal>
+    </span>
     """
   end
 

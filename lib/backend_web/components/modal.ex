@@ -3,9 +3,10 @@ defmodule Components.Modal do
   prop(button_title, :string, required: false, default: nil)
   prop(button_class, :string, required: false, default: "button")
   prop(title, :string, required: true)
-  prop(show_modal, :boolean, default: false)
+  data(show_modal, :boolean, default: false)
   prop(show_success, :boolean, default: false)
   prop(show_error, :boolean, default: false)
+  prop(body_class, :css_class, default: "")
   prop(success_message, :string, default: "Success")
   prop(error_message, :string, default: "Error")
   prop(cancel_button_message, :string, default: "Cancel")
@@ -21,7 +22,7 @@ defmodule Components.Modal do
   @message_reset_assigns [show_error: false, show_success: false]
   def render(assigns) do
     ~F"""
-    <div>
+    <span>
       <button class={@button_class} type="button" :on-click="show_modal">{@button_title || @title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div :if={@show_modal} class="modal is-active">
@@ -31,7 +32,7 @@ defmodule Components.Modal do
               <p class="modal-card-title">{@title}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
           </header>
-          <section :if={@show_body} class="modal-card-body">
+          <section :if={@show_body} class={"modal-card-body", @body_class}>
             <#slot/>
           </section>
           <footer :if={@show_footer} class="modal-card-foot">
@@ -41,7 +42,7 @@ defmodule Components.Modal do
           </footer>
         </div>
       </div>
-    </div>
+    </span>
     """
   end
 
