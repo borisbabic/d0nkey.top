@@ -104,12 +104,6 @@
           <.navbar_item_link link={~p"/about"} display={"About"} />
         </.navbar_dropdown>
         <%!-- <.navbar_item_link link={~p"/mt/playoffs/summer_2025"}>Playoffs</.navbar_item_link> --%>
-        <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2026-04-15 13:12:00]) == :lt} href={~p"/tournament-lineups/masters_tour/winter_2026"}>
-            <span>🏆 Winter MT</span>
-            <%= if Twitch.HearthstoneLive.twitch_display_live?("playhearthstone") do %>
-              <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
-            <% end %>
-        </a>
         <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2026-03-17 16:00:00]) == :lt} href={~p"/mt/playoffs/winter_2026"}>
             <span>🏆 Playoffs</span>
             <%= if Twitch.HearthstoneLive.twitch_display_live?("playhearthstone") do %>
@@ -125,6 +119,13 @@
               <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
             <% end %>
         </a>
+        <.live_battlefy
+          display={"Winter MT"}
+          start={~N[2026-04-05 12:00:00]}
+          finish={~N[2026-04-15 13:30:00]}
+          battlefy_id={"69d8fa6f40d16e0013e416b0"}
+          twitch={"playhearthstone"}
+        />
         <.live_battlefy
           display={"Last Chance"}
           start={~N[2025-11-15 12:00:00]}
