@@ -1,4 +1,5 @@
 defmodule Components.Modal do
+  @moduledoc false
   use BackendWeb, :surface_live_component
   prop(button_title, :string, required: false, default: nil)
   prop(button_class, :string, required: false, default: "button")
@@ -27,7 +28,7 @@ defmodule Components.Modal do
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div :if={@show_modal} class="modal is-active">
         <div class="modal-background"><#slot {@background} /></div>
-        <div class="modal-card">
+        <div class="modal-card !tw-max-h-[85dvh]">
           <header class="modal-card-head">
               <p class="modal-card-title">{@title}</p>
               <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
