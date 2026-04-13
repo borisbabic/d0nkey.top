@@ -13,7 +13,6 @@ defmodule FunctionComponents.Stats do
   attr :lightness, :integer, default: 50
   attr :base_saturation, :integer, default: 5
   attr :sample, :integer, default: nil
-  attr :show_sample, :boolean, default: nil
   attr :impact, :boolean, default: false
   attr :win_loss, :any, default: nil
   attr :min_sample, :integer, default: 1
@@ -27,7 +26,6 @@ defmodule FunctionComponents.Stats do
     <.dynamic_tag :if={sufficient_sample(@sample, @min_sample)} tag_name={@tag_name} class={@class} style={if use_color?(@sample, @min_sample, @winrate, @min_for_color) , do: winrate_style(@winrate + shift_for_color(@impact) + @offset, flip(@positive_hue, @negative_hue, @flip), flip(@negative_hue, @positive_hue, @flip), @lightness, @base_saturation, @sample, @gradual_increase_limit), else: ""}>
       <span class={["tw-text-center", use_color?(@sample, @min_sample, @winrate, @min_for_color) && "basic-black-text"]}>
         <span :if={@show_winrate}>{round(@winrate, @round_digits)}</span>
-        <sup :if={@show_sample}>{@sample}</sup>
         <span :if={@win_loss}>{win_loss(@win_loss, @winrate, @sample, @show_winrate)}</span>
       </span>
     </.dynamic_tag>

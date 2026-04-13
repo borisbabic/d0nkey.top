@@ -135,7 +135,6 @@ defmodule Components.CardStatsTable do
           {add_arrow("Not Drawn Count", "not_drawn_count", @filters)}
           </a>
         </th>
-
             <th class="is-hidden-mobile">
             <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
               <span data-balloon-pos="up" aria-label={"Winrate when kept - deck winrate"}>
@@ -161,24 +160,26 @@ defmodule Components.CardStatsTable do
 
               </td>
             <td>
-              <WinrateTag impact={true} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
+              <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
               <span :if={!cs.sufficient_mull and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
             <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
 
             <td>
-              <WinrateTag impact={true} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
+              <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
               <span :if={!cs.sufficient_drawn and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
             <td :if={show_counts(@filters)}>
               {Util.get(cs, :drawn_total)}</td>
               <td>
-                <WinrateTag impact={true} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
+                <WinrateTag impact={true} show_sample={true} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
               </td>
               <td :if={show_counts(@filters)}>
                 {Util.get(cs, :not_drawn_total)}</td>
 
-            <td class="is-hidden-mobile"><WinrateTag impact={true} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/></td>
+            <td class="is-hidden-mobile">
+              <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
+            </td>
             <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
           </tr>
         </tbody>
