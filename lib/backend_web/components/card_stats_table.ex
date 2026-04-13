@@ -153,12 +153,10 @@ defmodule Components.CardStatsTable do
         <tbody>
           <tr :for={cs <- @card_stats |> DeckTracker.merge_card_stats() |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": selected?(cs, @highlight_cards)}>
             <td>
-
-            <div class="decklist_card_container">
-              <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
-            </div>
-
-              </td>
+              <div class="decklist_card_container">
+                <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
+              </div>
+            </td>
             <td>
               <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
               <span :if={!cs.sufficient_mull and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
@@ -171,11 +169,11 @@ defmodule Components.CardStatsTable do
             </td>
             <td :if={show_counts(@filters)}>
               {Util.get(cs, :drawn_total)}</td>
-              <td>
-                <WinrateTag impact={true} show_sample={true} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
-              </td>
-              <td :if={show_counts(@filters)}>
-                {Util.get(cs, :not_drawn_total)}</td>
+            <td class="is-hidden-mobile">
+              <WinrateTag impact={true} show_sample={true} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
+            </td>
+            <td class="is-hidden-mobile" :if={show_counts(@filters)}>
+              {Util.get(cs, :not_drawn_total)}</td>
 
             <td class="is-hidden-mobile">
               <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
@@ -348,6 +346,7 @@ defmodule Components.CardStatsTable do
   defp get_direction("asc"), do: :asc
   defp get_direction(_), do: :desc
 
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defp get_sorter(by) do
     case to_string(by) do
       "card" ->
