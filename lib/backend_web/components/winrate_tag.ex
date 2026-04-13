@@ -4,7 +4,7 @@ defmodule Components.WinrateTag do
   use BackendWeb, :surface_component
   alias FunctionComponents.Stats
   alias Backend.UserManager.User
-  # import Phoenix.Component, only: [dynamic_tag: 1]
+  import Phoenix.Component, only: [dynamic_tag: 1]
 
   prop(winrate, :number, required: true)
   prop(round_digits, :number, default: 1)
@@ -26,7 +26,33 @@ defmodule Components.WinrateTag do
   prop(show_winrate, :boolean, default: true)
   prop(gradual_increase_limit, :number, default: 10)
 
-  def render(assigns) do
+  def render(%{show_sample: true} = assigns) do
+    ~F"""
+      <.dynamic_tag tag_name={@tag_name}>
+        <Stats.winrate_tag
+        flip={@flip}
+        min_for_color={@min_for_color}
+        offset={@offset}
+        min_sample={@min_sample}
+        winrate={@winrate}
+        round_digits={@round_digits}
+        positive_hue={User.positive_hue(@user, @positive_hue)}
+        negative_hue={User.negative_hue(@user, @negative_hue)}
+        tag_name={@tag_name}
+        class={@class}
+        lightness={@lightness}
+        base_saturation={@base_saturation}
+        sample={@sample}
+        impact={@impact}
+        win_loss={@win_loss}
+        show_winrate={@show_winrate}
+        gradual_increase_limit={@gradual_increase_limit}/>
+        <span class="tw-text-xs">{@sample}</span>
+      </.dynamic_tag>
+    """
+  end
+
+  def render(%{show_sample: false} = assigns) do
     ~F"""
       <Stats.winrate_tag
       flip={@flip}
@@ -43,7 +69,6 @@ defmodule Components.WinrateTag do
       base_saturation={@base_saturation}
       sample={@sample}
       impact={@impact}
-      show_sample={@show_sample}
       win_loss={@win_loss}
       show_winrate={@show_winrate}
       gradual_increase_limit={@gradual_increase_limit}/>
