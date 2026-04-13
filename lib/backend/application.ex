@@ -145,7 +145,7 @@ defmodule Backend.Application do
 
     Task.async(fn ->
       Process.sleep(120_000)
-      Hearthstone.DeckTracker.AggregationJob.revive_orphaned()
+      Hearthstone.DeckTracker.AggregationJob.cancel_orphaned()
     end)
 
     Supervisor.start_link(children, opts)
