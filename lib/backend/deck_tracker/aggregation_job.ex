@@ -75,18 +75,17 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     |> Enum.sort_by(fn {_, _, minutes_ago, size} -> minutes_ago / size end, :desc)
   end
 
-  def revive_orphaned() do
-    Backend.Repo.update_all(orphaned_query(), set: [state: "available"])
+  def cancel_orphaned() do
+    Oban.cancel_all_jobs(orphaned_query())
   end
 
   def orphaned_query() do
     node = Oban.config().node
 
     from oj in "oban_jobs",
-      select: %{id: oj.id, queue: oj.queue, args: oj.args},
       where: fragment("?[1]", oj.attempted_by) != ^node,
       where: oj.queue in ^Enum.map(@queues, &to_string/1),
-      where: oj.state == "executing"
+      where: oj.state == "executing" or oj.state == "available"
   end
 
   defmacro __using__(opts) do
@@ -106,6 +105,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
 
       alias Hearthstone.DeckTracker.StatsAggregator
 
+      @impl true
       def perform(%Oban.Job{args: %{"period" => period, "format" => format}}) do
         StatsAggregator.auto_aggregate_period(period, format)
         :ok
