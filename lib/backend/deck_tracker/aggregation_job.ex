@@ -7,6 +7,10 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
   import Ecto.Query
 
   @queues [:deck_tracker_aggregator_fast, :deck_tracker_aggregator_slow]
+  @timeouts %{
+    deck_tracker_aggregator_fast: :timer.minutes(150),
+    deck_tracker_aggregator_slow: :timer.hours(7)
+  }
   def enqueue_needed() do
     needed()
     |> Enum.each(fn {period, format, _, size} ->
@@ -88,9 +92,22 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
       where: oj.state == "executing" or oj.state == "available"
   end
 
+  def cancel_old() do
+    now = NaiveDateTime.utc_now()
+    fast_ms = Map.fetch!(@timeouts, :deck_tracker_aggregator_fast)
+    slow_ms = Map.fetch!(@timeouts, :deck_tracker_aggregator_slow)
+    fast_cutoff = now |> NaiveDateTime.add(-1.2 * fast_ms, :millisecond)
+    slow_cutoff = now |> NaiveDateTime.add(-1.2 * slow_ms, :millisecond)
+
+    from oj in "oban_jobs",
+      where:
+        (oj.queue == "deck_tracker_aggregator_fast" and oj.inserted_at < ^fast_cutoff) or
+          (oj.queue == "deck_tracker_aggregator_slow" and oj.inserted_at < ^slow_cutoff)
+  end
+
   defmacro __using__(opts) do
     queue = Keyword.fetch!(opts, :queue)
-    timeout = Keyword.fetch!(opts, :timeout)
+    timeout = Map.fetch!(@timeouts, queue)
 
     quote do
       use Oban.Worker,
@@ -130,13 +147,11 @@ end
 defmodule Hearthstone.DeckTracker.FastAggregationJob do
   @moduledoc "Processs Aggregation Job"
   use Hearthstone.DeckTracker.AggregationJob,
-    queue: :deck_tracker_aggregator_fast,
-    timeout: :timer.minutes(150)
+    queue: :deck_tracker_aggregator_fast
 end
 
 defmodule Hearthstone.DeckTracker.SlowAggregationJob do
   @moduledoc "Processs Aggregation Job"
   use Hearthstone.DeckTracker.AggregationJob,
-    queue: :deck_tracker_aggregator_slow,
-    timeout: :timer.hours(7)
+    queue: :deck_tracker_aggregator_slow
 end
