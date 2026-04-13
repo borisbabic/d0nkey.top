@@ -66,7 +66,7 @@ defmodule Components.CardStatsTable do
         normalizer={&Util.to_int_or_orig/1}
         selected_as_title={false} />
       <LivePatchDropdown id="show_counts"
-        options={[{"yes", "Show Counts"}, {"no", "Don't Show Counts"}]}
+        options={[{"yes", "Show Counts"}, {"alongside_impact", "Counts Alongside Impact"}, {"no", "Don't Show Counts"}]}
         title={"Show Counts"}
         param={"show_counts"}
         selected_as_title={true} />
@@ -105,7 +105,7 @@ defmodule Components.CardStatsTable do
               </span>
             </a>
           </th>
-            <th :if={show_counts(@filters)}>
+            <th :if={show_counts?(@filters)}>
             <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
               {add_arrow("Mulligan Count", "mull_count", @filters)}
             </a>
@@ -118,7 +118,7 @@ defmodule Components.CardStatsTable do
               </span>
             </a>
           </th>
-            <th :if={show_counts(@filters)}>
+            <th :if={show_counts?(@filters)}>
             <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")}>
               {add_arrow("Drawn Count", "drawn_count", @filters)}
             </a>
@@ -130,7 +130,7 @@ defmodule Components.CardStatsTable do
             </span>
           </a>
         </th>
-        <th :if={show_counts(@filters)} class="is-hidden-mobile">
+        <th :if={show_counts?(@filters)} class="is-hidden-mobile">
           <a :on-click="change_sort" phx-value-sort_by={"not_drawn_count"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_count")}>
           {add_arrow("Not Drawn Count", "not_drawn_count", @filters)}
           </a>
@@ -143,7 +143,7 @@ defmodule Components.CardStatsTable do
             </a>
           </th>
 
-            <th :if={show_counts(@filters)} class="is-hidden-mobile">
+            <th :if={show_counts?(@filters)} class="is-hidden-mobile">
             <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
               {add_arrow("Kept Count", "kept_count", @filters)}
             </a>
@@ -158,27 +158,27 @@ defmodule Components.CardStatsTable do
               </div>
             </td>
             <td>
-              <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
-              <span :if={!cs.sufficient_mull and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
+              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
+              <span :if={!cs.sufficient_mull and !show_counts?(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
-            <td :if={show_counts(@filters)}>{Util.get(cs, :mull_total) }</td>
+            <td :if={show_counts?(@filters)}>{Util.get(cs, :mull_total) }</td>
 
             <td>
-              <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
-              <span :if={!cs.sufficient_drawn and !show_counts(@filters)}><HeroIcons.warning_triangle /></span>
+              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
+              <span :if={!cs.sufficient_drawn and !show_counts?(@filters)}><HeroIcons.warning_triangle /></span>
             </td>
-            <td :if={show_counts(@filters)}>
+            <td :if={show_counts?(@filters)}>
               {Util.get(cs, :drawn_total)}</td>
             <td class="is-hidden-mobile">
-              <WinrateTag impact={true} show_sample={true} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
+              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
             </td>
-            <td class="is-hidden-mobile" :if={show_counts(@filters)}>
+            <td class="is-hidden-mobile" :if={show_counts?(@filters)}>
               {Util.get(cs, :not_drawn_total)}</td>
 
             <td class="is-hidden-mobile">
-              <WinrateTag impact={true} show_sample={true} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
+              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
             </td>
-            <td :if={show_counts(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
+            <td :if={show_counts?(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
           </tr>
         </tbody>
       </table>
@@ -434,7 +434,7 @@ defmodule Components.CardStatsTable do
 
   def default_filters() do
     %{
-      "show_counts" => "no"
+      "show_counts" => "alongside_impact"
     }
   end
 
@@ -470,12 +470,21 @@ defmodule Components.CardStatsTable do
      )}
   end
 
-  def show_counts(filters) do
+  def show_counts?(filters) do
     show_counts =
       filters
       |> with_default_filters()
-      |> Map.get("show_counts", "no")
+      |> Map.get("show_counts", "alongside_impact")
 
-    show_counts != "no"
+    show_counts == "yes"
+  end
+
+  def counts_alongside_impact?(filters) do
+    show_counts =
+      filters
+      |> with_default_filters()
+      |> Map.get("show_counts", "alongside_impact")
+
+    show_counts == "alongside_impact"
   end
 end
