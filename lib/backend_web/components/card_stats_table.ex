@@ -94,7 +94,7 @@ defmodule Components.CardStatsTable do
         <thead>
           <th>
             <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")}>
-              {add_arrow(gettext("card_stats", "Card"), "card", @filters)}
+              {add_arrow(dgettext("card_stats", "Card"), "card", @filters)}
             </a>
           </th>
 
