@@ -238,7 +238,7 @@ defmodule BackendWeb do
       import Phoenix.View
 
       import BackendWeb.ErrorHelpers
-      import BackendWeb.Gettext
+      use Gettext, backend: BackendWeb.Gettext
       alias BackendWeb.Router.Helpers, as: Routes
       use BackendWeb.ViewHelpers
       import FunctionComponents.CoreComponents

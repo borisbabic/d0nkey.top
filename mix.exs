@@ -105,6 +105,7 @@ defmodule Backend.MixProject do
       {:oban_web, "~> 2.11"},
       {:kaffy, "~> 0.10.0"},
       {:redirect, "~> 0.4.0"},
+      {:kanta, "~> 0.5.1"},
       {:quantum, "~> 3.5"}
     ]
   end

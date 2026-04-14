@@ -1,8 +1,8 @@
 defmodule BackendWeb.Router do
   use BackendWeb, :router
   import Phoenix.LiveDashboard.Router
-  import Plug.BasicAuth
   import Oban.Web.Router
+  import KantaWeb.Router
   import Redirect
   alias BackendWeb.LivePlug.AssignDefaults
   alias BackendWeb.LivePlug.AdminAuth
@@ -19,6 +19,10 @@ defmodule BackendWeb.Router do
 
   pipeline :super_admin do
     plug(Backend.Plug.AdminAuth, role: :super)
+  end
+
+  pipeline :translator do
+    plug(Backend.Plug.AdminAuth, role: :translator)
   end
 
   pipeline :ensure_auth do
@@ -131,6 +135,11 @@ defmodule BackendWeb.Router do
     oban_dashboard("/oban")
     live("/panel", AdminPanelLive)
     live("/super/playground", PlaygroundLive)
+  end
+
+  scope "/kanta", BackendWeb do
+    pipe_through([:browser, :auth, :translator])
+    kanta_dashboard("/")
   end
 
   scope "/", BackendWeb do

@@ -19,6 +19,7 @@ defmodule Backend.Application do
         BackendWeb.Endpoint,
         # Starts a worker by calling: Backend.Worker.start_link(arg)
         # {Backend.Worker, arg},
+        {Kanta, Application.fetch_env!(:backend, Kanta)},
         %{
           # can multiserver
           id: Backend.Streaming.DeckStreamingInfoBag,
@@ -56,10 +57,6 @@ defmodule Backend.Application do
           id: Twitch.HearthstoneLive,
           start: {Twitch.HearthstoneLive, :start_link, [[]]}
         },
-        # %{
-        #   id: Backend.HSReplay.StreamingNow,
-        #   start: {Backend.HSReplay.StreamingNow, :start_link, [[]]}
-        # },
         %{
           # can multiserver
           id: Backend.Streaming.StreamingNow,
