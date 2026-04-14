@@ -219,6 +219,22 @@ window.hide_based_on_search = function (
   }
 };
 
+console.log("dgfsdfg");
+window.fit_text = (el) => {
+  const wrapper = el.querySelector(".shrink-wrapper");
+  console.log("ble ble ble ble");
+  if (!wrapper) return;
+
+  // Reset to capture the natural size first
+  wrapper.style.fontSize = "";
+  let size = parseInt(window.getComputedStyle(el).fontSize);
+
+  // Shrink loop
+  while (wrapper.scrollWidth > el.offsetWidth && size > 8) {
+    size--;
+    wrapper.style.fontSize = `${size}px`;
+  }
+};
 window.set_display = function (id_or_elem, display_val) {
   var elem = id_or_elem;
   if (typeof id_or_elem === "string" || id_or_elem instanceof String) {

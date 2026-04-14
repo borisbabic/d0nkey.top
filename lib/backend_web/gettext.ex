@@ -20,5 +20,5 @@ defmodule BackendWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext.Backend, otp_app: :backend
+  use Kanta.Backend, otp_app: :backend
 end

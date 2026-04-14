@@ -1,0 +1,52 @@
+## This file is a PO Template file.
+##
+## "msgid"s here are often extracted from source code.
+## Add new messages manually only if they're dynamic
+## messages that can't be statically extracted.
+##
+## Run "mix gettext.extract" to bring this file up to
+## date. Leave "msgstr"s empty as changing them here has no
+## effect: edit them in PO (.po) files instead.
+#
+msgid ""
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:123
+#, elixir-autogen, elixir-format
+msgid "Drawn Count"
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:117
+#, elixir-autogen, elixir-format
+msgid "Drawn Impact"
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:148
+#, elixir-autogen, elixir-format
+msgid "Kept Count"
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:141
+#, elixir-autogen, elixir-format
+msgid "Kept Impact"
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:110
+#, elixir-autogen, elixir-format
+msgid "Mulligan Count"
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:104
+#, elixir-autogen, elixir-format
+msgid "Mulligan Impact"
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:135
+#, elixir-autogen, elixir-format
+msgid "Not Drawn Count"
+msgstr ""
+
+#: lib/backend_web/components/card_stats_table.ex:129
+#, elixir-autogen, elixir-format
+msgid "Not Drawn Impact"
+msgstr ""

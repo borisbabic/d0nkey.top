@@ -208,6 +208,14 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
+config :gettext, :default_locale, "en"
+
+config :backend, Kanta,
+  endpoint: BackendWeb.Endpoint,
+  repo: Backend.Repo,
+  otp_name: :backend,
+  plugins: []
+
 config :error_tracker,
   repo: Backend.Repo,
   otp_app: :backend
