@@ -118,6 +118,7 @@ defmodule Components.CardsExplorer do
 
     fetched_cards =
       params
+      |> filter_relevant()
       |> Map.update("limit", 30 * scroll_size, &(&1 * scroll_size))
       |> Map.put("offset", new_offset)
       |> Map.put(:card_pool, card_pool)
