@@ -33,7 +33,6 @@ defmodule Backend.DeckArchetyper do
 
   def archetype(%{cards: _cards} = deck) do
     card_info = full_cards(deck)
-    class_name = Deck.class_name(deck)
 
     cond do
       splendiferous_whizbang?(card_info) ->

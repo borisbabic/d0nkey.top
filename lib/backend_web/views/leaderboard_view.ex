@@ -900,7 +900,7 @@ defmodule BackendWeb.LeaderboardView do
     "Lobby Legends"
   end
 
-  def legacy_mt_column(%{leaderboard_id: "STD", season_id: season_id, region: region}) do
+  def legacy_mt_column(%{leaderboard_id: "STD", season_id: season_id}) do
     case elem(get_ladder_tour_stop(season_id), 0) do
       :ok -> "Masters Tour"
       _ -> nil

@@ -129,10 +129,10 @@ defmodule Backend.CollectionManager.Collection.Card do
       premium_count: premium_count,
       diamond_count: diamond_count,
       signature_count: signature_count,
-      plain_count: Map.get(params, :plain_count, 0),
-      premium_count: Map.get(params, :premium_count, 0),
-      diamond_count: Map.get(params, :diamond_count, 0),
-      signature_count: Map.get(params, :signature_count, 0)
+      trial_plain_count: Map.get(params, :trial_plain_count, 0),
+      trial_premium_count: Map.get(params, :trial_premium_count, 0),
+      trial_diamond_count: Map.get(params, :trial_diamond_count, 0),
+      trial_signature_count: Map.get(params, :trial_signature_count, 0)
     }
   end
 end

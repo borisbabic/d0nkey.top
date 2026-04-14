@@ -3423,10 +3423,10 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_agg_count_query(_, query), do: query
 
+  def deck_or_archetype_criteria(deck_id, deck_param \\ "player_deck_id")
+
   def deck_or_archetype_criteria({key, value}, _),
     do: {key, value}
-
-  def deck_or_archetype_criteria(deck_id, deck_param \\ "player_deck_id")
 
   def deck_or_archetype_criteria(deck_id, deck_param) when is_integer(deck_id),
     do: {deck_param, deck_id}

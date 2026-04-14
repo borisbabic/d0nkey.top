@@ -201,15 +201,11 @@ defmodule BackendWeb.DeckBuilderLive do
     end
   end
 
-  def handle_event("remove-card", %{"card_id" => _card_id} = params, socket) do
-    do_remove_card(socket, params)
-  end
-
   def handle_event("toggle_cards", _, socket) do
     {:noreply, socket |> assign(show_cards: !socket.assigns.show_cards)}
   end
 
-  def handle_event("add-card", %{"card_id" => card_raw} = params, socket) do
+  def handle_event("add-card", %{"card_id" => card_raw}, socket) do
     card = Util.to_int!(card_raw)
     fabled_group = CardBag.fabled_group(card)
     %{deck: deck, raw_params: raw_params} = socket.assigns

@@ -1072,7 +1072,7 @@ defmodule ScratchPad do
 
   def process_twist_data(data \\ @twist_data) do
     Enum.map(data, fn {name, comment, card_name_tuples} ->
-      {errors, card_ids} = process_twist_cards(card_name_tuples)
+      {_errors, card_ids} = process_twist_cards(card_name_tuples)
       card_names = Enum.map(card_name_tuples, &elem(&1, 1))
       hero_id = get_hero_id(name)
       deckcode = Backend.Hearthstone.Deck.deckcode(card_ids, hero_id, 4)

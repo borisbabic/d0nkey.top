@@ -140,8 +140,4 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Dirty Rat"
     ])
   end
-
-  defp mystery_egg_hunter?(card_info) do
-    min_count?(card_info, 1, ["Mystery Egg"])
-  end
 end
