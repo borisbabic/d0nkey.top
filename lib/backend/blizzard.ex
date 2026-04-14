@@ -60,7 +60,6 @@ defmodule Backend.Blizzard do
 
   @type region :: :EU | :US | :AP | :CN
   @regions [:EU, :US, :AP, :CN]
-  @binary_regions Enum.map(@regions, &to_string/1)
   @qualifier_regions [:EU, :US, :AP]
   @type leaderboard ::
           :BG | :STD | :WLD | :CLS | :MRC | :arena | :twist | :DUO | :undergroundarena

@@ -43,6 +43,17 @@ defmodule Components.ArchetypeStatsTable do
     """
   end
 
+  def render(%{stats: stats, minimum_games: min_games} = assigns) do
+    filtered_stats =
+      stats |> Enum.filter(&(&1.wins + &1.losses > min_games)) |> order_by_archetype()
+
+    total_stats = Hearthstone.DeckTracker.sum_stats(filtered_stats)
+
+    assigns
+    |> assign(filtered_stats: filtered_stats, total_stats: total_stats)
+    |> render()
+  end
+
   attr :archetype, :string
   attr :params, :map, default: %{}
 
@@ -54,17 +65,6 @@ defmodule Components.ArchetypeStatsTable do
       </a>
     </td>
     """
-  end
-
-  def render(%{stats: stats, minimum_games: min_games} = assigns) do
-    filtered_stats =
-      stats |> Enum.filter(&(&1.wins + &1.losses > min_games)) |> order_by_archetype()
-
-    total_stats = Hearthstone.DeckTracker.sum_stats(filtered_stats)
-
-    assigns
-    |> assign(filtered_stats: filtered_stats, total_stats: total_stats)
-    |> render()
   end
 
   defp win_loss(%{wins: wins, losses: losses}, true), do: %{wins: wins, losses: losses}

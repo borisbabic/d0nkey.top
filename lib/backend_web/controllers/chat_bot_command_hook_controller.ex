@@ -24,6 +24,11 @@ defmodule BackendWeb.ChatBotCommandHookController do
     end
   end
 
+  def deck_url(conn, _params) do
+    conn
+    |> put_status(400)
+  end
+
   def hearthstone_news(conn, %{"channel" => _, "options" => options}) do
     tags =
       options
@@ -43,11 +48,6 @@ defmodule BackendWeb.ChatBotCommandHookController do
       _ ->
         conn |> put_status(400)
     end
-  end
-
-  def deck_url(conn, _params) do
-    conn
-    |> put_status(400)
   end
 
   def leaderboard_count(conn, %{
