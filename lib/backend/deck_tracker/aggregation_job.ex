@@ -86,7 +86,8 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
   def orphaned_query() do
     node = Oban.config().node
 
-    from oj in "oban_jobs",
+    from oj in Oban.Job,
+      # select: %{id: oj.id, queue: oj.queue, args: oj.args},
       where: fragment("?[1]", oj.attempted_by) != ^node,
       where: oj.queue in ^Enum.map(@queues, &to_string/1),
       where: oj.state == "executing" or oj.state == "available"
@@ -96,13 +97,16 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     now = NaiveDateTime.utc_now()
     fast_ms = Map.fetch!(@timeouts, :deck_tracker_aggregator_fast)
     slow_ms = Map.fetch!(@timeouts, :deck_tracker_aggregator_slow)
-    fast_cutoff = now |> NaiveDateTime.add(-1.2 * fast_ms, :millisecond)
-    slow_cutoff = now |> NaiveDateTime.add(-1.2 * slow_ms, :millisecond)
+    fast_cutoff = now |> NaiveDateTime.add(trunc(-1.2 * fast_ms), :millisecond)
+    slow_cutoff = now |> NaiveDateTime.add(trunc(-1.2 * slow_ms), :millisecond)
 
-    from oj in "oban_jobs",
-      where:
-        (oj.queue == "deck_tracker_aggregator_fast" and oj.inserted_at < ^fast_cutoff) or
-          (oj.queue == "deck_tracker_aggregator_slow" and oj.inserted_at < ^slow_cutoff)
+    query =
+      from oj in Oban.Job,
+        where:
+          (oj.queue == "deck_tracker_aggregator_fast" and oj.inserted_at < ^fast_cutoff) or
+            (oj.queue == "deck_tracker_aggregator_slow" and oj.inserted_at < ^slow_cutoff)
+
+    Oban.cancel_all_jobs(query)
   end
 
   defmacro __using__(opts) do
