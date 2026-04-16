@@ -14,13 +14,33 @@ defmodule Twitch.HearthstoneLive do
   end
 
   def handle_info(:loop, state = %{table: table}) do
-    streams = create_streams()
+    new_streams = create_streams()
+
+    new_streams_map = Map.new(new_streams, fn %{id: id} = stream -> {id, stream} end)
+    old_streams_map = Util.ets_lookup(table, :streams_map, %{})
+
+    cutoff = NaiveDateTime.utc_now() |> NaiveDateTime.add(-200, :second)
+
+    streams_map =
+      Map.merge(old_streams_map, new_streams_map)
+      |> Map.filter(fn {_key, val} ->
+        case Map.get(val, :last_known_live) do
+          %NaiveDateTime{} = last_known_live ->
+            :gt == NaiveDateTime.compare(last_known_live, cutoff)
+
+          _ ->
+            false
+        end
+      end)
+
+    streams = Map.values(streams_map)
 
     BackendWeb.Endpoint.broadcast_from(self(), "streaming:hs:twitch_live", "update", %{
       streams: streams
     })
 
     :ets.insert(table, {:streams, streams})
+    :ets.insert(table, {:streams_map, streams_map})
 
     send_loop()
     {:noreply, state}
