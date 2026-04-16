@@ -14,6 +14,7 @@ defmodule Twitch.Stream do
     field :user_id, String.t()
     field :user_name, String.t()
     field :viewer_count, number
+    field :last_known_live, NaiveDateTime.t()
   end
 
   def live?(%{live: "live"}), do: true
@@ -42,6 +43,7 @@ defmodule Twitch.Stream do
       type: map["type"],
       user_id: map["user_id"],
       user_name: map["user_name"],
+      last_known_live: NaiveDateTime.utc_now(),
       viewer_count: map["viewer_count"]
     }
   end
