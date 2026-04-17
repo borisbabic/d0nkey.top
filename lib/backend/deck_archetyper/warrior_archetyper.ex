@@ -210,6 +210,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       sulthraze?(card_info) ->
         :"Sul'thraze Warrior"
 
+      "Destructive Blaze" in card_info.card_names ->
+        :"Blaze Warrior"
+
       true ->
         fallbacks(card_info, "Warrior")
     end
