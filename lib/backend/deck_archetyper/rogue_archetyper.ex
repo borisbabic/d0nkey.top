@@ -315,6 +315,9 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       wild_thief_rogue?(card_info) ->
         :"Thief Rogue"
 
+      "Wishing Well" in card_info.card_names ->
+        :"Well Rogue"
+
       "Spirit of the Shark" in card_info.card_names ->
         :"Shark Rogue"
 
