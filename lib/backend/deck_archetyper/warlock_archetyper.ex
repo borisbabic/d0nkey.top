@@ -219,6 +219,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
   def wild(card_info) do
     cond do
+      boar?(card_info) and "Battle at the End Time" in card_info.card_names and highlander?(card_info) ->
+        :"HL Tick Tock Boarlock"
+
       "Battle at the End Time" in card_info.card_names and highlander?(card_info) ->
         :"HL Tick Tock Warlock"
 
@@ -242,6 +245,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       "The Demon Seed" in card_info.card_names ->
         :Seedlock
+
+      boar?(card_info) and "Battle at the End Time" in card_info.card_names ->
+        :"Tick Tock Boarlock"
 
       "Battle at the End Time" in card_info.card_names ->
         :"Tick Tock Warlock"
