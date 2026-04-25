@@ -165,13 +165,14 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   end
 
   defp wild_small_spell_mage?(card_info) do
-    min_count?(card_info, 3, [
-      "Mana Wyrm",
-      "Flamewaker",
-      "Raylla, Sand Sculptor",
-      "Vicious Slitherspear",
-      "Mantle Shaper"
-    ])
+    Archmage Kalec in card_info.card_names or
+      min_count?(card_info, 3, [
+        "Mana Wyrm",
+        "Flamewaker",
+        "Raylla, Sand Sculptor",
+        "Vicious Slitherspear",
+        "Mantle Shaper"
+      ])
   end
 
   defp no_minion?(card_info, min_count) do
