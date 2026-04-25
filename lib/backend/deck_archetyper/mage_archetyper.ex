@@ -165,7 +165,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
   end
 
   defp wild_small_spell_mage?(card_info) do
-    Archmage Kalec in card_info.card_names or
+    "Archmage Kalec" in card_info.card_names or
       min_count?(card_info, 3, [
         "Mana Wyrm",
         "Flamewaker",
