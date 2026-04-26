@@ -150,6 +150,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       highlander?(card_info) ->
         :"Highlander Priest"
 
+      wild_heal_burn_priest?(card_info) ->
+        :"Heal Burn Priest"
+
       questline?(card_info) ->
         :"Questline Priest"
 
@@ -250,6 +253,13 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       "Intertwined Fate",
       "Keymaster Alabaster",
       "Cloning Device"
+    ])
+  end
+
+  defp wild_heal_burn_priest?(card_info) do
+    min_count?(card_info, 2, [
+      "Cleansing Cleric",
+      "Embrace the Shadow"
     ])
   end
 
