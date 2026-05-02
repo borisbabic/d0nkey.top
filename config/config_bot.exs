@@ -135,10 +135,9 @@ config :backend, QuantumScheduler,
      end},
     {"47 * * * *",
      fn ->
-       Backend.Leaderboards.save_all_right_after_midnight(
+       Backend.Leaderboards.save_all_current_right_after_midnight(
          [:STD, :BG, :WLD, :DUO, :undergroundarena, :twist],
-         20_000,
-         120_000,
+         nil,
          10_001
        )
      end},

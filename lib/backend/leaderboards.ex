@@ -183,6 +183,24 @@ defmodule Backend.Leaderboards do
         between_full_delay_ms,
         offset
       ) do
+    regions_after_midnight()
+    |> save_current_with_delay(
+      leaderboards,
+      between_pages_delay_ms,
+      between_full_delay_ms,
+      nil,
+      offset
+    )
+  end
+
+  def save_all_current_right_after_midnight(leaderboards, max_num \\ nil, min_num \\ 1) do
+    for r <- regions_after_midnight(), l <- leaderboards do
+      season = fetch_current_season(l, r)
+      save_with_retry(season, max_num, min_num)
+    end
+  end
+
+  defp regions_after_midnight() do
     Enum.filter(Blizzard.regions_with_timezone(), fn {_region, timezone} ->
       now = Timex.now(timezone)
       one_hour_ago = Timex.shift(now, hours: -1)
@@ -191,13 +209,6 @@ defmodule Backend.Leaderboards do
       :eq != Date.compare(now_date, one_hour_ago_date)
     end)
     |> Enum.map(&elem(&1, 0))
-    |> save_current_with_delay(
-      leaderboards,
-      between_pages_delay_ms,
-      between_full_delay_ms,
-      nil,
-      offset
-    )
   end
 
   def save_last_month_constructed(
@@ -338,26 +349,37 @@ defmodule Backend.Leaderboards do
       |> Repo.all()
 
     ranks = Enum.map(entries, & &1.rank)
-    max_rank = Enum.max(ranks)
 
     missing_pages =
-      1..total_size
-      |> Enum.chunk_every(@page_size)
-      |> Enum.with_index(1)
-      |> Enum.filter(fn {chunk, _page} ->
-        if Enum.at(chunk, 0) > max_rank do
-          true
-        else
-          Enum.any?(chunk, fn num ->
-            num not in ranks
-          end)
-        end
-      end)
-      |> Enum.map(fn {_chunk, page} -> page end)
+      find_missing_pages(ranks, total_size)
 
     for page <- missing_pages do
       PageFetcher.enqueue_page(season, page)
     end
+  end
+
+  defp find_missing_pages(ranks, total_size) do
+    max_rank = Enum.max(ranks)
+
+    chunk_has_missing = fn chunk ->
+      Enum.any?(chunk, fn num ->
+        num not in ranks
+      end)
+    end
+
+    filter_fun = fn {chunk, _page} ->
+      if Enum.at(chunk, 0) > max_rank do
+        true
+      else
+        chunk_has_missing.(chunk)
+      end
+    end
+
+    1..total_size
+    |> Enum.chunk_every(@page_size)
+    |> Enum.with_index(1)
+    |> Enum.filter(filter_fun)
+    |> Enum.map(fn {_chunk, page} -> page end)
   end
 
   defp base_gaps_query() do

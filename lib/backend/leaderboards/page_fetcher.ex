@@ -1,6 +1,6 @@
 defmodule Backend.Leaderboards.PageFetcher do
   @moduledoc "Fetches leaderboard pages and retries failures"
-  use Oban.Worker, queue: :leaderboards_pages_fetching, unique: [period: 300]
+  use Oban.Worker, queue: :leaderboards_pages_fetching, unique: [period: 300], max_attempts: 3
   alias Backend.Leaderboards
   alias Hearthstone.Leaderboards.Api
   alias Hearthstone.Leaderboards.Response
