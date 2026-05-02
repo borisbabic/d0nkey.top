@@ -211,6 +211,15 @@ defmodule Backend.Leaderboards do
     |> Enum.map(&elem(&1, 0))
   end
 
+  def save_last_month_constructed_with_retry(leaderboards) do
+    season_id = Blizzard.current_constructed_season_id() - 1
+
+    for r <- Blizzard.regions(), l <- leaderboards do
+      season = %ApiSeason{region: r, leaderboard_id: to_string(l), season_id: season_id}
+      save_with_retry(season)
+    end
+  end
+
   def save_last_month_constructed(
         leaderboards,
         between_pages_delay_ms,

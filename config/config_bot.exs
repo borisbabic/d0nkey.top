@@ -143,11 +143,7 @@ config :backend, QuantumScheduler,
      end},
     {"37 09 1 * *",
      fn ->
-       Backend.Leaderboards.save_last_month_constructed(
-         [:STD, :WLD, :twist],
-         60_000,
-         360_000
-       )
+       Backend.Leaderboards.save_last_month_constructed_with_retry([:STD, :WLD, :twist])
      end},
     # {"7 * * * *", fn -> Backend.Leaderboards.prune_empty_seasons() end},
     {"11 08 1 * *", fn -> Backend.Leaderboards.copy_last_month_to_lobby_legends() end},
