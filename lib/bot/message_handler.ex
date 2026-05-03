@@ -184,17 +184,16 @@ defmodule Bot.MessageHandler do
       "!ping" ->
         Message.create(msg.channel_id, "pong")
 
-      <<"!create_highlight", _::binary>> ->
-        handle_highlight(msg)
-
-      <<"!c_h", _::binary>> ->
-        handle_highlight(msg)
-
-      <<"!ch", _::binary>> ->
-        handle_highlight(msg)
-
       <<"!leaderboard", _::binary>> ->
         Bot.LdbMessageHandler.handle_top_leaderboard(msg)
+
+      <<"!check", _::binary>> ->
+        if :lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2026-05-03 16:00:00]) do
+          reply_deez_nuts(msg, "deez nuts")
+        end
+
+      <<"!deez", _::binary>> ->
+        reply_deez_nuts(msg, "nuts")
 
       <<"!ldbc", _::binary>> ->
         Bot.LdbMessageHandler.handle_count(msg)
