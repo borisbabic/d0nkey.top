@@ -141,7 +141,19 @@ defmodule Bot.MessageHandlerUtil do
     Logger.error("Couldn't send discord message to #{channel_id}")
   end
 
-  def travolta_response(), do: %{file: "assets/static/images/travolta.gif"}
+  def travolta_response(), do: [file: "assets/static/images/travolta.gif"]
+
+  @default_deez_nuts_msg "deez nuts"
+  def deez_nuts_response(message \\ @default_deez_nuts_msg),
+    do: [file: "assets/static/images/nuts.jpg", content: message]
+
+  def send_deez_nuts(%{channel_id: channel_id}, message \\ @default_deez_nuts_msg) do
+    Api.Message.create(channel_id, deez_nuts_response(message))
+  end
+
+  def reply_deez_nuts(msg, message \\ @default_deez_nuts_msg) do
+    reply(msg, deez_nuts_response(message))
+  end
 
   def send_travolta(channel_id),
     do: Api.Message.create(channel_id, travolta_response())
