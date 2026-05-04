@@ -12,6 +12,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       imbue?(card_info) ->
         :"Imbue Paladin"
 
+      dude_paladin?(card_info) ->
+        :"Dude Paladin"
+
       finja?(card_info) ->
         :"Finja Paladin"
 
@@ -42,6 +45,18 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp dude_paladin?(card_info) do
+    min_count?(card_info, 5, [
+      "Convalescence",
+      "Emboldening Blade",
+      "Brash Battlemaster",
+      "Teamwork",
+      "Resilient Savior",
+      "Arator the Redeemer",
+      "Muster for Battle"
+    ])
   end
 
   defp finja?(card_info) do

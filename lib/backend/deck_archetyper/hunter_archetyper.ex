@@ -23,6 +23,12 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       no_hand?(card_info) ->
         :"No Hand Hunter"
 
+      companion?(card_info) ->
+        :"Companion Hunter"
+
+      huffer?(card_info) ->
+        :"Huffer Hunter"
+
       "Confront the Tol'vir" in card_info.card_names ->
         :"Ace Hunter"
 
@@ -32,6 +38,27 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp huffer?(card_info) do
+    min_count?(card_info, 3, [
+      "Tayla Earthstrider",
+      "Spiritspeaker",
+      "Chrono-Lord Deios"
+    ])
+  end
+
+  defp companion?(card_info) do
+    min_count?(card_info, 4, [
+      "Tame Pet",
+      "Spiritspeaker",
+      "Migrating Elekk",
+      "Roam Free",
+      "Tayla Earthstrider",
+      "Animal Companion",
+      "Broll Bearmantle",
+      "Call of the Wild"
+    ])
   end
 
   defp dragon_hunter?(card_info) do

@@ -17,6 +17,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       imbue?(card_info, 4) ->
         :"Imbue Mage"
 
+      leyline?(card_info) ->
+        :"Leyline Mage"
+
       burn_mage?(card_info) ->
         :"Burn Mage"
 
@@ -32,6 +35,18 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp leyline?(card_info) do
+    min_count?(card_info, 4, [
+      "Leyline Nexus",
+      "Mystic Runsaber",
+      "Surge Needle",
+      "Crystallized Leyline",
+      "Ley Walker",
+      "Bursting Leyline",
+      "The Arcanomicon"
+    ])
   end
 
   defp burn_mage?(card_info) do
