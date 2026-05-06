@@ -4,6 +4,15 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
 
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
+  @leyline_package [
+    "Crystallized Leyline",
+    "Ley Walker",
+    "Bursting Leyline",
+    "The Arcanomicon",
+    "Surge Needle",
+    "Mystic Runesaber",
+    "Leyline Nexus"
+  ]
   @standard_excludes %{}
   @standard_config [
     {:"Quest Mage", ["The Forbidden Sequence"]},
@@ -19,6 +28,15 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Flutterwing Guardian",
        "Bitterbloom Knight"
      ]},
+    {:"Leyline Mage",
+     [
+       "Mirror Dimension",
+       "Sands of Time",
+       "Portal Vanguard",
+       "Khadgar",
+       "Storage Scuffle",
+       "Spark of Life"
+     ] ++ @leyline_package},
     {:"Burn Mage",
      [
        "Battlefield Blaster",
