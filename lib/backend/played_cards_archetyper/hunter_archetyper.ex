@@ -15,6 +15,20 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Resplendent Dreamweaver",
        "Flutterwing Guardian"
      ]},
+    {:"Companion Hunter",
+     [
+       "Roam Free",
+       "Call of the Wild",
+       "Migrating Elekk",
+       "Animal Companion",
+       "Tayla Earthstrider",
+       "Critter Caretaker",
+       "Broll Bearmantle",
+       "Exotic Houndmaster",
+       "Spiritspeaker",
+       "Nighmare Lord Xavius",
+       "Tame Pet"
+     ]},
     {:"Dragon Hunter",
      [
        "Tormented Dreadwing",
@@ -24,6 +38,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Petal Peddler",
        "Darkscale Broodmother"
      ]},
+    # 5.5
     {:"No Hand Hunter",
      [
        "Precise Shot",
@@ -51,9 +66,9 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Dreambound Raptor",
        "Bloodmage Thalnos",
        "Bursting Shot",
-       "Shepherd's Crook"
+       "Shepherd's Crook",
+       "Sands of Time"
      ]},
-    # 5.5
     {:"Dragon Druid",
      [
        "Carrier Whelp",
