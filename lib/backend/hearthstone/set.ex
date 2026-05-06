@@ -14,6 +14,8 @@ defmodule Backend.Hearthstone.Set do
     field :non_collectible_revelead_count, :integer
     field :slug, :string
     field :type, :string
+    # like for HSJson. I think it's what's used in game? Didn't have a better name
+    field :alt_slug, :string, default: nil
     field :release_date, :date
 
     timestamps()
@@ -36,6 +38,7 @@ defmodule Backend.Hearthstone.Set do
       :release_date,
       :non_collectible_count,
       :non_collectible_revelead_count,
+      :alt_slug,
       :type
     ])
     |> validate_required([
@@ -55,6 +58,7 @@ defmodule Backend.Hearthstone.Set do
   end
 
   # TODO add this to the DB
+  # Used for quests and questlines
   def abbreviation(%{slug: "united-in-stormwind"}), do: "UiS"
   def abbreviation(%{slug: "journey-to-ungoro"}), do: "JtU"
   def abbreviation(%{slug: "galakronds-awakening"}), do: "GA"

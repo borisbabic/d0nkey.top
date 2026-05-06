@@ -24,4 +24,20 @@ defmodule Backend.Infrastructure.HearthstoneJsonCommunicator do
       _ -> {:error, :error_getting}
     end
   end
+
+  @directory_url "https://api.hearthstonejson.com/v1/"
+  @version_regex ~r/"\/v1\/(\d+)\/"/
+  @spec get_latest_version() :: {:ok, integer()} | {:error, any()}
+  def get_latest_version() do
+    with {:ok, %{body: body}} <- HTTPoison.get(@directory_url) do
+      latest =
+        Regex.scan(@version_regex, body)
+        |> Enum.map(fn [_matched, captured] ->
+          Util.to_int!(captured)
+        end)
+        |> Enum.max()
+
+      {:ok, latest}
+    end
+  end
 end

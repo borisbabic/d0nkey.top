@@ -3,6 +3,7 @@ import Config
 config :backend, QuantumScheduler,
   jobs: [
     {"37 3 * * *", fn -> Backend.HearthstoneJson.update_cards() end},
+    {"11 */2 * * *", fn -> Backend.HearthstoneJson.update_version_and_cards() end},
     # {"37 13 * * *", fn -> Backend.ReqvamTop100Tweeter.check_and_tweet() end},
     {"37 5 * * *", fn -> Backend.PrioritizedBattletagCache.update_cache() end},
     # {"1 * * * *", fn -> Backend.MastersTour.sign_me_up() end},

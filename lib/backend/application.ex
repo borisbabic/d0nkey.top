@@ -68,6 +68,11 @@ defmodule Backend.Application do
           start: {Backend.Infrastructure.PlayerNationalityCache, :start_link, [[]]}
         },
         %{
+          # multiserverable
+          id: Backend.Hearthstone.JsonCardShimmier,
+          start: {Backend.Hearthstone.JsonCardShimmier, :start_link, [[]]}
+        },
+        %{
           # multiserverable, might get out of sync if multiple?
           id: Backend.HearthstoneJson,
           start: {Backend.HearthstoneJson, :start_link, [[fetch_fresh: fetch_fresh?()]]}
