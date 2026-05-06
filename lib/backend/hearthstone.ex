@@ -2091,20 +2091,55 @@ defmodule Backend.Hearthstone do
   def add_missing_cards_from_json(
         set_slug \\ "event",
         json_set \\ "EVENT",
-        additional_filter \\ & &1.collectible
+        additional_filter \\ & &1.collectible,
+        json_cards \\ nil,
+        api_ids \\ nil
       ) do
-    api_ids = CardBag.all_cards() |> Enum.map(&Card.dbf_id/1)
+    {json_cards, api_ids} = do_ensure_cards_and_ids(json_cards, api_ids)
 
     missing =
-      HearthstoneJson.cards()
-      |> Enum.filter(
+      Enum.filter(
+        json_cards,
         &(&1.set == json_set and &1.dbf_id not in api_ids and additional_filter.(&1))
       )
 
     sets = card_sets()
 
     card_set_id = find_matching_by_slug(sets, set_slug)
-    upsert_json_cards(missing, card_set_id)
+    ret = upsert_json_cards(missing, card_set_id)
+    CardBag.refresh_table()
+    ret
+  end
+
+  def add_missing_collectible_from_json(json_cards \\ nil, api_ids \\ nil) do
+    {json_cards, api_ids} = do_ensure_cards_and_ids(json_cards, api_ids)
+    query = from s in Set, where: not is_nil(s.alt_slug) and not is_nil(s.slug)
+    sets = Repo.all(query)
+
+    ret =
+      for set <- sets do
+        {
+          set.slug,
+          add_missing_cards_from_json(
+            set.slug,
+            set.alt_slug,
+            & &1.collectible,
+            json_cards,
+            api_ids
+          )
+        }
+      end
+
+    CardBag.refresh_table()
+    ret
+  end
+
+  @spec do_ensure_cards_and_ids([HearthstoneJson.Card.t()] | nil, [integer()] | nil) ::
+          {[HearthstoneJson.Card.t()], [integer()]}
+  defp do_ensure_cards_and_ids(json_cards, api_ids) do
+    json_cards = json_cards || HearthstoneJson.cards()
+    api_ids = api_ids || CardBag.all_cards() |> Enum.map(&Card.dbf_id/1)
+    {json_cards, api_ids}
   end
 
   def upsert_json_cards(cards, card_set_id) do

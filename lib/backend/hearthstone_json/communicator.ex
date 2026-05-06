@@ -6,4 +6,5 @@ defmodule Backend.HearthstoneJson.Communicator do
   @callback get_collectible_cards() :: {:ok, [Card]} | {:error, any()}
   @callback get_cards!() :: [Card]
   @callback get_cards() :: {:ok, [Card]} | {:error, any()}
+  @callback get_latest_version() :: {:ok, integer()} | {:error, any()}
 end
