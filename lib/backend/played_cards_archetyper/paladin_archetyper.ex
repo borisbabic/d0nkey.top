@@ -19,6 +19,33 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Petal Picker",
        "Aegis of Light"
      ]},
+    {:"Dude Paladin",
+     [
+       "Emboldening Blade",
+       "Resilient Savior",
+       "Arator the Redeemer",
+       "Hatching Ceremony",
+       "Teamwork",
+       "Muster for Battle",
+       "Brash Battlemaster"
+     ]},
+    {:"End of Turnadin",
+     [
+       "Scalebreaker Bulwark",
+       "Spearheart Sentry",
+       "Hourglass Attendant",
+       "Inspiring Maul",
+       "Sandfury Aura",
+       "Nightmare Lord Xavius",
+       "Gelbin of Tomorrow",
+       "Ancient of Yore",
+       "Mekkatorque's Aura",
+       "Gnomish Aura",
+       "Renewing Flames",
+       "Manifested Timeways",
+       "Chronological Aura",
+       "Bronze Redeemer"
+     ]},
     {:"Aggro Paladin",
      [
        "Beaming Sidekick",
@@ -30,31 +57,9 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Imprisoned Vilefiend",
        "Fire Fly"
      ]},
-    {:"End of Turnadin",
+    {:"Dude Paladin",
      [
-       "The Curator",
-       "Scalebreaker Bulwark",
-       "Hardlight Protector",
-       "Spearheart Sentry",
-       "Hourglass Attendant",
-       "Inspiring Maul",
-       "Sandfury Aura",
-       "Nightmare Lord Xavius",
-       "Gelbin of Tomorrow",
-       "Ancient of Yore",
-       "Ursol",
-       "Mekkatorque's Aura",
-       "Gnomish Aura",
-       "Renewing Flames",
-       "Manifested Timeways",
-       "Nozdormu, Bronze Aspect",
-       "Chronological Aura",
-       "Toreth the Unbreaking",
-       "Bronze Redeemer",
-       "Violet Treasuregill",
-       "Acceleration Aura",
-       "Righteous Protector",
-       "Taelan Fordring"
+       "Convalescence"
      ]},
     {:"Aggro Paladin",
      [
