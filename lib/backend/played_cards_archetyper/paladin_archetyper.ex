@@ -23,57 +23,58 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      [
        "Emboldening Blade",
        "Resilient Savior",
-       "Arator the Redeemer",
-       "Hatching Ceremony",
-       "Teamwork",
-       "Muster for Battle",
-       "Brash Battlemaster"
+       "Arator the Redeemer"
      ]},
     {:"End of Turnadin",
      [
        "Scalebreaker Bulwark",
        "Spearheart Sentry",
-       "Hourglass Attendant",
        "Inspiring Maul",
        "Sandfury Aura",
        "Nightmare Lord Xavius",
        "Gelbin of Tomorrow",
-       "Ancient of Yore",
        "Mekkatorque's Aura",
        "Gnomish Aura",
-       "Renewing Flames",
        "Manifested Timeways",
-       "Chronological Aura",
-       "Bronze Redeemer"
+       "Chronological Aura"
      ]},
     {:"Aggro Paladin",
      [
        "Beaming Sidekick",
        "Murloc Tidecaller",
-       "Worgen Infiltrator",
-       "Dreambound Raptor",
        "Tortollan Storyteller",
-       "Abusive Sergeant",
-       "Imprisoned Vilefiend",
-       "Fire Fly"
+       "Imprisoned Vilefiend"
      ]},
+    # 5.5
     {:"Dude Paladin",
      [
+       "Teamwork",
+       "Brash Battlemaster",
+       "Muster for Battle",
+       "Hatching Ceremony",
        "Convalescence"
      ]},
     {:"Aggro Paladin",
      [
+       "Worgen Infiltrator",
+       "Rockskipper",
+       "Dreambound Raptor",
+       "Dragonscale Armaments",
        "Rock Skipper",
        "Murmy",
        "Glacial Shard",
        "Carrier Whelp",
        "Platysaur",
        "Dragonscale Aramaments",
-       "Sizzling Cinder",
-       "The Fins Beyond Time",
-       "Twilight Egg",
-       "Ancient Raptor",
-       "Past Gnomeregan"
+       "Sizzling Cinder"
+     ]},
+    {:"End of Turnadin",
+     [
+       "Righteous Protector",
+       "Violet Treasuregill",
+       "Toreth the Unbreaking",
+       "Acceleration Aura",
+       "Nozdormu, Bronze Aspect"
      ]}
   ]
   @wild_config []

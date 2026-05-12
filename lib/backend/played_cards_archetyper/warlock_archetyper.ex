@@ -40,7 +40,9 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
        "Drain Soul",
        "Conflagrate",
        "Abusive Sergeant",
-       "Cursed Catacombs"
+       "Cursed Catacombs",
+       "Dissolving Ooze",
+       "Endbringer Umbra"
      ]},
     {:"Wallow Warlock",
      [

@@ -45,7 +45,9 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
        "Cultist Map",
        "Garona Halforcen",
        "Sands of Time",
-       "Glacial Shard"
+       "Glacial Shard",
+       "Bitterbloom Knight",
+       "Eventuality"
      ]}
   ]
   @wild_config []

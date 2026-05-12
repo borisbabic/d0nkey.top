@@ -21,42 +21,59 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      [
        "Overheat",
        "Power of the Wild",
-       "Ancient Raptor"
+       "Platysaur",
+       "Twilight Egg",
+       "Ravenous Flock",
+       "Vibrant Squirrel",
+       "Hatchery Helper",
+       "Forest's Gift",
+       "Longneck Egg",
+       "Torga"
      ]},
     {:"Merithra Druid",
      [
        "Merithra of the Dream",
-       "Darkscale Broodmother",
-       "Broodwatcher",
-       "Fyrakk the Blazing",
-       "Carrier Whelp",
-       "Prescient Slitherdrake",
-       "Naralex, Herald of the Flights"
+       "Darkscale Broodmother"
+       # "Broodwatcher",
+       # "Fyrakk the Blazing"
      ]},
-    {:"Token Druid",
+    {:"Hostage Druid",
      [
-       "Platysaur",
-       "Ravenous Flock",
-       "Twilight Egg",
-       "Longneck Egg"
+       "Grove Shaper",
+       "Hopeful Dryad",
+       "Dark Iron Harbinger",
+       "Chrono-Lord Deios",
+       "Mo'arg Forgefiend",
+       "Endbringer Umbra",
+       "Tindral Sageswift"
      ]},
     # 5.5
     {:"Merithra Druid",
      [
+       "Broodwatcher",
+       "Fyrakk the Blazing",
+       "Bashana Runetotem",
+       "Wickerfang",
+       "Lifebloom",
        "Azshara's Triumph",
        "Elise the Navigator",
-       "Horn of Plenty",
-       "Endangered Dodo"
+       "Ebb and Flow",
+       "Nightmare Lord Xavius",
+       "Naralex, Herald of the Flights",
+       "Ysera, Emerald Aspect"
      ]},
-    {:"Imbue Druid",
+    {:"Token Druid",
      [
-       "Photosynthesis"
+       "Living Roots"
      ]},
     {:"Merithra Druid",
      [
+       "Horn of Plenty",
+       "Amirdrassil",
        "Acceleration Aura",
+       "Waveshaping",
        "Felwood Treant",
-       "Waveshaping"
+       "Innervate"
      ]}
   ]
   @wild_config [

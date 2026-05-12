@@ -14,19 +14,7 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Darkscale Broodmother",
        "Petal Peddler",
        "Prescient Slitherdrake",
-       "Carrier Whelp",
-       "Shadowed Informant",
-       "Stadium Announcer",
-       "Brood Keeper"
-     ]},
-    {:"Gladiator Warrior",
-     [
-       "Gladiatorial Combat",
-       "Shaladrassil",
-       "Succumb to Madness",
-       "Clutch of Corruption",
-       "Tortolla",
-       "Ysondre"
+       "Carrier Whelp"
      ]},
     {:"Egg Warrior",
      [
@@ -37,12 +25,15 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Heir of Hereafter",
        "Shellnado",
        "Nablya, the Watcher",
-       "Bash",
-       "The Egg of Khelos"
+       "The Egg of Khelos",
+       "Unleash the Crocolisks"
+     ]},
+    {:"Dragon Warrior",
+     [
+       "Twilight Egg"
      ]},
     {:"Harold Warrior",
      [
-       "Time-Twisted Seer",
        "Elise the Navigator",
        "Envoy of the End",
        "Ragnaros, the Great Fire",
@@ -63,6 +54,12 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
      ]},
     {:"Gladiator Warrior",
      [
+       "Gladiatorial Combat",
+       "Shaladrassil",
+       "Succumb to Madness",
+       "Clutch of Corruption",
+       "Tortolla",
+       "Ysondre",
        "Erupting Volcano",
        "Shadowflame Suffusion",
        "Searing Fissure"

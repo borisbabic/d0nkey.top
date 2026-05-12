@@ -35,6 +35,8 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Portal Vanguard",
        "Khadgar",
        "Storage Scuffle",
+       "Glacial Shard",
+       "Nightmare Lord Xavius",
        "Spark of Life"
      ] ++ @leyline_package},
     {:"Burn Mage",
