@@ -14,13 +14,19 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
        "Ultraxion",
        "Arisen Onyxia",
        "Envoy of the End",
-       "Experimental Animation"
+       "Experimental Animation",
+       "Memoriam Manifest",
+       "The Curator",
+       "Soulrest Ceremony"
+
+       # "Boneguard Commander" 
      ]},
     {:"Unholy DK",
      [
        "Grave Strength",
-       "Maze Guide"
-       # "Living Paradox"
+       "Maze Guide",
+       "Living Paradox",
+       "Talanji's Last Stand"
      ]},
     # {:"Imbue DK",
     #  [
@@ -33,7 +39,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
     {:"Harold DK",
      [
        "Hematurge",
-       "Whelp of the Infinite"
+       "Elise the Navigator"
      ]},
     {:"Unholy DK",
      [

@@ -26,40 +26,36 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Fel Infusion",
        "Defiled Spear" | @herald_package
      ]},
-    {:"No Minion DH",
-     ["Time-Lost Glaive", "Sands of Time", "Sigil of Cinder", "Horn of Feasting"]},
-    {:"Harold DH",
+    {:"No Minion DH", ["Time-Lost Glaive", "Sigil of Cinder"]},
+    {:"Broxigar DH",
      [
+       "Crimson Sigil Runner",
        "Felfire Blaze",
-       "Chaos Strike",
-       "Nespirah, Enthralled",
-       "Elise the Navigator",
-       "Hive Map"
+       "Remnant of Rage",
+       "Glacial Shard",
+       "Sheltered Survivor",
+       "Bloodmage Thalnos",
+       "Prize Vendor",
+       "Elven Archer",
+       "Kayn Sunfury"
      ]},
     # 5.5
-    {:"Dragon DH",
-     [
-       "Whelp of the Infinite",
-       "Petal Peddler",
-       "Netherspite Historian",
-       "Darkscale Broodmother",
-       "Prescient Slitherdrake",
-       "Carrier Whelp",
-       "Battlefiend",
-       "Shadowed Informant",
-       "Slumbering Sprite"
-     ]},
     {:"No Minion DH",
      [
+       "Horn of Feasting",
+       "Sands of Time",
+       "Nespirah, Enthralled",
+       "Broxigar's Last Stand",
+       "Illidari Studies",
        "Wyvern's Slumber",
+       "Infestation",
        "First Portal to Argus",
        "Press the Advantage",
        "Sigil of the Seas",
+       "Hive Map",
+       "Axe of Cenarius",
+       "Eye Beam",
        "Grim Harvest"
-     ]},
-    {:"Harold DH",
-     [
-       "Infestation"
      ]}
   ]
   @wild_config [

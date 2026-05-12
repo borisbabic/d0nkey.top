@@ -46,6 +46,8 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
        "Cease to Exist",
        "Power Word: Shield",
        "Ysera, Emerald Aspect",
+       "Moonwell",
+       "Bitterbloom Knight",
        "Purifying Breath"
      ]}
   ]

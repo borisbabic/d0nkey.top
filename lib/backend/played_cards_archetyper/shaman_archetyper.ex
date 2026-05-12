@@ -40,6 +40,8 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Far Sight",
        "Voltaic Burst",
        "Glacial Shard",
+       "Holy Eggbearer",
+       "Thunderquake",
        "Crackling Cloudstrider"
        # x (4) Ascendance
      ]},
