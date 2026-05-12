@@ -3,6 +3,7 @@ defmodule Backend.HearthstoneJson do
 
   use GenServer
   @name :hearthstone_json
+  require Logger
   alias Backend.Infrastructure.HearthstoneJsonCommunicator, as: Api
   alias Backend.HearthstoneJson.Card
   alias Backend.CardMatcher
@@ -34,15 +35,15 @@ defmodule Backend.HearthstoneJson do
   @spec get_by_card_id(String.t()) :: Card.t() | nil
   def get_by_card_id(card_id), do: table() |> Util.ets_lookup("card_id_#{card_id}")
 
-  @spec get_fresh() :: [Card]
+  @spec get_fresh() :: {:ok, [Card]} | {:using_json, [Card]}
   def get_fresh() do
     case Api.get_cards() do
       {:ok, cards} ->
-        cards
+        {:ok, cards}
 
       _ ->
-        Process.send_after(self(), :update_cards, 20_000)
-        get_json()
+        # Process.send_after(self(), :update_cards, 20_000)
+        {:using_json, get_json()}
     end
   end
 
@@ -52,6 +53,10 @@ defmodule Backend.HearthstoneJson do
 
   def update_cards(cards) do
     GenServer.cast(@name, {:update_cards, cards})
+  end
+
+  def update_version_and_cards() do
+    GenServer.cast(@name, :update_version_and_cards)
   end
 
   @spec get_json() :: [Card]
@@ -72,7 +77,7 @@ defmodule Backend.HearthstoneJson do
     |> Map.put(:fetch_fresh, false)
     |> update_table()
 
-    update_cards()
+    update_version_and_cards()
     {:ok, state}
   end
 
@@ -105,12 +110,24 @@ defmodule Backend.HearthstoneJson do
   def card_url(id, size),
     do: "https://art.hearthstonejson.com/v1/render/latest/enUS/#{size}/#{id}.png"
 
+  defp fetch(%{fetch_fresh: false}), do: {:ok, get_json()}
+  defp fetch(%{fetch_fresh: true}), do: get_fresh()
   def update_table(%{table: table, fetch_fresh: false}), do: get_json() |> update_table(table)
-  def update_table(%{table: table, fetch_fresh: true}), do: get_fresh() |> update_table(table)
+
+  def update_table(%{table: table, fetch_fresh: true}) do
+    case get_fresh() do
+      {:ok, fresh} ->
+        update_table(fresh, table)
+
+      {:using_json, fresh} ->
+        Process.send_after(self(), :update_cards, 20_000)
+        update_table(fresh, table)
+    end
+  end
 
   def update_table(_cards, :undefined), do: nil
 
-  def update_table(cards, table) do
+  def update_table(cards, table, version \\ nil) do
     cards
     |> Enum.each(fn c ->
       :ets.insert(table, {"card_id_#{c.id}", c})
@@ -124,6 +141,34 @@ defmodule Backend.HearthstoneJson do
     :ets.insert(table, {"all_cards", cards})
     :ets.insert(table, {"collectible_cards", collectible_cards})
     :ets.insert(table, {"playable_cards", cards |> Enum.filter(&Card.playable?/1)})
+
+    if version do
+      :ets.insert(table, {"latest_version", version})
+    end
+  end
+
+  defp do_update_version_and_cards(%{table: table} = state) do
+    current_version = Util.ets_lookup(table, "latest_version", 0)
+    {:ok, latest_version} = Api.get_latest_version()
+
+    if current_version < latest_version do
+      with {:ok, cards} <- fetch(state) do
+        update_table(cards, table, latest_version)
+
+        Logger.info(
+          "Hearthstone Json updated to version #{latest_version} from #{current_version}"
+        )
+
+        BackendWeb.Endpoint.broadcast("hearthstone_json", "version_updated", %{
+          cards: cards,
+          version: latest_version
+        })
+      end
+    else
+      Logger.debug("Version is not newer. Current: #{current_version} Latest: #{latest_version}")
+    end
+
+    {:noreply, state}
   end
 
   @canonical_set_priority [
@@ -173,7 +218,7 @@ defmodule Backend.HearthstoneJson do
   def collectible_cards(), do: table() |> Util.ets_lookup("collectible_cards", [])
   def playable_cards(), do: table() |> Util.ets_lookup("playable_cards", [])
 
-  def handle_cast({:update_cards, cards}, state = %{table: table}) do
+  def handle_cast({:update_cards, cards}, %{table: table} = state) do
     update_table(cards, table)
     {:noreply, state}
   end
@@ -183,9 +228,17 @@ defmodule Backend.HearthstoneJson do
     {:noreply, state}
   end
 
+  def handle_cast(:update_version_and_cards, state) do
+    do_update_version_and_cards(state)
+  end
+
   def handle_info(:update_cards, state) do
     update_table(state)
     {:noreply, state}
+  end
+
+  def handle_info(:update_version_and_cards, state) do
+    do_update_version_and_cards(state)
   end
 
   def up?(), do: GenServer.whereis(@name) != nil
