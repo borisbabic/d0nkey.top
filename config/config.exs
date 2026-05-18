@@ -61,6 +61,8 @@ config :ueberauth, Ueberauth.Strategy.Bnet.OAuth, bnet_oath
 
 config :backend, Backend.UserManager.Guardian,
   issuer: "d0nkey.top",
+  # Keep in sync with BackendWeb.Endpoint
+  ttl: {60 * 60 * 24 * 365, :seconds},
   secret_key: "CyjJAVTbtJgJwS+NbkbTpVTPDJeMKqcn+GakxrO4E5j/kB3SgcgF3CqfsxpxzQKM"
 
 config :kaffy,
