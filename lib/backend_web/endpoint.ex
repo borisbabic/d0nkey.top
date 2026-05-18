@@ -5,6 +5,7 @@ defmodule BackendWeb.Endpoint do
                    key: "_backend_key",
                    signing_salt: "tbOo3n69",
                    # one year
+                   # Keep in sync with guardian config
                    max_age: 60 * 60 * 24 * 365
 
   socket "/socket", BackendWeb.UserSocket,
