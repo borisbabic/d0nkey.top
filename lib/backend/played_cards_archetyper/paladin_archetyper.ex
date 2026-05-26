@@ -27,23 +27,23 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
      ]},
     {:"End of Turnadin",
      [
-       "Scalebreaker Bulwark",
-       "Spearheart Sentry",
-       "Inspiring Maul",
-       "Sandfury Aura",
-       "Nightmare Lord Xavius",
+       "Chronological Aura",
        "Gelbin of Tomorrow",
-       "Mekkatorque's Aura",
        "Gnomish Aura",
+       "Inspiring Maul",
        "Manifested Timeways",
-       "Chronological Aura"
+       "Mekkatorque's Aura",
+       "Nightmare Lord Xavius",
+       "Sandfury Aura",
+       "Scalebreaker Bulwark",
+       "Spearheart Sentry"
      ]},
     {:"Aggro Paladin",
      [
        "Beaming Sidekick",
        "Murloc Tidecaller",
-       "Tortollan Storyteller",
-       "Imprisoned Vilefiend"
+       "Rockskipper",
+       "Tortollan Storyteller"
      ]},
     # 5.5
     {:"Dude Paladin",
@@ -51,22 +51,15 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Teamwork",
        "Brash Battlemaster",
        "Muster for Battle",
-       "Hatching Ceremony",
-       "Convalescence"
+       "Hatching Ceremony"
      ]},
     {:"Aggro Paladin",
      [
-       "Worgen Infiltrator",
-       "Rockskipper",
-       "Dreambound Raptor",
-       "Dragonscale Armaments",
-       "Rock Skipper",
-       "Murmy",
-       "Glacial Shard",
        "Carrier Whelp",
-       "Platysaur",
-       "Dragonscale Aramaments",
-       "Sizzling Cinder"
+       "Glacial Shard",
+       "Murmy",
+       "Rockskipper",
+       "Worgen Infiltrator"
      ]},
     {:"End of Turnadin",
      [
@@ -75,6 +68,10 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Toreth the Unbreaking",
        "Acceleration Aura",
        "Nozdormu, Bronze Aspect"
+     ]},
+    {:"Dude Paladin",
+     [
+       "Convalescence"
      ]}
   ]
   @wild_config []
