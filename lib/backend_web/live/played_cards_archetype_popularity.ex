@@ -36,7 +36,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   @deck_archetype_mapping %{
     # "Ravenous Cliff Dive DH" => "Cliff Dive DH",
     # Maybe not the best
-    # "Azshara Druid" => "Hydration Druid",
+    # "Azshara Druid" => "Ramp Druid",
+    # "Merithra Druid" => "Ramp Druid",
+    # "Hostage Druid" => "Ramp Druid",
     "Treant Druid" => "Token Druid",
     "Ace Hunter" => "No Hand Hunter",
     "Quest Spell Mage" => "Spell Mage",
@@ -269,9 +271,10 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   def handle_params(params, _uri, socket) do
     default = %{
-      "period" => PeriodDropdown.default(:public),
+      "period" => "all",
       "format" => 2,
-      "rank" => "all"
+      "min_played_count" => 1000,
+      "rank" => "diamond_to_legend"
     }
 
     exclude_config_levels = Map.get(params, "exclude_config_levels", 0) |> Util.to_int_or_orig()
