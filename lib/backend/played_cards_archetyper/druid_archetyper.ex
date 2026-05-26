@@ -24,11 +24,9 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Platysaur",
        "Twilight Egg",
        "Ravenous Flock",
-       "Vibrant Squirrel",
        "Hatchery Helper",
        "Forest's Gift",
-       "Longneck Egg",
-       "Torga"
+       "Longneck Egg"
      ]},
     {:"Merithra Druid",
      [
@@ -48,32 +46,74 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Tindral Sageswift"
      ]},
     # 5.5
+    {:"Azshara Druid",
+     [
+       "Welcome Home!",
+       "Zin-Azshari",
+       "Briarspawn Drake",
+       "Lady Azshara",
+       "Zin-Azshari",
+       "The Well of Eternity"
+     ]},
     {:"Merithra Druid",
      [
-       "Broodwatcher",
        "Fyrakk the Blazing",
-       "Bashana Runetotem",
-       "Wickerfang",
-       "Lifebloom",
-       "Azshara's Triumph",
-       "Elise the Navigator",
-       "Ebb and Flow",
-       "Nightmare Lord Xavius",
-       "Naralex, Herald of the Flights",
-       "Ysera, Emerald Aspect"
+       "Broodwatcher",
+       "Wickerfang"
      ]},
+    {:"Hostage Druid",
+     [
+       "Oaken Summons",
+       "Wrath",
+       "Illusory Greenwing"
+     ]},
+    {:"Merithra Druid",
+     [
+       "Lifebloom",
+       "Rustrot Viper"
+     ]},
+    {:"Hostage Druid",
+     [
+       "Reforestation",
+       "Shaladrassil"
+     ]},
+    # 10.5
     {:"Token Druid",
      [
        "Living Roots"
      ]},
+    {:"Azshara Druid",
+     [
+       "Story of Barnabus"
+     ]},
     {:"Merithra Druid",
      [
+       "Azshara's Triumph"
+     ]},
+    {:"Hostage Druid",
+     [
+       "Heartroot Stones"
+     ]},
+    {:"Merithra Druid",
+     [
+       "Bashana Runetotem",
+       "Elise the Navigator",
+       "Acceleration Aura"
+     ]},
+    # 15.5
+    {:"Merithra Druid",
+     [
+       "Nightmare Lord Xavius",
+       "Ebb and Flow",
        "Horn of Plenty",
-       "Amirdrassil",
-       "Acceleration Aura",
+       "Innervate",
        "Waveshaping",
-       "Felwood Treant",
-       "Innervate"
+       "Amirdrassil",
+       "Felwood Treant"
+     ]},
+    {:"Merithra Druid",
+     [
+       "Press the Advantage"
      ]}
   ]
   @wild_config [
