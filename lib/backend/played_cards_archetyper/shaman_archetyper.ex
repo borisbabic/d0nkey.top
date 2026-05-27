@@ -42,7 +42,7 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
        "Glacial Shard",
        "Holy Eggbearer",
        "Thunderquake",
-       "Crackling Cloudstrider"
+       "Sands of Iime"
        # x (4) Ascendance
      ]},
     {:"Imbue Shaman",

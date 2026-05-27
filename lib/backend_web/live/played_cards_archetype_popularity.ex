@@ -15,7 +15,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Backend.PlayedCardsArchetyper
   alias Backend.Hearthstone.Card
 
-  @default_min_played_count 100
+  @default_min_played_count 1000
   @default_sort_by "any_popularity"
   data(user, :any)
   data(needs_class?, :boolean, default: false)
@@ -42,6 +42,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Treant Druid" => "Token Druid",
     "Ace Hunter" => "No Hand Hunter",
     "Quest Spell Mage" => "Spell Mage",
+    "Imbue Rogue" => "Harold Rogue",
     "Wallow Shredslock" => "Wallow Warlock",
     "Harold Egglock" => "Harold Warlock",
     "Dino Egglock" => "Egglock",
@@ -273,7 +274,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     default = %{
       "period" => "all",
       "format" => 2,
-      "min_played_count" => 1000,
+      "min_played_count" => @default_min_played_count,
       "rank" => "diamond_to_legend"
     }
 

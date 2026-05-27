@@ -20,13 +20,10 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
      [
        "Holy Eggbearer",
        "Endbringer Umbra",
-       "Abusive Sergeant",
        "Siphoning Growth",
-       "Heir of Hereafter",
        "Shellnado",
        "Nablya, the Watcher",
-       "The Egg of Khelos",
-       "Unleash the Crocolisks"
+       "The Egg of Khelos"
      ]},
     {:"Dragon Warrior",
      [
@@ -37,18 +34,21 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
        "Elise the Navigator",
        "Envoy of the End",
        "Ragnaros, the Great Fire",
-       "Ultraxion",
        "Ysera, Emerald Aspect",
        "Deathwing, Worldbreaker"
      ]},
     # 5.5
     {:"Dragon Warrior",
      [
+       "Stadium Announcer",
+       "Brood Keeper",
+       "Shadowed Informant",
        "Windpeak Wyrm",
        "Darkrider"
      ]},
     {:"Harold Warrior",
      [
+       "Ultraxion",
        "Scorching Ravager",
        "Cataclysmic War Axe"
      ]},
@@ -68,7 +68,8 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
      [
        "Decimation",
        "Acolyte of Pain",
-       "Sanguine Depths"
+       "Sanguine Depths",
+       "Unleash the Crocolisks"
      ]},
     {:"Gladiator Warrior",
      [

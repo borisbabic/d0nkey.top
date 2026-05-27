@@ -21,23 +21,20 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     {:"No Minion DH", ["Lasting Legacy", "Solitude", "Hounds of Fury", "The Eternal Hold"]},
     {:"Harold DH",
      [
-       "Ravenous Felfisher",
        "Scorchreaver",
-       "Fel Infusion",
        "Defiled Spear" | @herald_package
      ]},
-    {:"No Minion DH", ["Time-Lost Glaive", "Sigil of Cinder"]},
+    {:"No Minion DH", ["Time-Lost Glaive", "Horn of Feasting", "Hive Map"]},
     {:"Broxigar DH",
      [
-       "Crimson Sigil Runner",
-       "Felfire Blaze",
-       "Remnant of Rage",
-       "Glacial Shard",
-       "Sheltered Survivor",
-       "Bloodmage Thalnos",
-       "Prize Vendor",
        "Elven Archer",
-       "Kayn Sunfury"
+       "Felfire Blaze",
+       "Glacial Shard",
+       "Kayn Sunfury",
+       "Perenial Serpent",
+       "Prize Vendor",
+       "Remnant of Rage",
+       "Wild Pyromancer"
      ]},
     # 5.5
     {:"No Minion DH",

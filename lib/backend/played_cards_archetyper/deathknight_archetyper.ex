@@ -80,17 +80,27 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
      [
        "Nerubian Swawmguard",
        "Falric",
+       "Chow Down",
+       "Nerubian Swarmguard",
        "Twilight Egg"
      ]},
+    # 10.5
     {:"Harold DK",
      [
        "Sanguine Infestation",
        "Creature of Madness",
        "Nightmare Lord Xavius",
+       "Hideous Husk",
        "Sands of Time",
        "Poison Breath",
        "Wild Pyromancer",
        "Chillfallen Baron"
+     ]},
+    {:"Unholy DK",
+     [
+       "Reluctant Wrangler",
+       "Ancient Raptor",
+       "Murmy"
      ]}
   ]
 
