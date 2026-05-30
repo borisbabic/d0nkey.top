@@ -17,32 +17,50 @@
 <FunctionComponents.Ads.below_title/>
 
 <div>
-<%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @tournament.id), [method: :get], fn
-f-> %>
+<%= if assigns[:standings] do %>
+  <%= form_for @conn, Routes.battlefy_path(@conn, :tournament, @tournament.id), [method: :get], fn
+  f-> %>
 
-    <.stage_selection_dropdown :if={@show_stage_selection} stages={@stages} title={@stage_selection_text} />
-    <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
-        <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
-    <% end %>
-    <%= render_multiselect_dropdown(%{
-        form: f,
-        options: @player_options,
-        attr: "player",
-        search_id: "highlight-players",
-        placeholder: "Player Name",
-        title: "Highlight Players"
-    }) %>
-    <%= if @use_countries do %>
-        <%= render_countries_multiselect_dropdown(f, @selected_countries, %{title: "Highlight Countries"}) %>
-    <% end %>
-    <%= render_dropdowns @dropdowns %>
+      <.stage_selection_dropdown :if={@show_stage_selection} stages={@stages} title={@stage_selection_text} />
+      <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
+          <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
+      <% end %>
+      <%= render_multiselect_dropdown(%{
+          form: f,
+          options: @player_options,
+          attr: "player",
+          search_id: "highlight-players",
+          placeholder: "Player Name",
+          title: "Highlight Players"
+      }) %>
+      <%= if @use_countries do %>
+          <%= render_countries_multiselect_dropdown(f, @selected_countries, %{title: "Highlight Countries"}) %>
+      <% end %>
+      <%= render_dropdowns @dropdowns %>
+  <% end %>
+<% else %>
+  <.stage_selection_dropdown :if={@show_stage_selection} stages={@stages} title={@stage_selection_text} />
+  <%= render_dropdowns @dropdowns %>
 <% end %>
 </div>
 
-<%= if Enum.any?(@highlighted_standings) do %>
-    <div id="highlighted_standings">
-        <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlighted_standings, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
-        <br>
-    </div>
+
+<%= if assigns[:standings] do %>
+  <%= if Enum.any?(@highlighted_standings) do %>
+      <div id="highlighted_standings">
+          <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlighted_standings, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
+          <br>
+      </div>
+  <% end %>
+  <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: assigns[:standings], show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
 <% end %>
-<%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @standings, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
+<%= if assigns[:bracket] do %>
+  <FunctionComponents.Battlefy.bracket bracket={@bracket} show_final={@show_final} lineups={@lineups} tournament_id={@tournament.id} render_decks={fn decks -> live_render(@conn, BackendWeb.CompactLineupOnly, session: %{"extra_decks" => Enum.map(decks, &Backend.Hearthstone.Deck.deckcode/1)}) end}/>
+<% end %>
+<%= if assigns[:brackets] do %>
+  <%= for {name, bracket} <- @brackets do %>
+    <br> 
+    <div class="title is-4">{name}</div>
+    <FunctionComponents.Battlefy.bracket bracket={bracket} lineups={@lineups} show_final={@show_final} tournament_id={@tournament.id} render_decks={fn decks -> live_render(@conn, BackendWeb.CompactLineupOnly, session: %{"extra_decks" => Enum.map(decks, &Backend.Hearthstone.Deck.deckcode/1)}) end}/>
+  <% end %>
+<% end %>

@@ -65,4 +65,6 @@ defmodule Backend.Battlefy.Communicator do
   @callback get_user_tournaments(String.t()) :: [Tournament.t()]
 
   @callback get_participants(Battlefy.tournament_id()) :: [Team.t()]
+
+  @callback get_stage_bracket(Battlefy.stage_id()) :: Battlefy.Bracket.t()
 end

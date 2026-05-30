@@ -2,7 +2,7 @@ defmodule Backend.Battlefy.Stage do
   @moduledoc false
   use TypedStruct
   alias Backend.Battlefy
-  alias Backend.Battlefy.Bracket
+  alias Backend.Battlefy.Stage.Bracket
   alias Backend.Battlefy.Match
 
   typedstruct enforce: true do
@@ -11,7 +11,7 @@ defmodule Backend.Battlefy.Stage do
     field :current_round, integer | nil
     field :start_time, Calendar.datetime()
     field :standing_ids, Battlefy.battlefy_id()
-    field :has_started, bool
+    field :has_started, boolean
     field :bracket, Bracket.t()
     field :matches, [Match.t()]
   end
@@ -45,7 +45,7 @@ defmodule Backend.Battlefy.Stage do
   def bracket_type(stage), do: stage.bracket |> Bracket.bracket_type()
 end
 
-defmodule Backend.Battlefy.Bracket do
+defmodule Backend.Battlefy.Stage.Bracket do
   @moduledoc false
   use TypedStruct
 
