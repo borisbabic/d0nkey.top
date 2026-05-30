@@ -54,6 +54,7 @@ defmodule BackendWeb.BattlefyController do
   def tournament(conn, params = %{"tournament_id" => tournament_id}) do
     Logger.debug("tournament params #{inspect(params)}")
     tournament = Battlefy.get_tournament(tournament_id)
+
     Logger.debug("Fetched tournament")
     invited_mapset = invited_mapset(params, tournament)
     participants = participants(params, tournament)
@@ -94,9 +95,37 @@ defmodule BackendWeb.BattlefyController do
         participants: participants,
         highlight: get_highlight(params)
       }
-      |> add_matches_standings(params)
+      |> add_standings_or_bracket(params)
       |> enqueue_missing_lineups()
     )
+  end
+
+  defp add_standings_or_bracket(existing, params) do
+    if show_bracket?(existing.tournament, params) do
+      add_bracket(existing, params)
+    else
+      add_matches_standings(existing, params)
+    end
+  end
+
+  defp show_bracket?(_tournament, %{"view_mode" => view_mode}) do
+    view_mode == "bracket"
+  end
+
+  defp show_bracket?(_tournament, %{"stage_id" => "all_brackets"}), do: true
+
+  defp show_bracket?(tournament, %{"stage_id" => stage_id}) do
+    with [_ | _] = stages <- tournament.stages,
+         %{} = stage <-
+           Enum.find(stages, &(&1.id == stage_id)) do
+      bracketable_by_default?(stage)
+    else
+      _ -> false
+    end
+  end
+
+  defp show_bracket?(tournament, _) do
+    Enum.at(tournament.stages, -1)
   end
 
   defp enqueue_missing_lineups(
@@ -158,6 +187,51 @@ defmodule BackendWeb.BattlefyController do
     []
   end
 
+  defp bracketable_by_default?(%{bracket: %{teams_count: teams_count, type: "elimination"}})
+       when is_integer(teams_count) do
+    teams_count < 17
+  end
+
+  defp bracketable_by_default?(_), do: false
+
+  defp add_bracket(existing, %{"stage_id" => "all_brackets"}) do
+    add_all_brackets(existing)
+  end
+
+  defp add_bracket(existing, %{"stage_id" => stage_id}) do
+    do_add_bracket(existing, stage_id)
+  end
+
+  defp add_bracket(%{tournament: tournament} = existing, _) do
+    if Enum.all?(tournament.stages, &bracketable_by_default?/1) do
+      add_all_brackets(existing)
+    else
+      stage_id =
+        tournament.stages
+        |> Enum.reverse()
+        |> Enum.find(&bracketable_by_default?/1)
+
+      do_add_bracket(existing, stage_id)
+    end
+  end
+
+  defp do_add_bracket(existing, stage_id) do
+    bracket = Battlefy.get_stage_bracket(stage_id)
+
+    existing
+    |> Map.put(:bracket_raw, bracket)
+    |> Map.put(:view_mode, "bracket")
+  end
+
+  defp add_all_brackets(%{tournament: tournament} = existing) do
+    brackets = tournament.stages |> Enum.map(&Battlefy.get_stage_bracket/1)
+
+    existing
+    |> Map.put(:brackets_raw, brackets)
+    |> Map.put(:view_mode, "bracket")
+    |> Map.put(:stage_id, "all_brackets")
+  end
+
   defp add_matches_standings(existing, params = %{"stage_id" => stage_id}) do
     standings = Battlefy.get_stage_standings(stage_id)
 
@@ -173,6 +247,7 @@ defmodule BackendWeb.BattlefyController do
       standings_raw: standings,
       matches: matches,
       show_ongoing: show_ongoing,
+      view_mode: "standings",
       standings_stage_id: stage_id
     })
   end
@@ -192,6 +267,7 @@ defmodule BackendWeb.BattlefyController do
           standings_raw: standings,
           matches: matches,
           show_ongoing: show_ongoing,
+          view_mode: "standings",
           standings_stage_id: stage_id
         })
 
@@ -201,6 +277,7 @@ defmodule BackendWeb.BattlefyController do
           standings_raw: [],
           matches: [],
           standings_stage_id: nil,
+          view_mode: "standings",
           show_ongoing: ongoing?(params)
         })
     end

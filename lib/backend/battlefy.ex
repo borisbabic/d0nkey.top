@@ -1,6 +1,7 @@
 defmodule Backend.Battlefy do
   @moduledoc false
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
+  alias Backend.Battlefy.Bracket
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Tournament.CustomField
   alias Backend.Battlefy.Standings
@@ -142,6 +143,19 @@ defmodule Backend.Battlefy do
                                     pattern: ~r/Classic Hearthstone NA/i
                                   }
                                 ]
+
+  @spec get_stage_bracket(Stage.t() | String.t()) :: Bracket.t()
+  def get_stage_bracket(stage_id) when is_binary(stage_id) do
+    Api.get_stage_bracket(stage_id)
+  end
+
+  def get_stage_bracket(%Stage{id: stage_id}) when is_binary(stage_id) do
+    Api.get_stage_bracket(stage_id)
+  end
+
+  def get_stage_bracket(_) do
+    Bracket.from_raw_map(%{})
+  end
 
   @spec get_stage_standings(Stage.t() | String.t()) :: [Standings.t()]
   def get_stage_standings(stage_id) when is_binary(stage_id) do

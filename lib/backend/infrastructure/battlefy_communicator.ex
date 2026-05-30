@@ -3,6 +3,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   require Logger
   alias Backend.Battlefy
   alias Backend.Blizzard
+  alias Backend.Battlefy.Bracket
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchDeckstrings
   alias Backend.Battlefy.Profile
@@ -125,6 +126,15 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
           end
         )
     end
+  end
+
+  @spec get_stage_bracket(Battlefy.stage_id()) :: Battlefy.Bracket.t()
+  def get_stage_bracket(stage_id) do
+    url = "https://d2jpovtdeeoi3i.cloudfront.net/stages/#{stage_id}/bracket"
+
+    get_body(url)
+    |> Jason.decode!()
+    |> Bracket.from_raw_map()
   end
 
   @spec get_stage_with_matches(Battlefy.stage_id()) :: Battlefy.Stage.t()
