@@ -2,6 +2,7 @@ defmodule BackendWeb.BattlefyController do
   use BackendWeb, :controller
   alias Backend.Battlefy
   alias Backend.Battlefy.Tournament
+  alias Backend.Battlefy.Stage
   alias Backend.Battlefy.MatchTeam
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.MastersTour.TourStop
@@ -124,8 +125,11 @@ defmodule BackendWeb.BattlefyController do
     end
   end
 
+  defp show_bracket?(%{stages: nil}, _), do: false
+
   defp show_bracket?(tournament, _) do
     Enum.at(tournament.stages, -1)
+    |> bracketable_by_default?()
   end
 
   defp enqueue_missing_lineups(
@@ -209,7 +213,7 @@ defmodule BackendWeb.BattlefyController do
       stage_id =
         tournament.stages
         |> Enum.reverse()
-        |> Enum.find(&bracketable_by_default?/1)
+        |> Enum.find(&Stage.bracketable?/1)
 
       do_add_bracket(existing, stage_id)
     end

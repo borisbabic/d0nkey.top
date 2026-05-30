@@ -41,6 +41,11 @@ defmodule Backend.Battlefy.Stage do
     }
   end
 
+  @doc "Can we display the stage as a bracket"
+  @spec bracketable?(__MODULE__) :: boolean()
+  def bracketable?(%{bracket: %{type: "elimination"}}), do: true
+  def bracketable?(_), do: false
+
   @spec bracket_type(__MODULE__) :: Backend.Tournaments.bracket_type()
   def bracket_type(stage), do: stage.bracket |> Bracket.bracket_type()
 end

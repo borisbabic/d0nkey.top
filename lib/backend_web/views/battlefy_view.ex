@@ -4,6 +4,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.MastersTour
   alias Backend.Battlefy
   alias Backend.Battlefy.Bracket
+  alias Backend.Battlefy.Stage
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
@@ -291,6 +292,26 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
+  def render("user_tournaments.html", %{
+        slug: slug,
+        page: page,
+        tournaments: tournaments,
+        conn: conn
+      }) do
+    render(
+      "user_tournaments.html",
+      %{
+        title: "#{slug}'s Battlefy Tournaments",
+        subtitle: "Public tournaments only",
+        tournaments: tournaments,
+        conn: conn,
+        slug: slug,
+        prev_button: prev_button(conn, page - 1, slug),
+        next_button: next_button(conn, page + 1, slug)
+      }
+    )
+  end
+
   def render("tournament.html", %{standings_raw: _} = params), do: do_render_tournament(params)
   def render("tournament.html", %{bracket_raw: _} = params), do: do_render_tournament(params)
   def render("tournament.html", %{brackets_raw: _} = params), do: do_render_tournament(params)
@@ -329,33 +350,21 @@ defmodule BackendWeb.BattlefyView do
     )
   end
 
-  def render("user_tournaments.html", %{
-        slug: slug,
-        page: page,
-        tournaments: tournaments,
-        conn: conn
-      }) do
-    render(
-      "user_tournaments.html",
-      %{
-        title: "#{slug}'s Battlefy Tournaments",
-        subtitle: "Public tournaments only",
-        tournaments: tournaments,
-        conn: conn,
-        slug: slug,
-        prev_button: prev_button(conn, page - 1, slug),
-        next_button: next_button(conn, page + 1, slug)
-      }
-    )
-  end
-
   defp put_param(params, key, func) do
     Map.put(params, key, func.(params))
   end
 
   defp add_tournament_stage_attrs(params) do
+    stages =
+      case params[:tournament] do
+        %{stages: stages} when is_list(stages) -> stages
+        _ -> []
+      end
+
+    bracketable_stages = Enum.count(stages, &Stage.bracketable?/1)
+
     extra_stages =
-      if params[:view_mode] in ["bracket", "brackets"] do
+      if bracketable_stages > 1 do
         [
           %{
             name: "All Brackets",
@@ -1052,7 +1061,7 @@ defmodule BackendWeb.BattlefyView do
         []
       end
 
-    vm = {
+    {
       [
         %{
           display: "Standings",
