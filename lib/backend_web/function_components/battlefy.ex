@@ -172,7 +172,7 @@ defmodule FunctionComponents.Battlefy do
     assigns = assigns |> assign(new_assigns)
 
     ~H"""
-      <div class={"tw-grid tw-grid-flow-col tw-grid-cols-#{@col_count} #{if @winner, do: "tw-font-bold"} #{if @strike_through_losers and !@winner, do: "tw-line-through" }"}>
+      <div class={"tw-grid tw-grid-flow-col tw-grid-cols-#{@col_count} #{if @winner, do: "tw-italic"} #{if @strike_through_losers and !@winner, do: "tw-line-through" }"}>
         <%= if @decks do %>
           <%= (@render_decks || &render_decks/1).(@decks) %>
         <% end %>
