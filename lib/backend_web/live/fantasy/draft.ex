@@ -18,7 +18,7 @@ defmodule BackendWeb.FantasyDraftLive do
   data(show_draft_picks_table, :boolean)
 
   def mount(params, session, s) do
-    socket = s |> assign_defaults(session) |> assign_league(params |> put_user_in_context())
+    socket = s |> assign_defaults(session) |> assign_league(params) |> put_user_in_context()
 
     user = socket.assigns.user
 

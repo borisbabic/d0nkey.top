@@ -96,6 +96,13 @@ defmodule Backend.Fantasy do
 
   def get_league(id), do: Repo.get(League, id) |> preload_league()
 
+  def fetch_league(id) do
+    case get_league(id) do
+      %League{} = league -> {:ok, league}
+      _ -> {:error, :league_not_found}
+    end
+  end
+
   def preload_league(thing),
     do: thing |> Repo.preload([:owner, [teams: [:owner, :league, :picks]]])
 
@@ -360,7 +367,6 @@ defmodule Backend.Fantasy do
     end
   end
 
-
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
 
@@ -596,14 +602,18 @@ defmodule Backend.Fantasy do
 
   def make_pick(%{real_time_draft: false, current_round: cr} = league, user, name) do
     with league_team = %{id: _id} <- League.team_for_user(league, user),
+         num_picks <- Enum.count(league_team.picks),
+         {:error, true} <- {:error, num_picks < league.roster_size},
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
            %LeagueTeamPick{}
-           |> LeagueTeamPick.changeset(%{pick: name, team: league_team, round: cr}) do
-      Repo.transaction(fn repo ->
-        repo.update!(league_cs)
-        repo.insert!(pick_cs)
-      end)
+           |> LeagueTeamPick.changeset(%{pick: name, team: league_team, round: cr}),
+         {:ok, _} <-
+           Repo.transaction(fn repo ->
+             repo.insert!(pick_cs)
+             repo.update!(league_cs)
+           end) do
+      fetch_league(league.id)
     end
   end
 

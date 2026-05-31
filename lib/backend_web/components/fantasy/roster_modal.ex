@@ -21,7 +21,7 @@ defmodule Components.RosterModal do
       <Modal
       id={"modal_#{@id}"}
       button_title={@button_title}
-      show_footer={show_round_footer?(@league_tema)}
+      show_footer={show_round_footer?(@league_team)}
       title={LeagueTeam.display_name(@league_team)}>
         <div class="content">
           <ul :for={{pick_name, points} <- picks_with_points(@league_team, @include_points, round(@league_team, @round))}>
