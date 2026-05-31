@@ -1,6 +1,6 @@
 defmodule Components.FantasyModal do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
 
   require Logger
   prop(show_modal, :boolean, default: false)
@@ -29,7 +29,7 @@ defmodule Components.FantasyModal do
       <button class="button" type="button" :on-click="show_modal">{@title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
       <div class="modal is-active" :if={@show_modal}>
-        <.form for={%{}} as={:league} id="fantasy_league_form" phx-change="change" phx-submit="submit" phx-target={@myself}>
+        <.form for={%{}} as={:league} id="fantasy_league_form" phx-submit="submit" phx-target={@myself}>
           <div class="modal-background"></div>
           <div class="modal-card">
             <header class="modal-card-head">
@@ -111,7 +111,7 @@ defmodule Components.FantasyModal do
               </div>
               <div class="field">
                 <label class="label" for="real_time_draft">Real Time Draft</label>
-                <input
+                <.input
                   type="checkbox"
                   name="league[real_time_draft]"
                   id="real_time_draft"
@@ -182,7 +182,6 @@ defmodule Components.FantasyModal do
     |> add_card_nerfs()
     |> add_lobby_legends()
     |> Kernel.++([
-      {"Grandmasters", "grandmasters"},
       {"Battlefy", "battlefy"}
     ])
   end
@@ -215,7 +214,7 @@ defmodule Components.FantasyModal do
     if current_tour_stop?() do
       "masters_tour"
     else
-      "grandmasters"
+      "battlefy"
     end
   end
 
@@ -254,7 +253,7 @@ defmodule Components.FantasyModal do
     do: ["swiss_wins", "gm_points_2021"] |> point_system_options()
 
   defp point_system_options("battlefy"),
-    do: ["swiss_wins"] |> point_system_options()
+    do: ["swiss_wins", "total_wins"] |> point_system_options()
 
   defp point_system_options("card_nerfs"),
     do: ["3_new_1_old"] |> point_system_options()

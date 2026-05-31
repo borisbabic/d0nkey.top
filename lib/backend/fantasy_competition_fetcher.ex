@@ -211,14 +211,13 @@ defmodule Backend.FantasyCompetitionFetcher do
     end
   end
 
-  def get_battlefy_results(_tournament_id, %{point_system: "total_wins"}) do
-    %{}
-    # raise "NOT WORKING RIGHT"
-    ## single elim wins aren't being counted right :(
-    # %{stages: stages} = tournament_id
-    # |> Battlefy.get_tournament()
-    # stages
-    # |> sum_bf_wins()
+  def get_battlefy_results(tournament_id, %{point_system: "total_wins"}) do
+    %{stages: stages} =
+      tournament_id
+      |> Battlefy.get_tournament()
+
+    (stages || [])
+    |> sum_bf_wins()
   end
 
   def get_battlefy_results(tournament_id, %{point_system: "swiss_wins"}) do

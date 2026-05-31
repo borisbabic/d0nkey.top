@@ -149,8 +149,16 @@ defmodule Components.CompetitorsTable do
     do: {:noreply, assign(socket, :search, search)}
 
   def handle_event("pick", %{"name" => name}, socket = %{assigns: %{league: league, user: user}}) do
-    Fantasy.make_pick(league, user, name)
-    {:noreply, socket}
+    new_socket =
+      case Fantasy.make_pick(league, user, name) do
+        {:ok, %League{} = league} ->
+          socket |> assign(league: league)
+
+        _ ->
+          socket
+      end
+
+    {:noreply, new_socket}
   end
 
   defp filter(participants, search) when is_binary(search) do
