@@ -151,6 +151,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       min_keyword_count?(card_info, 8, "taunt") ->
         :"Taunt Hunter"
 
+      companion?(card_info) ->
+        :"Companion Hunter"
+
       true ->
         fallbacks(card_info, "Hunter")
     end
