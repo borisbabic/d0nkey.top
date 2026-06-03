@@ -291,12 +291,10 @@ defmodule Backend.Hearthstone.Card do
   end
 
   defp use_english_field(field, map) do
-    new_val =
-      with new_map = %{} <- Map.get(map, field, nil) do
-        Map.get(new_map, "en_us", nil)
-      end
-
-    Map.put(map, field, new_val)
+    case Map.get(map, field) do
+      %{"en_us" => us} when not is_nil(us) -> Map.put(map, field, us)
+      _ -> map
+    end
   end
 
   def put_multi_minion_types(changeset, minion_types),
