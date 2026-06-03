@@ -97,6 +97,26 @@ defmodule Bot.RevealMessageHandler do
     "Final Reveal Stream"
   end
 
+  def extract_prepend(%{reveal_time: ~N[2026-06-09 21:00:00.000]}) do
+    "Shaman + Rogue + Demon Hunter"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-06-11 21:00:00.000]}) do
+    "Priest + Warrior + Warlock"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-06-16 21:00:00.000]}) do
+    "Mage + Druid"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-06-18 21:00:00.000]}) do
+    "Hunter + Paladin + Death Knight"
+  end
+
+  def extract_prepend(%{reveal_time: ~N[2026-06-23 21:00:00.000]}) do
+    "Final Reveal Stream"
+  end
+
   def extract_prepend(%{image_url: image_url}) when is_binary(image_url) do
     # https://.../31p4_Icon_Zerg.png into ["Icon", "Zerg"]
 
