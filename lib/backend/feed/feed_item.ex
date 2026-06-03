@@ -5,6 +5,7 @@ defmodule Backend.Feed.FeedItem do
   # 0.9716^24 ~ 0.5, 0.9716^48 ~ 0.25
   @default_decay_rate 0.9716
   @required [:decay_rate, :cumulative_decay, :points, :decayed_points, :value, :type]
+  @optional [:time_window, :start_time, :end_time]
   schema "feed_items" do
     field :decay_rate, :float, default: @default_decay_rate
     field :cumulative_decay, :float, default: 1.0
@@ -12,13 +13,16 @@ defmodule Backend.Feed.FeedItem do
     field :decayed_points, :float
     field :value, :string
     field :type, :string
+    field :time_window, :boolean, default: false
+    field :start_time, :naive_datetime, default: nil
+    field :end_time, :naive_datetime, default: nil
     timestamps()
   end
 
   @doc false
   def changeset(feed_item, attrs) do
     feed_item
-    |> cast(attrs, @required)
+    |> cast(attrs, @required ++ @optional)
     |> ensure_decayed_points(feed_item)
     |> ensure_decay_rate()
     |> validate_required(@required)

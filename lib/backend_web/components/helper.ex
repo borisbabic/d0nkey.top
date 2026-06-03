@@ -40,6 +40,14 @@ defmodule Components.Helper do
     """
   end
 
+  attr :datetime, :any, required: true
+
+  def relative_datetime(assigns) do
+    ~H"""
+      <time class="datetime-relative" datetime={NaiveDateTime.to_iso8601(@datetime)} id={random_id()} aria-label={timestamp(@datetime)}><%= Timex.format!(@datetime, "{relative}", :relative) %></time>
+    """
+  end
+
   defp timestamp(maybe_naive) do
     {:ok, not_naive} = DateTime.from_naive(maybe_naive, "Etc/UTC")
     DateTime.to_unix(not_naive, :millisecond)
