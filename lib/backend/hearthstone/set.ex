@@ -17,6 +17,7 @@ defmodule Backend.Hearthstone.Set do
     # like for HSJson. I think it's what's used in game? Didn't have a better name
     field :alt_slug, :string, default: nil
     field :release_date, :date
+    #### IF adding something manual then add it to :replace_all_except
 
     timestamps()
   end
