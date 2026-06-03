@@ -59,7 +59,7 @@ defmodule Components.Feed.RevealStreamItem do
 
   def participant(assigns) do
     ~H"""
-      <div>{@display_prefix}{dbg(@participant).display}</div>
+      <div>{@display_prefix}{@participant.display}</div>
     """
   end
 end
