@@ -8,6 +8,7 @@ defmodule Components.ReplaysTable do
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.Enums.GameType
   alias Hearthstone.Enums.Format
+  alias FunctionComponents.DeckComponents
 
   prop(replays, :list, required: true)
   prop(show_player_btag, :boolean, default: false)
@@ -46,7 +47,7 @@ defmodule Components.ReplaysTable do
                 <span class={"tw-text-black", "decklist-info", Deck.extract_class(opponent_archetype) |> String.downcase()}>{opponent_archetype}</span>
               {#else}
                 <span class="icon">
-                  <img src={"#{BackendWeb.BattlefyView.class_url(game.opponent_class)}"} >
+                  <DeckComponents.class_icon class_slug={game.opponent_class}/>
                 </span>
               {/if}
                 <PlayerName :if={@show_opponent_name} player={game.opponent_btag}/>

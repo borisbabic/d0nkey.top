@@ -12,6 +12,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.Battlenet.Battletag
   alias Backend.UserManager.User
   import FunctionComponents.Battlefy, only: [stage_selection_dropdown: 1]
+  import FunctionComponents.DeckComponents, only: [class_icon: 1]
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -167,10 +168,11 @@ defmodule BackendWeb.BattlefyView do
     })
   end
 
-  def render("class_match_stats.html", %{class: _class, bans: 1} = assigns) do
-    ~H"""
-    <img class="image is-32x32" style="opacity:0.2;" src={class_url(@class)}>
-    """
+  def render("class_match_stats.html", %{class: class, bans: 1} = assigns) do
+    assigns
+    |> Map.put(:opacity, 0.2)
+    |> Map.put(:class_slug, class)
+    |> class_icon()
   end
 
   def render(
@@ -239,15 +241,11 @@ defmodule BackendWeb.BattlefyView do
     size = 32 - offset
 
     assigns = %{
-      image_url: class_url(class),
+      class_slug: class,
       style: border_css <> "height: #{size}px; width: #{size}px; margin: 3px #{offset}px;"
     }
 
-    ~H"""
-    <figure class="image is-rounded">
-      <img class="image is-rounded" style={@style} src={@image_url} />
-    </figure>
-    """
+    class_icon(assigns)
   end
 
   def render("tournaments_stats.html", p = %{conn: conn, tournaments: tournaments}) do
@@ -667,10 +665,6 @@ defmodule BackendWeb.BattlefyView do
 
   def tour_stop?(%{id: id}),
     do: !!Backend.MastersTour.TourStop.get_by(:battlefy_id, id)
-
-  # todo move elsewhere
-  def class_url(nil), do: nil
-  def class_url(class), do: "/images/icons/#{String.downcase(class)}.png"
 
   @win_color "hsl(141, 53%, 53%)"
   @loss_color "hsl(348, 86%, 61%)"

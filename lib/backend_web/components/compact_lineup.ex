@@ -5,6 +5,7 @@ defmodule Components.CompactLineup do
   alias Backend.Hearthstone.Lineup
   alias Backend.Hearthstone
   alias Components.Decklist
+  alias FunctionComponents.DeckComponents
   alias Backend.DeckInteractionTracker, as: Tracker
 
   # code or struct
@@ -26,9 +27,7 @@ defmodule Components.CompactLineup do
           <ul>
             <li :for={deck <- @decks} class={"is-active": selected_deck?(deck, @selected_deck)}>
               <a class={"player-name", Deck.class(deck) |> String.downcase()} :on-click={click_event(deck, @selected_deck)} phx-value-deckcode={Deck.deckcode(deck)}>
-                <figure>
-                    <img class="image is-16x16" src={"#{ BackendWeb.BattlefyView.class_url(Deck.class(deck)) }"} >
-                </figure>
+                <DeckComponents.class_icon class_slug={Deck.class(deck) |> dbg()} size={16} />
               </a>
             </li>
           </ul>

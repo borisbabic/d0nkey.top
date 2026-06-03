@@ -14,4 +14,25 @@ defmodule FunctionComponents.DeckComponents do
       </div>
     """
   end
+
+  attr :class_slug, :string, required: true
+  attr :opacity, :float, default: 1.0
+  attr :css_class, :string, default: ""
+  attr :style, :string, default: ""
+  attr :size, :integer, default: 32
+
+  def class_icon(assigns) do
+    ~H"""
+    <figure class="image is-rounded">
+      <img class={"image is-rounded is-#{@size}x#{@size} #{@css_class}"} style={"opacity: #{@opacity};#{@style}"} src={class_icon_url(dbg(@class_slug))}>
+    </figure>
+    """
+  end
+
+  def class_icon_url([class]), do: class_icon_url(class)
+
+  def class_icon_url(class) when is_binary(class),
+    do: "/images/icons/#{String.downcase(class)}.png"
+
+  def class_icon_url(_), do: nil
 end
