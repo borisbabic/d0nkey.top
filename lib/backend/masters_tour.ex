@@ -1128,9 +1128,8 @@ defmodule Backend.MastersTour do
   @spec tour_stops_tournaments() :: [Battlefy.Tournament.t()]
   def tour_stops_tournaments() do
     TourStop.all()
-    |> Enum.map(fn ts -> ts.battlefy_id end)
-    |> Enum.filter(&Util.id/1)
-    |> Enum.map(&Battlefy.get_tournament/1)
+    |> Enum.filter(fn ts -> ts.battlefy_id end)
+    |> Enum.map(&get_mt_tournament/1)
   end
 
   defp to_battelfy_standings({name, place, wins, losses}) do
