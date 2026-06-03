@@ -37,9 +37,7 @@
             <%= for %{class: class, bans: bans, wins: wins, losses: losses} <- @class_stats do %>
                 <tr>
                     <td>
-                        <figure>
-                            <img class="image is-32x32" src={"#{ class_url(class) }"} >
-                        </figure>
+                        <.class_icon class_slug={class} />
                     </td>
                     <td><%= bans %></td>
                     <td><%= wins %></td>
