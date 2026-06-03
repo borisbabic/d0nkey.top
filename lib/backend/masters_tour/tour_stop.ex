@@ -574,7 +574,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Worlds 2025",
-        battlefy_id: nil,
+        battlefy_id: "6941b7af3ca24d00130d3e53",
         ladder_priority: nil,
         ladder_seasons: [137, 138, 140, 141, 143, 144],
         ladder_invites: nil,
@@ -598,7 +598,7 @@ defmodule Backend.MastersTour.TourStop do
       },
       %__MODULE__{
         id: :"Masters Tour 2026_1",
-        battlefy_id: nil,
+        battlefy_id: "69d8fa6f40d16e0013e416b0",
         ladder_priority: nil,
         ladder_seasons: [],
         ladder_invites: nil,
