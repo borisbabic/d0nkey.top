@@ -3,6 +3,7 @@ defmodule Backend.Feed do
   import Ecto.Query, warn: false
   alias Backend.Feed.DeckInteraction
   alias Backend.Feed.FeedItem
+  alias Backend.Feed.RevealStream
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.Repo
@@ -74,12 +75,15 @@ defmodule Backend.Feed do
   end
 
   def get_current_items(limit \\ 40, offset \\ 0) do
+    now = NaiveDateTime.utc_now()
+
     query =
       from fi in FeedItem,
         order_by: [desc: fi.decayed_points],
         limit: ^limit,
         offset: ^offset,
-        select: fi
+        select: fi,
+        where: not fi.time_window or (fi.start_time <= ^now and fi.end_time >= ^now)
 
     Repo.all(query)
   end
@@ -271,5 +275,40 @@ defmodule Backend.Feed do
     }
 
     update_feed_item(item, attrs)
+  end
+
+  @spec get_reveal_stream_slugs() :: [String.t()]
+  def get_reveal_stream_slugs() do
+    query =
+      from fi in FeedItem,
+        where: fi.type == "reveal_stream",
+        select: fi.value
+
+    Repo.all(query)
+  end
+
+  @default_opts [hours_before: 6, hours_after: 1, points: 69_666_420]
+  def add_missing_reveal_streams(opts \\ @default_opts) do
+    hours_before = Keyword.get(opts, :hours_before, @default_opts[:hours_before])
+    hours_after = Keyword.get(opts, :hours_after, @default_opts[:hours_after])
+    points = Keyword.get(opts, :points, @default_opts[:points])
+    existing_slugs = get_reveal_stream_slugs()
+
+    for %{start_time: %NaiveDateTime{} = start_time, slug: slug} when is_binary(slug) <-
+          RevealStream.all(),
+        slug not in existing_slugs do
+      item_start_time = NaiveDateTime.add(start_time, -1 * hours_before, :hour)
+      item_end_time = NaiveDateTime.add(start_time, hours_after, :hour)
+
+      %{
+        type: "reveal_stream",
+        value: slug,
+        points: points,
+        time_window: true,
+        start_time: item_start_time,
+        end_time: item_end_time
+      }
+      |> create_feed_item()
+    end
   end
 end

@@ -38,6 +38,19 @@ defmodule Components.Socials do
   end
 
   attr :link, :string, required: true
+  attr :height, :integer, default: 30
+  attr :show_live, :boolean, default: true
+
+  def twitch_channel(assigns) do
+    ~H"""
+      <a href={"https://www.twitch.tv/#{@channel}"}>
+        <img style={"height: #{@height}px;"} class="image" alt="Twitch" src="/images/brands/twitch_extruded_wordmark_purple.svg" />
+        <p :if={@show_live && Twitch.HearthstoneLive.twitch_display_live?(@channel)}><sup class="is-size-7 has-text-info"> Live!</sup></p>
+      </a>
+    """
+  end
+
+  attr :link, :string, required: true
 
   def patreon(assigns) do
     ~H"""
