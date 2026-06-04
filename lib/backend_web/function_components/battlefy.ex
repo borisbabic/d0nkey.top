@@ -3,6 +3,7 @@ defmodule FunctionComponents.Battlefy do
 
   use BackendWeb, :component
 
+  alias Backend.Hearthstone.Deck
   alias Backend.Battlefy.Tournament
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.MatchTeam
@@ -51,9 +52,164 @@ defmodule FunctionComponents.Battlefy do
     """
   end
 
-  def render_decks(decks) do
-    BackendWeb.BattlefyMatchLive.render_decks(decks, Ecto.UUID.generate())
+  attr :tournament, :map, required: true
+  attr :match, :map, required: true
+  attr :top_decks, :list, default: []
+  attr :bottom_decks, :list, default: []
+
+  def match_table(assigns) do
+    ~H"""
+      <table class="table is-fullwidth">
+        <thead>
+          <tr>
+            <th>{@match.top |> MatchTeam.get_name() |> player(@tournament)}</th>
+            <th>Score</th>
+            <th>{@match.bottom |> MatchTeam.get_name() |> player(@tournament)}</th>
+            <th>When</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :if={Enum.any?(@top_decks) or Enum.any?(@bottom_decks)}>
+            <td>{render_decks(@top_decks)}</td>
+            <td></td>
+            <td>{render_decks(@bottom_decks)}</td>
+            <td></td>
+          </tr>
+          <tr :for={times <- match_times(@match, @top_decks, @bottom_decks)} >
+            <td>{times.top}</td>
+            <td>{Map.get(times, :score)}</td>
+            <td>{times.bottom}</td>
+            <td>{Util.from_now(times.when)}</td>
+          </tr>
+          <tr :for={game <- games(@match)} >
+            <td>{decks(@top_decks, game.top_class) |> render_decks(game.game_identifier <> "_top")}</td>
+            <td>{game.score}</td>
+            <td>{decks(@bottom_decks, game.bottom_class) |> render_decks(game.game_identifier <> "_bottom")}</td>
+            <td>{Util.from_now(game.finished)}</td>
+          </tr>
+        </tbody>
+      </table>
+    """
   end
+
+  defp games(match) do
+    match.stats
+    |> Enum.sort_by(& &1.game_number, :asc)
+    |> Enum.map(fn
+      %{
+        created_at: created_at,
+        stats: %{bottom: %{class: bottom_class, winner: bw}, top: %{class: top_class, winner: tw}}
+      } = g ->
+        %{
+          top_class: top_class,
+          bottom_class: bottom_class,
+          finished: created_at,
+          game_identifier: game_identifier(g),
+          score: "#{score(tw)} - #{score(bw)}"
+        }
+
+      %{created_at: created_at} = g ->
+        %{
+          top_class: "",
+          bottom_class: "",
+          finished: created_at,
+          identifier: game_identifier(g),
+          score: ""
+        }
+
+      g ->
+        %{
+          top_class: "",
+          bottom_class: "",
+          finished: "?",
+          identifier: game_identifier(g),
+          score: ""
+        }
+    end)
+  end
+
+  defp score(true), do: 1
+  defp score(_), do: 0
+
+  defp player(nil, _), do: ""
+
+  defp player(name, tournament) do
+    link = Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, tournament.id, name)
+
+    assigns = %{link: link, name: name}
+
+    ~H"""
+    <a href={@link}><%= @name %></a>
+    """
+  end
+
+  defp match_times(%{top: top, bottom: bottom}, top_decks, bottom_decks) do
+    [
+      %{
+        top: "Check In",
+        when: top && top.ready_at,
+        bottom: ""
+      },
+      %{
+        top: top && decks(top_decks, top.banned_class) |> render_decks("banned_top", "???"),
+        when: top && top.banned_at,
+        score: "Banned",
+        bottom: ""
+      },
+      %{
+        bottom: "Check In",
+        when: bottom && bottom.ready_at,
+        top: ""
+      },
+      %{
+        bottom:
+          bottom &&
+            decks(bottom_decks, bottom.banned_class) |> render_decks("banned_bottom", "???"),
+        when: bottom && bottom.banned_at,
+        score: "Banned",
+        top: ""
+      }
+    ]
+    |> Enum.filter(& &1.when)
+    |> Enum.sort_by(& &1.when, fn a, b -> :lt == NaiveDateTime.compare(a, b) end)
+  end
+
+  def render_decks(decks, id \\ nil, fallback \\ "")
+
+  def render_decks(decks, nil, fallback) do
+    render_decks(decks, Ecto.UUID.generate(), fallback)
+  end
+
+  def render_decks(decks, id, fallback) do
+    BackendWeb.BattlefyMatchLive.render_decks(decks, id, fallback)
+  end
+
+  def render_decks([deck], id, _fallback) do
+    assigns = %{deck: deck, id: id}
+    ExpandableDecklist.render(assigns)
+  end
+
+  def render_decks([], _id, fallback), do: fallback
+
+  def render_decks(decks, id, _fallback) do
+    assigns = %{extra_decks: decks, id: id}
+    CompactLineup.render(assigns)
+  end
+
+  defp game_identifier(%{game_id: game_id, game_number: game_number}),
+    do: "#{game_id}_#{game_number}"
+
+  defp game_identifier(_), do: "Unknown_game_identifier_#{Ecto.UUID.generate()}"
+
+  defp decks(decks, lower_class) when is_binary(lower_class) do
+    class = String.upcase(lower_class)
+
+    Enum.filter(decks, fn d ->
+      Deck.class(d) == class
+    end)
+  end
+
+  defp decks(_, _), do: []
 
   attr :bracket, :map, required: true
   attr :show_championship, :boolean, default: true
@@ -129,9 +285,14 @@ defmodule FunctionComponents.Battlefy do
                 <div class="tw-absolute tw-left-[-2.5rem] tw-top-1/2 tw-w-10 tw-h-[2px] tw-bg-gray-600 tw-transform tw--translate-y-1/2"></div>
               <% end %>
 
-              <.player_cell name={MatchTeam.get_name(top)} score={top.score} winner={top.winner} strike_through_losers={match.is_complete && @strike_through_losers} tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
-              <div class="tw-border-t tw-border-gray-700 tw-my-1"></div>
-              <.player_cell name={MatchTeam.get_name(bottom)} score={bottom.score} winner={bottom.winner} strike_through_losers={match.is_complete && @strike_through_losers}  tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
+              <div phx-click={show_modal("match-modal-#{match.id}")}>
+                <.player_cell name={MatchTeam.get_name(top)} score={top.score} winner={top.winner} strike_through_losers={match.is_complete && @strike_through_losers} tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
+                <div class="tw-border-t tw-border-gray-700 tw-my-1"></div>
+                <.player_cell name={MatchTeam.get_name(bottom)} score={bottom.score} winner={bottom.winner} strike_through_losers={match.is_complete && @strike_through_losers}  tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
+              </div>
+              <.modal id={"match-modal-#{match.id}"} title={"#{MatchTeam.get_name(top)} vs #{MatchTeam.get_name(bottom)}"}>
+                  ble
+              </.modal>
             </div>
             <%= if last_round? && @sub_bracket.third_place_round do %>
               <%=

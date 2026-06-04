@@ -696,4 +696,27 @@ defmodule Util do
       ArgumentError -> {:error, :not_existing}
     end
   end
+
+  def from_now(time, minute_ago_cutoff \\ 180) do
+    case min_ago(time, NaiveDateTime.utc_now()) do
+      other when not is_integer(other) -> "?"
+      recent when recent < minute_ago_cutoff -> "#{recent} min ago"
+      _ -> "#{Timex.from_now(time)}"
+    end
+  end
+
+  defp min_ago(nil, _now), do: nil
+
+  defp min_ago(comparison, now) do
+    now_stamp = now |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_unix()
+
+    comp_stamp =
+      comparison
+      |> DateTime.from_naive!("Etc/UTC")
+      |> DateTime.to_unix()
+
+    ((now_stamp - comp_stamp) / 60)
+    |> Float.round()
+    |> trunc()
+  end
 end
