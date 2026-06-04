@@ -1,7 +1,7 @@
 defmodule FunctionComponents.CoreComponents do
   @moduledoc false
   use Phoenix.Component
-  # alias Phoenix.LiveView.JS
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders an input with label and error messages.
@@ -176,5 +176,80 @@ defmodule FunctionComponents.CoreComponents do
         <% end %>
     </div>
     """
+  end
+
+  attr :show_footer, :boolean, default: true
+  attr :show_error, :boolean, default: false
+
+  attr :title, :string, default: nil
+  attr :show_body, :boolean, default: true
+  attr :show_cancel_button, :boolean, default: true
+
+  attr :error_message, :string, default: "Error"
+  attr :cancel_button_message, :string, default: "Cancel"
+
+  slot :background, required: false
+  slot :footer, required: false
+  slot :inner_block, required: true
+  attr :id, :string, required: true
+
+  def modal(assigns) do
+    ~H"""
+        <div id={@id} class="modal">
+          <div class="modal-background">{render_slot(@background)}</div>
+          <div class="modal-card !tw-max-h-[85dvh]">
+            <header class="modal-card-head" :if={@title}>
+                <p class="modal-card-title">{@title}</p>
+                <button class="delete" type="button" aria-label="close" phx-click={hide_modal(@id)}></button>
+            </header>
+            <section :if={@show_body} class={"modal-card-body"}>
+              {render_slot(@inner_block)}
+            </section>
+            <footer :if={@show_footer} class="modal-card-foot">
+              {render_slot(@footer)}
+              <button :if={@show_cancel_button} class="button" type="button" phx-click={hide_modal(@id)}>{@cancel_button_message}</button>
+              <div :if={@show_error} class="notification is-warning tag">{@error_message}</div>
+            </footer>
+          </div>
+        </div>
+    """
+  end
+
+  @doc """
+
+  Returns the JS object with the modal displayed and focused.
+
+  ## Parameters
+
+  - js - an optional composable JS script to be executed.
+  - id - The id of the modal to be shown.
+
+  ## Description
+   Updates the specified modal's state to open and focuses on its first content element.
+
+  """
+  def show_modal(js \\ %JS{}, id) when is_binary(id) do
+    js
+    |> JS.add_class("is-active", to: "##{id}")
+    |> JS.focus_first(to: "##{id}")
+  end
+
+  @doc """
+
+  Returns the updated JavaScript state with the modal closed.
+
+  ## Parameters
+
+  - js - an optional composable JS script to be executed.
+  - id - The id of the modal to be hidden.
+
+  ## Description
+  Removes the "open" attribute from the specified modal and sets the focus away from it.
+
+  """
+  def hide_modal(js \\ %JS{}, id) do
+    js
+    |> JS.remove_class("is-active", to: "##{id}")
+    |> JS.pop_focus()
   end
 end
