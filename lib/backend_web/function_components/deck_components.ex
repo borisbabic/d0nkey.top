@@ -24,7 +24,7 @@ defmodule FunctionComponents.DeckComponents do
   def class_icon(assigns) do
     ~H"""
     <figure class="image is-rounded">
-      <img class={"image is-rounded is-#{@size}x#{@size} #{@css_class}"} style={"opacity: #{@opacity};#{@style}"} src={class_icon_url(dbg(@class_slug))}>
+      <img class={"image is-rounded is-#{@size}x#{@size} #{@css_class}"} style={"opacity: #{@opacity};#{@style}"} src={class_icon_url(@class_slug)}>
     </figure>
     """
   end
