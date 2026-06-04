@@ -237,10 +237,11 @@ defmodule Components.Helper do
   attr :link, :string, required: false, default: nil
   attr :name, :string, required: true
   attr :with_country, :boolean, default: true
+  attr :stop_propagation, :boolean, default: false
 
   def player_link(assigns) do
     ~H"""
-    <a href={@link || "/player-profile/#{@name}"}>
+    <a href={@link || "/player-profile/#{@name}"} onclick={if @stop_propagation, do: "event.stopPropagation()"}>
       <%= player_name(@name, @with_country) %>
     </a>
     """

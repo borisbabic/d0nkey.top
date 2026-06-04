@@ -27,7 +27,7 @@ defmodule Components.CompactLineup do
           <ul>
             <li :for={deck <- @decks} class={"is-active": selected_deck?(deck, @selected_deck)}>
               <a class={"player-name", Deck.class(deck) |> String.downcase()} :on-click={click_event(deck, @selected_deck)} phx-value-deckcode={Deck.deckcode(deck)}>
-                <DeckComponents.class_icon class_slug={Deck.class(deck) |> dbg()} size={16} />
+                <DeckComponents.class_icon class_slug={Deck.class(deck)} size={16} />
               </a>
             </li>
           </ul>

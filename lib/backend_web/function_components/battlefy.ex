@@ -52,7 +52,7 @@ defmodule FunctionComponents.Battlefy do
     """
   end
 
-  attr :tournament, :map, required: true
+  attr :tournament_id, :string, required: true
   attr :match, :map, required: true
   attr :top_decks, :list, default: []
   attr :bottom_decks, :list, default: []
@@ -62,9 +62,9 @@ defmodule FunctionComponents.Battlefy do
       <table class="table is-fullwidth">
         <thead>
           <tr>
-            <th>{@match.top |> MatchTeam.get_name() |> player(@tournament)}</th>
+            <th>{@match.top |> MatchTeam.get_name() |> player(@tournament_id)}</th>
             <th>Score</th>
-            <th>{@match.bottom |> MatchTeam.get_name() |> player(@tournament)}</th>
+            <th>{@match.bottom |> MatchTeam.get_name() |> player(@tournament_id)}</th>
             <th>When</th>
           </tr>
         </thead>
@@ -133,8 +133,8 @@ defmodule FunctionComponents.Battlefy do
 
   defp player(nil, _), do: ""
 
-  defp player(name, tournament) do
-    link = Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, tournament.id, name)
+  defp player(name, tournament_id) do
+    link = Routes.battlefy_path(BackendWeb.Endpoint, :tournament_player, tournament_id, name)
 
     assigns = %{link: link, name: name}
 
@@ -182,18 +182,6 @@ defmodule FunctionComponents.Battlefy do
 
   def render_decks(decks, id, fallback) do
     BackendWeb.BattlefyMatchLive.render_decks(decks, id, fallback)
-  end
-
-  def render_decks([deck], id, _fallback) do
-    assigns = %{deck: deck, id: id}
-    ExpandableDecklist.render(assigns)
-  end
-
-  def render_decks([], _id, fallback), do: fallback
-
-  def render_decks(decks, id, _fallback) do
-    assigns = %{extra_decks: decks, id: id}
-    CompactLineup.render(assigns)
   end
 
   defp game_identifier(%{game_id: game_id, game_number: game_number}),
@@ -285,13 +273,13 @@ defmodule FunctionComponents.Battlefy do
                 <div class="tw-absolute tw-left-[-2.5rem] tw-top-1/2 tw-w-10 tw-h-[2px] tw-bg-gray-600 tw-transform tw--translate-y-1/2"></div>
               <% end %>
 
-              <div phx-click={show_modal("match-modal-#{match.id}")}>
+              <div class={if use_modal?(match), do: "tw-cursor-pointer"} phx-click={if use_modal?(match), do: show_modal("match-modal-#{match.id}")}>
                 <.player_cell name={MatchTeam.get_name(top)} score={top.score} winner={top.winner} strike_through_losers={match.is_complete && @strike_through_losers} tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
                 <div class="tw-border-t tw-border-gray-700 tw-my-1"></div>
                 <.player_cell name={MatchTeam.get_name(bottom)} score={bottom.score} winner={bottom.winner} strike_through_losers={match.is_complete && @strike_through_losers}  tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
               </div>
-              <.modal id={"match-modal-#{match.id}"} title={"#{MatchTeam.get_name(top)} vs #{MatchTeam.get_name(bottom)}"}>
-                  ble
+              <.modal :if={use_modal?(match)} id={"match-modal-#{match.id}"} title={"#{MatchTeam.get_name(top)} vs #{MatchTeam.get_name(bottom)}"}>
+                <.match_table match={match} tournament_id={@tournament_id} />
               </.modal>
             </div>
             <%= if last_round? && @sub_bracket.third_place_round do %>
@@ -308,6 +296,10 @@ defmodule FunctionComponents.Battlefy do
 
     """
   end
+
+  defp use_modal?(_), do: false
+  defp use_modal?(%{stats: [_ | _]}), do: true
+  defp use_modal?(_), do: false
 
   attr :name, :string, required: true
   attr :winner, :boolean, default: false
@@ -338,14 +330,14 @@ defmodule FunctionComponents.Battlefy do
           <%= (@render_decks || &render_decks/1).(@decks) %>
         <% end %>
         <%= if @tournament_id && @name do %>
-          <p class=""><%= render_player_link(@name, ~p"/battlefy/tournament/#{@tournament_id}/player/#{@name}?#{if @stage_id, do: %{stage_id: @stage_id}, else: ""}", true) %></p>
+          <.player_link name={@name} tournament_id={@tournament_id} stage_id={@stage_id} />
         <% else %>
           <p class=""><%= render_player_name(@name, true) %></p>
         <% end %>
         <%= if @tournament_id && @match_id do %>
-          <a class="tw-text-right tw-font-mono " href={~p"/battlefy/tournament/#{@tournament_id}/match/#{@match_id}"}><%= @score %></a>
+          <a class="tw-text-right tw-font-mono " onclick="event.stopPropagation()" href={~p"/battlefy/tournament/#{@tournament_id}/match/#{@match_id}"}><%= @score %></a>
         <% else %>
-          <p class="tw-text-right tw-font-mono "><%= @score %></p>
+          <p class="tw-text-right tw-font-mono " onclick="event.stopPropagation()" ><%= @score %></p>
         <% end %>
       </div>
     """
@@ -365,5 +357,17 @@ defmodule FunctionComponents.Battlefy do
 
   defp most_matches(rounds) do
     Enum.map(rounds, &Enum.count(&1.matches)) |> Enum.max(fn -> 0 end)
+  end
+
+  attr :tournament_id, :string, required: true
+  attr :stage_id, :string, default: nil
+  attr :name, :string, required: true
+  attr :with_country, :boolean, default: true
+  attr :stop_propagation, :boolean, default: false
+
+  def player_link(assigns) do
+    ~H"""
+      <Helper.player_link name={@name} stop_propagation={true} link={~p"/battlefy/tournament/#{@tournament_id}/player/#{@name}?#{if @stage_id, do: %{stage_id: @stage_id}, else: ""}"} />
+    """
   end
 end
