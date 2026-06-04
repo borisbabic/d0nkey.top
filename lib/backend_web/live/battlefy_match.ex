@@ -32,7 +32,7 @@ defmodule BackendWeb.BattlefyMatchLive do
           {subtitle(@match)}
         </div>
         <FunctionComponents.Ads.below_title/>
-        <.match_table match={@match} tournament={@tournament} top_decks={@top_decks} bottom_decks={@bottom_decks} />
+        <.match_table match={@match} tournament_id={@tournament.id} top_decks={@top_decks} bottom_decks={@bottom_decks} />
       </div>
     """
   end
