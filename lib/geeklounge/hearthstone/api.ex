@@ -23,7 +23,7 @@ defmodule GeekLounge.Hearthstone.Api do
     end
   end
 
-  defp tournament_url(tournament_id) do
+  def tournament_url(tournament_id) do
     "/api/v1/tournaments/#{tournament_id}"
   end
 

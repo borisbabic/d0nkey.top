@@ -2,6 +2,7 @@ defmodule GeekLounge.Hearthstone.Tournament do
   @moduledoc false
   use TypedStruct
 
+  alias GeekLounge.Hearthstone.Group
   alias GeekLounge.Hearthstone.Round
   alias GeekLounge.Hearthstone.Participant
 
@@ -10,6 +11,7 @@ defmodule GeekLounge.Hearthstone.Tournament do
     field :name, String.t()
     field :created_at, NaiveDateTime.t()
     field :rounds, [Round.t()]
+    field :groups, [Group.t()]
     field :participants, [Participant.t()]
   end
 
@@ -25,7 +27,8 @@ defmodule GeekLounge.Hearthstone.Tournament do
       name: map["name"],
       created_at: created_at,
       rounds: map["rounds"] |> Enum.map(&Round.from_raw_map/1),
-      participants: map["participants"] |> Enum.map(&Participant.from_raw_map/1)
+      participants: map["participants"] |> Enum.map(&Participant.from_raw_map/1),
+      groups: Map.get(map, "groups", []) |> Enum.map(&Group.from_raw_map/1)
     }
   end
 end

@@ -12,7 +12,7 @@ defmodule GeekLounge.Hearthstone.Player do
   def from_raw_map(raw) do
     %__MODULE__{
       id: raw["id"],
-      display_name: raw["display_name"],
+      display_name: raw["displayName"],
       battletag: raw["battleTag"]
     }
   end
