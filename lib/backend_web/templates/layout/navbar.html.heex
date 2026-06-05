@@ -110,9 +110,6 @@
               <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
             <% end %>
         </a>
-        <a class="navbar-item" href={"/tournament-lineups/masters_tour/spring_2026"}}>
-          <span>🏆 MT Spring Lineups</span>
-        </a>
         <a class="navbar-item" :if={info = current_qualifier_info()} href={info.link}}>
           <span>🏆 {info.title}</span>
         </a>

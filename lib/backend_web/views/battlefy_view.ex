@@ -112,12 +112,14 @@ defmodule BackendWeb.BattlefyView do
     slug = fn t -> (t.organization && t.organization.slug) || params[:slug] end
 
     tournaments =
-      raw
-      |> Enum.map(fn t ->
+      for %{id: id, slug: s} = t <- raw do
         t
-        |> Map.put_new(:link, Battlefy.create_tournament_link(t.slug, t.id, t |> slug.()))
-        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, t.id))
-      end)
+        |> Map.put_new(
+          :link,
+          Battlefy.create_tournament_link(s, id, t |> slug.())
+        )
+        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, s))
+      end
 
     render("tournament_table.html", %{tournaments: tournaments})
   end
