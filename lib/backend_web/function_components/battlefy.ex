@@ -274,9 +274,9 @@ defmodule FunctionComponents.Battlefy do
               <% end %>
 
               <div class={if use_modal?(match), do: "tw-cursor-pointer"} phx-click={if use_modal?(match), do: show_modal("match-modal-#{match.id}")}>
-                <.player_cell name={MatchTeam.get_name(top)} score={top.score} winner={top.winner} strike_through_losers={match.is_complete && @strike_through_losers} tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
+                <.player_cell name={MatchTeam.get_name(top)} score={top.score} class={player_cell_class(match.is_complete, top.winner, @strike_through_losers)}tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
                 <div class="tw-border-t tw-border-gray-700 tw-my-1"></div>
-                <.player_cell name={MatchTeam.get_name(bottom)} score={bottom.score} winner={bottom.winner} strike_through_losers={match.is_complete && @strike_through_losers}  tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
+                <.player_cell name={MatchTeam.get_name(bottom)} score={bottom.score} class={player_cell_class(match.is_complete, bottom.winner, @strike_through_losers)} tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
               </div>
               <.modal :if={use_modal?(match)} id={"match-modal-#{match.id}"} title={"#{MatchTeam.get_name(top)} vs #{MatchTeam.get_name(bottom)}"}>
                 <.match_table match={match} tournament_id={@tournament_id} />
@@ -297,7 +297,6 @@ defmodule FunctionComponents.Battlefy do
     """
   end
 
-  defp use_modal?(_), do: false
   defp use_modal?(%{stats: [_ | _]}), do: true
   defp use_modal?(_), do: false
 
@@ -308,9 +307,8 @@ defmodule FunctionComponents.Battlefy do
   attr :stage_id, :string, default: nil
   attr :match_id, :string, default: nil
   attr :lineups, :map, default: %{}
-  attr :strike_through_losers, :boolean, required: true
-
   attr :render_decks, :fun, default: nil
+  attr :class, :string, default: ""
 
   def player_cell(assigns) do
     lineup = get_lineup(assigns)
@@ -325,15 +323,17 @@ defmodule FunctionComponents.Battlefy do
     assigns = assigns |> assign(new_assigns)
 
     ~H"""
-      <div class={"tw-grid tw-grid-flow-col tw-grid-cols-#{@col_count} #{if !@winner, do: "tw-italic"} #{if @strike_through_losers and !@winner, do: "tw-line-through" }"}>
+      <div class={"tw-grid tw-grid-flow-col tw-grid-cols-#{@col_count} #{@class}"}>
         <%= if @decks do %>
           <%= (@render_decks || &render_decks/1).(@decks) %>
         <% end %>
-        <%= if @tournament_id && @name do %>
-          <.player_link name={@name} tournament_id={@tournament_id} stage_id={@stage_id} />
-        <% else %>
-          <p class=""><%= render_player_name(@name, true) %></p>
-        <% end %>
+        <p>
+          <%= if @tournament_id && @name do %>
+            <.player_link name={@name} tournament_id={@tournament_id} stage_id={@stage_id} />
+          <% else %>
+            <%= render_player_name(@name, true) %>
+          <% end %>
+        </p>
         <%= if @tournament_id && @match_id do %>
           <a class="tw-text-right tw-font-mono " onclick="event.stopPropagation()" href={~p"/battlefy/tournament/#{@tournament_id}/match/#{@match_id}"}><%= @score %></a>
         <% else %>
@@ -342,6 +342,18 @@ defmodule FunctionComponents.Battlefy do
       </div>
     """
   end
+
+  defp player_cell_class(true, true, _strike_through_losers), do: "tw-font-semibold"
+
+  defp player_cell_class(true, false, strike_through_losers) do
+    if strike_through_losers do
+      "tw-font-extralight tw-line-through"
+    else
+      "tw-font-extralight"
+    end
+  end
+
+  defp player_cell_class(_, _, _), do: ""
 
   defp get_lineup(%{lineups: lineups, name: name}), do: get_lineup(lineups, name)
 
