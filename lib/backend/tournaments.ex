@@ -36,8 +36,22 @@ defmodule Backend.Tournaments do
   def get_source_link(_), do: nil
 
   @spec get_our_link(tournament_tuple | Tournament.t()) :: String.t() | nil
+  def get_any_link({"masters_tour", "winter_2026"}), do: mt_link(:"Masters Tour 2026_1")
+  def get_any_link({"masters_tour", "spring_2026"}), do: mt_link(:"Masters Tour 2026_2")
+  def get_any_link({"masters_tour", "summer_2026"}), do: mt_link(:"Masters Tour 2026_3")
+
   def get_any_link(tournament_or_tuple) do
     get_our_link(tournament_or_tuple) || get_source_link(tournament_or_tuple)
+  end
+
+  defp mt_link(mt) do
+    case Backend.MastersTour.TourStop.get_battlefy_id(mt) do
+      {:ok, id} when is_binary(id) ->
+        get_our_link({"battlefy", id})
+
+      _ ->
+        nil
+    end
   end
 
   def filter_newest(tournaments, hours_ago_cutoff) when is_integer(hours_ago_cutoff) do
