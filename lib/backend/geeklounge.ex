@@ -74,17 +74,18 @@ defmodule Backend.GeekLounge do
       tournament_id: lineup_tournament_id
     }
 
-    display_name_fun = Keyword.get(opts, :display_name_fun, fn _, name -> name end)
+    display_name_fun = Keyword.get(opts, :display_name_fun, create_display_name_fun(tournament))
 
     player_ids_and_btags =
       Enum.map(tournament.participants, &{&1.player.id, &1.player.battletag})
 
     for {player_id, battletag} <- player_ids_and_btags,
+        # need to fetch so decks is populated
         {:ok, participant} <- [Api.fetch_participant(tournament_id, player_id)],
         deck_strings = Enum.map(participant.decks, & &1.deck_string),
         Enum.any?(deck_strings) do
       name = battletag || player_id
-      display_name = display_name_fun.(participant, name)
+      display_name = display_name_fun.(add_battletag(participant, tournament), name)
 
       base_attrs
       |> Map.put(:name, name)
@@ -102,6 +103,72 @@ defmodule Backend.GeekLounge do
       {:ok, id} -> id
       _ -> tournament_url_or_id
     end
+  end
+
+  def group_map(%{groups: [_ | _] = groups}) do
+    group_map =
+      for %{name: group_name, standings: standings} <- groups,
+          %{player: %{battletag: btag}} when is_binary(btag) <- standings,
+          into: %{} do
+        {btag, group_name}
+      end
+  end
+
+  def create_display_name_fun(tournament, use_display_name \\ true) do
+    group_map = group_map(tournament)
+
+    fn
+      %{player: %{battletag: btag, display_name: display_name}}, name when is_binary(btag) ->
+        group =
+          with nil <- Map.get(group_map, name) do
+            Map.get(group_map, btag)
+          end
+
+        display =
+          if use_display_name && display_name do
+            display_name
+          else
+            name
+          end
+
+        if group do
+          "#{group} - #{display}"
+        else
+          group
+        end
+
+      p, name ->
+        case Map.get(group_map, name) do
+          nil ->
+            name
+
+          group ->
+            "#{group} - #{name}"
+        end
+    end
+  end
+
+  # sometimes the battletag isn't in the response :shrug:
+  def add_battletag(%{player: %{id: id, battletag: battletag}} = participant, tournament)
+      when is_nil(battletag) and is_binary(id) do
+    battletag =
+      Enum.find_value(tournament.participants || [], fn
+        %{player: %{id: player_id, battletag: btag}} when player_id == id and is_binary(btag) ->
+          btag
+
+        _ ->
+          nil
+      end)
+
+    if battletag do
+      put_in(participant, [Access.key(:player), Access.key(:battletag)], battletag)
+    else
+      participant
+    end
+  end
+
+  def add_battletag(participant, _tournament) do
+    participant
   end
 
   def extract_id(tournament_url) do

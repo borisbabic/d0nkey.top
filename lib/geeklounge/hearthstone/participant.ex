@@ -27,4 +27,10 @@ defmodule GeekLounge.Hearthstone.Participant do
       seed: raw["seed"]
     }
   end
+
+  def battletag(%{player: %{battletag: battletag}}) when is_binary(battletag) do
+    battletag
+  end
+
+  def battletag(_), do: nil
 end
