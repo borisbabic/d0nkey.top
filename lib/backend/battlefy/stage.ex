@@ -16,21 +16,15 @@ defmodule Backend.Battlefy.Stage do
     field :matches, [Match.t()]
   end
 
-  @spec from_raw_map(map) :: __MODULE__.t()
+  @spec from_raw_map(Map.t()) :: __MODULE__.t()
 
-  def from_raw_map(
-        map = %{
-          "startTime" => start_time,
-          "hasStarted" => has_started,
-          "name" => name
-        }
-      ) do
+  def from_raw_map(map) when is_map(map) do
     %__MODULE__{
       id: map["id"] || map["_id"],
-      start_time: NaiveDateTime.from_iso8601!(start_time),
-      has_started: has_started,
+      start_time: start_time(map),
+      has_started: map["hasStarted"],
       standing_ids: map["standingIDs"] || [],
-      name: name,
+      name: map["name"],
       current_round: map["currentRound"],
       matches:
         if(is_list(map["matches"]),
@@ -40,6 +34,14 @@ defmodule Backend.Battlefy.Stage do
       bracket: Bracket.from_raw_map(map["bracket"])
     }
   end
+
+  @spec start_time(Map.t()) :: NaiveDateTime.t() | nil
+  defp start_time(%{"startTime" => start_time}) when is_binary(start_time) do
+    NaiveDateTime.from_iso8601(start_time)
+    |> Util.nilify()
+  end
+
+  defp start_time(_), do: nil
 
   @doc "Can we display the stage as a bracket"
   @spec bracketable?(__MODULE__) :: boolean()
