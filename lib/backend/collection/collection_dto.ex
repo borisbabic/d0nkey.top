@@ -62,6 +62,7 @@ defmodule Backend.CollectionManager.CollectionDto do
     Enum.reduce_while(cards, {:ok, []}, fn raw_card, {:ok, carry} ->
       case Card.from_raw_map(raw_card) do
         {:ok, card} -> {:cont, {:ok, add_card(carry, card)}}
+        {:error, "no card found" <> _} -> {:cont, carry}
         {:error, reason} -> {:halt, {:error, reason}}
       end
     end)
