@@ -382,7 +382,12 @@ defmodule Components.MatchupsTable do
 
   defp sort_mapper("opponent_" <> opponent_archetype, min_matchup_sample) do
     fn m ->
-      opponent = String.to_existing_atom(opponent_archetype)
+      opponent =
+        case Util.to_existing_atom(opponent_archetype) do
+          {:ok, arch} -> arch
+          {:error, _} -> opponent_archetype
+        end
+
       %{winrate: winrate, games: games} = Matchups.opponent_stats(m, opponent)
 
       if games >= min_matchup_sample do
