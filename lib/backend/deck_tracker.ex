@@ -1603,10 +1603,13 @@ defmodule Hearthstone.DeckTracker do
     do: query
 
   defp compose_games_query({"rank", slug}, query) do
-    rank = get_rank_by_slug(slug)
+    case get_rank_by_slug(slug) do
+      nil ->
+        query |> where(false)
 
-    query
-    |> filter_rank(rank, :game, :player_rank, :player_legend_rank)
+      rank ->
+        filter_rank(query, rank, :game, :player_rank, :player_legend_rank)
+    end
   end
 
   defp compose_games_query({"min_player_rank", min_rank}, query),
