@@ -91,7 +91,7 @@ defmodule BackendWeb.BattlefyController do
         has_lineups: Backend.Hearthstone.has_lineups?(params["tournament_id"], "battlefy"),
         lineups: lineups(show_lineups, params["tournament_id"]),
         country_highlight: multi_select_to_array(params["country"]),
-        page_title: tournament.name,
+        page_title: Map.get(tournament, :name),
         stage_id: params["stage_id"],
         participants: participants,
         highlight: get_highlight(params)
