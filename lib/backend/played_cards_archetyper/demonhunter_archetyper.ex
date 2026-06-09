@@ -55,47 +55,48 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
        "Grim Harvest"
      ]}
   ]
-  @wild_config [
-    {:"Pirate Demon Hunter",
-     [
-       "Ship's Cannon",
-       "Hozen Roughhouser",
-       "Treasure Distributor",
-       "Field of Strife",
-       "Magnifying Glaive",
-       "Parachute Brigand",
-       "Southsea Captain",
-       "Patches the Pirate",
-       "Mistake",
-       "Space Pirate",
-       "Adrenaline Fiend",
-       "Dangerous Cliffside"
-     ]},
-    {:"Questline DH",
-     [
-       "Crimson Sigil Runner",
-       "Glaivetar",
-       "Fierce Outsider",
-       "Vengeful Walloper",
-       "Irebound Brute",
-       "Felosophy",
-       "Double Jump",
-       "Patches the Pilot",
-       "Aranna, Thrill Seeker",
-       "Spectral Sight",
-       "Illidari Studies",
-       "Final Showdown",
-       "Sigil of Alacrity",
-       "Mana Burn",
-       "Glide",
-       "Paraglide",
-       "Dispose of Evidence",
-       "Spectral Sight",
-       "Illidari Studies",
-       "Sigil of Time",
-       "Consume Magic"
-     ]}
-  ]
+  @wild_config []
+  # @wild_config [
+  #   {:"Pirate Demon Hunter",
+  #    [
+  #      "Ship's Cannon",
+  #      "Hozen Roughhouser",
+  #      "Treasure Distributor",
+  #      "Field of Strife",
+  #      "Magnifying Glaive",
+  #      "Parachute Brigand",
+  #      "Southsea Captain",
+  #      "Patches the Pirate",
+  #      "Mistake",
+  #      "Space Pirate",
+  #      "Adrenaline Fiend",
+  #      "Dangerous Cliffside"
+  #    ]},
+  #   {:"Questline DH",
+  #    [
+  #      "Crimson Sigil Runner",
+  #      "Glaivetar",
+  #      "Fierce Outsider",
+  #      "Vengeful Walloper",
+  #      "Irebound Brute",
+  #      "Felosophy",
+  #      "Double Jump",
+  #      "Patches the Pilot",
+  #      "Aranna, Thrill Seeker",
+  #      "Spectral Sight",
+  #      "Illidari Studies",
+  #      "Final Showdown",
+  #      "Sigil of Alacrity",
+  #      "Mana Burn",
+  #      "Glide",
+  #      "Paraglide",
+  #      "Dispose of Evidence",
+  #      "Spectral Sight",
+  #      "Illidari Studies",
+  #      "Sigil of Time",
+  #      "Consume Magic"
+  #    ]}
+  # ]
 
   def standard_excludes(), do: %{}
   def wild_excludes(), do: %{}

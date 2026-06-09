@@ -20,6 +20,7 @@ defmodule Backend.PlayedCardsArchetyper.ArchetyperHelper do
           if card_info.debug do
             IO.puts("Matching #{archetype} at level #{level}")
           end
+
           archetype
         else
           nil
@@ -30,6 +31,7 @@ defmodule Backend.PlayedCardsArchetyper.ArchetyperHelper do
           if card_info.debug do
             IO.puts("Matching #{archetype} at level #{level}")
           end
+
           archetype
         else
           nil

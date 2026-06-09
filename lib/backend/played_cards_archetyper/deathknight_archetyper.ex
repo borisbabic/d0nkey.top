@@ -104,36 +104,7 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
      ]}
   ]
 
-  @wild_config [
-    {:"XL Highlander DK",
-     [
-       "Reno, Lone Ranger",
-       "Tuskarrrr Trawler",
-       "Zephrys the Great",
-       "Reno Jackson",
-       "Customs Enforcer",
-       "Space Pirate",
-       "Mixologist",
-       "Blademaster Okani",
-       "Cult Neophyte",
-       "Theotar, the Mad Duke",
-       "Cold Feet",
-       "Runeforging",
-       "Quartzite Crusher",
-       "Patchwerk",
-       "Climactic Necrotic Explosion",
-       "Razorscale",
-       "Malted Magma",
-       "Construct Quarter",
-       "Buttons",
-       "The Curator",
-       "Staff od the Endbringer",
-       "Dirty Rat",
-       "E.T.C., Band Manager",
-       "Frost Strike",
-       "Elise the Navigator"
-     ]}
-  ]
+  @wild_config []
 
   def standard_excludes(), do: %{}
   def wild_excludes(), do: %{}
