@@ -148,7 +148,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "Adaptive Amalgam" in card_info.card_names ->
         :"Amalgam Hunter"
 
-      min_keyword_count?(card_info, 8, "taunt") ->
+      min_keyword_count?(card_info, 8, "taunt", unique: false) ->
         :"Taunt Hunter"
 
       companion?(card_info) ->

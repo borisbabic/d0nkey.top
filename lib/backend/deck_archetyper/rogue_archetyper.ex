@@ -38,11 +38,14 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       imbue?(card_info, 3) ->
         :"Imbue Rogue"
 
-      min_keyword_count?(card_info, 2, "spell-damage") ->
+      min_keyword_count?(card_info, 2, "spell-damage", unique: true) ->
         :"Burn Rogue"
 
       cycle?(card_info) ->
         :"Cycle Rogue"
+
+      "Vanessa the Ringleader" in card_info.card_names ->
+        :"Vanessa Rogue"
 
       "Garona Halforcen" in card_info.card_names ->
         :"Garona Rogue"
@@ -67,10 +70,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     min_count?(card_info, 2, ["Naralex, Herald of the Flights", "Ysera, Emerald Aspect"]) and
       Enum.count(dragons) < 4
   end
-
-  # defp combo?(card_info) do
-  #   min_keyword_count?(card_info, 8, "combo")
-  # end
 
   defp quasar?(card_info) do
     "Quasar" in card_info.card_names and min_keyword_count?(card_info, 1, "spell-damage")

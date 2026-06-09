@@ -194,7 +194,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Barnes" in card_info.card_names ->
         :"Barnes Druid"
 
-      min_keyword_count?(card_info, 4, "spell-damage") ->
+      min_keyword_count?(card_info, 4, "spell-damage", unique: false) ->
         :"Spell Damage Druid"
 
       wild_miracle_druid?(card_info) ->
