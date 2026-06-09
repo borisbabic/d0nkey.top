@@ -91,7 +91,6 @@ defmodule BackendWeb.FeedLive do
 
     fetched_items =
       Backend.Feed.get_current_items(@limit, new_offset)
-      |> add_reveal_stream(new_offset)
 
     handle_offset_stream_scroll(
       socket,
@@ -102,45 +101,6 @@ defmodule BackendWeb.FeedLive do
       nil
     )
   end
-
-  @reveal_streams [
-    %{
-      start_time: ~N[2026-06-09 21:00:00],
-      host: %{
-        display: "Rarran",
-        link: "https:/www.twitch.tv/rarran"
-      },
-      guests: [
-        %{
-          display: "Firebat",
-          link: "https://www.twitch.tv/firebat"
-        },
-        %{
-          display: "Regis Killbin",
-          link: "https://www.youtube.com/channel/UCbt1SGMrWj5Q7TMXAfmTERQ"
-        }
-      ]
-    }
-  ]
-
-  defp add_reveal_stream(items, 0) do
-    now = NaiveDateTime.utc_now()
-
-    case Enum.find(@reveal_streams, fn
-           %{start_time: start_time} ->
-             start_to_show = NaiveDateTime.add(start_time, -4, :hour)
-             finish_showing = NaiveDateTime.add(start_time, 1, :hour)
-             Util.in_range?(now, {start_to_show, finish_showing})
-         end) do
-      nil ->
-        items
-
-      reveal_stream ->
-        [%{type: "reveal_stream", value: reveal_stream}, items]
-    end
-  end
-
-  defp add_reveal_stream(items, _), do: items
 
   def handle_info({:incoming_result, result}, socket) do
     OmniBar.incoming_result(result, "omni_bar_id")
