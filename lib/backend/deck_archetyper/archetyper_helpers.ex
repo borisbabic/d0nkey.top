@@ -242,17 +242,31 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   end
 
   def starship?(ci, min \\ 4) do
-    min_keyword_count?(ci, min, "starship")
+    min_keyword_count?(ci, min, "starship", unique: false)
   end
 
   @spec min_keyword_count?(card_info :: card_info(), min :: integer, keyword_slug :: String.t()) ::
           boolean
-  def min_keyword_count?(%{full_cards: full_cards} = _card_info, min, keyword_slug) do
+  def min_keyword_count?(
+        %{full_cards: full_cards} = _card_info,
+        min,
+        keyword_slug,
+        opts \\ [unique: true]
+      ) do
     num =
       full_cards
+      |> unique(opts)
       |> Enum.count(&Card.has_keyword?(&1, keyword_slug))
 
     num >= min
+  end
+
+  defp unique(full_cards, opts) do
+    if Keyword.get(opts, :unique) do
+      Enum.uniq_by(full_cards, &Card.dbf_id/1)
+    else
+      full_cards
+    end
   end
 
   @spec min_spell_school_count?(card_info(), integer(), atom()) :: boolean()

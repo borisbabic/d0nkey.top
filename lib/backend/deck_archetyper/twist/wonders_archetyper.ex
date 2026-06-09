@@ -12,6 +12,7 @@ defmodule Backend.DeckArchetyper.Twist.WondersArchetyper do
     cond do
       mill_rogue?(card_info) ->
         :"Mill Rogue"
+
       aggro_shaman?(card_info) ->
         :"Aggro Shaman"
 
@@ -42,7 +43,7 @@ defmodule Backend.DeckArchetyper.Twist.WondersArchetyper do
       freeze_mage?(card_info) ->
         :"Freeze Mage"
 
-      min_keyword_count?(card_info, 9, "overload") ->
+      min_keyword_count?(card_info, 9, "overload", unique: false) ->
         String.to_atom("Overload #{class_name}")
 
       type_count(card_info, "Dragon") > 4 ->
@@ -60,8 +61,14 @@ defmodule Backend.DeckArchetyper.Twist.WondersArchetyper do
   end
 
   defp aggro_shaman?(card_info) do
-    min_count?(card_info, 3, ["Patches the Pirate", "Tunnel Trogg", "Jade Golemn", "Flamewreathed Faceless"])
+    min_count?(card_info, 3, [
+      "Patches the Pirate",
+      "Tunnel Trogg",
+      "Jade Golemn",
+      "Flamewreathed Faceless"
+    ])
   end
+
   defp mill_rogue?(card_info) do
     min_count?(card_info, 2, ["Coldlight Oracle", "Gang Up"])
   end
