@@ -120,22 +120,24 @@ defmodule BackendWeb.DeckBuilderLive do
   end
 
   defp deck_name(deck) do
-    max =
-      if Enum.any?(deck.cards, &Card.forty_card_deck?/1) do
-        40
-      else
-        30
-      end
+    case Deck.deck_size(deck) do
+      {_, max} when is_integer(max) ->
+        curr = Enum.count(deck.cards)
 
-    curr = Enum.count(deck.cards)
+        vyranoth_part = vyranoth_part?(deck)
 
-    vyranoth_part = vyranoth_part?(deck)
+        if curr == max do
+          Deck.name(deck, vyranoth_part)
+        else
+          class = Deck.class(deck) |> Deck.class_name()
+          "#{vyranoth_part}#{class} #{curr}/#{max}" |> Deck.add_runes(deck)
+        end
 
-    if curr == max do
-      Deck.name(deck, vyranoth_part)
-    else
-      class = Deck.class(deck) |> Deck.class_name()
-      "#{vyranoth_part}#{class} #{curr}/#{max}" |> Deck.add_runes(deck)
+      {:error, :multiple_deck_sizes_needed} ->
+        "Multiple Deck Sizes"
+
+      {:error, _} ->
+        "Invalid Deck"
     end
   end
 

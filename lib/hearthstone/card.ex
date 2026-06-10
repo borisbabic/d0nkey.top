@@ -36,6 +36,7 @@ defmodule Hearthstone.Card do
     field(:mercenary_hero, MercenaryHero.t())
     field(:rune_cost, RuneCost.t())
     field(:text, String.t())
+    field(:deck_size_mod, integer())
     field(:zilliax_functional_module?, boolean())
     field(:zilliax_cosmetic_module?, boolean())
     field(:banned_from_sideboard, boolean())
@@ -58,6 +59,7 @@ defmodule Hearthstone.Card do
         collectible: map["collectible"] == 1,
         copy_of_card_id: map["copy_of_card_id"],
         crop_image: map["crop_image"],
+        deck_size_mod: map["deck_size_mod"],
         durability: map["durability"],
         duels: map["duels"] |> Duels.from_raw_map(),
         faction_ids: faction_ids(map),

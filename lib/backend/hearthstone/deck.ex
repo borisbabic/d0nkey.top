@@ -1027,6 +1027,21 @@ defmodule Backend.Hearthstone.Deck do
     !Card.zilliax_3000?(id)
   end
 
+  @spec deck_size(t()) ::
+          {:default | :modified, integer()}
+          | {:error, :multiple_deck_sizes_needed | :unknown_error}
+  def deck_size(%{cards: cards}) do
+    Enum.map(cards, &Card.deck_size_mod/1)
+    |> Enum.uniq()
+    |> Enum.filter(& &1)
+    |> case do
+      [] -> {:default, 30}
+      [num] when is_integer(num) -> {:modified, num}
+      [_ | [_ | _]] -> {:error, :multiple_deck_sizes_needed}
+      _ -> {:error, :unknown_error}
+    end
+  end
+
   def addable?(_deck, nil), do: false
 
   def addable?(deck, card_id) when is_integer(card_id) do
@@ -1037,6 +1052,7 @@ defmodule Backend.Hearthstone.Deck do
     total = total_copies(deck, card)
     max_allowed = Card.max_copies_in_deck(card)
     runes_allowed? = runes_allowed?(deck, card)
+    deck_size_allowed? = deck_size_allowed?(deck, card)
 
     not_tourist_or_can_add_tourist? =
       !Card.tourist?(card) or
@@ -1046,8 +1062,21 @@ defmodule Backend.Hearthstone.Deck do
       !Card.zilliax_module?(Card.dbf_id(card)) or missing_zilliax_parts?(deck)
 
     # max one tourist per deck
-    runes_allowed? and total < max_allowed and
+    deck_size_allowed? and runes_allowed? and total < max_allowed and
       not_tourist_or_can_add_tourist? and not_zilly_module_or_zilly_not_full?
+  end
+
+  defp deck_size_allowed?(deck, card) do
+    case deck_size(deck) do
+      {:error, _} ->
+        false
+
+      {:default, _} ->
+        true
+
+      {:modified, size} ->
+        Card.deck_size_mod(card) in [size, nil]
+    end
   end
 
   @max_runes_in_deck 3
