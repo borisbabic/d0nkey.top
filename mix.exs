@@ -70,8 +70,7 @@ defmodule Backend.MixProject do
       {:tesla, "~> 1.4"},
       {:tesla_cache, "~> 1.1.0"},
       {:guardian, "~> 2.0"},
-      {:ueberauth_bnet,
-       github: "borisbabic/ueberauth_bnet", commit: "8f57a3ae0b6fcc74b341a5ff7a410443501577e4"},
+      {:ueberauth_bnet, github: "borisbabic/ueberauth_bnet", commit: "8f57a3ae0b6fcc74b341a5ff7a410443501577e4"},
       # {:ueberauth_bnet, "~> 0.3"},
       # {:ueberauth_bnet, path: "/home/boris/projects/ueberauth_bnet"},
       {:ueberauth_twitch, "~> 0.2.0"},
@@ -106,6 +105,7 @@ defmodule Backend.MixProject do
       {:kaffy, "~> 0.10.0"},
       {:redirect, "~> 0.4.0"},
       {:kanta, "~> 0.5.1"},
+      {:quokka, "~> 2.13", only: [:dev, :test], runtime: false},
       {:quantum, "~> 3.5"}
     ]
   end
