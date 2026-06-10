@@ -745,8 +745,7 @@ defmodule BackendWeb.BattlefyView do
 
   def player_count(params) do
     all_player_names(params)
-    |> Enum.filter(& &1)
-    |> Enum.count()
+    |> Enum.count(& &1)
   end
 
   def add_ongoing_subtitle(subtitles, ongoing) when ongoing == %{}, do: subtitles

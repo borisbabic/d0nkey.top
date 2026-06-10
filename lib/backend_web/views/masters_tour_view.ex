@@ -171,7 +171,7 @@ defmodule BackendWeb.MastersTourView do
         "Only Losses" => ps.only_losses,
         "Only Losses %" => ps |> PlayerStats.only_losses_percent() |> Float.round(2),
         "Cups Won" => ps.num_won,
-        "Num 2nd" => ps.positions |> Enum.filter(&(&1 == 2)) |> Enum.count(),
+        "Num 2nd" => ps.positions |> Enum.count(&(&1 == 2)),
         "Num Matches" => ps |> PlayerStats.matches(),
         "Matches Won" => ps.wins,
         "Matches Lost" => ps.losses,

@@ -35,9 +35,9 @@ defmodule Hearthstone.DeckTracker.DeckStats do
     |> unique_constraint([:hour_start, :deck_id, :opponent_class])
   end
 
-  defp all_for_nil_class(raw = %{"opponent_class" => nil}),
+  defp all_for_nil_class(%{"opponent_class" => nil} = raw),
     do: Map.put(raw, "opponent_class", "ALL")
 
-  defp all_for_nil_class(raw = %{opponent_class: nil}), do: Map.put(raw, :opponent_class, "ALL")
+  defp all_for_nil_class(%{opponent_class: nil} = raw), do: Map.put(raw, :opponent_class, "ALL")
   defp all_for_nil_class(raw), do: raw
 end

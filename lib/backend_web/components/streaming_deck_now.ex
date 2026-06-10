@@ -16,11 +16,11 @@ defmodule Components.StreamingDeckNow do
       </a>
     """
   end
+
   def render(assigns = %{deck: %{deckcode: deckcode}}) do
     count =
       StreamingNow.streaming_now()
-      |> Enum.filter(&(&1.deckcode == deckcode))
-      |> Enum.count()
+      |> Enum.count(&(&1.deckcode == deckcode))
 
     link = Routes.live_path(BackendWeb.Endpoint, StreamingNowLive, %{"deckcode" => deckcode})
 

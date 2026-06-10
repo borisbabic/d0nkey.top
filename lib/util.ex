@@ -38,14 +38,14 @@ defmodule Util do
     rem(rem(number - min, length) + length, length) + min
   end
 
-  def day_start(day = %Date{}, :naive) do
+  def day_start(%Date{} = day, :naive) do
     case NaiveDateTime.new(day.year, day.month, day.day, 0, 0, 0) do
       {:ok, day_start} -> day_start
       _ -> raise "Weird date, couldn't make naive date time"
     end
   end
 
-  def day_end(day = %Date{}, :naive) do
+  def day_end(%Date{} = day, :naive) do
     case NaiveDateTime.new(day.year, day.month, day.day, 23, 59, 59) do
       {:ok, day_start} -> day_start
       _ -> raise "Weird date, couldn't make naive date time"
@@ -82,7 +82,7 @@ defmodule Util do
   iex> Util.in_range?(~N[2020-12-01 23:00:00], {~N[2020-03-01 23:00:00], ~N[2022-03-01 00:00:00]})
   true
   """
-  def in_range?(target = %NaiveDateTime{}, {min = %NaiveDateTime{}, max = %NaiveDateTime{}}) do
+  def in_range?(%NaiveDateTime{} = target, {%NaiveDateTime{} = min, %NaiveDateTime{} = max}) do
     NaiveDateTime.compare(target, min) != :lt &&
       NaiveDateTime.compare(target, max) != :gt
   end
@@ -227,7 +227,7 @@ defmodule Util do
   iex> Util.get_surrounding_ranges({~D[2020-01-01], ~D[2020-01-07]})
   {{~D[2019-12-25], ~D[2019-12-31]}, {~D[2020-01-08], ~D[2020-01-14]}}
   """
-  def get_surrounding_ranges(range = {%Date{} = _from, %Date{} = _to}) do
+  def get_surrounding_ranges({%Date{} = _from, %Date{} = _to} = range) do
     {get_previous_range(range), get_following_range(range)}
   end
 
@@ -585,7 +585,7 @@ defmodule Util do
 
   defp do_map_abort_on_error([], _map_fun, {:ok, values}), do: {:ok, values |> Enum.reverse()}
 
-  defp do_map_abort_on_error([current | rest], map_fun, _carry = {:ok, cards}) do
+  defp do_map_abort_on_error([current | rest], map_fun, {:ok, cards} = _carry) do
     case map_fun.(current) do
       {:ok, mapped} -> do_map_abort_on_error(rest, map_fun, {:ok, [mapped | cards]})
       e = {:error, _} -> e

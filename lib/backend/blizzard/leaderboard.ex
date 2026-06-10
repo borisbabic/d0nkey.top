@@ -69,9 +69,9 @@ defmodule Backend.Blizzard.Leaderboard.Entry do
     field :rating, String.t()
   end
 
-  def from_raw_map(entries = [%{"rank" => _} | _]), do: entries |> Enum.map(&from_raw_map/1)
+  def from_raw_map([%{"rank" => _} | _] = entries), do: entries |> Enum.map(&from_raw_map/1)
 
-  def from_raw_map(map = %{"accountid" => account_id, "rank" => rank}) do
+  def from_raw_map(%{"accountid" => account_id, "rank" => rank} = map) do
     %__MODULE__{
       account_id: account_id,
       rank: rank,

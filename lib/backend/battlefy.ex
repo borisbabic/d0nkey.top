@@ -324,6 +324,7 @@ defmodule Backend.Battlefy do
   end
 
   @spec create_single_elim_standings([Match.t()], integer) :: [Standings.t()]
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def create_single_elim_standings(matches, rounds) do
     {auto_wins, auto_losses} = find_auto_wins_losses(matches)
 
@@ -378,6 +379,7 @@ defmodule Backend.Battlefy do
         if round_number == rounds,
           do:
             winners
+            # credo:disable-for-next-line Credo.Check.Refactor.Nesting
             |> Enum.map(fn w ->
               %Standings{
                 team: w.team,
@@ -423,7 +425,7 @@ defmodule Backend.Battlefy do
   def create_standings_from_matches(%{id: id}),
     do: id |> get_matches() |> create_standings_from_matches()
 
-  def create_standings_from_matches(matches = [_ | _]) do
+  def create_standings_from_matches([_ | _] = matches) do
     matches
     |> Enum.reduce(%{}, fn m = %{top: top, bottom: bottom}, acc ->
       acc
@@ -447,7 +449,7 @@ defmodule Backend.Battlefy do
   defp auto_loss?(_, _, %{double_loss: true}), do: true
   defp auto_loss?(w, l, m), do: auto_win?(w, l, m)
 
-  def add_team_to_stats(team_map, t = %{team: team = %{name: name}}, opponent, m) do
+  def add_team_to_stats(team_map, %{team: team = %{name: name}} = t, opponent, m) do
     standings =
       team_map |> Map.get(name) ||
         %Standings{
@@ -626,6 +628,11 @@ defmodule Backend.Battlefy do
       end)
       |> Map.new()
 
+    do_create_match_stats(matches, lineup_decks, full_lineups)
+  end
+
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def do_create_match_stats(matches, lineup_decks, full_lineups) do
     for %{is_complete: true, top: top, bottom: bottom, stats: stats} <- matches do
       top_banned = Map.get(lineup_decks, archetype_key(top, top.banned_class))
       top_lineup = Map.get(full_lineups, MatchTeam.get_name(top)) || []
@@ -822,7 +829,7 @@ defmodule Backend.Battlefy do
   end
 
   def get_future_opponents(
-        stage = %{bracket: %{type: "elimination", style: "single"}},
+        %{bracket: %{type: "elimination", style: "single"}} = stage,
         matches,
         team_name
       ) do
@@ -888,13 +895,13 @@ defmodule Backend.Battlefy do
   end
 
   @spec get_future_from_previous(Match.t(), [Match.t()], integer) :: [Match.t()]
-  def get_future_from_previous(match = %{round_number: 1}, _, _) do
+  def get_future_from_previous(%{round_number: 1} = match, _, _) do
     [match]
   end
 
   @spec get_future_from_previous(Match.t(), [Match.t()], integer) :: [Match.t()]
   def get_future_from_previous(
-        match = %{top: top, bottom: bottom},
+        %{top: top, bottom: bottom} = match,
         matches,
         total_rounds
       ) do
@@ -984,7 +991,7 @@ defmodule Backend.Battlefy do
           battletag_full: Blizzard.battletag()
         }) ::
           [Blizzard.deckstring()]
-  def get_deckstrings(info = %{battletag_full: battletag_full}) do
+  def get_deckstrings(%{battletag_full: battletag_full} = info) do
     get_deckstrings(info, [battletag_full]) |> Map.get(battletag_full)
   end
 
@@ -1075,7 +1082,7 @@ defmodule Backend.Battlefy do
     |> Enum.filter(&Util.id/1)
   end
 
-  def get_stats_stage_standings(s = %Stage{}) do
+  def get_stats_stage_standings(%Stage{} = s) do
     if s |> Stage.bracket_type() == :single_elimination do
       s |> create_standings_from_matches()
     else
@@ -1109,7 +1116,7 @@ defmodule Backend.Battlefy do
   """
   @spec tournament_link_to_id(String.t() | tournament_id()) :: tournament_id()
   def tournament_link_to_id(empty) when empty in ["", nil], do: nil
-  def tournament_link_to_id(id = <<_::192>>), do: id
+  def tournament_link_to_id(<<_::192>> = id), do: id
 
   def tournament_link_to_id(link) do
     no_comments =

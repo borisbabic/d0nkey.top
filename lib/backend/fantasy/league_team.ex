@@ -65,8 +65,7 @@ defmodule Backend.Fantasy.LeagueTeam do
     removed =
       lt
       |> round_picks(cr - 1)
-      |> Enum.filter(&(!(&1.pick in current_round_picks)))
-      |> Enum.count()
+      |> Enum.count(&(!(&1.pick in current_round_picks)))
 
     in_previous_round =
       lt

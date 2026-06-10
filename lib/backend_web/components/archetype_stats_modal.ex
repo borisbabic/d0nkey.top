@@ -35,7 +35,7 @@ defmodule Components.ArchetypeStatsModal do
   end
 
   def minimum_games_options(min_minimum_games) do
-    [1, 5, 10, 20, 30, 40, 50, 75, 100, 250, 500, 1000, 2500, 5000, 10000]
+    [1, 5, 10, 20, 30, 40, 50, 75, 100, 250, 500, 1000, 2500, 5000, 10_000]
     |> Enum.filter(&(&1 >= min_minimum_games))
   end
 

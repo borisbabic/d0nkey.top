@@ -157,7 +157,7 @@ defmodule Backend.Battlefy.MatchTeam do
     }
   end
 
-  def get_name(mt = %__MODULE__{}) do
+  def get_name(%__MODULE__{} = mt) do
     cond do
       mt.team && mt.team.name && mt.team.name != "" -> mt.team.name
       mt.name && mt.name != "" -> mt.name
@@ -295,7 +295,7 @@ defmodule Backend.Battlefy.Match.MatchStats do
     maps |> Enum.map(&from_raw_map/1)
   end
 
-  def from_raw_map(map = %{"stats" => stats, "gameNumber" => game_number}) do
+  def from_raw_map(%{"stats" => stats, "gameNumber" => game_number} = map) do
     %__MODULE__{
       stats: Stats.from_raw_map(stats),
       created_at: map["createdAt"] |> Util.naive_date_time_or_nil(),
@@ -377,7 +377,7 @@ defmodule Backend.Battlefy.Match.NextRound do
     field :match_id, String.t()
   end
 
-  def from_raw_map(params = %{"position" => position}) do
+  def from_raw_map(%{"position" => position} = params) do
     match_id = params["match_id"] || params["matchId"] || params["matchID"]
     %__MODULE__{position: position, match_id: match_id}
   end

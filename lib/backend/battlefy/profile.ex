@@ -8,7 +8,7 @@ defmodule Backend.Battlefy.Profile do
     field :username, String.t()
   end
 
-  def from_raw_map(map = %{"slug" => slug, "username" => username}) do
+  def from_raw_map(%{"slug" => slug, "username" => username} = map) do
     %__MODULE__{
       id: map["_id"] || map["id"],
       slug: slug,
