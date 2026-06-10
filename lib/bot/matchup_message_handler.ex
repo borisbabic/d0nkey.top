@@ -63,8 +63,7 @@ defmodule Bot.MatchupMessageHandler do
     else
       missing_text =
         all_missing
-        |> Enum.map(&String.trim/1)
-        |> Enum.join(" nor for ")
+        |> Enum.map_join(" nor for ", &String.trim/1)
 
       {:error, "Couldn't find a deck for #{missing_text}"}
     end

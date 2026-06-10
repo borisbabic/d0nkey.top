@@ -89,11 +89,11 @@ defmodule Backend.BattlefyUtil do
   end
 
   def get_number_short(tournaments) do
-    tournaments |> Enum.filter(fn %{standings: s} -> 257 > s |> Enum.count() end) |> Enum.count()
+    tournaments |> Enum.count(fn %{standings: s} -> 257 > s |> Enum.count() end)
   end
 
   def get_number_full(tournaments) do
-    tournaments |> Enum.filter(fn %{standings: s} -> 512 == s |> Enum.count() end) |> Enum.count()
+    tournaments |> Enum.count(fn %{standings: s} -> 512 == s |> Enum.count() end)
   end
 
   @spec get_fewest_players(expanded) :: {{integer(), String.t()}, {integer(), String.t()}}

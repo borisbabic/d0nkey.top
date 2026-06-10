@@ -48,7 +48,7 @@ defmodule Backend.Battlefy.Standings do
     end)
   end
 
-  defp add_win_loss(standings = %__MODULE__{}, raw_map) do
+  defp add_win_loss(%__MODULE__{} = standings, raw_map) do
     %__MODULE__{standings | wins: raw_map["wins"], losses: raw_map["losses"]}
   end
 end

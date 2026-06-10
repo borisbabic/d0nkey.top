@@ -180,7 +180,7 @@ defmodule Backend.TournamentStats.TeamStats do
   2
   """
   @spec num_won(TeamStats.t()) :: integer()
-  def num_won(%{positions: pos}), do: pos |> Enum.filter(fn p -> p == 1 end) |> Enum.count()
+  def num_won(%{positions: pos}), do: pos |> Enum.count(fn p -> p == 1 end)
 
   @doc """
   iex> Backend.TournamentStats.TeamStats.worst(%{positions: [2,5,3,1,], no_results: 2})

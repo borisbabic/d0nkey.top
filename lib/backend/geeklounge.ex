@@ -106,12 +106,11 @@ defmodule Backend.GeekLounge do
   end
 
   def group_map(%{groups: [_ | _] = groups}) do
-    group_map =
-      for %{name: group_name, standings: standings} <- groups,
-          %{player: %{battletag: btag}} when is_binary(btag) <- standings,
-          into: %{} do
-        {btag, group_name}
-      end
+    for %{name: group_name, standings: standings} <- groups,
+        %{player: %{battletag: btag}} when is_binary(btag) <- standings,
+        into: %{} do
+      {btag, group_name}
+    end
   end
 
   def create_display_name_fun(tournament, use_display_name \\ true) do
@@ -137,7 +136,7 @@ defmodule Backend.GeekLounge do
           group
         end
 
-      p, name ->
+      _participant, name ->
         case Map.get(group_map, name) do
           nil ->
             name

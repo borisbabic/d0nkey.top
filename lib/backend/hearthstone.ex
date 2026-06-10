@@ -436,8 +436,6 @@ defmodule Backend.Hearthstone do
   end
 
   def class(%{hero: hero}), do: class(hero)
-  # TODO: remove, this is temp before hearthstonejson gets it.
-  def class(78_065), do: "DEATHKNIGHT"
 
   def class(dbf_id) when is_integer(dbf_id) or is_binary(dbf_id),
     do: HearthstoneJson.get_class(dbf_id)
@@ -1539,7 +1537,7 @@ defmodule Backend.Hearthstone do
       c.id not in [
         120_482,
         120_175,
-        96917,
+        96_917,
         120_647,
         117_723,
         121_242,

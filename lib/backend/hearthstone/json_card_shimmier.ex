@@ -12,7 +12,7 @@ defmodule Backend.Hearthstone.JsonCardShimmier do
   end
 
   def handle_info(
-        %{topic: "hearthstone_json", payload: %{cards: json_cards, version: version}},
+        %{topic: "hearthstone_json", payload: %{cards: json_cards, version: _version}},
         state
       ) do
     Backend.Hearthstone.add_missing_collectible_from_json(json_cards)

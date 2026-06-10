@@ -60,7 +60,21 @@ defmodule BackendWeb.Live.DeckViewerTest do
   end
 
   test "Deckcode with invalid card is still displayed", %{conn: conn} do
-    cards = [-120, -144, -214, 64709, 69513, 69513, 69539, 69539, 69550, 69550, 70320, 70320]
+    cards = [
+      -120,
+      -144,
+      -214,
+      64_709,
+      69_513,
+      69_513,
+      69_539,
+      69_539,
+      69_550,
+      69_550,
+      70_320,
+      70_320
+    ]
+
     deckcode = Deck.deckcode(cards, 2, 274)
     query = URI.encode_query(%{code: deckcode})
     {:ok, _view, html} = live(conn, "/deckviewer?#{query}")

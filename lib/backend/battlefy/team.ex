@@ -44,7 +44,7 @@ defmodule Backend.Battlefy.Team do
   def player_or_team_name(%{name: name}) when is_binary(name), do: name
   def player_or_team_name(_), do: nil
 
-  def from_raw_map(map = %{"name" => name}) do
+  def from_raw_map(%{"name" => name} = map) do
     %__MODULE__{
       name: name,
       user_id: map["userID"],
@@ -79,7 +79,7 @@ defmodule Backend.Battlefy.Team.Player do
     field :slug, String.t() | nil
   end
 
-  def from_raw_map(map = %{"userID" => _}) do
+  def from_raw_map(%{"userID" => _} = map) do
     %__MODULE__{
       in_game_name: map["inGameName"],
       user_id: map["userID"],

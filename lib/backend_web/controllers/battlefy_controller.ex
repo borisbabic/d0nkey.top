@@ -1,9 +1,9 @@
 defmodule BackendWeb.BattlefyController do
   use BackendWeb, :controller
   alias Backend.Battlefy
-  alias Backend.Battlefy.Tournament
-  alias Backend.Battlefy.Stage
   alias Backend.Battlefy.MatchTeam
+  alias Backend.Battlefy.Stage
+  alias Backend.Battlefy.Tournament
   alias Backend.Infrastructure.BattlefyCommunicator, as: Api
   alias Backend.MastersTour.TourStop
   alias Backend.TournamentStreams

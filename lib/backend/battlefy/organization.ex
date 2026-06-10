@@ -13,7 +13,7 @@ defmodule Backend.Battlefy.Organization do
   end
 
   @spec from_raw_map(map) :: Backend.Battlefy.Organization.t()
-  def from_raw_map(map = %{"slug" => slug}) do
+  def from_raw_map(%{"slug" => slug} = map) do
     %__MODULE__{
       id: map["_id"] || map["id"],
       name: map["name"],
