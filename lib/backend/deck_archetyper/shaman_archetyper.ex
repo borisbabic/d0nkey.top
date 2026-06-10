@@ -8,7 +8,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       quest?(card_info) ->
         :"Quest Shaman"
 
-      imbue?(card_info, 6) ->
+      imbue?(card_info, 5) ->
         :"Imbue Shaman"
 
       elemental_shaman?(card_info) ->
@@ -32,7 +32,7 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       "Haywire Hornswog" in card_info.card_names ->
         :"Overload Shaman"
 
-      imbue?(card_info, 4) ->
+      imbue?(card_info, 3) ->
         :"Imbue Shaman"
 
       "Farseer Wo" in card_info.card_names ->
