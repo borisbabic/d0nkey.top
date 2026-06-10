@@ -22,7 +22,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def full_cards(%{cards: cards} = deck) do
     {full_cards, card_names} =
       Enum.map(cards, fn c ->
-        with card = %{name: name} <- Backend.Hearthstone.get_deckcode_card(c) do
+        with %{name: name} = card <- Backend.Hearthstone.get_deckcode_card(c) do
           {card, name}
         end
       end)
@@ -95,10 +95,10 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     "Disciple of Demise"
   ]
 
-  def neutral_excavate(), do: @neutral_excavate
-  def neutral_spell_damage(), do: @standard_neutral_spell_damage
+  def neutral_excavate, do: @neutral_excavate
+  def neutral_spell_damage, do: @standard_neutral_spell_damage
 
-  def neutral_dragon_synergy(), do: @neutral_dragon_synergy
+  def neutral_dragon_synergy, do: @neutral_dragon_synergy
 
   @type fallbacks_opt :: minion_type_fallback_opt() | faction_fallback_opt()
   @spec fallbacks(card_info(), String.t(), fallbacks_opt()) :: String.t()
@@ -205,6 +205,15 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Ship's Cannon",
       "Mistake"
     ])
+  end
+
+  def spell_count(card_info), do: count(card_info, &Card.spell?/1)
+  def minion_count(card_info), do: count(card_info, &Card.minion?/1)
+
+  def count(%{full_cards: full_cards}, filter_fun), do: count(full_cards, filter_fun)
+
+  def count(full_cards, filter_fun) do
+    Enum.count(full_cards, filter_fun)
   end
 
   def giants?(ci, min_count \\ 3) do
@@ -328,7 +337,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     end
   end
 
-  def quest?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.quest?(&1))
+  def quest?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.quest?/1)
   def questline?(%{full_cards: full_cards}), do: Enum.any?(full_cards, &Card.questline?/1)
 
   def highlander_payoff?(%{full_cards: full_cards}),
@@ -340,7 +349,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     min_count = Keyword.get(opts, :min_faction_count, 2)
 
     with counts_raw when is_map(counts_raw) or is_list(counts_raw) <- faction_counts(ci),
-         counts = [_ | _] <- Enum.to_list(counts_raw),
+         [_ | _] = counts <- Enum.to_list(counts_raw),
          {faction, count} when count >= min_count <- Enum.max_by(counts, &elem(&1, 1)) do
       "#{faction} #{class_part}"
     else
@@ -356,12 +365,12 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
         class_part,
         opts
       ) do
-    fallback = Keyword.get(opts, :fallback, nil)
+    fallback = Keyword.get(opts, :fallback)
     min_count = Keyword.get(opts, :min_count, 6)
     ignore_types = Keyword.get(opts, :ignore_types, [])
 
-    with counts = [_ | _] <- minion_type_counts(ci),
-         filtered = [_ | _] <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
+    with [_ | _] = counts <- minion_type_counts(ci),
+         [_ | _] = filtered <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
          {type, count} when count >= min_count <- Enum.max_by(filtered, &elem(&1, 1)) do
       "#{type} #{class_part}"
     else
