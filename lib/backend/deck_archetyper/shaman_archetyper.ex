@@ -2,11 +2,24 @@
 defmodule Backend.DeckArchetyper.ShamanArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Card
 
   def standard(card_info) do
     cond do
+      mug?(card_info) and quest?(card_info) ->
+        :"Mug Quest Shaman"
+
+      zee?(card_info) and quest?(card_info) ->
+        :"Zee Quest Shaman"
+
       quest?(card_info) ->
         :"Quest Shaman"
+
+      mug?(card_info) ->
+        :"Mug Shaman"
+
+      zee?(card_info) ->
+        :"Zee Shaman"
 
       imbue?(card_info, 5) ->
         :"Imbue Shaman"
@@ -41,6 +54,23 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       true ->
         fallbacks(card_info, "Shaman")
     end
+  end
+
+  defp mug?(card_info) do
+    "Mug'Zee" in card_info.card_names and
+      1 == minion_count(card_info)
+  end
+
+  defp zee?(card_info) do
+    non_quest_spell_count =
+      card_info.full_cards
+      |> Enum.count(fn card ->
+        Card.spell?(card) and
+          !Card.quest?(card) and
+          !Card.questline?(card)
+      end)
+
+    "Mug'Zee" in card_info.card_names and 0 == non_quest_spell_count
   end
 
   defp masochist?(card_info) do
@@ -129,6 +159,15 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
 
       quest?(card_info) ->
         String.to_atom("#{quest_abbreviation(card_info)} Quest Shaman")
+
+      mug?(card_info) and zee?(card_info) ->
+        :"Mug'Zee Shaman"
+
+      mug?(card_info) ->
+        :"Mug Shaman"
+
+      zee?(card_info) ->
+        :"Zee Shaman"
 
       boar?(card_info) ->
         :"Boar Shaman"
