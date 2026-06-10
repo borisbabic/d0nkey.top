@@ -91,6 +91,7 @@ defmodule Backend.Hearthstone.Card do
 
     belongs_to(:canonical, Backend.Hearthstone.Card)
     belongs_to(:deckcode_copy, Backend.Hearthstone.Card)
+    field(:deck_size_mod, :integer, default: nil)
 
     timestamps()
   end
@@ -119,6 +120,7 @@ defmodule Backend.Hearthstone.Card do
       :collectible,
       # :copy_of_card_id,
       :crop_image,
+      :deck_size_mod,
       :durability,
       :duels_constructed,
       :duels_relevant,
@@ -223,6 +225,13 @@ defmodule Backend.Hearthstone.Card do
   def etc_band_manager?(id) when is_integer(id), do: id == @etc_band_manager
   def etc_band_manager?(card), do: dbf_id(card) == @etc_band_manager
 
+  @azalina_soulsever 126_055
+  def azalina_soulsever, do: @azalina_soulsever
+  @spec azalina_soulsever?(card() | integer() | nil) :: boolean
+  def azalina_soulsever?(nil), do: false
+  def azalina_soulsever?(id) when is_integer(id), do: id == @azalina_soulsever
+  def azalina_soulsever?(card), do: dbf_id(card) == @azalina_soulsever
+
   @vyranoth 123_151
   def vyranoth, do: @vyranoth
   @spec vyranoth?(card() | integer() | nil) :: boolean
@@ -266,12 +275,26 @@ defmodule Backend.Hearthstone.Card do
   def fabled_rafaam, do: @fabled_rafaam
   @renathal 79_767
   @forty_card_deck_triggers [@fabled_rafaam, @renathal]
+  @twenty_card_deck_triggers [@azalina_soulsever]
 
   def renathal, do: @renathal
-  @spec zilliax_3000?(card() | integer() | nil) :: boolean
+  @spec renathal?(card() | integer() | nil) :: boolean
   def renathal?(nil), do: false
   def renathal?(id) when is_integer(id), do: id == @renathal
   def renathal?(card), do: dbf_id(card) == @renathal
+
+  @spec deck_size_mod(card) :: integer | nil
+  def deck_size(%{deck_size_mod: deck_size_mod}) when is_integer(deck_size_mod) do
+    deck_size_mod
+  end
+
+  def deck_size_mod(card) do
+    cond do
+      forty_card_deck?(card) -> 40
+      twenty_card_deck?(card) -> 20
+      true -> nil
+    end
+  end
 
   def forty_card_deck?(card) when is_integer(card) do
     card in @forty_card_deck_triggers
@@ -283,6 +306,18 @@ defmodule Backend.Hearthstone.Card do
     card
     |> dbf_id()
     |> forty_card_deck?()
+  end
+
+  def twenty_card_deck?(card) when is_integer(card) do
+    card in @twenty_card_deck_triggers
+  end
+
+  def twenty_card_deck?(nil), do: false
+
+  def twenty_card_deck?(card) when is_card(card) do
+    card
+    |> dbf_id()
+    |> twenty_card_deck?()
   end
 
   def use_english_fields(map) do
