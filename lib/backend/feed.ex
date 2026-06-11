@@ -24,7 +24,7 @@ defmodule Backend.Feed do
     |> inc(field)
   end
 
-  def inc(deck = %Deck{}, field) do
+  def inc(%Deck{} = deck, field) do
     di =
       deck
       |> get_or_create_deck_interaction()
@@ -38,7 +38,7 @@ defmodule Backend.Feed do
   end
 
   @spec get_or_create_deck_interaction(Deck.t()) :: {:ok, DeckInteraction.t()}
-  def get_or_create_deck_interaction(deck = %Deck{}) do
+  def get_or_create_deck_interaction(%Deck{} = deck) do
     deck
     |> deck_interaction()
     |> case do
@@ -67,7 +67,7 @@ defmodule Backend.Feed do
     Repo.one(query)
   end
 
-  def get_current_start() do
+  def get_current_start do
     now = NaiveDateTime.utc_now()
 
     NaiveDateTime.new(now.year, now.month, now.day, now.hour, 0, 0)
@@ -131,24 +131,24 @@ defmodule Backend.Feed do
   end
 
   @spec update_feed_item_points(FeedItem.t(), number()) :: {:ok, FeedItem.t()} | {:error, any()}
-  def update_feed_item_points(fi = %FeedItem{}, points) do
+  def update_feed_item_points(%FeedItem{} = fi, points) do
     attrs = %{points: points}
     fi |> update_feed_item(attrs)
   end
 
   @spec update_feed_item(FeedItem.t(), map()) :: {:ok, FeedItem.t()} | {:error, any()}
-  def update_feed_item(fi = %FeedItem{}, attrs) do
+  def update_feed_item(%FeedItem{} = fi, attrs) do
     fi
     |> FeedItem.changeset(attrs)
     |> Repo.update()
   end
 
   @spec change_feed_item(FeedItem.t(), map()) :: Ecto.Changeset
-  def change_feed_item(fi = %FeedItem{}, attrs \\ %{}), do: fi |> FeedItem.changeset(attrs)
+  def change_feed_item(%FeedItem{} = fi, attrs \\ %{}), do: fi |> FeedItem.changeset(attrs)
 
-  def delete_feed_item(fi = %FeedItem{}), do: fi |> Repo.delete()
+  def delete_feed_item(%FeedItem{} = fi), do: fi |> Repo.delete()
 
-  def decay_feed_items() do
+  def decay_feed_items do
     query = from(fi in FeedItem)
 
     query
@@ -253,17 +253,10 @@ defmodule Backend.Feed do
 
   defp ensure_articles_item(item), do: item
 
-  defp update_articles_item(item = %{value: v}, latest, _) when v == latest, do: {:ok, item}
+  defp update_articles_item(%{value: v} = item, latest, _) when v == latest, do: {:ok, item}
 
   defp update_articles_item(item, latest, start_params) do
-    query =
-      from fi in FeedItem,
-        where: fi.type != "latest_hs_articles",
-        order_by: [desc: fi.decayed_points],
-        select: fi.decayed_points,
-        limit: 1
-
-    highest = Repo.one(query) || 0
+    highest = highest_points_for_articles()
     points = highest + start_params[:head_start]
 
     attrs = %{
@@ -277,8 +270,19 @@ defmodule Backend.Feed do
     update_feed_item(item, attrs)
   end
 
+  def highest_points_for_articles do
+    query =
+      from fi in FeedItem,
+        where: fi.type not in ^["latest_hs_articles", "reveal_stream"],
+        order_by: [desc: fi.decayed_points],
+        select: fi.decayed_points,
+        limit: 1
+
+    Repo.one(query) || 0
+  end
+
   @spec get_reveal_stream_slugs() :: [String.t()]
-  def get_reveal_stream_slugs() do
+  def get_reveal_stream_slugs do
     query =
       from fi in FeedItem,
         where: fi.type == "reveal_stream",
