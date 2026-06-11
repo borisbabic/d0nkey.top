@@ -77,7 +77,7 @@ defmodule Backend.Feed.RevealStream do
     link: "https://open.spotify.com/show/0Q8RRCEDX4cbDaFdmLO1Io?si=97114f24f8df4094"
   }
 
-  def all() do
+  def all do
     [
       %__MODULE__{
         slug: "violet_hold_1",
