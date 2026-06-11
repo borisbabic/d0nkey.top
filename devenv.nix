@@ -6,6 +6,7 @@ let
 in {
   # https://devenv.sh/basics/
   env.GREET = "devenv";
+  env.MIX_ENV = "dev";
 
   # https://devenv.sh/packages/
   packages = [
