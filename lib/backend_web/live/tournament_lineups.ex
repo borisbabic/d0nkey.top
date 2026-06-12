@@ -27,6 +27,9 @@ defmodule BackendWeb.TournamentLineups do
               <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
               | <a href={link}>Tournament</a>
               </span>
+              <span :if={@user}>
+              | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/export.csv"}>Export Lineups</a>
+              </span>
               <span :if={@twitch}>
                 <span :for={stream <- String.split(@twitch, "|")}>
                   | <a href={"https://www.twitch.tv/#{stream}"} class="dropdown">
