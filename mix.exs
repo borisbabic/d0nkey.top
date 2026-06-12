@@ -106,6 +106,7 @@ defmodule Backend.MixProject do
       {:redirect, "~> 0.4.0"},
       {:kanta, "~> 0.5.1"},
       {:quokka, "~> 2.13", only: [:dev, :test], runtime: false},
+      {:hanyutils, "~> 0.3.0"},
       {:quantum, "~> 3.5"}
     ]
   end
