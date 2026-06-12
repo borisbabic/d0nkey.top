@@ -38,7 +38,7 @@ defmodule Backend.UserManager.User do
   end
 
   @doc false
-  def changeset(user, attrs = %{admin_roles: ar = [r | _]}) when is_atom(r) do
+  def changeset(user, %{admin_roles: [r | _] = ar} = attrs) when is_atom(r) do
     new_attrs = attrs |> Map.put(:admin_roles, ar |> Enum.map(&to_string/1))
     changeset(user, new_attrs)
   end
@@ -79,7 +79,7 @@ defmodule Backend.UserManager.User do
     cs
     |> fetch_change(:country_code)
     |> case do
-      {:ok, cc} when is_binary(cs) -> cs |> put_change(:country_code, String.upcase(cc))
+      {:ok, cc} when is_binary(cc) -> cs |> put_change(:country_code, String.upcase(cc))
       _ -> cs
     end
   end
@@ -97,7 +97,7 @@ defmodule Backend.UserManager.User do
     do: bt |> Backend.MastersTour.InvitedPlayer.shorten_battletag()
 
   @spec all_admin_roles() :: [atom()]
-  def all_admin_roles(),
+  def all_admin_roles,
     do: [
       :super,
       :battletag_info,
@@ -123,7 +123,7 @@ defmodule Backend.UserManager.User do
     ]
 
   @spec string_admin_roles() :: [String.t()]
-  def string_admin_roles(), do: all_admin_roles() |> Enum.map(&to_string/1)
+  def string_admin_roles, do: all_admin_roles() |> Enum.map(&to_string/1)
 
   @spec can_access?(User.t(), String.t() | atom()) :: boolean
   def can_access?(%{admin_roles: admin_roles}, role) when is_list(admin_roles) do
@@ -229,45 +229,45 @@ defmodule Backend.UserManager.User.DecklistOptions do
   def show_one(%{show_one: show_one}), do: show_one
   def show_one(_), do: @default_show_one
 
-  def preferred_deckcode_options(), do: @preferred_deckcode_options
+  def preferred_deckcode_options, do: @preferred_deckcode_options
 
   def preferred_deckcode(%{preferred_deckcode: preferred_deckcode})
       when preferred_deckcode in @preferred_deckcode_options,
       do: preferred_deckcode
 
   def preferred_deckcode(_), do: @default_preferred_deckcode
-  def default_preferred_deckcode(), do: @default_preferred_deckcode
+  def default_preferred_deckcode, do: @default_preferred_deckcode
 
   def fade_missing_cards(%{fade_missing_cards: fade_missing_cards})
       when is_boolean(fade_missing_cards),
       do: fade_missing_cards
 
   def fade_missing_cards(_), do: @default_fade_missing_cards
-  def default_fade_missing_cards(), do: @default_fade_missing_cards
+  def default_fade_missing_cards, do: @default_fade_missing_cards
 
   def fade_rotating_cards(%{fade_rotating_cards: fade_rotating_cards})
       when is_boolean(fade_rotating_cards),
       do: fade_rotating_cards
 
   def fade_rotating_cards(_), do: @default_fade_rotating_cards
-  def default_fade_rotating_cards(), do: @default_fade_rotating_cards
+  def default_fade_rotating_cards, do: @default_fade_rotating_cards
 
   def use_missing_dust(%{use_missing_dust: use_missing}) when is_boolean(use_missing),
     do: use_missing
 
   def use_missing_dust(_), do: @default_use_missing_dust
-  def default_use_missing_dust(), do: @default_use_missing_dust
+  def default_use_missing_dust, do: @default_use_missing_dust
 
   def show_one_for_legendaries(%{show_one_for_legendaries: show_one}) when is_boolean(show_one),
     do: show_one
 
   def show_one_for_legendaries(_), do: @default_show_one_for_legendaries
 
-  def default_show_dust_above(), do: @default_show_dust_above
+  def default_show_dust_above, do: @default_show_dust_above
   def show_dust_above(%{show_dust_above: show}) when is_boolean(show), do: show
   def show_dust_above(_), do: @default_show_dust_above
 
-  def default_show_dust_below(), do: @default_show_dust_below
+  def default_show_dust_below, do: @default_show_dust_below
   def show_dust_below(%{show_dust_below: show}) when is_boolean(show), do: show
   def show_dust_below(_), do: @default_show_dust_below
 
@@ -280,8 +280,8 @@ defmodule Backend.UserManager.User.DecklistOptions do
   def valid_color?(opt),
     do: opt in ["dark_grey", "card_class", "deck_class", "rarity", "deck_format"]
 
-  def show_one_for_legendaries_default(), do: @default_show_one_for_legendaries
-  def show_one_default(), do: @default_show_one
+  def show_one_for_legendaries_default, do: @default_show_one_for_legendaries
+  def show_one_default, do: @default_show_one
 
   def validate_colors(changeset, fields) do
     Enum.reduce(fields, changeset, fn f, cs ->

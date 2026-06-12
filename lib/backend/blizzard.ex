@@ -292,7 +292,7 @@ defmodule Backend.Blizzard do
     |> Enum.uniq()
   end
 
-  def current_ladder_tour_stop() do
+  def current_ladder_tour_stop do
     case get_ladder_tour_stop(get_season_id(Date.utc_today())) do
       {:ok, ts} -> ts
       {:error, _} -> ""
@@ -303,7 +303,7 @@ defmodule Backend.Blizzard do
   Returns a list of all tour stops
   """
   @spec tour_stops() :: [tour_stop]
-  def tour_stops() do
+  def tour_stops do
     TourStop.all() |> Enum.map(& &1.id)
   end
 
@@ -319,7 +319,7 @@ defmodule Backend.Blizzard do
   Returns a list of all leaderboards
   """
   @spec leaderboards() :: [leaderboard]
-  def leaderboards() do
+  def leaderboards do
     @leaderboards
   end
 
@@ -328,7 +328,7 @@ defmodule Backend.Blizzard do
   Doesn't include modes that are now dead
   """
   @spec active_leaderboards() :: [leaderboard]
-  def active_leaderboards() do
+  def active_leaderboards do
     leaderboards()
     |> Enum.reject(&(&1 in @defunct_leaderboards))
   end
@@ -345,7 +345,7 @@ defmodule Backend.Blizzard do
   Returns a list of all regions
   """
   @spec regions() :: [region]
-  def regions() do
+  def regions do
     @regions
   end
 
@@ -353,7 +353,7 @@ defmodule Backend.Blizzard do
   Returns a list of all qualifier eligible regions
   """
   @spec qualifier_regions() :: [region]
-  def qualifier_regions() do
+  def qualifier_regions do
     @qualifier_regions
   end
 
@@ -498,7 +498,7 @@ defmodule Backend.Blizzard do
   end
 
   @spec qualifier_regions_with_name() :: [{region(), String.t()}]
-  def qualifier_regions_with_name() do
+  def qualifier_regions_with_name do
     qualifier_regions_with_name(:long)
   end
 
@@ -513,7 +513,7 @@ defmodule Backend.Blizzard do
   end
 
   @spec regions_with_name() :: [{region(), String.t()}]
-  def regions_with_name() do
+  def regions_with_name do
     regions_with_name(:long)
   end
 
@@ -599,7 +599,7 @@ defmodule Backend.Blizzard do
   def get_region_identifier(r), do: {:error, "unknown_region #{r}"}
 
   @spec leaderboards_with_name() :: [{leaderboard(), String.t()}]
-  def leaderboards_with_name() do
+  def leaderboards_with_name do
     leaderboards_with_name(:long)
   end
 
@@ -706,7 +706,7 @@ defmodule Backend.Blizzard do
     Util.get_month_name(month)
   end
 
-  def get_ineligible_players() do
+  def get_ineligible_players do
     [
       %{battletag_short: "Archangel", from: ~D[2019-01-01]},
       %{battletag_short: "Chakki", from: ~D[2019-01-01]},
@@ -723,7 +723,7 @@ defmodule Backend.Blizzard do
       {:ok, date} ->
         get_ineligible_players()
         |> Enum.any?(fn %{battletag_short: bt, from: d} ->
-          battletag_short == bt && Date.compare(d, date) == :lt
+          battletag_short == bt && Date.before?(d, date)
         end)
 
       _ ->
@@ -767,12 +767,12 @@ defmodule Backend.Blizzard do
     get_grandmasters_lineups(gm_season, stage_title)
   end
 
-  def get_grandmasters_lineups(),
+  def get_grandmasters_lineups,
     do: current_or_default_week_title() |> get_grandmasters_lineups()
 
-  def current_gm_season(), do: {2022, 2}
+  def current_gm_season, do: {2022, 2}
 
-  def current_or_default_week_title(), do: current_gm_season() |> current_or_default_week_title()
+  def current_or_default_week_title, do: current_gm_season() |> current_or_default_week_title()
 
   def current_or_default_week_title(season) do
     season
@@ -830,7 +830,7 @@ defmodule Backend.Blizzard do
   defp break_weeks_so_far(week, break_weeks),
     do: break_weeks |> Enum.count(&(&1 <= week))
 
-  def weeks_so_far(season_def = %{break_weeks: break_weeks, playoffs_week: playoffs}) do
+  def weeks_so_far(%{break_weeks: break_weeks, playoffs_week: playoffs} = season_def) do
     week_range(season_def)
     |> Enum.filter(&(!(&1 in break_weeks) && &1 <= playoffs))
     |> Enum.map(&gm_week(season_def, &1))
@@ -901,14 +901,14 @@ defmodule Backend.Blizzard do
   end
 
   @spec regions_with_timezone :: [{leaderboard(), String.t()}]
-  def regions_with_timezone(),
+  def regions_with_timezone,
     do: [{:US, "US/Pacific"}, {:AP, "Asia/Taipei"}, {:EU, "CET"}, {:CN, "Asia/Shanghai"}]
 
-  def next_blizz_o_clock() do
+  def next_blizz_o_clock do
     now = DateTime.now!(timezone())
     blizz_o_clock_today = blizz_o_clock(now)
 
-    if DateTime.compare(blizz_o_clock_today, now) == :lt do
+    if DateTime.before?(blizz_o_clock_today, now) do
       now |> Timex.shift(days: 1) |> blizz_o_clock()
     else
       blizz_o_clock_today
@@ -926,7 +926,7 @@ defmodule Backend.Blizzard do
     DateTime.new!(date, time, timezone())
   end
 
-  def blizz_o_clock_time(), do: @blizz_o_clock_time
+  def blizz_o_clock_time, do: @blizz_o_clock_time
 
   @spec current_constructed_season_id(region :: atom) :: integer()
   def current_constructed_season_id(region \\ :US) do
@@ -934,11 +934,11 @@ defmodule Backend.Blizzard do
     Timex.now(timezone) |> Timex.to_date() |> get_season_id()
   end
 
-  def timezone() do
+  def timezone do
     regions_with_timezone() |> Keyword.get(:US, "US/Pacific")
   end
 
-  def now() do
+  def now do
     Timex.now(timezone())
   end
 
@@ -961,7 +961,6 @@ defmodule Backend.Blizzard do
   def parse_leaderboard_id!(ldb), do: parse_leaderboard_id(ldb) |> Util.bangify()
 
   @spec parse_leaderboard_id(String.t() | atom()) :: {:ok, atom()} | {:error, any()}
-  def parse_leaderboard_id(atom) when is_atom(atom), do: parse_leaderboard_id(to_string(atom))
   def parse_leaderboard_id(atom) when is_atom(atom), do: parse_leaderboard_id(to_string(atom))
 
   def parse_leaderboard_id(bgs) when bgs in ["BGS", "battlegrounds", "battleground"],
