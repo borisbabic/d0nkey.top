@@ -11,7 +11,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
   @spec embiggen(Deck.t() | String.t()) :: String.t()
   def embiggen(deckcode) when is_binary(deckcode), do: deckcode |> Deck.decode!() |> embiggen()
 
-  def embiggen(d = %{cards: cards, deckcode: deckcode}) do
+  def embiggen(%{cards: cards, deckcode: deckcode} = d) do
     deck_name = Deck.name(d)
     card_sort_opts = [cost: &Deck.card_mana_cost(d, &1)]
 

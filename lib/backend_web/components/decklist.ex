@@ -28,7 +28,7 @@ defmodule Components.Decklist do
   def deck_name(deck, _name, true), do: Deck.name(deck)
   def deck_name(deck, _name, _archetype_as_name), do: Deck.class_name(deck)
 
-  def deck_link(deck, false), do: ~p"/deck/#{link_part(deck)}"
+  def deck_link(deck, false), do: Deck.link(deck)
 
   def deck_link(deck, true) do
     case Deck.archetype(deck) do
@@ -36,9 +36,6 @@ defmodule Components.Decklist do
       archetype -> ~p"/archetype/#{archetype}?#{add_games_filters(deck)}"
     end
   end
-
-  defp link_part(%{id: id}) when not is_nil(id), do: id
-  defp link_part(%{deckcode: deckcode}), do: deckcode
 
   def render(assigns) do
     deck = assigns[:deck]

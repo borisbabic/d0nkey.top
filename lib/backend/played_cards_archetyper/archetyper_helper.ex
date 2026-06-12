@@ -75,7 +75,7 @@ defmodule Backend.PlayedCardsArchetyper.ArchetyperHelper do
       archetype_game_player(g)
 
       IO.puts(
-        "Deck Archetype: #{g.player_deck.archetype} Deck Id: #{g.player_deck.id} Deck: https://www.hsguru.com/deck/#{g.player_deck.id}"
+        "Deck Archetype: #{g.player_deck.archetype} Deck Id: #{g.player_deck.id} Deck: #{Backend.Hearthstone.Deck.link(g.player_deck)}"
       )
     end
   end
