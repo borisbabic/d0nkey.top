@@ -306,7 +306,8 @@ defmodule BackendWeb.Router do
       session: %{
         "title" => "2026 Summer Week 2",
         "tournament_ids" => [
-          "699e25c1762b8800128011ee",
+          # "699e25c1762b8800128011ee",
+          "6a229251e2da5c0013fcf242",
           "699e26259198e2001229a786",
           "699e2663762b880012801209"
         ]
