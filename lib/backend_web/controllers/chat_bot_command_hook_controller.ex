@@ -17,8 +17,8 @@ defmodule BackendWeb.ChatBotCommandHookController do
       end
 
     with [deck] <- DeckcodeExtractor.performant_extract_from_text(deckcode),
-         {:ok, %{id: id}} <- Backend.Hearthstone.create_or_get_deck(deck) do
-      conn |> put_status(200) |> text("https://www.hsguru.com/deck/#{id}")
+         {:ok, deck} <- Backend.Hearthstone.create_or_get_deck(deck) do
+      conn |> put_status(200) |> text(Backend.Hearthstone.Deck.link(deck))
     else
       _ -> conn |> put_status(400)
     end

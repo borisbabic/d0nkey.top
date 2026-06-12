@@ -389,7 +389,7 @@ defmodule Bot.MessageHandler do
     )
   end
 
-  def blizz_message() do
+  def blizz_message do
     timestamp = Blizzard.next_blizz_o_clock() |> Timex.to_unix()
 
     "The next blizz o clock (when blizzard usually releases new stuff in game) is <t:#{timestamp}:R>, ie <t:#{timestamp}:F> (shown in your timezone)"
@@ -401,7 +401,7 @@ defmodule Bot.MessageHandler do
   end
 
   defp do_log_message(%{content: content, guild_id: guild_id}) do
-    with command = "!" <> _ <-
+    with "!" <> _ = command <-
            String.split(content, "\s") |> Enum.at(0) do
       write_log(command, guild_id)
     end
@@ -423,7 +423,7 @@ defmodule Bot.MessageHandler do
     end
   end
 
-  def general_help_reply() do
+  def general_help_reply do
     command_specific =
       for {key, _} <- @help_definitions, !(key =~ " ") do
         "`\t!dhelp #{key}`"
@@ -446,7 +446,7 @@ defmodule Bot.MessageHandler do
 
   def handle_card(msg) do
     case Regex.scan(~r/\[\[(.+?)\]\]/, msg.content, capture: :all_but_first) do
-      matches = [_ | _] ->
+      [_ | _] = matches ->
         Task.start(fn ->
           write_log("card match #{Enum.join(matches, "|")}", msg.guild_id)
         end)
@@ -622,7 +622,7 @@ defmodule Bot.MessageHandler do
 
   @spec create_deck_message(String.t()) :: String.t()
   def create_deck_message(deck) do
-    "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck)}\n```\nhttps://www.hsguru.com/deck/#{deck.id || Deck.deckcode(deck)}"
+    "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck)}\n```\n#{Deck.link(deck)}"
   end
 
   def handle_highlight(%{content: content, channel_id: channel_id}) do

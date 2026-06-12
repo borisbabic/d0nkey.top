@@ -33,12 +33,12 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @doc false
-  def changeset(c, attrs = %{hsreplay_archetype: %{id: id}}) do
+  def changeset(c, %{hsreplay_archetype: %{id: id}} = attrs) do
     changeset(c, attrs |> Map.put(:hsreplay_archetype, id))
   end
 
   @doc false
-  def changeset(c, attrs_raw = %{deckcode: _, cost: _}) do
+  def changeset(c, %{deckcode: _, cost: _} = attrs_raw) do
     attrs = sort_cards(attrs_raw)
 
     c
@@ -89,7 +89,7 @@ defmodule Backend.Hearthstone.Deck do
     Enum.sort(ids, :asc)
   end
 
-  defp sort_cards(%{cards: cards = [a | _]} = attrs) when is_integer(a) do
+  defp sort_cards(%{cards: [a | _] = cards} = attrs) when is_integer(a) do
     new_cards = sort_card_ids(cards)
     Map.put(attrs, :cards, new_cards)
   end
@@ -666,11 +666,9 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   defp parts(chunked) do
-    try do
-      Enum.map(chunked, &Varint.LEB128.decode/1)
-    rescue
-      _ -> :error
-    end
+    Enum.map(chunked, &Varint.LEB128.decode/1)
+  rescue
+    _ -> :error
   end
 
   defp base64_decode(target) do
@@ -791,7 +789,7 @@ defmodule Backend.Hearthstone.Deck do
          deckcode when is_binary(deckcode) <- deckcode(deck) do
       {:ok, deckcode}
     else
-      ret = {:error, _} -> ret
+      {:error, _} = ret -> ret
       _ -> {:error, "Couldn't decode deckcode"}
     end
   end
@@ -800,7 +798,7 @@ defmodule Backend.Hearthstone.Deck do
 
   def canonical_constructed_deckcode(code) when is_binary(code) do
     case decode(code) do
-      {:ok, deck = %{cards: cards}} when length(cards) > 14 and length(cards) < 41 ->
+      {:ok, %{cards: cards} = deck} when length(cards) > 14 and length(cards) < 41 ->
         {:ok, deckcode(deck)}
 
       _ ->
@@ -876,11 +874,11 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def create_comparison_map(decklists = [code | _]) when is_binary(code) do
+  def create_comparison_map([code | _] = decklists) when is_binary(code) do
     decklists |> Enum.map(&decode!/1) |> create_comparison_map()
   end
 
-  def create_comparison_map(decks = [%__MODULE__{} | _]) do
+  def create_comparison_map([%__MODULE__{} | _] = decks) do
     decks
     |> Enum.flat_map(& &1.cards)
     |> Enum.map(&CardBag.deckcode_copy_id/1)
@@ -926,7 +924,15 @@ defmodule Backend.Hearthstone.Deck do
     |> Regex.compile!(modifiers)
   end
 
-  def classes() do
+  def link(%{id: id}) when not is_nil(id) do
+    "https://www.hsguru.com/deck/#{id}"
+  end
+
+  def link(deck) do
+    "https://www.hsguru.com/deck/#{deckcode(deck)}"
+  end
+
+  def classes do
     [
       "DEATHKNIGHT",
       "DEMONHUNTER",

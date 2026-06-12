@@ -32,7 +32,7 @@ defmodule BackendWeb.CardStatsLive do
       <div>
         <div class="title is-2">{@title || "Card Stats"}</div>
         <div class="subtitle is-6">
-          <span :if={@deck}><a href={~p"/deck/#{@deck.id}"}> Deck Stats</a> | </span>
+          <span :if={@deck}><a href={Deck.link(@deck)}> Deck Stats</a> | </span>
           <span :if={deck_id = highlight_deck_id(@params)}><a href={~p"/card-stats?#{create_deck_filters(@params, deck_id)}"}>Deck Card Stats</a> | </span>
           <span :if={archetype = Map.get(@params, "archetype")}><a href={~p"/archetype/#{archetype}?#{create_archetype_stats_filters(@params)}"}>Archetype Stats</a> | </span>
           <span :if={archetype = Deck.archetype(@deck)} ><a href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"} class={"tw-border-2 tw-rounded tw-border-orange-500": low_sample?(@games)}>Archetype Card Stats</a> | </span>
@@ -57,7 +57,7 @@ defmodule BackendWeb.CardStatsLive do
   end
 
   defp highlight_deck_id(params) do
-    Map.get(params, "highlight_deck", nil)
+    Map.get(params, "highlight_deck")
   end
 
   defp create_deck_filters(params, deck_id) do
@@ -84,7 +84,7 @@ defmodule BackendWeb.CardStatsLive do
 
   defp stats(criteria, _assigns) do
     case Hearthstone.DeckTracker.card_stats(criteria) do
-      %{card_stats: card_stats} = stats -> {card_stats, Map.get(stats, :total, nil)}
+      %{card_stats: card_stats} = stats -> {card_stats, Map.get(stats, :total)}
       _ -> {[], 0}
     end
   end
@@ -150,7 +150,7 @@ defmodule BackendWeb.CardStatsLive do
 
   def add_deck_id(criteria, _), do: criteria
 
-  def assign_deck(socket = %{assigns: %{criteria: %{"player_deck_id" => id}}}) do
+  def assign_deck(%{assigns: %{criteria: %{"player_deck_id" => id}}} = socket) do
     case Backend.Hearthstone.get_deck(id) do
       %Deck{} = deck ->
         socket
@@ -163,7 +163,7 @@ defmodule BackendWeb.CardStatsLive do
 
   def assign_deck(socket), do: assign(socket, :deck, nil)
 
-  def assign_meta(socket = %{assigns: %{deck: deck = %Deck{format: format}}}) do
+  def assign_meta(%{assigns: %{deck: %Deck{format: format} = deck}} = socket) do
     title = "#{Deck.name(deck)} Deck Card Stats (#{Deck.format_name(format)})"
 
     socket
@@ -174,7 +174,7 @@ defmodule BackendWeb.CardStatsLive do
     |> assign(title: title)
   end
 
-  def assign_meta(socket = %{assigns: %{criteria: criteria = %{"archetype" => archetype}}}) do
+  def assign_meta(%{assigns: %{criteria: %{"archetype" => archetype} = criteria}} = socket) do
     format_part =
       case Map.get(criteria, "format") do
         nil -> ""
