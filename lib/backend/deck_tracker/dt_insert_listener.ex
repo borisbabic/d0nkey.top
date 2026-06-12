@@ -18,7 +18,7 @@ defmodule Hearthstone.DeckTracker.InsertListener do
   end
 
   def process_inserted_id(id) do
-    with game = %{id: _} <- DeckTracker.get_game(id) do
+    with %{id: _} = game <- DeckTracker.get_game(id) do
       process_game(game)
     end
   end

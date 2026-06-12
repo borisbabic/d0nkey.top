@@ -20,7 +20,7 @@ defmodule Backend.Grandmasters.Response do
     field :season_end, Time.t()
   end
 
-  def from_raw_map(map = %{"seasonStart" => _}),
+  def from_raw_map(%{"seasonStart" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(map) do
@@ -109,7 +109,7 @@ defmodule Backend.Grandmasters.Response do
     end)
   end
 
-  def decklists(matches = [%{} | _]) do
+  def decklists([%{} | _] = matches) do
     matches
     |> Enum.flat_map(&Match.decklists/1)
     |> Enum.filter(fn {competitor, lists} -> competitor != nil && lists |> Enum.any?() end)
@@ -117,7 +117,7 @@ defmodule Backend.Grandmasters.Response do
     |> Map.values()
   end
 
-  def decklists(r = %{}) do
+  def decklists(%{} = r) do
     decklists(r, fn %{brackets: [b | _]} ->
       b.matches
       |> case do
@@ -148,7 +148,7 @@ defmodule Backend.Grandmasters.Response do
 
     matcher = fn match ->
       case Match.start_time(match) do
-        {:ok, start} -> NaiveDateTime.compare(start, latest_start) == :gt
+        {:ok, start} -> NaiveDateTime.after?(start, latest_start)
         _ -> false
       end
     end
@@ -227,7 +227,7 @@ defmodule Backend.Grandmasters.Response.Tournament do
     |> Response.decklists()
   end
 
-  def from_raw_map(map = %{"availableLanguages" => _}),
+  def from_raw_map(%{"availableLanguages" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(map) do
@@ -261,7 +261,7 @@ defmodule Backend.Grandmasters.Response.Stage do
     field :etag, String.t()
   end
 
-  def from_raw_map(map = %{"availableLanguages" => _}),
+  def from_raw_map(%{"availableLanguages" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(map) do
@@ -305,7 +305,7 @@ defmodule Backend.Grandmasters.Response.Bracket do
     field :competitors, [Competitor.t()]
   end
 
-  def from_raw_map(map = %{"availableLanguages" => _}),
+  def from_raw_map(%{"availableLanguages" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(map) do
@@ -363,7 +363,7 @@ defmodule Backend.Grandmasters.Response.Match do
   @spec decklists(Match.t()) :: [{Competitor.t(), [String.t()]}]
   def decklists(%{competitors: c, decklists: d}), do: Enum.zip(c, d)
 
-  def from_raw_map(map = %{"availableLanguages" => _}),
+  def from_raw_map(%{"availableLanguages" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(nil), do: nil
@@ -391,7 +391,7 @@ defmodule Backend.Grandmasters.Response.Match do
     }
   end
 
-  def parse_decklists(map = %{"attributes" => %{"competitor_1" => _}}) do
+  def parse_decklists(%{"attributes" => %{"competitor_1" => _}} = map) do
     ["competitor_1", "competitor_2"]
     |> Enum.map(fn n ->
       get_in(map, ["attributes", n, "decklist"])
@@ -402,7 +402,7 @@ defmodule Backend.Grandmasters.Response.Match do
     end)
   end
 
-  def parse_decklists(map = %{"attributes" => %{"competitor_1_decklists" => _}}) do
+  def parse_decklists(%{"attributes" => %{"competitor_1_decklists" => _}} = map) do
     ["competitor_1_decklists", "competitor_2_decklists"]
     |> Enum.map(fn n ->
       get_in(map, ["attributes", n])
@@ -433,7 +433,7 @@ defmodule Backend.Grandmasters.Response.Match do
     end
   end
 
-  def match_info(match = %{winner: winner = %{id: id}, competitors: c}) do
+  def match_info(%{winner: %{id: id} = winner, competitors: c} = match) do
     winner_index = c |> Enum.find_index(&(&1 && &1.id == id))
     winner_score = match |> score_at(winner_index)
     loser_score = match |> score_at(1 - winner_index)
@@ -447,7 +447,7 @@ defmodule Backend.Grandmasters.Response.Match do
     }
   end
 
-  def match_info(match = %{competitors: [top, bottom]}) do
+  def match_info(%{competitors: [top, bottom]} = match) do
     %{
       top: top,
       bottom: bottom,
@@ -469,7 +469,7 @@ defmodule Backend.Grandmasters.Response.Competitor do
     field :headshot, String.t()
   end
 
-  def from_raw_map(map = %{"availableLanguages" => _}),
+  def from_raw_map(%{"availableLanguages" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(nil), do: nil
@@ -504,7 +504,7 @@ defmodule Backend.Grandmasters.Response.Season do
     field :end_date, Time.t()
   end
 
-  def from_raw_map(map = %{"startDate" => _}),
+  def from_raw_map(%{"startDate" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(map) do
@@ -526,7 +526,7 @@ defmodule Backend.Grandmasters.Response.Time do
     field :time_zone, String.t()
   end
 
-  def from_raw_map(map = %{"timeZone" => _}),
+  def from_raw_map(%{"timeZone" => _} = map),
     do: map |> Recase.Enumerable.convert_keys(&Recase.to_snake/1) |> from_raw_map()
 
   def from_raw_map(%{"time" => time, "time_zone" => time_zone}) do

@@ -7,7 +7,7 @@ defmodule Bot.MTMessageHandler do
   alias Bot.BattlefyMessageHandler
   require Logger
 
-  def handle_mt_standings(msg = %{content: content}) do
+  def handle_mt_standings(%{content: content} = msg) do
     content
     |> get_options(:string)
     |> TourStop.get()
@@ -16,12 +16,12 @@ defmodule Bot.MTMessageHandler do
     |> send_or_travolta(msg.channel_id)
   end
 
-  def mt_message(ts = %{battlefy_id: battlefy_id}, message) when is_binary(battlefy_id) do
+  def mt_message(%{battlefy_id: battlefy_id} = ts, message) when is_binary(battlefy_id) do
     Logger.debug("Getting mt message for #{ts.id} #{battlefy_id} ")
 
     with %{stages: [s | _]} <- MastersTour.get_mt_tournament(ts),
          standings <- MastersTour.get_mt_stage_standings(s, ts),
-         battletags = [_ | _] <- get_guild_battletags!(message.guild_id) do
+         [_ | _] = battletags <- get_guild_battletags!(message.guild_id) do
       Bot.BattlefyMessageHandler.create_message(battletags, standings, &MastersTour.fix_name/1)
     else
       other ->
@@ -32,7 +32,7 @@ defmodule Bot.MTMessageHandler do
 
   def mt_message(_, _), do: ""
 
-  defp or_current_mt(mt = %{id: _}), do: mt
+  defp or_current_mt(%{id: _} = mt), do: mt
   defp or_current_mt(_), do: TourStop.get_current(1, 240) |> TourStop.get()
 
   def handle_qualifiers_standings(msg) do
@@ -47,7 +47,7 @@ defmodule Bot.MTMessageHandler do
     BattlefyMessageHandler.handle_tournament_standings(tournaments, msg)
   end
 
-  def handle_qualifier_standings(msg = %{content: content}) do
+  def handle_qualifier_standings(%{content: content} = msg) do
     with {num, _} <- content |> get_options(:string) |> Integer.parse(),
          %{id: id} <- MastersTour.get_qualifier(num) do
       Bot.BattlefyMessageHandler.handle_tournament_standings(id, msg)
@@ -96,7 +96,7 @@ defmodule Bot.MTMessageHandler do
     """
   end
 
-  def recent_qualifier_standings(msg = %{guild_id: guild_id}) do
+  def recent_qualifier_standings(%{guild_id: guild_id} = msg) do
     message = standings_message(guild_id)
     send_or_travolta(message, msg.channel_id)
   end

@@ -39,8 +39,8 @@ defmodule Components.OmniBar do
   end
 
   def update(
-        assigns = %{incoming_result: result},
-        socket = %{assigns: %{results: results, search: search}}
+        %{incoming_result: result} = assigns,
+        %{assigns: %{results: results, search: search}} = socket
       ) do
     new_results =
       if result.search_term == search do
@@ -56,7 +56,7 @@ defmodule Components.OmniBar do
     |> update(socket)
   end
 
-  def update(assigns = %{search: search}, socket = %{assigns: %{results: results}}) do
+  def update(%{search: search} = assigns, %{assigns: %{results: results}} = socket) do
     new_results = results |> Enum.filter(search)
     {:ok, socket |> assign(assigns) |> assign(results: new_results)}
   end

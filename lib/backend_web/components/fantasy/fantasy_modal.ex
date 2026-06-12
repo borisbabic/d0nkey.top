@@ -168,12 +168,12 @@ defmodule Components.FantasyModal do
 
   defp battlefy_tournament_id(_), do: nil
 
-  defp current_lobby_legends(), do: LobbyLegendsSeason.current(120, 0)
+  defp current_lobby_legends, do: LobbyLegendsSeason.current(120, 0)
 
-  defp current_tour_stop(), do: TourStop.get_current(120, 0)
-  defp current_tour_stop?(), do: nil != current_tour_stop()
+  defp current_tour_stop, do: TourStop.get_current(120, 0)
+  defp current_tour_stop?, do: nil != current_tour_stop()
 
-  defp competition_type_options() do
+  defp competition_type_options do
     if current_tour_stop?() do
       [{"Masters Tour", "masters_tour"}]
     else
@@ -194,9 +194,9 @@ defmodule Components.FantasyModal do
     end
   end
 
-  defp current_card_nerfs?() do
+  defp current_card_nerfs? do
     today = Date.utc_today()
-    Date.compare(today, ~D[2022-08-03]) == :lt
+    Date.before?(today, ~D[2022-08-03])
   end
 
   defp add_lobby_legends(competition_types) do
@@ -263,7 +263,7 @@ defmodule Components.FantasyModal do
 
   defp point_system_options(_), do: []
 
-  defp gm_2021_1_start(), do: ~N[2021-04-08 09:00:00] |> Fantasy.new_league_deadline(:week)
+  defp gm_2021_1_start, do: ~N[2021-04-08 09:00:00] |> Fantasy.new_league_deadline(:week)
 
   defp draft_deadline_value(%{draft_deadline: dd}, _) when not is_nil(dd),
     do: dd |> NaiveDateTime.to_iso8601()
@@ -298,7 +298,7 @@ defmodule Components.FantasyModal do
 
   defp draft_deadline_value(_, _), do: nil
 
-  defp update_draft_deadline(attrs = %{"deadline" => <<dd::binary>>}) do
+  defp update_draft_deadline(%{"deadline" => <<dd::binary>>} = attrs) do
     "#{dd}:00"
     |> NaiveDateTime.from_iso8601()
     |> case do
@@ -320,7 +320,7 @@ defmodule Components.FantasyModal do
   def handle_event(
         "submit",
         %{"league" => raw_attrs},
-        socket = %{assigns: %{league: league = %{id: id}}}
+        %{assigns: %{league: %{id: id} = league}} = socket
       )
       when not is_nil(id) do
     attrs = raw_attrs |> update_draft_deadline()
@@ -342,7 +342,7 @@ defmodule Components.FantasyModal do
     |> handle_result(socket)
   end
 
-  def handle_event("regenerate_join_code", _, socket = %{assigns: %{league: league}}) do
+  def handle_event("regenerate_join_code", _, %{assigns: %{league: league}} = socket) do
     new_league = league |> Map.put(:join_code, Ecto.UUID.generate())
 
     {

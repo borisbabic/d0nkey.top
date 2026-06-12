@@ -67,8 +67,7 @@ defmodule BackendWeb.PlayerView do
         if ps |> PlayerStats.with_result() > 0 do
           [
             {"#{period_part}MTQ played", ps |> PlayerStats.with_result()},
-            {"#{period_part}MTQ winrate",
-             ps |> PlayerStats.matches_won_percent() |> Float.round(2)}
+            {"#{period_part}MTQ winrate", ps |> PlayerStats.matches_won_percent() |> Float.round(2)}
           ]
         else
           []
@@ -103,7 +102,7 @@ defmodule BackendWeb.PlayerView do
         mt: mt_rows
       })
       # sorted descending. trial and errored it, ofc
-      |> Enum.sort_by(fn r -> r.time end, fn a, b -> NaiveDateTime.compare(a, b) == :gt end)
+      |> Enum.sort_by(fn r -> r.time end, fn a, b -> NaiveDateTime.after?(a, b) end)
       |> Enum.drop(offset)
       |> Enum.take(limit)
       |> Enum.map(&PlayerHelper.table_row/1)
@@ -293,9 +292,7 @@ defmodule BackendWeb.PlayerView do
     period = if period_param, do: period_param, else: "season_#{ss.season_id}"
 
     link =
-      Routes.leaderboard_path(conn, :player_history, ss.region, period, ss.leaderboard_id, player,
-        attr: attr
-      )
+      Routes.leaderboard_path(conn, :player_history, ss.region, period, ss.leaderboard_id, player, attr: attr)
 
     history_link(%{link: link})
   end
@@ -309,7 +306,7 @@ defmodule BackendWeb.PlayerView do
   end
 
   @default_competitions ["leaderboard", "mt"]
-  def default_competitions(), do: @default_competitions
+  def default_competitions, do: @default_competitions
 
   def selected?(competition, selected_competitions) do
     Enum.member?(selected_competitions, to_string(competition))

@@ -39,7 +39,7 @@ defmodule BackendWeb.DeckSheetViewLive do
        |> subscribe()}
 
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
-  def render(assigns = %{sheet: %{}}) do
+  def render(%{sheet: %{}} = assigns) do
     ~F"""
         {#if Sheets.can_view?(@sheet, @user)}
           <div class="title is-1">{@sheet.name}</div>
@@ -234,9 +234,8 @@ defmodule BackendWeb.DeckSheetViewLive do
     )
   end
 
-  def handle_info({:update_params, params}, socket = %{assigns: assigns}) do
-    {:noreply,
-     push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params(assigns), params))}
+  def handle_info({:update_params, params}, %{assigns: assigns} = socket) do
+    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params(assigns), params))}
   end
 
   def handle_info(

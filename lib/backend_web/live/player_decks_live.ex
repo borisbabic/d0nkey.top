@@ -35,7 +35,7 @@ defmodule BackendWeb.PlayerDecksLive do
 
   @spec handle_info({:update_params, any}, Phoenix.LiveView.Socket.t()) ::
           {:noreply, Phoenix.LiveView.Socket.t()}
-  def handle_info({:update_params, params}, socket = %{assigns: %{player_btag: player_btag}}) do
+  def handle_info({:update_params, params}, %{assigns: %{player_btag: player_btag}} = socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, player_btag, params))}
   end
 

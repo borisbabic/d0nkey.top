@@ -22,8 +22,7 @@ config :ueberauth, Ueberauth.Strategy.Twitch.OAuth,
 config :ueberauth, Ueberauth,
   providers: [
     bnet: {Ueberauth.Strategy.Bnet, []},
-    twitch:
-      {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
+    twitch: {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
   ]
 
 # Configure your database

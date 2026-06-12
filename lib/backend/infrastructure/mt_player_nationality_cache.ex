@@ -63,7 +63,7 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
   def handle_call(
         {:get_actual_battletag, mt_bt},
         _from,
-        state = {mt_bt_map, short_bt_map, actual_bt_map}
+        {mt_bt_map, short_bt_map, actual_bt_map} = state
       ) do
     response =
       get_actual_battletag(mt_bt_map, mt_bt) ||
@@ -73,7 +73,7 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
     {:reply, response, state}
   end
 
-  def handle_call({:get_country, mt_bt}, _from, state = {mt_bt_map, short_bt_map, actual_bt_map}) do
+  def handle_call({:get_country, mt_bt}, _from, {mt_bt_map, short_bt_map, actual_bt_map} = state) do
     response =
       get_country(mt_bt_map, mt_bt) ||
         get_country(actual_bt_map, mt_bt) ||
@@ -82,14 +82,14 @@ defmodule Backend.Infrastructure.PlayerNationalityCache do
     {:reply, response, state}
   end
 
-  def handle_call({:get, mt_bt}, _from, state = {mt_bt_map, short_bt_map, actual_bt_map}) do
+  def handle_call({:get, mt_bt}, _from, {mt_bt_map, short_bt_map, actual_bt_map} = state) do
     response =
       with nil <- Map.get(mt_bt_map, mt_bt),
            nil <- Map.get(actual_bt_map, mt_bt),
            nil <- Map.get(short_bt_map, mt_bt |> InvitedPlayer.shorten_battletag()) do
         nil
       else
-        pn = %{nationality: _} -> pn
+        %{nationality: _} = pn -> pn
         _ -> nil
       end
 

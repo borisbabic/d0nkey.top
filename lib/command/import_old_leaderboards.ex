@@ -30,7 +30,7 @@ defmodule Command.ImportOldLeaderboards do
   end
 
   @spec create_leaderboard(list(), String.t()) :: Leaderboard.t()
-  defp create_leaderboard(csv_entries = [[region, month_raw, year_raw | _] | _], ldb_id) do
+  defp create_leaderboard([[region, month_raw, year_raw | _] | _] = csv_entries, ldb_id) do
     with {:ok, month} <- Util.get_month_number(month_raw),
          {year, _} <- Integer.parse(year_raw),
          {:ok, date} <- Date.new(year, month, 13),
@@ -45,7 +45,7 @@ defmodule Command.ImportOldLeaderboards do
          entries: Enum.map(csv_entries, &create_entry/1)
        }}
     else
-      e = {:error, _} -> e
+      {:error, _} = e -> e
       _ -> {:error, "Couldn't create ldb for #{region} #{month_raw} #{year_raw}"}
     end
   end

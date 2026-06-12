@@ -52,7 +52,7 @@ defmodule Backend.GMStream do
     {:ok, %{}}
   end
 
-  def configure_twitter() do
+  def configure_twitter do
     config = Application.fetch_env!(:backend, :gm_stream_twitter_info)
     ExTwitter.configure(:process, config)
   end

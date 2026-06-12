@@ -24,8 +24,7 @@ config :ueberauth, Ueberauth,
       Ueberauth.Strategy.Patreon,
       [default_scope: "identity"]
     },
-    twitch:
-      {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
+    twitch: {Ueberauth.Strategy.Twitch, [callback_url: "http://localhost:8994/auth/twitch/callback"]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Patreon.OAuth,
@@ -141,10 +140,8 @@ config :backend,
   hdt_plugin_latest_file: "hdt_plugin/#{hdt_plugin_latest_version}.dll",
   default_nitropay_ads_txt_url: "https://api.nitropay.com/v1/ads-909.txt",
   ads_config: [
-    {"d0nkey.top",
-     %{enable_adsense: false, nitropay_url: "https://api.nitropay.com/v1/ads-909.txt"}},
-    {"hsguru.com",
-     %{enable_adsense: false, nitropay_url: "https://api.nitropay.com/v1/ads-1847.txt"}}
+    {"d0nkey.top", %{enable_adsense: false, nitropay_url: "https://api.nitropay.com/v1/ads-909.txt"}},
+    {"hsguru.com", %{enable_adsense: false, nitropay_url: "https://api.nitropay.com/v1/ads-1847.txt"}}
   ],
   ecto_repos: [Backend.Repo],
   admin_config_vars_cutoff_date: "3000-12-31"

@@ -14,7 +14,7 @@ defmodule BackendWeb.ArchivedPatchesLive do
     """
   end
 
-  defp periods() do
+  defp periods do
     Hearthstone.DeckTracker.periods(type: "archive", order_by: {:period_start, :desc})
   end
 end

@@ -4,16 +4,15 @@ defmodule BackendWeb.TwitchCommandController do
   alias Backend.TwitchBot
   alias Backend.TwitchBot.TwitchCommand
 
-
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
   plug(Backend.Plug.AdminAuth, role: :twitch_commands)
   plug(:put_layout, false)
-
 
   def index(conn, params) do
     case TwitchBot.paginate_twitch_commands(params) do
       {:ok, assigns} ->
         render(conn, "index.html", assigns)
+
       error ->
         conn
         |> put_flash(:error, "There was an error rendering Twitch commands. #{inspect(error)}")
@@ -32,6 +31,7 @@ defmodule BackendWeb.TwitchCommandController do
         conn
         |> put_flash(:info, "Twitch command created successfully.")
         |> redirect(to: Routes.twitch_command_path(conn, :show, twitch_command))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -56,6 +56,7 @@ defmodule BackendWeb.TwitchCommandController do
         conn
         |> put_flash(:info, "Twitch command updated successfully.")
         |> redirect(to: Routes.twitch_command_path(conn, :show, twitch_command))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", twitch_command: twitch_command, changeset: changeset)
     end

@@ -88,8 +88,7 @@ defmodule BackendWeb.TournamentStreamControllerTest do
 
     test "redirects when data is valid", %{conn: conn, tournament_stream: tournament_stream} do
       conn =
-        put conn, Routes.tournament_stream_path(conn, :update, tournament_stream),
-          tournament_stream: @update_attrs
+        put conn, Routes.tournament_stream_path(conn, :update, tournament_stream), tournament_stream: @update_attrs
 
       assert redirected_to(conn) == Routes.tournament_stream_path(conn, :show, tournament_stream)
 
@@ -102,8 +101,7 @@ defmodule BackendWeb.TournamentStreamControllerTest do
       tournament_stream: tournament_stream
     } do
       conn =
-        put conn, Routes.tournament_stream_path(conn, :update, tournament_stream),
-          tournament_stream: @invalid_attrs
+        put conn, Routes.tournament_stream_path(conn, :update, tournament_stream), tournament_stream: @invalid_attrs
 
       assert html_response(conn, 200) =~ "Edit Tournament stream"
     end

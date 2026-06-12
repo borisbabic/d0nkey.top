@@ -95,7 +95,7 @@ defmodule Backend.LeaderboardsPoints do
     ]
   end
 
-  def current_season_id() do
+  def current_season_id do
   end
 
   def get_relevant_ldb_seasons(season_slug, leaderboard_id, use_current \\ false) do
@@ -119,7 +119,7 @@ defmodule Backend.LeaderboardsPoints do
   def system("china_" <> _), do: China2026
   def system(_), do: HsEsports2025
 
-  def points_seasons() do
+  def points_seasons do
     systems()
     |> Enum.flat_map(& &1.points_seasons())
   end
@@ -133,7 +133,7 @@ defmodule Backend.LeaderboardsPoints do
     end)
   end
 
-  defp systems(), do: [HsEsports2023, Bonobo2025, HsEsports2025, China2026]
+  defp systems, do: [HsEsports2023, Bonobo2025, HsEsports2025, China2026]
 
   def create_fake_entry(account_id, rank, season_id, rating \\ nil) do
     %Backend.Leaderboards.Entry{

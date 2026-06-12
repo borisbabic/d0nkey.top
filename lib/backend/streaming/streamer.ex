@@ -24,6 +24,6 @@ defmodule Backend.Streaming.Streamer do
     |> validate_required(@required)
   end
 
-  def twitch_login(s = %__MODULE__{}), do: s.twitch_login || s.hsreplay_twitch_login
-  def twitch_display(s = %__MODULE__{}), do: s.twitch_display || s.hsreplay_twitch_display
+  def twitch_login(%__MODULE__{} = s), do: s.twitch_login || s.hsreplay_twitch_login
+  def twitch_display(%__MODULE__{} = s), do: s.twitch_display || s.hsreplay_twitch_display
 end

@@ -22,7 +22,7 @@ defmodule Backend.Api.ApiUser do
     |> unique_constraint(:username)
   end
 
-  defp put_pass_hash(cs = %Ecto.Changeset{valid?: true, changes: %{password: password}})
+  defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = cs)
        when not is_nil(password) do
     change(cs, %{password: Bcrypt.hash_pwd_salt(password, hash_key: :password)})
   end

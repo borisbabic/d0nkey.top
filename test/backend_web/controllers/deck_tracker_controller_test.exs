@@ -3,7 +3,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
 
   alias Hearthstone.DeckTracker.GameInserter
 
-  def valid_fs_request() do
+  def valid_fs_request do
     game_id = Ecto.UUID.generate()
 
     request = %{
@@ -15,8 +15,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
         "cardsWithCreatedBy" => [
           %{"cardId" => 32, "turn" => 3, "createdBy" => nil}
         ],
-        "deckcode" =>
-          "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+        "deckcode" => "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
       "opponent" => %{
         "battletag" => Ecto.UUID.generate(),
@@ -36,7 +35,7 @@ defmodule BackendWeb.DeckTrackerControllerTest do
     {game_id, request}
   end
 
-  def valid_hdt_request() do
+  def valid_hdt_request do
     game_id = Ecto.UUID.generate()
     version = Ecto.UUID.generate()
 

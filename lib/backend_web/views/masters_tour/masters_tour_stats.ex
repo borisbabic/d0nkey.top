@@ -255,7 +255,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
         ]
 
     columns_to_show =
-      if is_list(selected_columns) && Enum.count(selected_columns) > 0 do
+      if is_list(selected_columns) && not Enum.empty?(selected_columns) do
         columns |> Enum.filter(fn c -> Enum.member?(selected_columns, c) end)
       else
         ["Player", "Tour Stops", "Top 8", "Matches Won", "Matches Lost", "Winrate %"]
@@ -324,7 +324,7 @@ defmodule BackendWeb.MastersTour.MastersToursStats do
 
   defp years_options(years) do
     MastersTour.eligible_stats_years()
-    |> Enum.map(&to_string(&1))
+    |> Enum.map(&to_string/1)
     |> Enum.map(fn y ->
       %{
         selected: !Enum.any?(years) || y in years,

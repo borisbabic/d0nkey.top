@@ -49,7 +49,7 @@ defmodule Backend.HSReplay.ReplayFeedEntry do
   #   {key, value}
   # end
 
-  def from_raw_map(map = %{"player1Rank" => _}) do
+  def from_raw_map(%{"player1Rank" => _} = map) do
     map
     |> Recase.Enumerable.convert_keys(&Recase.to_snake/1)
     |> from_raw_map()

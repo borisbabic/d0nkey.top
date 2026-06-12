@@ -106,7 +106,7 @@ defmodule Components.SurfaceBulma.Table do
   def handle_event(
         "sorted_click",
         %{"value" => sort_by_new},
-        socket = %{assigns: %{sorted_by: sorted_by, sort_reverse: sort_reverse}}
+        %{assigns: %{sorted_by: sorted_by, sort_reverse: sort_reverse}} = socket
       ) do
     socket =
       cond do

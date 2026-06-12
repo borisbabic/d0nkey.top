@@ -81,7 +81,7 @@ defmodule BackendWeb.Live.DecksTest do
     deck_fixtures(@highlander_warlock)
   end
 
-  defp generate_btag() do
+  defp generate_btag do
     Ecto.UUID.generate() |> String.replace("-", "") |> Kernel.<>("#0000")
   end
 

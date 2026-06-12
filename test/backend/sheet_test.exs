@@ -43,9 +43,7 @@ defmodule Backend.SheetsTest do
       %{sheet: sheet, owner: _owner} = create_sheet()
 
       {:ok, deck} =
-        Hearthstone.create_or_get_deck(
-          "AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA="
-        )
+        Hearthstone.create_or_get_deck("AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA=")
 
       assert {:error, _} = Sheets.create_deck_sheet_listing(sheet, deck, create_temp_user())
     end
@@ -54,9 +52,7 @@ defmodule Backend.SheetsTest do
       %{sheet: sheet, owner: owner} = create_sheet()
 
       {:ok, deck} =
-        Hearthstone.create_or_get_deck(
-          "AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA="
-        )
+        Hearthstone.create_or_get_deck("AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA=")
 
       assert {:ok, _listing} = Sheets.create_deck_sheet_listing(sheet, deck, owner)
     end
@@ -67,9 +63,7 @@ defmodule Backend.SheetsTest do
       comment = Ecto.UUID.generate()
 
       {:ok, deck} =
-        Hearthstone.create_or_get_deck(
-          "AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA="
-        )
+        Hearthstone.create_or_get_deck("AAEBAR8EpIgD25EE57kEsJMFDbsF2QmBCuq7Ao7DAqLOA7nQA9vtA4j0A+q5BIPIBL/TBMDtBAA=")
 
       assert {:ok, %{comment: ^comment}} =
                Sheets.create_deck_sheet_listing(sheet, deck, owner, %{comment: comment})

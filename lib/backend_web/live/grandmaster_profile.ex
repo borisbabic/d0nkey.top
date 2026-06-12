@@ -133,7 +133,7 @@ defmodule BackendWeb.GrandmasterProfileLive do
   def handle_params(params, _uri, socket) do
     week =
       case params["week"] do
-        w = <<_::8, _::binary>> -> w
+        <<_::8, _::binary>> = w -> w
         _ -> Blizzard.current_or_default_week_title()
       end
 

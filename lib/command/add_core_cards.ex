@@ -17,12 +17,12 @@ defmodule Command.AddCoreCards do
   @core_slug "temp_core_#{@year_number}"
   @core_name "Core #{@year_number}"
   @fake_card_set_id -67
-  def run() do
+  def run do
     ensure_fake_core_set()
     add_cards()
   end
 
-  def ensure_fake_core_set() do
+  def ensure_fake_core_set do
     cs = Backend.Hearthstone.card_sets()
 
     if !Enum.any?(cs, &(&1.slug == @core_slug)) do
@@ -192,7 +192,7 @@ defmodule Command.AddCoreCards do
     |> Map.put(:id, id)
     |> Map.put(:image, image_url(card_id))
     |> Map.put(:card_set_id, @fake_card_set_id)
-    |> Map.drop([:image_gold])
+    |> Map.delete(:image_gold)
     |> Map.put(card_id, :card_id)
   end
 

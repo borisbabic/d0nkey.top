@@ -12,11 +12,11 @@ defmodule Twitch.Token do
   end
 
   def from_raw_map(
-        map = %{
+        %{
           "access_token" => access_token,
           "expires_in" => expires_in_raw,
           "token_type" => token_type
-        }
+        } = map
       ) do
     now = NaiveDateTime.utc_now()
     expires_in = expires_in_raw |> Util.to_int_or_orig()

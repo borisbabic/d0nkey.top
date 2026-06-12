@@ -22,7 +22,7 @@ defmodule Backend.Hearthstone.CardAggregate do
     Enum.reduce(cards, empty(), &tally/2)
   end
 
-  def empty() do
+  def empty do
     %__MODULE__{
       total_count: 0,
       total_mana_cost: 0,
@@ -57,13 +57,13 @@ defmodule Backend.Hearthstone.CardAggregate do
   end
 
   def string_fields(agg, keywords \\ nil) do
-    avg_minion_cost = average_mana_cost(agg.minion_stats) |> float_display
-    avg_minion_attack = MinionStats.average_attack(agg.minion_stats) |> float_display
-    avg_minion_health = MinionStats.average_health(agg.minion_stats) |> float_display
+    avg_minion_cost = average_mana_cost(agg.minion_stats) |> float_display()
+    avg_minion_attack = MinionStats.average_attack(agg.minion_stats) |> float_display()
+    avg_minion_health = MinionStats.average_health(agg.minion_stats) |> float_display()
 
-    avg_weapon_cost = average_mana_cost(agg.weapon_stats) |> float_display
-    avg_weapon_attack = WeaponStats.average_attack(agg.weapon_stats) |> float_display
-    avg_weapon_durability = WeaponStats.average_durability(agg.weapon_stats) |> float_display
+    avg_weapon_cost = average_mana_cost(agg.weapon_stats) |> float_display()
+    avg_weapon_attack = WeaponStats.average_attack(agg.weapon_stats) |> float_display()
+    avg_weapon_durability = WeaponStats.average_durability(agg.weapon_stats) |> float_display()
 
     %{
       "Count" => agg.total_count,
@@ -159,7 +159,7 @@ defmodule Backend.Hearthstone.CardAggregate.MinionStats do
     field :keyword_counts, integer()
   end
 
-  def empty() do
+  def empty do
     %__MODULE__{
       total_count: 0,
       total_health: 0,
@@ -209,7 +209,7 @@ defmodule Backend.Hearthstone.CardAggregate.WeaponStats do
     field :keyword_counts, integer()
   end
 
-  def empty() do
+  def empty do
     %__MODULE__{
       total_count: 0,
       total_mana_cost: 0,
@@ -258,7 +258,7 @@ defmodule Backend.Hearthstone.CardAggregate.SpellStats do
     field :total_mana_cost, integer()
   end
 
-  def empty() do
+  def empty do
     %__MODULE__{
       total_count: 0,
       total_mana_cost: 0,

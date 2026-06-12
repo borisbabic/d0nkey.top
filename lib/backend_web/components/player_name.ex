@@ -13,7 +13,7 @@ defmodule Components.PlayerName do
   prop(link_class, :css_class, default: "")
   prop(shorten, :boolean, default: false)
 
-  def render(assigns = %{player: nil}), do: ~F"<span>?</span>"
+  def render(%{player: nil} = assigns), do: ~F"<span>?</span>"
 
   def render(assigns) do
     ~F"""

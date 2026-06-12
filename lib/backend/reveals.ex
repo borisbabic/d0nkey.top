@@ -11,7 +11,7 @@ defmodule Backend.Reveals do
     case reveal_time(slug) do
       %NaiveDateTime{} = reveal_time ->
         now = NaiveDateTime.utc_now()
-        NaiveDateTime.compare(now, reveal_time) == :gt
+        NaiveDateTime.after?(now, reveal_time)
 
       _ ->
         false

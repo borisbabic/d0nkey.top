@@ -12,7 +12,7 @@ defmodule Backend.Discord.Broadcast do
   end
 
   @doc false
-  def new() do
+  def new do
     cast(
       %__MODULE__{},
       %{publish_token: Ecto.UUID.generate(), subscribe_token: Ecto.UUID.generate()},

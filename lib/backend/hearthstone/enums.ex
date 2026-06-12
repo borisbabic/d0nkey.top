@@ -40,10 +40,10 @@ defmodule Hearthstone.Enums.BnetGameType do
   def ranked_twist, do: 62
   def casual_twist, do: 63
 
-  def duels_types(), do: [pvpdr(), pvpdr_paid()]
+  def duels_types, do: [pvpdr(), pvpdr_paid()]
   def duels?(type), do: type in duels_types()
 
-  def standard_types(),
+  def standard_types,
     do: [
       casual_standard_normal(),
       casual_standard_newbie(),
@@ -53,38 +53,38 @@ defmodule Hearthstone.Enums.BnetGameType do
 
   def standard?(type), do: type in standard_types()
 
-  def wild_types(), do: [casual_wild(), ranked_wild()]
+  def wild_types, do: [casual_wild(), ranked_wild()]
   def wild?(type), do: type in wild_types()
 
-  def battlegrounds_types(), do: [battlegrounds(), battlegrounds_friendly()]
+  def battlegrounds_types, do: [battlegrounds(), battlegrounds_friendly()]
   def battlegrounds?(type), do: type in battlegrounds_types()
 
-  def tavernbrawl_types(),
+  def tavernbrawl_types,
     do: [tavernbrawl_1p_versus_ai(), tavernbrawl_2p_coop(), tavernbrawl_pvp()]
 
   def tavernbrawl?(type), do: type in tavernbrawl_types()
 
-  def fireside_gathering_types(),
+  def fireside_gathering_types,
     do: [fsg_brawl_1p_versus_ai(), fsg_brawl_2p_coop(), fsg_brawl_pvp(), fsg_brawl_vs_friend()]
 
   def fireside_gathering?(type), do: type in fireside_gathering_types()
   def fsg?(type), do: fireside_gathering?(type)
 
-  def arena_types(), do: [arena()]
+  def arena_types, do: [arena()]
   def arena?(type), do: type in arena_types()
 
-  def classic_types(), do: [ranked_classic(), casual_classic()]
+  def classic_types, do: [ranked_classic(), casual_classic()]
   def classic?(type), do: type in classic_types()
 
-  def twist_types(), do: [ranked_twist(), casual_twist()]
+  def twist_types, do: [ranked_twist(), casual_twist()]
   def twist?(type), do: type in twist_types()
 
-  def mercenaries_types(),
+  def mercenaries_types,
     do: [mercenaries_pvp(), mercenaries_pve(), mercenaries_pve_coop(), mercenaries_friendly()]
 
   def mercenaries?(type), do: type in mercenaries_types()
 
-  def ranked_types(),
+  def ranked_types,
     do: [
       pvpdr_paid(),
       pvpdr(),
@@ -99,10 +99,10 @@ defmodule Hearthstone.Enums.BnetGameType do
 
   def ranked?(type), do: type in ranked_types()
 
-  def ladder_types(), do: [ranked_standard(), ranked_wild(), ranked_standard_new_player()]
+  def ladder_types, do: [ranked_standard(), ranked_wild(), ranked_standard_new_player()]
   def ladder?(type), do: type in ladder_types()
 
-  def constructed_types(),
+  def constructed_types,
     do: wild_types() ++ standard_types() ++ classic_types() ++ [friends(), vs_ai()]
 
   def constructed?(type), do: type in constructed_types()
@@ -195,7 +195,7 @@ defmodule Hearthstone.Enums.GameType do
     |> elem(1)
   end
 
-  def constructed_types(), do: [ranked(), casual(), vs_friend()]
+  def constructed_types, do: [ranked(), casual(), vs_friend()]
 
   # renamed
   def pvpcwtestdr, do: test_ai_vs_ai()
@@ -285,7 +285,7 @@ defmodule Hearthstone.Enums.Format do
   end
 
   @spec all() :: [{integer(), String.t()}]
-  def all() do
+  def all do
     @all |> Enum.map(fn {_, id, name} -> {id, name} end)
   end
 
@@ -294,7 +294,7 @@ defmodule Hearthstone.Enums.Format do
     @all |> Enum.map(fn {atom, id, _name} -> {id, atom} end)
   end
 
-  def all_values() do
+  def all_values do
     @all |> Enum.map(fn {_atom, id, _name} -> id end)
   end
 end

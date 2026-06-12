@@ -9,7 +9,7 @@ defmodule Backend.Streaming.DeckStreamingInfo do
     field :first_streamed_by, String.t() | nil
   end
 
-  def empty(),
+  def empty,
     do: %__MODULE__{
       peak: nil,
       peaked_by: nil,

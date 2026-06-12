@@ -18,8 +18,7 @@ defmodule BackendWeb.MastersTourView do
   end
 
   def create_row_html(
-        {pr = %{name: _name, total: total, per_ts: per_ts, region: _region, country: _country},
-         place},
+        {%{name: _name, total: total, per_ts: per_ts, region: _region, country: _country} = pr, place},
         tour_stops,
         show_current_score
       ) do
@@ -83,8 +82,7 @@ defmodule BackendWeb.MastersTourView do
   def min_cups(total) when total < 5, do: 0
 
   def min_cups(total),
-    do:
-      [100, @min_cups_options |> Enum.find(fn a -> a > 4 + total * 0.20 end) || 100] |> Enum.min()
+    do: [100, @min_cups_options |> Enum.find(fn a -> a > 4 + total * 0.20 end) || 100] |> Enum.min()
 
   @doc """
   When there is winrate invites and we don't want the default min cups to exceed that num
@@ -117,13 +115,12 @@ defmodule BackendWeb.MastersTourView do
         end
       end)
       |> Enum.frequencies()
-      |> Enum.map(fn {year, count} ->
+      |> Map.new(fn {year, count} ->
         {"#{year} MTs qualified", count}
       end)
-      |> Enum.into(%{})
 
     tour_stops
-    |> Enum.map(fn tour_stop ->
+    |> Map.new(fn tour_stop ->
       cell =
         Helper.checkmark(%{
           show: MapSet.member?(invited_set, player_stats.battletag_full <> to_string(tour_stop))
@@ -131,7 +128,6 @@ defmodule BackendWeb.MastersTourView do
 
       {TourStop.display_name(tour_stop), cell}
     end)
-    |> Map.new()
     |> Map.merge(qualified_per_year)
   end
 
@@ -281,7 +277,7 @@ defmodule BackendWeb.MastersTourView do
 
   def period_title(period) do
     case TourStop.get(period) do
-      ts = %{id: _} -> TourStop.display_name(ts)
+      %{id: _} = ts -> TourStop.display_name(ts)
       _ -> to_string(period)
     end
   end
@@ -318,8 +314,7 @@ defmodule BackendWeb.MastersTourView do
         %{
           display: Recase.to_title(v),
           selected: v == show_gms,
-          link:
-            Routes.masters_tour_path(conn, :earnings, Map.put(conn.query_params, "show_gms", v))
+          link: Routes.masters_tour_path(conn, :earnings, Map.put(conn.query_params, "show_gms", v))
         }
       end)
 
@@ -505,7 +500,7 @@ defmodule BackendWeb.MastersTourView do
           [Qualifier.t()],
           Plug.Conn.t()
         ) :: Backend.Battlefy.Communicator.qualifier() | map()
-  def add_qualifier_winner(q = %{id: id}, qualifiers, conn) do
+  def add_qualifier_winner(%{id: id} = q, qualifiers, conn) do
     winner =
       qualifiers
       |> Enum.find(&(&1.tournament_id == id))
@@ -599,7 +594,7 @@ defmodule BackendWeb.MastersTourView do
 
     {is_ts, ts, has_winrate_qual} =
       case TourStop.get(period) do
-        ts = %{id: _, min_qualifiers_for_winrate: min} ->
+        %{id: _, min_qualifiers_for_winrate: min} = ts ->
           {true, ts, is_integer(min)}
 
         _ ->
@@ -709,7 +704,7 @@ defmodule BackendWeb.MastersTourView do
     dropdowns =
       [
         limit_dropdown,
-        {ts_list, period |> period_title},
+        {ts_list, period |> period_title()},
         {min_list, "Min #{min_to_show} cups"},
         {show_flags_list, flag_title}
       ]
@@ -746,7 +741,7 @@ defmodule BackendWeb.MastersTourView do
   def render("earnings.html", %{
         tour_stops: tour_stops_all,
         earnings: earnings,
-        gm_season: gm_season = {year, season},
+        gm_season: {year, season} = gm_season,
         show_gms: show_gms,
         conn: conn,
         country: country,
@@ -811,7 +806,7 @@ defmodule BackendWeb.MastersTourView do
 
   def render(
         "qualifiers.html",
-        params = %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range, db: db}
+        %{fetched_qualifiers: qualifiers_raw, conn: conn, range: range, db: db} = params
       ) do
     region = params[:region]
     {before_range, after_range} = Util.get_surrounding_ranges(range)
@@ -843,8 +838,7 @@ defmodule BackendWeb.MastersTourView do
       |> Enum.map(fn r ->
         %{
           display: r,
-          link:
-            Routes.masters_tour_path(conn, :qualifiers, Map.put(conn.query_params, "region", r))
+          link: Routes.masters_tour_path(conn, :qualifiers, Map.put(conn.query_params, "region", r))
         }
       end)
       |> Enum.concat([
@@ -903,7 +897,7 @@ defmodule BackendWeb.MastersTourView do
     render("tour_stops.html", %{conn: conn, raw: tournaments, slug: "hsesports"})
   end
 
-  def render(t = "masters_tours_stats.html", params), do: MastersToursStats.render(t, params)
+  def render("masters_tours_stats.html" = t, params), do: MastersToursStats.render(t, params)
 
   # If it's not explicitly set for a tour stop that has winrate % qual default to "yes"
   def default_hiding_for_winrate(params, has_winrate_qual, hide_qualified) do
@@ -944,15 +938,15 @@ defmodule BackendWeb.MastersTourView do
     date_ranges ++ tour_stop_ranges
   end
 
-  def eligible_years(), do: [2020, 2021, 2022]
+  def eligible_years, do: [2020, 2021, 2022]
 
-  def eligible_tour_stops() do
+  def eligible_tour_stops do
     Blizzard.tour_stops()
     |> Enum.reverse()
     |> Enum.take_while(fn ts -> ts != :Bucharest end)
   end
 
-  def create_qualifiers_link(range = {%Date{} = _from, %Date{} = _to}, conn) do
+  def create_qualifiers_link({%Date{} = _from, %Date{} = _to} = range, conn) do
     new_params = conn.query_params |> Util.update_from_to_params(range)
 
     Routes.masters_tour_path(conn, :qualifiers, new_params)
@@ -995,7 +989,7 @@ defmodule BackendWeb.MastersTourView do
           reason: String.t() | nil
         }
   def process_invited_player(
-        invited_player = %{battletag_full: battletag_full, reason: reason_raw, official: official},
+        %{battletag_full: battletag_full, reason: reason_raw, official: official} = invited_player,
         conn
       ) do
     tournament_link =

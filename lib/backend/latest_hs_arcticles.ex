@@ -18,11 +18,9 @@ defmodule Backend.LatestHSArticles do
     {:noreply, articles}
   end
 
-  def fetch() do
+  def fetch do
     with {:ok, %{body: body}} <-
-           HTTPoison.get(
-             "https://hearthstone.blizzard.com/en-us/api/blog/articleList/?page=1&pageSize=100"
-           ),
+           HTTPoison.get("https://hearthstone.blizzard.com/en-us/api/blog/articleList/?page=1&pageSize=100"),
          {:ok, decoded} <- Jason.decode(body),
          sorted <- Enum.sort_by(decoded, & &1["publish"], :desc) |> add_april_fools(),
          {:ok, _feed_item} <- update_feed_item(sorted) do
@@ -54,10 +52,10 @@ defmodule Backend.LatestHSArticles do
     end
   end
 
-  def get(), do: GenServer.call(__MODULE__, :get)
-  def update(), do: GenServer.cast(__MODULE__, :update)
+  def get, do: GenServer.call(__MODULE__, :get)
+  def update, do: GenServer.cast(__MODULE__, :update)
 
-  def patch_notes_url(), do: get() |> patch_notes_url()
+  def patch_notes_url, do: get() |> patch_notes_url()
 
   def patch_notes_url(articles),
     do: articles |> Enum.find_value(&(patch_notes?(&1) && url(&1)))

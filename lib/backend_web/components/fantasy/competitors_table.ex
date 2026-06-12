@@ -111,25 +111,25 @@ defmodule Components.CompetitorsTable do
   defp cut(participants, %{competition_type: "card_nerfs"}), do: participants |> Enum.take(150)
   defp cut(participants, _), do: participants |> Enum.take(500)
 
-  defp picked_by(league = %{real_time_draft: true}, %{name: name}, _),
+  defp picked_by(%{real_time_draft: true} = league, %{name: name}, _),
     do: league |> League.picked_by(name)
 
-  defp picked_by(league = %{real_time_draft: false}, %{name: name}, user),
+  defp picked_by(%{real_time_draft: false} = league, %{name: name}, user),
     do: !League.pickable?(league, user, name) && League.team_for_user(league, user)
 
-  defp has_current_pick?(league = %{real_time_draft: false, roster_size: roster_size}, user) do
+  defp has_current_pick?(%{real_time_draft: false, roster_size: roster_size} = league, user) do
     lt = league |> League.team_for_user(user)
     lt && roster_size > LeagueTeam.current_roster_size(lt)
   end
 
   @spec has_current_pick?(League.t(), User.t()) :: boolean
-  defp has_current_pick?(league = %{real_time_draft: true}, user),
+  defp has_current_pick?(%{real_time_draft: true} = league, user),
     do: league |> League.drafting_now() |> LeagueTeam.can_manage?(user)
 
   def handle_event(
         "unpick",
         %{"pick" => pick, "league_team" => lt_string_id},
-        socket = %{assigns: %{user: u}}
+        %{assigns: %{user: u}} = socket
       ) do
     new_socket =
       with {lt_id, _} <- Integer.parse(lt_string_id),
@@ -148,7 +148,7 @@ defmodule Components.CompetitorsTable do
   def handle_event("search", %{"search" => [search]}, socket),
     do: {:noreply, assign(socket, :search, search)}
 
-  def handle_event("pick", %{"name" => name}, socket = %{assigns: %{league: league, user: user}}) do
+  def handle_event("pick", %{"name" => name}, %{assigns: %{league: league, user: user}} = socket) do
     new_socket =
       case Fantasy.make_pick(league, user, name) do
         {:ok, %League{} = league} ->
@@ -168,18 +168,18 @@ defmodule Components.CompetitorsTable do
 
   defp filter(participants, _), do: participants
 
-  defp add_participants(socket = %{assigns: %{league: league}}) do
+  defp add_participants(%{assigns: %{league: league}} = socket) do
     p = league |> Backend.FantasyCompetitionFetcher.get_participants()
     socket |> assign(:participants, p)
   end
 
   defp add_participants(socket), do: socket
 
-  defp add_mt_stats(socket = %{assigns: %{league: %{competition_type: "masters_tour"}}}) do
+  defp add_mt_stats(%{assigns: %{league: %{competition_type: "masters_tour"}}} = socket) do
     map =
       Backend.MastersTour.masters_tours_stats()
       |> Backend.MastersTour.create_mt_stats_collection()
-      |> Enum.map(fn {name, tts} ->
+      |> Map.new(fn {name, tts} ->
         stats =
           tts
           |> Enum.map(&TournamentTeamStats.total_stats/1)
@@ -194,7 +194,6 @@ defmodule Components.CompetitorsTable do
           }
         }
       end)
-      |> Map.new()
 
     socket |> assign(:mt_stats, map)
   end

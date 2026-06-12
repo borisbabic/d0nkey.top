@@ -43,7 +43,7 @@ defmodule Backend.MastersTour do
     |> InvitedPlayer.changeset(attrs)
   end
 
-  def list_invited_players() do
+  def list_invited_players do
     Repo.all(InvitedPlayer)
   end
 
@@ -81,7 +81,7 @@ defmodule Backend.MastersTour do
   end
 
   def has_qualifier_started?(%{start_time: st}),
-    do: NaiveDateTime.compare(st, NaiveDateTime.utc_now()) == :lt
+    do: NaiveDateTime.before?(st, NaiveDateTime.utc_now())
 
   def has_qualifier_started?(_), do: false
 
@@ -102,21 +102,19 @@ defmodule Backend.MastersTour do
   @spec create_qualifier_standings([Battlefy.Standings.t()]) :: [Qualifier.Standings.t()]
   def create_qualifier_standings(battlefy_standings) do
     battlefy_standings
-    |> Enum.map(
-      fn s = %{wins: wins, losses: losses, place: position, team: %{name: battletag_full}} ->
-        %{
-          battletag_full: battletag_full,
-          wins: wins - Map.get(s, :auto_wins, 0),
-          losses: losses - Map.get(s, :auto_losses, 0),
-          position: position
-        }
-      end
-    )
+    |> Enum.map(fn %{wins: wins, losses: losses, place: position, team: %{name: battletag_full}} = s ->
+      %{
+        battletag_full: battletag_full,
+        wins: wins - Map.get(s, :auto_wins, 0),
+        losses: losses - Map.get(s, :auto_losses, 0),
+        position: position
+      }
+    end)
     |> Enum.group_by(fn s -> s.battletag_full end)
     |> Enum.map(fn {_key, standings} -> standings |> Enum.min_by(fn s -> s.position end) end)
   end
 
-  def warmup_stats_cache() do
+  def warmup_stats_cache do
     %{year: current_year} = Date.utc_today()
 
     2020..current_year
@@ -132,11 +130,10 @@ defmodule Backend.MastersTour do
     ret
   end
 
-  def full_btag_grouping_func() do
+  def full_btag_grouping_func do
     all_btags =
       Repo.all(Backend.Battlenet.OldBattletag)
-      |> Enum.map(&{&1.old_battletag, &1.new_battletag})
-      |> Map.new()
+      |> Map.new(&{&1.old_battletag, &1.new_battletag})
 
     fn %{battletag_full: btag} ->
       do_full_btag_grouping(btag, all_btags)
@@ -187,7 +184,7 @@ defmodule Backend.MastersTour do
   end
 
   @spec list_qualifiers() :: [Qualifier]
-  def list_qualifiers() do
+  def list_qualifiers do
     query =
       from q in Qualifier,
         select: q,
@@ -212,14 +209,13 @@ defmodule Backend.MastersTour do
   def bt_search(bts) when is_list(bts), do: "%(#{Enum.join(bts, "|")})%"
   def bt_search(bt), do: bt_search([bt])
 
-  def list_qualifiers_in_range(start_date = %Date{}, end_date = %Date{}),
+  def list_qualifiers_in_range(%Date{} = start_date, %Date{} = end_date),
     do:
-      list_qualifiers_in_range(
-        start_date |> Util.day_start(:naive),
-        end_date |> Util.day_end(:naive)
-      )
+      start_date
+      |> Util.day_start(:naive)
+      |> list_qualifiers_in_range(end_date |> Util.day_end(:naive))
 
-  def list_qualifiers_in_range(start_time = %NaiveDateTime{}, end_time = %NaiveDateTime{}) do
+  def list_qualifiers_in_range(%NaiveDateTime{} = start_time, %NaiveDateTime{} = end_time) do
     query =
       from q in Qualifier,
         where: q.start_time >= ^start_time and q.start_time <= ^end_time,
@@ -262,7 +258,7 @@ defmodule Backend.MastersTour do
     PlayerStatsCache.delete(:all)
   end
 
-  def refresh_current_invited() do
+  def refresh_current_invited do
     with %{id: id} <- TourStop.get_current_qualifiers() do
       id
       |> to_string()
@@ -270,7 +266,7 @@ defmodule Backend.MastersTour do
     end
   end
 
-  def qualifiers_update() do
+  def qualifiers_update do
     TourStop.get_current_qualifiers(:id)
     |> qualifiers_update()
   end
@@ -287,14 +283,14 @@ defmodule Backend.MastersTour do
 
   def qualifiers_update(tour_stop, update_cache \\ true) when is_atom(tour_stop) do
     existing =
-      list_qualifiers_for_tour(tour_stop) |> Enum.map(fn q -> q.tournament_id end) |> MapSet.new()
+      list_qualifiers_for_tour(tour_stop) |> MapSet.new(fn q -> q.tournament_id end)
 
     new =
       get_qualifiers_for_tour(tour_stop)
       |> Enum.filter(fn q -> !MapSet.member?(existing, q.id) and has_qualifier_started?(q) end)
       |> Enum.map(fn q -> Battlefy.get_tournament(q.id) end)
       |> Enum.filter(&(supported_qualifier?(&1) and finished_qualifier?(&1)))
-      |> Enum.map(fn t = %{stages: [stage]} ->
+      |> Enum.map(fn %{stages: [stage]} = t ->
         s = Battlefy.create_standings_from_matches(stage)
         standings = create_qualifier_standings(s)
 
@@ -340,8 +336,7 @@ defmodule Backend.MastersTour do
     tournament_ids =
       list_invited_players(tour_stop)
       |> Enum.filter(fn ip -> ip.tournament_id end)
-      |> Enum.map(fn ip -> ip.tournament_id end)
-      |> MapSet.new()
+      |> MapSet.new(fn ip -> ip.tournament_id end)
 
     Repo.all(
       from qs in Qualifier,
@@ -351,7 +346,7 @@ defmodule Backend.MastersTour do
     |> save_qualifier_invites()
   end
 
-  def save_qualifier_invites(qualifiers = [%{tournament_slug: _} | _]) do
+  def save_qualifier_invites([%{tournament_slug: _} | _] = qualifiers) do
     qualifiers
     |> Enum.reduce(Multi.new(), fn q, multi ->
       ip = q |> create_qualifier_invite()
@@ -387,7 +382,7 @@ defmodule Backend.MastersTour do
     |> Repo.transaction()
   end
 
-  def fetch() do
+  def fetch do
     existing =
       Repo.all(
         from ip in InvitedPlayer,
@@ -403,7 +398,7 @@ defmodule Backend.MastersTour do
 
     BattlefyCommunicator.get_invited_players()
     |> Enum.filter(fn ip -> !MapSet.member?(existing, InvitedPlayer.uniq_string(ip)) end)
-    |> insert_all
+    |> insert_all()
   end
 
   def prepare_insert_all(multi, new_players) do
@@ -524,7 +519,7 @@ defmodule Backend.MastersTour do
   end
 
   @spec get_me_signup_options() :: user_signup_options
-  def get_me_signup_options() do
+  def get_me_signup_options do
     %{
       user_id: Application.fetch_env!(:backend, :su_user_id),
       token: Application.fetch_env!(:backend, :su_token),
@@ -536,7 +531,7 @@ defmodule Backend.MastersTour do
     }
   end
 
-  def sign_me_up() do
+  def sign_me_up do
     case Application.fetch_env(:backend, :su_token) do
       {:ok, <<_::binary>>} -> get_me_signup_options() |> signup_player()
       {_, nil} -> {:error, "Missing signup token"}
@@ -588,7 +583,7 @@ defmodule Backend.MastersTour do
 
     missing_qualifier_options
     |> Enum.map(&BattlefyCommunicator.signup_for_qualifier/1)
-    |> Enum.reduce({:ok, []}, fn result, acc = {_, errors} ->
+    |> Enum.reduce({:ok, []}, fn result, {_, errors} = acc ->
       case result do
         {:ok, _} -> acc
         {:error, reason} -> {:error, [reason | errors]}
@@ -597,7 +592,7 @@ defmodule Backend.MastersTour do
   end
 
   @spec create_qualifier_link(Backend.Battlefy.Tournament.t()) :: String.t()
-  def create_qualifier_link(t = %{slug: _, id: _, organization: %{slug: _}}) do
+  def create_qualifier_link(%{slug: _, id: _, organization: %{slug: _}} = t) do
     Battlefy.create_tournament_link(t)
   end
 
@@ -964,7 +959,7 @@ defmodule Backend.MastersTour do
     end
   end
 
-  defp use_cached_value?(cached, ts = %TourStop{}),
+  defp use_cached_value?(cached, %TourStop{} = ts),
     do: !TourStop.current?(ts) && (cached || !TourStop.started?(ts))
 
   defp mt_tournament_cache_key(%{id: id}), do: "mt_tournament_#{id}"
@@ -974,7 +969,7 @@ defmodule Backend.MastersTour do
   def get_mt_tournament(ts) when is_atom(ts) or is_binary(ts),
     do: ts |> TourStop.get() |> get_mt_tournament()
 
-  def get_mt_tournament(ts = %TourStop{}) do
+  def get_mt_tournament(%TourStop{} = ts) do
     cached = get_mt_tournament(ts, :cache)
 
     if use_cached_value?(cached, ts) do
@@ -1000,7 +995,7 @@ defmodule Backend.MastersTour do
   defp mt_stage_cache_key(%{id: id}), do: mt_stage_cache_key(id)
   defp mt_stage_cache_key(stage_id), do: "mt_stage_#{stage_id}"
 
-  def get_mt_stage(stage_id, ts = %TourStop{}) do
+  def get_mt_stage(stage_id, %TourStop{} = ts) do
     cached = get_mt_stage(stage_id, :cache)
 
     if use_cached_value?(cached, ts) do
@@ -1030,7 +1025,7 @@ defmodule Backend.MastersTour do
 
   @spec get_mt_stage_standings(Stage.t(), TourStop.t() | Blizzard.tour_stop() | :cache | :fresh) ::
           [Standings.t()]
-  def get_mt_stage_standings(stage, ts = %TourStop{}) do
+  def get_mt_stage_standings(stage, %TourStop{} = ts) do
     cached = get_mt_stage_standings(stage, :cache)
 
     if use_cached_value?(cached, ts) do
@@ -1089,7 +1084,7 @@ defmodule Backend.MastersTour do
     |> Enum.map(&to_battelfy_standings/1)
   end
 
-  def get_mt_stage_standings(s = %Stage{}) do
+  def get_mt_stage_standings(%Stage{} = s) do
     if s |> Battlefy.Stage.bracket_type() == :single_elimination do
       s |> Battlefy.create_standings_from_matches()
     else
@@ -1126,7 +1121,7 @@ defmodule Backend.MastersTour do
   end
 
   @spec tour_stops_tournaments() :: [Battlefy.Tournament.t()]
-  def tour_stops_tournaments() do
+  def tour_stops_tournaments do
     TourStop.all()
     |> Enum.filter(fn ts -> ts.battlefy_id end)
     |> Enum.map(&get_mt_tournament/1)
@@ -1143,7 +1138,7 @@ defmodule Backend.MastersTour do
     }
   end
 
-  defp las_vegas_top8_standings() do
+  defp las_vegas_top8_standings do
     [
       {"dog#1593", 1, 4, 1},
       {"gallon#11212", 2, 3, 1},
@@ -1157,7 +1152,7 @@ defmodule Backend.MastersTour do
     |> Enum.map(&to_battelfy_standings/1)
   end
 
-  defp seoul_top8_standings() do
+  defp seoul_top8_standings do
     [
       {"168 - Felkeine#1616", 1, 4, 0},
       {"077 - Zhym#11132", 2, 3, 2},
@@ -1185,7 +1180,7 @@ defmodule Backend.MastersTour do
 
   defp add_missing_top_cut(stages, _), do: stages
 
-  defp get_mt_tournament_stages_standings(ts = %TourStop{}) do
+  defp get_mt_tournament_stages_standings(%TourStop{} = ts) do
     tournament = get_mt_tournament(ts)
 
     tournament.stage_ids
@@ -1201,14 +1196,14 @@ defmodule Backend.MastersTour do
   @spec masters_tours_stats([integer | String.t()] | TourStop.t()) :: [[TournamentTeamStats.t()]]
   def masters_tours_stats(years \\ [])
 
-  def masters_tours_stats(tour_stops = [%TourStop{} | _]) do
+  def masters_tours_stats([%TourStop{} | _] = tour_stops) do
     tour_stops
     |> Enum.filter(fn ts -> ts.battlefy_id && TourStop.started?(ts) end)
     |> Enum.map(fn ts ->
       get_mt_tournament_stages_standings(ts)
       |> Backend.TournamentStats.create_tournament_team_stats(ts.id, ts.battlefy_id)
     end)
-    |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
+    |> Enum.filter(fn tts -> not Enum.empty?(tts) end)
   end
 
   def masters_tours_stats(years) do
@@ -1224,7 +1219,7 @@ defmodule Backend.MastersTour do
     Enum.filter(tour_stops, &(to_string(&1.year) in years_string))
   end
 
-  def eligible_stats_years(), do: 2019..2022
+  def eligible_stats_years, do: 2019..2022
 
   @spec create_mt_stats_collection([[TournamentTeamStats.t()]]) :: [
           {String.t(), [TournamentTeamStats.t()]}
@@ -1238,7 +1233,7 @@ defmodule Backend.MastersTour do
   end
 
   def create_player_nationality(
-        %Backend.Battlefy.MatchTeam{team: %{name: name, players: [p = %{country_code: cc}]}},
+        %Backend.Battlefy.MatchTeam{team: %{name: name, players: [%{country_code: cc} = p]}},
         ts
       )
       when not is_nil(cc) do
@@ -1290,7 +1285,7 @@ defmodule Backend.MastersTour do
     end
   end
 
-  def mt_player_nationalities() do
+  def mt_player_nationalities do
     Repo.all(from(pn in PlayerNationality))
   end
 
@@ -1305,7 +1300,7 @@ defmodule Backend.MastersTour do
     Repo.all(query)
   end
 
-  def warmup_player_nationality_cache() do
+  def warmup_player_nationality_cache do
     mt_player_nationalities()
     |> PlayerNationalityCache.reinit()
   end
@@ -1385,7 +1380,7 @@ defmodule Backend.MastersTour do
 
   def get_qualifier(num) do
     with %{qualifiers_period: {start_date, end_date}} <- TourStop.get_current_qualifiers(),
-         qualifiers = [_ | _] <- BattlefyCommunicator.get_masters_qualifiers(start_date, end_date) do
+         [_ | _] = qualifiers <- BattlefyCommunicator.get_masters_qualifiers(start_date, end_date) do
       qualifiers
       |> Enum.find(fn %{name: name} ->
         name |> String.contains?("- #{num}") || name |> String.contains?("- ##{num}")
@@ -1401,7 +1396,7 @@ defmodule Backend.MastersTour do
     BattlefyCommunicator.get_masters_qualifiers(before, now)
   end
 
-  def get_ongoing_qualifiers() do
+  def get_ongoing_qualifiers do
     today = Date.utc_today()
     start_date = Date.add(today, -2)
     end_date = Date.add(today, 1)
@@ -1411,8 +1406,7 @@ defmodule Backend.MastersTour do
       qualifiers_in_range
       |> Enum.map(& &1.id)
       |> list_qualifiers_by_tournament_ids()
-      |> Enum.map(& &1.tournament_id)
-      |> MapSet.new()
+      |> MapSet.new(& &1.tournament_id)
 
     qualifiers_in_range
     |> Enum.filter(&(has_qualifier_started?(&1) and MapSet.member?(finished, &1.id)))

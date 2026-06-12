@@ -50,12 +50,11 @@ defmodule Backend.LeaderboardsPoints.Bonobo2025 do
 
     players_mapset =
       participants
-      |> Enum.map(fn team ->
+      |> MapSet.new(fn team ->
         team
         |> Backend.Battlefy.Team.player_or_team_name()
         |> Backend.Battlenet.Battletag.shorten()
       end)
-      |> MapSet.new()
 
     Enum.filter(rows, fn {account_id, _, _} -> MapSet.member?(players_mapset, account_id) end)
   end
@@ -67,7 +66,7 @@ defmodule Backend.LeaderboardsPoints.Bonobo2025 do
   end
 
   @impl true
-  def points_seasons(), do: ["bonobo_2025"]
+  def points_seasons, do: ["bonobo_2025"]
 
   @impl true
   def points_for_ladder_season(_, _, _), do: {:error, :unsupported}

@@ -8,6 +8,5 @@ defmodule Backend.Repo.Migrations.HsreplayDeckMap do
     end
 
     create(unique_index(:hsr_deck_map, [:hsr_deck_id]))
-
   end
 end

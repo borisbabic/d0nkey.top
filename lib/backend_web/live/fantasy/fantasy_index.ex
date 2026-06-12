@@ -10,7 +10,7 @@ defmodule BackendWeb.FantasyIndexLive do
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
-  def render(assigns = %{user: %{id: _}}) do
+  def render(%{user: %{id: _}} = assigns) do
     ~F"""
       <div>
         <div class="title is-2">Fantasy Leagues</div>
@@ -45,7 +45,7 @@ defmodule BackendWeb.FantasyIndexLive do
     :lt == NaiveDateTime.compare(now, mt_start)
   end
 
-  defp get_user_leagues(user = %Backend.UserManager.User{}) do
+  defp get_user_leagues(%Backend.UserManager.User{} = user) do
     Fantasy.get_user_leagues(user)
   end
 

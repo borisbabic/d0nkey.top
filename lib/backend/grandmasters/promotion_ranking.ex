@@ -11,7 +11,7 @@ defmodule Backend.Grandmasters.PromotionRanking do
     field :per_ts, TSPoints.t()
   end
 
-  def merge_ts(ts_points_list = [%{player: player} | _]) do
+  def merge_ts([%{player: player} | _] = ts_points_list) do
     total = ts_points_list |> Enum.map(& &1.points) |> Enum.sum()
 
     %PromotionRanking{

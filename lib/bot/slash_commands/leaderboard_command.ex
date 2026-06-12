@@ -6,7 +6,7 @@ defmodule Bot.SlashCommands.LeaderboardCommand do
   @names ["ldb", "leaderboard"]
   @count_names ["ldbc", "leaderboard_counts"]
   @impl true
-  def get_commands() do
+  def get_commands do
     leaderboard_commands =
       for name <- @names do
         %{

@@ -7,14 +7,13 @@ defmodule Backend.StreamingTest do
     alias Hearthstone.DeckTracker.GameDto
     alias Hearthstone.DeckTracker.PlayerDto
 
-    def dt_game_fixture() do
+    def dt_game_fixture do
       game_dto = %GameDto{
         player: %PlayerDto{
           battletag: "D0nkey#2470",
           rank: 51,
           legend_rank: 512,
-          deckcode:
-            "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+          deckcode: "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
         },
         opponent: %PlayerDto{
           battletag: "BlaBla#14314",

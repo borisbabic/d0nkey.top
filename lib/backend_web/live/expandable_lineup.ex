@@ -10,7 +10,7 @@ defmodule BackendWeb.ExpandableLineupLive do
   data(user, :any)
   data(show_cards, :boolean)
 
-  def mount(_params, p = %{"lineup_id" => lineup_id}, socket) do
+  def mount(_params, %{"lineup_id" => lineup_id} = p, socket) do
     {:ok,
      socket
      |> assign(lineup_id: lineup_id, show_cards: !!p["show_cards"])
@@ -26,7 +26,7 @@ defmodule BackendWeb.ExpandableLineupLive do
     """
   end
 
-  def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old}}) do
+  def handle_event("show_cards", _, %{assigns: %{show_cards: old}} = socket) do
     {
       :noreply,
       socket

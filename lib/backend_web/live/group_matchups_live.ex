@@ -42,8 +42,7 @@ defmodule BackendWeb.GroupMatchupsLive do
   end
 
   def handle_info({:update_params, params}, socket) do
-    {:noreply,
-     push_patch(socket, to: Routes.live_path(socket, __MODULE__, socket.assigns.group_id, params))}
+    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, socket.assigns.group_id, params))}
   end
 
   def handle_params(raw_params, _uri, socket) do

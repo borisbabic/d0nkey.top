@@ -16,12 +16,12 @@ defmodule Backend.TournamentStats.TeamStandings do
     field(:auto_losses, integer)
   end
 
-  def actual_wins(ts = %__MODULE__{}), do: ts.wins - ts.auto_wins
-  def actual_losses(ts = %__MODULE__{}), do: ts.losses - ts.auto_losses
-  def only_losses(ts = %__MODULE__{}), do: if(ts |> only_losses?(), do: 1, else: 0)
-  def only_losses?(ts = %__MODULE__{}), do: ts |> actual_wins() < 1 && ts |> actual_losses() > 0
-  def no_result(ts = %__MODULE__{}), do: if(ts |> no_result?(), do: 1, else: 0)
-  def no_result?(ts = %__MODULE__{}), do: ts |> actual_wins() < 1 && ts |> actual_losses() < 1
+  def actual_wins(%__MODULE__{} = ts), do: ts.wins - ts.auto_wins
+  def actual_losses(%__MODULE__{} = ts), do: ts.losses - ts.auto_losses
+  def only_losses(%__MODULE__{} = ts), do: if(ts |> only_losses?(), do: 1, else: 0)
+  def only_losses?(%__MODULE__{} = ts), do: ts |> actual_wins() < 1 && ts |> actual_losses() > 0
+  def no_result(%__MODULE__{} = ts), do: if(ts |> no_result?(), do: 1, else: 0)
+  def no_result?(%__MODULE__{} = ts), do: ts |> actual_wins() < 1 && ts |> actual_losses() < 1
 end
 
 defmodule Backend.TournamentStats.TeamStats do
@@ -49,10 +49,10 @@ defmodule Backend.TournamentStats.TeamStats do
 
   def calculate_team_stats({_, ps}), do: calculate_team_stats(ps)
 
-  def calculate_team_stats([first = %__MODULE__{} | rest]),
+  def calculate_team_stats([%__MODULE__{} = first | rest]),
     do: rest |> Enum.reduce(first, &update/2)
 
-  def calculate_team_stats([first = %TeamStandings{} | rest]),
+  def calculate_team_stats([%TeamStandings{} = first | rest]),
     do: rest |> Enum.reduce(create(first), &update/2)
 
   def calculate_team_stats([]), do: empty("")
@@ -97,7 +97,7 @@ defmodule Backend.TournamentStats.TeamStats do
     }
   end
 
-  def update(subject = %__MODULE__{}, new = %__MODULE__{}) do
+  def update(%__MODULE__{} = subject, %__MODULE__{} = new) do
     %__MODULE__{
       name: subject.name,
       wins: subject.wins + new.wins,
@@ -142,7 +142,7 @@ defmodule Backend.TournamentStats.TeamStats do
   }
   """
   @spec update(TeamStats.t(), TeamStandings.t()) :: TeamStats.t()
-  def update(ts = %__MODULE__{}, s) do
+  def update(%__MODULE__{} = ts, s) do
     if ts.name != s.name, do: raise("Team names do not match!")
 
     %__MODULE__{
@@ -159,7 +159,7 @@ defmodule Backend.TournamentStats.TeamStats do
 
   # for use in Enum.reduce()
   @spec update(TeamStandings.t(), TeamStats.t()) :: TeamStats.t()
-  def update(s, ts = %__MODULE__{}), do: update(ts, s)
+  def update(s, %__MODULE__{} = ts), do: update(ts, s)
 
   @doc """
   iex> Backend.TournamentStats.TeamStats.with_result(%{positions: [1,2,3,5], no_results: 2})
@@ -203,7 +203,7 @@ defmodule Backend.TournamentStats.TeamStats do
   20.0
   """
   @spec only_losses_percent(TeamStats.t()) :: float()
-  def only_losses_percent(ps = %{only_losses: ol}), do: Util.percent(ol, with_result(ps))
+  def only_losses_percent(%{only_losses: ol} = ps), do: Util.percent(ol, with_result(ps))
 
   @doc """
   iex> Backend.TournamentStats.TeamStats.matches(
@@ -212,10 +212,10 @@ defmodule Backend.TournamentStats.TeamStats do
   7
   """
   @spec matches(TeamStats.t(), stats_type) :: integer()
-  def matches(ts = %__MODULE__{}, stats_type),
+  def matches(%__MODULE__{} = ts, stats_type),
     do: (ts |> wins(stats_type)) + (ts |> losses(stats_type))
 
-  def matches(ts = %__MODULE__{}), do: matches(ts, :actual)
+  def matches(%__MODULE__{} = ts), do: matches(ts, :actual)
 
   @doc """
   iex> Backend.TournamentStats.TeamStats.matches_won_percent(%Backend.TournamentStats.TeamStats{wins: 8, losses: 2,
@@ -226,10 +226,10 @@ defmodule Backend.TournamentStats.TeamStats do
   80.0
   """
   @spec matches_won_percent(TeamStats.t(), stats_type) :: float
-  def matches_won_percent(ts = %__MODULE__{}, stats_type),
-    do: Util.percent(ts |> wins(stats_type), ts |> matches(stats_type))
+  def matches_won_percent(%__MODULE__{} = ts, stats_type),
+    do: ts |> wins(stats_type) |> Util.percent(ts |> matches(stats_type))
 
-  def matches_won_percent(ts = %__MODULE__{}), do: matches_won_percent(ts, :actual)
+  def matches_won_percent(%__MODULE__{} = ts), do: matches_won_percent(ts, :actual)
 
   @doc """
   iex> Backend.TournamentStats.TeamStats.wins(%{wins: 8, auto_wins: 2}, :actual)

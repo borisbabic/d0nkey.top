@@ -44,7 +44,7 @@ defmodule BackendWeb.GroupReplaysLive do
     }
   end
 
-  def handle_info({:update_params, params}, socket = %{assigns: %{group_id: group_id}}) do
+  def handle_info({:update_params, params}, %{assigns: %{group_id: group_id}} = socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, group_id, params))}
   end
 

@@ -28,15 +28,15 @@ defmodule Backend.Infrastructure.PlayerStatsCache do
     {:reply, state[period], state}
   end
 
-  def handle_cast({:set, period, stats}, state = %{table: table}) do
+  def handle_cast({:set, period, stats}, %{table: table} = state) do
     :ets.insert(table, {period, stats})
     {:noreply, state}
   end
 
-  def handle_cast({:delete, period}, state = %{table: table}) do
+  def handle_cast({:delete, period}, %{table: table} = state) do
     :ets.delete(table, period)
     {:noreply, state}
   end
 
-  def table(), do: :ets.whereis(@name)
+  def table, do: :ets.whereis(@name)
 end

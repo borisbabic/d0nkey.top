@@ -22,13 +22,13 @@ defmodule Backend.HearthstoneJson.Card do
     field :type, String.t()
   end
 
-  def from_raw_map(map = %{"dbfId" => _}) do
+  def from_raw_map(%{"dbfId" => _} = map) do
     map
     |> Recase.Enumerable.convert_keys(&Recase.to_snake/1)
     |> from_raw_map()
   end
 
-  def from_raw_map(map = %{"dbf_id" => _}) do
+  def from_raw_map(%{"dbf_id" => _} = map) do
     %__MODULE__{
       id: map["id"],
       dbf_id: map["dbf_id"],
@@ -50,7 +50,7 @@ defmodule Backend.HearthstoneJson.Card do
     }
   end
 
-  def same_effect?(first = %__MODULE__{}, second = %__MODULE__{}) do
+  def same_effect?(%__MODULE__{} = first, %__MODULE__{} = second) do
     [:attack, :health, :cost, :text, :type]
     |> Enum.all?(&(Map.get(first, &1) == Map.get(second, &1)))
   end

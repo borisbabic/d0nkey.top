@@ -168,7 +168,7 @@ defmodule Backend.Api do
         select: u
       )
 
-    with user = %{id: _id} <- Repo.one(query),
+    with %{id: _id} = user <- Repo.one(query),
          true <- ApiUser.verify_password?(user, password) do
       {:ok, user}
     else

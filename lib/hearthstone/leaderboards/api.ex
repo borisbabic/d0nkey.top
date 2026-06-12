@@ -30,7 +30,7 @@ defmodule Hearthstone.Leaderboards.Api do
          {:ok, decoded} <- Jason.decode(body) do
       Response.from_raw_map(decoded, season)
     else
-      r = {:error, _reason} -> r
+      {:error, _reason} = r -> r
       _ -> {:error, :unknown_error_getting_leaderboard_page}
     end
   end

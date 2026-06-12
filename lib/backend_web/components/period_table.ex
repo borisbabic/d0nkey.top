@@ -38,7 +38,9 @@ defmodule Components.PeriodTable do
   end
 
   defp periods(periods) do
-    for %{display: display, slug: slug} = p <- periods, {:ok, start_time} <- [Period.start_time(p)], {:ok, end_time} <- [Period.end_time_or_now(p)] do
+    for %{display: display, slug: slug} = p <- periods,
+        {:ok, start_time} <- [Period.start_time(p)],
+        {:ok, end_time} <- [Period.end_time_or_now(p)] do
       %{display: display, start_time: start_time, end_time: end_time, slug: slug}
     end
   end

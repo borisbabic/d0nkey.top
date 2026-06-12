@@ -207,11 +207,9 @@ defmodule BackendWeb.ArchetypeMappingTable do
 
     mappings
     |> Enum.group_by(&Map.get(&1, y_axis))
-    |> Enum.reduce({%{}, %{}}, fn {player_archetype, db_mappings},
-                                  {carry_mappings, x_axis_popularity} ->
+    |> Enum.reduce({%{}, %{}}, fn {player_archetype, db_mappings}, {carry_mappings, x_axis_popularity} ->
       {map, x_axis_popularity} =
-        Enum.reduce(db_mappings, {%{}, x_axis_popularity}, fn mapping,
-                                                              {carry, x_axis_popularity} ->
+        Enum.reduce(db_mappings, {%{}, x_axis_popularity}, fn mapping, {carry, x_axis_popularity} ->
           archetype = Map.get(mapping, x_axis) |> to_string()
           count = Map.get(mapping, :count, 0)
 

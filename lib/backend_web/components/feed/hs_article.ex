@@ -22,12 +22,12 @@ defmodule Components.Feed.HSArticle do
   end
 
   def image(%{
-        "thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => url = "http" <> _}
+        "thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => "http" <> _ = url}
       }),
       do: url
 
   def image(%{
-        "thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => url = "//" <> _}
+        "thumbnail" => %{"mimeType" => <<"image"::binary, _::binary>>, "url" => "//" <> _ = url}
       }),
       do: "https:#{url}"
 

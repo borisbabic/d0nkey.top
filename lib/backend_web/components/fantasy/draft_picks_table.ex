@@ -35,9 +35,7 @@ defmodule Components.DraftPicksTable do
     league.teams
     |> Enum.flat_map(fn lt ->
       lt.picks
-      |> Enum.map(
-        &%{name: &1.pick, team_name: lt |> LeagueTeam.display_name(), picked_at: &1.inserted_at}
-      )
+      |> Enum.map(&%{name: &1.pick, team_name: lt |> LeagueTeam.display_name(), picked_at: &1.inserted_at})
     end)
     |> Enum.sort_by(&(&1.picked_at |> NaiveDateTime.to_iso8601()), :desc)
   end

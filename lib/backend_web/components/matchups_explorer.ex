@@ -221,18 +221,18 @@ defmodule Components.MatchupsExplorer do
     |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
   end
 
-  defp warning() do
+  defp warning do
     now = NaiveDateTime.utc_now()
 
     cond do
-      NaiveDateTime.compare(now, ~N[2026-03-10 17:00:00]) == :lt ->
+      NaiveDateTime.before?(now, ~N[2026-03-10 17:00:00]) ->
         "Demon Hunter Archetype separation is subpar"
 
-      NaiveDateTime.compare(now, ~N[2026-03-17 17:00:00]) == :lt ->
+      NaiveDateTime.before?(now, ~N[2026-03-17 17:00:00]) ->
         "Archetyping is for before the 35.0.0 patch. I probably won't update it til after the expansion"
 
-      NaiveDateTime.compare(now, ~N[2026-04-08 17:00:00]) == :lt and
-          NaiveDateTime.compare(now, ~N[2026-04-02 17:30:00]) == :gt ->
+      NaiveDateTime.before?(now, ~N[2026-04-08 17:00:00]) and
+          NaiveDateTime.after?(now, ~N[2026-04-02 17:30:00]) ->
         "Post patch archetyping will be updated a couple days post patch"
 
       true ->

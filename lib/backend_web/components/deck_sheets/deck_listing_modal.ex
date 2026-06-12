@@ -96,8 +96,8 @@ defmodule Components.DeckListingModal do
 
   defp title(%{name: name}) when is_binary(name), do: name
   defp title(_), do: "Add Deck(s) to sheet"
-  defp deckcode(%{deck: deck = %Deck{}}, _), do: Deck.deckcode(deck)
-  defp deckcode(_, deck = %Deck{}), do: Deck.deckcode(deck)
+  defp deckcode(%{deck: %Deck{} = deck}, _), do: Deck.deckcode(deck)
+  defp deckcode(_, %Deck{} = deck), do: Deck.deckcode(deck)
   defp deckcode(_, code) when is_binary(code), do: code
   defp deckcode(_, _), do: nil
 
@@ -152,7 +152,7 @@ defmodule Components.DeckListingModal do
   def handle_event(
         "submit",
         %{"listing" => attrs},
-        socket = %{assigns: %{user: user, existing: existing, deck: deck, modal_part_id: id_part}}
+        %{assigns: %{user: user, existing: existing, deck: deck, modal_part_id: id_part}} = socket
       ) do
     if existing do
       Sheets.edit_deck_sheet_listing(existing, attrs, user)
@@ -160,7 +160,7 @@ defmodule Components.DeckListingModal do
       with {deckcode_or_link, rest} <- Map.pop(attrs, "deckcode"),
            deckcodes <- DeckcodeExtractor.extract_decks(deckcode_or_link),
            {sheet_id, rest} <- Map.pop(rest, "sheet_id"),
-           sheet = %{id: _} <- Sheets.get_sheet(sheet_id),
+           %{id: _} = sheet <- Sheets.get_sheet(sheet_id),
            {:ok, decks} <- create_decks(deckcodes) do
         errors =
           Enum.map(decks, &Sheets.create_deck_sheet_listing(sheet, &1, user, rest))

@@ -337,11 +337,11 @@ defmodule Util do
   def percent(_, 0), do: 0.0
   def percent(num, total), do: 100 * num / total
 
-  def update_from_to_params(params, {from = %Date{}, to = %Date{}}) do
+  def update_from_to_params(params, {%Date{} = from, %Date{} = to}) do
     Map.merge(params, %{"from" => Date.to_iso8601(from), "to" => Date.to_iso8601(to)})
   end
 
-  def current_week() do
+  def current_week do
     Date.utc_today()
     |> Date.to_erl()
     |> :calendar.iso_week_number()
@@ -386,10 +386,10 @@ defmodule Util do
   def naive_date_time_or_nil(val) do
     val
     |> NaiveDateTime.from_iso8601()
-    |> nilify
+    |> nilify()
   end
 
-  def gen_html_id() do
+  def gen_html_id do
     # A as the first to ensure it starts with a non digit
     min = String.to_integer("A0000000000000000000000", 36)
 
@@ -588,7 +588,7 @@ defmodule Util do
   defp do_map_abort_on_error([current | rest], map_fun, {:ok, cards} = _carry) do
     case map_fun.(current) do
       {:ok, mapped} -> do_map_abort_on_error(rest, map_fun, {:ok, [mapped | cards]})
-      e = {:error, _} -> e
+      {:error, _} = e -> e
       _ -> {:error, :invalid_mapper_function_return}
     end
   end
@@ -689,12 +689,10 @@ defmodule Util do
 
   @spec to_existing_atom(string :: String.t()) :: {:ok, atom()} | {:error, :not_existing}
   def to_existing_atom(string) when is_binary(string) do
-    try do
-      atom = String.to_existing_atom(string)
-      {:ok, atom}
-    rescue
-      ArgumentError -> {:error, :not_existing}
-    end
+    atom = String.to_existing_atom(string)
+    {:ok, atom}
+  rescue
+    ArgumentError -> {:error, :not_existing}
   end
 
   def from_now(time, minute_ago_cutoff \\ 180) do

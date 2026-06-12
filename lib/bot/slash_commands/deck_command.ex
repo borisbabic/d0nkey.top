@@ -5,7 +5,7 @@ defmodule Bot.SlashCommands.DeckCommand do
 
   @name "deck"
   @impl true
-  def get_commands() do
+  def get_commands do
     [
       %{
         name: @name,

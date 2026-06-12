@@ -127,7 +127,7 @@ defmodule Backend.Leaderboards do
 
   defp get_newer(region, leaderboard, season, older) do
     case get_leaderboard(region, leaderboard, season) do
-      newer = %{season_id: _} -> newer
+      %{season_id: _} = newer -> newer
       _ -> older
     end
   end
@@ -143,7 +143,7 @@ defmodule Backend.Leaderboards do
   defp add_season(criteria, nil), do: criteria
   defp add_season(criteria, season), do: [{"season_id", season} | criteria]
 
-  def get_comparison(snap = %Snapshot{}, min_ago) do
+  def get_comparison(%Snapshot{} = snap, min_ago) do
     get_criteria(snap, [:latest, :season, min_ago])
     |> snapshots()
     |> Enum.at(0)
@@ -200,7 +200,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  defp regions_after_midnight() do
+  defp regions_after_midnight do
     Enum.filter(Blizzard.regions_with_timezone(), fn {_region, timezone} ->
       now = Timex.now(timezone)
       one_hour_ago = Timex.shift(now, hours: -1)
@@ -309,8 +309,7 @@ defmodule Backend.Leaderboards do
           integer() | nil
         ) ::
           {:ok, {[Row.t()], season_from_response :: ApiSeason.t()}}
-          | {:error, error :: any(),
-             rows_prior_to_error :: {Row.t(), season_from_response :: ApiSeason.t()}}
+          | {:error, error :: any(), rows_prior_to_error :: {Row.t(), season_from_response :: ApiSeason.t()}}
   def save_all_with_delay(season, delay_ms, num \\ nil, start \\ 1) do
     with first_page <- Api.offset_to_page(start),
          {:ok, response} <- Api.get_page(season, first_page),
@@ -391,7 +390,7 @@ defmodule Backend.Leaderboards do
     |> Enum.map(fn {_chunk, page} -> page end)
   end
 
-  defp base_gaps_query() do
+  defp base_gaps_query do
     base_current_entries_query()
     |> join_season()
     |> select([season: s, entry: e], %{
@@ -421,8 +420,7 @@ defmodule Backend.Leaderboards do
   defp do_save_rows(%{page_to_fetch: page_to_fetch, previous: previous, season: season})
        when page_to_fetch >= 1_000_000 / @page_size,
        do:
-         {:error,
-          "Trying to fetch an insane number of pages on the leaderboards, up to #{page_to_fetch}",
+         {:error, "Trying to fetch an insane number of pages on the leaderboards, up to #{page_to_fetch}",
           {previous, season}}
 
   defp do_save_rows(%{
@@ -440,9 +438,7 @@ defmodule Backend.Leaderboards do
     {:ok, {previous, season}}
   end
 
-  defp do_save_rows(
-         %{season: season, delay_ms: delay_ms, previous: previous, page_to_fetch: page} = opts
-       ) do
+  defp do_save_rows(%{season: season, delay_ms: delay_ms, previous: previous, page_to_fetch: page} = opts) do
     Process.sleep(delay_ms)
 
     with {:ok, response} <- Api.get_page(season, page),
@@ -470,7 +466,7 @@ defmodule Backend.Leaderboards do
 
   defp fetch_pages(season, num_entries) do
     case Api.get_page(season) do
-      {:ok, response = %{leaderboard: %{pagination: %{total_pages: total_pages}}}} ->
+      {:ok, %{leaderboard: %{pagination: %{total_pages: total_pages}}} = response} ->
         pages = ceil(min(total_pages * @page_size, num_entries) / @page_size)
 
         extra_pages = fetch_extra_pages(response.season, pages)
@@ -521,14 +517,14 @@ defmodule Backend.Leaderboards do
 
   def handle_rows(rows, season), do: create_entries(rows, season)
 
-  def handle_response(%{leaderboard: %{rows: rows = [_ | _]}, season: season}),
+  def handle_response(%{leaderboard: %{rows: [_ | _] = rows}, season: season}),
     do: handle_rows(rows, season)
 
   def handle_response(_) do
     nil
   end
 
-  def save_old() do
+  def save_old do
     for region <- Blizzard.qualifier_regions(),
         ldb <- ["STD", "WLD"],
         season_id <- 64..80,
@@ -537,12 +533,12 @@ defmodule Backend.Leaderboards do
 
   defp get_and_save(r, l, s) do
     case Blizzard.get_leaderboard(r, l, s) do
-      l = %Blizzard.Leaderboard{} -> l |> get_or_create_ldb()
+      %Blizzard.Leaderboard{} = l -> l |> get_or_create_ldb()
       _ -> nil
     end
   end
 
-  def get_latest_matching(l = %Snapshot{}) do
+  def get_latest_matching(%Snapshot{} = l) do
     get_criteria(l, [:latest, :season])
     |> snapshots()
     |> Enum.at(0)
@@ -550,14 +546,14 @@ defmodule Backend.Leaderboards do
 
   def get_latest_matching(_), do: nil
 
-  def get_or_create_ldb(l = %Blizzard.Leaderboard{}) do
+  def get_or_create_ldb(%Blizzard.Leaderboard{} = l) do
     case l |> get_criteria([:updated_at, :season]) |> snapshots() do
       [existing] -> existing
       _ -> create_ldb(l)
     end
   end
 
-  def create_snapshot_attrs(l = %Blizzard.Leaderboard{}) do
+  def create_snapshot_attrs(%Blizzard.Leaderboard{} = l) do
     %{
       entries: l.entries |> Enum.map(&to_attrs/1),
       season_id: l.season_id,
@@ -574,10 +570,10 @@ defmodule Backend.Leaderboards do
   def to_attrs(a), do: a
 
   # TEMPORARY FIX, october 2021 entries are being added to September 2021
-  defp create_ldb(l = %{season_id: 95}),
+  defp create_ldb(%{season_id: 95} = l),
     do: l |> Map.put(:season_id, 96) |> create_ldb()
 
-  defp create_ldb(l = %Blizzard.Leaderboard{}) do
+  defp create_ldb(%Blizzard.Leaderboard{} = l) do
     attrs = create_snapshot_attrs(l)
 
     %Snapshot{}
@@ -637,12 +633,12 @@ defmodule Backend.Leaderboards do
     ]
     |> entries()
     |> Enum.group_by(& &1.season_id)
-    |> Enum.map(fn {_, entries = [%{season: %{leaderboard_id: l, region: r}} | _]} ->
+    |> Enum.map(fn {_, [%{season: %{leaderboard_id: l, region: r}} | _] = entries} ->
       {entries, r, l}
     end)
   end
 
-  def current_ladder_seasons() do
+  def current_ladder_seasons do
     for region <- Backend.Blizzard.regions(),
         ldb <- Backend.Blizzard.leaderboards(),
         into: [] do
@@ -669,7 +665,7 @@ defmodule Backend.Leaderboards do
         ) :: [Entry]
   def get_player_entries(battletags_short, region, leaderboard_id, season_id \\ nil)
 
-  def get_player_entries(battletags_short = [_ | _], region, leaderboard_id, season_id) do
+  def get_player_entries([_ | _] = battletags_short, region, leaderboard_id, season_id) do
     get_player_entries(MapSet.new(battletags_short), region, leaderboard_id, season_id)
   end
 
@@ -690,7 +686,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  defp base_stats_query() do
+  defp base_stats_query do
     from e in {"leaderboards_current_entries", Entry},
       as: :entry,
       group_by: e.account_id,
@@ -801,7 +797,7 @@ defmodule Backend.Leaderboards do
       where: not like(s.leaderboard_id, "invalid_%")
   end
 
-  defp base_snapshots_query() do
+  defp base_snapshots_query do
     from s in Snapshot,
       where: not like(s.leaderboard_id, "invalid_%")
   end
@@ -864,7 +860,7 @@ defmodule Backend.Leaderboards do
     |> where([s], s.region == ^to_string(region))
   end
 
-  defp compose_snapshot_query({"season_id", season = "lobby_legends_" <> _}, query) do
+  defp compose_snapshot_query({"season_id", "lobby_legends_" <> _ = season}, query) do
     case LobbyLegendsSeason.get(season) do
       %{ladder: %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id}} ->
         new_query =
@@ -923,12 +919,12 @@ defmodule Backend.Leaderboards do
     |> limit(^limit)
   end
 
-  defp compose_snapshot_query({"after", date = %NaiveDateTime{}}, query) do
+  defp compose_snapshot_query({"after", %NaiveDateTime{} = date}, query) do
     query
     |> where([s], s.upstream_updated_at > ^date)
   end
 
-  defp compose_snapshot_query({"up_to", date = %NaiveDateTime{}}, query) do
+  defp compose_snapshot_query({"up_to", %NaiveDateTime{} = date}, query) do
     query
     |> where([s], s.upstream_updated_at < ^date)
   end
@@ -1003,12 +999,12 @@ defmodule Backend.Leaderboards do
     |> preload([entry: e, season: s], season: s)
   end
 
-  defp base_current_entries_query() do
+  defp base_current_entries_query do
     from e in {"leaderboards_current_entries", Entry},
       as: :entry
   end
 
-  defp base_entries_query() do
+  defp base_entries_query do
     from e in Entry,
       as: :entry
   end
@@ -1101,9 +1097,9 @@ defmodule Backend.Leaderboards do
     |> where([entry: e], e.season_id == ^id)
   end
 
-  defp compose_entries_query({"season", s = %{season_id: nil}}, query) do
+  defp compose_entries_query({"season", %{season_id: nil} = s}, query) do
     case get_season(s) do
-      {:ok, season = %{id: id}} when is_integer(id) ->
+      {:ok, %{id: id} = season} when is_integer(id) ->
         compose_entries_query({"season", season}, query)
 
       {:ok, season} ->
@@ -1113,7 +1109,7 @@ defmodule Backend.Leaderboards do
 
   defp compose_entries_query({"season", season}, query), do: do_season_criteria(query, season)
 
-  defp compose_entries_query({"seasons", seasons = [%{} | _]}, query) do
+  defp compose_entries_query({"seasons", [%{} | _] = seasons}, query) do
     ids =
       Enum.flat_map(seasons, fn s ->
         case get_season(s) do
@@ -1126,9 +1122,9 @@ defmodule Backend.Leaderboards do
     |> where([entry: e], e.season_id in ^ids)
   end
 
-  defp compose_entries_query({"seasons", _seasons = []}, query), do: query |> where(1 == 2)
+  defp compose_entries_query({"seasons", [] = _seasons}, query), do: query |> where(1 == 2)
 
-  defp compose_entries_query({"season_id", season = "lobby_legends_" <> _}, query) do
+  defp compose_entries_query({"season_id", "lobby_legends_" <> _ = season}, query) do
     case LobbyLegendsSeason.get(season) do
       %{ladder: %{ap: ap_end, eu: eu_end, us: us_end, season_id: season_id}} ->
         new_query =
@@ -1241,12 +1237,12 @@ defmodule Backend.Leaderboards do
     |> offset(^offset)
   end
 
-  defp compose_entries_query({"after", date = %NaiveDateTime{}}, query) do
+  defp compose_entries_query({"after", %NaiveDateTime{} = date}, query) do
     query
     |> where([entry: e], e.inserted_at > ^date)
   end
 
-  defp compose_entries_query({"up_to", date = %NaiveDateTime{}}, query) do
+  defp compose_entries_query({"up_to", %NaiveDateTime{} = date}, query) do
     query
     |> where([entry: e], e.inserted_at < ^date)
   end
@@ -1471,7 +1467,7 @@ defmodule Backend.Leaderboards do
   @spec dedup_player_histories([history_entry()], atom()) :: [history_entry()]
   def dedup_player_histories(histories, changed_attr) do
     histories
-    |> Enum.sort_by(& &1.upstream_updated_at, &(NaiveDateTime.compare(&1, &2) == :lt))
+    |> Enum.sort_by(& &1.upstream_updated_at, &NaiveDateTime.before?(&1, &2))
     |> Enum.dedup_by(&Map.get(&1, changed_attr))
   end
 
@@ -1488,7 +1484,7 @@ defmodule Backend.Leaderboards do
   end
 
   def create_entries(rows, s) do
-    with {:ok, season = %{id: _id}} <- get_season(s) do
+    with {:ok, %{id: _id} = season} <- get_season(s) do
       create_entries(rows, season)
     end
   end
@@ -1521,7 +1517,7 @@ defmodule Backend.Leaderboards do
     Repo.get(Season, db_id)
   end
 
-  def all_seasons() do
+  def all_seasons do
     Repo.all(Season)
   end
 
@@ -1569,7 +1565,7 @@ defmodule Backend.Leaderboards do
 
   def get_season(season), do: {:ok, ensure_season_full(season)}
 
-  def create_season(season = %Season{id: _}), do: season
+  def create_season(%Season{id: _} = season), do: season
 
   def create_season(season) do
     %Season{}
@@ -1583,7 +1579,7 @@ defmodule Backend.Leaderboards do
   end
 
   def snapshot_conversion(snapshot, multi) do
-    with {:ok, season = %{id: id}} <-
+    with {:ok, %{id: id} = season} <-
            get_season(%{
              season_id: snapshot.season_id,
              leaderboard_id: snapshot.leaderboard_id,
@@ -1618,7 +1614,7 @@ defmodule Backend.Leaderboards do
 
   def trunc_rating(rating), do: (1.0 * rating) |> Float.round(0) |> trunc()
 
-  def refresh_latest() do
+  def refresh_latest do
     # Repo.query!(
     #   "
     # DO $$
@@ -1676,7 +1672,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  def copy_to_bg_lobby_legends(date = %Date{}, bg_season_id) do
+  def copy_to_bg_lobby_legends(%Date{} = date, bg_season_id) do
     for {r, timezone} <- Blizzard.regions_with_timezone() do
       up_to =
         DateTime.new!(date, ~T[00:00:00], timezone)
@@ -1711,7 +1707,7 @@ defmodule Backend.Leaderboards do
     end
   end
 
-  def prune_empty_seasons() do
+  def prune_empty_seasons do
     Repo.query!(
       "DELETE FROM public.leaderboards_seasons WHERE id NOT IN (SELECT DISTINCT(season_id) FROM public.leaderboards_entry) AND inserted_at < now() - INTERVAL '2 min';",
       [],
@@ -1719,7 +1715,7 @@ defmodule Backend.Leaderboards do
     )
   end
 
-  def copy_last_month_to_lobby_legends() do
+  def copy_last_month_to_lobby_legends do
     Date.utc_today() |> Timex.shift(months: -1) |> copy_to_bg_lobby_legends()
   end
 end

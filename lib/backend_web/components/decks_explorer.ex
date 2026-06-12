@@ -34,9 +34,7 @@ defmodule Components.DecksExplorer do
   prop(default_period, :string, default: nil)
   prop(filter_context, :atom, default: :public)
 
-  prop(min_games_options, :list,
-    default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12_800]
-  )
+  prop(min_games_options, :list, default: [1, 10, 20, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12_800])
 
   prop(default_min_games, :integer, default: nil)
   prop(min_games_floor, :integer, default: 50)
@@ -282,8 +280,7 @@ defmodule Components.DecksExplorer do
     {regions, context_based_defaults} =
       case assigns do
         %{filter_context: :public} ->
-          {Hearthstone.DeckTracker.get_auto_aggregate_regions(),
-           [{"exclude_bugged_sources", "yes"}]}
+          {Hearthstone.DeckTracker.get_auto_aggregate_regions(), [{"exclude_bugged_sources", "yes"}]}
 
         _ ->
           {[], []}
@@ -404,16 +401,16 @@ defmodule Components.DecksExplorer do
   end
 
   defp modal_stats_filters(filters),
-    do: Map.delete(filters, "min_games") |> Map.delete("order_by") |> Map.delete("limit")
+    do: Map.delete(filters, "min_games") |> Map.drop(["order_by", "limit"])
 
-  def handle_info({:update_params, params}, socket = %{assigns: %{path_params: path_params}})
+  def handle_info({:update_params, params}, %{assigns: %{path_params: path_params}} = socket)
       when not is_nil(path_params) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params, params))}
   end
 
-  def limit_options(), do: [10, 15, 20, 25, 30]
+  def limit_options, do: [10, 15, 20, 25, 30]
 
-  def region_options(),
+  def region_options,
     do: [
       {nil, "All Regions"}
       | Enum.map(Blizzard.regions(), &{to_string(&1), Blizzard.get_region_name(&1, :long)})
@@ -430,7 +427,7 @@ defmodule Components.DecksExplorer do
     "winrate" != Map.get(params, "order_by", "winrate")
   end
 
-  def order_by_options(),
+  def order_by_options,
     do: [
       {"winrate", "Winrate %"},
       {"total", "Total Games"},

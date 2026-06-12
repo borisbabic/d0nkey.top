@@ -22,7 +22,7 @@ defmodule BackendWeb.ViewHelpers do
         Helper.dropdowns(%{dropdowns: dropdowns})
       end
 
-      def render_multiselect_dropdown(o = %{form: _, title: _, options: options, attr: attr}) do
+      def render_multiselect_dropdown(%{form: _, title: _, options: options, attr: attr} = o) do
         search_id = o |> Map.get(:search_id)
 
         search_class = "#{attr}_#{search_id}"
@@ -128,7 +128,7 @@ defmodule BackendWeb.ViewHelpers do
         Helper.player_link(%{name: name, link: link, with_country: with_country})
       end
 
-      def warning_triangle(), do: Helper.warning_triangle()
+      def warning_triangle, do: Helper.warning_triangle()
     end
   end
 end

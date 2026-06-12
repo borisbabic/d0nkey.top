@@ -44,7 +44,7 @@ defmodule GeekLounge.Hearthstone.Api do
     "/api/v1/decks/#{deck_id}"
   end
 
-  def client() do
+  def client do
     Tesla.client([{Tesla.Middleware.BaseUrl, "https://hearthstone.geeklounge.com/"}])
   end
 

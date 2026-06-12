@@ -8,6 +8,7 @@ defmodule Backend.Repo.Migrations.DtSource do
 
       timestamps()
     end
+
     create(unique_index(:dt_sources, [:source, :version], name: :dt_source_source_version))
   end
 end

@@ -9,7 +9,7 @@ defmodule Components.StreamingDeckNow do
   data(link, :string)
   data(count, :integer)
 
-  def render(assigns = %{count: _, link: _}) do
+  def render(%{count: _, link: _} = assigns) do
     ~F"""
       <a :if={@count > 0} href={"#{@link}"} class="tag column is-twitch" >
         # Live: {@count}
@@ -17,7 +17,7 @@ defmodule Components.StreamingDeckNow do
     """
   end
 
-  def render(assigns = %{deck: %{deckcode: deckcode}}) do
+  def render(%{deck: %{deckcode: deckcode}} = assigns) do
     count =
       StreamingNow.streaming_now()
       |> Enum.count(&(&1.deckcode == deckcode))

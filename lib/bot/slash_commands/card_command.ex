@@ -6,7 +6,7 @@ defmodule Bot.SlashCommands.CardCommand do
   @name "card"
   @image_name "card_image"
   @impl true
-  def get_commands() do
+  def get_commands do
     [
       %{
         name: @name,

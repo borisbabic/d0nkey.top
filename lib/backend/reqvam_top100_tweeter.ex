@@ -9,11 +9,11 @@ defmodule Backend.ReqvamTop100Tweeter do
           day_of_week: integer(),
           date: Date.t()
         }
-  def check_and_tweet() do
+  def check_and_tweet do
     Task.start(&do_check_and_tweet/0)
   end
 
-  defp do_check_and_tweet() do
+  defp do_check_and_tweet do
     with {:ok, config} <- Application.fetch_env(:backend, :req_t100_twitter_info),
          :ok <- ExTwitter.configure(:process, config),
          {:ok, season} <-
@@ -88,16 +88,16 @@ defmodule Backend.ReqvamTop100Tweeter do
     ["reqvam isn't top 100 NA"]
   end
 
-  defp mt_message_score_part({:ok, {wins, losses = 0}}),
+  defp mt_message_score_part({:ok, {wins, 0 = losses}}),
     do: ["He is #{wins} - #{losses} ! Go Paul! Go! Carry reqvam!"]
 
   defp mt_message_score_part({:ok, {wins, losses}}) when wins > 6,
     do: ["He is #{wins} - #{losses}. Top 16 wooohoooo"]
 
-  defp mt_message_score_part({:ok, {wins = 0, losses}}),
+  defp mt_message_score_part({:ok, {0 = wins, losses}}),
     do: ["He is #{wins} - #{losses} Sadge. Where is Paul when you need somebody to carry you"]
 
-  defp mt_message_score_part({:ok, {wins, losses = 1}}) when wins < 7,
+  defp mt_message_score_part({:ok, {wins, 1 = losses}}) when wins < 7,
     do: ["He is #{wins} - #{losses}. Top 16 incoming Copium"]
 
   defp mt_message_score_part({:ok, {wins, losses}}),
@@ -128,8 +128,7 @@ defmodule Backend.ReqvamTop100Tweeter do
     do: handle_mt(:"Masters Tour One", entry)
 
   def msg(%{entry: %{rank: 42}}),
-    do:
-      "\"What rank is reqvam on NA\" is probably not the ultimate question, but the answer is the same: 42"
+    do: "\"What rank is reqvam on NA\" is probably not the ultimate question, but the answer is the same: 42"
 
   def msg(%{entry: %{rank: 1}}),
     do: [
@@ -184,12 +183,11 @@ defmodule Backend.ReqvamTop100Tweeter do
     do:
       "I don't care if Mondays blue. Tuesday's grey and Wednesday too. Thursday I don't care about you. On Friday Reqvams #{rank}"
 
-  def msg(info = %{entry: %{rank: rank}}) when rank < 101,
+  def msg(%{entry: %{rank: rank}} = info) when rank < 101,
     do: top_100_messages(rank) |> add_gaby(info)
 
   def msg(%{date: %{day: 15}}),
-    do:
-      "Oh, no, reqvam isn't top 100. He should put Noz in his decks because he needs to do some serious climbing"
+    do: "Oh, no, reqvam isn't top 100. He should put Noz in his decks because he needs to do some serious climbing"
 
   def msg(%{date: %{day: day}}) when day < 5,
     do: [

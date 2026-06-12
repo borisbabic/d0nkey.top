@@ -41,8 +41,8 @@ defmodule Backend.HSReplay.StreamerDeckInserter do
          },
          deck
        ) do
-    with streamer = %{id: _id} <- Streaming.get_streamer_by_login(login),
-         dto = %StreamerDeckInfoDto{} <-
+    with %{id: _id} = streamer <- Streaming.get_streamer_by_login(login),
+         %StreamerDeckInfoDto{} = dto <-
            StreamerDeckInfoDto.create(rank || 0, legend_rank || 0, nil),
          {:ok, _} <- Streaming.get_or_create_streamer_deck(deck, streamer, dto) do
       :ok

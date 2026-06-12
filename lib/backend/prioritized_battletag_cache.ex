@@ -44,7 +44,7 @@ defmodule Backend.PrioritizedBattletagCache do
 
     shortened =
       with nil <- bt |> InvitedPlayer.shorten_battletag() |> get() do
-        bt |> InvitedPlayer.shorten_battletag() |> Backend.MastersTour.name_hacks() |> get
+        bt |> InvitedPlayer.shorten_battletag() |> Backend.MastersTour.name_hacks() |> get()
       end
 
     {full, shortened}
@@ -52,7 +52,7 @@ defmodule Backend.PrioritizedBattletagCache do
     case {full, shortened} do
       {nil, s} -> s
       {f, nil} -> f
-      {%{priority: fp}, s = %{priority: sp}} when fp < 5000 and sp >= 5000 -> s
+      {%{priority: fp}, %{priority: sp} = s} when fp < 5000 and sp >= 5000 -> s
       {f, _} -> f
     end
   end
@@ -63,18 +63,18 @@ defmodule Backend.PrioritizedBattletagCache do
   def get(list) when is_list(list), do: list |> Enum.find(nil, &get/1)
   def get(bt) when is_binary(bt), do: table() |> Util.ets_lookup(bt)
 
-  def table(), do: :ets.whereis(@name)
+  def table, do: :ets.whereis(@name)
 
-  def update_cache(ret = {:error, _}), do: ret
+  def update_cache({:error, _} = ret), do: ret
 
-  def update_cache(ret = {:ok, bt}) do
+  def update_cache({:ok, bt} = ret) do
     GenServer.cast(@name, {:update_cache, bt})
     ret
   end
 
-  def update_cache(), do: GenServer.cast(@name, :update_cache)
+  def update_cache, do: GenServer.cast(@name, :update_cache)
 
-  def handle_cast({:update_cache, bt = %{priority: priority}}, state = %{table: table}) do
+  def handle_cast({:update_cache, %{priority: priority} = bt}, %{table: table} = state) do
     [bt.battletag_full, bt.battletag_short]
     |> Enum.filter(fn b ->
       table
@@ -92,12 +92,12 @@ defmodule Backend.PrioritizedBattletagCache do
     {:noreply, state}
   end
 
-  def handle_cast(:update_cache, state = %{table: table}) do
+  def handle_cast(:update_cache, %{table: table} = state) do
     table |> update_table()
     {:noreply, state}
   end
 
-  def handle_info(:update_cache, state = %{table: table}) do
+  def handle_info(:update_cache, %{table: table} = state) do
     table |> update_table()
     {:noreply, state}
   end

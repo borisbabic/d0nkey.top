@@ -89,7 +89,7 @@ defmodule BackendWeb.GrandmastersLineup do
     {:noreply, socket |> assign(week: week)}
   end
 
-  def weeks() do
+  def weeks do
     season = Blizzard.current_gm_season()
 
     season

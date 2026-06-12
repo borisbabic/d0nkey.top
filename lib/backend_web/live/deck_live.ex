@@ -22,7 +22,7 @@ defmodule BackendWeb.DeckLive do
     {:ok, assign_defaults(socket, session) |> put_user_in_context()}
   end
 
-  def handle_params(params = %{"deck" => deck_parts}, session, socket) when is_list(deck_parts) do
+  def handle_params(%{"deck" => deck_parts} = params, session, socket) when is_list(deck_parts) do
     new_deck = deck_parts |> Enum.join("/")
 
     params
@@ -30,7 +30,7 @@ defmodule BackendWeb.DeckLive do
     |> handle_params(session, socket)
   end
 
-  def handle_params(params = %{"deck" => deck_raw}, _session, socket) do
+  def handle_params(%{"deck" => deck_raw} = params, _session, socket) do
     deck =
       case extract_deck(deck_raw) do
         {:ok, deck} -> deck
@@ -79,7 +79,7 @@ defmodule BackendWeb.DeckLive do
     |> assign(:filters, filters)
   end
 
-  def render(assigns = %{deck: _}) do
+  def render(%{deck: _} = assigns) do
     ~F"""
       <div>
         <div class="title is-2">{Deck.name(@deck)} {Deck.format_name(@deck)}</div>
@@ -166,7 +166,7 @@ defmodule BackendWeb.DeckLive do
 
   def handle_event("deck_copied", _, socket), do: {:noreply, socket}
 
-  def assign_meta(socket = %{assigns: %{deck: deck = %{id: _id}}}) do
+  def assign_meta(%{assigns: %{deck: %{id: _id} = deck}} = socket) do
     socket
     |> assign_meta_tags(%{
       description: Deck.deckcode(deck),

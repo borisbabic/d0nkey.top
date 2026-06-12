@@ -23,7 +23,7 @@ defmodule Bot.LdbMessageHandler do
   end
 
   @ldb_order %{"STD" => 0, "WLD" => 1, "BG" => 2, "DUO" => 3, "underground_arena" => 4}
-  def create_current_count_table() do
+  def create_current_count_table do
     rows =
       Leaderboards.current_ladder_seasons()
       |> Enum.flat_map(fn s ->

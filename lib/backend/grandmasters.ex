@@ -16,24 +16,22 @@ defmodule Backend.Grandmasters do
     {:ok, %{table: table}}
   end
 
-  def table(), do: :ets.whereis(@name)
+  def table, do: :ets.whereis(@name)
 
-  def update(), do: GenServer.cast(@name, :update)
+  def update, do: GenServer.cast(@name, :update)
 
-  def handle_cast(:update, state = %{table: table}) do
+  def handle_cast(:update, %{table: table} = state) do
     update_table(table)
     {:noreply, state}
   end
 
   defp update_table(table) do
-    try do
-      with {:ok, response = %{requested_season_tournaments: [_|_]}} <- Communicator.get_gm(),
-          false <- Map.equal?(raw_response(), response) do
-        update_table(response, table)
-      end
-    rescue
-      _ -> nil
+    with {:ok, %{requested_season_tournaments: [_ | _]} = response} <- Communicator.get_gm(),
+         false <- Map.equal?(raw_response(), response) do
+      update_table(response, table)
     end
+  rescue
+    _ -> nil
   end
 
   defp update_table(response, table) do
@@ -52,10 +50,9 @@ defmodule Backend.Grandmasters do
       end)
       |> Enum.reduce(%{}, fn weekly_results, carry ->
         weekly_results
-        |> Enum.map(fn {player, points} ->
+        |> Map.new(fn {player, points} ->
           {player, %{points: points, results: [points]}}
         end)
-        |> Map.new()
         |> Map.merge(carry, fn _, first, second ->
           new_points = first.points + second.points
           new_results = (first.results ++ second.results) |> Enum.sort(:desc)
@@ -82,6 +79,7 @@ defmodule Backend.Grandmasters do
       Map.update!(r, prev_winner, &add_winner_points/1)
     end)
   end
+
   def add_season_winner_points(results_map, _), do: results_map
 
   def add_winner_points(%{points: p, results: r}), do: %{points: p + 5, results: r}
@@ -121,12 +119,12 @@ defmodule Backend.Grandmasters do
 
   defp hack_results(results, _, _), do: results
 
-  def raw_response(), do: table() |> Util.ets_lookup("raw_response", %{})
-  def total_results(), do: table() |> Util.ets_lookup("total_results", %{})
+  def raw_response, do: table() |> Util.ets_lookup("raw_response", %{})
+  def total_results, do: table() |> Util.ets_lookup("total_results", %{})
 
-  def regionified_competitors(), do: table() |> Util.ets_lookup("regionified_competitors", [])
+  def regionified_competitors, do: table() |> Util.ets_lookup("regionified_competitors", [])
 
-  defp competitors_map() do
+  defp competitors_map do
     regionified_competitors()
     |> Enum.flat_map(fn {region, competitors} ->
       competitors |> Enum.map(&{&1.name, region})

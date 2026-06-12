@@ -28,13 +28,13 @@ defmodule Backend.Battlefy.LineupFetcher do
   end
 
   @spec fetch(any, Backend.Battlefy.Match.t()) :: nil | {:error, any} | {:ok, any}
-  def fetch(tournament_id, match = %Match{}) do
+  def fetch(tournament_id, %Match{} = match) do
     deckstrings = Api.get_match_deckstrings(tournament_id, match.id)
     insert(tournament_id, match.top, deckstrings.top)
     insert(tournament_id, match.bottom, deckstrings.bottom)
   end
 
-  def insert(tournament_id, mt = %MatchTeam{team: _}, deckstrings = [_ | _]) do
+  def insert(tournament_id, %MatchTeam{team: _} = mt, [_ | _] = deckstrings) do
     Backend.Hearthstone.get_or_create_lineup(
       tournament_id,
       "battlefy",

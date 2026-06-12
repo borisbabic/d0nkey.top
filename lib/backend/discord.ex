@@ -4,7 +4,7 @@ defmodule Backend.Discord do
   alias Backend.Infrastructure.DiscordCommunicator, as: Api
   alias Backend.Discord.Broadcast
 
-  def url() do
+  def url do
     "https://discordapp.com/api/webhooks/672113411731226634/q7F_sCtz6aCvF6wIB1qHEbsx-_aLnvHPC53Nol-SkfDfeKNHhD62gCFVeJ-7dPLnDx5p"
   end
 
@@ -54,7 +54,7 @@ defmodule Backend.Discord do
   @spec get_broadcast!(String.t()) :: Backend.Discord.Broadcast.t()
   def get_broadcast!(id), do: Repo.get!(Broadcast, id)
 
-  def create_broadcast() do
+  def create_broadcast do
     Broadcast.new()
     |> Repo.insert()
   end
@@ -89,7 +89,7 @@ defmodule Backend.Discord do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_broadcast(broadcast = %Broadcast{}, attrs) do
+  def update_broadcast(%Broadcast{} = broadcast, attrs) do
     broadcast
     |> Broadcast.changeset(attrs)
     |> Repo.update()
@@ -107,7 +107,7 @@ defmodule Backend.Discord do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_broadcast(broadcast = %Broadcast{}) do
+  def delete_broadcast(%Broadcast{} = broadcast) do
     Repo.delete(broadcast)
   end
 
@@ -120,7 +120,7 @@ defmodule Backend.Discord do
       %Ecto.Changeset{source: %Broadcast{}}
 
   """
-  def change_broadcast(broadcast = %Broadcast{}) do
+  def change_broadcast(%Broadcast{} = broadcast) do
     Broadcast.changeset(broadcast, %{})
   end
 end

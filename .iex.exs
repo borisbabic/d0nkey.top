@@ -1,1 +1,1 @@
-IEx.configure(auto_reload: true, history_size: 696969)
+IEx.configure(auto_reload: true, history_size: 696_969)

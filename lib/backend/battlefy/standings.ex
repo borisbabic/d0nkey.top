@@ -17,7 +17,7 @@ defmodule Backend.Battlefy.Standings do
     if Enum.all?(map_list, fn m -> m["place"] end) do
       map_list
       |> with_team()
-      |> Enum.map(fn raw = %{"team" => team, "place" => place} ->
+      |> Enum.map(fn %{"team" => team, "place" => place} = raw ->
         %__MODULE__{
           place: place,
           disqualified: !!raw["disqualified"],
@@ -29,7 +29,7 @@ defmodule Backend.Battlefy.Standings do
       map_list
       |> with_team()
       |> Enum.with_index(1)
-      |> Enum.map(fn {raw = %{"team" => team}, place} ->
+      |> Enum.map(fn {%{"team" => team} = raw, place} ->
         %__MODULE__{
           place: place,
           disqualified: !!raw["disqualified"],

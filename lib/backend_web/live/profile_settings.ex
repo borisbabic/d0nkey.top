@@ -167,7 +167,7 @@ defmodule BackendWeb.ProfileSettingsLive do
 
   def patreon_tier_info(_), do: nil
 
-  defp hue_options() do
+  defp hue_options do
     [
       {"Default", nil},
       {"Blue", 220},
@@ -184,18 +184,18 @@ defmodule BackendWeb.ProfileSettingsLive do
     [{"None", nil} | collection_options]
   end
 
-  def country_options() do
+  def country_options do
     Enum.map(Countriex.all(), fn %{name: name, alpha2: code} ->
       {name, code}
     end)
     |> Enum.sort_by(&elem(&1, 0), :asc)
   end
 
-  def pride_flag() do
+  def pride_flag do
     <<0xF0, 0x9F, 0x8F, 0xB3, 0xEF, 0xB8, 0x8F, 0xE2, 0x80, 0x8D, 0xF0, 0x9F, 0x8C, 0x88>>
   end
 
-  def peace_symbol() do
+  def peace_symbol do
     <<0xE2, 0x98, 0xAE>>
   end
 
@@ -208,22 +208,22 @@ defmodule BackendWeb.ProfileSettingsLive do
   def handle_event(
         "toggle_custom_hues",
         _,
-        socket = %{assigns: %{custom_hues: custom_hues}}
+        %{assigns: %{custom_hues: custom_hues}} = socket
       ) do
     {:noreply, socket |> assign(:custom_hues, !custom_hues)}
   end
 
-  def handle_event("disconnect_twitch", _, socket = %{assigns: %{user: user}}) do
+  def handle_event("disconnect_twitch", _, %{assigns: %{user: user}} = socket) do
     {:ok, updated} = UserManager.remove_twitch(user)
     {:noreply, socket |> assign(:user, updated)}
   end
 
-  def handle_event("disconnect_patreon", _, socket = %{assigns: %{user: user}}) do
+  def handle_event("disconnect_patreon", _, %{assigns: %{user: user}} = socket) do
     {:ok, updated} = UserManager.remove_patreon(user)
     {:noreply, socket |> assign(:user, updated)}
   end
 
-  def handle_event("submit", attrs_raw, socket = %{assigns: %{user: user}}) do
+  def handle_event("submit", attrs_raw, %{assigns: %{user: user}} = socket) do
     attrs =
       attrs_raw
       |> parse_battlefy_slug()
@@ -255,10 +255,8 @@ defmodule BackendWeb.ProfileSettingsLive do
     end)
   end
 
-  def parse_battlefy_slug(
-        attrs = %{"battlefy_slug" => <<"https://battlefy.com/users/"::binary, slug::binary>>}
-      ),
-      do: attrs |> Map.put("battlefy_slug", slug)
+  def parse_battlefy_slug(%{"battlefy_slug" => <<"https://battlefy.com/users/"::binary, slug::binary>>} = attrs),
+    do: attrs |> Map.put("battlefy_slug", slug)
 
   def parse_battlefy_slug(attrs), do: attrs
 

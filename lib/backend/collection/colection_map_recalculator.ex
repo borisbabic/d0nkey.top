@@ -5,7 +5,7 @@ defmodule Backend.CollectionManager.CollectionMapRecalculator do
   alias Backend.Repo
   use Oban.Worker, queue: :hs_collection_map_recalculator, unique: [period: 720]
 
-  def enqueue_all(), do: enqueue_all(NaiveDateTime.utc_now())
+  def enqueue_all, do: enqueue_all(NaiveDateTime.utc_now())
 
   def enqueue_all(%NaiveDateTime{} = cutoff) do
     %{"enqueue_all_before" => cutoff}
@@ -13,7 +13,7 @@ defmodule Backend.CollectionManager.CollectionMapRecalculator do
     |> Oban.insert()
   end
 
-  def enqueue_all_stale() do
+  def enqueue_all_stale do
     %{"job" => "enqueue_all_stale"}
     |> new()
     |> Oban.insert()

@@ -12,7 +12,7 @@ defmodule Patreon.Api do
     engine_opts: [keys: :atoms],
     decode_content_types: ["application/json", "application/vnd.api+json"]
 
-  def get_campaigns() do
+  def get_campaigns do
     get("/api/oauth2/v2/campaigns")
   end
 
@@ -122,7 +122,7 @@ defmodule Patreon.Api do
 
   def included_attributes(id, type, included) do
     case Enum.find_value(included, false, fn %{type: t, id: i, attributes: attributes} ->
-           i == id and t == type && Map.merge(%{id: id, type: type}, attributes)
+           (i == id and t == type) && Map.merge(%{id: id, type: type}, attributes)
          end) do
       false -> :error
       attributes -> {:ok, attributes}

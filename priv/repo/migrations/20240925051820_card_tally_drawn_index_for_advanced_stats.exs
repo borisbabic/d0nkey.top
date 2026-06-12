@@ -13,6 +13,7 @@ defmodule Backend.Repo.Migrations.CardTallyDrawnIndexForAdvancedStats do
     """
     |> execute()
   end
+
   def down do
     """
     DROP INDEX CONCURRENTLY IF EXISTS dt_card_game_tally_card_id_drawn;

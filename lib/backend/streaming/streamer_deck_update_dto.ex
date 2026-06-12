@@ -12,10 +12,10 @@ defmodule Backend.Streaming.StreamerDeckInfoDto do
     field :result, atom() | nil
   end
 
-  def create(game = %Game{}),
+  def create(%Game{} = game),
     do: create(game.player_rank, game.player_legend_rank, GameType.as_bnet(game), game.status)
 
-  def create(streaming = %Streaming{}) do
+  def create(%Streaming{} = streaming) do
     %{rank: rank, legend_rank: legend_rank} = Backend.Streaming.ranks(streaming)
     create(rank, legend_rank, streaming.game_type)
   end

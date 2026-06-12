@@ -4,7 +4,7 @@ defmodule Hearthstone.DeckTracker.PeriodManager do
   alias Hearthstone.DeckTracker.Period
   alias Hearthstone.DeckTracker.SlowAggregationJob
 
-  def retire_old_periods() do
+  def retire_old_periods do
     cutoff_days = 30
     period_types = ["patch", "release"]
     new_attrs = [auto_aggregate: false, include_in_deck_filters: false]
@@ -15,7 +15,7 @@ defmodule Hearthstone.DeckTracker.PeriodManager do
     DeckTracker.update_all_periods(old_criteria, set: new_attrs)
   end
 
-  def archive_latest() do
+  def archive_latest do
     latest =
       DeckTracker.periods([
         {:type, ["patch", "release"]},

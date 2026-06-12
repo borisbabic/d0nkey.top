@@ -3,7 +3,7 @@ defmodule BackendWeb.FantasyHelper do
   alias Backend.Hearthstone
   def competition_name(%{competition: c}), do: c |> competition_name()
 
-  def competition_name(full = <<"gm_"::binary, season::bitstring>>) do
+  def competition_name(<<"gm_"::binary, season::bitstring>> = full) do
     season
     |> Hearthstone.parse_gm_season()
     |> case do

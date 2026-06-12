@@ -141,7 +141,7 @@ defmodule Bot.MessageHandlerUtil do
     Logger.error("Couldn't send discord message to #{channel_id}")
   end
 
-  def travolta_response(), do: [file: "assets/static/images/travolta.gif"]
+  def travolta_response, do: [file: "assets/static/images/travolta.gif"]
 
   @default_deez_nuts_msg "deez nuts"
   def deez_nuts_response(message \\ @default_deez_nuts_msg),
@@ -235,8 +235,8 @@ defmodule Bot.MessageHandlerUtil do
     Api.Message.create(@muted_reporting_channel_id, message)
   end
 
-  def reporting_channel_id(), do: @reporting_channel_id
-  def muted_reporting_channel_id(), do: @muted_reporting_channel_id
+  def reporting_channel_id, do: @reporting_channel_id
+  def muted_reporting_channel_id, do: @muted_reporting_channel_id
 
   def format_text(text) when is_binary(text) do
     text

@@ -588,7 +588,7 @@ defmodule Backend.Fantasy do
   end
 
   def make_pick(%{real_time_draft: true, current_round: cr} = league, user, name) do
-    with league_team = %{id: _id} <- League.drafting_now(league),
+    with %{id: _id} = league_team <- League.drafting_now(league),
          {:ok, league_cs} <- League.add_pick(league, user),
          pick_cs <-
            %LeagueTeamPick{}
@@ -601,7 +601,7 @@ defmodule Backend.Fantasy do
   end
 
   def make_pick(%{real_time_draft: false, current_round: cr} = league, user, name) do
-    with league_team = %{id: _id} <- League.team_for_user(league, user),
+    with %{id: _id} = league_team <- League.team_for_user(league, user),
          num_picks <- Enum.count(league_team.picks),
          {:error, true} <- {:error, num_picks < league.roster_size},
          {:ok, league_cs} <- League.add_pick(league, user),
@@ -675,14 +675,14 @@ defmodule Backend.Fantasy do
 
   @spec unpick(integer, User.t(), String.t()) :: {:ok, League.t()} | {:error, any()}
   def unpick(league_team_id, user, pick) do
-    with lt = %LeagueTeam{} <- get_league_team(league_team_id),
+    with %LeagueTeam{} = lt <- get_league_team(league_team_id),
          true <- LeagueTeam.can_manage?(lt, user),
          true <- LeagueTeam.can_unpick?(lt, pick),
-         ltp = %LeagueTeamPick{} <- get_league_team_pick(lt.id, pick, lt.league.current_round),
+         %LeagueTeamPick{} = ltp <- get_league_team_pick(lt.id, pick, lt.league.current_round),
          {:ok, _} <- delete_league_team_pick(ltp),
-         league = %{id: _} <- get_league(lt.league_id),
+         %{id: _} = league <- get_league(lt.league_id),
          cs <- League.inc_updated_at(league),
-         {:ok, league = %League{}} <- Repo.update(cs) do
+         {:ok, %League{} = league} <- Repo.update(cs) do
       {:ok, league}
     end
   end
@@ -697,7 +697,7 @@ defmodule Backend.Fantasy do
     Repo.all(query)
   end
 
-  def advance_gm_round() do
+  def advance_gm_round do
     current_season = Blizzard.current_gm_season()
     tournament_title = current_season |> Blizzard.gm_tournament_title()
 
@@ -752,7 +752,7 @@ defmodule Backend.Fantasy do
   def new_league_deadline(deadline, :week) do
     now = NaiveDateTime.utc_now()
 
-    if NaiveDateTime.compare(now, deadline) == :gt do
+    if NaiveDateTime.after?(now, deadline) do
       deadline
       |> NaiveDateTime.add(60 * 60 * 24 * 7)
       |> new_league_deadline(:week)

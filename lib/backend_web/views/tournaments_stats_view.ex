@@ -11,7 +11,7 @@ defmodule BackendWeb.TournamentStatsView do
     end
   end
 
-  def render("tournaments_stats.html", params = %{tournaments_stats: _}) do
+  def render("tournaments_stats.html", %{tournaments_stats: _} = params) do
     curr_url = link_creator(params.conn).(%{})
     new_params = Map.put(params, :curr_url, curr_url)
     render("tournaments_stats_table.html", new_params)
@@ -19,7 +19,7 @@ defmodule BackendWeb.TournamentStatsView do
 
   def render(
         "tournaments_stats_table.html",
-        p = %{
+        %{
           conn: conn,
           tournaments_stats: tournaments_stats,
           selected_columns: selected_columns_raw,
@@ -27,7 +27,7 @@ defmodule BackendWeb.TournamentStatsView do
           min_matches: min_matches_raw,
           min_tournaments: min_tournaments_raw,
           direction: direction
-        }
+        } = p
       ) do
     min_matches = if is_integer(min_matches_raw), do: min_matches_raw, else: 0
     min_tournaments = if is_integer(min_tournaments_raw), do: min_tournaments_raw, else: 0
@@ -135,7 +135,7 @@ defmodule BackendWeb.TournamentStatsView do
     Components.Helper.simple_link(%{link: url, body: cell, class: "is-text"})
   end
 
-  defp add_cell("Player", {c = %{name: player_name}, row}) when is_binary(player_name) do
+  defp add_cell("Player", {%{name: player_name} = c, row}) when is_binary(player_name) do
     assigns = %{link: ~p"/player-profile/#{player_name}", player_name: player_name}
 
     player_cell = ~H"""
@@ -149,26 +149,26 @@ defmodule BackendWeb.TournamentStatsView do
 
   defp add_cell("Player", {c, row}), do: {c, [nil, row]}
 
-  defp add_cell("Num Played", {c = %{total: total}, row}), do: {c, [total | row]}
+  defp add_cell("Num Played", {%{total: total} = c, row}), do: {c, [total | row]}
 
-  defp add_cell("Num Won", {c = %{stats: stats}, row}),
+  defp add_cell("Num Won", {%{stats: stats} = c, row}),
     do: {c, [stats |> TeamStats.num_won() | row]}
 
-  defp add_cell("Median", {c = %{stats: stats}, row}),
+  defp add_cell("Median", {%{stats: stats} = c, row}),
     do: {c, [stats |> TeamStats.median() | row]}
 
-  defp add_cell("Worst", {c = %{stats: stats}, row}), do: {c, [stats |> TeamStats.worst() | row]}
-  defp add_cell("Best", {c = %{stats: stats}, row}), do: {c, [stats |> TeamStats.best() | row]}
+  defp add_cell("Worst", {%{stats: stats} = c, row}), do: {c, [stats |> TeamStats.worst() | row]}
+  defp add_cell("Best", {%{stats: stats} = c, row}), do: {c, [stats |> TeamStats.best() | row]}
 
-  defp add_cell("Num Matches", {c = %{stats: stats, stats_type: st}, row}),
+  defp add_cell("Num Matches", {%{stats: stats, stats_type: st} = c, row}),
     do: {c, [TeamStats.matches(stats, st) | row]}
 
-  defp add_cell("Matches Won", {c = %{stats: stats, stats_type: st}, row}),
+  defp add_cell("Matches Won", {%{stats: stats, stats_type: st} = c, row}),
     do: {c, [stats |> TeamStats.wins(st) | row]}
 
-  defp add_cell("Matches Lost", {c = %{stats: stats, stats_type: st}, row}),
+  defp add_cell("Matches Lost", {%{stats: stats, stats_type: st} = c, row}),
     do: {c, [stats |> TeamStats.losses(st) | row]}
 
-  defp add_cell("Winrate %", {c = %{stats: stats}, row}),
+  defp add_cell("Winrate %", {%{stats: stats} = c, row}),
     do: {c, [stats |> TeamStats.matches_won_percent() |> Float.round(2) | row]}
 end

@@ -38,7 +38,7 @@ defmodule BackendWeb.BattlefyController do
 
   defp earnings(params, tournament_id) do
     with true <- show_earnings?(params),
-         ts = %{id: ts_id} <-
+         %{id: ts_id} = ts <-
            TourStop.all()
            |> Enum.find(fn ts -> ts.battlefy_id == tournament_id end),
          {:ok, season} <- Backend.Blizzard.get_promotion_season_for_gm(ts_id),
@@ -52,7 +52,7 @@ defmodule BackendWeb.BattlefyController do
 
   def profile_tournament(conn, params), do: tournament(conn, params)
 
-  def tournament(conn, params = %{"tournament_id" => tournament_id}) do
+  def tournament(conn, %{"tournament_id" => tournament_id} = params) do
     Logger.debug("tournament params #{inspect(params)}")
     tournament = Battlefy.get_tournament(tournament_id)
 
@@ -84,8 +84,7 @@ defmodule BackendWeb.BattlefyController do
         invited_mapset: invited_mapset,
         earnings: earnings,
         fantasy_picks: fantasy_picks,
-        other_streams:
-          TournamentStreams.get_for_tournament({"battlefy", params["tournament_id"]}),
+        other_streams: TournamentStreams.get_for_tournament({"battlefy", params["tournament_id"]}),
         show_lineups: show_lineups,
         highlight_fantasy: highlight_fantasy(params),
         has_lineups: Backend.Hearthstone.has_lineups?(params["tournament_id"], "battlefy"),
@@ -153,8 +152,8 @@ defmodule BackendWeb.BattlefyController do
   def participants(_, _), do: []
 
   def invited_mapset(%{"show_invited" => ts}, %{id: id}) do
-    with invited = [_ | _] <- Backend.MastersTour.list_invited_players(ts),
-         participants = [_ | _] <- Battlefy.get_participants(id) do
+    with [_ | _] = invited <- Backend.MastersTour.list_invited_players(ts),
+         [_ | _] = participants <- Battlefy.get_participants(id) do
       invited_ms = invited |> MapSet.new(& &1.battletag_full)
 
       participants
@@ -236,7 +235,7 @@ defmodule BackendWeb.BattlefyController do
     |> Map.put(:stage_id, "all_brackets")
   end
 
-  defp add_matches_standings(existing, params = %{"stage_id" => stage_id}) do
+  defp add_matches_standings(existing, %{"stage_id" => stage_id} = params) do
     standings = Battlefy.get_stage_standings(stage_id)
 
     {matches, show_ongoing} =
@@ -256,7 +255,7 @@ defmodule BackendWeb.BattlefyController do
     })
   end
 
-  defp add_matches_standings(existing = %{tournament: tournament}, params) do
+  defp add_matches_standings(%{tournament: tournament} = existing, params) do
     case Battlefy.get_tournament_standings_and_stage_id(tournament) do
       {:ok, {stage_id, standings}} ->
         {matches, show_ongoing} =
@@ -307,10 +306,10 @@ defmodule BackendWeb.BattlefyController do
 
   def tournament_player(
         conn,
-        params = %{
+        %{
           "tournament_id" => tournament_id,
           "team_name" => team_name_raw
-        }
+        } = params
       ) do
     team_name = URI.decode_www_form(team_name_raw)
     {opponent_matches, player_matches, stage_id} = future_and_player(params)
@@ -387,8 +386,8 @@ defmodule BackendWeb.BattlefyController do
   end
 
   def organization_tournaments(conn, %{
-        "from" => from = %Date{},
-        "to" => to = %Date{},
+        "from" => %Date{} = from,
+        "to" => %Date{} = to,
         "slug" => slug
       }) do
     {org, tournaments} =
@@ -422,7 +421,7 @@ defmodule BackendWeb.BattlefyController do
     })
   end
 
-  def organization_tournaments(conn, %{"from" => from = %Date{}, "to" => to = %Date{}}) do
+  def organization_tournaments(conn, %{"from" => %Date{} = from, "to" => %Date{} = to}) do
     render(conn, "organization_tournaments.html", %{
       from: from,
       to: to,
@@ -432,7 +431,7 @@ defmodule BackendWeb.BattlefyController do
     })
   end
 
-  def organization_tournaments(conn, params = %{"from" => from, "to" => to}) do
+  def organization_tournaments(conn, %{"from" => from, "to" => to} = params) do
     from_date = Date.from_iso8601!(from)
     to_date = Date.from_iso8601!(to)
     organization_tournaments(conn, %{params | "from" => from_date, "to" => to_date})
@@ -445,7 +444,7 @@ defmodule BackendWeb.BattlefyController do
     organization_tournaments(conn, Map.merge(params, %{"from" => from, "to" => to}))
   end
 
-  def user_tournaments(conn, params = %{"slug" => slug}) do
+  def user_tournaments(conn, %{"slug" => slug} = params) do
     page = params["page"] |> Util.to_int(1)
     tournaments = Api.get_user_tournaments(slug, page)
 
@@ -460,7 +459,7 @@ defmodule BackendWeb.BattlefyController do
   defp list_or_comma_separated(list) when is_list(list), do: list
   defp list_or_comma_separated(string) when is_binary(string), do: string |> String.split(",")
 
-  def tournaments_stats(conn, params = %{"tournament_ids" => tournament_ids}) do
+  def tournaments_stats(conn, %{"tournament_ids" => tournament_ids} = params) do
     direction = direction(params["direction"])
     selected_columns = multi_select_to_array(params["columns"])
 
@@ -474,7 +473,7 @@ defmodule BackendWeb.BattlefyController do
     tournaments_stats =
       tournaments
       |> Enum.map(&Battlefy.create_tournament_stats/1)
-      |> Enum.filter(fn tts -> Enum.count(tts) > 0 end)
+      |> Enum.filter(fn tts -> not Enum.empty?(tts) end)
 
     page_title =
       case params["title"] do
@@ -495,7 +494,7 @@ defmodule BackendWeb.BattlefyController do
     })
   end
 
-  def tournaments_stats(conn, params = %{"tournaments" => tournaments_raw}) do
+  def tournaments_stats(conn, %{"tournaments" => tournaments_raw} = params) do
     tournaments =
       if is_binary(tournaments_raw),
         do: String.split(tournaments_raw, ["\n", "\r\n"]),

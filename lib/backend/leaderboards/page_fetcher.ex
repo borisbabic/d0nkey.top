@@ -9,7 +9,7 @@ defmodule Backend.Leaderboards.PageFetcher do
     season = Leaderboards.season(db_id)
 
     case Api.get_page(season, num) do
-      {:ok, %{leaderboard: %{rows: rows = [_ | _]}}} ->
+      {:ok, %{leaderboard: %{rows: [_ | _] = rows}}} ->
         Leaderboards.handle_rows(rows, season)
         :ok
 
@@ -28,7 +28,7 @@ defmodule Backend.Leaderboards.PageFetcher do
         max_page_num \\ nil,
         first_page \\ 1
       ) do
-    with {:ok, season = %{id: id}} when is_integer(id) <- Leaderboards.get_season(season) do
+    with {:ok, %{id: id} = season} when is_integer(id) <- Leaderboards.get_season(season) do
       for page_num <- first_page..last_page(tot, max_page_num) do
         enqueue_page(season, page_num)
       end
@@ -41,6 +41,6 @@ defmodule Backend.Leaderboards.PageFetcher do
     |> Oban.insert()
   end
 
-  def last_page(from_response, _from_arg = nil), do: from_response
+  def last_page(from_response, nil = _from_arg), do: from_response
   def last_page(from_response, from_arg), do: min(from_response, from_arg)
 end

@@ -89,7 +89,7 @@ defmodule BackendWeb.DeckBuilderLive do
     """
   end
 
-  defp format_options() do
+  defp format_options do
     conditional =
       for %{format: f} <- active_conditional_formats() do
         {f, format_name(f)}
@@ -152,7 +152,7 @@ defmodule BackendWeb.DeckBuilderLive do
     end
   end
 
-  defp supported_formats() do
+  defp supported_formats do
     conditional =
       for %{format: f} <- active_conditional_formats(), do: f
 

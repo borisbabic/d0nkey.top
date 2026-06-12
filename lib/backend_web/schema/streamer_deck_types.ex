@@ -37,11 +37,9 @@ defmodule BackendWeb.Schema.StreamerDeckTypes do
 
     field :twitch_display, :string
 
-    field :hsreplay_twitch_login, :string,
-      deprecate: "Use the non hsreplay version when available"
+    field :hsreplay_twitch_login, :string, deprecate: "Use the non hsreplay version when available"
 
-    field :hsreplay_twitch_display, :string,
-      deprecate: "Use the non hsreplay version when available"
+    field :hsreplay_twitch_display, :string, deprecate: "Use the non hsreplay version when available"
   end
 
   node object(:deck) do

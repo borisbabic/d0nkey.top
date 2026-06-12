@@ -16,7 +16,7 @@ defmodule BackendWeb.ArchetypeLive do
     {:ok, assign_defaults(socket, session) |> put_user_in_context()}
   end
 
-  def handle_params(params = %{"archetype" => archetype}, _session, socket) do
+  def handle_params(%{"archetype" => archetype} = params, _session, socket) do
     stats_params = params |> Map.take(OpponentStatsTable.param_keys())
     replay_params = ReplayExplorer.filter_relevant(params)
     format_name = parse_format_name(params)

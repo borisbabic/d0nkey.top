@@ -69,7 +69,7 @@ defmodule Backend.FantasyCompetitionFetcher do
   def get_participants(%{competition_type: "card_nerfs"}),
     do:
       Hearthstone.cards([{"format", "wild"}, {"collectible", true}])
-      |> Enum.sort_by(&Card.cost(&1), :asc)
+      |> Enum.sort_by(&Card.cost/1, :asc)
       |> Enum.sort_by(&(Card.classes(&1) |> Enum.at(0)), :asc)
       |> Enum.sort_by(& &1.card_set_id, :desc)
       |> Enum.map(&%Participant{name: &1.name, meta: %{card: &1}})
@@ -120,7 +120,7 @@ defmodule Backend.FantasyCompetitionFetcher do
         "BeNice" => 14 + 27.5
       })
 
-  def fetch_results(l = %{competition_type: "battlefy", competition: competition}, _),
+  def fetch_results(%{competition_type: "battlefy", competition: competition} = l, _),
     do: get_battlefy_results(competition, l)
 
   def fetch_results(
@@ -146,8 +146,7 @@ defmodule Backend.FantasyCompetitionFetcher do
         "Crabrider",
         "Mankrik"
       ]
-      |> Enum.map(&{&1, 1})
-      |> Map.new()
+      |> Map.new(&{&1, 1})
 
   def fetch_results(%{competition_type: "card_changes", competition: "buffs_may_2021"}, _),
     do:
@@ -163,8 +162,7 @@ defmodule Backend.FantasyCompetitionFetcher do
         "Shieldmaiden",
         "N'Zoth, God of the Deep"
       ]
-      |> Enum.map(&{&1, 1})
-      |> Map.new()
+      |> Map.new(&{&1, 1})
 
   def fetch_results(
         %{
@@ -198,11 +196,10 @@ defmodule Backend.FantasyCompetitionFetcher do
       ) do
     competition
     |> Backend.Grandmasters.PromotionCalculator.ts_points(:points_2021)
-    |> Enum.map(&{&1.player, &1.points})
-    |> Map.new()
+    |> Map.new(&{&1.player, &1.points})
   end
 
-  def fetch_results(l = %{competition_type: "masters_tour", competition: competition}, _) do
+  def fetch_results(%{competition_type: "masters_tour", competition: competition} = l, _) do
     competition
     |> TourStop.get()
     |> case do
@@ -237,7 +234,7 @@ defmodule Backend.FantasyCompetitionFetcher do
     end
   end
 
-  defp sum_bf_wins(stages = [%Battlefy.Stage{} | _]) do
+  defp sum_bf_wins([%Battlefy.Stage{} | _] = stages) do
     stages
     |> Enum.flat_map(&Battlefy.get_stage_standings/1)
     |> Enum.reduce(%{}, fn s, carry ->

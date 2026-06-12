@@ -31,14 +31,14 @@ defmodule Components.DeleteModal do
     """
   end
 
-  def handle_event("delete", _, socket = %{assigns: %{on_delete: on_delete, modal_id: modal_id}}) do
+  def handle_event("delete", _, %{assigns: %{on_delete: on_delete, modal_id: modal_id}} = socket) do
     on_delete.()
     |> handle_result(socket, modal_id)
 
     {:noreply, socket}
   end
 
-  defp handle_result(result = {success, _}, socket, modal_id) when success in [:ok, :error],
+  defp handle_result({success, _} = result, socket, modal_id) when success in [:ok, :error],
     do: Modal.handle_result(result, socket, modal_id)
 
   defp handle_result(result, socket, modal_id), do: handle_result({:ok, result}, socket, modal_id)

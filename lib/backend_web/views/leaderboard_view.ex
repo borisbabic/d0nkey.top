@@ -191,7 +191,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def history_dropdowns(false, _, _), do: []
 
-  defp actual_end(assigns = %{season_display: _}) do
+  defp actual_end(%{season_display: _} = assigns) do
     ~H"""
       <span><%= @season_display %> ends at <%= render_datetime(@deadline) %> not <%= render_datetime(@other) %></span>
     """
@@ -204,7 +204,7 @@ defmodule BackendWeb.LeaderboardView do
     now = NaiveDateTime.utc_now()
     %{ladder: %{eu: deadline}} = LobbyLegendsSeason.get("lobby_legends_2")
 
-    if NaiveDateTime.compare(now, deadline) == :lt do
+    if NaiveDateTime.before?(now, deadline) do
       hour_before = NaiveDateTime.add(deadline, -1 * 60 * 60)
 
       assigns = %{
@@ -246,7 +246,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def render(
         "points.html",
-        params = %{
+        %{
           conn: conn,
           points: points,
           points_season: ps,
@@ -254,13 +254,12 @@ defmodule BackendWeb.LeaderboardView do
           region: region,
           use_current: use_current,
           countries: countries
-        }
+        } = params
       ) do
     season_map =
       LeaderboardsPoints.get_relevant_ldb_seasons(ps, ldb, use_current)
       |> Enum.sort(:asc)
-      |> Enum.map(&{&1, Blizzard.get_month_start(&1) |> Util.get_month_name()})
-      |> Map.new()
+      |> Map.new(&{&1, Blizzard.get_month_start(&1) |> Util.get_month_name()})
 
     update_link = fn new_params ->
       Routes.leaderboard_path(
@@ -290,8 +289,7 @@ defmodule BackendWeb.LeaderboardView do
       |> Enum.map(fn {player, season_points, total} ->
         per_season =
           season_points
-          |> Enum.map(fn {id, _, points} -> {Map.get(season_map, id, id), points} end)
-          |> Map.new()
+          |> Map.new(fn {id, _, points} -> {Map.get(season_map, id, id), points} end)
 
         %{
           name: player || "",
@@ -322,8 +320,7 @@ defmodule BackendWeb.LeaderboardView do
       subtitle: points_subtitle(ps),
       prev_button: prev_button,
       next_button: next_button,
-      page_title:
-        "#{LeaderboardsPoints.points_season_display(ps)} #{Blizzard.get_leaderboard_name(ldb)}",
+      page_title: "#{LeaderboardsPoints.points_season_display(ps)} #{Blizzard.get_leaderboard_name(ldb)}",
       rows: rows,
       headers: headers,
       selected_countries: countries,
@@ -333,7 +330,7 @@ defmodule BackendWeb.LeaderboardView do
 
   def render(
         "rank_history.html",
-        attrs = %{rank_history: history, rank: rank, conn: conn}
+        %{rank_history: history, rank: rank, conn: conn} = attrs
       ) do
     has_rating = history |> Enum.any?(& &1.rating)
     dropdowns = history_dropdowns(attrs, :rank)
@@ -368,13 +365,13 @@ defmodule BackendWeb.LeaderboardView do
 
   def render(
         "player_history.html",
-        attrs = %{
+        %{
           player_history: player_history,
           attr: attr,
           player: player,
           min_max_criteria: min_max_criteria,
           conn: conn
-        }
+        } = attrs
       ) do
     has_rating = player_history |> Enum.any?(& &1.rating)
 
@@ -408,20 +405,20 @@ defmodule BackendWeb.LeaderboardView do
     )
   end
 
-  def render("index.html", params = %{leaderboard: nil}) do
+  def render("index.html", %{leaderboard: nil} = params) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
   end
 
   def render(
         "index.html",
-        params = %{
+        %{
           conn: conn,
           ladder_invite_num: ladder_invite_num,
           highlight: highlight,
           leaderboard: leaderboard,
           show_flags: show_flags,
           show_ratings: show_ratings
-        }
+        } = params
       ) do
     invited =
       params
@@ -564,8 +561,7 @@ defmodule BackendWeb.LeaderboardView do
           value: to_string(l),
           name: l |> Blizzard.get_leaderboard_name(:long),
           display: l |> Blizzard.get_leaderboard_name(:long),
-          selected:
-            (leaderboards == [] && "STD" == l) || leaderboards |> Enum.member?(to_string(l))
+          selected: (leaderboards == [] && "STD" == l) || leaderboards |> Enum.member?(to_string(l))
         }
       end)
 
@@ -622,14 +618,14 @@ defmodule BackendWeb.LeaderboardView do
     Routes.leaderboard_path(conn, :points, new_params)
   end
 
-  def create_dropdowns(params = %{leaderboard: nil}) do
+  def create_dropdowns(%{leaderboard: nil} = params) do
     params
     |> Map.put(:leaderboard, %{leaderboard_id: nil, region: nil, season_id: nil})
     |> create_dropdowns()
   end
 
   def create_dropdowns(
-        _params = %{
+        %{
           conn: conn,
           leaderboard: %{
             leaderboard_id: leaderboard_id,
@@ -638,7 +634,7 @@ defmodule BackendWeb.LeaderboardView do
           },
           show_flags: show_flags,
           compare_to: compare_to
-        }
+        } = _params
       ) do
     [
       create_region_dropdown(conn, region),
@@ -762,7 +758,7 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Points Season")}
   end
 
-  def create_region_dropdown(conn = %Plug.Conn{}, region) do
+  def create_region_dropdown(%Plug.Conn{} = conn, region) do
     create_region_dropdown(
       region,
       &update_index_link(conn, "region", &1, ["offset", "limit"])
@@ -783,7 +779,7 @@ defmodule BackendWeb.LeaderboardView do
     {options, dropdown_title(options, "Region")}
   end
 
-  def create_leaderboard_dropdown(conn = %Plug.Conn{}, leaderboard_id) do
+  def create_leaderboard_dropdown(%Plug.Conn{} = conn, leaderboard_id) do
     create_leaderboard_dropdown(
       leaderboard_id,
       &update_index_link(conn, "leaderboardId", &1, ["offset", "limit", "seasonId"])
@@ -944,7 +940,7 @@ defmodule BackendWeb.LeaderboardView do
 
   defp max_diff(_, _), do: 60 * 60
 
-  def add_other_ladders(invited, params = %{other_ladders: other}),
+  def add_other_ladders(invited, %{other_ladders: other} = params),
     do: add_other_ladders(invited, other, params)
 
   def add_other_ladders(invited, [current | rest], params) do
@@ -953,8 +949,7 @@ defmodule BackendWeb.LeaderboardView do
     |> process_entries(invited)
     |> Enum.filter(fn e -> e.qualifying |> elem(0) end)
     |> Enum.with_index(1)
-    |> Enum.map(fn {e, pos} -> {e.account_id, {:other_ladder, current.region, pos}} end)
-    |> Map.new()
+    |> Map.new(fn {e, pos} -> {e.account_id, {:other_ladder, current.region, pos}} end)
     |> add_other_ladders(rest, params)
   end
 
@@ -1039,12 +1034,10 @@ defmodule BackendWeb.LeaderboardView do
     do: "I've been told this isn't the same Jay that Finished on APAC so I'm not counting them"
 
   def warning(%{season_id: 91, region: "AP", leaderboard_id: "STD"}, "Jay"),
-    do:
-      "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
+    do: "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
 
   def warning(%{season_id: 95, region: "AP", leaderboard_id: "STD"}, "Jay"),
-    do:
-      "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
+    do: "This probably isn't the same Jay that Finished on Americas so I'm not counting them as invited"
 
   def warning(%{season_id: 94, region: "EU", leaderboard_id: "STD"}, "XiaoT"),
     do: "Has previously gotten a second invite from a ladder finish, so I'm not counting them"
@@ -1153,11 +1146,11 @@ defmodule BackendWeb.LeaderboardView do
   def process_entries(
         %{
           leaderboard:
-            snapshot = %{
+            %{
               entries: entries,
               upstream_updated_at: upstream_updated_at,
               leaderboard_id: ldb
-            },
+            } = snapshot,
           comparison: comparison,
           ladder_invite_num: num_invited,
           ladder_points: ladder_points,
@@ -1167,7 +1160,7 @@ defmodule BackendWeb.LeaderboardView do
       ) do
     rating_display = rating_display_func(ldb)
 
-    Enum.map_reduce(entries, 1, fn le = %{account_id: account_id}, acc ->
+    Enum.map_reduce(entries, 1, fn %{account_id: account_id} = le, acc ->
       warning = warning(snapshot, account_id)
       qualified = !warning && Map.get(invited, account_id)
       banned = banned(snapshot, account_id)

@@ -97,7 +97,7 @@ defmodule Components.DeckSheetsModal do
     [{"None", nil} | group_options]
   end
 
-  defp roles() do
+  defp roles do
     DeckSheet.available_roles()
     |> Enum.map(&{DeckSheet.role_display(&1), &1})
   end
@@ -126,7 +126,7 @@ defmodule Components.DeckSheetsModal do
   def handle_event(
         "submit",
         %{"deck_sheet" => attrs},
-        socket = %{assigns: %{user: user, existing: existing}}
+        %{assigns: %{user: user, existing: existing}} = socket
       ) do
     if existing do
       Sheets.edit_deck_sheet(existing, attrs, user)

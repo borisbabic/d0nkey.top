@@ -10,7 +10,7 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
   alias Backend.Infrastructure.ApiCache
   @behaviour Backend.HSReplay.Communicator
 
-  def get_replay_feed() do
+  def get_replay_feed do
     with {:ok, body} <- throttled_body("https://hsreplay.net/api/v1/live/replay_feed/"),
          {:ok, decoded} <- Poison.decode(body) do
       decoded
@@ -21,7 +21,7 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     end
   end
 
-  def get_archetypes() do
+  def get_archetypes do
     with {:ok, body} <- throttled_body("https://hsreplay.net/api/v1/archetypes/"),
          {:ok, decoded} <- Poison.decode(body) do
       Enum.map(decoded, &Archetype.from_raw_map/1)
@@ -43,7 +43,7 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
   end
 
   @spec get_streaming_now() :: [Streaming.t()]
-  def get_streaming_now() do
+  def get_streaming_now do
     url = "https://hsreplay.net/api/v1/live/streaming-now/"
 
     with {:ok, body} <- throttled_body(url),
@@ -113,7 +113,7 @@ defmodule Backend.Infrastructure.HSReplayCommunicator do
     end
   end
 
-  defp throttled?() do
+  defp throttled? do
     case ApiCache.get(:hsreplay_communication_throttle) do
       nil -> false
       deadline -> :lt == NaiveDateTime.compare(NaiveDateTime.utc_now(), deadline)

@@ -5,7 +5,7 @@ defmodule Bot.SlashCommands.ReplaceLongConfigCommand do
   @enable "enable_replace_long"
   @disable "disable_replace_long"
   @impl true
-  def get_commands() do
+  def get_commands do
     [
       %{
         name: @enable,

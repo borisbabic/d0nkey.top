@@ -37,5 +37,5 @@ defmodule Hearthstone.DeckTracker.GameInsertBatcher do
     {:noreply, [args | state]}
   end
 
-  defp send_loop(), do: Process.send_after(self(), :loop, 1000 * 2)
+  defp send_loop, do: Process.send_after(self(), :loop, 1000 * 2)
 end

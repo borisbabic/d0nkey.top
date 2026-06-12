@@ -18,7 +18,7 @@ defmodule Backend.Streaming do
     BnetGameType.constructed?(bnet_game_type)
   end
 
-  def ranks(sn = %{game_type: bnet_game_type}) do
+  def ranks(%{game_type: bnet_game_type} = sn) do
     if BnetGameType.ladder?(bnet_game_type) do
       %{rank: sn.rank, legend_rank: sn.legend_rank}
     else
@@ -53,7 +53,7 @@ defmodule Backend.Streaming do
   end
 
   @spec log_streamer_game(String.t(), Game.t()) :: {:ok, StreamerDeck.t()} | {:error, any()}
-  def log_streamer_game(twitch_id, game = %{player_deck: deck = %Deck{}}) do
+  def log_streamer_game(twitch_id, %{player_deck: %Deck{} = deck} = game) do
     with {:ok, streamer} <- get_or_create_streamer(twitch_id) do
       get_or_create_streamer_deck(deck, streamer, game)
     end
@@ -62,7 +62,7 @@ defmodule Backend.Streaming do
   # don't know the deck so can't log the game
   def log_streamer_game(_twitch_id, _game), do: {:error, :unknown_deck}
 
-  def update_hdt_streamer_decks() do
+  def update_hdt_streamer_decks do
     HSReplay.get_streaming_now()
     |> update_hdt_streamer_decks()
   end
@@ -155,7 +155,7 @@ defmodule Backend.Streaming do
     |> Repo.one()
   end
 
-  def create_streamer_deck(deck, streamer, dto = %StreamerDeckInfoDto{}) do
+  def create_streamer_deck(deck, streamer, %StreamerDeckInfoDto{} = dto) do
     now = DateTime.utc_now()
 
     attrs = %{
@@ -235,7 +235,7 @@ defmodule Backend.Streaming do
     |> Repo.transaction()
   end
 
-  def update_streamer_deck(ds = %StreamerDeck{}, dto = %StreamerDeckInfoDto{}) do
+  def update_streamer_deck(%StreamerDeck{} = ds, %StreamerDeckInfoDto{} = dto) do
     attrs = %{
       best_rank: [dto.rank, ds.best_rank] |> non_zero_min(),
       best_legend_rank: [dto.legend_rank, ds.best_legend_rank] |> non_zero_min(),
@@ -252,12 +252,12 @@ defmodule Backend.Streaming do
     |> Repo.update()
   end
 
-  def update_streamer_deck(ds = %StreamerDeck{}, game = %Game{}) do
+  def update_streamer_deck(%StreamerDeck{} = ds, %Game{} = game) do
     dto = StreamerDeckInfoDto.create(game)
     update_streamer_deck(ds, dto)
   end
 
-  def update_streamer_deck(ds = %StreamerDeck{}, sn) do
+  def update_streamer_deck(%StreamerDeck{} = ds, sn) do
     if should_update?(ds, sn) do
       dto = StreamerDeckInfoDto.create(sn)
       update_streamer_deck(ds, dto)
@@ -272,7 +272,7 @@ defmodule Backend.Streaming do
 
   def recent?(%{updated_at: ua}) do
     line = NaiveDateTime.utc_now() |> NaiveDateTime.add(-15 * 60)
-    NaiveDateTime.compare(ua, line) == :gt
+    NaiveDateTime.after?(ua, line)
   end
 
   @doc """
@@ -308,7 +308,7 @@ defmodule Backend.Streaming do
     |> Repo.all()
   end
 
-  def base_streamers_query() do
+  def base_streamers_query do
     from(s in Streamer, as: :streamer)
   end
 
@@ -375,7 +375,7 @@ defmodule Backend.Streaming do
     |> Repo.all()
   end
 
-  defp base_streamer_decks_query() do
+  defp base_streamer_decks_query do
     from sd in StreamerDeck,
       as: :streamer_deck,
       join: s in assoc(sd, :streamer),
@@ -434,14 +434,14 @@ defmodule Backend.Streaming do
     compose_streamer_deck_query({"include_cards", ids}, query)
   end
 
-  defp compose_streamer_deck_query({"include_cards", cards = [_ | _]}, query) do
+  defp compose_streamer_deck_query({"include_cards", [_ | _] = cards}, query) do
     query
     |> Hearthstone.include_cards(cards, :deck)
   end
 
   defp compose_streamer_deck_query({"include_cards", []}, query), do: query
 
-  defp compose_streamer_deck_query({"exclude_cards", cards = [_ | _]}, query) do
+  defp compose_streamer_deck_query({"exclude_cards", [_ | _] = cards}, query) do
     query
     |> Hearthstone.exclude_cards(cards, :deck)
   end
@@ -562,7 +562,7 @@ defmodule Backend.Streaming do
   def gdb_ids(filter_out \\ [111_915]), do: filter_card_set(1935, filter_out)
   def ed_ids(filter_out \\ [113_321, 113_973]), do: filter_card_set(1946, filter_out)
 
-  defp alterac_valley_card_ids() do
+  defp alterac_valley_card_ids do
     Backend.HearthstoneJson.collectible_cards()
     |> Enum.filter(fn c ->
       # no Vanndar nor Drek'Thar
@@ -571,7 +571,7 @@ defmodule Backend.Streaming do
     |> Enum.map(& &1.dbf_id)
   end
 
-  defp lich_king_card_ids() do
+  defp lich_king_card_ids do
     Backend.HearthstoneJson.collectible_cards()
     |> Enum.filter(fn c ->
       # no Vanndar nor Drek'Thar

@@ -5,18 +5,18 @@ defmodule BackendWeb.AuthController do
   alias Backend.UserManager
   alias Backend.UserManager.Guardian
 
-  def callback(conn = %{assigns: %{ueberauth_fail: _fails}}, _params) do
+  def callback(%{assigns: %{ueberauth_fail: _fails}} = conn, _params) do
     conn
     |> put_flash(:error, "Failed to auth")
     |> redirect(to: "/")
   end
 
   def callback(
-        conn = %{assigns: %{ueberauth_auth: %{provider: :patreon, uid: patreon_id}}},
+        %{assigns: %{ueberauth_auth: %{provider: :patreon, uid: patreon_id}}} = conn,
         _params
       ) do
     case Guardian.Plug.current_resource(conn) do
-      user = %{battletag: _bt} ->
+      %{battletag: _bt} = user ->
         UserManager.set_patreon(user, patreon_id)
         conn |> redirect(to: "/profile/settings")
 
@@ -25,7 +25,7 @@ defmodule BackendWeb.AuthController do
     end
   end
 
-  def callback(conn = %{assigns: %{ueberauth_auth: auth = %{provider: :bnet}}}, _params) do
+  def callback(%{assigns: %{ueberauth_auth: %{provider: :bnet} = auth}} = conn, _params) do
     user =
       auth
       |> get_bnet_info()
@@ -37,11 +37,11 @@ defmodule BackendWeb.AuthController do
   end
 
   def callback(
-        conn = %{assigns: %{ueberauth_auth: uberauth = %{provider: :twitch, uid: twitch_id}}},
+        %{assigns: %{ueberauth_auth: %{provider: :twitch, uid: twitch_id} = uberauth}} = conn,
         _params
       ) do
     case Guardian.Plug.current_resource(conn) do
-      user = %{battletag: _bt} ->
+      %{battletag: _bt} = user ->
         UserManager.set_twitch(user, twitch_id)
         create_streamer_from_info(twitch_id, uberauth)
         conn |> redirect(to: "/profile/settings")

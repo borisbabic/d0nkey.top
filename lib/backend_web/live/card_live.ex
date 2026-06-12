@@ -55,7 +55,7 @@ defmodule BackendWeb.CardLive do
     """
   end
 
-  def assign_meta(socket = %{assigns: %{card: card = %{name: name}}}) do
+  def assign_meta(%{assigns: %{card: %{name: name} = card}} = socket) do
     socket
     |> assign_meta_tags(%{
       title: name |> add_card_set(card),

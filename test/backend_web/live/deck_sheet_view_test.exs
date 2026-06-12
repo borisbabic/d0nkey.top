@@ -195,9 +195,9 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
     end
   end
 
-  defp extract_deck(extra = %{deck: %{id: _}}), do: Map.pop(extra, :deck)
+  defp extract_deck(%{deck: %{id: _}} = extra), do: Map.pop(extra, :deck)
 
-  defp extract_deck(extra = %{deckcode: code}) do
+  defp extract_deck(%{deckcode: code} = extra) do
     with {:ok, deck} <- Backend.Hearthstone.create_or_get_deck(code) do
       {deck, Map.drop(extra, :deckcode)}
     end

@@ -39,7 +39,7 @@ defmodule BackendWeb.CardsLive do
         do: cf
   end
 
-  defp format_options() do
+  defp format_options do
     default_options = [{"the_past", "The Past"} | CardsExplorer.default_format_options()]
     conditional = for %{format: f} <- active_conditional_formats(), do: {f, format_name(f)}
     default_options ++ conditional

@@ -67,11 +67,11 @@ defmodule Backend.PlayerIconBag do
     end)
   end
 
-  def update(), do: GenServer.cast(@name, :update)
+  def update, do: GenServer.cast(@name, :update)
 
   def set_user_icons(%{battletag: btag, unicode_icon: nil}) do
     case List.keyfind(@picture_icons, btag, 0) do
-      config = {^btag, _icon} -> GenServer.cast(@name, {:set_icon, config})
+      {^btag, _icon} = config -> GenServer.cast(@name, {:set_icon, config})
       _ -> GenServer.cast(@name, {:delete_icon, btag})
     end
   end
@@ -82,17 +82,17 @@ defmodule Backend.PlayerIconBag do
 
   def set_user_icons(_), do: nil
 
-  def handle_cast(:update, state = %{table: table}) do
+  def handle_cast(:update, %{table: table} = state) do
     update_table(table)
     {:noreply, state}
   end
 
-  def handle_cast({:set_icon, {btag, icon}}, state = %{table: table}) do
+  def handle_cast({:set_icon, {btag, icon}}, %{table: table} = state) do
     set_icon(table, btag, icon)
     {:noreply, state}
   end
 
-  def handle_cast({:delete_icon, btag}, state = %{table: table}) do
+  def handle_cast({:delete_icon, btag}, %{table: table} = state) do
     delete_icon(table, btag)
     {:noreply, state}
   end
@@ -108,7 +108,7 @@ defmodule Backend.PlayerIconBag do
     :ets.delete(table, Battletag.shorten(btag))
   end
 
-  def table(), do: :ets.whereis(@name)
+  def table, do: :ets.whereis(@name)
 
   def get(player) do
     table = table()

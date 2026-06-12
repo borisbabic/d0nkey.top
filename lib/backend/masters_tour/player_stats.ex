@@ -18,7 +18,7 @@ defmodule Backend.MastersTour.PlayerStats do
   def create_collection(qualifiers, btag_func \\ & &1.battletag_full) do
     qualifiers
     |> Enum.flat_map(fn q -> q.standings end)
-    |> Enum.group_by(btag_func, & Map.put(&1, :battletag_full, btag_func.(&1)))
+    |> Enum.group_by(btag_func, &Map.put(&1, :battletag_full, btag_func.(&1)))
     |> Enum.map(&calculate_player_stats/1)
   end
 
@@ -26,8 +26,7 @@ defmodule Backend.MastersTour.PlayerStats do
           nonempty_maybe_improper_list
           | {any,
              nonempty_maybe_improper_list
-             | {any,
-                nonempty_maybe_improper_list | {any, nonempty_maybe_improper_list | {any, any}}}}
+             | {any, nonempty_maybe_improper_list | {any, nonempty_maybe_improper_list | {any, any}}}}
         ) :: any
   def calculate_player_stats({_, ps}), do: calculate_player_stats(ps)
   def calculate_player_stats([first | rest]), do: rest |> Enum.reduce(create(first), &update/2)
@@ -65,9 +64,9 @@ defmodule Backend.MastersTour.PlayerStats do
 
   @spec update(Player.t(), Standings.t()) :: Player.t()
   @spec update(Standings.t(), Player.t()) :: Player.t()
-  def update(s, p = %__MODULE__{}), do: update(p, s)
+  def update(s, %__MODULE__{} = p), do: update(p, s)
 
-  def update(p = %__MODULE__{}, s) do
+  def update(%__MODULE__{} = p, s) do
     if p.battletag_full != s.battletag_full, do: raise("Battletags don't match, wtf")
 
     %__MODULE__{
@@ -118,7 +117,7 @@ defmodule Backend.MastersTour.PlayerStats do
   20.0
   """
   @spec only_losses_percent(PlayerStats.t()) :: float()
-  def only_losses_percent(ps = %{only_losses: ol}), do: Util.percent(ol, with_result(ps))
+  def only_losses_percent(%{only_losses: ol} = ps), do: Util.percent(ol, with_result(ps))
 
   @doc """
   iex> Backend.MastersTour.PlayerStats.matches(%{wins: 5, losses: 2})
@@ -132,10 +131,10 @@ defmodule Backend.MastersTour.PlayerStats do
   80.0
   """
   @spec matches_won_percent(PlayerStats.t()) :: float
-  def matches_won_percent(ps = %{wins: wins}), do: Util.percent(wins, matches(ps))
+  def matches_won_percent(%{wins: wins} = ps), do: Util.percent(wins, matches(ps))
 
   @spec projected_matches_won_percent(PlayerStats.t(), integer, float) :: float
-  def projected_matches_won_percent(ps = %{wins: wins}, min_cups, adjusted_winrate) do
+  def projected_matches_won_percent(%{wins: wins} = ps, min_cups, adjusted_winrate) do
     adjusted_wins_per_loss = adjusted_winrate / (1 - adjusted_winrate)
 
     {adjusted_matches, adjusted_wins} =

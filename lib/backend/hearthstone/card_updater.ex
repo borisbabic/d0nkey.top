@@ -44,7 +44,7 @@ defmodule Backend.Hearthstone.CardUpdater do
     enqueue(%{"collectible" => "0,1"}, delay)
   end
 
-  def enqueue_latest_set() do
+  def enqueue_latest_set do
     %{slug: slug} = Backend.Hearthstone.latest_set()
 
     %{"collectible" => "0,1", "set" => slug}

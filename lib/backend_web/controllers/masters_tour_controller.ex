@@ -27,11 +27,11 @@ defmodule BackendWeb.MastersTourController do
 
   def qualifiers(
         conn,
-        params = %{
+        %{
           "from" => %Date{} = from,
           "to" => %Date{} = to,
           "player_slug" => player_slug
-        }
+        } = params
       ) do
     fetched = BattlefyCommunicator.get_masters_qualifiers(from, to)
 
@@ -48,7 +48,7 @@ defmodule BackendWeb.MastersTourController do
     })
   end
 
-  def qualifiers(conn, params = %{"from" => %Date{} = from, "to" => %Date{} = to}) do
+  def qualifiers(conn, %{"from" => %Date{} = from, "to" => %Date{} = to} = params) do
     fetched = BattlefyCommunicator.get_masters_qualifiers(from, to)
 
     user_params =
@@ -57,8 +57,7 @@ defmodule BackendWeb.MastersTourController do
       |> case do
         %{battlefy_slug: slug} when is_binary(slug) ->
           %{
-            user_tournaments:
-              BattlefyCommunicator.get_user_tournaments_from(slug, Util.day_start(from, :naive))
+            user_tournaments: BattlefyCommunicator.get_user_tournaments_from(slug, Util.day_start(from, :naive))
           }
 
         _ ->
@@ -79,7 +78,7 @@ defmodule BackendWeb.MastersTourController do
     )
   end
 
-  def qualifiers(conn, params = %{"from" => from, "to" => to}) do
+  def qualifiers(conn, %{"from" => from, "to" => to} = params) do
     from_date = Date.from_iso8601!(from)
     to_date = Date.from_iso8601!(to)
     qualifiers(conn, %{params | "from" => from_date, "to" => to_date})
@@ -110,7 +109,7 @@ defmodule BackendWeb.MastersTourController do
 
   defp show_current_score?(_), do: false
 
-  def points(conn, params = %{"show_gms" => show_gms}) do
+  def points(conn, %{"show_gms" => show_gms} = params) do
     gm_season = params["season"] |> parse_season()
 
     points_system =
@@ -151,7 +150,7 @@ defmodule BackendWeb.MastersTourController do
   end
 
   def points(conn, params) do
-    points(conn, Map.merge(params, %{"show_gms" => "no"}))
+    points(conn, Map.put(params, "show_gms", "no"))
   end
 
   def earnings(conn, params) do
@@ -176,7 +175,7 @@ defmodule BackendWeb.MastersTourController do
   defp direction("asc"), do: :asc
   defp direction(_), do: nil
 
-  defp columns(columns = %{}) do
+  defp columns(%{} = columns) do
     columns
     |> Enum.filter(fn {_, selected} -> selected == "true" end)
     |> Enum.map(fn {column, _} -> column end)
@@ -184,9 +183,9 @@ defmodule BackendWeb.MastersTourController do
 
   defp columns(_), do: nil
 
-  def qualifier_stats(conn, params = %{"tour_stop" => ts}) do
+  def qualifier_stats(conn, %{"tour_stop" => ts} = params) do
     period =
-      case Integer.parse(ts |> to_string()) do
+      case ts |> to_string() |> Integer.parse() do
         {year, _} ->
           year
 
@@ -225,7 +224,7 @@ defmodule BackendWeb.MastersTourController do
 
     qualifier_stats(
       conn,
-      Map.merge(params, %{"tour_stop" => period})
+      Map.put(params, "tour_stop", period)
     )
   end
 
@@ -253,7 +252,7 @@ defmodule BackendWeb.MastersTourController do
   end
 
   @spec current_qualifiers_ts() :: String.t()
-  def current_qualifiers_ts() do
+  def current_qualifiers_ts do
     case TourStop.get_current_qualifiers() do
       %{id: id} ->
         to_string(id)
@@ -266,12 +265,12 @@ defmodule BackendWeb.MastersTourController do
     end
   end
 
-  def qualifier_redirect(conn, params = %{"mtq_num" => mtq_num}) do
+  def qualifier_redirect(conn, %{"mtq_num" => mtq_num} = params) do
     %{id: id} = MastersTour.get_qualifier(mtq_num)
 
     append =
       case params["rest"] do
-        rest = [_ | _] -> ["" | rest] |> Enum.join("/")
+        [_ | _] = rest -> ["" | rest] |> Enum.join("/")
         _ -> ""
       end
 

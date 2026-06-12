@@ -98,8 +98,7 @@ defmodule BackendWeb.InvitedPlayerControllerTest do
 
     test "redirects when data is valid", %{conn: conn, invited_player: invited_player} do
       conn =
-        put conn, Routes.invited_player_path(conn, :update, invited_player),
-          invited_player: @update_attrs
+        put conn, Routes.invited_player_path(conn, :update, invited_player), invited_player: @update_attrs
 
       assert redirected_to(conn) == Routes.invited_player_path(conn, :show, invited_player)
 
@@ -109,8 +108,7 @@ defmodule BackendWeb.InvitedPlayerControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, invited_player: invited_player} do
       conn =
-        put conn, Routes.invited_player_path(conn, :update, invited_player),
-          invited_player: @invalid_attrs
+        put conn, Routes.invited_player_path(conn, :update, invited_player), invited_player: @invalid_attrs
 
       assert html_response(conn, 200) =~ "Edit Invited player"
     end

@@ -12,7 +12,7 @@ defmodule BackendWeb.CompactLineupOnly do
   def mount(_params, session, socket) do
     assigns = [
       extra_decks: Map.get(session, "extra_decks", []),
-      lineup: Map.get(session, "lineup", nil),
+      lineup: Map.get(session, "lineup"),
       component_id: "compact_lineup_" <> Ecto.UUID.generate()
     ]
 

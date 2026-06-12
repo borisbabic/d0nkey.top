@@ -102,7 +102,7 @@ defmodule Backend.Sheets do
 
   @spec edit_deck_sheet_listing(DeckSheetListing.t(), map(), User.t() | nil) ::
           {:ok, DeckSheetListing.t()} | {:error, any()}
-  def edit_deck_sheet_listing(listing = %{sheet: sheet}, attrs, editor) do
+  def edit_deck_sheet_listing(%{sheet: sheet} = listing, attrs, editor) do
     if can_contribute?(sheet, editor) do
       do_edit_deck_sheet_listing(listing, attrs)
     else
@@ -220,7 +220,7 @@ defmodule Backend.Sheets do
   defp preload_tuple({:ok, thing}, to_preload), do: {:ok, Repo.preload(thing, to_preload)}
   defp preload_tuple(thing, to_preload), do: {:ok, Repo.preload(thing, to_preload)}
 
-  def delete_listing(listing = %{sheet: sheet}, user) do
+  def delete_listing(%{sheet: sheet} = listing, user) do
     if can_contribute?(sheet, user) do
       do_delete_listing(listing)
     else

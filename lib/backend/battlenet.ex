@@ -213,8 +213,7 @@ defmodule Backend.Battlenet do
 
     current? =
       from(b in Battletag,
-        where:
-          b.battletag_full == ^bt and b.reported_by == ^bt and b.country == ^cc and b.priority > 0
+        where: b.battletag_full == ^bt and b.reported_by == ^bt and b.country == ^cc and b.priority > 0
       )
       |> Repo.all()
       |> Enum.any?()
@@ -455,8 +454,7 @@ defmodule Backend.Battlenet do
             country: country_code,
             priority: @battlefy_import_priority,
             reported_by: "battlefy_importer",
-            comment:
-              "Imported by #{user.battletag} from: https://www.hsguru.com/battletfy/tournament/#{tournament_id}"
+            comment: "Imported by #{user.battletag} from: https://www.hsguru.com/battletfy/tournament/#{tournament_id}"
           }
 
           cs = Battletag.changeset(%Battletag{}, attrs)

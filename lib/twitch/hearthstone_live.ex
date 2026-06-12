@@ -13,7 +13,7 @@ defmodule Twitch.HearthstoneLive do
     {:ok, %{table: table}}
   end
 
-  def handle_info(:loop, state = %{table: table}) do
+  def handle_info(:loop, %{table: table} = state) do
     new_streams = create_streams()
 
     new_streams_map = Map.new(new_streams, fn %{id: id} = stream -> {id, stream} end)
@@ -46,14 +46,14 @@ defmodule Twitch.HearthstoneLive do
     {:noreply, state}
   end
 
-  defp table(), do: :ets.whereis(@name)
+  defp table, do: :ets.whereis(@name)
 
   @spec streams() :: [Twitch.Stream]
-  def streams(), do: Util.ets_lookup(table(), :streams, [])
+  def streams, do: Util.ets_lookup(table(), :streams, [])
 
   def handle_call(:streams, _from, streams), do: {:reply, streams, streams}
 
-  defp create_streams(), do: Twitch.Api.hearthstone_streams()
+  defp create_streams, do: Twitch.Api.hearthstone_streams()
   defp send_loop(after_ms \\ 60_000), do: Process.send_after(self(), :loop, after_ms)
 
   def twitch_id_live?(nil), do: false

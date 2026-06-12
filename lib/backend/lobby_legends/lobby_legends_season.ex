@@ -27,7 +27,7 @@ defmodule Backend.LobbyLegends.LobbyLegendsSeason do
     field :player_streams, %{String.t() => String.t()}
   end
 
-  def all() do
+  def all do
     [
       %__MODULE__{
         slug: "lobby_legends_1",

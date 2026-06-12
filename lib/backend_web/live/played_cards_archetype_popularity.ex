@@ -279,7 +279,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     }
 
     exclude_config_levels = Map.get(params, "exclude_config_levels", 0) |> Util.to_int_or_orig()
-    filter_config_level = Map.get(params, "filter_config_level", nil) |> Util.to_int_or_orig()
+    filter_config_level = Map.get(params, "filter_config_level") |> Util.to_int_or_orig()
 
     criteria =
       Map.merge(default, params)
@@ -303,7 +303,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     mode = Map.get(params, "mode", "popularity")
 
     selected_params =
-      default |> Map.merge(params) |> Map.merge(%{"min_played_count" => min_played_count})
+      default |> Map.merge(params) |> Map.put("min_played_count", min_played_count)
 
     same_assigns = [
       criteria: criteria,
@@ -347,8 +347,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
     new_excludes =
       PlayedCardsArchetyper.excludes(format, class)
-      |> Enum.reduce(Map.get(criteria, "player_deck_excludes", []), fn {archetype, card_names},
-                                                                       acc ->
+      |> Enum.reduce(Map.get(criteria, "player_deck_excludes", []), fn {archetype, card_names}, acc ->
         if to_string(archetype) in excludes do
           names_to_ids(card_names, format) ++ acc
         else
@@ -507,11 +506,10 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         pop_map =
           popularity
           |> merge()
-          |> Enum.map(fn {card_id, pop} ->
+          |> Map.new(fn {card_id, pop} ->
             {card, level, archetype} = card_info(card_id, config_map)
             {Card.name(card), %{level: level, archetype: archetype, pop: pop, card: card}}
           end)
-          |> Map.new()
 
         new_level =
           Enum.flat_map(cards, fn card_name ->
@@ -555,8 +553,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   def process_games(games) do
     Enum.reduce(games, {%{}, %{}}, fn
-      %{player_deck: %{archetype: archetype}, played_cards: played_cards},
-      {popularity, archetype_popularity} ->
+      %{player_deck: %{archetype: archetype}, played_cards: played_cards}, {popularity, archetype_popularity} ->
         archetype = archetype |> to_string()
 
         pop =
@@ -669,15 +666,13 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   def merge_archetypes_map(map, mapping \\ @deck_archetype_mapping) do
     map
-    |> Enum.group_by(fn {arch, _count} -> get_merged_archetype(arch, mapping) end, fn {_arch,
-                                                                                       count} ->
+    |> Enum.group_by(fn {arch, _count} -> get_merged_archetype(arch, mapping) end, fn {_arch, count} ->
       count
     end)
-    |> Enum.map(fn {arch, counts} -> {arch, Enum.sum(counts)} end)
-    |> Map.new()
+    |> Map.new(fn {arch, counts} -> {arch, Enum.sum(counts)} end)
   end
 
-  def deck_archetype_mapping(), do: @deck_archetype_mapping
+  def deck_archetype_mapping, do: @deck_archetype_mapping
 
   def handle_event(
         "change_sort",

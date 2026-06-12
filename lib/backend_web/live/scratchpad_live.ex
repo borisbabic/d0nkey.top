@@ -15,7 +15,7 @@ defmodule BackendWeb.ScratchPadLive do
     """
   end
 
-  defp cards() do
+  defp cards do
     Backend.Hearthstone.get_deck(11_100_865)
     |> Map.get(:cards)
     |> Enum.uniq()

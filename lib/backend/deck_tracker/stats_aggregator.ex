@@ -161,7 +161,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     result
   end
 
-  defp default_chunk_size() do
+  defp default_chunk_size do
     Application.get_env(:backend, :default_agg_chunk_size, 500_000)
   end
 

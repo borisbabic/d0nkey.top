@@ -45,7 +45,7 @@ defmodule Command.DeduplicateDecks do
     end)
   end
 
-  def update_streamer_decks(multi, ids, actual = %{id: new_id}) when is_integer(new_id) do
+  def update_streamer_decks(multi, ids, %{id: new_id} = actual) when is_integer(new_id) do
     change_ids_query = from sd in StreamerDeck, where: sd.deck_id in ^ids
 
     from(sd in StreamerDeck, where: sd.deck_id in ^ids, preload: [:deck, :streamer])
@@ -61,7 +61,7 @@ defmodule Command.DeduplicateDecks do
   # no previous streamer decks from the decks we want to delete
   def merge_streamer_decks([], m, _actual), do: m
 
-  def merge_streamer_decks(sds = [%{streamer: streamer} | _], m, actual) do
+  def merge_streamer_decks([%{streamer: streamer} | _] = sds, m, actual) do
     case {Backend.Streaming.get_streamer_deck(actual, streamer), Enum.count(sds)} do
       # only one, so we can just change the id later
       {nil, c} when c < 2 ->
@@ -82,7 +82,7 @@ defmodule Command.DeduplicateDecks do
     end
   end
 
-  def merge_streamer_decks(all = [keep | delete], m) do
+  def merge_streamer_decks([keep | delete] = all, m) do
     latest = Enum.max_by(all, & &1.last_played)
 
     attrs = %{
@@ -154,7 +154,7 @@ defmodule Command.DeduplicateDecks do
     |> Enum.filter(&(Enum.count(&1) > 1))
   end
 
-  def generate_test_data() do
+  def generate_test_data do
     d =
       "AAECAfHhBATE9gSpgAXLpQXMpQUN7bEElrcE7eME9eME/uMEguQEk+QEueYEh/YEtIAFtYAFk4EFopkFAA=="
       |> Deck.decode!()

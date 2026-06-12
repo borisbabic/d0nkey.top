@@ -17,8 +17,7 @@ defmodule BackendWeb.DeckviewerLive do
   data(title, :string)
 
   def mount(_params, session, socket) do
-    {:ok,
-     socket |> assign_defaults(session) |> put_user_in_context() |> assign(page_title: title([]))}
+    {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign(page_title: title([]))}
   end
 
   def render(assigns) do
@@ -128,7 +127,7 @@ defmodule BackendWeb.DeckviewerLive do
   def handle_event(
         "submit",
         %{"new_deck" => %{"new_code" => new_code}},
-        socket = %{assigns: %{deckcodes: dc}}
+        %{assigns: %{deckcodes: dc}} = socket
       ) do
     new_codes = DeckcodeExtractor.extract_decks(new_code)
 
@@ -146,7 +145,7 @@ defmodule BackendWeb.DeckviewerLive do
     }
   end
 
-  def handle_event("delete", %{"index" => index}, socket = %{assigns: %{deckcodes: dc}}) do
+  def handle_event("delete", %{"index" => index}, %{assigns: %{deckcodes: dc}} = socket) do
     new_codes = dc |> List.delete_at(index |> Util.to_int_or_orig())
 
     {
@@ -168,17 +167,15 @@ defmodule BackendWeb.DeckviewerLive do
     {:noreply, socket}
   end
 
-  def handle_event("toggle_compare", _, socket = %{assigns: %{compare_decks: cd}}) do
+  def handle_event("toggle_compare", _, %{assigns: %{compare_decks: cd}} = socket) do
     {
       :noreply,
       socket
-      |> push_patch(
-        to: Routes.live_path(socket, __MODULE__, current_params(socket) |> add_compare_param(!cd))
-      )
+      |> push_patch(to: Routes.live_path(socket, __MODULE__, current_params(socket) |> add_compare_param(!cd)))
     }
   end
 
-  def handle_event("class_sort_decks", _, socket = %{assigns: %{deckcodes: dc}}) do
+  def handle_event("class_sort_decks", _, %{assigns: %{deckcodes: dc}} = socket) do
     new_codes = dc |> Enum.sort_by(&(&1 |> Deck.decode!() |> Deck.class()))
 
     {
@@ -195,14 +192,11 @@ defmodule BackendWeb.DeckviewerLive do
     }
   end
 
-  def handle_event("toggle_rotation", _, socket = %{assigns: %{rotation: rt}}) do
+  def handle_event("toggle_rotation", _, %{assigns: %{rotation: rt}} = socket) do
     {
       :noreply,
       socket
-      |> push_patch(
-        to:
-          Routes.live_path(socket, __MODULE__, current_params(socket) |> add_rotation_param(!rt))
-      )
+      |> push_patch(to: Routes.live_path(socket, __MODULE__, current_params(socket) |> add_rotation_param(!rt)))
     }
   end
 
@@ -230,7 +224,7 @@ defmodule BackendWeb.DeckviewerLive do
   defp add_code_param(map, deckcodes), do: map |> Map.put("code", deckcodes |> codes_to_param())
   defp codes_to_param(codes), do: codes |> Enum.join(",")
 
-  defp title(codes) when is_list(codes) and length(codes) > 0 do
+  defp title(codes) when is_list(codes) and (is_list(codes) and codes != []) do
     "Deckviewer (#{Enum.count(codes)})"
   end
 

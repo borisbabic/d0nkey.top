@@ -7,7 +7,7 @@ defmodule Backend.MaxNations2022 do
   alias Backend.Battlenet.Battletag
   alias Backend.Hearthstone
 
-  def rosters() do
+  def rosters do
     %{
       "Argentina" => ["Nalguidan#1733", "Rusinho#11447", "Tincho#1287"],
       "Australia" => ["WetGoose#11793", "ColdSnapSp#1674", "Coolkid2001#1483"],
@@ -60,7 +60,7 @@ defmodule Backend.MaxNations2022 do
     }
   end
 
-  def first_stage_groups() do
+  def first_stage_groups do
     %{
       "A" => ["Brazil", "Spain", "Poland", "Australia"],
       "B" => ["Argentina", "Thailand", "Serbia", "Austria"],
@@ -92,14 +92,14 @@ defmodule Backend.MaxNations2022 do
 
   def get_nation(_), do: nil
 
-  def lineup_tournament_source(), do: "max_nations_2022"
+  def lineup_tournament_source, do: "max_nations_2022"
 
-  def get_latest_lineups_tournament_id() do
+  def get_latest_lineups_tournament_id do
     lineup_tournament_source()
     |> Hearthstone.get_latest_tournament_id_for_source()
   end
 
-  def get_possible_lineups_tournament_id() do
+  def get_possible_lineups_tournament_id do
     lineup_tournament_source()
     |> Hearthstone.get_tournament_ids_for_source()
   end
@@ -116,13 +116,13 @@ defmodule Backend.MaxNations2022 do
     |> Repo.all()
   end
 
-  defp base_lineup_query() do
+  defp base_lineup_query do
     from l in Lineup,
       where: l.tournament_source == ^lineup_tournament_source(),
       order_by: [desc: l.inserted_at]
   end
 
-  def live?() do
+  def live? do
     Twitch.HearthstoneLive.streams()
     |> Enum.any?(&(&1.user_name == "MAXTeamTV" && String.downcase(&1.title) =~ "nation"))
   end

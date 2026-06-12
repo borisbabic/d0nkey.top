@@ -3,6 +3,7 @@ defmodule Backend.HSReplay.DeckMap do
   use Ecto.Schema
   import Ecto.Changeset
   alias Backend.Hearthstone.Deck
+
   schema "hsr_deck_map" do
     belongs_to :deck, Deck
     field :hsr_deck_id, :string

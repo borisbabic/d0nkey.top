@@ -88,7 +88,7 @@ defmodule Backend.DiscordBot do
 
   @spec update_guild_config(GuildConfig.t(), [String.t()], integer()) ::
           {:ok, GuildConfig.t()} | {:error, any()}
-  def update_guild_config(old = %{last_message_id: old_last}, _, new_last)
+  def update_guild_config(%{last_message_id: old_last} = old, _, new_last)
       when old_last == new_last,
       do: {:ok, old}
 
@@ -118,7 +118,7 @@ defmodule Backend.DiscordBot do
          [channel | _] <- Enum.filter(channels, &String.starts_with?(&1.name, "battletags")) do
       {:ok, channel}
     else
-      error = {:error, _} -> error
+      {:error, _} = error -> error
       _ -> {:error, :could_not_find_battletags_channel}
     end
   end
@@ -149,7 +149,7 @@ defmodule Backend.DiscordBot do
 
   @spec fetch_messages(GuildConfig.t()) :: [Nostrum.Struct.Message.t()]
   defp fetch_messages(%GuildConfig{channel_id: channel_id, last_message_id: nil}) do
-    with {:ok, messages = [_ | _]} <- Api.Channel.messages(channel_id, @amount_to_fetch),
+    with {:ok, [_ | _] = messages} <- Api.Channel.messages(channel_id, @amount_to_fetch),
          {:ok, more_messages} <- do_fetch_initial(channel_id, before_id(messages)) do
       messages ++ more_messages
     else
@@ -165,7 +165,7 @@ defmodule Backend.DiscordBot do
   defp do_fetch_initial(channel_id, before_id) do
     Process.sleep(1005)
 
-    with {:ok, messages = [_ | _]} <-
+    with {:ok, [_ | _] = messages} <-
            Api.Channel.messages(channel_id, @amount_to_fetch, {:before, before_id}),
          before_id <- before_id(messages),
          {:ok, newer_messages} <- do_fetch_initial(channel_id, before_id) do
@@ -174,7 +174,7 @@ defmodule Backend.DiscordBot do
       {:ok, []} ->
         {:ok, []}
 
-      error = {:error, _} ->
+      {:error, _} = error ->
         Logger.warning("Error fetching initial: #{inspect(error)}")
 
       other ->
@@ -187,7 +187,7 @@ defmodule Backend.DiscordBot do
 
   defp do_fetch_messages(channel_id, last_message_id) do
     case Api.Channel.messages(channel_id, @amount_to_fetch, {:after, last_message_id}) do
-      {:ok, messages = [%{id: new_last_id} | _]} ->
+      {:ok, [%{id: new_last_id} | _] = messages} ->
         do_fetch_messages(channel_id, new_last_id) ++ messages
 
       _ ->

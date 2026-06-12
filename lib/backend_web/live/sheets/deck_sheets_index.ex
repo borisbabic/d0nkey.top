@@ -18,7 +18,7 @@ defmodule BackendWeb.DeckSheetsIndexLive do
        |> put_user_in_context()
        |> assign(:page_title, "Deck Sheets")}
 
-  def render(assigns = %{user: %{id: _}}) do
+  def render(%{user: %{id: _}} = assigns) do
     ~F"""
         <div>
           <div class="title is-1">Deck Sheets</div>

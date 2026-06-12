@@ -12,28 +12,26 @@ defmodule Hearthstone.DeckTracker.ArchetypeBag do
     {:ok, %{table: table}, {:continue, :update}}
   end
 
-  def handle_continue(:update, state = %{table: table}) do
+  def handle_continue(:update, %{table: table} = state) do
     update_table(table)
     {:noreply, state}
   end
 
   defp update_table(table) do
-    try do
-      all_archetypes =
-        Enum.flat_map(Hearthstone.Enums.Format.all(), fn {format, _} ->
-          key = format_key(format)
-          archetypes = DeckTracker.currently_aggregated_archetypes(format)
+    all_archetypes =
+      Enum.flat_map(Hearthstone.Enums.Format.all(), fn {format, _} ->
+        key = format_key(format)
+        archetypes = DeckTracker.currently_aggregated_archetypes(format)
 
-          insert_archetypes(archetypes, table, key)
-          archetypes
-        end)
-        |> Enum.uniq()
+        insert_archetypes(archetypes, table, key)
+        archetypes
+      end)
+      |> Enum.uniq()
 
-      key = format_key("all")
-      insert_archetypes(all_archetypes, table, key)
-    rescue
-      _ -> :ok
-    end
+    key = format_key("all")
+    insert_archetypes(all_archetypes, table, key)
+  rescue
+    _ -> :ok
   end
 
   defp insert_archetypes(archetypes, table, key) do
@@ -47,12 +45,12 @@ defmodule Hearthstone.DeckTracker.ArchetypeBag do
     Util.ets_lookup(table(), key) || []
   end
 
-  def update(), do: GenServer.cast(__MODULE__, :update)
+  def update, do: GenServer.cast(__MODULE__, :update)
 
-  def handle_cast(:update, state = %{table: table}) do
+  def handle_cast(:update, %{table: table} = state) do
     update_table(table)
     {:noreply, state}
   end
 
-  def table(), do: :ets.whereis(__MODULE__)
+  def table, do: :ets.whereis(__MODULE__)
 end

@@ -8,7 +8,7 @@ defmodule BackendWeb.ImportCountriesFromBattlefyLive do
   data(tournament_id, :string)
   data(user, :any)
 
-  def mount(_params, session = %{"tournament_id" => id}, socket) do
+  def mount(_params, %{"tournament_id" => id} = session, socket) do
     {:ok,
      socket
      |> assign(tournament_id: id)

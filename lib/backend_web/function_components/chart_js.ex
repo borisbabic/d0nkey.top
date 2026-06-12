@@ -36,7 +36,7 @@ defmodule FunctionComponents.ChartJs do
 
     def unquote(fun)(assigns) do
       assigns
-      |> update(:config, fn old -> Map.merge(old, %{type: unquote(plot_type)}) end)
+      |> update(:config, fn old -> Map.put(old, :type, unquote(plot_type)) end)
       |> chart()
     end
   end

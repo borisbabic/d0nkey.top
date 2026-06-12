@@ -24,9 +24,7 @@ defmodule Components.TierList do
   prop(criteria, :map, default: %{})
   prop(live_view, :module, required: true)
 
-  prop(min_games_options, :list,
-    default: [100, 250, 500, 1000, 2500, 5000, 7500, 10_000, 25_000, 50_000, 100_000]
-  )
+  prop(min_games_options, :list, default: [100, 250, 500, 1000, 2500, 5000, 7500, 10_000, 25_000, 50_000, 100_000])
 
   prop(premium_filters, :boolean, default: nil)
   prop(user, :map, from_context: :user)

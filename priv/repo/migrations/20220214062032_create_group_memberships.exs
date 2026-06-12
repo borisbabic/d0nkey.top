@@ -12,6 +12,9 @@ defmodule Backend.Repo.Migrations.CreateGroupMemberships do
 
     create index(:group_memberships, [:group_id])
     create index(:group_memberships, [:user_id])
-    create unique_index(:group_memberships, [:group_id, :user_id], name: :group_memberships_group_user)
+
+    create unique_index(:group_memberships, [:group_id, :user_id],
+             name: :group_memberships_group_user
+           )
   end
 end
