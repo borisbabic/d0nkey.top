@@ -53,7 +53,7 @@ defmodule Backend.Battlefy.Match do
   def from_raw_map([match]), do: from_raw_map(match)
 
   def from_raw_map(
-        map = %{
+        %{
           "roundNumber" => round_number,
           "matchNumber" => match_number,
           "bottom" => bottom,
@@ -61,7 +61,7 @@ defmodule Backend.Battlefy.Match do
           "isBye" => is_bye,
           "stageID" => stage_id
           # "is_complete" => is_complete
-        }
+        } = map
       ) do
     %__MODULE__{
       id: map["id"] || map["_id"],
@@ -81,7 +81,7 @@ defmodule Backend.Battlefy.Match do
     }
   end
 
-  def ongoing?(m = %__MODULE__{}) do
+  def ongoing?(%__MODULE__{} = m) do
     m.completed_at == nil &&
       (m.bottom.winner == false || m.bottom.winner == nil) &&
       (m.top.winner == false || m.top.winner == nil)
@@ -90,7 +90,7 @@ defmodule Backend.Battlefy.Match do
   @spec create_class_stats(Match.t(), :bottom | :top) :: [ClassMatchStats.t()]
   def create_class_stats(%{stats: nil}, _), do: nil
 
-  def create_class_stats(m = %__MODULE__{}, place) do
+  def create_class_stats(%__MODULE__{} = m, place) do
     case Map.get(m, place) do
       nil ->
         nil
@@ -128,7 +128,7 @@ defmodule Backend.Battlefy.MatchTeam do
     field :name, String.t()
   end
 
-  def empty() do
+  def empty do
     %__MODULE__{
       winner: false,
       disqualified: false,
@@ -186,10 +186,10 @@ defmodule Backend.Battlefy.ClassMatchStats do
     }
   end
 
-  def merge(nil, second = %__MODULE__{}), do: second
-  def merge(first = %__MODULE__{}, nil), do: first
+  def merge(nil, %__MODULE__{} = second), do: second
+  def merge(%__MODULE__{} = first, nil), do: first
 
-  def merge(first = %__MODULE__{class: a}, second = %__MODULE__{class: b}) when a == b do
+  def merge(%__MODULE__{class: a} = first, %__MODULE__{class: b} = second) when a == b do
     %__MODULE__{
       class: a,
       wins: first.wins + second.wins,
@@ -198,7 +198,7 @@ defmodule Backend.Battlefy.ClassMatchStats do
     }
   end
 
-  def init_collection(class_stats = %__MODULE__{}) do
+  def init_collection(%__MODULE__{} = class_stats) do
     %{} |> Map.put(class_stats.class, class_stats)
   end
 
@@ -206,7 +206,7 @@ defmodule Backend.Battlefy.ClassMatchStats do
     Map.merge(first_collection, second_collection, fn _, first, second -> merge(first, second) end)
   end
 
-  def update_collection(collection, class_stats = %__MODULE__{}) do
+  def update_collection(collection, %__MODULE__{} = class_stats) do
     class_stats
     |> init_collection()
     |> merge_collections(collection)
@@ -329,13 +329,13 @@ defmodule Backend.Battlefy.Match.MatchStats.Stats do
 
   def from_raw_map(_), do: nil
 
-  def add_class_stats_for_place(s = %__MODULE__{}, collection, place) do
+  def add_class_stats_for_place(%__MODULE__{} = s, collection, place) do
     team_stats = Map.get(s, place)
 
     cond do
       !s.is_complete || !team_stats -> collection
       team_stats.winner -> collection |> ClassMatchStats.add_win(team_stats.class)
-      !team_stats.winner -> collection |> ClassMatchStats.add_loss(team_stats.class)
+      true -> collection |> ClassMatchStats.add_loss(team_stats.class)
     end
   end
 end

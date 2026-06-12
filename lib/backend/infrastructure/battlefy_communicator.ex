@@ -33,9 +33,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   def get_response(url) do
     {u_secs, response} = :timer.tc(&get!/1, [url |> encode()])
 
-    Logger.warning(
-      "[BattlefyCommunicator] Got #{url} [#{response.status}] in #{div(u_secs, 1000)} ms "
-    )
+    Logger.warning("[BattlefyCommunicator] Got #{url} [#{response.status}] in #{div(u_secs, 1000)} ms ")
 
     response
   end
@@ -51,12 +49,12 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   Get's the qualifiers that start between the start and end date or time (inclusive)
   """
   @spec get_masters_qualifiers(Date.t(), Date.t()) :: [qualifier]
-  def get_masters_qualifiers(start_date = %Date{}, end_date = %Date{}) do
+  def get_masters_qualifiers(%Date{} = start_date, %Date{} = end_date) do
     get_masters_qualifiers(Util.day_start(start_date, :naive), Util.day_end(end_date, :naive))
   end
 
   @spec get_masters_qualifiers(NaiveDateTime.t(), NaiveDateTime.t()) :: [qualifier]
-  def get_masters_qualifiers(start_time = %NaiveDateTime{}, end_time = %NaiveDateTime{}) do
+  def get_masters_qualifiers(%NaiveDateTime{} = start_time, %NaiveDateTime{} = end_time) do
     url =
       "https://majestic.battlefy.com/hearthstone-masters/tournaments?start=#{NaiveDateTime.to_iso8601(start_time)}&end=#{NaiveDateTime.to_iso8601(end_time)}"
 
@@ -96,9 +94,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
     {u_secs, response} = :timer.tc(&HTTPoison.get!/1, [URI.encode(url)])
 
-    Logger.debug(
-      "Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(u_secs, 1000)} ms"
-    )
+    Logger.debug("Got invited players #{tour_stop && "for #{tour_stop} "}in #{div(u_secs, 1000)} ms")
 
     case Jason.decode!(response.body) do
       %{"error" => _} ->
@@ -107,12 +103,12 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       invitations ->
         Enum.map(
           invitations,
-          fn invited = %{
+          fn %{
                "battletag" => battletag_full,
                "type" => type,
                "tourStop" => tour_stop,
                "createdAt" => upstream_time
-             } ->
+             } = invited ->
             %{
               battletag_full: String.trim(battletag_full),
               reason: invited["reason"] || type,
@@ -247,7 +243,6 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
       {:ok, match}
     else
       {:error, reason} -> {:error, reason}
-      _ -> {:error, "could not fetch match"}
     end
   end
 
@@ -285,8 +280,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
 
   def get_organization_tournaments_from_to(
         slug,
-        from_date = %Date{},
-        to_date = %Date{}
+        %Date{} = from_date,
+        %Date{} = to_date
       ) do
     get_organization_tournaments_from_to(
       slug,
@@ -302,8 +297,8 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         ) :: [Tournament.t()]
   def get_organization_tournaments_from_to(
         org_id,
-        from_time = %NaiveDateTime{},
-        to_time = %NaiveDateTime{}
+        %NaiveDateTime{} = from_time,
+        %NaiveDateTime{} = to_time
       ) do
     now = NaiveDateTime.utc_now()
 
@@ -429,7 +424,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   @spec get_user_tournaments_from(String.t(), NaiveDateTime.t()) :: [Tournament.t()]
-  def get_user_tournaments_from(slug, from_time = %NaiveDateTime{}, page \\ 1, carry \\ [])
+  def get_user_tournaments_from(slug, %NaiveDateTime{} = from_time, page \\ 1, carry \\ [])
       when is_integer(page) do
     ret = get_user_tournaments(slug, page) || []
 
@@ -507,9 +502,9 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   @spec custom_values(signup_options, [Communicator.custom_value()]) :: {:ok, any} | {:error, any}
-  def custom_values(options = %{tournament_id: tournament_id}, custom_values) do
+  def custom_values(%{tournament_id: tournament_id} = options, custom_values) do
     value =
-      Enum.map(custom_values, fn cv = %{name: name, value: value} ->
+      Enum.map(custom_values, fn %{name: name, value: value} = cv ->
         %{
           "name" => name,
           "public" => Map.get(cv, :public, false),
@@ -558,21 +553,19 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
         {:error, [reason | prev_errors]}
 
       {:ok, _} ->
-        Logger.debug(
-          "Successfully signed up #{options.battletag_full} for #{options.tournament_id}"
-        )
+        Logger.debug("Successfully signed up #{options.battletag_full} for #{options.tournament_id}")
 
         {:ok, nil}
     end
   end
 
   @spec put_form_fields(signup_options, String.t()) :: {:ok, any} | {:error, any}
-  def put_form_fields(options = %{token: token}, body) do
+  def put_form_fields(%{token: token} = options, body) do
     url = form_fields_link(options)
     headers = headers(token)
 
     case HTTPoison.put(url, body, headers) do
-      {:ok, response = %{status_code: 200}} ->
+      {:ok, %{status_code: 200} = response} ->
         {:ok, response}
 
       {:ok, %{body: resp_body, status_code: status_code}} ->
@@ -596,7 +589,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   @spec connect_battlenet(signup_options) :: {:ok, any} | {:error, any}
-  def connect_battlenet(options = %{battletag_full: battletag_full, battlenet_id: battlenet_id}) do
+  def connect_battlenet(%{battletag_full: battletag_full, battlenet_id: battlenet_id} = options) do
     body =
       %{
         "name" => "ConnectBattleNet",
@@ -614,7 +607,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
   end
 
   @spec submit_discord(signup_options) :: {:ok, any} | {:error, any}
-  def submit_discord(options = %{discord: discord}) do
+  def submit_discord(%{discord: discord} = options) do
     custom_values = [%{name: "Discord Name", value: discord, public: false}]
     custom_values(options, custom_values)
   end
@@ -634,7 +627,7 @@ defmodule Backend.Infrastructure.BattlefyCommunicator do
     headers = headers(token)
 
     case HTTPoison.post(url, body, headers) do
-      {:ok, response = %{status_code: 200}} ->
+      {:ok, %{status_code: 200} = response} ->
         {:ok, response}
 
       {:ok, %{body: resp_body, status_code: status_code}} ->
