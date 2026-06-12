@@ -48,6 +48,13 @@ defmodule BackendWeb.Router do
     plug(:put_root_layout, {BackendWeb.LayoutView, :root})
   end
 
+  pipeline :csv do
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :bot_command_hooks do
     plug(:fetch_session)
     plug(:protect_from_forgery)
@@ -534,6 +541,11 @@ defmodule BackendWeb.Router do
       "/tournament-streams/:tournament_source/:tournament_id/manager",
       TournamentStreamManagerLive
     )
+  end
+
+  scope "/", BackendWeb do
+    pipe_through([:csv, :auth, :ensure_auth])
+    get("/tournament-lineups/:tournament_source/:tournament_id/export.csv", HearthstoneController, :export_lineups)
   end
 
   scope "/torch", BackendWeb do

@@ -60,14 +60,14 @@ defmodule BackendWeb do
 
       unquote(verified_routes())
 
-      def multi_select_to_list(multi = %{}) do
+      def multi_select_to_list(%{} = multi) do
         for {column, "true"} <- multi, do: column
       end
 
       def multi_select_to_list(list) when is_list(list), do: list
       def multi_select_to_list(_), do: []
 
-      def multi_select_to_array(multi = %{}) do
+      def multi_select_to_array(%{} = multi) do
         for {column, "true"} <- multi, do: column
       end
 
@@ -84,6 +84,12 @@ defmodule BackendWeb do
           nil -> default
           v -> v
         end
+      end
+
+      def csv(conn, csv_text) do
+        conn
+        |> put_resp_header("content-type", "text/csv")
+        |> text(csv_text)
       end
 
       use PhoenixMetaTags.TagController
@@ -142,7 +148,7 @@ defmodule BackendWeb do
     end
   end
 
-  def surface() do
+  def surface do
     quote do
       alias BackendWeb.Router.Helpers, as: Routes
       import BackendWeb.LiveHelpers
