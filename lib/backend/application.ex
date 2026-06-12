@@ -185,7 +185,7 @@ defmodule Backend.Application do
     end
   end
 
-  def twitch_bot_config() do
+  def twitch_bot_config do
     with {:ok, config} <- Application.fetch_env(:backend, :twitch_bot_config),
          {{:ok, chats}, _} <- {Application.fetch_env(:backend, :twitch_bot_chats), config} do
       config
@@ -197,7 +197,7 @@ defmodule Backend.Application do
     end
   end
 
-  def migrate() do
+  def migrate do
     with {:ok, true} <- Application.fetch_env(:backend, :auto_migrate) do
       try do
         Ecto.Migrator.run(Backend.Repo, "priv/repo/migrations", :up, all: true)
@@ -250,7 +250,7 @@ defmodule Backend.Application do
     :ok
   end
 
-  def warmup_cache() do
+  def warmup_cache do
     with {:ok, true} <- Application.fetch_env(:backend, :warmup_cache) do
       [
         &Backend.MastersTour.warmup_stats_cache/0,
@@ -268,7 +268,7 @@ defmodule Backend.Application do
     end
   end
 
-  def oban_config() do
+  def oban_config do
     Application.get_env(:backend, Oban)
   end
 end

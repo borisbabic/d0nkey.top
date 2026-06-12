@@ -53,23 +53,27 @@ defmodule Components.TwitchCommandsTable do
     """
   end
 
-  def handle_event("enable", %{"id" => id}, socket = %{assigns: %{user: user}}) do
+  def handle_event("enable", %{"id" => id}, %{assigns: %{user: user}} = socket) do
     new_command = TwitchBot.enable(id, user)
     {:noreply, socket |> assign_commands(new_command)}
   end
-  def handle_event("disable", %{"id" => id}, socket = %{assigns: %{user: user}}) do
+
+  def handle_event("disable", %{"id" => id}, %{assigns: %{user: user}} = socket) do
     new_command = TwitchBot.disable(id, user)
     {:noreply, socket |> assign_commands(new_command)}
   end
-  def handle_event("delete", %{"id" => id}, socket = %{assigns: %{user: user, commands: old_commands}}) do
-    commands = case TwitchBot.delete(id, user) do
-      {:ok, _} -> Enum.filter(old_commands, & to_string(&1.id) != to_string(id))
-      {:error, _} -> old_commands
-    end
+
+  def handle_event("delete", %{"id" => id}, %{assigns: %{user: user, commands: old_commands}} = socket) do
+    commands =
+      case TwitchBot.delete(id, user) do
+        {:ok, _} -> Enum.filter(old_commands, &(to_string(&1.id) != to_string(id)))
+        {:error, _} -> old_commands
+      end
+
     {:noreply, socket |> assign(commands: commands)}
   end
 
-  defp assign_commands(socket = %{assigns: %{commands: old_commands}}, new_command) do
+  defp assign_commands(%{assigns: %{commands: old_commands}} = socket, new_command) do
     new_commands = update_commands(old_commands, new_command)
     socket |> assign(commands: new_commands)
   end
@@ -78,6 +82,7 @@ defmodule Components.TwitchCommandsTable do
   defp update_commands(old_commands, {:error}), do: old_commands
   defp update_commands(old_commands, :error), do: old_commands
   defp update_commands(old_commands, {:ok, command}), do: update_commands(old_commands, command)
+
   defp update_commands(old_commands, new_command) do
     old_commands
     |> Enum.map_reduce(false, fn com, upd ->
@@ -96,6 +101,7 @@ defmodule Components.TwitchCommandsTable do
   defp enabled_button(%{enabled: true}) do
     {"disable", "Disable"}
   end
+
   defp enabled_button(_) do
     {"enable", "Enable"}
   end

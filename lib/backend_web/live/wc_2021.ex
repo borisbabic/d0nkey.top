@@ -11,7 +11,7 @@ defmodule BackendWeb.WC2021Live do
     {:ok,
      socket
      |> assign_defaults(session)
-     |> put_user_in_context}
+     |> put_user_in_context()}
   end
 
   def render(assigns) do

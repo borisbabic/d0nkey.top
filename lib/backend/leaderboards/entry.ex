@@ -25,6 +25,6 @@ defmodule Backend.Leaderboards.Entry do
     |> validate_required([:rank, :season_id])
   end
 
-  def current_table(), do: :leaderboards_current_entries
-  def current(), do: {current_table(), __MODULE__}
+  def current_table, do: :leaderboards_current_entries
+  def current, do: {current_table(), __MODULE__}
 end

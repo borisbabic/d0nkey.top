@@ -25,7 +25,9 @@ defmodule Backend.UserManager.GroupMembership do
 
   defp set_assoc(c, attrs, attr) do
     case Map.get(attrs, attr) do
-      nil -> c
+      nil ->
+        c
+
       val ->
         c
         |> put_assoc(attr, val)
@@ -39,7 +41,7 @@ defmodule Backend.UserManager.GroupMembership do
   def owner?(%{role: "Owner"}), do: true
   def owner?(_), do: false
 
-  def admin?(m = %{role: r}),
+  def admin?(%{role: r} = m),
     do: owner?(m) || r in ["Admin"]
 
   def admin?(_), do: false

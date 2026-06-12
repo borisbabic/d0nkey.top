@@ -15,10 +15,9 @@ defmodule BackendWeb.GroupLive do
   data(rerender, :any, default: true)
 
   def mount(_params, session, socket),
-    do:
-      {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> put_user_in_context()}
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> put_user_in_context()}
 
-  def render(assigns = %{user: %{id: _}}) do
+  def render(%{user: %{id: _}} = assigns) do
     ~F"""
         <div :if={({group, membership} = group_membership(@group_id, @user)) && group && @rerender}>
           <div class="title is-2">{group.name}</div>
@@ -141,7 +140,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event(
         "kick_user",
         %{"user_id" => user_id},
-        socket = %{assigns: %{user: user, group_id: group_id}}
+        %{assigns: %{user: user, group_id: group_id}} = socket
       ) do
     UserManager.kick_user(user_id, group_id, user)
     |> handle_error(socket, rerender_fun())
@@ -150,7 +149,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event(
         "make_admin",
         %{"user_id" => user_id},
-        socket = %{assigns: %{user: user, group_id: group_id}}
+        %{assigns: %{user: user, group_id: group_id}} = socket
       ) do
     UserManager.make_admin(user_id, group_id, user)
     |> handle_error(socket, rerender_fun())
@@ -159,7 +158,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event(
         "remove_admin",
         %{"user_id" => user_id},
-        socket = %{assigns: %{user: user, group_id: group_id}}
+        %{assigns: %{user: user, group_id: group_id}} = socket
       ) do
     UserManager.remove_admin(user_id, group_id, user)
     |> handle_error(socket, rerender_fun())
@@ -168,7 +167,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event(
         "join_group",
         _,
-        socket = %{assigns: %{user: user, join_code: join_code, group_id: group_id}}
+        %{assigns: %{user: user, join_code: join_code, group_id: group_id}} = socket
       ) do
     UserManager.join_group(user, group_id, join_code)
     |> handle_error(socket, fn s ->
@@ -176,7 +175,7 @@ defmodule BackendWeb.GroupLive do
     end)
   end
 
-  def handle_event("leave_group", _, socket = %{assigns: %{user: user, group_id: group_id}}) do
+  def handle_event("leave_group", _, %{assigns: %{user: user, group_id: group_id}} = socket) do
     UserManager.leave_group(user, group_id)
     |> handle_error(socket, fn s ->
       push_navigate(s, to: Routes.live_path(socket, BackendWeb.MyGroupsLive))
@@ -186,7 +185,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event(
         "transfer_ownership",
         %{"user_id" => user_id},
-        socket = %{assigns: %{user: user, group_id: group_id}}
+        %{assigns: %{user: user, group_id: group_id}} = socket
       ) do
     UserManager.transfer_ownership(user_id, group_id, user)
     |> handle_error(socket, rerender_fun())
@@ -195,7 +194,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event(
         "start_using_data",
         %{"user_id" => user_id},
-        socket = %{assigns: %{user: user, group_id: group_id}}
+        %{assigns: %{user: user, group_id: group_id}} = socket
       ) do
     UserManager.change_include_data(user_id, group_id, user, true)
     |> handle_error(socket, rerender_fun())
@@ -204,7 +203,7 @@ defmodule BackendWeb.GroupLive do
   def handle_event(
         "stop_using_data",
         %{"user_id" => user_id},
-        socket = %{assigns: %{user: user, group_id: group_id}}
+        %{assigns: %{user: user, group_id: group_id}} = socket
       ) do
     UserManager.change_include_data(user_id, group_id, user, false)
     |> handle_error(socket, rerender_fun())
@@ -216,7 +215,7 @@ defmodule BackendWeb.GroupLive do
   defp handle_error(_, socket, on_success), do: {:noreply, on_success.(socket)}
 
   # stupid hack, think of something better
-  defp rerender_fun(),
+  defp rerender_fun,
     do: fn socket ->
       socket |> assign(:rerender, Ecto.UUID.generate())
     end

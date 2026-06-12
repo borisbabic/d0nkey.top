@@ -31,7 +31,7 @@ defmodule Backend.LeaderboardsPoints.China2026 do
     {:ok, HsEsports2025.find_points(rank, @points)}
   end
 
-  def get_points_system(), do: @points
+  def get_points_system, do: @points
   @spec points_for_rank!(rank :: integer()) :: points :: integer()
   @impl true
   def points_for_rank!(r) do
@@ -74,7 +74,7 @@ defmodule Backend.LeaderboardsPoints.China2026 do
   end
 
   @impl true
-  def points_seasons(), do: HsEsports2025.points_seasons(@season_mapper, "china_")
+  def points_seasons, do: HsEsports2025.points_seasons(@season_mapper, "china_")
 
   @impl true
   def points_for_ladder_season(leaderboard_id, season_id, region) do

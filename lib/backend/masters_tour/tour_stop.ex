@@ -60,7 +60,7 @@ defmodule Backend.MastersTour.TourStop do
     field :year, integer
   end
 
-  def all() do
+  def all do
     [
       %__MODULE__{
         id: :"Las Vegas",
@@ -653,12 +653,12 @@ defmodule Backend.MastersTour.TourStop do
   end
 
   def get(tour_stop, attr, default \\ nil)
-  def get(ts = %__MODULE__{}, attr, default), do: Map.get(ts, attr, default)
+  def get(%__MODULE__{} = ts, attr, default), do: Map.get(ts, attr, default)
 
   def get(tour_stop, attr, default)
       when (is_tour_stop(tour_stop) or is_binary(tour_stop)) and is_atom(attr) do
     case get(tour_stop) do
-      ts = %{id: _} -> Map.get(ts, attr, default)
+      %{id: _} = ts -> Map.get(ts, attr, default)
       _ -> default
     end
   end
@@ -699,7 +699,7 @@ defmodule Backend.MastersTour.TourStop do
 
   def get_id_for_season!(season_id), do: Util.bangify(get_id_for_season(season_id))
 
-  def get(ts = %__MODULE__{}), do: ts
+  def get(%__MODULE__{} = ts), do: ts
 
   def get(tour_stop) when is_tour_stop(tour_stop) do
     all()
@@ -723,7 +723,7 @@ defmodule Backend.MastersTour.TourStop do
 
   def display_name(tour_stop) when is_binary(tour_stop) or is_atom(tour_stop) do
     case get(tour_stop) do
-      ts = %{id: _} -> display_name(ts)
+      %{id: _} = ts -> display_name(ts)
       _ -> nil
     end
   end
@@ -750,7 +750,7 @@ defmodule Backend.MastersTour.TourStop do
 
   @spec started?(atom | String.t() | Backend.MastersTour.TourStop.t()) :: boolean
   def started?(%{start_time: start_time}),
-    do: NaiveDateTime.compare(start_time, NaiveDateTime.utc_now()) == :lt
+    do: NaiveDateTime.before?(start_time, NaiveDateTime.utc_now())
 
   def started?(tour_stop) when is_atom(tour_stop) or is_binary(tour_stop),
     do: tour_stop |> get() |> started?()
@@ -770,7 +770,7 @@ defmodule Backend.MastersTour.TourStop do
   def ladder_invites(tour_stop), do: get(tour_stop, :ladder_invites, 0)
 
   @spec get_current_qualifiers() :: __MODULE__.t() | nil
-  def get_current_qualifiers() do
+  def get_current_qualifiers do
     now = Date.utc_today()
 
     all()
@@ -789,7 +789,7 @@ defmodule Backend.MastersTour.TourStop do
     end
   end
 
-  def get_next() do
+  def get_next do
     all()
     |> Enum.find(&(!started?(&1)))
   end

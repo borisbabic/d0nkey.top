@@ -8,7 +8,7 @@ defmodule BackendWeb.PlayerReplaysLive do
   data(filters, :map)
 
   def mount(_params, session, socket),
-    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context}
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
   def render(assigns) do
     # filters
@@ -42,7 +42,7 @@ defmodule BackendWeb.PlayerReplaysLive do
     }
   end
 
-  def handle_info({:update_params, params}, socket = %{assigns: %{player_btag: player_btag}}) do
+  def handle_info({:update_params, params}, %{assigns: %{player_btag: player_btag}} = socket) do
     {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, player_btag, params))}
   end
 

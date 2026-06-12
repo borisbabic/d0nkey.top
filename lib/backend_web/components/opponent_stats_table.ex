@@ -121,6 +121,6 @@ defmodule Components.OpponentStatsTable do
   defp set_user_based_params({_, params}, _),
     do: params |> Map.put("exclude_bugged_sources", "yes")
 
-  def param_keys(),
+  def param_keys,
     do: ["rank", "period", "players", "region", "format", "force_fresh", "player_has_coin"]
 end

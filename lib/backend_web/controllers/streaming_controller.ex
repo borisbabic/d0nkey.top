@@ -81,7 +81,7 @@ defmodule BackendWeb.StreamingController do
 
     criteria =
       %{
-        "order_by" => {direction || :desc, sort_by |> order_by},
+        "order_by" => {direction || :desc, sort_by |> order_by()},
         "limit" => 20,
         "offset" => 0
       }
@@ -105,7 +105,7 @@ defmodule BackendWeb.StreamingController do
 
   # The params was renamed from legend to best_legend_rank.
   # I included other legend filters and wanted to keep it consistent in the queries
-  defp handle_old_peak_param(params = %{"legend" => best}),
+  defp handle_old_peak_param(%{"legend" => best} = params),
     do: params |> Map.put("best_legend_rank", best) |> Map.delete("legend")
 
   defp handle_old_peak_param(params), do: params

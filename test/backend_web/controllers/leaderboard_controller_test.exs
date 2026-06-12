@@ -163,9 +163,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
       conn = get(conn, url)
       Backend.Repo.delete_all(from e in Entry, where: e.season_id == ^season.id)
 
-      Backend.Repo.delete_all(
-        from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id
-      )
+      Backend.Repo.delete_all(from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id)
 
       Backend.Repo.delete(season)
       assert html_response(conn, 200) =~ "D0nkeyHot"
@@ -215,9 +213,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
       conn = get(conn, url)
       Backend.Repo.delete_all(from e in Entry, where: e.season_id == ^season.id)
 
-      Backend.Repo.delete_all(
-        from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id
-      )
+      Backend.Repo.delete_all(from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id)
 
       Backend.Repo.delete(season)
       assert html_response(conn, 200) =~ "↓243"
@@ -270,9 +266,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
 
       Backend.Repo.delete_all(from e in Entry, where: e.season_id == ^season.id)
 
-      Backend.Repo.delete_all(
-        from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id
-      )
+      Backend.Repo.delete_all(from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id)
 
       Backend.Repo.delete(season)
       refute html_response(conn, 200) =~ ">91</td>"
@@ -327,9 +321,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
       conn = get(conn, url)
       Backend.Repo.delete_all(from e in Entry, where: e.season_id == ^season.id)
 
-      Backend.Repo.delete_all(
-        from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id
-      )
+      Backend.Repo.delete_all(from e in {"leaderboards_current_entries", Entry}, where: e.season_id == ^season.id)
 
       Backend.Repo.delete(season)
       assert html_response(conn, 200) =~ "↓243"
@@ -400,9 +392,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
       url = Routes.leaderboard_path(conn, :index, params)
       conn = get(conn, url)
 
-      Backend.Repo.delete_all(
-        from e in Entry, where: e.season_id in [^season.id, ^other_season.id]
-      )
+      Backend.Repo.delete_all(from e in Entry, where: e.season_id in [^season.id, ^other_season.id])
 
       Backend.Repo.delete_all(
         from e in {"leaderboards_current_entries", Entry},

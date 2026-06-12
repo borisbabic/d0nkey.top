@@ -154,8 +154,7 @@ defmodule BackendWeb.CollectionLive do
             can_admin: Collection.can_admin?(coll, socket.assigns.user),
             public: coll.public,
             error: nil,
-            multiple_collection_options:
-              multiple_collection_options(socket.assigns.user, coll.id, display),
+            multiple_collection_options: multiple_collection_options(socket.assigns.user, coll.id, display),
             page_title: "#{Collection.display(coll)}"
           ]
 
@@ -165,8 +164,7 @@ defmodule BackendWeb.CollectionLive do
             collection_display: nil,
             error: error,
             card_map: nil,
-            multiple_collection_options:
-              multiple_collection_options(socket.assigns.user, nil, nil)
+            multiple_collection_options: multiple_collection_options(socket.assigns.user, nil, nil)
           ]
       end
 

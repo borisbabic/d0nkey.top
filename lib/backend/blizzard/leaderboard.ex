@@ -23,7 +23,7 @@ defmodule Backend.Blizzard.Leaderboard do
         }
       end)
 
-  def from_raw_map(map = %{"seasonId" => _}),
+  def from_raw_map(%{"seasonId" => _} = map),
     do:
       map
       |> Recase.Enumerable.convert_keys(&Recase.to_snake/1)

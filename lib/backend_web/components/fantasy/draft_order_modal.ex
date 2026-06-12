@@ -33,8 +33,8 @@ defmodule Components.DraftOrderModal do
     end
   end
 
-  defp pick_order_chunks(%{pick_order: order = [_ | _], roster_size: roster_size}) do
-    chunk_size = div(order |> Enum.count(), roster_size)
+  defp pick_order_chunks(%{pick_order: [_ | _] = order, roster_size: roster_size}) do
+    chunk_size = order |> Enum.count() |> div(roster_size)
     order |> Enum.with_index() |> Enum.chunk_every(chunk_size)
   end
 

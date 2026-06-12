@@ -65,8 +65,7 @@ defmodule Backend.HearthstoneTest do
         durability: nil,
         duels_constructed: false,
         duels_relevant: false,
-        flavor_text:
-          "With an uncertain past and a questionable future, Reno was lucky to find his home on the range.",
+        flavor_text: "With an uncertain past and a questionable future, Reno was lucky to find his home on the range.",
         health: 30,
         image:
           "https://d15f34w2p8l1cc.cloudfront.net/hearthstone/6b956c7f075b2872f2fcc82e15a4d30ce9c5dd7345c26c5f765c165ab61673a1.png",

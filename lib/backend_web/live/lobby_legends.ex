@@ -64,13 +64,12 @@ defmodule BackendWeb.LobbyLegendsLive do
       streams_raw
       |> Map.values()
       |> Enum.filter(& &1)
-      |> Enum.map(fn s ->
+      |> MapSet.new(fn s ->
         String.split(s, "/")
         |> Enum.reverse()
         |> hd()
         |> String.downcase()
       end)
-      |> MapSet.new()
 
     Enum.filter(streaming, fn s ->
       downcase_login = Twitch.Stream.login(s) |> String.downcase()
@@ -80,7 +79,7 @@ defmodule BackendWeb.LobbyLegendsLive do
 
   defp season(slug), do: LobbyLegendsSeason.get_or_current(slug)
 
-  defp subscribe_to_messages() do
+  defp subscribe_to_messages do
     @subscriptions
     |> Enum.each(fn s ->
       # unsub first prevents double subscribes

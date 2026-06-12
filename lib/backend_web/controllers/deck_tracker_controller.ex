@@ -50,9 +50,7 @@ defmodule BackendWeb.DeckTrackerController do
         |> text("Missing game_id")
 
       {:error, reason} ->
-        Logger.warning(
-          "Unknown error submitting games reason: #{inspect(reason)} params: #{inspect(params)}"
-        )
+        Logger.warning("Unknown error submitting games reason: #{inspect(reason)} params: #{inspect(params)}")
 
         conn
         |> put_status(500)
@@ -76,8 +74,7 @@ defmodule BackendWeb.DeckTrackerController do
       GameInsertBatcher.enqueue(with_inserted_at, api_user)
       {player_archetype, opponent_archetype} = extract_played_archetypes(dto)
 
-      {:ok,
-       %{deck: deck, player_archetype: player_archetype, opponent_archetype: opponent_archetype}}
+      {:ok, %{deck: deck, player_archetype: player_archetype, opponent_archetype: opponent_archetype}}
     end
   end
 
@@ -90,12 +87,12 @@ defmodule BackendWeb.DeckTrackerController do
 
     player_class =
       (get_in(game_dto, [Access.key(:player, %{}), Access.key(:class, nil)]) ||
-         Map.get(game_dto, :player_class, nil))
+         Map.get(game_dto, :player_class))
       |> Deck.normalize_class_name()
 
     opponent_class =
       (get_in(game_dto, [Access.key(:opponent, %{}), Access.key(:class, nil)]) ||
-         Map.get(game_dto, :opponent_class, nil))
+         Map.get(game_dto, :opponent_class))
       |> Deck.normalize_class_name()
 
     case GameDto.create_played_cards_ecto_attrs(
@@ -157,7 +154,7 @@ defmodule BackendWeb.DeckTrackerController do
   #   end
   # end
 
-  defp log_game(dto = %{player: %{battletag: "D0nkey#2470"}}, params),
+  defp log_game(%{player: %{battletag: "D0nkey#2470"}} = dto, params),
     do: log_game(:error, dto, params)
 
   defp log_game(dto, params), do: log_game(:debug, dto, params)

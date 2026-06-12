@@ -12,9 +12,7 @@ defmodule BackendWeb.DecksLive do
   data(min_games_floor, :integer)
 
   def mount(_params, session, socket),
-    do:
-      {:ok,
-       socket |> assign_defaults(session) |> put_user_in_context() |> assign_min_games_floor()}
+    do: {:ok, socket |> assign_defaults(session) |> put_user_in_context() |> assign_min_games_floor()}
 
   def render(assigns) do
     ~F"""
@@ -58,7 +56,7 @@ defmodule BackendWeb.DecksLive do
     {:noreply, assign(socket, :filters, filters) |> assign_meta()}
   end
 
-  defp assign_meta(socket = %{assigns: %{filters: filters}}) do
+  defp assign_meta(%{assigns: %{filters: filters}} = socket) do
     format_part =
       case Map.get(filters, "format") do
         nil -> ""

@@ -7,7 +7,7 @@ defmodule Backend.DeckFeedItemUpdater do
   @threshold 1
   @feed_item_type :deck
 
-  def update_deck_items() do
+  def update_deck_items do
     Feed.get_latest_deck_interactions()
     |> Enum.group_by(& &1.deck_id)
     |> Enum.each(&update_deck_item/1)

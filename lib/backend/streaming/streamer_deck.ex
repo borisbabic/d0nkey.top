@@ -32,10 +32,10 @@ defmodule Backend.Streaming.StreamerDeck do
   end
 
   @doc false
-  defp non_assoc(), do: @required ++ @not_required
+  defp non_assoc, do: @required ++ @not_required
 
   @doc false
-  def changeset(c = %{first_played: fp}, a) when not is_nil(fp), do: update(c, a)
+  def changeset(%{first_played: fp} = c, a) when not is_nil(fp), do: update(c, a)
   def changeset(c, a), do: create(c, a)
 
   @doc false

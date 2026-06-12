@@ -29,7 +29,7 @@ defmodule Twitch.Stream do
     |> String.replace("{height}", to_string(height))
   end
 
-  def from_raw_map(map = %{"started_at" => started_at_raw}) do
+  def from_raw_map(%{"started_at" => started_at_raw} = map) do
     started_at = NaiveDateTime.from_iso8601!(started_at_raw)
 
     %{

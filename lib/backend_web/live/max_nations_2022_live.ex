@@ -47,7 +47,7 @@ defmodule BackendWeb.MaxNations2022Live do
     {:noreply, socket}
   end
 
-  def weeks(), do: MaxNations2022.get_possible_lineups_tournament_id()
+  def weeks, do: MaxNations2022.get_possible_lineups_tournament_id()
 
   def handle_params(params, _uri, socket) do
     week = params["week"] || MaxNations2022.get_latest_lineups_tournament_id()

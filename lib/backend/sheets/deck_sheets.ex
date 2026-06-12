@@ -67,7 +67,7 @@ defmodule Backend.Sheets.DeckSheet do
     end
   end
 
-  def available_roles(), do: @roles
+  def available_roles, do: @roles
 
   def role_display(role), do: role |> to_string() |> Recase.to_title()
 
@@ -144,5 +144,5 @@ defmodule Backend.Sheets.DeckSheet do
   def extra_column_fields(%{extra_columns: %{} = extra_columns}), do: Map.keys(extra_columns)
   def extra_column_fields(_), do: []
 
-  def default_sort(), do: @default_sort
+  def default_sort, do: @default_sort
 end

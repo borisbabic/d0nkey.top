@@ -5,7 +5,7 @@ defmodule Bot.BattlefyMessageHandler do
   import Bot.MessageHandlerUtil
   require Logger
 
-  def handle_tournament_standings(message = %{content: content}) do
+  def handle_tournament_standings(%{content: content} = message) do
     content
     |> get_options(:string)
     |> String.trim()
@@ -49,7 +49,7 @@ defmodule Bot.BattlefyMessageHandler do
 
   def create_standings_message(
         battlefy_id,
-        _message = %{guild_id: _guild_id},
+        %{guild_id: _guild_id} = _message,
         [_ | _] = battletags,
         header
       ) do
@@ -63,7 +63,7 @@ defmodule Bot.BattlefyMessageHandler do
     end
   end
 
-  def create_standings_message(battlefy_id, message = %{guild_id: guild_id}, _battletags, headers) do
+  def create_standings_message(battlefy_id, %{guild_id: guild_id} = message, _battletags, headers) do
     case get_guild_battletags!(guild_id) do
       [_ | _] = battletags -> create_standings_message(battlefy_id, message, battletags, headers)
       other -> log_unable_to_create(other)

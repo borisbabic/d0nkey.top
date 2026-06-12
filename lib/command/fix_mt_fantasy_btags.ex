@@ -29,9 +29,9 @@ defmodule Command.FantasyMTFixer do
 
   def make_url(doc_id),
     do: "https://docs.google.com/spreadsheets/d/#{doc_id}/export?gid=0&format=csv"
+
   def get_url!(:Silvermoon),
-    do:
-      "https://docs.google.com/spreadsheets/d/1uo6B4ABU_rPU6jcForpUccwdI49xhhYD6-rKw0h6EHo/export?gid=0&format=csv"
+    do: "https://docs.google.com/spreadsheets/d/1uo6B4ABU_rPU6jcForpUccwdI49xhhYD6-rKw0h6EHo/export?gid=0&format=csv"
 
   def fix(mt), do: mt |> get_url!() |> fix(mt)
 
@@ -52,10 +52,11 @@ defmodule Command.FantasyMTFixer do
     |> TourStop.get_battlefy_id!()
     |> Battlefy.get_participants()
     |> Enum.flat_map(fn
-        %{name: new, players: [%{in_game_name: old}]} -> [{old, new}]
-        _ -> []
-      end)
+      %{name: new, players: [%{in_game_name: old}]} -> [{old, new}]
+      _ -> []
+    end)
   end
+
   def apply_changes(changes, mt) do
     tour_stop = to_string(mt)
 

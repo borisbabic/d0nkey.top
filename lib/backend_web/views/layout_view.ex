@@ -16,7 +16,7 @@ defmodule BackendWeb.LayoutView do
     #    end
   end
 
-  def current_qualifier_info() do
+  def current_qualifier_info do
     now = NaiveDateTime.utc_now()
 
     cond do
@@ -98,7 +98,7 @@ defmodule BackendWeb.LayoutView do
 
   def current_dreamhack(%Plug.Conn{} = _conn) do
     case Dreamhack.current() do
-      current = [_ | _] ->
+      [_ | _] = current ->
         current_dreamhack(%{current: current})
 
       _ ->
@@ -124,11 +124,11 @@ defmodule BackendWeb.LayoutView do
     """
   end
 
-  def show_lobby_legends?() do
+  def show_lobby_legends? do
     Backend.LobbyLegends.LobbyLegendsSeason.current(1, 48)
   end
 
-  def show_fantasy?() do
+  def show_fantasy? do
     false &&
       (ongoing_dreamhack_fantasy?() ||
          ongoing_mt_fantasy?() ||
@@ -150,12 +150,12 @@ defmodule BackendWeb.LayoutView do
     end
   end
 
-  defp ongoing_lobby_legends_fantasy?(),
+  defp ongoing_lobby_legends_fantasy?,
     do: !!Backend.LobbyLegends.LobbyLegendsSeason.current(120, 60)
 
-  defp ongoing_mt_fantasy?(), do: !!Backend.MastersTour.TourStop.get_current(120, 60)
-  defp ongoing_dreamhack_fantasy?(), do: Enum.any?(Dreamhack.current_fantasy())
-  defp highlight_fantasy_for_gm?(), do: false
+  defp ongoing_mt_fantasy?, do: !!Backend.MastersTour.TourStop.get_current(120, 60)
+  defp ongoing_dreamhack_fantasy?, do: Enum.any?(Dreamhack.current_fantasy())
+  defp highlight_fantasy_for_gm?, do: false
 
   @spec enable_nitropay?(Plug.Conn.t()) :: boolean
   def enable_nitropay?(%{params: %{"nitropay_test" => "yes"}}), do: true
@@ -190,7 +190,7 @@ defmodule BackendWeb.LayoutView do
     end
   end
 
-  def nitropay_demo?() do
+  def nitropay_demo? do
     Application.get_env(:backend, :nitropay_demo, true)
   end
 end

@@ -44,9 +44,9 @@ defmodule BackendWeb.PlayerController do
   end
 
   @default_competitions ["leaderboard", "mt"]
-  def default_competitions(), do: @default_competitions
+  def default_competitions, do: @default_competitions
 
-  def player_profile(conn, params = %{"battletag_full" => bt}) do
+  def player_profile(conn, %{"battletag_full" => bt} = params) do
     battletags = player_profile_battletags(bt) |> Enum.reverse()
     short_btags = Enum.map(battletags, &Battletag.shorten/1)
     mt_names = Enum.map(short_btags, &MastersTour.name_hacks/1)

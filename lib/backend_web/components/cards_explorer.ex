@@ -199,7 +199,7 @@ defmodule Components.CardsExplorer do
   #   end
   # end
 
-  def default_format_options(), do: @default_format_options
+  def default_format_options, do: @default_format_options
 
   def handle_event("next-cards-page", _middle, socket) do
     %{offset: offset, params: %{"limit" => limit}} = socket.assigns
@@ -221,7 +221,7 @@ defmodule Components.CardsExplorer do
       case {Map.get(params, "search"), long_enough} do
         {nil, false} -> params
         {nil, true} -> Map.put(params, "search", search_input)
-        {_, false} -> Map.drop(params, ["search"])
+        {_, false} -> Map.delete(params, "search")
         {_, true} -> Map.put(params, "search", search_input)
       end
 

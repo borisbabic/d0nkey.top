@@ -57,7 +57,7 @@ defmodule BackendWeb.GrandmastersLive do
   def lineup_url(week),
     do: Routes.live_path(BackendWeb.Endpoint, BackendWeb.GrandmastersLineup, %{"week" => week})
 
-  def weeks() do
+  def weeks do
     season = Blizzard.current_gm_season()
 
     season
@@ -72,10 +72,7 @@ defmodule BackendWeb.GrandmastersLive do
   def handle_event("change-week", %{"week" => week}, socket) do
     {:noreply,
      socket
-     |> push_patch(
-       to:
-         Routes.live_path(socket, __MODULE__, socket |> current_params() |> Map.put(:week, week))
-     )}
+     |> push_patch(to: Routes.live_path(socket, __MODULE__, socket |> current_params() |> Map.put(:week, week)))}
   end
 
   def handle_event("change-region", %{"region" => region}, socket) do

@@ -13,12 +13,12 @@ defmodule Backend.FifoSet do
     add(set, String.to_atom(key), value)
   end
 
-  def add(set = %{max_length: max_length, entries: entries}, key, value)
+  def add(%{max_length: max_length, entries: entries} = set, key, value)
       when length(entries) < max_length do
     _add(set, max_length, entries, key, value)
   end
 
-  def add(set = %{max_length: max_length, entries: [_throw_away, entries]}, key, value)
+  def add(%{max_length: max_length, entries: [_throw_away, entries]} = set, key, value)
       when length(entries) == max_length do
     _add(set, max_length, entries, key, value)
   end

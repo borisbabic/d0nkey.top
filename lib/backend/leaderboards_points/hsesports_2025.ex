@@ -110,7 +110,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
   defp remove_prefix(season, prefix), do: season |> String.replace_leading(prefix, "")
 
   @impl true
-  def points_seasons() do
+  def points_seasons do
     points_seasons(@season_mapper)
   end
 
@@ -182,8 +182,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
   def season_specific_links(ps) when ps in ["2025", "2025_spring"] do
     [
       %{
-        link:
-          "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/it/ITJPBG8SPQOP1744133921898.pdf",
+        link: "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/it/ITJPBG8SPQOP1744133921898.pdf",
         display: "Source for March"
       }
     ]
@@ -191,7 +190,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2025 do
 
   def season_specific_links(_), do: []
 
-  def current_points_season() do
+  def current_points_season do
     current = Blizzard.current_constructed_season_id()
 
     case Enum.find(@season_mapper, &(current == elem(&1, 2) && elem(&1, 1))) do

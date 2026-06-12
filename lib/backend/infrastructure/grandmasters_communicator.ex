@@ -6,7 +6,7 @@ defmodule Backend.Infrastructure.GrandmastersCommunicator do
   use Tesla
   plug Tesla.Middleware.Timeout, timeout: 10_000
 
-  def get_gm() do
+  def get_gm do
     url =
       "https://hearthstone.blizzard.com/en-us/api/esports/schedule/grandmasters/?season=null&year=null"
 
@@ -14,7 +14,7 @@ defmodule Backend.Infrastructure.GrandmastersCommunicator do
          {:ok, decoded} <- Poison.decode(body) do
       {:ok, Response.from_raw_map(decoded)}
     else
-      r = {:error, _reason} -> r
+      {:error, _reason} = r -> r
       _ -> {:error, :unknown_error}
     end
   end

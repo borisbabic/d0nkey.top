@@ -10,7 +10,7 @@ defmodule Hearthstone.Metadata.MinionType do
     field :game_modes, [integer()]
   end
 
-  def from_raw_map(map = %{"id" => id, "name" => name, "slug" => slug}) do
+  def from_raw_map(%{"id" => id, "name" => name, "slug" => slug} = map) do
     %__MODULE__{
       id: id,
       name: name,

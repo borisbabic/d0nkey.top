@@ -30,9 +30,7 @@ defmodule Components.TournamentLineupExplorer do
       :ok,
       socket
       |> assign(assigns)
-      |> assign(
-        lineups: lineups(assigns.tournament_id, assigns.tournament_source, assigns.filters)
-      )
+      |> assign(lineups: lineups(assigns.tournament_id, assigns.tournament_source, assigns.filters))
     }
   end
 
@@ -221,7 +219,7 @@ defmodule Components.TournamentLineupExplorer do
   def handle_event(
         "remove_deck",
         %{"index" => index_raw},
-        socket = %{assigns: %{temp_filters: temp_filters}}
+        %{assigns: %{temp_filters: temp_filters}} = socket
       ) do
     {index, _} = Integer.parse(index_raw)
 
@@ -230,7 +228,7 @@ defmodule Components.TournamentLineupExplorer do
     {:noreply, socket |> assign(temp_filters: new_temp_filters)}
   end
 
-  def handle_event("add_deck", _, socket = %{assigns: %{temp_filters: temp_filters}}) do
+  def handle_event("add_deck", _, %{assigns: %{temp_filters: temp_filters}} = socket) do
     decks = temp_filters |> decks() |> Kernel.++([empty_deck_filter()])
 
     new_temp_filters = temp_filters |> Map.put("decks", decks)
@@ -238,7 +236,7 @@ defmodule Components.TournamentLineupExplorer do
     {:noreply, socket |> assign(temp_filters: new_temp_filters)}
   end
 
-  def empty_deck_filter(), do: %{"include_cards" => [], "exclude_cards" => [], "archetype" => []}
+  def empty_deck_filter, do: %{"include_cards" => [], "exclude_cards" => [], "archetype" => []}
   def decks(%{"decks" => d}) when is_list(d), do: d
   def decks(_), do: []
 end

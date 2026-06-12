@@ -8,8 +8,8 @@ defmodule Hearthstone.Leaderboards.Season do
     field :season_id, integer() | nil
   end
 
-  def default_leaderboard_id(), do: "STD"
-  def default_region(), do: "EU"
+  def default_leaderboard_id, do: "STD"
+  def default_region, do: "EU"
 
   def ensure_region(season, default \\ nil) do
     %{season | region: season.region || default || default_region()}

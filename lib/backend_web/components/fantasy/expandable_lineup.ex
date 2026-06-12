@@ -43,7 +43,7 @@ defmodule Components.ExpandableLineup do
 
   def sort(decks, _), do: decks |> Deck.sort()
 
-  def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old}}) do
+  def handle_event("show_cards", _, %{assigns: %{show_cards: old}} = socket) do
     {
       :noreply,
       socket
@@ -54,7 +54,7 @@ defmodule Components.ExpandableLineup do
   def handle_event(
         "deck_copied",
         %{"deckcode" => code},
-        socket = %{assigns: %{track_copied: track_copied}}
+        %{assigns: %{track_copied: track_copied}} = socket
       ) do
     if track_copied do
       Tracker.inc_copied(code)

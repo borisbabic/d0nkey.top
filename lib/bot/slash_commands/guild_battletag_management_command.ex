@@ -9,7 +9,7 @@ defmodule Bot.SlashCommands.GuildBattletagManagementCommand do
   @change_channel "change_battletags_channel"
   @list_battletags "list_battletags"
   @impl true
-  def get_commands() do
+  def get_commands do
     [
       %{
         name: @add_battletags,

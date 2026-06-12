@@ -43,7 +43,7 @@ defmodule Hearthstone.Card do
   end
 
   @spec from_raw_map(map()) :: {:ok, __MODULE__.t()} | {:error, any()}
-  def from_raw_map(raw_map = %{"id" => id}) do
+  def from_raw_map(%{"id" => id} = raw_map) do
     map = Recase.Enumerable.convert_keys(raw_map, &Recase.to_snake/1)
 
     {
@@ -123,7 +123,7 @@ defmodule Hearthstone.Card do
     do: true
 
   # it's the same card in these cases
-  def same_effect?(first = %__MODULE__{}, second = %__MODULE__{}) do
+  def same_effect?(%__MODULE__{} = first, %__MODULE__{} = second) do
     [:attack, :health, :mana_cost, :text, :card_type_id]
     |> Enum.all?(&(Map.get(first, &1) == Map.get(second, &1)))
   end
@@ -148,7 +148,7 @@ defmodule Hearthstone.Card.Duels do
     field(:relevant, boolean())
   end
 
-  def from_raw_map(map = %{"relevant" => r}) do
+  def from_raw_map(%{"relevant" => r} = map) do
     %__MODULE__{
       constructed: !!map["constructed"],
       relevant: !!r
@@ -188,7 +188,7 @@ defmodule Hearthstone.Card.RuneCost do
 
   def from_raw_map(nil), do: nil
 
-  def empty() do
+  def empty do
     %__MODULE__{
       blood: 0,
       frost: 0,

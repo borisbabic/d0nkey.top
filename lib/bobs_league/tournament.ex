@@ -46,7 +46,7 @@ defmodule BobsLeague.Api.Tournament do
 
       {:ok, tour}
     else
-      r = {:error, _reason} -> r
+      {:error, _reason} = r -> r
       _ -> {:error, :unknown_error_parsing_bobs_league_tournaments}
     end
   end

@@ -150,7 +150,7 @@ defmodule BackendWeb.StreamingView do
   #   end)
   # end
 
-  defp win_loss(sd = %{wins: wins, losses: losses}, conn) do
+  defp win_loss(%{wins: wins, losses: losses} = sd, conn) do
     winrate = StreamerDeck.winrate(sd)
 
     if winrate do
@@ -181,7 +181,7 @@ defmodule BackendWeb.StreamingView do
   end
 
   def links(sd) do
-    twitch_link(sd.streamer |> Streamer.twitch_login(), "twitch", ["tag", "is-link"])
+    sd.streamer |> Streamer.twitch_login() |> twitch_link("twitch", ["tag", "is-link"])
   end
 
   def create_expansion_dropdown(conn, query_param, default_title, yes_option_display) do
@@ -241,8 +241,7 @@ defmodule BackendWeb.StreamingView do
       ]
       |> Enum.map(fn c ->
         %{
-          link:
-            Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "class", c)),
+          link: Routes.streaming_path(conn, :streamer_decks, Map.put(conn.query_params, "class", c)),
           selected: to_string(Map.get(conn.query_params, "class")) == to_string(c),
           display: Deck.class_name(c)
         }

@@ -17,7 +17,7 @@ defmodule BackendWeb.MyGroupsLive do
     Helper.needs_login(%{})
   end
 
-  def render(assigns = %{user: %{id: _}}) do
+  def render(%{user: %{id: _}} = assigns) do
     ~F"""
       <div>
         <div class="title is-2">My Groups</div>

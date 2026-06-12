@@ -23,10 +23,10 @@ defmodule Backend.UserManager.Group do
 
   defp set_owner(c, %{owner: owner}, _), do: set_owner(c, owner)
   defp set_owner(c, %{"owner" => owner}, _), do: set_owner(c, owner)
-  defp set_owner(c, _, %{owner: owner = %{id: _}}), do: set_owner(c, owner)
+  defp set_owner(c, _, %{owner: %{id: _} = owner}), do: set_owner(c, owner)
   defp set_owner(c, _, _), do: c
 
-  defp set_owner(c, owner = %{id: _}) do
+  defp set_owner(c, %{id: _} = owner) do
     c
     |> put_assoc(:owner, owner)
     |> foreign_key_constraint(:owner)

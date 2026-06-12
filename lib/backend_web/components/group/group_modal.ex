@@ -82,7 +82,7 @@ defmodule Components.GroupModal do
   def handle_event(
         "submit",
         %{"group" => attrs},
-        socket = %{assigns: %{group: group = %{id: id}}}
+        %{assigns: %{group: %{id: id} = group}} = socket
       )
       when not is_nil(id) do
     group
@@ -104,7 +104,7 @@ defmodule Components.GroupModal do
     {:noreply, socket |> assign_temp_vals(params)}
   end
 
-  def handle_event("regenerate_join_code", _, socket = %{assigns: %{group: group}}) do
+  def handle_event("regenerate_join_code", _, %{assigns: %{group: group}} = socket) do
     new_group = group |> Map.put(:join_code, Ecto.UUID.generate())
 
     {

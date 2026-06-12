@@ -25,7 +25,7 @@ defmodule Components.DeckWithStats do
     """
   end
 
-  def render(assigns = %{deck_with_stats: deck_with_stats, show_win_loss?: show_wl?}) do
+  def render(%{deck_with_stats: deck_with_stats, show_win_loss?: show_wl?} = assigns) do
     deck = deck(deck_with_stats)
 
     win_loss =

@@ -11,7 +11,7 @@ defmodule Hearthstone.DeckTracker.AggregationLog do
     timestamps(updated_at: false)
   end
 
-  def empty() do
+  def empty do
     %__MODULE__{
       formats: [],
       ranks: [],

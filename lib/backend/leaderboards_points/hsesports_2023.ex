@@ -81,7 +81,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2023 do
   end
 
   @impl true
-  def points_seasons() do
+  def points_seasons do
     @season_mapper
     |> Enum.filter(&elem(&1, 1))
     |> Enum.flat_map(fn {year, season, _, _} -> [year, "#{year}_#{season}"] end)
@@ -122,7 +122,7 @@ defmodule Backend.LeaderboardsPoints.HsEsports2023 do
 
   ######
 
-  def current_points_season() do
+  def current_points_season do
     current = Blizzard.current_constructed_season_id()
 
     case Enum.find(@season_mapper, &(current == elem(&1, 2) && elem(&1, 1))) do

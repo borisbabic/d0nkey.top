@@ -17,7 +17,7 @@ defmodule Components.Feed.LatestHSArticles do
     """
   end
 
-  defp get_latest_articles() do
+  defp get_latest_articles do
     Backend.LatestHSArticles.get()
     |> Enum.take(9)
   end

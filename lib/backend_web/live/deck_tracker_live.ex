@@ -30,7 +30,7 @@ defmodule BackendWeb.DeckTrackerLive do
       |> assign(error_message: nil, message: nil, valid: false)
     }
 
-  def handle_params(params = %{"deck" => deck_parts}, session, socket) when is_list(deck_parts) do
+  def handle_params(%{"deck" => deck_parts} = params, session, socket) when is_list(deck_parts) do
     new_deck = deck_parts |> Enum.join("/")
 
     params
@@ -91,7 +91,7 @@ defmodule BackendWeb.DeckTrackerLive do
     |> assign(:form_values, form_values)
   end
 
-  defp assign_meta(socket = %{assigns: %{deck: deck = %{id: _id}}}) do
+  defp assign_meta(%{assigns: %{deck: %{id: _id} = deck}} = socket) do
     socket
     |> assign_meta_tags(%{
       description: Deck.deckcode(deck),
@@ -102,7 +102,7 @@ defmodule BackendWeb.DeckTrackerLive do
 
   defp assign_meta(socket), do: socket
 
-  defp assign_stats(socket = %{assigns: assigns}) do
+  defp assign_stats(%{assigns: assigns} = socket) do
     socket
     |> assign(get_stats(assigns))
   end
@@ -119,7 +119,7 @@ defmodule BackendWeb.DeckTrackerLive do
     }
 
   @spec render(any) :: Phoenix.LiveView.Rendered.t()
-  def render(assigns = %{user: %{id: _}}) do
+  def render(%{user: %{id: _}} = assigns) do
     ~F"""
       <.form for={%{}} as={:game} id="deck_tracker_form" phx-submit="submit" phx-change="validate">
         <br>
@@ -206,7 +206,7 @@ defmodule BackendWeb.DeckTrackerLive do
 
   def get_stats(_), do: [wins: 0, losses: 0, winrate: 0.0]
 
-  defp game_type_options() do
+  defp game_type_options do
     [
       GameType.ranked(),
       GameType.casual(),
@@ -217,12 +217,12 @@ defmodule BackendWeb.DeckTrackerLive do
     |> Enum.map(&{GameType.name(&1), &1})
   end
 
-  defp format_options() do
+  defp format_options do
     Format.all()
     |> Enum.map(fn {val, name} -> {name, val} end)
   end
 
-  defp class_options() do
+  defp class_options do
     Deck.classes()
     |> Enum.map(&{Deck.class_name(&1), &1})
   end
@@ -270,7 +270,7 @@ defmodule BackendWeb.DeckTrackerLive do
     |> assign(:message, message)
   end
 
-  defp reset_form_values(socket = %{assigns: %{form_values: form_values, deck: deck}}) do
+  defp reset_form_values(%{assigns: %{form_values: form_values, deck: deck}} = socket) do
     new_values =
       form_values
       |> Map.take(["player_rank", "player_legend_rank", "opponent_rank", "opponent_legend_rank"])
@@ -280,8 +280,7 @@ defmodule BackendWeb.DeckTrackerLive do
   end
 
   def get_message(:win),
-    do:
-      ["Good Job", "Nice Highroll", "Well Played", "ggwp", "GG WP", "ggwp no re"] |> Enum.random()
+    do: ["Good Job", "Nice Highroll", "Well Played", "ggwp", "GG WP", "ggwp no re"] |> Enum.random()
 
   def get_message(:loss),
     do:
@@ -296,7 +295,7 @@ defmodule BackendWeb.DeckTrackerLive do
   def handle_event(
         "submit",
         %{"game" => game_raw},
-        socket = %{assigns: %{user: user, deck: deck}}
+        %{assigns: %{user: user, deck: deck}} = socket
       ) do
     game_map =
       game_raw

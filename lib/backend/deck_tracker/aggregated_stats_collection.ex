@@ -144,8 +144,7 @@ defmodule Hearthstone.DeckTracker.AggregatedStatsCollection.Intermediate do
       "wins" => int.wins,
       "losses" => int.losses,
       "winrate" => winrate,
-      "turns" =>
-        if(int.turns_total_games == 0, do: 0, else: int.total_turns / int.turns_total_games),
+      "turns" => if(int.turns_total_games == 0, do: 0, else: int.total_turns / int.turns_total_games),
       "duration" => duration,
       "climbing_speed" => climbing_speed,
       "card_stats" => insertable_card_stats(int) || [],

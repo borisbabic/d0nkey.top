@@ -11,7 +11,7 @@ defmodule BackendWeb.LeaderboardController do
   defp parse_use_current(%{"use_current_season" => "no"}), do: false
   defp parse_use_current(_), do: true
 
-  def points(conn, params = %{"points_season" => ps, "leaderboard_id" => ldb}) do
+  def points(conn, %{"points_season" => ps, "leaderboard_id" => ldb} = params) do
     use_current = parse_use_current(params)
     points = LeaderboardsPoints.calculate(ps, ldb, use_current)
 
@@ -41,7 +41,7 @@ defmodule BackendWeb.LeaderboardController do
     Enum.any?(["compare_to", "up_to"], &Map.has_key?(params, &1))
   end
 
-  def index(conn, params = %{"region" => _, "leaderboardId" => _}) do
+  def index(conn, %{"region" => _, "leaderboardId" => _} = params) do
     if needs_login?(params) && !BackendWeb.AuthUtils.user(conn) do
       viewable_url = Routes.leaderboard_path(conn, :index, Map.drop(params, @needs_login))
       {:error, :needs_login, viewable_url}
@@ -189,7 +189,7 @@ defmodule BackendWeb.LeaderboardController do
         "undergroundarena"
       ]
 
-  defp hack_lobby_legends_season(ldb = %{}, %{"seasonId" => new_season = "lobby_legends" <> _}),
+  defp hack_lobby_legends_season(%{} = ldb, %{"seasonId" => "lobby_legends" <> _ = new_season}),
     do: Map.put(ldb, :season_id, new_season)
 
   defp hack_lobby_legends_season(ldb, _), do: ldb
@@ -239,8 +239,7 @@ defmodule BackendWeb.LeaderboardController do
         {[], 0, points}
 
       {:ok, tour_stop} ->
-        {MastersTour.list_invited_players(tour_stop),
-         MastersTour.TourStop.ladder_invites(tour_stop), nil}
+        {MastersTour.list_invited_players(tour_stop), MastersTour.TourStop.ladder_invites(tour_stop), nil}
 
       _ ->
         {[], 0, nil}
@@ -263,11 +262,11 @@ defmodule BackendWeb.LeaderboardController do
     end
   end
 
-  def ladders_to_check(%{season_id: s, leaderboard_id: ldb = "BG", region: r}, "yes") do
+  def ladders_to_check(%{season_id: s, leaderboard_id: "BG" = ldb, region: r}, "yes") do
     Blizzard.ladders_to_check(s, ldb, r)
   end
 
-  def ladders_to_check(%{season_id: s, leaderboard_id: ldb = "STD", region: r}, "yes") do
+  def ladders_to_check(%{season_id: s, leaderboard_id: "STD" = ldb, region: r}, "yes") do
     s
     |> MastersTour.TourStop.get_by_ladder()
     |> case do
@@ -396,19 +395,17 @@ defmodule BackendWeb.LeaderboardController do
 
   def player_history_old(
         conn,
-        params = %{
+        %{
           "leaderboard_id" => ldb,
           "region" => region,
           "season_id" => season,
           "player" => player
-        }
+        } = params
       ) do
     attr = history_attr(params)
 
     link =
-      Routes.leaderboard_path(conn, :player_history, region, "season_#{season}", ldb, player,
-        attr: attr
-      )
+      Routes.leaderboard_path(conn, :player_history, region, "season_#{season}", ldb, player, attr: attr)
 
     conn
     |> Plug.Conn.put_status(302)
@@ -417,12 +414,12 @@ defmodule BackendWeb.LeaderboardController do
 
   def player_history(
         conn,
-        params = %{
+        %{
           "leaderboard_id" => ldb,
           "region" => region,
           "period" => period,
           "player" => player
-        }
+        } = params
       ) do
     attr = history_attr(params)
     min_max_criteria = extract_min_max_criteria(params)

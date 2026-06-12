@@ -29,9 +29,9 @@ defmodule Backend.Streaming.StreamingNow do
   end
 
   @spec streaming_now() :: streaming_now()
-  def streaming_now(), do: Util.gs_call_if_up(@name, :streaming_now, [])
+  def streaming_now, do: Util.gs_call_if_up(@name, :streaming_now, [])
 
-  def handle_call(:streaming_now, _from, state = %{streaming_now: sn}), do: {:reply, sn, state}
+  def handle_call(:streaming_now, _from, %{streaming_now: sn} = state), do: {:reply, sn, state}
 
   defp update_state(old_state, key, new_val) do
     partially_updated =

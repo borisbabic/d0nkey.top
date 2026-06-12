@@ -9,7 +9,7 @@ defmodule BackendWeb.DeckOnlyLive do
   data(deck, :any)
   data(user, :any)
 
-  def mount(_params, session = %{"code" => code}, socket) do
+  def mount(_params, %{"code" => code} = session, socket) do
     {:ok,
      socket
      |> assign(deck: Deck.decode!(code))

@@ -14,14 +14,14 @@ defmodule Backend.AdsTxtCache do
     {:ok, %{table: table}, {:continue, :update}}
   end
 
-  def handle_continue(:update, state = %{table: table}) do
+  def handle_continue(:update, %{table: table} = state) do
     update_table(table)
     {:noreply, state}
   end
 
-  def table(), do: :ets.whereis(__MODULE__)
+  def table, do: :ets.whereis(__MODULE__)
 
-  def update(), do: GenServer.cast(__MODULE__, :update)
+  def update, do: GenServer.cast(__MODULE__, :update)
 
   defp update_table(table) do
     for {_host, %{enable_adsense: true, nitropay_url: url}} <- config() do
@@ -37,7 +37,7 @@ defmodule Backend.AdsTxtCache do
     end
   end
 
-  def handle_cast(:update, state = %{table: table}) do
+  def handle_cast(:update, %{table: table} = state) do
     update_table(table)
     {:noreply, state}
   end
@@ -50,7 +50,7 @@ defmodule Backend.AdsTxtCache do
 
   defp set_ads_txt(ads_txt, table, url), do: :ets.insert(table, {url, ads_txt})
 
-  defp default_url() do
+  defp default_url do
     Application.fetch_env(:backend, :default_nitropay_ads_txt_url)
   end
 
@@ -70,7 +70,7 @@ defmodule Backend.AdsTxtCache do
     table() |> Util.ets_lookup(url, @adsense)
   end
 
-  def config() do
+  def config do
     Application.fetch_env!(:backend, :ads_config)
   end
 end

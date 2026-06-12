@@ -13,7 +13,7 @@ defmodule Twitch.Api do
 
   @hearthstone_id 138_585
 
-  def hearthstone_streams() do
+  def hearthstone_streams do
     get_all(&fetch_hearthstone_streams/1, [], nil)
     |> Enum.map(&Twitch.Stream.from_raw_map/1)
   end
@@ -25,7 +25,7 @@ defmodule Twitch.Api do
 
   @spec hearthstone_streams_after(any) :: {:error, any} | {:ok, Tesla.Env.t()}
   def hearthstone_streams_after(pagination) do
-    do_get("/helix/streams/", [game_id: @hearthstone_id, after: pagination])
+    do_get("/helix/streams/", game_id: @hearthstone_id, after: pagination)
   end
 
   @spec do_get(binary | Tesla.Client.t(), list(), list()) :: {:error, any} | {:ok, Tesla.Env.t()}

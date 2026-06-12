@@ -18,7 +18,7 @@ defmodule BackendWeb.HSReplayController do
     end)
   end
 
-  def matchups(conn, params = %{"as" => as_raw, "vs" => vs_raw}) do
+  def matchups(conn, %{"as" => as_raw, "vs" => vs_raw} = params) do
     cookies = params["cookies"]
 
     archetype_matchups =

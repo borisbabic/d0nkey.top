@@ -4,7 +4,7 @@ defmodule Components.Helper do
   alias FunctionComponents.Dropdown
   alias Backend.Hearthstone.Deck
 
-  def warning_triangle(), do: warning_triangle(%{})
+  def warning_triangle, do: warning_triangle(%{})
 
   attr :before, :any, required: false, default: false
   attr :after_warning, :any, required: false, default: false
@@ -57,7 +57,7 @@ defmodule Components.Helper do
     Util.datetime_to_presentable_string(maybe_naive)
   end
 
-  defp random_id() do
+  defp random_id do
     :crypto.strong_rand_bytes(42) |> Base.encode64() |> binary_part(0, 42)
   end
 
@@ -100,7 +100,7 @@ defmodule Components.Helper do
     """
   end
 
-  def empty() do
+  def empty do
     assigns = %{}
 
     ~H"""

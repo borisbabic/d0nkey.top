@@ -36,7 +36,7 @@ defmodule Backend.Streaming.DeckStreamingInfoBag do
     end
   end
 
-  defp create_info(sd) when length(sd) > 0 do
+  defp create_info(sd) when is_list(sd) and sd != [] do
     {peak, peaked_by} =
       sd
       |> Enum.filter(&(&1.best_legend_rank > 0))
@@ -68,7 +68,7 @@ defmodule Backend.Streaming.DeckStreamingInfoBag do
     GenServer.call(__MODULE__, {:set_info, info, deck_id})
   end
 
-  def handle_call({:set_info, info, deck_id}, _, state = %{table: table}) do
+  def handle_call({:set_info, info, deck_id}, _, %{table: table} = state) do
     now = NaiveDateTime.utc_now()
     :ets.insert(table, {deck_id, {now, info}})
     {:reply, info, state}
@@ -82,5 +82,5 @@ defmodule Backend.Streaming.DeckStreamingInfoBag do
     :gt == NaiveDateTime.compare(date, cutoff)
   end
 
-  def table(), do: :ets.whereis(__MODULE__)
+  def table, do: :ets.whereis(__MODULE__)
 end

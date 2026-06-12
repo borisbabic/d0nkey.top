@@ -12,12 +12,12 @@ defmodule Components.DeckStreamingInfo do
   data(legend_rank, :any)
 
   def render(
-        assigns = %{
+        %{
           info: _info,
           deck: _deck,
           legend_rank: _,
           streamer_deck_path: _sdp
-        }
+        } = assigns
       ) do
     ~F"""
       <div class="tag column" :if={is_integer(@info.peak)}>
@@ -36,9 +36,9 @@ defmodule Components.DeckStreamingInfo do
 
   def render(%{deck_id: deck_id} = assigns) when is_integer(deck_id) do
     info = DeckStreamingInfoBag.get(deck_id)
+
     %{
-      streamer_deck_path:
-        Routes.streaming_path(BackendWeb.Endpoint, :streamer_decks, %{"deck_id" => deck_id}),
+      streamer_deck_path: Routes.streaming_path(BackendWeb.Endpoint, :streamer_decks, %{"deck_id" => deck_id}),
       deck: Backend.Hearthstone.deck(deck_id),
       info: info,
       legend_rank: info |> Map.get(:peak) |> render_legend_rank()

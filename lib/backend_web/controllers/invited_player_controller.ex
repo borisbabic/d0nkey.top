@@ -43,8 +43,8 @@ defmodule BackendWeb.InvitedPlayerController do
     end
   end
 
-  def split(string), do:
-    string |> String.replace("\r", "") |> String.split("\n") |> Enum.map(&String.trim/1) |> Enum.filter(& &1 != "")
+  def split(string),
+    do: string |> String.replace("\r", "") |> String.split("\n") |> Enum.map(&String.trim/1) |> Enum.filter(&(&1 != ""))
 
   def create(conn, %{"invited_player" => invited_player_params}) do
     case MastersTour.create_invited_player(invited_player_params) do

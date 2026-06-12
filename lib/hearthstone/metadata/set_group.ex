@@ -19,7 +19,7 @@ defmodule Hearthstone.Metadata.SetGroup do
     field :year_range, String.t() | nil
   end
 
-  def from_raw_map(map = %{"name" => name, "slug" => slug, "cardSets" => card_sets}) do
+  def from_raw_map(%{"name" => name, "slug" => slug, "cardSets" => card_sets} = map) do
     %__MODULE__{
       name: name,
       slug: slug,

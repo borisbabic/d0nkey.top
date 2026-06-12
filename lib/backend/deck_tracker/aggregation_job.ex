@@ -11,7 +11,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     deck_tracker_aggregator_fast: :timer.minutes(150),
     deck_tracker_aggregator_slow: :timer.hours(7)
   }
-  def enqueue_needed() do
+  def enqueue_needed do
     needed()
     |> Enum.each(fn {period, format, _, size} ->
       if size > 170 do
@@ -22,19 +22,19 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     end)
   end
 
-  def pause_queues() do
+  def pause_queues do
     for q <- @queues do
       Oban.pause_queue(queue: q)
     end
   end
 
-  def resume_queues() do
+  def resume_queues do
     for q <- @queues do
       Oban.resume_queue(queue: q)
     end
   end
 
-  def needed() do
+  def needed do
     periods = DeckTracker.periods(auto_aggregate: true) |> Enum.reject(&Period.future?/1)
     formats = DeckTracker.formats(auto_aggregate: true)
 
@@ -68,8 +68,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
             _ -> 32
           end
 
-        {period.slug, format_value, minutes_ago,
-         Enum.max([Period.size(period) / 1.5, minimum_minutes_ago])}
+        {period.slug, format_value, minutes_ago, Enum.max([Period.size(period) / 1.5, minimum_minutes_ago])}
       end
 
     potential_formats
@@ -79,11 +78,11 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
     |> Enum.sort_by(fn {_, _, minutes_ago, size} -> minutes_ago / size end, :desc)
   end
 
-  def cancel_orphaned() do
+  def cancel_orphaned do
     Oban.cancel_all_jobs(orphaned_query())
   end
 
-  def orphaned_query() do
+  def orphaned_query do
     node = Oban.config().node
 
     from oj in Oban.Job,
@@ -93,7 +92,7 @@ defmodule Hearthstone.DeckTracker.AggregationJob do
       where: oj.state == "executing" or oj.state == "available"
   end
 
-  def cancel_old() do
+  def cancel_old do
     now = NaiveDateTime.utc_now()
     fast_ms = Map.fetch!(@timeouts, :deck_tracker_aggregator_fast)
     slow_ms = Map.fetch!(@timeouts, :deck_tracker_aggregator_slow)

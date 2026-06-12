@@ -36,7 +36,7 @@ defmodule BackendWeb.BattletagController do
     redirect(conn, to: Routes.battletag_path(conn, :index))
   end
 
-  def batch_insert(p = %{"country" => country, "priority" => priority}, split_attr, rb) do
+  def batch_insert(%{"country" => country, "priority" => priority} = p, split_attr, rb) do
     base_attrs = %{
       "country" => country,
       "priority" => priority,

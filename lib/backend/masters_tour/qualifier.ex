@@ -31,13 +31,12 @@ defmodule Backend.MastersTour.Qualifier do
   end
 
   @doc false
-  def changeset(qualifier = %__MODULE__{tour_stop: nil}, attrs) do
+  def changeset(%__MODULE__{tour_stop: nil} = qualifier, attrs) do
     qualifier
     |> cast(attrs, @non_embed_attrs)
     |> cast_embed(:standings)
     |> validate_required(@all_attrs)
   end
-
 
   def num(slug) when is_binary(slug) do
     slug
@@ -45,10 +44,10 @@ defmodule Backend.MastersTour.Qualifier do
     |> Enum.at(-1)
     |> Util.to_int(nil)
   end
+
   def num(%{slug: slug}), do: num(slug)
   def num(%{tournament_slug: tournament_slug}), do: num(tournament_slug)
   def num(_), do: nil
-
 end
 
 defmodule Backend.MastersTour.Qualifier.Standings do

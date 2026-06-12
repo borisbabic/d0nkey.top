@@ -26,8 +26,7 @@ defmodule Backend.CollectionManager do
 
   defp on_conflict_update(attrs) do
     from c in Collection,
-      where:
-        c.battletag == ^attrs.battletag and not is_nil(c.region) and c.region == ^attrs.region,
+      where: c.battletag == ^attrs.battletag and not is_nil(c.region) and c.region == ^attrs.region,
       # doing it like this instead of a where clause means it still gets touched so we don't have to deal with stale nonesense and worry about the right struct being returned
       update: [
         set: [
@@ -178,7 +177,7 @@ defmodule Backend.CollectionManager do
     end
   end
 
-  def stale_or_missing_card_maps() do
+  def stale_or_missing_card_maps do
     query = from(c in Collection) |> where_stale()
 
     Repo.all(query)

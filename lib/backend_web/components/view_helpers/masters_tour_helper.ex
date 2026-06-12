@@ -48,7 +48,7 @@ defmodule Components.ViewHelpers.MastersTourHelper do
     """
   end
 
-  def create_name_cell(player_row = %{name: name}) do
+  def create_name_cell(%{name: name} = player_row) do
     region = create_region_tag(player_row)
     country = create_country_tag(player_row)
 

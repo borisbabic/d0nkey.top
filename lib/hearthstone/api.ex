@@ -37,9 +37,7 @@ defmodule Hearthstone.Api do
   end
 
   @spec get_cards(map()) :: {:ok, Cards.t()} | {:error, any()}
-  def get_cards(
-        opts \\ %{collectible: "0,1", locale: @default_locale, pageSize: @default_page_size}
-      ) do
+  def get_cards(opts \\ %{collectible: "0,1", locale: @default_locale, pageSize: @default_page_size}) do
     query = URI.encode_query(opts)
     url = "#{@base_url}/cards?#{query}"
 
@@ -47,7 +45,7 @@ defmodule Hearthstone.Api do
       {:ok, body} ->
         Cards.from_raw_map(body)
 
-      e = {:error, _} ->
+      {:error, _} = e ->
         e
 
       _ ->
@@ -65,9 +63,7 @@ defmodule Hearthstone.Api do
   end
 
   @spec get_all_cards(map()) :: {:ok, [Hearthstone.Card.t()]} | {:error, any()}
-  def get_all_cards(
-        opts \\ %{collectible: "1", locale: @default_locale, pageSize: @default_page_size}
-      ) do
+  def get_all_cards(opts \\ %{collectible: "1", locale: @default_locale, pageSize: @default_page_size}) do
     do_get_all_cards(opts, nil, [])
   end
 
@@ -78,7 +74,7 @@ defmodule Hearthstone.Api do
   defp do_get_all_cards(opts, prev_response, carry) do
     {delay, request_opts} = Map.pop(opts, :delay, 5000)
 
-    with {:ok, response = %{cards: cards}} <- next_page(prev_response, request_opts) do
+    with {:ok, %{cards: cards} = response} <- next_page(prev_response, request_opts) do
       Process.sleep(delay)
       do_get_all_cards(opts, response, cards ++ carry)
     end
@@ -102,7 +98,7 @@ defmodule Hearthstone.Api do
   end
 
   @spec create_access_token() :: {:ok, String.t()} | {:error, any()}
-  def create_access_token() do
+  def create_access_token do
     create_access_token(
       Application.get_env(:backend, :bnet_client_id),
       Application.get_env(:backend, :bnet_client_secret)
@@ -122,10 +118,10 @@ defmodule Hearthstone.Api do
          {:ok, %{"access_token" => access_token}} <- Poison.decode(body) do
       {:ok, access_token}
     else
-      e = {:error, _} ->
+      {:error, _} = e ->
         e
 
-      {:ok, r = %{"error" => "unauthorized"}} ->
+      {:ok, %{"error" => "unauthorized"} = r} ->
         with {:ok, encoded} <- Poison.encode(r) do
           Logger.warning("Unauthorized blizzard response: #{encoded}")
         end
@@ -138,7 +134,7 @@ defmodule Hearthstone.Api do
   end
 
   @spec access_token() :: {:ok, String.t()} | {:error, any()}
-  def access_token() do
+  def access_token do
     case Util.ets_lookup(table(), :access_token, nil) do
       nil ->
         with {:ok, token} <- create_access_token() do
@@ -177,12 +173,12 @@ defmodule Hearthstone.Api do
     {:noreply, state}
   end
 
-  def handle_cast({:set_access_token, token}, state = %{table: table}) do
+  def handle_cast({:set_access_token, token}, %{table: table} = state) do
     :ets.insert(table, {:access_token, token})
     {:noreply, state}
   end
 
-  defp table(), do: :ets.whereis(@name)
+  defp table, do: :ets.whereis(@name)
 
   defp send_loop(after_ms), do: Process.send_after(self(), :loop, after_ms)
 

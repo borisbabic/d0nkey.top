@@ -14,7 +14,7 @@ defmodule Components.FantasyLeague do
   prop(round, :any, default: nil)
   prop(user, :map, from_context: :user)
 
-  def render(assigns = %{league: %{id: _}}) do
+  def render(%{league: %{id: _}} = assigns) do
     ~F"""
       <div>
           <div class="title is-2">{@league.name} </div>
@@ -110,7 +110,7 @@ defmodule Components.FantasyLeague do
   def current_round_option(league, round), do: League.round(league, round)
 
   def round_options(%{current_round: cr}) do
-    ["All" | 1..cr |> Enum.into([])]
+    ["All" | 1..cr |> Enum.to_list()]
   end
 
   def can_remove?(league, user, league_team) do
@@ -143,7 +143,7 @@ defmodule Components.FantasyLeague do
     |> Enum.sort_by(&(&1 |> elem(1)), :desc)
   end
 
-  defp results_rounds(league, :all), do: 1..league.current_round |> Enum.into([])
+  defp results_rounds(league, :all), do: 1..league.current_round |> Enum.to_list()
   defp results_rounds(_, round) when is_integer(round), do: [round]
   defp results_rounds(league, _), do: [league.current_round]
 end

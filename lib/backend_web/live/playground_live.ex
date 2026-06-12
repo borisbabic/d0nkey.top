@@ -20,7 +20,7 @@ defmodule BackendWeb.PlaygroundLive do
     """
   end
 
-  defp data() do
+  defp data do
     %{
       "labels" => ["A", "B"],
       "datasets" => [%{"data" => [%{"x" => 1, "y" => 2}, %{"x" => 3, "y" => 4}]}]

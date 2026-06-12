@@ -3,7 +3,7 @@ defmodule Bot.SlashCommands.MTQCommand do
   use Bot.SlashCommands.SlashCommand
 
   @impl true
-  def get_commands() do
+  def get_commands do
     [
       %{
         name: "mtq",
@@ -24,7 +24,7 @@ defmodule Bot.SlashCommands.MTQCommand do
   @impl true
   def handle_interaction(%{data: %{name: n}}) when n not in ["mtq"], do: :skip
 
-  def handle_interaction(interaction = %Interaction{data: %{name: "mtq"}, guild_id: guild_id}) do
+  def handle_interaction(%Interaction{data: %{name: "mtq"}, guild_id: guild_id} = interaction) do
     num = option_value(interaction, "num")
     defer(interaction)
 

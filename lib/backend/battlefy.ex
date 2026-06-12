@@ -407,7 +407,7 @@ defmodule Backend.Battlefy do
   @spec create_standings_from_matches(Stage.t()) :: [Standings.t()]
   def create_standings_from_matches(%{
         id: id,
-        bracket: bracket = %{type: "elimination", style: "single"}
+        bracket: %{type: "elimination", style: "single"} = bracket
       }) do
     {rounds, _max_position} =
       case {bracket.rounds_count, bracket.teams_count} do
@@ -427,7 +427,7 @@ defmodule Backend.Battlefy do
 
   def create_standings_from_matches([_ | _] = matches) do
     matches
-    |> Enum.reduce(%{}, fn m = %{top: top, bottom: bottom}, acc ->
+    |> Enum.reduce(%{}, fn %{top: top, bottom: bottom} = m, acc ->
       acc
       |> add_team_to_stats(top, bottom, m)
       |> add_team_to_stats(bottom, top, m)
@@ -449,7 +449,7 @@ defmodule Backend.Battlefy do
   defp auto_loss?(_, _, %{double_loss: true}), do: true
   defp auto_loss?(w, l, m), do: auto_win?(w, l, m)
 
-  def add_team_to_stats(team_map, %{team: team = %{name: name}} = t, opponent, m) do
+  def add_team_to_stats(team_map, %{team: %{name: name} = team} = t, opponent, m) do
     standings =
       team_map |> Map.get(name) ||
         %Standings{
@@ -767,7 +767,7 @@ defmodule Backend.Battlefy do
     end
   end
 
-  def empty_opponent_matches(), do: %{winner: [], loser: [], waiting: []}
+  def empty_opponent_matches, do: %{winner: [], loser: [], waiting: []}
 
   def future_opponents(matches, %{
         id: id,
@@ -804,14 +804,12 @@ defmodule Backend.Battlefy do
 
   def possible_future_opponents(matches, future_match_id, current_match_id \\ nil) do
     matches
-    |> Enum.filter(
-      &(Map.get(&1, :next) |> Next.has_match_id?(future_match_id) && &1.id != current_match_id)
-    )
+    |> Enum.filter(&(Map.get(&1, :next) |> Next.has_match_id?(future_match_id) && &1.id != current_match_id))
     |> Enum.flat_map(fn
       %{top: %{winner: top}, bottom: %{winner: bot}} when top == true or bot == true ->
         []
 
-      match = %{top: %{winner: false, team: top}, bottom: %{winner: false, team: bot}}
+      %{top: %{winner: false, team: top}, bottom: %{winner: false, team: bot}} = match
       when top != nil and bot != nil ->
         [match]
 
@@ -928,7 +926,7 @@ defmodule Backend.Battlefy do
   @spec get_deckstrings(%{stage_id: stage_id, tournament_id: tournament_id}, [
           Blizzard.battletag()
         ]) :: map()
-  def get_deckstrings(info = %{tournament_id: tournament_id}, battletags)
+  def get_deckstrings(%{tournament_id: tournament_id} = info, battletags)
       when is_list(battletags) do
     matches = get_deckstrings_matches(info)
 
@@ -1015,7 +1013,7 @@ defmodule Backend.Battlefy do
   end
 
   @spec regions :: [region]
-  def regions() do
+  def regions do
     @regions
   end
 
@@ -1068,7 +1066,7 @@ defmodule Backend.Battlefy do
     "https://battlefy.com/#{org_slug}/#{slug}/#{id}/info"
   end
 
-  def hardcoded_organization_slugs(), do: @organization_slugs
+  def hardcoded_organization_slugs, do: @organization_slugs
 
   def organization_stats(org_slug),
     do: @organization_stats_configs |> Enum.filter(&Kernel.==(&1.organization_slug, org_slug))
@@ -1076,7 +1074,7 @@ defmodule Backend.Battlefy do
   def stats_config(stats_slug),
     do: @organization_stats_configs |> Enum.find(&Kernel.==(&1.stats_slug, stats_slug))
 
-  def hardcoded_organizations() do
+  def hardcoded_organizations do
     hardcoded_organization_slugs()
     |> Enum.map(&Api.get_organization/1)
     |> Enum.filter(&Util.id/1)
@@ -1138,7 +1136,7 @@ defmodule Backend.Battlefy do
   @spec lineups(tournament_id) :: [Lineup]
   def lineups(tournament_id) do
     case Hearthstone.get_lineups(tournament_id, "battlefy") do
-      lineups = [_ | _] ->
+      [_ | _] = lineups ->
         lineups
 
       _ ->
@@ -1230,7 +1228,7 @@ defmodule Backend.Battlefy do
         mapper.(val)
       end
     end)
-    |> Map.drop([nil])
+    |> Map.delete(nil)
     |> Enum.map(fn {grouped_by, standings} ->
       new_name = Map.get(display_map, grouped_by, grouped_by)
       merge_standings(standings, new_name)

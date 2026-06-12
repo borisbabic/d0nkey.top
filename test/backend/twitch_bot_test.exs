@@ -5,9 +5,47 @@ defmodule Backend.TwitchBotTest do
 
   alias Backend.TwitchBot.TwitchCommand
 
-  @valid_attrs %{user_id: 1, enabled: true, message: "some message", message_regex: true, message_regex_flags: "some message_regex_flags", name: "some name", random_chance: 120.5, response: "some response", sender: "some sender", sender_regex: true, sender_regex_flags: "some sender_regex_flags", type: "some type"}
-  @update_attrs %{user_id: 1, enabled: false, message: "some updated message", message_regex: false, message_regex_flags: "some updated message_regex_flags", name: "some updated name", random_chance: 456.7, response: "some updated response", sender: "some updated sender", sender_regex: false, sender_regex_flags: "some updated sender_regex_flags", type: "some updated type"}
-  @invalid_attrs %{enabled: nil, message: nil, message_regex: nil, message_regex_flags: nil, name: nil, random_chance: nil, response: nil, sender: nil, sender_regex: nil, sender_regex_flags: nil, type: nil}
+  @valid_attrs %{
+    user_id: 1,
+    enabled: true,
+    message: "some message",
+    message_regex: true,
+    message_regex_flags: "some message_regex_flags",
+    name: "some name",
+    random_chance: 120.5,
+    response: "some response",
+    sender: "some sender",
+    sender_regex: true,
+    sender_regex_flags: "some sender_regex_flags",
+    type: "some type"
+  }
+  @update_attrs %{
+    user_id: 1,
+    enabled: false,
+    message: "some updated message",
+    message_regex: false,
+    message_regex_flags: "some updated message_regex_flags",
+    name: "some updated name",
+    random_chance: 456.7,
+    response: "some updated response",
+    sender: "some updated sender",
+    sender_regex: false,
+    sender_regex_flags: "some updated sender_regex_flags",
+    type: "some updated type"
+  }
+  @invalid_attrs %{
+    enabled: nil,
+    message: nil,
+    message_regex: nil,
+    message_regex_flags: nil,
+    name: nil,
+    random_chance: nil,
+    response: nil,
+    sender: nil,
+    sender_regex: nil,
+    sender_regex_flags: nil,
+    type: nil
+  }
 
   describe "#paginate_twitch_commands/1" do
     test "returns paginated list of twitch_commands" do
@@ -119,5 +157,4 @@ defmodule Backend.TwitchBotTest do
     user = create_temp_user()
     Map.put(command, :user_id, user.id)
   end
-
 end

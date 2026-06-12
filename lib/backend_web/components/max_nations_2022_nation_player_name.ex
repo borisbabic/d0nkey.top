@@ -6,6 +6,7 @@ defmodule Components.MaxNations2022NationPlayerName do
 
   prop(player, :string, required: true)
   prop(nation, :string, required: false)
+
   def render(assigns) do
     ~F"""
       <span>
@@ -14,8 +15,10 @@ defmodule Components.MaxNations2022NationPlayerName do
       </span>
     """
   end
+
   def nation(nil, player) do
     MaxNations2022.get_nation(player)
   end
+
   def nation(nation, _), do: nation
 end

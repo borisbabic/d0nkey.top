@@ -36,7 +36,7 @@ defmodule Components.GMStandingsTable do
   def class(index) when index < 12, do: "gm-standings-boring"
   def class(_), do: "gm-standings-relegated"
 
-  def weeks(), do: BackendWeb.GrandmastersLive.weeks()
+  def weeks, do: BackendWeb.GrandmastersLive.weeks()
 
   def weekly_results(player, week) do
     Grandmasters.results(week)

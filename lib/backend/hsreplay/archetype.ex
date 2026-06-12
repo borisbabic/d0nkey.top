@@ -17,20 +17,20 @@ defmodule Backend.HSReplay.Archetype do
     field :wild_cpp_signature_core, Signature.t()
   end
 
-  def from_raw_map(map = %{"playerClass" => _}) do
+  def from_raw_map(%{"playerClass" => _} = map) do
     map
     |> Recase.Enumerable.convert_keys(&Recase.to_snake/1)
     |> from_raw_map()
   end
 
   def from_raw_map(
-        m = %{
+        %{
           "player_class" => pc,
           "player_class_name" => pcn,
           "url" => url,
           "name" => name,
           "id" => id
-        }
+        } = m
       ) do
     %__MODULE__{
       id: id,
@@ -60,7 +60,7 @@ defmodule Backend.HSReplay.Archetype.CcpSignatureCore do
     field :components, [integer]
   end
 
-  def from_raw_map(m = %{"as_of" => as_of_raw}) do
+  def from_raw_map(%{"as_of" => as_of_raw} = m) do
     %__MODULE__{
       as_of: NaiveDateTime.from_iso8601!(as_of_raw),
       format: m["format"],

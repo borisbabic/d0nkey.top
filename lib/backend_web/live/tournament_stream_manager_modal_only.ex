@@ -9,7 +9,7 @@ defmodule BackendWeb.TournamentStreamManagerModalOnlyLive do
   data(tournament_id, :string)
   data(user, :any)
 
-  def mount(_params, session = %{"tournament_source" => source, "tournament_id" => id}, socket) do
+  def mount(_params, %{"tournament_source" => source, "tournament_id" => id} = session, socket) do
     {:ok,
      socket
      |> assign(tournament_source: source, tournament_id: id)

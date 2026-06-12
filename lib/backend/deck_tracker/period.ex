@@ -87,7 +87,7 @@ defmodule Hearthstone.DeckTracker.Period do
   end
 
   def future?(%{period_start: %NaiveDateTime{} = period_start}) do
-    NaiveDateTime.compare(period_start, NaiveDateTime.utc_now()) == :gt
+    NaiveDateTime.after?(period_start, NaiveDateTime.utc_now())
   end
 
   def future?(_), do: false

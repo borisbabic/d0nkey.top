@@ -218,8 +218,8 @@ defmodule Command.ExportData do
     """
   end
 
-  defp yesterday_start() do
-    Timex.today() |> Timex.add(Timex.Duration.from_days(-1)) |> Timex.to_datetime()
+  defp yesterday_start do
+    Date.utc_today() |> Timex.add(Timex.Duration.from_days(-1)) |> Timex.to_datetime()
   end
 
   # defp plus_one_day(start) do

@@ -35,7 +35,7 @@ defmodule BackendWeb.FantasyLeagueLive do
 
   def handle_info(
         %{payload: %{id: payload_id, table: "leagues"}},
-        s = %{assigns: %{league_id: league_id}}
+        %{assigns: %{league_id: league_id}} = s
       ) do
     socket =
       if to_string(payload_id) == to_string(league_id) do

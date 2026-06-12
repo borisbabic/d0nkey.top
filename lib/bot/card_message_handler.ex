@@ -52,7 +52,7 @@ defmodule Bot.CardMessageHandler do
 
   def create_image_component(card, opts \\ []) do
     card_url = Keyword.get(opts, :card_url, Card.card_url(card)) |> add_hsguru()
-    title_prepend = Keyword.get(opts, :title_prepend, nil)
+    title_prepend = Keyword.get(opts, :title_prepend)
 
     accent_color = discord_color(card)
 

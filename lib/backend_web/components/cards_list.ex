@@ -58,8 +58,7 @@ defmodule Components.CardsList do
     comparison_map =
       (comparison || [])
       |> Enum.filter(& &1)
-      |> Enum.map(&{Hearthstone.CardBag.deckcode_copy_id(&1.id), &1})
-      |> Map.new()
+      |> Map.new(&{Hearthstone.CardBag.deckcode_copy_id(&1.id), &1})
 
     to_check =
       comparison ||
@@ -69,8 +68,8 @@ defmodule Components.CardsList do
     to_check
     |> Enum.flat_map(fn c ->
       {class, count} =
-        case {Map.get(comparison_map, CardBag.deckcode_copy_id(c.id)), Map.get(cards_map, c.id),
-              highlight_rotation, fade_unowned} do
+        case {Map.get(comparison_map, CardBag.deckcode_copy_id(c.id)), Map.get(cards_map, c.id), highlight_rotation,
+              fade_unowned} do
           {cc, {_, count}, _, _} when not is_nil(cc) -> {comparison_class(cc, count), count}
           {nil, {card, count}, true, _} -> {rotation_class(highlight_rotation, card), count}
           {nil, {card, count}, _, true} -> {unowned_class(card, count, owned_card_map), count}
@@ -160,10 +159,9 @@ defmodule Components.CardsList do
     # might be hacky might be useful overall
     |> Enum.map(&CardBag.deckcode_copy_id/1)
     |> Hearthstone.ordered_frequencies(cost: &Deck.card_mana_cost(deck, &1))
-    |> Enum.map(fn {card, count} ->
+    |> Map.new(fn {card, count} ->
       {card.id, {card, count}}
     end)
-    |> Map.new()
   end
 
   @staying_sets [

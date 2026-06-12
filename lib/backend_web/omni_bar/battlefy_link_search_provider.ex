@@ -75,8 +75,7 @@ defmodule BackendWeb.BattlefySearchProvider do
           display_value: "View organizer tournaments",
           priority: 0.5,
           result_id: "battlefy_organizier_tournament_results",
-          link:
-            Routes.battlefy_path(BackendWeb.Endpoint, :organization_tournaments, %{"slug" => org})
+          link: Routes.battlefy_path(BackendWeb.Endpoint, :organization_tournaments, %{"slug" => org})
         }
 
       _ ->

@@ -184,21 +184,21 @@ defmodule Backend.TwitchBot do
   end
 
   def enable(id, user) do
-    with command = %{id: _} <- get_twitch_command(id),
+    with %{id: _} = command <- get_twitch_command(id),
          true <- can_manage?(command, user) do
       update_twitch_command(command, %{enabled: true})
     end
   end
 
   def disable(id, user) do
-    with command = %{id: _} <- get_twitch_command(id),
+    with %{id: _} = command <- get_twitch_command(id),
          true <- can_manage?(command, user) do
       update_twitch_command(command, %{enabled: false})
     end
   end
 
   def delete(id, user) do
-    with command = %{id: _} <- get_twitch_command(id),
+    with %{id: _} = command <- get_twitch_command(id),
          true <- can_manage?(command, user) do
       delete_twitch_command(command)
     end
@@ -206,7 +206,7 @@ defmodule Backend.TwitchBot do
 
   @spec can_manage?(TwitchCommand.t(), User.t() | nil) :: boolean
   def can_manage?(%{user_id: user_id}, %{id: id}) when id == user_id, do: true
-  def can_manage?(_, user = %{id: _id}), do: User.can_access?(user, "twitch_commands")
+  def can_manage?(_, %{id: _id} = user), do: User.can_access?(user, "twitch_commands")
   def can_manage?(_, _), do: false
 
   defp filter_config(:twitch_commands) do

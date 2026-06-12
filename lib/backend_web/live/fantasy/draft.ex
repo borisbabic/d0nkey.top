@@ -79,12 +79,12 @@ defmodule BackendWeb.FantasyDraftLive do
     """
   end
 
-  def show_draft_picks_table(league = %{real_time_draft: true}, true),
+  def show_draft_picks_table(%{real_time_draft: true} = league, true),
     do: League.any_picks?(league)
 
   def show_draft_picks_table(_, _), do: false
 
-  def show_draft_picks_table_button(league = %{real_time_draft: true}),
+  def show_draft_picks_table_button(%{real_time_draft: true} = league),
     do: League.any_picks?(league)
 
   def show_draft_picks_table_button(_), do: false
@@ -94,12 +94,12 @@ defmodule BackendWeb.FantasyDraftLive do
   def handle_event(
         "toggle_draft_picks_table",
         _,
-        socket = %{assigns: %{show_draft_picks_table: sdpt}}
+        %{assigns: %{show_draft_picks_table: sdpt}} = socket
       ) do
     {:noreply, socket |> assign(show_draft_picks_table: !sdpt)}
   end
 
-  def handle_event("start_draft", _, socket = %{assigns: %{league: league}}) do
+  def handle_event("start_draft", _, %{assigns: %{league: league}} = socket) do
     Backend.Fantasy.start_draft(league)
     {:noreply, socket}
   end
@@ -125,7 +125,7 @@ defmodule BackendWeb.FantasyDraftLive do
 
   def handle_info(
         %{payload: %{id: payload_id, table: "leagues"}},
-        s = %{assigns: %{league_id: league_id}}
+        %{assigns: %{league_id: league_id}} = s
       ) do
     socket =
       if to_string(payload_id) == to_string(league_id) do
@@ -156,6 +156,6 @@ defmodule BackendWeb.FantasyDraftLive do
 
   defp get_league(league_id), do: Fantasy.get_league(league_id)
 
-  defp presence_topic(%{assigns: %{league: league = %League{}}}), do: presence_topic(league)
+  defp presence_topic(%{assigns: %{league: %League{} = league}}), do: presence_topic(league)
   defp presence_topic(%League{id: id}), do: "fantasy_draft_#{id}"
 end

@@ -51,7 +51,7 @@ defmodule Components.RosterModal do
   defp show_round_footer?(_), do: true
 
   def standings_link(%{
-        picks: picks = [_ | _],
+        picks: [_ | _] = picks,
         league: %{competition_type: "masters_tour", competition: ts}
       }) do
     ts
@@ -74,7 +74,7 @@ defmodule Components.RosterModal do
   def standings_link(_), do: nil
 
   defp show_pick_name(
-         lt = %{league: league = %{real_time_draft: false, draft_deadline: dd}},
+         %{league: %{real_time_draft: false, draft_deadline: dd} = league} = lt,
          user,
          name,
          round
@@ -112,9 +112,9 @@ defmodule Components.RosterModal do
     |> Enum.sort_by(&(&1 |> elem(0)), :desc)
   end
 
-  def handle_event("inc_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
+  def handle_event("inc_round", _, %{assigns: %{round: r, league_team: lt}} = socket),
     do: {:noreply, socket |> assign(round: round(lt, r) + 1)}
 
-  def handle_event("dec_round", _, socket = %{assigns: %{round: r, league_team: lt}}),
+  def handle_event("dec_round", _, %{assigns: %{round: r, league_team: lt}} = socket),
     do: {:noreply, socket |> assign(round: round(lt, r) - 1)}
 end

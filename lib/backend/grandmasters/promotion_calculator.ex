@@ -138,9 +138,11 @@ defmodule Backend.Grandmasters.PromotionCalculator do
 
   def swiss_points(standings, :match_wins, _), do: match_wins(standings)
 
-  defp match_wins(standings), do: Enum.map(standings, fn %{team: %{name: name}, wins: wins, place: place} ->
-    {name, wins, place}
-  end)
+  defp match_wins(standings),
+    do:
+      Enum.map(standings, fn %{team: %{name: name}, wins: wins, place: place} ->
+        {name, wins, place}
+      end)
 
   @first_earnings {32_500, 1}
   @second_earnings {22_500, 2}
@@ -191,6 +193,7 @@ defmodule Backend.Grandmasters.PromotionCalculator do
       {name, points, place}
     end)
   end
+
   def top_cut_points(standings, :match_wins, _), do: match_wins(standings)
 
   # 2020 9-16 in swiss are treated as 9th

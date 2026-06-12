@@ -76,7 +76,7 @@ defmodule Backend.BattlefyUtil do
     0
   end
 
-  def get_average_duration(t = _tournaments_with_meta) do
+  def get_average_duration(_tournaments_with_meta = t) do
     count = t |> Enum.count()
 
     total =
@@ -134,10 +134,8 @@ defmodule Backend.BattlefyUtil do
 
     %{
       average_duration: t |> get_average_duration() |> Util.human_duration(),
-      average_duration_fewer_rounds:
-        t |> get_average_duration_fewer_rounds() |> Util.human_duration(),
-      average_duration_all_rounds:
-        t |> get_average_duration_all_rounds() |> Util.human_duration(),
+      average_duration_fewer_rounds: t |> get_average_duration_fewer_rounds() |> Util.human_duration(),
+      average_duration_all_rounds: t |> get_average_duration_all_rounds() |> Util.human_duration(),
       shortest_duration: {Util.human_duration(shortest_dur), shortest_link},
       longest_duration: {Util.human_duration(longest_dur), longest_link},
       avg_players: get_average_player_count(t),
@@ -268,7 +266,7 @@ defmodule Backend.BattlefyUtil do
   """
   def next_round_match(match_number, round_number, total_rounds) do
     pos_in_round = get_pos_in_round(match_number, round_number, total_rounds)
-    get_matchnum((pos_in_round / 2) |> Float.ceil() |> trunc(), round_number + 1, total_rounds)
+    (pos_in_round / 2) |> Float.ceil() |> trunc() |> get_matchnum(round_number + 1, total_rounds)
   end
 
   def get_neighbor(_, round_number, total_rounds) when round_number == total_rounds do

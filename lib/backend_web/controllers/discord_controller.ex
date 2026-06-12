@@ -14,12 +14,12 @@ defmodule BackendWeb.DiscordController do
     )
   end
 
-  def broadcast(conn = %{method: "POST"}, %{"photo" => %{path: path, filename: name}}) do
+  def broadcast(%{method: "POST"} = conn, %{"photo" => %{path: path, filename: name}}) do
     Discord.broadcast(path, name)
     render(conn, "broadcast.html")
   end
 
-  def publish(conn = %{method: "POST"}, %{
+  def publish(%{method: "POST"} = conn, %{
         "photo" => %{path: path, filename: name},
         "token" => token,
         "id" => id
@@ -44,7 +44,7 @@ defmodule BackendWeb.DiscordController do
     end
   end
 
-  def subscribe(conn = %{method: "POST"}, %{"hook_url" => hook_url, "token" => token, "id" => id}) do
+  def subscribe(%{method: "POST"} = conn, %{"hook_url" => hook_url, "token" => token, "id" => id}) do
     broadcast = Discord.get_broadcast!(id)
 
     if token == broadcast.subscribe_token do

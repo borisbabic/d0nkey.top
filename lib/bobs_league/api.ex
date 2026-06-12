@@ -5,7 +5,7 @@ defmodule BobsLeague.Api do
   alias BobsLeague.Api.Tournament
 
   @spec tournaments() :: {:ok, Tournament.t()} | {:error, any()}
-  def tournaments() do
+  def tournaments do
     with {:ok, %{body: body}} <- get("/tournaments/?limit=25"),
          {:ok, %{"data" => data}} <- Jason.decode(body) do
       tournaments =
@@ -13,7 +13,7 @@ defmodule BobsLeague.Api do
 
       {:ok, tournaments}
     else
-      r = {:error, _reason} -> r
+      {:error, _reason} = r -> r
       _ -> {:error, :unknown_error_getting_bobs_league_tournaments}
     end
   end

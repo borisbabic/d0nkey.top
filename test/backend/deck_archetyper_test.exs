@@ -36,9 +36,7 @@ defmodule Backend.DeckArchetyperTest do
   # errored out streamer decks
   test "deck_archetyper doesnt' error" do
     deck =
-      Deck.decode!(
-        "AAECAfHhBAqoigSk7wTipAXLpQWeqgXzyAX8+QXt/wWLkgb/lwYK0e0Eh/YEsvcEtPcEkpMFoJkF8OgFg5IGkZcGgJgGAAA="
-      )
+      Deck.decode!("AAECAfHhBAqoigSk7wTipAXLpQWeqgXzyAX8+QXt/wWLkgb/lwYK0e0Eh/YEsvcEtPcEkpMFoJkF8OgFg5IGkZcGgJgGAAA=")
 
     DeckArchetyper.archetype(deck)
     assert true

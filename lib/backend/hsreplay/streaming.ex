@@ -14,7 +14,7 @@ defmodule Backend.HSReplay.Streaming do
 
   def deckcode(%{deck: d, hero: h, format: f}), do: Backend.Hearthstone.Deck.deckcode(d, h, f)
 
-  def from_raw_map(map = %{"legend_rank" => lr}) do
+  def from_raw_map(%{"legend_rank" => lr} = map) do
     %__MODULE__{
       deck: map["deck"],
       hero: map["hero"],
@@ -37,7 +37,7 @@ defmodule Backend.HSReplay.Streaming.Twitch do
     field :display_name, String.t()
   end
 
-  def from_raw_map(map = %{"display_name" => dn}) do
+  def from_raw_map(%{"display_name" => dn} = map) do
     %__MODULE__{
       id: map["id"],
       login: map["login"],

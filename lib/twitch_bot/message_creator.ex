@@ -5,7 +5,7 @@ defmodule TwitchBot.MessageCreator do
   alias Backend.UserManager.User
   alias Backend.Streaming.Streamer
 
-  def create_messages(matching, message_info = %{chat: chat}) when is_list(matching) do
+  def create_messages(matching, %{chat: chat} = message_info) when is_list(matching) do
     user_values = user_values(chat)
     values = base_values(message_info) |> Map.merge(user_values)
     Enum.map(matching, &create_message(&1, message_info, values))
@@ -36,8 +36,7 @@ defmodule TwitchBot.MessageCreator do
 
       user ->
         %{
-          "streamer_decks_url" =>
-            "https://www.hsguru.com/streamer-decks?twitch_id=#{user.twitch_id}"
+          "streamer_decks_url" => "https://www.hsguru.com/streamer-decks?twitch_id=#{user.twitch_id}"
         }
         |> add_latest_replay(user)
     end
@@ -53,12 +52,11 @@ defmodule TwitchBot.MessageCreator do
     Repo.one(query)
   end
 
-  def add_leaderboard_status(values = %{"ldb_player" => player}) do
+  def add_leaderboard_status(%{"ldb_player" => player} = values) do
     status =
       Backend.Leaderboards.get_current_player_entries([player])
       |> Enum.filter(&(&1 |> elem(0) |> Enum.any?()))
-      |> Enum.map_join(" | ", fn {[%{rank: rank, rating: rating} | _],
-                                  %{region: region, leaderboard_id: leaderboard}} ->
+      |> Enum.map_join(" | ", fn {[%{rank: rank, rating: rating} | _], %{region: region, leaderboard_id: leaderboard}} ->
         [
           Backend.Blizzard.get_region_name(region, :short),
           Backend.Blizzard.get_leaderboard_name(leaderboard, :short),

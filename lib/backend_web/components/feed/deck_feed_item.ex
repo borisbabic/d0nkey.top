@@ -6,7 +6,7 @@ defmodule Components.Feed.DeckFeedItem do
   alias Components.DeckStreamingInfo
   prop(item, :map, required: true)
 
-  def render(assigns = %{item: %{value: _deck_id}}) do
+  def render(%{item: %{value: _deck_id}} = assigns) do
     ~F"""
     <span>
     <DeckCard :if={deck = deck(@item.value)}>

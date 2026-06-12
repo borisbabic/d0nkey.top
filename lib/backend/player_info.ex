@@ -263,27 +263,27 @@ defmodule Backend.PlayerInfo do
     "BY" => :EU,
     "IS" => :EU
   }
-  def get_eligible_countries() do
+  def get_eligible_countries do
     @alpha2_to_region |> Map.keys()
   end
 
   def new_grandmasters(_), do: []
 
-  def get_grandmasters_for_promotion(season = {2020, 2}),
+  def get_grandmasters_for_promotion({2020, 2} = season),
     do: get_grandmasters(:Jönköping, relegated_gms_for_promotion(season))
 
-  def get_grandmasters_for_promotion(season = {2021, 1}),
+  def get_grandmasters_for_promotion({2021, 1} = season),
     do: get_grandmasters(:Montréal, relegated_gms_for_promotion(season)) ++ ["Briarthorn"]
 
-  def get_grandmasters_for_promotion(season = {2021, 2}),
+  def get_grandmasters_for_promotion({2021, 2} = season),
     do: get_grandmasters(:Dalaran, relegated_gms_for_promotion(season))
 
-  def get_grandmasters_for_promotion(season = {2022, 1}) do
+  def get_grandmasters_for_promotion({2022, 1} = season) do
     relegated = relegated_gms_for_promotion(season)
     get_grandmasters({2021, 2}) |> remove_relegated(relegated)
   end
 
-  def get_grandmasters_for_promotion(season = {2022, 2}) do
+  def get_grandmasters_for_promotion({2022, 2} = season) do
     relegated = relegated_gms_for_promotion(season)
 
     newly_promoted = [
@@ -420,7 +420,7 @@ defmodule Backend.PlayerInfo do
     ]
   end
 
-  def get_grandmasters(rts = _reference_tour_stop, relegated) do
+  def get_grandmasters(_reference_tour_stop = rts, relegated) do
     Backend.MastersTour.list_invited_players(rts)
     |> Enum.filter(fn %{reason: r, official: _o} -> String.contains?(r, "Grandmaster") end)
     |> Enum.map(fn %{battletag_full: bf} ->

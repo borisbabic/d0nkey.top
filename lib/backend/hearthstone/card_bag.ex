@@ -24,7 +24,7 @@ defmodule Backend.Hearthstone.CardBag do
   def sideboardable?(card_id, fallback \\ true),
     do: Util.ets_lookup(table(), "sideboardable_#{card_id}", fallback)
 
-  defp all() do
+  defp all do
     :ets.match_object(table(), {:_, :"$1"})
   end
 
@@ -33,7 +33,7 @@ defmodule Backend.Hearthstone.CardBag do
   @doc """
   Collectible cards sorted by standard first
   """
-  def standard_first() do
+  def standard_first do
     Util.ets_lookup(table(), :standard_first, [])
   end
 
@@ -51,7 +51,7 @@ defmodule Backend.Hearthstone.CardBag do
   end
 
   @spec all_cards() :: [Card.t()] | Stream.t()
-  def all_cards() do
+  def all_cards do
     all()
     |> Stream.filter(fn
       {"card_id_" <> _, _} -> true
@@ -60,11 +60,11 @@ defmodule Backend.Hearthstone.CardBag do
     |> Stream.map(&elem(&1, 1))
   end
 
-  def fabled_companions() do
+  def fabled_companions do
     Util.ets_lookup(table(), :fabled_companions, [])
   end
 
-  def refresh_table(), do: GenServer.cast(@name, :refresh_table)
+  def refresh_table, do: GenServer.cast(@name, :refresh_table)
 
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: @name)
@@ -76,12 +76,12 @@ defmodule Backend.Hearthstone.CardBag do
     {:ok, %{table: table, last_success_response: nil}, {:continue, :init}}
   end
 
-  def handle_continue(:init, state = %{table: table}) do
+  def handle_continue(:init, %{table: table} = state) do
     set_table(table)
     {:noreply, state}
   end
 
-  def handle_cast(:refresh_table, state = %{table: table}) do
+  def handle_cast(:refresh_table, %{table: table} = state) do
     set_table(table)
     {:noreply, state}
   end
@@ -165,7 +165,7 @@ defmodule Backend.Hearthstone.CardBag do
     :ets.insert(table, {:collectible_for_match, collectible_for_match})
   end
 
-  defp table(), do: :ets.whereis(@name)
+  defp table, do: :ets.whereis(@name)
 
   @min_distance 0.7
   @spec closest_collectible(String.t(), number()) :: [{number(), Card.t()}]

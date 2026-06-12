@@ -158,7 +158,7 @@ defmodule Backend.UserManagerTest do
     group
   end
 
-  def owner_id() do
+  def owner_id do
     user = create_temp_user()
 
     user.id

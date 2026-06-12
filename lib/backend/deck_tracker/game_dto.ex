@@ -26,17 +26,16 @@ defmodule Hearthstone.DeckTracker.GameDto do
   end
 
   @spec from_raw_map(map(), ApiUser.t()) :: GameDto.t()
-  def from_raw_map(map = %{"GameId" => _}, created_by),
+  def from_raw_map(%{"GameId" => _} = map, created_by),
     do: map |> to_snake() |> from_raw_map(created_by)
 
-  def from_raw_map(map = %{"gameId" => _}, created_by),
+  def from_raw_map(%{"gameId" => _} = map, created_by),
     do: map |> to_snake() |> from_raw_map(created_by)
 
-  def from_raw_map(map = %{}, created_by) do
+  def from_raw_map(%{} = map, created_by) do
     %GameDto{
       player: map["player"] |> PlayerDto.from_raw_map(map["format"]),
-      opponent:
-        (map["opponent"] || map["opposing_player"]) |> PlayerDto.from_raw_map(map["format"]),
+      opponent: (map["opponent"] || map["opposing_player"]) |> PlayerDto.from_raw_map(map["format"]),
       game_id: map["game_id"],
       game_type: map["game_type"],
       format: map["format"],
@@ -84,7 +83,7 @@ defmodule Hearthstone.DeckTracker.GameDto do
     deckcode_handler.(dto.player.deckcode)
   end
 
-  def to_ecto_attrs(dto = %GameDto{}, deckcode_handler, source_handler) do
+  def to_ecto_attrs(%GameDto{} = dto, deckcode_handler, source_handler) do
     %{
       "player_btag" => dto.player.battletag,
       "player_rank" => dto.player.rank,
@@ -174,10 +173,8 @@ defmodule Hearthstone.DeckTracker.GameDto do
         %{
           "player_cards" => player_dbf_ids,
           "opponent_cards" => opponent_dbf_ids,
-          "player_archetype" =>
-            Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_class, format),
-          "opponent_archetype" =>
-            Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_class, format),
+          "player_archetype" => Backend.PlayedCardsArchetyper.archetype(player_dbf_ids, player_class, format),
+          "opponent_archetype" => Backend.PlayedCardsArchetyper.archetype(opponent_dbf_ids, opponent_class, format),
           "archetyping_updated_at" => NaiveDateTime.utc_now()
         }
       }

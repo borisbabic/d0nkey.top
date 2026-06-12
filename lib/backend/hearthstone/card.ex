@@ -47,8 +47,7 @@ defmodule Backend.Hearthstone.Card do
   end
 
   @primary_key {:id, :integer, []}
-  @derive {Jason.Encoder,
-           except: [:__meta__, :__struct__, :canonical, :deckcode_copy, :copy_of_card]}
+  @derive {Jason.Encoder, except: [:__meta__, :__struct__, :canonical, :deckcode_copy, :copy_of_card]}
   schema "hs_cards" do
     field(:artist_name, :string)
     field(:attack, :integer)
@@ -104,7 +103,7 @@ defmodule Backend.Hearthstone.Card do
     attrs =
       base_attrs
       |> update_duels()
-      |> Map.drop([:mercenary_hero])
+      |> Map.delete(:mercenary_hero)
       |> use_english_fields()
       |> Util.keys_to_string()
 
@@ -203,7 +202,7 @@ defmodule Backend.Hearthstone.Card do
     map
     |> Map.put(:duels_constructed, cons)
     |> Map.put(:duels_relevant, rel)
-    |> Map.drop([:duels])
+    |> Map.delete(:duels)
   end
 
   defp update_duels(map), do: map

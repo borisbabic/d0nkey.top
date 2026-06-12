@@ -70,7 +70,7 @@ defmodule Components.NewTwitchCommand do
   def handle_event(
         "submit",
         %{"twitch_command" => raw_attrs},
-        socket = %{assigns: %{user: %{id: id}}}
+        %{assigns: %{user: %{id: id}}} = socket
       ) do
     attrs = Map.put(raw_attrs, "user_id", id)
     TwitchBot.create_twitch_command(attrs)
@@ -120,7 +120,7 @@ defmodule Components.NewTwitchCommand do
   defp get_template(_),
     do: %{type: "custom", message: "!quote_me", response: "{{ sender }}: \"{{ message }}\""}
 
-  defp templates() do
+  defp templates do
     [
       {
         "custom",

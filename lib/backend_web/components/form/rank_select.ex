@@ -22,7 +22,7 @@ defmodule Components.Form.RankSelect do
      )}
   end
 
-  defp set_rank_parts(assigns = %{rank: r}) when is_integer(r) do
+  defp set_rank_parts(%{rank: r} = assigns) when is_integer(r) do
     Map.put(assigns, :rank_parts, DeckTracker.convert_rank(r))
   end
 
@@ -49,7 +49,7 @@ defmodule Components.Form.RankSelect do
     """
   end
 
-  defp levels() do
+  defp levels do
     [
       :Legend,
       :Diamond,
@@ -105,9 +105,9 @@ defmodule Components.Form.RankSelect do
 
   defp num_sub_ranks(_), do: nil
 
-  defp assign_rank(socket = %{assigns: %{rank_parts: :Legend}}), do: assign(socket, rank: 51)
+  defp assign_rank(%{assigns: %{rank_parts: :Legend}} = socket), do: assign(socket, rank: 51)
 
-  defp assign_rank(socket = %{assigns: %{rank_parts: parts}}) do
+  defp assign_rank(%{assigns: %{rank_parts: parts}} = socket) do
     case DeckTracker.convert_rank(parts) do
       nil -> socket
       rank -> assign(socket, rank: rank, legend_rank: 0)

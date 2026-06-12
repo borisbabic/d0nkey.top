@@ -111,7 +111,7 @@ defmodule BackendWeb.StreamingNowLive do
     {:noreply, assign(socket, streaming_now: streaming_now)}
   end
 
-  defp subscribe_to_messages() do
+  defp subscribe_to_messages do
     @subscriptions
     |> Enum.each(fn s ->
       # unsub first prevents double subscribes

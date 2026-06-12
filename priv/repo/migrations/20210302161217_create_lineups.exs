@@ -11,7 +11,9 @@ defmodule Backend.Repo.Migrations.CreateLineups do
     end
 
     create(
-      unique_index(:lineups, [:tournament_id, :tournament_source, :name], name: :lineup_uniq_index)
+      unique_index(:lineups, [:tournament_id, :tournament_source, :name],
+        name: :lineup_uniq_index
+      )
     )
   end
 end

@@ -13,8 +13,7 @@ defmodule Hearthstone.DeckTrackerTest do
         battletag: "D0nkey#2470",
         rank: 51,
         legend_rank: 512,
-        deckcode:
-          "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+        deckcode: "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
       opponent: %PlayerDto{
         battletag: "BlaBla#14314",
@@ -31,8 +30,7 @@ defmodule Hearthstone.DeckTrackerTest do
         battletag: "D0nkey#2470",
         rank: nil,
         legend_rank: nil,
-        deckcode:
-          "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+        deckcode: "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
       opponent: %PlayerDto{
         battletag: nil,
@@ -52,8 +50,7 @@ defmodule Hearthstone.DeckTrackerTest do
         legend_rank: nil,
         cards_in_hand_after_mulligan: [%{card_dbf_id: 74_097, kept: false}],
         cards_drawn_from_initial_deck: [%{card_dbf_id: 74_097, turn: 3}],
-        deckcode:
-          "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+        deckcode: "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
       opponent: %PlayerDto{
         battletag: nil,
@@ -72,8 +69,7 @@ defmodule Hearthstone.DeckTrackerTest do
         legend_rank: nil,
         cards_in_hand_after_mulligan: [%{card_id: "THIS DOEST NOT EXIST", kept: false}],
         cards_drawn_from_initial_deck: [%{card_id: "CORE_CFM_753", turn: 3}],
-        deckcode:
-          "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+        deckcode: "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
       opponent: %PlayerDto{
         battletag: nil,
@@ -91,8 +87,7 @@ defmodule Hearthstone.DeckTrackerTest do
         rank: nil,
         legend_rank: nil,
         cards_played: [%{card_id: 74_097, turn: 3, created?: false}],
-        deckcode:
-          "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
+        deckcode: "AAECAa0GCJu6A8i+A5vYA/voA9TtA6bvA8jvA4WfBAuTugOvugPezAPXzgP+0QPi3gP44wOW6AOa6wOe6wOU7wMA"
       },
       opponent: %PlayerDto{
         battletag: nil,
@@ -105,7 +100,6 @@ defmodule Hearthstone.DeckTrackerTest do
       game_type: 7,
       format: 2
     }
-
 
     test "handle_game/1 returns new game and updates it" do
       assert {:ok, %Game{status: :in_progress, turns: nil, duration: nil}} =

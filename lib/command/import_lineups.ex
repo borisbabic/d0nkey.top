@@ -148,8 +148,6 @@ defmodule Command.ImportLineups do
   end
 
   def get_sheet_csv(spreadsheet_id, sheet_id) do
-    get(
-      "https://docs.google.com/spreadsheets/d/e/2PACX-#{spreadsheet_id}/pub?output=csv&gid=#{sheet_id}"
-    )
+    get("https://docs.google.com/spreadsheets/d/e/2PACX-#{spreadsheet_id}/pub?output=csv&gid=#{sheet_id}")
   end
 end

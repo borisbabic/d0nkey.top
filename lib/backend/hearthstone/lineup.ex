@@ -41,7 +41,7 @@ defmodule Backend.Hearthstone.Lineup do
     end)
   end
 
-  defp empty_stats_map() do
+  defp empty_stats_map do
     %{
       "DEATHKNIGHT" => 0,
       "DEMONHUNTER" => 0,

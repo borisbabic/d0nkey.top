@@ -18,7 +18,7 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
   # @battlefy_id "5efbcdaca2b8f022508f65c3"
   # @custom_field "5ec5ca7153702b1ab2a5c9dc"
 
-  def battlefy_id(), do: @battlefy_id
+  def battlefy_id, do: @battlefy_id
 
   def help_message(command \\ "botd") do
     """
@@ -77,9 +77,9 @@ defmodule Bot.BattleOfTheDiscordsMessageHandler do
   def handle(_, msg),
     do: send_message("Invalid argument, see `!dhelp botd` ", msg)
 
-  defp slugs(), do: for(%{slug: slug} <- @participating_discords, do: slug)
+  defp slugs, do: for(%{slug: slug} <- @participating_discords, do: slug)
 
-  def sorted_standings(),
+  def sorted_standings,
     do: Battlefy.get_standings(@battlefy_id) |> Battlefy.filter_and_sort_standings()
 
   @spec participating_guild?(Nostrum.Struct.Message.t() | integer()) :: boolean

@@ -20,7 +20,7 @@ defmodule BackendWeb.DeckcodeSearchProvider do
     with false <- deck_result(deck, term) |> callback.(),
          false <- deckviewer_result(deck, term) |> callback.(),
          false <- streaming_now_result(deck, term, callback),
-         d = %{id: _deck_id} <- Hearthstone.deck(deck) do
+         %{id: _deck_id} = d <- Hearthstone.deck(deck) do
       streamer_decks_result(d, term) |> callback.()
     end
   end
@@ -38,8 +38,7 @@ defmodule BackendWeb.DeckcodeSearchProvider do
         display_value: "Live on #{currently_streaming} streams",
         priority: 0.4,
         result_id: "streaming_now_deck_result",
-        link:
-          Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, %{"deckcode" => code})
+        link: Routes.live_path(BackendWeb.Endpoint, BackendWeb.StreamingNowLive, %{"deckcode" => code})
       }
       |> callback.()
     else

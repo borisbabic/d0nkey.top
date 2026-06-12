@@ -48,7 +48,7 @@ defmodule Backend.Telemetry do
     ]
   end
 
-  defp get_and_put_ip(metadata = %{conn: conn}) do
+  defp get_and_put_ip(%{conn: conn} = metadata) do
     ip =
       conn.req_headers
       |> Enum.find_value(fn {h, v} -> h == "x-forwarded-for" && v end)

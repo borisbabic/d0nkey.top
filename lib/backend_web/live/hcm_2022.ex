@@ -39,7 +39,7 @@ defmodule BackendWeb.HCM2022Live do
     {:noreply, socket}
   end
 
-  def weeks(), do: Backend.Hearthstone.get_tournament_ids_for_source("hcm_2022")
+  def weeks, do: Backend.Hearthstone.get_tournament_ids_for_source("hcm_2022")
 
   def handle_params(params, _uri, socket) do
     week = params["week"] || Backend.Hearthstone.get_latest_tournament_id_for_source("hcm_2022")

@@ -222,8 +222,8 @@ defmodule Components.CardStatsTable do
   def flip_direction(_), do: "desc"
 
   def flip_direction(
-        new_params = %{"sort_by" => new_sort_by},
-        old_params = %{"sort_by" => old_sort_by}
+        %{"sort_by" => new_sort_by} = new_params,
+        %{"sort_by" => old_sort_by} = old_params
       )
       when new_sort_by == old_sort_by do
     new_direction = get_direction(old_params) |> flip_direction()
@@ -272,7 +272,7 @@ defmodule Components.CardStatsTable do
 
   defp filter_same_deck(stats, filters) do
     with id when not is_nil(id) <- deck_id(filters),
-         deck = %Deck{} <- Hearthstone.get_deck(id) do
+         %Deck{} = deck <- Hearthstone.get_deck(id) do
       filter_cards(stats, Deck.unique_cards_with_sideboards(deck))
     else
       _ -> stats
@@ -432,7 +432,7 @@ defmodule Components.CardStatsTable do
     }
   end
 
-  def default_filters() do
+  def default_filters do
     %{
       "show_counts" => "alongside_impact"
     }

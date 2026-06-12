@@ -2,7 +2,7 @@ defmodule Bot.SlashCommandHandler do
   alias Bot.SlashCommands.SlashCommand
   alias Nostrum.Struct.Interaction
 
-  def register_slash_commands() do
+  def register_slash_commands do
     commands()
     |> Enum.flat_map(& &1.get_commands())
     |> Enum.each(&register_command/1)
@@ -47,16 +47,16 @@ defmodule Bot.SlashCommandHandler do
           [SlashCommand],
           SlashCommand.interaction_response()
         ) :: SlashCommand.interaction_response()
-  def do_handle_interaction(_interaction, _commands = [], _), do: :ok
+  def do_handle_interaction(_interaction, [] = _commands, _), do: :ok
   def do_handle_interaction(_interaction, _commands, :halt), do: :halted
-  def do_handle_interaction(_interaction, _commands, error = {:error, _}), do: error
+  def do_handle_interaction(_interaction, _commands, {:error, _} = error), do: error
 
   def do_handle_interaction(interaction, [curr | rest], _) do
     result = apply(curr, :handle_interaction, [interaction])
     do_handle_interaction(interaction, rest, result)
   end
 
-  def commands() do
+  def commands do
     Application.get_env(:backend, :nostrum_slash_commands, [])
   end
 end

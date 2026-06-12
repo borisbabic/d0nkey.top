@@ -107,7 +107,7 @@ defmodule Backend.Patreon do
     PatreonTier.changeset(patreon_tier, attrs)
   end
 
-  def add_new_tiers() do
+  def add_new_tiers do
     {:ok, response} = Patreon.Api.get_campaign(campaign_id())
     campaign = Patreon.Api.data_with_included(response.body)
     current_tier_ids = list_patreon_tiers() |> MapSet.new(& &1.id)
@@ -118,10 +118,10 @@ defmodule Backend.Patreon do
     end
   end
 
-  def campaign_id(), do: Application.fetch_env!(:backend, :patreon_campaign_id)
+  def campaign_id, do: Application.fetch_env!(:backend, :patreon_campaign_id)
 
   @spec campaign_user_tiers() :: [%{user_id: String.t(), tier_id: String.t()}]
-  def campaign_user_tiers() do
+  def campaign_user_tiers do
     {:ok, campaign_members} = Patreon.Api.get_all_campaign_members(campaign_id())
 
     for %{currently_entitled_tiers: [%{id: tier_id} | _], user: %{id: user_id}} <-

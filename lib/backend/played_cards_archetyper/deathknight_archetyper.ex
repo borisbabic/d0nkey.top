@@ -106,11 +106,11 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
 
   @wild_config []
 
-  def standard_excludes(), do: %{}
-  def wild_excludes(), do: %{}
+  def standard_excludes, do: %{}
+  def wild_excludes, do: %{}
 
-  def standard_config(), do: add_excludes(@standard_config, standard_excludes())
-  def wild_config(), do: add_excludes(@wild_config, standard_excludes())
+  def standard_config, do: add_excludes(@standard_config, standard_excludes())
+  def wild_config, do: add_excludes(@wild_config, standard_excludes())
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other DK")

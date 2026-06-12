@@ -32,7 +32,7 @@ defmodule Backend.Battlefy.Tournament do
     do: NaiveDateTime.utc_now() |> NaiveDateTime.compare(start_time) == :gt
 
   @spec from_raw_map(map()) :: t()
-  def from_raw_map(map = %{"startTime" => start_time, "slug" => slug, "name" => name}) do
+  def from_raw_map(%{"startTime" => start_time, "slug" => slug, "name" => name} = map) do
     region =
       case map["region"] do
         "Americas" -> :US
@@ -54,25 +54,24 @@ defmodule Backend.Battlefy.Tournament do
       game: Game.from_raw_map(map["game"]),
       streams: Stream.from_raw_map(map["streams"]),
       status: map["status"],
-      game_attributes:
-        GameAttributes.from_raw_map(map["gameAttributes"] || map["game_attributes"]),
+      game_attributes: GameAttributes.from_raw_map(map["gameAttributes"] || map["game_attributes"]),
       stages: extract_stages(map)
     }
   end
 
-  def extract_stages(%{"stages" => stages = [%{"startTime" => _} | _]}) do
+  def extract_stages(%{"stages" => [%{"startTime" => _} | _] = stages}) do
     stages |> Enum.map(&Battlefy.Stage.from_raw_map/1)
   end
 
   def extract_stages(_), do: nil
 
-  def extract_organization(%{"organization" => org = %{"slug" => _}}) do
+  def extract_organization(%{"organization" => %{"slug" => _} = org}) do
     Backend.Battlefy.Organization.from_raw_map(org)
   end
 
   def extract_organization(_), do: nil
 
-  def get_duration(tournament = %__MODULE__{}) do
+  def get_duration(%__MODULE__{} = tournament) do
     case tournament.last_completed_match_at do
       %{calendar: _} ->
         NaiveDateTime.diff(tournament.last_completed_match_at, tournament.start_time)
@@ -160,7 +159,7 @@ defmodule Backend.Battlefy.Tournament.Game do
 
   def from_raw_map(nil), do: nil
 
-  def from_raw_map(map = %{}) do
+  def from_raw_map(%{} = map) do
     %__MODULE__{
       id: map["id"] || map["_id"],
       slug: map["slug"],
@@ -234,13 +233,10 @@ defmodule Backend.Battlefy.Tournament.GameAttributes do
     %__MODULE__{
       ban_enabled: parse_ban_enabled(raw),
       classes_per_player: raw["classesPerPlayer"] || raw["classes_per_player"],
-      deck_publish_and_lock_time:
-        (raw["deckPublishAndLockTime"] || raw["deck_publish_and_lock_time"]) |> parse_date(),
-      hearthstone_card_format:
-        parse_card_format(raw["hearthstone_card_format"] || raw["hearthstoneCardFormat"]),
+      deck_publish_and_lock_time: (raw["deckPublishAndLockTime"] || raw["deck_publish_and_lock_time"]) |> parse_date(),
+      hearthstone_card_format: parse_card_format(raw["hearthstone_card_format"] || raw["hearthstoneCardFormat"]),
       hearthstone_deck_format: raw["hearthstoneDeckFormat"] || raw["hearthstone_deck_format"],
-      open_deck_format?:
-        raw["isOpenDeckFormat"] || raw["is_open_deck_format"] || raw["open_deck_format?"],
+      open_deck_format?: raw["isOpenDeckFormat"] || raw["is_open_deck_format"] || raw["open_deck_format?"],
       standard_year: raw["standardYear"] || raw["standard_year"]
     }
   end

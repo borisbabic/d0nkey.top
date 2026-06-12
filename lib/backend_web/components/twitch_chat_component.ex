@@ -8,7 +8,7 @@ defmodule Components.TwitchChat do
 
   defmacro __using__(opts) do
     subs_quote =
-      for component_id <-  Keyword.get(opts, :component_ids) do
+      for component_id <- Keyword.get(opts, :component_ids) do
         quote do
           def handle_info(
                 %{topic: "twitch:chat:" <> _, event: "new_message", payload: %{message_info: message_info}},
@@ -21,8 +21,8 @@ defmodule Components.TwitchChat do
 
             {:noreply, socket}
           end
+        end
       end
-    end
 
     if Keyword.get(opts, :alias, true) do
       alias_quote =
@@ -38,9 +38,11 @@ defmodule Components.TwitchChat do
 
   def update(%{incoming_items: unfiltered_incoming_items}, socket) do
     normalized_chat = socket.assigns.channel |> TwitchBot.Handler.normalize_chat()
-    incoming_items = Enum.filter(unfiltered_incoming_items, fn %{chat: chat} ->
-      TwitchBot.Handler.normalize_chat(chat) == normalized_chat
-    end)
+
+    incoming_items =
+      Enum.filter(unfiltered_incoming_items, fn %{chat: chat} ->
+        TwitchBot.Handler.normalize_chat(chat) == normalized_chat
+      end)
 
     {:ok, socket |> stream(:twitch_chat, incoming_items, limit: socket.assigns.limit)}
   end

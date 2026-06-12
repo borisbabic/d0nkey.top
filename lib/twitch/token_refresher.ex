@@ -13,7 +13,7 @@ defmodule Twitch.TokenRefresher do
   use GenServer
   @name :twitch_token
 
-  def get_token(), do: GenServer.call(@name, :get_token)
+  def get_token, do: GenServer.call(@name, :get_token)
 
   def start_link(default), do: GenServer.start_link(__MODULE__, default, name: @name)
 
@@ -39,7 +39,7 @@ defmodule Twitch.TokenRefresher do
     {:noreply, new_state}
   end
 
-  defp fetch_token() do
+  defp fetch_token do
     with {:ok, %{body: body}} <- post("/oauth2/token", "") do
       {:ok, body |> Token.from_raw_map()}
     else
@@ -47,7 +47,7 @@ defmodule Twitch.TokenRefresher do
     end
   end
 
-  def handle_call(:get_token, _from, state = %{access_token: access_token}) do
+  def handle_call(:get_token, _from, %{access_token: access_token} = state) do
     {:reply, access_token, state}
   end
 

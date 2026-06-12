@@ -22,7 +22,7 @@ defmodule Backend.Streaming.StreamerDeckBag do
     GenServer.cast(__MODULE__, {:log, streamer_deck})
   end
 
-  def handle_cast({:log, streamer_deck}, state = %{table: table}) do
+  def handle_cast({:log, streamer_deck}, %{table: table} = state) do
     update_overall(streamer_deck, table)
     update_per_streamer(streamer_deck, table)
     {:noreply, state}
@@ -155,5 +155,5 @@ defmodule Backend.Streaming.StreamerDeckBag do
 
   defp upstream(criteria), do: {:ok, Streaming.streamer_decks(criteria)}
 
-  def table(), do: :ets.whereis(__MODULE__)
+  def table, do: :ets.whereis(__MODULE__)
 end

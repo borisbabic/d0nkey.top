@@ -40,7 +40,7 @@ defmodule Bot.ThlMessageHandler do
   end
 
   @spec check_in_discord(checkable) :: check_result
-  def check_in_discord(checkable = {_, discord_tag}) do
+  def check_in_discord({_, discord_tag} = checkable) do
     case get_thl_user_id(discord_tag) do
       {:ok, id} -> {:ok, checkable, id}
       _ -> {:error, checkable, :not_in_discord_or_bad_tag}
@@ -100,13 +100,13 @@ defmodule Bot.ThlMessageHandler do
   defp extract_matching_id(_, _, _), do: nil
 
   @spec search_url() :: {:ok, String.t()} | {:error, any()}
-  def search_url() do
+  def search_url do
     with {:ok, discord_id} <- get_discord_id() do
       {:ok, "/guilds/#{discord_id}/members/search"}
     end
   end
 
-  def get_discord_id() do
+  def get_discord_id do
     Application.fetch_env(:backend, :thl_discord_id)
   end
 end

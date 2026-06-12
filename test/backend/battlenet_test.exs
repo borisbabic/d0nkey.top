@@ -196,5 +196,4 @@ defmodule Backend.BattlenetTest do
 
     old_battletag
   end
-
 end

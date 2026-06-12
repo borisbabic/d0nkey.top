@@ -24,7 +24,7 @@ defmodule Backend.Fantasy.LeagueTeamPick do
   defp set_league_team(c, %{team: league_team}), do: set_league_team(c, league_team)
   defp set_league_team(c, %{"team" => league_team}), do: set_league_team(c, league_team)
 
-  defp set_league_team(c, league_team = %{id: _}) do
+  defp set_league_team(c, %{id: _} = league_team) do
     c
     |> put_assoc(:team, league_team)
     |> foreign_key_constraint(:team)

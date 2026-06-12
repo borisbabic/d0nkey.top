@@ -46,7 +46,7 @@ defmodule Hearthstone.DeckTracker.Game do
   end
 
   @doc false
-  def changeset(game = %{game_id: game_id}, attrs) when is_binary(game_id) do
+  def changeset(%{game_id: game_id} = game, attrs) when is_binary(game_id) do
     game
     |> Backend.Repo.preload([:raw_player_card_stats, :card_tallies])
     |> cast(attrs, [

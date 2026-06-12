@@ -45,8 +45,7 @@ defmodule Hearthstone.Leaderboards.Response do
           leaderboard_id: leaderboard_id
         },
         raw_response: raw,
-        season_metadata:
-          SeasonMetadata.from_raw_map(raw["seasonMetaData"] || raw["seasonMetadata"])
+        season_metadata: SeasonMetadata.from_raw_map(raw["seasonMetaData"] || raw["seasonMetadata"])
       }
     }
   end
@@ -250,7 +249,7 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
   def get_max_season_id(_), do: {:error, :invalid_leaderboard_metadata}
 
   @spec from_raw_map(map()) :: SeasonMetadata.t()
-  def from_raw_map(m = %{"name" => name, "seasons" => seasons}) do
+  def from_raw_map(%{"name" => name, "seasons" => seasons} = m) do
     %__MODULE__{
       name: name,
       rating_id: Map.get(m, "ratingId"),

@@ -27,7 +27,7 @@ defmodule ScratchPad do
     end)
   end
 
-  def example_deck() do
+  def example_deck do
     """
       {
           "deck": [
@@ -77,7 +77,7 @@ defmodule ScratchPad do
     |> Poison.decode!()
   end
 
-  def encode_deck() do
+  def encode_deck do
     d = example_deck()
 
     cards =
@@ -97,10 +97,10 @@ defmodule ScratchPad do
        [Enum.count(cards[2])] ++
        cards[2] ++
        [0])
-    |> Enum.into([], fn bit -> Varint.LEB128.encode(bit) end)
+    |> Enum.map(fn bit -> Varint.LEB128.encode(bit) end)
   end
 
-  def parse_hearthstone_json() do
+  def parse_hearthstone_json do
     with {:ok, body} <- File.read("lib/data/collectible.json"),
          {:ok, json} <- body |> Poison.decode() do
       json |> Enum.map(&Backend.HearthstoneJson.Card.from_raw_map/1)
@@ -144,7 +144,7 @@ defmodule ScratchPad do
   #   sum
   # end
 
-  def all_mt_participants() do
+  def all_mt_participants do
     Backend.MastersTour.TourStop.all()
     |> Enum.filter(& &1.battlefy_id)
     # |> Enum.flat_map(& Backend.Battlefy.get_participants(&1.battlefy_id))
@@ -164,7 +164,7 @@ defmodule ScratchPad do
     |> Backend.Grandmasters.PromotionCalculator.get_group_by()
   end
 
-  def find_same_mt_players() do
+  def find_same_mt_players do
     all_mt_participants()
     |> find_same_mt_players()
   end
@@ -179,7 +179,7 @@ defmodule ScratchPad do
 
   def create_map({_user_id, parts}), do: parts |> Enum.reverse() |> create_map()
 
-  def create_map([curr = {<<"Backup", _::bitstring>>, _, _} | rest]),
+  def create_map([{<<"Backup", _::bitstring>>, _, _} = curr | rest]),
     do: create_map(rest ++ [curr])
 
   def create_map([{current, _, _} | rest]) do
@@ -193,7 +193,7 @@ defmodule ScratchPad do
 
   # imported decks from prod and had duplicates
   # I don't know how the fuck that happened either
-  def deduplicate_decks() do
+  def deduplicate_decks do
     deck_ids = duplicate_deck_ids()
 
     query =
@@ -222,7 +222,7 @@ defmodule ScratchPad do
     |> Repo.transaction()
   end
 
-  defp duplicate_deck_ids() do
+  defp duplicate_deck_ids do
     query =
       from d in Deck,
         group_by: d.id,
@@ -349,11 +349,11 @@ defmodule ScratchPad do
     "AAECAQcIkvgCr5EDkpcDuZkDgqUDx7YDjuYG3+YGC62RA7SRA42XA4+XA/qkA/ykA9WlA/mlA/WoA9isA9mtAwAA",
     "AAECAfHhBAAPm8gCqIEErYoEiZ8EnJ8Etp8EjboEjdEEkNQEiPYE1c4FpP8F8aUG1agGhuYGAAA="
   ]
-  def whizbang_decks() do
+  def whizbang_decks do
     @original_splendiferous_decks ++ @new_splendiferous_29_2_2
   end
 
-  def new_whizbang_decks(), do: @new_splendiferous_29_2_2
+  def new_whizbang_decks, do: @new_splendiferous_29_2_2
 
   @twist_data [
     {"Illidan Stormrage",
@@ -1068,7 +1068,7 @@ defmodule ScratchPad do
        {1, "Frost Giant"}
      ]}
   ]
-  def twist_data(), do: @twist_data
+  def twist_data, do: @twist_data
 
   def process_twist_data(data \\ @twist_data) do
     Enum.map(data, fn {name, comment, card_name_tuples} ->
@@ -1165,7 +1165,7 @@ defmodule ScratchPad do
     |> twist_deck_archetyping()
   end
 
-  def tiwst_codes(), do: @twist_codes
+  def tiwst_codes, do: @twist_codes
 
   def card_names_to_min_count(names, leeway \\ 0) do
     uniq_names = Enum.uniq(names)

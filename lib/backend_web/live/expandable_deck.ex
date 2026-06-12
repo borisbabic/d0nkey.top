@@ -23,21 +23,21 @@ defmodule BackendWeb.ExpandableDeckLive do
      |> put_user_in_context()}
   end
 
-  def extract_deck(_session = %{"deck" => %Deck{id: id} = deck}) when is_integer(id), do: deck
+  def extract_deck(%{"deck" => %Deck{id: id} = deck} = _session) when is_integer(id), do: deck
 
-  def extract_deck(session = %{"deck" => %Deck{}}) do
+  def extract_deck(%{"deck" => %Deck{}} = session) do
     do_extract_deck(session, "deck")
   end
 
-  def extract_deck(session = %{"deck_id" => id}) when is_integer(id) do
+  def extract_deck(%{"deck_id" => id} = session) when is_integer(id) do
     do_extract_deck(session, "deck_id")
   end
 
-  def extract_deck(session = %{"code" => c}) when is_binary(c) do
+  def extract_deck(%{"code" => c} = session) when is_binary(c) do
     do_extract_deck(session, "code")
   end
 
-  def extract_deck(session = %{"deckcode" => c}) when is_binary(c) do
+  def extract_deck(%{"deckcode" => c} = session) when is_binary(c) do
     do_extract_deck(session, "deckcode")
   end
 
@@ -65,7 +65,7 @@ defmodule BackendWeb.ExpandableDeckLive do
     """
   end
 
-  def handle_event("show_cards", _, socket = %{assigns: %{show_cards: old, deckcode: code}}) do
+  def handle_event("show_cards", _, %{assigns: %{show_cards: old, deckcode: code}} = socket) do
     if !old, do: Tracker.inc_expanded(code)
 
     {

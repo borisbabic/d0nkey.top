@@ -16,7 +16,7 @@ defmodule BackendWeb.OldBattletagControllerTest do
     @describetag :authenticated
     @describetag :old_battletags
     test "lists all old_battletags", %{conn: conn} do
-      conn = get conn, Routes.old_battletag_path(conn, :index)
+      conn = get(conn, Routes.old_battletag_path(conn, :index))
       assert html_response(conn, 200) =~ "Old battletags"
     end
   end
@@ -25,7 +25,7 @@ defmodule BackendWeb.OldBattletagControllerTest do
     @describetag :authenticated
     @describetag :old_battletags
     test "renders form", %{conn: conn} do
-      conn = get conn, Routes.old_battletag_path(conn, :new)
+      conn = get(conn, Routes.old_battletag_path(conn, :new))
       assert html_response(conn, 200) =~ "New Old battletag"
     end
   end
@@ -39,7 +39,7 @@ defmodule BackendWeb.OldBattletagControllerTest do
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.old_battletag_path(conn, :show, id)
 
-      conn = get conn, Routes.old_battletag_path(conn, :show, id)
+      conn = get(conn, Routes.old_battletag_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Old battletag Details"
     end
 
@@ -57,7 +57,7 @@ defmodule BackendWeb.OldBattletagControllerTest do
     @describetag :authenticated
     @describetag :old_battletags
     test "renders form for editing chosen old_battletag", %{conn: conn, old_battletag: old_battletag} do
-      conn = get conn, Routes.old_battletag_path(conn, :edit, old_battletag)
+      conn = get(conn, Routes.old_battletag_path(conn, :edit, old_battletag))
       assert html_response(conn, 200) =~ "Edit Old battletag"
     end
   end
@@ -71,7 +71,7 @@ defmodule BackendWeb.OldBattletagControllerTest do
       conn = put conn, Routes.old_battletag_path(conn, :update, old_battletag), old_battletag: @update_attrs
       assert redirected_to(conn) == Routes.old_battletag_path(conn, :show, old_battletag)
 
-      conn = get conn, Routes.old_battletag_path(conn, :show, old_battletag)
+      conn = get(conn, Routes.old_battletag_path(conn, :show, old_battletag))
       assert html_response(conn, 200) =~ "some updated old_battletag"
     end
 
@@ -89,10 +89,11 @@ defmodule BackendWeb.OldBattletagControllerTest do
     @describetag :authenticated
     @describetag :old_battletags
     test "deletes chosen old_battletag", %{conn: conn, old_battletag: old_battletag} do
-      conn = delete conn, Routes.old_battletag_path(conn, :delete, old_battletag)
+      conn = delete(conn, Routes.old_battletag_path(conn, :delete, old_battletag))
       assert redirected_to(conn) == Routes.old_battletag_path(conn, :index)
+
       assert_error_sent 404, fn ->
-        get conn, Routes.old_battletag_path(conn, :show, old_battletag)
+        get(conn, Routes.old_battletag_path(conn, :show, old_battletag))
       end
     end
   end

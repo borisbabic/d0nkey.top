@@ -17,7 +17,7 @@ defmodule Components.JoinLeague do
     """
   end
 
-  def handle_event("join", _, socket = %{assigns: %{user: user, league: league}}) do
+  def handle_event("join", _, %{assigns: %{user: user, league: league}} = socket) do
     assigns =
       Fantasy.join_league(league, user)
       |> case do

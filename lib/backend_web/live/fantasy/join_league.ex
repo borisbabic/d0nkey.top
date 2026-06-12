@@ -12,7 +12,7 @@ defmodule BackendWeb.JoinLeagueLive do
   def mount(_params, session, socket),
     do: {:ok, socket |> assign_defaults(session) |> put_user_in_context()}
 
-  def render(assigns = %{user: %{id: _}}) do
+  def render(%{user: %{id: _}} = assigns) do
     ~F"""
       <div>
         <div :if={@league} >

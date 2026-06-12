@@ -45,7 +45,7 @@ defmodule TwitchBot.Handler do
     Map.put(info, :id, chat <> sender <> now_iso() <> message)
   end
 
-  defp now_iso(), do: NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601()
+  defp now_iso, do: NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601()
 
   def subscribe_to_chat(chat) do
     chat

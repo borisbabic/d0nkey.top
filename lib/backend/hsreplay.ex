@@ -27,7 +27,7 @@ defmodule Backend.HSReplay do
         arch =
           archetypes
           |> Enum.sort_by(
-            fn a -> String.jaro_distance(a.name |> String.downcase(), normalized) end,
+            fn a -> a.name |> String.downcase() |> String.jaro_distance(normalized) end,
             &Kernel.>=/2
           )
           |> Enum.at(0)
@@ -42,11 +42,11 @@ defmodule Backend.HSReplay do
     {found |> Enum.reject(&is_nil/1), missing}
   end
 
-  def get_archetype_matchups() do
+  def get_archetype_matchups do
     Api.get_archetype_matchups()
   end
 
-  def get_archetypes() do
+  def get_archetypes do
     case {get_archetypes(:cache), Application.get_env(:backend, :disable_hsreplay)} do
       {_, true} -> []
       {nil, _} -> get_archetypes(:fresh) |> cache_archetypes()
@@ -67,7 +67,7 @@ defmodule Backend.HSReplay do
     archetypes
   end
 
-  def get_latest() do
+  def get_latest do
     []
   end
 
@@ -180,32 +180,32 @@ defmodule Backend.HSReplay do
     do: "https://hsreplay.net/decks/#{deckcode |> URI.encode_www_form()}"
 
   @spec get_streaming_now() :: [Streaming.t()]
-  def get_streaming_now(), do: Api.get_streaming_now()
+  def get_streaming_now, do: Api.get_streaming_now()
 
-  def guess_non_highlander(d = %{class: class_name, format: format}) do
+  def guess_non_highlander(%{class: class_name, format: format} = d) do
     get_archetypes()
     |> Enum.filter(fn a ->
       with true <- a.player_class_name == class_name do
         core = a |> Archetype.signature_core(format)
         limit = NaiveDateTime.utc_now() |> NaiveDateTime.add(-60 * 60 * 24 * 30)
-        core && NaiveDateTime.compare(core.as_of, limit) == :gt && !Archetype.highlander?(a)
+        core && NaiveDateTime.after?(core.as_of, limit) && !Archetype.highlander?(a)
       end
     end)
     |> match_archetypes(d)
   end
 
   @spec get_highlander(%{:cards => any, :format => any, optional(any) => any}) :: any
-  def get_highlander(d = %{class: class_name}) when not is_nil(class_name) do
+  def get_highlander(%{class: class_name} = d) when not is_nil(class_name) do
     get_highlander(class_name, d)
   end
 
-  def get_highlander(d = %{hero: hero}) do
+  def get_highlander(%{hero: hero} = d) do
     hero
     |> Backend.HearthstoneJson.get_class()
     |> get_highlander(d)
   end
 
-  def get_highlander(class_name, d = %{format: format}) do
+  def get_highlander(class_name, %{format: format} = d) do
     get_archetypes()
     |> Enum.filter(fn a ->
       Archetype.signature_core(a, format) &&
@@ -215,7 +215,7 @@ defmodule Backend.HSReplay do
     |> match_archetypes(d)
   end
 
-  def guess_archetype(d = %{cards: cards}) do
+  def guess_archetype(%{cards: cards} = d) do
     cards
     |> Enum.frequencies()
     |> Enum.max_by(fn {_archetype, freq} -> freq end)
@@ -231,7 +231,7 @@ defmodule Backend.HSReplay do
     archetypes
     |> Enum.map(fn a ->
       core = a |> Archetype.signature_core(format)
-      num_matches = (cards -- cards -- core.components) |> Enum.count()
+      num_matches = (cards -- (cards -- core.components)) |> Enum.count()
       {num_matches, a}
     end)
     |> Enum.max_by(fn {matches, _} -> matches end, &>=/2, fn -> nil end)
@@ -253,7 +253,7 @@ defmodule Backend.HSReplay do
     get_archetypes()
     |> Enum.filter(fn a ->
       core = a |> Archetype.signature_core(2)
-      core && core.as_of && NaiveDateTime.compare(reference_time, core.as_of) == :lt
+      core && core.as_of && NaiveDateTime.before?(reference_time, core.as_of)
     end)
     |> Enum.sort_by(fn a -> a.name end, :asc)
     |> Enum.sort_by(fn a -> a.player_class_name end, :asc)
@@ -268,12 +268,12 @@ defmodule Backend.HSReplay do
   end
 
   def insert_map(hsr_deck_id, deckcode_or_deck) do
-    with {:ok, deck = %{id: _id}} <- Backend.Hearthstone.create_or_get_deck(deckcode_or_deck) do
+    with {:ok, %{id: _id} = deck} <- Backend.Hearthstone.create_or_get_deck(deckcode_or_deck) do
       insert_map(hsr_deck_id, deck)
     end
   end
 
-  def handle_live_decks() do
+  def handle_live_decks do
     ["standard", "wild", "classic", "twist"]
     |> Enum.each(&handle_live_decks/1)
   end

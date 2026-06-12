@@ -4,16 +4,15 @@ defmodule BackendWeb.GroupController do
   alias Backend.UserManager
   alias Backend.UserManager.Group
 
-
   plug(:put_root_layout, {BackendWeb.LayoutView, "torch.html"})
   plug(Backend.Plug.AdminAuth, role: :groups)
   plug(:put_layout, false)
-
 
   def index(conn, params) do
     case UserManager.paginate_groups(params) do
       {:ok, assigns} ->
         render(conn, "index.html", assigns)
+
       error ->
         conn
         |> put_flash(:error, "There was an error rendering Groups. #{inspect(error)}")
@@ -32,6 +31,7 @@ defmodule BackendWeb.GroupController do
         conn
         |> put_flash(:info, "Group created successfully.")
         |> redirect(to: Routes.group_path(conn, :show, group))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
@@ -56,6 +56,7 @@ defmodule BackendWeb.GroupController do
         conn
         |> put_flash(:info, "Group updated successfully.")
         |> redirect(to: Routes.group_path(conn, :show, group))
+
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", group: group, changeset: changeset)
     end

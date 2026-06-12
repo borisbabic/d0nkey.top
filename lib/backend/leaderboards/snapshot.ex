@@ -88,7 +88,7 @@ defmodule Backend.Leaderboards.Snapshot.Entry do
   end
 
   @doc false
-  def changeset(entry, attrs = %{account_id: nil}) do
+  def changeset(entry, %{account_id: nil} = attrs) do
     new_attrs = Map.put(attrs, :account_id, "------")
     changeset(entry, new_attrs)
   end

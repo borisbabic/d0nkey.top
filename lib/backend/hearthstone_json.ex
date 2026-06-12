@@ -36,7 +36,7 @@ defmodule Backend.HearthstoneJson do
   def get_by_card_id(card_id), do: table() |> Util.ets_lookup("card_id_#{card_id}")
 
   @spec get_fresh() :: {:ok, [Card]} | {:using_json, [Card]}
-  def get_fresh() do
+  def get_fresh do
     case Api.get_cards() do
       {:ok, cards} ->
         {:ok, cards}
@@ -47,7 +47,7 @@ defmodule Backend.HearthstoneJson do
     end
   end
 
-  def update_cards() do
+  def update_cards do
     GenServer.cast(@name, {:update_cards})
   end
 
@@ -55,12 +55,12 @@ defmodule Backend.HearthstoneJson do
     GenServer.cast(@name, {:update_cards, cards})
   end
 
-  def update_version_and_cards() do
+  def update_version_and_cards do
     GenServer.cast(@name, :update_version_and_cards)
   end
 
   @spec get_json() :: [Card]
-  defp get_json() do
+  defp get_json do
     with {:ok, body} <- File.read("lib/data/collectible.json"),
          {:ok, json} <- body |> Poison.decode() do
       json |> Enum.map(&Card.from_raw_map/1)
@@ -93,9 +93,9 @@ defmodule Backend.HearthstoneJson do
   def card_url(card), do: card_url(card, :"256x")
 
   @spec tile_card_url(Card.t() | integer()) :: {String.t(), String.t()}
-  def tile_card_url(dbf_id) when is_integer(dbf_id), do: get_card(dbf_id) |> tile_card_url
+  def tile_card_url(dbf_id) when is_integer(dbf_id), do: get_card(dbf_id) |> tile_card_url()
 
-  def tile_card_url(card = %{id: id}) when is_binary(id) do
+  def tile_card_url(%{id: id} = card) when is_binary(id) do
     {
       tile_url(card),
       card_url(card)
@@ -155,9 +155,7 @@ defmodule Backend.HearthstoneJson do
       with {:ok, cards} <- fetch(state) do
         update_table(cards, table, latest_version)
 
-        Logger.info(
-          "Hearthstone Json updated to version #{latest_version} from #{current_version}"
-        )
+        Logger.info("Hearthstone Json updated to version #{latest_version} from #{current_version}")
 
         BackendWeb.Endpoint.broadcast("hearthstone_json", "version_updated", %{
           cards: cards,
@@ -212,11 +210,11 @@ defmodule Backend.HearthstoneJson do
     |> Util.ets_lookup("card_class_#{dbf_id}")
   end
 
-  def table(), do: :ets.whereis(@name)
+  def table, do: :ets.whereis(@name)
 
-  def cards(), do: table() |> Util.ets_lookup("all_cards", [])
-  def collectible_cards(), do: table() |> Util.ets_lookup("collectible_cards", [])
-  def playable_cards(), do: table() |> Util.ets_lookup("playable_cards", [])
+  def cards, do: table() |> Util.ets_lookup("all_cards", [])
+  def collectible_cards, do: table() |> Util.ets_lookup("collectible_cards", [])
+  def playable_cards, do: table() |> Util.ets_lookup("playable_cards", [])
 
   def handle_cast({:update_cards, cards}, %{table: table} = state) do
     update_table(cards, table)
@@ -241,5 +239,5 @@ defmodule Backend.HearthstoneJson do
     do_update_version_and_cards(state)
   end
 
-  def up?(), do: GenServer.whereis(@name) != nil
+  def up?, do: GenServer.whereis(@name) != nil
 end

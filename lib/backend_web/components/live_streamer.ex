@@ -13,7 +13,7 @@ defmodule Components.LiveStreamer do
   data(show_deck, :boolean)
   slot(default)
 
-  def render(assigns = %{live_streamer: s}) do
+  def render(%{live_streamer: s} = assigns) do
     game_type =
       s.game_type
       |> Util.to_int_or_orig()

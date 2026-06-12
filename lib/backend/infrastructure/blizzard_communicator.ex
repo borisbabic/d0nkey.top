@@ -11,9 +11,7 @@ defmodule Backend.Infrastructure.BlizzardCommunicator do
 
     {u_secs, return} = :timer.tc(&HTTPoison.get/1, [url])
 
-    Logger.debug(
-      "Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(u_secs, 1000)} ms #{url}"
-    )
+    Logger.debug("Got leaderboard #{region} #{leaderboard_id} #{season_id} in #{div(u_secs, 1000)} ms #{url}")
 
     case return do
       {:ok, %{body: body}} -> body |> Poison.decode!() |> Leaderboard.from_raw_map()
