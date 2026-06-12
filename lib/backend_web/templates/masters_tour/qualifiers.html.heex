@@ -62,7 +62,7 @@
                 </td>
             <% end %>
             <td>
-                <%= if t |> Backend.Battlefy.Tournament.has_bracket() do %>
+                <%= if Backend.Battlefy.Tournament.has_bracket?(t) do %>
                     <a class="is-link" href={"#{ standings_link }"}>
                         standings
                     </a>

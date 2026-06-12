@@ -26,9 +26,9 @@ defmodule Backend.Battlefy.Tournament do
     field :game, Game
   end
 
-  def has_bracket(%{status: "registration-closed"}), do: true
+  def has_bracket?(%{status: "registration-closed"}), do: true
 
-  def has_bracket(%{start_time: start_time}),
+  def has_bracket?(%{start_time: start_time}),
     do: NaiveDateTime.utc_now() |> NaiveDateTime.compare(start_time) == :gt
 
   @spec from_raw_map(map()) :: t()

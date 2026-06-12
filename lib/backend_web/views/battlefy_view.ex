@@ -8,6 +8,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.Battlefy.Organization
   alias Backend.Battlefy.Match
   alias Backend.Battlefy.MatchTeam
+  alias Backend.Battlefy.Tournament
   alias Backend.MastersTour
   alias Backend.Battlenet.Battletag
   alias Backend.UserManager.User
@@ -113,12 +114,18 @@ defmodule BackendWeb.BattlefyView do
 
     tournaments =
       for %{id: id, slug: s} = t <- raw do
+        lineups_link =
+          if Tournament.has_bracket?(t) and Battlefy.has_lineups?(id) do
+            ~p"/battlefy/tournament/#{id}/lineups"
+          end
+
         t
         |> Map.put_new(
           :link,
           Battlefy.create_tournament_link(s, id, t |> slug_fun.())
         )
         |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, id))
+        |> Map.put_new(:lineups_link, lineups_link)
       end
 
     render("tournament_table.html", %{tournaments: tournaments})

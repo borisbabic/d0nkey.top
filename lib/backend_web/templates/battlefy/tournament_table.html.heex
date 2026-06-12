@@ -7,7 +7,7 @@
     </tr>
     </thead>
     <tbody>
-    <%= for t = %{start_time: start_time, name: name, link: link, standings_link: standings_link} <- @tournaments do %>
+    <%= for t = %{start_time: start_time, name: name, link: link, standings_link: standings_link, lineups_link: lineups_link} <- @tournaments do %>
     <tr>
         <td>
             <a class="is-link" href={"#{ link }"}>
@@ -16,9 +16,14 @@
         </td>
         <td><%= render_datetime start_time %></td>
         <td>
-            <%= if t |> Backend.Battlefy.Tournament.has_bracket() do %>
+            <%= if Backend.Battlefy.Tournament.has_bracket?(t) do %>
                 <a class="is-link" href={"#{ standings_link }"}>
                     standings
+                </a>
+            <% end %>
+            <%= if lineups_link do %>
+                <a class="is-link" href={"#{ lineups_link }"}>
+                    lineups
                 </a>
             <% end %>
         </td>
