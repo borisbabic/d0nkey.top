@@ -532,6 +532,8 @@ defmodule BackendWeb.Router do
 
     live("/profile/settings", ProfileSettingsLive)
     live("/scratchpad", ScratchPadLive)
+
+    get("/iyingdi/lineups/:set_id", IyingdiController, :lineups)
   end
 
   scope "/", BackendWeb do

@@ -1,11 +1,12 @@
 defmodule OmniBar do
   @moduledoc "Backend behind the omni bar, orchestrates searches"
 
-  def providers(),
+  def providers,
     do: [
       BackendWeb.DeckcodeSearchProvider,
       BackendWeb.BattlefySearchProvider,
-      BackendWeb.BattletagSearchProvider
+      BackendWeb.BattletagSearchProvider,
+      BackendWeb.IyingdiSearchProvider
     ]
 
   def search(term, reply) do

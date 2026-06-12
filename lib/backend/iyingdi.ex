@@ -1,33 +1,53 @@
 defmodule Backend.Iyingdi do
   @moduledoc false
+  alias Backend.Hearthstone
   alias Iyingdi.Hearthstone.Api
   alias Iyingdi.Hearthstone.Deck, as: IDeck
 
+  @tournament_source "iyingdi"
+
+  def lineup_url(set_id) do
+    "/tournament-lineups/#{@tournament_source}/#{set_id}"
+  end
+
+  def ensure_lineups(set_id) do
+    if !Hearthstone.has_lineups?(set_id, @tournament_source) do
+      import_lineups(set_id)
+    end
+  end
+
+  def get_or_create_lineups(set_id) do
+    ensure_lineups(set_id)
+
+    Hearthstone.lineups([{"tournament_source", @tournament_source}, {"tournament_id", set_id}])
+  end
+
   def import_lineups(set_id_or_url) do
-    set_id_or_url
+    set_id = set_id(set_id_or_url)
+
+    set_id
     |> get_decks()
-    |> insert_lineups()
+    |> insert_lineups(set_id)
   end
 
   @spec get_decks(String.t()) :: [IDeck.t()]
-  def get_decks(set_id_or_url) do
-    set_id = extract_set_id(set_id_or_url)
+  def get_decks(set_id) do
     {:ok, decks} = Api.fetch_decks(set_id)
     decks
   end
 
-  def insert_lineups(decks, opts \\ []) do
-    tournament_source = Keyword.get(opts, :tournament_source, "iyingdi")
+  def insert_lineups(decks, set_id, opts \\ []) do
+    tournament_source = Keyword.get(opts, :tournament_source, @tournament_source)
 
-    Enum.group_by(decks, &(&1.set_name <> &1.player))
-    |> Enum.map(fn {_group, [%{set_name: set_name, player: player} | _] = decks} ->
+    Enum.group_by(decks, & &1.player)
+    |> Enum.map(fn {_group, [%{player: player} | _] = decks} ->
       deckstrings = Enum.map(decks, & &1.code)
 
       attrs = %{
         name: player,
         display_name: display_name(player),
         tournament_source: tournament_source,
-        tournament_id: set_name
+        tournament_id: set_id
       }
 
       {attrs, deckstrings}
@@ -59,14 +79,18 @@ defmodule Backend.Iyingdi do
   If url with id extract it, otherwise return the string
 
   ## Example
-    iex> Backend.Iyingdi.extract_set_id("https://www.iyingdi.com/web/tools/hearthstone/decks/setdetail?btypes=home_allset&setid=1644750")
+    iex> Backend.Iyingdi.set_id("https://www.iyingdi.com/web/tools/hearthstone/decks/setdetail?btypes=home_allset&setid=1644750")
     "1644750"
   """
-  @spec extract_set_id(String.t()) :: String.t()
-  def extract_set_id(set_id_or_url) do
-    case Regex.named_captures(~r/setid=(?<set_id>\d+)/, set_id_or_url) do
+  @spec set_id(String.t()) :: String.t()
+  def set_id(set_id_or_url) do
+    extract_set_id_from_url(set_id_or_url) || set_id_or_url
+  end
+
+  def extract_set_id_from_url(url) do
+    case Regex.named_captures(~r/setid=(?<set_id>\d+)/, url) do
       %{"set_id" => set_id} -> set_id
-      _ -> set_id_or_url
+      _ -> nil
     end
   end
 end
