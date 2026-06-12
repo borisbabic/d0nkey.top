@@ -118,7 +118,7 @@ defmodule BackendWeb.BattlefyView do
           :link,
           Battlefy.create_tournament_link(s, id, t |> slug_fun.())
         )
-        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, s))
+        |> Map.put_new(:standings_link, Routes.battlefy_path(conn, :tournament, id))
       end
 
     render("tournament_table.html", %{tournaments: tournaments})
