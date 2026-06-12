@@ -1,5 +1,5 @@
 defmodule Backend.Doctest do
-  use Backend.DataCase, async: true
+  use ExUnit.Case, async: true
   doctest Backend.Grandmasters.PromotionRanking
   doctest Backend.Hearthstone.Deck
   doctest Backend.Blizzard
@@ -14,4 +14,5 @@ defmodule Backend.Doctest do
   doctest Backend.Streaming
   doctest Backend.Sheets
   doctest Backend.Sheets.DeckSheet
+  doctest Backend.Iyingdi
 end

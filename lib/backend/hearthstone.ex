@@ -38,11 +38,11 @@ defmodule Backend.Hearthstone do
     end
   end
 
-  def set_groups() do
+  def set_groups do
     Repo.all(SetGroup)
   end
 
-  def standard_card_sets() do
+  def standard_card_sets do
     query =
       from(sg in SetGroup,
         where: sg.slug == "standard",
@@ -53,7 +53,7 @@ defmodule Backend.Hearthstone do
   end
 
   @spec card_sets() :: [Set.t()]
-  def card_sets() do
+  def card_sets do
     Repo.all(Set)
   end
 
@@ -78,7 +78,7 @@ defmodule Backend.Hearthstone do
     Repo.all(query)
   end
 
-  def latest_set() do
+  def latest_set do
     query =
       from s in Set,
         order_by: [desc: :inserted_at],
@@ -88,7 +88,7 @@ defmodule Backend.Hearthstone do
   end
 
   @spec latest_prerelease_brawl_sets() :: [String.t()]
-  def latest_prerelease_brawl_sets() do
+  def latest_prerelease_brawl_sets do
     query =
       from sg in SetGroup,
         where: like(sg.slug, "%prerelease%") or like(sg.slug, "%brawl%"),
@@ -99,11 +99,11 @@ defmodule Backend.Hearthstone do
     Repo.one(query) || []
   end
 
-  def card_back_categories() do
+  def card_back_categories do
     Repo.all(CardBackCategory)
   end
 
-  def classes() do
+  def classes do
     Repo.all(Class)
   end
 
@@ -112,39 +112,39 @@ defmodule Backend.Hearthstone do
     Repo.one(query)
   end
 
-  def game_modes() do
+  def game_modes do
     Repo.all(GameMode)
   end
 
-  def factions() do
+  def factions do
     Repo.all(Faction)
   end
 
-  def keywords() do
+  def keywords do
     Repo.all(HSKeyword)
   end
 
-  def mercenary_roles() do
+  def mercenary_roles do
     Repo.all(MercenaryRole)
   end
 
-  def minion_types() do
+  def minion_types do
     Repo.all(MinionType)
   end
 
-  def spell_schools() do
+  def spell_schools do
     Repo.all(SpellSchool)
   end
 
-  def rarities() do
+  def rarities do
     Repo.all(Rarity)
   end
 
-  def card_types() do
+  def card_types do
     Repo.all(Type)
   end
 
-  def update_metadata() do
+  def update_metadata do
     with {:ok,
           %{
             card_back_categories: card_back_categories,
@@ -256,7 +256,7 @@ defmodule Backend.Hearthstone do
     |> Repo.update()
   end
 
-  def all_cards() do
+  def all_cards do
     query = from(c in Card)
 
     query
@@ -642,7 +642,7 @@ defmodule Backend.Hearthstone do
     {:ok, "Done"}
   end
 
-  def init_deck_costs() do
+  def init_deck_costs do
     case init_deck_costs(1000) do
       :done -> :ok
       _ -> init_deck_costs()
@@ -684,9 +684,9 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
-  defp base_decks_query(), do: from(d in Deck, as: :deck)
+  defp base_decks_query, do: from(d in Deck, as: :deck)
 
-  defp base_archetypes_query(),
+  defp base_archetypes_query,
     do:
       from(d in Deck, as: :deck)
       |> select([deck: d], d.archetype)
@@ -781,14 +781,14 @@ defmodule Backend.Hearthstone do
       )
       |> where([game: g], g.inserted_at >= ago(^min_ago, "minute"))
 
-  defp compose_decks_query({"include_cards", cards = [_ | _]}, query) do
+  defp compose_decks_query({"include_cards", [_ | _] = cards}, query) do
     query
     |> include_cards(cards, :deck)
   end
 
   defp compose_decks_query({"include_cards", []}, query), do: query
 
-  defp compose_decks_query({"exclude_cards", cards = [_ | _]}, query) do
+  defp compose_decks_query({"exclude_cards", [_ | _] = cards}, query) do
     query
     |> exclude_cards(cards, :deck)
   end
@@ -891,10 +891,10 @@ defmodule Backend.Hearthstone do
       where: c.id in ^list or c.canonical_id in ^list
   end
 
-  def darkmoon_faire_out?() do
+  def darkmoon_faire_out? do
     now = NaiveDateTime.utc_now()
     release = ~N[2020-11-17 18:00:00]
-    NaiveDateTime.compare(now, release) == :gt
+    NaiveDateTime.after?(now, release)
   end
 
   # @type extract_card_fun :: (any() -> Card.card())
@@ -910,7 +910,7 @@ defmodule Backend.Hearthstone do
   @spec ordered_frequencies(integer(), card_sort_opts()) :: {Card.card(), integer()}
   def ordered_frequencies(cards, card_sort_opts \\ [])
 
-  def ordered_frequencies(cards = [a | _], card_sort_opts) when is_integer(a) do
+  def ordered_frequencies([a | _] = cards, card_sort_opts) when is_integer(a) do
     cards
     |> Enum.frequencies()
     |> Enum.map(fn {c, freq} ->
@@ -1011,7 +1011,7 @@ defmodule Backend.Hearthstone do
 
   def get_or_create_lineup(attrs, deckstrings) do
     case lineup(attrs) do
-      ln = %{id: _} ->
+      %{id: _} = ln ->
         {:ok, ln}
 
       nil ->
@@ -1058,6 +1058,33 @@ defmodule Backend.Hearthstone do
   def insert_lineup(attrs, deckstrings) do
     create_lineup(attrs, deckstrings)
     |> Repo.insert()
+  end
+
+  @spec batch_insert_lineups([{attrs :: Map.t(), decks :: list()}]) :: any()
+  def batch_insert_lineups(attrs_decks_tuples) do
+    Enum.reduce(attrs_decks_tuples, Multi.new(), fn
+      {attrs, decks}, multi ->
+        changeset = create_lineup(attrs, decks)
+        lineup_multi_id(attrs)
+
+        Multi.insert(
+          multi,
+          lineup_multi_id(attrs),
+          changeset
+        )
+    end)
+    |> Repo.transaction()
+  end
+
+  defp lineup_multi_id(%Ecto.Changeset{}) do
+    raise "not implemented yet"
+  end
+
+  defp lineup_multi_id(attrs) do
+    source = Util.get(attrs, :tournament_source)
+    id = Util.get(attrs, :tournament_id)
+    name = Util.get(attrs, :name)
+    "lineup_#{source}_#{id}_#{name}"
   end
 
   def has_lineups?(tournament_id, tournament_source) do
@@ -1152,7 +1179,7 @@ defmodule Backend.Hearthstone do
     # |> post_processer.()
   end
 
-  def not_classic_card_criteria(), do: {"card_set_id_not_in", [1646]}
+  def not_classic_card_criteria, do: {"card_set_id_not_in", [1646]}
 
   # defp use_fake_limit(old_filters) do
   #   old_filters
@@ -1619,7 +1646,7 @@ defmodule Backend.Hearthstone do
     Repo.all(query)
   end
 
-  defp base_cards_query() do
+  defp base_cards_query do
     from(c in Card,
       as: :card,
       left_join: cs in assoc(c, :card_set),
@@ -1669,7 +1696,7 @@ defmodule Backend.Hearthstone do
     |> Repo.all()
   end
 
-  defp base_lineups_query() do
+  defp base_lineups_query do
     from(l in Lineup,
       as: :lineup,
       join: ld in assoc(l, :decks),
@@ -1906,7 +1933,7 @@ defmodule Backend.Hearthstone do
     CardBag.refresh_table()
   end
 
-  def set_referent_card_ids() do
+  def set_referent_card_ids do
     collectible = cards([{"collectible", true}, :actual_card_set, not_classic_card_criteria()])
     grouped = Enum.group_by(collectible, &Card.same_card_grouper/1)
 
@@ -1947,7 +1974,7 @@ defmodule Backend.Hearthstone do
     {oldest, newest} =
       cards
       |> with_usable_sets()
-      |> Enum.min_max_by(&(&1.card_set.release_date |> to_string))
+      |> Enum.min_max_by(&(&1.card_set.release_date |> to_string()))
 
     deckcode_copy_id = newest.id
 
@@ -2043,19 +2070,19 @@ defmodule Backend.Hearthstone do
   end
 
   @spec spell_school_options() :: [{slug :: String.t(), name :: String.t()}]
-  def spell_school_options() do
+  def spell_school_options do
     spell_schools()
     |> to_slug_name_options()
   end
 
   @spec rarity_options() :: [{slug :: String.t(), name :: String.t()}]
-  def rarity_options() do
+  def rarity_options do
     rarities()
     |> to_slug_name_options()
   end
 
   @spec faction_options() :: [{slug :: String.t(), name :: String.t()}]
-  def faction_options() do
+  def faction_options do
     factions()
     |> to_slug_name_options()
   end
