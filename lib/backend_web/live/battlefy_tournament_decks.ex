@@ -28,7 +28,7 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
           </span>
         </div>
         <FunctionComponents.Ads.below_title/>
-        <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"}tournament_id={@tournament_id} tournament_source={"battlefy"} />
+        <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"} tournament_id={@tournament_id} tournament_source={"battlefy"} />
       </div>
     """
   end
