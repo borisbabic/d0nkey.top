@@ -70,4 +70,12 @@ defmodule Components.Modal do
   def reset_messages(modal_id) when is_binary(modal_id) do
     send_update(__MODULE__, [{:id, modal_id} | @message_reset_assigns])
   end
+
+  def hide_modal(modal_id) do
+    send_update(__MODULE__, id: modal_id, show_modal: false)
+  end
+
+  def show_modal(modal_id) do
+    send_update(__MODULE__, id: modal_id, show_modal: false)
+  end
 end

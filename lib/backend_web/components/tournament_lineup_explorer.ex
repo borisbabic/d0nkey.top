@@ -6,7 +6,6 @@ defmodule Components.TournamentLineupExplorer do
   prop(tournament_source, :string)
   prop(filters, :map, default: %{"decks" => []})
   prop(temp_filters, :map, default: %{})
-  prop(show_modal, :boolean, default: false)
   prop(page, :integer, default: 1)
   prop(page_size, :integer, default: 50)
   prop(show_page_dropdown, :boolean, default: true)
@@ -30,8 +29,12 @@ defmodule Components.TournamentLineupExplorer do
       :ok,
       socket
       |> assign(assigns)
-      |> assign(lineups: lineups(assigns.tournament_id, assigns.tournament_source, assigns.filters))
+      |> assign_lineups()
     }
+  end
+
+  defp assign_lineups(%{assigns: assigns} = socket) do
+    assign(socket, lineups: lineups(assigns.tournament_id, assigns.tournament_source, assigns.filters))
   end
 
   def render(assigns) do
@@ -45,7 +48,7 @@ defmodule Components.TournamentLineupExplorer do
           </Dropdown.item>
         </Dropdown.menu>
         <Modal
-        id="decks_filter_modal_#{@id}"
+        id={modal_id(@id)}
         button_title="Filter"
         body_class="tw-min-h-[400px]"
         title="Filter Decks/Lineups"
@@ -189,20 +192,17 @@ defmodule Components.TournamentLineupExplorer do
   end
 
   def handle_event("show_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: true, temp_filters: socket.assigns.filters)}
+    send_update(__MODULE__, id: socket.assigns.id, temp_filters: socket.assigns.filters)
+    {:noreply, socket |> assign(temp_filters: socket.assigns.filters) |> do_show_modal()}
   end
 
   def handle_event("hide_modal", _, socket) do
-    {:noreply, socket |> assign(show_modal: false)}
+    {:noreply, socket |> do_hide_modal()}
   end
 
   def handle_event("save_filters", _, socket) do
-    {:noreply,
-     socket
-     |> assign(
-       filters: socket.assigns.temp_filters,
-       show_modal: false
-     )}
+    send_update(__MODULE__, id: socket.assigns.id, filters: socket.assigns.temp_filters)
+    {:noreply, socket |> assign(filters: socket.assigns.temp_filters) |> do_hide_modal()}
   end
 
   def handle_event(
@@ -235,6 +235,24 @@ defmodule Components.TournamentLineupExplorer do
 
     {:noreply, socket |> assign(temp_filters: new_temp_filters)}
   end
+
+  defp do_hide_modal(%{assigns: %{id: id}} = socket) do
+    id
+    |> modal_id()
+    |> Modal.hide_modal()
+
+    socket
+  end
+
+  defp do_show_modal(%{assigns: %{id: id}} = socket) do
+    id
+    |> modal_id()
+    |> Modal.show_modal()
+
+    socket
+  end
+
+  defp modal_id(id), do: "decks_filter_modal_#{id}"
 
   def empty_deck_filter, do: %{"include_cards" => [], "exclude_cards" => [], "archetype" => []}
   def decks(%{"decks" => d}) when is_list(d), do: d
