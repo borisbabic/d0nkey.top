@@ -101,25 +101,25 @@ defmodule BackendWeb.DeckBuilderLive do
   defp standard?(%{format: 2}), do: true
   defp standard?(_), do: false
 
-  defp card_pool(_deck, _additional_classes, format) when is_binary(format) and byte_size(format) > 2 do
-    true
-  end
-
   defp card_pool(deck, additional_classes, format) do
-    if missing_underbelly?(deck) do
-      (Deck.classes() -- [Deck.class(deck), "NEUTRAL"])
-      |> Enum.map(&%{class: &1})
-    else
-      tourist_pool =
-        for {class, set} <- Deck.tourist_class_set_tuples(deck) do
-          %{class: class, card_set_id: set, not_tourist: true}
-        end
+    cond do
+      missing_underbelly?(deck) ->
+        %{not_classes: ["HUNTER", "NEUTRAL"]}
 
-      pool = [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
+      is_binary(format) and byte_size(format) > 1 ->
+        true
 
-      Enum.reduce(additional_classes || [], pool, fn class, carried_pool ->
-        [%{class: class} | carried_pool]
-      end)
+      true ->
+        tourist_pool =
+          for {class, set} <- Deck.tourist_class_set_tuples(deck) do
+            %{class: class, card_set_id: set, not_tourist: true}
+          end
+
+        pool = [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
+
+        Enum.reduce(additional_classes || [], pool, fn class, carried_pool ->
+          [%{class: class} | carried_pool]
+        end)
     end
   end
 
@@ -173,11 +173,18 @@ defmodule BackendWeb.DeckBuilderLive do
   end
 
   defp card_params(params, false, true) do
-    params
-    |> Map.put("minion_type", "beast")
+    add_underbelly_params(params)
   end
 
   defp card_params(params, false, _), do: params
+
+  defp add_underbelly_params(params) do
+    params |> Map.put("minion_type", "beast")
+  end
+
+  defp remove_underbelly_params(params) do
+    params |> Map.delete("minion_type")
+  end
 
   def handle_event("pick-class-format", %{"format" => format, "deck_class" => class}, socket) do
     %{raw_params: raw_params} = socket.assigns
@@ -256,9 +263,18 @@ defmodule BackendWeb.DeckBuilderLive do
             add_card(deck, card)
         end
 
+      params =
+        if missing_underbelly?(deck) and !missing_underbelly?(Deck.decode!(new_code)) do
+          raw_params
+          |> remove_underbelly_params()
+        else
+          raw_params
+        end
+        |> Map.put("code", new_code)
+
       {:noreply,
        push_patch(socket,
-         to: Routes.live_path(socket, __MODULE__, Map.put(raw_params, "code", new_code))
+         to: Routes.live_path(socket, __MODULE__, params)
        )}
     else
       {:noreply, socket}

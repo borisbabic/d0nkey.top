@@ -1579,6 +1579,17 @@ defmodule Backend.Hearthstone do
 
   defp compose_cards_query({:card_pool, true}, query), do: query
 
+  defp compose_cards_query({:card_pool, %{not_classes: classes}}, query) do
+    dynamic =
+      Enum.reduce(classes, dynamic(true), fn
+        class, dynamic ->
+          dynamic([card: c], ^dynamic and not exists(exists_classes_subquery(class)))
+      end)
+
+    query
+    |> where(^dynamic)
+  end
+
   defp compose_cards_query({:card_pool, pool_filters}, query) do
     dynamic =
       Enum.reduce(pool_filters, dynamic(false), fn
