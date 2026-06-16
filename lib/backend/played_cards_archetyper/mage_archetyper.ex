@@ -31,6 +31,7 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
     {:"Leyline Mage", @leyline_package},
     {:"Burn Mage",
      [
+       "Archmage Kalec",
        "Arcane Barrage",
        "Bloodmage Thalnos",
        "Conjured Bookkeeper",
@@ -40,9 +41,11 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Living Flame",
        "Raincaller",
        "Scorching Winds",
+       "Sizzling Cinder",
        "Sleet Storm",
        "Spellweaver's Brilliance",
        "Time-Twisted Seer",
+       "Tunneling Geomancer",
        "Unstable Spellcaster",
        "Violet Spellwing",
        "Vulcanos"
@@ -53,7 +56,7 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Runed Orb",
        "Sands of Time",
        "Winterspring Whelp",
-       "Archmage Kalec"
+       "Khadgar"
      ]}
   ]
   @wild_config []

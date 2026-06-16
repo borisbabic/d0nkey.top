@@ -25,7 +25,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Critter Caretaker",
        "Broll Bearmantle",
        "Spiritspeaker",
-       "Nightmare Lord Xavius",
+       # "Nightmare Lord Xavius",
        "Crazed Alchemist"
      ]},
     {:"No Hand Hunter",
@@ -37,7 +37,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        # "Confront the Tol'vir",
        "Dreambound Raptor",
        "Glacial Shard",
-       "Niri of the Crater",
+       # "Niri of the Crater",
        "Platysaur",
        "Precise Shot",
        "Quel'dorei Fletcher",
@@ -72,6 +72,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Sands of Time",
        "Tame Pet",
        "Tracking",
+       "Niri of the Crater",
        "Wound Prey"
      ]},
     {:"Dragon Hunter",
