@@ -39,7 +39,7 @@ defmodule BackendWeb.DeckBuilderLive do
         </div>
         <CardsExplorer
           scroll_size={@scroll_size}
-          card_pool={card_pool(@deck, Map.get(@raw_params, "additional_classes", []))}
+          card_pool={card_pool(@deck, Map.get(@raw_params, "additional_classes", []), @format)}
           default_order_by={"mana_in_class"}
           class_options={class_options(@deck)}
           format_filter={standard?(@deck)}
@@ -47,7 +47,7 @@ defmodule BackendWeb.DeckBuilderLive do
           id="cards_explorer"
           format_options={format_options()}
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
-          params={card_params(@params, Deck.missing_zilliax_parts?(@deck))}
+          params={card_params(@params, Deck.missing_zilliax_parts?(@deck), missing_underbelly?(@deck))}
           url_params={@params}
           on_card_click={"add-card"}
           card_phx_hook={"DeckBuilderCard"}
@@ -101,17 +101,26 @@ defmodule BackendWeb.DeckBuilderLive do
   defp standard?(%{format: 2}), do: true
   defp standard?(_), do: false
 
-  defp card_pool(deck, additional_classes) do
-    tourist_pool =
-      for {class, set} <- Deck.tourist_class_set_tuples(deck) do
-        %{class: class, card_set_id: set, not_tourist: true}
-      end
+  defp card_pool(_deck, _additional_classes, format) when is_binary(format) and byte_size(format) > 2 do
+    true
+  end
 
-    pool = [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
+  defp card_pool(deck, additional_classes, format) do
+    if missing_underbelly?(deck) do
+      (Deck.classes() -- [Deck.class(deck), "NEUTRAL"])
+      |> Enum.map(&%{class: &1})
+    else
+      tourist_pool =
+        for {class, set} <- Deck.tourist_class_set_tuples(deck) do
+          %{class: class, card_set_id: set, not_tourist: true}
+        end
 
-    Enum.reduce(additional_classes || [], pool, fn class, carried_pool ->
-      [%{class: class} | carried_pool]
-    end)
+      pool = [%{class: Deck.class(deck)}, %{class: "NEUTRAL"} | tourist_pool]
+
+      Enum.reduce(additional_classes || [], pool, fn class, carried_pool ->
+        [%{class: class} | carried_pool]
+      end)
+    end
   end
 
   defp class_options(deck) do
@@ -159,11 +168,16 @@ defmodule BackendWeb.DeckBuilderLive do
     @evergreen_formats ++ conditional
   end
 
-  defp card_params(params, false), do: params
-
-  defp card_params(_, true) do
+  defp card_params(_, true, _) do
     %{"collectible" => false, "card_set_id" => [1897], "search" => " Module"}
   end
+
+  defp card_params(params, false, true) do
+    params
+    |> Map.put("minion_type", "beast")
+  end
+
+  defp card_params(params, false, _), do: params
 
   def handle_event("pick-class-format", %{"format" => format, "deck_class" => class}, socket) do
     %{raw_params: raw_params} = socket.assigns
@@ -224,6 +238,9 @@ defmodule BackendWeb.DeckBuilderLive do
 
           missing_etc_band_member?(deck) and CardBag.sideboardable?(card) ->
             add_to_sideboard(deck, card, Card.etc_band_manager())
+
+          missing_underbelly?(deck) and CardBag.sideboardable?(card) ->
+            add_to_sideboard(deck, card, Card.king_of_the_underbelly())
 
           # auto add art
           Card.zilliax_3000?(card) ->
@@ -356,11 +373,12 @@ defmodule BackendWeb.DeckBuilderLive do
   def handle_params(raw_params, _uri, socket) do
     params = CardsExplorer.filter_relevant(raw_params, ["additional_classes"])
     scroll_size = Map.get(raw_params, "scroll_size", socket.assigns.scroll_size) |> Util.to_int(1)
+    format = Map.get(raw_params, "format", Map.get(socket.assigns, :format)) |> Util.to_int_or_orig()
 
     {
       :noreply,
       socket
-      |> assign(params: params, raw_params: raw_params, scroll_size: scroll_size)
+      |> assign(params: params, raw_params: raw_params, scroll_size: scroll_size, format: format)
       |> assign_deck(raw_params)
       |> assign_title()
     }
@@ -392,8 +410,11 @@ defmodule BackendWeb.DeckBuilderLive do
     assign(socket, :page_title, "DeckBuilder")
   end
 
+  def missing_underbelly?(deck) do
+    Deck.missing_sideboard_parts?(deck, Card.king_of_the_underbelly(), 3)
+  end
+
   def missing_etc_band_member?(deck) do
-    Enum.any?(deck.cards, &Card.etc_band_manager?/1) and
-      Deck.sideboards_count(deck, Card.etc_band_manager()) < 3
+    Deck.missing_sideboard_parts?(deck, Card.etc_band_manager(), 3)
   end
 end

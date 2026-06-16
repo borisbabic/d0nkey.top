@@ -224,6 +224,13 @@ defmodule Backend.Hearthstone.Card do
   def etc_band_manager?(id) when is_integer(id), do: id == @etc_band_manager
   def etc_band_manager?(card), do: dbf_id(card) == @etc_band_manager
 
+  @king_of_the_underbelly 125_998
+  def king_of_the_underbelly, do: @king_of_the_underbelly
+  @spec etc_band_manager?(card() | integer() | nil) :: boolean
+  def kind_of_the_underbelly?(nil), do: false
+  def king_of_the_underbelly?(id) when is_integer(id), do: id == @king_of_the_underbelly
+  def king_of_the_underbelly?(card), do: dbf_id(card) == @king_of_the_underbelly
+
   @azalina_soulsever 126_055
   def azalina_soulsever, do: @azalina_soulsever
   @spec azalina_soulsever?(card() | integer() | nil) :: boolean

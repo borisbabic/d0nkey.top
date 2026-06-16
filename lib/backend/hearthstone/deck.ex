@@ -1115,8 +1115,12 @@ defmodule Backend.Hearthstone.Deck do
 
   @spec missing_zilliax_parts?(t()) :: boolean()
   def missing_zilliax_parts?(deck) do
-    Enum.any?(deck.cards, &Card.zilliax_3000?/1) and
-      sideboards_count(deck, Card.zilliax_3000()) < 3
+    missing_sideboard_parts?(deck, Card.zilliax_3000(), 3)
+  end
+
+  @spec missing_sideboard_parts?(t(), integer(), integer()) :: boolean()
+  def missing_sideboard_parts?(deck, sideboard_id, sideboard_size \\ 3) do
+    Enum.any?(deck.cards, &(&1 == sideboard_id)) and sideboards_count(deck, sideboard_id) < sideboard_size
   end
 
   def tourists(deck) do

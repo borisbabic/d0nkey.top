@@ -1538,7 +1538,8 @@ defmodule Backend.Hearthstone do
               "unguro_prerelease_brawl",
               "ed_prerelease_brawl",
               "timeways_prerelease_brawl",
-              "cataclysm_prerelease_brawl"
+              "cataclysm_prerelease_brawl",
+              "violet_hold_prerelease_brawl"
             ] do
     new_query = compose_cards_query({"card_set_group_slug", format}, query)
     compose_cards_query({"banned_cards_for_format", format}, new_query)
