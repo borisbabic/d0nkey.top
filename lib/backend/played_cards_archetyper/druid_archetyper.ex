@@ -25,15 +25,13 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Twilight Egg",
        "Ravenous Flock",
        "Hatchery Helper",
-       "Forest's Gift",
-       "Longneck Egg"
+       "Forest's Gift"
      ]},
     {:"Merithra Druid",
      [
-       "Merithra of the Dream",
-       "Darkscale Broodmother"
-       # "Broodwatcher",
-       # "Fyrakk the Blazing"
+       "Darkscale Broodmother",
+       "Fyrakk the Blazing",
+       "Merithra of the Dream"
      ]},
     {:"Hostage Druid",
      [
@@ -46,19 +44,19 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
        "Tindral Sageswift"
      ]},
     # 5.5
-    {:"Azshara Druid",
-     [
-       "Welcome Home!",
-       "Zin-Azshari",
-       "Briarspawn Drake",
-       "Lady Azshara",
-       "Zin-Azshari",
-       "The Well of Eternity"
-     ]},
+    # {:"Azshara Druid",
+    #  [
+    #    "Welcome Home!",
+    #    "Zin-Azshari",
+    #    "Briarspawn Drake",
+    #    "Lady Azshara",
+    #    "Zin-Azshari",
+    #    "The Well of Eternity"
+    #  ]},
     {:"Merithra Druid",
      [
-       "Fyrakk the Blazing",
        "Broodwatcher",
+       "Vanessa the Ringleader",
        "Wickerfang"
      ]},
     {:"Hostage Druid",
