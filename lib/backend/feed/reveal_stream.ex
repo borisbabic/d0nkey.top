@@ -126,7 +126,7 @@ defmodule Backend.Feed.RevealStream do
       %__MODULE__{
         slug: "violet_hold_final",
         start_time: ~N[2026-06-18 21:00:00],
-        host: @rarran,
+        host: nil,
         classes: [],
         devs: [@edward_goodwin],
         guests: [@regis],
