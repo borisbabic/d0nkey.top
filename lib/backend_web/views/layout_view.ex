@@ -35,7 +35,7 @@ defmodule BackendWeb.LayoutView do
       Util.in_range?(now, {~N[2026-06-12 12:00:00], ~N[2026-06-17 12:00:00]}) ->
         %{link: ~p"/esports/2026/qualifiers/summer-week2", title: "Qualifiers"}
 
-      Util.in_range?(now, {~N[2026-06-18 12:00:00], ~N[2026-06-21 12:00:00]}) ->
+      Util.in_range?(now, {~N[2026-06-18 12:00:00], ~N[2026-06-23 12:00:00]}) ->
         %{link: ~p"/esports/2026/qualifiers/summer-blitz", title: "Blitz Qualifiers"}
 
       true ->
