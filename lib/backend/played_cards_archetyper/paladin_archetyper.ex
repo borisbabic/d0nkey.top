@@ -10,68 +10,74 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
     {:"Quest Paladin", ["Dive the Golakka Depths"]},
     {:"Imbue Paladin",
      [
-       "Malorne the Waywatcher",
-       "Resplendent Dreamweaver",
+       "Aegis of Light",
        "Bitterbloom Knight",
-       "Flutterwing Guardian",
        "Dreamwarden",
+       "Flutterwing Guardian",
        "Goldpetal Drake",
+       "Malorne the Waywatcher",
        "Petal Picker",
-       "Aegis of Light"
+       "Resplendent Dreamweaver"
      ]},
     {:"Dude Paladin",
      [
+       "Arator the Redeemer",
        "Emboldening Blade",
        "Resilient Savior",
-       "Arator the Redeemer"
+       "Teamwork"
      ]},
     {:"End of Turnadin",
      [
+       "Battle Vicar",
        "Chronological Aura",
+       "Earthen Drake",
        "Gelbin of Tomorrow",
        "Gnomish Aura",
        "Inspiring Maul",
        "Manifested Timeways",
        "Mekkatorque's Aura",
-       "Nightmare Lord Xavius",
        "Sandfury Aura",
        "Scalebreaker Bulwark",
        "Spearheart Sentry"
      ]},
-    {:"Aggro Paladin",
-     [
-       "Beaming Sidekick",
-       "Murloc Tidecaller",
-       "Rockskipper",
-       "Tortollan Storyteller"
-     ]},
-    # 5.5
     {:"Dude Paladin",
      [
-       "Teamwork",
+       "Platysaur",
        "Brash Battlemaster",
        "Muster for Battle",
        "Hatching Ceremony"
      ]},
-    {:"Aggro Paladin",
+    # 5.5
+    {:"End of Turnadin",
      [
-       "Carrier Whelp",
        "Glacial Shard",
-       "Murmy",
-       "Rockskipper",
-       "Worgen Infiltrator"
+       "Toreth the Unbreaking"
      ]},
     {:"End of Turnadin",
      [
-       "Righteous Protector",
-       "Violet Treasuregill",
-       "Toreth the Unbreaking",
-       "Acceleration Aura",
+       "Acceleration Aura"
+     ]},
+    {:"Dude Paladin",
+     [
+       "Sizzling Cinder",
+       "Twilight Egg",
+       "Convalescence"
+     ]},
+    {:"End of Turnadin",
+     [
+       "Nightmare Lord Xavius",
        "Nozdormu, Bronze Aspect"
      ]},
     {:"Dude Paladin",
      [
-       "Convalescence"
+       "Violet Treasuregill",
+       "Past Gnomeregan"
+     ]},
+    # 10.5
+    {:"End of Turnadin",
+     [
+       "Righteous Protector",
+       "The Fins Beyond Time"
      ]}
   ]
   @wild_config []
