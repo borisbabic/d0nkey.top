@@ -3492,6 +3492,20 @@ defmodule Hearthstone.DeckTracker do
     IO.puts("Took #{diff / 60} minutes to process games ie #{diff} seconds")
   end
 
+  def recalculate_archetypes_for_latest(classes \\ [], additional_criteria \\ [], chunk_size \\ 100) do
+    criteria =
+      case classes do
+        [_ | _] -> [{"player_or_opponent_class", classes} | additional_criteria]
+        [] -> additional_criteria
+      end
+
+    slug =
+      periods([{:type, ["release", "patch"]}])
+      |> latest_with_start()
+
+    recalculate_archetypes_for_period_stream(slug, NaiveDateTime.utc_now(), criteria, chunk_size)
+  end
+
   @spec recalculate_archetypes_for_period_stream(String.t(), NaiveDateTime.t(), list(), integer()) ::
           any()
   def recalculate_archetypes_for_period_stream(
