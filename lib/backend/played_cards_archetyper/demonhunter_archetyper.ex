@@ -5,54 +5,58 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @herald_package [
-    "Deathwing, Worldbreaker",
-    "Azshara, Ocean Lord",
-    "Ultraxion",
     "Armored Bloodletter",
-    "Envoy of the End"
+    "Azshara, Ocean Lord",
+    "Deathwing, Worldbreaker",
+    "Envoy of the End",
+    "Ultraxion"
+  ]
+  @broxigar_dh_minions [
+    "Bloodmage Thalnos",
+    "Devious Coyote",
+    "Dreadsoul Corrupter",
+    "Felfire Blaze",
+    "Glacial Shard",
+    "Kayn Sunfury",
+    "Remnant of Rage",
+    "Slumbering Sprite",
+    "Wild Pyromancer"
   ]
   @standard_excludes %{
     :"No Minion DH" =>
       @herald_package ++
-        ["Elise the Navigator", "Scorchreaver", "Felfire Blaze", "Ravenous Felfisher"]
+        ["Elise the Navigator", "Scorchreaver", "Felfire Blaze", "Ravenous Felfisher" | @broxigar_dh_minions]
   }
   @standard_config [
     {:"Quest DH", ["Unleash the Colossus"]},
-    {:"No Minion DH", ["Lasting Legacy", "Solitude", "Hounds of Fury", "The Eternal Hold"]},
-    {:"Harold DH",
-     [
-       "Scorchreaver",
-       "Defiled Spear" | @herald_package
-     ]},
-    {:"No Minion DH", ["Time-Lost Glaive", "Horn of Feasting", "Hive Map"]},
+    {:"No Minion DH", ["Solitude", "Hounds of Fury", "The Eternal Hold"]},
+    {:"Harold DH", @herald_package},
     {:"Broxigar DH",
      [
-       "Elven Archer",
-       "Felfire Blaze",
-       "Glacial Shard",
-       "Kayn Sunfury",
-       "Perenial Serpent",
-       "Prize Vendor",
-       "Remnant of Rage",
-       "Wild Pyromancer"
+       "Insect Claw",
+       "Perennial Serpent"
+       | @broxigar_dh_minions
+     ]},
+    {:"Harold DH",
+     [
+       "Defiled Spear",
+       "Fel Infusion",
+       "Scorchreaver"
      ]},
     # 5.5
+    {:"No Minion DH", ["Time-Lost Glaive"]},
+    {:"Broxigar DH", ["Press the Advantage", "Eye Beam", "Chaos Strike"]},
+    {:"No Minion DH", ["Lasting Legacy", "Horn of Feasting"]},
+    {:"No Minion DH", ["Wyvern's Slumber", "Hive Map", "Axe of Cenarius", "Sigil of the Seas"]},
+    {:"Harold DH",
+     [
+       "Illidari Studies",
+       "Infestation"
+     ]},
     {:"No Minion DH",
      [
-       "Horn of Feasting",
-       "Sands of Time",
-       "Nespirah, Enthralled",
-       "Broxigar's Last Stand",
-       "Illidari Studies",
-       "Wyvern's Slumber",
-       "Infestation",
-       "First Portal to Argus",
-       "Press the Advantage",
-       "Sigil of the Seas",
-       "Hive Map",
-       "Axe of Cenarius",
-       "Eye Beam",
-       "Grim Harvest"
+       "Grim Harvest",
+       "Sigil of Cinder"
      ]}
   ]
   @wild_config []
