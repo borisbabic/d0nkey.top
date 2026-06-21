@@ -8,24 +8,24 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     {:"Quest Druid", ["Restore the Wild"]},
     {:"Imbue Druid",
      [
-       "Hamuul Runetotem",
-       "Dreambound Disciple",
        "Bitterbloom Knight",
+       "Charred Chameleon",
+       "Dreambound Disciple",
        "Flutterwing Guardian",
-       "Resplendent Dreamweaver",
+       "Hamuul Runetotem",
        "Malorne the Waywatcher",
        "Petal Picker",
-       "Charred Chameleon"
+       "Resplendent Dreamweaver"
      ]},
     {:"Token Druid",
      [
-       "Overheat",
-       "Power of the Wild",
-       "Platysaur",
-       "Twilight Egg",
-       "Ravenous Flock",
+       "Forest's Gift",
        "Hatchery Helper",
-       "Forest's Gift"
+       "Overheat",
+       "Platysaur",
+       "Power of the Wild",
+       "Ravenous Flock",
+       "Twilight Egg"
      ]},
     {:"Merithra Druid",
      [
@@ -35,24 +35,14 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      ]},
     {:"Hostage Druid",
      [
+       "Chrono-Lord Deios",
+       "Dark Iron Harbinger",
+       "Endbringer Umbra",
        "Grove Shaper",
        "Hopeful Dryad",
-       "Dark Iron Harbinger",
-       "Chrono-Lord Deios",
        "Mo'arg Forgefiend",
-       "Endbringer Umbra",
        "Tindral Sageswift"
      ]},
-    # 5.5
-    # {:"Azshara Druid",
-    #  [
-    #    "Welcome Home!",
-    #    "Zin-Azshari",
-    #    "Briarspawn Drake",
-    #    "Lady Azshara",
-    #    "Zin-Azshari",
-    #    "The Well of Eternity"
-    #  ]},
     {:"Merithra Druid",
      [
        "Broodwatcher",
@@ -61,9 +51,9 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      ]},
     {:"Hostage Druid",
      [
+       "Illusory Greenwing",
        "Oaken Summons",
-       "Wrath",
-       "Illusory Greenwing"
+       "Wrath"
      ]},
     {:"Merithra Druid",
      [
@@ -94,20 +84,20 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
      ]},
     {:"Merithra Druid",
      [
+       "Acceleration Aura",
        "Bashana Runetotem",
-       "Elise the Navigator",
-       "Acceleration Aura"
+       "Elise the Navigator"
      ]},
     # 15.5
     {:"Merithra Druid",
      [
-       "Nightmare Lord Xavius",
+       "Amirdrassil",
        "Ebb and Flow",
+       "Felwood Treant",
        "Horn of Plenty",
        "Innervate",
-       "Waveshaping",
-       "Amirdrassil",
-       "Felwood Treant"
+       "Nightmare Lord Xavius",
+       "Waveshaping"
      ]},
     {:"Merithra Druid",
      [
