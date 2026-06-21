@@ -19,8 +19,15 @@ defmodule BackendWeb.ErrorView do
     <div>
       If you think it should have went right, and the issue persists, please report it in one of the following places:
       <ul>
-        <li><a href={Constants.discord_bugs()}>Discord</a></li>
-        <li><a href={Constants.github_issues()}>Github</a></li>
+        <li>
+          <a href={Constants.discord_bugs()}>Discord</a>
+          <%= if temp_warning?() do %>
+            <span>(Temporarily slow to respond, probably til the release of Escape from Violet Hold)</span>
+          <% end %>
+        </li>
+        <li>
+          <a href={Constants.github_issues()}>Github</a>
+        </li>
       </ul>
     </div>
     """
@@ -31,5 +38,10 @@ defmodule BackendWeb.ErrorView do
   # "Not Found".
   def template_not_found(template, _assigns) do
     Phoenix.Controller.status_message_from_template(template)
+  end
+
+  defp temp_warning? do
+    now = NaiveDateTime.utc_now()
+    :lt == NaiveDateTime.compare(now, ~N[2026-07-07 17:00:00])
   end
 end
