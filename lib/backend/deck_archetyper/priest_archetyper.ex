@@ -75,10 +75,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
   @standard_resummon ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"]
   @wild_resummon ["Grave Rune", "Twilight's Call", "Amulet of Undying", "Embalming Ritual"]
   @all_resummon @standard_resummon ++ @wild_resummon
-  defp armor?(ci) do
-    "Arkonite Defense Crystal" in ci.card_names and
-      min_count?(ci, 2, @all_resummon)
-  end
 
   defp hitchhiker?(ci) do
     "Mystified To'cha" in ci.card_names
@@ -186,9 +182,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       wild_rez_priest?(card_info) ->
         :"Rez Priest"
 
-      "Heartbreaker Hedanis" in card_info.card_names ->
-        :"Hedanis Priest"
-
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Priest"
 
@@ -200,9 +193,6 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
 
       "Nazmani Bloodweaver" in card_info.card_names ->
         :"Nazmani Priest"
-
-      armor?(card_info) ->
-        :"Armor Priest"
 
       "Divine Spirit" in card_info.card_names ->
         :"Divine Spirit Priest"
