@@ -143,9 +143,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Dew Process" in card_info.card_names ->
         :"Mill Druid"
 
-      wild_mill_otk?(card_info) ->
-        :"Mill OTK Druid"
-
       wild_boar_otk?(card_info) ->
         :"Boar OTK Druid"
 
@@ -233,10 +230,6 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Jade Behemoth",
       "Aya Blackpaw"
     ])
-  end
-
-  defp wild_mill_otk?(card_info) do
-    min_count?(card_info, 2, ["Grove Shaper", "Naturalize"])
   end
 
   defp old_aggro?(card_info) do
