@@ -242,9 +242,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Galvanizer" in card_info.card_names ->
         :"Mech Paladin"
 
-      thekal?(card_info) ->
-        :"Thekal Paladin"
-
       true ->
         fallbacks(card_info, "Paladin")
     end
@@ -260,10 +257,6 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   defp aura_cta?(card_info) do
     min_count?(card_info, 2, ["Call to Arms", "Gelbin of Tomorrow"])
-  end
-
-  defp thekal?(card_info) do
-    min_count?(card_info, 2, ["High Priest Thekal", "Molten Giant"])
   end
 
   defp earthen_paladin?(ci),
