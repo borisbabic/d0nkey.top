@@ -197,26 +197,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       min_count?(ci, 2, @self_fatigue_package)
   end
 
-  defp implock?(ci),
-    do:
-      min_count?(ci, 6, [
-        "Bloodbound Imp",
-        "Desk Imp",
-        "Fiendish Circle",
-        "Flame Imp",
-        "Flustered Librarian",
-        "Imp Gang Boss",
-        "Imp King Rafaam",
-        "Imp Swarm (Rank 1)",
-        "Impending Catastrophe",
-        "Malchezaar's Imp",
-        "Mischievous Imp",
-        "Nofin's Imp-ossible",
-        "Piggyback Imp",
-        "Vile Library",
-        "Wicked Shipment"
-      ])
-
   def wild(card_info) do
     cond do
       boar?(card_info) and "Battle at the End Time" in card_info.card_names and
@@ -295,9 +275,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       demon_boar?(card_info) ->
         :"Demon Boarlock"
 
-      boar?(card_info) and egglock?(card_info, 1) ->
-        :"Bacon and Eggs Warlock"
-
       boar?(card_info) ->
         :Boarlock
 
@@ -312,9 +289,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       mill?(card_info) ->
         :"Mill Warlock"
-
-      implock?(card_info) ->
-        :Implock
 
       deckless?(card_info) ->
         :"Deckless Warlock"
