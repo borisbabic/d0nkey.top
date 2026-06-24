@@ -39,6 +39,7 @@ defmodule Hearthstone.Card do
     field(:deck_size_mod, integer())
     field(:zilliax_functional_module?, boolean())
     field(:zilliax_cosmetic_module?, boolean())
+    field(:max_sideboard_cards, integer())
     field(:banned_from_sideboard, boolean())
   end
 
@@ -79,6 +80,7 @@ defmodule Hearthstone.Card do
         mercenary_hero: MercenaryHero.from_raw_map(map["mercenary_hero"]),
         rune_cost: RuneCost.from_raw_map(map["rune_cost"]),
         banned_from_sideboard: map["banned_from_sideboard"] == 1,
+        max_sideboard_cards: map["max_sideboard_cards"],
         zilliax_functional_module?: map["is_zilliax_functional_module"],
         zilliax_cosmetic_module?: map["is_zilliax_cosmetic_module"],
         text: map["text"]

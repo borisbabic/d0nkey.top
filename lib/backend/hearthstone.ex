@@ -2210,6 +2210,7 @@ defmodule Backend.Hearthstone do
           rarity_id: find_matching_by_slug(rarities, rarity),
           card_type_id: find_matching_by_slug(types, type),
           banned_from_sideboard: false,
+          max_sideboard_cards: nil,
           deck_size_mod: nil,
           artist_name: artist,
           attack: attack,

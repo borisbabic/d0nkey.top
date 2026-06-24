@@ -84,6 +84,7 @@ defmodule Backend.Hearthstone.Card do
     field(:text, :string)
     field(:dust_free, :boolean, default: false)
     field(:nicknames, {:array, :string}, default: [])
+    field(:max_sideboard_cards, :integer, default: nil)
     field(:banned_from_sideboard, :boolean, default: false)
 
     embeds_one(:rune_cost, RuneCost, on_replace: :delete)
@@ -125,6 +126,7 @@ defmodule Backend.Hearthstone.Card do
       :duels_relevant,
       :flavor_text,
       :banned_from_sideboard,
+      :max_sideboard_cards,
       :health,
       :image,
       :image_gold,
