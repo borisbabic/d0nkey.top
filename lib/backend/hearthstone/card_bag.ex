@@ -64,6 +64,11 @@ defmodule Backend.Hearthstone.CardBag do
     Util.ets_lookup(table(), :fabled_companions, [])
   end
 
+  @spec sideboard_cards() :: [Card.t()]
+  def sideboard_cards do
+    Util.ets_lookup(table(), :sideboard_cards, [])
+  end
+
   def refresh_table, do: GenServer.cast(@name, :refresh_table)
 
   def start_link(default) do
@@ -106,6 +111,11 @@ defmodule Backend.Hearthstone.CardBag do
     for c <- cards do
       :ets.insert(table, {key_for_deckcode_copy_id(c.id), c.deckcode_copy_id || c.id})
     end
+  end
+
+  defp set_sideboard_cards(table, cards) do
+    sideboard_cards = Enum.filter(cards, &is_integer(&1.max_sideboard_cards))
+    :ets.insert(table, {:sideboard_cards, sideboard_cards})
   end
 
   defp set_fabled_groups(table, cards) do
@@ -151,6 +161,7 @@ defmodule Backend.Hearthstone.CardBag do
     set_deckcode_copy_id(table, cards)
     set_cards(table, cards)
     set_fabled_groups(table, cards)
+    set_sideboard_cards(table, cards)
 
     standard_first =
       cards

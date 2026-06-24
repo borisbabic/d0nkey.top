@@ -47,7 +47,7 @@ defmodule BackendWeb.DeckBuilderLive do
           id="cards_explorer"
           format_options={format_options()}
           additional_url_params={%{"code" => Deck.deckcode(@deck)}}
-          params={card_params(@params, Deck.missing_zilliax_parts?(@deck), missing_underbelly?(@deck))}
+          params={card_params(@params, @deck)}
           url_params={@params}
           on_card_click={"add-card"}
           card_phx_hook={"DeckBuilderCard"}
@@ -101,10 +101,16 @@ defmodule BackendWeb.DeckBuilderLive do
   defp standard?(%{format: 2}), do: true
   defp standard?(_), do: false
 
+  defp missing_sideboard_card_pool(deck) do
+    deck
+    |> Deck.missing_sideboard()
+    |> Backend.Hearthstone.sideboard_card_pool()
+  end
+
   defp card_pool(deck, additional_classes, format) do
     cond do
-      missing_underbelly?(deck) ->
-        %{not_classes: ["HUNTER", "NEUTRAL"]}
+      card_pool = missing_sideboard_card_pool(deck) ->
+        card_pool
 
       is_binary(format) and byte_size(format) > 1 ->
         true
@@ -168,23 +174,50 @@ defmodule BackendWeb.DeckBuilderLive do
     @evergreen_formats ++ conditional
   end
 
-  defp card_params(_, true, _) do
-    %{"collectible" => false, "card_set_id" => [1897], "search" => " Module"}
+  defp card_params(params, deck) do
+    with %{id: sideboard_id} <- Deck.missing_sideboard(deck),
+         sideboard_params when map_size(sideboard_params) > 0 <- Backend.Hearthstone.sideboard_params(sideboard_id) do
+      Map.merge(params, sideboard_params)
+    else
+      _ -> params
+    end
   end
 
-  defp card_params(params, false, true) do
-    add_underbelly_params(params)
-  end
-
-  defp card_params(params, false, _), do: params
-
-  defp add_underbelly_params(params) do
-    params |> Map.put("minion_type", "beast")
-  end
-
-  defp remove_underbelly_params(params) do
-    params |> Map.delete("minion_type")
-  end
+  # defp card_params(params, true, _, _) do
+  #   %{"collectible" => false, "card_set_id" => [1897], "search" => " Module"}
+  # end
+  #
+  # defp card_params(params, _, true, _) do
+  #   add_underbelly_params(params)
+  # end
+  #
+  # defp card_params(params, _, _, true) do
+  #   add_beatrix_params(params)
+  # end
+  #
+  # defp card_params(params, false, _, _), do: params
+  #
+  # defp add_underbelly_params(params) do
+  #   params
+  #   |> Map.delete("search")
+  #   |> Map.put("minion_type", "beast")
+  # end
+  #
+  # defp remove_underbelly_params(params) do
+  #   params |> Map.delete("minion_type")
+  # end
+  #
+  # defp add_beatrix_params(params) do
+  #   params
+  #   |> Map.delete("search")
+  #   |> Map.put("card_type", "minion")
+  #   |> Map.put("mana_cost", 2)
+  # end
+  #
+  # defp remove_beatrix_params(params) do
+  #   params
+  #   |> Map.drop(["card_type", "mana_cost"])
+  # end
 
   def handle_event("pick-class-format", %{"format" => format, "deck_class" => class}, socket) do
     %{raw_params: raw_params} = socket.assigns
@@ -234,20 +267,17 @@ defmodule BackendWeb.DeckBuilderLive do
     %{deck: deck, raw_params: raw_params} = socket.assigns
 
     if Deck.addable?(deck, card) do
-      new_code =
+      params =
         cond do
           # hack so people can't remove the zilly art because they won't be able to add it back
           card == 110_446 ->
             Deck.deckcode(deck)
+            |> add_code_to(raw_params)
 
-          Deck.missing_zilliax_parts?(deck) ->
-            add_to_sideboard(deck, card, Card.zilliax_3000())
-
-          missing_etc_band_member?(deck) and CardBag.sideboardable?(card) ->
-            add_to_sideboard(deck, card, Card.etc_band_manager())
-
-          missing_underbelly?(deck) and CardBag.sideboardable?(card) ->
-            add_to_sideboard(deck, card, Card.king_of_the_underbelly())
+          sideboard = Deck.missing_sideboard(deck) ->
+            add_to_sideboard(deck, card, sideboard.id)
+            |> add_code_to(raw_params)
+            |> remove_sideboard_params_if_complete(sideboard)
 
           # auto add art
           Card.zilliax_3000?(card) ->
@@ -255,22 +285,18 @@ defmodule BackendWeb.DeckBuilderLive do
             |> Deck.decode!()
             # pink is perfect. perfect is pink
             |> add_to_sideboard(110_446, card)
+            |> add_code_to(raw_params)
+            |> Map.delete("search")
 
           !Enum.empty?(fabled_group) ->
             add_cards(deck, fabled_group)
+            |> add_code_to(raw_params)
 
           true ->
             add_card(deck, card)
+            |> add_code_to(raw_params)
+            |> remove_search_if_sideboard_with_params(card)
         end
-
-      params =
-        if missing_underbelly?(deck) and !missing_underbelly?(Deck.decode!(new_code)) do
-          raw_params
-          |> remove_underbelly_params()
-        else
-          raw_params
-        end
-        |> Map.put("code", new_code)
 
       {:noreply,
        push_patch(socket,
@@ -285,6 +311,18 @@ defmodule BackendWeb.DeckBuilderLive do
     Tracker.inc_copied(code)
     {:noreply, socket}
   end
+
+  defp remove_search_if_sideboard_with_params(params, card) do
+    case Backend.Hearthstone.sideboard_params(card) do
+      sideboard_params when map_size(sideboard_params) > 0 ->
+        Map.delete(params, "search")
+
+      _ ->
+        params
+    end
+  end
+
+  defp add_code_to(code, params), do: Map.put(params, "code", code)
 
   defp do_remove_card(socket, %{"card_id" => card_raw} = params) do
     sideboard =
@@ -304,10 +342,39 @@ defmodule BackendWeb.DeckBuilderLive do
         true -> remove_card(deck, card)
       end
 
+    new_params =
+      raw_params
+      |> remove_sideboard_params_if_missing(card)
+      |> Map.put("code", new_code)
+
     {:noreply,
      push_patch(socket,
-       to: Routes.live_path(socket, __MODULE__, Map.put(raw_params, "code", new_code))
+       to: Routes.live_path(socket, __MODULE__, new_params)
      )}
+  end
+
+  defp remove_sideboard_params_if_missing(params, card, additional_to_drop \\ []) do
+    do_remove_sideboard_params(params, card, additional_to_drop, true)
+  end
+
+  defp remove_sideboard_params_if_complete(params, card, additional_to_drop \\ []) do
+    do_remove_sideboard_params(params, card, additional_to_drop, false)
+  end
+
+  defp do_remove_sideboard_params(params, card, additional_to_drop, if_missing?) do
+    to_drop =
+      with %{id: id, max_sideboard_cards: sideboard_size} <-
+             Enum.find(CardBag.sideboard_cards(), &(Card.dbf_id(&1) == card)),
+           {:ok, deck} <- Deck.decode(params["code"]),
+           ^if_missing? <- Deck.missing_sideboard_parts?(deck, id, sideboard_size) do
+        Backend.Hearthstone.sideboard_params(id)
+        |> Map.keys()
+        |> Kernel.++(additional_to_drop)
+      else
+        _ -> []
+      end
+
+    Map.drop(params, to_drop)
   end
 
   defp remove_from_sideboard(deck, card, sideboard) do
@@ -362,7 +429,8 @@ defmodule BackendWeb.DeckBuilderLive do
     Deck.deckcode(cards ++ deck.cards, deck.hero, deck.format, deck.sideboards)
   end
 
-  defp add_to_sideboard(deck, card, sideboard) do
+  defp add_to_sideboard(deck, card, sideboard_card) do
+    sideboard = Backend.Hearthstone.dbf_id(sideboard_card)
     index = Enum.find_index(deck.sideboards, &(&1.card == card && &1.sideboard == sideboard))
 
     new_sideboards =
@@ -424,6 +492,10 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp assign_title(socket) do
     assign(socket, :page_title, "DeckBuilder")
+  end
+
+  def missing_beatrix?(deck) do
+    Deck.missing_sideboard_parts?(deck, Card.commander_beatrix(), 1)
   end
 
   def missing_underbelly?(deck) do

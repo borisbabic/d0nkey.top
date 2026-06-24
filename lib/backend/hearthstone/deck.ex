@@ -509,7 +509,7 @@ defmodule Backend.Hearthstone.Deck do
   """
   @spec decode(String.t(), [decode_opt]) :: {:ok, t()} | {:error, String.t() | any()}
   def decode(deckcode, opts \\ [])
-  def decode("", _opts), do: {:error, "Couldn't decode deckstring"}
+  def decode(bad_code, _opts) when bad_code in ["", nil], do: {:error, "Couldn't decode deckstring"}
 
   def decode(deckcode, opts) do
     canonicalize = Keyword.get(opts, :canonicalize, true)
@@ -1105,6 +1105,19 @@ defmodule Backend.Hearthstone.Deck do
       |> Enum.sum()
 
     in_deck + in_sideboards
+  end
+
+  @spec sideboard_complete?(t(), Card.t()) :: boolean
+  def sideboard_complete?(deck, %{id: sideboard_id, max_sideboard_cards: sideboard_size}) do
+    !missing_sideboard_parts?(deck, sideboard_id, sideboard_size)
+  end
+
+  @spec missing_sideboard(t()) :: Card.t() | nil
+  def missing_sideboard(deck) do
+    Enum.find(CardBag.sideboard_cards(), fn
+      %{id: sideboard_id, max_sideboard_cards: sideboard_size} ->
+        missing_sideboard_parts?(deck, sideboard_id, sideboard_size)
+    end)
   end
 
   @spec missing_zilliax_sideboard?(t()) :: boolean()

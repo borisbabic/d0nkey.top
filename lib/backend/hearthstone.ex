@@ -2252,4 +2252,32 @@ defmodule Backend.Hearthstone do
       end
     end)
   end
+
+  @spec sideboard_params(card() | integer()) :: Map.t()
+  def sideboard_params(card) do
+    cond do
+      Card.commander_beatrix?(card) ->
+        %{"card_type" => "minion", "mana_cost" => 2}
+
+      Card.king_of_the_underbelly?(card) ->
+        %{"minion_type" => "beast"}
+
+      Card.zilliax_3000?(card) ->
+        %{"collectible" => false, "card_set_id" => [1897], "search" => " Module"}
+
+      true ->
+        %{}
+    end
+  end
+
+  @spec sideboard_card_pool(card() | integer) :: Map.t() | nil
+  def sideboard_card_pool(card) do
+    cond do
+      Card.king_of_the_underbelly?(card) ->
+        %{not_classes: ["HUNTER", "NEUTRAL"]}
+
+      true ->
+        nil
+    end
+  end
 end

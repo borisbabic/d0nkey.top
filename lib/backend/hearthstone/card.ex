@@ -222,37 +222,44 @@ defmodule Backend.Hearthstone.Card do
   @etc_band_manager 90_749
   def etc_band_manager, do: @etc_band_manager
   @spec etc_band_manager?(card() | integer() | nil) :: boolean
-  def etc_band_manager?(nil), do: false
   def etc_band_manager?(id) when is_integer(id), do: id == @etc_band_manager
-  def etc_band_manager?(card), do: dbf_id(card) == @etc_band_manager
+  def etc_band_manager?(card) when is_card(card), do: dbf_id(card) == @etc_band_manager
+  def etc_band_manager?(_), do: false
+
+  @commander_beatrix 126_621
+  def commander_beatrix, do: @commander_beatrix
+  @spec commander_beatrix?(card() | integer() | nil) :: boolean
+  def commander_beatrix?(id) when is_integer(id), do: id == @commander_beatrix
+  def commander_beatrix?(card) when is_card(card), do: dbf_id(card) == @commander_beatrix
+  def commander_beatrix?(_), do: false
 
   @king_of_the_underbelly 125_998
   def king_of_the_underbelly, do: @king_of_the_underbelly
   @spec etc_band_manager?(card() | integer() | nil) :: boolean
-  def kind_of_the_underbelly?(nil), do: false
   def king_of_the_underbelly?(id) when is_integer(id), do: id == @king_of_the_underbelly
-  def king_of_the_underbelly?(card), do: dbf_id(card) == @king_of_the_underbelly
+  def king_of_the_underbelly?(card) when is_card(card), do: dbf_id(card) == @king_of_the_underbelly
+  def king_of_the_underbelly?(_), do: false
 
   @azalina_soulsever 126_055
   def azalina_soulsever, do: @azalina_soulsever
   @spec azalina_soulsever?(card() | integer() | nil) :: boolean
-  def azalina_soulsever?(nil), do: false
   def azalina_soulsever?(id) when is_integer(id), do: id == @azalina_soulsever
-  def azalina_soulsever?(card), do: dbf_id(card) == @azalina_soulsever
+  def azalina_soulsever?(card) when is_card(card), do: dbf_id(card) == @azalina_soulsever
+  def azalina_soulsever?(_), do: false
 
   @vyranoth 123_151
   def vyranoth, do: @vyranoth
   @spec vyranoth?(card() | integer() | nil) :: boolean
-  def vyranoth?(nil), do: false
   def vyranoth?(id) when is_integer(id), do: id == @vyranoth
-  def vyranoth?(card), do: dbf_id(card) == @vyranoth
+  def vyranoth?(card) when is_card(card), do: dbf_id(card) == @vyranoth
+  def vyranoth?(_), do: false
 
   @zilliax_3000 102_983
   def zilliax_3000, do: @zilliax_3000
   @spec zilliax_3000?(card() | integer() | nil) :: boolean
-  def zilliax_3000?(nil), do: false
   def zilliax_3000?(id) when is_integer(id), do: id == @zilliax_3000
-  def zilliax_3000?(card), do: dbf_id(card) == @zilliax_3000
+  def zilliax_3000?(card) when is_card(card), do: dbf_id(card) == @zilliax_3000
+  def zilliax_3000?(_), do: false
 
   @pink_zilly 110_446
   def pink_zilly, do: @pink_zilly
