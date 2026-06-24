@@ -108,7 +108,7 @@ defmodule Components.Filter.PlayableCardSelect do
   defp filter_canonical(cards, false), do: cards
 
   def name(selected) do
-    case Backend.HearthstoneJson.get_card(selected) do
+    case Backend.Hearthstone.get_card(selected) do
       %{name: name} -> name
       _ -> nil
     end
