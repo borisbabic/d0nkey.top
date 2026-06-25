@@ -23,7 +23,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
           d.sideboards
           |> Enum.filter(&(&1.sideboard == card.id))
           |> Hearthstone.sort_cards(card_sort_opts)
-          |> Enum.map(&{Hearthstone.get_card(&1.card), &1.count, "  "})
+          |> Enum.map(&{Hearthstone.get_card(&1.card), Card.multiply_count_for_sideboard(&1), "  "})
           |> Enum.filter(&elem(&1, 0))
 
         [{card, freq, ""} | card_sideboards]

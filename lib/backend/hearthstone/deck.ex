@@ -1056,7 +1056,14 @@ defmodule Backend.Hearthstone.Deck do
 
   def addable?(deck, card) do
     total = total_copies(deck, card)
-    max_allowed = Card.max_copies_in_deck(card)
+
+    max_allowed =
+      if exclusive_missing_sideboard?(deck) do
+        1
+      else
+        Card.max_copies_in_deck(card)
+      end
+
     runes_allowed? = runes_allowed?(deck, card)
     deck_size_allowed? = deck_size_allowed?(deck, card)
 
@@ -1070,6 +1077,11 @@ defmodule Backend.Hearthstone.Deck do
     # max one tourist per deck
     deck_size_allowed? and runes_allowed? and total < max_allowed and
       not_tourist_or_can_add_tourist? and not_zilly_module_or_zilly_not_full?
+  end
+
+  defp exclusive_missing_sideboard?(deck) do
+    missing_sideboard(deck)
+    |> Card.exclusive_sideboard?()
   end
 
   defp deck_size_allowed?(deck, card) do
@@ -1101,7 +1113,7 @@ defmodule Backend.Hearthstone.Deck do
 
     in_sideboards =
       Enum.filter(sideboards, &(card_id == CardBag.deckcode_copy_id(&1.card)))
-      |> Enum.map(& &1.count)
+      |> Enum.map(&Card.multiply_count_for_sideboard/1)
       |> Enum.sum()
 
     in_deck + in_sideboards

@@ -279,6 +279,37 @@ defmodule Backend.Hearthstone.Card do
     123_743 => 123_692,
     123_744 => 123_692
   }
+
+  # for beatrix
+  def multiply_count_for_sideboard(%{count: count, sideboard: sideboard}) do
+    multiply_count_for_sideboard(sideboard, count)
+  end
+
+  @spec multiply_count_for_sideboard(card() | integer(), integer()) :: integer()
+  def multiply_count_for_sideboard(sideboard, count) do
+    count * sideboard_copies_per_entry(sideboard)
+  end
+
+  @spec sideboard_copies_per_entry(integer() | card()) :: integer()
+  def sideboard_copies_per_entry(card) when is_card(card) do
+    card
+    |> dbf_id()
+    |> sideboard_copies_per_entry()
+  end
+
+  def sideboard_copies_per_entry(@commander_beatrix), do: 10
+  def sideboard_copies_per_entry(_), do: 1
+
+  @spec exclusive_sideboard?(integer() | card()) :: boolean
+  def exclusive_sideboard?(card) when is_card(card) do
+    card
+    |> dbf_id()
+    |> sideboard_copies_per_entry()
+  end
+
+  def exclusive_sideboard?(@commander_beatrix), do: true
+  def exclusive_sideboard?(_), do: false
+
   @spec shattered_merged_id(integer() | card()) :: integer() | nil
   def shattered_merged_id(card_or_dbf_id) when is_integer(card_or_dbf_id) do
     Map.get(@shattered_map, card_or_dbf_id)

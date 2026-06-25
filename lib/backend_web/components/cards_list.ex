@@ -33,7 +33,7 @@ defmodule Components.CardsList do
               deck_class={@deck_class}
               non_hover_class={class}
               card={card}
-              count={count}
+              count={Card.multiply_count_for_sideboard(sideboard, count)}
               deck={@deck}
               decklist_options={User.decklist_options(@user)}
               disable_link={!!@on_card_click}
