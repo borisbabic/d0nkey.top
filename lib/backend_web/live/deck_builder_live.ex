@@ -51,7 +51,7 @@ defmodule BackendWeb.DeckBuilderLive do
           url_params={@params}
           on_card_click={"add-card"}
           card_phx_hook={"DeckBuilderCard"}
-          card_disabled={fn card -> !Deck.addable?(@deck, card) end}>
+          card_disabled={fn card -> !Deck.addable?(@deck, card, addable_opts(@format)) end}>
           <:additional_filters>
             <ClassMultiDropdown
               id="additional_classes_dropdown"
@@ -264,9 +264,9 @@ defmodule BackendWeb.DeckBuilderLive do
   def handle_event("add-card", %{"card_id" => card_raw}, socket) do
     card = Util.to_int!(card_raw)
     fabled_group = CardBag.fabled_group(card)
-    %{deck: deck, raw_params: raw_params} = socket.assigns
+    %{deck: deck, raw_params: raw_params, format: format} = socket.assigns
 
-    if Deck.addable?(deck, card) do
+    if Deck.addable?(deck, card, addable_opts(format)) do
       params =
         cond do
           # hack so people can't remove the zilly art because they won't be able to add it back
@@ -321,6 +321,9 @@ defmodule BackendWeb.DeckBuilderLive do
         params
     end
   end
+
+  defp addable_opts("violet_hold_prerelease_brawl"), do: [skip_rune_check: true]
+  defp addable_opts(_), do: []
 
   defp add_code_to(code, params), do: Map.put(params, "code", code)
 

@@ -1048,13 +1048,17 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def addable?(_deck, nil), do: false
+  @type addable_opt :: {:skip_rune_check, boolean()}
 
-  def addable?(deck, card_id) when is_integer(card_id) do
-    addable?(deck, Hearthstone.get_card(card_id))
+  @spec addable?(t(), integer | nil | Card.card(), [addable_opt()]) :: boolean()
+  def addable?(_deck, nil, _opts), do: false
+
+  def addable?(deck, card_id, opts) when is_integer(card_id) do
+    addable?(deck, Hearthstone.get_card(card_id), opts)
   end
 
-  def addable?(deck, card) do
+  def addable?(deck, card, opts) do
+    skip_rune_check? = Keyword.get(opts, :skip_rune_check, false)
     total = total_copies(deck, card)
 
     max_allowed =
@@ -1064,7 +1068,7 @@ defmodule Backend.Hearthstone.Deck do
         Card.max_copies_in_deck(card)
       end
 
-    runes_allowed? = runes_allowed?(deck, card)
+    runes_allowed? = skip_rune_check? || runes_allowed?(deck, card)
     deck_size_allowed? = deck_size_allowed?(deck, card)
 
     not_tourist_or_can_add_tourist? =
