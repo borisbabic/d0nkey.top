@@ -1,14 +1,17 @@
 defmodule BackendWeb.LineupSubmitterLive do
   use BackendWeb, :surface_live_view
 
-  data(view_url, :string, default: nil)
   data(tournament_id, :string, default: nil)
+  data(user_tournament_ids, :list, default: [])
 
   def mount(_params, session, socket) do
-    {:ok,
-     socket
-     |> assign_defaults(session)
-     |> put_user_in_context()}
+    {
+      :ok,
+      socket
+      |> assign_defaults(session)
+      |> put_user_in_context()
+      |> assign_user_tournament_ids()
+    }
   end
 
   def render(assigns) do
@@ -44,10 +47,9 @@ defmodule BackendWeb.LineupSubmitterLive do
               <input class="input has-text-black" type="number" name="lineups[ignore_columns]" id="ignore_columns" value="1" />
             </div>
             <button type="submit" class="button is-success">Save Lineups</button>
-            <div :if={@view_url}>
-              View lineups <a href={@view_url}>Here</a>
-            </div>
-            <div :if={tournament_ids = (@view_url || true) && user_tournament_ids(@user)}>
+            <br>
+            <br>
+            <div :if={Enum.any?(@user_tournament_ids)}>
               <table class="table is-narrow">
                 <thead>
                   <tr>
@@ -56,8 +58,8 @@ defmodule BackendWeb.LineupSubmitterLive do
                   </tr>
                 </thead>
                 <tbody>
-                  <tr :for={tournament_id <- tournament_ids}>
-                    <td class="level">
+                  <tr :for={tournament_id <- @user_tournament_ids}>
+                    <td>
                       <a href={~p"/tournament-lineups/#{@user.battletag}/#{tournament_id}"}">{tournament_id}</a>
                     </td>
                     <td>
@@ -75,6 +77,12 @@ defmodule BackendWeb.LineupSubmitterLive do
 
   def allowed(%{battletag: bt}) when is_binary(bt), do: true
   def allowed(_), do: false
+
+  def assign_user_tournament_ids(%{assigns: %{user: user}} = socket) do
+    assign(socket, user_tournament_ids: user_tournament_ids(user))
+  end
+
+  def assign_user_tournament_ids(socket), do: socket
 
   def user_tournament_ids(%{battletag: bt}) when is_binary(bt) do
     Backend.Hearthstone.get_tournament_ids_for_source(bt)
@@ -102,7 +110,8 @@ defmodule BackendWeb.LineupSubmitterLive do
       end
 
     Command.ImportLineups.import(data, tournament_id, source)
-    {:noreply, socket |> assign(:view_url, ~p"/tournament-lineups/#{source}/#{tournament_id}")}
+
+    {:noreply, socket |> assign_user_tournament_ids()}
   end
 
   def handle_event(
@@ -112,7 +121,7 @@ defmodule BackendWeb.LineupSubmitterLive do
       ) do
     Backend.Hearthstone.delete_lineups(id, battletag)
     # {socket.assigns.params["tournament_id"]}")}
-    {:noreply, socket |> assign(:view_url, nil)}
+    {:noreply, socket |> assign_user_tournament_ids()}
   end
 
   defp custom_tournament_source?(user),
