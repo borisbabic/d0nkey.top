@@ -6,6 +6,8 @@ defmodule BackendWeb.GroupMatchupsLive do
   data(user, :any)
   data(group_id, :any)
   data(params, :map)
+  data(group, :any, default: nil)
+  data(membership, :any, default: nil)
 
   def mount(_params, session, socket),
     do:
@@ -17,15 +19,15 @@ defmodule BackendWeb.GroupMatchupsLive do
 
   def render(assigns) do
     ~F"""
-      <div :if={({group, membership} = BackendWeb.GroupLive.group_membership(@group_id, @user)) && group && membership}>
-        <div class="title is-2">{group.name} Matchups</div>
+      <div :if={@group && @membership}>
+        <div class="title is-2">{@group.name} Matchups</div>
         <div class="subtitle is-5">
           Powered by <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
         <FunctionComponents.Ads.below_title/>
         <MatchupsExplorer
           id="matchups_explorer"
-          additional_params={%{"in_group" => membership}}
+          additional_params={%{"in_group" => @membership}}
           filter_context={:personal}
           params={@params}
           live_view={__MODULE__}
@@ -47,6 +49,6 @@ defmodule BackendWeb.GroupMatchupsLive do
 
   def handle_params(raw_params, _uri, socket) do
     {group_id, params} = Map.pop(raw_params, "group_id")
-    {:noreply, assign(socket, group_id: group_id, params: params)}
+    {:noreply, assign(socket, group_id: group_id, params: params) |> BackendWeb.GroupLive.assign_group_and_membership()}
   end
 end

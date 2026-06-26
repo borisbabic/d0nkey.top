@@ -5,6 +5,8 @@ defmodule BackendWeb.GroupReplaysLive do
 
   data(user, :any)
   data(group_id, :any)
+  data(group, :any, default: nil)
+  data(membership, :any, default: nil)
   data(filters, :map)
 
   def mount(_params, session, socket),
@@ -17,8 +19,8 @@ defmodule BackendWeb.GroupReplaysLive do
     # player rank
     # region
     ~F"""
-      <div :if={({group, membership} = BackendWeb.GroupLive.group_membership(@group_id, @user)) && group && membership}>
-        <div class="title is-2">{group.name} Replays</div>
+      <div :if={@group && @membership}>
+        <div class="title is-2">{@group.name} Replays</div>
         <div class="subtitle is-6">
         Powered by <a href="https://www.firestoneapp.com/">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
@@ -27,7 +29,7 @@ defmodule BackendWeb.GroupReplaysLive do
           show_player_btag={true}
           path_params={@group_id}
           id="my-replays"
-          additional_params={additional_params(membership)}
+          additional_params={additional_params(@membership)}
           default_period={"all"}
           params={@filters}
           live_view={__MODULE__}
@@ -60,6 +62,7 @@ defmodule BackendWeb.GroupReplaysLive do
       socket
       |> assign(:filters, filters)
       |> assign(:group_id, params["group_id"])
+      |> BackendWeb.GroupLive.assign_group_and_membership()
     }
   end
 
