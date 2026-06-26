@@ -83,7 +83,7 @@ defmodule BackendWeb.DeckBuilderLive do
         </.form>
         <br>
         <div class="tw-flex tw-flex-wrap tw-gap-3">
-          <div class="tw-inline-grid tw-grid-cols-3 tw-gap-1 tw-rounded-lg" :for={class <- Deck.classes()}>
+          <div class="tw-inline-grid tw-grid-cols-1 tw-gap-1 tw-rounded-lg" :for={class <- Deck.classes()}>
             <button class={"button", "decklist-info", String.downcase(class)} :for={format <- supported_formats()} :on-click={"pick-class-format"} phx-value-format={format} phx-value-deck_class={class}>
               <span class={"tw-text-black", format}>{Deck.short_name_if_multi_word(class)} - {format_name(format)}</span>
             </button>
