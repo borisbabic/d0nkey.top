@@ -110,7 +110,7 @@
               <p><sup class="is-size-7 has-text-info"> Live!</sup></p>
             <% end %>
         </a>
-        <a class="navbar-item" :if={info = current_qualifier_info()} href={info.link}}>
+        <a class="navbar-item" :if={info = current_qualifier_info()} href={info.link}>
           <span>🏆 {info.title}</span>
         </a>
         <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2025-12-25 12:12:00]) == :lt} href={~p"/wc/2025"}>
