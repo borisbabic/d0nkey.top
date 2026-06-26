@@ -1,6 +1,5 @@
 defmodule BackendWeb.IyingdiController do
   use BackendWeb, :controller
-  alias Backend.Hearthstone
   alias Backend.Iyingdi
 
   def lineups(conn, %{"set_id" => set_id}) do

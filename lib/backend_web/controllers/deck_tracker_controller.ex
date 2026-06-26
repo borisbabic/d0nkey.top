@@ -34,7 +34,7 @@ defmodule BackendWeb.DeckTrackerController do
           "opponent_archetype" => Map.get(ret, :opponent_archetype)
         })
 
-      {:ok, nil} ->
+      {:ok, %{deck: nil}} ->
         conn
         |> put_status(200)
         |> text("Deck missing or not parsable")

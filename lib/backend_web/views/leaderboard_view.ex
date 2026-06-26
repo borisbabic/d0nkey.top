@@ -197,8 +197,6 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  defp actual_end(assigns), do: Map.put(assigns, :season_display, "The season")
-
   defp other_warning(%{leaderboard_id: "BG", season_id: s, region: "EU"})
        when s in [5, "5", "lobby_legends_2"] do
     now = NaiveDateTime.utc_now()
@@ -450,7 +448,7 @@ defmodule BackendWeb.LeaderboardView do
       total: Map.get(params, :total),
       dropdowns: [limit_dropdown | create_dropdowns(params)],
       old: old?(leaderboard, conn.query_params["offset"]),
-      season_id: leaderboard && leaderboard.season_id,
+      season_id: Map.get(leaderboard, :season_id),
       show_ratings: show_ratings,
       conn: conn,
       prev_button: prev_button,
@@ -1400,16 +1398,24 @@ defmodule BackendWeb.LeaderboardView do
     """
   end
 
-  defp announcement_link_subtitle(assigns) do
-    ~H"""
-      <div :if={[%{link: link, display: display} | rest ] = @links} class="subtitle is-5">
-          <a href={link} target="_blank"><%= display %><HeroIcons.external_link link={link} /></a>
-          <%= for %{link: l, display: d} <- rest do %>
-            | <a href={l} target="_blank"><%= d %><HeroIcons.external_link link={l} /></a>
-          <% end %>
+  defp announcement_link_subtitle(%{links: links} = assigns) do
+    case links do
+      [%{link: link, display: display} | rest] ->
+        assigns = assigns |> assign(link: link, display: display, rest: rest)
 
-      </div>
-    """
+        ~H"""
+          <div class="subtitle is-5">
+              <a href={@link} target="_blank"><%= @display %><HeroIcons.external_link link={@link} /></a>
+              <%= for %{link: l, display: d} <- @rest do %>
+                | <a href={l} target="_blank"><%= d %><HeroIcons.external_link link={l} /></a>
+              <% end %>
+
+          </div>
+        """
+
+      _ ->
+        ""
+    end
   end
 
   def points_subtitle(ps) when is_atom(ps), do: ps |> to_string() |> points_subtitle()

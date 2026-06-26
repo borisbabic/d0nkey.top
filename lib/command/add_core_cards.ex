@@ -38,9 +38,12 @@ defmodule Command.AddCoreCards do
           collectible_revealed_count: 290,
           type: nil
         }
-        |> Map.put(:release_date, @release_date)
 
-      cs = %Set{} |> Set.changeset(api_set)
+      cs =
+        %Set{}
+        |> Set.changeset(api_set)
+        |> Set.set_release_date(@release_date)
+
       Backend.Repo.insert(cs)
     end
   end

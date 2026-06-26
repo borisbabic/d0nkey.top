@@ -83,10 +83,11 @@ defmodule Hearthstone.Api do
   @spec next_page(Cards.t() | nil, map()) :: {:ok, Cards.t()} | {:error, any()}
   def next_page(prev_response, opts \\ %{})
   def next_page(nil, opts), do: get_cards(opts)
-  def next_page(%{page: page}, opts), do: opts |> Map.put("page", page + 1) |> get_cards()
 
   def next_page(%{page: last_page, page_count: last_page}, _opts),
     do: {:error, :already_at_last_page}
+
+  def next_page(%{page: page}, opts), do: opts |> Map.put("page", page + 1) |> get_cards()
 
   @spec get_body(String.t(), list(), list()) :: {:ok, map()} | {:error, any()}
   def get_body(url, base_headers \\ [], opts \\ []) do

@@ -550,10 +550,10 @@ defmodule BackendWeb.BattlefyView do
       {player, opponent, player_place, opponent_place} =
         case {top.team, bottom.team} do
           {%{name: ^team_name}, _} ->
-            {top, bottom || Battlefy.MatchTeam.empty(), :top, :bottom}
+            {top, bottom, :top, :bottom}
 
           {_, %{name: ^team_name}} ->
-            {bottom, top || Battlefy.MatchTeam.empty(), :bottom, :top}
+            {bottom, top, :bottom, :top}
 
           _ ->
             Logger.warning("No team is the players team, wtf #{top.team} #{bottom.team}")

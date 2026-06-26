@@ -223,7 +223,7 @@ defmodule Components.Helper do
 
   def region_flag(assigns) do
     ~H"""
-      <span data-balloon-pos="up" aria-label={@region}class="icon">
+      <span data-balloon-pos="up" aria-label={@region} class="icon">
           <img
               class="icon"
               src={@image}

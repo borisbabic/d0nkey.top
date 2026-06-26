@@ -1,6 +1,5 @@
 defmodule Backend.Infrastructure.HSReplayCommunicator do
   @moduledoc false
-  require Logger
   import Backend.Infrastructure.CommunicatorUtil
   alias Backend.HSReplay.ReplayFeedEntry
   alias Backend.HSReplay.Archetype

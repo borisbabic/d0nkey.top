@@ -1,6 +1,5 @@
 defmodule Bot.BattlefyMessageHandler do
   @moduledoc false
-  alias Nostrum.Api
   alias Backend.Battlefy
   import Bot.MessageHandlerUtil
   require Logger
@@ -35,15 +34,15 @@ defmodule Bot.BattlefyMessageHandler do
     |> send_message(message)
   end
 
-  def handle_tournament_standings(standings, %{channel_id: channel_id, guild_id: guild_id})
-      when is_list(standings) do
-    message =
-      guild_id
-      |> get_guild_battletags!()
-      |> create_message(standings)
-
-    Api.Message.create(channel_id, message)
-  end
+  # def handle_tournament_standings(standings, %{channel_id: channel_id, guild_id: guild_id})
+  #     when is_list(standings) do
+  #   message =
+  #     guild_id
+  #     |> get_guild_battletags!()
+  #     |> create_message(standings)
+  #
+  #   Api.Message.create(channel_id, message)
+  # end
 
   def create_standings_message(battlefy_id, message, battletags \\ [], header \\ nil)
 

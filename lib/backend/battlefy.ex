@@ -831,7 +831,7 @@ defmodule Backend.Battlefy do
         matches,
         team_name
       ) do
-    total_rounds = stage.bracket && stage.bracket.rounds_count
+    total_rounds = stage.bracket.rounds_count
     get_future_opponents(matches, total_rounds, team_name)
   end
 

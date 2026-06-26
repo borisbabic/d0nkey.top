@@ -274,7 +274,7 @@ defmodule FunctionComponents.Battlefy do
               <% end %>
 
               <div class={if use_modal?(match), do: "tw-cursor-pointer"} phx-click={if use_modal?(match), do: show_modal("match-modal-#{match.id}")}>
-                <.player_cell name={MatchTeam.get_name(top)} score={top.score} class={player_cell_class(match.is_complete, top.winner, @strike_through_losers)}tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
+                <.player_cell name={MatchTeam.get_name(top)} score={top.score} class={player_cell_class(match.is_complete, top.winner, @strike_through_losers)} tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
                 <div class="tw-border-t tw-border-gray-700 tw-my-1"></div>
                 <.player_cell name={MatchTeam.get_name(bottom)} score={bottom.score} class={player_cell_class(match.is_complete, bottom.winner, @strike_through_losers)} tournament_id={@tournament_id} lineups={@lineups} stage_id={@stage_id} match_id={Map.get(match, :id)} render_decks={@render_decks}/>
               </div>

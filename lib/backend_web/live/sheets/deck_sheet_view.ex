@@ -158,9 +158,6 @@ defmodule BackendWeb.DeckSheetViewLive do
 
       {:error, error} ->
         assign(socket, :error, error)
-
-      _ ->
-        socket
     end
   end
 

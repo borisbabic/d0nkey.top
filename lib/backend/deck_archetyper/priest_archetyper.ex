@@ -72,9 +72,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
     min_count?(card_info, 2, ["The Egg of Khelos", "Holy Eggbearer"])
   end
 
-  @standard_resummon ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"]
-  @wild_resummon ["Grave Rune", "Twilight's Call", "Amulet of Undying", "Embalming Ritual"]
-  @all_resummon @standard_resummon ++ @wild_resummon
+  # @standard_resummon ["Rest in Peace", "Cubicle", "Lesser Diamond Spellstone"]
+  # @wild_resummon ["Grave Rune", "Twilight's Call", "Amulet of Undying", "Embalming Ritual"]
+  # @all_resummon @standard_resummon ++ @wild_resummon
 
   defp hitchhiker?(ci) do
     "Mystified To'cha" in ci.card_names

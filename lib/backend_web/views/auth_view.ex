@@ -1,5 +1,4 @@
 defmodule BackendWeb.AuthView do
-  require Logger
   use BackendWeb, :view
 
   def render("login_welcome.html", %{user: user}) do

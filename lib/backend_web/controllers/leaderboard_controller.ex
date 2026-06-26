@@ -478,6 +478,5 @@ defmodule BackendWeb.LeaderboardController do
   end
 
   defp add_region_criteria(criteria, []), do: criteria
-  defp add_region_criteria(criteria, nil), do: criteria
-  defp add_region_criteria(criteria, regions), do: [{"region", regions} | criteria]
+  defp add_region_criteria(criteria, regions) when is_list(regions), do: [{"region", regions} | criteria]
 end

@@ -23,7 +23,7 @@ defmodule TwitchBot.MessageCreator do
     values = Map.merge(base_values, extra_values) |> add_leaderboard_status()
 
     with {:ok, template} <- Solid.parse(config.response),
-         message when is_binary(message) <- Solid.render(template, values) do
+         {:ok, message} when is_binary(message) <- Solid.render(template, values) do
       message
     end
   end

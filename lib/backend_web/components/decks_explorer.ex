@@ -403,9 +403,11 @@ defmodule Components.DecksExplorer do
   defp modal_stats_filters(filters),
     do: Map.delete(filters, "min_games") |> Map.drop(["order_by", "limit"])
 
-  def handle_info({:update_params, params}, %{assigns: %{path_params: path_params}} = socket)
+  # maybe unused?
+  def handle_info({:update_params, params}, %{assigns: %{path_params: path_params, live_view: live_view}} = socket)
       when not is_nil(path_params) do
-    {:noreply, push_patch(socket, to: Routes.live_path(socket, __MODULE__, path_params, params))}
+    path = Routes.live_path(socket, live_view, path_params, params)
+    {:noreply, push_patch(socket, to: path)}
   end
 
   def limit_options, do: [10, 15, 20, 25, 30]

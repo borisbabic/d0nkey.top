@@ -1,6 +1,5 @@
 defmodule Hearthstone.Leaderboards.Api do
   @moduledoc false
-  require Logger
   alias Hearthstone.Leaderboards.Response
   alias Hearthstone.Leaderboards.Season
 

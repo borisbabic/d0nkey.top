@@ -363,6 +363,7 @@ defmodule Backend.Hearthstone.Deck do
   def archetype(%{archetype: a}) when is_binary(a) or (is_atom(a) and not is_nil(a)), do: a
   def archetype(deck), do: DeckArchetyper.archetype(deck)
 
+  @spec name(t(), String.t()) :: String.t()
   def name(deck, prefix \\ "") do
     base_name = "#{prefix}#{base_name(deck)}"
 
@@ -376,7 +377,7 @@ defmodule Backend.Hearthstone.Deck do
     |> shorten_death_knight()
   end
 
-  @whizbang_heros_archetypes [
+  @whizbang_heroes_archetypes [
     :"Illidan Stormrage",
     :"Al'Akir the Windlord",
     :"Leeroy Jenkins",
@@ -397,10 +398,14 @@ defmodule Backend.Hearthstone.Deck do
     :"Arch-Villain Rafaam",
     :Arfus
   ]
+
+  @spec add_name_modifiers?(t(), String.t() | atom()) :: boolean
   defp add_name_modifiers?(_, "Splendiferous Whizbang"), do: false
 
-  defp add_name_modifiers?(%{format: 4}, base_name) when base_name in @whizbang_heros_archetypes,
-    do: false
+  defp add_name_modifiers?(%{format: 4}, base_name) do
+    skip_modifiers? = Enum.any?(@whizbang_heroes_archetypes, &(to_string(&1) == base_name))
+    !skip_modifiers?
+  end
 
   defp add_name_modifiers?(_, _), do: true
 

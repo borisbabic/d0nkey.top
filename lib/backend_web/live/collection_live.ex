@@ -247,6 +247,4 @@ defmodule BackendWeb.CollectionLive do
     choosable = CollectionManager.choosable_by_user(user)
     Enum.map(choosable, &{&1.id, Collection.display(&1)})
   end
-
-  defp user_collection_options(_), do: []
 end

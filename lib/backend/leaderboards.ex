@@ -104,7 +104,7 @@ defmodule Backend.Leaderboards do
     do: get_leaderboard(region, to_string(leaderboard), season)
 
   def get_leaderboard(region, leaderboard, season) do
-    curr_season = Blizzard.get_current_ladder_season(leaderboard) || 0
+    curr_season = Blizzard.get_current_ladder_season(leaderboard)
 
     if should_avoid_fetching?(region, leaderboard, season) do
       get_by_info(region, leaderboard, season)
