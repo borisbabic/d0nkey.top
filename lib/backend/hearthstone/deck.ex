@@ -332,8 +332,24 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
+  def short_name_if_multi_word(class) do
+    class_name = class_name(class)
+
+    if class_name =~ " " do
+      abrreviate_name(class_name)
+    else
+      class_name
+    end
+  end
+
   def short_class_name(class) do
-    case class_name(class) do
+    class
+    |> class_name()
+    |> abrreviate_name()
+  end
+
+  def abrreviate_name(class_name) do
+    case class_name do
       "Death Knight" -> "DK"
       "Demon Hunter" -> "DH"
       "Paladin" -> "Pa"

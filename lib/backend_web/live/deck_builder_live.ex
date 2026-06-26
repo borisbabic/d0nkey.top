@@ -81,9 +81,14 @@ defmodule BackendWeb.DeckBuilderLive do
             </div>
           </div>
         </.form>
-        <button class={"button", "decklist-info", String.downcase(class)} :for={class <- Deck.classes(), format <- supported_formats()} :on-click={"pick-class-format"} phx-value-format={format} phx-value-deck_class={class}>
-          {Deck.class_name(class)} - {format_name(format)}
-        </button>
+        <br>
+        <div class="tw-flex tw-flex-wrap tw-gap-3">
+          <div class="tw-inline-grid tw-grid-cols-3 tw-gap-1 tw-rounded-lg" :for={class <- Deck.classes()}>
+            <button class={"button", "decklist-info", String.downcase(class)} :for={format <- supported_formats()} :on-click={"pick-class-format"} phx-value-format={format} phx-value-deck_class={class}>
+              <span class={"tw-text-black", format}>{Deck.short_name_if_multi_word(class)} - {format_name(format)}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     """
@@ -182,42 +187,6 @@ defmodule BackendWeb.DeckBuilderLive do
       _ -> params
     end
   end
-
-  # defp card_params(params, true, _, _) do
-  #   %{"collectible" => false, "card_set_id" => [1897], "search" => " Module"}
-  # end
-  #
-  # defp card_params(params, _, true, _) do
-  #   add_underbelly_params(params)
-  # end
-  #
-  # defp card_params(params, _, _, true) do
-  #   add_beatrix_params(params)
-  # end
-  #
-  # defp card_params(params, false, _, _), do: params
-  #
-  # defp add_underbelly_params(params) do
-  #   params
-  #   |> Map.delete("search")
-  #   |> Map.put("minion_type", "beast")
-  # end
-  #
-  # defp remove_underbelly_params(params) do
-  #   params |> Map.delete("minion_type")
-  # end
-  #
-  # defp add_beatrix_params(params) do
-  #   params
-  #   |> Map.delete("search")
-  #   |> Map.put("card_type", "minion")
-  #   |> Map.put("mana_cost", 2)
-  # end
-  #
-  # defp remove_beatrix_params(params) do
-  #   params
-  #   |> Map.drop(["card_type", "mana_cost"])
-  # end
 
   def handle_event("pick-class-format", %{"format" => format, "deck_class" => class}, socket) do
     %{raw_params: raw_params} = socket.assigns
