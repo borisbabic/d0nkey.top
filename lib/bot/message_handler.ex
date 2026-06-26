@@ -555,11 +555,12 @@ defmodule Bot.MessageHandler do
 
       send_deck_messages(decks, msg)
     else
-      {:error, {:too_many_decks, num_decks}} ->
-        message =
-          "Found too many decks (#{num_decks}). You must tag the bot to enable sending more than 1 deck"
-
-        reply(msg, message)
+      {:error, {:too_many_decks, _num_decks}} ->
+        # message =
+        #   "Found too many decks (#{num_decks}). You must tag the bot to enable sending more than 1 deck"
+        #
+        # reply(msg, message)
+        :ignore
 
       true ->
         handle_possible_long_deck(msg)
