@@ -1,7 +1,6 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@source "../../deps/daisy_ui_components/";
 
 /* This file is for your main application css. */
 .multi-select-text {

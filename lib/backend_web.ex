@@ -248,8 +248,8 @@ defmodule BackendWeb do
       alias BackendWeb.Router.Helpers, as: Routes
       alias Phoenix.LiveView.JS
       use BackendWeb.ViewHelpers
-      use DaisyUIComponents, core_components: true
-      # import FunctionComponents.CoreComponents
+      # use DaisyUIComponents, core_components: true
+      import FunctionComponents.CoreComponents
       unquote(verified_routes())
 
       def add_games_filters(base \\ %{}, params) do

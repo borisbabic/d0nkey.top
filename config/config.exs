@@ -219,8 +219,6 @@ config :error_tracker,
   repo: Backend.Repo,
   otp_app: :backend
 
-config :daisy_ui_components, translate_function: &FunctionComponents.CoreComponents.translate_error/1
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
