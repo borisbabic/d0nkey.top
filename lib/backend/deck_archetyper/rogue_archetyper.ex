@@ -20,6 +20,15 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
+      ayaya?(card_info) ->
+        :"AYAYA Rogue"
+
+      two_bit?(card_info) ->
+        :"Two-Bit Rogue"
+
+      burn?(card_info) ->
+        :"Burn Rogue"
+
       "Elise the Navigator" in card_info.card_names ->
         :"Elise Rogue"
 
@@ -53,6 +62,19 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp ayaya?(card_info) do
+    "Aya, Lotus Kingpin" in card_info.card_names
+  end
+
+  defp burn?(card_info) do
+    min_count?(card_info, 1, neutral_spell_damage()) and
+      min_count?(card_info, 2, ["Rite of Twilight", "Chrono Daggers"])
+  end
+
+  defp two_bit?(card_info) do
+    min_count?(card_info, 2, ["Lotus Troublemaker", "Jade Guardians"])
   end
 
   defp dark_gift?(card_info) do
