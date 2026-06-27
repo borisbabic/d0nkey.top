@@ -1401,7 +1401,7 @@ defmodule BackendWeb.LeaderboardView do
   defp announcement_link_subtitle(%{links: links} = assigns) do
     case links do
       [%{link: link, display: display} | rest] ->
-        assigns = assigns |> assign(link: link, display: display, rest: rest)
+        assigns = assigns |> Map.merge(%{link: link, display: display, rest: rest})
 
         ~H"""
           <div class="subtitle is-5">
