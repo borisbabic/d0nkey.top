@@ -100,7 +100,8 @@ defmodule Backend.MixProject do
       {:error_tracker, "~> 0.1"},
       {:oban_live_dashboard, "~> 0.2.0"},
       {:oban_web, "~> 2.11"},
-      {:kaffy, "~> 0.10"},
+      # issue with building kaffy on dokku because of too big metedata.config for hex
+      {:kaffy, git: "https://github.com/aesmail/kaffy", ref: "b31b54eac985aec644d48440bd96da74341f8974"},
       {:redirect, "~> 0.4.0"},
       {:kanta, "~> 0.5.1"},
       {:quokka, "~> 2.13", only: [:dev, :test], runtime: false},
