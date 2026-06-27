@@ -247,7 +247,8 @@ defmodule BackendWeb do
       use Gettext, backend: BackendWeb.Gettext
       alias BackendWeb.Router.Helpers, as: Routes
       use BackendWeb.ViewHelpers
-      import FunctionComponents.CoreComponents
+      use DaisyUIComponents, core_components: true
+      # import FunctionComponents.CoreComponents
       unquote(verified_routes())
 
       def add_games_filters(base \\ %{}, params) do

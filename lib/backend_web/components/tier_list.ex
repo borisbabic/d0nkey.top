@@ -70,7 +70,7 @@ defmodule Components.TierList do
           <ForceFreshDropdown id={"force_fresh"} />
         {/if}
 
-        <div :if={{stats, total} = stats(@data, @criteria)}>
+        <div :if={{stats, total} = get_stats(@data, @criteria)}>
         <div class="chart-container" :if={@show_chart}>
           <ChartJs.scatter
             canvas_class={"tw-max-h-[400px] tw-max-w-4xl tw-bg-gray-300"}
@@ -200,10 +200,10 @@ defmodule Components.TierList do
     |> Float.round(1)
   end
 
-  def stats([_ | _] = stats, _criteria), do: stats
-  def stats(_, criteria), do: stats(criteria)
+  def get_stats([_ | _] = stats, _criteria), do: stats
+  def get_stats(_, criteria), do: get_stats(criteria)
 
-  def stats(criteria) do
+  def get_stats(criteria) do
     {min_games, crit} = criteria |> with_defaults() |> Map.pop("min_games")
     stats_all = DeckTracker.archetype_stats(crit)
 

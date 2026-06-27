@@ -14,7 +14,7 @@ defmodule Components.Lineups.ArchetypeStatsTable do
   def render(assigns) do
     ~F"""
       <div>
-      <Table id={"lineups_stats_#{@id}"} data={stats <- stats(@stats)} striped>
+      <Table id={"lineups_stats_#{@id}"} data={stats <- lineup_stats(@stats)} striped>
         <Column label="Archetype" sort_by={fn %{archetype: a} -> {Deck.extract_class(a), a} end}> <DeckComponents.archetype archetype={stats.archetype} /> </Column>
         <Column label="Total Games" sort_by={fn %{total: total} -> total end}>{stats.total}</Column>
         <Column label="Wins" column_class="is-hidden-mobile" sort_by={fn %{wins: wins} -> wins end}>{stats.wins}</Column>
@@ -29,8 +29,8 @@ defmodule Components.Lineups.ArchetypeStatsTable do
     """
   end
 
-  defp stats(stats) when is_list(stats), do: stats
+  defp lineup_stats(stats) when is_list(stats), do: stats
 
-  defp stats(%{} = stats),
+  defp lineup_stats(%{} = stats),
     do: Map.values(stats) |> Enum.filter(& &1.archetype) |> Enum.sort_by(& &1.total, :desc)
 end

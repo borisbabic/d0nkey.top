@@ -105,6 +105,7 @@ defmodule Backend.MixProject do
       {:quokka, "~> 2.13", only: [:dev, :test], runtime: false},
       {:hanyutils, "~> 0.3.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:daisy_ui_components, "~> 0.9"},
       {:quantum, "~> 3.5"}
     ]
   end

@@ -1,6 +1,7 @@
 defmodule Components.CardStatsTable do
   @moduledoc false
   use BackendWeb, :surface_live_component
+  alias Backend.Hearthstone.CardBag
   alias Components.DecklistCard
   alias Components.LivePatchDropdown
   alias Components.Filter.ArchetypeSelect
@@ -303,7 +304,7 @@ defmodule Components.CardStatsTable do
     Enum.flat_map(stats, fn cs ->
       mull = Util.get(cs, :mull_total)
       drawn = Util.get(cs, :drawn_total)
-      card = card(Util.get(cs, :card_id))
+      card = CardBag.card(Util.get(cs, :card_id))
       sufficient_mull = mull >= mull_min
       sufficient_drawn = drawn >= drawn_min
       in_highlight = card != nil and Hearthstone.canonical_id(card.id) in to_highlight
@@ -321,10 +322,8 @@ defmodule Components.CardStatsTable do
     end)
   end
 
-  def card(card_id), do: Backend.Hearthstone.CardBag.card(card_id)
-
   def card_name(card_id) do
-    card(card_id)
+    CardBag.card(card_id)
     |> Map.get(:name)
   end
 
