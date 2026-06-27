@@ -29,6 +29,12 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       huffer?(card_info) ->
         :"Huffer Hunter"
 
+      rat_trap?(card_info) ->
+        :"Rat Trap Hunter"
+
+      deathrattle?(card_info) ->
+        :"Deathrattle Hunter"
+
       "Confront the Tol'vir" in card_info.card_names ->
         :"Ace Hunter"
 
@@ -38,6 +44,16 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  defp rat_trap?(card_info) do
+    min_count?(card_info, 3, ["Arcane Tripwire", "R4T-C4TCH3R", "Warmaster Blackhorn"])
+  end
+
+  @deathrattle_synergy ["Sewer Swimmer", "Black Market Overseer", "Chrono-Lord Deios", "Endbringer Umbra"]
+  defp deathrattle?(card_info) do
+    min_keyword_count?(card_info, 6, "deathrattle") and
+      min_count?(card_info, 2, @deathrattle_synergy)
   end
 
   defp huffer?(card_info) do
