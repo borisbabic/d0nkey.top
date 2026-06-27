@@ -426,6 +426,20 @@ defmodule BackendWeb.DeckBuilderLive do
      )}
   end
 
+  def handle_params(raw_params, _uri, socket) when 0 == map_size(raw_params) do
+    {
+      :noreply,
+      socket
+      |> assign(
+        deck: nil,
+        format: nil,
+        raw_params: %{},
+        params: %{},
+        scroll_size: nil
+      )
+    }
+  end
+
   def handle_params(raw_params, _uri, socket) do
     params = CardsExplorer.filter_relevant(raw_params, ["additional_classes"])
     scroll_size = Map.get(raw_params, "scroll_size", socket.assigns.scroll_size) |> Util.to_int(1)
