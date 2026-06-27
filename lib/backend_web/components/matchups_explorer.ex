@@ -225,6 +225,10 @@ defmodule Components.MatchupsExplorer do
     now = NaiveDateTime.utc_now()
 
     cond do
+      NaiveDateTime.before?(now, ~N[2026-07-07 17:00:00]) and
+          NaiveDateTime.after?(now, ~N[2026-07-13 17:30:00]) ->
+        "Post Expansion Archetypes will be added a couple days after release after data is gathered."
+
       NaiveDateTime.before?(now, ~N[2026-03-10 17:00:00]) ->
         "Demon Hunter Archetype separation is subpar"
 
