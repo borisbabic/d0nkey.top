@@ -11,6 +11,7 @@ defmodule Backend.MixProject do
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      listeners: [Phoenix.CodeReloader],
       preferred_cli_env: [
         "test.watch": :test
       ],
@@ -38,7 +39,7 @@ defmodule Backend.MixProject do
   defp deps do
     [
       {:cowlib, "~> 2.13", override: true},
-      {:phoenix, "~> 1.7.0"},
+      {:phoenix, "~> 1.7"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_live_view, "~> 1.0.17"},
@@ -98,7 +99,7 @@ defmodule Backend.MixProject do
       {:error_tracker, "~> 0.1"},
       {:oban_live_dashboard, "~> 0.2.0"},
       {:oban_web, "~> 2.11"},
-      {:kaffy, "~> 0.10.0"},
+      {:kaffy, "~> 0.10"},
       {:redirect, "~> 0.4.0"},
       {:kanta, "~> 0.5.1"},
       {:quokka, "~> 2.13", only: [:dev, :test], runtime: false},
