@@ -20,6 +20,12 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       herald?(card_info, 5) ->
         :"Harold Warrior"
 
+      patron?(card_info) and enrage_warrior?(card_info, 4) ->
+        :"Patron Warrior"
+
+      enrage_warrior?(card_info, 5) ->
+        :"Enrage Warrior"
+
       "Gladiatorial Combat" in card_info.card_names ->
         :"Gladiator Warrior"
 
@@ -32,14 +38,11 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       burn_warrior?(card_info) ->
         :"Burn Warrior"
 
-      patron?(card_info) and enrage_warrior?(card_info) ->
-        :"Patron Warrior"
-
-      enrage_warrior?(card_info) ->
-        :"Enrage Warrior"
-
       herald?(card_info) ->
         :"Harold Warrior"
+
+      enrage_warrior?(card_info, 4) ->
+        :"Enrage Warrior"
 
       patron?(card_info) ->
         :"Patron Warrior"
@@ -88,11 +91,14 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     )
   end
 
-  defp enrage_warrior?(card_info) do
-    min_count?(card_info, 3, [
+  defp enrage_warrior?(card_info, count) do
+    min_count?(card_info, count, [
       "Sanguine Depths",
       "Ominous Nightmares",
       "Stonecarver",
+      "Disguised Watchman",
+      "Ball and Chain",
+      "Rioter",
       "Eggbasher",
       "Bloodhoof Brave",
       "City Defenses",
@@ -110,6 +116,8 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
   defp warrior_aoe?(ci, min_count \\ 4),
     do:
       min_count?(ci, min_count, [
+        "Crowd Control",
+        "Disguised Watchman",
         "Brawl",
         "Aftershocks",
         "Sanitize",
