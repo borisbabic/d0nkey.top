@@ -261,11 +261,6 @@ var pad = function (te) {
 };
 let Hooks = {};
 Hooks.ChartJs = ChartJsHook;
-Hooks.KeepFocus = {
-  updated() {
-    this.el.focus();
-  },
-};
 Hooks.InfiniteScrollLoaded = {
   mounted() {
     console.log("mounting hook");

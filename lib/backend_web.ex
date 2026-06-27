@@ -246,6 +246,7 @@ defmodule BackendWeb do
       import BackendWeb.ErrorHelpers
       use Gettext, backend: BackendWeb.Gettext
       alias BackendWeb.Router.Helpers, as: Routes
+      alias Phoenix.LiveView.JS
       use BackendWeb.ViewHelpers
       use DaisyUIComponents, core_components: true
       # import FunctionComponents.CoreComponents
