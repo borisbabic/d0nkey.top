@@ -17,6 +17,9 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       imbue?(card_info, 4) ->
         :"Imbue Mage"
 
+      bsm?(card_info) ->
+        :"Big Spell Mage"
+
       leyline?(card_info) ->
         :"Leyline Mage"
 
@@ -29,12 +32,19 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Timelooper Toki" in card_info.card_names ->
         :"Toki Mage"
 
+      "Jailhouse Manastorm" in card_info.card_names ->
+        :"Manastorm Mage"
+
       bad?(card_info) ->
         :"Bad Mage"
 
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp bsm?(card_info) do
+    min_count?(card_info, 1, ["Spire Security"])
   end
 
   defp leyline?(card_info) do
@@ -55,6 +65,7 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       "Unstable Spellcaster",
       "Sleet Storm",
       "Arcane Flow",
+      "Contraband Wands",
       "Spellweaver's Brilliance",
       "Arcane Barrage"
     ])
