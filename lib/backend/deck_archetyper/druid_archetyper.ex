@@ -2,6 +2,7 @@
 defmodule Backend.DeckArchetyper.DruidArchetyper do
   @moduledoc false
   import Backend.DeckArchetyper.ArchetyperHelpers
+  alias Backend.Hearthstone.Card
 
   def standard(card_info) do
     cond do
@@ -14,11 +15,20 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       imbue_druid?(card_info) ->
         :"Imbue Druid"
 
+      chef?(card_info) ->
+        :"Chef Druid"
+
+      rotten_food?(card_info) ->
+        :"Rotten Druid"
+
       treant_druid?(card_info) ->
         :"Treant Druid"
 
       token?(card_info) ->
         :"Token Druid"
+
+      attack_druid?(card_info) ->
+        :"Attack Druid"
 
       bad?(card_info) ->
         :"Bad Druid"
@@ -41,6 +51,32 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       true ->
         fallbacks(card_info, "Druid")
     end
+  end
+
+  defp attack_druid?(card_info) do
+    min_count?(
+      card_info,
+      5,
+      [
+        "Feral Rage",
+        "Savage Striker",
+        "Secret Ingredient",
+        "Spider Rider",
+        "Spiderling",
+        "Staff of Trickery",
+        "Widow's Bite"
+      ]
+    )
+  end
+
+  defp chef?(card_info) do
+    {_, [most_expensive | _]} = lowest_highest_cost_cards(card_info, :full_card)
+    Card.cost(most_expensive) <= 3 and "Chef Neth'rek" in card_info.card_names
+  end
+
+  defp rotten_food?(card_info) do
+    {_, [most_expensive | _]} = lowest_highest_cost_cards(card_info, :full_card)
+    Card.cost(most_expensive) > 3 and "Chef Neth'rek" in card_info.card_names
   end
 
   @wide_buff [

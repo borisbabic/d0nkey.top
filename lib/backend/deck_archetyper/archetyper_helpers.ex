@@ -478,8 +478,8 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     Enum.count(cute_minions) >= min_count
   end
 
-  @spec do_return([Card.t()], :full_cards | :name) :: [Card.t()] | [String.t()]
-  defp do_return(cards, :full_cards), do: cards
+  @spec do_return([Card.t()], :full_card | :name) :: [Card.t()] | [String.t()]
+  defp do_return(cards, :full_card), do: cards
   defp do_return(cards, :name), do: Enum.map(cards, & &1.name)
 
   @spec xl?(card_info) :: boolean
