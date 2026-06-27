@@ -318,9 +318,11 @@ defmodule Backend.Hearthstone.Deck do
     end
   end
 
-  def class_name(class) do
+  def class_name(class) when is_binary(class) do
     Map.get(@class_name_map, class, class)
   end
+
+  def class_name(_), do: nil
 
   @spec class_from_class_name(class_name :: String.t()) ::
           {:ok, class :: String.t()} | {:error, class_name :: String.t()}
