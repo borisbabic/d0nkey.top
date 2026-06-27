@@ -48,6 +48,9 @@ defmodule Backend.DeckArchetyper.ShamanArchetyper do
       imbue?(card_info, 3) ->
         :"Imbue Shaman"
 
+      "Hijacked Securitybot" in card_info.card_names ->
+        :"Securitybot Shaman"
+
       "Farseer Wo" in card_info.card_names ->
         :"Wo Shaman"
 
