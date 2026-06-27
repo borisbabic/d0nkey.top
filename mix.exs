@@ -78,10 +78,6 @@ defmodule Backend.MixProject do
       {:ueberauth_patreon, github: "borisbabic/ueberauth_patreon"},
       # {:ueberauth_patreon, path: "/home/boris/projects/ueberauth_patreon"}3
       {:countriex, "~>0.4"},
-      {:absinthe, "~> 1.5"},
-      {:absinthe_plug, "~> 1.5"},
-      {:absinthe_phoenix, "~> 2.0.0"},
-      {:absinthe_relay, "~> 1.5"},
       {:surface, "~> 0.9"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:oban, "~> 2.5"},
