@@ -15,11 +15,17 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       herald?(card_info) ->
         :"Harold DH"
 
+      void_soul?(card_info, 4) ->
+        :"Void Soul DH"
+
       "Irida Sinseeker" in card_info.card_names ->
         :"Void DH"
 
       fel_dh?(card_info) ->
         :"Fel DH"
+
+      void_soul?(card_info, 3) ->
+        :"Void Soul DH"
 
       "Entomologist Toru" in card_info.card_names ->
         :"Toru DH"
@@ -30,8 +36,8 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       broxigar?(card_info) ->
         :"Broxigar DH"
 
-      zerg?(card_info, 4) ->
-        :"Zerg DH"
+      void_soul?(card_info, 2) ->
+        :"Void Soul DH"
 
       "Broxigar" in card_info.card_names ->
         :"Broxigar DH"
@@ -42,6 +48,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, "DH")
     end
+  end
+
+  defp void_soul?(card_info, count) do
+    min_count?(card_info, count, ["Void Soul", "Void Blast", "Vicious Voidscale", "Stardust Scythe"])
   end
 
   defp fel_dh?(card_info) do
