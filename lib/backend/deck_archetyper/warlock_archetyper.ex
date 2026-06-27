@@ -72,6 +72,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       discard?(card_info, 5) ->
         :"Discard Warlock"
 
+      "Godfrey the Betrayer" in card_info.card_names ->
+        :"Godfrey Warlock"
+
+      "Moragg" in card_info.card_names ->
+        :"Moragg Warlock"
+
       "Lord Jaraxxus" in card_info.card_names ->
         :"J-Lock"
 
