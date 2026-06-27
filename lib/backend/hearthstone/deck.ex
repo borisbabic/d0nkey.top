@@ -134,13 +134,15 @@ defmodule Backend.Hearthstone.Deck do
   def zilliax_modules_sideboards(sideboards_or_deck),
     do: filter_sideboards(sideboards_or_deck, Card.zilliax_3000())
 
-  @spec filter_sideboards(t() | [Sideboard.t()], integer()) :: [integer()]
+  @spec filter_sideboards(t() | [Sideboard.t()], integer()) :: [Sideboard.t()]
   def filter_sideboards(%{sideboards: sideboards}, sideboard_id),
     do: filter_sideboards(sideboards, sideboard_id)
 
-  def filter_sideboards(sideboards, sideboard_id) do
+  def filter_sideboards(sideboards, sideboard_id) when is_list(sideboards) do
     Enum.filter(sideboards, &(&1.sideboard == sideboard_id))
   end
+
+  def filter_sideboards(_, _), do: []
 
   @spec zilliax_modules_cards(t() | [Sideboard.t()]) :: [Card.t()]
   def zilliax_modules_cards(sideboards_or_deck),

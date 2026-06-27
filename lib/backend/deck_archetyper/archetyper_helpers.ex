@@ -14,8 +14,8 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
           full_cards: [Card.t()],
           cards: [integer()],
           deck: Deck.t(),
-          zilliax_sideboard_names: [String.t()],
-          etc_sideboard_names: [String.t()]
+          etc_sideboard_names: [String.t()],
+          beatrix_sideboard: String.t() | nil
         }
 
   @spec full_cards(Deck.t()) :: card_info()
@@ -29,19 +29,22 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       |> Enum.filter(& &1)
       |> Enum.unzip()
 
-    zilliax_modules_names =
-      Map.get(deck, :sideboards, []) |> Deck.zilliax_modules_cards() |> Enum.map(& &1.name)
+    beatrix_sideboard =
+      case Deck.sideboard_cards(deck, Card.commander_beatrix()) do
+        [%{name: name}] -> name
+        _ -> nil
+      end
 
     etc_sideboard_names =
-      Map.get(deck, :sideboards, []) |> Deck.etc_sideboard_cards() |> Enum.map(& &1.name)
+      Deck.etc_sideboard_cards(deck) |> Enum.map(& &1.name)
 
     %{
       full_cards: full_cards,
       card_names: card_names,
       cards: cards,
       deck: deck,
-      zilliax_modules_names: zilliax_modules_names,
-      etc_sideboard_names: etc_sideboard_names
+      etc_sideboard_names: etc_sideboard_names,
+      beatrix_sideboard: beatrix_sideboard
     }
   end
 

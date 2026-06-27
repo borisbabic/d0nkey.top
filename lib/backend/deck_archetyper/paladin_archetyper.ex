@@ -9,6 +9,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       quest?(card_info) ->
         :"Quest Paladin"
 
+      pure?(card_info) ->
+        :"Pure Paladin"
+
       imbue?(card_info) ->
         :"Imbue Paladin"
 
@@ -17,6 +20,12 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
       finja?(card_info) ->
         :"Finja Paladin"
+
+      beatrix_focused?(card_info, "Prize Vendor") ->
+        :"Mill Paladin"
+
+      beatrix_focused?(card_info, "Archmage") ->
+        :"Archmage Paladin"
 
       end_of_turn?(card_info) ->
         :"End of Turnadin"
@@ -45,6 +54,15 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp beatrix_focused?(card_info, beatrix_sideboard) do
+    card_info.beatrix_sideboard == beatrix_sideboard and
+      min_count?(card_info, 2, ["Scarlet Recruiter", "Reinforcement Aura"])
+  end
+
+  defp pure?(card_info) do
+    min_count?(card_info, 2, ["Vigilant Sentry", "Scarlet Bruiser"])
   end
 
   defp dude_paladin?(card_info) do
@@ -81,7 +99,8 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp infinity?(card_info) do
-    min_count?(card_info, 3, ["Hand of Infinity", "Dissolving Ooze", "Bloodsail Raider"])
+    min_count?(card_info, 2, ["Hand of Infinity", "Bloodsail Raider"]) and
+      min_count?(card_info, 1, ["Dissolving Ooze", "Judgement"])
   end
 
   defp handbuff?(card_info) do
@@ -118,54 +137,49 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp aggro_paladin?(card_info) do
-    (cost_count(card_info, 1) > 13 ||
-       min_count?(card_info, 6, [
-         "Vicious Slitherspear",
-         "Worgen Inflitrator",
-         "Platysaur",
-         "Dreambound Raptor",
-         "Sizzling Cinder",
-         "Twilight Egg",
-         "Flash Sale",
-         "For Quel'Thalas!",
-         "Seal of Blood",
-         "Blessing of Kings",
-         "Sunwing Squawker",
-         "Foul Egg",
-         "Sanguine Soldier",
-         "Blood Matriarch Liadrin",
-         "Gold Panner",
-         "Crusader Aura",
-         "Busy-Bot",
-         "Hand of A'dal",
-         "Flight Maneuvers",
-         "Tortollan Storyteller",
-         "Hand of A'dal",
-         "Murmy",
-         "Fire Fly",
-         "Beaming Sidekick",
-         "Sinstone Totem",
-         "Crooked Cook",
-         "Sea Giant",
-         "Leeroy Jenkins",
-         "Boogie Down",
-         "Mining Casualties",
-         "Buffet Biggun",
-         "Muster for Battle",
-         "Miracle Salesman",
-         "Flash Sale",
-         "Mother Duck",
-         "Disco Maul",
-         "Smoldering Strength",
-         "Nerubian Egg",
-         "Sea Giant",
-         "Maze Guide",
-         "Righteous Protector"
-       ])) or
-      min_count?(card_info.card_names ++ card_info.zilliax_modules_names, 2, [
-        "Crusader Aura",
+    cost_count(card_info, 1) > 13 ||
+      min_count?(card_info, 6, [
+        "Vicious Slitherspear",
+        "Worgen Inflitrator",
+        "Platysaur",
+        "Dreambound Raptor",
+        "Sizzling Cinder",
+        "Twilight Egg",
         "Flash Sale",
-        "Pylon Module"
+        "For Quel'Thalas!",
+        "Seal of Blood",
+        "Blessing of Kings",
+        "Sunwing Squawker",
+        "Foul Egg",
+        "Sanguine Soldier",
+        "Blood Matriarch Liadrin",
+        "Gold Panner",
+        "Crusader Aura",
+        "Busy-Bot",
+        "Hand of A'dal",
+        "Flight Maneuvers",
+        "Tortollan Storyteller",
+        "Hand of A'dal",
+        "Murmy",
+        "Fire Fly",
+        "Beaming Sidekick",
+        "Sinstone Totem",
+        "Crooked Cook",
+        "Sea Giant",
+        "Leeroy Jenkins",
+        "Boogie Down",
+        "Mining Casualties",
+        "Buffet Biggun",
+        "Muster for Battle",
+        "Miracle Salesman",
+        "Flash Sale",
+        "Mother Duck",
+        "Disco Maul",
+        "Smoldering Strength",
+        "Nerubian Egg",
+        "Sea Giant",
+        "Maze Guide",
+        "Righteous Protector"
       ])
   end
 

@@ -108,10 +108,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp zoolock?(card_info) do
-    min_count?(card_info.card_names ++ card_info.zilliax_modules_names, 2, [
+    min_count?(card_info.card_names, 2, [
       "Entropic Continuity",
       "Tortollan Storyteller",
-      "Pylon Module",
       "Yesterlock"
     ])
   end
