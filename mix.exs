@@ -52,7 +52,8 @@ defmodule Backend.MixProject do
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.12"},
-      {:postgrex, ">= 0.0.0"},
+      # 0.22.2 made the site unable to connect on dev machine 
+      {:postgrex, "~> 0.20.0"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
       # 1.0 doesn't introduce breaking changes
       {:gettext, "~> 1.0", override: true},
