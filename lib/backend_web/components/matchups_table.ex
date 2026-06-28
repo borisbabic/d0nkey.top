@@ -84,7 +84,7 @@ defmodule Components.MatchupsTable do
               <button :on-click="change_sort" phx-value-sort_by="archetype" class="" phx-value-sort_direction={sort_direction(@sort, "archetype", "asc")}>Archetype</button>
             </th>
             <th :for={archetype <- sorted_headers} class={"tw-border", "tw-border-gray-600","tw-text-black", "class-background", Deck.extract_class(archetype) |> String.downcase()}>
-              <button :on-click="change_sort" phx-value-sort_by={"opponent_#{archetype}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{archetype}", "desc")}> {Deck.class_name(archetype)}</button>
+              <button :on-click="change_sort" phx-value-sort_by={"opponent_#{archetype}"} phx-value-sort_direction={sort_direction(@sort, "opponent_#{archetype}", "desc")}> {archetype_name(archetype)}</button>
             </th>
             </tr>
             <tr >
@@ -112,7 +112,7 @@ defmodule Components.MatchupsTable do
                 <button :on-click="toggle_favorite" aria-label="favorite" phx-value-archetype={Matchups.archetype(matchup)}>
                   <HeroIcons.star filled={to_string(Matchups.archetype(matchup)) in @favorited}/>
                 </button>
-                  {Matchups.archetype(matchup) |> Deck.class_name()}
+                  {archetype_name(matchup)}
               </td>
               <td class={" tw-border tw-border-gray-600 tw-h-[30px] #{custom_matchup_weights_class(@merged_custom_matchup_weights, opp)}"} data-balloon-pos="up" aria-label={"#{Matchups.archetype(matchup)} versus #{opp} - #{games} games"} :for={{opp, %{winrate: winrate, games: games}} <- Enum.map(sorted_headers, fn opp -> {opp, Matchups.opponent_stats(matchup, opp)} end)}>
               <WinrateTag show_winrate={!@win_loss} win_loss={@win_loss} tag_name="div" class="tw-h-full tw-flex tw-items-center tw-justify-center" winrate={winrate} min_sample={@min_matchup_sample} sample={games} />
@@ -122,6 +122,16 @@ defmodule Components.MatchupsTable do
         </table>
       </div>
     """
+  end
+
+  defp archetype_name(archetype) when is_binary(archetype) or is_atom(archetype) do
+    Deck.class_name(archetype) || archetype
+  end
+
+  defp archetype_name(matchup) do
+    matchup
+    |> Matchups.archetype()
+    |> archetype_name()
   end
 
   defp deck("deck", id) do
