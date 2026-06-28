@@ -84,7 +84,8 @@ defmodule Backend.MixProject do
       {:countriex, "~>0.4"},
       {:surface, "~> 0.9"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:oban, "~> 2.5"},
+      # upgrading to 2.23.0 caused errors
+      {:oban, "~> 2.19.4"},
       {:phoenix_meta_tags, github: "javiercr/phoenix_meta_tags"},
       {:oauther, "~> 1.1"},
       {:extwitter, "~> 0.12"},
