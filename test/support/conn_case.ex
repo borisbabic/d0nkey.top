@@ -144,7 +144,7 @@ defmodule BackendWeb.ConnCase do
       admin_roles: [],
       bnet_id: 1,
       hide_ads: false,
-      decklist_options: %{border: nil, gradient: nil}
+      decklist_options: %{border: nil, gradient: nil, preferred_deckcode: "short"}
     }
 
     with %{battletag: btag} = attrs <- base_attrs |> Map.merge(opts),

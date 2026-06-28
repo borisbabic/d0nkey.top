@@ -29,7 +29,10 @@ defmodule Backend.DataCase do
           attrs
           |> Enum.into(%{
             battletag: Ecto.UUID.generate(),
-            bnet_id: :rand.uniform(2_147_483_646)
+            bnet_id: :rand.uniform(2_147_483_646),
+            decklist_options: %{
+              preferred_deckcode: "short"
+            }
           })
           |> Backend.UserManager.create_user()
 
@@ -38,6 +41,14 @@ defmodule Backend.DataCase do
     end
   end
 
+  # setup tags do
+  #   Backend.DataCase.setup_sandbox(tags)
+  #   :ok
+  # end
+  # def setup_sandbox(tags) do
+  #   pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Backend.Repo, shared: not tags[:async])
+  #   on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+  # end
   setup [:setup_db]
   # setup [:setup_db]
   # setup do
