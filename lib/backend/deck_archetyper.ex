@@ -55,6 +55,13 @@ defmodule Backend.DeckArchetyper do
     end
   end
 
+  def archetype(archetype) when is_binary(archetype) do
+    case Deck.decode(archetype) do
+      {:ok, deck} -> archetype(deck)
+      _ -> nil
+    end
+  end
+
   def archetype(_), do: nil
 
   defp prerelease_brawl?(card_info) do
@@ -147,7 +154,8 @@ defmodule Backend.DeckArchetyper do
         false
     end
 
-    !Enum.any?(full_cards, not_in_standard)
+    # Hack for tests since it's empty there
+    Enum.any?(standard_sets) and !Enum.any?(full_cards, not_in_standard)
   end
 
   defp standard_in_wild?(_), do: false
