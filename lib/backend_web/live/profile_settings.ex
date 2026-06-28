@@ -224,7 +224,6 @@ defmodule BackendWeb.ProfileSettingsLive do
         _ -> user
       end
 
-    dbg(attrs_raw)
     {:noreply, socket |> assign(:user, updated)}
   end
 

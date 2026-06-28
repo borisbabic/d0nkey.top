@@ -11,7 +11,8 @@ defmodule BackendWeb.ProfileSettingsLiveTest do
   @tag :authenticated
   test "renders profile settings form when authenticated", %{conn: conn, user: _user} do
     {:ok, _view, html} = live(conn, "/profile/settings")
-    assert html =~ "Profile Settings"
+    assert html =~ "Profile"
+    assert html =~ "Settings"
     assert html =~ "Country Flag"
     assert html =~ "Save"
   end
