@@ -152,7 +152,7 @@ defmodule BackendWeb.DeckSheetViewLiveTest do
   end
 
   @tag :authenticated
-  test "view mode decks doesn't include card name", %{conn: conn, user: user} do
+  test "view mode decks doesn include card name", %{conn: conn, user: user} do
     %{sheet: %{name: sheet_name, id: id}, listing: %{name: listing_name}} = create_listing(user)
     {:ok, _view, html} = live(conn, "/deck-sheets/#{id}?view_mode=decks")
     assert html =~ sheet_name
