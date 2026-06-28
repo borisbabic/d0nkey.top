@@ -278,7 +278,11 @@ defmodule Components.MatchupsTable do
   end
 
   def handle_event(@restore_favorites_event, archetypes_raw, socket) do
-    archetypes = String.split(archetypes_raw || "", ",")
+    archetypes =
+      archetypes_raw
+      |> Util.empty_to("")
+      |> String.split(",")
+
     {:noreply, socket |> assign(favorited: archetypes)}
   end
 
@@ -300,7 +304,10 @@ defmodule Components.MatchupsTable do
 
   def handle_event("set_sort", sort_and_direction, socket) do
     {sort, direction} =
-      case String.split(sort_and_direction || "games,desc") do
+      sort_and_direction
+      |> Util.empty_to("games,desc")
+      |> String.split(",")
+      |> case do
         [sort, direction | _]
         when is_valid_sort(sort) and direction in ["asc", "desc", :asc, :desc] ->
           {sort, direction}

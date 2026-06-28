@@ -38,6 +38,7 @@ defmodule Util do
     rem(rem(number - min, length) + length, length) + min
   end
 
+  @spec day_start(Date.t(), :naive) :: NaiveDateTime.t()
   def day_start(%Date{} = day, :naive) do
     case NaiveDateTime.new(day.year, day.month, day.day, 0, 0, 0) do
       {:ok, day_start} -> day_start
@@ -45,6 +46,7 @@ defmodule Util do
     end
   end
 
+  @spec day_end(Date.t(), :naive) :: NaiveDateTime.t()
   def day_end(%Date{} = day, :naive) do
     case NaiveDateTime.new(day.year, day.month, day.day, 23, 59, 59) do
       {:ok, day_start} -> day_start
@@ -52,6 +54,7 @@ defmodule Util do
     end
   end
 
+  @spec async_map(Enum.t(), (any() -> any()), timeout()) :: list()
   def async_map(enum, fun, timeout \\ :infinity) do
     enum
     |> Enum.map(fn e -> Task.async(fn -> fun.(e) end) end)
@@ -122,34 +125,6 @@ defmodule Util do
   def reject_keys(target, keys) do
     Enum.reject(target, fn {k, _v} -> Enum.member?(keys, k) end)
   end
-
-  # def map_kv!(map, key_mapper_list) do
-  #   case map_kv(map, key_mapper_list) do
-  #     {:error, reason} -> throw reason
-  #     success -> success
-  #   end
-  # end
-
-  # def map_kv(map, key_mapper_list) do
-  #   missing_keys = Map.keys(key_mapper_list) -- Map.keys(map)
-  #   if missing_keys != [] do
-  #     {:error, "Missing keys from map: #{Enum.join(missing_keys, " ")}"}
-  #   end
-  #   mapped = key_mapper_list
-  #   |> Enum.map(fn {key, mapper} ->
-  #     case()
-
-  #     {key, mapper.(map[key])}
-  #   end)
-  #   {:ok, mapped}
-  # end
-
-  # def map_kv(map, key_mapper_list, struct) do
-  #   struct(struct, map |> map_kv(key_mapper_list))
-  # end
-  # def map_kv!(map, key_mapper_list, struct) do
-  #   struct(struct, map |> map_kv!(key_mapper_list))
-  # end
 
   def update_map(map, key_updater_map) do
     key_updater_map
@@ -716,5 +691,27 @@ defmodule Util do
     ((now_stamp - comp_stamp) / 60)
     |> Float.round()
     |> trunc()
+  end
+
+  @empty [[], %{}, "", nil]
+  @doc "Returns the arg or nil if empty list, map, string, or nil"
+  @spec empty_to_nil(any()) :: any() | nil
+  def empty_to_nil(empty) when empty in @empty, do: nil
+  def empty_to_nil(not_empty), do: not_empty
+
+  @doc """
+  Returns the first arg, or fallback if arg is "empty"
+  ## Example
+    iex> Util.empty_to(0, :ble)
+    0
+    iex> Util.empty_to(%{}, "")
+    ""
+    iex> Util.empty_to(false, :empty_fallback)
+    false
+  """
+  def empty_to(arg, fallback) do
+    with nil <- empty_to_nil(arg) do
+      fallback
+    end
   end
 end
