@@ -17,144 +17,130 @@ defmodule BackendWeb.ProfileSettingsLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">Profile Settings</div>
+        <div class="title is-2">Profile & Settings</div>
         <FunctionComponents.Ads.below_title/>
         <div :if={@user}>
           <.form for={%{}} as={:user} id="profile_settings_form" phx-submit="submit">
-            <div>
-              <label for="country_code" class="label">Country Flag</label>
-              <select name="country_code" class="select has-text-black">
-              {options_for_select([{"Select Country", nil} | country_options()], @user.country_code)}
-              </select>
-            </div>
-            <div>
-              <label for="cross_out_country" class="label">Cross Out Country</label>
-              <.input type="checkbox" name="cross_out_country" checked={@user.cross_out_country} />
-            </div>
-            <div>
-              <label for="show_region" class="label">Show Region Instead of Country</label>
-              <.input type="checkbox" name="show_region" checked={@user.show_region} />
-            </div>
-            <br>
-            <div :if={@custom_hues}>
-              <label for="positive_hue" class="label">Positive Hue</label>
-              <input class="has-text-black" value={@user.positive_hue} type="number" name="positive_hue" min={0} max={360} step={1}/>
-              <label for="negative_hue" class="label">Negative Hue</label>
-              <input class="has-text-black" value={@user.negative_hue} type="number" name="negative_hue" min={0} max={360} step={1}/>
-            </div>
-            <div :if={!@custom_hues}>
-              <label for="positive_hue" class="label">Positive Color</label>
-              <select name="positive_hue" class="select has-text-black">
-                {options_for_select(hue_options(), @user.positive_hue)}
-              </select>
-              <label for="negative_hue" class="label">Negative Color</label>
-              <select name="negative_hue" class="select has-text-black">
-                {options_for_select(hue_options(), @user.negative_hue)}
-              </select>
-            </div>
-            <label>
-              <input type="checkbox" value={@custom_hues} :on-click="toggle_custom_hues" checked={@custom_hues}>
-              <span>Custom Hues</span>
-            </label>
-            <br>
-            <div>
-              <label for="unicode_icon" class="label">Player Icon</label>
-              <select name="unicode_icon" class="select has-text-black">
-                {options_for_select([{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}], @user.unicode_icon)}
-              </select>
-              For custom icons see <a href="/patreon">patreon</a>
-            # </div>
-            <br>
-            <label class="label">Deck Sheets</label>
-            <div>
-              <select name="default_sheet_id" class="select has-text-black" value={@user.default_sheet_id}>
-                {options_for_select(Components.DeckListingModal.sheet_options(@user), @user.default_sheet_id)}
-              </select>
-              <label for="default_sheet_id">Default Sheet</label>
-            </div>
-            <div>
-              <input type="search" name="default_sheet_source" class="has-text-black" value={@user.default_sheet_source}/>
-              <label for="default_sheet_source">Default Source</label>
-            </div>
-            <label class="label">Collection</label>
-            <div>
-              <select name="current_collection_id" class="select has-text-black" value={@user.current_collection_id}>
-                {options_for_select(collection_options(@user), @user.current_collection_id)}
-              </select>
-              <label for="current_collection_id">Current Collection</label>
-            </div>
-            <label class="label">Decklist Options</label>
-            <div>
-              <select name="preferred_deckcode" class="select has-text-black">
-               {options_for_select(["Short Deckcode (Valid)": "short", "Long Deckcode (Valid)": "long", "Long Deckcode (Markdown)": "long_markdown_code"], DecklistOptions.preferred_deckcode(@user.decklist_options))}
-              </select>
-              <label for="gradient">Preferred Deckcode When Copying</label>
-            </div>
-            <div>
-              <select name="border" class="select has-text-black">
-                {options_for_select(["Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"], DecklistOptions.border(@user.decklist_options))}
-              </select>
-              <label for="border">Border Color</label>
-            </div>
-            <div>
-              <select name="gradient" class="select has-text-black">
-               {options_for_select(["Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"], DecklistOptions.gradient(@user.decklist_options))}
-              </select>
-              <label for="gradient">Gradient Color</label>
-            </div>
-            <div>
-              <.input type="checkbox" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} label="Show 1 for singleton cards"/>
-            </div>
-            <div>
-              <.input type="checkbox" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} label="Show 1 for singleton legendaries"/>
-            </div>
-            <div>
-              <.input type="checkbox" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} label="Show dust above cards"/>
-            </div>
-            <div>
-              <.input type="checkbox" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} label="Show dust below cards"/>
-            </div>
-            <div>
-              <.input type="checkbox" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Use missing dust instead of total"/>
-            </div>
-            <div>
-              <.input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} label="Fade missing cards in decks"/>
-            </div>
-            <div>
-              <.input type="checkbox" name="fade_rotating_cards" checked={DecklistOptions.fade_rotating_cards(@user.decklist_options)} label="Fade rotating cards in decks"/>
-            </div>
-            <br>
-            <div>
-              <select name="replay_preference" class="select has-text-black" value={@user.replay_preference}>
-                {options_for_select([{"All", :all}, {"Streamed", :streamed}, {"None", :none}], @user.replay_preference)}
-              </select>
-              <label for="replay_preference">Which replays do you want to be considered public? (only affects new replays)</label>
-            </div>
-            <br>
-            <div>
-              <label for="battlefy_slug" class="label">Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it</label>
-              <input name="battlefy_slug" class="has-text-black is-small" value={@user.battlefy_slug}/>
-            </div>
+            <.accordion>
+              <:trigger>Country & Icon</:trigger>
+              <:panel>
+                <.input 
+                  options={[{"Select Country", nil} | country_options()]}
+                  type={"select"}
+                  label={"Country Flag"}
+                  name={"country_code"}
+                  value={@user.country_code}
+                  class={"select has-text-black"}/>
+                <.input type="checkbox" label="Cross Out Country" name="cross_out_country" checked={@user.cross_out_country} />
+                <.input type="checkbox" label="Show Region Instead of Country" name="show_region" checked={@user.show_region} />
+
+                <.input
+                type="select"
+                label="Player Icon"
+                name="unicode_icon"
+                value={@user.unicode_icon}
+                options={[{"None/Custom", nil}, {pride_flag(), pride_flag()}, {peace_symbol(), peace_symbol()}]}/>
+                <span class="tw-text-italic">
+                  For custom icons see <a href="/patreon">patreon</a>
+                </span>
+              </:panel>
+              <:trigger>Decklist Colors</:trigger>
+              <:panel>
+                <.input
+                  class="select has-text-black"
+                  type="select"
+                  name="border"
+                  value={DecklistOptions.border(@user.decklist_options)}
+                  label="Border Color"
+                  options={["Border Color": "border_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"]} />
+                <.input
+                  class="select has-text-black"
+                  type="select"
+                  name="gradient"
+                  value={DecklistOptions.gradient(@user.decklist_options)}
+                  label="Gradient Color"
+                  options={["Gradient Color": "gradient_color", "Card Class": "card_class", "Deck Class": "deck_class", "Rarity": "rarity", "Dark Grey": "dark_grey", "Deck Format": "deck_format"]} />
+              </:panel>
+              <:trigger>Decklist Options</:trigger>
+              <:panel>
+                <.input type="select" name="preferred_deckcode" class="select has-text-black" value={DecklistOptions.preferred_deckcode(@user.decklist_options)} options={["Short Deckcode (Valid)": "short", "Long Deckcode (Valid)": "long", "Long Deckcode (Markdown)": "long_markdown_code"]} label="Preferred Deckcode When Copying"/>
+                <.input type="checkbox" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} label="Show 1 for singleton cards"/>
+                <.input type="checkbox" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} label="Show 1 for singleton legendaries"/>
+                <.input type="checkbox" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} label="Show dust+action bar above cards"/>
+                <.input type="checkbox" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} label="Show dust+action bar below cards"/>
+                <.input type="checkbox" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Use missing dust instead of total"/>
+                <.input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} label="Fade missing cards in decks"/>
+                <.input type="checkbox" name="fade_rotating_cards" checked={DecklistOptions.fade_rotating_cards(@user.decklist_options)} label="Fade rotating cards in decks"/>
+              </:panel>
+
+              <:trigger>Deck Sheets</:trigger>
+              <:panel>
+                <.input
+                value={@user.default_sheet_id}
+                name="default_sheet_id"
+                type="select"
+                label="Default Sheet"
+                options={Components.DeckListingModal.sheet_options(@user)}
+                />
+                <.input type="search" label="Default Source" name="default_sheet_source" class="has-text-black" value={@user.default_sheet_source} />
+              </:panel>
+              <:trigger>Winrate/Impact Colors</:trigger>
+              <:panel>
+                <div :if={@custom_hues}>
+                  <.input label="Positive Hue" name="positive_hue" class="has-text-black" value={@user.positive_hue} type="number" name="positive_hue" min={0} max={360} step={1}/>
+                  <.input label="Negative Hue" name="negative_hue" class="has-text-black" value={@user.negative_hue} type="number" name="negative_hue" min={0} max={360} step={1}/>
+                </div>
+                <div :if={!@custom_hues}>
+                  <.input
+                    type="select"
+                    name="positive_hue"
+                    label="Positive Color"
+                    class="select has-text-black"
+                    options={hue_options()}
+                    value={@user.positive_hue}/>
+                  <.input
+                    type="select"
+                    label="Negative Color"
+                    name="negative_hue"
+                    class="select has-text-black"
+                    options={hue_options()}
+                    value={@user.negative_hue} />
+                </div>
+                <div :on-click="toggle_custom_hues">
+                  <.input label="Use Custom Hues" type="checkbox" name="custom_hues" lable="Custom Hues" value={@custom_hues} checked={@custom_hues} />
+                </div>
+              </:panel>
+
+              <:trigger>Connections {Enum.count([@user.twitch_id, @user.patreon_id], & &1)}/2 </:trigger>
+              <:panel>
+                <div :if={@user.twitch_id}>
+                  <button type="button" :on-click="disconnect_twitch" class="button">Disconnect Twitch {twitch_username(@user)}</button>
+                </div>
+                <div :if={!@user.twitch_id}>
+                  <a class="button" href="/auth/twitch">Connect Twitch</a>
+                </div>
+                <div :if={@user.patreon_id} class="level level-left">
+                  <button type="button" :on-click="disconnect_patreon" class="button">Disconnect Patreon</button>
+                  <div :if={tier_info = patreon_tier_info(@user)}>
+                    Tier: {tier_info.title} | Ad Free: {if tier_info.ad_free, do: "Yes", else: "No"}
+                  </div>
+                  <div :if={!@user.patreon_tier_id}>
+                    Tier: ? | Ad Free: ? || If you're already supporting this should get updated soon. If not you can support the site at <Components.Socials.patreon link={~p"/patreon"} />
+                  </div>
+                </div>
+                <div :if={!@user.patreon_id} class="level level-left">
+                  <a class="button" href="/auth/patreon">Connect Patreon</a>
+                  <div> Tier: ? | Ad Free: ?</div>
+                </div>
+              </:panel>
+              <:trigger>Misc</:trigger>
+              <:panel>
+                <.input type="select" name="current_collection_id" value={@user.current_collection_id} options={collection_options(@user)} label="Current Collection" class="select has-text-black" />
+                <.input type="select" label="Which replays do you want to be considered public? (only affects new replays)" value={@user.replay_preference} options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]} name="replay_preference" class="select has-text-black"/>
+                <.input label="Battlefy Slug. Open your battlefy profile then paste the url and I'll extract it" name="battlefy_slug" class="has-text-black is-small" value={@user.battlefy_slug}/>
+              </:panel>
+            </.accordion>
             <button type="submit" class="button">Save</button>
-            <div :if={@user.twitch_id}>
-              <button type="button" :on-click="disconnect_twitch" class="button">Disconnect Twitch {twitch_username(@user)}</button>
-            </div>
-            <div :if={!@user.twitch_id}>
-              <a class="button" href="/auth/twitch">Connect Twitch</a>
-            </div>
-            <div :if={@user.patreon_id} class="level level-left">
-              <button type="button" :on-click="disconnect_patreon" class="button">Disconnect Patreon</button>
-              <div :if={tier_info = patreon_tier_info(@user)}>
-                Tier: {tier_info.title} | Ad Free: {if tier_info.ad_free, do: "Yes", else: "No"}
-              </div>
-              <div :if={!@user.patreon_tier_id}>
-                Tier: ? | Ad Free: ? || If you're already supporting this should get updated soon. If not you can support the site at <Components.Socials.patreon link={~p"/patreon"} />
-              </div>
-            </div>
-            <div :if={!@user.patreon_id} class="level level-left">
-              <a class="button" href="/auth/patreon">Connect Patreon</a>
-              <div> Tier: ? | Ad Free: ?</div>
-            </div>
           </.form>
         </div>
         <div :if={!@user}>Not Logged In. You need to <a href={~p"/auth/bnet"}>log in</a> to change your settings</div>
@@ -238,6 +224,7 @@ defmodule BackendWeb.ProfileSettingsLive do
         _ -> user
       end
 
+    dbg(attrs_raw)
     {:noreply, socket |> assign(:user, updated)}
   end
 
