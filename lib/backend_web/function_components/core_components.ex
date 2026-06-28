@@ -1,6 +1,7 @@
 defmodule FunctionComponents.CoreComponents do
   @moduledoc false
   use Phoenix.Component
+  use Gettext, backend: BackendWeb.Gettext
   alias Phoenix.LiveView.JS
 
   @doc """
@@ -21,13 +22,27 @@ defmodule FunctionComponents.CoreComponents do
     * For live file uploads, see `Phoenix.Component.live_file_input/1`
 
   See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
-  for more information. Unsupported types, such as hidden and radio,
-  are best written directly in your templates.
+  for more information. Unsupported types, such as radio, are best
+  written directly in your templates.
 
   ## Examples
 
-      <.input field={@form[:email]} type="email" />
-      <.input name="my-input" errors={["oh no!"]} />
+  ```heex
+  <.input field={@form[:email]} type="email" />
+  <.input name="my-input" errors={["oh no!"]} />
+  ```
+
+  ## Select type
+
+  When using `type="select"`, you must pass the `options` and optionally
+  a `value` to mark which option should be preselected.
+
+  ```heex
+  <.input field={@form[:user_type]} type="select" options={["Admin": "admin", "User": "user"]} />
+  ```
+
+  For more information on what kind of data can be passed to `options` see
+  [`options_for_select`](https://phoenix-html.hexdocs.pm/Phoenix.HTML.Form.html#options_for_select/2).
   """
   attr :id, :any, default: nil
   attr :name, :any
@@ -37,7 +52,7 @@ defmodule FunctionComponents.CoreComponents do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file month number password
-               range search select tel text textarea time url week)
+               search select tel text textarea time url week hidden)
 
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
@@ -46,6 +61,8 @@ defmodule FunctionComponents.CoreComponents do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :class, :any, default: nil, doc: "the input class to use over defaults"
+  attr :error_class, :any, default: nil, doc: "the input error class to use over defaults"
 
   attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step)
@@ -61,6 +78,12 @@ defmodule FunctionComponents.CoreComponents do
     |> input()
   end
 
+  def input(%{type: "hidden"} = assigns) do
+    ~H"""
+    <input type="hidden" id={@id} name={@name} value={@value} {@rest} />
+    """
+  end
+
   def input(%{type: "checkbox"} = assigns) do
     assigns =
       assign_new(assigns, :checked, fn ->
@@ -68,27 +91,172 @@ defmodule FunctionComponents.CoreComponents do
       end)
 
     ~H"""
-    <div>
-      <label class="">
-        <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
+    <div class="fieldset tw-mb-2">
+      <label for={@id}>
         <input
-          type="checkbox"
-          id={@id}
+          type="hidden"
           name={@name}
-          value="true"
-          checked={@checked}
-          class=""
-          {@rest}
+          value="false"
+          disabled={@rest[:disabled]}
+          form={@rest[:form]}
         />
-        {@label}
+        <span class="label">
+          <input
+            type="checkbox"
+            id={@id}
+            name={@name}
+            value="true"
+            checked={@checked}
+            class={@class || "checkbox checkbox-sm"}
+            {@rest}
+          />{@label}
+        </span>
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
 
-  def input(_assigns) do
-    raise "not implemented"
+  def input(%{type: "select"} = assigns) do
+    ~H"""
+    <div class="fieldset tw-mb-2">
+      <label for={@id}>
+        <span :if={@label} class="label tw-mb-1">{@label}</span>
+        <select
+          id={@id}
+          name={@name}
+          class={[@class || "tw-w-full tw-select", @errors != [] && (@error_class || "select-error")]}
+          multiple={@multiple}
+          {@rest}
+        >
+          <option :if={@prompt} value="">{@prompt}</option>
+          {Phoenix.HTML.Form.options_for_select(@options, @value)}
+        </select>
+      </label>
+      <.error :for={msg <- @errors}>{msg}</.error>
+    </div>
+    """
+  end
+
+  def input(%{type: "textarea"} = assigns) do
+    ~H"""
+    <div class="fieldset tw-mb-2">
+      <label for={@id}>
+        <span :if={@label} class="label tw-mb-1">{@label}</span>
+        <textarea
+          id={@id}
+          name={@name}
+          class={[
+            @class || "tw-w-full textarea",
+            @errors != [] && (@error_class || "textarea-error")
+          ]}
+          {@rest}
+        >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
+      </label>
+      <.error :for={msg <- @errors}>{msg}</.error>
+    </div>
+    """
+  end
+
+  # All other inputs text, datetime-local, url, password, etc. are handled here...
+  def input(assigns) do
+    ~H"""
+    <div class="fieldset tw-mb-2">
+      <label for={@id}>
+        <span :if={@label} class="label tw-mb-1">{@label}</span>
+        <input
+          type={@type}
+          name={@name}
+          id={@id}
+          value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+          class={[
+            @class || "tw-w-full input",
+            @errors != [] && (@error_class || "input-error")
+          ]}
+          {@rest}
+        />
+      </label>
+      <.error :for={msg <- @errors}>{msg}</.error>
+    </div>
+    """
+  end
+
+  attr :checked, :boolean, required: true
+  attr :name, :string, required: true
+  attr :label, :string, required: true
+
+  def toggle(assigns) do
+    ~H"""
+      <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-center tw-gap-12">
+          <label :if={!@checked} class="tw-relative tw-inline-flex tw-items-center tw-cursor-pointer tw-text-gray-900 tw-gap-3">
+              <input name={@name} type="checkbox" class="tw-sr-only tw-peer" />
+              <div class="tw-w-16 tw-h-8 tw-bg-black tw-rounded-full tw-peer tw-peer-checked:tw-bg-slate-300 tw-transition-colors tw-duration-200"></div>
+              <span class="tw-dot tw-absolute tw-left-1 tw-top-1 tw-w-6 tw-h-6 tw-bg-white tw-rounded-full tw-transition-transform tw-duration-200 tw-ease-in-out tw-peer-checked:tw-translate-x-8"></span>
+              {@label}
+          </label>
+          <label :if={@checked} class="tw-relative tw-inline-flex tw-items-center tw-cursor-pointer tw-text-gray-900 tw-gap-3">
+              <input name={@name} type="checkbox" class="tw-sr-only tw-peer" checked />
+              <div class="tw-w-16 tw-h-8 tw-bg-black tw-rounded-full tw-peer tw-peer-checked:tw-bg-slate-300 tw-transition-colors tw-duration-200"></div>
+              <span class="tw-dot tw-absolute tw-left-1 tw-top-1 tw-w-6 tw-h-6 tw-bg-white tw-rounded-full tw-transition-transform tw-duration-200 tw-ease-in-out tw-peer-checked:tw-translate-x-8"></span>
+              {@label}
+          </label>
+      </div>
+    """
+  end
+
+  @doc """
+  Renders flash notices.
+
+  ## Examples
+
+      <.flash kind={:info} flash={@flash} />
+      <.flash
+        id="welcome-back"
+        kind={:info}
+        phx-mounted={show("#welcome-back") |> JS.remove_attribute("hidden")}
+        hidden
+      >
+        Welcome Back!
+      </.flash>
+  """
+  attr :id, :string, doc: "the optional id of flash container"
+  attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
+  attr :title, :string, default: nil
+  attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
+  attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
+
+  slot :inner_block, doc: "the optional inner block that renders the flash message"
+
+  def flash(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "flash-#{assigns.kind}" end)
+
+    ~H"""
+    <div
+      :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
+      id={@id}
+      phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
+      role="alert"
+      class="toast toast-top toast-end z-50"
+      {@rest}
+    >
+      <div class={[
+        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap",
+        @kind == :info && "alert-info",
+        @kind == :error && "alert-error"
+      ]}>
+        <.icon :if={@kind == :info} name="hero-information-circle" class="size-5 shrink-0" />
+        <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0" />
+        <div>
+          <p :if={@title} class="font-semibold">{@title}</p>
+          <p>{msg}</p>
+        </div>
+        <div class="flex-1" />
+        <button type="button" class="group self-start cursor-pointer" aria-label={gettext("close")}>
+          <.icon name="hero-x-mark" class="size-5 opacity-40 group-hover:opacity-70" />
+        </button>
+      </div>
+    </div>
+    """
   end
 
   @doc """
@@ -123,12 +291,40 @@ defmodule FunctionComponents.CoreComponents do
   Generates a generic error message.
   """
   slot :inner_block, required: true
-
+  # Helper used by inputs to generate form errors
   def error(assigns) do
     ~H"""
-    <p class="notification is-error">
+    <p class="mt-1.5 flex gap-2 items-center text-sm text-error">
+      <.icon name="hero-exclamation-circle" class="size-5" />
       {render_slot(@inner_block)}
     </p>
+    """
+  end
+
+  @doc """
+  Renders a [Heroicon](https://heroicons.com).
+
+  Heroicons come in three styles – outline, solid, and mini.
+  By default, the outline style is used, but solid and mini may
+  be applied by using the `-solid` and `-mini` suffix.
+
+  You can customize the size and colors of the icons by setting
+  width, height, and background color classes.
+
+  Icons are extracted from the `deps/heroicons` directory and bundled within
+  your compiled app.css by the plugin in `assets/vendor/heroicons.js`.
+
+  ## Examples
+
+      <.icon name="hero-x-mark" />
+      <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
+  """
+  attr :name, :string, required: true
+  attr :class, :any, default: "size-4"
+
+  def icon(%{name: "hero-" <> _} = assigns) do
+    ~H"""
+    <span class={[@name, @class]} />
     """
   end
 
@@ -211,6 +407,28 @@ defmodule FunctionComponents.CoreComponents do
           </div>
         </div>
     """
+  end
+
+  ## JS Commands
+
+  def show(js \\ %JS{}, selector) do
+    JS.show(js,
+      to: selector,
+      time: 300,
+      transition:
+        {"transition-all ease-out duration-300", "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
+         "opacity-100 translate-y-0 sm:scale-100"}
+    )
+  end
+
+  def hide(js \\ %JS{}, selector) do
+    JS.hide(js,
+      to: selector,
+      time: 200,
+      transition:
+        {"transition-all ease-in duration-200", "opacity-100 translate-y-0 sm:scale-100",
+         "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"}
+    )
   end
 
   @doc """
