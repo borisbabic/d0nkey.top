@@ -54,7 +54,8 @@ defmodule Backend.MixProject do
       {:ecto_sql, "~> 3.12"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_reload, "~> 1.5", only: :dev},
-      {:gettext, "~> 0.11"},
+      # 1.0 doesn't introduce breaking changes
+      {:gettext, "~> 1.0", override: true},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.1"},
       {:httpoison, "~> 2.1"},
