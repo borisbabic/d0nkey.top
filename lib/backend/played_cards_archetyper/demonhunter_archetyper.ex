@@ -28,79 +28,46 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
         ["Elise the Navigator", "Scorchreaver", "Felfire Blaze", "Ravenous Felfisher" | @broxigar_dh_minions]
   }
   @standard_config [
-    {:"Quest DH", ["Unleash the Colossus"]},
-    {:"No Minion DH", ["Solitude", "Hounds of Fury", "The Eternal Hold"]},
-    {:"Harold DH", @herald_package},
-    {:"Broxigar DH",
-     [
-       "Insect Claw",
-       "Perennial Serpent"
-       | @broxigar_dh_minions
-     ]},
-    {:"Harold DH",
-     [
-       "Defiled Spear",
-       "Fel Infusion",
-       "Scorchreaver"
-     ]},
-    # 5.5
-    {:"No Minion DH", ["Time-Lost Glaive"]},
-    {:"Broxigar DH", ["Press the Advantage", "Eye Beam", "Chaos Strike"]},
-    {:"No Minion DH", ["Lasting Legacy", "Horn of Feasting"]},
-    {:"No Minion DH", ["Wyvern's Slumber", "Hive Map", "Axe of Cenarius", "Sigil of the Seas"]},
-    {:"Harold DH",
-     [
-       "Illidari Studies",
-       "Infestation"
-     ]},
-    {:"No Minion DH",
-     [
-       "Grim Harvest",
-       "Sigil of Cinder"
-     ]}
+    "Quest DH": ["Unleash the Colossus"],
+    "No Minion DH": ["Solitude", "Hounds of Fury", "The Eternal Hold"],
+    "Harold DH": @herald_package,
+    "Broxigar DH": [
+      "Axe of Cenarius",
+      "Bloodmage Thalnos",
+      "Broxigar",
+      "Broxigar's Last Stand",
+      "Chaos Strike",
+      "Crimson Sigil Runner",
+      "Devious Coyote",
+      "Dreadsoul Corrupter",
+      "Eye Beam",
+      "Felfire Blaze",
+      "First Portal to Argus",
+      "Glacial Shard",
+      "Grim Harvest",
+      "Hive Map",
+      "Horn of Feasting",
+      "Illidari Studies",
+      "Infestation",
+      "Insect Claw",
+      "Kayn Sunfury",
+      "Lasting Legacy",
+      "Nespirah, Enthralled",
+      "Perennial Serpent",
+      "Portal Vanguard",
+      "Press the Advantage",
+      "Ravenous Felhunter",
+      "Remnant of Rage",
+      "Sands of Time",
+      "Sigil of Cinder",
+      "Sigil of the Seas",
+      "Slumbering Sprite",
+      "Time-Lost Glaive",
+      "Wild Pyromancer",
+      "Wyvern's Slumber"
+    ]
   ]
   @wild_config []
-  # @wild_config [
-  #   {:"Pirate Demon Hunter",
-  #    [
-  #      "Ship's Cannon",
-  #      "Hozen Roughhouser",
-  #      "Treasure Distributor",
-  #      "Field of Strife",
-  #      "Magnifying Glaive",
-  #      "Parachute Brigand",
-  #      "Southsea Captain",
-  #      "Patches the Pirate",
-  #      "Mistake",
-  #      "Space Pirate",
-  #      "Adrenaline Fiend",
-  #      "Dangerous Cliffside"
-  #    ]},
-  #   {:"Questline DH",
-  #    [
-  #      "Crimson Sigil Runner",
-  #      "Glaivetar",
-  #      "Fierce Outsider",
-  #      "Vengeful Walloper",
-  #      "Irebound Brute",
-  #      "Felosophy",
-  #      "Double Jump",
-  #      "Patches the Pilot",
-  #      "Aranna, Thrill Seeker",
-  #      "Spectral Sight",
-  #      "Illidari Studies",
-  #      "Final Showdown",
-  #      "Sigil of Alacrity",
-  #      "Mana Burn",
-  #      "Glide",
-  #      "Paraglide",
-  #      "Dispose of Evidence",
-  #      "Spectral Sight",
-  #      "Illidari Studies",
-  #      "Sigil of Time",
-  #      "Consume Magic"
-  #    ]}
-  # ]
 
   def standard_excludes, do: %{}
   def wild_excludes, do: %{}
