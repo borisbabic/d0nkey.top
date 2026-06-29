@@ -91,8 +91,8 @@ defmodule FunctionComponents.CoreComponents do
       end)
 
     ~H"""
-    <div class="fieldset tw-mb-2">
-      <label for={@id}>
+    <div class="tw-mb-4">
+      <label for={@id} class="tw-inline-flex tw-items-center tw-gap-3 tw-cursor-pointer tw-select-none">
         <input
           type="hidden"
           name={@name}
@@ -100,17 +100,16 @@ defmodule FunctionComponents.CoreComponents do
           disabled={@rest[:disabled]}
           form={@rest[:form]}
         />
-        <span class="label">
-          <input
-            type="checkbox"
-            id={@id}
-            name={@name}
-            value="true"
-            checked={@checked}
-            class={@class || "checkbox checkbox-sm"}
-            {@rest}
-          />{@label}
-        </span>
+        <input
+          type="checkbox"
+          id={@id}
+          name={@name}
+          value="true"
+          checked={@checked}
+          class={@class || "tw-rounded tw-bg-[#2a2a2a] tw-border-slate-700 tw-text-sky-500 focus:tw-ring-sky-500/30 tw-w-4 tw-h-4 tw-transition-all"}
+          {@rest}
+        />
+        <span :if={@label} class="tw-text-sm tw-font-medium text-white">{@label}</span>
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
@@ -119,19 +118,30 @@ defmodule FunctionComponents.CoreComponents do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div class="fieldset tw-mb-2">
-      <label for={@id}>
-        <span :if={@label} class="label tw-mb-1">{@label}</span>
-        <select
-          id={@id}
-          name={@name}
-          class={[@class || "tw-w-full tw-select", @errors != [] && (@error_class || "select-error")]}
-          multiple={@multiple}
-          {@rest}
-        >
-          <option :if={@prompt} value="">{@prompt}</option>
-          {Phoenix.HTML.Form.options_for_select(@options, @value)}
-        </select>
+    <div class="tw-mb-4">
+      <label for={@id} class="tw-block">
+        <span :if={@label} class="tw-block tw-text-sm tw-font-bold text-white tw-mb-1.5">{@label}</span>
+        <div class="tw-relative">
+          <select
+            id={@id}
+            name={@name}
+            class={[
+              @class || "tw-w-full tw-appearance-none tw-rounded-lg tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-text-white focus:tw-border-sky-500 focus:tw-ring-2 focus:tw-ring-sky-500/20 tw-h-10 tw-pl-3 tw-pr-10 tw-text-sm tw-transition-all tw-cursor-pointer",
+              @errors != [] && (@error_class || "tw-border-rose-500 focus:tw-border-rose-500 focus:tw-ring-rose-500/20")
+            ]}
+            multiple={@multiple}
+            {@rest}
+          >
+            <option :if={@prompt} value="">{@prompt}</option>
+            {Phoenix.HTML.Form.options_for_select(@options, @value)}
+          </select>
+          
+          <div :if={!@multiple} class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center tw-pr-3 tw-text-slate-400">
+            <svg class="tw-h-4 tw-w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
@@ -140,15 +150,15 @@ defmodule FunctionComponents.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div class="fieldset tw-mb-2">
-      <label for={@id}>
-        <span :if={@label} class="label tw-mb-1">{@label}</span>
+    <div class="tw-mb-4">
+      <label for={@id} class="tw-block">
+        <span :if={@label} class="tw-block tw-text-sm tw-font-bold text-white tw-mb-1.5">{@label}</span>
         <textarea
           id={@id}
           name={@name}
           class={[
-            @class || "tw-w-full textarea",
-            @errors != [] && (@error_class || "textarea-error")
+            @class || "tw-w-full tw-rounded-lg tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-text-white focus:tw-border-sky-500 focus:tw-ring-2 focus:tw-ring-sky-500/20 tw-p-3 tw-text-sm tw-min-h-[100px] tw-transition-all",
+            @errors != [] && (@error_class || "tw-border-rose-500 focus:tw-border-rose-500 focus:tw-ring-rose-500/20")
           ]}
           {@rest}
         >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
@@ -158,20 +168,19 @@ defmodule FunctionComponents.CoreComponents do
     """
   end
 
-  # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div class="fieldset tw-mb-2">
-      <label for={@id}>
-        <span :if={@label} class="label tw-mb-1">{@label}</span>
+    <div class="tw-mb-4">
+      <label for={@id} class="tw-block">
+        <span :if={@label} class="tw-block tw-text-sm tw-font-bold text-white tw-mb-1.5">{@label}</span>
         <input
           type={@type}
           name={@name}
           id={@id}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            @class || "tw-w-full input",
-            @errors != [] && (@error_class || "input-error")
+            @class || "tw-w-full tw-rounded-lg tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-text-white focus:tw-border-sky-500 focus:tw-ring-2 focus:tw-ring-sky-500/20 tw-h-10 tw-px-3 tw-text-sm tw-transition-all",
+            @errors != [] && (@error_class || "tw-border-rose-500 focus:tw-border-rose-500 focus:tw-ring-rose-500/20")
           ]}
           {@rest}
         />
@@ -181,26 +190,53 @@ defmodule FunctionComponents.CoreComponents do
     """
   end
 
-  attr :checked, :boolean, required: true
-  attr :name, :string, required: true
-  attr :label, :string, required: true
+  @doc """
+  Renders a smooth toggle switch instead of a classic checkbox.
+  """
+  attr :id, :any, default: nil
+  attr :name, :any
+  attr :label, :string, default: nil
+  attr :value, :any
+  attr :checked, :boolean, default: false
+  attr :field, Phoenix.HTML.FormField
+  attr :rest, :global
+
+  def toggle(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    assigns
+    |> assign(field: nil, id: assigns.id || field.id)
+    |> assign_new(:name, fn -> field.name end)
+    |> assign_new(:checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", field.value) end)
+    |> toggle()
+  end
 
   def toggle(assigns) do
     ~H"""
-      <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-center tw-gap-12">
-          <label :if={!@checked} class="tw-relative tw-inline-flex tw-items-center tw-cursor-pointer tw-text-gray-900 tw-gap-3">
-              <input name={@name} type="checkbox" class="tw-sr-only tw-peer" />
-              <div class="tw-w-16 tw-h-8 tw-bg-black tw-rounded-full tw-peer tw-peer-checked:tw-bg-slate-300 tw-transition-colors tw-duration-200"></div>
-              <span class="tw-dot tw-absolute tw-left-1 tw-top-1 tw-w-6 tw-h-6 tw-bg-white tw-rounded-full tw-transition-transform tw-duration-200 tw-ease-in-out tw-peer-checked:tw-translate-x-8"></span>
-              {@label}
-          </label>
-          <label :if={@checked} class="tw-relative tw-inline-flex tw-items-center tw-cursor-pointer tw-text-gray-900 tw-gap-3">
-              <input name={@name} type="checkbox" class="tw-sr-only tw-peer" checked />
-              <div class="tw-w-16 tw-h-8 tw-bg-black tw-rounded-full tw-peer tw-peer-checked:tw-bg-slate-300 tw-transition-colors tw-duration-200"></div>
-              <span class="tw-dot tw-absolute tw-left-1 tw-top-1 tw-w-6 tw-h-6 tw-bg-white tw-rounded-full tw-transition-transform tw-duration-200 tw-ease-in-out tw-peer-checked:tw-translate-x-8"></span>
-              {@label}
-          </label>
-      </div>
+    <div class="tw-mb-4">
+      <label for={@id} class="tw-inline-flex tw-items-center tw-justify-between tw-w-full tw-cursor-pointer tw-select-none">
+        <span :if={@label} class="tw-text-sm tw-font-medium text-white">{@label}</span>
+        
+        <div class="tw-relative tw-inline-block">
+          <input
+            type="hidden"
+            name={@name}
+            value="false"
+            disabled={@rest[:disabled]}
+            form={@rest[:form]}
+          />
+          <input
+            type="checkbox"
+            id={@id}
+            name={@name}
+            value="true"
+            checked={@checked}
+            class="tw-sr-only tw-peer"
+            {@rest}
+          />
+          <div class="tw-w-11 tw-h-6 tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-rounded-full peer-checked:tw-bg-sky-500 peer-checked:tw-border-transparent tw-transition-all"></div>
+          <div class="tw-absolute tw-top-1 tw-left-1 tw-bg-slate-400 tw-w-4 tw-h-4 tw-rounded-full peer-checked:tw-bg-white peer-checked:tw-translate-x-5 tw-transition-all"></div>
+        </div>
+      </label>
+    </div>
     """
   end
 
