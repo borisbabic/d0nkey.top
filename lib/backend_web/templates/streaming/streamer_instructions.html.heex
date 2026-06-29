@@ -1,24 +1,47 @@
-<div class="title is-2">Streamer Instructions</div>
-<FunctionComponents.Ads.below_title/>
+<div class="tw-max-w-4xl tw-mx-auto tw-p-6 tw-space-y-8 tw-font-sans tw-text-slate-300">
+  
+  <!-- Header Section -->
+  <header class="tw-border-b tw-border-slate-800 tw-pb-6">
+    <h1 class="tw-text-4xl tw-font-extrabold tw-tracking-tight text-white">Streamer Instructions</h1>
+  </header>
 
-<li>
-    <%= if user(@conn) do %>
-        <span>Done ✓</span>
+  <FunctionComponents.Ads.below_title />
 
-    <% end %>
-    Ensure you are logged in. If you are not you can do so <a target="_blank" href="/auth/bnet">here</a>
-</li>
-<li>
-    <%= if user(@conn) && user(@conn).twitch_id do %>
-        <span>Done ✓</span>
-    <% end %>
-    Go to settings and connect your twitch account, or click <a target="_blank" href="/auth/twitch">here</a> to connect your twitch account
-</li>
-<li>
-    HDT users install the <a target="_blank" href="/hdt-plugin">plugin</a>. Firestone users don't have to do anything, unless they've previously disabled the integration in General -> Third Party (then reenable it 4head)
-</li>
+  <!-- Interactive Onboarding Checklist -->
+  <div class="tw-grid tw-grid-cols-1 tw-gap-4">
+    
+    <.setup_step title="Account Login" is_done={user(@conn) != nil}>
+      Ensure you are logged in. If you aren't, you can log in via
+      <a target="_blank" href="/auth/bnet" class="has-text-info tw-underline hover:tw-text-sky-300">Battle.net</a>.
+    </.setup_step>
 
-<br>
-And that's it! Just stream hearthstone on twitch with either Firestone running or HDT with the plugin. After you finish a game it will be logged in <a href="/streamer-decks">Streamer Decks</a>
-<br>
-NOTE: Streaming now functionality is currently unsupported. Streamer decks gets updated after you finish a game.
+    <.setup_step title="Twitch Integration" is_done={user(@conn) && user(@conn).twitch_id != nil}>
+      Link your twitch account. Head to settings and go to connections, or connect it by clicking 
+      <a target="_blank" href="/auth/twitch" class="has-text-info tw-underline hover:tw-text-sky-300">here to authorize Twitch</a>.
+    </.setup_step>
+
+    <.setup_step title="Tracker Configuration" is_done={false}>
+      <strong>HDT Users:</strong> Install the <a target="_blank" href="/hdt-plugin" class="has-text-info tw-underline hover:tw-text-sky-300">plugin</a>. <br />
+      <strong>Firestone Users:</strong> Built in support. No action is required unless you manually toggled it off inside 
+      <span class="tw-font-mono tw-text-xs tw-bg-black/30 tw-px-1 tw-rounded tw-text-slate-300">General &rarr; Third Party</span> configurations.
+    </.setup_step>
+
+  </div>
+
+  <!-- Success/Wrap-up Statement -->
+  <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4">
+    <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
+      <span class="tw-text-xl">🎉</span>
+      <h3 class="tw-text-lg tw-font-bold text-white">And that's all it takes!</h3>
+    </div>
+    <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
+      After completing the above, just stream in the Hearthstone category on Twitch with your deck tracker running. After you finish a game it will be added to <a href="/streamer-decks" class="has-text-success tw-underline hover:tw-text-emerald-300 tw-font-semibold">Streamer Decks</a>.
+    </p>
+  </div>
+
+  <!-- Note Footer Callout -->
+  <.alert type="info" title="Limitations">
+    Streaming now functionality is currently unsupported. Streamer decks gets updated after you finish a game. 
+  </.alert>
+
+</div>

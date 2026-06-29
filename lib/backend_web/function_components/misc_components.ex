@@ -77,4 +77,41 @@ defmodule FunctionComponents.MiscComponents do
     </div>
     """
   end
+
+  @doc """
+  Renders an onboarding or setup checklist with built-in state validation.
+  """
+  attr :title, :string, required: true
+  attr :is_done, :boolean, default: false
+  slot :inner_block, required: true
+
+  def setup_step(assigns) do
+    ~H"""
+    <div class="tw-flex tw-items-start tw-gap-4 tw-p-5 has-background-dark tw-border tw-border-slate-800 tw-rounded-xl tw-shadow-sm">
+      <div class="tw-flex-shrink-0 tw-mt-0.5">
+        <%= if @is_done do %>
+          <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-full has-background-success has-text-dark tw-text-xs tw-font-bold">
+            ✓
+          </span>
+        <% else %>
+          <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-full tw-bg-slate-800 tw-text-slate-400 tw-text-xs tw-font-bold tw-border tw-border-slate-700">
+            !
+          </span>
+        <% end %>
+      </div>
+      <div class="tw-space-y-1">
+        <h4 class={[
+          "tw-font-bold tw-text-sm",
+          @is_done && "tw-text-slate-400 tw-line-through",
+          !@is_done && "text-white"
+        ]}>
+          <%= @title %>
+        </h4>
+        <p class="tw-text-sm tw-text-slate-400">
+          <%= render_slot(@inner_block) %>
+        </p>
+      </div>
+    </div>
+    """
+  end
 end
