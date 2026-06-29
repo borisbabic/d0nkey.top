@@ -497,7 +497,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     {card_popularity, _archetypes} = process_games(games)
     config_map = config_map(previous_archetyper_config)
 
-    case sort_and_filter(card_popularity, min_played_count, "any_popularity", nil, config_map, "yes") do
+    case sort_and_filter(card_popularity, min_played_count, "any_popularity", nil, config_map, "yes")
+         |> skip_zilly(config_map) do
       [{_card_info, popularity_map} = first | rest] ->
         arch = most_popular_arch(popularity_map)
 
@@ -528,6 +529,12 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         {:ok, %{auto_archetyping: previous_archetyper_config}}
     end
   end
+
+  # hack because it gets stuck on always zilly
+  # not 100% why this happens
+  # hack seemed easiest
+  defp skip_zilly([{{%{name: "Zilliax Deluxe 3000"}, _, _}, _pop_map} | rest], %{"Zilliax Deluxe 3000" => _}), do: rest
+  defp skip_zilly(result, _), do: result
 
   defp min_played_count(
          %{min_min_played_count: min, max_min_played_count: max, total_games_percent: total_games_percent},
