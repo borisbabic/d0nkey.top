@@ -405,7 +405,8 @@ defmodule BackendWeb.Router do
     live("/card-stats", CardStatsLive)
     live("/meta", MetaLive)
     live("/matchups", MatchupsLive)
-    live("/archetype-mapping", ArchetypeMappingTable)
+    live("/archetyping/played-cards-popularity", PlayedCardsArchetypePopularity)
+    live("/archetyping/mapping", ArchetypeMappingTable)
     live("/decks", DecksLive)
     live("/deck-sheets/:sheet_id", DeckSheetViewLive)
     live("/deck-sheets", DeckSheetsIndexLive)
@@ -483,9 +484,6 @@ defmodule BackendWeb.Router do
     )
 
     live("/tournament-lineups/:tournament_source/:tournament_id", TournamentLineups)
-
-    live("/played-cards-archetype-popularity", PlayedCardsArchetypePopularity)
-
     live("/wc/2021", WC2021Live)
     live("/wc/2022", WC2022Live)
     live("/wc/2025", WC2025Live)

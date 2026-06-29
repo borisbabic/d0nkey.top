@@ -278,6 +278,45 @@ defmodule Util do
   end
 
   @doc """
+  Transform to float while ignoring the binary remainder or returns the original string
+
+  ## Example
+  iex> Util.to_int_or_orig("hello")
+  "hello"
+  iex> Util.to_int_or_orig("-1")
+  -1.0
+  iex> Util.to_int_or_orig(50)
+  50.0
+  iex> Util.to_int_or_orig("-1.45")
+  -1.45
+  """
+  def to_float_or_orig(orig), do: to_float(orig, orig)
+
+  @doc """
+  Transform to an float while ignoring the binary remainder or returns the fallback
+
+  ## Example
+  iex> Util.to_float("hello", 45)
+  45
+  iex> Util.to_float("-1", 45)
+  -1.0
+  iex> Util.to_float("-1.45", 45)
+  -1.45
+  """
+  def to_float(%Decimal{} = dec, _), do: Decimal.to_float(dec)
+  def to_float(float, _fallback) when is_float(float), do: float
+  def to_float(integer, _fallback) when is_integer(integer), do: integer * 1.0
+
+  def to_float(<<float_or_not::binary>>, fallback) do
+    case Float.parse(float_or_not) do
+      {float, _rem} -> float
+      _ -> fallback
+    end
+  end
+
+  def to_float(_, fallback), do: fallback
+
+  @doc """
   Takes and {:ok,_} | {:error, _ } and returns the value on :ok and nil on :error
   """
   @spec nilify({:ok | :error, any()}) :: any() | nil
@@ -713,5 +752,10 @@ defmodule Util do
     with nil <- empty_to_nil(arg) do
       fallback
     end
+  end
+
+  @spec has_keys?(Map.t(), Enum.t()) :: boolean
+  def has_keys?(map, keys) do
+    Enum.all?(keys, &Map.has_key?(map, &1))
   end
 end

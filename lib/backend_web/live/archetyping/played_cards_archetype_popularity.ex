@@ -16,16 +16,24 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
   alias Backend.Hearthstone.Card
 
   @default_min_played_count 1000
+  @default_min_min_played_count 100
+  @default_max_min_played_count 2000
+  @default_total_games_percent 1.0
   @default_sort_by "any_popularity"
   data(user, :any)
+  data(needs_auto_archetyping_vars?, :boolean, default: false)
   data(needs_class?, :boolean, default: false)
   data(can_access?, :boolean, default: false)
   data(card_popularity, :any)
   data(card_report, :any)
+  data(auto_archetyping, :any)
   data(params, :map, default: %{})
   data(criteria, :map, default: %{})
   data(sort_by, :string, default: @default_sort_by)
   data(min_played_count, :integer, default: @default_min_played_count)
+  data(min_min_played_count, :integer, default: @default_min_min_played_count)
+  data(max_min_played_count, :integer, default: @default_max_min_played_count)
+  data(total_games_percent, :number, default: @default_total_games_percent)
   data(exclude_config_levels, :integer, default: 0)
   data(filter_config_level, :integer, default: nil)
   data(filter_out_whizbang, :string, default: "yes")
@@ -123,7 +131,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         />
       <LivePatchDropdown
         id="mode_dropdown"
-        options={[{"popularity", "Popularity"}, {"report", "Report"}]}
+        options={[{"popularity", "Popularity"}, {"report", "Report"}, {"auto_archetyping", "Auto Archetype"}]}
         title={"Mode"}
         param={"mode"}
         current_val={@mode}
@@ -155,6 +163,31 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         current_val={@params["archetype_excludes"] || []}
         selected_as_title={false}
         />
+
+      <LivePatchDropdown
+        :if={"auto_archetyping" == @mode}
+        id="min_min_played_count"
+        options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+        title={"Min Min Played Count (for auto archetyping)"}
+        param={"min_min_played_count"}
+        selected_as_title={true}
+        normalizer={&to_string/1} />
+      <LivePatchDropdown
+        :if={"auto_archetyping" == @mode}
+        id="max_min_played_count"
+        options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+        title={"Max Min Played Count (for auto archetyping)"}
+        param={"max_min_played_count"}
+        selected_as_title={true}
+        normalizer={&to_string/1} />
+      <LivePatchDropdown
+        :if={"auto_archetyping" == @mode}
+        id="total_games_percent"
+        options={[0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]}
+        title={"Total Games Percent For Min Account(for auto archetyping)"}
+        param={"total_games_percent"}
+        selected_as_title={true}
+        normalizer={&to_string/1} />
       <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
       <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
       <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
@@ -163,7 +196,22 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       <div :if={@needs_class?}>
         Select a class before proceeding. I'd suggest selecting your other filters first.
       </div>
-      <div :if={!@needs_class?}>
+      <div :if={@needs_auto_archetyping_vars?}>
+        Select auto archetyping vers before proceeding.
+      </div>
+      <div :if={!@needs_class? and !@needs_auto_archetyping_vars?}>
+        <div :if={@mode == "auto_archetyping"}>
+          <div :if={@auto_archetyping.loading}>
+            Loading Auto auto_archetyping
+          </div>
+          <div :if={@auto_archetyping.ok? && !@auto_archetyping.loading}>
+            <code>
+              <pre>
+                  {auto_archetyping_display(@auto_archetyping.result)}
+              </pre>
+            </code>
+          </div>
+        </div>
         <div :if={@mode == "report"}>
           <div :if={@card_report.loading}>
             Loading Card Popularity Report
@@ -225,6 +273,10 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     """
   end
 
+  defp auto_archetyping_display(archetyping_config) do
+    inspect(archetyping_config, pretty: true)
+  end
+
   @spec excludes_options(integer() | String.t(), String.t()) :: [{String.t(), String.t()}] | false
   defp excludes_options(_format, nil), do: false
 
@@ -253,10 +305,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     end
   end
 
-  def archetyping_config_cards_excludes(format, class, levels) do
-    format
-    |> Util.to_int_or_orig()
-    |> PlayedCardsArchetyper.config(class)
+  def archetyping_config_cards_excludes(config, levels) do
+    config
     |> Enum.take(levels)
     |> Enum.map(fn
       {_archetype, {cards, exclude}} -> {cards, exclude}
@@ -299,6 +349,15 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     min_played_count =
       Map.get(params, "min_played_count", @default_min_played_count) |> Util.to_int_or_orig()
 
+    min_min_played_count =
+      Map.get(params, "min_min_played_count", @default_min_min_played_count) |> Util.to_int_or_orig()
+
+    max_min_played_count =
+      Map.get(params, "max_min_played_count", @default_max_min_played_count) |> Util.to_int_or_orig()
+
+    total_games_percent =
+      Map.get(params, "total_games_percent", @default_total_games_percent) |> Util.to_float_or_orig()
+
     sort_by = Map.get(params, "sort_by", @default_sort_by)
     mode = Map.get(params, "mode", "popularity")
 
@@ -314,16 +373,27 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       filter_out_whizbang: params["filter_out_whizbang"] || socket.assigns[:filter_out_whizbang],
       intermediate_report: [],
       mode: mode,
-      min_played_count: min_played_count
+      min_played_count: min_played_count,
+      min_min_played_count: min_min_played_count,
+      max_min_played_count: max_min_played_count,
+      total_games_percent: total_games_percent
     ]
 
-    if Map.has_key?(criteria, "player_class") do
+    needed_vars_flags = needed_vars_flags(criteria, params, mode)
+
+    if Enum.any?(needed_vars_flags, fn {_flag, needed?} -> needed? end) do
+      {:noreply,
+       socket
+       |> assign(needed_vars_flags)
+       |> assign(same_assigns)
+       |> update_context(selected_params)}
+    else
       title = "#{criteria["player_class"]} #{mode}"
 
       {
         :noreply,
         socket
-        |> assign(needs_class?: false)
+        |> assign(needed_vars_flags)
         |> assign(same_assigns)
         |> assign_config_map(criteria)
         |> update_context(selected_params)
@@ -332,13 +402,20 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           title: title
         })
       }
-    else
-      {:noreply,
-       socket
-       |> assign(needs_class?: true)
-       |> assign(same_assigns)
-       |> update_context(selected_params)}
     end
+  end
+
+  defp needed_vars_flags(criteria, params, mode) do
+    needs_auto_archetyping_vars? =
+      "auto_archetyping" == mode and
+        !Util.has_keys?(params, ["min_min_played_count", "max_min_played_count", "total_games_percent"])
+
+    needs_class? = !Map.has_key?(criteria, "player_class")
+
+    [
+      needs_class?: needs_class?,
+      needs_auto_archetyping_vars?: needs_auto_archetyping_vars?
+    ]
   end
 
   defp add_excludes(criteria, [_ | _] = excludes) do
@@ -374,6 +451,89 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   defp fetch_async(new_socket, _old_socket, "popularity"), do: fetch_popularity(new_socket)
   defp fetch_async(new_socket, _old_socket, "report"), do: fetch_report(new_socket)
+  defp fetch_async(new_socket, _old_socket, "auto_archetyping"), do: fetch_auto_archetyping(new_socket)
+
+  defp fetch_auto_archetyping(socket) do
+    criteria = socket.assigns.criteria
+
+    auto_archetyping_vars =
+      Map.take(socket.assigns, [
+        :min_min_played_count,
+        :max_min_played_count,
+        :total_games_percent
+      ])
+
+    exclude_config_levels = Map.get(socket.assigns, :exclude_config_levels) || 0
+
+    socket
+    |> assign_async([:auto_archetyping], fn ->
+      IO.puts("assigning async from level #{exclude_config_levels}")
+      fetch_auto_archetyping(criteria, auto_archetyping_vars, exclude_config_levels)
+    end)
+  end
+
+  def fetch_auto_archetyping(base_criteria, vars, level, prev_config \\ nil) do
+    format = Map.fetch!(base_criteria, "format") |> Util.to_int_or_orig()
+    class = Map.fetch!(base_criteria, "player_class")
+
+    new_level = level + 1
+
+    puts_append =
+      "auto archetyping level #{new_level}. class: #{class} format: #{format}|||#{NaiveDateTime.utc_now()}"
+
+    IO.puts("Starting #{puts_append}")
+
+    previous_archetyper_config =
+      with nil <- prev_config do
+        PlayedCardsArchetyper.config(format, class) |> Enum.take(level)
+      end
+
+    criteria = base_criteria |> add_excluded_config(level, previous_archetyper_config)
+    games = Hearthstone.DeckTracker.games_with_played_cards(criteria, timeout: 120_000)
+    game_count = Enum.count(games)
+    IO.puts("Got #{game_count} games while #{puts_append}")
+    min_played_count = min_played_count(vars, game_count)
+    IO.puts("Min Played count #{min_played_count} games while #{puts_append}")
+    {card_popularity, _archetypes} = process_games(games)
+    config_map = config_map(previous_archetyper_config)
+
+    case sort_and_filter(card_popularity, min_played_count, "any_popularity", nil, config_map, "yes") do
+      [{_card_info, popularity_map} = first | rest] ->
+        arch = most_popular_arch(popularity_map)
+
+        same =
+          Enum.take_while(rest, fn {_, pop_map} ->
+            most_popular_arch(pop_map) == arch
+          end)
+
+        cards =
+          [first | same]
+          |> Enum.map(fn {{card, _, _}, _} ->
+            Card.name(card)
+          end)
+          |> Enum.sort()
+
+        new_config = previous_archetyper_config ++ [{String.to_existing_atom(arch), cards}]
+
+        IO.puts("Adding #{Enum.count(cards)} for #{arch} while #{puts_append}")
+        fetch_auto_archetyping(base_criteria, vars, new_level, new_config)
+
+      _result ->
+        IO.puts("Done auto archetyping, got up to #{level}")
+        {:ok, %{auto_archetyping: previous_archetyper_config}}
+    end
+  end
+
+  defp min_played_count(
+         %{min_min_played_count: min, max_min_played_count: max, total_games_percent: total_games_percent},
+         total_games
+       ) do
+    # min = Keyword.fetch!(vars, :min_min_played_count) |> Util.to_int_or_orig()
+    # max = Keyword.fetch!(vars, :max_min_played_count) |> Util.to_int_or_orig()
+    # total_games_percent = Keyword.fetch!(vars, :total_games_percent) |> Util.to_float_or_orig()
+    games = total_games * total_games_percent * 0.01
+    Util.median([min, games, max])
+  end
 
   defp fetch_popularity(socket) do
     criteria =
@@ -429,26 +589,45 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     |> Map.new()
   end
 
+  defp add_excluded_config(criteria, levels, config \\ nil)
+
   defp add_excluded_config(
-         %{"format" => format, "player_class" => player_class} = criteria,
-         levels
+         %{"format" => format} = criteria,
+         levels,
+         config
        )
        when levels > 0 do
-    names_excludes_levels = archetyping_config_cards_excludes(format, player_class, levels)
+    case config(config, criteria) do
+      nil ->
+        criteria
 
-    excludes_includes_levels =
-      Enum.map(names_excludes_levels, fn {cards, excludes_in_level} ->
-        cards_ids = names_to_ids(cards, format)
-        excludes_in_level_ids = names_to_ids(excludes_in_level, format)
+      config ->
+        names_excludes_levels = archetyping_config_cards_excludes(config, levels)
 
-        # we want to skip the ones that match, so in the db we want to exclude the cards_ids but include those that have excluded ids
-        %{"exclude" => cards_ids, "include_any" => excludes_in_level_ids}
-      end)
+        excludes_includes_levels =
+          Enum.map(names_excludes_levels, fn {cards, excludes_in_level} ->
+            cards_ids = names_to_ids(cards, format)
+            excludes_in_level_ids = names_to_ids(excludes_in_level, format)
 
-    Map.put(criteria, "player_played_cards_excludes_includes_levels", excludes_includes_levels)
+            # we want to skip the ones that match, so in the db we want to exclude the cards_ids but include those that have excluded ids
+            %{"exclude" => cards_ids, "include_any" => excludes_in_level_ids}
+          end)
+
+        Map.put(criteria, "player_played_cards_excludes_includes_levels", excludes_includes_levels)
+    end
   end
 
-  defp add_excluded_config(criteria, _), do: criteria
+  defp add_excluded_config(criteria, _, _), do: criteria
+
+  defp config(config, _criteria) when is_list(config), do: config
+
+  defp config(_, %{"format" => format, "player_class" => class}) do
+    format
+    |> Util.to_int_or_orig()
+    |> PlayedCardsArchetyper.config(class)
+  end
+
+  defp config(_, _), do: nil
 
   defp names_to_ids(card_names, format) do
     Backend.Hearthstone.cards([
@@ -573,14 +752,14 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     end)
   end
 
-  defp sort_and_filter(
-         card_played_popularity,
-         min_played_count,
-         sort_by,
-         filter_config_level,
-         config_map,
-         filter_out_whizbang
-       ) do
+  def sort_and_filter(
+        card_played_popularity,
+        min_played_count,
+        sort_by,
+        filter_config_level,
+        config_map,
+        filter_out_whizbang
+      ) do
     sorter = sorter(sort_by)
 
     card_played_popularity
@@ -636,12 +815,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       {_card, popularity} ->
         {total, rest} = Map.pop(popularity, "total", 999_999_999)
 
-        val =
-          rest
-          # ensure it's not empty
-          |> Map.put_new("not_empty", 0)
-          |> Enum.max_by(fn {_arch, val} -> val end)
-          |> elem(1)
+        val = most_popular_count(rest)
 
         val / total
     end
@@ -655,6 +829,24 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       total = Map.get(popularity, "total", 0)
       count / total
     end
+  end
+
+  defp most_popular(popularity_map) do
+    popularity_map
+    |> Map.delete("total")
+    # ensure it's not empty
+    |> Map.put_new("not_empty", 0)
+    |> Enum.max_by(fn {_arch, val} -> val end)
+  end
+
+  defp most_popular_count(popularity_map) do
+    most_popular(popularity_map)
+    |> elem(1)
+  end
+
+  defp most_popular_arch(popularity_map) do
+    most_popular(popularity_map)
+    |> elem(0)
   end
 
   defp sorted_archetypes(archetypes_map) do

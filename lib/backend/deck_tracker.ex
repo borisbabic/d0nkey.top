@@ -3503,6 +3503,7 @@ defmodule Hearthstone.DeckTracker do
       periods([{:type, ["release", "patch"]}])
       |> latest_with_start()
 
+    IO.puts("latest slug: #{slug}")
     recalculate_archetypes_for_period_stream(slug, NaiveDateTime.utc_now(), criteria, chunk_size)
   end
 

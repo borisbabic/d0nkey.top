@@ -30,8 +30,8 @@
             <% end %>
             <.navbar_item_link link={~p"/profile/settings"} display={"Settings"} />
             <%= if can_access?(@conn, :archetyping) do %>
-              <.navbar_item_link link={~p"/played-cards-archetype-popularity"} display={"Archetyping - Played Cards Popularity"} />
-              <.navbar_item_link link={~p"/archetype-mapping"} display={"Archetyping - Mapping"} />
+              <.navbar_item_link link={~p"/archetyping/played-cards-popularity"} display={"Archetyping - Played Cards Popularity"} />
+              <.navbar_item_link link={~p"/archetyping/mapping"} display={"Archetyping - Mapping"} />
             <% end %>
             <%= if can_access?(@conn, :battletag_info) do %>
               <.navbar_item_link link={~p"/torch/battletag_info"} display={"Admin - Battletag Info"} />
