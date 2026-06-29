@@ -5,104 +5,57 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest Druid", ["Restore the Wild"]},
-    {:"Imbue Druid",
-     [
-       "Bitterbloom Knight",
-       "Charred Chameleon",
-       "Dreambound Disciple",
-       "Flutterwing Guardian",
-       "Hamuul Runetotem",
-       "Malorne the Waywatcher",
-       "Petal Picker",
-       "Resplendent Dreamweaver"
-     ]},
-    {:"Token Druid",
-     [
-       "Forest's Gift",
-       "Hatchery Helper",
-       "Overheat",
-       "Platysaur",
-       "Power of the Wild",
-       "Ravenous Flock",
-       "Twilight Egg"
-     ]},
-    {:"Merithra Druid",
-     [
-       "Darkscale Broodmother",
-       "Fyrakk the Blazing",
-       "Merithra of the Dream"
-     ]},
-    {:"Hostage Druid",
-     [
-       "Chrono-Lord Deios",
-       "Dark Iron Harbinger",
-       "Endbringer Umbra",
-       "Grove Shaper",
-       "Hopeful Dryad",
-       "Mo'arg Forgefiend",
-       "Tindral Sageswift"
-     ]},
-    {:"Merithra Druid",
-     [
-       "Broodwatcher",
-       "Vanessa the Ringleader",
-       "Wickerfang"
-     ]},
-    {:"Hostage Druid",
-     [
-       "Illusory Greenwing",
-       "Oaken Summons",
-       "Wrath"
-     ]},
-    {:"Merithra Druid",
-     [
-       "Lifebloom",
-       "Rustrot Viper"
-     ]},
-    {:"Hostage Druid",
-     [
-       "Reforestation",
-       "Shaladrassil"
-     ]},
-    # 10.5
-    {:"Token Druid",
-     [
-       "Living Roots"
-     ]},
-    {:"Azshara Druid",
-     [
-       "Story of Barnabus"
-     ]},
-    {:"Merithra Druid",
-     [
-       "Azshara's Triumph"
-     ]},
-    {:"Hostage Druid",
-     [
-       "Heartroot Stones"
-     ]},
-    {:"Merithra Druid",
-     [
-       "Acceleration Aura",
-       "Bashana Runetotem",
-       "Elise the Navigator"
-     ]},
-    # 15.5
-    {:"Merithra Druid",
-     [
-       "Amirdrassil",
-       "Ebb and Flow",
-       "Felwood Treant",
-       "Horn of Plenty",
-       "Innervate",
-       "Nightmare Lord Xavius",
-       "Waveshaping"
-     ]},
-    {:"Merithra Druid",
-     [
-       "Press the Advantage"
-     ]}
+    "Quest Druid": ["Restore the Wild"],
+    "Imbue Druid": [
+      "Bitterbloom Knight",
+      "Charred Chameleon",
+      "Dreambound Disciple",
+      "Flutterwing Guardian",
+      "Hamuul Runetotem",
+      "Malorne the Waywatcher",
+      "Petal Picker",
+      "Resplendent Dreamweaver"
+    ],
+    "Merithra Druid": ["Merithra of the Dream"],
+    "Hostage Druid": ["Dark Iron Harbinger", "Grove Shaper"],
+    "Token Druid": ["Forest's Gift", "Hatchery Helper", "Overheat", "Platysaur", "Twilight Egg"],
+    "Merithra Druid": ["Darkscale Broodmother"],
+    "Hostage Druid": ["Tindral Sageswift"],
+    "Krona Druid": ["Disciple of Demise"],
+    "Azshara Druid": ["Welcome Home!"],
+    "Krona Druid": ["Plated Beetle"],
+    "Hostage Druid": ["Mo'arg Forgefiend"],
+    "Merithra Druid": ["Broodwatcher", "Fyrakk the Blazing"],
+    "Hostage Druid": ["Hopeful Dryad", "Longneck Egg"],
+    "Krona Druid": ["Krona, Keeper of Eons"],
+    "Azshara Druid": ["Briarspawn Drake", "Lady Azshara", "The Well of Eternity", "Zin-Azshari", "Zin-Azshari"],
+    "Merithra Druid": ["Vanessa the Ringleader", "Wickerfang"],
+    "Hostage Druid": ["Glacial Shard", "Shaladrassil"],
+    "Deios Druid": ["Omen of the End"],
+    "Hostage Druid": [
+      "Chrono-Lord Deios",
+      "Endbringer Umbra",
+      "Heartroot Stones",
+      "Naralex, Herald of the Flights",
+      "Underking"
+    ],
+    "Merithra Druid": [
+      "Bashana Runetotem",
+      "Ebb and Flow",
+      "Elise the Navigator",
+      "Evergreen Stag",
+      "Horn of Plenty",
+      "Nightmare Lord Xavius"
+    ],
+    "Krona Druid": ["Prize Vendor"],
+    "Merithra Druid": [
+      "Acceleration Aura",
+      "Amirdrassil",
+      "Felwood Treant",
+      "Innervate",
+      "Press the Advantage",
+      "Waveshaping"
+    ]
   ]
   @wild_config []
   # @wild_config [
