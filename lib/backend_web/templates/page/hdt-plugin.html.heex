@@ -1,60 +1,131 @@
-<div class="title is-2">HDT Plugin</div>
-<FunctionComponents.Ads.below_title/>
+<div class="tw-max-w-4xl tw-mx-auto tw-p-6 tw-space-y-12 tw-font-sans tw-text-slate-300">
+  
+  <!-- Header Section -->
+  <header class="tw-border-b tw-border-slate-800 tw-pb-6">
+    <h1 class="tw-text-4xl tw-font-extrabold tw-tracking-tight text-white">HDT Plugin</h1>
+  </header>
 
+  <FunctionComponents.Ads.below_title />
 
-<div class="subtitle is-6">
-    Not just for <a target="_blank" href="/streamer-decks">Streamer Decks</a>.  Contribute to <a target="_blank" href="/decks">Decks</a>, enjoy and share your <a target="_blank" href="/my-decks">Decks</a> and <a target="_blank" href="/my-replays">Replays</a> (all also available for <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> users)
+  <!-- Subtitle Value Proposition Banner -->
+  <div class="tw-p-5 tw-rounded-xl tw-bg-slate-800/30 tw-border tw-border-slate-800 tw-text-sm tw-leading-relaxed">
+    🚀 <strong class="text-white">Not just for Streamer Decks.</strong> 
+    Contribute to <a target="_blank" href="/decks" class="has-text-info tw-underline hover:tw-text-sky-300">Decks data</a>, 
+    plus enjoy and share your own data via <a target="_blank" href="/my-decks" class="has-text-info tw-underline hover:tw-text-sky-300">My Decks</a> 
+    and <a target="_blank" href="/my-replays" class="has-text-info tw-underline hover:tw-text-sky-300">My Replays</a>. 
+    <span class="tw-block tw-mt-2 tw-text-xs tw-text-slate-400">
+      (No plugin needed for
+      <a href="https://www.firestoneapp.com/" target="_blank" class="has-text-success tw-inline-flex tw-items-center tw-gap-0.5 tw-underline">Firestone <HeroIcons.external_link class="tw-w-3 tw-h-3"/></a> users).
+    </span>
+  </div>
+
+  <!-- Download Call-to-Action Action Bar -->
+  <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-center tw-gap-4 tw-p-6 has-background-dark tw-border tw-border-slate-800 tw-rounded-2xl">
+    <div class="tw-flex-1 tw-text-center sm:tw-text-left">
+      <h3 class="tw-text-lg tw-font-bold text-white">Download the Plugin</h3>
+      <p class="tw-text-xs tw-text-slate-400 tw-mt-0.5">You may need to right-click and choose <span class="tw-font-semibold">"Save Link As..."</span> or similar</p>
+    </div>
+    <.cta_button href="/hdt-plugin/d0nkey.top plugin.dll">
+      Download Latest Plugin (.dll)
+    </.cta_button>
+  </div>
+
+  <!-- Installation Steps Checklist Grid -->
+  <section class="tw-space-y-4">
+    <h2 class="tw-text-2xl tw-font-bold text-white">Text Instructions</h2>
+    <div class="tw-grid tw-grid-cols-1 tw-gap-4">
+      
+      <.setup_step title="Download Plugin" is_done={false}>
+        Download the plugin above
+      </.setup_step>
+
+      <.setup_step title="Deploy Assets" is_done={false}>
+        Open the plugins window
+        <span class="tw-font-mono tw-text-xs tw-bg-black/30 tw-px-1 tw-rounded tw-text-slate-300">Options &rarr; Plugins</span>, 
+        then drag and drop the downloaded file into the window.
+      </.setup_step>
+
+      <.setup_step title="Enable" is_done={false}>
+        Enable the plugin and restart HDt
+      </.setup_step>
+
+      <.setup_step 
+        title="Streamer Decks Setup" 
+        is_done={user(@conn) && user(@conn).twitch_id != nil}
+      >
+        <%= if user(@conn) && user(@conn).twitch_id do %>
+          <span class="has-text-success tw-font-semibold">✓ Account Linked.</span> Twitch identity validation matches correctly. Once client hooks are verified locally, you are instantly configured for <a href="/streamer-decks" class="has-text-info tw-underline">Streamer Decks pipeline tracking</a>.
+        <% else %>
+          <span class="tw-text-amber-400 tw-font-medium">For Streamers:</span> 
+          <%= if !user(@conn) do %>
+            You need to <a target="_blank" href="/auth/bnet" class="has-text-info tw-underline tw-font-semibold">Login via Battle.net</a> first, then 
+          <% end %>
+          <a target="_blank" href="/auth/twitch" class="has-text-info tw-underline tw-font-semibold">Connect your Twitch account</a> with this site
+        <% end %>
+      </.setup_step>
+
+    </div>
+  </section>
+
+  <!-- Walkthrough Video Embed Layout -->
+  <section class="tw-space-y-4">
+    <h2 class="tw-text-2xl tw-font-bold text-white"><a target="_blank" href="https://www.youtube.com/watch?v=b8TsjZLnwJQ">Video Guide</a></h2>
+    <div class="tw-rounded-2xl tw-w-[560px] tw-overflow-hidden tw-border tw-border-slate-800 tw-shadow-lg">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/b8TsjZLnwJQ?si=opdvwnDZKIXQsr1v" title="Video Guide" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+  </section>
+
+  <!-- Known Errors Block -->
+  <.section_block title="Known Issues" variant="boxed">
+    <div class="tw-flex tw-gap-3 tw-text-sm tw-text-slate-400">
+      <span class="has-text-warning tw-font-bold">⚠️</span>
+      <p>Streaming Now is not supported since games are only sent after they finish</p>
+    </div>
+  </.section_block>
+
+  <!-- Troubleshooting Documentation Block -->
+  <section class="tw-space-y-4">
+    <h2 class="tw-text-2xl tw-font-bold text-white">Troubleshooting</h2>
+    <div class="tw-divide-y tw-divide-slate-800 tw-border tw-border-slate-800 tw-rounded-xl has-background-dark tw-overflow-hidden">
+      
+      <!-- Check 1 -->
+      <div class="tw-p-5">
+        <h4 class="tw-font-bold text-white tw-text-sm">1. Verify it's Enabled/Installed</h4>
+        <p class="tw-text-sm tw-text-slate-400 tw-mt-1">
+          Head to <span class="tw-font-mono tw-text-xs tw-bg-black/30 tw-px-1 tw-rounded tw-text-slate-300">Options &rarr; Plugins</span> and check if you can see the plugin, if it's enabled, and the version
+        </p>
+      </div>
+
+      <!-- Check 2 -->
+      <div class="tw-p-5">
+        <h4 class="tw-font-bold text-white tw-text-sm">2. Installation Failures</h4>
+        <p class="tw-text-sm tw-text-slate-400 tw-mt-1">
+          If it's not installing it could be due to HDT being in a non default location. Check <a target="_blank" href="https://github.com/HearthSim/Hearthstone-Deck-Tracker/wiki/Available-Plugins" class="has-text-info tw-inline-flex tw-items-center tw-gap-0.5 tw-underline">HDT Instructions <HeroIcons.external_link class="tw-w-3 tw-h-3" /></a> for installing plugins
+        </p>
+      </div>
+
+      <!-- Check 3 -->
+      <div class="tw-p-5 tw-space-y-3">
+        <h4 class="tw-font-bold text-white tw-text-sm">3. Feedback & Help</h4>
+        <p class="tw-text-sm tw-text-slate-400">
+          For feedback or additional help see the <span class="tw-font-semibold tw-text-slate-300">#hdt-extension</span> channel in my <a target="_blank" href="/discord" class="has-text-info tw-underline">Discord Server</a>.
+        </p>
+        
+        <!-- System paths callout -->
+        <div class="tw-p-3 tw-bg-black/30 tw-rounded-lg tw-border tw-border-slate-800/60">
+          <p class="tw-text-xs tw-text-slate-400 tw-leading-relaxed">
+            💡 <strong class="text-white">For better troubleshooting</strong> Include the relevant HDT log file:
+          </p>
+          <code class="tw-block tw-mt-2 tw-text-xs tw-font-mono tw-p-2 tw-bg-slate-950 tw-text-emerald-400 tw-rounded tw-overflow-x-auto">
+            %appdata%\HearthstoneDeckTracker\Logs\hdt_logs.txt
+          </code>
+          <p class="tw-text-[11px] tw-text-slate-500 tw-mt-2 tw-italic">
+            Note: this file is recreated if you restart hdt, there will be others in the folder so you may need to include a different file from that folder. You can determine which one from the date/time in the file name
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
 </div>
-<a class="is-link is-size-1" target="_blank" href="/hdt-plugin/d0nkey.top plugin.dll">Latest Version</a> Right Click -> Save Link
-
-<div class="subtitle is-4">Text Instructions</div>
-<li>
-    Right click and save the latest version above
-</li>
-<li>
-    Open the plugins window in HDT (Options -> Plugins) and drag and drop the file you saved onto the window.
-</li>
-
-<li>
-    Enable the plugin and Restart HDT
-</li>
-
-<li>
-<%= if user(@conn) && user(@conn).twitch_id do %>
-    <span>✓ You've connected your twitch so after you have the plugin set up you're ready for <a href="/streamer-decks">Streamer Decks</a></span>
-<% else %>
-    For Streamers:
-    <%= if !user(@conn) do %>
-        <span><a target="_blank" href="/auth/bnet">Login</a> then </span>
-    <% end %>
-    <a target="_blank" href="/auth/twitch">Connect</a> your twitch account with this site
-<% end %>
-
-</li>
-
-
-<br>
-<div class="subtitle is-4">Video Guide</div>
-<iframe width="420" height="315"
-    src="https://www.youtube.com/embed/b8TsjZLnwJQ">
-</iframe>
-
-<br>
-<div class="subtitle is-4">Known Issues</div>
-<li>
-    Streaming now functionality doesn't work (but don't worry streamer decks does)
-</li>
-
-
-<br>
-<div class="subtitle is-4">Troubleshooting</div>
-<li>
-You can check that it is installed by going to Options -> Plugins and also verify that it is enabled and which version it is
-</li>
-<li>
-If it's not installing then perhaps HDT is installed in a non default location? Also check <a target="_blank" href="https://github.com/HearthSim/Hearthstone-Deck-Tracker/wiki/Available-Plugins">HDT instructions<HeroIcons.external_link /></a> for installing plugins
-</li>
-<li>
-For feedback or additional help see the #hdt-extension channel in my <a target="_blank" href="/discord">Discord</a>
-Include the hdt log file located here <code>%appdata%\HearthstoneDeckTracker\Logs\hdt_logs.txt</code> - this file is recreated if you restart hdt, there will be others in the folder so if it's in an old file
-</li>

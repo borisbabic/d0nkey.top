@@ -1,7 +1,7 @@
 defmodule FunctionComponents.MiscComponents do
   use Phoenix.Component
   alias FunctionComponents.CoreComponents, as: Core
-  @moduledoc "Function components that need a home"
+  @moduledoc "Function components that need a home, mainly generated and perhaps needing fixing"
 
   @doc """
   Renders a visual metric calculation block for a single stat event.
@@ -112,6 +112,21 @@ defmodule FunctionComponents.MiscComponents do
         </p>
       </div>
     </div>
+    """
+  end
+
+  @doc """
+  Renders a prominent call-to-action button or download link.
+  """
+  attr :href, :string, required: true
+  attr :target, :string, default: "_blank"
+  slot :inner_block, required: true
+
+  def cta_button(assigns) do
+    ~H"""
+    <a href={@href} target={@target} class="tw-inline-flex tw-items-center tw-justify-center tw-px-6 tw-py-3.5 tw-font-bold tw-rounded-xl has-background-link has-text-white hover:tw-opacity-90 tw-transition-all tw-shadow-md tw-w-full sm:tw-w-auto">
+      <%= render_slot(@inner_block) %>
+    </a>
     """
   end
 end
