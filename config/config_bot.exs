@@ -13,6 +13,7 @@ config :backend, QuantumScheduler,
     {"*/10 * * * *", fn -> Backend.Reporting.check_last_aggregated() end},
     {"47 * * * *", fn -> Backend.Feed.decay_feed_items() end},
     {"51 * * * *", fn -> Hearthstone.DeckTracker.auto_aggregate_matchups(2) end},
+    {"23 */3 * * *", fn -> Hearthstone.DeckTracker.auto_aggregate_matchups(1) end},
     # {"3 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
     # Again if something happened with the first, it'll just fail if it already successfully aggregated
     # {"13 * * * *", &Hearthstone.DeckTracker.aggregate_next_hour/0},
