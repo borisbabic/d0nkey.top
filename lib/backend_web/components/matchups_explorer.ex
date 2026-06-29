@@ -39,7 +39,7 @@ defmodule Components.MatchupsExplorer do
   def render(assigns) do
     ~F"""
     <div>
-      <.warning />
+      <.warning format={@params["format"]}/>
       <PeriodDropdown id="matchups_period_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters} />
       <FormatDropdown :if={user_has_premium?(@user)} id="matchups_format_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
       <RankDropdown id="matchups_rank_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
@@ -187,12 +187,32 @@ defmodule Components.MatchupsExplorer do
     })
   end
 
-  def warning(assigns) do
+  attr :format, :integer, default: nil
+
+  def warning(%{format: wild} = assigns) when wild in [1, "1"] do
     ~H"""
-    <div class="notification is-warning" :if={warning = warning() } >
-      {warning}
-    </div>
+    <.alert title="Wild archetyping is bad">
+      Wild matchups Archetyping is mostly auto generated. Don't put too much stock in the exact values
+    </.alert>
+    <.warning />
     """
+  end
+
+  def warning(assigns) do
+    case warning() do
+      {title, body} ->
+        assigns = assign(assigns, title: title, body: body)
+
+        ~H"""
+        <.alert title={@title}>
+          {@body}
+        </.alert>
+        """
+
+      _ ->
+        ~H"""
+        """
+    end
   end
 
   def fetch_matchups(
@@ -221,23 +241,23 @@ defmodule Components.MatchupsExplorer do
     |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
   end
 
+  @spec warning() :: {String.t() | nil, String.t()}
   defp warning do
     now = NaiveDateTime.utc_now()
 
     cond do
-      NaiveDateTime.before?(now, ~N[2026-07-07 17:00:00]) and
-          NaiveDateTime.after?(now, ~N[2026-07-13 17:30:00]) ->
-        "Post Expansion Archetypes will be added a couple days after release after data is gathered."
+      Util.in_range?(now, {~N[2026-07-07 17:00:00], ~N[2026-07-13 17:30:00]}) ->
+        {"Still uses pre expansion archetyping", "Post Expansion Archetypes needs at least a couple days of data."}
 
       NaiveDateTime.before?(now, ~N[2026-03-10 17:00:00]) ->
-        "Demon Hunter Archetype separation is subpar"
+        {nil, "Demon Hunter Archetype separation is subpar"}
 
       NaiveDateTime.before?(now, ~N[2026-03-17 17:00:00]) ->
-        "Archetyping is for before the 35.0.0 patch. I probably won't update it til after the expansion"
+        {nil, "Archetyping is for before the 35.0.0 patch. I probably won't update it til after the expansion"}
 
       NaiveDateTime.before?(now, ~N[2026-04-08 17:00:00]) and
           NaiveDateTime.after?(now, ~N[2026-04-02 17:30:00]) ->
-        "Post patch archetyping will be updated a couple days post patch"
+        {nil, "Post patch archetyping will be updated a couple days post patch"}
 
       true ->
         false
