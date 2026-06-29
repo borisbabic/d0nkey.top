@@ -26,7 +26,7 @@ defmodule BackendWeb.ProfileSettingsLive do
       <FunctionComponents.Ads.below_title/>
 
       <div :if={@user}>
-        <.form for={%{}} as={:user} id="profile_settings_form" phx-submit="submit" class="tw-space-y-6">
+        <.form for={%{}} as={:user} id="profile_settings_form" phx-change="submit" phx-submit="submit" class="tw-space-y-6">
           
           <!-- Section: Country & Icon -->
           <div class="tw-p-6 has-background-dark tw-border tw-border-slate-800 tw-rounded-xl tw-space-y-4">
@@ -191,11 +191,6 @@ defmodule BackendWeb.ProfileSettingsLive do
               <.input type="select" label="Which replays do you want to be public? (Only affects new replays)" value={@user.replay_preference} options={[{"All", :all}, {"Streamed", :streamed}, {"None", :none}]} name="replay_preference" />
               <.input label="Battlefy Slug (Open your profile, paste the URL, and I'll grab it)" name="battlefy_slug"  value={@user.battlefy_slug}/>
             </div>
-          </div>
-
-          <!-- Sticky or bottom Save Action Bar -->
-          <div class="tw-pt-4 tw-flex tw-justify-end">
-            <button type="submit" class="button is-link is-medium tw-px-8 tw-font-bold">Save Settings</button>
           </div>
 
         </.form>
