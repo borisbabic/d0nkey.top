@@ -57,247 +57,107 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       "Waveshaping"
     ]
   ]
-  @wild_config []
-  # @wild_config [
-  #   {:"Astral Communion Druid",
-  #    [
-  #      "Deathwing the Destroyer",
-  #      "Astral Communion",
-  #      "Factory Assemblybot",
-  #      "Harth Stonebrew",
-  #      "Ysera the Dreamer",
-  #      "Avatar of Hearthstone",
-  #      "Carrier",
-  #      "Forest Lord Cenarius",
-  #      "Magatha, Bane of Music"
-  #    ]},
-  #   {:"Mill Druid",
-  #    [
-  #      "Selfish Shellfish",
-  #      "Coldlight Oracle",
-  #      "Dew Process"
-  #    ]},
-  #   {:"Barnes Druid",
-  #    [
-  #      "Barnes",
-  #      "Starfire",
-  #      "Magical Dollhouse",
-  #      "Funnel Cake"
-  #    ]},
-  #   {:"OTK Druid",
-  #    [
-  #      "Malygos",
-  #      "Moonbeam",
-  #      "Travelmaster Dungar",
-  #      "Champions of Azeroth"
-  #    ]},
-  #   {:"Egg Druid",
-  #    [
-  #      "The Egg of Khelos",
-  #      "The Egg of Khelos",
-  #      "Spiritsinger Umbra",
-  #      "Power of the Wild",
-  #      "Savage Roar"
-  #    ]},
-  #   # 5.5
-  #   {:"Mecha'thun Druid",
-  #    [
-  #      "Mecha'thun",
-  #      "Lady Anacondra"
-  #    ]},
-  #   {:"Therazane Druid",
-  #    [
-  #      "Therazane",
-  #      "Stone Drake",
-  #      "Bouldering Buddy",
-  #      "Death Blossom Whomper",
-  #      "Hydration Station"
-  #    ]},
-  #   {:"Highlander Druid",
-  #    [
-  #      "Zephrys the Great",
-  #      "Razorscale",
-  #      "Rheastrasza",
-  #      "Mutanus the Devourer",
-  #      "Alexstrasza",
-  #      "Reno, Lone Ranger",
-  #      "Juicy Psychmelon",
-  #      "Loatheb",
-  #      "Dirty Rat",
-  #      "Trogg Gemtosser",
-  #      "Widowbloom Seedsman",
-  #      "Seabreeze Chalice",
-  #      "Astalor Bloodsworn",
-  #      "Reno Jackson"
-  #    ]},
-  #   {:"Astral Communion Druid",
-  #    [
-  #      "Death Beetle"
-  #    ]},
-  #   {:"Mill Druid",
-  #    [
-  #      "Sleepy Resident",
-  #      "Rising Waves",
-  #      "Branching Paths"
-  #    ]},
-  #   # 10.5
-  #   {:"Treant Druid",
-  #    [
-  #      "Aeroponics",
-  #      "Cultivation",
-  #      "Blood Treant",
-  #      "Treenforcements",
-  #      "Overgrown Beanstalk",
-  #      "Umbral Owl"
-  #    ]},
-  #   {:"OTK Druid",
-  #    [
-  #      "Aviana"
-  #    ]},
-  #   {:"Boar OTK Druid",
-  #    [
-  #      "Stormpike Quartermaster",
-  #      "Stonetusk Boar",
-  #      "Oracle of Elune"
-  #    ]},
-  #   {:"Therazane Druid",
-  #    [
-  #      "Tar Slime",
-  #      "Imposing Anubisath",
-  #      "Fire Fly",
-  #      "Acolyte of Pain",
-  #      "Tar Creeper",
-  #      "Far Watch Post",
-  #      "Evergreen Stag"
-  #    ]},
-  #   {:"Old Aggro Druid",
-  #    [
-  #      "Pride's Fury",
-  #      "Beaming Sidekick",
-  #      "Crooked Cook",
-  #      "Vicious Slitherspear",
-  #      "Herald of Nature",
-  #      "Peasant"
-  #    ]},
-  #   # 15.5
-  #   {:"Linecracker Druid",
-  #    [
-  #      "Gadgetzan Auctioneer",
-  #      "Earthen Scales",
-  #      "Linecracker",
-  #      "Moonfire",
-  #      "BEEEES!!!"
-  #    ]},
-  #   {:"Mecha'thun Druid",
-  #    [
-  #      "Celestial Alignment"
-  #    ]},
-  #   {:"OTK Druid",
-  #    [
-  #      "Ultimate Infestation",
-  #      "Nightshade Bud"
-  #    ]},
-  #   {:"Imbue Druid",
-  #    [
-  #      "Dreambound Disciple",
-  #      "Charred Chameleon",
-  #      "Bitterbloom Knight",
-  #      "Sing-Along Buddy",
-  #      "Malorne the Waywatcher",
-  #      "Petal Picker",
-  #      "Flutterwing Guardian",
-  #      "Resplendent Dreamweaver"
-  #    ]},
-  #   {:"Astral Communion Druid",
-  #    [
-  #      "Marin the Manager",
-  #      "Innervate",
-  #      "Yogg-Saron, Unleashed",
-  #      "Reforestation",
-  #      "Fyrakk the Blazing"
-  #    ]},
-  #   # 20.5
-  #   {:"Mill Druid",
-  #    [
-  #      "Mistah Vistah"
-  #    ]},
-  #   {:"Barnes Druid",
-  #    [
-  #      "Capture Coldtooth Mine"
-  #    ]},
-  #   {:"OTK Druid",
-  #    [
-  #      "Overflow",
-  #      "Ysiel Windsinger",
-  #      "Sleep under the Stars",
-  #      "Malfurion's Gift",
-  #      "Overgrowth",
-  #      "Wild Growth"
-  #    ]},
-  #   {:"Mill Druid",
-  #    [
-  #      "Theotar, the Mad Duke"
-  #    ]},
-  #   {:"Egg Druid",
-  #    [
-  #      "Story of Barnabus"
-  #    ]},
-  #   # 25.5
-  #   {:"Mecha'thun Druid",
-  #    [
-  #      "Trail Mix",
-  #      "Lifebinder's Gift"
-  #    ]},
-  #   {:"Astral Communion Druid",
-  #    [
-  #      "Arkonite Revelation"
-  #    ]},
-  #   {:"Barnes Druid",
-  #    [
-  #      "Swipe"
-  #    ]},
-  #   {:"Mill Druid",
-  #    [
-  #      "Naturalize",
-  #      "Poison Seeds",
-  #      "Sir Finley, Sea Guide",
-  #      "Bob the Bartender",
-  #      "Frost Lotus Seedling",
-  #      "Spreading Plague"
-  #    ]},
-  #   {:"Barnes Druid",
-  #    [
-  #      "Bottomless Toy Chest",
-  #      "Biology Project",
-  #      "Solar Eclipse",
-  #      "Pendant of Earth"
-  #    ]},
-  #   # 30.5
-  #   {:"Astral Communion Druid",
-  #    [
-  #      "E.T.C., Band Manager",
-  #      "Bottomless Toy Chest",
-  #      "Aquatic Form"
-  #    ]},
-  #   {:"OTK Druid",
-  #    [
-  #      "Nourish",
-  #      "New Heights"
-  #    ]},
-  #   {:"Highlander Druid", ["Prince Renethal"]}
-  # ]
+  @wild_config [
+    "Barnes Druid": ["Starfire"],
+    "Mill Druid": ["Dew Process", "Selfish Shellfish"],
+    "Mecha'thun Druid": ["Mecha'thun"],
+    "Token Druid": ["Aeroponics"],
+    "Highlander Druid": ["Alexstrasza", "Rheastrasza", "The Curator", "Warmaster Blackhorn"],
+    "Dragon Druid": ["Razormane Battleguard"],
+    "Linecracker Druid": ["Linecracker"],
+    "XL Dragon Druid": ["Tormented Dreadwing", "Ysera the Dreamer"],
+    "XL Deios Druid": ["Jepetto Joybuzz", "Kun the Forgotten King"],
+    "Barnes Druid": ["Magical Dollhouse"],
+    "Champions Druid": ["Barnes"],
+    "XL HL Tog Druid": ["Azalina Soulthief", "King Togwaggle"],
+    "XL Dragon Druid": ["Summer Flowerchild"],
+    "Highlander Druid": ["Trogg Gemtosser", "Twilight Timereaver"],
+    "Mill Druid": ["Branching Paths", "Rising Waves"],
+    "Highlander Druid": ["Smothering Starfish"],
+    "Mecha'thun Druid": ["Germination"],
+    "Astral Druid": ["Astral Communion"],
+    "Highlander Druid": ["Loatheb"],
+    "XL HL Tog Druid": ["Blademaster Okani"],
+    "Linecracker Druid": ["Moonfire"],
+    "Highlander Druid": ["Razorscale"],
+    "Boar OTK Druid": ["Stormpike Quartermaster"],
+    "Mill Druid": ["Floop's Glorious Gloop", "Mistah Vistah"],
+    "XL Dragon Druid": ["Whelp of the Infinite"],
+    "Highlander Druid": ["Death Beetle"],
+    "XL HL Tog Druid": ["Tortollan Traveler"],
+    "OTK Druid": ["Nightshade Bud"],
+    "XL Therazane Druid": ["Stone Drake"],
+    "XL Deios Druid": ["Chrono-Lord Deios"],
+    "Highlander Druid": [
+      "Brann Bronzebeard",
+      "Breath of Dreams",
+      "Desert Nestmatron",
+      "Dirty Rat",
+      "Reno Jackson",
+      "Reno, Lone Ranger",
+      "Splish-Splash Whelp",
+      "Zephrys the Great"
+    ],
+    "Splendiferous Whizbang": ["Moment of Discovery"],
+    "Old Aggro Druid": [
+      "Herald of Nature",
+      "Irondeep Trogg",
+      "Jerry Rig Carpenter",
+      "Mark of the Wild",
+      "Peasant",
+      "Planted Evidence",
+      "Vicious Slitherspear"
+    ],
+    "Token Druid": ["Sow the Soil"],
+    "Mill Druid": ["Naturalize", "Poison Seeds"],
+    "OTK Druid": ["Overflow"],
+    "Champions Druid": ["Champions of Azeroth"],
+    "STD Merithra Druid": ["Darkscale Broodmother", "Ebb and Flow"],
+    "Mecha'thun Druid": ["Wrath"],
+    "Star Grazer Druid": ["Death Blossom Whomper"],
+    "Questline Druid": ["Lost in the Park"],
+    "XL Deios Druid": ["Astalor Bloodsworn"],
+    "XL HL Tog Druid": ["Amirdrassil", "Skulking Geist"],
+    "Mill Druid": ["Theotar, the Mad Duke"],
+    "XL Deios Druid": ["Juicy Psychmelon"],
+    "Mill Druid": ["Spreading Plague"],
+    "OTK Druid": ["Ultimate Infestation"],
+    "Champions Druid": ["Swipe"],
+    "Linecracker Druid": ["Capture Coldtooth Mine", "Lifebinder's Gift"],
+    "Mill Druid": ["Bob the Bartender", "Heartroot Stones", "Sleepy Resident"],
+    "Highlander Druid": ["Jungle Giants"],
+    "Star Grazer Druid": ["Hedge Maze"],
+    "Highlander Druid": ["Acceleration Aura"],
+    "Mill Druid": ["Frost Lotus Seedling"],
+    "Barnes Druid": ["Bottomless Toy Chest"],
+    "Mecha'thun Druid": ["Trail Mix"],
+    "Mill Druid": ["E.T.C., Band Manager", "Moonlit Guidance", "New Heights", "Sir Finley, Sea Guide"],
+    "Champions Druid": ["Pendant of Earth", "Solar Eclipse"],
+    "Highlander Druid": [
+      "Malfurion's Gift",
+      "Nourish",
+      "Overgrowth",
+      "Prince Renathal",
+      "Wild Growth",
+      "Wildheart Guff"
+    ],
+    "Mill Druid": ["Invigorate"],
+    "Highlander Druid": ["Dark Peddler", "Darkbomb", "Forgotten Torch", "Shadow Word: Pain"],
+    "Mill Druid": ["Aquatic Form"],
+    "Highlander Druid": ["Waveshaping"]
+  ]
 
   def standard_excludes, do: %{}
   def wild_excludes, do: %{}
 
   def standard_config, do: add_excludes(@standard_config, standard_excludes())
-  def wild_config, do: add_excludes(@wild_config, standard_excludes())
+  def wild_config, do: add_excludes(@wild_config, wild_excludes())
 
   def standard(card_info) do
-    process_config(@standard_config, card_info, :"Other Druid")
+    process_config(standard_config(), card_info, :"Other Druid")
   end
 
   def wild(card_info) do
-    process_config(@wild_config, card_info, :"Other Druid")
+    process_config(wild_config(), card_info, :"Other Druid")
   end
 end
