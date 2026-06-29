@@ -24,6 +24,7 @@ defmodule Components.MatchupsExplorer do
   prop(path_params, :any, default: nil)
   prop(weight_merging_map, :map, default: %{})
   prop(live_view, :module, required: true)
+  prop(format_filter?, :boolean, default: false)
   data(player_perspective, :string, default: "archetype")
   data(opponent_perspective, :string, default: "archetype")
   data(win_loss_percentage, :string, default: "percentage")
@@ -41,7 +42,7 @@ defmodule Components.MatchupsExplorer do
     <div>
       <.warning format={@params["format"]}/>
       <PeriodDropdown id="matchups_period_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters} />
-      <FormatDropdown :if={user_has_premium?(@user)} id="matchups_format_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
+      <FormatDropdown :if={@format_filter?} id="matchups_format_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
       <RankDropdown id="matchups_rank_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
       <RegionDropdown :if={@premium_filters} id="matchups_region_dropdown" filter_context={@filter_context} warning={@filter_context != :personal}/>
       <LivePatchDropdown

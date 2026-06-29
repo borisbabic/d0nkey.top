@@ -19,7 +19,7 @@ defmodule BackendWeb.MatchupsLive do
           To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
         </div>
         <FunctionComponents.Ads.below_title/>
-        <MatchupsExplorer id="matchups_explorer" filter_context={:public} params={@params} live_view={__MODULE__} weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()} />
+        <MatchupsExplorer id="matchups_explorer" format_filter?={true} filter_context={:public} params={@params} live_view={__MODULE__} weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()} />
       </div>
     """
   end
