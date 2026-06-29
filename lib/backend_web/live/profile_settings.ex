@@ -38,8 +38,8 @@ defmodule BackendWeb.ProfileSettingsLive do
                 label={"Country Flag"}
                 name={"country_code"}
                 value={@user.country_code} />
-              <.input type="checkbox" label="Cross Out Country" name="cross_out_country" checked={@user.cross_out_country} />
-              <.input type="checkbox" label="Show Region Instead of Country" name="show_region" checked={@user.show_region} />
+              <.toggle label="Cross Out Country" name="cross_out_country" checked={@user.cross_out_country} />
+              <.toggle label="Show Region Instead of Country" name="show_region" checked={@user.show_region} />
 
               <.input
                 type={"select"}
@@ -78,13 +78,13 @@ defmodule BackendWeb.ProfileSettingsLive do
             <div class="tw-space-y-3">
               <.input type="select" name="preferred_deckcode" value={DecklistOptions.preferred_deckcode(@user.decklist_options)} options={["Short Deckcode (Valid)": "short", "Long Deckcode (Valid)": "long", "Long Deckcode (Markdown)": "long_markdown_code"]} label="Preferred Deckcode When Copying"/>
               <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-2 tw-pt-2">
-                <.input type="checkbox" name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} label="Show 1 for singleton cards"/>
-                <.input type="checkbox" name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} label="Show 1 for singleton legendaries"/>
-                <.input type="checkbox" name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} label="Show dust+action bar above cards"/>
-                <.input type="checkbox" name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} label="Show dust+action bar below cards"/>
-                <.input type="checkbox" name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Use missing dust instead of total"/>
-                <.input type="checkbox" name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} label="Fade missing cards in decks"/>
-                <.input type="checkbox" name="fade_rotating_cards" checked={DecklistOptions.fade_rotating_cards(@user.decklist_options)} label="Fade rotating cards in decks"/>
+                <.toggle name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} label="Show 1 for singleton cards"/>
+                <.toggle name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} label="Show 1 for singleton legendaries"/>
+                <.toggle name="show_dust_above" checked={DecklistOptions.show_dust_above(@user.decklist_options)} label="Show dust+action bar above cards"/>
+                <.toggle name="show_dust_below" checked={DecklistOptions.show_dust_below(@user.decklist_options)} label="Show dust+action bar below cards"/>
+                <.toggle name="use_missing_dust" checked={DecklistOptions.use_missing_dust(@user.decklist_options)} label="Use missing dust instead of total"/>
+                <.toggle name="fade_missing_cards" checked={DecklistOptions.fade_missing_cards(@user.decklist_options)} label="Fade missing cards in decks"/>
+                <.toggle name="fade_rotating_cards" checked={DecklistOptions.fade_rotating_cards(@user.decklist_options)} label="Fade rotating cards in decks"/>
               </div>
             </div>
           </div>
@@ -127,7 +127,7 @@ defmodule BackendWeb.ProfileSettingsLive do
                   value={@user.negative_hue} />
               </div>
               <div :on-click="toggle_custom_hues" class="tw-pt-2">
-                <.input label="Use Custom Hues" type="checkbox" name="custom_hues" value={@custom_hues} checked={@custom_hues} />
+                <.toggle label="Use Custom Hues" name="custom_hues" value={@custom_hues} checked={@custom_hues} />
               </div>
             </div>
           </div>
