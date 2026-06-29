@@ -513,7 +513,12 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           end)
           |> Enum.sort()
 
-        new_config = previous_archetyper_config ++ [{String.to_existing_atom(arch), cards}]
+        string_arch =
+          arch
+          |> Util.empty_to("Other #{Backend.Hearthstone.Deck.short_name_if_multi_word(class)}")
+          |> String.to_existing_atom()
+
+        new_config = previous_archetyper_config ++ [{string_arch, cards}]
 
         IO.puts("Adding #{Enum.count(cards)} for #{arch}: #{inspect(cards)} while #{puts_append}")
         fetch_auto_archetyping(base_criteria, vars, new_level, new_config)
