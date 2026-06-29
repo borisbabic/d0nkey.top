@@ -409,6 +409,39 @@ defmodule FunctionComponents.CoreComponents do
     """
   end
 
+  @doc """
+  Renders alert banners using Bulma contextual color modes.
+  """
+  attr :type, :string, default: "warning", values: ["warning", "info", "success", "danger"]
+  attr :title, :string, required: true
+  slot :inner_block, required: true
+
+  def alert(assigns) do
+    ~H"""
+    <div class={"tw-flex tw-items-start tw-gap-3 tw-rounded-xl tw-p-4 tw-border has-background-dark tw-border-#{@type}/30"}>
+      <div class={"has-text-#{@type} tw-mt-0.5"}>
+        <HeroIcons.warning_triangle class="tw-w-5 tw-h-5" />
+      </div>
+      <div>
+        <h3 class={"tw-text-sm tw-font-semibold has-text-#{@type}"}><%= @title %></h3>
+        <p class="tw-mt-1 tw-text-sm tw-text-slate-300">
+          <%= render_slot(@inner_block) %>
+        </p>
+      </div>
+    </div>
+    """
+  end
+
+  slot :inner_block, required: true
+
+  def code(assigns) do
+    ~H"""
+      <code class="tw-block tw-text-xs tw-bg-black/40 tw-p-1.5 tw-rounded has-text-info tw-border tw-border-slate-800/60">
+        <%= render_slot(@inner_block) %>
+      </code>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do

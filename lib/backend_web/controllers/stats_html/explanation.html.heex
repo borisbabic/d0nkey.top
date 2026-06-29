@@ -1,40 +1,138 @@
-<div class="title is-2"> Stats Explanation </div>
-<div class="notification is-warning">Sample sizes matter! Even though I'll let you see low sample size stats, don't put too much stock into them</div>
+<div class="tw-max-w-4xl tw-mx-auto tw-p-6 tw-space-y-12 tw-font-sans tw-text-slate-300">
+  
+  <!-- Header Section -->
+  <header class="tw-border-b tw-border-slate-800 tw-pb-6">
+    <h1 class="tw-text-4xl tw-font-extrabold tw-tracking-tight text-white">Stats Explanation</h1>
+  </header>
 
+  <!-- Global Warning Banner -->
+  <.alert type="warning" title="Sample sizes matter!">
+    Even though I'll let you see low sample size stats, don't put too much stock into them.
+  </.alert>
 
-<div class="subtitle is-4"> Card Stats</div>
-<div class="notification is-info">tl;dr: Use mulligan impact for what to keep in the mull, and drawn impact for what to include in your list</div>
+  <!-- Card Stats Section -->
+  <section class="tw-space-y-6">
+    <div>
+      <h2 class="tw-text-2xl tw-font-bold text-white">Card Stats</h2>
+      <!-- tl;dr Banner -->
+      <div class="tw-mt-2 tw-inline-flex tw-items-center tw-gap-2 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm has-text-info tw-border tw-border-info/20 has-background-dark">
+        <span class="tw-font-bold tw-uppercase tw-text-xs has-background-info has-text-dark tw-px-1.5 tw-py-0.5 tw-rounded">tl;dr</span>
+        <span>Use <strong class="text-white">mulligan impact</strong> for what to keep in the mull, and <strong class="text-white">drawn impact</strong> for what to include in your list.</span>
+      </div>
+    </div>
 
-<li> <b>Impact:</b> How much this card event affects the winrate. The base calculation is card (event) winrate - deck winrate. </li>
-<li> <b>Mulligan Impact:</b> <code>Mulligan Impact = Mulligan Winrate - Deck Winrate</code>, Includes both cards kept in the mulligan and those that were gotten after the mulligan. This is the main stat for determining what to keep</li>
-<li> <b>Mulligan Count:</b> The number of times the card was in the mulligan, kept or unkept. ie sample size for Mulligan impact</li>
-<li> <b>Drawn Impact:</b> <code>Drawn Impact = Drawn Winrate - Deck Winrate</code>, useful for measuring what to include in your list</li>
-<li> <b>Drawn Count:</b> The number of times the card was drawn. ie sample size for Drawn impact</li>
-<li> <b>Not Drawn Impact:</b> <code>NotDrawn Impact = Drawn Winrate - Deck Winrate</code> <b>negative is better</b>! - test metric, could help with certain cards whose drawn winrate is affected, like tradeable cards. This is not per copy, but overall, which can show 1 vs 2 card bias.</li>
-<li> <b>Not Drawn Count:</b> The number of games the card was not drawn. ie sample size for Not Drawn impact</li>
-<li> <b>Kept Impact:</b> <code>Kept Impact = Kept Winrate - Deck Winrate</code>, Not that useful, mainly in comparison with Mulligan Impact for determining situational keeps.</li>
-<li> <b>Kept Count:</b> The number of times the card was kept in the mulligan. ie sample size for Kept impact</li>
+    <!-- Core Definition -->
+    <div class="tw-p-4 has-background-dark tw-rounded-xl tw-border tw-border-slate-800">
+      <p class="tw-text-sm tw-text-slate-400">
+        <strong class="text-white">Impact:</strong> How much this card event affects the winrate. The base calculation is:
+        <span class="tw-block tw-mt-2 tw-font-mono tw-text-xs tw-bg-black/40 tw-border tw-border-slate-800 tw-p-2 tw-rounded has-text-success tw-w-fit">
+          Card (Event) Winrate - Deck Winrate
+        </span>
+      </p>
+    </div>
 
-<div class="subtitle is-5"> Archetype Card Stats</div>
-Archetype card stats are not simply calculated like deck cards stats, ie drawn winrate <b>isn't</b> "drawn winrate across the archetype - archetype winrate", instead they are calculated from the deck card stats. <i>This means archetype card stats are actually useful on my site!</i>
-<li>  <HeroIcons.warning_triangle />️ - this will appear when a highlighted card doesn't fit the required minimum count, either mulligan or drawn </li>
-<li> You can highlight a deck's cards by opening a deck's card stats then clicking Archetype Stats in the subtitle</li>
+    <!-- Grid of Metrics -->
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+      <.stat_card 
+        title="Mulligan Impact" 
+        formula="Mulligan Winrate - Deck Winrate"
+        description="Includes both cards kept in the mulligan and those gotten after. This is your go-to metric for determining what to keep."
+        count_name="Mulligan Count"
+        badge="Main Mulligan Stat"
+        badge_type="success"
+      />
 
-<br>
-<div class="subtitle is-4"> Archetype Stats</div>
-Archetype stats are all based on the player perspective, ie the player using the deck tracker that sent the game to my site.
-Using the opponent's perspective would help with deck tracker bias, but it also requires archetype recognition for partial decklists which I do not do. A lack of archetype recognition for your opponent is why I don't have archetype matchups on my site
+      <.stat_card 
+        title="Drawn Impact" 
+        formula="Drawn Winrate - Deck Winrate"
+        description="Useful for measuring card power over the course of a game to decide what to actually include in your decklist."
+        count_name="Drawn Count"
+      />
 
-<br>
-<div class="subtitle is-4"> Deck Stats</div>
-Deck stats, as in stats for exact lists, are all based on the player perspective, ie the player using the deck tracker that sent the game to my site. This includes
+      <.stat_card 
+        title="Not Drawn Impact" 
+        formula="Drawn Winrate - Deck Winrate"
+        description="A test metric helpful for specific mechanics (like Tradeable). Unlike other stats, it's not per copy, it's overall. Can help highlight 1 vs 2 card deck biases."
+        count_name="Not Drawn Count"
+        badge="Negative is Better!"
+        badge_type="info"
+      />
 
-<br>
-<div class="subtitle is-4">Matchups</div>
-Matchups use different archetyping then other stuff on the site. Elsewhere the site looks at the full list to determine the archetype, that is not possible here because the opponent's deck is not known, only their played cards. This means archetyping here is based on played cards, which is harder and can't differentiate between archetypes as well as deck based archetyping.
+      <.stat_card 
+        title="Kept Impact" 
+        formula="Kept Winrate - Deck Winrate"
+        description="Mainly useful in direct comparison with Mulligan Impact to spot highly situational, specific scenario keeps."
+        count_name="Kept Count"
+      />
+    </div>
+  </section>
 
-<br>
-<div class="subtitle is-4"> Filters & co</div>
-<li> ️<HeroIcons.warning_triangle />  - A warning triangle will will appear for options that aren't aggregated. That means the site is calculating the stats as you request them, which can be slow, or even fail because it times out. Please try to avoid spamming unaggregated requests for long time periods (4weeks+) - Personal stats are never aggregated, I'll remove the warning from there eventually, hopefully</li>
-<li> As Class - This will popup a table of class winrates as the class for the given filters. ex, if on the decks page you filter for decks that include Reno, then hit as class, you will see the winrates of classes when they include Reno in their deck. So a 40% for Rogue here would mean that Rogues with Reno have had a 40% winrate</li>
-<li> Vs Class - This will popup a table of class winrates vs the class for the given filters. ex, if on the decks page you select Priest and exclude Aman'Thul, then hit vs class, you will see the winrate priests without Aman'Thul have vs each class. So a 20% for Rogue here would mean that Priests that don't run Aman'Thul have had a 20% winrate vs Rogue</li>
+  <!-- Archetype Card Stats Section -->
+  <.section_block title="Archetype Card Stats" variant="boxed">
+    <p>
+      Unlike deck card stats, archetype card stats are not calculated looking at the archetype as a whole, but rather built from deck card stats
+      <span class="tw-italic tw-font-semibold has-text-success">This lets archetype card stats be useful!</span> Since it removes bias from the deck a card is included in 
+    </p>
+    
+    <div class="tw-bg-black/20 tw-p-4 tw-rounded-xl tw-border tw-border-slate-800 tw-space-y-3 tw-text-sm tw-mt-4">
+      <p class="tw-text-slate-400 tw-pl-6">
+        💡 <span class="tw-font-medium text-white">Tip:</span> Highlight a deck's individual cards by opening its card stats page, then select <span class="tw-underline tw-decoration-success/40 tw-font-medium tw-text-slate-200">Archetype Card Stats</span> in the subtitle.
+      </p>
+      <div class="tw-flex tw-items-center tw-gap-2 has-text-warning">
+        <HeroIcons.warning_triangle class="tw-w-4 tw-h-4" />
+        <span class="tw-text-slate-300">Appears when a highlighted card falls short of the minimum required sample size.</span>
+      </div>
+    </div>
+  </.section_block>
+
+  <!-- Perspective Section (Archetype & Deck Stats split) -->
+  <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
+    <.section_block title="Meta Stats">
+      Based strictly on the deck tracker user's perspective, meaning it's subject to deck tracker bias
+    </.section_block>
+
+    <.section_block title="Deck Stats">
+      Stats for exact card lists, including sideboards. Just like meta stats, these metrics reflect the perspective of the player running the active deck tracker and is subject to deck tracker bias.
+    </.section_block>
+  </div>
+
+  <!-- Matchups Section -->
+  <.section_block title="Matchups" variant="boxed">
+    Matchup analysis requires different archetype classification. Because your opponent's exact deck is unknown, archetyping must rely on cards played in the game. This archetyping is used for both perspectives in the matchups tab. This makes differentiating similar archetypes more difficult and requires a data collection buffer period after new cards/patches
+  </.section_block>
+
+  <!-- Filters Section -->
+  <section class="tw-space-y-4">
+    <h2 class="tw-text-2xl tw-font-bold text-white">Filters</h2>
+    
+    <div class="tw-divide-y tw-divide-slate-800 tw-border tw-border-slate-800 tw-rounded-xl has-background-dark tw-overflow-hidden">
+      <!-- Live Calculation Warning using standard component configuration -->
+      <div class="tw-p-4 tw-flex tw-gap-3 tw-bg-amber-500/5">
+        <div class="has-text-warning tw-mt-0.5">
+          <HeroIcons.warning_triangle class="tw-w-5 tw-h-5" />
+        </div>
+        <div class="tw-text-sm">
+          <strong class="has-text-warning">Live Calculation Warning:</strong> This icon appears next to parameters calculated in real-time. Unaggregated requests consume heavy processing power and may time out. Please try to avoid heavy usage of such features. 
+          <span class="tw-block tw-mt-1 tw-text-xs tw-text-slate-500 tw-italic">Note: Personal stats are always calculated live; if there is a warning triangle there you can ignore it.</span>
+        </div>
+      </div>
+
+      <!-- As Class -->
+      <.filter_row 
+        title="As Class Modal" 
+        example="Filter for decks containing Reno, then toggle As Class. You'll see individual class winrates when piloting a Reno deck (e.g., a 40% Rogue score means Rogues running Reno win 40% of their games)."
+      >
+        Displays class winrates <span class="tw-italic text-slate-300">as</span> the class for games matching your current filter set.
+      </.filter_row>
+
+      <!-- Vs Class -->
+      <.filter_row 
+        title="Vs Class Modal" 
+        example="Filter for Priest and exclude Aman'Thul, then toggle Vs Class. You will see how well Priests without Aman'Thul perform against specific opponent classes."
+      >
+        Displays performance metrics matching your filters <span class="tw-italic text-slate-300">against</span> each opposing class. A 20% for Rogue here would mean that Priests that don't run Aman'Thul have had a 20% winrate vs Rogue
+      </.filter_row>
+    </div>
+  </section>
+
+</div>
