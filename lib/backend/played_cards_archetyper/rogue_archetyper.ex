@@ -5,50 +5,42 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest Rogue", ["Lie in Wait"]},
-    {:"Harold Rogue",
-     [
-       "Maniacal Follower",
-       "Ultraxion",
-       "Envoy of the End",
-       "Sinestra",
-       "Deathwing, Worldbreaker",
-       "Rite of Twilight"
-     ]},
-    # {:"Imbue Rogue",
-    #  [
-    #    "Flutterwing Guardian",
-    #    "Bittbloom Knight",
-    #    "Jagged Edge of Time",
-    #    "Eventuality"
-    #  ]},
-    {:"Harold Rogue",
-     [
-       "Elise the Navigator",
-       "Deja Vu",
-       "Nightmare Fuel",
-       "Foxy Fraud",
-       "Flashback",
-       "Agent of the Old Ones",
-       "Mirrex, the Crystalline",
-       "Nightmare Lord Xavius",
-       "Naralex, Herald of the Flights",
-       "Spymistress",
-       "Twilight Mistress",
-       "Shaladrassil",
-       "Cloud Serpent",
-       "Fast Forward",
-       "Opu the Unseen",
-       "Ysera, Emerald Aspect",
-       "Preparation",
-       "The Kingslayers",
-       "Cultist Map",
-       "Garona Halforcen",
-       "Sands of Time",
-       "Glacial Shard",
-       "Bitterbloom Knight",
-       "Eventuality"
-     ]}
+    "Quest Rogue": ["Lie in Wait"],
+    "Harold Rogue": [
+      "Maniacal Follower",
+      "Ultraxion",
+      "Envoy of the End",
+      "Sinestra",
+      "Deathwing, Worldbreaker"
+    ],
+    "Harold Rogue": [
+      "Deja Vu",
+      "Elise the Navigator",
+      "Flutterwing Guardian",
+      "Glacial Shard",
+      "Naralex, Herald of the Flights",
+      "Nightmare Fuel",
+      "Nightmare Lord Xavius",
+      "Resplendent Dreamweaver",
+      "Shaladrassil",
+      "Twilight Mistress"
+    ],
+    "Burn Rogue": ["Chrono Daggers", "Morchie", "Prize Vendor", "Rockskipper", "Tunneling Geomancer"],
+    "Harold Rogue": [
+      "Agent of the Old Ones",
+      "Backstab",
+      "Bitterbloom Knight",
+      "Cultist Map",
+      "Eventuality",
+      "Jagged Edge of Time",
+      "Opu the Unseen",
+      "Preparation",
+      "Rite of Twilight",
+      "Sands of Time",
+      "Spymistress",
+      "The Kingslayers",
+      "Vanessa the Ringleader"
+    ]
   ]
   @wild_config []
 
