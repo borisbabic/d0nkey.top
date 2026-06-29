@@ -672,7 +672,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
         |> to_string()
         |> String.starts_with?("Whizbang")
       end)
-      |> Enum.reduce([], fn {{_archetype, cards}, level}, carry ->
+      |> Enum.reduce([], fn {{_archetype, cards_maybe_excludes}, level}, carry ->
+        cards = cards(cards_maybe_excludes)
         IO.puts("Processing level #{level}. class: #{class} format: #{format}")
 
         games =
@@ -725,6 +726,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
     {:ok, %{card_report: card_report}}
   end
+
+  defp cards({cards, _excludes}), do: cards
+  defp cards(cards), do: cards
 
   def handle_info({:update_intermediate_report, intermediate_report}, socket) do
     {:noreply, socket |> assign(intermediate_report: intermediate_report)}
