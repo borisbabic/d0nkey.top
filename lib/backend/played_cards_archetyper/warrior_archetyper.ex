@@ -5,82 +5,30 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest Warrior",
-     [
-       "Enter the Lost City"
-     ]},
-    {:"Dragon Warrior",
-     [
-       "Darkscale Broodmother",
-       "Petal Peddler",
-       "Prescient Slitherdrake",
-       "Carrier Whelp"
-     ]},
-    {:"Egg Warrior",
-     [
-       "Holy Eggbearer",
-       "Endbringer Umbra",
-       "Siphoning Growth",
-       "Shellnado",
-       "Nablya, the Watcher",
-       "The Egg of Khelos"
-     ]},
-    {:"Dragon Warrior",
-     [
-       "Twilight Egg"
-     ]},
-    {:"Harold Warrior",
-     [
-       "Elise the Navigator",
-       "Envoy of the End",
-       "Ragnaros, the Great Fire",
-       "Ysera, Emerald Aspect",
-       "Deathwing, Worldbreaker"
-     ]},
-    # 5.5
-    {:"Dragon Warrior",
-     [
-       "Stadium Announcer",
-       "Brood Keeper",
-       "Shadowed Informant",
-       "Windpeak Wyrm",
-       "Darkrider"
-     ]},
-    {:"Harold Warrior",
-     [
-       "Ultraxion",
-       "Scorching Ravager",
-       "Cataclysmic War Axe"
-     ]},
-    {:"Gladiator Warrior",
-     [
-       "Gladiatorial Combat",
-       "Shaladrassil",
-       "Succumb to Madness",
-       "Clutch of Corruption",
-       "Tortolla",
-       "Ysondre",
-       "Erupting Volcano",
-       "Shadowflame Suffusion",
-       "Searing Fissure"
-     ]},
-    {:"Egg Warrior",
-     [
-       "Decimation",
-       "Acolyte of Pain",
-       "Sanguine Depths",
-       "Unleash the Crocolisks"
-     ]},
-    {:"Gladiator Warrior",
-     [
-       "For Glory!",
-       "Torch",
-       "Axe of the Forefathers",
-       "Eternal Toil",
-       "Shield Block"
-     ]},
-    # 10.5
-    {:"Precursory Strike", ["Dragon Warrior"]}
+    "Quest Warrior": ["Enter the Lost City"],
+    "Dragon Warrior": ["Darkscale Broodmother", "Petal Peddler"],
+    "Burn Warrior": ["Rockskipper"],
+    "Gladiator Warrior": ["Gladiatorial Combat"],
+    "Dragon Warrior": [
+      "Brood Keeper",
+      "Carrier Whelp",
+      "Cult Neophyte",
+      "Prescient Slitherdrake",
+      "Shadowed Informant",
+      "Stadium Announcer",
+      "Twilight Egg",
+      "Windpeak Wyrm"
+    ],
+    "Harold Warrior": ["Chrono-Lord Deios", "Ragnaros, the Great Fire"],
+    "Burn Warrior": ["Time-Twisted Seer"],
+    "Harold Warrior": ["Cataclysmic War Axe", "Envoy of the End", "Scorching Ravager", "Ultraxion"],
+    "Burn Warrior": ["Prize Vendor"],
+    "Egg Warrior": ["Decimation", "Endbringer Umbra"],
+    "Dragon Warrior": ["Darkrider"],
+    "Egg Warrior": ["Holy Eggbearer", "Nablya, the Watcher", "The Egg of Khelos"],
+    "Burn Warrior": ["Bash", "Erupting Volcano", "Searing Fissure"],
+    "Gladiator Warrior": ["Clutch of Corruption", "Eternal Toil", "Slam", "Torch", "Unleash the Crocolisks"],
+    "Dragon Warrior": ["Sanguine Depths"]
   ]
   @wild_config []
 
@@ -88,13 +36,13 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
   def wild_excludes, do: %{}
 
   def standard_config, do: add_excludes(@standard_config, standard_excludes())
-  def wild_config, do: add_excludes(@wild_config, standard_excludes())
+  def wild_config, do: add_excludes(@wild_config, wild_excludes())
 
   def standard(card_info) do
     process_config(@standard_config, card_info, :"Other Warrior")
   end
 
-  def wild(_card_info) do
-    nil
+  def wild(card_info) do
+    process_config(@wild_config, card_info, :"Other Warrior")
   end
 end
