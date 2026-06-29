@@ -515,7 +515,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
         new_config = previous_archetyper_config ++ [{String.to_existing_atom(arch), cards}]
 
-        IO.puts("Adding #{Enum.count(cards)} for #{arch} while #{puts_append}")
+        IO.puts("Adding #{Enum.count(cards)} for #{arch}: #{inspect(cards)} while #{puts_append}")
         fetch_auto_archetyping(base_criteria, vars, new_level, new_config)
 
       _result ->
