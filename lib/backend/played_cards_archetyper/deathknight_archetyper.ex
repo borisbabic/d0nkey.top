@@ -5,103 +5,31 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest DK", ["Reanimate the Terror"]},
-    {:"Harold DK",
-     [
-       "Staff of the Endbringer",
-       "Deathwing, Worldbreaker",
-       "Obsessive Technician",
-       "Ultraxion",
-       "Arisen Onyxia",
-       "Envoy of the End",
-       "Experimental Animation",
-       "Memoriam Manifest",
-       "The Curator",
-       "Soulrest Ceremony"
-
-       # "Boneguard Commander" 
-     ]},
-    {:"Unholy DK",
-     [
-       "Grave Strength",
-       "Maze Guide",
-       "Living Paradox",
-       "Talanji's Last Stand"
-     ]},
-    # {:"Imbue DK",
-    #  [
-    #    "Petal Picker",
-    #    "Bitterbloom Knight",
-    #    "Jagged Edge of Time",
-    #    "Finality",
-    #    "Flutterwing Guardian"
-    #  ]},
-    {:"Harold DK",
-     [
-       "Hematurge",
-       "Elise the Navigator"
-     ]},
-    {:"Unholy DK",
-     [
-       "Monstrous Mosquito",
-       "Talanji's Last Stand",
-       "Shadows of Yesterday"
-     ]},
-    # 5.5
-    {:"Imbue DK",
-     [
-       "Jagged Edge of Time",
-       "Flutterwing Guardian",
-       "Petal Picker",
-       "Bitterbloom Knight"
-     ]},
-    {:"Harold DK",
-     [
-       "Shadowed Informant",
-       "Morbid Swarm"
-     ]},
-    {:"Blood DK",
-     [
-       "Ursoc",
-       "Crittter Caretaker",
-       "Fyrakk the Blazing",
-       "Ancient of Yore",
-       "Alexandros Mograine",
-       "Naralex, Herald of the Flights",
-       "Death Strike"
-     ]},
-    {:"Harold DK",
-     [
-       "Infested Breath",
-       "Husk, Eternal Reaper",
-       "Royal Librarian"
-     ]},
-    {:"Unholy DK",
-     [
-       "Nerubian Swawmguard",
-       "Falric",
-       "Chow Down",
-       "Nerubian Swarmguard",
-       "Twilight Egg"
-     ]},
-    # 10.5
-    {:"Harold DK",
-     [
-       "Sanguine Infestation",
-       "Creature of Madness",
-       "Nightmare Lord Xavius",
-       "Hideous Husk",
-       "Sands of Time",
-       "Poison Breath",
-       "Wild Pyromancer",
-       "Chillfallen Baron"
-     ]},
-    {:"Unholy DK",
-     [
-       "Reluctant Wrangler",
-       "Ancient Raptor",
-       "Murmy"
-     ]}
+    "Quest DK": ["Reanimate the Terror"],
+    "Harold DK": [
+      "Staff of the Endbringer",
+      "Deathwing, Worldbreaker",
+      "Obsessive Technician",
+      "Ultraxion",
+      "Arisen Onyxia",
+      "Envoy of the End",
+      "Experimental Animation",
+      "Memoriam Manifest",
+      "The Curator",
+      "Soulrest Ceremony"
+    ],
+    "Unholy DK": [
+      "Grave Strength",
+      "Maze Guide",
+      "Living Paradox",
+      "Talanji's Last Stand"
+    ],
+    "Unholy DK": ["Shadows of Yesterday"],
+    "Harold DK": ["Elise the Navigator"],
+    "Harold DK": ["Hematurge", "Morbid Swarm"],
+    "Unholy DK": ["Ancient Raptor", "Reluctant Wrangler", "Twilight Egg"],
+    "Harold DK": ["Carrier Whelp", "Infested Breath"],
+    "Harold DK": ["Chillfallen Baron"]
   ]
 
   @wild_config []
