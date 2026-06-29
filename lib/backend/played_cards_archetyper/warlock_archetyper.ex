@@ -6,70 +6,48 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
 
   @standard_excludes %{}
   @standard_config [
-    {:"Tick Tock Warlock", ["Battle at the End Time"]},
-    {:"Quest Warlock", ["Escape the Underfel"]},
-    {:Rafaamlock,
-     [
-       "Tiny Rafaam",
-       "Green Rafaam",
-       "Murloc Rafaam",
-       "Explorer Rafaam",
-       "Warchief Rafaam",
-       "Calamitous Rafaam",
-       "Mindflayer R'faam",
-       "Giant Rafaam",
-       "Archmage Rafaam",
-       "Timethief Rafaam"
-     ]},
-    {:"Harold Warlock",
-     [
-       "Envoy of the End",
-       "Ultraxion"
-     ]},
-    {:"Harold Warlock",
-     [
-       "Spirit Bomb",
-       "The Egg of Khelos",
-       "Shadowsworn Disciple",
-       "Shrine of Twilight",
-       "Holy Eggbearer",
-       "Cursed Chains",
-       "Eldritch Tentacles",
-       "Archdruid of Thorns",
-       "Hellfire",
-       "Drain Soul",
-       "Conflagrate",
-       "Abusive Sergeant",
-       "Cursed Catacombs",
-       "Dissolving Ooze",
-       "Endbringer Umbra"
-     ]},
-    {:"Wallow Warlock",
-     [
-       "Overgrown Horror",
-       "Avant-Gardening",
-       "Treacherous Tormentor",
-       "Creature of Madness",
-       "Shadowflame Stalker",
-       "Wallow, the Wretched"
-     ]},
-    {:"Aggro Warlock",
-     [
-       "Flame Imp",
-       "Acolyte of Infinity",
-       "Sizzling Cinder",
-       "Entropic Continuity",
-       "Darkscale Broodmother",
-       "Ruinous Velocidrake",
-       "Prescient Slitherdrake",
-       "Ocular Occultist",
-       "Fatebreaker",
-       "Twilight Timehopper",
-       "Tachyon Barrage",
-       "Petal Peddler",
-       "Twilight Egg",
-       "Carrier Whelp"
-     ]}
+    "Tick Tock Warlock": ["Battle at the End Time"],
+    "Quest Warlock": ["Escape the Underfel"],
+    Rafaamlock: [
+      "Tiny Rafaam",
+      "Green Rafaam",
+      "Murloc Rafaam",
+      "Explorer Rafaam",
+      "Warchief Rafaam",
+      "Calamitous Rafaam",
+      "Mindflayer R'faam",
+      "Giant Rafaam",
+      "Archmage Rafaam",
+      "Timethief Rafaam"
+    ],
+    Egglock: ["Abusive Sergeant", "Archdruid of Thorns", "Dissolving Ooze", "Spirit Bomb"],
+    "Wallow Warlock": ["Hopeful Dryad", "Overgrown Horror"],
+    "Divergence Warlock": ["Fae Trickster"],
+    Egglock: ["Endbringer Umbra", "Holy Eggbearer"],
+    "Wallow Warlock": ["Wallow, the Wretched"],
+    "Divergence Warlock": ["Divergence", "Shaladrassil"],
+    "Aggro Warlock": ["Darkscale Broodmother", "Flame Imp"],
+    "Wallow Warlock": [
+      "Avant-Gardening",
+      "Creature of Madness",
+      "Raptor Herald",
+      "Shadowflame Stalker",
+      "Treacherous Tormentor"
+    ],
+    Egglock: ["Conflagrate", "Shadowsworn Disciple", "Shrine of Twilight", "The Egg of Khelos", "Ultraxion"],
+    Rafaamlock: [
+      "Cursed Catacombs",
+      "Drain Soul",
+      "Eldritch Tentacles",
+      "Elise the Navigator",
+      "Eternal Toil",
+      "Fractured Power",
+      "Glacial Shard",
+      "Hellfire",
+      "Nightmare Lord Xavius",
+      "Possessed Animancer",
+      "Sheltered Survivor"
+    ]
   ]
   @wild_config []
 

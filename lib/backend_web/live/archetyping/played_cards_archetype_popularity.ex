@@ -52,7 +52,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Quest Spell Mage" => "Spell Mage",
     "Imbue Rogue" => "Harold Rogue",
     "Wallow Shredslock" => "Wallow Warlock",
-    "Harold Egglock" => "Harold Warlock",
+    "Harold Egglock" => "Egglock",
     "Dino Egglock" => "Egglock",
     "Zoolock" => "Aggro Warlock",
     "Shredslock" => "Aggro Warlock",
