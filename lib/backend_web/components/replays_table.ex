@@ -8,7 +8,7 @@ defmodule Components.ReplaysTable do
   alias Hearthstone.DeckTracker.Game
   alias Hearthstone.Enums.GameType
   alias Hearthstone.Enums.Format
-  alias FunctionComponents.DeckComponents
+  import Components.ArchetypeStatsTable, only: [archetype_cell: 1]
 
   prop(replays, :list, required: true)
   prop(show_player_btag, :boolean, default: false)
@@ -41,18 +41,7 @@ defmodule Components.ReplaysTable do
             <.td :if={@show_player_btag}><PlayerName flag={true} player={game.player_btag}/></.td>
             <.td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} /></.td>
             <.td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></.td>
-            <.td :if={@show_opponent}>
-              <span>
-              {#if opponent_archetype = get_in(game, [Access.key(:played_cards, %{}), Access.key(:opponent_archetype, nil)])}
-                <span class={"tw-text-black", "decklist-info", Deck.extract_class(opponent_archetype) |> String.downcase()}>{opponent_archetype}</span>
-              {#else}
-                <span class="icon">
-                  <DeckComponents.class_icon class_slug={game.opponent_class}/>
-                </span>
-              {/if}
-                <PlayerName :if={@show_opponent_name} player={game.opponent_btag}/>
-              </span>
-            </.td>
+            <.archetype_cell :if={@show_opponent} {... opponent_archetype(game)} />
             <.td :if={@show_mode}> <p class={"tag", {class(game), :mode in @show_result_as}}>{game_mode(game)}</p></.td>
             <.td :if={@show_rank}><p class={"tag", {class(game), :rank in @show_result_as}}>{Game.player_rank_text(game)}</p></.td>
             <.td :if={@show_replay_link}><a :if={link = replay_link(game)} href={"#{link}"} target="_blank">View Replay</a></.td>
@@ -62,6 +51,14 @@ defmodule Components.ReplaysTable do
       </.table>
     """
   end
+
+  defp opponent_archetype(%{played_cards: %{opponent_archetype: arch}}) when is_binary(arch) or is_atom(arch),
+    do: %{archetype: arch}
+
+  defp opponent_archetype(%{opponent_class: class}) when is_binary(class),
+    do: %{link?: false, archetype: Deck.class_name(class)}
+
+  defp opponent_archetype(_), do: %{link?: false, archetype: "?"}
 
   def game_mode(%{game_type: game_type, format: format}) do
     if game_type in [GameType.ranked(), GameType.casual()] do

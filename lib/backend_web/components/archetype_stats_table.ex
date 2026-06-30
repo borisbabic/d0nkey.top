@@ -57,13 +57,17 @@ defmodule Components.ArchetypeStatsTable do
 
   attr :archetype, :string
   attr :params, :map, default: %{}
+  attr :link?, :boolean, default: true
 
   def archetype_cell(assigns) do
     ~H"""
     <.td class={"decklist-info #{Deck.extract_class(@archetype) |> String.downcase()} tw-text-center"}>
-      <a class="basic-black-text deck-title" href={~p"/archetype/#{@archetype || ""}?#{add_games_filters(@params)}"}>
+      <a :if={@link?} class="basic-black-text deck-title" href={~p"/archetype/#{@archetype || ""}?#{add_games_filters(@params)}"}>
         {@archetype}
       </a>
+      <span :if={!@link?} class="basic-black-text deck-title">
+        {@archetype}
+      </span>
     </.td>
     """
   end
