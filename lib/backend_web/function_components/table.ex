@@ -7,7 +7,7 @@ defmodule FunctionComponents.Table do
 
   def table(assigns) do
     ~H"""
-    <div id={@id} class="tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 has-background-dark">
+    <div id={@id} class="tw-rounded-xl tw-border tw-border-slate-800 has-background-dark tw-overflow-y-visible">
       <table class="tw-w-full tw-text-left tw-border-collapse">
         {render_slot(@inner_block)}
       </table>
