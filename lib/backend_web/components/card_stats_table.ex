@@ -105,7 +105,7 @@ defmodule Components.CardStatsTable do
 
               <.th>
                 <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
-                  <span data-balloon-pos="up" aria-label={"Mull (kept + unkept) winrate - deck winrate"}>
+                  <span>
                     {add_arrow(dgettext("card_stats", "Mulligan Impact"), "mull_impact", @filters, true)}
                   </span>
                 </a>
@@ -119,7 +119,7 @@ defmodule Components.CardStatsTable do
 
               <.th >
                 <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
-                  <span data-balloon-pos="up" aria-label={"Drawn winrate - deck winrate"}>
+                  <span>
                     {add_arrow(dgettext("card_stats", "Drawn Impact"), "drawn_impact", @filters)}
                   </span>
                 </a>
@@ -133,7 +133,7 @@ defmodule Components.CardStatsTable do
 
               <.th class={"is-hidden-mobile"}>
                 <a :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact", "asc")} >
-                  <span data-balloon-pos="up" aria-label={"Not Drawn winrate - deck winrate (lower is better)"}>
+                  <span>
                     {add_arrow(dgettext("card_stats", "Not Drawn Impact"), "not_drawn_impact", @filters)}
                   </span>
                 </a>
@@ -147,7 +147,7 @@ defmodule Components.CardStatsTable do
 
               <.th class={"is-hidden-mobile"}>
                 <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
-                  <span data-balloon-pos="up" aria-label={"Winrate when kept - deck winrate"}>
+                  <span>
                     {add_arrow(dgettext("card_stats", "Kept Impact"), "kept_impact", @filters)}
                   </span>
                 </a>
