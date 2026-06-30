@@ -1,6 +1,6 @@
 defmodule Components.ArchetypeStatsModal do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
   alias Components.ArchetypeStatsTable
   alias FunctionComponents.Dropdown
   alias Components.Modal
@@ -23,11 +23,13 @@ defmodule Components.ArchetypeStatsModal do
         id={"modal_#{@id}"}
         button_title={@button_title || @title || @default_title}
         title={@modal_title || @title || @default_title}>
-        <Dropdown.menu title="Min Games" :if={@show_minimum_dropdown}>
-          <Dropdown.item :for={minimum_games <- minimum_games_options(@min_minimum_games) } selected={minimum_games == @minimum_games} phx-target={@myself} phx-click="set-minimum" phx-value-minimum_games={minimum_games} >
-            {minimum_games}
-          </Dropdown.item>
-        </Dropdown.menu>
+        <.filter_container>
+          <Dropdown.menu title="Min Games" :if={@show_minimum_dropdown}>
+            <Dropdown.item :for={minimum_games <- minimum_games_options(@min_minimum_games) } selected={minimum_games == @minimum_games} phx-target={@myself} phx-click="set-minimum" phx-value-minimum_games={minimum_games} >
+              {minimum_games}
+            </Dropdown.item>
+          </Dropdown.menu>
+        </.filter_container>
         <ArchetypeStatsTable stats={@get_stats.()} minimum_games={@minimum_games}/>
       </Modal>
     </span>

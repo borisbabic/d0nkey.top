@@ -13,7 +13,7 @@ defmodule BackendWeb.FantasyIndexLive do
   def render(%{user: %{id: _}} = assigns) do
     ~F"""
       <div>
-        <div class="title is-2">Fantasy Leagues</div>
+        <.page_header title="Fantasy Leagues" />
         <FunctionComponents.Ads.below_title/>
         <div class="level">
           <div class="level-left">

@@ -33,8 +33,11 @@ defmodule BackendWeb.StreamingNowLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">Streaming Now</div>
-        <div class="subtitle is-6"><a href={"#{Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)}"}>Instructions for streamers</a></div>
+        <.page_header title="Streaming Now">
+          <:nav_links>
+            <a href={~p"/streamer-instructions"}>Instructions for streamers</a>
+          </:nav_links>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
 
         <Dropdown.menu title={"Sort"}>

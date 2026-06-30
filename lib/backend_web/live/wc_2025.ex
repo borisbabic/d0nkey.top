@@ -24,13 +24,15 @@ defmodule BackendWeb.WC2025Live do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2"> Worlds 2025</div>
-        <div class="subtitle is-6 tw-flex">
-        <a href={~p"/battlefy/tournament/6941b7af3ca24d00130d3e53"}>Tournament</a>
-        | <Components.Socials.twitch height={20} link="https://www.twitch.tv/playhearthstone" />
-        <span class="is-hidden-mobile">|Casters:  Edelweiss, Lorinda, Raven, Sottle | Guests: Cora, Darroch, McBanterFace, Reqvam</span>
-        </div>
-
+        <.page_header title="Worlds 2025">
+          <:nav_links>
+            <a href={~p"/battlefy/tournament/6941b7af3ca24d00130d3e53"}>Tournament</a>
+            <Components.Socials.twitch height={20} link="https://www.twitch.tv/playhearthstone" />
+          </:nav_links>
+          <:meta_info>
+            <span class="is-hidden-mobile">|Casters:  Edelweiss, Lorinda, Raven, Sottle | Guests: Cora, Darroch, McBanterFace, Reqvam</span>
+          </:meta_info>
+        </.page_header>
         <.accordion id="schedule_accordian">
           <:trigger>
             <span>Day 1 (A-B) - 6 Matches - <Helper.datetime datetime={~N[2025-12-18 15:00:00]} /></span>

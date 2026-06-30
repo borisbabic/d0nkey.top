@@ -23,80 +23,82 @@ defmodule BackendWeb.GroupLive do
   def render(%{user: %{id: _}} = assigns) do
     ~F"""
         <div :if={@group && @membership}>
-          <div class="title is-2">{@group.name}</div>
-          <div class="subtitle is-6">
-            Owner: {User.battletag(@group.owner)}
-            <span :if={@membership && @group.discord}>
-              | <a href={@group.discord} target="_blank">Discord</a>
-            </span>
-          </div>
+          <.page_header title={@group.name}>
+            <:nav_link>
+              <span :if={@membership && @group.discord}>
+                | <a href={@group.discord} target="_blank">Discord</a>
+              </span>
+            </:nav_link>
+            <:meta_info>
+              <span>
+                Owner: {User.battletag(@group.owner)}
+              </span>
+            </:meta_info>
+          </.page_header>
           <FunctionComponents.Ads.below_title/>
 
-            <div class="level is-mobile">
-              <div class="level-left">
-
-                <div class="level-item" :if={@membership}>
-                  <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupReplaysLive, @group_id)}>Group Replays</a>
-                </div>
-                <div class="level-item" :if={@membership}>
-                  <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupDecksLive, @group_id)}>Group Decks</a>
-                </div>
-                <div class="level-item" :if={@membership}>
-                  <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupMatchupsLive, @group_id)}>Group Matchups</a>
-                </div>
-                <div class="level-item" :if={@membership && !GroupMembership.owner?(@membership)}>
-                  <button class="is-link button" :on-click="leave_group"}>Leave Group</button>
-                </div>
-                <div class="level-item" :if={!@membership}>
-                  {#if  @join_code && @join_code == @group.join_code}
-                    <button class="button" :on-click="join_group">Join Group</button>
-                    Your private replays and stats will be visible to the group
-                  {#else }
-                    You're not a member of this group. Contact the owner for access
-                  {/if}
-                </div>
-
-                <div class="level-item" :if={@error_message}>
-                  <div class="notification is-warning tag">{@error_message}</div>
-                </div>
-
-                <div :if={GroupMembership.admin?(@membership)} class="level-item">
-                  <GroupModal id="edit_group_modal" group={@group} />
-                </div>
-
-                <div class="level-item" :if={GroupMembership.admin?(@membership)} >
-                  <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, __MODULE__, @group_id, %{"join_code" => @group.join_code})}>Join Link</a>
-                </div>
-
+            <.filter_container>
+              <div :if={@membership}>
+                <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupReplaysLive, @group_id)}>Group Replays</a>
               </div>
-            </div>
-            <table :if={@membership} class="table is-fullwidth">
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Role</th>
-                  <th>Included in data</th>
-                  <th :if={GroupMembership.admin?(@membership)}>Manage</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr :for={{gm, event, text} <- @memberships}>
-                  <td><PlayerName player={gm.user.battletag} /></td>
-                  <td>{gm.role}</td>
-                  <td>
+              <div :if={@membership}>
+                <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupDecksLive, @group_id)}>Group Decks</a>
+              </div>
+              <div :if={@membership}>
+                <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupMatchupsLive, @group_id)}>Group Matchups</a>
+              </div>
+              <div :if={@membership && !GroupMembership.owner?(@membership)}>
+                <button class="is-link button" :on-click="leave_group"}>Leave Group</button>
+              </div>
+              <div :if={!@membership}>
+                {#if  @join_code && @join_code == @group.join_code}
+                  <button class="button" :on-click="join_group">Join Group</button>
+                  Your private replays and stats will be visible to the group
+                {#else }
+                  You're not a member of this group. Contact the owner for access
+                {/if}
+              </div>
+
+              <div :if={@error_message}>
+                <div class="notification is-warning tag">{@error_message}</div>
+              </div>
+
+              <div :if={GroupMembership.admin?(@membership)} class="level-item">
+                <GroupModal id="edit_group_modal" group={@group} />
+              </div>
+
+              <div :if={GroupMembership.admin?(@membership)} >
+                <a class="is-link button"  href={Routes.live_path(BackendWeb.Endpoint, __MODULE__, @group_id, %{"join_code" => @group.join_code})}>Join Link</a>
+              </div>
+
+            </.filter_container>
+            <.table :if={@membership} id="members_table">
+              <.thead>
+                <.trh>
+                  <.th>Member</.th>
+                  <.th>Role</.th>
+                  <.th>Included in data</.th>
+                  <.th :if={GroupMembership.admin?(@membership)}>Manage</.th>
+                </.trh>
+              </.thead>
+              <.tbody>
+                <.trb :for={{gm, event, text} <- @memberships}>
+                  <.td><PlayerName player={gm.user.battletag} /></.td>
+                  <.td>{gm.role}</.td>
+                  <.td>
                     {included(gm)}
-                  </td>
-                  <td :if={GroupMembership.admin?(@membership)}>
+                  </.td>
+                  <.td :if={GroupMembership.admin?(@membership)}>
                     <button :if={GroupMembership.admin?(@membership)}
                       class="button" :on-click={event} phx-value-user_id={gm.user.id}>{text}</button>
                     <button :if={!GroupMembership.admin?(gm)} class="button" :on-click="kick_user" phx-value-user_id={gm.user.id}>Kick User</button>
                     <button :if={!GroupMembership.admin?(gm)} class="button" :on-click="make_admin" phx-value-user_id={gm.user.id}>Make Admin</button>
                     <button :if={GroupMembership.admin?(gm) && !GroupMembership.owner?(gm) && GroupMembership.owner?(@membership)} class="button" :on-click="remove_admin" phx-value-user_id={gm.user.id}>Remove Admin</button>
                     <button :if={!GroupMembership.owner?(gm) && GroupMembership.owner?(@membership)} class="button" :on-click="transfer_ownership" phx-value-user_id={gm.user.id}>Transfer Ownership</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </.td>
+                </.trb>
+              </.tbody>
+            </.table>
           </div>
 
     """

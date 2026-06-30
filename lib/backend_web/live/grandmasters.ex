@@ -25,13 +25,12 @@ defmodule BackendWeb.GrandmastersLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">
-          Grandmasters
-        </div>
-        <div class="subtitle is-6">
-          <a target"_blank" href="https://hearthstone.blizzard.com/en-us/esports/standings/">Official Site<HeroIcons.external_link /></a>
-          | <a href={lineup_url(@week)}>Lineups</a>
-        </div>
+        <.page_header title="Grandmasters">
+          <:nav_links>
+            <a target"_blank" href="https://hearthstone.blizzard.com/en-us/esports/standings/">Official Site<HeroIcons.external_link /></a>
+            <a href={lineup_url(@week)}>Lineups</a>
+          </:nav_links>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
 
         <div class="level is-mobile">

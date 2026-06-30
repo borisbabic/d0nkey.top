@@ -29,12 +29,13 @@ defmodule BackendWeb.QualifierShowcaseLive do
   def render(assigns) do
     ~F"""
     <div>
-      <div class="title is-2">{@page_title}</div>
-      <div class="subtitle is-5">
-        <a href={~p"/tournament-lineups/popularity?#{@multi_query}"}><span class="is-hidden-mobile">Archetype/Lineup </span>Popularity</a> |
-        <a href={~p"/tournament-lineups/stats?#{@multi_query}"}><span class="is-hidden-mobile">Archetype</span> Winrates</a> |
-        <a href={~p"/streaming-now?#{@multi_query}"}>Streams</a>
-      </div>
+      <.page_header title={@page_title}>
+        <:nav_links>
+          <a href={~p"/tournament-lineups/popularity?#{@multi_query}"}><span class="is-hidden-mobile">Archetype/Lineup </span>Popularity</a>
+          <a href={~p"/tournament-lineups/stats?#{@multi_query}"}><span class="is-hidden-mobile">Archetype</span> Winrates</a>
+          <a href={~p"/streaming-now?#{@multi_query}"}>Streams</a>
+        </:nav_links>
+      </.page_header>
       <div :for={tournament <- @tournaments}>
         <Battlefy.tournament_card tournament={tournament} />
         <br>

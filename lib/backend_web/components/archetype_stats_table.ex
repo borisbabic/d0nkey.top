@@ -5,6 +5,7 @@ defmodule Components.ArchetypeStatsTable do
   alias Components.WinrateTag
   alias Backend.Hearthstone.Deck
   import Components.MatchupsTable, only: [archetype_sort_key: 1]
+  import FunctionComponents.Table
 
   prop(stats, :list, required: true)
   prop(show_class_percent?, :boolean, default: true)
@@ -15,31 +16,31 @@ defmodule Components.ArchetypeStatsTable do
 
   def render(%{filtered_stats: _, total_stats: _} = assigns) do
     ~F"""
-      <table class="table is-fullwidth is-striped">
-        <thead>
-          <tr>
-            <th>Class</th>
-            <th>Winrate</th>
-            <th>Total Games</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr :for={stat <- @filtered_stats}>
+      <.table id={"archetype_stats_table_"}>
+        <.thead>
+          <.trh>
+            <.th>Class</.th>
+            <.th>Winrate</.th>
+            <.th>Total Games</.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :for={stat <- @filtered_stats}>
             <.archetype_cell archetype={archetype(stat)} />
-            <td>
+            <.td>
               <WinrateTag winrate={stat.winrate} win_loss={win_loss(stat, @show_win_loss?)}/>
-            </td>
-            <td>{total(stat, @total_stats, @show_class_percent?)}</td>
-          </tr>
-          <tr :if={@total_stats}>
-            <td>Total</td>
-            <td>
+            </.td>
+            <.td>{total(stat, @total_stats, @show_class_percent?)}</.td>
+          </.trb>
+          <.trb :if={@total_stats}>
+            <.td>Total</.td>
+            <.td>
               <WinrateTag winrate={@total_stats.winrate} win_loss={win_loss(@total_stats, @show_win_loss?) } />
-            </td>
-            <td>{@total_stats.total}</td>
-          </tr>
-        </tbody>
-      </table>
+            </.td>
+            <.td>{@total_stats.total}</.td>
+          </.trb>
+        </.tbody>
+      </.table>
     """
   end
 
@@ -59,11 +60,11 @@ defmodule Components.ArchetypeStatsTable do
 
   def archetype_cell(assigns) do
     ~H"""
-    <td class={"decklist-info #{Deck.extract_class(@archetype) |> String.downcase()}"}>
-      <a class="basic-black-text deck-title" href={~p"/archetype/#{@archetype}?#{add_games_filters(@params)}"}>
+    <.td class={"decklist-info #{Deck.extract_class(@archetype) |> String.downcase()} tw-text-center"}>
+      <a class="basic-black-text deck-title" href={~p"/archetype/#{@archetype || ""}?#{add_games_filters(@params)}"}>
         {@archetype}
       </a>
-    </td>
+    </.td>
     """
   end
 

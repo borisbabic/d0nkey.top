@@ -13,22 +13,22 @@ defmodule BackendWeb.LineupHistoryLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2"><a href={Routes.player_path(BackendWeb.Endpoint, :player_profile, @name)}>{@name}</a></div>
+        <.page_header title={@name} title_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, @name)} />
         <FunctionComponents.Ads.below_title/>
-        <table class="table" :if={lineups = Backend.Hearthstone.lineup_history(@source, @name)}>
-          <thead>
-            <tr>
-              <th>Submitted</th>
-              <th>Decks</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr :for={l <- lineups}>
-              <td>{l.tournament_id}</td>
-              <td><ExpandableLineup id={"#{l.tournament_id}#{l.name}"} lineup={l}/></td>
-            </tr>
-          </tbody>
-        </table>
+        <.table id="lineup_history_table" :if={lineups = Backend.Hearthstone.lineup_history(@source, @name)}>
+          <.thead>
+            <.trh>
+              <.th>Submitted</.th>
+              <.th>Decks</.th>
+            </.trh>
+          </.thead>
+          <.tbody>
+            <.trb :for={l <- lineups}>
+              <.td>{l.tournament_id}</.td>
+              <.td><ExpandableLineup id={"#{l.tournament_id}#{l.name}"} lineup={l}/></.td>
+            </.trb>
+          </.tbody>
+        </.table>
       </div>
     """
   end

@@ -1,6 +1,6 @@
 defmodule FunctionComponents.TournamentsTable do
   @moduledoc false
-  use Phoenix.Component
+  use BackendWeb, :component
   alias Backend.Tournaments.Tournament
   alias Components.Helper
   alias FunctionComponents.EsportsBadges
@@ -8,36 +8,34 @@ defmodule FunctionComponents.TournamentsTable do
   attr :tournaments, :list, required: true
   attr :user_tournaments, :list, default: []
 
-  def table(assigns) do
+  def tournaments_table(assigns) do
     ~H"""
-    <table class="table is-striped is-fullwidth is-narrow">
-      <thead>
-      <tr>
-          <th>Name</th>
-          <th>Start Time</th>
-          <th>Tags</th>
-      </tr>
-      </thead>
-      <tbody>
-        <%= for tournament <- @tournaments do %>
-          <tr>
-            <td>
-              <a class="is-link" href={Tournament.standings_link(tournament)}>
-                <%= Tournament.name(tournament) %>
-              </a>
-            </td>
-            <td :if={start_time = Tournament.start_time(tournament)} class={start_time_class(start_time)}>
-              <Helper.datetime datetime={start_time} />
-            </td>
-            <td :if={!Tournament.start_time(tournament)}> </td>
-            <td>
-              <EsportsBadges.badges badges={tags(tournament, @user_tournaments)} />
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
+    <.table id="tournaments_table_table">
+      <.thead>
+      <.trh>
+          <.th>Name</.th>
+          <.th>Start Time</.th>
+          <.th>Tags</.th>
+      </.trh>
+      </.thead>
+      <.tbody>
+        <.trb :for={tournament <- @tournaments}>
+          <.td>
+            <a class="is-link" href={Tournament.standings_link(tournament)}>
+              <%= Tournament.name(tournament) %>
+            </a>
+          </.td>
+          <.td :if={start_time = Tournament.start_time(tournament)} class={start_time_class(start_time)}>
+            <Helper.datetime datetime={start_time} />
+          </.td>
+          <.td :if={!Tournament.start_time(tournament)}> </.td>
+          <.td>
+            <EsportsBadges.badges badges={tags(tournament, @user_tournaments)} />
+          </.td>
+        </.trb>
+      </.tbody>
 
-    </table>
+    </.table>
     """
   end
 

@@ -20,15 +20,16 @@ defmodule BackendWeb.MultiTournamentLineupPopularityTableLive do
       <div>
         <div>
           <div>
-            <div class="title is-2">{@page_title}</div>
-            <div class="subtitle is-6">
-              <a href={~p"/tournament-lineups/stats?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Stats</a>
-              | <a href={~p"/tournament-lineups/matchups?#{%{"tournaments" => @raw_tournaments}}"}>Matchups</a>
-              <span :if={@lineups.ok?}> | Total Lineups: {Enum.count(@lineups.result)}</span>
-              <span :for={{link, display} <- links(@tournament_tuples)}>
-                | <a href={link}>{display}</a>
-              </span>
-            </div>
+            <.page_header title={@page_title}>
+              <:nav_links>
+                <a href={~p"/tournament-lineups/stats?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Stats</a>
+                <a href={~p"/tournament-lineups/matchups?#{%{"tournaments" => @raw_tournaments}}"}>Matchups</a>
+                <a :for={{link, display} <- links(@tournament_tuples)} href={link}>{display}</a>
+              </:nav_links>
+              <:meta_info>
+                <span :if={@lineups.ok?}> | Total Lineups: {Enum.count(@lineups.result)}</span>
+              </:meta_info>
+            </.page_header>
             <FunctionComponents.Ads.below_title/>
             <PopularityTable :if={@lineups.ok?} deck_group_size={@deck_group_size} id={"lineup_popularity_table_#{Enum.count(@tournament_tuples)}"} lineups={@lineups.result}/>
           </div>

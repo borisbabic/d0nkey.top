@@ -17,6 +17,7 @@ defmodule Components.TierList do
   import Components.DecksExplorer, only: [parse_int: 2]
   import Components.CardStatsTable, only: [add_arrow: 3, add_arrow: 4]
   import FunctionComponents.Stats, only: [round: 2]
+  import FunctionComponents.Table
   import Components.ArchetypeStatsTable, only: [archetype_cell: 1]
 
   prop(data, :list, default: [])
@@ -47,28 +48,30 @@ defmodule Components.TierList do
   def render(assigns) do
     ~F"""
       <div>
-        <button class="button" id="toggle_chart" :on-click="toggle_chart">Chart {if @show_chart, do: "↑", else: "↓"}</button>
-        <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
-        <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
-        <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
-        <ClassMultiDropdown
-          id="tier_list_opponents_class_dropdown"
-          name_prefix={"VS "}
-          title={"Opponent's Class"}
-          param={"opponent_class"} />
+        <.filter_container>
+          <button class="button" id="toggle_chart" :on-click="toggle_chart">Chart {if @show_chart, do: "↑", else: "↓"}</button>
+          <PeriodDropdown id="tier_list_period_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)} />
+          <FormatDropdown id="tier_list_format_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
+          <RankDropdown id="tier_list_rank_dropdown" filter_context={:public} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
+          <ClassMultiDropdown
+            id="tier_list_opponents_class_dropdown"
+            name_prefix={"VS "}
+            title={"Opponent's Class"}
+            param={"opponent_class"} />
 
-        <LivePatchDropdown
-          id="tier_list_min_games_dropdown"
-          options={@min_games_options}
-          title={"Min Games"}
-          param={"min_games"}
-          selected_as_title={false}
-          normalizer={&to_string/1} />
-        <PlayerHasCoinDropdown id="tier_list_player_has_coin_dropdown" />
-        {#if premium_filters?(@premium_filters, @user)}
-          <RegionDropdown title={Components.Helper.warning_triangle(%{before: "Region"})} id={"deck_region"} filter_context={:public} />
-          <ForceFreshDropdown id={"force_fresh"} />
-        {/if}
+          <LivePatchDropdown
+            id="tier_list_min_games_dropdown"
+            options={@min_games_options}
+            title={"Min Games"}
+            param={"min_games"}
+            selected_as_title={false}
+            normalizer={&to_string/1} />
+          <PlayerHasCoinDropdown id="tier_list_player_has_coin_dropdown" />
+          {#if premium_filters?(@premium_filters, @user)}
+            <RegionDropdown title={Components.Helper.warning_triangle(%{before: "Region"})} id={"deck_region"} filter_context={:public} />
+            <ForceFreshDropdown id={"force_fresh"} />
+          {/if}
+        </.filter_container>
 
         <div :if={{stats, total} = get_stats(@data, @criteria)}>
         <div class="chart-container" :if={@show_chart}>
@@ -102,38 +105,40 @@ defmodule Components.TierList do
             data={chart_data(stats, total)}
           />
         </div>
-        <table class="table is-fullwidth is-striped is-narrow">
-          <thead>
-            <th>Archetype</th>
-            <th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "winrate"))}>
-            {add_arrow("Winrate", "winrate", @params, true)}
-            </.link></th>
-            <th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
-            {add_arrow("Popularity", "total", @params)}
-            </.link></th>
-            <th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "turns"))}>
-            {add_arrow("Turns", "turns", @params)}
-            </.link></th>
-            <th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "duration"))}>
-            {add_arrow("Duration", "duration", @params)}
-            </.link></th>
-            <th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
-            {add_arrow("Climbing Speed", "climbing_speed", @params)}
-            </.link></th>
-          </thead>
-          <tbody>
-            <tr :for={as <- stats}>
+        <.table id={"tier_list_table_id"}>
+          <.thead>
+            <.trh>
+              <.th>Archetype</.th>
+              <.th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "winrate"))}>
+              {add_arrow("Winrate", "winrate", @params, true)}
+              </.link></.th>
+              <.th><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "total"))}>
+              {add_arrow("Popularity", "total", @params)}
+              </.link></.th>
+              <.th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "turns"))}>
+              {add_arrow("Turns", "turns", @params)}
+              </.link></.th>
+              <.th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "duration"))}>
+              {add_arrow("Duration", "duration", @params)}
+              </.link></.th>
+              <.th class="is-hidden-mobile"><.link patch={Routes.live_path(BackendWeb.Endpoint, @live_view, Map.put(@params, "sort_by", "climbing_speed"))}>
+              {add_arrow("Climbing Speed", "climbing_speed", @params)}
+              </.link></.th>
+            </.trh>
+          </.thead>
+          <.tbody>
+            <.trb :for={as <- stats}>
               <.archetype_cell archetype={as.archetype} params={@params} />
-              <td>
+              <.td>
                 <WinrateTag winrate={as.winrate}/>
-              </td>
-              <td>{percentage(as.total, total)}% ({as.total})</td>
-              <td class="is-hidden-mobile">{Float.round(as.turns, 1)}</td>
-              <td class="is-hidden-mobile">{Float.round(as.duration/60, 1)}</td>
-              <td class="is-hidden-mobile">{Float.round(as.climbing_speed, 2)}⭐/h</td>
-            </tr>
-          </tbody>
-        </table>
+              </.td>
+              <.td>{percentage(as.total, total)}% ({as.total})</.td>
+              <.td class="is-hidden-mobile">{Float.round(as.turns, 1)}</.td>
+              <.td class="is-hidden-mobile">{Float.round(as.duration/60, 1)}</.td>
+              <.td class="is-hidden-mobile">{Float.round(as.climbing_speed, 2)}⭐/h</.td>
+            </.trb>
+          </.tbody>
+        </.table>
         </div>
 
       </div>

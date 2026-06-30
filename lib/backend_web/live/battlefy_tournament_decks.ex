@@ -18,15 +18,14 @@ defmodule BackendWeb.BattlefyTournamentDecksLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">Explore Decks</div>
-        <div class="subtitle is-6">
-          <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/popularity"}>Popularity</a>
-          | <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/stats"}>Stats</a>
-          | <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/matchups"}>Matchup</a>
-          <span :if={link = Backend.Tournaments.get_any_link({"battlefy", @tournament_id})}>
-          | <a href={link}>Tournament</a>
-          </span>
-        </div>
+        <.page_header title="Explore Decks">
+          <:nav_links>
+            <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/popularity"}>Popularity</a>
+            <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/stats"}>Stats</a>
+            <a href={~p"/tournament-lineups/battlefy/#{@tournament_id}/matchups"}>Matchup</a>
+            <a :if={link = Backend.Tournaments.get_any_link({"battlefy", @tournament_id})} href={link}>Tournament</a>
+          </:nav_links>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <TournamentLineupExplorer id={"lineup_explorer#{@tournament_id}"} tournament_id={@tournament_id} tournament_source={"battlefy"} />
       </div>

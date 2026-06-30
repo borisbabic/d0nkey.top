@@ -20,14 +20,13 @@ defmodule BackendWeb.MultiTournamentMatchupsTableLive do
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">{@page_title}</div>
-      <div class="subtitle is-6">
-        <a href={~p"/tournament-lineups/popularity?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Popularity</a>
-        | <a href={~p"/tournament-lineups/stats?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Stats</a>
-        <span :for={{link, display} <- links(@tournament_tuples)}>
-          | <a href={link}>{display}</a>
-        </span>
-      </div>
+      <.page_header title={@page_title}>
+        <:nav_links>
+          <a href={~p"/tournament-lineups/popularity?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Popularity</a>
+          <a href={~p"/tournament-lineups/stats?#{%{"tournaments" => @raw_tournaments}}"}>Archetype Stats</a>
+          <a :for={{link, display} <- links(@tournament_tuples)} href={link}>{display}</a>
+        </:nav_links>
+      </.page_header>
       <FunctionComponents.Ads.below_title/>
       <div :if={@archetype_stats.loading}>
         Preparing stats...

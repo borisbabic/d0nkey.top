@@ -1,32 +1,33 @@
 defmodule Components.DraftPicksTable do
   @moduledoc false
-  use Surface.LiveComponent
-  use BackendWeb.ViewHelpers
+  use BackendWeb, :surface_live_component
   alias Backend.Fantasy.LeagueTeam
   prop(league, :map)
 
   def render(assigns) do
     ~F"""
-      <table class="table is-fullwidth is-striped"> 
-        <thead>
-          <th>
-            Competitor
-          </th>
-          <th>
-            Picked By
-          </th>
-          <th>
-            Picked at
-          </th>
-        </thead>
-        <tbody>
-          <tr :for={pick <- @league |> picks()} >
-            <td>{pick.name}</td>
-            <td>{pick.team_name}</td>
-            <td>{pick.picked_at |> render_datetime()}</td>
-          </tr>
-        </tbody>
-      </table>
+      <.table id="draft_picks_table"> 
+        <.thead>
+          <.trh>
+            <.th>
+              Competitor
+            </.th>
+            <.th>
+              Picked By
+            </.th>
+            <.th>
+              Picked at
+            </.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :for={pick <- @league |> picks()} >
+            <.td>{pick.name}</.td>
+            <.td>{pick.team_name}</.td>
+            <.td>{pick.picked_at |> render_datetime()}</.td>
+          </.trb>
+        </.tbody>
+      </.table>
 
     """
   end

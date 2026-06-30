@@ -50,24 +50,24 @@ defmodule BackendWeb.LineupSubmitterLive do
             <br>
             <br>
             <div :if={Enum.any?(@user_tournament_ids)}>
-              <table class="table is-narrow">
-                <thead>
-                  <tr>
-                    <th>Previous Tournaments for {@user.battletag}</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr :for={tournament_id <- @user_tournament_ids}>
-                    <td>
+              <.table id="previous tournaments">
+                <.thead>
+                  <.trh>
+                    <.th>Previous Tournaments for {@user.battletag}</.th>
+                    <.th></.th>
+                  </.trh>
+                </.thead>
+                <.tbody>
+                  <.trb :for={tournament_id <- @user_tournament_ids}>
+                    <.td>
                       <a href={~p"/tournament-lineups/#{@user.battletag}/#{tournament_id}"}">{tournament_id}</a>
-                    </td>
-                    <td>
+                    </.td>
+                    <.td>
                       <botton :on-click="delete-lineups" phx-value-id={tournament_id} class="button is-danger">Delete</botton>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    </.td>
+                  </.trb>
+                </.tbody>
+              </.table>
             </div>
           </.form>
         </div>

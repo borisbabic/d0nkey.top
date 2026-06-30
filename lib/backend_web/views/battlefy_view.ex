@@ -14,6 +14,7 @@ defmodule BackendWeb.BattlefyView do
   alias Backend.UserManager.User
   import FunctionComponents.Battlefy, only: [stage_selection_dropdown: 1]
   import FunctionComponents.DeckComponents, only: [class_icon: 1]
+  import FunctionComponents.Table
 
   @type future_opponent_team :: %{
           name: String.t(),
@@ -1223,38 +1224,38 @@ defmodule BackendWeb.BattlefyView do
 
     ~H"""
     <div class="title is-5"><%= @title %> </div>
-    <table class="table is-striped is-fullwidth is-narrow">
-        <thead>
-            <tr>
-                <th>Round</th>
-                <th>Top</th>
-                <th class="is-hidden-mobile">Top Decks</th>
-                <th>Score</th>
-                <th>Bottom</th>
-                <th class="is-hidden-mobile">Bottom Decks</th>
-            </tr>
-        </thead>
-        <tbody>
+    <.table id="future_opponents_table">
+        <.thead>
+            <.trh>
+                <.th>Round</.th>
+                <.th>Top</.th>
+                <.th class="is-hidden-mobile">Top Decks</.th>
+                <.th>Score</.th>
+                <.th>Bottom</.th>
+                <.th class="is-hidden-mobile">Bottom Decks</.th>
+            </.trh>
+        </.thead>
+        <.tbody>
             <%= for %{top: top, bottom: bottom, match_url: match_url, score: score, current_round: current_round} <- @future_matches do %>
-                <tr>
-                    <td><%= current_round %></td>
+                <.trb>
+                    <.td><%= current_round %></.td>
                     <%= if top == nil do %>
-                        <td></td><td></td>
+                        <.td></.td><.td></.td>
                     <% else %>
-                        <td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><%= top.decks %></td>
+                        <.td><a href={"#{ top.link }"}> <%= render_player_name(top.name, true) %></a></.td>
+                        <.td class="is-hidden-mobile"><%= top.decks %></.td>
                     <% end %>
-                    <td><a href={"#{ match_url }"}> <%= score %></a></td>
+                    <.td><a href={"#{ match_url }"}> <%= score %></a></.td>
                     <%= if bottom == nil do %>
-                        <td></td><td></td>
+                        <.td></.td><.td></.td>
                     <% else %>
-                        <td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></td>
-                        <td class="is-hidden-mobile"><%= bottom.decks %></td>
+                        <.td><a href={"#{ bottom.link }"}> <%= render_player_name(bottom.name, true) %></a></.td>
+                        <.td class="is-hidden-mobile"><%= bottom.decks %></.td>
                     <% end %>
-                </tr>
+                </.trb>
             <% end %>
-        </tbody>
-    </table>
+        </.tbody>
+    </.table>
     """
   end
 end

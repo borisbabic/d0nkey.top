@@ -36,17 +36,16 @@ defmodule BackendWeb.CardLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">{@card.name}</div>
-        <div class="subtitle is-5">
-          <a href={"https://hearthstone.wiki.gg/wiki/#{@card.name}"}>Wiki<HeroIcons.external_link /></a>
-          | <a href={"https://hearthstone.blizzard.com/cards/#{@card_id}"}>Official Site<HeroIcons.external_link /></a>
-          | <a href={~p"/decks?player_deck_includes[]=#{Hearthstone.canonical_id(@card_id)}"}>Find Decks</a>
-          | <a href={~p"/streamer-decks?#{%{include_cards: %{Hearthstone.canonical_id(@card_id) => true}}}"}>Find Streamer Decks</a>
-          <span :if={Backend.UserManager.User.can_access?(@user, :kaffy)}>
-          | <a href={~p"/admin/kaffy/hearthstone/card/#{@card_id}"}>Kaffy</a>
-          </span>
-          | <a :if={Backend.UserManager.User.can_access?(@user, :card)} :on-click="update_card">Update</a>
-        </div>
+        <.page_header title={@card.name}>
+          <:nav_links>
+            <a href={"https://hearthstone.wiki.gg/wiki/#{@card.name}"}>Wiki<HeroIcons.external_link /></a>
+            <a href={"https://hearthstone.blizzard.com/cards/#{@card_id}"}>Official Site<HeroIcons.external_link /></a>
+            <a href={~p"/decks?player_deck_includes[]=#{Hearthstone.canonical_id(@card_id)}"}>Find Decks</a>
+            <a href={~p"/streamer-decks?#{%{include_cards: %{Hearthstone.canonical_id(@card_id) => true}}}"}>Find Streamer Decks</a>
+            <a :if={Backend.UserManager.User.can_access?(@user, :kaffy)} href={~p"/admin/kaffy/hearthstone/card/#{@card_id}"}>Kaffy</a>
+            <a :if={Backend.UserManager.User.can_access?(@user, :card)} :on-click="update_card">Update</a>
+          </:nav_links>
+        </.page_header>
         <Card id={"card_#{@card_id}"} card={@card} />
         <FunctionComponents.Ads.below_title/>
         <Card :for={child <- Hearthstone.child_cards(@card)} id={"card_#{child.id}"} card={child} />

@@ -102,96 +102,98 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">Played Cards Archetype Popularity</div>
-      <PeriodDropdown id="period_dropdown" filter_context={:personal} aggregated_only={false} />
-      <FormatDropdown id="format_dropdown" filter_context={:personal} aggregated_only={false} />
-      <RankDropdown id="rank_dropdown" filter_context={:personal} aggregated_only={false} />
-      <ClassDropdown id="class_dropdown" param="player_class"/>
-      <LivePatchDropdown
-        id="min_played_count"
-        options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
-        title={"Min Played Count"}
-        param={"min_played_count"}
-        selected_as_title={false}
-        normalizer={&to_string/1} />
-      <LivePatchDropdown
-        id="exclude_config_levels"
-        options={0..30}
-        title={"Exclude Config Levels"}
-        param={"exclude_config_levels"}
-        current_val={@exclude_config_levels}
-        selected_as_title={false}
-        normalizer={&Util.to_int_or_orig/1} />
-      <LivePatchDropdown
-        id="sort_by"
-        options={[{"any_popularity", "Any Popularity"}, {"total", "Times Played"}]}
-        title={"Sort By"}
-        param={"sort_by"}
-        selected_as_title={false}
-        />
-      <LivePatchDropdown
-        id="mode_dropdown"
-        options={[{"popularity", "Popularity"}, {"report", "Report"}, {"auto_archetyping", "Auto Archetype"}]}
-        title={"Mode"}
-        param={"mode"}
-        current_val={@mode}
-        selected_as_title={true}
-        />
-      <LivePatchDropdown
-        id="filter_config_level"
-        options={[{nil, "Any"} | Enum.to_list(1..30)]}
-        title={"Filter Config Level"}
-        param={"filter_config_level"}
-        current_val={@filter_config_level}
-        selected_as_title={false}
-        normalizer={&Util.to_int_or_orig/1} />
-      <LivePatchDropdown
-        :if={@mode == "popularity"}
-        id="filter_out_whizbang"
-        options={[{"yes", "Exclude Whizbang"}, {"no", "Include Whizbang"}]}
-        title={"Filter out whizbang"}
-        param={"filter_out_whizbang"}
-        current_val={@filter_out_whizbang}
-        selected_as_title={true}
-        />
-      <MultiSelectDropdown
-        :if={excludes_options = excludes_options(@params["format"], @params["player_class"])}
-        id="excludes_to_user"
-        options={excludes_options}
-        title={"Excludes to use"}
-        param={"archetype_excludes"}
-        current_val={@params["archetype_excludes"] || []}
-        selected_as_title={false}
-        />
+      <.page_header title="Played Cards Archetype Popularity" />
+      <.filter_container>
+        <PeriodDropdown id="period_dropdown" filter_context={:personal} aggregated_only={false} />
+        <FormatDropdown id="format_dropdown" filter_context={:personal} aggregated_only={false} />
+        <RankDropdown id="rank_dropdown" filter_context={:personal} aggregated_only={false} />
+        <ClassDropdown id="class_dropdown" param="player_class"/>
+        <LivePatchDropdown
+          id="min_played_count"
+          options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          title={"Min Played Count"}
+          param={"min_played_count"}
+          selected_as_title={false}
+          normalizer={&to_string/1} />
+        <LivePatchDropdown
+          id="exclude_config_levels"
+          options={0..30}
+          title={"Exclude Config Levels"}
+          param={"exclude_config_levels"}
+          current_val={@exclude_config_levels}
+          selected_as_title={false}
+          normalizer={&Util.to_int_or_orig/1} />
+        <LivePatchDropdown
+          id="sort_by"
+          options={[{"any_popularity", "Any Popularity"}, {"total", "Times Played"}]}
+          title={"Sort By"}
+          param={"sort_by"}
+          selected_as_title={false}
+          />
+        <LivePatchDropdown
+          id="mode_dropdown"
+          options={[{"popularity", "Popularity"}, {"report", "Report"}, {"auto_archetyping", "Auto Archetype"}]}
+          title={"Mode"}
+          param={"mode"}
+          current_val={@mode}
+          selected_as_title={true}
+          />
+        <LivePatchDropdown
+          id="filter_config_level"
+          options={[{nil, "Any"} | Enum.to_list(1..30)]}
+          title={"Filter Config Level"}
+          param={"filter_config_level"}
+          current_val={@filter_config_level}
+          selected_as_title={false}
+          normalizer={&Util.to_int_or_orig/1} />
+        <LivePatchDropdown
+          :if={@mode == "popularity"}
+          id="filter_out_whizbang"
+          options={[{"yes", "Exclude Whizbang"}, {"no", "Include Whizbang"}]}
+          title={"Filter out whizbang"}
+          param={"filter_out_whizbang"}
+          current_val={@filter_out_whizbang}
+          selected_as_title={true}
+          />
+        <MultiSelectDropdown
+          :if={excludes_options = excludes_options(@params["format"], @params["player_class"])}
+          id="excludes_to_user"
+          options={excludes_options}
+          title={"Excludes to use"}
+          param={"archetype_excludes"}
+          current_val={@params["archetype_excludes"] || []}
+          selected_as_title={false}
+          />
 
-      <LivePatchDropdown
-        :if={"auto_archetyping" == @mode}
-        id="min_min_played_count"
-        options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
-        title={"Min Min Played Count (for auto archetyping)"}
-        param={"min_min_played_count"}
-        selected_as_title={true}
-        normalizer={&to_string/1} />
-      <LivePatchDropdown
-        :if={"auto_archetyping" == @mode}
-        id="max_min_played_count"
-        options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
-        title={"Max Min Played Count (for auto archetyping)"}
-        param={"max_min_played_count"}
-        selected_as_title={true}
-        normalizer={&to_string/1} />
-      <LivePatchDropdown
-        :if={"auto_archetyping" == @mode}
-        id="total_games_percent"
-        options={[0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]}
-        title={"Total Games Percent For Min Account(for auto archetyping)"}
-        param={"total_games_percent"}
-        selected_as_title={true}
-        normalizer={&to_string/1} />
-      <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
-      <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
-      <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
-      <PlayableCardSelect id={"player_played_cards_excludes"} format={@params["format"]} param={"player_played_cards_excludes"} selected={@params["player_played_cards_excludes"] || []} title="Not Played cards"/>
+        <LivePatchDropdown
+          :if={"auto_archetyping" == @mode}
+          id="min_min_played_count"
+          options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          title={"Min Min Played Count (for auto archetyping)"}
+          param={"min_min_played_count"}
+          selected_as_title={true}
+          normalizer={&to_string/1} />
+        <LivePatchDropdown
+          :if={"auto_archetyping" == @mode}
+          id="max_min_played_count"
+          options={[1, 23, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          title={"Max Min Played Count (for auto archetyping)"}
+          param={"max_min_played_count"}
+          selected_as_title={true}
+          normalizer={&to_string/1} />
+        <LivePatchDropdown
+          :if={"auto_archetyping" == @mode}
+          id="total_games_percent"
+          options={[0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]}
+          title={"Total Games Percent For Min Account(for auto archetyping)"}
+          param={"total_games_percent"}
+          selected_as_title={true}
+          normalizer={&to_string/1} />
+        <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
+        <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
+        <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
+        <PlayableCardSelect id={"player_played_cards_excludes"} format={@params["format"]} param={"player_played_cards_excludes"} selected={@params["player_played_cards_excludes"] || []} title="Not Played cards"/>
+      </.filter_container>
 
       <div :if={@needs_class?}>
         Select a class before proceeding. I'd suggest selecting your other filters first.
@@ -217,24 +219,26 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
             Loading Card Popularity Report
           </div>
           <div :if={!Enum.empty?(@intermediate_report) || (@card_report.ok? && !@card_report.loading)} class="table-scrolling-sticky-wrapper">
-            <table class="table is-fullwidth is-striped tw-table">
-              <thead>
-                <th class="tw-bg-gray-700">Card</th>
-                <th class="tw-bg-gray-700" >Archetype</th>
-                <th class="tw-bg-gray-700" >Config Level</th>
-                <th class="tw-bg-gray-700" >Popularity in Archetype</th>
-              </thead>
-              <tbody>
-                <tr :for={{_card_name, card_report} <- (if @card_report.ok?, do: @card_report.result, else: @intermediate_report)}>
-                  <td>{Card.name(card_report.card)}</td>
-                  <td>{card_report.archetype}</td>
-                  <td>{card_report.config_level}</td>
-                  <td>
+            <.table id="card_report_table">
+              <.thead>
+                <.trh>
+                  <.th class="tw-bg-gray-700">Card</.th>
+                  <.th class="tw-bg-gray-700" >Archetype</.th>
+                  <.th class="tw-bg-gray-700" >Config Level</.th>
+                  <.th class="tw-bg-gray-700" >Popularity in Archetype</.th>
+                </.trh>
+              </.thead>
+              <.tbody>
+                <.trb :for={{_card_name, card_report} <- (if @card_report.ok?, do: @card_report.result, else: @intermediate_report)}>
+                  <.td>{Card.name(card_report.card)}</.td>
+                  <.td>{card_report.archetype}</.td>
+                  <.td>{card_report.config_level}</.td>
+                  <.td>
                     <WinrateTag tag_name="div" class="tw-h-full" winrate={card_report.popularity} offset={-0.25}/>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </.td>
+                </.trb>
+              </.tbody>
+            </.table>
           </div>
         </div>
         <div :if={@mode == "popularity"}>
@@ -242,31 +246,33 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
             Loading Card Popularity
           </div>
          <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading} class="table-scrolling-sticky-wrapper">
-          <table class="table is-fullwidth is-striped tw-table">
-            <thead>
-              <th class="tw-bg-gray-700">Card</th>
-              <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</th>
-              <th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Config Level</th>
-              <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={"total"}>
-                {add_arrow("Times Played", "total", @params, true)}
-              </th>
-              <th class="tw-bg-gray-700 ":on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @archetypes.result}>
-                {add_arrow(archetype, to_string(archetype), @params)}
-              </th>
-            </thead>
-            <tbody>
-              <tr :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, @filter_config_level, @config_map, @filter_out_whizbang)}> <td class="sticky-column">
+          <.table class="table is-fullwidth is-striped tw-table">
+            <.thead>
+              <.trh>
+                <.th class="tw-bg-gray-700">Card</.th>
+                <.th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</.th>
+                <.th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Config Level</.th>
+                <.th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={"total"}>
+                  {add_arrow("Times Played", "total", @params, true)}
+                </.th>
+                <.th class="tw-bg-gray-700 ":on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @archetypes.result}>
+                  {add_arrow(archetype, to_string(archetype), @params)}
+                </.th>
+              </.trh>
+            </.thead>
+            <.tbody>
+              <.trb :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, @filter_config_level, @config_map, @filter_out_whizbang)}> <.td class="sticky-column">
                   <div class="decklist_card_container">
                     <DecklistCard :if={card} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
-                </td>
-                <td :if={User.can_access?(@user, :archetyping)}>{card_archetype}</td>
-                <td :if={User.can_access?(@user, :archetyping)}>{level}</td>
-                <td>{total}</td>
-                <td :for={archetype <- @archetypes.result} class={class(archetype, card_archetype)}>{Map.get(popularity_map, archetype, 0) |> Util.percent(total) |> Float.round(1)}</td>
-              </tr>
-            </tbody>
-          </table>
+                </.td>
+                <.td :if={User.can_access?(@user, :archetyping)}>{card_archetype}</.td>
+                <.td :if={User.can_access?(@user, :archetyping)}>{level}</.td>
+                <.td>{total}</.td>
+                <.td :for={archetype <- @archetypes.result} class={class(archetype, card_archetype)}>{Map.get(popularity_map, archetype, 0) |> Util.percent(total) |> Float.round(1)}</.td>
+              </.trb>
+            </.tbody>
+          </.table>
           </div>
         </div>
       </div>

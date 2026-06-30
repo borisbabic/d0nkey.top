@@ -128,6 +128,7 @@ defmodule Components.DecksExplorer do
     <div>
       <div phx-hook="InfiniteScrollLoaded" id="deck_stats_container" :if={{params, search_filters} = {@actual_params, @search_filters}}>
 
+      <.filter_container>
         <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)}/>
         <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
         <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
@@ -194,6 +195,7 @@ defmodule Components.DecksExplorer do
           param={"no_archetype"}
           selected_as_title={false}
         />
+      </.filter_container>
         <br>
         <br>
 

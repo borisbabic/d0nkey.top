@@ -23,7 +23,7 @@ defmodule BackendWeb.DeckviewerLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-1" :if={@title}> {@title}</div>
+        <.page_header :if={@title} title={@title} />
         <br>
         <div class="level">
           <div class="level-item">

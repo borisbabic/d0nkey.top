@@ -37,13 +37,16 @@ defmodule BackendWeb.ArchetypeLive do
 
   def render(assigns) do
     ~F"""
-    <div class="title is-2">{@title || @archetype}</div>
-    <div class="subtitle is-6">
-      <span><a href={~p"/card-stats?#{card_stats_params(@archetype, @stats_params)}"}>Card Stats</a> </span>
-      <span>| <a href={~p"/decks?#{decks_params(@archetype, @stats_params) |> add_games_filters(@stats_params)}"}>Decks</a></span>
-      <span>| <a href={~p"/replays?#{decks_params(@archetype, @stats_params)}"}>Replays Stats</a> </span>
-      <AggLogSubtitle criteria={@stats_params} />
-    </div>
+    <.page_header title={@title || @archetype}>
+      <:nav_links>
+        <a href={~p"/card-stats?#{card_stats_params(@archetype, @stats_params)}"}>Card Stats</a>
+        <a href={~p"/decks?#{decks_params(@archetype, @stats_params) |> add_games_filters(@stats_params)}"}>Decks</a>
+        <a href={~p"/replays?#{decks_params(@archetype, @stats_params)}"}>Replays Stats</a>
+      </:nav_links>
+      <:meta_info>
+        <AggLogSubtitle criteria={@stats_params} />
+      </:meta_info>
+    </.page_header>
     <div id="below-title-ads">
       <FunctionComponents.Ads.below_title/>
     </div>

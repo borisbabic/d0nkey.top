@@ -1,63 +1,62 @@
-<div class="title is-2"><%= @title %></div>
-<div class="subtitle is-6">
-    <p>
-        <a href={"#{ Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)}"}>Instructions for streamers</a> <a href="/hdt-plugin" target="_blank"></a>
-    </p>
-</div>
+<.page_header title={@title}>
+  <:nav_links>
+    <a href={"#{ Routes.streaming_path(BackendWeb.Endpoint, :streamer_instructions)}"}>Instructions for streamers</a> <a href="/hdt-plugin" target="_blank"></a>
+  </:nav_links>
+</.page_header>
 <FunctionComponents.Ads.below_title/>
-<div class="columns is-pulled-left">
-<%= @prev_button %>
-<%= @next_button %>
-<%= render_dropdowns @dropdowns %>
-<div class="dropdown is-hoverable">
-    <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "include_cards", "title" => "Include Cards", "selected" => @include, "format" => @conn.query_params["format"]}) %>
-</div>
-<div class="dropdown is-hoverable">
-    <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "exclude_cards", "title" => "Exclude Cards", "selected" => @exclude, "format" => @conn.query_params["format"]}) %>
-</div>
-<div class="dropdown is-hoverable">
-    <%= live_render(@conn, BackendWeb.StreamerPickerLive, session: %{"base_url" => @base_url}) %>
-</div>
-</div>
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-        <tr>
-            <th>Deck</th>
-            <th>Streamer</th>
-            <th>Format</th>
-            <th><abbr title="Legend Peak">Peak</abbr></th>
-            <th class="is-hidden-mobile"><abbr title="Latest Legend Rank">Latest</abbr></th>
-            <th class="is-hidden-mobile"><abbr title="Worst Legend Rank">Worst</abbr></th>
-            <%!-- <th class="is-hidden-mobile"><abbr title="Games Played or estimated time played when games unknown">Amount Played</abbr></th> --%>
-            <th class="is-hidden-mobile">Win - Loss</th>
-            <th>Links</th>
-            <th class="is-hidden-mobile">Last Played</th>
-        </tr>
-    </thead>
-    <tbody>
+<.filter_container>
+  <%= @prev_button %>
+  <%= @next_button %>
+  <%= render_dropdowns @dropdowns %>
+  <div class="dropdown is-hoverable">
+      <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "include_cards", "title" => "Include Cards", "selected" => @include, "format" => @conn.query_params["format"]}) %>
+  </div>
+  <div class="dropdown is-hoverable">
+      <%= live_render(@conn, BackendWeb.PlayableCardSelectLive, session: %{"base_url" => @base_url, "param" => "exclude_cards", "title" => "Exclude Cards", "selected" => @exclude, "format" => @conn.query_params["format"]}) %>
+  </div>
+  <div class="dropdown is-hoverable">
+      <%= live_render(@conn, BackendWeb.StreamerPickerLive, session: %{"base_url" => @base_url}) %>
+  </div>
+</.filter_container>
+<.table id="streamer_decks_table">
+    <.thead>
+        <.trh>
+            <.th>Deck</.th>
+            <.th>Streamer</.th>
+            <.th>Format</.th>
+            <.th><abbr title="Legend Peak">Peak</abbr></.th>
+            <.th class="is-hidden-mobile"><abbr title="Latest Legend Rank">Latest</abbr></.th>
+            <.th class="is-hidden-mobile"><abbr title="Worst Legend Rank">Worst</abbr></.th>
+            <%!-- <.th class="is-hidden-mobile"><abbr title="Games Played or estimated time played when games unknown">Amount Played</abbr></.th> --%>
+            <.th class="is-hidden-mobile">Win - Loss</.th>
+            <.th>Links</.th>
+            <.th class="is-hidden-mobile">Last Played</.th>
+        </.trh>
+    </.thead>
+    <.tbody>
         <%= for r <- @rows do %>
-        <tr>
-            <td>
+        <.trb>
+            <.td>
                 <%= live_render(@conn, BackendWeb.ExpandableDeckLive, session: %{"deck" => r.deck, "show_cards" => false }) %>
-            </td>
-            <td>
+            </.td>
+            <.td>
                 <span><%= r.streamer %></span>
-            </td>
-            <td><%= render_game_type r.format %></td>
-            <td><%= render_legend_rank r.best_legend_rank %></td>
-            <td class="is-hidden-mobile"><%= render_legend_rank r.latest_legend_rank %></td>
-            <td class="is-hidden-mobile"><%= render_legend_rank r.worst_legend_rank %></td>
-            <td class="is-hidden-mobile"><%= r.win_loss %></td>
-            <td>
+            </.td>
+            <.td><%= render_game_type r.format %></.td>
+            <.td><%= render_legend_rank r.best_legend_rank %></.td>
+            <.td class="is-hidden-mobile"><%= render_legend_rank r.latest_legend_rank %></.td>
+            <.td class="is-hidden-mobile"><%= render_legend_rank r.worst_legend_rank %></.td>
+            <.td class="is-hidden-mobile"><%= r.win_loss %></.td>
+            <.td>
                 <a href={"#{ r.deck_link }"}>
                     <span class="icon tag is-link">
                         <HeroIcons.users />
                     </span>
                 </a>
                 <%= r.links %>
-            </td>
-            <td class="is-hidden-mobile"><%= render_datetime r.last_played %></td>
-        </tr>
+            </.td>
+            <.td class="is-hidden-mobile"><%= render_datetime r.last_played %></.td>
+        </.trb>
         <% end %>
-    </tbody>
-</table>
+    </.tbody>
+</.table>

@@ -17,12 +17,7 @@ defmodule BackendWeb.ProfileSettingsLive do
   def render(assigns) do
     ~F"""
     <div class="tw-max-w-4xl tw-mx-auto tw-p-6 tw-space-y-8 tw-font-sans tw-text-slate-300">
-      
-      <!-- Title Area -->
-      <header class="tw-border-b tw-border-slate-800 tw-pb-4">
-        <div class="title is-2 text-white">Profile & Settings</div>
-      </header>
-      
+      <.page_header title="Profile & Settings"/>
       <FunctionComponents.Ads.below_title/>
 
       <div :if={@user}>

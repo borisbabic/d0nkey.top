@@ -10,30 +10,30 @@ defmodule Components.PeriodTable do
 
   def render(assigns) do
     ~F"""
-    <table class="table is-fullwidth">
-      <thead>
-        <tr>
-          <th>Period</th>
-          <th>Start</th>
-          <th>End</th>
-          <th :if={@include_decks_link}>Decks</th>
-          <th :if={@include_meta_link}>Decks</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr :for={%{display: display, start_time: start_time, end_time: end_time, slug: slug} <- periods(@periods)}>
-          <td>{display}</td>
-          <td><Helper.datetime datetime={start_time}/></td>
-          <td><Helper.datetime datetime={end_time}/></td>
-          <td :if={@include_decks_link}>
+    <.table id="period_table">
+      <.thead>
+        <.trh>
+          <.th>Period</.th>
+          <.th>Start</.th>
+          <.th>End</.th>
+          <.th :if={@include_decks_link}>Decks</.th>
+          <.th :if={@include_meta_link}>Decks</.th>
+        </.trh>
+      </.thead>
+      <.tbody>
+        <.trb :for={%{display: display, start_time: start_time, end_time: end_time, slug: slug} <- periods(@periods)}>
+          <.td>{display}</.td>
+          <.td><Helper.datetime datetime={start_time}/></.td>
+          <.td><Helper.datetime datetime={end_time}/></.td>
+          <.td :if={@include_decks_link}>
             <a href={~p"/decks?period=#{slug}"}>Decks</a>
-          </td>
-          <td :if={@include_meta_link}>
+          </.td>
+          <.td :if={@include_meta_link}>
             <a href={~p"/meta?period=#{slug}"}>Meta</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </.td>
+        </.trb>
+      </.tbody>
+    </.table>
     """
   end
 

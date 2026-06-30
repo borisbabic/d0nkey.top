@@ -139,6 +139,7 @@ defmodule Components.CardsExplorer do
   def render(assigns) do
     ~F"""
       <div phx-hook="InfiniteScrollLoaded" id="cards_container">
+        <.filter_container>
         <#slot {@dropdowns_before} />
         <FormatDropdown :if={@format_filter} id="cards_format_dropdown", options={@format_options || []} />
         <CardSetDropdown id="card_set_dropdown" group_slug={group_slug(@params["format"])}/>
@@ -154,6 +155,8 @@ defmodule Components.CardsExplorer do
         <!-- <LivePatchDropdown id="cards_collectible" param="collectible" title="Collectible" options={[{"no", "Uncollectible"}, {"yes", "Collectible"}]} /> -->
         <LivePatchDropdown id="order_by_dropdown" param="order_by" title="Sort" options={[{"latest", "Latest"}, {"mana", "Mana"}, {"mana_in_class", "Mana in Class"}]} />
         <#slot {@additional_filters} />
+        </.filter_container>
+        
         <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
           <input name="search" type="text" class="input has-text-black" placeholder="Search name/text" value={Map.get(@params, "search", "")} />
         </.form>

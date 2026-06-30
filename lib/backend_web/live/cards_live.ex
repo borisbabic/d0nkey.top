@@ -25,7 +25,7 @@ defmodule BackendWeb.CardsLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">Hearthstone Cards</div>
+        <.page_header title="Hearthstone Cards" />
         <FunctionComponents.Ads.below_title/>
         <CardsExplorer live_view={__MODULE__} id="cards_explorer" params={@params} format_options={format_options()}/>
       </div>

@@ -1,6 +1,6 @@
 defmodule Components.FantasyLeague do
   @moduledoc false
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
   alias Components.FantasyModal
   alias Components.LeagueInfoModal
   alias Components.RosterModal
@@ -9,7 +9,6 @@ defmodule Components.FantasyLeague do
   alias Backend.Fantasy
   alias Backend.FantasyCompetitionFetcher, as: ResultsFetcher
   alias FunctionComponents.Dropdown
-  use BackendWeb.ViewHelpers
   prop(league, :any)
   prop(round, :any, default: nil)
   prop(user, :map, from_context: :user)
@@ -17,60 +16,55 @@ defmodule Components.FantasyLeague do
   def render(%{league: %{id: _}} = assigns) do
     ~F"""
       <div>
-          <div class="title is-2">{@league.name} </div>
-
-          <div class="level is-mobile ">
-            <div class="level-left">
-
-              <div class="level-item" :if={League.can_manage?(@league, @user)} >
-                  <FantasyModal id={"edit_modal_#{@league.id}"} league={@league} title="Edit League"/>
-              </div>
-              <div class="level-item" :if={!League.can_manage?(@league, @user)} >
-                  <LeagueInfoModal id={"league_info_modal_#{@league.id}"} league={@league}/>
-              </div>
-
-
-              <Dropdown.menu title={round_title(@league, @round)} class="level-item">
-                <Dropdown.item
-                  :for={r <- round_options(@league)}
-                  phx-click="set_round"
-                  phx-target={@myself}
-                  phx-value-round={r}
-                  class={"is-link #{current_round_option(@league, @round) == r && "is-active" || ""}"}>
-                    {round_title(r)}
-                </Dropdown.item>
-              </Dropdown.menu>
-
-              <div class="level-item">
-                <a class="is-link button"  href={"/fantasy/leagues/#{@league.id}/draft"}>{draft_title(@league)}</a>
-              </div>
-
-              <div class="level-item" :if={League.can_manage?(@league, @user)} >
-                <a class="is-link button"  href={"/fantasy/leagues/join/#{@league.join_code}"}>Join Link</a>
-              </div>
-
-
+          <.page_header title={@league.name} />
+          <.filter_container>
+            <div :if={League.can_manage?(@league, @user)} >
+                <FantasyModal id={"edit_modal_#{@league.id}"} league={@league} title="Edit League"/>
             </div>
-          </div>
+            <div :if={!League.can_manage?(@league, @user)} >
+                <LeagueInfoModal id={"league_info_modal_#{@league.id}"} league={@league}/>
+            </div>
 
-          <table class="table is-fullwidth is-striped">
-            <thead>
-              <th>Team</th>
-              <th>Points</th>
-              <th>Actions</th>
-            </thead>
-            <tbody>
-             <tr :for={{lt, points} <- teams_with_points(@league, @round)}>
-              <td>{lt |> LeagueTeam.display_name()}</td>
-              <td>{points}</td>
-              <td>
-                <button  :if={can_remove?(@league, @user, lt)} class="button" type="button" :on-click="remove_league_team" phx-value-id={"#{lt.id}"}>Remove</button>
-                <RosterModal id={"roster_modal_#{lt.id}"} league_team={lt} />
-              </td>
-            </tr>
 
-            </tbody>
-          </table>
+            <Dropdown.menu title={round_title(@league, @round)} class="level-item">
+              <Dropdown.item
+                :for={r <- round_options(@league)}
+                phx-click="set_round"
+                phx-target={@myself}
+                phx-value-round={r}
+                class={"is-link #{current_round_option(@league, @round) == r && "is-active" || ""}"}>
+                  {round_title(r)}
+              </Dropdown.item>
+            </Dropdown.menu>
+
+            <div class="level-item">
+              <a class="is-link button"  href={"/fantasy/leagues/#{@league.id}/draft"}>{draft_title(@league)}</a>
+            </div>
+
+            <div :if={League.can_manage?(@league, @user)} >
+              <a class="is-link button"  href={"/fantasy/leagues/join/#{@league.join_code}"}>Join Link</a>
+            </div>
+          </.filter_container>
+
+          <.table id="fanstay_league_teams_table">
+            <.thead>
+              <.trh>
+                <.th>Team</.th>
+                <.th>Points</.th>
+                <.th>Actions</.th>
+              </.trh>
+            </.thead>
+            <.tbody>
+             <.trb :for={{lt, points} <- teams_with_points(@league, @round)}>
+                <.td>{lt |> LeagueTeam.display_name()}</.td>
+                <.td>{points}</.td>
+                <.td>
+                  <button  :if={can_remove?(@league, @user, lt)} class="button" type="button" :on-click="remove_league_team" phx-value-id={"#{lt.id}"}>Remove</button>
+                  <RosterModal id={"roster_modal_#{lt.id}"} league_team={lt} />
+                </.td>
+              </.trb>
+            </.tbody>
+          </.table>
 
       </div>
     """
@@ -78,7 +72,7 @@ defmodule Components.FantasyLeague do
 
   def render(assigns) do
     ~F"""
-    <div class="title is-2">League not found</div>
+      <.page_header title="League not found" />
     """
   end
 

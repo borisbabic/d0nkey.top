@@ -22,7 +22,7 @@ defmodule BackendWeb.CardStatsLive do
 
   def render(%{missing_premium: true} = assigns) do
     ~F"""
-        <div class="title is-2">{@title || "Card Stats"}</div>
+        <.page_header title={@title || "Card Stats"} />
         <div class="title is-3">You do not have access to these filters. Join the appropriate tier to access <Components.Socials.patreon link="/patreon" /></div>
     """
   end
@@ -46,10 +46,7 @@ defmodule BackendWeb.CardStatsLive do
           </:nav_links>
 
           <:meta_info>
-            <div class="tw-text-slate-500">
-              To contribute use <a href="https://www.firestoneapp.com/" target="_blank" class="tw-text-slate-400 hover:tw-text-sky-400 tw-underline tw-decoration-slate-600">Firestone</a>
-            </div>
-
+            <.contribution hdt={false} />
             <div class="tw-hidden md:tw-block tw-h-3 tw-w-px tw-bg-slate-800"></div>
 
             <AggLogSubtitle criteria={@criteria} />

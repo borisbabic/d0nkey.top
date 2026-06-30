@@ -8,38 +8,40 @@ defmodule Components.FantasyLeaguesTable do
 
   def render(assigns) do
     ~F"""
-      <table class="table is-striped is-fullwidth">
-        <thead>
-          <th>
-            Name
-          </th>
-          <th>
-            Competition
-          </th>
-          <th>
-            Owner
-          </th>
-          <th>
-            Members
-          </th>
-        </thead>
-        <tbody>
-          <tr :for={league <- @leagues |> Enum.uniq_by(& &1.id)}>
-            <td>
+      <.table id="fantasy_leagues_table">
+        <.thead>
+          <.trh>
+            <.th>
+              Name
+            </.th>
+            <.th>
+              Competition
+            </.th>
+            <.th>
+              Owner
+            </.th>
+            <.th>
+              Members
+            </.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :for={league <- @leagues |> Enum.uniq_by(& &1.id)}>
+            <.td>
               <a href={"/fantasy/leagues/#{league.id}"}>{league.name}</a>
-            </td>
-            <td>
+            </.td>
+            <.td>
               {league |> competition_name()}
-            </td>
-            <td>
+            </.td>
+            <.td>
               {league.owner |> User.display_name()}
-            </td>
-            <td>
+            </.td>
+            <.td>
               {league |> League.teams() |> Enum.count()}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </.td>
+          </.trb>
+        </.tbody>
+      </.table>
     """
   end
 end

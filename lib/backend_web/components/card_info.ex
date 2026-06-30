@@ -34,16 +34,25 @@ defmodule Components.CardInfo do
   )
 
   def render(assigns) do
+    [headers | rows] = rows(assigns.card, assigns.attrs)
+    assigns = assigns |> assign(rows: rows, headers: headers)
+
     ~F"""
       <div>
-        <table class="table is-striped is-narrow">
-          <tbody>
-            <tr :for={{name, value} <- rows(@card, @attrs)}>
-              <td>{name}</td>
-              <td>{value}</td>
-            </tr>
-          </tbody>
-        </table>
+        <.table id="card_info_table">
+          <.thead>
+            <.trh>
+              <.td>{elem(@headers, 0)}</.td>
+              <.td>{elem(@headers, 1)}</.td>
+            </.trh>
+          </.thead>
+          <.tbody>
+            <.trb :for={{name, value} <- @rows}>
+              <.td>{name}</.td>
+              <.td>{value}</.td>
+            </.trb>
+          </.tbody>
+        </.table>
       </div>
     """
   end

@@ -13,10 +13,11 @@ defmodule BackendWeb.PlayerDecksLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">{@page_title}</div>
-        <div class="subtitle is-6">
-        Powered by <a href="https://www.firestoneapp.com/">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        </div>
+        <.page_header title={"#{@group.name} Replays"}>
+          <:meta_info>
+            <.contribution powered={true} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <DecksExplorer
           id="decks_explorer"

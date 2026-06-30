@@ -16,12 +16,15 @@ defmodule BackendWeb.JoinLeagueLive do
     ~F"""
       <div>
         <div :if={@league} >
-          <div class="title is-2"> Join {@league.name}</div>
-          <div class="subtitle is-5 tag"> League owner: {@league.owner |> User.display_name()}</div>
-          <div class="subtitle is-5 tag"> Members: {Fantasy.league_members(@league) |> Enum.count()} / {@league.max_teams} </div>
-          <div class="subtitle is-5 tag"> Point System: {League.scoring_display(@league)} </div>
-          <div class="subtitle is-5 tag"> Roster Size: {@league.roster_size} </div>
-          <div :if={@league.draft_deadline} class="subtitle is-5 tag"> Draft Deadline: {render_datetime(@league.draft_deadline )} </div>
+          <.page_header title={"Join #{@league.name}"}>
+            <:meta_info>
+              <div class="tag"> League owner: {@league.owner |> User.display_name()}</div>
+              <div class="tag"> Members: {Fantasy.league_members(@league) |> Enum.count()} / {@league.max_teams} </div>
+              <div class="tag"> Point System: {League.scoring_display(@league)} </div>
+              <div class="tag"> Roster Size: {@league.roster_size} </div>
+              <div :if={@league.draft_deadline} class="tag"> Draft Deadline: {render_datetime(@league.draft_deadline )} </div>
+            </:meta_info>
+          </.page_header>
             <br>
           <FunctionComponents.Ads.below_title/>
           <a class="link" href={"/fantasy/leagues/#{@league.id}"}>View League</a>

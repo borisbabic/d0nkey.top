@@ -31,7 +31,7 @@ defmodule BackendWeb.DeckBuilderLive do
   def render(assigns) do
     ~F"""
     <div>
-      <div class="title is-2">Hearthstone DeckBuilder</div>
+      <.page_header title="Hearthstone DeckBuilder" />
       <FunctionComponents.Ads.below_title/>
       <div :if={@deck}>
         <div class="sticky-top decklist_card_container darker-grey-background">

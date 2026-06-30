@@ -13,11 +13,12 @@ defmodule BackendWeb.EsportsLive do
   def render(assigns) do
     ~F"""
     <div>
-      <div class="title is-2">Esports</div>
-      <div class="subtitle is-6">
-        <a href={~p"/mt/tour-stops"}>Tour Stops</a>
-        | <a href={~p"/legacy-hsesports"}>Legacy HSEsports</a>
-      </div>
+      <.page_header title="Esports">
+        <:nav_links>
+          <a href={~p"/mt/tour-stops"}>Tour Stops</a>
+          <a href={~p"/legacy-hsesports"}>Legacy HSEsports</a>
+        </:nav_links>
+      </.page_header>
       <div class="columns is-narrow is-multiline is-mobile">
         <div class="column">
           <.hsesports_card />

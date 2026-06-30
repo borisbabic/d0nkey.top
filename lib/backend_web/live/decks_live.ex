@@ -17,10 +17,16 @@ defmodule BackendWeb.DecksLive do
   def render(assigns) do
     ~F"""
     <div>
-      <div class="title is-2">Decks</div>
-      <div class="subtitle is-6">
-      <a href={~p"/stats/explanation"}>Stats Explanation</a><AggLogSubtitle criteria={@filters} />| To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-      </div>
+      <.page_header title="Decks">
+        <:nav_links>
+          <a href={~p"/stats/explanation"}>Stats Explanation</a>
+        </:nav_links>
+        <:meta_info>
+          <.contribution />
+           <div class="tw-hidden md:tw-block tw-h-3 tw-w-px tw-bg-slate-800"></div>
+          <AggLogSubtitle criteria={@filters} />
+        </:meta_info>
+      </.page_header>
       <FunctionComponents.Ads.below_title />
       <DecksExplorer live_view={__MODULE__} id="decks_explorer" params={@filters} filter_context={:public} min_games_floor={@min_games_floor}/>
     </div>

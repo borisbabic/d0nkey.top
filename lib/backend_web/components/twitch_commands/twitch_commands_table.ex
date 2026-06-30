@@ -11,45 +11,47 @@ defmodule Components.TwitchCommandsTable do
 
   def render(assigns) do
     ~F"""
-    <table class={"table", "is-striped": @striped, "is-fullwidth": @fullwidth}>
-      <thead>
-        <th>Manage</th>
-        <th>Type</th>
-        <th>Message</th>
-        <th>Sender</th>
-        <th>Response</th>
-        <th>Enabled</th>
-      {#if @view_advanced}
-        <th>Random Chance</th>
-        <th>Message Regex</th>
-        <th>Message Regex Flags</th>
-        <th>Sender Regex</th>
-        <th>Sender Regex Flags</th>
-      {/if}
-      </thead>
-      <tbody>
-        <tr :for={command <- @commands}>
-          <td>
+    <.table id={"twitch_commands_table"}>
+      <.thead>
+        <.trh>
+          <.th>Manage</.th>
+          <.th>Type</.th>
+          <.th>Message</.th>
+          <.th>Sender</.th>
+          <.th>Response</.th>
+          <.th>Enabled</.th>
+        {#if @view_advanced}
+          <.th>Random Chance</.th>
+          <.th>Message Regex</.th>
+          <.th>Message Regex Flags</.th>
+          <.th>Sender Regex</.th>
+          <.th>Sender Regex Flags</.th>
+        {/if}
+        </.trh>
+      </.thead>
+      <.tbody>
+        <.trb :for={command <- @commands}>
+          <.td>
             {#if @user && TwitchBot.can_manage?(command, @user)}
             <button class="button" :if={{event, button_title} = enabled_button(command)} phx-value-id={command.id} :on-click={event}>{button_title}</button>
             <button class="button" phx-value-id={command.id} :on-click="delete">Delete</button>
             {/if}
-          </td>
-          <td>{command.type}</td>
-          <td>{command.message}</td>
-          <td>{command.sender}</td>
-          <td>{command.response}</td>
-          <td>{command.enabled}</td>
+          </.td>
+          <.td>{command.type}</.td>
+          <.td>{command.message}</.td>
+          <.td>{command.sender}</.td>
+          <.td>{command.response}</.td>
+          <.td>{command.enabled}</.td>
         {#if @view_advanced}
-          <td>{command.random_chance}</td>
-          <td>{command.message_regex}</td>
-          <td>{command.message_regex_flags}</td>
-          <td>{command.sender_regex}</td>
-          <td>{command.sender_regex_flags}</td>
+          <.td>{command.random_chance}</.td>
+          <.td>{command.message_regex}</.td>
+          <.td>{command.message_regex_flags}</.td>
+          <.td>{command.sender_regex}</.td>
+          <.td>{command.sender_regex_flags}</.td>
         {/if}
-        </tr>
-      </tbody>
-    </table>
+        </.trb>
+      </.tbody>
+    </.table>
     """
   end
 

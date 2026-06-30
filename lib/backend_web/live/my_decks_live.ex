@@ -22,12 +22,15 @@ defmodule BackendWeb.MyDecksLive do
   def render(assigns) do
     ~F"""
       <div :if={btag = User.battletag(@user)}>
-        <div class="title is-2">My Decks</div>
-        <div class="subtitle is-6">
-          <abbr title="Share your public decks"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerDecksLive, @user.battletag)} target="_blank">Share</a></abbr>
-          | <a href={~p"/stats/explanation"}>Stats Explanation</a>
-          | Powered by <a href="https://www.firestoneapp.com/">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        </div>
+        <.page_header title="My Decks">
+          <:nav_links>
+            <abbr title="Share your public decks"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerDecksLive, @user.battletag)} target="_blank">Share</a></abbr>
+            <a href={~p"/stats/explanation"}>Stats Explanation</a>
+          </:nav_links>
+          <:meta_info>
+            <.contribution powered={true} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <DecksExplorer
           id="decks_explorer"

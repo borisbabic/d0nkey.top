@@ -15,7 +15,7 @@ defmodule BackendWeb.TwitchNewCommandLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">New Twitch Commands</div>
+        <.page_header title="New Twitch Commands" />
         <NewTwitchCommand id="new_twitch_command" user={@user} />
       </div>
     """

@@ -59,36 +59,36 @@ defmodule FunctionComponents.Battlefy do
 
   def match_table(assigns) do
     ~H"""
-      <table class="table is-fullwidth">
-        <thead>
-          <tr>
-            <th>{@match.top |> MatchTeam.get_name() |> player(@tournament_id)}</th>
-            <th>Score</th>
-            <th>{@match.bottom |> MatchTeam.get_name() |> player(@tournament_id)}</th>
-            <th>When</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr :if={Enum.any?(@top_decks) or Enum.any?(@bottom_decks)}>
-            <td>{render_decks(@top_decks)}</td>
-            <td></td>
-            <td>{render_decks(@bottom_decks)}</td>
-            <td></td>
-          </tr>
-          <tr :for={times <- match_times(@match, @top_decks, @bottom_decks)} >
-            <td>{times.top}</td>
-            <td>{Map.get(times, :score)}</td>
-            <td>{times.bottom}</td>
-            <td>{Util.from_now(times.when)}</td>
-          </tr>
-          <tr :for={game <- games(@match)} >
-            <td>{decks(@top_decks, game.top_class) |> render_decks(game.game_identifier <> "_top")}</td>
-            <td>{game.score}</td>
-            <td>{decks(@bottom_decks, game.bottom_class) |> render_decks(game.game_identifier <> "_bottom")}</td>
-            <td>{Util.from_now(game.finished)}</td>
-          </tr>
-        </tbody>
-      </table>
+      <.table id="match_table">
+        <.thead>
+          <.trh>
+            <.th>{@match.top |> MatchTeam.get_name() |> player(@tournament_id)}</.th>
+            <.th>Score</.th>
+            <.th>{@match.bottom |> MatchTeam.get_name() |> player(@tournament_id)}</.th>
+            <.th>When</.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :if={Enum.any?(@top_decks) or Enum.any?(@bottom_decks)}>
+            <.td>{render_decks(@top_decks)}</.td>
+            <.td></.td>
+            <.td>{render_decks(@bottom_decks)}</.td>
+            <.td></.td>
+          </.trb>
+          <.trb :for={times <- match_times(@match, @top_decks, @bottom_decks)} >
+            <.td>{times.top}</.td>
+            <.td>{Map.get(times, :score)}</.td>
+            <.td>{times.bottom}</.td>
+            <.td>{Util.from_now(times.when)}</.td>
+          </.trb>
+          <.trb :for={game <- games(@match)} >
+            <.td>{decks(@top_decks, game.top_class) |> render_decks(game.game_identifier <> "_top")}</.td>
+            <.td>{game.score}</.td>
+            <.td>{decks(@bottom_decks, game.bottom_class) |> render_decks(game.game_identifier <> "_bottom")}</.td>
+            <.td>{Util.from_now(game.finished)}</.td>
+          </.trb>
+        </.tbody>
+      </.table>
     """
   end
 

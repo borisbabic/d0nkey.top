@@ -42,49 +42,51 @@ defmodule Components.TournamentLineupExplorer do
     <div>
       <div :if={@lineups}>
         <#slot />
-        <Dropdown.menu title="Page" :if={@show_page_dropdown}>
-          <Dropdown.item :for={page <- page_range(@lineups, @page_size)} selected={page == @page} phx-target={@myself} phx-click="set-page" phx-value-page={page} >
-            {page}
-          </Dropdown.item>
-        </Dropdown.menu>
-        <Modal
-        id={modal_id(@id)}
-        button_title="Filter"
-        body_class="tw-min-h-[400px]"
-        title="Filter Decks/Lineups"
-        >
-          <div :for.with_index={{deck, index} <- decks(@temp_filters)} class="level">
-            <div class="level-left">
-              <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={index}>Remove deck</button>
-              <Dropdown.menu title={"#{deck["class"] && deck["class"] |> Deck.class_name() || "Class"}"}>
-                <Dropdown.item selected={deck["class" == class]} :for={class <- Deck.classes()} phx-target={@myself} phx-click="filter-class" phx-value-index={index} phx-value-class={class}>
-                  {class |> Deck.class_name()}
-                </Dropdown.item>
-              </Dropdown.menu>
-              <ArchetypeSelect id={"archetype_select_#{index}"} updater={update_value(@id, @temp_filters, index, "archetype")} param={"archetype"} params={%{"archetype" => deck["archetype"]}} selected={deck["archetype"]} title="Archetype"/>
-              <PlayableCardSelect id={"include_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
-              <PlayableCardSelect id={"exclude_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
+        <.filter_container>
+          <Dropdown.menu title="Page" :if={@show_page_dropdown}>
+            <Dropdown.item :for={page <- page_range(@lineups, @page_size)} selected={page == @page} phx-target={@myself} phx-click="set-page" phx-value-page={page} >
+              {page}
+            </Dropdown.item>
+          </Dropdown.menu>
+          <Modal
+          id={modal_id(@id)}
+          button_title="Filter"
+          body_class="tw-min-h-[400px]"
+          title="Filter Decks/Lineups"
+          >
+            <div :for.with_index={{deck, index} <- decks(@temp_filters)} class="level">
+              <div class="level-left">
+                <button class="button level-item" type="button" :on-click="remove_deck" phx-value-index={index}>Remove deck</button>
+                <Dropdown.menu title={"#{deck["class"] && deck["class"] |> Deck.class_name() || "Class"}"}>
+                  <Dropdown.item selected={deck["class" == class]} :for={class <- Deck.classes()} phx-target={@myself} phx-click="filter-class" phx-value-index={index} phx-value-class={class}>
+                    {class |> Deck.class_name()}
+                  </Dropdown.item>
+                </Dropdown.menu>
+                <ArchetypeSelect id={"archetype_select_#{index}"} updater={update_value(@id, @temp_filters, index, "archetype")} param={"archetype"} params={%{"archetype" => deck["archetype"]}} selected={deck["archetype"]} title="Archetype"/>
+                <PlayableCardSelect id={"include_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "include_cards")} selected={deck["include_cards"]} title="Include cards"/>
+                <PlayableCardSelect id={"exclude_cards_deck_#{index}"} updater={update_value(@id, @temp_filters, index, "exclude_cards")} selected={deck["exclude_cards"]} title="Exclude cards"/>
+              </div>
             </div>
-          </div>
-        <:footer>
-        <button class="button" type="button" :on-click="add_deck">Add deck</button>
-        <button class="button" type="button" aria-label="close" :on-click="save_filters">Save</button>
-        </:footer>
-        </Modal>
+          <:footer>
+          <button class="button" type="button" :on-click="add_deck">Add deck</button>
+          <button class="button" type="button" aria-label="close" :on-click="save_filters">Save</button>
+          </:footer>
+          </Modal>
 
-        <button class="button" type="button" :on-click="open-all">Open All</button>
-        <button class="button" type="button" :on-click="close-all">Close All</button>
-        <div>Total: {@lineups |> Enum.count()}</div>
-        <table class="table is-fullwidth is-striped">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Decks</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr :for={lineup <- @lineups |> paginate(@page, @page_size)}>
-              <td>
+          <button class="button" type="button" :on-click="open-all">Open All</button>
+          <button class="button" type="button" :on-click="close-all">Close All</button>
+          <div>Total: {@lineups |> Enum.count()}</div>
+        </.filter_container>
+        <.table id="lineups_table">
+          <.thead>
+            <.trh>
+              <.th>Name</.th>
+              <.th>Decks</.th>
+            </.trh>
+          </.thead>
+          <.tbody>
+            <.trb :for={lineup <- @lineups |> paginate(@page, @page_size)}>
+              <.td>
                 {#if @gm_week}
                   <GMProfileLink week={@gm_week} gm={lineup.name}/>
                 {#elseif slot_assigned?(:lineup_name)}
@@ -96,13 +98,13 @@ defmodule Components.TournamentLineupExplorer do
                 {#else}
                   <PlayerName player={lineup.name} display={lineup.display_name}/>
                 {/if}
-              </td>
-              <td>
+              </.td>
+              <.td>
                 <ExpandableLineup lineup={lineup} id={expandable_lineup_id(lineup.id)}/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </.td>
+            </.trb>
+          </.tbody>
+        </.table>
       </div>
     </div>
     """

@@ -129,4 +129,19 @@ defmodule FunctionComponents.MiscComponents do
     </a>
     """
   end
+
+  attr :hdt, :boolean, default: true
+  attr :powered, :boolean, default: false
+
+  def contribution(assigns) do
+    ~H"""
+
+      <div class="tw-text-slate-500">
+        <span :if={!@powered}>To contribute use </span><span :if={@powered}>Powered By </span><a href="https://www.firestoneapp.com/" target="_blank" class="tw-text-slate-400 hover:tw-text-sky-400 tw-underline tw-decoration-slate-600">Firestone</a>
+        <span :if={@hdt}>
+          or the <a href="/hdt/plugin" target="_blank" class="tw-text-slate-400 hover:tw-text-sky-400 tw-underline tw-decoration-slate-600">HDT Plugin</a>
+        </span>
+      </div>
+    """
+  end
 end

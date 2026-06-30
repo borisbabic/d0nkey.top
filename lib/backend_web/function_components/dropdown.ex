@@ -55,7 +55,7 @@ defmodule FunctionComponents.Dropdown do
       x-on:keydown.enter.prevent="open=!open"
       class={[
         @class,
-        "tw-inline-flex tw-items-center tw-gap-2 tw-bg-slate-800/60 hover:tw-bg-slate-800 tw-text-slate-200 hover:tw-text-white tw-border tw-border-slate-700/60 tw-rounded-lg tw-px-3 tw-py-1.5 tw-text-xs tw-font-semibold tw-transition-all"
+        "tw-inline-flex tw-items-center tw-gap-2 tw-bg-slate-800/60 hover:tw-bg-slate-800 tw-text-slate-200 hover:tw-text-white tw-border tw-border-slate-700/60 tw-rounded-lg tw-px-3 tw-py-1.5 tw-text-xs tw-transition-all"
       ]}
     >
       {@title}

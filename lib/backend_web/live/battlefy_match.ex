@@ -23,14 +23,11 @@ defmodule BackendWeb.BattlefyMatchLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">
-          <a href={"#{Battlefy.get_match_url(@tournament, @match)}"}>
-            {title(@match)}<HeroIcons.external_link size={nil}/>
-          </a>
-        </div>
-        <div class="subtitle is-5">
-          {subtitle(@match)}
-        </div>
+        <.page_header title={title(@match)} link={{Battlefy.get_match_url(@tournament, @match)}}>
+          <:meta_info>
+            {subtitle(@match)}
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <.match_table match={@match} tournament_id={@tournament.id} top_decks={@top_decks} bottom_decks={@bottom_decks} />
       </div>
@@ -72,8 +69,10 @@ defmodule BackendWeb.BattlefyMatchLive do
     """
   end
 
-  def title(%{top: top, bottom: bottom}) do
-    "#{top |> MatchTeam.get_name()} vs #{bottom |> MatchTeam.get_name()}"
+  def title(assigns) do
+    ~H"""
+      {@top |> MatchTeam.get_name()} vs {@bottom |> MatchTeam.get_name()}<HeroIcons.external_link size={nil}/>
+    """
   end
 
   def handle_params(%{"match_id" => match_id, "tournament_id" => tournament_id}, _uri, socket) do

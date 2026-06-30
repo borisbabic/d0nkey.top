@@ -23,12 +23,14 @@ defmodule BackendWeb.MyReplaysLive do
     # region
     ~F"""
       <div :if={@user}>
-        <div class="title is-2">My Replays</div>
-        <div class="subtitle is-6">
-
-          <abbr title="Share your public replays"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerReplaysLive, @user.battletag)} target="_blank">Share</a></abbr>
-          | Powered by <a href="https://www.firestoneapp.com/">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        </div>
+        <.page_header title="My Decks">
+          <:nav_links>
+            <abbr title="Share your public replays"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerDecksLive, @user.battletag)} target="_blank">Share</a></abbr>
+          </:nav_links>
+          <:meta_info>
+            <.contribution powered={true} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <ReplayExplorer
           id="my-replays"

@@ -1,6 +1,6 @@
 defmodule Components.ReplaysTable do
   @moduledoc false
-  use Surface.Component
+  use BackendWeb, :surface_component
   alias Components.ExpandableDecklist
   alias Components.PlayerName
   alias Backend.Hearthstone.Deck
@@ -24,24 +24,24 @@ defmodule Components.ReplaysTable do
 
   def render(assigns) do
     ~F"""
-      <table class="table is-fullwidth">
-        <thead>
-          <tr>
-            <th :if={@show_player_btag}>Player</th>
-            <th :if={@show_deck} class={"is-hidden-mobile": @hide_deck_mobile}>Deck</th>
-            <th :if={@show_opponent}>Opponent</th>
-            <th :if={@show_mode}>Game Mode</th>
-            <th :if={@show_rank}>Rank</th>
-            <th :if={@show_replay_link}>Replay Link</th>
-            <th :if={@show_played}>Played</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr :for={game <- @replays} >
-            <td :if={@show_player_btag}><PlayerName flag={true} player={game.player_btag}/></td>
-            <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} /></td>
-            <td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></td>
-            <td :if={@show_opponent}>
+      <.table id="replays_table">
+        <.thead>
+          <.trh>
+            <.th :if={@show_player_btag}>Player</.th>
+            <.th :if={@show_deck} class={"is-hidden-mobile": @hide_deck_mobile}>Deck</.th>
+            <.th :if={@show_opponent}>Opponent</.th>
+            <.th :if={@show_mode}>Game Mode</.th>
+            <.th :if={@show_rank}>Rank</.th>
+            <.th :if={@show_replay_link}>Replay Link</.th>
+            <.th :if={@show_played}>Played</.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :for={game <- @replays} >
+            <.td :if={@show_player_btag}><PlayerName flag={true} player={game.player_btag}/></.td>
+            <.td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} /></.td>
+            <.td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></.td>
+            <.td :if={@show_opponent}>
               <span>
               {#if opponent_archetype = get_in(game, [Access.key(:played_cards, %{}), Access.key(:opponent_archetype, nil)])}
                 <span class={"tw-text-black", "decklist-info", Deck.extract_class(opponent_archetype) |> String.downcase()}>{opponent_archetype}</span>
@@ -52,14 +52,14 @@ defmodule Components.ReplaysTable do
               {/if}
                 <PlayerName :if={@show_opponent_name} player={game.opponent_btag}/>
               </span>
-            </td>
-            <td :if={@show_mode}> <p class={"tag", {class(game), :mode in @show_result_as}}>{game_mode(game)}</p></td>
-            <td :if={@show_rank}><p class={"tag", {class(game), :rank in @show_result_as}}>{Game.player_rank_text(game)}</p></td>
-            <td :if={@show_replay_link}><a :if={link = replay_link(game)} href={"#{link}"} target="_blank">View Replay</a></td>
-            <td :if={@show_played}>{Timex.format!(game.inserted_at, "{relative}", :relative)}</td>
-          </tr>
-        </tbody>
-      </table>
+            </.td>
+            <.td :if={@show_mode}> <p class={"tag", {class(game), :mode in @show_result_as}}>{game_mode(game)}</p></.td>
+            <.td :if={@show_rank}><p class={"tag", {class(game), :rank in @show_result_as}}>{Game.player_rank_text(game)}</p></.td>
+            <.td :if={@show_replay_link}><a :if={link = replay_link(game)} href={"#{link}"} target="_blank">View Replay</a></.td>
+            <.td :if={@show_played}>{Timex.format!(game.inserted_at, "{relative}", :relative)}</.td>
+          </.trb>
+        </.tbody>
+      </.table>
     """
   end
 

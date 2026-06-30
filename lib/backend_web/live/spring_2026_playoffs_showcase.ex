@@ -31,13 +31,14 @@ defmodule BackendWeb.Spring2026PlayoffsShowcaseLive do
   def render(assigns) do
     ~F"""
     <div>
-      <div class="title is-2">{@page_title}</div>
-      <div class="subtitle is-5">
-        <a href={~p"/tournament-lineups/popularity?#{@multi_query}"}><span class="is-hidden-mobile">Archetype/Lineup </span>Popularity</a> |
-        <a href={~p"/tournament-lineups/stats?#{@multi_query}"}><span class="is-hidden-mobile">Archetype</span> Winrates</a> |
-        <a href={~p"/streaming-now?#{@multi_query}"}>Other Streams</a> |
-        <a href="https://hearthstone.blizzard.com/en-us/news/24250390/hearthstone-esports-kicks-off-in-2026-with-the-winter-playoffs">Viewer Guide <HeroIcons.external_link /></a>
-      </div>
+      <.page_header title={@page_title}>
+        <:nav_links>
+          <a href={~p"/tournament-lineups/popularity?#{@multi_query}"}><span class="is-hidden-mobile">Archetype/Lineup </span>Popularity</a>
+          <a href={~p"/tournament-lineups/stats?#{@multi_query}"}><span class="is-hidden-mobile">Archetype</span> Winrates</a>
+          <a href={~p"/streaming-now?#{@multi_query}"}>Other Streams</a>
+          <a href="https://hearthstone.blizzard.com/en-us/news/24250390/hearthstone-esports-kicks-off-in-2026-with-the-winter-playoffs">Viewer Guide <HeroIcons.external_link /></a>
+        </:nav_links>
+      </.page_header>
       <div class="notification is-primary">
         Day 1 (Saturday): Swiss - no official stream<span class="is-hidden-mobile">, players may stream their POV</span>
       </div>

@@ -42,12 +42,15 @@ defmodule BackendWeb.DeckSheetViewLive do
   def render(%{sheet: %{}} = assigns) do
     ~F"""
         {#if Sheets.can_view?(@sheet, @user)}
-          <div class="title is-1">{@sheet.name}</div>
-          <div class="subtitle is-5">
-            <span>Owner: {User.display_name(@sheet.owner)}</span>
-            <span>| <a href={deckviewer_link(@sheet, @user, @deck_filters, @sort)}>View in deckviewer</a></span>
-          </div>
-          <div class="level level-left">
+          <.page_header title={@sheet.name}>
+            <:nav_links>
+              <a href={deckviewer_link(@sheet, @user, @deck_filters, @sort)}>View in deckviewer</a>
+            </:nav_links>
+            <:meta_info>
+              <span>Owner: {User.display_name(@sheet.owner)}</span>
+            </:meta_info>
+          </.page_header>
+          <.filter_container>
             {#if Sheets.can_admin?(@sheet, @user)}
               <DeckSheetsModal button_title="Edit Sheet" id={"edit_modal_#{@sheet.id}"} existing={@sheet} user={@user}/>
             {/if}
@@ -55,47 +58,47 @@ defmodule BackendWeb.DeckSheetViewLive do
               <DeckListingModal button_title="Add Deck(s)" id={"create_new_listing"} sheet={@sheet} user={@user}/>
             {/if}
 
-          <LivePatchDropdown
-            id="view_mode_dropdown"
-            options={[{"sheet", "Sheet"}, {"decks", "Decks"}]}
-            title={"View Mode"}
-            param={"view_mode"}
-            live_view={__MODULE__} />
-          <ClassDropdown id="deck_class_dropdown" param="deck_class" />
-            <PlayableCardSelect id={"deck_include_cards"} param="deck_include_cards" selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
-            <PlayableCardSelect id={"deck_exclude_cards"} param="deck_exclude_cards" selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
-          <LivePatchDropdown
-            id="sort_dropdown"
-            options={DeckSheet.listing_sort_options(@sheet) |> Util.flip_tuples()}
-            title="Sort"
-            param="sort"
-            liveview={__MODULE__} />
-          </div>
-          <table :if={@view_mode == "sheet"} id="deck_sheet_listing_table" class="table is-fullwidth is-striped">
-            <thead>
-              <tr>
-                <th>Deck</th>
-                <th>Source</th>
-                <th>Comment</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="table_body" phx-update="stream">
-              <tr id={dom_id} :for={{dom_id, listing} <- @streams.listings}>
-                <td>
+            <LivePatchDropdown
+              id="view_mode_dropdown"
+              options={[{"sheet", "Sheet"}, {"decks", "Decks"}]}
+              title={"View Mode"}
+              param={"view_mode"}
+              live_view={__MODULE__} />
+            <ClassDropdown id="deck_class_dropdown" param="deck_class" />
+              <PlayableCardSelect id={"deck_include_cards"} param="deck_include_cards" selected={@deck_filters["deck_include_cards"] || []} title="Include cards"/>
+              <PlayableCardSelect id={"deck_exclude_cards"} param="deck_exclude_cards" selected={@deck_filters["deck_exclude_cards"] || []} title="Exclude cards"/>
+            <LivePatchDropdown
+              id="sort_dropdown"
+              options={DeckSheet.listing_sort_options(@sheet) |> Util.flip_tuples()}
+              title="Sort"
+              param="sort"
+              liveview={__MODULE__} />
+          </.filter_container>
+          <.table :if={@view_mode == "sheet"} id="deck_sheet_listing_table">
+            <.thead>
+              <.trh>
+                <.th>Deck</.th>
+                <.th>Source</.th>
+                <.th>Comment</.th>
+                <.th>Actions</.th>
+              </.trh>
+            </.thead>
+            <.tbody id="table_body" phx-update="stream">
+              <.trb id={dom_id} :for={{dom_id, listing} <- @streams.listings}>
+                <.td>
                   <ExpandableDecklist id={"expandable_deck_for_" <> dom_id} deck={listing.deck} name={listing.name} />
-                </td>
-                <td>{listing.source}</td>
-                <td>{listing.comment}</td>
-                <td>
-                  <div class="level level-left">
+                </.td>
+                <.td>{listing.source}</.td>
+                <.td>{listing.comment}</.td>
+                <.td>
+                  <div class="tw-flex tw-gap-1">
                     <DeleteModal :if={Sheets.can_contribute?(@sheet, @user)} id={"delete_modal_#{listing.id}"} on_delete={fn -> Backend.Sheets.delete_listing(listing, @user) end}/>
                     <DeckListingModal :if={Sheets.can_contribute?(@sheet, @user)} id={"edit_listing_#{listing.id}"} user={@user} existing={listing}/>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </.td>
+              </.trb>
+            </.tbody>
+          </.table>
           <div id="decklist_viewport" phx-update="stream" :if={@view_mode == "decks"} class="columns is-multiline is-mobile is-narrow is-centered">
             <div id={dom_id} :for={{dom_id, listing} <- @streams.listings} class="column is-narrow">
               <DeckCard after_deck_class={"columns is-multiline is-mobile"}>

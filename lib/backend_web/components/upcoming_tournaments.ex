@@ -4,7 +4,7 @@ defmodule Components.UpcomingTournaments do
   alias Backend.Battlefy
   alias BobsLeague.Api, as: BobsLeague
   alias Backend.Tournaments.Tournament
-  alias FunctionComponents.TournamentsTable
+  import FunctionComponents.TournamentsTable, only: [tournaments_table: 1]
 
   prop(title, :string, default: nil)
   prop(hours_ago, :integer, default: 0)
@@ -17,8 +17,8 @@ defmodule Components.UpcomingTournaments do
     ~F"""
       <div>
         <div :if={@title} class="title is-4">{@title}</div>
-        <TournamentsTable.table :if={tournaments = !@full_tournaments.ok? && @tournaments.ok? && @tournaments.result} tournaments={tournaments} user_tournaments={if @user_tournaments.ok?, do: @user_tournaments.result, else: []}/>
-        <TournamentsTable.table :if={tournaments = @full_tournaments.ok? && @full_tournaments.result} tournaments={tournaments} user_tournaments={if @user_tournaments.ok?, do: @user_tournaments.result, else: []} />
+        <.tournaments_table :if={tournaments = !@full_tournaments.ok? && @tournaments.ok? && @tournaments.result} tournaments={tournaments} user_tournaments={if @user_tournaments.ok?, do: @user_tournaments.result, else: []}/>
+        <.tournaments_table :if={tournaments = @full_tournaments.ok? && @full_tournaments.result} tournaments={tournaments} user_tournaments={if @user_tournaments.ok?, do: @user_tournaments.result, else: []} />
         <div :if={@tournaments.loading && @full_tournaments.loading}>Loading tournaments...</div>
       </div>
     """

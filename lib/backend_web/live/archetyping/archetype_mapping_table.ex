@@ -10,6 +10,7 @@ defmodule BackendWeb.ArchetypeMappingTable do
   alias Components.Filter.PlayableCardSelect
   alias Components.LivePatchDropdown
   alias Components.WinrateTag
+  import FunctionComponents.Table
 
   @default_min_played_count 100
   @default_sort_by "total"
@@ -42,28 +43,30 @@ defmodule BackendWeb.ArchetypeMappingTable do
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">Archetype Mappings</div>
-      <PeriodDropdown id="period_dropdown" filter_context={:personal} aggregated_only={false} />
-      <FormatDropdown id="format_dropdown" filter_context={:personal} aggregated_only={false} />
-      <RankDropdown id="rank_dropdown" filter_context={:personal} aggregated_only={false} />
-      <ClassDropdown id="class_dropdown" param="player_class"/>
-      <LivePatchDropdown
-        id="min_played_count"
-        options={[1, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
-        title={"Min Played Count"}
-        param={"min_played_count"}
-        selected_as_title={false}
-        normalizer={&to_string/1} />
-      <LivePatchDropdown
-        id="x_axis"
-        options={["player_archetype", "player_deck_archetype"]}
-        title={"X Axis"}
-        param={"x_axis"}
-        normalizer={&to_string/1} />
-      <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
-      <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
-      <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
-      <PlayableCardSelect id={"player_played_cards_excludes"} format={@params["format"]} param={"player_played_cards_excludes"} selected={@params["player_played_cards_excludes"] || []} title="Not Played cards"/>
+      <.page_header title="Archetype Mappings" />
+      <.filter_container>
+        <PeriodDropdown id="period_dropdown" filter_context={:personal} aggregated_only={false} />
+        <FormatDropdown id="format_dropdown" filter_context={:personal} aggregated_only={false} />
+        <RankDropdown id="rank_dropdown" filter_context={:personal} aggregated_only={false} />
+        <ClassDropdown id="class_dropdown" param="player_class"/>
+        <LivePatchDropdown
+          id="min_played_count"
+          options={[1, 69, 100, 420, 666, 1000, 2000, 3500, 5000, 7000, 9001, 15000, 20000]}
+          title={"Min Played Count"}
+          param={"min_played_count"}
+          selected_as_title={false}
+          normalizer={&to_string/1} />
+        <LivePatchDropdown
+          id="x_axis"
+          options={["player_archetype", "player_deck_archetype"]}
+          title={"X Axis"}
+          param={"x_axis"}
+          normalizer={&to_string/1} />
+        <PlayableCardSelect id={"player_deck_includes"} format={@params["format"]} param={"player_deck_includes"} selected={@params["player_deck_includes"] || []} title="Include cards"/>
+        <PlayableCardSelect id={"player_deck_excludes"} format={@params["format"]} param={"player_deck_excludes"} selected={@params["player_deck_excludes"] || []} title="Exclude cards"/>
+        <PlayableCardSelect id={"player_played_cards_includes"} format={@params["format"]} param={"player_played_cards_includes"} selected={@params["player_played_cards_includes"] || []} title="Played cards"/>
+        <PlayableCardSelect id={"player_played_cards_excludes"} format={@params["format"]} param={"player_played_cards_excludes"} selected={@params["player_played_cards_excludes"] || []} title="Not Played cards"/>
+      </.filter_container>
 
       <div :if={@needs_class?}>
         Select a class before proceeding. I'd suggest selecting your other filters first.
@@ -73,26 +76,28 @@ defmodule BackendWeb.ArchetypeMappingTable do
           Loading tournaments...
         </div>
         <div :if={@archetype_mapping.ok? && !@archetype_mapping.loading} class="table-scrolling-sticky-wrapper">
-          <table class="table is-fullwidth is-striped tw-table">
-            <thead>
-              <th class="tw-bg-gray-700" >Archetype</th>
-              <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by="total">Total</th>
-              <th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @sorted_x_axis.result}>
-                {add_arrow(archetype, to_string(archetype), @params)}
-              </th>
-            </thead>
-            <tbody>
-              <tr :for={{y_axis, popularity_map} <- sort_and_filter(@archetype_mapping.result, @min_played_count, @sort_by)}>
-                <td class="sticky-column">
+          <.table id="archetype_mapping_table">
+            <.thead>
+              <.trh>
+                <.th class="tw-bg-gray-700" >Archetype</.th>
+                <.th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by="total">Total</.th>
+                <.th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @sorted_x_axis.result}>
+                  {add_arrow(archetype, to_string(archetype), @params)}
+                </.th>
+              </.trh>
+            </.thead>
+            <.tbody>
+              <.trb :for={{y_axis, popularity_map} <- sort_and_filter(@archetype_mapping.result, @min_played_count, @sort_by)}>
+                <.td class="sticky-column">
                   {y_axis}
-                </td>
-                <td>
+                </.td>
+                <.td>
                   {Map.get(popularity_map, "total", 0)}
-                </td>
-                <td :for={archetype <- @sorted_x_axis.result}><WinrateTag offset={-0.3} min_for_color={0.4} winrate={Map.get(popularity_map, archetype, 0) |> Util.percent(Map.get(popularity_map, "total", 0)) |> Kernel./(100)} /></td>
-              </tr>
-            </tbody>
-          </table>
+                </.td>
+                <.td :for={archetype <- @sorted_x_axis.result}><WinrateTag offset={-0.3} min_for_color={0.4} winrate={Map.get(popularity_map, archetype, 0) |> Util.percent(Map.get(popularity_map, "total", 0)) |> Kernel./(100)} /></.td>
+              </.trb>
+            </.tbody>
+          </.table>
         </div>
       </div>
     """

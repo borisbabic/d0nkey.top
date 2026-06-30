@@ -18,10 +18,11 @@ defmodule BackendWeb.MyMatchupsLive do
   def render(assigns) do
     ~F"""
       <div :if={btag = User.battletag(@user)}>
-        <div class="title is-2">My Matchups</div>
-        <div class="subtitle is-5">
-          Powered by <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        </div>
+        <.page_header title="My Matchups">
+          <:meta_info>
+            <.contribution powered={true} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <MatchupsExplorer
           id="matchups_explorer"

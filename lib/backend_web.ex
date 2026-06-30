@@ -252,6 +252,8 @@ defmodule BackendWeb do
       use BackendWeb.ViewHelpers
       # use DaisyUIComponents, core_components: true
       import FunctionComponents.CoreComponents
+      import FunctionComponents.Table
+      import FunctionComponents.MiscComponents, only: [contribution: 1]
       unquote(verified_routes())
 
       def add_games_filters(base \\ %{}, params) do

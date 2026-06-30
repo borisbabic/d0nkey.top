@@ -8,6 +8,8 @@ defmodule BackendWeb.StreamingView do
   alias Hearthstone.Enums.Format
   alias BackendWeb.ViewUtil
   import FunctionComponents.MiscComponents, only: [setup_step: 1]
+  import FunctionComponents.Table
+  import FunctionComponents.CoreComponents, only: [page_header: 1, filter_container: 1, alert: 1]
 
   def twitch_link(streamer) do
     twitch_link(Streamer.twitch_login(streamer), Streamer.twitch_display(streamer))

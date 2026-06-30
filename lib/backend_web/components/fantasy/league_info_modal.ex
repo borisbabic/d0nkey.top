@@ -1,8 +1,7 @@
 defmodule Components.LeagueInfoModal do
-  use Surface.LiveComponent
+  use BackendWeb, :surface_live_component
   alias Backend.Fantasy.League
   import BackendWeb.FantasyHelper
-  use BackendWeb.ViewHelpers
   alias Components.Modal
 
   prop(show_modal, :boolean, default: false)
@@ -17,14 +16,14 @@ defmodule Components.LeagueInfoModal do
       id={"modal_#{@id}"}
       button_title={@button_title}
       tittle={"#{@league.name} League Info"}>
-      <table class="table is-fullwidth is-striped">
-        <tbody>
-         <tr :for={{info, value} <- info(@league)}>
-          <td>{info}</td>
-          <td>{value}</td>
-        </tr>
-        </tbody>
-      </table>
+      <.table id="fantasy_modal_table">
+        <.tbody>
+         <.trb :for={{info, value} <- info(@league)}>
+          <.td>{info}</.td>
+          <.td>{value}</.td>
+        </.trb>
+        </.tbody>
+      </.table>
       </Modal>
     </span>
     """

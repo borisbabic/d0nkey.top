@@ -14,10 +14,11 @@ defmodule BackendWeb.MatchupsLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">Matchups</div>
-        <div class="subtitle is-5">
-          To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        </div>
+        <.page_header title="Matchups">
+          <:meta_info>
+            <.contribution hdt={false} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <MatchupsExplorer id="matchups_explorer" format_filter?={true} filter_context={:public} params={@params} live_view={__MODULE__} weight_merging_map={BackendWeb.PlayedCardsArchetypePopularity.deck_archetype_mapping()} />
       </div>

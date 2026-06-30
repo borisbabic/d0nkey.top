@@ -392,7 +392,6 @@ defmodule BackendWeb.Router do
     get("/streamer-decks", StreamingController, :streamer_decks)
     get("/streamer-instructions", StreamingController, :streamer_instructions)
     live("/streaming-now", StreamingNowLive)
-    live("/youtube/bnet-chat/:video_id", YoutubeChatLive)
 
     live("/cards", CardsLive)
     live("/card/:card_id", CardLive)
@@ -530,11 +529,6 @@ defmodule BackendWeb.Router do
 
   scope "/", BackendWeb do
     pipe_through([:browser, :auth, :ensure_auth])
-
-    live(
-      "/tournament-streams/:tournament_source/:tournament_id/manager",
-      TournamentStreamManagerLive
-    )
   end
 
   scope "/", BackendWeb do

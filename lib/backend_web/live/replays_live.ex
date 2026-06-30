@@ -14,10 +14,11 @@ defmodule BackendWeb.ReplaysLive do
   def render(assigns) do
     ~F"""
     <div>
-      <div class="title is-2">Replays</div>
-      <div class="subtitle is-6">
-      To contribute <span class="is-hidden-mobile"> use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a>  or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a> and </span>make <a href={~p"/profile/settings"}>your replays public</a>
-      </div>
+      <.page_header title="Replays">
+        <:meta_info>
+          <.contribution />
+        </:meta_info>
+      </.page_header>
       <FunctionComponents.Ads.below_title />
       <ReplayExplorer
       live_view={__MODULE__}

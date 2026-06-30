@@ -18,11 +18,17 @@ defmodule BackendWeb.BattlefyParticipantsLive do
   def render(assigns) do
     ~F"""
       <div>
+        <.page_header title="Registered Participants">
+          <:nav_links>
+            <a href={~p"/battlefy/tournament/#{@tournament_id}"}>View Tournament</a>
+          </:nav_links>
+          <:meta_info>
+            <span :if={@participants.ok?}>Registered: #{Enum.count(@participants.result)}</span>
+            <span :if={@participants.ok?}>Checked In: #{Enum.count(@participants.result, & &1.checked_in_at)}</span>
+          </:meta_info>
+        </.page_header>
         <div class="title is-2">Registered Participants</div>
         <div class="subtitle is-6">
-          <a href={~p"/battlefy/tournament/#{@tournament_id}"}>View Tournament</a>
-          <span :if={@participants.ok?}>| Registered: #{Enum.count(@participants.result)}</span>
-          <span :if={@participants.ok?}>| Checked In: #{Enum.count(@participants.result, & &1.checked_in_at)}</span>
         </div>
         <FunctionComponents.Ads.below_title/>
         <.form for={%{}} as={:search} phx-change="change" phx-submit="change">

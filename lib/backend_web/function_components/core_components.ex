@@ -245,8 +245,8 @@ defmodule FunctionComponents.CoreComponents do
 
   def filter_container(assigns) do
     ~H"""
-      <div class="tw-space-y-2">
-        <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-2">
+      <div class="tw-space-y-2 tw-m-1">
+        <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-1">
           {render_slot(@inner_block)}
         </div>
       </div>
@@ -508,7 +508,7 @@ defmodule FunctionComponents.CoreComponents do
 
   def data_table(assigns) do
     ~H"""
-    <.table>
+    <.table id={"table_#{@id}"}>
       <.thead>
         <.trh>
           <.th 
@@ -550,15 +550,24 @@ defmodule FunctionComponents.CoreComponents do
   reusable navigation links, and background metadata trackers.
   """
   attr :title, :string, required: true
+  attr :title_link, :string, default: nil
 
   slot :nav_links, doc: "Contains individual action links"
   slot :meta_info, doc: "Contains auxiliary stats like game counts, filters, or credits"
 
   def page_header(assigns) do
+    if !assigns.title and !assigns.title_body do
+      raise "missing title"
+    end
+
     ~H"""
     <div class="tw-mb-6 tw-space-y-2">
-      <h1 class="tw-text-2xl md:tw-text-3xl tw-font-bold tw-tracking-tight tw-text-white">
-        {@title}
+      <h1 class="tw-text-3xl md:tw-text-4xl 2xl:tw-text-5xl tw-font-bold tw-tracking-tight tw-text-white">
+        <%= if @title_link do %>
+          <a href={@title_link}>{@title}</a>
+        <% else %>
+          {@title}
+        <% end %>
       </h1>
 
       <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2 tw-text-xs tw-font-medium tw-text-slate-400">

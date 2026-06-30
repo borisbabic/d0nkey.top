@@ -63,13 +63,16 @@ defmodule BackendWeb.CollectionLive do
           </div>
         {#elseif @card_map}
           <div>
-            <div class="title is-2">{@page_title}</div>
-            <div class="subtitle is-6">
-              <span :if={current?(@user, @collection_id)}>This is your current collection</span>
-              <button :if={@user && !current?(@user, @collection_id)} :on-click="make_current" class="button">Use as current</button>
-              <button :if={@can_admin} :on-click="toggle_public" class="button">{public_display(@public)}: Make {public_display(!@public)}</button>
-              <a :if={@can_admin && @public && @share_link} target="_blank" href={@share_link}>Share</a>
-            </div>
+            <.page_header title={@page_title}>
+              <:nav_links>
+                <a :if={@can_admin && @public && @share_link} target="_blank" href={@share_link}>Share</a>
+              </:nav_links>
+              <:meta_info>
+                <span :if={current?(@user, @collection_id)}>This is your current collection</span>
+                <button :if={@user && !current?(@user, @collection_id)} :on-click="make_current" class="button">Use as current</button>
+                <button :if={@can_admin} :on-click="toggle_public" class="button">{public_display(@public)}: Make {public_display(!@public)}</button>
+              </:meta_info>
+            </.page_header>
             <FunctionComponents.Ads.below_title/>
             <CardsExplorer
               live_view={__MODULE__}

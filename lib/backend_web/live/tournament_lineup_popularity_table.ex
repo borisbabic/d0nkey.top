@@ -20,16 +20,14 @@ defmodule BackendWeb.TournamentLineupPopularityTableLive do
       <div>
         <div>
           <div>
-            <div class="title is-2">{@page_title}</div>
-            <div class="subtitle is-6">
-              <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
-              | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
-              | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/matchups"}>Matchups</a>
-              <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
-               | <a href={link}>Tournament</a>
-              </span>
-              <span :if={@lineups.ok?}>| Total Lineups: {Enum.count(@lineups.result)}</span>
-            </div>
+            <.page_header title={@page_title}>
+              <:nav_links>
+                <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
+                <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
+                <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/matchups"}>Matchups</a>
+                <a :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})} href={link}>Tournament</a>
+              </:nav_links>
+            </.page_header>
             <FunctionComponents.Ads.below_title/>
             <PopularityTable :if={@lineups.ok?} deck_group_size={@deck_group_size} id={"lineup_popularity_table_#{@tournament_source}_#{@tournament_id}"} lineups={@lineups.result}/>
           </div>

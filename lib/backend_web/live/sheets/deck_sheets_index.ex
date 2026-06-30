@@ -21,20 +21,36 @@ defmodule BackendWeb.DeckSheetsIndexLive do
   def render(%{user: %{id: _}} = assigns) do
     ~F"""
         <div>
-          <div class="title is-1">Deck Sheets</div>
-          <DeckSheetsModal id="new_modal" user={@user}/>
+          <.page_header title="Deck Sheets"/>
+          <.filter_container>
+            <DeckSheetsModal id="new_modal" user={@user}/>
+          </.filter_container>
         </div>
-        <Table id="deck_sheets_table" data={sheet <- sheets(@user)} striped>
-          <Column label="Name"><a href={"/deck-sheets/#{sheet.id}"} target="#">{sheet.name}</a></Column>
-          <Column label="Owner">{User.display_name(sheet.owner)}</Column>
-          <Column label="Group">{group_name(sheet)}</Column>
-          <Column label="Actions">
-            <div class="level level-left">
-              <DeleteModal :if={Sheets.can_admin?(sheet, @user)} id={"delete_modal_#{sheet.id}"} on_delete={fn -> Backend.Sheets.delete_sheet(sheet, @user) end}/>
-              <DeckSheetsModal id={"edit_modal_#{sheet.id}"} user={@user} existing={sheet}/>
-            </div>
-          </Column>
-        </Table>
+        <.table id="deck_sheets_table">
+          <.thead>
+            <.trh>
+              <.th>Name</.th>
+              <.th>Owner</.th>
+              <.th>Group</.th>
+              <.th>Actions</.th>
+            </.trh>
+          </.thead>
+          <.tbody>
+            <.trb :for={sheet <- sheets(@user)}>
+              <.td>
+                <a href={"/deck-sheets/#{sheet.id}"} target="#">{sheet.name}</a>
+              </.td>
+              <.td>{User.display_name(sheet.owner)}</.td>
+              <.td>{group_name(sheet)}</.td>
+              <.td>
+                <div class="tw-flex tw-gap-1">
+                  <DeleteModal :if={Sheets.can_admin?(sheet, @user)} id={"delete_modal_#{sheet.id}"} on_delete={fn -> Backend.Sheets.delete_sheet(sheet, @user) end}/>
+                  <DeckSheetsModal id={"edit_modal_#{sheet.id}"} user={@user} existing={sheet}/>
+                </div>
+              </.td>
+            </.trb>
+          </.tbody>
+        </.table>
     """
   end
 

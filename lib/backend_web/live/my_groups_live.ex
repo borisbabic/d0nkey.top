@@ -20,31 +20,34 @@ defmodule BackendWeb.MyGroupsLive do
   def render(%{user: %{id: _}} = assigns) do
     ~F"""
       <div>
-        <div class="title is-2">My Groups</div>
-        <div class="subtitle is-6">
-        Powered by <a href="https://www.firestoneapp.com/">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        </div>
+        <.page_header title="My Groups">
+          <:meta_info>
+            <.contribution powered={true} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
       </div>
 
-      <GroupModal id="group_modal" />
+      <.filter_container>
+        <GroupModal id="group_modal" />
+      </.filter_container>
 
-      <table class="table is-fullwidth">
-        <thead>
-          <tr>
-            <th>Group</th>
-            <th>Owner</th>
-            <th>View</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr :for={group <- groups(@user)}>
-            <td>{group.name}</td>
-            <td>{User.battletag(group.owner)}</td>
-            <td><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupLive, group.id)}>View</a></td>
-          </tr>
-        </tbody>
-      </table>
+      <.table id="groups_table">
+        <.thead>
+          <.trh>
+            <.th>Group</.th>
+            <.th>Owner</.th>
+            <.th>View</.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :for={group <- groups(@user)}>
+            <.td>{group.name}</.td>
+            <.td>{User.battletag(group.owner)}</.td>
+            <.td><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.GroupLive, group.id)}>View</a></.td>
+          </.trb>
+        </.tbody>
+      </.table>
     """
   end
 

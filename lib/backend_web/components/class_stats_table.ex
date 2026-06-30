@@ -1,8 +1,9 @@
 defmodule Components.ClassStatsTable do
   @moduledoc false
-  use Surface.Component
+  use BackendWeb, :surface_component
 
   alias Components.WinrateTag
+  import Components.ArchetypeStatsTable, only: [archetype_cell: 1]
 
   prop(stats, :list, required: true)
   prop(show_class_percent?, :boolean, default: true)
@@ -12,31 +13,31 @@ defmodule Components.ClassStatsTable do
 
   def render(%{filtered_stats: _, total_stats: _} = assigns) do
     ~F"""
-      <table class="table is-fullwidth is-striped">
-        <thead>
-          <tr>
-            <th>Class</th>
-            <th>Winrate</th>
-            <th>Total Games</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr :for={stat <- @filtered_stats}>
-            <td><span class={"tag","player-name", extract_class(stat) |> String.downcase()}><span class={"basic-black-text"}>{class_name(stat)}</span></span></td>
-            <td>
+      <.table id="class_stats_table">
+        <.thead>
+          <.trh>
+            <.th>Class</.th>
+            <.th>Winrate</.th>
+            <.th>Total Games</.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :for={stat <- @filtered_stats}>
+            <.archetype_cell archetype={class_name(stat)} />
+            <.td>
               <WinrateTag winrate={stat.winrate} win_loss={win_loss(stat, @show_win_loss?)}/>
-            </td>
-            <td>{total(stat, @total_stats, @show_class_percent?)}</td>
-          </tr>
-          <tr :if={@total_stats}>
-            <td>Total</td>
-            <td>
+            </.td>
+            <.td>{total(stat, @total_stats, @show_class_percent?)}</.td>
+          </.trb>
+          <.trb :if={@total_stats}>
+            <.td>Total</.td>
+            <.td>
               <WinrateTag winrate={@total_stats.winrate} win_loss={win_loss(@total_stats, @show_win_loss?) } />
-            </td>
-            <td>{@total_stats.total}</td>
-          </tr>
-        </tbody>
-      </table>
+            </.td>
+            <.td>{@total_stats.total}</.td>
+          </.trb>
+        </.tbody>
+      </.table>
     """
   end
 

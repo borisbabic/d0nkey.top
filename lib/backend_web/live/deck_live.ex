@@ -82,15 +82,18 @@ defmodule BackendWeb.DeckLive do
   def render(%{deck: _} = assigns) do
     ~F"""
       <div>
-        <div class="title is-2">{Deck.name(@deck)} {Deck.format_name(@deck)}</div>
-        <div class="subtitle is-6" :if={match?(%{id: id} when is_integer(id), @deck)}>
-          <span><a href={~p"/deckbuilder?#{deck_builder_query_params(@deck)}"}>Edit</a></span>
-          <span> | <a href={card_stats_url(@deck)}>Card Stats (Mulligan)</a></span>
-          <span> | <a href={Decklist.deck_link(@deck, true)}>Archetype Stats</a></span>
-          <span> | <a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "player_deck_id" => @deck.id}, @deck_stats_params)}"}>Replays</a> </span>
-          <span :if={Deck.archetype(@deck)}> | <a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "archetype" => Deck.archetype(@deck)}, @deck_stats_params)}"}>Archetype Replays</a> </span>
-          <AggLogSubtitle criteria={@filters}/>
-        </div>
+        <.page_header title={"#{Deck.name(@deck)} #{Deck.format_name(@deck)}"}>
+          <:nav_links :if={match?(%{id: id} when is_integer(id), @deck)}>
+            <span><a href={~p"/deckbuilder?#{deck_builder_query_params(@deck)}"}>Edit</a></span>
+            <span><a href={card_stats_url(@deck)}>Card Stats (Mulligan)</a></span>
+            <span><a href={Decklist.deck_link(@deck, true)}>Archetype Stats</a></span>
+            <span><a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "player_deck_id" => @deck.id}, @deck_stats_params)}"}>Replays</a> </span>
+            <span :if={Deck.archetype(@deck)}><a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "archetype" => Deck.archetype(@deck)}, @deck_stats_params)}"}>Archetype Replays</a> </span>
+          </:nav_links>
+          <:meta_info>
+            <AggLogSubtitle criteria={@filters} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title />
         <div :if={valid?(@deck)} class="columns is-multiline is-mobile is-narrow is-centered">
           <div class="column is-narrow-mobile">
@@ -126,9 +129,7 @@ defmodule BackendWeb.DeckLive do
               live_view={__MODULE__} />
           </div>
         </div>
-        <div :if={!valid?(@deck)} class="title is-2">
-          Not a valid deck.
-        </div>
+        <.page_header :if={!valid?(@deck)} title="Not a valid deck." />
       </div>
     """
   end

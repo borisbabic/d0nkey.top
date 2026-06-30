@@ -1,27 +1,27 @@
 defmodule Components.Feed.TierList do
   @moduledoc "Tier list for the front page"
-  use Surface.Component
+  use BackendWeb, :surface_component
 
   alias Components.WinrateTag
 
   def render(assigns) do
     ~F"""
     <div class="card" style="width: calc(2*(var(--decklist-width) - 15px));">
-      <table class="table is-fullwidth is-striped">
-        <thead>
-          <tr>
-            <th>Archetype</th>
-            <th>Winrate</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr :for={stat <- get_tier_list()}>
-            <td>{stat.archetype}</td>
-            <td><WinrateTag winrate={stat.winrate} /></td>
-          </tr>
-        </tbody>
+      <.table id="feed_tier_list_table">
+        <.thead>
+          <.trh>
+            <.th>Archetype</.th>
+            <.th>Winrate</.th>
+          </.trh>
+        </.thead>
+        <.tbody>
+          <.trb :for={stat <- get_tier_list()}>
+            <.td>{stat.archetype}</.td>
+            <.td><WinrateTag winrate={stat.winrate} /></.td>
+          </.trb>
+        </.tbody>
 
-      </table>
+      </.table>
     </div>
 
     """

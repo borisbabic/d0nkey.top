@@ -18,15 +18,14 @@ defmodule BackendWeb.TournamentLineupMatchupsTableLive do
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">{@page_title}</div>
-      <div class="subtitle is-6">
-        <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
-        | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/popularity"}>Archetype Popularity</a>
-        | <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
-        <span :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})}>
-          | <a href={link}>Tournament</a>
-        </span>
-      </div>
+      <.page_header title={@page_title}>
+        <:nav_links>
+          <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>
+          <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/popularity"}>Archetype Popularity</a>
+          <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/stats"}>Archetype Stats</a>
+          <a :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})} href={link}>Tournament</a>
+        </:nav_links>
+      </.page_header>
       <FunctionComponents.Ads.below_title/>
       <div :if={@archetype_stats.loading}>
         Preparing stats...

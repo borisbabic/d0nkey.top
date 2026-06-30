@@ -14,19 +14,27 @@ defmodule BackendWeb.MetaLive do
 
   def render(%{missing_premium: true} = assigns) do
     ~F"""
-        <div class="title is-2">Meta</div>
-        <div class="title is-3">You do not have access to these filters. <a href="/auth/bnet">Login</a> to access this page</div>
+        <.page_header title="Meta" />
+        <.alert>
+          You do not have access to these filters. <a href="/auth/bnet">Login</a> to access this page
+        </.alert>
     """
   end
 
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">Meta</div>
-        <div class="subtitle is-6">
-        <span><a href={~p"/matchups"}>Matchups</a> |</span>
-        To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        <AggLogSubtitle criteria={@params} /></div>
+
+        <.page_header title="Meta">
+          <:nav_links>
+            <a href={~p"/matchups"}>Matchups</a>
+          </:nav_links>
+          <:meta_info>
+            <.contribution />
+            <div class="tw-hidden md:tw-block tw-h-3 tw-w-px tw-bg-slate-800"></div>
+            <AggLogSubtitle criteria={@criteria} />
+          </:meta_info>
+        </.page_header>
         <FunctionComponents.Ads.below_title/>
         <TierList id="tier_list" criteria={@criteria} params={@params} live_view={__MODULE__}/>
       </div>

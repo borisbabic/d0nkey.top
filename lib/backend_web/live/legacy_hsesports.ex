@@ -4,7 +4,7 @@ defmodule BackendWeb.LegacyHSEsportsLive do
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">Archive of old hsesports pages</div>
+      <.page_header title="Archive of old hsesports pages" />
       <ul>
           <li> <a href={"#{Routes.masters_tour_path(BackendWeb.Endpoint, :invited_players) }"}>Invited Players</a></li>
           <li> <a href={"#{Routes.masters_tour_path(BackendWeb.Endpoint, :qualifiers)}"}>Qualifiers</a></li>
