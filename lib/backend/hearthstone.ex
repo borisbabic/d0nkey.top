@@ -803,13 +803,22 @@ defmodule Backend.Hearthstone do
     cataclysm(query)
   end
 
+  defp compose_decks_query({"violet_hold", "yes"}, query) do
+    violet_hold(query)
+  end
+
   defp compose_decks_query(unrecognized, query) do
     Logger.warning("Couldn't compose #{__MODULE__} query: #{inspect(unrecognized)}")
     query
   end
 
   def includes_latest_set(query, binding \\ :deck) do
-    cataclysm(query, binding)
+    violet_hold(query, binding)
+  end
+
+  def violet_hold(query, binding \\ :deck) do
+    card_ids = violet_hold_ids()
+    query |> where([{^binding, d}], fragment("? && ?", d.cards, ^card_ids))
   end
 
   def cataclysm(query, binding \\ :deck) do
@@ -821,6 +830,9 @@ defmodule Backend.Hearthstone do
     card_ids = timeways_ids()
     query |> where([{^binding, d}], fragment("? && ?", d.cards, ^card_ids))
   end
+
+  def violet_hold_ids(filter_out \\ [124_150]),
+    do: filter_card_set(1988, filter_out)
 
   def cataclysm_ids(filter_out \\ [122_635]),
     do: filter_card_set(1980, filter_out)

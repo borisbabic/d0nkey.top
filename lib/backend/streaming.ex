@@ -504,6 +504,14 @@ defmodule Backend.Streaming do
     Hearthstone.timeways(query)
   end
 
+  defp compose_streamer_deck_query({"cataclysm", "yes"}, query) do
+    Hearthstone.cataclysm(query)
+  end
+
+  defp compose_streamer_deck_query({"violet_hold", "yes"}, query) do
+    Hearthstone.violet_hold(query)
+  end
+
   defp compose_streamer_deck_query({"hsreplay_archetype", []}, query), do: query
 
   defp compose_streamer_deck_query({"hsreplay_archetype", archetypes}, query),
