@@ -178,9 +178,7 @@ defmodule Components.CardStatsTable do
                 </div>
               </.td>
               <.td py={0} :if={show_counts?(@filters)}>
-                <.count>
-                  {Util.get(cs, :mull_total) }
-                </.count>
+                <.count count={Util.get(cs, :mull_total)}/>
               </.td>
 
               <.td py={0} >
@@ -189,21 +187,19 @@ defmodule Components.CardStatsTable do
                   <span :if={!cs.sufficient_drawn and !show_counts?(@filters)} class="has-text-warning"><HeroIcons.warning_triangle class="tw-w-4 tw-h-4" /></span>
                 </div>
               </.td>
-              <.td py={0} :if={show_counts?(@filters)}><.count>{Util.get(cs, :drawn_total)}</.count></.td>
+              <.td py={0} :if={show_counts?(@filters)}><.count count={Util.get(cs, :drawn_total)}/></.td>
 
               <.td py={0} class="is-hidden-mobile">
                 <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
               </.td>
               <.td py={0} class="is-hidden-mobile" :if={show_counts?(@filters)}>
-                <.count>
-                  {Util.get(cs, :not_drawn_total)}
-                </.count>
+                <.count count={Util.get(cs, :not_drawn_total)} />
               </.td>
 
               <.td py={0} class="is-hidden-mobile">
                 <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
               </.td>
-              <.td py={0} :if={show_counts?(@filters)} class="is-hidden-mobile"><.count>{Util.get(cs, :kept_total)}</.count></.td>
+              <.td py={0} :if={show_counts?(@filters)} class="is-hidden-mobile"><.count count={Util.get(cs, :kept_total)}/></.td>
             </.trb>
           </.tbody>
         </.table>
