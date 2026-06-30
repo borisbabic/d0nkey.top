@@ -18,7 +18,6 @@ defmodule BackendWeb.TournamentLineupArchetypeStatsTable do
 
   def render(assigns) do
     ~F"""
-      <div class="title is-2">{@page_title}</div>
       <.page_header title={@page_title}>
         <:nav_links>
           <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}"}>Lineups</a>

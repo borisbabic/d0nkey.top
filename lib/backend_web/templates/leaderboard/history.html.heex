@@ -1,37 +1,39 @@
-<div class="title is-2"><%= @title %></div>
+<.page_header title={@title} />
 <FunctionComponents.Ads.below_title/>
 
-<%= if @numeric_filters do %>
-    <%= @numeric_filters %>
-<% end %>
-<%= render_dropdowns(@dropdowns) %>
-<div class="svg-container">
-    <%= @graph %>
-</div>
+<.filter_container>
+  <%= if @numeric_filters do %>
+      <%= @numeric_filters %>
+  <% end %>
+  <%= render_dropdowns(@dropdowns) %>
+  <div class="svg-container">
+      <%= @graph %>
+  </div>
+</.filter_container>
 
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-        <tr>
-            <th>Rank</th>
-            <th>Player</th>
-            <th>Time</th>
+<.table id="leaderboard_history_table">
+    <.thead>
+        <.trh>
+            <.th>Rank</.th>
+            <.th>Player</.th>
+            <.th>Time</.th>
             <%= if @has_rating do %>
-                <th>Rating</th>
+                <.th>Rating</.th>
             <% end %>
-        </tr>
-    </thead>
-    <tbody>
+        </.trh>
+    </.thead>
+    <.tbody>
         <%= for ph = %{rank: r, upstream_updated_at: time} <- @history do %>
-            <tr>
-                <td><%= render_comparison(r, ph.prev_rank, true) %></td>
-                <td><%= render_player_link(ph.account_id) %></td>
-                <td>
+            <.trb>
+                <.td><%= render_comparison(r, ph.prev_rank, true) %></.td>
+                <.td><%= render_player_link(ph.account_id) %></.td>
+                <.td>
                     <%= render_datetime(time) %>
-                </td>
+                </.td>
                 <%= if @has_rating do %>
-                    <td><%= render_comparison(ph.rating, ph.prev_rating, false, &Backend.Leaderboards.trunc_rating/1) %></td>
+                    <.td><%= render_comparison(ph.rating, ph.prev_rating, false, &Backend.Leaderboards.trunc_rating/1) %></.td>
                 <% end %>
-            </tr>
+            </.trb>
         <% end %>
-    </tbody>
-</table>
+    </.tbody>
+</.table>

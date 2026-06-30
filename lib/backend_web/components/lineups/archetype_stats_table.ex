@@ -1,8 +1,8 @@
 defmodule Components.Lineups.ArchetypeStatsTable do
   @moduledoc false
   use BackendWeb, :surface_live_component
-  alias Components.SurfaceBulma.Table
-  alias Components.SurfaceBulma.Table.Column
+  alias Components.Table
+  alias Components.Table.Column
   alias FunctionComponents.DeckComponents
   alias Backend.Hearthstone.Deck
   alias Backend.Tournaments.ArchetypeStats

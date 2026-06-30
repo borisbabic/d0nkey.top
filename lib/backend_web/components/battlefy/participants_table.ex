@@ -5,8 +5,8 @@ defmodule Components.Battlefy.ParticipantsTable do
   prop(highlight, :string, default: nil)
   prop(filters, :map, default: %{})
   prop(tournament_id, :string, required: true)
-  alias Components.SurfaceBulma.Table
-  alias Components.SurfaceBulma.Table.Column
+  alias Components.Table
+  alias Components.Table.Column
   alias Components.Helper
   # prop(sort, :str
   # prop(sort_direction, :string, :logged_in)

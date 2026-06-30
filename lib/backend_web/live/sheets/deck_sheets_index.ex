@@ -4,8 +4,6 @@ defmodule BackendWeb.DeckSheetsIndexLive do
   alias Backend.Sheets
   alias Backend.UserManager.User
   alias Components.DeckSheetsModal
-  alias Components.SurfaceBulma.Table
-  alias Components.SurfaceBulma.Table.Column
   alias Components.DeleteModal
 
   data(user, :any)

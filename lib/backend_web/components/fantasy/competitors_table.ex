@@ -8,8 +8,8 @@ defmodule Components.CompetitorsTable do
   alias Backend.Hearthstone.Card
   alias Backend.Fantasy.LeagueTeam
   alias Components.PlayerName
-  alias Components.SurfaceBulma.Table
-  alias Components.SurfaceBulma.Table.Column
+  alias Components.Table
+  alias Components.Table.Column
 
   alias Backend.TournamentStats.TournamentTeamStats
   alias Backend.TournamentStats.TeamStats
@@ -35,7 +35,7 @@ defmodule Components.CompetitorsTable do
         </div>
       </.form>
       <div :if={prepared = prepare_data(@participants, @league, @search) |> sort(@mt_stats)}>
-        <Table id="competitiors_table" data={participant <- prepared} striped>
+        <Table id="competitiors_table" data={participant <- prepared}>
           <Column label="Competitor">
             {#if player_profile?(@league)}
               <PlayerName player={participant.name}/>
