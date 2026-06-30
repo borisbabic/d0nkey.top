@@ -22,6 +22,7 @@ defmodule Components.TournamentStreamManagerModal do
         <Modal
         id={"#{@user.id}#{@tournament_source}#{@tournament_id}_stream_modal"}
         button_title={button_title(@existing)}
+        button_class=""
         title="Manage Streams">
           <button :for={ts <- @existing} class="button" type="button" :on-click="delete_existing" phx-value-id={ts.id}> Remove {TournamentStream.stream_tuple(ts) |> Stream.display_name()}</button>
           <button :for={tuple = {platform, id} <- missing(@existing, @user)} class="button" type="button" :on-click="create_new" phx-value-platform={platform} phx-value-id={id}> Add {Stream.display_name(tuple)}</button>

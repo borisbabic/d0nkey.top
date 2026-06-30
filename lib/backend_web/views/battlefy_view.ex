@@ -397,14 +397,12 @@ defmodule BackendWeb.BattlefyView do
     ~H"""
     <%= if @has_lineups do %>
       <a class="link" href={~p"/battlefy/tournament/#{@tournament.id}/lineups"}>Lineups</a>
-      | <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/popularity"}>Popularity</a>
-      | <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/stats"}>Winrate</a>
-      | <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/matchups"}>Matchups</a>
-      |
+      <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/popularity"}>Popularity</a>
+      <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/stats"}>Winrate</a>
+      <a class="link" href={~p"/tournament-lineups/battlefy/#{@tournament.id}/matchups"}>Matchups</a>
     <% end %>
     <%= if !@has_lineups and @tournament.id == "66104524c69b9f10c243d1fa" do %>
       <a class="link" href={~p"/tournament-lineups/masters_tour/Spring2024"}>Lineups (Draft)</a>
-      |
     <% end %>
     """
   end
@@ -414,7 +412,6 @@ defmodule BackendWeb.BattlefyView do
     <%= streams_subtitle(@tournament)%>
     <%= if Enum.any?(@other_streams) do %>
       <a href={"/streaming-now?for_tournament=battlefy|#{@tournament.id}"}>Other Streams</a>
-      |
     <% end %>
     """
   end
@@ -455,7 +452,7 @@ defmodule BackendWeb.BattlefyView do
 
     ~H"""
     <%= for stream <- @twitch_streams do %>
-        <Components.Socials.twitch height={20} link={stream} /> |
+        <Components.Socials.twitch height={20} link={stream} />
     <% end %>
     """
   end
@@ -707,7 +704,7 @@ defmodule BackendWeb.BattlefyView do
     |> add_duration_subtitle(tournament)
     |> add_player_count_subtitle(params)
     |> add_ongoing_subtitle(ongoing)
-    |> Enum.join(" | ")
+    |> Enum.join(" ")
   end
 
   defp user_subtitle(%{conn: conn, standings: standings, tournament: %{id: id}} = params) do

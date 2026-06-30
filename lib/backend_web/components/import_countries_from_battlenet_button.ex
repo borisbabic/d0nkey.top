@@ -7,7 +7,7 @@ defmodule Components.ImportCountriesFromBattlenetButton do
   def render(assigns) do
     ~F"""
       <div>
-        <button class="button" type="button" :on-click="import_countries">Import Countries</button>
+        <button class="" type="button" :on-click="import_countries">Import Countries</button>
       </div>
     """
   end
