@@ -1097,8 +1097,7 @@ defmodule Backend.Hearthstone.Deck do
     deck_size_allowed? = deck_size_allowed?(deck, card)
 
     not_tourist_or_can_add_tourist? =
-      !Card.tourist?(card) or
-        Enum.count(tourists(deck)) < 1
+      !Card.tourist?(card) or Enum.empty?(tourists(deck))
 
     not_zilly_module_or_zilly_not_full? =
       !Card.zilliax_module?(Card.dbf_id(card)) or missing_zilliax_parts?(deck)
@@ -1149,14 +1148,16 @@ defmodule Backend.Hearthstone.Deck do
   end
 
   @spec sideboard_complete?(t(), Card.t()) :: boolean
-  def sideboard_complete?(deck, %{id: sideboard_id, max_sideboard_cards: sideboard_size}) do
+  def sideboard_complete?(deck, %{id: sideboard_id} = card) do
+    sideboard_size = Card.max_sideboard_cards(card)
     !missing_sideboard_parts?(deck, sideboard_id, sideboard_size)
   end
 
   @spec missing_sideboard(t()) :: Card.t() | nil
   def missing_sideboard(deck) do
     Enum.find(CardBag.sideboard_cards(), fn
-      %{id: sideboard_id, max_sideboard_cards: sideboard_size} ->
+      %{id: sideboard_id} = card ->
+        sideboard_size = Card.max_sideboard_cards(card)
         missing_sideboard_parts?(deck, sideboard_id, sideboard_size)
     end)
   end

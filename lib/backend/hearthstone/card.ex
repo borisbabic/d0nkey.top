@@ -290,6 +290,21 @@ defmodule Backend.Hearthstone.Card do
     count * sideboard_copies_per_entry(sideboard)
   end
 
+  @spec max_sideboard_cards(card()) :: integer() | nil
+  def max_sideboard_cards(%{max_sideboard_cards: max}) when is_integer(max), do: max
+
+  def max_sideboard_cards(card) when is_card(card) do
+    case dbf_id(card) do
+      @commander_beatrix -> 1
+      @king_of_the_underbelly -> 3
+      @etc_band_manager -> 3
+      @zilliax_3000 -> 3
+      _ -> nil
+    end
+  end
+
+  def max_sideboard_cards(_), do: nil
+
   @spec sideboard_copies_per_entry(integer() | card()) :: integer()
   def sideboard_copies_per_entry(card) when is_card(card) do
     card

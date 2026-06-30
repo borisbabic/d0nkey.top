@@ -335,8 +335,9 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp do_remove_sideboard_params(params, card, additional_to_drop, if_missing?) do
     to_drop =
-      with %{id: id, max_sideboard_cards: sideboard_size} <-
+      with %{id: id} = card <-
              Enum.find(CardBag.sideboard_cards(), &(Card.dbf_id(&1) == card)),
+           sideboard_size <- Card.max_sideboard_cards(card),
            {:ok, deck} <- Deck.decode(params["code"]),
            ^if_missing? <- Deck.missing_sideboard_parts?(deck, id, sideboard_size) do
         Backend.Hearthstone.sideboard_params(id)
@@ -478,17 +479,5 @@ defmodule BackendWeb.DeckBuilderLive do
 
   defp assign_title(socket) do
     assign(socket, :page_title, "DeckBuilder")
-  end
-
-  def missing_beatrix?(deck) do
-    Deck.missing_sideboard_parts?(deck, Card.commander_beatrix(), 1)
-  end
-
-  def missing_underbelly?(deck) do
-    Deck.missing_sideboard_parts?(deck, Card.king_of_the_underbelly(), 3)
-  end
-
-  def missing_etc_band_member?(deck) do
-    Deck.missing_sideboard_parts?(deck, Card.etc_band_manager(), 3)
   end
 end

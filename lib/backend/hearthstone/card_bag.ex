@@ -114,7 +114,9 @@ defmodule Backend.Hearthstone.CardBag do
   end
 
   defp set_sideboard_cards(table, cards) do
-    sideboard_cards = Enum.filter(cards, &is_integer(&1.max_sideboard_cards))
+    sideboard_cards =
+      Enum.filter(cards, &Card.max_sideboard_cards/1)
+
     :ets.insert(table, {:sideboard_cards, sideboard_cards})
   end
 
