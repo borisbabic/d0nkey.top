@@ -1382,16 +1382,16 @@ defmodule BackendWeb.LeaderboardView do
               <input name={"#{ key }[]"} type="hidden" value={"#{ value }"}>
           <% end %>
           <div class="is-pulled-right">
-              <%= number_input f, "max_rank", class: "input", placeholder: "Max Rank", style: style %>
+              <%= number_input f, "max_rank", class: "input", placeholder: "Max Rank", style: style, enterkeyhint: "go" %>
           </div>
           <div class="is-pulled-right">
-              <%= number_input f, "min_rank", class: "input", placeholder: "Min Rank", style: style %>
+              <%= number_input f, "min_rank", class: "input", placeholder: "Min Rank", style: style, enterkeyhint: "go" %>
           </div>
           <div class="is-pulled-right">
-              <%= number_input f, "max_rating", class: "input", placeholder: "Max Rating", style: style %>
+              <%= number_input f, "max_rating", class: "input", placeholder: "Max Rating", style: style, enterkeyhint: "go" %>
           </div>
           <div class="is-pulled-right">
-              <%= number_input f, "min_rating", class: "input", placeholder: "Min Rating", style: style %>
+              <%= number_input f, "min_rating", class: "input", placeholder: "Min Rating", style: style, enterkeyhint: "go" %>
           </div>
           <input type="submit" class="is-hidden"/>
       <% end %>
