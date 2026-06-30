@@ -37,7 +37,7 @@ defmodule FunctionComponents.Table do
 
   slot :inner_block, required: true
   attr :header, :boolean, required: true
-  attr :class, :string, required: false, default: ""
+  attr :class, :any, required: false, default: ""
   attr :selected, :boolean, default: false
 
   def tr(assigns) do
@@ -54,7 +54,7 @@ defmodule FunctionComponents.Table do
   defp tr_class(false), do: "tw-transition-colors hover:tw-bg-slate-800/30"
 
   slot :inner_block, required: true
-  attr :class, :string, required: false, default: ""
+  attr :class, :any, required: false, default: ""
 
   def trh(assigns) do
     ~H"""
@@ -65,7 +65,7 @@ defmodule FunctionComponents.Table do
   end
 
   slot :inner_block, required: true
-  attr :class, :string, required: false, default: ""
+  attr :class, :any, required: false, default: ""
   attr :selected, :boolean, default: false
 
   def trb(assigns) do
@@ -77,7 +77,7 @@ defmodule FunctionComponents.Table do
   end
 
   slot :inner_block, required: true
-  attr :class, :string, required: false, default: ""
+  attr :class, :any, required: false, default: ""
 
   def td(assigns) do
     ~H"""
@@ -88,7 +88,7 @@ defmodule FunctionComponents.Table do
   end
 
   slot :inner_block, required: true
-  attr :class, :string, required: false, default: ""
+  attr :class, :any, required: false, default: ""
 
   def th(assigns) do
     ~H"""

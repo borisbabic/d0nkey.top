@@ -3,6 +3,9 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application css. */
+[x-cloak] { 
+  display: none !important; 
+}
 .multi-select-text {
   white-space: nowrap;
   overflow: hidden;

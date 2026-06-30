@@ -120,6 +120,8 @@ defmodule BackendWeb do
       use Surface.LiveView,
         layout: {BackendWeb.LayoutView, :live}
 
+      alias Components.PageHeader
+
       unquote(surface())
     end
   end

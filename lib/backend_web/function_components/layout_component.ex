@@ -2,7 +2,7 @@ defmodule FunctionComponents.LayoutComponent do
   @moduledoc "Function components for the layout, primarily the navbar"
   use BackendWeb, :component
 
-  alias FunctionComponents.Dropdown
+  alias FunctionComponents.DropdownOld, as: Dropdown
   attr :display, :string, required: true
   attr :battlefy_id, :string, required: true
   attr :start, NaiveDateTime, required: true

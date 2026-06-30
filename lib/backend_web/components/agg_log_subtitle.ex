@@ -6,10 +6,11 @@ defmodule Components.AggLogSubtitle do
   prop(criteria, :any, default: nil)
   prop(format, :any, default: nil)
   prop(period, :string, default: nil)
+  prop(include_prefix, :boolean, default: false)
 
   def render(%{latest_agg: %NaiveDateTime{}} = assigns) do
     ~F"""
-    <span>| {Timex.from_now(@latest_agg)} </span>
+    <span><span :if={@include_prefix}>| </span>{Timex.from_now(@latest_agg)} </span>
     """
   end
 

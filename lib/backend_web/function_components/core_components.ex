@@ -545,6 +545,60 @@ defmodule FunctionComponents.CoreComponents do
     """
   end
 
+  @doc """
+  Renders a consistent page header block with distinct layouts for titles, 
+  reusable navigation links, and background metadata trackers.
+  """
+  attr :title, :string, required: true
+
+  slot :nav_links, doc: "Contains individual action links"
+  slot :meta_info, doc: "Contains auxiliary stats like game counts, filters, or credits"
+
+  def page_header(assigns) do
+    ~H"""
+    <div class="tw-mb-6 tw-space-y-2">
+      <h1 class="tw-text-2xl md:tw-text-3xl tw-font-bold tw-tracking-tight tw-text-white">
+        {@title}
+      </h1>
+
+      <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2 tw-text-xs tw-font-medium tw-text-slate-400">
+        <!-- Render Navigation Group -->
+        <div :if={@nav_links != []} class="tw-flex tw-items-center tw-gap-3">
+          {render_slot(@nav_links)}
+        </div>
+
+        <!-- Visual Separator Line -->
+        <div :if={@nav_links != [] and @meta_info != []} class="tw-hidden md:tw-block tw-h-3 tw-w-px tw-bg-slate-800"></div>
+
+        <!-- Render Metadata / Stats Group -->
+        <div :if={@meta_info != []} class="tw-flex tw-flex-wrap tw-items-center tw-gap-4">
+          {render_slot(@meta_info)}
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders a low sample or attention-grabbing indicator badge.
+  """
+  attr :active, :boolean, default: false
+  slot :inner_block, required: true
+
+  def sample_badge(assigns) do
+    ~H"""
+    <div class="tw-flex tw-items-center tw-gap-1.5">
+      <span :if={@active} class="tw-relative tw-flex tw-h-2 tw-w-2">
+        <span class="tw-animate-ping tw-absolute tw-inline-flex tw-h-full tw-w-full tw-rounded-full tw-bg-orange-400 tw-opacity-75"></span>
+        <span class="tw-relative tw-inline-flex tw-rounded-full tw-h-2 tw-w-2 tw-bg-orange-500"></span>
+      </span>
+      <span class={["tw-font-mono", (if @active, do:  "tw-text-orange-400 tw-font-semibold", else: "tw-text-slate-300")]}>
+        {render_slot(@inner_block)}
+      </span>
+    </div>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do

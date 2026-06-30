@@ -30,16 +30,35 @@ defmodule BackendWeb.CardStatsLive do
   def render(assigns) do
     ~F"""
       <div>
-        <div class="title is-2">{@title || "Card Stats"}</div>
-        <div class="subtitle is-6">
-          <span :if={@deck}><a href={Deck.link(@deck)}> Deck Stats</a> | </span>
-          <span :if={deck_id = highlight_deck_id(@params)}><a href={~p"/card-stats?#{create_deck_filters(@params, deck_id)}"}>Deck Card Stats</a> | </span>
-          <span :if={archetype = Map.get(@params, "archetype")}><a href={~p"/archetype/#{archetype}?#{create_archetype_stats_filters(@params)}"}>Archetype Stats</a> | </span>
-          <span :if={archetype = Deck.archetype(@deck)} ><a href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"} class={"tw-border-2 tw-rounded tw-border-orange-500": low_sample?(@games)}>Archetype Card Stats</a> | </span>
-          <a href={~p"/stats/explanation"}>Stats Explanation</a> | To contribute use <a href="https://www.firestoneapp.com/" target="_blank">Firestone</a>
-          <AggLogSubtitle criteria={@criteria} />
-          <span :if={@games}> | <span class={"tw-underline tw-decoration-orange-500": low_sample?(@games)}> Games: {@games}</span></span>
-        </div>
+        <.page_header title={@title || "Card Stats"}>
+          <:nav_links>
+            <a :if={@deck} href={Deck.link(@deck)} class="hover:tw-text-sky-400 tw-transition-colors">Deck Stats</a>
+
+            <a :if={deck_id = highlight_deck_id(@params)} href={~p"/card-stats?#{create_deck_filters(@params, deck_id)}"} class="hover:tw-text-sky-400 tw-transition-colors">Deck Card Stats</a>
+
+            <a :if={archetype = Map.get(@params, "archetype")} href={~p"/archetype/#{archetype}?#{create_archetype_stats_filters(@params)}"} class="hover:tw-text-sky-400 tw-transition-colors">Archetype Stats</a>
+
+            <a :if={archetype = Deck.archetype(@deck)} href={~p"/card-stats?#{create_archetype_filters(@params, archetype)}"} class={["tw-transition-colors hover:tw-text-sky-400", low_sample?(@games) && "tw-text-orange-400 tw-font-semibold"]}>
+              Archetype Card Stats
+            </a>
+
+            <a href={~p"/stats/explanation"} class="hover:tw-text-sky-400 tw-transition-colors">Stats Explanation</a>
+          </:nav_links>
+
+          <:meta_info>
+            <div class="tw-text-slate-500">
+              To contribute use <a href="https://www.firestoneapp.com/" target="_blank" class="tw-text-slate-400 hover:tw-text-sky-400 tw-underline tw-decoration-slate-600">Firestone</a>
+            </div>
+
+            <div class="tw-hidden md:tw-block tw-h-3 tw-w-px tw-bg-slate-800"></div>
+
+            <AggLogSubtitle criteria={@criteria} />
+
+            <.sample_badge :if={@games} active={low_sample?(@games)}>
+              Games: {@games}
+            </.sample_badge>
+          </:meta_info>
+        </.page_header>
       <FunctionComponents.Ads.below_title/>
         <CardStatsTable highlight_dropdowns={low_sample?(@games)} highlight_cards={@highlight_cards} params={@params}id="main_card_stats_table" filters={@filters} card_stats={@card_stats || []} criteria={@criteria} live_view={__MODULE__}/>
       </div>
