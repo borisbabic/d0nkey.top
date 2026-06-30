@@ -1,10 +1,14 @@
-<div class="title is-2"><%= @page_title %></div>
-<%= if @subtitle do %>
-  <%= @subtitle %>
-<% end %>
+<.page_header title={@page_title}>
+  <:nav_links>
+    <%= if @subtitle do %>
+      <%= @subtitle %>
+    <% end %>
+  </:nav_links>
+</.page_header>
 <%= form_for @conn, Routes.leaderboard_path(@conn, :points, @conn.query_params),
 [method: :get], fn
 f-> %>
+  <.filter_container>
     <%= for {key, value} when is_binary(value) or is_integer(value) <- @conn.query_params do %>
         <input name={"#{ key }"} type="hidden" value={"#{ value }"}>
     <% end %>
@@ -13,23 +17,24 @@ f-> %>
     <%= render_dropdowns @dropdowns %>
 
     <%= render_countries_multiselect_dropdown(f, @selected_countries) %>
+  </.filter_container>
 <% end %>
 
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-        <tr>
+<.table id="ldb_points_table">
+    <.thead>
+        <.trh>
             <%= for hd <- @headers do %>
-                <th> <%= hd %> </th>
+                <.th> <%= hd %> </.th>
             <% end %>
-        </tr>
-    </thead>
-    <tbody>
+        </.trh>
+    </.thead>
+    <.tbody>
         <%= for row <- @rows do %>
-            <tr>
+            <.trb>
                 <%= for cell <- row do %>
-                    <td> <%= cell %> </td>
+                    <.td> <%= cell %> </.td>
                 <% end %>
-            </tr>
+            </.trb>
         <% end %>
-    </tbody>
-</table>
+    </.tbody>
+</.table>

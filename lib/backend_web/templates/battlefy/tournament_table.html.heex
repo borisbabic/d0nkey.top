@@ -1,21 +1,22 @@
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Start Time</th>
-        <th>Links</th>
-    </tr>
-    </thead>
-    <tbody>
+<.table id="battlefy_tournaments_table">
+    <.thead>
+    <.trh>
+        <.th>Name</.th>
+        <.th>Start Time</.th>
+        <.th>Links</.th>
+    </.trh>
+    </.thead>
+    <.tbody>
     <%= for t = %{start_time: start_time, name: name, link: link, standings_link: standings_link, lineups_link: lineups_link} <- @tournaments do %>
-    <tr>
-        <td>
+    <.trb>
+        <.td>
             <a class="is-link" href={"#{ link }"}>
                 <%= name %>
             </a>
-        </td>
-        <td><%= render_datetime start_time %></td>
-        <td>
+        </.td>
+        <.td><%= render_datetime start_time %></.td>
+        <.td>
+          <.filter_container>
             <%= if Backend.Battlefy.Tournament.has_bracket?(t) do %>
                 <a class="is-link" href={"#{ standings_link }"}>
                     standings
@@ -26,8 +27,9 @@
                     lineups
                 </a>
             <% end %>
-        </td>
-    </tr>
+          </.filter_container>
+        </.td>
+    </.trb>
     <% end %>
-    </tbody>
-</table>
+    </.tbody>
+</.table>

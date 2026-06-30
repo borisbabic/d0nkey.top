@@ -9,7 +9,7 @@ defmodule BackendWeb.ArchivedPatchesLive do
 
   def render(assigns) do
     ~F"""
-    <div class="title is-2">Archived Patches</div>
+    <.page_header title="Archived Patches" />
     <PeriodTable periods={periods()} include_decks_link={true} include_meta_link={true}/>
     """
   end

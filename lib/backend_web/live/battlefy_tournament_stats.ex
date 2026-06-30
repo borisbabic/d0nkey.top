@@ -19,7 +19,7 @@ defmodule BackendWeb.BattlefyTournamentStatsLive do
     ~F"""
       <div>
         <div>
-          <div class="title is-2">Tournaments Stats</div>
+          <.page_header title="Tournament Stats" />
           <FunctionComponents.Ads.below_title/>
           <.form for={%{}} as={:tournaments} phx-change="change">
             <label>One battlefy link per line:</label>

@@ -1,35 +1,35 @@
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-        <tr>
-            <th>Position</th>
-            <th>Battletag</th>
+<.table id="leaderboard_table">
+    <.thead>
+        <.trh>
+            <.th>Position</.th>
+            <.th>Battletag</.th>
             <%= if @show_ratings do %>
-                <th>Rating</th>
+                <.th>Rating</.th>
             <% end %>
             <%= if @mt_column do %>
-                <th><%= @mt_column %></th>
+                <.th><%= @mt_column %></.th>
             <% end %>
-        </tr>
-    </thead>
-    <tbody>
+        </.trh>
+    </.thead>
+    <.tbody>
 <%= for e = %{player_history_link: player_history_link, rank_history_link: rank_history_link, qualified: qualified, rating: rating, account_id: battletag, rank: position, qualifying: qualifying, prev_rank: prev_rank, prev_rating: prev_rating, ineligible: ineligible}
  <- @table_entries do %>
-        <tr>
-            <td>
+        <.trb>
+            <.td>
                 <%= render_comparison(position, prev_rank, true) %>
                 <%= if position == 1 do %>
                     <%= rank_history_link %>
                 <% end %>
-            </td>
-            <td>
+            </.td>
+            <.td>
                 <%= render_player_link(battletag, nil, @show_flags == "yes") %>
                 <%= player_history_link %>
-            </td>
+            </.td>
             <%= if @show_ratings do %>
-                <td><%= render_comparison(rating, prev_rating, false) %></td>
+                <.td><%= render_comparison(rating, prev_rating, false) %></.td>
             <% end %>
             <%= if @mt_column do %>
-                <td>
+                <.td>
                 <%= case {qualified, qualifying, ineligible} do%>
                     <% {_, _, true} -> %>
                         <p class="tag is-dark" data-balloon-pos="up" aria-label="Blizz employees and others are ineligible ">Ineligible</p>
@@ -55,9 +55,9 @@
                 <%= if e.wrong_region do %>
                     <span data-balloon-pos="up" aria-label="Wrong region to earn an invite" class="tag is-warning">Wrong Region</span>
                 <% end %>
-                </td>
+                </.td>
             <% end %>
-        </tr>
+        </.trb>
 <% end %>
-    </tbody>
-</table>
+    </.tbody>
+</.table>

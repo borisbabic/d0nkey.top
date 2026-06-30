@@ -1,6 +1,8 @@
 <div class="title is-2"><%= @title %> </div>
 <div class="subtitle is-6"><%= @subtitle %> </div>
 <FunctionComponents.Ads.below_title/>
-<%= @prev_button %>
-<%= @next_button %>
+<.filter_container>
+  <%= @prev_button %>
+  <%= @next_button %>
+</.filter_container>
 <%= render("tournament_table.html", conn: @conn, raw: @tournaments, slug: @slug) %>

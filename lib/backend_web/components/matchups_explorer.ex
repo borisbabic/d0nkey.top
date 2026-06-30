@@ -193,7 +193,7 @@ defmodule Components.MatchupsExplorer do
   def warning(%{format: wild} = assigns) when wild in [1, "1"] do
     ~H"""
     <.alert title="Wild archetyping is bad">
-      Wild matchups Archetyping is mostly auto generated. Don't put too much stock in the exact values
+      Wild matchups Archetyping is mostly poorly auto generated. Don't put too much stock into the exact values
     </.alert>
     <.warning />
     """

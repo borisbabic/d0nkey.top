@@ -1,18 +1,21 @@
-<div class="title is-2">Leaderboard</div>
-<div class="subtitle is-6">
+<.page_header title={Leaderboard}>
+  <:nav_links>
     <a target="_blank" href={"#{ Routes.leaderboard_path(@conn, :player_stats) }"}>Stats</a>
     <%= if @official_link do %>
-    |    <a target="_blank" href={"#{ @official_link }"}>Official Site</a>
+      <a target="_blank" href={"#{ @official_link }"}>Official Site</a>
     <% end %>
+  </:nav_links>
+  <:meta_info>
     <%= if @total do %>
-      |     Total Players: <%= @total %>
+      <span>Total Players: <%= @total %></span>
     <% end %>
     <%= if @updated_at do %>
-    |     Updated at <%= render_datetime @updated_at %>
+      <span>Updated at <%= render_datetime @updated_at %></span>
     <% end %>
-</div>
+  </:meta_info>
+</.page_header>
 <FunctionComponents.Ads.below_title/>
-<div class="level level-left">
+<.filter_container>
     <%= @prev_button %>
     <%= @next_button %>
     <%= render_dropdowns @dropdowns %>
@@ -22,7 +25,7 @@
             <%= hidden_input f, k, value: v %>
         <% end %>
     <% end %>
-</div>
+</.filter_container>
 
 
 <%= if @old do %>

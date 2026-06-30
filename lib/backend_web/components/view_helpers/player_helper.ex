@@ -6,11 +6,11 @@ defmodule Components.ViewHelpers.PlayerHelper do
 
   def table_row(assigns) do
     ~H"""
-      <tr>
-        <td> <%= @competition %> </td>
-        <td> <%= @position %> </td>
-        <td> <%= @score %> </td>
-      </tr>
+      <.trb>
+        <.td> <%= @competition %> </.td>
+        <.td> <%= @position %> </.td>
+        <.td> <%= @score %> </.td>
+      </.trb>
     """
   end
 
@@ -19,7 +19,7 @@ defmodule Components.ViewHelpers.PlayerHelper do
   def table_headers(assigns) do
     ~H"""
       <%= for h <- @headers do %>
-        <th><%= h %></th>
+        <.th><%= h %></.th>
       <% end %>
     """
   end

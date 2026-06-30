@@ -1,6 +1,7 @@
-<div class="title is-2"><%= render_player_name(@bt, true) %></div>
+<.page_header title={render_player_name(@bt, true)} />
 <FunctionComponents.Ads.below_title/>
 
+<.filter_container>
 <%= @prev_button %>
 <%= @next_button %>
 <%= render_dropdowns @dropdowns %>
@@ -16,15 +17,16 @@ f-> %>
         <%= row %>
     </div>
 <% end %>
-<table class="table is-striped is-fullwidth is-narrow">
-    <thead>
-        <tr>
+</.filter_container>
+<.table id="player_profile_table">
+    <.thead>
+        <.trh>
             <%= @table_headers %>
-        </tr>
-    </thead>
-    <tbody>
+        </.trh>
+    </.thead>
+    <.tbody>
         <%= for row <- @table_rows do %>
             <%= row %>
         <% end %>
-    </tbody>
-</table>
+    </.tbody>
+</.table>
