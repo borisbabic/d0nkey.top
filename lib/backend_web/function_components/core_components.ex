@@ -2,6 +2,7 @@ defmodule FunctionComponents.CoreComponents do
   @moduledoc false
   use Phoenix.Component
   use Gettext, backend: BackendWeb.Gettext
+  import FunctionComponents.Table
   alias Phoenix.LiveView.JS
 
   @doc """
@@ -240,6 +241,18 @@ defmodule FunctionComponents.CoreComponents do
     """
   end
 
+  slot :inner_block, required: true, doc: "the filters"
+
+  def filter_container(assigns) do
+    ~H"""
+      <div class="tw-space-y-2">
+        <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-2">
+          {render_slot(@inner_block)}
+        </div>
+      </div>
+    """
+  end
+
   @doc """
   Renders flash notices.
 
@@ -475,6 +488,60 @@ defmodule FunctionComponents.CoreComponents do
       <code class="tw-block tw-text-xs tw-bg-black/40 tw-p-1.5 tw-rounded has-text-info tw-border tw-border-slate-800/60">
         <%= render_slot(@inner_block) %>
       </code>
+    """
+  end
+
+  @doc """
+  Renders a system-wide dark data table. Supports responsive styling, 
+  precise tooltip alignment anchoring, and conditional columns.
+  """
+  attr :id, :string, required: true
+  attr :rows, :list, required: true
+  attr :row_class, :any, default: nil
+
+  slot :col, required: true do
+    attr :label, :any, required: true
+    attr :class, :string, doc: "Applies to both th and td elements"
+    attr :header_class, :string, doc: "Applies exclusively to th elements"
+    attr :cell_class, :string, doc: "Applies exclusively to td elements"
+  end
+
+  def data_table(assigns) do
+    ~H"""
+    <.table>
+      <.thead>
+        <.trh>
+          <.th 
+            :for={col <- @col} 
+            class={[
+              col[:class], 
+              col[:header_class]
+            ]}
+          >
+            {col[:label]}
+          </.th>
+        </.trh>
+      </.thead>
+        <.tbody >
+          <.trb
+            :for={row <- @rows} 
+            class={[
+              is_function(@row_class) && @row_class.(row),
+              is_binary(@row_class) && @row_class
+            ]}
+          >
+            <.td 
+              :for={col <- @col} 
+              class={[
+                col[:class], 
+                col[:cell_class]
+              ]}
+            >
+              {render_slot(col, row)}
+            </.td>
+          </.trb>
+        </.tbody>
+    </.table>
     """
   end
 

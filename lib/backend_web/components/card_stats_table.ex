@@ -1,6 +1,7 @@
 defmodule Components.CardStatsTable do
   @moduledoc false
   use BackendWeb, :surface_live_component
+  import FunctionComponents.Table
   alias Backend.Hearthstone.CardBag
   alias Components.DecklistCard
   alias Components.LivePatchDropdown
@@ -50,140 +51,173 @@ defmodule Components.CardStatsTable do
 
   def render(assigns) do
     ~F"""
-    <div>
-      <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)} warning={@highlight_dropdowns}/>
-      <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
-      <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)} warning={@highlight_dropdowns}/>
-      <LivePatchDropdown id="min_mull_count"
-        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
-        title={"Min Mull Count"}
-        param={"min_mull_count"}
-        normalizer={&Util.to_int_or_orig/1}
-        selected_as_title={false}/>
-      <LivePatchDropdown id="min_drawn_count"
-        options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
-        title={"Min Drawn Count"}
-        param={"min_drawn_count"}
-        normalizer={&Util.to_int_or_orig/1}
-        selected_as_title={false} />
-      <LivePatchDropdown id="show_counts"
-        options={[{"yes", "Show Counts"}, {"alongside_impact", "Counts Alongside Impact"}, {"no", "Don't Show Counts"}]}
-        title={"Show Counts"}
-        param={"show_counts"}
-        selected_as_title={true} />
-      <ClassDropdown id={"opponent_class_filter"}
-        title={"Opponent"}
-        name_prefix={"VS "}
-        param={"opponent_class"} />
+    <div class="tw-space-y-6 tw-font-sans tw-text-slate-300">
 
-      <PlayerHasCoinDropdown id={"player_has_coin_dropdown"} />
-      {#if premium_filters?(@premium_filters, @user)}
-        <PlayableCardSelect id={"fresh_player_deck_includes"} format={@test_params["format"]} param={"fresh_player_deck_includes"} selected={@test_params["fresh_player_deck_includes"] || []} title="Decks Include cards"/>
-        <PlayableCardSelect id={"fresh_player_deck_excludes"} format={@test_params["format"]} param={"fresh_player_deck_excludes"} selected={@test_params["fresh_player_deck_excludes"] || []} title="Decks Exclude cards"/>
-        <PlayableCardSelect format={@test_params["format"]} id={"player_mulligan"} param={"player_mulligan"} selected={@test_params["player_mulligan"] || []} title="In Mulligan"/>
-        <PlayableCardSelect format={@test_params["format"]} id={"player_not_mulligan"} param={"player_not_mulligan"} selected={@test_params["player_not_mulligan"] || []} title="Not In Mulligan"/>
-        <PlayableCardSelect format={@test_params["format"]} id={"player_drawn"} param={"player_drawn"} selected={@test_params["player_drawn"] || []} title="Drawn"/>
-        <PlayableCardSelect format={@test_params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
-        <PlayableCardSelect format={@test_params["format"]} id={"player_kept"} param={"player_kept"} selected={@test_params["player_kept"] || []} title="Kept"/>
-        <PlayableCardSelect format={@test_params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
-        <ArchetypeSelect format={@test_params["format"]} played_cards_archetypes={true} id={"opponent_archetype"} param={"opponent_archetype"} selected={@test_params["opponent_archetype"] || []} title="Opponent Archetype"/>
-        <ForceFreshDropdown id={"force_fresh"} />
-      {/if}
+      <.filter_container>
+        <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)} warning={@highlight_dropdowns}/>
+        <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)}/>
+        <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!premium_filters?(@premium_filters, @user)} warning={@highlight_dropdowns}/>
+        <LivePatchDropdown id="min_mull_count"
+          options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
+          title={"Min Mull Count"}
+          param={"min_mull_count"}
+          normalizer={&Util.to_int_or_orig/1}
+          selected_as_title={false}/>
+        <LivePatchDropdown id="min_drawn_count"
+          options={[0, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 9600, 12800, 16000]}
+          title={"Min Drawn Count"}
+          param={"min_drawn_count"}
+          normalizer={&Util.to_int_or_orig/1}
+          selected_as_title={false} />
+        <LivePatchDropdown id="show_counts"
+          options={[{"yes", "Show Counts"}, {"alongside_impact", "Counts Alongside Impact"}, {"no", "Don't Show Counts"}]}
+          title={"Show Counts"}
+          param={"show_counts"}
+          selected_as_title={true} />
+        <ClassDropdown id={"opponent_class_filter"}
+          title={"Opponent"}
+          name_prefix={"VS "}
+          param={"opponent_class"} />
+        <PlayerHasCoinDropdown id={"player_has_coin_dropdown"} />
 
+        {#if premium_filters?(@premium_filters, @user)}
+          <PlayableCardSelect id={"fresh_player_deck_includes"} format={@test_params["format"]} param={"fresh_player_deck_includes"} selected={@test_params["fresh_player_deck_includes"] || []} title="Decks Include cards"/>
+          <PlayableCardSelect id={"fresh_player_deck_excludes"} format={@test_params["format"]} param={"fresh_player_deck_excludes"} selected={@test_params["fresh_player_deck_excludes"] || []} title="Decks Exclude cards"/>
+          <PlayableCardSelect format={@test_params["format"]} id={"player_mulligan"} param={"player_mulligan"} selected={@test_params["player_mulligan"] || []} title="In Mulligan"/>
+          <PlayableCardSelect format={@test_params["format"]} id={"player_not_mulligan"} param={"player_not_mulligan"} selected={@test_params["player_not_mulligan"] || []} title="Not In Mulligan"/>
+          <PlayableCardSelect format={@test_params["format"]} id={"player_drawn"} param={"player_drawn"} selected={@test_params["player_drawn"] || []} title="Drawn"/>
+          <PlayableCardSelect format={@test_params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
+          <PlayableCardSelect format={@test_params["format"]} id={"player_kept"} param={"player_kept"} selected={@test_params["player_kept"] || []} title="Kept"/>
+          <PlayableCardSelect format={@test_params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
+          <ArchetypeSelect format={@test_params["format"]} played_cards_archetypes={true} id={"opponent_archetype"} param={"opponent_archetype"} selected={@test_params["opponent_archetype"] || []} title="Opponent Archetype"/>
+          <ForceFreshDropdown id={"force_fresh"} />
+        {/if}
+      </.filter_container>
 
-      <table class="table is-fullwidth is-striped is-gapless">
-        <thead>
-          <th>
-            <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")}>
-              {add_arrow(dgettext("card_stats", "Card"), "card", @filters)}
-            </a>
-          </th>
+      <.table id={"card-stats-table-main-table"}>
+          <.thead>
+            <.trh>
+              <.th>
+                <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")} >
+                  {add_arrow(dgettext("card_stats", "Card"), "card", @filters)}
+                </a>
+              </.th>
 
-            <th>
-            <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
-              <span data-balloon-pos="up" aria-label={"Mull (kept + unkept) winrate - deck winrate"}>
-                {add_arrow(dgettext("card_stats", "Mulligan Impact"), "mull_impact", @filters, true)}
-              </span>
-            </a>
-          </th>
-            <th :if={show_counts?(@filters)}>
-            <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
-              {add_arrow(dgettext("card_stats", "Mulligan Count"), "mull_count", @filters)}
-            </a>
-            </th>
+              <.th>
+                <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
+                  <span data-balloon-pos="up" aria-label={"Mull (kept + unkept) winrate - deck winrate"}>
+                    {add_arrow(dgettext("card_stats", "Mulligan Impact"), "mull_impact", @filters, true)}
+                  </span>
+                </a>
+              </.th>
 
-            <th>
-            <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
-              <span data-balloon-pos="up" aria-label={"Drawn winrate - deck winrate"}>
-                {add_arrow(dgettext("card_stats", "Drawn Impact"), "drawn_impact", @filters)}
-              </span>
-            </a>
-          </th>
-            <th :if={show_counts?(@filters)}>
-            <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")}>
-              {add_arrow(dgettext("card_stats", "Drawn Count"), "drawn_count", @filters)}
-            </a>
-          </th>
-        <th class="is-hidden-mobile">
-          <a :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact", "asc")}>
-            <span data-balloon-pos="up" aria-label={"Not Drawn winrate - deck winrate (lower is better)"}>
-              {add_arrow(dgettext("card_stats", "Not Drawn Impact"), "not_drawn_impact", @filters)}
-            </span>
-          </a>
-        </th>
-        <th :if={show_counts?(@filters)} class="is-hidden-mobile">
-          <a :on-click="change_sort" phx-value-sort_by={"not_drawn_count"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_count")}>
-          {add_arrow(dgettext("card_stats", "Not Drawn Count"), "not_drawn_count", @filters)}
-          </a>
-        </th>
-            <th class="is-hidden-mobile">
-            <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
-              <span data-balloon-pos="up" aria-label={"Winrate when kept - deck winrate"}>
-                {add_arrow(dgettext("card_stats", "Kept Impact"), "kept_impact", @filters)}
-              </span>
-            </a>
-          </th>
+              <.th :if={show_counts?(@filters)}>
+                <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
+                  {add_arrow(dgettext("card_stats", "Mulligan Count"), "mull_count", @filters)}
+                </a>
+              </.th>
 
-            <th :if={show_counts?(@filters)} class="is-hidden-mobile">
-            <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
-              {add_arrow(dgettext("card_stats", "Kept Count"), "kept_count", @filters)}
-            </a>
-            </th>
+              <.th >
+                <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
+                  <span data-balloon-pos="up" aria-label={"Drawn winrate - deck winrate"}>
+                    {add_arrow(dgettext("card_stats", "Drawn Impact"), "drawn_impact", @filters)}
+                  </span>
+                </a>
+              </.th>
 
-        </thead>
-        <tbody>
-          <tr :for={cs <- @card_stats |> DeckTracker.merge_card_stats() |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} class={"is-selected": selected?(cs, @highlight_cards)}>
-            <td>
-              <div class="decklist_card_container">
-                <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
-              </div>
-            </td>
-            <td>
-              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
-              <span :if={!cs.sufficient_mull and !show_counts?(@filters)}><HeroIcons.warning_triangle /></span>
-            </td>
-            <td :if={show_counts?(@filters)}>{Util.get(cs, :mull_total) }</td>
+              <.th :if={show_counts?(@filters)}>
+                <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")} >
+                  {add_arrow(dgettext("card_stats", "Drawn Count"), "drawn_count", @filters)}
+                </a>
+              </.th>
 
-            <td>
-              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
-              <span :if={!cs.sufficient_drawn and !show_counts?(@filters)}><HeroIcons.warning_triangle /></span>
-            </td>
-            <td :if={show_counts?(@filters)}>
-              {Util.get(cs, :drawn_total)}</td>
-            <td class="is-hidden-mobile">
-              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
-            </td>
-            <td class="is-hidden-mobile" :if={show_counts?(@filters)}>
-              {Util.get(cs, :not_drawn_total)}</td>
+              <.th class={"is-hidden-mobile"}>
+                <a :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact", "asc")} >
+                  <span data-balloon-pos="up" aria-label={"Not Drawn winrate - deck winrate (lower is better)"}>
+                    {add_arrow(dgettext("card_stats", "Not Drawn Impact"), "not_drawn_impact", @filters)}
+                  </span>
+                </a>
+              </.th>
 
-            <td class="is-hidden-mobile">
-              <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
-            </td>
-            <td :if={show_counts?(@filters)} class="is-hidden-mobile">{Util.get(cs, :kept_total)}</td>
-          </tr>
-        </tbody>
-      </table>
+              <.th :if={show_counts?(@filters)} class={"is-hidden-mobile"}>
+                <a :on-click="change_sort" phx-value-sort_by={"not_drawn_count"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_count")}>
+                {add_arrow(dgettext("card_stats", "Not Drawn Count"), "not_drawn_count", @filters)}
+                </a>
+              </.th>
+
+              <.th class={"is-hidden-mobile"}>
+                <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
+                  <span data-balloon-pos="up" aria-label={"Winrate when kept - deck winrate"}>
+                    {add_arrow(dgettext("card_stats", "Kept Impact"), "kept_impact", @filters)}
+                  </span>
+                </a>
+              </.th>
+
+              <.th :if={show_counts?(@filters)} class={"is-hidden-mobile"}>
+                <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
+                  {add_arrow(dgettext("card_stats", "Kept Count"), "kept_count", @filters)}
+                </a>
+              </.th>
+            </.trh>
+          </.thead>
+
+          <.tbody>
+            <.trb :for={cs <- @card_stats |> DeckTracker.merge_card_stats() |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} 
+              selected={selected?(cs, @highlight_cards)}>
+
+              <.td >
+                <div class="tw-max-w-[180px]">
+                  <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
+                </div>
+              </.td>
+
+              <.td>
+                <div class="tw-flex tw-items-center tw-gap-1.5">
+                  <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
+                  <span :if={!cs.sufficient_mull and !show_counts?(@filters)} class="has-text-warning"><HeroIcons.warning_triangle class="tw-w-4 tw-h-4" /></span>
+                </div>
+              </.td>
+              <.td :if={show_counts?(@filters)}>
+                <.count>
+                  {Util.get(cs, :mull_total) }
+                </.count>
+              </.td>
+
+              <.td >
+                <div class="tw-flex tw-items-center tw-gap-1.5">
+                  <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
+                  <span :if={!cs.sufficient_drawn and !show_counts?(@filters)} class="has-text-warning"><HeroIcons.warning_triangle class="tw-w-4 tw-h-4" /></span>
+                </div>
+              </.td>
+              <.td :if={show_counts?(@filters)}><.count>{Util.get(cs, :drawn_total)}</.count></.td>
+
+              <.td class="is-hidden-mobile">
+                <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
+              </.td>
+              <.td class="is-hidden-mobile" :if={show_counts?(@filters)}>
+                <.count>
+                  {Util.get(cs, :not_drawn_total)}
+                </.count>
+              </.td>
+
+              <.td class="is-hidden-mobile">
+                <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
+              </.td>
+              <.td :if={show_counts?(@filters)} class="is-hidden-mobile"><.count>{Util.get(cs, :kept_total)}</.count></.td>
+            </.trb>
+          </.tbody>
+        </.table>
     </div>
+    """
+  end
+
+  attr :count, :integer, required: true
+
+  defp count(assigns) do
+    ~H"""
+      <span class="tw-text-sm tw-text-slate-400 tw-font-mono">
+        {@count}
+      </span>
     """
   end
 
