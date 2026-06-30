@@ -48,7 +48,7 @@ defmodule FunctionComponents.Table do
     """
   end
 
-  defp selected_class(true), do: "tw-bg-[#24292e] hover:tw-bg-slate-700/40"
+  defp selected_class(true), do: "tw-bg-[#34393e] hover:tw-bg-slate-700/40"
   defp selected_class(_), do: ""
   defp tr_class(true), do: "tw-border-b tw-border-slate-800 tw-bg-black/20"
   defp tr_class(false), do: "tw-transition-colors hover:tw-bg-slate-800/30"
