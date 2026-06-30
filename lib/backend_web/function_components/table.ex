@@ -78,10 +78,12 @@ defmodule FunctionComponents.Table do
 
   slot :inner_block, required: true
   attr :class, :any, required: false, default: ""
+  attr :px, :integer, default: 3
+  attr :py, :integer, default: 1
 
   def td(assigns) do
     ~H"""
-    <td class={["tw-p-3 tw-align-middle tw-font-medium", @class]}>
+    <td class={["tw-px-#{@px} tw-py-#{@py} tw-align-middle tw-font-medium", @class]}>
       {render_slot(@inner_block)}
     </td>
     """
@@ -92,7 +94,7 @@ defmodule FunctionComponents.Table do
 
   def th(assigns) do
     ~H"""
-    <th class={["tw-p-4 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider hover:tw-text-white", @class]}>
+    <th class={["tw-p-3 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider hover:tw-text-white", @class]}>
       {render_slot(@inner_block)}
     </th>
     """

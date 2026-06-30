@@ -165,45 +165,45 @@ defmodule Components.CardStatsTable do
             <.trb :for={cs <- @card_stats |> DeckTracker.merge_card_stats() |> map_filter(@filters, @highlight_cards) |> sort(@filters) |> filter_same_deck(@filters)} 
               selected={selected?(cs, @highlight_cards)}>
 
-              <.td >
+              <.td py={0} px={0} >
                 <div class="tw-max-w-[180px]">
                   <DecklistCard deck_class="NEUTRAL" card={Util.get(cs, :card)} count={count(cs, @filters)} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                 </div>
               </.td>
 
-              <.td>
+              <.td py={0}>
                 <div class="tw-flex tw-items-center tw-gap-1.5">
                   <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
                   <span :if={!cs.sufficient_mull and !show_counts?(@filters)} class="has-text-warning"><HeroIcons.warning_triangle class="tw-w-4 tw-h-4" /></span>
                 </div>
               </.td>
-              <.td :if={show_counts?(@filters)}>
+              <.td py={0} :if={show_counts?(@filters)}>
                 <.count>
                   {Util.get(cs, :mull_total) }
                 </.count>
               </.td>
 
-              <.td >
+              <.td py={0} >
                 <div class="tw-flex tw-items-center tw-gap-1.5">
                   <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
                   <span :if={!cs.sufficient_drawn and !show_counts?(@filters)} class="has-text-warning"><HeroIcons.warning_triangle class="tw-w-4 tw-h-4" /></span>
                 </div>
               </.td>
-              <.td :if={show_counts?(@filters)}><.count>{Util.get(cs, :drawn_total)}</.count></.td>
+              <.td py={0} :if={show_counts?(@filters)}><.count>{Util.get(cs, :drawn_total)}</.count></.td>
 
-              <.td class="is-hidden-mobile">
+              <.td py={0} class="is-hidden-mobile">
                 <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
               </.td>
-              <.td class="is-hidden-mobile" :if={show_counts?(@filters)}>
+              <.td py={0} class="is-hidden-mobile" :if={show_counts?(@filters)}>
                 <.count>
                   {Util.get(cs, :not_drawn_total)}
                 </.count>
               </.td>
 
-              <.td class="is-hidden-mobile">
+              <.td py={0} class="is-hidden-mobile">
                 <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
               </.td>
-              <.td :if={show_counts?(@filters)} class="is-hidden-mobile"><.count>{Util.get(cs, :kept_total)}</.count></.td>
+              <.td py={0} :if={show_counts?(@filters)} class="is-hidden-mobile"><.count>{Util.get(cs, :kept_total)}</.count></.td>
             </.trb>
           </.tbody>
         </.table>
