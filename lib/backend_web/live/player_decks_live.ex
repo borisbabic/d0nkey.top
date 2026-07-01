@@ -13,7 +13,7 @@ defmodule BackendWeb.PlayerDecksLive do
   def render(assigns) do
     ~F"""
       <div>
-        <.page_header title={"#{@group.name} Replays"}>
+        <.page_header title={@page_title}>
           <:meta_info>
             <.contribution powered={true} />
           </:meta_info>
