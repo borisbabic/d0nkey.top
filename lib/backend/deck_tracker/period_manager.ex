@@ -36,7 +36,8 @@ defmodule Hearthstone.DeckTracker.PeriodManager do
     end
   end
 
-  def update_brawl_period_start(check_wednesday? \\ true) do
+  # skipping for pre release brawl and stuff
+  def update_brawl_period_start(check_wednesday? \\ true, skip_if_in_previous_hr \\ 36) do
     period = DeckTracker.get_period_by_slug("brawl")
 
     now = Backend.Blizzard.now()
@@ -44,7 +45,15 @@ defmodule Hearthstone.DeckTracker.PeriodManager do
     wednesday? = Date.day_of_week(now) == 3
     already_started? = :gt == Time.compare(DateTime.to_time(now), start_time)
 
-    if (wednesday? or !check_wednesday?) and already_started? do
+    in_cooldown_period? =
+      if is_integer(skip_if_in_previous_hr) and is_map(period.period_start) do
+        cooldown_start = now |> Timex.shift(hour: -1 * skip_if_in_previous_hr)
+        :gt == Time.compare(period.period_start, cooldown_start)
+      else
+        false
+      end
+
+    if (wednesday? or !check_wednesday?) and already_started? and !in_cooldown_period? do
       {:ok, period_start} =
         DateTime.new!(DateTime.to_date(now), start_time, now.time_zone)
         |> DateTime.shift_zone("Etc/UTC")
