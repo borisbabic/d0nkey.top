@@ -5,6 +5,9 @@ defmodule Command.ExportData do
           optional(:end_time) => NaiveDateTime.t(),
           optional(:file_part) => String.t(),
           optional(:directory) => String.t(),
+          optional(:format) => String.t() | integer(),
+          optional(:db_format) => String.t() | integer(),
+          optional(:game_type) => String.t() | integer(),
           optional(:delimiter) => String.t()
         }
   @type import_params :: %{
@@ -25,12 +28,16 @@ defmodule Command.ExportData do
   @spec fill_export_games_params(export_games_params()) :: export_games_params()
   def fill_export_games_params(params \\ %{}) do
     start_time = Map.get(params, :start_time) || yesterday_start()
+    format = Map.get(params, :format, 2) |> Util.to_int_or_orig()
+    {db_format, game_type} = Hearthstone.DeckTracker.db_format_and_game_type(format)
 
     %{
       start_time: start_time,
       end_time: Map.get(params, :end_time) || NaiveDateTime.utc_now(),
       file_part: Map.get(params, :file_part) || start_time |> Timex.to_date() |> to_string(),
-      format: Map.get(params, :format, 2) |> Util.to_int_or_orig(),
+      format: format,
+      db_format: Map.get(params, :db_format, db_format),
+      game_type: Map.get(params, :game_type, game_type),
       directory: Map.get(params, :directory, "/tmp") |> String.trim_trailing("/"),
       delimiter: Map.get(params, :delimiter, "|")
     }
@@ -99,7 +106,8 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
-        format: format,
+        db_format: format,
+        game_type: game_type,
         file_part: file_part
       }) do
     """
@@ -118,7 +126,7 @@ defmodule Command.ExportData do
             WHERE
               DTG.INSERTED_AT >= '#{start_time}'
               AND DTG.INSERTED_AT < '#{end_time}'
-              AND DTG.GAME_TYPE = 7
+              AND DTG.GAME_TYPE = #{game_type}
               AND DTG.FORMAT = #{format}
           )
       ) TO '#{directory}/decks_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
@@ -130,7 +138,8 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
-        format: format,
+        db_format: format,
+        game_type: game_type,
         file_part: file_part
       }) do
     """
@@ -149,7 +158,7 @@ defmodule Command.ExportData do
             WHERE
               DTG.INSERTED_AT >= '#{start_time}'
               AND DTG.INSERTED_AT < '#{end_time}'
-              AND DTG.GAME_TYPE = 7
+              AND DTG.GAME_TYPE = #{game_type}
               AND DTG.FORMAT = #{format}
           )
       ) TO '#{directory}/games_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
@@ -161,7 +170,8 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
-        format: format,
+        db_format: format,
+        game_type: game_type,
         file_part: file_part
       }) do
     """
@@ -180,7 +190,7 @@ defmodule Command.ExportData do
           WHERE
             DTG.INSERTED_AT >= '#{start_time}'
             AND DTG.INSERTED_AT < '#{end_time}'
-            AND DTG.GAME_TYPE = 7
+            AND DTG.GAME_TYPE = #{game_type}
             AND DTG.FORMAT = #{format}
         )
     ) TO '#{directory}/tallies_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
@@ -192,7 +202,8 @@ defmodule Command.ExportData do
         end_time: end_time,
         directory: directory,
         delimiter: delimiter,
-        format: format,
+        db_format: format,
+        game_type: game_type,
         file_part: file_part
       }) do
     """
@@ -211,7 +222,7 @@ defmodule Command.ExportData do
           WHERE
             DTG.INSERTED_AT >= '#{start_time}'
             AND DTG.INSERTED_AT < '#{end_time}'
-            AND DTG.GAME_TYPE = 7
+            AND DTG.GAME_TYPE = #{game_type}
             AND DTG.FORMAT = #{format}
         )
     ) TO '#{directory}/played_cards_#{file_part}.csv' DELIMITER '#{delimiter}' CSV HEADER;
