@@ -94,7 +94,7 @@ defmodule FunctionComponents.Table do
 
   def th(assigns) do
     ~H"""
-    <th class={["tw-p-3 tw-text-xs tw-font-bold tw-uppercase tw-tracking-wider hover:tw-text-white", @class]}>
+    <th class={["tw-p-3 tw-text-sm tw-font-bold tw-uppercase tw-tracking-wider hover:tw-text-white", @class]}>
       {render_slot(@inner_block)}
     </th>
     """

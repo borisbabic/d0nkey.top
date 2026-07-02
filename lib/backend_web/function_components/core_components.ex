@@ -570,7 +570,7 @@ defmodule FunctionComponents.CoreComponents do
         <% end %>
       </h1>
 
-      <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2 tw-text-xs tw-font-medium tw-text-slate-400">
+      <div class="tw-flex tw-flex-wrap tw-items-center tw-gap-x-4 tw-gap-y-2 tw-text-sm tw-font-medium tw-text-slate-400">
         <!-- Render Navigation Group -->
         <div :if={@nav_links != []} class="tw-flex tw-items-center tw-gap-3">
           {render_slot(@nav_links)}
