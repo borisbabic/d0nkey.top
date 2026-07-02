@@ -2147,13 +2147,20 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
+  # todo fix format handling somehow
+  # it's too magical with the is_integer and string
+  # and game_type
+  # like what about 
   defp compose_games_query({"format", format}, query) when is_integer(format) do
-    game_type = format_game_type(format)
-    # abs is hack for tavern brawl
+    {db_format, game_type} = db_format_and_game_type(format)
+
     query
-    |> where([game: g], g.format == ^abs(format))
+    |> where([game: g], g.format == ^db_format)
     |> where([game: g], g.game_type == ^game_type)
   end
+
+  defp compose_games_query({"format", {:db_format, format}}, query),
+    do: query |> where([game: g], g.format == ^format)
 
   defp compose_games_query({"format", format}, query),
     do: query |> where([game: g], g.format == ^format)
@@ -2294,7 +2301,13 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
-  defp format_game_type(format) do
+  @spec db_format_and_game_type(String.t() | integer()) :: {db_format :: integer(), game_type :: integer()}
+  def db_format_and_game_type(format_raw) do
+    format = Util.to_int_or_orig(format_raw)
+    {abs(format), format_game_type(format)}
+  end
+
+  def format_game_type(format) do
     format_query = from f in Format, where: f.value == ^format, limit: 1
 
     case Repo.one(format_query) do

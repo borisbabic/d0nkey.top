@@ -38,11 +38,13 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
     ranks = DeckTracker.ranks(auto_aggregate: true)
 
+    {db_format, game_type} = DeckTracker.db_format_and_game_type(format)
+
     base_criteria =
       [
         {"period", period},
-        {"format", format},
-        {"game_type", 7},
+        {"format", {:db_format, db_format}},
+        {"game_type", game_type},
         {"until", NaiveDateTime.utc_now()}
       ] ++ rank_criteria(ranks)
 
