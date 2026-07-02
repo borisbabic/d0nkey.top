@@ -2395,7 +2395,7 @@ defmodule Hearthstone.DeckTracker do
     Repo.one(query)
   end
 
-  @spec card_tallies_for_game(Game.t()) :: [CardGameTall.t()]
+  @spec card_tallies_for_game(Game.t()) :: [CardGameTally.t()]
   def card_tallies_for_game(%{id: id}, repo_opts \\ []) do
     query =
       from(r in CardGameTally,

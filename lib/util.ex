@@ -90,6 +90,14 @@ defmodule Util do
       NaiveDateTime.compare(target, max) != :gt
   end
 
+  def before_now(%NaiveDateTime{} = target) do
+    :lt == NaiveDateTime.compare(target, NaiveDateTime.utc_now())
+  end
+
+  def after_now(%NaiveDateTime{} = target) do
+    :gt == NaiveDateTime.compare(target, NaiveDateTime.utc_now())
+  end
+
   def human_diff(later, earlier) do
     diff = NaiveDateTime.diff(later, earlier, :second)
     human_duration(diff)

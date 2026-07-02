@@ -102,6 +102,7 @@
           <.navbar_item_link link={~p"/about"} display={"About"} />
         </.navbar_dropdown>
         <%!-- <.navbar_item_link link={~p"/mt/playoffs/summer_2025"}>Playoffs</.navbar_item_link> --%>
+        <.current_giveaway />
         <a class="navbar-item" :if={NaiveDateTime.compare(NaiveDateTime.utc_now(), ~N[2026-05-20 10:00:00]) == :lt} href={~p"/mt/playoffs/spring_2026"}>
             <span>🏆 Playoffs</span>
             <%= if Twitch.HearthstoneLive.twitch_display_live?("playhearthstone") do %>

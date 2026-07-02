@@ -23,6 +23,16 @@ defmodule FunctionComponents.LayoutComponent do
     """
   end
 
+  def current_giveaway(assigns) do
+    assigns =
+      assigns
+      |> assign(giveaway: Backend.Giveaways.current_giveaway())
+
+    ~H"""
+    <a :if={@giveaway} class="navbar-item" href={~p"/giveaway/#{@giveaway.id}"}>🎁 Giveaway!</a>
+    """
+  end
+
   attr :sub_menus, :list, required: false, default: []
   attr :display, :string, required: true
   attr :main_link, :string, required: false, default: "#"
