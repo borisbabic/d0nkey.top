@@ -292,6 +292,34 @@ defmodule Backend.Hearthstone.Deck do
   defp deckcode_part(nil), do: [0]
   defp deckcode_part(cards), do: [Enum.count(cards) | cards |> Enum.sort()]
 
+  @classes [
+    "DEATHKNIGHT",
+    "DEMONHUNTER",
+    "DRUID",
+    "HUNTER",
+    "MAGE",
+    "PALADIN",
+    "PRIEST",
+    "ROGUE",
+    "SHAMAN",
+    "WARLOCK",
+    "WARRIOR"
+  ]
+
+  @class_rgb %{
+    "DEATHKNIGHT" => {108, 105, 154},
+    "DEMONHUNTER" => {37, 111, 61},
+    "DRUID" => {255, 127, 14},
+    "HUNTER" => {44, 160, 44},
+    "MAGE" => {23, 190, 207},
+    "PALADIN" => {240, 189, 39},
+    "PRIEST" => {199, 199, 199},
+    "ROGUE" => {127, 127, 127},
+    "SHAMAN" => {43, 125, 180},
+    "WARLOCK" => {162, 112, 153},
+    "WARRIOR" => {200, 21, 24},
+    "NEUTRAL" => {43, 45, 47}
+  }
   @class_name_map %{
     "NEUTRAL" => "Neutral",
     "DEATHKNIGHT" => "Death Knight",
@@ -335,6 +363,11 @@ defmodule Backend.Hearthstone.Deck do
       _ -> {:error, class_name}
     end
   end
+
+  @spec class_from_class_name(class_or_class_name :: String.t()) ::
+          {:ok, class :: String.t()} | {:error, class_name :: String.t()}
+  def class_from_class_or_class_name(class) when class in @classes, do: {:ok, class}
+  def class_from_class_or_class_name(class_name), do: class_from_class_name(class_name)
 
   def short_name_if_multi_word(class) do
     class_name = class_name(class)
@@ -957,36 +990,8 @@ defmodule Backend.Hearthstone.Deck do
     "https://www.hsguru.com/deck/#{deckcode(deck)}"
   end
 
-  def classes do
-    [
-      "DEATHKNIGHT",
-      "DEMONHUNTER",
-      "DRUID",
-      "HUNTER",
-      "MAGE",
-      "PALADIN",
-      "PRIEST",
-      "ROGUE",
-      "SHAMAN",
-      "WARLOCK",
-      "WARRIOR"
-    ]
-  end
+  def classes, do: @classes
 
-  @class_rgb %{
-    "DEATHKNIGHT" => {108, 105, 154},
-    "DEMONHUNTER" => {37, 111, 61},
-    "DRUID" => {255, 127, 14},
-    "HUNTER" => {44, 160, 44},
-    "MAGE" => {23, 190, 207},
-    "PALADIN" => {240, 189, 39},
-    "PRIEST" => {199, 199, 199},
-    "ROGUE" => {127, 127, 127},
-    "SHAMAN" => {43, 125, 180},
-    "WARLOCK" => {162, 112, 153},
-    "WARRIOR" => {200, 21, 24},
-    "NEUTRAL" => {43, 45, 47}
-  }
   def class_color(class, type \\ :hex)
 
   def class_color(class, :hex) do

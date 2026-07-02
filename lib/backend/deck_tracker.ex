@@ -1950,15 +1950,18 @@ defmodule Hearthstone.DeckTracker do
        when is_list(archetypes) do
     dynamic =
       archetypes
-      |> Enum.map(&Deck.class_from_class_name/1)
+      |> Enum.map(&{&1, Deck.class_from_class_or_class_name(&1)})
       |> Enum.reduce(dynamic(false), fn
-        {_, nil}, dynamic ->
+        {nil, {_, _}}, dynamic ->
           dynamic
 
-        {:ok, class}, dynamic ->
-          dynamic([player_deck: pd], ^dynamic or (pd.class == ^class and is_nil(pd.archetype)))
+        {archetype, {:ok, class}}, dynamic ->
+          dynamic(
+            [player_deck: pd],
+            ^dynamic or (pd.class == ^class and is_nil(pd.archetype)) or pd.archetype == ^archetype
+          )
 
-        {:error, archetype}, dynamic ->
+        {archetype, {:error, archetype}}, dynamic ->
           dynamic([player_deck: pd], ^dynamic or pd.archetype == ^archetype)
       end)
 

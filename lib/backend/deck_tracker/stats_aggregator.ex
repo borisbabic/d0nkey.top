@@ -222,7 +222,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
     end
   end
 
-  defp archetype_chunks(criteria, chunk_size, direction) do
+  def archetype_chunks(criteria, chunk_size, direction) do
     archetype_popularity = DeckTracker.archetype_popularity(criteria, direction)
 
     Enum.chunk_while(
