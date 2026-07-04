@@ -2,7 +2,6 @@ defmodule BackendWeb.GiveawayLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
   alias Backend.Giveaways
-  alias Backend.PlayerInfo
   alias Components.Table
   alias Components.Table.Column
   alias Components.Helper
@@ -24,11 +23,29 @@ defmodule BackendWeb.GiveawayLive do
   def render(%{creator?: true} = assigns) do
     ~F"""
     <div>
-      <div class="tw-grid tw-cols-2">
-        <span>Deadline:</span><span>{NaiveDateTime.to_iso8601(@giveaway.deadline)}|{render_datetime(@giveaway.deadline)}</span>
-        <span>Num Winners:</span><span>{Enum.count(@entries, & &1.winner)/@giveaway.number_of_winners}</span>
-        <button class="button" :on-click="pick_winners">Pick Winners</button>
-      </div>
+      <.page_header title={@giveaway.name} />
+      <.table id={"creator_table"}>
+        <.tbody>
+          <.trb>
+            <.td>Deadline</.td>
+            <.td>
+              <div class="tw-grid tw-grid-cols-1">
+                <span>{NaiveDateTime.to_iso8601(@giveaway.deadline)}</span>
+                <span>{render_datetime(@giveaway.deadline)}</span>
+              </div>
+            </.td>
+          </.trb>
+          <.trb>
+            <.td>Num Winners:</.td>
+            <.td>{Enum.count(@entries, & &1.winner)}/{@giveaway.number_of_winners}</.td>
+          </.trb>
+          <.trb>
+            <.td>Num Entries:</.td>
+            <.td>{Enum.count(@entries)}</.td>
+          </.trb>
+        </.tbody>
+      </.table>
+      <button class="button" :on-click="pick_winners">Pick Winners</button>
       <Table id="entries_table" data={entry <- @entries} >
         <Column label="Battletag">{entry.user.battletag}</Column>
         <Column label="Winner">{entry.winner}</Column>
@@ -80,7 +97,7 @@ defmodule BackendWeb.GiveawayLive do
 
   def handle_params(%{"giveaway_id" => id}, _session, %{assigns: %{user: user}} = socket) do
     giveaway = Giveaways.get_giveaway!(id)
-    creator? = giveaway.creator_id == Map.get(user || %{}, id)
+    creator? = giveaway.creator_id == Map.get(user || %{}, :id)
 
     {entry, entries} =
       if creator? do

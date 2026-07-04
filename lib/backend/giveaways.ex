@@ -4,6 +4,7 @@ defmodule Backend.Giveaways do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Backend.UserManager.User
   alias Backend.Repo
 
@@ -148,23 +149,48 @@ defmodule Backend.Giveaways do
     Repo.all(query)
   end
 
-  def pick_winner(%Giveaway{creator: %{id: creator_id, num_of_winners: num}} = giveaway, %User{id: user_id} = user)
+  def pick_winners(%Giveaway{creator: %{id: creator_id}, number_of_winners: num} = giveaway, %User{id: user_id} = user)
       when user_id == creator_id do
     entries = get_entries(giveaway, user)
     winners = Enum.count(entries, & &1.winner)
 
     if winners < num do
       entries
+      |> Enum.filter(&(!&1.winner))
       |> score_entries(giveaway)
+      |> create_random_list()
+      |> Enum.take(num - winners)
+      |> update_winners()
+
+      {:ok, get_entries(giveaway, user)}
     else
-      entries
+      {:ok, entries}
     end
   end
 
-  def score_entries(entries, _giveaway) do
+  @spec create_random_list([{score :: integer(), GiveawayEntry.t()}]) :: [GiveawayEntry.t()]
+  defp create_random_list(scored_entries) do
+    Enum.flat_map(scored_entries, fn {num, entry} ->
+      for _ <- 1..num, do: entry
+    end)
+    |> Enum.shuffle()
+    |> Enum.uniq()
+  end
+
+  defp update_winners(entries) do
+    multi =
+      Enum.reduce(entries, Multi.new(), fn %{id: id, winner: false} = entry, multi ->
+        cs = GiveawayEntry.changeset(entry, %{winner: true})
+        Multi.update(multi, "make_#{id}_a_winner", cs)
+      end)
+
+    Repo.transaction(multi)
+  end
+
+  defp score_entries(entries, _giveaway) do
     # todo make more flexible and check config
-    Enum.map(entries, fn %{battletag: _battletag} = giveaway ->
-      {1, giveaway}
+    Enum.map(entries, fn %{user: %{battletag: _battletag}} = entry ->
+      {1, entry}
     end)
   end
 
