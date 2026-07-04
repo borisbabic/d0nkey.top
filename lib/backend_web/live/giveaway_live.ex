@@ -47,7 +47,7 @@ defmodule BackendWeb.GiveawayLive do
       </.table>
       <button class="button" :on-click="pick_winners">Pick Winners</button>
       <Table id="entries_table" data={entry <- @entries} >
-        <Column label="Battletag">{entry.user.battletag}</Column>
+        <Column label="Battletag"><Helper.player_name name={entry.user.battletag} country={true} /></Column>
         <Column label="Winner">{entry.winner}</Column>
       </Table>
     </div>

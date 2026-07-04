@@ -152,6 +152,14 @@ defmodule Components.Helper do
   attr :name, :string, required: true
   attr :country, :any, required: false, default: nil
 
+  def player_name(%{country: true, name: name} = assigns) do
+    country = Backend.PlayerInfo.get_country(name)
+
+    assigns
+    |> assign(:country, country)
+    |> player_name()
+  end
+
   def player_name(assigns) do
     ~H"""
     <%= if @country do %>
