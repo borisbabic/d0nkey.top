@@ -1,6 +1,7 @@
 defmodule Backend.Hearthstone.Deck do
   @moduledoc false
 
+  require Logger
   use Ecto.Schema
   import Ecto.Changeset
   alias Hearthstone.Card.RuneCost
@@ -596,7 +597,7 @@ defmodule Backend.Hearthstone.Deck do
         end
 
       cards = Enum.sort(unsorted_cards)
-      {class, hero} = deckcode_class_hero(hero, cards)
+      {class, hero} = deckcode_class_hero(hero, cards, format)
 
       {:ok,
        %__MODULE__{
@@ -693,14 +694,18 @@ defmodule Backend.Hearthstone.Deck do
 
   defp take_multi([]), do: {[], []}
 
-  @spec deckcode_class_hero(integer, [integer]) :: {String.t(), String.t()}
-  def deckcode_class_hero(hero, cards) do
+  @spec deckcode_class_hero(integer, [integer], integer() | nil) :: {String.t(), String.t()}
+  def deckcode_class_hero(hero, cards, format \\ nil) do
     hero_class = Hearthstone.class(hero)
+    no_class_cards? = !Enum.any?(cards, &(hero_class == Hearthstone.class(&1)))
 
-    if hero_class not in [nil, "NEUTRAL"] and
-         Enum.any?(cards, &(hero_class == Hearthstone.class(&1))) do
+    if hero_class not in [nil, "NEUTRAL"] do
       {hero_class, hero}
     else
+      if(no_class_cards? and 2 == format) do
+        Logger.error("Got missing class cards for a standard deck!!!")
+      end
+
       class = most_frequent_class(cards) || hero_class || "NEUTRAL"
       hero = get_basic_hero(class)
       {class, hero}
