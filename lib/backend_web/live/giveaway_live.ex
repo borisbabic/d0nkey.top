@@ -58,17 +58,27 @@ defmodule BackendWeb.GiveawayLive do
     ~F"""
     <div>
       <.page_header title={@giveaway.name} />
-      <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={@giveaway.description}>
+      <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={@entry && @entry.winner}>
+        <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
+          <span class="tw-text-xl">🎊</span>
+          <h3 class="tw-text-lg tw-font-bold text-white">Congrats! You won!</h3>
+        </div>
+        <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
+          D0nkey#2470 will add you on battlenet and send you the code
+        </p>
+      </div>
+      <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={@giveaway.description || @giveaway.deadline }>
         <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
           <span class="tw-text-xl">🎁</span>
           <h3 class="tw-text-lg tw-font-bold text-white">It's giveaway time!</h3>
         </div>
         <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
-          {@giveaway.description}
+          <div :if={@giveaway.description}>
+            {@giveaway.description}
+          </div>
 
           <div :if={@giveaway.deadline} class="tw-text-sm tw-text-slate-100">
             Deadline: <Helper.datetime class="tw-text-sm tw-text-slate-400" datetime={@giveaway.deadline} />
-
           </div>
         </p>
       </div>
