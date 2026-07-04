@@ -187,10 +187,14 @@ defmodule Backend.Giveaways do
     Repo.transaction(multi)
   end
 
-  defp score_entries(entries, _giveaway) do
+  def score_entries(entries, _giveaway) do
     # todo make more flexible and check config
-    Enum.map(entries, fn %{user: %{battletag: _battletag}} = entry ->
-      {1, entry}
+    Enum.map(entries, fn %{user: %{battletag: _battletag, country_code: cc}} = entry ->
+      if cc do
+        {2, entry}
+      else
+        {1, entry}
+      end
     end)
   end
 
