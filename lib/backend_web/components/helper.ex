@@ -33,10 +33,11 @@ defmodule Components.Helper do
   end
 
   attr :datetime, :any, required: true
+  attr :class, :any, default: ""
 
   def datetime(assigns) do
     ~H"""
-      <time class="datetime-human" phx-hook="LocalDateTime" datetime={NaiveDateTime.to_iso8601(@datetime)} id={random_id()} aria-label={timestamp(@datetime)}><%= human_readable(@datetime)%> UTC</time>
+      <time class={["datetime-human", @class]} phx-hook="LocalDateTime" datetime={NaiveDateTime.to_iso8601(@datetime)} id={random_id()} aria-label={timestamp(@datetime)}><%= human_readable(@datetime)%> UTC</time>
     """
   end
 

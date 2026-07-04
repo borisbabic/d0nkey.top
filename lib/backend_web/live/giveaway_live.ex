@@ -5,6 +5,7 @@ defmodule BackendWeb.GiveawayLive do
   alias Backend.PlayerInfo
   alias Components.Table
   alias Components.Table.Column
+  alias Components.Helper
   import FunctionComponents.MiscComponents, only: [setup_step: 1]
 
   data(user, :any)
@@ -47,6 +48,11 @@ defmodule BackendWeb.GiveawayLive do
         </div>
         <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
           {@giveaway.description}
+
+          <div :if={@giveaway.deadline} class="tw-text-sm tw-text-slate-100">
+            Deadline: <Helper.datetime class="tw-text-sm tw-text-slate-400" datetime={@giveaway.deadline} />
+
+          </div>
         </p>
       </div>
       <div class="tw-grid tw-grid-cols-1 tw-gap-4">
