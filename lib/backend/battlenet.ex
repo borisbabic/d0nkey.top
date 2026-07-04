@@ -170,6 +170,7 @@ defmodule Backend.Battlenet do
       text(:country)
       number(:priority)
       text(:reported_by)
+      text(:comment)
     end
   end
 
