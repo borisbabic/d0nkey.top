@@ -45,15 +45,6 @@ defmodule Backend.Giveaways do
 
   @doc """
   Creates a giveaway.
-
-  ## Examples
-
-      iex> create_giveaway(%{field: value})
-      {:ok, %Giveaway{}}
-
-      iex> create_giveaway(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
   def create_giveaway(attrs_raw, %User{id: user_id}) do
     attrs = Map.put(attrs_raw, :creator_id, user_id)

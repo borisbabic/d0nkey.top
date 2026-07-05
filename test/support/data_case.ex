@@ -25,18 +25,7 @@ defmodule Backend.DataCase do
       import Backend.DataCase
 
       def create_temp_user(attrs \\ %{}) do
-        {:ok, user} =
-          attrs
-          |> Enum.into(%{
-            battletag: Ecto.UUID.generate(),
-            bnet_id: :rand.uniform(2_147_483_646),
-            decklist_options: %{
-              preferred_deckcode: "short"
-            }
-          })
-          |> Backend.UserManager.create_user()
-
-        user
+        Backend.UserFixtures.user_fixture(attrs)
       end
     end
   end

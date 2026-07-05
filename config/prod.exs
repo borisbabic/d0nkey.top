@@ -6,7 +6,7 @@ import Config
 
 import_config "config_web.exs"
 
-twitch_redirect = "https://www.d0nkey.top/auth/twitch/callback"
+twitch_redirect = "https://www.hsguru.com/auth/twitch/callback"
 
 config :backend,
   warmup_cache: true,

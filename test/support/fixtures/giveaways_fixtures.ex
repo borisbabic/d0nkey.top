@@ -8,14 +8,17 @@ defmodule Backend.GiveawaysFixtures do
   Generate a giveaway.
   """
   def giveaway_fixture(attrs \\ %{}) do
+    {creator, rest} = Map.pop(attrs, :creator)
+    creator = creator || Backend.UserFixtures.user_fixture()
+
     {:ok, giveaway} =
-      attrs
+      rest
       |> Enum.into(%{
         config: %{},
         deadline: ~N[2226-06-29 22:57:00],
         name: "some name"
       })
-      |> Backend.Giveaways.create_giveaway()
+      |> Backend.Giveaways.create_giveaway(creator)
 
     giveaway
   end
