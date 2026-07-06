@@ -142,7 +142,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"Naga DH"
 
       wild_token_brox?(card_info) and questline?(card_info) ->
-        :"Token Broxigar DH"
+        :"Token DH"
 
       "Broxigar" in card_info.card_names and questline?(card_info) ->
         :"Broxigar DH"
