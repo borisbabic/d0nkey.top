@@ -1,6 +1,7 @@
 defmodule BackendWeb.GiveawayLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
+  alias Backend.Battlenet.Battletag
   alias Backend.Giveaways
   alias Components.Table
   alias Components.Table.Column
@@ -12,6 +13,7 @@ defmodule BackendWeb.GiveawayLive do
   data(entry, :any)
   data(entries, :list, [])
   data(creator?, :boolean, default: false)
+  data(winners, :list, [])
 
   def mount(_params, session, socket) do
     {:ok,
@@ -58,31 +60,40 @@ defmodule BackendWeb.GiveawayLive do
     ~F"""
     <div>
       <.page_header title={@giveaway.name} />
-      <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={@entry && @entry.winner}>
-        <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
-          <span class="tw-text-xl">🎊</span>
-          <h3 class="tw-text-lg tw-font-bold text-white">Congrats! You won!</h3>
-        </div>
-        <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
-          D0nkey#2470 will add you on battlenet and send you the code
-        </p>
-      </div>
-      <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={@giveaway.description || @giveaway.deadline }>
-        <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
-          <span class="tw-text-xl">🎁</span>
-          <h3 class="tw-text-lg tw-font-bold text-white">It's giveaway time!</h3>
-        </div>
-        <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
-          <div :if={@giveaway.description}>
-            {@giveaway.description}
-          </div>
-
-          <div :if={@giveaway.deadline} class="tw-text-sm tw-text-slate-100">
-            Deadline: <Helper.datetime class="tw-text-sm tw-text-slate-400" datetime={@giveaway.deadline} />
-          </div>
-        </p>
-      </div>
       <div class="tw-grid tw-grid-cols-1 tw-gap-4">
+        <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={@entry && @entry.winner}>
+          <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
+            <span class="tw-text-xl">🎊</span>
+            <h3 class="tw-text-lg tw-font-bold text-white">Congrats! You won!</h3>
+          </div>
+          <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
+            D0nkey#2470 will add you on battlenet and send you the code
+          </p>
+        </div>
+        <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={(!@entry or !@entry.winner) and winners_picked?(@giveaway, @winners)}>
+          <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
+            <span class="tw-text-xl">🎉</span>
+            <h3 class="tw-text-lg tw-font-bold text-white">The giveaway is over</h3>
+          </div>
+          <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
+            Congrats to the winner(s): <span>{Enum.join(@winners, ", ")}</span>
+          </p>
+        </div>
+        <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={@giveaway.description || @giveaway.deadline }>
+          <div class="tw-flex tw-items-center tw-gap-2 has-text-success">
+            <span class="tw-text-xl">🎁</span>
+            <h3 class="tw-text-lg tw-font-bold text-white">It's giveaway time!</h3>
+          </div>
+          <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
+            <div :if={@giveaway.description}>
+              {@giveaway.description}
+            </div>
+
+            <div :if={@giveaway.deadline} class="tw-text-sm tw-text-slate-100">
+              Deadline: <Helper.datetime class="tw-text-sm tw-text-slate-400" datetime={@giveaway.deadline} />
+            </div>
+          </p>
+        </div>
         <.setup_step title="Enter the giveaway" is_done={@entry}>
           <div :if={@entry}>
             You're already entered!
@@ -90,8 +101,11 @@ defmodule BackendWeb.GiveawayLive do
           <div :if={!@user && !@entry}>
             You need to <a target="_blank" href="/auth/bnet">login</a> before you can enter 
           </div>
-          <div :if={@user && !@entry}>
+          <div :if={@user && !@entry && !Util.before_now(@giveaway.deadline)}>
             <button class="button" :on-click={"enter"}>Click here to enter</button>
+          </div>
+          <div :if={!@entry && Util.before_now(@giveaway.deadline)}>
+            The deadline has passed 🥲
           </div>
         </.setup_step>
 
@@ -111,15 +125,18 @@ defmodule BackendWeb.GiveawayLive do
 
     {entry, entries} =
       if creator? do
-        {nil, Giveaways.get_entries(giveaway, user) |> sort_entries()}
+        entries = Giveaways.get_entries(giveaway, user) |> sort_entries()
+        {nil, entries}
       else
         {Giveaways.get_entry(giveaway, user), []}
       end
 
+    winners = Giveaways.winner_names(giveaway)
+
     {
       :noreply,
       socket
-      |> assign(entry: entry, giveaway: giveaway, creator?: creator?, entries: entries)
+      |> assign(entry: entry, giveaway: giveaway, creator?: creator?, entries: entries, winners: winners)
     }
   end
 
@@ -140,4 +157,6 @@ defmodule BackendWeb.GiveawayLive do
     |> Enum.sort_by(fn %{user: %{battletag: btag}} -> btag end, :asc)
     |> Enum.sort_by(fn %{winner: winner} -> winner end, :desc)
   end
+
+  defp winners_picked?(%{number_of_winners: num}, winners), do: Enum.count(winners) == num
 end

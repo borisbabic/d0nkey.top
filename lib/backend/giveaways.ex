@@ -189,10 +189,27 @@ defmodule Backend.Giveaways do
     end)
   end
 
-  @spec current_giveaway() :: Giveaway.t() | nil
-  def current_giveaway do
+  @spec current_giveaway(number()) :: Giveaway.t() | nil
+  def current_giveaway(leeway_hours \\ 6) do
     now = NaiveDateTime.utc_now()
-    query = from g in Giveaway, where: g.creator_id == 1 and g.deadline > ^now, order_by: [desc: g.deadline], limit: 1
+    # keep it around for 6 arounds
+    cutoff = Timex.shift(now, hours: -1 * leeway_hours)
+
+    query =
+      from g in Giveaway, where: g.creator_id == 1 and g.deadline > ^cutoff, order_by: [desc: g.deadline], limit: 1
+
     Repo.one(query)
+  end
+
+  @spec winner_names(Giveaway.t()) :: [String.t()]
+  def winner_names(%Giveaway{id: id}) do
+    query =
+      from ge in GiveawayEntry,
+        inner_join: u in assoc(ge, :user),
+        where: ge.giveaway_id == ^id and ge.winner,
+        select: u.battletag
+
+    Repo.all(query)
+    |> Enum.map(&Backend.Battlenet.Battletag.shorten/1)
   end
 end
