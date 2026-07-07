@@ -62,7 +62,18 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
   end
 
   defp pure?(card_info) do
-    min_count?(card_info, 2, ["Vigilant Sentry", "Scarlet Bruiser"])
+    any_neutral? =
+      Enum.any?(card_info.full_cards, fn card ->
+        case Card.class(card) do
+          {:ok, "NEUTRAL"} ->
+            true
+
+          _ ->
+            false
+        end
+      end)
+
+    !any_neutral?
   end
 
   defp dude_paladin?(card_info) do
