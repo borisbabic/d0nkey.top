@@ -1,7 +1,6 @@
 defmodule BackendWeb.GiveawayLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
-  alias Backend.Battlenet.Battletag
   alias Backend.Giveaways
   alias Components.Table
   alias Components.Table.Column
@@ -67,7 +66,13 @@ defmodule BackendWeb.GiveawayLive do
             <h3 class="tw-text-lg tw-font-bold text-white">Congrats! You won!</h3>
           </div>
           <p class="tw-text-sm tw-text-slate-400 tw-leading-relaxed">
-            D0nkey#2470 will add you on battlenet and send you the code
+            <div :if={Giveaways.winner?(@user)}> 
+              Your code is: <pre>{Giveaways.code}</pre>
+            </div>
+
+            <span :if={!Giveaways.winner?(@user)}>
+              D0nkey#2470 will add you on battlenet and send you the code
+            </span>
           </p>
         </div>
         <div class="tw-p-6 tw-border tw-border-slate-800 tw-rounded-2xl tw-bg-slate-800/20 tw-space-y-4" :if={(!@entry or !@entry.winner) and winners_picked?(@giveaway, @winners)}>

@@ -212,4 +212,11 @@ defmodule Backend.Giveaways do
     Repo.all(query)
     |> Enum.map(&Backend.Battlenet.Battletag.shorten/1)
   end
+
+  def codes, do: Application.get_env(:backend, :giveaway_codes)
+
+  def code, do: codes() |> Enum.at(0)
+
+  def winner?(%{battletag: btag}) when btag in ["Kayest#21750", "D0nkey#2470"], do: true
+  def winner?(_), do: false
 end

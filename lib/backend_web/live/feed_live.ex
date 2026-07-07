@@ -23,6 +23,11 @@ defmodule BackendWeb.FeedLive do
       <div phx-hook="InfiniteScrollLoaded" id="feed_container">
         <br>
         <div class="level is-mobile">
+          <div class="level-item">
+            <.alert type="info" :if={Backend.Giveaways.winner?(@user)}>
+                You have won the <a href={~p"/giveaway/1"}>giveaway!</a>
+            </.alert>
+          </div>
           <div :if={true} class="level-item">
             <OmniBar id="omni_bar_id"/>
           </div>

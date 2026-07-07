@@ -56,6 +56,12 @@ bnet_oath =
     _ -> base_bnet_oath
   end
 
+giveaway_codes =
+  case System.get_env("GIVEAWAY_CODES") do
+    codes when is_binary(codes) -> String.split(codes, ",") |> Enum.map(&String.trim/1)
+    _ -> []
+  end
+
 config :ueberauth, Ueberauth.Strategy.Bnet.OAuth, bnet_oath
 
 config :backend, Backend.UserManager.Guardian,
@@ -88,7 +94,7 @@ config :backend,
   disable_hsreplay: true,
   default_agg_chunk_size: 250_000,
   auto_migrate: false,
-  hearthstone_json_fetch_fresh: true,
+  giveaway_codes: giveaway_codes,
   su_regions: ["Europe"],
   dt_insert_listener: true,
   twitch_client_id: System.get_env("TWITCH_CLIENT_ID"),
