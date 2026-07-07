@@ -28,7 +28,13 @@ defmodule Backend.HearthstoneJson do
   def get_dbf_by_card_id(card_id) do
     case get_by_card_id(card_id) do
       %{dbf_id: id} -> id
-      _ -> nil
+      _ -> coin_hack(card_id)
+    end
+  end
+
+  defp coin_hack(card_id) do
+    if is_binary(card_id) and (card_id =~ "COIN" or card_id =~ "GAME_005") do
+      1746
     end
   end
 
