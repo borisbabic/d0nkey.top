@@ -584,7 +584,7 @@ defmodule Hearthstone.DeckTracker do
   def card_stats(criteria) do
     case fresh_or_agg(criteria) do
       :fresh -> fresh_card_deck_stats(criteria)
-      :agg -> agg_deck_card_stats(criteria) |> Enum.at(0)
+      :agg -> agg_deck_card_stats(criteria) |> Enum.max_by(& &1.total, fn -> nil end)
     end
   end
 
