@@ -183,6 +183,18 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Murozond, Unbounded" in ci.card_names ->
         String.to_atom("Murozond #{class_name}")
 
+      "Captured Archamge" in ci.card_names ->
+        String.to_atom("Archmage #{class_name}")
+
+      "Black Market Auctioneer" in ci.card_names ->
+        String.to_atom("Auctioneer #{class_name}")
+
+      "Zuramat's Prison" in ci.card_names ->
+        String.to_atom("Zuramat #{class_name}")
+
+      "Jailbird" in ci.card_names ->
+        String.to_atom("Prepared #{class_name}")
+
       true ->
         faction_fallback(ci, class_name, opts) || minion_type_fallback(ci, class_name, opts)
     end
