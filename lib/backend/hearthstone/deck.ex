@@ -699,13 +699,13 @@ defmodule Backend.Hearthstone.Deck do
     hero_class = Hearthstone.class(hero)
     no_class_cards? = !Enum.any?(cards, &(hero_class == Hearthstone.class(&1)))
 
-    if hero_class not in [nil, "NEUTRAL"] do
-      {hero_class, hero}
-    else
+    if hero_class not in [nil, "NEUTRAL"] or no_class_cards? do
       if(no_class_cards? and 2 == format) do
         Logger.error("Got missing class cards for a standard deck!!!")
       end
 
+      {hero_class, hero}
+    else
       class = most_frequent_class(cards) || hero_class || "NEUTRAL"
       hero = get_basic_hero(class)
       {class, hero}
