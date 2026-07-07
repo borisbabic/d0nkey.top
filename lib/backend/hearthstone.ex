@@ -437,8 +437,15 @@ defmodule Backend.Hearthstone do
 
   def class(%{hero: hero}), do: class(hero)
 
-  def class(dbf_id) when is_integer(dbf_id) or is_binary(dbf_id),
-    do: HearthstoneJson.get_class(dbf_id)
+  def class(dbf_id) when is_integer(dbf_id) or is_binary(dbf_id) do
+    with card when is_card(card) <- get_card(dbf_id),
+         {:ok, class} <-
+           Card.class(card) do
+      class
+    else
+      _ -> HearthstoneJson.get_class(dbf_id)
+    end
+  end
 
   def class(_), do: nil
 
