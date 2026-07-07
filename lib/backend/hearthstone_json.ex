@@ -67,7 +67,7 @@ defmodule Backend.HearthstoneJson do
 
   @spec get_json() :: [Card]
   defp get_json do
-    with {:ok, body} <- File.read("lib/data/collectible.json"),
+    with {:ok, body} <- File.read("lib/data/cards.json"),
          {:ok, json} <- body |> Poison.decode() do
       json |> Enum.map(&Card.from_raw_map/1)
     end
