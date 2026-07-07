@@ -24,7 +24,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       beatrix_focused?(card_info, "Prize Vendor") ->
         :"Mill Paladin"
 
-      beatrix_focused?(card_info, "Archmage") ->
+      beatrix_focused?(card_info, "Captured Archmage") ->
         :"Archmage Paladin"
 
       end_of_turn?(card_info) ->
