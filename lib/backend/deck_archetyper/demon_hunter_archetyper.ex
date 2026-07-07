@@ -15,6 +15,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       herald?(card_info) ->
         :"Harold DH"
 
+      archmage?(card_info) ->
+        :"Archmage DH"
+
       void_soul?(card_info, 4) ->
         :"Void Soul DH"
 
@@ -48,6 +51,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, "DH")
     end
+  end
+
+  defp archmage?(card_info) do
+    min_count?(card_info, 2, ["Captured Archmage", "Ravenous Felhunter"])
   end
 
   defp void_soul?(card_info, count) do
