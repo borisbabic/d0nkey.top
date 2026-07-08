@@ -45,6 +45,12 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       only_runes?(card_info, :unholy) ->
         :"Unholy DK"
 
+      aggro?(card_info) ->
+        :"Aggro DK"
+
+      standard_plague?(card_info) ->
+        :"Plague DK"
+
       frost?(card_info) ->
         :"\"Frost\" DK"
 
@@ -57,6 +63,23 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp standard_plague?(card_info) do
+    min_count?(card_info, 2, ["Disguised Doctor", "The Living Plague"])
+  end
+
+  defp aggro?(card_info) do
+    min_count?(card_info, 3, [
+      "Murmy",
+      "Command Claw",
+      "Warden Maiev",
+      "Talanji's Last Stand",
+      "Bone Flurry",
+      "Shadow's of Yesterday",
+      "Battlefield Necromancer",
+      "Fire Fly"
+    ])
   end
 
   defp stego_herenn?(card_info) do
@@ -158,7 +181,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       rainbow_runes?(card_info) and highlander?(card_info) ->
         :"HL Rainbow DK"
 
-      plague?(card_info) and highlander?(card_info) ->
+      wild_plague?(card_info) and highlander?(card_info) ->
         :"HL Plague DK"
 
       highlander?(card_info) ->
@@ -188,10 +211,10 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       buttons?(card_info) ->
         :"Buttons DK"
 
-      wild_aggro_dk?(card_info) and plague?(card_info) ->
+      wild_aggro_dk?(card_info) and wild_plague?(card_info) ->
         :"Aggro Plague DK"
 
-      plague?(card_info) ->
+      wild_plague?(card_info) ->
         :"Plague DK"
 
       wild_aggro_dk?(card_info) ->
@@ -208,7 +231,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
     end
   end
 
-  defp plague?(card_info) do
+  defp wild_plague?(card_info) do
     "Helya" in card_info.card_names and
       min_count?(card_info, 2, [
         "Staff of the Primus",
