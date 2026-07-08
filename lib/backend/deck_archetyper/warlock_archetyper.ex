@@ -394,10 +394,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       [
         "Altar of Fire",
         "Blood Shard Bristleback",
+        "Godfrey the Betrayer",
         "Soul Rend",
         "Neeru Fireblade",
         "Barrens Scavenger",
         "Tickatus",
+        "The Unseen Atlas",
+        "Crescendo",
+        "Pop'gar the Putrid",
         "Fanottem, Lord of the Opera"
       ]
     )
