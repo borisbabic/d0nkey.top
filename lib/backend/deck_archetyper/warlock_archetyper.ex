@@ -262,9 +262,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       fatigue_warlock?(card_info) ->
         :"Insanity Warlock"
 
-      wild_fatigue_warlock?(card_info) ->
-        :"Fatigue Warlock"
-
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Warlock"
 
@@ -294,6 +291,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       mill?(card_info) ->
         :"Mill Warlock"
+
+      wild_fatigue_warlock?(card_info) ->
+        :"Fatigue Warlock"
 
       deckless?(card_info) ->
         :"Deckless Warlock"
@@ -388,18 +388,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp wild_fatigue_warlock?(card_info) do
-    min_count?(
-      card_info,
-      5,
-      [
-        "Altar of Fire",
-        "Blood Shard Bristleback",
-        "Soul Rend",
-        "Neeru Fireblade",
-        "Barrens Scavenger",
-        "Tickatus",
-        "Fanottem, Lord of the Opera"
-      ]
-    )
+    min_count?(card_info, 4, [
+      "Altar of Fire",
+      "Barrens Scavenger",
+      "Fanottem, Lord of the Opera",
+      "Crescendo",
+      "Grave Defiler"
+      "Fracking",
+      "Void Virtuoso"
+    ])
   end
 end
