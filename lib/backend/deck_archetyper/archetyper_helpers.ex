@@ -177,6 +177,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "The Egg of Khelos" in ci.card_names ->
         String.to_atom("Egg #{class_name}")
 
+      "Zuramat's Prison" in ci.card_names ->
+        String.to_atom("Zuramat #{class_name}")
+
       "Chrono-Lord Deios" in ci.card_names ->
         String.to_atom("Deios #{class_name}")
 
@@ -188,9 +191,6 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
 
       "Black Market Auctioneer" in ci.card_names ->
         String.to_atom("Auctioneer #{class_name}")
-
-      "Zuramat's Prison" in ci.card_names ->
-        String.to_atom("Zuramat #{class_name}")
 
       "Jailbird" in ci.card_names ->
         String.to_atom("Prepared #{class_name}")
