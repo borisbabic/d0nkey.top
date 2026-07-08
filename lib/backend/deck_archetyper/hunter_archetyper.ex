@@ -20,11 +20,11 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       dragon_hunter?(card_info) ->
         :"Dragon Hunter"
 
-      no_hand?(card_info) ->
-        :"No Hand Hunter"
-
       companion?(card_info) ->
         :"Companion Hunter"
+
+      face?(card_info) ->
+        :"Face Hunter"
 
       huffer?(card_info) ->
         :"Huffer Hunter"
@@ -35,8 +35,8 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       deathrattle?(card_info) ->
         :"Deathrattle Hunter"
 
-      "Confront the Tol'vir" in card_info.card_names ->
-        :"Ace Hunter"
+      "The Egg of Khelos" in card_info.card_names ->
+        :"Egg Hunter"
 
       bad?(card_info) ->
         :"Bad Hunter"
@@ -44,6 +44,29 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       true ->
         fallbacks(card_info, "Hunter")
     end
+  end
+
+  @face_cards [
+    "Precise Shot",
+    "Sylvanas's Triumph",
+    "Sizzling Cinder",
+    "Arcane Shot",
+    "Quel'dorei Fletcher",
+    "Reinforcement Rallier",
+    "Quick Shot",
+    "Arrow Retriever",
+    "Slumbering Sprite",
+    "Rockskipper",
+    "Arcane Tripwire"
+  ]
+  defp face?(card_info) do
+    confront_without_caretaker? =
+      "Confront the Tol'vir" in card_info.card_names and "Critter Caretaker" not in card_info.card_names
+
+    confront_highest? = "Confront the Tol'vir" in (lowest_highest_cost_cards(card_info, :name) |> elem(1))
+
+    min_count?(card_info.card_names, 6, @face_cards) or
+      (confront_without_caretaker? and (min_count?(card_info, 3, @face_cards) or confront_highest?))
   end
 
   defp rat_trap?(card_info) do
@@ -90,15 +113,15 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
     )
   end
 
-  defp no_hand?(card_info) do
-    min_count?(card_info, 2, [
-      "Arrow Retriever",
-      "Quel'dorei Fletcher",
-      "Quick Shot",
-      "Precise Shot",
-      "King Maluk"
-    ])
-  end
+  # defp no_hand?(card_info) do
+  #   min_count?(card_info, 2, [
+  #     "Arrow Retriever",
+  #     "Quel'dorei Fletcher",
+  #     "Quick Shot",
+  #     "Precise Shot",
+  #     "King Maluk"
+  #   ])
+  # end
 
   defp bad?(ci) do
     min_count?(ci, 5, [
