@@ -388,7 +388,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
     with [_ | _] = counts <- minion_type_counts(ci),
          [_ | _] = filtered <- Enum.reject(counts, &(to_string(elem(&1, 0)) in ignore_types)),
          {type, count} when count >= min_count <- Enum.max_by(filtered, &elem(&1, 1)) do
-      "#{type} #{class_part}"
+      String.to_atom("#{type} #{class_part}")
     else
       _ -> fallback
     end
