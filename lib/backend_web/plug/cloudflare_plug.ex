@@ -19,7 +19,7 @@ defmodule BackendWeb.Plug.StripCloudflareParams do
     cleaned_params = reject_cf_params(conn.params, @cloudflare_prefixes)
 
     # Rebuild the query string and update the connection
-    new_query_string = URI.encode_query(cleaned_params)
+    new_query_string = Plug.Conn.Query.encode(cleaned_params)
 
     %{conn | query_string: new_query_string, query_params: cleaned_query_params, params: cleaned_params}
   end
