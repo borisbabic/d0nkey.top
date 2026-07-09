@@ -29,43 +29,25 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   }
   @standard_config [
     "Quest DH": ["Unleash the Colossus"],
-    "No Minion DH": ["Solitude", "Hounds of Fury", "The Eternal Hold"],
+    "Void Soul DH": [
+      "Jailbird",
+      "Vanessa the Ringleader",
+      "Tras'tath, Soul Parasite",
+      "Vicious Voidscale",
+      "Stardust Scythe",
+      "Void Blast",
+      "Void Soul"
+    ],
     "Harold DH": @herald_package,
-    "Broxigar DH": [
-      "Axe of Cenarius",
-      "Bloodmage Thalnos",
-      "Broxigar",
-      "Broxigar's Last Stand",
-      "Chaos Strike",
-      "Crimson Sigil Runner",
-      "Devious Coyote",
-      "Dreadsoul Corrupter",
-      "Eye Beam",
-      "Felfire Blaze",
-      "First Portal to Argus",
-      "Glacial Shard",
-      "Grim Harvest",
-      "Hive Map",
-      "Horn of Feasting",
-      "Illidari Studies",
-      "Infestation",
-      "Insect Claw",
-      "Kayn Sunfury",
-      "Lasting Legacy",
-      "Nespirah, Enthralled",
-      "Perennial Serpent",
-      "Portal Vanguard",
-      "Press the Advantage",
-      "Ravenous Felhunter",
-      "Remnant of Rage",
-      "Sands of Time",
-      "Sigil of Cinder",
-      "Sigil of the Seas",
-      "Slumbering Sprite",
-      "Time-Lost Glaive",
-      "Wild Pyromancer",
-      "Wyvern's Slumber"
-    ]
+    # auto gen
+    "Spell DH": ["Hounds of Fury"],
+    "Archmage DH": ["Captured Archmage", "Ravenous Felhunter"],
+    # 5.5
+    "Spell DH": ["Lasting Legacy", "Sands of Time", "Solitude"],
+    "Demon DH": ["Netherwalker"],
+    "Spell DH": ["Horn of Feasting", "Nespirah, Enthralled"],
+    "Void DH": ["Battlefiend", "Hive Map", "Sigil of Cinder", "Time-Lost Glaive"],
+    "Void Soul DH": ["Grim Harvest", "Sigil of the Seas"]
   ]
   @wild_config [
     "XL Draenei Demon Hunter": ["Crimson Commander", "Saronite Chain Gang", "Starlight Wanderer"],

@@ -15,71 +15,24 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Resplendent Dreamweaver",
        "Flutterwing Guardian"
      ]},
-    {:"Companion Hunter",
-     [
-       "Roam Free",
-       "Call of the Wild",
-       "Migrating Elekk",
-       "Animal Companion",
-       "Talya Earthstrider",
-       "Critter Caretaker",
-       "Broll Bearmantle",
-       "Spiritspeaker",
-       # "Nightmare Lord Xavius",
-       "Crazed Alchemist"
-     ]},
-    {:"No Hand Hunter",
-     [
-       "Arcane Shot",
-       "Arrow Retriever",
-       "Bloodmage Thalnos",
-       "Brutish Endmaw",
-       # "Confront the Tol'vir",
-       "Dreambound Raptor",
-       "Glacial Shard",
-       # "Niri of the Crater",
-       "Platysaur",
-       "Precise Shot",
-       "Quel'dorei Fletcher",
-       "Quick Shot",
-       "Reinforcement Rallier",
-       "Rockskipper",
-       "Shepherd's Crook",
-       "Sizzling Cinder",
-       "Slumbering Sprite",
-       "Sylvanas's Triumph",
-       "Wormhole"
-     ]},
-    # 5.5
-    {:"Dragon Hunter",
-     [
-       "Carrier Whelp",
-       "Darkscale Broodmother",
-       "Netherspite Historian",
-       "Petal Peddler",
-       "Prescient Slitherdrake",
-       "Tormented Dreadwing",
-       "Whelp of the Infinite",
-       "Whlpe of the Infinite"
-     ]},
-    {:"Companion Hunter",
-     [
-       "Confront the Tol'vir",
-       "Ranger Captain Alleria",
-       "Ranger General Sylvanas",
-       "Ranger Initiate Vereesa",
-       "Raptor-Nest Nurse",
-       "Sands of Time",
-       "Tame Pet",
-       "Tracking",
-       "Niri of the Crater",
-       "Wound Prey"
-     ]},
-    {:"Dragon Hunter",
-     [
-       "Portal Vanguard",
-       "Tol'vir Carver"
-     ]}
+    # auto gen
+    "Companion Hunter": ["Crazed Alchemist"],
+    "Face Hunter": ["Precise Shot", "Quel'dorei Fletcher", "Rockskipper", "Slumbering Sprite"],
+    "Dragon Hunter": ["Petal Peddler", "Prescient Slitherdrake"],
+    "Companion Hunter": ["Broll Bearmantle", "Call of the Wild", "Migrating Elekk", "Roam Free", "Talya Earthstrider"],
+    "Face Hunter": ["Arcane Shot", "Beast Tripwire", "Glacial Shard", "Sizzling Cinder"],
+    "Dragon Hunter": ["Carrier Whelp"],
+    "Face Hunter": ["Arcane Tripwire", "Reinforcement Rallier", "Smuggled Shovel"],
+    "Companion Hunter": [
+      "Confront the Tol'vir",
+      "Critter Caretaker",
+      "Raptor-Nest Nurse",
+      "Sands of Time",
+      "Tame Pet",
+      "Tracking",
+      "Underbelly Network",
+      "Wound Prey"
+    ]
   ]
   @wild_config [
     "Boar Hunter": ["Elwynn Boar"],

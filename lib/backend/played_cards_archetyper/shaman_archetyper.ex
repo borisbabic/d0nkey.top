@@ -5,56 +5,45 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest Shaman", ["Spirit of the Mountain"]},
-    {:"Harold Shaman",
-     [
-       "Shadowed Informant",
-       "For All Time",
-       "Twilight Egg",
-       "Elise the Navigator",
-       "Nightmare Lord Xavius",
-       "Whelp of the Infinite",
-       "Healing Rain",
-       "Carrier Whelp",
-       "Ceremonial Clash",
-       "Crackling Clopudstrider",
-       "Ultraxion",
-       "Ancient Raptor",
-       "Muradin, High King",
-       "Deathwing, Worldbreaker",
-       "Al'Akir, Lord of Storms",
-       "High King's Hammer",
-       "Envoy of the End",
-       "Avatar Form",
-       "Flight of the Firehawk",
-       "Skywall Sentinel",
-       "Muradin's Last Stand",
-       "Primordial Overseer",
-       "Ritual of Power",
-       "Witch's Apprentice",
-       "Hex",
-       "Static Shock",
-       "Lightning Storm",
-       "Mother Duck",
-       "Wailing Vapor",
-       "Far Sight",
-       "Voltaic Burst",
-       "Glacial Shard",
-       "Holy Eggbearer",
-       "Thunderquake",
-       "Sands of Iime"
-       # x (4) Ascendance
-     ]},
-    {:"Imbue Shaman",
-     [
-       "Flutterwing Guardian",
-       "Bitterbloom Knight",
-       "Petal Picker",
-       "Resplendent Dreamweaver",
-       "Glowroot Lure",
-       "Aspect's Embrace",
-       "Living Guarden"
-     ]}
+    # auto gen
+    "Zee Shaman": ["Beaming Sidekick", "Endbringer Umbra"],
+    "Zee Shaman": ["Beanstalk Brute"],
+    "Mug Shaman": ["Instant Multiverse"],
+    "Zee Shaman": [
+      "Bralma Searstone",
+      "Fire Fly",
+      "Hexmarshal",
+      "Portal Vanguard",
+      "Shadowed Informant",
+      "Sizzling Cinder"
+    ],
+    "Mug Shaman": ["Stormfury", "Zuramat's Prison"],
+    "Zee Shaman": ["Prescient Slitherdrake"],
+    "Harold Shaman": ["Flight of the Firehawk"],
+    "Mug Shaman": ["Blazing Invocation", "Frostshatter", "Molten Gold", "Mountain Map"],
+    "Zee Shaman": ["Darkscale Broodmother", "Emberscarred Whelp", "Primalfin Challenger", "Slagclaw", "Torga"],
+    "Harold Shaman": ["Avatar Form", "Muradin, High King", "Primordial Overseer"],
+    "Mug Shaman": ["Sands of Time", "Thunderquake"],
+    "Zee Shaman": [
+      "Carrier Whelp",
+      "Cinderfin",
+      "Elise the Navigator",
+      "Envoy of the End",
+      "Gallagio Goon",
+      "Getaway Hogdriver",
+      "Glacial Shard",
+      "Hijacked Securitybot",
+      "Holy Eggbearer",
+      "Nightmare Lord Xavius",
+      "Skywall Sentinel",
+      "Tiny Pal",
+      "Ultraxion",
+      "Vanessa the Ringleader",
+      "Wailing Vapor",
+      "Warden Maiev",
+      "Witch's Apprentice"
+    ],
+    "Mug Shaman": ["Low Security Wing", "Ritual of Power"]
   ]
   @wild_config [
     "Even Shaman": [

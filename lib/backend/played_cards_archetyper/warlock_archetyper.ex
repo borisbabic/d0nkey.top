@@ -20,34 +20,72 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       "Archmage Rafaam",
       "Timethief Rafaam"
     ],
-    Egglock: ["Abusive Sergeant", "Archdruid of Thorns", "Dissolving Ooze", "Spirit Bomb"],
-    "Wallow Warlock": ["Hopeful Dryad", "Overgrown Horror"],
-    "Divergence Warlock": ["Fae Trickster"],
-    Egglock: ["Endbringer Umbra", "Holy Eggbearer"],
-    "Wallow Warlock": ["Wallow, the Wretched"],
-    "Divergence Warlock": ["Divergence", "Shaladrassil"],
-    "Aggro Warlock": ["Darkscale Broodmother", "Flame Imp"],
-    "Wallow Warlock": [
-      "Avant-Gardening",
-      "Creature of Madness",
-      "Raptor Herald",
-      "Shadowflame Stalker",
-      "Treacherous Tormentor"
+    # auto gen
+    Egglock: ["Abusive Sergeant"],
+    "Divergence Warlock": ["Divergence"],
+    "Wallow Warlock": ["Overgrown Horror"],
+    Egglock: ["Holy Eggbearer", "The Egg of Khelos"],
+    "Godfrey Warlock": [
+      "Ancient of Yore",
+      "Bat Mask",
+      "Captured Archmage",
+      "Chrono-Lord Deios",
+      "Tranquil Treant",
+      "Ysera, Emerald Aspect"
     ],
-    Egglock: ["Conflagrate", "Shadowsworn Disciple", "Shrine of Twilight", "The Egg of Khelos", "Ultraxion"],
+    "Wallow Warlock": ["Raptor Herald"],
+    Rafaamlock: ["Glacial Shard", "P1CK-P0K3T", "Prize Vendor"],
+    "Godfrey Warlock": ["Annihilation"],
+    "Animancer Warlock": ["Escape Artist"],
+    "Godfrey Warlock": ["Demonic Confinement"],
+    Rafaamlock: ["Elise the Navigator", "Possessed Animancer", "RAFAAM LADDER!!"],
+    "Godfrey Warlock": [
+      "Archwitch Willow",
+      "Critter Caretaker",
+      "Eldritch Tentacles",
+      "Godfrey the Betrayer",
+      "Spire of Solitude",
+      "Zuramat's Prison"
+    ],
     Rafaamlock: [
+      "Caged Cranium",
       "Cursed Catacombs",
       "Drain Soul",
-      "Eldritch Tentacles",
-      "Elise the Navigator",
-      "Eternal Toil",
       "Fractured Power",
-      "Glacial Shard",
       "Hellfire",
-      "Nightmare Lord Xavius",
-      "Possessed Animancer",
-      "Sheltered Survivor"
+      "Rotheart Dryad",
+      "Shadow Rounds",
+      "Sheltered Survivor",
+      "The Unseen Atlas"
     ]
+    # Egglock: ["Abusive Sergeant", "Archdruid of Thorns", "Dissolving Ooze", "Spirit Bomb"],
+    # "Wallow Warlock": ["Hopeful Dryad", "Overgrown Horror"],
+    # "Divergence Warlock": ["Fae Trickster"],
+    # Egglock: ["Endbringer Umbra", "Holy Eggbearer"],
+    # "Wallow Warlock": ["Wallow, the Wretched"],
+    # "Divergence Warlock": ["Divergence", "Shaladrassil"],
+    # "Aggro Warlock": ["Darkscale Broodmother", "Flame Imp"],
+    # "Wallow Warlock": [
+    #   "Avant-Gardening",
+    #   "Creature of Madness",
+    #   "Raptor Herald",
+    #   "Shadowflame Stalker",
+    #   "Treacherous Tormentor"
+    # ],
+    # Egglock: ["Conflagrate", "Shadowsworn Disciple", "Shrine of Twilight", "The Egg of Khelos", "Ultraxion"],
+    # Rafaamlock: [
+    #   "Cursed Catacombs",
+    #   "Drain Soul",
+    #   "Eldritch Tentacles",
+    #   "Elise the Navigator",
+    #   "Eternal Toil",
+    #   "Fractured Power",
+    #   "Glacial Shard",
+    #   "Hellfire",
+    #   "Nightmare Lord Xavius",
+    #   "Possessed Animancer",
+    #   "Sheltered Survivor"
+    # ]
   ]
   @wild_config [
     Discolock: [

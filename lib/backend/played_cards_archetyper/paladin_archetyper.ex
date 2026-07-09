@@ -19,66 +19,46 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
        "Petal Picker",
        "Resplendent Dreamweaver"
      ]},
-    {:"Dude Paladin",
-     [
-       "Arator the Redeemer",
-       "Emboldening Blade",
-       "Resilient Savior",
-       "Teamwork"
-     ]},
-    {:"End of Turnadin",
-     [
-       "Battle Vicar",
-       "Chronological Aura",
-       "Earthen Drake",
-       "Gelbin of Tomorrow",
-       "Gnomish Aura",
-       "Inspiring Maul",
-       "Manifested Timeways",
-       "Mekkatorque's Aura",
-       "Sandfury Aura",
-       "Scalebreaker Bulwark",
-       "Spearheart Sentry"
-     ]},
-    {:"Dude Paladin",
-     [
-       "Platysaur",
-       "Brash Battlemaster",
-       "Muster for Battle",
-       "Hatching Ceremony"
-     ]},
-    # 5.5
-    {:"End of Turnadin",
-     [
-       "Glacial Shard",
-       "Toreth the Unbreaking"
-     ]},
-    {:"End of Turnadin",
-     [
-       "Acceleration Aura"
-     ]},
-    {:"Dude Paladin",
-     [
-       "Sizzling Cinder",
-       "Twilight Egg",
-       "Convalescence"
-     ]},
-    {:"End of Turnadin",
-     [
-       "Nightmare Lord Xavius",
-       "Nozdormu, Bronze Aspect"
-     ]},
-    {:"Dude Paladin",
-     [
-       "Violet Treasuregill",
-       "Past Gnomeregan"
-     ]},
-    # 10.5
-    {:"End of Turnadin",
-     [
-       "Righteous Protector",
-       "The Fins Beyond Time"
-     ]}
+    # auto gen
+    "Pure Paladin": ["Vigilant Sentry"],
+    "End of Turnadin": ["Earthen Drake"],
+    "Pure Paladin": ["Scarlet Bruiser"],
+    "Aggro Paladin": ["Beaming Sidekick", "Fire Fly"],
+    "Pure Paladin": ["Truth Seeker"],
+    "Dude Paladin": ["Arator the Redeemer", "Brash Battlemaster", "Emboldening Blade"],
+    "Pure Paladin": ["Lightmender"],
+    "Egg Paladin": ["Fae Trickster", "Gullible Guard", "Holy Eggbearer", "The Egg of Khelos"],
+    "End of Turnadin": ["Sheltered Survivor"],
+    "Pure Paladin": [
+      "Acceleration Aura",
+      "Commander Beatrix",
+      "Gelbin of Tomorrow",
+      "Gnomish Aura",
+      "Manifested Timeways",
+      "Reinforcement Aura",
+      "Sandfury Aura",
+      "Scarlet Recruiter"
+    ],
+    "Dude Paladin": ["Hatching Ceremony", "Teamwork"],
+    "End of Turnadin": [
+      "Battle Vicar",
+      "Glacial Shard",
+      "Inspiring Maul",
+      "Nightmare Lord Xavius",
+      "Past Gnomeregan",
+      "Scalebreaker Bulwark",
+      "Sizzling Cinder",
+      "Twilight Egg"
+    ],
+    "Pure Paladin": [
+      "Consecration",
+      "Convalescence",
+      "Nozdormu, Bronze Aspect",
+      "Righteous Protector",
+      "Spearheart Sentry",
+      "Toreth the Unbreaking",
+      "Violet Treasuregill"
+    ]
   ]
   @wild_config [
     "Lynessa Libram Paladin": ["Adaptation", "Libram of Wisdom", "Lightray", "Myrmidon", "Sunsapper Lynessa"],

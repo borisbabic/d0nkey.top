@@ -13,32 +13,31 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
       "Sinestra",
       "Deathwing, Worldbreaker"
     ],
-    "Harold Rogue": [
-      "Deja Vu",
-      "Elise the Navigator",
-      "Flutterwing Guardian",
-      "Glacial Shard",
-      "Naralex, Herald of the Flights",
-      "Nightmare Fuel",
-      "Nightmare Lord Xavius",
-      "Resplendent Dreamweaver",
-      "Shaladrassil",
-      "Twilight Mistress"
-    ],
-    "Burn Rogue": ["Chrono Daggers", "Morchie", "Prize Vendor", "Rockskipper", "Tunneling Geomancer"],
-    "Harold Rogue": [
+    # auto gen
+    #
+    "Harold Rogue": ["Elise the Navigator"],
+    "Two-Bit Rogue": ["Shadowed Informant"],
+    # "AYAYA Rogue": ["Aya, Lotus Kingpin", "Defias Wannabe", "Time Adm'ral Hooktail"],
+    "Two-Bit Rogue": [
       "Agent of the Old Ones",
-      "Backstab",
       "Bitterbloom Knight",
+      "Blackpaw's Whip",
       "Cultist Map",
       "Eventuality",
-      "Jagged Edge of Time",
-      "Opu the Unseen",
+      "Flashback",
+      "Foxy Fraud",
+      "Frantic Forger",
+      "Garona Halforcen",
+      "Jade Guardians",
+      "Lotus Bookie",
+      "Lotus Troublemaker",
+      "Nab",
+      "Picklock",
       "Preparation",
+      "Prize Vendor",
       "Rite of Twilight",
-      "Sands of Time",
-      "Spymistress",
       "The Kingslayers",
+      "Thief's Tools",
       "Vanessa the Ringleader"
     ]
   ]

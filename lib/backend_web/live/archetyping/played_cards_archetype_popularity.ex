@@ -48,6 +48,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     # "Merithra Druid" => "Ramp Druid",
     # "Hostage Druid" => "Ramp Druid",
     "Unholy DK" => "Aggro DK",
+    "Broxigar DH" => "Spell DH",
+    "No Minion DH" => "Spell DH",
     "Treant Druid" => "Token Druid",
     "Ace Hunter" => "No Hand Hunter",
     "Quest Spell Mage" => "Spell Mage",

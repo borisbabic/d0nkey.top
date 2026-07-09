@@ -6,29 +6,33 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
 
   @standard_config [
     "Quest Warrior": ["Enter the Lost City"],
-    "Dragon Warrior": ["Darkscale Broodmother", "Petal Peddler"],
-    "Burn Warrior": ["Rockskipper"],
-    "Gladiator Warrior": ["Gladiatorial Combat"],
-    "Dragon Warrior": [
-      "Brood Keeper",
-      "Carrier Whelp",
-      "Cult Neophyte",
-      "Prescient Slitherdrake",
-      "Shadowed Informant",
-      "Stadium Announcer",
-      "Twilight Egg",
-      "Windpeak Wyrm"
+    "Dragon Warrior": ["Darkscale Broodmother", "Petal Peddler", "Prescient Slitherdrake", "Stadium Announcer"],
+    "Egg Warrior": [
+      "Endbringer Umbra",
+      "Holy Eggbearer",
+      "Shellnado",
+      "Siphoning Growth",
+      "The Egg of Khelos"
     ],
-    "Harold Warrior": ["Chrono-Lord Deios", "Ragnaros, the Great Fire"],
-    "Burn Warrior": ["Time-Twisted Seer"],
-    "Harold Warrior": ["Cataclysmic War Axe", "Envoy of the End", "Scorching Ravager", "Ultraxion"],
-    "Burn Warrior": ["Prize Vendor"],
-    "Egg Warrior": ["Decimation", "Endbringer Umbra"],
-    "Dragon Warrior": ["Darkrider"],
-    "Egg Warrior": ["Holy Eggbearer", "Nablya, the Watcher", "The Egg of Khelos"],
-    "Burn Warrior": ["Bash", "Erupting Volcano", "Searing Fissure"],
-    "Gladiator Warrior": ["Clutch of Corruption", "Eternal Toil", "Slam", "Torch", "Unleash the Crocolisks"],
-    "Dragon Warrior": ["Sanguine Depths"]
+    "Gladiator Warrior": ["Gladiatorial Combat"],
+    "Lo'Gosh Warrior": ["Ancient Raptor"],
+    "Patron Warrior": ["Destructive Blaze"],
+    "Harold Warrior": ["Ultraxion"],
+    "Enrage Warrior": ["Injured Tol'vir"],
+    "Lo'Gosh Warrior": ["City Defenses"],
+    "Harold Warrior": ["Envoy of the End"],
+    "Dragon Warrior": ["Shadowed Informant"],
+    "Lo'Gosh Warrior": ["Bloodmage Thalnos", "Sands of Time"],
+    "Harold Warrior": ["Cataclysmic War Axe", "Ragnaros, the Great Fire", "Scorching Ravager"],
+    "Dragon Warrior": ["Brood Keeper"],
+    "Lo'Gosh Warrior": ["Broll, Blood Fighter", "Lo'Gosh, Blood Fighter"],
+    "Dragon Warrior": ["Darkrider", "Windpeak Wyrm"],
+    "Lo'Gosh Warrior": ["P1CK-P0K3T", "Scrappy Defender"],
+    "Lo'Gosh Warrior": ["Mother Duck", "Nightmare Lord Xavius", "Precursory Strike"],
+    "Enrage Warrior": ["Ball and Chain", "Ominous Nightmares", "Rioter", "Stonecarver", "Time-Twisted Seer"],
+    "Dragon Warrior": ["Carrier Whelp"],
+    "Egg Warrior": ["Acolyte of Pain", "Axe of the Forefathers", "For Glory!", "Slam"],
+    "Dragon Warrior": ["Sanguine Depths", "Shadowflame Suffusion"]
   ]
   @wild_config [
     "XL Taunt Warrior": [

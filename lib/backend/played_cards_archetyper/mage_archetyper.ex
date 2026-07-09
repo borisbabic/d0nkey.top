@@ -35,28 +35,25 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
        "Arcane Barrage",
        "Bloodmage Thalnos",
        "Conjured Bookkeeper",
+       "Contraband Wands",
        "Fireball",
        "First Flame",
        "Frostbolt",
        "Living Flame",
        "Raincaller",
+       "Runed Orb",
+       "Sands of Time",
        "Scorching Winds",
        "Sizzling Cinder",
        "Sleet Storm",
+       "Spark of Life",
        "Spellweaver's Brilliance",
+       "Storage Scuffle",
        "Time-Twisted Seer",
        "Tunneling Geomancer",
        "Unstable Spellcaster",
        "Violet Spellwing",
        "Vulcanos"
-     ]},
-    {:"Leyline Mage",
-     [
-       "Smoldering Grove",
-       "Runed Orb",
-       "Sands of Time",
-       "Winterspring Whelp",
-       "Khadgar"
      ]}
   ]
   @wild_config [
