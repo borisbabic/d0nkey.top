@@ -94,9 +94,12 @@ defmodule FunctionComponents.Table do
 
   def th(assigns) do
     ~H"""
-    <th class={["tw-p-3 tw-text-sm tw-font-bold tw-uppercase tw-tracking-wider hover:tw-text-white", @class]}>
+    <th class={header_class(@class)}>
       {render_slot(@inner_block)}
     </th>
     """
   end
+
+  def header_class(class),
+    do: ["tw-p-3 tw-text-sm tw-font-bold tw-uppercase tw-tracking-wider hover:tw-text-white", class]
 end

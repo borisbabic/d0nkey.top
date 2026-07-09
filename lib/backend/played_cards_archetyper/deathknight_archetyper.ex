@@ -7,29 +7,48 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
   @standard_config [
     "Quest DK": ["Reanimate the Terror"],
     "Harold DK": [
-      "Staff of the Endbringer",
       "Deathwing, Worldbreaker",
       "Obsessive Technician",
       "Ultraxion",
       "Arisen Onyxia",
       "Envoy of the End",
-      "Experimental Animation",
-      "Memoriam Manifest",
-      "The Curator",
-      "Soulrest Ceremony"
+      "Experimental Animation"
     ],
-    "Unholy DK": [
+    "Aggro DK": [
       "Grave Strength",
-      "Maze Guide",
-      "Living Paradox",
-      "Talanji's Last Stand"
+      "Devious Coyote",
+      "Battlefield Necromancer"
     ],
-    "Unholy DK": ["Shadows of Yesterday"],
-    "Harold DK": ["Elise the Navigator"],
-    "Harold DK": ["Hematurge", "Morbid Swarm"],
-    "Unholy DK": ["Ancient Raptor", "Reluctant Wrangler", "Twilight Egg"],
-    "Harold DK": ["Carrier Whelp", "Infested Breath"],
-    "Harold DK": ["Chillfallen Baron"]
+    "Egg DK": [
+      "Holy Eggbearer",
+      "The Egg of Khelos"
+    ],
+    "Imbue DK": [
+      "Flutterwing Guardian",
+      "Petal Picker",
+      "Jagged Edge of Time",
+      "Bitterbloom Knight",
+      "Resplendent Dreamweaver",
+      "Malorne the Waywatcher",
+      "Finality"
+    ],
+    "Aggro DK": [
+      "Twilight Egg",
+      "Warden Maiev",
+      "Talanji's Last Stand",
+      "Monstrous Mosquito",
+      "Glacial Shard",
+      "Fire Fly",
+      "Command Claw",
+      "Acolyte of Death",
+      "Maze Guide",
+      "Reluctant Wrangler",
+      "Ancient Ceremony",
+      "Murmy",
+      "Remnant of Rage",
+      "Tower of Ghouls",
+      "Shadows of Yesterday"
+    ]
   ]
 
   @wild_config [

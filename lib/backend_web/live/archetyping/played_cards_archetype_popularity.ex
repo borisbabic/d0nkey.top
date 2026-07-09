@@ -47,6 +47,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     # "Azshara Druid" => "Ramp Druid",
     # "Merithra Druid" => "Ramp Druid",
     # "Hostage Druid" => "Ramp Druid",
+    "Unholy DK" => "Aggro DK",
     "Treant Druid" => "Token Druid",
     "Ace Hunter" => "No Hand Hunter",
     "Quest Spell Mage" => "Spell Mage",
@@ -246,18 +247,18 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
             Loading Card Popularity
           </div>
          <div :if={@card_popularity.ok? && @archetypes.ok? && !@card_popularity.loading} class="table-scrolling-sticky-wrapper">
-          <.table class="table is-fullwidth is-striped tw-table">
+          <.table id="card_popularity_table" class="table is-fullwidth is-striped tw-table">
             <.thead>
               <.trh>
                 <.th class="tw-bg-gray-700">Card</.th>
                 <.th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Archetype</.th>
                 <.th class="tw-bg-gray-700" :if={User.can_access?(@user, :archetyping)}>Config Level</.th>
-                <.th class="tw-bg-gray-700" :on-click="change_sort" phx-value-sort_by={"total"}>
+                <th class={header_class("tw-bg-gray-700")} :on-click="change_sort" phx-value-sort_by={"total"}>
                   {add_arrow("Times Played", "total", @params, true)}
-                </.th>
-                <.th class="tw-bg-gray-700 ":on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @archetypes.result}>
+                </th>
+                <th class={[header_class("tw-bg-gray-700")]} :on-click="change_sort" phx-value-sort_by={archetype} :for={archetype <- @archetypes.result}>
                   {add_arrow(archetype, to_string(archetype), @params)}
-                </.th>
+                </th>
               </.trh>
             </.thead>
             <.tbody>
