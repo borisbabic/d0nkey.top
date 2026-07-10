@@ -14,25 +14,28 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
       "Siphoning Growth",
       "The Egg of Khelos"
     ],
+    "Harold Warrior": [
+      "Cataclysmic War Axe",
+      "Envoy of the End",
+      "Scorching Ravager",
+      "Ultraxion"
+    ],
+    "Lo'Gosh Warrior": ["Broll, Blood Fighter", "Lo'Gosh, Blood Fighter", "Valeera, Blood Fighter"],
+    # auto gen
+    #
+    "Other Warrior": ["Rockskipper"],
     "Gladiator Warrior": ["Gladiatorial Combat"],
-    "Lo'Gosh Warrior": ["Ancient Raptor"],
-    "Patron Warrior": ["Destructive Blaze"],
-    "Harold Warrior": ["Ultraxion"],
-    "Enrage Warrior": ["Injured Tol'vir"],
-    "Lo'Gosh Warrior": ["City Defenses"],
-    "Harold Warrior": ["Envoy of the End"],
+    "Lo'Gosh Warrior": ["Bloodmage Thalnos"],
     "Dragon Warrior": ["Shadowed Informant"],
-    "Lo'Gosh Warrior": ["Bloodmage Thalnos", "Sands of Time"],
-    "Harold Warrior": ["Cataclysmic War Axe", "Ragnaros, the Great Fire", "Scorching Ravager"],
+    "Lo'Gosh Warrior": ["Ancient Raptor"],
     "Dragon Warrior": ["Brood Keeper"],
-    "Lo'Gosh Warrior": ["Broll, Blood Fighter", "Lo'Gosh, Blood Fighter"],
+    "Lo'Gosh Warrior": ["Sands of Time"],
     "Dragon Warrior": ["Darkrider", "Windpeak Wyrm"],
-    "Lo'Gosh Warrior": ["P1CK-P0K3T", "Scrappy Defender"],
-    "Lo'Gosh Warrior": ["Mother Duck", "Nightmare Lord Xavius", "Precursory Strike"],
-    "Enrage Warrior": ["Ball and Chain", "Ominous Nightmares", "Rioter", "Stonecarver", "Time-Twisted Seer"],
-    "Dragon Warrior": ["Carrier Whelp"],
-    "Egg Warrior": ["Acolyte of Pain", "Axe of the Forefathers", "For Glory!", "Slam"],
-    "Dragon Warrior": ["Sanguine Depths", "Shadowflame Suffusion"]
+    "Lo'Gosh Warrior": ["City Defenses", "Nightmare Lord Xavius", "P1CK-P0K3T", "Precursory Strike", "Scrappy Defender"],
+    "Egg Warrior": ["Unleash the Crocolisks"],
+    "Dragon Warrior": ["Carrier Whelp", "Mother Duck"],
+    "Egg Warrior": ["Acolyte of Pain", "Slam"],
+    "Dragon Warrior": ["Erupting Volcano", "Sanguine Depths", "Searing Fissure"]
   ]
   @wild_config [
     "XL Taunt Warrior": [
