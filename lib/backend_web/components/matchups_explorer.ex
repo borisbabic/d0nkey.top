@@ -247,7 +247,7 @@ defmodule Components.MatchupsExplorer do
     now = NaiveDateTime.utc_now()
 
     cond do
-      Util.in_range?(now, {~N[2026-07-07 17:00:00], ~N[2026-07-14 17:30:00]}) ->
+      Util.in_range?(now, {~N[2026-07-07 17:00:00], ~N[2026-07-10 10:30:00]}) ->
         {"Preliminary Violet Hold Archetyping",
          "Proper post Expansion Archetypes needs at least a couple days of data."}
 
