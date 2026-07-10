@@ -23,7 +23,7 @@ defmodule BackendWeb.MyReplaysLive do
     # region
     ~F"""
       <div :if={@user}>
-        <.page_header title="My Decks">
+        <.page_header title={@page_title}>
           <:nav_links>
             <abbr title="Share your public replays"><a href={Routes.live_path(BackendWeb.Endpoint, BackendWeb.PlayerDecksLive, @user.battletag)} target="_blank">Share</a></abbr>
           </:nav_links>
