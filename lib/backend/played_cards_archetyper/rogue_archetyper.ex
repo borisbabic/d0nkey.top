@@ -13,20 +13,22 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
       "Sinestra",
       "Deathwing, Worldbreaker"
     ],
-    # auto gen
-    #
-    "Harold Rogue": ["Elise the Navigator"],
-    "Two-Bit Rogue": ["Shadowed Informant"],
-    # "AYAYA Rogue": ["Aya, Lotus Kingpin", "Defias Wannabe", "Time Adm'ral Hooktail"],
     "Two-Bit Rogue": [
       "Agent of the Old Ones",
+      "Aya, Lotus Kingpin",
+      "Backstab",
       "Bitterbloom Knight",
       "Blackpaw's Whip",
+      "Bloodmage Thalnos",
+      "Crystal Tusk",
+      "Cult Neophyte",
       "Cultist Map",
+      "Deadly Bribe",
+      "Deja Vu",
       "Eventuality",
+      "Fan of Knives",
       "Flashback",
       "Foxy Fraud",
-      "Frantic Forger",
       "Garona Halforcen",
       "Jade Guardians",
       "Lotus Bookie",
@@ -36,9 +38,12 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
       "Preparation",
       "Prize Vendor",
       "Rite of Twilight",
+      "Rockskipper",
+      "Shadowed Informant",
       "The Kingslayers",
       "Thief's Tools",
-      "Vanessa the Ringleader"
+      "Vanessa the Ringleader",
+      "War'loc"
     ]
   ]
   @wild_config [
