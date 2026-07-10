@@ -16,50 +16,53 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       "Petal Picker",
       "Resplendent Dreamweaver"
     ],
+    "Chef Druid": [
+      "Chef Neth'rek",
+      "Commissary Crook",
+      "Kaldorei Cultivator",
+      "Lethal Recipe",
+      "Spiteful Chef"
+    ],
+    "Hostage Druid": [
+      "Chrono-Lord Deios",
+      "Endbringer Umbra",
+      "Grove Shaper",
+      "Sewer Imp",
+      "Tindral Sageswift"
+    ],
+    "Merithra Druid": ["Darkscale Broodmother", "Fyrakk the Blazing"],
+    # 5.5
+    "Attack Druid": ["Infest the Scullery", "Savage Striker"],
+    "Merithra Druid": ["Merithra of the Dream"],
     # auto gen
     "Chef Druid": [
       "Azshara's Triumph",
-      "Chef Neth'rek",
-      "Commissary Crook",
       "Creature of Madness",
-      "Critter Caretaker",
-      "Defias Smuggler",
       "Doomsayer",
       "Glacial Shard",
-      "Kaldorei Cultivator",
-      "Lethal Recipe",
       "Mossbinding",
-      "Noxious Bribe",
       "Photosynthesis",
       "Raven Idol",
       "Sands of Time",
       "Spider Rider",
-      "Spiteful Chef",
       "Symbiosis"
     ],
-    "Merithra Druid": ["Fyrakk the Blazing"],
-    "Token Druid": ["Overheat"],
-    "Merithra Druid": ["Darkscale Broodmother"],
-    "Hostage Druid": ["Chrono-Lord Deios", "Endbringer Umbra"],
-    "Azshara Druid": ["Lady Azshara"],
-    "Attack Druid": ["Infest the Scullery"],
-    "Merithra Druid": ["Elise the Navigator", "Welcome Home!"],
-    "Token Druid": ["Living Roots"],
-    "Krona Druid": ["Contingency", "Prize Vendor"],
-    "Attack Druid": ["Widow's Bite"],
+    "Token Druid": ["Hatchery Helper", "Living Roots", "Longneck Egg", "Ravenous Flock", "Twilight Egg"],
     "Merithra Druid": [
-      "Acceleration Aura",
+      "Bashana Runetotem",
       "Broodwatcher",
       "Ebb and Flow",
-      "Felwood Treant",
-      "Horn of Plenty",
-      "Innervate",
+      "Elise the Navigator",
       "Nightmare Lord Xavius",
-      "Underking",
-      "Vanessa the Ringleader",
+      "Shaladrassil",
+      "Welcome Home!",
       "Wickerfang",
-      "Ysera, Emerald Aspect"
-    ]
+      "Ysera, Emerald Aspect",
+      "Zuramat's Prison"
+    ],
+    # 10.5
+    "Chef Druid": ["Spiderling"],
+    "Merithra Druid": ["Acceleration Aura", "Felwood Treant", "Horn of Plenty", "Waveshaping"]
   ]
   @wild_config [
     "Barnes Druid": ["Starfire"],
