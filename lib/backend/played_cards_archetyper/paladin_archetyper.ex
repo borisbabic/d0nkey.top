@@ -7,55 +7,51 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
   @standard_excludes %{}
 
   @standard_config [
-    {:"Quest Paladin", ["Dive the Golakka Depths"]},
-    {:"Imbue Paladin",
-     [
-       "Aegis of Light",
-       "Bitterbloom Knight",
-       "Dreamwarden",
-       "Flutterwing Guardian",
-       "Goldpetal Drake",
-       "Malorne the Waywatcher",
-       "Petal Picker",
-       "Resplendent Dreamweaver"
-     ]},
-    # auto gen
-    "Pure Paladin": ["Vigilant Sentry"],
+    "Quest Paladin": ["Dive the Golakka Depths"],
+    "Egg Paladin": ["The Egg of Khelos"],
+    "Pure Paladin": ["Vigilant Sentry", "Scarlet Bruiser"],
+    "Imbue Paladin": [
+      "Bitterbloom Knight",
+      "Flutterwing Guardian",
+      "Malorne the Waywatcher",
+      "Petal Picker",
+      "Resplendent Dreamweaver"
+    ],
     "End of Turnadin": ["Earthen Drake"],
-    "Pure Paladin": ["Scarlet Bruiser"],
-    "Aggro Paladin": ["Beaming Sidekick", "Fire Fly"],
-    "Pure Paladin": ["Truth Seeker"],
-    "Dude Paladin": ["Arator the Redeemer", "Brash Battlemaster", "Emboldening Blade"],
-    "Pure Paladin": ["Lightmender"],
-    "Egg Paladin": ["Fae Trickster", "Gullible Guard", "Holy Eggbearer", "The Egg of Khelos"],
-    "End of Turnadin": ["Sheltered Survivor"],
+    # 5.5
+    "Egg Paladin": ["Fae Trickster"],
+    # Auto Gen
+    #
+    "Pure Paladin": ["Reinforcement Aura", "Scarlet Recruiter", "Truth Seeker"],
+    "Dude Paladin": [
+      "Arator the Redeemer",
+      "Brash Battlemaster",
+      "Emboldening Blade",
+      "Hatching Ceremony",
+      "Muster for Battle",
+      "Resilient Savior",
+      "Teamwork"
+    ],
+    "Pure Paladin": ["Commander Beatrix"],
+    "End of Turnadin": ["Battle Vicar", "Nightmare Lord Xavius", "Sizzling Cinder", "Twilight Egg"],
     "Pure Paladin": [
       "Acceleration Aura",
-      "Commander Beatrix",
-      "Gelbin of Tomorrow",
-      "Gnomish Aura",
-      "Manifested Timeways",
-      "Reinforcement Aura",
-      "Sandfury Aura",
-      "Scarlet Recruiter"
-    ],
-    "Dude Paladin": ["Hatching Ceremony", "Teamwork"],
-    "End of Turnadin": [
-      "Battle Vicar",
-      "Glacial Shard",
-      "Inspiring Maul",
-      "Nightmare Lord Xavius",
-      "Past Gnomeregan",
-      "Scalebreaker Bulwark",
-      "Sizzling Cinder",
-      "Twilight Egg"
-    ],
-    "Pure Paladin": [
+      "Chronological Aura",
       "Consecration",
       "Convalescence",
+      "Dreamwarden",
+      "Gelbin of Tomorrow",
+      "Holy Bola!",
+      "Inspiring Maul",
+      "Judgment",
+      "Manifested Timeways",
       "Nozdormu, Bronze Aspect",
+      "Past Gnomeregan",
       "Righteous Protector",
+      "Sandfury Aura",
+      "Scalebreaker Bulwark",
       "Spearheart Sentry",
+      "The Fins Beyond Time",
       "Toreth the Unbreaking",
       "Violet Treasuregill"
     ]
