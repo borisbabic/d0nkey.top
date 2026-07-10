@@ -9,6 +9,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       quest?(card_info) ->
         :"Quest Druid"
 
+      hostage?(card_info) and imbue_druid?(card_info) ->
+        :"Hostage Imbue Druid"
+
       hostage?(card_info) ->
         :"Hostage Druid"
 
