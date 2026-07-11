@@ -217,6 +217,6 @@ defmodule Backend.Giveaways do
 
   def code, do: codes() |> Enum.at(0)
 
-  def winner?(%{battletag: btag}) when btag in ["Kayest#21750", "D0nkey#2470"], do: true
+  # def winner?(%{battletag: btag}) when btag in ["Kayest#21750", "D0nkey#2470"], do: true
   def winner?(_), do: false
 end
