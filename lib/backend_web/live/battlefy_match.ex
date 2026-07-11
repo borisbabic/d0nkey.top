@@ -23,7 +23,7 @@ defmodule BackendWeb.BattlefyMatchLive do
   def render(assigns) do
     ~F"""
       <div>
-        <.page_header title={title(@match)} link={{Battlefy.get_match_url(@tournament, @match)}}>
+        <.page_header title={title(@match)} link={Battlefy.get_match_url(@tournament, @match)}>
           <:meta_info>
             {subtitle(@match)}
           </:meta_info>

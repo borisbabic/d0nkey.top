@@ -13,7 +13,7 @@ defmodule BackendWeb.LineupHistoryLive do
   def render(assigns) do
     ~F"""
       <div>
-        <.page_header title={@name} title_link={Routes.player_path(BackendWeb.Endpoint, :player_profile, @name)} />
+        <.page_header title={@name} link={Routes.player_path(BackendWeb.Endpoint, :player_profile, @name)} />
         <FunctionComponents.Ads.below_title/>
         <.table id="lineup_history_table" :if={lineups = Backend.Hearthstone.lineup_history(@source, @name)}>
           <.thead>

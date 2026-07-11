@@ -550,7 +550,7 @@ defmodule FunctionComponents.CoreComponents do
   reusable navigation links, and background metadata trackers.
   """
   attr :title, :string, required: true
-  attr :title_link, :string, default: nil
+  attr :link, :string, default: nil
 
   slot :nav_links, doc: "Contains individual action links"
   slot :meta_info, doc: "Contains auxiliary stats like game counts, filters, or credits"
@@ -563,8 +563,8 @@ defmodule FunctionComponents.CoreComponents do
     ~H"""
     <div class="tw-mb-6 tw-space-y-2">
       <h1 class="tw-text-3xl md:tw-text-4xl 2xl:tw-text-5xl tw-font-bold tw-tracking-tight tw-text-white">
-        <%= if @title_link do %>
-          <a href={@title_link}>{@title}</a>
+        <%= if @link do %>
+          <a href={@link}>{@title}</a>
         <% else %>
           {@title}
         <% end %>
