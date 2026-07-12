@@ -89,7 +89,7 @@ defmodule Components.CardStatsTable do
           <PlayableCardSelect format={@test_params["format"]} id={"player_not_drawn"} param={"player_not_drawn"} selected={@test_params["player_not_drawn"] || []} title="Not Drawn"/>
           <PlayableCardSelect format={@test_params["format"]} id={"player_kept"} param={"player_kept"} selected={@test_params["player_kept"] || []} title="Kept"/>
           <PlayableCardSelect format={@test_params["format"]} id={"player_not_kept"} param={"player_not_kept"} selected={@test_params["player_not_kept"] || []} title="Not Kept"/>
-          <ArchetypeSelect format={@test_params["format"]} played_cards_archetypes={true} id={"opponent_archetype"} param={"opponent_archetype"} selected={@test_params["opponent_archetype"] || []} title="Opponent Archetype"/>
+          <ArchetypeSelect criteria={@test_params} played_cards_archetypes={true} id={"opponent_archetype"} param={"opponent_archetype"} selected={@test_params["opponent_archetype"] || []} title="Opponent Archetype"/>
           <ForceFreshDropdown id={"force_fresh"} />
         {/if}
       </.filter_container>

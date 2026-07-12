@@ -95,8 +95,8 @@ defmodule Components.ReplayExplorer do
             selected_as_title={true}
             use_nil_val_as_title={false}
           />
-          <ArchetypeSelect :if={@archetype_filter} id={"player_deck_archetype"} param={"player_deck_archetype"} selected={@params["player_deck_archetype"] || []} title="Archetypes" />
-          <ArchetypeSelect :if={@opponent_archetype_filter} id={"opponent_archetype"} played_cards_archetypes={true} param={"opponent_archetype"} selected={@params["opponent_archetype"] || []} title="Opponent Archetypes" />
+          <ArchetypeSelect :if={@archetype_filter} id={"player_deck_archetype"} param={"player_deck_archetype"} selected={@params["player_deck_archetype"] || []} title="Archetypes" criteria={@params} />
+          <ArchetypeSelect :if={@opponent_archetype_filter} id={"opponent_archetype"} played_cards_archetypes={true} param={"opponent_archetype"} selected={@params["opponent_archetype"] || []} title="Opponent Archetypes" criteria={@params} />
           <ClassDropdown :if={@player_class_filter} id="player_class_dropdown"
             param={"player_class"} />
           <ClassDropdown :if={@opponent_class_filter} id="opponent_class_dropdown"

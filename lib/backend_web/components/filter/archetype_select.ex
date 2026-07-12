@@ -9,7 +9,7 @@ defmodule Components.Filter.ArchetypeSelect do
   prop(param, :string, required: true)
   prop(selectable_archetypes, :list, default: [])
   prop(updater, :fun, default: &MultiSelectDropdown.update_selected/2)
-  prop(criteria, :list, default: [{"latest", 60 * 12}])
+  prop(criteria, :any, default: %{})
   prop(played_cards_archetypes, :boolean, default: false)
 
   def render(assigns) do
@@ -51,8 +51,8 @@ defmodule Components.Filter.ArchetypeSelect do
 
   defp archetypes([], criteria, true) do
     format =
-      case List.keyfind(criteria || [], "format", 0) do
-        {"format", format} when is_integer(format) or is_binary(format) ->
+      case Util.get(criteria, "format") do
+        format when is_integer(format) or is_binary(format) ->
           Util.to_int_or_orig(format)
 
         _ ->
@@ -63,8 +63,8 @@ defmodule Components.Filter.ArchetypeSelect do
   end
 
   defp archetypes([], criteria, false) do
-    case List.keyfind(criteria, "format", 0) do
-      {"format", format} when is_integer(format) or is_binary(format) ->
+    case Util.get(criteria, "format") do
+      format when is_integer(format) or is_binary(format) ->
         ArchetypeBag.get_archetypes(format)
 
       _ ->

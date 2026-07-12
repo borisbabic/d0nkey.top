@@ -162,8 +162,15 @@ defmodule Util do
       end
 
     case {atom_val, from} do
-      {_, %{^key => value}} -> value
-      {k, _} -> get(from, k, opts)
+      {_, %{^key => value}} ->
+        value
+
+      {k, _} ->
+        if is_list(from) and :keyfind_value_error != keyfind_value(from, key, 0, :keyfind_value_error) do
+          keyfind_value(from, key, 0)
+        else
+          get(from, k, opts)
+        end
     end
   end
 
