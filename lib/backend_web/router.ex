@@ -211,6 +211,7 @@ defmodule BackendWeb.Router do
     live("/mt/playoffs/spring_2025", Spring2025PlayoffsShowcaseLive)
     live("/mt/playoffs/winter_2026", Winter2026PlayoffsShowcaseLive)
     live("/mt/playoffs/spring_2026", Spring2026PlayoffsShowcaseLive)
+    live("/mt/playoffs/summer_2026", Summer2026PlayoffsShowcaseLive)
 
     live_session :qualifiers_winter_blitz,
       session: %{

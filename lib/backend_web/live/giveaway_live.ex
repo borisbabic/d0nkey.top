@@ -106,10 +106,10 @@ defmodule BackendWeb.GiveawayLive do
           <div :if={!@user && !@entry}>
             You need to <a target="_blank" href="/auth/bnet">login</a> before you can enter 
           </div>
-          <div :if={@user && !@entry && !Util.before_now(@giveaway.deadline)}>
+          <div :if={@user && !@entry && !Util.before_now?(@giveaway.deadline)}>
             <button class="button" :on-click={"enter"}>Click here to enter</button>
           </div>
-          <div :if={!@entry && Util.before_now(@giveaway.deadline)}>
+          <div :if={!@entry && Util.before_now?(@giveaway.deadline)}>
             The deadline has passed 🥲
           </div>
         </.setup_step>

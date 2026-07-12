@@ -118,7 +118,7 @@ defmodule Backend.Giveaways do
   end
 
   def enter(%Giveaway{deadline: deadline} = giveaway, %User{} = user) do
-    if Util.after_now(deadline) do
+    if Util.after_now?(deadline) do
       GiveawayEntry.changeset(%{user_id: user.id, giveaway_id: giveaway.id})
       |> Repo.insert()
     else

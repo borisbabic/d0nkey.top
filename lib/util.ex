@@ -78,6 +78,11 @@ defmodule Util do
     |> String.replace("T", " ")
   end
 
+  @spec now_in_range?({NaiveDateTime.t(), NaiveDateTime.t()}) :: boolean()
+  def now_in_range?({%NaiveDateTime{}, %NaiveDateTime{}} = range) do
+    in_range?(NaiveDateTime.utc_now(), range)
+  end
+
   @doc """
   Checks wether the target NaiveDateTime is within {min, max}
   iex> Util.in_range?(~N[2019-12-01 23:00:00], {~N[2020-03-01 23:00:00], ~N[2022-03-01 00:00:00]})
@@ -85,16 +90,17 @@ defmodule Util do
   iex> Util.in_range?(~N[2020-12-01 23:00:00], {~N[2020-03-01 23:00:00], ~N[2022-03-01 00:00:00]})
   true
   """
+  @spec in_range?(NaiveDateTime.t(), {NaiveDateTime.t(), NaiveDateTime.t()}) :: boolean()
   def in_range?(%NaiveDateTime{} = target, {%NaiveDateTime{} = min, %NaiveDateTime{} = max}) do
     NaiveDateTime.compare(target, min) != :lt &&
       NaiveDateTime.compare(target, max) != :gt
   end
 
-  def before_now(%NaiveDateTime{} = target) do
+  def before_now?(%NaiveDateTime{} = target) do
     :lt == NaiveDateTime.compare(target, NaiveDateTime.utc_now())
   end
 
-  def after_now(%NaiveDateTime{} = target) do
+  def after_now?(%NaiveDateTime{} = target) do
     :gt == NaiveDateTime.compare(target, NaiveDateTime.utc_now())
   end
 
