@@ -54,7 +54,7 @@ defmodule BackendWeb.LineupSubmitterLive do
                 <.thead>
                   <.trh>
                     <.th>Previous Tournaments for {@user.battletag}</.th>
-                    <.th></.th>
+                    <.th>Actions</.th>
                   </.trh>
                 </.thead>
                 <.tbody>
