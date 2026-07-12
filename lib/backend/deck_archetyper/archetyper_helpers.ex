@@ -355,7 +355,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
 
   def quest_abbreviation(card_info) do
     case Enum.find(card_info.full_cards, &Card.quest?/1) do
-      [%{card_set: card_set}] -> Backend.Hearthstone.Set.abbreviation(card_set)
+      %{card_set: card_set} -> Backend.Hearthstone.Set.abbreviation(card_set)
       _ -> nil
     end
   end
