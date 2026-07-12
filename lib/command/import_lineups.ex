@@ -10,6 +10,37 @@ defmodule Command.ImportLineups do
   use Tesla
   plug Tesla.Middleware.FollowRedirects, max_redirects: 3
 
+  def import_from_deck_sheet(
+        sheet_id,
+        tournament_source,
+        player_name_field \\ :source,
+        tournament_id \\ nil,
+        user_id \\ 1
+      ) do
+    sheet = Backend.Sheets.get_sheet(sheet_id)
+    listings = Backend.Sheets.get_listings!(sheet, Backend.UserManager.get_user!(user_id))
+    tournament_id = tournament_id || sheet.name
+
+    IO.puts("Saving to: https:///www.hsguru.com/tournament-lineups/#{tournament_source}/#{tournament_id}")
+
+    multi =
+      listings
+      |> Enum.group_by(&Map.fetch!(&1, player_name_field))
+      |> Enum.reduce(Multi.new(), fn {name, listings}, multi ->
+        deckstrings = Enum.map(listings, &Deck.deckcode(&1.deck))
+
+        changeset =
+          Hearthstone.create_lineup(
+            %{name: name, tournament_id: tournament_id, tournament_source: tournament_source},
+            deckstrings
+          )
+
+        Multi.insert(multi, name, changeset)
+      end)
+
+    Repo.transaction(multi)
+  end
+
   def import_from_battlefy_csv_url(csv_url, tournament_id, class_num) do
     %{body: body} = HTTPoison.get!(csv_url, [], follow_redirect: true)
 
