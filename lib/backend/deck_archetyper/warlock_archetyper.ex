@@ -202,6 +202,14 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       min_count?(ci, 2, @self_fatigue_package)
   end
 
+  defp wild_painlock?(card_info) do
+    min_count?(card_info, 2, [
+      "Molten Giant",
+      "Imprisoned Horror",
+      "Flesh Giant"
+    ])
+  end
+
   def wild(card_info) do
     cond do
       boar?(card_info) and "Battle at the End Time" in card_info.card_names and
@@ -297,6 +305,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
 
       deckless?(card_info) ->
         :"Deckless Warlock"
+
+      wild_painlock?(card_info) ->
+        :Painlock
 
       true ->
         fallbacks(card_info, "Warlock")
