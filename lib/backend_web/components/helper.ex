@@ -190,8 +190,10 @@ defmodule Components.Helper do
     region_flag(%{image: image, region: region})
   end
 
+  @region_map %{"AP" => "APAC", "AM" => "AMER", "EU" => "EMEA"}
   def country_flag(region, _) when region in ["AP", "APAC", "AM", "AMER", "EU", "EMEA"] do
-    image = "/images/region_#{String.downcase(region)}.png"
+    file_part = Map.get(@region_map, region, region) |> String.downcase()
+    image = "/images/region_#{file_part}.png"
 
     region_flag(%{image: image, region: region})
   end
