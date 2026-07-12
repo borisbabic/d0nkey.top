@@ -346,8 +346,15 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
 
   def vanndar?(%{card_names: card_names}), do: "Vanndar Stormpike" in card_names
 
+  def quest_abbreviation_part(card_info) do
+    case quest_abbreviation(card_info) do
+      nil -> ""
+      abbr -> "#{abbr} "
+    end
+  end
+
   def quest_abbreviation(card_info) do
-    case Enum.filter(card_info.full_cards, &Card.quest?/1) do
+    case Enum.find(card_info.full_cards, &Card.quest?/1) do
       [%{card_set: card_set}] -> Backend.Hearthstone.Set.abbreviation(card_set)
       _ -> nil
     end

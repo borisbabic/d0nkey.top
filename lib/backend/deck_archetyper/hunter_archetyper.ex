@@ -140,7 +140,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
         :"HL Questline Hunter"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Hunter")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest Hunter")
 
       "Beastmaster Leoroxx" in card_info.card_names and highlander?(card_info) ->
         :"HL Leoroxx Hunter"
@@ -158,7 +158,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
         :"Questline Hunter"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest Hunter")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest Hunter")
 
       boar?(card_info) ->
         :"Boar Hunter"

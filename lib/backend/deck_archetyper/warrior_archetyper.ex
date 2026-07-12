@@ -134,7 +134,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         :"HL Questline Warrior"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Warrior")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest Warrior")
 
       "Unlucky Powderman" in card_info.card_names and highlander?(card_info) ->
         :"HL Taunt Warrior"
@@ -152,7 +152,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
         :"Questline Warrior"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest Warrior")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest Warrior")
 
       boar?(card_info) ->
         :"Boar Warrior"

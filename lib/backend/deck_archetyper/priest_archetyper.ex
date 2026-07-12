@@ -132,7 +132,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         :"HL Questline Priest"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Priest")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest Priest")
 
       "The Harvester of Envy" in card_info.card_names and highlander?(card_info) ->
         :"HL Thief Priest"
@@ -153,7 +153,7 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
         :"Questline Priest"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest Priest")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest Priest")
 
       boar?(card_info) ->
         :"Boar Priest"

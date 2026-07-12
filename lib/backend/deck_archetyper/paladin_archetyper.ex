@@ -202,7 +202,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         :"HL Questline Paladin"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Paladin")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest Paladin")
 
       wild_exodia_paladin?(card_info) and highlander?(card_info) ->
         :"HL Exodia Paladin"
@@ -220,7 +220,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
         :"Questline Paladin"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest Paladin")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest Paladin")
 
       boar?(card_info) ->
         :"Boar Paladin"

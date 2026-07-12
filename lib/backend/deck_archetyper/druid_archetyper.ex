@@ -144,7 +144,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         :"HL Questline Druid"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Druid")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest Druid")
 
       imbue_druid?(card_info) and highlander?(card_info) ->
         :"HL Imbue Druid"
@@ -162,7 +162,7 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
         :"Questline Druid"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest Druid")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest Druid")
 
       boar?(card_info) ->
         :"Boar Druid"

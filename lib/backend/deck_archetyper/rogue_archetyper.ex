@@ -227,7 +227,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         :"HL Questline Rogue"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest Rogue")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest Rogue")
 
       imbue?(card_info, 4) and highlander?(card_info) ->
         :"HL Imbue Rogue"
@@ -248,7 +248,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
         :"Questline Rogue"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest Rogue")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest Rogue")
 
       boar?(card_info) ->
         :"Boar Rogue"

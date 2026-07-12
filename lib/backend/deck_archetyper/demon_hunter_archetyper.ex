@@ -110,13 +110,13 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
         :"HL Questline DH"
 
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest DH")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest DH")
 
       highlander?(card_info) ->
         :"Highlander DH"
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest DH")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest DH")
 
       baku?(card_info) ->
         :"Odd DH"

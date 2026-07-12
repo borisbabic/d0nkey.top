@@ -173,7 +173,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
     cond do
       quest?(card_info) and highlander?(card_info) ->
-        String.to_atom("HL #{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("HL #{quest_abbreviation_part(card_info)}Quest #{class_name}")
 
       only_runes?(card_info, :blood) and highlander?(card_info) ->
         :"HL Blood DK"
@@ -188,7 +188,7 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
         String.to_atom("Highlander #{class_name}")
 
       quest?(card_info) ->
-        String.to_atom("#{quest_abbreviation(card_info)} Quest #{class_name}")
+        String.to_atom("#{quest_abbreviation_part(card_info)}Quest #{class_name}")
 
       boar?(card_info) ->
         String.to_atom("Boar #{class_name}")
