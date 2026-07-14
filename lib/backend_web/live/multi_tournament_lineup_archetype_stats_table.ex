@@ -26,9 +26,6 @@ defmodule BackendWeb.MultiTournamentLineupArchetypeStatsTable do
           <a href={~p"/tournament-lineups/matchups?#{%{"tournaments" => @raw_tournaments}}"}>Matchups</a>
           <a :for={{link, display} <- links(@tournament_tuples)} href={link}>{display}</a>
         </:nav_links>
-        <:meta_info>
-          <span :if={@lineups.ok?}> | Total Lineups: {Enum.count(@lineups.result)}</span>
-        </:meta_info>
       </.page_header>
       <FunctionComponents.Ads.below_title/>
       <div :if={@archetype_stats.loading}>
