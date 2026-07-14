@@ -71,14 +71,16 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
 
   defp aggro?(card_info) do
     min_count?(card_info, 3, [
-      "Murmy",
-      "Command Claw",
-      "Warden Maiev",
-      "Talanji's Last Stand",
-      "Bone Flurry",
-      "Shadow's of Yesterday",
       "Battlefield Necromancer",
-      "Fire Fly"
+      "Bone Flurry",
+      "Command Claw",
+      "Devious Coyote",
+      "Fire Fly",
+      "Living Paradox",
+      "Murmy",
+      "Shadow's of Yesterday",
+      "Talanji's Last Stand",
+      "Warden Maiev"
     ])
   end
 

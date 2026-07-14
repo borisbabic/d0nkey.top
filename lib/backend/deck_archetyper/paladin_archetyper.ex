@@ -21,7 +21,7 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       finja?(card_info) ->
         :"Finja Paladin"
 
-      beatrix_focused?(card_info, "Prize Vendor") ->
+      mill?(card_info) ->
         :"Mill Paladin"
 
       beatrix_focused?(card_info, "Captured Archmage") ->
@@ -54,6 +54,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       true ->
         fallbacks(card_info, "Paladin")
     end
+  end
+
+  defp mill?(card_info) do
+    beatrix_focused?(card_info, "Prize Vendor") or
+      (card_info.beatrix_sideboard == "Prize Vendor" and "Endbringer Umbra" in card_info.card_names)
   end
 
   defp beatrix_focused?(card_info, beatrix_sideboard) do

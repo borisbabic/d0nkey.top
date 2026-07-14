@@ -29,9 +29,6 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Gladiatorial Combat" in card_info.card_names ->
         :"Gladiator Warrior"
 
-      "Ysondre" in card_info.card_names ->
-        :"Ysondre Warrior"
-
       type_count(card_info, "Dragon") > 5 ->
         :"Dragon Warrior"
 
@@ -59,9 +56,19 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Lo'Gosh, Blood Fighter" in card_info.card_names ->
         :"Lo'Gosh Warrior"
 
+      twenty_five?(card_info) ->
+        :"CaprioDi Warrior"
+
+      "Ysondre" in card_info.card_names ->
+        :"Ysondre Warrior"
+
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp twenty_five?(card_info) do
+    min_count?(card_info, 2, ["Crowd Control", "P1CK-P0K3T", "Scrappy Defender"])
   end
 
   defp patron?(card_info) do

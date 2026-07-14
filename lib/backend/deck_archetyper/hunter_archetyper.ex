@@ -23,6 +23,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       companion?(card_info) ->
         :"Companion Hunter"
 
+      face?(card_info) and "King of the Underbelly" in card_info.card_names ->
+        :"Contraband Face Hunter"
+
       face?(card_info) ->
         :"Face Hunter"
 
@@ -38,6 +41,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       "The Egg of Khelos" in card_info.card_names ->
         :"Egg Hunter"
 
+      tripwire?(card_info) ->
+        :"Tripwire Hunter"
+
       bad?(card_info) ->
         :"Bad Hunter"
 
@@ -50,6 +56,7 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
     "Precise Shot",
     "Sylvanas's Triumph",
     "Sizzling Cinder",
+    "Platysaur",
     "Arcane Shot",
     "Quel'dorei Fletcher",
     "Reinforcement Rallier",
@@ -69,8 +76,13 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       (confront_without_caretaker? and (min_count?(card_info, 3, @face_cards) or confront_highest?))
   end
 
+  @tripwire ["Arcane Tripwire", "Beast Tripwire"]
+  defp tripwire?(card_info) do
+    min_count?(card_info, 2, @tripwire)
+  end
+
   defp rat_trap?(card_info) do
-    min_count?(card_info, 3, ["Arcane Tripwire", "R4T-C4TCH3R", "Warmaster Blackhorn"])
+    min_count?(card_info, 1, @tripwire) and min_count?(card_info, 2, ["R4T-C4TCH3R", "Warmaster Blackhorn"])
   end
 
   @deathrattle_synergy ["Sewer Swimmer", "Black Market Overseer", "Chrono-Lord Deios", "Endbringer Umbra"]
