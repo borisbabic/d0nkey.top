@@ -258,14 +258,23 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       "Painter's Virtue" in card_info.card_names ->
         :"Handbuff Paladin"
 
+      clone_cta?(card_info) ->
+        :"Clone CtA Paladin"
+
       aura_cta?(card_info) ->
         :"Aura CtA Paladin"
 
       "Call to Arms" in card_info.card_names ->
         :"CtA Paladin"
 
+      card_info.beatrix_sideboard == "Galvanizer" ->
+        :"Clone Mech Paladin"
+
       "Galvanizer" in card_info.card_names ->
         :"Mech Paladin"
+
+      card_info.beatrix_sideboard == "Kobold Miner" ->
+        :"Clone Miner Paladin"
 
       true ->
         fallbacks(card_info, "Paladin")
@@ -282,6 +291,10 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
 
   defp aura_cta?(card_info) do
     min_count?(card_info, 2, ["Call to Arms", "Gelbin of Tomorrow"])
+  end
+
+  defp clone_cta?(card_info) do
+    min_count?(card_info, 2, ["Call to Arms", "Commander Beatrix"])
   end
 
   defp earthen_paladin?(ci),
