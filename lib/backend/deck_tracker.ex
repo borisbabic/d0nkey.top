@@ -21,6 +21,7 @@ defmodule Hearthstone.DeckTracker do
   alias Hearthstone.DeckTracker.Rank
   alias Hearthstone.DeckTracker.Format
   alias Hearthstone.DeckTracker.Region
+  alias Backend.Battlenet
   alias Backend.Hearthstone
   alias Backend.Hearthstone.Deck
   alias Backend.UserManager
@@ -1791,8 +1792,12 @@ defmodule Hearthstone.DeckTracker do
   defp compose_games_query({"player_deck_id", deck_id}, query),
     do: query |> where([game: g], g.player_deck_id == ^deck_id)
 
-  defp compose_games_query({"player_btag", btag}, query),
-    do: query |> where([game: g], g.player_btag == ^btag)
+  defp compose_games_query({"player_btag", btags}, query) when is_list(btags) do
+    subquery = Battlenet.all_battletags_query(btags)
+    query |> where([game: g], g.player_btag in subquery(subquery))
+  end
+
+  defp compose_games_query({"player_btag", btag}, query), do: compose_games_query({"player_btag", [btag]}, query)
 
   defp compose_games_query({"player_class", raw_classes}, @agg_deck_query = query)
        when is_list(raw_classes) do
@@ -2228,14 +2233,11 @@ defmodule Hearthstone.DeckTracker do
     query |> where([game: g], g.public == ^public)
   end
 
-  defp compose_games_query({"in_group", %GroupMembership{group_id: group_id}}, query) do
+  defp compose_games_query({"in_group", %GroupMembership{} = membership}, query) do
+    group_battletags_query = UserManager.group_battletags_for_data_query(membership)
+
     query
-    |> join(:inner, [game: g], u in User, on: u.battletag == g.player_btag, as: :user)
-    |> join(:inner, [user: u], gm in GroupMembership,
-      on: gm.user_id == u.id,
-      as: :group_membership
-    )
-    |> where([group_membership: gm], gm.group_id == ^group_id and gm.include_data == true)
+    |> where([game: g], g.player_btag in subquery(group_battletags_query))
   end
 
   defp compose_games_query({"limit", limit}, query) when is_integer(limit) or is_binary(limit),

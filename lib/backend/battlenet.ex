@@ -349,6 +349,41 @@ defmodule Backend.Battlenet do
     end
   end
 
+  def all_battletags(battletags), do: all_battletags_query(battletags) |> Repo.all()
+
+  def all_battletags_query(battletags) do
+    values = Enum.map(battletags, &%{btag: &1})
+    types = %{btag: :string}
+    union_query = from v in values(values, types), select: v.btag
+
+    {cte_query, cte_name} = old_battletag_recursive_query(battletags)
+
+    OldBattletag
+    |> recursive_ctes(true)
+    |> with_cte(^cte_name, as: ^cte_query)
+    |> join(:inner, [ob], ct in ^cte_name, on: ct.id == ob.id)
+    |> select([ob], ob.old_battletag)
+    |> union(^union_query)
+  end
+
+  def old_battletag_recursive_query(battletags) do
+    initial_query =
+      from ob in OldBattletag,
+        where: ob.new_battletag in ^battletags
+
+    cte_name = "old_battletag_tree"
+
+    recursion_query =
+      from(ob in OldBattletag)
+      |> join(:inner, [ob], ct in ^cte_name, on: ob.new_battletag == ct.old_battletag)
+
+    cte_query =
+      initial_query
+      |> union_all(^recursion_query)
+
+    {cte_query, cte_name}
+  end
+
   def get_old_for_btag(btag) do
     query =
       from(ob in OldBattletag,

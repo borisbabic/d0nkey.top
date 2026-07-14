@@ -14,6 +14,7 @@ defmodule Backend.UserManager do
   @pagination_distance 5
 
   alias Backend.CollectionManager.Collection
+  alias Backend.Battlenet
   alias Backend.UserManager.User
   alias Backend.UserManager.Group
   alias Backend.UserManager.GroupMembership
@@ -752,5 +753,22 @@ defmodule Backend.UserManager do
         where: u.battletag == ^battletag and is_nil(u.current_collection_id)
 
     Repo.update_all(query, set: [current_collection_id: id])
+  end
+
+  def group_battletags_for_data_query(%GroupMembership{group_id: group_id}) do
+    current_battletags =
+      from(u in User, as: :user)
+      |> join(:inner, [user: u], gm in GroupMembership, on: gm.user_id == u.id, as: :group_membership)
+      |> where([group_membership: gm], gm.group_id == ^group_id and gm.include_data)
+      |> select([user: u], u.battletag)
+      |> Repo.all()
+
+    Battlenet.all_battletags_query(current_battletags)
+  end
+
+  def group_battletags_for_data(gm) do
+    gm
+    |> group_battletags_for_data_query()
+    |> Repo.all()
   end
 end
