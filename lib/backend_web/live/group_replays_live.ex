@@ -25,10 +25,6 @@ defmodule BackendWeb.GroupReplaysLive do
             <.contribution powered={true} />
           </:meta_info>
         </.page_header>
-        <div class="title is-2">{@group.name} Replays</div>
-        <div class="subtitle is-6">
-        Powered by <a href="https://www.firestoneapp.com/">Firestone<HeroIcons.external_link /></a> or the <a target="_blank" href="/hdt-plugin">HDT Plugin</a>
-        </div>
         <FunctionComponents.Ads.below_title/>
         <ReplayExplorer
           show_player_btag={true}
