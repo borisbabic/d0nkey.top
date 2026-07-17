@@ -234,8 +234,8 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       wild_chad_seedlock?(card_info) ->
         :"Chad Seedlock"
 
-      wild_fatigue_seedlock?(card_info) ->
-        :"Fatigue Seedlock"
+      wild_miracle_seedlock?(card_info) ->
+        :"Miracle Seedlock"
 
       "The Demon Seed" in card_info.card_names ->
         :Seedlock
@@ -270,8 +270,11 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       fatigue_warlock?(card_info) ->
         :"Insanity Warlock"
 
-      wild_fatigue_warlock?(card_info) ->
+      "Crescendo" in card_info.card_names ->
         :"Fatigue Warlock"
+
+      wild_miracle_warlock?(card_info) ->
+        :"Miracle Warlock"
 
       "Mecha'thun" in card_info.card_names ->
         :"Mecha'thun Warlock"
@@ -339,8 +342,12 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
     min_count?(card_info, 2, ["Thaddius, Monstrosity", "The Demon Seed"])
   end
 
-  defp wild_fatigue_seedlock?(card_info) do
+  defp wild_miracle_seedlock?(card_info) do
     min_count?(card_info, 2, ["Fanottem, Lord of the Opera", "The Demon Seed"])
+  end
+
+  defp wild_miracle_warlock?(card_info) do
+    min_count?(card_info, 2, ["Fanottem, Lord of the Opera", "Zephrys the Great"])
   end
 
   defp discard?(card_info, min_count) do
@@ -396,25 +403,5 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       "Disposable Acolytes",
       "Soul Barrage"
     ])
-  end
-
-  defp wild_fatigue_warlock?(card_info) do
-    min_count?(
-      card_info,
-      5,
-      [
-        "Altar of Fire",
-        "Blood Shard Bristleback",
-        "Godfrey the Betrayer",
-        "Soul Rend",
-        "Neeru Fireblade",
-        "Barrens Scavenger",
-        "Tickatus",
-        "The Unseen Atlas",
-        "Crescendo",
-        "Pop'gar the Putrid",
-        "Fanottem, Lord of the Opera"
-      ]
-    )
   end
 end
