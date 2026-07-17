@@ -399,22 +399,20 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp wild_fatigue_warlock?(card_info) do
-    min_count?(
-      card_info,
-      5,
-      [
-        "Altar of Fire",
-        "Blood Shard Bristleback",
-        "Godfrey the Betrayer",
-        "Soul Rend",
-        "Neeru Fireblade",
-        "Barrens Scavenger",
-        "Tickatus",
-        "The Unseen Atlas",
-        "Crescendo",
-        "Pop'gar the Putrid",
-        "Fanottem, Lord of the Opera"
-      ]
-    )
+    min_count?(card_info, 5, [
+      "Altar of Fire",
+      "Blood Shard Bristleback",
+      "Godfrey the Betrayer",
+      "Soul Rend",
+      "Neeru Fireblade",
+      "Barrens Scavenger",
+      "Tickatus",
+      "The Unseen Atlas",
+      "Crescendo",
+      "Pop'gar the Putrid",
+      "Fanottem, Lord of the Opera",
+      "Zephrys the Great",
+      "Celestial Projectionist"
+    ])
   end
 end
