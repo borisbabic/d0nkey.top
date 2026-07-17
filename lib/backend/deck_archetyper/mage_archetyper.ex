@@ -163,9 +163,23 @@ defmodule Backend.DeckArchetyper.MageArchetyper do
       wild_small_spell_mage?(card_info) ->
         :"Small Spell Mage"
 
+      wild_freeze_mage?(card_info) ->
+        :"Freeze Mage"
+
       true ->
         fallbacks(card_info, "Mage")
     end
+  end
+
+  defp wild_freeze_mage?(card_info) do
+    min_count?(card_info, 4, [
+      "Freezing Potion",
+      "Cold Snap",
+      "Frost Nova",
+      "Varden Dawngrasp",
+      "Sleet Skater",
+      "Bob the Bartender"
+    ])
   end
 
   defp arcane_mage?(card_info) do
