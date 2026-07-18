@@ -44,6 +44,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       tripwire?(card_info) ->
         :"Tripwire Hunter"
 
+      "Magmaw" in card_info.card_names ->
+        :"Magmaw Hunter"
+
       bad?(card_info) ->
         :"Bad Hunter"
 

@@ -91,7 +91,7 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       3,
       [
         "Giftwrapped Whelp",
-        "Windspeak Wyrm",
+        "Windpeak Wyrm",
         "Brood Keeper",
         "Darkrider"
       ] ++ neutral_dragon_synergy()

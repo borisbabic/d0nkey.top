@@ -48,8 +48,11 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       finja_package?(card_info) ->
         :"Finja Paladin"
 
-      "Sunsapper Lynessa" in card_info.card_names ->
-        :"Lynessa Paladin"
+      card_info.beatrix_sideboard == "Warden Maiev" ->
+        :"Maiev Paladin"
+
+      card_info.beatrix_sideboard == "Petal Peddler" ->
+        :"Peddler Paladin"
 
       true ->
         fallbacks(card_info, "Paladin")
