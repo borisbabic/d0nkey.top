@@ -350,8 +350,14 @@ defmodule Components.DecksExplorer do
 
     rank_factor =
       case params["rank"] do
+        r when r in ["bronze", "silver", "gold", "platinum", "diamond"] -> 0.5
+        "top_100" -> 0.05
+        "top_500" -> 0.15
+        "legend_101_1000" -> 0.25
         "top_legend" -> 0.3
+        "legend_1001_" -> 0.5
         "top_5k" -> 0.5
+        "top_10k" -> 0.67
         "legend" -> 0.8
         "all" -> 1.4
         _ -> 1
