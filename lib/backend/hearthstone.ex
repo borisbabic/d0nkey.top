@@ -790,14 +790,14 @@ defmodule Backend.Hearthstone do
 
   defp compose_decks_query({"include_cards", [_ | _] = cards}, query) do
     query
-    |> include_cards(cards, :deck)
+    |> include_cards_in_deck(cards)
   end
 
   defp compose_decks_query({"include_cards", []}, query), do: query
 
   defp compose_decks_query({"exclude_cards", [_ | _] = cards}, query) do
     query
-    |> exclude_cards(cards, :deck)
+    |> exclude_cards_in_deck(cards)
   end
 
   defp compose_decks_query({"exclude_cards", []}, query), do: query
@@ -853,52 +853,80 @@ defmodule Backend.Hearthstone do
         do: c.id
   end
 
-  def include_cards(query, cards, binding, field \\ :cards) do
-    dynamic = include_cards_dynamic(cards, binding, field)
+  def include_cards_in_deck(query, cards, binding \\ :deck), do: include_cards(query, cards, binding, :cards, true)
+
+  def include_cards(query, cards, binding, field, check_sideboard \\ false) do
+    dynamic = include_cards_dynamic(cards, binding, field, check_sideboard)
 
     query |> where(^dynamic)
   end
 
-  def exclude_cards(query, cards, binding, field \\ :cards) do
-    dynamic = exclude_cards_dynamic(cards, binding, field)
+  def exclude_cards_in_deck(query, cards, binding \\ :deck), do: exclude_cards(query, cards, binding, :cards, true)
+
+  def exclude_cards(query, cards, binding, field, check_sideboard \\ false) do
+    dynamic = exclude_cards_dynamic(cards, binding, field, check_sideboard)
 
     query |> where(^dynamic)
   end
 
-  def exclude_cards_dynamic(cards, binding, field \\ :cards) do
-    cards
-    |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
-      same_cards_subquery = same_card_ids_query(card_id)
+  def include_any_cards_dynamic(cards, binding, field \\ :cards, check_sideboard \\ false) do
+    cards_dynamic(cards, binding, field, check_sideboard, dynamic(false), :or)
+  end
 
-      dynamic(
-        [{^binding, d}],
-        ^dynamic and not fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
-      )
+  def include_cards_dynamic(cards, binding, field \\ :cards, check_sideboard \\ false) do
+    cards_dynamic(cards, binding, field, check_sideboard, dynamic(true), :and)
+  end
+
+  def exclude_cards_dynamic(cards, binding, field \\ :cards, check_sideboard \\ false) do
+    cards_dynamic(cards, binding, field, check_sideboard, dynamic(true), :and_not)
+  end
+
+  defp cards_dynamic(cards, binding, field, check_sideboard, starting_dynamic, dynamic_combiner)
+       when dynamic_combiner in [:and, :and_not, :or] do
+    cards
+    |> Enum.reduce(starting_dynamic, fn card_id, dynamic ->
+      card_dynamic =
+        has_card_dynamic(card_id, binding, field) |> add_sideboard_dynamic(check_sideboard, card_id, binding)
+
+      combine_dynamics(dynamic, card_dynamic, dynamic_combiner)
     end)
   end
 
-  def include_any_cards_dynamic(cards, binding, field \\ :cards) do
-    cards
-    |> Enum.reduce(dynamic(false), fn card_id, dynamic ->
-      same_cards_subquery = same_card_ids_query(card_id)
-
-      dynamic(
-        [{^binding, d}],
-        ^dynamic or fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
-      )
-    end)
+  defp combine_dynamics(dynamic, other_dynamic, :and) do
+    dynamic(^dynamic and ^other_dynamic)
   end
 
-  def include_cards_dynamic(cards, binding, field \\ :cards) do
-    cards
-    |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
-      same_cards_subquery = same_card_ids_query(card_id)
+  defp combine_dynamics(dynamic, other_dynamic, :and_not) do
+    dynamic(^dynamic and not (^other_dynamic))
+  end
 
-      dynamic(
-        [{^binding, d}],
-        ^dynamic and fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
+  defp combine_dynamics(dynamic, other_dynamic, :or) do
+    dynamic(^dynamic or ^other_dynamic)
+  end
+
+  defp add_sideboard_dynamic(dynamic, false, _card_id, _binding), do: dynamic
+
+  defp add_sideboard_dynamic(dynamic, true, card_id, binding) do
+    sideboard_dynamic = sideboard_includes_dynamic(card_id, binding)
+    dynamic(^dynamic or ^sideboard_dynamic)
+  end
+
+  defp sideboard_includes_dynamic(card_id, deck_binding) do
+    same_cards_subquery = same_card_ids_query(card_id)
+
+    dynamic(
+      [{^deck_binding, d}],
+      fragment(
+        "ARRAY(SELECT (sb->>'card')::integer FROM unnest(?) as sb) && ?",
+        field(d, :sideboards),
+        subquery(same_cards_subquery)
       )
-    end)
+    )
+  end
+
+  defp has_card_dynamic(card_id, binding, field) do
+    same_cards_subquery = same_card_ids_query(card_id)
+    dynamic([{^binding, d}], fragment("? && ?", field(d, ^field), subquery(same_cards_subquery)))
   end
 
   def same_card_ids_query(card_id) do

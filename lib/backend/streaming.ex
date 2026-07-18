@@ -436,14 +436,14 @@ defmodule Backend.Streaming do
 
   defp compose_streamer_deck_query({"include_cards", [_ | _] = cards}, query) do
     query
-    |> Hearthstone.include_cards(cards, :deck)
+    |> Hearthstone.include_cards_in_deck(cards)
   end
 
   defp compose_streamer_deck_query({"include_cards", []}, query), do: query
 
   defp compose_streamer_deck_query({"exclude_cards", [_ | _] = cards}, query) do
     query
-    |> Hearthstone.exclude_cards(cards, :deck)
+    |> Hearthstone.exclude_cards_in_deck(cards)
   end
 
   defp compose_streamer_deck_query({"exclude_cards", %{} = cards}, query) do

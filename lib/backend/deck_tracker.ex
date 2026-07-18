@@ -1673,22 +1673,22 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"player_deck_includes", cards}, query) do
     query
-    |> Hearthstone.include_cards(cards, :player_deck)
+    |> Hearthstone.include_cards_in_deck(cards, :player_deck)
   end
 
   defp compose_games_query({"player_deck_excludes", cards}, query) do
     query
-    |> Hearthstone.exclude_cards(cards, :player_deck)
+    |> Hearthstone.exclude_cards_in_deck(cards, :player_deck)
   end
 
   defp compose_games_query({"fresh_player_deck_includes", cards}, query) do
     query
-    |> Hearthstone.include_cards(cards, :player_deck)
+    |> Hearthstone.include_cards_in_deck(cards, :player_deck)
   end
 
   defp compose_games_query({"fresh_player_deck_excludes", cards}, query) do
     query
-    |> Hearthstone.exclude_cards(cards, :player_deck)
+    |> Hearthstone.exclude_cards_in_deck(cards, :player_deck)
   end
 
   defp compose_games_query({"player_played_cards_includes", cards}, query) do
