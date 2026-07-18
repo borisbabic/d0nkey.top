@@ -868,37 +868,54 @@ defmodule Backend.Hearthstone do
   def exclude_cards_dynamic(cards, binding, field \\ :cards) do
     cards
     |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
-      same_cards_subquery = same_card_ids_query(card_id)
-
-      dynamic(
-        [{^binding, d}],
-        ^dynamic and not fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
-      )
+      dynamic(^dynamic and not ^has_card_dynamic(card_id, binding, field))
     end)
   end
 
   def include_any_cards_dynamic(cards, binding, field \\ :cards) do
     cards
     |> Enum.reduce(dynamic(false), fn card_id, dynamic ->
-      same_cards_subquery = same_card_ids_query(card_id)
-
-      dynamic(
-        [{^binding, d}],
-        ^dynamic or fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
-      )
+      dynamic(^dynamic or ^has_card_dynamic(card_id, binding, field))
     end)
   end
 
   def include_cards_dynamic(cards, binding, field \\ :cards) do
     cards
     |> Enum.reduce(dynamic(true), fn card_id, dynamic ->
-      same_cards_subquery = same_card_ids_query(card_id)
+      dynamic(^dynamic and ^has_card_dynamic(card_id, binding, field))
+    end)
+  end
 
+  # sideboards whose contents count for include/exclude card filters
+  @card_filter_sideboards [Card.etc_band_manager(), Card.king_of_the_underbelly()]
+
+  defp has_card_dynamic(card_id, binding, field) do
+    same_cards_subquery = same_card_ids_query(card_id)
+
+    in_cards =
       dynamic(
         [{^binding, d}],
-        ^dynamic and fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
+        fragment("? && ?", field(d, ^field), subquery(same_cards_subquery))
       )
-    end)
+
+    if field == :cards do
+      sideboard_same_cards_subquery = same_card_ids_query(card_id)
+
+      in_sideboards =
+        dynamic(
+          [{^binding, d}],
+          fragment(
+            "ARRAY(SELECT (sb->>'card')::integer FROM unnest(?) AS sb WHERE (sb->>'sideboard')::integer = ANY(?)) && ?",
+            field(d, :sideboards),
+            ^@card_filter_sideboards,
+            subquery(sideboard_same_cards_subquery)
+          )
+        )
+
+      dynamic(^in_cards or ^in_sideboards)
+    else
+      in_cards
+    end
   end
 
   def same_card_ids_query(card_id) do
