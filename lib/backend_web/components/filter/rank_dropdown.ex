@@ -3,11 +3,13 @@ defmodule Components.Filter.RankDropdown do
   use Surface.LiveComponent
   alias Components.LivePatchDropdown
   alias Hearthstone.DeckTracker
+  alias Backend.UserManager.User
   prop(title, :string, default: "Rank")
   prop(param, :string, default: "rank")
   prop(url_params, :map, from_context: {Components.LivePatchDropdown, :url_params})
   prop(path_params, :map, from_context: {Components.LivePatchDropdown, :path_params})
   prop(selected_params, :map, from_context: {Components.LivePatchDropdown, :selected_params})
+  prop(user, :map, from_context: :user)
   prop(filter_context, :atom, default: :public)
   prop(live_view, :module, required: true)
   prop(aggregated_only, :boolean, default: false)
@@ -17,7 +19,7 @@ defmodule Components.Filter.RankDropdown do
     ~F"""
     <span>
       <LivePatchDropdown
-        options={options(@filter_context, @aggregated_only)}
+        options={options(@filter_context, @aggregated_only, @user)}
         title={@title}
         param={@param}
         warning={@warning}
@@ -29,10 +31,10 @@ defmodule Components.Filter.RankDropdown do
     """
   end
 
-  def options(context, aggregated_only \\ false) do
+  def options(context, aggregated_only \\ false, user \\ nil) do
     aggregated = DeckTracker.aggregated_ranks()
 
-    for %{slug: slug, display: d} <- DeckTracker.ranks_for_filters(context),
+    for %{slug: slug, display: d} <- ranks(context, user),
         !aggregated_only or slug in aggregated do
       display =
         if slug in aggregated or context == :personal,
@@ -40,6 +42,16 @@ defmodule Components.Filter.RankDropdown do
           else: Components.Helper.warning_triangle(%{before: d})
 
       {slug, display}
+    end
+  end
+
+  defp ranks(context, user) do
+    ranks = DeckTracker.ranks_for_filters(context)
+
+    if User.premium?(user) do
+      ranks
+    else
+      Enum.reject(ranks, & &1.premium_only)
     end
   end
 

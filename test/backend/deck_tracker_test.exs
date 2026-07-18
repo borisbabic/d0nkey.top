@@ -330,7 +330,8 @@ defmodule Hearthstone.DeckTrackerTest do
     min_legend_rank: 42,
     order_priority: 69,
     min_rank: 42,
-    slug: "some slug"
+    slug: "some slug",
+    premium_only: false
   }
   @update_attrs %{
     auto_aggregate: false,
@@ -342,7 +343,8 @@ defmodule Hearthstone.DeckTrackerTest do
     max_rank: 43,
     min_legend_rank: 43,
     min_rank: 43,
-    slug: "some updated slug"
+    slug: "some updated slug",
+    premium_only: true
   }
   @invalid_attrs %{
     auto_aggregate: nil,
@@ -392,6 +394,7 @@ defmodule Hearthstone.DeckTrackerTest do
       assert rank.min_legend_rank == 42
       assert rank.min_rank == 42
       assert rank.slug == "some slug"
+      assert rank.premium_only == false
     end
 
     test "with invalid data returns error changeset" do
@@ -413,6 +416,7 @@ defmodule Hearthstone.DeckTrackerTest do
       assert rank.min_legend_rank == 43
       assert rank.min_rank == 43
       assert rank.slug == "some updated slug"
+      assert rank.premium_only == true
     end
 
     test "with invalid data returns error changeset" do

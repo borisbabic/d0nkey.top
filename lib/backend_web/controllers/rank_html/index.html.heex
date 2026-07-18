@@ -41,6 +41,11 @@
             <label>Default</label>
             <%= filter_boolean_input(:rank, :default, @conn.params) %>
           </div>
+
+          <div class="field">
+            <label>Premium only</label>
+            <%= filter_boolean_input(:rank, :premium_only, @conn.params) %>
+          </div>
         
         
         
@@ -106,6 +111,7 @@
 
               <th><%= table_link(@conn, "Order Priority", :order_priority) %></th>
               <th><%= table_link(@conn, "Default", :default) %></th>
+              <th><%= table_link(@conn, "Premium only", :premium_only) %></th>
             
             <th><span>Actions</span></th>
           </tr>
@@ -135,6 +141,8 @@
                 <td><%= rank.order_priority %></td>
 
                 <td><%= rank.default %></td>
+
+                <td><%= rank.premium_only %></td>
               
               <td class="torch-actions">
                 <span><.link href={~p"/torch/ranks/#{rank}"}><%= Torch.I18n.message("Show") %></.link></span>

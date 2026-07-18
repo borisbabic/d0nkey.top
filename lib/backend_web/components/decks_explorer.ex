@@ -350,6 +350,8 @@ defmodule Components.DecksExplorer do
 
     rank_factor =
       case params["rank"] do
+        "top_100" -> 0.1
+        "top_500" -> 0.2
         "top_legend" -> 0.3
         "top_5k" -> 0.5
         "legend" -> 0.8
