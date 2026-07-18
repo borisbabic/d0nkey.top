@@ -9,10 +9,10 @@
             <%= if @show_score do %>
                 <.th>Score</.th>
             <% end %>
-            <%= if @show_ongoing do %>
-                <.th class="ongoing_score_column"><abbr title="Ongoing Match Score">Ongoing</abbr></.th>
+            <%= if @matches? do %>
+                <.th class="ongoing_score_column"><abbr title="Ongoing Match Score">Match Score</abbr></.th>
             <% end %>
-            <%= if @show_ongoing do %>
+            <%= if @matches? do %>
                 <.th class="ongoing_opponent_column"><abbr title="Ongoing Match Opponent">Opponent</abbr></.th>
             <% end %>
             <%= if @show_earnings do %>
@@ -24,7 +24,7 @@
         </.trh>
     </.thead>
     <.tbody>
-    <%= for %{earnings: earnings, name_class: name_class, pre_name_cell: pre_name_cell, place: place, name: name, score: score, name_link: name_link, ongoing: ongoing, lineup: lineup, invited: invited} <- @standings do %>
+    <%= for %{earnings: earnings, name_class: name_class, pre_name_cell: pre_name_cell, place: place, name: name, score: score, name_link: name_link, match: match, lineup: lineup, invited: invited} <- @standings do %>
         <.trb>
             <.td><%= place %></.td>
             <%= if @show_invited do %>
@@ -38,13 +38,13 @@
             <%= if @show_score do %>
                 <.td><%=score%></.td>
             <% end %>
-            <%= if @show_ongoing do %>
-                    <%= if ongoing do %>
+            <%= if @matches? do %>
+                    <%= if match do %>
                         <.td>
-                            <a href={"#{ ongoing.match_url }"}> <%= ongoing.score %></a>
+                            <a href={"#{ match.match_url }"}> <%= match.score %></a>
                         </.td>
                         <.td>
-                            <a href={"#{ ongoing.opponent_link }"}> <%= render_player_name(ongoing.opponent, true) %></a>
+                            <a href={"#{ match.opponent_link }"}> <%= render_player_name(match.opponent, true) %></a>
                         </.td>
                     <% else %>
                         <.td></.td>

@@ -325,7 +325,7 @@ defmodule BackendWeb.BattlefyView do
   def do_render_tournament(params) do
     new_params =
       params
-      |> put_param(:ongoing, &calculate_ongoing/1)
+      |> put_param(:matches, &calculate_matches/1)
       |> put_param(:is_tour_stop, &tour_stop?/1)
       |> Map.put(:use_countries, true)
       |> handle_standings_or_bracket()
@@ -582,22 +582,26 @@ defmodule BackendWeb.BattlefyView do
     end)
   end
 
-  @spec calculate_ongoing(%{
+  @spec calculate_matches(%{
           matches: [Match.t()],
           show_ongoing: boolean,
           tournament: Battlefy.Tournament.t(),
           conn: Plug.Conn.t()
         }) :: map()
-  defp calculate_ongoing(
+  defp calculate_matches(
          %{
            matches: matches,
-           show_ongoing: true,
+           show_matches: sm,
+           show_ongoing: so,
            tournament: tournament,
            conn: conn
          } = params
-       ) do
+       )
+       when sm or so do
+    filter = if !sm and so, do: &Match.ongoing?/1, else: & &1
+
     matches
-    |> Enum.filter(&Match.ongoing?/1)
+    |> Enum.filter(filter)
     |> Enum.flat_map(fn %{top: t, bottom: b} = m ->
       [
         {
@@ -611,6 +615,7 @@ defmodule BackendWeb.BattlefyView do
                 tournament.id,
                 m.id
               ),
+            ongoing: Match.ongoing?(m),
             opponent: b |> MatchTeam.get_name(),
             opponent_link:
               Routes.battlefy_path(
@@ -633,6 +638,7 @@ defmodule BackendWeb.BattlefyView do
                 tournament.id,
                 m.id
               ),
+            ongoing: Match.ongoing?(m),
             opponent: t |> MatchTeam.get_name(),
             opponent_link:
               if t |> MatchTeam.get_name() do
@@ -653,7 +659,7 @@ defmodule BackendWeb.BattlefyView do
     |> Map.new()
   end
 
-  defp calculate_ongoing(_), do: Map.new()
+  defp calculate_matches(_), do: Map.new()
 
   defp stage_query_param(%{stage_id: stage_id}) when is_binary(stage_id),
     do: %{stage_id: stage_id}
@@ -688,7 +694,9 @@ defmodule BackendWeb.BattlefyView do
     }
   end
 
-  def ongoing_count(ongoing) do
+  def ongoing_count(matches) do
+    ongoing = matches |> Enum.filter(fn {_, %{ongoing: ongoing}} -> ongoing end)
+
     total = Enum.count(ongoing) |> div(2)
 
     not_nil_nil =
@@ -699,11 +707,11 @@ defmodule BackendWeb.BattlefyView do
     {total, not_nil_nil}
   end
 
-  def tournament_subtitle(%{tournament: tournament, ongoing: ongoing} = params) do
+  def tournament_subtitle(%{tournament: tournament, matches: matches} = params) do
     []
     |> add_duration_subtitle(tournament)
     |> add_player_count_subtitle(params)
-    |> add_ongoing_subtitle(ongoing)
+    |> add_ongoing_subtitle(matches)
     |> Enum.join(" ")
   end
 
@@ -749,10 +757,10 @@ defmodule BackendWeb.BattlefyView do
     |> Enum.count(& &1)
   end
 
-  def add_ongoing_subtitle(subtitles, ongoing) when ongoing == %{}, do: subtitles
+  def add_ongoing_subtitle(subtitles, matches) when matches == %{} or matches == [], do: subtitles
 
-  def add_ongoing_subtitle(subtitles, ongoing) do
-    {total_ongoing, not_nil_nil_ongoing} = ongoing_count(ongoing)
+  def add_ongoing_subtitle(subtitles, matches) do
+    {total_ongoing, not_nil_nil_ongoing} = ongoing_count(matches)
     subtitles ++ ["Ongoing: #{total_ongoing}", "Ongoing(not 0-0): #{not_nil_nil_ongoing}"]
   end
 
@@ -855,7 +863,7 @@ defmodule BackendWeb.BattlefyView do
            show_lineups: show_lineups,
            invited_mapset: invited_mapset,
            tournament: tournament,
-           ongoing: ongoing,
+           matches: matches,
            use_countries: use_countries,
            participants: participants
          } = params
@@ -901,7 +909,7 @@ defmodule BackendWeb.BattlefyView do
         score: "#{s.wins} - #{s.losses}",
         wins: s.wins,
         losses: s.losses,
-        ongoing: ongoing |> Map.get(s.team.name),
+        match: matches |> Map.get(s.team.name),
         invited: Helper.checkmark(%{show: invited?}),
         lineup: lineup
       }
@@ -915,7 +923,7 @@ defmodule BackendWeb.BattlefyView do
 
   defp create_tournament_dropdowns(params) do
     [view_mode_dropdown(params)]
-    |> add_ongoing_dropdown(params)
+    |> add_matches_dropdown(params)
     |> add_lineups_dropdown(params)
     |> add_earnings_dropdown(params)
     |> add_highlight_fantasy_dropdown(params)
@@ -1086,16 +1094,29 @@ defmodule BackendWeb.BattlefyView do
     }
   end
 
-  def add_ongoing_dropdown(dds, %{
+  def add_matches_dropdown(dds, %{
         conn: conn,
         tournament: tournament,
         show_ongoing: show_ongoing,
+        show_matches: show_matches,
         view_mode: "standings"
       }) do
     ongoing =
       {[
          %{
-           display: "Yes",
+           display: "All",
+           selected: show_matches,
+           link:
+             Routes.battlefy_path(
+               conn,
+               :tournament,
+               tournament.id,
+               Map.put(conn.query_params, "show_matches", "yes")
+               |> Map.delete("show_ongoing")
+             )
+         },
+         %{
+           display: "Ongoing",
            selected: show_ongoing,
            link:
              Routes.battlefy_path(
@@ -1103,25 +1124,27 @@ defmodule BackendWeb.BattlefyView do
                :tournament,
                tournament.id,
                Map.put(conn.query_params, "show_ongoing", "yes")
+               |> Map.delete("show_matches")
              )
          },
          %{
            display: "No",
-           selected: !show_ongoing,
+           selected: !show_ongoing and !show_matches,
            link:
              Routes.battlefy_path(
                conn,
                :tournament,
                tournament.id,
                Map.put(conn.query_params, "show_ongoing", "no")
+               |> Map.put("show_matches", "no")
              )
          }
-       ], "Show Ongoing"}
+       ], "Show Matches"}
 
     dds ++ [ongoing]
   end
 
-  def add_ongoing_dropdown(dds, _), do: dds
+  def add_matches_dropdown(dds, _), do: dds
 
   def get_earnings_dropdown(conn, tournament, show_earnings) do
     {[

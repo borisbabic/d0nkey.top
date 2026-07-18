@@ -50,11 +50,11 @@
 <%= if assigns[:standings] do %>
   <%= if Enum.any?(@highlighted_standings) do %>
       <div id="highlighted_standings">
-          <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: @highlighted_standings, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
+          <%= render("tournament_standings.html", matches?: @show_ongoing or @show_matches, show_score: @show_score, standings: @highlighted_standings, show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
           <br>
       </div>
   <% end %>
-  <%= render("tournament_standings.html", show_ongoing: @show_ongoing, show_score: @show_score, standings: assigns[:standings], show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
+  <%= render("tournament_standings.html", matches?: @show_ongoing or @show_matches, show_score: @show_score, standings: assigns[:standings], show_earnings: @show_earnings, conn: @conn, show_decks: @show_decks, show_invited: @show_invited) %>
 <% end %>
 <%= if assigns[:bracket] do %>
   <FunctionComponents.Battlefy.bracket bracket={@bracket} show_final={@show_final} lineups={@lineups} tournament_id={@tournament.id} render_decks={fn decks -> live_render(@conn, BackendWeb.CompactLineupOnly, session: %{"extra_decks" => Enum.map(decks, &Backend.Hearthstone.Deck.deckcode/1)}) end}/>

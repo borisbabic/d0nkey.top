@@ -18,6 +18,11 @@ defmodule BackendWeb.BattlefyController do
 
   defp ongoing?(_), do: false
 
+  defp matches?(%{"show_matches" => matches}) when is_binary(matches),
+    do: String.starts_with?(matches, "yes") or String.starts_with?(matches, "all")
+
+  defp matches?(_), do: false
+
   defp show_earnings?(%{"show_earnings" => earnings}) when is_binary(earnings),
     do: String.starts_with?(earnings, "yes")
 
@@ -238,54 +243,61 @@ defmodule BackendWeb.BattlefyController do
   defp add_matches_standings(existing, %{"stage_id" => stage_id} = params) do
     standings = Battlefy.get_stage_standings(stage_id)
 
-    {matches, show_ongoing} =
-      if ongoing?(params) do
-        {Battlefy.get_matches(stage_id), true}
-      else
-        {[], false}
-      end
+    base =
+      existing
+      |> Map.merge(%{
+        standings_raw: standings,
+        show_ongoing: ongoing?(params),
+        show_matches: matches?(params),
+        matches: [],
+        view_mode: "standings",
+        standings_stage_id: stage_id
+      })
 
-    existing
-    |> Map.merge(%{
-      standings_raw: standings,
-      matches: matches,
-      show_ongoing: show_ongoing,
-      view_mode: "standings",
-      standings_stage_id: stage_id
-    })
+    if fetch_matches?(base) do
+      base
+      |> Map.put(:matches, Battlefy.get_matches(stage_id))
+    else
+      base
+    end
   end
 
   defp add_matches_standings(%{tournament: tournament} = existing, params) do
+    base =
+      existing
+      |> Map.merge(%{
+        standings_raw: [],
+        matches: [],
+        standings_stage_id: nil,
+        view_mode: "standings",
+        show_ongoing: ongoing?(params),
+        show_matches: matches?(params)
+      })
+
     case Battlefy.get_tournament_standings_and_stage_id(tournament) do
       {:ok, {stage_id, standings}} ->
-        {matches, show_ongoing} =
-          if ongoing?(params) do
-            {Battlefy.get_tournament_matches(tournament), true}
+        matches =
+          if fetch_matches?(base) do
+            Battlefy.get_tournament_matches(tournament)
           else
-            {[], false}
+            []
           end
 
-        existing
+        base
         |> Map.merge(%{
           standings_raw: standings,
           matches: matches,
-          show_ongoing: show_ongoing,
           view_mode: "standings",
           standings_stage_id: stage_id
         })
 
       _ ->
-        existing
-        |> Map.merge(%{
-          standings_raw: [],
-          matches: [],
-          standings_stage_id: nil,
-          view_mode: "standings",
-          show_ongoing: ongoing?(params)
-        })
+        base
     end
   end
 
+  defp fetch_matches?(%{show_ongoing: so, show_matches: sm}), do: so or sm
+  defp fetch_matches?(_), do: false
   def get_highlight(params), do: multi_select_to_array(params["player"])
 
   def tournament_decks(conn, %{
