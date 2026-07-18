@@ -73,13 +73,25 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   end
 
   defp chef?(card_info) do
-    {_, [most_expensive | _]} = lowest_highest_cost_cards(card_info, :full_card)
-    Card.cost(most_expensive) <= 3 and "Chef Neth'rek" in card_info.card_names
+    "Chef Neth'rek" in card_info.card_names and
+      case lowest_highest_cost_cards(card_info, :full_card) do
+        {_, [most_expensive | _]} ->
+          Card.cost(most_expensive) <= 3
+
+        _ ->
+          false
+      end
   end
 
   defp rotten_food?(card_info) do
-    {_, [most_expensive | _]} = lowest_highest_cost_cards(card_info, :full_card)
-    Card.cost(most_expensive) > 3 and "Chef Neth'rek" in card_info.card_names
+    "Chef Neth'rek" in card_info.card_names and
+      case lowest_highest_cost_cards(card_info, :full_card) do
+        {_, [most_expensive | _]} ->
+          Card.cost(most_expensive) > 3
+
+        _ ->
+          false
+      end
   end
 
   @wide_buff [
