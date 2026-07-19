@@ -188,6 +188,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       igneous?(card_info) and odyn?(card_info) ->
         :"Igneous Odyn Warrior"
 
+      igneous?(card_info) ->
+        :"Igneous Warrior"
+
       odyn?(card_info) ->
         :"Odyn Warrior"
 
