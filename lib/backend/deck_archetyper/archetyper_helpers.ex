@@ -54,12 +54,26 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   def genn?(%{card_names: card_names}), do: "Genn Greymane" in card_names
 
   @spec min_count?(card_info :: card_info() | [String.t()], integer(), [String.t()]) :: boolean()
-  def min_count?(%{card_names: card_names}, min, cards) do
-    min_count?(card_names, min, cards)
+  def min_count?(card_info_or_names, min, cards) do
+    min <= count_cards(card_info_or_names, cards)
   end
 
-  def min_count?(card_names, min, cards) do
-    min <= cards |> Enum.count(&(&1 in card_names))
+  @spec count_cards(card_info :: card_info() | [String.t()], [String.t()]) :: boolean()
+  def count_cards(%{card_names: card_names}, cards) do
+    count_cards(card_names, cards)
+  end
+
+  def count_cards(card_names, cards) do
+    Enum.count(cards, fn
+      card_name when is_binary(card_name) ->
+        card_name in card_names
+
+      bool when is_boolean(bool) ->
+        bool
+
+      fun when is_function(fun, 0) ->
+        fun.()
+    end)
   end
 
   @spec all_odd?(card_info()) :: boolean()

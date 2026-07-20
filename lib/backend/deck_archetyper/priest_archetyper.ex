@@ -11,6 +11,9 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       egg_priest?(card_info) ->
         :"Egg Priest"
 
+      soothsayer?(card_info) ->
+        :"Soothsayer Priest"
+
       control_priest?(card_info) ->
         :"Control Priest"
 
@@ -47,6 +50,15 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp soothsayer?(card_info) do
+    calia_check = fn ->
+      {_, highest} = lowest_highest_cost_cards(card_info, :name)
+      "Soothsayer" in highest and "Calia Menethil" in card_info.card_names
+    end
+
+    "Soothsayer" in card_info.card_names and min_count?(card_info, 2, ["Schism", "Undeath Sentence", calia_check])
   end
 
   defp handbuff_priest?(card_info) do
