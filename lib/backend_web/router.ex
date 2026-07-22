@@ -59,6 +59,12 @@ defmodule BackendWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  pipeline :developer_api do
+    plug(:accepts, ["json"])
+    plug(BackendWeb.Plug.ApiKeyAuth)
+    plug(BackendWeb.Plug.ApiRateLimit)
+  end
+
   # defp api_auth(conn, _opts) do
   #   with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
   #        {:ok, api_user} <- Backend.Api.verify_user(user, pass) do
@@ -131,6 +137,18 @@ defmodule BackendWeb.Router do
     get("/cards/metadata", CardsController, :metadata)
   end
 
+  scope "/api/v1", BackendWeb do
+    pipe_through([:developer_api])
+    get("/meta", DeveloperStatsController, :meta)
+    get("/archetypes", DeveloperStatsController, :archetypes)
+    get("/archetypes/:archetype", DeveloperStatsController, :archetype)
+    get("/decks", DeveloperDeckController, :index)
+    get("/streamers", DeveloperStreamingController, :streamers)
+    get("/streamers/:twitch_login/decks", DeveloperStreamingController, :streamer_decks)
+    get("/streamer-decks", DeveloperStreamingController, :streamer_decks)
+    get("/streams/live", DeveloperStreamingController, :live_streams)
+  end
+
   scope "/admin", BackendWeb do
     pipe_through([:browser, :auth, :super_admin])
     oban_dashboard("/oban")
@@ -178,6 +196,7 @@ defmodule BackendWeb.Router do
     live("/", FeedLive)
     get("/incubator", PageController, :incubator)
     get("/about", PageController, :about)
+    get("/api-docs", PageController, :api_docs)
     get("/donate-follow", PageController, :donate_follow)
     get("/privacy", PageController, :privacy)
 

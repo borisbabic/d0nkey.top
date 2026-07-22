@@ -5,10 +5,13 @@ defmodule Backend.Api do
 
   import Ecto.Query, warn: false
   alias Backend.Repo
+  alias Ecto.Multi
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
 
   alias Backend.Api.ApiUser
+  alias Backend.Api.DeveloperApiKey
+  alias Backend.UserManager.User
 
   @pagination [page_size: 15]
   @pagination_distance 5
@@ -177,4 +180,118 @@ defmodule Backend.Api do
       _ -> {:error, :unknown_error}
     end
   end
+
+  @doc """
+  Creates a new developer API key and revokes the user's previous key.
+
+  The plaintext token is returned once and is never persisted.
+  """
+  @spec create_developer_api_key(User.t()) ::
+          {:ok, %{api_key: DeveloperApiKey.t(), token: String.t()}} | {:error, term()}
+  def create_developer_api_key(%User{id: user_id}) do
+    token_prefix = "hsg_live_" <> random_token(9)
+    secret = random_token(32)
+    token = token_prefix <> "." <> secret
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    attrs = %{
+      user_id: user_id,
+      token_prefix: token_prefix,
+      token_digest: token_digest(secret)
+    }
+
+    Multi.new()
+    |> Multi.run(:user, fn repo, _changes ->
+      case repo.one(from u in User, where: u.id == ^user_id, lock: "FOR UPDATE") do
+        %User{} = user -> {:ok, user}
+        nil -> {:error, :user_not_found}
+      end
+    end)
+    |> Multi.update_all(
+      :revoked_keys,
+      active_developer_api_keys_query(user_id),
+      set: [revoked_at: now, updated_at: now]
+    )
+    |> Multi.insert(:api_key, DeveloperApiKey.changeset(%DeveloperApiKey{}, attrs))
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{api_key: api_key}} -> {:ok, %{api_key: api_key, token: token}}
+      {:error, _operation, reason, _changes} -> {:error, reason}
+    end
+  end
+
+  @doc "Returns the user's active developer API key, if one exists."
+  @spec get_active_developer_api_key(User.t()) :: DeveloperApiKey.t() | nil
+  def get_active_developer_api_key(%User{id: user_id}) do
+    user_id
+    |> active_developer_api_keys_query()
+    |> Repo.one()
+  end
+
+  @doc "Revokes the developer API key owned by the given user."
+  @spec revoke_developer_api_key(User.t()) :: :ok | {:error, term()}
+  def revoke_developer_api_key(%User{id: user_id}) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    Multi.new()
+    |> Multi.run(:user, fn repo, _changes ->
+      case repo.one(from u in User, where: u.id == ^user_id, lock: "FOR UPDATE") do
+        %User{} = user -> {:ok, user}
+        nil -> {:error, :user_not_found}
+      end
+    end)
+    |> Multi.update_all(
+      :revoked_keys,
+      active_developer_api_keys_query(user_id),
+      set: [revoked_at: now, updated_at: now]
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, _changes} -> :ok
+      {:error, _operation, reason, _changes} -> {:error, reason}
+    end
+  end
+
+  @doc "Verifies an active developer API key and loads its owner."
+  @spec verify_developer_api_key(String.t()) ::
+          {:ok, DeveloperApiKey.t()} | {:error, :invalid_api_key}
+  def verify_developer_api_key(token) when is_binary(token) do
+    with {:ok, token_prefix, secret} <- parse_developer_api_key(token),
+         %DeveloperApiKey{} = api_key <- developer_api_key_by_prefix(token_prefix),
+         true <- Plug.Crypto.secure_compare(api_key.token_digest, token_digest(secret)) do
+      {:ok, api_key}
+    else
+      _ -> {:error, :invalid_api_key}
+    end
+  end
+
+  def verify_developer_api_key(_), do: {:error, :invalid_api_key}
+
+  defp active_developer_api_keys_query(user_id) do
+    from key in DeveloperApiKey,
+      where: key.user_id == ^user_id and is_nil(key.revoked_at)
+  end
+
+  defp developer_api_key_by_prefix(token_prefix) do
+    from(key in DeveloperApiKey,
+      join: user in assoc(key, :user),
+      where: key.token_prefix == ^token_prefix and is_nil(key.revoked_at),
+      preload: [user: user]
+    )
+    |> Repo.one()
+  end
+
+  defp parse_developer_api_key("hsg_live_" <> _ = token) do
+    case String.split(token, ".", parts: 2) do
+      [token_prefix, secret] when secret != "" -> {:ok, token_prefix, secret}
+      _ -> {:error, :invalid_api_key}
+    end
+  end
+
+  defp parse_developer_api_key(_), do: {:error, :invalid_api_key}
+
+  defp random_token(bytes),
+    do: bytes |> :crypto.strong_rand_bytes() |> Base.url_encode64(padding: false)
+
+  defp token_digest(secret), do: :crypto.hash(:sha256, secret)
 end

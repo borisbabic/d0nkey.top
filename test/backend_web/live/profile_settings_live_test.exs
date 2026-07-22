@@ -14,7 +14,28 @@ defmodule BackendWeb.ProfileSettingsLiveTest do
     assert html =~ "Profile"
     assert html =~ "Settings"
     assert html =~ "Country Flag"
-    assert html =~ "Save"
+    assert html =~ ~s(id="profile_settings_form")
+    assert html =~ "Developer API"
+    assert html =~ "Generate API Key"
+    assert html =~ "/api-docs"
+  end
+
+  @tag :authenticated
+  test "creates, rotates, and revokes a developer API key", %{conn: conn, user: user} do
+    {:ok, view, _html} = live(conn, "/profile/settings")
+
+    assert view |> element("#generate-api-key") |> render_click() =~ "Copy this key now"
+    assert has_element?(view, "#new-api-key-value")
+
+    first_key = Backend.Api.get_active_developer_api_key(user)
+    assert first_key
+
+    assert view |> element("#rotate-api-key") |> render_click() =~ "Copy this key now"
+    second_key = Backend.Api.get_active_developer_api_key(user)
+    refute first_key.id == second_key.id
+
+    assert view |> element("#revoke-api-key") |> render_click() =~ "Generate API Key"
+    assert Backend.Api.get_active_developer_api_key(user) == nil
   end
 
   @tag :authenticated

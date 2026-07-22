@@ -81,4 +81,44 @@ defmodule Backend.ApiTest do
       assert %Ecto.Changeset{} = Api.change_api_user(api_user)
     end
   end
+
+  describe "developer API keys" do
+    test "creates a one-time key without persisting its plaintext secret" do
+      user = create_temp_user()
+
+      assert {:ok, %{api_key: api_key, token: token}} = Api.create_developer_api_key(user)
+      assert String.starts_with?(token, api_key.token_prefix <> ".")
+      refute api_key.token_digest == token
+
+      assert {:ok, verified} = Api.verify_developer_api_key(token)
+      assert verified.id == api_key.id
+      assert verified.user_id == user.id
+    end
+
+    test "rotating a key revokes the previous token" do
+      user = create_temp_user()
+      {:ok, %{api_key: first_key, token: first_token}} = Api.create_developer_api_key(user)
+
+      assert {:ok, %{api_key: second_key, token: second_token}} =
+               Api.create_developer_api_key(user)
+
+      refute first_key.id == second_key.id
+      assert {:error, :invalid_api_key} = Api.verify_developer_api_key(first_token)
+      assert {:ok, verified} = Api.verify_developer_api_key(second_token)
+      assert verified.id == second_key.id
+      assert Api.get_active_developer_api_key(user).id == second_key.id
+    end
+
+    test "revokes only the key owned by the supplied user" do
+      first_user = create_temp_user()
+      second_user = create_temp_user()
+      {:ok, %{token: first_token}} = Api.create_developer_api_key(first_user)
+      {:ok, %{api_key: second_key, token: second_token}} = Api.create_developer_api_key(second_user)
+
+      assert :ok = Api.revoke_developer_api_key(first_user)
+      assert {:error, :invalid_api_key} = Api.verify_developer_api_key(first_token)
+      assert {:ok, verified} = Api.verify_developer_api_key(second_token)
+      assert verified.id == second_key.id
+    end
+  end
 end

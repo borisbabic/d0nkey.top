@@ -12,6 +12,7 @@ defmodule Backend.Application do
       [
         # Start the Ecto repository
         Backend.Repo,
+        Backend.Api.RateLimiter,
         # Start the endpoint when the application starts
         {Phoenix.PubSub, name: Backend.PubSub},
         Backend.Telemetry,

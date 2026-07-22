@@ -1622,10 +1622,10 @@ defmodule Hearthstone.DeckTracker do
     do: query |> order_by([game: g], desc: max(g.inserted_at))
 
   defp compose_games_query({"order_by", "newest_deck"}, %{group_bys: []} = query),
-    do: query |> order_by([player_deck: d], desc: d.inserted_at)
+    do: query |> order_by([player_deck: d], desc: d.inserted_at, desc: d.id)
 
   defp compose_games_query({"order_by", "newest_deck"}, query),
-    do: query |> order_by([player_deck: d], desc: max(d.inserted_at))
+    do: query |> order_by([player_deck: d], desc: max(d.inserted_at), desc: max(d.id))
 
   defp compose_games_query({"order_by", "oldest_deck"}, %{group_bys: []} = query),
     do: query |> order_by([player_deck: d], asc: d.inserted_at)
@@ -1665,6 +1665,15 @@ defmodule Hearthstone.DeckTracker do
 
   defp compose_games_query({"deck_format", deck_format}, query),
     do: query |> where([player_deck: pd], pd.format == ^deck_format)
+
+  defp compose_games_query({:before_deck, {inserted_at, id}}, query) do
+    query
+    |> where(
+      [player_deck: deck],
+      deck.inserted_at < ^inserted_at or
+        (deck.inserted_at == ^inserted_at and deck.id < ^id)
+    )
+  end
 
   defp compose_games_query({"includes_latest_set", "yes"}, query) do
     query

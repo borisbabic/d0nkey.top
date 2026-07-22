@@ -19,6 +19,10 @@ defmodule BackendWeb.PageController do
     render(conn, "about.html")
   end
 
+  def api_docs(conn, _params) do
+    render(conn, "api_docs.html", page_title: "HSGuru Developer API")
+  end
+
   def privacy(conn, _params) do
     render(conn, "privacy.html")
   end
