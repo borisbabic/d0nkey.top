@@ -1,17 +1,24 @@
 defmodule BackendWeb.ProfileSettingsLive do
   @moduledoc false
   use BackendWeb, :surface_live_view
+  alias Backend.Api
+  alias Backend.CollectionManager.Collection
   alias Backend.Streaming
   alias Backend.UserManager
   alias Backend.UserManager.User
-  alias Backend.CollectionManager.Collection
   alias Backend.UserManager.User.DecklistOptions
 
   data(user, :map)
   data(custom_hues, :boolean, default: false)
+  data(api_key, :any, default: nil)
+  data(revealed_api_key, :string, default: nil)
 
   def mount(_params, session, socket) do
-    {:ok, assign_defaults(socket, session) |> put_user_in_context() |> assign_custom_hues()}
+    {:ok,
+     assign_defaults(socket, session)
+     |> put_user_in_context()
+     |> assign_custom_hues()
+     |> assign_developer_api_key()}
   end
 
   def render(assigns) do
@@ -178,6 +185,45 @@ defmodule BackendWeb.ProfileSettingsLive do
             </div>
           </div>
 
+          <!-- Section: Developer API -->
+          <div class="tw-p-6 has-background-dark tw-border tw-border-slate-800 tw-rounded-xl tw-space-y-4">
+            <div class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3 tw-border-b tw-border-slate-800 tw-pb-3">
+              <div>
+                <h3 class="tw-text-lg tw-font-bold text-white">Developer API</h3>
+                <p class="tw-text-xs tw-text-slate-400 tw-mt-1">Use an API key to access public HSGuru statistics and deck data.</p>
+              </div>
+              <a class="button is-small is-info is-outlined" href={~p"/api-docs"}>Open API Docs</a>
+            </div>
+
+            <div :if={@revealed_api_key} id="new-api-key" class="tw-rounded-lg tw-border tw-border-amber-500/50 tw-bg-amber-950/20 tw-p-4 tw-space-y-3">
+              <div>
+                <p class="tw-font-semibold tw-text-amber-200">Copy this key now</p>
+                <p class="tw-text-xs tw-text-amber-100/70">For security, the complete key will not be shown again.</p>
+              </div>
+              <div class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-2">
+                <code id="new-api-key-value" class="tw-flex-1 tw-break-all tw-rounded tw-bg-black/40 tw-p-3 tw-text-xs tw-text-emerald-300">{@revealed_api_key}</code>
+                <button type="button" class="clip-btn-value button is-info" data-clipboard-text={@revealed_api_key}>Copy API Key</button>
+              </div>
+            </div>
+
+            <div :if={@api_key} id="active-api-key" class="tw-flex tw-flex-col md:tw-flex-row md:tw-items-center md:tw-justify-between tw-gap-4 tw-rounded-lg tw-bg-black/20 tw-p-4">
+              <div>
+                <span class="tw-block tw-text-sm tw-font-semibold text-white">Active key</span>
+                <code class="tw-text-sm tw-text-slate-300">{masked_api_key(@api_key)}</code>
+                <span class="tw-block tw-text-xs tw-text-slate-500 tw-mt-1">Created {api_key_created_at(@api_key)}</span>
+              </div>
+              <div class="tw-flex tw-gap-2">
+                <button id="rotate-api-key" type="button" :on-click="rotate_api_key" data-confirm="Rotate this API key? The current key will stop working immediately." class="button is-small is-warning is-outlined">Rotate</button>
+                <button id="revoke-api-key" type="button" :on-click="revoke_api_key" data-confirm="Revoke this API key? Applications using it will lose access immediately." class="button is-small is-danger is-outlined">Revoke</button>
+              </div>
+            </div>
+
+            <div :if={!@api_key} id="no-api-key" class="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center sm:tw-justify-between tw-gap-3 tw-rounded-lg tw-bg-black/20 tw-p-4">
+              <p class="tw-text-sm tw-text-slate-400">No API key has been created for this Battle.net account.</p>
+              <button id="generate-api-key" type="button" :on-click="generate_api_key" class="button is-info">Generate API Key</button>
+            </div>
+          </div>
+
           <!-- Section: Misc -->
           <div class="tw-p-6 has-background-dark tw-border tw-border-slate-800 tw-rounded-xl tw-space-y-4">
             <h3 class="tw-text-lg tw-font-bold text-white tw-border-b tw-border-slate-800 tw-pb-2">Misc Settings</h3>
@@ -261,6 +307,32 @@ defmodule BackendWeb.ProfileSettingsLive do
     {:noreply, socket |> assign(:user, updated)}
   end
 
+  def handle_event("generate_api_key", _, %{assigns: %{user: %User{} = user}} = socket) do
+    create_developer_api_key(socket, user)
+  end
+
+  def handle_event("rotate_api_key", _, %{assigns: %{user: %User{} = user}} = socket) do
+    create_developer_api_key(socket, user)
+  end
+
+  def handle_event("revoke_api_key", _, %{assigns: %{user: %User{} = user}} = socket) do
+    case Api.revoke_developer_api_key(user) do
+      :ok ->
+        {:noreply,
+         socket
+         |> assign(api_key: nil, revealed_api_key: nil)
+         |> put_flash(:info, "API key revoked")}
+
+      {:error, _reason} ->
+        {:noreply, put_flash(socket, :error, "Could not revoke API key")}
+    end
+  end
+
+  def handle_event(event, _, socket)
+      when event in ["generate_api_key", "rotate_api_key", "revoke_api_key"] do
+    {:noreply, put_flash(socket, :error, "Sign in with Battle.net to manage an API key")}
+  end
+
   def handle_event("submit", attrs_raw, %{assigns: %{user: user}} = socket) do
     attrs =
       attrs_raw
@@ -285,6 +357,33 @@ defmodule BackendWeb.ProfileSettingsLive do
     negative = User.negative_hue(user, nil)
     custom_hues = !(positive in values) or !(negative in values)
     assign(socket, custom_hues: custom_hues)
+  end
+
+  def assign_developer_api_key(%{assigns: %{user: %User{} = user}} = socket) do
+    assign(socket, :api_key, Api.get_active_developer_api_key(user))
+  end
+
+  def assign_developer_api_key(socket), do: assign(socket, :api_key, nil)
+
+  def masked_api_key(%{token_prefix: token_prefix}), do: token_prefix <> ".••••••••"
+
+  def api_key_created_at(%{inserted_at: %NaiveDateTime{} = inserted_at}) do
+    Calendar.strftime(inserted_at, "%B %d, %Y")
+  end
+
+  def api_key_created_at(_), do: "recently"
+
+  defp create_developer_api_key(socket, user) do
+    case Api.create_developer_api_key(user) do
+      {:ok, %{api_key: api_key, token: token}} ->
+        {:noreply,
+         socket
+         |> assign(api_key: api_key, revealed_api_key: token)
+         |> put_flash(:info, "API key created")}
+
+      {:error, _reason} ->
+        {:noreply, put_flash(socket, :error, "Could not create an API key")}
+    end
   end
 
   defp parse_int(attrs, keys) do

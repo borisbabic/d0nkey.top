@@ -16,6 +16,9 @@ defmodule BackendWeb.NavTest do
     for link <- @logged_in_links do
       refute response =~ link
     end
+
+    assert response =~ ~s(href="/api-docs")
+    assert response =~ "API Docs"
   end
 
   @tag :authenticated

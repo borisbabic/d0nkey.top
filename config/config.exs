@@ -70,6 +70,10 @@ config :backend, Backend.UserManager.Guardian,
   ttl: {60 * 60 * 24 * 365, :seconds},
   secret_key: "CyjJAVTbtJgJwS+NbkbTpVTPDJeMKqcn+GakxrO4E5j/kB3SgcgF3CqfsxpxzQKM"
 
+config :backend, :developer_api,
+  rate_limit: 60,
+  window_ms: :timer.minutes(1)
+
 config :kaffy,
   otp_app: :backend,
   ecto_repo: Backend.Repo,

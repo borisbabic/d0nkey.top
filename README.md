@@ -73,6 +73,35 @@ If you get an :eacces error that mentions `$PROJECT_DIR/_build/tailwind-linux-x6
 
 
 ## API
+### Developer API
+
+The versioned Developer API exposes the public aggregate data used by the Meta,
+Archetype, and Decks pages. Sign in with Battle.net and create a key from
+`/profile/settings`, then read the complete documentation at
+`/api-docs`.
+
+```text
+Authorization: Bearer hsg_live_<prefix>.<secret>
+```
+
+The API also accepts the key in `X-API-Key`. Plaintext keys are shown once and
+are never stored. Each key is independently rate limited; the default is 60
+requests per minute.
+
+Available endpoints:
+
+- `GET /api/v1/meta`
+- `GET /api/v1/archetypes`
+- `GET /api/v1/archetypes/:archetype`
+- `GET /api/v1/decks`
+- `GET /api/v1/streamers`
+- `GET /api/v1/streamers/:twitch_login/decks`
+- `GET /api/v1/streamer-decks`
+- `GET /api/v1/streams/live`
+
+Only filters backed by public aggregate tables are available. Personal games,
+`region`, and `force_fresh` remain outside the public v1 contract.
+
 ### Resources
 #### Deck Info
 `archetype`: the deck archetype, without runes or XL

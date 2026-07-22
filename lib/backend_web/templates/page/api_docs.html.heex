@@ -1,0 +1,237 @@
+<div class="tw-max-w-7xl tw-mx-auto tw-px-4 sm:tw-px-6 tw-py-8 tw-font-sans tw-text-slate-300">
+  <section class="tw-relative tw-overflow-hidden tw-rounded-2xl tw-border tw-border-slate-800 tw-bg-slate-950/80 tw-p-6 md:tw-p-10 tw-mb-8">
+    <div class="tw-absolute tw-inset-0 tw-bg-gradient-to-br tw-from-cyan-500/10 tw-via-transparent tw-to-violet-500/10 tw-pointer-events-none"></div>
+    <div class="tw-relative tw-max-w-3xl">
+      <div class="tw-flex tw-items-center tw-gap-3 tw-mb-4">
+        <span class="tw-rounded-full tw-bg-cyan-500/15 tw-px-3 tw-py-1 tw-text-xs tw-font-semibold tw-text-cyan-300">API v1</span>
+        <span class="tw-text-xs tw-text-slate-500">Public aggregated Hearthstone data</span>
+      </div>
+      <h1 class="tw-text-3xl md:tw-text-5xl tw-font-bold tw-tracking-tight tw-text-white">HSGuru Developer API</h1>
+      <p class="tw-mt-4 tw-text-base md:tw-text-lg tw-leading-7 tw-text-slate-400">
+        Build tools with the same public data used by the HSGuru Meta, Archetype, Decks, and Streaming pages.
+      </p>
+      <div class="tw-mt-6 tw-flex tw-flex-wrap tw-gap-3">
+        <a href={~p"/profile/settings"} class="button is-info">Manage API Key</a>
+        <a href="#quick-start" class="button is-dark">Quick Start</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-[240px_minmax(0,1fr)] tw-gap-8">
+    <aside class="lg:tw-sticky lg:tw-top-4 lg:tw-self-start">
+      <nav aria-label="API documentation" class="tw-rounded-xl tw-border tw-border-slate-800 tw-bg-slate-950/60 tw-p-4">
+        <p class="tw-px-3 tw-pb-2 tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-slate-500">On this page</p>
+        <div class="tw-grid tw-grid-cols-2 sm:tw-grid-cols-3 lg:tw-grid-cols-1 tw-gap-1 tw-text-sm">
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#quick-start">Quick Start</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#authentication">Authentication</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#rate-limits">Rate Limits</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#response-format">Response Format</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#meta">Meta</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#archetypes">Archetypes</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#archetype-stats">Archetype Stats</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#decks">New Decks</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#streamers">Streamers</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#streamer-decks">Streamer Decks</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#live-streams">Live Streams</a>
+          <a class="tw-rounded-lg tw-px-3 tw-py-2 hover:tw-bg-slate-800 hover:tw-text-white" href="#errors">Errors</a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="tw-min-w-0 tw-space-y-10">
+      <section id="quick-start" class="tw-scroll-mt-6">
+        <h2 class="tw-text-2xl tw-font-bold tw-text-white">Quick Start</h2>
+        <p class="tw-mt-2 tw-text-slate-400">Sign in with Battle.net, generate a key in Profile Settings, and send it as a Bearer token.</p>
+        <div class="tw-mt-4 tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 tw-bg-black/40 tw-p-4">
+          <pre class="tw-m-0 tw-text-sm tw-leading-6 tw-text-emerald-300"><code>curl "https://www.hsguru.com/api/v1/meta?format=2&amp;rank=legend" \
+  -H "Authorization: Bearer hsg_live_your_key"</code></pre>
+        </div>
+        <p class="tw-mt-3 tw-text-sm tw-text-slate-500">All successful responses use a top-level <code class="tw-text-cyan-300">data</code> property.</p>
+      </section>
+
+      <section id="authentication" class="tw-scroll-mt-6 tw-rounded-xl tw-border tw-border-slate-800 tw-bg-slate-950/40 tw-p-6">
+        <h2 class="tw-text-2xl tw-font-bold tw-text-white">Authentication</h2>
+        <p class="tw-mt-2 tw-text-slate-400">API keys belong to your Battle.net account. The complete key is displayed once and can be rotated or revoked from Profile Settings.</p>
+        <div class="tw-mt-4 tw-grid md:tw-grid-cols-2 tw-gap-4">
+          <div class="tw-rounded-lg tw-bg-black/30 tw-p-4">
+            <p class="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-slate-500">Recommended</p>
+            <code class="tw-mt-2 tw-block tw-break-all tw-text-sm tw-text-cyan-300">Authorization: Bearer &lt;api-key&gt;</code>
+          </div>
+          <div class="tw-rounded-lg tw-bg-black/30 tw-p-4">
+            <p class="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-slate-500">Alternative</p>
+            <code class="tw-mt-2 tw-block tw-break-all tw-text-sm tw-text-cyan-300">X-API-Key: &lt;api-key&gt;</code>
+          </div>
+        </div>
+      </section>
+
+      <section id="rate-limits" class="tw-scroll-mt-6">
+        <h2 class="tw-text-2xl tw-font-bold tw-text-white">Rate Limits</h2>
+        <p class="tw-mt-2 tw-text-slate-400">Each key is limited to 60 requests per minute by default. Limits may be adjusted as the API evolves.</p>
+        <div class="tw-mt-4 tw-grid sm:tw-grid-cols-2 xl:tw-grid-cols-4 tw-gap-3">
+          <.api_doc_metric name="X-RateLimit-Limit" description="Requests allowed per window" />
+          <.api_doc_metric name="X-RateLimit-Remaining" description="Requests left in this window" />
+          <.api_doc_metric name="X-RateLimit-Reset" description="Seconds until reset" />
+          <.api_doc_metric name="Retry-After" description="Wait time after a 429 response" />
+        </div>
+      </section>
+
+      <section id="response-format" class="tw-scroll-mt-6 tw-rounded-xl tw-border tw-border-slate-800 tw-bg-slate-950/40 tw-p-6">
+        <h2 class="tw-text-2xl tw-font-bold tw-text-white">Response Format</h2>
+        <p class="tw-mt-2 tw-text-slate-400">
+          Successful responses use a top-level <code class="tw-text-cyan-300">data</code> property. Win rates are ratios from 0 to 1, timestamps use ISO 8601, and unavailable values are returned as <code class="tw-text-cyan-300">null</code>.
+        </p>
+        <div class="tw-mt-4 tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 tw-bg-black/40 tw-p-4">
+          <pre class="tw-m-0 tw-text-sm tw-leading-6 tw-text-emerald-300"><code>{Jason.encode!(%{data: %{streamer_decks: [%{streamer: %{login: "thijs"}, deck: %{id: 123, deckcode: "AAECA..."}, performance: %{wins: 18, losses: 12, winrate: 0.6}}], pagination: %{limit: 50, offset: 0, next_offset: 50}}}, pretty: true)}</code></pre>
+        </div>
+      </section>
+
+      <section id="meta" class="tw-scroll-mt-6">
+        <.api_doc_endpoint method="GET" path="/api/v1/meta" summary="Archetype win rates, popularity, game counts, duration, turns, and climbing speed." />
+        <.api_doc_parameters rows={[
+          {"format", "integer", "Hearthstone format. Standard is 2 and Wild is 1."},
+          {"period", "string", "An available aggregate period slug."},
+          {"rank", "string", "Rank bracket such as legend, top_legend, or another available public rank slug."},
+          {"opponent_class[]", "string[]", "One or more opponent classes."},
+          {"min_games", "integer", "Minimum archetype sample size. Default: 1000."},
+          {"player_has_coin", "enum", "any, yes, or no."},
+          {"sort_by", "enum", "winrate, total, turns, duration, or climbing_speed."}
+        ]} />
+        <p class="tw-mt-3 tw-text-sm tw-text-slate-500">Array filters accept up to 25 values. Do not combine <code class="tw-text-cyan-300">any</code> with specific classes.</p>
+      </section>
+
+      <section id="archetypes" class="tw-scroll-mt-6">
+        <.api_doc_endpoint method="GET" path="/api/v1/archetypes" summary="All currently aggregated Standard and Wild archetypes used by HSGuru filters." />
+        <.api_doc_parameters rows={[
+          {"format", "integer|string", "Optional. Use 2 or standard, 1 or wild. Omit it to return both formats."}
+        ]} />
+      </section>
+
+      <section id="archetype-stats" class="tw-scroll-mt-6">
+        <.api_doc_endpoint method="GET" path="/api/v1/archetypes/:archetype" summary="Overall stats, class matchups, and card performance for one archetype." />
+        <.api_doc_parameters rows={[
+          {"format", "integer", "Standard is 2 and Wild is 1."},
+          {"period", "string", "An available aggregate period slug."},
+          {"rank", "string", "An available rank slug."},
+          {"opponent_class", "string", "Limit results to one opponent class."},
+          {"player_has_coin", "enum", "any, yes, or no."},
+          {"min_mull_count", "integer", "Minimum mulligan sample size."},
+          {"min_drawn_count", "integer", "Minimum drawn sample size."},
+          {"sort_by", "enum", "card, mull_impact, mull_count, drawn_impact, drawn_count, kept_impact, kept_count, not_drawn_impact, or not_drawn_count."},
+          {"sort_direction", "enum", "asc or desc."}
+        ]} />
+      </section>
+
+      <section id="decks" class="tw-scroll-mt-6">
+        <.api_doc_endpoint method="GET" path="/api/v1/decks" summary="A cursor-paginated feed of the newest decks visible through public HSGuru aggregates." />
+        <div class="tw-mt-4 tw-rounded-lg tw-border tw-border-cyan-900/60 tw-bg-cyan-950/20 tw-p-4 tw-text-sm tw-text-cyan-100/80">
+          Results are always ordered by deck creation time and ID. Use <code class="tw-text-cyan-300">pagination.next_cursor</code> unchanged to request the next page.
+        </div>
+        <.api_doc_parameters rows={[
+          {"format", "integer|string", "Standard (2) or Wild (1)."},
+          {"period", "string", "An available aggregate period slug."},
+          {"rank", "string", "An available rank slug."},
+          {"player_class[]", "string[]", "One or more player classes."},
+          {"opponent_class[]", "string[]", "One or more opponent classes, or any."},
+          {"player_deck_archetype[]", "string[]", "One or more deck archetypes."},
+          {"player_has_coin", "enum", "any, yes, or no."},
+          {"min_games", "integer", "Minimum sample size. Default: 200; minimum: 50."},
+          {"min_winrate", "number", "Minimum win rate as a ratio or percentage."},
+          {"includes_latest_set", "boolean", "Use yes or true."},
+          {"player_deck_includes[]", "integer[]", "DBF IDs that must be present."},
+          {"player_deck_excludes[]", "integer[]", "DBF IDs that must not be present."},
+          {"limit", "integer", "Page size from 1 to 100. Default: 20."},
+          {"cursor", "string", "Opaque cursor returned by the previous response."}
+        ]} />
+        <p class="tw-mt-3 tw-text-sm tw-text-slate-500">Class, archetype, include-card, and exclude-card arrays accept up to 25 values.</p>
+        <div class="tw-mt-4 tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 tw-bg-black/40 tw-p-4">
+          <pre class="tw-m-0 tw-text-sm tw-leading-6 tw-text-emerald-300"><code>curl "https://www.hsguru.com/api/v1/decks?format=1&amp;rank=legend&amp;player_class[]=MAGE&amp;min_games=100" \
+  -H "Authorization: Bearer hsg_live_your_key"</code></pre>
+        </div>
+      </section>
+
+      <section id="streamers" class="tw-scroll-mt-6">
+        <.api_doc_endpoint method="GET" path="/api/v1/streamers" summary="A paginated catalog of every known streamer with aggregate deck and performance statistics." />
+        <p class="tw-mt-3 tw-text-sm tw-text-slate-500">
+          Each streamer includes deck count, recorded wins and losses, win rate, minutes played, best Legend rank, and most recent play time.
+        </p>
+        <.api_doc_parameters rows={[
+          {"search", "string", "Search Twitch login or display name."},
+          {"twitch_login[]", "string[]", "Return specific Twitch channels."},
+          {"sort_by", "enum", "display_name, login, or created_at."},
+          {"sort_direction", "enum", "asc or desc."},
+          {"limit", "integer", "Page size from 1 to 100. Default: 50."},
+          {"offset", "integer", "Page offset from 0 to 100000. Use pagination.next_offset for the next page."}
+        ]} />
+        <div class="tw-mt-4 tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 tw-bg-black/40 tw-p-4">
+          <pre class="tw-m-0 tw-text-sm tw-leading-6 tw-text-emerald-300"><code>curl "https://www.hsguru.com/api/v1/streamers?limit=100" \
+  -H "Authorization: Bearer hsg_live_your_key"</code></pre>
+        </div>
+      </section>
+
+      <section id="streamer-decks" class="tw-scroll-mt-6">
+        <.api_doc_endpoint method="GET" path="/api/v1/streamers/:twitch_login/decks" summary="All recorded decks for one streamer, including decklists and performance statistics." />
+        <div class="tw-mt-4">
+          <.api_doc_endpoint method="GET" path="/api/v1/streamer-decks" summary="The same dataset across every streamer. Filter by one or more Twitch logins or IDs." />
+        </div>
+        <p class="tw-mt-3 tw-text-sm tw-text-slate-500">
+          Every result includes the full deckcode and card list, first and last play time, wins, losses, win rate, minutes played, and best, latest, and worst Legend ranks.
+        </p>
+        <.api_doc_parameters rows={[
+          {"twitch_login[]", "string[]", "One or more Twitch logins. The path endpoint supplies this automatically."},
+          {"twitch_id[]", "integer[]", "One or more Twitch user IDs."},
+          {"format", "integer|string", "Wild (1), Standard (2), Classic (3), or Twist (4)."},
+          {"class", "string", "A Hearthstone player class."},
+          {"best_legend_rank", "integer", "Maximum best Legend rank, for example 500."},
+          {"latest_legend_rank", "integer", "Maximum latest Legend rank."},
+          {"worst_legend_rank", "integer", "Maximum worst Legend rank."},
+          {"last_played_within_minutes", "integer", "Only decks played during this recent time window."},
+          {"first_played_within_minutes", "integer", "Only decks first seen during this recent time window."},
+          {"min_minutes_played", "integer", "Minimum estimated minutes played."},
+          {"deck_id", "integer", "Return one HSGuru deck ID."},
+          {"include_cards[]", "integer[]", "DBF IDs that must be present."},
+          {"exclude_cards[]", "integer[]", "DBF IDs that must not be present."},
+          {"sort_by", "enum", "last_played, first_played, best_legend_rank, latest_legend_rank, worst_legend_rank, minutes_played, wins, or losses."},
+          {"sort_direction", "enum", "asc or desc."},
+          {"limit", "integer", "Page size from 1 to 100. Default: 50."},
+          {"offset", "integer", "Page offset from 0 to 100000. Use pagination.next_offset for the next page."}
+        ]} />
+        <p class="tw-mt-3 tw-text-sm tw-text-slate-500">Twitch login, Twitch ID, include-card, and exclude-card arrays accept up to 25 values.</p>
+        <div class="tw-mt-4 tw-overflow-x-auto tw-rounded-xl tw-border tw-border-slate-800 tw-bg-black/40 tw-p-4">
+          <pre class="tw-m-0 tw-text-sm tw-leading-6 tw-text-emerald-300"><code>curl "https://www.hsguru.com/api/v1/streamers/thijs/decks?format=2&amp;last_played_within_minutes=43200" \
+  -H "Authorization: Bearer hsg_live_your_key"</code></pre>
+        </div>
+      </section>
+
+      <section id="live-streams" class="tw-scroll-mt-6">
+        <.api_doc_endpoint method="GET" path="/api/v1/streams/live" summary="Current Hearthstone Twitch streams known to HSGuru, optionally including the active deckcode." />
+        <.api_doc_parameters rows={[
+          {"mode", "string", "Hearthstone mode, such as Standard, Wild, or Battlegrounds."},
+          {"language", "string", "Twitch stream language code."},
+          {"legend_rank", "integer", "Maximum current Legend rank."},
+          {"deckcode", "string", "Return streams playing one exact deckcode."},
+          {"has_deck", "enum", "any, yes, or no."},
+          {"sort_by", "enum", "most_viewers, fewest_viewers, newest, or oldest."},
+          {"limit", "integer", "Maximum results from 1 to 100. Default: 50."}
+        ]} />
+      </section>
+
+      <section id="errors" class="tw-scroll-mt-6">
+        <h2 class="tw-text-2xl tw-font-bold tw-text-white">Errors</h2>
+        <div class="tw-mt-4 tw-overflow-hidden tw-rounded-xl tw-border tw-border-slate-800">
+          <table class="tw-w-full tw-text-left tw-text-sm">
+            <thead class="tw-bg-slate-900 tw-text-slate-300">
+              <tr><th class="tw-p-3">Status</th><th class="tw-p-3">Meaning</th></tr>
+            </thead>
+            <tbody class="tw-divide-y tw-divide-slate-800 tw-bg-slate-950/40">
+              <tr><td class="tw-p-3 tw-font-mono tw-text-amber-300">400</td><td class="tw-p-3">Invalid or unsupported parameter.</td></tr>
+              <tr><td class="tw-p-3 tw-font-mono tw-text-amber-300">401</td><td class="tw-p-3">Missing, invalid, or revoked API key.</td></tr>
+              <tr><td class="tw-p-3 tw-font-mono tw-text-amber-300">404</td><td class="tw-p-3">Archetype not found.</td></tr>
+              <tr><td class="tw-p-3 tw-font-mono tw-text-amber-300">422</td><td class="tw-p-3">The filter combination is not available in public aggregates.</td></tr>
+              <tr><td class="tw-p-3 tw-font-mono tw-text-amber-300">429</td><td class="tw-p-3">Rate limit exceeded.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>

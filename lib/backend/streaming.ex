@@ -308,6 +308,26 @@ defmodule Backend.Streaming do
     |> Repo.all()
   end
 
+  def streamers_with_stats(criteria) do
+    base_streamers_query()
+    |> build_streamers_query(criteria)
+    |> join(:left, [streamer: s], sd in StreamerDeck,
+      on: sd.streamer_id == s.id,
+      as: :streamer_deck_stats
+    )
+    |> group_by([streamer: s], s.id)
+    |> select([streamer: s, streamer_deck_stats: sd], %{
+      streamer: s,
+      deck_count: count(sd.deck_id),
+      wins: fragment("COALESCE(SUM(?), 0)", sd.wins),
+      losses: fragment("COALESCE(SUM(?), 0)", sd.losses),
+      minutes_played: fragment("COALESCE(SUM(?), 0)", sd.minutes_played),
+      best_legend_rank: fragment("MIN(NULLIF(?, 0))", sd.best_legend_rank),
+      last_played: max(sd.last_played)
+    })
+    |> Repo.all()
+  end
+
   def base_streamers_query do
     from(s in Streamer, as: :streamer)
   end
@@ -319,11 +339,37 @@ defmodule Backend.Streaming do
     search = "%#{search_term}%"
 
     query
-    |> where([streamer: s], ilike(s.twitch_login, ^search) or ilike(s.twitch_display, ^search))
+    |> where(
+      [streamer: s],
+      ilike(fragment("COALESCE(?, ?)", s.twitch_login, s.hsreplay_twitch_login), ^search) or
+        ilike(fragment("COALESCE(?, ?)", s.twitch_display, s.hsreplay_twitch_display), ^search)
+    )
   end
 
   defp compose_streamers_query({"limit", limit}, query) do
     limit(query, ^limit)
+  end
+
+  defp compose_streamers_query({"offset", offset}, query) do
+    offset(query, ^offset)
+  end
+
+  defp compose_streamers_query({"order_by", {direction, :display_name}}, query) do
+    order_by(query, [streamer: s], [
+      {^direction, fragment("COALESCE(?, ?)", s.twitch_display, s.hsreplay_twitch_display)},
+      asc: s.id
+    ])
+  end
+
+  defp compose_streamers_query({"order_by", {direction, :login}}, query) do
+    order_by(query, [streamer: s], [
+      {^direction, fragment("COALESCE(?, ?)", s.twitch_login, s.hsreplay_twitch_login)},
+      asc: s.id
+    ])
+  end
+
+  defp compose_streamers_query({"order_by", {direction, :inserted_at}}, query) do
+    order_by(query, [streamer: s], [{^direction, s.inserted_at}, asc: s.id])
   end
 
   defp compose_streamers_query({"order_by", "search_similarity_" <> search_target}, query) do
@@ -347,12 +393,14 @@ defmodule Backend.Streaming do
 
   defp compose_streamers_query({"twitch_login", logins}, query) when is_list(logins) do
     query
-    |> where([streamer: s], s.twitch_login in ^logins)
+    |> where(
+      [streamer: s],
+      fragment("LOWER(COALESCE(?, ?))", s.twitch_login, s.hsreplay_twitch_login) in ^logins
+    )
   end
 
   defp compose_streamers_query({"twitch_login", login}, query) when is_binary(login) do
-    query
-    |> where([streamer: s], s.twitch_login == ^login)
+    compose_streamers_query({"twitch_login", [String.downcase(login)]}, query)
   end
 
   defp compose_streamers_query(_unrecognized, query), do: query
@@ -397,10 +445,9 @@ defmodule Backend.Streaming do
 
   defp compose_streamer_deck_query({"twitch_login", twitch_login}, query) do
     query
-    |> join(:inner, [sd], s in assoc(sd, :streamer))
     |> where(
-      [_sd, s, _d],
-      s.hsreplay_twitch_login in ^twitch_login or s.twitch_login in ^twitch_login
+      [streamer: s],
+      fragment("LOWER(COALESCE(?, ?))", s.twitch_login, s.hsreplay_twitch_login) in ^twitch_login
     )
   end
 
@@ -414,13 +461,15 @@ defmodule Backend.Streaming do
     int_ids = Enum.map(twitch_ids, &Util.to_int_or_orig/1)
 
     query
-    |> join(:inner, [sd], s in assoc(sd, :streamer))
-    |> where([_sd, s, _d], s.twitch_id in ^int_ids)
+    |> where([streamer: s], s.twitch_id in ^int_ids)
   end
 
   defp compose_streamer_deck_query({"order_by", {direction, field}}, query) do
     query
-    |> order_by([{^direction, ^field}])
+    |> order_by(
+      [streamer_deck: sd],
+      [{^direction, field(sd, ^field)}, asc: sd.streamer_id, asc: sd.deck_id]
+    )
   end
 
   defp compose_streamer_deck_query({"limit", limit}, query), do: query |> limit(^limit)
