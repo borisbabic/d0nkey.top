@@ -63,12 +63,6 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       egglock?(card_info, 1) ->
         :Egglock
 
-      deckless?(card_info) ->
-        :"Deckless Warlock"
-
-      zerg?(card_info, 4) ->
-        :"Zerg Warlock"
-
       discard?(card_info, 5) ->
         :"Discard Warlock"
 
@@ -153,13 +147,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
   end
 
   defp demon?(ci) do
-    min_count?(ci, 3, [
-      "Kil'jaeden",
-      "Demonic Dynamics",
-      "Abduction Ray",
-      "Archimonde",
-      "Foreboding Flame"
-    ])
+    min_count?(ci, 2, ["Moragg", "Archwitch Willow", "Annihilation"])
   end
 
   @spec deckless?(ArchetyperHelpers.card_info()) :: boolean()
