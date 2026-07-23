@@ -48,6 +48,18 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       zoolock?(card_info) ->
         :Zoolock
 
+      herald?(card_info) and egglock?(card_info, 2) ->
+        :"Harold Egglock"
+
+      egglock?(card_info, 2) ->
+        :Egglock
+
+      herald?(card_info) and demon?(card_info) ->
+        :"Harold Demon Warlock"
+
+      herald?(card_info) ->
+        :"Harold Warlock"
+
       demon?(card_info) ->
         :"Demon Warlock"
 

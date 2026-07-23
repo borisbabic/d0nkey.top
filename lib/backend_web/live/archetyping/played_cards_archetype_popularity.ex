@@ -57,6 +57,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "AYAYA Rogue" => "Two-Bit Rogue",
     "Imbue Rogue" => "Harold Rogue",
     "Wallow Shredslock" => "Wallow Warlock",
+    "Harold Demon Warlock" => "Harold Warlock",
     "Harold Egglock" => "Egglock",
     "Dino Egglock" => "Egglock",
     "Zoolock" => "Aggro Warlock",
