@@ -48,10 +48,11 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     # "Merithra Druid" => "Ramp Druid",
     # "Hostage Druid" => "Ramp Druid",
     "Unholy DK" => "Aggro DK",
+    "Harold Void Soul DH" => "Void Soul DH",
     "Broxigar DH" => "Spell DH",
     "No Minion DH" => "Spell DH",
     "Treant Druid" => "Token Druid",
-    "Ace Hunter" => "No Hand Hunter",
+    "Contraband Face Hunter" => "Face Hunter",
     "Quest Spell Mage" => "Spell Mage",
     "AYAYA Rogue" => "Two-Bit Rogue",
     "Imbue Rogue" => "Harold Rogue",
@@ -144,7 +145,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
           />
         <LivePatchDropdown
           id="filter_config_level"
-          options={[{nil, "Any"} | Enum.to_list(1..30)]}
+          options={[{nil, "Any"}, {"next", "Next"} | Enum.to_list(1..30)]}
           title={"Filter Config Level"}
           param={"filter_config_level"}
           current_val={@filter_config_level}
@@ -265,7 +266,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
               </.trh>
             </.thead>
             <.tbody>
-              <.trb :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, @filter_config_level, @config_map, @filter_out_whizbang)}> <.td class="sticky-column">
+              <.trb :for={{{card, level, card_archetype}, %{"total" => total} = popularity_map} <- sort_and_filter(@card_popularity.result, @min_played_count, @sort_by, handle_next(@filter_config_level, @exclude_config_levels), @config_map, @filter_out_whizbang)}> <.td class="sticky-column">
                   <div class="decklist_card_container">
                     <DecklistCard :if={card} deck_class="NEUTRAL" card={card} decklist_options={Backend.UserManager.User.decklist_options(@user)}/>
                   </div>
@@ -414,6 +415,9 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
       }
     end
   end
+
+  defp handle_next("next", excluded) when is_number(excluded), do: excluded + 1
+  defp handle_next(level, _), do: level
 
   defp needed_vars_flags(criteria, params, mode) do
     needs_auto_archetyping_vars? =

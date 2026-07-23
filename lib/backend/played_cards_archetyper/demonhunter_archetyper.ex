@@ -30,8 +30,6 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   @standard_config [
     "Quest DH": ["Unleash the Colossus"],
     "Void Soul DH": [
-      "Jailbird",
-      "Vanessa the Ringleader",
       "Tras'tath, Soul Parasite",
       "Vicious Voidscale",
       "Stardust Scythe",
@@ -40,14 +38,24 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     ],
     "Harold DH": @herald_package,
     # auto gen
-    "Spell DH": ["Hounds of Fury"],
-    "Archmage DH": ["Captured Archmage", "Ravenous Felhunter"],
-    # 5.5
-    "Spell DH": ["Lasting Legacy", "Sands of Time", "Solitude"],
-    "Demon DH": ["Netherwalker"],
-    "Spell DH": ["Horn of Feasting", "Nespirah, Enthralled"],
-    "Void DH": ["Battlefiend", "Hive Map", "Sigil of Cinder", "Time-Lost Glaive"],
-    "Void Soul DH": ["Grim Harvest", "Sigil of the Seas"]
+    "Void Soul DH": [
+      "Axe of Cenarius",
+      "Broxigar's Last Stand",
+      "Cult Neophyte",
+      "First Portal to Argus",
+      "Grim Harvest",
+      "Hive Map",
+      "Horn of Feasting",
+      "Illidari Studies",
+      "Infestation",
+      "Irida Sinseeker",
+      "Kayn Sunfury",
+      "Nightmare Lord Xavius",
+      "Press the Advantage",
+      "Sigil of Cinder",
+      "Sigil of the Seas",
+      "Wyvern's Slumber"
+    ]
   ]
   @wild_config [
     "XL Draenei Demon Hunter": ["Crimson Commander", "Saronite Chain Gang", "Starlight Wanderer"],
