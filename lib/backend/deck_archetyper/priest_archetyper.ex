@@ -14,14 +14,14 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       soothsayer?(card_info) ->
         :"Soothsayer Priest"
 
+      thief?(card_info, 5) ->
+        :"Thief Priest"
+
       control_priest?(card_info) ->
         :"Control Priest"
 
       imbue?(card_info, 4) ->
         :"Imbue Priest"
-
-      thief?(card_info, 5) ->
-        :"Thief Priest"
 
       "Wilted Shadow" in card_info.card_names ->
         :"Wilted Priest"
