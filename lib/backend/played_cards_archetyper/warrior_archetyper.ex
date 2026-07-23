@@ -6,7 +6,11 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
 
   @standard_config [
     "Quest Warrior": ["Enter the Lost City"],
-    "Dragon Warrior": ["Darkscale Broodmother", "Petal Peddler", "Prescient Slitherdrake", "Stadium Announcer"],
+    "Dragon Warrior": [
+      "Darkscale Broodmother",
+      "Petal Peddler",
+      "Prescient Slitherdrake"
+    ],
     "Egg Warrior": [
       "Endbringer Umbra",
       "Holy Eggbearer",
@@ -14,6 +18,7 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
       "Siphoning Growth",
       "The Egg of Khelos"
     ],
+    "Dragon Warrior": ["Brood Keeper"],
     "Harold Warrior": [
       "Cataclysmic War Axe",
       "Envoy of the End",
@@ -21,21 +26,20 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
       "Ultraxion"
     ],
     "Lo'Gosh Warrior": ["Broll, Blood Fighter", "Lo'Gosh, Blood Fighter", "Valeera, Blood Fighter"],
-    # auto gen
-    #
-    "Other Warrior": ["Rockskipper"],
-    "Gladiator Warrior": ["Gladiatorial Combat"],
-    "Lo'Gosh Warrior": ["Bloodmage Thalnos"],
-    "Dragon Warrior": ["Shadowed Informant"],
-    "Lo'Gosh Warrior": ["Ancient Raptor"],
-    "Dragon Warrior": ["Brood Keeper"],
-    "Lo'Gosh Warrior": ["Sands of Time"],
-    "Dragon Warrior": ["Darkrider", "Windpeak Wyrm"],
-    "Lo'Gosh Warrior": ["City Defenses", "Nightmare Lord Xavius", "P1CK-P0K3T", "Precursory Strike", "Scrappy Defender"],
-    "Egg Warrior": ["Unleash the Crocolisks"],
-    "Dragon Warrior": ["Carrier Whelp", "Mother Duck"],
-    "Egg Warrior": ["Acolyte of Pain", "Slam"],
-    "Dragon Warrior": ["Erupting Volcano", "Sanguine Depths", "Searing Fissure"]
+    "Dragon Warrior": ["Windpeak Wyrm"],
+    "Lo'Gosh Warrior": ["Latorvian Armorer", "Mother Duck", "Nightmare Lord Xavius", "Precursory Strike"],
+    "Dragon Warrior": ["Carrier Whelp", "Darkrider"],
+    "Lo'Gosh Warrior": ["Erupting Volcano", "Searing Fissure"],
+    "Egg Warrior": [
+      "Acolyte of Pain",
+      "Axe of the Forefathers",
+      "Eternal Toil",
+      "For Glory!",
+      "Sanguine Depths",
+      "Shield Block",
+      "Slam",
+      "Torch"
+    ]
   ]
   @wild_config [
     "XL Taunt Warrior": [
