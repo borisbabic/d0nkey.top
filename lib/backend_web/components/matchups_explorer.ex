@@ -243,7 +243,7 @@ defmodule Components.MatchupsExplorer do
     |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
   end
 
-  @last_archetype_update ~N[2026-07-01 00:00:00]
+  @last_archetype_update ~N[2026-07-23 20:00:00]
   @spec warning() :: {String.t() | nil, String.t()}
   defp warning do
     now = NaiveDateTime.utc_now()
