@@ -15,46 +15,40 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
   ]
   @standard_excludes %{}
   @standard_config [
-    {:"Quest Mage", ["The Forbidden Sequence"]},
-    {:"Imbue Mage",
-     [
-       "Aessina",
-       "Bitterbloom Knight",
-       "Divination",
-       "Flutterwing Guardian",
-       "Malorne the Waywatcher",
-       "Petal Picker",
-       "Resplendent Dreamweaver",
-       "Spirit Gatherer",
-       "Wisprider"
-     ]},
-    {:"Leyline Mage", @leyline_package},
-    {:"Burn Mage",
-     [
-       "Archmage Kalec",
-       "Arcane Barrage",
-       "Bloodmage Thalnos",
-       "Conjured Bookkeeper",
-       "Contraband Wands",
-       "Fireball",
-       "First Flame",
-       "Frostbolt",
-       "Living Flame",
-       "Raincaller",
-       "Runed Orb",
-       "Sands of Time",
-       "Scorching Winds",
-       "Sizzling Cinder",
-       "Sleet Storm",
-       "Spark of Life",
-       "Spellweaver's Brilliance",
-       "Storage Scuffle",
-       "Time-Twisted Seer",
-       "Tunneling Geomancer",
-       "Unstable Spellcaster",
-       "Violet Spellwing",
-       "Vulcanos"
-     ]}
+    "Quest Mage": ["The Forbidden Sequence"],
+    "Imbue Mage": [
+      "Aessina",
+      "Bitterbloom Knight",
+      "Divination",
+      "Flutterwing Guardian",
+      "Malorne the Waywatcher",
+      "Petal Picker",
+      "Resplendent Dreamweaver",
+      "Spirit Gatherer",
+      "Wisprider"
+    ],
+    "Leyline Mage": @leyline_package,
+    # auto gen
+    "Burn Mage": [
+      "Fireball",
+      "Living Flame",
+      "Raincaller",
+      "Scorching Winds",
+      "Spellweaver's Brilliance",
+      "Time-Twisted Seer",
+      "Tunneling Geomancer",
+      "Unstable Spellcaster"
+    ],
+    "Toki Mage": ["Dirty Rat"],
+    "Big Spell Mage": ["Prize Vendor"],
+    "Toki Mage": ["Flamestrike", "Rustrot Viper", "Timelooper Toki", "Ysera, Emerald Aspect"],
+    "Burn Mage": ["Archmage Kalec"],
+    "Manastorm Mage": ["Bitter End", "Ice Barrier", "Mystic Misdirection", "Semi-Stable Portal"],
+    "Burn Mage": ["Arcane Barrage", "Code Violet", "Contraband Wands"],
+    "Toki Mage": ["Blizzard", "Nightmare Lord Xavius", "Relic of Kings"],
+    "Burn Mage": ["Eternal Firebolt", "Storage Scuffle"],
+    "Toki Mage": ["Alter Time", "Cold Snap", "Runed Orb"],
+    "Toki Mage": ["Portal Vanguard", "Sands of Time"]
   ]
   @wild_config [
     "Other Mage": ["Dire Wolf Alpha", "Evasive Wyrm", "Faerie Dragon", "Imposing Anubisath", "Raid Leader"],
