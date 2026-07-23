@@ -8,7 +8,6 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
 
   @standard_config [
     "Quest Paladin": ["Dive the Golakka Depths"],
-    "Egg Paladin": ["The Egg of Khelos"],
     "Pure Paladin": ["Vigilant Sentry", "Scarlet Bruiser"],
     "Imbue Paladin": [
       "Bitterbloom Knight",
@@ -17,42 +16,52 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
       "Petal Picker",
       "Resplendent Dreamweaver"
     ],
+    "Aggro Paladin": [
+      "Elven Archer",
+      "Abusive Sergeant",
+      "Beaming Sidekick",
+      "Concealing Confection",
+      "Fire Fly",
+      "Murmy",
+      "Carrier Whelp"
+    ],
     "End of Turnadin": ["Earthen Drake"],
     # 5.5
-    "Egg Paladin": ["Fae Trickster"],
     # Auto Gen
     #
-    "Pure Paladin": ["Reinforcement Aura", "Scarlet Recruiter", "Truth Seeker"],
-    "Dude Paladin": [
-      "Arator the Redeemer",
-      "Brash Battlemaster",
-      "Emboldening Blade",
-      "Hatching Ceremony",
-      "Muster for Battle",
-      "Resilient Savior",
-      "Teamwork"
-    ],
-    "Pure Paladin": ["Commander Beatrix"],
-    "End of Turnadin": ["Battle Vicar", "Nightmare Lord Xavius", "Sizzling Cinder", "Twilight Egg"],
+    "Mill Paladin": ["Annoy-o-Tron", "Spikeridged Steed"],
+    "Egg Paladin": ["Bloodsail Raider", "Fae Trickster", "Holy Eggbearer", "The Egg of Khelos"],
+    "Pure Paladin": ["Scarlet Recruiter"],
+    "Dude Paladin": ["Brash Battlemaster", "Emboldening Blade", "Hatching Ceremony"],
+    "Mill Paladin": ["Doomsayer"],
+    "Aggro Paladin": ["Dreambound Raptor"],
+    "End of Turnadin": ["Sheltered Survivor"],
     "Pure Paladin": [
       "Acceleration Aura",
       "Chronological Aura",
-      "Consecration",
-      "Convalescence",
-      "Dreamwarden",
       "Gelbin of Tomorrow",
-      "Holy Bola!",
       "Inspiring Maul",
-      "Judgment",
       "Manifested Timeways",
-      "Nozdormu, Bronze Aspect",
+      "Mekkatorque's Aura",
+      "Reinforcement Aura",
+      "Scalebreaker Bulwark"
+    ],
+    "Aggro Paladin": [
+      "Cult Neophyte",
+      "Dragonscale Armaments",
+      "Glacial Shard",
+      "Platysaur",
+      "Prize Vendor",
+      "Resistance Aura"
+    ],
+    "Pure Paladin": ["Consecration", "Dreamwarden", "Nozdormu, Bronze Aspect", "Toreth the Unbreaking"],
+    "Dude Paladin": ["Muster for Battle"],
+    "Aggro Paladin": ["Sizzling Cinder"],
+    "Pure Paladin": [
+      "Convalescence",
       "Past Gnomeregan",
       "Righteous Protector",
-      "Sandfury Aura",
-      "Scalebreaker Bulwark",
       "Spearheart Sentry",
-      "The Fins Beyond Time",
-      "Toreth the Unbreaking",
       "Violet Treasuregill"
     ]
   ]
