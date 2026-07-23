@@ -33,6 +33,12 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       imbue?(card_info, 4) ->
         :"Imbue DK"
 
+      egg?(card_info) ->
+        :"Egg DK"
+
+      small_imbue?(card_info) ->
+        :"Imbue DK"
+
       rainbow_runes?(card_info) ->
         :"Rainbow DK"
 
@@ -60,9 +66,16 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       "Talanji of the Graves" in card_info.card_names ->
         :"Bwonsamdi DK"
 
+      "Blood Doctor Thal'ena" in card_info.card_names ->
+        :"Thal'ena DK"
+
       true ->
         fallbacks(card_info, "DK", ignore_types: ["Undead", "undead", "UNDEAD"])
     end
+  end
+
+  defp small_imbue?(card_info) do
+    min_count?(card_info, 2, ["Finality", "Malorne the Waywatcher"])
   end
 
   defp standard_plague?(card_info) do
@@ -155,19 +168,20 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
   defp handbuff_dk?(c),
     do:
       min_count?(c, 3, [
-        "Lesser Spinel Spellstone",
-        "City Chief Esho",
         "Amateur Puppeteer",
         "Blood Tap",
-        "Toysnatching Geist",
+        "City Chief Esho",
         "Darkfallen Neophyte",
+        "Encumbered Pack Mule",
+        "Gruesome Nightmare",
         "Helm of Humiliation",
-        "Vicious Bloodworm",
         "Hourglass Attendant",
+        "Lesser Spinel Spellstone",
         "Overlord Runthak",
         "Ram Commander",
-        "Encumbered Pack Mule",
-        "Saloon Brewmaster"
+        "Saloon Brewmaster",
+        "Toysnatching Geist",
+        "Vicious Bloodworm"
       ])
 
   def wild(card_info) do

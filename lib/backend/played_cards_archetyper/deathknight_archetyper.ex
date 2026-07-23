@@ -23,31 +23,31 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Holy Eggbearer",
       "The Egg of Khelos"
     ],
+    "Imbue DK": ["Flutterwing Guardian", "Petal Picker"],
+    "Thal'ena DK": ["Glacial Shard"],
+    "Thal'ena DK": ["Creature of Madness"],
+    "Aggro DK": [
+      "Acolyte of Death",
+      "Ancient Raptor",
+      "Monstrous Mosquito",
+      "Talanji's Last Stand",
+      "Twilight Egg",
+      "Warden Maiev"
+    ],
+    "Thal'ena DK": ["Elven Archer"],
+    "Plague DK": ["Disguised Doctor", "Shadows of Yesterday"],
+    "Harold DK": ["Hematurge"],
+    "Thal'ena DK": ["Corpse Cannon", "Falric"],
+    "Handbuff DK": ["Gruesome Nightmare"],
+    "Rainbow DK": ["Chromatic Broodmother"],
+    "Harold DK": ["Chillfallen Baron", "Emergency Surgery", "Infested Breath"],
+    "Thal'ena DK": ["Tower of Ghouls"],
     "Imbue DK": [
-      "Flutterwing Guardian",
-      "Petal Picker",
       "Jagged Edge of Time",
       "Bitterbloom Knight",
       "Resplendent Dreamweaver",
       "Malorne the Waywatcher",
       "Finality"
-    ],
-    "Aggro DK": [
-      "Twilight Egg",
-      "Warden Maiev",
-      "Talanji's Last Stand",
-      "Monstrous Mosquito",
-      "Glacial Shard",
-      "Fire Fly",
-      "Command Claw",
-      "Acolyte of Death",
-      "Maze Guide",
-      "Reluctant Wrangler",
-      "Ancient Ceremony",
-      "Murmy",
-      "Remnant of Rage",
-      "Tower of Ghouls",
-      "Shadows of Yesterday"
     ]
   ]
 

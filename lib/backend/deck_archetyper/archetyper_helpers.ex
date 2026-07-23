@@ -188,7 +188,7 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Soulbound Ashtongue" in ci.card_names ->
         String.to_atom("Ashtoungue #{class_name}")
 
-      "The Egg of Khelos" in ci.card_names ->
+      egg?(ci) ->
         String.to_atom("Egg #{class_name}")
 
       "Zuramat's Prison" in ci.card_names ->
@@ -206,6 +206,9 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
       "Black Market Auctioneer" in ci.card_names ->
         String.to_atom("Auctioneer #{class_name}")
 
+      "Vyranoth" in ci.card_names ->
+        String.to_atom("Vyranoth #{class_name}")
+
       "Jailbird" in ci.card_names ->
         String.to_atom("Prepared #{class_name}")
 
@@ -217,6 +220,10 @@ defmodule Backend.DeckArchetyper.ArchetyperHelpers do
   # defp replicator_bug_abuse?(card_info) do
   #   min_count?(card_info, 2, ["The Replicator-inator", "Ancient of Yore"])
   # end
+
+  def egg?(card_info) do
+    "The Egg of Khelos" in card_info.card_names
+  end
 
   defp amalgam?(card_info) do
     one_drop_names =
