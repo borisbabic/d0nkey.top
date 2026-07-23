@@ -2881,11 +2881,20 @@ defmodule Hearthstone.DeckTracker do
   # end
 
   @spec latest_with_start([Period.t()]) :: (slug :: String.t()) | nil
-  defp latest_with_start(periods) do
-    periods
-    |> Enum.filter(&Period.use_period_start?/1)
-    |> Enum.sort_by(& &1.period_start, {:desc, NaiveDateTime})
-    |> slug_of_first()
+  defp latest_with_start(periods), do: latest_with_start(periods, :slug)
+
+  @spec latest_with_start([Period.t()], :slug | :period_start) ::
+          (slug :: String.t()) | (period_start :: NaiveDateTime.t()) | nil
+  defp latest_with_start(periods, field) do
+    sorted =
+      periods
+      |> Enum.filter(&Period.use_period_start?/1)
+      |> Enum.sort_by(& &1.period_start, {:desc, NaiveDateTime})
+
+    case field do
+      :slug -> slug_of_first(sorted)
+      :period_start -> period_start_of_first(sorted)
+    end
   end
 
   @spec longest_rolling([Period.t()]) :: (slug :: String.t()) | nil
@@ -2895,6 +2904,9 @@ defmodule Hearthstone.DeckTracker do
     |> Enum.sort_by(& &1.hours_ago, :desc)
     |> slug_of_first()
   end
+
+  defp period_start_of_first([%{period_start: period_start} | _]), do: period_start
+  defp period_start_of_first(_), do: nil
 
   defp slug_of_first([%{slug: slug} | _]), do: slug
   defp slug_of_first(_), do: nil
@@ -3523,6 +3535,12 @@ defmodule Hearthstone.DeckTracker do
 
     IO.puts("latest slug: #{slug}")
     recalculate_archetypes_for_period_stream(slug, NaiveDateTime.utc_now(), criteria, chunk_size)
+  end
+
+  @spec latest_patch_or_release_time(list()) :: NaiveDateTime.t() | nil
+  def latest_patch_or_release_time(additional_filters \\ []) do
+    periods([{:type, ["release", "patch"]} | additional_filters])
+    |> latest_with_start(:period_start)
   end
 
   @spec recalculate_archetypes_for_period_stream(String.t(), NaiveDateTime.t(), list(), integer()) ::

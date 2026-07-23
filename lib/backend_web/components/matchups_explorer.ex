@@ -2,6 +2,7 @@ defmodule Components.MatchupsExplorer do
   @moduledoc false
   use BackendWeb, :surface_live_component
 
+  alias Hearthstone.DeckTracker
   alias Components.MatchupsTable
   alias Components.Filter.PeriodDropdown
   alias Components.Filter.RankDropdown
@@ -147,7 +148,7 @@ defmodule Components.MatchupsExplorer do
       |> Util.to_int_or_orig()
 
     {needs_premium?, updated_at, matchups} =
-      case Hearthstone.DeckTracker.aggregated_matchups(criteria) do
+      case DeckTracker.aggregated_matchups(criteria) do
         {:ok, %{matchups: matchups, updated_at: updated_at}} -> {false, updated_at, matchups}
         _ -> {socket.assigns.filter_context == :public and true, nil, nil}
       end
@@ -232,7 +233,7 @@ defmodule Components.MatchupsExplorer do
 
     socket
     |> assign_async([:archetype_stats], fn ->
-      {:ok, matchups} = Hearthstone.DeckTracker.matchups(criteria)
+      {:ok, matchups} = DeckTracker.matchups(criteria)
       {:ok, %{archetype_stats: matchups}}
     end)
   end
@@ -242,6 +243,7 @@ defmodule Components.MatchupsExplorer do
     |> assign(archetype_stats: Phoenix.LiveView.AsyncResult.ok(matchups))
   end
 
+  @last_archetype_update ~N[2026-07-01 00:00:00]
   @spec warning() :: {String.t() | nil, String.t()}
   defp warning do
     now = NaiveDateTime.utc_now()
@@ -262,7 +264,12 @@ defmodule Components.MatchupsExplorer do
         {nil, "Post patch archetyping will be updated a couple days post patch"}
 
       true ->
-        false
+        with %NaiveDateTime{} = time <- DeckTracker.latest_patch_or_release_time(),
+             :lt <- NaiveDateTime.compare(@last_archetype_update, time) do
+          {nil, "Post patch archetyping will be updated a couple days post patch"}
+        else
+          _ -> false
+        end
     end
   end
 
