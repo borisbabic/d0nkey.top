@@ -85,6 +85,7 @@ defmodule BackendWeb.DeckLive do
         <.page_header title={"#{Deck.name(@deck)} #{Deck.format_name(@deck)}"}>
           <:nav_links :if={match?(%{id: id} when is_integer(id), @deck)}>
             <span><a href={~p"/deckbuilder?#{deck_builder_query_params(@deck)}"}>Edit</a></span>
+            <a href={~p"/stats/explanation"} class="hover:tw-text-sky-400 tw-transition-colors">Stats Explanation</a>
             <span><a href={card_stats_url(@deck)}>Card Stats (Mulligan)</a></span>
             <span><a href={Decklist.deck_link(@deck, true)}>Archetype Stats</a></span>
             <span><a href={~p"/replays?#{add_games_filters(%{"has_replay_url" => true, "player_deck_id" => @deck.id}, @deck_stats_params)}"}>Replays</a> </span>

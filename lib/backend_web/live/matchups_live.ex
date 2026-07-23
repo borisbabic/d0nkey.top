@@ -15,6 +15,9 @@ defmodule BackendWeb.MatchupsLive do
     ~F"""
       <div>
         <.page_header title="Matchups">
+          <:nav_links>
+            <a href={~p"/stats/explanation"} class="hover:tw-text-sky-400 tw-transition-colors">Stats Explanation</a>
+          </:nav_links>
           <:meta_info>
             <.contribution hdt={false} />
           </:meta_info>

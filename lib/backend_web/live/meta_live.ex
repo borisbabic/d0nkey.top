@@ -27,6 +27,7 @@ defmodule BackendWeb.MetaLive do
 
         <.page_header title="Meta">
           <:nav_links>
+            <a href={~p"/stats/explanation"} class="hover:tw-text-sky-400 tw-transition-colors">Stats Explanation</a>
             <a href={~p"/matchups"}>Matchups</a>
           </:nav_links>
           <:meta_info>

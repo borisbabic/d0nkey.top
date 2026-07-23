@@ -39,6 +39,7 @@ defmodule BackendWeb.ArchetypeLive do
     ~F"""
     <.page_header title={@title || @archetype}>
       <:nav_links>
+        <a href={~p"/stats/explanation"} class="hover:tw-text-sky-400 tw-transition-colors">Stats Explanation</a>
         <a href={~p"/card-stats?#{card_stats_params(@archetype, @stats_params)}"}>Card Stats</a>
         <a href={~p"/decks?#{decks_params(@archetype, @stats_params) |> add_games_filters(@stats_params)}"}>Decks</a>
         <a href={~p"/replays?#{decks_params(@archetype, @stats_params)}"}>Replays Stats</a>
