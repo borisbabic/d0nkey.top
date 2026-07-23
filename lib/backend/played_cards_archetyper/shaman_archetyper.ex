@@ -6,44 +6,28 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
 
   @standard_config [
     # auto gen
-    "Zee Shaman": ["Beaming Sidekick", "Endbringer Umbra"],
-    "Zee Shaman": ["Beanstalk Brute"],
-    "Mug Shaman": ["Instant Multiverse"],
-    "Zee Shaman": [
-      "Bralma Searstone",
-      "Fire Fly",
-      "Hexmarshal",
-      "Portal Vanguard",
-      "Shadowed Informant",
-      "Sizzling Cinder"
+    "Zee Shaman": ["Beaming Sidekick", "Hexmarshal", "Slagclaw"],
+    "Mug Shaman": [
+      "Ascendance",
+      "Blazing Invocation",
+      "Fire Breath",
+      "Low Security Wing",
+      "Molten Gold",
+      "Mountain Map"
     ],
-    "Mug Shaman": ["Stormfury", "Zuramat's Prison"],
-    "Zee Shaman": ["Prescient Slitherdrake"],
+    "Zee Shaman": ["Fire Fly"],
     "Harold Shaman": ["Flight of the Firehawk"],
-    "Mug Shaman": ["Blazing Invocation", "Frostshatter", "Molten Gold", "Mountain Map"],
-    "Zee Shaman": ["Darkscale Broodmother", "Emberscarred Whelp", "Primalfin Challenger", "Slagclaw", "Torga"],
-    "Harold Shaman": ["Avatar Form", "Muradin, High King", "Primordial Overseer"],
-    "Mug Shaman": ["Sands of Time", "Thunderquake"],
-    "Zee Shaman": [
-      "Carrier Whelp",
-      "Cinderfin",
-      "Elise the Navigator",
-      "Envoy of the End",
-      "Gallagio Goon",
-      "Getaway Hogdriver",
-      "Glacial Shard",
-      "Hijacked Securitybot",
-      "Holy Eggbearer",
-      "Nightmare Lord Xavius",
-      "Skywall Sentinel",
-      "Tiny Pal",
-      "Ultraxion",
-      "Vanessa the Ringleader",
-      "Wailing Vapor",
-      "Warden Maiev",
-      "Witch's Apprentice"
+    "Zee Shaman": ["Emberscarred Whelp", "Prescient Slitherdrake"],
+    "Harold Shaman": [
+      "Avatar Form",
+      "High King's Hammer",
+      "Muradin's Last Stand",
+      "Muradin, High King",
+      "Primordial Overseer",
+      "Twilight Egg"
     ],
-    "Mug Shaman": ["Low Security Wing", "Ritual of Power"]
+    "Zee Shaman": ["Carrier Whelp", "Hijacked Securitybot", "Holy Eggbearer", "Shadowed Informant"],
+    "Mug Shaman": ["Ritual of Power", "Sands of Time"]
   ]
   @wild_config [
     "Even Shaman": [

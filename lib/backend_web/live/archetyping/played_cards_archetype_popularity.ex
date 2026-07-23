@@ -54,6 +54,7 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "Treant Druid" => "Token Druid",
     "Contraband Face Hunter" => "Face Hunter",
     "Quest Spell Mage" => "Spell Mage",
+    "Garona Rogue" => "Two-Bit Rogue",
     "AYAYA Rogue" => "Two-Bit Rogue",
     "Imbue Rogue" => "Harold Rogue",
     "Wallow Shredslock" => "Wallow Warlock",
