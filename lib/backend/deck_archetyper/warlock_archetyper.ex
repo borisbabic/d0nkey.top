@@ -27,7 +27,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       painlock?(card_info, 6) ->
         :Painlock
 
-      herald?(card_info) and egglock?(card_info, 3) ->
+      herald?(card_info, 3) and egglock?(card_info, 3) ->
         :"Harold Egglock"
 
       "Ultragigasaur" in card_info.card_names and egglock?(card_info, 3) ->
@@ -48,7 +48,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       zoolock?(card_info) ->
         :Zoolock
 
-      herald?(card_info) and egglock?(card_info, 2) ->
+      herald?(card_info, 3) and egglock?(card_info, 2) ->
         :"Harold Egglock"
 
       egglock?(card_info, 2) ->
@@ -57,7 +57,7 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       herald?(card_info) and demon?(card_info) ->
         :"Harold Demon Warlock"
 
-      herald?(card_info) ->
+      herald?(card_info, 3) ->
         :"Harold Warlock"
 
       demon?(card_info) ->
