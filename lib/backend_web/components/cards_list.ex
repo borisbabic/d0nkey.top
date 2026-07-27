@@ -74,7 +74,7 @@ defmodule Components.CardsList do
           {nil, {card, count}, true, _} -> {rotation_class(highlight_rotation, card), count}
           {nil, {card, count}, _, true} -> {unowned_class(card, count, owned_card_map), count}
           {_, {_card, count}, _, _} -> {nil, count}
-          {_, nil, _, _} -> {"not-in-list", nil}
+          {_, nil, _, _} -> {"not-in-list", 0}
         end
 
       actual = %{card: c, count: count, class: class, sideboard: false}

@@ -286,6 +286,8 @@ defmodule Backend.Hearthstone.Card do
   end
 
   @spec multiply_count_for_sideboard(card() | integer(), integer()) :: integer()
+  def multiply_count_for_sideboard(_sideboard, zero) when zero in [0, nil], do: 0
+
   def multiply_count_for_sideboard(sideboard, count) do
     count * sideboard_copies_per_entry(sideboard)
   end
