@@ -297,7 +297,8 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   defp wild_miracle_druid?(card_info) do
     min_count?(card_info, 1, [
       "Gadgetzan Auctioneer",
-      "Ysiel Windsinger"
+      "Ysiel Windsinger",
+      "Black Market Auctioneer"
     ])
   end
 
