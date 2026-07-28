@@ -76,7 +76,7 @@ defmodule Components.OpponentStatsTable do
           <RegionDropdown id="opp_stats_table_region_dropdown" :if={can_access_unaggregated?(@user)} warning={true} />
           <FormatDropdown class={"is-hidden-mobile"} :if={@format_dropdown?} id="opp_stats_format_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <PlayerHasCoinDropdown id={"opp_stats_table_player_has_coin_dropdown"} />
-          <ForceFreshDropdown id="opp_stats_table_force_fresh_dropdown" :if={Backend.UserManager.User.premium?(@user)} />
+          <ForceFreshDropdown id="opp_stats_table_force_fresh_dropdown" :if={can_access_unaggregated?(@user)} />
           <LivePatchDropdown :if={Backend.UserManager.User.battletag(@user)}
             options={[{"all_players", "All Players"}, {"my_games", "My Games"}]}
             title={"Players"}
