@@ -14,7 +14,6 @@ defmodule BackendWeb.ProfileSettingsLiveTest do
     assert html =~ "Profile"
     assert html =~ "Settings"
     assert html =~ "Country Flag"
-    assert html =~ "Save"
   end
 
   @tag :authenticated

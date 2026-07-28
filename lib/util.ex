@@ -302,13 +302,13 @@ defmodule Util do
   Transform to float while ignoring the binary remainder or returns the original string
 
   ## Example
-  iex> Util.to_int_or_orig("hello")
+  iex> Util.to_float_or_orig("hello")
   "hello"
-  iex> Util.to_int_or_orig("-1")
+  iex> Util.to_float_or_orig("-1")
   -1.0
-  iex> Util.to_int_or_orig(50)
+  iex> Util.to_float_or_orig(50)
   50.0
-  iex> Util.to_int_or_orig("-1.45")
+  iex> Util.to_float_or_orig("-1.45")
   -1.45
   """
   def to_float_or_orig(orig), do: to_float(orig, orig)
