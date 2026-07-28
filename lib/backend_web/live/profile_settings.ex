@@ -71,7 +71,13 @@ defmodule BackendWeb.ProfileSettingsLive do
           <div class="tw-p-6 has-background-dark tw-border tw-border-slate-800 tw-rounded-xl tw-space-y-4">
             <h3 class="tw-text-lg tw-font-bold text-white tw-border-b tw-border-slate-800 tw-pb-2">Decklist Options</h3>
             <div class="tw-space-y-3">
-              <.input type="select" name="preferred_deckcode" value={DecklistOptions.preferred_deckcode(@user.decklist_options)} options={["Short Deckcode (Valid)": "short", "Long Deckcode (Valid)": "long", "Long Deckcode (Markdown)": "long_markdown_code"]} label="Preferred Deckcode When Copying"/>
+              <.input 
+              type="select" 
+              name="preferred_deckcode" 
+              value={DecklistOptions.preferred_deckcode(@user.decklist_options)} 
+              options={["Short Deckcode": "short", "Short Deckcode With Name": "short_with_name", "Long Deckcode": "long", "Long Deckcode (Invalid - For Markdown)": "long_markdown_code"]}
+              label="Preferred Deckcode When Copying"
+            />
               <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-2 tw-pt-2">
                 <.toggle name="show_one" checked={DecklistOptions.show_one(@user.decklist_options)} label="Show 1 for singleton cards"/>
                 <.toggle name="show_one_for_legendaries" checked={DecklistOptions.show_one_for_legendaries(@user.decklist_options)} label="Show 1 for singleton legendaries"/>

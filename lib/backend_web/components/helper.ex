@@ -304,7 +304,7 @@ defmodule Components.Helper do
 
   attr :deck, :any, required: true
   attr :hide_no_js, :boolean, default: false
-  attr :preferred_deckcode, :string, default: "short"
+  attr :preferred_deckcode, :string, default: "short_with_name"
 
   def deckcode_for_deck(%{
         deck: %Deck{} = deck,
@@ -313,6 +313,9 @@ defmodule Components.Helper do
       }) do
     deckcode =
       case preferred_deckcode do
+        "short_with_name" ->
+          Backend.Hearthstone.DeckcodeEmbiggener.with_name(deck)
+
         "short" ->
           Deck.deckcode(deck)
 

@@ -192,8 +192,8 @@ defmodule Backend.UserManager.User.DecklistOptions do
   @default_use_missing_dust true
   @default_fade_missing_cards true
   @default_fade_rotating_cards false
-  @default_preferred_deckcode "long"
-  @preferred_deckcode_options ["short", "long", "long_markdown_code"]
+  @default_preferred_deckcode "short_with_name"
+  @preferred_deckcode_options ["short", "long", "long_markdown_code", "short_with_name"]
   @primary_key false
   embedded_schema do
     field :border, :string

@@ -30,16 +30,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
       end)
       |> Enum.map_join("\n", &create_card_part(&1, d))
 
-    link_part =
-      case Map.get(d, :id) do
-        nil ->
-          ""
-
-        id ->
-          """
-          You can view this deck at https://www.hsguru.com/deck/#{id}
-          """
-      end
+    link_part = link_part(d)
 
     """
     ### #{deck_name}
@@ -47,7 +38,7 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
     # Format: #{Deck.format_name(d.format)}
     #{cards_part}
     #{deckcode}
-    # #{link_part}
+    #{link_part}
     """
   end
 
@@ -55,5 +46,24 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
     rarity = Card.rarity_square(card)
 
     "# #{rarity} #{sideboard_prefix}#{freq}x (#{Deck.card_mana_cost(deck, card)}) #{card.name}"
+  end
+
+  defp link_part(%{id: id}) when is_integer(id) do
+    """
+    ### You can view this deck at https://www.hsguru.com/deck/#{id}
+    """
+  end
+
+  defp link_part(_), do: ""
+
+  def with_name(%{deckcode: deckcode} = d) do
+    deck_name = Deck.name(d)
+    link_part = link_part(d)
+
+    """
+    ### #{deck_name}
+    #{deckcode}
+    #{link_part}
+    """
   end
 end
