@@ -322,6 +322,9 @@ defmodule Components.Helper do
         "long" ->
           Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck)
 
+        "long_triple_hashtag" ->
+          Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck, 3)
+
         "long_markdown_code" ->
           "```\n#{Backend.Hearthstone.DeckcodeEmbiggener.embiggen(deck)}\n```"
       end

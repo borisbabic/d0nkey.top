@@ -9,11 +9,15 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
   Takes a deck or deckcode and produces a long form deckcode
   """
   @spec embiggen(Deck.t() | String.t()) :: String.t()
-  def embiggen(deckcode) when is_binary(deckcode), do: deckcode |> Deck.decode!() |> embiggen()
+  def embiggen(deckcode, number_of_hashtags \\ 1)
 
-  def embiggen(%{cards: cards, deckcode: deckcode} = d) do
+  def embiggen(deckcode, number_of_hashtags) when is_binary(deckcode),
+    do: deckcode |> Deck.decode!() |> embiggen(number_of_hashtags)
+
+  def embiggen(%{cards: cards, deckcode: deckcode} = d, number_of_hashtags) do
     deck_name = Deck.name(d)
     card_sort_opts = [cost: &Deck.card_mana_cost(d, &1)]
+    hashtags = String.duplicate("#", number_of_hashtags)
 
     cards_part =
       cards
@@ -28,37 +32,37 @@ defmodule Backend.Hearthstone.DeckcodeEmbiggener do
 
         [{card, freq, ""} | card_sideboards]
       end)
-      |> Enum.map_join("\n", &create_card_part(&1, d))
+      |> Enum.map_join("\n", &create_card_part(&1, d, hashtags))
 
-    link_part = link_part(d)
+    link_part = link_part(d, number_of_hashtags)
 
     """
     ### #{deck_name}
-    # Cost: #{Deck.cost(d)}
-    # Format: #{Deck.format_name(d.format)}
+    #{hashtags} Cost: #{Deck.cost(d)}
+    #{hashtags} Format: #{Deck.format_name(d.format)}
     #{cards_part}
     #{deckcode}
     #{link_part}
     """
   end
 
-  def create_card_part({card, freq, sideboard_prefix}, deck) do
+  def create_card_part({card, freq, sideboard_prefix}, deck, hashtags \\ "#") do
     rarity = Card.rarity_square(card)
 
-    "# #{rarity} #{sideboard_prefix}#{freq}x (#{Deck.card_mana_cost(deck, card)}) #{card.name}"
+    "#{hashtags} #{rarity} #{sideboard_prefix}#{freq}x (#{Deck.card_mana_cost(deck, card)}) #{card.name}"
   end
 
-  defp link_part(%{id: id}) when is_integer(id) do
+  defp link_part(%{id: id}, number_of_hashtags) when is_integer(id) do
     """
-    ### You can view this deck at https://www.hsguru.com/deck/#{id}
+    #{String.duplicate("#", number_of_hashtags)} You can view this deck at https://www.hsguru.com/deck/#{id}
     """
   end
 
-  defp link_part(_), do: ""
+  defp link_part(_, _), do: ""
 
   def with_name(%{deckcode: deckcode} = d) do
     deck_name = Deck.name(d)
-    link_part = link_part(d)
+    link_part = link_part(d, 3)
 
     """
     ### #{deck_name}

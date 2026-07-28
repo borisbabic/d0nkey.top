@@ -75,7 +75,7 @@ defmodule BackendWeb.ProfileSettingsLive do
               type="select" 
               name="preferred_deckcode" 
               value={DecklistOptions.preferred_deckcode(@user.decklist_options)} 
-              options={["Short Deckcode": "short", "Short Deckcode With Name": "short_with_name", "Long Deckcode": "long", "Long Deckcode (Invalid - For Markdown)": "long_markdown_code"]}
+              options={["Short Deckcode": "short", "Short Deckcode With Name": "short_with_name", "Long Deckcode": "long", "Long Deckcode using ###": "long_triple_hashtag", "Long Deckcode (Invalid - Markdown Code)": "long_markdown_code"]}
               label="Preferred Deckcode When Copying"
             />
               <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-2 tw-pt-2">
