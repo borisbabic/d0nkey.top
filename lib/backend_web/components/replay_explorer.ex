@@ -87,7 +87,7 @@ defmodule Components.ReplayExplorer do
           <FormatDropdown id="format_dropdown" :if={@format_filter} filter_context={@filter_context} />
           <RankDropdown id="rank_dropdown" :if={@rank_filter} filter_context={@filter_context} />
           <PeriodDropdown id="period_dropdown" :if={@period_filter} filter_context={@filter_context} />
-          <RegionDropdown id="region_dropdown" :if={@region_filter} filter_context={@filter_context} />
+          <RegionDropdown id="region_dropdown" :if={@region_filter} filter_context={@filter_context} warning={:public == @filter_context} />
           <LivePatchDropdown
             options={[{nil, "Any"}, {"win", "Win"}, {"loss", "Loss"}, {"draw", "Draw"}]}
             title={"Result"}

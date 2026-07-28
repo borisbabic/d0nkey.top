@@ -4,6 +4,20 @@ defmodule Components.Helper do
   alias FunctionComponents.Dropdown
   alias Backend.Hearthstone.Deck
 
+  @spec add_warning_after(text :: String.t() | any(), add_warning? :: boolean()) :: any()
+  def add_warning_after(text, true) do
+    warning_triangle(%{before: text})
+  end
+
+  def add_warning_after(text, _), do: text
+
+  @spec add_warning_before(text :: String.t() | any(), add_warning? :: boolean()) :: any()
+  def add_warning_before(text, true) do
+    warning_triangle(%{after_warning: text})
+  end
+
+  def add_warning_before(text, _), do: text
+
   def warning_triangle, do: warning_triangle(%{})
 
   attr :before, :any, required: false, default: false

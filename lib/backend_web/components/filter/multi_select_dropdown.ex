@@ -15,12 +15,13 @@ defmodule Components.MultiSelectDropdown do
   prop(updater, :fun, required: false, default: &__MODULE__.update_selected/2)
   prop(num_to_show, :number, required: false, default: 7)
   prop(any_as_empty, :boolean, default: true)
+  prop(warning, :boolean, default: false)
   data(selected, :list, default: [])
 
   def render(%{actual_title: _} = assigns) do
     ~F"""
         <span class={@class}>
-          <Dropdown.menu title={@actual_title} aria-multiselectable="true">
+          <Dropdown.menu title={@actual_title} aria-multiselectable="true" warning?={@warning} >
             <.form :if={@show_search} phx-change={name(@search_event)} phx-submit={name(@search_event)} phx-target={target(@search_event, @myself)} >
               <input name="search" type="text" class="input has-text-black" placeholder="Search" autocomplete="off" />
             </.form>

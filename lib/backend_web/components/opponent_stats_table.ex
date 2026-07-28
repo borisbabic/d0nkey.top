@@ -73,7 +73,7 @@ defmodule Components.OpponentStatsTable do
     <div>
           <RankDropdown id="opp_stats_table_rank_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <PeriodDropdown id="opp_stats_table_period_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
-          <RegionDropdown id="opp_stats_table_region_dropdown" :if={can_access_unaggregated?(@user)} />
+          <RegionDropdown id="opp_stats_table_region_dropdown" :if={can_access_unaggregated?(@user)} warning={true} />
           <FormatDropdown class={"is-hidden-mobile"} :if={@format_dropdown?} id="opp_stats_format_dropdown" aggregated_only={aggregated_only?(@needs_login?, @selected_params)} filter_context={filter_context(@selected_params)}/>
           <PlayerHasCoinDropdown id={"opp_stats_table_player_has_coin_dropdown"} />
           <ForceFreshDropdown id="opp_stats_table_force_fresh_dropdown" :if={Backend.UserManager.User.premium?(@user)} />

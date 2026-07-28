@@ -5,6 +5,7 @@ defmodule FunctionComponents.Dropdown do
 
   attr :title, :any, required: false
   attr :class, :string, default: nil
+  attr :warning?, :boolean, default: false
   slot :inner_block, required: true
 
   def menu(assigns) do
@@ -17,7 +18,7 @@ defmodule FunctionComponents.Dropdown do
       x-bind:aria-expanded="open"
       x-on:keydown.esc="open=false"
     >
-      <.title :if={@title} title={@title} />
+      <.title :if={@title} title={Components.Helper.add_warning_after(@title, @warning?)} />
       
       <div 
         x-cloak

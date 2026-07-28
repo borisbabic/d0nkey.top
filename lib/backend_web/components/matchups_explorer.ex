@@ -45,7 +45,7 @@ defmodule Components.MatchupsExplorer do
       <PeriodDropdown id="matchups_period_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters} />
       <FormatDropdown :if={@format_filter?} id="matchups_format_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
       <RankDropdown id="matchups_rank_dropdown" filter_context={@filter_context} aggregated_only={!@premium_filters}/>
-      <RegionDropdown :if={@premium_filters} id="matchups_region_dropdown" filter_context={@filter_context} warning={@filter_context != :personal}/>
+      <RegionDropdown :if={@premium_filters} id="matchups_region_dropdown" filter_context={@filter_context} warning={:public == @filter_context}/>
       <LivePatchDropdown
         id="min_played_count"
         options={[1, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]}

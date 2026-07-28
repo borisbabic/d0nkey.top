@@ -68,7 +68,7 @@ defmodule Components.TierList do
             normalizer={&to_string/1} />
           <PlayerHasCoinDropdown id="tier_list_player_has_coin_dropdown" />
           {#if premium_filters?(@premium_filters, @user)}
-            <RegionDropdown title={Components.Helper.warning_triangle(%{before: "Region"})} id={"deck_region"} filter_context={:public} />
+            <RegionDropdown title={"Region"} warning={true} id={"deck_region"} filter_context={:public} />
             <ForceFreshDropdown id={"force_fresh"} />
           {/if}
         </.filter_container>

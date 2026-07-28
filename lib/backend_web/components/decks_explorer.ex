@@ -132,7 +132,7 @@ defmodule Components.DecksExplorer do
         <FormatDropdown id="format_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)}/>
         <RankDropdown id="rank_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
         <PeriodDropdown id="period_dropdown" filter_context={@filter_context} aggregated_only={!can_access_unaggregated?(@user, @filter_context)} warning={warning?(@streams)} />
-        <RegionDropdown :if={can_access_unaggregated?(@user, @filter_context)} title={warning_if_public(@filter_context, "Region")} id={"deck_region"} filter_context={@filter_context} />
+        <RegionDropdown :if={can_access_unaggregated?(@user, @filter_context)} title={"Region"} warning={true} id={"deck_region"} filter_context={@filter_context} />
 
          { #<LivePatchDropdown
         #   options={limit_options()}
