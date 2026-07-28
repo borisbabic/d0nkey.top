@@ -21,6 +21,8 @@ defmodule Components.ReplaysTable do
   prop(show_rank, :boolean, default: true)
   prop(show_replay_link, :boolean, default: true)
   prop(show_played, :boolean, default: true)
+  prop(show_turns, :boolean, default: true)
+  prop(show_coin, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -30,6 +32,9 @@ defmodule Components.ReplaysTable do
             <.th :if={@show_player_btag}>Player</.th>
             <.th :if={@show_deck} class={"is-hidden-mobile": @hide_deck_mobile}>Deck</.th>
             <.th :if={@show_opponent}>Opponent</.th>
+            <.th :if={@show_opponent_name}>Opponent Btag</.th>
+            <.th :if={@show_coin}>Coin</.th>
+            <.th :if={@show_played}>Turns</.th>
             <.th :if={@show_mode}>Game Mode</.th>
             <.th :if={@show_rank}>Rank</.th>
             <.th :if={@show_replay_link}>Replay Link</.th>
@@ -42,6 +47,9 @@ defmodule Components.ReplaysTable do
             <.td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !!game.player_deck}><ExpandableDecklist id={"replay_decklist_#{game.id}"} deck={game.player_deck} /></.td>
             <.td class={"is-hidden-mobile": @hide_deck_mobile} :if={@show_deck and !game.player_deck}><div class="tag is-warning">Unknown or incomplete deck</div></.td>
             <.archetype_cell :if={@show_opponent} {... opponent_archetype(game)} />
+            <.td :if={@show_opponent_name}><PlayerName flag={true} player={game.opponent_btag}/></.td>
+            <.td :if={@show_coin}>{coin(game)}</.td>
+            <.td :if={@show_turns}>{game.turns}</.td>
             <.td :if={@show_mode}> <p class={"tag", {class(game), :mode in @show_result_as}}>{game_mode(game)}</p></.td>
             <.td :if={@show_rank}><p class={"tag", {class(game), :rank in @show_result_as}}>{Game.player_rank_text(game)}</p></.td>
             <.td :if={@show_replay_link}><a :if={link = replay_link(game)} href={"#{link}"} target="_blank">View Replay</a></.td>
@@ -51,6 +59,9 @@ defmodule Components.ReplaysTable do
       </.table>
     """
   end
+
+  defp coin(%{player_has_coin: true}), do: "🪙"
+  defp coin(_), do: ""
 
   defp opponent_archetype(%{played_cards: %{opponent_archetype: arch}}) when is_binary(arch) or is_atom(arch),
     do: %{archetype: arch}
