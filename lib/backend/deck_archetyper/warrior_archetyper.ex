@@ -38,6 +38,12 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       herald?(card_info) ->
         :"Harold Warrior"
 
+      warrior_aoe?(card_info) ->
+        :"Control Warrior"
+
+      "Lo'Gosh, Blood Fighter" in card_info.card_names ->
+        :"Lo'Gosh Warrior"
+
       enrage_warrior?(card_info, 4) ->
         :"Enrage Warrior"
 
@@ -47,14 +53,8 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Briarspawn Drake" in card_info.card_names ->
         :"Briarspawn Warrior"
 
-      warrior_aoe?(card_info) ->
-        :"Control Warrior"
-
       type_count(card_info, "Pirate") >= 5 ->
         :"Pirate Warrior"
-
-      "Lo'Gosh, Blood Fighter" in card_info.card_names ->
-        :"Lo'Gosh Warrior"
 
       twenty_five?(card_info) ->
         :"CaprioDi Warrior"
