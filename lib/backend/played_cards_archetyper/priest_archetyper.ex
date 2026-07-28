@@ -13,53 +13,46 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
       "Unshackle Soul"
     ],
     # auto gen
+    "Control Priest": ["Ancient of Yore", "Devouring Plague", "Purifying Breath", "Steamcleaner", "Story of Amara"],
+    "Control Priest": ["Tyrande"],
+    "Thief Priest": ["Psychic Conjurer"],
+    "Egg Priest": ["Holy Smite", "The Egg of Khelos"],
     "Control Priest": [
-      "Devouring Plague",
+      "Cleansing Cleric",
       "Elise the Navigator",
+      "Fae Trickster",
       "Flash Heal",
-      "Purifying Breath",
-      "Steamcleaner",
-      "Story of Amara",
+      "For All Time",
+      "Holy Nova",
+      "Mend",
+      "Moonwell",
+      "Ruby Sanctum",
+      "The Black Blood",
       "Ysera, Emerald Aspect"
     ],
-    # 5.5
-    "Egg Priest": ["The Egg of Khelos"],
-    "Thief Priest": ["Psychic Conjurer"],
-    "Control Priest": [
+    "Thief Priest": ["Power Word: Shield", "Rustrot Viper"],
+    "Quest Priest": ["Captured Archmage"],
+    "Thief Priest": [
       "Atiesh the Greatstaff",
+      "Aviana, Elune's Chosen",
       "Bitterbloom Knight",
+      "Calia Menethil",
       "Cease to Exist",
-      "Cleansing Cleric",
       "Dirty Rat",
-      "Disciple of the Dove",
       "Eternal Firebolt",
-      "Fae Trickster",
-      "For All Time",
       "Gravedawn Sunbloom",
       "Greater Healing Potion",
       "Holy Embrace",
-      "Holy Nova",
-      "Karazhan the Sanctum",
-      "Medivh the Hallowed",
-      "Mend",
-      "Moonwell",
-      "Nightmare Lord Xavius",
-      "Ruby Sanctum",
-      "Shadow Word: Ruin",
-      "Soothsayer",
-      "The Black Blood",
-      "Tyrande",
-      "Undeath Sentence"
-    ],
-    "Thief Priest": [
-      "Hold Them Off!",
       "Intertwined Fate",
       "Kaldorei Priestess",
+      "Karazhan the Sanctum",
       "Karov the Broken",
       "Lunarwing Messenger",
+      "Medivh the Hallowed",
       "Medivh's Triumph",
       "Reach Equilibrium",
-      "Rustrot Viper"
+      "Sands of Time",
+      "Shadow Word: Ruin"
     ]
   ]
   @wild_config [

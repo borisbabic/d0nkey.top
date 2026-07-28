@@ -14,41 +14,42 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Envoy of the End",
       "Experimental Animation"
     ],
+    "Egg DK": [
+      "Holy Eggbearer",
+      "The Egg of Khelos"
+    ],
     "Aggro DK": [
       "Grave Strength",
       "Devious Coyote",
       "Battlefield Necromancer"
     ],
-    "Egg DK": [
-      "Holy Eggbearer",
-      "The Egg of Khelos"
-    ],
     "Imbue DK": ["Flutterwing Guardian", "Petal Picker"],
-    "Thal'ena DK": ["Glacial Shard"],
-    "Thal'ena DK": ["Creature of Madness"],
+    # 5.5
     "Aggro DK": [
-      "Acolyte of Death",
-      "Ancient Raptor",
-      "Monstrous Mosquito",
+      "Cult Neophyte",
       "Talanji's Last Stand",
       "Twilight Egg",
-      "Warden Maiev"
+      "Ancient Raptor",
+      "Acolyte of Death"
     ],
-    "Thal'ena DK": ["Elven Archer"],
-    "Plague DK": ["Disguised Doctor", "Shadows of Yesterday"],
-    "Harold DK": ["Hematurge"],
-    "Thal'ena DK": ["Corpse Cannon", "Falric"],
-    "Handbuff DK": ["Gruesome Nightmare"],
+    "Thal'ena DK": ["Glacial Shard", "Elvent Archer", "Sawbones"],
+    # Auto Gen
+    "Handbuff DK": ["Hourglass Attendant"],
+    "Other DK": ["Ancient of Yore", "Concealing Confection"],
+    "Thal'ena DK": ["Chow Down", "Creature of Madness"],
+    "Harold DK": ["Hematurge", "Husk, Eternal Reaper"],
+    "Imbue DK": ["Jagged Edge of Time"],
     "Rainbow DK": ["Chromatic Broodmother"],
-    "Harold DK": ["Chillfallen Baron", "Emergency Surgery", "Infested Breath"],
-    "Thal'ena DK": ["Tower of Ghouls"],
-    "Imbue DK": [
-      "Jagged Edge of Time",
-      "Bitterbloom Knight",
-      "Resplendent Dreamweaver",
-      "Malorne the Waywatcher",
-      "Finality"
-    ]
+    "Plague DK": ["Disguised Doctor"],
+    "Thal'ena DK": ["Elven Archer"],
+    "Aggro DK": ["Monstrous Mosquito"],
+    "Handbuff DK": ["Blood Tap"],
+    "Egg DK": ["Soulrest Ceremony"],
+    "Aggro DK": ["Murmy", "Reluctant Wrangler"],
+    "Harold DK": ["Chillfallen Baron", "Command Claw", "Infested Breath"],
+    "Thal'ena DK": ["Blood Doctor Thal'ena", "Corpse Cannon", "Falric", "Prize Vendor", "Remnant of Rage"],
+    #
+    "Harold DK": ["Morbid Swarm"]
   ]
 
   @wild_config [

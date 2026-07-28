@@ -9,6 +9,8 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
     "Dragon Warrior": [
       "Darkscale Broodmother",
       "Petal Peddler",
+      "Brood Keeper",
+      "Windpeak Wyrm",
       "Prescient Slitherdrake"
     ],
     "Egg Warrior": [
@@ -18,27 +20,44 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
       "Siphoning Growth",
       "The Egg of Khelos"
     ],
-    "Dragon Warrior": ["Brood Keeper"],
     "Harold Warrior": [
       "Cataclysmic War Axe",
       "Envoy of the End",
       "Scorching Ravager",
       "Ultraxion"
     ],
-    "Lo'Gosh Warrior": ["Broll, Blood Fighter", "Lo'Gosh, Blood Fighter", "Valeera, Blood Fighter"],
-    "Dragon Warrior": ["Windpeak Wyrm"],
-    "Lo'Gosh Warrior": ["Latorvian Armorer", "Mother Duck", "Nightmare Lord Xavius", "Precursory Strike"],
-    "Dragon Warrior": ["Carrier Whelp", "Darkrider"],
-    "Lo'Gosh Warrior": ["Erupting Volcano", "Searing Fissure"],
-    "Egg Warrior": [
+    "Other Warrior": ["Gladiatorial Combat"],
+    "Lo'Gosh Warrior": ["Valeera, Blood Fighter"],
+    "Burn Warrior": ["Rockskipper"],
+    "Lo'Gosh Warrior": [
       "Acolyte of Pain",
       "Axe of the Forefathers",
+      "Broll, Blood Fighter",
+      "Bulwark of Azzinoth",
+      "Chainbreaker Hogger",
+      "City Defenses",
+      "Crowd Control",
+      "Destructive Blaze",
+      "Disguised Watchman",
+      "Erupting Volcano",
       "Eternal Toil",
+      "Execute",
       "For Glory!",
-      "Sanguine Depths",
+      "Latorvian Armorer",
+      "Lo'Gosh, Blood Fighter",
+      "Mother Duck",
+      "Nightmare Lord Xavius",
+      "Portal Vanguard",
+      "Precursory Strike",
+      "Release the Beasts",
+      "Rustrot Viper",
+      "Scramble for Gear",
+      "Searing Fissure",
+      "Shadowflame Suffusion",
       "Shield Block",
       "Slam",
-      "Torch"
+      "Torch",
+      "Twilight Egg"
     ]
   ]
   @wild_config [

@@ -5,13 +5,13 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @leyline_package [
+    "Bursting Leyline",
     "Crystallized Leyline",
     "Ley Walker",
-    "Bursting Leyline",
-    "The Arcanomicon",
-    "Surge Needle",
+    "Leyline Nexus",
     "Mystic Runesaber",
-    "Leyline Nexus"
+    "Surge Needle",
+    "The Arcanomicon"
   ]
   @standard_excludes %{}
   @standard_config [
@@ -28,8 +28,8 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
       "Wisprider"
     ],
     "Leyline Mage": @leyline_package,
-    # auto gen
     "Burn Mage": [
+      "Archmage Kalec",
       "Fireball",
       "Living Flame",
       "Raincaller",
@@ -39,16 +39,32 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
       "Tunneling Geomancer",
       "Unstable Spellcaster"
     ],
-    "Toki Mage": ["Dirty Rat"],
-    "Big Spell Mage": ["Prize Vendor"],
-    "Toki Mage": ["Flamestrike", "Rustrot Viper", "Timelooper Toki", "Ysera, Emerald Aspect"],
-    "Burn Mage": ["Archmage Kalec"],
-    "Manastorm Mage": ["Bitter End", "Ice Barrier", "Mystic Misdirection", "Semi-Stable Portal"],
-    "Burn Mage": ["Arcane Barrage", "Code Violet", "Contraband Wands"],
-    "Toki Mage": ["Blizzard", "Nightmare Lord Xavius", "Relic of Kings"],
-    "Burn Mage": ["Eternal Firebolt", "Storage Scuffle"],
-    "Toki Mage": ["Alter Time", "Cold Snap", "Runed Orb"],
-    "Toki Mage": ["Portal Vanguard", "Sands of Time"]
+    # auto gen
+    "Toki Mage": ["Timelooper Toki", "Ysera, Emerald Aspect"],
+    "Manastorm Mage": ["Deep Freeze", "Khadgar"],
+    "Big Spell Mage": ["Spire Security"],
+    "Manastorm Mage": ["Bitter End", "Mirror Dimension", "Shadowed Informant"],
+    "Burn Mage": ["Story of the Waygate"],
+    "Toki Mage": ["Breakout Architect", "Dirty Rat", "Flamestrike", "Rustrot Viper"],
+    "Burn Mage": ["Arcane Barrage", "Contraband Wands"],
+    "Manastorm Mage": ["Blizzard", "Ice Barrier", "Semi-Stable Portal"],
+    "Toki Mage": ["Nightmare Lord Xavius", "Relic of Kings", "Winterspring Whelp"],
+    "Burn Mage": [
+      "Alter Time",
+      "Code Violet",
+      "Cold Snap",
+      "Eternal Firebolt",
+      "First Flame",
+      "Jailhouse Manastorm",
+      "Portal Vanguard",
+      "Runed Orb",
+      "Sands of Time",
+      "Sleet Storm",
+      "Smoldering Grove",
+      "Spark of Life",
+      "Storage Scuffle",
+      "The Skeleton Key"
+    ]
   ]
   @wild_config [
     "Other Mage": ["Dire Wolf Alpha", "Evasive Wyrm", "Faerie Dragon", "Imposing Anubisath", "Raid Leader"],

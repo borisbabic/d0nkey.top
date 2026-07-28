@@ -5,29 +5,48 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    # auto gen
-    "Zee Shaman": ["Beaming Sidekick", "Hexmarshal", "Slagclaw"],
+    "Zee Shaman": ["Beaming Sidekick", "Hexmarshal"],
     "Mug Shaman": [
       "Ascendance",
-      "Blazing Invocation",
-      "Fire Breath",
-      "Low Security Wing",
       "Molten Gold",
       "Mountain Map"
     ],
-    "Zee Shaman": ["Fire Fly"],
+    "Zee Shaman": [
+      "Emberscarred Whelp",
+      "Fire Fly",
+      "Getaway Hogdriver",
+      "Prescient Slitherdrake",
+      "Slagclaw"
+    ],
+    "Mug Shaman": [
+      "Fire Breath",
+      "Blazing Invocation",
+      "Low Security Wing"
+    ],
     "Harold Shaman": ["Flight of the Firehawk"],
-    "Zee Shaman": ["Emberscarred Whelp", "Prescient Slitherdrake"],
+    "Zee Shaman": ["Darkscale Broodmother", "Platysaur"],
     "Harold Shaman": [
       "Avatar Form",
+      "Crackling Cloudstrider",
       "High King's Hammer",
-      "Muradin's Last Stand",
       "Muradin, High King",
-      "Primordial Overseer",
-      "Twilight Egg"
+      "Primordial Overseer"
     ],
-    "Zee Shaman": ["Carrier Whelp", "Hijacked Securitybot", "Holy Eggbearer", "Shadowed Informant"],
-    "Mug Shaman": ["Ritual of Power", "Sands of Time"]
+    "Zee Shaman": [
+      "Carrier Whelp",
+      "Cult Neophyte",
+      "Gallagio Goon",
+      "Glacial Shard",
+      "Hijacked Securitybot",
+      "Holy Eggbearer",
+      "Portal Vanguard",
+      "Prize Vendor",
+      "Shadowed Informant",
+      "Sizzling Cinder",
+      "Warden Maiev"
+    ],
+    "Mug Shaman": ["Sands of Time", "Thunderquake", "Voltaic Burst"],
+    "Harold Shaman": ["Ritual of Power", "Skywall Sentinel", "Witch's Apprentice"]
   ]
   @wild_config [
     "Even Shaman": [

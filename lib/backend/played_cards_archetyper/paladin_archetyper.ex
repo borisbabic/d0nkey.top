@@ -25,43 +25,38 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
       "Murmy",
       "Carrier Whelp"
     ],
-    "End of Turnadin": ["Earthen Drake"],
-    # 5.5
-    # Auto Gen
-    #
-    "Mill Paladin": ["Annoy-o-Tron", "Spikeridged Steed"],
-    "Egg Paladin": ["Bloodsail Raider", "Fae Trickster", "Holy Eggbearer", "The Egg of Khelos"],
-    "Pure Paladin": ["Scarlet Recruiter"],
-    "Dude Paladin": ["Brash Battlemaster", "Emboldening Blade", "Hatching Ceremony"],
-    "Mill Paladin": ["Doomsayer"],
+    "Mill Paladin": ["Smoldering Strength", "Spikeridged Steed"],
+    "Dude Paladin": ["Emboldening Blade"],
+    "Pure Paladin": ["Mekkatorque's Aura", "Truth Seeker"],
+    "Dude Paladin": ["Brash Battlemaster"],
     "Aggro Paladin": ["Dreambound Raptor"],
+    "Mill Paladin": ["Annoy-o-Tron"],
+    "Pure Paladin": ["Gnomish Aura"],
+    "Egg Paladin": ["Fae Trickster", "Jailbird"],
+    "End of Turnadin": ["Earthen Drake"],
+    "Pure Paladin": ["Scarlet Recruiter"],
     "End of Turnadin": ["Sheltered Survivor"],
-    "Pure Paladin": [
-      "Acceleration Aura",
-      "Chronological Aura",
-      "Gelbin of Tomorrow",
-      "Inspiring Maul",
-      "Manifested Timeways",
-      "Mekkatorque's Aura",
-      "Reinforcement Aura",
-      "Scalebreaker Bulwark"
-    ],
-    "Aggro Paladin": [
-      "Cult Neophyte",
-      "Dragonscale Armaments",
-      "Glacial Shard",
-      "Platysaur",
-      "Prize Vendor",
-      "Resistance Aura"
-    ],
-    "Pure Paladin": ["Consecration", "Dreamwarden", "Nozdormu, Bronze Aspect", "Toreth the Unbreaking"],
+    "Mill Paladin": ["Doomsayer", "Endbringer Umbra"],
+    "Pure Paladin": ["Reinforcement Aura"],
+    "Egg Paladin": ["Bloodsail Raider", "The Egg of Khelos"],
+    "Aggro Paladin": ["Cult Neophyte", "Platysaur"],
+    "End of Turnadin": ["Nightmare Lord Xavius"],
+    "Pure Paladin": ["Acceleration Aura", "Chronological Aura", "Gelbin of Tomorrow", "Manifested Timeways"],
+    "Aggro Paladin": ["Dragonscale Armaments"],
+    "End of Turnadin": ["Battle Vicar"],
     "Dude Paladin": ["Muster for Battle"],
-    "Aggro Paladin": ["Sizzling Cinder"],
+    "Aggro Paladin": ["Glacial Shard", "Sizzling Cinder"],
     "Pure Paladin": [
       "Convalescence",
+      "Dreamwarden",
+      "Inspiring Maul",
+      "Nozdormu, Bronze Aspect",
       "Past Gnomeregan",
       "Righteous Protector",
+      "Sandfury Aura",
+      "Scalebreaker Bulwark",
       "Spearheart Sentry",
+      "Toreth the Unbreaking",
       "Violet Treasuregill"
     ]
   ]

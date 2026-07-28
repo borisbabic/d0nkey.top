@@ -30,24 +30,22 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       "Sewer Imp",
       "Tindral Sageswift"
     ],
-    "Merithra Druid": ["Darkscale Broodmother", "Fyrakk the Blazing"],
+    "Merithra Druid": ["Merithra of the Dream", "Darkscale Broodmother", "Fyrakk the Blazing"],
+    "Chef Druid": ["Mossbinding", "Symbiosis", "Photosynthesis"],
     # auto gen
-    "Chef Druid": ["Mossbinding", "Symbiosis"],
-    "Merithra Druid": ["Broodwatcher", "Darkscale Broodmother", "Merithra of the Dream", "Rustrot Viper"],
-    "Azshara Druid": ["Briarspawn Drake"],
-    "Chef Druid": ["Sands of Time"],
+    "Merithra Druid": ["Broodwatcher"],
+    "Chef Druid": ["Warden Maiev"],
+    "Azshara Druid": ["Briarspawn Drake", "Welcome Home!", "Zin-Azshari"],
+    "Chef Druid": ["Doomsayer", "Sands of Time"],
+    "Merithra Druid": ["Highborne Mentor", "Lifebloom", "Rustrot Viper", "Staff of Trickery", "Wickerfang"],
+    "Chef Druid": ["Spider Rider", "Spiderling", "Widow's Bite"],
     "Azshara Druid": ["Lady Azshara"],
-    "Merithra Druid": ["Nightmare Lord Xavius", "Wickerfang"],
-    "Chef Druid": [
-      "Azshara's Triumph",
-      "Press the Advantage",
-      "Secret Ingredient",
-      "Spider Rider",
-      "Spiderling",
-      "Widow's Bite"
-    ],
-    "Azshara Druid": ["Heartroot Stones"],
-    "Merithra Druid": ["Acceleration Aura", "Felwood Treant", "Waveshaping"]
+    "Hostage Druid": ["Shaladrassil"],
+    "Krona Druid": ["Contingency", "Krona, Keeper of Eons", "Prize Vendor"],
+    "Merithra Druid": ["Bashana Runetotem", "Nightmare Lord Xavius"],
+    "Chef Druid": ["Azshara's Triumph"],
+    "Hostage Druid": ["Heartroot Stones", "Press the Advantage", "Twilight Timereaver", "Underking"],
+    "Merithra Druid": ["Acceleration Aura", "Felwood Treant", "Horn of Plenty", "Innervate", "Waveshaping"]
   ]
   @wild_config [
     "Barnes Druid": ["Starfire"],

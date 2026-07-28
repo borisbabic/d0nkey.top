@@ -40,22 +40,16 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
     # auto gen
     "Void Soul DH": [
       "Axe of Cenarius",
-      "Broxigar's Last Stand",
       "Cult Neophyte",
       "First Portal to Argus",
+      "Glacial Shard",
       "Grim Harvest",
-      "Hive Map",
-      "Horn of Feasting",
-      "Illidari Studies",
       "Infestation",
-      "Irida Sinseeker",
-      "Kayn Sunfury",
-      "Nightmare Lord Xavius",
-      "Press the Advantage",
-      "Sigil of Cinder",
-      "Sigil of the Seas",
-      "Wyvern's Slumber"
-    ]
+      "Rustrot Viper",
+      "Sands of Time",
+      "Sigil of the Seas"
+    ],
+    "Void Soul DH": ["Illidari Studies", "Press the Advantage", "Wyvern's Slumber"]
   ]
   @wild_config [
     "XL Draenei Demon Hunter": ["Crimson Commander", "Saronite Chain Gang", "Starlight Wanderer"],
