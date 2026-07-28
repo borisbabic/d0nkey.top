@@ -14,7 +14,7 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       imbue?(card_info, 5) ->
         :"Imbue Rogue"
 
-      thief_rogue?(card_info) ->
+      thief?(card_info) ->
         :"Thief Rogue"
 
       weapon?(card_info) ->
@@ -62,6 +62,10 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp thief?(card_info) do
+    min_count?(card_info, 2, ["Rat Burglar", "Keymaster Alabaster", "Mimicry", "Shadowcloaked Assailant"])
   end
 
   defp ayaya?(card_info) do
@@ -192,34 +196,6 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
   def cycle?(card_info) do
     min_count?(card_info, 3, @multi_draw)
   end
-
-  defp thief_rogue?(ci),
-    do:
-      min_count?(ci, 6, [
-        "Shaku, the Collector",
-        "Agency Espionage",
-        "Nightmare Fuel",
-        "Undercity Huckster",
-        "Tricky Satyr",
-        "Ashamane",
-        "Mimicry",
-        "Thistle Tea",
-        "Snatch and Grab",
-        "Treasure Hunter Eudora",
-        "Petty Theft",
-        "Concierge",
-        "Tess Greymane",
-        "Twisted Pack",
-        "Mixtape",
-        "Hipster",
-        "Plagiarizarrr",
-        "Jackpot!",
-        "Kaja'mite Creation",
-        "Costume Merchant",
-        "Shadowed Informant",
-        "Hench-Clan Burglar",
-        "Swashburglar"
-      ])
 
   def wild(card_info) do
     cond do
