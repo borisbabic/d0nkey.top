@@ -1171,6 +1171,14 @@ defmodule Hearthstone.DeckTracker do
     end
   end
 
+  defp filter_out_bots(query) do
+    query
+    |> where(
+      [played_cards: pc, game: g],
+      g.region != :CN or (pc.player_archetype != :"Imbue Mage" and pc.opponent_archetype != :"Imbue Mage")
+    )
+  end
+
   @spec archetypes(list() | map(), list()) :: [atom()]
   def archetypes(raw_criteria, repo_opts \\ []) do
     criteria =
@@ -1317,6 +1325,14 @@ defmodule Hearthstone.DeckTracker do
   @old_aggregated_query %{from: %{as: :deck_stats}}
   @agg_deck_query %{from: %{as: :agg_deck_stats}}
   @card_query %{from: %{as: :card_tally}}
+
+  defp compose_games_query({"filter_out_bots", yes}, query) when yes in @affirmative do
+    query
+    |> ensure_played_cards_joined()
+    |> filter_out_bots()
+  end
+
+  defp compose_games_query({"filter_out_bots", _}, query), do: query
 
   defp compose_games_query({"with_card_tallies", yes}, query) when yes in @affirmative do
     query
@@ -3853,6 +3869,7 @@ defmodule Hearthstone.DeckTracker do
                  {"period", period_slug},
                  {"rank", rank_slug},
                  {"format", format},
+                 {"filter_out_bots", "yes"},
                  {"exclude_bugged_sources", "yes"}
                ]) do
             {:ok, matchups} ->

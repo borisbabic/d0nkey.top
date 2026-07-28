@@ -119,6 +119,7 @@ defmodule Hearthstone.DeckTracker.StatsAggregator do
 
             games_criteria = [
               {"with_card_tallies", true},
+              {"filter_out_bots", true},
               {"player_deck_archetype", archetypes} | base_criteria
             ]
 
