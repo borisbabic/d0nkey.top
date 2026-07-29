@@ -42,7 +42,7 @@ defmodule BackendWeb.TournamentLineups do
 
   @spec choose_your_champion?(String.t(), String.t()) :: boolean()
   defp choose_your_champion?("masters_tour", "summer_2026") do
-    Util.after_now?(~N[2026-08-01 07:00:00])
+    Util.after_now?(~N[2026-08-05 07:00:00])
   end
 
   defp choose_your_champion?(_, _), do: false
