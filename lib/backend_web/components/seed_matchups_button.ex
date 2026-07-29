@@ -9,7 +9,7 @@ defmodule Components.SeedMatchupsButton do
 
   def render(assigns) do
     ~F"""
-    <button class="button" :on-click="seed_matchups_weights" phx-hook="LocalStorage">
+    <button id={"#{@id}_seed_matchups_button"} class="button" :on-click="seed_matchups_weights" phx-hook="LocalStorage">
       {@button_title}
     </button>
     """
