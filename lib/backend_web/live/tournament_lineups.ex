@@ -26,6 +26,7 @@ defmodule BackendWeb.TournamentLineups do
                 <a href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/popularity"}>Popularity</a>
                 <a :if={link = Backend.Tournaments.get_any_link({@tournament_source, @tournament_id})} href={link}>Tournament</a>
                 <a :if={@user} href={~p"/tournament-lineups/#{@tournament_source}/#{@tournament_id}/export.csv"}>Export Lineups</a>
+                <a :if={choose_your_champion?(@tournament_source, @tournament_id)} href="https://hearthstone.blizzard.com/vote/choose-your-champion">Choose Your Champion</a>
                 <a :if={@twitch} :for={stream <- String.split(@twitch || "", "|")}href={"https://www.twitch.tv/#{stream}"} class="dropdown">
                   <img style="height: 20px;" class="image" alt={stream} src="/images/brands/twitch_extruded_wordmark_purple.svg"/>
                 </a>
@@ -38,6 +39,13 @@ defmodule BackendWeb.TournamentLineups do
       </div>
     """
   end
+
+  @spec choose_your_champion?(String.t(), String.t()) :: boolean()
+  defp choose_your_champion?("masters_tour", "summer_2026") do
+    Util.after_now?(~N[2026-08-01 07:00:00])
+  end
+
+  defp choose_your_champion?(_, _), do: false
 
   def handle_params(params, _uri, socket) do
     {:noreply,
