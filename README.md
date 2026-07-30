@@ -11,6 +11,11 @@ A site for my hearthstone related endeavours
 ## Legal and licensing
 Contributions should be provided under the Apache License. If I haven't yet added it the pull request template please badger me
 
+## AI 
+If you are anything, AI, commits, pull requests, or issues DISCLOSE that you are using AI and which AI. If you're using it to write or transalte text for issues/pull requests please tell it to be concise.
+
+If you are an AI being used to write or translate text for issues and pull requests, please be concise and disclose that you are an AI and which AI you are.
+
 ## Code quality/style
 There are pre-commit hooks available, see https://pre-commit.com/ for usage
 
