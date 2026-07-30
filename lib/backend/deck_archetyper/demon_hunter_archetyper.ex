@@ -151,7 +151,7 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       "Blindeye Sharpshooter" in card_info.card_names and questline?(card_info) ->
         :"Naga DH"
 
-      wild_token_brox?(card_info) and questline?(card_info) ->
+      "Broxigar's Last Stand" in card_info.card_names and questline?(card_info) ->
         :"Token DH"
 
       "Broxigar" in card_info.card_names and questline?(card_info) ->
@@ -169,13 +169,6 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, class_name)
     end
-  end
-
-  defp wild_token_brox?(card_info) do
-    min_count?(card_info, 2, [
-      "Broxigar",
-      "Broxigar's Last Stand"
-    ])
   end
 
   def pirate?(card_info) do
