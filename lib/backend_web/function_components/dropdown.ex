@@ -5,6 +5,7 @@ defmodule FunctionComponents.Dropdown do
 
   attr :title, :any, required: false
   attr :class, :string, default: nil
+  attr :new_cutoff, :map, default: nil
   attr :warning?, :boolean, default: false
   slot :inner_block, required: true
 
@@ -18,7 +19,7 @@ defmodule FunctionComponents.Dropdown do
       x-bind:aria-expanded="open"
       x-on:keydown.esc="open=false"
     >
-      <.title :if={@title} title={Components.Helper.add_warning_after(@title, @warning?)} />
+      <.title :if={@title} title={Components.Helper.add_warning_after(@title, @warning?) |> Components.Helper.add_new_after(@new_cutoff)} />
       
       <div 
         x-cloak

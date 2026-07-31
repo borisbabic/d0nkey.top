@@ -6,6 +6,7 @@ defmodule Components.LivePatchDropdown do
 
   prop(class, :css_class, default: nil)
   prop(warning, :boolean, default: false)
+  prop(new_cutoff, :naive_datetime, default: nil)
 
   @spec render(%{
           :normalizer => any,
@@ -16,7 +17,7 @@ defmodule Components.LivePatchDropdown do
   def render(%{actual_title: _} = assigns) do
     ~F"""
     <span>
-      <Dropdown.menu title={@actual_title} class={[@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning]}>
+      <Dropdown.menu title={@actual_title} new_cutoff={@new_cutoff} class={[@class, "has-text-black", "tw-border-2 tw-rounded tw-border-orange-500": @warning]}>
         <Dropdown.item
           :for={opt <- @options}
           selected={@current == @normalizer.(value(opt))}

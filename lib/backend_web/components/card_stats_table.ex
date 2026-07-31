@@ -30,6 +30,7 @@ defmodule Components.CardStatsTable do
   prop(user, :map, from_context: :user)
   prop(premium_filters, :boolean, default: nil)
   data(test_params, :map)
+  data(offsets, :map, default: %{})
   data(highlight_cards, :list, default: [])
 
   def update(assigns, socket) do
@@ -39,6 +40,7 @@ defmodule Components.CardStatsTable do
       :ok,
       socket
       |> assign(assigns)
+      |> assign_offsets()
       |> assign(test_params: test_params)
       |> LivePatchDropdown.update_context(
         assigns.live_view,
@@ -48,6 +50,20 @@ defmodule Components.CardStatsTable do
       )
     }
   end
+
+  defp assign_offsets(%{assigns: %{card_stats: stats, filters: filters}} = socket) do
+    if weighted_colors?(filters) do
+      offsets = offsets(stats)
+
+      socket
+      |> assign(offsets: offsets)
+    else
+      socket
+      |> assign(offsets: %{})
+    end
+  end
+
+  defp assign_offsets(socket), do: socket
 
   def render(assigns) do
     ~F"""
@@ -73,6 +89,12 @@ defmodule Components.CardStatsTable do
           options={[{"yes", "Show Counts"}, {"alongside_impact", "Counts Alongside Impact"}, {"no", "Don't Show Counts"}]}
           title={"Show Counts"}
           param={"show_counts"}
+          selected_as_title={true} />
+        <LivePatchDropdown id="impact_colors"
+          options={[{"weighted", "Weighted Colors"}, {"pos_neg", "Positive/Negative Colors"}]}
+          title={"Impact Colors"}
+          param={"impact_colors"}
+          new_cutoff={~N[2026-08-15 13:00:00]}
           selected_as_title={true} />
         <ClassDropdown id={"opponent_class_filter"}
           title={"Opponent"}
@@ -173,7 +195,7 @@ defmodule Components.CardStatsTable do
 
               <.td py={0}>
                 <div class="tw-flex tw-items-center tw-gap-1.5">
-                  <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
+                  <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} offset={Util.get(@offsets, :mull_impact, default: 0)} winrate={Util.get(cs, :mull_impact)} sample={Util.get(cs, :mull_total)} round/>
                   <span :if={!cs.sufficient_mull and !show_counts?(@filters)} class="has-text-warning"><HeroIcons.warning_triangle class="tw-w-4 tw-h-4" /></span>
                 </div>
               </.td>
@@ -183,21 +205,21 @@ defmodule Components.CardStatsTable do
 
               <.td py={0} >
                 <div class="tw-flex tw-items-center tw-gap-1.5">
-                  <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
+                  <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} offset={Util.get(@offsets, :drawn_impact, default: 0)} winrate={Util.get(cs, :drawn_impact)} sample={Util.get(cs, :drawn_total)} />
                   <span :if={!cs.sufficient_drawn and !show_counts?(@filters)} class="has-text-warning"><HeroIcons.warning_triangle class="tw-w-4 tw-h-4" /></span>
                 </div>
               </.td>
               <.td py={0} :if={show_counts?(@filters)}><.count count={Util.get(cs, :drawn_total)}/></.td>
 
               <.td py={0} class="is-hidden-mobile">
-                <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} flip={true} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
+                <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} flip={true} offset={Util.get(@offsets, :not_drawn_impact, default: 0)} winrate={Util.get(cs, :not_drawn_impact)} sample={Util.get(cs, :not_drawn_total)} />
               </.td>
               <.td py={0} class="is-hidden-mobile" :if={show_counts?(@filters)}>
                 <.count count={Util.get(cs, :not_drawn_total)} />
               </.td>
 
               <.td py={0} class="is-hidden-mobile">
-                <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
+                <WinrateTag impact={true} show_sample={counts_alongside_impact?(@filters)} offset={Util.get(@offsets, :kept_impact, default: 0)} winrate={Util.get(cs, :kept_impact)} sample={Util.get(cs, :kept_total)}/>
               </.td>
               <.td py={0} :if={show_counts?(@filters)} class="is-hidden-mobile"><.count count={Util.get(cs, :kept_total)}/></.td>
             </.trb>
@@ -417,6 +439,7 @@ defmodule Components.CardStatsTable do
       "min_drawn_count",
       "min_count",
       "show_counts",
+      "impact_colors",
       "player_deck_id",
       "deck_id",
       "player_mulligan",
@@ -463,7 +486,8 @@ defmodule Components.CardStatsTable do
 
   def default_filters do
     %{
-      "show_counts" => "alongside_impact"
+      "show_counts" => "alongside_impact",
+      "impact_colors" => "weighted"
     }
   end
 
@@ -499,6 +523,15 @@ defmodule Components.CardStatsTable do
      )}
   end
 
+  defp weighted_colors?(filters) do
+    impact_colors =
+      filters
+      |> with_default_filters()
+      |> Map.fetch!("impact_colors")
+
+    impact_colors == "weighted"
+  end
+
   def show_counts?(filters) do
     show_counts =
       filters
@@ -515,5 +548,48 @@ defmodule Components.CardStatsTable do
       |> Map.get("show_counts", "alongside_impact")
 
     show_counts == "alongside_impact"
+  end
+
+  def offsets(stats) do
+    {factors, totals} =
+      stats
+      |> Enum.reduce({%{}, %{}}, fn stats, carry ->
+        stats
+        |> Map.keys()
+        |> find_impact_total_pairs()
+        |> Enum.reduce(carry, fn {impact_key, total_key}, {factors, totals} ->
+          total_val = Map.get(stats, total_key, 0)
+          impact_val = Map.get(stats, impact_key, 0)
+          factor = impact_val * total_val
+          new_factors = Map.update(factors, impact_key, 0, &(&1 + factor))
+          new_totals = Map.update(totals, impact_key, 0, &(&1 + total_val))
+          {new_factors, new_totals}
+        end)
+      end)
+
+    Map.new(totals, fn
+      {key, total} when is_number(total) and total > 0 ->
+        factor = Map.get(factors, key) || 0
+        {key, -1 * factor / total}
+
+      {key, _} ->
+        {key, 0}
+    end)
+  end
+
+  defp find_impact_total_pairs(keys) do
+    Enum.group_by(keys, fn k ->
+      String.split(k, "_") |> Enum.reverse() |> Enum.drop(1) |> Enum.reverse() |> Enum.join("_")
+    end)
+    |> Enum.flat_map(fn {group, _} ->
+      impact = group <> "_impact"
+      total = group <> "_total"
+
+      if impact in keys and total in keys do
+        [{impact, total}]
+      else
+        []
+      end
+    end)
   end
 end

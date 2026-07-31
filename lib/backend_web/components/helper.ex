@@ -4,6 +4,19 @@ defmodule Components.Helper do
   alias FunctionComponents.Dropdown
   alias Backend.Hearthstone.Deck
 
+  @spec add_new_after(String.t() | any(), NaiveDateTime.t() | boolean() | nil) :: any()
+  def add_new_after(text, true), do: new_after(%{text: text})
+
+  def add_new_after(text, %NaiveDateTime{} = cutoff) do
+    if Util.after_now?(cutoff) do
+      new_after(%{text: text})
+    else
+      text
+    end
+  end
+
+  def add_new_after(text, _), do: text
+
   @spec add_warning_after(text :: String.t() | any(), add_warning? :: boolean()) :: any()
   def add_warning_after(text, true) do
     warning_triangle(%{before: text})
@@ -19,6 +32,20 @@ defmodule Components.Helper do
   def add_warning_before(text, _), do: text
 
   def warning_triangle, do: warning_triangle(%{})
+
+  attr :text, :any, required: false
+
+  def new_after(assigns) do
+    ~H"""
+    <span>{@text}<.new/></span>
+    """
+  end
+
+  def new(assigns) do
+    ~H"""
+    <sup class="is-size-7 has-text-info"> New!</sup>
+    """
+  end
 
   attr :before, :any, required: false, default: false
   attr :after_warning, :any, required: false, default: false
