@@ -35,6 +35,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       rat_trap?(card_info) ->
         :"Rat Trap Hunter"
 
+      dragon_hunter?(card_info, 3) ->
+        :"Dragon Hunter"
+
       deathrattle?(card_info) ->
         :"Deathrattle Hunter"
 
@@ -115,10 +118,10 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
     ])
   end
 
-  defp dragon_hunter?(card_info) do
+  defp dragon_hunter?(card_info, count \\ 4) do
     min_count?(
       card_info,
-      4,
+      count,
       [
         "Earthen Roar",
         "Stonetalon Striker",
