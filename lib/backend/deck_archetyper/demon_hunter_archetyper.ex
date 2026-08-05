@@ -24,6 +24,9 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       void_soul?(card_info, 4) ->
         :"Void Soul DH"
 
+      raza?(card_info) ->
+        :"Raza DH"
+
       "Irida Sinseeker" in card_info.card_names ->
         :"Void DH"
 
@@ -54,6 +57,10 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
       true ->
         fallbacks(card_info, "DH")
     end
+  end
+
+  defp raza?(card_info) do
+    min_count?(card_info, 3, ["Enduring Roach", "Soul Immolation", "Eredar Deceptor"])
   end
 
   defp archmage?(card_info) do
