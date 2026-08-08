@@ -24,6 +24,10 @@ defmodule BackendWeb.DeckTrackerController do
   def put_game(conn, params) do
     api_user = api_user(conn)
 
+    if Mix.env() == :dev do
+      dbg(params)
+    end
+
     case enqueue_game(params, api_user) do
       {:ok, %{deck: %Deck{} = deck} = ret} ->
         conn
