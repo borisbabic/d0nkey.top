@@ -6,62 +6,51 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
 
   @standard_config [
     "Quest Rogue": ["Lie in Wait"],
-    "Harold Rogue": [
-      "Maniacal Follower",
-      "Ultraxion",
-      "Envoy of the End",
-      "Sinestra",
-      "Deathwing, Worldbreaker"
-    ],
-    "Two-Bit Rogue": [
-      # "Lotus Troublemaker",
-      "Bloodmage Thalnos",
-      "Picklock",
-      "Escape Artist",
-      "Warden Maiev",
-      "Shadowed Informant"
-    ],
     # auto gen
-    "Two-Bit Rogue": [
-      "Aya, Lotus Kingpin",
-      "Blackpaw's Whip",
-      "Cult Neophyte",
-      "Fan of Knives",
-      "Garona Halforcen",
-      "Jade Guardians",
-      "Loot Hoarder",
-      "Lotus Troublemaker",
-      "Rockskipper",
-      "The Kingslayers",
-      "War'loc"
-    ],
+    "Two-Bit Rogue": ["Bloodmage Thalnos", "Crystal Tusk", "Escape Artist", "Lotus Troublemaker", "Picklock"],
     "Harold Rogue": [
-      "Creature of Madness",
+      "Deathwing, Worldbreaker",
       "Elise the Navigator",
-      "Flutterwing Guardian",
-      "Glacial Shard",
-      "Jagged Edge of Time",
-      "Nightmare Fuel",
-      "Nightmare Lord Xavius",
-      "Opu the Unseen",
-      "Resplendent Dreamweaver",
-      "Sands of Time",
-      "Twilight Mistress"
+      "Envoy of the End",
+      "Maniacal Follower",
+      "Sinestra",
+      "Ultraxion"
     ],
     "Two-Bit Rogue": [
       "Agent of the Old Ones",
+      "Aya, Lotus Kingpin",
       "Backstab",
       "Bitterbloom Knight",
+      "Blackpaw's Whip",
+      "Cult Neophyte",
       "Cultist Map",
+      "Deadly Bribe",
       "Deja Vu",
+      "Dirty Rat",
+      "Doomsayer",
       "Eventuality",
+      "Fan of Knives",
       "Flashback",
       "Foxy Fraud",
+      "Garona Halforcen",
+      "Glacial Shard",
+      "Jade Guardians",
+      "Loot Hoarder",
       "Lotus Bookie",
+      "Naralex, Herald of the Flights",
+      "Nightmare Fuel",
       "Preparation",
+      "Prize Vendor",
       "Rite of Twilight",
+      "Rustrot Viper",
+      "Sands of Time",
+      "Shadowed Informant",
+      "The Kingslayers",
       "Thief's Tools",
-      "Vanessa the Ringleader"
+      "Twilight Mistress",
+      "Vanessa the Ringleader",
+      "Warden Maiev",
+      "Watfin"
     ]
   ]
   @wild_config [
