@@ -15,41 +15,30 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Experimental Animation"
     ],
     "Egg DK": [
+      "Abusive Sergeant",
+      "Endbringer Umbra",
+      "Dissolving Ooze",
       "Holy Eggbearer",
       "The Egg of Khelos"
     ],
     "Aggro DK": [
       "Grave Strength",
-      "Devious Coyote",
-      "Battlefield Necromancer"
-    ],
-    "Imbue DK": ["Flutterwing Guardian", "Petal Picker"],
-    # 5.5
-    "Aggro DK": [
-      "Cult Neophyte",
+      "Reluctant Wrangler",
       "Talanji's Last Stand",
       "Twilight Egg",
-      "Ancient Raptor",
-      "Acolyte of Death"
+      "Murmy"
     ],
-    "Thal'ena DK": ["Glacial Shard", "Elvent Archer", "Sawbones"],
-    # Auto Gen
-    "Handbuff DK": ["Hourglass Attendant"],
-    "Other DK": ["Ancient of Yore", "Concealing Confection"],
-    "Thal'ena DK": ["Chow Down", "Creature of Madness"],
-    "Harold DK": ["Hematurge", "Husk, Eternal Reaper"],
-    "Imbue DK": ["Jagged Edge of Time"],
-    "Rainbow DK": ["Chromatic Broodmother"],
-    "Plague DK": ["Disguised Doctor"],
-    "Thal'ena DK": ["Elven Archer"],
-    "Aggro DK": ["Monstrous Mosquito"],
-    "Handbuff DK": ["Blood Tap"],
-    "Egg DK": ["Soulrest Ceremony"],
-    "Aggro DK": ["Murmy", "Reluctant Wrangler"],
-    "Harold DK": ["Chillfallen Baron", "Command Claw", "Infested Breath"],
-    "Thal'ena DK": ["Blood Doctor Thal'ena", "Corpse Cannon", "Falric", "Prize Vendor", "Remnant of Rage"],
+    # AUTO GEN 
     #
-    "Harold DK": ["Morbid Swarm"]
+    "Egg DK": ["Portal Vanguard"],
+    "Frost DK": ["Cryosleep", "Fae Trickster", "Frostwyrm's Fury", "Rockskipper", "Timestop", "Tunneling Geomancer"],
+    "Egg DK": ["Defias Smuggler", "Wild Pyromancer"],
+    "Aggro DK": ["Battlefield Necromancer"],
+    "Egg DK": ["Escape Artist"],
+    "Egg DK": ["Acolyte of Death", "Corpse Cannon", "Drink Blood", "Falric", "Glacial Shard", "Sawbones"],
+    "Harold DK": ["Chillfallen Baron", "Hematurge"],
+    "Egg DK": ["Infested Breath", "Morbid Swarm", "Staff of the Endbringer"]
+    # 5.5
   ]
 
   @wild_config [
