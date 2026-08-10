@@ -15,39 +15,38 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
        "Resplendent Dreamweaver",
        "Flutterwing Guardian"
      ]},
-    # auto gen
-    "Face Hunter": ["Platysaur"],
     "Companion Hunter": ["Talya Earthstrider"],
     "Face Hunter": [
-      "Arcane Shot",
-      "Briarspawn Drake",
+      "Platysaur",
+      "Rockskipper",
       "Quel'dorei Fletcher",
       "Reinforcement Rallier",
-      "Rockskipper",
-      "Sizzling Cinder"
+      "Precise Shot",
+      "Sizzling Cinder",
+      "Arcane Shot"
     ],
     "Companion Hunter": [
-      "Animal Companion",
-      "Broll Bearmantle",
-      "Call of the Wild",
-      "Migrating Elekk",
-      "Roam Free",
-      "Spiritspeaker"
+      "Migrating Elekk"
     ],
-    "Dragon Hunter": ["Darkscale Broodmother", "Petal Peddler", "Prescient Slitherdrake"],
+    "Dragon Hunter": [
+      "Stonetalon Striker",
+      "Darkscale Broodmother",
+      "Ebonscale Scout"
+    ],
     "Face Hunter": [
+      "Glacial Shard"
+    ],
+    # auto gen
+    "Dragon Hunter": [
       "Arcane Tripwire",
       "Beast Tripwire",
+      "Carrier Whelp",
       "Confront the Tol'vir",
-      "Cult Neophyte",
       "Earthen Roar",
-      "Glacial Shard",
-      "King of the Underbelly",
       "Ranger Captain Alleria",
       "Ranger General Sylvanas",
       "Ranger Initiate Vereesa",
-      "Raptor-Nest Nurse",
-      "Rustrot Viper",
+      "Shadowed Informant",
       "Smuggled Shovel",
       "Sylvanas's Triumph",
       "Tame Pet",
