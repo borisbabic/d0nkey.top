@@ -13,46 +13,46 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
       "Unshackle Soul"
     ],
     # auto gen
-    "Control Priest": ["Ancient of Yore", "Devouring Plague", "Purifying Breath", "Steamcleaner", "Story of Amara"],
-    "Control Priest": ["Tyrande"],
-    "Thief Priest": ["Psychic Conjurer"],
-    "Egg Priest": ["Holy Smite", "The Egg of Khelos"],
     "Control Priest": [
+      "Ancient of Yore",
+      "Atiesh the Greatstaff",
       "Cleansing Cleric",
+      "Devouring Plague",
       "Elise the Navigator",
       "Fae Trickster",
       "Flash Heal",
-      "For All Time",
       "Holy Nova",
-      "Mend",
-      "Moonwell",
-      "Ruby Sanctum",
+      "Karazhan the Sanctum",
+      "Malorne the Waywatcher",
+      "Steamcleaner",
+      "Story of Amara",
       "The Black Blood",
+      "Tyrande",
       "Ysera, Emerald Aspect"
     ],
-    "Thief Priest": ["Power Word: Shield", "Rustrot Viper"],
-    "Quest Priest": ["Captured Archmage"],
+    "Soothsayer Priest": ["Calia Menethil", "Jailbird", "Portal Vanguard"],
+    # 5.5
+    "Thief Priest": ["Psychic Conjurer"],
+    "Egg Priest": ["Defias Smuggler", "The Egg of Khelos"],
+    "Soothsayer Priest": ["Endbringer Umbra", "Hold Them Off!", "Twilight Influence"],
+    "Thief Priest": ["Power Word: Shield"],
+    "Control Priest": ["Mend", "Ruby Sanctum"],
+    # 10.5
     "Thief Priest": [
-      "Atiesh the Greatstaff",
-      "Aviana, Elune's Chosen",
-      "Bitterbloom Knight",
-      "Calia Menethil",
-      "Cease to Exist",
-      "Dirty Rat",
-      "Eternal Firebolt",
-      "Gravedawn Sunbloom",
-      "Greater Healing Potion",
       "Holy Embrace",
       "Intertwined Fate",
       "Kaldorei Priestess",
-      "Karazhan the Sanctum",
-      "Karov the Broken",
       "Lunarwing Messenger",
       "Medivh the Hallowed",
-      "Medivh's Triumph",
-      "Reach Equilibrium",
-      "Sands of Time",
+      "Moonwell",
       "Shadow Word: Ruin"
+    ],
+    "Thief Priest": [
+      "Bitterbloom Knight",
+      "Dirty Rat",
+      "Eternal Firebolt",
+      "Medivh's Triumph",
+      "Reach Equilibrium"
     ]
   ]
   @wild_config [
