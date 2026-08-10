@@ -42,11 +42,11 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       "Merithra of the Dream" in card_info.card_names ->
         :"Merithra Druid"
 
-      "Krona, Keeper of Eons" in card_info.card_names ->
-        :"Krona Druid"
-
       "Lady Azshara" in card_info.card_names ->
         :"Azshara Druid"
+
+      "Krona, Keeper of Eons" in card_info.card_names ->
+        :"Krona Druid"
 
       "Alternate Reality" in card_info.card_names ->
         :"Alternate Reality Druid"
