@@ -8,57 +8,34 @@ defmodule Backend.PlayedCardsArchetyper.PaladinArchetyper do
 
   @standard_config [
     "Quest Paladin": ["Dive the Golakka Depths"],
-    "Pure Paladin": ["Vigilant Sentry", "Scarlet Bruiser"],
-    "Imbue Paladin": [
-      "Bitterbloom Knight",
-      "Flutterwing Guardian",
-      "Malorne the Waywatcher",
-      "Petal Picker",
-      "Resplendent Dreamweaver"
-    ],
-    "Aggro Paladin": [
-      "Elven Archer",
-      "Abusive Sergeant",
-      "Beaming Sidekick",
-      "Concealing Confection",
-      "Fire Fly",
-      "Murmy",
-      "Carrier Whelp"
-    ],
-    "Mill Paladin": ["Smoldering Strength", "Spikeridged Steed"],
-    "Dude Paladin": ["Emboldening Blade"],
-    "Pure Paladin": ["Mekkatorque's Aura", "Truth Seeker"],
-    "Dude Paladin": ["Brash Battlemaster"],
-    "Aggro Paladin": ["Dreambound Raptor"],
-    "Mill Paladin": ["Annoy-o-Tron"],
-    "Pure Paladin": ["Gnomish Aura"],
-    "Egg Paladin": ["Fae Trickster", "Jailbird"],
-    "End of Turnadin": ["Earthen Drake"],
+    # auto gen
+    "Aggro Paladin": ["Abusive Sergeant", "Beaming Sidekick", "Elven Archer"],
+    "Pure Paladin": ["Vigilant Sentry"],
+    "Aggro Paladin": ["Concealing Confection", "Fire Fly", "Murmy"],
+    "Imbue Paladin": ["Petal Picker", "Resplendent Dreamweaver"],
+    "Pure Paladin": ["Scarlet Bruiser"],
+    "Aggro Paladin": ["Carrier Whelp", "Dreambound Raptor", "Platysaur"],
+    "Imbue Paladin": ["Flutterwing Guardian"],
     "Pure Paladin": ["Scarlet Recruiter"],
-    "End of Turnadin": ["Sheltered Survivor"],
-    "Mill Paladin": ["Doomsayer", "Endbringer Umbra"],
+    "Imbue Paladin": ["Bitterbloom Knight"],
     "Pure Paladin": ["Reinforcement Aura"],
-    "Egg Paladin": ["Bloodsail Raider", "The Egg of Khelos"],
-    "Aggro Paladin": ["Cult Neophyte", "Platysaur"],
-    "End of Turnadin": ["Nightmare Lord Xavius"],
-    "Pure Paladin": ["Acceleration Aura", "Chronological Aura", "Gelbin of Tomorrow", "Manifested Timeways"],
-    "Aggro Paladin": ["Dragonscale Armaments"],
-    "End of Turnadin": ["Battle Vicar"],
-    "Dude Paladin": ["Muster for Battle"],
-    "Aggro Paladin": ["Glacial Shard", "Sizzling Cinder"],
+    "Imbue Paladin": ["Aegis of Light", "Goldpetal Drake"],
+    "Aggro Paladin": ["Dragonscale Armaments", "Sizzling Cinder"],
     "Pure Paladin": [
-      "Convalescence",
-      "Dreamwarden",
+      "Acceleration Aura",
+      "Chronological Aura",
+      "Commander Beatrix",
+      "Gelbin of Tomorrow",
       "Inspiring Maul",
+      "Manifested Timeways",
       "Nozdormu, Bronze Aspect",
-      "Past Gnomeregan",
-      "Righteous Protector",
-      "Sandfury Aura",
       "Scalebreaker Bulwark",
       "Spearheart Sentry",
-      "Toreth the Unbreaking",
-      "Violet Treasuregill"
-    ]
+      "The Fins Beyond Time",
+      "Toreth the Unbreaking"
+    ],
+    "Aggro Paladin": ["Glacial Shard", "Twilight Egg"],
+    "Pure Paladin": ["Righteous Protector", "Violet Treasuregill"]
   ]
   @wild_config [
     "Lynessa Libram Paladin": ["Adaptation", "Libram of Wisdom", "Lightray", "Myrmidon", "Sunsapper Lynessa"],
