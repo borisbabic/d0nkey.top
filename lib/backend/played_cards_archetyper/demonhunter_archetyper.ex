@@ -36,46 +36,19 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
       "Void Blast",
       "Void Soul"
     ],
-    "Harold DH": @herald_package,
-    # auto gen
-    "Void Soul DH": [
-      "Axe of Cenarius",
-      "Cult Neophyte",
-      "First Portal to Argus",
-      "Glacial Shard",
-      "Grim Harvest",
-      "Infestation",
-      "Rustrot Viper",
-      "Sands of Time",
-      "Sigil of the Seas"
+    "Raza DH": [
+      "Eredar Deceptor",
+      "Enduring Roach",
+      "Soul Immolation"
     ],
-    "Void Soul DH": ["Illidari Studies", "Press the Advantage", "Wyvern's Slumber"]
+    "Harold DH": @herald_package,
+    "Void DH": ["Meadowstrider"],
+    "Spell DH": ["Lasting Legacy", "Nespirah, Enthralled", "Solitude", "The Eternal Hold", "Time-Lost Glaive"],
+    "Spell DH": ["Sigil of the Seas"],
+    "Raza DH": ["Press the Advantage"],
+    "Void DH": ["Grim Harvest", "Hive Map", "Illidari Studies", "Infestation", "Wyvern's Slumber"]
   ]
   @wild_config [
-    "XL Draenei Demon Hunter": ["Crimson Commander", "Saronite Chain Gang", "Starlight Wanderer"],
-    "Pirate DH": ["Field of Strife", "Ship's Cannon"],
-    "Token Broxigar DH": [
-      "Animated Broomstick",
-      "Feast of Souls",
-      "Remnant of Rage",
-      "SECURITY!!",
-      "Wings of Hate",
-      "Wings of Hate (Rank 1)",
-      "Wings of Hate (Rank 2)"
-    ],
-    "LC Quest DH": ["Moonstone Mauler"],
-    "Pirate DH": ["Adrenaline Fiend", "Hozen Roughhouser", "Mistake", "Treasure Distributor"],
-    "Naga DH": ["Adaptive Amalgam"],
-    "XL Il'gynoth DH": ["Mo'arg Artificer"],
-    "Fatigue DH": ["Glaivetar"],
-    "XL Questline DH": ["Crystalline Statue"],
-    "XL HL Questline DH": ["Speaker Stomper"],
-    "Token Broxigar DH": ["Spawning Pool"],
-    "Broxigar DH": ["Broxigar", "Vengeful Walloper"],
-    "XL HL Questline DH": ["Cult Neophyte", "Razorscale"],
-    "XL Starship Demon Hunter": ["Felfused Battery"],
-    "Token Broxigar DH": ["Momentum"],
-    "XL HL Questline DH": ["Ci'Cigi", "Felfire Deadeye"],
     "Token Broxigar DH": [
       "Broxigar's Last Stand",
       "Dispose of Evidence",

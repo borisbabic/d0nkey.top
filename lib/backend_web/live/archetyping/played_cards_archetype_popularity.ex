@@ -88,6 +88,8 @@ defmodule BackendWeb.PlayedCardsArchetypePopularity do
     "XL Linecracker Druid" => "Linecracker Druid"
   }
   # hacky, ensuring they exist
+  :"Spell DH"
+
   for {k, v} <- @deck_archetype_mapping do
     {String.to_atom(k), String.to_atom(v)}
   end
