@@ -6,59 +6,41 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
 
   @standard_config [
     "Quest Warrior": ["Enter the Lost City"],
+    # auto gen
+    "Dragon Warrior": ["Petal Peddler", "Darkscale Broodmother"],
+    "Egg Warrior": ["Dissolving Ooze", "Endbringer Umbra", "Holy Eggbearer", "Siphoning Growth", "The Egg of Khelos"],
     "Dragon Warrior": [
-      "Darkscale Broodmother",
-      "Petal Peddler",
       "Brood Keeper",
-      "Windpeak Wyrm",
-      "Prescient Slitherdrake"
+      "Carrier Whelp",
+      "Illusory Greenwing",
+      "Prescient Slitherdrake",
+      "Quantum Destabilizer",
+      "Stadium Announcer",
+      "Windpeak Wyrm"
     ],
-    "Egg Warrior": [
-      "Endbringer Umbra",
-      "Holy Eggbearer",
-      "Shellnado",
-      "Siphoning Growth",
-      "The Egg of Khelos"
-    ],
-    "Harold Warrior": [
-      "Cataclysmic War Axe",
-      "Envoy of the End",
-      "Scorching Ravager",
-      "Ultraxion"
-    ],
-    "Other Warrior": ["Gladiatorial Combat"],
-    "Lo'Gosh Warrior": ["Valeera, Blood Fighter"],
-    "Burn Warrior": ["Rockskipper"],
+    "Harold Warrior": ["Ragnaros, the Great Fire", "Ultraxion"],
+    "Lo'Gosh Warrior": ["Release the Beasts"],
+    "Harold Warrior": ["Deathwing, Worldbreaker", "Envoy of the End", "Scorching Ravager"],
     "Lo'Gosh Warrior": [
       "Acolyte of Pain",
       "Axe of the Forefathers",
       "Broll, Blood Fighter",
-      "Bulwark of Azzinoth",
       "Chainbreaker Hogger",
-      "City Defenses",
-      "Crowd Control",
-      "Destructive Blaze",
       "Disguised Watchman",
       "Erupting Volcano",
-      "Eternal Toil",
       "Execute",
-      "For Glory!",
-      "Latorvian Armorer",
       "Lo'Gosh, Blood Fighter",
       "Mother Duck",
       "Nightmare Lord Xavius",
       "Portal Vanguard",
       "Precursory Strike",
-      "Release the Beasts",
-      "Rustrot Viper",
+      "Sands of Time",
       "Scramble for Gear",
       "Searing Fissure",
       "Shadowflame Suffusion",
-      "Shield Block",
-      "Slam",
-      "Torch",
-      "Twilight Egg"
-    ]
+      "Valeera, Blood Fighter"
+    ],
+    "Egg Warrior": ["Sanguine Depths"]
   ]
   @wild_config [
     "XL Taunt Warrior": [
