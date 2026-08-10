@@ -18,9 +18,7 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
     ],
     "Chef Druid": [
       "Chef Neth'rek",
-      "Commissary Crook",
       "Kaldorei Cultivator",
-      "Lethal Recipe",
       "Spiteful Chef"
     ],
     "Hostage Druid": [
@@ -31,21 +29,43 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
       "Tindral Sageswift"
     ],
     "Merithra Druid": ["Merithra of the Dream", "Darkscale Broodmother", "Fyrakk the Blazing"],
-    "Chef Druid": ["Mossbinding", "Symbiosis", "Photosynthesis"],
-    # auto gen
+    # 5.5
+    "Chef Druid": ["Mossbinding", "Commissary Crook"],
     "Merithra Druid": ["Broodwatcher"],
-    "Chef Druid": ["Warden Maiev"],
-    "Azshara Druid": ["Briarspawn Drake", "Welcome Home!", "Zin-Azshari"],
-    "Chef Druid": ["Doomsayer", "Sands of Time"],
-    "Merithra Druid": ["Highborne Mentor", "Lifebloom", "Rustrot Viper", "Staff of Trickery", "Wickerfang"],
-    "Chef Druid": ["Spider Rider", "Spiderling", "Widow's Bite"],
-    "Azshara Druid": ["Lady Azshara"],
-    "Hostage Druid": ["Shaladrassil"],
-    "Krona Druid": ["Contingency", "Krona, Keeper of Eons", "Prize Vendor"],
-    "Merithra Druid": ["Bashana Runetotem", "Nightmare Lord Xavius"],
-    "Chef Druid": ["Azshara's Triumph"],
-    "Hostage Druid": ["Heartroot Stones", "Press the Advantage", "Twilight Timereaver", "Underking"],
-    "Merithra Druid": ["Acceleration Aura", "Felwood Treant", "Horn of Plenty", "Innervate", "Waveshaping"]
+    "Chef Druid": [
+      "Spider Rider",
+      "Sands of Time",
+      "Azshara's Triumph",
+      "Mark of the Wild",
+      "Photosynthesis",
+      "Symbiosis",
+      "Lethal Recipe"
+    ],
+    "Azshara Druid": [
+      "Welcome Home!",
+      "Briarspawn Drake",
+      "The Well of Eternity",
+      "Zin-Azshari",
+      "Lady Azshara"
+    ],
+    "Merithra Druid": [
+      "Elise the Navigator",
+      "Wickerfang",
+      "Bashana Runetotem"
+    ],
+    # 10.5
+    "Hostage Druid": [
+      "Heartroot Stones",
+      "Underking"
+    ],
+    "Merithra Druid": [
+      "Ebb and Flow",
+      "Acceleration Aura",
+      "Horn of Plenty",
+      "Innervate",
+      "Waveshaping",
+      "Felwood Treant"
+    ]
   ]
   @wild_config [
     "Barnes Druid": ["Starfire"],
