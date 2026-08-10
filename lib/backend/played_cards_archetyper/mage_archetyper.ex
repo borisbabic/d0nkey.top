@@ -40,30 +40,33 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
       "Unstable Spellcaster"
     ],
     # auto gen
-    "Toki Mage": ["Timelooper Toki", "Ysera, Emerald Aspect"],
-    "Manastorm Mage": ["Deep Freeze", "Khadgar"],
-    "Big Spell Mage": ["Spire Security"],
-    "Manastorm Mage": ["Bitter End", "Mirror Dimension", "Shadowed Informant"],
+    "Toki Mage": ["Faceless Enigma", "Timelooper Toki"],
+    "Manastorm Mage": ["Deep Freeze"],
     "Burn Mage": ["Story of the Waygate"],
-    "Toki Mage": ["Breakout Architect", "Dirty Rat", "Flamestrike", "Rustrot Viper"],
-    "Burn Mage": ["Arcane Barrage", "Contraband Wands"],
-    "Manastorm Mage": ["Blizzard", "Ice Barrier", "Semi-Stable Portal"],
-    "Toki Mage": ["Nightmare Lord Xavius", "Relic of Kings", "Winterspring Whelp"],
-    "Burn Mage": [
+    "Manastorm Mage": [
       "Alter Time",
-      "Code Violet",
+      "Bitter End",
+      "Blizzard",
       "Cold Snap",
       "Eternal Firebolt",
       "First Flame",
+      "Flamestrike",
+      "Frostbolt",
+      "Ice Barrier",
       "Jailhouse Manastorm",
+      "Mirror Dimension",
+      "Nightmare Lord Xavius",
       "Portal Vanguard",
+      "Relic of Kings",
       "Runed Orb",
       "Sands of Time",
+      "Semi-Stable Portal",
       "Sleet Storm",
       "Smoldering Grove",
       "Spark of Life",
       "Storage Scuffle",
-      "The Skeleton Key"
+      "The Skeleton Key",
+      "Winterspring Whelp"
     ]
   ]
   @wild_config [
