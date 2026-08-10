@@ -5,48 +5,56 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    "Zee Shaman": ["Beaming Sidekick", "Hexmarshal"],
-    "Mug Shaman": [
-      "Ascendance",
-      "Molten Gold",
-      "Mountain Map"
-    ],
+    # auto-gen
     "Zee Shaman": [
-      "Emberscarred Whelp",
-      "Fire Fly",
-      "Getaway Hogdriver",
-      "Prescient Slitherdrake",
-      "Slagclaw"
-    ],
-    "Mug Shaman": [
-      "Fire Breath",
-      "Blazing Invocation",
-      "Low Security Wing"
-    ],
-    "Harold Shaman": ["Flight of the Firehawk"],
-    "Zee Shaman": ["Darkscale Broodmother", "Platysaur"],
-    "Harold Shaman": [
-      "Avatar Form",
-      "Crackling Cloudstrider",
-      "High King's Hammer",
-      "Muradin, High King",
-      "Primordial Overseer"
-    ],
-    "Zee Shaman": [
+      "Beaming Sidekick",
       "Carrier Whelp",
       "Cult Neophyte",
-      "Gallagio Goon",
+      "Dreambound Raptor",
+      "Emberscarred Whelp",
+      "Fire Fly",
       "Glacial Shard",
+      "Hexmarshal",
       "Hijacked Securitybot",
       "Holy Eggbearer",
-      "Portal Vanguard",
+      "Platysaur",
       "Prize Vendor",
-      "Shadowed Informant",
-      "Sizzling Cinder",
-      "Warden Maiev"
+      "Slagclaw",
+      "The Black Knight",
+      "The Curator"
     ],
-    "Mug Shaman": ["Sands of Time", "Thunderquake", "Voltaic Burst"],
-    "Harold Shaman": ["Ritual of Power", "Skywall Sentinel", "Witch's Apprentice"]
+    "Mug Shaman": [
+      "Ascendance",
+      "Blazing Invocation",
+      "Fire Breath",
+      "Frostshatter",
+      "Low Security Wing",
+      "Molten Gold",
+      "Mountain Map",
+      "Mug'Zee",
+      "Sands of Time",
+      "Stormfury",
+      "Thunderquake",
+      "Voltaic Burst"
+    ],
+    "Harold Shaman": [
+      "Avatar Form",
+      "Flight of the Firehawk",
+      "Lightning Storm",
+      "Muradin's Last Stand",
+      "Muradin, High King",
+      "Primordial Overseer",
+      "Twilight Egg"
+    ],
+    "Zee Shaman": [
+      "Envoy of the End",
+      "Gallagio Goon",
+      "Skywall Sentinel",
+      "Tiny Pal",
+      "Wailing Vapor",
+      "Warden Maiev",
+      "Witch's Apprentice"
+    ]
   ]
   @wild_config [
     "Even Shaman": [
