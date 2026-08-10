@@ -20,35 +20,33 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       "Archmage Rafaam",
       "Timethief Rafaam"
     ],
-    Egglock: ["Holy Eggbearer"],
+    Egglock: ["Holy Eggbearer", "The Egg of Khelos"],
     "Harold Warlock": [
       "Cho'gall, Mastermind",
       "Deathwing, Worldbreaker",
       "Ultraxion"
     ],
-    "Wallow Warlock": ["Avant-Gardening", "Raptor Herald"],
+    "Wallow Warlock": ["Avant-Gardening", "Raptor Herald", "Wallow, the Wretched", "Overgrown Horror"],
+    "Harold Warlock": ["Shrine of Twilight", "Glacial Shard", "Shadowsworn Disciple", "Annihilation", "Imp Gang Stooge"],
     # auto gen
-    "Harold Warlock": ["Rustrot Viper", "Shrine of Twilight"],
-    "Demon Warlock": ["Jailbird"],
-    "Godfrey Warlock": ["Chronoclaws", "Tachyon Barrage"],
-    Rafaamlock: ["Mortal Coil"],
-    "Harold Warlock": ["Ancient Augur", "Cursed Chains", "Glacial Shard", "Imp Gang Stooge", "Shadowsworn Disciple"],
-    Egglock: ["The Egg of Khelos"],
-    Rafaamlock: ["RAFAAM LADDER!!"],
-    "Demon Warlock": ["Annihilation", "Archwitch Willow"],
-    Rafaamlock: ["Elise the Navigator", "Nightmare Lord Xavius", "Shadow Rounds"],
-    "Harold Warlock": ["Moragg"],
-    "Godfrey Warlock": ["Demonic Confinement"],
+    "Godfrey Warlock": ["Chronoclaws", "Cult Neophyte", "Demonic Confinement", "Prize Vendor", "Tachyon Barrage"],
     Rafaamlock: [
+      "Caged Cranium",
       "Critter Caretaker",
-      "Eldritch Tentacles",
+      "Doomsayer",
+      "Drain Soul",
       "Eternal Toil",
       "Fractured Power",
+      "Hellfire",
+      "Mortal Coil",
+      "Nightmare Lord Xavius",
       "Possessed Animancer",
-      "Rotheart Dryad",
-      "Sheltered Survivor"
-    ],
-    "Harold Warlock": ["Caged Cranium", "Conflagrate", "Cursed Catacombs", "Drain Soul", "Hellfire", "The Unseen Atlas"]
+      "RAFAAM LADDER!!",
+      "Shadow Rounds",
+      "Sheltered Survivor",
+      "Spire of Solitude",
+      "The Unseen Atlas"
+    ]
   ]
   @wild_config [
     Discolock: [
