@@ -120,6 +120,9 @@ defmodule Components.Filter.DropdownBase do
         end)
       end
 
+      def title(%{title: title}, _), do: title
+      def title(_, _), do: ""
+
       def value({value, _display}), do: value
       def value(value), do: value
 
@@ -136,7 +139,7 @@ defmodule Components.Filter.DropdownBase do
       def current(%{url_params: params, param: param, normalizer: normalizer}),
         do: do_current(params, param, normalizer)
 
-      def current(_, _), do: nil
+      def current(_), do: nil
 
       defp do_current(params, param, normalizer) do
         with curr when not is_nil(curr) <- Map.get(params || %{}, param) do

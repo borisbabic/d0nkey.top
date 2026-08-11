@@ -11,6 +11,8 @@ defmodule Components.Filter.ArchetypeSelect do
   prop(updater, :fun, default: &MultiSelectDropdown.update_selected/2)
   prop(criteria, :any, default: %{})
   prop(played_cards_archetypes, :boolean, default: false)
+  prop(select_all, :boolean, default: true)
+  prop(scrollable, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -21,10 +23,12 @@ defmodule Components.Filter.ArchetypeSelect do
         param={@param}
         selected={@selected}
         updater={@updater}
-        options={archetypes(@search, @selected, @selectable_archetypes, @criteria, @played_cards_archetypes)}
+        options={archetypes(@search, @selected, @selectable_archetypes, @criteria, @played_cards_archetypes, @scrollable)}
         title={@title}
         search_event={"search"}
         selected_as_title={false}
+        select_all={@select_all}
+        scrollable={@scrollable}
         />
       </span>
     """
@@ -38,15 +42,22 @@ defmodule Components.Filter.ArchetypeSelect do
         selected,
         selectable_archetypes,
         criteria,
-        played_cards_archetypes \\ false
+        played_cards_archetypes \\ false,
+        scrollable \\ false
       ) do
-    num_to_show = (7 - Enum.count(selected)) |> max(3)
+    all = archetypes(selectable_archetypes, criteria, played_cards_archetypes) || []
 
-    (archetypes(selectable_archetypes, criteria, played_cards_archetypes) || [])
-    |> Enum.filter(&(String.downcase(to_string(&1)) =~ String.downcase(search)))
-    |> Enum.reject(&(to_string(&1) in selected))
-    |> Enum.take(num_to_show)
-    |> Kernel.++(selected)
+    filtered =
+      all
+      |> Enum.filter(&(String.downcase(to_string(&1)) =~ String.downcase(search)))
+      |> Enum.reject(&(to_string(&1) in selected))
+
+    if scrollable do
+      filtered ++ selected
+    else
+      num_to_show = (7 - Enum.count(selected)) |> max(3)
+      filtered |> Enum.take(num_to_show) |> Kernel.++(selected)
+    end
   end
 
   defp archetypes([], criteria, true) do

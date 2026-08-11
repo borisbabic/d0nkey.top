@@ -9,6 +9,9 @@ defmodule Components.MultiSelectDropdown do
   prop(matches_search, :fun, required: true)
   prop(class, :css_class, default: nil)
 
+  prop(select_all, :boolean, default: false)
+  prop(scrollable, :boolean, default: false)
+
   prop(search_event, :event, default: %{name: "search"})
   data(search, :string, default: "")
   prop(default_selector, :fun, required: false, default: &__MODULE__.default_selected/1)
@@ -20,27 +23,63 @@ defmodule Components.MultiSelectDropdown do
 
   def render(%{actual_title: _} = assigns) do
     ~F"""
-        <span class={@class}>
+        <span id={@id} class={@class}>
           <Dropdown.menu title={@actual_title} aria-multiselectable="true" warning?={@warning} >
             <.form :if={@show_search} phx-change={name(@search_event)} phx-submit={name(@search_event)} phx-target={target(@search_event, @myself)} >
               <input name="search" type="text" class="input has-text-black" placeholder="Search" autocomplete="off" />
             </.form>
-            <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top} phx-target={@myself} phx-click="remove_selected" phx-value-value={value(selected)}>
-              {display(selected)}
-            </Dropdown.item>
-            <Dropdown.item selected={false} :for={unselected <- unselected(@search, @options, @num_to_show, @selected, @normalizer)} :if={@selected_to_top} phx-target={@myself} phx-click="add_selected" phx-value-value={value(unselected)}>
-              {display(unselected)}
-            </Dropdown.item>
-            <Dropdown.item
-              :if={!@selected_to_top}
-              :for={opt <- unselected(@search, @options, @num_to_show)}
-              selected={selected?(value(opt), @current, @normalizer)}
+            <button
+              :if={@select_all}
+              type="button"
+              id={@id <> "_select_all_btn"}
+              class="tw-w-full tw-text-left tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-text-sky-400 hover:tw-bg-slate-700/50 tw-rounded-md tw-mb-1"
+              phx-click="select_all"
               phx-target={@myself}
-              aria-selected={selected?(value(opt), @current, @normalizer)}
-              phx-click={merged_on_click(value(opt), @current, @normalizer)}
-              phx-value-value={value(opt)}>
-                  {display(opt)}
-            </Dropdown.item>
+            >
+              Select All
+            </button>
+            <div class={[@scrollable && "tw-max-h-60 tw-overflow-y-auto"]}>
+              <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top}>
+                <div class="tw-flex tw-items-center tw-justify-between tw-w-full">
+                  <span
+                    class="tw-flex-1 tw-cursor-pointer"
+                    phx-target={@myself}
+                    phx-click="remove_selected"
+                    phx-value-value={value(selected)}
+                  >
+                    {display(selected)}
+                  </span>
+                </div>
+              </Dropdown.item>
+              <Dropdown.item selected={false} :for={unselected <- unselected(@search, @options, @num_to_show, @selected, @normalizer, @scrollable)} :if={@selected_to_top}>
+                <div class="tw-flex tw-items-center tw-justify-between tw-w-full">
+                  <span
+                    class="tw-flex-1 tw-cursor-pointer"
+                    phx-target={@myself}
+                    phx-click="add_selected"
+                    phx-value-value={value(unselected)}
+                  >
+                    {display(unselected)}
+                  </span>
+                </div>
+              </Dropdown.item>
+              <Dropdown.item
+                :if={!@selected_to_top}
+                :for={opt <- unselected(@search, @options, @num_to_show, [], @normalizer, @scrollable)}
+                selected={selected?(value(opt), @current, @normalizer)}
+                aria-selected={selected?(value(opt), @current, @normalizer)}>
+                <div class="tw-flex tw-items-center tw-justify-between tw-w-full">
+                  <span
+                    class="tw-flex-1 tw-cursor-pointer"
+                    phx-target={@myself}
+                    phx-click={merged_on_click(value(opt), @current, @normalizer)}
+                    phx-value-value={value(opt)}
+                  >
+                    {display(opt)}
+                  </span>
+                </div>
+              </Dropdown.item>
+            </div>
           </Dropdown.menu>
         </span>
     """
@@ -158,6 +197,42 @@ defmodule Components.MultiSelectDropdown do
   def handle_event("search", %{"search" => [search]}, socket) when is_binary(search),
     do: {:noreply, assign(socket, :search, search)}
 
+  def handle_event(
+        "select_all",
+        _,
+        %{
+          assigns: %{
+            options: options,
+            updater: updater,
+            normalizer: normalizer,
+            current: current,
+            search: search,
+            any_as_empty: any_as_empty
+          }
+        } = socket
+      ) do
+    search_term = normalize_search(search)
+
+    matching_options =
+      options
+      |> Enum.reject(fn opt ->
+        val = value(opt)
+        is_nil(val) or (any_as_empty and val == "any")
+      end)
+      |> Enum.filter(fn opt ->
+        normalize_search(opt && display(opt)) =~ search_term
+      end)
+
+    matching_values = Enum.map(matching_options, &value/1)
+
+    new_selected =
+      (current || [])
+      |> Kernel.++(matching_values)
+      |> Enum.uniq_by(normalizer)
+
+    {:noreply, updater.(socket, new_selected)}
+  end
+
   def handle_event(_event, _other, socket) do
     {:noreply, socket}
   end
@@ -209,8 +284,14 @@ defmodule Components.MultiSelectDropdown do
     end
   end
 
-  defp unselected(search, options, base_num_to_show, selected \\ [], normalizer \\ & &1) do
-    num_to_show = (base_num_to_show - Enum.count(selected)) |> max(3)
+  defp unselected(
+         search,
+         options,
+         base_num_to_show,
+         selected \\ [],
+         normalizer \\ &Util.id/1,
+         scrollable \\ false
+       ) do
     normalized_search = normalize_search(search)
 
     normalized_selected =
@@ -220,12 +301,19 @@ defmodule Components.MultiSelectDropdown do
         |> normalizer.()
       end)
 
-    options
-    |> Enum.reject(&(normalizer.(value(&1)) in normalized_selected))
-    |> Enum.filter(fn opt ->
-      normalize_search(opt && display(opt) && display(opt)) =~ normalized_search
-    end)
-    |> Enum.take(num_to_show)
+    filtered =
+      options
+      |> Enum.reject(&(normalizer.(value(&1)) in normalized_selected))
+      |> Enum.filter(fn opt ->
+        normalize_search(opt && display(opt)) =~ normalized_search
+      end)
+
+    if scrollable do
+      filtered
+    else
+      num_to_show = (base_num_to_show - Enum.count(selected)) |> max(3)
+      Enum.take(filtered, num_to_show)
+    end
   end
 
   defp normalize_search(search) do

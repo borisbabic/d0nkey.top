@@ -13,6 +13,8 @@ defmodule Backend.MixProject do
       aliases: aliases(),
       listeners: [Phoenix.CodeReloader],
       preferred_cli_env: [
+        test: :test,
+        precommit: :test,
         "test.watch": :test
       ],
       deps: deps()
@@ -26,12 +28,6 @@ defmodule Backend.MixProject do
     [
       mod: {Backend.Application, []},
       extra_applications: [:logger, :runtime_tools]
-    ]
-  end
-
-  def cli do
-    [
-      preferred_envs: [precommit: :test, test: :test]
     ]
   end
 

@@ -14,6 +14,7 @@ defmodule Components.Filter.ClassMultiDropdown do
   prop(live_view, :module, required: true)
   prop(include_neutral, :boolean, default: false)
   prop(options, :any, default: nil)
+  prop(select_all, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -30,12 +31,14 @@ defmodule Components.Filter.ClassMultiDropdown do
           path_params={@path_params}
           num_to_show={20}
           selected_params={@selected_params}
-          live_view={@live_view} />
+          live_view={@live_view}
+          select_all={@select_all} />
       </span>
     """
   end
 
   def options(any_name, name_prefix, include_neutral?, options) do
+    any_name = any_name || "Any Class"
     any = {nil, any_name}
     classes = if is_list(options), do: options, else: Deck.classes()
     class_options = Enum.map(classes, &{&1, "#{name_prefix}#{Deck.class_name(&1)}"})
