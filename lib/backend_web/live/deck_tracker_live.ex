@@ -151,12 +151,12 @@ defmodule BackendWeb.DeckTrackerLive do
           </div>
           <div class=" is-narrow">
             <select class="select has-text-black " name="game[game_type]" id="game_type">
-              <option :for={{label, value} <- game_type_options()} value={value} selected={Map.get(@form_values, "game_type", GameType.ranked()) == value}>{label}</option>
+              <option :for={{label, value} <- game_type_options()} value={value} selected={to_string(Map.get(@form_values, "game_type", GameType.ranked())) == to_string(value)}>{label}</option>
             </select>
           </div>
           <div class=" is-narrow">
             <select class="select has-text-black " name="game[format]" id="format">
-              <option :for={{label, value} <- format_options()} value={value} selected={Map.get(@form_values, "format", @deck.format) == value}>{label}</option>
+              <option :for={{label, value} <- format_options()} value={value} selected={to_string(Map.get(@form_values, "format", @deck.format)) == to_string(value)}>{label}</option>
             </select>
           </div>
         </div>
@@ -171,7 +171,7 @@ defmodule BackendWeb.DeckTrackerLive do
           </select>
           <select name="game[turns]" class="select has-text-black " id="turns">
             <option value="">Turns</option>
-            <option :for={t <- 1..45} value={t} selected={Map.get(@form_values, "turns") == t}>{t}</option>
+            <option :for={t <- 1..45} value={t} selected={to_string(Map.get(@form_values, "turns")) == to_string(t)}>{t}</option>
           </select>
           <input name="game[opponent_battletag]" value={Map.get(@form_values, "opponent_battletag")} class="input has-text-black  is-small" placeholder="Opponent Battletag" style="width: 200px;" />
           <RankSelect rank_title={"Player Rank"} id="player_rank" rank_field={:player_rank} rank={@form_values["player_rank"]} legend_rank_field={:player_legend_rank} legend_rank={@form_values["player_legend_rank"]} />
