@@ -57,6 +57,19 @@ defmodule BackendWeb.BattlefyController do
 
   def profile_tournament(conn, params), do: tournament(conn, params)
 
+  def tournament(
+        conn,
+        %{"tournament_id" => tournament_id, "view_mode" => "standings", "stage_id" => "all_brackets"}
+      ) do
+    action = Map.get(conn.private, :phoenix_action, :tournament)
+
+    new_query_params =
+      conn.query_params
+      |> Map.put("view_mode", "bracket")
+
+    redirect(conn, to: Routes.battlefy_path(conn, action, tournament_id, new_query_params))
+  end
+
   def tournament(conn, %{"tournament_id" => tournament_id} = params) do
     Logger.debug("tournament params #{inspect(params)}")
     tournament = Battlefy.get_tournament(tournament_id)

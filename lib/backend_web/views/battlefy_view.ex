@@ -360,7 +360,7 @@ defmodule BackendWeb.BattlefyView do
     Map.put(params, key, func.(params))
   end
 
-  defp add_tournament_stage_attrs(params) do
+  def add_tournament_stage_attrs(params) do
     stages =
       case params[:tournament] do
         %{stages: stages} when is_list(stages) -> stages
@@ -370,7 +370,7 @@ defmodule BackendWeb.BattlefyView do
     bracketable_stages = Enum.count(stages, &Stage.bracketable?/1)
 
     extra_stages =
-      if bracketable_stages > 1 do
+      if bracketable_stages > 1 and params[:view_mode] != "standings" do
         [
           %{
             name: "All Brackets",
