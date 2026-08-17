@@ -131,6 +131,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function handleInputSubmit(e) {
+  if (
+    e.target &&
+    e.target.tagName === "INPUT" &&
+    e.target.type !== "submit" &&
+    e.target.type !== "button"
+  ) {
+    var form = e.target.form;
+    if (form) {
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    }
+  }
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.keyCode === 13) {
+    handleInputSubmit(e);
+  }
+});
+
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute("enterkeyhint")) {
+    handleInputSubmit(e);
+  }
+});
+
+
 // document.addEventListener('DOMContentLoaded', () => {
 //     console.log("Converting datetimes")
 //     var pad = function(te) {

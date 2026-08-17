@@ -1371,6 +1371,9 @@ defmodule BackendWeb.LeaderboardView do
   defp create_numeric_filters(assigns) do
     style = "width: 8em;"
 
+    submit_js =
+      "if (this.value !== this.defaultValue) { this.form.requestSubmit ? this.form.requestSubmit() : this.form.submit(); }"
+
     ~H"""
       <%= form_for @conn, @curr_url,
       [method: :get], fn
@@ -1382,18 +1385,18 @@ defmodule BackendWeb.LeaderboardView do
               <input name={"#{ key }[]"} type="hidden" value={"#{ value }"}>
           <% end %>
           <div class="is-pulled-right">
-              <%= number_input f, "max_rank", class: "input", placeholder: "Max Rank", style: style, enterkeyhint: "go" %>
+              <%= number_input f, "max_rank", class: "input", placeholder: "Max Rank", style: style, enterkeyhint: "go", onchange: submit_js %>
           </div>
           <div class="is-pulled-right">
-              <%= number_input f, "min_rank", class: "input", placeholder: "Min Rank", style: style, enterkeyhint: "go" %>
+              <%= number_input f, "min_rank", class: "input", placeholder: "Min Rank", style: style, enterkeyhint: "go", onchange: submit_js %>
           </div>
           <div class="is-pulled-right">
-              <%= number_input f, "max_rating", class: "input", placeholder: "Max Rating", style: style, enterkeyhint: "go" %>
+              <%= number_input f, "max_rating", class: "input", placeholder: "Max Rating", style: style, enterkeyhint: "go", onchange: submit_js %>
           </div>
           <div class="is-pulled-right">
-              <%= number_input f, "min_rating", class: "input", placeholder: "Min Rating", style: style, enterkeyhint: "go" %>
+              <%= number_input f, "min_rating", class: "input", placeholder: "Min Rating", style: style, enterkeyhint: "go", onchange: submit_js %>
           </div>
-          <input type="submit" class="is-hidden"/>
+          <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none;" tabindex="-1" />
       <% end %>
     """
   end
