@@ -157,7 +157,13 @@ defmodule Backend.Hearthstone.Card do
         ""
       end
 
-    description = "#{cost(card)} mana #{stats}#{classes} #{type_name(card)}"
+    minion_type =
+      case minion_types(card) do
+        [] -> ""
+        types -> Enum.join(types, "/") <> " "
+      end
+
+    description = "#{cost(card)} mana #{stats}#{classes} #{minion_type}#{type_name(card)}"
 
     description =
       if include_text do
@@ -470,6 +476,48 @@ defmodule Backend.Hearthstone.Card do
   @spec type_name(card()) :: String.t()
   def type_name(%{card_type: %{name: name}}), do: name
   def type_name(%{type: type}) when is_binary(type), do: type
+
+  defp multi_minion_types(card) do
+    case Map.get(card, :multi_minion_types) do
+      %Ecto.Association.NotLoaded{} -> []
+      nil -> []
+      types when is_list(types) -> types
+      _ -> []
+    end
+  end
+
+  defp single_type(card) do
+    case Map.get(card, :minion_type) do
+      %Ecto.Association.NotLoaded{} -> nil
+      nil -> nil
+      type -> type
+    end
+  end
+
+  @spec minion_types(card()) :: [String.t()]
+  def minion_types(card) do
+    multi_types = multi_minion_types(card)
+
+    single_type = single_type(card)
+
+    all_types =
+      if Enum.any?(multi_types) do
+        multi_types
+      else
+        if single_type, do: [single_type], else: []
+      end
+
+    all_types
+    |> Enum.map(fn
+      %{name: name} when is_binary(name) -> name
+      %{"name" => name} when is_binary(name) -> name
+      name when is_binary(name) -> name
+      _ -> nil
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.map(&Recase.to_title/1)
+    |> Enum.uniq()
+  end
 
   @spec classes(card()) :: [String.t()]
   def classes(%{card_class: card_class}), do: [card_class]

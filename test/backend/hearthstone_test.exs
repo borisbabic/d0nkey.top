@@ -125,4 +125,62 @@ defmodule Backend.HearthstoneTest do
 
     assert [%{name: "Wandmaker"}, %{name: "Reno, Lone Ranger"}] = Hearthstone.sort_cards(cards)
   end
+
+  describe "Card.minion_types/1 and Card.description/4" do
+    alias Backend.Hearthstone.Card
+    alias Backend.Hearthstone.MinionType
+
+    test "returns minion types for single, multi, and dual types" do
+      card_single = %Card{
+        minion_type: %MinionType{name: "BEAST"},
+        multi_minion_types: [%MinionType{name: "BEAST"}]
+      }
+
+      card_dual = %Card{
+        multi_minion_types: [%MinionType{name: "Beast"}, %MinionType{name: "Demon"}]
+      }
+
+      card_none = %Card{
+        minion_type: nil,
+        multi_minion_types: []
+      }
+
+      assert Card.minion_types(card_single) == ["Beast"]
+      assert Card.minion_types(card_dual) == ["Beast", "Demon"]
+      assert Card.minion_types(card_none) == []
+    end
+
+    test "includes minion type in Card.description/4" do
+      card_minion = %Card{
+        name: "Savannah Highmane",
+        cost: 6,
+        attack: 6,
+        health: 5,
+        classes: ["HUNTER"],
+        card_type: %Backend.Hearthstone.Type{name: "Minion"},
+        minion_type: %MinionType{name: "BEAST"},
+        multi_minion_types: [%MinionType{name: "BEAST"}],
+        text: "Deathrattle: Summon two 2/2 Hyenas."
+      }
+
+      desc = Card.description(card_minion)
+      assert desc =~ "6 mana 6/5 Hunter Beast Minion"
+
+      short_desc = Card.description(card_minion, false, false)
+      assert short_desc == "6 mana 6/5 Hunter Beast Minion"
+
+      card_dual = %Card{
+        name: "Amalgam",
+        cost: 3,
+        attack: 3,
+        health: 4,
+        classes: ["NEUTRAL"],
+        card_type: %Backend.Hearthstone.Type{name: "Minion"},
+        multi_minion_types: [%MinionType{name: "BEAST"}, %MinionType{name: "DRAGON"}],
+        text: "This is all minion types."
+      }
+
+      assert Card.description(card_dual, false, false) == "3 mana 3/4 Neutral Beast/Dragon Minion"
+    end
+  end
 end

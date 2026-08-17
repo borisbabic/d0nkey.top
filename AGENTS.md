@@ -59,6 +59,8 @@ This is a web application written using the Phoenix web framework.
       mylist = ["blue", "green"]
       Enum.at(mylist, i)
 
+- Use Enum.any?() to check for lists that aren't empty, and Enum.empty?() for lists that are empty.
+
 - Elixir variables are immutable, but can be rebound, so for block expressions like `if`, `case`, `cond`, etc
   you *must* bind the result of the expression to a variable if you want to use it and you CANNOT rebind the result inside the expression, ie:
 
