@@ -11,6 +11,7 @@ defmodule Components.MultiSelectDropdown do
 
   prop(select_all, :boolean, default: false)
   prop(scrollable, :boolean, default: false)
+  prop(clear, :boolean, default: true)
 
   prop(search_event, :event, default: %{name: "search"})
   data(search, :string, default: "")
@@ -37,6 +38,16 @@ defmodule Components.MultiSelectDropdown do
               phx-target={@myself}
             >
               Select All
+            </button>
+            <button
+              :if={show_clear?(@clear, @selected, @current)}
+              type="button"
+              id={@id <> "_clear_btn"}
+              class="tw-w-full tw-text-left tw-px-3 tw-py-1.5 tw-text-xs tw-font-medium tw-text-sky-400 hover:tw-bg-slate-700/50 tw-rounded-md tw-mb-1"
+              phx-click="clear"
+              phx-target={@myself}
+            >
+              Clear
             </button>
             <div class={[@scrollable && "tw-max-h-60 tw-overflow-y-auto"]}>
               <Dropdown.item :for={selected <- @selected} selected={true} :if={@selected_to_top}>
@@ -100,6 +111,7 @@ defmodule Components.MultiSelectDropdown do
 
   def add_to_empty(assigns) do
     assigns
+    |> Map.put_new(:clear, true)
     |> add_title_current()
     |> fix_current()
     |> add_selected()
@@ -175,6 +187,14 @@ defmodule Components.MultiSelectDropdown do
 
   def handle_event(
         "reset_selected",
+        _,
+        %{assigns: %{updater: updater}} = socket
+      ) do
+    {:noreply, updater.(socket, [])}
+  end
+
+  def handle_event(
+        "clear",
         _,
         %{assigns: %{updater: updater}} = socket
       ) do
@@ -320,5 +340,34 @@ defmodule Components.MultiSelectDropdown do
     search
     |> to_string()
     |> String.downcase()
+  end
+
+  def multiple_selected?(selected, current) do
+    valid_count =
+      cond do
+        is_list(selected) and not Enum.empty?(selected) ->
+          selected
+          |> Enum.reject(fn item ->
+            val = value(item)
+            is_nil(val) or val == "any" or val == ""
+          end)
+          |> length()
+
+        is_list(current) ->
+          current
+          |> Enum.reject(fn item ->
+            is_nil(item) or item == "any" or item == ""
+          end)
+          |> length()
+
+        true ->
+          0
+      end
+
+    valid_count > 1
+  end
+
+  defp show_clear?(clear, selected, current) do
+    clear and multiple_selected?(selected, current)
   end
 end

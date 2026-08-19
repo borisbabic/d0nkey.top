@@ -21,6 +21,7 @@ defmodule BackendWeb.Components.MultiSelectDropdownTest do
       num_to_show: 7,
       any_as_empty: true,
       select_all: false,
+      clear: true,
       scrollable: false,
       selected: [],
       search: "",
@@ -43,6 +44,7 @@ defmodule BackendWeb.Components.MultiSelectDropdownTest do
       criteria: %{},
       played_cards_archetypes: false,
       select_all: true,
+      clear: true,
       scrollable: true,
       class: nil,
       warning: false,
@@ -73,6 +75,7 @@ defmodule BackendWeb.Components.MultiSelectDropdownTest do
       include_neutral: false,
       options: nil,
       select_all: true,
+      clear: true,
       live_view: BackendWeb.DecksLive,
       class: nil,
       warning: false,
@@ -174,6 +177,75 @@ defmodule BackendWeb.Components.MultiSelectDropdownTest do
     end
   end
 
+  describe "MultiSelectDropdown - Clear" do
+    test "renders Clear button when multiple items are selected and clear is default (true)" do
+      html =
+        render_ms(
+          options: ["Mage", "Hunter", "Paladin"],
+          selected: ["Mage", "Hunter"]
+        )
+
+      assert html =~ "Clear"
+      assert html =~ "ms_test_clear_btn"
+    end
+
+    test "renders Clear button when multiple items are passed via current_val" do
+      html =
+        render_ms(
+          options: ["Mage", "Hunter", "Paladin"],
+          current_val: ["Mage", "Hunter"]
+        )
+
+      assert html =~ "Clear"
+      assert html =~ "ms_test_clear_btn"
+    end
+
+    test "does not render Clear button when only 1 item is selected" do
+      html =
+        render_ms(
+          options: ["Mage", "Hunter", "Paladin"],
+          selected: ["Mage"]
+        )
+
+      refute html =~ "ms_test_clear_btn"
+      refute html =~ ">Clear</button>"
+    end
+
+    test "does not render Clear button when no items are selected" do
+      html =
+        render_ms(
+          options: ["Mage", "Hunter", "Paladin"],
+          selected: []
+        )
+
+      refute html =~ "ms_test_clear_btn"
+      refute html =~ ">Clear</button>"
+    end
+
+    test "does not render Clear button when multiple items are selected but clear is false" do
+      html =
+        render_ms(
+          options: ["Mage", "Hunter", "Paladin"],
+          selected: ["Mage", "Hunter"],
+          clear: false
+        )
+
+      refute html =~ "ms_test_clear_btn"
+      refute html =~ ">Clear</button>"
+    end
+
+    test "handle_event clear resets selected items to empty list" do
+      dummy_socket = %Phoenix.LiveView.Socket{
+        assigns: %{
+          updater: fn _socket, selected -> {:updated, selected} end
+        }
+      }
+
+      assert {:noreply, {:updated, []}} =
+               MultiSelectDropdown.handle_event("clear", %{}, dummy_socket)
+    end
+  end
+
   describe "ArchetypeSelect integration" do
     test "enables select_all and scrollable by default" do
       html =
@@ -182,6 +254,38 @@ defmodule BackendWeb.Components.MultiSelectDropdownTest do
       assert html =~ "Select All"
       assert html =~ "tw-max-h-60 tw-overflow-y-auto"
     end
+
+    test "renders Clear button when multiple archetypes are selected" do
+      html =
+        render_archetype_select(
+          selectable_archetypes: ["Pure Paladin", "Secret Mage", "Face Hunter"],
+          selected: ["Pure Paladin", "Secret Mage"]
+        )
+
+      assert html =~ "Clear"
+      assert html =~ "arch_test_as_ms_id_clear_btn"
+    end
+
+    test "does not render Clear button when only 1 archetype is selected" do
+      html =
+        render_archetype_select(
+          selectable_archetypes: ["Pure Paladin", "Secret Mage", "Face Hunter"],
+          selected: ["Pure Paladin"]
+        )
+
+      refute html =~ "arch_test_as_ms_id_clear_btn"
+    end
+
+    test "does not render Clear button when clear is false" do
+      html =
+        render_archetype_select(
+          selectable_archetypes: ["Pure Paladin", "Secret Mage", "Face Hunter"],
+          selected: ["Pure Paladin", "Secret Mage"],
+          clear: false
+        )
+
+      refute html =~ "arch_test_as_ms_id_clear_btn"
+    end
   end
 
   describe "ClassMultiDropdown integration" do
@@ -189,6 +293,31 @@ defmodule BackendWeb.Components.MultiSelectDropdownTest do
       html = render_class_multi([])
 
       assert html =~ "Select All"
+    end
+
+    test "renders Clear button when multiple classes are selected" do
+      html =
+        render_class_multi(selected_params: %{"class" => ["mage", "hunter"]})
+
+      assert html =~ "Clear"
+      assert html =~ "class_test_class_multi_clear_btn"
+    end
+
+    test "does not render Clear button when only 1 class is selected" do
+      html =
+        render_class_multi(selected_params: %{"class" => ["mage"]})
+
+      refute html =~ "class_test_class_multi_clear_btn"
+    end
+
+    test "does not render Clear button when clear is false" do
+      html =
+        render_class_multi(
+          selected_params: %{"class" => ["mage", "hunter"]},
+          clear: false
+        )
+
+      refute html =~ "class_test_class_multi_clear_btn"
     end
   end
 end

@@ -13,6 +13,7 @@ defmodule Components.Filter.RegionDropdown do
   prop(warning, :boolean, default: false)
   prop(live_view, :module, required: true)
   prop(class, :css_class, default: nil)
+  prop(clear, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -31,7 +32,8 @@ defmodule Components.Filter.RegionDropdown do
           selected_as_title={false}
           default_selector={default_selector(@filter_context)}
           warning={@warning}
-          live_view={@live_view} />
+          live_view={@live_view}
+          clear={@clear} />
       </span>
     """
   end

@@ -6,6 +6,7 @@ defmodule Components.Filter.CardSetDropdown do
   prop(param, :string, default: "card_set_id")
   prop(group_slug, :string, default: nil)
   prop(options, :list, default: nil)
+  prop(clear, :boolean, default: true)
   data(show_search, :boolean)
   data(selected_to_top, :boolean)
 
@@ -20,7 +21,8 @@ defmodule Components.Filter.CardSetDropdown do
       show_search={@show_search}
       num_to_show={696969}
       normalizer={&Util.to_int_or_orig/1}
-      param={@param}/>
+      param={@param}
+      clear={@clear}/>
     </span>
     """
   end

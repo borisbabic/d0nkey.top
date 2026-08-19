@@ -13,6 +13,7 @@ defmodule Components.Filter.ArchetypeSelect do
   prop(played_cards_archetypes, :boolean, default: false)
   prop(select_all, :boolean, default: true)
   prop(scrollable, :boolean, default: true)
+  prop(clear, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -29,6 +30,7 @@ defmodule Components.Filter.ArchetypeSelect do
         selected_as_title={false}
         select_all={@select_all}
         scrollable={@scrollable}
+        clear={@clear}
         />
       </span>
     """

@@ -15,6 +15,7 @@ defmodule Components.Filter.ClassMultiDropdown do
   prop(include_neutral, :boolean, default: false)
   prop(options, :any, default: nil)
   prop(select_all, :boolean, default: true)
+  prop(clear, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -32,7 +33,8 @@ defmodule Components.Filter.ClassMultiDropdown do
           num_to_show={20}
           selected_params={@selected_params}
           live_view={@live_view}
-          select_all={@select_all} />
+          select_all={@select_all}
+          clear={@clear} />
       </span>
     """
   end

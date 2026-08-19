@@ -18,6 +18,9 @@ This is a web application written using the Phoenix web framework.
 - Phoenix v1.8 moved the `<.flash_group>` component to the `Layouts` module. You are **forbidden** from calling `<.flash_group>` outside of the `layouts.ex` module
 - **Always** use the imported `<.input>` component for form inputs from `core_components.ex` when available. `<.input>` is imported and using it will save steps and prevent errors
 - If you override the default input classes (`<.input class="myclass px-2 py-1 rounded-lg">)`) class with your own values, no default classes are inherited, so your custom classes must fully style the input
+- Do not use `assigns` directly within a template, like ~H or ~F, use the props/attrs
+- Do not use `Map` functions on assigns
+- You do not need to manually add default values to assigns within render. The prop/attrs definition of the default value will handle that
 
 ### Component guidlines
 - Use the `<.page_header>` core_component for page titles. It is imported

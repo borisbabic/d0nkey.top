@@ -11,6 +11,7 @@ defmodule Components.Filter.PlayableCardSelect do
   prop(updater, :fun, default: &MultiSelectDropdown.update_selected/2)
   prop(param, :string, required: true)
   prop(format, :any, default: nil)
+  prop(clear, :boolean, default: true)
 
   def render(assigns) do
     ~F"""
@@ -27,6 +28,7 @@ defmodule Components.Filter.PlayableCardSelect do
       current_val={@selected}
       normalizer={&Util.to_int_or_orig/1}
       selected_as_title={false}
+      clear={@clear}
       />
     </span>
     """
