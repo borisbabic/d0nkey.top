@@ -8,7 +8,7 @@ defmodule Components.Filter.NextButton do
 
   def render(assigns) do
     ~F"""
-    <.link  class="button is-link" patch={link(@live_view, @path_params, @url_params, @default_offset, @default_limit)}>
+    <.link class="button is-link" aria-label="Next page" patch={link(@live_view, @path_params, @url_params, @default_offset, @default_limit)}>
         <HeroIcons.chevron_right />
     </.link>
     """

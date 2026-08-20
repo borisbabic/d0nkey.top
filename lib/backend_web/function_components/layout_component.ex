@@ -36,12 +36,13 @@ defmodule FunctionComponents.LayoutComponent do
   attr :sub_menus, :list, required: false, default: []
   attr :display, :string, required: true
   attr :main_link, :string, required: false, default: "#"
+  attr :aria_label, :string, required: false, default: nil
   slot :inner_block, required: true
 
   def navbar_dropdown(assigns) do
     ~H"""
       <div class="navbar-item has-dropdown" x-on:mouseleave="if(window.canCloseDropdown($event)) open=false;" x-data={"{#{init_to_false(["open" | @sub_menus])}}"} x-bind:class="{'is-active': open}" x-bind:aria-expanded="open" x-on:keydown.esc={"open=false"}>
-        <Dropdown.title aria_controls={"navbar-dropdown"} title={@display} {%{href: @main_link}} class="navbar-item navbar-link" />
+        <Dropdown.title aria_controls={"navbar-dropdown"} aria_label={@aria_label} title={@display} {%{href: @main_link}} class="navbar-item navbar-link" />
           <div class="navbar-dropdown">
             <div>
               <%= render_slot(@inner_block) %>

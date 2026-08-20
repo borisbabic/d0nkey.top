@@ -1,14 +1,14 @@
 <!-- template: navbar.html.eex -->
 
- <nav id="main-navbar" class="navbar is-dark" role="navigation" aria-label="main navigation" style="display:none">
+ <nav id="main-navbar" class="navbar is-dark" role="navigation" aria-label="main navigation">
    <div class="navbar-brand">
-     <a class="navbar-item" aria-lebal="menu-item" href="/"><img src={Application.fetch_env!(:backend, :favicon)} alt="HSGuru"></a>
+     <a class="navbar-item" aria-label="HSGuru Home" href="/"><img src={Application.fetch_env!(:backend, :favicon)} alt="HSGuru"></a>
 
-     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="burger-toggle">
+     <button type="button" class="navbar-burger burger" aria-label="Navigation Menu" aria-expanded="false" aria-controls="burger-toggle" data-target="burger-toggle">
        <span aria-hidden="true"></span>
        <span aria-hidden="true"></span>
        <span aria-hidden="true"></span>
-     </a>
+     </button>
    </div>
 
    <div id="burger-toggle" class="navbar-menu">
@@ -57,7 +57,7 @@
             <% end %>
           </.navbar_dropdown>
         <% else %>
-          <.navbar_dropdown display={"👤"}>
+          <.navbar_dropdown display={"👤"} aria_label="Account">
             <.navbar_item_link link={~p"/auth/bnet"} display="Sign in (Battlenet)"/>
           </.navbar_dropdown>
         <% end %>
@@ -181,40 +181,6 @@
      </div>
    </div>
  </nav>
-<script>
-   var navbar = document.getElementById('main-navbar');
-   if (navbar) {
-   navbar.style.display = '';
-   } else {
-       console.log("Couldn't get navbar!")
-   }
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  // Get all "navbar-burger" elements
-  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-
-  // Check if there are any navbar burgers
-  if ($navbarBurgers.length > 0) {
-
-    // Add a click event on each of them
-    $navbarBurgers.forEach( el => {
-      el.addEventListener('click', () => {
-
-        // Get the target from the "data-target" attribute
-        const target = el.dataset.target;
-        const $target = document.getElementById(target);
-
-        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-        el.classList.toggle('is-active');
-        $target.classList.toggle('is-active');
-
-      });
-    });
-  }
-
-});
-</script>
 <noscript>
   <header class="container">
     <nav role="navigation">

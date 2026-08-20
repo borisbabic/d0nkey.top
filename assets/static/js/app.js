@@ -425,3 +425,36 @@ liveSocket.connect();
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket;
 /**** </LiveViewCopyPasta> ****/
+
+// Accessible Navbar Burger Handler
+document.addEventListener("DOMContentLoaded", () => {
+  const navbarBurgers = Array.prototype.slice.call(
+    document.querySelectorAll(".navbar-burger"),
+    0
+  );
+
+  if (navbarBurgers.length > 0) {
+    navbarBurgers.forEach((el) => {
+      const toggleMenu = () => {
+        const target = el.dataset.target;
+        const targetEl = document.getElementById(target);
+        const isExpanded = el.getAttribute("aria-expanded") === "true";
+
+        el.setAttribute("aria-expanded", (!isExpanded).toString());
+        el.classList.toggle("is-active");
+        if (targetEl) {
+          targetEl.classList.toggle("is-active");
+        }
+      };
+
+      el.addEventListener("click", toggleMenu);
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleMenu();
+        }
+      });
+    });
+  }
+});
+

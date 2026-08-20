@@ -74,7 +74,7 @@ defmodule BackendWeb.DeckBuilderLive do
         <.form id="add_deck_form" for={%{}} as={:new_deck} phx-submit="submit" autocomplete="off">
           <div class="columns is-mobile is-multitline">
             <div class="column is-narrow">
-              <textarea class="textarea has-fixed-size small" name="new_deck[new_code]" placeholder="Paste deckcode or link" size="30" rows="1"></textarea>
+              <textarea class="textarea has-fixed-size small" name="new_deck[new_code]" placeholder="Paste deckcode or link" aria-label="Paste deckcode or link" size="30" rows="1"></textarea>
             </div>
             <div class="column is-narrow">
               <button type="submit" class="button">Edit</button>

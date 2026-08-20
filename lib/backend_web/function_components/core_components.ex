@@ -107,12 +107,14 @@ defmodule FunctionComponents.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
+          aria-invalid={@errors != []}
+          aria-describedby={if @errors != [], do: "#{@id}-error"}
           class={@class || "tw-rounded tw-bg-[#2a2a2a] tw-border-slate-700 tw-text-sky-500 focus:tw-ring-sky-500/30 tw-w-4 tw-h-4 tw-transition-all"}
           {@rest}
         />
         <span :if={@label} class="tw-text-sm tw-font-medium text-white">{@label}</span>
       </label>
-      <.error :for={msg <- @errors}>{msg}</.error>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}>{msg}</.error>
     </div>
     """
   end
@@ -126,6 +128,8 @@ defmodule FunctionComponents.CoreComponents do
           <select
             id={@id}
             name={@name}
+            aria-invalid={@errors != []}
+            aria-describedby={if @errors != [], do: "#{@id}-error"}
             class={[
               @class || "tw-w-full tw-appearance-none tw-rounded-lg tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-text-white focus:tw-border-sky-500 focus:tw-ring-2 focus:tw-ring-sky-500/20 tw-h-10 tw-pl-3 tw-pr-10 tw-text-sm tw-transition-all tw-cursor-pointer",
               @errors != [] && (@error_class || "tw-border-rose-500 focus:tw-border-rose-500 focus:tw-ring-rose-500/20")
@@ -138,13 +142,13 @@ defmodule FunctionComponents.CoreComponents do
           </select>
           
           <div :if={!@multiple} class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center tw-pr-3 tw-text-slate-400">
-            <svg class="tw-h-4 tw-w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <svg class="tw-h-4 tw-w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06z" clip-rule="evenodd" />
             </svg>
           </div>
         </div>
       </label>
-      <.error :for={msg <- @errors}>{msg}</.error>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}>{msg}</.error>
     </div>
     """
   end
@@ -157,6 +161,8 @@ defmodule FunctionComponents.CoreComponents do
         <textarea
           id={@id}
           name={@name}
+          aria-invalid={@errors != []}
+          aria-describedby={if @errors != [], do: "#{@id}-error"}
           class={[
             @class || "tw-w-full tw-rounded-lg tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-text-white focus:tw-border-sky-500 focus:tw-ring-2 focus:tw-ring-sky-500/20 tw-p-3 tw-text-sm tw-min-h-[100px] tw-transition-all",
             @errors != [] && (@error_class || "tw-border-rose-500 focus:tw-border-rose-500 focus:tw-ring-rose-500/20")
@@ -164,7 +170,7 @@ defmodule FunctionComponents.CoreComponents do
           {@rest}
         >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
       </label>
-      <.error :for={msg <- @errors}>{msg}</.error>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}>{msg}</.error>
     </div>
     """
   end
@@ -178,6 +184,8 @@ defmodule FunctionComponents.CoreComponents do
           type={@type}
           name={@name}
           id={@id}
+          aria-invalid={@errors != []}
+          aria-describedby={if @errors != [], do: "#{@id}-error"}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
             @class || "tw-w-full tw-rounded-lg tw-bg-[#2a2a2a] tw-border tw-border-slate-700 tw-text-white focus:tw-border-sky-500 focus:tw-ring-2 focus:tw-ring-sky-500/20 tw-h-10 tw-px-3 tw-text-sm tw-transition-all",
@@ -186,7 +194,7 @@ defmodule FunctionComponents.CoreComponents do
           {@rest}
         />
       </label>
-      <.error :for={msg <- @errors}>{msg}</.error>
+      <.error :for={msg <- @errors} id={"#{@id}-error"}>{msg}</.error>
     </div>
     """
   end
@@ -230,6 +238,8 @@ defmodule FunctionComponents.CoreComponents do
             name={@name}
             value="true"
             checked={@checked}
+            role="switch"
+            aria-checked={to_string(@checked)}
             class="tw-sr-only tw-peer"
             {@rest}
           />
@@ -339,11 +349,12 @@ defmodule FunctionComponents.CoreComponents do
   @doc """
   Generates a generic error message.
   """
+  attr :id, :string, default: nil
   slot :inner_block, required: true
   # Helper used by inputs to generate form errors
   def error(assigns) do
     ~H"""
-    <p class="mt-1.5 flex gap-2 items-center text-sm text-error">
+    <p id={@id} class="mt-1.5 flex gap-2 items-center text-sm text-error">
       <.icon name="hero-exclamation-circle" class="size-5" />
       {render_slot(@inner_block)}
     </p>
@@ -373,7 +384,7 @@ defmodule FunctionComponents.CoreComponents do
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} />
+    <span class={[@name, @class]} aria-hidden="true" />
     """
   end
 
@@ -438,12 +449,12 @@ defmodule FunctionComponents.CoreComponents do
 
   def modal(assigns) do
     ~H"""
-        <div id={@id} class="modal">
-          <div class="modal-background">{render_slot(@background)}</div>
+        <div id={@id} class="modal" role="dialog" aria-modal="true" aria-labelledby={if @title, do: "#{@id}-title"} phx-window-keydown={hide_modal(@id)} phx-key="Escape">
+          <div class="modal-background" phx-click={hide_modal(@id)}>{render_slot(@background)}</div>
           <div class="modal-card !tw-max-h-[85dvh]">
             <header class="modal-card-head" :if={@title}>
-                <p class="modal-card-title">{@title}</p>
-                <button class="delete" type="button" aria-label="close" phx-click={hide_modal(@id)}></button>
+                <p id={"#{@id}-title"} class="modal-card-title">{@title}</p>
+                <button class="delete" type="button" aria-label="Close modal" phx-click={hide_modal(@id)}></button>
             </header>
             <section :if={@show_body} class={"modal-card-body"}>
               {render_slot(@inner_block)}

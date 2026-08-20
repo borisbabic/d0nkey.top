@@ -30,12 +30,15 @@ defmodule FunctionComponents.DropdownOld do
   attr :title, :any, required: true
   attr :class, :string, default: "button"
   attr :aria_controls, :string, default: "dropdown-menu"
+  attr :aria_label, :string, default: nil
 
   def title(assigns) do
     ~H"""
       <.link
         aria-haspopup="true"
         aria-controls={@aria_controls}
+        aria-label={@aria_label}
+        role="button"
         tabindex="0"
         x-on:click.prevent="open=!open"
         x-on:keydown.up.prevent="open=false"

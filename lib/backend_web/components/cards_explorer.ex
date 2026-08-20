@@ -145,7 +145,7 @@ defmodule Components.CardsExplorer do
         <CardSetDropdown id="card_set_dropdown" group_slug={group_slug(@params["format"])}/>
         <ManaCostDropdown id="cards_mana_cost_dropdown" />
         <AttackDropdown id="cards_attack_dropdown" />
-        <HealthDropdown id="cards_attack_dropdown" />
+        <HealthDropdown id="cards_health_dropdown" />
         <ClassDropdown options={@class_options} id="class_dropdown" include_neutral={true}/>
         <CardTypeDropdown id="cards_card_type_dropdown" />
         <MinionTypeDropdown id="cards_minion_type_dropdown"/>
@@ -157,8 +157,8 @@ defmodule Components.CardsExplorer do
         <#slot {@additional_filters} />
         </.filter_container>
         
-        <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
-          <input name="search" type="text" class="input has-text-black" placeholder="Search name/text" value={Map.get(@params, "search", "")} />
+        <.form for={%{}} as={:search} id="cards_search_form" phx-change="change" phx-submit="change" phx-target={@myself}>
+          <input name="search" type="text" class="input has-text-black" placeholder="Search name/text" aria-label="Search cards by name or text" value={Map.get(@params, "search", "")} />
         </.form>
         <div
           id="cards_viewport"

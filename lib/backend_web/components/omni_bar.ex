@@ -15,8 +15,8 @@ defmodule Components.OmniBar do
       <div>
         <div class="level is-mobile" style="margin-bottom: 0;">
           <div class="level-item">
-            <.form for={%{}} as={:search} phx-change="change" phx-submit="change" phx-target={@myself}>
-              <input class="input has-text-black" type="text" name="search" value={@search} placeholder="Type or paste"/>
+            <.form for={%{}} as={:search} id="omni_bar_form" phx-change="change" phx-submit="change" phx-target={@myself}>
+              <input class="input has-text-black" type="text" name="search" value={@search} placeholder="Type or paste" aria-label="Search HSGuru" />
             </.form>
           </div>
 

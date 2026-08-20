@@ -105,13 +105,13 @@ defmodule Components.DecklistCard do
       )
 
     ~F"""
-      <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{Card.dbf_id(@card)}"} class={"has-no-pointer-events": @disable_link}>
+      <a href={if @disable_link, do: "javascript:;", else: ~p"/card/#{Card.dbf_id(@card)}"} aria-label={"#{@count}x #{@card.name}"} class={"has-no-pointer-events": @disable_link}>
         <div class="tw-relative" onmouseover={"set_display('#{@image_id}', 'flex')"} onmouseout={"set_display('#{@image_id}', 'none')"}>
           <div style={"--color-border: #{@border}; --color-gradient: #{@gradient};"} class={"#{@non_hover_class} decklist-card-container decklist-card #{@html_id} is-flex is-align-items-center"}>
             <span class="deck-text decklist-card-background" style=" padding-left: 0.5ch;"></span>
             <span :if={@show_mana_cost}class="card-number deck-text decklist-card-background is-unselectable has-text-left" style="width: 3ch;">{cost(@card, @use_deck_card_cost, @deck)}</span>
             <div class="card-name deck-text decklist-card-gradient has-text-left is-clipped">
-              <span style="font-size: 0;"># {@count}x ({Card.cost(@card)}) </span>
+              <span class="tw-sr-only"># {@count}x ({Card.cost(@card)}) </span>
               <span :if={@sideboarded_in}><HeroIcons.chevron_right size="small"/></span>
               {@card.name}
             </div>

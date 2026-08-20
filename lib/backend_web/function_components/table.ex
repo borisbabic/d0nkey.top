@@ -91,10 +91,11 @@ defmodule FunctionComponents.Table do
 
   slot :inner_block, required: true
   attr :class, :any, required: false, default: ""
+  attr :scope, :string, default: "col"
 
   def th(assigns) do
     ~H"""
-    <th class={header_class(@class)}>
+    <th scope={@scope} class={header_class(@class)}>
       {render_slot(@inner_block)}
     </th>
     """

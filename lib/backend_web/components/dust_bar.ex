@@ -16,7 +16,7 @@ defmodule Components.DustBar do
           <DeckListingModal button_class="icon button" :if={@user} id={Ecto.UUID.generate() <> Deck.deckcode(@deck)} deck={@deck} button_title={"+"} user={@user}/>
           {Deck.cost(@deck, @card_map)}
           <span class="icon">
-            <img class="image" src="/images/dust_icon.webp" />
+            <img class="image" src="/images/dust_icon.webp" alt="Arcane Dust" />
           </span>
         </div>
       </div>

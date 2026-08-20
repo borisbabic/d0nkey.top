@@ -181,7 +181,7 @@ defmodule HeroIcons do
 
   def svg(assigns) do
     ~H"""
-      <svg xmlns="http://www.w3.org/2000/svg" fill={@fill} viewBox="0 0 24 24" stroke-width="1.5" stroke={@stroke} class="icon w-6 h-6">
+      <svg xmlns="http://www.w3.org/2000/svg" fill={@fill} viewBox="0 0 24 24" stroke-width="1.5" stroke={@stroke} class="icon w-6 h-6" aria-hidden="true">
       <%= render_slot(@inner_block) %>
       </svg>
     """

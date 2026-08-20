@@ -262,9 +262,10 @@ defmodule Components.Helper do
         srcset={"https://flagcdn.com/128x96/#{ String.downcase(@country) }.png 2x,\n  https://flagcdn.com/192x144/#{ String.downcase(@country) }.png 3x"}
         width="64"
         height="48"
+        alt={Util.get_country_name(@country) || @country}
         >
         <%= if @cross_out_country do %>
-          <img src="/images/cross.png" width="64" height="48" class="cross-image">
+          <img src="/images/cross.png" width="64" height="48" class="cross-image" alt="" aria-hidden="true">
         <% end %>
       </span>
     """
@@ -281,6 +282,7 @@ defmodule Components.Helper do
               src={@image}
               width="64"
               height="48"
+              alt={@region}
               >
       </span>
     """
@@ -317,11 +319,11 @@ defmodule Components.Helper do
   def deckcode(assigns) do
     ~H"""
     <div>
-        <button type="button" data-balloon-pos="up" data-aria-on-copy="Copied!" class="clip-btn-value is-shown-js" style={if @hide_no_js, do: "display: none;"} aria-label="Copy" data-clipboard-text={@deckcode}>
+        <button type="button" data-balloon-pos="up" data-aria-on-copy="Copied!" class="clip-btn-value is-shown-js" style={if @hide_no_js, do: "display: none;"} aria-label="Copy deck code" data-clipboard-text={@deckcode}>
             <HeroIcons.copy size="small"/>
         </button>
         <noscript>
-            <textarea class="textarea has-fixed-size is-hidden-js" readonly rows="1" style="white-space: nowrap; overflow: hidden; width: 50px;">
+            <textarea class="textarea has-fixed-size is-hidden-js" aria-label="Deck code" readonly rows="1" style="white-space: nowrap; overflow: hidden; width: 50px;">
                 <%= @deckcode %>
             </textarea>
         </noscript>

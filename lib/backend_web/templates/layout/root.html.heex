@@ -53,10 +53,11 @@
               async src="//gc.zgo.at/count.js"></script>
     <% end %>
   </head>
-  <%= render("navbar.html", %{conn: @conn, handle_user: true}) %>
-  <div id="nitropay-video-all"></div>
   <body>
-    <main role="main" class={"#{ container_classes(@conn) }"}>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <%= render("navbar.html", %{conn: @conn, handle_user: true}) %>
+    <div id="nitropay-video-all"></div>
+    <main id="main-content" tabindex="-1" role="main" class={"#{ container_classes(@conn) }"}>
       <%= if enable_nitropay?(@conn) && show_ads?(@conn) do %>
         <div class="is-hidden-mobile sticky-stack column" phx-update="ignore" id="nitropay-sticky-side-rail-container">
           <%!-- <FunctionComponents.Ads.ad_blocking_hint/> --%>
@@ -65,9 +66,7 @@
       <%= @inner_content %>
     </main>
     <br>
+    <div phx-update="ignore" id="nitropay-desktop-anchor"></div>
+    <%= render("footer.html", %{conn: @conn}) %>
   </body>
-
-  <div phx-update="ignore" id="nitropay-desktop-anchor">
-  </div>
-  <%= render("footer.html", %{conn: @conn}) %>
 </html>

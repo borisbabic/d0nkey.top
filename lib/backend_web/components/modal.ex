@@ -26,12 +26,12 @@ defmodule Components.Modal do
     <span>
       <button class={@button_class} type="button" :on-click="show_modal">{@button_title || @title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
-      <div :if={@show_modal} class="modal is-active">
+      <div :if={@show_modal} class="modal is-active" role="dialog" aria-modal="true" aria-label={@title}>
         <div class="modal-background"><#slot {@background} /></div>
         <div class="modal-card !tw-max-h-[85dvh]">
           <header class="modal-card-head">
               <p class="modal-card-title">{@title}</p>
-              <button class="delete" type="button" aria-label="close" :on-click="hide_modal"></button>
+              <button class="delete" type="button" aria-label="Close modal" :on-click="hide_modal"></button>
           </header>
           <section :if={@show_body} class={"modal-card-body", @body_class}>
             <#slot/>

@@ -30,7 +30,7 @@ defmodule BackendWeb.DeckviewerLive do
             <.form for={%{}} as={:new_deck} id="add_deck_form" phx-submit="submit" autocomplete="off">
               <div class="columns is-mobile is-multiline">
                   <div class="column is-narrow">
-                    <textarea class="textarea has-fixed-size small" name="new_deck[new_code]" placeholder="Paste deckcode or link" size="30" rows="1"/>
+                    <textarea class="textarea has-fixed-size small" name="new_deck[new_code]" placeholder="Paste deckcode or link" aria-label="Paste deckcode or link" size="30" rows="1"/>
                   </div>
                   <div class="column is-narrow">
                     <button type="submit" class="button">Add</button>
@@ -61,7 +61,7 @@ defmodule BackendWeb.DeckviewerLive do
           <div class="column is-narrow" :for.with_index = {{deck, index} <- @deckcodes} :if={@compare_decks == @compare_decks}>
             <Decklist deck={deck |> Deck.decode!()} name={"#{deck |> Deck.extract_name()}"} comparison={@comparison} highlight_rotation={@rotation}>
               <:right_button>
-                <a class="delete" phx-click="delete" phx-value-index={index}/>
+                <button type="button" class="delete" aria-label="Remove deck" phx-click="delete" phx-value-index={index}></button>
               </:right_button>
             </Decklist>
           </div>

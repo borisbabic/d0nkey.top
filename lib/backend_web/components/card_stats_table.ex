@@ -120,13 +120,13 @@ defmodule Components.CardStatsTable do
           <.thead>
             <.trh>
               <.th>
-                <a :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")} >
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"card"} phx-value-sort_direction={sort_direction(@filters, "card")} >
                   {add_arrow(dgettext("card_stats", "Card"), "card", @filters)}
                 </a>
               </.th>
 
               <.th>
-                <a :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"mull_impact"} phx-value-sort_direction={sort_direction(@filters, "mull_impact")}>
                   <span>
                     {add_arrow(dgettext("card_stats", "Mulligan Impact"), "mull_impact", @filters, true)}
                   </span>
@@ -134,13 +134,13 @@ defmodule Components.CardStatsTable do
               </.th>
 
               <.th :if={show_counts?(@filters)}>
-                <a :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"mull_count"} phx-value-sort_direction={sort_direction(@filters, "mull_count")}>
                   {add_arrow(dgettext("card_stats", "Mulligan Count"), "mull_count", @filters)}
                 </a>
               </.th>
 
               <.th >
-                <a :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "drawn_impact")}>
                   <span>
                     {add_arrow(dgettext("card_stats", "Drawn Impact"), "drawn_impact", @filters)}
                   </span>
@@ -148,13 +148,13 @@ defmodule Components.CardStatsTable do
               </.th>
 
               <.th :if={show_counts?(@filters)}>
-                <a :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")} >
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"drawn_count"} phx-value-sort_direction={sort_direction(@filters, "drawn_count")} >
                   {add_arrow(dgettext("card_stats", "Drawn Count"), "drawn_count", @filters)}
                 </a>
               </.th>
 
               <.th class={"is-hidden-mobile"}>
-                <a :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact", "asc")} >
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"not_drawn_impact"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_impact", "asc")} >
                   <span>
                     {add_arrow(dgettext("card_stats", "Not Drawn Impact"), "not_drawn_impact", @filters)}
                   </span>
@@ -162,13 +162,13 @@ defmodule Components.CardStatsTable do
               </.th>
 
               <.th :if={show_counts?(@filters)} class={"is-hidden-mobile"}>
-                <a :on-click="change_sort" phx-value-sort_by={"not_drawn_count"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_count")}>
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"not_drawn_count"} phx-value-sort_direction={sort_direction(@filters, "not_drawn_count")}>
                 {add_arrow(dgettext("card_stats", "Not Drawn Count"), "not_drawn_count", @filters)}
                 </a>
               </.th>
 
               <.th class={"is-hidden-mobile"}>
-                <a :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"kept_impact"} phx-value-sort_direction={sort_direction(@filters, "kept_impact")}>
                   <span>
                     {add_arrow(dgettext("card_stats", "Kept Impact"), "kept_impact", @filters)}
                   </span>
@@ -176,7 +176,7 @@ defmodule Components.CardStatsTable do
               </.th>
 
               <.th :if={show_counts?(@filters)} class={"is-hidden-mobile"}>
-                <a :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
+                <a role="button" tabindex="0" href="#" :on-click="change_sort" phx-value-sort_by={"kept_count"} phx-value-sort_direction={sort_direction(@filters, "kept_count")}>
                   {add_arrow(dgettext("card_stats", "Kept Count"), "kept_count", @filters)}
                 </a>
               </.th>
