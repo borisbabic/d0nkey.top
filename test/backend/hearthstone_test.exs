@@ -153,7 +153,7 @@ defmodule Backend.HearthstoneTest do
     test "includes minion type in Card.description/4" do
       card_minion = %Card{
         name: "Savannah Highmane",
-        cost: 6,
+        mana_cost: 6,
         attack: 6,
         health: 5,
         classes: ["HUNTER"],
@@ -171,7 +171,7 @@ defmodule Backend.HearthstoneTest do
 
       card_dual = %Card{
         name: "Amalgam",
-        cost: 3,
+        mana_cost: 3,
         attack: 3,
         health: 4,
         classes: ["NEUTRAL"],

@@ -21,4 +21,29 @@ defmodule BackendWeb.Gettext do
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
   use Kanta.Backend, otp_app: :backend
+
+  defoverridable handle_missing_plural_translation: 7
+
+  def handle_missing_plural_translation(
+        locale,
+        domain,
+        msgctxt,
+        msgid,
+        msgid_plural,
+        n,
+        bindings
+      ) do
+    super(locale, domain, msgctxt, msgid, msgid_plural, n, bindings)
+  rescue
+    _ ->
+      GettextFallbackBackend.lngettext(
+        locale,
+        domain,
+        msgctxt,
+        msgid,
+        msgid_plural,
+        n,
+        bindings
+      )
+  end
 end

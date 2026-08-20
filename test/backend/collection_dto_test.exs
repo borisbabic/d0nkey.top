@@ -16,6 +16,6 @@ defmodule Backend.CollectionManager.CollectionDtoTest do
   test "skips unknown card" do
     id = "THIS_IS_AN_INVALID_ID"
     map = Map.put(@valid_map, "cards", [%{"id" => id}])
-    assert [] = CollectionDto.from_raw_map(map, NaiveDateTime.utc_now())
+    assert {:ok, %CollectionDto{cards: []}} = CollectionDto.from_raw_map(map, NaiveDateTime.utc_now())
   end
 end
