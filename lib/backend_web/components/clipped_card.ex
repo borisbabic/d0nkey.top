@@ -7,7 +7,7 @@ defmodule Components.ClippedCard do
 
   def render(assigns) do
     ~F"""
-      <a href={~p"/card/#{@card}"} aria-label={@card.name}>
+      <a href={~p"/card/#{@card}"} aria-label={Card.name(@card)}>
         <div style={"background-image: url(#{Card.card_url(@card)}); height:32px; width:32px; background-size: 101px 180px; background-position: 50% 23%;"} role="img" aria-label={@card.name}>
         </div>
       </a>

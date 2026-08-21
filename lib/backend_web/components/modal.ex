@@ -26,7 +26,7 @@ defmodule Components.Modal do
     <span>
       <button class={@button_class} type="button" :on-click="show_modal">{@button_title || @title}</button>
       <div :if={@show_success} class="notification is-success tag">{@success_message}</div>
-      <div :if={@show_modal} class="modal is-active" role="dialog" aria-modal="true" aria-label={@title}>
+      <div :if={@show_modal} class="modal is-active" role="dialog" aria-modal="true" aria-label={if is_binary(@title), do: @title, else: "Open Modal"}>
         <div class="modal-background"><#slot {@background} /></div>
         <div class="modal-card !tw-max-h-[85dvh]">
           <header class="modal-card-head">
