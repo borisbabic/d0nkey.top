@@ -178,13 +178,14 @@ defmodule Components.MatchupsTable do
     else
       {total_winrate_factor, total_weight} =
         Enum.reduce(weights, {0, 0}, fn {archetype, weight}, {winrate_factor, acc_weight} ->
-          case Matchups.opponent_stats(matchup, String.to_existing_atom(archetype)) do
-            %{winrate: winrate, games: games} when games > 0 and is_number(winrate) ->
-              winrate_factor = winrate_factor + winrate * weight
-              acc_weight = acc_weight + weight
+          with {:ok, atom_archetype} <- Util.to_existing_atom(archetype),
+               %{winrate: winrate, games: games} when games > 0 and is_number(winrate) <-
+                 Matchups.opponent_stats(matchup, atom_archetype) do
+            winrate_factor = winrate_factor + winrate * weight
+            acc_weight = acc_weight + weight
 
-              {winrate_factor, acc_weight}
-
+            {winrate_factor, acc_weight}
+          else
             _ ->
               {winrate_factor, acc_weight}
           end
