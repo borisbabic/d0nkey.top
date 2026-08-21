@@ -85,12 +85,13 @@ defmodule Backend.DeckArchetyper.DemonHunterArchetyper do
   end
 
   defp no_minion?(card_info) do
-    min_count?(card_info, 2, [
-      "Solitude",
-      "Lasting Legacy",
-      "Hounds of Fury",
-      "The Eternal Hold"
-    ])
+    "Irida Sinseeker" not in card_info.card_names and
+      min_count?(card_info, 2, [
+        "Solitude",
+        "Lasting Legacy",
+        "Hounds of Fury",
+        "The Eternal Hold"
+      ])
   end
 
   defp relic_dh?(ci) do
