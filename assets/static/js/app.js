@@ -342,6 +342,11 @@ Hooks.LocalStorage = {
   },
   clear(obj) {
     localStorage.removeItem(obj.key);
+    if (obj.clear_selector) {
+      this.el.querySelectorAll(obj.clear_selector).forEach((el) => {
+        el.value = "";
+      });
+    }
   },
 };
 Hooks.LocalDateTime = {

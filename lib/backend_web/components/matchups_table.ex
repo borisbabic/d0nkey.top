@@ -54,16 +54,15 @@ defmodule Components.MatchupsTable do
      })}
   end
 
-  def update(assigns, socket) do
-    {:ok, socket |> assign(assigns)}
-  end
-
   def render(assigns) do
     assigns =
       assigns
       |> assign(
         merged_custom_matchup_weights:
-          merge_custom_matchup_weights(assigns.custom_matchup_weights, assigns.weight_merging_map)
+          merge_custom_matchup_weights(
+            Map.get(assigns, :custom_matchup_weights, %{}),
+            Map.get(assigns, :weight_merging_map, %{})
+          )
       )
 
     ~F"""
@@ -90,7 +89,7 @@ defmodule Components.MatchupsTable do
             <tr >
                 <th :for={archetype <- sorted_headers} class="tw-text-justify tw-border tw-border-gray-600 tw-text-gray-300 tw-bg-gray-700">
                   <.form for={%{}} id={"custom_mathchup_popularity_#{archetype}"} phx-change="update_custom_matchup_weights" phx-target={@myself}>
-                    <input id={"custom_weight_input_#{archetype}"} :if={archetype = archetype} class="tw-text-center tw-block has-text-black tw-w-full tw-h-5 tw-p-0 tw-leading-normal tw-appearance-none [appearance:textfield] [&::-webkit-outer-spin-button]:tw-appearance-none [&::-webkit-inner-spin-button]:tw-appearance-none" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype))} />
+                    <input id={"custom_weight_input_#{archetype}"} :if={archetype = archetype} class="tw-text-center tw-block has-text-black tw-w-full tw-h-5 tw-p-0 tw-leading-normal tw-appearance-none [appearance:textfield] [&::-webkit-outer-spin-button]:tw-appearance-none [&::-webkit-inner-spin-button]:tw-appearance-none" type="number" name={archetype} min="0" value={Map.get(@merged_custom_matchup_weights, to_string(archetype)) || ""} />
                   </.form>
                 </th>
             </tr>
@@ -242,7 +241,10 @@ defmodule Components.MatchupsTable do
     {:noreply,
      socket
      |> assign(custom_matchup_weights: %{})
-     |> push_event("clear", %{key: @local_storage_custom_weights_key})}
+     |> push_event("clear", %{
+       key: @local_storage_custom_weights_key,
+       clear_selector: "input[id^='custom_weight_input_']"
+     })}
   end
 
   def handle_event(
