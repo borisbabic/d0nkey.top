@@ -17,6 +17,9 @@ defmodule Backend.DeckArchetyper.HunterArchetyper do
       imbue?(card_info) ->
         :"Imbue Hunter"
 
+      dragon_hunter?(card_info) and companion?(card_info) ->
+        :"Dragon Tamer Hunter"
+
       dragon_hunter?(card_info) ->
         :"Dragon Hunter"
 
