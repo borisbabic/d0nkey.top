@@ -227,6 +227,9 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
       buttons?(card_info) ->
         :"Buttons DK"
 
+      wild_mine?(card_info) ->
+        :"Mine DK"
+
       wild_aggro_dk?(card_info) and wild_plague?(card_info) ->
         :"Aggro Plague DK"
 
@@ -256,6 +259,10 @@ defmodule Backend.DeckArchetyper.DeathKnightArchetyper do
         "Tomb Traitor",
         "Chained Guardian"
       ])
+  end
+
+  defp wild_mine?(card_info) do
+    min_count?(card_info, 2, ["Naval Mine", "Death Growl"])
   end
 
   defp wild_aggro_dk?(card_info) do
