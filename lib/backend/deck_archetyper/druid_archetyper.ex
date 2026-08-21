@@ -249,6 +249,9 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
       min_keyword_count?(card_info, 4, "spell-damage", unique: false) ->
         :"Spell Damage Druid"
 
+      "Death Beetle" in card_info.card_names ->
+        :"Beetle Druid"
+
       bad?(card_info) ->
         :"Bad Druid"
 
