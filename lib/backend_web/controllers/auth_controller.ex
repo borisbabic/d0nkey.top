@@ -1,5 +1,6 @@
 defmodule BackendWeb.AuthController do
   use BackendWeb, :controller
+  plug :save_return_to when action in [:request]
   plug Ueberauth
 
   alias Backend.UserManager
@@ -7,6 +8,7 @@ defmodule BackendWeb.AuthController do
 
   def callback(%{assigns: %{ueberauth_fail: _fails}} = conn, _params) do
     conn
+    |> delete_session(:return_to)
     |> put_flash(:error, "Failed to auth")
     |> redirect(to: "/")
   end
@@ -31,9 +33,16 @@ defmodule BackendWeb.AuthController do
       |> get_bnet_info()
       |> UserManager.ensure_bnet_user()
 
+    return_to =
+      conn
+      |> get_session(:return_to)
+      |> sanitize_return_to(conn)
+      |> Kernel.||("/")
+
     conn
+    |> delete_session(:return_to)
     |> Guardian.Plug.sign_in(user)
-    |> redirect(to: "/")
+    |> redirect(to: return_to)
   end
 
   def callback(
@@ -53,11 +62,54 @@ defmodule BackendWeb.AuthController do
 
   def callback(conn, _params) do
     conn
+    |> delete_session(:return_to)
     |> put_flash(
       :error,
       "Unknown issue when authing, please contact d0nkey if it persists after trying again later"
     )
     |> redirect(to: "/")
+  end
+
+  defp save_return_to(conn, _opts) do
+    return_to =
+      conn.params["redirect_to"] ||
+        conn.params["return_to"] ||
+        get_req_header(conn, "referer") |> List.first()
+
+    case sanitize_return_to(return_to, conn) do
+      nil ->
+        conn
+
+      path when path in ["", "/"] ->
+        conn
+
+      path ->
+        put_session(conn, :return_to, path)
+    end
+  end
+
+  @doc false
+  def sanitize_return_to(url, conn) when is_binary(url) do
+    url = String.trim(url)
+
+    with %URI{host: host, path: path, query: query} <- URI.parse(url),
+         true <- allowed_return_to?(path) do
+      "#{path}?#{query || ""}"
+    else
+      _ -> nil
+    end
+  end
+
+  def sanitize_return_to(_, _), do: nil
+
+  def allowed_return_to?(empty) when empty in ["/", ""], do: false
+  def allowed_return_to?("/auth" <> _), do: false
+  def allowed_return_to?("/logout" <> _), do: false
+  def allowed_return_to?("//" <> _), do: false
+  def allowed_return_to?("/\\" <> _), do: false
+
+  def allowed_return_to?(path) do
+    String.starts_with?(path, "/")
   end
 
   defp create_streamer_from_info(twitch_id, %{
@@ -112,9 +164,20 @@ defmodule BackendWeb.AuthController do
     text(conn, response)
   end
 
-  def logout(conn, _params) do
+  def logout(conn, params) do
+    return_to =
+      params["redirect_to"] ||
+        params["return_to"] ||
+        get_req_header(conn, "referer") |> List.first()
+
+    return_to =
+      return_to
+      |> sanitize_return_to(conn)
+      |> Kernel.||("/")
+
     conn
+    |> delete_session(:return_to)
     |> Guardian.Plug.sign_out()
-    |> redirect(to: "/")
+    |> redirect(to: return_to)
   end
 end

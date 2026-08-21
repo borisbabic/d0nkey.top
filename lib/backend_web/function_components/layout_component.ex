@@ -3,6 +3,7 @@ defmodule FunctionComponents.LayoutComponent do
   use BackendWeb, :component
 
   alias FunctionComponents.DropdownOld, as: Dropdown
+  import BackendWeb.AuthController, only: [allowed_return_to?: 1]
   attr :display, :string, required: true
   attr :battlefy_id, :string, required: true
   attr :start, NaiveDateTime, required: true
@@ -31,6 +32,17 @@ defmodule FunctionComponents.LayoutComponent do
     ~H"""
     <a :if={@giveaway} class="navbar-item" href={~p"/giveaway/#{@giveaway.id}"}>🎁 Giveaway!</a>
     """
+  end
+
+  @spec redirect_to_for_current_path(Plug.Conn.t()) :: String.t()
+  def redirect_to_for_current_path(conn) do
+    current_path = Phoenix.Controller.current_path(conn)
+
+    if allowed_return_to?(current_path) do
+      [redirect_to: current_path]
+    else
+      ""
+    end
   end
 
   attr :sub_menus, :list, required: false, default: []

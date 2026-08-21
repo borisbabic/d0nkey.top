@@ -47,7 +47,7 @@
               <.navbar_item_link link={~p"/admin/oban/jobs"} display={"Oban Jobs"} />
               <.navbar_item_link link={~p"/admin/kaffy"} display={"Kaffy"} />
             <% end %>
-            <.navbar_item_link link={~p"/logout"} display={"Logout"} />
+            <.navbar_item_link link={~p"/logout?#{redirect_to_for_current_path(@conn)}"} display={"Logout"} />
             <%= if can_access?(@conn, :developer) do %>
               <% query_part = if @conn.query_string != "", do: "?#{@conn.query_string}", else: "" %>
               <.navbar_item_link link={"http://localhost:8994" <> @conn.request_path <> query_part} display={"Localhost"} />
@@ -58,7 +58,7 @@
           </.navbar_dropdown>
         <% else %>
           <.navbar_dropdown display={"👤"} aria_label="Account">
-            <.navbar_item_link link={~p"/auth/bnet"} display="Sign in (Battlenet)"/>
+            <.navbar_item_link link={~p"/auth/bnet?#{redirect_to_for_current_path(@conn)}"} display="Sign in (Battlenet)"/>
           </.navbar_dropdown>
         <% end %>
         <.navbar_dropdown display="Leaderboards" main_link={~p"/leaderboard"}>

@@ -458,3 +458,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// Automatically append current URL as redirect_to for Battle.net login and logout links
+document.addEventListener("click", (e) => {
+  const link = e.target.closest && e.target.closest('a[href^="/auth/bnet"], a[href^="/logout"]');
+  if (link) {
+    const currentUrl = window.location.pathname + window.location.search;
+    if (
+      currentUrl &&
+      currentUrl !== "/" &&
+      !currentUrl.startsWith("/auth") &&
+      !currentUrl.startsWith("/logout")
+    ) {
+      try {
+        const href = link.getAttribute("href");
+        const url = new URL(href, window.location.origin);
+        if (!url.searchParams.has("redirect_to") && !url.searchParams.has("return_to")) {
+          url.searchParams.set("redirect_to", currentUrl);
+          link.setAttribute("href", url.pathname + url.search);
+        }
+      } catch (err) {
+        console.error("Error setting redirect_to on link:", err);
+      }
+    }
+  }
+});
+
+
+
