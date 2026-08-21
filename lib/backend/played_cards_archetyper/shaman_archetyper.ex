@@ -5,55 +5,55 @@ defmodule Backend.PlayedCardsArchetyper.ShamanArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    # auto-gen
     "Zee Shaman": [
       "Beaming Sidekick",
       "Carrier Whelp",
       "Cult Neophyte",
       "Dreambound Raptor",
-      "Emberscarred Whelp",
       "Fire Fly",
-      "Glacial Shard",
+      "Gallagio Goon",
+      "Getaway Hogdriver",
       "Hexmarshal",
       "Hijacked Securitybot",
       "Holy Eggbearer",
       "Platysaur",
+      "Portal Vanguard",
       "Prize Vendor",
+      "Rockskipper",
+      "Shadowed Informant",
       "Slagclaw",
       "The Black Knight",
-      "The Curator"
+      "The Curator",
+      "Warden Maiev"
+    ],
+    "Harold Shaman": [
+      "Al'Akir, Lord of Storms",
+      "Avatar Form",
+      "Elise the Navigator",
+      "Flight of the Firehawk",
+      "High King's Hammer",
+      "Muradin, High King",
+      "Primordial Overseer",
+      "Twilight Egg",
+      "Ultraxion"
     ],
     "Mug Shaman": [
       "Ascendance",
       "Blazing Invocation",
       "Fire Breath",
-      "Frostshatter",
+      "Hex",
+      "Lightning Storm",
       "Low Security Wing",
       "Molten Gold",
       "Mountain Map",
       "Mug'Zee",
-      "Sands of Time",
-      "Stormfury",
-      "Thunderquake",
-      "Voltaic Burst"
-    ],
-    "Harold Shaman": [
-      "Avatar Form",
-      "Flight of the Firehawk",
-      "Lightning Storm",
       "Muradin's Last Stand",
-      "Muradin, High King",
-      "Primordial Overseer",
-      "Twilight Egg"
-    ],
-    "Zee Shaman": [
-      "Envoy of the End",
-      "Gallagio Goon",
-      "Skywall Sentinel",
+      "Ritual of Power",
+      "Sands of Time",
+      "Static Shock",
+      "Thunderquake",
       "Tiny Pal",
-      "Wailing Vapor",
-      "Warden Maiev",
-      "Witch's Apprentice"
+      "Voltaic Burst"
     ]
   ]
   @wild_config [

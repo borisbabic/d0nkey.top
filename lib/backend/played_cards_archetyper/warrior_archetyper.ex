@@ -6,41 +6,36 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
 
   @standard_config [
     "Quest Warrior": ["Enter the Lost City"],
-    # auto gen
-    "Dragon Warrior": ["Petal Peddler", "Darkscale Broodmother"],
-    "Egg Warrior": ["Dissolving Ooze", "Endbringer Umbra", "Holy Eggbearer", "Siphoning Growth", "The Egg of Khelos"],
-    "Dragon Warrior": [
-      "Brood Keeper",
-      "Carrier Whelp",
-      "Illusory Greenwing",
-      "Prescient Slitherdrake",
-      "Quantum Destabilizer",
-      "Stadium Announcer",
-      "Windpeak Wyrm"
+    "Dragon Warrior": ["Petal Peddler", "Darkscale Broodmother", "Prescient Slitherdrake", "Brood Keeper"],
+    "Egg Warrior": ["Holy Eggbearer", "The Egg of Khelos", "Siphoning Growth", "Endbringer Umbra"],
+    "Other Warrior": ["Gladiatorial Combat"],
+    "Other Warrior": ["Rockskipper"],
+    "Harold Warrior": ["Deathwing, Worldbreaker", "Envoy of the End", "Ragnaros, the Great Fire", "Ultraxion"],
+    "Lo'Gosh Warrior": [
+      "Broll, Blood Fighter",
+      "Lo'Gosh, Blood Fighter",
+      "Mother Duck",
+      "Release the Beasts",
+      "Valeera, Blood Fighter"
     ],
-    "Harold Warrior": ["Ragnaros, the Great Fire", "Ultraxion"],
-    "Lo'Gosh Warrior": ["Release the Beasts"],
-    "Harold Warrior": ["Deathwing, Worldbreaker", "Envoy of the End", "Scorching Ravager"],
+    "Dragon Warrior": ["Stadium Announcer", "Windpeak Wyrm"],
+    "Harold Warrior": ["Cataclysmic War Axe", "Scorching Ravager"],
+    "Dragon Warrior": ["Darkrider"],
+    "Lo'Gosh Warrior": ["Nightmare Lord Xavius", "Precursory Strike"],
+    "Egg Warrior": ["Decimation", "Shellnado", "Unleash the Crocolisks"],
+    "Other Warrior": ["Clutch of Corruption"],
     "Lo'Gosh Warrior": [
       "Acolyte of Pain",
       "Axe of the Forefathers",
-      "Broll, Blood Fighter",
-      "Chainbreaker Hogger",
-      "Disguised Watchman",
+      "Crowd Control",
       "Erupting Volcano",
-      "Execute",
-      "Lo'Gosh, Blood Fighter",
-      "Mother Duck",
-      "Nightmare Lord Xavius",
-      "Portal Vanguard",
-      "Precursory Strike",
-      "Sands of Time",
+      "Eternal Toil",
       "Scramble for Gear",
       "Searing Fissure",
       "Shadowflame Suffusion",
-      "Valeera, Blood Fighter"
-    ],
-    "Egg Warrior": ["Sanguine Depths"]
+      "Shield Block",
+      "Torch"
+    ]
   ]
   @wild_config [
     "XL Taunt Warrior": [

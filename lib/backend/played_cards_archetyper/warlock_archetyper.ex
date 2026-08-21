@@ -26,24 +26,51 @@ defmodule Backend.PlayedCardsArchetyper.WarlockArchetyper do
       "Deathwing, Worldbreaker",
       "Ultraxion"
     ],
+    # 5.5
+    "Other Warlock": [
+      "Chronoclaws"
+    ],
     "Wallow Warlock": ["Avant-Gardening", "Raptor Herald", "Wallow, the Wretched", "Overgrown Horror"],
-    "Harold Warlock": ["Shrine of Twilight", "Glacial Shard", "Shadowsworn Disciple", "Annihilation", "Imp Gang Stooge"],
+    "Harold Warlock": [
+      "Shrine of Twilight",
+      "Glacial Shard",
+      "Shadowsworn Disciple",
+      "Annihilation",
+      "Imp Gang Stooge",
+      "Defias Smuggler"
+    ],
     # auto gen
-    "Godfrey Warlock": ["Chronoclaws", "Cult Neophyte", "Demonic Confinement", "Prize Vendor", "Tachyon Barrage"],
+    "Other Warlock": ["Divergence"],
+    Rafaamlock: ["Nightmare Lord Xavius"],
+    "Other Warlock": ["Cult Neophyte"],
+    Rafaamlock: ["Possessed Animancer"],
+    "Other Warlock": ["Escape Artist"],
+    Rafaamlock: ["Sheltered Survivor"],
+    "Other Warlock": ["Tachyon Barrage"],
     Rafaamlock: [
-      "Caged Cranium",
+      "Ancient Augur",
       "Critter Caretaker",
+      "Dirty Rat",
       "Doomsayer",
-      "Drain Soul",
+      "Elise the Navigator",
       "Eternal Toil",
       "Fractured Power",
-      "Hellfire",
       "Mortal Coil",
-      "Nightmare Lord Xavius",
-      "Possessed Animancer",
       "RAFAAM LADDER!!",
-      "Shadow Rounds",
-      "Sheltered Survivor",
+      "Shadow Rounds"
+    ],
+    Rafaamlock: ["Fae Trickster", "Prize Vendor", "Sands of Time"],
+    "Harold Warlock": [
+      "Caged Cranium",
+      "Conflagrate",
+      "Cursed Catacombs",
+      "Cursed Chains",
+      "Drain Soul",
+      "Godfrey the Betrayer",
+      "Hellfire",
+      "Moragg",
+      "Rotten Apple",
+      "Rustrot Viper",
       "Spire of Solitude",
       "The Unseen Atlas"
     ]

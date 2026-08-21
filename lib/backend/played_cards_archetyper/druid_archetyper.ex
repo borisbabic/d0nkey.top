@@ -6,65 +6,77 @@ defmodule Backend.PlayedCardsArchetyper.DruidArchetyper do
 
   @standard_config [
     "Quest Druid": ["Restore the Wild"],
-    "Imbue Druid": [
-      "Bitterbloom Knight",
-      "Charred Chameleon",
-      "Dreambound Disciple",
-      "Flutterwing Guardian",
-      "Hamuul Runetotem",
-      "Malorne the Waywatcher",
-      "Petal Picker",
-      "Resplendent Dreamweaver"
+    # "Imbue Druid": [
+    #   "Bitterbloom Knight",
+    #   "Charred Chameleon",
+    #   "Dreambound Disciple",
+    #   "Flutterwing Guardian",
+    #   "Hamuul Runetotem",
+    #   "Malorne the Waywatcher",
+    #   "Petal Picker",
+    #   "Resplendent Dreamweaver"
+    # ],
+    "Chef Druid": [
+      "Chef Neth'rek"
+    ],
+    "Attack Druid": [
+      "Savage Striker",
+      "Infest the Scullery",
+      "Feral Rage"
     ],
     "Chef Druid": [
-      "Chef Neth'rek",
-      "Kaldorei Cultivator",
-      "Spiteful Chef"
+      "Kaldorei Cultivator"
     ],
     "Hostage Druid": [
-      "Chrono-Lord Deios",
       "Endbringer Umbra",
       "Grove Shaper",
       "Sewer Imp",
       "Tindral Sageswift"
     ],
-    "Merithra Druid": ["Merithra of the Dream", "Darkscale Broodmother", "Fyrakk the Blazing"],
     # 5.5
-    "Chef Druid": ["Mossbinding", "Commissary Crook"],
-    "Merithra Druid": ["Broodwatcher"],
     "Chef Druid": [
+      "Warden Maiev",
+      "Mossbinding",
+      "Spiteful Chef"
+    ],
+    "Attack Druid": [
       "Spider Rider",
-      "Sands of Time",
-      "Azshara's Triumph",
-      "Mark of the Wild",
-      "Photosynthesis",
-      "Symbiosis",
-      "Lethal Recipe"
+      "Spiderling",
+      "Widows's Bite",
+      "Secret Ingredient"
     ],
-    "Azshara Druid": [
-      "Welcome Home!",
-      "Briarspawn Drake",
-      "The Well of Eternity",
-      "Zin-Azshari",
-      "Lady Azshara"
-    ],
+    # auto-gen
+    "Merithra Druid": ["Darkscale Broodmother"],
+    "Azshara Druid": ["Briarspawn Drake", "Zin-Azshari"],
     "Merithra Druid": [
-      "Elise the Navigator",
-      "Wickerfang",
-      "Bashana Runetotem"
+      "Broodwatcher",
+      "Defias Smuggler",
+      "Doomsayer",
+      "Fyrakk the Blazing",
+      "Highborne Mentor",
+      "Lifebloom",
+      "Merithra of the Dream",
+      "Naralex, Herald of the Flights",
+      "Nightmare Lord Xavius",
+      "Rustrot Viper",
+      "Shaladrassil"
     ],
-    # 10.5
-    "Hostage Druid": [
-      "Heartroot Stones",
-      "Underking"
-    ],
+    "Azshara Druid": ["Lady Azshara"],
+    "Attack Druid": ["Staff of Trickery", "Wickerfang", "Widow's Bite"],
+    "Azshara Druid": ["Story of Barnabus"],
+    "Chef Druid": ["Azshara's Triumph"],
+    "Hostage Druid": ["Heartroot Stones"],
+    "Attack Druid": ["Bashana Runetotem", "Press the Advantage"],
     "Merithra Druid": [
-      "Ebb and Flow",
       "Acceleration Aura",
+      "Amirdrassil",
+      "Ebb and Flow",
+      "Elise the Navigator",
+      "Felwood Treant",
       "Horn of Plenty",
       "Innervate",
-      "Waveshaping",
-      "Felwood Treant"
+      "Twilight Timereaver",
+      "Waveshaping"
     ]
   ]
   @wild_config [

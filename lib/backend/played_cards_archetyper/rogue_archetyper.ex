@@ -7,7 +7,6 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
   @standard_config [
     "Quest Rogue": ["Lie in Wait"],
     # auto gen
-    "Two-Bit Rogue": ["Bloodmage Thalnos", "Crystal Tusk", "Escape Artist", "Lotus Troublemaker", "Picklock"],
     "Harold Rogue": [
       "Deathwing, Worldbreaker",
       "Elise the Navigator",
@@ -16,41 +15,50 @@ defmodule Backend.PlayedCardsArchetyper.RogueArchetyper do
       "Sinestra",
       "Ultraxion"
     ],
-    "Two-Bit Rogue": [
-      "Agent of the Old Ones",
+    "AYAYA Rogue": [
       "Aya, Lotus Kingpin",
-      "Backstab",
-      "Bitterbloom Knight",
-      "Blackpaw's Whip",
-      "Cult Neophyte",
-      "Cultist Map",
+      "Portal Vanguard",
+      "Defias Wannabe",
+      "Time Adm'ral Hooktail",
+      "Garona's Last Stand",
       "Deadly Bribe",
-      "Deja Vu",
-      "Dirty Rat",
-      "Doomsayer",
-      "Eventuality",
-      "Fan of Knives",
-      "Flashback",
-      "Foxy Fraud",
-      "Garona Halforcen",
-      "Glacial Shard",
-      "Jade Guardians",
-      "Loot Hoarder",
-      "Lotus Bookie",
-      "Naralex, Herald of the Flights",
-      "Nightmare Fuel",
-      "Preparation",
-      "Prize Vendor",
-      "Rite of Twilight",
-      "Rustrot Viper",
-      "Sands of Time",
+      "Ashamane"
+    ],
+    "Two-Bit Rogue": [
+      "Lotus Troublemaker",
+      "Jade Guardians"
+    ],
+    "Harold Rogue": [
+      "Opu the Unseen"
+    ],
+    # 5.5
+    "Two-Bit Rogue": [
+      "Bloodmage Thalnos",
       "Shadowed Informant",
-      "The Kingslayers",
-      "Thief's Tools",
+      "Escape Artist"
+    ],
+    "Harold Rogue": [
       "Twilight Mistress",
-      "Vanessa the Ringleader",
-      "Warden Maiev",
-      "Watfin"
+      "Naralex, Herald of the Flights",
+      "Jagged Edge of Time",
+      "Nightmare Fuel"
+    ],
+    # auto-gen
+    "AYAYA Rogue": ["Everburning Phoenix"],
+    "Harold Rogue": ["Shaladrassil"],
+    "AYAYA Rogue": ["Backstab", "Blackpaw's Whip", "Glacial Shard", "Picklock", "Spymistress", "Vanessa the Ringleader"],
+    "Harold Rogue": ["Deja Vu"],
+    "Two-Bit Rogue": ["Bitterbloom Knight", "Cult Neophyte", "Dirty Rat", "Doomsayer", "Fan of Knives", "Watfin"],
+    "Harold Rogue": [
+      "Agent of the Old Ones",
+      "Cultist Map",
+      "Eventuality",
+      "Flashback",
+      "Garona Halforcen",
+      "Lotus Bookie",
+      "Preparation",
+      "Rite of Twilight",
+      "The Kingslayers"
     ]
   ]
   @wild_config [

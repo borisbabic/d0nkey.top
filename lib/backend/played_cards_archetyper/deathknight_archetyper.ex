@@ -15,7 +15,6 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Experimental Animation"
     ],
     "Egg DK": [
-      "Abusive Sergeant",
       "Endbringer Umbra",
       "Dissolving Ooze",
       "Holy Eggbearer",
@@ -26,19 +25,40 @@ defmodule Backend.PlayedCardsArchetyper.DeathKnightArchetyper do
       "Reluctant Wrangler",
       "Talanji's Last Stand",
       "Twilight Egg",
-      "Murmy"
+      "Murmy",
+      "Ancient Raptor",
+      "Warden Maiev",
+      "Battlefiend Necromancer",
+      "Shadows of Yesterday",
+      "Monstrous Mosquito"
     ],
     # AUTO GEN 
     #
+    "Imbue DK": ["Petal Picker"],
+    "Egg DK": ["Defias Smuggler"],
     "Egg DK": ["Portal Vanguard"],
-    "Frost DK": ["Cryosleep", "Fae Trickster", "Frostwyrm's Fury", "Rockskipper", "Timestop", "Tunneling Geomancer"],
-    "Egg DK": ["Defias Smuggler", "Wild Pyromancer"],
-    "Aggro DK": ["Battlefield Necromancer"],
-    "Egg DK": ["Escape Artist"],
-    "Egg DK": ["Acolyte of Death", "Corpse Cannon", "Drink Blood", "Falric", "Glacial Shard", "Sawbones"],
-    "Harold DK": ["Chillfallen Baron", "Hematurge"],
-    "Egg DK": ["Infested Breath", "Morbid Swarm", "Staff of the Endbringer"]
-    # 5.5
+    "Harold DK": ["The Curator"],
+    "Other DK": ["Alexandros Mograine"],
+    "Harold DK": ["Elise the Navigator"],
+    "Rainbow DK": ["Blood Tap"],
+    "Imbue DK": ["Bitterbloom Knight", "Finality", "Flutterwing Guardian"],
+    "Other DK": ["Wicked Blightspawn"],
+    "Egg DK": ["Drink Blood", "Falric", "Glacial Shard"],
+    "Harold DK": ["Chillfallen Baron", "Command Claw", "Hematurge", "Husk, Eternal Reaper", "Sanguine Infestation"],
+    "Egg DK": [
+      "Blood Doctor Thal'ena",
+      "Corpse Cannon",
+      "Emergency Surgery",
+      "Morbid Swarm",
+      "Nightmare Lord Xavius",
+      "Poison Breath",
+      "Reanimated Pterrordax",
+      "Remnant of Rage",
+      "Sawbones",
+      "Soulrest Ceremony",
+      "Staff of the Endbringer",
+      "Tower of Ghouls"
+    ]
   ]
 
   @wild_config [

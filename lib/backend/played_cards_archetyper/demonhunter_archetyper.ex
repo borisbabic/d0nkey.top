@@ -29,24 +29,52 @@ defmodule Backend.PlayedCardsArchetyper.DemonHunterArchetyper do
   }
   @standard_config [
     "Quest DH": ["Unleash the Colossus"],
+    "Raza DH": ["Eredar Deceptor"],
     "Void Soul DH": [
+      "Ravenous Felhunter",
       "Tras'tath, Soul Parasite",
       "Vicious Voidscale",
       "Stardust Scythe",
       "Void Blast",
       "Void Soul"
     ],
+    "Harold DH": @herald_package,
     "Raza DH": [
-      "Eredar Deceptor",
       "Enduring Roach",
       "Soul Immolation"
     ],
-    "Harold DH": @herald_package,
-    "Void DH": ["Meadowstrider"],
-    "Spell DH": ["Lasting Legacy", "Nespirah, Enthralled", "Solitude", "The Eternal Hold", "Time-Lost Glaive"],
-    "Spell DH": ["Sigil of the Seas"],
+    # auto-gen
+    "Void DH": [
+      "Carrier Whelp",
+      "Cloud Serpent",
+      "Cosmic Manifestations",
+      "Escape Artist",
+      "Hellraiser",
+      "Illusory Greenwing",
+      "Irida Sinseeker",
+      "Jumpscare!",
+      "Netherspite Historian",
+      "Portal Vanguard",
+      "Prescient Slitherdrake",
+      "Rockskipper",
+      "Shadowed Informant",
+      "Solitude",
+      "The Eternal Hold"
+    ],
+    "Raza DH": ["Bloodmage Thalnos", "Fumigate", "Raging Felscreamer", "Royal Librarian", "Rustrot Viper"],
+    "Harold DH": ["Fel Infusion"],
+    "Other DH": ["Hive Map", "Time-Lost Glaive"],
     "Raza DH": ["Press the Advantage"],
-    "Void DH": ["Grim Harvest", "Hive Map", "Illidari Studies", "Infestation", "Wyvern's Slumber"]
+    "Other DH": ["Horn of Feasting"],
+    "Other DH": ["Crimson Sigil Runner", "Eye Beam", "Lasting Legacy", "Ravenous Felfisher", "Remnant of Rage"],
+    "Raza DH": [
+      "Axe of Cenarius",
+      "Broxigar's Last Stand",
+      "First Portal to Argus",
+      "Grim Harvest",
+      "Illidari Studies",
+      "Infestation"
+    ]
   ]
   @wild_config [
     "Token Broxigar DH": [

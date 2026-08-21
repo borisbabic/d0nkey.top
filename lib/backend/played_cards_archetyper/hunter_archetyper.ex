@@ -5,44 +5,43 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
   import Backend.PlayedCardsArchetyper.ArchetyperHelper
 
   @standard_config [
-    {:"Quest Hunter", ["The Food Chain"]},
-    {:"Tick Tock Hunter", ["Battle at the End Time"]},
-    {:"Imbue Hunter",
-     [
-       "Petal Picker",
-       "Bitterbloom Knight",
-       "Umbraclaw",
-       "Resplendent Dreamweaver",
-       "Flutterwing Guardian"
-     ]},
-    "Companion Hunter": ["Talya Earthstrider"],
-    "Face Hunter": [
-      "Platysaur",
-      "Rockskipper",
-      "Quel'dorei Fletcher",
-      "Reinforcement Rallier",
-      "Precise Shot",
-      "Sizzling Cinder",
-      "Arcane Shot"
+    "Quest Hunter": ["The Food Chain"],
+    "Tick Tock Hunter": ["Battle at the End Time"],
+    "Imbue Hunter": [
+      "Petal Picker",
+      "Resplendent Dreamweaver"
     ],
     "Companion Hunter": [
-      "Migrating Elekk"
+      "Talya Earthstrider",
+      "Roam Free",
+      "Migrating Elekk",
+      "Call of the Wild",
+      "Animal Companion",
+      "Spiritspeaker"
     ],
-    "Dragon Hunter": [
-      "Stonetalon Striker",
-      "Darkscale Broodmother",
-      "Ebonscale Scout"
-    ],
+    # auto-gen
+    "Face Hunter": ["Slumbering Sprite"],
+    "Dragon Hunter": ["Petal Peddler", "Prescient Slitherdrake"],
+    "Other Hunter": ["Stranglevine"],
+    "Face Hunter": ["Arrow Retriever", "Quick Shot"],
+    "Dragon Hunter": ["Darkscale Broodmother"],
     "Face Hunter": [
-      "Glacial Shard"
+      "Arcane Shot",
+      "Confront the Tol'vir",
+      "Platysaur",
+      "Precise Shot",
+      "Quel'dorei Fletcher",
+      "Reinforcement Rallier",
+      "Rockskipper",
+      "Sizzling Cinder"
     ],
-    # auto gen
     "Dragon Hunter": [
       "Arcane Tripwire",
       "Beast Tripwire",
       "Carrier Whelp",
-      "Confront the Tol'vir",
       "Earthen Roar",
+      "King of the Underbelly",
+      "Portal Vanguard",
       "Ranger Captain Alleria",
       "Ranger General Sylvanas",
       "Ranger Initiate Vereesa",
@@ -50,6 +49,7 @@ defmodule Backend.PlayedCardsArchetyper.HunterArchetyper do
       "Smuggled Shovel",
       "Sylvanas's Triumph",
       "Tame Pet",
+      "Tol'vir Carver",
       "Tracking",
       "Underbelly Network",
       "Wound Prey"

@@ -6,53 +6,53 @@ defmodule Backend.PlayedCardsArchetyper.PriestArchetyper do
 
   @standard_config [
     "Thief Priest": ["Azalina Soulsever"],
-    "Egg Priest": ["Holy Eggbearer"],
     "Thief Priest": [
       "Enthralled Shade",
       "Mind Sweeper",
       "Unshackle Soul"
     ],
     # auto gen
+    "Other Priest": ["Holy Eggbearer"],
     "Control Priest": [
       "Ancient of Yore",
       "Atiesh the Greatstaff",
+      "Aviana, Elune's Chosen",
       "Cleansing Cleric",
       "Devouring Plague",
       "Elise the Navigator",
+      "Eternal Firebolt",
       "Fae Trickster",
       "Flash Heal",
+      "For All Time",
+      "Greater Healing Potion",
       "Holy Nova",
       "Karazhan the Sanctum",
       "Malorne the Waywatcher",
+      "Medivh the Hallowed",
+      "Purifying Breath",
+      "Ruby Sanctum",
       "Steamcleaner",
       "Story of Amara",
       "The Black Blood",
       "Tyrande",
       "Ysera, Emerald Aspect"
     ],
-    "Soothsayer Priest": ["Calia Menethil", "Jailbird", "Portal Vanguard"],
-    # 5.5
     "Thief Priest": ["Psychic Conjurer"],
-    "Egg Priest": ["Defias Smuggler", "The Egg of Khelos"],
-    "Soothsayer Priest": ["Endbringer Umbra", "Hold Them Off!", "Twilight Influence"],
-    "Thief Priest": ["Power Word: Shield"],
-    "Control Priest": ["Mend", "Ruby Sanctum"],
-    # 10.5
+    "Other Priest": ["Calia Menethil", "Portal Vanguard", "Twilight Influence"],
     "Thief Priest": [
+      "Bitterbloom Knight",
+      "Dirty Rat",
       "Holy Embrace",
       "Intertwined Fate",
       "Kaldorei Priestess",
       "Lunarwing Messenger",
-      "Medivh the Hallowed",
-      "Moonwell",
-      "Shadow Word: Ruin"
-    ],
-    "Thief Priest": [
-      "Bitterbloom Knight",
-      "Dirty Rat",
-      "Eternal Firebolt",
       "Medivh's Triumph",
-      "Reach Equilibrium"
+      "Moonwell",
+      "Power Word: Shield",
+      "Reach Equilibrium",
+      "Rustrot Viper",
+      "Shadow Word: Ruin",
+      "Soothsayer"
     ]
   ]
   @wild_config [

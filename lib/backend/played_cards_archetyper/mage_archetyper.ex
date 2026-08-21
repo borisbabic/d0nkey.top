@@ -17,7 +17,6 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
   @standard_config [
     "Quest Mage": ["The Forbidden Sequence"],
     "Imbue Mage": [
-      "Aessina",
       "Bitterbloom Knight",
       "Divination",
       "Flutterwing Guardian",
@@ -30,24 +29,26 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
     "Leyline Mage": @leyline_package,
     "Burn Mage": [
       "Archmage Kalec",
+      "Bloodmage Thalnos",
       "Fireball",
       "Living Flame",
       "Raincaller",
       "Scorching Winds",
       "Spellweaver's Brilliance",
+      "Story of the Waygate",
       "Time-Twisted Seer",
       "Tunneling Geomancer",
-      "Unstable Spellcaster"
+      "Unstable Spellcaster",
+      "Violet Spellwing"
     ],
     # auto gen
-    "Toki Mage": ["Faceless Enigma", "Timelooper Toki"],
-    "Manastorm Mage": ["Deep Freeze"],
-    "Burn Mage": ["Story of the Waygate"],
     "Manastorm Mage": [
       "Alter Time",
+      "Arcane Barrage",
       "Bitter End",
       "Blizzard",
       "Cold Snap",
+      "Deep Freeze",
       "Eternal Firebolt",
       "First Flame",
       "Flamestrike",
@@ -66,6 +67,8 @@ defmodule Backend.PlayedCardsArchetyper.MageArchetyper do
       "Spark of Life",
       "Storage Scuffle",
       "The Skeleton Key",
+      "Tricksy Improviser",
+      "Vulcanos",
       "Winterspring Whelp"
     ]
   ]
