@@ -57,19 +57,20 @@ defmodule Backend.DeckArchetyper.DruidArchetyper do
   end
 
   defp attack_druid?(card_info) do
-    min_count?(
-      card_info,
-      5,
-      [
-        "Feral Rage",
-        "Savage Striker",
-        "Secret Ingredient",
-        "Spider Rider",
-        "Spiderling",
-        "Staff of Trickery",
-        "Widow's Bite"
-      ]
-    )
+    min_count?(card_info, 2, ["Infest the Scullery", "Staff of Trickery"]) or
+      min_count?(
+        card_info,
+        5,
+        [
+          "Feral Rage",
+          "Savage Striker",
+          "Secret Ingredient",
+          "Spider Rider",
+          "Spiderling",
+          "Staff of Trickery",
+          "Widow's Bite"
+        ]
+      )
   end
 
   defp chef?(card_info) do
