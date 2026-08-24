@@ -2,6 +2,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
   use BackendWeb.ConnCase
   import Ecto.Query
   alias Backend.Leaderboards.Entry
+  alias Backend.Leaderboards.SeasonSize
   alias Backend.Leaderboards
 
   defp create_entries(rows, season) do
@@ -405,6 +406,126 @@ defmodule BackendWeb.LeaderboardControllerTest do
       refute html_response(conn, 200) =~ "PLEASE NO"
       # refute html_response(conn, 200) =~ "AP #3"
       # assert html_response(conn, 200) =~ "AP #2"
+    end
+  end
+
+  describe "/leaderboard/size-history" do
+    @describetag :leaderboard_size_history
+    @describetag :authenticated
+
+    test "records size history and prevents duplicate entries for same size" do
+      s = %Hearthstone.Leaderboards.Season{
+        leaderboard_id: "STD",
+        season_id: 150,
+        region: "EU"
+      }
+
+      {:ok, season} = Leaderboards.get_season(s)
+      now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+      # Record initial size
+      {:ok, %SeasonSize{total_size: 500}} =
+        Leaderboards.record_season_size(season, 500, NaiveDateTime.add(now, -3600))
+
+      # Record duplicate size - should be noop
+      assert {:ok, :noop} =
+               Leaderboards.record_season_size(season, 500, NaiveDateTime.add(now, -1800))
+
+      # Record increased size
+      {:ok, %SeasonSize{total_size: 1200}} =
+        Leaderboards.record_season_size(season, 1200, now)
+
+      sizes = Leaderboards.size_history("EU", "season_150", "STD")
+      assert length(sizes) == 2
+
+      [first, second] = sizes
+      assert first.total_size == 500
+      assert first.prev_total_size == nil
+      assert second.total_size == 1200
+      assert second.prev_total_size == 500
+
+      Backend.Repo.delete_all(from sz in SeasonSize, where: sz.season_id == ^season.id)
+      Backend.Repo.delete(season)
+    end
+
+    test "update_total_size updates season and records size history" do
+      s = %Hearthstone.Leaderboards.Season{
+        leaderboard_id: "BG",
+        season_id: 60,
+        region: "US"
+      }
+
+      {:ok, season} = Leaderboards.get_season(s)
+      now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+      Leaderboards.update_total_size(season, 800, NaiveDateTime.add(now, -7200))
+      {:ok, updated_season} = Leaderboards.get_season(s)
+      assert updated_season.total_size == 800
+
+      Leaderboards.update_total_size(season, 1500, now)
+      {:ok, updated_season_2} = Leaderboards.get_season(s)
+      assert updated_season_2.total_size == 1500
+
+      history = Leaderboards.size_history("US", "season_60", "BG")
+      assert length(history) == 2
+      assert Enum.map(history, & &1.total_size) == [800, 1500]
+
+      Backend.Repo.delete_all(from sz in SeasonSize, where: sz.season_id == ^season.id)
+      Backend.Repo.delete(season)
+    end
+
+    test "GET /leaderboard/size-history returns 200 and renders graph and comparison table", %{
+      conn: conn
+    } do
+      s = %Hearthstone.Leaderboards.Season{
+        leaderboard_id: "STD",
+        season_id: 151,
+        region: "EU"
+      }
+
+      {:ok, season} = Leaderboards.get_season(s)
+      now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+      Leaderboards.record_season_size(season, 1000, NaiveDateTime.add(now, -3600))
+      Leaderboards.record_season_size(season, 1350, now)
+
+      url =
+        Routes.leaderboard_path(
+          conn,
+          :size_history,
+          "EU",
+          "season_151",
+          "STD"
+        )
+
+      conn = get(conn, url)
+      assert html_response(conn, 200) =~ "Standard Europe Size History"
+      assert html_response(conn, 200) =~ "1350"
+      assert html_response(conn, 200) =~ "↑350"
+      assert html_response(conn, 200) =~ "leaderboard_size_history_table"
+
+      Backend.Repo.delete_all(from sz in SeasonSize, where: sz.season_id == ^season.id)
+      Backend.Repo.delete(season)
+    end
+
+    test "GET /leaderboard includes size history link when total size exists", %{conn: conn} do
+      s = %Hearthstone.Leaderboards.Season{
+        leaderboard_id: "STD",
+        season_id: 152,
+        region: "EU"
+      }
+
+      {:ok, season} = Leaderboards.get_season(s)
+      Leaderboards.update_total_size(season, 2500)
+
+      url = Routes.leaderboard_path(conn, :index, Map.from_struct(s))
+      conn = get(conn, url)
+
+      assert html_response(conn, 200) =~ "Total Players: 2500"
+      assert html_response(conn, 200) =~ "/leaderboard/size-history/region/EU/period/season_152/leaderboard_id/STD"
+
+      Backend.Repo.delete_all(from sz in SeasonSize, where: sz.season_id == ^season.id)
+      Backend.Repo.delete(season)
     end
   end
 end

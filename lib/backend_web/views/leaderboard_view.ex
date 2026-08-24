@@ -17,18 +17,28 @@ defmodule BackendWeb.LeaderboardView do
   def history_graph([], _), do: ""
 
   def history_graph(player_history, attr) do
-    data = Enum.map(player_history, &{&1.upstream_updated_at, player_history_data(&1, attr)})
-    dataset = Contex.Dataset.new(data)
-    y_scale = yscale(data)
+    data =
+      player_history
+      |> Enum.map(&{&1.upstream_updated_at, player_history_data(&1, attr)})
+      |> Enum.filter(fn {time, val} -> time != nil and val != nil end)
 
-    point_plot =
-      Contex.PointPlot.new(dataset,
-        custom_y_scale: y_scale,
-        custom_y_formatter: &(&1 |> trunc() |> abs())
-      )
+    case data do
+      [] ->
+        ""
 
-    Contex.Plot.new(900, 200, point_plot)
-    |> Contex.Plot.to_svg()
+      _ ->
+        dataset = Contex.Dataset.new(data)
+        y_scale = yscale(data)
+
+        point_plot =
+          Contex.PointPlot.new(dataset,
+            custom_y_scale: y_scale,
+            custom_y_formatter: &(&1 |> trunc() |> abs())
+          )
+
+        Contex.Plot.new(900, 200, point_plot)
+        |> Contex.Plot.to_svg()
+    end
   end
 
   # Ensure th that the interval size is never below 1
@@ -48,6 +58,7 @@ defmodule BackendWeb.LeaderboardView do
   end
 
   defp player_history_data(ph, :rank), do: -1 * ph.rank
+  defp player_history_data(ph, :total_size), do: ph.total_size
   defp player_history_data(ph, attr), do: Map.get(ph, attr)
 
   def history_dropdowns(%{conn: conn}, history \\ :player) do
@@ -143,6 +154,21 @@ defmodule BackendWeb.LeaderboardView do
 
   defp history_updater(conn, key, :player), do: &update_player_history_link(conn, key, &1)
   defp history_updater(conn, key, :rank), do: &update_rank_history_link(conn, key, &1)
+  defp history_updater(conn, key, :size), do: &update_size_history_link(conn, key, &1)
+
+  def update_size_history_link(conn, key, val) do
+    params =
+      conn.params
+      |> Map.put(key, val)
+
+    %{
+      "period" => s,
+      "region" => r,
+      "leaderboard_id" => l
+    } = params
+
+    Routes.leaderboard_path(conn, :size_history, r, s, l)
+  end
 
   def update_rank_history_link(conn, key, val) do
     params =
@@ -403,6 +429,34 @@ defmodule BackendWeb.LeaderboardView do
     )
   end
 
+  def render(
+        "size_history.html",
+        %{size_history: history, conn: conn} = attrs
+      ) do
+    dropdowns = history_dropdowns(attrs, :size)
+    ldb = conn.params["leaderboard_id"]
+    region = conn.params["region"]
+    period = conn.params["period"]
+
+    sorted_history =
+      history
+      |> Enum.reverse()
+
+    graph = history_graph(history, :total_size)
+    title = "#{Blizzard.get_leaderboard_name(ldb)} #{Blizzard.get_region_name(region)} Size History"
+
+    render("size_history.html", %{
+      dropdowns: dropdowns,
+      history: sorted_history,
+      conn: conn,
+      graph: graph,
+      title: title,
+      leaderboard_id: ldb,
+      region: region,
+      period: period
+    })
+  end
+
   def render("index.html", %{leaderboard: nil} = params) do
     render("empty.html", %{dropdowns: create_dropdowns(params)})
   end
@@ -424,6 +478,23 @@ defmodule BackendWeb.LeaderboardView do
       |> add_other_ladders(params)
 
     entries = process_entries(params, invited)
+
+    size_history_link =
+      if leaderboard && Map.get(leaderboard, :season_id) do
+        link =
+          Routes.leaderboard_path(
+            conn,
+            :size_history,
+            leaderboard.region,
+            "season_#{leaderboard.season_id}",
+            leaderboard.leaderboard_id
+          )
+
+        %{link: link}
+        |> BackendWeb.PlayerView.history_link()
+      else
+        nil
+      end
 
     update_link = fn new_params ->
       Routes.leaderboard_path(conn, :index, conn.query_params |> Map.merge(new_params))
@@ -457,6 +528,7 @@ defmodule BackendWeb.LeaderboardView do
       ladder_invite_num: ladder_invite_num,
       official_link: Snapshot.official_link(leaderboard),
       show_flags: show_flags,
+      size_history_link: size_history_link,
       highlighted: process_highlighted(highlight, entries)
     })
   end

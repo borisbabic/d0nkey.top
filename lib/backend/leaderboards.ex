@@ -14,6 +14,7 @@ defmodule Backend.Leaderboards do
   alias Backend.Leaderboards.Snapshot
   alias Backend.Leaderboards.Entry
   alias Backend.Leaderboards.Season
+  alias Backend.Leaderboards.SeasonSize
   alias Hearthstone.Leaderboards.Season, as: ApiSeason
   alias Hearthstone.Leaderboards.Api
   alias Hearthstone.Leaderboards.Response
@@ -26,6 +27,12 @@ defmodule Backend.Leaderboards do
           upstream_updated_at: NaiveDateTime.t(),
           prev_rank: integer() | nil,
           prev_rating: integer() | nil
+        }
+
+  @type size_history_entry :: %{
+          total_size: integer(),
+          upstream_updated_at: NaiveDateTime.t(),
+          prev_total_size: integer() | nil
         }
 
   @type entry :: %{
@@ -289,6 +296,7 @@ defmodule Backend.Leaderboards do
     min_page = count_to_page_num(min_num)
 
     with {:ok, response} <- Api.get_page(season) do
+      Task.start(fn -> update_total_size(season, response) end)
       PageFetcher.enqueue_all(response, max_page, min_page)
     end
   end
@@ -406,13 +414,72 @@ defmodule Backend.Leaderboards do
     |> having([entry: e, season: s], max(e.rank) != count(1) or max(e.rank) != max(s.total_size))
   end
 
+  def update_total_size(season_raw, %Response{} = response) do
+    with {:ok, total_size} <- Response.total_size(response) do
+      timestamp =
+        Snapshot.extract_updated_at(response.raw_response) ||
+          DateTime.utc_now() |> DateTime.truncate(:second)
+
+      update_total_size(season_raw, total_size, timestamp)
+    end
+  end
+
+  def update_total_size(season_raw, total_size) when is_integer(total_size) do
+    update_total_size(season_raw, total_size, DateTime.utc_now() |> DateTime.truncate(:second))
+  end
+
   def update_total_size(season_raw, response) do
-    with {:ok, season} <- get_season(season_raw),
-         {:ok, total_size} <- Response.total_size(response),
-         true <- season.total_size == nil or season.total_size < total_size do
-      attrs = %{total_size: total_size}
-      cs = Season.changeset(season, attrs)
-      Repo.update(cs)
+    with {:ok, total_size} <- Response.total_size(response) do
+      update_total_size(season_raw, total_size)
+    end
+  end
+
+  def update_total_size(season_raw, total_size, timestamp) when is_integer(total_size) do
+    with {:ok, season} <- get_season(season_raw) do
+      if season.total_size == nil or season.total_size < total_size do
+        attrs = %{total_size: total_size}
+        cs = Season.changeset(season, attrs)
+        Repo.update(cs)
+      end
+
+      record_season_size(season, total_size, timestamp)
+    end
+  end
+
+  @doc """
+  Records a season size data point in `leaderboards_season_sizes`.
+  Only inserts if the latest recorded size differs from `total_size`.
+  """
+  def record_season_size(season_raw, total_size, timestamp \\ nil)
+
+  def record_season_size(%Season{id: season_id}, total_size, timestamp)
+      when is_integer(total_size) and total_size > 0 do
+    ts = timestamp || DateTime.utc_now() |> DateTime.truncate(:second)
+
+    latest_size_query =
+      from sz in SeasonSize,
+        where: sz.season_id == ^season_id,
+        order_by: [desc: sz.inserted_at, desc: sz.id],
+        limit: 1
+
+    case Repo.one(latest_size_query) do
+      %{total_size: ^total_size} ->
+        {:ok, :noop}
+
+      _ ->
+        %SeasonSize{}
+        |> SeasonSize.changeset(%{
+          season_id: season_id,
+          total_size: total_size,
+          inserted_at: ts
+        })
+        |> Repo.insert()
+    end
+  end
+
+  def record_season_size(season_raw, total_size, timestamp) do
+    with {:ok, season} <- get_season(season_raw) do
+      record_season_size(season, total_size, timestamp)
     end
   end
 
@@ -467,6 +534,7 @@ defmodule Backend.Leaderboards do
   defp fetch_pages(season, num_entries) do
     case Api.get_page(season) do
       {:ok, %{leaderboard: %{pagination: %{total_pages: total_pages}}} = response} ->
+        Task.start(fn -> update_total_size(season, response) end)
         pages = ceil(min(total_pages * @page_size, num_entries) / @page_size)
 
         extra_pages = fetch_extra_pages(response.season, pages)
@@ -1462,6 +1530,106 @@ defmodule Backend.Leaderboards do
     ]
 
     entries_rank_history(rank, criteria, nil)
+  end
+
+  @spec size_history(String.t() | atom(), String.t() | integer(), String.t() | atom(), list()) :: [
+          size_history_entry()
+        ]
+  def size_history(region, period, leaderboard_id, additional_criteria \\ []) do
+    criteria = [
+      {"period", period},
+      {"region", region},
+      {"leaderboard_id", leaderboard_id} | additional_criteria
+    ]
+
+    entries_size_history(criteria)
+  end
+
+  def entries_size_history(criteria) do
+    base_sizes_query()
+    |> build_sizes_query(criteria)
+    |> size_history_previous()
+    |> Repo.all()
+  end
+
+  def base_sizes_query do
+    from sz in SeasonSize,
+      as: :size,
+      join: s in assoc(sz, :season),
+      as: :season
+  end
+
+  defp build_sizes_query(query, criteria) do
+    Enum.reduce(criteria, query, &compose_sizes_query/2)
+  end
+
+  defp compose_sizes_query({"region", region}, query) when is_binary(region) or is_atom(region) do
+    query |> where([season: s], s.region == ^to_string(region))
+  end
+
+  defp compose_sizes_query({"region", regions}, query) when is_list(regions) do
+    regions_str = Enum.map(regions, &to_string/1)
+    query |> where([season: s], s.region in ^regions_str)
+  end
+
+  defp compose_sizes_query({"leaderboard_id", ldb}, query) when is_binary(ldb) or is_atom(ldb) do
+    query |> where([season: s], s.leaderboard_id == ^to_string(ldb))
+  end
+
+  defp compose_sizes_query({"leaderboard_id", ldbs}, query) when is_list(ldbs) do
+    ldbs_str = Enum.map(ldbs, &to_string/1)
+    query |> where([season: s], s.leaderboard_id in ^ldbs_str)
+  end
+
+  defp compose_sizes_query({"season_id", season_id}, query) do
+    sid = Util.to_int_or_orig(season_id)
+    query |> where([season: s], s.season_id == ^sid)
+  end
+
+  defp compose_sizes_query({"season", %Season{id: id}}, query) when is_integer(id) do
+    query |> where([size: sz], sz.season_id == ^id)
+  end
+
+  defp compose_sizes_query({"season", %{id: id}}, query) when is_integer(id) do
+    query |> where([size: sz], sz.season_id == ^id)
+  end
+
+  defp compose_sizes_query({"season", %{season_id: sid, region: r, leaderboard_id: ldb}}, query) do
+    query
+    |> where([season: s], s.season_id == ^Util.to_int_or_orig(sid))
+    |> where([season: s], s.region == ^to_string(r))
+    |> where([season: s], s.leaderboard_id == ^to_string(ldb))
+  end
+
+  defp compose_sizes_query({"period", <<"season_"::binary, season_id::bitstring>>}, query) do
+    compose_sizes_query({"season_id", season_id}, query)
+  end
+
+  for unit <- ["minute", "day", "hour", "week", "month", "year"] do
+    defp compose_sizes_query(
+           {"period", <<"past_"::binary, unquote(unit)::binary, "s_"::binary, raw::bitstring>>},
+           query
+         ),
+         do: sizes_past_period(query, raw, unquote(unit))
+  end
+
+  defp compose_sizes_query(_, query), do: query
+
+  defp sizes_past_period(query, raw, unit) do
+    {val, _} = Integer.parse(raw)
+
+    query
+    |> where([size: sz], sz.inserted_at > ago(^val, ^unit))
+  end
+
+  defp size_history_previous(query) do
+    from sz in (query |> order_by([size: s], asc: s.inserted_at, asc: s.id) |> subquery()),
+      windows: [w: [order_by: sz.inserted_at]],
+      select: %{
+        total_size: sz.total_size,
+        upstream_updated_at: sz.inserted_at,
+        prev_total_size: lag(sz.total_size) |> over(:w)
+      }
   end
 
   @spec dedup_player_histories([history_entry()], atom()) :: [history_entry()]

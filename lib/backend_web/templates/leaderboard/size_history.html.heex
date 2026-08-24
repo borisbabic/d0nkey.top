@@ -1,0 +1,37 @@
+<.page_header title={@title}>
+  <:nav_links>
+    <a href={Routes.leaderboard_path(@conn, :index, %{"region" => @region, "leaderboardId" => @leaderboard_id})}>Leaderboard</a>
+    <a target="_blank" href={Routes.leaderboard_path(@conn, :player_stats)}>Stats</a>
+  </:nav_links>
+</.page_header>
+<FunctionComponents.Ads.below_title/>
+
+<.filter_container>
+  <%= render_dropdowns(@dropdowns) %>
+</.filter_container>
+<div class="svg-container">
+    <%= @graph %>
+</div>
+
+<.table id="leaderboard_size_history_table">
+    <.thead>
+        <.trh>
+            <.th>Total Players</.th>
+            <.th>Time</.th>
+        </.trh>
+    </.thead>
+    <.tbody>
+        <%= if Enum.empty?(@history) do %>
+            <.trb>
+                <.td colspan="2" class="has-text-centered has-text-grey">No size history recorded yet for this period</.td>
+            </.trb>
+        <% else %>
+            <%= for sh = %{total_size: size, upstream_updated_at: time} <- @history do %>
+                <.trb>
+                    <.td><%= render_comparison(size, sh[:prev_total_size], false) %></.td>
+                    <.td><%= render_datetime(time) %></.td>
+                </.trb>
+            <% end %>
+        <% end %>
+    </.tbody>
+</.table>

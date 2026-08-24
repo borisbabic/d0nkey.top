@@ -7,7 +7,7 @@
   </:nav_links>
   <:meta_info>
     <%= if @total do %>
-      <span>Total Players: <%= @total %></span>
+      <span>Total Players: <%= @total %> <%= @size_history_link %></span>
     <% end %>
     <%= if @updated_at do %>
       <span>Updated at <%= render_datetime @updated_at %></span>

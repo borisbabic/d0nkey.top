@@ -8,6 +8,7 @@ defmodule Backend.Leaderboards.Season do
     field :region, :string
     field :season_id, :integer
     field :total_size, :integer, default: nil
+    has_many :sizes, Backend.Leaderboards.SeasonSize
 
     timestamps()
   end

@@ -173,6 +173,12 @@ defmodule BackendWeb.Router do
       :player_history_old
     )
 
+    get(
+      "/leaderboard/count-history/region/:region/period/:period/leaderboard_id/:leaderboard_id",
+      LeaderboardController,
+      :size_history
+    )
+
     get("/leaderboard/points", LeaderboardController, :points)
 
     live("/", FeedLive)

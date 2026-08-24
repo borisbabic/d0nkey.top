@@ -103,14 +103,24 @@ defmodule BackendWeb.LeaderboardController do
     do_total(season_id)
   end
 
+  defp total(%{season_id: season_id, region: region, leaderboard_id: leaderboard_id} = s)
+       when not is_nil(season_id) and not is_nil(region) and not is_nil(leaderboard_id) do
+    do_total(s)
+  end
+
   defp total(%{season: season}) when is_integer(season) do
     do_total(season)
+  end
+
+  defp total(%{season_id: season_id}) when is_integer(season_id) do
+    do_total(season_id)
   end
 
   defp total(_), do: nil
 
   defp do_total(season_or_id) do
     case Leaderboards.get_season(season_or_id) do
+      {:ok, %{total_size: total_size}} when is_integer(total_size) -> total_size
       %{total_size: total_size} when is_integer(total_size) -> total_size
       _ -> nil
     end
@@ -453,6 +463,25 @@ defmodule BackendWeb.LeaderboardController do
       rank_history: history,
       conn: conn,
       rank: rank
+    })
+  end
+
+  def size_history(
+        conn,
+        %{
+          "leaderboard_id" => ldb,
+          "region" => region,
+          "period" => period
+        }
+      ) do
+    history = Backend.Leaderboards.size_history(region, period, ldb)
+
+    render(conn, "size_history.html", %{
+      size_history: history,
+      conn: conn,
+      leaderboard_id: ldb,
+      region: region,
+      period: period
     })
   end
 
