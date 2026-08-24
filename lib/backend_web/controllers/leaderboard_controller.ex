@@ -472,8 +472,9 @@ defmodule BackendWeb.LeaderboardController do
           "leaderboard_id" => ldb,
           "region" => region,
           "period" => period
-        }
+        } = params
       ) do
+    attr = size_history_attr(params)
     history = Backend.Leaderboards.size_history(region, period, ldb)
 
     render(conn, "size_history.html", %{
@@ -481,9 +482,20 @@ defmodule BackendWeb.LeaderboardController do
       conn: conn,
       leaderboard_id: ldb,
       region: region,
-      period: period
+      period: period,
+      attr: attr
     })
   end
+
+  def size_history_attr(%{"attr" => "hourly"}), do: :hourly
+  def size_history_attr(%{"attr" => "hour"}), do: :hourly
+  def size_history_attr(%{"attr" => "rate_of_change_hour"}), do: :hourly
+  def size_history_attr(%{"attr" => "daily"}), do: :daily
+  def size_history_attr(%{"attr" => "day"}), do: :daily
+  def size_history_attr(%{"attr" => "rate_of_change_day"}), do: :daily
+  def size_history_attr(%{"attr" => "rate_of_change"}), do: :daily
+  def size_history_attr(%{"attr" => "rate"}), do: :daily
+  def size_history_attr(_), do: :total_size
 
   def extract_min_max_criteria(params) do
     for key <- ["min_rank", "max_rank", "min_rating", "max_rating"],

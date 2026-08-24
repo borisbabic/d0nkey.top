@@ -33,12 +33,21 @@ defmodule BackendWeb.LeaderboardView do
         point_plot =
           Contex.PointPlot.new(dataset,
             custom_y_scale: y_scale,
-            custom_y_formatter: &(&1 |> trunc() |> abs())
+            custom_y_formatter: &format_graph_value(&1, attr)
           )
 
         Contex.Plot.new(900, 200, point_plot)
         |> Contex.Plot.to_svg()
     end
+  end
+
+  defp format_graph_value(val, attr)
+       when attr in [:rate_of_change_day, :rate_of_change_hour, :rate_of_change] do
+    :erlang.float_to_binary(val * 1.0, decimals: 1)
+  end
+
+  defp format_graph_value(val, _attr) do
+    val |> trunc() |> abs() |> to_string()
   end
 
   # Ensure th that the interval size is never below 1
@@ -59,6 +68,7 @@ defmodule BackendWeb.LeaderboardView do
 
   defp player_history_data(ph, :rank), do: -1 * ph.rank
   defp player_history_data(ph, :total_size), do: ph.total_size
+  defp player_history_data(ph, :increase), do: Map.get(ph, :increase)
   defp player_history_data(ph, attr), do: Map.get(ph, attr)
 
   def history_dropdowns(%{conn: conn}, history \\ :player) do
@@ -156,6 +166,35 @@ defmodule BackendWeb.LeaderboardView do
   defp history_updater(conn, key, :rank), do: &update_rank_history_link(conn, key, &1)
   defp history_updater(conn, key, :size), do: &update_size_history_link(conn, key, &1)
 
+  defp add_size_attr_dropdown(dropdowns, conn, current) do
+    options =
+      [
+        {:total_size, "Total Players"},
+        {:daily, "Daily Increase"},
+        {:hourly, "Hourly Increase"}
+      ]
+      |> Enum.map(fn {attr, display} ->
+        %{
+          display: display,
+          selected: attr_selected?(current, attr),
+          link: update_size_history_link(conn, "attr", to_string(attr))
+        }
+      end)
+
+    dropdowns ++ [{options, dropdown_title(options, "Metric")}]
+  end
+
+  defp attr_selected?(current, :daily),
+    do: current in [:daily, :day, :rate_of_change_day, :rate_of_change, :rate]
+
+  defp attr_selected?(current, :hourly),
+    do: current in [:hourly, :hour, :rate_of_change_hour]
+
+  defp attr_selected?(current, :total_size),
+    do: current in [:total_size, nil, ""]
+
+  defp attr_selected?(current, target), do: current == target
+
   def update_size_history_link(conn, key, val) do
     params =
       conn.params
@@ -167,7 +206,13 @@ defmodule BackendWeb.LeaderboardView do
       "leaderboard_id" => l
     } = params
 
-    Routes.leaderboard_path(conn, :size_history, r, s, l)
+    query_params =
+      params
+      |> Map.take(["attr"])
+      |> Enum.reject(fn {_, v} -> is_nil(v) or v == "total_size" or v == "" end)
+      |> Map.new()
+
+    Routes.leaderboard_path(conn, :size_history, r, s, l, query_params)
   end
 
   def update_rank_history_link(conn, key, val) do
@@ -433,17 +478,39 @@ defmodule BackendWeb.LeaderboardView do
         "size_history.html",
         %{size_history: history, conn: conn} = attrs
       ) do
-    dropdowns = history_dropdowns(attrs, :size)
+    attr = Map.get(attrs, :attr) || BackendWeb.LeaderboardController.size_history_attr(conn.params)
+
+    dropdowns =
+      history_dropdowns(attrs, :size)
+      |> add_size_attr_dropdown(conn, attr)
+
     ldb = conn.params["leaderboard_id"]
     region = conn.params["region"]
     period = conn.params["period"]
 
+    display_history =
+      case attr do
+        a when a in [:daily, :day, :rate_of_change_day, :rate_of_change, :rate] ->
+          Backend.Leaderboards.aggregate_size_history(history, :day)
+
+        a when a in [:hourly, :hour, :rate_of_change_hour] ->
+          Backend.Leaderboards.aggregate_size_history(history, :hour)
+
+        _ ->
+          history
+      end
+
     sorted_history =
-      history
+      display_history
       |> Enum.reverse()
 
-    graph = history_graph(history, :total_size)
-    title = "#{Blizzard.get_leaderboard_name(ldb)} #{Blizzard.get_region_name(region)} Size History"
+    graph_attr =
+      if attr in [:daily, :day, :rate_of_change_day, :rate_of_change, :rate, :hourly, :hour, :rate_of_change_hour],
+        do: :increase,
+        else: :total_size
+
+    graph = history_graph(display_history, graph_attr)
+    title = size_history_title(ldb, region, attr)
 
     render("size_history.html", %{
       dropdowns: dropdowns,
@@ -451,6 +518,7 @@ defmodule BackendWeb.LeaderboardView do
       conn: conn,
       graph: graph,
       title: title,
+      attr: attr,
       leaderboard_id: ldb,
       region: region,
       period: period
@@ -669,6 +737,17 @@ defmodule BackendWeb.LeaderboardView do
       leaderboards_options: leaderboards_options
     })
   end
+
+  def size_history_title(ldb, region, attr)
+      when attr in [:daily, :day, :rate_of_change_day, :rate_of_change, :rate],
+      do: "#{Blizzard.get_leaderboard_name(ldb)} #{Blizzard.get_region_name(region)} Daily Increase"
+
+  def size_history_title(ldb, region, attr)
+      when attr in [:hourly, :hour, :rate_of_change_hour],
+      do: "#{Blizzard.get_leaderboard_name(ldb)} #{Blizzard.get_region_name(region)} Hourly Increase"
+
+  def size_history_title(ldb, region, _),
+    do: "#{Blizzard.get_leaderboard_name(ldb)} #{Blizzard.get_region_name(region)} Size History"
 
   def update_index_link(conn, param, value, to_delete \\ []) do
     new_params =

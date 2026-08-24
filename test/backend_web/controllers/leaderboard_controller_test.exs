@@ -474,7 +474,40 @@ defmodule BackendWeb.LeaderboardControllerTest do
       Backend.Repo.delete(season)
     end
 
-    test "GET /leaderboard/size-history returns 200 and renders graph and comparison table", %{
+    test "aggregate_size_history groups by day and hour and computes increases accurately" do
+      t1 = ~N[2026-08-20 10:00:00]
+      t2 = ~N[2026-08-20 18:30:00]
+      t3 = ~N[2026-08-21 09:15:00]
+
+      history = [
+        %{total_size: 100, upstream_updated_at: t1, prev_total_size: nil},
+        %{total_size: 180, upstream_updated_at: t2, prev_total_size: 100},
+        %{total_size: 320, upstream_updated_at: t3, prev_total_size: 180}
+      ]
+
+      daily = Leaderboards.aggregate_size_history(history, :day)
+      assert length(daily) == 2
+      [d1, d2] = daily
+      assert d1.period_label == "2026-08-20"
+      assert d1.total_size == 180
+      assert d1.increase == 80
+      assert d2.period_label == "2026-08-21"
+      assert d2.total_size == 320
+      assert d2.increase == 140
+      assert d2.prev_increase == 80
+
+      hourly = Leaderboards.aggregate_size_history(history, :hour)
+      assert length(hourly) == 3
+      [h1, h2, h3] = hourly
+      assert h1.period_label == "2026-08-20 10:00"
+      assert h1.increase == 0
+      assert h2.period_label == "2026-08-20 18:00"
+      assert h2.increase == 80
+      assert h3.period_label == "2026-08-21 09:00"
+      assert h3.increase == 140
+    end
+
+    test "GET /leaderboard/size-history returns 200 and renders daily and hourly increase tables", %{
       conn: conn
     } do
       s = %Hearthstone.Leaderboards.Season{
@@ -486,9 +519,10 @@ defmodule BackendWeb.LeaderboardControllerTest do
       {:ok, season} = Leaderboards.get_season(s)
       now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
-      Leaderboards.record_season_size(season, 1000, NaiveDateTime.add(now, -3600))
+      Leaderboards.record_season_size(season, 1000, NaiveDateTime.add(now, -86_400))
       Leaderboards.record_season_size(season, 1350, now)
 
+      # Default Total Players snapshot view
       url =
         Routes.leaderboard_path(
           conn,
@@ -503,6 +537,39 @@ defmodule BackendWeb.LeaderboardControllerTest do
       assert html_response(conn, 200) =~ "1350"
       assert html_response(conn, 200) =~ "↑350"
       assert html_response(conn, 200) =~ "leaderboard_size_history_table"
+
+      # Daily Increase view
+      daily_url =
+        Routes.leaderboard_path(
+          conn,
+          :size_history,
+          "EU",
+          "season_151",
+          "STD",
+          %{"attr" => "daily"}
+        )
+
+      daily_conn = get(conn, daily_url)
+      assert html_response(daily_conn, 200) =~ "Standard Europe Daily Increase"
+      assert html_response(daily_conn, 200) =~ "Day"
+      assert html_response(daily_conn, 200) =~ "Increase"
+      assert html_response(daily_conn, 200) =~ "350"
+
+      # Hourly Increase view
+      hourly_url =
+        Routes.leaderboard_path(
+          conn,
+          :size_history,
+          "EU",
+          "season_151",
+          "STD",
+          %{"attr" => "hourly"}
+        )
+
+      hourly_conn = get(conn, hourly_url)
+      assert html_response(hourly_conn, 200) =~ "Standard Europe Hourly Increase"
+      assert html_response(hourly_conn, 200) =~ "Hour"
+      assert html_response(hourly_conn, 200) =~ "Increase"
 
       Backend.Repo.delete_all(from sz in SeasonSize, where: sz.season_id == ^season.id)
       Backend.Repo.delete(season)
@@ -522,7 +589,7 @@ defmodule BackendWeb.LeaderboardControllerTest do
       conn = get(conn, url)
 
       assert html_response(conn, 200) =~ "Total Players: 2500"
-      assert html_response(conn, 200) =~ "/leaderboard/size-history/region/EU/period/season_152/leaderboard_id/STD"
+      assert html_response(conn, 200) =~ "/leaderboard/count-history/region/EU/period/season_152/leaderboard_id/STD"
 
       Backend.Repo.delete_all(from sz in SeasonSize, where: sz.season_id == ^season.id)
       Backend.Repo.delete(season)

@@ -16,20 +16,38 @@
 <.table id="leaderboard_size_history_table">
     <.thead>
         <.trh>
-            <.th>Total Players</.th>
-            <.th>Time</.th>
+            <%= if @attr in [:daily, :day, :rate_of_change_day, :rate_of_change, :rate] do %>
+                <.th>Day</.th>
+                <.th>Increase</.th>
+                <.th>Total Players</.th>
+            <% end %>
+            <%= if @attr in [:hourly, :hour, :rate_of_change_hour] do %>
+                <.th>Hour</.th>
+                <.th>Increase</.th>
+                <.th>Total Players</.th>
+            <% end %>
+            <%= if @attr not in [:daily, :day, :rate_of_change_day, :rate_of_change, :rate, :hourly, :hour, :rate_of_change_hour] do %>
+                <.th>Total Players</.th>
+                <.th>Time</.th>
+            <% end %>
         </.trh>
     </.thead>
     <.tbody>
         <%= if Enum.empty?(@history) do %>
             <.trb>
-                <.td colspan="2" class="has-text-centered has-text-grey">No size history recorded yet for this period</.td>
+                <.td colspan="3" class="has-text-centered has-text-grey">No size history recorded yet for this period</.td>
             </.trb>
         <% else %>
-            <%= for sh = %{total_size: size, upstream_updated_at: time} <- @history do %>
+            <%= for sh <- @history do %>
                 <.trb>
-                    <.td><%= render_comparison(size, sh[:prev_total_size], false) %></.td>
-                    <.td><%= render_datetime(time) %></.td>
+                    <%= if @attr in [:daily, :day, :rate_of_change_day, :rate_of_change, :rate, :hourly, :hour, :rate_of_change_hour] do %>
+                        <.td><%= sh.period_label %></.td>
+                        <.td>+<%= render_comparison(sh.increase, sh[:prev_increase], false) %></.td>
+                        <.td><%= sh.total_size %></.td>
+                    <% else %>
+                        <.td><%= render_comparison(sh.total_size, sh[:prev_total_size], false) %></.td>
+                        <.td><%= render_datetime(sh.upstream_updated_at) %></.td>
+                    <% end %>
                 </.trb>
             <% end %>
         <% end %>

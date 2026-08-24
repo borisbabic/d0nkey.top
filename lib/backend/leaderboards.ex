@@ -32,7 +32,12 @@ defmodule Backend.Leaderboards do
   @type size_history_entry :: %{
           total_size: integer(),
           upstream_updated_at: NaiveDateTime.t(),
-          prev_total_size: integer() | nil
+          prev_total_size: integer() | nil,
+          rate_of_change_day: float() | nil,
+          rate_of_change_hour: float() | nil,
+          rate_of_change: float() | nil,
+          prev_rate_of_change_day: float() | nil,
+          prev_rate_of_change_hour: float() | nil
         }
 
   @type entry :: %{
@@ -1631,6 +1636,93 @@ defmodule Backend.Leaderboards do
         prev_total_size: lag(sz.total_size) |> over(:w)
       }
   end
+
+  @doc """
+  Aggregates size history into calendar days or hours.
+  For each period, computes the increase in total size during that period
+  and records the ending total size.
+  """
+  def aggregate_size_history(history, period_type)
+      when period_type in [:day, :hour, :rate_of_change_day, :rate_of_change_hour, :daily, :hourly] do
+    unit = if period_type in [:hour, :rate_of_change_hour, :hourly], do: :hour, else: :day
+
+    # Group by truncated time key
+    grouped =
+      history
+      |> Enum.sort_by(& &1.upstream_updated_at, {:asc, NaiveDateTime})
+      |> Enum.group_by(fn entry -> truncate_time(entry.upstream_updated_at, unit) end)
+
+    sorted_periods =
+      grouped
+      |> Enum.sort_by(fn {time, _} -> time end, {:asc, NaiveDateTime})
+
+    initial_prev_size =
+      case history do
+        [%{prev_total_size: pts} | _] when is_integer(pts) -> pts
+        [%{total_size: ts} | _] when is_integer(ts) -> ts
+        _ -> 0
+      end
+
+    {aggregated, _} =
+      Enum.map_reduce(sorted_periods, initial_prev_size, fn {period_time, entries}, prev_size ->
+        last_entry = List.last(entries)
+        end_size = last_entry.total_size
+        increase = max(0, end_size - prev_size)
+
+        result = %{
+          period: period_time,
+          period_type: unit,
+          period_label: format_period_label(period_time, unit),
+          increase: increase,
+          total_size: end_size,
+          prev_total_size: prev_size,
+          upstream_updated_at: period_time
+        }
+
+        {result, end_size}
+      end)
+
+    {with_prev_increase, _} =
+      Enum.map_reduce(aggregated, nil, fn entry, prev_entry ->
+        prev_inc = if prev_entry, do: prev_entry.increase, else: nil
+        {Map.put(entry, :prev_increase, prev_inc), entry}
+      end)
+
+    with_prev_increase
+  end
+
+  def aggregate_size_history(history, _), do: history
+
+  defp truncate_time(%DateTime{} = dt, unit) do
+    dt |> DateTime.to_naive() |> truncate_time(unit)
+  end
+
+  defp truncate_time(%NaiveDateTime{year: y, month: m, day: d}, :day) do
+    NaiveDateTime.new!(y, m, d, 0, 0, 0)
+  end
+
+  defp truncate_time(%NaiveDateTime{year: y, month: m, day: d, hour: h}, :hour) do
+    NaiveDateTime.new!(y, m, d, h, 0, 0)
+  end
+
+  defp truncate_time(other, _), do: other
+
+  defp format_period_label(%DateTime{} = dt, unit) do
+    dt |> DateTime.to_naive() |> format_period_label(unit)
+  end
+
+  defp format_period_label(%NaiveDateTime{year: y, month: m, day: d}, :day) do
+    "#{y}-#{pad(m)}-#{pad(d)}"
+  end
+
+  defp format_period_label(%NaiveDateTime{year: y, month: m, day: d, hour: h}, :hour) do
+    "#{y}-#{pad(m)}-#{pad(d)} #{pad(h)}:00"
+  end
+
+  defp format_period_label(other, _), do: to_string(other)
+
+  defp pad(n) when n < 10, do: "0#{n}"
+  defp pad(n), do: "#{n}"
 
   @spec dedup_player_histories([history_entry()], atom()) :: [history_entry()]
   def dedup_player_histories(histories, changed_attr) do
