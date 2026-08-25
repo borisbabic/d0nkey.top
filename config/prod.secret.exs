@@ -24,6 +24,12 @@ config :backend,
   admin_config_vars_cutoff_date: admin_config_vars_cutoff_date
 
 config :backend, Backend.Repo,
+  socket_options: [:inet, keepalive: true],
+  parameters: [
+    tcp_keepalives_idle: "60",
+    tcp_keepalives_interval: "10",
+    tcp_keepalives_count: "3"
+  ],
   timeout: 25_000,
   # for pgbouncer. It needs it for non session mode
   prepare: :unnamed,
