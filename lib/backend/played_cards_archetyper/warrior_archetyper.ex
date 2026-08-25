@@ -8,6 +8,17 @@ defmodule Backend.PlayedCardsArchetyper.WarriorArchetyper do
     "Quest Warrior": ["Enter the Lost City"],
     "Dragon Warrior": ["Petal Peddler", "Darkscale Broodmother", "Prescient Slitherdrake", "Brood Keeper"],
     "Egg Warrior": ["Holy Eggbearer", "The Egg of Khelos", "Siphoning Growth", "Endbringer Umbra"],
+    "Pirate Warrior": [
+      "Blastpowder Egineer",
+      "Hook n' Heave",
+      "Cannonmaster",
+      "Captain Crowley",
+      "Follow the Fuse",
+      "Hand Cannon",
+      "Land Ho!",
+      "Small-Time Buccaneer",
+      "Southsea Captain"
+    ],
     "Other Warrior": ["Gladiatorial Combat"],
     "Other Warrior": ["Rockskipper"],
     "Harold Warrior": ["Deathwing, Worldbreaker", "Envoy of the End", "Ragnaros, the Great Fire", "Ultraxion"],

@@ -29,6 +29,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       "Gladiatorial Combat" in card_info.card_names ->
         :"Gladiator Warrior"
 
+      pirate?(card_info) ->
+        :"Pirate Warrior"
+
       type_count(card_info, "Dragon") > 5 ->
         :"Dragon Warrior"
 
@@ -65,6 +68,20 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       true ->
         fallbacks(card_info, "Warrior")
     end
+  end
+
+  defp pirate?(card_info) do
+    min_count?(card_info, 4, [
+      "Blastpowder Egineer",
+      "Hook n' Heave",
+      "Cannonmaster",
+      "Captain Crowley",
+      "Follow the Fuse",
+      "Hand Cannon",
+      "Land Ho!",
+      "Small-Time Buccaneer",
+      "Southsea Captain"
+    ])
   end
 
   defp twenty_five?(card_info) do
