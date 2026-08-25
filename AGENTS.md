@@ -2,6 +2,7 @@ This is a web application written using the Phoenix web framework.
 
 ## Project guidelines
 
+- Avoid large functions and prefer multiple smaller functions
 - Use the already included and available `:req` (`Req`) library for HTTP requests, **avoid** `:httpoison`, `:tesla`, and `:httpc`. Req is included by default and is the preferred HTTP client for Phoenix apps. In modules that already use Tesla it is preferred to continue using Tesla
 
 ### Surface guidelines

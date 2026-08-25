@@ -8,6 +8,7 @@ defmodule Backend.Giveaways.GiveawayEntry do
     belongs_to :giveaway, Giveaway
     belongs_to :user, User
     field :winner, :boolean, default: false
+    field :code, :string
 
     timestamps()
   end
@@ -24,7 +25,7 @@ defmodule Backend.Giveaways.GiveawayEntry do
   @doc false
   def changeset(giveaway_entry \\ %__MODULE__{}, attrs) do
     giveaway_entry
-    |> cast(attrs, [:winner, :giveaway_id, :user_id])
+    |> cast(attrs, [:winner, :code, :giveaway_id, :user_id])
     |> foreign_key_constraint(:giveaway_id)
     |> foreign_key_constraint(:user_id)
     |> unique_constraint([:giveaway_id, :user_id])

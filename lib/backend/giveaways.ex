@@ -67,9 +67,31 @@ defmodule Backend.Giveaways do
 
   """
   def update_giveaway(%Giveaway{} = giveaway, attrs) do
-    giveaway
-    |> Giveaway.changeset(attrs)
-    |> Repo.update()
+    result =
+      giveaway
+      |> Giveaway.changeset(attrs)
+      |> Repo.update()
+
+    case result do
+      {:ok, updated_giveaway} ->
+        if Map.has_key?(attrs, :codes) or Map.has_key?(attrs, "codes") do
+          sync_codes_to_winners(updated_giveaway)
+        end
+
+        {:ok, updated_giveaway}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Saves and normalizes codes for a giveaway, syncing them to winning entries.
+  """
+  @spec save_codes(Giveaway.t(), list(String.t()) | String.t()) :: {:ok, Giveaway.t()} | {:error, Ecto.Changeset.t()}
+  def save_codes(%Giveaway{} = giveaway, codes_raw) do
+    codes = Giveaway.normalize_codes(codes_raw)
+    update_giveaway(giveaway, %{codes: codes})
   end
 
   @doc """
@@ -126,8 +148,14 @@ defmodule Backend.Giveaways do
     end
   end
 
-  def get_entries(%Giveaway{creator: %{id: creator_id}} = giveaway, %User{id: user_id}) when user_id == creator_id do
-    do_entries(giveaway)
+  def get_entries(%Giveaway{} = giveaway, %User{id: user_id}) do
+    creator_id = giveaway.creator_id || (giveaway.creator && giveaway.creator.id)
+
+    if user_id == creator_id do
+      do_entries(giveaway)
+    else
+      []
+    end
   end
 
   defp do_entries(%Giveaway{id: id}) do
@@ -140,23 +168,82 @@ defmodule Backend.Giveaways do
     Repo.all(query)
   end
 
-  def pick_winners(%Giveaway{creator: %{id: creator_id}, number_of_winners: num} = giveaway, %User{id: user_id} = user)
-      when user_id == creator_id do
-    entries = get_entries(giveaway, user)
-    winners = Enum.count(entries, & &1.winner)
+  def pick_winners(%Giveaway{number_of_winners: num} = giveaway, %User{id: user_id} = user) do
+    creator_id = giveaway.creator_id || (giveaway.creator && giveaway.creator.id)
 
-    if winners < num do
-      entries
-      |> Enum.filter(&(!&1.winner))
-      |> score_entries(giveaway)
-      |> create_random_list()
-      |> Enum.take(num - winners)
-      |> update_winners()
+    if user_id == creator_id do
+      entries = get_entries(giveaway, user)
 
-      {:ok, get_entries(giveaway, user)}
+      existing_winners =
+        entries
+        |> Enum.filter(& &1.winner)
+
+      num_existing_winners = Enum.count(existing_winners)
+
+      if num_existing_winners < num do
+        new_winners =
+          entries
+          |> Enum.filter(&(!&1.winner))
+          |> score_entries(giveaway)
+          |> create_random_list()
+          |> Enum.take(num - num_existing_winners)
+
+        giveaway_reloaded = Repo.get!(Giveaway, giveaway.id)
+        all_codes = giveaway_reloaded.codes || []
+
+        used_codes =
+          existing_winners
+          |> Enum.map(& &1.code)
+          |> Enum.reject(&is_nil/1)
+
+        available_codes = all_codes -- used_codes
+
+        multi =
+          new_winners
+          |> Enum.with_index()
+          |> Enum.reduce(Multi.new(), fn {entry, idx}, multi ->
+            assigned_code = Enum.at(available_codes, idx)
+            cs = GiveawayEntry.changeset(entry, %{winner: true, code: assigned_code})
+            Multi.update(multi, "make_#{entry.id}_a_winner", cs)
+          end)
+
+        Repo.transaction(multi)
+
+        {:ok, get_entries(giveaway, user)}
+      else
+        {:ok, entries}
+      end
     else
-      {:ok, entries}
+      {:error, :unauthorized}
     end
+  end
+
+  defp sync_codes_to_winners(%Giveaway{id: giveaway_id, codes: codes}) do
+    query =
+      from ge in GiveawayEntry,
+        where: ge.giveaway_id == ^giveaway_id and ge.winner,
+        order_by: [asc: ge.inserted_at, asc: ge.id]
+
+    winners = Repo.all(query)
+    codes = codes || []
+
+    used_codes =
+      winners
+      |> Enum.map(& &1.code)
+      |> Enum.filter(&(&1 in codes))
+
+    {_, multi} =
+      Enum.reduce(winners, {codes -- used_codes, Multi.new()}, fn entry, {avail_codes, multi} ->
+        if entry.code in codes do
+          {avail_codes, multi}
+        else
+          [next_code | rest_avail] = avail_codes ++ [nil]
+          cs = GiveawayEntry.changeset(entry, %{code: next_code})
+          {rest_avail, Multi.update(multi, "sync_winner_code_#{entry.id}", cs)}
+        end
+      end)
+
+    Repo.transaction(multi)
   end
 
   @spec create_random_list([{score :: integer(), GiveawayEntry.t()}]) :: [GiveawayEntry.t()]
@@ -166,16 +253,6 @@ defmodule Backend.Giveaways do
     end)
     |> Enum.shuffle()
     |> Enum.uniq()
-  end
-
-  defp update_winners(entries) do
-    multi =
-      Enum.reduce(entries, Multi.new(), fn %{id: id, winner: false} = entry, multi ->
-        cs = GiveawayEntry.changeset(entry, %{winner: true})
-        Multi.update(multi, "make_#{id}_a_winner", cs)
-      end)
-
-    Repo.transaction(multi)
   end
 
   def score_entries(entries, _giveaway) do
@@ -213,10 +290,44 @@ defmodule Backend.Giveaways do
     |> Enum.map(&Backend.Battlenet.Battletag.shorten/1)
   end
 
-  def codes, do: Application.get_env(:backend, :giveaway_codes)
+  def codes do
+    case current_giveaway() do
+      %Giveaway{codes: codes} when is_list(codes) and codes != [] -> codes
+      _ -> Application.get_env(:backend, :giveaway_codes, [])
+    end
+  end
 
   def code, do: codes() |> Enum.at(0)
 
-  # def winner?(%{battletag: btag}) when btag in ["Kayest#21750", "D0nkey#2470"], do: true
+  def winner?(nil), do: false
+
+  def winner?(%User{id: user_id}) do
+    case current_giveaway() do
+      %Giveaway{id: giveaway_id} ->
+        winner?(giveaway_id, user_id)
+
+      nil ->
+        query =
+          from ge in GiveawayEntry,
+            where: ge.user_id == ^user_id and ge.winner,
+            select: count(ge.id)
+
+        Repo.one(query) > 0
+    end
+  end
+
   def winner?(_), do: false
+
+  def winner?(%Giveaway{id: giveaway_id}, %User{id: user_id}), do: winner?(giveaway_id, user_id)
+
+  def winner?(giveaway_id, user_id) when is_integer(giveaway_id) and is_integer(user_id) do
+    query =
+      from ge in GiveawayEntry,
+        where: ge.giveaway_id == ^giveaway_id and ge.user_id == ^user_id and ge.winner,
+        select: count(ge.id)
+
+    Repo.one(query) > 0
+  end
+
+  def winner?(_, _), do: false
 end
