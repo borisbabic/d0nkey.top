@@ -449,10 +449,21 @@ defmodule Backend.Leaderboards do
         attrs = %{total_size: total_size}
         cs = Season.changeset(season, attrs)
         Repo.update(cs)
+        do_record_season_size(season, total_size, timestamp)
       end
-
-      record_season_size(season, total_size, timestamp)
     end
+  end
+
+  def do_record_season_size(%Season{id: season_id}, total_size, timestamp) do
+    ts = timestamp || DateTime.utc_now() |> DateTime.truncate(:second)
+
+    %SeasonSize{}
+    |> SeasonSize.changeset(%{
+      season_id: season_id,
+      total_size: total_size,
+      inserted_at: ts
+    })
+    |> Repo.insert()
   end
 
   @doc """
@@ -461,10 +472,8 @@ defmodule Backend.Leaderboards do
   """
   def record_season_size(season_raw, total_size, timestamp \\ nil)
 
-  def record_season_size(%Season{id: season_id}, total_size, timestamp)
+  def record_season_size(%Season{id: season_id} = season, total_size, timestamp)
       when is_integer(total_size) and total_size > 0 do
-    ts = timestamp || DateTime.utc_now() |> DateTime.truncate(:second)
-
     latest_size_query =
       from sz in SeasonSize,
         where: sz.season_id == ^season_id,
@@ -476,18 +485,12 @@ defmodule Backend.Leaderboards do
         {:ok, :noop}
 
       _ ->
-        %SeasonSize{}
-        |> SeasonSize.changeset(%{
-          season_id: season_id,
-          total_size: total_size,
-          inserted_at: ts
-        })
-        |> Repo.insert()
+        do_record_season_size(season, total_size, timestamp)
     end
   end
 
   def record_season_size(season_raw, total_size, timestamp) do
-    with {:ok, season} <- get_season(season_raw) do
+    with {:ok, %Season{id: _id}} = season when is_integer(total_size) and total_size > 0 <- get_season(season_raw) do
       record_season_size(season, total_size, timestamp)
     end
   end
