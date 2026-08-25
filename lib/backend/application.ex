@@ -132,6 +132,11 @@ defmodule Backend.Application do
           id: Backend.PlayerCountryPreferenceBag,
           start: {Backend.PlayerCountryPreferenceBag, :start_link, [[]]}
         },
+        %{
+          # can multiserver
+          id: Backend.Leaderboards.Seasons,
+          start: {Backend.Leaderboards.Seasons, :start_link, [[]]}
+        },
         {Task.Supervisor, name: Backend.TaskSupervisor},
         {Task, &warmup_cache/0},
         QuantumScheduler
@@ -254,7 +259,8 @@ defmodule Backend.Application do
     with {:ok, true} <- Application.fetch_env(:backend, :warmup_cache) do
       [
         &Backend.MastersTour.warmup_stats_cache/0,
-        &Backend.MastersTour.warmup_player_nationality_cache/0
+        &Backend.MastersTour.warmup_player_nationality_cache/0,
+        &Backend.Leaderboards.Seasons.fetch_and_update/0
       ]
       |> Enum.each(fn f ->
         try do

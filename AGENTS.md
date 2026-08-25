@@ -2,7 +2,7 @@ This is a web application written using the Phoenix web framework.
 
 ## Project guidelines
 
-- Use the already included and available `:req` (`Req`) library for HTTP requests, **avoid** `:httpoison`, `:tesla`, and `:httpc`. Req is included by default and is the preferred HTTP client for Phoenix apps
+- Use the already included and available `:req` (`Req`) library for HTTP requests, **avoid** `:httpoison`, `:tesla`, and `:httpc`. Req is included by default and is the preferred HTTP client for Phoenix apps. In modules that already use Tesla it is preferred to continue using Tesla
 
 ### Surface guidelines
 - Always call  `assign_defaults/2` and `put_user_in_context/1` in `mount/3`
@@ -103,6 +103,7 @@ This is a web application written using the Phoenix web framework.
       assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
 
    - Instead of sleeping to synchronize before the next call, **always** use `_ = :sys.get_state/1` to ensure the process has handled prior messages
+- Tests that call an external API or service should be tagged with :external
 <!-- phoenix:elixir-end -->
 
 <!-- phoenix:phoenix-start -->

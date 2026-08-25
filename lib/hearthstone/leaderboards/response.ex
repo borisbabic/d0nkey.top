@@ -145,6 +145,7 @@ end
 defmodule Hearthstone.Leaderboards.Response.SeasonMetadata do
   use TypedStruct
   alias Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata
+  alias Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata
 
   typedstruct do
     field(:ap, RegionMetadata.t())
@@ -152,26 +153,72 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata do
     field(:us, RegionMetadata.t())
   end
 
-  @spec from_raw_map(map()) :: SeasonMetadata.t()
-  def from_raw_map(%{"AP" => ap, "EU" => eu, "US" => us}) do
-    %__MODULE__{
-      ap: RegionMetadata.from_raw_map(ap),
-      eu: RegionMetadata.from_raw_map(eu),
-      us: RegionMetadata.from_raw_map(us)
-    }
-  end
+  @spec from_raw_map(map() | nil) :: SeasonMetadata.t() | nil
+  def from_raw_map(%{} = map) do
+    eu = Map.get(map, "EU") || Map.get(map, "eu") || Map.get(map, :eu) || Map.get(map, :EU)
+    us = Map.get(map, "US") || Map.get(map, "us") || Map.get(map, :us) || Map.get(map, :US)
+    ap = Map.get(map, "AP") || Map.get(map, "ap") || Map.get(map, :ap) || Map.get(map, :AP)
 
-  @spec get_leaderboard_metadata(t(), leaderboard_id :: String.t(), region :: String.t()) ::
-          {:ok, Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata.t()}
-          | {:error, atom()}
-  def get_leaderboard_metadata(season_metadata, leaderboard_id, region) do
-    case Backend.Blizzard.get_region_identifier(region) do
-      {:ok, :EU} -> RegionMetadata.get_leaderboard_metadata(season_metadata.eu, leaderboard_id)
-      {:ok, :AP} -> RegionMetadata.get_leaderboard_metadata(season_metadata.ap, leaderboard_id)
-      {:ok, :US} -> RegionMetadata.get_leaderboard_metadata(season_metadata.us, leaderboard_id)
-      _ -> {:error, :unsupported_region}
+    if eu || us || ap do
+      %__MODULE__{
+        ap: RegionMetadata.from_raw_map(ap),
+        eu: RegionMetadata.from_raw_map(eu),
+        us: RegionMetadata.from_raw_map(us)
+      }
+    else
+      nil
     end
   end
+
+  def from_raw_map(_), do: nil
+
+  @spec get_region_metadata(t(), region :: String.t() | atom()) ::
+          {:ok, RegionMetadata.t()} | {:error, atom()}
+  def get_region_metadata(%__MODULE__{} = season_metadata, region) do
+    case get_region_key(region) do
+      {:ok, :eu} ->
+        if season_metadata.eu, do: {:ok, season_metadata.eu}, else: {:error, :unsupported_region}
+
+      {:ok, :ap} ->
+        if season_metadata.ap, do: {:ok, season_metadata.ap}, else: {:error, :unsupported_region}
+
+      {:ok, :us} ->
+        if season_metadata.us, do: {:ok, season_metadata.us}, else: {:error, :unsupported_region}
+
+      _ ->
+        {:error, :unsupported_region}
+    end
+  end
+
+  def get_region_metadata(_, _), do: {:error, :invalid_season_metadata}
+
+  @spec get_leaderboard_metadata(t(), leaderboard_id :: String.t() | atom(), region :: String.t() | atom()) ::
+          {:ok, LeaderboardMetadata.t()} | {:error, atom()}
+  def get_leaderboard_metadata(%__MODULE__{} = season_metadata, leaderboard_id, region) do
+    with {:ok, region_meta} <- get_region_metadata(season_metadata, region) do
+      RegionMetadata.get_leaderboard_metadata(region_meta, leaderboard_id)
+    end
+  end
+
+  def get_leaderboard_metadata(_, _, _), do: {:error, :invalid_season_metadata}
+
+  defp get_region_key(region)
+       when region in ["EU", :EU, "eu", :eu, "Europe", :Europe, :europe, "europe"],
+       do: {:ok, :eu}
+
+  defp get_region_key(region)
+       when region in ["US", :US, "us", :us, "America", :America, "Americas", :Americas, :americas, "americas"],
+       do: {:ok, :us}
+
+  defp get_region_key(region)
+       when region in ["AP", :AP, "ap", :ap, "Asia", :Asia, :asia, "asia", "APAC", :APAC, :apac, "apac"],
+       do: {:ok, :ap}
+
+  defp get_region_key(region)
+       when region in ["CN", :CN, "cn", :cn, "China", :China, :china, "china"],
+       do: {:ok, :cn}
+
+  defp get_region_key(_), do: {:error, :unsupported_region}
 end
 
 defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
@@ -179,67 +226,112 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.RegionMetadata do
   alias Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata
 
   typedstruct enforce: false do
-    field(:undergroundarena, LeaderboardMetadata.t(), enforce: true)
-    field(:arena, LeaderboardMetadata.t(), enforce: true)
-    field(:battlegrounds, LeaderboardMetadata.t(), enforce: true)
-    field(:battlegroundsduo, LeaderboardMetadata.t(), enforce: true)
+    field(:undergroundarena, LeaderboardMetadata.t())
+    field(:arena, LeaderboardMetadata.t())
+    field(:battlegrounds, LeaderboardMetadata.t())
+    field(:battlegroundsduo, LeaderboardMetadata.t())
     field(:classic, LeaderboardMetadata.t())
-    field(:mercenaries, LeaderboardMetadata.t(), enforce: true)
-    field(:standard, LeaderboardMetadata.t(), enforce: true)
+    field(:mercenaries, LeaderboardMetadata.t())
+    field(:standard, LeaderboardMetadata.t())
     field(:twist, LeaderboardMetadata.t())
-    field(:wild, LeaderboardMetadata.t(), enforce: true)
+    field(:wild, LeaderboardMetadata.t())
   end
 
-  @spec from_raw_map(map()) :: SeasonMetadata.t()
-  def from_raw_map(
-        %{
-          "battlegrounds" => battlegrounds,
-          "standard" => standard,
-          "wild" => wild
-        } = map
-      ) do
+  @spec from_raw_map(map() | nil) :: RegionMetadata.t() | nil
+  def from_raw_map(%{} = map) do
     %__MODULE__{
-      arena: LeaderboardMetadata.from_raw_map(map["arena"]),
-      undergroundarena: LeaderboardMetadata.from_raw_map(map["undergroundarena"]),
-      battlegrounds: LeaderboardMetadata.from_raw_map(battlegrounds),
-      battlegroundsduo: LeaderboardMetadata.from_raw_map(map["battlegroundsduo"]),
-      classic: LeaderboardMetadata.from_raw_map(map["classic"]),
-      mercenaries: LeaderboardMetadata.from_raw_map(map["mercenaries"]),
-      standard: LeaderboardMetadata.from_raw_map(standard),
-      twist: LeaderboardMetadata.from_raw_map(map["twist"]),
-      wild: LeaderboardMetadata.from_raw_map(wild)
+      arena: LeaderboardMetadata.from_raw_map(map["arena"] || map[:arena]),
+      undergroundarena: LeaderboardMetadata.from_raw_map(map["undergroundarena"] || map[:undergroundarena]),
+      battlegrounds: LeaderboardMetadata.from_raw_map(map["battlegrounds"] || map[:battlegrounds]),
+      battlegroundsduo: LeaderboardMetadata.from_raw_map(map["battlegroundsduo"] || map[:battlegroundsduo]),
+      classic: LeaderboardMetadata.from_raw_map(map["classic"] || map[:classic]),
+      mercenaries: LeaderboardMetadata.from_raw_map(map["mercenaries"] || map[:mercenaries]),
+      standard: LeaderboardMetadata.from_raw_map(map["standard"] || map[:standard]),
+      twist: LeaderboardMetadata.from_raw_map(map["twist"] || map[:twist]),
+      wild: LeaderboardMetadata.from_raw_map(map["wild"] || map[:wild])
     }
   end
 
-  @spec get_leaderboard_metadata(t(), leaderboard_id :: String.t()) ::
+  def from_raw_map(_), do: nil
+
+  @spec get_leaderboard_metadata(t(), leaderboard_id :: String.t() | atom()) ::
           {:ok, LeaderboardMetadata.t()} | {:error, atom()}
-  def get_leaderboard_metadata(season_metadata, leaderboard_id) do
+  def get_leaderboard_metadata(%__MODULE__{} = season_metadata, leaderboard_id) do
     with {:ok, identifier} <-
            Hearthstone.Leaderboards.Api.get_leaderboard_identifier(leaderboard_id),
-         %{name: _} = metadata <-
-           Map.get(season_metadata, identifier, {:error, :unsupported_leaderboard}) do
+         %LeaderboardMetadata{} = metadata <- Map.get(season_metadata, identifier) do
       {:ok, metadata}
+    else
+      nil -> {:error, :unsupported_leaderboard}
+      {:error, _} = e -> e
+      _ -> {:error, :unsupported_leaderboard}
     end
   end
+
+  def get_leaderboard_metadata(_, _), do: {:error, :invalid_region_metadata}
+end
+
+defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.SeasonItem do
+  use TypedStruct
+
+  typedstruct do
+    field(:season_id, integer(), enforce: true)
+    field(:display_name, map() | String.t() | nil)
+    field(:mode, map() | nil)
+    field(:key, map() | nil)
+  end
+
+  @spec from_raw(map() | integer()) :: t() | nil
+  def from_raw(season_id) when is_integer(season_id) do
+    %__MODULE__{
+      season_id: season_id,
+      display_name: nil
+    }
+  end
+
+  def from_raw(%{} = map) do
+    season_id = map["season_id"] || map[:season_id] || map["seasonId"] || map[:seasonId]
+
+    if is_integer(season_id) do
+      %__MODULE__{
+        season_id: season_id,
+        display_name: map["display_name"] || map[:display_name] || map["displayName"] || map[:displayName],
+        mode: map["mode"] || map[:mode],
+        key: map["key"] || map[:key]
+      }
+    else
+      nil
+    end
+  end
+
+  def from_raw(_), do: nil
+
+  @spec display_name(t(), String.t()) :: String.t()
+  def display_name(%__MODULE__{season_id: season_id, display_name: %{} = dn_map}, locale) do
+    Map.get(dn_map, locale) ||
+      Map.get(dn_map, "en_US") ||
+      Map.get(dn_map, :en_US) ||
+      "Season #{season_id}"
+  end
+
+  def display_name(%__MODULE__{display_name: dn}, _locale) when is_binary(dn) and dn != "", do: dn
+  def display_name(%__MODULE__{season_id: season_id}, _locale), do: "Season #{season_id}"
 end
 
 defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata do
   use TypedStruct
+  alias Hearthstone.Leaderboards.Response.SeasonMetadata.SeasonItem
 
   typedstruct do
     field(:name, String.t())
     field(:rating_id, integer() | nil)
-    field(:seasons, [integer()])
+    field(:seasons, [SeasonItem.t()])
   end
 
-  def get_max_season_id(%{seasons: seasons}) do
-    Enum.map(seasons, fn
-      s when is_integer(s) -> s
-      %{"season_id" => s} -> s
-      %{season_id: s} -> s
-      _ -> nil
-    end)
-    |> Enum.filter(& &1)
+  @spec get_max_season_id(t()) :: {:ok, integer()} | {:error, atom()}
+  def get_max_season_id(%__MODULE__{seasons: seasons}) do
+    seasons
+    |> Enum.map(& &1.season_id)
     |> case do
       [_ | _] = season_ids -> {:ok, Enum.max(season_ids)}
       _ -> {:error, :no_seasons}
@@ -248,12 +340,32 @@ defmodule Hearthstone.Leaderboards.Response.SeasonMetadata.LeaderboardMetadata d
 
   def get_max_season_id(_), do: {:error, :invalid_leaderboard_metadata}
 
-  @spec from_raw_map(map()) :: SeasonMetadata.t()
-  def from_raw_map(%{"name" => name, "seasons" => seasons} = m) do
+  @spec get_seasons(t() | any(), String.t()) :: [{String.t(), integer()}]
+  def get_seasons(metadata, locale \\ "en_US")
+
+  def get_seasons(%__MODULE__{seasons: seasons}, locale) do
+    seasons
+    |> Enum.map(fn item ->
+      {SeasonItem.display_name(item, locale), item.season_id}
+    end)
+    |> Enum.sort_by(&elem(&1, 1), :desc)
+  end
+
+  def get_seasons(_, _), do: []
+
+  @spec from_raw_map(map() | nil) :: t() | nil
+  def from_raw_map(%{} = m) do
+    raw_seasons = m["seasons"] || m[:seasons] || []
+
+    parsed_seasons =
+      raw_seasons
+      |> Enum.map(&SeasonItem.from_raw/1)
+      |> Enum.filter(& &1)
+
     %__MODULE__{
-      name: name,
-      rating_id: Map.get(m, "ratingId"),
-      seasons: seasons
+      name: m["name"] || m[:name],
+      rating_id: m["ratingId"] || m[:ratingId] || m["rating_id"] || m[:rating_id],
+      seasons: parsed_seasons
     }
   end
 

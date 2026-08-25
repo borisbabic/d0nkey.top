@@ -1131,12 +1131,21 @@ defmodule BackendWeb.LeaderboardView do
     with {:ok, ldb} <- Blizzard.to_leaderboard_id(ldb || :STD),
          {:ok, region} <- Blizzard.to_region(region || :EU) do
       selectable_seasons =
-        Blizzard.get_current_ladder_season(ldb, region)..0
-        |> Enum.take(7)
-        |> Enum.map(fn s ->
-          name = Blizzard.get_season_name(s, ldb)
-          {name, s}
-        end)
+        case ldb do
+          ldb when ldb in [:arena, :undergroundarena, :BG, :DUO] ->
+            Backend.Leaderboards.Seasons.get_seasons(ldb, region)
+            |> Enum.take(7)
+
+          _ ->
+            current = Blizzard.get_current_ladder_season(ldb, region)
+
+            Range.new(current, 0, -1)
+            |> Enum.take(7)
+            |> Enum.map(fn s ->
+              name = Blizzard.get_season_name(s, ldb)
+              {name, s}
+            end)
+        end
 
       {:ok, selectable_seasons}
     end

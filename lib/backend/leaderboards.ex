@@ -301,7 +301,11 @@ defmodule Backend.Leaderboards do
     min_page = count_to_page_num(min_num)
 
     with {:ok, response} <- Api.get_page(season) do
-      Task.start(fn -> update_total_size(season, response) end)
+      Task.start(fn ->
+        update_total_size(season, response)
+        Backend.Leaderboards.Seasons.update_from_response(response)
+      end)
+
       PageFetcher.enqueue_all(response, max_page, min_page)
     end
   end
@@ -590,10 +594,13 @@ defmodule Backend.Leaderboards do
 
   def handle_rows(rows, season), do: create_entries(rows, season)
 
-  def handle_response(%{leaderboard: %{rows: [_ | _] = rows}, season: season}),
-    do: handle_rows(rows, season)
+  def handle_response(%{leaderboard: %{rows: [_ | _] = rows}, season: season} = response) do
+    Task.start(fn -> Backend.Leaderboards.Seasons.update_from_response(response) end)
+    handle_rows(rows, season)
+  end
 
-  def handle_response(_) do
+  def handle_response(response) do
+    Task.start(fn -> Backend.Leaderboards.Seasons.update_from_response(response) end)
     nil
   end
 

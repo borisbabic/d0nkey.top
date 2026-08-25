@@ -17,7 +17,7 @@ defmodule Hearthstone.Leaderboards.Api do
   @page_size 25
 
   @spec get_page(Season.t(), integer() | nil) :: {:ok, Response.t()} | {:error, any()}
-  def get_page(raw_season, page \\ @default_page) do
+  def get_page(raw_season \\ %Season{}, page \\ @default_page) do
     season =
       raw_season
       |> Season.ensure_region()
@@ -31,6 +31,19 @@ defmodule Hearthstone.Leaderboards.Api do
     else
       {:error, _reason} = r -> r
       _ -> {:error, :unknown_error_getting_leaderboard_page}
+    end
+  end
+
+  @spec get_season_metadata(Season.t() | map()) ::
+          {:ok, Response.SeasonMetadata.t()} | {:error, any()}
+  def get_season_metadata(raw_season \\ %Season{}) do
+    with {:ok, %Response{season_metadata: %Response.SeasonMetadata{} = metadata}} <-
+           get_page(raw_season, 1) do
+      {:ok, metadata}
+    else
+      {:ok, _} -> {:error, :no_season_metadata}
+      {:error, _} = err -> err
+      _ -> {:error, :unknown_error}
     end
   end
 
