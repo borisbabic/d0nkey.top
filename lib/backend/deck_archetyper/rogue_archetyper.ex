@@ -8,8 +8,14 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       quest?(card_info) ->
         :"Quest Rogue"
 
+      sneaky?(card_info) and herald?(card_info) ->
+        :"Sneaky Harold Rogue"
+
       herald?(card_info) ->
         :"Harold Rogue"
+
+      sneaky?(card_info) and imbue?(card_info, 5) ->
+        :"Sneaky Imbue Rogue"
 
       imbue?(card_info, 5) ->
         :"Imbue Rogue"
@@ -20,14 +26,26 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       weapon?(card_info) ->
         :"Weapon Rogue"
 
+      sneaky?(card_info) and ayaya?(card_info) ->
+        :"Sneaky AYAYA Rogue"
+
       ayaya?(card_info) ->
         :"AYAYA Rogue"
+
+      sneaky?(card_info) and two_bit?(card_info) ->
+        :"Sneaky Two-Bit Rogue"
 
       two_bit?(card_info) ->
         :"Two-Bit Rogue"
 
       burn?(card_info) ->
         :"Burn Rogue"
+
+      sneaky?(card_info) and burn?(card_info) ->
+        :"Sneaky Burn Rogue"
+
+      sneaky?(card_info) ->
+        :"Sneaky Rogue"
 
       "Elise the Navigator" in card_info.card_names ->
         :"Elise Rogue"
@@ -62,6 +80,16 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
       true ->
         fallbacks(card_info, "Rogue")
     end
+  end
+
+  defp sneaky?(card_info) do
+    min_keyword_count?(card_info, 5, "stealth", unique: true) or
+      min_count?(card_info, 2, [
+        "SI:7 Slayer",
+        "Silent Strike",
+        "Tricks of the Trade",
+        "Mathias Shaw"
+      ])
   end
 
   defp thief?(card_info) do

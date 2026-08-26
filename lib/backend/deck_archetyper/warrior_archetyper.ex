@@ -14,6 +14,9 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       murloc?(card_info) ->
         :"Murloc Warrior"
 
+      dragon?(card_info) and pirate?(card_info) ->
+        :"Dragon Pirate Warrior"
+
       dragon?(card_info) ->
         :"Dragon Warrior"
 
