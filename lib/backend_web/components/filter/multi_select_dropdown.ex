@@ -308,9 +308,12 @@ defmodule Components.MultiSelectDropdown do
          search,
          options,
          base_num_to_show,
-         selected \\ [],
-         normalizer \\ &Util.id/1,
-         scrollable \\ false
+         selected,
+         normalizer,
+         scrollable
+         # selected \\ [],
+         # normalizer \\ &Util.id/1,
+         # scrollable \\ false
        ) do
     normalized_search = normalize_search(search)
 

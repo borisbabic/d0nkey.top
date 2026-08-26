@@ -266,8 +266,17 @@ defmodule Backend.Giveaways do
     end)
   end
 
+  @default_leeway_hours 5
+
+  @spec current_giveaway_id(number()) :: integer() | nil
+  def current_giveaway_id(leeway_hours \\ @default_leeway_hours) do
+    with %{id: id} when is_integer(id) <- current_giveaway(leeway_hours) do
+      id
+    end
+  end
+
   @spec current_giveaway(number()) :: Giveaway.t() | nil
-  def current_giveaway(leeway_hours \\ 6) do
+  def current_giveaway(leeway_hours \\ @default_leeway_hours) do
     now = NaiveDateTime.utc_now()
     # keep it around for 6 arounds
     cutoff = Timex.shift(now, hours: -1 * leeway_hours)

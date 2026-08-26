@@ -18,7 +18,7 @@ defmodule Backend.Reveals do
     end
   end
 
-  def can_show_anyway?(%{battletag: bt}) when bt in ["RHat#1215", "D0nkey2470"], do: true
+  def can_show_anyway?(%{battletag: bt}) when bt in ["D0nkey2470"], do: true
   def can_show_anyway?(u), do: User.can_access?(u, :reveals)
 
   def reveal_time(:boom) do

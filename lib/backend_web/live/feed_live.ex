@@ -24,9 +24,7 @@ defmodule BackendWeb.FeedLive do
         <br>
         <div class="level is-mobile">
           <div class="level-item">
-            <.alert type="info" :if={Backend.Giveaways.winner?(@user)}>
-                You have won the <a href={~p"/giveaway/1"}>giveaway!</a>
-            </.alert>
+            <.giveaway_alert giveaway={Backend.Giveaways.current_giveaway(72)} user={@user} />
           </div>
           <div :if={true} class="level-item">
             <OmniBar id="omni_bar_id"/>
@@ -60,6 +58,19 @@ defmodule BackendWeb.FeedLive do
           </div>
         </div>
       </div>
+    """
+  end
+
+  attr :giveaway, :any, required: true
+  attr :user, :any, required: true
+
+  def giveaway_alert(%{giveaway: g, user: u} = assigns) when is_nil(g) or is_nil(u), do: ~H""
+
+  def giveaway_alert(assigns) do
+    ~H"""
+      <.alert type="info" :if={Backend.Giveaways.winner?(@giveaway, @user)}>
+          You have won the <a href={~p"/giveaway/#{Map.get(@giveaway, :id)}"}>giveaway!</a>
+      </.alert>
     """
   end
 
