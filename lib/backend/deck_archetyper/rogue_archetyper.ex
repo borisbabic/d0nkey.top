@@ -415,11 +415,18 @@ defmodule Backend.DeckArchetyper.RogueArchetyper do
     ]) or
       ("Coldlight Oracle" in card_info.card_names and
          min_count?(card_info, 1, ["Spirit of the Shark", "Brann Bronzebeard"]) and
-         min_count?(card_info, 2, [
-           "Potion of Illusion",
-           "Togwaggle's Scheme",
-           "Gang Up",
-           "Lab Recruiter"
-         ]))
+           min_count?(card_info, 2, [
+             "Potion of Illusion",
+             "Togwaggle's Scheme",
+             "Gang Up",
+             "Lab Recruiter"
+           ])
+      ) or
+        min_count?(card_info, 3, [
+           "Disguised Operator",
+           "Barrens Trapper",
+           "Sonya Shadowdancer",
+           "Snowfall Graveyard"
+         ])
   end
 end
