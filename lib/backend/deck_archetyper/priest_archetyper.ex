@@ -8,6 +8,12 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       # quest?(card_info) ->
       #   :"Quest Priest"
 
+      "Azalina Soulsever" in card_info.card_names ->
+        :"Thief Priest"
+
+      equilibrium_quest?(card_info) ->
+        :"Quest Priest"
+
       egg_priest?(card_info) ->
         :"Egg Priest"
 
@@ -50,6 +56,10 @@ defmodule Backend.DeckArchetyper.PriestArchetyper do
       true ->
         fallbacks(card_info, "Priest")
     end
+  end
+
+  defp equilibrium_quest?(card_info) do
+    min_count?(card_info, 2, ["Reach Equilibrium", "Raith Van Geist"])
   end
 
   defp soothsayer?(card_info) do

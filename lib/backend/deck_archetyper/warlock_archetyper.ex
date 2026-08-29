@@ -60,6 +60,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       herald?(card_info, 3) ->
         :"Harold Warlock"
 
+      impformant?(card_info) ->
+        :"Impformant Warlock"
+
       demon?(card_info) ->
         :"Demon Warlock"
 
@@ -78,6 +81,9 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       discard?(card_info, 5) ->
         :"Discard Warlock"
 
+      impformant?(card_info, 3) ->
+        :"Impformant Warlock"
+
       "Godfrey the Betrayer" in card_info.card_names ->
         :"Godfrey Warlock"
 
@@ -93,6 +99,17 @@ defmodule Backend.DeckArchetyper.WarlockArchetyper do
       true ->
         fallbacks(card_info, "Warlock")
     end
+  end
+
+  defp impformant?(card_info, count \\ 4) do
+    min_count?(card_info, count, [
+      "Corrupt Constable",
+      "Follow the Evidence",
+      "Frame Job",
+      "Harsh Sentence",
+      "Kabal Conspirator",
+      "Kabal Mastermind"
+    ])
   end
 
   defp divergence?(card_info) do

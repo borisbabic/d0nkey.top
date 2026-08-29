@@ -54,6 +54,9 @@ defmodule Backend.DeckArchetyper.PaladinArchetyper do
       card_info.beatrix_sideboard == "Petal Peddler" ->
         :"Peddler Paladin"
 
+      card_info.beatrix_sideboard == "Prize Vendor" ->
+        :"Mill Paladin"
+
       true ->
         fallbacks(card_info, "Paladin")
     end

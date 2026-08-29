@@ -14,7 +14,10 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       murloc?(card_info) ->
         :"Murloc Warrior"
 
-      dragon?(card_info) and pirate?(card_info) ->
+      herald?(card_info, 6) ->
+        :"Harold Warrior"
+
+      dragon?(card_info, 2) and pirate?(card_info, 3) ->
         :"Dragon Pirate Warrior"
 
       dragon?(card_info) ->
@@ -73,8 +76,8 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
     end
   end
 
-  defp pirate?(card_info) do
-    min_count?(card_info, 4, [
+  defp pirate?(card_info, count \\ 4) do
+    min_count?(card_info, count, [
       "Blastpowder Egineer",
       "Hook n' Heave",
       "Cannonmaster",
@@ -105,10 +108,10 @@ defmodule Backend.DeckArchetyper.WarriorArchetyper do
       ])
   end
 
-  defp dragon?(card_info) do
+  defp dragon?(card_info, count \\ 3) do
     min_count?(
       card_info,
-      3,
+      count,
       [
         "Giftwrapped Whelp",
         "Windpeak Wyrm",
